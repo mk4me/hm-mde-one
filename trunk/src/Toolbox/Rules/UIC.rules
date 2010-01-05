@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VisualStudioToolFile
+	Name="UI Compiler"
+	Version="8,00"
+	>
+	<Rules>
+		<CustomBuildRule
+			Name="UI Compiler"
+			DisplayName="Compiling User Interface"
+			CommandLine="echo Generating ui_$(InputName).h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe $(InputDir)$(InputName).ui -o $(InputDir)ui_$(InputName).h&#x0D;&#x0A;"
+			Outputs="$(InputDir)ui_$(InputName).h"
+			AdditionalDependencies="$(InputName).ui;$(QTDIR)\bin\uic.exe"
+			FileExtensions="*.ui"
+			ExecutionDescription="Compiling User Interface for $(InputFileName)"
+			>
+			<Properties>
+			</Properties>
+		</CustomBuildRule>
+	</Rules>
+</VisualStudioToolFile>
