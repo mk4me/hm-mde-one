@@ -10,17 +10,17 @@ class ConsoleWidgetOutputBuffer : public std::streambuf
 {
 public:
   ConsoleWidgetOutputBuffer(ConsoleWidget *console, std::size_t buff_sz = 256): 
-    buffer_(buff_sz + 1)
-  , console_(console)
+    _buffer(buff_sz + 1)
+  , _console(console)
   {
-    char *base = &buffer_.front();
-    setp(base, base + buffer_.size() - 1);
+    char *base = &_buffer.front();
+    setp(base, base + _buffer.size() - 1);
   }
 
   virtual ~ConsoleWidgetOutputBuffer()
   {
-    console_ = NULL; 
-    buffer_.clear(); 
+    _console = NULL; 
+    _buffer.clear(); 
   }
 private: 
   virtual int_type overflow(int_type c = traits_type::eof()) 
@@ -39,14 +39,14 @@ private:
   bool flush_buffer()
   {
     std::string buf = std::string(pbase(), pptr()); 
-    console_->print(buf); 
-    char *base = &buffer_.front();
-    setp(base, base + buffer_.size() - 1);
+    _console->print(buf); 
+    char *base = &_buffer.front();
+    setp(base, base + _buffer.size() - 1);
     return true; 
   }
 private: 
-  ConsoleWidget *console_; 
-  std::vector<char> buffer_;
+  ConsoleWidget *_console; 
+  std::vector<char> _buffer;
 };
 
 /*

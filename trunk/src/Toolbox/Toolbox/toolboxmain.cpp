@@ -25,12 +25,15 @@
 #include "ConfigurationService.h"
 #include "Logger.h"
 
+// helper - this name is quite long...
+#define pPat osg::PositionAttitudeTransform*
+
 #define CONFIG_FILE "Toolbox_config.ini"
 
 ToolboxMain::ToolboxMain(QWidget *parent)
-  : QMainWindow(parent), ui(new Ui::ToolboxMain)
+  : QMainWindow(parent), m_ui(new Ui::ToolboxMain)
 {
-    ui->setupUi(this);
+    m_ui->setupUi(this);
 
     // Console Widget 
     initializeConsoleWidget();
@@ -40,12 +43,12 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     // Wczytuje plik konfiguracyjny
     loadConfiguration(); 
 
-    plugins_.clear(); 
+    m_plugins.clear(); 
     loadPlugins(); 
 
     // w przysz³oœci setLayout
-    QDockWidget *cdock = dynamic_cast<QDockWidget *>(consoleWidget_->parent()); 
-    QDockWidget *tldock = dynamic_cast<QDockWidget *>(timeLine_->parent()); 
+    QDockWidget *cdock = dynamic_cast<QDockWidget *>(m_consoleWidget->parent()); 
+    QDockWidget *tldock = dynamic_cast<QDockWidget *>(m_timeLine->parent()); 
 
     if(cdock && tldock)
       tabifyDockWidget(cdock, tldock); 
@@ -53,8 +56,8 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 
 ToolboxMain::~ToolboxMain()
 {
-  delete ui;
-  std::streambuf *buf = std::cout.rdbuf(streambuf_);
+  delete m_ui;
+  std::streambuf *buf = std::cout.rdbuf(m_streambuf);
   delete buf; 
 }
 
@@ -76,23 +79,23 @@ void ToolboxMain::initializeControlWidget()
   // ControlWidget
   QDockWidget *dock = new QDockWidget(tr("Control (sample)"), this, Qt::WindowTitleHint);
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  osgControlWidget_ = new OsgControlWidget();    
+  m_osgControlWidget = new OsgControlWidget();    
   addDockWidget(Qt::RightDockWidgetArea, dock);
-  dock->setWidget((QWidget*)osgControlWidget_);
+  dock->setWidget((QWidget*)m_osgControlWidget);
 
-  osgViewer::Scene* scene = osgView_->getScene(); 
-  osgControlWidget_->setScene(scene); 
+  osgViewer::Scene* scene = m_osgView->getScene(); 
+  m_osgControlWidget->setScene(scene); 
 
   // TimeLine
   QDockWidget *tldock = new QDockWidget(tr("Time Line"), this, Qt::WindowTitleHint); 
   tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-  timeLine_ = new TimeLine(); 
+  m_timeLine = new TimeLine(); 
   addDockWidget(Qt::BottomDockWidgetArea, tldock);
-  tldock->setWidget((QWidget*)timeLine_); 
+  tldock->setWidget((QWidget*)m_timeLine); 
 
-  timeLine_->setScene(scene); 
+  m_timeLine->setScene(scene); 
 
-  connect(&osgView_->_timer, SIGNAL(timeout()), timeLine_, SLOT(update())); 
+  connect(&m_osgView->_timer, SIGNAL(timeout()), m_timeLine, SLOT(update())); 
 
   // Inicjalizacja menu: 
   createActions(); 
@@ -124,9 +127,9 @@ void ToolboxMain::initializePlugin(QObject *plugin)
   IControlPlugin *iControlPlugin = qobject_cast<IControlPlugin *>(plugin);
   if (iControlPlugin)
   {
-    osgViewer::Scene* scene = osgView_->getScene(); 
+    osgViewer::Scene* scene = m_osgView->getScene(); 
 
-    plugins_.push_back(plugin); 
+    m_plugins.push_back(plugin); 
 
     QDockWidget *tldock = new QDockWidget(iControlPlugin->getPluginName(), this, Qt::WindowTitleHint); 
     tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
@@ -140,51 +143,127 @@ void ToolboxMain::initializePlugin(QObject *plugin)
 // To ma byæ w pluginach 
 void ToolboxMain::createActions()
 {
-  openAct_ = new QAction(tr("&Open..."), this);
-  openAct_->setShortcut(tr("Ctrl+O"));
-  connect(openAct_, SIGNAL(triggered()), this, SLOT(open()));
+  m_openAct = new QAction(tr("&Open..."), this);
+  m_openAct->setShortcut(tr("Ctrl+O"));
+  connect(m_openAct, SIGNAL(triggered()), this, SLOT(open()));
 }
 
 void ToolboxMain::createMenus()
 {
-  fileMenu_ = menuBar()->addMenu(tr("&File"));
-  fileMenu_->addAction(openAct_);
+  m_fileMenu = menuBar()->addMenu(tr("&File"));
+  m_fileMenu->addAction(m_openAct);
 }
 
+//////////////////////////////////////////////////////////////////////////
+// draws bone
+void ToolboxMain::drawBone(pPat bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode)
+{
+	osg::Vec3d bpos = (*parentRot) * bone->getPosition() + *parentPos;
+	osg::Quat  brot = bone->getAttitude() * (*parentRot);
+
+	// recursively draw other bones
+	for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
+		drawBone((pPat)bone->getChild(b), &bpos, &brot, geode);
+
+	// draw actual bone
+	osg::Geometry*  geometry = new osg::Geometry();
+
+	// vertices
+	osg::Vec3Array* vertices = new osg::Vec3Array();
+	vertices->push_back(*parentPos);
+	vertices->push_back(bpos);
+
+	// indices
+	osg::DrawElementsUInt* line = new osg::DrawElementsUInt(osg::PrimitiveSet::LINES, 0);
+	line->push_back(0);
+	line->push_back(1);
+	
+	// set geometry data
+	geometry->setVertexArray(vertices);
+	geometry->addPrimitiveSet(line);
+
+	// set colors
+	osg::Vec4Array* colors = new osg::Vec4Array;
+	colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
+	colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;
+	colorIndexArray->push_back(0);
+	colorIndexArray->push_back(1);
+	geometry->setColorArray(colors);
+	geometry->setColorIndices(colorIndexArray);
+	geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+
+	// add to geode
+	geode->addDrawable(geometry);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// draws skeleton
+void ToolboxMain::drawSkeletonFromGroup(osg::Group* root)
+{
+	int childNum = root->getNumChildren();
+	for (int i = 0; i < childNum; ++i)
+	{
+		// find skeleton
+		if (!root->getChild(i)->getName().compare("skeleton"))
+		{
+			pPat root_bone = (pPat)(root->getChild(i)->asGroup()->getChild(0));
+
+			osg::Geode* geode = new osg::Geode();
+			geode->setName("skeleton_geode");
+
+			// recursively draw skeleton
+			for (unsigned int b = 0; b < root_bone->getNumChildren(); ++b)
+				drawBone((pPat)root_bone->getChild(b), &root_bone->getPosition(), &root_bone->getAttitude(), geode);
+			
+			root->addChild(geode);
+
+			// we did what we want
+			return;
+		}
+	}
+
+	MessageBox(0, L"No skeleton?", L"info", MB_OK);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// loads model
 void ToolboxMain::open()
 {
-  const QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
-  
-  if (!fileName.isEmpty()) 
-  {
-    std::cout << " " << std::endl; 
-    std::cout << "File Opened: " << std::string(fileName.toUtf8()) << std::endl;
-    std::cout << "---------------------------------------------------------------" << std::endl; 
-    // 
-    osg::Node *loadedModel = osgDB::readNodeFile( std::string(fileName.toUtf8()) );
-    osg::Node *grid = createGrid(); 
+	const QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
 
-    if(loadedModel->asGroup())
-      loadedModel->asGroup()->addChild(grid); 
+	if (!fileName.isEmpty()) 
+	{
+		std::cout << " " << std::endl; 
+		std::cout << "File Opened: " << std::string(fileName.toUtf8()) << std::endl;
+		std::cout << "---------------------------------------------------------------" << std::endl; 
+		
+		// calls external function loading model <- look into osgDBPlugin
+		osg::Node *loadedModel = osgDB::readNodeFile( std::string(fileName.toUtf8()) );
+	
+		if (loadedModel)
+		{
+			drawSkeletonFromGroup(loadedModel->asGroup());
 
-    osgView_->setSceneData( loadedModel );
+			m_root->addChild(loadedModel);
+			m_osgView->setSceneData(m_root);
 
-    osgViewer::Scene* scene = osgView_->getScene(); 
-    osgControlWidget_->setScene(scene); 
-    timeLine_->setScene(scene); 
+			osgViewer::Scene* scene = m_osgView->getScene(); 
+			m_osgControlWidget->setScene(scene); 
+			m_timeLine->setScene(scene); 
 
-    int pluginCount = plugins_.size(); 
-    for (int i=0; i<pluginCount; ++i)
-    {
-      QObject *plugin = plugins_[i]; 
-      IControlPlugin *iControlPlugin = qobject_cast<IControlPlugin *>(plugin);
-      if(iControlPlugin)
-      {
-        iControlPlugin->setScene(scene); 
-      }
-    }
-
-  }
+			int pluginCount = m_plugins.size(); 
+			for (int i=0; i<pluginCount; ++i)
+			{
+				QObject *plugin = m_plugins[i]; 
+				IControlPlugin *iControlPlugin = qobject_cast<IControlPlugin*>(plugin);
+				if(iControlPlugin)
+					iControlPlugin->setScene(scene); 
+			}
+		}
+	}
 }
 
 void ToolboxMain::initializeConsoleWidget()
@@ -192,97 +271,99 @@ void ToolboxMain::initializeConsoleWidget()
   QDockWidget *dock; 
   dock = new QDockWidget(tr("Console"), this, Qt::WindowTitleHint);
   dock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-  consoleWidget_ = new ConsoleWidget();    
+  m_consoleWidget = new ConsoleWidget();    
   addDockWidget(Qt::BottomDockWidgetArea, dock);
-  dock->setWidget((QWidget*)consoleWidget_); 
+  dock->setWidget((QWidget*)m_consoleWidget); 
 
   // Inicjalizacja konsoli
-  ConsoleWidgetOutputBuffer *ob = new ConsoleWidgetOutputBuffer(consoleWidget_, 256);
-  streambuf_ = std::cout.rdbuf(ob);
+  ConsoleWidgetOutputBuffer *ob = new ConsoleWidgetOutputBuffer(m_consoleWidget, 256);
+  m_streambuf = std::cout.rdbuf(ob);
 
   std::cout << "Console initialized..." << std::endl; 
 }
 
 void ToolboxMain::initializeOGSWidget()
 {
-  osgView_ = new ViewerQT(this, 0, 0);
-  setCentralWidget(osgView_); 
-  osgView_->addEventHandler(new osgViewer::StatsHandler);
-  
-  osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator(); 
-  osgView_->setCameraManipulator(cameraManipulator);
+	m_osgView = new ViewerQT(this, 0, 0);
+	setCentralWidget(m_osgView); 
+	m_osgView->addEventHandler(new osgViewer::StatsHandler);
 
-  //cameraManipulator->cente
+	osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator(); 
+	m_osgView->setCameraManipulator(cameraManipulator);
 
-  osg::Group *root = new osg::Group(); 
-  root->addChild(createGrid());
-  osgView_->setSceneData( root );
+	m_root = new osg::Group();
+	m_root->setName("root");
+	m_root->addChild(createGrid());
+	m_osgView->setSceneData( m_root );
 
-  //osgViewer::Scene* scene = osgView_->getScene(); 
-  //osgControlWidget_->setScene(scene); 
+	// osgViewer::Scene* scene = m_osgView->getScene(); 
+	// m_osgControlWidget->setScene(scene); 
 }
 
-osg::Node *ToolboxMain::createGrid()
+osg::Node* ToolboxMain::createGrid()
 {
-  osg::Geode* geode = new osg::Geode();
-  // create Geometry object to store all the vertices and lines primitive.
-  osg::Geometry* linesGeom = new osg::Geometry();
+	osg::Geode* geode = new osg::Geode();
+	// create Geometry object to store all the vertices and lines primitive.
+	osg::Geometry* linesGeom = new osg::Geometry();
 
-  float size = 0.5f; 
-  int sizeX = 21; 
-  int sizeY = 21; 
+	float size = 0.5f; 
+	int sizeX = 21; 
+	int sizeY = 21; 
 
-  // this time we'll preallocate the vertex array to the size we
-  // need and then simple set them as array elements, 8 points
-  // makes 4 line segments.
-  osg::Vec3Array* vertices = new osg::Vec3Array((sizeX+sizeY)*2);
+	// this time we'll preallocate the vertex array to the size we
+	// need and then simple set them as array elements, 8 points
+	// makes 4 line segments.
+	osg::Vec3Array* vertices = new osg::Vec3Array((sizeX+sizeY)*2);
 
-  for (int i=0; i<sizeX; ++i)
-  {
-    float a_x = (float(i - sizeX/2) )*size; 
-    float a_y = -1.0f*(sizeX/2)*size; 
+	for (int i=0; i<sizeX; ++i)
+	{
+	float a_x = (float(i - sizeX/2) )*size; 
+	float a_y = -1.0f*(sizeX/2)*size; 
 
-    float b_x = (float(i - sizeX/2) )*size; 
-    float b_y = 1.0f*(sizeX/2)*size; 
-    
-    (*vertices)[2*i].set( a_x, a_y, 0.0f);
-    (*vertices)[2*i+1].set( b_x, b_y, 0.0f);
-  }
+	float b_x = (float(i - sizeX/2) )*size; 
+	float b_y = 1.0f*(sizeX/2)*size; 
 
-  for (int i=0; i<sizeY; ++i)
-  {
-    float a_x = -1.0f*(sizeY/2)*size; 
-    float a_y = (float(i - sizeY/2) )*size; 
+	(*vertices)[2*i].set( a_x, a_y, 0.0f);
+	(*vertices)[2*i+1].set( b_x, b_y, 0.0f);
+	}
 
-    float b_x = 1.0f*(sizeY/2)*size; 
-    float b_y = (float(i - sizeY/2) )*size; 
+	for (int i=0; i<sizeY; ++i)
+	{
+	float a_x = -1.0f*(sizeY/2)*size; 
+	float a_y = (float(i - sizeY/2) )*size; 
 
-    (*vertices)[sizeX*2+2*i].set( a_x, a_y, 0.0f);
-    (*vertices)[sizeX*2+2*i+1].set( b_x, b_y, 0.0f);
-  }
-  
-  // pass the created vertex array to the points geometry object.
-  linesGeom->setVertexArray(vertices);
+	float b_x = 1.0f*(sizeY/2)*size; 
+	float b_y = (float(i - sizeY/2) )*size; 
 
-  // set the colors as before, plus using the above
-  osg::Vec4Array* colors = new osg::Vec4Array;
-  colors->push_back( osg::Vec4(0.5f, 0.5f, 0.5f, 0.5f) );
-  linesGeom->setColorArray(colors);
-  linesGeom->setColorBinding( osg::Geometry::BIND_OVERALL );
+	(*vertices)[sizeX*2+2*i].set( a_x, a_y, 0.0f);
+	(*vertices)[sizeX*2+2*i+1].set( b_x, b_y, 0.0f);
+	}
 
-  // set the normal in the same way color.
-  osg::Vec3Array* normals = new osg::Vec3Array;
-  normals->push_back( osg::Vec3(0.0f, -1.0f, 0.0f) );
-  linesGeom->setNormalArray(normals);
-  linesGeom->setNormalBinding( osg::Geometry::BIND_OVERALL );
+	// pass the created vertex array to the points geometry object.
+	linesGeom->setVertexArray(vertices);
 
-  // This time we simply use primitive, and hardwire the number of coords to use 
-  // since we know up front,
-  linesGeom->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, (sizeX+sizeY)*2) );
+	// set the colors as before, plus using the above
+	osg::Vec4Array* colors = new osg::Vec4Array;
+	colors->push_back( osg::Vec4(0.5f, 0.5f, 0.5f, 0.5f) );
+	linesGeom->setColorArray(colors);
+	linesGeom->setColorBinding( osg::Geometry::BIND_OVERALL );
 
-  // add the points geometry to the geode.
-  geode->addDrawable(linesGeom);
+	// set the normal in the same way color.
+	osg::Vec3Array* normals = new osg::Vec3Array;
+	normals->push_back( osg::Vec3(0.0f, -1.0f, 0.0f) );
+	linesGeom->setNormalArray(normals);
+	linesGeom->setNormalBinding( osg::Geometry::BIND_OVERALL );
 
-  //osgView_->setSceneData((osg::Node *)geode);
-  return (osg::Node*)geode; 
+	// This time we simply use primitive, and hardwire the number of coords to use 
+	// since we know up front,
+	linesGeom->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, (sizeX+sizeY)*2) );
+
+	// add the points geometry to the geode.
+	geode->addDrawable(linesGeom);
+
+	//osgView_->setSceneData((osg::Node *)geode);
+
+	geode->setName("grid");
+
+	return (osg::Node*)geode; 
 }

@@ -10,8 +10,8 @@
 TimeLine::TimeLine(void):
   Ui::TimeLine()
 , QWidget()
-, play_(true)
-, animationTime_(0.0f)
+, _play(true)
+, _animationTime(0.0f)
 {
   setupUi(this); 
 
@@ -37,7 +37,7 @@ void TimeLine::analizeNode( osg::Node *node )
   if(apc)
   {
     std::cout << "AnimationPathCallback found! Node: " << node->getName() << std::endl; 
-    animPathCallbacks_.push_back(apc); 
+    _animPathCallbacks.push_back(apc); 
   }
 
   if(group)
@@ -53,34 +53,34 @@ void TimeLine::analizeNode( osg::Node *node )
 
 void TimeLine::clear()
 {
-  animPathCallbacks_.clear(); 
-  play_ = true; 
+  _animPathCallbacks.clear(); 
+  _play = true; 
 }
 
 void TimeLine::togglePlay()
 {
-  play_ = !play_; 
-  setPause(!play_); 
+  _play = !_play; 
+  setPause(!_play); 
 }
 
 void TimeLine::setPause(bool pause)
 {
-  play_ = !pause; 
+  _play = !pause; 
 
-  int animPathCallbackCount = animPathCallbacks_.size(); 
+  int animPathCallbackCount = _animPathCallbacks.size(); 
   for (int i=0; i<animPathCallbackCount; ++i)
   {
-    osg::AnimationPathCallback *apc = animPathCallbacks_[i]; 
-    apc->setPause(!play_); 
+    osg::AnimationPathCallback *apc = _animPathCallbacks[i]; 
+    apc->setPause(!_play); 
   }
 }
 
 void TimeLine::animationTimeTest()
 {
-  int animPathCallbackCount = animPathCallbacks_.size(); 
+  int animPathCallbackCount = _animPathCallbacks.size(); 
   for (int i=0; i<animPathCallbackCount; ++i)
   {
-    osg::AnimationPathCallback *apc = animPathCallbacks_[i]; 
+    osg::AnimationPathCallback *apc = _animPathCallbacks[i]; 
     double time = getCurrentAnimationTime(apc);
     double timeOffset = apc->getTimeOffset(); 
     std::cout << "Node: " << apc->getName() << " time: " << time << " timeOffset: " << timeOffset << std::endl;
@@ -89,13 +89,13 @@ void TimeLine::animationTimeTest()
 
 void TimeLine::update()
 {
-  if(!play_) return; 
+  if(!_play) return; 
 
-  if(animPathCallbacks_.size() > 0)
+  if(_animPathCallbacks.size() > 0)
   {
-    double time = getCurrentAnimationTime(animPathCallbacks_[0]); 
+    double time = getCurrentAnimationTime(_animPathCallbacks[0]); 
     currentTime->setValue(time); 
-    osg::AnimationPath *ap = animPathCallbacks_[0]->getAnimationPath(); 
+    osg::AnimationPath *ap = _animPathCallbacks[0]->getAnimationPath(); 
     double period = ap->getPeriod(); 
     double modulated_time = (time - ap->getFirstTime())/ap->getPeriod();
     
@@ -145,16 +145,16 @@ void TimeLine::setScene( osgViewer::Scene *scene )
   analizeNode(node); 
 
   double time = 0.0f; 
-  int animPathCallbackCount = animPathCallbacks_.size(); 
+  int animPathCallbackCount = _animPathCallbacks.size(); 
   for (int i=0; i<animPathCallbackCount; ++i)
   {
-    osg::AnimationPathCallback *apc = animPathCallbacks_[i]; 
+    osg::AnimationPathCallback *apc = _animPathCallbacks[i]; 
     osg::AnimationPath *ap = apc->getAnimationPath(); 
     time += ap->getLastTime() - ap->getFirstTime(); 
     //std::cout << "Node: " << apc->getName() << " time: " << ap->getLastTime() - ap->getFirstTime() << std::endl; 
   }
   time /= animPathCallbackCount; 
-  animationTime_ = time; 
+  _animationTime = time; 
 }
 
 void TimeLine::timeLineSliderPressed()
@@ -174,10 +174,10 @@ void TimeLine::timeLineSliderActionTriggered( int act )
   std::cout << "timeLineSliderValueChanged() " << mod_time << std::endl; 
   setPause(true); 
 
-  int animPathCallbackCount = animPathCallbacks_.size(); 
+  int animPathCallbackCount = _animPathCallbacks.size(); 
   for (int i=0; i<animPathCallbackCount; ++i)
   {
-    osg::AnimationPathCallback *apc = animPathCallbacks_[i]; 
+    osg::AnimationPathCallback *apc = _animPathCallbacks[i]; 
     osg::AnimationPath *ap = apc->getAnimationPath(); 
 
     double new_time = ap->getFirstTime() + mod_time*ap->getPeriod(); 

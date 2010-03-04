@@ -9,9 +9,9 @@ class TimeLine: public QWidget, Ui::TimeLine
 {
   Q_OBJECT
 private: 
-  std::vector<osg::AnimationPathCallback *> animPathCallbacks_; 
-  bool play_; 
-  float animationTime_; 
+  std::vector<osg::AnimationPathCallback *> _animPathCallbacks; 
+  bool _play; 
+  float _animationTime; 
 public:
   TimeLine(void);
   ~TimeLine(void);

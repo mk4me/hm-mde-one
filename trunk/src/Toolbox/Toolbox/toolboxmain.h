@@ -6,11 +6,14 @@
 #include <QMenu>
 #include <QAction>
 #include <osg/Node>
+#include <osg/PositionAttitudeTransform>
+#include <osg/Geometry>
 
 #include <streambuf>
 #include <QVector>
 
 #include <PluginsInterfaces.h>
+
 
 QT_BEGIN_NAMESPACE
 class QObject; 
@@ -22,51 +25,58 @@ QT_END_NAMESPACE
 
 namespace Ui
 {
-    class ToolboxMain;
+	class ToolboxMain;
 }
 
 class ToolboxMain : public QMainWindow
 {
-    Q_OBJECT
+		Q_OBJECT
 
-public:
-    ToolboxMain(QWidget *parent = 0);
+	public:
+		ToolboxMain(QWidget* parent = 0);
 
-    void loadPlugins(); 
-    void initializeOGSWidget();
-    void initializeConsoleWidget();
-    void initializeControlWidget();
+		void loadPlugins(); 
+		void initializeOGSWidget();
+		void initializeConsoleWidget();
+		void initializeControlWidget();
 
-    void createActions(); 
-    void createMenus(); 
-    osg::Node *createGrid(); 
-    ~ToolboxMain();
+		void createActions(); 
+		void createMenus(); 
+		osg::Node* createGrid(); 
+		~ToolboxMain();
 
-public slots: 
-  void open();
+	public slots: 
+		void open();
 
-private: 
-  void initializePlugin(QObject *plugin);
-  void loadConfiguration();
-private:    
-  Ui::ToolboxMain *ui;
+	private: 
+		void initializePlugin(QObject* plugin);
+		void loadConfiguration();
 
-  QVector<QObject *> plugins_; 
+		void drawSkeletonFromGroup(osg::Group* root);
+		void drawBone(osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode);
 
-  OsgControlWidget *osgControlWidget_; 
-  ConsoleWidget *consoleWidget_; 
+	private:    
+		Ui::ToolboxMain* m_ui;
 
-  ViewerQT *osgView_; 
-  TimeLine *timeLine_; 
+		QVector<QObject*> m_plugins; 
 
-  // Stary bufor cout
-  std::streambuf *streambuf_; 
+		OsgControlWidget* m_osgControlWidget; 
+		ConsoleWidget* m_consoleWidget; 
 
-  // Menu 
-  QMenu *fileMenu_; 
+		ViewerQT* m_osgView; 
+		TimeLine* m_timeLine; 
 
-  // Akcje 
-  QAction *openAct_;
+		// Stary bufor cout
+		std::streambuf* m_streambuf; 
+
+		// Menu 
+		QMenu* m_fileMenu; 
+
+		// Akcje 
+		QAction* m_openAct;
+
+		// scene root
+		osg::Group* m_root;
 };
 
 #endif // TOOLBOXMAIN_H

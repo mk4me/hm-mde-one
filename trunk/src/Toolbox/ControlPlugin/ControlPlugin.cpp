@@ -11,7 +11,7 @@
 #include "OsgControlWidget.h"
 
 ControlPlugin::ControlPlugin(void):
-  controlWidget_(0)
+  _controlWidget(0)
 {
 }
 
@@ -22,10 +22,10 @@ ControlPlugin::~ControlPlugin(void)
 
 void ControlPlugin::unloadPlugin()
 {
-  if(controlWidget_ != NULL)
+  if(_controlWidget != NULL)
   {
-    delete controlWidget_; 
-    controlWidget_ = 0; 
+    delete _controlWidget; 
+    _controlWidget = 0; 
   }
 }
 
@@ -36,9 +36,9 @@ int ControlPlugin::getDockWidgetsCount()
 
 QWidget *ControlPlugin::getDockWidget( int i )
 {
-  if(!controlWidget_) 
-    controlWidget_ = new OsgControlWidget(); 
-  return (QWidget *)controlWidget_; 
+  if(!_controlWidget) 
+    _controlWidget = new OsgControlWidget(); 
+  return (QWidget *)_controlWidget; 
 }
 
 QString ControlPlugin::getPluginName()
@@ -48,8 +48,8 @@ QString ControlPlugin::getPluginName()
 
 void ControlPlugin::setScene( osgViewer::Scene *scene )
 {
-  if(!controlWidget_) return; 
-  controlWidget_->setScene(scene); 
+  if(!_controlWidget) return; 
+  _controlWidget->setScene(scene); 
 }
 
 Q_EXPORT_PLUGIN2(motion_controlplugin, ControlPlugin)

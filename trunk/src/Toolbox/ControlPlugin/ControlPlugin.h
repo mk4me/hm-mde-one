@@ -25,5 +25,5 @@ public:
 
   // 
 private: 
-  OsgControlWidget *controlWidget_;  
+  OsgControlWidget *_controlWidget;  
 };
