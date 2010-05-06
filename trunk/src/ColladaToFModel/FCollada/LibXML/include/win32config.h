@@ -87,7 +87,7 @@ static int isnan (double d) {
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #define mkdir(p,m) _mkdir(p)
 #define snprintf _snprintf
-#define vsnprintf(b,c,f,a) _vsnprintf(b,c,f,a)
+//#define _vsnprintf(b,c,f,a) _vsnprintf(b,c,f,a)
 #endif
 
 /* Threading API to use should be specified here for compatibility reasons.

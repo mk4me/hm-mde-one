@@ -29,6 +29,7 @@
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -255,6 +256,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Model.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ModelWithSkeleton.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\OsgControlWidget.cpp"
 				>
 			</File>
@@ -293,6 +302,14 @@
 			</File>
 			<File
 				RelativePath=".\Logger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Model.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ModelWithSkeleton.h"
 				>
 			</File>
 			<File
@@ -341,44 +358,6 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Generated Files"
-			Filter="cpp;c;cxx;moc;h;def;odl;idl;res;"
-			UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}"
-			>
-			<File
-				RelativePath=".\Debug\moc_ConsoleWidget.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Debug\moc_OsgControlWidget.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Debug\moc_TimeLine.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Debug\moc_toolboxmain.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UI\ui_Console.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UI\ui_OsgWidget.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UI\ui_TimeLine.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UI\ui_toolboxmain.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="Form Files"
 			Filter="ui"
 			UniqueIdentifier="{99349809-55BA-4b9d-BF79-8FDBB0286EB3}"
@@ -400,6 +379,44 @@
 				RelativePath=".\UI\toolboxmain.ui"
 				>
 			</File>
+			<Filter
+				Name="Generated Files"
+				Filter="cpp;c;cxx;moc;h;def;odl;idl;res;"
+				UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}"
+				>
+				<File
+					RelativePath=".\Debug\moc_ConsoleWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Debug\moc_OsgControlWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Debug\moc_TimeLine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Debug\moc_toolboxmain.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI\ui_Console.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI\ui_OsgWidget.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI\ui_TimeLine.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI\ui_toolboxmain.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Interfaces"

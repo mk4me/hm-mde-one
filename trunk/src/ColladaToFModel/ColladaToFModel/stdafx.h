@@ -195,6 +195,7 @@ typedef fm::vector<MeshInstance*> GeometryMeshInstanceVector;
 #include "FAnimation.h"
 #include "FModel.h"
 #include "ModelExport.h"
+#include "ModelExportFacade.h"
 
 #define DEFAULT_SHADER "std-model"
 //#define DEFAULT_SHADER_SKINNED "std-model-skinned"

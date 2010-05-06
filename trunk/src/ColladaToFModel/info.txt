@@ -1,0 +1,12 @@
+Kompilacja:
+
+1.	Budujemy najpierw solucjê FCollada\FCollada.sln, a nastênie ColladaToFModel\ColladaToFModel.sln
+2.	Plik wykonywalny bêdzie znajdowa³ siê w katalogu bin\tools\
+
+
+Obs³uga:
+
+dae2fmodel.exe –v -f –i konwertowany_plik.dae –o katalog_wyjœciowy –t typ_tekstury
+Poza i wszystkie parametry s¹ nieobowi¹zkowe.
+v  – wyœwietla informacje o przebiegu konwersji
+f – wymusza napisanie plików wyjœciowych

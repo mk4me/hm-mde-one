@@ -1,4 +1,6 @@
-#pragma once 
+#ifndef ADAPER_WIDGET_H
+#define ADAPER_WIDGET_H
+
 /* OpenSceneGraph example, osganimate.
 *
 *  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,6 +24,8 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/TrackballManipulator>
 #include <osgDB/ReadFile>
+
+#include "ServiceManager.h"
 
 #define USE_QT4 1
 
@@ -92,12 +96,14 @@ class ViewerQT : public osgViewer::Viewer, public AdapterWidget
             setThreadingModel(osgViewer::Viewer::SingleThreaded);
 
             connect(&_timer, SIGNAL(timeout()), this, SLOT(updateGL()));
-            _timer.start(33);
+            _timer.start(34);
         }
 
         virtual void paintGL()
         {
             frame();
+            double delta = ((double)_timer.interval())/1000.0; 
+            ServiceManager::GetInstance()->OnTick(delta); 
         }
 
     //protected:
@@ -127,3 +133,5 @@ class CompositeViewerQT : public osgViewer::CompositeViewer, public AdapterWidge
 
         QTimer _timer;
 };
+
+#endif

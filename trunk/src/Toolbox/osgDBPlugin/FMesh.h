@@ -1,9 +1,16 @@
-#pragma once
+#ifndef FMESH_H
+#define FMESH_H
 
+#include <cstring>
 #include <string>
 #include <vector>
 #include <osg/Group>
 #include <osg/Geode>
+#include <osg/Geometry>
+
+
+typedef unsigned char byte;
+
 
 //////////////////////////////////////////////////////////////////////////
 // rozmiary
@@ -24,6 +31,7 @@ enum sizes
 	HEADER_SIZE = 6,		    // ID + chunk size (2+4)
 	HEADER_SIZE_EXP = 10,	  // ID + chunk size + number of elements in chunk (3*4)
 	GUID_SIZE = 16,
+	VERTICES_SIZE = 56
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -144,10 +152,10 @@ struct SMesh
 	SMeshFaces*     mesh_faces;
 	SMeshModifier*  modifier;
 
-	osg::Geode*		geode;
+	osg::ref_ptr<osg::Geode>	geode;
+	osg::ref_ptr<osg::Geometry>	geometry;
 
-
-	SMesh() : mesh_buffer(new SMeshBuffer()), mesh_faces(new SMeshFaces()), modifier(new SMeshModifier()), geode(NULL) {}
+	SMesh() : mesh_buffer(new SMeshBuffer()), mesh_faces(new SMeshFaces()), modifier(new SMeshModifier()), geode(new osg::Geode()), geometry(new osg::Geometry()) {}
 
 	~SMesh() { if (mesh_buffer)  delete mesh_buffer,  mesh_buffer  = NULL;
 			  if (mesh_faces)   delete mesh_faces,   mesh_faces   = NULL;
@@ -174,7 +182,7 @@ struct SDof
 
 struct SBone
 {	
-	osg::Group* node;
+	osg::ref_ptr<osg::Group> node;
 
 	std::string name;
 	int			parent_id;
@@ -189,7 +197,7 @@ struct SBone
 
 	SDof   dof;				// dof (?)
 
-	SBone() : child_bone_id(NULL) { ZeroMemory(&dof, sizeof(SDof)); }
+	SBone() : child_bone_id(NULL) { memset(&dof, 0, sizeof(SDof)); }
 	~SBone() { if (child_bone_id) delete [] child_bone_id, child_bone_id = NULL; }
 };
 
@@ -206,10 +214,19 @@ struct SSkeleton
 
 struct SFMesh
 {
-	SMesh*		mesh;
-	SSkeleton*	skeleton;
+	std::vector<SMesh*>		mesh;
+	SSkeleton*				skeleton;
 	
-	SFMesh() : mesh(NULL), skeleton(NULL) {}
-	~SFMesh() {  if (mesh)     delete mesh,     mesh     = NULL;
-				if (skeleton) delete skeleton, skeleton = NULL;}
+	SFMesh() : skeleton(NULL) {}
+	~SFMesh() 
+	{ 
+		for (std::vector<SMesh*>::iterator i = mesh.begin(); i != mesh.end(); ++i)
+			delete *i;
+		mesh.clear();
+
+		if (skeleton)
+			delete skeleton, skeleton = NULL;
+	}
 };
+
+#endif

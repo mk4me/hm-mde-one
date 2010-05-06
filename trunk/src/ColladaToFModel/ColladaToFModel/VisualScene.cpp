@@ -72,14 +72,18 @@ bool VisualScene::AnalizeSceneNode( FCDSceneNode *node )
 {
   // Analizowanie wêz³a i odpowiednie jego zapamiêtanie. 
   clog << node->GetName().c_str() << ": " << (node->GetJointFlag()? "JOINT":"NODE") << "\n"; 
+  
+  
+  FCDEntity::Type typ = node->GetType();
+
   if(!node->GetJointFlag())
   {
     return AnalizeNode(node);
   }
-  else
-  {
-    return AnalizeJoint(node); 
-  }
+   else
+   {
+     return AnalizeJoint(node); 
+   }
   return true; 
 }
 
@@ -120,10 +124,22 @@ bool VisualScene::AnalizeNode( FCDSceneNode * node )
   // Parsujemy wêzê³. Czyli szukamy jaki
   const FCDEntityInstance **entityInstanceContainer = node->GetInstances(); 
 
+  // Sprawdzic typ noda.
+
+
   size_t entityCount = node->GetInstanceCount(); 
-  //clog << "Jest " << entityCount << " instancji..." << "\n"; 
+ // clog << "Jest " << entityCount << " instancji..." << "\n"; 
 
   FMMatrix44 nodeTransform = node->CalculateWorldTransform(); 
+
+  // wiem ze d³ugi if - ale konieczny :P
+  // gdy w XML nie ma okreslonego typu  np: TYPE="JOINT" to collada przypisuje mu typ SCENE_NODE. a medota analizeJoint sprawdza czy wêzel rodzic jest typu Scene Node
+  // w tym przypadku ka¿dy jest i czy ma jednego rodzica - i w tym przypadku tez kazdy ma  1 rodzica. Wynik jes taki iz otrzymuemy 105 zamiast np 18 poprawnych wêz³ów
+  //TODO; Przeniœæ do AnalizeJoint jeœli sie da - sprawdziæ
+  if(entityCount == 0 && node->GetType() == FCDEntity::SCENE_NODE && node != sceneRoot_ && node->GetParent(0) == sceneRoot_)
+  {
+      AnalizeJoint(node);
+  }
 
   for(size_t i=0; i<entityCount; ++i)
   {
@@ -157,10 +173,19 @@ bool VisualScene::AnalizeNode( FCDSceneNode * node )
         }
       }
       break;
+
+//     case FCDEntityInstance::SIMPLE:
+//         break;
+
     default:
       break;
     }
   }
+
+//   if(entityCount == 0)
+//   {
+//       AnalizeJoint(node);
+//   }
   return true; 
 }
 

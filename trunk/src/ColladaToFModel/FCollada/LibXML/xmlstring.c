@@ -543,7 +543,7 @@ xmlStrPrintf(xmlChar *buf, intptr_t len, const xmlChar *msg, ...) {
     }
     
     va_start(args, msg);
-    ret = vsnprintf((char *) buf, len, (const char *) msg, args);
+    ret = _vsnprintf((char *) buf, len, (const char *) msg, args);
     va_end(args);
     buf[len - 1] = 0; /* be safe ! */
     
@@ -569,7 +569,7 @@ xmlStrVPrintf(xmlChar *buf, intptr_t len, const xmlChar *msg, va_list ap) {
         return(-1);
     }
     
-    ret = vsnprintf((char *) buf, len, (const char *) msg, ap);
+    ret = _vsnprintf((char *) buf, len, (const char *) msg, ap);
     buf[len - 1] = 0; /* be safe ! */
     
     return(ret);

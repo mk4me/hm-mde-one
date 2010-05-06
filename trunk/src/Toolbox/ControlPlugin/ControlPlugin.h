@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONTROL_PLUGIN_H
+#define CONTROL_PLUGIN_H
 
 #include <QObject>
 
@@ -27,3 +28,5 @@ public:
 private: 
   OsgControlWidget *_controlWidget;  
 };
+
+#endif

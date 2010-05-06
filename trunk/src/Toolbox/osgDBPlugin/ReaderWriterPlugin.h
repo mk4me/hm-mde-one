@@ -1,4 +1,5 @@
-#pragma once
+#ifndef READER_WRITER_PLUGIN_H
+#define READER_WRITER_PLUGIN_H
 
 #include <osg/Notify>
 #include <osg/Group>
@@ -30,11 +31,13 @@
 #include <iostream>
 #include <vector>
 
-#include <Windows.h>
 #include <assert.h>
 
 #include "FModel.h"
 #include "FMesh.h"
+#include "FAnimation.h"
+
+#include <SkeletonNode.h>
 
 using namespace std;
 using namespace osg;
@@ -103,25 +106,34 @@ class ReaderWriterPlugin : public osgDB::ReaderWriter
 {
 public:
 	ReaderWriterPlugin();
-	virtual const char* className() const { return "3DS Auto Studio Reader"; }
+	virtual const char* className() const { return "3DS Auto Studio Reader"; } // eeee???
 	virtual ReadResult readNode(const std::string& file, const osgDB::ReaderWriter::Options* options) const;
 
 private:
 
 	// reads content
-	HRESULT GetModelName(IXMLDOMDocument* pXMLDom, std::wstring* name) const;
-	HRESULT LoadMesh(std::wstring* address, SFMesh* fmesh) const;
+	bool loadMesh					(std::wstring* address, SFMesh* fmesh)          const;
+	bool isSkeletalAnimation		(wstring* address)								const;
+	bool isMeshAnimation			(wstring* address)								const;
+	bool loadSkeletalAnimation		(wstring* address, SSkeletalAnimation* anim)	const;
+	bool loadAnimation				(SFModel* fmodel, SFAnimation* fmesh, 
+									ref_ptr<osg::Group> root)			const;
+	bool pushSkeletalAnimationToOSG	(wstring* name, SSkeletalAnimation* anim, 
+									std::vector<CSkeletonNode*>* bones) const;
+	bool createArrayHoldingBones	(std::vector<CSkeletonNode*>* bones, 
+									ref_ptr<osg::Group> root) const;
 
 	template <class T>
-	HRESULT ReadAnotherCon(FILE* file, T* ret, const T& anticipated) const;
+	bool readAnotherCon				(FILE* file, T* ret, const T& anticipated)      const;
 
-	HRESULT LoadSkeleton(SSkeleton* skeleton, FILE* meshFile) const;
-	HRESULT PushSkeletonToOsg(SSkeleton* skeleton, osg::Group* root) const;
-	HRESULT CreateGeometry(SMesh* mesh, osg::Group* root) const;
-	HRESULT GetMaterials(SMesh* mesh, SFModel* fmodel, osg::Group* root) const;
+	bool loadSkeleton				(SSkeleton* skeleton, FILE* meshFile)           const;
+	bool pushSkeletonToOsg			(SFMesh* fmodel, ref_ptr<osg::Group> root)		const;
+	bool pushMeshesToOsg			(SFMesh* fmodel, ref_ptr<osg::Group> root)		const;
 };
 
 
 // now register with Registry to instantiate the above
 // reader/writer.
 REGISTER_OSGPLUGIN(tbs, ReaderWriterPlugin)
+
+#endif

@@ -180,7 +180,7 @@ class GeometryPolygons
 
   void SaveMeshBuffer( FileChunk * pFile ); 
   void SaveMeshIndices( FileChunk * pFile ); 
-  void SaveSkin( FileChunk * pFile ); 
+
   void SaveVertexSemantics(FileChunk * pFile); 
 
   size_t GetVertexSize(); 
@@ -198,6 +198,8 @@ public:
 
   FMMatrix44 WorldTransform() const { return worldTransform_; }
   void WorldTransform(FMMatrix44 *val) { worldTransform_ = *val; }
+
+  void SaveSkin( FileChunk * pFile ); 
 
   ~GeometryPolygons(void);
 

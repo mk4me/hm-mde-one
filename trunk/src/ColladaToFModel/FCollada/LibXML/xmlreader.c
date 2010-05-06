@@ -4031,7 +4031,7 @@ xmlTextReaderBuildMessage(const char *msg, va_list ap) {
     size = 150;
 
     while (1) {
-        chars = vsnprintf(str, size, msg, ap);
+        chars = _vsnprintf(str, size, msg, ap);
         if ((chars > -1) && (chars < size))
             break;
         if (chars > -1)

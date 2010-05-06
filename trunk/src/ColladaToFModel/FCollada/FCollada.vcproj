@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9.00"
 	Name="FCollada"
 	ProjectGUID="{FF956BB3-F377-43A8-AB31-633299BDF6C6}"
 	RootNamespace="FCollada"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -360,6 +361,8 @@
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				OptimizeReferences="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(SolutionDir)..\..\..\lib\FCollada\$(ProjectName).lib"
 				TargetMachine="1"
 			/>
@@ -380,9 +383,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -443,6 +443,8 @@
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				OptimizeReferences="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(ProjectDir)Output/FColladaD.lib"
 				TargetMachine="17"
 			/>
@@ -463,9 +465,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -528,6 +527,8 @@
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				OptimizeReferences="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(SolutionDir)..\..\..\lib\FCollada\$(ProjectName).lib"
 				TargetMachine="1"
 			/>
@@ -548,9 +549,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -614,6 +612,8 @@
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				OptimizeReferences="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(ProjectDir)Output/FCollada.lib"
 				TargetMachine="17"
 			/>
@@ -634,9 +634,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -988,6 +985,8 @@
 				GenerateMapFile="true"
 				MapExports="true"
 				OptimizeReferences="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(SolutionDir)..\..\..\lib\FCollada\$(ProjectName).lib"
 				TargetMachine="1"
 			/>
@@ -1008,9 +1007,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1075,6 +1071,8 @@
 				GenerateMapFile="true"
 				MapExports="true"
 				OptimizeReferences="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1094,9 +1092,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1159,6 +1154,8 @@
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				OptimizeReferences="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(SolutionDir)..\..\..\lib\FCollada\$(ProjectName).lib"
 				TargetMachine="1"
 			/>
@@ -1179,9 +1176,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1245,6 +1239,8 @@
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				OptimizeReferences="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1264,9 +1260,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1628,6 +1621,8 @@
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(SolutionDir)..\..\..\lib\FCollada\$(ProjectName).lib"
 				TargetMachine="1"
 			/>
@@ -1648,9 +1643,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1715,6 +1707,8 @@
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1734,9 +1728,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1798,6 +1789,8 @@
 				AdditionalOptions="/MACHINE:X86"
 				OutputFile="$(ProjectDir)../../../bin/tools/$(ProjectName).dll"
 				ModuleDefinitionFile=""
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(SolutionDir)..\..\..\lib\FCollada\$(ProjectName).lib"
 				TargetMachine="1"
 			/>
@@ -1818,9 +1811,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1883,6 +1873,8 @@
 				AdditionalOptions="/MACHINE:x64"
 				OutputFile="$(ProjectDir)Output/$(ConfigurationName) $(PlatformName)/$(ProjectName).dll"
 				ModuleDefinitionFile=""
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -1902,9 +1894,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

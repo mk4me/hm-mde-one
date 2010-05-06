@@ -41,25 +41,44 @@ bool ModelExport::Save(FCDocument *colladaDocument, fm::string outputDir)
   // Zapisywanie geometrii 
   // TODO: Dodaæ odpowiednie nazywanie siatki oraz animacji 
   FMesh *fmesh = NULL; 
-  if(scene->GetMeshInstanceCount() > 0)
-  {
+//  if(scene->GetMeshInstanceCount() > 0)
+//  {
     fmesh = new FMesh(fileName, outputDir); 
     if( !fmesh->Save(scene) )
     {
       delete fmesh; 
       return false; 
     }
-  }
+//  } 
+    //  jeœli nie ma siatki  - trzeba zapisac koœci i jego animacje.
+//  else if(scene->GetMeshInstanceCount() <= 0) 
+//  {
+      // Otwieranie pliku 
+//      fm::string filename = outputDir; 
+//      filename.append(fileName); 
+//      FileChunk* outputFile_ = new FileChunk(filename.c_str()); 
+
+      // Zapisujemy szkielet 
+//      Skeleton *skeleton = scene->GetSkeleton(); 
+//      if(skeleton)
+//      {
+//          skeleton->Save(outputFile_); 
+//      }
+//  }
+
  
   FAnimation *fanimation = SaveAnimations(scene, fileName, outputDir); 
 
+
   // Zapisywanie pliku FModel 
-  if( (scene->GetMeshInstanceCount() > 0) && ((!IfFileExist(outputDir, fileName)) || Parameters::ForceOverwriteFModel()) )
+  if(((!IfFileExist(outputDir, fileName)) || Parameters::ForceOverwriteFModel()) )
   {
     FModel *fmodel = new FModel(); 
     fmodel->Save(fileName, outputDir, scene, fmesh, fanimation); 
     if(fmodel) delete fmodel; 
+
   }
+
 
   if(scene) delete scene; 
   if(fmesh) delete fmesh; 
@@ -67,6 +86,7 @@ bool ModelExport::Save(FCDocument *colladaDocument, fm::string outputDir)
 
   return true; 
 }
+
 
 FAnimation *ModelExport::SaveAnimations( VisualScene * scene, fm::string fileName, fm::string outputDir )
 {

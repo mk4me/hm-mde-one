@@ -64,7 +64,7 @@ bool Parameters::ForceOverwriteFModel()
 
 void Parameters::ShowHelp()
 {
-  fm::string help = TO_STRING("> help needed... \n"); 
+    fm::string help = TO_STRING("> Wrong syntax! \n > Usage: \n > dae2fmodel.exe -i file.dae"); 
   cout << help.c_str(); 
 }
 

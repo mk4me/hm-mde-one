@@ -228,7 +228,7 @@
 /* Define to 1 if you have the `vfprintf' function. */
 #define HAVE_VFPRINTF 1
 
-/* Define to 1 if you have the `vsnprintf' function. */
+/* Define to 1 if you have the `_vsnprintf' function. */
 #define HAVE_VSNPRINTF 1
 
 /* Define to 1 if you have the `vsprintf' function. */
@@ -283,4 +283,4 @@
 /* #undef snprintf */
 
 /* Win32 Std C name mangling work-around */
-/* #undef vsnprintf */
+/* #undef _vsnprintf */

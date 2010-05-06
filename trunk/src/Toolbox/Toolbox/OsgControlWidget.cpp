@@ -6,14 +6,20 @@
 
 #include "ConfigurationService.h"
 
+#include "ServiceManager.h"
+#include "AnimationService.h"
+#include "ObjectService.h"
+#include "ModelWithSkeleton.h"
+
 OsgControlWidget::OsgControlWidget(void):
   Ui::OsgTest()
 , QWidget()
 {
   setupUi(this); 
 
-  connect(testButton, SIGNAL(clicked()), this, SLOT(makeTest())); 
-
+  connect(testButton, SIGNAL(clicked()), this, SLOT(makeTest()));
+  connect(listWidget, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
+ 
   /*
   QTreeWidgetItem *cities = new QTreeWidgetItem(sceneGraphWidget);
   cities->setText(0, tr("Cities"));
@@ -28,49 +34,110 @@ OsgControlWidget::~OsgControlWidget(void)
   clearScene(); 
 }
 
-void OsgControlWidget::makeTest()
+
+void OsgControlWidget::selectionChanged()
 {
-  std::cout << "Wczytywanie Lua " << 3.1415f << " :D" << std::endl; 
-  QString path = qApp->applicationDirPath();
-  path.append("/"); 
-  path.append("Toolbox_config.ini"); 
-  ConfigurationService *config = new ConfigurationService(); 
-  config->loadConfiguration( std::string(path.toUtf8()) ); 
+/*
+
+    QListWidgetItem* item;
+    QList<QListWidgetItem*> selected = listWidget->itemClicked(item);
+
+    std::string anim = "";
+
+    QString	str = (*selected.begin())->text();
+    anim= str.toAscii().constData();			
+
+    ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
+    AnimationService* aServ = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>();
+
+    aServ->setSelectedAnimationName(anim);
+*/
+
+	QList<QListWidgetItem*> selected = listWidget->selectedItems();
+	if (selected.begin() != selected.end())
+	{
+		std::string anim = "";
+
+		QListWidgetItem* item = *selected.begin();
+//		if (item->columnCount() > 1 )//&& !item->text(1).compare("Animation"))
+//		{
+			QString	str = item->text();
+			anim		= str.toAscii().constData();			
+//		}
+
+		// get service
+		ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
+		AnimationService* aServ = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>();
+
+		aServ->setSelectedAnimationName(anim);
+	}
 }
+
+
+
+void OsgControlWidget::makeTest()
+{	
+	// get service
+	ServiceManager::GetInstance()->RegisterServiceAs<ObjectService>(); 
+	ObjectService* objects = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>();
+
+	CModelWithSkeleton* model = dynamic_cast<CModelWithSkeleton*>(objects->getModel());
+	if (model)
+	{
+		// using AnimationService is more elegant than taking it directly from list
+		ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
+		AnimationService* animServ = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>();
+
+		if (animServ->getSelectedAnimationName().length())
+		{
+			CAnimation* animation = model->getAnimation(animServ->getSelectedAnimationName());
+			if (animation)
+				animation->play(model);
+		}
+	}
+
+	//std::cout << "Wczytywanie Lua " << 3.1415f << " :D" << std::endl; 
+	//QString path = qApp->applicationDirPath();
+	//path.append("/"); 
+	//path.append("Toolbox_config.ini"); 
+	//ConfigurationService *config = new ConfigurationService(); 
+	//config->loadConfiguration( std::string(path.toUtf8()) ); 
+}
+
 
 void OsgControlWidget::setScene(osgViewer::Scene *scene)
 {
-  clearScene(); 
+	// clear...
+	clearScene(); 
 
-  osg::Node *topNode = scene->getSceneData(); 
-  osg::Group *topGroup = 0; 
-  if(topNode)
-    topGroup = topNode->asGroup(); 
+	ServiceManager::GetInstance()->RegisterServiceAs<ObjectService>(); 
+	ObjectService* objects = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>();
 
-  if(topGroup != 0)
-  {
-    QTreeWidgetItem *rootTreeItem = new QTreeWidgetItem(sceneGraphWidget);
-    rootTreeItem->setText(0, topGroup->getName().c_str());
+	CModelWithSkeleton* model = dynamic_cast<CModelWithSkeleton*>(objects->getModel());
+	if (model)
+	{
+		std::map<std::string, CAnimation*>* animations = model->getAnimations();
 
-    int childCount = topGroup->getNumChildren(); 
-    for (int i=0; i<childCount; ++i)
-    {
-      osg::Node *child = topGroup->getChild(i); 
-      if(child->asGroup() != 0)
-      {
-        addGroupToTreeView(child->asGroup(), rootTreeItem); 
-      }
-      else if(child->asGeode())
-      {
-        addGeodeToTreeView(child->asGeode(), rootTreeItem); 
-      }
-
+        // R.Zowal not neded naw 
+//		QListWidgetItem *rootListItem = new QListWidgetItem(listWidget);
+//		rootTreeItem->setText(0, "Animations");
+		for (std::map<std::string, CAnimation*>::iterator i = animations->begin(); i != animations->end(); ++i)
+		{
+			QListWidgetItem *nodeListItem = new QListWidgetItem(listWidget); 
+			nodeListItem->setText(i->first.c_str()); 
+	//		nodeListItem->setText(tr("Animation"));
+		}
+	
     }
-  }
+
 }
 
 void OsgControlWidget::clearScene()
 {
+    listWidget->reset();
+    listWidget->clear();
+
+/*
   std::stack<QTreeWidgetItem *> itemStack; 
 
   if(!sceneGraphWidget)
@@ -95,9 +162,11 @@ void OsgControlWidget::clearScene()
       itemStack.pop(); 
       delete item; 
     }
-  }
+  }*/
+
 }
 
+/*
 void OsgControlWidget::addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem)
 {
   QTreeWidgetItem *nodeTreeItem = new QTreeWidgetItem(parentTreeItem); 
@@ -121,3 +190,4 @@ void OsgControlWidget::addGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *pa
 
 }
 
+*/

@@ -4382,7 +4382,7 @@ xmlTextWriterVSprintf(const char *format, va_list argptr)
         return NULL;
     }
 
-    while (((count = vsnprintf((char *) buf, size, format, argptr)) < 0)
+    while (((count = _vsnprintf((char *) buf, size, format, argptr)) < 0)
            || (count == size - 1) || (count == size) || (count > size)) {
         xmlFree(buf);
         size += BUFSIZ;

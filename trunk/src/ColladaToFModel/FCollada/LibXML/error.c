@@ -33,7 +33,7 @@ void xmlGenericErrorDefaultFunc	(void *ctx ATTRIBUTE_UNUSED,
 								\
     while (1) {							\
 	va_start(ap, msg);					\
-  	chars = vsnprintf(str, size, msg, ap);			\
+  	chars = _vsnprintf(str, size, msg, ap);			\
 	va_end(ap);						\
 	if ((chars > -1) && (chars < size))			\
 	    break;						\

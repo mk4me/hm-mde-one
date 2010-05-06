@@ -1,7 +1,9 @@
-#pragma once
+#ifndef CONSOLE_WIDGET_H
+#define CONSOLE_WIDGET_H
+
 #include <QtGui/QWidget>
 
-#include "UI/ui_Console.h"
+#include "ui_Console.h"
 //#include "Logger.h"
 
 class ConsoleWidget: public QWidget, Ui::Console
@@ -17,3 +19,4 @@ public slots:
   virtual void echo();
 };
 
+#endif

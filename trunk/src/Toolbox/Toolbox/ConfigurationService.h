@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONFIGURATION_SERVICE_H
+#define CONFIGURATION_SERVICE_H
 
 #include <string>
 #include <vector>
@@ -30,3 +31,5 @@ public:
   bool loadConfiguration(std::string fileName); 
   void parseTable(lua_State *L, int idx);
 };
+
+#endif

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="FArchiveXML"
 	ProjectGUID="{5A441CC6-F281-4A83-8BC4-323D4148C7C0}"
 	RootNamespace="FCPArchive"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

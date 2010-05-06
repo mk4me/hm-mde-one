@@ -14,6 +14,9 @@
 
 #include <PluginsInterfaces.h>
 
+#include "ObjectService.h"
+#include "ServiceManager.h"
+#include "ModelWithSkeleton.h"
 
 QT_BEGIN_NAMESPACE
 class QObject; 
@@ -21,6 +24,7 @@ class OsgControlWidget;
 class ConsoleWidget; 
 class ViewerQT; 
 class TimeLine; 
+class GridWidget;
 QT_END_NAMESPACE
 
 namespace Ui
@@ -42,41 +46,95 @@ class ToolboxMain : public QMainWindow
 
 		void createActions(); 
 		void createMenus(); 
-		osg::Node* createGrid(); 
+		osg::ref_ptr<osg::Node> createGrid(); 
 		~ToolboxMain();
+
+        void InitializeCoreServices(); 
+        
 
 	public slots: 
 		void open();
+        void setingModel();
+        void wireFrameView();
+        void normalView();
+        void boneView();
+        void materialView();
+
+        inline void pointViewModel();
+        inline void linesViewModel();
+        inline void line_stripViewModel();
+        inline void line_loopViewModel();
+        inline void triangleViewModel();
+        inline void triangle_stripViewModel();
+        inline void triangle_funViewModel();
+        inline void quadsViewModel();
+        inline void quad_stripViewModel();
+        inline void polygonViewModel();
+
+    protected:
+        void closeEvent(QCloseEvent* event);
+        ObjectService* _pScene;
+        CModelWithSkeleton* _model;
+
+        CModel* _model2;
+        
 
 	private: 
 		void initializePlugin(QObject* plugin);
 		void loadConfiguration();
 
-		void drawSkeletonFromGroup(osg::Group* root);
-		void drawBone(osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode);
-
+        void readSettings();
+        void writeSettings();
+	
 	private:    
-		Ui::ToolboxMain* m_ui;
+        ServiceManager* _pServiceManager;
+		Ui::ToolboxMain* _ui;
 
-		QVector<QObject*> m_plugins; 
+		QVector<QObject*> _plugins; 
 
-		OsgControlWidget* m_osgControlWidget; 
-		ConsoleWidget* m_consoleWidget; 
+		OsgControlWidget* _osgControlWidget; 
 
-		ViewerQT* m_osgView; 
-		TimeLine* m_timeLine; 
+        GridWidget* _gridWidget;
+
+		ConsoleWidget* _consoleWidget; 
+
+		ViewerQT* _osgView; 
+		TimeLine* _timeLine; 
 
 		// Stary bufor cout
-		std::streambuf* m_streambuf; 
+		std::streambuf* _streambuf; 
 
 		// Menu 
-		QMenu* m_fileMenu; 
+		QMenu* _fileMenu; 
+        QMenu* _modelMenu;
+
 
 		// Akcje 
-		QAction* m_openAct;
+		QAction* _openAct;
+        QAction* _setModelTest;
+        QAction* _viewWFAct;
+        QAction* _viewMaterialAct;
+        QAction* _viewBoneAct;
 
-		// scene root
-		osg::Group* m_root;
+        // Akcje Modelu
+        QAction* _NoneAct;
+        QAction* _points;
+        QAction* _lines;
+        QAction* _line_strip;
+        QAction* _line_loop;
+        QAction* _triangle;
+        QAction* _triangle_strip;
+        QAction* _triangle_fun;
+        QAction* _quads;
+        QAction* _quad_strip;
+        QAction* _polygon;
+   
+
+        // Dane u¿ywane przy przechowywaniu ustawieñ aplikacji
+        static const QString _settingsOrganizationName;
+        static const QString _settingsApplicationName;
 };
+
+#include "toolboxmain.inl"
 
 #endif // TOOLBOXMAIN_H

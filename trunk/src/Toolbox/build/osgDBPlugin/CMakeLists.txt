@@ -1,0 +1,98 @@
+PROJECT(OSGDBPLUGIN)
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${OSGDBPLUGIN_SOURCE_DIR} ${OSGDBPLUGIN_BINARY_DIR})
+
+# INCLUDES
+SET(OSGDBPLUGIN_INCLUDE_X
+	../../include
+	../../OsgExtensions/
+)
+
+IF(UNIX)
+
+	# .cxx sources
+	SET(OSGDBPLUGIN_SRCS_CXX
+		../../osgDBPlugin/FModel.cpp
+		../../osgDBPlugin/ReaderWriterPlugin.cpp
+		../../osgDBPlugin/tinyXML/tinystr.cpp
+		../../osgDBPlugin/tinyXML/tinyxml.cpp
+		../../osgDBPlugin/tinyXML/tinyxmlerror.cpp
+		../../osgDBPlugin/tinyXML/tinyxmlparser.cpp
+	)
+
+	# LIBS
+	SET(OSGDBPLUGIN_LIBS_X
+		dl
+		m
+		pthread
+		osg
+		osgViewer
+		osgSim
+		osgUtil
+		osgext
+	)
+
+ELSEIF(WIN32)
+
+	# .cxx sources
+	SET(OSGDBPLUGIN_SRCS_CXX
+		../../osgDBPlugin/FModel.cpp
+		../../osgDBPlugin/ReaderWriterPlugin.cpp
+		../../osgDBPlugin/tinyXML/tinystr.cpp
+		../../osgDBPlugin/tinyXML/tinyxml.cpp
+		../../osgDBPlugin/tinyXML/tinyxmlerror.cpp
+		../../osgDBPlugin/tinyXML/tinyxmlparser.cpp
+
+		../../osgDBPlugin/FModel.h
+		../../osgDBPlugin/FMesh.h
+		../../osgDBPlugin/FAnimation.h
+		../../osgDBPlugin/ReaderWriterPlugin.h
+		../../osgDBPlugin/tinyXML/tinystr.h
+		../../osgDBPlugin/tinyXML/tinyxml.h
+	)
+	
+	# LIBS
+	SET(OSGDBPLUGIN_LIBS_X
+		osgd.lib 
+		osgViewerd.lib 
+		osgGAd.lib 
+		osgDBd.lib 
+		osgTextd.lib 
+		OpenThreadsd.lib
+		$(ProjectDir)../OsgExtensions/osgext.lib
+	)
+
+ENDIF()
+
+INCLUDE_DIRECTORIES(${OSGDBPLUGIN_INCLUDE_X})
+
+# srcs
+IF(UNIX)
+	ADD_LIBRARY(osgDB_tbsd SHARED ${OSGDBPLUGIN_SRCS_CXX})
+ELSEIF(WIN32)
+	ADD_LIBRARY(osgDB_tbsd SHARED ${OSGDBPLUGIN_SRCS_CXX})
+ENDIF()
+
+# libs
+TARGET_LINK_LIBRARIES(osgDB_tbsd ${OSGDBPLUGIN_LIBS_X})
+
+IF(WIN32)
+	# post build event
+	ADD_CUSTOM_COMMAND(
+		TARGET osgDB_tbsd
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory ../../../../bin
+		COMMAND ${CMAKE_COMMAND} -E make_directory ../../../../bin/Win32
+		COMMAND ${CMAKE_COMMAND} -E make_directory ../../../../bin/Win32/$(ConfigurationName)
+		COMMAND ${CMAKE_COMMAND} -E make_directory ../../../../bin/Win32/$(ConfigurationName)/osgPlugins-2.8.2
+		COMMAND ${CMAKE_COMMAND} -E copy ARGS $(ConfigurationName)/osgDB_tbsd.dll ../../../../bin/Win32/$(ConfigurationName)/osgPlugins-2.8.2/
+	)
+ELSEIF(UNIX)
+	# post build event
+	ADD_CUSTOM_COMMAND(
+		TARGET osgDB_tbsd
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy ARGS libosgDB_tbsd.so ../../../../bin/Linux/osgPlugins-2.8.2/osgdb_tbs.so
+	)
+ENDIF()
+

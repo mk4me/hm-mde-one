@@ -1,11 +1,14 @@
-#pragma once
+#ifndef OSG_CONTROL_WIDGET_H
+#define OSG_CONTROL_WIDGET_H
+
 #include <QtGui/QWidget>
 #include <osgViewer/Scene>
 #include <osg/Group>
 #include <osg/Geode>
 #include <osg/NodeVisitor>
+#include <string>
 
-#include "UI/ui_OsgWidget.h"
+#include "ui_OsgWidget.h"
 
 class OsgControlWidget: public QWidget, Ui::OsgTest
 {
@@ -17,9 +20,16 @@ public:
   void setScene(osgViewer::Scene *scene); 
   void clearScene(); 
 
+  
+	
+
 public slots: 
-  virtual void makeTest();
-  void addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem);
-  void addGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem);
+
+	virtual void selectionChanged();
+	virtual void makeTest();
+//	void addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem);
+//	void addGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem);
 };
 
+
+#endif

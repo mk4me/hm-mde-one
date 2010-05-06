@@ -10,7 +10,10 @@ FModel::~FModel(void)
 
 void FModel::Save( fm::string fileName, fm::string outputDir, VisualScene *scene, FMesh *mesh, FAnimation *animation )
 {
-  fileName.append(".fmodel"); 
+  fm::string animationFileName = fileName;
+  animationFileName.append(".fanimation");
+
+  fileName.append(".tbs"); 
   fm::map<size_t, size_t> meshMaterialPairMap; 
 
   CCoInitialize init;   //must be declared before any IXMLDOM objects
@@ -171,6 +174,15 @@ void FModel::Save( fm::string fileName, fm::string outputDir, VisualScene *scene
   }
 
   // TODO: Dodaæ dopisywania fragmentu z animacjami 
+
+  //21.04.2010 R.Z
+  CComPtr<IXMLDOMNode> AnimationListNode;
+  CComPtr<IXMLDOMNode> Animation;
+  CreateXMLNode(pXMLDoc,fmdNode,_T("AnimationList"),&AnimationListNode);
+  {
+      CreateXMLNode(pXMLDoc, AnimationListNode, _T("Animation"), &Animation);
+      AddXMLAttribute(Animation, _T("FileName"), animationFileName); 
+  }
 
   // Zapisujemy plik
   fm::string fullname = outputDir; 

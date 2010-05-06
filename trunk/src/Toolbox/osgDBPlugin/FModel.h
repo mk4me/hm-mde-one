@@ -1,16 +1,11 @@
-#pragma once
-
-#include <stdio.h>
-#include <tchar.h>
-
-#include <Windows.h>
-
-#include <atlbase.h>
-#include <xmllite.h>
-#include <strsafe.h>
+#ifndef F_MODEL_H
+#define F_MODEL_H
 
 #include <string>
 #include <vector>
+#include <map>
+
+#include "tinyXML/tinyxml.h"
 
 using namespace std;
 
@@ -42,13 +37,15 @@ struct STexture
 	ETextureType::TYPE	type;
 };
 
+typedef map<ETextureType::TYPE, wstring> texmap;
+
 struct SMaterial
 {
-	wstring				name; 
-	wstring				shader_name; 
-	bool				transparency;
+	wstring		name; 
+	wstring		shader_name; 
+	bool		transparency;
 
-	vector<STexture>	texture_list;
+	texmap		texture_list;
 };
 
 struct SMeshGroup
@@ -63,14 +60,11 @@ struct SFModel
 	wstring					path;
 
 	vector<SMaterial>		material_list;
-	vector<vector<int>>		material_set_list;
+	vector<vector<int> >		material_set_list;
 	vector<SMeshGroup>		mesh_group_list;
 	vector<wstring>			animation_list;
 
 	bool					properly_loaded;
-
-	// get attributes
-	HRESULT GetAttributes(IXmlReader* reader, vector<wstring>* attributes);
 
 	// c - tor
 	SFModel() : properly_loaded(false) {}
@@ -79,3 +73,5 @@ struct SFModel
 	// d - tor
 	~SFModel() {}
 };
+
+#endif
