@@ -2,6 +2,7 @@
 
 using namespace std;
 
+//--------------------------------------------------------------------------------------------------
 SFModel::SFModel(const std::wstring &address)
 : properly_loaded(false)
 {

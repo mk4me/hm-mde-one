@@ -11,18 +11,18 @@
 
 class OsgControlWidget: public QWidget, Ui::OsgTest
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  OsgControlWidget(void);
-  ~OsgControlWidget(void);
+    OsgControlWidget(void);
+    ~OsgControlWidget(void);
 
-  void setScene(osgViewer::Scene *scene); 
-  void clearScene(); 
+    void SetScene(osgViewer::Scene *scene); 
+    void ClearScene(); 
 
 public slots: 
-  virtual void makeTest();
-  void addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem);
-  void addGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem);
+    virtual void MakeTest();
+    void addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem);
+    void addGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem);
 };
 
 

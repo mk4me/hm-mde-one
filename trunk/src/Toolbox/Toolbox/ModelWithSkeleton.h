@@ -39,18 +39,18 @@ struct STransformation
 
 //////////////////////////////////////////////////////////////////////////
 // model that has skeleton
-class CModelWithSkeleton : public CModel
+class ModelWithSkeleton : public Model
 {		
     ObjectService* _pScene;
 
 	// animations
-	std::map<std::string, CAnimation*>	_animations;
+	std::map<std::string, Animation*>	_animations;
 
 	// skeleton
 	osg::ref_ptr<osg::Group>			_skeleton;
 
 	// vector of pointers at bones
-	std::vector<CSkeletonNode*>*		_joints;
+	std::vector<SkeletonNode*>*		_joints;
 
 	// geode of skeleton
 	osg::ref_ptr<osg::Geode>			_skeletonGeode;
@@ -73,15 +73,15 @@ class CModelWithSkeleton : public CModel
 	std::string							_lastPlayedAnimation;
 
 	// create arrays of bones
-	void createArrayOfJoints(CSkeletonNode* bone);
+	void CreateArrayOfJoints(SkeletonNode* bone);
 	// draws one bone
-	void drawBone(osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode);
+	void DrawBone(osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode);
 	// update bone
-	void updateBone(osg::PositionAttitudeTransform* bone);
+	void UpdateBone(osg::PositionAttitudeTransform* bone);
 
     void getTransformToGroup( osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Group* group);
 	// recalculates changes of skeleton
-	void recalculateChanges();
+	void RecalculateChanges();
 
     osg::ref_ptr<osg::Geometry> drawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos);
 
@@ -94,9 +94,9 @@ public:
 	std::string&						getLastName()		{ return _lastPlayedAnimation; }
 
 	// get animation
-	CAnimation*							getAnimation(std::string& name);
+	Animation*							GetAnimation(std::string& name);
 	// get animations
-	std::map<std::string, CAnimation*>*	getAnimations()		{ return &_animations; }
+	std::map<std::string, Animation*>*	getAnimations()		{ return &_animations; }
 
 	// returns pointer at specified bone
 	osg::PositionAttitudeTransform*		getBone(unsigned int id) { return (*_joints)[id]; }
@@ -105,31 +105,26 @@ public:
 	osg::PositionAttitudeTransform*		getSkeleton() { return (osg::PositionAttitudeTransform*)(_skeleton.valid() ? _skeleton.get() : NULL);  }
 
 	// update skeleton when called
-	void updateSkeleton();
+	void UpdateSkeleton();
 
 	// updates skeleton's MESH! - only shows skeleton!!! 
 	// you have to update skeleton first by yourself!
 	// i assume this is debug/information function
 
-    void selectGroup(std::string nameGroup);
+    void SelectGroup(std::string nameGroup);
     void findSelectedGroup(osg::Group* group, std::string nameGroup);
     void drawSelectedGroup(osg::Group* group);
 
 
     // Draw Bones
-	void updateSkeletonMesh();
+	void UpdateSkeletonMesh();
 
 	// draws mesh
-	virtual bool updateMesh();
+	virtual bool UpdateMesh();
 
-	// c - tor
-	CModelWithSkeleton(const std::string& fileName, bool visible = true);
-
-    CModelWithSkeleton(bool visible, std::vector<CSkeletonNode*>* joints, STransformation* initialBones, 
-        std::string	_lastPlayedAnimation, STransformation* actualBones, SSkeleton* skeleton, SFAnimation* animation, SVertice* meshBuffer);
-
-	// d - tor
-	virtual ~CModelWithSkeleton();
+	ModelWithSkeleton(const std::string& fileName, bool visible = true);
+    ModelWithSkeleton(bool visible, std::vector<SkeletonNode*>* joints, STransformation* initialBones, std::string _lastPlayedAnimation, STransformation* actualBones, SSkeleton* skeleton, SFAnimation* animation, SVertice* meshBuffer);
+	virtual ~ModelWithSkeleton();
 };
 
 #endif

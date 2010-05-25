@@ -15,13 +15,13 @@ class IControlPlugin
 public:
   virtual ~IControlPlugin() {}
 
-  virtual void unloadPlugin() = 0; 
-  virtual int getDockWidgetsCount() = 0; 
-  virtual QWidget *getDockWidget(int i) = 0;
-  virtual QString getPluginName() = 0; 
+  virtual void UnloadPlugin() = 0; 
+  virtual int GetDockWidgetsCount() = 0; 
+  virtual QWidget* GetDockWidget(int i) = 0;
+  virtual QString GetPluginName() = 0; 
 
   // Tymczasowa funkcja - pozniej zamiast tego bedzie serviceManager !!
-  virtual void setScene(osgViewer::Scene *scene) = 0; 
+  virtual void SetScene(osgViewer::Scene *scene) = 0; 
 };
 
 

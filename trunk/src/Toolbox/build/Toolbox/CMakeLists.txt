@@ -11,7 +11,7 @@ SET(TOOLBOX_SRCS
     ../../Toolbox/ConsoleWidget.h
     ../../Toolbox/OsgControlWidget.h
     ../../Toolbox/TimeLine.h
-    ../../Toolbox/toolboxmain.h
+    ../../Toolbox/ToolboxMain.h
 	../../Toolbox/GridWidget.h
 )
 
@@ -42,7 +42,7 @@ IF(UNIX)
 		../../Toolbox/QOSGWidget.cpp
 		../../Toolbox/ServiceManager.cpp
 		../../Toolbox/TimeLine.cpp
-		../../Toolbox/toolboxmain.cpp
+		../../Toolbox/ToolboxMain.cpp
 		../../Toolbox/Animation.cpp
 		../../Toolbox/ModelFacade.cpp
 	)
@@ -88,7 +88,7 @@ ELSEIF(WIN32)
 		../../Toolbox/QOSGWidget.cpp
 		../../Toolbox/ServiceManager.cpp
 		../../Toolbox/TimeLine.cpp
-		../../Toolbox/toolboxmain.cpp
+		../../Toolbox/ToolboxMain.cpp
 		../../Toolbox/Animation.cpp
 		../../Toolbox/GridWidget.cpp	
 		../../Toolbox/ModelFacade.cpp
@@ -105,12 +105,12 @@ ELSEIF(WIN32)
 		../../Toolbox/QOSGWidget.h
 		../../Toolbox/ServiceManager.h
 		../../Toolbox/TimeLine.h
-		../../Toolbox/toolboxmain.h
+		../../Toolbox/ToolboxMain.h
 		../../Toolbox/Animation.h
 		../../Toolbox/SimpleFunctors.h
 		
 #		../../ObjectService.inl
-#		../../toolboxmain.inl
+#		../../ToolboxMain.inl
 		
 		../../Toolbox/BaseDataTypes.h
 		../../Toolbox/IBaseService.h

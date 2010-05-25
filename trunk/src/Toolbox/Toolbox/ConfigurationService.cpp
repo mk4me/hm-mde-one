@@ -36,14 +36,17 @@ static int luaB_print (lua_State *L) {
   return 0;
 }/**/
 
+//--------------------------------------------------------------------------------------------------
 ConfigurationService::ConfigurationService(void)
 {
 }
 
+//--------------------------------------------------------------------------------------------------
 ConfigurationService::~ConfigurationService(void)
 {
 }
 
+//--------------------------------------------------------------------------------------------------
 bool ConfigurationService::loadConfiguration( std::string fileName )
 {
   lua_State *L = lua_open();
@@ -87,6 +90,7 @@ bool ConfigurationService::loadConfiguration( std::string fileName )
   return true; 
 }
 
+//--------------------------------------------------------------------------------------------------
 void ConfigurationService::parseTable(lua_State *L, int idx)
 {
   lua_pushnil(L);  // first key 

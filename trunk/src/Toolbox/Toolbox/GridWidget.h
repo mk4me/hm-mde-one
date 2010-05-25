@@ -17,18 +17,15 @@ public:
     GridWidget(void);
     ~GridWidget(void);
 
-    void setScene(osgViewer::Scene *scene); 
-    void clearScene(); 
+    void SetScene(osgViewer::Scene *scene); 
+    void ClearScene(); 
 
+public slots: 
+    virtual void SelectionChanged();
+    virtual void MakeTest();
+    void AddGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem);
+    void AddGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem);
 
-
-
-    public slots: 
-
-        virtual void selectionChanged();
-        virtual void makeTest();
-        void addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem);
-        void addGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem);
 };
 
 

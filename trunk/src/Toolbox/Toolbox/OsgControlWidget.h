@@ -17,16 +17,16 @@ public:
   OsgControlWidget(void);
   ~OsgControlWidget(void);
 
-  void setScene(osgViewer::Scene *scene); 
-  void clearScene(); 
+  void SetScene(osgViewer::Scene *scene); 
+  void ClearScene(); 
 
   
 	
 
 public slots: 
 
-	virtual void selectionChanged();
-	virtual void makeTest();
+	virtual void SelectionChanged();
+	virtual void MakeTest();
 //	void addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem);
 //	void addGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem);
 };

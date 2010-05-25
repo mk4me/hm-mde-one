@@ -12,14 +12,15 @@
 #include "ObjectService.h"
 #include "ModelWithSkeleton.h"
 
+//--------------------------------------------------------------------------------------------------
 GridWidget::GridWidget(void):
-Ui::GridWidget()
+  Ui::GridWidget()
 , QWidget()
 {
     setupUi(this); 
 
-    connect(testButton, SIGNAL(clicked()), this, SLOT(makeTest()));
-    connect(sceneGraphWidget, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
+    connect(testButton, SIGNAL(clicked()), this, SLOT(MakeTest()));
+    connect(sceneGraphWidget, SIGNAL(itemSelectionChanged()), this, SLOT(SelectionChanged()));
 
     /*
     QTreeWidgetItem *cities = new QTreeWidgetItem(sceneGraphWidget);
@@ -30,12 +31,14 @@ Ui::GridWidget()
     /**/
 }
 
+//--------------------------------------------------------------------------------------------------
 GridWidget::~GridWidget(void)
 {
-    clearScene(); 
+    ClearScene(); 
 }
 
-void GridWidget::selectionChanged()
+//--------------------------------------------------------------------------------------------------
+void GridWidget::SelectionChanged()
 {
     //
     //tymczasowo wywalic, poniewa¿ nie mozemy wp³ywac na animacje, ale co najwyzej na podœwietlenie gridów itp.
@@ -56,36 +59,36 @@ void GridWidget::selectionChanged()
             ServiceManager::GetInstance()->RegisterServiceAs<ObjectService>(); 
             ObjectService* objects = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>();
 
-            CModelWithSkeleton* model = dynamic_cast<CModelWithSkeleton*>(objects->getModel());
+            ModelWithSkeleton* model = dynamic_cast<ModelWithSkeleton*>(objects->GetModel());
             if (model)
             {
-                model->selectGroup(group);
-                model->updateSkeletonMesh();
+                model->SelectGroup(group);
+                model->UpdateSkeletonMesh();
             }
       }
         // get service
     }
-
 }
 
-void GridWidget::makeTest()
+//--------------------------------------------------------------------------------------------------
+void GridWidget::MakeTest()
 {	
     // get service
     ServiceManager::GetInstance()->RegisterServiceAs<ObjectService>(); 
     ObjectService* objects = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>();
 
-    CModelWithSkeleton* model = dynamic_cast<CModelWithSkeleton*>(objects->getModel());
+    ModelWithSkeleton* model = dynamic_cast<ModelWithSkeleton*>(objects->GetModel());
     if (model)
     {
         // using AnimationService is more elegant than taking it directly from list
         ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
         AnimationService* animServ = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>();
 
-        if (animServ->getSelectedAnimationName().length())
+        if (animServ->GetSelectedAnimationName().length())
         {
-            CAnimation* animation = model->getAnimation(animServ->getSelectedAnimationName());
+            Animation* animation = model->GetAnimation(animServ->GetSelectedAnimationName());
             if (animation)
-                animation->play(model);
+                animation->Play(model);
         }
     }
 
@@ -97,10 +100,11 @@ void GridWidget::makeTest()
     //config->loadConfiguration( std::string(path.toUtf8()) ); 
 }
 
-void GridWidget::setScene(osgViewer::Scene *scene)
+//--------------------------------------------------------------------------------------------------
+void GridWidget::SetScene(osgViewer::Scene *scene)
 {
     // clear...
-    clearScene(); 
+    ClearScene(); 
 
     osg::Node *topNode = scene->getSceneData(); 
     osg::Group *topGroup = 0; 
@@ -118,18 +122,19 @@ void GridWidget::setScene(osgViewer::Scene *scene)
             osg::Node *child = topGroup->getChild(i); 
             if(child->asGroup() != 0)
             {
-                addGroupToTreeView(child->asGroup(), rootTreeItem); 
+                AddGroupToTreeView(child->asGroup(), rootTreeItem); 
             }
             else if(child->asGeode())
             {
-                addGeodeToTreeView(child->asGeode(), rootTreeItem); 
+                AddGeodeToTreeView(child->asGeode(), rootTreeItem); 
             }
 
         }
     }
 }
 
-void GridWidget::clearScene()
+//--------------------------------------------------------------------------------------------------
+void GridWidget::ClearScene()
 {
     std::stack<QTreeWidgetItem *> itemStack; 
 
@@ -158,7 +163,8 @@ void GridWidget::clearScene()
     }
 }
 
-void GridWidget::addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem)
+//--------------------------------------------------------------------------------------------------
+void GridWidget::AddGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem)
 {
     QTreeWidgetItem *nodeTreeItem = new QTreeWidgetItem(parentTreeItem); 
     nodeTreeItem->setText(0, group->getName().c_str()); 
@@ -169,15 +175,14 @@ void GridWidget::addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTr
     {
         osg::Node *child = group->getChild(i); 
         if(child->asGroup() != 0)
-            addGroupToTreeView(child->asGroup(), nodeTreeItem); 
+            AddGroupToTreeView(child->asGroup(), nodeTreeItem); 
     }
 }
 
-void GridWidget::addGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem)
+//--------------------------------------------------------------------------------------------------
+void GridWidget::AddGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem)
 {
     QTreeWidgetItem *nodeTreeItem = new QTreeWidgetItem(parentTreeItem); 
     nodeTreeItem->setText(0, geode->getName().c_str()); 
     nodeTreeItem->setText(1, tr("Geode"));
-
 }
-

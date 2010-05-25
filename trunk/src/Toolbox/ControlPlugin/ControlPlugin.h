@@ -9,24 +9,23 @@ class OsgControlWidget;
 
 class ControlPlugin : public QObject, public IControlPlugin
 {
-  Q_OBJECT
-  Q_INTERFACES(IControlPlugin)
+    Q_OBJECT
+    Q_INTERFACES(IControlPlugin)
 public:
-  ControlPlugin(void);
-  virtual ~ControlPlugin(void);
+    ControlPlugin(void);
+    virtual ~ControlPlugin(void);
 
-  // IControlPlugin 
-  virtual void unloadPlugin(); 
-  virtual int getDockWidgetsCount(); 
-  virtual QWidget *getDockWidget(int i);
-  virtual QString getPluginName(); 
+    // IControlPlugin 
+    virtual void UnloadPlugin(); 
+    virtual int GetDockWidgetsCount(); 
+    virtual QWidget *GetDockWidget(int i);
+    virtual QString GetPluginName(); 
+    // Tymczasowa funkcja - pozniej zamiast tego bedzie serviceManager !!
+    virtual void SetScene(osgViewer::Scene *scene); 
 
-  // Tymczasowa funkcja - pozniej zamiast tego bedzie serviceManager !!
-  virtual void setScene(osgViewer::Scene *scene); 
-
-  // 
+    // 
 private: 
-  OsgControlWidget *_controlWidget;  
+    OsgControlWidget *_controlWidget;  
 };
 
 #endif

@@ -1,28 +1,47 @@
 #include "Animation.h"
 
-
 #include "ModelWithSkeleton.h"
 #include "ServiceManager.h"
 #include "AnimationService.h"
 
-
 using namespace std;
-
 
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id].get()
 
-
-//////////////////////////////////////////////////////////////////////////
-// pause 
-bool CAnimation::pause()
+//--------------------------------------------------------------------------------------------------
+Animation::Animation(std::vector<SkeletonNode*>* root, unsigned int id):
+  _state(Animation::STOPPED)
+, _actTime(0.0), _length(0.0)
+, _bones(root)
+, _id(id)
+, _model(NULL)
+, _prevTime(0.0)
+, _isStartAnimation(true)
+, _firstNodeTime(0.0)
 {
-	if (_state == EAnimationState::PLAYING)
+    // TODO: dlugosc animacjia dokladnie ucieczka do wskaxnika na grupy animcji moze praowadzic do skoku w adres, oiekt 
+    // który nie iestnieje - i czasm sie tak robi, przy ladowaniu wiêcej niz jednej animacji.
+
+    // TODO: (kolejne spostrzezenie.  nie mamy tablicy animacji z SkeletonNode ANIMATION_GROUP czyli (pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id].get()
+    // zwróci nam przekroczenie zakresu wektora ( dla wiecej niz 1 animacja poniewaz size() _vector(...)_animation nie jest tablic¹ ( czy jak to uj¹æ :P to wskaŸnik - lista, nie musi miec tylu elementów ) 
+
+    // get length of this animation
+    for (vector<SkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
+        if((*i)->GetNumOfAnimations() > 0)
+            if ((*i)->GetNumOfAnimations() && _length < ANIMATION_GROUP(*i)->getLength())
+                _length = ANIMATION_GROUP(*i)->getLength();
+}
+
+//--------------------------------------------------------------------------------------------------
+bool Animation::Pause()
+{
+	if (_state == Animation::PLAYING)
 	{
 		ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
 		AnimationService* animServ = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>(); 
-		animServ->unregisterAnimation();
+		animServ->UnregisterAnimation();
 
-		_state = EAnimationState::PAUSED;
+		_state = Animation::PAUSED;
 
 		return true;
 	}
@@ -30,18 +49,16 @@ bool CAnimation::pause()
 	return false;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// resume
-bool CAnimation::resume()
+//--------------------------------------------------------------------------------------------------
+bool Animation::Resume()
 {
-	if (_state == EAnimationState::PAUSED)
+	if (_state == Animation::PAUSED)
 	{
 		ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
 		AnimationService* animServ = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>(); 
-		animServ->registerAnimation(this, &CAnimation::update);
+		animServ->RegisterAnimation(this, &Animation::Update);
 
-		_state = EAnimationState::PLAYING;
+		_state = Animation::PLAYING;
 
 		return true;
 	}
@@ -49,15 +66,14 @@ bool CAnimation::resume()
 	return false;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// set transformations from frame 0
-void CAnimation::firstFrame()
+//--------------------------------------------------------------------------------------------------
+// Set transformations from frame 0
+void Animation::FirstFrame()
 {
 	_actTime	= 0.0;
 	_prevTime	= 0.0;
 
-	for (vector<CSkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
+	for (vector<SkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
 	{
 		// if animated bone
 		if ((*i)->GetNumOfAnimations())
@@ -81,148 +97,131 @@ void CAnimation::firstFrame()
 	}
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// stop
-bool CAnimation::stop()
+//--------------------------------------------------------------------------------------------------
+bool Animation::Stop()
 {
-	firstFrame();
+	FirstFrame();
 
 	// update model
-	updateModel();
-	_state = EAnimationState::STOPPED;
+	UpdateModel();
+	_state = Animation::STOPPED;
 
 	ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
 	AnimationService* animServ = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>(); 
-	animServ->notifyStop();
+	animServ->NotifyStop();
 
 	return true;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// prepares animation for playing
-void CAnimation::play(CModelWithSkeleton* model)
+//--------------------------------------------------------------------------------------------------
+// Prepares animation for playing
+void Animation::Play(ModelWithSkeleton* model)
 { 
 	// are we resuming?
-	if (resume()) return;
+	if (Resume()) return;
 
 	// add animation to caller
-	if (_state != EAnimationState::PLAYING)
+	if (_state != Animation::PLAYING)
 	{
 		ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
 		AnimationService* animServ = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>(); 
-		animServ->registerAnimation(this, &CAnimation::update);
-		_state		= EAnimationState::PLAYING; 
+		animServ->RegisterAnimation(this, &Animation::Update);
+		_state		= Animation::PLAYING; 
 	}
 
-	_model		= model; 
-//    _isStartAnimation = true;
-
-//	firstFrame();
+	_model = model; 
 }
 
-
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 // moves to proper part of animation
-double CAnimation::moveToProperPart(CAnimationGroup* ag)
+double Animation::MoveToProperPart(CAnimationGroup* ag)
 {	
-     if(_isStartAnimation)
-     {
-         // sprawdzenie pierwszego noda - i odjecie wartosci.  porzebne do przesuniecia czasu - poniewaz
-         // nie kazda animacja zaczyna sie od czasu równego 0.
-         _firstNodeTime = ag->getActNode()->GetTime();
+    if(_isStartAnimation)
+    {
+        // sprawdzenie pierwszego noda - i odjecie wartosci.  porzebne do przesuniecia czasu - poniewaz
+        // nie kazda animacja zaczyna sie od czasu równego 0.
+        _firstNodeTime = ag->getActNode()->GetTime();
 
-         _length -= _firstNodeTime;
-         _isStartAnimation = !_isStartAnimation;
-     }
+        _length -= _firstNodeTime;
+        _isStartAnimation = !_isStartAnimation;
+    }
 
-     //R.Z. trzeba odjac pasek przewijania od momentu startu.
-
-	if	(_actTime > _prevTime)  // we are moving forwards
-	{
-		// actual node time
-		double actNodeTime = ag->getActNode()->GetTime();
-		if((_actTime + _firstNodeTime) > actNodeTime)
-		{
-			if (ag->next())
-			{
-				ag->goNext();
-				return moveToProperPart(ag);
-			}
-			// else : 1.0
-		}
- 		else if	((_actTime + _firstNodeTime) < actNodeTime)
- 		{
- 			if (ag->prev())
- 			{
- 				double prevNodeTime = ag->getPrevNode()->GetTime();
- 				double progress = ((_actTime + _firstNodeTime) - prevNodeTime) / (actNodeTime - prevNodeTime);
- 				// return progress of transformation
- 				return progress;
- 			}
- 			return (_actTime + _firstNodeTime) / actNodeTime;
- 		}
-	}
-	else if	(_actTime < _prevTime)	// we are moving backwards
-	{
-		// actual node time
-		double actNodeTime = ag->getActNode()->GetTime();
-		if((_actTime + _firstNodeTime) > actNodeTime)
-		{
-			if (ag->next())
-			{
-				double nextNodeTime = ag->getNextNode()->GetTime();
-				// return progress of transformation
-				return (nextNodeTime - (_actTime + _firstNodeTime)) / (nextNodeTime - actNodeTime);
-			}
-		}
-		else if ((_actTime + _firstNodeTime) < actNodeTime)
-		{
-			if (ag->prev())
-			{
-				ag->goPrev();
+    //FIXME: ??? trzeba odjac pasek przewijania od momentu startu.
+    if	(_actTime > _prevTime)  // we are moving forwards
+    {
+        // actual node time
+        double actNodeTime = ag->getActNode()->GetTime();
+        if((_actTime + _firstNodeTime) > actNodeTime)
+        {
+            if (ag->next())
+            {
+                ag->goNext();
+                return MoveToProperPart(ag);
+            }
+            // else : 1.0
+        }
+        else if	((_actTime + _firstNodeTime) < actNodeTime)
+        {
+            if (ag->prev())
+            {
+                double prevNodeTime = ag->getPrevNode()->GetTime();
+                double progress = ((_actTime + _firstNodeTime) - prevNodeTime) / (actNodeTime - prevNodeTime);
+                // return progress of transformation
+                return progress;
+            }
+            return (_actTime + _firstNodeTime) / actNodeTime;
+        }
+    }
+    else if	(_actTime < _prevTime)	// we are moving backwards
+    {
+        // actual node time
+        double actNodeTime = ag->getActNode()->GetTime();
+        if((_actTime + _firstNodeTime) > actNodeTime)
+        {
+            if (ag->next())
+            {
+                double nextNodeTime = ag->getNextNode()->GetTime();
+                // return progress of transformation
+                return (nextNodeTime - (_actTime + _firstNodeTime)) / (nextNodeTime - actNodeTime);
+            }
+        }
+        else if ((_actTime + _firstNodeTime) < actNodeTime)
+        {
+            if (ag->prev())
+            {
+                ag->goPrev();
                 if(ag->prev())
-				    return moveToProperPart(ag);
-			}
-		}
-	}
+                    return MoveToProperPart(ag);
+            }
+        }
+    }
 
-	// by default
-	return 1.0;
+    // by default
+    return 1.0;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 // change animation progress
-double CAnimation::setPogress(double t)
+double Animation::SetPogress(double t)
 {
-	EAnimationState::TYPE actState = _state;
-
+	Animation::AnimationState actState = _state;
 	// put to <0, 1>
-	t = (t < 0.0) ? 0.0 : 
-		(t > 1.0) ? 1.0 : t;
-
-	// set time
+	t = (t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
 	_actTime = _length * t;
-
 	// update Model
-	updateModel();
-
+	UpdateModel();
 	_state = actState;
-
 	return _actTime;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 // update model - updates only mesh etc taking skeleton
 // into consideration - called by update
-void CAnimation::updateModel()
+void Animation::UpdateModel()
 {
 	// update skeleton
 	// for every bone
-	for (vector<CSkeletonNode*>::iterator i =  _bones->begin(); i != _bones->end(); ++i)
+	for (vector<SkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
 	{
 		// if animated bone
 		if ((*i)->GetNumOfAnimations())
@@ -235,7 +234,7 @@ void CAnimation::updateModel()
             if(ag->getLength() <=0)
                 continue;
 
-			double progress = moveToProperPart(ag);
+			double progress = MoveToProperPart(ag);
 
 			// transform bone
 			osg::Vec3d oldTrans = (*i)->getPosition();
@@ -254,16 +253,16 @@ void CAnimation::updateModel()
 
 			// stop condition
 			if (!ag->next() && fabs(progress - 1.0) < 0.000000001)
-				_state = EAnimationState::STOPPED;
+				_state = Animation::STOPPED;
 			else
-				_state = EAnimationState::PLAYING;
+				_state = Animation::PLAYING;
 		}
 	}
 
 
 
 	// update mesh
-	_model->updateMesh();
+	_model->UpdateMesh();
 	//	_model->drawNormals(2.0f);
 	//	_model->test();
 	//	_model->updateSkeletonMesh();
@@ -272,20 +271,18 @@ void CAnimation::updateModel()
 	_prevTime = _actTime;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// update
-void CAnimation::update(double dt)
+//--------------------------------------------------------------------------------------------------
+void Animation::Update(double dt)
 {
 	// if everything is done - stop animation
-	if (_state == EAnimationState::STOPPED)
+	if (_state == Animation::STOPPED)
 	{
 		// remove animation from caller
 		ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
 		AnimationService* animServ = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>(); 
-		animServ->unregisterAnimation();
+		animServ->UnregisterAnimation();
 
-		firstFrame();
+		FirstFrame();
 
 		return;
 	}
@@ -294,25 +291,29 @@ void CAnimation::update(double dt)
 	_actTime += dt;
 
 	// update model
-	updateModel();
+	UpdateModel();
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// c - tor
-CAnimation::CAnimation(std::vector<CSkeletonNode*>* root, unsigned int id)
-:	_state(EAnimationState::STOPPED), _actTime(0.0), _length(0.0), 
-	_bones(root), _id(id), _model(NULL), _prevTime(0.0), _isStartAnimation(true), _firstNodeTime(0.0)
+//--------------------------------------------------------------------------------------------------
+double Animation::GetProgress()
 {
-    // TODO: R.Z dlugos animacjia dokladnie ucieczka do wskaxnika na grupy animcji moze praowadzic do skoku w adres, oiekt 
-    // który nie iestnieje - i czasm sie tak robi, przy ladowaniu wiêcej niz jednej animacji.
+    return _actTime / _length; 
+}
 
-    // TODO: (kolejne spostrzezenie.  nie mamy tablicy animacji z SkeletonNode ANIMATION_GROUP czyli (pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id].get()
-    // zwróci nam przekroczenie zakresu wektora ( dla wiecej niz 1 animacja poniewaz size() _vector(...)_animation nie jest tablic¹ ( czy jak to uj¹æ :P to wskaŸnik - lista, nie musi miec tylu elementów ) 
+//--------------------------------------------------------------------------------------------------
+void Animation::SetModel( ModelWithSkeleton* model )
+{
+    _model = model;
+}
 
-	// get length of this animation
-	for (vector<CSkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
-        if((*i)->GetNumOfAnimations() > 0)
-	        if ((*i)->GetNumOfAnimations() && _length < ANIMATION_GROUP(*i)->getLength())
-		        _length = ANIMATION_GROUP(*i)->getLength();
+//--------------------------------------------------------------------------------------------------
+double Animation::GetTime()
+{
+    return _actTime; 
+}
+
+//--------------------------------------------------------------------------------------------------
+Animation::AnimationState Animation::GetState()
+{
+    return _state; 
 }

@@ -110,27 +110,23 @@ public:
 	virtual ReadResult readNode(const std::string& file, const osgDB::ReaderWriter::Options* options) const;
 
 private:
-
 	// reads content
-	bool loadMesh					(std::wstring* address, SFMesh* fmesh)          const;
-	bool isSkeletalAnimation		(wstring* address)								const;
-	bool isMeshAnimation			(wstring* address)								const;
-	bool loadSkeletalAnimation		(wstring* address, SSkeletalAnimation* anim)	const;
-	bool loadAnimation				(SFModel* fmodel, SFAnimation* fmesh, 
-									ref_ptr<osg::Group> root)			const;
-	bool pushSkeletalAnimationToOSG	(wstring* name, SSkeletalAnimation* anim, 
-									std::vector<CSkeletonNode*>* bones) const;
-	bool createArrayHoldingBones	(std::vector<CSkeletonNode*>* bones, 
-									ref_ptr<osg::Group> root) const;
+	bool loadMesh(std::wstring* address, SFMesh* fmesh) const;
+	bool isSkeletalAnimation(wstring* address) const;
+	bool isMeshAnimation(wstring* address) const;
+	bool loadSkeletalAnimation(wstring* address, SSkeletalAnimation* anim) const;
+	bool loadAnimation(SFModel* fmodel, SFAnimation* fmesh, ref_ptr<osg::Group> root)const;
+	bool pushSkeletalAnimationToOSG(wstring* name, SSkeletalAnimation* anim, 
+									std::vector<SkeletonNode*>* bones) const;
+	bool createArrayHoldingBones(std::vector<SkeletonNode*>* bones, ref_ptr<osg::Group> root) const;
 
 	template <class T>
-	bool readAnotherCon				(FILE* file, T* ret, const T& anticipated)      const;
+	bool readAnotherCon(FILE* file, T* ret, const T& anticipated) const;
 
-	bool loadSkeleton				(SSkeleton* skeleton, FILE* meshFile)           const;
-	bool pushSkeletonToOsg			(SFMesh* fmodel, ref_ptr<osg::Group> root)		const;
-	bool pushMeshesToOsg			(SFMesh* fmodel, ref_ptr<osg::Group> root)		const;
+	bool loadSkeleton(SSkeleton* skeleton, FILE* meshFile) const;
+	bool pushSkeletonToOsg(SFMesh* fmodel, ref_ptr<osg::Group> root) const;
+	bool pushMeshesToOsg(SFMesh* fmodel, ref_ptr<osg::Group> root) const;
 };
-
 
 // now register with Registry to instantiate the above
 // reader/writer.

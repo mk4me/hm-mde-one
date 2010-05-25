@@ -7,73 +7,54 @@
 #include "Animation.h"
 #include "GlobalServicesIDs.h"
 
+// TODO
+// tymczasowa klas - dalem to tu tylko by miec
+// szybki dostep do zaladowanych modeli
 
-namespace MODEL_FLAG
+//--------------------------------------------------------------------------------------------------
+// Scene service
+class ObjectService: public IBaseService
 {
-    enum VIEW
+public: 
+    // TODO: W zasadzie ten enum tu nie pasuje. Przenisc go np do Model.h (?)
+    enum ViewMode
     {
         NONE      = 0,     // 0b00000000
         MODEL 	  = 1,	   // 0b00000001	
         WIREFRAME = 1 << 1,// 0b00000010	
         BONE      = 1 << 2,// 0b00000100	
         MATERIAL  = 1 << 3,// 0b00001000	
-
-        // do przeniesienia w inny enum
     };
-}
 
-// TODO
-// tymczasowa klas - dalem to tu tylko by miec
-// szybki dostep do zaladowanych modeli
+public:
+    ObjectService(void);
+    virtual ~ObjectService(void);
+    void Clear();
 
-//////////////////////////////////////////////////////////////////////////
-// scene service
-class ObjectService: public IBaseService
-{
-	M_DECLARE_CLASS(); 
+    void SetViewModelFlag(int flag);
+    void AddVieModelFlag(ObjectService::ViewMode flag);
+    void RemoveVieModelFlag(ObjectService::ViewMode flag);
+    void SetPrimitiveModeFlag(osg::PrimitiveSet::Mode flag);
+    int GetViewModelFlag();
+    int GetPrimitiveModeFlag();
+
+    void AddModel(Model* model);
+    void SetModel(Model* model); 
+    // get model 
+    Model* GetModel(); 
+    // update
+    virtual AsyncResult OnTick(double delta); 
+    // 
+    virtual AsyncResult OnAdded(); 
 
 protected:
-
-	CModel* _model;
-
+	Model* _model;
     int _viewModelFlag;
     osg::PrimitiveSet::Mode _primitiveModeFlag;
 
-public:
-
-    inline void setViewModelFlag(int flag);
-    inline void addVieModelFlag(MODEL_FLAG::VIEW flag);
-    inline void removeVieModelFlag(MODEL_FLAG::VIEW flag);
-
-    inline void setPrimitiveModeFlag(osg::PrimitiveSet::Mode flag);
-    inline int getViewModelFlag();
-    inline int getPrimitiveModeFlag();
-
-
-	// clear all
-	void clearAll();
-
-	// add model
-	void addModel(CModel* model);
-
-    void SetModel(CModel* model) {  addModel(model); };
-
-	// get model 
-	CModel* getModel()	{ return _model; }
-
-	// update
-	virtual AsyncResult OnTick(double delta); 
-
-	// 
-	virtual AsyncResult OnAdded(); 
-
-	// c - tor
-	ObjectService(void);
-
-	// d - tor
-	virtual ~ObjectService(void);
+private: 
+    M_DECLARE_CLASS(); 
+	
 };
-
-#include "ObjectService.inl"
 
 #endif

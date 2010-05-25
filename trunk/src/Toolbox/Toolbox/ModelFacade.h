@@ -46,12 +46,12 @@ class ModelFacade
 {
 public:
 
-    ModelFacade(CModelWithSkeleton* modelWithSkeleton, CAnimation* animation, SMesh* mesh, osg::ref_ptr<osg::Group> root, osg::ref_ptr<osg::Group> skeleton);
+    ModelFacade(ModelWithSkeleton* modelWithSkeleton, Animation* animation, SMesh* mesh, osg::ref_ptr<osg::Group> root, osg::ref_ptr<osg::Group> skeleton);
 
     // seting method
-    void setModelWithSkeleton(CModelWithSkeleton* modelWithSkeleton)    { _modelWithSkeleton = modelWithSkeleton;}
+    void setModelWithSkeleton(ModelWithSkeleton* modelWithSkeleton)    { _modelWithSkeleton = modelWithSkeleton;}
 
-    void setAnimation(CAnimation* animation)                            {_animation = animation;}
+    void setAnimation(Animation* animation)                            {_animation = animation;}
 
     void setMesh(SMesh* mesh)                                           {_mesh = mesh;}
 
@@ -60,8 +60,8 @@ public:
     void setSkeleton(osg::ref_ptr<osg::Group> skeleton)                 {_skeleton = skeleton;}
 
     // geting method
-    CModelWithSkeleton* getModelWithSkeleton();
-    CAnimation* getAnimation();
+    ModelWithSkeleton* getModelWithSkeleton();
+    Animation* getAnimation();
     SMesh* getMesh();
     osg::ref_ptr<osg::Group> getRoot();
     osg::ref_ptr<osg::Group> getSkeleton();
@@ -75,7 +75,7 @@ public:
   //  ModelFacade* getModel();
 
 
-    void setNewModel(CModelWithSkeleton* model);
+    void setNewModel(ModelWithSkeleton* model);
     void inicjalization();
 
 protected:
@@ -90,9 +90,9 @@ private:
     AnimationService*           _animationService;
 
     // variables
-    CModelWithSkeleton*         _modelWithSkeleton;     // posiada juz w sobie liste animacji.
+    ModelWithSkeleton*         _modelWithSkeleton;     // posiada juz w sobie liste animacji.
     osg::ref_ptr<osg::Group>	_root;
-    CAnimation*                 _animation;
+    Animation*                 _animation;
 
     SMesh*                      _mesh;
 

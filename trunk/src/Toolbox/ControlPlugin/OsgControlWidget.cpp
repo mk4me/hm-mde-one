@@ -4,15 +4,14 @@
 #include <stack> // TODO: Wszystko std musi byæ w przysz³oœci na STLport (sugestia)
 #include "OsgControlWidget.h"
 
-
-
+//--------------------------------------------------------------------------------------------------
 OsgControlWidget::OsgControlWidget(void):
   Ui::OsgTest()
 , QWidget()
 {
     setupUi(this); 
 
-    connect(testButton, SIGNAL(clicked()), this, SLOT(makeTest())); 
+    connect(testButton, SIGNAL(clicked()), this, SLOT(MakeTest())); 
 
     /*
     QTreeWidgetItem *cities = new QTreeWidgetItem(sceneGraphWidget);
@@ -23,19 +22,22 @@ OsgControlWidget::OsgControlWidget(void):
     /**/
 }
 
+//--------------------------------------------------------------------------------------------------
 OsgControlWidget::~OsgControlWidget(void)
 {
-  clearScene(); 
+  ClearScene(); 
 }
 
-void OsgControlWidget::makeTest()
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::MakeTest()
 {
     std::cout << "hahahha test wykonany! " << 3.1415f << " :D" << std::endl; 
 }
 
-void OsgControlWidget::setScene(osgViewer::Scene *scene)
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::SetScene(osgViewer::Scene *scene)
 {
-    clearScene(); 
+    ClearScene(); 
 
     osg::Node *topNode = scene->getSceneData(); 
     osg::Group *topGroup = 0; 
@@ -64,7 +66,8 @@ void OsgControlWidget::setScene(osgViewer::Scene *scene)
     }
 }
 
-void OsgControlWidget::clearScene()
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::ClearScene()
 {
     std::stack<QTreeWidgetItem *> itemStack; 
 
@@ -93,6 +96,7 @@ void OsgControlWidget::clearScene()
     }
 }
 
+//--------------------------------------------------------------------------------------------------
 void OsgControlWidget::addGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem)
 {
     QTreeWidgetItem *nodeTreeItem = new QTreeWidgetItem(parentTreeItem); 
@@ -108,6 +112,7 @@ void OsgControlWidget::addGroupToTreeView(osg::Group *group, QTreeWidgetItem *pa
     }
 }
 
+//--------------------------------------------------------------------------------------------------
 void OsgControlWidget::addGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem)
 {
     QTreeWidgetItem *nodeTreeItem = new QTreeWidgetItem(parentTreeItem); 

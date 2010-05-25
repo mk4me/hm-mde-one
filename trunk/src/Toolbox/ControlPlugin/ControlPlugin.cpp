@@ -10,46 +10,53 @@
 
 #include "OsgControlWidget.h"
 
+//--------------------------------------------------------------------------------------------------
 ControlPlugin::ControlPlugin(void):
-  _controlWidget(0)
+_controlWidget(0)
 {
 }
 
+//--------------------------------------------------------------------------------------------------
 ControlPlugin::~ControlPlugin(void)
 {
-  unloadPlugin(); 
+    UnloadPlugin(); 
 }
 
-void ControlPlugin::unloadPlugin()
+//--------------------------------------------------------------------------------------------------
+void ControlPlugin::UnloadPlugin()
 {
-  if(_controlWidget != NULL)
-  {
-    delete _controlWidget; 
-    _controlWidget = 0; 
-  }
+    if(_controlWidget != NULL)
+    {
+        delete _controlWidget; 
+        _controlWidget = 0; 
+    }
 }
 
-int ControlPlugin::getDockWidgetsCount()
+//--------------------------------------------------------------------------------------------------
+int ControlPlugin::GetDockWidgetsCount()
 {
-  return 1; 
+    return 1; 
 }
 
-QWidget *ControlPlugin::getDockWidget( int i )
+//--------------------------------------------------------------------------------------------------
+QWidget *ControlPlugin::GetDockWidget( int i )
 {
-  if(!_controlWidget) 
-    _controlWidget = new OsgControlWidget(); 
-  return (QWidget *)_controlWidget; 
+    if(!_controlWidget) 
+        _controlWidget = new OsgControlWidget(); 
+    return (QWidget *)_controlWidget; 
 }
 
-QString ControlPlugin::getPluginName()
+//--------------------------------------------------------------------------------------------------
+QString ControlPlugin::GetPluginName()
 {
-  return QString::fromUtf8("Control wigdet (from plugin ;) )"); 
+    return QString::fromUtf8("Control wigdet (from plugin ;) )"); 
 }
 
-void ControlPlugin::setScene( osgViewer::Scene *scene )
+//--------------------------------------------------------------------------------------------------
+void ControlPlugin::SetScene( osgViewer::Scene *scene )
 {
-  if(!_controlWidget) return; 
-  _controlWidget->setScene(scene); 
+    if(!_controlWidget) return; 
+    _controlWidget->SetScene(scene); 
 }
 
 Q_EXPORT_PLUGIN2(motion_controlplugin, ControlPlugin)

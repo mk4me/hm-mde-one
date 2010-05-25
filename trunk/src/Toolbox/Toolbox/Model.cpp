@@ -20,14 +20,74 @@
 #include "../OsgExtensions/CustomGroup.h"
 #include "../OsgExtensions/SkeletonNode.h"
 
-
-
 using namespace osg;
 
+//--------------------------------------------------------------------------------------------------
+// Loads model from file 
+Model::Model(const std::string& fileName, bool visible): 
+  _root(NULL)
+, _materialId(-1)
+, _meshBuffer(NULL)
+, _properlyLoaded(false)
+{
+    // calls external function loading model <- look into osgDBPlugin
+    ref_ptr<osg::Node> ret = osgDB::readNodeFile(fileName);
 
-//////////////////////////////////////////////////////////////////////////
+    if (dynamic_cast<CCustomGroup*>(ret.get()))
+    {
+        if (ret.valid() && (_root = ret->asGroup())) // this assign is meant to be here
+        {
+            // TODO: - materialy dzialaja na "slowo honoru"
+            // apply proper material
+            vector<vector<int> >* setList = ((CCustomGroup*)_root.get())->getMaterialSetList();
+            if (setList && setList->size() && (*setList)[0].size())
+                _materialId = (*setList)[0][0];
+
+            // save original mesh
+            if(((CCustomGroup*)_root.get())->getMesh() != NULL)
+            {
+                _meshBuffer = (SVertice*) new byte [((CCustomGroup*)_root.get())->getMesh()->mesh_buffer->n];
+                memcpy (_meshBuffer, ((CCustomGroup*)_root.get())->getMesh()->mesh_buffer->buffer, 
+                    ((CCustomGroup*)_root.get())->getMesh()->mesh_buffer->n);
+
+                _properlyLoaded = true;
+            }
+        }
+    }
+
+    _pScene = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>(); 
+}
+
+//--------------------------------------------------------------------------------------------------
+// Manually creates the model 
+Model::Model(SVertice* meshBuffer,  bool visible): 
+  _root(NULL)
+, _materialId(-1)
+, _meshBuffer(meshBuffer)
+, _properlyLoaded(false)
+{
+}
+
+//--------------------------------------------------------------------------------------------------
+Model::~Model()
+{
+    // it's all i suppose...
+    if (_root.valid())
+    {
+        for (int i = _root->getNumParents() - 1; i >= 0; --i)
+        {
+            _root->getParent(i)->removeChild(_root);
+        }
+    }
+
+    if (_meshBuffer)
+        delete [] _meshBuffer;
+    _meshBuffer = NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
 // draws normal vectors
-void CModel::drawNormals(float size)
+void Model::DrawNormals(float size)
 {
 	if (_meshes.size())
 	{
@@ -39,7 +99,6 @@ void CModel::drawNormals(float size)
 
 			int numOfVertices= mesh->mesh_buffer->n / VERTICES_SIZE;
 			SVertice*  vData        = _meshBuffer;
-
 
 			// for every vertice
 			for (int v = 0; v < numOfVertices; ++v)
@@ -86,11 +145,10 @@ void CModel::drawNormals(float size)
 	}
 };
 
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 // draws WireFrame
-void CModel::drawWireFrame(unsigned int mesh_id, unsigned int id)
+void Model::DrawWireFrame(unsigned int mesh_id, unsigned int id)
 {
-
     ref_ptr<Geode>		geode	 = new Geode();
     ref_ptr<Geometry>	geometry = new Geometry();
 
@@ -104,10 +162,10 @@ void CModel::drawWireFrame(unsigned int mesh_id, unsigned int id)
 
         SMesh* mesh = ((CCustomGroup*)_root.get())->getMesh(i);
 
-        if (mesh && (_pScene->getViewModelFlag() & MODEL_FLAG::MODEL || _pScene->getViewModelFlag() & MODEL_FLAG::WIREFRAME))
+        if (mesh && (_pScene->GetViewModelFlag() & ObjectService::MODEL || _pScene->GetViewModelFlag() & ObjectService::WIREFRAME))
         {
-        //    ref_ptr<Geode>		geode	 = new Geode();
-        //    ref_ptr<Geometry>	geometry = new Geometry();
+            //    ref_ptr<Geode>		geode	 = new Geode();
+            //    ref_ptr<Geometry>	geometry = new Geometry();
 
             geode->setName("mesh");
             geode->addDrawable(geometry);	
@@ -115,7 +173,7 @@ void CModel::drawWireFrame(unsigned int mesh_id, unsigned int id)
             // vertices, texcoords, normals
             int        numOfVertices= mesh->mesh_buffer->n / VERTICES_SIZE;
 
-        //    SVertice*  vData        = _meshBuffer;
+            //    SVertice*  vData        = _meshBuffer;
             Vec3Array* vertices     = new Vec3Array();
             Vec2Array* texcoords    = new Vec2Array();
             Vec3Array* normals      = new Vec3Array();
@@ -148,8 +206,6 @@ void CModel::drawWireFrame(unsigned int mesh_id, unsigned int id)
         }
     }
 
-    //
-
     osg::StateSet* stateset = new osg::StateSet;
     osg::PolygonOffset* polyoffset = new osg::PolygonOffset;
     polyoffset->setFactor(-1.0f);
@@ -177,24 +233,15 @@ void CModel::drawWireFrame(unsigned int mesh_id, unsigned int id)
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
 #endif
 
-  //  if(!(_viewModelFlag & MODEL_FLAG::MODEL))
-  //      _meshes[mesh_id]->setStateSet(stateset);
-  //  else
-  //  {
-    if(!(_pScene->getViewModelFlag() & MODEL_FLAG::MODEL))
-        removeGeodes();
-
+    if(!(_pScene->GetViewModelFlag() & ObjectService::MODEL))
+        RemoveGeodes();
     geode->setStateSet(stateset);
     _root->addChild(geode);
-  //  }
-
-
-
 }
 
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 // applies material 
-bool CModel::applyMaterial(unsigned int mesh_id, unsigned int id)
+bool Model::ApplyMaterial(unsigned int mesh_id, unsigned int id)
 {
 	// TODO:
 	// at the moment - take diffuse texture and load it
@@ -225,20 +272,17 @@ bool CModel::applyMaterial(unsigned int mesh_id, unsigned int id)
 		else
 			return false;
 	}
-
 	return true;
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 // removes geodes
-void CModel::removeGeodes()
+void Model::RemoveGeodes()
 {
 	//_meshes.clear();
-    
     if(!_root)
         return;
-
     int index = 0;
 	int childNum = _root->getNumChildren();
 	for (int i = childNum - 1; i >= 0; --i)
@@ -250,92 +294,86 @@ void CModel::removeGeodes()
 	}	
 }
 
-
-//////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 // update mesh
-bool CModel::updateMesh()
+bool Model::UpdateMesh()
 {
-	// remove all geodes
-    //	removeGeodes();
+    // Remove all geodes
+    //removeGeodes();
 
-	// for every mesh
-		for (unsigned int i = 0; i < (((CCustomGroup*)_root.get())->getNumOfMeshes()); ++i)
-		{
-			SMesh* mesh = ((CCustomGroup*)_root.get())->getMesh(i);
-	
-			if (mesh && (_pScene->getViewModelFlag() & MODEL_FLAG::MODEL || _pScene->getViewModelFlag() & MODEL_FLAG::WIREFRAME))
-			{
-				ref_ptr<Geode>		geode	 = new Geode();
-				ref_ptr<Geometry>	geometry = new Geometry();
-	
-				geode->setName("mesh");
-				geode->addDrawable(geometry);	
+    // for every mesh
+    for (unsigned int i = 0; i < (((CCustomGroup*)_root.get())->getNumOfMeshes()); ++i)
+    {
+        SMesh* mesh = ((CCustomGroup*)_root.get())->getMesh(i);
 
-                
-                // TODO:
-                // moge wziac z goede raz zbudowanego DrawableList - z niego pobraæ geometry a z geometry Vec3Arrary, co anjwyzej tak moge zrobic update.
-                // bez koneicznosci tworzenia nowego...
-                // Wykorzystac _meshBuffer;
+        if (mesh && (_pScene->GetViewModelFlag() & ObjectService::MODEL || _pScene->GetViewModelFlag() & ObjectService::WIREFRAME))
+        {
+            ref_ptr<Geode>		geode	 = new Geode();
+            ref_ptr<Geometry>	geometry = new Geometry();
 
+            geode->setName("mesh");
+            geode->addDrawable(geometry);	
 
-                // vertices, texcoords, normals
-				int        numOfVertices= mesh->mesh_buffer->n / VERTICES_SIZE;
-	
-		//		SVertice*  vData        = _meshBuffer;
-				Vec3Array* vertices     = new Vec3Array();
-				Vec2Array* texcoords    = new Vec2Array();
-				Vec3Array* normals      = new Vec3Array();
-	
-				for (int v = 0; v < numOfVertices; ++v) 
-				{
-					// vertex buffer
-					vertices->push_back(Vec3(_meshBuffer[v].position[0], _meshBuffer[v].position[1], _meshBuffer[v].position[2]));
-					// texcoords
-					texcoords->push_back(Vec2(fabs(_meshBuffer[v].texture_vertex[0]), fabs(_meshBuffer[v].texture_vertex[1])));
-					// normals
-					normals->push_back(Vec3(_meshBuffer[v].normal[0], _meshBuffer[v].normal[1], _meshBuffer[v].normal[2]));
-				}
-	
-				geometry->setVertexArray(vertices);
-				geometry->setTexCoordArray(0, texcoords);
-				geometry->setNormalArray(normals);
-	
-				// faces
-                
-				for (int f = 0; f < mesh->mesh_faces->face_count; ++f)
-				{
-					DrawElementsUInt* face = new DrawElementsUInt(_pScene->getPrimitiveModeFlag(), 0);
-					face->push_back(mesh->mesh_faces->faces[f].index[0]);
-					face->push_back(mesh->mesh_faces->faces[f].index[1]);
-					face->push_back(mesh->mesh_faces->faces[f].index[2]);
-					geometry->addPrimitiveSet(face);
-				}
-	
-				// add new mesh..
-                if(_meshes.size() == 0)
-				    _meshes.push_back(geode);
-                else
-                    _meshes[0] = geode;
+            // TODO:
+            // moge wziac z goede raz zbudowanego DrawableList - z niego pobraæ geometry a z geometry Vec3Arrary, co anjwyzej tak moge zrobic update.
+            // bez koneicznosci tworzenia nowego...
+            // Wykorzystac _meshBuffer;
 
-				_root->addChild(geode);   //TODO: update zamiast remove;
-	
-				// apply material
-				if (_materialId >= 0)
-	            {
-	                if(_pScene->getViewModelFlag() & MODEL_FLAG::MATERIAL)
-	                    applyMaterial(i, _materialId);
-	                if(_pScene->getViewModelFlag() & MODEL_FLAG::WIREFRAME)
-	                    drawWireFrame(i, _materialId);
-	            }
-			}
-		}
-	return true;
+            // vertices, texcoords, normals
+            int numOfVertices= mesh->mesh_buffer->n / VERTICES_SIZE;
+
+            //SVertice*  vData        = _meshBuffer;
+            Vec3Array* vertices     = new Vec3Array();
+            Vec2Array* texcoords    = new Vec2Array();
+            Vec3Array* normals      = new Vec3Array();
+
+            for (int v = 0; v < numOfVertices; ++v) 
+            {
+                // vertex buffer
+                vertices->push_back(Vec3(_meshBuffer[v].position[0], _meshBuffer[v].position[1], _meshBuffer[v].position[2]));
+                // texcoords
+                texcoords->push_back(Vec2(fabs(_meshBuffer[v].texture_vertex[0]), fabs(_meshBuffer[v].texture_vertex[1])));
+                // normals
+                normals->push_back(Vec3(_meshBuffer[v].normal[0], _meshBuffer[v].normal[1], _meshBuffer[v].normal[2]));
+            }
+
+            geometry->setVertexArray(vertices);
+            geometry->setTexCoordArray(0, texcoords);
+            geometry->setNormalArray(normals);
+
+            // faces
+            for (int f = 0; f < mesh->mesh_faces->face_count; ++f)
+            {
+                DrawElementsUInt* face = new DrawElementsUInt(_pScene->GetPrimitiveModeFlag(), 0);
+                face->push_back(mesh->mesh_faces->faces[f].index[0]);
+                face->push_back(mesh->mesh_faces->faces[f].index[1]);
+                face->push_back(mesh->mesh_faces->faces[f].index[2]);
+                geometry->addPrimitiveSet(face);
+            }
+
+            // add new mesh..
+            if(_meshes.size() == 0)
+                _meshes.push_back(geode);
+            else
+                _meshes[0] = geode;
+
+            _root->addChild(geode);   //TODO: update zamiast remove;
+
+            // apply material
+            if (_materialId >= 0)
+            {
+                if(_pScene->GetViewModelFlag() & ObjectService::MATERIAL)
+                    ApplyMaterial(i, _materialId);
+                if(_pScene->GetViewModelFlag() & ObjectService::WIREFRAME)
+                    DrawWireFrame(i, _materialId);
+            }
+        }
+    }
+    return true;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// load shader source
-bool CModel::loadShaderSource(osg::Shader* obj, const std::string& file)
+//--------------------------------------------------------------------------------------------------
+bool Model::LoadShaderSource(osg::Shader* obj, const std::string& file)
 {
 	std::string fqFileName = osgDB::findDataFile(file);
 	if (!fqFileName.length())
@@ -347,10 +385,8 @@ bool CModel::loadShaderSource(osg::Shader* obj, const std::string& file)
 		return false;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// add shaders
-bool CModel::addShaders(const std::string& vertex_address, const std::string& pixel_address)
+//--------------------------------------------------------------------------------------------------
+bool Model::AddShaders(const std::string& vertex_address, const std::string& pixel_address)
 {
 	for (std::vector<osg::ref_ptr<osg::Geode> >::iterator i = _meshes.begin(); i != _meshes.end(); ++i)
 	{
@@ -365,8 +401,8 @@ bool CModel::addShaders(const std::string& vertex_address, const std::string& pi
 			program->addShader(vertex);
 			program->addShader(fragment);
 
-			loadShaderSource(vertex,   vertex_address);
-			loadShaderSource(fragment, pixel_address);
+			LoadShaderSource(vertex,   vertex_address);
+			LoadShaderSource(fragment, pixel_address);
 
 			state->setAttributeAndModes(program, StateAttribute::ON);	
 		}
@@ -375,61 +411,14 @@ bool CModel::addShaders(const std::string& vertex_address, const std::string& pi
 	return false;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// c - tor
-CModel::CModel(const std::string& fileName, bool visible)
-: _root(NULL), _materialId(-1), _meshBuffer(NULL), _properlyLoaded(false)
+//--------------------------------------------------------------------------------------------------
+bool Model::IsValid()
 {
-	// calls external function loading model <- look into osgDBPlugin
-	ref_ptr<osg::Node> ret = osgDB::readNodeFile(fileName);
-
-	if (dynamic_cast<CCustomGroup*>(ret.get()))
-	{
-		if (ret.valid() && (_root = ret->asGroup())) // this assign is meant to be here
-		{
-			// TODO: - materialy dzialaja na "slowo honoru"
-			// apply proper material
-			vector<vector<int> >* setList = ((CCustomGroup*)_root.get())->getMaterialSetList();
-			if (setList && setList->size() && (*setList)[0].size())
-				_materialId = (*setList)[0][0];
-
-			// save original mesh
-
-            if(((CCustomGroup*)_root.get())->getMesh() != NULL)
-            {
-                _meshBuffer = (SVertice*) new byte [((CCustomGroup*)_root.get())->getMesh()->mesh_buffer->n];
-                memcpy (_meshBuffer, ((CCustomGroup*)_root.get())->getMesh()->mesh_buffer->buffer, 
-                    ((CCustomGroup*)_root.get())->getMesh()->mesh_buffer->n);
-
-                _properlyLoaded = true;
-            }
-		}
-	}
-
-    _pScene = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>(); 
+    return _properlyLoaded; 
 }
 
-// R.Zowal 29.04.2010 na potrzeby tworzenia modelu programowo.
-CModel::CModel(SVertice* meshBuffer,  bool visible)
-: _root(NULL), _materialId(-1), _meshBuffer(meshBuffer), _properlyLoaded(false)
+//--------------------------------------------------------------------------------------------------
+osg::ref_ptr<osg::Group> Model::GetRoot()
 {
-
-}
-
-//////////////////////////////////////////////////////////////////////////
-// d - tor
-CModel::~CModel()
-{
-	// it's all i suppose...
-	if (_root.valid())
-	{
-		for (int i = _root->getNumParents() - 1; i >= 0; --i)
-		{
-			_root->getParent(i)->removeChild(_root);
-		}
-	}
-
-	if (_meshBuffer)
-		delete [] _meshBuffer;
-	_meshBuffer = NULL;
+    return _root; 
 }
