@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<fmd Version="2.50" Author="rzowal" AuthoringTool="COLLADA_to_FModel_Converter" AuthoringToolVersion="0.9.01" Date="Thu Apr 22 11:55:46 2010">
-  <Model Filename="biped.fmesh"></Model>
-  <MaterialList></MaterialList>
-  <MaterialSetList></MaterialSetList>
-  <AnimationList>
-    <Animation FileName="biped.fanimation"></Animation>
-  </AnimationList>
-</fmd>
