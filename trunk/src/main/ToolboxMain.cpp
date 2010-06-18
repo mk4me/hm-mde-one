@@ -2,7 +2,7 @@
 // for the Visual Leak Detector for VisualStudio
 
 //#include <vld.h>        
-#include "toolboxmain.h"
+#include "ToolboxMain.h"
 #include "ui_toolboxmaindeffile.h"
 #include "ui_OsgWidget.h"
 #include "OsgControlWidget.h"

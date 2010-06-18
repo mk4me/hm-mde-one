@@ -14,7 +14,7 @@
 #include <osg/PolygonMode>
 
 #include "ServiceManager.h"
-#include "toolboxmain.h"
+#include "ToolboxMain.h"
 #include "ObjectService.h"
 
 #include "../OsgExtensions/CustomGroup.h"

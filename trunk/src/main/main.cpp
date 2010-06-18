@@ -1,5 +1,5 @@
 #include <QtGui/QApplication>
-#include "toolboxmain.h"
+#include "ToolboxMain.h"
 
 int main(int argc, char *argv[])
 {
