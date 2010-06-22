@@ -309,193 +309,98 @@ void ModelWithSkeleton::DrawBone(pPat bone, const osg::Vec3d* parentPos, const o
 	// recursively draw other bones
 	for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
 		if (dynamic_cast<SkeletonNode*>(bone->getChild(b)))
-	        DrawBone((pPat)bone->getChild(b), &bpos, &brot, geode);
+			DrawBone((pPat)bone->getChild(b), &bpos, &brot, geode);
+		
 
-    // TODO: do rysowania koœci najlepiej uzyc macierzy, narazie szybki szpil.
-	// draw actual bone
-	osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
+    // TODO  zmienic nazwe bone na joint, bo to strasznie myli, a naprawde to zmeiniemy pozycje jointów
+    // problem polega na tym, ze w momencie gdy joint ma iecej niz 1 dziecko - przesyla im wszystkim takiego samego quata (rotacje)
+    // w skutek czego mamy kilka kosciu u³ozonych w ten sam sposób.
 
-	// vertices
-	osg::Vec3Array* vertices = new osg::Vec3Array();
-	vertices->push_back(*parentPos);
-	vertices->push_back(bpos);
+    // JOINTY to NIE KOŒCI - mozna je traktowaæ jako spoiwa miêdzy nimi. ale nie jako same koœci.
 
-	// indices
-	osg::DrawElementsUInt* line = new osg::DrawElementsUInt(osg::PrimitiveSet::LINES, 0);
-	line->push_back(0);
-	line->push_back(1);
-
-	// set geometry data
-    geometry->setVertexArray(vertices);
-	geometry->addPrimitiveSet(line);
-
-    // set colors
-    // sprawdzic jak wp³ywa na kolor textury.
-    osg::Vec4Array* colors = new osg::Vec4Array;
-    if(_selectedGroupName == bone->getName())
-    {
-        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
-        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
-    }
-    else
-    {
-        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
-        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-    }
-
-	osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
-	colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;
-	colorIndexArray->push_back(0);
-	colorIndexArray->push_back(1);
-
-	geometry->setColorArray(colors);
-	geometry->setColorIndices(colorIndexArray);
-	geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-
-	// add to geode
-	geode->addDrawable(geometry);
-
-    //R.Zowal 16-06-2010
-    /*
-        Idea jest taka:
-        1) tworzymy prost¹ prostopad³¹(wekstor) do aktualnej koœci - pos³u¿y to za prost¹ le¿¹c¹ na p³aszczyŸnie zbudowanej z tych dwóch wektorów
-        2) tworzymy p³aszczyznê która jest prostopad³a do wczeœniej utworzonej - wektorem normalnym jest utworzony przez nas wektor (prostopad³y do koœci)
-        3) tworzymy okr¹g którego œrodkiem jest koœæ a rysowany jest na p³aszczysnie prostopad³ej do koœci.
-    */
-
-//     vector V = C - A;
-//     vector N = B - A;
-//     float t = (V.x*N.x + V.y*N.y + V.z*N.z) / (N.x*N.x + N.y*N.y + N.z*N.z) ;
-//     vector D = N * t;
-
-//     osg::Vec3d bpos2 = (*parentRot) * ((bone->getPosition()*4)/5) + *parentPos;
+// 	osg::Vec3d temp_1 = boneNodeChild - boneNodeParent;
+// 	osg::Vec3d temp_2 = boneNodeParent - boneNodeChild;
 // 
-//     osg::Vec3d vecTemp;
+// 	result._v[0] = (temp_1._v[1]*temp_2[2] - temp_1._v[2]*temp_2[1]);
+// 	result._v[1] = (temp_1._v[0]*temp_2[2] - temp_1._v[2]*temp_2[0]);
+// 	result._v[2] = (temp_1._v[0]*temp_2[1] - temp_1._v[1]*temp_2[0]);
 // 
-//     vecTemp._v[0] = bpos._v[0] - bpos2._v[0];
-//     vecTemp._v[1] = bpos._v[1] - bpos2._v[1];
-//     vecTemp._v[2] = bpos._v[2] - bpos2._v[2];
+// 	// 	double norm = result.length();
+// 	// 	if(norm > 0)
+// 	// 	{
+// 	// 		double inv = 1.0f/norm;
+// 	// 		result._v[0] *= inv;
+// 	// 		result._v[1] *= inv;
+// 	// 		result._v[2] *= inv;
+// 	// 	}
+// 
+// 	boneNodeLeftArm = osg::Vec3(distanceHightToArm, -distanceWidthToArm, 0.f);
+// 
+// 	osg::Quat q(PI_2, boneNodeChild);
+// 	boneNodeRightArm = (q * punkt);
 // 
 // 
-//     osg::Vec3d vecTemp2 = vecTemp;
-//     vecTemp2._v[0] = -vecTemp2._v[0];
-// 
-//     osg::Vec3d punkt;
-//     
-//     punkt._v[0] = bpos2._v[0] + vecTemp2._v[0];
-//     punkt._v[1] = bpos2._v[1] + vecTemp2._v[1];
-//     punkt._v[2] = bpos2._v[2] + vecTemp2._v[2];
-// 
-//     geode->addDrawable(drawLine(&bpos2, &punkt));
-
-
-    osg::Vec3d bpos2 = (*parentRot) * ((bone->getPosition()*4)/5) + *parentPos;
-    osg::Vec3 result;
-
- //   [cx,cy,cz]  =  [  (ay*bz - az*by)  ,  (ax*bz - az*bx)  ,  (ax*by - ay*bx)  ]  // tworzenie wektora prostopad³ego.
-
-
-    result._v[0] = (bpos._v[1]*bpos2[2] - bpos._v[2]*bpos2[1]);
-    result._v[1] = (bpos._v[0]*bpos2[2] - bpos._v[2]*bpos2[0]);
-    result._v[2] = (bpos._v[0]*bpos2[1] - bpos._v[1]*bpos2[0]);
-
-    osg::Vec3d punkt;
-
-    // niestety normalizacja w osg odadaje nam typ Vec3f - tylko i wy³¹cznie, a ca³a apliakcja uzywa Vec3d - daltego trzeba to zrobiæ rêcznie.
-    double norm = result.length();
-    if(norm > 0)
-    {
-        double inv = 1.0f/norm;
-        result._v[0] *= inv;
-        result._v[1] *= inv;
-        result._v[2] *= inv;
-    }
-
-    punkt = bpos2 + result;
-
-    geode->addDrawable(drawLine(&bpos, &punkt));
-    geode->addDrawable(drawLine(&bpos2, &punkt));
-    geode->addDrawable(drawLine(parentPos, &punkt));
-
-
-
-    osg::Quat q(PI_2, bpos2);
-
-    osg::Vec3d punkt2;
-    punkt2 = (q * punkt);
-
-    geode->addDrawable(drawLine(&bpos, &punkt2));
-    geode->addDrawable(drawLine(parentPos, &punkt2));
-
-    osg::Quat q2(PI, bpos2);
-
-    osg::Vec3d punkt3;
-    punkt3 = (q2 * punkt);
-
-    geode->addDrawable(drawLine(&bpos, &punkt3));
-    geode->addDrawable(drawLine(parentPos, &punkt3));
-
-
-    osg::Quat q3((PI+PI_2), bpos2);
-    osg::Vec3d punkt4;
-    punkt4 = (q3 * punkt);
-
-    geode->addDrawable(drawLine(&bpos, &punkt4));
-    geode->addDrawable(drawLine(parentPos, &punkt4));
-
-
-
-
-
-// 
-//     osg::Vec3 boneVector;
-//     boneVector = bpos - (*parentPos);
+// 	osg::Quat q2(PI, boneNodeChild);
+// 	boneNodeFrontArm = (q2 * punkt);
 // 
 // 
+// 	osg::Quat q3((PI+PI_2), boneNodeChild);
+// 	boneNodeBackArm = (q3 * punkt);
 // 
 // 
-//     osg::Quat q(PI_2, boneVector);
-// 
-// 
-//     osg::Vec3d punkt2;
-//     punkt2 = q * punkt;
-// 
-//     geode->addDrawable(drawLine(&bpos, &punkt2));
-//     geode->addDrawable(drawLine(parentPos, &punkt2));
+// 	// 	osg::Matrix3 m(1.0,0.0,0.0,
+// 	// 				   0.0,1.0,0.0,
+// 	// 				   0.0,0.0,1.0);
 
 
+    float length = (*parentPos - bpos).length();
+    float distanceHightToArm = length/8;
+    float distanceWidthToArm = length/12;
 
-//     float r = (bpos2 - punkt).length();
-//     float phi = acos(punkt._v[2]/result.length());
-//     float ro = atan2(punkt._v[1],punkt._v[0]);
+    osg::Vec3d boneNodeParent;
+    osg::Vec3d boneNodeChild;
+    osg::Vec3d boneNodeLeftArm;
+    osg::Vec3d boneNodeRightArm;
+
+    osg::Vec3d boneNodeFrontArm;
+    osg::Vec3d boneNodeBackArm;
+	osg::Vec3d result;
+	osg::Vec3d punkt;
+
+    boneNodeParent = osg::Vec3(0.f, 0.f, 0.f);
+    boneNodeChild = bone->getPosition(); //osg::Vec3(length, 0.f, 0.f); 
+
+
+	boneNodeLeftArm = osg::Vec3(distanceHightToArm, -distanceWidthToArm, 0.f);
+    boneNodeRightArm = osg::Vec3(distanceHightToArm, distanceWidthToArm, 0.f);
+ 
+    boneNodeFrontArm = osg::Vec3(distanceHightToArm, 0.f, -distanceWidthToArm);
+    boneNodeBackArm = osg::Vec3(distanceHightToArm, 0.f, distanceWidthToArm);
+
+    boneNodeParent = (*parentRot) * boneNodeParent + *parentPos;
+    boneNodeChild = (*parentRot) * boneNodeChild + *parentPos;
+
+    boneNodeLeftArm = (*parentRot) * boneNodeLeftArm + *parentPos;
+    boneNodeRightArm = (*parentRot) * boneNodeRightArm + *parentPos;
+
+    boneNodeFrontArm = (*parentRot) * boneNodeFrontArm + *parentPos;
+    boneNodeBackArm = (*parentRot) * boneNodeBackArm + *parentPos;
+
+
+    geode->addDrawable(DrawTriangle(&boneNodeParent, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm));
+	geode->addDrawable(DrawTriangle(&boneNodeChild, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm));
+
+//     geode->addDrawable(DrawLine(&boneNodeParent, &boneNodeLeftArm));
+//     geode->addDrawable(DrawLine(&boneNodeLeftArm, &boneNodeChild));
+//     geode->addDrawable(DrawLine(&boneNodeRightArm, &boneNodeChild));
+//     geode->addDrawable(DrawLine(&boneNodeRightArm, &boneNodeParent));
 // 
-//     phi += PI;
-//     ro += PI;
-// 
-//     osg::Vec3d punkt2;
-//     punkt2._v[0] = (result.length()*sin(phi)*cos(ro)) + bpos2._v[0];
-//     punkt2._v[1] = (result.length()*sin(phi)*sin(ro)) + bpos2._v[1];
-//     punkt2._v[2] = (result.length()*cos(phi)) + bpos2._v[2];
-// 
-//     geode->addDrawable(drawLine(&bpos, &punkt2));
-//     geode->addDrawable(drawLine(parentPos, &punkt2));
+//     geode->addDrawable(DrawLine(&boneNodeParent, &boneNodeFrontArm));
+//     geode->addDrawable(DrawLine(&boneNodeFrontArm, &boneNodeChild));
+//     geode->addDrawable(DrawLine(&boneNodeBackArm, &boneNodeChild));
+//     geode->addDrawable(DrawLine(&boneNodeBackArm, &boneNodeParent));
 
-
-
-
-//    vecU * vecW = cos($) *|vecU||vecW|
-
-
-//     // równianie p³aszczyzny     Ax+By+Cz+D=0
-//     osg::Vec3 normalVector;
-//     
-//     //normalVector = prostopadly do bpos;
-//     
-//     osg::Plane plane_perpendicular;
-// 
-//     //plane_perpendicular = Plane stworzonego z normalVector i bpos;
-// 
-//     //  rysowanie okrêgu na plane_perpendicular - srodek okrêgu wyznacza przeciêcie bona z p³aszczyzna(plane_perpendicular)
+  //  geode->addDrawable(DrawLine(parentPos, &bpos));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -520,7 +425,7 @@ void ModelWithSkeleton::UpdateSkeletonMesh()
 }
 
 //--------------------------------------------------------------------------------------------------
-osg::ref_ptr<osg::Geometry> ModelWithSkeleton::drawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos)
+osg::ref_ptr<osg::Geometry> ModelWithSkeleton::DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos)
 {
     // draw actual bone
     osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
@@ -556,6 +461,58 @@ osg::ref_ptr<osg::Geometry> ModelWithSkeleton::drawLine(const osg::Vec3d* startP
     return geometry;
 }
 
+//--------------------------------------------------------------------------------------------------
+osg::ref_ptr<osg::Geometry> ModelWithSkeleton::DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, const osg::Vec3d* vertexPos, const osg::Vec3d* startPos2, const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2)
+{
+	// draw actual bone
+	osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
+
+	// vertices
+	osg::Vec3Array* vertices = new osg::Vec3Array();
+	vertices->push_back(*startPos);
+	vertices->push_back(*endPos);
+	vertices->push_back(*vertexPos);
+	vertices->push_back(*startPos2);
+	vertices->push_back(*endPos2);
+	vertices->push_back(*vertexPos2);
+
+	// indices
+	osg::DrawElementsUInt* line = new osg::DrawElementsUInt(osg::PrimitiveSet::POLYGON, 0);
+	line->push_back(0);
+	line->push_back(1);
+	line->push_back(2);
+	line->push_back(3);
+	line->push_back(4);
+	line->push_back(5);
+
+	// set geometry data
+	geometry->setVertexArray(vertices);
+	geometry->addPrimitiveSet(line);
+
+	// set colors
+	osg::Vec4Array* colors = new osg::Vec4Array;
+	colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
+	colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
+
+	osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
+	colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;
+	colorIndexArray->push_back(0);
+	colorIndexArray->push_back(1);
+	colorIndexArray->push_back(2);
+	colorIndexArray->push_back(3);
+	colorIndexArray->push_back(4);
+	colorIndexArray->push_back(5);
+
+	geometry->setColorArray(colors);
+	geometry->setColorIndices(colorIndexArray);
+	geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+
+	return geometry;
+}
 //--------------------------------------------------------------------------------------------------
 void ModelWithSkeleton::SelectGroup( std::string nameGroup)
 {

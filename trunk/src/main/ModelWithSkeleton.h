@@ -83,7 +83,8 @@ class ModelWithSkeleton : public Model
 	// recalculates changes of skeleton
 	void RecalculateChanges();
 
-    osg::ref_ptr<osg::Geometry> drawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos);
+    osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos);
+    osg::ref_ptr<osg::Geometry> DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, const osg::Vec3d* vertexPos, const osg::Vec3d* startPos2, const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2);
 
     void drawGroup(osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode);
 
