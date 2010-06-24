@@ -29,12 +29,13 @@
 #include <QDir>
 
 #include "ConsoleWidget.h"
-#include "ConfigurationService.h"
 #include "Logger.h"
 
 #include "ServiceManager.h"
 #include "AnimationService.h"
 #include "ObjectService.h"
+
+#include <iostream>
 
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*
@@ -497,31 +498,49 @@ void ToolboxMain::InitializeCoreServices()
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::SettingModel()
 {
-    ObjectService* object = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>(); 
-    if(_model)
-    {
-        object->AddModel(_model);
-        osg::ref_ptr<osg::Group> group = _model->GetRoot();
-        // create group being root of scene
-        osg::ref_ptr<osg::Group> root = new osg::Group();
-        root->setName("root");
-        // create grid
-        root->addChild(CreateGrid());
-        // add model
-        root->addChild(group);	
-        // add to control
-        _osgView->setSceneData(root);
+     ObjectService* object = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>(); 
+     if(_model)
+     {
+         object->AddModel(_model);
+         osg::ref_ptr<osg::Group> group = _model->GetRoot();
+         // create group being root of scene
+         osg::ref_ptr<osg::Group> root = new osg::Group();
+         root->setName("root");
+         // create grid
+         root->addChild(CreateGrid());
+         // add model
+         root->addChild(group);	
+         // add to control
+         _osgView->setSceneData(root);
+ 
+         // manage scene
+         osgViewer::Scene* scene = _osgView->getScene(); 
+         _osgControlWidget->SetScene(scene); 
+         _gridWidget->SetScene(scene);
+         _timeLine->SetScene(scene); 
+         _model->UpdateMesh();
+         _modelWithSkeleton = (ModelWithSkeleton*)_model;
+     }
+     _model = object->GetModel();
 
-        // manage scene
-        osgViewer::Scene* scene = _osgView->getScene(); 
-        _osgControlWidget->SetScene(scene); 
-        _gridWidget->SetScene(scene);
-        _timeLine->SetScene(scene); 
-        _model->UpdateMesh();
-        _modelWithSkeleton = (ModelWithSkeleton*)_model;
-        return;
-    }
-    _model = object->GetModel();
+// TESTING CONFIGURATION_FILE_MANAGER
+
+//     ConfigurationFile::getInstance().LoadConfig("Config.ini");
+//     std::list<ConfigurationGroup*> groupList = ConfigurationFile::getInstance().GetConfigurationGroupList();
+//     int zmienna = ConfigurationFile::getInstance().GetIntParameter("MemMaxValue");
+//     float f = ConfigurationFile::getInstance().GetIntParameter("TimingMaxValue");
+//     ConfigurationGroup* group = ConfigurationFile::getInstance().GetConfigurationGroup("VisualTracker");
+//     group->SetParametrVal("PerfMaxValue ", "200");
+//     ConfigurationFile::getInstance().SetParameter("VisualTracker","PerfMaxValue", "300");
+//     ConfigurationFile::getInstance().SetParameter("PerfMaxValue", "450");
+//     ConfigurationGroup* dupa = new ConfigurationGroup("DUPA_TEST");
+//     dupa->AddNewParametr("walek", "1000");
+//     Parameter* par = new Parameter("cwel","kozak");
+//     Parameter* par2 = new Parameter("standardowo-test","dupa_dupa_dupa");
+//     dupa->AddNewParamter(*par);
+//     dupa->AddNewParamter(*par2);
+//     ConfigurationFile::getInstance().AddNewConfigurationGroup(*dupa);
+//     ConfigurationFile::getInstance().Save();
 }
 
 //--------------------------------------------------------------------------------------------------

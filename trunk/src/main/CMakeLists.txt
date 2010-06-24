@@ -30,7 +30,6 @@ IF(UNIX)
 	SET(TOOLBOX_SRCS_CXX
 		AdapterWidget.cpp
 		AnimationService.cpp
-		ConfigurationService.cpp
 		ObjectService.cpp
 		ConsoleWidget.cpp
 		Logger.cpp
@@ -45,6 +44,11 @@ IF(UNIX)
 		ToolboxMain.cpp
 		Animation.cpp
 		ModelFacade.cpp
+		../utils/ConfigFileManage/ConfigBuffer.cpp
+		../utils/ConfigFileManage/ConfigurationFile.cpp
+		../utils/ConfigFileManage/ConfigurationGroup.cpp
+		../utils/ConfigFileManage/FileReader.cpp
+		../utils/ConfigFileManage/Parameter.cpp
 	)
 
 	# INCLUDES
@@ -53,6 +57,7 @@ IF(UNIX)
 		UI
 		/usr/X11R6/include
 		../OsgExtensions/
+		../utils/ConfigFileManage
 	)
 
 	# LIBS
@@ -66,7 +71,6 @@ IF(UNIX)
 		osgViewer
 		osgSim
 		osgUtil
-		lua
 		osgext
 	)
 
@@ -77,7 +81,6 @@ ELSEIF(WIN32)
 		AdapterWidget.cpp
 		AnimationService.cpp
 		ObjectService.cpp
-		ConfigurationService.cpp
 		ConsoleWidget.cpp
 		Logger.cpp
 		main.cpp
@@ -92,9 +95,15 @@ ELSEIF(WIN32)
 		Animation.cpp
 		GridWidget.cpp	
 		ModelFacade.cpp
+		../utils/ConfigFileManage/ConfigBuffer.cpp
+		../utils/ConfigFileManage/ConfigurationFile.cpp
+		../utils/ConfigFileManage/ConfigurationGroup.cpp
+		../utils/ConfigFileManage/FileReader.cpp
+		../utils/ConfigFileManage/Parameter.cpp
+		
+		
 		AdapterWidget.h
 		AnimationService.h
-		ConfigurationService.h
 		ObjectService.h
 		ConsoleWidget.h
 		Logger.h
@@ -107,12 +116,17 @@ ELSEIF(WIN32)
 		TimeLine.h
 		ToolboxMain.h
 		Animation.h
-		SimpleFunctors.h
-			
+		SimpleFunctors.h	
 		BaseDataTypes.h
 		IBaseService.h
 		GlobalServicesIDs.h
 		ModelFacade.h
+		../utils/ConfigFileManage/ConfigBuffer.h
+		../utils/ConfigFileManage/ConfigurationFile.h
+		../utils/ConfigFileManage/ConfigurationGroup.h
+		../utils/ConfigFileManage/FileReader.h
+		../utils/ConfigFileManage/Parameter.h
+		../utils/ConfigFileManage/IConfigManager.h
 	)
 
 	# INCLUDES
@@ -124,7 +138,6 @@ ELSEIF(WIN32)
 		debug
 		../../include/mkspecs/win32-msvc2008
 		../include
-		../utils/Tools/lua/include
 		../OsgExtensions/
 	)
 
@@ -140,9 +153,74 @@ ELSEIF(WIN32)
 		osgDBd.lib 
 		osgTextd.lib 
 		OpenThreadsd.lib 
-		../utils/Tools/lua/lib/static/lua5.1
 		../lib/osgext
 	)
+	
+	# Tworzymy grupy (filtry VS)
+	# ---------------------------------------------------------------
+	#
+	#SOURCE_GROUP("Header Files\\ConfigFileManage" FILES 
+	
+	SOURCE_GROUP("Header Files\\Toolbox" FILES  
+		AdapterWidget.h
+		AnimationService.h
+		ObjectService.h
+		ConsoleWidget.h
+		Logger.h
+		Model.h
+		ModelWithSkeleton.h
+		OsgControlWidget.h
+		GridWidget.h
+		QOSGWidget.h
+		ServiceManager.h
+		TimeLine.h
+		ToolboxMain.h
+		Animation.h
+		SimpleFunctors.h	
+		BaseDataTypes.h
+		IBaseService.h
+		GlobalServicesIDs.h
+		ModelFacade.h
+		)
+		
+	SOURCE_GROUP("Source Files\\Toolbox" FILES  
+		AdapterWidget.cpp
+		AnimationService.cpp
+		ObjectService.cpp
+		ConsoleWidget.cpp
+		Logger.cpp
+		main.cpp
+		Model.cpp
+		ModelWithSkeleton.cpp
+		OsgControlWidget.cpp
+		GridWidget.cpp	
+		QOSGWidget.cpp
+		ServiceManager.cpp
+		TimeLine.cpp
+		ToolboxMain.cpp
+		Animation.cpp
+		GridWidget.cpp	
+		ModelFacade.cpp
+		)
+		
+	
+	SOURCE_GROUP("Header Files\\ConfigFileManage" FILES  
+		../utils/ConfigFileManage/ConfigBuffer.h
+		../utils/ConfigFileManage/ConfigurationFile.h
+		../utils/ConfigFileManage/ConfigurationGroup.h
+		../utils/ConfigFileManage/FileReader.h
+		../utils/ConfigFileManage/Parameter.h
+		../utils/ConfigFileManage/IConfigManager.h
+		)
+		
+	SOURCE_GROUP("Source Files\\ConfigFileManage" FILES  
+		../utils/ConfigFileManage/ConfigBuffer.cpp
+		../utils/ConfigFileManage/ConfigurationFile.cpp
+		../utils/ConfigFileManage/ConfigurationGroup.cpp
+		../utils/ConfigFileManage/FileReader.cpp
+		../utils/ConfigFileManage/Parameter.cpp
+		)
+		
 
 ENDIF()
 

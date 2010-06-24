@@ -462,7 +462,9 @@ osg::ref_ptr<osg::Geometry> ModelWithSkeleton::DrawLine(const osg::Vec3d* startP
 }
 
 //--------------------------------------------------------------------------------------------------
-osg::ref_ptr<osg::Geometry> ModelWithSkeleton::DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, const osg::Vec3d* vertexPos, const osg::Vec3d* startPos2, const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2)
+osg::ref_ptr<osg::Geometry> ModelWithSkeleton::DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, 
+                                                            const osg::Vec3d* vertexPos, const osg::Vec3d* startPos2, 
+                                                            const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2)
 {
 	// draw actual bone
 	osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();

@@ -44,7 +44,6 @@ IF(UNIX)
 		osgViewer
 		osgSim
 		osgUtil
-		lua
 		osgext		
 	)
 
@@ -69,7 +68,6 @@ ELSEIF(WIN32)
 		debug
 		../../include/mkspecs/win32-msvc2008
 		../include
-		../utils/Tools/lua/include
 		../OsgExtensions/
 	)
 
@@ -85,7 +83,6 @@ ELSEIF(WIN32)
 		osgDBd.lib 
 		osgTextd.lib 
 		OpenThreadsd.lib 
-		../utils/Tools/lua/lib/static/lua5.1
 		../lib/osgext		
 	)
 

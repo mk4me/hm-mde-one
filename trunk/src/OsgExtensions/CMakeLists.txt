@@ -35,7 +35,6 @@ IF(UNIX)
 		osgViewer
 		osgSim
 		osgUtil
-		lua
 	)
 
 ELSEIF(WIN32)
@@ -71,7 +70,6 @@ ELSEIF(WIN32)
 	SET(OSG_EXTENSIONS_INCLUDE_X
 		debug
 		../../include
-		../../../utils/Tools/lua/include
 	)
 
 	# LIBS
@@ -82,7 +80,6 @@ ELSEIF(WIN32)
 		osgDBd.lib 
 		osgTextd.lib 
 		OpenThreadsd.lib 
-		../utils/Tools/lua/lib/static/lua5.1
 	)
 
 ENDIF()
