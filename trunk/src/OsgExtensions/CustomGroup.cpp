@@ -27,3 +27,9 @@ SMesh* CCustomGroup::getMesh(int id)
 
     return NULL;
 }
+
+//--------------------------------------------------------------------------------------------------
+void CCustomGroup::Clear()
+{
+    _FMesh->mesh.clear();
+}

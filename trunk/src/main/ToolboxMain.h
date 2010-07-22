@@ -16,7 +16,7 @@
 
 #include "ObjectService.h"
 #include "ServiceManager.h"
-#include "ModelWithSkeleton.h"
+#include "Model.h"
 
 QT_BEGIN_NAMESPACE
 class QObject; 
@@ -74,7 +74,6 @@ public slots:
 protected:
     void closeEvent(QCloseEvent* event);
     ObjectService* _pScene;
-    ModelWithSkeleton* _modelWithSkeleton;
     Model* _model;
 
 private: 

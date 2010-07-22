@@ -10,7 +10,7 @@
 #include <osg/Group>
 
 #include "../osgDBPlugin/FModel.h"
-#include "../osgDBPlugin/FMesh.h"
+#include "../osgDBPlugin/ModelData.h"
 #include "../osgDBPlugin/FAnimation.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ class CCustomGroup : public osg::Group
 
 		// pointer at structure holding entire information about
 		// fmesh
-		SFMesh*			_FMesh;
+		SModelData*			_FMesh;
 
 		// pointer at structure holding entire information about
 		// animations
@@ -36,7 +36,7 @@ class CCustomGroup : public osg::Group
 		void setFModel		(SFModel* fmodel)			{ _FModel = fmodel; }
 
 		// set fmesh
-		void setFMesh		(SFMesh* fmesh)				{ _FMesh = fmesh; }
+		void setFMesh		(SModelData* fmesh)				{ _FMesh = fmesh; }
 
 		// set animations
 		void setAnimations	(SFAnimation* animations)	{ _FAnimations = animations; }
@@ -62,6 +62,8 @@ class CCustomGroup : public osg::Group
 
 		// get mesh
         SMesh* getMesh(int id = 0);
+
+        void Clear();
 
 		// number of meshes
 		unsigned int			getNumOfMeshes()		{ return _FMesh->mesh.size(); }

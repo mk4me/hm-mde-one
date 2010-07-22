@@ -18,7 +18,7 @@ void ModelFacade::inicjalization()
 }
 
 //---------------------------------------------------------------------------------------------
-ModelWithSkeleton* ModelFacade::getModelWithSkeleton()
+Model* ModelFacade::getModelWithSkeleton()
 {
     if(_modelWithSkeleton)
         return _modelWithSkeleton;
@@ -64,7 +64,7 @@ osg::ref_ptr<osg::Group> ModelFacade::getSkeleton()
 
 //---------------------------------------------------------------------------------------------
 ModelFacade::ModelFacade(
-    ModelWithSkeleton* modelWithSkeleton,
+    Model* modelWithSkeleton,
     Animation* animation,
     SMesh* mesh,
     osg::ref_ptr<osg::Group> root,
@@ -84,7 +84,7 @@ void ModelFacade::loadToSystem()
 
 }
 
-void ModelFacade::setNewModel(ModelWithSkeleton* model)
+void ModelFacade::setNewModel(Model* model)
 {
     _objectService->AddModel(model);
 }

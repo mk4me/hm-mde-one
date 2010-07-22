@@ -35,6 +35,7 @@ IF(UNIX)
 		Logger.cpp
 		main.cpp
 		Model.cpp
+		Mesh.cpp
 		ModelWithSkeleton.cpp
 		OsgControlWidget.cpp
 		GridWidget.cpp
@@ -85,7 +86,7 @@ ELSEIF(WIN32)
 		Logger.cpp
 		main.cpp
 		Model.cpp
-		ModelWithSkeleton.cpp
+		Mesh.cpp
 		OsgControlWidget.cpp
 		GridWidget.cpp	
 		QOSGWidget.cpp
@@ -108,7 +109,7 @@ ELSEIF(WIN32)
 		ConsoleWidget.h
 		Logger.h
 		Model.h
-		ModelWithSkeleton.h
+		Mesh.h
 		OsgControlWidget.h
 		GridWidget.h
 		QOSGWidget.h
@@ -168,7 +169,7 @@ ELSEIF(WIN32)
 		ConsoleWidget.h
 		Logger.h
 		Model.h
-		ModelWithSkeleton.h
+		Mesh.h
 		OsgControlWidget.h
 		GridWidget.h
 		QOSGWidget.h
@@ -191,7 +192,7 @@ ELSEIF(WIN32)
 		Logger.cpp
 		main.cpp
 		Model.cpp
-		ModelWithSkeleton.cpp
+		Mesh.cpp
 		OsgControlWidget.cpp
 		GridWidget.cpp	
 		QOSGWidget.cpp

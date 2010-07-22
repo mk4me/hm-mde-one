@@ -41,6 +41,8 @@
 #define pPat osg::PositionAttitudeTransform*
 #define CONFIG_FILE "Toolbox_config.ini"
 
+#define OSGTERRAIN_VALIDDATAOPERATOR   1 
+
 
 //--------------------------------------------------------------------------------------------------
 // Statics definitions
@@ -308,27 +310,27 @@ void ToolboxMain::CreateMenus()
 void ToolboxMain::NormalView()
 {
     _pScene->AddVieModelFlag(ObjectService::MODEL);
-    _modelWithSkeleton->UpdateMesh();
+    _model->UpdateBones();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::BoneView()
 {
     _pScene->AddVieModelFlag(ObjectService::BONE);
-    _modelWithSkeleton->UpdateMesh();
+    _model->UpdateBones();
 }
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::WireFrameView()
 {
     _pScene->AddVieModelFlag(ObjectService::WIREFRAME);
-    _modelWithSkeleton->UpdateMesh();
+    _model->UpdateBones();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::MaterialView()
 {
     _pScene->AddVieModelFlag(ObjectService::MATERIAL);
-    _modelWithSkeleton->UpdateMesh();
+    _model->UpdateBones();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -345,13 +347,15 @@ void ToolboxMain::Open()
         std::cout << "File Opened: " << std::string(fileName.toUtf8()) << std::endl;
         std::cout << "---------------------------------------------------------------" << std::endl; 
 
-        ModelWithSkeleton* model = new ModelWithSkeleton(std::string(fileName.toUtf8()));
+        Model* model = new Model(std::string(fileName.toUtf8()));
         osg::ref_ptr<osg::Group> group = model->GetRoot();
 
+        
         // test
-        model->UpdateMesh();
+        model->UpdateBones();
         //model->updateSkeletonMesh();
 
+        
         // create group being root of scene
         osg::ref_ptr<osg::Group> root = new osg::Group();
         root->setName("root");
@@ -386,7 +390,7 @@ void ToolboxMain::Open()
                 iControlPlugin->SetScene(scene); 
         }
 
-        _modelWithSkeleton = dynamic_cast<ModelWithSkeleton*>(_pScene->GetModel());  // zawsze mamy tylko jeden model.
+        _model = dynamic_cast<Model*>(_pScene->GetModel());  // zawsze mamy tylko jeden model.
 
         _pScene->SetViewModelFlag(ObjectService::MODEL | ObjectService::MATERIAL);
         _pScene->SetPrimitiveModeFlag(osg::PrimitiveSet::TRIANGLES);
@@ -519,7 +523,7 @@ void ToolboxMain::SettingModel()
          _gridWidget->SetScene(scene);
          _timeLine->SetScene(scene); 
          _model->UpdateMesh();
-         _modelWithSkeleton = (ModelWithSkeleton*)_model;
+         _model = (Model*)_model;
      }
      _model = object->GetModel();
 
@@ -547,12 +551,12 @@ void ToolboxMain::SettingModel()
 // TODO:  refactorng KONIECZNIE -  tymczasem dla testów, spróbowac zrobiæ jedna medote zarz¹cdaj¹ca tymi pozosta³ymi
 void ToolboxMain::PointViewModel()
 {
-    ModelWithSkeleton* model;
+    Model* model;
 
     ObjectService* pScene = _pServiceManager->GetSystemServiceAs<ObjectService>(); 
     pScene->SetPrimitiveModeFlag(osg::PrimitiveSet::POINTS);
-    model = dynamic_cast<ModelWithSkeleton*>(pScene->GetModel());  // zawsze mamy tylko jeden model.
-    model->UpdateMesh();
+    model = dynamic_cast<Model*>(pScene->GetModel());  // zawsze mamy tylko jeden model.
+    model->UpdateBones();
 }
 
 //--------------------------------------------------------------------------------------------------

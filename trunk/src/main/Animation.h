@@ -5,7 +5,7 @@
 #include <AnimationNode.h>
 #include <AnimationGroup.h>
 
-class ModelWithSkeleton;
+class Model;
 
 // TODO:
 // zastanowic sie czy nie zrobic tego troche inaczej...
@@ -27,7 +27,7 @@ public:
     Animation(std::vector<SkeletonNode*>* root, unsigned int id);
 
     // play
-    void Play(ModelWithSkeleton* model);
+    void Play(Model* model);
     // pause 
     bool Pause();
     // stop
@@ -37,7 +37,7 @@ public:
     // update
     void Update(double dt);
     // sets model
-    void SetModel(ModelWithSkeleton* model); 
+    void SetModel(Model* model); 
     // change animation progress
     // value <0.0, 1.0>
     double SetPogress(double t);
@@ -72,7 +72,7 @@ private:
     // id of animation
     unsigned int _id;
     // pointer to object being animated
-    ModelWithSkeleton* _model;
+    Model* _model;
     bool _isStartAnimation;
     double _firstNodeTime;
 

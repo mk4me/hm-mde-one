@@ -34,8 +34,9 @@
 #include <assert.h>
 
 #include "FModel.h"
-#include "FMesh.h"
+#include "ModelData.h"
 #include "FAnimation.h"
+#include "FileChunkReader.h"
 
 #include <SkeletonNode.h>
 
@@ -109,9 +110,10 @@ public:
 	virtual const char* className() const { return "3DS Auto Studio Reader"; } // eeee???
 	virtual ReadResult readNode(const std::string& file, const osgDB::ReaderWriter::Options* options) const;
 
+
 private:
 	// reads content
-	bool loadMesh(std::wstring* address, SFMesh* fmesh) const;
+	bool loadMesh(std::wstring* address, SModelData* fmesh) const;
 	bool isSkeletalAnimation(wstring* address) const;
 	bool isMeshAnimation(wstring* address) const;
 	bool loadSkeletalAnimation(wstring* address, SSkeletalAnimation* anim) const;
@@ -124,8 +126,10 @@ private:
 	bool readAnotherCon(FILE* file, T* ret, const T& anticipated) const;
 
 	bool loadSkeleton(SSkeleton* skeleton, FILE* meshFile) const;
-	bool pushSkeletonToOsg(SFMesh* fmodel, ref_ptr<osg::Group> root) const;
-	bool pushMeshesToOsg(SFMesh* fmodel, ref_ptr<osg::Group> root) const;
+	bool pushSkeletonToOsg(SModelData* fmodel, ref_ptr<osg::Group> root) const;
+	bool pushMeshesToOsg(SModelData* fmodel, ref_ptr<osg::Group> root) const;
+
+    
 };
 
 // now register with Registry to instantiate the above

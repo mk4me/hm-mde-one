@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)..\..\..\..\bin\tools"
+			OutputDirectory="$(SolutionDir)..\..\..\..\bin\utils"
 			IntermediateDirectory="$(SolutionDir)..\..\..\..\bin\tmp\$(ProjectName)"
 			ConfigurationType="1"
 			CharacterSet="2"
@@ -64,7 +64,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="FCollada.lib msxml2.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)..\..\..\lib\FCollada&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)..\..\..\..\lib\win32\FCollada&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -95,8 +95,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)..\..\..\bin\tools"
-			IntermediateDirectory="$(SolutionDir)..\..\..\bin\tmp\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)..\..\..\..\bin\utils"
+			IntermediateDirectory="$(SolutionDir)..\..\..\..\bin\tmp\$(ProjectName)"
 			ConfigurationType="1"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -139,7 +139,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="FCollada.lib msxml2.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)..\..\..\lib\FCollada&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)..\..\..\..\lib\win32\FCollada&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

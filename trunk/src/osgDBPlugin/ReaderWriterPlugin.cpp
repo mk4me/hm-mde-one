@@ -4,6 +4,8 @@
 #include <AnimationNode.h>
 #include <AnimationGroup.h>
 
+FileChunkReader *m_pFileReader;
+
 //--------------------------------------------------------------------------------------------------
 ReaderWriterPlugin::ReaderWriterPlugin()
 {
@@ -101,11 +103,27 @@ bool ReaderWriterPlugin::loadSkeleton(SSkeleton* skeleton, FILE* meshFile) const
 
 //--------------------------------------------------------------------------------------------------
 // loads mesh from .mesh
-bool ReaderWriterPlugin::loadMesh(std::wstring* address, SFMesh* fmesh) const
+bool ReaderWriterPlugin::loadMesh(std::wstring* address, SModelData* fmesh) const
 {
     FILE* meshFile = NULL;
-
     std::string straddress(address->begin(), address->end());
+
+    m_pFileReader = new FileChunkReader(straddress);
+    m_pFileReader->LoadMeshVersion2(fmesh);
+
+    return true;
+
+
+
+
+
+
+
+
+
+
+
+   // m_pFileReader->LoadMesh(fmesh);
     if (meshFile = fopen(straddress.c_str(), "rb"))
     {
         // read file header
@@ -364,7 +382,7 @@ bool ReaderWriterPlugin::loadMesh(std::wstring* address, SFMesh* fmesh) const
 }
 
 //--------------------------------------------------------------------------------------------------
-bool ReaderWriterPlugin::pushSkeletonToOsg(SFMesh* fmesh, ref_ptr<osg::Group> root) const
+bool ReaderWriterPlugin::pushSkeletonToOsg(SModelData* fmesh, ref_ptr<osg::Group> root) const
 {
     SSkeleton* skeleton = fmesh->skeleton;
 
@@ -427,7 +445,7 @@ bool ReaderWriterPlugin::pushSkeletonToOsg(SFMesh* fmesh, ref_ptr<osg::Group> ro
 
 //--------------------------------------------------------------------------------------------------
 // push meshes to OSG
-bool ReaderWriterPlugin::pushMeshesToOsg(SFMesh* fmodel, ref_ptr<osg::Group> root) const
+bool ReaderWriterPlugin::pushMeshesToOsg(SModelData* fmodel, ref_ptr<osg::Group> root) const
 {
     bool any = false;
 
@@ -829,7 +847,7 @@ osgDB::ReaderWriter::ReadResult ReaderWriterPlugin::readNode(const std::string& 
         // loading it separately from pushing elements to OSG
         // because of too long & unreadable code
 
-        SFMesh* fmesh = new SFMesh();
+        SModelData* fmesh = new SModelData();
         root->setFMesh(fmesh);
 
         // 19.04.2010 - poprzednio by³o to co ponizej zakomentowane.  - testy dla ³adowania modelu bez mesha

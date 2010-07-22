@@ -38,15 +38,17 @@ ELSEIF(WIN32)
 	SET(OSGDBPLUGIN_SRCS_CXX
 		FModel.cpp
 		ReaderWriterPlugin.cpp
+		FileChunkReader.cpp
 		tinyXML/tinystr.cpp
 		tinyXML/tinyxml.cpp
 		tinyXML/tinyxmlerror.cpp
 		tinyXML/tinyxmlparser.cpp
 
 		FModel.h
-		FMesh.h
+		ModelData.h
 		FAnimation.h
 		ReaderWriterPlugin.h
+		FileChunkReader.h
 		tinyXML/tinystr.h
 		tinyXML/tinyxml.h
 	)
@@ -61,6 +63,15 @@ ELSEIF(WIN32)
 		OpenThreadsd.lib
 		$(ProjectDir)../lib/osgext.lib
 	)
+	
+	
+	SOURCE_GROUP("Header Files\\FileChunkReader" FILES  
+		FileChunkReader.h
+		)
+		
+	SOURCE_GROUP("Source Files\\FileChunkReader" FILES  
+		FileChunkReader.cpp
+		)
 
 ENDIF()
 

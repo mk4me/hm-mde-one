@@ -60,7 +60,7 @@ ELSEIF(WIN32)
 		# TODO
 		# jw
 		#../../osgDBPlugin/FModel.h
-		#../../osgDBPlugin/FMesh.h
+		#../../osgDBPlugin/ModelData.h
 		#../../osgDBPlugin/FAnimation.h
 		#../../osgDBPlugin/tinyXML/tinystr.h
 		#../../osgDBPlugin/tinyXML/tinyxml.h		

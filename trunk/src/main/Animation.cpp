@@ -1,6 +1,6 @@
 #include "Animation.h"
 
-#include "ModelWithSkeleton.h"
+#include "Model.h"
 #include "ServiceManager.h"
 #include "AnimationService.h"
 
@@ -115,7 +115,7 @@ bool Animation::Stop()
 
 //--------------------------------------------------------------------------------------------------
 // Prepares animation for playing
-void Animation::Play(ModelWithSkeleton* model)
+void Animation::Play(Model* model)
 { 
 	// are we resuming?
 	if (Resume()) return;
@@ -262,7 +262,7 @@ void Animation::UpdateModel()
 
 
 	// update mesh
-	_model->UpdateMesh();
+	_model->UpdateBones();
 	//	_model->drawNormals(2.0f);
 	//	_model->test();
 	//	_model->updateSkeletonMesh();
@@ -301,7 +301,7 @@ double Animation::GetProgress()
 }
 
 //--------------------------------------------------------------------------------------------------
-void Animation::SetModel( ModelWithSkeleton* model )
+void Animation::SetModel( Model* model )
 {
     _model = model;
 }

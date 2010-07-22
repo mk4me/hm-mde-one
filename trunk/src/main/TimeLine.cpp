@@ -9,7 +9,7 @@
 #include "ServiceManager.h"
 #include "ObjectService.h"
 #include "AnimationService.h"
-#include "ModelWithSkeleton.h"
+#include "Model.h"
 
 
 #define SLIDER_MAX 1000
@@ -57,7 +57,7 @@ void TimeLine::PlayClicked()
 	ServiceManager::GetInstance()->RegisterServiceAs<ObjectService>(); 
 	ObjectService* objects = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>();
 
-	ModelWithSkeleton* model = dynamic_cast<ModelWithSkeleton*>(objects->GetModel());
+	Model* model = dynamic_cast<Model*>(objects->GetModel());
 	if (model)
 	{
 		// using AnimationService is more elegant than taking it directly from list
@@ -141,7 +141,7 @@ void TimeLine::TimeLineSliderReleased()
 	ServiceManager::GetInstance()->RegisterServiceAs<ObjectService>(); 
 	ObjectService* objects = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>();
 
-	ModelWithSkeleton* model = dynamic_cast<ModelWithSkeleton*>(objects->GetModel());
+	Model* model = dynamic_cast<Model*>(objects->GetModel());
 	if (model && animServ->GetSelectedAnimationName().length())
 	{
 		Animation* animation = model->GetAnimation(animServ->GetSelectedAnimationName());

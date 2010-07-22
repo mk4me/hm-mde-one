@@ -7,7 +7,7 @@
 #include "ServiceManager.h"
 #include "AnimationService.h"
 #include "ObjectService.h"
-#include "ModelWithSkeleton.h"
+#include "Model.h"
 
 //--------------------------------------------------------------------------------------------------
 OsgControlWidget::OsgControlWidget(void):
@@ -77,7 +77,7 @@ void OsgControlWidget::MakeTest()
     ServiceManager::GetInstance()->RegisterServiceAs<ObjectService>(); 
     ObjectService* objects = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>();
 
-    ModelWithSkeleton* model = dynamic_cast<ModelWithSkeleton*>(objects->GetModel());
+    Model* model = dynamic_cast<Model*>(objects->GetModel());
     if (model)
     {
         // using AnimationService is more elegant than taking it directly from list
@@ -107,7 +107,7 @@ void OsgControlWidget::SetScene(osgViewer::Scene *scene)
     ClearScene(); 
     ServiceManager::GetInstance()->RegisterServiceAs<ObjectService>(); 
     ObjectService* objects = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>();
-    ModelWithSkeleton* model = dynamic_cast<ModelWithSkeleton*>(objects->GetModel());
+    Model* model = dynamic_cast<Model*>(objects->GetModel());
     if (model)
     {
         std::map<std::string, Animation*>* animations = model->getAnimations();

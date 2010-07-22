@@ -33,11 +33,11 @@
 #include "ServiceManager.h"
 #include "AnimationService.h"
 #include "ObjectService.h"
-#include "ModelWithSkeleton.h"
+#include "Model.h"
 #include "Animation.h"
 #include "SkeletonNode.h"
 
-#include "../osgDBPlugin/FMesh.h"
+#include "../osgDBPlugin/ModelData.h"
 
 
 #define pPat osg::PositionAttitudeTransform*
@@ -46,10 +46,10 @@ class ModelFacade
 {
 public:
 
-    ModelFacade(ModelWithSkeleton* modelWithSkeleton, Animation* animation, SMesh* mesh, osg::ref_ptr<osg::Group> root, osg::ref_ptr<osg::Group> skeleton);
+    ModelFacade(Model* modelWithSkeleton, Animation* animation, SMesh* mesh, osg::ref_ptr<osg::Group> root, osg::ref_ptr<osg::Group> skeleton);
 
     // seting method
-    void setModelWithSkeleton(ModelWithSkeleton* modelWithSkeleton)    { _modelWithSkeleton = modelWithSkeleton;}
+    void setModelWithSkeleton(Model* modelWithSkeleton)    { _modelWithSkeleton = modelWithSkeleton;}
 
     void setAnimation(Animation* animation)                            {_animation = animation;}
 
@@ -60,7 +60,7 @@ public:
     void setSkeleton(osg::ref_ptr<osg::Group> skeleton)                 {_skeleton = skeleton;}
 
     // geting method
-    ModelWithSkeleton* getModelWithSkeleton();
+    Model* getModelWithSkeleton();
     Animation* getAnimation();
     SMesh* getMesh();
     osg::ref_ptr<osg::Group> getRoot();
@@ -75,7 +75,7 @@ public:
   //  ModelFacade* getModel();
 
 
-    void setNewModel(ModelWithSkeleton* model);
+    void setNewModel(Model* model);
     void inicjalization();
 
 protected:
@@ -90,7 +90,7 @@ private:
     AnimationService*           _animationService;
 
     // variables
-    ModelWithSkeleton*         _modelWithSkeleton;     // posiada juz w sobie liste animacji.
+    Model*         _modelWithSkeleton;     // posiada juz w sobie liste animacji.
     osg::ref_ptr<osg::Group>	_root;
     Animation*                 _animation;
 
