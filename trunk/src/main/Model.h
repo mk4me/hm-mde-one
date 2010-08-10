@@ -33,6 +33,7 @@ struct STransformation
 	// for hierarchy recalculation 
 	osg::Vec3d	position;		// start point
 	osg::Quat	attitude;		// this bone rotation
+    bool hasChild;
 
 	// TODO:
 	// na razie wystepuje spora redundancja danych, ale chce aby to najpierw
@@ -98,6 +99,9 @@ public:
     // return root
     osg::ref_ptr<osg::Group> GetRoot(); 
     bool UpdateMesh();
+
+    bool LoadModel();
+
     // removes geodes from root
     void RemoveGeodes();
 
@@ -107,14 +111,20 @@ public:
     // draw normals
     void DrawNormals(float size);
     // draw WireFrame
-    void DrawWireFrame(unsigned int mesh_id, unsigned int id);
+    void DrawWireFrame(osg::Geode* geode);
     // add shaders
     bool AddShaders(const std::string& vertex, const std::string& pixel);
     // apply material
-    bool ApplyMaterial(unsigned int mesh_id, unsigned int id);	
+    bool ApplyMaterial(unsigned int mesh_id, unsigned int id, bool isVisible);	
     // loads shader
     bool LoadShaderSource(osg::Shader* obj, const std::string& file);
     size_t GetVertexSize();
+
+    void UpdateWireFrame();
+    void ResetWireFrame();
+
+    void Update();
+
 
 
     // TODO: Fix this 
@@ -143,7 +153,7 @@ private:
 
     osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos);
     osg::ref_ptr<osg::Geometry> DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, const osg::Vec3d* vertexPos, 
-        const osg::Vec3d* startPos2, const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2);
+        const osg::Vec3d* startPos2, const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2, bool isSelected);
 
     void drawGroup(osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode);
 
@@ -162,13 +172,13 @@ private:
     STransformation*					_actualBones;
     // number of bones
     unsigned int						_numOfBones;
-    // additional counter
-    unsigned int				        _counter;
+
     std::string                         _selectedGroupName;
     // temporary array
     osg::Vec3d							_tempVectors[MAX_AFFECTING_BONES][2];
     // last played animation
     std::string							_lastPlayedAnimation;
+    osg::ref_ptr<osg::Geode>			_wireFrameGeode;
 
  
 protected:

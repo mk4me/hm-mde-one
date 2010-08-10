@@ -1,9 +1,17 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
 
+#ifdef __WIN32__
 #include <SkeletonNode.h>
 #include <AnimationNode.h>
 #include <AnimationGroup.h>
+#endif
+
+#ifdef __UNIX__
+#include "../OsgExtensions/SkeletonNode.h"
+#include "../OsgExtensions/AnimationNode.h"
+#include "../OsgExtensions/AnimationGroup.h"
+#endif
 
 class Model;
 

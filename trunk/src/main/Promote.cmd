@@ -20,25 +20,17 @@ if not exist "%OutputBinPath%" md "%OutputBinPath%"
 
 @rem Kopiujemy  
 xcopy "%OSGBinPath%\*.dll" "%OutputBinPath%" /S /Y /D /I /R /EXCLUDE:PromoteExcludes.txt
-xcopy "%OSGBinPath%\*.dll" "%BuildPath%\%Configuration%" /S /Y /D /I /R /EXCLUDE:PromoteExcludes.txt
+@rem xcopy "%OSGBinPath%\*.dll" "%BuildPath%\%Configuration%" /S /Y /D /I /R /EXCLUDE:PromoteExcludes.txt
 @rem Kompiujemy biblioteki Qt
 if %Configuration% == Debug (
   xcopy "%QtBinDir%\QtCored4.dll" "%OutputBinPath%"
   xcopy "%QtBinDir%\QtGuid4.dll" "%OutputBinPath%"
   xcopy "%QtBinDir%\QtOpenGLd4.dll" "%OutputBinPath%"
   
-  xcopy "%QtBinDir%\QtCored4.dll" "%BuildPath%\%Configuration%" 
-  xcopy "%QtBinDir%\QtGuid4.dll" "%BuildPath%\%Configuration%" 
-  xcopy "%QtBinDir%\QtOpenGLd4.dll" "%BuildPath%\%Configuration%" 
-  
 ) else (
   xcopy "%QtBinDir%\QtCore4.dll" "%OutputBinPath%"
   xcopy "%QtBinDir%\QtGui4.dll" "%OutputBinPath%"
   xcopy "%QtBinDir%\QtOpenGL4.dll" "%OutputBinPath%"
-  
-  xcopy "%QtBinDir%\QtCore4.dll" "%BuildPath%\%Configuration%" 
-  xcopy "%QtBinDir%\QtGui4.dll" "%BuildPath%\%Configuration%" 
-  xcopy "%QtBinDir%\QtOpenGL4.dll" "%BuildPath%\%Configuration%" 
 )
 
 goto :EOF

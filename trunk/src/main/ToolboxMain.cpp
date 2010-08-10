@@ -34,6 +34,8 @@
 #include "ServiceManager.h"
 #include "AnimationService.h"
 #include "ObjectService.h"
+#include "../utils/ConfigFileManage/ConfigurationFileService.h"
+#include "PluginServices.h"
 
 #include <iostream>
 
@@ -66,9 +68,6 @@ ToolboxMain::ToolboxMain(QWidget *parent):
     // Wczytuje plik konfiguracyjny
     LoadConfiguration(); 
 
-    _plugins.clear(); 
-    LoadPlugins(); 
-
     // w przysz³oœci setLayout
     QDockWidget *cdock = dynamic_cast<QDockWidget *>(_consoleWidget->parent()); 
     QDockWidget *tldock = dynamic_cast<QDockWidget *>(_timeLine->parent()); 
@@ -81,6 +80,8 @@ ToolboxMain::ToolboxMain(QWidget *parent):
     // Inicjalizacja podstawowych serwisów 
     InitializeCoreServices(); 
 
+    _plugins.clear(); 
+    LoadPlugins(); 
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -91,6 +92,7 @@ ToolboxMain::~ToolboxMain()
     std::streambuf *buf = std::cout.rdbuf(_streambuf);
     delete buf;
 
+    _pPluginService = NULL;
     // remove all services
     ServiceManager::DestroyInstance();
 }
@@ -185,47 +187,33 @@ void ToolboxMain::InitializeControlWidget()
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::LoadPlugins()
 {
-    QDir pluginsDir = QDir(qApp->applicationDirPath());
+    //Nowy sposób ³adownaie luginów 6.08.2010
+    _pPluginService = ServiceManager::GetInstance()->GetSystemServiceAs<PluginService>();
 
-    pluginsDir.cd("plugins");
+    PluginList pList = _pPluginService->GetPluginList();
 
-    foreach (QString fileName, pluginsDir.entryList(QDir::Files)) 
+    for(std::vector<IControlPlugin*>::iterator itr = pList.begin(); itr != pList.end(); itr++)
     {
-        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
-        QObject *plugin = loader.instance();
-        if (plugin) 
-        {
-            InitializePlugin(plugin);
-            //pluginFileNames += fileName;
-        }
+        osgViewer::Scene* scene = _osgView->getScene(); 
+
+        QDockWidget *tldock = new QDockWidget((*itr)->GetPluginName(), this, Qt::WindowTitleHint); 
+        tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+        addDockWidget(Qt::BottomDockWidgetArea, tldock);
+
+        QWidget* widget = (*itr)->GetDockWidget(0);
+        tldock->setWidget(widget); 
+
+        QString dockWidgetName = (*itr)->GetPluginName() + widget->objectName();
+        tldock->setObjectName(dockWidgetName);
+
+        (*itr)->SetScene(scene); 
     }
 }
 
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::InitializePlugin(QObject *plugin)
 {
-    IControlPlugin *iControlPlugin = qobject_cast<IControlPlugin *>(plugin);
-    if (iControlPlugin)
-    {
-        osgViewer::Scene* scene = _osgView->getScene(); 
 
-        _plugins.push_back(plugin);
-
-        QDockWidget *tldock = new QDockWidget(iControlPlugin->GetPluginName(), this, Qt::WindowTitleHint); 
-        tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-        addDockWidget(Qt::BottomDockWidgetArea, tldock);
-
-        QWidget* widget = iControlPlugin->GetDockWidget(0);
-        tldock->setWidget(widget); 
-
-        // Nazwa dock widgetu musi byæ unikalna, ¿eby dzia³a³o zapisywanie stanu okien.
-        // Na razie tworzona na podstawie nazwy pluginu i widgeta, ale jeœli któraœ
-        // z tych nazw mo¿e siê powtarzaæ, trzeba bêdzie to zmodyfikowaæ.
-        QString dockWidgetName = iControlPlugin->GetPluginName() + widget->objectName();
-        tldock->setObjectName(dockWidgetName);
-
-        iControlPlugin->SetScene(scene); 
-    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -237,7 +225,6 @@ void ToolboxMain::CreateActions()
     _viewWFAct = new QAction(tr("&WireFrame"), this);
     _viewMaterialAct = new QAction(tr("&Material"), this);
     _viewBoneAct = new QAction(tr("&Bone"), this);
-    _NoneAct = new QAction(tr("&None"), this);
 
     _points = new QAction(tr("&Points"), this);
     _lines = new QAction(tr("&Lines"), this);
@@ -250,7 +237,6 @@ void ToolboxMain::CreateActions()
     _quad_strip = new QAction(tr("&Quad strip"), this);
     _polygon = new QAction(tr("&Polygon"), this);
 
-    _NoneAct->setShortcut(tr("Ctrl+N"));
     _viewBoneAct->setShortcut(tr("Ctrl+N"));
     _viewMaterialAct->setShortcut(tr("Ctrl+N"));
     _viewWFAct->setShortcut(tr("Ctrl+W"));
@@ -261,7 +247,6 @@ void ToolboxMain::CreateActions()
     connect(_viewWFAct, SIGNAL(triggered()), this, SLOT(WireFrameView()));
     connect(_viewMaterialAct, SIGNAL(triggered()), this, SLOT(MaterialView()));
     connect(_viewBoneAct, SIGNAL(triggered()), this, SLOT(BoneView()));
-    connect(_NoneAct, SIGNAL(triggered()), this, SLOT(NormalView()));
     connect(_points, SIGNAL(triggered()), this, SLOT(PointViewModel()));
     connect(_lines, SIGNAL(triggered()), this, SLOT(LinesViewModel()));
     connect(_line_strip, SIGNAL(triggered()), this, SLOT(LineStripViewModel()));
@@ -291,8 +276,6 @@ void ToolboxMain::CreateMenus()
     _fileMenu->addSeparator();
 
     _modelMenu = _fileMenu->addMenu(tr("&Model"));
-    _modelMenu->addAction(_NoneAct);     
-    _modelMenu->addSeparator();
     _modelMenu->addAction(_points); 
     _modelMenu->addAction(_lines);
     _modelMenu->addAction(_line_strip);
@@ -307,30 +290,38 @@ void ToolboxMain::CreateMenus()
 
 // TODO:  zrobiæ jedn¹ funkcje do tego. - wybor opcjii.
 //--------------------------------------------------------------------------------------------------
-void ToolboxMain::NormalView()
-{
-    _pScene->AddVieModelFlag(ObjectService::MODEL);
-    _model->UpdateBones();
-}
-
-//--------------------------------------------------------------------------------------------------
 void ToolboxMain::BoneView()
 {
     _pScene->AddVieModelFlag(ObjectService::BONE);
-    _model->UpdateBones();
+
+    if(!(_pScene->GetViewModelFlag() & ObjectService::BONE))
+    {
+        _model->RemoveGeodes();
+        _model->LoadModel();
+    }
+
+    _model->Update();
 }
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::WireFrameView()
 {
     _pScene->AddVieModelFlag(ObjectService::WIREFRAME);
-    _model->UpdateBones();
+
+    if(!(_pScene->GetViewModelFlag() & ObjectService::WIREFRAME))
+        _model->ResetWireFrame();
+
+    _model->Update();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::MaterialView()
 {
     _pScene->AddVieModelFlag(ObjectService::MATERIAL);
-    _model->UpdateBones();
+
+    if(_pScene->GetViewModelFlag() & ObjectService::MATERIAL)
+        _model->ApplyMaterial(0, 0, true);
+    else
+        _model->ApplyMaterial(0, 0, false);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -352,7 +343,7 @@ void ToolboxMain::Open()
 
         
         // test
-        model->UpdateBones();
+        model->Update();
         //model->updateSkeletonMesh();
 
         
@@ -381,13 +372,10 @@ void ToolboxMain::Open()
 
         _timeLine->SetScene(scene); 
 
-        int pluginCount = _plugins.size(); 
-        for (int i=0; i<pluginCount; ++i)
+        PluginList pluginList = _pPluginService->GetPluginList();
+        for(std::vector<IControlPlugin* >::const_iterator it = pluginList.begin(); it != pluginList.end(); it++)
         {
-            QObject *plugin = _plugins[i]; 
-            IControlPlugin *iControlPlugin = qobject_cast<IControlPlugin*>(plugin);
-            if(iControlPlugin)
-                iControlPlugin->SetScene(scene); 
+            (*it)->SetScene(scene);
         }
 
         _model = dynamic_cast<Model*>(_pScene->GetModel());  // zawsze mamy tylko jeden model.
@@ -497,6 +485,8 @@ void ToolboxMain::InitializeCoreServices()
     ServiceManager::GetInstance()->RegisterServiceAs<AnimationService>(); 
     AnimationService* pAnimation = ServiceManager::GetInstance()->GetSystemServiceAs<AnimationService>(); 
     pAnimation->SetScene(_osgView->getScene()); 
+
+    ServiceManager::GetInstance()->RegisterServiceAs<PluginService>();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -528,6 +518,26 @@ void ToolboxMain::SettingModel()
      _model = object->GetModel();
 
 // TESTING CONFIGURATION_FILE_MANAGER
+    ServiceManager::GetInstance()->RegisterServiceAs<ConfigurationFileService>(); 
+
+    ConfigurationFileService* pCFService = _pServiceManager->GetSystemServiceAs<ConfigurationFileService>();
+    
+    pCFService->LoadConfig("Config.ini");
+    std::list<ConfigurationGroup*> groupList = pCFService->GetConfigurationGroupList();
+    int zmienna = pCFService->GetIntParameter("MemMaxValue");
+    float f = pCFService->GetIntParameter("TimingMaxValue");
+    ConfigurationGroup* group = pCFService->GetConfigurationGroup("VisualTracker");
+    group->SetParametrVal("PerfMaxValue ", "200");
+    pCFService->SetParameter("VisualTracker","PerfMaxValue", "300");
+    pCFService->SetParameter("PerfMaxValue", "450");
+    ConfigurationGroup* dupa = new ConfigurationGroup("DUPA_TEST");
+    dupa->AddNewParametr("walek", "1000");
+    Parameter* par = new Parameter("cwel","kozak");
+    Parameter* par2 = new Parameter("standardowo-test","dupa_dupa_dupa");
+    dupa->AddNewParamter(*par);
+    dupa->AddNewParamter(*par2);
+    pCFService->AddNewConfigurationGroup(*dupa);
+    pCFService->Save();
 
 //     ConfigurationFile::getInstance().LoadConfig("Config.ini");
 //     std::list<ConfigurationGroup*> groupList = ConfigurationFile::getInstance().GetConfigurationGroupList();
@@ -556,7 +566,7 @@ void ToolboxMain::PointViewModel()
     ObjectService* pScene = _pServiceManager->GetSystemServiceAs<ObjectService>(); 
     pScene->SetPrimitiveModeFlag(osg::PrimitiveSet::POINTS);
     model = dynamic_cast<Model*>(pScene->GetModel());  // zawsze mamy tylko jeden model.
-    model->UpdateBones();
+    model->Update();
 }
 
 //--------------------------------------------------------------------------------------------------

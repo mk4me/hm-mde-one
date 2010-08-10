@@ -22,6 +22,7 @@ public:
 
   // Tymczasowa funkcja - pozniej zamiast tego bedzie serviceManager !!
   virtual void SetScene(osgViewer::Scene *scene) = 0; 
+  virtual std::string GetPluginType() = 0;
 };
 
 

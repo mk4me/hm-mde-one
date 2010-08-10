@@ -262,7 +262,7 @@ void Animation::UpdateModel()
 
 
 	// update mesh
-	_model->UpdateBones();
+	_model->Update();
 	//	_model->drawNormals(2.0f);
 	//	_model->test();
 	//	_model->updateSkeletonMesh();

@@ -1,5 +1,8 @@
 PROJECT(CONTROLPLUGIN)
 
+# just debug / release
+SET(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
+
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${CONTROLPLUGIN_SOURCE_DIR} ${CONTROLPLUGIN_BINARY_DIR})
 
 # add Qt modules here, the include will setup QT_LIBRARIES
@@ -27,10 +30,11 @@ IF(UNIX)
 
 	# INCLUDES
 	SET(CONTROLPLUGIN_INCLUDE_X
+		../../include/osg
 		../include
 		UI
 		/usr/X11R6/include
-		../OsgExtensions/
+		../osgext/
 	)
 
 	# LIBS
@@ -43,8 +47,7 @@ IF(UNIX)
 		osg
 		osgViewer
 		osgSim
-		osgUtil
-		osgext		
+		osgUtil	
 	)
 
 ELSEIF(WIN32)
@@ -60,6 +63,7 @@ ELSEIF(WIN32)
 
 	# INCLUDES
 	SET(CONTROLPLUGIN_INCLUDE_X
+		../../include/osg
 		../../include
 		../../include/QT/QtCore
 		../../include/QT/QtGui
@@ -68,22 +72,33 @@ ELSEIF(WIN32)
 		debug
 		../../include/mkspecs/win32-msvc2008
 		../include
-		../OsgExtensions/
+		../osgext/
 	)
 
 	# LIBS
 	SET(CONTROLPLUGIN_LIBS_X
-		../../lib/win32/debug/QT/qtmaind
-		../../lib/win32/debug/QT/QtOpenGLd4
-		../../lib/win32/debug/QT/QtGuid4
-		../../lib/win32/debug/QT/QtCored4
-		osgd.lib 
-		osgViewerd.lib 
-		osgGAd.lib 
-		osgDBd.lib 
-		osgTextd.lib 
-		OpenThreadsd.lib 
-		../lib/osgext		
+		debug ../../lib/win32/debug/QT/qtmaind
+		debug ../../lib/win32/debug/QT/QtOpenGLd4
+		debug ../../lib/win32/debug/QT/QtGuid4
+		debug ../../lib/win32/debug/QT/QtCored4
+		debug ../../lib/win32/debug/osg/osgd
+		debug ../../lib/win32/debug/osg/osgViewerd
+		debug ../../lib/win32/debug/osg/osgGAd
+		debug ../../lib/win32/debug/osg/osgDBd
+		debug ../../lib/win32/debug/osg/osgTextd
+		debug ../../lib/win32/debug/osg/OpenThreadsd
+			
+		
+		optimized ../../lib/win32/release/QT/qtmain
+		optimized ../../lib/win32/release/QT/QtOpenGL4
+		optimized ../../lib/win32/release/QT/QtGui4
+		optimized ../../lib/win32/release/QT/QtCore4
+		optimized ../../lib/win32/release/osg/osg
+		optimized ../../lib/win32/release/osg/osgViewer
+		optimized ../../lib/win32/release/osg/osgGA
+		optimized ../../lib/win32/release/osg/osgDB
+		optimized ../../lib/win32/release/osg/osgText
+		optimized ../../lib/win32/release/osg/OpenThreads
 	)
 
 ENDIF()
@@ -115,9 +130,7 @@ IF(WIN32)
 		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32
 		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)
 		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)/plugins
-		COMMAND ${CMAKE_COMMAND} -E make_directory ../main/$(ConfigurationName)/plugins
 		COMMAND ${CMAKE_COMMAND} -E copy ARGS $(ConfigurationName)/ControlPlugin.dll ../../bin/Win32/$(ConfigurationName)/plugins/
-		COMMAND ${CMAKE_COMMAND} -E copy ARGS $(ConfigurationName)/ControlPlugin.dll ../main/$(ConfigurationName)/plugins/
 	)
 ELSEIF(UNIX)
 	# post build event

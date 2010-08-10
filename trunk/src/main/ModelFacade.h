@@ -35,7 +35,7 @@
 #include "ObjectService.h"
 #include "Model.h"
 #include "Animation.h"
-#include "SkeletonNode.h"
+#include "../OsgExtensions/SkeletonNode.h"
 
 #include "../osgDBPlugin/ModelData.h"
 

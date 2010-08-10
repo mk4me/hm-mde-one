@@ -6,7 +6,14 @@
 #include <osg/Geode>
 #include <osg/NodeVisitor>
 
+#ifdef __WIN32__
 #include <SkeletonNode.h>
+#endif
+
+#ifdef __UNIX__
+#include "../OsgExtensions/SkeletonNode.h"
+#endif
+
 
 using namespace std;
 using namespace osg;

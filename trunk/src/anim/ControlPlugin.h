@@ -22,6 +22,7 @@ public:
     virtual QString GetPluginName(); 
     // Tymczasowa funkcja - pozniej zamiast tego bedzie serviceManager !!
     virtual void SetScene(osgViewer::Scene *scene); 
+    virtual std::string GetPluginType();
 
     // 
 private: 

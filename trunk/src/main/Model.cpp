@@ -31,8 +31,6 @@
 #include "ToolboxMain.h"
 #include "ObjectService.h"
 
-#include "../OsgExtensions/CustomGroup.h"
-#include "../OsgExtensions/SkeletonNode.h"
 
 #include "../osgDBPlugin/FileChunkReader.h"
 
@@ -44,6 +42,18 @@
 
 using namespace osg;
 using namespace std;
+
+
+//--------------------------------------------------------------------------------------------------
+void itoa(int value, std::string& buf, int base)
+{
+    int i = 30;
+
+    buf = "";
+
+    for(; value && i ; --i, value /= base) buf = "0123456789abcdef"[value % base] + buf;
+
+}
 
 //--------------------------------------------------------------------------------------------------
 Model::Model(const std::string &fileName, bool visible):
@@ -73,7 +83,8 @@ Model::Model(const std::string &fileName, bool visible):
                 _joints		= new vector<SkeletonNode*>();
                 CreateArrayOfJoints((SkeletonNode*)_skeleton->getChild(0)->asGroup());
 
-                _numOfBones	= _joints->size();// - 1;
+                _numOfBones	= _joints->size();
+                _numOfBones += 1; // because we don't added first node (root_of_Skeleton)
 
                 // get 'global' (? - not another transformations but entire propagated from root) 
                 // transformations of bones
@@ -137,9 +148,7 @@ Model::Model(bool visible, std::vector<SkeletonNode*>* joints, STransformation* 
     root->setFMesh(fmesh);
 
     // kosci
-
     root->setSkeleton(skeleton);
-
     root->setAnimations(animation);
 
     _root = root;
@@ -148,7 +157,6 @@ Model::Model(bool visible, std::vector<SkeletonNode*>* joints, STransformation* 
 //--------------------------------------------------------------------------------------------------
 Model::~Model()
 {
-
     // it's all i suppose...
     if (_root.valid())
     {
@@ -165,7 +173,6 @@ Model::~Model()
     _meshes.clear();
 
 
-
     if (_joints)
         delete _joints;
     _joints = NULL;
@@ -178,7 +185,6 @@ Model::~Model()
         delete [] _actualBones;
     _actualBones = NULL;
 
-
     _animations.clear();
     ((CCustomGroup*)_root.get())->Clear();
 
@@ -189,7 +195,7 @@ Model::~Model()
 // recalculates changes of skeleton
 void Model::RecalculateChanges()
 {
-	for (unsigned int b = 0; b < _numOfBones; ++b)
+	for (unsigned int b = 0; b < (_numOfBones + 1); ++b)
 	{
 		// cross product
 		Vec3d	cross	 = _initialBones[b].bone ^ _actualBones[b].bone;	
@@ -211,54 +217,77 @@ void Model::UpdateSkeleton()
 {
 	pPat skeleton = dynamic_cast<SkeletonNode*>(_skeleton.get());
 	if (skeleton)
-	{
-		_counter = 0;
-
+    {
 		for (unsigned int b = 0; b < skeleton->getNumChildren(); ++b)
 			if (dynamic_cast<SkeletonNode*>(skeleton->getChild(b)) )
 				UpdateBone((pPat)skeleton->getChild(b));
 	}
 }
 
+//--------------------------------------------------------------------------------------------------
+void Model::Update()
+{
+    // TODO: do rpzemyœlenia, Applymaterial moze byæ w Load Model - wtedy bêdizemy wywo³ywaæ Loda Model przy Open - w toolboxie,
+    // zamiast Update. Albo tuaj, w tedy mamy kontrlo nad materia³ami nie wazne czy jest robiony UpadeteMesh czy LoadModel
+    UpdateBones();
+
+    if(!_isModelLoaded)
+    {
+        LoadModel();
+        _isModelLoaded = true;
+    }
+    else
+        UpdateMesh();
+
+
+    if(_pScene->GetViewModelFlag() & ObjectService::MATERIAL)
+        ApplyMaterial(0, _materialId, true);
+
+    if(_pScene->GetViewModelFlag() & ObjectService::WIREFRAME)
+        UpdateWireFrame();
+}
 
 //--------------------------------------------------------------------------------------------------
 // creates arrays of pointers at bones sorted by id
 void Model::UpdateBone(osg::PositionAttitudeTransform* bone)
 {
 	unsigned int pId = ((SkeletonNode*)bone->getParent(0))->GetId();
+    unsigned int boneId = ((SkeletonNode*)bone)->GetId();
 
-	osg::Vec3d ppos = pId ? _actualBones[pId - 1].position : ((pPat)_skeleton.get())->getPosition();
-	osg::Quat  prot = pId ? _actualBones[pId - 1].attitude : ((pPat)_skeleton.get())->getAttitude();
+    std::string name = bone->getName();
 
-	osg::Vec3d bpos = prot * bone->getPosition() + ppos;
-	osg::Quat  brot = bone->getAttitude() * prot;
 
-	STransformation tr;
-	tr.attitude	= brot;
-	tr.position	= bpos;
+    osg::Vec3d ppos = pId ? _actualBones[pId].position : ((pPat)_skeleton.get())->getPosition();
+    osg::Quat  prot = pId ? _actualBones[pId].attitude : ((pPat)_skeleton.get())->getAttitude();
 
-	tr.bone		= bpos - ppos;
-	tr.point	= ppos;
+    osg::Vec3d bpos = prot * bone->getPosition() + ppos;
+    osg::Quat  brot = bone->getAttitude() * prot;
 
-	_actualBones[_counter] = tr;
-	++_counter;
+    STransformation tr;
+    tr.attitude	= brot;
+    tr.position	= bpos;
 
-	for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
-		if (dynamic_cast<SkeletonNode*>(bone->getChild(b)))
-			UpdateBone((pPat)bone->getChild(b));
+    tr.bone		= bpos - ppos;
+    tr.point	= ppos;
+
+    if (bone->getNumChildren() > 0)
+        tr.hasChild = true;
+    else
+        tr.hasChild = false;
+
+    _actualBones[boneId] = tr;
+
+    for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
+        if (dynamic_cast<SkeletonNode*>(bone->getChild(b)))
+            UpdateBone((pPat)bone->getChild(b));
+
 }
 
 //--------------------------------------------------------------------------------------------------
 // update mesh
 bool Model::UpdateBones()
 {
-    // TODO: musze przesunac to z moich wczytanych z modelem struktur do OSG
-
-    //if(!_root)
-    //    return false;
-
-//    RemoveGeodes();
-
+    int countHandv = 0;
      for (unsigned int j = 0; j < (((CCustomGroup*)_root.get())->getNumOfMeshes()); ++j)
 
      {
@@ -275,14 +304,10 @@ bool Model::UpdateBones()
              // recalculates changes of skeleton
              RecalculateChanges();
 
-             // update all vertices
-             //SVertice* vData = (SVertice*)mesh->mesh_buffer->buffer;
-
              SVertice* vData = _meshRootBufferList[j];
-
              
              // update vertices using skin
-             for (int i = 0; i < skin->n; ++i)
+             for (int i = 0; i < skin->n; i++)
              {
                  // vertice
                  SSkinnedVertice* vertice = &skin->skinned_vertices[i];
@@ -295,29 +320,36 @@ bool Model::UpdateBones()
                  Vec3d normal(vData[vertice->vert_id].normal[0], 
                      vData[vertice->vert_id].normal[1], vData[vertice->vert_id].normal[2]);
 
+
+
                  // for every affecting bone
-                 for (int b = 0; b < vertice->n; ++b)
+                 for (int b = 0; b < vertice->n; b++)
                  {
-                     _tempVectors[b][POSITION] =	_actualBones[vertice->bones[b].boneID].rotation 
-                         * (actPos - _actualBones[vertice->bones[b].boneID].point									
-                         + _actualBones[vertice->bones[b].boneID].translation)									
-                         + _actualBones[vertice->bones[b].boneID].point;
+                     int boneID = vertice->bones[b].boneID;
+                     if(_actualBones[boneID].hasChild)
+                     {
+                         boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
+                     }
+
+                     _tempVectors[b][POSITION] =	_actualBones[boneID].rotation 
+                         * (actPos - _actualBones[boneID].point									
+                         + _actualBones[boneID].translation)									
+                         + _actualBones[boneID].point;
 
                      _tempVectors[b][NORMALS]  = _actualBones[vertice->bones[b].boneID].rotation * normal;
+
                  }
 
                  // get output point
                  Vec3d change, nchange;
-                 for (int b = 0; b < vertice->n; ++b)
+                 for (int b = 0; b < vertice->n; b++)
                  {
                      change  += _tempVectors[b][POSITION] * vertice->bones[b].weight;
                      nchange += _tempVectors[b][NORMALS]  * vertice->bones[b].weight;
                  }
 
+
                  // update of vertex
-
-
-
                  _meshBufferList[j][vertice->vert_id].position[0] = change.x();
                  _meshBufferList[j][vertice->vert_id].position[1] = change.y();
                  _meshBufferList[j][vertice->vert_id].position[2] = change.z();
@@ -327,12 +359,9 @@ bool Model::UpdateBones()
                  _meshBufferList[j][vertice->vert_id].normal[1] = nchange.y();
                  _meshBufferList[j][vertice->vert_id].normal[2] = nchange.z();
              }
-
-             // create new mesh
          }
      }
 
-     UpdateMesh();
      return true;
 }
 
@@ -340,6 +369,9 @@ bool Model::UpdateBones()
 // creates array of pointers at bones sorted by id
 void Model::CreateArrayOfJoints(SkeletonNode* bone)
 {
+
+    std::string name = bone->getName();
+
 	_joints->push_back(bone);
 
 	for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
@@ -368,11 +400,6 @@ void Model::DrawBone(pPat bone, const osg::Vec3d* parentPos, const osg::Quat* pa
 	osg::Vec3d bpos = (*parentRot) * bone->getPosition() + *parentPos;
 	osg::Quat  brot = bone->getAttitude() * (*parentRot);
 
-	// recursively draw other bones
-	for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
-		if (dynamic_cast<SkeletonNode*>(bone->getChild(b)))
-			DrawBone((pPat)bone->getChild(b), &bpos, &brot, geode);
-		
 
     float length = (*parentPos - bpos).length();
     float distanceHightToArm = length/8;
@@ -407,9 +434,20 @@ void Model::DrawBone(pPat bone, const osg::Vec3d* parentPos, const osg::Quat* pa
     boneNodeFrontArm = (*parentRot) * boneNodeFrontArm + *parentPos;
     boneNodeBackArm = (*parentRot) * boneNodeBackArm + *parentPos;
 
+    bool isSelected = false;
+    if(_selectedGroupName == bone->getName())
+    {
+        isSelected = true;
+    }
 
-    geode->addDrawable(DrawTriangle(&boneNodeParent, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm));
-	geode->addDrawable(DrawTriangle(&boneNodeChild, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm));
+    geode->addDrawable(DrawTriangle(&boneNodeParent, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm, isSelected));
+	geode->addDrawable(DrawTriangle(&boneNodeChild, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm, isSelected));
+
+
+    // recursively draw other bones
+    for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
+        if (dynamic_cast<SkeletonNode*>(bone->getChild(b)))
+            DrawBone((pPat)bone->getChild(b), &bpos, &brot, geode);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -431,6 +469,22 @@ void Model::UpdateSkeletonMesh()
 			DrawBone((pPat)root_bone->getChild(b), &root_bone->getPosition(), &root_bone->getAttitude(), _skeletonGeode);
 
 	_root->addChild(_skeletonGeode);
+}
+
+//--------------------------------------------------------------------------------------------------
+void Model::UpdateWireFrame()
+{
+    // remove old geode
+    if (_wireFrameGeode.valid())
+        _root->removeChild(_wireFrameGeode.get());
+
+    // create new geode
+    _wireFrameGeode = new osg::Geode();
+    _wireFrameGeode->setName("wireFrame_geode");
+
+    DrawWireFrame(_wireFrameGeode);
+
+    _root->addChild(_wireFrameGeode);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -473,7 +527,7 @@ osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3d* startPos, const os
 //--------------------------------------------------------------------------------------------------
 osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, 
                                                             const osg::Vec3d* vertexPos, const osg::Vec3d* startPos2, 
-                                                            const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2)
+                                                            const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2, bool isSelected)
 {
 	// draw actual bone
 	osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
@@ -500,14 +554,27 @@ osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, cons
 	geometry->setVertexArray(vertices);
 	geometry->addPrimitiveSet(line);
 
-	// set colors
-	osg::Vec4Array* colors = new osg::Vec4Array;
-	colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
-	colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
+    // set colors
+    osg::Vec4Array* colors = new osg::Vec4Array;
+    if(isSelected)
+    {
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+    }
+    else
+    {
+        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
+        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
+    }
+
 
 	osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
 	colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;
@@ -529,7 +596,6 @@ void Model::SelectGroup( std::string nameGroup)
 {
     _selectedGroupName = nameGroup;
 }
-
 
 //--------------------------------------------------------------------------------------------------
 size_t Model::GetVertexSize()
@@ -591,7 +657,6 @@ void Model::InicializeMesh(const std::string& fileName, bool visible)
             if (setList && setList->size() && (*setList)[0].size())
                 _materialId = (*setList)[0][0];
 
-
             // Nowa zmiana wczytywania mesha.
             // TODO: zoptymalizowaæ potem - std::vector nie robi g³êbokiej kopi jeœli ich elementem jest wskaŸnik - dlatego taki ba³agan
             // spróbowaæ skorzystac s shared_ptr
@@ -607,7 +672,6 @@ void Model::InicializeMesh(const std::string& fileName, bool visible)
             {
                 if(((CCustomGroup*)_root.get())->getMesh(i) != NULL)
                 {
-
                     numberOfElements = ((CCustomGroup*)_root.get())->getMesh(i)->mesh_buffer->n / _vertexSize;
 
                     SVertice* meshBuffer = new SVertice[numberOfElements];
@@ -763,22 +827,17 @@ void Model::DrawNormals(float size)
 
 //--------------------------------------------------------------------------------------------------
 // draws WireFrame
-void Model::DrawWireFrame(unsigned int mesh_id, unsigned int id)
+void Model::DrawWireFrame(osg::Geode* geode)
 {
-
     for (unsigned int i = 0; i < (((CCustomGroup*)_root.get())->getNumOfMeshes()); ++i)
     {
-        ref_ptr<Geode>		geode	 = new Geode();
         ref_ptr<Geometry>	geometry = new Geometry();
 
         SMesh* mesh = ((CCustomGroup*)_root.get())->getMesh(i);
 
         if (mesh && (_pScene->GetViewModelFlag() & ObjectService::MODEL || _pScene->GetViewModelFlag() & ObjectService::WIREFRAME))
         {
-            //    ref_ptr<Geode>		geode	 = new Geode();
-            //    ref_ptr<Geometry>	geometry = new Geometry();
-
-            geode->setName("mesh");
+            geode->setName("WireFrame");
             geode->addDrawable(geometry);	
 
             // vertices, texcoords, normals
@@ -789,6 +848,7 @@ void Model::DrawWireFrame(unsigned int mesh_id, unsigned int id)
             Vec2Array* texcoords    = new Vec2Array();
             Vec3Array* normals      = new Vec3Array();
 
+            vertices->reserve(numOfVertices);
             for (int v = 0; v < numOfVertices; ++v)
             {
                 // vertex buffer
@@ -828,6 +888,7 @@ void Model::DrawWireFrame(unsigned int mesh_id, unsigned int id)
 #if 1
         osg::Material* material = new osg::Material;
         stateset->setAttributeAndModes(material,osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
+
         stateset->setMode(GL_LIGHTING,osg::StateAttribute::OVERRIDE|osg::StateAttribute::OFF);
 #else
         // version which sets the color of the wireframe.
@@ -843,22 +904,20 @@ void Model::DrawWireFrame(unsigned int mesh_id, unsigned int id)
         stateset->setMode(GL_LIGHTING,osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
 #endif
 
-        //   if(!(_pScene->GetViewModelFlag() & ObjectService::MODEL))
-        //     RemoveGeodes();
         geode->setStateSet(stateset);
-        _root->addChild(geode);
     }
-
-
 }
 
 //--------------------------------------------------------------------------------------------------
 // applies material 
-bool Model::ApplyMaterial(unsigned int mesh_id, unsigned int id)
+bool Model::ApplyMaterial(unsigned int mesh_id, unsigned int id,  bool isVisible)
 {
     // TODO:
     // at the moment - take diffuse texture and load it
     // we should load proper shader... etc
+
+    if(_materialId < 0)
+        return false;
 
     vector<SMaterial>* materialList = ((CCustomGroup*)_root.get())->getMaterialList();
 
@@ -878,7 +937,10 @@ bool Model::ApplyMaterial(unsigned int mesh_id, unsigned int id)
             StateSet* stateOne = new StateSet();
 
 
-            stateOne->setTextureAttributeAndModes(0, tex, osg::StateAttribute::OVERRIDE|StateAttribute::ON);
+            if(isVisible)
+                stateOne->setTextureAttributeAndModes(0, tex, osg::StateAttribute::OVERRIDE|StateAttribute::ON);
+            else
+                stateOne->setTextureAttributeAndModes(0, tex, osg::StateAttribute::OVERRIDE|StateAttribute::OFF);
 
             _meshes[mesh_id]->setStateSet(stateOne);
         }
@@ -908,10 +970,9 @@ void Model::RemoveGeodes()
 }
 
 //--------------------------------------------------------------------------------------------------
-// update mesh
-bool Model::UpdateMesh()
+bool Model::LoadModel()
 {
-    ref_ptr<Geode>		geode	 = new Geode();
+    ref_ptr<Geode>	geode = new Geode();
 
     // for every mesh
     for (unsigned int i = 0; i < (((CCustomGroup*)_root.get())->getNumOfMeshes()); ++i)
@@ -921,14 +982,12 @@ bool Model::UpdateMesh()
         if (mesh && (_pScene->GetViewModelFlag() & ObjectService::MODEL || _pScene->GetViewModelFlag() & ObjectService::WIREFRAME))
         {
             std::string name = "mesh";
-            char zmienna[33];
+            std::string zmienna;
             itoa(i,zmienna, 10);
             name.append(zmienna);
 
             geode->setName(name);
-
-            if(!_isModelLoaded)
-                geode->addDrawable(mesh);	
+            geode->addDrawable(mesh);	
 
 
             // vertices, texcoords, normals
@@ -941,7 +1000,7 @@ bool Model::UpdateMesh()
 
 
             vertices->reserve(numOfVertices);
-            for (int v = 0; v < numOfVertices; ++v) 
+            for (int v = 0; v < numOfVertices; v++) 
             {
                 // vertex buffer
                 vertices->push_back(Vec3(vData[v].position[0], vData[v].position[1], vData[v].position[2]));
@@ -957,21 +1016,15 @@ bool Model::UpdateMesh()
 
 
             // faces
-            for (int f = 0; f < mesh->mesh_faces->face_count; ++f)
+            for (int f = 0; f < mesh->mesh_faces->face_count; f++)
             {
                 DrawElementsUInt* face = new DrawElementsUInt(_pScene->GetPrimitiveModeFlag(), 0);
                 //  face->reserve(3);
                 face->push_back(mesh->mesh_faces->faces[f].index[0]);
                 face->push_back(mesh->mesh_faces->faces[f].index[1]);
                 face->push_back(mesh->mesh_faces->faces[f].index[2]);
-                if(!_isModelLoaded)
-                {
-                    mesh->addPrimitiveSet(face);
-                }
-                else
-                {
-                    mesh->setPrimitiveSet(f,face);
-                }
+                
+                mesh->addPrimitiveSet(face);
             }
         }
 
@@ -979,21 +1032,64 @@ bool Model::UpdateMesh()
         mesh->dirtyDisplayList();
     }
 
-    if(!_isModelLoaded)
-    {
         _root->addChild(geode);
         _meshes.push_back(geode);
         _isModelLoaded = true;
-    }
 
+    return true;
+}
 
-    // TODO: do przeanalizowania - ³adowanie jednego geode - b¹dz dla karzdego mesha.  szybkoœc dzia³ania/wieksza elastycznoœæ
-    if (_materialId >= 0)
+//--------------------------------------------------------------------------------------------------
+// update mesh
+bool Model::UpdateMesh()
+{
+    // for every mesh
+    for (unsigned int i = 0; i < (((CCustomGroup*)_root.get())->getNumOfMeshes()); i++)
     {
-        if(_pScene->GetViewModelFlag() & ObjectService::MATERIAL)
-            ApplyMaterial(0, _materialId);
-        if(_pScene->GetViewModelFlag() & ObjectService::WIREFRAME)
-            DrawWireFrame(0, _materialId);
+        SMesh* mesh = ((CCustomGroup*)_root.get())->getMesh(i);
+
+        if (mesh && (_pScene->GetViewModelFlag() & ObjectService::MODEL || _pScene->GetViewModelFlag() & ObjectService::WIREFRAME))
+        {
+            // vertices, texcoords, normals
+            int numOfVertices= mesh->mesh_buffer->n / _vertexSize;
+
+            SVertice*  vData        = _meshBufferList[i];
+            Vec3Array* vertices     = new Vec3Array();
+            Vec2Array* texcoords    = new Vec2Array();
+            Vec3Array* normals      = new Vec3Array();
+
+
+            vertices->reserve(numOfVertices);
+            for (int v = 0; v < numOfVertices; v++) 
+            {
+                // vertex buffer
+                vertices->push_back(Vec3(vData[v].position[0], vData[v].position[1], vData[v].position[2]));
+                // texcoords
+                texcoords->push_back(Vec2(fabs(vData[v].texture_vertex[0]), fabs(vData[v].texture_vertex[1])));
+                // normals
+                normals->push_back(Vec3(vData[v].normal[0], vData[v].normal[1], vData[v].normal[2]));
+            }
+
+            mesh->setVertexArray(vertices);
+            mesh->setTexCoordArray(0, texcoords);
+            mesh->setNormalArray(normals);
+
+
+            // faces
+            for (int f = 0; f < mesh->mesh_faces->face_count; f++)
+            {
+                DrawElementsUInt* face = new DrawElementsUInt(_pScene->GetPrimitiveModeFlag(), 0);
+                //  face->reserve(3);
+                face->push_back(mesh->mesh_faces->faces[f].index[0]);
+                face->push_back(mesh->mesh_faces->faces[f].index[1]);
+                face->push_back(mesh->mesh_faces->faces[f].index[2]);
+                    
+                mesh->setPrimitiveSet(f,face);
+            }
+        }
+
+        mesh->dirtyBound();
+        mesh->dirtyDisplayList();
     }
 
     return true;
@@ -1050,3 +1146,9 @@ osg::ref_ptr<osg::Group> Model::GetRoot()
     return _root; 
 }
 
+//--------------------------------------------------------------------------------------------------
+void Model::ResetWireFrame()
+{
+    if (_wireFrameGeode.valid())
+        _root->removeChild(_wireFrameGeode.get());
+}

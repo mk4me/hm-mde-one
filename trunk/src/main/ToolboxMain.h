@@ -18,6 +18,8 @@
 #include "ServiceManager.h"
 #include "Model.h"
 
+class PluginService;
+
 QT_BEGIN_NAMESPACE
 class QObject; 
 class OsgControlWidget;
@@ -55,7 +57,6 @@ public slots:
     void Open();
     void SettingModel();
     void WireFrameView();
-    void NormalView();
     void BoneView();
     void MaterialView();
 
@@ -85,6 +86,7 @@ private:
 
 private:    
     ServiceManager* _pServiceManager;
+    PluginService* _pPluginService;
     Ui::ToolboxMain* _ui;
     QVector<QObject*> _plugins; 
 
@@ -110,7 +112,6 @@ private:
     QAction* _viewBoneAct;
 
     // Model actions
-    QAction* _NoneAct;
     QAction* _points;
     QAction* _lines;
     QAction* _line_strip;
