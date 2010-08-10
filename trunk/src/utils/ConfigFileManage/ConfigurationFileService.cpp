@@ -12,8 +12,8 @@
 
 M_DECLARED_CLASS(ConfigurationFileService, kCLASSID_ConfigurationFileService);
 
-//R.Zowal  to mo¿e  nie jest pamiêciowo optymalne ale dzia³a - TODO - siê zoptymaliuje potem.
-// chwilowo nie u¿ywane R.Zowal
+// to mo¿e  nie jest pamiêciowo optymalne ale dzia³a - TODO - siê zoptymaliuje potem.
+// chwilowo nie u¿ywane 
 
 /** Macro TRIM_CMP( x ) - checks if char is ' ' or '\t' */
 #define TRIM_CMP( x ) ( 0[x] == ' ' || 0[x] == '\t' || 0[x] == 0 )

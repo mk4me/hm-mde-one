@@ -159,7 +159,7 @@ void PluginService::LoadPlugins()
         {
             if(AddPlugIn(getRealPath(itr->c_str(), dataFind.cFileName)))
             {
-                int nie_dupa = 1;
+                int no_tmp = 1;
             }
 
             bMoreFiles = FindNextFile(hFind,&dataFind);
