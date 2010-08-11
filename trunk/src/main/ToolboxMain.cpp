@@ -196,14 +196,14 @@ void ToolboxMain::LoadPlugins()
     {
         osgViewer::Scene* scene = _osgView->getScene(); 
 
-        QDockWidget *tldock = new QDockWidget((*itr)->GetPluginName(), this, Qt::WindowTitleHint); 
+        QDockWidget *tldock = new QDockWidget((*itr)->GetPluginName().c_str(), this, Qt::WindowTitleHint); 
         tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
         addDockWidget(Qt::BottomDockWidgetArea, tldock);
 
         QWidget* widget = (*itr)->GetDockWidget(0);
         tldock->setWidget(widget); 
 
-        QString dockWidgetName = (*itr)->GetPluginName() + widget->objectName();
+        QString dockWidgetName = (*itr)->GetPluginName().c_str() + widget->objectName();
         tldock->setObjectName(dockWidgetName);
 
         (*itr)->SetScene(scene); 
@@ -530,15 +530,31 @@ void ToolboxMain::SettingModel()
     group->SetParametrVal("PerfMaxValue ", "200");
     pCFService->SetParameter("VisualTracker","PerfMaxValue", "300");
     pCFService->SetParameter("PerfMaxValue", "450");
-    ConfigurationGroup* dp = new ConfigurationGroup("_TEST");
-    dp->AddNewParametr("vval", "1000");
-    Parameter* par = new Parameter("cl","ak");
-    Parameter* par2 = new Parameter("standardowo-test","d_d_d");
-    dp->AddNewParamter(*par);
-    dp->AddNewParamter(*par2);
-    pCFService->AddNewConfigurationGroup(*dp);
+    ConfigurationGroup* dupa = new ConfigurationGroup("DUPA_TEST");
+    dupa->AddNewParametr("walek", "1000");
+    Parameter* par = new Parameter("cwel","kozak");
+    Parameter* par2 = new Parameter("standardowo-test","dupa_dupa_dupa");
+    dupa->AddNewParamter(*par);
+    dupa->AddNewParamter(*par2);
+    pCFService->AddNewConfigurationGroup(*dupa);
     pCFService->Save();
 
+//     ConfigurationFile::getInstance().LoadConfig("Config.ini");
+//     std::list<ConfigurationGroup*> groupList = ConfigurationFile::getInstance().GetConfigurationGroupList();
+//     int zmienna = ConfigurationFile::getInstance().GetIntParameter("MemMaxValue");
+//     float f = ConfigurationFile::getInstance().GetIntParameter("TimingMaxValue");
+//     ConfigurationGroup* group = ConfigurationFile::getInstance().GetConfigurationGroup("VisualTracker");
+//     group->SetParametrVal("PerfMaxValue ", "200");
+//     ConfigurationFile::getInstance().SetParameter("VisualTracker","PerfMaxValue", "300");
+//     ConfigurationFile::getInstance().SetParameter("PerfMaxValue", "450");
+//     ConfigurationGroup* dupa = new ConfigurationGroup("DUPA_TEST");
+//     dupa->AddNewParametr("walek", "1000");
+//     Parameter* par = new Parameter("cwel","kozak");
+//     Parameter* par2 = new Parameter("standardowo-test","dupa_dupa_dupa");
+//     dupa->AddNewParamter(*par);
+//     dupa->AddNewParamter(*par2);
+//     ConfigurationFile::getInstance().AddNewConfigurationGroup(*dupa);
+//     ConfigurationFile::getInstance().Save();
 }
 
 //--------------------------------------------------------------------------------------------------

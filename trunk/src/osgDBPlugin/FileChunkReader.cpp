@@ -110,7 +110,7 @@ bool FileChunkReader::LoadMeshVersion1( SModelData* fmesh )
                                 {
                                     mesh->mesh_buffer->vertex_format = new SVertexElement [mesh->mesh_buffer->element_count];
 
-                                    // do zrobienia potem - 
+                                    // do zrobienia potem - dupa
                                     if (fread(mesh->mesh_buffer->vertex_format, mesh->mesh_buffer->element_count * TVERT_DATA_SIZE, 1, m_pMeshFile) != 1)
                                     {	
                                         delete mesh; 
@@ -720,7 +720,7 @@ bool FileChunkReader::LoadMeshVersion2( SModelData* fmesh )
                                                     }
                                                     if(sum != 1.0f)
                                                     {
-                                                        int tmp = 1;
+                                                        int dupa = 1;
                                                     }
 
                                                     for (int b = 0; b < mesh->modifier->skin->skinned_vertices[i].n; ++b)

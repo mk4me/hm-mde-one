@@ -17,6 +17,9 @@
 
 #ifdef __UNIX__
 #include <dlfcn.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <errno.h>
 #endif
 
 #include <stdio.h>
@@ -35,6 +38,25 @@ typedef std::string filenamestring;
 using namespace std;
 M_DECLARED_CLASS(PluginService, kCLASSID_PluginService);
 
+
+#ifdef __UNIX__
+//--------------------------------------------------------------------------------------------------
+int getdir (string dir, vector<string> &files)
+{
+    DIR *dp;
+    struct dirent *dirp;
+    if((dp  = opendir(dir.c_str())) == NULL) {
+        cout << "Error(" << errno << ") opening " << dir << endl;
+        return errno;
+    }
+
+    while ((dirp = readdir(dp)) != NULL) {
+        files.push_back(string(dirp->d_name));
+    }
+    closedir(dp);
+    return 0;
+}
+#endif
 
 //--------------------------------------------------------------------------------------------------
 void PluginService::Clear()
@@ -103,6 +125,7 @@ FilePathList& PluginService::GetPathPlugin()
    return _PluginFileDirList;
 }
 
+
 //--------------------------------------------------------------------------------------------------
 void PluginService::SetPathPlugin()
 {
@@ -119,14 +142,39 @@ void PluginService::SetPathPlugin()
             pathstr.find_last_of(GRANT_FILENAME_TEXT("\\/")));
         convertStringPathIntoFileDirList(GRANT_FILENAME_TO_STRING(executableDir), _PluginFileDirList);
     }
-//     else
-//     {
-//         osg::notify(osg::WARN) << "Could not get application directory "
-//             "using Win32 API. It will not be searched." << std::endl;
-//     }
+    else
+    {
+        std::cout<< "Could not get application directory "
+            "using Win32 API. It will not be searched." << std::endl;
+    }
+
+    //   2. The directory from plugins folder.
+    retval = GRANT_WINDOWS_FUNCT(GetModuleFileName)(NULL, path, size);
+    if (retval != 0 && retval < size)
+    {
+        filenamestring pathstr(path);
+        filenamestring executableDir(pathstr, 0, 
+            pathstr.find_last_of(GRANT_FILENAME_TEXT("\\/")));
+
+        std::string dirpath = executableDir;
+        dirpath.append("\\plugins");
+        convertStringPathIntoFileDirList(GRANT_FILENAME_TO_STRING(dirpath), _PluginFileDirList);
+    }
+    else
+    {
+        std::cout << "Could not get application directory -- plugins folder"
+            "using Win32 API. It will not be searched." << std::endl;
+    }
+
 #endif
 #ifdef __UNIX__
+    //   1. The directory from which the application loaded.
+    std::string dir = string(".");
+    _PluginFileDirList.push_back(dir);
 
+    //   2. The directory from plugins folder.
+    dir = string("plugins/.");
+    _PluginFileDirList.push_back(dir);
 #endif
 }
 
@@ -144,7 +192,7 @@ void PluginService::LoadPlugins()
 #ifdef __WIN32__
     HANDLE hFind;
     WIN32_FIND_DATA dataFind;
-    BOOL bMoreFiles = TRUE;
+    BOOL bMoreFiles;
     char* m_chFileMask;
     m_chFileMask = "*.dll";
 
@@ -152,18 +200,41 @@ void PluginService::LoadPlugins()
     for(FilePathList::const_iterator itr = loadPluginFolderPath.begin(); itr!=loadPluginFolderPath.end(); ++itr)
     {
         GRANT_WINDOWS_FUNCT(SetCurrentDirectory)(itr->c_str());
-
+        bMoreFiles = TRUE;
 
         hFind = FindFirstFile(m_chFileMask,&dataFind);
         while (hFind != INVALID_HANDLE_VALUE && bMoreFiles == TRUE)
         {
             if(AddPlugIn(getRealPath(itr->c_str(), dataFind.cFileName)))
             {
-                int no_tmp = 1;
+                std::cout<< "Plugin Load Complete :   " << dataFind.cFileName << std::endl;
             }
 
             bMoreFiles = FindNextFile(hFind,&dataFind);
         }
+    }
+#endif
+#ifdef __UNIX__
+    for(FilePathList::const_iterator itr = loadPluginFolderPath.begin(); itr!=loadPluginFolderPath.end(); ++itr)
+    {
+        std::vector<string> files = vector<string>();
+
+	    DIR *dp;
+        struct dirent *dirp;
+        if((dp  = opendir((*itr).c_str())) == NULL) 
+	   {
+            cout << "Error(" << errno << ") opening " << (*itr) << endl;
+            return;
+        }
+
+        while ((dirp = readdir(dp)) != NULL) 
+	    {
+	        if(AddPlugIn(getRealPath(itr->c_str(), dirp->d_name)))
+	        {
+		    std::cout<< "Plugin Load Complete :   " << dirp->d_name << std::endl;
+	        }
+        }
+        closedir(dp);
     }
 #endif
 }
@@ -171,7 +242,12 @@ void PluginService::LoadPlugins()
 //--------------------------------------------------------------------------------------------------
 std::string PluginService::getRealPath(const std::string& path, const std::string& fileName)
 {
+#ifdef __WIN32__
     return path + "\\" + fileName;
+#endif
+#ifdef __UNIX__
+    return path + "/" + fileName;
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -193,7 +269,7 @@ bool PluginService::AddPlugIn(std::string pluginPath/*, std::string pluginName*/
     hdll = GRANT_WINDOWS_FUNCT(LoadLibrary)(TEXT(pluginPath.c_str()));		// load the dll
     createPlugin = (pvFunction)(GetProcAddress( hdll, "CreateConrolPluginInstance" ));
 
-    if(!CreateFoo)
+    if(!createPlugin)
         return false;
 
    // QObject *plugin = (QObject*)(CreateFoo());	// get pointer to object
@@ -203,6 +279,7 @@ bool PluginService::AddPlugIn(std::string pluginPath/*, std::string pluginName*/
     iControlPlugin = (IControlPlugin*)(createPlugin());
     if(iControlPlugin)
     {
+        std::cout << "Loading Plugin -- Plugin Name :"<< iControlPlugin->GetPluginName() << std::endl;
         _PluginList.push_back(iControlPlugin);
     }
   
@@ -210,26 +287,34 @@ bool PluginService::AddPlugIn(std::string pluginPath/*, std::string pluginName*/
    // FreeLibrary(hdll);				// free the dll
 #endif
 #ifdef __UNIX__
+
+   int size_of_path = pluginPath.length();
+   if(size_of_path < 4)
+	return false;
+
+   std::string expansion_of_file = pluginPath.substr((size_of_path - 2), size_of_path);
+   if(expansion_of_file != "so")
+	return false;
+
+
    //void* handle = dlopen(pluginPath.c_str(), RTLD_LAZY);
-   void* handle = dlopen(pluginPath.c_str(), RTLD_NOW);
+   void* handle = dlopen(pluginPath.c_str(), RTLD_LAZY);
    if(!handle)
    {
-
-	std::cout << "Error: " << dlerror() << std::endl;
+	std::cout << "Error ladowanie uchwytuuuu: " << dlerror() << std::endl;
         return false;
    }
 
-  
    createPlugin = (pvFunction)dlsym(handle, "CreateControlPluginInstance");
    if(!createPlugin)
    {
-	std::cout << " Error: " << dlerror() << std::endl;
+	std::cout << " Error pobieranie funkcji zwracajacej obiekt: " << dlerror() << std::endl;
         return false;
    }
    iControlPlugin = (IControlPlugin*)(createPlugin());
     if(iControlPlugin)
     {
-	std::cout << "Zaladowal :"<< iControlPlugin->GetPluginName().toStdString() << std::endl;
+	std::cout << "Loading Plugin -- Plugin Name :"<< iControlPlugin->GetPluginName().toStdString() << std::endl;
         _PluginList.push_back(iControlPlugin);
     }
 #endif

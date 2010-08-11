@@ -9,12 +9,33 @@
 #define IMPEXP __declspec(dllimport)
 #endif 	// __dll__
 
-#ifdef __WIN32__
-extern "C" IMPEXP IControlPlugin* CreateConrolPluginInstance();
-#endif
 
-#ifdef __UNIX__
+#ifdef __WIN32__         
+extern "C" IMPEXP IControlPlugin* CreateConrolPluginInstance();  
+
+#define PLUGIN_REGISTER(className)                                          \
+int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void*)      \
+{                                                                           \
+    return 1;                                                               \
+}                                                                           \
+                                                                            \
+IMPEXP IControlPlugin* CreateConrolPluginInstance()                         \
+{                                                                           \
+return (IControlPlugin*)(new className());                                  \
+}        
+
+#endif     
+                   
+                          
+
+#ifdef __UNIX__        
 extern "C" IControlPlugin* CreateControlPluginInstance();
+
+#define PLUGIN_REGISTER(className)                                          \
+extern "C" IControlPlugin* CreateControlPluginInstance()                    \
+{                                                                           \
+    return (IControlPlugin*)(new className());                              \
+}                                                                           
 #endif
 
 #endif	// DLLEXPORTS_H

@@ -14,26 +14,8 @@
 #define __dll__
 #include "DllExports.h"
 
-#ifdef __WIN32__
 
-int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void*)
-{
-    return 1;
-}
-
-IMPEXP IControlPlugin* CreateConrolPluginInstance()
-{
-    return (IControlPlugin*)(new ControlPlugin());
-}
-
-#endif
-
-#ifdef __UNIX__
-extern "C" IControlPlugin* CreateControlPluginInstance()
-{
-	return (IControlPlugin*)(new ControlPlugin());
-}
-#endif
+PLUGIN_REGISTER(ControlPlugin)
 
 //--------------------------------------------------------------------------------------------------
 ControlPlugin::ControlPlugin(void):
@@ -72,9 +54,9 @@ QWidget *ControlPlugin::GetDockWidget( int i )
 }
 
 //--------------------------------------------------------------------------------------------------
-QString ControlPlugin::GetPluginName()
+std::string ControlPlugin::GetPluginName()
 {
-    return QString::fromUtf8("Control wigdet (from plugin ver 2 ;) )"); 
+    return std::string("Control wigdet (from plugin ver ;) )"); 
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -89,4 +71,3 @@ std::string ControlPlugin::GetPluginType()
 {
     return "GRANT-PLUGIN2";
 }
-Q_EXPORT_PLUGIN2(motion_controlplugin, ControlPlugin)

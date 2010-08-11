@@ -7,10 +7,8 @@
 
 class OsgControlWidget; 
 
-class ControlPlugin : public QObject, public IControlPlugin
+class ControlPlugin : public IControlPlugin
 {
-    Q_OBJECT
-    Q_INTERFACES(IControlPlugin)
 public:
     ControlPlugin(void);
     virtual ~ControlPlugin(void);
@@ -19,7 +17,7 @@ public:
     virtual void UnloadPlugin(); 
     virtual int GetDockWidgetsCount(); 
     virtual QWidget *GetDockWidget(int i);
-    virtual QString GetPluginName(); 
+    virtual std::string GetPluginName(); 
     // Tymczasowa funkcja - pozniej zamiast tego bedzie serviceManager !!
     virtual void SetScene(osgViewer::Scene *scene); 
     virtual std::string GetPluginType();
