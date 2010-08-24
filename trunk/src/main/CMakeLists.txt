@@ -286,29 +286,43 @@ QT4_WRAP_CPP(TOOLBOX_SRCS_CXX ${TOOLBOX_SRCS})
 IF(UNIX)
   ADD_EXECUTABLE(toolbox_app ${TOOLBOX_SRCS_CXX})
 ELSEIF(WIN32)
-  ADD_EXECUTABLE(toolbox_app WIN32 ${TOOLBOX_SRCS_CXX})
+  ADD_EXECUTABLE(toolbox_app  ${TOOLBOX_SRCS_CXX})
 ENDIF()
 
 # libs
 TARGET_LINK_LIBRARIES(toolbox_app ${QT_LIBRARIES})
 TARGET_LINK_LIBRARIES(toolbox_app ${TOOLBOX_LIBS_X})
 
-
+install(TARGETS toolbox_app DESTINATION bin )
 IF(WIN32)
 	# post build event
-	ADD_CUSTOM_COMMAND(
-		TARGET toolbox_app
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E comspec ARGS Promote.cmd $(ConfigurationName) Win32
+	#ADD_CUSTOM_COMMAND(
+	#	TARGET toolbox_app
+	#	POST_BUILD
+	#	COMMAND ${CMAKE_COMMAND} -E comspec ARGS Promote.cmd $(ConfigurationName) Win32
 		#COMMAND ${CMAKE_COMMAND} -E copy ARGS $(ConfigurationName)/toolbox_app.exe ../../bin/Win32/$(ConfigurationName)/
-	)
+	#)
 	
 	#prefix hack
-	SET_TARGET_PROPERTIES(toolbox_app PROPERTIES
-		PREFIX ../../../bin/Win32/$(ConfigurationName)/
-		DEBUG_POSTFIX _d
-	)
-	
+	#SET_TARGET_PROPERTIES(toolbox_app PROPERTIES
+	#	PREFIX ../../../bin/Win32/$(ConfigurationName)/
+	#	DEBUG_POSTFIX _d
+	#)
+
+	set(DLL_FILES ../../lib/win32/release/osg/osg66-osg.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/osg/osg66-osgDB.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/osg/osg66-osgGA.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/osg/osg66-osgQT.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/osg/osg66-osgText.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/osg/osg66-osgUtil.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/osg/osg66-osgViewer.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/osg/osg66-osgWidget.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/osg/ot12-OpenThreads.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/QT/QtGui4.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/QT/QtCore4.dll)
+	set(DLL_FILES ${DLL_FILES} ../../lib/win32/release/QT/QtOpenGL4.dll)
+
+	install(FILES ${DLL_FILES} DESTINATION bin)
 ELSEIF(UNIX)
 	# post build event
 	ADD_CUSTOM_COMMAND(

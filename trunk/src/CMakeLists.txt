@@ -28,6 +28,8 @@ FIND_PACKAGE(Qt4 REQUIRED)
 # SUBDIRS(OsgExtensions ControlPlugin osgDBPlugin Toolbox)
 SUBDIRS(anim osgDBPlugin main)
 
+
+
 #---------------------------------------------------
 
 option(ENABLE_CPACK "Set on to enable CPack" OFF)

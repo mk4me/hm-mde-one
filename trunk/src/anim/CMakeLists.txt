@@ -123,15 +123,17 @@ TARGET_LINK_LIBRARIES(ControlPlugin ${CONTROLPLUGIN_LIBS_X})
 
 IF(WIN32)
 	# post build event
-	ADD_CUSTOM_COMMAND(
-		TARGET ControlPlugin
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin
-		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32
-		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)
-		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)/plugins
-		COMMAND ${CMAKE_COMMAND} -E copy ARGS $(ConfigurationName)/ControlPlugin.dll ../../bin/Win32/$(ConfigurationName)/plugins/
-	)
+	#ADD_CUSTOM_COMMAND(
+	#	TARGET ControlPlugin
+	#	POST_BUILD
+	#	COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin
+	#	COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32
+	#	COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)
+	#	COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)/plugins
+	#	COMMAND ${CMAKE_COMMAND} -E copy ARGS $(ConfigurationName)/ControlPlugin.dll ../../bin/Win32/$(ConfigurationName)/plugins/
+	#)
+
+install(TARGETS ControlPlugin DESTINATION bin/plugins)
 ELSEIF(UNIX)
 	# post build event
 	ADD_CUSTOM_COMMAND(

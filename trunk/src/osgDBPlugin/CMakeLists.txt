@@ -109,21 +109,21 @@ TARGET_LINK_LIBRARIES(osgDB_tbs ${OSGDBPLUGIN_LIBS_X})
 
 IF(WIN32)
 	# post build event
-	ADD_CUSTOM_COMMAND(
-		TARGET osgDB_tbs
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin
-		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32
-		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)
-		COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)/osgPlugins-2.8.2
-	)
+	#ADD_CUSTOM_COMMAND(
+	#	TARGET osgDB_tbs
+	#	POST_BUILD
+	#	COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin
+	#	COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32
+	#	COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)
+	#	COMMAND ${CMAKE_COMMAND} -E make_directory ../../bin/Win32/$(ConfigurationName)/osgPlugins-2.8.2
+	#)
 	
 	#prefix hack
-	SET_TARGET_PROPERTIES(osgDB_tbs PROPERTIES
-		PREFIX ../../../bin/Win32/$(ConfigurationName)/osgPlugins-2.8.2/
-		DEBUG_POSTFIX d
-	)
-	
+	#SET_TARGET_PROPERTIES(osgDB_tbs PROPERTIES
+	#	PREFIX ../../../bin/Win32/$(ConfigurationName)/osgPlugins-2.8.2/
+	#	DEBUG_POSTFIX d
+	#)
+install(TARGETS osgDB_tbs DESTINATION bin/osgPlugins-2.8.2 )	
 ELSEIF(UNIX)
 	# post build event
 	ADD_CUSTOM_COMMAND(
