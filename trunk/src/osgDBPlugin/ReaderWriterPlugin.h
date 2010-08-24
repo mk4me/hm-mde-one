@@ -1,6 +1,6 @@
 #ifndef READER_WRITER_PLUGIN_H
 #define READER_WRITER_PLUGIN_H
-
+#include "ModelData.h"
 #include <osg/Notify>
 #include <osg/Group>
 #include <osg/Geode>
@@ -34,7 +34,7 @@
 #include <assert.h>
 
 #include "FModel.h"
-#include "ModelData.h"
+
 #include "FAnimation.h"
 #include "FileChunkReader.h"
 
