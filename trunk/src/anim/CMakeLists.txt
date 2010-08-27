@@ -44,10 +44,10 @@ IF(UNIX)
 		GLU
 		GL
 		pthread
-		osg
-		osgViewer
-		osgSim
-		osgUtil	
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosg.so
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosgViewer.so
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosgSim.so
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosgUtil.so	
 	)
 
 ELSEIF(WIN32)
@@ -121,6 +121,7 @@ ENDIF()
 TARGET_LINK_LIBRARIES(ControlPlugin ${QT_LIBRARIES})
 TARGET_LINK_LIBRARIES(ControlPlugin ${CONTROLPLUGIN_LIBS_X})
 
+install(TARGETS ControlPlugin DESTINATION bin/plugins)
 IF(WIN32)
 	# post build event
 	#ADD_CUSTOM_COMMAND(
@@ -133,12 +134,11 @@ IF(WIN32)
 	#	COMMAND ${CMAKE_COMMAND} -E copy ARGS $(ConfigurationName)/ControlPlugin.dll ../../bin/Win32/$(ConfigurationName)/plugins/
 	#)
 
-install(TARGETS ControlPlugin DESTINATION bin/plugins)
 ELSEIF(UNIX)
 	# post build event
-	ADD_CUSTOM_COMMAND(
-		TARGET ControlPlugin
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy ARGS libControlPlugin.so ../../bin/Linux/plugins/ControlPlugin.so
-	)
+#	ADD_CUSTOM_COMMAND(
+##		TARGET ControlPlugin
+#		POST_BUILD
+#		COMMAND ${CMAKE_COMMAND} -E copy ARGS libControlPlugin.so ../../bin/Linux/plugins/ControlPlugin.so
+#	)
 ENDIF()

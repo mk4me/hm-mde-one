@@ -35,10 +35,10 @@ IF(UNIX)
 		dl
 		m
 		pthread
-		osg
-		osgViewer
-		osgSim
-		osgUtil
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosg.so
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosgViewer.so
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosgSim.so
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosgUtil.so	
 	)
 
 ELSEIF(WIN32)
@@ -106,7 +106,7 @@ ENDIF()
 
 # libs
 TARGET_LINK_LIBRARIES(osgDB_tbs ${OSGDBPLUGIN_LIBS_X})
-
+install(TARGETS osgDB_tbs DESTINATION bin/osgPlugins-2.8.2 )	
 IF(WIN32)
 	# post build event
 	#ADD_CUSTOM_COMMAND(
@@ -123,13 +123,13 @@ IF(WIN32)
 	#	PREFIX ../../../bin/Win32/$(ConfigurationName)/osgPlugins-2.8.2/
 	#	DEBUG_POSTFIX d
 	#)
-install(TARGETS osgDB_tbs DESTINATION bin/osgPlugins-2.8.2 )	
+
 ELSEIF(UNIX)
 	# post build event
-	ADD_CUSTOM_COMMAND(
-		TARGET osgDB_tbs
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy ARGS libosgDB_tbs.so ../../bin/Linux/osgPlugins-2.8.2/osgdb_tbs.so
-	)
+	#ADD_CUSTOM_COMMAND(
+	#	TARGET osgDB_tbs
+	#	POST_BUILD
+	#	COMMAND ${CMAKE_COMMAND} -E copy ARGS libosgDB_tbs.so ../../bin/Linux/osgPlugins-2.8.2/osgdb_tbs.so
+	#)
 ENDIF()
 

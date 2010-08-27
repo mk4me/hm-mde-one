@@ -91,7 +91,7 @@ ADD_LIBRARY(osgext ${OSG_EXTENSIONS_SRCS_CXX})
 
 # libs
 TARGET_LINK_LIBRARIES(osgext ${OSG_EXTENSIONS_LIBS_X})
-
+install(TARGETS osgext DESTINATION bin)
 IF(WIN32)
 	# post build event
 	#ADD_CUSTOM_COMMAND(
@@ -99,7 +99,7 @@ IF(WIN32)
 	#	POST_BUILD
 	#	COMMAND ${CMAKE_COMMAND} -E copy ARGS $(ProjectDir)$(ConfigurationName)/osgext.lib $(ProjectDir)../lib
 	#)
-install(TARGETS osgext DESTINATION bin)
+
 #ELSEIF(UNIX)
 #	# post build event
 #	ADD_CUSTOM_COMMAND(

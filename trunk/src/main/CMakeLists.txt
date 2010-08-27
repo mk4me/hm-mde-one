@@ -82,10 +82,10 @@ IF(UNIX)
 		GLU
 		GL
 		pthread
-		osg
-		osgViewer
-		osgSim
-		osgUtil
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosg.so
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosgViewer.so
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosgSim.so
+		${PROJECT_SOURCE_DIR}/../../lib/linux/release/osg/libosgUtil.so	
 	)
 
 ELSEIF(WIN32)
@@ -325,10 +325,10 @@ IF(WIN32)
 	install(FILES ${DLL_FILES} DESTINATION bin)
 ELSEIF(UNIX)
 	# post build event
-	ADD_CUSTOM_COMMAND(
-		TARGET toolbox_app
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy ARGS toolbox_app ../../bin/Linux/toolbox_app
-	)
+	#ADD_CUSTOM_COMMAND(
+	#	TARGET toolbox_app
+	#	POST_BUILD
+	#	COMMAND ${CMAKE_COMMAND} -E copy ARGS toolbox_app ../../bin/#Linux/toolbox_app
+#	)
 ENDIF()
 

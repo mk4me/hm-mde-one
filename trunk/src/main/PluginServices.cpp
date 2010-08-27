@@ -314,7 +314,8 @@ bool PluginService::AddPlugIn(std::string pluginPath/*, std::string pluginName*/
    iControlPlugin = (IControlPlugin*)(createPlugin());
     if(iControlPlugin)
     {
-	std::cout << "Loading Plugin -- Plugin Name :"<< iControlPlugin->GetPluginName().toStdString() << std::endl;
+//powoduje blad pod linuxem
+//	std::cout << "Loading Plugin -- Plugin Name :"<< iControlPlugin->GetPluginName().toStdString() << std::endl;
         _PluginList.push_back(iControlPlugin);
     }
 #endif
