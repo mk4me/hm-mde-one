@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="frs.src" default="build">
+	<target name="build">
+		<!-- uruchamiamy kompilacje projektu C++ -->
+		<vcc srcfile="ColladaToFModel.sln" project="dae2fmodel" debug="${debug}" />
+	</target>
+</project>
+
