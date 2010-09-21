@@ -49,13 +49,6 @@ SET(TOOLBOX_SRCS
 )
 
 # UI
-SET(TOOLBOX_UI
-	UI/Console.ui
-	UI/TimeLine.ui
-    UI/toolboxmaindeffile.ui
-    UI/GridWidget.ui
-)
-
 IF(UNIX)
 
 	# .cxx sources
@@ -84,11 +77,6 @@ IF(UNIX)
 		../OsgExtensions/Model.cpp
 		../OsgExtensions/Mesh.cpp
 		../OsgExtensions/Intersection.cpp
-		../utils/ConfigFileManage/ConfigBuffer.cpp
-		../utils/ConfigFileManage/ConfigurationGroup.cpp
-		../utils/ConfigFileManage/FileReader.cpp
-		../utils/ConfigFileManage/Parameter.cpp
-		../utils/ConfigFileManage/ConfigurationFileService.cpp
 		
 		../OsgExtensions/SkeletonNode.cpp
 		../OsgExtensions/AnimationNode.cpp
@@ -109,7 +97,6 @@ IF(UNIX)
 		UI
 		/usr/X11R6/include
 		../osgext/
-		../utils/ConfigFileManage
 		../../include/osg
 	)
 
@@ -154,11 +141,6 @@ ELSEIF(WIN32)
 		../OsgExtensions/Model.cpp
 		../OsgExtensions/Mesh.cpp
 		../OsgExtensions/Intersection.cpp
-		../utils/ConfigFileManage/ConfigBuffer.cpp
-		../utils/ConfigFileManage/ConfigurationGroup.cpp
-		../utils/ConfigFileManage/FileReader.cpp
-		../utils/ConfigFileManage/Parameter.cpp
-		../utils/ConfigFileManage/ConfigurationFileService.cpp
 		
 		../OsgExtensions/SkeletonNode.cpp
 		../OsgExtensions/AnimationNode.cpp
@@ -208,13 +190,7 @@ ELSEIF(WIN32)
 		../OsgExtensions/tinyXML/tinystr.h
 		../OsgExtensions/tinyXML/tinyxml.h
 		../OsgExtensions/FModel.h
-		
-		../utils/ConfigFileManage/ConfigBuffer.h
-		../utils/ConfigFileManage/ConfigurationGroup.h
-		../utils/ConfigFileManage/FileReader.h
-		../utils/ConfigFileManage/Parameter.h
-		../utils/ConfigFileManage/IConfigManager.h
-		../utils/ConfigFileManage/ConfigurationFileService.h
+	
 	)
 
 	# INCLUDES
@@ -229,6 +205,8 @@ ELSEIF(WIN32)
 		../OsgExtensions/
 		../../include/osg
 	)
+	
+	message("${QT_LIBRARIES}")
 
 	# LIBS
 	SET(TOOLBOX_LIBS_X
@@ -300,24 +278,10 @@ ELSEIF(WIN32)
 		../anim/Animation.cpp
 		)
 		
-	
-	SOURCE_GROUP("Header Files\\ConfigFileManage" FILES  
-		../utils/ConfigFileManage/ConfigBuffer.h
-		../utils/ConfigFileManage/ConfigurationGroup.h
-		../utils/ConfigFileManage/FileReader.h
-		../utils/ConfigFileManage/Parameter.h
-		../utils/ConfigFileManage/IConfigManager.h
-		)
-		
-	SOURCE_GROUP("Source Files\\ConfigFileManage" FILES  
-		../utils/ConfigFileManage/ConfigBuffer.cpp
-		../utils/ConfigFileManage/ConfigurationGroup.cpp
-		../utils/ConfigFileManage/FileReader.cpp
-		../utils/ConfigFileManage/Parameter.cpp
-		)
+
+
 		
 	SOURCE_GROUP("Header Files\\Services" FILES  
-		../utils/ConfigFileManage/ConfigurationFileService.h
 		../TEST/AnimationService.h
 		ServiceManager.h
 		PluginServices.h
@@ -328,7 +292,6 @@ ELSEIF(WIN32)
 	)
 	
 	SOURCE_GROUP("Source Files\\Services" FILES  
-		../utils/ConfigFileManage/ConfigurationFileService.cpp
 		../TEST/AnimationService.cpp
 		ServiceManager.cpp
 		PluginServices.cpp
@@ -381,23 +344,24 @@ ENDIF()
 
 INCLUDE_DIRECTORIES(${TOOLBOX_INCLUDE_X})
 
-# build ui_XXX files from the XML-style .ui files
-QT4_WRAP_UI(TOOLBOX_SRCS_CXX ${TOOLBOX_UI})
-# this moc's the above variable and appends to the cxx sources
+message("${TOOLBOX_SRCS}")
+message("${TOOLBOX_SRCS_CXX}")
 QT4_WRAP_CPP(TOOLBOX_SRCS_CXX ${TOOLBOX_SRCS})
+message("${TOOLBOX_SRCS_CXX}")
+
 
 
 
 # srcs
 IF(UNIX)
-  ADD_EXECUTABLE(toolbox_app ${TOOLBOX_SRCS_CXX})
+  #ADD_EXECUTABLE(toolbox_app ${TOOLBOX_SRCS_CXX})
 ELSEIF(WIN32)
-  ADD_EXECUTABLE(toolbox_app WIN32 ${TOOLBOX_SRCS_CXX})
+  #ADD_EXECUTABLE(toolbox_app WIN32 ${TOOLBOX_SRCS_CXX})
 ENDIF()
 
 # libs
-TARGET_LINK_LIBRARIES(toolbox_app ${QT_LIBRARIES})
-TARGET_LINK_LIBRARIES(toolbox_app ${TOOLBOX_LIBS_X})
+#TARGET_LINK_LIBRARIES(toolbox_app ${QT_LIBRARIES})
+#TARGET_LINK_LIBRARIES(toolbox_app ${TOOLBOX_LIBS_X})
 
 
 
@@ -416,10 +380,10 @@ IF(WIN32)
 	copy_files(../../binaries/win32/osg/debug ../../bin/Win32/Debug)
 	
 	#prefix hack
-	SET_TARGET_PROPERTIES(toolbox_app PROPERTIES
-		PREFIX ../../../bin/Win32/$(ConfigurationName)/
-		DEBUG_POSTFIX _d
-	)
+	#SET_TARGET_PROPERTIES(toolbox_app PROPERTIES
+	#	PREFIX ../../../bin/Win32/$(ConfigurationName)/
+	#	DEBUG_POSTFIX _d
+	#)
 	
 ELSEIF(UNIX)
 	# post build event

@@ -2,9 +2,9 @@
 #define ANIMATION_H
 
 
-#include "../include/ISkeletonNode.h"
-#include "../include/IAnimationNode.h"
-#include "../include/IAnimationGroup.h"
+#include <core/ISkeletonNode.h>
+#include <core/IAnimationNode.h>
+#include <core/IAnimationGroup.h>
 
 
 class IModel;

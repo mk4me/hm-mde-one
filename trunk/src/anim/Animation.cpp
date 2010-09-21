@@ -1,6 +1,6 @@
 #include "Animation.h"
 
-#include "../include/IServiceManager.h"
+#include <core/IServiceManager.h>
 #include "AnimationService.h"
 
 using namespace std;

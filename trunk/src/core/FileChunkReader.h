@@ -90,16 +90,16 @@ class Model;
 //-------------------------------------------------------------------------------
 enum sizes
 {
-    INT_SIZE = 4,
+    SIZES_INT_SIZE = 4,
     SHORT_INT_SIZE = 2,
     WORD_SIZE = 2,
-    FLOAT_SIZE = 4,
-    DOUBLE_SIZE = 8,
-    CHAR_SIZE = 1,
+    SIZES_FLOAT_SIZE = 4,
+    SIZES_DOUBLE_SIZE = 8,
+    SIZES_CHAR_SIZE = 1,
     // rozmiary pojedynczych danych w kawa³kach
-    VERT_DATA_SIZE = 12,	  // 3*FLOAT_SIZE
-    NORMAL_DATA_SIZE = 12,	// 3*FLOAT_SIZE
-    TVERT_DATA_SIZE = 8,	  // 2*FLOAT_SIZE
+    VERT_DATA_SIZE = 12,	  // 3*SIZES_FLOAT_SIZE
+    NORMAL_DATA_SIZE = 12,	// 3*SIZES_FLOAT_SIZE
+    TVERT_DATA_SIZE = 8,	  // 2*SIZES_FLOAT_SIZE
     FACE_DATA_SIZE = 40,	  // 3 indeksy na wierz, 3 na TVerts, 3 na normalne, 
     // 1 na ID Materia³u (wszystko to s¹ DWORD'y - 4 bajty)
     HEADER_SIZE = 6,		    // ID + chunk size (2+4)

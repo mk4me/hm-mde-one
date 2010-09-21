@@ -1,7 +1,7 @@
 #include "Intersection.h"
 
 #include <math.h>
-#include "../include/Vec3.h"
+#include <core/Vec3.h>
 
 //
 // CheckLineBox Helper Functions

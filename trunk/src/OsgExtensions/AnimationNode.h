@@ -3,7 +3,7 @@
 
 
 #include <osg/PositionAttitudeTransform>
-#include "IAnimationNode.h"
+#include <core/IAnimationNode.h>
 
 
 //////////////////////////////////////////////////////////////////////////

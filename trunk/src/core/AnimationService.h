@@ -6,8 +6,8 @@
 #include <string>
 
 #include "Animation.h"
-#include "GlobalServicesIDs.h"
-#include "SimpleFunctors.h"
+#include <core/GlobalServicesIDs.h>
+#include <core/SimpleFunctors.h>
 
 #include <osg/Vec3d>
 #include <osg/Quat>

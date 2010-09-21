@@ -19,7 +19,7 @@
 #include <iostream>
 #include <osgGA/TerrainManipulator>
 
-#include <QDir>
+#include <QtCore/QDir>
 
 #include "ConsoleWidget.h"
 #include "Logger.h"
@@ -30,7 +30,7 @@
 #include "ModelService.h"
 #include "UserInterfaceService.h"
 #include "RenderService.h"
-#include "../utils/ConfigFileManage/ConfigurationFileService.h"
+#include "config/ConfigurationFileService.h"
 
 #include <iostream>
 

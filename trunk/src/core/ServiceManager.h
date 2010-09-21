@@ -1,8 +1,8 @@
 #ifndef SERVICE_MANAGER_H
 #define SERVICE_MANAGER_H
 
-#include "../include/IServiceManager.h"
-#include "../include/IBaseService.h"
+#include <core/IServiceManager.h>
+#include <core/IBaseService.h>
 #include <map>
 
 class ServiceManager: public IServiceManager

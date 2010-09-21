@@ -1,8 +1,8 @@
 #ifndef ANIMATION_PLUGIN_H
 #define ANIMATION_PLUGIN_H
 
-#include <QObject>
-#include <PluginsInterfaces.h>
+#include <QtCore/QObject>
+#include <core/PluginsInterfaces.h>
 #include <vector>
 #include <string>
 

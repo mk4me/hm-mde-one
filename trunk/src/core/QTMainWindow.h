@@ -1,13 +1,13 @@
 #ifndef QT_MAINWINDOW_H
 #define QT_MAINWINDOW_H
 
-#include "../include/QtMainWindowInterface.h"
+#include <core/QtMainWindowInterface.h>
 #include <QtGui/QMainWindow>
-#include <QtGui>
-#include <QMenu>
-#include <QDir>
-#include <QAction>
-#include <QVector>
+#include <QtGui/QtGui>
+#include <QtGui/QMenu>
+#include <QtCore/QDir>
+#include <QtGui/QAction>
+#include <QtCore/QVector>
 
 #include <map>
 

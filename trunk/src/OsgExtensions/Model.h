@@ -7,8 +7,8 @@
 
 #include <osg/PositionAttitudeTransform>
 #include <osg/Group>
-#include "../include/IModel.h"
-#include "../include/IMesh.h"
+#include <core/IModel.h>
+#include <core/IMesh.h>
 
 class Mesh;
 class ISkeletonNode;

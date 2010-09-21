@@ -3,8 +3,8 @@
 #include "Intersection.h"
 #include "DataTransfer.h"
 #include "Enumerators.h"
-#include "../include/Vec3.h"
-#include "../include/ModelData.h"
+#include <core/Vec3.h>
+#include <core/ModelData.h>
 
 #include <osg/PrimitiveSet>
 
@@ -104,19 +104,19 @@ size_t Mesh::GetVertexSize()
 		switch(m_pSementicVertexFormat[i].type)
 		{
 		case Position: 
-			size = 3 * FLOAT_SIZE; 
+			size = 3 * SIZES_FLOAT_SIZE; 
 			break; 
 		case Normal: 
-			size = 3 * FLOAT_SIZE; 
+			size = 3 * SIZES_FLOAT_SIZE; 
 			break; 
 		case Binormal: 
-			size = 3 * FLOAT_SIZE; 
+			size = 3 * SIZES_FLOAT_SIZE; 
 			break; 
 		case Tangent: 
-			size = 3 * FLOAT_SIZE; 
+			size = 3 * SIZES_FLOAT_SIZE; 
 			break; 
 		case TexCoord0: 
-			size = 2 * FLOAT_SIZE; 
+			size = 2 * SIZES_FLOAT_SIZE; 
 			break; 
 		default:
 			size = 0; 
@@ -157,15 +157,15 @@ bool Mesh::Inicialize()
             switch(m_pSementicVertexFormat[j].type)
             {
             case Position: 
-                size = 3 * FLOAT_SIZE;
+                size = 3 * SIZES_FLOAT_SIZE;
 
-                memcpy (&m_pVerts[k]._v[0], &m_pBuffer[indexComplexBuffor], FLOAT_SIZE);
-                memcpy (&m_pVerts[k]._v[1], &m_pBuffer[indexComplexBuffor + FLOAT_SIZE], FLOAT_SIZE);
-                memcpy (&m_pVerts[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*FLOAT_SIZE)], FLOAT_SIZE);
+                memcpy (&m_pVerts[k]._v[0], &m_pBuffer[indexComplexBuffor], SIZES_FLOAT_SIZE);
+                memcpy (&m_pVerts[k]._v[1], &m_pBuffer[indexComplexBuffor + SIZES_FLOAT_SIZE], SIZES_FLOAT_SIZE);
+                memcpy (&m_pVerts[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*SIZES_FLOAT_SIZE)], SIZES_FLOAT_SIZE);
 
-                memcpy (&m_pRootVerts[k]._v[0], &m_pBuffer[indexComplexBuffor], FLOAT_SIZE);
-                memcpy (&m_pRootVerts[k]._v[1], &m_pBuffer[indexComplexBuffor + FLOAT_SIZE], FLOAT_SIZE);
-                memcpy (&m_pRootVerts[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*FLOAT_SIZE)], FLOAT_SIZE);
+                memcpy (&m_pRootVerts[k]._v[0], &m_pBuffer[indexComplexBuffor], SIZES_FLOAT_SIZE);
+                memcpy (&m_pRootVerts[k]._v[1], &m_pBuffer[indexComplexBuffor + SIZES_FLOAT_SIZE], SIZES_FLOAT_SIZE);
+                memcpy (&m_pRootVerts[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*SIZES_FLOAT_SIZE)], SIZES_FLOAT_SIZE);
 
                 vertices->push_back(m_pVerts[k]);
 
@@ -173,15 +173,15 @@ bool Mesh::Inicialize()
                 break; 
 
             case Normal: 
-                size = 3 * FLOAT_SIZE; 
+                size = 3 * SIZES_FLOAT_SIZE; 
 
-                memcpy (&m_pVertNormals[k]._v[0], &m_pBuffer[indexComplexBuffor], FLOAT_SIZE);
-                memcpy (&m_pVertNormals[k]._v[1], &m_pBuffer[indexComplexBuffor + FLOAT_SIZE], FLOAT_SIZE);
-                memcpy (&m_pVertNormals[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*FLOAT_SIZE)], FLOAT_SIZE);
+                memcpy (&m_pVertNormals[k]._v[0], &m_pBuffer[indexComplexBuffor], SIZES_FLOAT_SIZE);
+                memcpy (&m_pVertNormals[k]._v[1], &m_pBuffer[indexComplexBuffor + SIZES_FLOAT_SIZE], SIZES_FLOAT_SIZE);
+                memcpy (&m_pVertNormals[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*SIZES_FLOAT_SIZE)], SIZES_FLOAT_SIZE);
 
-                memcpy (&m_pRootVertNormals[k]._v[0], &m_pBuffer[indexComplexBuffor], FLOAT_SIZE);
-                memcpy (&m_pRootVertNormals[k]._v[1], &m_pBuffer[indexComplexBuffor + FLOAT_SIZE], FLOAT_SIZE);
-                memcpy (&m_pRootVertNormals[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*FLOAT_SIZE)], FLOAT_SIZE);
+                memcpy (&m_pRootVertNormals[k]._v[0], &m_pBuffer[indexComplexBuffor], SIZES_FLOAT_SIZE);
+                memcpy (&m_pRootVertNormals[k]._v[1], &m_pBuffer[indexComplexBuffor + SIZES_FLOAT_SIZE], SIZES_FLOAT_SIZE);
+                memcpy (&m_pRootVertNormals[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*SIZES_FLOAT_SIZE)], SIZES_FLOAT_SIZE);
 
                 normals->push_back(m_pVertNormals[k]);
 
@@ -189,30 +189,30 @@ bool Mesh::Inicialize()
                 break; 
 
             case Binormal: 
-                size = 3 * FLOAT_SIZE; 
+                size = 3 * SIZES_FLOAT_SIZE; 
 
-                memcpy (&m_pBiNormals[k]._v[0], &m_pBuffer[indexComplexBuffor], FLOAT_SIZE);
-                memcpy (&m_pBiNormals[k]._v[1], &m_pBuffer[indexComplexBuffor + FLOAT_SIZE], FLOAT_SIZE);
-                memcpy (&m_pBiNormals[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*FLOAT_SIZE)], FLOAT_SIZE);
+                memcpy (&m_pBiNormals[k]._v[0], &m_pBuffer[indexComplexBuffor], SIZES_FLOAT_SIZE);
+                memcpy (&m_pBiNormals[k]._v[1], &m_pBuffer[indexComplexBuffor + SIZES_FLOAT_SIZE], SIZES_FLOAT_SIZE);
+                memcpy (&m_pBiNormals[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*SIZES_FLOAT_SIZE)], SIZES_FLOAT_SIZE);
 
                 indexComplexBuffor += size;
                 break; 
 
             case Tangent: 
-                size = 3 * FLOAT_SIZE; 
+                size = 3 * SIZES_FLOAT_SIZE; 
 
-                memcpy (&m_pTangent[k]._v[0], &m_pBuffer[indexComplexBuffor], FLOAT_SIZE);
-                memcpy (&m_pTangent[k]._v[1], &m_pBuffer[indexComplexBuffor + FLOAT_SIZE], FLOAT_SIZE);
-                memcpy (&m_pTangent[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*FLOAT_SIZE)], FLOAT_SIZE);
+                memcpy (&m_pTangent[k]._v[0], &m_pBuffer[indexComplexBuffor], SIZES_FLOAT_SIZE);
+                memcpy (&m_pTangent[k]._v[1], &m_pBuffer[indexComplexBuffor + SIZES_FLOAT_SIZE], SIZES_FLOAT_SIZE);
+                memcpy (&m_pTangent[k]._v[2], &m_pBuffer[indexComplexBuffor + (2*SIZES_FLOAT_SIZE)], SIZES_FLOAT_SIZE);
 
                 indexComplexBuffor += size;
                 break; 
 
             case TexCoord0: 
-                size = 2 * FLOAT_SIZE; 
+                size = 2 * SIZES_FLOAT_SIZE; 
 
-                memcpy (&m_pUVs[k].x, &m_pBuffer[indexComplexBuffor], FLOAT_SIZE);
-                memcpy (&m_pUVs[k].y, &m_pBuffer[indexComplexBuffor + FLOAT_SIZE], FLOAT_SIZE);
+                memcpy (&m_pUVs[k].x, &m_pBuffer[indexComplexBuffor], SIZES_FLOAT_SIZE);
+                memcpy (&m_pUVs[k].y, &m_pBuffer[indexComplexBuffor + SIZES_FLOAT_SIZE], SIZES_FLOAT_SIZE);
                 indexComplexBuffor += size;
                 break; 
 

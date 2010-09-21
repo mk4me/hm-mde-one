@@ -3,8 +3,8 @@
 
 #include <osg/Group>
 #include <osg/PositionAttitudeTransform>
-#include "../include/IAnimationGroup.h"
-#include "../include/ISkeletonNode.h"
+#include <core/IAnimationGroup.h>
+#include <core/ISkeletonNode.h>
 
 
 //--------------------------------------------------------------------------------------------------

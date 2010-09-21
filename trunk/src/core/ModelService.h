@@ -4,8 +4,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../include/GlobalServicesIDs.h"
-#include "../include/SimpleFunctors.h"
+#include <core/GlobalServicesIDs.h>
+#include <core/SimpleFunctors.h>
 
 class Model;
 class ServiceManager;

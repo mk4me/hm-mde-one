@@ -2,17 +2,17 @@
 #define TOOLBOXMAIN_H
 
 #include <QtGui/QMainWindow>
-#include <QtGui>
-#include <QMenu>
-#include <QAction>
+#include <QtGui/QtGui>
+#include <QtGui/QMenu>
+#include <QtGui/QAction>
 #include <osg/Node>
 #include <osg/PositionAttitudeTransform>
 #include <osg/Geometry>
 
 #include <streambuf>
-#include <QVector>
+#include <QtCore/QVector>
 
-#include <PluginsInterfaces.h>
+#include <core/PluginsInterfaces.h>
 
 
 class PluginService;

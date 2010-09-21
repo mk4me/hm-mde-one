@@ -8,7 +8,7 @@
 
 #include "../OsgExtensions/Model.h"
 #include "../OsgExtensions/Mesh.h"
-#include "../OsgExtensions/Vec3.h"
+#include <core/Vec3.h>
 #include "Animation.h"
 
 

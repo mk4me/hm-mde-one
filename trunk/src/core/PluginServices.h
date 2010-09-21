@@ -4,17 +4,17 @@
 
 #include <string>
 #include <deque>
-#include <PluginsInterfaces.h>
+#include <core/PluginsInterfaces.h>
 
 #include <QtGui/QMainWindow>
-#include <QtGui>
-#include <QMenu>
-#include <QDir>
-#include <QAction>
-#include <QVector>
+#include <QtGui/QtGui>
+#include <QtGui/QMenu>
+#include <QtCore/QDir>
+#include <QtGui/QAction>
+#include <QtCore/QVector>
 
-#include "../include/GlobalServicesIDs.h"
-#include "../include/SimpleFunctors.h"
+#include <core/GlobalServicesIDs.h>
+#include <core/SimpleFunctors.h>
 #include "ToolboxMain.h"
 
 typedef std::deque<std::string> FilePathList;

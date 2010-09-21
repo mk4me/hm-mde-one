@@ -3,18 +3,18 @@
 
 
 #include <string>
-#include <PluginsInterfaces.h>
+#include <core/PluginsInterfaces.h>
 
 #include <QtGui/QMainWindow>
-#include <QtGui>
-#include <QMenu>
-#include <QDir>
-#include <QAction>
-#include <QVector>
+#include <QtGui/QtGui>
+#include <QtGui/QMenu>
+#include <QtCore/QDir>
+#include <QtGui/QAction>
+#include <QtCore/QVector>
 
-#include "../include/GlobalServicesIDs.h"
-#include "../include/SimpleFunctors.h"
-#include "../include/UserInterface.h"
+#include <core/GlobalServicesIDs.h>
+#include <core/SimpleFunctors.h>
+#include <core/UserInterface.h>
 
 
 //--------------------------------------------------------------------------------------------------

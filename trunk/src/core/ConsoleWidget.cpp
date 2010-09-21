@@ -1,5 +1,5 @@
 #include "ConsoleWidget.h"
-#include <QScrollBar>
+#include <QtGui/QScrollBar>
 
 ConsoleWidget::ConsoleWidget(void): 
   Ui::Console()

@@ -1,7 +1,7 @@
 #ifndef PLUGIN_DATA_H
 #define PLUGIN_DATA_H
 
-#include "../include/PluginDataInterface.h"
+#include <core/PluginDataInterface.h>
 
 class PluginData: public IPluginData
 {

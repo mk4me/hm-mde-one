@@ -2,8 +2,8 @@
 #define NEW_MESH_H
 
 #include <osg/Geometry>
-#include "../include/ModelData.h"
-#include "../include/IMesh.h"
+#include <core/ModelData.h>
+#include <core/IMesh.h>
 
 class CDataTransfer;
 class CVec3;
@@ -105,7 +105,7 @@ private:
     SSkin*	m_pSkin;
 
     //TODO : dodane na przysz³oœæ, w ramch obs³ugi zaznaczania elementów siatki
-    // NewMesh	
+    // IModel	
     int m_nbTris;
     CVec3 *m_pTriNormals;
     unsigned int *m_pTris;

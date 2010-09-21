@@ -1,7 +1,7 @@
 #ifndef QT_WIDGET_H
 #define QT_WIDGET_H
 
-#include "../include/QtWidgetInterface.h"
+#include <core/QtWidgetInterface.h>
 class OsgControlWidget;
 
 class QtWidget: public IQtWidget

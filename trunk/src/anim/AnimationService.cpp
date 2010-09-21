@@ -8,13 +8,13 @@
 #include <osg/Vec3d>
 #include <osg/Quat>
 
-#include "../include/IModel.h"
-#include "../include/IMesh.h"
-#include "../include/Vec3.h"
-#include "../include/ModelData.h"
+#include <core/IModel.h>
+#include <core/IMesh.h>
+#include <core/Vec3.h>
+#include <core/ModelData.h>
 
-#include "../include/ISkeletonNode.h"
-#include "../include/IServiceManager.h"
+#include <core/ISkeletonNode.h>
+#include <core/IServiceManager.h>
 
 
 using namespace std;

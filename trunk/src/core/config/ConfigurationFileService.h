@@ -1,13 +1,13 @@
 #ifndef CONFIGURATIONFILE_SERVICE_H
 #define CONFIGURATIONFILE_SERVICE_H
 
-#include "../include/GlobalServicesIDs.h"
-#include "../include/SimpleFunctors.h"
+#include <core/GlobalServicesIDs.h>
+#include <core/SimpleFunctors.h>
 
 #include "IConfigManager.h"
 #include "ConfigBuffer.h"
 #include "ConfigurationGroup.h"
-#include "ServiceManager.h"
+#include "../ServiceManager.h"
 #include "FileReader.h"
 
 //--------------------------------------------------------------------------------------------------

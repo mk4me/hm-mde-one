@@ -10,13 +10,13 @@
 
 #include "QtWidget.h"
 #include "PluginData.h"
-#include "../include/PluginDataInterface.h"
-#include "../include/WidgetInterface.h"
-#include "../include/IServiceManager.h"
+#include <core/PluginDataInterface.h>
+#include <core/WidgetInterface.h>
+#include <core/IServiceManager.h>
 #include "AnimationService.h"
 
 //-------- DllMain.cpp --------//
-#include "DllExports.h"
+#include <core/DllExports.h>
 
 
 PLUGIN_REGISTER(AnimationPlugin)

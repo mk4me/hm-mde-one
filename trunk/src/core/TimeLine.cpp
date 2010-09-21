@@ -3,7 +3,7 @@
 
 #include <osg/Node>
 #include <osg/Group>
-#include <QTimeLine>
+#include <QtCore/QTimeLine>
 
 #include "TimeLine.h"
 #include "ServiceManager.h"

@@ -1,5 +1,5 @@
 #include "FileChunkReader.h"
-#include "../include/ModelData.h"
+#include <core/ModelData.h>
 
 #include "../OsgExtensions/Model.h"
 #include "../OsgExtensions/Mesh.h"
@@ -68,7 +68,7 @@ bool FileChunkReader::LoadMesh( Model* model )
                                     length -= HEADER_SIZE;
                                     char* buff = new char [length];
     
-                                    if(!ReadString(buff, (CHAR_SIZE * length)))
+                                    if(!ReadString(buff, (SIZES_CHAR_SIZE * length)))
                                     {
                                         delete [] buff; 
                                         delete mesh; 
@@ -336,7 +336,7 @@ bool FileChunkReader::BeginChunk(int &fileSize )
         return false;	
     }
 
-    if (fread(&fileSize, INT_SIZE, 1, m_pMeshFile) != 1)
+    if (fread(&fileSize, SIZES_INT_SIZE, 1, m_pMeshFile) != 1)
     {	
         fclose(m_pMeshFile); 
         return false;	
@@ -355,7 +355,7 @@ bool FileChunkReader::ReadNextChunk( short &header, int &chunkSize )
     }
 
     // chunk size?
-    if (fread(&chunkSize, INT_SIZE, 1, m_pMeshFile) != 1)
+    if (fread(&chunkSize, SIZES_INT_SIZE, 1, m_pMeshFile) != 1)
     {	
         fclose(m_pMeshFile);
         return false;	
@@ -381,7 +381,7 @@ void FileChunkReader::ChangeFile(const std::string name)
 //--------------------------------------------------------------------------------------------------
 bool FileChunkReader::ReadInt(int &data )
 {
-    if (fread(&data, INT_SIZE, 1, m_pMeshFile) != 1)
+    if (fread(&data, SIZES_INT_SIZE, 1, m_pMeshFile) != 1)
     {	
         fclose(m_pMeshFile); 
         return false;	
@@ -417,7 +417,7 @@ bool FileChunkReader::ReadBytes( byte &data, int size )
 //--------------------------------------------------------------------------------------------------
 bool FileChunkReader::ReadFloat( float &data )
 {
-    if (fread(&data, FLOAT_SIZE, 1, m_pMeshFile) != 1)
+    if (fread(&data, SIZES_FLOAT_SIZE, 1, m_pMeshFile) != 1)
     {	
         fclose(m_pMeshFile); 
         return false;	
@@ -465,7 +465,7 @@ bool FileChunkReader::LoadSkeleton( SSkeleton* skeleton )
             length -= HEADER_SIZE;
             char* buff = new char [length];
            
-            if(!ReadString(buff, (CHAR_SIZE * length)))
+            if(!ReadString(buff, (SIZES_CHAR_SIZE * length)))
             {
                 delete [] buff; 
                 return false;
@@ -479,13 +479,13 @@ bool FileChunkReader::LoadSkeleton( SSkeleton* skeleton )
                 return false;
 
             // get transformations
-            if (fread(&skeleton->bones[b].translation, FLOAT_SIZE * 3, 1, m_pMeshFile) != 1)
+            if (fread(&skeleton->bones[b].translation, SIZES_FLOAT_SIZE * 3, 1, m_pMeshFile) != 1)
                 return false;
-            if (fread(&skeleton->bones[b].quaternion, FLOAT_SIZE * 4, 1, m_pMeshFile) != 1)
+            if (fread(&skeleton->bones[b].quaternion, SIZES_FLOAT_SIZE * 4, 1, m_pMeshFile) != 1)
                 return false;
-            if (fread(&skeleton->bones[b].bone_space_trans, FLOAT_SIZE * 3, 1, m_pMeshFile) != 1)
+            if (fread(&skeleton->bones[b].bone_space_trans, SIZES_FLOAT_SIZE * 3, 1, m_pMeshFile) != 1)
                 return false;
-            if (fread(&skeleton->bones[b].bone_space_quate, FLOAT_SIZE * 4, 1, m_pMeshFile) != 1)
+            if (fread(&skeleton->bones[b].bone_space_quate, SIZES_FLOAT_SIZE * 4, 1, m_pMeshFile) != 1)
                 return false;
 
             // child bones
@@ -496,7 +496,7 @@ bool FileChunkReader::LoadSkeleton( SSkeleton* skeleton )
                 skeleton->bones[b].child_bone_id = new int [skeleton->bones[b].n];
 
             for (int cbi = 0; cbi < skeleton->bones[b].n; ++cbi)
-                if (fread(&skeleton->bones[b].child_bone_id [cbi], INT_SIZE, 1, m_pMeshFile) != 1)
+                if (fread(&skeleton->bones[b].child_bone_id [cbi], SIZES_INT_SIZE, 1, m_pMeshFile) != 1)
                     return false;
 
             // another chunk
@@ -504,7 +504,7 @@ bool FileChunkReader::LoadSkeleton( SSkeleton* skeleton )
                 return false;
             if (chunk_header != FMODEL_DOF)
                 return false;
-            if (fread(&length, INT_SIZE, 1, m_pMeshFile) != 1)
+            if (fread(&length, SIZES_INT_SIZE, 1, m_pMeshFile) != 1)
                 return false;
 
             // dof
@@ -566,7 +566,7 @@ bool FileChunkReader::LoadMeshVersion2( SModelData* fmesh )
                                 length -= HEADER_SIZE;
                                 char* buff = new char [length];
 
-                                if(!ReadString(buff, (CHAR_SIZE * length)))
+                                if(!ReadString(buff, (SIZES_CHAR_SIZE * length)))
                                 {
                                     delete [] buff; 
                                     delete mesh; 

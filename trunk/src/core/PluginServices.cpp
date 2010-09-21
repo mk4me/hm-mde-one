@@ -1,12 +1,12 @@
 #include "PluginServices.h"
 #include <iostream>
 #include <QtGui/QMainWindow>
-#include <QtGui>
-#include <QMenu>
-#include <QDir>
-#include <QAction>
-#include <QVector>
-#include <QWidget>
+#include <QtGui/QtGui>
+#include <QtGui/QMenu>
+#include <QtCore/QDir>
+#include <QtGui/QAction>
+#include <QtCore/QVector>
+#include <QtGui/QWidget>
 
 #include "ServiceManager.h"
 

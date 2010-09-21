@@ -5,7 +5,7 @@
 #include <osg/Group>
 #include <stack> // TODO: Wszystko std musi byæ w przysz³oœci na STLport (sugestia)
 
-#include "../include/IServiceManager.h"
+#include <core/IServiceManager.h>
 #include "AnimationService.h"
 
 //--------------------------------------------------------------------------------------------------

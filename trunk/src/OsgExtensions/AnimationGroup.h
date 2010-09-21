@@ -2,8 +2,8 @@
 #define ANIMATION_GROUP_H
 
 #include <osg/Group>
-#include "../include/IAnimationNode.h"
-#include "../include/IAnimationGroup.h"
+#include <core/IAnimationNode.h>
+#include <core/IAnimationGroup.h>
 
 //////////////////////////////////////////////////////////////////////////
 // group holding animations
