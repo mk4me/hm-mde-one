@@ -1,8 +1,8 @@
 #include "FileChunkReader.h"
 #include <core/ModelData.h>
 
-#include "../OsgExtensions/Model.h"
-#include "../OsgExtensions/Mesh.h"
+#include "Model.h"
+#include "Mesh.h"
 
 
 

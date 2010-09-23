@@ -1,13 +1,13 @@
 #include "FileReader2Motion.h"
 #include "FileChunkReader.h"
-#include "../OsgExtensions/Model.h"
-#include "../OsgExtensions/Mesh.h"
+#include "Model.h"
+#include "Mesh.h"
 
-#include "../OsgExtensions/FModel.h"
-#include "../OsgExtensions/FAnimation.h"
-#include "../OsgExtensions/AnimationNode.h"
-#include "../OsgExtensions/AnimationGroup.h"
-#include "../OsgExtensions/SkeletonNode.h"
+#include "FModel.h"
+#include "FAnimation.h"
+#include "AnimationNode.h"
+#include "AnimationGroup.h"
+#include "SkeletonNode.h"
 
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*

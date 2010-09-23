@@ -48,4 +48,13 @@ enum VertexType
     HalfFloat4 = 13L
 };
 
+enum POSITION
+{
+  LEFT,
+  RIGHT,
+  UP,
+  DOWN
+};
+
+
 #endif // ENUMERATORS_H

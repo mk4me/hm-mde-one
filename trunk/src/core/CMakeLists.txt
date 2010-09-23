@@ -52,19 +52,19 @@ set(TARGET_SRC
 	UserInterfaceService.cpp
 	WindowFactory.cpp
 	
-	../OsgExtensions/AnimationGroup.cpp
-	../OsgExtensions/AnimationNode.cpp
-#	../OsgExtensions/CustomGroup.cpp
-	../OsgExtensions/FModel.cpp
-	../OsgExtensions/Intersection.cpp
-	../OsgExtensions/Mesh.cpp
-	../OsgExtensions/Model.cpp
-	../OsgExtensions/SkeletonNode.cpp
+	AnimationGroup.cpp
+	AnimationNode.cpp
+#	CustomGroup.cpp
+	FModel.cpp
+	Intersection.cpp
+	Mesh.cpp
+	Model.cpp
+	SkeletonNode.cpp
 	
-	../OsgExtensions/tinyXML/tinystr.cpp
-	../OsgExtensions/tinyXML/tinyxml.cpp
-	../OsgExtensions/tinyXML/tinyxmlerror.cpp
-	../OsgExtensions/tinyXML/tinyxmlparser.cpp
+#	tinyXML/tinystr.cpp
+	#tinyXML/tinyxml.cpp
+	#tinyXML/tinyxmlerror.cpp
+	#tinyXML/tinyxmlparser.cpp
 	
 )
 
@@ -114,6 +114,10 @@ set(TARGET_SRC ${TARGET_SRC} ${CONFIG_SRC})
 
 #------------------------------------------------------------------------------
 # tworzenie
+
+# obsluga OpenGL
+set(QT_USE_QTOPENGL TRUE) 
+include(${QT_USE_FILE})
 
 # kompilacja do wspó³dzielonej biblioteki
 add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})

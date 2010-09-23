@@ -34,8 +34,8 @@
 
 #include <iostream>
 
-#include "../OsgExtensions/Model.h"
-#include "../OsgExtensions/Mesh.h"
+#include "Model.h"
+#include "Mesh.h"
 
 #include "FileReader2Motion.h"
 

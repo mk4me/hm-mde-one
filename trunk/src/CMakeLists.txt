@@ -58,6 +58,7 @@ CONFIG_OPTION(VM_ENABLE_EXCEPTIONS "Enable exeptions?" ON)
 find_package(OSG)
 #find_package(Stdint)
 find_package(Qt)
+find_package(TinyXML)
 #find_package(Prerequisites)
 if (MOTION_ENABLE_TESTS)
 	find_package(CppUnit)
@@ -113,7 +114,7 @@ endif()
 #ADD_PROJECT(anim "")
 #ADD_PROJECT(main "")
 ADD_PROJECT(anim "OSG;QT")
-ADD_PROJECT(core "OSG;QT;anim")
+ADD_PROJECT(core "OSG;QT;anim;TINYXML")
 
 
 #---------------------------------------------------

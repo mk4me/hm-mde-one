@@ -1,6 +1,6 @@
 #include "ModelService.h"
 
-#include "../OsgExtensions/Model.h"
+#include "Model.h"
 #include "ServiceManager.h"
 
 

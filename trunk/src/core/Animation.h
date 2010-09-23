@@ -2,9 +2,9 @@
 #define ANIMATION_H
 
 
-#include "../OsgExtensions/SkeletonNode.h"
-#include "../OsgExtensions/AnimationNode.h"
-#include "../OsgExtensions/AnimationGroup.h"
+#include "SkeletonNode.h"
+#include "AnimationNode.h"
+#include "AnimationGroup.h"
 
 
 class Model;

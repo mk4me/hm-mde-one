@@ -12,7 +12,7 @@
 //#include <string>
 #include <vector>
 #include <stdlib.h>
-#include "../OsgExtensions/Enumerators.h"
+#include "Enumerators.h"
 
 typedef unsigned char byte;
 
