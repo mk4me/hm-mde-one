@@ -113,8 +113,10 @@ endif()
 
 #ADD_PROJECT(anim "")
 #ADD_PROJECT(main "")
-ADD_PROJECT(anim "OSG;QT")
-ADD_PROJECT(core "OSG;QT;anim;TINYXML")
+
+ADD_PROJECT(core "OSG;QT;TINYXML")
+ADD_PROJECTS(plugins)
+
 
 
 #---------------------------------------------------

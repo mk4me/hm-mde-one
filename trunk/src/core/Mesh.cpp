@@ -2,7 +2,7 @@
 
 #include "Intersection.h"
 #include "DataTransfer.h"
-#include "Enumerators.h"
+#include <core/Enumerators.h>
 #include <core/Vec3.h>
 #include <core/ModelData.h>
 

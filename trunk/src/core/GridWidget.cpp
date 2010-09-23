@@ -6,7 +6,6 @@
 #include <stack> // TODO: Wszystko std musi byæ w przysz³oœci na STLport (sugestia)
 
 #include "ServiceManager.h"
-#include "../anim/AnimationService.h"
 
 //--------------------------------------------------------------------------------------------------
 GridWidget::GridWidget(void):

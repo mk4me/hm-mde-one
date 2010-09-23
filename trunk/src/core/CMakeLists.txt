@@ -8,16 +8,22 @@ set(TARGET_TARGETNAME
 # trafiæ; w przeciwnym wypadku CMake generuje b³êdny projekt
 
 #------------------------------------------------------------------------------
-# pliki
-set(TARGET_H
+
+# nag³ówki prywatne
+set(PRIVATE_H
 	AdapterWidget.h
-	Animation.h
 	ConsoleWidget.h
+	DataTransfer.h
+	FAnimation.h
 	FileChunkReader.h
 	FileReader2Motion.h
 	FileUtil.h
+	FModel.h
 	GridWidget.h
+	Intersection.h
 	Logger.h
+	Mesh.h
+	Model.h
 	ModelService.h
 	OsgControlWidget.h
 	PluginServices.h
@@ -25,13 +31,46 @@ set(TARGET_H
 	QTMainWindow.h
 	RenderService.h
 	ServiceManager.h
+	SkeletonNode.h
 	TimeLine.h
 	ToolboxMain.h
 	UserInterfaceService.h
 	WindowFactory.h
 )
-source_group("Header files" FILES ${TARGET_H})
+source_group("Header files" FILES ${PRIVATE_H})
 
+# nag³ówki publiczne
+string(REPLACE ${MOTION_ROOT} ${MOTION_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
+set(PUBLIC_H
+	${HEADER_PATH}/BaseDataTypes.h
+	${HEADER_PATH}/dae2Motion.h
+	${HEADER_PATH}/DllExports.h
+	${HEADER_PATH}/Enumerators.h
+	${HEADER_PATH}/GlobalServicesIDs.h
+	${HEADER_PATH}/IAnimationGroup.h
+	${HEADER_PATH}/IAnimationNode.h
+	${HEADER_PATH}/IBaseService.h
+	${HEADER_PATH}/IMesh.h
+	${HEADER_PATH}/IModel.h
+	${HEADER_PATH}/IServiceManager.h
+	${HEADER_PATH}/ISkeletonNode.h
+	${HEADER_PATH}/MainWindow.h
+	${HEADER_PATH}/ModelData.h
+	${HEADER_PATH}/PluginDataInterface.h
+	${HEADER_PATH}/PluginsInterfaces.h
+	${HEADER_PATH}/QtMainWindowInterface.h
+	${HEADER_PATH}/QtWidgetInterface.h
+	${HEADER_PATH}/SimpleFunctors.h
+	${HEADER_PATH}/UserInterface.h
+	${HEADER_PATH}/Vec3.h
+	${HEADER_PATH}/WidgetInterface.h
+	${HEADER_PATH}/WxMainWindowInterface.h
+	${HEADER_PATH}/WxWidgetInterface.h
+)
+source_group("Header files" FILES ${PUBLIC_H})
+set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
+
+# Ÿród³a
 set(TARGET_SRC
 	AdapterWidget.cpp
 	ConsoleWidget.cpp
@@ -59,15 +98,11 @@ set(TARGET_SRC
 	Intersection.cpp
 	Mesh.cpp
 	Model.cpp
-	SkeletonNode.cpp
-	
-#	tinyXML/tinystr.cpp
-	#tinyXML/tinyxml.cpp
-	#tinyXML/tinyxmlerror.cpp
-	#tinyXML/tinyxmlparser.cpp
-	
+	SkeletonNode.cpp	
 )
+source_group("Source files" FILES ${TARGET_SRC})
 
+# metadane generowane przez MOC
 SET(TARGET_MOC_H
     ConsoleWidget.h
     TimeLine.h
@@ -75,8 +110,8 @@ SET(TARGET_MOC_H
 	GridWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
+source_group("Source files" FILES ${TARGET_MOC_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
-source_group("Source files" FILES ${TARGET_SRC})
 
 #------------------------------------------------------------------------------
 # UI
@@ -125,3 +160,5 @@ add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
 include_directories(${DEFAULT_PROJECT_INCLUDES})
 # biblioteki
 target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})	
+
+ON_PROJECT_ADDED(core)

@@ -1,5 +1,5 @@
-project(ANIMSERV_TEST)
-set(TARGET_TARGETNAME anim)
+project(animation)
+set(TARGET_TARGETNAME animation)
 
 set(TARGET_H
 	AnimationPlugin.h
@@ -50,16 +50,16 @@ target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})
 # ¿eby mo¿na by³o u¿yæ tej biblioteki w makrach
 ON_PROJECT_ADDED(${TARGET_TARGETNAME})
 
-IF(WIN32)
-	#prefix hack
-	SET_TARGET_PROPERTIES(anim PROPERTIES
-		PREFIX ../../../bin/Win32/$(ConfigurationName)/plugins/
-	)
-ELSEIF(UNIX)
-	# post build event
-	ADD_CUSTOM_COMMAND(
-		TARGET ControlPlugin
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy ARGS anim.so ../../bin/Linux/plugins/anim.so
-	)
-ENDIF()
+#IF(WIN32)
+#	#prefix hack
+#	SET_TARGET_PROPERTIES(anim PROPERTIES
+#		PREFIX ../../../bin/Win32/$(ConfigurationName)/plugins/
+#	)
+#ELSEIF(UNIX)
+#	# post build event
+#	ADD_CUSTOM_COMMAND(
+#		TARGET ControlPlugin
+#		POST_BUILD
+#		COMMAND ${CMAKE_COMMAND} -E copy ARGS anim.so ../../bin/Linux/plugins/anim.so
+#	)
+#ENDIF()
