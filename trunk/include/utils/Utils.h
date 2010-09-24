@@ -1,8 +1,8 @@
 /********************************************************************
-	created:  2010/05/14
-	created:  14:5:2010   10:13
+	created:    2010/05/14
+	created:    14:5:2010     10:13
 	filename: Utils.h
-	author:	  Piotr Gwiazdowski
+	author:	    Piotr Gwiazdowski
 
 	purpose:
 *********************************************************************/
@@ -16,9 +16,9 @@ namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Sugerowany pocz¹tek makra sk³adaj¹cego siê z wielu instrukcji
-#define UTILS_MULTISTATEMENT_BEGIN  do {
+#define UTILS_MULTISTATEMENT_BEGIN    do {
 //! Sugerowany koniec makra sk³adaj¹cego siê z wielu instrukcji
-#define UTILS_MULTISTATEMENT_END    } while(0) /* brak ; na koncu! */
+#define UTILS_MULTISTATEMENT_END        } while(0) /* brak ; na koncu! */
 
 //------------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ namespace utils {
 template <class T>
 inline T clamp(const T& v, const T& min, const T& max)
 {
-  return ( v < min ) ? min : ((v > max) ? max : v);
+    return ( v < min ) ? min : ((v > max) ? max : v);
 }
 
 //------------------------------------------------------------------------------
@@ -36,24 +36,24 @@ inline T clamp(const T& v, const T& min, const T& max)
 template <class T>
 inline void zero(T & object)
 {
-  memset(&object, 0, sizeof(T));
+    memset(&object, 0, sizeof(T));
 }
 
 //------------------------------------------------------------------------------
 
 //! Zwalnia zadany wskaŸnik oraz zeruje jego wartoœæ.
 #define UTIL_DELETEPTR(ptr) UTILS_MULTISTATEMENT_BEGIN \
-  delete ptr; \
-  ptr = NULL; \
-  UTILS_MULTISTATEMENT_END
+    delete ptr; \
+    ptr = NULL; \
+    UTILS_MULTISTATEMENT_END
 
 //! Zwalnia zadany wskaŸnik oraz zeruje jego wartoœæ.
 //! \param ptr WskaŸnik do zwolnienia.
 template <class T>
 inline void deletePtr(T *& ptr)
 {
-  delete ptr;
-  ptr = NULL;
+    delete ptr;
+    ptr = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ inline void deletePtr(T *& ptr)
 template <class T>
 inline T sign(T value)
 {
-  return value >= 0 ? T(1) : T(-1);
+    return value >= 0 ? T(1) : T(-1);
 }
 
 //------------------------------------------------------------------------------
@@ -78,4 +78,4 @@ struct NullType {};
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD__UTILS_H__
+#endif    // __HEADER_GUARD__UTILS_H__

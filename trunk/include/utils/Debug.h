@@ -26,26 +26,26 @@ namespace utils {
 class Debug
 {
 private:
-  //! Klasa bez instancji.
-  Debug() {}
+    //! Klasa bez instancji.
+    Debug() {}
 
 public:
-  //!
-  //! \param file
-  //! \param line
-  //! \param format
-  //! \param
-  static void print(const char * file, int line, const char * format, ...);
-  //!
-  //! \param file
-  //! \param line
-  //! \param format
-  //! \param
-  static void formatMessage(char * buffer, int bufferSize, const char * format, ...);
-  //! Zaœlepka. Pomaga w budowaniu makr.
-  //! \param buffer
-  //! \param bufferSize
-  static void formatMessage(char * buffer, int bufferSize);
+    //!
+    //! \param file
+    //! \param line
+    //! \param format
+    //! \param
+    static void print(const char * file, int line, const char * format, ...);
+    //!
+    //! \param file
+    //! \param line
+    //! \param format
+    //! \param
+    static void formatMessage(char * buffer, int bufferSize, const char * format, ...);
+    //! Zaœlepka. Pomaga w budowaniu makr.
+    //! \param buffer
+    //! \param bufferSize
+    static void formatMessage(char * buffer, int bufferSize);
 };
 
 /**
@@ -61,18 +61,18 @@ public:
  *	Definicja asercji.
  */
 #if defined(_DEBUG) || defined(DEBUG)
-# ifdef WIN32
-#   define UTILS_ASSERT(contition, ...) UTILS_MULTISTATEMENT_BEGIN \
-  if (!(contition)) {\
-    char __assert_buffer[256];\
-    utils::Debug::formatMessage(__assert_buffer, sizeof(__assert_buffer)-1, __VA_ARGS__);\
-    if (1 == _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, __assert_buffer)) {\
-      _CrtDbgBreak();\
-    }\
-  } UTILS_MULTISTATEMENT_END
-#  else // WIN32
-#   define UTILS_ASSERT(condition, msg, ...) assert(condition)
-# endif // WIN32
+#ifdef WIN32
+#define UTILS_ASSERT(contition, ...) UTILS_MULTISTATEMENT_BEGIN                               \
+if (!(contition)) {                                                                           \
+    char __assert_buffer[256];                                                                \
+    utils::Debug::formatMessage(__assert_buffer, sizeof(__assert_buffer)-1, __VA_ARGS__);     \
+    if (1 == _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, __assert_buffer)) {         \
+        _CrtDbgBreak();                                                                       \
+    }                                                                                         \
+} UTILS_MULTISTATEMENT_END
+#else // WIN32
+#define UTILS_ASSERT(condition, msg, ...) assert(condition)
+#endif // WIN32
 #else
 # define UTILS_ASSERT(...)
 #endif

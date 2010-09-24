@@ -1,10 +1,10 @@
 /********************************************************************
-	created:  2010/04/07
-	created:  7:4:2010   18:08
+	created:    2010/04/07
+	created:    7:4:2010     18:08
 	filename: PolciesBoost.h
-	author:	  Piotr Gwiazdowski
+	author:	    Piotr Gwiazdowski
 	
-	purpose:  
+	purpose:    
 *********************************************************************/
 #ifndef __AVINOUT_POLCIESBOOST_H__
 #define __AVINOUT_POLCIESBOOST_H__
@@ -21,53 +21,53 @@ namespace utils {
 */
 struct PtrPolicyBoost
 {
-  //! Typ wskaünika.
-  template <class T> struct Ptr 
-  {
-    typedef boost::shared_ptr<T> Type;
-  };
-  //! Tylko deklaracja, specjalizacja wyciπga wskaünik!
-  template <class T> struct Pointed;
-  //! Specjalizacja wyciπgajπca wskaünik.
-  template <class T> struct Pointed<boost::shared_ptr<T> >
-  {
-    typedef T::element_type Type;
-  };
+    //! Typ wskaünika.
+    template <class T> struct Ptr 
+    {
+        typedef boost::shared_ptr<T> Type;
+    };
+    //! Tylko deklaracja, specjalizacja wyciπga wskaünik!
+    template <class T> struct Pointed;
+    //! Specjalizacja wyciπgajπca wskaünik.
+    template <class T> struct Pointed<boost::shared_ptr<T> >
+    {
+        typedef T::element_type Type;
+    };
 
-  //! Klasa bazowa.
-  typedef NullType Base;
+    //! Klasa bazowa.
+    typedef NullType Base;
 
-  //! Zerowanie wskaünika.
-  //! \param ptr
-  template <class T>
-  void initPtr( T & ptr )
-  {}
+    //! Zerowanie wskaünika.
+    //! \param ptr
+    template <class T>
+    void initPtr( T & ptr )
+    {}
 
-  //! Ustawienie wartoúci wskaünika surowymi danymi.
-  //! \param ptr
-  //! \param data
-  template<class T>
-  void setPtr(boost::shared_ptr<T> & ptr, T * data)
-  {
-    ptr.reset(data);
-  }
+    //! Ustawienie wartoúci wskaünika surowymi danymi.
+    //! \param ptr
+    //! \param data
+    template<class T>
+    void setPtr(boost::shared_ptr<T> & ptr, T * data)
+    {
+        ptr.reset(data);
+    }
 
-  //! Ustawienie wartoúci wskaünika poprzes kopiowanie z innego mπdrego wskaünika.
-  //! \param ptr
-  //! \param data
-  template<class T>
-  void setPtr(boost::shared_ptr<T> & ptr, boost::shared_ptr<T> & data)
-  {
-    ptr = data;
-  }
+    //! Ustawienie wartoúci wskaünika poprzes kopiowanie z innego mπdrego wskaünika.
+    //! \param ptr
+    //! \param data
+    template<class T>
+    void setPtr(boost::shared_ptr<T> & ptr, boost::shared_ptr<T> & data)
+    {
+        ptr = data;
+    }
 
-  //! Czy wskaünik jest unikatowy?
-  //! \param ptr
-  template<class T>
-  bool isUnique(boost::shared_ptr<T> & ptr) const
-  {
-    return ptr.unique();
-  }
+    //! Czy wskaünik jest unikatowy?
+    //! \param ptr
+    template<class T>
+    bool isUnique(boost::shared_ptr<T> & ptr) const
+    {
+        return ptr.unique();
+    }
 };
 
 
@@ -76,4 +76,4 @@ struct PtrPolicyBoost
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __AVINOUT_POLCIESBOOST_H__
+#endif    // __AVINOUT_POLCIESBOOST_H__
