@@ -1,14 +1,13 @@
 ###############################################################################
-
 # Inicjuje proces wyszukiwania biblioteki.
 macro(FIND_INIT variable dirName)
 
 	# g³ówne œcie¿ki
 	if (NOT FIND_DISABLE_INCLUDES)
-		set(${variable}_INCLUDE_DIR "${MOTION_INCLUDE_ROOT}/${dirName}" CACHE PATH "Location of ${variable} headers.")
+		set(${variable}_INCLUDE_DIR "${EDR_INCLUDE_ROOT}/${dirName}" CACHE PATH "Location of ${variable} headers.")
 	endif()
-	set(${variable}_LIBRARY_DIR_DEBUG "${MOTION_LIBRARIES_ROOT_DEBUG}/${dirName}" CACHE PATH "Location of ${variable} debug libraries.")
-	set(${variable}_LIBRARY_DIR_RELEASE "${MOTION_LIBRARIES_ROOT_RELEASE}/${dirName}" CACHE PATH "Location of ${variable} libraries.")
+	set(${variable}_LIBRARY_DIR_DEBUG "${EDR_LIBRARIES_ROOT_DEBUG}/${dirName}" CACHE PATH "Location of ${variable} debug libraries.")
+	set(${variable}_LIBRARY_DIR_RELEASE "${EDR_LIBRARIES_ROOT_RELEASE}/${dirName}" CACHE PATH "Location of ${variable} libraries.")
 	# lokalizacja bibliotek dla trybu debug
 	set (FIND_DIR_DEBUG ${${variable}_LIBRARY_DIR_DEBUG})
 	# lokalizacja bibliotek
@@ -21,14 +20,18 @@ macro(FIND_INIT variable dirName)
 	# wyzerowanie zmiennych logicznych
 	set (FIND_RESULTS_LOGICAL_OR 0)
 	set (FIND_RESULTS_LOGICAL_AND 1)
+	
+	FIND_NOTIFY(${variable} "FIND_INIT: include: ${${variable}_INCLUDE_DIR}; debug: ${${variable}_LIBRARY_DIR_DEBUG}; release: ${${variable}_LIBRARY_DIR_RELEASE}")
+	
 endmacro(FIND_INIT)
 
 ###############################################################################
 
 macro(FIND_INCLUDE_PLATFORM_HEADERS variable dirName)
 	# okreœlamy œcie¿kê do katalogu z nag³ówkami konfiguracyjnymi
-	set(${variable}_INCLUDE_CONFIG_DIR "${${variable}_INCLUDE_DIR}/../${MOTION_LIBRARIES_PLATFORM}/${dirName}" 
+	set(${variable}_INCLUDE_CONFIG_DIR "${${variable}_INCLUDE_DIR}/../${EDR_LIBRARIES_PLATFORM}/${dirName}" 
 		CACHE PATH "Location of config headers")
+	FIND_NOTIFY(${variable} "FIND_INIT: platform headers: ${${variable}_INCLUDE_CONFIG_DIR}")
 endmacro(FIND_INCLUDE_PLATFORM_HEADERS)
 
 ###############################################################################
@@ -39,8 +42,11 @@ macro(FIND_FINISH variable)
 	# skopiowanie
 	set (${variable}_LIBRARIES ${FIND_RESULTS})	
 	set (FIND_DISABLE_INCLUDES OFF)
+	FIND_NOTIFY(${variable} "FIND_FINISH: found libraries ${FIND_RESULTS}")
 
 endmacro(FIND_FINISH)
+
+
 
 ###############################################################################
 
@@ -63,10 +69,15 @@ macro(FIND_LIBS_PATTERN variable releasePattern debugPattern extensions)
 		set(CMAKE_FIND_LIBRARY_SUFFIXES ${extensions})
 	endif()
 	
+	if (FIND_DISABLE_CUSTOM_DIRECTORY)
+		FIND_NOTIFY(${variable} "FIND_LIBS: only system directories!")
+	endif()
+	
 	# wyszukanie wersji debug
 	set(_lib_names)
 	CREATE_NAMES_LIST("<?,lib>${debugPattern}${extensions}" _lib_names)
 	
+	FIND_NOTIFY(${variable} "FIND_LIBS: debug pattern ${debugPattern} unrolled to ${_lib_names}")
 	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
 		# szukamy wersji release, najpierw w wyznaczonym miejscu
 		find_library(${variable}_LIBRARY_DEBUG
@@ -82,10 +93,12 @@ macro(FIND_LIBS_PATTERN variable releasePattern debugPattern extensions)
 		DOC "Location of release version of ${_lib_names}"
 	)
 	
+	
 	# wyszukanie wersji release
 	set(_lib_names)
 	CREATE_NAMES_LIST("<?,lib>${releasePattern}${extensions}" _lib_names)
 	
+	FIND_NOTIFY(${variable} "FIND_LIBS: release pattern ${releasePattern} unrolled to ${_lib_names}")
 	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
 		# szukamy wersji release, najpierw w wyznaczonym miejscu
 		find_library(${variable}_LIBRARY_RELEASE
@@ -120,11 +133,15 @@ endmacro(FIND_LIBS_PATTERN)
 #   ${variable}_LIBRARY_RELEASE lokazliacja biblioteki w wersji release 
 macro(FIND_DLLS_PATTERN variable releasePattern debugPattern)
 	
+	if (FIND_DISABLE_CUSTOM_DIRECTORY)
+		FIND_NOTIFY(${variable} "FIND_DLLS: only system directories!")
+	endif()
 	#message("find dlls: ${variable} ${releasePattern} ${debugPattern}")
 	# wyszukanie wersji debug
 	set(_lib_names)
 	CREATE_NAMES_LIST("${debugPattern}.dll" _lib_names)
 	# szukamy wersji debug
+	FIND_NOTIFY(${variable} "FIND_DLLS: debug pattern ${debugPattern} unrolled to ${_lib_names}")
 	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
 		find_file(${variable}_LIBRARY_DEBUG_DLL
 			NAMES ${_lib_names}
@@ -142,57 +159,7 @@ macro(FIND_DLLS_PATTERN variable releasePattern debugPattern)
 	set(_lib_names)
 	CREATE_NAMES_LIST("${releasePattern}.dll" _lib_names)
 	# szukamy wersji release
-	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
-		find_file(${variable}_LIBRARY_RELEASE_DLL
-			NAMES ${_lib_names}
-			PATHS ${FIND_DIR_RELEASE}
-			DOC "Location of release version of ${variable}"
-			NO_DEFAULT_PATH
-		)
-	endif()
-	find_file(${variable}_LIBRARY_RELEASE_DLL
-		NAMES ${_lib_names}
-		DOC "Location of release version of ${variable}"
-	)
-
-endmacro(FIND_DLLS_PATTERN)
-
-###############################################################################
-
-# Makro wyszukuje bibliotek statycznych lub plików lib dla wspó³dzielonych bibliotek (windows).
-# Zak³ada, ¿e istniej¹ dwie zmienne:
-# FIND_DIR_DEBUG Miejsca gdzie szukaæ bibliotek w wersji debug
-# FIND_DIR_RELEASE Miejsca gdzie szukaæ bibliotek w wersji release
-# Wyjaœnienie: extension u¿ywany jest w sytuacji, gdy
-# CMake nie potrafi wyszukaæ biblioteki bez rozszerzenia (np. biblioteki stayczne na Unixie)
-# w 99% przypadków jednak nic nie zawiera i w tych wypadkach rozszerzenia brane s¹ z suffixes.
-# Rezultaty:
-# 	${variable}_LIBRARY_DEBUG lokalizacja biblioteki w wersji debug
-#   ${variable}_LIBRARY_RELEASE lokazliacja biblioteki w wersji release 
-macro(FIND_DLLS_PATTERN variable releasePattern debugPattern)
-	
-	#message("find dlls: ${variable} ${releasePattern} ${debugPattern}")
-	# wyszukanie wersji debug
-	set(_lib_names)
-	CREATE_NAMES_LIST("${debugPattern}.dll" _lib_names)
-	# szukamy wersji debug
-	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
-		find_file(${variable}_LIBRARY_DEBUG_DLL
-			NAMES ${_lib_names}
-			PATHS ${FIND_DIR_DEBUG}
-			DOC "Location of debug version of ${variable}"
-			NO_DEFAULT_PATH
-		)
-	endif()
-	find_file(${variable}_LIBRARY_DEBUG_DLL
-		NAMES ${_lib_names}
-		DOC "Location of debug version of ${variable}"
-	)
-					
-	# wyszukanie wersji release
-	set(_lib_names)
-	CREATE_NAMES_LIST("${releasePattern}.dll" _lib_names)
-	# szukamy wersji release
+	FIND_NOTIFY(${variable} "FIND_DLLS: release pattern ${releasePattern} unrolled to ${_lib_names}")
 	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
 		find_file(${variable}_LIBRARY_RELEASE_DLL
 			NAMES ${_lib_names}
@@ -212,9 +179,14 @@ endmacro(FIND_DLLS_PATTERN)
 ###############################################################################
 
 macro(FIND_EXECUTABLE variable pattern)
-
+	FIND_NOTIFY(${variable} "FIND_EXECUTABLE: begin: ${${variable}}")
+	if (FIND_DISABLE_CUSTOM_DIRECTORY)
+		FIND_NOTIFY(${variable} "FIND_EXECUTABLE: only system directories!")
+	endif()
+	
 	set(_lib_names)
 	CREATE_NAMES_LIST("${pattern}" _lib_names)
+	FIND_NOTIFY(${variable} "FIND_EXECUTABLE: pattern ${pattern} unrolled to ${_lib_names}")
 	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
 		# najpierw przeszukiwany jest katalog release
 		find_program(${variable}_EXECUTABLE
@@ -242,6 +214,7 @@ macro(FIND_EXECUTABLE variable pattern)
 		set(${variable}_FOUND 1)
 		FIND_NOTIFY_RESULT(1)
 	endif()
+	FIND_NOTIFY(${variable} "FIND_EXECUTABLE: end: ${${variable}_EXECUTABLE}")
 endmacro(FIND_EXECUTABLE)
 
 ###############################################################################
@@ -316,7 +289,9 @@ endmacro (ADD_LIBRARY_SINGLE)
 ###############################################################################
 
 macro(FIND_STATIC_EXT variable names debugNames)
+	FIND_NOTIFY(${variable} "FIND_STATIC_EXT: begin: ${${variable}}")
 	ADD_LIBRARY_SINGLE(${variable} ${names} ${debugNames} 1)
+	FIND_NOTIFY(${variable} "FIND_STATIC_EXT: libs: ${${variable}}")
 endmacro(FIND_STATIC_EXT)
 
 # Wyszukuje bibliotekê statyczn¹
@@ -330,6 +305,7 @@ endmacro(FIND_STATIC)
 ###############################################################################
 
 macro (FIND_SHARED_EXT variable names debugNames dllNames dllDebugNames)
+	FIND_NOTIFY(${variable} "FIND_SHARED_EXT: begin: ${${variable}}")
 	if (NOT WIN32)
 		# jeden plik
 		ADD_LIBRARY_SINGLE(${variable} ${names} ${debugNames} 0)
@@ -371,6 +347,7 @@ macro (FIND_SHARED_EXT variable names debugNames dllNames dllDebugNames)
 			FIND_NOTIFY_RESULT(0)
 		endif()
 	endif()
+	FIND_NOTIFY(${variable} "FIND_SHARED_EXT: libs: ${${variable}}; debug dll: ${${variable}_LIBRARY_DEBUG}; release dll: ${${variable}_LIBRARY_RELEASE}")
 endmacro( FIND_SHARED_EXT )
 
 # Wyszukuje bibliotekê statyczn¹
@@ -385,6 +362,7 @@ endmacro (FIND_SHARED)
 ###############################################################################
 
 macro (FIND_MODULE_EXT variable isSystemModule names debugNames)
+	FIND_NOTIFY(${variable} "FIND_MODULE_EXT: begin: ${${variable}}")
 	# czy wyszukujemy tylko w œcie¿ce systemowej?
 	if (${isSystemModule} STREQUAL "TRUE")
 		set(FIND_DISABLE_CUSTOM_DIRECTORY ON)
@@ -397,8 +375,11 @@ macro (FIND_MODULE_EXT variable isSystemModule names debugNames)
 		list( REMOVE_ITEM FIND_RESULTS ${variable})
 		# jeœli to nie modu³ systemowy dodajemy do listy
 		if (${isSystemModule} STREQUAL "FALSE")
+			FIND_NOTIFY(${variable} "FIND_MODULE_EXT: will copy; debug dll: ${${variable}_LIBRARY_DEBUG}; release dll: ${${variable}_LIBRARY_RELEASE}")
 			list( APPEND FIND_MODULES_TO_COPY_DEBUG ${${variable}_LIBRARY_DEBUG} )
 			list( APPEND FIND_MODULES_TO_COPY_RELEASE ${${variable}_LIBRARY_RELEASE} )
+		else()
+			FIND_NOTIFY(${variable} "FIND_MODULE_EXT: won't copy; debug dll: ${${variable}_LIBRARY_DEBUG}; release dll: ${${variable}_LIBRARY_RELEASE}")
 		endif()
 	endif()
 		
@@ -412,6 +393,7 @@ macro (FIND_MODULE_EXT variable isSystemModule names debugNames)
 		unset(${variable}_LIBRARY_DIR_DEBUG CACHE )
 	    unset(${variable}_LIBRARY_DIR_RELEASE CACHE )
 	endif()	
+	FIND_NOTIFY(${variable} "FIND_MODULE_EXT: libs: ${${variable}}")
 endmacro(FIND_MODULE_EXT)
 
 # Wyszukuje bibliotekê statyczn¹
@@ -527,3 +509,12 @@ macro (CREATE_NAMES_LIST pattern result)
 	set(${result} ${_names})
 endmacro (CREATE_NAMES_LIST)
 
+###############################################################################
+
+macro(FIND_NOTIFY var msg)
+	if (FIND_VERBOSE)
+		message(STATUS "FIND>${var}>${msg}")
+	endif()
+endmacro()
+
+###############################################################################

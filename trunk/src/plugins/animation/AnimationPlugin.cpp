@@ -13,7 +13,7 @@
 #include <core/PluginDataInterface.h>
 #include <core/WidgetInterface.h>
 #include <core/IServiceManager.h>
-#include "AnimationService.h"
+#include <plugins/animation/AnimationService.h>
 
 //-------- DllMain.cpp --------//
 #include <core/DllExports.h>

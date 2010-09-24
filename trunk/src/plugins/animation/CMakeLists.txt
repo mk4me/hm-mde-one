@@ -1,15 +1,33 @@
 project(animation)
 set(TARGET_TARGETNAME animation)
 
-set(TARGET_H
-	AnimationPlugin.h
+# obs³uga QT
+set(QT_USE_QTOPENGL TRUE)
+include(${QT_USE_FILE})
+
+add_definitions(-D__dll__)
+
+#------------------------------------------------------------------------------
+
+# nag³ówki
+string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
+set(PUBLIC_H
+	${HEADER_PATH}/AnimationService.h
+	${HEADER_PATH}/Animation.h
+)
+source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
+set(PRIVATE_H
 	OsgControlWidget.h
 	QtWidget.h
 	PluginData.h
-	AnimationService.h
-	Animation.h
+	AnimationPlugin.h
 )
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
+set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
+#------------------------------------------------------------------------------
+
+# Ÿród³a
 set(TARGET_SRC
 	AnimationPlugin.cpp
 	OsgControlWidget.cpp
@@ -18,27 +36,25 @@ set(TARGET_SRC
 	AnimationService.cpp
 	Animation.cpp
 )
+source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
-
-ADD_DEFINITIONS(-D__dll__)
-
-
-# add Qt modules here, the include will setup QT_LIBRARIES
-set(QT_USE_QTOPENGL TRUE) # obsluga OpenGL
-include(${QT_USE_FILE})
-
-# files which need to be moc'd by Qt
 SET(TARGET_MOC_H
-	AnimationPlugin.h
 	OsgControlWidget.h
 )
-QT4_WRAP_CPP(TARGET_SRC ${TARGET_MOC_H})
+QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 
+#------------------------------------------------------------------------------
 # UI
-SET(TARGET_UI_H
-	UI/OsgWidget.ui
+SET(TARGET_UI
+	ui/OsgWidget.ui
 )
-QT4_WRAP_UI(TARGET_H ${TARGET_UI_H})
+QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
+source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
+set(TARGET_H ${TARGET_H} ${TARGET_UI} ${TARGET_UI_H})
+
+#------------------------------------------------------------------------------
 
 # kompilacja do wspó³dzielonej biblioteki
 add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})

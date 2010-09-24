@@ -37,10 +37,10 @@ set(PRIVATE_H
 	UserInterfaceService.h
 	WindowFactory.h
 )
-source_group("Header files" FILES ${PRIVATE_H})
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
 # nag³ówki publiczne
-string(REPLACE ${MOTION_ROOT} ${MOTION_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
+string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/BaseDataTypes.h
 	${HEADER_PATH}/dae2Motion.h
@@ -67,8 +67,10 @@ set(PUBLIC_H
 	${HEADER_PATH}/WxMainWindowInterface.h
 	${HEADER_PATH}/WxWidgetInterface.h
 )
-source_group("Header files" FILES ${PUBLIC_H})
+source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
+
+#------------------------------------------------------------------------------
 
 # Ÿród³a
 set(TARGET_SRC
@@ -100,7 +102,7 @@ set(TARGET_SRC
 	Model.cpp
 	SkeletonNode.cpp	
 )
-source_group("Source files" FILES ${TARGET_SRC})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
@@ -110,21 +112,21 @@ SET(TARGET_MOC_H
 	GridWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
-source_group("Source files" FILES ${TARGET_MOC_SRC})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 
 #------------------------------------------------------------------------------
 # UI
-set(CORE_UI
+set(TARGET_UI
 	ui/Console.ui
 	ui/GridWidget.ui
 	ui/OsgWidget.ui
 	ui/TimeLine.ui
 	ui/toolboxmaindeffile.ui
 )
-QT4_WRAP_UI(CORE_UI_H ${CORE_UI})
-source_group("Header files\\ui" FILES ${CORE_UI_H} ${CORE_UI})
-set(TARGET_H ${TARGET_H} ${CORE_UI_H} ${CORE_UI})
+QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
+source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
+set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 
 #------------------------------------------------------------------------------
 # CONFIG
@@ -135,7 +137,7 @@ set(CONFIG_H
 	config/IConfigManager.h
 	config/Parameter.h
 )
-source_group("Header files\\config" FILES ${CONFIG_H})
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\config" FILES ${CONFIG_H})
 set(TARGET_H ${TARGET_H} ${CONFIG_H})
 
 set(CONFIG_SRC
@@ -144,7 +146,7 @@ set(CONFIG_SRC
 	config/FileReader.cpp
 	config/Parameter.cpp
 )
-source_group("Source files\\config" FILES ${CONFIG_SRC})
+source_group("${SOURCEGROUP_SOURCES}\\config" FILES ${CONFIG_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${CONFIG_SRC})
 
 #------------------------------------------------------------------------------

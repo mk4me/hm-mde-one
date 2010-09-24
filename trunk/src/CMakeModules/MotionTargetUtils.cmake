@@ -70,7 +70,7 @@ macro(ADD_PROJECT name dependencies)
 		#message("${name}: ${dependencies}")
 		set (DEFAULT_PROJECT_DEPENDENCIES ${dependencies})
 		set (DEFAULT_PROJECT_LIBS)
-		set (DEFAULT_PROJECT_INCLUDES "${PROJECT_SOURCE_DIR};${PROJECT_BINARY_DIR}/${name};${PROJECT_BINARY_DIR};${MOTION_INCLUDE_ROOT}" )
+		set (DEFAULT_PROJECT_INCLUDES "${PROJECT_SOURCE_DIR};${PROJECT_BINARY_DIR}/${name};${PROJECT_BINARY_DIR};${EDR_INCLUDE_ROOT}" )
 		# kopiujemy dane
 		foreach (value ${dependencies})
 			#if (NOT ${createDependency})

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6) 
-project (ERD)
+project (EDR)
 
 # dodatkowe modu³y
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
@@ -11,23 +11,23 @@ include(MotionTargetUtils)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-set(MOTION_LIBRARIES_ROOT "../lib" CACHE PATH "Location of libraries.")
-set(MOTION_INCLUDE_ROOT "../include" CACHE PATH "Location of includes.")
-set(MOTION_ROOT "${PROJECT_SOURCE_DIR}")
+set(EDR_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../lib" CACHE PATH "Location of libraries.")
+set(EDR_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../include" CACHE PATH "Location of includes.")
+set(EDR_ROOT "${PROJECT_SOURCE_DIR}")
 
 # Blok definicje zale¿ne od platformy
 if(WIN32)
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-	set(MOTION_LIBRARIES_PLATFORM "win32" CACHE STRING "Platform")
+	set(EDR_LIBRARIES_PLATFORM "win32" CACHE STRING "Platform")
 elseif(UNIX)
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
-	set(MOTION_LIBRARIES_PLATFORM "linux" CACHE STRING "Platform")
+	set(EDR_LIBRARIES_PLATFORM "linux" CACHE STRING "Platform")
 else()
 	message(FATAL_ERROR "Platform not supported.")
 endif()
 
-set(MOTION_LIBRARIES_ROOT_DEBUG "${MOTION_LIBRARIES_ROOT}/${MOTION_LIBRARIES_PLATFORM}/debug" CACHE PATH "Location of debug libraries")
-set(MOTION_LIBRARIES_ROOT_RELEASE "${MOTION_LIBRARIES_ROOT}/${MOTION_LIBRARIES_PLATFORM}/release" CACHE PATH "Location of release libraries")
+set(EDR_LIBRARIES_ROOT_DEBUG "${EDR_LIBRARIES_ROOT}/${EDR_LIBRARIES_PLATFORM}/debug" CACHE PATH "Location of debug libraries")
+set(EDR_LIBRARIES_ROOT_RELEASE "${EDR_LIBRARIES_ROOT}/${EDR_LIBRARIES_PLATFORM}/release" CACHE PATH "Location of release libraries")
 
 # tylko debug/release - nie dzia³a!
 # set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Typy konfiguracji" FORCE)
@@ -45,9 +45,17 @@ endif()
 # opcje
 
 # Czy skopiowaæ modu³y (niezlinkowane .so oraz .dll)?
-option(MOTION_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
+option(EDR_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
 # Opcje konfiguracji
 CONFIG_OPTION(VM_ENABLE_EXCEPTIONS "Enable exeptions?" ON)
+
+set(SOURCEGROUP_PRIVATE_HEADERS "Header files" CACHE STRING "Filter for private headers.")
+set(SOURCEGROUP_SOURCES "Source files" CACHE STRING "Filter for sources.")
+set(SOURCEGROUP_PUBLIC_HEADERS "Header files" CACHE STRING "Filter for public headers.")
+set(SOURCEGROUP_UI "UI" CACHE STRING "Filter for .ui files and generated headers.")
+
+option(EDR_VEBOSE_CONFIG "Print verbose info?" OFF)
+set(FIND_VERBOSE ${EDR_VEBOSE_CONFIG})
 
 #---------------------------------------------------
 # wyszukanie potrzebnych bibliotek
@@ -60,14 +68,14 @@ find_package(OSG)
 find_package(Qt)
 find_package(TinyXML)
 #find_package(Prerequisites)
-if (MOTION_ENABLE_TESTS)
+if (EDR_ENABLE_TESTS)
 	find_package(CppUnit)
 endif()
 
 #---------------------------------------------------
 # obs³uga kwestii modu³ów (so dynamicznie wczytywanych oraz dll)
 
-if (MOTION_COPY_MODULES)
+if (EDR_COPY_MODULES)
 	message(STATUS "Copying modules...")
 	# wybieramy listê konfiguracji
 	if ( WIN32 )
@@ -79,7 +87,7 @@ if (MOTION_COPY_MODULES)
 		FIND_COPY_AND_INSTALL_MODULES("${CMAKE_BUILD_TYPE}" "")
 	endif()
 
-	message("Copying finished. You should turn of MOTION_COPY_MODULES option now.")
+	message("Copying finished. You should turn of EDR_COPY_MODULES option now.")
 endif()
 if ( UNIX )
 	# http://www.cmake.org/Wiki/CMake_RPATH_handling
@@ -97,8 +105,8 @@ endif()
 
 #---------------------------------------------------
 # nag³ówki
-#set(MOTION_INCLUDE_ROOT "../include/" CACHE PATH "Location of data.")
-#install(DIRECTORY ${MOTION_DATA_ROOT} DESTINATION bin/ FILES_MATCHING PATTERN "*.png") 
+#set(EDR_INCLUDE_ROOT "../include/" CACHE PATH "Location of data.")
+#install(DIRECTORY ${EDR_DATA_ROOT} DESTINATION bin/ FILES_MATCHING PATTERN "*.png") 
 
 #---------------------------------------------------
 # Projekty sk³adaj¹ce siê z podprojektów dodajamy makrem ADD_PROJECTS,
@@ -121,24 +129,24 @@ ADD_PROJECTS(plugins)
 
 #---------------------------------------------------
 # zaspby
-set(MOTION_DATA_ROOT "${PROJECT_SOURCE_DIR}/../data/" CACHE PATH "Location of data.")
-install(DIRECTORY ${MOTION_DATA_ROOT} DESTINATION bin/ FILES_MATCHING PATTERN "*.png") 
+set(EDR_DATA_ROOT "${PROJECT_SOURCE_DIR}/../data/" CACHE PATH "Location of data.")
+install(DIRECTORY ${EDR_DATA_ROOT} DESTINATION bin/ FILES_MATCHING PATTERN "*.png") 
 
 #---------------------------------------------------
 # testy
-option(MOTION_ENABLE_TESTS "Build test projects?" OFF)
-if (MOTION_ENABLE_TESTS)
-	set(MOTION_TESTS_ROOT "../tests/" CACHE PATH "Location of data.")
-	add_subdirectory(${MOTION_TESTS_ROOT} ${PROJECT_BINARY_DIR}/tests)
+option(EDR_ENABLE_TESTS "Build test projects?" OFF)
+if (EDR_ENABLE_TESTS)
+	set(EDR_TESTS_ROOT "../tests/" CACHE PATH "Location of data.")
+	add_subdirectory(${EDR_TESTS_ROOT} ${PROJECT_BINARY_DIR}/tests)
 endif()
 
 #---------------------------------------------------
 # projekt zasobów
-option(MOTION_ENABLE_SVN_RESOURCES "Enable svn resources?" OFF)
-if(MOTION_ENABLE_SVN_RESOURCES)
-	set(MOTION_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/../resources/" CACHE PATH "Location of resources being part of repository.")
-	add_subdirectory(${MOTION_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
-	install(DIRECTORY ${MOTION_SVN_RESOURCES_ROOT} DESTINATION bin/data/ 
+option(EDR_ENABLE_SVN_RESOURCES "Enable svn resources?" OFF)
+if(EDR_ENABLE_SVN_RESOURCES)
+	set(EDR_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/../resources/" CACHE PATH "Location of resources being part of repository.")
+	add_subdirectory(${EDR_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
+	install(DIRECTORY ${EDR_SVN_RESOURCES_ROOT} DESTINATION bin/data/ 
 		PATTERN ".svn" EXCLUDE
 		PATTERN "CMakeLists.txt" EXCLUDE)
 endif()
