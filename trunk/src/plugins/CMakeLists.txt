@@ -2,7 +2,7 @@ project(plugins)
 set(PROJECTS_NAME plugins)
 
 # animation
-ADD_PROJECT(animation "OSG;QT;core")
+ADD_PROJECT(animation "OSG;QT;core;utils")
 # plugin
 # ADD_PROJECT(OSGPlugin "OSG;vm_core")
 

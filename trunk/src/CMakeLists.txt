@@ -61,7 +61,7 @@ set(FIND_VERBOSE ${EDR_VEBOSE_CONFIG})
 # wyszukanie potrzebnych bibliotek
 
 # Szukamy bibliotek
-#find_package(Boost)
+find_package(Boost)
 #find_package(FFmpeg)
 find_package(OSG)
 #find_package(Stdint)
@@ -122,7 +122,8 @@ endif()
 #ADD_PROJECT(anim "")
 #ADD_PROJECT(main "")
 
-ADD_PROJECT(core "OSG;QT;TINYXML")
+ADD_PROJECT(utils "BOOST")
+ADD_PROJECT(core "utils;OSG;QT;TINYXML")
 ADD_PROJECTS(plugins)
 
 
