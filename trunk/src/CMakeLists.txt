@@ -14,6 +14,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 set(EDR_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../lib" CACHE PATH "Location of libraries.")
 set(EDR_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../include" CACHE PATH "Location of includes.")
 set(EDR_ROOT "${PROJECT_SOURCE_DIR}")
+set(EDR_BUILD_ROOT "${PROJECT_BINARY_DIR}")
 
 # Blok definicje zale¿ne od platformy
 if(WIN32)
@@ -62,9 +63,9 @@ set(FIND_VERBOSE ${EDR_VEBOSE_CONFIG})
 
 # Szukamy bibliotek
 find_package(Boost)
-#find_package(FFmpeg)
+find_package(FFmpeg)
 find_package(OSG)
-#find_package(Stdint)
+find_package(Stdint)
 find_package(Qt)
 find_package(TinyXML)
 #find_package(Prerequisites)

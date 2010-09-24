@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD__UTILS_DEBUG_H__
 #define __HEADER_GUARD__UTILS_DEBUG_H__
 
-#if WIN32
+#if __WIN32__
 #include <crtdbg.h>
 #else
 #include <cassert>
@@ -61,7 +61,7 @@ public:
  *	Definicja asercji.
  */
 #if defined(_DEBUG) || defined(DEBUG)
-#ifdef WIN32
+#ifdef __WIN32__
 #define UTILS_ASSERT(contition, ...) UTILS_MULTISTATEMENT_BEGIN                               \
 if (!(contition)) {                                                                           \
     char __assert_buffer[256];                                                                \
@@ -70,9 +70,9 @@ if (!(contition)) {                                                             
         _CrtDbgBreak();                                                                       \
     }                                                                                         \
 } UTILS_MULTISTATEMENT_END
-#else // WIN32
+#else // __WIN32__
 #define UTILS_ASSERT(condition, msg, ...) assert(condition)
-#endif // WIN32
+#endif // __WIN32__
 #else
 # define UTILS_ASSERT(...)
 #endif

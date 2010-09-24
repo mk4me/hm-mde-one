@@ -7,7 +7,7 @@
 #include <utils/Macros.h>
 #include <utils/System.h>
 
-#if WIN32
+#if __WIN32__
 #include <Windows.h>
 #endif
 #include <utils/Profiler.h>
@@ -262,11 +262,20 @@ std::string Profiler::createCSV()
 
     // pobranie bie¿¹cego czasu
     time_t rawtime;
-    struct tm * timeinfo;
     time ( &rawtime );
+#ifdef __WIN32__
+    struct tm timeinfo;
+    localtime_s(&timeinfo, &rawtime);
+    char timeBuffer[26] = { 0 };
+    asctime_s(timeBuffer, &timeinfo);
+    output<<"Profiling date:\t"<<timeBuffer;
+#else
+    struct tm * timeinfo;
     timeinfo = localtime ( &rawtime );
-
     output<<"Profiling date:\t"<<asctime(timeinfo);
+#endif
+
+
     output<<"Total time:\t"<<tickToSeconds(duration)<<std::endl;
     output<<"Profiler overhead:\t"<<tickToSeconds(overhead)<<std::endl;
 
@@ -297,7 +306,7 @@ void Profiler::addEntry( ProfilerEntry * entry )
     // jest podjête w celu optymalizacji czasowej
     if ( entry->id == ProfilerEntry::InvalidID ) {
         // czemu nie instance.nextID++? poniewa¿ tutaj jest mniejsze prawdopodobieñstwo b³êdu.
-#if WIN32
+#if __WIN32__
         entry->id = InterlockedIncrement(&instance.nextID) - 1;
 #else
         entry->id = ++instance.nextID - 1;
@@ -319,7 +328,7 @@ void Profiler::setThreadEnabled( bool enabled )
         } else {
             disableThread(thread);
         }
-#if WIN32
+#if __WIN32__
     }
     InterlockedExchangeAdd64(&overhead, getTick() - start);
 #else
@@ -346,7 +355,7 @@ Profiler::State* Profiler::getState()
                 result = threadList[idx].second;
             }
         }
-#if WIN32
+#if __WIN32__
     }
     InterlockedExchangeAdd64(&overhead, getTick() - start);
 #else
@@ -520,7 +529,7 @@ const char* ProfilerEntry::getTypeName(int& length) const
 
 const char* ProfilerEntry::getFunctionName() const
 {
-#if defined(WIN32)
+#if defined(__WIN32__)
     const char * end = strrchr(function, ':');
     if ( end ) {
         return end+1;

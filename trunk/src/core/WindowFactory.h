@@ -2,7 +2,7 @@
 #define WINDOWS_FACTORY_H
 
 #include <core/MainWindow.h>
-#include <core/QTMainWindow.h>
+#include "QTMainWindow.h"
 #include <string>
 
 class MainWindowFactory

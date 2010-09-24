@@ -39,6 +39,7 @@
 #include "Mesh.h"
 
 #include "FileReader2Motion.h"
+#include <utils/Debug.h>
 
 
 // helper - this name is quite long...

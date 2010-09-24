@@ -9,9 +9,9 @@
 #ifndef __HEADER_GUARD__SYSTEM_H__
 #define __HEADER_GUARD__SYSTEM_H__
 
-#if defined(WIN32)
+#if defined(__WIN32__)
 #include <Windows.h>
-#elif defined(UNIX)
+#elif defined(__UNIX__)
 #include <time.h>
 #include <pthread.h>
 #include <sys/types.h>
@@ -23,7 +23,7 @@ namespace utils {
 namespace __system {
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef WIN32
+#ifdef __WIN32__
 
 //! Typ tykniêcia zegara.
 typedef long long Tick;

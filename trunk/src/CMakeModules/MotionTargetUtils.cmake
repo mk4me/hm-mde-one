@@ -11,6 +11,7 @@ macro(ON_PROJECT_ADDED name)
 	# co budujemy?
 	get_target_property(BUILD_TYPE ${name} TYPE)
 	
+	# NA RAZIE WY£ACZONY MECHANIZM PRZEKAZYWANIA BIBLIOTEK!
 	# sprawdzamy to po to, ¿eby projekty zale¿ne (klienci bibliotek, testy) 
 	# równie¿ widzia³y te same zale¿ne biblioteki, co projekt
 	if (BUILD_TYPE STREQUAL "STATIC_LIBRARY" OR BUILD_TYPE STREQUAL "SHARED_LIBRARY")
@@ -26,7 +27,7 @@ macro(ON_PROJECT_ADDED name)
 		foreach(value ${DEFAULT_PROJECT_DEPENDENCIES})
 			list(APPEND ${name}_LIBRARIES_PROXY ${${value}_LIBRARIES})
 		endforeach()
-		set(${name}_LIBRARIES ${${name}_LIBRARIES_PROXY} PARENT_SCOPE)
+		#set(${name}_LIBRARIES ${${name}_LIBRARIES_PROXY} PARENT_SCOPE)
 	endif()
 	
 	
@@ -70,7 +71,7 @@ macro(ADD_PROJECT name dependencies)
 		#message("${name}: ${dependencies}")
 		set (DEFAULT_PROJECT_DEPENDENCIES ${dependencies})
 		set (DEFAULT_PROJECT_LIBS)
-		set (DEFAULT_PROJECT_INCLUDES "${PROJECT_SOURCE_DIR};${PROJECT_BINARY_DIR}/${name};${PROJECT_BINARY_DIR};${EDR_INCLUDE_ROOT}" )
+		set (DEFAULT_PROJECT_INCLUDES "${PROJECT_BINARY_DIR}/${name};${EDR_BUILD_ROOT};${EDR_INCLUDE_ROOT};${EDR_ROOT}" )
 		# kopiujemy dane
 		foreach (value ${dependencies})
 			#if (NOT ${createDependency})

@@ -330,7 +330,7 @@ struct ProfilerEntryUpdater
 //! Makro s³u¿¹ce do pomiaru czasu wykonania funkcji. Powinno byæ umieszczane
 //! w pierwszej linii. NIE nale¿y umieszczaæ w funkcjach inline (gdy¿ przestan¹
 //! wtedy byæ inline :))
-#if defined(WIN32)
+#if defined(_MSC_VER)
 #define UTILS_PROFILER_ENTRY \
     static utils::ProfilerEntry __profiler_entry(__FUNCSIG__, __FUNCTION__, __FILE__, __LINE__);\
     utils::ProfilerEntryUpdater __profiler_updater(&__profiler_entry)
@@ -343,7 +343,7 @@ struct ProfilerEntryUpdater
 //! Makro s³u¿¹ce do pomiaru czêœci funkcji. Nazwa mo¿e sk³adaæ siê tylko ze znaków
 //! alfanumerycznych.
 //! \param name Nazwa zakresu
-#if defined(WIN32)
+#if defined(_MSC_VER)
 #define UTILS_PROFILER_SCOPE(name) \
     static utils::ProfilerEntry __scope_entry_##name(__FUNCSIG__, __FUNCTION__ "{" STRINGIZE(name) "}", __FILE__, __LINE__); \
     utils::ProfilerEntryUpdater __scope_updater_##name(&__scope_entry_##name)

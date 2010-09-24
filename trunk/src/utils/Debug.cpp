@@ -1,16 +1,16 @@
 #include <stdarg.h>
 #include <utils/Debug.h>
 
-#ifdef WIN32
+#ifdef __WIN32__
 #include <Windows.h>
 #include <strsafe.h>
 #define snprintf StringCchPrintf
 #define vsnprintf StringCchVPrintf
 #define PRINT OutputDebugString
-#else // WIN32
+#else // __WIN32__
 #include <cstdio>
 #define PRINT printf
-#endif // WIN32
+#endif // __WIN32__
 
 #define BUFFER_SIZE 256
 
