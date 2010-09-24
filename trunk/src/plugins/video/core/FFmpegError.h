@@ -16,7 +16,7 @@ public:
   {}
 
   //! \return Klon obiektu.
-  AVOVERRIDE VideoError * clone() const
+  virtual VideoError * clone() const
   {
     return new FFmpegError(*this);
   }

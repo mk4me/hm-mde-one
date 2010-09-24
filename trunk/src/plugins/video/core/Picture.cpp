@@ -1,5 +1,5 @@
 #include "VMPrivate.h"
-#include "Picture.h"
+#include <plugins/video/core/Picture.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vm {

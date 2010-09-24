@@ -1,7 +1,7 @@
 #include "VMPrivate.h"
 #include "VideoManager.h"
 #include "FFmpegVideoStream.h"
-#include "BufferedVideoStream.h"
+#include <plugins/video/core/BufferedVideoStream.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vm {

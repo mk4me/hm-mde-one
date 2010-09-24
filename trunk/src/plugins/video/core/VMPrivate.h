@@ -42,14 +42,13 @@ extern "C" {
 #include <utils/Profiler.h>
 #include <utils/Enum.h>
 #include <plugins/video/core/Config.h>
+#include <plugins/video/core/PixelFormat.h>
+#include <plugins/video/core/Picture.h>
+#include <plugins/video/core/VideoError.h>
+#include <plugins/video/core/VideoStream.h>
 #include "Utils.h"
-#include "PixelFormat.h"
-#include "Picture.h"
 #include "VideoBufferChunk.h"
 #include "VideoBuffer.h"
-#include "VideoError.h"
-#include "VideoStream.h"
-#include "VideoInput.h"
 #include "VideoManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////

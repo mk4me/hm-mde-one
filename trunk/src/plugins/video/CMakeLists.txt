@@ -41,26 +41,30 @@ set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 
 #------------------------------------------------------------------------------
 # CORE
-set(CORE_H
-	core/BufferedVideoStream.h
+set(CORE_PRIVATE_H
 	core/Converter.h
 	core/FFmpegError.h
 	core/FFmpegVideoStream.h
-	core/Frame.h
-	core/Picture.h
-	core/PixelFormat.h
 	core/Utils.h
 	core/VideoBuffer.h
 	core/VideoBufferChunk.h
-	core/VideoError.h
-	core/VideoInput.h
 	core/VideoManager.h
-	core/VideoStream.h
 	core/VM.h
 	core/VMPrivate.h
 )
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\core" FILES ${CORE_H})
-set(TARGET_H ${TARGET_H} ${CORE_H})
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\core" FILES ${CORE_PRIVATE_H})
+set(TARGET_H ${TARGET_H} ${CORE_PRIVATE_H})
+
+set(CORE_PUBLIC_H
+	${HEADER_PATH}/core/Picture.h
+	${HEADER_PATH}/core/PixelFormat.h
+	${HEADER_PATH}/core/VideoError.h
+	${HEADER_PATH}/core/VideoStream.h
+	${HEADER_PATH}/core/BufferedVideoStream.h
+)
+source_group("${SOURCEGROUP_PUBLIC_HEADERS}\\core" FILES ${CORE_PUBLIC_H})
+set(TARGET_H ${TARGET_H} ${CORE_PUBLIC_H})
+
 
 set(CORE_SRC
 	core/BufferedVideoStream.cpp

@@ -81,7 +81,7 @@ public:                                                     \
 }
 
 #define DEFINE_ENUM_ENCHANCEMENT(TYPE) \
-namespace utils { template <> const __EnumInitializer<TYPE> Enum<TYPE>::initializer = __EnumInitializer<TYPE>(); }
+namespace utils { template <> const __EnumInitializer<TYPE> Enum<TYPE>::initializer = __EnumInitializer<TYPE>(); };
 
 //------------------------------------------------------------------------------
 

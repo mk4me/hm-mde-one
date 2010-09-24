@@ -30,7 +30,6 @@
 #include <plugins/video/core/Picture.h>
 #include <plugins/video/core/VideoError.h>
 #include <plugins/video/core/VideoStream.h>
-#include <plugins/video/core/VideoInput.h>
 #include <plugins/video/core/VideoManager.h>
 
 ////////////////////////////////////////////////////////////////////////////////

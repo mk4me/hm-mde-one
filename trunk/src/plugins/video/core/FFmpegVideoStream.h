@@ -105,15 +105,15 @@ public:
   
 
   //!
-  AVOVERRIDE bool readNext();
+  virtual bool readNext();
   //! 
-  AVOVERRIDE double getFrameTimestamp() const;
+  virtual double getFrameTimestamp() const;
   //!
-  AVOVERRIDE double getFrameEndTimestamp() const;
+  virtual double getNextFrameTimestamp() const;
   //! \retrun Pozycja w strumieniu.
-  AVOVERRIDE double getTime() const;
+  virtual double getTime() const;
   //! \param time Pozycja w Ÿródle.
-  AVOVERRIDE bool setTime(double time);
+  virtual bool setTime(double time);
 
   //! \param callback
   static void setLockManager(LockManager callback);

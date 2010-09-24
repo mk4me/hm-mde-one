@@ -220,7 +220,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
 
 //------------------------------------------------------------------------------
 
-AVOVERRIDE bool FFmpegVideoStream::readNext()
+bool FFmpegVideoStream::readNext()
 {
   VM_FUNCTION_PROLOG;
   if ( frameTimestamp == AV_NOPTS_VALUE ) {
@@ -236,7 +236,7 @@ AVOVERRIDE bool FFmpegVideoStream::readNext()
 
 //------------------------------------------------------------------------------
 
-AVOVERRIDE double FFmpegVideoStream::getTime() const
+double FFmpegVideoStream::getTime() const
 {
   VM_FUNCTION_PROLOG;
   return wantedTime;
@@ -244,7 +244,7 @@ AVOVERRIDE double FFmpegVideoStream::getTime() const
 
 //------------------------------------------------------------------------------
 
-AVOVERRIDE bool FFmpegVideoStream::setTime( double time )
+bool FFmpegVideoStream::setTime( double time )
 {
   VM_FUNCTION_PROLOG;
   //Measurer measurer("setTime");
@@ -336,7 +336,7 @@ AVOVERRIDE bool FFmpegVideoStream::setTime( double time )
 
 //------------------------------------------------------------------------------
 
-AVOVERRIDE double FFmpegVideoStream::getFrameTimestamp() const
+double FFmpegVideoStream::getFrameTimestamp() const
 {
   VM_FUNCTION_PROLOG;
   return timestampToSec(frameTimestamp);
@@ -344,7 +344,7 @@ AVOVERRIDE double FFmpegVideoStream::getFrameTimestamp() const
 
 //------------------------------------------------------------------------------
 
-AVOVERRIDE double FFmpegVideoStream::getFrameEndTimestamp() const
+double FFmpegVideoStream::getNextFrameTimestamp() const
 {
   VM_FUNCTION_PROLOG;
   return timestampToSec(frameTimestamp+frameSpan);

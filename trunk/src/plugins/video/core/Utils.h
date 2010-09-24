@@ -9,7 +9,6 @@ namespace vm {
 
 //! Imitacja s³owa kluczowego "override" z C# wskazuj¹ce, która metoda w klasie
 //! pochodnej stanowi prze³adowanie wirtualnej metody z klasy bazowej.
-#define AVOVERRIDE
 
 //------------------------------------------------------------------------------
 

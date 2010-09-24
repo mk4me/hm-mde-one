@@ -41,6 +41,8 @@
 #include "FileReader2Motion.h"
 #include <utils/Debug.h>
 
+#include <plugins/video/core/PixelFormat.h>
+
 
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*
