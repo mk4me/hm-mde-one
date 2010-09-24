@@ -1,7 +1,7 @@
 #ifndef BASE_SERVICE_H
 #define BASE_SERVICE_H
 
-#include "BaseDataTypes.h"
+#include <core/BaseDataTypes.h>
 
 // in h file
 #define M_DECLARE_CLASS()             \

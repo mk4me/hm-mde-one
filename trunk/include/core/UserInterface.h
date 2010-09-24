@@ -1,7 +1,7 @@
 #ifndef IUSERINTERFACE_H
 #define IUSERINTERFACE_H
 
-#include "MainWindow.h"
+#include <core/MainWindow.h>
 
 class IUserInterface
 {

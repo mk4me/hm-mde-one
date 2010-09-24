@@ -1,7 +1,7 @@
 #ifndef I_SERVICE_MANAGER_H
 #define I_SERVICE_MANAGER_H
 
-#include "IBaseService.h"
+#include <core/IBaseService.h>
 #include <map>
 
 class IBaseService;

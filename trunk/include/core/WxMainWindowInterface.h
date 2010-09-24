@@ -1,7 +1,8 @@
 #ifndef Wx_MAINWINDOW_INTERFACE_H
 #define Wx_MAINWINDOW_INTERFACE_H
 
-#include "MainWindow.h"
+#include <core/MainWindow.h>
+
 
 
 class IWxMainWindow: public IMainWindow

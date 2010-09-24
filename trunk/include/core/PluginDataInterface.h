@@ -1,7 +1,7 @@
 #ifndef PLUGIN_DATA_INTERFACE_H
 #define PLUGIN_DATA_INTERFACE_H
 
-#include "Enumerators.h"
+#include <core/Enumerators.h>
 #include <string>
 
 class IPluginData
