@@ -9,7 +9,7 @@ set(TARGET_TARGETNAME
 set(PRIVATE_H
 	VideoPlugin.h
 )
-#source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
 # nag³ówki publiczne
 string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
@@ -22,8 +22,9 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	VideoPlugin.cpp
 )
-#source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H

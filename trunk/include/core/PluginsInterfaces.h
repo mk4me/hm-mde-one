@@ -1,7 +1,7 @@
 #ifndef PLUGININTERFACES_H
 #define PLUGININTERFACES_H
 
-#include <QtCore/QtPlugin>
+//#include <QtCore/QtPlugin>
 #include <core/Enumerators.h>
 
 class IWidget;
@@ -19,7 +19,7 @@ public:
   virtual int GetWidgetsCount() = 0; 
   virtual IWidget* GetDockWidget(int i = 0) = 0;
   virtual POSITION GetWidgetPos(int i = 0) = 0;
-  virtual std::string GetPluginName() = 0; 
+  virtual const std::string& GetPluginName() = 0; 
 
   virtual void RegisterServices(IServiceManager *pServiceManager) = 0; 
 

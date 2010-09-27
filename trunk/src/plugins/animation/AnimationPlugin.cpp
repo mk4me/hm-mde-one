@@ -68,7 +68,7 @@ POSITION AnimationPlugin::GetWidgetPos( int i /*= 0*/ )
 }
 
 //--------------------------------------------------------------------------------------------------
-std::string AnimationPlugin::GetPluginName()
+const std::string& AnimationPlugin::GetPluginName()
 {
     return _name;
 }

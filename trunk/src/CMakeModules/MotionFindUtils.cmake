@@ -4,7 +4,7 @@ macro(FIND_INIT variable dirName)
 
 	# g³ówne œcie¿ki
 	if (NOT FIND_DISABLE_INCLUDES)
-		set(${variable}_INCLUDE_DIR "${EDR_INCLUDE_ROOT}/${dirName}" CACHE PATH "Location of ${variable} headers.")
+		set(${variable}_INCLUDE_DIR "${EDR_LIBRARIES_INCLUDE_ROOT}/${dirName}" CACHE PATH "Location of ${variable} headers.")
 	endif()
 	set(${variable}_LIBRARY_DIR_DEBUG "${EDR_LIBRARIES_ROOT_DEBUG}/${dirName}" CACHE PATH "Location of ${variable} debug libraries.")
 	set(${variable}_LIBRARY_DIR_RELEASE "${EDR_LIBRARIES_ROOT_RELEASE}/${dirName}" CACHE PATH "Location of ${variable} libraries.")

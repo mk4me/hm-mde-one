@@ -22,7 +22,7 @@ public:
     virtual int GetWidgetsCount(); 
     virtual IWidget *GetDockWidget(int i = 0);
     virtual POSITION GetWidgetPos(int i = 0);
-    virtual std::string GetPluginName(); 
+    virtual const std::string& GetPluginName(); 
     virtual void RegisterServices(IServiceManager *pServiceManager);
 
     virtual void SetScene(osgViewer::Scene *scene); 
