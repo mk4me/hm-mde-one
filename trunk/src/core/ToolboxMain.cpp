@@ -25,8 +25,7 @@
 #include "Logger.h"
 
 #include "ServiceManager.h"
-// Zakomentowa³em wszystkie u¿ycia AnimationService w tym pliku - P. Gwiazdowski
-//#include "../anim/AnimationService.h"
+#include <plugins/animation/AnimationService.h>
 #include "PluginServices.h"
 #include "ModelService.h"
 #include "UserInterfaceService.h"
@@ -109,7 +108,7 @@ void ToolboxMain::InitializeCoreServices()
     m_pServiceManager->RegisterServiceAs(m_pPluginService, PluginService::CLASS_ID); 
 
     //6. Animation Service from plugin
-    //m_pAnimationService = dynamic_cast<AnimationService*>(m_pServiceManager->GetSystemService(AnimationService::CLASS_ID));
+    m_pAnimationService = dynamic_cast<AnimationService*>(m_pServiceManager->GetSystemService(AnimationService::CLASS_ID));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -157,7 +156,7 @@ void ToolboxMain::Clear()
 
     m_pPluginService = NULL;
     m_pUserInterfaceService = NULL;
-    //m_pAnimationService = NULL;
+    m_pAnimationService = NULL;
     m_pModelService = NULL;
     m_pRenderService = NULL;
 
@@ -333,7 +332,7 @@ void ToolboxMain::Open()
 
         m_pModelService->Clear();
         m_pModelService->AddModel(model);
-        //m_pAnimationService->LoadAnimation(model);
+        m_pAnimationService->LoadAnimation(model);
 
 
         // manage scene

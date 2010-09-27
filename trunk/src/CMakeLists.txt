@@ -124,8 +124,9 @@ endif()
 #ADD_PROJECT(main "")
 
 ADD_PROJECT(utils "BOOST")
-ADD_PROJECT(core "utils;OSG;QT;TINYXML")
 ADD_PROJECTS(plugins)
+ADD_PROJECT(core "utils;OSG;QT;TINYXML;plugins")
+
 
 
 

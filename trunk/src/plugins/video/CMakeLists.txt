@@ -7,6 +7,7 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	VideoPlugin.h
 )
 #source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
