@@ -6,14 +6,15 @@
 
 #include <core/GlobalServicesIDs.h>
 #include <core/SimpleFunctors.h>
+#include <core/IModelService.h>
 
-class Model;
+class IModel;
 class ServiceManager;
 
 //--------------------------------------------------------------------------------------------------
 // Model Service
 //--------------------------------------------------------------------------------------------------
-class ModelService: public IBaseService
+class ModelService: public IModelService
 {
 public:
     ModelService();
@@ -22,18 +23,15 @@ public:
     virtual AsyncResult OnTick(double delta); 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
 
-    void AddModel(Model* model);
-    void Set(Model* model, int i = 0);
+    void AddModel(IModel* model);
+    void Set(IModel* model, int i = 0);
     void Clear();
-    Model* GetModel(int i = 0);
-
-protected: 
-
+    IModel* GetModel(int i = 0);
 
 private: 
     M_DECLARE_CLASS(); 
 
-    std::vector<Model* > _modelList;
+    std::vector<IModel* > _modelList;
 
     ServiceManager* m_pServiceManager;
 };

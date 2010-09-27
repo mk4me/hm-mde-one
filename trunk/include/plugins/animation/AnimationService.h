@@ -6,6 +6,7 @@
 #include <string>
 
 #include <plugins/animation/Animation.h>
+#include <core/IAnimationService.h>
 #include <core/GlobalServicesIDs.h>
 #include <core/SimpleFunctors.h>
 
@@ -49,7 +50,7 @@ struct STransform
 //--------------------------------------------------------------------------------------------------
 // Animation Service
 //--------------------------------------------------------------------------------------------------
-class AnimationService: public IBaseService
+class AnimationService: public IAnimationService
 {
 public:
     AnimationService(void);

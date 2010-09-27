@@ -25,7 +25,7 @@
 #include "Logger.h"
 
 #include "ServiceManager.h"
-#include <plugins/animation/AnimationService.h>
+#include <core/IAnimationService.h>
 #include "PluginServices.h"
 #include "ModelService.h"
 #include "UserInterfaceService.h"
@@ -108,7 +108,7 @@ void ToolboxMain::InitializeCoreServices()
     m_pServiceManager->RegisterServiceAs(m_pPluginService, PluginService::CLASS_ID); 
 
     //6. Animation Service from plugin
-    m_pAnimationService = dynamic_cast<AnimationService*>(m_pServiceManager->GetSystemService(AnimationService::CLASS_ID));
+    m_pAnimationService = dynamic_cast<IAnimationService*>(m_pServiceManager->GetSystemService(kCLASSID_AnimationService));
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -57,7 +57,7 @@ set(TARGET_H ${TARGET_H} ${TARGET_UI} ${TARGET_UI_H})
 #------------------------------------------------------------------------------
 
 # kompilacja do wspó³dzielonej biblioteki
-add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})
+add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
 # nag³ówki
 include_directories( ${DEFAULT_PROJECT_INCLUDES} )
 # biblioteki

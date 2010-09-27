@@ -18,7 +18,7 @@
 class PluginService;
 class UserInterfaceService;
 class ServiceManager;
-class AnimationService;
+class IAnimationService;
 class ModelService;
 class RenderService;
 
@@ -88,7 +88,7 @@ private:
     ServiceManager* m_pServiceManager;
     PluginService* m_pPluginService;
     UserInterfaceService* m_pUserInterfaceService;
-    AnimationService* m_pAnimationService;
+    IAnimationService* m_pAnimationService;
     ModelService* m_pModelService;
     RenderService* m_pRenderService;
 

@@ -1,6 +1,6 @@
 #include "ModelService.h"
 
-#include "Model.h"
+#include <core/IModel.h>
 #include "ServiceManager.h"
 
 
@@ -41,13 +41,13 @@ void ModelService::Clear()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ModelService::AddModel( Model* model )
+void ModelService::AddModel( IModel* model )
 {
     _modelList.push_back(model);
 }
 
 //--------------------------------------------------------------------------------------------------
-void ModelService::Set( Model* model, int i /*= 0*/ )
+void ModelService::Set( IModel* model, int i /*= 0*/ )
 {
     if(_modelList.size() > i)
         _modelList[i] = model;
@@ -56,7 +56,7 @@ void ModelService::Set( Model* model, int i /*= 0*/ )
 }
 
 //--------------------------------------------------------------------------------------------------
-Model* ModelService::GetModel( int i /*= 0*/ )
+IModel* ModelService::GetModel( int i /*= 0*/ )
 {
     if(_modelList.size() > i)
         return _modelList[i];
