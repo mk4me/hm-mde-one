@@ -3,7 +3,7 @@ set(PROJECTS_NAME plugins)
 
 # animation
 ADD_PROJECT(animation "OSG;QT;utils")
-ADD_PROJECT(video "OSG;QT;FFMPEG;utils")
+ADD_PROJECT(video "OSG;QT;FFMPEG;STDINT;utils")
 # plugin
 # ADD_PROJECT(OSGPlugin "OSG;vm_core")
 
