@@ -27,7 +27,6 @@ set(PRIVATE_H
 	ModelService.h
 	OsgControlWidget.h
 	PluginServices.h
-	QOSGWidget.h
 	QTMainWindow.h
 	RenderService.h
 	ServiceManager.h
@@ -50,6 +49,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/IAnimationGroup.h
 	${HEADER_PATH}/IAnimationNode.h
 	${HEADER_PATH}/IBaseService.h
+	${HEADER_PATH}/IIdentifiable.h
 	${HEADER_PATH}/IMesh.h
 	${HEADER_PATH}/IModel.h
 	${HEADER_PATH}/IServiceManager.h
@@ -66,6 +66,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/WidgetInterface.h
 	${HEADER_PATH}/WxMainWindowInterface.h
 	${HEADER_PATH}/WxWidgetInterface.h
+	${HEADER_PATH}/QOSGWidget.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -84,7 +85,6 @@ set(TARGET_SRC
 	main.cpp
 	ModelService.cpp
 	PluginServices.cpp
-	QOSGWidget.cpp
 	QTMainWindow.cpp
 	RenderService.cpp
 	ServiceManager.cpp
@@ -148,6 +148,17 @@ set(CONFIG_SRC
 )
 source_group("${SOURCEGROUP_SOURCES}\\config" FILES ${CONFIG_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${CONFIG_SRC})
+
+#------------------------------------------------------------------------------
+# prekompilowany nag³ówek
+set(PRECOMPILED_H CorePCH.h)
+set(PRECOMPILED_SRC CorePCH.cpp)
+SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
+set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
+
 
 #------------------------------------------------------------------------------
 # tworzenie

@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "SkeletonNode.h"
 
 using namespace osg;

@@ -27,7 +27,7 @@ public:
   virtual int GetWidgetsCount(); 
   virtual IWidget* GetDockWidget(int i = 0);
   virtual POSITION GetWidgetPos(int i = 0);
-  virtual const std::string& GetPluginName() = 0; 
+  virtual const std::string& GetPluginName(); 
 
   virtual void RegisterServices(IServiceManager *serviceManager); 
 

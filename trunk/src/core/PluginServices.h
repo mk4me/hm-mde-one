@@ -26,6 +26,7 @@ typedef std::vector<ISystemPlugin* > PluginList;
 //--------------------------------------------------------------------------------------------------
 class PluginService: public IBaseService
 {
+    UNIQUE_ID('PLUG','SRVC');
 public:
     PluginService();
     virtual ~PluginService();

@@ -79,3 +79,7 @@ ON_PROJECT_ADDED(${TARGET_TARGETNAME})
 #		COMMAND ${CMAKE_COMMAND} -E copy ARGS anim.so ../../bin/Linux/plugins/anim.so
 #	)
 #ENDIF()
+
+
+get_target_property(PROP animation LOCATION)
+message("${PROP}")

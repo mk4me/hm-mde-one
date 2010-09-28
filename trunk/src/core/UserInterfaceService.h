@@ -22,6 +22,7 @@
 //--------------------------------------------------------------------------------------------------
 class UserInterfaceService: public IBaseService, public IUserInterface
 {
+    UNIQUE_ID('UI','SRVC');
 public:
     UserInterfaceService();
     virtual ~UserInterfaceService();

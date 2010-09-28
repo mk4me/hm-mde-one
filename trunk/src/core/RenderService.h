@@ -25,6 +25,7 @@ typedef osg::ref_ptr<osg::Group> osgGroupPtr;
 
 class RenderService: public IBaseService
 {
+    UNIQUE_ID('REND','SRVC');
 public:
     RenderService();
     virtual ~RenderService();

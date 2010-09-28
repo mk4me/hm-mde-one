@@ -52,6 +52,7 @@ struct STransform
 //--------------------------------------------------------------------------------------------------
 class AnimationService: public IAnimationService
 {
+    UNIQUE_ID('ANIM','SRVC');
 public:
     AnimationService(void);
 

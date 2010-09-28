@@ -1,9 +1,10 @@
+#include "CorePCH.h"
 // Go to http://dmoulding.googlepages.com/vld 
 // for the Visual Leak Detector for VisualStudio
     
 #include "ToolboxMain.h"
 #include "ui_toolboxmaindeffile.h"
-#include "QOSGWidget.h"
+#include <core/QOSGWidget.h>
 #include "AdapterWidget.h"
 #include "TimeLine.h"
 #include "GridWidget.h"
@@ -92,7 +93,6 @@ void ToolboxMain::InitializeCoreServices()
     m_pModelService = new ModelService();
     m_pRenderService = new RenderService();
     m_pPluginService = new PluginService();
-
 
     //2. Model Service
     m_pServiceManager->RegisterServiceAs(m_pModelService, ModelService::CLASS_ID);
@@ -250,6 +250,7 @@ void ToolboxMain::LoadPlugins()
 
         for(int i = 0; i < (*itr)->GetWidgetsCount(); i++)
         {
+          IWidget* w = (*itr)->GetDockWidget(i);
             QWidget* widget = (QWidget*)(*itr)->GetDockWidget(i);
             tldock->setWidget(widget); 
 

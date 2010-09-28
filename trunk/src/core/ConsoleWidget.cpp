@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "ConsoleWidget.h"
 #include <QtGui/QScrollBar>
 

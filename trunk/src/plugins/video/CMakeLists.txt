@@ -3,19 +3,24 @@ project(video)
 set(TARGET_TARGETNAME
 	video
 )
+
+add_definitions(-D__dll__)
+
 #------------------------------------------------------------------------------
 
 # nag³ówki prywatne
 set(PRIVATE_H
 	VideoPlugin.h
+	VideoWidget.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
 # nag³ówki publiczne
 string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
+	${HEADER_PATH}/VideoService.h
 )
-#source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
+source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 #------------------------------------------------------------------------------
@@ -23,6 +28,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Ÿród³a
 set(TARGET_SRC
 	VideoPlugin.cpp
+	VideoService.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -36,9 +42,10 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 set(TARGET_UI
+	ui/video.ui
 )
-#QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
-#source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
+QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
+source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
 set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 
 #------------------------------------------------------------------------------
@@ -116,7 +123,7 @@ set(QT_USE_QTOPENGL TRUE)
 include(${QT_USE_FILE})
 
 # kompilacja do wspó³dzielonej biblioteki
-add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})
+add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
 # nag³ówki
 include_directories(${DEFAULT_PROJECT_INCLUDES})
 # biblioteki

@@ -2,14 +2,15 @@
 #define BASE_SERVICE_H
 
 #include <core/BaseDataTypes.h>
+#include <core/IIdentifiable.h>
 
 // in h file
 #define M_DECLARE_CLASS()             \
-public:                                      \
+public:                               \
     static const ClassID CLASS_ID;    
 
 // in cpp file
-#define M_DECLARED_CLASS(className, idvalue)  const ClassID className::CLASS_ID = idvalue;
+#define M_DECLARED_CLASS(className, idvalue)  const ClassID className::CLASS_ID = idvalue;                     
 
 enum AsyncResult
 {
@@ -19,7 +20,7 @@ enum AsyncResult
 };
 
 class IServiceManager;
-class IBaseService
+class IBaseService : public IIdentifiable
 {
 public:
     //virtual AsyncResult Initialize() { return AsyncResult_Complete; } 

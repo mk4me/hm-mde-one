@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "Intersection.h"
 
 #include <math.h>

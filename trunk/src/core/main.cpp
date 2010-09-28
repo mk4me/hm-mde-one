@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include <QtGui/QApplication>
 #include "ToolboxMain.h"
 

@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "ModelService.h"
 
 #include <core/IModel.h>

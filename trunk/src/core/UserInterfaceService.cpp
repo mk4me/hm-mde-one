@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "UserInterfaceService.h"
 #include "WindowFactory.h"
 #include <iostream>

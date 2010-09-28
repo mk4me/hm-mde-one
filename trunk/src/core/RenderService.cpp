@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "RenderService.h"
 #include <QtGui/qwidget.h>
 
@@ -64,6 +65,8 @@ void RenderService::Inicialize()
     mainWindow->addDockWidget(Qt::NoDockWidgetArea, dock);
     m_widgetMap["RENDERING_MAIN_WINDOW"] = widget;
 
+
+    
     m_spRoot = new osg::Group();
     m_spRoot->setName("root");
 

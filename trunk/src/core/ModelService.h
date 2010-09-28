@@ -16,6 +16,7 @@ class ServiceManager;
 //--------------------------------------------------------------------------------------------------
 class ModelService: public IModelService
 {
+    UNIQUE_ID('MODL','SRVC');
 public:
     ModelService();
     virtual ~ModelService();

@@ -104,3 +104,20 @@ macro(ADD_PROJECTS name)
 endmacro(ADD_PROJECTS)
 
 ###############################################################################
+
+MACRO(SET_PRECOMPILED_HEADER header source sources)
+	if(MSVC)
+		get_filename_component(_basename ${header} NAME_WE)
+		set(_binary "${CMAKE_CURRENT_BINARY_DIR}/${_basename}.pch")
+		set_source_files_properties(${source}
+			PROPERTIES COMPILE_FLAGS "/Yc\"${header}\" /Fp\"${_binary}\""
+			OBJECT_OUTPUTS "${_binary}")
+		set_source_files_properties(${sources}
+			PROPERTIES COMPILE_FLAGS "/Yu\"${_binary}\" /FI\"${_binary}\" /Fp\"${_binary}\""
+			OBJECT_DEPENDS "${_binary}")  
+	else()
+		add_definitions(-DDISABLE_PRECOMPILED_HEADERS)
+	endif()
+ENDMACRO(SET_PRECOMPILED_HEADER)
+
+###############################################################################

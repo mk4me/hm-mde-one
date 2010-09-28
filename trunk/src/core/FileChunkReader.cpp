@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "FileChunkReader.h"
 #include <core/ModelData.h>
 

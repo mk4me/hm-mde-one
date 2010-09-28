@@ -1,3 +1,4 @@
+
 #include <iostream>
 //#include <stack> // TODO: Wszystko std musi byæ w przysz³oœci na STLport (sugestia)
 

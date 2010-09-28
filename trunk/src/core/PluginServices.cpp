@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "PluginServices.h"
 #include <iostream>
 #include <QtGui/QMainWindow>

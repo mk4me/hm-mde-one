@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "FileReader2Motion.h"
 #include "FileChunkReader.h"
 #include "Model.h"
