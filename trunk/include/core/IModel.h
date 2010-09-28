@@ -10,6 +10,7 @@ class IMesh;
 class ISkeletonNode;
 struct SSkeleton;
 struct SFAnimation;
+struct SMaterial;
 
 class IModel
 {
@@ -22,6 +23,7 @@ public:
     virtual void SetSkeleton(SSkeleton* skeleton) = 0;
     virtual void SetAnimation(SFAnimation* animation) = 0;
     virtual void SetJoints(std::vector<ISkeletonNode* >* joints) = 0;
+    virtual void ApplyMaterial(std::vector<SMaterial>* materialList, std::wstring textureDir) = 0;
     virtual void* GetSkeletonGroup() = 0;
 
     virtual IMesh* GetMesh(int i = 0) = 0;

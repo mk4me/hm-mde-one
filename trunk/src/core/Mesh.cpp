@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 #include "Intersection.h"
-#include "DataTransfer.h"
+//#include "DataTransfer.h"
 #include <core/Enumerators.h>
 #include <core/Vec3.h>
 #include <core/ModelData.h>
@@ -42,12 +42,12 @@ void Mesh::Clear()
     m_pUVs = NULL;
     m_pTris = NULL;
     m_pTriFlags = NULL;
-	m_pBiNormals = NULL;
-	m_pTangent = NULL;
-	m_pBuffer = NULL;
-	m_pSementicVertexFormat = NULL;
-	m_pFaces = NULL;
-	m_pSkin = NULL;
+    m_pBiNormals = NULL;
+    m_pTangent = NULL;
+    m_pBuffer = NULL;
+    m_pSementicVertexFormat = NULL;
+    m_pFaces = NULL;
+    m_pSkin = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -72,63 +72,43 @@ void Mesh::Deallocate()
     delete[] m_pTriNormals;
 }
 
-//--------------------------------------------------------------------------------------------------
-// Loads a mesh file from disk
-//
-bool Mesh::Load( const char *sFilename )
-{
-    FILE *pFile = fopen( sFilename, "rb" );
-
-    if ( pFile ) 
-    {
-        CDataTransfer LoadIO( pFile, CDataTransfer::FILE_LOAD );
- //       DataIO( LoadIO ); // Read the File
-
-   //     ClearTriFlags();
-   //     CalculateFaceNormals();
-   //     CalculateVertNormals();
-
-        fclose( pFile );
-        return true;
-    }
-    return false;
-}
 
 //--------------------------------------------------------------------------------------------------
 size_t Mesh::GetVertexSize()
 {
-	size_t vertexSize = 0; 
-	for(int i=0; i<m_semanticCount; ++i)
-	{
-		size_t size = 0; 
-		switch(m_pSementicVertexFormat[i].type)
-		{
-		case Position: 
-			size = 3 * SIZES_FLOAT_SIZE; 
-			break; 
-		case Normal: 
-			size = 3 * SIZES_FLOAT_SIZE; 
-			break; 
-		case Binormal: 
-			size = 3 * SIZES_FLOAT_SIZE; 
-			break; 
-		case Tangent: 
-			size = 3 * SIZES_FLOAT_SIZE; 
-			break; 
-		case TexCoord0: 
-			size = 2 * SIZES_FLOAT_SIZE; 
-			break; 
-		default:
-			size = 0; 
-		}
-		vertexSize += size; 
-	}
-	return vertexSize; 
+    size_t vertexSize = 0; 
+    for(int i=0; i<m_semanticCount; ++i)
+    {
+        size_t size = 0; 
+        switch(m_pSementicVertexFormat[i].type)
+        {
+        case Position: 
+            size = 3 * SIZES_FLOAT_SIZE; 
+            break; 
+        case Normal: 
+            size = 3 * SIZES_FLOAT_SIZE; 
+            break; 
+        case Binormal: 
+            size = 3 * SIZES_FLOAT_SIZE; 
+            break; 
+        case Tangent: 
+            size = 3 * SIZES_FLOAT_SIZE; 
+            break; 
+        case TexCoord0: 
+            size = 2 * SIZES_FLOAT_SIZE; 
+            break; 
+        default:
+            size = 0; 
+        }
+        vertexSize += size; 
+    }
+    return vertexSize; 
 }
 
 //--------------------------------------------------------------------------------------------------
 bool Mesh::Inicialize()
 {
+    bool isTexture = false;
     m_vertexCount = m_bufferSize/GetVertexSize();
 
     m_pRootVerts = new CVec3 [m_vertexCount];
@@ -213,6 +193,9 @@ bool Mesh::Inicialize()
 
                 memcpy (&m_pUVs[k].x, &m_pBuffer[indexComplexBuffor], SIZES_FLOAT_SIZE);
                 memcpy (&m_pUVs[k].y, &m_pBuffer[indexComplexBuffor + SIZES_FLOAT_SIZE], SIZES_FLOAT_SIZE);
+
+                texcoords->push_back(osg::Vec2(fabs(m_pUVs[k].x), fabs(m_pUVs[k].y)));
+
                 indexComplexBuffor += size;
                 break; 
 
@@ -224,9 +207,13 @@ bool Mesh::Inicialize()
 
 
     this->setVertexArray(vertices);
-    //   this->setTexCoordArray(0, texcoords);
     this->setNormalArray(normals);
 
+    for(size_t j=0; j<m_semanticCount; j++)
+    {
+        if(m_pSementicVertexFormat[j].type == TexCoord0)
+            this->setTexCoordArray(0, texcoords);
+    }
 
 
     for (int f = 0; f < m_faceCount; f++)
@@ -258,9 +245,7 @@ void Mesh::Update()
 
 
     this->setVertexArray(vertices);
-    //   this->setTexCoordArray(0, texcoords);
     this->setNormalArray(normals);
-
 
 
     for (int f = 0; f < m_faceCount; f++)
@@ -279,10 +264,10 @@ void Mesh::Update()
 // DataIO is used to read or write from/to a file
 // ( in the future this could also be used for cloning, stats, etc. )
 //
-bool Mesh::DataIO( CDataTransfer &IO )
-{
-    return true;
-}
+// bool Mesh::DataIO( CDataTransfer &IO )
+// {
+//     return true;
+// }
 
 //--------------------------------------------------------------------------------------------------
 // Compute the face normals from the crossproduct and put them in m_pTriNormals
@@ -480,7 +465,7 @@ void Mesh::SetName(std::string name)
 //--------------------------------------------------------------------------------------------------
 void Mesh::SetClsid(unsigned char* clasID)
 {
-  //  m_clsid = clasID;
+    //  m_clsid = clasID;
 }
 
 //--------------------------------------------------------------------------------------------------

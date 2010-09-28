@@ -7,6 +7,10 @@
 
 #include <osg/PositionAttitudeTransform>
 #include <osg/Group>
+#include <osg/Texture2D>
+#include <osg/Material>
+#include <osgDB/ReadFile>
+
 #include <core/IModel.h>
 #include <core/IMesh.h>
 
@@ -15,6 +19,7 @@ class ISkeletonNode;
 class SkeletonNode;
 struct SSkeleton;
 struct SFAnimation;
+struct SMaterial;
 
 #define MAX_AFFECTING_BONES 8
 
@@ -27,10 +32,11 @@ public:
 
     virtual void Clear();
     virtual void AddMesh(IMesh* mesh);
-	virtual void InicializeMesh();
+    virtual void InicializeMesh();
     virtual void SetSkeleton(SSkeleton* skeleton);
     virtual void SetAnimation(SFAnimation* animation);
     virtual void SetJoints(std::vector<ISkeletonNode* >* joints);
+    virtual void ApplyMaterial(std::vector<SMaterial>* materialList, std::wstring textureDir);
     virtual void* GetSkeletonGroup();
 
     virtual IMesh* GetMesh(int i = 0);
@@ -42,7 +48,7 @@ public:
 
 private:
     void CreateArrayOfJoints(SkeletonNode* bone);
- 
+
     std::vector<ISkeletonNode* >* m_pJoints;
     SSkeleton* m_pSkeleton;
     SFAnimation* m_pAnimation;

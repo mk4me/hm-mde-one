@@ -5,7 +5,7 @@
 #include <core/ModelData.h>
 #include <core/IMesh.h>
 
-class CDataTransfer;
+//class CDataTransfer;
 class CVec3;
 
 typedef unsigned char byte;
@@ -51,8 +51,7 @@ public:
     virtual void SetFaces(SFace* val);//
     virtual void SetSkin(SSkin* val);//
 
-    virtual bool DataIO(class CDataTransfer& IO);//
-    virtual bool Load(const char *sFilename);//
+    //virtual bool DataIO(class CDataTransfer& IO);//
     virtual bool Inicialize();//
 
     virtual int FrustumSelect(CVec3 Normals[4], CVec3 Points[8]);//
@@ -105,7 +104,7 @@ private:
     SSkin*	m_pSkin;
 
     //TODO : dodane na przysz³oœæ, w ramch obs³ugi zaznaczania elementów siatki
-    // IModel	
+    // NewMesh	
     int m_nbTris;
     CVec3 *m_pTriNormals;
     unsigned int *m_pTris;

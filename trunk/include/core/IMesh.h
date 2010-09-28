@@ -2,7 +2,7 @@
 #define I_MESH_H
 
 
-class CDataTransfer;
+//class CDataTransfer;
 class CVec3;
 struct SVertexElement;
 struct SFace;
@@ -51,9 +51,8 @@ public:
     virtual void SetFaceCount(int val) = 0;
     virtual void SetFaces(SFace* val) = 0;
     virtual void SetSkin(SSkin* val) = 0;
- 
-    virtual bool DataIO(class CDataTransfer& IO) = 0;
-    virtual bool Load(const char *sFilename) = 0;
+
+    //virtual bool DataIO(class CDataTransfer& IO) = 0;
     virtual bool Inicialize() = 0;
 
     virtual int FrustumSelect(CVec3 Normals[4], CVec3 Points[8]) = 0;

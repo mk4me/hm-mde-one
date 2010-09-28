@@ -2,8 +2,11 @@
 
 #include "Mesh.h"
 #include "SkeletonNode.h"
+#include <core/FModel.h>
 
 
+using namespace osg;
+using namespace std;
 
 //--------------------------------------------------------------------------------------------------
 Model::Model()
@@ -57,10 +60,40 @@ IMesh* Model::GetMesh( int i /*= 0*/ )
 //--------------------------------------------------------------------------------------------------
 void Model::InicializeMesh()
 {
-	for(std::vector<IMesh* >::iterator it = m_meshList.begin(); it != m_meshList.end(); it++)
-	{
-		(*it)->Inicialize();
-	}
+    for(std::vector<IMesh* >::iterator it = m_meshList.begin(); it != m_meshList.end(); it++)
+    {
+        (*it)->Inicialize();
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void Model::ApplyMaterial(std::vector<SMaterial>* materialList, std::wstring textureDir)
+{
+    if (materialList && materialList->size() > 0)
+    {
+        texmap::iterator i;
+        if ((i = (*materialList)[0].texture_list.find(ETextureType::DIFFUSE_MAP)) != (*materialList)[0].texture_list.end())
+        {
+            Texture2D* tex = new Texture2D();
+
+            wstring path = textureDir + L"/" + i->second;
+            tex->setDataVariance(osg::Object::DYNAMIC); 
+            osg::Image* klnFace = osgDB::readImageFile(string(path.begin(), path.end()));
+            if (!klnFace) 
+                return;
+
+            tex->setImage(klnFace);
+
+            StateSet* stateOne = new StateSet();
+            stateOne->setTextureAttributeAndModes(0, tex, osg::StateAttribute::OVERRIDE|StateAttribute::ON);
+
+            for(std::vector<IMesh* >::iterator it = m_meshList.begin(); it != m_meshList.end(); it++)
+            { 
+                if(dynamic_cast<Mesh*>(*it))
+                    dynamic_cast<Mesh*>(*it)->setStateSet(stateOne);
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -115,7 +148,7 @@ std::vector<ISkeletonNode* >* Model::GetJoints()
             return m_pJoints;
         }
     }
-    
+
     return NULL;
 }
 

@@ -9,6 +9,8 @@
 #include "AnimationGroup.h"
 #include "SkeletonNode.h"
 
+#include <core/dae2Motion.h>
+
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*
 
@@ -23,76 +25,80 @@ FileChunkReader *m_pFileReader;
 //--------------------------------------------------------------------------------------------------
 void FileReader2Motion::ReadFile( const std::string& file, Model* model )
 {
-	wstring fmodel(file.begin(), file.end());
+    // opcjnalnie ob³ugujemy tylko format TBS;
 
-	SFModel* fmodel_file = new SFModel(fmodel);
-	if (!fmodel_file->properly_loaded)
-		return;
+    wstring fmodel(file.begin(), file.end());
 
-	fmodel_file->path = fmodel.substr(0, fmodel.find_last_of(L'/'));
+    SFModel* fmodel_file = new SFModel(fmodel);
+    if (!fmodel_file->properly_loaded)
+        return;
 
-	// path of file containing mesh
-	wstring model_name = fmodel_file->path + L'/' + fmodel_file->file_name;
 
-	LoadMesh(&model_name, model);
-	model->InicializeMesh();
+    fmodel_file->path = fmodel.substr(0, fmodel.find_last_of(L'/'));
+
+    // path of file containing mesh
+    wstring model_name = fmodel_file->path + L'/' + fmodel_file->file_name;
+
+    LoadMesh(&model_name, model);
+    model->InicializeMesh();
 
     if (!LoadSkeleton(model))
         return;
 
     LoadAnimation(fmodel_file, model);
+    model->ApplyMaterial(&fmodel_file->material_list, fmodel_file->path);
 }
 
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadMesh(std::wstring* address, Model* model)
 {
-	FILE* meshFile = NULL;
-	std::string straddress(address->begin(), address->end());
+    FILE* meshFile = NULL;
+    std::string straddress(address->begin(), address->end());
 
-	m_pFileReader = new FileChunkReader(straddress);
-	m_pFileReader->LoadMesh(model);
+    m_pFileReader = new FileChunkReader(straddress);
+    m_pFileReader->LoadMesh(model);
 
-	return true;
+    return true;
 }
 
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadAnimation( SFModel* fmodel, Model* model )
 {
-        SFAnimation* animations = new SFAnimation();
+    SFAnimation* animations = new SFAnimation();
 
-        vector<SkeletonNode*> bones;
-        CreateArrayHoldingBones(&bones, model);
+    vector<SkeletonNode*> bones;
+    CreateArrayHoldingBones(&bones, model);
 
-        for(vector<std::wstring>::iterator i = fmodel->animation_list.begin(); i != fmodel->animation_list.end(); ++i)
+    for(vector<std::wstring>::iterator i = fmodel->animation_list.begin(); i != fmodel->animation_list.end(); ++i)
+    {
+        wstring address = fmodel->path + L'/' + *i;
+
+        if(IsSkeletalAnimation(&address) && !bones.empty())
         {
-            wstring address = fmodel->path + L'/' + *i;
-
-            if(IsSkeletalAnimation(&address) && !bones.empty())
+            SSkeletonAnimation* animation = new SSkeletonAnimation();
+            if (!LoadSkeletalAnimationFromFile(&address, animation))
             {
-                SSkeletonAnimation* animation = new SSkeletonAnimation();
-                if (!LoadSkeletalAnimationFromFile(&address, animation))
-                {
-                    delete animation;
-                    return false;
-                }
-
-                animations->m_skeletonAanimation.insert(make_pair<wstring, SSkeletonAnimation*>(*i, animation));
-                InicializeSkeletalAnimation(&(*i), animation, &bones);
-
-            }
-            else if(IsMeshAnimation(&address))
-            {
-                // TODO:
-                // na razie zakldam, ze nie jest to potrzebne
-                // aczkolwiek...
-                assert(false);
-            }
-            else
+                delete animation;
                 return false;
-        }
+            }
 
-        model->SetAnimation(animations);
-        return true;
+            animations->m_skeletonAanimation.insert(make_pair<wstring, SSkeletonAnimation*>(*i, animation));
+            InicializeSkeletalAnimation(&(*i), animation, &bones);
+
+        }
+        else if(IsMeshAnimation(&address))
+        {
+            // TODO:
+            // na razie zakldam, ze nie jest to potrzebne
+            // aczkolwiek...
+            assert(false);
+        }
+        else
+            return false;
+    }
+
+    model->SetAnimation(animations);
+    return true;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -143,7 +149,7 @@ bool FileReader2Motion::IsSkeletalAnimation(std::wstring* address)
         {	fclose(file); return false;	}
         if (chunk_header != FMD_HEADER)
         {	fclose(file); return false;	}
-        if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
+        if (fread(&length, INT_SIZE, 1, file) != 1)
         {	fclose(file); return false;	}
 
         if (length > 6)
@@ -153,7 +159,7 @@ bool FileReader2Motion::IsSkeletalAnimation(std::wstring* address)
             {	fclose(file); return false;	}
             if (chunk_header != FMD_PLUGIN)
             {	fclose(file); return false;	}
-            if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
+            if (fread(&length, INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             if (length > 6)
@@ -195,7 +201,7 @@ bool FileReader2Motion::LoadSkeletalAnimationFromFile(std::wstring* address, SSk
         // FMD
         if (fread(&chunkHeader, SHORT_INT_SIZE, 1, file) != 1)
         {	fclose(file); return false;	}
-        if (fread(&fileSize, SIZES_INT_SIZE, 1, file) != 1)
+        if (fread(&fileSize, INT_SIZE, 1, file) != 1)
         {	fclose(file); return false;	}
 
         //CLSID + FMD_PLUGIN
@@ -213,7 +219,7 @@ bool FileReader2Motion::LoadSkeletalAnimationFromFile(std::wstring* address, SSk
             {	fclose(file); return false;	}
             if (chunkHeader != FMD_SKEL_ANIM)
             {	fclose(file); return false;	}
-            if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
+            if (fread(&length, INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             // FMD_STRING - animation name
@@ -221,18 +227,18 @@ bool FileReader2Motion::LoadSkeletalAnimationFromFile(std::wstring* address, SSk
             {	fclose(file); return false;	}
             if (chunkHeader != FMD_STRING)
             {	fclose(file); return false;	}
-            if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
+            if (fread(&length, INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             length -= HEADER_SIZE;
             char* buff = new char [length];
-            if (fread(buff, SIZES_CHAR_SIZE * length, 1, file) != 1)
+            if (fread(buff, CHAR_SIZE * length, 1, file) != 1)
             {	delete [] buff; fclose(file); return false;	}
             anim->name = string(buff);
             delete [] buff;
 
             // bones count		
-            if (fread(&anim->bones_count, SIZES_INT_SIZE, 1, file) != 1)
+            if (fread(&anim->bones_count, INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             anim->bones = new SSkeletalAnimationBone [anim->bones_count];
@@ -241,11 +247,11 @@ bool FileReader2Motion::LoadSkeletalAnimationFromFile(std::wstring* address, SSk
             for (int b = 0; b < anim->bones_count; ++b)
             {
                 // bone id
-                if (fread(&anim->bones[b].bone_id, SIZES_INT_SIZE, 1, file) != 1)
+                if (fread(&anim->bones[b].bone_id, INT_SIZE, 1, file) != 1)
                 {	fclose(file); return false;	}
 
                 // key count
-                if (fread(&anim->bones[b].n, SIZES_INT_SIZE, 1, file) != 1)
+                if (fread(&anim->bones[b].n, INT_SIZE, 1, file) != 1)
                 {	fclose(file); return false;	}
 
                 anim->bones[b].frames = new SKeyFrame [anim->bones[b].n];
@@ -328,7 +334,7 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
         {	fclose(file); return false;	}
         if (chunk_header != FMD_HEADER)
         {	fclose(file); return false;	}
-        if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
+        if (fread(&length, INT_SIZE, 1, file) != 1)
         {	fclose(file); return false;	}
 
         if (length > 6)
@@ -338,7 +344,7 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
             {	fclose(file); return false;	}
             if (chunk_header != FMD_PLUGIN)
             {	fclose(file); return false;	}
-            if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
+            if (fread(&length, INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             if (length > 6)
