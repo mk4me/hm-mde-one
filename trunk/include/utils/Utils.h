@@ -69,6 +69,18 @@ inline T sign(T value)
 
 //------------------------------------------------------------------------------
 
+//! Zwraca znak liczby. U¿ywane do uproszczenia mno¿enia.
+//! \param value
+//! \return 1 albo -1
+template <class T, size_t Size>
+inline size_t length(const T (&fixedArray)[Size])
+{
+  return Size;
+}
+
+
+//------------------------------------------------------------------------------
+
 struct NullType {};
 
 //------------------------------------------------------------------------------

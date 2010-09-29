@@ -9,6 +9,9 @@
 #ifndef __HEADER_GUARD__VIDEOWIDGET_H__
 #define __HEADER_GUARD__VIDEOWIDGET_H__
 
+#include <vector>
+#include <osg/ImageStream>
+#include <osgViewer/Viewer>
 #include <core/QOSGWidget.h>
 #include "ui_video.h"
 
@@ -19,16 +22,15 @@ private:
     QOSGViewer* viewer;
 
 public:
-    VideoWidget()
-    {
-        setupUi(this); 
-        viewer = new QOSGViewer(this, "OsgViewer");
-        GLWidget->addWidget( viewer );
-    }
+    VideoWidget();
 
     virtual ~VideoWidget()
     {
     }
+
+    static void configureView(bool vertically, bool horizontally,
+      std::vector<osg::Image*> &images, std::vector<osg::ImageStream*> &streams, 
+      osgViewer::Viewer &viewer, bool textureRect);
 };
 
 #endif  // __HEADER_GUARD__VIDEOWIDGET_H__

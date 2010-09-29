@@ -60,7 +60,7 @@ QOSGWidget::QOSGWidget( QWidget * parent, const char * name, const QGLWidget * s
 {
     graphicsWindow = new osgViewer::GraphicsWindowEmbedded(0,0,width(),height());
 #if USE_QT4
-    setFocusPolicy(Qt::ClickFocus);
+    setFocusPolicy(Qt::WheelFocus);
 #else
     setFocusPolicy(QWidget::ClickFocus);
 #endif
@@ -75,7 +75,7 @@ void QOSGWidget::resizeGL( int width, int height )
 void QOSGWidget::keyPressEvent( QKeyEvent* event )
 {
 #if USE_QT4
-    graphicsWindow->getEventQueue()->keyPress( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
+    graphicsWindow->getEventQueue()->keyPress( translateKey(event) );
 #else
     graphicsWindow->getEventQueue()->keyPress( (osgGA::GUIEventAdapter::KeySymbol) event->ascii() );
 #endif
@@ -84,7 +84,7 @@ void QOSGWidget::keyPressEvent( QKeyEvent* event )
 void QOSGWidget::keyReleaseEvent( QKeyEvent* event )
 {
 #if USE_QT4
-    graphicsWindow->getEventQueue()->keyRelease( (osgGA::GUIEventAdapter::KeySymbol) *(event->text().toAscii().data() ) );
+    graphicsWindow->getEventQueue()->keyRelease( translateKey(event) );
 #else
     graphicsWindow->getEventQueue()->keyRelease( (osgGA::GUIEventAdapter::KeySymbol) event->ascii() );
 #endif
@@ -121,6 +121,28 @@ void QOSGWidget::mouseReleaseEvent( QMouseEvent* event )
 void QOSGWidget::mouseMoveEvent( QMouseEvent* event )
 {
     graphicsWindow->getEventQueue()->mouseMotion(event->x(), event->y());
+}
+
+void QOSGWidget::wheelEvent( QWheelEvent* event )
+{
+    using namespace osgGA;
+    GUIEventAdapter::ScrollingMotion motion = event->delta() > 0 ? GUIEventAdapter::SCROLL_UP : GUIEventAdapter::SCROLL_DOWN;
+    double time = graphicsWindow->getEventQueue()->getTime();
+    graphicsWindow->getEventQueue()->mouseScroll(motion);
+}
+
+osgGA::GUIEventAdapter::KeySymbol QOSGWidget::translateKey( QKeyEvent* event )
+{
+    int key = event->key();
+    if ( key == Qt::Key_Alt ) {
+        return osgGA::GUIEventAdapter::KEY_Alt_L;
+    } else if ( key == Qt::Key_Control ) {
+        return osgGA::GUIEventAdapter::KEY_Control_L;
+    } else if ( key == Qt::Key_Shift ) {
+        return osgGA::GUIEventAdapter::KEY_Shift_L;
+    } else {
+        return static_cast<osgGA::GUIEventAdapter::KeySymbol>(*event->text().toAscii().data());
+    }
 }
 
 

@@ -12,6 +12,25 @@ add_definitions(-D__dll__)
 set(PRIVATE_H
 	VideoPlugin.h
 	VideoWidget.h
+	
+	Button.h
+	Callback.h
+	Controller.h
+	HorizontalScrollBar.h
+	ImageCanvas.h
+	Model.h
+	NestedNodeCallback.h
+	Potentiometer.h
+	PotentiometerModel.h
+	StaticKeyboardHandler.h
+	Stream.h
+	StreamsViewOSGWidget.h
+	TimeLine.h
+	TimelineImageStreamWrapper.h
+	TimelineViewOSG.h
+	tm.h
+	View.h
+	WidgetFunctors.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -29,6 +48,20 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	VideoPlugin.cpp
 	VideoService.cpp
+	VideoWidget.cpp
+	
+	Button.cpp
+	Controller.cpp
+	HorizontalScrollBar.cpp
+	ImageCanvas.cpp
+	Model.cpp
+	osgmovie.cpp
+	Potentiometer.cpp
+	PotentiometerModel.cpp
+	StaticKeyboardHandler.cpp
+	StreamsViewOSGWidget.cpp
+	TimelineViewOSG.cpp
+	tm.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -114,6 +147,16 @@ configure_file( "core/Config.h.in" "${PROJECT_BINARY_DIR}/core/Config.h" )
 set(TARGET_H ${TARGET_H} "${PROJECT_BINARY_DIR}/core/Config.h")
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\core" FILES "${PROJECT_BINARY_DIR}/core/Config.h")
 
+#------------------------------------------------------------------------------
+# prekompilowany nag³ówek
+set(PRECOMPILED_H VideoPCH.h)
+set(PRECOMPILED_SRC VideoPCH.cpp)
+SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
+set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
+
 
 #------------------------------------------------------------------------------
 # tworzenie
@@ -124,6 +167,7 @@ include(${QT_USE_FILE})
 
 # kompilacja do wspó³dzielonej biblioteki
 add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
+#add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
 # nag³ówki
 include_directories(${DEFAULT_PROJECT_INCLUDES})
 # biblioteki
