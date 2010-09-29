@@ -1,3 +1,4 @@
+#include "../VideoPCH.h"
 #include <math.h>
 #include <utils/Debug.h>
 #include <utils/Profiler.h>

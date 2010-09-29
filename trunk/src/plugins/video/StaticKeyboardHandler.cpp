@@ -1,3 +1,4 @@
+#include "VideoPCH.h"
 #include <osgWidget/ViewerEventHandlers>
 #include <osgGA/GUIEventAdapter>
 #include "StaticKeyboardHandler.h"

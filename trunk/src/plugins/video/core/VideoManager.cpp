@@ -1,3 +1,4 @@
+#include "../VideoPCH.h"
 #include "VMPrivate.h"
 #include "VideoManager.h"
 #include "FFmpegVideoStream.h"

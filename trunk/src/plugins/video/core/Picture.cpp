@@ -1,3 +1,4 @@
+#include "../VideoPCH.h"
 #include "VMPrivate.h"
 #include <plugins/video/core/Picture.h>
 

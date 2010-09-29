@@ -1,3 +1,4 @@
+#include "../VideoPCH.h"
 #include <iostream>
 
 #include <osg/Notify>

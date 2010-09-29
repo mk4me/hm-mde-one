@@ -1,3 +1,4 @@
+#include "VideoPCH.h"
 #include <core/IServiceManager.h>
 #include <plugins/video/VideoService.h>
 

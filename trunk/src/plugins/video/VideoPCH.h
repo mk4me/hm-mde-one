@@ -32,21 +32,15 @@
 #include <osg/io_utils>
 #include <osg/Timer>
 #include <osg/GLExtensions>
-
 #include <osgViewer/ViewerEventHandlers>
 #include <osgViewer/Viewer>
-
 #include <osgWidget/ViewerEventHandlers>
 #include <osgWidget/WindowManager>
-
 #include <osgText/Text>
-
 #include <osgGA/TrackballManipulator>
 #include <osgGA/StateSetManipulator>
 #include <osgGA/EventVisitor>
-
 #include <osgDB/ReadFile>
-
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>

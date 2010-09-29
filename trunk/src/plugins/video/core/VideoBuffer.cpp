@@ -1,3 +1,4 @@
+#include "../VideoPCH.h"
 #include <iostream>
 #include "VMPrivate.h"
 #include "VideoBufferChunk.h"
