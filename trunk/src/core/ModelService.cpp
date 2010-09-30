@@ -2,6 +2,7 @@
 #include "ModelService.h"
 
 #include <core/IModel.h>
+#include <core/IDataManager.h>
 #include "ServiceManager.h"
 
 
@@ -63,4 +64,18 @@ IModel* ModelService::GetModel( int i /*= 0*/ )
         return _modelList[i];
 
     return NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ModelService::SetModel( IModel* model, IDataManager* manager )
+{
+    Clear();
+    AddModel(model);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ModelService::SetModel( IModel* model )
+{
+    Clear();
+    AddModel(model);
 }

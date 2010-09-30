@@ -9,6 +9,7 @@
 #include <osg/Quat>
 
 #include <core/IModel.h>
+#include <core/IDataManager.h>
 #include <core/IMesh.h>
 #include <core/Vec3.h>
 #include <core/ModelData.h>
@@ -389,4 +390,16 @@ void AnimationService::UpdateMesh()
 std::map<std::string, Animation*>* AnimationService::GetAnimations()
 {
     return &m_animations;
+}
+
+//--------------------------------------------------------------------------------------------------
+void AnimationService::SetModel( IModel* model, IDataManager* manager )
+{
+    LoadAnimation(model);
+}
+
+//--------------------------------------------------------------------------------------------------
+void AnimationService::SetModel( IModel* model )
+{
+    LoadAnimation(model);
 }

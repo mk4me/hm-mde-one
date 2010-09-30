@@ -1,7 +1,7 @@
 #ifndef BASE_DATA_TYPES_H
 #define BASE_DATA_TYPES_H
 
-#include <stdint.h>
+#include <../../stdint/stdint.h>
 
 typedef long ClassID; 
 #define NULL 0

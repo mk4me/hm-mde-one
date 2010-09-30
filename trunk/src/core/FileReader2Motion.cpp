@@ -10,7 +10,8 @@
 #include "AnimationGroup.h"
 #include "SkeletonNode.h"
 
-#include <core/dae2Motion.h>
+#include <core/Vec3.h>
+
 
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*
@@ -18,22 +19,43 @@
 #define POSITION 0
 #define NORMALS  1
 
+std::ifstream m_Fs;
 
 using namespace std;
 
 FileChunkReader *m_pFileReader;
 
+
+unsigned int Read(VOID* pData, unsigned int numBytes)
+{
+    m_Fs.read((char* )pData, numBytes);
+
+    if (m_Fs.gcount() == numBytes)
+        return m_Fs.gcount();
+
+    // cout << "Nie uda³o siê odczytaæ" << numBytes << "pliku, odczytano:  "<<  m_Fs.gcount() << std::endl;
+    return 0;
+}
+
 //--------------------------------------------------------------------------------------------------
 void FileReader2Motion::ReadFile( const std::string& file, Model* model )
 {
-    // opcjnalnie ob³ugujemy tylko format TBS;
+    //TODO: poprawic wizualnie i zrzuwaæ koñcówke na ma³e litery
+    if(file.substr(file.length() - 3, file.length()) == "DAE")
+        ReadFrmDAEFile(file, model);
 
+    if(file.substr(file.length() - 3, file.length()) == "tbs")
+        ReadFromTBSFile(file, model);
+}
+
+//--------------------------------------------------------------------------------------------------
+void FileReader2Motion::ReadFromTBSFile( const std::string& file, Model* model )
+{
     wstring fmodel(file.begin(), file.end());
 
     SFModel* fmodel_file = new SFModel(fmodel);
     if (!fmodel_file->properly_loaded)
         return;
-
 
     fmodel_file->path = fmodel.substr(0, fmodel.find_last_of(L'/'));
 
@@ -48,6 +70,97 @@ void FileReader2Motion::ReadFile( const std::string& file, Model* model )
 
     LoadAnimation(fmodel_file, model);
     model->ApplyMaterial(&fmodel_file->material_list, fmodel_file->path);
+}
+
+//--------------------------------------------------------------------------------------------------
+void FileReader2Motion::ReadFrmDAEFile(const std::string& file, Model* model )
+{
+    // opcjnalnie ob³ugujemy tylko format TBS;
+    m_Fs.open(file.c_str(), ios::binary);
+
+    std::string buffer = "";
+
+    // Jesli jest podany filepath otwieramy lokalny plik
+    if (file != "")
+    {
+        // Musimy odczytaæ ca³y plik
+        CHAR temp[256];
+        ZeroMemory(temp,256);
+        while(Read((VOID*)temp,255) == 255)
+        {
+            temp[255] = '\0';
+            buffer += temp;
+            ZeroMemory(temp,256);
+        }
+        buffer += temp;
+        buffer += "\0";
+    }
+
+    if (buffer != "")
+    {
+        SDea2Motion* io_data = new SDea2Motion();
+        std::cout << file << std::endl;
+        io_data->in_fileName = file;
+        io_data->in_fileName += '\0';
+        std::cout << io_data->in_fileName;
+        io_data->in_buffer = new char[buffer.size()+1];
+        strcpy_s(io_data->in_buffer,buffer.size()+1,buffer.c_str());
+        io_data->in_length = buffer.size();
+        Convert2Motion(io_data);
+
+        std::cout << "Wczytano siatek: " << io_data->out_meshes.size() << std::endl;
+
+        LoadMeshFromDAE(model, io_data);
+        model->InicializeMesh();
+    }
+
+    m_Fs.close();
+}
+
+//--------------------------------------------------------------------------------------------------
+void FileReader2Motion::LoadMeshFromDAE( Model* model, SDea2Motion* io_data )
+{
+    for(unsigned int i=0; i<io_data->out_meshes.size(); i++)
+    {
+        IIMesh* mesh = io_data->out_meshes[i];
+        unsigned int subMeshes = mesh->GetSubMeshCount();	
+        for(unsigned int j=0; j<subMeshes; j++)
+        {
+            float* dataTransform = mesh->GetTranslation();
+            CVec3 transform(dataTransform[0], dataTransform[1], dataTransform[2]);
+            Mesh* mMesh = new Mesh();
+            IISubMesh* subMesh = mesh->GetSubMesh(j);
+            int vertexCount = subMesh->GetVertexCount();
+            CVec3 *vertex = new CVec3[vertexCount];
+            CVec3 *normal = new CVec3[vertexCount];
+            float* vertexData = subMesh->GetPositions();
+            float* normalData = subMesh->GetNormals();
+
+            for(int nTri =0; nTri <= vertexCount;)
+            {
+                vertex[nTri/3]._v[0] = vertexData[nTri];
+                vertex[nTri/3]._v[1] = vertexData[nTri+1];
+                vertex[nTri/3]._v[2] = vertexData[nTri+2];
+
+                vertex[nTri/3] += transform;
+
+                normal[nTri/3]._v[0] = normalData[nTri];
+                normal[nTri/3]._v[1] = normalData[nTri+1];
+                normal[nTri/3]._v[2] = normalData[nTri+2];
+
+                nTri += 3;
+            }   
+
+            mMesh->SetTrisCount(subMesh->GetIndicesCount());
+            mMesh->SetTris(subMesh->GetIndices());
+            mMesh->SetVertexCount(vertexCount/3);
+            mMesh->CalculateFaceNormals();
+            mMesh->SetVertNormals(normal);
+            mMesh->SetVertex(vertexData);
+            mMesh->SetVerts(vertex);
+            model->AddMesh(mMesh);
+        }
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -374,6 +487,9 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadSkeleton(Model* model)
 {
+    if(!model->GetSkeleton())
+        return false;
+
     SSkeleton* skeleton = model->GetSkeleton();
 
     if (model->GetSkeleton() && skeleton->bones_count > 0)

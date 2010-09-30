@@ -42,6 +42,7 @@
 #include <utils/Debug.h>
 
 #include <plugins/video/core/PixelFormat.h>
+#include "DataManager.h"
 
 
 // helper - this name is quite long...
@@ -327,14 +328,11 @@ void ToolboxMain::Open()
 
         Model* model = new Model();
 		FileReader2Motion::ReadFile(fileName.toStdString(), model);
+
+        DataManager* dataManaget = new DataManager(fileName.toStdString());
+        m_pServiceManager->SetModel(model, dataManaget);
        
-        m_pRenderService->SetScene(model);
         m_pRenderService->AddObjectToRender(CreateGrid());
-
-        m_pModelService->Clear();
-        m_pModelService->AddModel(model);
-        m_pAnimationService->LoadAnimation(model);
-
 
         // manage scene
         osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 

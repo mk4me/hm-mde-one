@@ -9,6 +9,8 @@
 #include <core/IModelService.h>
 
 class IModel;
+class IDataManager;
+
 class ServiceManager;
 
 //--------------------------------------------------------------------------------------------------
@@ -23,6 +25,9 @@ public:
 
     virtual AsyncResult OnTick(double delta); 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
+
+    virtual void SetModel(IModel* model, IDataManager* manager);
+    virtual void SetModel(IModel* model);
 
     void AddModel(IModel* model);
     void Set(IModel* model, int i = 0);

@@ -15,14 +15,22 @@
 Mesh::Mesh()
 {
     m_vertexCount = 0;
+    m_faceCount = 0;
     m_nbTris = 0;
 
     m_pVerts = NULL;
-    m_pUVs = NULL;
     m_pVertNormals = NULL;
+    m_pTriNormals = NULL;
+    m_pUVs = NULL;
     m_pTris = NULL;
     m_pTriFlags = NULL;
-    m_pTriNormals = NULL;
+    m_pBiNormals = NULL;
+    m_pTangent = NULL;
+    m_pBuffer = NULL;
+    m_pSementicVertexFormat = NULL;
+    m_pFaces = NULL;
+    m_pSkin = NULL;
+    vertex = NULL;
 
     m_SelectMode = SELECT_ADD;
 }
@@ -37,6 +45,10 @@ Mesh::~Mesh()
 //--------------------------------------------------------------------------------------------------
 void Mesh::Clear()
 {
+    m_vertexCount = 0;
+    m_faceCount = 0;
+    m_nbTris = 0;
+
     m_pVerts = NULL;
     m_pVertNormals = NULL;
     m_pTriNormals = NULL;
@@ -49,6 +61,7 @@ void Mesh::Clear()
     m_pSementicVertexFormat = NULL;
     m_pFaces = NULL;
     m_pSkin = NULL;
+    vertex = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -57,7 +70,7 @@ void Mesh::Allocate( int nVerts, int nTris )
     m_pVerts = new CVec3[ nVerts + 1 ];
     m_pUVs  = new TexCoord[ nVerts + 1 ];
     m_pVertNormals = new CVec3[ nVerts + 1 ];
-    m_pTris = new unsigned int[ nTris*3 + 1 ];
+    m_pTris = new unsigned long[ nTris*3 + 1 ];
     m_pTriFlags = new int[ nTris + 1 ];
     m_pTriNormals = new CVec3[ nTris + 1 ];
 }
@@ -109,6 +122,28 @@ size_t Mesh::GetVertexSize()
 //--------------------------------------------------------------------------------------------------
 bool Mesh::Inicialize()
 {
+    if(m_pBuffer)
+        InicializeFromTBSFile();
+    else
+        InicializeFromDAEFile();
+
+    for (int f = 0; f < m_faceCount; f++)
+    {
+        osg::DrawElementsUInt* face = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
+        //  face->reserve(3);
+        face->push_back(m_pFaces[f].index[0]);
+        face->push_back(m_pFaces[f].index[1]);
+        face->push_back(m_pFaces[f].index[2]);
+
+        this->addPrimitiveSet(face);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Mesh::InicializeFromTBSFile()
+{
     bool isTexture = false;
     m_vertexCount = m_bufferSize/GetVertexSize();
 
@@ -120,8 +155,6 @@ bool Mesh::Inicialize()
     m_pVertNormals = new CVec3[m_vertexCount];
     m_pBiNormals = new CVec3[m_vertexCount];
     m_pTangent = new CVec3[m_vertexCount];
-    //  m_pTris = new unsigned int[ m_nbVerts*3 + 1 ];
-    //  m_pTriFlags = new int[ m_nbVerts + 1 ];
     m_pTriNormals = new CVec3[m_vertexCount];
 
     osg::Vec3Array* vertices     = new osg::Vec3Array();
@@ -206,7 +239,6 @@ bool Mesh::Inicialize()
         } 
     }
 
-
     this->setVertexArray(vertices);
     this->setNormalArray(normals);
 
@@ -215,20 +247,23 @@ bool Mesh::Inicialize()
         if(m_pSementicVertexFormat[j].type == TexCoord0)
             this->setTexCoordArray(0, texcoords);
     }
+}
 
+//--------------------------------------------------------------------------------------------------
+void Mesh::InicializeFromDAEFile()
+{
+    osg::Vec3Array* vertices     = new osg::Vec3Array();
+    osg::Vec2Array* texcoords    = new osg::Vec2Array();
+    osg::Vec3Array* normals      = new osg::Vec3Array();
 
-    for (int f = 0; f < m_faceCount; f++)
+    for(int k = 0; k<m_vertexCount; k++)
     {
-        osg::DrawElementsUInt* face = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
-        //  face->reserve(3);
-        face->push_back(m_pFaces[f].index[0]);
-        face->push_back(m_pFaces[f].index[1]);
-        face->push_back(m_pFaces[f].index[2]);
-
-        this->addPrimitiveSet(face);
+        vertices->push_back(m_pVerts[k]);
+        normals->push_back(m_pVertNormals[k]);
     }
 
-    return true;
+    this->setVertexArray(vertices);
+    this->setNormalArray(normals);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -275,14 +310,18 @@ void Mesh::Update()
 //
 void Mesh::CalculateFaceNormals( )
 {
-    for ( int nTri = 0; nTri < m_nbTris; nTri++ )
+    m_faceCount = m_nbTris/3;
+    m_pFaces = new SFace[m_faceCount];
+    m_nbTris -= 3;
+    for ( int nTri = 0; nTri <= m_nbTris;)
     {
-        int nV = nTri*3;
-        CVec3 P0 = m_pVerts[ m_pTris[ nV ] ];
-        CVec3 P1 = m_pVerts[ m_pTris[ nV+1 ] ];
-        CVec3 P2 = m_pVerts[ m_pTris[ nV+2 ] ];
-        m_pTriNormals[ nTri ] = (P1-P0).CrossProduct(P2-P0);
-        m_pTriNormals[ nTri ].Normalize();
+        m_pFaces[nTri/3].index[0] = m_pTris[ nTri ];
+        m_pFaces[nTri/3].index[1] = m_pTris[ nTri+1 ];
+        m_pFaces[nTri/3].index[2] = m_pTris[ nTri+2 ];
+
+        nTri += 3;
+//         m_pTriNormals[ nTri ] = (P1-P0).CrossProduct(P2-P0);
+//         m_pTriNormals[ nTri ].Normalize();
     }
 }
 
@@ -628,4 +667,40 @@ int& Mesh::GetMaterialIndex()
 void Mesh::SetMaterialIndex(int val) 
 { 
     m_materialIndex = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+int Mesh::GetTrisCount() const
+{ 
+    return m_nbTris;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Mesh::SetTrisCount(int val) 
+{ 
+    m_nbTris = val; 
+}
+
+//--------------------------------------------------------------------------------------------------
+unsigned long * Mesh::GetTris() const
+{
+    return m_pTris;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Mesh::SetTris( unsigned long * val )
+{
+    m_pTris = val;
+}
+
+//--------------------------------------------------------------------------------------------------
+float* Mesh::GetVertex() const
+{
+    return vertex;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Mesh::SetVertex( float* val )
+{
+    vertex = val;
 }

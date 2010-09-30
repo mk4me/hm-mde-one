@@ -1,6 +1,9 @@
 #include "CorePCH.h"
 #include "ServiceManager.h"
 
+#include <core/IModel.h>
+#include <core/IDataManager.h>
+
 
 
 
@@ -67,6 +70,30 @@ void ServiceManager::OnTick(double delta)
     while (it != _services.end())
     {
         it->second->OnTick(delta); 
+        it++; 
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void ServiceManager::SetModel( IModel* model, IDataManager* manager )
+{
+    //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
+    std::map<ClassID, IBaseService *>::iterator it = _services.begin();  
+    while (it != _services.end())
+    {
+        it->second->SetModel(model, manager); 
+        it++; 
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void ServiceManager::SetModel( IModel* model )
+{
+    //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
+    std::map<ClassID, IBaseService *>::iterator it = _services.begin();  
+    while (it != _services.end())
+    {
+        it->second->SetModel(model); 
         it++; 
     }
 }

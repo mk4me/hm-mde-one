@@ -16,6 +16,9 @@
 
 class Model;
 class Mesh;
+class IModel;
+class IDataManager;
+
 class UserInterfaceService;
 //--------------------------------------------------------------------------------------------------
 // Render Service
@@ -31,6 +34,9 @@ public:
     virtual ~RenderService();
     virtual AsyncResult OnTick(double delta); 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
+
+    virtual void SetModel(IModel* model, IDataManager* manager);
+    virtual void SetModel(IModel* model);
 
 
     void TestScreenForNewModel(Model* model);

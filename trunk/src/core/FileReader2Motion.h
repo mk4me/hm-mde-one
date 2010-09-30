@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <core/dae2Motion.h>
 
 class Model;
 class SkeletonNode;
@@ -17,6 +18,11 @@ public:
     static bool LoadAnimation(SFModel* fmodel, Model* model);
 
 private:
+    static void ReadFrmDAEFile(const std::string& file, Model* model);
+    static void ReadFromTBSFile(const std::string& file, Model* model);
+
+    static void LoadMeshFromDAE(Model* model, SDea2Motion* io_data);
+
     static bool CreateArrayHoldingBones(std::vector<SkeletonNode*>* bones, Model* model);
     static bool IsSkeletalAnimation(std::wstring* address);
     static bool LoadSkeletalAnimationFromFile(std::wstring* address, SSkeletonAnimation* anim);

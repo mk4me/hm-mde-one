@@ -19,6 +19,9 @@ enum AsyncResult
     AsyncResult_Complete,
 };
 
+class IModel;
+class IDataManager;
+
 class IServiceManager;
 class IBaseService : public IIdentifiable
 {
@@ -30,6 +33,9 @@ public:
     //virtual AsyncResult SetTimeUpdate(double currentTime) { return AsyncResult_Complete; } 
 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager) {return AsyncResult_Complete; } 
+
+    virtual void SetModel(IModel* model, IDataManager* manager) = 0;
+    virtual void SetModel(IModel* model) = 0;
 
 	virtual ~IBaseService() {}
 };

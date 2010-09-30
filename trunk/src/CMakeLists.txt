@@ -11,9 +11,9 @@ include(MotionTargetUtils)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-set(EDR_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../lib" CACHE PATH "Location of libraries.")
+set(EDR_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../libs/lib" CACHE PATH "Location of libraries.")
 set(EDR_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../include" CACHE PATH "Location of includes.")
-set(EDR_LIBRARIES_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../include" CACHE PATH "Location of includes.")
+set(EDR_LIBRARIES_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../libs/include" CACHE PATH "Location of includes.")
 set(EDR_ROOT "${PROJECT_SOURCE_DIR}")
 set(EDR_BUILD_ROOT "${PROJECT_BINARY_DIR}")
 
@@ -46,6 +46,7 @@ endif()
 #---------------------------------------------------
 # opcje
 
+
 # Czy skopiowaæ modu³y (niezlinkowane .so oraz .dll)?
 option(EDR_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
 # Opcje konfiguracji
@@ -69,6 +70,7 @@ find_package(OSG)
 find_package(Stdint)
 find_package(Qt)
 find_package(TinyXML)
+find_package(Dae2ERD)
 #find_package(Prerequisites)
 if (EDR_ENABLE_TESTS)
 	find_package(CppUnit)
@@ -121,15 +123,14 @@ endif()
 #ADD_PROJECT(tm "OSG;utils")
 #ADD_PROJECT(main "OSG;vm;tm")
 
+
 #ADD_PROJECT(anim "")
 #ADD_PROJECT(main "")
 
 ADD_PROJECT(utils "BOOST")
 ADD_PROJECT(corelib "utils;OSG;QT;TINYXML;STDINT")
-ADD_PROJECT(core "utils;OSG;QT;TINYXML;corelib")
+ADD_PROJECT(core "utils;OSG;QT;TINYXML;corelib;DAE2ERD")
 ADD_PROJECTS(plugins)
-
-
 
 
 #---------------------------------------------------

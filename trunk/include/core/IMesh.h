@@ -36,6 +36,7 @@ public:
     virtual void SetSelectionMode(eSelectionModes nMode) = 0;
     virtual void SetRootVertNormals(CVec3 * val) = 0;
     virtual void SetBuffer(unsigned char * val) = 0;
+    virtual void SetTris(unsigned long * val) = 0;
     virtual void SetClsid(unsigned char* val) = 0;
     virtual void SetVertNormals(CVec3 * val) = 0;
     virtual void SetMaterialIndex(int val) = 0;
@@ -47,8 +48,10 @@ public:
     virtual void SetVertexCount(int val) = 0;
     virtual void SetUVs(TexCoord * val) = 0;
     virtual void SetBufferSize(int val) = 0;
+    virtual void SetTrisCount(int val) = 0;
     virtual void SetVerts(CVec3 * val) = 0;
     virtual void SetFaceCount(int val) = 0;
+    virtual void SetVertex(float* val) = 0;
     virtual void SetFaces(SFace* val) = 0;
     virtual void SetSkin(SSkin* val) = 0;
 
@@ -57,11 +60,15 @@ public:
 
     virtual int FrustumSelect(CVec3 Normals[4], CVec3 Points[8]) = 0;
     virtual int LineSelect(const CVec3 &LP1, const CVec3 &LP2) = 0;
+    virtual unsigned long * GetTris() const = 0;
+    virtual int GetTrisCount() const = 0;
     virtual int& GetMaterialIndex() = 0;
     virtual int& GetSemanticCount() = 0;
     virtual int& GetVertexCount() = 0;
     virtual int& GetBufferSize() = 0;
     virtual int& GetFaceCount() = 0;
+
+    virtual float* GetVertex() const = 0;
 
     virtual size_t GetVertexSize() = 0;
 

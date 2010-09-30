@@ -21,8 +21,8 @@ namespace osgViewer
 
 
 class IModel;
+class IDataManager;
 class IServiceManager;
-
 
 
 
@@ -35,6 +35,9 @@ public:
     virtual ~IAnimationService() {};
     virtual AsyncResult OnTick(double delta) = 0; 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager) = 0; 
+
+    virtual void SetModel(IModel* model, IDataManager* manager) = 0;
+    virtual void SetModel(IModel* model) = 0;
 
     virtual void RegisterAnimation(Animation* object, void (Animation::*fun)(double)) = 0; // add function to caller
     virtual void SetSelectedAnimationName(std::string& name) = 0; // set act selected animation name 

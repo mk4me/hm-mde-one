@@ -11,6 +11,9 @@
 
 #include <core/IBaseService.h>
 
+class IModel;
+class IDataManager;
+
 class VideoService : public IBaseService
 {
   //M_DECLARE_CLASS();
@@ -19,6 +22,9 @@ class VideoService : public IBaseService
 public:
   virtual AsyncResult OnTick(double delta);
   virtual AsyncResult OnAdded(IServiceManager* serviceManager);
+
+  virtual void SetModel(IModel* model, IDataManager* manager);
+  virtual void SetModel(IModel* model);
 };
 
 

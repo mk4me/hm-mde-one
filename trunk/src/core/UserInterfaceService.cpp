@@ -3,6 +3,9 @@
 #include "WindowFactory.h"
 #include <iostream>
 
+#include <core/IModel.h>
+#include <core/IDataManager.h>
+
 using namespace std;
 M_DECLARED_CLASS(UserInterfaceService, kCLASSID_UserInterfaceService);
 
@@ -62,4 +65,16 @@ void UserInterfaceService::InicializeServices( std::string typeName, void *objec
 void* UserInterfaceService::GetMainObject()
 {
     return m_pMainObject;
+}
+
+//--------------------------------------------------------------------------------------------------
+void UserInterfaceService::SetModel( IModel* model, IDataManager* manager )
+{
+
+}
+
+//--------------------------------------------------------------------------------------------------
+void UserInterfaceService::SetModel( IModel* model )
+{
+
 }

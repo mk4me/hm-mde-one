@@ -78,7 +78,19 @@ public:
     virtual SFace* GetFaces() const;//
     virtual SSkin* GetSkin() const;
 
+    virtual int GetTrisCount() const;
+    virtual void SetTrisCount(int val);
+
+    virtual unsigned long * GetTris() const;
+    virtual void SetTris(unsigned long * val);
+
+    virtual float* GetVertex() const;
+    virtual void SetVertex(float* val);
+
 private:
+    void InicializeFromDAEFile();
+    void InicializeFromTBSFile();
+
     size_t GetVertexSize();//
 
     int m_materialIndex; // material index in material set library
@@ -103,13 +115,12 @@ private:
     SFace*	m_pFaces; // faces
     SSkin*	m_pSkin;
 
-    //TODO : dodane na przysz³oœæ, w ramch obs³ugi zaznaczania elementów siatki
-    // NewMesh	
     int m_nbTris;
-    CVec3 *m_pTriNormals;
-    unsigned int *m_pTris;
-    int *m_pTriFlags;
+    unsigned long *m_pTris;
+    float* vertex;
 
+    CVec3 *m_pTriNormals;
+    int *m_pTriFlags;
     eSelectionModes m_SelectMode;
 };
 

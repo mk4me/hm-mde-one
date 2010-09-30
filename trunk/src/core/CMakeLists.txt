@@ -13,6 +13,7 @@ set(TARGET_TARGETNAME
 set(PRIVATE_H
 	AdapterWidget.h
 	ConsoleWidget.h
+	DataManager.h
 	DataTransfer.h
 	FAnimation.h
 	FileChunkReader.h
@@ -77,6 +78,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	AdapterWidget.cpp
 	ConsoleWidget.cpp
+	DataManager.cpp
 	FileChunkReader.cpp
 	FileReader2Motion.cpp
 	FileUtil.cpp

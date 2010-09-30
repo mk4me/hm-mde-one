@@ -9,6 +9,9 @@
 #include <QtCore/QVector>
 #include <QtGui/QWidget>
 
+#include <core/IModel.h>
+#include <core/IDataManager.h>
+
 #include "ServiceManager.h"
 
 #ifdef __WIN32__
@@ -338,4 +341,16 @@ std::string PluginService::getSimpleFileName(const std::string& fileName)
     }
     if (slash2==std::string::npos) return std::string(fileName.begin()+slash1+1,fileName.end());
     return std::string(fileName.begin()+(slash1>slash2?slash1:slash2)+1,fileName.end());
+}
+
+//--------------------------------------------------------------------------------------------------
+void PluginService::SetModel( IModel* model, IDataManager* manager )
+{
+
+}
+
+//--------------------------------------------------------------------------------------------------
+void PluginService::SetModel( IModel* model )
+{
+
 }

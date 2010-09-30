@@ -6,6 +6,9 @@
 #include "Model.h"
 #include "Mesh.h"
 
+#include <core/IModel.h>
+#include <core/IDataManager.h>
+
 #include <osgGA/TerrainManipulator>
 
 
@@ -195,8 +198,22 @@ void RenderService::InicizlizeModelMesh(Model* model)
 
     for( it = meshList.begin(); it != meshList.end(); it++)
     {
-        geode->addDrawable(dynamic_cast<Mesh*>(*it));
+            geode->addDrawable(dynamic_cast<Mesh*>(*it));
     }
 
     model->addChild(geode);
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::SetModel( IModel* model, IDataManager* manager )
+{
+    if(dynamic_cast<Model* >(model))
+        SetScene(dynamic_cast<Model* >(model));
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::SetModel( IModel* model )
+{
+    if(dynamic_cast<Model* >(model))
+        SetScene(dynamic_cast<Model* >(model));
 }
