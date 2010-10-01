@@ -185,7 +185,8 @@ struct SBone
 	osg::ref_ptr<osg::Group> node;
 
 	std::string name;
-	int			parent_id;
+	int	parent_id;
+    int id;
 
 	float translation      [3]; // bone translation vector 
 	float quaternion       [4]; // bone quaternion 

@@ -123,19 +123,25 @@ void FileReader2Motion::LoadMeshFromDAE( Model* model, SDea2Motion* io_data )
     for(unsigned int i=0; i<io_data->out_meshes.size(); i++)
     {
         IIMesh* mesh = io_data->out_meshes[i];
-        unsigned int subMeshes = mesh->GetSubMeshCount();	
+        unsigned int subMeshes = mesh->GetSubMeshCount();
+
         for(unsigned int j=0; j<subMeshes; j++)
         {
-            float* dataTransform = mesh->GetTranslation();
-            CVec3 transform(dataTransform[0], dataTransform[1], dataTransform[2]);
             Mesh* mMesh = new Mesh();
+
+            float* dataTransform = mesh->GetTranslation();
             IISubMesh* subMesh = mesh->GetSubMesh(j);
+
             int vertexCount = subMesh->GetVertexCount();
-            CVec3 *vertex = new CVec3[vertexCount];
-            CVec3 *normal = new CVec3[vertexCount];
             float* vertexData = subMesh->GetPositions();
             float* normalData = subMesh->GetNormals();
+            CVec3 *vertex = new CVec3[vertexCount];
+            CVec3 *normal = new CVec3[vertexCount];
 
+            CVec3 transform(dataTransform[0], dataTransform[1], dataTransform[2]);
+
+            // wczytywanie danych i konwersja do naszej struktury
+            // TODO: zrobiæ refactoring kodu
             for(int nTri =0; nTri <= vertexCount;)
             {
                 vertex[nTri/3]._v[0] = vertexData[nTri];
@@ -151,6 +157,7 @@ void FileReader2Motion::LoadMeshFromDAE( Model* model, SDea2Motion* io_data )
                 nTri += 3;
             }   
 
+            // £adowanie danych
             mMesh->SetTrisCount(subMesh->GetIndicesCount());
             mMesh->SetTris(subMesh->GetIndices());
             mMesh->SetVertexCount(vertexCount/3);

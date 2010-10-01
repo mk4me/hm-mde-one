@@ -12,6 +12,8 @@ set(TARGET_TARGETNAME
 # nag³ówki prywatne
 set(PRIVATE_H
 	AdapterWidget.h
+	ASFAMCData.h
+	ASFAMCParser.h
 	ConsoleWidget.h
 	DataManager.h
 	DataTransfer.h
@@ -35,6 +37,7 @@ set(PRIVATE_H
 	TimeLine.h
 	ToolboxMain.h
 	UserInterfaceService.h
+	Quaternioncal.h
 	WindowFactory.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -77,6 +80,8 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Ÿród³a
 set(TARGET_SRC
 	AdapterWidget.cpp
+	ASFAMCData.cpp
+	ASFAMCParser.cpp
 	ConsoleWidget.cpp
 	DataManager.cpp
 	FileChunkReader.cpp
@@ -103,6 +108,7 @@ set(TARGET_SRC
 	Mesh.cpp
 	Model.cpp
 	SkeletonNode.cpp	
+	Quaternioncal.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
