@@ -205,15 +205,8 @@ void RenderService::InicizlizeModelMesh(Model* model)
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::SetModel( IModel* model, IDataManager* manager )
+void RenderService::SetModel(IDataManager* dataManager )
 {
-    if(dynamic_cast<Model* >(model))
-        SetScene(dynamic_cast<Model* >(model));
-}
-
-//--------------------------------------------------------------------------------------------------
-void RenderService::SetModel( IModel* model )
-{
-    if(dynamic_cast<Model* >(model))
-        SetScene(dynamic_cast<Model* >(model));
+    if(dynamic_cast<Model* >(dataManager->GetModel()))
+        SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
 }

@@ -75,25 +75,13 @@ void ServiceManager::OnTick(double delta)
 }
 
 //--------------------------------------------------------------------------------------------------
-void ServiceManager::SetModel( IModel* model, IDataManager* manager )
+void ServiceManager::SetModel(IDataManager* dataManager )
 {
     //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
     std::map<ClassID, IBaseService *>::iterator it = _services.begin();  
     while (it != _services.end())
     {
-        it->second->SetModel(model, manager); 
-        it++; 
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-void ServiceManager::SetModel( IModel* model )
-{
-    //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
-    std::map<ClassID, IBaseService *>::iterator it = _services.begin();  
-    while (it != _services.end())
-    {
-        it->second->SetModel(model); 
+        it->second->SetModel(dataManager); 
         it++; 
     }
 }

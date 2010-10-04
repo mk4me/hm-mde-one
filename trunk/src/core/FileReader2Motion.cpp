@@ -12,6 +12,8 @@
 
 #include <core/Vec3.h>
 
+#include <core/ASFAMCParser.h>
+
 
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*
@@ -43,9 +45,16 @@ void FileReader2Motion::ReadFile( const std::string& file, Model* model )
     //TODO: poprawic wizualnie i zrzuwaæ koñcówke na ma³e litery
     if(file.substr(file.length() - 3, file.length()) == "DAE")
         ReadFrmDAEFile(file, model);
-
-    if(file.substr(file.length() - 3, file.length()) == "tbs")
+    else if(file.substr(file.length() - 3, file.length()) == "tbs")
         ReadFromTBSFile(file, model);
+    else
+    {
+        ASFAMCParser* object = new ASFAMCParser();
+        object->readAcclaimFiles("D:\\GRANT\\____MotionCaptureProject-Example\\trial\\trial1.asf","D:\\GRANT\\____MotionCaptureProject-Example\\trial\\trial1.amc");
+
+        Channel* joint = object->getCurrentJointPointer();
+        vectorOfJoints* Joints = object->getJoints();
+    }
 }
 
 //--------------------------------------------------------------------------------------------------

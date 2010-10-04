@@ -1,11 +1,15 @@
 #include "DataManager.h"
+
+#include <core/IModel.h>
 #include <tinyxml.h>
 
 
 
 //--------------------------------------------------------------------------------------------------
-DataManager::DataManager(std::string address)
+DataManager::DataManager(std::string address, IModel* model)
 {
+    m_pModel = model;
+
     std::string add(address.begin(), address.end());
     TiXmlDocument doc(add.c_str());
 
@@ -91,4 +95,13 @@ std::string DataManager::GetVideoFilePath(int i)
 int DataManager::GetFilePathCount()
 {
     return m_VideoFilePathList.size();
+}
+
+//--------------------------------------------------------------------------------------------------
+IModel* DataManager::GetModel()
+{
+    if(m_pModel)
+        return m_pModel;
+
+    return NULL;
 }

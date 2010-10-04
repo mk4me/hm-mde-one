@@ -67,15 +67,8 @@ IModel* ModelService::GetModel( int i /*= 0*/ )
 }
 
 //--------------------------------------------------------------------------------------------------
-void ModelService::SetModel( IModel* model, IDataManager* manager )
+void ModelService::SetModel(IDataManager* dataManager )
 {
     Clear();
-    AddModel(model);
-}
-
-//--------------------------------------------------------------------------------------------------
-void ModelService::SetModel( IModel* model )
-{
-    Clear();
-    AddModel(model);
+    AddModel(dataManager->GetModel());
 }

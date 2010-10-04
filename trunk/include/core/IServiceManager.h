@@ -14,8 +14,7 @@ public:
     virtual ~IServiceManager(void) {};
     virtual IBaseService* GetSystemService(ClassID classID) = 0;
     virtual void RegisterServiceAs(IBaseService* newService, ClassID classID) = 0;
-    virtual void SetModel(IModel* model, IDataManager* manager) = 0;
-    virtual void SetModel(IModel* model) = 0;
+    virtual void SetModel(IDataManager* dataManager) = 0;
 };
 
 

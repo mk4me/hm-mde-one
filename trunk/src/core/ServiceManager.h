@@ -18,9 +18,7 @@ public:
     virtual IBaseService* GetSystemService(ClassID classID);
     virtual void RegisterServiceAs(IBaseService* newService, ClassID classID);
 
-    virtual void SetModel(IModel* model, IDataManager* manager);
-    virtual void SetModel(IModel* model);
-
+    virtual void SetModel(IDataManager* dataManager);
     virtual void OnTick(double delta); 
 
 private: 

@@ -17,8 +17,7 @@ public:
     virtual AsyncResult OnTick(double delta) = 0; 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager) = 0; 
 
-    virtual void SetModel(IModel* model, IDataManager* manager) = 0;
-    virtual void SetModel(IModel* model) = 0;
+    virtual void SetModel(IDataManager* dataManager) = 0;
 
     virtual void AddModel(IModel* model) = 0;
     virtual void Set(IModel* model, int i = 0) = 0;

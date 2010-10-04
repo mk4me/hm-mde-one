@@ -329,8 +329,8 @@ void ToolboxMain::Open()
         Model* model = new Model();
 		FileReader2Motion::ReadFile(fileName.toStdString(), model);
 
-        DataManager* dataManaget = new DataManager(fileName.toStdString());
-        m_pServiceManager->SetModel(model, dataManaget);
+        DataManager* dataManaget = new DataManager(fileName.toStdString(), model);
+        m_pServiceManager->SetModel(dataManaget);
        
         m_pRenderService->AddObjectToRender(CreateGrid());
 

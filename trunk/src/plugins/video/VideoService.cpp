@@ -16,12 +16,7 @@ AsyncResult VideoService::OnAdded( IServiceManager* serviceManager )
   return AsyncResult_Complete;
 }
 
-void VideoService::SetModel( IModel* model, IDataManager* manager )
-{
-
-}
-
-void VideoService::SetModel( IModel* model )
+void VideoService::SetModel(IDataManager* dataManager )
 {
 
 }

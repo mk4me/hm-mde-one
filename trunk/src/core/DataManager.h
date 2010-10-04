@@ -3,10 +3,12 @@
 
 #include <core/IDataManager.h>
 
+class IModel;
+
 class DataManager: public IDataManager
 {
 public:
-    DataManager(std::string address);
+    DataManager(std::string address, IModel* model);
     virtual ~DataManager();
 
     virtual void GetVideoFile();
@@ -14,8 +16,12 @@ public:
     virtual std::string GetVideoFilePath(int i);
     virtual int GetFilePathCount();
 
+    virtual IModel* GetModel();
+
 private:
     std::vector<std::string> m_VideoFilePathList;
+
+    IModel* m_pModel;
 };
 
 

@@ -344,13 +344,7 @@ std::string PluginService::getSimpleFileName(const std::string& fileName)
 }
 
 //--------------------------------------------------------------------------------------------------
-void PluginService::SetModel( IModel* model, IDataManager* manager )
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void PluginService::SetModel( IModel* model )
+void PluginService::SetModel(IDataManager* dataManager )
 {
 
 }

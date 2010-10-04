@@ -3,6 +3,7 @@
 
 #include <string>
 
+class IModel;
 
 class IDataManager
 {
@@ -14,6 +15,8 @@ public:
 
     virtual std::string GetVideoFilePath(int i) = 0;
     virtual int GetFilePathCount() = 0;
+
+    virtual IModel* GetModel() = 0;
 };
 
 #endif // I_DATA_MANAGER_H

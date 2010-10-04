@@ -393,13 +393,7 @@ std::map<std::string, Animation*>* AnimationService::GetAnimations()
 }
 
 //--------------------------------------------------------------------------------------------------
-void AnimationService::SetModel( IModel* model, IDataManager* manager )
+void AnimationService::SetModel(IDataManager* dataManager )
 {
-    LoadAnimation(model);
-}
-
-//--------------------------------------------------------------------------------------------------
-void AnimationService::SetModel( IModel* model )
-{
-    LoadAnimation(model);
+    LoadAnimation(dataManager->GetModel());
 }

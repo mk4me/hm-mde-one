@@ -68,13 +68,7 @@ void* UserInterfaceService::GetMainObject()
 }
 
 //--------------------------------------------------------------------------------------------------
-void UserInterfaceService::SetModel( IModel* model, IDataManager* manager )
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void UserInterfaceService::SetModel( IModel* model )
+void UserInterfaceService::SetModel(IDataManager* dataManager )
 {
 
 }

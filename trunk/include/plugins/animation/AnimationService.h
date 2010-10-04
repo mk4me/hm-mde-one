@@ -61,8 +61,7 @@ public:
     virtual AsyncResult OnTick(double delta); 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
 
-    virtual void SetModel(IModel* model, IDataManager* manager);
-    virtual void SetModel(IModel* model);
+    virtual void SetModel(IDataManager* dataManager);
 
     void RegisterAnimation(Animation* object, void (Animation::*fun)(double)); // add function to caller
     void SetSelectedAnimationName(std::string& name); // set act selected animation name 
