@@ -63,6 +63,7 @@ class Channel
 
 
 private:
+    int                 m_id;
     int					type;				// Types are ROOT, JOINT, EFFECTOR, and NOTYPE
     char*				name;
     char*				parent;
@@ -84,6 +85,9 @@ public:
     Channel();
     ~Channel();
     Channel(const Channel& tempJoint);
+
+    void        setID(const int id);
+    int        getID();
 
     // Sets and gets what type of joint the latest addition is.
     void		setType(const char*);

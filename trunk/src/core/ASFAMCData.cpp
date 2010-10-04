@@ -34,6 +34,7 @@ Channel::Channel()
     name = strdup( "" );
     parent = strdup( "" );
     rotationOrder = strdup( "" );
+    m_id = 0;
 }
 
 // Destructor clears all necessary memory.
@@ -70,6 +71,7 @@ Channel::Channel(const Channel& tempJoint)
     eulerMarkers = tempJoint.eulerMarkers;
     quaternionMarkers = tempJoint.quaternionMarkers;
     quatV = tempJoint.quatV;
+    m_id = tempJoint.m_id;
 }
 
 // This returns the smallest Y value the markers have - this is used to calculate where
@@ -282,6 +284,9 @@ void Channel::setRotation(int frameNum, float xRotate, float yRotate, float zRot
 // Gets the requested frame's translation values
 void Channel::getTranslation(int frameNum, float &xTranslate, float &yTranslate, float &zTranslate)
 {
+    if(frames.size() < 1)
+        return;
+
     frameData tempFrameData = frames[ frameNum-1 ];
     if(tempFrameData.size() == 6){
         xTranslate = tempFrameData[0];
@@ -379,6 +384,11 @@ void Channel::computeQuaternions()
 
         tempQuaternion.fromEulerAngles( xRotate, yRotate, zRotate );
         quatV.push_back( tempQuaternion);
+    }
+
+    if((int)frames.size() < 1)
+    {
+        quatV.push_back(Quaternion(1.0f, 0.0f, 0.0f, 0.0f));
     }
 }
 
@@ -603,3 +613,12 @@ void Channel::dump()
     }
 }
 
+void Channel::setID( const int id )
+{
+    m_id = id;
+}
+
+int Channel::getID()
+{
+    return m_id;
+}

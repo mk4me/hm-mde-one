@@ -382,13 +382,13 @@ void ASFAMCParser::readBVHjoint ()
 
 
 // The following function, through the use of a helper function, loads the Acclaim motion capture format
-int ASFAMCParser::readAcclaimFiles( char* ASFFileName, char* AMCFileName ) 
+int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileName ) 
 {
     FILE *tempFilePointerASF ;
     FILE *tempFilePointerAMC ;
 
     //First argument, the ASF file, is opened
-    if ((tempFilePointerASF  = fopen(ASFFileName, "r")) == NULL)
+    if ((tempFilePointerASF  = fopen(ASFFileName.c_str(), "r")) == NULL)
     {
         printf ("The file %s was not opened\n", ASFFileName) ;
         return 0;
@@ -397,7 +397,7 @@ int ASFAMCParser::readAcclaimFiles( char* ASFFileName, char* AMCFileName )
         printf ("The file %s is being processed.\n", ASFFileName) ;
 
     //First argument, the AMC file, is opened
-    if ((tempFilePointerAMC  = fopen(AMCFileName, "r")) == NULL)
+    if ((tempFilePointerAMC  = fopen(AMCFileName.c_str(), "r")) == NULL)
     {
         printf ("The file %s was not opened\n", AMCFileName) ;
         return 0;
@@ -496,6 +496,7 @@ int ASFAMCParser::readAcclaimFiles( char* ASFFileName, char* AMCFileName )
             numOfRoots++      ;
             tempJoint.setType("ROOT") ;													//set the type
             tempJoint.setName("root") ;													//set the name
+            tempJoint.setID(-1);
             //No need to set parent for ROOT...
 
             token = strtok (NULL, " (),\t\n") ;
@@ -563,6 +564,7 @@ int ASFAMCParser::readAcclaimFiles( char* ASFFileName, char* AMCFileName )
             {
                 int readFlag = 0 ;
                 int dofNum   = 0 ;
+                int id = 0;
 
                 if (strcmp (token, "begin") == 0)
                 {
@@ -577,6 +579,8 @@ int ASFAMCParser::readAcclaimFiles( char* ASFFileName, char* AMCFileName )
                         if (strcmp (token, "id") == 0)
                         {
                             token = strtok (NULL, " (),\t\n") ;
+                            id = atoi(token);
+                            tempJoint.setID(id);
                             //							printf ("ID is : %s\n", token) ;
                         }
                         else if (strcmp (token, "name") == 0)

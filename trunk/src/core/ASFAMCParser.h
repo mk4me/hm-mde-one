@@ -33,6 +33,7 @@
 #include <map>
 #include <vector>
 #include <stdio.h>
+#include <string>
 
 #include "ASFAMCData.h"
 
@@ -105,7 +106,7 @@ public:
     int keepAnimating();
 
     // Read ASF and AMC files -> pass an asf filename then an amc one.
-    int readAcclaimFiles( char* ASFFileName, char* AMCFileName ) ;
+    int readAcclaimFiles(std::string ASFFileName, std::string AMCFileName ) ;
 
     // Compute the end effectors for all the joints.
     void computeEffectors();

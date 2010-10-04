@@ -47,14 +47,8 @@ void FileReader2Motion::ReadFile( const std::string& file, Model* model )
         ReadFrmDAEFile(file, model);
     else if(file.substr(file.length() - 3, file.length()) == "tbs")
         ReadFromTBSFile(file, model);
-    else
-    {
-        ASFAMCParser* object = new ASFAMCParser();
-        object->readAcclaimFiles("D:\\GRANT\\____MotionCaptureProject-Example\\trial\\trial1.asf","D:\\GRANT\\____MotionCaptureProject-Example\\trial\\trial1.amc");
-
-        Channel* joint = object->getCurrentJointPointer();
-        vectorOfJoints* Joints = object->getJoints();
-    }
+    else if(file.substr(file.length() - 3, file.length()) == "asf")
+        ReadAcclaimFile(file, model);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -127,6 +121,15 @@ void FileReader2Motion::ReadFrmDAEFile(const std::string& file, Model* model )
 }
 
 //--------------------------------------------------------------------------------------------------
+void FileReader2Motion::ReadAcclaimFile( const std::string& file, Model* model )
+{
+    ASFAMCParser* object = new ASFAMCParser();
+    object->readAcclaimFiles(file, file.substr(0, file.length() - 3) + "amc");
+
+    ParserAcclaimFile2EDR(model, object);
+}
+
+//--------------------------------------------------------------------------------------------------
 void FileReader2Motion::LoadMeshFromDAE( Model* model, SDea2Motion* io_data )
 {
     for(unsigned int i=0; i<io_data->out_meshes.size(); i++)
@@ -177,6 +180,45 @@ void FileReader2Motion::LoadMeshFromDAE( Model* model, SDea2Motion* io_data )
             model->AddMesh(mMesh);
         }
     }
+}
+
+//--------------------------------------------------------------------------------------------------
+void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclaimObject )
+{
+    int bonesCount = acclaimObject->getNumberOfJoints();
+    Channel* joint = acclaimObject->getCurrentJointPointer();
+    vectorOfJoints* Joints = acclaimObject->getJoints();
+
+    SSkeleton* skeleton = new SSkeleton();
+    SBone* bone = new SBone[bonesCount];
+
+    skeleton->bones_count = bonesCount;
+    for(int i = 0; i < bonesCount; i++)
+    {
+        bone[i].name = joint->getName();
+        bone[i].id = joint->getID();
+        bone[i].parent_id = acclaimObject->getJoint(joint->getParent())->getID();
+
+        // get translation
+        joint->getTranslation(1, bone[i].translation[0], bone[i].translation[1], bone[i].translation[2]);
+
+        // get quaternion
+        joint->getAngleAndAxis(1,bone[i].quaternion[3], bone[i].quaternion[0], bone[i].quaternion[1], bone[i].quaternion[2]);
+
+        // number of children
+        bone[i].n = joint->numOfChildren();
+
+        // childs_id
+        bone[i].child_bone_id = new int[joint->numOfChildren()];
+        for(int j = 0; j < joint->numOfChildren(); j++)
+        {
+            bone[i].child_bone_id[j] = acclaimObject->getJoint(joint->getChild(i))->getID();
+        }
+
+        joint++;
+    }
+
+    LoadSkeleton(model);
 }
 
 //--------------------------------------------------------------------------------------------------

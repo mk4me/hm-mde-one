@@ -5,6 +5,8 @@
 #include <vector>
 #include <core/dae2Motion.h>
 
+class ASFAMCParser;
+
 class Model;
 class SkeletonNode;
 struct SSkeletonAnimation;
@@ -20,8 +22,10 @@ public:
 private:
     static void ReadFrmDAEFile(const std::string& file, Model* model);
     static void ReadFromTBSFile(const std::string& file, Model* model);
+    static void ReadAcclaimFile(const std::string& file, Model* model);
 
     static void LoadMeshFromDAE(Model* model, SDea2Motion* io_data);
+    static void ParserAcclaimFile2EDR(Model* model, ASFAMCParser* acclaimObject);
 
     static bool CreateArrayHoldingBones(std::vector<SkeletonNode*>* bones, Model* model);
     static bool IsSkeletalAnimation(std::wstring* address);
