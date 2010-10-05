@@ -206,9 +206,9 @@ void Channel::addFrame(float xTranslate, float yTranslate, float zTranslate, flo
     tempFrameData.push_back( xTranslate );
     tempFrameData.push_back( yTranslate );
     tempFrameData.push_back( zTranslate );
-    tempFrameData.push_back( zRotate );
     tempFrameData.push_back( xRotate );
     tempFrameData.push_back( yRotate );
+    tempFrameData.push_back( zRotate );
     frames.push_back( tempFrameData );
 }
 
@@ -216,9 +216,9 @@ void Channel::addFrame(float xTranslate, float yTranslate, float zTranslate, flo
 void Channel::addFrame(float xRotate, float yRotate, float zRotate)
 {
     frameData tempFrameData;
-    tempFrameData.push_back( zRotate );
     tempFrameData.push_back( xRotate );
     tempFrameData.push_back( yRotate );
+    tempFrameData.push_back( zRotate );
     frames.push_back( tempFrameData );
 }
 

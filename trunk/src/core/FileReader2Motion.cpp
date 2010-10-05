@@ -117,6 +117,7 @@ void FileReader2Motion::ReadFrmDAEFile(const std::string& file, Model* model )
         model->InicializeMesh();
     }
 
+    m_Fs.seekg(0,ios::beg);
     m_Fs.close();
 }
 
@@ -485,7 +486,7 @@ bool FileReader2Motion::InicializeSkeletalAnimation
         // length of entire animation...
 
         // Moze sie zdazyc tak i z animacja rozpocznie sie od pewnego momentu - wtedy dlugosc poczatkowych wezlow bedzie rowna zera - moze sie rozsypac program. 
-        // TODO:  cos z tym zrobic,  stworzycadtwarzanie animacji uwzgledaniajac ten przyapdek
+        // TODO:  cos z tym zrobic,  stworzyc odtwarzanie animacji uwzgledaniajac ten przypadek
         //	if (animLength > 0.0)
         //	{
         animation->setLength(animLength);

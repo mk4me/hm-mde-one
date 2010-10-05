@@ -914,6 +914,7 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
     }
     glPopMatrix();
 
+    // ³adowanie rotacji(qwaternions)
     // Compute Quaternions
     jointPointer = joints.begin();
 
