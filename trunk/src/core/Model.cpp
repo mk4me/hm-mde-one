@@ -146,7 +146,9 @@ std::vector<ISkeletonNode* >* Model::GetJoints()
 
             // create vector of pointers at bones
             m_pJoints = new std::vector<ISkeletonNode*>();
-            CreateArrayOfJoints((SkeletonNode*)skeleton->getChild(0)->asGroup()); 
+            CreateArrayOfJoints((SkeletonNode*)skeleton->asGroup()); 
+
+            // CreateArrayOfJoints((SkeletonNode*)skeleton->getChild(0)->asGroup()); 
 
             return m_pJoints;
         }

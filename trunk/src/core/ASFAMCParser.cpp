@@ -496,7 +496,7 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
             numOfRoots++      ;
             tempJoint.setType("ROOT") ;													//set the type
             tempJoint.setName("root") ;													//set the name
-            tempJoint.setID(-1);
+            tempJoint.setID(0);
             //No need to set parent for ROOT...
 
             token = strtok (NULL, " (),\t\n") ;
@@ -1425,7 +1425,7 @@ Channel* ASFAMCParser::getJoint( const char* jointName )
     for(int Counter=0; Counter<jointPosition; Counter++)
         _joint_pointer++;
 
-    return &(*jointPointer);
+    return &(*_joint_pointer);
 }
 
 int ASFAMCParser::doesExist()

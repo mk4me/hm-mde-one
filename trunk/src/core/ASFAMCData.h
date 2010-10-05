@@ -87,7 +87,7 @@ public:
     Channel(const Channel& tempJoint);
 
     void        setID(const int id);
-    int        getID();
+    int         getID();
 
     // Sets and gets what type of joint the latest addition is.
     void		setType(const char*);

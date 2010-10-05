@@ -197,7 +197,11 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
     {
         bone[i].name = joint->getName();
         bone[i].id = joint->getID();
-        bone[i].parent_id = acclaimObject->getJoint(joint->getParent())->getID();
+
+        if(joint->getType() == CHANNEL_TYPE::ROOT)
+            bone[i].parent_id = -1;
+        else
+            bone[i].parent_id = acclaimObject->getJoint(joint->getParent())->getID();
 
         // get translation
         joint->getTranslation(1, bone[i].translation[0], bone[i].translation[1], bone[i].translation[2]);
@@ -212,12 +216,15 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
         bone[i].child_bone_id = new int[joint->numOfChildren()];
         for(int j = 0; j < joint->numOfChildren(); j++)
         {
-            bone[i].child_bone_id[j] = acclaimObject->getJoint(joint->getChild(i))->getID();
+            bone[i].child_bone_id[j] = (acclaimObject->getJoint(joint->getChild(j)))->getID();
         }
 
         joint++;
     }
 
+    skeleton->bones = bone;
+
+    model->SetSkeleton(skeleton);
     LoadSkeleton(model);
 }
 

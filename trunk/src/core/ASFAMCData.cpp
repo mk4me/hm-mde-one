@@ -285,18 +285,23 @@ void Channel::setRotation(int frameNum, float xRotate, float yRotate, float zRot
 void Channel::getTranslation(int frameNum, float &xTranslate, float &yTranslate, float &zTranslate)
 {
     if(frames.size() < 1)
+    {
+        xTranslate = offset[0];
+        yTranslate = offset[1];
+        zTranslate = offset[2];
         return;
+    }
 
     frameData tempFrameData = frames[ frameNum-1 ];
-    if(tempFrameData.size() == 6){
+//    if(tempFrameData.size() == 6){
         xTranslate = tempFrameData[0];
         yTranslate = tempFrameData[1];
         zTranslate = tempFrameData[2];
-    }
-    else
-    {
-        printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
-    }
+//    }
+//    else
+//    {
+//        printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
+//    }
 }
 
 // Gets the joint's offset from its parent.
