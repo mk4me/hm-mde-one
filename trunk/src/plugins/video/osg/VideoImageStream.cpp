@@ -349,5 +349,26 @@ void VideoImageStream::reloadImage(vm::Picture & picture)
   }
 }
 
+void VideoImageStream::setTargetFormat( vm::PixelFormat targetFormat )
+{
+    if ( targetFormat != this->targetFormat ) {
+
+        if ( targetFormat == vm::PixelFormatYV12 ) {
+            // poniewa¿ wymagamy konwersji w shaderach, ustawiamy aspect ratio
+            setPixelAspectRatio( static_cast<float>(getStream()->getAspectRatio()) * 1.5f );
+        } else {
+            setPixelAspectRatio( static_cast<float>(getStream()->getAspectRatio()));
+        }
+
+        this->targetFormat = targetFormat;
+        int width = currentPicture.width;
+        int height = currentPicture.height;
+        currentPicture.free();
+        currentPicture.format = targetFormat;
+        currentPicture = vm::Picture::create(width, height, targetFormat);
+        reloadImage(currentPicture);
+    }
+}
+
 
 } // namespace vmOSGPlugin

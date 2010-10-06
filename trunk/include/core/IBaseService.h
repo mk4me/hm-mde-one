@@ -3,6 +3,7 @@
 
 #include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
+#include <core/WidgetInterface.h>
 
 // in h file
 #define M_DECLARE_CLASS()             \
@@ -19,6 +20,7 @@ enum AsyncResult
     AsyncResult_Complete,
 };
 
+
 class IModel;
 class IDataManager;
 
@@ -26,6 +28,14 @@ class IServiceManager;
 class IBaseService : public IIdentifiable
 {
 public:
+    //! Us³uga nie musi mieæ wizualnej reprezentacji, wiêc nie zawsze jest
+    //! potrzeba prze³adowywania tej metody.
+    //! \return Widget tworzony przez us³ugê.
+    virtual IWidget* getWidget()
+    {
+        return NULL;
+    }
+
     //virtual AsyncResult Initialize() { return AsyncResult_Complete; } 
     //virtual AsyncResult PostInitialize() { return AsyncResult_Complete; } 
 

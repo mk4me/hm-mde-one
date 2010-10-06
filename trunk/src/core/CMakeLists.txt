@@ -54,6 +54,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/IAnimationNode.h
 	${HEADER_PATH}/IBaseService.h
 	${HEADER_PATH}/IIdentifiable.h
+	${HEADER_PATH}/IDataManager.h
 	${HEADER_PATH}/IMesh.h
 	${HEADER_PATH}/IModel.h
 	${HEADER_PATH}/IServiceManager.h

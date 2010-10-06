@@ -13,17 +13,29 @@
 
 class IModel;
 class IDataManager;
+class IWidget;
+class VideoWidget;
 
 class VideoService : public IBaseService
 {
   //M_DECLARE_CLASS();
   UNIQUE_ID('VIDE','SRVC');
 
-public:
-  virtual AsyncResult OnTick(double delta);
-  virtual AsyncResult OnAdded(IServiceManager* serviceManager);
+private:
+    VideoWidget* widget;
 
-  virtual void SetModel(IDataManager* dataManager);
+public:
+    VideoService();
+
+    inline VideoWidget* getWidget() const
+    { 
+        return widget;
+    }
+
+    virtual AsyncResult OnTick(double delta);
+    virtual AsyncResult OnAdded(IServiceManager* serviceManager);
+
+    virtual void SetModel(IDataManager* dataManager);
 };
 
 

@@ -12,12 +12,15 @@
 #include <string>
 #include <osgViewer/Scene>
 #include <core/PluginsInterfaces.h>
+#include <plugins/video/VideoService.h>
 
 class VideoPlugin : public ISystemPlugin
 {
 private:
   //! Nazwa pluginu.
   std::string name;
+  //!
+  VideoService* service;
 
 public:
   VideoPlugin();

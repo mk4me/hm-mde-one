@@ -12,7 +12,6 @@ add_definitions(-D__dll__)
 set(PRIVATE_H
 	VideoPlugin.h
 	VideoWidget.h
-	
 	Button.h
 	Callback.h
 	Controller.h
@@ -67,9 +66,10 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
+	VideoWidget.h
 )
-#QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
-#source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
+QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 
 #------------------------------------------------------------------------------

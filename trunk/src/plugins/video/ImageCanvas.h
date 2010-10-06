@@ -20,28 +20,23 @@ namespace osgUI {
 
 class ImageCanvas : public osgWidget::Canvas
 {
-public:
-  //! 
-  struct WantedSize : public osg::Referenced
-  {
-    osgWidget::XYCoord size;
-  };
-
 private:
+    //! Indeks obramowania.
+    enum Border {
+        BorderLeft,
+        BorderTop,
+        BorderRight,
+        BorderBottom
+    };
+
   //! Obrazek.
   osg::ref_ptr<osg::Image> image;
   //! Prostok¹t zawieraj¹cy obrazek.
   osg::ref_ptr<osgWidget::Widget> rect;
   //! Podpis.
   osg::ref_ptr<osgWidget::Label> label;
-  //!
-  osg::ref_ptr<osgWidget::Widget> borderLeft;
-  //!
-  osg::ref_ptr<osgWidget::Widget> borderTop;
-  //!
-  osg::ref_ptr<osgWidget::Widget> borderRight;
-  //!
-  osg::ref_ptr<osgWidget::Widget> borderBottom;
+  //! Ramka.
+  osg::ref_ptr<osgWidget::Widget> border[4];
   //! Czy rozmiar ma odpowiadaæ rozmiarowi obrazka?
   bool keepImageRatio;
 
@@ -56,6 +51,8 @@ public:
   //! \param canvas
   //! \param copyop
   ImageCanvas(const ImageCanvas& canvas, const osg::CopyOp& copyop);
+
+  virtual ~ImageCanvas();
 
   //! \param maxWidth
   //! \param maxHeight
@@ -102,7 +99,7 @@ public:
   //! \return Kolor obramowania.
   inline osgWidget::Color getBorderColor() const
   {
-    return borderBottom->getColor();
+    return border[BorderTop]->getColor();
   }
   //! \param r
   //! \param g
@@ -117,15 +114,23 @@ public:
   void setBorderColor(osgWidget::Color color);
 
   //! \return Czy pokazuje etykietê?
-  inline bool isShowingLabel() const
+  inline bool getShowLabel() const
   {
     return label->getParent() == this;
   }
   //! \param value Czy etykieta ma byæ pokazywana?
+
   void setShowLabel(bool value);
+  //! \return Czy pokazuje obramowanie?
+  inline bool getShowBorder() const
+  {
+      return border[BorderTop]->getParent() == this;
+  }
+  //! \param value Czy obramowanie ma byæ pokazywane?
+  void setShowBorder(bool value);
 
   //! \return
-  inline bool isKeepingImageRatio() const
+  inline bool getKeepImageRatio() const
   { 
     return keepImageRatio;
   }
@@ -141,8 +146,6 @@ protected:
   osgWidget::Window::Sizes _getWidthImplementation() const;
   //! Prze³adowanie metody obliczaj¹cej rozmiar.
   osgWidget::Window::Sizes _getHeightImplementation() const;
-
-
 };
 
 

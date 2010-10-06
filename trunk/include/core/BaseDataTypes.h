@@ -9,7 +9,7 @@ typedef long ClassID;
 //! Identyfikator. Jest to pewien kompromis miêdzy zapewnieniem unikalnoœci
 //! bez potrzeby definiowania sta³ych w jednym pliku a mo¿liwoœci¹
 //! "rêcznego" odczytu (utrudnione w przypadku GUIDów).
-struct UniqueId
+struct UniqueID
 {
   union {
     //! Dane w postaci tablicy bajtów.
@@ -34,40 +34,40 @@ struct UniqueId
 #endif
 
   //! Najwygodniej podawaæ wersje w postaci czteroliterowych sta³ych,
-  //! np. new UniqueId('TEST', 'STFU'). W tym wypadku pole data bêdzie
+  //! np. new UniqueID('TEST', 'STFU'). W tym wypadku pole data bêdzie
   //! w odwrotnej kolejnoœci!
   //! \param major G³ówny identyfikator, np. plugina.
   //! \param minor Mniej znacz¹cy identyfikator, np. us³ugi.
-  inline UniqueId(int major, int minor) : minor(minor), major(major)
+  inline UniqueID(int major, int minor) : minor(minor), major(major)
   {}
-  inline UniqueId() : quad(0)
+  inline UniqueID() : quad(0)
   {}
-  inline UniqueId(const UniqueId& rhs) : quad(rhs.quad)
+  inline UniqueID(const UniqueID& rhs) : quad(rhs.quad)
   {}
 
-  inline UniqueId& operator=(const UniqueId& rhs)
+  inline UniqueID& operator=(const UniqueID& rhs)
   {
     quad = rhs.quad;
     return *this;
   }
-  inline bool operator==(const UniqueId& rhs) const
+  inline bool operator==(const UniqueID& rhs) const
   {
     return quad == rhs.quad;
   }
-  inline bool operator!=(const UniqueId& rhs) const
+  inline bool operator!=(const UniqueID& rhs) const
   {
     return quad != rhs.quad;
   }
-  inline bool operator<(const UniqueId& rhs) const
+  inline bool operator<(const UniqueID& rhs) const
   {
     return quad < rhs.quad;
   }
 };
 
 template <int32_t Major, int32_t Minor>
-struct UniqueIdSpec : public UniqueId
+struct UniqueIdSpec : public UniqueID
 {
-  UniqueIdSpec() : UniqueId(Major, Minor) {}
+  UniqueIdSpec() : UniqueID(Major, Minor) {}
 };
 
 #endif //BASE_SERVICE_H

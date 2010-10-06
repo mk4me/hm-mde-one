@@ -90,6 +90,95 @@ bool getViewSize( osgViewer::Viewer &viewer, unsigned int &width, unsigned int &
   return true;
 }
 
+void configureView(bool vertically, bool horizontally,
+                                std::vector<osg::Image*> &images, std::vector<osg::ImageStream*> &streams, 
+                                osgViewer::Viewer &viewer, bool textureRect)
+{
+    unsigned int viewerWidth = viewer.getCamera()->getGraphicsContext()->getTraits()->width;
+    unsigned int viewerHeight = viewer.getCamera()->getGraphicsContext()->getTraits()->height;
+
+    // tworzymy korzeñ
+    osg::ref_ptr<osg::Group> root = new osg::Group();
+    root->getOrCreateStateSet()->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    // tworzymy wêze³ filmów
+    osg::ref_ptr<osg::Geode> imagesNode = new osg::Geode;
+
+    // okreœlamy liczbê kolumn i wierszy
+    unsigned int rows = 0;
+    unsigned int columns = 0;
+    if ( !vertically && !horizontally ) {
+        columns = static_cast<unsigned int>(ceil(sqrt(static_cast<double>(images.size()))));
+        if ( columns != 0 ) {
+            if ( columns * (columns-1) >= images.size() ) {
+                rows = columns-1;
+            } else {
+                rows = columns;
+            }
+        }
+    } else if ( vertically ) {
+        rows = images.size();
+        columns = 1;
+    } else if ( horizontally ) {
+        columns = images.size();
+        rows = 1;
+    }
+
+    // przygotowanie widoków strumieni
+    StreamViewOSGWidget * streamView = new StreamViewOSGWidget(&viewer,
+        textureRect, viewerWidth, viewerHeight, 0x1234, 0);
+    streamView->setDimensions(rows, columns);
+
+    // tworzymy geometriê
+    for ( unsigned int y = 0; y < rows; ++y ) {
+        for ( unsigned int x = 0; x < columns; ++x ) {
+            // indeks obrazka
+            size_t idx = x + y * columns;
+            if ( idx < images.size() ) {
+                osg::Image* image = images[idx];
+                streamView->addStream(image, y, x);
+            }
+        }
+    }
+
+    // kontroler
+    Controller * controller = new Controller();
+    for (  std::vector<osg::ImageStream*>::iterator it = streams.begin(); it != streams.end(); ++it ) {
+        controller->getModel()->addStream(  *it );
+    }
+    // widok
+    TimelineViewOSG * view = new TimelineViewOSG(&viewer, viewerWidth, viewerHeight, 0x1234, 0);
+    view->setController(controller);
+    // model
+    controller->getModel()->attach(view);
+
+    osg::Camera * guiCamera = view->createParentOrthoCamera();
+    guiCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
+    guiCamera->setRenderOrder(osg::Camera::POST_RENDER, 2);
+
+    osg::Camera * streamViewCamera = streamView->createParentOrthoCamera();
+    streamViewCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
+    streamViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
+
+    //root->addSlave(textCamera);
+    root->addChild(imagesNode);
+    root->addChild(guiCamera);
+    root->addChild(streamViewCamera);
+
+
+    // dodanie dwóch takich handlerów powoduje b³êdy!
+    viewer.addEventHandler( new osgWidget::MouseHandler(streamView) );
+    viewer.addEventHandler( new osgUI::StaticKeyboardHandler(streamView) );
+    viewer.addEventHandler( new osgViewer::StatsHandler );
+    viewer.addEventHandler( new osgGA::StateSetManipulator( viewer.getCamera()->getOrCreateStateSet() ) );
+    viewer.addEventHandler( new osgViewer::WindowSizeHandler );
+    viewer.addEventHandler( new osgWidget::ResizeHandler(view, guiCamera) );
+    viewer.addEventHandler( new osgWidget::ResizeHandler(streamView, streamViewCamera) );
+
+    viewer.setSceneData(root.get());
+
+    viewer.getCamera()->setClearColor(osg::Vec4(0,0,0,1));
+}
+
 //------------------------------------------------------------------------------
 
 int main(int argc, char** argv)
@@ -196,7 +285,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  VideoWidget::configureView(vertically, horizontally, images, streams, viewer, textureRect );
+  configureView(vertically, horizontally, images, streams, viewer, textureRect );
 
   
   viewer.setThreadingModel(osgViewer::ViewerBase::DrawThreadPerContext);

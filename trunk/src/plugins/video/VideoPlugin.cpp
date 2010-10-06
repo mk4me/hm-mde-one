@@ -25,6 +25,7 @@ PLUGIN_REGISTER(VideoPlugin)
 VideoPlugin::VideoPlugin()
 : name("Video Plugin")
 {
+    service = new VideoService();
 }
 
 VideoPlugin::~VideoPlugin()
@@ -44,13 +45,7 @@ int VideoPlugin::GetWidgetsCount()
 
 IWidget* VideoPlugin::GetDockWidget( int i /*= 0*/ )
 {
-  static QWidget* widget[1] = { NULL };
-  if ( widget[0] == NULL ) {
-    for (int i = 0; i < 1; ++i) {
-      widget[i] = new VideoWidget();
-    }
-  }
-  return (IWidget*)widget[i];
+  return (IWidget*)service->getWidget();
 }
 
 POSITION VideoPlugin::GetWidgetPos( int i /*= 0*/ )
@@ -65,8 +60,7 @@ const std::string& VideoPlugin::GetPluginName()
 
 void VideoPlugin::RegisterServices( IServiceManager *serviceManager )
 {
-  VideoService* videoService = new VideoService();
-  serviceManager->RegisterServiceAs(videoService, VideoService::getClassID().major);
+  serviceManager->RegisterServiceAs(service, service->getID().major);
 }
 
 void VideoPlugin::SetScene( osgViewer::Scene *scene )

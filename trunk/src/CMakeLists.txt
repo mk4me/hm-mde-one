@@ -59,6 +59,7 @@ set(SOURCEGROUP_UI "UI" CACHE STRING "Filter for .ui files and generated headers
 
 option(EDR_VEBOSE_CONFIG "Print verbose info?" OFF)
 set(FIND_VERBOSE ${EDR_VEBOSE_CONFIG})
+set(TARGET_VERBOSE ${EDR_VEBOSE_CONFIG})
 
 #---------------------------------------------------
 # wyszukanie potrzebnych bibliotek
@@ -71,6 +72,12 @@ find_package(Stdint)
 find_package(Qt)
 find_package(TinyXML)
 find_package(Dae2ERD)
+
+# Biblioteczne wyszukanie OGL;
+find_package(OpenGL)
+set(OPENGL_LIBRARIES_PROXY ${OPENGL_LIBRARIES})
+set(OPENGL_LIBRARIES OPENGL_LIBRARIES_PROXY)
+
 #find_package(Prerequisites)
 if (EDR_ENABLE_TESTS)
 	find_package(CppUnit)
@@ -129,7 +136,7 @@ endif()
 
 ADD_PROJECT(utils "BOOST")
 ADD_PROJECT(corelib "utils;OSG;QT;TINYXML;STDINT")
-ADD_PROJECT(core "utils;OSG;QT;TINYXML;corelib;DAE2ERD")
+ADD_PROJECT(core "utils;OSG;QT;TINYXML;corelib;DAE2ERD;OPENGL")
 ADD_PROJECTS(plugins)
 
 

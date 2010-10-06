@@ -38,6 +38,26 @@ using namespace osgUI;
 
 const std::string SHADERS_ROOT = "data/resources/shaders/";
 
+class FindCanvasesVisitor : public osg::NodeVisitor
+{
+public:
+    std::vector<osgUI::ImageCanvas*> canvases;
+
+    virtual void apply(osg::Node& node)
+    {
+        if ( osgUI::ImageCanvas* canvas = dynamic_cast<osgUI::ImageCanvas*>(&node) ) {
+            apply(*canvas);
+        }
+        traverse(node);
+    }
+
+    inline void apply(osgUI::ImageCanvas& canvas) 
+    {
+        canvases.push_back(&canvas);
+    }
+};
+
+
 struct ImageViewUpdater : public osg::NodeCallback
 {
   osg::observer_ptr<StreamViewOSGWidget> manager;
@@ -45,7 +65,7 @@ struct ImageViewUpdater : public osg::NodeCallback
   double lastWidth;
   double lastHeight;
   float scale;
-  osg::ref_ptr<osg::Uniform> textureSize;
+  osg::observer_ptr<osg::Uniform> textureSize;
 
   ImageViewUpdater(StreamViewOSGWidget * manager, osg::Image * image, osg::Uniform* textureSize = NULL)
   {
@@ -62,7 +82,7 @@ struct ImageViewUpdater : public osg::NodeCallback
     ImageCanvas * canvas = dynamic_cast<ImageCanvas*>(node);
     if ( canvas || manager.valid() || image->valid() ) {
       // czy zmiana rozmiaru?
-      if ( lastWidth !=  manager->getWidth() || lastHeight !=  manager->getHeight() ) {
+      if ( lastWidth !=  manager->getWidth() || lastHeight != manager->getHeight() ) {
         // znormalizowane rozmiary okna
         float normWidth = scale / manager->getColumns();
         float normHeight = scale / manager->getRows();
@@ -79,7 +99,6 @@ struct ImageViewUpdater : public osg::NodeCallback
         // zapamiêtujemy
         lastWidth = manager->getWidth();
         lastHeight = manager->getHeight();
-
         notifyImageSize(canvas);
       }
     }
@@ -93,7 +112,7 @@ struct ImageViewUpdater : public osg::NodeCallback
       stream->setMaxWidth(static_cast<int>(canvas->getWidth()));
       canvas->setTexCoord();
       // czy jest zmienna okreœlaj¹ca rozmiar tekstury?
-      if ( textureSize ) {
+      if ( textureSize.valid() ) {
         textureSize->set( stream->s(), stream->t() );
       }
       //canvas->getRect()->getOrCreateStateSet()->setUniformList()
@@ -153,87 +172,34 @@ struct ImageViewUpdater : public osg::NodeCallback
 
 
 //!
-StreamViewOSGWidget::StreamViewOSGWidget(osgViewer::View * view, int rows, int columns, bool useTextureRect,
+StreamViewOSGWidget::StreamViewOSGWidget(osgViewer::View * view, bool useTextureRect,
                                          float width, float height, unsigned int mask, unsigned int flags)
-: osgWidget::WindowManager(view, width, height, mask, flags), rows(rows), columns(columns),
-  useTextureRect(useTextureRect)
+: osgWidget::WindowManager(view, width, height, mask, flags),
+  useTextureRect(useTextureRect),
+  rows(1),
+  columns(1)
 {
-  yuvShader = new osg::Program;
+  yuvProgram = new osg::Program;
 
-  // nazwa programu
-  std::string shaderName = useTextureRect ? "textureRect_yuv_to_rgb.frag" : "texture2D_yuv_to_rgb.frag";
+  yuvTexture2DShader = new osg::Shader(osg::Shader::FRAGMENT);
+  yuvTextureRectShader = new osg::Shader(osg::Shader::FRAGMENT);
 
-  // odczyt shadera
-  osg::Shader* shader = new osg::Shader(osg::Shader::FRAGMENT);
-  if (shader->loadShaderSourceFromFile(SHADERS_ROOT + shaderName)) {
-    // uda³o siê!
-    yuvShader->addShader(shader);
-  } else {
-    throw std::runtime_error("Error reading shader file: " + shaderName);
+  std::string path = SHADERS_ROOT + "texture2D_yuv_to_rgb.frag";
+  if (!yuvTexture2DShader->loadShaderSourceFromFile(path)) {
+      OSG_FATAL<<"Could not load shader: "<<path<<std::endl;
+      yuvTexture2DShader = NULL;
   }
+  path = SHADERS_ROOT + "textureRect_yuv_to_rgb.frag";
+  if (!yuvTextureRectShader->loadShaderSourceFromFile(path)) {
+      OSG_FATAL<<"Could not load shader: "<<path<<std::endl;
+      yuvTextureRectShader = NULL;
+  }
+  setUseTextureRect(useTextureRect);
 }
 
 
 void StreamViewOSGWidget::addStream( osg::Image * image, int row, int column )
 {
-#if 0
-  {
-    // tworzymy teksturkê
-    osg::Texture* texture = new osg::Texture2D();
-    bool flip = image->getOrigin()==osg::Image::TOP_LEFT;  texture->setImage(0, image);
-    texture->setResizeNonPowerOfTwoHint(false);
-
-    // tworzymy widget
-    osgWidget::Widget * rect = new osgWidget::Widget("Image", 64, 64);
-    rect->setTexture(texture, false, false);
-    rect->setPadding(1);
-    rect->setPadTop(0);
-    double bottom = flip ? 1.0 : 0.0;
-    double top = flip ? 0.0 : 1.0;
-    rect->setTexCoord(0.0, top, osgWidget::Widget::UPPER_LEFT);
-    rect->setTexCoord(0.0, bottom, osgWidget::Widget::LOWER_LEFT);
-    rect->setTexCoord(1.0, top, osgWidget::Widget::UPPER_RIGHT);
-    rect->setTexCoord(1.0, bottom, osgWidget::Widget::LOWER_RIGHT);
-    // czy wymuszamy shader?
-    if (dynamic_cast<vmOSGPlugin::VideoImageStream*>(image) &&
-      vmOSGPlugin::VideoImageStream::TargetFrame::pixelFormat == avinout::PixelFormatYV12) {
-      rect->getOrCreateStateSet()->addUniform(new osg::Uniform("movie_texture",0));
-      rect->getOrCreateStateSet()->setAttribute(yuvShader);
-    }
-
-
-    // tworzymy labelkê
-    osgWidget::Label * label = new osgWidget::Label("Label", image->getFileName());
-    label->setColor(osgWidget::Color(0.25, 0.25, 0.25, 1));
-    label->setFontColor(osgWidget::Color(1, 1, 1, 1));
-    label->setAlignHorizontal(osgWidget::Widget::HA_CENTER);
-    label->setAlignVertical(osgWidget::Widget::VA_TOP);
-    label->setPadding(1);
-    //label->setPadBottom(0);
-    label->setHeight(10);
-
-    // tworzymy boxa który to wszystko trzyma
-    osgWidget::Box * box = new osgWidget::Box("Box", osgWidget::Box::VERTICAL);
-    box->addWidget(rect);
-    box->addWidget(label);
-    box->attachMoveCallback();
-    box->setUpdateCallback(new ImageViewUpdater(this, image));
-    // rozmiar boxa
-    resizeImageBox(box, image);
-    box->resizeAdd();
-
-    // pozycja boxa
-    double dx = getWidth() / columns;
-    double dy = getHeight() / rows;
-    double x  = dx * column;
-    double y = getHeight() - dy * (row+1);
-    x += (dx - box->getWidth()) / 2.0;
-    y += (dy - box->getHeight()) / 2.0;
-    box->setOrigin( static_cast<int>(x + 0.5), static_cast<int>(y + 0.5));
-    addChild(box);
-  }
-#else
-  {
     float width = getWidth() / columns;
     float height = getHeight() / rows;
 
@@ -244,17 +210,20 @@ void StreamViewOSGWidget::addStream( osg::Image * image, int row, int column )
     // czy wymuszamy shader?
     vmOSGPlugin::VideoImageStream* stream = dynamic_cast<vmOSGPlugin::VideoImageStream*>(image);
     if (stream && stream->getTargetFormat() == vm::PixelFormatYV12 /*&&
-      static_cast<avinout::PixelFormat>(vmOSGPlugin::VideoImageStream::TargetFrame::pixelFormat) == avinout::PixelFormatYV12*/) {
-      canv->setImage(image, useTextureRect);
-      osg::ref_ptr<osg::StateSet> state = canv->getRect()->getOrCreateStateSet();
-      state->addUniform(new osg::Uniform("movie_texture",0));
-      state->addUniform(textureSize = new osg::Uniform("texture_size", 0, 0));
-      state->setAttribute(yuvShader);
+        static_cast<avinout::PixelFormat>(vmOSGPlugin::VideoImageStream::TargetFrame::pixelFormat) == avinout::PixelFormatYV12*/) {
+        canv->setImage(image, useTextureRect);
+        osg::ref_ptr<osg::StateSet> state = canv->getRect()->getOrCreateStateSet();
+        state->addUniform(new osg::Uniform("movie_texture",0));
+        state->addUniform(textureSize = new osg::Uniform("texture_size", 0, 0));
+        state->setAttribute(yuvProgram);
     } else {
-      canv->setImage(image, useTextureRect);
+        canv->setImage(image, useTextureRect);
     }
+
     // dodajemy callbacki
     canv->attachMoveCallback();
+    //canv->setShowLabel(false);
+    //canv->setShowBorder(false);
     //canv->setEventMask(osgWidget::EVENT_MASK_MOUSE_CLICK);
     ImageViewUpdater * updater = new ImageViewUpdater(this, image, textureSize);
     canv->setUpdateCallback(updater);
@@ -264,9 +233,9 @@ void StreamViewOSGWidget::addStream( osg::Image * image, int row, int column )
     canv->setKeepImageRatio(true);
     canv->resize(width, height);
     if (stream) {
-      updater->notifyImageSize( canv );
-      /*stream->setMaxWidth(static_cast<int>(width));
-      canv->setTexCoord();*/
+        updater->notifyImageSize( canv );
+        /*stream->setMaxWidth(static_cast<int>(width));
+        canv->setTexCoord();*/
     }
 
     // pozycja canvasa
@@ -276,6 +245,77 @@ void StreamViewOSGWidget::addStream( osg::Image * image, int row, int column )
     y += (height - canv->getHeight()) / 2.0;
     canv->setOrigin( static_cast<int>(x + 0.5), static_cast<int>(y + 0.5));
     addChild(canv);
-  }
-#endif
 }
+
+void StreamViewOSGWidget::clear()
+{
+    rows = 0;
+    columns = 0;
+    this->removeChildren(0, this->getNumChildren());
+}
+
+void StreamViewOSGWidget::setFormat( vm::PixelFormat format )
+{
+    FindCanvasesVisitor visitor;
+    visitor.setTraversalMode(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
+    this->accept(visitor);
+    
+    for (size_t i = 0; i < visitor.canvases.size(); ++i) {
+        // czy wymuszamy shader?
+        osgUI::ImageCanvas* canvas = visitor.canvases[i];
+        vmOSGPlugin::VideoImageStream* stream = dynamic_cast<vmOSGPlugin::VideoImageStream*>(canvas->getImage());
+        if ( !stream ) {
+            continue;
+        }
+        ImageViewUpdater* callback = dynamic_cast<ImageViewUpdater*>(canvas->getUpdateCallback());
+        if ( stream->getTargetFormat() != vm::PixelFormatYV12 ) {
+            if ( format == vm::PixelFormatYV12 ) {
+                osg::ref_ptr<osg::StateSet> state = canvas->getRect()->getOrCreateStateSet();
+                osg::Uniform* textureSize = NULL;
+                state->addUniform(new osg::Uniform("movie_texture",0));
+                state->addUniform(textureSize = new osg::Uniform("texture_size", 0, 0));
+                state->setAttribute(yuvProgram);
+                callback->textureSize = textureSize;
+            }
+        } else if ( format != vm::PixelFormatYV12 ) {
+            osg::ref_ptr<osg::StateSet> state = canvas->getRect()->getOrCreateStateSet();
+            state->removeAttribute(yuvProgram);
+            state->removeUniform("texture_size");
+        }
+        stream->setTargetFormat(format);
+        callback->notifyImageSize(canvas);
+        
+    }
+}
+
+void StreamViewOSGWidget::setUseTextureRect( bool useTextureRect )
+{
+    while ( yuvProgram->getNumShaders() ) {
+        yuvProgram->removeShader( yuvProgram->getShader(0) );
+    }
+    if ( useTextureRect ) {
+        if (yuvTextureRectShader) {
+            yuvProgram->addShader(yuvTextureRectShader);
+        }
+    } else {
+        if (yuvTexture2DShader) {
+            yuvProgram->addShader(yuvTexture2DShader);
+        }
+    }
+    this->useTextureRect = useTextureRect;
+}
+
+void StreamViewOSGWidget::makeGrid( int count, int& rows, int& columns )
+{
+    columns = static_cast<int>(ceil(sqrt(static_cast<double>(count))));
+    if ( columns != 0 ) {
+        if ( columns * (columns-1) >= count ) {
+            rows = columns-1;
+        } else {
+            rows = columns;
+        }
+    } else {
+        rows = 0;
+    }
+}
+

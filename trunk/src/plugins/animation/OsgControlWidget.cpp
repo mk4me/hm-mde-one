@@ -71,9 +71,6 @@ void OsgControlWidget::SetScene(osgViewer::Scene *scene)
 //--------------------------------------------------------------------------------------------------
 void OsgControlWidget::SetScene( osgViewer::Scene *scene, IServiceManager *pServiceManager )
 {
-  int q = 'xyzw';
-  UniqueId cid('TEST','STFU');
-  UniqueId cid2('TEST','STF1');
     // clear...
     ClearScene(); 
     m_pAnimationService = dynamic_cast<AnimationService*>(pServiceManager->GetSystemService(AnimationService::CLASS_ID));

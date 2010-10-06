@@ -92,6 +92,9 @@ public:
   {
     return targetFormat;
   }
+  //! \param targetFormat Format do którego film jest konwertowany.
+  void setTargetFormat(vm::PixelFormat targetFormat); 
+
   //! \return Maksymalna szerokoœæ konwertowanego strumienia.
   inline int getMaxWidth() const
   { 

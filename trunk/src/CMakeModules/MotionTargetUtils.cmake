@@ -62,6 +62,7 @@ macro(ADD_PROJECT name dependencies)
 		if (NOT ${value}_FOUND)
 			set(ADD_PROJECT_FAILED 1)
 			set(ADD_PROJECT_MESSAGE ${value} ", " ${ADD_PROJECT_MESSAGE})
+			TARGET_NOTIFY(${name} "${value} not found")
 		endif()
 	endforeach()
 	# sprawdzamy
@@ -77,7 +78,7 @@ macro(ADD_PROJECT name dependencies)
 			#if (NOT ${createDependency})
 			#	message("(${name}) RAW ${value} libraries: ${${value}_LIBRARIES}")
 			#endif()
-			#message("(${name}) RAW ${value} libraries: ${${value}_LIBRARIES}")
+			TARGET_NOTIFY(${name} "RAW DEPENDENCY ${value} libraries: ${${value}_LIBRARIES}")
 			foreach (value2 ${${value}_LIBRARIES})
 				if (NOT ${createDependency})
 					#message("(${name})Current library: ${value2} : ${${value2}} : ")
@@ -121,3 +122,10 @@ MACRO(SET_PRECOMPILED_HEADER header source sources)
 ENDMACRO(SET_PRECOMPILED_HEADER)
 
 ###############################################################################
+
+macro(TARGET_NOTIFY var msg)
+	if (TARGET_VERBOSE)
+		message(STATUS "TARGET>${var}>${msg}")
+	endif()
+endmacro()
+

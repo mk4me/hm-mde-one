@@ -2,7 +2,8 @@
 #define WIDGET_INTERFACE_H
 
 #include <osgViewer/Scene>
-#include <core/IServiceManager.h>
+
+class IServiceManager;
 
 class IWidget
 {

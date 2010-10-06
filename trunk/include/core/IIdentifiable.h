@@ -16,7 +16,7 @@ class IIdentifiable
 {
 public:
     virtual ~IIdentifiable() {}
-    virtual UniqueId getID() const = 0;
+    virtual UniqueID getID() const = 0;
 };
 
 //! Makro s³u¿¹ce do nadania identyfikatora obiektowi implementuj¹cemu
@@ -26,13 +26,13 @@ public:
 private:                                \
     UniqueIdSpec<major, minor> __id;    \
 public:                                 \
-    virtual UniqueId getID() const      \
+    virtual UniqueID getID() const      \
     {                                   \
         return __id;                    \
     }                                   \
-    static UniqueId getClassID()        \
+    static UniqueID getClassID()        \
     {                                   \
-        return UniqueId(major, minor);  \
+        return UniqueID(major, minor);  \
     }        
 
 
