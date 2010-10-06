@@ -409,7 +409,11 @@ int Channel::getQuaternionMatrix( int frameNum, float *tempMatrix )
 // This function returns the angle and axis of a quaternion representation by reference.
 void Channel::getAngleAndAxis( int frameNum, float &angle, float &x, float &y, float &z )
 {
-    quatV[ frameNum-1 ].getAngleAndAxis( angle, x, y, z );
+    //TODO: pprawic jakby co
+    if(quatV.size() > frameNum)
+        quatV[ frameNum-1 ].getAngleAndAxis( angle, x, y, z );
+    else
+        quatV[0].getAngleAndAxis(angle, x, y, z);
 }
 
 // This interpolates the rotateX values of the Euler data.

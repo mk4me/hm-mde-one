@@ -18,6 +18,7 @@ public:
 	static void ReadFile(const std::string& file, Model* model);
 	static bool LoadMesh(std::wstring* address, Model* model);
     static bool LoadAnimation(SFModel* fmodel, Model* model);
+    static bool LoadAnimation(ASFAMCParser* acclaimObject, Model* model);
 
 private:
     static void ReadFrmDAEFile(const std::string& file, Model* model);

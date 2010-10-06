@@ -14,6 +14,8 @@
 
 #include <core/ASFAMCParser.h>
 
+#define TIMERMULTIPLAY 0.01
+
 
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*
@@ -227,6 +229,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
 
     model->SetSkeleton(skeleton);
     LoadSkeleton(model);
+    LoadAnimation(acclaimObject, model);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -276,6 +279,59 @@ bool FileReader2Motion::LoadAnimation( SFModel* fmodel, Model* model )
         else
             return false;
     }
+
+    model->SetAnimation(animations);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model )
+{
+    std::wstring animationName = L"testing";
+    SFAnimation* animations = new SFAnimation();
+    Channel* jointPointer = acclaimObject->getCurrentJointPointer();
+
+    vector<SkeletonNode*> bones;
+    CreateArrayHoldingBones(&bones, model);
+
+    SSkeletonAnimation* animation = new SSkeletonAnimation();
+
+    animation->bones_count = acclaimObject->getNumberOfJoints();
+    animation->bones = new SSkeletalAnimationBone[animation->bones_count];
+
+    for(int b = 0; b < animation->bones_count; b++)
+    {
+        animation->bones[b].bone_id = jointPointer->getID();
+        animation->bones[b].n = acclaimObject->getNumberOfFrames();
+
+        animation->bones[b].frames = new SKeyFrame[animation->bones[b].n];
+
+        //for every key
+        for(int k = 0; k < animation->bones[b].n; k++)
+        {
+            animation->bones[b].frames->time = TIMERMULTIPLAY * k;
+
+            jointPointer->getTranslation(k+1, animation->bones[b].frames->trans[0], animation->bones[b].frames->trans[1], animation->bones[b].frames->trans[2]);
+            jointPointer->getAngleAndAxis(k+1, animation->bones[b].frames->quat[3], animation->bones[b].frames->quat[0], animation->bones[b].frames->quat[1], animation->bones[b].frames->quat[2]);               
+        }
+        
+        jointPointer++;
+    }
+
+    animations->m_skeletonAanimation.insert(make_pair<wstring, SSkeletonAnimation*>(animationName, animation));
+
+    InicializeSkeletalAnimation(&animationName, animation, &bones);
+
+//    if(IsMeshAnimation(&address))
+//    {
+//         // TODO:
+//         // na razie zakldam, ze nie jest to potrzebne
+//         //aczkolwiek...
+//         assert(false);
+//     }
+//     else
+//         return false;
+//     }
 
     model->SetAnimation(animations);
     return true;
