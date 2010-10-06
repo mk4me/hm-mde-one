@@ -67,11 +67,11 @@ public:
     //! Konstruktor inicjalizujacu UI.
     VideoWidget();
 
-    void init( std::vector<std::string> &files );
     virtual ~VideoWidget()
     {
     }
 
+    void init( std::vector<std::string> &files );
     void configureView(int rows, int columns, ImagesList & images);
 
 public:

@@ -93,8 +93,6 @@ VideoWidget::VideoWidget()
 //   files.push_back("s1.avi");
 // 
 //   init(files);
-
-  
 }
 
 

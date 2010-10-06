@@ -22,12 +22,14 @@ class VideoService : public IBaseService
   UNIQUE_ID('VIDE','SRVC');
 
 private:
-    VideoWidget* widget;
+    // TODO
+    // tymczasowe
+    QWidget* widget;
 
 public:
     VideoService();
 
-    inline VideoWidget* getWidget() const
+    inline QWidget* getWidget() const
     { 
         return widget;
     }

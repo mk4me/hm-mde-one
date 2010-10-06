@@ -48,6 +48,7 @@ set(TARGET_SRC
 	VideoPlugin.cpp
 	VideoService.cpp
 	VideoWidget.cpp
+	VideoWidgetQt.cpp
 	
 	Button.cpp
 	Controller.cpp
@@ -76,6 +77,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 # UI
 set(TARGET_UI
 	ui/video.ui
+	ui/VideoWidgetQt.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
