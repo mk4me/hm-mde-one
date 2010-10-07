@@ -86,6 +86,8 @@ private:
     // Gets the global position of a requested joint.
     int getJointPosition( const char* jointName );
 
+    void RemoveDummyJoint();
+
     // How high the floor should be - gathered by finding the lowest Y-value in the motion.
     float floorHeight;
 

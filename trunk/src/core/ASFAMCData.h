@@ -29,7 +29,7 @@
 #include "quaternioncal.h"
 
 // This holds the jointType constant, to use:
-enum CHANNEL_TYPE { NOTYPE=-1, ROOT, JOINT, EFFECTOR};
+enum CHANNEL_TYPE { NOTYPE=-1, ROOT, JOINT, EFFECTOR, DUMMY};
 
 // This holds the names of a joint's children
 typedef std::vector<char*> childVector;
@@ -110,6 +110,8 @@ public:
     int		numOfChildren();
     char*	getChild(int);
     void	addChild(const char*);
+
+    void    removeChild(const char*);
 
     // Sets and gets the motion data offset.
     // Make sure you pass in references for getOffset

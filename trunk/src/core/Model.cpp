@@ -6,6 +6,8 @@
 #include <core/FModel.h>
 
 
+#define pPat osg::PositionAttitudeTransform*
+
 using namespace osg;
 using namespace std;
 
@@ -186,4 +188,161 @@ void* Model::GetSkeletonGroup()
     }
 
     return NULL;
+}
+
+
+//--------------------------------------------------------------------------------------------------
+void Model::DrawBone( osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode )
+{
+    osg::Vec3d bpos = (*parentRot) * bone->getPosition() + *parentPos;
+    osg::Quat  brot = bone->getAttitude() * (*parentRot);
+
+
+    float length = (*parentPos - bpos).length();
+    float distanceHightToArm = length/8;
+    float distanceWidthToArm = length/12;
+
+    osg::Vec3d boneNodeParent;
+    osg::Vec3d boneNodeChild;
+    osg::Vec3d boneNodeLeftArm;
+    osg::Vec3d boneNodeRightArm;
+
+    osg::Vec3d boneNodeFrontArm;
+    osg::Vec3d boneNodeBackArm;
+    osg::Vec3d result;
+    osg::Vec3d punkt;
+
+    boneNodeParent = osg::Vec3(0.f, 0.f, 0.f);
+    boneNodeChild = bone->getPosition(); //osg::Vec3(length, 0.f, 0.f); 
+
+    geode->addDrawable(DrawLine(parentPos, &bpos));
+
+//     boneNodeLeftArm = osg::Vec3(distanceHightToArm, -distanceWidthToArm, 0.f);
+//     boneNodeRightArm = osg::Vec3(distanceHightToArm, distanceWidthToArm, 0.f);
+// 
+//     boneNodeFrontArm = osg::Vec3(distanceHightToArm, 0.f, -distanceWidthToArm);
+//     boneNodeBackArm = osg::Vec3(distanceHightToArm, 0.f, distanceWidthToArm);
+// 
+//     boneNodeParent = (*parentRot) * boneNodeParent + *parentPos;
+//     boneNodeChild = (*parentRot) * boneNodeChild + *parentPos;
+// 
+//     boneNodeLeftArm = (*parentRot) * boneNodeLeftArm + *parentPos;
+//     boneNodeRightArm = (*parentRot) * boneNodeRightArm + *parentPos;
+// 
+//     boneNodeFrontArm = (*parentRot) * boneNodeFrontArm + *parentPos;
+//     boneNodeBackArm = (*parentRot) * boneNodeBackArm + *parentPos;
+// 
+// 
+//     geode->addDrawable(DrawTriangle(&boneNodeParent, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm, false));
+//     geode->addDrawable(DrawTriangle(&boneNodeChild, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm, false));
+
+
+    // recursively draw other bones
+    for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
+        if (dynamic_cast<SkeletonNode*>(bone->getChild(b)))
+            DrawBone((pPat)bone->getChild(b), &bpos, &brot, geode);
+}
+
+//--------------------------------------------------------------------------------------------------
+osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, 
+                                                const osg::Vec3d* vertexPos, const osg::Vec3d* startPos2, 
+                                                const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2, bool isSelected)
+{
+    // draw actual bone
+    osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
+
+    // vertices
+    osg::Vec3Array* vertices = new osg::Vec3Array();
+    vertices->push_back(*startPos);
+    vertices->push_back(*endPos);
+    vertices->push_back(*vertexPos);
+    vertices->push_back(*startPos2);
+    vertices->push_back(*endPos2);
+    vertices->push_back(*vertexPos2);
+
+    // indices
+    osg::DrawElementsUInt* line = new osg::DrawElementsUInt(osg::PrimitiveSet::POLYGON, 0);
+    line->push_back(0);
+    line->push_back(1);
+    line->push_back(2);
+    line->push_back(3);
+    line->push_back(4);
+    line->push_back(5);
+
+    // set geometry data
+    geometry->setVertexArray(vertices);
+    geometry->addPrimitiveSet(line);
+
+    // set colors
+    osg::Vec4Array* colors = new osg::Vec4Array;
+    if(isSelected)
+    {
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+    }
+    else
+    {
+        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
+        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
+    }
+
+
+    osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
+    colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;
+    colorIndexArray->push_back(0);
+    colorIndexArray->push_back(1);
+    colorIndexArray->push_back(2);
+    colorIndexArray->push_back(3);
+    colorIndexArray->push_back(4);
+    colorIndexArray->push_back(5);
+
+    geometry->setColorArray(colors);
+    geometry->setColorIndices(colorIndexArray);
+    geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+
+    return geometry;
+}
+
+osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos)
+{
+    // draw actual bone
+    osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
+
+    // vertices
+    osg::Vec3Array* vertices = new osg::Vec3Array();
+    vertices->push_back(*startPos);
+    vertices->push_back(*endPos);
+
+    // indices
+    osg::DrawElementsUInt* line = new osg::DrawElementsUInt(osg::PrimitiveSet::LINES, 0);
+    line->push_back(0);
+    line->push_back(1);
+
+    // set geometry data
+    geometry->setVertexArray(vertices);
+    geometry->addPrimitiveSet(line);
+
+    // set colors
+    osg::Vec4Array* colors = new osg::Vec4Array;
+    colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
+    colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;
+    colorIndexArray->push_back(0);
+    colorIndexArray->push_back(1);
+
+    geometry->setColorArray(colors);
+    geometry->setColorIndices(colorIndexArray);
+    geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+
+    return geometry;
 }

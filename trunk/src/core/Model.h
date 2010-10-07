@@ -46,6 +46,12 @@ public:
     virtual SSkeleton* GetSkeleton();
     virtual SFAnimation* GetAnimation();
 
+    void DrawBone(osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode);
+    osg::ref_ptr<osg::Geometry> DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, const osg::Vec3d* vertexPos, 
+        const osg::Vec3d* startPos2, const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2, bool isSelected);
+
+    osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos);
+
 private:
     void CreateArrayOfJoints(SkeletonNode* bone);
 

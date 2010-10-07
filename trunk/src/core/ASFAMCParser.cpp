@@ -562,6 +562,8 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
 
             while (token != NULL)
             {
+                bool isDummyFile = true;
+
                 int readFlag = 0 ;
                 int dofNum   = 0 ;
                 int id = 0;
@@ -576,6 +578,8 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
 
                     while (token != NULL)
                     {
+                        isDummyFile = true;
+
                         if (strcmp (token, "id") == 0)
                         {
                             token = strtok (NULL, " (),\t\n") ;
@@ -636,6 +640,7 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
                             }
                             readFlag = 1 ;
 
+                            isDummyFile = false;
                         }
                         else if (strcmp (token, "limits") == 0)
                         {
@@ -655,6 +660,9 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
                         if (strcmp (token, "end") == 0)
                             break ;
                     }
+
+                    if(isDummyFile)
+                        tempJoint.setType("DUMMY");
 
                     joints.push_back(tempJoint) ;
                     mappedJointNames[ strdup(tempJoint.getName()) ] = joints.size() - 1 ;			//ADD THE JOINT HERE
@@ -776,6 +784,8 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
 
         delete[] token ;
     }
+
+  //  RemoveDummyJoint();
 
     //Now it's time to dig through that .AMC file...
 
@@ -955,6 +965,65 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
     fclose (tempFilePointerAMC) ;
 
     return 1;
+}
+
+
+void ASFAMCParser::RemoveDummyJoint()
+{
+    vectorOfJoints tempJoints;
+    mappedNames tempMappedJointNames;
+
+    Channel* tempParent;
+    Channel* tempChild;
+
+    //mappedJointNames[ strdup(tempJoint.getName()) ] = joints.size() - 1 ;	
+
+
+    // TODO: zoptymalizowac w póŸniejszym czasie. Narazie nie jest to zbyt optymalne bo dwa razy przelatuemy po tablicy
+    // no ale niestety obecna architektóra ³adowania z plików acclaime opiera sie na mapie która daje indeks tablicy z której
+    // pobieramy odpowiedni joint  - wiêc przypiswanie odpowiednich indeksów do mapy jest szcezgólnie wa¿ne.
+    // na potrzeby tego rozw¹zania czyli wywalenia jointów które sa dummy - mamy takie rozwi¹zanie
+
+    // po pierwsze ³adujemy childy z jointow(dummy) do ich rodzicow jako childy
+    for(vectorOfJoints::iterator it = joints.begin(); it != joints.end(); it++)
+    {
+        if(it->getType() == DUMMY)
+        {
+            std::string parent = it->getParent();
+
+            tempParent = getJoint(parent.c_str());
+            tempParent->removeChild(it->getName());
+
+            for(int i = 0; i < it->numOfChildren(); i ++)
+            {
+                tempChild = getJoint(it->getChild(i));
+                tempChild->setParent(parent.c_str());
+
+                tempParent->addChild(tempChild->getName());
+            }
+        }
+    }
+
+    int counter = 0;
+    // kopiujemy na nowo tablice
+    for(vectorOfJoints::iterator it = joints.begin(); it != joints.end(); it++)
+    {
+        if(it->getType() != DUMMY)
+        {
+            it->setID(counter++);
+
+            tempJoints.push_back(*it);
+            tempMappedJointNames[strdup((it->getName())) ] = tempJoints.size() - 1;
+        }
+    }
+
+    // update danych
+
+    joints.clear();
+    joints = tempJoints;
+
+    mappedJointNames.clear();
+    mappedJointNames = tempMappedJointNames;
 }
 
 // Though currently not working, the following function writes a renderman RIB file

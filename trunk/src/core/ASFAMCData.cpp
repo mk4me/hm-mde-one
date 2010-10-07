@@ -111,6 +111,8 @@ void Channel::setType(const char* channelType)
         type = EFFECTOR;
     else if(strcmp(channelType, "ROOT") == 0)
         type = ROOT;
+    else if(strcmp(channelType, "DUMMY") == 0)
+        type = DUMMY;
     else
         type = NOTYPE;
 }
@@ -164,6 +166,19 @@ char* Channel::getChild(int childNum)
 void Channel::addChild(const char* childName)
 {
     children.push_back( strdup( childName ) );
+}
+
+//remove child
+void Channel::removeChild(const char* childName)
+{
+    for(childVector::iterator it = children.begin(); it != children.end(); it++)
+    {
+        if(strcmp(*it, childName) == 0)
+        {
+            children.erase(it);
+            break;
+        }
+    }
 }
 
 // Sets the current joint's offset from its parent.
@@ -284,24 +299,25 @@ void Channel::setRotation(int frameNum, float xRotate, float yRotate, float zRot
 // Gets the requested frame's translation values
 void Channel::getTranslation(int frameNum, float &xTranslate, float &yTranslate, float &zTranslate)
 {
-    if(frames.size() < 1)
-    {
-        xTranslate = offset[0];
-        yTranslate = offset[1];
-        zTranslate = offset[2];
-        return;
-    }
+// TODO: R.Zowal
+//     if(frames.size() < 1)
+//     {
+//         xTranslate = offset[0];
+//         yTranslate = offset[1];
+//         zTranslate = offset[2];
+//         return;
+//     }
 
     frameData tempFrameData = frames[ frameNum-1 ];
-//    if(tempFrameData.size() == 6){
+ //   if(tempFrameData.size() == 6){
         xTranslate = tempFrameData[0];
         yTranslate = tempFrameData[1];
         zTranslate = tempFrameData[2];
-//    }
-//    else
+ //   }
+ //   else
 //    {
-//        printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
-//    }
+ //       printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
+ //   }
 }
 
 // Gets the joint's offset from its parent.
@@ -391,6 +407,7 @@ void Channel::computeQuaternions()
         quatV.push_back( tempQuaternion);
     }
 
+    //TODO: R.Zowal zminic to - acclaim nie 
     if((int)frames.size() < 1)
     {
         quatV.push_back(Quaternion(1.0f, 0.0f, 0.0f, 0.0f));

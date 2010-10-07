@@ -10,7 +10,9 @@
 #include <core/IDataManager.h>
 
 #include <osgGA/TerrainManipulator>
+#include <core/SkeletonNode.h>
 
+#define pPat osg::PositionAttitudeTransform*
 
 M_DECLARED_CLASS(RenderService, kCLASSID_RenderService);
 
@@ -199,6 +201,31 @@ void RenderService::InicizlizeModelMesh(Model* model)
     for( it = meshList.begin(); it != meshList.end(); it++)
     {
             geode->addDrawable(dynamic_cast<Mesh*>(*it));
+    }
+
+
+    // Drawing Bones
+    osg::ref_ptr<osg::Geode> skeletonGeode = new osg::Geode();
+    skeletonGeode->setName("skeleton_geode");
+
+    int childNum = model->getNumChildren();
+    for (int i = 0; i < childNum; ++i)
+    {		
+        osg::Group* group = dynamic_cast<SkeletonNode*>(model->getChild(i));
+        if (group)
+        {
+            //////////////////////////////////////////////////////////////////////////
+            // get skeleton and set pointer at him as member
+            osg::ref_ptr<osg::Group> skeleton = model->getChild(i)->asGroup();
+
+            pPat root_bone = (pPat)(skeleton.get());
+
+            for (unsigned int b = 0; b < root_bone->getNumChildren(); ++b)
+                if (dynamic_cast<SkeletonNode*>(root_bone->getChild(b)))
+                    model->DrawBone((pPat)root_bone->getChild(b), &root_bone->getPosition(), &root_bone->getAttitude(), skeletonGeode);
+
+            model->addChild(skeletonGeode);
+        }
     }
 
     model->addChild(geode);
