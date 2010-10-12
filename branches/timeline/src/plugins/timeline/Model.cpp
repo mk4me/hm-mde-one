@@ -24,7 +24,6 @@ Model::~Model()
 
 void Model::setTime( double time )
 {
-    uiTime = time;
     state.time = time;
     for ( iterator it = begin(); it != end(); ++it ) {
         StreamPtr& stream = *it;
@@ -33,6 +32,13 @@ void Model::setTime( double time )
         stream->setTime(clamped);
     }
     notify();
+}
+
+
+void Model::setState( const State& state )
+{
+    this->state = state;
+    setTime(state.time);
 }
 
 
@@ -57,6 +63,7 @@ void Model::addStreamInternal( StreamPtr stream )
         stream->setTime(state.time);
         notify();
     }
+    state.length = getLength();
 }
 
 
@@ -69,6 +76,7 @@ void Model::removeStream( StreamPtr stream )
     } else {
         throw new std::runtime_error("Stream not added.");
     }
+    state.length = getLength();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

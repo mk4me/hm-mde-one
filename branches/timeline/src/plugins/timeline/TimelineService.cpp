@@ -5,10 +5,11 @@
 
 
 TimelineService::TimelineService()
+:   seekRequested(false)
 {
     widget = new TimelineWidget(this);
     controller = new timeline::Controller();
-    controller->getModel()->attach(widget);
+    controller->attach(widget);
 }
 
 IWidget* TimelineService::getWidget()
@@ -18,6 +19,16 @@ IWidget* TimelineService::getWidget()
 
 AsyncResult TimelineService::OnTick( double delta )
 {
+    // state = controller->captureState();
+    if ( controller->isPlaying() ) {
+        if ( isSeekRequested() ) {
+            // czekamy do momentu gdy uda siê uzyskaæ zadany punkt czasowy
+            setSeekRequested( controller->isTimeRequested() );
+        } else {
+            // inkrementacja
+            controller->setTime( controller->getTime() + delta * controller->getTimeScale() );
+        }
+    }
     return AsyncResult_Complete;
 }
 
@@ -50,4 +61,9 @@ TimelineService::~TimelineService()
 {
     controller->pause();
     delete controller;
+}
+
+AsyncResult TimelineService::compute( IServiceManager* serviceManager )
+{
+    return AsyncResult_Complete;
 }

@@ -40,7 +40,6 @@ public:
     //!
     typedef Streams::size_type size_type;
 
-private:
     //! Stan modelu.
     struct State 
     {
@@ -61,8 +60,6 @@ private:
 private:
     //! Lista strumieni.
     Streams streams;
-    //! Czas który jest zakolejkowany, ale jeszcze nie ustawiony.
-    double uiTime;
     //! Stan zaakceptowany.
     State state;
 
@@ -141,7 +138,7 @@ public:
         return state.time;
     }
     //! \return
-    inline bool getPlaying() const
+    inline bool isPlaying() const
     { 
         return state.isPlaying;
     }
@@ -173,29 +170,13 @@ public:
         state.refreshPeriod = refreshPeriod; 
     }
 
-    //! Czas, który jest zakolejkowany, ale jeszcze nie ustawiony.
-    //! \param time Liczba ujemna gdy nie ma czasu UI
-    inline void setNormalizedUITime(double time)
-    {
-        setUITime(state.time * getLength());
-    }
-    //! Czas, który jest zakolejkowany, ale jeszcze nie ustawiony.
-    //! \param time Liczba ujemna gdy nie ma czasu UI
-    inline void setUITime(double time) 
+    //! \return
+    const State& getState() const
     { 
-        this->uiTime = time; 
-        notify();
+        return state;
     }
-    //! \return Czas którego nale¿y u¿ywaæ przy wyœwietlaniu UI.
-    inline double getUITime() const
-    {
-        return uiTime;
-    }
-    //! \return Czas którego nale¿y u¿ywaæ przy wyœwietlaniu UI.
-    inline double getNormalizedUITime() const
-    {
-        return uiTime / getLength();
-    }
+    //! \param state
+    void setState(const State& state);
 
     //virtual void notify();
 

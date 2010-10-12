@@ -24,6 +24,8 @@ private:
     TimelineWidget* widget;
     //! Model timeline'a.
     timeline::Controller* controller;
+    //! Czy wykonuje siê seeka?
+    bool seekRequested;
 
 public:
     TimelineService();
@@ -37,6 +39,11 @@ public:
     virtual void SetModel(IDataManager* dataManager);
 
 public:
+    //!
+    virtual AsyncResult compute(IServiceManager* serviceManager);
+
+public:
+
     //! \return Kontroler.
     inline timeline::Controller* getController()
     {
@@ -47,6 +54,20 @@ public:
     {
         return controller;
     }
+
+    //! \return true je¿eli za¿yczono sobie seeka, ale jeszcze nie uda³o siê go wykonaæ.
+    inline bool isSeekRequested() const
+    { 
+        return seekRequested;
+    }
+    //! Metodê tê nale¿y wywo³aæ z parametrem true je¿eli nadaje siê nowy czas timeline'a, a nie chce
+    //! siê, aby nastêpowa³a automatyczna inkremetnacja czasu zanim dekodery osi¹gn¹ zadany punkt czasowy.
+    //! \param seekRequested true je¿eli za¿yczono sobie seeka, ale jeszcze nie uda³o siê go wykonaæ.
+    inline void setSeekRequested(bool seekRequested) 
+    { 
+        this->seekRequested = seekRequested; 
+    }
+
 
 };
 

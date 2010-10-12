@@ -41,6 +41,9 @@ public:
     virtual void SetModel(IDataManager* dataManager);
 
 public:
+
+
+public:
     virtual timeline::Model::Streams getStreams();
 };
 

@@ -22,14 +22,28 @@ namespace timeline {
 /**
  *	
  */
-class Controller : protected OpenThreads::Thread
+class Controller : protected OpenThreads::Thread, public utils::Observable<Model::State>
 {
 private:
     //! Model danych.
-    Model * model;
-    //!
-    OpenThreads::Mutex timeMutex;
-    //!
+    Model* model;
+
+    //! Kopia stanu modelu.
+    Model::State dirtyState;
+
+    //! Czy kontroler jest zajêty?
+    volatile bool busy;
+    //! Czy stan uleg³ zmianie, a nie zosta³ jeszcze zaakceptowany?
+    bool dirty;
+    //! Czy czas ma byæ inkrementowany?
+    bool timeRequested;
+    //! Czy dzia³a w trybie asynchronicznym?
+    bool asynchronousMode;
+
+
+    //! Muteks blokujacy modyfikacjê stanu modelu.
+    OpenThreads::Mutex modelMutex;
+    //! Muteks blokuj¹cy modyfikacjê stanu.
     OpenThreads::Mutex stateMutex;
     //!
     osg::Timer timer;
@@ -45,75 +59,74 @@ public:
     //! Zatrzymuje strumienie.
     void pause();
 
-    //! \return Model.
-    inline const Model* getModel() const
-    { 
-        return model;
-    }
-    //! \return Model.
-    inline Model* getModel()
-    { 
-        return model;
-    }
-
     //! \return Czas
     double getTime() const;
     //! Ustawia czas blokuj¹co.
     //! \param time Czas
     void setTime(double time);
-    //! Ustawia czas nieblokuj¹co. Do u¿ytku przez kod UI.
-    //! \param time Czas.
-    void setUITime(double time);
+    //! \return
+    double getTimeScale() const;
+    //! \param timeScale
+    void setTimeScale(double timeScale);
     //! \return D³ugoœæ najd³u¿szego ze strumieni.
     double getLength() const;
+    //!
+    void setStreamOffset(int idx, double offset);
 
-    //! \return
-    inline double getTimeScale() const
-    { 
-        return model->getTimeScale();
-    }
-    //! \param timeScale
-    inline void setTimeScale(double timeScale) 
-    { 
-        model->setTimeScale(timeScale);
-    }
     //! \return Znormalizowany czas.
-    inline double getNormalizedTime() const
+    double getNormalizedTime() const
     {
         return getTime() / getLength();
     }
     //! Ustawia czas blokuj¹co.
     //! \param time Znormalizowany czas.
-    inline void setNormalizedTime(double time)
+    void setNormalizedTime(double time)
     {
         setTime( time * getLength() );
     }
-    //! Ustawia czas nieblokuj¹co. Do u¿ytku przez kod UI.
-    //! \param time Znormalizowany czas.
-    inline void setNormalizedUITime(double time)
-    {
-        setUITime(time * getLength());
+
+    //! \return
+    inline Model* getModel()
+    { 
+        return model;
     }
 
-    //!
-    void setStreamOffset(int idx, double offset);
+    //! \return
+    inline bool isAsynchronousMode() const
+    { 
+        return asynchronousMode;
+    }
+    //! \param asynchronousMode
+    inline void setAsynchronousMode(bool asynchronousMode) 
+    { 
+        this->asynchronousMode = asynchronousMode; 
+    }
+
+    //! \return Czy kontroler jest zajêty?
+    bool isBusy() const;
+    //! \return Czy bie¿¹cy stan jest "brudny"?
+    bool isDirty() const;
+    //! \return Czy strumienie s¹ odtwarzane?
+    bool isPlaying() const;
+    //! \return
+    bool isTimeRequested() const;
 
 private:
     //! W¹tek odtwarzaj¹cy.
     virtual void run();
 
-    //! Odtwarzanie strumieni z automatycznym postêpem.
-    /** Odtwarzanie w ten sposób nigdy siê nie koñczy (ci¹gle zwraca false).
-      \return false
-    */
-    bool autoPlayback();
-    //! Odtwarzanie asynchroniczne.
-    /** Porównuje, czy czas UI jest równy czasowi strumieni; jeœli tak, to siê
-      koñczy. Metoda wprowadzona po to, aby zachowaæ p³ynnoœæ UI przy odtwarzaniu
-      asynchronicznym.
-      \return true gdy koniec.
-    */  
-    bool asyncPlayback();
+    //! \return Czy mo¿liwy jest "czysty" zapis?
+    bool isWriteEnabled() const;
+
+    //! \return Bie¿¹cy stan. W zale¿noœci od rezultatu isWriteEnabled
+    //! zwracany jest albo faktyczny stan modelu, albo jego "brudna" kopia.
+    Model::State getState() const;
+
+    //! Ustawia bie¿¹cy stan. Zmienna dirtyState zawsze jest ustawiana,
+    //! ewentualnie jeszcze (na podstawie rezultatu isWriteEnabled) 
+    //! ustawiana jest flaga dirty.
+    //! \param state Bie¿¹cy stan.
+    void setState(const Model::State& state);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

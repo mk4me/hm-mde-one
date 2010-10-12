@@ -38,7 +38,7 @@ public slots:
 public:
     //! Aktualizacja obserwatora.
     //! \param subject Obiekt podany obserwacji.
-    virtual void update(const timeline::Model * subject);
+    virtual void update(const timeline::Model::State * subject);
 
 private:
     double getSliderValue(QSlider* slider) const;

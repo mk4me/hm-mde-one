@@ -69,6 +69,8 @@ private:
 protected:
     //! Tylko klasa pochodna mo¿e wywo³aæ ten konstruktor.
     Observable() : self(NULL), isUpdating(false) {}
+    //! Tylko klasa pochodna mo¿e wywo³aæ ten konstruktor.
+    Observable(const T* self) : self(self), isUpdating(false) {}
 
 public:
     //!
@@ -125,17 +127,12 @@ public:
             UTILS_ASSERT(false, "Can't update during notify.");
         }
 
-        printf("entering: %d\n", GetCurrentThreadId());
         isUpdating = true;
         for ( typename std::vector<ObserverPtr>::iterator it = observers.begin(); it != observers.end(); ++ it) {
             (*it)->update(self);
         }
-        printf("leaving: %d\n", GetCurrentThreadId());
         isUpdating = false;
     }
-
-    //! Meotda do prze³adowania w klasie pochodnej. Musi wywo³aæ metodê notify obserwatora.
-    //virtual void notify(ObserverType * toNotify);
 };
 
 //------------------------------------------------------------------------------

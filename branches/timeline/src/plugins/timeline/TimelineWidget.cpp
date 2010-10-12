@@ -18,26 +18,25 @@ TimelineWidget::~TimelineWidget()
 
 void TimelineWidget::timeSliderChanged(int value)
 {
-    service->getController()->setNormalizedUITime(getSliderValue(timeSlider));
+    service->getController()->setNormalizedTime(getSliderValue(timeSlider));
+    service->setSeekRequested(true);
 }
 
-void TimelineWidget::update( const timeline::Model * subject )
+void TimelineWidget::update( const timeline::Model::State * subject )
 {
-    double normalizedUITime = subject->getNormalizedUITime();
-
     // ustawienie wartoœci slidera
-    int sliderValue = getSliderValue(timeSlider, normalizedUITime);
-    if ( sliderValue != timeSlider->value() ) {
+    int sliderValue = getSliderValue(timeSlider, subject->normalizedTime);
+    if ( sliderValue != timeSlider->value() && !timeSlider->isSliderDown() ) {
         timeSlider->blockSignals(true);
         timeSlider->setValue(sliderValue);
         timeSlider->blockSignals(false);
     }
 
-    //currentTimeSpinBox->blockSignals(true);
-    //currentTimeSpinBox->setMinimum(0.0);
-    //currentTimeSpinBox->setMaximum( subject->getLength() );
-    //currentTimeSpinBox->setValue( subject->getUITime() );
-    //currentTimeSpinBox->blockSignals(false);
+    currentTimeSpinBox->blockSignals(true);
+    currentTimeSpinBox->setMinimum(0.0);
+    currentTimeSpinBox->setMaximum( subject->length );
+    currentTimeSpinBox->setValue( subject->time );
+    currentTimeSpinBox->blockSignals(false);
 
 //     blockSignals(true);
 //     if (subject->getPlaying()) {
