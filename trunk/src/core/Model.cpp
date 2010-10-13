@@ -14,6 +14,8 @@ using namespace std;
 //--------------------------------------------------------------------------------------------------
 Model::Model()
 {
+	m_geometry = new osg::Geometry();
+
     m_pJoints = NULL;
     m_pSkeleton = NULL;
     m_pAnimation = NULL;
@@ -190,6 +192,33 @@ void* Model::GetSkeletonGroup()
     return NULL;
 }
 
+void Model::DrawModelBone()
+{
+	// create new geode
+	_skeletonGeode = new osg::Geode();
+	_skeletonGeode->setName("skeleton_geode");
+
+	// Drawing Bones
+	int childNum = this->getNumChildren();
+	for (int i = 0; i < childNum; ++i)
+	{		
+		osg::Group* group = dynamic_cast<SkeletonNode*>(this->getChild(i));
+		if (group)
+		{
+			//////////////////////////////////////////////////////////////////////////
+			// get skeleton and set pointer at him as member
+			osg::ref_ptr<osg::Group> skeleton = this->getChild(i)->asGroup();
+
+			pPat root_bone = (pPat)(skeleton.get());
+
+			for (unsigned int b = 0; b < root_bone->getNumChildren(); ++b)
+				if (dynamic_cast<SkeletonNode*>(root_bone->getChild(b)))
+					this->DrawBone((pPat)root_bone->getChild(b), &root_bone->getPosition(), &root_bone->getAttitude(), _skeletonGeode);
+
+			this->addChild(_skeletonGeode);
+		}
+	}
+}
 
 //--------------------------------------------------------------------------------------------------
 void Model::DrawBone( osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode )
@@ -249,7 +278,7 @@ osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, cons
                                                 const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2, bool isSelected)
 {
     // draw actual bone
-    osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
+    
 
     // vertices
     osg::Vec3Array* vertices = new osg::Vec3Array();
@@ -270,8 +299,8 @@ osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, cons
     line->push_back(5);
 
     // set geometry data
-    geometry->setVertexArray(vertices);
-    geometry->addPrimitiveSet(line);
+    m_geometry->setVertexArray(vertices);
+    m_geometry->addPrimitiveSet(line);
 
     // set colors
     osg::Vec4Array* colors = new osg::Vec4Array;
@@ -304,11 +333,11 @@ osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, cons
     colorIndexArray->push_back(4);
     colorIndexArray->push_back(5);
 
-    geometry->setColorArray(colors);
-    geometry->setColorIndices(colorIndexArray);
-    geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+    m_geometry->setColorArray(colors);
+    m_geometry->setColorIndices(colorIndexArray);
+    m_geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 
-    return geometry;
+    return m_geometry;
 }
 
 osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos)

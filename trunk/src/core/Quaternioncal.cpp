@@ -243,3 +243,11 @@ void Quaternion::getRotationMatrix( float* M)
     M[3] = M[7] = M[11] = M[12] = M[13] = M[14] = 0;
     M[15] = 1;
 }
+
+void Quaternion::getQuaternion( float &w, float &x, float &y, float &z )
+{
+	w = W;
+	x = X;
+	y = Y;
+	z = Z;
+}

@@ -248,15 +248,15 @@ int Channel::getRotation(int frameNum, float &xRotate, float &yRotate, float &zR
     frameData tempFrameData = frames[ frameNum-1 ];
     if(tempFrameData.size() == 6)
     {
-        xRotate = tempFrameData[4];
-        yRotate = tempFrameData[5];
-        zRotate = tempFrameData[3];
+        xRotate = tempFrameData[3];
+        yRotate = tempFrameData[4];
+        zRotate = tempFrameData[5];
     }
     else if(tempFrameData.size() == 3)
     {
-        xRotate = tempFrameData[1];
-        yRotate = tempFrameData[2];
-        zRotate = tempFrameData[0];	
+        xRotate = tempFrameData[0];
+        yRotate = tempFrameData[1];
+        zRotate = tempFrameData[2];	
     }
     else
     {
@@ -309,11 +309,12 @@ void Channel::getTranslation(int frameNum, float &xTranslate, float &yTranslate,
 //     }
 
     frameData tempFrameData = frames[ frameNum-1 ];
- //   if(tempFrameData.size() == 6){
+    if(tempFrameData.size() == 6)
+	{
         xTranslate = tempFrameData[0];
         yTranslate = tempFrameData[1];
         zTranslate = tempFrameData[2];
- //   }
+    }
  //   else
 //    {
  //       printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
@@ -502,39 +503,7 @@ void Channel::interpolate( int start, int stop, int channelPos )
 }	
 
 
-// This is the workhorse that actually re-assigns newly-interpolated values to the frames between
-// the two requested quaternion interpolation points.
-void Channel::interpolateQuaternion( int start, int stop )
-{
-    // user thinks of frame 1 as start but I use frame 0 so 
-    // subtract 1 from start and stop
-    start--;
-    stop--;
 
-    Quaternion to, from, result;
-
-    // If user gave me start==0 - 1 then use first frame, but it is actually just copying stop frame to all the frames in between
-    if( start != -1 )
-        from = quatV[ start ];
-    to = quatV[ stop ];
-
-    quaternionVector::iterator quaternionIterator = quatV.begin();
-    for(int ICounter=0; ICounter<=start; ICounter++)
-    {
-        quaternionIterator++;
-    }
-
-    for(int Counter=start+1; Counter<stop; Counter++)
-    {
-        if( start == -1 )
-            result = to;
-        else
-            result.slerp( from, to, ((Counter - start)/float(stop-start)) );
-        quatV.insert( quaternionIterator, result );
-        quaternionIterator++;
-        quaternionIterator = quatV.erase( quaternionIterator );
-    }
-}
 
 // Clears all of the markers for quaternion data.
 void Channel::clearQuaternionMarkers()
@@ -556,88 +525,7 @@ int Channel::hasFrameData()
     return 0;
 }
 
-//Just dump all the pertient information for the joint at hand.
-void Channel::dump()
-{
-    printf("**************** Dumping Joint *****************\n");
-    printf("Joint Name = %s\n", name);
-    printf("Joint Type = %d\n", type);
-    printf("Joint Parent = %s\n", parent);
 
-    if( (int)children.size() > 0 )
-    {
-        printf("Joint children = ");
-
-        for(int Counter=0; Counter<(int)children.size(); Counter++)
-            printf("%s ", children[Counter]);
-        printf("\n");
-    }
-
-    printf("Rotation order = %s\n",rotationOrder);
-    printf("OFFSET ");
-
-    if(offset.size() > 0)
-        printf("%f %f %f", offset[0], offset[1], offset[2]);
-    printf("\nJoint channel names  ");
-
-    for(int Counter1=0; Counter1<(int)channelNames.size(); Counter1++)
-        printf("%s ", channelNames[Counter1]);
-
-    printf("\n");
-    printf("FRAMES %d\n", frames.size());
-
-    for(int Counter2=0; Counter2<(int)frames.size(); Counter2++)
-    {
-        frameData tempFrameData2 = frames[Counter2];
-
-        for(int Counter2i=0; Counter2i<(int)tempFrameData2.size(); Counter2i++)
-            printf("%f ",tempFrameData2[Counter2i]);
-        printf("\n");
-    }
-
-    printf("ORIGINAL MARKER data %d\n", originalMarkers.size());
-
-    for(int Counter3=0; Counter3<(int)originalMarkers.size(); Counter3++)
-    {
-        markerPosition tempMarkerPosition = originalMarkers[Counter3];
-
-        for(int Counter3i=0; Counter3i<(int)tempMarkerPosition.size(); Counter3i++)
-            printf("%f ",tempMarkerPosition[Counter3i]);
-        printf("\n");
-
-    }
-    printf("EULER MARKER data %d\n", eulerMarkers.size());
-
-    for(int Counter4=0; Counter4<(int)eulerMarkers.size(); Counter4++)
-    {
-        markerPosition tempMarkerPosition2 = eulerMarkers[Counter4];
-
-        for(int Counter4i=0; Counter4i<(int)tempMarkerPosition2.size(); Counter4i++)
-            printf("%f ",tempMarkerPosition2[Counter4i]);
-        printf("\n");
-
-    }
-
-    printf("QUATERNION MARKER data %d\n", quaternionMarkers.size());
-
-    for(int Counter5=0; Counter5<(int)quaternionMarkers.size(); Counter5++)
-    {
-        markerPosition tempMarkerPosition3 = quaternionMarkers[Counter5];
-
-        for(int Counter5i=0; Counter5i<(int)tempMarkerPosition3.size(); Counter5i++)
-            printf("%f ",tempMarkerPosition3[Counter5i]);
-        printf("\n");
-
-    }
-
-    printf("QUATERNION data %d\n", quatV.size());
-
-    for(int Counter6=0; Counter6<(int)quatV.size(); Counter6++)
-    {
-        Quaternion tempQuaternion = quatV[Counter6];
-        tempQuaternion.print();
-    }
-}
 
 void Channel::setID( const int id )
 {
@@ -647,4 +535,18 @@ void Channel::setID( const int id )
 int Channel::getID()
 {
     return m_id;
+}
+
+void Channel::getQuaternionFromEuler( int frameNum, float &w, float &x, float &y, float &z )
+{
+	float rx, ry, rz;
+	getRotation(frameNum, rx, ry, rz);
+
+	rx = rx * PI / 180;
+	ry = ry * PI / 180;
+	rz = rz * PI / 180;
+
+	Quaternion* quat = new Quaternion(rx, ry, rz);
+
+	quat->getQuaternion(w, x, y, z);
 }

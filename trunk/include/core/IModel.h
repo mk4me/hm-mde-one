@@ -32,6 +32,8 @@ public:
     virtual SSkeleton* GetSkeleton() = 0;
     virtual SFAnimation* GetAnimation() = 0;
     virtual std::vector<ISkeletonNode* >* GetJoints() = 0;
+
+	virtual void DrawModelBone() = 0;
 };
 
 

@@ -55,6 +55,8 @@ public:
     // Compute quaternion from euler angles
     void fromEulerAngles( float, float, float );
 
+	void getQuaternion(float &w, float &x, float &y, float &z);
+
     // This return the axis and angle to rotate around, I don't really use this however,
     // I rather just get the Rotation matrix and multiply that on my gl stack
     void getAngleAndAxis( float &angle, float &x, float &y, float &z );

@@ -69,19 +69,8 @@ private:
     // supports motion data files with multiple roots
 
     int				exists;					// This value is used to see if motion data exists so
-    // that animWindow can tell if there is anything it can draw
-    // This function is a recursive function that is used by readBVHfile to read in the motion data
-    void readBVHjoint();
 
-    // Internal functions used to write the BVH and MEL data to a file.  Often recursive.
-    void writeBvhJoints(char *name, FILE *bvhStream, int tabBuffer) ;	
-    void writeBvhData  (char *name, FILE *bvhStream) ;	
-    void writeBvhDataHelper(char *name, FILE *bvhStream, int frameNum) ;	
-    void writeMelJoints(char *name, FILE *melStream, char *oldName);
 
-    // Used to properly tab a BVH file.  Accepts a file to write to and the number of tabs
-    // requested.
-    void writeTabs(FILE *fileStream, int tabNum) ;
 
     // Gets the global position of a requested joint.
     int getJointPosition( const char* jointName );
@@ -97,9 +86,6 @@ public:
     ASFAMCParser();
     ~ASFAMCParser();
 
-    // Read and write BVH files.  Pass this function a filename to write.
-    int readBVHfile( char* BVHFileName ) ;
-    void writeBVHfile( char* BVHFileName) ;
 
     vectorOfJoints* getJoints();
 
@@ -113,21 +99,6 @@ public:
     // Compute the end effectors for all the joints.
     void computeEffectors();
 
-    // Writes a RIB file using a private recursive function.  This takes arguments declared
-    // by the window displayed in the main window.  
-    // They are : The filename to write
-    //            The filename to output as .tif images (from the rib file)
-    //            The X resolution
-    //            The Y resolution
-    //            The starting frame of animation
-    //            The ending frame of animation
-    void writeRIBfile (const char*, const char*, int, int, int, int ) ;
-
-    // This function takes a filename and writes marker data to that file.
-    void writeMarkerFile (const char*) ;
-
-    // Write out a mel script that can be used with maya for creating animations
-    void writeMelScript (const char*) ;
 
     // Get a pointer to a joint given by jointName.  You should not delete the memory
     // for this joint I give you
@@ -148,11 +119,6 @@ public:
     int getNumberOfRoots();
     char* getRootName( int );
 
-    // Call this function to comute an euler or quaternion marker for each marker you should pass a 1
-    // into the variable intial call so that the function knows what joint is being computed
-    void computeEulerMarker(Channel *j, int frameNum, int initialCall=0);
-    void computeQuaternionMarker(Channel *j, int frameNum, int initialCall=0);
-
 
     // These 4 functions can be used for going through the joints sequentially
     // Here is an example use:
@@ -167,10 +133,6 @@ public:
     int getNumberOfJoints();				// get the number of joints
 
 
-    // Call these function to recompute the markers if the user has changed any of the angle via the graphEditor
-    void recomputeEulerMarkers();
-    void recomputeQuaternionMarkers();
-
     // set the camera position
     void setCameraPosition(float, float, float);
 
@@ -180,17 +142,8 @@ public:
     // Sets the time that each frame should be shown
     void setFrameTime(float ft);
 
-    // These are just two functions that I used for debuging by dumping out the joints and the mapped names
-    void dump();
-    void dumpMappedNames();
-
     // This is used for the RIB exporter and gathers a 4x4 transformation matrix for the camera.
     void setCameraPosition(float* rMatrix);
-
-    // Write out the marker to a file, based on the input you get from the input file
-    // Input file example:    joint name x y z
-    void writeMarkersToFile(const char*, const char*);
-    void writeMarkersToFileRecursion(Channel* tempJoint,int frameNum,FILE* tempFilePointer,float XOffset=0,float YOffset=0,float ZOffset=0, int initialCall=0);
 
     float getFloorHeight();
 };

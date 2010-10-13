@@ -209,10 +209,10 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
         // get translation
         joint->getOffset(bone[i].translation[0], bone[i].translation[1], bone[i].translation[2]);
 
+		
         // get quaternion
-        //joint->getAngleAndAxis(1,bone[i].quaternion[3], bone[i].quaternion[0], bone[i].quaternion[1], bone[i].quaternion[2]);
-        bone[i].quaternion[0] = bone[i].quaternion[1] = bone[i].quaternion[2] = 0;
-        bone[i].quaternion[3] = 1;
+        joint->getQuaternionFromEuler(1,bone[i].quaternion[3], bone[i].quaternion[0], bone[i].quaternion[1], bone[i].quaternion[2]);
+
 
         // number of children
         bone[i].n = joint->numOfChildren();
@@ -231,7 +231,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
 
     model->SetSkeleton(skeleton);
     LoadSkeleton(model);
-  //  LoadAnimation(acclaimObject, model);
+    LoadAnimation(acclaimObject, model);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -313,10 +313,9 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
         {
             animation->bones[b].frames->time = TIMERMULTIPLAY * k;
 
-            jointPointer->getTranslation(k+1, animation->bones[b].frames->trans[0], animation->bones[b].frames->trans[1], animation->bones[b].frames->trans[2]);
-            jointPointer->getAngleAndAxis(k+1, animation->bones[b].frames->quat[3], animation->bones[b].frames->quat[0], animation->bones[b].frames->quat[1], animation->bones[b].frames->quat[2]);               
-            animation->bones[b].frames->quat[0] = animation->bones[b].frames->quat[1] = animation->bones[b].frames->quat[2] = 0;
-            animation->bones[b].frames->quat[3] = 1;
+            jointPointer->getOffset(animation->bones[b].frames->trans[0], animation->bones[b].frames->trans[1], animation->bones[b].frames->trans[2]);
+            jointPointer->getQuaternionFromEuler(k+1, animation->bones[b].frames->quat[3], animation->bones[b].frames->quat[0], animation->bones[b].frames->quat[1], animation->bones[b].frames->quat[2]);               
+
         }
 
         jointPointer++;

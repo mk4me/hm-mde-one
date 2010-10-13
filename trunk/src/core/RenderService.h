@@ -48,6 +48,8 @@ public:
     osgGroupPtr GetRoot();
     ViewerQT* GetMainAdapterWidget();
 
+	void RenderBone(Model* model);
+
 private: 
     M_DECLARE_CLASS(); 
     void Inicialize();

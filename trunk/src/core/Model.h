@@ -52,6 +52,11 @@ public:
 
     osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos);
 
+	virtual void DrawModelBone();
+
+	osg::ref_ptr<osg::Geometry>  m_geometry;
+
+	osg::ref_ptr<osg::Geode> _skeletonGeode;
 private:
     void CreateArrayOfJoints(SkeletonNode* bone);
 

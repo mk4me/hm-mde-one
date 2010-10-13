@@ -86,6 +86,8 @@ public:
     ~Channel();
     Channel(const Channel& tempJoint);
 
+	void        getQuaternionFromEuler(int frameNum, float &w, float &x, float &y, float &z);
+
     void        setID(const int id);
     int         getID();
 
@@ -173,11 +175,8 @@ public:
     void	interpolateRotateY(int, int);
     void	interpolateRotateZ(int, int);
 
-    // Interpolate quaternion angles
-    void	interpolateQuaternion(int, int);
 
-    // This function will print out all the motion data for this joint
-    void	dump();
+
 
     // Does this joint have frameData (1 or 0)
     int		hasFrameData();
