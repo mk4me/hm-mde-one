@@ -136,7 +136,7 @@ AsyncResult AnimationService::OnTick(double delta)
         RecalculateChanges();
         UpdateMesh();
 
-		//m_pModel->DrawModelBone();
+		m_pModel->DrawModelBone();
 
 		// call functions that are to call every animation frame
 		for (std::vector<ISimpleOneArgFunctor<double>*>::iterator i = m_functionsToCall.begin(); i != m_functionsToCall.end(); ++i)

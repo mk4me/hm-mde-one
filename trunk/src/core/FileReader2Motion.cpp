@@ -311,10 +311,10 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
         //for every key
         for(int k = 0; k < animation->bones[b].n; k++)
         {
-            animation->bones[b].frames->time = TIMERMULTIPLAY * k;
+            animation->bones[b].frames[k].time = TIMERMULTIPLAY * k;
 
-            jointPointer->getOffset(animation->bones[b].frames->trans[0], animation->bones[b].frames->trans[1], animation->bones[b].frames->trans[2]);
-            jointPointer->getQuaternionFromEuler(k+1, animation->bones[b].frames->quat[3], animation->bones[b].frames->quat[0], animation->bones[b].frames->quat[1], animation->bones[b].frames->quat[2]);               
+            jointPointer->getOffset(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
+            jointPointer->getQuaternionFromEuler(k+1, animation->bones[b].frames[k].quat[3], animation->bones[b].frames[k].quat[0], animation->bones[b].frames[k].quat[1], animation->bones[b].frames[k].quat[2]);               
 
         }
 

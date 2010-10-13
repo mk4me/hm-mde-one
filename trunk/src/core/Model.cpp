@@ -194,6 +194,9 @@ void* Model::GetSkeletonGroup()
 
 void Model::DrawModelBone()
 {
+	if (_skeletonGeode.valid())
+		this->removeChild(_skeletonGeode.get());
+
 	// create new geode
 	_skeletonGeode = new osg::Geode();
 	_skeletonGeode->setName("skeleton_geode");
