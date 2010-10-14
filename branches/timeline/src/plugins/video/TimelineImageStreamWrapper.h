@@ -9,6 +9,8 @@
 #ifndef __HEADER_GUARD__TIMELINEOSGIMAGESTREAM_H__
 #define __HEADER_GUARD__TIMELINEOSGIMAGESTREAM_H__
 
+#include <plugins/timeline/Stream.h>
+
 /**
  * 
  */

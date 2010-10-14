@@ -23,10 +23,13 @@ namespace timeline {
 ////////////////////////////////////////////////////////////////////////////////
 
 Controller::Controller() : 
-    utils::Observable<Model::State>(&dirtyState),
+    utils::Observable<State>(&dirtyState),
     modelMutex(), 
     stateMutex(), 
-    asynchronousMode(true)
+    asynchronous(false),
+    timeDirty(false),
+    busy(false),
+    dirty(false)
 {
   model = new Model();
   dirtyState = model->getState();
@@ -48,7 +51,7 @@ void Controller::pause()
 //   OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
 //   model->setPlaying(false);
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-    Model::State state = getState();
+    State state = getState();
     state.isPlaying = false;
     setState(state);
 }
@@ -57,13 +60,12 @@ void Controller::play()
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
 
-    Model::State state = getState();
+    State state = getState();
     state.isPlaying = true;
     setState(state);
 
-    timeRequested = true;
     if ( !isRunning() ) {
-        start();
+        //start();
     }
 }
 
@@ -82,12 +84,40 @@ void Controller::play()
 //   }
 // }
 
-double Controller::getLength() const
+void Controller::addStream( StreamPtr stream )
 {
-    return model->getLength();
-    //return getState().length;
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock2(modelMutex);
+    model->addStream(stream);
+    dirtyState.length = model->getLength();
+    //dirty = true;
 }
 
+void Controller::removeStream( StreamPtr stream )
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock2(modelMutex);
+    model->removeStream(stream);
+    State state = getState();
+    state.length = model->getLength();
+    setState(state);
+}
+
+double Controller::getNormalizedTime() const
+{
+    return getTime() / getLength();
+}
+
+void Controller::setNormalizedTime( double time )
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    setTime( time * getLength() );
+}
+
+double Controller::getLength() const
+{
+    return getState().length;
+}
 
 bool Controller::isPlaying() const
 {
@@ -104,15 +134,17 @@ void Controller::setTime( double time )
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
     
     // nowy stan
-    Model::State state = getState();
+    State state = getState();
     state.time = time;
     state.normalizedTime = time  / getLength();
     setState(state);
+    timeDirty = true;
+    model->timeDirty = true;
+    
 
     // wyzerowanie licznika
-    timeRequested = true;
-    if ( !isRunning() && asynchronousMode ) {
-        start();
+    if ( !isRunning() && asynchronous ) {
+        //start();
     }
 }
 
@@ -124,7 +156,7 @@ double Controller::getTimeScale() const
 void Controller::setTimeScale( double timeScale )
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-    Model::State state = getState();
+    State state = getState();
     state.timeScale = timeScale;
     setState(state);
 }
@@ -144,9 +176,137 @@ void Controller::run()
             // zerujemy czas ramki
             frameLength.setStartTick();
 
+            if (!compute()) {
+                return;
+            }
+
+            // jak d³ugo to wszystko trwa³o?
+            double waitTime = 0.02 - frameLength.time_s();
+            if ( waitTime > 0.0 ) {
+                OpenThreads::Thread::microSleep( waitTime * 1000000 );
+            }
+        } 
+    } catch (const std::exception & error) {
+        OSG_WARN<< "Controller::run : " << error.what() << std::endl;
+    } catch (...) {
+        OSG_WARN<< "Controller::run : unhandled exception" << std::endl;
+    }
+}
+
+
+
+State Controller::getState() const
+{
+    if ( isWriteEnabled() ) {
+        return model->getState();
+    } else {
+        return dirtyState;
+    }
+}
+
+void Controller::setState( const State& state )
+{
+    if ( isWriteEnabled() ) {
+        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(modelMutex);
+        busy = true;
+        model->setState(state);
+        dirty = false;
+        busy = false;
+    } else {
+        dirty = true;
+    }
+    dirtyState = state;
+    notify();
+}
+
+bool Controller::isWriteEnabled() const
+{
+    if ( OpenThreads::Thread::CurrentThread() == this ) {
+        return true;
+    } else if ( const_cast<Controller*>(this)->isRunning() ) {
+        return false;
+    } else {
+        return !asynchronous;
+    }
+}
+
+bool Controller::isBusy() const
+{
+    return busy;
+}
+
+bool Controller::isDirty() const
+{
+    return dirty;
+}
+
+bool Controller::isTimeDirty() const
+{
+    return timeDirty;
+}
+
+bool Controller::isAsynchronous() const
+{
+    return asynchronous;
+}
+
+void Controller::setAsynchronous( bool asynchronous )
+{
+    this->asynchronous = asynchronous;
+}
+
+bool Controller::compute()
+{
+    // ustalenie i modyfikacja bie¿¹cego stanu
+    bool resetTimer = false;
+    State appliedState;
+    {
+        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+        // czy jest sens dalej trzymaæ w¹tek?
+        if ( !isDirty() && !isPlaying() ) {
+            //OSG_NOTICE<<"Finished Controller::run()"<<std::endl;
+            return false;
+        }
+        // zaakceptowano stan
+        appliedState = dirtyState;
+        timeDirty = dirty = false;
+        model->timeDirty = false;
+        busy = true;
+    }
+
+    // nadanie bie¿¹cego stanu
+    {
+        // blokada modyfikacji czasu
+        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(modelMutex);
+        // nadanie stanu modelowi - miejsce wykonania w³aœciwej logiki
+        model->setState(appliedState);
+        // ile trzeba bêdzie czekaæ?
+        busy = false;
+    }
+    return true;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+} // namespace timeline
+////////////////////////////////////////////////////////////////////////////////
+
+#pragma region LEGACY
+#if 0
+void Controller::run()
+{
+    //UTILS_PROFILER_THREAD_SCOPE;
+    try
+    {
+        osg::Timer frameLength;
+        while (true) {
+            // zerujemy czas ramki
+            frameLength.setStartTick();
+
             // ustalenie i modyfikacja bie¿¹cego stanu
             bool resetTimer = false;
-            Model::State appliedState;
+            State appliedState;
             {
                 OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
                 // czy jest sens dalej trzymaæ w¹tek?
@@ -169,7 +329,7 @@ void Controller::run()
                 } else if ( dirtyState.isPlaying ) {
                     // automatyczna inkrementacja
                     //time += delta * dirtyState.timeScale;
-                    //time = utils::clamp(time, 0.0, model->getLength());
+                    //time = utils::clamp(time, 0.0, model->calculateLength());
                 }
                 dirtyState.time = time;
 
@@ -207,59 +367,5 @@ void Controller::run()
         OSG_WARN<< "Controller::run : unhandled exception" << std::endl;
     }
 }
-
-
-
-Model::State Controller::getState() const
-{
-    if ( isWriteEnabled() ) {
-        return model->getState();
-    } else {
-        return dirtyState;
-    }
-}
-
-void Controller::setState( const Model::State& state )
-{
-    if ( isWriteEnabled() ) {
-        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(modelMutex);
-        busy = true;
-        model->setState(state);
-        busy = false;
-    } else {
-        dirty = true;
-    }
-    dirtyState = state;
-    // HACK
-    dirtyState.length = model->getLength();
-    notify();
-}
-
-bool Controller::isWriteEnabled() const
-{
-    if ( OpenThreads::Thread::CurrentThread() == this ) {
-        return true;
-    } else if ( const_cast<Controller*>(this)->isRunning() ) {
-        return false;
-    } else {
-        return !asynchronousMode;
-    }
-}
-
-bool Controller::isBusy() const
-{
-    return busy;
-}
-
-bool Controller::isDirty() const
-{
-    return dirty;
-}
-
-bool Controller::isTimeRequested() const
-{
-    return timeRequested;
-}
-////////////////////////////////////////////////////////////////////////////////
-} // namespace timeline
-////////////////////////////////////////////////////////////////////////////////
+#endif
+#pragma endregion LEGACY

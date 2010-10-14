@@ -14,6 +14,7 @@
 #include <osg/Timer>
 
 #include "Model.h"
+#include "State.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline {
@@ -22,32 +23,29 @@ namespace timeline {
 /**
  *	
  */
-class Controller : protected OpenThreads::Thread, public utils::Observable<Model::State>
+class Controller : public OpenThreads::Thread, public utils::Observable<State>
 {
 private:
     //! Model danych.
     Model* model;
 
     //! Kopia stanu modelu.
-    Model::State dirtyState;
+    State dirtyState;
 
     //! Czy kontroler jest zajêty?
     volatile bool busy;
     //! Czy stan uleg³ zmianie, a nie zosta³ jeszcze zaakceptowany?
     bool dirty;
-    //! Czy czas ma byæ inkrementowany?
-    bool timeRequested;
+    //! Wyodrêbnienie opisu stanu czasu.
+    bool timeDirty;
     //! Czy dzia³a w trybie asynchronicznym?
-    bool asynchronousMode;
-
+    bool asynchronous;
 
     //! Muteks blokujacy modyfikacjê stanu modelu.
     OpenThreads::Mutex modelMutex;
     //! Muteks blokuj¹cy modyfikacjê stanu.
     OpenThreads::Mutex stateMutex;
-    //!
-    osg::Timer timer;
-  
+
 public:
     //!
     Controller();
@@ -74,16 +72,10 @@ public:
     void setStreamOffset(int idx, double offset);
 
     //! \return Znormalizowany czas.
-    double getNormalizedTime() const
-    {
-        return getTime() / getLength();
-    }
+    double getNormalizedTime() const;
     //! Ustawia czas blokuj¹co.
     //! \param time Znormalizowany czas.
-    void setNormalizedTime(double time)
-    {
-        setTime( time * getLength() );
-    }
+    void setNormalizedTime(double time);
 
     //! \return
     inline Model* getModel()
@@ -91,16 +83,10 @@ public:
         return model;
     }
 
-    //! \return
-    inline bool isAsynchronousMode() const
-    { 
-        return asynchronousMode;
-    }
-    //! \param asynchronousMode
-    inline void setAsynchronousMode(bool asynchronousMode) 
-    { 
-        this->asynchronousMode = asynchronousMode; 
-    }
+    //! \param stream Strumieñ do dodania.
+    void addStream(StreamPtr stream);
+    //! \param stream Strumieñ do usniêcia.
+    void removeStream(StreamPtr stream);
 
     //! \return Czy kontroler jest zajêty?
     bool isBusy() const;
@@ -108,25 +94,32 @@ public:
     bool isDirty() const;
     //! \return Czy strumienie s¹ odtwarzane?
     bool isPlaying() const;
-    //! \return
-    bool isTimeRequested() const;
+    //! \return Czy bie¿¹cy czas jest "brudny"? true -> isDirty()==true
+    bool isTimeDirty() const;
+    //! \return Czy dzia³a w trybie asynchronicznym?
+    bool isAsynchronous() const;
+    //! \param asynchronous Czy ma dzia³aæ w trybie asynchronicznym?
+    void setAsynchronous(bool asynchronous);
+
+    bool compute();
 
 private:
     //! W¹tek odtwarzaj¹cy.
     virtual void run();
 
+    
     //! \return Czy mo¿liwy jest "czysty" zapis?
     bool isWriteEnabled() const;
 
     //! \return Bie¿¹cy stan. W zale¿noœci od rezultatu isWriteEnabled
     //! zwracany jest albo faktyczny stan modelu, albo jego "brudna" kopia.
-    Model::State getState() const;
+    State getState() const;
 
     //! Ustawia bie¿¹cy stan. Zmienna dirtyState zawsze jest ustawiana,
     //! ewentualnie jeszcze (na podstawie rezultatu isWriteEnabled) 
     //! ustawiana jest flaga dirty.
     //! \param state Bie¿¹cy stan.
-    void setState(const Model::State& state);
+    void setState(const State& state);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

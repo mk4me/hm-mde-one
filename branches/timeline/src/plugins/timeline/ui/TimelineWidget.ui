@@ -161,7 +161,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -173,6 +173,16 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="2" column="0" colspan="3">
+      <widget class="QLabel" name="statusLabel">
+       <property name="text">
+        <string>Working...</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -244,11 +254,45 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>timeSlider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>TimelineWidget</receiver>
+   <slot>timeSliderPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>236</x>
+     <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>317</x>
+     <y>109</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>timeSlider</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>TimelineWidget</receiver>
+   <slot>timeSliderReleased()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>236</x>
+     <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>317</x>
+     <y>109</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>timeSliderChanged(int)</slot>
   <slot>playButtonPressed()</slot>
   <slot>pauseButtonPressed()</slot>
   <slot>stopButtonPressed()</slot>
+  <slot>timeSliderPressed()</slot>
+  <slot>timeSliderReleased()</slot>
  </slots>
 </ui>

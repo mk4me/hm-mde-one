@@ -14,17 +14,17 @@
 #include "Stream.h"
 #include "Model.h"
 
-/**
- *	Interfejs klienta timeline'a.
- */
-class ITimelineClient
-{
-public:
-    //! Pusty polimorficzny destruktor.
-    virtual ~ITimelineClient() {}
-    //! \return Lista strumieni.
-    virtual timeline::Model::Streams getStreams() = 0;
-};
+// /**
+//  *	Interfejs klienta timeline'a.
+//  */
+// class ITimelineClient
+// {
+// public:
+//     //! Pusty polimorficzny destruktor.
+//     virtual ~ITimelineClient() {}
+//     //! \return Lista strumieni.
+//     virtual timeline::Streams getStreams() = 0;
+// };
 
 
 #endif  // __HEADER_GUARD__ITIMELINECLIENT_H__

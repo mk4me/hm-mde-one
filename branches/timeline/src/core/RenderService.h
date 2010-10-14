@@ -32,7 +32,6 @@ class RenderService: public IBaseService
 public:
     RenderService();
     virtual ~RenderService();
-    virtual AsyncResult OnTick(double delta); 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
 
     virtual void SetModel(IDataManager* dataManager);

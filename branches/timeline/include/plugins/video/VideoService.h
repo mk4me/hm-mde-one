@@ -10,14 +10,13 @@
 #define __HEADER_GUARD__VIDEOSERVICE_H__
 
 #include <core/IBaseService.h>
-#include <plugins/timeline/ITimelineClient.h>
 
 class IModel;
 class IDataManager;
 class IWidget;
 class VideoWidget;
 
-class VideoService : public IBaseService, public ITimelineClient
+class VideoService : public IBaseService
 {
   //M_DECLARE_CLASS();
   UNIQUE_ID('VIDE','SRVC');
@@ -35,16 +34,9 @@ public:
         return widget;
     }
 
-    virtual AsyncResult OnTick(double delta);
     virtual AsyncResult OnAdded(IServiceManager* serviceManager);
 
-    virtual void SetModel(IDataManager* dataManager);
-
-public:
-
-
-public:
-    virtual timeline::Model::Streams getStreams();
+    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 };
 
 

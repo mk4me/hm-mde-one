@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD__TIMELINEMODEL_H__
 #define __HEADER_GUARD__TIMELINEMODEL_H__
 
-#include <boost/weak_ptr.hpp>
+
 #include <vector>
 #include <stdexcept>
 #include <utils/ObserverPattern.h>
@@ -17,6 +17,7 @@
 #include <OpenThreads/Thread>
 
 #include "Stream.h"
+#include "State.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline {
@@ -29,10 +30,6 @@ namespace timeline {
 class Model : public utils::Observable<Model>
 {
 public:
-    //! WskaŸnik na strumieñ.
-    typedef boost::shared_ptr<Stream> StreamPtr;
-    //! Zbiór strumieni.
-    typedef std::vector< StreamPtr > Streams;
     //! 
     typedef Streams::iterator iterator;
     //!
@@ -40,28 +37,15 @@ public:
     //!
     typedef Streams::size_type size_type;
 
-    //! Stan modelu.
-    struct State 
-    {
-        //! Czas.
-        double time;
-        //! D³ugoœæ strumienia. 
-        double length;
-        //! Znormalizowany czas.
-        double normalizedTime;
-        //! Czy jest odtwarzany?
-        bool isPlaying;
-        //! Jaka jest skala czasowa?
-        double timeScale;
-        //! Jak czêsto ma byæ odœwie¿any?
-        double refreshPeriod;
-    };
-
 private:
     //! Lista strumieni.
     Streams streams;
     //! Stan zaakceptowany.
     State state;
+
+public:
+    // HACK
+    volatile bool timeDirty;
 
 public:
     //! Konstruktor zeruj¹cy.
@@ -129,8 +113,7 @@ public:
     //! Ustawia wspólny czas wszystkich aktywnych strumieni.
     void setTime(double time);
 
-    //! \return D³ugoœæ najd³u¿szego ze strumieni z uwzglêdnieniem offsetów.
-    double getLength() const;
+
 
     //! \return Czas strumieni.
     inline double getTime() const
@@ -159,15 +142,10 @@ public:
         state.timeScale = timeScale; 
         notify();
     }
-    //! \return
-    inline double getRefreshPeriod() const
-    { 
-        return state.refreshPeriod;
-    }
-    //! \param refreshPeriod
-    inline void setRefreshPeriod(double refreshPeriod) 
-    { 
-        state.refreshPeriod = refreshPeriod; 
+    //! \return D³ugoœæ.
+    inline double getLength() const
+    {
+        return state.length;
     }
 
     //! \return
@@ -182,7 +160,8 @@ public:
 
 private:
 
-    
+    //! \return D³ugoœæ najd³u¿szego ze strumieni z uwzglêdnieniem offsetów.
+    double calculateLength() const;
 
     //! Pomocnicza metoda dodaj¹ca strumieñ.
     //! \param stream Strumieñ do dodania.

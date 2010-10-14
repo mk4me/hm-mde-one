@@ -14,10 +14,11 @@ string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR}
 set(PUBLIC_H
 	${HEADER_PATH}/TimelineService.h
 	${HEADER_PATH}/Stream.h
-	${HEADER_PATH}/ITimelineClient.h
+	${HEADER_PATH}/ITimeline.h
 	${HEADER_PATH}/Controller.h
 	${HEADER_PATH}/View.h
 	${HEADER_PATH}/Model.h
+	${HEADER_PATH}/State.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H

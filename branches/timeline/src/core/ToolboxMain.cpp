@@ -51,7 +51,48 @@
 
 #define OSGTERRAIN_VALIDDATAOPERATOR 1 
 
+class ComputeThread : public OpenThreads::Thread
+{
+private:
+    ServiceManager* serviceManager;
+    double refreshRate;
+    volatile bool done;
 
+public:
+    ComputeThread(ServiceManager* serviceManager, double refreshRate)
+        : serviceManager(serviceManager), refreshRate(refreshRate), done(false)
+    {}
+
+    //! \param done
+    inline void setDone(bool done) 
+    { 
+        this->done = done; 
+    }
+
+    virtual void run()
+    {
+        try
+        {
+            osg::Timer frameLength;
+            while (!done) {
+                // zerujemy czas ramki
+                frameLength.setStartTick();
+
+                serviceManager->computePass();
+
+                // jak d³ugo to wszystko trwa³o?
+                double waitTime = refreshRate - frameLength.time_s();
+                if ( waitTime > 0.0 ) {
+                    OpenThreads::Thread::microSleep( waitTime * 1000000 );
+                }
+            } 
+        } catch (const std::exception & error) {
+            OSG_WARN<< "ComputeThread::run : " << error.what() << std::endl;
+        } catch (...) {
+            OSG_WARN<< "ComputeThread::run : unhandled exception" << std::endl;
+        }
+    }
+};
 
 
 //--------------------------------------------------------------------------------------------------
@@ -78,11 +119,21 @@ ToolboxMain::ToolboxMain(QWidget *parent):
     if(cdock && tldock)
         tabifyDockWidget(cdock, tldock); 
 
+    
+
     _plugins.clear(); 
     LoadPlugins(); 
     ReadSettings();
     CreateMenus();          // Inicjalizacja menu: 
     LoadWindowMenuWidget();
+
+
+    connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
+    updateTimer.start(50);
+
+    computeThread = new ComputeThread(m_pServiceManager, 0.02);
+    computeThread->start();
+
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -163,6 +214,12 @@ void ToolboxMain::Clear()
 
     // remove all services
     m_pServiceManager = NULL;
+
+    if ( computeThread->isRunning() ) {
+        computeThread->setDone(true);
+        computeThread->join();
+        delete computeThread;
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -266,7 +323,7 @@ void ToolboxMain::LoadPlugins()
     // tymczasowe, chodzi o wywo³anie eventa pozwalaj¹cego us³ugom na przejrzenie listy
     // dostêpnych us³ug
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        m_pServiceManager->getService(i)->OnServicesAdded(m_pServiceManager);
+        m_pServiceManager->getService(i)->init(m_pServiceManager);
     }
 }
 
@@ -559,3 +616,8 @@ void ToolboxMain::PolygonViewModel()
 
 }
 
+
+void ToolboxMain::updateServices()
+{
+    m_pServiceManager->updatePass();
+}

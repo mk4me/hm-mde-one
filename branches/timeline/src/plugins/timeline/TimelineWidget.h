@@ -34,11 +34,14 @@ public slots:
     void playButtonPressed();
     void pauseButtonPressed();
     void stopButtonPressed();
+    void timeSliderPressed();
+    void timeSliderReleased();
 
 public:
     //! Aktualizacja obserwatora.
     //! \param subject Obiekt podany obserwacji.
-    virtual void update(const timeline::Model::State * subject);
+    virtual void update(const timeline::State * subject);
+    void setBusy(bool busy);
 
 private:
     double getSliderValue(QSlider* slider) const;

@@ -10,6 +10,7 @@
 //--------------------------------------------------------------------------------------------------
 ServiceManager::ServiceManager(void)
 {
+    resetTime();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -64,14 +65,36 @@ void ServiceManager::RegisterServiceAs()
 }/**/
 
 //--------------------------------------------------------------------------------------------------
-void ServiceManager::OnTick(double delta)
+void ServiceManager::updatePass()
 {
     //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
-    ServicesMap::iterator it = servicesMap.begin();  
-    while (it != servicesMap.end())
-    {
-        it->second->OnTick(delta); 
-        it++; 
+//     ServicesMap::iterator it = servicesMap.begin();  
+//     while (it != servicesMap.end())
+//     {
+//         it->second->OnTick(delta); 
+//         it++; 
+//     }
+
+    // aktualizacja czasu
+    updateTime();
+
+    // aktualizacja us³ug
+    for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
+        (*it)->update(this);
+    }
+    // drugi cykl aktualizacji
+    for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
+        (*it)->lateUpdate(this);
+    }
+}
+
+
+
+void ServiceManager::computePass()
+{
+    // aktualizacja us³ug
+    for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
+        (*it)->compute();
     }
 }
 
@@ -82,7 +105,7 @@ void ServiceManager::SetModel(IDataManager* dataManager )
     ServicesMap::iterator it = servicesMap.begin();  
     while (it != servicesMap.end())
     {
-        it->second->SetModel(dataManager); 
+        it->second->loadData(this, dataManager); 
         it++; 
     }
 }
@@ -99,4 +122,31 @@ IBaseService* ServiceManager::getService( int idx )
     } else {
         return NULL;
     }
+}
+
+double ServiceManager::getTime()
+{
+    return serviceTime;
+}
+
+double ServiceManager::getDeltaTime()
+{
+    return serviceDeltaTime;
+}
+
+void ServiceManager::resetTime()
+{
+    serviceTimer.setStartTick();
+    serviceUpdateTime = serviceTimer.getStartTick();
+    serviceDeltaTime = 0.0;
+}
+
+void ServiceManager::updateTime()
+{
+    osg::Timer_t tick = serviceTimer.tick();
+    serviceDeltaTime = serviceTimer.delta_s( serviceUpdateTime, tick );
+    serviceUpdateTime = tick;
+    serviceTime = serviceTimer.delta_s( serviceTimer.getStartTick(), tick );
+
+    //OSG_NOTICE<<serviceDeltaTime<<std::endl;
 }

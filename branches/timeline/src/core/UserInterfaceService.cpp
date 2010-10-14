@@ -23,12 +23,6 @@ UserInterfaceService::~UserInterfaceService()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult UserInterfaceService::OnTick( double delta )
-{
-    return AsyncResult_Complete; 
-}
-
-//--------------------------------------------------------------------------------------------------
 AsyncResult UserInterfaceService::OnAdded(IServiceManager* serviceManager)
 {
     m_pServiceManager = (ServiceManager*)serviceManager;

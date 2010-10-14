@@ -13,10 +13,11 @@
 #include <plugins/timeline/Stream.h>
 #include <plugins/timeline/Controller.h>
 #include <plugins/timeline/ITimelineClient.h>
+#include <plugins/timeline/ITimelineService.h>
 
 class TimelineWidget;
 
-class TimelineService : public IBaseService
+class TimelineService : public ITimeline, public IBaseService
 {
     UNIQUE_ID('TIML','SRVC');
 private:
@@ -31,16 +32,41 @@ public:
     TimelineService();
     virtual ~TimelineService();
 
-    virtual AsyncResult OnTick(double delta);
     virtual AsyncResult OnAdded(IServiceManager* serviceManager);
-    virtual AsyncResult OnServicesAdded(IServiceManager* serviceManager);
+    
 
     virtual IWidget* getWidget();
     virtual void SetModel(IDataManager* dataManager);
 
+// IBaseService
 public:
     //!
-    virtual AsyncResult compute(IServiceManager* serviceManager);
+    virtual AsyncResult init(IServiceManager* serviceManager);
+    //!
+    virtual AsyncResult compute();
+    //!
+    virtual AsyncResult lateUpdate(IServiceManager* serviceManager);
+    //!
+    virtual AsyncResult update(IServiceManager* serviceManager);
+
+// ITimeline
+public:
+    //! \param stream Strumieñ do dodania.
+    virtual void addStream(timeline::StreamPtr stream);
+    //! \param stream Strumieñ do usuniêcia.
+    virtual void removeStream(timeline::StreamPtr stream);
+    //! \return true je¿eli timeline sam siê odtwarza.
+    virtual bool isPlaying() const;
+    //!
+    virtual void setPlaying(bool playing);
+    //!
+    virtual double getTime() const;
+    //!
+    virtual void setTime(double time);
+    //!
+    virtual double getLength() const;
+    virtual double getNormalizedTime() const;
+    virtual void setNormalizedTime(double time);
 
 public:
 
@@ -63,10 +89,7 @@ public:
     //! Metodê tê nale¿y wywo³aæ z parametrem true je¿eli nadaje siê nowy czas timeline'a, a nie chce
     //! siê, aby nastêpowa³a automatyczna inkremetnacja czasu zanim dekodery osi¹gn¹ zadany punkt czasowy.
     //! \param seekRequested true je¿eli za¿yczono sobie seeka, ale jeszcze nie uda³o siê go wykonaæ.
-    inline void setSeekRequested(bool seekRequested) 
-    { 
-        this->seekRequested = seekRequested; 
-    }
+    void setSeekRequested(bool seekRequested);
 
 
 };

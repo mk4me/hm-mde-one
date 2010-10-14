@@ -126,8 +126,9 @@ AnimationService::~AnimationService(void)
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult AnimationService::OnTick(double delta)
+AsyncResult AnimationService::update(IServiceManager* serviceManager)
 { 
+    double delta = serviceManager->getDeltaTime();
 	if (m_pAnimation)
 	{
 		// update animation

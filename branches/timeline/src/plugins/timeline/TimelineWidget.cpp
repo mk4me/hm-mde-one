@@ -22,7 +22,17 @@ void TimelineWidget::timeSliderChanged(int value)
     service->setSeekRequested(true);
 }
 
-void TimelineWidget::update( const timeline::Model::State * subject )
+void TimelineWidget::timeSliderPressed()
+{
+    //service->setSeekRequested(true);
+}
+
+void TimelineWidget::timeSliderReleased()
+{
+    //service->setSeekRequested(false);
+}
+
+void TimelineWidget::update( const timeline::State * subject )
 {
     // ustawienie wartoœci slidera
     int sliderValue = getSliderValue(timeSlider, subject->normalizedTime);
@@ -75,16 +85,25 @@ void TimelineWidget::setSliderValue( double value, QSlider* slider )
 
 void TimelineWidget::playButtonPressed()
 {
-    service->getController()->play();
+    service->setPlaying(true);
 }
 
 void TimelineWidget::pauseButtonPressed()
 {
-    service->getController()->pause();
+    service->setPlaying(false);
 }
 
 void TimelineWidget::stopButtonPressed()
 {
-    service->getController()->pause();
-    service->getController()->setTime(0);
+    service->setPlaying(false);
+    service->setTime(0);
+}
+
+void TimelineWidget::setBusy( bool busy )
+{
+    if ( busy ) {
+        statusLabel->setText("Working...");
+    } else {
+        statusLabel->setText("");
+    }
 }

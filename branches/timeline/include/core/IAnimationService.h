@@ -33,7 +33,6 @@ class IAnimationService: public IBaseService
 {
 public:
     virtual ~IAnimationService() {};
-    virtual AsyncResult OnTick(double delta) = 0; 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager) = 0; 
 
     virtual void SetModel(IDataManager* dataManager) = 0;

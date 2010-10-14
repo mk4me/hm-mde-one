@@ -22,12 +22,6 @@ ModelService::~ModelService()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult ModelService::OnTick( double delta )
-{
-    return AsyncResult_Complete; 
-}
-
-//--------------------------------------------------------------------------------------------------
 AsyncResult ModelService::OnAdded(IServiceManager* serviceManager)
 {
     m_pServiceManager = (ServiceManager*)serviceManager;

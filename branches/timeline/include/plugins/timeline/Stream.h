@@ -9,7 +9,9 @@
 #ifndef __HEADER_GUARD__TIMELINESTREAM_H__
 #define __HEADER_GUARD__TIMELINESTREAM_H__
 
+#include <vector>
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline {
@@ -26,7 +28,7 @@ private:
     //! Nazwa strumienia.
     std::string name;
     //!
-    float startOffset;
+    double startOffset;
 
 public:
     //! Pomocnicza funkcja do enkapsulacji strumieni i podpinania ich do timeline'a.
@@ -61,16 +63,22 @@ public:
         this->name = name;
     }
     //! \return Offset w sekundach.
-    virtual float getStartOffset() const
+    virtual double getStartOffset() const
     { 
         return startOffset;
     }
     //! \param startOffset Offset w sekundach.
-     virtual void setStartOffset(float startOffset) 
+     virtual void setStartOffset(double startOffset) 
     { 
         this->startOffset = startOffset; 
     }
 };
+
+//! WskaŸnik na strumieñ.
+typedef boost::shared_ptr<Stream> StreamPtr;
+
+//! Zbiór strumieni.
+typedef std::vector<StreamPtr> Streams;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace timeline

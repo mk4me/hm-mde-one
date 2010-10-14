@@ -79,13 +79,6 @@ PluginService::~PluginService()
 {
     Clear();
 }
-
-//--------------------------------------------------------------------------------------------------
-AsyncResult PluginService::OnTick(double delta)
-{ 
-    return AsyncResult_Complete; 
-}
-
 //--------------------------------------------------------------------------------------------------
 AsyncResult PluginService::OnAdded(IServiceManager* serviceManager)
 {

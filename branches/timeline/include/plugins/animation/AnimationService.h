@@ -58,7 +58,7 @@ public:
     AnimationService(void);
 
     virtual ~AnimationService(void);
-    virtual AsyncResult OnTick(double delta); 
+    virtual AsyncResult update(IServiceManager* serviceManager); 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
 
     virtual void SetModel(IDataManager* dataManager);
