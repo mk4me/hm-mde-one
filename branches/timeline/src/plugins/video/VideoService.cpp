@@ -1,7 +1,7 @@
 #include "VideoPCH.h"
 #include <core/IServiceManager.h>
 #include <plugins/video/VideoService.h>
-#include <plugins/timeline/ITimelineService.h>
+#include <plugins/timeline/ITimeline.h>
 #include <core/IModel.h>
 #include <core/IDataManager.h>
 #include "VideoWidget.h"

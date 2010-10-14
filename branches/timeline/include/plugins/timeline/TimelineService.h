@@ -13,7 +13,7 @@
 #include <plugins/timeline/Stream.h>
 #include <plugins/timeline/Controller.h>
 #include <plugins/timeline/ITimelineClient.h>
-#include <plugins/timeline/ITimelineService.h>
+#include <plugins/timeline/ITimeline.h>
 
 class TimelineWidget;
 
