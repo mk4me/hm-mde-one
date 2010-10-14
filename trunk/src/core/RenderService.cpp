@@ -39,12 +39,6 @@ void RenderService::Clear()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::OnTick( double delta )
-{
-    return AsyncResult_Complete; 
-}
-
-//--------------------------------------------------------------------------------------------------
 AsyncResult RenderService::OnAdded(IServiceManager* serviceManager)
 {
     m_pServiceManager = (ServiceManager*)serviceManager;

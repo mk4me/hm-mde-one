@@ -15,7 +15,6 @@ Model::Model()
     state.normalizedTime = 0.0;
     state.isPlaying = false;
     state.timeScale = 1.0;
-    state.refreshPeriod = 0.035;
 }
 
 Model::~Model()
@@ -24,9 +23,8 @@ Model::~Model()
 
 void Model::setTime( double time )
 {
-    uiTime = time;
     state.time = time;
-    for ( iterator it = begin(); it != end(); ++it ) {
+    for ( iterator it = begin(); it != end() && !timeDirty; ++it ) {
         StreamPtr& stream = *it;
         double realTime = time - stream->getStartOffset();
         double clamped = utils::clamp(realTime, 0.0, stream->getLength());
@@ -36,7 +34,14 @@ void Model::setTime( double time )
 }
 
 
-double Model::getLength() const
+void Model::setState( const State& state )
+{
+    this->state = state;
+    setTime(state.time);
+}
+
+
+double Model::calculateLength() const
 {
     double maxLength = 0.0;
     for ( const_iterator it = begin(); it != end(); ++it ) {
@@ -57,6 +62,7 @@ void Model::addStreamInternal( StreamPtr stream )
         stream->setTime(state.time);
         notify();
     }
+    state.length = calculateLength();
 }
 
 
@@ -69,6 +75,7 @@ void Model::removeStream( StreamPtr stream )
     } else {
         throw new std::runtime_error("Stream not added.");
     }
+    state.length = calculateLength();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -52,6 +52,7 @@ private:
     };
     //! Obrazki pogrupowane wg. po³o¿enia.
     ImagesList images;
+    
     //! Widget z widokiem OSG.
     QOSGViewer* viewer;
     //! Widok w³aœciwy.
@@ -84,6 +85,12 @@ public:
     //! \param selected Indeks strumienia. Ignorowany, gdy 
     //!                 viewType != ViewTypeSingle
     void setViewType(ViewType viewType, int selected = 0);
+
+    //! \return
+    inline VideoWidget::ImagesList& getImages()
+    { 
+        return images;
+    }
 
 public slots: 
     void displayTypeChanged(int index);

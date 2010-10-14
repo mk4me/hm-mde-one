@@ -22,9 +22,17 @@
 namespace timeline {
 ////////////////////////////////////////////////////////////////////////////////
 
-Controller::Controller() : timeMutex(), stateMutex()
+Controller::Controller() : 
+    utils::Observable<State>(&dirtyState),
+    modelMutex(), 
+    stateMutex(), 
+    asynchronous(false),
+    timeDirty(false),
+    busy(false),
+    dirty(false)
 {
   model = new Model();
+  dirtyState = model->getState();
 }
 
 Controller::~Controller()
@@ -40,150 +48,324 @@ Controller::~Controller()
 
 void Controller::pause()
 {
-  OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-  model->setPlaying(false);
+//   OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+//   model->setPlaying(false);
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    State state = getState();
+    state.isPlaying = false;
+    setState(state);
 }
 
 void Controller::play()
 {
-  OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-  // czy zrestartowaæ zegar?
-  bool restartClock = !model->getPlaying() || !isRunning();
-  // ustawiamy flagê
-  model->setPlaying(true);
-  // resetujemy zegar
-  if ( restartClock ) {
-    timer.setStartTick();
-  }
-  // uruchamiamy w¹tek
-  if ( !isRunning() ) {
-    start();
-  }
-}
-
-void Controller::setTime( double time )
-{
-  OpenThreads::ScopedLock<OpenThreads::Mutex> lock(timeMutex);
-  // ustawiamy czas
-  model->setTime(time);
-  if ( isRunning() ) {
-    // synchronizujemy zegar
-    timer.setStartTick();
-  }
-}
-
-void Controller::setUITime( double time )
-{
-  // ustawiamy czas
-  model->setUITime(time);
-  // jeœli w¹tek nie dzia³a, uruchamiamy go
-  if ( !isRunning() ) {
-    // dla bezpieczeñstwa sprawdzamy jeszcze raz...
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-    if (time != model->getTime() && !isRunning()) {
-      // ok, uruchamiamy w¹tek który bêdzie odœwie¿a³ obraz
-      start();
+
+    State state = getState();
+    state.isPlaying = true;
+    setState(state);
+
+    if ( !isRunning() ) {
+        //start();
     }
-  }
+}
+
+// void Controller::setUITime( double time )
+// {
+//   // ustawiamy czas
+//   model->setUITime(time);
+//   // jeœli w¹tek nie dzia³a, uruchamiamy go
+//   if ( !isRunning() ) {
+//     // dla bezpieczeñstwa sprawdzamy jeszcze raz...
+//     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+//     if (time != model->getTime() && !isRunning()) {
+//       // ok, uruchamiamy w¹tek który bêdzie odœwie¿a³ obraz
+//       start();
+//     }
+//   }
+// }
+
+void Controller::addStream( StreamPtr stream )
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock2(modelMutex);
+    model->addStream(stream);
+    dirtyState.length = model->getLength();
+    //dirty = true;
+}
+
+void Controller::removeStream( StreamPtr stream )
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock2(modelMutex);
+    model->removeStream(stream);
+    State state = getState();
+    state.length = model->getLength();
+    setState(state);
+}
+
+double Controller::getNormalizedTime() const
+{
+    return getTime() / getLength();
+}
+
+void Controller::setNormalizedTime( double time )
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    setTime( time * getLength() );
 }
 
 double Controller::getLength() const
 {
-  return model->getLength();
+    return getState().length;
+}
+
+bool Controller::isPlaying() const
+{
+    return getState().isPlaying;
 }
 
 double Controller::getTime() const
 {
-  return model->getTime();
+    return getState().time;
+}
+
+void Controller::setTime( double time )
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    
+    // nowy stan
+    State state = getState();
+    state.time = time;
+    state.normalizedTime = time  / getLength();
+    setState(state);
+    timeDirty = true;
+    model->timeDirty = true;
+    
+
+    // wyzerowanie licznika
+    if ( !isRunning() && asynchronous ) {
+        //start();
+    }
+}
+
+double Controller::getTimeScale() const
+{
+    return getState().timeScale;
+}
+
+void Controller::setTimeScale( double timeScale )
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    State state = getState();
+    state.timeScale = timeScale;
+    setState(state);
 }
 
 void Controller::setStreamOffset( int idx, double offset )
 {
-  OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-  model->getStream(idx)->setStartOffset(offset);
+    throw std::runtime_error("Not implemented");
 }
 
 void Controller::run()
 {
-  //UTILS_PROFILER_THREAD_SCOPE;
-  try
-  {
-    osg::Timer frameLength;
-    bool done = false;
-    do {
-      // zerujemy czas ramki
-      frameLength.setStartTick();
-      {
-        //cout << "entering mutex\n";
-        // odtwarzamy
-        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(timeMutex);
-        if ( model->getPlaying() )  {
-          done = autoPlayback();
-        } else {
-          done = asyncPlayback();
-        }
-        //cout << "leaving mutex\n";
-      }
-      if (!done) {
-        // jak d³ugo to trwa³o?
-        double waitTime = model->getRefreshPeriod() - frameLength.time_s();
-        if ( waitTime > 0.0 ) {
-          // czekamy
-          OpenThreads::Thread::microSleep( waitTime * 1000000 );
-        }
-      } else {
-        // koniec pêtli
-        break;
-      }
-    } while (true);
-  }
-  catch (const std::exception & error)
-  {
-    OSG_WARN<< "VideoImageStream::run : " << error.what() << std::endl;
-  }
-  catch (...)
-  {
-    OSG_WARN<< "VideoImageStream::run : unhandled exception" << std::endl;
-  }
-  OSG_NOTICE<<"Finished VideoImageStream::run()"<<std::endl;
+    //UTILS_PROFILER_THREAD_SCOPE;
+    try
+    {
+        osg::Timer frameLength;
+        while (true) {
+            // zerujemy czas ramki
+            frameLength.setStartTick();
+
+            if (!compute()) {
+                return;
+            }
+
+            // jak d³ugo to wszystko trwa³o?
+            double waitTime = 0.02 - frameLength.time_s();
+            if ( waitTime > 0.0 ) {
+                OpenThreads::Thread::microSleep( waitTime * 1000000 );
+            }
+        } 
+    } catch (const std::exception & error) {
+        OSG_WARN<< "Controller::run : " << error.what() << std::endl;
+    } catch (...) {
+        OSG_WARN<< "Controller::run : unhandled exception" << std::endl;
+    }
 }
 
-bool Controller::asyncPlayback()
+
+
+State Controller::getState() const
 {
-  if (model->getUITime() != model->getTime()) {
-    model->setTime(model->getUITime());
-    return false;
-  } else {
-    // skoñczyliœmy
+    if ( isWriteEnabled() ) {
+        return model->getState();
+    } else {
+        return dirtyState;
+    }
+}
+
+void Controller::setState( const State& state )
+{
+    if ( isWriteEnabled() ) {
+        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(modelMutex);
+        busy = true;
+        model->setState(state);
+        dirty = false;
+        busy = false;
+    } else {
+        dirty = true;
+    }
+    dirtyState = state;
+    notify();
+}
+
+bool Controller::isWriteEnabled() const
+{
+    if ( OpenThreads::Thread::CurrentThread() == this ) {
+        return true;
+    } else if ( const_cast<Controller*>(this)->isRunning() ) {
+        return false;
+    } else {
+        return !asynchronous;
+    }
+}
+
+bool Controller::isBusy() const
+{
+    return busy;
+}
+
+bool Controller::isDirty() const
+{
+    return dirty;
+}
+
+bool Controller::isTimeDirty() const
+{
+    return timeDirty;
+}
+
+bool Controller::isAsynchronous() const
+{
+    return asynchronous;
+}
+
+void Controller::setAsynchronous( bool asynchronous )
+{
+    this->asynchronous = asynchronous;
+}
+
+bool Controller::compute()
+{
+    // ustalenie i modyfikacja bie¿¹cego stanu
+    bool resetTimer = false;
+    State appliedState;
+    {
+        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+        // czy jest sens dalej trzymaæ w¹tek?
+        if ( !isDirty() && !isPlaying() ) {
+            //OSG_NOTICE<<"Finished Controller::run()"<<std::endl;
+            return false;
+        }
+        // zaakceptowano stan
+        appliedState = dirtyState;
+        timeDirty = dirty = false;
+        model->timeDirty = false;
+        busy = true;
+    }
+
+    // nadanie bie¿¹cego stanu
+    {
+        // blokada modyfikacji czasu
+        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(modelMutex);
+        // nadanie stanu modelowi - miejsce wykonania w³aœciwej logiki
+        model->setState(appliedState);
+        // ile trzeba bêdzie czekaæ?
+        busy = false;
+    }
     return true;
-  }
 }
 
-bool Controller::autoPlayback()
-{
-  bool usingUITime = false;
-  // bie¿¹ce tykniêcie
-  osg::Timer_t tick = timer.tick();
-  double delta = timer.delta_s(timer.getStartTick(), tick);
-  timer.setStartTick(tick);
-  // czy pobieramy normalny czas czy te¿ czas UI (zmodyfikowany przez UI)?
-  double time = model->getTime() + delta * getTimeScale();
-  if ( model->getUITime() != model->getTime() ) {
-    //std::cout << model->getUITime() << "\n";
-    time = model->getUITime();
-    usingUITime = true;
-  }
-  // ograniczamy czas
-  time = utils::clamp(time, 0.0, model->getLength());
-  model->setTime(time);
 
-  if ( usingUITime ) {
-    timer.setStartTick();
-  }
 
-  // jeszcze nie koniec
-  return false;
-}
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace timeline
 ////////////////////////////////////////////////////////////////////////////////
+
+#pragma region LEGACY
+#if 0
+void Controller::run()
+{
+    //UTILS_PROFILER_THREAD_SCOPE;
+    try
+    {
+        osg::Timer frameLength;
+        while (true) {
+            // zerujemy czas ramki
+            frameLength.setStartTick();
+
+            // ustalenie i modyfikacja bie¿¹cego stanu
+            bool resetTimer = false;
+            State appliedState;
+            {
+                OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+                // czy jest sens dalej trzymaæ w¹tek?
+                if ( !isDirty() && !isPlaying() ) {
+                    OSG_NOTICE<<"Finished Controller::run()"<<std::endl;
+                    return;
+                }
+
+                // obliczenie delty
+                osg::Timer_t tick = timer.tick();
+                double delta = timer.delta_s(timer.getStartTick(), tick);
+                timer.setStartTick(tick);
+
+                // je¿eli podano inny czas to znaczy, ¿e nie mo¿na siê automatycznie przesun¹æ dalej
+                double time = dirtyState.time;
+                if ( timeRequested ) {
+                    // czas podany rêcznie, nie modyfikujemy go
+                    resetTimer = true;
+                    timeRequested = false;
+                } else if ( dirtyState.isPlaying ) {
+                    // automatyczna inkrementacja
+                    //time += delta * dirtyState.timeScale;
+                    //time = utils::clamp(time, 0.0, model->calculateLength());
+                }
+                dirtyState.time = time;
+
+                // zaakceptowano stan
+                appliedState = dirtyState;
+                dirty = false;
+                //notify();
+            }
+
+            // nadanie bie¿¹cego stanu
+            double waitTime;
+            {
+                // blokada modyfikacji czasu
+                OpenThreads::ScopedLock<OpenThreads::Mutex> lock(modelMutex);
+                busy = true;
+                // nadanie stanu modelowi - miejsce wykonania w³aœciwej logiki
+                model->setState(appliedState);
+                // ile trzeba bêdzie czekaæ?
+                waitTime = appliedState.refreshPeriod - frameLength.time_s();
+                busy = false;
+            }
+
+            // je¿eli czas podano rêcznie - wyzerowanie timera
+            if ( resetTimer ) {
+                timer.setStartTick();
+            }
+            // jak d³ugo to wszystko trwa³o?
+            if ( waitTime > 0.0 ) {
+                OpenThreads::Thread::microSleep( waitTime * 1000000 );
+            }
+        } 
+    } catch (const std::exception & error) {
+        OSG_WARN<< "Controller::run : " << error.what() << std::endl;
+    } catch (...) {
+        OSG_WARN<< "Controller::run : unhandled exception" << std::endl;
+    }
+}
+#endif
+#pragma endregion LEGACY

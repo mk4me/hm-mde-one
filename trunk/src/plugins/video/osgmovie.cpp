@@ -16,7 +16,7 @@
 *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 *  THE SOFTWARE.
 */
-
+/*
 #include <iostream>
 
 #include <osgViewer/Viewer>
@@ -295,4 +295,4 @@ int main(int argc, char** argv)
   vm::VideoManager::destroyInstance();
 
   return 0;
-}
+}*/

@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD__TIMELINEMODEL_H__
 #define __HEADER_GUARD__TIMELINEMODEL_H__
 
-#include <boost/weak_ptr.hpp>
+
 #include <vector>
 #include <stdexcept>
 #include <utils/ObserverPattern.h>
@@ -17,6 +17,7 @@
 #include <OpenThreads/Thread>
 
 #include "Stream.h"
+#include "State.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline {
@@ -29,10 +30,6 @@ namespace timeline {
 class Model : public utils::Observable<Model>
 {
 public:
-    //! WskaŸnik na strumieñ.
-    typedef boost::shared_ptr<Stream> StreamPtr;
-    //! Zbiór strumieni.
-    typedef std::vector< StreamPtr > Streams;
     //! 
     typedef Streams::iterator iterator;
     //!
@@ -41,30 +38,14 @@ public:
     typedef Streams::size_type size_type;
 
 private:
-    //! Stan modelu.
-    struct State 
-    {
-        //! Czas.
-        double time;
-        //! D³ugoœæ strumienia. 
-        double length;
-        //! Znormalizowany czas.
-        double normalizedTime;
-        //! Czy jest odtwarzany?
-        bool isPlaying;
-        //! Jaka jest skala czasowa?
-        double timeScale;
-        //! Jak czêsto ma byæ odœwie¿any?
-        double refreshPeriod;
-    };
-
-private:
     //! Lista strumieni.
     Streams streams;
-    //! Czas który jest zakolejkowany, ale jeszcze nie ustawiony.
-    double uiTime;
     //! Stan zaakceptowany.
     State state;
+
+public:
+    // HACK
+    volatile bool timeDirty;
 
 public:
     //! Konstruktor zeruj¹cy.
@@ -132,8 +113,7 @@ public:
     //! Ustawia wspólny czas wszystkich aktywnych strumieni.
     void setTime(double time);
 
-    //! \return D³ugoœæ najd³u¿szego ze strumieni z uwzglêdnieniem offsetów.
-    double getLength() const;
+
 
     //! \return Czas strumieni.
     inline double getTime() const
@@ -141,7 +121,7 @@ public:
         return state.time;
     }
     //! \return
-    inline bool getPlaying() const
+    inline bool isPlaying() const
     { 
         return state.isPlaying;
     }
@@ -162,46 +142,26 @@ public:
         state.timeScale = timeScale; 
         notify();
     }
-    //! \return
-    inline double getRefreshPeriod() const
-    { 
-        return state.refreshPeriod;
-    }
-    //! \param refreshPeriod
-    inline void setRefreshPeriod(double refreshPeriod) 
-    { 
-        state.refreshPeriod = refreshPeriod; 
+    //! \return D³ugoœæ.
+    inline double getLength() const
+    {
+        return state.length;
     }
 
-    //! Czas, który jest zakolejkowany, ale jeszcze nie ustawiony.
-    //! \param time Liczba ujemna gdy nie ma czasu UI
-    inline void setNormalizedUITime(double time)
-    {
-        setUITime(state.time * getLength());
-    }
-    //! Czas, który jest zakolejkowany, ale jeszcze nie ustawiony.
-    //! \param time Liczba ujemna gdy nie ma czasu UI
-    inline void setUITime(double time) 
+    //! \return
+    const State& getState() const
     { 
-        this->uiTime = time; 
-        notify();
+        return state;
     }
-    //! \return Czas którego nale¿y u¿ywaæ przy wyœwietlaniu UI.
-    inline double getUITime() const
-    {
-        return uiTime;
-    }
-    //! \return Czas którego nale¿y u¿ywaæ przy wyœwietlaniu UI.
-    inline double getNormalizedUITime() const
-    {
-        return uiTime / getLength();
-    }
+    //! \param state
+    void setState(const State& state);
 
     //virtual void notify();
 
 private:
 
-    
+    //! \return D³ugoœæ najd³u¿szego ze strumieni z uwzglêdnieniem offsetów.
+    double calculateLength() const;
 
     //! Pomocnicza metoda dodaj¹ca strumieñ.
     //! \param stream Strumieñ do dodania.

@@ -34,10 +34,9 @@ public:
         return widget;
     }
 
-    virtual AsyncResult OnTick(double delta);
     virtual AsyncResult OnAdded(IServiceManager* serviceManager);
 
-    virtual void SetModel(IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 };
 
 

@@ -36,17 +36,56 @@ public:
         return NULL;
     }
 
-    //virtual AsyncResult Initialize() { return AsyncResult_Complete; } 
-    //virtual AsyncResult PostInitialize() { return AsyncResult_Complete; } 
-
-    virtual AsyncResult OnTick(double delta) { return AsyncResult_Complete; } 
-    //virtual AsyncResult SetTimeUpdate(double currentTime) { return AsyncResult_Complete; } 
 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager) {return AsyncResult_Complete; } 
 
-    virtual void SetModel(IDataManager* dataManager) = 0;
+    virtual void SetModel(IDataManager* dataManager)
+    {        
+    }
 
 	virtual ~IBaseService() {}
+
+
+    //------------------------------------------------------------------------------
+    // NOWY INTERFEJS US£UGI
+ 
+    //! Inicjalizacja us³ugi. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
+    //! (nie zainicjalizowaniu!) wszystkich us³ug. Mo¿na wiêc pobieraæ wskaŸniki.
+    virtual AsyncResult init(IServiceManager* serviceManager)
+    {
+        return AsyncResult_Complete;
+    }
+
+    //! £aduje 
+    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager)
+    {
+        SetModel(dataManager);
+        return AsyncResult_Complete;
+    }
+
+    //! Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
+    //! \param serviceManager 
+    virtual AsyncResult update(IServiceManager* serviceManager) 
+    { 
+        return AsyncResult_Complete; 
+    }
+
+    //! Drugi przebieg aktualizacji logiki; us³ugi jako takie nie maj¹ wp³ywu na kolejnoœæ, z jak¹
+    //! wywo³ywana jest metoda Update. Gdy jakaœ us³uga bazuje na pozosta³ych nale¿y wówczas
+    //! u¿yæ metody LateUpdate, która jest wywo³ywana po cyklu Update wszystkich us³ug.
+    //! Ten sam w¹tek co UI.
+    //! \param serviceManager
+    virtual AsyncResult lateUpdate(IServiceManager* serviceManager) 
+    { 
+        return AsyncResult_Complete; 
+    }
+
+    //! Miejsce na bardziej skomplikowane obliczenia. W¹tek inny ni¿ dla UI, niekoniecznie taki
+    //! sam dla wszystkich us³ug.
+    virtual AsyncResult compute()
+    {
+        return AsyncResult_Complete;
+    }
 };
 
 #endif //BASE_SERVICE_H

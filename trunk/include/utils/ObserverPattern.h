@@ -63,10 +63,14 @@ private:
     std::vector<ObserverPtr> observers;
     //! Obserwowany obiekt.
     const T * self;
+    //!
+    volatile bool isUpdating;
 
 protected:
     //! Tylko klasa pochodna mo¿e wywo³aæ ten konstruktor.
-    Observable() : self(NULL) {}
+    Observable() : self(NULL), isUpdating(false) {}
+    //! Tylko klasa pochodna mo¿e wywo³aæ ten konstruktor.
+    Observable(const T* self) : self(self), isUpdating(false) {}
 
 public:
     //!
@@ -117,13 +121,18 @@ public:
         if ( !self ) {
             throw std::runtime_error("Could not deduce self-pointer");
         }
+
+        if (isUpdating) {
+            DebugBreak();
+            UTILS_ASSERT(false, "Can't update during notify.");
+        }
+
+        isUpdating = true;
         for ( typename std::vector<ObserverPtr>::iterator it = observers.begin(); it != observers.end(); ++ it) {
             (*it)->update(self);
         }
+        isUpdating = false;
     }
-
-    //! Meotda do prze³adowania w klasie pochodnej. Musi wywo³aæ metodê notify obserwatora.
-    //virtual void notify(ObserverType * toNotify);
 };
 
 //------------------------------------------------------------------------------

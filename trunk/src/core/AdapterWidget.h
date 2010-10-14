@@ -96,14 +96,14 @@ class ViewerQT : public osgViewer::Viewer, public AdapterWidget
             setThreadingModel(osgViewer::Viewer::SingleThreaded);
 
             connect(&_timer, SIGNAL(timeout()), this, SLOT(updateGL()));
-            _timer.start(34);
+            _timer.start(10);
         }
 
         virtual void paintGL()
         {
             frame();
             double delta = ((double)_timer.interval())/1000.0; 
-            m_pServicemanager->OnTick(delta); 
+            //m_pServicemanager->OnTick(delta); 
         }
 
         ServiceManager* m_pServicemanager;

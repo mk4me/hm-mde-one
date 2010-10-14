@@ -20,7 +20,7 @@ namespace timeline {
 /**
  * Klasa bazowa dla widoku timeline.
  */
-class View : public utils::Observer<Model>
+class View : public utils::Observer<State>
 {
 public:
     //! Typ wskaünika na kontroler.

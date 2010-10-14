@@ -10,11 +10,6 @@
 #include "Callback.h"
 #include "HorizontalScrollBar.h"
 #include "Potentiometer.h"
-#include "Model.h"
-#include "TimelineImageStreamWrapper.h"
-#include "Controller.h"
-#include "View.h"
-#include "TimelineViewOSG.h"
 #include "StreamsViewOSGWidget.h"
 
 #include "tm.h"

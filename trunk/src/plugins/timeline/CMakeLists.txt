@@ -1,5 +1,5 @@
-project(animation)
-set(TARGET_TARGETNAME animation)
+project(timeline)
+set(TARGET_TARGETNAME timeline)
 
 # obs³uga QT
 set(QT_USE_QTOPENGL TRUE)
@@ -12,15 +12,20 @@ add_definitions(-D__dll__)
 # nag³ówki
 string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
-	${HEADER_PATH}/AnimationService.h
-	${HEADER_PATH}/Animation.h
+	${HEADER_PATH}/TimelineService.h
+	${HEADER_PATH}/Stream.h
+	${HEADER_PATH}/ITimeline.h
+	${HEADER_PATH}/Controller.h
+	${HEADER_PATH}/View.h
+	${HEADER_PATH}/Model.h
+	${HEADER_PATH}/State.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
-	OsgControlWidget.h
-	QtWidget.h
-	PluginData.h
-	AnimationPlugin.h
+	TimelinePlugin.h
+	TimelineWidget.h
+	TimelineViewOSG.h
+	Stream.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -29,17 +34,17 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-	AnimationPlugin.cpp
-	OsgControlWidget.cpp
-	QtWidget.cpp
-	PluginData.cpp
-	AnimationService.cpp
-	Animation.cpp
+	TimelineService.cpp
+	TimelinePlugin.cpp
+	TimelineWidget.cpp
+	Controller.cpp
+	Model.cpp
+	Stream.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 SET(TARGET_MOC_H
-	OsgControlWidget.h
+	TimelineWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -48,13 +53,25 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 SET(TARGET_UI
-	ui/OsgWidget.ui
+	ui/TimelineWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
 set(TARGET_H ${TARGET_H} ${TARGET_UI} ${TARGET_UI_H})
 
+
 #------------------------------------------------------------------------------
+# prekompilowany nag³ówek
+set(PRECOMPILED_H TimelinePCH.h)
+set(PRECOMPILED_SRC TimelinePCH.cpp)
+SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
+set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
+
+#------------------------------------------------------------------------------
+# tworzenie
 
 # kompilacja do wspó³dzielonej biblioteki
 add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
@@ -65,20 +82,5 @@ target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})
 
 # ¿eby mo¿na by³o u¿yæ tej biblioteki w makrach
 ON_PROJECT_ADDED(${TARGET_TARGETNAME})
-
-#IF(WIN32)
-#	#prefix hack
-#	SET_TARGET_PROPERTIES(anim PROPERTIES
-#		PREFIX ../../../bin/Win32/$(ConfigurationName)/plugins/
-#	)
-#ELSEIF(UNIX)
-#	# post build event
-#	ADD_CUSTOM_COMMAND(
-#		TARGET ControlPlugin
-#		POST_BUILD
-#		COMMAND ${CMAKE_COMMAND} -E copy ARGS anim.so ../../bin/Linux/plugins/anim.so
-#	)
-#ENDIF()
-
 
 get_target_property(PROP animation LOCATION)

@@ -17,12 +17,6 @@
 
 #include <utils/PtrPolicyOSG.h>
 #include <utils/ObserverPattern.h>
-
-
-#include "Model.h"
-#include "Controller.h"
-#include "View.h"
-
 #include "core/VM.h"
 #include "osg/VideoImageStream.h"
 

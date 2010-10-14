@@ -21,6 +21,7 @@ class ServiceManager;
 class IAnimationService;
 class ModelService;
 class RenderService;
+class ComputeThread;
 
 QT_BEGIN_NAMESPACE
 class QMainWindowPrivate;
@@ -74,6 +75,9 @@ public slots:
     void QuadStripViewModel();
     void PolygonViewModel();
 
+    //! Aktualizacja us³ug.
+    void updateServices();
+
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -83,6 +87,8 @@ private:
 
     void ReadSettings();
     void WriteSettings();
+
+
 
 private:    
     ServiceManager* m_pServiceManager;
@@ -105,12 +111,15 @@ private:
 
     // Menu 
     QMenu* _windowMenu;
+    ComputeThread* computeThread;
 
     friend class QMainWindowPrivate;
 
     // Application settings data
     static const QString _settingsOrganizationName;
     static const QString _settingsApplicationName;
+
+    QTimer updateTimer;
 };
 
 #endif // TOOLBOXMAIN_H

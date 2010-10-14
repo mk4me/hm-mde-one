@@ -14,21 +14,15 @@ set(PRIVATE_H
 	VideoWidget.h
 	Button.h
 	Callback.h
-	Controller.h
 	HorizontalScrollBar.h
 	ImageCanvas.h
-	Model.h
 	NestedNodeCallback.h
 	Potentiometer.h
 	PotentiometerModel.h
 	StaticKeyboardHandler.h
-	Stream.h
 	StreamsViewOSGWidget.h
-	TimeLine.h
 	TimelineImageStreamWrapper.h
-	TimelineViewOSG.h
 	tm.h
-	View.h
 	WidgetFunctors.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -51,16 +45,13 @@ set(TARGET_SRC
 	VideoWidgetQt.cpp
 	
 	Button.cpp
-	Controller.cpp
 	HorizontalScrollBar.cpp
 	ImageCanvas.cpp
-	Model.cpp
 	osgmovie.cpp
 	Potentiometer.cpp
 	PotentiometerModel.cpp
 	StaticKeyboardHandler.cpp
 	StreamsViewOSGWidget.cpp
-	TimelineViewOSG.cpp
 	tm.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})

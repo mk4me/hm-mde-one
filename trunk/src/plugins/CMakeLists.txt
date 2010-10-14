@@ -4,6 +4,7 @@ set(PROJECTS_NAME plugins)
 # animation
 ADD_PROJECT(animation "OSG;QT;utils;corelib")
 ADD_PROJECT(video "OSG;QT;FFMPEG;STDINT;utils;corelib")
+ADD_PROJECT(timeline "BOOST;QT;utils;corelib")
 # plugin
 # ADD_PROJECT(OSGPlugin "OSG;vm_core")
 
