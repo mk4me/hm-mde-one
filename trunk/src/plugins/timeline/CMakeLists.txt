@@ -25,7 +25,6 @@ set(PRIVATE_H
 	TimelinePlugin.h
 	TimelineWidget.h
 	TimelineViewOSG.h
-	Stream.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
