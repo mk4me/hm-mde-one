@@ -9,17 +9,16 @@
 #ifndef __HEADER_GUARD__VIDEOSERVICE_H__
 #define __HEADER_GUARD__VIDEOSERVICE_H__
 
-#include <core/IBaseService.h>
+#include <core/IService.h>
 
 class IModel;
 class IDataManager;
 class IWidget;
 class VideoWidget;
 
-class VideoService : public IBaseService
+class VideoService : public IService
 {
-  //M_DECLARE_CLASS();
-  UNIQUE_ID('VIDE','SRVC');
+    UNIQUE_ID('VIDE','SRVC');
 
 private:
     // TODO

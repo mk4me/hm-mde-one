@@ -56,19 +56,19 @@ AsyncResult TimelineService::compute()
     return AsyncResult_Complete;
 }
 
-AsyncResult TimelineService::update( IServiceManager* serviceManager )
+AsyncResult TimelineService::update( double time, double timeDelta )
 {
     widget->setBusy(controller->isBusy() || controller->isTimeDirty());
     return AsyncResult_Complete;
 }
 
-AsyncResult TimelineService::lateUpdate( IServiceManager* serviceManager )
+AsyncResult TimelineService::lateUpdate( double time, double timeDelta)
 {
     if ( controller->isPlaying() ) {
         if ( isSeekRequested() ) {
             setSeekRequested( controller->isBusy() || controller->isTimeDirty() );
         }  else {
-            controller->setTime( controller->getTime() + serviceManager->getDeltaTime() * controller->getTimeScale() );
+            controller->setTime( controller->getTime() + timeDelta * controller->getTimeScale() );
         }
     }
     return AsyncResult_Complete;

@@ -8,7 +8,7 @@ class IServiceManager;
 //--------------------------------------------------------------------------------------------------
 // Model Service
 //--------------------------------------------------------------------------------------------------
-class IModelService: public IBaseService
+class IModelService: public IService
 {
 public:
 

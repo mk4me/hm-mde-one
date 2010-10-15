@@ -22,14 +22,14 @@ class IDataManager;
 //--------------------------------------------------------------------------------------------------
 // Plugin Service
 //--------------------------------------------------------------------------------------------------
-class UserInterfaceService: public IBaseService, public IUserInterface
+class UserInterfaceService: public IService, public IUserInterface
 {
     UNIQUE_ID('UI','SRVC');
 public:
     UserInterfaceService();
     virtual ~UserInterfaceService();
 
-    //IBaseService
+    //IService
     virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
 
     virtual void SetModel(IDataManager* dataManager);
@@ -43,10 +43,6 @@ public:
     void* GetMainObject();
 
 protected: 
-
-
-private: 
-    M_DECLARE_CLASS(); 
 
     IMainWindow* m_pMainWindow;
     void* m_pMainObject;

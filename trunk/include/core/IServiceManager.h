@@ -1,27 +1,31 @@
 #ifndef I_SERVICE_MANAGER_H
 #define I_SERVICE_MANAGER_H
 
-#include <core/IBaseService.h>
+#include <core/IService.h>
 #include <map>
 #include <vector>
 
 class IModel;
 class IDataManager;
-class IBaseService;
+class IService;
 
 class IServiceManager
 {
 public:
     virtual ~IServiceManager(void) {};
-    virtual IBaseService* GetSystemService(ClassID classID) = 0;
-    virtual void RegisterServiceAs(IBaseService* newService, ClassID classID) = 0;
-    virtual void SetModel(IDataManager* dataManager) = 0;
+
+    //! Rejestruje zadan¹ us³ugê.
+    //! \param newService
+    virtual void registerService(IService* newService) = 0;
 
     //! \return Liczba us³ug.
     virtual int getNumServices() const = 0;
     //! \param idx Indeks us³ugi.
     //! \return Us³uga o zadanym indeksie.
-    virtual IBaseService* getService(int idx) = 0;
+    virtual IService* getService(int idx) = 0;
+    //! \param id ID us³ugi do wyszukania.
+    //! \return Odnaleziona us³uga b¹dŸ NULL.
+    virtual IService* getService(UniqueID id) = 0;
 
     //! \return Czas dzia³ania.
     virtual double getTime() = 0;
@@ -35,20 +39,20 @@ public:
     {
         std::vector<T*> result;
         queryServices(result);
-        if ( result.size() ) {
-            return result[0];
-        } else {
+        if ( result.empty() ) {
             return NULL;
+        } else {
+            UTILS_ASSERT(result.size()==1, "Multiple services found.");
+            return result[0];
         }
     }
-
     //! Metoda wyszukuj¹ca wszystkie us³ugi danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
     void queryServices(std::vector<T*>& target)
     {
         for ( int i = 0; i < getNumServices(); ++i ) {
-            IBaseService* service = getService(i);
+            IService* service = getService(i);
             if ( T* casted = dynamic_cast<T*>(service) ) {
                 target.push_back(casted);
             }

@@ -26,7 +26,7 @@ class UserInterfaceService;
 
 typedef osg::ref_ptr<osg::Group> osgGroupPtr;
 
-class RenderService: public IBaseService
+class RenderService: public IService
 {
     UNIQUE_ID('REND','SRVC');
 public:
@@ -50,7 +50,6 @@ public:
 	void RenderBone(Model* model);
 
 private: 
-    M_DECLARE_CLASS(); 
     void Inicialize();
     void InicizlizeModelMesh(Model* model);
 

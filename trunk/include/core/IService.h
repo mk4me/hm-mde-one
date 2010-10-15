@@ -6,12 +6,12 @@
 #include <core/WidgetInterface.h>
 
 // in h file
-#define M_DECLARE_CLASS()             \
-public:                               \
-    static const ClassID CLASS_ID;    
+// #define M_DECLARE_CLASS()             \
+// public:                               \
+//     static const ClassID CLASS_ID;    
 
 // in cpp file
-#define M_DECLARED_CLASS(className, idvalue)  const ClassID className::CLASS_ID = idvalue;                     
+/*#define M_DECLARED_CLASS(className, idvalue)  const ClassID className::CLASS_ID = idvalue;       */              
 
 enum AsyncResult
 {
@@ -25,7 +25,7 @@ class IModel;
 class IDataManager;
 
 class IServiceManager;
-class IBaseService : public IIdentifiable
+class IService : public IIdentifiable
 {
 public:
     //! Us³uga nie musi mieæ wizualnej reprezentacji, wiêc nie zawsze jest
@@ -43,7 +43,7 @@ public:
     {        
     }
 
-	virtual ~IBaseService() {}
+	virtual ~IService() {}
 
 
     //------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ public:
 
     //! Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
     //! \param serviceManager 
-    virtual AsyncResult update(IServiceManager* serviceManager) 
+    virtual AsyncResult update(double time, double timeDelta) 
     { 
         return AsyncResult_Complete; 
     }
@@ -75,7 +75,7 @@ public:
     //! u¿yæ metody LateUpdate, która jest wywo³ywana po cyklu Update wszystkich us³ug.
     //! Ten sam w¹tek co UI.
     //! \param serviceManager
-    virtual AsyncResult lateUpdate(IServiceManager* serviceManager) 
+    virtual AsyncResult lateUpdate(double time, double timeDelta) 
     { 
         return AsyncResult_Complete; 
     }

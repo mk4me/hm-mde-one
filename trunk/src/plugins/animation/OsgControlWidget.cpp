@@ -73,7 +73,7 @@ void OsgControlWidget::SetScene( osgViewer::Scene *scene, IServiceManager *pServ
 {
     // clear...
     ClearScene(); 
-    m_pAnimationService = dynamic_cast<AnimationService*>(pServiceManager->GetSystemService(AnimationService::CLASS_ID));
+    m_pAnimationService = dynamic_cast<AnimationService*>(pServiceManager->getService(AnimationService::getClassID()));
 
     std::map<std::string, Animation*>* animations = m_pAnimationService->GetAnimations();
 

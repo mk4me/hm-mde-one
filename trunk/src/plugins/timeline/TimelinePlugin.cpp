@@ -44,7 +44,7 @@ const std::string& TimelinePlugin::GetPluginName()
 
 void TimelinePlugin::RegisterServices( IServiceManager *serviceManager )
 {
-    serviceManager->RegisterServiceAs(service, service->getID().major);
+    serviceManager->registerService(service);
 }
 
 void TimelinePlugin::SetScene( osgViewer::Scene *scene )

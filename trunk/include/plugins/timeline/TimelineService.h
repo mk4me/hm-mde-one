@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD__TIMELINESERVICE_H__
 #define __HEADER_GUARD__TIMELINESERVICE_H__
 
-#include <core/IBaseService.h>
+#include <core/IService.h>
 #include <plugins/timeline/Stream.h>
 #include <plugins/timeline/Controller.h>
 #include <plugins/timeline/ITimelineClient.h>
@@ -17,7 +17,7 @@
 
 class TimelineWidget;
 
-class TimelineService : public ITimeline, public IBaseService
+class TimelineService : public ITimeline, public IService
 {
     UNIQUE_ID('TIML','SRVC');
 private:
@@ -38,16 +38,16 @@ public:
     virtual IWidget* getWidget();
     virtual void SetModel(IDataManager* dataManager);
 
-// IBaseService
+// IService
 public:
     //!
     virtual AsyncResult init(IServiceManager* serviceManager);
     //!
     virtual AsyncResult compute();
     //!
-    virtual AsyncResult lateUpdate(IServiceManager* serviceManager);
+    virtual AsyncResult lateUpdate(double time, double timeDelta);
     //!
-    virtual AsyncResult update(IServiceManager* serviceManager);
+    virtual AsyncResult update(double time, double timeDelta);
 
 // ITimeline
 public:

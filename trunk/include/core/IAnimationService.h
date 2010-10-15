@@ -29,7 +29,7 @@ class IServiceManager;
 //--------------------------------------------------------------------------------------------------
 // Animation Service
 //--------------------------------------------------------------------------------------------------
-class IAnimationService: public IBaseService
+class IAnimationService: public IService
 {
 public:
     virtual ~IAnimationService() {};

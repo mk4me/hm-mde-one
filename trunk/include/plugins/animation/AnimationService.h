@@ -58,7 +58,7 @@ public:
     AnimationService(void);
 
     virtual ~AnimationService(void);
-    virtual AsyncResult update(IServiceManager* serviceManager); 
+    virtual AsyncResult update(double time, double timeDelta); 
     virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
 
     virtual void SetModel(IDataManager* dataManager);
@@ -91,8 +91,6 @@ protected:
     osgViewer::Scene* m_pScene; 
 
 private: 
-    M_DECLARE_CLASS(); 
-
     void UpdateBone(osg::PositionAttitudeTransform* bone);
     void RecalculateChanges();
     void UpdateSkeleton();

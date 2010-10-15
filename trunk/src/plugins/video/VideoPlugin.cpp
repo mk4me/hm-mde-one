@@ -60,7 +60,7 @@ const std::string& VideoPlugin::GetPluginName()
 
 void VideoPlugin::RegisterServices( IServiceManager *serviceManager )
 {
-  serviceManager->RegisterServiceAs(service, service->getID().major);
+  serviceManager->registerService(service);
 }
 
 void VideoPlugin::SetScene( osgViewer::Scene *scene )

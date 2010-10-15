@@ -7,7 +7,8 @@
 
 
 
-M_DECLARED_CLASS(ModelService, kCLASSID_ModelService);
+//deprecated:
+//M_DECLARED_CLASS(ModelService, kCLASSID_ModelService);
 
 //--------------------------------------------------------------------------------------------------
 ModelService::ModelService()

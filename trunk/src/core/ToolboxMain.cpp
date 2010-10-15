@@ -147,20 +147,20 @@ void ToolboxMain::InitializeCoreServices()
     m_pPluginService = new PluginService();
 
     //2. Model Service
-    m_pServiceManager->RegisterServiceAs(m_pModelService, ModelService::CLASS_ID);
+    m_pServiceManager->registerService(m_pModelService);
 
     //3. UserInterface Service
-    m_pServiceManager->RegisterServiceAs(m_pUserInterfaceService, UserInterfaceService::CLASS_ID);
+    m_pServiceManager->registerService(m_pUserInterfaceService);
     m_pUserInterfaceService->InicializeServices("QT",this);
 
     //4. Render Service
-    m_pServiceManager->RegisterServiceAs(m_pRenderService, RenderService::CLASS_ID);
+    m_pServiceManager->registerService(m_pRenderService);
 
     //5. Plugin Service
-    m_pServiceManager->RegisterServiceAs(m_pPluginService, PluginService::CLASS_ID); 
+    m_pServiceManager->registerService(m_pPluginService); 
 
     //6. Animation Service from plugin
-    m_pAnimationService = dynamic_cast<IAnimationService*>(m_pServiceManager->GetSystemService(kCLASSID_AnimationService));
+    m_pAnimationService = m_pServiceManager->queryServices<IAnimationService>();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -394,7 +394,7 @@ void ToolboxMain::Open()
 		FileReader2Motion::ReadFile(fileName.toStdString(), model);
 
         DataManager* dataManaget = new DataManager(fileName.toStdString(), model);
-        m_pServiceManager->SetModel(dataManaget);
+        m_pServiceManager->setData(dataManaget);
        
         m_pRenderService->AddObjectToRender(CreateGrid());
 
@@ -532,7 +532,7 @@ void ToolboxMain::SettingModel()
     m_pRenderService->CreateNewWindow("TEST2");
 
 // TESTING CONFIGURATION_FILE_MANAGER
-//     ServiceManager::GetInstance()->RegisterServiceAs<ConfigurationFileService>(); 
+//     ServiceManager::GetInstance()->registerService<ConfigurationFileService>(); 
 // 
 //     ConfigurationFileService* pCFService = m_pServiceManager->GetSystemServiceAs<ConfigurationFileService>();
 //     

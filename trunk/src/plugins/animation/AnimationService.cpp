@@ -21,7 +21,8 @@
 using namespace std;
 using namespace osg;
 
-M_DECLARED_CLASS(AnimationService, kCLASSID_AnimationService);
+//deprecated:
+//M_DECLARED_CLASS(AnimationService, kCLASSID_AnimationService);
 
 
 #define pPat osg::PositionAttitudeTransform*
@@ -126,9 +127,9 @@ AnimationService::~AnimationService(void)
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult AnimationService::update(IServiceManager* serviceManager)
+AsyncResult AnimationService::update(double time, double timeDelta)
 { 
-    double delta = serviceManager->getDeltaTime();
+    double delta = timeDelta;
 	if (m_pAnimation)
 	{
 		// update animation

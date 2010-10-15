@@ -26,7 +26,7 @@ class IDataManager;
 //--------------------------------------------------------------------------------------------------
 // Plugin Service
 //--------------------------------------------------------------------------------------------------
-class PluginService: public IBaseService
+class PluginService: public IService
 {
     UNIQUE_ID('PLUG','SRVC');
 public:
@@ -36,8 +36,7 @@ public:
 
     virtual void SetModel(IDataManager* dataManager);
 
-private: 
-    M_DECLARE_CLASS(); 
+public:
 
     void convertStringPathIntoFileDirList(const std::string& paths,FilePathList& filepath);
     void SetPathPlugin();

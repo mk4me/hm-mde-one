@@ -77,7 +77,7 @@ const std::string& AnimationPlugin::GetPluginName()
 void AnimationPlugin::RegisterServices(IServiceManager *pServiceManager )
 {
     AnimationService* animationService = new AnimationService();
-    pServiceManager->RegisterServiceAs(animationService, AnimationService::CLASS_ID);
+    pServiceManager->registerService(animationService);
 }
 
 //--------------------------------------------------------------------------------------------------

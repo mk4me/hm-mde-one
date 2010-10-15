@@ -13,7 +13,7 @@
 //--------------------------------------------------------------------------------------------------
 // ConfigurationFile Service
 //--------------------------------------------------------------------------------------------------
-class ConfigurationFileService: public IBaseService, public IConfigManager
+class ConfigurationFileService: public IService, public IConfigManager
 {
 public:
 
@@ -48,8 +48,6 @@ public:
     std::list<ConfigurationGroup*>& GetConfigurationGroupList();
 
 private: 
-    M_DECLARE_CLASS(); 
-
     void CheckLine(std::string line);
     bool m_isConfigFileLoad;
     bool isConfigurationGroup;

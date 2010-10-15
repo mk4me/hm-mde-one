@@ -7,7 +7,8 @@
 #include <core/IDataManager.h>
 
 using namespace std;
-M_DECLARED_CLASS(UserInterfaceService, kCLASSID_UserInterfaceService);
+//deprecated:
+//M_DECLARED_CLASS(UserInterfaceService, kCLASSID_UserInterfaceService);
 
 
 //--------------------------------------------------------------------------------------------------

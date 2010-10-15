@@ -40,7 +40,8 @@ typedef char filenamechar;
 typedef std::string filenamestring;
 
 using namespace std;
-M_DECLARED_CLASS(PluginService, kCLASSID_PluginService);
+//deprecated:
+//M_DECLARED_CLASS(PluginService, kCLASSID_PluginService);
 
 
 #ifdef __UNIX__

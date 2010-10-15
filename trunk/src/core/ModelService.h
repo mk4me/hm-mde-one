@@ -33,8 +33,6 @@ public:
     IModel* GetModel(int i = 0);
 
 private: 
-    M_DECLARE_CLASS(); 
-
     std::vector<IModel* > _modelList;
 
     ServiceManager* m_pServiceManager;

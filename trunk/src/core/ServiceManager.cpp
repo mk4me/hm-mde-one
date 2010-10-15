@@ -9,6 +9,7 @@
 
 //--------------------------------------------------------------------------------------------------
 ServiceManager::ServiceManager(void)
+: updateMarker(NULL)
 {
     resetTime();
 }
@@ -17,31 +18,19 @@ ServiceManager::ServiceManager(void)
 ServiceManager::~ServiceManager(void)
 {
 	// free allocated memory
-	for (ServicesMap::iterator i = servicesMap.begin(); i != servicesMap.end(); ++i)
-		delete i->second;
-	// clear container
-	servicesMap.clear();
+    for (ServicesMap::iterator i = servicesMap.begin(); i != servicesMap.end(); ++i) {
+        delete i->second;
+    }
 }
-
 //--------------------------------------------------------------------------------------------------
-IBaseService* ServiceManager::GetSystemService(ClassID classID)
+void ServiceManager::registerService( IService* service )
 {
-    ServicesMap::iterator it = servicesMap.find(classID);
-	
-	if (it != servicesMap.end())
-		return it->second; 
-	else
-		return NULL;
-}
-
-//--------------------------------------------------------------------------------------------------
-void ServiceManager::RegisterServiceAs(IBaseService* newService, ClassID classID)
-{
-    if (servicesMap.find(classID) == servicesMap.end())
-    {
-        servicesMap.insert( std::pair<ClassID, IBaseService *>(classID, newService)); 
-        servicesList.push_back(newService);
-        newService->OnAdded(this); 
+    if (servicesMap.find(service->getID()) == servicesMap.end()) {
+        servicesMap.insert( std::make_pair(service->getID(), service)); 
+        servicesList.push_back(service);
+        service->OnAdded(this); 
+    } else {
+        throw std::runtime_error("Service with this ID already registered.");
     }
 };
 
@@ -50,17 +39,17 @@ void ServiceManager::RegisterServiceAs(IBaseService* newService, ClassID classID
 template<typename T>
 T* ServiceManager::GetSystemServiceAs()
 {
-    IBaseService *pService = GetSystemService(T::CLASS_ID);
+    IService *pService = GetSystemService(T::CLASS_ID);
     T *pResult = dynamic_cast<T*>(pService);
     return pResult; 
 }
 
 //--------------------------------------------------------------------------------------------------
 template<typename T>
-void ServiceManager::RegisterServiceAs()
+void ServiceManager::registerService()
 {
     T* pService = new T(); 
-    _services.insert( std::pair<ClassID, IBaseService *>(T::CLASS_ID, pService) ); 
+    _services.insert( std::pair<ClassID, IService *>(T::CLASS_ID, pService) ); 
     pService->OnAdded(); 
 }/**/
 
@@ -75,17 +64,23 @@ void ServiceManager::updatePass()
 //         it++; 
 //     }
 
+    // ustawienia markera update'a
+    updateMarker = OpenThreads::Thread::CurrentThread();
+
     // aktualizacja czasu
     updateTime();
 
     // aktualizacja us³ug
     for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
-        (*it)->update(this);
+        (*it)->update(getTime(), getDeltaTime());
     }
     // drugi cykl aktualizacji
     for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
-        (*it)->lateUpdate(this);
+        (*it)->lateUpdate(getTime(), getDeltaTime());
     }
+
+    // ustawienia markera update'a
+    updateMarker = NULL;
 }
 
 
@@ -99,7 +94,7 @@ void ServiceManager::computePass()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ServiceManager::SetModel(IDataManager* dataManager )
+void ServiceManager::setData(IDataManager* dataManager )
 {
     //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
     ServicesMap::iterator it = servicesMap.begin();  
@@ -115,7 +110,7 @@ int ServiceManager::getNumServices() const
     return static_cast<int>(servicesList.size());
 }
 
-IBaseService* ServiceManager::getService( int idx )
+IService* ServiceManager::getService( int idx )
 {
     if ( idx < static_cast<int>(servicesList.size()) ) {
         return servicesList[idx];
@@ -124,13 +119,26 @@ IBaseService* ServiceManager::getService( int idx )
     }
 }
 
+IService* ServiceManager::getService( UniqueID id )
+{
+    ServicesMap::iterator it = servicesMap.find(id);
+    if (it != servicesMap.end()) {
+        return it->second; 
+    } else {
+        return NULL;
+    }
+}
+
+
 double ServiceManager::getTime()
 {
+    UTILS_ASSERT(updateMarker == OpenThreads::Thread::CurrentThread());
     return serviceTime;
 }
 
 double ServiceManager::getDeltaTime()
 {
+    UTILS_ASSERT(updateMarker == OpenThreads::Thread::CurrentThread());
     return serviceDeltaTime;
 }
 
@@ -150,3 +158,4 @@ void ServiceManager::updateTime()
 
     //OSG_NOTICE<<serviceDeltaTime<<std::endl;
 }
+

@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD__ITIMELINESERVICE_H__
 #define __HEADER_GUARD__ITIMELINESERVICE_H__
 
-#include <core/IBaseService.h>
+#include <core/IService.h>
 #include "Stream.h"
 
 class ITimeline

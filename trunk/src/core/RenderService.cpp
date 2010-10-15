@@ -14,7 +14,8 @@
 
 #define pPat osg::PositionAttitudeTransform*
 
-M_DECLARED_CLASS(RenderService, kCLASSID_RenderService);
+//deprecated:
+//M_DECLARED_CLASS(RenderService, kCLASSID_RenderService);
 
 //--------------------------------------------------------------------------------------------------
 RenderService::RenderService()
@@ -51,7 +52,7 @@ AsyncResult RenderService::OnAdded(IServiceManager* serviceManager)
 //--------------------------------------------------------------------------------------------------
 void RenderService::Inicialize()
 {
-    m_pUserInterfaceService =  dynamic_cast<UserInterfaceService*>(m_pServiceManager->GetSystemService(UserInterfaceService::CLASS_ID));
+    m_pUserInterfaceService =  dynamic_cast<UserInterfaceService*>(m_pServiceManager->getService(UserInterfaceService::getClassID()));
 
     osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator();
     QMainWindow* mainWindow = (QMainWindow*)m_pUserInterfaceService->GetMainObject();
