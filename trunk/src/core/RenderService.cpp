@@ -201,7 +201,7 @@ void RenderService::InicizlizeModelMesh(Model* model)
 
     model->addChild(geode);
 
-	//RenderBone(model);
+	RenderBone(model);
 }
 
 //--------------------------------------------------------------------------------------------------

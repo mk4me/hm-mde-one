@@ -221,9 +221,9 @@ void Channel::addFrame(float xTranslate, float yTranslate, float zTranslate, flo
     tempFrameData.push_back( xTranslate );
     tempFrameData.push_back( yTranslate );
     tempFrameData.push_back( zTranslate );
+    tempFrameData.push_back( zRotate );
     tempFrameData.push_back( xRotate );
     tempFrameData.push_back( yRotate );
-    tempFrameData.push_back( zRotate );
     frames.push_back( tempFrameData );
 }
 
@@ -231,9 +231,9 @@ void Channel::addFrame(float xTranslate, float yTranslate, float zTranslate, flo
 void Channel::addFrame(float xRotate, float yRotate, float zRotate)
 {
     frameData tempFrameData;
+    tempFrameData.push_back( zRotate );
     tempFrameData.push_back( xRotate );
     tempFrameData.push_back( yRotate );
-    tempFrameData.push_back( zRotate );
     frames.push_back( tempFrameData );
 }
 
@@ -248,15 +248,15 @@ int Channel::getRotation(int frameNum, float &xRotate, float &yRotate, float &zR
     frameData tempFrameData = frames[ frameNum-1 ];
     if(tempFrameData.size() == 6)
     {
-        xRotate = tempFrameData[3];
-        yRotate = tempFrameData[4];
-        zRotate = tempFrameData[5];
+        xRotate = tempFrameData[4];
+        yRotate = tempFrameData[5];
+        zRotate = tempFrameData[3];
     }
     else if(tempFrameData.size() == 3)
     {
-        xRotate = tempFrameData[0];
-        yRotate = tempFrameData[1];
-        zRotate = tempFrameData[2];	
+        xRotate = tempFrameData[1];
+        yRotate = tempFrameData[2];
+        zRotate = tempFrameData[0];	
     }
     else
     {
@@ -299,26 +299,16 @@ void Channel::setRotation(int frameNum, float xRotate, float yRotate, float zRot
 // Gets the requested frame's translation values
 void Channel::getTranslation(int frameNum, float &xTranslate, float &yTranslate, float &zTranslate)
 {
-// TODO: R.Zowal
-//     if(frames.size() < 1)
-//     {
-//         xTranslate = offset[0];
-//         yTranslate = offset[1];
-//         zTranslate = offset[2];
-//         return;
-//     }
-
     frameData tempFrameData = frames[ frameNum-1 ];
-    if(tempFrameData.size() == 6)
-	{
+    if(tempFrameData.size() == 6){
         xTranslate = tempFrameData[0];
         yTranslate = tempFrameData[1];
         zTranslate = tempFrameData[2];
     }
- //   else
-//    {
- //       printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
- //   }
+    else
+    {
+        printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
+    }
 }
 
 // Gets the joint's offset from its parent.
