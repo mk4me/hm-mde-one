@@ -50,7 +50,7 @@ public:
     osg::ref_ptr<osg::Geometry> DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, const osg::Vec3d* vertexPos, 
         const osg::Vec3d* startPos2, const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2, bool isSelected);
 
-    osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos);
+    osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos, bool isSelected);
 
 	virtual void DrawModelBone();
 

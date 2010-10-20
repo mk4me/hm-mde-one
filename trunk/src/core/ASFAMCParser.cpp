@@ -310,11 +310,14 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
                         }
                         else if (strcmp (token, "axis") == 0)
                         {
-                            token = strtok (NULL, " (),\t\n") ;					
+                            token = strtok (NULL, " (),\t\n") ;	
+                            tempJoint.setASFAxis(atof(token));
                             //							printf ("axs X : %s\n", token) ;					
-                            token = strtok (NULL, " (),\t\n") ;					
+                            token = strtok (NULL, " (),\t\n") ;		
+                            tempJoint.setASFAxis(atof(token));
                             //							printf ("axs Y : %s\n", token) ;					
                             token = strtok (NULL, " (),\t\n") ;
+                            tempJoint.setASFAxis(atof(token));
                             //							printf ("axs Z : %s\n", token) ;
                             token = strtok (NULL, " (),\t\n") ;
                             //							printf ("axs order : %s\n", token);

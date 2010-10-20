@@ -192,6 +192,7 @@ void* Model::GetSkeletonGroup()
     return NULL;
 }
 
+//--------------------------------------------------------------------------------------------------
 void Model::DrawModelBone()
 {
 	if (_skeletonGeode.valid())
@@ -247,7 +248,14 @@ void Model::DrawBone( osg::PositionAttitudeTransform* bone, const osg::Vec3d* pa
     boneNodeParent = osg::Vec3(0.f, 0.f, 0.f);
     boneNodeChild = bone->getPosition(); //osg::Vec3(length, 0.f, 0.f); 
 
-    geode->addDrawable(DrawLine(parentPos, &bpos));
+    bool isSelected = false;
+    if(bone->getName() == "RightUpLeg")
+    {
+        isSelected = true;
+       // brot = -brot;
+    }
+   
+    geode->addDrawable(DrawLine(parentPos, &bpos, isSelected));
 
 //     boneNodeLeftArm = osg::Vec3(distanceHightToArm, -distanceWidthToArm, 0.f);
 //     boneNodeRightArm = osg::Vec3(distanceHightToArm, distanceWidthToArm, 0.f);
@@ -343,7 +351,8 @@ osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, cons
     return m_geometry;
 }
 
-osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos)
+//--------------------------------------------------------------------------------------------------
+osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos, bool isSelected)
 {
     // draw actual bone
     osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
@@ -364,8 +373,16 @@ osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3d* startPos, const os
 
     // set colors
     osg::Vec4Array* colors = new osg::Vec4Array;
-    colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
-    colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    if(isSelected)
+    {
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+    }
+    else
+    {
+        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    }
 
     osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
     colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;

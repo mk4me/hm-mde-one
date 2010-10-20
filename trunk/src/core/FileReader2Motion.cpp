@@ -345,6 +345,74 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
 
     InicializeSkeletalAnimation(&animationName, animation, &bones);
 
+
+//     jointPointer = acclaimObject->getCurrentJointPointer();
+// 
+//     for(int b = 0; b < animation->bones_count; b++)
+//     {
+//         animation->bones[b].bone_id = jointPointer->getID();
+//         animation->bones[b].n = acclaimObject->getNumberOfFrames();
+// 
+//         animation->bones[b].frames = new SKeyFrame[animation->bones[b].n];
+// 
+//         // attach new animation to bone
+//         CAnimationGroup* anim = new CAnimationGroup(animation->bones[b].n);
+//         anim->setName(string(animationName.begin(), animationName.end()));
+// 
+//         // for every frame
+//         double animLength = 0.0;
+// 
+//         //for every key
+//         for(int k = 0; k < animation->bones[b].n; k++)
+//         {
+// 
+//             animation->bones[b].frames[k].time = TIMERMULTIPLAY * k;
+// 
+//             CAnimationNode* frame = new CAnimationNode((double)animation->bones[b].frames[k].time);
+// 
+//             animLength = animLength < animation->bones[b].frames[k].time ? animation->bones[b].frames[k].time : animLength;
+// 
+//             float translation      [3]; // bone translation vector 
+//             float quaternion       [4]; // bone quaternion 
+// 
+//             if(jointPointer->getType() == CHANNEL_TYPE::ROOT)
+//             {
+//                 jointPointer->getTranslation(k+1, translation[0], translation[1], translation[2]);
+//                 jointPointer->getQuaternionFromEuler(k+1, quaternion[3], quaternion[0], quaternion[1], quaternion[2]);
+// 
+//             }
+//             else
+//             {
+//                 // get translation
+//                 jointPointer->getOffset(translation[0], translation[1], translation[2]);
+// 
+//                 // get quaternion
+//                 jointPointer->getQuaternionFromEuler(k+1, quaternion[3], quaternion[0], quaternion[1], quaternion[2]);
+//             }
+// 
+//             frame->setPosition(osg::Vec3(translation[0], translation[1], translation[2]));	
+//             frame->setAttitude(osg::Quat(quaternion[0], quaternion[1], quaternion[2], quaternion[3]));	// attitude
+// 
+//             anim->addChild(frame);
+//         }
+// 
+//         anim->setLength(animLength);
+// 
+//         for(std::vector<SkeletonNode* >::iterator it = bones.begin(); it != bones.end(); it++)
+//         {
+//             if((*it)->GetId() == animation->bones[b].bone_id)
+//             {
+//                 (*it)->AddAnimation(anim);	
+//             }
+//         }
+// 
+//         //bones[animation->bones[b].bone_id]->AddAnimation(anim);	
+// 
+// 
+//         jointPointer++;
+//     }
+
+
     //    if(IsMeshAnimation(&address))
     //    {
     //         // TODO:
@@ -568,8 +636,18 @@ bool FileReader2Motion::InicializeSkeletalAnimation
         // TODO:  cos z tym zrobic,  stworzyc odtwarzanie animacji uwzgledaniajac ten przypadek
         //	if (animLength > 0.0)
         //	{
+
         animation->setLength(animLength);
-        (*bones)[anim->bones[b].bone_id]->AddAnimation(animation);	
+
+        for(std::vector<SkeletonNode* >::iterator it = (*bones).begin(); it != (*bones).end(); it++)
+        {
+            if((*it)->GetId() == anim->bones[b].bone_id)
+            {
+                (*it)->AddAnimation(animation);	
+            }
+        }
+
+     //   (*bones)[anim->bones[b].bone_id]->AddAnimation(animation);	
         //	}
     }
 

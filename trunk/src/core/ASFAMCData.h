@@ -48,6 +48,9 @@ typedef std::vector<float> frameData;
 // it has every frame number.  NOTE: Frame1 = frameVectors[0];
 typedef std::vector<frameData>	frameVectors;
 
+// static rotation
+typedef std::vector<float> staticRotation;
+
 // This holds a marker positioin (3 float vector)
 typedef std::vector<float> markerPosition;
 
@@ -79,12 +82,18 @@ private:
 
     quaternionVector	quatV;		
 
+    staticRotation      axis;
+
     void interpolate(int,int,int);			// This is a private function it gets used by interpolateRX, RY and RZ for eulers
 
 public:
     Channel();
     ~Channel();
     Channel(const Channel& tempJoint);
+
+    void invert(float *matrix);
+
+    void setASFAxis(float angle);
 
 	void        getQuaternionFromEuler(int frameNum, float &w, float &x, float &y, float &z);
 
@@ -186,6 +195,8 @@ public:
     void	setRotationOrder(char*);
     char*	getRotationOrder();
     float 	smallestYvalueInMarkers();
+
+    void getAsAxisMatrix(float* matrix);
 };
 
 #endif //ASFAMCDATA_H
