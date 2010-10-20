@@ -23,18 +23,27 @@ public:
     ModelService();
     virtual ~ModelService();
 
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot); 
 
-    virtual void SetModel(IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
     void AddModel(IModel* model);
     void Set(IModel* model, int i = 0);
     void Clear();
     IModel* GetModel(int i = 0);
 
+    virtual const std::string& getName() const
+    {
+        return name;
+    }
+    virtual IWidget* getWidget()
+    { 
+        return NULL;
+    }
+
 private: 
     std::vector<IModel* > _modelList;
-
+    std::string name;
     ServiceManager* m_pServiceManager;
 };
 

@@ -43,6 +43,8 @@ class ToolboxMain : public QMainWindow
 
 public:
     ToolboxMain(QWidget* parent = 0);
+
+    
     ~ToolboxMain();
 
     void LoadPlugins(); 
@@ -54,7 +56,7 @@ public:
     void CreateMenus(); 
     void LoadWindowMenuWidget();
     osg::ref_ptr<osg::Node> CreateGrid(); 
-    void InitializeCoreServices(); 
+    
     void Clear();
 
 public slots: 
@@ -78,6 +80,10 @@ public slots:
     //! Aktualizacja us³ug.
     void updateServices();
 
+private:
+    void registerCoreServices(); 
+    void registerPluginsServices();
+
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -94,12 +100,10 @@ private:
     ServiceManager* m_pServiceManager;
     PluginService* m_pPluginService;
     UserInterfaceService* m_pUserInterfaceService;
-    IAnimationService* m_pAnimationService;
     ModelService* m_pModelService;
     RenderService* m_pRenderService;
 
     Ui::ToolboxMain* _ui;
-    QVector<QObject*> _plugins; 
 
     // TODO: Embedded widgets - should be in plugins !!
     GridWidget* _gridWidget;
@@ -120,6 +124,7 @@ private:
     static const QString _settingsApplicationName;
 
     QTimer updateTimer;
+    osg::ref_ptr<osg::Node> sceneRoot;
 };
 
 #endif // TOOLBOXMAIN_H

@@ -1,4 +1,13 @@
 #include "VideoPCH.h"
+#include <core/Plugin.h>
+#include <plugins/video/VideoService.h>
+
+CORE_PLUGIN_BEGIN("Video", UniqueID('VIDE', 'PLUG'))
+CORE_PLUGIN_ADD_SERVICE(VideoService)
+CORE_PLUGIN_END
+
+#if 0
+
 #include <sstream>
 
 #include <QtGui/QWidget>
@@ -14,11 +23,12 @@
 #include <core/IServiceManager.h>
 #include <core/DllExports.h>
 
-#include <plugins/video/VideoService.h>
+
 
 #include "VideoPlugin.h"
 #include "ui_video.h"
 #include "VideoWidget.h"
+
 
 PLUGIN_REGISTER(VideoPlugin)
 
@@ -63,19 +73,9 @@ void VideoPlugin::RegisterServices( IServiceManager *serviceManager )
   serviceManager->registerService(service);
 }
 
-void VideoPlugin::SetScene( osgViewer::Scene *scene )
-{
-
-}
-
-void VideoPlugin::SetScene( osgViewer::Scene *scene, IServiceManager *serviceManager )
-{
-}
-
 std::string VideoPlugin::GetWidgetName( int i /*= 0*/ )
 {
-  std::ostringstream out;
-  out << i;
-  return out.str();
+    return utils::toString(i);
 }
 
+#endif

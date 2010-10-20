@@ -78,12 +78,12 @@ void GridWidget::MakeTest()
 }
 
 //--------------------------------------------------------------------------------------------------
-void GridWidget::SetScene(osgViewer::Scene *scene)
+void GridWidget::SetScene(osg::Node *scene)
 {
     // clear...
     ClearScene(); 
 
-    osg::Node *topNode = scene->getSceneData(); 
+    osg::Node *topNode = scene; 
     osg::Group *topGroup = 0; 
     if(topNode)
         topGroup = topNode->asGroup(); 

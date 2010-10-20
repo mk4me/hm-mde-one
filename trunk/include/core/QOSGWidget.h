@@ -1,3 +1,14 @@
+/********************************************************************
+	created:  2010/10/15
+	created:  15:10:2010   15:04
+	filename: QOSGWidget.h
+	author:	  Piotr Gwiazdowski
+	
+	purpose:  
+*********************************************************************/
+#ifndef __HEADER_GUARD__QOSGWIDGET_H__
+#define __HEADER_GUARD__QOSGWIDGET_H__
+
 #include <QtOpenGL/QGLWidget>
 #include <QtCore/QTimer>
 #include <osgViewer/Viewer>
@@ -69,3 +80,5 @@ protected:
         frame();
     }
 };
+
+#endif  // __HEADER_GUARD__QOSGWIDGET_H__

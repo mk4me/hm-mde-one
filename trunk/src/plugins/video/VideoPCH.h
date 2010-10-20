@@ -19,6 +19,8 @@
 #include <stack>
 #include <iostream>
 
+#include <boost/lexical_cast.hpp>
+
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/StateSet>

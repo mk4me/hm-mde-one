@@ -6,7 +6,7 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__TIMELINEPLUGIN_H__
+/*#ifndef __HEADER_GUARD__TIMELINEPLUGIN_H__
 #define __HEADER_GUARD__TIMELINEPLUGIN_H__
 
 #include <string>
@@ -33,10 +33,8 @@ public:
 
     virtual void RegisterServices(IServiceManager *serviceManager); 
 
-    virtual void SetScene(osgViewer::Scene *scene); 
-    virtual void SetScene(osgViewer::Scene *scene, IServiceManager *serviceManager); 
     virtual std::string GetWidgetName(int i = 0);
 };
 
 
-#endif  // __HEADER_GUARD__TIMELINEPLUGIN_H__
+#endif  // __HEADER_GUARD__TIMELINEPLUGIN_H__*/

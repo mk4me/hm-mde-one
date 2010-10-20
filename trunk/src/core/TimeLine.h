@@ -21,7 +21,7 @@ public:
     void AnimationTimeTest(); 
     void Update(double dt); 
     double GetCurrentAnimationTime(osg::AnimationPathCallback* apc); 
-    void SetScene(osgViewer::Scene* scene); 
+    void SetScene(osg::Node* scene); 
     void TimeLineSliderActionTriggered(int act); 
     void OnAnimationStop();
 

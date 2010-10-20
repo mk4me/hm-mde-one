@@ -45,7 +45,8 @@ bool Animation::Resume()
 {
 	if (_state == Animation::PAUSED)
 	{
-		m_pAnimationService->RegisterAnimation(this, &Animation::Update);
+		m_pAnimationService->RegisterAnimation(this, &Animation::SetTime);
+        m_pAnimationService->setLength(_length);
 
 		_state = Animation::PLAYING;
 
@@ -110,7 +111,8 @@ void Animation::Play()
 	// add animation to caller
 	if (_state != Animation::PLAYING)
 	{
-		m_pAnimationService->RegisterAnimation(this, &Animation::Update);
+		m_pAnimationService->RegisterAnimation(this, &Animation::SetTime);
+        m_pAnimationService->setLength(_length);
 		_state = Animation::PLAYING; 
 	}
 
@@ -278,6 +280,26 @@ void Animation::Update(double dt)
 	UpdateModel();
 }
 
+void Animation::SetTime( double time )
+{
+    // if everything is done - stop animation
+    if (_state == Animation::STOPPED)
+    {
+        // remove animation from caller
+        m_pAnimationService->UnregisterAnimation();
+
+        FirstFrame();
+
+        return;
+    }
+
+    // update time flow
+    _actTime = time;
+
+    // update model
+    UpdateModel();
+}
+
 //--------------------------------------------------------------------------------------------------
 double Animation::GetProgress()
 {
@@ -295,3 +317,4 @@ Animation::AnimationState Animation::GetState()
 {
     return _state; 
 }
+

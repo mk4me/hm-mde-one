@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD__UTILS_H__
 #define __HEADER_GUARD__UTILS_H__
 
+#include <boost/lexical_cast.hpp>
 #include <cstring>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,6 +83,16 @@ inline size_t length(const T (&fixedArray)[Size])
 //------------------------------------------------------------------------------
 
 struct NullType {};
+
+//------------------------------------------------------------------------------
+
+//! Konwersja danego typu do ³añcucha.
+//! \param source
+template <class T>
+inline std::string toString(const T& source)
+{
+    return boost::lexical_cast<std::string>(source);
+}
 
 //------------------------------------------------------------------------------
 

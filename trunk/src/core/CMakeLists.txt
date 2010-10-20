@@ -72,6 +72,8 @@ set(PUBLIC_H
 	${HEADER_PATH}/WxMainWindowInterface.h
 	${HEADER_PATH}/WxWidgetInterface.h
 	${HEADER_PATH}/QOSGWidget.h
+	${HEADER_PATH}/Plugin.h
+	${HEADER_PATH}/Export.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})

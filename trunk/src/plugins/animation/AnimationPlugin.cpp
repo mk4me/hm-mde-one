@@ -1,4 +1,15 @@
+#include <plugins/animation/AnimationService.h>
+#include <core/Plugin.h>
+
+CORE_PLUGIN_BEGIN("Animation", UniqueID('ANIM', 'PLUG'))
+CORE_PLUGIN_ADD_SERVICE(AnimationService)
+CORE_PLUGIN_END
+
+#if 0
+
 #include "AnimationPlugin.h"
+
+#include <boost/lexical_cast.hpp>
 
 #include <QtGui/QWidget>
 #include <QtCore/QString>
@@ -13,21 +24,20 @@
 #include <core/PluginDataInterface.h>
 #include <core/WidgetInterface.h>
 #include <core/IServiceManager.h>
-#include <plugins/animation/AnimationService.h>
-
 //-------- DllMain.cpp --------//
 #include <core/DllExports.h>
-
 
 PLUGIN_REGISTER(AnimationPlugin)
 
 //--------------------------------------------------------------------------------------------------
 AnimationPlugin::AnimationPlugin(void)
+: name("Animation Plugin")
 {
-    _name = "Animation Service"; 
-
-    QtWidget* widget = new QtWidget();
-    _controlWidgetList.push_back(widget);
+    service = new AnimationService();
+//     _name = "Animation Service"; 
+// 
+//     QtWidget* widget = new QtWidget();
+//     _controlWidgetList.push_back(widget);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -39,69 +49,42 @@ AnimationPlugin::~AnimationPlugin(void)
 //--------------------------------------------------------------------------------------------------
 void AnimationPlugin::UnloadPlugin()
 {
-    _controlWidgetList.clear();
-    _pluginDataList.clear();
+    delete service;
 }
 
 //--------------------------------------------------------------------------------------------------
 int AnimationPlugin::GetWidgetsCount()
 {
-    return _controlWidgetList.size();
+    return 1;
 }
 
 //--------------------------------------------------------------------------------------------------
 IWidget *AnimationPlugin::GetDockWidget( int i )
 {
-    if((_controlWidgetList.size()) > i)
-        return (IWidget*)_controlWidgetList[i]->GetWidget();
-
-    return NULL;
+    return service->getWidget();
 }
 
 //--------------------------------------------------------------------------------------------------
 POSITION AnimationPlugin::GetWidgetPos( int i /*= 0*/ )
 {
-    if((_pluginDataList.size()) > i)
-        return _pluginDataList[i]->GetPosition();
-
     return RIGHT;
 }
 
 //--------------------------------------------------------------------------------------------------
 const std::string& AnimationPlugin::GetPluginName()
 {
-    return _name;
+    return name;
 }
 
 //--------------------------------------------------------------------------------------------------
 void AnimationPlugin::RegisterServices(IServiceManager *pServiceManager )
 {
-    AnimationService* animationService = new AnimationService();
-    pServiceManager->registerService(animationService);
+    pServiceManager->registerService(service);
 }
 
-//--------------------------------------------------------------------------------------------------
-void AnimationPlugin::SetScene( osgViewer::Scene *scene )
-{
-    for(std::vector<QtWidget* >::const_iterator it = _controlWidgetList.begin(); it != _controlWidgetList.end(); it++)
-    {
-        (*it)->SetData(scene);
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-void AnimationPlugin::SetScene( osgViewer::Scene *scene, IServiceManager *pServiceManager )
-{
-    for(std::vector<QtWidget* >::const_iterator it = _controlWidgetList.begin(); it != _controlWidgetList.end(); it++)
-    {
-        (*it)->SetData(scene,pServiceManager);
-    }
-}
 //--------------------------------------------------------------------------------------------------
 std::string AnimationPlugin::GetWidgetName(int i)
 {
-    if(_pluginDataList.size() > i)
-        return _pluginDataList[i]->GetName();
-
-    return "GRANT-PLUGIN1";
+    return boost::lexical_cast<std::string>(i);
 }
+#endif

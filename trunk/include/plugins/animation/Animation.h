@@ -39,6 +39,8 @@ public:
     bool Resume();
     // update
     void Update(double dt);
+    void SetTime(double time);
+
     // change animation progress
     // value <0.0, 1.0>
     double SetPogress(double t);

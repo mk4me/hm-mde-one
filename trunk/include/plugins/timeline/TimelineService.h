@@ -27,27 +27,27 @@ private:
     timeline::Controller* controller;
     //! Czy wykonuje siê seeka?
     bool seekRequested;
+    //!
+    std::string name;
 
 public:
     TimelineService();
     virtual ~TimelineService();
 
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager);
-    
-
-    virtual IWidget* getWidget();
-    virtual void SetModel(IDataManager* dataManager);
-
 // IService
 public:
     //!
-    virtual AsyncResult init(IServiceManager* serviceManager);
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot);
+    //!
+    virtual IWidget* getWidget();
     //!
     virtual AsyncResult compute();
     //!
     virtual AsyncResult lateUpdate(double time, double timeDelta);
     //!
     virtual AsyncResult update(double time, double timeDelta);
+    //!
+    virtual const std::string& getName() const;
 
 // ITimeline
 public:

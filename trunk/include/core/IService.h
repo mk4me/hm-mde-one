@@ -28,20 +28,7 @@ class IServiceManager;
 class IService : public IIdentifiable
 {
 public:
-    //! Us³uga nie musi mieæ wizualnej reprezentacji, wiêc nie zawsze jest
-    //! potrzeba prze³adowywania tej metody.
-    //! \return Widget tworzony przez us³ugê.
-    virtual IWidget* getWidget()
-    {
-        return NULL;
-    }
 
-
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager) {return AsyncResult_Complete; } 
-
-    virtual void SetModel(IDataManager* dataManager)
-    {        
-    }
 
 	virtual ~IService() {}
 
@@ -51,7 +38,9 @@ public:
  
     //! Inicjalizacja us³ugi. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
     //! (nie zainicjalizowaniu!) wszystkich us³ug. Mo¿na wiêc pobieraæ wskaŸniki.
-    virtual AsyncResult init(IServiceManager* serviceManager)
+    //! \param serviceManager Manager us³ug.
+    //! \param root Korzeñ wspólnej sceny 3D.
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot)
     {
         return AsyncResult_Complete;
     }
@@ -59,7 +48,6 @@ public:
     //! £aduje 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager)
     {
-        SetModel(dataManager);
         return AsyncResult_Complete;
     }
 
@@ -86,6 +74,14 @@ public:
     {
         return AsyncResult_Complete;
     }
+
+    //! Us³uga nie musi mieæ wizualnej reprezentacji.
+    //! \return Widget tworzony przez us³ugê b¹dŸ NULL.
+    virtual IWidget* getWidget() = 0;
+
+    //! \return Nazwa us³ugi.
+    virtual const std::string& getName() const = 0;
+
 };
 
 #endif //BASE_SERVICE_H

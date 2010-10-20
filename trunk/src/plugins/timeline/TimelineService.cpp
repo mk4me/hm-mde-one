@@ -5,7 +5,8 @@
 
 
 TimelineService::TimelineService()
-:   seekRequested(false)
+:   seekRequested(false),
+    name("Timeline")
 {
     widget = new TimelineWidget(this);
     controller = new timeline::Controller();
@@ -25,28 +26,8 @@ IWidget* TimelineService::getWidget()
     return reinterpret_cast<IWidget*>(widget);
 }
 
-AsyncResult TimelineService::OnAdded( IServiceManager* serviceManager )
+AsyncResult TimelineService::init( IServiceManager* serviceManager, osg::Node* sceneRoot )
 {
-    return AsyncResult_Complete;
-}
-
-void TimelineService::SetModel( IDataManager* dataManager )
-{
-
-}
-
-AsyncResult TimelineService::init( IServiceManager* serviceManager )
-{
-//     for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-//         ITimelineClient* client = dynamic_cast<ITimelineClient*>(serviceManager->getService(i));
-//         if ( client ) {
-//             timeline::Streams streams = client->getStreams();
-//             for ( size_t j = 0; j < streams.size(); ++j ) {
-//                 controller->addStream( streams[j] );
-//             }
-//         }
-//     }
-    //controller->play();
     return AsyncResult_Complete;
 }
 
@@ -126,4 +107,9 @@ double TimelineService::getNormalizedTime() const
 void TimelineService::setNormalizedTime( double time )
 {
     return controller->setNormalizedTime(time);
+}
+
+const std::string& TimelineService::getName() const
+{
+    return name;
 }

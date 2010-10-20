@@ -8,7 +8,7 @@
 *********************************************************************/
 #ifndef __HEADER_GUARD__VIDEOPLUGIN_H__
 #define __HEADER_GUARD__VIDEOPLUGIN_H__
-
+#if 0
 #include <string>
 #include <osgViewer/Scene>
 #include <core/PluginsInterfaces.h>
@@ -33,11 +33,9 @@ public:
   virtual const std::string& GetPluginName(); 
 
   virtual void RegisterServices(IServiceManager *serviceManager); 
-
-  virtual void SetScene(osgViewer::Scene *scene); 
-  virtual void SetScene(osgViewer::Scene *scene, IServiceManager *serviceManager); 
   virtual std::string GetWidgetName(int i = 0);
 };
 
 
 #endif  // __HEADER_GUARD__VIDEOPLUGIN_H__
+#endif

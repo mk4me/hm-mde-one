@@ -17,17 +17,19 @@ class OsgControlWidget: public QWidget, Ui::OsgTest
 {
     Q_OBJECT
 public:
+
+
     OsgControlWidget(void);
     ~OsgControlWidget(void);
 
-    void SetScene(osgViewer::Scene *scene); 
-    void SetScene(osgViewer::Scene *scene, IServiceManager *pServiceManager); 
+    void SetScene(osg::Node *scene); 
+    void SetScene(osg::Node *scene, IServiceManager *pServiceManager); 
     void ClearScene(); 
 
     public slots: 
 
-        virtual void SelectionChanged();
-        virtual void MakeTest();
+        virtual void followTimelineChecked(int checked);
+        virtual void animationSelectionChanged();
 
 private:
     AnimationService* m_pAnimationService;

@@ -14,10 +14,6 @@ public:
 
     virtual ~IModelService() {};
 
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager) = 0; 
-
-    virtual void SetModel(IDataManager* dataManager) = 0;
-
     virtual void AddModel(IModel* model) = 0;
     virtual void Set(IModel* model, int i = 0) = 0;
     virtual void Clear() = 0;

@@ -10,6 +10,8 @@
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/View>
 
+#include <core/QOSGWidget.h>
+
 #include "AdapterWidget.h"
 
 #include <map>
@@ -32,9 +34,9 @@ class RenderService: public IService
 public:
     RenderService();
     virtual ~RenderService();
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot); 
 
-    virtual void SetModel(IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
     void TestScreenForNewModel(Model* model);
     void AddObjectToRender(osg::Node* node);
@@ -45,12 +47,21 @@ public:
 
     osgViewer::Scene* GetMainWindowScene();
     osgGroupPtr GetRoot();
-    ViewerQT* GetMainAdapterWidget();
+    QOSGViewer* GetMainAdapterWidget();
 
 	void RenderBone(Model* model);
 
+    virtual const std::string& getName() const
+    {
+        return name;
+    }
+    virtual IWidget* getWidget()
+    { 
+        return NULL;
+    }
+
 private: 
-    void Inicialize();
+    void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);
 
     UserInterfaceService* m_pUserInterfaceService;
@@ -58,10 +69,12 @@ private:
     std::map<std::string, ViewerQT*> m_osgViewMap;
     std::map<std::string, QWidget*> m_widgetMap;
 
-    ViewerQT* m_pMainOsgView; 
+    QOSGViewer* m_pMainOsgView; 
     osgGroupPtr m_spRoot;
 
     ServiceManager* m_pServiceManager;
+    //! Nazwa.
+    std::string name;
 };
 
 

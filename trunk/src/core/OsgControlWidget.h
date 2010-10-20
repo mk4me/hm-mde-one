@@ -14,10 +14,12 @@ class OsgControlWidget: public QWidget, Ui::OsgTest
 {
   Q_OBJECT
 public:
+
+
   OsgControlWidget(void);
   ~OsgControlWidget(void);
 
-  void SetScene(osgViewer::Scene *scene); 
+  void SetScene(osg::Node *scene); 
   void ClearScene(); 
 
   

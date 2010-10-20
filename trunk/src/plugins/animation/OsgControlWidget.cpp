@@ -14,9 +14,10 @@ Ui::OsgTest()
 , QWidget()
 {
     setupUi(this); 
+    //followTimelineCheckbox->setChecked(true);
 
-    connect(testButton, SIGNAL(clicked()), this, SLOT(MakeTest()));
-    connect(listWidget, SIGNAL(itemSelectionChanged()), this, SLOT(SelectionChanged()));
+//     connect(testButton, SIGNAL(clicked()), this, SLOT(MakeTest()));
+//     connect(listWidget, SIGNAL(itemSelectionChanged()), this, SLOT(SelectionChanged()));
 
 }
 
@@ -27,33 +28,42 @@ OsgControlWidget::~OsgControlWidget(void)
 }
 
 //--------------------------------------------------------------------------------------------------
-void OsgControlWidget::SelectionChanged()
+void OsgControlWidget::animationSelectionChanged()
 {
-    QList<QListWidgetItem*> selected = listWidget->selectedItems();
+    QList<QListWidgetItem*> selected = animationList->selectedItems();
     if (selected.begin() != selected.end())
     {
         std::string anim = "";
-
         QListWidgetItem* item = *selected.begin();
-
         QString	str = item->text();
         anim = str.toAscii().constData();			
-
-        m_pAnimationService->SetSelectedAnimationName(anim);
+        if ( anim == "[none]")   {
+            m_pAnimationService->SetSelectedAnimationName("");
+            m_pAnimationService->PlayAnimation("");
+        } else {
+            m_pAnimationService->SetSelectedAnimationName(anim);
+            m_pAnimationService->PlayAnimation(anim);
+        }
     }
+}
+//------------------------------------------------------------------------------
+
+void OsgControlWidget::followTimelineChecked( int checked )
+{
+    m_pAnimationService->setFollowTimeline( checked != 0 );
 }
 
 //--------------------------------------------------------------------------------------------------
-void OsgControlWidget::MakeTest()
-{	
-    if (m_pAnimationService->GetSelectedAnimationName().length())
-    {
-        m_pAnimationService->PlayAnimation(m_pAnimationService->GetSelectedAnimationName());
-    }
-}
+// void OsgControlWidget::MakeTest()
+// {	
+//     if (m_pAnimationService->GetSelectedAnimationName().length())
+//     {
+//         m_pAnimationService->PlayAnimation(m_pAnimationService->GetSelectedAnimationName());
+//     }
+// }
 
 //--------------------------------------------------------------------------------------------------
-void OsgControlWidget::SetScene(osgViewer::Scene *scene)
+void OsgControlWidget::SetScene(osg::Node *scene)
 {
 //     // clear...
 //     ClearScene(); 
@@ -69,7 +79,7 @@ void OsgControlWidget::SetScene(osgViewer::Scene *scene)
 }
 
 //--------------------------------------------------------------------------------------------------
-void OsgControlWidget::SetScene( osgViewer::Scene *scene, IServiceManager *pServiceManager )
+void OsgControlWidget::SetScene( osg::Node *scene, IServiceManager *pServiceManager )
 {
     // clear...
     ClearScene(); 
@@ -79,7 +89,7 @@ void OsgControlWidget::SetScene( osgViewer::Scene *scene, IServiceManager *pServ
 
     for (std::map<std::string, Animation*>::iterator i = animations->begin(); i != animations->end(); ++i)
     {
-        QListWidgetItem *nodeListItem = new QListWidgetItem(listWidget); 
+        QListWidgetItem *nodeListItem = new QListWidgetItem(animationList); 
         nodeListItem->setText(i->first.c_str()); 
     }
 }
@@ -87,6 +97,8 @@ void OsgControlWidget::SetScene( osgViewer::Scene *scene, IServiceManager *pServ
 //--------------------------------------------------------------------------------------------------
 void OsgControlWidget::ClearScene()
 {
-    listWidget->reset();
-    listWidget->clear();
+    animationList->reset();
+    animationList->clear();
+    QListWidgetItem* node = new QListWidgetItem(animationList);
+    node->setText("[none]");
 }

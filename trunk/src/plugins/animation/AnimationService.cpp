@@ -17,12 +17,55 @@
 #include <core/ISkeletonNode.h>
 #include <core/IServiceManager.h>
 
+#include <plugins/timeline/ITimeline.h>
+#include <plugins/timeline/Stream.h>
+
+#include "QtWidget.h"
 
 using namespace std;
 using namespace osg;
 
 //deprecated:
 //M_DECLARED_CLASS(AnimationService, kCLASSID_AnimationService);
+
+// TODO przenieœæ to do osobnego pliku!
+class AnimationStream : public timeline::Stream
+{
+private:
+  //! Strumieñ wewnêtrzny.
+  AnimationService* service;
+
+public:
+  //! \param stream Strumieñ wewnêtrzny.
+  AnimationStream(AnimationService* service) : service(service)
+  {}
+  //! \see Stream::setTime
+  virtual void setTime(double time)
+  {
+    service->setTargetTime(time);
+  }
+  //! \see Stream::getTime
+  virtual double getTime() const
+  {
+    return service->getTargetTime();
+  }
+  //! \see Stream::getLength
+  virtual double getLength() const
+  {
+    return service->getLength();
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+namespace timeline {
+////////////////////////////////////////////////////////////////////////////////
+template<> inline Stream* Stream::encapsulate(AnimationService* service)
+{
+  return new AnimationStream(service);
+}
+////////////////////////////////////////////////////////////////////////////////
+} // namespace timeline
+////////////////////////////////////////////////////////////////////////////////
 
 
 #define pPat osg::PositionAttitudeTransform*
@@ -111,13 +154,22 @@ void AnimationService::Clear()
     m_functionsToCallWhenAnimationStopped.clear();
 
 	ClearCaller();
+
+    
 }
 
 //--------------------------------------------------------------------------------------------------
 AnimationService::AnimationService(void): 
   m_pAnimation(NULL)
-, m_selectedAnimatonName("")
+, m_selectedAnimatonName(""),
+  targetTime(0.0),
+  stateMutex(),
+  length(0.0),
+  followTimeline(false),
+  currentAnimation(NULL),
+  name("Animation")
 {
+    widget = new QtWidget;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -129,11 +181,23 @@ AnimationService::~AnimationService(void)
 //--------------------------------------------------------------------------------------------------
 AsyncResult AnimationService::update(double time, double timeDelta)
 { 
-    double delta = timeDelta;
+    double targetTime;
+    if ( followTimeline ) {
+        targetTime = this->targetTime;
+        // HACK: ¿eby animacja siê nie "blokowa³a" (Piotr Gwiazdowski)
+        targetTime = std::min(targetTime, length - 0.1);
+    } else {
+        if ( currentAnimation ) {
+            targetTime = currentAnimation->GetTime() + timeDelta;
+        } else {
+            targetTime = 0.0;
+        }
+    }
+
 	if (m_pAnimation)
 	{
 		// update animation
-		(*m_pAnimation)(delta);
+		(*m_pAnimation)(targetTime);
         UpdateSkeleton();
         RecalculateChanges();
         UpdateMesh();
@@ -142,7 +206,7 @@ AsyncResult AnimationService::update(double time, double timeDelta)
 
 		// call functions that are to call every animation frame
 		for (std::vector<ISimpleOneArgFunctor<double>*>::iterator i = m_functionsToCall.begin(); i != m_functionsToCall.end(); ++i)
-			(**i)(delta);
+			(**i)(targetTime);
 
 		// remove functions that are to remove...
 		for (std::vector<std::vector<ISimpleOneArgFunctor<double>*>::iterator>::iterator i = m_functionsToRemove.begin(); 
@@ -158,23 +222,20 @@ AsyncResult AnimationService::update(double time, double timeDelta)
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult AnimationService::OnAdded(IServiceManager* serviceManager)
+AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
 {
     m_pServiceManager = serviceManager;
+    m_pScene = sceneRoot;
+    if ( widget ) {
+        widget->SetData(sceneRoot, serviceManager);
+    }
 
     std::cout << "AnimationService ADDED!" << std::endl; 
     return AsyncResult_Complete; 
 }
 
 //--------------------------------------------------------------------------------------------------
-void AnimationService::SetScene(osgViewer::Scene* scene)
-{
-    std::cout << "AnimationService: Scene added" << std::endl; 
-    m_pScene = scene; 
-}
-
-//--------------------------------------------------------------------------------------------------
-void AnimationService::SetSelectedAnimationName(std::string& name)
+void AnimationService::SetSelectedAnimationName(const std::string& name)
 { 
     m_selectedAnimatonName = name; 
 } 
@@ -295,9 +356,16 @@ void AnimationService::PlayAnimation(std::string animationName)
 {
     map<std::string, Animation*>::iterator i = m_animations.find(animationName);
 
-    if (i != m_animations.end())
-    {
+    if ( currentAnimation ) {
+        currentAnimation->Stop();
+    }
+    
+    if (i != m_animations.end()) {
+        currentAnimation = i->second;
         i->second->Play();
+    } else {
+        UnregisterAnimation();
+        currentAnimation = NULL;
     }
 }
 
@@ -397,7 +465,59 @@ std::map<std::string, Animation*>* AnimationService::GetAnimations()
 }
 
 //--------------------------------------------------------------------------------------------------
-void AnimationService::SetModel(IDataManager* dataManager )
+AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
     LoadAnimation(dataManager->GetModel());
+    widget->SetData(m_pScene, serviceManager);
+
+    ITimeline* timeline = serviceManager->queryServices<ITimeline>();
+    if ( timeline ) {
+        timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
+    } else {
+        OSG_WARN<<"ITimeline not found."<<std::endl;
+    }
+
+    return AsyncResult_Complete;
+}
+
+IWidget* AnimationService::getWidget()
+{
+    return reinterpret_cast<IWidget*>(widget->GetWidget());
+}
+
+QtWidget* AnimationService::getQtWidget()
+{
+    return widget;
+}
+
+double AnimationService::getTargetTime() const
+{
+    return targetTime;
+}
+
+void AnimationService::setTargetTime( double time )
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    targetTime = time;
+}
+
+double AnimationService::getLength() const
+{
+    return length;
+}
+
+void AnimationService::setLength( double length )
+{
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    this->length = length;
+}
+
+bool AnimationService::getFollowTimeline() const
+{
+    return followTimeline;
+}
+
+void AnimationService::setFollowTimeline( bool followTimeline )
+{
+    this->followTimeline = followTimeline;
 }

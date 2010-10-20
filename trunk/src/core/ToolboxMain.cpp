@@ -107,7 +107,20 @@ ToolboxMain::ToolboxMain(QWidget *parent):
 {
     _ui->setupUi(this);
 
-    InitializeCoreServices(); 
+    registerCoreServices(); 
+    registerPluginsServices();
+
+
+
+    sceneRoot = new osg::Group();
+    sceneRoot->setName("root");
+
+    // inicjalizacja us³ug
+    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
+        m_pServiceManager->getService(i)->init(m_pServiceManager, sceneRoot.get());
+    }
+
+
     InitializeConsoleWidget();          // Console Widget 
     InitializeControlWidget();          // Control Widget + TimeLine
     LoadConfiguration();                // Wczytuje plik konfiguracyjny
@@ -119,10 +132,48 @@ ToolboxMain::ToolboxMain(QWidget *parent):
     if(cdock && tldock)
         tabifyDockWidget(cdock, tldock); 
 
-    
-
-    _plugins.clear(); 
     LoadPlugins(); 
+
+    // inicjalizacja UI
+    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
+        IService* service = m_pServiceManager->getService(i);
+        IWidget* widget = service->getWidget();
+        if ( widget ) {
+            // dodajemy widget dokowalny
+            QDockWidget* dock = new QDockWidget( QString::fromStdString(service->getName()), this, Qt::WindowTitleHint);
+            dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+            addDockWidget(Qt::BottomDockWidgetArea, dock);
+            // HACK
+            QWidget* qwidget = reinterpret_cast<QWidget*>(widget);
+            dock->setWidget(qwidget);
+            dock->setObjectName( QString::fromStdString( service->getName() ) + qwidget->objectName() );
+        }
+    }
+
+
+
+    //     for(std::vector<core::Plugin*>::iterator itr = pList.begin(); itr != pList.end(); itr++)
+    //     {
+    //         osgViewer::Scene* scene =  m_pRenderService->GetMainWindowScene();
+    //         osg::Node* sceneRoot = scene->getSceneData();
+    // 
+    //         QDockWidget *tldock = new QDockWidget((*itr)->getName().c_str(), this, Qt::WindowTitleHint); 
+    //         tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    //         addDockWidget(Qt::BottomDockWidgetArea, tldock);
+    // 
+    //         for(int i = 0; i < (*itr)->GetWidgetsCount(); i++)
+    //         {
+    //             IWidget* w = (*itr)->GetDockWidget(i);
+    //             QWidget* widget = (QWidget*)(*itr)->GetDockWidget(i);
+    //             tldock->setWidget(widget); 
+    // 
+    //             QString dockWidgetName = (*itr)->GetPluginName().c_str() + widget->objectName();
+    //             tldock->setObjectName(dockWidgetName); 
+    //         }
+    //     }
+
+
+
     ReadSettings();
     CreateMenus();          // Inicjalizacja menu: 
     LoadWindowMenuWidget();
@@ -137,31 +188,7 @@ ToolboxMain::ToolboxMain(QWidget *parent):
 }
 
 //--------------------------------------------------------------------------------------------------
-void ToolboxMain::InitializeCoreServices()
-{
-    //1. Service manafger
-    m_pUserInterfaceService = new UserInterfaceService();
-    m_pServiceManager = new ServiceManager();
-    m_pModelService = new ModelService();
-    m_pRenderService = new RenderService();
-    m_pPluginService = new PluginService();
 
-    //2. Model Service
-    m_pServiceManager->registerService(m_pModelService);
-
-    //3. UserInterface Service
-    m_pServiceManager->registerService(m_pUserInterfaceService);
-    m_pUserInterfaceService->InicializeServices("QT",this);
-
-    //4. Render Service
-    m_pServiceManager->registerService(m_pRenderService);
-
-    //5. Plugin Service
-    m_pServiceManager->registerService(m_pPluginService); 
-
-    //6. Animation Service from plugin
-    m_pAnimationService = m_pServiceManager->queryServices<IAnimationService>();
-}
 
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::CreateMenus()
@@ -208,7 +235,6 @@ void ToolboxMain::Clear()
 
     m_pPluginService = NULL;
     m_pUserInterfaceService = NULL;
-    m_pAnimationService = NULL;
     m_pModelService = NULL;
     m_pRenderService = NULL;
 
@@ -270,6 +296,7 @@ void ToolboxMain::InitializeControlWidget()
     InitializeOGSWidget();  // MainWidget 
 
     osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
+    osg::Node* sceneRoot = scene->getSceneData();
 
     // TimeLine
     QDockWidget *tldock = new QDockWidget(tr("Time Line"), this, Qt::WindowTitleHint); 
@@ -279,7 +306,7 @@ void ToolboxMain::InitializeControlWidget()
     addDockWidget(Qt::BottomDockWidgetArea, tldock);
     tldock->setWidget((QWidget*)_timeLine); 
 
-    _timeLine->SetScene(scene); 
+    _timeLine->SetScene(sceneRoot); 
 
     connect(&(m_pRenderService->GetMainAdapterWidget()->_timer), SIGNAL(timeout()), _timeLine, SLOT(update())); 
 
@@ -296,35 +323,28 @@ void ToolboxMain::InitializeControlWidget()
 //--------------------------------------------------------------------------------------------------
 void ToolboxMain::LoadPlugins()
 {
-    PluginList pList = m_pPluginService->GetPluginList();
+//    PluginService::Plugins& pList = m_pPluginService->getPlugins();
 
-    for(std::vector<ISystemPlugin*>::iterator itr = pList.begin(); itr != pList.end(); itr++)
-    {
-        osgViewer::Scene* scene =  m_pRenderService->GetMainWindowScene();
+//     for(std::vector<core::Plugin*>::iterator itr = pList.begin(); itr != pList.end(); itr++)
+//     {
+//         osgViewer::Scene* scene =  m_pRenderService->GetMainWindowScene();
+//         osg::Node* sceneRoot = scene->getSceneData();
+// 
+//         QDockWidget *tldock = new QDockWidget((*itr)->getName().c_str(), this, Qt::WindowTitleHint); 
+//         tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+//         addDockWidget(Qt::BottomDockWidgetArea, tldock);
+// 
+//         for(int i = 0; i < (*itr)->GetWidgetsCount(); i++)
+//         {
+//             IWidget* w = (*itr)->GetDockWidget(i);
+//             QWidget* widget = (QWidget*)(*itr)->GetDockWidget(i);
+//             tldock->setWidget(widget); 
+// 
+//             QString dockWidgetName = (*itr)->GetPluginName().c_str() + widget->objectName();
+//             tldock->setObjectName(dockWidgetName); 
+//         }
+//     }
 
-        QDockWidget *tldock = new QDockWidget((*itr)->GetPluginName().c_str(), this, Qt::WindowTitleHint); 
-        tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-        addDockWidget(Qt::BottomDockWidgetArea, tldock);
-
-        for(int i = 0; i < (*itr)->GetWidgetsCount(); i++)
-        {
-          IWidget* w = (*itr)->GetDockWidget(i);
-            QWidget* widget = (QWidget*)(*itr)->GetDockWidget(i);
-            tldock->setWidget(widget); 
-
-            QString dockWidgetName = (*itr)->GetPluginName().c_str() + widget->objectName();
-            tldock->setObjectName(dockWidgetName);
-
-            (*itr)->SetScene(scene, m_pServiceManager); 
-        }
-    }
-
-    // TODO
-    // tymczasowe, chodzi o wywo³anie eventa pozwalaj¹cego us³ugom na przejrzenie listy
-    // dostêpnych us³ug
-    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        m_pServiceManager->getService(i)->init(m_pServiceManager);
-    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -400,15 +420,10 @@ void ToolboxMain::Open()
 
         // manage scene
         osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
+        osg::Node* sceneRoot = scene->getSceneData();
      //   _osgControlWidget->SetScene(scene); 
-        _gridWidget->SetScene(scene);
-        _timeLine->SetScene(scene); 
-
-        PluginList pluginList = m_pPluginService->GetPluginList();
-        for(std::vector<ISystemPlugin* >::const_iterator it = pluginList.begin(); it != pluginList.end(); it++)
-        {
-            (*it)->SetScene(scene, m_pServiceManager);
-        }
+        _gridWidget->SetScene(sceneRoot);
+        _timeLine->SetScene(sceneRoot); 
 
         return;
 
@@ -620,4 +635,36 @@ void ToolboxMain::PolygonViewModel()
 void ToolboxMain::updateServices()
 {
     m_pServiceManager->updatePass();
+}
+
+
+void ToolboxMain::registerCoreServices()
+{
+    //1. Service manafger
+    m_pUserInterfaceService = new UserInterfaceService();
+    m_pServiceManager = new ServiceManager();
+    m_pModelService = new ModelService();
+    m_pRenderService = new RenderService();
+    m_pPluginService = new PluginService();
+
+    //2. Model Service
+    m_pServiceManager->registerService(m_pModelService);
+
+    //3. UserInterface Service
+    m_pServiceManager->registerService(m_pUserInterfaceService);
+    m_pUserInterfaceService->InicializeServices("QT",this);
+
+    //4. Render Service
+    m_pServiceManager->registerService(m_pRenderService);
+}
+
+void ToolboxMain::registerPluginsServices()
+{
+    m_pPluginService->load();
+    for ( size_t i = 0; i < m_pPluginService->getNumPlugins(); ++i ) {
+        core::Plugin* plugin = m_pPluginService->getPlugin(i);
+        for ( size_t j = 0; j < plugin->getNumServices(); ++j ) {
+            m_pServiceManager->registerService(plugin->getService(j));
+        }
+    }
 }

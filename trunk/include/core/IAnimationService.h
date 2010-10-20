@@ -33,14 +33,11 @@ class IAnimationService: public IService
 {
 public:
     virtual ~IAnimationService() {};
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager) = 0; 
-
-    virtual void SetModel(IDataManager* dataManager) = 0;
 
     virtual void RegisterAnimation(Animation* object, void (Animation::*fun)(double)) = 0; // add function to caller
-    virtual void SetSelectedAnimationName(std::string& name) = 0; // set act selected animation name 
+    virtual void SetSelectedAnimationName(const std::string& name) = 0; // set act selected animation name 
     virtual void PlayAnimation(std::string animationName) = 0;
-    virtual void SetScene(osgViewer::Scene* scene) = 0; // set animated scene
+    //virtual void SetScene(osg::Node* scene) = 0; // set animated scene
     virtual void LoadAnimation(IModel* model) = 0;
     virtual void ClearCaller() = 0; // clear caller
     virtual void NotifyStop() = 0; // notify stop

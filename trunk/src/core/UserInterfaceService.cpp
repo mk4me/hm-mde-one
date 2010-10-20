@@ -24,7 +24,7 @@ UserInterfaceService::~UserInterfaceService()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult UserInterfaceService::OnAdded(IServiceManager* serviceManager)
+AsyncResult UserInterfaceService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
 {
     m_pServiceManager = (ServiceManager*)serviceManager;
 
@@ -63,7 +63,7 @@ void* UserInterfaceService::GetMainObject()
 }
 
 //--------------------------------------------------------------------------------------------------
-void UserInterfaceService::SetModel(IDataManager* dataManager )
+AsyncResult UserInterfaceService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
-
+    return AsyncResult_Complete;
 }

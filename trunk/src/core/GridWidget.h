@@ -17,7 +17,7 @@ public:
     GridWidget(void);
     ~GridWidget(void);
 
-    void SetScene(osgViewer::Scene *scene); 
+    void SetScene(osg::Node *scene); 
     void ClearScene(); 
 
 public slots: 

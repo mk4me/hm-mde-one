@@ -1,6 +1,9 @@
 #include "CorePCH.h"
 #include "PluginServices.h"
 #include <iostream>
+#include <boost/numeric/conversion/cast.hpp>
+
+
 #include <QtGui/QMainWindow>
 #include <QtGui/QtGui>
 #include <QtGui/QMenu>
@@ -11,6 +14,8 @@
 
 #include <core/IModel.h>
 #include <core/IDataManager.h>
+
+#include <core/Plugin.h>
 
 #include "ServiceManager.h"
 
@@ -35,6 +40,9 @@
 
 // DLL function signature
 
+#define LOG_ERROR OSG_FATAL
+#define LOG_INFO  OSG_NOTICE
+
 
 typedef char filenamechar;
 typedef std::string filenamestring;
@@ -45,7 +53,6 @@ using namespace std;
 
 
 #ifdef __UNIX__
-//--------------------------------------------------------------------------------------------------
 int getdir (string dir, vector<string> &files)
 {
     DIR *dp;
@@ -63,259 +70,241 @@ int getdir (string dir, vector<string> &files)
 }
 #endif
 
-//--------------------------------------------------------------------------------------------------
-void PluginService::Clear()
-{
-    m_pluginFileDirList.clear();
-}
 
-//--------------------------------------------------------------------------------------------------
 PluginService::PluginService()
 {
-    m_pluginFileDirList.clear();
+    paths.clear();
+    // dodaje domyœlne œcie¿ki
+    addDefaultPaths();
 }
 
-//--------------------------------------------------------------------------------------------------
 PluginService::~PluginService()
 {
-    Clear();
-}
-//--------------------------------------------------------------------------------------------------
-AsyncResult PluginService::OnAdded(IServiceManager* serviceManager)
-{
-    m_pServiceManager = (ServiceManager*)serviceManager;
-
-    std::cout << "PluginService ADDED-test!" << std::endl; 
-
-    SetPathPlugin();
-    LoadPlugins();
-    return AsyncResult_Complete; 
+    clear();
 }
 
-
-//--------------------------------------------------------------------------------------------------
-void PluginService::convertStringPathIntoFileDirList(const std::string& paths,FilePathList& filepath)
+PluginService::Paths& PluginService::getPaths()
 {
-#if defined(WIN32) && !defined(__CYGWIN__)
-    char delimitor = ';';
-#else
-    char delimitor = ':';
-#endif
+    return paths;
+}
 
-    if (!paths.empty())
-    {
-        std::string::size_type start = 0;
-        std::string::size_type end;
-        while ((end = paths.find_first_of(delimitor,start))!=std::string::npos)
-        {
-            filepath.push_back(std::string(paths,start,end-start));
-            start = end+1;
-        }
+const PluginService::Paths& PluginService::getPaths() const
+{
+    return paths;
+}
 
-        std::string lastPath(paths,start,std::string::npos);
-        if (!lastPath.empty())
-            filepath.push_back(lastPath);
+
+void PluginService::clear()
+{
+    // wyczyszczenie œcie¿ek
+    paths.clear();
+
+    // kasowanie pluginów
+    for (size_t i = 0; i < plugins.size(); ++i) {
+        delete plugins[i];
     }
+    plugins.clear();
 
+    // zwolnienie bibliotek
+    for (size_t i = 0; i < libraries.size(); ++i) {
+#if defined(__WIN32__)
+        ::FreeLibrary( reinterpret_cast<HMODULE>(libraries[i]) );
+#elif defined(__UNIX__)
+#error Not implemented yet
+#endif
+    }
+    libraries.clear();
 }
 
-//--------------------------------------------------------------------------------------------------
-FilePathList& PluginService::GetPathPlugin()
+void PluginService::addDefaultPaths()
 {
-   return m_pluginFileDirList;
-}
+#if defined(__WIN32__)
+    // katalog uruchomieniowy
 
-
-//--------------------------------------------------------------------------------------------------
-void PluginService::SetPathPlugin()
-{
-#ifdef __WIN32__
-    //   1. The directory from which the application loaded.
     DWORD retval = 0;
     const DWORD size = MAX_PATH;
-    filenamechar path[size];
-    retval = GRANT_WINDOWS_FUNCT(GetModuleFileName)(NULL, path, size);
-    if (retval != 0 && retval < size)
-    {
-        filenamestring pathstr(path);
-        filenamestring executableDir(pathstr, 0, 
-            pathstr.find_last_of(GRANT_FILENAME_TEXT("\\/")));
-        convertStringPathIntoFileDirList(GRANT_FILENAME_TO_STRING(executableDir), m_pluginFileDirList);
-    }
-    else
-    {
-        std::cout<< "Could not get application directory "
+    char path[size];
+    std::string executableDir;
+
+    retval = ::GetModuleFileName(NULL, path, size);
+    if (retval != 0 && retval < size) {
+        std::string pathstr(path);
+        executableDir = std::string( pathstr, 0, pathstr.find_last_of("\\/") );
+        convertStringPathIntoFileDirList(executableDir, paths);
+    } else {
+        LOG_ERROR << "Could not get application directory "
             "using Win32 API. It will not be searched." << std::endl;
     }
 
-    //   2. The directory from plugins folder.
-    retval = GRANT_WINDOWS_FUNCT(GetModuleFileName)(NULL, path, size);
-    if (retval != 0 && retval < size)
-    {
-        filenamestring pathstr(path);
-        filenamestring executableDir(pathstr, 0, 
-            pathstr.find_last_of(GRANT_FILENAME_TEXT("\\/")));
-
+    // katalog plugins
+    if (!executableDir.empty())  {
         std::string dirpath = executableDir;
         dirpath.append("\\plugins");
-        convertStringPathIntoFileDirList(GRANT_FILENAME_TO_STRING(dirpath), m_pluginFileDirList);
-    }
-    else
-    {
-        std::cout << "Could not get application directory -- plugins folder"
+        convertStringPathIntoFileDirList(dirpath, paths);
+    } else {
+        LOG_ERROR << "Could not get application directory -- plugins folder"
             "using Win32 API. It will not be searched." << std::endl;
     }
-
-#endif
-#ifdef __UNIX__
-    //   1. The directory from which the application loaded.
+#elif defined(__UNIX__)
+    // katalog uruchomieniowy
     std::string dir = string(".");
-    m_pluginFileDirList.push_back(dir);
+    paths.push_back(dir);
 
-    //   2. The directory from plugins folder.
+    // zagnie¿d¿ony katalog plugins
     dir = string("plugins/.");
-    m_pluginFileDirList.push_back(dir);
+    paths.push_back(dir);
 #endif
 }
 
-//--------------------------------------------------------------------------------------------------
-PluginList& PluginService::GetPluginList()
-{
-    return m_pluginList;
-}
 
-//--------------------------------------------------------------------------------------------------
-void PluginService::LoadPlugins()
+void PluginService::load()
 {
-    FilePathList loadPluginFolderPath = GetPathPlugin();
-
 #ifdef __WIN32__
-    HANDLE hFind;
+    HANDLE file;
     WIN32_FIND_DATA dataFind;
-    BOOL bMoreFiles;
-    char* m_chFileMask;
-    m_chFileMask = "*.dll";
+    bool moreFiles;
+    const char* fileMask = "*.dll";
 
-
-    for(FilePathList::const_iterator itr = loadPluginFolderPath.begin(); itr!=loadPluginFolderPath.end(); ++itr)
-    {
-        GRANT_WINDOWS_FUNCT(SetCurrentDirectory)(itr->c_str());
-        bMoreFiles = TRUE;
-
-        hFind = FindFirstFile(m_chFileMask,&dataFind);
-        while (hFind != INVALID_HANDLE_VALUE && bMoreFiles == TRUE)
-        {
-            if(AddPlugIn(getRealPath(itr->c_str(), dataFind.cFileName)))
-            {
-                std::cout<< "Plugin Load Complete :   " << dataFind.cFileName << std::endl;
-            }
-
-            bMoreFiles = FindNextFile(hFind,&dataFind);
+    for(Paths::const_iterator itr = paths.begin(); itr!=paths.end(); ++itr) {
+        // bie¿¹cy katalog
+        ::SetCurrentDirectory(itr->c_str());
+        moreFiles = true;
+        // listowanie plików
+        file = ::FindFirstFile(fileMask, &dataFind);
+        while (file != INVALID_HANDLE_VALUE && moreFiles) {
+            // dodanie plugina
+            addPlugIn(combinePath(*itr, dataFind.cFileName));
+            // czy dalej? (dziwna postaæ ¿eby pozbyæ siê warninga)
+            moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));
         }
     }
 #endif
 #ifdef __UNIX__
-    for(FilePathList::const_iterator itr = loadPluginFolderPath.begin(); itr!=loadPluginFolderPath.end(); ++itr)
+    for(Paths::const_iterator itr = paths.begin(); itr!=paths.end(); ++itr)
     {
         std::vector<string> files = vector<string>();
 
-	    DIR *dp;
+        DIR *dp;
         struct dirent *dirp;
-        if((dp  = opendir((*itr).c_str())) == NULL) 
-	   {
-            cout << "Error(" << errno << ") opening " << (*itr) << endl;
-            return;
+        if( (dp  = opendir(itr->c_str())) == NULL) {
+            LOG_ERROR << "Error(" << errno << ") opening " << (*itr) << std::endl;
+            continue;;
         }
 
-        while ((dirp = readdir(dp)) != NULL) 
-	    {
-	        if(AddPlugIn(getRealPath(itr->c_str(), dirp->d_name)))
-	        {
-		    std::cout<< "Plugin Load Complete :   " << dirp->d_name << std::endl;
-	        }
+        while ((dirp = readdir(dp)) != NULL) {
+            addPlugIn(combinePath(*itr, dirp->d_name));
         }
         closedir(dp);
     }
 #endif
 }
 
-//--------------------------------------------------------------------------------------------------
-std::string PluginService::getRealPath(const std::string& path, const std::string& fileName)
+//
+//void PluginService::LoadPlugins()
+//{
+//    FilePathList loadPluginFolderPath = GetPathPlugin();
+//
+//#ifdef __WIN32__
+//    HANDLE hFind;
+//    WIN32_FIND_DATA dataFind;
+//    BOOL bMoreFiles;
+//    char* m_chFileMask;
+//    m_chFileMask = "*.dll";
+//
+//
+//    for(FilePathList::const_iterator itr = loadPluginFolderPath.begin(); itr!=loadPluginFolderPath.end(); ++itr)
+//    {
+//        GRANT_WINDOWS_FUNCT(SetCurrentDirectory)(itr->c_str());
+//        bMoreFiles = TRUE;
+//
+//        hFind = FindFirstFile(m_chFileMask,&dataFind);
+//        while (hFind != INVALID_HANDLE_VALUE && bMoreFiles == TRUE)
+//        {
+//            if(addPlugIn(combinePath(itr->c_str(), dataFind.cFileName)))
+//            {
+//                std::cout<< "Plugin Load Complete :   " << dataFind.cFileName << std::endl;
+//            }
+//
+//            bMoreFiles = FindNextFile(hFind,&dataFind);
+//        }
+//    }
+//#endif
+//#ifdef __UNIX__
+//    for(FilePathList::const_iterator itr = loadPluginFolderPath.begin(); itr!=loadPluginFolderPath.end(); ++itr)
+//    {
+//        std::vector<string> files = vector<string>();
+//
+//	    DIR *dp;
+//        struct dirent *dirp;
+//        if((dp  = opendir((*itr).c_str())) == NULL) 
+//	   {
+//            cout << "Error(" << errno << ") opening " << (*itr) << endl;
+//            return;
+//        }
+//
+//        while ((dirp = readdir(dp)) != NULL) 
+//	    {
+//	        if(addPlugIn(combinePath(itr->c_str(), dirp->d_name)))
+//	        {
+//		    std::cout<< "Plugin Load Complete :   " << dirp->d_name << std::endl;
+//	        }
+//        }
+//        closedir(dp);
+//    }
+//#endif
+//}
+
+bool PluginService::addPlugIn( const std::string& path )
 {
 #ifdef __WIN32__
-    return path + "\\" + fileName;
+    HMODULE library = ::LoadLibrary( path.c_str() );
+    if ( library ) {
+        FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
+        if ( proc ) {
+            bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
+                reinterpret_cast<core::Plugin::CreateFunction>(proc));
+            if ( success ) {
+                return true;
+            }
+        }
+    }
+    FreeLibrary(library);
+    return false;
 #endif
+
 #ifdef __UNIX__
-    return path + "/" + fileName;
-#endif
-}
-
-//--------------------------------------------------------------------------------------------------
-std::string PluginService::GetPlugIn()
-{
-    return std::string();
-}
-
-//--------------------------------------------------------------------------------------------------
-bool PluginService::AddPlugIn(std::string pluginPath/*, std::string pluginName*/)
-{
+#error Dla UNIXa jeszcze nie zmienione
     ISystemPlugin* iControlPlugin = NULL;
     typedef ISystemPlugin* (*pvFunction)();
     pvFunction createPlugin;
 
-#ifdef __WIN32__
-    HINSTANCE hdll = NULL;
-
-    hdll = GRANT_WINDOWS_FUNCT(LoadLibrary)(TEXT(pluginPath.c_str()));		// load the dll
-    createPlugin = (pvFunction)(GetProcAddress( hdll, "CreateConrolPluginInstance" ));
-
-    if(!createPlugin)
+    int size_of_path = path.length();
+    if(size_of_path < 4)
         return false;
 
-   // QObject *plugin = (QObject*)(CreateFoo());	// get pointer to object
-   // iControlPlugin = (ISystemPlugin*)(CreateFoo());
-   // iControlPlugin = qobject_cast<ISystemPlugin *>(plugin);
+    std::string expansion_of_file = path.substr((size_of_path - 2), size_of_path);
+    if(expansion_of_file != "so")
+        return false;
 
+
+    //void* handle = dlopen(pluginPath.c_str(), RTLD_LAZY);
+    void* handle = dlopen(path.c_str(), RTLD_LAZY);
+    if(!handle)
+    {
+        std::cout << "Error ladowanie uchwytuuuu: " << dlerror() << std::endl;
+        return false;
+    }
+
+    createPlugin = (pvFunction)dlsym(handle, "CreateControlPluginInstance");
+    if(!createPlugin)
+    {
+        std::cout << " Error pobieranie funkcji zwracajacej obiekt: " << dlerror() << std::endl;
+        return false;
+    }
     iControlPlugin = (ISystemPlugin*)(createPlugin());
     if(iControlPlugin)
     {
-        iControlPlugin->RegisterServices(m_pServiceManager);
         std::cout << "Loading Plugin -- Plugin Name :"<< iControlPlugin->GetPluginName() << std::endl;
-        m_pluginList.push_back(iControlPlugin);
-    }
-  
-   // Hmm... to trzeba bêdzie dok³adnei zbadaæ
-   // FreeLibrary(hdll);				// free the dll
-#endif
-#ifdef __UNIX__
-
-   int size_of_path = pluginPath.length();
-   if(size_of_path < 4)
-	return false;
-
-   std::string expansion_of_file = pluginPath.substr((size_of_path - 2), size_of_path);
-   if(expansion_of_file != "so")
-	return false;
-
-
-   //void* handle = dlopen(pluginPath.c_str(), RTLD_LAZY);
-   void* handle = dlopen(pluginPath.c_str(), RTLD_LAZY);
-   if(!handle)
-   {
-	std::cout << "Error ladowanie uchwytuuuu: " << dlerror() << std::endl;
-        return false;
-   }
-
-   createPlugin = (pvFunction)dlsym(handle, "CreateControlPluginInstance");
-   if(!createPlugin)
-   {
-	std::cout << " Error pobieranie funkcji zwracajacej obiekt: " << dlerror() << std::endl;
-        return false;
-   }
-   iControlPlugin = (ISystemPlugin*)(createPlugin());
-    if(iControlPlugin)
-    {
-	std::cout << "Loading Plugin -- Plugin Name :"<< iControlPlugin->GetPluginName() << std::endl;
         m_pluginList.push_back(iControlPlugin);
     }
 #endif
@@ -323,8 +312,65 @@ bool PluginService::AddPlugIn(std::string pluginPath/*, std::string pluginName*/
     return true;
 }
 
-//--------------------------------------------------------------------------------------------------
-std::string PluginService::getSimpleFileName(const std::string& fileName)
+bool PluginService::onAddPlugin( const std::string& path, uint32_t library, core::Plugin::CreateFunction createFunction )
+{
+    core::Plugin* plugin = NULL;
+
+    // próba za³adowania
+    try {
+        plugin = createFunction();
+    } catch ( std::exception& ex ) {
+        LOG_ERROR<<"Error loading plugin "<<path<<": "<<ex.what()<<std::endl;
+        return false;
+    } catch ( ... ) {
+        LOG_ERROR<<"Error loading plugin "<<path<<": Unknown"<<std::endl;
+        return false;
+    }
+
+    // czy uda³o siê wczytaæ?
+    if ( !plugin ) {
+        LOG_ERROR<<"Error loading plugin "<<path<<": Plugin not created"<<std::endl;
+        return false;
+    }
+
+    plugins.push_back(plugin);
+    libraries.push_back(library);
+    LOG_INFO << "Plugin loaded: " << plugin->getName() << std::endl;
+    return true;
+}
+
+void PluginService::convertStringPathIntoFileDirList(const std::string& paths, Paths& filepath)
+{
+#if defined(__WIN32__)
+    char delimitor = ';';
+#else
+    char delimitor = ':';
+#endif
+    if (!paths.empty()) {
+        std::string::size_type start = 0;
+        std::string::size_type end;
+        while ( (end = paths.find_first_of(delimitor, start)) != std::string::npos) {
+            filepath.push_back(std::string(paths,start,end-start));
+            start = end+1;
+        }
+        std::string lastPath(paths,start,std::string::npos);
+        if (!lastPath.empty()) {
+            filepath.push_back(lastPath);
+        }
+    }
+
+}
+
+std::string PluginService::combinePath(const std::string& path, const std::string& fileName)
+{
+#if defined(__WIN32__)
+    return path + "\\" + fileName;
+#elif defined(__UNIX__)
+    return path + "/" + fileName;
+#endif
+}
+
+std::string PluginService::getFileName(const std::string& fileName)
 {
     std::string::size_type slash1 = fileName.find_last_of('/');
     std::string::size_type slash2 = fileName.find_last_of('\\');
@@ -337,8 +383,5 @@ std::string PluginService::getSimpleFileName(const std::string& fileName)
     return std::string(fileName.begin()+(slash1>slash2?slash1:slash2)+1,fileName.end());
 }
 
-//--------------------------------------------------------------------------------------------------
-void PluginService::SetModel(IDataManager* dataManager )
-{
 
-}
+

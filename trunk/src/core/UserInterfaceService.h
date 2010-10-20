@@ -30,15 +30,24 @@ public:
     virtual ~UserInterfaceService();
 
     //IService
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot); 
 
-    virtual void SetModel(IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
     //IUserInterface
     virtual void AddMenu(std::string menuName);
     virtual void AddAction(std::string menuName, std::string actionName);
     virtual void AddAction(std::string menuName, std::string actionName, std::string slotMethodNameFromMainMenu);
     virtual void InicializeServices(std::string typeName, void *object);
+    
+    virtual const std::string& getName() const
+    {
+        return name;
+    }
+    virtual IWidget* getWidget()
+    { 
+        return NULL;
+    }
 
     void* GetMainObject();
 
@@ -46,6 +55,7 @@ protected:
 
     IMainWindow* m_pMainWindow;
     void* m_pMainObject;
+    std::string name;
 
     ServiceManager* m_pServiceManager;
 };

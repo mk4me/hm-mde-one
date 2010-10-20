@@ -257,11 +257,10 @@ double TimeLine::GetCurrentAnimationTime( osg::AnimationPathCallback *apc )
 }
 
 //--------------------------------------------------------------------------------------------------
-void TimeLine::SetScene( osgViewer::Scene *scene )
+void TimeLine::SetScene( osg::Node* scene )
 {
   Clear(); 
-  osg::Node *node = scene->getSceneData(); 
-  AnalizeNode(node); 
+  AnalizeNode(scene); 
 
   double time = 0.0f; 
   int animPathCallbackCount = _animPathCallbacks.size(); 

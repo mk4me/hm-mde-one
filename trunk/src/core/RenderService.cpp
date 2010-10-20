@@ -19,6 +19,7 @@
 
 //--------------------------------------------------------------------------------------------------
 RenderService::RenderService()
+:   name("Render")
 {
 
 }
@@ -40,17 +41,17 @@ void RenderService::Clear()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::OnAdded(IServiceManager* serviceManager)
+AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
 {
     m_pServiceManager = (ServiceManager*)serviceManager;
 
     std::cout<< "RenderService ADDED-test!" << std::endl; 
-    Inicialize();
+    Inicialize(sceneRoot);
     return AsyncResult_Complete; 
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::Inicialize()
+void RenderService::Inicialize(osg::Node* sceneRoot)
 {
     m_pUserInterfaceService =  dynamic_cast<UserInterfaceService*>(m_pServiceManager->getService(UserInterfaceService::getClassID()));
 
@@ -67,14 +68,14 @@ void RenderService::Inicialize()
 
 
     
-    m_spRoot = new osg::Group();
-    m_spRoot->setName("root");
+    m_spRoot = dynamic_cast<osg::Group*>(sceneRoot);
+    UTILS_ASSERT(m_spRoot != NULL);
 
-    m_pMainOsgView = new ViewerQT(m_pServiceManager, widget, 0, 0);
+    m_pMainOsgView = new QOSGViewer(widget, 0, 0);
     m_pMainOsgView->addEventHandler(new osgViewer::StatsHandler);
     m_pMainOsgView->setCameraManipulator(cameraManipulator);
 
-    m_pMainOsgView->setSceneData(m_spRoot);
+    m_pMainOsgView->setSceneData(sceneRoot);
     dock->setWidget((QWidget*)m_pMainOsgView); 
     mainWindow->setCentralWidget(dock);
 }
@@ -117,7 +118,7 @@ osgViewer::Scene* RenderService::GetMainWindowScene()
 }
 
 //--------------------------------------------------------------------------------------------------
-ViewerQT* RenderService::GetMainAdapterWidget()
+QOSGViewer* RenderService::GetMainAdapterWidget()
 {
     if(m_pMainOsgView)
         return m_pMainOsgView;
@@ -205,10 +206,11 @@ void RenderService::InicizlizeModelMesh(Model* model)
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::SetModel(IDataManager* dataManager )
+AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
     if(dynamic_cast<Model* >(dataManager->GetModel()))
         SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
+    return AsyncResult_Complete;
 }
 
 //--------------------------------------------------------------------------------------------------

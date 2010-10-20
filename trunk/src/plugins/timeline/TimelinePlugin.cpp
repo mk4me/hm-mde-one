@@ -1,4 +1,15 @@
 #include "TimelinePCH.h"
+#include <plugins/timeline/TimelineService.h>
+#include <core/Plugin.h>
+
+CORE_PLUGIN_BEGIN("Timeline", UniqueID('TIME', 'PLUG'))
+CORE_PLUGIN_ADD_SERVICE(TimelineService)
+CORE_PLUGIN_END
+
+#if 0
+
+
+#include <boost/lexical_cast.hpp>
 #include <core/IServiceManager.h>
 #include "TimelinePlugin.h"
 #include <core/DllExports.h>
@@ -47,19 +58,8 @@ void TimelinePlugin::RegisterServices( IServiceManager *serviceManager )
     serviceManager->registerService(service);
 }
 
-void TimelinePlugin::SetScene( osgViewer::Scene *scene )
-{
-
-}
-
-void TimelinePlugin::SetScene( osgViewer::Scene *scene, IServiceManager *serviceManager )
-{
-
-}
-
 std::string TimelinePlugin::GetWidgetName( int i /*= 0*/ )
 {
-    std::ostringstream out;
-    out << i;
-    return out.str();
+    return boost::lexical_cast<std::string>(i);
 }
+#endif

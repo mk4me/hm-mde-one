@@ -28,7 +28,7 @@ void ServiceManager::registerService( IService* service )
     if (servicesMap.find(service->getID()) == servicesMap.end()) {
         servicesMap.insert( std::make_pair(service->getID(), service)); 
         servicesList.push_back(service);
-        service->OnAdded(this); 
+        //service->init(this); 
     } else {
         throw std::runtime_error("Service with this ID already registered.");
     }
@@ -50,7 +50,7 @@ void ServiceManager::registerService()
 {
     T* pService = new T(); 
     _services.insert( std::pair<ClassID, IService *>(T::CLASS_ID, pService) ); 
-    pService->OnAdded(); 
+    pService->init(); 
 }/**/
 
 //--------------------------------------------------------------------------------------------------

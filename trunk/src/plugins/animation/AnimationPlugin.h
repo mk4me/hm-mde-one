@@ -1,4 +1,4 @@
-#ifndef ANIMATION_PLUGIN_H
+/*#ifndef ANIMATION_PLUGIN_H
 #define ANIMATION_PLUGIN_H
 
 #include <QtCore/QObject>
@@ -10,9 +10,17 @@ class IWidget;
 class OsgControlWidget; 
 class PluginData;
 class QtWidget;
+class AnimationService;
 
 class AnimationPlugin : public ISystemPlugin
 {
+private:
+    //! Nazwa plugina.
+    std::string name;
+    //! Wrapowana us³uga.
+    AnimationService* service;
+    
+
 public:
     AnimationPlugin(void);
     virtual ~AnimationPlugin(void);
@@ -25,15 +33,15 @@ public:
     virtual const std::string& GetPluginName(); 
     virtual void RegisterServices(IServiceManager *pServiceManager);
 
-    virtual void SetScene(osgViewer::Scene *scene); 
-    virtual void SetScene(osgViewer::Scene *scene, IServiceManager *pServiceManager);
+//    virtual void SetScene(osg::Node *scene, IServiceManager *pServiceManager);
     virtual std::string GetWidgetName(int i = 0);
-
-    // 
-private: 
-    std::string _name;
-    std::vector<QtWidget* >_controlWidgetList;  
-    std::vector<PluginData* > _pluginDataList;
+// 
+//     // 
+// private: 
+//     std::string _name;
+//     std::vector<QtWidget* >_controlWidgetList;  
+//     std::vector<PluginData* > _pluginDataList;
 };
 
 #endif //ANIMATION_PLUGIN_H
+*/

@@ -15,14 +15,14 @@ QtWidget::~QtWidget()
 }
 
 //--------------------------------------------------------------------------------------------------
-void QtWidget::SetData( osgViewer::Scene *scene )
+void QtWidget::SetData( osg::Node *scene )
 {
     if(!_controlWidget) return; 
     _controlWidget->SetScene(scene); 
 }
 
 //--------------------------------------------------------------------------------------------------
-void QtWidget::SetData( osgViewer::Scene *scene, IServiceManager *pServiceManager )
+void QtWidget::SetData( osg::Node *scene, IServiceManager *pServiceManager )
 {
     if(!_controlWidget) return; 
     _controlWidget->SetScene(scene, pServiceManager); 

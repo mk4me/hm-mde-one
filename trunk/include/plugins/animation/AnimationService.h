@@ -24,6 +24,7 @@ namespace osgViewer
 class IModel;
 class IDataManager;
 class IServiceManager;
+class QtWidget;
 
 
 #define MAX_AFFECTING_BONES 8
@@ -59,14 +60,14 @@ public:
 
     virtual ~AnimationService(void);
     virtual AsyncResult update(double time, double timeDelta); 
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot); 
 
-    virtual void SetModel(IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
     void RegisterAnimation(Animation* object, void (Animation::*fun)(double)); // add function to caller
-    void SetSelectedAnimationName(std::string& name); // set act selected animation name 
+    void SetSelectedAnimationName(const std::string& name); // set act selected animation name 
     void PlayAnimation(std::string animationName);
-    void SetScene(osgViewer::Scene* scene); // set animated scene
+    //void SetScene(osg::Node* scene); // set animated scene
     void LoadAnimation(IModel* model);
     void ClearCaller(); // clear caller
     void NotifyStop(); // notify stop
@@ -86,9 +87,38 @@ public:
     Animation* GetAnimation(); // returns act animation
     std::map<std::string, Animation*>* GetAnimations();
 
+// IService (Piotr Gwiazdowski)
+public:
+    // HACK ten podzia³ powinien byæ tymczasowy
+    virtual IWidget* getWidget();
+    virtual QtWidget* getQtWidget();
+    
+    double getTargetTime() const;
+    void setTargetTime(double time);
+    double getLength() const;
+    void setLength(double length);
+    //! \return
+    bool getFollowTimeline() const;
+    //! \param followTimeline
+    void setFollowTimeline(bool followTimeline);
+
+    virtual const std::string& getName() const
+    {
+        return name;
+    }
+    
+private:
+    double length;
+    double targetTime;
+    OpenThreads::Mutex stateMutex;
+    bool followTimeline;
+    Animation* currentAnimation;
+    //! Nazwa.
+    std::string name;
+
 protected: 
     // scene
-    osgViewer::Scene* m_pScene; 
+    osg::ref_ptr<osg::Node> m_pScene;
 
 private: 
     void UpdateBone(osg::PositionAttitudeTransform* bone);
@@ -121,6 +151,7 @@ private:
     osg::Vec3d _tempVectors[MAX_AFFECTING_BONES][2];
 
     IServiceManager* m_pServiceManager;
+    QtWidget* widget;
 };
 
 //--------------------------------------------------------------------------------------------------

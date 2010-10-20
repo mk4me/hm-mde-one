@@ -10,8 +10,8 @@ public:
     QtWidget();
     ~QtWidget();
 
-    virtual void SetData(osgViewer::Scene *scene);
-    virtual void SetData(osgViewer::Scene *scene, IServiceManager *pServiceManager);
+    virtual void SetData(osg::Node *scene);
+    virtual void SetData(osg::Node *scene, IServiceManager *pServiceManager);
     virtual void* GetWidget();
     void Clear(); 
 

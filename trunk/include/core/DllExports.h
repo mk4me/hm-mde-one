@@ -3,11 +3,11 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <iostream>
-#ifdef __dll__
+#ifdef __LIBRARY_DYNAMIC__
 #define IMPEXP __declspec(dllexport)
 #else
 #define IMPEXP __declspec(dllimport)
-#endif 	// __dll__
+#endif 	// __LIBRARY_DYNAMIC__
 
 
 #ifdef __WIN32__         

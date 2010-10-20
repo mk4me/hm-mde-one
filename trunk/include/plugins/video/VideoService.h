@@ -24,16 +24,22 @@ private:
     // TODO
     // tymczasowe
     QWidget* widget;
+    //! Nazwa.
+    std::string name;
 
 public:
     VideoService();
 
-    inline QWidget* getWidget() const
+    virtual IWidget* getWidget()
     { 
-        return widget;
+        // HACK: ca³y ten system jest shackowany!
+        return reinterpret_cast<IWidget*>(widget);
     }
 
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager);
+    virtual const std::string& getName() const
+    {
+        return name;
+    }
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 };

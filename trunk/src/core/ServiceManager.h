@@ -48,6 +48,10 @@ public:
     void computePass();
     //! Zeruje czas widziany przez us≥ugi.
     void resetTime();
+    //! \return Czas dzia≥ania.
+    double getTime();
+    //! \return Delta od ostatniej ramki.
+    double getDeltaTime();
 
 // IServiceManager
 public:
@@ -63,10 +67,6 @@ public:
     //! \return Odnaleziona us≥uga bπdü NULL.
     virtual IService* getService(UniqueID id);
 
-    //! \return Czas dzia≥ania.
-    virtual double getTime();
-    //! \return Delta od ostatniej ramki.
-    virtual double getDeltaTime();
 
 private: 
     //! Aktualizuje czas widziany przez us≥ugi.

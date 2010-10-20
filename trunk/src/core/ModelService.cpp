@@ -12,6 +12,7 @@
 
 //--------------------------------------------------------------------------------------------------
 ModelService::ModelService()
+:   name("Model")
 {
 
 }
@@ -23,7 +24,7 @@ ModelService::~ModelService()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult ModelService::OnAdded(IServiceManager* serviceManager)
+AsyncResult ModelService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
 {
     m_pServiceManager = (ServiceManager*)serviceManager;
 
@@ -62,8 +63,9 @@ IModel* ModelService::GetModel( int i /*= 0*/ )
 }
 
 //--------------------------------------------------------------------------------------------------
-void ModelService::SetModel(IDataManager* dataManager )
+AsyncResult ModelService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
     Clear();
     AddModel(dataManager->GetModel());
+    return AsyncResult_Complete;
 }

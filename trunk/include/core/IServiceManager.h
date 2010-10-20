@@ -4,6 +4,7 @@
 #include <core/IService.h>
 #include <map>
 #include <vector>
+#include <utils/Debug.h>
 
 class IModel;
 class IDataManager;
@@ -26,11 +27,6 @@ public:
     //! \param id ID us≥ugi do wyszukania.
     //! \return Odnaleziona us≥uga bπdü NULL.
     virtual IService* getService(UniqueID id) = 0;
-
-    //! \return Czas dzia≥ania.
-    virtual double getTime() = 0;
-    //! \return Delta od ostatniej ramki.
-    virtual double getDeltaTime() = 0;
 
     //! Metoda wyszukujπca wszystkie us≥ugi danego typu (np. implementujπce
     //! dany interfejs).

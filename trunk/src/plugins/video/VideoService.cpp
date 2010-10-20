@@ -11,6 +11,7 @@
 //M_DECLARED_CLASS(VideoService, )
 
 VideoService::VideoService()
+:   name("Video")
 {
     widget = new VideoWidget();
 
@@ -22,11 +23,6 @@ VideoService::VideoService()
 //         files.push_back("s1.avi");
 //     }
 //     reinterpret_cast<VideoWidget*>(widget)->init(files);
-}
-
-AsyncResult VideoService::OnAdded( IServiceManager* serviceManager )
-{
-  return AsyncResult_Complete;
 }
 
 AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)

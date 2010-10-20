@@ -4,7 +4,7 @@ set(TARGET_TARGETNAME
 	video
 )
 
-add_definitions(-D__dll__)
+add_definitions(-D__LIBRARY_DYNAMIC__)
 
 #------------------------------------------------------------------------------
 
