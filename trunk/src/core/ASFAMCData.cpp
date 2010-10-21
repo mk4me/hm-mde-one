@@ -54,6 +54,7 @@ Channel::~Channel()
     eulerMarkers.clear();
     quaternionMarkers.clear();
     quatV.clear();
+    staticAxis.clear();
 }
 
 // Copy constructor does everything necessary.
@@ -72,7 +73,7 @@ Channel::Channel(const Channel& tempJoint)
     quaternionMarkers = tempJoint.quaternionMarkers;
     quatV = tempJoint.quatV;
     m_id = tempJoint.m_id;
-    axis = tempJoint.axis;
+    staticAxis = tempJoint.staticAxis;
 }
 
 // This returns the smallest Y value the markers have - this is used to calculate where
@@ -686,7 +687,7 @@ void Channel::getQuaternionFromEuler( int frameNum, float &w, float &x, float &y
             }
     }
 
-    /* Mnozenie macierzy B*M */
+    /* Mnozenie macierzy Cinv*asmMotion */
         int i, j, k;
         for(i = 0; i < 4; i++)
             for(j = 0; j < 4; j++)
@@ -697,14 +698,14 @@ void Channel::getQuaternionFromEuler( int frameNum, float &w, float &x, float &y
                     L[i][j] = L[i][j] + B[i][k] * M[k][j];
 
 
-        /* Mnozenie macierzy (B*M) * C */
-        for(i = 0; i < 4; i++)
-            for(j = 0; j < 4; j++)
-                L[i][j] = 0;
-        for(i = 0; i < 4; i++) //ILWIERSZY
-            for(j = 0; j < 4; j++) //ILWIERSZY
-                for(k = 0; k < 4; k++) //ILKOLUMN
-                    L[i][j] = L[i][j] + L[i][k] * A[k][j];
+//         /* Mnozenie macierzy (B*M) * C */
+//         for(i = 0; i < 4; i++)
+//             for(j = 0; j < 4; j++)
+//                 L[i][j] = 0;
+//         for(i = 0; i < 4; i++) //ILWIERSZY
+//             for(j = 0; j < 4; j++) //ILWIERSZY
+//                 for(k = 0; k < 4; k++) //ILKOLUMN
+//                     L[i][j] = L[i][j] + L[i][k] * A[k][j];
 
 
 
@@ -796,15 +797,15 @@ void Channel::getQuaternionFromEuler( int frameNum, float &w, float &x, float &y
 
 void Channel::setASFAxis( float angle )
 {
-    axis.push_back(angle);
+    staticAxis.push_back(angle);
 }
 
 void Channel::getAsAxisMatrix( float* matrix )
 {
     float Yaw, Pitch, Roll;
-    Pitch = axis[0];
-    Yaw = axis[1];
-    Roll = axis[2];
+    Pitch = staticAxis[0];
+    Yaw = staticAxis[1];
+    Roll = staticAxis[2];
 
     // zamiana eulera na qwatrnion
     double qx,qy,qz,qw;

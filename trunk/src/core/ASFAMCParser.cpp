@@ -230,11 +230,11 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
                 }
                 else if (strcmp (token, "orientation") == 0)
                 {
-                    token = strtok (NULL, " (),\t\n") ;
                     for (int Counter = 0; Counter < 3; Counter++)
                     {
                         //						printf ("The ORIENTATION ORDER is: %s\n", token) ;
                         token = strtok (NULL, " (),\t\n") ;	
+                        tempJoint.setASFAxis(atof(token));
                     }
                     readFlag = 1 ;
                 }

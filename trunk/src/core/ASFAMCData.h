@@ -82,7 +82,7 @@ private:
 
     quaternionVector	quatV;		
 
-    staticRotation      axis;
+    staticRotation      staticAxis;
 
     void interpolate(int,int,int);			// This is a private function it gets used by interpolateRX, RY and RZ for eulers
 
