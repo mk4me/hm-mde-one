@@ -27,6 +27,8 @@
 #include <deque>
 
 #include "quaternioncal.h"
+#include <core/Matrix.h>
+
 
 // This holds the jointType constant, to use:
 enum CHANNEL_TYPE { NOTYPE=-1, ROOT, JOINT, EFFECTOR, DUMMY};
@@ -197,6 +199,7 @@ public:
     float 	smallestYvalueInMarkers();
 
     void getAsAxisMatrix(float* matrix);
+    void getAsAxisMatrix(matrix<double> &C);
 };
 
 #endif //ASFAMCDATA_H

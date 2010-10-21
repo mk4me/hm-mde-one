@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 #ifndef PI
 #define PI (3.1415926535)
 #endif
@@ -529,57 +528,6 @@ int Channel::getID()
     return m_id;
 }
 
-
-void Channel::invert(float *matrix)  
-{
-    int maxsize = 4;  // max number of rows (same as max number of columns)
-    int actualsize = 4;  // actual size (rows, or columns) of the stored matrix
-
-    for (int i=1; i < actualsize; i++) matrix[i] /= matrix[0]; // normalize row 0
-    for (int i=1; i < actualsize; i++)  { 
-        for (int j=i; j < actualsize; j++)  { // do a column of L
-            float sum = 0.0;
-            for (int k = 0; k < i; k++)  
-                sum += matrix[j*maxsize+k] * matrix[k*maxsize+i];
-            matrix[j*maxsize+i] -= sum;
-        }
-        if (i == actualsize-1) continue;
-        for (int j=i+1; j < actualsize; j++)  {  // do a row of U
-            float sum = 0.0;
-            for (int k = 0; k < i; k++)
-                sum += matrix[i*maxsize+k]*matrix[k*maxsize+j];
-            matrix[i*maxsize+j] = 
-                (matrix[i*maxsize+j]-sum) / matrix[i*maxsize+i];
-        }
-    }
-    for ( int i = 0; i < actualsize; i++ )  // invert L
-        for ( int j = i; j < actualsize; j++ )  {
-            float x = 1.0;
-            if ( i != j ) {
-                x = 0.0;
-                for ( int k = i; k < j; k++ ) 
-                    x -= matrix[j*maxsize+k]*matrix[k*maxsize+i];
-            }
-            matrix[j*maxsize+i] = x / matrix[j*maxsize+j];
-        }
-        for ( int i = 0; i < actualsize; i++ )   // invert U
-            for ( int j = i; j < actualsize; j++ )  {
-                if ( i == j ) continue;
-                float sum = 0.0;
-                for ( int k = i; k < j; k++ )
-                    sum += matrix[k*maxsize+j]*( (i==k) ? 1.0 : matrix[i*maxsize+k] );
-                matrix[i*maxsize+j] = -sum;
-            }
-            for ( int i = 0; i < actualsize; i++ )   // final inversion
-                for ( int j = 0; j < actualsize; j++ )  {
-                    float sum = 0.0;
-                    for ( int k = ((i>j)?i:j); k < actualsize; k++ )  
-                        sum += ((j==k)?1.0:matrix[j*maxsize+k])*matrix[k*maxsize+i];
-                    matrix[j*maxsize+i] = sum;
-                }
-};
-
-
 void Channel::getQuaternionFromEuler( int frameNum, float &w, float &x, float &y, float &z )
 {
     bool isOpenGLFormat = true;
@@ -587,212 +535,30 @@ void Channel::getQuaternionFromEuler( int frameNum, float &w, float &x, float &y
     float Yaw, Pitch, Roll;
     getRotation(frameNum, Pitch, Yaw, Roll); // Yaw = x, Pitch = y, Roll = z
 
-    // zamiana eulera na qwatrnion
-    double qx,qy,qz,qw;
+    matrix<double> C(4,4);          //matrix from axis
+    matrix<double> Cinv(4,4);       //inversion of matrix C
+    matrix<double> M(4,4);          //motion data - rotation from acm file
 
-    // zamiana na radiany
-     	Yaw = Yaw * PI / 180;
-     	Pitch = Pitch * PI / 180;
-     	Roll = Roll * PI / 180; 
+    matrix<double> Temp(4,4);          //solution of local rotation
+    matrix<double> L(4,4);          //solution of local rotation
 
-    Yaw *= 0.5f; Pitch *= 0.5f; Roll *= 0.5f;
-
-    float sy = sinf(Yaw), cy = cosf(Yaw);
-    float sp = sinf(Pitch), cp = cosf(Pitch);
-    float sr = sinf(Roll), cr = cosf(Roll);
-
-    // Konwersja k¹tów Eulera na kwaternion,
-    // który obraca ze wsp. obiektu do œwiata,
-    qx = cy*sp*cr + sy*cp*sr;
-    qy = sy*cp*cr - cy*sp*sr;
-    qz = cy*cp*sr - sy*sp*cr;
-    qw = cy*cp*cr + sy*sp*sr;
-
-    //normalizacja
-    float distance = (float)sqrt(qw*qw + qx*qx + qy*qy + qz*qz);
-    if( distance == 0 )
-    {
-        qw = 1.0;
-        qx = qy = qz = 0.0;
-    }
-    else
-    {
-        qw /= distance;
-        qx /= distance;
-        qy /= distance;
-        qz /= distance;
-    }
-
-
-    // deklaracja danych macierzy
-    float *Mm = new float[16]; //acm motiondata
-    float *C = new float[16];
-
+    
     getAsAxisMatrix(C);
-    float *Cinv =  new float[16];
+    
+    M.loadFromEulerAngle(Yaw, Pitch, Roll);
+    Cinv.copymatrix(C);
+    Cinv.invert();
 
-    float A[4][4]; // C - asf axic
-    float B[4][4]; // Cinv
-    float M[4][4]; // acm motion
+    Temp.settoproduct(Cinv, M);
+    L.settoproduct(Temp,C);
 
-    double L[4][4]; // wynik - macierz animacji
+    double qx,qy,qz,qw;
+    L.getQuaternion(qx, qy, qz, qw);
 
-
-    // kwaternion na macierz
-    float
-        xx = qx * qx, yy = qy * qy, zz = qz * qz,
-        xy = qx * qy, xz = qx * qz,
-        yz = qy * qz, wx = qw * qx,
-        wy = qw * qy, wz = qw * qz;
-
-    Mm[0] = 1.0f - 2.0f * ( yy + zz ); //11
-    Mm[1] = 2.0f * ( xy + wz ); //12
-    Mm[2] = 2.0f * ( xz - wy ); //13
-    Mm[3] = 0.0f; //14
-
-    Mm[4] = 2.0f * ( xy - wz ); //21
-    Mm[5] = 1.0f - 2.0f * ( xx + zz ); //22
-    Mm[6] = 2.0f * ( yz + wx ); //23
-    Mm[7] = 0.0f; //24
-
-    Mm[8] = 2.0f * ( xz + wy ); //31
-    Mm[9] = 2.0f * ( yz - wx ); //32
-    Mm[10] = 1.0f - 2.0f * ( xx + yy ); //33
-    Mm[11] = 0.0f; //34
-
-    Mm[12] = 0.0f; //41
-    Mm[13] = 0.0f; //42
-    Mm[14] = 0.0f; //43
-    Mm[15] = 1.0f; //44
-
-
-    Cinv = C;
-
-    // macierz odwrotna
-    invert(Cinv);
-
-
-    // Parsowanie danych
-    if(isOpenGLFormat)
-    {
-        int counter = 0;
-        for(int i = 0; i<4; i++)
-            for(int j = 0; j<4; j++)
-            {
-                A[i][j] = C[counter];
-                B[i][j] = Cinv[counter];
-                M[i][j] = Mm[counter];
-
-                counter++;
-            }
-    }
-
-    /* Mnozenie macierzy Cinv*asmMotion */
-        int i, j, k;
-        for(i = 0; i < 4; i++)
-            for(j = 0; j < 4; j++)
-                L[i][j] = 0;
-        for(i = 0; i < 4; i++) //ILWIERSZY
-            for(j = 0; j < 4; j++) //ILWIERSZY
-                for(k = 0; k < 4; k++) //ILKOLUMN
-                    L[i][j] = L[i][j] + B[i][k] * M[k][j];
-
-
-//         /* Mnozenie macierzy (B*M) * C */
-//         for(i = 0; i < 4; i++)
-//             for(j = 0; j < 4; j++)
-//                 L[i][j] = 0;
-//         for(i = 0; i < 4; i++) //ILWIERSZY
-//             for(j = 0; j < 4; j++) //ILWIERSZY
-//                 for(k = 0; k < 4; k++) //ILKOLUMN
-//                     L[i][j] = L[i][j] + L[i][k] * A[k][j];
-
-
-
-    // Konwercja z macierzy do kwaternionu
-    float trace = L[0][0] + L[1][1] + L[2][2]; // I removed + 1.0f; see discussion with Ethan
-    if( trace > 0 ) {// I changed M_EPSILON to 0
-        float s = 0.5f / sqrtf(trace+ 1.0f);
-        w = 0.25f / s;
-        x = ( L[2][1] - L[1][2] ) * s;
-        y = ( L[0][2] - L[2][0] ) * s;
-        z = ( L[1][0] - L[0][1] ) * s;
-    } else {
-        if ( L[0][0] > L[1][1] && L[0][0] > L[2][2] ) {
-            float s = 2.0f * sqrtf( 1.0f + L[0][0] - L[1][1] - L[2][2]);
-            w = (L[2][1] - L[1][2] ) / s;
-            x = 0.25f * s;
-            y = (L[0][1] + L[1][0] ) / s;
-            z = (L[0][2] + L[2][0] ) / s;
-        } else if (L[1][1] > L[2][2]) {
-            float s = 2.0f * sqrtf( 1.0f + L[1][1] - L[0][0] - L[2][2]);
-            w = (L[0][2] - L[2][0] ) / s;
-            x = (L[0][1] + L[1][0] ) / s;
-            y = 0.25f * s;
-            z = (L[1][2] + L[2][1] ) / s;
-        } else {
-            float s = 2.0f * sqrtf( 1.0f + L[2][2] - L[0][0] - L[1][1] );
-            w = (L[1][0] - L[0][1] ) / s;
-            x = (L[0][2] + L[2][0] ) / s;
-            y = (L[1][2] + L[2][1] ) / s;
-            z = 0.25f * s;
-        }
-    }
-
-
-
- //   Yaw *= 0.5f; Pitch *= 0.5f; Roll *= 0.5f;
-
-//     if(Yaw < 0)
-//     {
-//         Yaw = (int)Yaw % 360;
-//         Yaw = 360 + (int)Yaw;
-//     }
-// 
-//     if(Pitch < 0)
-//     {
-//         Pitch = (int)Pitch % 360;
-//         Pitch = 360 + (int)Pitch;
-//     }
-// 
-//     if(Roll < 0)
-//     {
-//         Roll = (int)Roll % 360;
-//         Roll = 360 + (int)Roll;
-//     }
-
-//       Yaw = abs(Yaw); Pitch = abs(Pitch); Roll = abs(Roll);
-// // 
-//      	Yaw = Yaw * PI / 180;
-//      	Pitch = Pitch * PI / 180;
-//      	Roll = Roll * PI / 180;
-// 
-//         	Quaternion* quat = new Quaternion(Pitch, Yaw, Roll);
-//         
-//         	quat->getQuaternion(w, x, y, z);
-
-//     float sy = sinf(Yaw), cy = cosf(Yaw);
-//     float sp = sinf(Pitch), cp = cosf(Pitch);
-//     float sr = sinf(Roll), cr = cosf(Roll);
-// 
-//     x = cy*sp*cr + sy*cp*sr;
-//     y = sy*cp*cr - cy*sp*sr;
-//     z = cy*cp*sr - sy*sp*cr;
-//     w = cy*cp*cr + sy*sp*sr;
-
-
-// 	float rx, ry, rz;
-// 	getRotation(frameNum, rx, ry, rz);
-// 
-//     // zamiana stopni na radiany
-// 	rx = rx * PI / 180;
-// 	ry = ry * PI / 180;
-// 	rz = rz * PI / 180;
-// 
-// 
-// 	Quaternion* quat = new Quaternion(rx, ry, rz);
-// 
-// 	quat->getQuaternion(w, x, y, z);
+    w = (float)qw;
+    x = (float)qx;
+    y = (float)qy;
+    z = (float)qz;
 }
 
 void Channel::setASFAxis( float angle )
@@ -800,74 +566,14 @@ void Channel::setASFAxis( float angle )
     staticAxis.push_back(angle);
 }
 
-void Channel::getAsAxisMatrix( float* matrix )
+
+void Channel::getAsAxisMatrix( matrix<double> &C )
 {
     float Yaw, Pitch, Roll;
     Pitch = staticAxis[0];
     Yaw = staticAxis[1];
     Roll = staticAxis[2];
 
-    // zamiana eulera na qwatrnion
-    double qx,qy,qz,qw;
 
-    // zamiana na radiany
-    Yaw = Yaw * PI / 180;
-    Pitch = Pitch * PI / 180;
-    Roll = Roll * PI / 180; 
-
-    Yaw *= 0.5f; Pitch *= 0.5f; Roll *= 0.5f;
-
-    float sy = sinf(Yaw), cy = cosf(Yaw);
-    float sp = sinf(Pitch), cp = cosf(Pitch);
-    float sr = sinf(Roll), cr = cosf(Roll);
-
-    // Konwersja k¹tów Eulera na kwaternion,
-    // który obraca ze wsp. obiektu do œwiata,
-    qx = cy*sp*cr + sy*cp*sr;
-    qy = sy*cp*cr - cy*sp*sr;
-    qz = cy*cp*sr - sy*sp*cr;
-    qw = cy*cp*cr + sy*sp*sr;
-
-    //normalizacja
-    float distance = (float)sqrt(qw*qw + qx*qx + qy*qy + qz*qz);
-    if( distance == 0 )
-    {
-        qw = 1.0;
-        qx = qy = qz = 0.0;
-    }
-    else
-    {
-        qw /= distance;
-        qx /= distance;
-        qy /= distance;
-        qz /= distance;
-    }
-
-
-    // kwaternion na macierz
-    float
-        xx = qx * qx, yy = qy * qy, zz = qz * qz,
-        xy = qx * qy, xz = qx * qz,
-        yz = qy * qz, wx = qw * qx,
-        wy = qw * qy, wz = qw * qz;
-
-    matrix[0] = 1.0f - 2.0f * ( yy + zz ); //11
-    matrix[1] = 2.0f * ( xy + wz ); //12
-    matrix[2] = 2.0f * ( xz - wy ); //13
-    matrix[3] = 0.0f; //14
-
-    matrix[4] = 2.0f * ( xy - wz ); //21
-    matrix[5] = 1.0f - 2.0f * ( xx + zz ); //22
-    matrix[6] = 2.0f * ( yz + wx ); //23
-    matrix[7] = 0.0f; //24
-
-    matrix[8] = 2.0f * ( xz + wy ); //31
-    matrix[9] = 2.0f * ( yz - wx ); //32
-    matrix[10] = 1.0f - 2.0f * ( xx + yy ); //33
-    matrix[11] = 0.0f; //34
-
-    matrix[12] = 0.0f; //41
-    matrix[13] = 0.0f; //42
-    matrix[14] = 0.0f; //43
-    matrix[15] = 1.0f; //44
+    C.loadFromEulerAngle(Yaw, Pitch, Roll);
 }
