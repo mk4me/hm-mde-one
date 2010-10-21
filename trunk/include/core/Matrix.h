@@ -8,30 +8,31 @@
 #endif
 
 // generic object (class) definition of matrix:
-template <class D> class matrix{
-    // NOTE: maxsize determines available memory storage, but
-    // actualsize determines the actual size of the stored matrix in use
-    // at a particular time.
+// NOTE: maxsize determines available memory storage, but
+// actualsize determines the actual size of the stored matrix in use
+// at a particular time.
 
-    // Format of this matrix is prepared to OpenGL format (matrix*)
-    // But we can get matrix[][] using the public method olso.
+// Format of this matrix is prepared to OpenGL format (matrix*)
+// But we can get matrix[][] using the public method olso.
 
+template <class D> 
+class matrix{
 
-    int maxsize;  // max number of rows (same as max number of columns)
-    int actualsize;  // actual size (rows, or columns) of the stored matrix
-    D* data;      // where the data contents of the matrix are stored
+    int m_maxsize;  // max number of rows (same as max number of columns)
+    int m_actualsize;  // actual size (rows, or columns) of the stored matrix
+    D* m_pData;      // where the data contents of the matrix are stored
 
     void allocate()
     {
-        delete[] data;
-        data = new D [maxsize*maxsize];
+        delete[] m_pData;
+        m_pData = new D [m_maxsize*m_maxsize];
     };
 
     matrix() {};                  // private ctor's
     matrix(int newmaxsize) {matrix(newmaxsize,newmaxsize);};
 
 //--------------------------------------------------------------------------------------------------
-    void normalize(double &qx, double &qy, double &qz, double &qw)
+    void Normalize(double &qx, double &qy, double &qz, double &qw)
     {
         //normalizacja
         float distance = (float)sqrt(qw*qw + qx*qx + qy*qy + qz*qz);
@@ -50,14 +51,14 @@ template <class D> class matrix{
     }
 
 //--------------------------------------------------------------------------------------------------
-    void parseData2MultiTable(D matrix[][4])
+    void ParseData2MultiTable(D matrix[][4])
     {
         // Parsowanie danych
         int counter = 0;
         for(int i = 0; i<4; i++)
             for(int j = 0; j<4; j++)
             {
-                matrix[i][j] = data[counter];
+                matrix[i][j] = m_pData[counter];
                 counter++;
             }
     }
@@ -67,22 +68,22 @@ public:
     matrix(int newmaxsize, int newactualsize) // the only public ctor
     { 
         if (newmaxsize <= 0) newmaxsize = 5;
-        maxsize = newmaxsize; 
+        m_maxsize = newmaxsize; 
         if ((newactualsize <= newmaxsize)&&(newactualsize>0))
-            actualsize = newactualsize;
+            m_actualsize = newactualsize;
         else 
-            actualsize = newmaxsize;
+            m_actualsize = newmaxsize;
         // since allocate() will first call delete[] on data:
-        data = 0;
+        m_pData = 0;
         allocate();
     };
 
 //--------------------------------------------------------------------------------------------------
-    ~matrix() { delete[] data; };
+    ~matrix() { delete[] m_pData; };
 
 
 //--------------------------------------------------------------------------------------------------
-    void loadFromEulerAngle(D Yaw, D Pitch, D Roll)
+    void LoadFromEulerAngle(D Yaw, D Pitch, D Roll)
     {
         double qx,qy,qz,qw;
 
@@ -104,15 +105,15 @@ public:
         qz = cy*cp*sr - sy*sp*cr;
         qw = cy*cp*cr + sy*sp*sr;
 
-        normalize(qx,qy,qz,qw);
-        loadfromQuaternion(qx,qy,qz,qw);
+        Normalize(qx,qy,qz,qw);
+        LoadfromQuaternion(qx,qy,qz,qw);
     }
 
 //--------------------------------------------------------------------------------------------------
-    void loadfromQuaternion(double &qx, double &qy, double &qz, double &qw)
+    void LoadfromQuaternion(double &qx, double &qy, double &qz, double &qw)
     {
-        maxsize = 4;
-        actualsize = 4;
+        m_maxsize = 4;
+        m_actualsize = 4;
         allocate();
 
         // kwaternion na macierz
@@ -122,51 +123,51 @@ public:
             yz = qy * qz, wx = qw * qx,
             wy = qw * qy, wz = qw * qz;
 
-        data[0] = 1.0f - 2.0f * ( yy + zz ); //11
-        data[1] = 2.0f * ( xy + wz ); //12
-        data[2] = 2.0f * ( xz - wy ); //13
-        data[3] = 0.0f; //14
+        m_pData[0] = 1.0f - 2.0f * ( yy + zz ); //11
+        m_pData[1] = 2.0f * ( xy + wz ); //12
+        m_pData[2] = 2.0f * ( xz - wy ); //13
+        m_pData[3] = 0.0f; //14
 
-        data[4] = 2.0f * ( xy - wz ); //21
-        data[5] = 1.0f - 2.0f * ( xx + zz ); //22
-        data[6] = 2.0f * ( yz + wx ); //23
-        data[7] = 0.0f; //24
+        m_pData[4] = 2.0f * ( xy - wz ); //21
+        m_pData[5] = 1.0f - 2.0f * ( xx + zz ); //22
+        m_pData[6] = 2.0f * ( yz + wx ); //23
+        m_pData[7] = 0.0f; //24
 
-        data[8] = 2.0f * ( xz + wy ); //31
-        data[9] = 2.0f * ( yz - wx ); //32
-        data[10] = 1.0f - 2.0f * ( xx + yy ); //33
-        data[11] = 0.0f; //34
+        m_pData[8] = 2.0f * ( xz + wy ); //31
+        m_pData[9] = 2.0f * ( yz - wx ); //32
+        m_pData[10] = 1.0f - 2.0f * ( xx + yy ); //33
+        m_pData[11] = 0.0f; //34
 
-        data[12] = 0.0f; //41
-        data[13] = 0.0f; //42
-        data[14] = 0.0f; //43
-        data[15] = 1.0f; //44
+        m_pData[12] = 0.0f; //41
+        m_pData[13] = 0.0f; //42
+        m_pData[14] = 0.0f; //43
+        m_pData[15] = 1.0f; //44
     }
 
 //--------------------------------------------------------------------------------------------------
-    void getMatrix(D **matrix)
+    void GetMatrix(D **matrix)
     {
 
     }
 
 //--------------------------------------------------------------------------------------------------
-    void getMatrix(D *matrix)
+    void GetMatrix(D *matrix)
     {
 
     }
 
 //--------------------------------------------------------------------------------------------------
-void addMatrix(matrix& left, matrix& right)
+void AddMatrix(matrix& left, matrix& right)
 {
-    actualsize = left.getactualsize();
-    if ( maxsize < left.getactualsize() )  
+    m_actualsize = left.getactualsize();
+    if ( m_maxsize < left.getactualsize() )  
     {
-        maxsize = left.getactualsize();
+        m_maxsize = left.getactualsize();
         allocate();
     }
 
-    for ( int i = 0; i < actualsize; i++ )
-        for ( int j = 0; j < actualsize; j++ )  
+    for ( int i = 0; i < m_actualsize; i++ )
+        for ( int j = 0; j < m_actualsize; j++ )  
         {
             D sum;
             D leftvalue, rightvalue;
@@ -181,16 +182,16 @@ void addMatrix(matrix& left, matrix& right)
 
 }
 
-// mozn by by³o zrobiæ to na tablicy jednowymiarowej, ale zytelnoœc kodu by os³ab³a wiêc zrobimy konwersje na 
+// mozna by by³o zrobiæ to na tablicy jednowymiarowej, ale zytelnoœc kodu by os³ab³a wiêc zrobimy konwersje na 
 // tablice dwu wymarow¹
 //--------------------------------------------------------------------------------------------------
-    void getQuaternion(double &qx, double &qy, double &qz, double &qw)
+    void GetQuaternion(double &qx, double &qy, double &qz, double &qw)
     {
-        if(actualsize != 4)
+        if(m_actualsize != 4)
             return;
 
         D L[4][4];
-        parseData2MultiTable(L);
+        ParseData2MultiTable(L);
 
         float trace = L[0][0] + L[1][1] + L[2][2]; // I removed + 1.0f; see discussion with Ethan
         if( trace > 0 ) {// I changed M_EPSILON to 0
@@ -224,13 +225,13 @@ void addMatrix(matrix& left, matrix& right)
 
 
 //--------------------------------------------------------------------------------------------------
-    void comparetoidentity() // w niecie znalaz³em info ze moze sie przydaæ do sprawdzana macierzy - wiec puki co nie zaszkodzi miec coœ podobnego
+    void CompareToIdentity() // w niecie znalaz³em info ze moze sie przydaæ do sprawdzana macierzy - wiec puki co nie zaszkodzi miec coœ podobnego
     {
         int worstdiagonal = 0;
         D maxunitydeviation = 0.0;
         D currentunitydeviation;
-        for ( int i = 0; i < actualsize; i++ )  {
-            currentunitydeviation = data[i*maxsize+i] - 1.;
+        for ( int i = 0; i < m_actualsize; i++ )  {
+            currentunitydeviation = m_pData[i*m_maxsize+i] - 1.;
             if ( currentunitydeviation < 0.0) currentunitydeviation *= -1.;
             if ( currentunitydeviation > maxunitydeviation )  {
                 maxunitydeviation = currentunitydeviation;
@@ -241,10 +242,10 @@ void addMatrix(matrix& left, matrix& right)
         int worstoffdiagonalcolumn = 0;
         D maxzerodeviation = 0.0;
         D currentzerodeviation ;
-        for ( int i = 0; i < actualsize; i++ )  {
-            for ( int j = 0; j < actualsize; j++ )  {
+        for ( int i = 0; i < m_actualsize; i++ )  {
+            for ( int j = 0; j < m_actualsize; j++ )  {
                 if ( i == j ) continue;  // we look only at non-diagonal terms
-                currentzerodeviation = data[i*maxsize+j];
+                currentzerodeviation = m_pData[i*m_maxsize+j];
                 if ( currentzerodeviation < 0.0) currentzerodeviation *= -1.0;
                 if ( currentzerodeviation > maxzerodeviation )  {
                     maxzerodeviation = currentzerodeviation;
@@ -262,22 +263,22 @@ void addMatrix(matrix& left, matrix& right)
     }
 
 //--------------------------------------------------------------------------------------------------
-    void settoproduct(matrix& left, matrix& right) // mnozenie macierzy
+    void SetToProduct(matrix& left, matrix& right) // mnozenie macierzy
     {
-        actualsize = left.getactualsize();
-        if ( maxsize < left.getactualsize() )  
+        m_actualsize = left.getactualsize();
+        if ( m_maxsize < left.getactualsize() )  
         {
-            maxsize = left.getactualsize();
+            m_maxsize = left.getactualsize();
             allocate();
         }
 
-        for ( int i = 0; i < actualsize; i++ )
-            for ( int j = 0; j < actualsize; j++ )  
+        for ( int i = 0; i < m_actualsize; i++ )
+            for ( int j = 0; j < m_actualsize; j++ )  
             {
                 D sum = 0.0;
                 D leftvalue, rightvalue;
                 bool success;
-                for (int c = 0; c < actualsize; c++) 
+                for (int c = 0; c < m_actualsize; c++) 
                 {
                     left.getvalue(i,c,leftvalue,success);
                     right.getvalue(c,j,rightvalue,success);
@@ -301,105 +302,108 @@ void addMatrix(matrix& left, matrix& right)
 //--------------------------------------------------------------------------------------------------
     void copymatrix(matrix&  source) // kopiowanie macierzy
     {
-        actualsize = source.getactualsize();
-        if ( maxsize < source.getactualsize() )  
+        m_actualsize = source.getactualsize();
+        if ( m_maxsize < source.getactualsize() )  
         {
-            maxsize = source.getactualsize();
+            m_maxsize = source.getactualsize();
             allocate();
         }
-        for ( int i = 0; i < actualsize; i++ )
-            for ( int j = 0; j < actualsize; j++ ) 
+        for ( int i = 0; i < m_actualsize; i++ )
+            for ( int j = 0; j < m_actualsize; j++ ) 
             {
                 D value;
                 bool success;
                 source.getvalue(i,j,value,success);
-                data[i*maxsize+j] = value;
+                m_pData[i*m_maxsize+j] = value;
             }
     };
 
 //--------------------------------------------------------------------------------------------------
     void setactualsize(int newactualsize) // uzupe³nianie wielkoœci macierzy
     {
-        if ( newactualsize > maxsize )
+        if ( newactualsize > m_maxsize )
         {
-            maxsize = newactualsize ; // * 2;  // wastes memory but saves
+            m_maxsize = newactualsize ; // * 2;  // wastes memory but saves
             // time otherwise required for
             // operation new[]
             allocate();
         }
         if (newactualsize >= 0) 
-            actualsize = newactualsize;
+            m_actualsize = newactualsize;
     };
 
 //--------------------------------------------------------------------------------------------------
-    int getactualsize() { return actualsize; };
+    int getactualsize() 
+    { 
+        return m_actualsize; 
+    };
 
 //--------------------------------------------------------------------------------------------------
     void getvalue(int row, int column, D& returnvalue, bool& success) 
     {
-        if ( (row>=maxsize) || (column>=maxsize) 
+        if ( (row>=m_maxsize) || (column>=m_maxsize) 
             || (row<0) || (column<0) )
         {  success = false;
         return;    }
-        returnvalue = data[ row * maxsize + column ];
+        returnvalue = m_pData[ row * m_maxsize + column ];
         success = true;
     };
 
 //--------------------------------------------------------------------------------------------------
     bool setvalue(int row, int column, D newvalue)
     {
-        if ( (row >= maxsize) || (column >= maxsize) 
+        if ( (row >= m_maxsize) || (column >= m_maxsize) 
             || (row<0) || (column<0) ) return false;
-        data[ row * maxsize + column ] = newvalue;
+        m_pData[ row * m_maxsize + column ] = newvalue;
         return true;
     };
 
 //--------------------------------------------------------------------------------------------------
     void invert()
     {
-        if (actualsize <= 0) return;  // sanity check
-        if (actualsize == 1) return;  // must be of dimension >= 2
-        for (int i=1; i < actualsize; i++) data[i] /= data[0]; // normalize row 0
-        for (int i=1; i < actualsize; i++)  { 
-            for (int j=i; j < actualsize; j++)  { // do a column of L
+        if (m_actualsize <= 0) return;  // sanity check
+        if (m_actualsize == 1) return;  // must be of dimension >= 2
+        for (int i=1; i < m_actualsize; i++) m_pData[i] /= m_pData[0]; // normalize row 0
+        for (int i=1; i < m_actualsize; i++)  { 
+            for (int j=i; j < m_actualsize; j++)  { // do a column of L
                 D sum = 0.0;
                 for (int k = 0; k < i; k++)  
-                    sum += data[j*maxsize+k] * data[k*maxsize+i];
-                data[j*maxsize+i] -= sum;
+                    sum += m_pData[j*m_maxsize+k] * m_pData[k*m_maxsize+i];
+                m_pData[j*m_maxsize+i] -= sum;
             }
-            if (i == actualsize-1) continue;
-            for (int j=i+1; j < actualsize; j++)  {  // do a row of U
+            if (i == m_actualsize-1) continue;
+            for (int j=i+1; j < m_actualsize; j++)  {  // do a row of U
                 D sum = 0.0;
                 for (int k = 0; k < i; k++)
-                    sum += data[i*maxsize+k]*data[k*maxsize+j];
-                data[i*maxsize+j] = 
-                    (data[i*maxsize+j]-sum) / data[i*maxsize+i];
+                    sum += m_pData[i*m_maxsize+k]*m_pData[k*m_maxsize+j];
+                m_pData[i*m_maxsize+j] = 
+                    (m_pData[i*m_maxsize+j]-sum) / m_pData[i*m_maxsize+i];
             }
         }
-        for ( int i = 0; i < actualsize; i++ )  // invert L
-            for ( int j = i; j < actualsize; j++ )  {
+        for ( int i = 0; i < m_actualsize; i++ )  // invert L
+            for ( int j = i; j < m_actualsize; j++ )  {
                 D x = 1.0;
                 if ( i != j ) {
                     x = 0.0;
                     for ( int k = i; k < j; k++ ) 
-                        x -= data[j*maxsize+k]*data[k*maxsize+i];
+                        x -= m_pData[j*m_maxsize+k]*m_pData[k*m_maxsize+i];
                 }
-                data[j*maxsize+i] = x / data[j*maxsize+j];
+                m_pData[j*m_maxsize+i] = x / m_pData[j*m_maxsize+j];
             }
-            for ( int i = 0; i < actualsize; i++ )   // invert U
-                for ( int j = i; j < actualsize; j++ )  {
+            for ( int i = 0; i < m_actualsize; i++ )   // invert U
+                for ( int j = i; j < m_actualsize; j++ )  {
                     if ( i == j ) continue;
                     D sum = 0.0;
                     for ( int k = i; k < j; k++ )
-                        sum += data[k*maxsize+j]*( (i==k) ? 1.0 : data[i*maxsize+k] );
-                    data[i*maxsize+j] = -sum;
+                        sum += m_pData[k*m_maxsize+j]*( (i==k) ? 1.0 : m_pData[i*m_maxsize+k] );
+                    m_pData[i*m_maxsize+j] = -sum;
                 }
-                for ( int i = 0; i < actualsize; i++ )   // final inversion
-                    for ( int j = 0; j < actualsize; j++ )  {
+                for ( int i = 0; i < m_actualsize; i++ )   // final inversion
+                    for ( int j = 0; j < m_actualsize; j++ )  {
                         D sum = 0.0;
-                        for ( int k = ((i>j)?i:j); k < actualsize; k++ )  
-                            sum += ((j==k)?1.0:data[j*maxsize+k])*data[k*maxsize+i];
-                        data[j*maxsize+i] = sum;
+                        for ( int k = ((i>j)?i:j); k < m_actualsize; k++ )  
+                            sum += ((j==k)?1.0:m_pData[j*m_maxsize+k])*m_pData[k*m_maxsize+i];
+                        m_pData[j*m_maxsize+i] = sum;
                     }
     };
 };

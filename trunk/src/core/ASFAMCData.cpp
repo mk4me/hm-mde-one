@@ -545,15 +545,15 @@ void Channel::getQuaternionFromEuler( int frameNum, float &w, float &x, float &y
     
     getAsAxisMatrix(C);
     
-    M.loadFromEulerAngle(Yaw, Pitch, Roll);
+    M.LoadFromEulerAngle(Yaw, Pitch, Roll);
     Cinv.copymatrix(C);
     Cinv.invert();
 
-    Temp.settoproduct(Cinv, M);
-    L.settoproduct(Temp,C);
+    Temp.SetToProduct(Cinv, M);
+    L.SetToProduct(Temp,C);
 
     double qx,qy,qz,qw;
-    L.getQuaternion(qx, qy, qz, qw);
+    L.GetQuaternion(qx, qy, qz, qw);
 
     w = (float)qw;
     x = (float)qx;
@@ -575,5 +575,5 @@ void Channel::getAsAxisMatrix( matrix<double> &C )
     Roll = staticAxis[2];
 
 
-    C.loadFromEulerAngle(Yaw, Pitch, Roll);
+    C.LoadFromEulerAngle(Yaw, Pitch, Roll);
 }

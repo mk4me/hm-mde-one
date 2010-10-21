@@ -198,7 +198,7 @@ public:
     char*	getRotationOrder();
     float 	smallestYvalueInMarkers();
 
-    void getAsAxisMatrix(float* matrix);
+    // void getAsAxisMatrix(float* matrix);
     void getAsAxisMatrix(matrix<double> &C);
 };
 
