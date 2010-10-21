@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "SkeletonNode.h"
 #include <core/FModel.h>
+#include <core/Matrix.h>
 
 
 #define pPat osg::PositionAttitudeTransform*
@@ -227,8 +228,48 @@ void Model::DrawModelBone()
 //--------------------------------------------------------------------------------------------------
 void Model::DrawBone( osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode )
 {
-    osg::Vec3d bpos = (*parentRot) * bone->getPosition() + *parentPos;
-    osg::Quat  brot = bone->getAttitude() * (*parentRot);
+    // TEST £ACZENIE MACIERZY L = CinvMCB
+
+    matrix<double> Rotation(4,4);
+    matrix<double> ParentRotation(4,4);
+    matrix<double> L(4,4);
+
+    osg::Quat rotation = bone->getAttitude();
+    osg::Vec3d position = bone->getPosition();
+
+    Rotation.LoadfromQuaternion(rotation.x(), rotation.y(), rotation.z(), rotation.w());
+    ParentRotation.LoadfromQuaternion((double)parentRot->x(), (double)parentRot->y(), (double)parentRot->z(), (double)parentRot->w());
+
+    bool success;
+    double px = parentPos->x(), py = parentPos->y(), pz = parentPos->z();
+    ParentRotation.SetValue(0,3,px);
+    ParentRotation.SetValue(1,3,py);
+    ParentRotation.SetValue(2,3,pz);
+
+    px = position.x(), py = position.y(), pz = position.z();
+    Rotation.SetValue(0,3,px);
+    Rotation.SetValue(1,3,py);
+    Rotation.SetValue(2,3,pz);
+
+    L.SetToProduct(ParentRotation,Rotation);
+
+    double vx, vy, vz;
+    double qx, qy, qz, qw;
+
+    //bool success;
+    L.GetValue(0,3,vx,success);
+    L.GetValue(1,3,vy,success);
+    L.GetValue(2,3,vz,success);
+
+    L.GetQuaternion(qx,qy,qz,qw);
+
+    osg::Vec3d bpos = Vec3d(vx, vy, vz);
+    osg::Quat  brot(qx,qy,qz,qw);
+
+    // osg::Vec3d bpos = (*parentRot) * bone->getPosition() + *parentPos;
+//     osg::Quat  brot = bone->getAttitude() * (*parentRot);
+
+
 
 
     float length = (*parentPos - bpos).length();
@@ -249,7 +290,7 @@ void Model::DrawBone( osg::PositionAttitudeTransform* bone, const osg::Vec3d* pa
     boneNodeChild = bone->getPosition(); //osg::Vec3(length, 0.f, 0.f); 
 
     bool isSelected = false;
-    if(bone->getName() == "RightUpLeg")
+    if(bone->getName() == "LeftHand")
     {
         isSelected = true;
        // brot = -brot;

@@ -219,9 +219,21 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
                     for (int Counter = 0; Counter < 3; Counter++)
                     {
                         //						printf ("An OFFSET is: %s\n", token) ;
-                        if (Counter == 0) tempOX = atof(token) ;
-                        if (Counter == 1) tempOY = atof(token) ;
-                        if (Counter == 2) tempOZ = atof(token) ;						//HERE IS WHERE I TAKE
+                        if (Counter == 0)
+                        {
+                            tempOX = atof(token);
+                      //      tempJoint.setRootPosition(tempOX);
+                        }
+                        if (Counter == 1) 
+                        {
+                            tempOY = atof(token);
+                      //      tempJoint.setRootPosition(tempOY);
+                        }
+                        if (Counter == 2)
+                        {
+                            tempOZ = atof(token);
+                      //      tempJoint.setRootPosition(tempOZ);
+                        }                                                        //HERE IS WHERE I TAKE
                         token = strtok (NULL, " (),\t\n") ;						// ORDER INTO CONSID.
                     }
                     tempJoint.setOffset(tempOX, tempOY, tempOZ) ;						//CHANGE OFFSET FN VARS!

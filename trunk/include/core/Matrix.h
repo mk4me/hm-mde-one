@@ -110,7 +110,7 @@ public:
     }
 
 //--------------------------------------------------------------------------------------------------
-    void LoadfromQuaternion(double &qx, double &qy, double &qz, double &qw)
+    void LoadfromQuaternion(double qx, double qy, double qz, double qw)
     {
         m_maxsize = 4;
         m_actualsize = 4;
@@ -145,6 +145,35 @@ public:
     }
 
 //--------------------------------------------------------------------------------------------------
+    void LoadFromTranslationVec(D X, D Y, D Z)
+    {
+        m_maxsize = 4;
+        m_actualsize = 4;
+        allocate();
+
+        m_pData[0] = 1.0f; //11
+        m_pData[1] = 0.0f; //12
+        m_pData[2] = 0.0f; //13
+        m_pData[3] = X; //14
+
+        m_pData[4] = 0.0f; //21
+        m_pData[5] = 1.0f; //22
+        m_pData[6] = 0.0f; //23
+        m_pData[7] = Y; //24
+
+        m_pData[8] = 0.0f; //31
+        m_pData[9] = 0.0f; //32
+        m_pData[10] = 1.0f; //33
+        m_pData[11] = Z; //34
+
+        m_pData[12] = 0.0f; //41
+        m_pData[13] = 0.0f; //42
+        m_pData[14] = 0.0f; //43
+        m_pData[15] = 1.0f; //44
+    }
+
+
+//--------------------------------------------------------------------------------------------------
     void GetMatrix(D **matrix)
     {
 
@@ -159,10 +188,10 @@ public:
 //--------------------------------------------------------------------------------------------------
 void AddMatrix(matrix& left, matrix& right)
 {
-    m_actualsize = left.getactualsize();
-    if ( m_maxsize < left.getactualsize() )  
+    m_actualsize = left.GetActualSize();
+    if ( m_maxsize < left.GetActualSize() )  
     {
-        m_maxsize = left.getactualsize();
+        m_maxsize = left.GetActualSize();
         allocate();
     }
 
@@ -173,11 +202,11 @@ void AddMatrix(matrix& left, matrix& right)
             D leftvalue, rightvalue;
             bool success;
 
-            left.getvalue(i,j,leftvalue,success);
-            right.getvalue(i,j,rightvalue,success);
+            left.GetValue(i,j,leftvalue,success);
+            right.GetValue(i,j,rightvalue,success);
             sum = leftvalue + rightvalue;
 
-            setvalue(i,j,sum);
+            SetValue(i,j,sum);
         }
 
 }
@@ -265,10 +294,10 @@ void AddMatrix(matrix& left, matrix& right)
 //--------------------------------------------------------------------------------------------------
     void SetToProduct(matrix& left, matrix& right) // mnozenie macierzy
     {
-        m_actualsize = left.getactualsize();
-        if ( m_maxsize < left.getactualsize() )  
+        m_actualsize = left.GetActualSize();
+        if ( m_maxsize < left.GetActualSize() )  
         {
-            m_maxsize = left.getactualsize();
+            m_maxsize = left.GetActualSize();
             allocate();
         }
 
@@ -280,11 +309,11 @@ void AddMatrix(matrix& left, matrix& right)
                 bool success;
                 for (int c = 0; c < m_actualsize; c++) 
                 {
-                    left.getvalue(i,c,leftvalue,success);
-                    right.getvalue(c,j,rightvalue,success);
+                    left.GetValue(i,c,leftvalue,success);
+                    right.GetValue(c,j,rightvalue,success);
                     sum += leftvalue * rightvalue;
                 }
-                setvalue(i,j,sum);
+                SetValue(i,j,sum);
             }
 
     // Mnozenie macierzy  alternarywna wersja dla macierzy matrix[][]
@@ -300,12 +329,12 @@ void AddMatrix(matrix& left, matrix& right)
     }
 
 //--------------------------------------------------------------------------------------------------
-    void copymatrix(matrix&  source) // kopiowanie macierzy
+    void CopyMatrix(matrix&  source) // kopiowanie macierzy
     {
-        m_actualsize = source.getactualsize();
-        if ( m_maxsize < source.getactualsize() )  
+        m_actualsize = source.GetActualSize();
+        if ( m_maxsize < source.GetActualSize() )  
         {
-            m_maxsize = source.getactualsize();
+            m_maxsize = source.GetActualSize();
             allocate();
         }
         for ( int i = 0; i < m_actualsize; i++ )
@@ -313,13 +342,13 @@ void AddMatrix(matrix& left, matrix& right)
             {
                 D value;
                 bool success;
-                source.getvalue(i,j,value,success);
+                source.GetValue(i,j,value,success);
                 m_pData[i*m_maxsize+j] = value;
             }
     };
 
 //--------------------------------------------------------------------------------------------------
-    void setactualsize(int newactualsize) // uzupe³nianie wielkoœci macierzy
+    void SetActualSize(int newactualsize) // uzupe³nianie wielkoœci macierzy
     {
         if ( newactualsize > m_maxsize )
         {
@@ -333,13 +362,13 @@ void AddMatrix(matrix& left, matrix& right)
     };
 
 //--------------------------------------------------------------------------------------------------
-    int getactualsize() 
+    int GetActualSize() 
     { 
         return m_actualsize; 
     };
 
 //--------------------------------------------------------------------------------------------------
-    void getvalue(int row, int column, D& returnvalue, bool& success) 
+    void GetValue(int row, int column, D& returnvalue, bool& success) 
     {
         if ( (row>=m_maxsize) || (column>=m_maxsize) 
             || (row<0) || (column<0) )
@@ -350,7 +379,7 @@ void AddMatrix(matrix& left, matrix& right)
     };
 
 //--------------------------------------------------------------------------------------------------
-    bool setvalue(int row, int column, D newvalue)
+    bool SetValue(int row, int column, D newvalue)
     {
         if ( (row >= m_maxsize) || (column >= m_maxsize) 
             || (row<0) || (column<0) ) return false;
@@ -359,7 +388,7 @@ void AddMatrix(matrix& left, matrix& right)
     };
 
 //--------------------------------------------------------------------------------------------------
-    void invert()
+    void Invert()
     {
         if (m_actualsize <= 0) return;  // sanity check
         if (m_actualsize == 1) return;  // must be of dimension >= 2

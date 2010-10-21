@@ -53,6 +53,9 @@ typedef std::vector<frameData>	frameVectors;
 // static rotation
 typedef std::vector<float> staticRotation;
 
+// static position
+typedef std::vector<float> staticPosition;
+
 // This holds a marker positioin (3 float vector)
 typedef std::vector<float> markerPosition;
 
@@ -85,6 +88,7 @@ private:
     quaternionVector	quatV;		
 
     staticRotation      staticAxis;
+    staticPosition      position;
 
     void interpolate(int,int,int);			// This is a private function it gets used by interpolateRX, RY and RZ for eulers
 
@@ -96,6 +100,10 @@ public:
     void invert(float *matrix);
 
     void setASFAxis(float angle);
+    void setRootPosition(float pos);
+    void setRootPosition(float x, float y, float z);
+    void getPosition(float &x, float &y, float &z);
+    void getAxis(float &x, float &y, float &z);
 
 	void        getQuaternionFromEuler(int frameNum, float &w, float &x, float &y, float &z);
 

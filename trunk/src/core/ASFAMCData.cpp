@@ -54,6 +54,7 @@ Channel::~Channel()
     quaternionMarkers.clear();
     quatV.clear();
     staticAxis.clear();
+    position.clear();
 }
 
 // Copy constructor does everything necessary.
@@ -73,6 +74,7 @@ Channel::Channel(const Channel& tempJoint)
     quatV = tempJoint.quatV;
     m_id = tempJoint.m_id;
     staticAxis = tempJoint.staticAxis;
+    position = tempJoint.position;
 }
 
 // This returns the smallest Y value the markers have - this is used to calculate where
@@ -541,16 +543,37 @@ void Channel::getQuaternionFromEuler( int frameNum, float &w, float &x, float &y
 
     matrix<double> Temp(4,4);          //solution of local rotation
     matrix<double> L(4,4);          //solution of local rotation
+    matrix<double> B(4,4);
+
+    matrix<double> Temp2(4,4);
+    float tx,ty,tz;
 
     
     getAsAxisMatrix(C);
     
     M.LoadFromEulerAngle(Yaw, Pitch, Roll);
-    Cinv.copymatrix(C);
-    Cinv.invert();
+    Cinv.CopyMatrix(C);
+    Cinv.Invert();
+
+    if(type == CHANNEL_TYPE::ROOT)
+        getTranslation(frameNum, tx, ty, tz);
+    else
+        getOffset(tx,ty,tz);
+
+    B.LoadFromTranslationVec(tx,ty,tz);
 
     Temp.SetToProduct(Cinv, M);
-    L.SetToProduct(Temp,C);
+    Temp2.SetToProduct(Temp,C);
+    L.SetToProduct(Temp2,B);
+
+    // wa¿ne
+    bool success;
+    double px, py, pz;
+    L.GetValue(0,3,px,success);
+    L.GetValue(1,3,py,success);
+    L.GetValue(2,3,pz,success);
+
+    setRootPosition(px,py,pz);
 
     double qx,qy,qz,qw;
     L.GetQuaternion(qx, qy, qz, qw);
@@ -576,4 +599,32 @@ void Channel::getAsAxisMatrix( matrix<double> &C )
 
 
     C.LoadFromEulerAngle(Yaw, Pitch, Roll);
+}
+
+void Channel::setRootPosition( float pos )
+{
+    position.push_back(pos);
+}
+
+void Channel::setRootPosition( float x, float y, float z )
+{
+    position.push_back(x);
+    position.push_back(y);
+    position.push_back(z);
+}
+void Channel::getPosition( float &x, float &y, float &z )
+{
+   // if(type != CHANNEL_TYPE::ROOT)
+   //     return;
+
+    x = position[0];
+    y = position[1];
+    z = position[2];
+}
+
+void Channel::getAxis( float &x, float &y, float &z )
+{
+    x = staticAxis[0];
+    y = staticAxis[1];
+    z = staticAxis[2];
 }

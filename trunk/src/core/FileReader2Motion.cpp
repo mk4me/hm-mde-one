@@ -204,18 +204,17 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
         if(joint->getType() == CHANNEL_TYPE::ROOT)
         {
             bone[i].parent_id = -1;
-            joint->getTranslation(1, bone[i].translation[0], bone[i].translation[1], bone[i].translation[2]);
             joint->getQuaternionFromEuler(1,bone[i].quaternion[3], bone[i].quaternion[0], bone[i].quaternion[1], bone[i].quaternion[2]);
+            joint->getPosition(bone[i].translation[0], bone[i].translation[1], bone[i].translation[2]);
         }
         else
         {
             bone[i].parent_id = acclaimObject->getJoint(joint->getParent())->getID();
-
-            // get translation
-            joint->getOffset(bone[i].translation[0], bone[i].translation[1], bone[i].translation[2]);
-
             // get quaternion
             joint->getQuaternionFromEuler(1,bone[i].quaternion[3], bone[i].quaternion[0], bone[i].quaternion[1], bone[i].quaternion[2]);
+
+            // get translation
+            joint->getPosition(bone[i].translation[0], bone[i].translation[1], bone[i].translation[2]);
         }
 
 
@@ -324,17 +323,18 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
 
             if(jointPointer->getType() == CHANNEL_TYPE::ROOT)
             {
-                jointPointer->getTranslation(k+1, animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
-                //jointPointer->getOffset(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
                 jointPointer->getQuaternionFromEuler(k+1,animation->bones[b].frames[k].quat[3], animation->bones[b].frames[k].quat[0], animation->bones[b].frames[k].quat[1], animation->bones[b].frames[k].quat[2]);
+           
+                jointPointer->getPosition(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
+                //jointPointer->getOffset(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
             }
             else
             {
-                // get translation
-                jointPointer->getOffset(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
-
                 // get quaternion
                 jointPointer->getQuaternionFromEuler(k+1,animation->bones[b].frames[k].quat[3], animation->bones[b].frames[k].quat[0], animation->bones[b].frames[k].quat[1], animation->bones[b].frames[k].quat[2]);
+           
+                // get translation
+                jointPointer->getPosition(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
             }
         }
 
