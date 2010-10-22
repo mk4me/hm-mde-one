@@ -22,7 +22,6 @@ set(PUBLIC_H
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
-	TimelinePlugin.h
 	TimelineWidget.h
 	TimelineViewOSG.h
 )
@@ -81,5 +80,3 @@ target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})
 
 # ¿eby mo¿na by³o u¿yæ tej biblioteki w makrach
 ON_PROJECT_ADDED(${TARGET_TARGETNAME})
-
-get_target_property(PROP animation LOCATION)
