@@ -268,9 +268,9 @@ void calculateMatrix(Bone *bone)
 	int i;
 	double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
 
-	rotationZ(Rz, bone->axis_z);
-	rotationY(Ry, bone->axis_y);
-	rotationX(Rx, bone->axis_x);
+	rotationZ(Rz, -bone->axis_z);
+	rotationY(Ry, -bone->axis_y);
+	rotationX(Rx, -bone->axis_x);
 	matrix_mult(Rz, Ry, tmp);
 	matrix_mult(tmp, Rx, C);
 
@@ -340,9 +340,9 @@ bool FileReader2Motion::LoadSkeleton(Model* model)
 		int i;
 		double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
 
-		rotationZ(Rz, bone->axis_z);
-		rotationY(Ry, bone->axis_y);
-		rotationX(Rx, bone->axis_x);
+		rotationZ(Rz, -bone->axis_z);
+		rotationY(Ry, -bone->axis_y);
+		rotationX(Rx, -bone->axis_x);
 		matrix_mult(Rz, Ry, tmp);
 		matrix_mult(tmp, Rx, C);
 
@@ -552,14 +552,13 @@ bool FileReader2Motion::LoadAnimation( SFModel* fmodel, Model* model )
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model )
 {
-
-	Frame* frame =new Frame();
 	Channel* joint = acclaimObject->getCurrentJointPointer();
-
 	int boneCount = acclaimObject->getNumberOfJoints();
+
+	Frame* frame =new Frame[boneCount];
 	for(int i = 0; i < boneCount; i++)
 	{
-		frame->idx = joint->getID();
+		frame[i].idx = joint->getID();
 
 		for(int j = 0; j< acclaimObject->getNumberOfFrames(); j++)
 		{
@@ -569,8 +568,8 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
 			joint->getRotation(j+1, roation->rotx, roation->roty, roation->rotz);
 			joint->getTranslation(j+1, translation->translationx, translation->translationy, translation->translationz);
 
-			frame->rotation.push_back(roation);
-			frame->translation.push_back(translation);
+			frame[i].rotation.push_back(roation);
+			frame[i].translation.push_back(translation);
 		}
 	}
 
