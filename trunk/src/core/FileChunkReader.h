@@ -24,7 +24,7 @@ struct SModelData;
 struct SSkeleton;
 struct SSkeletonAnimation;
 struct SFModel;
-struct SFAnimation;
+struct Frame;
 
 class Model;
 

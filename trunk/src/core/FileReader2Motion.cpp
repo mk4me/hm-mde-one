@@ -11,8 +11,12 @@
 #include "SkeletonNode.h"
 
 #include <core/Vec3.h>
+#include "Skeleton.h"
 
 #include <core/ASFAMCParser.h>
+#include <core/Matrix.h>
+#include "Transform.h"
+#include "Frame.h"
 
 #define TIMERMULTIPLAY 0.01
 
@@ -188,55 +192,309 @@ void FileReader2Motion::LoadMeshFromDAE( Model* model, SDea2Motion* io_data )
 //--------------------------------------------------------------------------------------------------
 void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclaimObject )
 {
-    int bonesCount = acclaimObject->getNumberOfJoints();
-    Channel* joint = acclaimObject->getCurrentJointPointer();
-    vectorOfJoints* Joints = acclaimObject->getJoints();
+	Skeleton* skeleton = new Skeleton();
 
-    SSkeleton* skeleton = new SSkeleton();
-    SBone* bone = new SBone[bonesCount];
+	int boneCount = acclaimObject->getNumberOfJoints();
+	Channel* joint = acclaimObject->getCurrentJointPointer();
 
-    skeleton->bones_count = bonesCount;
-    for(int i = 0; i < bonesCount; i++)
-    {
-        bone[i].name = joint->getName();
-        bone[i].id = joint->getID();
+	skeleton->m_pBoneList.clear();
+	for(int i = 0; i < boneCount; i++)
+	{
+		Bone* bone = new Bone();
 
-        if(joint->getType() == CHANNEL_TYPE::ROOT)
-        {
-            bone[i].parent_id = -1;
-            joint->getQuaternionFromEuler(1,bone[i].quaternion[3], bone[i].quaternion[0], bone[i].quaternion[1], bone[i].quaternion[2]);
-            joint->getPosition(bone[i].translation[0], bone[i].translation[1], bone[i].translation[2]);
-        }
-        else
-        {
-            bone[i].parent_id = acclaimObject->getJoint(joint->getParent())->getID();
-            // get quaternion
-            joint->getQuaternionFromEuler(1,bone[i].quaternion[3], bone[i].quaternion[0], bone[i].quaternion[1], bone[i].quaternion[2]);
+		bone->idx = joint->getID();
+		bone->dir[0] = joint->getDirX();
+		bone->dir[1] = joint->getDirY();
+		bone->dir[2] = joint->getDirZ();
 
-            // get translation
-            joint->getPosition(bone[i].translation[0], bone[i].translation[1], bone[i].translation[2]);
-        }
+		bone->length = joint->getLength();
+		joint->getAxis(bone->axis_x, bone->axis_y, bone->axis_z);
+	
+		bone->name = joint->getName();
+		bone->parentName = joint->getParent();
+
+		int numeOfChild = joint->numOfChildren();
+		for(int i = 0; i < numeOfChild; i++)
+		{
+			bone->children.push_back(joint->getChild(i));
+		}
+
+		skeleton->m_pBoneList.push_back(bone);
+		joint++;
+	}
+
+	skeleton->m_pRootBone = skeleton->m_pBoneList[0];
+
+	for(std::vector<Bone*>::iterator it = skeleton->m_pBoneList.begin(); it != skeleton->m_pBoneList.end(); it++)
+	{
+			std::string parent = (*it)->parentName;
+
+			for(int i = 0; i < boneCount; i++)
+			{
+				if(skeleton->m_pBoneList[i]->name == parent)
+				{
+					(*it)->parent = skeleton->m_pBoneList[i];
+					break;
+				}
+			}
+
+			int childNumber = (*it)->children.size();
+			for(int i = 0; i < childNumber; i++)
+			{
+				std::string child = (*it)->children[i];
+				for(int j = 0; j < boneCount; j++)
+				{
+					if(skeleton->m_pBoneList[j]->name == child)
+					{
+						(*it)->child.push_back(skeleton->m_pBoneList[j]);
+						break;
+					}
+				}
+			}
+	}
 
 
-        // number of children
-        bone[i].n = joint->numOfChildren();
-
-        // childs_id
-        bone[i].child_bone_id = new int[joint->numOfChildren()];
-        for(int j = 0; j < joint->numOfChildren(); j++)
-        {
-            bone[i].child_bone_id[j] = (acclaimObject->getJoint(joint->getChild(j)))->getID();
-        }
-
-        joint++;
-    }
-
-    skeleton->bones = bone;
-
-    model->SetSkeleton(skeleton);
-    LoadSkeleton(model);
-    LoadAnimation(acclaimObject, model);
+     model->SetSkeleton(skeleton);
+     LoadSkeleton(model);
+     LoadAnimation(acclaimObject, model);
 }
+
+void calculateMatrix(Bone *bone)
+{
+	double C[4][4];
+	double Cinv[4][4];
+	double B[4][4];
+
+	int i;
+	double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
+
+	rotationZ(Rz, bone->axis_z);
+	rotationY(Ry, bone->axis_y);
+	rotationX(Rx, bone->axis_x);
+	matrix_mult(Rz, Ry, tmp);
+	matrix_mult(tmp, Rx, C);
+
+	//matrix_transpose(tmp2, C);   
+
+	float x,y,z;
+	float lenght = bone->length;
+	x = bone->dir[0] * lenght;
+	y = bone->dir[1] * lenght;
+	z = bone->dir[2] * lenght;
+
+	LoadFromTranslationVec(x,y,z,B);
+	//matrix_transpose(tmp, B);   
+
+	//CopyMatrix(Cinv,C);
+
+	for ( int i = 0; i < 4; i++ )
+		for ( int j = 0; j < 4; j++ ) 
+		{
+			Cinv[i][j] = C[i][j];
+		}
+
+	// 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
+	// 																C[1][0], C[1][1], C[1][2], C[1][3],
+	// 																C[2][0], C[2][1], C[2][2], C[2][3],
+	// 																C[3][0], C[3][1], C[3][2], C[3][3]));
+
+	Invert(Cinv);
+
+	SetToProduct(Cinv, C, tmp);
+	SetToProduct(tmp, B, tmp2);
+
+	SetToProduct(bone->parent->matrix, tmp2, bone->matrix);
+
+	bone->positionx = bone->matrix[0][3];
+	bone->positiony = bone->matrix[1][3];
+	bone->positionz = bone->matrix[2][3];
+
+	int childrenCount = bone->child.size();
+	for(int i = 0; i<childrenCount; i++)
+	{
+		calculateMatrix(bone->child[i]);
+	}
+}
+
+//--------------------------------------------------------------------------------------------------
+bool FileReader2Motion::LoadSkeleton(Model* model)
+{
+	if(!model->GetSkeleton())
+		return false;
+
+// 	float C[4][4];
+// 	float Cinv[4][4];
+// 	float B[4][4];
+
+
+	Skeleton* skeleton = model->GetSkeleton();
+
+	//for(std::vector<Bone*>::iterator it = skeleton->m_pBoneList.begin(); it != skeleton->m_pBoneList.end(); it++)
+	//{
+	Bone *bone = skeleton->m_pRootBone;
+
+		double C[4][4];
+		double Cinv[4][4];
+		double B[4][4];
+
+		int i;
+		double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
+
+		rotationZ(Rz, bone->axis_z);
+		rotationY(Ry, bone->axis_y);
+		rotationX(Rx, bone->axis_x);
+		matrix_mult(Rz, Ry, tmp);
+		matrix_mult(tmp, Rx, C);
+
+		//matrix_transpose(tmp2, C);   
+
+		float x,y,z;
+		float lenght = bone->length;
+		x = bone->dir[0] * lenght;
+		y = bone->dir[1] * lenght;
+		z = bone->dir[2] * lenght;
+
+		LoadFromTranslationVec(x,y,z,B);
+		//matrix_transpose(tmp, B);   
+
+		//CopyMatrix(Cinv,C);
+
+		for ( int i = 0; i < 4; i++ )
+			for ( int j = 0; j < 4; j++ ) 
+			{
+				Cinv[i][j] = C[i][j];
+			}
+
+// 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
+// 																C[1][0], C[1][1], C[1][2], C[1][3],
+// 																C[2][0], C[2][1], C[2][2], C[2][3],
+// 																C[3][0], C[3][1], C[3][2], C[3][3]));
+
+		Invert(Cinv);
+
+		SetToProduct(Cinv, C, tmp);
+		SetToProduct(tmp, B, bone->matrix);
+
+		bone->positionx = bone->matrix[0][3];
+		bone->positiony = bone->matrix[1][3];
+		bone->positionz = bone->matrix[2][3];
+
+
+
+		int childrenCount = bone->child.size();
+		for(int i = 0; i<childrenCount; i++)
+		{
+			calculateMatrix(bone->child[i]);
+		}
+
+	//}
+
+	//     if (model->GetSkeleton() && skeleton->bones_count > 0)
+	//     {
+	//         // skeleton
+	// 
+	//         //ref_ptr<Group> skeleton_group = new Group();
+	//         //skeleton_group->setName("skeleton");
+	// 
+	//         osg::ref_ptr<osg::Group> root_bone = new SkeletonNode();
+	//         int roots = 0;
+	// 
+	//         for (int b = 0; b < skeleton->bones_count; ++b)
+	//         {	
+	//             // load skeleton
+	//             // set parents
+	//             if (skeleton->bones[b].parent_id == -1) // handle root
+	//             {
+	//                 skeleton->bones[b].node = root_bone;				
+	//                 ++roots;
+	//             }
+	//             else
+	//             {
+	//                 skeleton->bones[b].node = new SkeletonNode();
+	// 
+	//                 // i assume that bones are in order defined by their hierarchy
+	//                 skeleton->bones[skeleton->bones[b].parent_id].node->addChild(skeleton->bones[b].node);
+	//             }
+	// 
+	//             // get pos and rot
+	//             osg::Vec3d bpos = osg::Vec3(skeleton->bones[b].translation[0], skeleton->bones[b].translation[1],skeleton->bones[b].translation[2]);
+	//             osg::Quat  brot = osg::Quat(osg::Vec4(skeleton->bones[b].quaternion[0], skeleton->bones[b].quaternion[1], 
+	//                 skeleton->bones[b].quaternion[2], skeleton->bones[b].quaternion[3]));
+	// 
+	//             // translation
+	//             ((pPat)skeleton->bones[b].node.get())->setPosition(bpos);
+	// 
+	//             // quaternion
+	//             ((pPat)skeleton->bones[b].node.get())->setAttitude(brot);
+	// 
+	//             // name
+	//             skeleton->bones[b].node.get()->setName(skeleton->bones[b].name);
+	// 
+	//             // id
+	//             ((SkeletonNode*)skeleton->bones[b].node.get())->SetId(b);
+	//         }
+	// 
+	//         // imho there should be only one root...
+	//         if (roots != 1)   
+	//             return false;
+	// 
+	//         //skeleton_group->addChild(root_bone);
+	//         //root->addChild(skeleton_group);
+	//         model->addChild(root_bone);
+	//     }
+
+	return true;
+}
+
+/*
+void Invert()
+{
+if (m_actualsize <= 0) return;  // sanity check
+if (m_actualsize == 1) return;  // must be of dimension >= 2
+for (int i=1; i < m_actualsize; i++) m_pData[i] /= m_pData[0]; // normalize row 0
+for (int i=1; i < m_actualsize; i++)  { 
+for (int j=i; j < m_actualsize; j++)  { // do a column of L
+D sum = 0.0;
+for (int k = 0; k < i; k++)  
+sum += m_pData[j*m_maxsize+k] * m_pData[k*m_maxsize+i];
+m_pData[j*m_maxsize+i] -= sum;
+}
+if (i == m_actualsize-1) continue;
+for (int j=i+1; j < m_actualsize; j++)  {  // do a row of U
+D sum = 0.0;
+for (int k = 0; k < i; k++)
+sum += m_pData[i*m_maxsize+k]*m_pData[k*m_maxsize+j];
+m_pData[i*m_maxsize+j] = 
+(m_pData[i*m_maxsize+j]-sum) / m_pData[i*m_maxsize+i];
+}
+}
+for ( int i = 0; i < m_actualsize; i++ )  // invert L
+for ( int j = i; j < m_actualsize; j++ )  {
+D x = 1.0;
+if ( i != j ) {
+x = 0.0;
+for ( int k = i; k < j; k++ ) 
+x -= m_pData[j*m_maxsize+k]*m_pData[k*m_maxsize+i];
+}
+m_pData[j*m_maxsize+i] = x / m_pData[j*m_maxsize+j];
+}
+for ( int i = 0; i < m_actualsize; i++ )   // invert U
+for ( int j = i; j < m_actualsize; j++ )  {
+if ( i == j ) continue;
+D sum = 0.0;
+for ( int k = i; k < j; k++ )
+sum += m_pData[k*m_maxsize+j]*( (i==k) ? 1.0 : m_pData[i*m_maxsize+k] );
+m_pData[i*m_maxsize+j] = -sum;
+}
+for ( int i = 0; i < m_actualsize; i++ )   // final inversion
+for ( int j = 0; j < m_actualsize; j++ )  {
+D sum = 0.0;
+for ( int k = ((i>j)?i:j); k < m_actualsize; k++ )  
+sum += ((j==k)?1.0:m_pData[j*m_maxsize+k])*m_pData[k*m_maxsize+i];
+m_pData[j*m_maxsize+i] = sum;
+}
+};
+*/
 
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadMesh(std::wstring* address, Model* model)
@@ -253,7 +511,7 @@ bool FileReader2Motion::LoadMesh(std::wstring* address, Model* model)
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadAnimation( SFModel* fmodel, Model* model )
 {
-    SFAnimation* animations = new SFAnimation();
+    Frame* animations = new Frame();
 
     vector<SkeletonNode*> bones;
     CreateArrayHoldingBones(&bones, model);
@@ -271,7 +529,8 @@ bool FileReader2Motion::LoadAnimation( SFModel* fmodel, Model* model )
                 return false;
             }
 
-            animations->m_skeletonAanimation.insert(make_pair<wstring, SSkeletonAnimation*>(*i, animation));
+			//TODO R.Zowal naprawic porem
+     //       animations->m_skeletonAanimation.insert(make_pair<wstring, SSkeletonAnimation*>(*i, animation));
             InicializeSkeletalAnimation(&(*i), animation, &bones);
 
         }
@@ -293,60 +552,42 @@ bool FileReader2Motion::LoadAnimation( SFModel* fmodel, Model* model )
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model )
 {
-    std::wstring animationName = L"testing";
-    SFAnimation* animations = new SFAnimation();
-    Channel* jointPointer = acclaimObject->getCurrentJointPointer();
 
-    vector<SkeletonNode*> bones;
-    CreateArrayHoldingBones(&bones, model);
+	Frame* frame =new Frame();
+	Channel* joint = acclaimObject->getCurrentJointPointer();
 
-    SSkeletonAnimation* animation = new SSkeletonAnimation();
+	int boneCount = acclaimObject->getNumberOfJoints();
+	for(int i = 0; i < boneCount; i++)
+	{
+		frame->idx = joint->getID();
 
-    animation->name = std::string(animationName.begin(), animationName.end());
-    animation->bones_count = acclaimObject->getNumberOfJoints();
-    animation->bones = new SSkeletalAnimationBone[animation->bones_count];
+		for(int j = 0; j< acclaimObject->getNumberOfFrames(); j++)
+		{
+			Srot* roation = new Srot();
+			Stran* translation = new Stran();
 
-    for(int b = 0; b < animation->bones_count; b++)
-    {
-        animation->bones[b].bone_id = jointPointer->getID();
-        animation->bones[b].n = acclaimObject->getNumberOfFrames();
+			joint->getRotation(j+1, roation->rotx, roation->roty, roation->rotz);
+			joint->getTranslation(j+1, translation->translationx, translation->translationy, translation->translationz);
 
-        animation->bones[b].frames = new SKeyFrame[animation->bones[b].n];
+			frame->rotation.push_back(roation);
+			frame->translation.push_back(translation);
+		}
+	}
 
-        //for every key
-        for(int k = 0; k < animation->bones[b].n; k++)
-        {
-            animation->bones[b].frames[k].time = TIMERMULTIPLAY * k;
+	model->SetAnimation(frame);
 
-            //     jointPointer->getOffset(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
-            //      jointPointer->getQuaternionFromEuler(k+1, animation->bones[b].frames[k].quat[3], animation->bones[b].frames[k].quat[0], animation->bones[b].frames[k].quat[1], animation->bones[b].frames[k].quat[2]);               
-
-            if(jointPointer->getType() == CHANNEL_TYPE::ROOT)
-            {
-                jointPointer->getQuaternionFromEuler(k+1,animation->bones[b].frames[k].quat[3], animation->bones[b].frames[k].quat[0], animation->bones[b].frames[k].quat[1], animation->bones[b].frames[k].quat[2]);
-           
-                jointPointer->getPosition(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
-                //jointPointer->getOffset(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
-            }
-            else
-            {
-                // get quaternion
-                jointPointer->getQuaternionFromEuler(k+1,animation->bones[b].frames[k].quat[3], animation->bones[b].frames[k].quat[0], animation->bones[b].frames[k].quat[1], animation->bones[b].frames[k].quat[2]);
-           
-                // get translation
-                jointPointer->getPosition(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
-            }
-        }
-
-        jointPointer++;
-    }
-
-    animations->m_skeletonAanimation.insert(make_pair<wstring, SSkeletonAnimation*>(animationName, animation));
-
-    InicializeSkeletalAnimation(&animationName, animation, &bones);
-
-
-//     jointPointer = acclaimObject->getCurrentJointPointer();
+//     std::wstring animationName = L"testing";
+//     SFAnimation* animations = new SFAnimation();
+//     Channel* jointPointer = acclaimObject->getCurrentJointPointer();
+// 
+//     vector<SkeletonNode*> bones;
+//     CreateArrayHoldingBones(&bones, model);
+// 
+//     SSkeletonAnimation* animation = new SSkeletonAnimation();
+// 
+//     animation->name = std::string(animationName.begin(), animationName.end());
+//     animation->bones_count = acclaimObject->getNumberOfJoints();
+//     animation->bones = new SSkeletalAnimationBone[animation->bones_count];
 // 
 //     for(int b = 0; b < animation->bones_count; b++)
 //     {
@@ -355,77 +596,119 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
 // 
 //         animation->bones[b].frames = new SKeyFrame[animation->bones[b].n];
 // 
-//         // attach new animation to bone
-//         CAnimationGroup* anim = new CAnimationGroup(animation->bones[b].n);
-//         anim->setName(string(animationName.begin(), animationName.end()));
-// 
-//         // for every frame
-//         double animLength = 0.0;
-// 
 //         //for every key
 //         for(int k = 0; k < animation->bones[b].n; k++)
 //         {
-// 
 //             animation->bones[b].frames[k].time = TIMERMULTIPLAY * k;
 // 
-//             CAnimationNode* frame = new CAnimationNode((double)animation->bones[b].frames[k].time);
-// 
-//             animLength = animLength < animation->bones[b].frames[k].time ? animation->bones[b].frames[k].time : animLength;
-// 
-//             float translation      [3]; // bone translation vector 
-//             float quaternion       [4]; // bone quaternion 
+//             //     jointPointer->getOffset(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
+//             //      jointPointer->getQuaternionFromEuler(k+1, animation->bones[b].frames[k].quat[3], animation->bones[b].frames[k].quat[0], animation->bones[b].frames[k].quat[1], animation->bones[b].frames[k].quat[2]);               
 // 
 //             if(jointPointer->getType() == CHANNEL_TYPE::ROOT)
 //             {
-//                 jointPointer->getTranslation(k+1, translation[0], translation[1], translation[2]);
-//                 jointPointer->getQuaternionFromEuler(k+1, quaternion[3], quaternion[0], quaternion[1], quaternion[2]);
-// 
+//                 jointPointer->getQuaternionFromEuler(k+1,animation->bones[b].frames[k].quat[3], animation->bones[b].frames[k].quat[0], animation->bones[b].frames[k].quat[1], animation->bones[b].frames[k].quat[2]);
+//            
+//                 jointPointer->getPosition(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
+//                 //jointPointer->getOffset(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
 //             }
 //             else
 //             {
-//                 // get translation
-//                 jointPointer->getOffset(translation[0], translation[1], translation[2]);
-// 
 //                 // get quaternion
-//                 jointPointer->getQuaternionFromEuler(k+1, quaternion[3], quaternion[0], quaternion[1], quaternion[2]);
-//             }
-// 
-//             frame->setPosition(osg::Vec3(translation[0], translation[1], translation[2]));	
-//             frame->setAttitude(osg::Quat(quaternion[0], quaternion[1], quaternion[2], quaternion[3]));	// attitude
-// 
-//             anim->addChild(frame);
-//         }
-// 
-//         anim->setLength(animLength);
-// 
-//         for(std::vector<SkeletonNode* >::iterator it = bones.begin(); it != bones.end(); it++)
-//         {
-//             if((*it)->GetId() == animation->bones[b].bone_id)
-//             {
-//                 (*it)->AddAnimation(anim);	
+//                 jointPointer->getQuaternionFromEuler(k+1,animation->bones[b].frames[k].quat[3], animation->bones[b].frames[k].quat[0], animation->bones[b].frames[k].quat[1], animation->bones[b].frames[k].quat[2]);
+//            
+//                 // get translation
+//                 jointPointer->getPosition(animation->bones[b].frames[k].trans[0], animation->bones[b].frames[k].trans[1], animation->bones[b].frames[k].trans[2]);
 //             }
 //         }
-// 
-//         //bones[animation->bones[b].bone_id]->AddAnimation(anim);	
-// 
 // 
 //         jointPointer++;
 //     }
-
-
-    //    if(IsMeshAnimation(&address))
-    //    {
-    //         // TODO:
-    //         // na razie zakladam, ze nie jest to potrzebne
-    //         //aczkolwiek...
-    //         assert(false);
-    //     }
-    //     else
-    //         return false;
-    //     }
-
-    model->SetAnimation(animations);
-    return true;
+// 
+//     animations->m_skeletonAanimation.insert(make_pair<wstring, SSkeletonAnimation*>(animationName, animation));
+// 
+//     InicializeSkeletalAnimation(&animationName, animation, &bones);
+// 
+// 
+// //     jointPointer = acclaimObject->getCurrentJointPointer();
+// // 
+// //     for(int b = 0; b < animation->bones_count; b++)
+// //     {
+// //         animation->bones[b].bone_id = jointPointer->getID();
+// //         animation->bones[b].n = acclaimObject->getNumberOfFrames();
+// // 
+// //         animation->bones[b].frames = new SKeyFrame[animation->bones[b].n];
+// // 
+// //         // attach new animation to bone
+// //         CAnimationGroup* anim = new CAnimationGroup(animation->bones[b].n);
+// //         anim->setName(string(animationName.begin(), animationName.end()));
+// // 
+// //         // for every frame
+// //         double animLength = 0.0;
+// // 
+// //         //for every key
+// //         for(int k = 0; k < animation->bones[b].n; k++)
+// //         {
+// // 
+// //             animation->bones[b].frames[k].time = TIMERMULTIPLAY * k;
+// // 
+// //             CAnimationNode* frame = new CAnimationNode((double)animation->bones[b].frames[k].time);
+// // 
+// //             animLength = animLength < animation->bones[b].frames[k].time ? animation->bones[b].frames[k].time : animLength;
+// // 
+// //             float translation      [3]; // bone translation vector 
+// //             float quaternion       [4]; // bone quaternion 
+// // 
+// //             if(jointPointer->getType() == CHANNEL_TYPE::ROOT)
+// //             {
+// //                 jointPointer->getTranslation(k+1, translation[0], translation[1], translation[2]);
+// //                 jointPointer->getQuaternionFromEuler(k+1, quaternion[3], quaternion[0], quaternion[1], quaternion[2]);
+// // 
+// //             }
+// //             else
+// //             {
+// //                 // get translation
+// //                 jointPointer->getOffset(translation[0], translation[1], translation[2]);
+// // 
+// //                 // get quaternion
+// //                 jointPointer->getQuaternionFromEuler(k+1, quaternion[3], quaternion[0], quaternion[1], quaternion[2]);
+// //             }
+// // 
+// //             frame->setPosition(osg::Vec3(translation[0], translation[1], translation[2]));	
+// //             frame->setAttitude(osg::Quat(quaternion[0], quaternion[1], quaternion[2], quaternion[3]));	// attitude
+// // 
+// //             anim->addChild(frame);
+// //         }
+// // 
+// //         anim->setLength(animLength);
+// // 
+// //         for(std::vector<SkeletonNode* >::iterator it = bones.begin(); it != bones.end(); it++)
+// //         {
+// //             if((*it)->GetId() == animation->bones[b].bone_id)
+// //             {
+// //                 (*it)->AddAnimation(anim);	
+// //             }
+// //         }
+// // 
+// //         //bones[animation->bones[b].bone_id]->AddAnimation(anim);	
+// // 
+// // 
+// //         jointPointer++;
+// //     }
+// 
+// 
+//     //    if(IsMeshAnimation(&address))
+//     //    {
+//     //         // TODO:
+//     //         // na razie zakladam, ze nie jest to potrzebne
+//     //         //aczkolwiek...
+//     //         assert(false);
+//     //     }
+//     //     else
+//     //         return false;
+//     //     }
+// 
+//     model->SetAnimation(animations);
+     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -707,67 +990,3 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
     return false;
 }
 
-//--------------------------------------------------------------------------------------------------
-bool FileReader2Motion::LoadSkeleton(Model* model)
-{
-    if(!model->GetSkeleton())
-        return false;
-
-    SSkeleton* skeleton = model->GetSkeleton();
-
-    if (model->GetSkeleton() && skeleton->bones_count > 0)
-    {
-        // skeleton
-
-        //ref_ptr<Group> skeleton_group = new Group();
-        //skeleton_group->setName("skeleton");
-
-        osg::ref_ptr<osg::Group> root_bone = new SkeletonNode();
-        int roots = 0;
-
-        for (int b = 0; b < skeleton->bones_count; ++b)
-        {	
-            // load skeleton
-            // set parents
-            if (skeleton->bones[b].parent_id == -1) // handle root
-            {
-                skeleton->bones[b].node = root_bone;				
-                ++roots;
-            }
-            else
-            {
-                skeleton->bones[b].node = new SkeletonNode();
-
-                // i assume that bones are in order defined by their hierarchy
-                skeleton->bones[skeleton->bones[b].parent_id].node->addChild(skeleton->bones[b].node);
-            }
-
-            // get pos and rot
-            osg::Vec3d bpos = osg::Vec3(skeleton->bones[b].translation[0], skeleton->bones[b].translation[1],skeleton->bones[b].translation[2]);
-            osg::Quat  brot = osg::Quat(osg::Vec4(skeleton->bones[b].quaternion[0], skeleton->bones[b].quaternion[1], 
-                skeleton->bones[b].quaternion[2], skeleton->bones[b].quaternion[3]));
-
-            // translation
-            ((pPat)skeleton->bones[b].node.get())->setPosition(bpos);
-
-            // quaternion
-            ((pPat)skeleton->bones[b].node.get())->setAttitude(brot);
-
-            // name
-            skeleton->bones[b].node.get()->setName(skeleton->bones[b].name);
-
-            // id
-            ((SkeletonNode*)skeleton->bones[b].node.get())->SetId(b);
-        }
-
-        // imho there should be only one root...
-        if (roots != 1)   
-            return false;
-
-        //skeleton_group->addChild(root_bone);
-        //root->addChild(skeleton_group);
-        model->addChild(root_bone);
-    }
-
-    return true;
-}

@@ -189,6 +189,7 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
             tempJoint.setType("ROOT") ;													//set the type
             tempJoint.setName("root") ;													//set the name
             tempJoint.setID(0);
+			tempJoint.setLength(1.0f);
             //No need to set parent for ROOT...
 
             token = strtok (NULL, " (),\t\n") ;
@@ -222,16 +223,19 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
                         if (Counter == 0)
                         {
                             tempOX = atof(token);
+							tempJoint.setDirX(tempOX);
                       //      tempJoint.setRootPosition(tempOX);
                         }
                         if (Counter == 1) 
                         {
                             tempOY = atof(token);
+							tempJoint.setDirY(tempOY);
                       //      tempJoint.setRootPosition(tempOY);
                         }
                         if (Counter == 2)
                         {
                             tempOZ = atof(token);
+							tempJoint.setDirZ(tempOZ);
                       //      tempJoint.setRootPosition(tempOZ);
                         }                                                        //HERE IS WHERE I TAKE
                         token = strtok (NULL, " (),\t\n") ;						// ORDER INTO CONSID.
@@ -302,18 +306,24 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
                         {
                             token = strtok (NULL, " (),\t\n") ;
                             dirX = atof(token) ;
+							tempJoint.setDirX(dirX);
+
                             //							printf ("dir X : %f\n", dirX) ;
                             token = strtok (NULL, " (),\t\n") ;
                             dirY = atof(token) ;
+							tempJoint.setDirY(dirY);
+
                             //							printf ("dir Y : %f\n", dirY) ;
                             token = strtok (NULL, " (),\t\n") ;
                             dirZ = atof(token) ;
+							tempJoint.setDirZ(dirZ);
                             //							printf ("dir Z : %f\n", dirZ) ;
                         }
                         else if (strcmp (token, "length") == 0)
                         {
                             token = strtok (NULL, " (),\t\n") ;
                             length = atof(token) ;
+							tempJoint.setLength(length);
                             //							printf ("LENGTH is : %f\n", len)  ;					//Now that we've got
                             dirX = dirX * length * globalScale ;					// the dirs and len's
                             dirY = dirY * length * globalScale ;					// we will compose and

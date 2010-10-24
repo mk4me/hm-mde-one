@@ -7,6 +7,126 @@
 #endif
 
 
+void CopyMatrix(double source[][4], double destinity[][4]) // kopiowanie macierzy
+{
+
+	for ( int i = 0; i < 4; i++ )
+		for ( int j = 0; j < 4; j++ ) 
+		{
+			destinity[i][j] = source[i][j];
+		}
+};
+
+void SetToProduct(double left[4][4], double right[4][4], double out[4][4]) // mnozenie macierzy
+{
+		// Mnozenie macierzy  alternarywna wersja dla macierzy matrix[][]
+		         int i, j, k;
+		         for(i = 0; i < 4; i++)
+		             for(j = 0; j < 4; j++)
+		                 out[i][j] = 0;
+		         for(i = 0; i < 4; i++) //ILWIERSZY
+		             for(j = 0; j < 4; j++) //ILWIERSZY
+		                 for(k = 0; k < 4; k++) //ILKOLUMN
+		                     out[i][j] = out[i][j] + left[i][k] * right[k][j];
+}
+
+void Invert(double source[][4], int m_actualsize, int m_maxsize)
+{
+
+	double *m_pData = new double[16];
+
+	m_pData[0] = source[0][0]; //11
+	m_pData[1] = source[0][1]; //12
+	m_pData[2] = source[0][2]; //13
+	m_pData[3] = source[0][3]; //14
+
+	m_pData[4] = source[1][0]; //21
+	m_pData[5] = source[1][1]; //22
+	m_pData[6] = source[1][2]; //23
+	m_pData[7] = source[1][3]; //24
+
+	m_pData[8] = source[2][0]; //31
+	m_pData[9] = source[2][1]; //32
+	m_pData[10] = source[2][2]; //33
+	m_pData[11] = source[2][3]; //34
+
+	m_pData[12] = source[3][0]; //41
+	m_pData[13] = source[3][1]; //42
+	m_pData[14] = source[3][2]; //43
+	m_pData[15] = source[3][3]; //44
+
+	for (int i=1; i < m_actualsize; i++) m_pData[i] /= m_pData[0]; // normalize row 0
+	for (int i=1; i < m_actualsize; i++)  { 
+		for (int j=i; j < m_actualsize; j++)  { // do a column of L
+			double sum = 0.0;
+			for (int k = 0; k < i; k++)  
+				sum += m_pData[j*m_maxsize+k] * m_pData[k*m_maxsize+i];
+			m_pData[j*m_maxsize+i] -= sum;
+		}
+		if (i == m_actualsize-1) continue;
+		for (int j=i+1; j < m_actualsize; j++)  {  // do a row of U
+			double sum = 0.0;
+			for (int k = 0; k < i; k++)
+				sum += m_pData[i*m_maxsize+k]*m_pData[k*m_maxsize+j];
+			m_pData[i*m_maxsize+j] = 
+				(m_pData[i*m_maxsize+j]-sum) / m_pData[i*m_maxsize+i];
+		}
+	}
+	for ( int i = 0; i < m_actualsize; i++ )  // invert L
+		for ( int j = i; j < m_actualsize; j++ )  {
+			double x = 1.0;
+			if ( i != j ) {
+				x = 0.0;
+				for ( int k = i; k < j; k++ ) 
+					x -= m_pData[j*m_maxsize+k]*m_pData[k*m_maxsize+i];
+			}
+			m_pData[j*m_maxsize+i] = x / m_pData[j*m_maxsize+j];
+		}
+		for ( int i = 0; i < m_actualsize; i++ )   // invert U
+			for ( int j = i; j < m_actualsize; j++ )  {
+				if ( i == j ) continue;
+				double sum = 0.0;
+				for ( int k = i; k < j; k++ )
+					sum += m_pData[k*m_maxsize+j]*( (i==k) ? 1.0 : m_pData[i*m_maxsize+k] );
+				m_pData[i*m_maxsize+j] = -sum;
+			}
+			for ( int i = 0; i < m_actualsize; i++ )   // final inversion
+				for ( int j = 0; j < m_actualsize; j++ )  {
+					double sum = 0.0;
+					for ( int k = ((i>j)?i:j); k < m_actualsize; k++ )  
+						sum += ((j==k)?1.0:m_pData[j*m_maxsize+k])*m_pData[k*m_maxsize+i];
+					m_pData[j*m_maxsize+i] = sum;
+				}
+
+				 source[0][0] = m_pData[0]; //11
+				 source[0][1] = m_pData[1]; //12
+				 source[0][2] = m_pData[2]; //13
+				 source[0][3] = m_pData[3]; //14
+
+				 source[1][0] = m_pData[4]; //21
+				 source[1][1] = m_pData[5]; //22
+				 source[1][2] = m_pData[6]; //23
+				 source[1][3] = m_pData[7]; //24
+
+				 source[2][0] = m_pData[8]; //31
+				 source[2][1] = m_pData[9]; //32
+				 source[2][2] = m_pData[10]; //33
+				 source[2][3] = m_pData[11]; //34
+
+				 source[3][0] = m_pData[12]; //41
+				 source[3][1] = m_pData[13]; //42
+				 source[3][2] = m_pData[14]; //43
+				 source[3][3] = m_pData[15]; //44
+};
+
+void LoadFromTranslationVec(float X, float Y, float Z, double m_pData[4][4])
+{
+	m_pData[0][0]=1;      m_pData[0][1]=0;       m_pData[0][2]=0; m_pData[0][3]=X;
+	m_pData[1][0]=0;	  m_pData[1][1]=1;       m_pData[1][2]=0; m_pData[1][3]=Y;
+	m_pData[2][0]=0;      m_pData[2][1]=0;       m_pData[2][2]=1; m_pData[2][3]=Z;
+	m_pData[3][0]=0;      m_pData[3][1]=0;       m_pData[3][2]=0; m_pData[3][3]=1;
+}
+
 /* Compute transpose of a matrix
 Input: matrix  a
 Output: matrix b = Transpose(a)

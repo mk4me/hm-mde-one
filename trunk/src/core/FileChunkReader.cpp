@@ -292,7 +292,9 @@ bool FileChunkReader::LoadMesh( Model* model )
                                         }
     
                                        // assert(!fmesh->skeleton);
-                                        model->SetSkeleton(skeleton);
+										//TODO R.Zowal
+										//SSkeleton* skeleton = new SSkeleton();
+                                        //model->SetSkeleton(skeleton);
     
                                         // EOF - if there is nothing more or file terminated by 0
                                         if (feof(m_pMeshFile) || (fileSize - ftell(m_pMeshFile) < 2))

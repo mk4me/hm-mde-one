@@ -72,7 +72,10 @@ class Channel
 
 private:
     int                 m_id;
-    int					type;				// Types are ROOT, JOINT, EFFECTOR, and NOTYPE
+	float				dirX, dirY, dirZ;
+	float				length;
+
+	int					type;				// Types are ROOT, JOINT, EFFECTOR, and NOTYPE
     char*				name;
     char*				parent;
     char*				rotationOrder;		// Rotation order is a string something like "XYZ"
@@ -104,6 +107,18 @@ public:
     void setRootPosition(float x, float y, float z);
     void getPosition(float &x, float &y, float &z);
     void getAxis(float &x, float &y, float &z);
+
+	float getDirX() const { return dirX; }
+	void setDirX(float val) { dirX = val; }
+
+	float getDirY() const { return dirY; }
+	void setDirY(float val) { dirY = val; }
+
+	float getDirZ() const { return dirZ; }
+	void setDirZ(float val) { dirZ = val; }
+
+	float getLength() const { return length; }
+	void setLength(float val) { length = val; }
 
 	void        getQuaternionFromEuler(int frameNum, float &w, float &x, float &y, float &z);
 

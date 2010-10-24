@@ -1,13 +1,20 @@
 #ifndef BONE_H
 #define BONE_H
 
+#include <vector>
+// This holds the names of a joint's children
+typedef std::vector<char*> childVector;
+
 //class Bone
 struct Bone
 {
-    struct Bone *sibling;		// Pointer to the sibling (branch bone) in the hierarchy tree 
-    struct Bone *child;			// Pointer to the child (outboard bone) in the hierarchy tree 
+	int idx;					// Bone inde
 
-    int idx;					// Bone index
+	char *name;
+    Bone *parent;		// Pointer to the sibling (branch bone) in the hierarchy tree 
+	std::vector<Bone *> child;			// Pointer to the child (outboard bone) in the hierarchy tree 
+	childVector			children;			// STL vector of char* to children names
+	char *parentName;
 
     float dir[3];				// Unit vector describes the direction from local origin to 
     // the origin of the child bone 
@@ -26,7 +33,6 @@ struct Bone
     int doftl;
     // dofx=1 if this bone has x degree of freedom, otherwise dofx=0.
 
-    char name[256];
     // rotation matrix from the local coordinate of this bone to the local coordinate system of it's parent
     double matrix[4][4];			
 

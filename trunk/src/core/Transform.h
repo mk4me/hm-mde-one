@@ -6,6 +6,11 @@ class Matrix
 
 };
 
+void CopyMatrix(double source[][4], double destinity[][4]);
+void SetToProduct(double left[4][4], double right[4][4], double out[4][4]);
+void Invert(double source[][4], int m_actualsize = 4, int m_maxsize = 4);
+void LoadFromTranslationVec(float X, float Y, float Z, double m_pData[4][4]);
+
 void matrix_transpose(double a[4][4], double b[4][4]);
 void matrix_print(char *str, double a[4][4]);
 void matrix_transform_affine(double m[4][4], double x, double y, double z, float pt[3]);

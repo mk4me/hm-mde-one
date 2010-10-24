@@ -75,6 +75,10 @@ Channel::Channel(const Channel& tempJoint)
     m_id = tempJoint.m_id;
     staticAxis = tempJoint.staticAxis;
     position = tempJoint.position;
+	dirX = tempJoint.dirX;
+	dirY = tempJoint.dirY;
+	dirZ = tempJoint.dirZ;
+	length = tempJoint.length;
 }
 
 // This returns the smallest Y value the markers have - this is used to calculate where
@@ -310,6 +314,10 @@ void Channel::getTranslation(int frameNum, float &xTranslate, float &yTranslate,
     }
     else
     {
+		xTranslate = 0;
+		yTranslate = 0;
+		zTranslate = 0;
+
         printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
     }
 }

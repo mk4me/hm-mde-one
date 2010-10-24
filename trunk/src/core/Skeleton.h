@@ -47,9 +47,9 @@ public:
     char * idx2name(int);
     int NUM_BONES_IN_ASF_FILE;
     int MOV_BONES_IN_ASF_FILE;
-private:
+//private:
     Bone *m_pRootBone;							// Pointer to the root bone, m_RootBone = &bone[0]
-    Bone  m_pBoneList[MAX_BONES_IN_ASF_FILE];   // Array with all skeleton bones
+	std::vector<Bone*> m_pBoneList;							// Array with all skeleton bones
 };
 
 int numBonesInSkel(Bone item);

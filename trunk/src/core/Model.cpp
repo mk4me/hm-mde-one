@@ -45,13 +45,13 @@ void Model::AddMesh( IMesh* mesh )
 }
 
 //--------------------------------------------------------------------------------------------------
-void Model::SetAnimation( SFAnimation* animation )
+void Model::SetAnimation( Frame* animation )
 {
     m_pAnimation = animation;
 }
 
 //--------------------------------------------------------------------------------------------------
-void Model::SetSkeleton( SSkeleton* skeleton )
+void Model::SetSkeleton(Skeleton* skeleton )
 {
     m_pSkeleton = skeleton;
 }
@@ -111,7 +111,7 @@ std::vector<IMesh* >& Model::GetMeshList()
 }
 
 //--------------------------------------------------------------------------------------------------
-SSkeleton* Model::GetSkeleton()
+Skeleton* Model::GetSkeleton()
 {
     if(m_pSkeleton)
         return m_pSkeleton;
@@ -120,7 +120,7 @@ SSkeleton* Model::GetSkeleton()
 }
 
 //--------------------------------------------------------------------------------------------------
-SFAnimation* Model::GetAnimation()
+Frame* Model::GetAnimation()
 {
     if(m_pAnimation)
         return m_pAnimation;
@@ -204,24 +204,28 @@ void Model::DrawModelBone()
 	_skeletonGeode->setName("skeleton_geode");
 
 	// Drawing Bones
-	int childNum = this->getNumChildren();
-	for (int i = 0; i < childNum; ++i)
-	{		
-		osg::Group* group = dynamic_cast<SkeletonNode*>(this->getChild(i));
-		if (group)
-		{
-			//////////////////////////////////////////////////////////////////////////
-			// get skeleton and set pointer at him as member
-			osg::ref_ptr<osg::Group> skeleton = this->getChild(i)->asGroup();
 
-			pPat root_bone = (pPat)(skeleton.get());
 
-			for (unsigned int b = 0; b < root_bone->getNumChildren(); ++b)
-				if (dynamic_cast<SkeletonNode*>(root_bone->getChild(b)))
-					this->DrawBone((pPat)root_bone->getChild(b), &root_bone->getPosition(), &root_bone->getAttitude(), _skeletonGeode);
+	Bone* bone = m_pSkeleton->m_pRootBone;
+	int childcount = bone->child.size();
 
-			this->addChild(_skeletonGeode);
-		}
+	for (int i = 0; i<childcount; i++)
+	{
+		this->DrawBone(bone->child[i], _skeletonGeode);
+	}
+
+	this->addChild(_skeletonGeode);
+
+}
+
+void Model::DrawBone( Bone* bone, osg::Geode* geode)
+{
+	geode->addDrawable(DrawLine(&osg::Vec3f((bone->parent)->positionx, (bone->parent)->positiony, (bone->parent)->positionz), &osg::Vec3f(bone->positionx,bone->positiony,bone->positionz), false));
+
+	int childcount = bone->child.size();
+	for (int i = 0; i<childcount; i++)
+	{
+		this->DrawBone(bone->child[i], geode);
 	}
 }
 
@@ -296,7 +300,7 @@ void Model::DrawBone( osg::PositionAttitudeTransform* bone, const osg::Vec3d* pa
        // brot = -brot;
     }
    
-    geode->addDrawable(DrawLine(parentPos, &bpos, isSelected));
+   // geode->addDrawable(DrawLine(parentPos, &bpos, isSelected));
 
 //     boneNodeLeftArm = osg::Vec3(distanceHightToArm, -distanceWidthToArm, 0.f);
 //     boneNodeRightArm = osg::Vec3(distanceHightToArm, distanceWidthToArm, 0.f);
@@ -323,6 +327,7 @@ void Model::DrawBone( osg::PositionAttitudeTransform* bone, const osg::Vec3d* pa
         if (dynamic_cast<SkeletonNode*>(bone->getChild(b)))
             DrawBone((pPat)bone->getChild(b), &bpos, &brot, geode);
 }
+
 
 //--------------------------------------------------------------------------------------------------
 osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, 
@@ -393,7 +398,7 @@ osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, cons
 }
 
 //--------------------------------------------------------------------------------------------------
-osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3d* startPos, const osg::Vec3d* endPos, bool isSelected)
+osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3f* startPos, const osg::Vec3f* endPos, bool isSelected)
 {
     // draw actual bone
     osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
