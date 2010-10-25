@@ -263,242 +263,132 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
      LoadAnimation(acclaimObject, model);
 }
 
+//--------------------------------------------------------------------------------------------------
 void calculateMatrix(Bone *bone)
 {
-	double C[4][4];
-	double Cinv[4][4];
-	double B[4][4];
+    double C[4][4];
+    double Cinv[4][4];
+    double B[4][4];
 
-	int i;
-	double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
+    int i;
+    double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
 
-	rotationZ(Rz, -bone->axis_z);
-	rotationY(Ry, -bone->axis_y);
-	rotationX(Rx, -bone->axis_x);
-	matrix_mult(Rz, Ry, tmp);
-	matrix_mult(tmp, Rx, C);
+    rotationZ(Rz, -bone->axis_z);
+    rotationY(Ry, -bone->axis_y);
+    rotationX(Rx, -bone->axis_x);
+    matrix_mult(Rz, Ry, tmp);
+    matrix_mult(tmp, Rx, C);
 
-	//matrix_transpose(tmp2, C);   
+    //matrix_transpose(tmp2, C);   
 
-	float x,y,z;
-	float lenght = bone->length;
-	x = bone->dir[0] * lenght;
-	y = bone->dir[1] * lenght;
-	z = bone->dir[2] * lenght;
+    float x,y,z;
+    float lenght = bone->length;
+    x = bone->dir[0] * lenght;
+    y = bone->dir[1] * lenght;
+    z = bone->dir[2] * lenght;
 
-	LoadFromTranslationVec(x,y,z,B);
-	//matrix_transpose(tmp, B);   
+    LoadFromTranslationVec(x,z,y,B);
+    //matrix_transpose(tmp, B);   
 
-	//CopyMatrix(Cinv,C);
+    //CopyMatrix(Cinv,C);
 
-	for ( int i = 0; i < 4; i++ )
-		for ( int j = 0; j < 4; j++ ) 
-		{
-			Cinv[i][j] = C[i][j];
-		}
+    for ( int i = 0; i < 4; i++ )
+        for ( int j = 0; j < 4; j++ ) 
+        {
+            Cinv[i][j] = C[i][j];
+        }
 
-	// 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
-	// 																C[1][0], C[1][1], C[1][2], C[1][3],
-	// 																C[2][0], C[2][1], C[2][2], C[2][3],
-	// 																C[3][0], C[3][1], C[3][2], C[3][3]));
+        // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
+        // 																C[1][0], C[1][1], C[1][2], C[1][3],
+        // 																C[2][0], C[2][1], C[2][2], C[2][3],
+        // 																C[3][0], C[3][1], C[3][2], C[3][3]));
 
-	Invert(Cinv);
+        Invert(Cinv);
 
-	SetToProduct(Cinv, C, tmp);
-	SetToProduct(tmp, B, tmp2);
+        SetToProduct(Cinv, C, tmp);
+        SetToProduct(tmp, B, tmp2);
 
-	SetToProduct(bone->parent->matrix, tmp2, bone->matrix);
+        SetToProduct(bone->parent->matrix, tmp2, bone->matrix);
 
-	bone->positionx = bone->matrix[0][3];
-	bone->positiony = bone->matrix[1][3];
-	bone->positionz = bone->matrix[2][3];
+        bone->positionx = bone->matrix[0][3];
+        bone->positiony = bone->matrix[1][3];
+        bone->positionz = bone->matrix[2][3];
 
-	int childrenCount = bone->child.size();
-	for(int i = 0; i<childrenCount; i++)
-	{
-		calculateMatrix(bone->child[i]);
-	}
+        int childrenCount = bone->child.size();
+        for(int i = 0; i<childrenCount; i++)
+        {
+            calculateMatrix(bone->child[i]);
+        }
 }
 
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadSkeleton(Model* model)
 {
-	if(!model->GetSkeleton())
-		return false;
-
-// 	float C[4][4];
-// 	float Cinv[4][4];
-// 	float B[4][4];
+    if(!model->GetSkeleton())
+        return false;
 
 
-	Skeleton* skeleton = model->GetSkeleton();
-
-	//for(std::vector<Bone*>::iterator it = skeleton->m_pBoneList.begin(); it != skeleton->m_pBoneList.end(); it++)
-	//{
-	Bone *bone = skeleton->m_pRootBone;
-
-		double C[4][4];
-		double Cinv[4][4];
-		double B[4][4];
-
-		int i;
-		double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
-
-		rotationZ(Rz, bone->axis_z);
-		rotationY(Ry, bone->axis_y);
-		rotationX(Rx, bone->axis_x);
-		matrix_mult(Rz, Ry, tmp);
-		matrix_mult(tmp, Rx, C);
-
-		//matrix_transpose(tmp2, C);   
-
-		float x,y,z;
-		float lenght = bone->length;
-		x = bone->dir[0] * lenght;
-		y = bone->dir[1] * lenght;
-		z = bone->dir[2] * lenght;
-
-		LoadFromTranslationVec(x,y,z,B);
-		//matrix_transpose(tmp, B);   
-
-		//CopyMatrix(Cinv,C);
-
-		for ( int i = 0; i < 4; i++ )
-			for ( int j = 0; j < 4; j++ ) 
-			{
-				Cinv[i][j] = C[i][j];
-			}
-
-// 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
-// 																C[1][0], C[1][1], C[1][2], C[1][3],
-// 																C[2][0], C[2][1], C[2][2], C[2][3],
-// 																C[3][0], C[3][1], C[3][2], C[3][3]));
-
-		Invert(Cinv);
-
-		SetToProduct(Cinv, C, tmp);
-		SetToProduct(tmp, B, bone->matrix);
-
-		bone->positionx = bone->matrix[0][3];
-		bone->positiony = bone->matrix[1][3];
-		bone->positionz = bone->matrix[2][3];
+    Skeleton* skeleton = model->GetSkeleton();
 
 
+    Bone *bone = skeleton->m_pRootBone;
 
-		int childrenCount = bone->child.size();
-		for(int i = 0; i<childrenCount; i++)
-		{
-			calculateMatrix(bone->child[i]);
-		}
+    double C[4][4];
+    double Cinv[4][4];
+    double B[4][4];
 
-	//}
+    int i;
+    double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
 
-	//     if (model->GetSkeleton() && skeleton->bones_count > 0)
-	//     {
-	//         // skeleton
-	// 
-	//         //ref_ptr<Group> skeleton_group = new Group();
-	//         //skeleton_group->setName("skeleton");
-	// 
-	//         osg::ref_ptr<osg::Group> root_bone = new SkeletonNode();
-	//         int roots = 0;
-	// 
-	//         for (int b = 0; b < skeleton->bones_count; ++b)
-	//         {	
-	//             // load skeleton
-	//             // set parents
-	//             if (skeleton->bones[b].parent_id == -1) // handle root
-	//             {
-	//                 skeleton->bones[b].node = root_bone;				
-	//                 ++roots;
-	//             }
-	//             else
-	//             {
-	//                 skeleton->bones[b].node = new SkeletonNode();
-	// 
-	//                 // i assume that bones are in order defined by their hierarchy
-	//                 skeleton->bones[skeleton->bones[b].parent_id].node->addChild(skeleton->bones[b].node);
-	//             }
-	// 
-	//             // get pos and rot
-	//             osg::Vec3d bpos = osg::Vec3(skeleton->bones[b].translation[0], skeleton->bones[b].translation[1],skeleton->bones[b].translation[2]);
-	//             osg::Quat  brot = osg::Quat(osg::Vec4(skeleton->bones[b].quaternion[0], skeleton->bones[b].quaternion[1], 
-	//                 skeleton->bones[b].quaternion[2], skeleton->bones[b].quaternion[3]));
-	// 
-	//             // translation
-	//             ((pPat)skeleton->bones[b].node.get())->setPosition(bpos);
-	// 
-	//             // quaternion
-	//             ((pPat)skeleton->bones[b].node.get())->setAttitude(brot);
-	// 
-	//             // name
-	//             skeleton->bones[b].node.get()->setName(skeleton->bones[b].name);
-	// 
-	//             // id
-	//             ((SkeletonNode*)skeleton->bones[b].node.get())->SetId(b);
-	//         }
-	// 
-	//         // imho there should be only one root...
-	//         if (roots != 1)   
-	//             return false;
-	// 
-	//         //skeleton_group->addChild(root_bone);
-	//         //root->addChild(skeleton_group);
-	//         model->addChild(root_bone);
-	//     }
+    rotationZ(Rz, bone->axis_z);
+    rotationY(Ry, bone->axis_y);
+    rotationX(Rx, bone->axis_x);
+    matrix_mult(Rz, Ry, tmp);
+    matrix_mult(tmp, Rx, C);
 
-	return true;
+    //matrix_transpose(tmp2, C);   
+
+    float x,y,z;
+    float lenght = bone->length;
+    x = bone->dir[0] * lenght;
+    y = bone->dir[1] * lenght;
+    z = bone->dir[2] * lenght;
+
+    LoadFromTranslationVec(x,z,y,B);
+    //matrix_transpose(tmp, B);   
+
+    //CopyMatrix(Cinv,C);
+
+    for ( int i = 0; i < 4; i++ )
+        for ( int j = 0; j < 4; j++ ) 
+        {
+            Cinv[i][j] = C[i][j];
+        }
+
+        // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
+        // 																C[1][0], C[1][1], C[1][2], C[1][3],
+        // 																C[2][0], C[2][1], C[2][2], C[2][3],
+        // 																C[3][0], C[3][1], C[3][2], C[3][3]));
+
+        Invert(Cinv);
+
+        SetToProduct(Cinv, C, tmp);
+        SetToProduct(tmp, B, bone->matrix);
+
+        bone->positionx = bone->matrix[0][3];
+        bone->positiony = bone->matrix[1][3];
+        bone->positionz = bone->matrix[2][3];
+
+        int childrenCount = bone->child.size();
+        for(int i = 0; i<childrenCount; i++)
+        {
+            calculateMatrix(bone->child[i]);
+        }
+
+
+        return true;
 }
 
-/*
-void Invert()
-{
-if (m_actualsize <= 0) return;  // sanity check
-if (m_actualsize == 1) return;  // must be of dimension >= 2
-for (int i=1; i < m_actualsize; i++) m_pData[i] /= m_pData[0]; // normalize row 0
-for (int i=1; i < m_actualsize; i++)  { 
-for (int j=i; j < m_actualsize; j++)  { // do a column of L
-D sum = 0.0;
-for (int k = 0; k < i; k++)  
-sum += m_pData[j*m_maxsize+k] * m_pData[k*m_maxsize+i];
-m_pData[j*m_maxsize+i] -= sum;
-}
-if (i == m_actualsize-1) continue;
-for (int j=i+1; j < m_actualsize; j++)  {  // do a row of U
-D sum = 0.0;
-for (int k = 0; k < i; k++)
-sum += m_pData[i*m_maxsize+k]*m_pData[k*m_maxsize+j];
-m_pData[i*m_maxsize+j] = 
-(m_pData[i*m_maxsize+j]-sum) / m_pData[i*m_maxsize+i];
-}
-}
-for ( int i = 0; i < m_actualsize; i++ )  // invert L
-for ( int j = i; j < m_actualsize; j++ )  {
-D x = 1.0;
-if ( i != j ) {
-x = 0.0;
-for ( int k = i; k < j; k++ ) 
-x -= m_pData[j*m_maxsize+k]*m_pData[k*m_maxsize+i];
-}
-m_pData[j*m_maxsize+i] = x / m_pData[j*m_maxsize+j];
-}
-for ( int i = 0; i < m_actualsize; i++ )   // invert U
-for ( int j = i; j < m_actualsize; j++ )  {
-if ( i == j ) continue;
-D sum = 0.0;
-for ( int k = i; k < j; k++ )
-sum += m_pData[k*m_maxsize+j]*( (i==k) ? 1.0 : m_pData[i*m_maxsize+k] );
-m_pData[i*m_maxsize+j] = -sum;
-}
-for ( int i = 0; i < m_actualsize; i++ )   // final inversion
-for ( int j = 0; j < m_actualsize; j++ )  {
-D sum = 0.0;
-for ( int k = ((i>j)?i:j); k < m_actualsize; k++ )  
-sum += ((j==k)?1.0:m_pData[j*m_maxsize+k])*m_pData[k*m_maxsize+i];
-m_pData[j*m_maxsize+i] = sum;
-}
-};
-*/
 
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadMesh(std::wstring* address, Model* model)
