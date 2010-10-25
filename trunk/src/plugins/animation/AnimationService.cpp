@@ -198,9 +198,9 @@ AsyncResult AnimationService::update(double time, double timeDelta)
 	{
 		// update animation
 		(*m_pAnimation)(targetTime);
-        UpdateSkeleton();
-        RecalculateChanges();
-        UpdateMesh();
+  //      UpdateSkeleton();
+  //      RecalculateChanges();
+  //      UpdateMesh();
 
 		m_pModel->DrawModelBone();
 
@@ -254,24 +254,24 @@ void AnimationService::LoadAnimation( IModel* model )
 
     m_pModel = model;
 
-    m_pJoints = model->GetJoints();
-    m_skeleton = (osg::Group*)model->GetSkeletonGroup();
-
-    if(!m_pJoints || !m_skeleton)
-        return;
-
-
-    m_numOfBones = m_pJoints->size();
-    m_numOfBones += 1; // because we don't added first node (root_of_Skeleton)
-
-    // get 'global' (? - not another transformations but entire propagated from root) 
-    // transformations of bones
-    m_pActualBones = new STransform [m_numOfBones];
-    UpdateSkeleton();
-
-    // save initial values
-    m_pInitialBones = new STransform [m_numOfBones];
-    memcpy(m_pInitialBones, m_pActualBones, sizeof(STransform) * m_numOfBones);
+//     m_pJoints = model->GetJoints();
+//     m_skeleton = (osg::Group*)model->GetSkeletonGroup();
+// 
+//     if(!m_pJoints || !m_skeleton)
+//         return;
+// 
+// 
+//     m_numOfBones = m_pJoints->size();
+//     m_numOfBones += 1; // because we don't added first node (root_of_Skeleton)
+// 
+//     // get 'global' (? - not another transformations but entire propagated from root) 
+//     // transformations of bones
+//     m_pActualBones = new STransform [m_numOfBones];
+//     UpdateSkeleton();
+// 
+//     // save initial values
+//     m_pInitialBones = new STransform [m_numOfBones];
+//     memcpy(m_pInitialBones, m_pActualBones, sizeof(STransform) * m_numOfBones);
 
     //////////////////////////////////////////////////////////////////////////
     // handle animations
@@ -279,23 +279,25 @@ void AnimationService::LoadAnimation( IModel* model )
     // extract number of animations				
     unsigned int numOfAnims = 0;
     vector<string> names;
-    for (vector<ISkeletonNode*>::iterator i = m_pJoints->begin(); i != m_pJoints->end(); ++i)
-    {
-        if ((*i)->GetNumOfAnimations() > numOfAnims)
-        {					
-            for (unsigned int j = numOfAnims; j < (*i)->GetNumOfAnimations(); ++j)
-                names.push_back((*(*i)->GetAnimations())[j]->GetName());
+//     for (vector<ISkeletonNode*>::iterator i = m_pJoints->begin(); i != m_pJoints->end(); ++i)
+//     {
+//         if ((*i)->GetNumOfAnimations() > numOfAnims)
+//         {					
+//             for (unsigned int j = numOfAnims; j < (*i)->GetNumOfAnimations(); ++j)
+//                 names.push_back((*(*i)->GetAnimations())[j]->GetName());
+// 
+//             numOfAnims = (*i)->GetNumOfAnimations();
+//         }
+//     }
 
-            numOfAnims = (*i)->GetNumOfAnimations();
-        }
-    }
-
-    int counting = m_pJoints->size();
+	names.push_back("anim_test");
+	numOfAnims++;
+//    int counting = m_pJoints->size();
 
     // create animations
     for (unsigned int i = 0; i < numOfAnims; ++i)
     {
-        Animation* animation = new Animation(m_pJoints, i, this);
+        Animation* animation = new Animation(model->GetSkeleton(), this);
         m_animations.insert(make_pair(names[i], animation));	
     }
     

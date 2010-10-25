@@ -2,27 +2,34 @@
 
 #include <core/IServiceManager.h>
 #include <plugins/animation/AnimationService.h>
+#include <core/Transform.h>
 
 using namespace std;
 
+#define TIMERMULTIPLAY 0.02
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
 
 //--------------------------------------------------------------------------------------------------
-Animation::Animation(std::vector<ISkeletonNode*>* root, unsigned int id, AnimationService* animationService):
+Animation::Animation(Skeleton* skeleton, AnimationService* animationService):
   m_pAnimationService(animationService)
+, m_pSkeleton(skeleton)
 , _state(Animation::STOPPED)
 , _actTime(0.0), _length(0.0)
-, _bones(root)
-, _id(id)
+, _bones(NULL)
+, _id(0)
 , _prevTime(0.0)
 , _isStartAnimation(true)
 , _firstNodeTime(0.0)
 {
-    // get length of this animation
-    for (vector<ISkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
-        if((*i)->GetNumOfAnimations() > 0)
-            if ((*i)->GetNumOfAnimations() && _length < ANIMATION_GROUP(*i)->getLength())
-                _length = ANIMATION_GROUP(*i)->getLength();
+//     // get length of this animation
+//     for (vector<ISkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
+//         if((*i)->GetNumOfAnimations() > 0)
+//             if ((*i)->GetNumOfAnimations() && _length < ANIMATION_GROUP(*i)->getLength())
+//                 _length = ANIMATION_GROUP(*i)->getLength();
+
+	// ilosc kosci = ilosc obiektów frame w dablicy
+	m_pFrameCount = skeleton->m_pRootBone->frame.size();
+	_length = skeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -63,28 +70,28 @@ void Animation::FirstFrame()
 	_actTime	= 0.0;
 	_prevTime	= 0.0;
 
-	for (vector<ISkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
-	{
-		// if animated bone
-		if ((*i)->GetNumOfAnimations())
-		{
-			// get animation group
-			IAnimationGroup* ag = ANIMATION_GROUP(*i);
-
-            if(ag->getLength() <= 0)
-                continue;
-
-			// reset...
-			ag->setPosition(0);
-
-			// set key frame no. 0
-			osg::Vec3d zeroTrans = ag->getActNode()->GetPosition();
-			osg::Quat  zeroQuat  = ag->getActNode()->GetAttitude();
-
-			(*i)->SetPosition(zeroTrans);
-			(*i)->SetAttitude(zeroQuat);
-		}
-	}
+// 	for (vector<ISkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
+// 	{
+// 		// if animated bone
+// 		if ((*i)->GetNumOfAnimations())
+// 		{
+// 			// get animation group
+// 			IAnimationGroup* ag = ANIMATION_GROUP(*i);
+// 
+//             if(ag->getLength() <= 0)
+//                 continue;
+// 
+// 			// reset...
+// 			ag->setPosition(0);
+// 
+// 			// set key frame no. 0
+// 			osg::Vec3d zeroTrans = ag->getActNode()->GetPosition();
+// 			osg::Quat  zeroQuat  = ag->getActNode()->GetAttitude();
+// 
+// 			(*i)->SetPosition(zeroTrans);
+// 			(*i)->SetAttitude(zeroQuat);
+// 		}
+// 	}
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -201,62 +208,180 @@ double Animation::SetPogress(double t)
 }
 
 //--------------------------------------------------------------------------------------------------
+void Animation::calculateMatrix(Bone *bone)
+{
+	int index = _actTime / TIMERMULTIPLAY;
+
+	if(index > m_pFrameCount - 1)
+	{
+		_state = Animation::STOPPED;
+		index = m_pFrameCount -1;
+	}
+
+	double C[4][4];
+	double Cinv[4][4];
+	double B[4][4];
+
+	double M[4][4];
+
+
+
+	int i;
+	double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
+
+	//motion matrix
+	rotationZ(Rz, bone->frame[index]->rotz);
+	rotationY(Ry, bone->frame[index]->roty);
+	rotationX(Rx, bone->frame[index]->rotx);
+	matrix_mult(Rz, Ry, tmp);
+	matrix_mult(tmp, Rx, M);
+
+	M[0][3]=bone->frame[index]->translationx;
+	M[1][3]=bone->frame[index]->translationy;
+	M[2][3]=bone->frame[index]->translationz;
+
+
+
+	rotationZ(Rz, bone->axis_z);
+	rotationY(Ry, bone->axis_y);
+	rotationX(Rx, bone->axis_x);
+	matrix_mult(Rz, Ry, tmp);
+	matrix_mult(tmp, Rx, C);
+
+	//matrix_transpose(tmp2, C);   
+
+	float x,y,z;
+	float lenght = bone->length;
+	x = bone->dir[0] * lenght;
+	y = bone->dir[1] * lenght;
+	z = bone->dir[2] * lenght;
+
+	LoadFromTranslationVec(x,y,z,B);
+	//matrix_transpose(tmp, B);   
+
+	//CopyMatrix(Cinv,C);
+
+	for ( int i = 0; i < 4; i++ )
+		for ( int j = 0; j < 4; j++ ) 
+		{
+			Cinv[i][j] = C[i][j];
+		}
+
+		// 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
+		// 																C[1][0], C[1][1], C[1][2], C[1][3],
+		// 																C[2][0], C[2][1], C[2][2], C[2][3],
+		// 																C[3][0], C[3][1], C[3][2], C[3][3]));
+
+		Invert(Cinv);
+
+		SetToProduct(Cinv, M, tmp);
+		SetToProduct(tmp, C, tmp2);
+		SetToProduct(tmp2, B, tmp);
+		SetToProduct(bone->parent->matrix, tmp, bone->matrix);
+
+		bone->positionx = bone->matrix[0][3];
+		bone->positiony = bone->matrix[1][3];
+		bone->positionz = bone->matrix[2][3];
+
+
+
+		int childrenCount = bone->child.size();
+		for(int i = 0; i<childrenCount; i++)
+		{
+			calculateMatrix(bone->child[i]);
+		}
+}
+
+//--------------------------------------------------------------------------------------------------
 // update model - updates only mesh etc taking skeleton
 // into consideration - called by update
 void Animation::UpdateModel()
 {
 	// update skeleton
 	// for every bone
-	for (vector<ISkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
+
+	int index = _actTime / TIMERMULTIPLAY;
+
+	if(index > m_pFrameCount - 1)
 	{
-		// if animated bone
-		if ((*i)->GetNumOfAnimations())
-		{
-			// get animation group
-			IAnimationGroup* ag = ANIMATION_GROUP(*i);
-
-			// get progress of actual part of animation
-
-            if(ag->getLength() <=0)
-                continue;
-
-			double progress = MoveToProperPart(ag);
-
-			// transform bone
-			osg::Vec3d oldTrans = (*i)->GetPosition();
-			osg::Quat  oldQuat  = (*i)->GetAttitude();
-
-			osg::Vec3d targetTrans = ag->getActNode()->GetPosition();
-			osg::Quat  targetQuat  = ag->getActNode()->GetAttitude();
-
-			// interpolate transformations
-			osg::Vec3d newTrans = oldTrans + (targetTrans - oldTrans) * progress;
-			osg::Quat  newQuat;  
-			newQuat.slerp(progress, oldQuat, targetQuat);
-
-			(*i)->SetPosition(newTrans);
-			(*i)->SetAttitude(newQuat);
-
-			// stop condition
-			if (!ag->next() && fabs(progress - 1.0) < 0.000000001)
-				_state = Animation::STOPPED;
-			else
-				_state = Animation::PLAYING;
-		}
+		_state = Animation::STOPPED;
+		index = m_pFrameCount -1;
 	}
 
+	int boundCount = m_pSkeleton->m_pBoneList.size();
+	Bone* bone = m_pSkeleton->m_pRootBone;
 
+	double C[4][4];
+	double Cinv[4][4];
+	double B[4][4];
 
-	// update mesh
+	double M[4][4];
+
 	
-    //_model->Update();
-	
-    //	_model->drawNormals(2.0f);
-	//	_model->test();
-	//	_model->updateSkeletonMesh();
 
-	// save previous time
-	_prevTime = _actTime;
+	int i;
+	double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
+
+	//motion matrix
+	rotationZ(Rz, bone->frame[index]->rotz);
+	rotationY(Ry, bone->frame[index]->roty);
+	rotationX(Rx, bone->frame[index]->rotx);
+	matrix_mult(Rz, Ry, tmp);
+	matrix_mult(tmp, Rx, M);
+
+	M[0][3]=bone->frame[index]->translationx;
+	M[1][3]=bone->frame[index]->translationy;
+	M[2][3]=bone->frame[index]->translationz;
+
+
+
+	rotationZ(Rz, bone->axis_z);
+	rotationY(Ry, bone->axis_y);
+	rotationX(Rx, bone->axis_x);
+	matrix_mult(Rz, Ry, tmp);
+	matrix_mult(tmp, Rx, C);
+
+	//matrix_transpose(tmp2, C);   
+
+	float x,y,z;
+	float lenght = bone->length;
+	x = bone->dir[0] * lenght;
+	y = bone->dir[1] * lenght;
+	z = bone->dir[2] * lenght;
+
+	LoadFromTranslationVec(x,y,z,B);
+	//matrix_transpose(tmp, B);   
+
+	//CopyMatrix(Cinv,C);
+
+	for ( int i = 0; i < 4; i++ )
+		for ( int j = 0; j < 4; j++ ) 
+		{
+			Cinv[i][j] = C[i][j];
+		}
+
+		// 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
+		// 																C[1][0], C[1][1], C[1][2], C[1][3],
+		// 																C[2][0], C[2][1], C[2][2], C[2][3],
+		// 																C[3][0], C[3][1], C[3][2], C[3][3]));
+
+		Invert(Cinv);
+
+		SetToProduct(Cinv, M, tmp);
+		SetToProduct(tmp, C, tmp2);
+		SetToProduct(tmp2, B, bone->matrix);
+
+		bone->positionx = bone->matrix[0][3];
+		bone->positiony = bone->matrix[1][3];
+		bone->positionz = bone->matrix[2][3];
+
+
+
+		int childrenCount = bone->child.size();
+		for(int i = 0; i<childrenCount; i++)
+		{
+			calculateMatrix(bone->child[i]);
+		}
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -274,7 +399,7 @@ void Animation::Update(double dt)
 	}
 
 	// update time flow
-	_actTime += dt;
+	_actTime = dt;
 
 	// update model
 	UpdateModel();
@@ -294,10 +419,10 @@ void Animation::SetTime( double time )
     }
 
     // update time flow
-    _actTime = time;
+    //_actTime = time;
 
     // update model
-    UpdateModel();
+    Update(time);
 }
 
 //--------------------------------------------------------------------------------------------------

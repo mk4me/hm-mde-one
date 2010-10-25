@@ -5,6 +5,8 @@
 #include <core/ISkeletonNode.h>
 #include <core/IAnimationNode.h>
 #include <core/IAnimationGroup.h>
+#include <core/Skeleton.h>
+#include <core/Frame.h>
 
 
 class IModel;
@@ -27,7 +29,7 @@ public:
     };
 
 public: 
-    Animation(std::vector<ISkeletonNode*>* root, unsigned int id, AnimationService* animationService);
+    Animation(Skeleton* skeleton, AnimationService* animationService);
 
     // play
     void Play();
@@ -61,7 +63,13 @@ private:
     // set transformations from frame 0
     void FirstFrame();
 
+	void calculateMatrix(Bone* bone);
+
 private: 
+
+	Skeleton* m_pSkeleton;
+	int m_pFrameCount;
+
     // act time of animation
     double _actTime;
     // last time of animation (are we going backwards of forwards?)

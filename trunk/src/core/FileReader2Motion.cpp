@@ -18,7 +18,7 @@
 #include "Transform.h"
 #include "Frame.h"
 
-#define TIMERMULTIPLAY 0.01
+#define TIMERMULTIPLAY 0.02
 
 
 // helper - this name is quite long...
@@ -340,9 +340,9 @@ bool FileReader2Motion::LoadSkeleton(Model* model)
 		int i;
 		double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
 
-		rotationZ(Rz, -bone->axis_z);
-		rotationY(Ry, -bone->axis_y);
-		rotationX(Rx, -bone->axis_x);
+		rotationZ(Rz, bone->axis_z);
+		rotationY(Ry, bone->axis_y);
+		rotationX(Rx, bone->axis_x);
 		matrix_mult(Rz, Ry, tmp);
 		matrix_mult(tmp, Rx, C);
 
@@ -552,28 +552,34 @@ bool FileReader2Motion::LoadAnimation( SFModel* fmodel, Model* model )
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model )
 {
+	Skeleton* skeleton = model->GetSkeleton();
 	Channel* joint = acclaimObject->getCurrentJointPointer();
 	int boneCount = acclaimObject->getNumberOfJoints();
 
-	Frame* frame =new Frame[boneCount];
 	for(int i = 0; i < boneCount; i++)
 	{
-		frame[i].idx = joint->getID();
+		std::vector<Frame*> frames;
 
 		for(int j = 0; j< acclaimObject->getNumberOfFrames(); j++)
 		{
-			Srot* roation = new Srot();
-			Stran* translation = new Stran();
-
-			joint->getRotation(j+1, roation->rotx, roation->roty, roation->rotz);
-			joint->getTranslation(j+1, translation->translationx, translation->translationy, translation->translationz);
-
-			frame[i].rotation.push_back(roation);
-			frame[i].translation.push_back(translation);
+			Frame* frame =new Frame();
+			frame->m_time = j/TIMERMULTIPLAY;
+			joint->getRotation(j+1, frame->rotx, frame->roty, frame->rotz);
+			joint->getTranslation(j+1, frame->translationx, frame->translationy, frame->translationz);
+			frames.push_back(frame);
 		}
-	}
+		
+		for(int b = 0; b <boneCount; b++)
+		{
+			if(joint->getID()== skeleton->m_pBoneList[b]->idx)
+			{
+				skeleton->m_pBoneList[b]->frame = frames;
+			}
+		}
 
-	model->SetAnimation(frame);
+
+		joint++;
+	}
 
 //     std::wstring animationName = L"testing";
 //     SFAnimation* animations = new SFAnimation();

@@ -306,6 +306,14 @@ void Channel::setRotation(int frameNum, float xRotate, float yRotate, float zRot
 // Gets the requested frame's translation values
 void Channel::getTranslation(int frameNum, float &xTranslate, float &yTranslate, float &zTranslate)
 {
+	if(frames.size() <1)
+	{
+		xTranslate = 0;
+		yTranslate = 0;
+		zTranslate = 0;
+		return;
+	}
+
     frameData tempFrameData = frames[ frameNum-1 ];
     if(tempFrameData.size() == 6){
         xTranslate = tempFrameData[0];
@@ -314,10 +322,6 @@ void Channel::getTranslation(int frameNum, float &xTranslate, float &yTranslate,
     }
     else
     {
-		xTranslate = 0;
-		yTranslate = 0;
-		zTranslate = 0;
-
         printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
     }
 }
