@@ -36,7 +36,7 @@ void OsgControlWidget::animationSelectionChanged()
         std::string anim = "";
         QListWidgetItem* item = *selected.begin();
         QString	str = item->text();
-        anim = str.toAscii().constData();			
+        anim = str.toAscii().constData();
         if ( anim == "[none]")   {
             m_pAnimationService->SetSelectedAnimationName("");
             m_pAnimationService->PlayAnimation("");
@@ -83,10 +83,10 @@ void OsgControlWidget::SetScene( osg::Node *scene, IServiceManager *pServiceMana
 {
     // clear...
     ClearScene(); 
-    m_pAnimationService = dynamic_cast<AnimationService*>(pServiceManager->getService(AnimationService::getClassID()));
+    m_pAnimationService = dynamic_cast<AnimationService*>(pServiceManager->getService(AnimationService::getClassID()).get());
 
+    
     std::map<std::string, Animation*>* animations = m_pAnimationService->GetAnimations();
-
     for (std::map<std::string, Animation*>::iterator i = animations->begin(); i != animations->end(); ++i)
     {
         QListWidgetItem *nodeListItem = new QListWidgetItem(animationList); 

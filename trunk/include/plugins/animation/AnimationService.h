@@ -188,4 +188,9 @@ void AnimationService::RegisterOnStopFunction(T* object, void (T::*fun)())
     m_functionsToCallWhenAnimationStopped.push_back(new CSimpleNoArgFunctor<T>(object, fun));
 }
 
+
+typedef CORE_SHARED_PTR(AnimationService) AnimationServicePtr;
+typedef CORE_CONST_SHARED_PTR(AnimationService) AnimationServiceConstPtr;
+typedef CORE_WEAK_PTR(AnimationService) AnimationServiceWeakPtr;
+
 #endif //ANIMATION_SERVICE_H

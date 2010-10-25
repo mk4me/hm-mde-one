@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Console</class>
- <widget class="QWidget" name="Console">
+ <class>ConsoleWidget</class>
+ <widget class="QWidget" name="ConsoleWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>796</width>
-    <height>91</height>
+    <width>440</width>
+    <height>143</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,5 +40,25 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>lineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>ConsoleWidget</receiver>
+   <slot>onEcho()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>219</x>
+     <y>132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>219</x>
+     <y>71</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onEcho()</slot>
+ </slots>
 </ui>

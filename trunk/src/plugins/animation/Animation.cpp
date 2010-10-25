@@ -1,8 +1,15 @@
+// HACK: dziêki temu, ¿e src/core/Frame.h i include/core/Frame.h
+// maj¹ tego samego ifndefa, mo¿na przy odpowiedniej kolejnoœci
+// wybraæ ten plik, o który nam chodzi. Takie rozwi¹zanie jest jednak
+// hackiem i trzeba to po prostu uporz¹dkowaæ
+#include "../src/core/Frame.h"
 #include <plugins/animation/Animation.h>
+
 
 #include <core/IServiceManager.h>
 #include <plugins/animation/AnimationService.h>
 #include <core/Transform.h>
+#include <core/Bone.h>
 
 using namespace std;
 

@@ -10,6 +10,7 @@
 #define __HEADER_GUARD__ITIMELINESERVICE_H__
 
 #include <core/IService.h>
+#include <core/SmartPtr.h>
 #include "Stream.h"
 
 class ITimeline
@@ -27,5 +28,11 @@ public:
     virtual double getNormalizedTime() const = 0;
     virtual void setNormalizedTime(double time) = 0;
 };
+
+typedef CORE_SHARED_PTR(ITimeline) ITimelinePtr;
+typedef CORE_CONST_SHARED_PTR(ITimeline) ITimelineConstPtr;
+typedef CORE_WEAK_PTR(ITimeline) ITimelineWeakPtr;
+
+
 
 #endif  // __HEADER_GUARD__ITIMELINESERVICE_H__

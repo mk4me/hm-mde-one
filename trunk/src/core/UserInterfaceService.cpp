@@ -6,7 +6,6 @@
 #include <core/IModel.h>
 #include <core/IDataManager.h>
 
-using namespace std;
 //deprecated:
 //M_DECLARED_CLASS(UserInterfaceService, kCLASSID_UserInterfaceService);
 
@@ -14,7 +13,6 @@ using namespace std;
 //--------------------------------------------------------------------------------------------------
 UserInterfaceService::UserInterfaceService()
 {
-
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -26,8 +24,6 @@ UserInterfaceService::~UserInterfaceService()
 //--------------------------------------------------------------------------------------------------
 AsyncResult UserInterfaceService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
 {
-    m_pServiceManager = (ServiceManager*)serviceManager;
-
     std::cout << "UserInterfaceService ADDED-test!" << std::endl; 
     return AsyncResult_Complete; 
 }

@@ -9,6 +9,8 @@
 #ifndef __HEADER_GUARD__UTILS_DEBUG_H__
 #define __HEADER_GUARD__UTILS_DEBUG_H__
 
+#include <utils/Config.h>
+
 #if __WIN32__
 #include <crtdbg.h>
 #else

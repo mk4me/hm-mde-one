@@ -472,7 +472,7 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
     LoadAnimation(dataManager->GetModel());
     widget->SetData(m_pScene, serviceManager);
 
-    ITimeline* timeline = serviceManager->queryServices<ITimeline>();
+    ITimelinePtr timeline = serviceManager->queryServices<ITimeline>();
     if ( timeline ) {
         timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
     } else {

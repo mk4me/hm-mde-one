@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD__UTILS_PROFILER_H__
 #define __HEADER_GUARD__UTILS_PROFILER_H__
 
+#include <utils/Config.h>
 #include <map>
 #include <string>
 #include <ostream>

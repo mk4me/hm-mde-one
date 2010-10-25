@@ -21,7 +21,6 @@ class Mesh;
 class IModel;
 class IDataManager;
 
-class UserInterfaceService;
 //--------------------------------------------------------------------------------------------------
 // Render Service
 //--------------------------------------------------------------------------------------------------
@@ -43,7 +42,7 @@ public:
     void SetScene(osg::Group* root);
     void Clear();
 
-    bool CreateNewWindow(std::string windowName);
+    
 
     osgViewer::Scene* GetMainWindowScene();
     osgGroupPtr GetRoot();
@@ -55,27 +54,20 @@ public:
     {
         return name;
     }
-    virtual IWidget* getWidget()
-    { 
-        return NULL;
-    }
+    virtual IWidget* getWidget();
 
 private: 
     void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);
 
-    UserInterfaceService* m_pUserInterfaceService;
-
-    std::map<std::string, ViewerQT*> m_osgViewMap;
-    std::map<std::string, QWidget*> m_widgetMap;
-
-    QOSGViewer* m_pMainOsgView; 
-    osgGroupPtr m_spRoot;
-
-    ServiceManager* m_pServiceManager;
+    QOSGViewer* widget; 
+    osgGroupPtr sceneRoot;
     //! Nazwa.
     std::string name;
 };
 
+typedef CORE_SHARED_PTR(RenderService) RenderServicePtr;
+typedef CORE_CONST_SHARED_PTR(RenderService) RenderServiceConstPtr;
+typedef CORE_WEAK_PTR(RenderService) RenderServiceWeakPtr;
 
 #endif //RENDER_SERVICE_H

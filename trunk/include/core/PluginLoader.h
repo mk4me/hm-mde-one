@@ -1,40 +1,21 @@
 #ifndef PLUGIN_SERVICE_H
 #define PLUGIN_SERVICE_H
 
-
+#include <vector>
 #include <string>
 #include <deque>
-
-#include <boost/shared_ptr.hpp>
-#include <core/PluginsInterfaces.h>
 #include <core/Plugin.h>
+#include <core/SmartPtr.h>
 
+////////////////////////////////////////////////////////////////////////////////
+namespace core {
+////////////////////////////////////////////////////////////////////////////////
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QtGui>
-#include <QtGui/QMenu>
-#include <QtCore/QDir>
-#include <QtGui/QAction>
-#include <QtCore/QVector>
-
-#include <core/GlobalServicesIDs.h>
-#include <core/SimpleFunctors.h>
-#include "ToolboxMain.h"
-
-typedef std::deque<std::string> FilePathList;
-typedef std::vector<ISystemPlugin* > PluginList;
-
-class IModel;
-class IDataManager;
-
-//--------------------------------------------------------------------------------------------------
-// Plugin Service
-//--------------------------------------------------------------------------------------------------
-class PluginService
+class PluginLoader
 {
 public:
     //! Za³adowane pluginy.
-    typedef std::vector<core::Plugin*> Plugins;
+    typedef std::vector<PluginPtr> Plugins;
     //! Uchwyty do bibliotek dynamicznie ³adowanych.
     typedef std::vector<uint32_t> Handles;
     //! Œcie¿ki wyszukiwania.
@@ -42,27 +23,25 @@ public:
 
 private:
     //! Uchwyty do bibliotek dynamicznie ³adowanych.
-    Handles libraries;
+    static Handles libraries;
     //! Za³adowane pluginy.
     Plugins plugins;
     //! Œcie¿ki wyszukiwania.
     Paths paths;
 
 public:
-    PluginService();
-    virtual ~PluginService();
+    PluginLoader();
+    virtual ~PluginLoader();
 
 public:
+    //! Zwalnia biblioteki. Mo¿na to wywo³aæ dopiero po zniszczeniu g³ównego okna.
+    static void freeLibraries();
     //! 
     void clear();
     //! 
     void addDefaultPaths();
     //! £aduje pluginy.
     void load();
-    //! \return Œcie¿ki wyszukiwania.
-    Paths& getPaths();
-    //! \return Œcie¿ki wyszukiwania.
-    const Paths& getPaths() const;
 
     //! \return
     size_t getNumPlugins() const
@@ -71,16 +50,27 @@ public:
     }
     //! 
     //! \param idx
-    core::Plugin* getPlugin(size_t idx)
+    PluginPtr getPlugin(size_t idx)
     {
         return plugins[idx];
     }
     //! 
     //! \param idx
-    const core::Plugin* getPlugin(size_t idx) const
+    const PluginPtr getPlugin(size_t idx) const
     {
         return plugins[idx];
     }
+    //! \return
+    const Paths& getPaths() const
+    { 
+        return paths;
+    }
+    //! \param paths
+    void setPaths(const Paths& paths) 
+    { 
+        this->paths = paths; 
+    }
+
 
 private:
     //! 
@@ -90,7 +80,7 @@ private:
     //! \param path
     //! \param library
     //! \param createFunction
-    bool onAddPlugin(const std::string& path, uint32_t library, core::Plugin::CreateFunction createFunction);
+    bool onAddPlugin(const std::string& path, uint32_t library, Plugin::CreateFunction createFunction);
     //! 
     //! \param paths
     //! \param filepath
@@ -103,5 +93,12 @@ private:
     //! \param fileName
     std::string getFileName(const std::string& fileName);
 };
+
+typedef CORE_SHARED_PTR(PluginLoader) PluginLoaderPtr;
+
+////////////////////////////////////////////////////////////////////////////////
+} // namespace core
+////////////////////////////////////////////////////////////////////////////////
+
 
 #endif //PLUGIN_SERVICE_H

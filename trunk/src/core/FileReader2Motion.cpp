@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include "Frame.h"
 #include "FileReader2Motion.h"
 #include "FileChunkReader.h"
 #include "Model.h"
@@ -16,7 +17,10 @@
 #include <core/ASFAMCParser.h>
 #include <core/Matrix.h>
 #include "Transform.h"
-#include "Frame.h"
+
+
+#include <core/Bone.h>
+
 
 #define TIMERMULTIPLAY 0.02
 

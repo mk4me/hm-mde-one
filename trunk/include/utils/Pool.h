@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD__POOL_H__
 #define __HEADER_GUARD__POOL_H__
 
+#include <utils/Config.h>
 #include <utils/Align.h>
 #include <utils/Utils.h>
 #include <utils/Debug.h>

@@ -33,7 +33,8 @@ void QtWidget::Clear()
 {
     if(_controlWidget != NULL)
     {
-        delete _controlWidget; 
+//         _controlWidget->parent()->removeChild(_controlWidget);
+//         delete _controlWidget; 
         _controlWidget = 0; 
     }
 }

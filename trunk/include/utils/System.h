@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD__SYSTEM_H__
 #define __HEADER_GUARD__SYSTEM_H__
 
+#include <utils/Config.h>
 #if defined(__WIN32__)
 #include <Windows.h>
 #elif defined(__UNIX__)

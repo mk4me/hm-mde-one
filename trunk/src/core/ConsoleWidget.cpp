@@ -3,19 +3,17 @@
 #include <QtGui/QScrollBar>
 
 ConsoleWidget::ConsoleWidget(void): 
-  Ui::Console()
+  Ui::ConsoleWidget()
 , QWidget()
 {
   setupUi(this); 
-
-  connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(echo()));
 }
 
 ConsoleWidget::~ConsoleWidget(void)
 {
 }
 
-void ConsoleWidget::echo()
+void ConsoleWidget::onEcho()
 {
   QString text = lineEdit->text(); 
   //std::string s = text.toUtf8(); 
@@ -29,9 +27,9 @@ void ConsoleWidget::echo()
   lineEdit->clear(); 
 }
 
-void ConsoleWidget::print( std::string str )
+void ConsoleWidget::print(const std::string& str)
 {
-  textEdit->insertPlainText(str.c_str()); 
-  QScrollBar *sb = textEdit->verticalScrollBar();
-  sb->setValue(sb->maximum());
+    textEdit->insertPlainText( QString::fromStdString(str) ); 
+    QScrollBar *sb = textEdit->verticalScrollBar();
+    sb->setValue(sb->maximum());
 }

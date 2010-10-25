@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>834</width>
-    <height>875</height>
+    <width>498</width>
+    <height>442</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,32 +19,268 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>834</width>
+     <width>498</width>
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuModel">
+     <property name="title">
+      <string>Model</string>
+     </property>
+     <addaction name="actionPoints"/>
+     <addaction name="actionLines"/>
+     <addaction name="actionLine_strip"/>
+     <addaction name="actionLine_loop"/>
+     <addaction name="actionTriangle"/>
+     <addaction name="actionTriangle_strip"/>
+     <addaction name="actionTriangle_fun"/>
+     <addaction name="actionQuads"/>
+     <addaction name="actionQuad_strip"/>
+     <addaction name="actionPolygon"/>
+    </widget>
+    <addaction name="actionWireframe"/>
+    <addaction name="actionBone"/>
+    <addaction name="actionMaterial"/>
+    <addaction name="menuModel"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>Toolbar</string>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
    <attribute name="toolBarArea">
-    <enum>LeftToolBarArea</enum>
+    <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="action_Open">
+  <action name="actionWireframe">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>&amp;Open...</string>
+    <string>Wireframe</string>
    </property>
   </action>
-  <action name="action_About">
+  <action name="actionBone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>&amp;About...</string>
+    <string>Bone</string>
+   </property>
+  </action>
+  <action name="actionMaterial">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Material</string>
+   </property>
+  </action>
+  <action name="actionPoints">
+   <property name="text">
+    <string>Points</string>
+   </property>
+  </action>
+  <action name="actionLines">
+   <property name="text">
+    <string>Lines</string>
+   </property>
+  </action>
+  <action name="actionLine_strip">
+   <property name="text">
+    <string>Line strip</string>
+   </property>
+  </action>
+  <action name="actionLine_loop">
+   <property name="text">
+    <string>Line loop</string>
+   </property>
+  </action>
+  <action name="actionTriangle">
+   <property name="text">
+    <string>Triangle</string>
+   </property>
+  </action>
+  <action name="actionTriangle_strip">
+   <property name="text">
+    <string>Triangle strip</string>
+   </property>
+  </action>
+  <action name="actionTriangle_fun">
+   <property name="text">
+    <string>Triangle fun</string>
+   </property>
+  </action>
+  <action name="actionQuads">
+   <property name="text">
+    <string>Quads</string>
+   </property>
+  </action>
+  <action name="actionQuad_strip">
+   <property name="text">
+    <string>Quad strip</string>
+   </property>
+  </action>
+  <action name="actionPolygon">
+   <property name="text">
+    <string>Polygon</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>&amp;Open</string>
+   </property>
+   <property name="shortcut">
+    <string>O</string>
+   </property>
+  </action>
+  <action name="actionWindow">
+   <property name="text">
+    <string>Window</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionOpen</sender>
+   <signal>triggered()</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onOpen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onExit()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMaterial</sender>
+   <signal>triggered()</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onMaterial()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionBone</sender>
+   <signal>triggered()</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onBones()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionWireframe</sender>
+   <signal>triggered()</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onWireframe()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onOpen()</slot>
+  <slot>onExit()</slot>
+  <slot>onWireframe()</slot>
+  <slot>onBones()</slot>
+  <slot>onMaterial()</slot>
+ </slots>
 </ui>

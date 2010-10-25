@@ -31,7 +31,6 @@ set(PRIVATE_H
 	Model.h
 	ModelService.h
 	OsgControlWidget.h
-	PluginServices.h
 	QTMainWindow.h
 	RenderService.h
 	ServiceManager.h
@@ -65,8 +64,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/ISkeletonNode.h
 	${HEADER_PATH}/MainWindow.h
 	${HEADER_PATH}/ModelData.h
-	${HEADER_PATH}/PluginDataInterface.h
-	${HEADER_PATH}/PluginsInterfaces.h
 	${HEADER_PATH}/QtMainWindowInterface.h
 	${HEADER_PATH}/QtWidgetInterface.h
 	${HEADER_PATH}/SimpleFunctors.h
@@ -77,7 +74,9 @@ set(PUBLIC_H
 	${HEADER_PATH}/WxWidgetInterface.h
 	${HEADER_PATH}/QOSGWidget.h
 	${HEADER_PATH}/Plugin.h
+	${HEADER_PATH}/PluginLoader.h
 	${HEADER_PATH}/Export.h
+	${HEADER_PATH}/SmartPtr.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -100,7 +99,7 @@ set(TARGET_SRC
 	Logger.cpp
 	main.cpp
 	ModelService.cpp
-	PluginServices.cpp
+	PluginLoader.cpp
 	QTMainWindow.cpp
 	RenderService.cpp
 	ServiceManager.cpp
@@ -137,7 +136,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 set(TARGET_UI
-	ui/Console.ui
+	ui/ConsoleWidget.ui
 	ui/GridWidget.ui
 	ui/OsgWidget.ui
 	ui/TimeLine.ui

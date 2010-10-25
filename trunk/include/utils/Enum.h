@@ -10,7 +10,7 @@ purpose:
 #define __MOTIONUTIL_ENUM_H__
 
 //------------------------------------------------------------------------------
-
+#include <utils/Config.h>
 #include <vector>
 #include <string>
 #include <sstream>

@@ -5,8 +5,9 @@
 //--------------------------------------------------------------------------------------------------
 IMainWindow* MainWindowFactory::CreateMainWindow( std::string libraryName, void *object )
 {
-    if(libraryName == "QT")
+    if(libraryName == "QT") {
         return (IMainWindow*)(new QTMainWindow(object));
+    }
 
     return NULL;
 }

@@ -4,6 +4,7 @@
 #include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
 #include <core/WidgetInterface.h>
+#include <core/SmartPtr.h>
 
 // in h file
 // #define M_DECLARE_CLASS()             \
@@ -83,5 +84,8 @@ public:
     virtual const std::string& getName() const = 0;
 
 };
+
+typedef CORE_SHARED_PTR(IService) IServicePtr;
+typedef CORE_CONST_SHARED_PTR(IService) IServiceConstPtr;
 
 #endif //BASE_SERVICE_H

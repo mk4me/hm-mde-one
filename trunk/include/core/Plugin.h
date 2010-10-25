@@ -11,6 +11,8 @@
 
 #include <vector>
 #include <string>
+
+#include "SmartPtr.h"
 #include "IService.h"
 #include "BaseDataTypes.h"
 #include "Export.h"
@@ -38,7 +40,7 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME() \
 
 //! Dodaje us≥ugÍ zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_SERVICE(className)                              \
-    instance->addService(new className );
+    instance->addService( IServicePtr(new className) );
 
 /**
  *	Kontener na us≥ugi.
@@ -49,7 +51,7 @@ public:
     //! Typ funkcji tworzπcej plugin.
     typedef core::Plugin* (*CreateFunction)();
     //! Typ listy us≥ug.
-    typedef std::vector<IService*> Services;
+    typedef std::vector<IServicePtr> Services;
     //!
     typedef Services::iterator iterator;
     //!
@@ -62,11 +64,13 @@ private:
     std::string name;
     //! ID pluginu.
     UniqueID id;
-    
+    //! åcieøka do pluginu.
+    std::string path;
+
 public:
     //! \param name Nazwa pluginu.
     Plugin(const std::string& name, UniqueID id) 
-        : name(name) 
+        : name(name), path("UNKNOWN")
     {}
 
 public:
@@ -81,7 +85,7 @@ public:
         return name;
     }
     //! \service Us≥uga do dodania do pluginu.
-    void addService(IService* service)
+    void addService(IServicePtr service)
     {
         services.push_back(service);
     }
@@ -92,17 +96,31 @@ public:
     }
     //! 
     //! \param i
-    IService* getService(size_t i)
+    IServicePtr getService(size_t i)
     {
         return services[i];
     }
     //! 
     //! \param i
-    const IService* getService(size_t i) const
+    IServiceConstPtr getService(size_t i) const
     {
         return services[i];
     }
+    //! \return
+    const std::string& getPath() const
+    { 
+        return path;
+    }
+    //! \param path
+    void setPath(const std::string& path) 
+    { 
+        this->path = path; 
+    }
 };
+
+//! Definicja wskaünika.
+typedef CORE_SHARED_PTR(Plugin) PluginPtr;
+typedef CORE_CONST_SHARED_PTR(Plugin) PluginConstPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

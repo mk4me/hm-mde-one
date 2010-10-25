@@ -3,20 +3,20 @@
 
 #include <QtGui/QWidget>
 
-#include "ui_Console.h"
+#include "ui_ConsoleWidget.h"
 //#include "Logger.h"
 
-class ConsoleWidget: public QWidget, Ui::Console
+class ConsoleWidget: public QWidget, Ui::ConsoleWidget
 {
   Q_OBJECT
 public:
   ConsoleWidget(void);
   ~ConsoleWidget(void);
 
-  void print(std::string str); 
+  void print(const std::string& str); 
 
 public slots: 
-  virtual void echo();
+  void onEcho();
 };
 
 #endif

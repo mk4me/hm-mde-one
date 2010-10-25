@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD__ALIGN_H__
 #define __HEADER_GUARD__ALIGN_H__
 
+#include <utils/Config.h>
 #include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////

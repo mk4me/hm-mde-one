@@ -175,7 +175,6 @@ macro(FIND_DLLS_PATTERN variable releasePattern debugPattern)
 
 endmacro(FIND_DLLS_PATTERN)
 
-
 ###############################################################################
 
 macro(FIND_EXECUTABLE variable pattern)

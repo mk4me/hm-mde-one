@@ -55,7 +55,7 @@ protected:
     osgGA::GUIEventAdapter::KeySymbol translateKey( QKeyEvent* event );
 };
 
-class QOSGViewer : public osgViewer::Viewer, public QOSGWidget
+class QOSGViewer : public QOSGWidget, public osgViewer::Viewer
 {
 public:
     //! TODO: tymczasowo publiczne!

@@ -1,6 +1,7 @@
 #ifndef BONE_H
 #define BONE_H
 
+#include "Frame.h"
 #include <vector>
 // This holds the names of a joint's children
 typedef std::vector<char*> childVector;
@@ -8,19 +9,21 @@ typedef std::vector<char*> childVector;
 //class Bone
 struct Bone
 {
-	int idx;					// Bone inde
+    int idx;					// Bone inde
 
-	char *name;
+    char *name;
     Bone *parent;		// Pointer to the sibling (branch bone) in the hierarchy tree 
-	std::vector<Bone *> child;			// Pointer to the child (outboard bone) in the hierarchy tree 
-	childVector			children;			// STL vector of char* to children names
-	char *parentName;
+    std::vector<Bone *> child;			// Pointer to the child (outboard bone) in the hierarchy tree 
+    std::vector<Frame*> frame;			// Animacja
+    childVector			children;			// STL vector of char* to children names
+    char *parentName;
 
     float dir[3];				// Unit vector describes the direction from local origin to 
     // the origin of the child bone 
     // Notice: stored in local coordinate system of the bone
 
     float length;				// Bone length  
+
 
     float axis_x, axis_y, axis_z;// orientation of each bone's local coordinate 
     //system as specified in ASF file (axis field)

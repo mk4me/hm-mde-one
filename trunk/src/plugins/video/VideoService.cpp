@@ -14,12 +14,13 @@ VideoService::VideoService()
 :   name("Video")
 {
     widget = new VideoWidget();
+    //int * dupa = new int[100000];
 
 //     std::vector<std::string> files;
 //     if ( files.size() == 0 ) {
 //         files.push_back("s1.avi");
 //         files.push_back("s1.avi");
-//         files.push_back("s1.avi");
+//         files.push_back("s1.avi";)
 //         files.push_back("s1.avi");
 //     }
 //     reinterpret_cast<VideoWidget*>(widget)->init(files);
@@ -35,7 +36,7 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
     }
     widget->init(files);
 
-    ITimeline* timeline = serviceManager->queryServices<ITimeline>();
+    ITimelinePtr timeline = serviceManager->queryServices<ITimeline>();
     if ( timeline ) {
         for ( size_t i = 0; i < widget->getImages().size(); ++i ) {
             osg::Image* img = widget->getImages()[i].get();
@@ -46,7 +47,6 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
         }
     } else {
         OSG_WARN<<"ITimeline not found."<<std::endl;
-
     }
 
     return AsyncResult_Complete;

@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD__UTILS_H__
 #define __HEADER_GUARD__UTILS_H__
 
+#include <utils/Config.h>
 #include <boost/lexical_cast.hpp>
 #include <cstring>
 

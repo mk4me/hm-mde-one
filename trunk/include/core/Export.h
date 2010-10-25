@@ -10,15 +10,15 @@
 #define __HEADER_GUARD__CORE_EXPORT_H__
 
 #if defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__) || defined( __BCPLUSPLUS__)  || defined( __MWERKS__)
-#  if defined( __LIBRARY_STATIC__ )
-#    define CORE_EXPORT
-#  elif defined( __LIBRARY_DYNAMIC__ )
-#    define CORE_EXPORT   __declspec(dllexport)
-#  else
-#    define CORE_EXPORT   __declspec(dllimport)
-#  endif
+#   if defined( __LIBRARY_STATIC__ )
+#       define CORE_EXPORT
+#   elif defined( __LIBRARY_DYNAMIC__ )
+#       define CORE_EXPORT   __declspec(dllexport)
+#   else
+#       define CORE_EXPORT   __declspec(dllimport)
+#   endif
 #else
-#  define CORE_EXPORT
+#   define CORE_EXPORT
 #endif
 
 #endif  // __HEADER_GUARD__CORE_EXPORT_H__

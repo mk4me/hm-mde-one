@@ -3,7 +3,6 @@
 
 
 #include <string>
-#include <core/PluginsInterfaces.h>
 
 #include <QtGui/QMainWindow>
 #include <QtGui/QtGui>
@@ -56,8 +55,6 @@ protected:
     IMainWindow* m_pMainWindow;
     void* m_pMainObject;
     std::string name;
-
-    ServiceManager* m_pServiceManager;
 };
 
 

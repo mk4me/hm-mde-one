@@ -1,6 +1,7 @@
 #ifndef OSG_CONTROL_WIDGET_H
 #define OSG_CONTROL_WIDGET_H
 
+#include <core/SmartPtr.h>
 #include <QtGui/QWidget>
 #include <osgViewer/Scene>
 #include <osg/Group>
@@ -9,9 +10,9 @@
 #include <string>
 
 #include "ui_OsgWidget.h"
+#include <plugins/animation/AnimationService.h>
 
 class IServiceManager;
-class AnimationService;
 
 class OsgControlWidget: public QWidget, Ui::OsgTest
 {

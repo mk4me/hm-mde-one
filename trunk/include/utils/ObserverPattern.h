@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD__OBSERVERPATTERN_H__
 #define __HEADER_GUARD__OBSERVERPATTERN_H__
 
+#include <utils/Config.h>
 #include <stdexcept>
 #include <vector>
 #include <algorithm>

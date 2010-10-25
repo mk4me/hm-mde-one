@@ -12,10 +12,8 @@
 #include <streambuf>
 #include <QtCore/QVector>
 
-#include <core/PluginsInterfaces.h>
+#include <core/PluginLoader.h>
 
-
-class PluginService;
 class UserInterfaceService;
 class ServiceManager;
 class IAnimationService;
@@ -44,45 +42,39 @@ class ToolboxMain : public QMainWindow
 public:
     ToolboxMain(QWidget* parent = 0);
 
+    void initializeUI();
     
     ~ToolboxMain();
 
-    void LoadPlugins(); 
     // TODO: Embedded widgets initializations - should be in plugins!!! 
     void InitializeOGSWidget();
     void InitializeConsoleWidget();
     void InitializeControlWidget();
 
-    void CreateMenus(); 
-    void LoadWindowMenuWidget();
-    osg::ref_ptr<osg::Node> CreateGrid(); 
-    
     void Clear();
 
-public slots: 
-    void Open();
-    void SettingModel();
-    void WireFrameView();
-    void BoneView();
-    void MaterialView();
-
-    void PointViewModel();
-    void LinesViewModel();
-    void LineStripViewModel();
-    void LineLoopViewModel();
-    void TriangleViewModel();
-    void TriangleStripViewModel();
-    void TriangleFunViewModel();
-    void QuadsViewModel();
-    void QuadStripViewModel();
-    void PolygonViewModel();
-
+public slots:    
     //! Aktualizacja us³ug.
     void updateServices();
 
+    void onOpen();
+    void onExit();
+    void onMaterial();
+    void onBones();
+    void onWireframe();
+
 private:
+    //! Tworzy siatkê rozci¹gniêt¹ na p³aszczyŸnie.
+    osg::ref_ptr<osg::Node> createGrid(); 
+
+    //! Rejestruje wbudowane us³ugi.
     void registerCoreServices(); 
+    //! Rejestruje us³ugi pochodz¹ce z pluginów.
     void registerPluginsServices();
+
+    //! Wype³nia podmenu akcjami dla dostêpnych okien.
+    //! \param target
+    void populateWindowMenu(QMenu* target);
 
 
 protected:
@@ -98,33 +90,34 @@ private:
 
 private:    
     ServiceManager* m_pServiceManager;
-    PluginService* m_pPluginService;
+    
     UserInterfaceService* m_pUserInterfaceService;
     ModelService* m_pModelService;
-    RenderService* m_pRenderService;
+    CORE_SHARED_PTR(RenderService) m_pRenderService;
 
-    Ui::ToolboxMain* _ui;
+    Ui::ToolboxMain* ui;
 
     // TODO: Embedded widgets - should be in plugins !!
     GridWidget* _gridWidget;
     ConsoleWidget* _consoleWidget; 
-    TimeLine* _timeLine; 
 
     // Stary bufor cout
     std::streambuf* _streambuf; 
 
-    // Menu 
-    QMenu* _windowMenu;
+    //! W¹tek obliczaj¹cy.
     ComputeThread* computeThread;
 
-    friend class QMainWindowPrivate;
+    //! Nazwa organizacji.
+    static const QString organizationName;
+    //! Nazwa aplikacji.
+    static const QString applicationName;
 
-    // Application settings data
-    static const QString _settingsOrganizationName;
-    static const QString _settingsApplicationName;
-
+    //! Timer wyznaczaj¹cy update'y.
     QTimer updateTimer;
+    //! Korzeñ sceny.
     osg::ref_ptr<osg::Node> sceneRoot;
+    //! Pluginy.
+    core::PluginLoader* pluginLoader;
 };
 
 #endif // TOOLBOXMAIN_H

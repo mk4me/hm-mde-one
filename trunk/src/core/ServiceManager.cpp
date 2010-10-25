@@ -18,12 +18,12 @@ ServiceManager::ServiceManager(void)
 ServiceManager::~ServiceManager(void)
 {
 	// free allocated memory
-    for (ServicesMap::iterator i = servicesMap.begin(); i != servicesMap.end(); ++i) {
-        delete i->second;
-    }
+    // for (ServicesMap::iterator i = servicesMap.begin(); i != servicesMap.end(); ++i) {
+    //     delete i->second;
+    // }
 }
 //--------------------------------------------------------------------------------------------------
-void ServiceManager::registerService( IService* service )
+void ServiceManager::registerService( IServicePtr service )
 {
     if (servicesMap.find(service->getID()) == servicesMap.end()) {
         servicesMap.insert( std::make_pair(service->getID(), service)); 
@@ -110,22 +110,22 @@ int ServiceManager::getNumServices() const
     return static_cast<int>(servicesList.size());
 }
 
-IService* ServiceManager::getService( int idx )
+IServicePtr ServiceManager::getService( int idx )
 {
     if ( idx < static_cast<int>(servicesList.size()) ) {
         return servicesList[idx];
     } else {
-        return NULL;
+        return IServicePtr();
     }
 }
 
-IService* ServiceManager::getService( UniqueID id )
+IServicePtr ServiceManager::getService( UniqueID id )
 {
     ServicesMap::iterator it = servicesMap.find(id);
     if (it != servicesMap.end()) {
         return it->second; 
     } else {
-        return NULL;
+        return IServicePtr();
     }
 }
 

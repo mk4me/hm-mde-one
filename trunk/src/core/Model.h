@@ -13,7 +13,7 @@
 
 #include <core/IModel.h>
 #include <core/IMesh.h>
-#include <Skeleton.h>
+#include <core/Skeleton.h>
 #include "Frame.h"
 
 class Mesh;

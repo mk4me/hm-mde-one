@@ -4,6 +4,14 @@ set(TARGET_TARGETNAME
 	utils
 )
 
+# Opcje konfiguracji
+CONFIG_OPTION(UTILS_ENABLE_PROFILER "Enable profiling?" OFF)
+CONFIG_OPTION(UTILS_ENABLE_LEAK_DETECTION "Enable leak detection?" ON)
+if(WIN32)
+	CONFIG_OPTION(UTILS_ENABLE_LEAK_DETECTION_VLD "Enable leak detection with VLD? (http://sites.google.com/site/dmoulding/vld)" OFF)
+endif()
+
+
 #------------------------------------------------------------------------------
 # nag³ówki prywatne
 set(PRIVATE_H
@@ -26,9 +34,18 @@ set(PUBLIC_H
 	${HEADER_PATH}/Debug.h
 	${HEADER_PATH}/Profiler.h
 	${HEADER_PATH}/System.h
+	${HEADER_PATH}/LeakDetection.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
+
+#------------------------------------------------------------------------------
+# konfiguracja
+
+# Kopiujemy konfiguracja
+configure_file( "Config.h.in" "${PROJECT_BINARY_DIR}/Config.h" )
+set(TARGET_H ${TARGET_H} "${PROJECT_BINARY_DIR}/Config.h")
+source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/Config.h")
 
 #------------------------------------------------------------------------------
 # Ÿród³a
@@ -36,6 +53,7 @@ set(TARGET_SRC
 	Enum.cpp
 	Debug.cpp
 	Profiler.cpp
+	LeakDetection.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 set(TARGET_SRC ${TARGET_SRC})

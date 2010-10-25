@@ -27,7 +27,6 @@
 
 #include "ServiceManager.h"
 #include <core/IAnimationService.h>
-#include "PluginServices.h"
 #include "ModelService.h"
 #include "UserInterfaceService.h"
 #include "RenderService.h"
@@ -94,22 +93,20 @@ public:
     }
 };
 
+const QString ToolboxMain::organizationName = QString("PJWSTK");
+const QString ToolboxMain::applicationName = QString("EDR");
 
-//--------------------------------------------------------------------------------------------------
-// Statics definitions
-const QString ToolboxMain::_settingsOrganizationName = QString("Artifex Mundi");
-const QString ToolboxMain::_settingsApplicationName = QString("Toolbox");
-
-//--------------------------------------------------------------------------------------------------
 ToolboxMain::ToolboxMain(QWidget *parent): 
   QMainWindow(parent)
-, _ui(new Ui::ToolboxMain)
+, ui(new Ui::ToolboxMain)
 {
-    _ui->setupUi(this);
+    pluginLoader = new core::PluginLoader();
+
+
+    ui->setupUi(this);
 
     registerCoreServices(); 
     registerPluginsServices();
-
 
 
     sceneRoot = new osg::Group();
@@ -125,58 +122,10 @@ ToolboxMain::ToolboxMain(QWidget *parent):
     InitializeControlWidget();          // Control Widget + TimeLine
     LoadConfiguration();                // Wczytuje plik konfiguracyjny
 
-    // w przysz³oœci setLayout
-    QDockWidget *cdock = dynamic_cast<QDockWidget *>(_consoleWidget->parent()); 
-    QDockWidget *tldock = dynamic_cast<QDockWidget *>(_timeLine->parent()); 
-
-    if(cdock && tldock)
-        tabifyDockWidget(cdock, tldock); 
-
-    LoadPlugins(); 
-
-    // inicjalizacja UI
-    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        IService* service = m_pServiceManager->getService(i);
-        IWidget* widget = service->getWidget();
-        if ( widget ) {
-            // dodajemy widget dokowalny
-            QDockWidget* dock = new QDockWidget( QString::fromStdString(service->getName()), this, Qt::WindowTitleHint);
-            dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-            addDockWidget(Qt::BottomDockWidgetArea, dock);
-            // HACK
-            QWidget* qwidget = reinterpret_cast<QWidget*>(widget);
-            dock->setWidget(qwidget);
-            dock->setObjectName( QString::fromStdString( service->getName() ) + qwidget->objectName() );
-        }
-    }
-
-
-
-    //     for(std::vector<core::Plugin*>::iterator itr = pList.begin(); itr != pList.end(); itr++)
-    //     {
-    //         osgViewer::Scene* scene =  m_pRenderService->GetMainWindowScene();
-    //         osg::Node* sceneRoot = scene->getSceneData();
-    // 
-    //         QDockWidget *tldock = new QDockWidget((*itr)->getName().c_str(), this, Qt::WindowTitleHint); 
-    //         tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-    //         addDockWidget(Qt::BottomDockWidgetArea, tldock);
-    // 
-    //         for(int i = 0; i < (*itr)->GetWidgetsCount(); i++)
-    //         {
-    //             IWidget* w = (*itr)->GetDockWidget(i);
-    //             QWidget* widget = (QWidget*)(*itr)->GetDockWidget(i);
-    //             tldock->setWidget(widget); 
-    // 
-    //             QString dockWidgetName = (*itr)->GetPluginName().c_str() + widget->objectName();
-    //             tldock->setObjectName(dockWidgetName); 
-    //         }
-    //     }
-
+    initializeUI();
 
 
     ReadSettings();
-    CreateMenus();          // Inicjalizacja menu: 
-    LoadWindowMenuWidget();
 
 
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
@@ -187,68 +136,36 @@ ToolboxMain::ToolboxMain(QWidget *parent):
 
 }
 
-//--------------------------------------------------------------------------------------------------
-
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::CreateMenus()
-{
-    m_pUserInterfaceService->AddMenu("File");
-
-    m_pUserInterfaceService->AddAction("File", "Open...", "Open()");
-    m_pUserInterfaceService->AddAction("File", "Set Model", "SettingModel()");
-
-    m_pUserInterfaceService->AddMenu("View");
-    m_pUserInterfaceService->AddAction("View", "Wireframe", "WireFrameView()");
-    m_pUserInterfaceService->AddAction("View", "Bone", "BoneView()");
-    m_pUserInterfaceService->AddAction("View", "Material", "MaterialView()");
-    //  _fileMenu->addSeparator();
-
-    m_pUserInterfaceService->AddMenu("View/Model");
-    m_pUserInterfaceService->AddAction("View/Model", "Points", "PointViewModel()");
-    m_pUserInterfaceService->AddAction("View/Model", "Lines", "LinesViewModel()");
-    m_pUserInterfaceService->AddAction("View/Model", "Line strip", "LineStripViewModel()");
-    m_pUserInterfaceService->AddAction("View/Model", "Line loop", "LineLoopViewModel()");
-    m_pUserInterfaceService->AddAction("View/Model", "Triangle", "TriangleViewModel()");
-    m_pUserInterfaceService->AddAction("View/Model", "Triangle strip", "TriangleStripViewModel()");
-    m_pUserInterfaceService->AddAction("View/Model", "Triangle fun", "TriangleFunViewModel()");
-    m_pUserInterfaceService->AddAction("View/Model", "Quads", "QuadsViewModel()");
-    m_pUserInterfaceService->AddAction("View/Model", "Quad strip", "QuadStripViewModel()");
-    m_pUserInterfaceService->AddAction("View/Model", "Polygon", "PolygonViewModel()");
-
-
-    _windowMenu = menuBar()->addMenu(tr("&Window"));
-}
-
-//--------------------------------------------------------------------------------------------------
 ToolboxMain::~ToolboxMain()
 {
     Clear();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ToolboxMain::Clear()
 {
-    delete _ui;  // ui stuff
+    delete ui;  // ui stuff
     std::streambuf *buf = std::cout.rdbuf(_streambuf);
     delete buf;
 
-    m_pPluginService = NULL;
+    m_pRenderService.reset();
+    delete m_pServiceManager;
+    delete pluginLoader;
     m_pUserInterfaceService = NULL;
     m_pModelService = NULL;
-    m_pRenderService = NULL;
+    
 
     // remove all services
-    m_pServiceManager = NULL;
+    //m_pServiceManager = NULL;
 
     if ( computeThread->isRunning() ) {
         computeThread->setDone(true);
         computeThread->join();
         delete computeThread;
     }
+
+    
 }
 
-//--------------------------------------------------------------------------------------------------
 void ToolboxMain::LoadConfiguration()
 {
     /*
@@ -259,56 +176,36 @@ void ToolboxMain::LoadConfiguration()
     config->loadConfiguration( std::string(path.toUtf8()) ); /**/
 }
 
-//--------------------------------------------------------------------------------------------------
 void ToolboxMain::ReadSettings()
 {
     QSettings settings(QSettings::IniFormat,
-        QSettings::UserScope,
-        _settingsOrganizationName,
-        _settingsApplicationName);
+        QSettings::UserScope, organizationName, applicationName);
 
     restoreGeometry(settings.value("Geometry").toByteArray());
     restoreState(settings.value("WindowState").toByteArray());
 }
 
-//--------------------------------------------------------------------------------------------------
 void ToolboxMain::WriteSettings()
 {
     QSettings settings(QSettings::IniFormat,
-        QSettings::UserScope,
-        _settingsOrganizationName,
-        _settingsApplicationName);
+        QSettings::UserScope, organizationName, applicationName);
 
     settings.setValue("Geometry", saveGeometry());
     settings.setValue("WindowState", saveState());
 }
 
-//--------------------------------------------------------------------------------------------------
 void ToolboxMain::closeEvent(QCloseEvent* event)
 {
     WriteSettings();
     QMainWindow::closeEvent(event);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ToolboxMain::InitializeControlWidget()
 {
     InitializeOGSWidget();  // MainWidget 
 
     osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
     osg::Node* sceneRoot = scene->getSceneData();
-
-    // TimeLine
-    QDockWidget *tldock = new QDockWidget(tr("Time Line"), this, Qt::WindowTitleHint); 
-    tldock->setObjectName(QString("Time Line"));
-    tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-    _timeLine = new TimeLine(); 
-    addDockWidget(Qt::BottomDockWidgetArea, tldock);
-    tldock->setWidget((QWidget*)_timeLine); 
-
-    _timeLine->SetScene(sceneRoot); 
-
-    connect(&(m_pRenderService->GetMainAdapterWidget()->_timer), SIGNAL(timeout()), _timeLine, SLOT(update())); 
 
     // inicjalizacja GridWidget
     QDockWidget *gDock = new QDockWidget(tr("GridWidget"), this, Qt::WindowTitleHint);
@@ -320,120 +217,28 @@ void ToolboxMain::InitializeControlWidget()
     gDock->setWidget((QWidget*)_gridWidget);
 }
 
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::LoadPlugins()
+void ToolboxMain::populateWindowMenu(QMenu* target)
 {
-//    PluginService::Plugins& pList = m_pPluginService->getPlugins();
-
-//     for(std::vector<core::Plugin*>::iterator itr = pList.begin(); itr != pList.end(); itr++)
-//     {
-//         osgViewer::Scene* scene =  m_pRenderService->GetMainWindowScene();
-//         osg::Node* sceneRoot = scene->getSceneData();
-// 
-//         QDockWidget *tldock = new QDockWidget((*itr)->getName().c_str(), this, Qt::WindowTitleHint); 
-//         tldock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-//         addDockWidget(Qt::BottomDockWidgetArea, tldock);
-// 
-//         for(int i = 0; i < (*itr)->GetWidgetsCount(); i++)
-//         {
-//             IWidget* w = (*itr)->GetDockWidget(i);
-//             QWidget* widget = (QWidget*)(*itr)->GetDockWidget(i);
-//             tldock->setWidget(widget); 
-// 
-//             QString dockWidgetName = (*itr)->GetPluginName().c_str() + widget->objectName();
-//             tldock->setObjectName(dockWidgetName); 
-//         }
-//     }
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::LoadWindowMenuWidget()
-{
-    //    QMainWindowPrivate * const d = reinterpret_cast<QMainWindowPrivate *>(qGetPtrHelper(d_ptr)); 
-
-    QList<QDockWidget *> dockwidgets = qFindChildren<QDockWidget *>(this);
-    if (dockwidgets.size()) 
-    {
-        for (int i = 0; i < dockwidgets.size(); ++i) 
-        {
+    QList<QDockWidget *> dockwidgets = qFindChildren<QDockWidget*>(this);
+    if (dockwidgets.size()) {
+        for (int i = 0; i < dockwidgets.size(); ++i) {
             QDockWidget *dockWidget = dockwidgets.at(i);
-            if (dockWidget->parentWidget() == this) 
-            {
-                _windowMenu->addAction(dockwidgets.at(i)->toggleViewAction());
+            if (dockWidget->parentWidget() == this) {
+                target->addAction(dockWidget->toggleViewAction());
             }
         }
-        _windowMenu->addSeparator();
+        target->addSeparator();
     }
 
     QList<QToolBar *> toolbars = qFindChildren<QToolBar *>(this);
-    if (toolbars.size()) 
-    {
-        for (int i = 0; i < toolbars.size(); ++i) 
-        {
+    if (toolbars.size()) {
+        for (int i = 0; i < toolbars.size(); ++i) {
             QToolBar *toolBar = toolbars.at(i);
-            _windowMenu->addAction(toolbars.at(i)->toggleViewAction());
+            target->addAction(toolBar->toggleViewAction());
         }
     }
 }
 
-// TODO:  zrobiæ jedn¹ funkcje do tego. - wybor opcjii.
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::BoneView()
-{
-
-}
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::WireFrameView()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::MaterialView()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-// loads model
-void ToolboxMain::Open()
-{
-    // TODO:
-    // tymczasowe rozwiazanie - powinno sie raczej dac mozliwosc ladowania wiekszej ilosci modeli,
-    const QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::currentPath());
-
-    if (!fileName.isEmpty()) 
-    {
-        std::cout << " " << std::endl; 
-        std::cout << "File Opened: " << std::string(fileName.toUtf8()) << std::endl;
-        std::cout << "---------------------------------------------------------------" << std::endl; 
-
-
-        Model* model = new Model();
-		FileReader2Motion::ReadFile(fileName.toStdString(), model);
-
-        DataManager* dataManaget = new DataManager(fileName.toStdString(), model);
-        m_pServiceManager->setData(dataManaget);
-       
-        m_pRenderService->AddObjectToRender(CreateGrid());
-
-        // manage scene
-        osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
-        osg::Node* sceneRoot = scene->getSceneData();
-     //   _osgControlWidget->SetScene(scene); 
-        _gridWidget->SetScene(sceneRoot);
-        _timeLine->SetScene(sceneRoot); 
-
-        return;
-
-        if (model)
-            delete model;
-    }
-    QMessageBox::warning(this, QString("Error!"), QString("Failed to load model."));
-}
-
-//--------------------------------------------------------------------------------------------------
 void ToolboxMain::InitializeConsoleWidget()
 {
     QDockWidget *dock; 
@@ -449,19 +254,18 @@ void ToolboxMain::InitializeConsoleWidget()
     std::cout << "Console initialized..." << std::endl; 
 }
 
-//--------------------------------------------------------------------------------------------------
 void ToolboxMain::InitializeOGSWidget()
 {
 //  setCentralWidget(_osgView); 
     osg::ref_ptr<osg::Group> root = new osg::Group();
     root->setName("root");
-    root->addChild(CreateGrid());
+    root->addChild(createGrid());
 
     m_pRenderService->SetScene(root);
 }
 
 //--------------------------------------------------------------------------------------------------
-osg::ref_ptr<osg::Node> ToolboxMain::CreateGrid()
+osg::ref_ptr<osg::Node> ToolboxMain::createGrid()
 {
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
     // create Geometry object to store all the vertices and lines primitive.
@@ -514,9 +318,118 @@ osg::ref_ptr<osg::Node> ToolboxMain::CreateGrid()
     return geode; 
 }
 
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::SettingModel()
+void ToolboxMain::updateServices()
 {
+    m_pServiceManager->updatePass();
+}
+
+void ToolboxMain::registerCoreServices()
+{
+    //1. Service manafger
+    m_pUserInterfaceService = new UserInterfaceService();
+    m_pServiceManager = new ServiceManager();
+    m_pModelService = new ModelService();
+    m_pRenderService = RenderServicePtr(new RenderService());
+
+    //2. Model Service
+    m_pServiceManager->registerService(IServicePtr(m_pModelService));
+
+    //3. UserInterface Service
+    m_pServiceManager->registerService(IServicePtr(m_pUserInterfaceService));
+    m_pUserInterfaceService->InicializeServices("QT",this);
+
+    //4. Render Service
+    m_pServiceManager->registerService(IServicePtr(m_pRenderService));
+}
+
+void ToolboxMain::registerPluginsServices()
+{
+    pluginLoader->load();
+    for ( size_t i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
+        core::PluginPtr plugin = pluginLoader->getPlugin(i);
+        for ( size_t j = 0; j < plugin->getNumServices(); ++j ) {
+            m_pServiceManager->registerService(plugin->getService(j));
+        }
+    }
+}
+
+void ToolboxMain::onOpen()
+{
+    const QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::currentPath(), "*.tbs");
+    if (!fileName.isEmpty()) 
+    {
+        std::cout << " " << std::endl; 
+        std::cout << "File Opened: " << std::string(fileName.toUtf8()) << std::endl;
+        std::cout << "---------------------------------------------------------------" << std::endl; 
+
+        Model* model = new Model();
+        FileReader2Motion::ReadFile(fileName.toStdString(), model);
+
+        DataManager* dataManaget = new DataManager(fileName.toStdString(), model);
+        m_pServiceManager->setData(dataManaget);
+
+        m_pRenderService->AddObjectToRender(createGrid());
+
+        // manage scene
+        osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
+        osg::Node* sceneRoot = scene->getSceneData();
+        //   _osgControlWidget->SetScene(scene); 
+        _gridWidget->SetScene(sceneRoot);
+        return;
+
+        if (model)
+            delete model;
+    }
+    QMessageBox::warning(this, QString("Error!"), QString("Failed to load model."));
+}
+
+void ToolboxMain::onExit()
+{
+    close();
+}
+
+void ToolboxMain::onMaterial()
+{
+    
+}
+
+void ToolboxMain::onBones()
+{
+
+}
+
+void ToolboxMain::onWireframe()
+{
+
+}
+
+void ToolboxMain::initializeUI()
+{
+    // widget rendeer service - centralny
+    setCentralWidget(reinterpret_cast<QWidget*>(m_pRenderService->getWidget()));
+    // pozosta³e widgety "p³ywaj¹ce"
+    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
+        IServicePtr service = m_pServiceManager->getService(i);
+        IWidget* widget = service->getWidget();
+        if ( widget && service != m_pRenderService ) {
+            // dodajemy widget dokowalny
+            QDockWidget* dock = new QDockWidget( QString::fromStdString(service->getName()), this, Qt::WindowTitleHint);
+            dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+            addDockWidget(Qt::BottomDockWidgetArea, dock);
+            // HACK
+            QWidget* qwidget = reinterpret_cast<QWidget*>(widget);
+            QObject* parent = qwidget->parent();
+            dock->setWidget(qwidget);
+            dock->setObjectName( QString::fromStdString( service->getName() ) + qwidget->objectName() + "WIDGET" );
+        }
+    }
+
+    // uzupe³nienie podmenu z mo¿liwymi oknami
+    populateWindowMenu(ui->menuWindow);
+}
+
+// void ToolboxMain::SettingModel()
+// {
 //      ObjectService* object = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>(); 
 //      if(m_model)
 //      {
@@ -526,7 +439,7 @@ void ToolboxMain::SettingModel()
 //          osg::ref_ptr<osg::Group> root = new osg::Group();
 //          root->setName("root");
 //          // create grid
-//          root->addChild(CreateGrid());
+//          root->addChild(createGrid());
 //          // add model
 //          root->addChild(group);	
 //          // add to control
@@ -542,9 +455,9 @@ void ToolboxMain::SettingModel()
 //      }
 //      m_model = object->GetModel();
 
-    m_pRenderService->CreateNewWindow("TEST");
-    m_pRenderService->CreateNewWindow("TEST1");
-    m_pRenderService->CreateNewWindow("TEST2");
+//     m_pRenderService->CreateNewWindow("TEST");
+//     m_pRenderService->CreateNewWindow("TEST1");
+//     m_pRenderService->CreateNewWindow("TEST2");
 
 // TESTING CONFIGURATION_FILE_MANAGER
 //     ServiceManager::GetInstance()->registerService<ConfigurationFileService>(); 
@@ -567,104 +480,5 @@ void ToolboxMain::SettingModel()
 //     dp->AddNewParamter(*par2);
 //     pCFService->AddNewConfigurationGroup(*dp);
 //     pCFService->Save();
-
-}
-
-//--------------------------------------------------------------------------------------------------
-// TODO:  refactorng KONIECZNIE -  tymczasem dla testów, spróbowac zrobiæ jedna medote zarz¹cdaj¹ca tymi pozosta³ymi
-void ToolboxMain::PointViewModel()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::LinesViewModel()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::LineStripViewModel()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::LineLoopViewModel()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::TriangleViewModel()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::TriangleStripViewModel()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::TriangleFunViewModel()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::QuadsViewModel()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::QuadStripViewModel()
-{
-
-}
-
-//--------------------------------------------------------------------------------------------------
-void ToolboxMain::PolygonViewModel()
-{
-
-}
-
-
-void ToolboxMain::updateServices()
-{
-    m_pServiceManager->updatePass();
-}
-
-
-void ToolboxMain::registerCoreServices()
-{
-    //1. Service manafger
-    m_pUserInterfaceService = new UserInterfaceService();
-    m_pServiceManager = new ServiceManager();
-    m_pModelService = new ModelService();
-    m_pRenderService = new RenderService();
-    m_pPluginService = new PluginService();
-
-    //2. Model Service
-    m_pServiceManager->registerService(m_pModelService);
-
-    //3. UserInterface Service
-    m_pServiceManager->registerService(m_pUserInterfaceService);
-    m_pUserInterfaceService->InicializeServices("QT",this);
-
-    //4. Render Service
-    m_pServiceManager->registerService(m_pRenderService);
-}
-
-void ToolboxMain::registerPluginsServices()
-{
-    m_pPluginService->load();
-    for ( size_t i = 0; i < m_pPluginService->getNumPlugins(); ++i ) {
-        core::Plugin* plugin = m_pPluginService->getPlugin(i);
-        for ( size_t j = 0; j < plugin->getNumServices(); ++j ) {
-            m_pServiceManager->registerService(plugin->getService(j));
-        }
-    }
-}
+// 
+// }

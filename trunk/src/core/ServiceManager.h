@@ -15,9 +15,9 @@ class ServiceManager: public IServiceManager
 {
 public:
     //! S³ownik us³ug.
-    typedef std::map<UniqueID, IService*> ServicesMap;
+    typedef std::map<UniqueID, IServicePtr> ServicesMap;
     //! Sekwencja us³ug.
-    typedef std::vector<IService*> ServicesList;
+    typedef std::vector<IServicePtr> ServicesList;
 
 private:
     //! S³ownik us³ug.
@@ -57,15 +57,15 @@ public:
 public:
     //! Rejestruje us³ugê. Us³ugi musz¹ mieæ unikatowe ID!
     //! \param service Us³guga do rejestracji.
-    virtual void registerService(IService* service);
+    virtual void registerService(IServicePtr service);
     //! \return Liczba us³ug.
     virtual int getNumServices() const;
     //! \param idx Indeks us³ugi.
     //! \return Us³uga o zadanym indeksie.
-    virtual IService* getService(int idx);
+    virtual IServicePtr getService(int idx);
     //! \param id ID us³ugi do wyszukania.
     //! \return Odnaleziona us³uga b¹dŸ NULL.
-    virtual IService* getService(UniqueID id);
+    virtual IServicePtr getService(UniqueID id);
 
 
 private: 

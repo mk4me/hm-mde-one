@@ -2,7 +2,6 @@
 #include "RenderService.h"
 #include <QtGui/qwidget.h>
 
-#include "UserInterfaceService.h"
 #include "Model.h"
 #include "Mesh.h"
 
@@ -33,18 +32,13 @@ RenderService::~RenderService()
 //--------------------------------------------------------------------------------------------------
 void RenderService::Clear()
 {
-    m_pMainOsgView = NULL;
-    m_spRoot = NULL;
-    m_pUserInterfaceService = NULL;
-
-    m_widgetMap.clear();
+    widget = NULL;
+    sceneRoot = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
 AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
 {
-    m_pServiceManager = (ServiceManager*)serviceManager;
-
     std::cout<< "RenderService ADDED-test!" << std::endl; 
     Inicialize(sceneRoot);
     return AsyncResult_Complete; 
@@ -53,37 +47,34 @@ AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* scen
 //--------------------------------------------------------------------------------------------------
 void RenderService::Inicialize(osg::Node* sceneRoot)
 {
-    m_pUserInterfaceService =  dynamic_cast<UserInterfaceService*>(m_pServiceManager->getService(UserInterfaceService::getClassID()));
+    sceneRoot = dynamic_cast<osg::Group*>(sceneRoot);
+    UTILS_ASSERT(sceneRoot != NULL);
+
+//     osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator();
+//     QMainWindow* mainWindow = (QMainWindow*)m_pUserInterfaceService->GetMainObject();
+//     QWidget* widget = new QWidget();  
+//     QDockWidget *dock; 
+// 
+//     dock = new QDockWidget("RENDERING_MAIN_WINDOW", mainWindow, Qt::WindowTitleHint);
+//     dock->setObjectName("RENDERING_DOC");
+//     dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+//     mainWindow->addDockWidget(Qt::NoDockWidgetArea, dock);
+//     m_widgetMap["RENDERING_MAIN_WINDOW"] = widget;
+
+    //QWidget* parent = new QWidget();  
 
     osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator();
-    QMainWindow* mainWindow = (QMainWindow*)m_pUserInterfaceService->GetMainObject();
-    QWidget* widget = new QWidget();  
-    QDockWidget *dock; 
 
-    dock = new QDockWidget("RENDERING_MAIN_WINDOW", mainWindow, Qt::WindowTitleHint);
-    dock->setObjectName("RENDERING_DOC");
-    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    mainWindow->addDockWidget(Qt::NoDockWidgetArea, dock);
-    m_widgetMap["RENDERING_MAIN_WINDOW"] = widget;
-
-
-    
-    m_spRoot = dynamic_cast<osg::Group*>(sceneRoot);
-    UTILS_ASSERT(m_spRoot != NULL);
-
-    m_pMainOsgView = new QOSGViewer(widget, 0, 0);
-    m_pMainOsgView->addEventHandler(new osgViewer::StatsHandler);
-    m_pMainOsgView->setCameraManipulator(cameraManipulator);
-
-    m_pMainOsgView->setSceneData(sceneRoot);
-    dock->setWidget((QWidget*)m_pMainOsgView); 
-    mainWindow->setCentralWidget(dock);
+    widget = new QOSGViewer(NULL, 0, 0);
+    widget->addEventHandler(new osgViewer::StatsHandler);
+    widget->setCameraManipulator(cameraManipulator);
+    widget->setSceneData(sceneRoot);
 }
 
 //--------------------------------------------------------------------------------------------------
 void RenderService::AddObjectToRender( osg::Node* node )
 {
-    m_spRoot->addChild(node);
+    sceneRoot->addChild(node);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -95,24 +86,24 @@ void RenderService::SetScene(osg::Group* root)
         InicizlizeModelMesh(model);
     }
 
-    m_spRoot = root;
-    m_pMainOsgView->setSceneData(m_spRoot);
+    sceneRoot = root;
+    widget->setSceneData(sceneRoot);
     
-    ViewerQT* temp;
-    std::map<std::string, ViewerQT*>::iterator it;
-
-    for (it = m_osgViewMap.begin(); it != m_osgViewMap.end(); it++) 
-    {
-        temp = (*it).second;
-        temp->setSceneData(root);
-    }
+//     ViewerQT* temp;
+//     std::map<std::string, ViewerQT*>::iterator it;
+// 
+//     for (it = m_osgViewMap.begin(); it != m_osgViewMap.end(); it++) 
+//     {
+//         temp = (*it).second;
+//         temp->setSceneData(root);
+//     }
 }
 
 //--------------------------------------------------------------------------------------------------
 osgViewer::Scene* RenderService::GetMainWindowScene()
 {
-    if(m_pMainOsgView)
-        return m_pMainOsgView->getScene();
+    if(widget)
+        return widget->getScene();
 
     return NULL;
 }
@@ -120,8 +111,8 @@ osgViewer::Scene* RenderService::GetMainWindowScene()
 //--------------------------------------------------------------------------------------------------
 QOSGViewer* RenderService::GetMainAdapterWidget()
 {
-    if(m_pMainOsgView)
-        return m_pMainOsgView;
+    if(widget)
+        return widget;
 
     return NULL;
 }
@@ -129,60 +120,62 @@ QOSGViewer* RenderService::GetMainAdapterWidget()
 //--------------------------------------------------------------------------------------------------
 osgGroupPtr RenderService::GetRoot()
 {
-    return m_spRoot;
+    return sceneRoot;
 }
 
 //--------------------------------------------------------------------------------------------------
-bool RenderService::CreateNewWindow( std::string windowName )
-{
-    QMainWindow* mainWindow = (QMainWindow*)m_pUserInterfaceService->GetMainObject();
-    
-    QDockWidget *dock = new QDockWidget(windowName.c_str(), mainWindow, Qt::WindowTitleHint);
-    osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator();
-    std::string docWindowName = windowName + "DOC";
-    QWidget* widget = new QWidget(); 
-    ViewerQT* OsgView = new ViewerQT(m_pServiceManager, widget, 0, 0);
 
-    dock->setObjectName(docWindowName.c_str());
-    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    mainWindow->addDockWidget(Qt::BottomDockWidgetArea, dock);
-    m_widgetMap[windowName] = widget;
-
-    m_spRoot = new osg::Group();
-    m_spRoot->setName("root");
-
-    OsgView->addEventHandler(new osgViewer::StatsHandler);
-    OsgView->setCameraManipulator(cameraManipulator);
-
-    m_pMainOsgView->setSceneData(m_spRoot);
-    dock->setWidget((QWidget*)OsgView); 
-    m_osgViewMap[windowName] = OsgView;
-
-    return true;
-}
+// Piotr Gwiazdowski: RenderService towrzy okienka? This is madness
+// bool RenderService::CreateNewWindow( std::string windowName )
+// {
+//     QMainWindow* mainWindow = (QMainWindow*)m_pUserInterfaceService->GetMainObject();
+//     
+//     QDockWidget *dock = new QDockWidget(windowName.c_str(), mainWindow, Qt::WindowTitleHint);
+//     osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator();
+//     std::string docWindowName = windowName + "DOC";
+//     QWidget* widget = new QWidget(); 
+//     ViewerQT* OsgView = new ViewerQT(m_pServiceManager, widget, 0, 0);
+// 
+//     dock->setObjectName(docWindowName.c_str());
+//     dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+//     mainWindow->addDockWidget(Qt::BottomDockWidgetArea, dock);
+//     m_widgetMap[windowName] = widget;
+// 
+//     sceneRoot = new osg::Group();
+//     sceneRoot->setName("root");
+// 
+//     OsgView->addEventHandler(new osgViewer::StatsHandler);
+//     OsgView->setCameraManipulator(cameraManipulator);
+// 
+//     widget->setSceneData(sceneRoot);
+//     dock->setWidget((QWidget*)OsgView); 
+//     m_osgViewMap[windowName] = OsgView;
+// 
+//     return true;
+// }
 
 //--------------------------------------------------------------------------------------------------
 void RenderService::TestScreenForNewModel( Model* model )
 {
-    InicizlizeModelMesh(model);
-	QMainWindow* mainWindow = (QMainWindow*)m_pUserInterfaceService->GetMainObject();
-
-	QDockWidget *dock = new QDockWidget("TESTING_NEW_MODEL", mainWindow, Qt::WindowTitleHint);
-    osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator();
-	std::string docWindowName = "TESTING_NEW_MODEL_DOC";
-    QWidget* widget = new QWidget();  
-    ViewerQT* OsgView = new ViewerQT(m_pServiceManager, widget, 0, 0);
-
-	dock->setObjectName(docWindowName.c_str());
-	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	mainWindow->addDockWidget(Qt::BottomDockWidgetArea, dock);
-	m_widgetMap["TESTING_NEW_MODEL"] = widget;
-
-	OsgView->addEventHandler(new osgViewer::StatsHandler);
-	OsgView->setCameraManipulator(cameraManipulator);
-
-	OsgView->setSceneData(model);
-	dock->setWidget((QWidget*)OsgView); 
+    UTILS_ASSERT(false, "Nie powinien tutaj wejœæ...");
+//     InicizlizeModelMesh(model);
+// 	QMainWindow* mainWindow = (QMainWindow*)m_pUserInterfaceService->GetMainObject();
+// 
+// 	QDockWidget *dock = new QDockWidget("TESTING_NEW_MODEL", mainWindow, Qt::WindowTitleHint);
+//     osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator();
+// 	std::string docWindowName = "TESTING_NEW_MODEL_DOC";
+//     QWidget* widget = new QWidget();  
+//     ViewerQT* OsgView = new ViewerQT(m_pServiceManager, widget, 0, 0);
+// 
+// 	dock->setObjectName(docWindowName.c_str());
+// 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+// 	mainWindow->addDockWidget(Qt::BottomDockWidgetArea, dock);
+// 
+// 	OsgView->addEventHandler(new osgViewer::StatsHandler);
+// 	OsgView->setCameraManipulator(cameraManipulator);
+// 
+// 	OsgView->setSceneData(model);
+// 	dock->setWidget((QWidget*)OsgView); 
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -208,8 +201,9 @@ void RenderService::InicizlizeModelMesh(Model* model)
 //--------------------------------------------------------------------------------------------------
 AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
-    if(dynamic_cast<Model* >(dataManager->GetModel()))
+    if(dynamic_cast<Model* >(dataManager->GetModel())) {
         SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
+    }
     return AsyncResult_Complete;
 }
 
@@ -254,4 +248,9 @@ void RenderService::RenderBone(Model* model)
 // 			model->addChild(skeletonGeode);
 // 		}
 // 	}
+}
+
+IWidget* RenderService::getWidget()
+{
+    return reinterpret_cast<IWidget*>(widget);
 }
