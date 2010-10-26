@@ -2,9 +2,12 @@
 
 #include <core/IServiceManager.h>
 #include <plugins/animation/AnimationService.h>
-#include <core/Transform.h>
 
 using namespace std;
+
+#ifndef M_PI
+#define M_PI (3.14159265358979323846)
+#endif
 
 #define TIMERMULTIPLAY 0.0055
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
@@ -218,37 +221,19 @@ void Animation::calculateMatrix(Bone *bone)
         index = m_pFrameCount -1;
     }
 
-    double C[4][4];
-    double Cinv[4][4];
-    double B[4][4];
+    osg::Matrixd C1, Cinv1, B1, M1, tmp, tmp2;
+    float rx, ry, rz;
+    rx=-bone->axis_x*M_PI/180.;
+    ry=-bone->axis_y*M_PI/180.;
+    rz=-bone->axis_z*M_PI/180.;
+    C1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f));
 
-    double M[4][4];
+    rx=-bone->frame[index]->rotx*M_PI/180.;
+    ry=-bone->frame[index]->roty*M_PI/180.;
+    rz=-bone->frame[index]->rotz*M_PI/180.;
+    M1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f));
+    M1.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
 
-
-
-    int i;
-    double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
-
-    //motion matrix
-    rotationZ(Rz, -bone->frame[index]->roty);
-    rotationY(Ry, -bone->frame[index]->rotz);
-    rotationX(Rx, -bone->frame[index]->rotx);
-    matrix_mult(Rz, Ry, tmp);
-    matrix_mult(tmp, Rx, M);
-
-    M[0][3]=bone->frame[index]->translationx;
-    M[1][3]=bone->frame[index]->translationz;
-    M[2][3]=bone->frame[index]->translationy;
-
-
-
-    rotationZ(Rz, -bone->axis_y);
-    rotationY(Ry, -bone->axis_z);
-    rotationX(Rx, -bone->axis_x);
-    matrix_mult(Rz, Ry, tmp);
-    matrix_mult(tmp, Rx, C);
-
-    //matrix_transpose(tmp2, C);   
 
     float x,y,z;
     float lenght = bone->length;
@@ -256,40 +241,31 @@ void Animation::calculateMatrix(Bone *bone)
     y = bone->dir[1] * lenght;
     z = bone->dir[2] * lenght;
 
-    LoadFromTranslationVec(x,z,y,B);
-    //matrix_transpose(tmp, B);   
+    B1.makeTranslate(x, z, y);
+    Cinv1 = osg::Matrixd::inverse(C1);
 
-    //CopyMatrix(Cinv,C);
+    // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
+    // 																C[1][0], C[1][1], C[1][2], C[1][3],
+    // 																C[2][0], C[2][1], C[2][2], C[2][3],
+    // 																C[3][0], C[3][1], C[3][2], C[3][3]));
 
-    for ( int i = 0; i < 4; i++ )
-        for ( int j = 0; j < 4; j++ ) 
-        {
-            Cinv[i][j] = C[i][j];
-        }
+    tmp = C1 * M1;
+    tmp2 = tmp * Cinv1;
+    tmp = B1 * tmp2;
+    *bone->matrix = tmp * (*bone->parent->matrix);
 
-        // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
-        // 																C[1][0], C[1][1], C[1][2], C[1][3],
-        // 																C[2][0], C[2][1], C[2][2], C[2][3],
-        // 																C[3][0], C[3][1], C[3][2], C[3][3]));
+    osg::Vec3d trans = bone->matrix->getTrans();
 
-        Invert(Cinv);
-
-        SetToProduct(Cinv, M, tmp);
-        SetToProduct(tmp, C, tmp2);
-        SetToProduct(tmp2, B, tmp);
-        SetToProduct(bone->parent->matrix, tmp, bone->matrix);
-
-        bone->positionx = bone->matrix[0][3];
-        bone->positiony = bone->matrix[1][3];
-        bone->positionz = bone->matrix[2][3];
+    bone->positionx = trans.x();
+    bone->positiony = trans.y();
+    bone->positionz = trans.z();
 
 
-
-        int childrenCount = bone->child.size();
-        for(int i = 0; i<childrenCount; i++)
-        {
-            calculateMatrix(bone->child[i]);
-        }
+    int childrenCount = bone->child.size();
+    for(int i = 0; i<childrenCount; i++)
+    {
+        calculateMatrix(bone->child[i]);
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -311,37 +287,19 @@ void Animation::UpdateModel()
     int boundCount = m_pSkeleton->m_pBoneList.size();
     Bone* bone = m_pSkeleton->m_pRootBone;
 
-    double C[4][4];
-    double Cinv[4][4];
-    double B[4][4];
+    osg::Matrixd C1, Cinv1, B1, M1, tmp, tmp2;
+    float rx, ry, rz;
+    rx=-bone->axis_x*M_PI/180.;
+    ry=-bone->axis_y*M_PI/180.;
+    rz=-bone->axis_z*M_PI/180.;
 
-    double M[4][4];
+    C1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f));
 
-
-
-    int i;
-    double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
-
-    //motion matrix
-    rotationZ(Rz, -bone->frame[index]->roty);
-    rotationY(Ry, -bone->frame[index]->rotz);
-    rotationX(Rx, -bone->frame[index]->rotx);
-    matrix_mult(Rz, Ry, tmp);
-    matrix_mult(tmp, Rx, M);
-
-    M[0][3]=bone->frame[index]->translationx;
-    M[1][3]=bone->frame[index]->translationz;
-    M[2][3]=bone->frame[index]->translationy;
-
-
-
-    rotationZ(Rz, -bone->axis_y);
-    rotationY(Ry, -bone->axis_z);
-    rotationX(Rx, -bone->axis_x);
-    matrix_mult(Rz, Ry, tmp);
-    matrix_mult(tmp, Rx, C);
-
-    //matrix_transpose(tmp2, C);   
+    rx=-bone->frame[index]->rotx*M_PI/180.;
+    ry=-bone->frame[index]->roty*M_PI/180.;
+    rz=-bone->frame[index]->rotz*M_PI/180.;
+    M1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f));
+    M1.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
 
     float x,y,z;
     float lenght = bone->length;
@@ -349,39 +307,31 @@ void Animation::UpdateModel()
     y = bone->dir[1] * lenght;
     z = bone->dir[2] * lenght;
 
-    LoadFromTranslationVec(x,z,y,B);
-    //matrix_transpose(tmp, B);   
+    B1.makeTranslate(x, z, y);
+    Cinv1 = osg::Matrixd::inverse(C1);
 
-    //CopyMatrix(Cinv,C);
-
-    for ( int i = 0; i < 4; i++ )
-        for ( int j = 0; j < 4; j++ ) 
-        {
-            Cinv[i][j] = C[i][j];
-        }
-
-        // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
-        // 																C[1][0], C[1][1], C[1][2], C[1][3],
-        // 																C[2][0], C[2][1], C[2][2], C[2][3],
-        // 																C[3][0], C[3][1], C[3][2], C[3][3]));
-
-        Invert(Cinv);
-
-        SetToProduct(Cinv, M, tmp);
-        SetToProduct(tmp, C, tmp2);
-        SetToProduct(tmp2, B, bone->matrix);
-
-        bone->positionx = bone->matrix[0][3];
-        bone->positiony = bone->matrix[1][3];
-        bone->positionz = bone->matrix[2][3];
+    // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
+    // 																C[1][0], C[1][1], C[1][2], C[1][3],
+    // 																C[2][0], C[2][1], C[2][2], C[2][3],
+    // 																C[3][0], C[3][1], C[3][2], C[3][3]));
 
 
+    tmp = C1 * M1;
+    tmp2 = tmp * Cinv1;
+    *bone->matrix = tmp2 * B1;
 
-        int childrenCount = bone->child.size();
-        for(int i = 0; i<childrenCount; i++)
-        {
-            calculateMatrix(bone->child[i]);
-        }
+    osg::Vec3d trans = bone->matrix->getTrans();
+
+    bone->positionx = trans.x();
+    bone->positiony = trans.y();
+    bone->positionz = trans.z();
+
+
+    int childrenCount = bone->child.size();
+    for(int i = 0; i<childrenCount; i++)
+    {
+        calculateMatrix(bone->child[i]);
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
