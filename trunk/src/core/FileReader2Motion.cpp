@@ -18,8 +18,9 @@
 
 #include <osg/Matrix>
 
-#define TIMERMULTIPLAY 0.02
 
+#define SCALE 0.2
+#define TIMERMULTIPLAY 0.02
 
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*
@@ -283,6 +284,7 @@ void calculateMatrix(Bone *bone)
     tmp = Cinv1 * C1;
     tmp2 = tmp * B1;
     *bone->matrix = tmp2 * (*bone->parent->matrix);
+    //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
 
     osg::Vec3d trans = bone->matrix->getTrans();
 
@@ -328,6 +330,7 @@ bool FileReader2Motion::LoadSkeleton(Model* model)
 
     tmp = Cinv1 * C1;
     *bone->matrix = tmp * B1;
+    //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
 
     osg::Vec3d trans = bone->matrix->getTrans();
 

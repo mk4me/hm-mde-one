@@ -16,6 +16,7 @@ using namespace std;
 Model::Model()
 {
 	m_geometry = new osg::Geometry();
+    m_spSkeletonGeode = new osg::Geode();
 
     m_pJoints = NULL;
     m_pSkeleton = NULL;
@@ -196,12 +197,12 @@ void* Model::GetSkeletonGroup()
 //--------------------------------------------------------------------------------------------------
 void Model::DrawModelBone()
 {
-	if (_skeletonGeode.valid())
-		this->removeChild(_skeletonGeode.get());
+	if (m_spSkeletonGeode.valid())
+		this->removeChild(m_spSkeletonGeode.get());
 
 	// create new geode
-	_skeletonGeode = new osg::Geode();
-	_skeletonGeode->setName("skeleton_geode");
+	m_spSkeletonGeode = new osg::Geode();
+	m_spSkeletonGeode->setName("skeleton_geode");
 
 	// Drawing Bones
 
@@ -211,10 +212,10 @@ void Model::DrawModelBone()
 
 	for (int i = 0; i<childcount; i++)
 	{
-		this->DrawBone(bone->child[i], _skeletonGeode);
+		this->DrawBone(bone->child[i], m_spSkeletonGeode);
 	}
 
-	this->addChild(_skeletonGeode);
+	this->addChild(m_spSkeletonGeode);
 
 }
 
@@ -440,4 +441,10 @@ osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3f* startPos, const os
     geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 
     return geometry;
+}
+
+//--------------------------------------------------------------------------------------------------
+osg::ref_ptr<osg::Geode> Model::GetSkeletonGeode()
+{
+    return m_spSkeletonGeode;
 }

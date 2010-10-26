@@ -45,9 +45,11 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/BaseDataTypes.h
+	${HEADER_PATH}/Bone.h
 	${HEADER_PATH}/dae2Motion.h
 	${HEADER_PATH}/DllExports.h
 	${HEADER_PATH}/Enumerators.h
+	${HEADER_PATH}/Frame.h
 	${HEADER_PATH}/GlobalServicesIDs.h
 	${HEADER_PATH}/IAnimationGroup.h
 	${HEADER_PATH}/IAnimationNode.h
@@ -63,6 +65,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/QtMainWindowInterface.h
 	${HEADER_PATH}/QtWidgetInterface.h
 	${HEADER_PATH}/SimpleFunctors.h
+	${HEADER_PATH}/Skeleton.h
 	${HEADER_PATH}/UserInterface.h
 	${HEADER_PATH}/Vec3.h
 	${HEADER_PATH}/WidgetInterface.h

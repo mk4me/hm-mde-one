@@ -43,6 +43,7 @@ public:
     virtual IMesh* GetMesh(int i = 0);
     virtual std::vector<IMesh* >& GetMeshList();
     virtual std::vector<ISkeletonNode* >* GetJoints();
+    virtual osg::ref_ptr<osg::Geode> GetSkeletonGeode();
 
     virtual Skeleton* GetSkeleton();
     virtual Frame* GetAnimation();
@@ -58,7 +59,7 @@ public:
 
     osg::ref_ptr<osg::Geometry>  m_geometry;
 
-    osg::ref_ptr<osg::Geode> _skeletonGeode;
+    osg::ref_ptr<osg::Geode> m_spSkeletonGeode;
 private:
     void CreateArrayOfJoints(SkeletonNode* bone);
 

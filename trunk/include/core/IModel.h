@@ -32,6 +32,7 @@ public:
     virtual Skeleton* GetSkeleton() = 0;
     virtual Frame* GetAnimation() = 0;
     virtual std::vector<ISkeletonNode* >* GetJoints() = 0;
+    virtual osg::ref_ptr<osg::Geode> GetSkeletonGeode() = 0;
 
 	virtual void DrawModelBone() = 0;
 };

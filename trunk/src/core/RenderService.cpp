@@ -216,7 +216,7 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 //--------------------------------------------------------------------------------------------------
 void RenderService::RenderBone(Model* model)
 {
-	osg::ref_ptr<osg::Geode> skeletonGeode = new osg::Geode();
+	osg::ref_ptr<osg::Geode> skeletonGeode = model->GetSkeletonGeode();
 	skeletonGeode->setName("skeleton_geode");
 
     if(!model->GetSkeleton())

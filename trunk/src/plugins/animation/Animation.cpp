@@ -9,6 +9,7 @@ using namespace std;
 #define M_PI (3.14159265358979323846)
 #endif
 
+#define SCALE 0.2
 #define TIMERMULTIPLAY 0.0055
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
 
@@ -244,10 +245,11 @@ void Animation::calculateMatrix(Bone *bone)
     B1.makeTranslate(x, z, y);
     Cinv1 = osg::Matrixd::inverse(C1);
 
-    tmp = C1 * M1;
-    tmp2 = tmp * Cinv1;
-    tmp = B1 * tmp2;
+    tmp = B1 * C1;
+    tmp2 = tmp * M1;
+    tmp = tmp2 * Cinv1;
     *bone->matrix = tmp * (*bone->parent->matrix);
+    //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
 
     osg::Vec3d trans = bone->matrix->getTrans();
 
@@ -305,9 +307,10 @@ void Animation::UpdateModel()
     B1.makeTranslate(x, z, y);
     Cinv1 = osg::Matrixd::inverse(C1);
 
-    tmp = C1 * M1;
-    tmp2 = tmp * Cinv1;
-    *bone->matrix = tmp2 * B1;
+    tmp = B1 * C1;
+    tmp2 = tmp * M1;
+    *bone->matrix = tmp2 * Cinv1;
+    //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
 
     osg::Vec3d trans = bone->matrix->getTrans();
 

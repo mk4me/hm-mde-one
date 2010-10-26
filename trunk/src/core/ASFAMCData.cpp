@@ -322,7 +322,7 @@ void Channel::getTranslation(int frameNum, float &xTranslate, float &yTranslate,
     }
     else
     {
-        printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
+        //printf("encountered an error, trying to read bad TRANSLATION frame data at frame %d\n", frameNum);
     }
 }
 
