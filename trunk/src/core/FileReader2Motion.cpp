@@ -74,10 +74,12 @@ void FileReader2Motion::ReadFromTBSFile( const std::string& file, Model* model )
     LoadMesh(&model_name, model);
     model->InicializeMesh();
 
-    if (!LoadSkeleton(model))
-        return;
+    // TODO : sparsowac w przyszlosci szkielet animacji z tbs do nowej struktury animacji na potrzeby acclaim file
+    //if (!LoadSkeleton(model))
+    //    return;
 
-    LoadAnimation(fmodel_file, model);
+    // TODO : sparsowac w przyszlosci szkielet animacji z tbs do nowej struktury animacji na potrzeby acclaim file
+    // LoadAnimation(fmodel_file, model);
     model->ApplyMaterial(&fmodel_file->material_list, fmodel_file->path);
 }
 
@@ -278,11 +280,6 @@ void calculateMatrix(Bone *bone)
     B1.makeTranslate(x, z, y);
     Cinv1 = osg::Matrixd::inverse(C1);
 
-    // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
-    // 																C[1][0], C[1][1], C[1][2], C[1][3],
-    // 																C[2][0], C[2][1], C[2][2], C[2][3],
-    // 																C[3][0], C[3][1], C[3][2], C[3][3]));
-
     tmp = Cinv1 * C1;
     tmp2 = tmp * B1;
     *bone->matrix = tmp2 * (*bone->parent->matrix);
@@ -328,11 +325,6 @@ bool FileReader2Motion::LoadSkeleton(Model* model)
 
     B1.makeTranslate(x, y, z);
     Cinv1 = osg::Matrixd::inverse(C1);
-
-    // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
-    // 																C[1][0], C[1][1], C[1][2], C[1][3],
-    // 																C[2][0], C[2][1], C[2][2], C[2][3],
-    // 																C[3][0], C[3][1], C[3][2], C[3][3]));
 
     tmp = Cinv1 * C1;
     *bone->matrix = tmp * B1;
@@ -434,7 +426,6 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
                 skeleton->m_pBoneList[b]->frame = frames;
             }
         }
-
 
         joint++;
     }

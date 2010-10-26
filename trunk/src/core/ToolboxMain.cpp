@@ -355,7 +355,7 @@ void ToolboxMain::registerPluginsServices()
 
 void ToolboxMain::onOpen()
 {
-    const QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::currentPath(), "*.tbs;*.asf"); // TODO: tymczasowo dodaje asf do filtrów Open File
+    const QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::currentPath(), "*.tbs;*.asf;*.DAE"); // TODO: tymczasowo dodaje asf do filtrów Open File
     if (!fileName.isEmpty()) 
     {
         std::cout << " " << std::endl; 

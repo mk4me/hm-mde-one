@@ -125,6 +125,12 @@ osgGroupPtr RenderService::GetRoot()
 
 //--------------------------------------------------------------------------------------------------
 
+// TODO:
+// R.Zowal: to by³a testowa metoda wykorzystywana wy³¹cznie w setSetting(testowa akcja) - teraz nie aktualna. 
+// Metoda mia³a tylko na celu sprawdzenie poprawnoœci generowanie wielu okienek QOSGViewer, równiez tych z plugina
+// Sugeruje aby to jeszcze chwilowo zosta³o. (testy wyœwietlania modelu ca³oœciowo w jednym oknie, i modelu szkieletu w kolejnym + ewntualne opcje)
+// nied³ugo nie bêdzie potrzebne wtedy to posprz¹tam. 
+
 // Piotr Gwiazdowski: RenderService towrzy okienka? This is madness
 // bool RenderService::CreateNewWindow( std::string windowName )
 // {
@@ -213,6 +219,8 @@ void RenderService::RenderBone(Model* model)
 	osg::ref_ptr<osg::Geode> skeletonGeode = new osg::Geode();
 	skeletonGeode->setName("skeleton_geode");
 
+    if(!model->GetSkeleton())
+        return;
 
 	Bone* bone = model->GetSkeleton()->m_pRootBone;
 	int childcount = bone->child.size();

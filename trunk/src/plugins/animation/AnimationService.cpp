@@ -254,11 +254,14 @@ void AnimationService::LoadAnimation( IModel* model )
 
     m_pModel = model;
 
-//     m_pJoints = model->GetJoints();
-//     m_skeleton = (osg::Group*)model->GetSkeletonGroup();
-// 
-//     if(!m_pJoints || !m_skeleton)
-//         return;
+    if(!model->GetSkeleton())
+        return;
+
+//      m_pJoints = model->GetJoints();
+//      m_skeleton = (osg::Group*)model->GetSkeletonGroup();
+//  
+//      if(!m_pJoints || !m_skeleton)
+//          return;
 // 
 // 
 //     m_numOfBones = m_pJoints->size();

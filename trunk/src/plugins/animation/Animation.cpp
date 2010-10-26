@@ -234,20 +234,15 @@ void Animation::calculateMatrix(Bone *bone)
     M1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f));
     M1.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
 
-
     float x,y,z;
     float lenght = bone->length;
     x = bone->dir[0] * lenght;
     y = bone->dir[1] * lenght;
     z = bone->dir[2] * lenght;
 
+
     B1.makeTranslate(x, z, y);
     Cinv1 = osg::Matrixd::inverse(C1);
-
-    // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
-    // 																C[1][0], C[1][1], C[1][2], C[1][3],
-    // 																C[2][0], C[2][1], C[2][2], C[2][3],
-    // 																C[3][0], C[3][1], C[3][2], C[3][3]));
 
     tmp = C1 * M1;
     tmp2 = tmp * Cinv1;
@@ -310,12 +305,6 @@ void Animation::UpdateModel()
     B1.makeTranslate(x, z, y);
     Cinv1 = osg::Matrixd::inverse(C1);
 
-    // 		osg::Matrixf mtrix = osg::Matrixf::inverse(osg::Matrixf(C[0][0], C[0][1], C[0][2], C[0][3],
-    // 																C[1][0], C[1][1], C[1][2], C[1][3],
-    // 																C[2][0], C[2][1], C[2][2], C[2][3],
-    // 																C[3][0], C[3][1], C[3][2], C[3][3]));
-
-
     tmp = C1 * M1;
     tmp2 = tmp * Cinv1;
     *bone->matrix = tmp2 * B1;
@@ -355,6 +344,7 @@ void Animation::Update(double dt)
     UpdateModel();
 }
 
+//--------------------------------------------------------------------------------------------------
 void Animation::SetTime( double time )
 {
     // if everything is done - stop animation
