@@ -3,20 +3,24 @@
 
 #include "Frame.h"
 #include <vector>
+#include <osg/Matrixd>
+
 // This holds the names of a joint's children
 typedef std::vector<char*> childVector;
 
 //class Bone
 struct Bone
 {
-    int idx;					// Bone inde
+    Bone(){ matrix = new osg::Matrixd(); }
+    ~Bone() { delete matrix; }
+	int idx;					// Bone inde
 
-    char *name;
+	char *name;
     Bone *parent;		// Pointer to the sibling (branch bone) in the hierarchy tree 
-    std::vector<Bone *> child;			// Pointer to the child (outboard bone) in the hierarchy tree 
-    std::vector<Frame*> frame;			// Animacja
-    childVector			children;			// STL vector of char* to children names
-    char *parentName;
+	std::vector<Bone *> child;			// Pointer to the child (outboard bone) in the hierarchy tree 
+	std::vector<Frame*> frame;			// Animacja
+	childVector			children;			// STL vector of char* to children names
+	char *parentName;
 
     float dir[3];				// Unit vector describes the direction from local origin to 
     // the origin of the child bone 
@@ -37,7 +41,7 @@ struct Bone
     // dofx=1 if this bone has x degree of freedom, otherwise dofx=0.
 
     // rotation matrix from the local coordinate of this bone to the local coordinate system of it's parent
-    double matrix[4][4];			
+    osg::Matrixd *matrix;			
 
     //Rotation angles for this bone at a particular time frame (as read from AMC file) in local coordinate system, 
     // this is position what we get "po" loading matrix;
