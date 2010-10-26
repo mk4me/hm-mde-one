@@ -14,7 +14,7 @@
 #include <core/IModel.h>
 #include <core/IMesh.h>
 #include <core/Skeleton.h>
-#include "Frame.h"
+#include <core/Frame.h>
 
 class Mesh;
 class ISkeletonNode;
@@ -47,18 +47,18 @@ public:
     virtual Skeleton* GetSkeleton();
     virtual Frame* GetAnimation();
 
-	void DrawBone(Bone* bone, osg::Geode* geode);
+    void DrawBone(Bone* bone, osg::Geode* geode);
     void DrawBone(osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode);
     osg::ref_ptr<osg::Geometry> DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, const osg::Vec3d* vertexPos, 
         const osg::Vec3d* startPos2, const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2, bool isSelected);
 
     osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3f* startPos, const osg::Vec3f* endPos, bool isSelected);
 
-	virtual void DrawModelBone();
+    virtual void DrawModelBone();
 
-	osg::ref_ptr<osg::Geometry>  m_geometry;
+    osg::ref_ptr<osg::Geometry>  m_geometry;
 
-	osg::ref_ptr<osg::Geode> _skeletonGeode;
+    osg::ref_ptr<osg::Geode> _skeletonGeode;
 private:
     void CreateArrayOfJoints(SkeletonNode* bone);
 

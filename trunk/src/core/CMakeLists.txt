@@ -14,7 +14,6 @@ set(PRIVATE_H
 	AdapterWidget.h
 	ASFAMCData.h
 	ASFAMCParser.h
-	Bone.h
 	ConsoleWidget.h
 	DataManager.h
 	DataTransfer.h
@@ -23,7 +22,6 @@ set(PRIVATE_H
 	FileReader2Motion.h
 	FileUtil.h
 	FModel.h
-	Frame.h
 	GridWidget.h
 	Intersection.h
 	Logger.h
@@ -34,10 +32,8 @@ set(PRIVATE_H
 	QTMainWindow.h
 	RenderService.h
 	ServiceManager.h
-	Skeleton.h
 	SkeletonNode.h
 	TimeLine.h
-	Transform.h
 	ToolboxMain.h
 	UserInterfaceService.h
 	Quaternioncal.h
@@ -88,13 +84,11 @@ set(TARGET_SRC
 	AdapterWidget.cpp
 	ASFAMCData.cpp
 	ASFAMCParser.cpp
-	Bone.cpp
 	ConsoleWidget.cpp
 	DataManager.cpp
 	FileChunkReader.cpp
 	FileReader2Motion.cpp
 	FileUtil.cpp
-	Frame.cpp
 	GridWidget.cpp
 	Logger.cpp
 	main.cpp
@@ -103,10 +97,8 @@ set(TARGET_SRC
 	QTMainWindow.cpp
 	RenderService.cpp
 	ServiceManager.cpp
-	Skeleton.cpp
 	TimeLine.cpp
 	ToolboxMain.cpp
-	Transform.cpp
 	UserInterfaceService.cpp
 	WindowFactory.cpp
 	

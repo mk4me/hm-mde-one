@@ -21,7 +21,6 @@ set(PRIVATE_H
 	QtWidget.h
 	PluginData.h
 	AnimationPlugin.h
-	../../core/Transform.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -36,7 +35,6 @@ set(TARGET_SRC
 	PluginData.cpp
 	AnimationService.cpp
 	Animation.cpp
-	../../core/Transform.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
