@@ -474,11 +474,11 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
                 hToken = strtok (NULL, "\n")         ;
             }
 
-            LocalFree (hSubBuffer) ;
-            LocalFree (hSubCopy) ;
-            LocalFree (hBuffer) ;
-            LocalFree (hToken) ;
-            LocalFree (parent) ;
+  //          LocalFree (hSubBuffer) ;
+//            LocalFree (hSubCopy) ;
+      //      LocalFree (hBuffer) ;
+    //        LocalFree (hToken) ;
+        //    LocalFree (parent) ;
         }
 
         else if (strcmp (token, "skin") == 0)

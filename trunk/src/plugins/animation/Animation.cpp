@@ -212,8 +212,9 @@ double Animation::SetPogress(double t)
 }
 
 //--------------------------------------------------------------------------------------------------
-void Animation::calculateMatrix(Bone *bone)
+void Animation::calculateChildMatrix(Bone *bone)
 {
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
 
     if(index > m_pFrameCount - 1)
@@ -222,18 +223,28 @@ void Animation::calculateMatrix(Bone *bone)
         index = m_pFrameCount -1;
     }
 
-    osg::Matrixd C1, Cinv1, B1, M1, tmp, tmp2;
+    // C - macierz obrotów (axis) plik ASF
+    // Cinv - inversja maierzy C
+    // B - macierz pozycji bezwzglêdnej: offfset = direction*length - plik ASF
+    // M - macierz ruchu - maciesz zaweiraj¹ca rotacj jak i translacje - plik AMC
+
+    osg::Matrixd C, Cinv, B, M, tmp, tmp2;
     float rx, ry, rz;
+    // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
     rx=-bone->axis_x*M_PI/180.;
     ry=-bone->axis_y*M_PI/180.;
     rz=-bone->axis_z*M_PI/180.;
-    C1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f));
+    // zmieniona rotacja ry = rz, rz = ry - prawdopodobnie osie w osg sa lewoskrêtne ??  czy¿by?
+    C.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
 
+    // tworzenie macierzy animacji. AMC file
+    // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
     rx=-bone->frame[index]->rotx*M_PI/180.;
     ry=-bone->frame[index]->roty*M_PI/180.;
     rz=-bone->frame[index]->rotz*M_PI/180.;
-    M1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f));
-    M1.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
+    // zmieniona rotacja ry = rz, rz = ry - prawdopodobnie osie w osg sa lewoskrêtne ??  czy¿by?
+    M.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
+    M.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx * SCALE, bone->frame[index]->translationz * SCALE, bone->frame[index]->translationy * SCALE));
 
     float x,y,z;
     float lenght = bone->length;
@@ -242,26 +253,28 @@ void Animation::calculateMatrix(Bone *bone)
     z = bone->dir[2] * lenght;
 
 
-    B1.makeTranslate(x, z, y);
-    Cinv1 = osg::Matrixd::inverse(C1);
+    B.makeTranslate(x, z, y);
+    Cinv = osg::Matrixd::inverse(C);
 
-    tmp = B1 * C1;
-    tmp2 = tmp * M1;
-    tmp = tmp2 * Cinv1;
+    // L = CinvMCB - wzór na animacjie AMC file- jednakze osg ma macierz transponowane !!!!
+    // konieczna jest zmian mnozenia, le¿ nie mo¿na zamienic stron mno¿enia z macierz¹ M (C i Cinv) !!!!
+    tmp = M* C;
+    tmp2 = Cinv * tmp;
+    tmp = B * tmp2;
     *bone->matrix = tmp * (*bone->parent->matrix);
     //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
 
     osg::Vec3d trans = bone->matrix->getTrans();
 
-    bone->positionx = trans.x();
-    bone->positiony = trans.y();
-    bone->positionz = trans.z();
+    bone->positionx = trans.x() * SCALE;
+    bone->positiony = trans.y() * SCALE;
+    bone->positionz = trans.z() * SCALE;
 
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateMatrix(bone->child[i]);
+        calculateChildMatrix(bone->child[i]);
     }
 }
 
@@ -273,6 +286,9 @@ void Animation::UpdateModel()
     // update skeleton
     // for every bone
 
+    // OBLICZANIE ROOTA.
+
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
 
     if(index > m_pFrameCount - 1)
@@ -281,22 +297,30 @@ void Animation::UpdateModel()
         index = m_pFrameCount -1;
     }
 
-    int boundCount = m_pSkeleton->m_pBoneList.size();
     Bone* bone = m_pSkeleton->m_pRootBone;
 
-    osg::Matrixd C1, Cinv1, B1, M1, tmp, tmp2;
+    // C - macierz obrotów (axis) plik ASF
+    // Cinv - inversja maierzy C
+    // B - macierz pozycji bezwzglêdnej: offfset = direction*length - plik ASF
+    // M - macierz ruchu - maciesz zaweiraj¹ca rotacj jak i translacje - plik AMC
+
+    osg::Matrixd C, Cinv, B, M, tmp, tmp2;
     float rx, ry, rz;
+    // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
     rx=-bone->axis_x*M_PI/180.;
     ry=-bone->axis_y*M_PI/180.;
     rz=-bone->axis_z*M_PI/180.;
 
-    C1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f));
+    // zmieniona rotacja ry = rz, rz = ry - prawdopodobnie osie w osg sa lewoskrêtne ??  czy¿by?
+    C.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
 
+    // tworzenie macierzy animacji. AMC file
+    // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
     rx=-bone->frame[index]->rotx*M_PI/180.;
     ry=-bone->frame[index]->roty*M_PI/180.;
     rz=-bone->frame[index]->rotz*M_PI/180.;
-    M1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f));
-    M1.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
+    M.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
+    M.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
 
     float x,y,z;
     float lenght = bone->length;
@@ -304,25 +328,27 @@ void Animation::UpdateModel()
     y = bone->dir[1] * lenght;
     z = bone->dir[2] * lenght;
 
-    B1.makeTranslate(x, z, y);
-    Cinv1 = osg::Matrixd::inverse(C1);
+    B.makeTranslate(x, z, y);
+    Cinv = osg::Matrixd::inverse(C);
 
-    tmp = B1 * C1;
-    tmp2 = tmp * M1;
-    *bone->matrix = tmp2 * Cinv1;
-    //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
+    // L = CinvMCB - wzór na animacjie AMC file- jednakze osg ma macierz transponowane !!!!
+    // konieczna jest zmian mnozenia, le¿ nie mo¿na zamienic stron mno¿enia z macierz¹ M (C i Cinv) !!!!
+    tmp = M * C;
+    tmp2 = Cinv * tmp;
+    *bone->matrix = B * tmp2;
+    bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
 
     osg::Vec3d trans = bone->matrix->getTrans();
 
-    bone->positionx = trans.x();
-    bone->positiony = trans.y();
-    bone->positionz = trans.z();
+    bone->positionx = trans.x() * SCALE;
+    bone->positiony = trans.y() * SCALE;
+    bone->positionz = trans.z() * SCALE;
 
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateMatrix(bone->child[i]);
+        calculateChildMatrix(bone->child[i]);
     }
 }
 

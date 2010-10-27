@@ -20,7 +20,7 @@
 
 
 #define SCALE 0.2
-#define TIMERMULTIPLAY 0.02
+#define TIMERMULTIPLAY 0.0055
 
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*
@@ -262,27 +262,37 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
 }
 
 //--------------------------------------------------------------------------------------------------
-void calculateMatrix(Bone *bone)
+void calculateChildMatrix(Bone *bone)
 {
-    osg::Matrixd C1, Cinv1, B1, tmp, tmp2;
+    // C - macierz obrotów (axis) plik ASF
+    // Cinv - inversja maierzy C
+    // B - macierz pozycji bezwzglêdnej: offfset = direction*length - plik ASF
+
+    osg::Matrixd C, Cinv, B, tmp, tmp2;
     float rx, ry, rz;
+    // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
     rx=-bone->axis_x*M_PI/180.;
     ry=-bone->axis_y*M_PI/180.;
     rz=-bone->axis_z*M_PI/180.;
 
-    C1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 1.0f, 0.0f), rz, osg::Vec3f(0.0f, 0.0f, 1.0f));
+    // zmieniona rotacja ry = rz, rz = ry - prawdopodobnie osie w osg sa lewoskrêtne ??  czy¿by?
+    C.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
 
     float x,y,z;
     float lenght = bone->length;
-    x = bone->dir[0] * lenght;
-    y = bone->dir[1] * lenght;
-    z = bone->dir[2] * lenght;
+    x = bone->dir[0] * lenght * SCALE;
+    y = bone->dir[1] * lenght * SCALE;
+    z = bone->dir[2] * lenght * SCALE;
 
-    B1.makeTranslate(x, z, y);
-    Cinv1 = osg::Matrixd::inverse(C1);
+    B.makeTranslate(x, z, y);
+    Cinv = osg::Matrixd::inverse(C);
 
-    tmp = Cinv1 * C1;
-    tmp2 = tmp * B1;
+    // L = CinvMCB - wzór na animacjie AMC file- jednakze osg ma macierz transponowane !!!!
+    // nie posiadamy macierzy M tak jak ma to miejsce w przypadku animacji, wiêc wczytanie szkieletu jest bezpieczne.
+    // mo¿na mnozyæ macierz nie achowuj¹c w³asnoœc transpozycji - i tak wczyta sie poprawni
+
+    tmp = Cinv * C;
+    tmp2 = tmp * B;
     *bone->matrix = tmp2 * (*bone->parent->matrix);
     //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
 
@@ -296,7 +306,7 @@ void calculateMatrix(Bone *bone)
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateMatrix(bone->child[i]);
+        calculateChildMatrix(bone->child[i]);
     }
 }
 
@@ -306,31 +316,41 @@ bool FileReader2Motion::LoadSkeleton(Model* model)
     if(!model->GetSkeleton())
         return false;
 
+    // OBLICZANIE ROOTA.
 
     Skeleton* skeleton = model->GetSkeleton();
-
     Bone *bone = skeleton->m_pRootBone;
 
-    osg::Matrixd C1, Cinv1, B1, tmp, tmp2;
+    // C - macierz obrotów (axis) plik ASF
+    // Cinv - inversja maierzy C
+    // B - macierz pozycji bezwzglêdnej: offfset = direction*length - plik ASF
+
+    osg::Matrixd C, Cinv, B, tmp, tmp2;
     float rx, ry, rz;
+    // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
     rx=-bone->axis_x*M_PI/180.;
     ry=-bone->axis_y*M_PI/180.;
     rz=-bone->axis_z*M_PI/180.;
 
-    C1.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 1.0f, 0.0f), rz, osg::Vec3f(0.0f, 0.0f, 1.0f));
+    // zmieniona rotacja ry = rz, rz = ry - prawdopodobnie osie w osg sa lewoskrêtne ??  czy¿by?
+    C.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
 
     float x,y,z;
     float lenght = bone->length;
-    x = bone->dir[0] * lenght;
-    y = bone->dir[1] * lenght;
-    z = bone->dir[2] * lenght;
+    x = bone->dir[0] * lenght * SCALE;
+    y = bone->dir[1] * lenght * SCALE;
+    z = bone->dir[2] * lenght * SCALE;
 
-    B1.makeTranslate(x, y, z);
-    Cinv1 = osg::Matrixd::inverse(C1);
+    B.makeTranslate(x, y, z);
+    Cinv = osg::Matrixd::inverse(C);
 
-    tmp = Cinv1 * C1;
-    *bone->matrix = tmp * B1;
-    //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
+    // L = CinvMCB - wzór na animacjie AMC file- jednakze osg ma macierz transponowane !!!!
+    // nie posiadamy macierzy M tak jak ma to miejsce w przypadku animacji, wiêc wczytanie szkieletu jest bezpieczne.
+    // mo¿na mnozyæ macierz nie achowuj¹c w³asnoœc transpozycji - i tak wczyta sie poprawni
+    
+    tmp = Cinv * C;
+    *bone->matrix = tmp * B;
+    bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
 
     osg::Vec3d trans = bone->matrix->getTrans();
 
@@ -342,7 +362,7 @@ bool FileReader2Motion::LoadSkeleton(Model* model)
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateMatrix(bone->child[i]);
+        calculateChildMatrix(bone->child[i]);
     }
 
     return true;
@@ -416,7 +436,7 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
         for(int j = 0; j< acclaimObject->getNumberOfFrames(); j++)
         {
             Frame* frame =new Frame();
-            frame->m_time = j/TIMERMULTIPLAY;
+            frame->m_time = j*TIMERMULTIPLAY;
             joint->getRotation(j+1, frame->rotx, frame->roty, frame->rotz);
             joint->getTranslation(j+1, frame->translationx, frame->translationy, frame->translationz);
             frames.push_back(frame);

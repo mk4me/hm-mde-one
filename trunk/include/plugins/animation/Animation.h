@@ -63,7 +63,7 @@ private:
     // set transformations from frame 0
     void FirstFrame();
 
-	void calculateMatrix(Bone* bone);
+	void calculateChildMatrix(Bone* bone);
 
 private: 
 
