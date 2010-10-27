@@ -3,12 +3,29 @@
 
 #include <vector>
 
+// struktura ramkai czyli animacji. s³u¿a do przchowywania informacji zawarych w AMC file
 struct Frame
 {
 	//int idx;
     float m_time;
     float rotx, roty, rotz;
     float translationx, translationy, translationz;
+};
+
+// struktura zawieraj¹ca liste ramek - animacji z AMC file
+// idx s³u¿y do identyfikowania animcji do w³aœciwej koœci.
+struct BoneAnimation
+{
+    int idx;
+
+    std::vector<Frame* > m_frames;
+
+};
+
+// struktura zawieraj¹ca liste koœci
+struct SkeletonAnimation
+{
+    std::vector<BoneAnimation* > m_boneAnimationList;
 };
 
 #endif //FRAME_H

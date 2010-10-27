@@ -96,6 +96,9 @@ public:
     // Read ASF and AMC files -> pass an asf filename then an amc one.
     int readAcclaimFiles(std::string ASFFileName, std::string AMCFileName ) ;
 
+    int ReadASFFile(FILE *tempFilePointerASF);
+    int ReadAMCFile(FILE *tempFilePointerAMC);
+
     // Compute the end effectors for all the joints.
     void computeEffectors();
 

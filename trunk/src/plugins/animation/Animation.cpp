@@ -10,7 +10,7 @@ using namespace std;
 #endif
 
 #define SCALE 0.2
-#define TIMERMULTIPLAY 0.0055
+#define TIMERMULTIPLAY 0.009
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
 
 //--------------------------------------------------------------------------------------------------

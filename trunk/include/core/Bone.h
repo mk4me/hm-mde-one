@@ -18,7 +18,7 @@ struct Bone
 	char *name;
     Bone *parent;		// Pointer to the sibling (branch bone) in the hierarchy tree 
 	std::vector<Bone *> child;			// Pointer to the child (outboard bone) in the hierarchy tree 
-	std::vector<Frame*> frame;			// Animacja
+	std::vector<Frame*> frame;			// Animacja TODO: zrobiæ pointera na jak¹s liste przechowuj¹c¹ te ramki - dzieki temu istnieje szybka podmiana animacji
 	childVector			children;			// STL vector of char* to children names
 	char *parentName;
 
