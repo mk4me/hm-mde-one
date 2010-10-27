@@ -8,10 +8,13 @@
 //--------------------------------------------------------------------------------------------------
 DataManager::DataManager(std::string address, IModel* model)
 {
+    m_pFileName = address;
     m_pModel = model;
 
     std::string add(address.begin(), address.end());
     TiXmlDocument doc(add.c_str());
+
+    std::string path = address.substr(0, address.find_last_of("/")+1);
 
     // load file
     if (doc.LoadFile())
@@ -43,7 +46,7 @@ DataManager::DataManager(std::string address, IModel* model)
                                 {
                                     if (!att->NameTStr().compare("FileName"))
                                     {
-                                        std::string val = att->Value();
+                                        std::string val = path + att->Value();
                                         m_VideoFilePathList.push_back(std::string(val.begin(), val.end()));
                                     }
                                     else
@@ -56,6 +59,68 @@ DataManager::DataManager(std::string address, IModel* model)
                         } 
                         while (video = video->NextSibling());
                     } 
+                }
+                if(!node->ValueStr().compare("SkeletonList")&& node->FirstChild())
+                {
+                    TiXmlNode* skeleton = node->FirstChild();
+                    if (!skeleton->ValueStr().compare("Skeleton"))
+                    {
+                        // get all materials
+                        do 
+                        {
+                            // get all attributes
+                            TiXmlAttribute* att = skeleton->ToElement()->FirstAttribute();
+                            if (att)
+                            {
+                                // material attributes
+                                do
+                                {
+                                    if (!att->NameTStr().compare("FileName"))
+                                    {
+                                        std::string val = path + att->Value();
+                                        m_SkeletonFilePathList.push_back(std::string(val.begin(), val.end()));
+                                    }
+                                    else
+                                        return;		
+
+                                } 
+                                while(att = att->Next());
+                            }
+                            else return;
+                        } 
+                        while (skeleton = skeleton->NextSibling());
+                    }
+                }
+                if(!node->ValueStr().compare("AnimationList")&& node->FirstChild())
+                {
+                    TiXmlNode* animation = node->FirstChild();
+                    if (!animation->ValueStr().compare("Animation"))
+                    {
+                        // get all materials
+                        do 
+                        {
+                            // get all attributes
+                            TiXmlAttribute* att = animation->ToElement()->FirstAttribute();
+                            if (att)
+                            {
+                                // material attributes
+                                do
+                                {
+                                    if (!att->NameTStr().compare("FileName"))
+                                    {
+                                        std::string val = path + att->Value();
+                                        m_AnimationFilePathList.push_back(std::string(val.begin(), val.end()));
+                                    }
+                                    else
+                                        return;		
+
+                                } 
+                                while(att = att->Next());
+                            }
+                            else return;
+                        } 
+                        while (animation = animation->NextSibling());
+                    }
                 }
             } 
             while (node = node->NextSibling());
@@ -74,6 +139,8 @@ DataManager::~DataManager()
 void DataManager::Clear()
 {
     m_VideoFilePathList.clear();
+    m_SkeletonFilePathList.clear();
+    m_AnimationFilePathList.clear();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -92,7 +159,7 @@ std::string DataManager::GetVideoFilePath(int i)
 }
 
 //--------------------------------------------------------------------------------------------------
-int DataManager::GetFilePathCount()
+int DataManager::GetVideoFilePathCount()
 {
     return m_VideoFilePathList.size();
 }
@@ -104,4 +171,40 @@ IModel* DataManager::GetModel()
         return m_pModel;
 
     return NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
+std::string DataManager::GetFileName()
+{
+    return m_pFileName;
+}
+
+//--------------------------------------------------------------------------------------------------
+std::string DataManager::GetSkeletonFilePath( int i )
+{
+    if(m_SkeletonFilePathList.size() > 0)
+        return m_SkeletonFilePathList[i];
+
+    return NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
+int DataManager::GetSkeletonFilePathCount()
+{
+    return m_SkeletonFilePathList.size();
+}
+
+//--------------------------------------------------------------------------------------------------
+std::string DataManager::GetAnimationFilePath( int i )
+{
+    if(m_AnimationFilePathList.size() > 0)
+        return m_AnimationFilePathList[i];
+
+    return NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
+int DataManager::GetAnimationFilePathCount()
+{
+    return m_AnimationFilePathList.size();
 }

@@ -9,20 +9,21 @@ class ASFAMCParser;
 
 class Model;
 class SkeletonNode;
+class DataManager;
 struct SSkeletonAnimation;
 struct SFModel;
 
 class FileReader2Motion
 {
 public:
-	static void ReadFile(const std::string& file, Model* model);
+	static void ReadFile(DataManager *dataManager);
 	static bool LoadMesh(std::wstring* address, Model* model);
     static bool LoadAnimation(SFModel* fmodel, Model* model);
     static bool LoadAnimation(ASFAMCParser* acclaimObject, Model* model);
 
 private:
     static void ReadFrmDAEFile(const std::string& file, Model* model);
-    static void ReadFromTBSFile(const std::string& file, Model* model);
+    static void ReadFromTBSFile(DataManager *dataManager);
     static void ReadAcclaimFile(const std::string& file, Model* model);
 
     static void LoadMeshFromDAE(Model* model, SDea2Motion* io_data);

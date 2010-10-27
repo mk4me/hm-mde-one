@@ -355,7 +355,7 @@ void ToolboxMain::registerPluginsServices()
 
 void ToolboxMain::onOpen()
 {
-    const QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::currentPath(), "*.tbs;*.asf;*.DAE"); // TODO: tymczasowo dodaje asf do filtrów Open File
+    const QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::currentPath(), "*.tbs"); // TODO: tymczasowo dodaje asf do filtrów Open File
     if (!fileName.isEmpty()) 
     {
         std::cout << " " << std::endl; 
@@ -363,9 +363,10 @@ void ToolboxMain::onOpen()
         std::cout << "---------------------------------------------------------------" << std::endl; 
 
         Model* model = new Model();
-        FileReader2Motion::ReadFile(fileName.toStdString(), model);
-
         DataManager* dataManaget = new DataManager(fileName.toStdString(), model);
+
+        FileReader2Motion::ReadFile(dataManaget);
+
         m_pServiceManager->setData(dataManaget);
 
         m_pRenderService->AddObjectToRender(createGrid());

@@ -31,7 +31,7 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
     VideoWidget* widget = reinterpret_cast<VideoWidget*>(this->widget);
 
     std::vector<std::string> files;
-    for (int i = 0; i < dataManager->GetFilePathCount(); ++i) {
+    for (int i = 0; i < dataManager->GetVideoFilePathCount(); ++i) {
         files.push_back(dataManager->GetVideoFilePath(i));
     }
     widget->init(files);

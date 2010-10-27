@@ -13,8 +13,15 @@ public:
     virtual void GetVideoFile() = 0;
     virtual void Clear() = 0;
 
+    virtual std::string GetFileName() = 0;
     virtual std::string GetVideoFilePath(int i) = 0;
-    virtual int GetFilePathCount() = 0;
+    virtual int GetVideoFilePathCount() = 0;
+
+    virtual std::string GetSkeletonFilePath(int i) = 0;
+    virtual int GetSkeletonFilePathCount() = 0;
+
+    virtual std::string GetAnimationFilePath(int i) = 0;
+    virtual int GetAnimationFilePathCount() = 0;
 
     virtual IModel* GetModel() = 0;
 };

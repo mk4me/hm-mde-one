@@ -9,6 +9,7 @@
 #include "AnimationNode.h"
 #include "AnimationGroup.h"
 #include "SkeletonNode.h"
+#include "DataManager.h"
 
 #include <core/Vec3.h>
 #include <core/Skeleton.h>
@@ -47,33 +48,42 @@ unsigned int Read(VOID* pData, unsigned int numBytes)
 }
 
 //--------------------------------------------------------------------------------------------------
-void FileReader2Motion::ReadFile( const std::string& file, Model* model )
+void FileReader2Motion::ReadFile(DataManager *dataManager)
 {
+    std::string file = dataManager->GetFileName();
+    Model *model = dynamic_cast<Model* >(dataManager->GetModel());
     //TODO: poprawic wizualnie i zrzuwaæ koñcówke na ma³e litery
     if(file.substr(file.length() - 3, file.length()) == "DAE")
         ReadFrmDAEFile(file, model);
     else if(file.substr(file.length() - 3, file.length()) == "tbs")
-        ReadFromTBSFile(file, model);
+        ReadFromTBSFile(dataManager);
     else if(file.substr(file.length() - 3, file.length()) == "asf")
         ReadAcclaimFile(file, model);
 }
 
 //--------------------------------------------------------------------------------------------------
-void FileReader2Motion::ReadFromTBSFile( const std::string& file, Model* model )
+void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 {
-    wstring fmodel(file.begin(), file.end());
+    ASFAMCParser* object = new ASFAMCParser();
+    if(dataManager->GetSkeletonFilePathCount() > 0 && dataManager->GetAnimationFilePathCount() > 0)
+    {
+        if(object->readAcclaimFiles(dataManager->GetSkeletonFilePath(0), dataManager->GetAnimationFilePath(0)))
+            ParserAcclaimFile2EDR(dynamic_cast<Model*>(dataManager->GetModel()), object);
+    }
 
-    SFModel* fmodel_file = new SFModel(fmodel);
-    if (!fmodel_file->properly_loaded)
-        return;
+    //wstring fmodel(file.begin(), file.end());
+    // 
+    //SFModel* fmodel_file = new SFModel(fmodel);
+    //if (!fmodel_file->properly_loaded)
+    //    return;
+    // 
+    //fmodel_file->path = fmodel.substr(0, fmodel.find_last_of(L'/'));
+    // 
+    //// path of file containing mesh
+    //wstring model_name = fmodel_file->path + L'/' + fmodel_file->file_name;
 
-    fmodel_file->path = fmodel.substr(0, fmodel.find_last_of(L'/'));
-
-    // path of file containing mesh
-    wstring model_name = fmodel_file->path + L'/' + fmodel_file->file_name;
-
-    LoadMesh(&model_name, model);
-    model->InicializeMesh();
+    //LoadMesh(&model_name, model);
+    //model->InicializeMesh();
 
     // TODO : sparsowac w przyszlosci szkielet animacji z tbs do nowej struktury animacji na potrzeby acclaim file
     //if (!LoadSkeleton(model))
@@ -81,7 +91,7 @@ void FileReader2Motion::ReadFromTBSFile( const std::string& file, Model* model )
 
     // TODO : sparsowac w przyszlosci szkielet animacji z tbs do nowej struktury animacji na potrzeby acclaim file
     // LoadAnimation(fmodel_file, model);
-    model->ApplyMaterial(&fmodel_file->material_list, fmodel_file->path);
+    //model->ApplyMaterial(&fmodel_file->material_list, fmodel_file->path);
 }
 
 //--------------------------------------------------------------------------------------------------
