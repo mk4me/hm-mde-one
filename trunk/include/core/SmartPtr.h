@@ -18,4 +18,7 @@
 #define CORE_WEAK_PTR(type) boost::weak_ptr<type>
 #define CORE_CONST_WEAK_PTR(type) boost::weak_ptr<const type>
 
+using boost::dynamic_pointer_cast;
+using boost::static_pointer_cast;
+
 #endif  // __HEADER_GUARD__CORE_SMARTPTR_H__

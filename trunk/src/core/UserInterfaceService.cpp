@@ -1,65 +1,72 @@
 #include "CorePCH.h"
+#include <core/Log.h>
 #include "UserInterfaceService.h"
-#include "WindowFactory.h"
 #include <iostream>
 
 #include <core/IModel.h>
 #include <core/IDataManager.h>
 
-//deprecated:
-//M_DECLARED_CLASS(UserInterfaceService, kCLASSID_UserInterfaceService);
-
 
 //--------------------------------------------------------------------------------------------------
 UserInterfaceService::UserInterfaceService()
+:   name("UserInterface")
 {
 }
 
 //--------------------------------------------------------------------------------------------------
 UserInterfaceService::~UserInterfaceService()
 {
-
 }
 
-//--------------------------------------------------------------------------------------------------
-AsyncResult UserInterfaceService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
-{
-    std::cout << "UserInterfaceService ADDED-test!" << std::endl; 
-    return AsyncResult_Complete; 
-}
+// void UserInterfaceService::InicializeServices( std::string typeName, void *object )
+// {
+//     m_pMainObject = object;
+//     m_pMainWindow = MainWindowFactory::CreateMainWindow(typeName, object);
+// }
 
-//--------------------------------------------------------------------------------------------------
-void UserInterfaceService::AddMenu(std::string menuName)
-{
-    m_pMainWindow->AddMenu(menuName);
-}
 
-//--------------------------------------------------------------------------------------------------
-void UserInterfaceService::AddAction(std::string menuName, std::string actionName)
-{
-    m_pMainWindow->AddAction(menuName, actionName);
-}
 
-//--------------------------------------------------------------------------------------------------
-void UserInterfaceService::AddAction( std::string menuName, std::string actionName, std::string slotMethodNameFromMainMenu )
-{
-    m_pMainWindow->AddAction(menuName, actionName, slotMethodNameFromMainMenu);
-}
-//--------------------------------------------------------------------------------------------------
-void UserInterfaceService::InicializeServices( std::string typeName, void *object )
-{
-    m_pMainObject = object;
-    m_pMainWindow = MainWindowFactory::CreateMainWindow(typeName, object);
-}
-
-//--------------------------------------------------------------------------------------------------
-void* UserInterfaceService::GetMainObject()
-{
-    return m_pMainObject;
-}
-
-//--------------------------------------------------------------------------------------------------
-AsyncResult UserInterfaceService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+AsyncResult UserInterfaceService::init( IServiceManager* serviceManager, osg::Node* sceneRoot )
 {
     return AsyncResult_Complete;
+}
+
+AsyncResult UserInterfaceService::loadData( IServiceManager* serviceManager, IDataManager* dataManager )
+{
+    return AsyncResult_Complete;
+}
+
+AsyncResult UserInterfaceService::update( double time, double timeDelta )
+{
+    return AsyncResult_Complete;
+}
+
+AsyncResult UserInterfaceService::lateUpdate( double time, double timeDelta )
+{
+    return AsyncResult_Complete;
+}
+
+AsyncResult UserInterfaceService::compute()
+{
+    return AsyncResult_Complete;
+}
+
+IWidget* UserInterfaceService::getWidget()
+{
+    return NULL;
+}
+
+const std::string& UserInterfaceService::getName() const
+{
+    return name;
+}
+
+core::Window* UserInterfaceService::getMainWindow()
+{
+    return mainWindow;
+}
+
+void UserInterfaceService::setMainWindow( core::Window* mainWindow )
+{
+    this->mainWindow = mainWindow;
 }

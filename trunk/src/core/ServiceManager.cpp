@@ -5,16 +5,13 @@
 #include <core/IDataManager.h>
 
 
-
-
-//--------------------------------------------------------------------------------------------------
 ServiceManager::ServiceManager(void)
 : updateMarker(NULL)
 {
     resetTime();
 }
 
-//--------------------------------------------------------------------------------------------------
+
 ServiceManager::~ServiceManager(void)
 {
 	// free allocated memory
@@ -22,8 +19,8 @@ ServiceManager::~ServiceManager(void)
     //     delete i->second;
     // }
 }
-//--------------------------------------------------------------------------------------------------
-void ServiceManager::registerService( IServicePtr service )
+
+void ServiceManager::registerService(IServicePtr service)
 {
     if (servicesMap.find(service->getID()) == servicesMap.end()) {
         servicesMap.insert( std::make_pair(service->getID(), service)); 
@@ -34,36 +31,8 @@ void ServiceManager::registerService( IServicePtr service )
     }
 };
 
-/*
-//--------------------------------------------------------------------------------------------------
-template<typename T>
-T* ServiceManager::GetSystemServiceAs()
-{
-    IService *pService = GetSystemService(T::CLASS_ID);
-    T *pResult = dynamic_cast<T*>(pService);
-    return pResult; 
-}
-
-//--------------------------------------------------------------------------------------------------
-template<typename T>
-void ServiceManager::registerService()
-{
-    T* pService = new T(); 
-    _services.insert( std::pair<ClassID, IService *>(T::CLASS_ID, pService) ); 
-    pService->init(); 
-}/**/
-
-//--------------------------------------------------------------------------------------------------
 void ServiceManager::updatePass()
 {
-    //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
-//     ServicesMap::iterator it = servicesMap.begin();  
-//     while (it != servicesMap.end())
-//     {
-//         it->second->OnTick(delta); 
-//         it++; 
-//     }
-
     // ustawienia markera update'a
     updateMarker = OpenThreads::Thread::CurrentThread();
 
@@ -83,8 +52,6 @@ void ServiceManager::updatePass()
     updateMarker = NULL;
 }
 
-
-
 void ServiceManager::computePass()
 {
     // aktualizacja us³ug
@@ -93,8 +60,7 @@ void ServiceManager::computePass()
     }
 }
 
-//--------------------------------------------------------------------------------------------------
-void ServiceManager::setData(IDataManager* dataManager )
+void ServiceManager::loadDataPass(IDataManager* dataManager)
 {
     //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
     ServicesMap::iterator it = servicesMap.begin();  
@@ -129,7 +95,6 @@ IServicePtr ServiceManager::getService( UniqueID id )
     }
 }
 
-
 double ServiceManager::getTime()
 {
     UTILS_ASSERT(updateMarker == OpenThreads::Thread::CurrentThread());
@@ -155,7 +120,5 @@ void ServiceManager::updateTime()
     serviceDeltaTime = serviceTimer.delta_s( serviceUpdateTime, tick );
     serviceUpdateTime = tick;
     serviceTime = serviceTimer.delta_s( serviceTimer.getStartTick(), tick );
-
-    //OSG_NOTICE<<serviceDeltaTime<<std::endl;
 }
 

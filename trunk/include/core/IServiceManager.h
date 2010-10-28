@@ -27,14 +27,24 @@ public:
     //! \param id ID us≥ugi do wyszukania.
     //! \return Odnaleziona us≥uga bπdü NULL.
     virtual IServicePtr getService(UniqueID id) = 0;
+};
+
+typedef CORE_SHARED_PTR(IServiceManager) IServiceManagerPtr;
+typedef CORE_CONST_SHARED_PTR(IServiceManager) IServiceManagerConstPtr;
+typedef CORE_WEAK_PTR(IServiceManager) IServiceManagerWeakPtr;
+typedef CORE_CONST_WEAK_PTR(IServiceManager) IServiceManagerWeakConstPtr;
+
+////////////////////////////////////////////////////////////////////////////////
+namespace core {
+////////////////////////////////////////////////////////////////////////////////
 
     //! Metoda wyszukujπca wszystkie us≥ugi danego typu (np. implementujπce
     //! dany interfejs).
     template <class T>
-    CORE_SHARED_PTR(T) queryServices(T* dummy = NULL)
+    CORE_SHARED_PTR(T) queryServices(IServiceManager* manager, T* dummy = NULL)
     {
         std::vector<CORE_SHARED_PTR(T)> result;
-        queryServices(result);
+        queryServices(manager, result);
         if ( result.empty() ) {
             return CORE_SHARED_PTR(T)();
         } else {
@@ -42,20 +52,23 @@ public:
             return result[0];
         }
     }
+
     //! Metoda wyszukujπca wszystkie us≥ugi danego typu (np. implementujπce
     //! dany interfejs).
     template <class T>
-    void queryServices(std::vector<CORE_SHARED_PTR(T)>& target)
+    void queryServices(IServiceManager* manager, std::vector<CORE_SHARED_PTR(T)>& target)
     {
-        for ( int i = 0; i < getNumServices(); ++i ) {
-            IServicePtr service = getService(i);
-            CORE_SHARED_PTR(T) casted = boost::dynamic_pointer_cast<T>(service);
+        for ( int i = 0; i < manager->getNumServices(); ++i ) {
+            IServicePtr service = manager->getService(i);
+            CORE_SHARED_PTR(T) casted = dynamic_pointer_cast<T>(service);
             if ( casted ) {
                 target.push_back(casted);
             }
         }
     }
-};
 
+////////////////////////////////////////////////////////////////////////////////
+} // namespace core
+////////////////////////////////////////////////////////////////////////////////
 
 #endif //I_SERVICE_MANAGER_H

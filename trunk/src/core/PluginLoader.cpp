@@ -1,7 +1,4 @@
 #include "CorePCH.h"
-#include <core/PluginLoader.h>
-#include <core/Plugin.h>
-#include <core/Log.h>
 
 #if defined(__WIN32__)
 #include <windows.h>
@@ -12,6 +9,10 @@
 #include <dirent.h>
 #include <errno.h>
 #endif
+
+#include <core/PluginLoader.h>
+#include <core/Plugin.h>
+#include <core/Log.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -267,10 +268,16 @@ std::string PluginLoader::getFileName(const std::string& fileName)
     std::string::size_type slash2 = fileName.find_last_of('\\');
     if (slash1==std::string::npos) 
     {
-        if (slash2==std::string::npos) return fileName;
+        if (slash2==std::string::npos) 
+        {
+            return fileName;
+        }
         return std::string(fileName.begin()+slash2+1,fileName.end());
     }
-    if (slash2==std::string::npos) return std::string(fileName.begin()+slash1+1,fileName.end());
+    if (slash2==std::string::npos) 
+    {   
+        return std::string(fileName.begin()+slash1+1,fileName.end());
+    }
     return std::string(fileName.begin()+(slash1>slash2?slash1:slash2)+1,fileName.end());
 }
 

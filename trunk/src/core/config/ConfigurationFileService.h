@@ -1,7 +1,6 @@
 #ifndef CONFIGURATIONFILE_SERVICE_H
 #define CONFIGURATIONFILE_SERVICE_H
 
-#include <core/GlobalServicesIDs.h>
 #include <core/SimpleFunctors.h>
 
 #include "IConfigManager.h"

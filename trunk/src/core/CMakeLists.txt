@@ -11,7 +11,6 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
-	AdapterWidget.h
 	ASFAMCData.h
 	ASFAMCParser.h
 	ConsoleWidget.h
@@ -28,8 +27,6 @@ set(PRIVATE_H
 	Mesh.h
 	Model.h
 	ModelService.h
-	OsgControlWidget.h
-	QTMainWindow.h
 	RenderService.h
 	ServiceManager.h
 	SkeletonNode.h
@@ -37,7 +34,7 @@ set(PRIVATE_H
 	ToolboxMain.h
 	UserInterfaceService.h
 	Quaternioncal.h
-	WindowFactory.h
+	ComputeThread.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -47,10 +44,8 @@ set(PUBLIC_H
 	${HEADER_PATH}/BaseDataTypes.h
 	${HEADER_PATH}/Bone.h
 	${HEADER_PATH}/dae2Motion.h
-	${HEADER_PATH}/DllExports.h
 	${HEADER_PATH}/Enumerators.h
 	${HEADER_PATH}/Frame.h
-	${HEADER_PATH}/GlobalServicesIDs.h
 	${HEADER_PATH}/IAnimationGroup.h
 	${HEADER_PATH}/IAnimationNode.h
 	${HEADER_PATH}/IService.h
@@ -60,17 +55,14 @@ set(PUBLIC_H
 	${HEADER_PATH}/IModel.h
 	${HEADER_PATH}/IServiceManager.h
 	${HEADER_PATH}/ISkeletonNode.h
-	${HEADER_PATH}/MainWindow.h
+	${HEADER_PATH}/Window.h
 	${HEADER_PATH}/ModelData.h
-	${HEADER_PATH}/QtMainWindowInterface.h
 	${HEADER_PATH}/QtWidgetInterface.h
 	${HEADER_PATH}/SimpleFunctors.h
 	${HEADER_PATH}/Skeleton.h
-	${HEADER_PATH}/UserInterface.h
+	${HEADER_PATH}/IUserInterface.h
 	${HEADER_PATH}/Vec3.h
 	${HEADER_PATH}/WidgetInterface.h
-	${HEADER_PATH}/WxMainWindowInterface.h
-	${HEADER_PATH}/WxWidgetInterface.h
 	${HEADER_PATH}/QOSGWidget.h
 	${HEADER_PATH}/Plugin.h
 	${HEADER_PATH}/PluginLoader.h
@@ -84,7 +76,6 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-	AdapterWidget.cpp
 	ASFAMCData.cpp
 	ASFAMCParser.cpp
 	ConsoleWidget.cpp
@@ -97,13 +88,11 @@ set(TARGET_SRC
 	main.cpp
 	ModelService.cpp
 	PluginLoader.cpp
-	QTMainWindow.cpp
 	RenderService.cpp
 	ServiceManager.cpp
 	TimeLine.cpp
 	ToolboxMain.cpp
 	UserInterfaceService.cpp
-	WindowFactory.cpp
 	
 	AnimationGroup.cpp
 	AnimationNode.cpp
@@ -114,6 +103,7 @@ set(TARGET_SRC
 	Model.cpp
 	SkeletonNode.cpp	
 	Quaternioncal.cpp
+	ComputeThread.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

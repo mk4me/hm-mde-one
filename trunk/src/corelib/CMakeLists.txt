@@ -26,6 +26,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Ÿród³a
 set(TARGET_SRC
 	QOSGWidget.cpp
+	Window.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

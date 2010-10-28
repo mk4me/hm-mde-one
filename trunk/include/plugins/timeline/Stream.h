@@ -76,7 +76,6 @@ public:
 
 //! WskaŸnik na strumieñ.
 typedef boost::shared_ptr<Stream> StreamPtr;
-
 //! Zbiór strumieni.
 typedef std::vector<StreamPtr> Streams;
 

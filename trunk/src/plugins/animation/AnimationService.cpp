@@ -20,7 +20,7 @@
 #include <plugins/timeline/ITimeline.h>
 #include <plugins/timeline/Stream.h>
 
-#include "QtWidget.h"
+#include "OsgControlWidget.h"
 
 using namespace std;
 using namespace osg;
@@ -169,7 +169,7 @@ AnimationService::AnimationService(void):
   currentAnimation(NULL),
   name("Animation")
 {
-    widget = new QtWidget;
+    widget = new OsgControlWidget();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -227,7 +227,7 @@ AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* s
     m_pServiceManager = serviceManager;
     m_pScene = sceneRoot;
     if ( widget ) {
-        widget->SetData(sceneRoot, serviceManager);
+        widget->SetScene(sceneRoot, serviceManager);
     }
 
     std::cout << "AnimationService ADDED!" << std::endl; 
@@ -473,9 +473,9 @@ std::map<std::string, Animation*>* AnimationService::GetAnimations()
 AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
     LoadAnimation(dataManager->GetModel());
-    widget->SetData(m_pScene, serviceManager);
+    widget->SetScene(m_pScene, serviceManager);
 
-    ITimelinePtr timeline = serviceManager->queryServices<ITimeline>();
+    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
         timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
     } else {
@@ -487,12 +487,7 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 
 IWidget* AnimationService::getWidget()
 {
-    return reinterpret_cast<IWidget*>(widget->GetWidget());
-}
-
-QtWidget* AnimationService::getQtWidget()
-{
-    return widget;
+    return reinterpret_cast<IWidget*>(widget);
 }
 
 double AnimationService::getTargetTime() const

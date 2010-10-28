@@ -131,7 +131,7 @@ endmacro(FIND_LIBS_PATTERN)
 # Rezultaty:
 # 	${variable}_LIBRARY_DEBUG lokalizacja biblioteki w wersji debug
 #   ${variable}_LIBRARY_RELEASE lokazliacja biblioteki w wersji release 
-macro(FIND_DLLS_PATTERN variable releasePattern debugPattern)
+macro(FIND_FILES_PATTERN variable releasePattern debugPattern)
 	
 	if (FIND_DISABLE_CUSTOM_DIRECTORY)
 		FIND_NOTIFY(${variable} "FIND_DLLS: only system directories!")
@@ -139,7 +139,7 @@ macro(FIND_DLLS_PATTERN variable releasePattern debugPattern)
 	#message("find dlls: ${variable} ${releasePattern} ${debugPattern}")
 	# wyszukanie wersji debug
 	set(_lib_names)
-	CREATE_NAMES_LIST("${debugPattern}.dll" _lib_names)
+	CREATE_NAMES_LIST("${debugPattern}" _lib_names)
 	# szukamy wersji debug
 	FIND_NOTIFY(${variable} "FIND_DLLS: debug pattern ${debugPattern} unrolled to ${_lib_names}")
 	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
@@ -157,7 +157,7 @@ macro(FIND_DLLS_PATTERN variable releasePattern debugPattern)
 					
 	# wyszukanie wersji release
 	set(_lib_names)
-	CREATE_NAMES_LIST("${releasePattern}.dll" _lib_names)
+	CREATE_NAMES_LIST("${releasePattern}" _lib_names)
 	# szukamy wersji release
 	FIND_NOTIFY(${variable} "FIND_DLLS: release pattern ${releasePattern} unrolled to ${_lib_names}")
 	if (NOT FIND_DISABLE_CUSTOM_DIRECTORY)
@@ -173,7 +173,7 @@ macro(FIND_DLLS_PATTERN variable releasePattern debugPattern)
 		DOC "Location of release version of ${variable}"
 	)
 
-endmacro(FIND_DLLS_PATTERN)
+endmacro(FIND_FILES_PATTERN)
 
 ###############################################################################
 
@@ -313,7 +313,7 @@ macro (FIND_SHARED_EXT variable names debugNames dllNames dllDebugNames)
 		# szukamy libów
 		FIND_LIBS_PATTERN(${variable} ${names} ${debugNames} ".lib")
 		# szukamy dllek
-		FIND_DLLS_PATTERN(${variable} "${dllNames}" "${dllDebugNames}")
+		FIND_FILES_PATTERN(${variable} "${dllNames}.dll" "${dllDebugNames}.dll")
 		set(MESSAGE_BODY "${variable} (${dllNames})")
 		
 		if ((${variable}_LIBRARY_DEBUG AND ${variable}_LIBRARY_DEBUG_DLL) OR (${variable}_LIBRARY_RELEASE AND ${variable}_LIBRARY_RELEASE_DLL))

@@ -64,9 +64,18 @@
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
 
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+#include <boost/tokenizer.hpp>
+
 #include <utils/Utils.h>
 #include <utils/Debug.h>
 #include <utils/Enum.h>
+
+#include <core/SmartPtr.h>
 
 #endif  // DISABLE_PRECOMPILED_HEADERS
 #endif  // __HEADER_GUARD__COREPCH_H__

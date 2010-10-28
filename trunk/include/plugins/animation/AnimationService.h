@@ -7,7 +7,6 @@
 
 #include <plugins/animation/Animation.h>
 #include <core/IAnimationService.h>
-#include <core/GlobalServicesIDs.h>
 #include <core/SimpleFunctors.h>
 
 #include <osg/PositionAttitudeTransform>
@@ -24,7 +23,7 @@ namespace osgViewer
 class IModel;
 class IDataManager;
 class IServiceManager;
-class QtWidget;
+class OsgControlWidget;
 
 
 #define MAX_AFFECTING_BONES 8
@@ -91,7 +90,6 @@ public:
 public:
     // HACK ten podzia³ powinien byæ tymczasowy
     virtual IWidget* getWidget();
-    virtual QtWidget* getQtWidget();
     
     double getTargetTime() const;
     void setTargetTime(double time);
@@ -151,7 +149,7 @@ private:
     osg::Vec3d _tempVectors[MAX_AFFECTING_BONES][2];
 
     IServiceManager* m_pServiceManager;
-    QtWidget* widget;
+    OsgControlWidget* widget;
 };
 
 //--------------------------------------------------------------------------------------------------

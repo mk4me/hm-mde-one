@@ -36,7 +36,7 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
     }
     widget->init(files);
 
-    ITimelinePtr timeline = serviceManager->queryServices<ITimeline>();
+    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
         for ( size_t i = 0; i < widget->getImages().size(); ++i ) {
             osg::Image* img = widget->getImages()[i].get();

@@ -1,26 +1,11 @@
 #ifndef USER_INTERFACE_SERVICE_H
 #define USER_INTERFACE_SERVICE_H
 
-
 #include <string>
+#include <osg/Node>
+#include <core/IService.h>
+#include <core/IUserInterface.h>
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QtGui>
-#include <QtGui/QMenu>
-#include <QtCore/QDir>
-#include <QtGui/QAction>
-#include <QtCore/QVector>
-
-#include <core/GlobalServicesIDs.h>
-#include <core/SimpleFunctors.h>
-#include <core/UserInterface.h>
-
-class IModel;
-class IDataManager;
-
-//--------------------------------------------------------------------------------------------------
-// Plugin Service
-//--------------------------------------------------------------------------------------------------
 class UserInterfaceService: public IService, public IUserInterface
 {
     UNIQUE_ID('UI','SRVC');
@@ -28,32 +13,29 @@ public:
     UserInterfaceService();
     virtual ~UserInterfaceService();
 
-    //IService
-    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot); 
+public:
+    //! \param mainWindow Wskaünik na g≥Ûwne okno.
+    void setMainWindow(core::Window* mainWindow);
 
+// IService
+public:
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot);
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
+    virtual AsyncResult update(double time, double timeDelta);
+    virtual AsyncResult lateUpdate(double time, double timeDelta);
+    virtual AsyncResult compute();
+    virtual IWidget* getWidget();
+    virtual const std::string& getName() const;
 
-    //IUserInterface
-    virtual void AddMenu(std::string menuName);
-    virtual void AddAction(std::string menuName, std::string actionName);
-    virtual void AddAction(std::string menuName, std::string actionName, std::string slotMethodNameFromMainMenu);
-    virtual void InicializeServices(std::string typeName, void *object);
-    
-    virtual const std::string& getName() const
-    {
-        return name;
-    }
-    virtual IWidget* getWidget()
-    { 
-        return NULL;
-    }
+// IUserInterface
+public:
+    //! \return Wskaünik na g≥Ûwne okno.
+    virtual core::Window* getMainWindow();
 
-    void* GetMainObject();
-
-protected: 
-
-    IMainWindow* m_pMainWindow;
-    void* m_pMainObject;
+private: 
+    //! Wskaünik na g≥Ûwne okno.
+    core::Window* mainWindow;
+    //! Nazwa us≥ugi.
     std::string name;
 };
 

@@ -5,7 +5,6 @@
 #include "ToolboxMain.h"
 #include "ui_toolboxmaindeffile.h"
 #include <core/QOSGWidget.h>
-#include "AdapterWidget.h"
 #include "TimeLine.h"
 #include "GridWidget.h"
 
@@ -43,62 +42,20 @@
 #include <plugins/video/core/PixelFormat.h>
 #include "DataManager.h"
 
+#include <boost/tokenizer.hpp>
+#include <boost/bind.hpp>
+#include <functional>
 
-// helper - this name is quite long...
-#define pPat osg::PositionAttitudeTransform*
-#define CONFIG_FILE "Toolbox_config.ini"
+#include "ComputeThread.h"
 
-#define OSGTERRAIN_VALIDDATAOPERATOR 1 
-
-class ComputeThread : public OpenThreads::Thread
-{
-private:
-    ServiceManager* serviceManager;
-    double refreshRate;
-    volatile bool done;
-
-public:
-    ComputeThread(ServiceManager* serviceManager, double refreshRate)
-        : serviceManager(serviceManager), refreshRate(refreshRate), done(false)
-    {}
-
-    //! \param done
-    inline void setDone(bool done) 
-    { 
-        this->done = done; 
-    }
-
-    virtual void run()
-    {
-        try
-        {
-            osg::Timer frameLength;
-            while (!done) {
-                // zerujemy czas ramki
-                frameLength.setStartTick();
-
-                serviceManager->computePass();
-
-                // jak d³ugo to wszystko trwa³o?
-                double waitTime = refreshRate - frameLength.time_s();
-                if ( waitTime > 0.0 ) {
-                    OpenThreads::Thread::microSleep( waitTime * 1000000 );
-                }
-            } 
-        } catch (const std::exception & error) {
-            OSG_WARN<< "ComputeThread::run : " << error.what() << std::endl;
-        } catch (...) {
-            OSG_WARN<< "ComputeThread::run : unhandled exception" << std::endl;
-        }
-    }
-};
-
+const QString ToolboxMain::configName = QString("Toolbox_config.ini");
 const QString ToolboxMain::organizationName = QString("PJWSTK");
 const QString ToolboxMain::applicationName = QString("EDR");
 
-ToolboxMain::ToolboxMain(QWidget *parent): 
-  QMainWindow(parent)
-, ui(new Ui::ToolboxMain)
+ToolboxMain::ToolboxMain(QWidget *parent)
+:   QMainWindow(parent),
+    ui(new Ui::ToolboxMain),
+    removeOnClick(false)
 {
     pluginLoader = new core::PluginLoader();
 
@@ -157,13 +114,7 @@ void ToolboxMain::Clear()
     // remove all services
     //m_pServiceManager = NULL;
 
-    if ( computeThread->isRunning() ) {
-        computeThread->setDone(true);
-        computeThread->join();
-        delete computeThread;
-    }
-
-    
+    delete computeThread;
 }
 
 void ToolboxMain::LoadConfiguration()
@@ -171,7 +122,7 @@ void ToolboxMain::LoadConfiguration()
     /*
     QString path = qApp->applicationDirPath();
     path.append("/"); 
-    path.append(CONFIG_FILE); 
+    path.append(configName); 
     ConfigurationService *config = new ConfigurationService(); 
     config->loadConfiguration( std::string(path.toUtf8()) ); /**/
 }
@@ -336,7 +287,7 @@ void ToolboxMain::registerCoreServices()
 
     //3. UserInterface Service
     m_pServiceManager->registerService(IServicePtr(m_pUserInterfaceService));
-    m_pUserInterfaceService->InicializeServices("QT",this);
+    m_pUserInterfaceService->setMainWindow(this);
 
     //4. Render Service
     m_pServiceManager->registerService(IServicePtr(m_pRenderService));
@@ -367,7 +318,7 @@ void ToolboxMain::onOpen()
 
         FileReader2Motion::ReadFile(dataManaget);
 
-        m_pServiceManager->setData(dataManaget);
+        m_pServiceManager->loadDataPass(dataManaget);
 
         m_pRenderService->AddObjectToRender(createGrid());
 
@@ -408,6 +359,7 @@ void ToolboxMain::initializeUI()
 {
     // widget rendeer service - centralny
     setCentralWidget(reinterpret_cast<QWidget*>(m_pRenderService->getWidget()));
+
     // pozosta³e widgety "p³ywaj¹ce"
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
         IServicePtr service = m_pServiceManager->getService(i);
@@ -427,6 +379,129 @@ void ToolboxMain::initializeUI()
 
     // uzupe³nienie podmenu z mo¿liwymi oknami
     populateWindowMenu(ui->menuWindow);
+
+    // testowe opcje
+    onTestItemClickedPtr.reset( new core::Window::ItemPressed(boost::bind(&ToolboxMain::onTestItemClicked, this, _1, _2 )));
+    onTestRemoveToggledPtr.reset(new core::Window::ItemPressed(boost::bind(&ToolboxMain::onTestRemoveToggled, this, _1, _2 )));
+    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Option", onTestItemClickedPtr);
+    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option", onTestItemClickedPtr);
+    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option2", onTestItemClickedPtr);
+    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested2/Option", onTestItemClickedPtr);
+    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Remove on click?", onTestRemoveToggledPtr, true, removeOnClick);
+}
+
+void ToolboxMain::onCustomAction()
+{
+    QObject* obj = QObject::sender();
+    std::string path = obj->objectName().toStdString();
+    this->triggerMenuItem(path, false);
+}
+
+void ToolboxMain::onCustomAction( bool triggered )
+{
+    QObject* obj = QObject::sender();
+    std::string path = obj->objectName().toStdString();
+    this->triggerMenuItem(path, triggered);
+}
+
+void ToolboxMain::onRemoveMenuItem( const std::string& path )
+{
+    // TODO: rekurencyjne usuwanie niepotrzebnych podmenu
+    QAction* action = findChild<QAction*>(QString::fromStdString(path));
+    if ( action ) 
+    {
+        delete action;
+    }
+    
+    /*
+    // "prawie dziala", ale przerwaca siê na zagnie¿d¿onych menu
+    if ( object ) 
+    {
+        QObject* last;
+        do 
+        {
+            QObject* parent = object->parent();
+            delete object;
+            object = parent;
+        } 
+        while ( object && object->children().size() <= 2 );
+    }*/
+}
+
+void ToolboxMain::onTestItemClicked(const std::string& sender, bool state)
+{
+    if (removeOnClick) {
+        m_pUserInterfaceService->getMainWindow()->removeMenuItem(sender);
+    }
+}
+
+void ToolboxMain::onTestRemoveToggled(const std::string& sender, bool state )
+{
+    removeOnClick = state;
+}
+
+void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool initialState )
+{
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    tokenizer tokens(path, boost::char_separator<char>("/"));
+    tokenizer::iterator next;
+    tokenizer::iterator token = tokens.begin();
+
+    QWidget* currentMenu = menuBar();
+    std::string pathPart;
+
+    for (token = tokens.begin(); token != tokens.end(); token = next ) 
+    {        
+        // ustawiamy nastêpny (przyda siê)
+        next = token;
+        ++next;
+
+        // aktualizacja bie¿¹cej œcie¿ki
+        if ( !pathPart.empty() ) 
+        {
+            pathPart.append("/");
+        }
+        pathPart += *token;
+
+        // wyszukanie dziecka
+        QString itemName = QString::fromStdString(pathPart);
+
+        if ( next == tokens.end() ) 
+        {
+            // liœæ
+            QAction* action = new QAction(this);
+            action->setObjectName( QString::fromStdString(pathPart) );
+            action->setText(QApplication::translate("ToolboxMain", token->c_str(), 0, QApplication::UnicodeUTF8));
+            currentMenu->addAction(action);
+            if ( checkable ) 
+            {
+                action->setCheckable(true);
+                action->setChecked(initialState);
+                QObject::connect(action, SIGNAL(toggled(bool)), this , SLOT(onCustomAction(bool)));
+            } 
+            else 
+            {
+                QObject::connect(action, SIGNAL(triggered()), this , SLOT(onCustomAction()));
+            }
+        } 
+        else 
+        {
+            if ( QMenu* menu = currentMenu->findChild<QMenu*>(itemName) )
+            {
+                // menu ju¿ istnieje
+                currentMenu = menu;
+            }
+            else 
+            {
+                // ga³¹Ÿ
+                menu = new QMenu(currentMenu);
+                menu->setObjectName( itemName );
+                menu->setTitle(QApplication::translate("ToolboxMain", token->c_str(), 0, QApplication::UnicodeUTF8));
+                currentMenu->addAction( menu->menuAction() );
+                currentMenu = menu;
+            }
+        }
+    }
 }
 
 // void ToolboxMain::SettingModel()
@@ -476,7 +551,7 @@ void ToolboxMain::initializeUI()
 //     ConfigurationGroup* dp = new ConfigurationGroup("_TEST");
 //     dp->AddNewParametr("vval", "1000");
 //     Parameter* par = new Parameter("cl","ak");
-//     Parameter* par2 = new Parameter("standardowo-test","d_d_d");
+//     Parameter* par2 = new Parameter("standardowo-onClicked","d_d_d");
 //     dp->AddNewParamter(*par);
 //     dp->AddNewParamter(*par2);
 //     pCFService->AddNewConfigurationGroup(*dp);

@@ -4,15 +4,13 @@
 #include <iostream>
 #include <vector>
 
-#include <core/GlobalServicesIDs.h>
 #include <core/SimpleFunctors.h>
 #include <osg//Node>
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/View>
 
+#include <core/IService.h>
 #include <core/QOSGWidget.h>
-
-#include "AdapterWidget.h"
 
 #include <map>
 

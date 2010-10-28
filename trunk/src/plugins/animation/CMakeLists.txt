@@ -18,7 +18,6 @@ set(PUBLIC_H
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
 	OsgControlWidget.h
-	QtWidget.h
 	PluginData.h
 	AnimationPlugin.h
 )
@@ -31,7 +30,6 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	AnimationPlugin.cpp
 	OsgControlWidget.cpp
-	QtWidget.cpp
 	PluginData.cpp
 	AnimationService.cpp
 	Animation.cpp

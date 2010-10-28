@@ -6,7 +6,6 @@
 #include <map>
 #include <vector>
 #include <osg/Timer>
-#include <OpenThreads/Thread>
 
 class IModel;
 class IDataManager;
@@ -41,7 +40,7 @@ public:
 
     //! Ustawia dane dla wszystkich us³ug.
     //! \param dataManager
-    void setData(IDataManager* dataManager);
+    void loadDataPass(IDataManager* dataManager);
     //! Przebieg update/lateUpdate.
     void updatePass(); 
     //! Przebieg compute.

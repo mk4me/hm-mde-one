@@ -1,6 +1,7 @@
 #ifndef I_MODEL_SERVICE_H
 #define I_MODEL_SERVICE_H
 
+#include <core/IService.h>
 
 class IModel;
 class IServiceManager;

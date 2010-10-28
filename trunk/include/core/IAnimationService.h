@@ -6,7 +6,8 @@
 #include <string>
 
 #include <plugins/animation/Animation.h>
-#include <core/GlobalServicesIDs.h>
+
+#include <core/IService.h>
 #include <core/SimpleFunctors.h>
 
 #include <osg/PositionAttitudeTransform>

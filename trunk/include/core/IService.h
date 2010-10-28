@@ -6,14 +6,6 @@
 #include <core/WidgetInterface.h>
 #include <core/SmartPtr.h>
 
-// in h file
-// #define M_DECLARE_CLASS()             \
-// public:                               \
-//     static const ClassID CLASS_ID;    
-
-// in cpp file
-/*#define M_DECLARED_CLASS(className, idvalue)  const ClassID className::CLASS_ID = idvalue;       */              
-
 enum AsyncResult
 {
     AsyncResult_Failure,
@@ -21,16 +13,12 @@ enum AsyncResult
     AsyncResult_Complete,
 };
 
-
-class IModel;
 class IDataManager;
-
 class IServiceManager;
+
 class IService : public IIdentifiable
 {
 public:
-
-
 	virtual ~IService() {}
 
 

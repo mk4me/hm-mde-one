@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 
-#include <core/GlobalServicesIDs.h>
 #include <core/SimpleFunctors.h>
 #include <core/IModelService.h>
 

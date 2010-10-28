@@ -13,6 +13,7 @@
 #include <QtCore/QVector>
 
 #include <core/PluginLoader.h>
+#include <core/Window.h>
 
 class UserInterfaceService;
 class ServiceManager;
@@ -35,7 +36,7 @@ namespace Ui
 	class ToolboxMain;
 }
 
-class ToolboxMain : public QMainWindow
+class ToolboxMain : public QMainWindow, core::Window
 {
     Q_OBJECT
 
@@ -62,6 +63,20 @@ public slots:
     void onMaterial();
     void onBones();
     void onWireframe();
+    void onCustomAction();
+    void onCustomAction(bool triggered);
+
+
+// core::Window
+protected:
+//     //! Natywne dodanie opcji do menu.
+//     virtual void onAddMenuItem( const std::string& path );
+// 
+//     
+//     //! Natywne dodanie opcji z flag¹ do menu.
+//     virtual void onAddMenuToggle( const std::string& path, bool state );
+    //! Natywne usuniêcie opcji z menu.
+    virtual void onRemoveMenuItem( const std::string& path );
 
 private:
     //! Tworzy siatkê rozci¹gniêt¹ na p³aszczyŸnie.
@@ -76,6 +91,8 @@ private:
     //! \param target
     void populateWindowMenu(QMenu* target);
 
+    void onAddMenuItem( const std::string& path, bool checkable, bool initialState );
+
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -86,13 +103,12 @@ private:
     void ReadSettings();
     void WriteSettings();
 
-
-
 private:    
     ServiceManager* m_pServiceManager;
     
     UserInterfaceService* m_pUserInterfaceService;
     ModelService* m_pModelService;
+
     CORE_SHARED_PTR(RenderService) m_pRenderService;
 
     Ui::ToolboxMain* ui;
@@ -107,6 +123,8 @@ private:
     //! W¹tek obliczaj¹cy.
     ComputeThread* computeThread;
 
+    //! Nazwa pliku konfiguracyjnego.
+    static const QString configName;
     //! Nazwa organizacji.
     static const QString organizationName;
     //! Nazwa aplikacji.
@@ -118,6 +136,15 @@ private:
     osg::ref_ptr<osg::Node> sceneRoot;
     //! Pluginy.
     core::PluginLoader* pluginLoader;
+
+
+// kod testowo-tymczasowy
+private:
+    void onTestItemClicked(const std::string& sender, bool state);
+    void onTestRemoveToggled(const std::string& sender, bool state);
+    core::Window::ItemPressedPtr onTestItemClickedPtr;
+    core::Window::ItemPressedPtr onTestRemoveToggledPtr;
+    bool removeOnClick;
 };
 
 #endif // TOOLBOXMAIN_H
