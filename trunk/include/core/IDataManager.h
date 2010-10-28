@@ -23,6 +23,9 @@ public:
     virtual std::string GetAnimationFilePath(int i) = 0;
     virtual int GetAnimationFilePathCount() = 0;
 
+    virtual std::string GetMeshFilePathPath(int i) = 0;
+    virtual int GetMeshFilePathCount() = 0;
+
     virtual IModel* GetModel() = 0;
 };
 

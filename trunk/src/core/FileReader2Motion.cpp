@@ -77,6 +77,12 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
         }
     }
 
+    if(dataManager->GetMeshFilePathCount() > 0)
+    {
+//         LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
+//         dataManager->GetModel()->InicializeMesh();
+    }
+
     //wstring fmodel(file.begin(), file.end());
     // 
     //SFModel* fmodel_file = new SFModel(fmodel);
@@ -386,12 +392,11 @@ bool FileReader2Motion::LoadSkeleton(Model* model)
 
 
 //--------------------------------------------------------------------------------------------------
-bool FileReader2Motion::LoadMesh(std::wstring* address, Model* model)
+bool FileReader2Motion::LoadMesh(std::string address, Model* model)
 {
     FILE* meshFile = NULL;
-    std::string straddress(address->begin(), address->end());
 
-    m_pFileReader = new FileChunkReader(straddress);
+    m_pFileReader = new FileChunkReader(address);
     m_pFileReader->LoadMesh(model);
 
     return true;

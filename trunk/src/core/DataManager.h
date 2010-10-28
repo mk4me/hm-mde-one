@@ -23,12 +23,18 @@ public:
     virtual std::string GetAnimationFilePath(int i);
     virtual int GetAnimationFilePathCount();
 
+    virtual std::string GetMeshFilePathPath(int i);
+    virtual int GetMeshFilePathCount();
+    
+
     virtual IModel* GetModel();
 
 private:
     std::vector<std::string> m_VideoFilePathList;
     std::vector<std::string> m_SkeletonFilePathList;
     std::vector<std::string> m_AnimationFilePathList;
+    std::vector<std::string> m_MeshFilePathList;
+ 
     std::string m_pFileName;
 
     IModel* m_pModel;

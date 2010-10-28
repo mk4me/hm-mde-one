@@ -200,7 +200,7 @@ AsyncResult AnimationService::update(double time, double timeDelta)
 		(*m_pAnimation)(targetTime);
   //      UpdateSkeleton();
   //      RecalculateChanges();
-  //      UpdateMesh();
+        UpdateMesh();
 
 		m_pModel->DrawModelBone();
 
@@ -425,17 +425,20 @@ void AnimationService::UpdateMesh()
                 for (int b = 0; b < vertice->n; b++)
                 {
                     int boneID = vertice->bones[b].boneID;
-                    if(m_pActualBones[boneID].hasChild)
+                    if(boneID >= m_pModel->GetSkeleton()->m_pBoneList.size())
+                        boneID = m_pModel->GetSkeleton()->m_pBoneList.size() - 1;
+
+                    if(m_pModel->GetSkeleton()->m_pBoneList[boneID]->child.size())
                     {
                         boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
                     }
 
-                    _tempVectors[b][POSITION] =	m_pActualBones[boneID].rotation 
-                        * (actPos - m_pActualBones[boneID].point									
-                        + m_pActualBones[boneID].translation)									
-                        + m_pActualBones[boneID].point;
+                    _tempVectors[b][POSITION] =	m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getRotate()
+                        * (actPos - m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getTrans()
+                        + (m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getTrans() - osg::Vec3d(m_pModel->GetSkeleton()->m_pBoneList[boneID]->dir[0], m_pModel->GetSkeleton()->m_pBoneList[boneID]->dir[1], m_pModel->GetSkeleton()->m_pBoneList[boneID]->dir[2])))
+                        + m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getTrans();
 
-                    _tempVectors[b][NORMALS]  = m_pActualBones[vertice->bones[b].boneID].rotation * normal;
+                    _tempVectors[b][NORMALS]  =	m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getRotate() * normal;
 
                 }
 

@@ -5,6 +5,7 @@
 
 
 
+// TODO: z optymalizowaæ kod.
 //--------------------------------------------------------------------------------------------------
 DataManager::DataManager(std::string address, IModel* model)
 {
@@ -122,6 +123,28 @@ DataManager::DataManager(std::string address, IModel* model)
                         while (animation = animation->NextSibling());
                     }
                 }
+                if(!node->ValueStr().compare("Model") && !node->FirstChild())
+                {
+                    // get all attributes
+                    TiXmlAttribute* att = node->ToElement()->FirstAttribute();
+                    if (att)
+                    {
+                        // material attributes
+                        do
+                        {
+                            if (!att->NameTStr().compare("FileName"))
+                            {
+                                std::string val = path + att->Value();
+                                m_MeshFilePathList.push_back(std::string(val.begin(), val.end()));
+                            }
+                            else
+                                return;		
+
+                        } 
+                        while(att = att->Next());
+                    }
+
+                }
             } 
             while (node = node->NextSibling());
         }	
@@ -182,7 +205,7 @@ std::string DataManager::GetFileName()
 //--------------------------------------------------------------------------------------------------
 std::string DataManager::GetSkeletonFilePath( int i )
 {
-    if(m_SkeletonFilePathList.size() > 0)
+    if(m_SkeletonFilePathList.size() > i)
         return m_SkeletonFilePathList[i];
 
     return NULL;
@@ -197,7 +220,7 @@ int DataManager::GetSkeletonFilePathCount()
 //--------------------------------------------------------------------------------------------------
 std::string DataManager::GetAnimationFilePath( int i )
 {
-    if(m_AnimationFilePathList.size() > 0)
+    if(m_AnimationFilePathList.size() > i)
         return m_AnimationFilePathList[i];
 
     return NULL;
@@ -207,4 +230,19 @@ std::string DataManager::GetAnimationFilePath( int i )
 int DataManager::GetAnimationFilePathCount()
 {
     return m_AnimationFilePathList.size();
+}
+
+//--------------------------------------------------------------------------------------------------
+std::string DataManager::GetMeshFilePathPath( int i )
+{
+    if(m_MeshFilePathList.size() > i)
+        return m_MeshFilePathList[i];
+
+    return NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
+int DataManager::GetMeshFilePathCount()
+{
+    return m_MeshFilePathList.size();
 }

@@ -17,7 +17,7 @@ class FileReader2Motion
 {
 public:
 	static void ReadFile(DataManager *dataManager);
-	static bool LoadMesh(std::wstring* address, Model* model);
+	static bool LoadMesh(std::string address, Model* model);
     static bool LoadAnimation(SFModel* fmodel, Model* model);
     static bool LoadAnimation(ASFAMCParser* acclaimObject, Model* model);
 
