@@ -67,8 +67,14 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
     ASFAMCParser* object = new ASFAMCParser();
     if(dataManager->GetSkeletonFilePathCount() > 0 && dataManager->GetAnimationFilePathCount() > 0)
     {
-        if(object->readAcclaimFiles(dataManager->GetSkeletonFilePath(0), dataManager->GetAnimationFilePath(0)))
+        if(object->ReadASFFile(dataManager->GetSkeletonFilePath(0)))
             ParserAcclaimFile2EDR(dynamic_cast<Model*>(dataManager->GetModel()), object);
+
+        for(int i = 0; i < dataManager->GetAnimationFilePathCount(); i++)
+        {
+            if(object->ReadAMCFile(dataManager->GetAnimationFilePath(i)))
+                LoadAnimation(object, dynamic_cast<Model*>(dataManager->GetModel()));
+        }
     }
 
     //wstring fmodel(file.begin(), file.end());
@@ -268,7 +274,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
 
     model->SetSkeleton(skeleton);
     LoadSkeleton(model);
-    LoadAnimation(acclaimObject, model);
+//    LoadAnimation(acclaimObject, model);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -394,7 +400,7 @@ bool FileReader2Motion::LoadMesh(std::wstring* address, Model* model)
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadAnimation( SFModel* fmodel, Model* model )
 {
-    Frame* animations = new Frame();
+    SkeletonAnimationList* animations = new SkeletonAnimationList();
 
     vector<SkeletonNode*> bones;
     CreateArrayHoldingBones(&bones, model);
@@ -435,6 +441,10 @@ bool FileReader2Motion::LoadAnimation( SFModel* fmodel, Model* model )
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model )
 {
+    SkeletonAnimationList *skeletonAnimationList = model->GetAnimation();
+    SkeletonAnimation *skeletonAnimation = new SkeletonAnimation();
+
+
     Skeleton* skeleton = model->GetSkeleton();
     Channel* joint = acclaimObject->getCurrentJointPointer();
     int boneCount = acclaimObject->getNumberOfJoints();
@@ -452,16 +462,24 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
             frames.push_back(frame);
         }
 
+        BoneAnimation *boneAnmation = new BoneAnimation();
+        boneAnmation->m_frames = frames;
+        boneAnmation->idx = joint->getID();
+
+        skeletonAnimation->m_boneAnimationList.push_back(boneAnmation);
+
         for(int b = 0; b <boneCount; b++)
         {
             if(joint->getID()== skeleton->m_pBoneList[b]->idx)
             {
-                skeleton->m_pBoneList[b]->frame = frames;
+                skeleton->m_pBoneList[b]->frame = boneAnmation->m_frames;
             }
         }
 
         joint++;
     }
+
+    skeletonAnimationList->m_SkeletonAnimationList.push_back(skeletonAnimation);
 
     return true;
 }

@@ -17,10 +17,10 @@ Model::Model()
 {
 	m_geometry = new osg::Geometry();
     m_spSkeletonGeode = new osg::Geode();
+    m_pAnimation = new::SkeletonAnimationList();
 
     m_pJoints = NULL;
     m_pSkeleton = NULL;
-    m_pAnimation = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -33,6 +33,7 @@ Model::~Model()
 void Model::Clear()
 {
     m_meshList.clear();
+    m_pAnimation->m_SkeletonAnimationList.clear();
 
     m_pJoints = NULL;
     m_pSkeleton = NULL;
@@ -46,7 +47,7 @@ void Model::AddMesh( IMesh* mesh )
 }
 
 //--------------------------------------------------------------------------------------------------
-void Model::SetAnimation( Frame* animation )
+void Model::SetAnimation( SkeletonAnimationList* animation )
 {
     m_pAnimation = animation;
 }
@@ -121,7 +122,7 @@ Skeleton* Model::GetSkeleton()
 }
 
 //--------------------------------------------------------------------------------------------------
-Frame* Model::GetAnimation()
+SkeletonAnimationList* Model::GetAnimation()
 {
     if(m_pAnimation)
         return m_pAnimation;

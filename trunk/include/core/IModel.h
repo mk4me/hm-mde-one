@@ -9,7 +9,7 @@ class Mesh;
 class IMesh;
 class ISkeletonNode;
 class Skeleton;
-struct Frame;
+struct SkeletonAnimationList;
 struct SMaterial;
 
 class IModel
@@ -21,7 +21,7 @@ public:
     virtual void AddMesh(IMesh* mesh) = 0;
     virtual void InicializeMesh() = 0;
     virtual void SetSkeleton(Skeleton* skeleton) = 0;
-    virtual void SetAnimation(Frame* animation) = 0;
+    virtual void SetAnimation(SkeletonAnimationList* animation) = 0;
     virtual void SetJoints(std::vector<ISkeletonNode* >* joints) = 0;
     virtual void ApplyMaterial(std::vector<SMaterial>* materialList, std::wstring textureDir) = 0;
     virtual void* GetSkeletonGroup() = 0;
@@ -30,7 +30,7 @@ public:
     virtual std::vector<IMesh* >& GetMeshList() = 0;
 
     virtual Skeleton* GetSkeleton() = 0;
-    virtual Frame* GetAnimation() = 0;
+    virtual SkeletonAnimationList* GetAnimation() = 0;
     virtual std::vector<ISkeletonNode* >* GetJoints() = 0;
     virtual osg::ref_ptr<osg::Geode> GetSkeletonGeode() = 0;
 

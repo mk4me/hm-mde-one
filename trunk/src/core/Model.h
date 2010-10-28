@@ -35,7 +35,7 @@ public:
     virtual void AddMesh(IMesh* mesh);
     virtual void InicializeMesh();
     virtual void SetSkeleton(Skeleton* skeleton);
-    virtual void SetAnimation(Frame* animation);
+    virtual void SetAnimation(SkeletonAnimationList* animation);
     virtual void SetJoints(std::vector<ISkeletonNode* >* joints);
     virtual void ApplyMaterial(std::vector<SMaterial>* materialList, std::wstring textureDir);
     virtual void* GetSkeletonGroup();
@@ -46,7 +46,7 @@ public:
     virtual osg::ref_ptr<osg::Geode> GetSkeletonGeode();
 
     virtual Skeleton* GetSkeleton();
-    virtual Frame* GetAnimation();
+    virtual SkeletonAnimationList* GetAnimation();
 
     void DrawBone(Bone* bone, osg::Geode* geode);
     void DrawBone(osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode);
@@ -65,7 +65,7 @@ private:
 
     std::vector<ISkeletonNode* >* m_pJoints;
     Skeleton* m_pSkeleton;
-    Frame* m_pAnimation;
+    SkeletonAnimationList* m_pAnimation;
     std::vector<IMesh* > m_meshList;
 };
 

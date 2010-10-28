@@ -15,15 +15,8 @@
 *	One thing to note, after the graph editor changes points it will call recompute on the
 *   quaternions and euler data so that it can be recomputed.
 *
-*	This class also contains our data readers and writers:
-*		1.)  Read BVH
-*		2.)  Write BVH
-*		3.)  Read Acclaim format
-*		4.)	 Write Marker data
-*		5.)	 Write MEL script
-*		6.)	 Write RIB file
-*		7.)	 Hardware Input/Output
-*
+*	This class contains our data readers and writers:
+*		1.)  Read Acclaim format
 *********************************************************************************************/
 
 #include <mbstring.h>
@@ -76,8 +69,22 @@ std::vector<char*> tempParentVector;
 // The following function, through the use of a helper function, loads the Acclaim motion capture format
 int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileName ) 
 {
+   
+
+    ReadASFFile(ASFFileName);
+
+    //RemoveDummyJoint();
+
+    ReadAMCFile(AMCFileName);
+
+    exists = 1 ;
+
+    return 1;
+}
+
+int ASFAMCParser::ReadASFFile(std::string ASFFileName)
+{
     FILE *tempFilePointerASF ;
-    FILE *tempFilePointerAMC ;
 
     //First argument, the ASF file, is opened
     if ((tempFilePointerASF  = fopen(ASFFileName.c_str(), "r")) == NULL)
@@ -88,35 +95,9 @@ int ASFAMCParser::readAcclaimFiles(std::string ASFFileName, std::string AMCFileN
     else
         printf ("The file %s is being processed.\n", ASFFileName) ;
 
-    //First argument, the AMC file, is opened
-    if ((tempFilePointerAMC  = fopen(AMCFileName.c_str(), "r")) == NULL)
-    {
-        printf ("The file %s was not opened\n", AMCFileName) ;
-        return 0;
-    }
-    else
-        printf ("The file %s is being processed.\n", AMCFileName) ;
-
     //Reset the pointer to the beginning of the file...
     fseek (tempFilePointerASF, 0L, SEEK_SET) ;
-    fseek (tempFilePointerAMC, 0L, SEEK_SET) ;
 
-    ReadASFFile(tempFilePointerASF);
-
-    //RemoveDummyJoint();
-
-    ReadAMCFile(tempFilePointerAMC);
-
-    exists = 1 ;
-
-    fclose (tempFilePointerASF) ;
-    fclose (tempFilePointerAMC) ;
-
-    return 1;
-}
-
-int ASFAMCParser::ReadASFFile( FILE *tempFilePointerASF )
-{
     //Buffers used for file reading...
     char buffer[10000]    ;
 
@@ -518,11 +499,26 @@ int ASFAMCParser::ReadASFFile( FILE *tempFilePointerASF )
         delete[] token ;
     }
 
+    fclose (tempFilePointerASF) ;
+
     return 1;
 }
 
-int ASFAMCParser::ReadAMCFile( FILE *tempFilePointerAMC )
+int ASFAMCParser::ReadAMCFile(std::string AMCFileName)
 {
+    FILE *tempFilePointerAMC ;
+
+    //First argument, the AMC file, is opened
+    if ((tempFilePointerAMC  = fopen(AMCFileName.c_str(), "r")) == NULL)
+    {
+        printf ("The file %s was not opened\n", AMCFileName) ;
+        return 0;
+    }
+    else
+        printf ("The file %s is being processed.\n", AMCFileName) ;
+
+    fseek (tempFilePointerAMC, 0L, SEEK_SET) ;
+
     //Buffers used for file reading...
     char buffer[10000]    ;
 
@@ -648,6 +644,8 @@ int ASFAMCParser::ReadAMCFile( FILE *tempFilePointerAMC )
         }			
         jointPointer++;
     }
+
+    fclose (tempFilePointerAMC) ;
 
     return 1;
 }

@@ -29,7 +29,7 @@ public:
     };
 
 public: 
-    Animation(Skeleton* skeleton, AnimationService* animationService);
+    Animation(Skeleton* skeleton, SkeletonAnimation* skeletonAnimation, AnimationService* animationService);
 
     // play
     void Play();
@@ -67,7 +67,8 @@ private:
 
 private: 
 
-	Skeleton* m_pSkeleton;
+	Skeleton *m_pSkeleton;
+    SkeletonAnimation *m_pSkeletonAnimaton;
 	int m_pFrameCount;
 
     // act time of animation

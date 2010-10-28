@@ -14,9 +14,10 @@ using namespace std;
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
 
 //--------------------------------------------------------------------------------------------------
-Animation::Animation(Skeleton* skeleton, AnimationService* animationService):
+Animation::Animation(Skeleton* skeleton, SkeletonAnimation* skeletonAnimation, AnimationService* animationService):
 m_pAnimationService(animationService)
 , m_pSkeleton(skeleton)
+, m_pSkeletonAnimaton(skeletonAnimation)
 , _state(Animation::STOPPED)
 , _actTime(0.0), _length(0.0)
 , _bones(NULL)
@@ -25,15 +26,6 @@ m_pAnimationService(animationService)
 , _isStartAnimation(true)
 , _firstNodeTime(0.0)
 {
-    //     // get length of this animation
-    //     for (vector<ISkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
-    //         if((*i)->GetNumOfAnimations() > 0)
-    //             if ((*i)->GetNumOfAnimations() && _length < ANIMATION_GROUP(*i)->getLength())
-    //                 _length = ANIMATION_GROUP(*i)->getLength();
-
-    // ilosc kosci = ilosc obiektów frame w dablicy
-    m_pFrameCount = skeleton->m_pRootBone->frame.size();
-    _length = skeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -125,6 +117,19 @@ void Animation::Play()
         m_pAnimationService->RegisterAnimation(this, &Animation::SetTime);
         m_pAnimationService->setLength(_length);
         _state = Animation::PLAYING; 
+
+        int boneCount = m_pSkeletonAnimaton->m_boneAnimationList.size();
+        for(int b = 0; b <boneCount; b++)
+        {
+            if(m_pSkeletonAnimaton->m_boneAnimationList[b]->idx == m_pSkeleton->m_pBoneList[b]->idx)
+            {
+                m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[b]->m_frames;
+            }
+        }
+
+        // ilosc kosci = ilosc obiektów frame w dablicy
+        m_pFrameCount = m_pSkeleton->m_pRootBone->frame.size();
+        _length = m_pSkeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
     }
 
 }

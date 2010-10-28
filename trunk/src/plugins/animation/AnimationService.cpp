@@ -293,15 +293,15 @@ void AnimationService::LoadAnimation( IModel* model )
 //         }
 //     }
 
-	names.push_back("anim_test");
-	numOfAnims++;
-//    int counting = m_pJoints->size();
-
-    // create animations
-    for (unsigned int i = 0; i < numOfAnims; ++i)
+    for(int i = 0; i < model->GetAnimation()->m_SkeletonAnimationList.size(); i++)
     {
-        Animation* animation = new Animation(model->GetSkeleton(), this);
-        m_animations.insert(make_pair(names[i], animation));	
+        names.push_back(("anim_test" + i));
+        //numOfAnims++;
+        //    int counting = m_pJoints->size();
+
+        // create animations
+            Animation* animation = new Animation(model->GetSkeleton(), model->GetAnimation()->m_SkeletonAnimationList[i], this);
+            m_animations.insert(make_pair(names[i], animation));	
     }
     
 }

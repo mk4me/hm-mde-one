@@ -28,4 +28,9 @@ struct SkeletonAnimation
     std::vector<BoneAnimation* > m_boneAnimationList;
 };
 
+struct SkeletonAnimationList
+{
+    std::vector<SkeletonAnimation* > m_SkeletonAnimationList;
+};
+
 #endif //FRAME_H
