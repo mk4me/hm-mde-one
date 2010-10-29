@@ -433,7 +433,7 @@ void AnimationService::UpdateMesh()
 
                     if(m_pModel->GetSkeleton()->m_pBoneList[boneID]->child.size())
                     {
-                        boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
+                       // boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
                     }
 
                     osg::Vec3d initialBonePosition = osg::Vec3d(m_pActualBones[boneID]->dir[0], m_pActualBones[boneID]->dir[1], m_pActualBones[boneID]->dir[2]);
