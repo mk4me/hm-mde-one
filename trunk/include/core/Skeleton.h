@@ -30,7 +30,7 @@ public:
     int MOV_BONES_IN_ASF_FILE;
 //private:
     Bone *m_pRootBone;							// Pointer to the root bone, m_RootBone = &bone[0]
-	std::vector<Bone*> m_pBoneList;							// Array with all skeleton bones
+	std::vector<Bone*> m_pBoneList;				// Array with all skeleton bones
 };
 
 #endif 

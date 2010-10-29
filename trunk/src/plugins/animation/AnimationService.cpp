@@ -399,6 +399,8 @@ void AnimationService::UpdateMesh()
     std::vector<IMesh*> meshList = m_pModel->GetMeshList();
     int countHandv = 0;
 
+    std::vector<Bone*> m_pActualBones = m_pModel->GetSkeleton()->m_pBoneList;	
+
     for(std::vector<IMesh*>::iterator it = meshList.begin(); it != meshList.end(); it++)
     {
         IMesh* mesh = *it;
@@ -424,21 +426,24 @@ void AnimationService::UpdateMesh()
                 // for every affecting bone
                 for (int b = 0; b < vertice->n; b++)
                 {
-                    int boneID = vertice->bones[b].boneID;
-                    if(boneID >= m_pModel->GetSkeleton()->m_pBoneList.size())
-                        boneID = m_pModel->GetSkeleton()->m_pBoneList.size() - 1;
+                    int boneID = vertice->bones[b].boneID + 1;
+
+                    if(boneID >= m_pActualBones.size())
+                        boneID = m_pActualBones.size() - 1;
 
                     if(m_pModel->GetSkeleton()->m_pBoneList[boneID]->child.size())
                     {
                         boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
                     }
 
-                    _tempVectors[b][POSITION] =	m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getRotate()
-                        * (actPos - m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getTrans()
-                        + (m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getTrans() - osg::Vec3d(m_pModel->GetSkeleton()->m_pBoneList[boneID]->dir[0], m_pModel->GetSkeleton()->m_pBoneList[boneID]->dir[1], m_pModel->GetSkeleton()->m_pBoneList[boneID]->dir[2])))
-                        + m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getTrans();
+                    osg::Vec3d initialBonePosition = osg::Vec3d(m_pActualBones[boneID]->dir[0], m_pActualBones[boneID]->dir[1], m_pActualBones[boneID]->dir[2]);
 
-                    _tempVectors[b][NORMALS]  =	m_pModel->GetSkeleton()->m_pBoneList[boneID]->matrix->getRotate() * normal;
+                    _tempVectors[b][POSITION] =	m_pActualBones[boneID]->matrix->getRotate()
+                        * (actPos - m_pActualBones[boneID]->matrix->getTrans()
+                        + (m_pActualBones[boneID]->matrix->getTrans() - initialBonePosition))
+                        + m_pActualBones[boneID]->matrix->getTrans();
+
+                    _tempVectors[b][NORMALS]  =	m_pActualBones[boneID]->matrix->getRotate() * normal;
 
                 }
 

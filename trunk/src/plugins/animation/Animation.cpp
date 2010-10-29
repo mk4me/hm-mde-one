@@ -9,7 +9,7 @@ using namespace std;
 #define M_PI (3.14159265358979323846)
 #endif
 
-#define SCALE 0.2
+#define SCALE 1
 #define TIMERMULTIPLAY 0.009
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
 
