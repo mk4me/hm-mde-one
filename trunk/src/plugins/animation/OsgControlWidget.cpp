@@ -102,3 +102,9 @@ void OsgControlWidget::ClearScene()
     QListWidgetItem* node = new QListWidgetItem(animationList);
     node->setText("[none]");
 }
+
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::scaleValueChanged( QString scale )
+{
+	m_pAnimationService->setScale(scale.toFloat());
+}	

@@ -52,6 +52,8 @@ public:
     double GetTime(); 
     // get state of this animation
     Animation::AnimationState GetState(); 
+
+	void SetScale(double scale);
     
 private: 
     // moves to proper part of animation and returns %
@@ -70,6 +72,7 @@ private:
 	Skeleton *m_pSkeleton;
     SkeletonAnimation *m_pSkeletonAnimaton;
 	int m_pFrameCount;
+	double SCALE;
 
     // act time of animation
     double _actTime;

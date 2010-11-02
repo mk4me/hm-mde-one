@@ -31,6 +31,7 @@ public:
 
         virtual void followTimelineChecked(int checked);
         virtual void animationSelectionChanged();
+		virtual void scaleValueChanged(QString scale);
 
 private:
     AnimationService* m_pAnimationService;

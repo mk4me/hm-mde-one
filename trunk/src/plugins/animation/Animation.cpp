@@ -9,7 +9,7 @@ using namespace std;
 #define M_PI (3.14159265358979323846)
 #endif
 
-#define SCALE 0.2
+// #define SCALE 1
 #define TIMERMULTIPLAY 0.009
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
 
@@ -25,6 +25,7 @@ m_pAnimationService(animationService)
 , _prevTime(0.0)
 , _isStartAnimation(true)
 , _firstNodeTime(0.0)
+, SCALE(1.0)
 {
 }
 
@@ -417,3 +418,8 @@ Animation::AnimationState Animation::GetState()
     return _state; 
 }
 
+//--------------------------------------------------------------------------------------------------
+void Animation::SetScale( double scale )
+{
+	SCALE = scale;
+}

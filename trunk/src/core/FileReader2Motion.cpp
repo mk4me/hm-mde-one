@@ -20,7 +20,7 @@
 #include <osg/Matrix>
 
 
-#define SCALE 0.2
+#define SCALE 1
 #define TIMERMULTIPLAY 0.0055
 
 // helper - this name is quite long...
@@ -79,8 +79,8 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 
     if(dataManager->GetMeshFilePathCount() > 0)
     {
-//         LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-//         dataManager->GetModel()->InicializeMesh();
+       // LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
+       // dataManager->GetModel()->InicializeMesh();
     }
 
     //wstring fmodel(file.begin(), file.end());
@@ -223,6 +223,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
     Channel* joint = acclaimObject->getCurrentJointPointer();
 
     skeleton->m_pBoneList.clear();
+	skeleton->m_pBoneList.resize(boneCount);
     for(int i = 0; i < boneCount; i++)
     {
         Bone* bone = new Bone();
@@ -244,7 +245,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
             bone->children.push_back(joint->getChild(i));
         }
 
-        skeleton->m_pBoneList.push_back(bone);
+        skeleton->m_pBoneList[joint->getID()] = bone;
         joint++;
     }
 

@@ -61,7 +61,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit">
+        <widget class="QLineEdit" name="scaleLineEdit">
          <property name="text">
           <string>1</string>
          </property>
@@ -141,9 +141,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>scaleLineEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>OsgTest</receiver>
+   <slot>scaleValueChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>245</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>236</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>followTimelineChecked(int)</slot>
   <slot>animationSelectionChanged()</slot>
+  <slot>scaleValueChanged(QString)</slot>
  </slots>
 </ui>

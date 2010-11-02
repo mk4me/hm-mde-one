@@ -100,12 +100,15 @@ public:
     //! \param followTimeline
     void setFollowTimeline(bool followTimeline);
 
+	void setScale(float scale);
+
     virtual const std::string& getName() const
     {
         return name;
     }
     
 private:
+	double SCALE;
     double length;
     double targetTime;
     OpenThreads::Mutex stateMutex;

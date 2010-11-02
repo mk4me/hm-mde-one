@@ -137,6 +137,7 @@ void AnimationService::ClearCaller()
 //--------------------------------------------------------------------------------------------------
 void AnimationService::Clear()
 {
+	SCALE = 1;
     m_numOfBones = 0;
     m_selectedAnimatonName= "";
 
@@ -154,8 +155,6 @@ void AnimationService::Clear()
     m_functionsToCallWhenAnimationStopped.clear();
 
 	ClearCaller();
-
-    
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -167,7 +166,8 @@ AnimationService::AnimationService(void):
   length(0.0),
   followTimeline(false),
   currentAnimation(NULL),
-  name("Animation")
+  name("Animation"),
+  SCALE(1)
 {
     widget = new OsgControlWidget();
 }
@@ -396,6 +396,8 @@ void AnimationService::RecalculateChanges()
 //--------------------------------------------------------------------------------------------------
 void AnimationService::UpdateMesh()
 {
+
+	//std::map<int, int> dupa;
     std::vector<IMesh*> meshList = m_pModel->GetMeshList();
     int countHandv = 0;
 
@@ -426,14 +428,15 @@ void AnimationService::UpdateMesh()
                 // for every affecting bone
                 for (int b = 0; b < vertice->n; b++)
                 {
-                    int boneID = vertice->bones[b].boneID + 1;
+                    int boneID = vertice->bones[b].boneID;
 
                     if(boneID >= m_pActualBones.size())
                         boneID = m_pActualBones.size() - 1;
 
+					/*dupa[boneID] = boneID;*/
                     if(m_pModel->GetSkeleton()->m_pBoneList[boneID]->child.size())
                     {
-                       // boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
+                        //boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
                     }
 
                     osg::Vec3d initialBonePosition = osg::Vec3d(m_pActualBones[boneID]->dir[0], m_pActualBones[boneID]->dir[1], m_pActualBones[boneID]->dir[2]);
@@ -528,4 +531,11 @@ bool AnimationService::getFollowTimeline() const
 void AnimationService::setFollowTimeline( bool followTimeline )
 {
     this->followTimeline = followTimeline;
+}
+
+void AnimationService::setScale( float scale )
+{
+	SCALE = scale;
+	if(currentAnimation)
+		currentAnimation->SetScale(SCALE);
 }
