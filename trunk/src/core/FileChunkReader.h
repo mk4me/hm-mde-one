@@ -134,7 +134,7 @@ public:
     FileChunkReader(std::string name);
     ~FileChunkReader(void);
 
-    bool LoadMesh(Model* model);
+    bool LoadMesh(Model* model, SSkeleton *skeleton);
     bool LoadMeshVersion2(SModelData* fmesh);
 
     bool LoadSkeleton(SSkeleton* skeleton);

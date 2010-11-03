@@ -436,19 +436,34 @@ void AnimationService::UpdateMesh()
 					/*dupa[boneID] = boneID;*/
                     if(m_pModel->GetSkeleton()->m_pBoneList[boneID]->child.size())
                     {
-                        //boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
+                       // boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
                     }
 
-                    osg::Vec3d initialBonePosition = osg::Vec3d(m_pActualBones[boneID]->dir[0], m_pActualBones[boneID]->dir[1], m_pActualBones[boneID]->dir[2]);
+                    osg::Vec3d initialBonePosition = m_pActualBones[boneID]->initialPosition;
+					osg::Vec3d pos = osg::Vec3d(m_pActualBones[boneID]->positionx, m_pActualBones[boneID]->positiony, m_pActualBones[boneID]->positionz);
 
-                    _tempVectors[b][POSITION] =	m_pActualBones[boneID]->matrix->getRotate()
-                        * (actPos - m_pActualBones[boneID]->matrix->getTrans()
-                        + (m_pActualBones[boneID]->matrix->getTrans() - initialBonePosition))
-                        + m_pActualBones[boneID]->matrix->getTrans();
+					// cross product
+					Vec3d	cross	 = m_pActualBones[boneID]->initialPosition ^ pos;
+					// cos of angle between old and new bone
+					double  cosangle = (m_pActualBones[boneID]->initialPosition * pos) / (m_pActualBones[boneID]->initialPosition.length() * pos.length());
+					// angle between old and new bone
+					double	angle    = acos(cosangle);	// acos of dot product div by lenths
 
-                    _tempVectors[b][NORMALS]  =	m_pActualBones[boneID]->matrix->getRotate() * normal;
+					// construct bone rotation...
+					osg::Quat rotation	= Quat(angle, cross);
+					// ...transformation
+					osg::Vec3d translation = pos - m_pActualBones[boneID]->initialPosition;
+
+
+					_tempVectors[b][POSITION] =	rotation 
+						* (actPos - pos									
+						+ translation)									
+						+ pos;
+
+					_tempVectors[b][NORMALS]  = rotation * normal;
 
                 }
+
 
                 // get output point
                 Vec3d change, nchange;

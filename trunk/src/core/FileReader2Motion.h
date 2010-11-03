@@ -12,6 +12,7 @@ class SkeletonNode;
 class DataManager;
 struct SSkeletonAnimation;
 struct SFModel;
+struct SSkeleton;
 
 class FileReader2Motion
 {
@@ -35,6 +36,8 @@ private:
     static bool InicializeSkeletalAnimation(std::wstring* name, SSkeletonAnimation* anim, std::vector<SkeletonNode*>* bones);
     static bool IsMeshAnimation(std::wstring* address);
     static bool LoadSkeleton(Model* model);
+
+	static bool Mapping(Model *model, SSkeleton *mesh_skeleton);
 };
 
 #endif //FILE_READER_2_MOTION_H

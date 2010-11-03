@@ -46,6 +46,9 @@ struct Bone
     //Rotation angles for this bone at a particular time frame (as read from AMC file) in local coordinate system, 
     // this is position what we get "po" loading matrix;
     float positionx,positiony,positionz;
+
+	osg::Vec3d initialPosition;
+	bool isInitialPosition;
 };
 
 #endif

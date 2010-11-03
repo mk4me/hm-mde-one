@@ -276,6 +276,11 @@ void Animation::calculateChildMatrix(Bone *bone)
     bone->positiony = trans.y() * SCALE;
     bone->positionz = trans.z() * SCALE;
 
+	if(!bone->isInitialPosition)
+	{
+		bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
+		bone->isInitialPosition = true;
+	}
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
@@ -350,6 +355,11 @@ void Animation::UpdateModel()
     bone->positiony = trans.y() * SCALE;
     bone->positionz = trans.z() * SCALE;
 
+	if(!bone->isInitialPosition)
+	{
+		bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
+		bone->isInitialPosition = true;
+	}
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)

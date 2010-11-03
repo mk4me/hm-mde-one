@@ -79,8 +79,8 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 
     if(dataManager->GetMeshFilePathCount() > 0)
     {
-       // LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-       // dataManager->GetModel()->InicializeMesh();
+        LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
+        dataManager->GetModel()->InicializeMesh();
     }
 
     //wstring fmodel(file.begin(), file.end());
@@ -227,6 +227,8 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
     for(int i = 0; i < boneCount; i++)
     {
         Bone* bone = new Bone();
+		bone->initialPosition = osg::Vec3d(0.f,0.f,0.f);
+		bone->isInitialPosition = false;
 
         bone->idx = joint->getID();
         bone->dir[0] = joint->getDirX();
@@ -398,7 +400,10 @@ bool FileReader2Motion::LoadMesh(std::string address, Model* model)
     FILE* meshFile = NULL;
 
     m_pFileReader = new FileChunkReader(address);
-    m_pFileReader->LoadMesh(model);
+    SSkeleton* skeleton = new SSkeleton;
+	m_pFileReader->LoadMesh(model, skeleton);
+
+	Mapping(model, skeleton);
 
     return true;
 }
@@ -769,3 +774,32 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
     return false;
 }
 
+//--------------------------------------------------------------------------------------------------
+bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
+{
+	Skeleton* model_skeleton = model->GetSkeleton();
+	Skeleton* temp = new Skeleton();
+
+	temp->m_pBoneList.resize(model_skeleton->m_pBoneList.size());
+
+	for(int b = 0; b < mesh_skeleton->bones_count; b++)
+	{
+		std::string nazwa = mesh_skeleton->bones[b].name;
+
+		for(int i = 0; i < model_skeleton->m_pBoneList.size(); i++)
+		{
+			if(nazwa == model_skeleton->m_pBoneList[i]->name)
+			{
+				temp->m_pBoneList[b] = model_skeleton->m_pBoneList[i];
+				break;
+			}
+		}
+	}
+
+	temp->m_pRootBone = temp->m_pBoneList[0];
+
+	model_skeleton = temp;
+	model->SetSkeleton(model_skeleton);
+
+	return true;
+}

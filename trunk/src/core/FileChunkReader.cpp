@@ -20,7 +20,7 @@ FileChunkReader::FileChunkReader(std::string name):
 }
 
 //--------------------------------------------------------------------------------------------------
-bool FileChunkReader::LoadMesh( Model* model )
+bool FileChunkReader::LoadMesh( Model* model, SSkeleton* skeleton )
 {
         m_pMeshFile = NULL;
     
@@ -282,7 +282,7 @@ bool FileChunkReader::LoadMesh( Model* model )
                                 {
                                 case FMODEL_BONES:
                                     {
-                                        SSkeleton* skeleton = new SSkeleton();
+                                        //SSkeleton* skeleton = new SSkeleton();
     
                                         if (!LoadSkeleton(skeleton))
                                         {	
@@ -291,7 +291,7 @@ bool FileChunkReader::LoadMesh( Model* model )
                                             return false;
                                         }
     
-                                       // assert(!fmesh->skeleton);
+                                        //assert(!fmesh->skeleton);
 										//TODO R.Zowal
 										//SSkeleton* skeleton = new SSkeleton();
                                         //model->SetSkeleton(skeleton);
