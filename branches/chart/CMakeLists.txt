@@ -16,6 +16,7 @@ set(PUBLIC_H
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
+	ChartPlugin.h
 	ChartService.h
 	ChartWidget.h
 	IChart.h
@@ -36,6 +37,7 @@ set(PRIVATE_H
 	Parameter.h
 	Parameters.h
 	ProcessorReader.h
+	ChartViewer.h
 
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -46,6 +48,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Ÿród³a
 set(TARGET_SRC
 	main.cpp
+	ChartPlugin.cpp
 	ChartWidget.cpp
 	ChartService.cpp
 	Chart.cpp
@@ -64,6 +67,7 @@ set(TARGET_SRC
 	MIPSreader.cpp
 	Parameter.cpp
 	Parameters.cpp
+	ChartViewer.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -89,8 +93,8 @@ set(TARGET_H ${TARGET_H} ${TARGET_UI} ${TARGET_UI_H})
 # tworzenie
 
 # kompilacja do wspó³dzielonej biblioteki
-#add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
-add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
+add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
+#add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
 # nag³ówki
 include_directories( ${DEFAULT_PROJECT_INCLUDES} )
 # biblioteki

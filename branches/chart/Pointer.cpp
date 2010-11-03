@@ -23,7 +23,7 @@ Pointer::Pointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data){
 	updatecb->getStackedTransforms().push_back(new osgAnimation::StackedTranslateElement("position"));
 	trans->setUpdateCallback(updatecb);
 	trans->setMatrix(osg::Matrix::identity());
-	trans->addUpdateCallback(new PointerUpdateCallback(text,data,endPoint.x()-startPoint.x()));
+	//trans->addUpdateCallback(new PointerUpdateCallback(text,data,endPoint.x()-startPoint.x()));
 	pointer=createPointer();
 	trans->addChild (pointer);
 	trans->addChild(geode);

@@ -11,6 +11,14 @@
 
 #include <QtGui/QWidget>
 #include <plugins/chart/ChartService.h>
+#include <osgViewer/Viewer>
+#include <core/QOSGWidget.h>
+#include "ChartViewer.h"
+#include "ChartDecoration.h"
+#include "LineChart.h"
+#include "ChartData.h"
+
+
 #include "ui_ChartWidget.h"
 
 class ChartWidget : public QWidget, public Ui::ChartWidget
@@ -20,16 +28,23 @@ class ChartWidget : public QWidget, public Ui::ChartWidget
 private:
     //! Us³uga tworz¹ca widget.
     ChartService* service;
-
+	//! Widget z widokiem OSG.
+	ChartViewer** listViewer;
+	ChartViewer* mainViewer;
+	std::string c3dFile;
+	void createEMGChanels();
+	void createGRFChanels();
+	void createChart(QOSGViewer* viewer,int chartIndex);
+	
 public:
     //! 
     ChartWidget(ChartService* service);
     //! 
     virtual ~ChartWidget();
-
+	void createLargeChart(int chartIndex);
 public slots:
     //! \param 
-   
+   void comboBoxChanged(int index);
 
 };
 

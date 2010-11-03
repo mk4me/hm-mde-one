@@ -24,6 +24,7 @@ IWidget* ChartService::getWidget()
 
 AsyncResult ChartService::init( IServiceManager* serviceManager, osg::Node* sceneRoot )
 {
+
     return AsyncResult_Complete;
 }
 
