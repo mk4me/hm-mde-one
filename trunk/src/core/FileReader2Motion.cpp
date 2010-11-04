@@ -229,6 +229,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
         Bone* bone = new Bone();
 		bone->initialPosition = osg::Vec3d(0.f,0.f,0.f);
 		bone->isInitialPosition = false;
+        bone->parent = NULL;
 
         bone->idx = joint->getID();
         bone->dir[0] = joint->getDirX();
@@ -791,6 +792,19 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 			if(nazwa == model_skeleton->m_pBoneList[i]->name)
 			{
 				temp->m_pBoneList[b] = model_skeleton->m_pBoneList[i];
+
+                float *bone_space_trans = mesh_skeleton->bones[b].bone_space_trans;
+                float *bone_space_quat = mesh_skeleton->bones[b].bone_space_quate;
+
+                float *bone_trans = mesh_skeleton->bones[b].translation;
+                float *bone_quat = mesh_skeleton->bones[b].quaternion;
+
+                temp->m_pBoneList[b]->boneSpace_translation = osg::Vec3f(bone_space_trans[0], bone_space_trans[1], bone_space_trans[2]);
+                temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(bone_space_quat[0], bone_space_quat[1], bone_space_quat[2], bone_space_quat[3]);
+
+                temp->m_pBoneList[b]->mesh_bone_translation = osg::Vec3f(bone_trans[0], bone_trans[1], bone_trans[2]);
+                temp->m_pBoneList[b]->mesh_bone_quaternion = osg::Quat(bone_quat[0], bone_quat[1], bone_quat[2], bone_quat[3]);
+
 				break;
 			}
 		}
