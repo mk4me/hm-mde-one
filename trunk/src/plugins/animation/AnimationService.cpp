@@ -423,7 +423,41 @@ void AnimationService::UpdateMesh()
                 // normal
                 Vec3d normal(mesh->GetRootVertNormals()[vertice->vert_id]._v[0], 
                     mesh->GetRootVertNormals()[vertice->vert_id]._v[1], mesh->GetRootVertNormals()[vertice->vert_id]._v[2]);
+        
+                /*
 
+                public void recalculate(Vector3f parentAbsoluteTranslation, Quat4f parentAbsoluteRotation)
+                {
+                    translationAbsolute_ = Mathematics.rotate(translation_, parentAbsoluteRotation); 
+                    translationAbsolute_ = Mathematics.add(translationAbsolute_, parentAbsoluteTranslation); 
+                    rotationAbsolute_ = Mathematics.mul(rotation_, parentAbsoluteRotation); 
+
+                    Matrix4f bonespace = new Matrix4f(rotationBonespace_, translationBonespace_, 1.0f); 
+                    Matrix4f absolute = new Matrix4f(rotationAbsolute_, translationAbsolute_, 1.0f); 
+
+
+                    Vector3f T = Mathematics.rotate(translationBonespace_, rotationAbsolute_); 
+                    T = Mathematics.add(translationAbsolute_, T); 
+
+                    boneTransformation_.mul(absolute, bonespace);
+                    boneTransformation_.m03 = T.x;  
+                    boneTransformation_.m13 = T.y;  
+                    boneTransformation_.m23 = T.z;  
+
+                    //boneTransformation_.transpose(); 
+                    //boneTransformation_.invert();
+
+                    if(skeleton_ != null)
+                    {
+                        int childCount = childrenIds_.size();
+                        for(int i=0; i<childCount; ++i)
+                        {
+                            skeleton_.getBone(childrenIds_.get(i)).recalculate(translationAbsolute_, rotationAbsolute_); 
+                        }
+                    }
+                } 
+
+                */
 
                 // for every affecting bone
                 for (int b = 0; b < vertice->n; b++)
@@ -455,7 +489,7 @@ void AnimationService::UpdateMesh()
 					osg::Vec3d translation = pos - m_pActualBones[boneID]->initialPosition;
 
 
-					_tempVectors[b][POSITION] =	rotation 
+					_tempVectors[b][POSITION] =	rotation.inverse()
 						* (actPos - pos									
 						+ translation)									
 						+ pos;

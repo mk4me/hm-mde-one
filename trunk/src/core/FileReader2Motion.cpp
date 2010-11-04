@@ -79,8 +79,8 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 
     if(dataManager->GetMeshFilePathCount() > 0)
     {
-        LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-        dataManager->GetModel()->InicializeMesh();
+        //LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
+        //dataManager->GetModel()->InicializeMesh();
     }
 
     //wstring fmodel(file.begin(), file.end());
