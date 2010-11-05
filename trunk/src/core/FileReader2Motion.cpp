@@ -65,6 +65,8 @@ void FileReader2Motion::ReadFile(DataManager *dataManager)
 void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 {
     ASFAMCParser* object = new ASFAMCParser();
+
+
     if(dataManager->GetSkeletonFilePathCount() > 0 && dataManager->GetAnimationFilePathCount() > 0)
     {
         if(object->ReadASFFile(dataManager->GetSkeletonFilePath(0)))
@@ -328,6 +330,8 @@ void calculateChildMatrix(Bone *bone)
     bone->positiony = trans.y();
     bone->positionz = trans.z();
 
+//    bone->bonespace = osg::Matrixd(bone->boneSpace_quaternion);
+//    bone->bonespace.postMultTranslate( bone->boneSpace_translation);
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
@@ -384,6 +388,8 @@ bool FileReader2Motion::LoadSkeleton(Model* model)
     bone->positiony = trans.y();
     bone->positionz = trans.z();
 
+//     bone->bonespace = osg::Matrixd(bone->boneSpace_quaternion);
+//     bone->bonespace.postMultTranslate( bone->boneSpace_translation);
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
@@ -796,14 +802,12 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
                 float *bone_space_trans = mesh_skeleton->bones[b].bone_space_trans;
                 float *bone_space_quat = mesh_skeleton->bones[b].bone_space_quate;
 
-                float *bone_trans = mesh_skeleton->bones[b].translation;
-                float *bone_quat = mesh_skeleton->bones[b].quaternion;
-
                 temp->m_pBoneList[b]->boneSpace_translation = osg::Vec3f(bone_space_trans[0], bone_space_trans[1], bone_space_trans[2]);
                 temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(bone_space_quat[0], bone_space_quat[1], bone_space_quat[2], bone_space_quat[3]);
 
-                temp->m_pBoneList[b]->mesh_bone_translation = osg::Vec3f(bone_trans[0], bone_trans[1], bone_trans[2]);
-                temp->m_pBoneList[b]->mesh_bone_quaternion = osg::Quat(bone_quat[0], bone_quat[1], bone_quat[2], bone_quat[3]);
+ 
+                temp->m_pBoneList[b]->bonespace.setRotate(temp->m_pBoneList[b]->boneSpace_quaternion);
+                temp->m_pBoneList[b]->bonespace.setTrans(temp->m_pBoneList[b]->boneSpace_translation);
 
 				break;
 			}

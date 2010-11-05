@@ -424,78 +424,34 @@ void AnimationService::UpdateMesh()
                 Vec3d normal(mesh->GetRootVertNormals()[vertice->vert_id]._v[0], 
                     mesh->GetRootVertNormals()[vertice->vert_id]._v[1], mesh->GetRootVertNormals()[vertice->vert_id]._v[2]);
         
-                /*
-
-                public void recalculate(Vector3f parentAbsoluteTranslation, Quat4f parentAbsoluteRotation)
-                {
-                    translationAbsolute_ = Mathematics.rotate(translation_, parentAbsoluteRotation); 
-                    translationAbsolute_ = Mathematics.add(translationAbsolute_, parentAbsoluteTranslation); 
-                    rotationAbsolute_ = Mathematics.mul(rotation_, parentAbsoluteRotation); 
-
-                    Matrix4f bonespace = new Matrix4f(rotationBonespace_, translationBonespace_, 1.0f); 
-                    Matrix4f absolute = new Matrix4f(rotationAbsolute_, translationAbsolute_, 1.0f); 
-
-
-                    Vector3f T = Mathematics.rotate(translationBonespace_, rotationAbsolute_); 
-                    T = Mathematics.add(translationAbsolute_, T); 
-
-                    boneTransformation_.mul(absolute, bonespace);
-                    boneTransformation_.m03 = T.x;  
-                    boneTransformation_.m13 = T.y;  
-                    boneTransformation_.m23 = T.z;  
-
-                    //boneTransformation_.transpose(); 
-                    //boneTransformation_.invert();
-
-                    if(skeleton_ != null)
-                    {
-                        int childCount = childrenIds_.size();
-                        for(int i=0; i<childCount; ++i)
-                        {
-                            skeleton_.getBone(childrenIds_.get(i)).recalculate(translationAbsolute_, rotationAbsolute_); 
-                        }
-                    }
-                } 
-
-                */
 
                 // for every affecting bone
                 for (int b = 0; b < vertice->n; b++)
                 {
                     int boneID = vertice->bones[b].boneID;
 
-                    if(boneID >= m_pActualBones.size())
-                        boneID = m_pActualBones.size() - 1;
+//                     if(boneID >= m_pActualBones.size())
+//                         boneID = m_pActualBones.size() - 1;
+// 
+// 					/*dupa[boneID] = boneID;*/
+//                     if(m_pModel->GetSkeleton()->m_pBoneList[boneID]->child.size())
+//                     {
+//                        // boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
+//                     }
 
-					/*dupa[boneID] = boneID;*/
-                    if(m_pModel->GetSkeleton()->m_pBoneList[boneID]->child.size())
-                    {
-                       // boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
-                    }
+                    osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
+                    T = m_pActualBones[boneID]->matrix->getTrans() + T;
 
-                    osg::Vec3d initialBonePosition = m_pActualBones[boneID]->initialPosition;
-					osg::Vec3d pos = osg::Vec3d(m_pActualBones[boneID]->positionx, m_pActualBones[boneID]->positiony, m_pActualBones[boneID]->positionz);
+                    osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
+         //           boneTransformation.setTrans(T);
 
-					// cross product
-					Vec3d	cross	 = m_pActualBones[boneID]->initialPosition ^ pos;
-					// cos of angle between old and new bone
-					double  cosangle = (m_pActualBones[boneID]->initialPosition * pos) / (m_pActualBones[boneID]->initialPosition.length() * pos.length());
-					// angle between old and new bone
-					double	angle    = acos(cosangle);	// acos of dot product div by lenths
+                    osg::Vec4d zmienna(actPos,1.0);
 
-					// construct bone rotation...
-					osg::Quat rotation	= Quat(angle, cross);
-					// ...transformation
-					osg::Vec3d translation = pos - m_pActualBones[boneID]->initialPosition;
+                    osg::Vec4d temp = boneTransformation.preMult(zmienna); 
+                    _tempVectors[b][POSITION] = osg::Vec3d(temp.x(), temp.y(),temp.z());   /*+ m_pActualBones[boneID]->matrix->getTrans()*/ //Mathematics.add(destonationVertex, Mathematics.scale(temp, weight)); 
 
-
-					_tempVectors[b][POSITION] =	rotation.inverse()
-						* (actPos - pos									
-						+ translation)									
-						+ pos;
-
-					_tempVectors[b][NORMALS]  = rotation * normal;
-
+                    osg::Vec3d temp2 = osg::Matrixd::transform3x3(boneTransformation, normal);
+                    _tempVectors[b][NORMALS] = temp2; //Mathematics.add(destonationNormal, Mathematics.scale(temp, weight)); 
                 }
 
 

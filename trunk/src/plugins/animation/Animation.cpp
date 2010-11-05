@@ -264,7 +264,7 @@ void Animation::calculateChildMatrix(Bone *bone)
 
     // L = CinvMCB - wzór na animacjie AMC file- jednakze osg ma macierz transponowane !!!!
     // konieczna jest zmian mnozenia, le¿ nie mo¿na zamienic stron mno¿enia z macierz¹ M (C i Cinv) !!!!
-    tmp = M* C;
+    tmp = M * C;
     tmp2 = Cinv * tmp;
     tmp = B * tmp2;
     *bone->matrix = tmp * (*bone->parent->matrix);

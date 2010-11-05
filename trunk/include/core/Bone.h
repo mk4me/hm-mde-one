@@ -53,8 +53,10 @@ struct Bone
     osg::Vec3f boneSpace_translation;
     osg::Quat boneSpace_quaternion;
 
-    osg::Vec3f mesh_bone_translation;
-    osg::Quat mesh_bone_quaternion;
+    // Bonespace
+
+    osg::Matrixd bonespace;
+    osg::Matrixd apsolute;
 };
 
 #endif
