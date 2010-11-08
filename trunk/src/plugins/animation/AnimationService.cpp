@@ -430,27 +430,19 @@ void AnimationService::UpdateMesh()
                 {
                     int boneID = vertice->bones[b].boneID;
 
-//                     if(boneID >= m_pActualBones.size())
-//                         boneID = m_pActualBones.size() - 1;
-// 
-// 					/*dupa[boneID] = boneID;*/
-//                     if(m_pModel->GetSkeleton()->m_pBoneList[boneID]->child.size())
-//                     {
-//                        // boneID++;  // rotacje bierzemy z dziecka. Z konca koœci która jest pocz¹tkiem nastêpnej.
-//                     }
-
-                    osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
-                    T = m_pActualBones[boneID]->matrix->getTrans() + T;
-
                     osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
-         //           boneTransformation.setTrans(T);
 
-                    osg::Vec4d zmienna(actPos,1.0);
+                   //  osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
+                   //  T = m_pActualBones[boneID]->matrix->getTrans() + T;
+                   // boneTransformation.setTrans(T);
 
-                    osg::Vec4d temp = boneTransformation.preMult(zmienna); 
-                    _tempVectors[b][POSITION] = osg::Vec3d(temp.x(), temp.y(),temp.z());   /*+ m_pActualBones[boneID]->matrix->getTrans()*/ //Mathematics.add(destonationVertex, Mathematics.scale(temp, weight)); 
+                   // osg::Vec4d zmienna(actPos,1.0);
 
-                    osg::Vec3d temp2 = osg::Matrixd::transform3x3(boneTransformation, normal);
+                    //boneTransformation.postMultScale(osg::Vec3d(0.2,0.2,0.2));
+                    osg::Vec3d temp = actPos * boneTransformation; 
+                    _tempVectors[b][POSITION] = temp;   /*+ m_pActualBones[boneID]->matrix->getTrans()*/ //Mathematics.add(destonationVertex, Mathematics.scale(temp, weight)); 
+
+                    osg::Vec3d temp2 = normal * boneTransformation;
                     _tempVectors[b][NORMALS] = temp2; //Mathematics.add(destonationNormal, Mathematics.scale(temp, weight)); 
                 }
 
