@@ -10,9 +10,13 @@ class ASFAMCParser;
 class Model;
 class SkeletonNode;
 class DataManager;
+class Skeleton;
+
 struct SSkeletonAnimation;
 struct SFModel;
 struct SSkeleton;
+
+struct Bone;
 
 class FileReader2Motion
 {
@@ -21,6 +25,8 @@ public:
 	static bool LoadMesh(std::string address, Model* model);
     static bool LoadAnimation(SFModel* fmodel, Model* model);
     static bool LoadAnimation(ASFAMCParser* acclaimObject, Model* model);
+
+    static bool LoadAnimation_ver2(std::string address, Model* model);
 
 private:
     static void ReadFrmDAEFile(const std::string& file, Model* model);
@@ -38,6 +44,10 @@ private:
     static bool LoadSkeleton(Model* model);
 
 	static bool Mapping(Model *model, SSkeleton *mesh_skeleton);
+    static bool Mapping_secVer( Model *model, SSkeleton *mesh_skeleton);
+
+    static void createHierarchy(Skeleton* temp);
+    static void calculateMatrixAndData(Bone *bone);
 };
 
 #endif //FILE_READER_2_MOTION_H

@@ -2,6 +2,8 @@
 #define FRAME_H
 
 #include <vector>
+#include <osg/Vec3f>
+#include <osg/Quat>
 
 // struktura ramkai czyli animacji. s³u¿a do przchowywania informacji zawarych w AMC file
 struct Frame
@@ -10,6 +12,9 @@ struct Frame
     float m_time;
     float rotx, roty, rotz;
     float translationx, translationy, translationz;
+
+    osg::Quat rotation;
+    osg::Vec3f translation;
 };
 
 // struktura zawieraj¹ca liste ramek - animacji z AMC file

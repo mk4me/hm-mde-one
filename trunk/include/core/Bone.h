@@ -5,6 +5,8 @@
 #include <vector>
 #include <osg/Matrixd>
 
+#include <string>
+
 // This holds the names of a joint's children
 typedef std::vector<char*> childVector;
 
@@ -15,7 +17,9 @@ struct Bone
     ~Bone() { delete matrix; }
 	int idx;					// Bone inde
 
-	char *name;
+    int parent_id;
+
+    char *name;
     Bone *parent;		// Pointer to the sibling (branch bone) in the hierarchy tree 
 	std::vector<Bone *> child;			// Pointer to the child (outboard bone) in the hierarchy tree 
 	std::vector<Frame*> frame;			// Animacja TODO: zrobiæ pointera na jak¹s liste przechowuj¹c¹ te ramki - dzieki temu istnieje szybka podmiana animacji
@@ -53,10 +57,15 @@ struct Bone
     osg::Vec3f boneSpace_translation;
     osg::Quat boneSpace_quaternion;
 
+    osg::Vec3f trans;
+    osg::Quat rot;
+
     // Bonespace
 
     osg::Matrixd bonespace;
     osg::Matrixd apsolute;
+
+    std::vector<int> childBoneId;
 };
 
 #endif

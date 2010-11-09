@@ -74,15 +74,18 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 
         for(int i = 0; i < dataManager->GetAnimationFilePathCount(); i++)
         {
-            if(object->ReadAMCFile(dataManager->GetAnimationFilePath(i)))
-                LoadAnimation(object, dynamic_cast<Model*>(dataManager->GetModel()));
+            //if(object->ReadAMCFile(dataManager->GetAnimationFilePath(i)))
+            //    LoadAnimation(dataManager->GetAnimationFilePath(i), dynamic_cast<Model*>(dataManager->GetModel()));
         }
     }
 
     if(dataManager->GetMeshFilePathCount() > 0)
     {
-//         LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-//         dataManager->GetModel()->InicializeMesh();
+         LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
+         dataManager->GetModel()->InicializeMesh();
+
+         if(object->ReadAMCFile(dataManager->GetAnimationFilePath(0)))
+             LoadAnimation_ver2(dataManager->GetAnimationFilePath(0), dynamic_cast<Model*>(dataManager->GetModel()));
     }
 
     //wstring fmodel(file.begin(), file.end());
@@ -410,7 +413,7 @@ bool FileReader2Motion::LoadMesh(std::string address, Model* model)
     SSkeleton* skeleton = new SSkeleton;
 	m_pFileReader->LoadMesh(model, skeleton);
 
-	Mapping(model, skeleton);
+	Mapping_secVer(model, skeleton);
 
     return true;
 }
@@ -799,6 +802,11 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 			{
 				temp->m_pBoneList[b] = model_skeleton->m_pBoneList[i];
 
+                for(int c = 0; c < mesh_skeleton->bones[b].n; c++)
+                {
+                    temp->m_pBoneList[b]->childBoneId.push_back(mesh_skeleton->bones[b].child_bone_id[c]);
+                }
+
                 float *bone_space_trans = mesh_skeleton->bones[b].bone_space_trans;
                 float *bone_space_quat = mesh_skeleton->bones[b].bone_space_quate;
 
@@ -814,10 +822,189 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 		}
 	}
 
+    //proste uzupe³nienie.
+    int sizeTemp = mesh_skeleton->bones_count;
+    bool isInTemp = false;
+
+    for(int b = 0; b < model_skeleton->m_pBoneList.size(); b++)
+    {
+        isInTemp = false;
+
+        for(int t = 0; t < temp->m_pBoneList.size(); t++)
+        {
+            if(temp->m_pBoneList[t] == model_skeleton->m_pBoneList[b])
+            {
+                isInTemp = true;
+                break;
+            }
+        }
+
+        if(!isInTemp)
+        {
+            temp->m_pBoneList[sizeTemp] = model_skeleton->m_pBoneList[b];
+            sizeTemp++;
+        }
+    }
+
+
 	temp->m_pRootBone = temp->m_pBoneList[0];
 
 	model_skeleton = temp;
 	model->SetSkeleton(model_skeleton);
 
 	return true;
+}
+
+
+
+bool FileReader2Motion::Mapping_secVer( Model *model, SSkeleton *mesh_skeleton )
+{
+    Skeleton* model_skeleton = model->GetSkeleton();
+    Skeleton* temp = new Skeleton();
+
+    temp->m_pBoneList.resize(mesh_skeleton->bones_count);
+
+    for(int b = 0; b < mesh_skeleton->bones_count; b++)
+    {
+        std::string nazwa = mesh_skeleton->bones[b].name;
+        Bone* bone = new Bone();
+        temp->m_pBoneList[b] = bone;
+
+        temp->m_pBoneList[b]->name = strdup( nazwa.c_str());
+        temp->m_pBoneList[b]->idx = b;
+
+        temp->m_pBoneList[b]->rot = osg::Quat(mesh_skeleton->bones[b].quaternion[0], mesh_skeleton->bones[b].quaternion[1], mesh_skeleton->bones[b].quaternion[2], mesh_skeleton->bones[b].quaternion[3]);
+        temp->m_pBoneList[b]->trans = osg::Vec3f(mesh_skeleton->bones[b].translation[0], mesh_skeleton->bones[b].translation[1], mesh_skeleton->bones[b].translation[2]);
+
+        temp->m_pBoneList[b]->matrix->setRotate(osg::Quat(mesh_skeleton->bones[b].quaternion[0], mesh_skeleton->bones[b].quaternion[1], mesh_skeleton->bones[b].quaternion[2], mesh_skeleton->bones[b].quaternion[3]));
+        temp->m_pBoneList[b]->matrix->setTrans(osg::Vec3f(mesh_skeleton->bones[b].translation[0], mesh_skeleton->bones[b].translation[1], mesh_skeleton->bones[b].translation[2]));
+
+        for(int c = 0; c < mesh_skeleton->bones[b].n; c++)
+        {
+            temp->m_pBoneList[b]->childBoneId.push_back(mesh_skeleton->bones[b].child_bone_id[c]);
+        }
+
+        temp->m_pBoneList[b]->parent_id = mesh_skeleton->bones[b].parent_id;
+
+        float *bone_space_trans = mesh_skeleton->bones[b].bone_space_trans;
+        float *bone_space_quat = mesh_skeleton->bones[b].bone_space_quate;
+
+        temp->m_pBoneList[b]->boneSpace_translation = osg::Vec3f(bone_space_trans[0], bone_space_trans[1], bone_space_trans[2]);
+        temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(bone_space_quat[0], bone_space_quat[1], bone_space_quat[2], bone_space_quat[3]);
+
+        temp->m_pBoneList[b]->bonespace.setRotate(temp->m_pBoneList[b]->boneSpace_quaternion);
+        temp->m_pBoneList[b]->bonespace.setTrans(temp->m_pBoneList[b]->boneSpace_translation);
+    }
+    
+    temp->m_pRootBone = temp->m_pBoneList[0];
+
+    createHierarchy(temp);
+
+    osg::Vec3d trans = temp->m_pRootBone->matrix->getTrans();
+
+    temp->m_pRootBone->positionx = trans.x();
+    temp->m_pRootBone->positiony = trans.y();
+    temp->m_pRootBone->positionz = trans.z();
+
+
+    for(int i =0; i < temp->m_pRootBone->child.size(); i++)
+        calculateMatrixAndData(temp->m_pRootBone->child[i]);
+
+    model_skeleton = temp;
+
+    model->SetSkeleton(model_skeleton);
+
+    return true;
+}
+
+void FileReader2Motion::createHierarchy( Skeleton* temp )
+{
+    for(int b = 0; b< temp->m_pBoneList.size(); b++)
+    {
+        Bone* bone = temp->m_pBoneList[b];
+
+        if(bone->parent_id != -1)
+        {
+            bone->parent = temp->m_pBoneList[bone->parent_id];
+        }
+
+        for(int i = 0; i < bone->childBoneId.size(); i++)
+        {
+            bone->child.push_back(temp->m_pBoneList[bone->childBoneId[i]]);
+        }
+    }
+
+}
+
+void FileReader2Motion::calculateMatrixAndData( Bone *bone)
+{
+    *bone->matrix =  (*bone->matrix) * (*bone->parent->matrix);
+
+    osg::Vec3d trans = bone->matrix->getTrans();
+
+    bone->positionx = trans.x();
+    bone->positiony = trans.y();
+    bone->positionz = trans.z();
+
+
+    int childrenCount = bone->child.size();
+    for(int i = 0; i<childrenCount; i++)
+    {
+        calculateMatrixAndData(bone->child[i]);
+    }
+}
+
+bool FileReader2Motion::LoadAnimation_ver2(std::string address, Model* model)
+{
+    SSkeletonAnimation* animation = new SSkeletonAnimation();
+    if (!LoadSkeletalAnimationFromFile(&std::wstring(address.begin(), address.end()), animation))
+    {
+        delete animation;
+        return false;
+    }
+
+
+
+    SkeletonAnimationList *skeletonAnimationList = model->GetAnimation();
+    SkeletonAnimation *skeletonAnimation = new SkeletonAnimation();
+
+    Skeleton* skeleton = model->GetSkeleton();
+
+    for(int i = 0; i < animation->bones_count; i++)
+    {
+        std::vector<Frame*> frames;
+
+        // for every frame
+        double animLength = 0.0;
+        for (int f = 0; f < animation->bones[i].n; ++f)
+        {
+            Frame* frame =new Frame();
+            frame->m_time = (double)animation->bones[i].frames[f].time;
+
+            frame->rotation = osg::Quat(animation->bones[i].frames[f].quat[0], animation->bones[i].frames[f].quat[1], animation->bones[i].frames[f].quat[2], animation->bones[i].frames[f].quat[3]);
+            frame->translation = osg::Vec3(animation->bones[i].frames[f].trans[0], animation->bones[i].frames[f].trans[1], animation->bones[i].frames[f].trans[2]);
+
+            frames.push_back(frame);
+        }
+
+        BoneAnimation *boneAnmation = new BoneAnimation();
+        boneAnmation->m_frames = frames;
+        boneAnmation->idx = animation->bones[i].bone_id;
+
+        skeletonAnimation->m_boneAnimationList.push_back(boneAnmation);
+
+        for(int b = 0; b <animation->bones_count; b++)
+        {
+            if(animation->bones[i].bone_id == skeleton->m_pBoneList[b]->idx)
+            {
+                skeleton->m_pBoneList[b]->frame = boneAnmation->m_frames;
+            }
+        }
+
+    }
+
+    skeletonAnimationList->m_SkeletonAnimationList.push_back(skeletonAnimation);
+
+
+    return true;
 }

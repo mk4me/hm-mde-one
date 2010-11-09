@@ -10,7 +10,7 @@ using namespace std;
 #endif
 
 // #define SCALE 1
-#define TIMERMULTIPLAY 0.009
+#define TIMERMULTIPLAY 0.09
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
 
 //--------------------------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ bool Animation::Stop()
     FirstFrame();
 
     // update model
-    UpdateModel();
+    UpdateModel_ver2();
     _state = Animation::STOPPED;
 
     m_pAnimationService->NotifyStop();
@@ -212,7 +212,7 @@ double Animation::SetPogress(double t)
     t = (t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
     _actTime = _length * t;
     // update Model
-    UpdateModel();
+    UpdateModel_ver2();
     _state = actState;
     return _actTime;
 }
@@ -286,6 +286,108 @@ void Animation::calculateChildMatrix(Bone *bone)
     for(int i = 0; i<childrenCount; i++)
     {
         calculateChildMatrix(bone->child[i]);
+    }
+}
+
+
+
+void Animation::calculateChildMatrix_ver2( Bone* bone )
+{
+    // update skeleton
+    // for every bone
+
+    // OBLICZANIE ROOTA.
+
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
+    int index = _actTime / TIMERMULTIPLAY;
+
+    if(index > m_pFrameCount - 1)
+    {
+        _state = Animation::STOPPED;
+        index = m_pFrameCount -1;
+    }
+
+    osg::Matrixd temp;
+
+    if(bone->frame.size() > index)
+    {
+        temp.setRotate(bone->frame[index]->rotation);
+        temp.setTrans(bone->frame[index]->translation);
+    }
+    else
+    {
+        temp.setRotate(bone->rot);
+        temp.setTrans(bone->trans);
+    }
+
+    *bone->matrix = temp;
+
+
+    *bone->matrix =  (*bone->matrix) * (*bone->parent->matrix);
+
+    osg::Vec3d trans = bone->matrix->getTrans();
+
+    bone->positionx = trans.x();
+    bone->positiony = trans.y();
+    bone->positionz = trans.z();
+
+
+    if(!bone->isInitialPosition)
+    {
+        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
+        bone->isInitialPosition = true;
+    }
+
+
+    int childrenCount = bone->child.size();
+    for(int i = 0; i<childrenCount; i++)
+    {
+        calculateChildMatrix_ver2(bone->child[i]);
+    }
+}
+
+void Animation::UpdateModel_ver2()
+{
+    // update skeleton
+    // for every bone
+
+    // OBLICZANIE ROOTA.
+
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
+    int index = _actTime / TIMERMULTIPLAY;
+
+    if(index > m_pFrameCount - 1)
+    {
+        _state = Animation::STOPPED;
+        index = m_pFrameCount -1;
+    }
+
+    Bone* bone = m_pSkeleton->m_pRootBone;
+
+    osg::Matrixd temp;
+
+    temp.setRotate(bone->frame[index]->rotation);
+    temp.setTrans(bone->frame[index]->translation);
+
+
+    *bone->matrix = temp;
+
+    osg::Vec3d trans = bone->matrix->getTrans();
+
+    bone->positionx = trans.x();
+    bone->positiony = trans.y();
+    bone->positionz = trans.z();
+
+    if(!bone->isInitialPosition)
+    {
+        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
+        bone->isInitialPosition = true;
+    }
+
+    int childrenCount = bone->child.size();
+    for(int i = 0; i<childrenCount; i++)
+    {
+        calculateChildMatrix_ver2(bone->child[i]);
     }
 }
 
@@ -386,7 +488,7 @@ void Animation::Update(double dt)
     _actTime = dt;
 
     // update model
-    UpdateModel();
+    UpdateModel_ver2();
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -223,6 +223,7 @@ void RenderService::RenderBone(Model* model)
         return;
 
 	Bone* bone = model->GetSkeleton()->m_pRootBone;
+
 	int childcount = bone->child.size();
 
 	for (int i = 0; i<childcount; i++)

@@ -126,6 +126,7 @@ private:
     void RecalculateChanges();
     void UpdateSkeleton();
     void UpdateMesh();
+    void UpdateMesh_testingVer();
     void Clear();
 
     std::vector<std::vector<ISimpleOneArgFunctor<double>*>::iterator> m_functionsToRemove; // functions to remove from caller

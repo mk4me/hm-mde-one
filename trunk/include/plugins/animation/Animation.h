@@ -62,10 +62,15 @@ private:
     // update model - updates only mesh etc taking skeleton
     // into consideration - called by update
     void UpdateModel();
+
+    void UpdateModel_ver2();
+
     // set transformations from frame 0
     void FirstFrame();
 
 	void calculateChildMatrix(Bone* bone);
+
+    void calculateChildMatrix_ver2(Bone* bone);
 
 private: 
 
