@@ -33,6 +33,7 @@ public:
 	int getRNumber();
 	float getXMin();
 	float getYMin();
+	int getFPS();
 private:
 	int rNumber;
 	float yScale,xScale;
@@ -46,5 +47,6 @@ private:
 	void normalize();
 	void setRNumber(std::string c3dFile);
 	void exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd);
+	int FPS;
 };
 #endif

@@ -102,6 +102,7 @@ void ChartData::exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd)
 	ChartData::rNumber=c3dd->getData()->getNumberOfFrames()*c3dd->getHeader()->getNumberOfAnalogSamplesPerFrame();
 	ChartData::x=new float[rNumber];
 	ChartData::y=new float[rNumber];
+	FPS=c3dd->getHeader()->getNumberOfAnalogSamplesPerFrame()*c3dd->getHeader()->getFrameRate();
 	for(int i=0; i < c3dd->getData()->getNumberOfFrames(); i++) // every frame
 	{
 
@@ -121,4 +122,7 @@ void ChartData::exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd)
 
 	}
 
+}
+int ChartData::getFPS(){
+ return FPS;
 }

@@ -24,11 +24,15 @@ private:
 
     //!
     std::string name;
-
-
+	double targetTime;
+    double length;
 public:
     ChartService();
     virtual ~ChartService();
+	void setTargetTime(double time);
+	double getTargetTime();
+    double getLength() const;
+    void setLength(double length);
 
 // IService
 public:

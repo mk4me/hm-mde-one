@@ -1,27 +1,27 @@
 #include "Pointer.h"
-
-
+#include <plugins/timeline/ITimeline.h>
+#include <plugins/timeline/Stream.h>
+#define TIMERMULTIPLAY 0.0055
 
 
 
 Pointer::Pointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data){
 	this->startPoint=startPoint;
 	this->endPoint=endPoint;
-	osg::ref_ptr<osgText::Text> text=createLabel(osg::Vec3(startPoint.x(),endPoint.y()+20,0),10	,"");
+	this->data=data;
+	
+	text=createLabel(osg::Vec3(startPoint.x(),endPoint.y()+20,0),10	,"");
 	text->setDataVariance(osg::Object::DYNAMIC);
 	osg::Geode* geode = new osg::Geode();
 	osg::StateSet* stateset = geode->getOrCreateStateSet();
 	stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
 	geode->addDrawable( text );
 
-	time=data->getRNumber()/100;
+	//time=data->getRNumber()/100;
 
-	osg::ref_ptr<osg::MatrixTransform> trans = new osg::MatrixTransform(	);
+	trans = new osg::MatrixTransform(	);
 	trans->setName("AnimatedNode");
 	trans->setDataVariance(osg::Object::DYNAMIC);
-	osgAnimation::UpdateMatrixTransform* updatecb = new osgAnimation::UpdateMatrixTransform("AnimatedCallback");
-	updatecb->getStackedTransforms().push_back(new osgAnimation::StackedTranslateElement("position"));
-	trans->setUpdateCallback(updatecb);
 	trans->setMatrix(osg::Matrix::identity());
 	//trans->addUpdateCallback(new PointerUpdateCallback(text,data,endPoint.x()-startPoint.x()));
 	pointer=createPointer();
@@ -84,4 +84,21 @@ osgText::Text* Pointer::createLabel(const osg::Vec3& pos, float size, const std:
 
 
 	return text;    
+}
+
+std::string float2str(float i)
+{
+	std::stringstream ss;
+	std::string temp;
+	ss << i;
+	ss >> temp;
+	return temp;
+}
+void Pointer::update(double targetTime){
+	
+	int frame=targetTime*data->getFPS();
+	if(frame<data->getRNumber()-1){
+	trans->setMatrix(osg::Matrix::translate(data->getNormalizedXValue(frame) * (endPoint.x()-startPoint.x()),0.0f,0.0f));
+	text->setText(float2str(data->getValue(frame)-data->getYMin()));
+	}
 }

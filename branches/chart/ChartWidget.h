@@ -35,17 +35,19 @@ private:
 	void createEMGChanels();
 	void createGRFChanels();
 	void createChart(QOSGViewer* viewer,int chartIndex);
-	
+	QWidget* actualWidget;
+
 public:
     //! 
     ChartWidget(ChartService* service);
     //! 
     virtual ~ChartWidget();
 	void createLargeChart(int chartIndex);
+	ChartViewer* getViewer();
 public slots:
     //! \param 
    void comboBoxChanged(int index);
-
+   
 };
 
 #endif  // __HEADER_GUARD__CHARTWIDGET_H__

@@ -8,14 +8,17 @@ LineChart::LineChart(ChartData* data,ChartDecoration* chartDecoration){
 		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*chartDecoration->getXEnd()+chartDecoration->getStartPoint().x(),data->getNormalizedYValue(i)*chartDecoration->getYEnd()+chartDecoration->getStartPoint().y(),0));
 	}
 	
-	Chart::drawChart(chartVertices);
+	Chart::drawChart(chartVertices); 
 	chartDecoration->setScaleX(data->getScaleX());
 	chartDecoration->setScaleY(data->getScaleY());
-	Pointer* pointer=new Pointer(chartDecoration->getStartPoint(),chartDecoration->getEndPoint(),data);
+	pointer=new Pointer(chartDecoration->getStartPoint(),chartDecoration->getEndPoint(),data);
 	this->addChild(pointer);
 	
 }
 void LineChart::addCoord(osg::Vec3 coord){
 LineChart::chartVertices->push_back(osg::Vec3(coord));
 
+}
+Pointer* LineChart::getPointer(){
+return pointer;
 }

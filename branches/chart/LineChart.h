@@ -18,13 +18,14 @@ purpose:  Klasa ta sluzy do tworzenia wykresu liniowego
 class LineChart : public Chart{
 private:
 	osg::Vec3Array* chartVertices;
+	Pointer* pointer;
 public:
 	//konstruktor wykresu
 	LineChart(ChartData* data,ChartDecoration* chartDecoration);
 
 	//! Funkcja dodajaca kolejny wierzcholek
 	void addCoord(osg::Vec3);
-
+	Pointer* getPointer();
 };
 
 
