@@ -222,7 +222,12 @@ void Model::DrawModelBone()
 
 void Model::DrawBone( Bone* bone, osg::Geode* geode)
 {
-	geode->addDrawable(DrawLine(&osg::Vec3f((bone->parent)->positionx, (bone->parent)->positiony, (bone->parent)->positionz), &osg::Vec3f(bone->positionx,bone->positiony,bone->positionz), false));
+    bool istrue = false;
+
+    if(!strcmp(bone->name, "LeftHand"))
+        istrue = true;
+
+	geode->addDrawable(DrawLine(&osg::Vec3f((bone->parent)->positionx, (bone->parent)->positiony, (bone->parent)->positionz), &osg::Vec3f(bone->positionx,bone->positiony,bone->positionz), istrue));
 
 	int childcount = bone->child.size();
 	for (int i = 0; i<childcount; i++)
@@ -296,7 +301,7 @@ void Model::DrawBone( osg::PositionAttitudeTransform* bone, const osg::Vec3d* pa
     boneNodeChild = bone->getPosition(); //osg::Vec3(length, 0.f, 0.f); 
 
     bool isSelected = false;
-    if(bone->getName() == "LeftHand")
+    if(bone->getName() == "RightLeg")
     {
         isSelected = true;
        // brot = -brot;

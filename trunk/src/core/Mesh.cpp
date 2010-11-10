@@ -129,7 +129,7 @@ bool Mesh::Inicialize()
 
     for (int f = 0; f < m_faceCount; f++)
     {
-        osg::DrawElementsUInt* face = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
+        osg::DrawElementsUInt* face = new osg::DrawElementsUInt(osg::PrimitiveSet::POINTS, 0);
         //  face->reserve(3);
         face->push_back(m_pFaces[f].index[0]);
         face->push_back(m_pFaces[f].index[1]);
@@ -286,7 +286,7 @@ void Mesh::Update()
 
     for (int f = 0; f < m_faceCount; f++)
     {
-        osg::DrawElementsUInt* face = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
+        osg::DrawElementsUInt* face = new osg::DrawElementsUInt(osg::PrimitiveSet::POINTS, 0);
         //  face->reserve(3);
         face->push_back(m_pFaces[f].index[0]);
         face->push_back(m_pFaces[f].index[1]);

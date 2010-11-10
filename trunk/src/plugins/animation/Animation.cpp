@@ -10,7 +10,7 @@ using namespace std;
 #endif
 
 // #define SCALE 1
-#define TIMERMULTIPLAY 0.09
+#define TIMERMULTIPLAY 0.009
 #define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
 
 //--------------------------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ bool Animation::Stop()
     FirstFrame();
 
     // update model
-    UpdateModel_ver2();
+    UpdateModel();
     _state = Animation::STOPPED;
 
     m_pAnimationService->NotifyStop();
@@ -212,7 +212,7 @@ double Animation::SetPogress(double t)
     t = (t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
     _actTime = _length * t;
     // update Model
-    UpdateModel_ver2();
+    UpdateModel();
     _state = actState;
     return _actTime;
 }
@@ -264,13 +264,16 @@ void Animation::calculateChildMatrix(Bone *bone)
 
     // L = CinvMCB - wzór na animacjie AMC file- jednakze osg ma macierz transponowane !!!!
     // konieczna jest zmian mnozenia, le¿ nie mo¿na zamienic stron mno¿enia z macierz¹ M (C i Cinv) !!!!
-    tmp = M * C;
+    tmp = M* C;
     tmp2 = Cinv * tmp;
     tmp = B * tmp2;
     *bone->matrix = tmp * (*bone->parent->matrix);
     //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
 
     osg::Vec3d trans = bone->matrix->getTrans();
+
+    if(!strcmp(bone->name, "RightLeg"))
+       bool istrue = true;
 
     bone->positionx = trans.x() * SCALE;
     bone->positiony = trans.y() * SCALE;
@@ -488,7 +491,7 @@ void Animation::Update(double dt)
     _actTime = dt;
 
     // update model
-    UpdateModel_ver2();
+    UpdateModel();
 }
 
 //--------------------------------------------------------------------------------------------------

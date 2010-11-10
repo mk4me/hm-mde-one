@@ -74,8 +74,8 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 
         for(int i = 0; i < dataManager->GetAnimationFilePathCount(); i++)
         {
-            //if(object->ReadAMCFile(dataManager->GetAnimationFilePath(i)))
-            //    LoadAnimation(dataManager->GetAnimationFilePath(i), dynamic_cast<Model*>(dataManager->GetModel()));
+            if(object->ReadAMCFile(dataManager->GetAnimationFilePath(i)))
+                LoadAnimation(object, dynamic_cast<Model*>(dataManager->GetModel()));
         }
     }
 
@@ -84,8 +84,8 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
          LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
          dataManager->GetModel()->InicializeMesh();
 
-         if(object->ReadAMCFile(dataManager->GetAnimationFilePath(0)))
-             LoadAnimation_ver2(dataManager->GetAnimationFilePath(0), dynamic_cast<Model*>(dataManager->GetModel()));
+//          if(object->ReadAMCFile(dataManager->GetAnimationFilePath(0)))
+//              LoadAnimation_ver2(dataManager->GetAnimationFilePath(0), dynamic_cast<Model*>(dataManager->GetModel()));
     }
 
     //wstring fmodel(file.begin(), file.end());
@@ -413,7 +413,7 @@ bool FileReader2Motion::LoadMesh(std::string address, Model* model)
     SSkeleton* skeleton = new SSkeleton;
 	m_pFileReader->LoadMesh(model, skeleton);
 
-	Mapping_secVer(model, skeleton);
+	Mapping(model, skeleton);
 
     return true;
 }
@@ -796,6 +796,8 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 	{
 		std::string nazwa = mesh_skeleton->bones[b].name;
 
+        nazwa = nazwa.substr(nazwa.find_first_of("HOM_") + 4, nazwa.length());
+
 		for(int i = 0; i < model_skeleton->m_pBoneList.size(); i++)
 		{
 			if(nazwa == model_skeleton->m_pBoneList[i]->name)
@@ -807,15 +809,19 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
                     temp->m_pBoneList[b]->childBoneId.push_back(mesh_skeleton->bones[b].child_bone_id[c]);
                 }
 
+                temp->m_pBoneList[b]->rot = osg::Quat(mesh_skeleton->bones[b].quaternion[0], mesh_skeleton->bones[b].quaternion[1], mesh_skeleton->bones[b].quaternion[2], mesh_skeleton->bones[b].quaternion[3]);
+                temp->m_pBoneList[b]->trans = osg::Vec3f(mesh_skeleton->bones[b].translation[0], mesh_skeleton->bones[b].translation[1], mesh_skeleton->bones[b].translation[2]);
+
                 float *bone_space_trans = mesh_skeleton->bones[b].bone_space_trans;
                 float *bone_space_quat = mesh_skeleton->bones[b].bone_space_quate;
 
-                temp->m_pBoneList[b]->boneSpace_translation = osg::Vec3f(bone_space_trans[0], bone_space_trans[1], bone_space_trans[2]);
-                temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(bone_space_quat[0], bone_space_quat[1], bone_space_quat[2], bone_space_quat[3]);
+                temp->m_pBoneList[b]->boneSpace_translation = osg::Vec3f(bone_space_trans[0], bone_space_trans[2], bone_space_trans[1]);
+                temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(-bone_space_quat[0], -bone_space_quat[2], -bone_space_quat[1], bone_space_quat[3]);
 
  
                 temp->m_pBoneList[b]->bonespace.makeRotate(temp->m_pBoneList[b]->boneSpace_quaternion);
                 temp->m_pBoneList[b]->bonespace.postMultTranslate(temp->m_pBoneList[b]->boneSpace_translation);
+
 
 				break;
 			}

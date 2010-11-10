@@ -200,7 +200,7 @@ AsyncResult AnimationService::update(double time, double timeDelta)
 		(*m_pAnimation)(targetTime);
   //      UpdateSkeleton();
   //      RecalculateChanges();
-        UpdateMesh_testingVer();
+        UpdateMesh();
 
 		m_pModel->DrawModelBone();
 
@@ -496,11 +496,11 @@ void AnimationService::UpdateMesh()
 
                 // act position of vertice
                 Vec3d actPos(mesh->GetRootVerts()[vertice->vert_id]._v[0],
-                    mesh->GetRootVerts()[vertice->vert_id]._v[1], mesh->GetRootVerts()[vertice->vert_id]._v[2]);
+                    mesh->GetRootVerts()[vertice->vert_id]._v[2], mesh->GetRootVerts()[vertice->vert_id]._v[1]);
 
                 // normal
                 Vec3d normal(mesh->GetRootVertNormals()[vertice->vert_id]._v[0], 
-                    mesh->GetRootVertNormals()[vertice->vert_id]._v[1], mesh->GetRootVertNormals()[vertice->vert_id]._v[2]);
+                    mesh->GetRootVertNormals()[vertice->vert_id]._v[2], mesh->GetRootVertNormals()[vertice->vert_id]._v[1]);
         
 
                 // for every affecting bone
@@ -508,7 +508,12 @@ void AnimationService::UpdateMesh()
                 {
                     int boneID = vertice->bones[b].boneID;
 
+                  //  if(boneID  == 15)
+                    {
+                       /* boneID--;*/
+                        
                     osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
+
 
                    //  osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
                    //  T = m_pActualBones[boneID]->matrix->getTrans() + T;
@@ -522,6 +527,7 @@ void AnimationService::UpdateMesh()
 
                     osg::Vec3d temp2 = normal * boneTransformation;
                     _tempVectors[b][NORMALS] = temp2; //Mathematics.add(destonationNormal, Mathematics.scale(temp, weight)); 
+                    }
                 }
 
 
