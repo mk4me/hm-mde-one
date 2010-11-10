@@ -97,8 +97,8 @@ std::string float2str(float i)
 void Pointer::update(double targetTime){
 	
 	int frame=targetTime*data->getFPS();
-	if(frame<data->getRNumber()-1){
+	//if(frame<data->getRNumber()-1){
 	trans->setMatrix(osg::Matrix::translate(data->getNormalizedXValue(frame) * (endPoint.x()-startPoint.x()),0.0f,0.0f));
 	text->setText(float2str(data->getValue(frame)-data->getYMin()));
-	}
+	//}
 }

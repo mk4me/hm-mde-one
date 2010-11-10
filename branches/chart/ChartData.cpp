@@ -74,7 +74,7 @@ float ChartData::getNormalizedXValue(int frame){
 }
 float ChartData::getScaleX(){return ChartData::xScale;}
 float ChartData::getScaleY(){return ChartData::yScale;}
-int ChartData::getRNumber(){return ChartData::rNumber;}
+int ChartData::getRNumber(){return ChartData::rNumber-1;}
 void ChartData::setRNumber(std::string c3dFile){
 	std::ifstream plik;
 	plik.open(c3dFile.c_str(),std::ios::in);
