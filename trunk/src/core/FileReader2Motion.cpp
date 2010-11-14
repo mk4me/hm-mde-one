@@ -288,7 +288,46 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
     }
 
     model->SetSkeleton(skeleton);
-    LoadSkeleton(model);
+    // LoadSkeleton(model);
+
+	// parse to BVM - joint model
+
+	Bone *bone = skeleton->m_pRootBone;
+
+
+	// get every bone & put them to list/whatever where they are sorted by id
+	struct Obj
+	{
+		static void update(Bone* bone)
+		{
+			int childSize = bone->child.size();
+			for(int i = 0; i < childSize; i++)
+			{
+				Bone* childBone = bone->child[i];
+				
+				update(childBone);
+
+				childBone->dir[0] = bone->dir[0];
+				childBone->dir[1] = bone->dir[1];
+				childBone->dir[2] = bone->dir[2];
+
+				childBone->length = bone->length;
+				childBone->axis_x = bone->axis_x;
+				childBone->axis_y = bone->axis_y;
+				childBone->axis_z = bone->axis_z;
+
+				// update(childBone);
+			}
+		}
+	};
+
+	Obj::update(bone);
+
+
+	LoadSkeleton(model);
+
+
+
 //    LoadAnimation(acclaimObject, model);
 }
 
@@ -785,12 +824,90 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
 }
 
 //--------------------------------------------------------------------------------------------------
+
 bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 {
 	Skeleton* model_skeleton = model->GetSkeleton();
 	Skeleton* temp = new Skeleton();
 
 	temp->m_pBoneList.resize(model_skeleton->m_pBoneList.size());
+
+	for(int b = 0; b < mesh_skeleton->bones_count; b++)
+	{
+		std::string nazwa = mesh_skeleton->bones[b].name;
+
+		nazwa = nazwa.substr(nazwa.find_first_of("HOM_") + 4, nazwa.length());
+
+		for(int i = 0; i < model_skeleton->m_pBoneList.size(); i++)
+		{
+			if(nazwa == model_skeleton->m_pBoneList[i]->name)
+			{
+				temp->m_pBoneList[b] = model_skeleton->m_pBoneList[i];
+
+				for(int c = 0; c < mesh_skeleton->bones[b].n; c++)
+				{
+					temp->m_pBoneList[b]->childBoneId.push_back(mesh_skeleton->bones[b].child_bone_id[c]);
+				}
+
+				temp->m_pBoneList[b]->rot = osg::Quat(mesh_skeleton->bones[b].quaternion[0], mesh_skeleton->bones[b].quaternion[1], mesh_skeleton->bones[b].quaternion[2], mesh_skeleton->bones[b].quaternion[3]);
+				temp->m_pBoneList[b]->trans = osg::Vec3f(mesh_skeleton->bones[b].translation[0], mesh_skeleton->bones[b].translation[1], mesh_skeleton->bones[b].translation[2]);
+
+				float *bone_space_trans = mesh_skeleton->bones[b].bone_space_trans;
+				float *bone_space_quat = mesh_skeleton->bones[b].bone_space_quate;
+
+				temp->m_pBoneList[b]->boneSpace_translation = osg::Vec3f(bone_space_trans[0], bone_space_trans[2], bone_space_trans[1]);
+				temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(-bone_space_quat[0], -bone_space_quat[2], -bone_space_quat[1], bone_space_quat[3]);
+
+
+				temp->m_pBoneList[b]->bonespace.makeRotate(temp->m_pBoneList[b]->boneSpace_quaternion);
+				temp->m_pBoneList[b]->bonespace.postMultTranslate(temp->m_pBoneList[b]->boneSpace_translation);
+
+
+				break;
+			}
+		}
+	}
+
+	//proste uzupe³nienie.
+	int sizeTemp = mesh_skeleton->bones_count;
+	bool isInTemp = false;
+
+	for(int b = 0; b < model_skeleton->m_pBoneList.size(); b++)
+	{
+		isInTemp = false;
+
+		for(int t = 0; t < temp->m_pBoneList.size(); t++)
+		{
+			if(temp->m_pBoneList[t] == model_skeleton->m_pBoneList[b])
+			{
+				isInTemp = true;
+				break;
+			}
+		}
+
+		if(!isInTemp)
+		{
+			temp->m_pBoneList[sizeTemp] = model_skeleton->m_pBoneList[b];
+			sizeTemp++;
+		}
+	}
+
+
+	temp->m_pRootBone = temp->m_pBoneList[0];
+
+	model_skeleton = temp;
+	model->SetSkeleton(model_skeleton);
+
+	return true;
+}
+
+/*
+bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
+{
+	Skeleton* model_skeleton = model->GetSkeleton();
+	Skeleton* temp = new Skeleton();
+
+	temp->m_pBoneList.resize(mesh_skeleton->bones_count);
 
 	for(int b = 0; b < mesh_skeleton->bones_count; b++)
 	{
@@ -847,10 +964,49 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 
         if(!isInTemp)
         {
-            temp->m_pBoneList[sizeTemp] = model_skeleton->m_pBoneList[b];
+			int childSize = model_skeleton->m_pBoneList[b]->child.size();
+
+			for(int i = 0; i < childSize; i++)
+			{
+				Bone* bone = model_skeleton->m_pBoneList[b]->child[i];
+
+				bone->axis_x += model_skeleton->m_pBoneList[b]->axis_x;
+				bone->axis_y += model_skeleton->m_pBoneList[b]->axis_y;
+				bone->axis_z += model_skeleton->m_pBoneList[b]->axis_z;
+
+				bone->length += model_skeleton->m_pBoneList[b]->length;
+ 
+				bone->dir[0] = model_skeleton->m_pBoneList[b]->dir[0];
+				bone->dir[1] = model_skeleton->m_pBoneList[b]->dir[1];
+				bone->dir[2] = model_skeleton->m_pBoneList[b]->dir[2];
+
+				bone->parent = model_skeleton->m_pBoneList[b]->parent;
+
+				if(!model_skeleton->m_pBoneList[b]->parent->isCleared)
+				{
+					model_skeleton->m_pBoneList[b]->parent->child.clear();
+					model_skeleton->m_pBoneList[b]->parent->isCleared = true;
+				}
+
+ 				for(int c = 0; c < model_skeleton->m_pBoneList[b]->child.size(); c++)
+ 				{
+ 					model_skeleton->m_pBoneList[b]->parent->child.push_back(model_skeleton->m_pBoneList[b]->child[c]);
+ 				}
+
+// 				if(strcmp(*it, childName) == 0)
+// 				{
+// 					children.erase(it);
+// 					break;
+// 				}
+			}
+
+            //temp->m_pBoneList[sizeTemp] = model_skeleton->m_pBoneList[b];
             sizeTemp++;
         }
     }
+
+
+
 
 
 	temp->m_pRootBone = temp->m_pBoneList[0];
@@ -861,7 +1017,7 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 	return true;
 }
 
-
+*/
 
 bool FileReader2Motion::Mapping_secVer( Model *model, SSkeleton *mesh_skeleton )
 {

@@ -507,10 +507,6 @@ void AnimationService::UpdateMesh()
                 for (int b = 0; b < vertice->n; b++)
                 {
                     int boneID = vertice->bones[b].boneID;
-
-                  //  if(boneID  == 15)
-                    {
-                       /* boneID--;*/
                         
                     osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
 
@@ -527,7 +523,6 @@ void AnimationService::UpdateMesh()
 
                     osg::Vec3d temp2 = normal * boneTransformation;
                     _tempVectors[b][NORMALS] = temp2; //Mathematics.add(destonationNormal, Mathematics.scale(temp, weight)); 
-                    }
                 }
 
 

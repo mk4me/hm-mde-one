@@ -119,20 +119,24 @@ void Animation::Play()
         m_pAnimationService->setLength(_length);
         _state = Animation::PLAYING; 
 
-        int boneCount = m_pSkeletonAnimaton->m_boneAnimationList.size();
-        for(int b = 0; b <boneCount; b++)
+        int animatioBoneCount = m_pSkeletonAnimaton->m_boneAnimationList.size();
+		int boneCount = m_pSkeleton->m_pBoneList.size();
+
+        for(int ab = 0; ab <animatioBoneCount; ab++)
         {
-            if(m_pSkeletonAnimaton->m_boneAnimationList[b]->idx == m_pSkeleton->m_pBoneList[b]->idx)
-            {
-                m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[b]->m_frames;
-            }
+			for(int b = 0; b <boneCount; b++)
+			{
+				if(m_pSkeletonAnimaton->m_boneAnimationList[ab]->idx == m_pSkeleton->m_pBoneList[b]->idx)
+				{
+					m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
+				}
+			}
         }
 
         // ilosc kosci = ilosc obiektów frame w dablicy
         m_pFrameCount = m_pSkeleton->m_pRootBone->frame.size();
         _length = m_pSkeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
     }
-
 }
 
 //--------------------------------------------------------------------------------------------------

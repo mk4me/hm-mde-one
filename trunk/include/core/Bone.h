@@ -13,7 +13,7 @@ typedef std::vector<char*> childVector;
 //class Bone
 struct Bone
 {
-    Bone(){ matrix = new osg::Matrixd(); }
+    Bone(){ matrix = new osg::Matrixd(); isCleared = false;}
     ~Bone() { delete matrix; }
 	int idx;					// Bone inde
 
@@ -66,6 +66,7 @@ struct Bone
     osg::Matrixd apsolute;
 
     std::vector<int> childBoneId;
+	bool isCleared;
 };
 
 #endif
