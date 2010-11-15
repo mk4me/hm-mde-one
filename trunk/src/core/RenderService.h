@@ -52,6 +52,7 @@ public:
     {
         return name;
     }
+
     virtual IWidget* getWidget();
 
 private: 

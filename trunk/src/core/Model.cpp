@@ -220,6 +220,7 @@ void Model::DrawModelBone()
 
 }
 
+//--------------------------------------------------------------------------------------------------
 void Model::DrawBone( Bone* bone, osg::Geode* geode)
 {
     bool istrue = false;
@@ -235,106 +236,6 @@ void Model::DrawBone( Bone* bone, osg::Geode* geode)
 		this->DrawBone(bone->child[i], geode);
 	}
 }
-
-//--------------------------------------------------------------------------------------------------
-void Model::DrawBone( osg::PositionAttitudeTransform* bone, const osg::Vec3d* parentPos, const osg::Quat* parentRot, osg::Geode* geode )
-{
-    // TEST £ACZENIE MACIERZY L = CinvMCB
-
-    matrix<double> Rotation(4,4);
-    matrix<double> ParentRotation(4,4);
-    matrix<double> L(4,4);
-
-    osg::Quat rotation = bone->getAttitude();
-    osg::Vec3d position = bone->getPosition();
-
-    Rotation.LoadfromQuaternion(rotation.x(), rotation.y(), rotation.z(), rotation.w());
-    ParentRotation.LoadfromQuaternion((double)parentRot->x(), (double)parentRot->y(), (double)parentRot->z(), (double)parentRot->w());
-
-    bool success;
-    double px = parentPos->x(), py = parentPos->y(), pz = parentPos->z();
-    ParentRotation.SetValue(0,3,px);
-    ParentRotation.SetValue(1,3,py);
-    ParentRotation.SetValue(2,3,pz);
-
-    px = position.x(), py = position.y(), pz = position.z();
-    Rotation.SetValue(0,3,px);
-    Rotation.SetValue(1,3,py);
-    Rotation.SetValue(2,3,pz);
-
-    L.SetToProduct(ParentRotation,Rotation);
-
-    double vx, vy, vz;
-    double qx, qy, qz, qw;
-
-    //bool success;
-    L.GetValue(0,3,vx,success);
-    L.GetValue(1,3,vy,success);
-    L.GetValue(2,3,vz,success);
-
-    L.GetQuaternion(qx,qy,qz,qw);
-
-    osg::Vec3d bpos = Vec3d(vx, vy, vz);
-    osg::Quat  brot(qx,qy,qz,qw);
-
-    // osg::Vec3d bpos = (*parentRot) * bone->getPosition() + *parentPos;
-//     osg::Quat  brot = bone->getAttitude() * (*parentRot);
-
-
-
-
-    float length = (*parentPos - bpos).length();
-    float distanceHightToArm = length/8;
-    float distanceWidthToArm = length/12;
-
-    osg::Vec3d boneNodeParent;
-    osg::Vec3d boneNodeChild;
-    osg::Vec3d boneNodeLeftArm;
-    osg::Vec3d boneNodeRightArm;
-
-    osg::Vec3d boneNodeFrontArm;
-    osg::Vec3d boneNodeBackArm;
-    osg::Vec3d result;
-    osg::Vec3d punkt;
-
-    boneNodeParent = osg::Vec3(0.f, 0.f, 0.f);
-    boneNodeChild = bone->getPosition(); //osg::Vec3(length, 0.f, 0.f); 
-
-    bool isSelected = false;
-    if(bone->getName() == "RightLeg")
-    {
-        isSelected = true;
-       // brot = -brot;
-    }
-   
-   // geode->addDrawable(DrawLine(parentPos, &bpos, isSelected));
-
-//     boneNodeLeftArm = osg::Vec3(distanceHightToArm, -distanceWidthToArm, 0.f);
-//     boneNodeRightArm = osg::Vec3(distanceHightToArm, distanceWidthToArm, 0.f);
-// 
-//     boneNodeFrontArm = osg::Vec3(distanceHightToArm, 0.f, -distanceWidthToArm);
-//     boneNodeBackArm = osg::Vec3(distanceHightToArm, 0.f, distanceWidthToArm);
-// 
-//     boneNodeParent = (*parentRot) * boneNodeParent + *parentPos;
-//     boneNodeChild = (*parentRot) * boneNodeChild + *parentPos;
-// 
-//     boneNodeLeftArm = (*parentRot) * boneNodeLeftArm + *parentPos;
-//     boneNodeRightArm = (*parentRot) * boneNodeRightArm + *parentPos;
-// 
-//     boneNodeFrontArm = (*parentRot) * boneNodeFrontArm + *parentPos;
-//     boneNodeBackArm = (*parentRot) * boneNodeBackArm + *parentPos;
-// 
-// 
-//     geode->addDrawable(DrawTriangle(&boneNodeParent, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm, false));
-//     geode->addDrawable(DrawTriangle(&boneNodeChild, &boneNodeLeftArm, &boneNodeFrontArm, &boneNodeRightArm, &boneNodeBackArm, &boneNodeLeftArm, false));
-
-
-    // recursively draw other bones
-    for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
-        if (dynamic_cast<SkeletonNode*>(bone->getChild(b)))
-            DrawBone((pPat)bone->getChild(b), &bpos, &brot, geode);
-}
-
 
 //--------------------------------------------------------------------------------------------------
 osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, 

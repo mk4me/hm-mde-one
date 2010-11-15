@@ -432,11 +432,6 @@ void AnimationService::UpdateMesh_testingVer()
 
                     osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
 
-                    //  osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
-                    //  T = m_pActualBones[boneID]->matrix->getTrans() + T;
-                    // boneTransformation.setTrans(T);
-
-                    // osg::Vec4d zmienna(actPos,1.0);
 
                     //boneTransformation.postMultScale(osg::Vec3d(0.2,0.2,0.2));
                     osg::Vec3d temp = actPos * boneTransformation; 
@@ -474,7 +469,6 @@ void AnimationService::UpdateMesh_testingVer()
 //--------------------------------------------------------------------------------------------------
 void AnimationService::UpdateMesh()
 {
-
 	//std::map<int, int> dupa;
     std::vector<IMesh*> meshList = m_pModel->GetMeshList();
     int countHandv = 0;
@@ -508,8 +502,10 @@ void AnimationService::UpdateMesh()
                 {
                     int boneID = vertice->bones[b].boneID;
                         
-                    osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
+                    if(m_pActualBones[boneID]->child.size() > 0)
+                        boneID++;
 
+                    osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
 
                    //  osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
                    //  T = m_pActualBones[boneID]->matrix->getTrans() + T;
@@ -572,43 +568,51 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
     return AsyncResult_Complete;
 }
 
+//--------------------------------------------------------------------------------------------------
 IWidget* AnimationService::getWidget()
 {
     return reinterpret_cast<IWidget*>(widget);
 }
 
+//--------------------------------------------------------------------------------------------------
 double AnimationService::getTargetTime() const
 {
     return targetTime;
 }
 
+//--------------------------------------------------------------------------------------------------
 void AnimationService::setTargetTime( double time )
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
     targetTime = time;
 }
 
+//--------------------------------------------------------------------------------------------------
 double AnimationService::getLength() const
 {
     return length;
 }
 
+//--------------------------------------------------------------------------------------------------
 void AnimationService::setLength( double length )
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
     this->length = length;
 }
 
+//--------------------------------------------------------------------------------------------------
 bool AnimationService::getFollowTimeline() const
 {
     return followTimeline;
 }
 
+//--------------------------------------------------------------------------------------------------
 void AnimationService::setFollowTimeline( bool followTimeline )
 {
     this->followTimeline = followTimeline;
 }
 
+//--------------------------------------------------------------------------------------------------
 void AnimationService::setScale( float scale )
 {
 	SCALE = scale;

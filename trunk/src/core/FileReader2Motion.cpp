@@ -52,6 +52,7 @@ void FileReader2Motion::ReadFile(DataManager *dataManager)
 {
     std::string file = dataManager->GetFileName();
     Model *model = dynamic_cast<Model* >(dataManager->GetModel());
+
     //TODO: poprawic wizualnie i zrzuwaæ koñcówke na ma³e litery
     if(file.substr(file.length() - 3, file.length()) == "DAE")
         ReadFrmDAEFile(file, model);
@@ -87,28 +88,6 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 //          if(object->ReadAMCFile(dataManager->GetAnimationFilePath(0)))
 //              LoadAnimation_ver2(dataManager->GetAnimationFilePath(0), dynamic_cast<Model*>(dataManager->GetModel()));
     }
-
-    //wstring fmodel(file.begin(), file.end());
-    // 
-    //SFModel* fmodel_file = new SFModel(fmodel);
-    //if (!fmodel_file->properly_loaded)
-    //    return;
-    // 
-    //fmodel_file->path = fmodel.substr(0, fmodel.find_last_of(L'/'));
-    // 
-    //// path of file containing mesh
-    //wstring model_name = fmodel_file->path + L'/' + fmodel_file->file_name;
-
-    //LoadMesh(&model_name, model);
-    //model->InicializeMesh();
-
-    // TODO : sparsowac w przyszlosci szkielet animacji z tbs do nowej struktury animacji na potrzeby acclaim file
-    //if (!LoadSkeleton(model))
-    //    return;
-
-    // TODO : sparsowac w przyszlosci szkielet animacji z tbs do nowej struktury animacji na potrzeby acclaim file
-    // LoadAnimation(fmodel_file, model);
-    //model->ApplyMaterial(&fmodel_file->material_list, fmodel_file->path);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -291,9 +270,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
     // LoadSkeleton(model);
 
 	// parse to BVM - joint model
-
 	Bone *bone = skeleton->m_pRootBone;
-
 
 	// get every bone & put them to list/whatever where they are sorted by id
 	struct Obj
@@ -323,11 +300,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
 
 	Obj::update(bone);
 
-
 	LoadSkeleton(model);
-
-
-
 //    LoadAnimation(acclaimObject, model);
 }
 
@@ -532,7 +505,13 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
         {
             if(joint->getID()== skeleton->m_pBoneList[b]->idx)
             {
-                skeleton->m_pBoneList[b]->frame = boneAnmation->m_frames;
+                // get every bone & put them to list/whatever where they are sorted by id               
+                int childCount = skeleton->m_pBoneList[b]->child.size();
+
+                for(int c = 0 ; c < childCount; c++)
+                {
+                    skeleton->m_pBoneList[b]->child[c]->frame = boneAnmation->m_frames;
+                }
             }
         }
 
@@ -747,12 +726,6 @@ bool FileReader2Motion::InicializeSkeletalAnimation
         }
 
         // length of entire animation...
-
-        // Moze sie zdazyc tak i z animacja rozpocznie sie od pewnego momentu - wtedy dlugosc poczatkowych wezlow bedzie rowna zera - moze sie rozsypac program. 
-        // TODO:  cos z tym zrobic,  stworzyc odtwarzanie animacji uwzgledaniajac ten przypadek
-        //	if (animLength > 0.0)
-        //	{
-
         animation->setLength(animLength);
 
         for(std::vector<SkeletonNode* >::iterator it = (*bones).begin(); it != (*bones).end(); it++)
@@ -868,7 +841,7 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 		}
 	}
 
-	//proste uzupe³nienie.
+	//proste uzupe³nienie pozosta³ych pól
 	int sizeTemp = mesh_skeleton->bones_count;
 	bool isInTemp = false;
 
@@ -901,124 +874,7 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 	return true;
 }
 
-/*
-bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
-{
-	Skeleton* model_skeleton = model->GetSkeleton();
-	Skeleton* temp = new Skeleton();
-
-	temp->m_pBoneList.resize(mesh_skeleton->bones_count);
-
-	for(int b = 0; b < mesh_skeleton->bones_count; b++)
-	{
-		std::string nazwa = mesh_skeleton->bones[b].name;
-
-        nazwa = nazwa.substr(nazwa.find_first_of("HOM_") + 4, nazwa.length());
-
-		for(int i = 0; i < model_skeleton->m_pBoneList.size(); i++)
-		{
-			if(nazwa == model_skeleton->m_pBoneList[i]->name)
-			{
-				temp->m_pBoneList[b] = model_skeleton->m_pBoneList[i];
-
-                for(int c = 0; c < mesh_skeleton->bones[b].n; c++)
-                {
-                    temp->m_pBoneList[b]->childBoneId.push_back(mesh_skeleton->bones[b].child_bone_id[c]);
-                }
-
-                temp->m_pBoneList[b]->rot = osg::Quat(mesh_skeleton->bones[b].quaternion[0], mesh_skeleton->bones[b].quaternion[1], mesh_skeleton->bones[b].quaternion[2], mesh_skeleton->bones[b].quaternion[3]);
-                temp->m_pBoneList[b]->trans = osg::Vec3f(mesh_skeleton->bones[b].translation[0], mesh_skeleton->bones[b].translation[1], mesh_skeleton->bones[b].translation[2]);
-
-                float *bone_space_trans = mesh_skeleton->bones[b].bone_space_trans;
-                float *bone_space_quat = mesh_skeleton->bones[b].bone_space_quate;
-
-                temp->m_pBoneList[b]->boneSpace_translation = osg::Vec3f(bone_space_trans[0], bone_space_trans[2], bone_space_trans[1]);
-                temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(-bone_space_quat[0], -bone_space_quat[2], -bone_space_quat[1], bone_space_quat[3]);
-
- 
-                temp->m_pBoneList[b]->bonespace.makeRotate(temp->m_pBoneList[b]->boneSpace_quaternion);
-                temp->m_pBoneList[b]->bonespace.postMultTranslate(temp->m_pBoneList[b]->boneSpace_translation);
-
-
-				break;
-			}
-		}
-	}
-
-    //proste uzupe³nienie.
-    int sizeTemp = mesh_skeleton->bones_count;
-    bool isInTemp = false;
-
-    for(int b = 0; b < model_skeleton->m_pBoneList.size(); b++)
-    {
-        isInTemp = false;
-
-        for(int t = 0; t < temp->m_pBoneList.size(); t++)
-        {
-            if(temp->m_pBoneList[t] == model_skeleton->m_pBoneList[b])
-            {
-                isInTemp = true;
-                break;
-            }
-        }
-
-        if(!isInTemp)
-        {
-			int childSize = model_skeleton->m_pBoneList[b]->child.size();
-
-			for(int i = 0; i < childSize; i++)
-			{
-				Bone* bone = model_skeleton->m_pBoneList[b]->child[i];
-
-				bone->axis_x += model_skeleton->m_pBoneList[b]->axis_x;
-				bone->axis_y += model_skeleton->m_pBoneList[b]->axis_y;
-				bone->axis_z += model_skeleton->m_pBoneList[b]->axis_z;
-
-				bone->length += model_skeleton->m_pBoneList[b]->length;
- 
-				bone->dir[0] = model_skeleton->m_pBoneList[b]->dir[0];
-				bone->dir[1] = model_skeleton->m_pBoneList[b]->dir[1];
-				bone->dir[2] = model_skeleton->m_pBoneList[b]->dir[2];
-
-				bone->parent = model_skeleton->m_pBoneList[b]->parent;
-
-				if(!model_skeleton->m_pBoneList[b]->parent->isCleared)
-				{
-					model_skeleton->m_pBoneList[b]->parent->child.clear();
-					model_skeleton->m_pBoneList[b]->parent->isCleared = true;
-				}
-
- 				for(int c = 0; c < model_skeleton->m_pBoneList[b]->child.size(); c++)
- 				{
- 					model_skeleton->m_pBoneList[b]->parent->child.push_back(model_skeleton->m_pBoneList[b]->child[c]);
- 				}
-
-// 				if(strcmp(*it, childName) == 0)
-// 				{
-// 					children.erase(it);
-// 					break;
-// 				}
-			}
-
-            //temp->m_pBoneList[sizeTemp] = model_skeleton->m_pBoneList[b];
-            sizeTemp++;
-        }
-    }
-
-
-
-
-
-	temp->m_pRootBone = temp->m_pBoneList[0];
-
-	model_skeleton = temp;
-	model->SetSkeleton(model_skeleton);
-
-	return true;
-}
-
-*/
-
+//--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::Mapping_secVer( Model *model, SSkeleton *mesh_skeleton )
 {
     Skeleton* model_skeleton = model->GetSkeleton();
@@ -1079,6 +935,7 @@ bool FileReader2Motion::Mapping_secVer( Model *model, SSkeleton *mesh_skeleton )
     return true;
 }
 
+//--------------------------------------------------------------------------------------------------
 void FileReader2Motion::createHierarchy( Skeleton* temp )
 {
     for(int b = 0; b< temp->m_pBoneList.size(); b++)
@@ -1098,6 +955,7 @@ void FileReader2Motion::createHierarchy( Skeleton* temp )
 
 }
 
+//--------------------------------------------------------------------------------------------------
 void FileReader2Motion::calculateMatrixAndData( Bone *bone)
 {
     *bone->matrix =  (*bone->matrix) * (*bone->parent->matrix);
@@ -1116,6 +974,7 @@ void FileReader2Motion::calculateMatrixAndData( Bone *bone)
     }
 }
 
+//--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadAnimation_ver2(std::string address, Model* model)
 {
     SSkeletonAnimation* animation = new SSkeletonAnimation();
@@ -1124,7 +983,6 @@ bool FileReader2Motion::LoadAnimation_ver2(std::string address, Model* model)
         delete animation;
         return false;
     }
-
 
 
     SkeletonAnimationList *skeletonAnimationList = model->GetAnimation();
@@ -1166,7 +1024,6 @@ bool FileReader2Motion::LoadAnimation_ver2(std::string address, Model* model)
     }
 
     skeletonAnimationList->m_SkeletonAnimationList.push_back(skeletonAnimation);
-
 
     return true;
 }

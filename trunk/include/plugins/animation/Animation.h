@@ -56,9 +56,6 @@ public:
 	void SetScale(double scale);
     
 private: 
-    // moves to proper part of animation and returns %
-    // of actual part progress
-    double MoveToProperPart(IAnimationGroup* ag);
     // update model - updates only mesh etc taking skeleton
     // into consideration - called by update
     void UpdateModel();

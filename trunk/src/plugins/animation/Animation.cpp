@@ -66,29 +66,6 @@ void Animation::FirstFrame()
 {
     _actTime	= 0.0;
     _prevTime	= 0.0;
-
-    // 	for (vector<ISkeletonNode*>::iterator i = _bones->begin(); i != _bones->end(); ++i)
-    // 	{
-    // 		// if animated bone
-    // 		if ((*i)->GetNumOfAnimations())
-    // 		{
-    // 			// get animation group
-    // 			IAnimationGroup* ag = ANIMATION_GROUP(*i);
-    // 
-    //             if(ag->getLength() <= 0)
-    //                 continue;
-    // 
-    // 			// reset...
-    // 			ag->setPosition(0);
-    // 
-    // 			// set key frame no. 0
-    // 			osg::Vec3d zeroTrans = ag->getActNode()->GetPosition();
-    // 			osg::Quat  zeroQuat  = ag->getActNode()->GetAttitude();
-    // 
-    // 			(*i)->SetPosition(zeroTrans);
-    // 			(*i)->SetAttitude(zeroQuat);
-    // 		}
-    // 	}
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -128,83 +105,22 @@ void Animation::Play()
 			{
 				if(m_pSkeletonAnimaton->m_boneAnimationList[ab]->idx == m_pSkeleton->m_pBoneList[b]->idx)
 				{
-					m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
+					// m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
+
+                    int childCount = m_pSkeleton->m_pBoneList[b]->child.size();
+
+                    for(int c = 0 ; c < childCount; c++)
+                    {
+                        m_pSkeleton->m_pBoneList[b]->child[c]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
+                    }
 				}
 			}
         }
 
         // ilosc kosci = ilosc obiektów frame w dablicy
-        m_pFrameCount = m_pSkeleton->m_pRootBone->frame.size();
-        _length = m_pSkeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
+        m_pFrameCount = m_pSkeleton->m_pRootBone->child[0]->frame.size();
+        _length = m_pSkeleton->m_pRootBone->child[0]->frame[m_pFrameCount-1]->m_time;
     }
-}
-
-//--------------------------------------------------------------------------------------------------
-// moves to proper part of animation
-double Animation::MoveToProperPart(IAnimationGroup* ag)
-{	
-    if(_isStartAnimation)
-    {
-        // sprawdzenie pierwszego noda - i odjecie wartosci.  porzebne do przesuniecia czasu - poniewaz
-        // nie kazda animacja zaczyna sie od czasu równego 0.
-        _firstNodeTime = ag->getActNode()->GetTime();
-
-        _length -= _firstNodeTime;
-        _isStartAnimation = !_isStartAnimation;
-    }
-
-    //FIXME: ??? trzeba odjac pasek przewijania od momentu startu.
-    if	(_actTime > _prevTime)  // we are moving forwards
-    {
-        // actual node time
-        double actNodeTime = ag->getActNode()->GetTime();
-        if((_actTime + _firstNodeTime) > actNodeTime)
-        {
-            if (ag->next())
-            {
-                ag->goNext();
-                return MoveToProperPart(ag);
-            }
-            // else : 1.0
-        }
-        else if	((_actTime + _firstNodeTime) < actNodeTime)
-        {
-            if (ag->prev())
-            {
-                double prevNodeTime = ag->getPrevNode()->GetTime();
-                double progress = ((_actTime + _firstNodeTime) - prevNodeTime) / (actNodeTime - prevNodeTime);
-                // return progress of transformation
-                return progress;
-            }
-            return (_actTime + _firstNodeTime) / actNodeTime;
-        }
-    }
-    else if	(_actTime < _prevTime)	// we are moving backwards
-    {
-        // actual node time
-        double actNodeTime = ag->getActNode()->GetTime();
-        if((_actTime + _firstNodeTime) > actNodeTime)
-        {
-            if (ag->next())
-            {
-                double nextNodeTime = ag->getNextNode()->GetTime();
-                // return progress of transformation
-                return (nextNodeTime - (_actTime + _firstNodeTime)) / (nextNodeTime - actNodeTime);
-            }
-        }
-        else if ((_actTime + _firstNodeTime) < actNodeTime)
-        {
-            if (ag->prev())
-            {
-                ag->goPrev();
-                if(ag->prev())
-                    return MoveToProperPart(ag);
-            }
-        }
-    }
-
-    // by default
-    return 1.0;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -296,108 +212,6 @@ void Animation::calculateChildMatrix(Bone *bone)
     }
 }
 
-
-
-void Animation::calculateChildMatrix_ver2( Bone* bone )
-{
-    // update skeleton
-    // for every bone
-
-    // OBLICZANIE ROOTA.
-
-    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
-    int index = _actTime / TIMERMULTIPLAY;
-
-    if(index > m_pFrameCount - 1)
-    {
-        _state = Animation::STOPPED;
-        index = m_pFrameCount -1;
-    }
-
-    osg::Matrixd temp;
-
-    if(bone->frame.size() > index)
-    {
-        temp.setRotate(bone->frame[index]->rotation);
-        temp.setTrans(bone->frame[index]->translation);
-    }
-    else
-    {
-        temp.setRotate(bone->rot);
-        temp.setTrans(bone->trans);
-    }
-
-    *bone->matrix = temp;
-
-
-    *bone->matrix =  (*bone->matrix) * (*bone->parent->matrix);
-
-    osg::Vec3d trans = bone->matrix->getTrans();
-
-    bone->positionx = trans.x();
-    bone->positiony = trans.y();
-    bone->positionz = trans.z();
-
-
-    if(!bone->isInitialPosition)
-    {
-        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
-        bone->isInitialPosition = true;
-    }
-
-
-    int childrenCount = bone->child.size();
-    for(int i = 0; i<childrenCount; i++)
-    {
-        calculateChildMatrix_ver2(bone->child[i]);
-    }
-}
-
-void Animation::UpdateModel_ver2()
-{
-    // update skeleton
-    // for every bone
-
-    // OBLICZANIE ROOTA.
-
-    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
-    int index = _actTime / TIMERMULTIPLAY;
-
-    if(index > m_pFrameCount - 1)
-    {
-        _state = Animation::STOPPED;
-        index = m_pFrameCount -1;
-    }
-
-    Bone* bone = m_pSkeleton->m_pRootBone;
-
-    osg::Matrixd temp;
-
-    temp.setRotate(bone->frame[index]->rotation);
-    temp.setTrans(bone->frame[index]->translation);
-
-
-    *bone->matrix = temp;
-
-    osg::Vec3d trans = bone->matrix->getTrans();
-
-    bone->positionx = trans.x();
-    bone->positiony = trans.y();
-    bone->positionz = trans.z();
-
-    if(!bone->isInitialPosition)
-    {
-        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
-        bone->isInitialPosition = true;
-    }
-
-    int childrenCount = bone->child.size();
-    for(int i = 0; i<childrenCount; i++)
-    {
-        calculateChildMatrix_ver2(bone->child[i]);
-    }
-}
-
 //--------------------------------------------------------------------------------------------------
 // update model - updates only mesh etc taking skeleton
 // into consideration - called by update
@@ -436,11 +250,14 @@ void Animation::UpdateModel()
 
     // tworzenie macierzy animacji. AMC file
     // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
-    rx=-bone->frame[index]->rotx*M_PI/180.;
-    ry=-bone->frame[index]->roty*M_PI/180.;
-    rz=-bone->frame[index]->rotz*M_PI/180.;
-    M.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
-    M.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
+//     rx=-bone->frame[index]->rotx*M_PI/180.;
+//     ry=-bone->frame[index]->roty*M_PI/180.;
+//     rz=-bone->frame[index]->rotz*M_PI/180.;
+//     M.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
+//     M.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
+
+    M.makeRotate(0, osg::Vec3f(1.0f, 0.0f, 0.0f), 0, osg::Vec3f(0.0f, 0.0f, 1.0f), 0, osg::Vec3f(0.0f, 1.0f, 0.0f));
+    M.postMultTranslate(osg::Vec3f(0, 0, 0));
 
     float x,y,z;
     float lenght = bone->length;
@@ -541,4 +358,106 @@ Animation::AnimationState Animation::GetState()
 void Animation::SetScale( double scale )
 {
 	SCALE = scale;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Animation::calculateChildMatrix_ver2( Bone* bone )
+{
+    // update skeleton
+    // for every bone
+
+    // OBLICZANIE ROOTA.
+
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
+    int index = _actTime / TIMERMULTIPLAY;
+
+    if(index > m_pFrameCount - 1)
+    {
+        _state = Animation::STOPPED;
+        index = m_pFrameCount -1;
+    }
+
+    osg::Matrixd temp;
+
+    if(bone->frame.size() > index)
+    {
+        temp.setRotate(bone->frame[index]->rotation);
+        temp.setTrans(bone->frame[index]->translation);
+    }
+    else
+    {
+        temp.setRotate(bone->rot);
+        temp.setTrans(bone->trans);
+    }
+
+    *bone->matrix = temp;
+
+
+    *bone->matrix =  (*bone->matrix) * (*bone->parent->matrix);
+
+    osg::Vec3d trans = bone->matrix->getTrans();
+
+    bone->positionx = trans.x();
+    bone->positiony = trans.y();
+    bone->positionz = trans.z();
+
+
+    if(!bone->isInitialPosition)
+    {
+        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
+        bone->isInitialPosition = true;
+    }
+
+
+    int childrenCount = bone->child.size();
+    for(int i = 0; i<childrenCount; i++)
+    {
+        calculateChildMatrix_ver2(bone->child[i]);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void Animation::UpdateModel_ver2()
+{
+    // update skeleton
+    // for every bone
+
+    // OBLICZANIE ROOTA.
+
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
+    int index = _actTime / TIMERMULTIPLAY;
+
+    if(index > m_pFrameCount - 1)
+    {
+        _state = Animation::STOPPED;
+        index = m_pFrameCount -1;
+    }
+
+    Bone* bone = m_pSkeleton->m_pRootBone;
+
+    osg::Matrixd temp;
+
+    temp.setRotate(bone->frame[index]->rotation);
+    temp.setTrans(bone->frame[index]->translation);
+
+
+    *bone->matrix = temp;
+
+    osg::Vec3d trans = bone->matrix->getTrans();
+
+    bone->positionx = trans.x();
+    bone->positiony = trans.y();
+    bone->positionz = trans.z();
+
+    if(!bone->isInitialPosition)
+    {
+        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
+        bone->isInitialPosition = true;
+    }
+
+    int childrenCount = bone->child.size();
+    for(int i = 0; i<childrenCount; i++)
+    {
+        calculateChildMatrix_ver2(bone->child[i]);
+    }
 }
