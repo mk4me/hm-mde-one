@@ -72,6 +72,8 @@ find_package(Stdint)
 find_package(Qt)
 find_package(TinyXML)
 find_package(Dae2ERD)
+find_package(cURL)
+find_package(wsdlpull)
 
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)

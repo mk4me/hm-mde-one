@@ -29,6 +29,10 @@
 #define POSITION 0
 #define NORMALS  1
 
+#ifndef M_PI
+#define M_PI (3.14159265358979323846)
+#endif
+
 std::ifstream m_Fs;
 
 using namespace std;
@@ -571,7 +575,7 @@ bool FileReader2Motion::IsSkeletalAnimation(std::wstring* address)
         {	fclose(file); return false;	}
         if (chunk_header != FMD_HEADER)
         {	fclose(file); return false;	}
-        if (fread(&length, INT_SIZE, 1, file) != 1)
+        if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
         {	fclose(file); return false;	}
 
         if (length > 6)
@@ -581,7 +585,7 @@ bool FileReader2Motion::IsSkeletalAnimation(std::wstring* address)
             {	fclose(file); return false;	}
             if (chunk_header != FMD_PLUGIN)
             {	fclose(file); return false;	}
-            if (fread(&length, INT_SIZE, 1, file) != 1)
+            if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             if (length > 6)
@@ -623,7 +627,7 @@ bool FileReader2Motion::LoadSkeletalAnimationFromFile(std::wstring* address, SSk
         // FMD
         if (fread(&chunkHeader, SHORT_INT_SIZE, 1, file) != 1)
         {	fclose(file); return false;	}
-        if (fread(&fileSize, INT_SIZE, 1, file) != 1)
+        if (fread(&fileSize, SIZES_INT_SIZE, 1, file) != 1)
         {	fclose(file); return false;	}
 
         //CLSID + FMD_PLUGIN
@@ -641,7 +645,7 @@ bool FileReader2Motion::LoadSkeletalAnimationFromFile(std::wstring* address, SSk
             {	fclose(file); return false;	}
             if (chunkHeader != FMD_SKEL_ANIM)
             {	fclose(file); return false;	}
-            if (fread(&length, INT_SIZE, 1, file) != 1)
+            if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             // FMD_STRING - animation name
@@ -649,18 +653,18 @@ bool FileReader2Motion::LoadSkeletalAnimationFromFile(std::wstring* address, SSk
             {	fclose(file); return false;	}
             if (chunkHeader != FMD_STRING)
             {	fclose(file); return false;	}
-            if (fread(&length, INT_SIZE, 1, file) != 1)
+            if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             length -= HEADER_SIZE;
             char* buff = new char [length];
-            if (fread(buff, CHAR_SIZE * length, 1, file) != 1)
+            if (fread(buff, SIZES_CHAR_SIZE * length, 1, file) != 1)
             {	delete [] buff; fclose(file); return false;	}
             anim->name = string(buff);
             delete [] buff;
 
             // bones count		
-            if (fread(&anim->bones_count, INT_SIZE, 1, file) != 1)
+            if (fread(&anim->bones_count, SIZES_INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             anim->bones = new SSkeletalAnimationBone [anim->bones_count];
@@ -669,11 +673,11 @@ bool FileReader2Motion::LoadSkeletalAnimationFromFile(std::wstring* address, SSk
             for (int b = 0; b < anim->bones_count; ++b)
             {
                 // bone id
-                if (fread(&anim->bones[b].bone_id, INT_SIZE, 1, file) != 1)
+                if (fread(&anim->bones[b].bone_id, SIZES_INT_SIZE, 1, file) != 1)
                 {	fclose(file); return false;	}
 
                 // key count
-                if (fread(&anim->bones[b].n, INT_SIZE, 1, file) != 1)
+                if (fread(&anim->bones[b].n, SIZES_INT_SIZE, 1, file) != 1)
                 {	fclose(file); return false;	}
 
                 anim->bones[b].frames = new SKeyFrame [anim->bones[b].n];
@@ -760,7 +764,7 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
         {	fclose(file); return false;	}
         if (chunk_header != FMD_HEADER)
         {	fclose(file); return false;	}
-        if (fread(&length, INT_SIZE, 1, file) != 1)
+        if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
         {	fclose(file); return false;	}
 
         if (length > 6)
@@ -770,7 +774,7 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
             {	fclose(file); return false;	}
             if (chunk_header != FMD_PLUGIN)
             {	fclose(file); return false;	}
-            if (fread(&length, INT_SIZE, 1, file) != 1)
+            if (fread(&length, SIZES_INT_SIZE, 1, file) != 1)
             {	fclose(file); return false;	}
 
             if (length > 6)
