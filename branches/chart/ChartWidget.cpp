@@ -9,13 +9,14 @@ ChartWidget::ChartWidget(ChartService* service)
     setupUi(this);
 
 	c3dFile="Przejscie1.c3d";
-	//createEMGChanels();
+
 	mainViewer=new ChartViewer(this,0,c3dFile);
 	mainViewer->setMinimumSize(300,300);
 	mainChart->addWidget(mainViewer);
+
 }
 
-ChartWidget::~ChartWidget()
+ChartWidget::~ChartWidget() 
 {
 
 }

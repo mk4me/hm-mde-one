@@ -74,7 +74,7 @@ ChartService::ChartService()
   length(0.0)
 {
     widget = new ChartWidget(this);
-	length=(double)widget->getViewer()->getData()->getRNumber()/(double)widget->getViewer()->getData()->getFPS() ;
+	length=(double)widget->getViewer()->getData(0)->getRNumber()/(double)widget->getViewer()->getData(0)->getFPS() ;
 }
 
 
@@ -107,8 +107,8 @@ AsyncResult ChartService::compute()
 
 AsyncResult ChartService::update( double time, double timeDelta )
 {
-	//targetTime+=timeDelta;
-	widget->getViewer()->getChart()->getPointer()->update(targetTime);
+	for(int i=0;i<widget->getViewer()->getChartCount();i++)
+	widget->getViewer()->getChart(i)->getPointer()->update(targetTime);
     return AsyncResult_Complete;
 }
 

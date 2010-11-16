@@ -19,6 +19,9 @@ class LineChart : public Chart{
 private:
 	osg::Vec3Array* chartVertices;
 	Pointer* pointer;
+	osg::Geode* chart;
+	ChartData* data;
+	ChartDecoration* chartDecoration;
 public:
 	//konstruktor wykresu
 	LineChart(ChartData* data,ChartDecoration* chartDecoration);
@@ -26,6 +29,7 @@ public:
 	//! Funkcja dodajaca kolejny wierzcholek
 	void addCoord(osg::Vec3);
 	Pointer* getPointer();
+	void repaint();
 };
 
 

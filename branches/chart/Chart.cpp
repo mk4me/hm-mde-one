@@ -1,7 +1,7 @@
 #include "Chart.h"
 
 
-void Chart::drawChart(osg::Vec3Array* chartVertices)
+osg::Geode* Chart::drawChart(osg::Vec3Array* chartVertices)
 {
 
 	colors = new osg::Vec4Array;
@@ -21,7 +21,7 @@ void Chart::drawChart(osg::Vec3Array* chartVertices)
 
 	geode->addDrawable(geom);
 
-	this->addChild(geode);
+	return geode;
 
 }
 

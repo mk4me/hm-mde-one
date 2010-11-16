@@ -24,19 +24,28 @@ class ChartViewer : public QOSGViewer
 private:
 	ChartWidget* chartWidget;
 	int index;
-	ChartData* data;
-	ChartDecoration* cSys;
-	LineChart* chart;
+	ChartData** data;
+	ChartDecoration** cSys;
+	LineChart** chart;
 	std::string c3dFile;
 		osg::Camera* cam;
+		int chartCount;
+		int cSysCount;
 public:
 	void changeView(int index);
 	ChartViewer(ChartWidget* chartWidget,int index,std::string c3dFile);
 	~ChartViewer();
-	LineChart* getChart();
-	ChartData* getData();
+	LineChart* getChart(int index);
+	ChartData* getData(int index);
+	ChartDecoration* getDecoration(int index);
+	void addCSys(int index);
+	int getChartCount();
+	void setChartCount(int chartCount);
+	int getCSysCount();
+	void setCSysCount(int cSysCount);
 
 protected:
+	virtual void resizeEvent(QResizeEvent* event);
 	virtual void mouseDoubleClickEvent(QMouseEvent* event);
 };
 
