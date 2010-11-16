@@ -2,10 +2,11 @@
 @author Marek Daniluk
 */
 #include <QtGui/QApplication>
-#include "core/CommunicationService.h"
-#include "CommServ.h"
+#include <QtGui/QDialog>
+#include "core/CommunicationManager.h"
+#include "CommunicationWidget.h"
 
-using namespace EDRCM;
+using namespace communication;
 
 std::string parse(char* argument) {
 	std::string temp(argument);
@@ -101,7 +102,7 @@ int main(int argc, char* argv[]) {
 	//		}
 	//	}
 	//}
-	//CommunicationService* db;
+	//CommunicationManager* db;
 	//TransportWSDL_FTPS* t = new TransportWSDL_FTPS();
 	//QueryWSDL* q = new QueryWSDL();
 
@@ -112,7 +113,7 @@ int main(int argc, char* argv[]) {
 	//q->setBasicQueriesServiceUri(basicqueries_uri);
 	//q->setBasicUpdatesServiceUri(basicupdates_uri);
 	//try {
-	//	db = CommunicationService::createInstanceFirstTime();
+	//	db = CommunicationManager::createInstanceFirstTime();
 	//	db->setTransportManager(t);
 	//	db->setQueryManager(q);
 	//	//std::cout << db->storeSessionFile(1, "directory", "dziennik logow", "log.txt") << "\n";
@@ -137,7 +138,7 @@ int main(int argc, char* argv[]) {
 	//	e.log("Exception: " + e.getExceptionMessage());
 	//}
 	QApplication a(argc, argv);
-	CommServ commserv;
+	CommunicationWidget commserv;
 	commserv.show();
-	return commserv.exec();
+	return a.exec();
 }

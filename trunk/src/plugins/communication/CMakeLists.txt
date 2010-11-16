@@ -4,20 +4,44 @@ set(TARGET_TARGETNAME
 	communication
 )
 
-#add_definitions(-D__LIBRARY_DYNAMIC__)
+add_definitions(-D__LIBRARY_DYNAMIC__)
 
 #------------------------------------------------------------------------------
 
 # nag³ówki prywatne
 set(PRIVATE_H
-	commserv.h SettingsDialog.h
+	CommunicationPlugin.h
+	CommunicationWidget.h SettingsDialog.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
 # nag³ówki publiczne
 string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
-#	${HEADER_PATH}/commserv.h
+	${HEADER_PATH}/BasicQueriesService.h
+	${HEADER_PATH}/BasicUpdatesService.h
+	${HEADER_PATH}/CommunicationManager.h
+	${HEADER_PATH}/CommunicationService.h
+	${HEADER_PATH}/DateTime.h
+	${HEADER_PATH}/EDRException.h
+	${HEADER_PATH}/Entity.h
+	${HEADER_PATH}/File.h
+	${HEADER_PATH}/FileStoremanService.h
+	${HEADER_PATH}/FTPS_cURL.h
+	${HEADER_PATH}/IAuthenticable.h
+	${HEADER_PATH}/IFTP.h
+	${HEADER_PATH}/IQueryable.h
+	${HEADER_PATH}/ISendable.h
+	${HEADER_PATH}/ITransportable.h
+	${HEADER_PATH}/MotionKind.h
+	${HEADER_PATH}/Performer.h
+	${HEADER_PATH}/QueryWSDL.h
+	${HEADER_PATH}/Segment.h
+	${HEADER_PATH}/Session.h
+	${HEADER_PATH}/SessionGroup.h
+	${HEADER_PATH}/TransportWSDL_FTPS.h
+	${HEADER_PATH}/Trial.h
+	${HEADER_PATH}/WSDL_Wsdlpull.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -26,13 +50,35 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-	main.cpp commserv.cpp SettingsDialog.cpp
+#	main.cpp
+	BasicQueriesService.cpp
+	BasicUpdatesService.cpp
+	CommunicationManager.cpp
+	CommunicationPlugin.cpp
+	CommunicationService.cpp
+	CommunicationWidget.cpp
+	DateTime.cpp
+	EDRException.cpp
+	Entity.cpp
+	File.cpp
+	FileStoremanService.cpp
+	FTPS_cURL.cpp
+	MotionKind.cpp
+	Performer.cpp
+	QueryWSDL.cpp
+	Segment.cpp
+	Session.cpp
+	SessionGroup.cpp
+	SettingsDialog.cpp
+	TransportWSDL_FTPS.cpp
+	Trial.cpp
+	WSDL_Wsdlpull.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
-	commserv.h SettingsDialog.h
+	CommunicationWidget.h SettingsDialog.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -41,78 +87,39 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 set(TARGET_UI
-	ui/commserv.ui
+	ui/CommunicationWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
 set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 
 #------------------------------------------------------------------------------
-# CORE
-set(CORE_PRIVATE_H
-	core/BasicQueriesService.h
-	core/BasicUpdatesService.h
-	core/CommunicationService.h
-	core/DateTime.h
-	core/EDRException.h
-	core/Entity.h
-	core/IQueryable.h
-	core/ISendable.h
-	core/ITransportable.h
-	core/MotionKind.h
-	core/Performer.h
-	core/QueryWSDL.h
-	core/Segment.h
-	core/Session.h
-	core/SessionGroup.h
-	core/TransportWSDL_FTPS.h
-	core/Trial.h
-	core/WSDL_Wsdlpull.h
-)
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\core" FILES ${CORE_PRIVATE_H})
-set(TARGET_H ${TARGET_H} ${CORE_PRIVATE_H})
+# prekompilowany nag³ówek
 
-set(CORE_PUBLIC_H
-#	${HEADER_PATH}/core/CommunicationService.h
-#	${HEADER_PATH}/core/TransportWSDL_FTPS.h
-#	${HEADER_PATH}/core/WSDL_Wsdlpull.h
-)
-source_group("${SOURCEGROUP_PUBLIC_HEADERS}\\core" FILES ${CORE_PUBLIC_H})
-set(TARGET_H ${TARGET_H} ${CORE_PUBLIC_H})
+set(PRECOMPILED_H CommunicationPCH.h)
 
+set(PRECOMPILED_SRC CommunicationPCH.cpp)
 
-set(CORE_SRC
-	core/BasicQueriesService.cpp
-	core/BasicUpdatesService.cpp
-	core/DateTime.cpp
-	core/CommunicationService.cpp
-	core/EDRException.cpp
-	core/Entity.cpp
-	core/File.cpp
-	core/FileStoremanService.cpp
-	core/FTPS_cURL.cpp
-	core/MotionKind.cpp
-	core/Performer.cpp
-	core/QueryWSDL.cpp
-	core/Segment.cpp
-	core/Session.cpp
-	core/SessionGroup.cpp
-	core/TransportWSDL_FTPS.cpp
-	core/Trial.cpp
-	core/WSDL_Wsdlpull.cpp
-)
-source_group("${SOURCEGROUP_SOURCES}\\core" FILES ${CORE_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${CORE_SRC})
+SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
+
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
+
+set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
+
+source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
+
+set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
+
 
 #------------------------------------------------------------------------------
 # tworzenie
 
 # kompilacja do wspó³dzielonej biblioteki
-#add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
-add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
+add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
 # nag³ówki
-include_directories(${DEFAULT_PROJECT_INCLUDES})
+include_directories( ${DEFAULT_PROJECT_INCLUDES} )
 # biblioteki
 target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})	
 
+# ¿eby mo¿na by³o u¿yæ tej biblioteki w makrach
 ON_PROJECT_ADDED(${TARGET_TARGETNAME})
