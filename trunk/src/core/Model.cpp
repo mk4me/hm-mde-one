@@ -6,6 +6,7 @@
 #include <core/FModel.h>
 #include <core/Matrix.h>
 
+#include <core/ModelData.h>
 
 #define pPat osg::PositionAttitudeTransform*
 

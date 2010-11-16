@@ -14,7 +14,7 @@
 #include <core/Vec3.h>
 #include <core/Skeleton.h>
 
-#include <core/ASFAMCParser.h>
+#include <core/ASFAMCParser.h> 
 #include <core/Frame.h>
 
 #include <osg/Matrix>
@@ -86,8 +86,8 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 
     if(dataManager->GetMeshFilePathCount() > 0)
     {
-         LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-         dataManager->GetModel()->InicializeMesh();
+      //   LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
+       //  dataManager->GetModel()->InicializeMesh();
 
 //          if(object->ReadAMCFile(dataManager->GetAnimationFilePath(0)))
 //              LoadAnimation_ver2(dataManager->GetAnimationFilePath(0), dynamic_cast<Model*>(dataManager->GetModel()));
@@ -349,6 +349,8 @@ void calculateChildMatrix(Bone *bone)
     bone->positiony = trans.y();
     bone->positionz = trans.z();
 
+   // bone->bonespace = osg::Matrixd::inverse(*bone->matrix);
+
 //    bone->bonespace = osg::Matrixd(bone->boneSpace_quaternion);
 //    bone->bonespace.postMultTranslate( bone->boneSpace_translation);
 
@@ -406,6 +408,8 @@ bool FileReader2Motion::LoadSkeleton(Model* model)
     bone->positionx = trans.x();
     bone->positiony = trans.y();
     bone->positionz = trans.z();
+
+   // bone->bonespace = osg::Matrixd::inverse(*bone->matrix);
 
 //     bone->bonespace = osg::Matrixd(bone->boneSpace_quaternion);
 //     bone->bonespace.postMultTranslate( bone->boneSpace_translation);
@@ -509,13 +513,15 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
         {
             if(joint->getID()== skeleton->m_pBoneList[b]->idx)
             {
-                // get every bone & put them to list/whatever where they are sorted by id               
-                int childCount = skeleton->m_pBoneList[b]->child.size();
+                skeleton->m_pBoneList[b]->frame = boneAnmation->m_frames;
 
-                for(int c = 0 ; c < childCount; c++)
-                {
-                    skeleton->m_pBoneList[b]->child[c]->frame = boneAnmation->m_frames;
-                }
+//                 // get every bone & put them to list/whatever where they are sorted by id               
+//                 int childCount = skeleton->m_pBoneList[b]->child.size();
+// 
+//                 for(int c = 0 ; c < childCount; c++)
+//                 {
+//                     skeleton->m_pBoneList[b]->child[c]->frame = boneAnmation->m_frames;
+//                 }
             }
         }
 
@@ -524,7 +530,15 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
 
     skeletonAnimationList->m_SkeletonAnimationList.push_back(skeletonAnimation);
 
+    RemoveDummyJoint(acclaimObject, model );
+
     return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void FileReader2Motion::RemoveDummyJoint( ASFAMCParser* acclaimObject, Model* model )
+{
+    
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -804,10 +818,11 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
 
 bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 {
+    model->SetModelSkeleton(mesh_skeleton);
 	Skeleton* model_skeleton = model->GetSkeleton();
 	Skeleton* temp = new Skeleton();
 
-	temp->m_pBoneList.resize(model_skeleton->m_pBoneList.size());
+	temp->m_pBoneList.resize(mesh_skeleton->bones_count);
 
 	for(int b = 0; b < mesh_skeleton->bones_count; b++)
 	{
@@ -832,8 +847,10 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 				float *bone_space_trans = mesh_skeleton->bones[b].bone_space_trans;
 				float *bone_space_quat = mesh_skeleton->bones[b].bone_space_quate;
 
-				temp->m_pBoneList[b]->boneSpace_translation = osg::Vec3f(bone_space_trans[0], bone_space_trans[2], bone_space_trans[1]);
-				temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(-bone_space_quat[0], -bone_space_quat[2], -bone_space_quat[1], bone_space_quat[3]);
+                temp->m_pBoneList[b]->bonespace = osg::Matrixd::inverse(*temp->m_pBoneList[b]->matrix);
+
+				//temp->m_pBoneList[b]->boneSpace_translation = osg::Vec3f(bone_space_trans[0], bone_space_trans[2], bone_space_trans[1]);
+				//temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(-bone_space_quat[0], -bone_space_quat[2], -bone_space_quat[1], bone_space_quat[3]);
 
 
 				temp->m_pBoneList[b]->bonespace.makeRotate(temp->m_pBoneList[b]->boneSpace_quaternion);
@@ -845,6 +862,8 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 		}
 	}
 
+    // wywalenie damisów
+   
 	//proste uzupe³nienie pozosta³ych pól
 	int sizeTemp = mesh_skeleton->bones_count;
 	bool isInTemp = false;
@@ -857,16 +876,38 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 		{
 			if(temp->m_pBoneList[t] == model_skeleton->m_pBoneList[b])
 			{
-				isInTemp = true;
-				break;
+                if(temp->m_pBoneList[t]->child.size() > 1 && !temp->m_pBoneList[t]->isCleared)
+                { 
+
+                    temp->m_pBoneList[t]->isCleared = true;
+
+                    std::vector<Bone* > child;
+                    for(int i = 0; i < model_skeleton->m_pBoneList[b]->child.size(); i ++)
+                    {
+                        //przypisywanie dzieci z dummy do kosci
+                        for(int c = 0; c < model_skeleton->m_pBoneList[b]->child[i]->child.size(); c++)
+                        {
+                            // przypisanie rodzica.
+                            model_skeleton->m_pBoneList[b]->child[i]->child[c]->parent = temp->m_pBoneList[t];
+
+                            child.push_back(model_skeleton->m_pBoneList[b]->child[i]->child[c]);
+                            //temp->m_pBoneList[t]->child.push_back(model_skeleton->m_pBoneList[b]->child[i]->child[c]);
+                        }
+                    }
+
+                    temp->m_pBoneList[t]->child.clear();
+                    temp->m_pBoneList[t]->child = child;
+                }
+			//	isInTemp = true;
+			//	break;
 			}
 		}
 
-		if(!isInTemp)
-		{
-			temp->m_pBoneList[sizeTemp] = model_skeleton->m_pBoneList[b];
-			sizeTemp++;
-		}
+	//	if(!isInTemp)
+	//	{
+	//		temp->m_pBoneList[sizeTemp] = model_skeleton->m_pBoneList[b];
+	//		sizeTemp++;
+	//	}
 	}
 
 

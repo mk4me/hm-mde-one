@@ -14,6 +14,8 @@
 #include <osg/Quat>
 #include <osg/ref_ptr>
 
+#include <core/ModelData.h>
+
 namespace osgViewer
 {
     class Scene; 
@@ -154,6 +156,11 @@ private:
 
     IServiceManager* m_pServiceManager;
     OsgControlWidget* widget;
+
+
+
+
+    SSkeleton* modelSkeleton;
 };
 
 //--------------------------------------------------------------------------------------------------

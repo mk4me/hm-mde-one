@@ -105,21 +105,40 @@ void Animation::Play()
 			{
 				if(m_pSkeletonAnimaton->m_boneAnimationList[ab]->idx == m_pSkeleton->m_pBoneList[b]->idx)
 				{
-					// m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
+					   m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
 
-                    int childCount = m_pSkeleton->m_pBoneList[b]->child.size();
-
-                    for(int c = 0 ; c < childCount; c++)
-                    {
-                        m_pSkeleton->m_pBoneList[b]->child[c]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
-                    }
+//                     int childCount = m_pSkeleton->m_pBoneList[b]->child.size();
+// 
+//                     for(int c = 0 ; c < childCount; c++)
+//                     {
+//                         m_pSkeleton->m_pBoneList[b]->child[c]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
+//                     }
 				}
 			}
         }
 
+//         int childCount = m_pSkeleton->m_pRootBone->child.size();
+// 
+//         for(int c = 0 ; c < childCount; c++)
+//         {
+//             for(int ab = 0; ab <animatioBoneCount; ab++)
+//             {
+//                 if(m_pSkeleton->m_pRootBone->child[c]->idx == m_pSkeletonAnimaton->m_boneAnimationList[ab]->idx)
+//                 {
+//                     m_pSkeleton->m_pRootBone->child[c]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
+//                 }
+//             }
+//         }
+// 
+// 
+// 
+// 
+// 
+//         m_pSkeleton->m_pRootBone->frame = m_pSkeletonAnimaton->m_boneAnimationList[0]->m_frames;
+
         // ilosc kosci = ilosc obiektów frame w dablicy
-        m_pFrameCount = m_pSkeleton->m_pRootBone->child[0]->frame.size();
-        _length = m_pSkeleton->m_pRootBone->child[0]->frame[m_pFrameCount-1]->m_time;
+        m_pFrameCount = m_pSkeleton->m_pRootBone->frame.size();
+        _length = m_pSkeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
     }
 }
 
@@ -250,14 +269,14 @@ void Animation::UpdateModel()
 
     // tworzenie macierzy animacji. AMC file
     // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
-//     rx=-bone->frame[index]->rotx*M_PI/180.;
-//     ry=-bone->frame[index]->roty*M_PI/180.;
-//     rz=-bone->frame[index]->rotz*M_PI/180.;
-//     M.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
-//     M.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
+    rx=-bone->frame[index]->rotx*M_PI/180.;
+    ry=-bone->frame[index]->roty*M_PI/180.;
+    rz=-bone->frame[index]->rotz*M_PI/180.;
+    M.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
+    M.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
 
-    M.makeRotate(0, osg::Vec3f(1.0f, 0.0f, 0.0f), 0, osg::Vec3f(0.0f, 0.0f, 1.0f), 0, osg::Vec3f(0.0f, 1.0f, 0.0f));
-    M.postMultTranslate(osg::Vec3f(0, 0, 0));
+   // M.makeRotate(0, osg::Vec3f(1.0f, 0.0f, 0.0f), 0, osg::Vec3f(0.0f, 0.0f, 1.0f), 0, osg::Vec3f(0.0f, 1.0f, 0.0f));
+  //  M.postMultTranslate(osg::Vec3f(0, 0, 0));
 
     float x,y,z;
     float lenght = bone->length;
@@ -392,7 +411,6 @@ void Animation::calculateChildMatrix_ver2( Bone* bone )
 
     *bone->matrix = temp;
 
-
     *bone->matrix =  (*bone->matrix) * (*bone->parent->matrix);
 
     osg::Vec3d trans = bone->matrix->getTrans();
@@ -400,7 +418,6 @@ void Animation::calculateChildMatrix_ver2( Bone* bone )
     bone->positionx = trans.x();
     bone->positiony = trans.y();
     bone->positionz = trans.z();
-
 
     if(!bone->isInitialPosition)
     {

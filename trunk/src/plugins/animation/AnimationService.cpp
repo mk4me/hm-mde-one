@@ -141,13 +141,15 @@ void AnimationService::Clear()
     m_numOfBones = 0;
     m_selectedAnimatonName= "";
 
+   // widget = NULL;
     m_pModel = NULL;
     m_pJoints = NULL;
     m_skeleton = NULL;
     m_pAnimation = NULL;
     m_pActualBones = NULL;
-    m_skeletonGeode = NULL;
     m_pInitialBones = NULL;
+    m_skeletonGeode = NULL;
+  //  m_pServiceManager = NULL;
 
     m_animations.clear();
     m_functionsToCall.clear();
@@ -304,6 +306,7 @@ void AnimationService::LoadAnimation( IModel* model )
             m_animations.insert(make_pair(names[i], animation));	
     }
     
+    modelSkeleton = m_pModel->GetModelSkeleton();
 }
 
 
@@ -469,6 +472,8 @@ void AnimationService::UpdateMesh_testingVer()
 //--------------------------------------------------------------------------------------------------
 void AnimationService::UpdateMesh()
 {
+    //SSkeleton* modelSkeleton = m_pModel->GetModelSkeleton();
+
 	//std::map<int, int> dupa;
     std::vector<IMesh*> meshList = m_pModel->GetMeshList();
     int countHandv = 0;
@@ -490,11 +495,11 @@ void AnimationService::UpdateMesh()
 
                 // act position of vertice
                 Vec3d actPos(mesh->GetRootVerts()[vertice->vert_id]._v[0],
-                    mesh->GetRootVerts()[vertice->vert_id]._v[2], mesh->GetRootVerts()[vertice->vert_id]._v[1]);
+                    mesh->GetRootVerts()[vertice->vert_id]._v[1], mesh->GetRootVerts()[vertice->vert_id]._v[2]);
 
                 // normal
                 Vec3d normal(mesh->GetRootVertNormals()[vertice->vert_id]._v[0], 
-                    mesh->GetRootVertNormals()[vertice->vert_id]._v[2], mesh->GetRootVertNormals()[vertice->vert_id]._v[1]);
+                    mesh->GetRootVertNormals()[vertice->vert_id]._v[1], mesh->GetRootVertNormals()[vertice->vert_id]._v[2]);
         
 
                 // for every affecting bone
@@ -502,23 +507,30 @@ void AnimationService::UpdateMesh()
                 {
                     int boneID = vertice->bones[b].boneID;
                         
-                    if(m_pActualBones[boneID]->child.size() > 0)
-                        boneID++;
+                  //  if(m_pActualBones[boneID]->child.size() > 0)
+                    //    boneID++;
 
-                    osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
+                    
 
-                   //  osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
-                   //  T = m_pActualBones[boneID]->matrix->getTrans() + T;
-                   // boneTransformation.setTrans(T);
+                 //   if(boneID == 9 || boneID == 3)
+               //     {
+                        osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
 
-                   // osg::Vec4d zmienna(actPos,1.0);
+                        //  osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
+                        //  T = m_pActualBones[boneID]->matrix->getTrans() + T;
+                        // boneTransformation.setTrans(T);
 
-                    //boneTransformation.postMultScale(osg::Vec3d(0.2,0.2,0.2));
-                    osg::Vec3d temp = actPos * boneTransformation; 
-                    _tempVectors[b][POSITION] = temp;   /*+ m_pActualBones[boneID]->matrix->getTrans()*/ //Mathematics.add(destonationVertex, Mathematics.scale(temp, weight)); 
+                        // osg::Vec4d zmienna(actPos,1.0);
 
-                    osg::Vec3d temp2 = normal * boneTransformation;
-                    _tempVectors[b][NORMALS] = temp2; //Mathematics.add(destonationNormal, Mathematics.scale(temp, weight)); 
+                        SBone *modelBone = &modelSkeleton->bones[boneID];
+
+                        //boneTransformation.postMultScale(osg::Vec3d(0.2,0.2,0.2));
+                        osg::Vec3d temp = actPos * boneTransformation; 
+                        _tempVectors[b][POSITION] = temp;   /*+ m_pActualBones[boneID]->matrix->getTrans()*/ //Mathematics.add(destonationVertex, Mathematics.scale(temp, weight)); 
+
+                        osg::Vec3d temp2 = normal * boneTransformation;
+                        _tempVectors[b][NORMALS] = temp2; //Mathematics.add(destonationNormal, Mathematics.scale(temp, weight)); 
+                 //   }
                 }
 
 

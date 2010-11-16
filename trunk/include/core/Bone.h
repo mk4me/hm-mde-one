@@ -61,7 +61,6 @@ struct Bone
     osg::Quat rot;
 
     // Bonespace
-
     osg::Matrixd bonespace;
     osg::Matrixd apsolute;
 

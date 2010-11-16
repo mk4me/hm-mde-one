@@ -48,6 +48,8 @@ private:
 
     static void createHierarchy(Skeleton* temp);
     static void calculateMatrixAndData(Bone *bone);
+
+    static void RemoveDummyJoint(ASFAMCParser* acclaimObject, Model* model );
 };
 
 #endif //FILE_READER_2_MOTION_H
