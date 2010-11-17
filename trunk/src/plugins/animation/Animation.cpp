@@ -74,7 +74,7 @@ bool Animation::Stop()
     FirstFrame();
 
     // update model
-    UpdateModel();
+    UpdateModelBVHFormat();
     _state = Animation::STOPPED;
 
     m_pAnimationService->NotifyStop();
@@ -151,9 +151,127 @@ double Animation::SetPogress(double t)
     t = (t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
     _actTime = _length * t;
     // update Model
-    UpdateModel();
+    UpdateModelBVHFormat();
     _state = actState;
     return _actTime;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Animation::calculateChildMatrixBVHFormat( Bone* bone )
+{
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
+    int index = _actTime / TIMERMULTIPLAY;
+
+    if(index > m_pFrameCount - 1)
+    {
+        _state = Animation::STOPPED;
+        index = m_pFrameCount -1;
+    }
+
+
+    osg::Matrixd M;
+    float rx, ry, rz;
+
+    float x,y,z;
+    float lenght = bone->length;
+    x = bone->dir[0] * lenght;
+    y = bone->dir[1] * lenght;
+    z = bone->dir[2] * lenght;
+
+
+    // tworzenie macierzy animacji. AMC file
+    // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
+    rx=-bone->frame[index]->rotx*M_PI/180.;
+    ry=-bone->frame[index]->roty*M_PI/180.;
+    rz=-bone->frame[index]->rotz*M_PI/180.;
+    M.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
+    M.setTrans(osg::Vec3f(x, z, y));
+
+  
+    *bone->matrix = M * (*bone->parent->matrix);
+    //bone->matrix->postMultScale(osg::Vec3d(SCALE, SCALE, SCALE));
+
+    osg::Vec3d trans = bone->matrix->getTrans();
+
+    if(!strcmp(bone->name, "LeftFoot"))
+        bool istrue = true;
+
+    bone->positionx = trans.x() * SCALE;
+    bone->positiony = trans.y() * SCALE;
+    bone->positionz = trans.z() * SCALE;
+
+    if(!bone->isInitialPosition)
+    {
+        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
+        bone->isInitialPosition = true;
+    }
+
+    int childrenCount = bone->child.size();
+    for(int i = 0; i<childrenCount; i++)
+    {
+        calculateChildMatrixBVHFormat(bone->child[i]);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void Animation::UpdateModelBVHFormat()
+{
+    // update skeleton
+    // for every bone
+
+    // OBLICZANIE ROOTA.
+
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
+    int index = _actTime / TIMERMULTIPLAY;
+
+    if(index > m_pFrameCount - 1)
+    {
+        _state = Animation::STOPPED;
+        index = m_pFrameCount -1;
+    }
+
+    Bone* bone = m_pSkeleton->m_pRootBone;
+
+
+    osg::Matrixd M;
+    float rx, ry, rz;
+
+    float x,y,z;
+    float lenght = bone->length;
+    x = (bone->dir[0] * lenght) + bone->frame[index]->translationx;
+    y = (bone->dir[1] * lenght) + bone->frame[index]->translationy;
+    z = (bone->dir[2] * lenght) + bone->frame[index]->translationz;
+
+
+
+    // tworzenie macierzy animacji. AMC file
+    // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
+    rx=-bone->frame[index]->rotx*M_PI/180.;
+    ry=-bone->frame[index]->roty*M_PI/180.;
+    rz=-bone->frame[index]->rotz*M_PI/180.;
+    M.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
+    M.setTrans(osg::Vec3f(x, z, y));
+
+
+    *bone->matrix = M;
+
+    osg::Vec3d trans = bone->matrix->getTrans();
+
+    bone->positionx = trans.x() * SCALE;
+    bone->positiony = trans.y() * SCALE;
+    bone->positionz = trans.z() * SCALE;
+
+    if(!bone->isInitialPosition)
+    {
+        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
+        bone->isInitialPosition = true;
+    }
+
+    int childrenCount = bone->child.size();
+    for(int i = 0; i<childrenCount; i++)
+    {
+        calculateChildMatrixBVHFormat(bone->child[i]);
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -331,7 +449,7 @@ void Animation::Update(double dt)
     _actTime = dt;
 
     // update model
-    UpdateModel();
+    UpdateModelBVHFormat();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -478,3 +596,4 @@ void Animation::UpdateModel_ver2()
         calculateChildMatrix_ver2(bone->child[i]);
     }
 }
+

@@ -186,7 +186,7 @@ int ASFAMCParser::ReadASFFile(std::string ASFFileName)
             tempJoint.setType("ROOT") ;													//set the type
             tempJoint.setName("root") ;													//set the name
             tempJoint.setID(0);
-            tempJoint.setLength(1.0f);
+            tempJoint.setLength(0.0f);
             //No need to set parent for ROOT...
 
             token = strtok (NULL, " (),\t\n") ;

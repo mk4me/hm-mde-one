@@ -513,12 +513,12 @@ void AnimationService::UpdateMesh()
                     
 
                  //   if(boneID == 9 || boneID == 3)
-               //     {
-                        osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
+                //    {
+                        osg::Matrixd boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
 
-                        //  osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
-                        //  T = m_pActualBones[boneID]->matrix->getTrans() + T;
-                        // boneTransformation.setTrans(T);
+//                           osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
+//                           T = m_pActualBones[boneID]->matrix->getTrans() + T;
+//                          boneTransformation.setTrans(T);
 
                         // osg::Vec4d zmienna(actPos,1.0);
 

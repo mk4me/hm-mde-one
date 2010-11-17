@@ -86,8 +86,8 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 
     if(dataManager->GetMeshFilePathCount() > 0)
     {
-      //   LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-       //  dataManager->GetModel()->InicializeMesh();
+         LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
+         dataManager->GetModel()->InicializeMesh();
 
 //          if(object->ReadAMCFile(dataManager->GetAnimationFilePath(0)))
 //              LoadAnimation_ver2(dataManager->GetAnimationFilePath(0), dynamic_cast<Model*>(dataManager->GetModel()));
@@ -509,7 +509,7 @@ bool FileReader2Motion::LoadAnimation(ASFAMCParser* acclaimObject, Model* model 
 
         skeletonAnimation->m_boneAnimationList.push_back(boneAnmation);
 
-        for(int b = 0; b <boneCount; b++)
+        for(int b = 0; b <skeleton->m_pBoneList.size(); b++)
         {
             if(joint->getID()== skeleton->m_pBoneList[b]->idx)
             {
@@ -853,8 +853,8 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 				//temp->m_pBoneList[b]->boneSpace_quaternion = osg::Quat(-bone_space_quat[0], -bone_space_quat[2], -bone_space_quat[1], bone_space_quat[3]);
 
 
-				temp->m_pBoneList[b]->bonespace.makeRotate(temp->m_pBoneList[b]->boneSpace_quaternion);
-				temp->m_pBoneList[b]->bonespace.postMultTranslate(temp->m_pBoneList[b]->boneSpace_translation);
+				//temp->m_pBoneList[b]->bonespace.makeRotate(temp->m_pBoneList[b]->boneSpace_quaternion);
+				//temp->m_pBoneList[b]->bonespace.postMultTranslate(temp->m_pBoneList[b]->boneSpace_translation);
 
 
 				break;
