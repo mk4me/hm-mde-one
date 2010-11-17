@@ -9,54 +9,47 @@
 #include <QtGui/QMessageBox>
 #include <QtCore/QSettings>
 //#include <QtXml/QDomDocument>
+#include <utils/ObserverPattern.h>
 #include <plugins/communication/CommunicationManager.h>
+#include <plugins/communication/CommunicationService.h>
 #include "SettingsDialog.h"
 
-class CommunicationWidget : public QWidget {
+class CommunicationService;
+
+class CommunicationWidget : public QWidget, public utils::Observer<communication::CommunicationManager> {
 	Q_OBJECT
 public:
-	CommunicationWidget();
+	CommunicationWidget(CommunicationService* service);
 	virtual ~CommunicationWidget();
+
+    virtual void update(const communication::CommunicationManager* subject);
 	void writeSettings();
 	void readSettings();
-	void setTableView(QTableWidget*, const QStringList&);
-	void getSessions();
-	void getSessionTrials();
-	void getTrialFiles();
 
 	private slots:
-		void selectSession(int, int);
-		void selectTrial(int, int);
-		void selectFile(int, int);
-		void downloadSelected();
-		void options();
-		void setChangedSettings();
+		void sessionsTableDoubleClicked(int, int);
+		void trialsTableDoubleClicked(int, int);
+		void filesTableDoubleClicked(int, int);
+		void downloadButtonClicked();
+		void optionsButtonClicked();
+		void settingsDialogAccepted();
 		void sessionButtonClicked();
 
 private:
 	const static QStringList sessionsHeader;
 	const static QStringList trialHeader;
 	const static QStringList fileHeader;
-	QPushButton* downloadSelectedButton;
-	QPushButton* optionsButton;
-	QPushButton* sessionButton;
-	QTableWidget* sessionTable;
-	QTableWidget* trialTable;
-	QTableWidget* fileTable;
-	QLabel* trialLabel;
-	QLabel* fileLabel;
-	QTabWidget* tabs;
-	SettingsDialog* settings_dialog;
-	communication::CommunicationManager* commServ;
-	communication::TransportWSDL_FTPS* transportManager;
-	communication::QueryWSDL* queryManager;
-	bool validateQuerySettings();
-	std::vector<communication::Session>* sessions;
-	std::vector<communication::Trial>* trials;
-	std::vector<communication::File>* files;
-	QString session_folder;
-	QString trial_folder;
-//	void SessionDetailsWithAttributesParser(const std::string& data);
-//	void parseSession(const QDomElement &element);
+
+	CommunicationService* m_service;
+
+	QPushButton* m_download_button;
+	QPushButton* m_options_button;
+	QPushButton* m_list_lab_sessions_button;
+	QTableWidget* m_sessions_table;
+	QTableWidget* m_trials_table;
+	QTableWidget* m_files_table;
+	QTabWidget* m_table_tabs;
+	SettingsDialog* m_settings_dialog;
+	void setTableView(QTableWidget*, const QStringList&);
 };
 #endif

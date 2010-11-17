@@ -278,9 +278,9 @@ const std::vector<Performer>* BasicQueriesService::listPerformersWithAttributes(
 	return new std::vector<Performer>();
 }
 
-const std::vector<Trial>* BasicQueriesService::listSessionTrials(int sessionID) {
+std::vector<Trial> BasicQueriesService::listSessionTrials(int sessionID) {
 	this->setOperation("ListSessionTrialsXML");
-	std::vector<Trial>* t = NULL;
+	std::vector<Trial> t;
 	if(invoker.status()) {
 		if(!invoker.setValue("sessionID", WSDL_Wsdlpull::toString<int>(sessionID))) {
 			throw EDRException(invoker.errors().c_str());
@@ -288,7 +288,6 @@ const std::vector<Trial>* BasicQueriesService::listSessionTrials(int sessionID) 
 		if(!invoker.invoke()) {
 			throw invoker.getXMLResponse();
 		}
-		t = new std::vector<Trial>();
 		Schema::TypeContainer* tc = NULL;
 		tc = invoker.getOutput("ListSessionTrialsXMLResponse");
 		if(!tc) {
@@ -328,7 +327,7 @@ const std::vector<Trial>* BasicQueriesService::listSessionTrials(int sessionID) 
 				throw EDRException("Bad document structure format.");
 			}
 			TrialDetails = SessionTrialList->getChildContainer("TrialDetails");
-			t->push_back(trial);
+			t.push_back(trial);
 		}
 	} else {
 		throw EDRException(invoker.errors().c_str());
@@ -366,12 +365,12 @@ const std::vector<Performer>* BasicQueriesService::listLabPerformersWithAttribut
 //------------------------------------
 //listowanie sesji danego laboratorium
 //------------------------------------
-const std::vector<Session>* BasicQueriesService::listLabSessionsWithAttributes(int labID) {
+std::vector<Session> BasicQueriesService::listLabSessionsWithAttributes(int labID) {
 	this->setOperation("ListLabSessionsWithAttributesXML");
 	this->setValue("labID", WSDL_Wsdlpull::toString<int>(labID));
 	this->invokeOperation();
 
-	std::vector<Session>* v = new std::vector<Session>();
+	std::vector<Session> v;
 	Schema::TypeContainer* tc = NULL;
 	tc = invoker.getOutput("ListLabSessionsWithAttributesXMLResponse");
 	if(!tc)
@@ -391,17 +390,17 @@ const std::vector<Session>* BasicQueriesService::listLabSessionsWithAttributes(i
 		}
 		else
 		{
-			throw EDRException("Bad document structure format.");
+			throw EDRException("Bad document structure format: ID.");
 		}
-		temp = sessionDetails->getValue("MotionKindID", type);
-		if(temp)
-		{
-			s.setmotionKindID(*((int*)temp));
-		}
-		else
-		{
-			throw EDRException("Bad document structure format.");
-		}
+		//temp = sessionDetails->getValue("MotionKindID", type);
+		//if(temp)
+		//{
+		//	s.setmotionKindID(*((int*)temp));
+		//}
+		//else
+		//{
+		//	throw EDRException("Bad document structure format: Motion kind.");
+		//}
 		temp = sessionDetails->getValue("SessionDate", type);
 		if(temp)
 		{
@@ -409,7 +408,7 @@ const std::vector<Session>* BasicQueriesService::listLabSessionsWithAttributes(i
 		}
 		else
 		{
-			throw EDRException("Bad document structure format.");
+			throw EDRException("Bad document structure format: session date.");
 		}
 		temp = sessionDetails->getValue("SessionDescription", type);
 		if(temp)
@@ -418,10 +417,10 @@ const std::vector<Session>* BasicQueriesService::listLabSessionsWithAttributes(i
 		}
 		else
 		{
-			throw EDRException("Bad document structure format.");
+			throw EDRException("Bad document structure format: session description.");
 		}
 		sessionDetails = tc->getChildContainer("SessionDetailsWithAttributes");
-		v->push_back(s);
+		v.push_back(s);
 	}
 	return v;
 }
@@ -441,13 +440,13 @@ const std::vector<File>* BasicQueriesService::listSessionFiles(int sessionID) {
 	return new std::vector<File>();
 }
 
-const std::vector<File>* BasicQueriesService::listFiles(int ID, const std::string& subjectType) {
+std::vector<File> BasicQueriesService::listFiles(int ID, const std::string& subjectType) {
 	this->setOperation("ListFilesWithAttributesXML");
 	this->setValue("subjectID", WSDL_Wsdlpull::toString<int>(ID));
 	this->setValue("subjectType", subjectType);
 	this->invokeOperation();
 
-	std::vector<File>* f = new std::vector<File>();
+	std::vector<File> f;
 	Schema::TypeContainer* tc = NULL;
 	tc = invoker.getOutput("ListFilesWithAttributesXMLResponse");
 	if(!tc)
@@ -493,7 +492,7 @@ const std::vector<File>* BasicQueriesService::listFiles(int ID, const std::strin
 			throw EDRException("Bad document structure format.");
 		}
 		FileDetails = FileList->getChildContainer("FileDetails");
-		f->push_back(file);
+		f.push_back(file);
 	}
 	return f;
 }

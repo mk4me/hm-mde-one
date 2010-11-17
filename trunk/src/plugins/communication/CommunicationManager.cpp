@@ -7,305 +7,205 @@
 
 using namespace communication;
 
-CommunicationManager* CommunicationManager::pInstance = NULL;
+CommunicationManager* CommunicationManager::m_instance = NULL;
 
-CommunicationManager* CommunicationManager::getInstance() {
-	if(pInstance == NULL) {
-		pInstance = new CommunicationManager();
+CommunicationManager* CommunicationManager::getInstance()
+{
+	if(m_instance == NULL) {
+		m_instance = new CommunicationManager();
 	}
-	return pInstance;
+	return m_instance;
 }
 
-CommunicationManager* CommunicationManager::createInstanceFirstTime() {
-	if(pInstance == NULL) {
-		pInstance = new CommunicationManager();
-	} else {
-		throw EDRException("Instance already created.");
+void CommunicationManager::destoryInstance()
+{
+}
+
+CommunicationManager::CommunicationManager()
+{
+	this->m_transport_manager = NULL;
+	this->m_query_manager = NULL;
+}
+
+CommunicationManager::~CommunicationManager()
+{
+	if(m_instance) {
+		delete m_instance;
 	}
-	return pInstance;
+	m_instance = NULL;
 }
 
-void CommunicationManager::destoryInstance() {
-	if(pInstance) {
-		delete pInstance;
+void CommunicationManager::setSessions(unsigned int lab_id)
+{
+	this->clearSessions(lab_id);
+	try
+	{
+	std::cout << "start\n";
+		this->m_sessions = this->m_query_manager->listLabSessionsWithAttributes(lab_id);
 	}
-	pInstance = NULL;
-}
-
-bool CommunicationManager::init() {
-	transportManager = NULL;
-	queryManager = NULL;
-	return true;
-}
-
-void CommunicationManager::setTransportManager(ITransportable* transportManager) {
-	if(this->transportManager != NULL) {
-		delete this->transportManager;
+	catch(std::string& e)
+	{
+	std::cout << "ojoj\n";
+		this->labSessionsErrorCatcher(e);
 	}
-	this->transportManager = transportManager;
+	std::cout << "bezblednie\n";
+	notify();
 }
 
-void CommunicationManager::setQueryManager(IQueryable* queryManager) {
-	if(this->queryManager != NULL) {
-		delete this->queryManager;
+const CommunicationManager::Sessions& CommunicationManager::getSessions(/*unsigned int lab_id*/) const
+{
+	return this->m_sessions;
+}
+
+void CommunicationManager::setTrials(unsigned int session_id)
+{
+	this->clearTrials(session_id);
+	this->m_trials = this->m_query_manager->listSessionTrials(session_id);
+	notify();
+}
+const CommunicationManager::Trials& CommunicationManager::getTrials(/*unsigned int session_id*/) const
+{
+	return this->m_trials;
+}
+
+void CommunicationManager::setFiles(unsigned int trial_id)
+{
+	this->clearFiles(trial_id);
+	this->m_files = this->m_query_manager->listFiles(trial_id, "trial");
+	notify();
+}
+
+const CommunicationManager::Files& CommunicationManager::getFiles(/*unsigned int trial_id*/) const
+{
+	return this->m_files;
+}
+
+void CommunicationManager::setFile(unsigned int file_id)
+{
+	this->m_file_path = this->m_transport_manager->downloadFile(file_id, "");
+	notify();
+}
+
+const std::string& CommunicationManager::getFile(/*unsigned int file_id*/) const
+{
+	return this->m_file_path;
+}
+
+void CommunicationManager::clearSessions(unsigned int lab_id)
+{
+	this->m_sessions.clear();
+	this->m_trials.clear();
+	this->m_files.clear();
+	notify();
+}
+
+void CommunicationManager::clearTrials(unsigned int session_id)
+{
+	this->m_trials.clear();
+	this->m_files.clear();
+	notify();
+}
+
+void CommunicationManager::clearFiles(unsigned int trial_id)
+{
+	this->m_files.clear();
+	notify();
+}
+
+void CommunicationManager::setTransportManager(ITransportable* transport_manager)
+{
+	this->m_transport_manager = transport_manager;
+	notify();
+}
+
+void CommunicationManager::setQueryManager(IQueryable* query_manager)
+{
+	this->m_query_manager = query_manager;
+	notify();
+}
+
+ITransportable* CommunicationManager::getTransportManager()
+{
+	return this->m_transport_manager;
+}
+
+IQueryable* CommunicationManager::getQueryManager()
+{
+	return this->m_query_manager;
+}
+
+void CommunicationManager::labSessionsErrorCatcher(std::string& raw_data)
+{
+	std::string filename = "response.xml";
+	std::ofstream tempfile(filename.c_str(), std::ios::out);
+	tempfile << raw_data;
+
+	//QDomDocument response;
+	TiXmlDocument document(filename);
+
+	//if(!response.setContent(QString(data.c_str())))
+	//{
+	//	QMessageBox::warning(this, tr("Error"), tr("Cannot parse xml document."));
+	//}
+	if(!document.LoadFile())
+	{
+		throw std::ios_base::failure("Failed to load response temporary file.");
 	}
-	this->queryManager = queryManager;
-}
+	
+	//QDomElement root = response.documentElement();
+	//QDomNode n = root.firstChild();
+	TiXmlElement* root = document.RootElement();
+	TiXmlNode* node = root->FirstChild();
 
-int CommunicationManager::storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename) {
-	if(transportManager == NULL) {
-		throw EDRException("transportManager object is not set.");
+	//while(!n.isNull()) {
+	//	if(!n.toElement().isNull() && n.toElement().tagName() == "SessionDetailsWithAttributes")
+	//	{
+	//		parseSession(n.toElement());
+	//	}
+	//	if(n.nextSibling().toElement().isNull())
+	//	{
+	//		n = n.firstChild();
+	//	}
+	//	else
+	//	{
+	//		n = n.nextSibling();
+	//	}
+	//}
+	while(node != NULL)
+	{
+		if(node->ToElement() != NULL && node->ToElement()->ValueStr() == "SessionDetailsWithAttributes")
+		{
+			std::cout << "YAY\n";
+		}
+		if(node->NextSibling()->ToElement() != NULL)
+		{
+			node = node->NextSibling();
+		}
+		else
+		{
+			node = node->FirstChild();
+		}
 	}
-	return transportManager->storeSessionFile(sessionID, path, description, filename);
 }
 
-int CommunicationManager::storeSessionFiles(int sessionID, const std::string& path, const std::string& description) {
-	if(transportManager == NULL) {
-		throw EDRException("transportManager object is not set.");
-	}
-	return transportManager->storeSessionFiles(sessionID, path, description);
+void CommunicationManager::parseSession(const TiXmlElement* element)
+{
+	//this->m_sessions.push_back();
+ //     s.setID(element.firstChildElement("SessionID").text().toInt());
+ //     s.setmotionKindID(element.firstChildElement("MotionKindID").text().toInt());
+ //     std::string date(element.firstChildElement("SessionDate").text().toStdString());
+ //     s.setSessionDate(communication::DateTime(date));
+ //     s.setSessionDescription(element.firstChildElement("SessionDescription").text().toStdString());
+ //     sessions->push_back(s);
 }
 
-int CommunicationManager::storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename) {
-	if(transportManager == NULL) {
-		throw EDRException("transportManager object is not set.");
-	}
-	return transportManager->storePerformerFile(performerID, path, description, filename);
-}
-
-void CommunicationManager::storePerformerFiles(int performerID, const std::string& path) {
-	if(transportManager == NULL) {
-		throw EDRException("transportManager object is not set.");
-	}
-	transportManager->storePerformerFiles(performerID, path);
-}
-
-int CommunicationManager::storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename) {
-	if(transportManager == NULL) {
-		throw EDRException("transportManager object is not set.");
-	}
-	return transportManager->storeTrialFile(trialID, path, description, filename);
-}
-
-void CommunicationManager::storeTrialFiles(int trialID, const std::string& path) {
-	if(transportManager == NULL) {
-		throw EDRException("transportManager object is not set.");
-	}
-	transportManager->storeTrialFiles(trialID, path);
-}
-
-const std::string CommunicationManager::downloadFile(int fileID, const std::string& path) {
-	if(transportManager == NULL) {
-		throw EDRException("transportManager object is not set.");
-	}
-	return transportManager->downloadFile(fileID, path);
-}
-
-Performer* CommunicationManager::createPerformer(const std::string& name, const std::string& surname) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->createPerformer(name, surname);
-}
-Session* CommunicationManager::createSession(int labID, int performerID, DateTime& sessionDate, const std::string& sessionDescription, const std::string& motionKindName, std::vector<int>& groupsIDs) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->createSession(labID, performerID, sessionDate, sessionDescription, motionKindName, groupsIDs);
-}
-
-Trial* CommunicationManager::createTrial(int sessionID, const std::string& trialDescription, int trialDuration) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->createTrial(sessionID, trialDescription, trialDuration);
-}
-
-Segment* CommunicationManager::defineTrialSegment(int trialID, const std::string& segmentName, int startTime, int endTime) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->defineTrialSegment(trialID, segmentName, startTime, endTime);
-}
-
-int CommunicationManager::setPerformerAttribute(int performerID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->setPerformerAttribute(performerID, attributeName, attributeVal, update);
-}
-
-int CommunicationManager::setSessionAttribute(int sessionID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->setSessionAttribute(sessionID, attributeName, attributeVal, update);
-}
-
-int CommunicationManager::setTrialAttribute(int trialID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->setTrialAttribute(trialID, attributeName, attributeVal, update);
-}
-
-int CommunicationManager::setFileAttribute(int fileID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->setFileAttribute(fileID, attributeName, attributeVal, update);
-}
-
-int CommunicationManager::setSegmentAttribute(int segmentID, const std::string& attributeName, const std::string& attributeVal, bool update) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->setSegmentAttribute(segmentID, attributeName, attributeVal, update);
-}
-
-bool CommunicationManager::assignSessionToGroup(int sessionID, int groupID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->assignSessionToGroup(sessionID, groupID);
-}
-
-const Performer* CommunicationManager::getPerformerById(int performerID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->getPerformerById(performerID);
-}
-
-const Session* CommunicationManager::getSessionById(int sessionID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->getSessionById(sessionID);
-}
-
-const Segment* CommunicationManager::getSegmentById(int segmentID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->getSegmentById(segmentID);
-}
-
-const Trial* CommunicationManager::getTrialById(int trialID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->getTrialById(trialID);
-}
-
-const std::vector<Session>* CommunicationManager::listPerformerSessions(int performerID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->listPerformerSessions(performerID);
-}
-
-const std::vector<Session>* CommunicationManager::listPerformerSessionsWithAttributes(int performerID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->listPerformerSessionsWithAttributes(performerID);
-}
-
-const std::vector<Performer>* CommunicationManager::listPerformers() {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->listPerformers();
-}
-
-const std::vector<Performer>* CommunicationManager::listPerformersWithAttributes() {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->listPerformersWithAttributes();
-}
-
-const std::vector<Trial>* CommunicationManager::listSessionTrials(int sessionID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->listSessionTrials(sessionID);
-}
-
-const std::vector<Trial>* CommunicationManager::listSessionTrialsWithAttributes(int sessionID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->listSessionTrialsWithAttributes(sessionID);
-}
-//
-//const std::vector<Segment>* CommunicationManager::listTrialSegments(int trialID) {
-//	if(queryManager == NULL) {
-//		EDRException("queryManager object is not set.");
-//	}
-//	return queryManager->listTrialSegments(trialID);
-//}
-//
-//const std::vector<Segment>* CommunicationManager::listTrialSegmentsWithAttributes(int trialID) {
-//	if(queryManager == NULL) {
-//		EDRException("queryManager object is not set.");
-//	}
-//	return queryManager->listTrialSegmentsWithAttributes(trialID);
-//}
-//
-//const std::vector<Performer>* CommunicationManager::listLabPerformersWithAttributes(int labID) {
-//	if(queryManager == NULL) {
-//		EDRException("queryManager object is not set.");
-//	}
-//	return queryManager->listLabPerformersWithAttributes(labID);
-//}
-
-const std::vector<Session>* CommunicationManager::listLabSessionsWithAttributes(int labID) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->listLabSessionsWithAttributes(labID);
-}
-
-//const std::vector<File>* CommunicationManager::listSessionFiles(int sessionID) {
-//	if(queryManager == NULL) {
-//		EDRException("queryManager object is not set.");
-//	}
-//	return queryManager->listSessionFiles(sessionID);
-//}
-
-const std::vector<File>* CommunicationManager::listFiles(int ID, const std::string& subjectType) {
-	if(queryManager == NULL) {
-		EDRException("queryManager object is not set.");
-	}
-	return queryManager->listFiles(ID, subjectType);
-}
-
-//const std::vector<File>* CommunicationManager::listFilesWithAttributes(int ID, const std::string& subjectType) {
-//	if(queryManager == NULL) {
-//		EDRException("queryManager object is not set.");
-//	}
-//	return queryManager->listFilesWithAttributes(ID, subjectType);
-//}
-//
-//const std::vector<SessionGroup>* CommunicationManager::listSessionGroupsDefined() {
-//	if(queryManager == NULL) {
-//		EDRException("queryManager object is not set.");
-//	}
-//	return queryManager->listSessionGroupsDefined();
-//}
-//
-//const std::vector<MotionKind>* CommunicationManager::listMotionKindsDefined() {
-//	if(queryManager == NULL) {
-//		EDRException("queryManager object is not set.");
-//	}
-//	return queryManager->listMotionKindsDefined();
-//}
-//
-//void CommunicationManager::performQuery(const std::string& query) {
-//	if(queryManager == NULL) {
-//		EDRException("queryManager object is not set.");
-//	}
-//	queryManager->performQuery(query);
+//void CommunicationService::parseSession(const QDomElement &element)
+//{
+//      communication::Session s;
+//      s.setID(element.firstChildElement("SessionID").text().toInt());
+//      s.setmotionKindID(element.firstChildElement("MotionKindID").text().toInt());
+//      std::string date(element.firstChildElement("SessionDate").text().toStdString());
+//      s.setSessionDate(communication::DateTime(date));
+//      s.setSessionDescription(element.firstChildElement("SessionDescription").text().toStdString());
+//      sessions->push_back(s);
 //}

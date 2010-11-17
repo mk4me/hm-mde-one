@@ -11,7 +11,8 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 # nag³ówki prywatne
 set(PRIVATE_H
 	CommunicationPlugin.h
-	CommunicationWidget.h SettingsDialog.h
+	CommunicationWidget.h
+	SettingsDialog.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -29,6 +30,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/FileStoremanService.h
 	${HEADER_PATH}/FTPS_cURL.h
 	${HEADER_PATH}/IAuthenticable.h
+	${HEADER_PATH}/ICommunication.h
 	${HEADER_PATH}/IFTP.h
 	${HEADER_PATH}/IQueryable.h
 	${HEADER_PATH}/ISendable.h

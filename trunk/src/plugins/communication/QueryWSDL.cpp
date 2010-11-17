@@ -109,7 +109,7 @@ const std::vector<Performer>* QueryWSDL::listPerformersWithAttributes() {
 	return bqs->listPerformersWithAttributes();
 }
 
-const std::vector<Trial>* QueryWSDL::listSessionTrials(int sessionID) {
+std::vector<Trial> QueryWSDL::listSessionTrials(int sessionID) {
 	return bqs->listSessionTrials(sessionID);
 }
 
@@ -129,7 +129,7 @@ const std::vector<Performer>* QueryWSDL::listLabPerformersWithAttributes(int lab
 	return bqs->listLabPerformersWithAttributes(labID);
 }
 
-const std::vector<Session>* QueryWSDL::listLabSessionsWithAttributes(int labID) {
+std::vector<Session> QueryWSDL::listLabSessionsWithAttributes(int labID) {
 	return bqs->listLabSessionsWithAttributes(labID);
 }
 
@@ -137,7 +137,7 @@ const std::vector<File>* QueryWSDL::listSessionFiles(int sessionID) {
 	return bqs->listSessionFiles(sessionID);
 }
 
-const std::vector<File>* QueryWSDL::listFiles(int ID, const std::string& subjectType) {
+std::vector<File> QueryWSDL::listFiles(int ID, const std::string& subjectType) {
 	return bqs->listFiles(ID, subjectType);
 }
 

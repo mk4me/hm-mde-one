@@ -81,7 +81,7 @@ namespace communication {
 		virtual const std::vector<Performer>* listPerformersWithAttributes() = 0;
 		/**
 		*/
-		virtual const std::vector<Trial>* listSessionTrials(int sessionID) = 0;
+		virtual std::vector<Trial> listSessionTrials(int sessionID) = 0;
 		/**
 		*/
 		virtual const std::vector<Trial>* listSessionTrialsWithAttributes(int sessionID) = 0;
@@ -96,13 +96,13 @@ namespace communication {
 		virtual const std::vector<Performer>* listLabPerformersWithAttributes(int labID) = 0;
 		/**
 		*/
-		virtual const std::vector<Session>* listLabSessionsWithAttributes(int labID) = 0;
+		virtual std::vector<Session> listLabSessionsWithAttributes(int labID) = 0;
 		/**
 		*/
 		virtual const std::vector<File>* listSessionFiles(int sessionID) = 0;
 		/**
 		*/
-		virtual const std::vector<File>* listFiles(int ID, const std::string& subjectType) = 0;
+		virtual std::vector<File> listFiles(int ID, const std::string& subjectType) = 0;
 		/**
 		*/
 		virtual const std::vector<File>* listFilesWithAttributes(int ID, const std::string& subjectType) = 0;

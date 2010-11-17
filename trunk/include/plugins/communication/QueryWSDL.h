@@ -105,7 +105,7 @@ namespace communication {
 		const std::vector<Performer>* listPerformersWithAttributes();
 		/**
 		*/
-		const std::vector<Trial>* listSessionTrials(int sessionID);
+		std::vector<Trial> listSessionTrials(int sessionID);
 		/**
 		*/
 		const std::vector<Trial>* listSessionTrialsWithAttributes(int sessionID);
@@ -120,13 +120,13 @@ namespace communication {
 		const std::vector<Performer>* listLabPerformersWithAttributes(int labID);
 		/**
 		*/
-		const std::vector<Session>* listLabSessionsWithAttributes(int labID);
+		std::vector<Session> listLabSessionsWithAttributes(int labID);
 		/**
 		*/
 		const std::vector<File>* listSessionFiles(int sessionID);
 		/**
 		*/
-		const std::vector<File>* listFiles(int ID, const std::string& subjectType);
+		std::vector<File> listFiles(int ID, const std::string& subjectType);
 		/**
 		*/
 		const std::vector<File>* listFilesWithAttributes(int ID, const std::string& subjectType);
