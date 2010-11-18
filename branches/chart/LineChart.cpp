@@ -10,7 +10,7 @@ LineChart::LineChart(ChartData* data,ChartDecoration* chartDecoration){
 		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*chartDecoration->getXEnd()+chartDecoration->getStartPoint().x(),data->getNormalizedYValue(i)*chartDecoration->getYEnd()+chartDecoration->getStartPoint().y(),0));
 	}
 	
-	chart=Chart::drawChart(chartVertices); 
+	chart=ChartDataSeries::drawChart(chartVertices); 
 	this->addChild(chart);
 
 	pointer=new Pointer(chartDecoration->getStartPoint(),chartDecoration->getEndPoint(),data);
@@ -31,7 +31,7 @@ LineChart::chartVertices=new osg::Vec3Array();
 		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*chartDecoration->getXEnd()+chartDecoration->getStartPoint().x(),data->getNormalizedYValue(i)*chartDecoration->getYEnd()+chartDecoration->getStartPoint().y(),0));
 	}
 	
-	osg::Geode* newChart=Chart::drawChart(chartVertices); 
+	osg::Geode* newChart=ChartDataSeries::drawChart(chartVertices); 
 	this->replaceChild(chart,newChart);
 chart=newChart;
 	Pointer* newPointer=new Pointer(chartDecoration->getStartPoint(),chartDecoration->getEndPoint(),data);

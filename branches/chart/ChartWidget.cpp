@@ -9,11 +9,11 @@ ChartWidget::ChartWidget(ChartService* service)
     setupUi(this);
 
 	c3dFile="Przejscie1.c3d";
-
+	//createEMGChanels();
 	mainViewer=new ChartViewer(this,0,c3dFile);
 	mainViewer->setMinimumSize(300,300);
 	mainChart->addWidget(mainViewer);
-
+	
 }
 
 ChartWidget::~ChartWidget() 
@@ -22,7 +22,7 @@ ChartWidget::~ChartWidget()
 }
 
 void ChartWidget::createLargeChart(int chartIndex){
-	mainViewer->changeView(chartIndex);
+//mainViewer->changeView(chartIndex);
 	//mainViewer=new ChartViewer(this,chartIndex,c3dFile);
 	////mainViewer->setMinimumSize(300,300);
 	//mainChart->addWidget(mainViewer);

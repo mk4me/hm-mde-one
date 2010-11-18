@@ -302,3 +302,10 @@ this->yNumReps=yNumReps;
 void ChartDecoration::setStartPoint(osg::Vec3 startPoint){
 	this->startPoint=osg::Vec3(startPoint.x()+borderSize,startPoint.y()+borderSize,0);
 }
+
+void ChartDecoration::setLocation(int x,int y,int width,int height){
+	this->setStartPoint(osg::Vec3(x,y,0));
+	this->setXEnd(width);
+	this->setYEnd(height);
+	
+}

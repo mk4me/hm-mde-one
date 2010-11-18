@@ -74,7 +74,7 @@ ChartService::ChartService()
   length(0.0)
 {
     widget = new ChartWidget(this);
-	length=(double)widget->getViewer()->getData(0)->getRNumber()/(double)widget->getViewer()->getData(0)->getFPS() ;
+	length=(double)widget->getViewer()->getChart()->getFrameNumber(0)/(double)widget->getViewer()->getChart()->getFPS(0) ;
 }
 
 
@@ -107,8 +107,8 @@ AsyncResult ChartService::compute()
 
 AsyncResult ChartService::update( double time, double timeDelta )
 {
-	for(int i=0;i<widget->getViewer()->getChartCount();i++)
-	widget->getViewer()->getChart(i)->getPointer()->update(targetTime);
+
+	widget->getViewer()->getChart()->updatePointer(targetTime);
     return AsyncResult_Complete;
 }
 
@@ -138,6 +138,6 @@ double ChartService::getLength() const
 
 void ChartService::setLength( double length )
 {
-  //  OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+
     this->length = length;
 }

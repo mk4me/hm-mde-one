@@ -20,7 +20,7 @@ set(PRIVATE_H
 	ChartService.h
 	ChartWidget.h
 	IChart.h
-	Chart.h
+	ChartDataSeries.h
 	ChartDecoration.h
 	ChartData.h
 	LineChart.h
@@ -38,6 +38,7 @@ set(PRIVATE_H
 	Parameters.h
 	ProcessorReader.h
 	ChartViewer.h
+	Chart.h
 
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -51,7 +52,7 @@ set(TARGET_SRC
 	ChartPlugin.cpp
 	ChartWidget.cpp
 	ChartService.cpp
-	Chart.cpp
+	ChartDataSeries.cpp
 	ChartDecoration.cpp
 	ChartData.cpp
 	LineChart.cpp
@@ -59,6 +60,7 @@ set(TARGET_SRC
 	PointerUpdateCallback.cpp
 	C3D_Data.cpp
 	c3dParser.cpp
+	Chart.cpp
 	Data.cpp
 	DECreader.cpp
 	GroupData.cpp

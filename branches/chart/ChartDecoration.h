@@ -133,5 +133,6 @@ public:
 	int getYNumReps();
 	//! Funkcja ustawiajaca ilosc przedzialek na osi Y
 	void setYNumReps(int xNumReps);
+	void setLocation(int x,int y,int width,int height);
 };
 #endif

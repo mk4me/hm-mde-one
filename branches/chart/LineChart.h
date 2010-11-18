@@ -11,11 +11,11 @@ purpose:  Klasa ta sluzy do tworzenia wykresu liniowego
 #include <osg/Geode>
 #include <osg/Geometry>
 #include "ChartData.h"
-#include "Chart.h"
+#include "ChartDataSeries.h"
 #include "ChartDecoration.h"
 #include "Pointer.h"
 
-class LineChart : public Chart{
+class LineChart : public ChartDataSeries{
 private:
 	osg::Vec3Array* chartVertices;
 	Pointer* pointer;
