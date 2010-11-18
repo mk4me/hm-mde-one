@@ -274,6 +274,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
     // LoadSkeleton(model);
 
 	// parse to BVM - joint model
+    /*
 	Bone *bone = skeleton->m_pRootBone;
 
 	// get every bone & put them to list/whatever where they are sorted by id
@@ -303,6 +304,7 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
 	};
 
 	Obj::update(bone);
+    */
 
 	LoadSkeleton(model);
 //    LoadAnimation(acclaimObject, model);
@@ -815,14 +817,38 @@ bool FileReader2Motion::IsMeshAnimation(std::wstring* address)
 }
 
 //--------------------------------------------------------------------------------------------------
+void FileReader2Motion::ChangePlaces( Skeleton* skeleton, int from, int destination )
+{
+    Bone* tmpBone = new Bone();
 
+    tmpBone = skeleton->m_pBoneList[from];
+    skeleton->m_pBoneList[from] = skeleton->m_pBoneList[destination];
+    skeleton->m_pBoneList[destination] = tmpBone;
+}
+
+//--------------------------------------------------------------------------------------------------
+void FileReader2Motion::ParseMeshSkeleton( Skeleton* skeleton )
+{
+    ChangePlaces(skeleton, 3,8);
+    ChangePlaces(skeleton, 4,9);
+    ChangePlaces(skeleton, 5,10);
+    ChangePlaces(skeleton, 6,11);
+    ChangePlaces(skeleton, 7,12);
+
+    ChangePlaces(skeleton, 15,19);
+    ChangePlaces(skeleton, 16,20);
+    ChangePlaces(skeleton, 17,21);
+    ChangePlaces(skeleton, 18,22);
+}
+
+//--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 {
     model->SetModelSkeleton(mesh_skeleton);
 	Skeleton* model_skeleton = model->GetSkeleton();
 	Skeleton* temp = new Skeleton();
 
-	temp->m_pBoneList.resize(mesh_skeleton->bones_count);
+	temp->m_pBoneList.resize(model_skeleton->m_pBoneList.size());
 
 	for(int b = 0; b < mesh_skeleton->bones_count; b++)
 	{
@@ -862,6 +888,33 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 		}
 	}
 
+    //proste uzupe³nienie.
+    int sizeTemp = mesh_skeleton->bones_count;
+    bool isInTemp = false;
+
+    for(int b = 0; b < model_skeleton->m_pBoneList.size(); b++)
+    {
+        isInTemp = false;
+
+        for(int t = 0; t < temp->m_pBoneList.size(); t++)
+        {
+            if(temp->m_pBoneList[t] == model_skeleton->m_pBoneList[b])
+            {
+                isInTemp = true;
+                break;
+            }
+        }
+
+        if(!isInTemp)
+        {
+            temp->m_pBoneList[sizeTemp] = model_skeleton->m_pBoneList[b];
+            sizeTemp++;
+        }
+    }
+
+    ParseMeshSkeleton(temp);
+
+    /*
     // wywalenie damisów
    
 	//proste uzupe³nienie pozosta³ych pól
@@ -909,7 +962,7 @@ bool FileReader2Motion::Mapping( Model *model, SSkeleton *mesh_skeleton )
 	//		sizeTemp++;
 	//	}
 	}
-
+*/
 
 	temp->m_pRootBone = temp->m_pBoneList[0];
 

@@ -50,6 +50,9 @@ private:
     static void calculateMatrixAndData(Bone *bone);
 
     static void RemoveDummyJoint(ASFAMCParser* acclaimObject, Model* model );
+
+    static void ParseMeshSkeleton(Skeleton* skeleton);
+    static void ChangePlaces(Skeleton* skeleton, int from, int destination);
 };
 
 #endif //FILE_READER_2_MOTION_H

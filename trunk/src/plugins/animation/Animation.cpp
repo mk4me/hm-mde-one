@@ -74,7 +74,7 @@ bool Animation::Stop()
     FirstFrame();
 
     // update model
-    UpdateModelBVHFormat();
+    UpdateModel();
     _state = Animation::STOPPED;
 
     m_pAnimationService->NotifyStop();
@@ -151,7 +151,7 @@ double Animation::SetPogress(double t)
     t = (t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
     _actTime = _length * t;
     // update Model
-    UpdateModelBVHFormat();
+    UpdateModel();
     _state = actState;
     return _actTime;
 }
@@ -178,6 +178,7 @@ void Animation::calculateChildMatrixBVHFormat( Bone* bone )
     y = bone->dir[1] * lenght;
     z = bone->dir[2] * lenght;
 
+    // trzeba uwzglêdniæ rotacje a asfa.
 
     // tworzenie macierzy animacji. AMC file
     // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
@@ -449,7 +450,7 @@ void Animation::Update(double dt)
     _actTime = dt;
 
     // update model
-    UpdateModelBVHFormat();
+    UpdateModel();
 }
 
 //--------------------------------------------------------------------------------------------------
