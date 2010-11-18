@@ -58,19 +58,17 @@ public:
 private: 
     // update model - updates only mesh etc taking skeleton
     // into consideration - called by update
-    void UpdateModel();
-    void calculateChildMatrix(Bone* bone);
+    void UpdateModelAcclaimFormat();
+    void CalculateChildMatrixAcclaimFormat(Bone* bone);
 
     void UpdateModelBVHFormat();
-    void calculateChildMatrixBVHFormat(Bone* bone);
-
+    void CalculateChildMatrixBVHFormat(Bone* bone);
 
     // set transformations from frame 0
     void FirstFrame();
 
-
-    void UpdateModel_ver2();
-    void calculateChildMatrix_ver2(Bone* bone);
+    void UpdateModelFmesh();
+    void CalculateChildMatrixFmesh(Bone* bone);
 
 private: 
 

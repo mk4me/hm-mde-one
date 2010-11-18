@@ -26,7 +26,7 @@ public:
     static bool LoadAnimation(SFModel* fmodel, Model* model);
     static bool LoadAnimation(ASFAMCParser* acclaimObject, Model* model);
 
-    static bool LoadAnimation_ver2(std::string address, Model* model);
+    static bool LoadAnimationFromFAnnimation(std::string address, Model* model);
 
 private:
     static void ReadFrmDAEFile(const std::string& file, Model* model);
@@ -44,14 +44,12 @@ private:
     static bool LoadSkeleton(Model* model);
 
 	static bool Mapping(Model *model, SSkeleton *mesh_skeleton);
-    static bool Mapping_secVer( Model *model, SSkeleton *mesh_skeleton);
+    static bool MappingFromFmesh( Model *model, SSkeleton *mesh_skeleton);
 
-    static void createHierarchy(Skeleton* temp);
-    static void calculateMatrixAndData(Bone *bone);
+    static void CreateHierarchyFmesh(Skeleton* temp);
+    static void CalculateMatrixAndDataFmesh(Bone *bone);
 
-    static void RemoveDummyJoint(ASFAMCParser* acclaimObject, Model* model );
-
-    static void ParseMeshSkeleton(Skeleton* skeleton);
+    static void MirrorSkeleton(Skeleton* skeleton);
     static void ChangePlaces(Skeleton* skeleton, int from, int destination);
 };
 

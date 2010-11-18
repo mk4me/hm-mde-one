@@ -22,8 +22,6 @@ class SkeletonNode;
 struct Frame;
 struct SMaterial;
 
-struct SSkeleton;
-
 #define MAX_AFFECTING_BONES 8
 
 class Model:public IModel, public osg::Group
@@ -39,6 +37,8 @@ public:
     virtual void SetAnimation(SkeletonAnimationList* animation);
     virtual void SetJoints(std::vector<ISkeletonNode* >* joints);
     virtual void ApplyMaterial(std::vector<SMaterial>* materialList, std::wstring textureDir);
+    virtual void DrawModelBone();
+
     virtual void* GetSkeletonGroup();
 
     virtual IMesh* GetMesh(int i = 0);
@@ -49,21 +49,13 @@ public:
     virtual Skeleton* GetSkeleton();
     virtual SkeletonAnimationList* GetAnimation();
 
-    virtual SSkeleton* GetModelSkeleton() {return m_pModelSkeleton;};
-    virtual void SetModelSkeleton(SSkeleton* skeleton){ m_pModelSkeleton = skeleton; };
-
     void DrawBone(Bone* bone, osg::Geode* geode);
-
-    osg::ref_ptr<osg::Geometry> DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, const osg::Vec3d* vertexPos, 
-        const osg::Vec3d* startPos2, const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2, bool isSelected);
 
     osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3f* startPos, const osg::Vec3f* endPos, bool isSelected);
 
-    virtual void DrawModelBone();
-
     osg::ref_ptr<osg::Geometry>  m_geometry;
-
     osg::ref_ptr<osg::Geode> m_spSkeletonGeode;
+
 private:
     void CreateArrayOfJoints(SkeletonNode* bone);
 
@@ -71,8 +63,6 @@ private:
     Skeleton* m_pSkeleton;
     SkeletonAnimationList* m_pAnimation;
     std::vector<IMesh* > m_meshList;
-
-    SSkeleton* m_pModelSkeleton;
 };
 
 

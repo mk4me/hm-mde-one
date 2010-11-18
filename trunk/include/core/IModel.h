@@ -11,7 +11,6 @@ class ISkeletonNode;
 class Skeleton;
 struct SkeletonAnimationList;
 struct SMaterial;
-struct SSkeleton;
 
 class IModel
 {
@@ -36,9 +35,6 @@ public:
     virtual osg::ref_ptr<osg::Geode> GetSkeletonGeode() = 0;
 
 	virtual void DrawModelBone() = 0;
-
-    virtual SSkeleton* GetModelSkeleton() = 0;
-    virtual void SetModelSkeleton(SSkeleton* skeleton) = 0;
 };
 
 

@@ -6,8 +6,6 @@
 #include <core/FModel.h>
 #include <core/Matrix.h>
 
-#include <core/ModelData.h>
-
 #define pPat osg::PositionAttitudeTransform*
 
 using namespace osg;
@@ -236,74 +234,6 @@ void Model::DrawBone( Bone* bone, osg::Geode* geode)
 	{
 		this->DrawBone(bone->child[i], geode);
 	}
-}
-
-//--------------------------------------------------------------------------------------------------
-osg::ref_ptr<osg::Geometry> Model::DrawTriangle(const osg::Vec3d* startPos, const osg::Vec3d* endPos, 
-                                                const osg::Vec3d* vertexPos, const osg::Vec3d* startPos2, 
-                                                const osg::Vec3d* endPos2, const osg::Vec3d* vertexPos2, bool isSelected)
-{
-    // draw actual bone
-    
-
-    // vertices
-    osg::Vec3Array* vertices = new osg::Vec3Array();
-    vertices->push_back(*startPos);
-    vertices->push_back(*endPos);
-    vertices->push_back(*vertexPos);
-    vertices->push_back(*startPos2);
-    vertices->push_back(*endPos2);
-    vertices->push_back(*vertexPos2);
-
-    // indices
-    osg::DrawElementsUInt* line = new osg::DrawElementsUInt(osg::PrimitiveSet::POLYGON, 0);
-    line->push_back(0);
-    line->push_back(1);
-    line->push_back(2);
-    line->push_back(3);
-    line->push_back(4);
-    line->push_back(5);
-
-    // set geometry data
-    m_geometry->setVertexArray(vertices);
-    m_geometry->addPrimitiveSet(line);
-
-    // set colors
-    osg::Vec4Array* colors = new osg::Vec4Array;
-    if(isSelected)
-    {
-        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
-        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
-        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
-        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
-        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
-        colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
-    }
-    else
-    {
-        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
-        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
-        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
-        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-        colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 0.0f));
-    }
-
-
-    osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
-    colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;
-    colorIndexArray->push_back(0);
-    colorIndexArray->push_back(1);
-    colorIndexArray->push_back(2);
-    colorIndexArray->push_back(3);
-    colorIndexArray->push_back(4);
-    colorIndexArray->push_back(5);
-
-    m_geometry->setColorArray(colors);
-    m_geometry->setColorIndices(colorIndexArray);
-    m_geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-
-    return m_geometry;
 }
 
 //--------------------------------------------------------------------------------------------------

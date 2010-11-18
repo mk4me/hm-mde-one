@@ -14,7 +14,6 @@
 #include <osg/Quat>
 #include <osg/ref_ptr>
 
-#include <core/ModelData.h>
 
 namespace osgViewer
 {
@@ -128,7 +127,6 @@ private:
     void RecalculateChanges();
     void UpdateSkeleton();
     void UpdateMesh();
-    void UpdateMesh_testingVer();
     void Clear();
 
     std::vector<std::vector<ISimpleOneArgFunctor<double>*>::iterator> m_functionsToRemove; // functions to remove from caller
@@ -156,11 +154,6 @@ private:
 
     IServiceManager* m_pServiceManager;
     OsgControlWidget* widget;
-
-
-
-
-    SSkeleton* modelSkeleton;
 };
 
 //--------------------------------------------------------------------------------------------------

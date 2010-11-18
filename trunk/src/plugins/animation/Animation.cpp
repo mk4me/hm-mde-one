@@ -74,7 +74,7 @@ bool Animation::Stop()
     FirstFrame();
 
     // update model
-    UpdateModel();
+    UpdateModelAcclaimFormat();
     _state = Animation::STOPPED;
 
     m_pAnimationService->NotifyStop();
@@ -106,37 +106,11 @@ void Animation::Play()
 				if(m_pSkeletonAnimaton->m_boneAnimationList[ab]->idx == m_pSkeleton->m_pBoneList[b]->idx)
 				{
 					   m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
-
-//                     int childCount = m_pSkeleton->m_pBoneList[b]->child.size();
-// 
-//                     for(int c = 0 ; c < childCount; c++)
-//                     {
-//                         m_pSkeleton->m_pBoneList[b]->child[c]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
-//                     }
 				}
 			}
         }
 
-//         int childCount = m_pSkeleton->m_pRootBone->child.size();
-// 
-//         for(int c = 0 ; c < childCount; c++)
-//         {
-//             for(int ab = 0; ab <animatioBoneCount; ab++)
-//             {
-//                 if(m_pSkeleton->m_pRootBone->child[c]->idx == m_pSkeletonAnimaton->m_boneAnimationList[ab]->idx)
-//                 {
-//                     m_pSkeleton->m_pRootBone->child[c]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
-//                 }
-//             }
-//         }
-// 
-// 
-// 
-// 
-// 
-//         m_pSkeleton->m_pRootBone->frame = m_pSkeletonAnimaton->m_boneAnimationList[0]->m_frames;
-
-        // ilosc kosci = ilosc obiektów frame w dablicy
+        // ilosc kosci = ilosc obiektów frame w tablicy
         m_pFrameCount = m_pSkeleton->m_pRootBone->frame.size();
         _length = m_pSkeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
     }
@@ -151,13 +125,13 @@ double Animation::SetPogress(double t)
     t = (t < 0.0) ? 0.0 : (t > 1.0) ? 1.0 : t;
     _actTime = _length * t;
     // update Model
-    UpdateModel();
+    UpdateModelAcclaimFormat();
     _state = actState;
     return _actTime;
 }
 
 //--------------------------------------------------------------------------------------------------
-void Animation::calculateChildMatrixBVHFormat( Bone* bone )
+void Animation::CalculateChildMatrixBVHFormat( Bone* bone )
 {
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
@@ -167,7 +141,6 @@ void Animation::calculateChildMatrixBVHFormat( Bone* bone )
         _state = Animation::STOPPED;
         index = m_pFrameCount -1;
     }
-
 
     osg::Matrixd M;
     float rx, ry, rz;
@@ -210,7 +183,7 @@ void Animation::calculateChildMatrixBVHFormat( Bone* bone )
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateChildMatrixBVHFormat(bone->child[i]);
+        CalculateChildMatrixBVHFormat(bone->child[i]);
     }
 }
 
@@ -271,12 +244,12 @@ void Animation::UpdateModelBVHFormat()
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateChildMatrixBVHFormat(bone->child[i]);
+        CalculateChildMatrixBVHFormat(bone->child[i]);
     }
 }
 
 //--------------------------------------------------------------------------------------------------
-void Animation::calculateChildMatrix(Bone *bone)
+void Animation::CalculateChildMatrixAcclaimFormat(Bone *bone)
 {
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
@@ -346,14 +319,14 @@ void Animation::calculateChildMatrix(Bone *bone)
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateChildMatrix(bone->child[i]);
+        CalculateChildMatrixAcclaimFormat(bone->child[i]);
     }
 }
 
 //--------------------------------------------------------------------------------------------------
 // update model - updates only mesh etc taking skeleton
 // into consideration - called by update
-void Animation::UpdateModel()
+void Animation::UpdateModelAcclaimFormat()
 {
     // update skeleton
     // for every bone
@@ -428,7 +401,7 @@ void Animation::UpdateModel()
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateChildMatrix(bone->child[i]);
+        CalculateChildMatrixAcclaimFormat(bone->child[i]);
     }
 }
 
@@ -450,7 +423,7 @@ void Animation::Update(double dt)
     _actTime = dt;
 
     // update model
-    UpdateModel();
+    UpdateModelAcclaimFormat();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -475,31 +448,7 @@ void Animation::SetTime( double time )
 }
 
 //--------------------------------------------------------------------------------------------------
-double Animation::GetProgress()
-{
-    return _actTime / _length; 
-}
-
-//--------------------------------------------------------------------------------------------------
-double Animation::GetTime()
-{
-    return _actTime; 
-}
-
-//--------------------------------------------------------------------------------------------------
-Animation::AnimationState Animation::GetState()
-{
-    return _state; 
-}
-
-//--------------------------------------------------------------------------------------------------
-void Animation::SetScale( double scale )
-{
-	SCALE = scale;
-}
-
-//--------------------------------------------------------------------------------------------------
-void Animation::calculateChildMatrix_ver2( Bone* bone )
+void Animation::CalculateChildMatrixFmesh( Bone* bone )
 {
     // update skeleton
     // for every bone
@@ -548,12 +497,12 @@ void Animation::calculateChildMatrix_ver2( Bone* bone )
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateChildMatrix_ver2(bone->child[i]);
+        CalculateChildMatrixFmesh(bone->child[i]);
     }
 }
 
 //--------------------------------------------------------------------------------------------------
-void Animation::UpdateModel_ver2()
+void Animation::UpdateModelFmesh()
 {
     // update skeleton
     // for every bone
@@ -594,7 +543,30 @@ void Animation::UpdateModel_ver2()
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
     {
-        calculateChildMatrix_ver2(bone->child[i]);
+        CalculateChildMatrixFmesh(bone->child[i]);
     }
 }
 
+//--------------------------------------------------------------------------------------------------
+double Animation::GetProgress()
+{
+    return _actTime / _length; 
+}
+
+//--------------------------------------------------------------------------------------------------
+double Animation::GetTime()
+{
+    return _actTime; 
+}
+
+//--------------------------------------------------------------------------------------------------
+Animation::AnimationState Animation::GetState()
+{
+    return _state; 
+}
+
+//--------------------------------------------------------------------------------------------------
+void Animation::SetScale( double scale )
+{
+    SCALE = scale;
+}

@@ -89,11 +89,11 @@ int ASFAMCParser::ReadASFFile(std::string ASFFileName)
     //First argument, the ASF file, is opened
     if ((tempFilePointerASF  = fopen(ASFFileName.c_str(), "r")) == NULL)
     {
-        printf ("The file %s was not opened\n", ASFFileName) ;
+        printf ("ERROR: The file %s was not opened\n", ASFFileName.c_str()) ;
         return 0;
     }
     else
-        printf ("The file %s is being processed.\n", ASFFileName) ;
+        printf ("The file %s is being processed.\n", ASFFileName.c_str()) ;
 
     //Reset the pointer to the beginning of the file...
     fseek (tempFilePointerASF, 0L, SEEK_SET) ;
@@ -511,11 +511,11 @@ int ASFAMCParser::ReadAMCFile(std::string AMCFileName)
     //First argument, the AMC file, is opened
     if ((tempFilePointerAMC  = fopen(AMCFileName.c_str(), "r")) == NULL)
     {
-        printf ("The file %s was not opened\n", AMCFileName) ;
+        printf ("ERROR: The file %s was not opened\n", AMCFileName.c_str()) ;
         return 0;
     }
     else
-        printf ("The file %s is being processed.\n", AMCFileName) ;
+        printf ("The file %s is being processed.\n", AMCFileName.c_str()) ;
 
     fseek (tempFilePointerAMC, 0L, SEEK_SET) ;
 

@@ -305,8 +305,6 @@ void AnimationService::LoadAnimation( IModel* model )
             Animation* animation = new Animation(model->GetSkeleton(), model->GetAnimation()->m_SkeletonAnimationList[i], this);
             m_animations.insert(make_pair(names[i], animation));	
     }
-    
-    modelSkeleton = m_pModel->GetModelSkeleton();
 }
 
 
@@ -398,83 +396,8 @@ void AnimationService::RecalculateChanges()
 }
 
 //--------------------------------------------------------------------------------------------------
-void AnimationService::UpdateMesh_testingVer()
-{
-    //std::map<int, int> dupa;
-    std::vector<IMesh*> meshList = m_pModel->GetMeshList();
-    int countHandv = 0;
-
-    std::vector<Bone*> m_pActualBones = m_pModel->GetSkeleton()->m_pBoneList;	
-
-    for(std::vector<IMesh*>::iterator it = meshList.begin(); it != meshList.end(); it++)
-    {
-        IMesh* mesh = *it;
-        SSkin* skin = NULL;
-
-        if (mesh && (skin = mesh->GetSkin()))
-        {
-            // update vertices using skin
-            for (int i = 0; i < skin->n; i++)
-            {
-                // vertice
-                SSkinnedVertice* vertice = &skin->skinned_vertices[i];
-
-                // act position of vertice
-                Vec3d actPos(mesh->GetRootVerts()[vertice->vert_id]._v[0],
-                    mesh->GetRootVerts()[vertice->vert_id]._v[1], mesh->GetRootVerts()[vertice->vert_id]._v[2]);
-
-                // normal
-                Vec3d normal(mesh->GetRootVertNormals()[vertice->vert_id]._v[0], 
-                    mesh->GetRootVertNormals()[vertice->vert_id]._v[1], mesh->GetRootVertNormals()[vertice->vert_id]._v[2]);
-
-
-                // for every affecting bone
-                for (int b = 0; b < vertice->n; b++)
-                {
-                    int boneID = vertice->bones[b].boneID;
-
-                    osg::Matrix boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
-
-
-                    //boneTransformation.postMultScale(osg::Vec3d(0.2,0.2,0.2));
-                    osg::Vec3d temp = actPos * boneTransformation; 
-                    _tempVectors[b][POSITION] = temp;   /*+ m_pActualBones[boneID]->matrix->getTrans()*/ //Mathematics.add(destonationVertex, Mathematics.scale(temp, weight)); 
-
-                    osg::Vec3d temp2 = normal * boneTransformation;
-                    _tempVectors[b][NORMALS] = temp2; //Mathematics.add(destonationNormal, Mathematics.scale(temp, weight)); 
-                }
-
-
-                // get output point
-                Vec3d change, nchange;
-                for (int b = 0; b < vertice->n; b++)
-                {
-                    change  += _tempVectors[b][POSITION] * vertice->bones[b].weight;
-                    nchange += _tempVectors[b][NORMALS]  * vertice->bones[b].weight;
-                }
-
-                // update of vertex
-                mesh->GetVerts()[vertice->vert_id]._v[0] = change.x();
-                mesh->GetVerts()[vertice->vert_id]._v[1] = change.y();
-                mesh->GetVerts()[vertice->vert_id]._v[2] = change.z();
-
-                // update of normal 
-                mesh->GetVertNormals()[vertice->vert_id]._v[0] = nchange.x();
-                mesh->GetVertNormals()[vertice->vert_id]._v[1] = nchange.y();
-                mesh->GetVertNormals()[vertice->vert_id]._v[2] = nchange.z();
-            }
-        }
-
-        (*it)->Update();
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
 void AnimationService::UpdateMesh()
 {
-    //SSkeleton* modelSkeleton = m_pModel->GetModelSkeleton();
-
-	//std::map<int, int> dupa;
     std::vector<IMesh*> meshList = m_pModel->GetMeshList();
     int countHandv = 0;
 
@@ -506,31 +429,18 @@ void AnimationService::UpdateMesh()
                 for (int b = 0; b < vertice->n; b++)
                 {
                     int boneID = vertice->bones[b].boneID;
-                        
-                  //  if(m_pActualBones[boneID]->child.size() > 0)
-                    //    boneID++;
 
-                    
+                    osg::Matrixd boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
 
-                 //   if(boneID == 9 || boneID == 3)
-                //    {
-                        osg::Matrixd boneTransformation = m_pActualBones[boneID]->bonespace * (*m_pActualBones[boneID]->matrix);
+                    // osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
+                    // T = m_pActualBones[boneID]->matrix->getTrans() + T;
+                    // boneTransformation.setTrans(T);
 
-//                           osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
-//                           T = m_pActualBones[boneID]->matrix->getTrans() + T;
-//                          boneTransformation.setTrans(T);
+                    osg::Vec3d temp = actPos * boneTransformation; 
+                    _tempVectors[b][POSITION] = temp;
 
-                        // osg::Vec4d zmienna(actPos,1.0);
-
-                        SBone *modelBone = &modelSkeleton->bones[boneID];
-
-                        //boneTransformation.postMultScale(osg::Vec3d(0.2,0.2,0.2));
-                        osg::Vec3d temp = actPos * boneTransformation; 
-                        _tempVectors[b][POSITION] = temp;   /*+ m_pActualBones[boneID]->matrix->getTrans()*/ //Mathematics.add(destonationVertex, Mathematics.scale(temp, weight)); 
-
-                        osg::Vec3d temp2 = normal * boneTransformation;
-                        _tempVectors[b][NORMALS] = temp2; //Mathematics.add(destonationNormal, Mathematics.scale(temp, weight)); 
-                 //   }
+                    osg::Vec3d temp2 = normal * boneTransformation;
+                    _tempVectors[b][NORMALS] = temp2;
                 }
 
 
