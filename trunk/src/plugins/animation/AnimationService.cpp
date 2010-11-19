@@ -439,7 +439,7 @@ void AnimationService::UpdateMesh()
                     osg::Vec3d temp = actPos * boneTransformation; 
                     _tempVectors[b][POSITION] = temp;
 
-                    osg::Vec3d temp2 = normal * boneTransformation;
+                    osg::Vec3d temp2 = boneTransformation.getRotate() * normal;
                     _tempVectors[b][NORMALS] = temp2;
                 }
 

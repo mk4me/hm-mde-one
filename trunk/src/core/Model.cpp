@@ -222,7 +222,7 @@ void Model::DrawModelBone()
 
 	this->addChild(m_spSkeletonGeode);
 
-  //  DrawNormals(0.7f);
+ //   DrawNormals(0.7f);
 }
 
 //--------------------------------------------------------------------------------------------------
