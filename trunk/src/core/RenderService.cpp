@@ -63,7 +63,7 @@ void RenderService::Inicialize(osg::Node* sceneRoot)
 
     osg::Light *light = new osg::Light();
 
-    light->setPosition(osg::Vec4d(100, 0, 400, 10));
+    light->setPosition(osg::Vec4d(300, -200, 900, 40));
     widget->setLight(light);
     
     widget->setLightingMode(osg::View::LightingMode::SKY_LIGHT);
