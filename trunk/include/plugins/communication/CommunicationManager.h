@@ -10,9 +10,7 @@ i web serwisy wsdl.
 
 #include <tinyxml.h>
 #include <utils/ObserverPattern.h>
-#include "Session.h"
-#include "Trial.h"
-#include "File.h"
+#include "Entity.h"
 #include "TransportWSDL_FTPS.h"
 #include "QueryWSDL.h"
 

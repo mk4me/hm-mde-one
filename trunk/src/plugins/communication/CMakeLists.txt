@@ -26,7 +26,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/DateTime.h
 	${HEADER_PATH}/EDRException.h
 	${HEADER_PATH}/Entity.h
-	${HEADER_PATH}/File.h
 	${HEADER_PATH}/FileStoremanService.h
 	${HEADER_PATH}/FTPS_cURL.h
 	${HEADER_PATH}/IAuthenticable.h
@@ -35,14 +34,8 @@ set(PUBLIC_H
 	${HEADER_PATH}/IQueryable.h
 	${HEADER_PATH}/ISendable.h
 	${HEADER_PATH}/ITransportable.h
-	${HEADER_PATH}/MotionKind.h
-	${HEADER_PATH}/Performer.h
 	${HEADER_PATH}/QueryWSDL.h
-	${HEADER_PATH}/Segment.h
-	${HEADER_PATH}/Session.h
-	${HEADER_PATH}/SessionGroup.h
 	${HEADER_PATH}/TransportWSDL_FTPS.h
-	${HEADER_PATH}/Trial.h
 	${HEADER_PATH}/WSDL_Wsdlpull.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
@@ -61,19 +54,11 @@ set(TARGET_SRC
 	CommunicationWidget.cpp
 	DateTime.cpp
 	EDRException.cpp
-	Entity.cpp
-	File.cpp
 	FileStoremanService.cpp
 	FTPS_cURL.cpp
-	MotionKind.cpp
-	Performer.cpp
 	QueryWSDL.cpp
-	Segment.cpp
-	Session.cpp
-	SessionGroup.cpp
 	SettingsDialog.cpp
 	TransportWSDL_FTPS.cpp
-	Trial.cpp
 	WSDL_Wsdlpull.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})

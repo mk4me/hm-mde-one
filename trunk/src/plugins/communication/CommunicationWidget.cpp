@@ -207,13 +207,13 @@ void CommunicationWidget::update(const communication::CommunicationManager* subj
 	setTableView(m_sessions_table, CommunicationWidget::sessionsHeader);
 	for(communication::CommunicationManager::Sessions::const_iterator it = subject->getSessions().begin(); it != subject->getSessions().end(); ++it)
 	{
-		QTableWidgetItem* i1 = new QTableWidgetItem(tr("%1").arg((*it).getID()));
+		QTableWidgetItem* i1 = new QTableWidgetItem(tr("%1").arg((*it).id));
 		i1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		QTableWidgetItem* i2 = new QTableWidgetItem(tr("%1").arg((*it).getmotionKindID()));
+		QTableWidgetItem* i2 = new QTableWidgetItem(tr("%1").arg((*it).motion_kind.c_str()));
 		i2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		QTableWidgetItem* i3 = new QTableWidgetItem(tr("%1").arg((*it).getSessionDate().toString().c_str()));
+		QTableWidgetItem* i3 = new QTableWidgetItem(tr("%1").arg((*it).session_date.toString().c_str()));
 		i3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		QTableWidgetItem* i4 = new QTableWidgetItem(tr("%1").arg((*it).getSessionDescription().c_str()));
+		QTableWidgetItem* i4 = new QTableWidgetItem(tr("%1").arg((*it).session_description.c_str()));
 		i4->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 		int row = m_sessions_table->rowCount();
@@ -227,11 +227,11 @@ void CommunicationWidget::update(const communication::CommunicationManager* subj
 	setTableView(m_trials_table, CommunicationWidget::trialHeader);
 	for(communication::CommunicationManager::Trials::const_iterator it = subject->getTrials().begin(); it != subject->getTrials().end(); ++it)
 	{
-		QTableWidgetItem* i1 = new QTableWidgetItem(tr("%1").arg((*it).getID()));
+		QTableWidgetItem* i1 = new QTableWidgetItem(tr("%1").arg((*it).id));
 		i1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		QTableWidgetItem* i2 = new QTableWidgetItem(tr("%1").arg((*it).getTrialDescription().c_str()));
+		QTableWidgetItem* i2 = new QTableWidgetItem(tr("%1").arg((*it).trial_description.c_str()));
 		i2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		QTableWidgetItem* i3 = new QTableWidgetItem(tr("%1").arg((*it).getDuration()));
+		QTableWidgetItem* i3 = new QTableWidgetItem(tr("%1").arg((*it).session_id));
 		i3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 		int row = m_trials_table->rowCount();
@@ -244,11 +244,11 @@ void CommunicationWidget::update(const communication::CommunicationManager* subj
 	setTableView(m_files_table, CommunicationWidget::fileHeader);
 	for(communication::CommunicationManager::Files::const_iterator it = subject->getFiles().begin(); it != subject->getFiles().end(); ++it)
 	{
-		QTableWidgetItem* i1 = new QTableWidgetItem(tr("%1").arg((*it).getID()));
+		QTableWidgetItem* i1 = new QTableWidgetItem(tr("%1").arg((*it).id));
 		i1->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		QTableWidgetItem* i2 = new QTableWidgetItem(tr("%1").arg((*it).getFileDescription().c_str()));
+		QTableWidgetItem* i2 = new QTableWidgetItem(tr("%1").arg((*it).file_description.c_str()));
 		i2->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		QTableWidgetItem* i3 = new QTableWidgetItem(tr("%1").arg((*it).getFilename().c_str()));
+		QTableWidgetItem* i3 = new QTableWidgetItem(tr("%1").arg((*it).file_name.c_str()));
 		i3->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 		int row = m_files_table->rowCount();
