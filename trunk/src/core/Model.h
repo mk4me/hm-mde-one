@@ -50,11 +50,14 @@ public:
     virtual SkeletonAnimationList* GetAnimation();
 
     void DrawBone(Bone* bone, osg::Geode* geode);
+    void DrawNormals(float size);
 
     osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3f* startPos, const osg::Vec3f* endPos, bool isSelected);
 
     osg::ref_ptr<osg::Geometry>  m_geometry;
     osg::ref_ptr<osg::Geode> m_spSkeletonGeode;
+
+    osg::ref_ptr<osg::Geode> m_spNormalGeode;
 
 private:
     void CreateArrayOfJoints(SkeletonNode* bone);

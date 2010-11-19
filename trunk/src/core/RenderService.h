@@ -46,7 +46,10 @@ public:
     osgGroupPtr GetRoot();
     QOSGViewer* GetMainAdapterWidget();
 
+    osg::Light* GetLight();
+
 	void RenderBone(Model* model);
+    void DrawNormals(Model* model, float size);
 
     virtual const std::string& getName() const
     {

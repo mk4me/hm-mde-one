@@ -6,6 +6,8 @@
 #include <core/FModel.h>
 #include <core/Matrix.h>
 
+#include <core/Vec3.h>
+
 #define pPat osg::PositionAttitudeTransform*
 
 using namespace osg;
@@ -16,6 +18,9 @@ Model::Model()
 {
 	m_geometry = new osg::Geometry();
     m_spSkeletonGeode = new osg::Geode();
+    
+    m_spNormalGeode = new osg::Geode();
+
     m_pAnimation = new::SkeletonAnimationList();
 
     m_pJoints = NULL;
@@ -217,6 +222,7 @@ void Model::DrawModelBone()
 
 	this->addChild(m_spSkeletonGeode);
 
+  //  DrawNormals(0.7f);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -280,6 +286,67 @@ osg::ref_ptr<osg::Geometry> Model::DrawLine(const osg::Vec3f* startPos, const os
 
     return geometry;
 }
+
+//--------------------------------------------------------------------------------------------------
+// draws normal vectors
+void Model::DrawNormals(float size)
+{
+    std::vector<IMesh*> meshList = GetMeshList();
+
+
+    if (m_spNormalGeode.valid())
+        this->removeChild(m_spNormalGeode.get());
+
+    // create new geode
+    m_spNormalGeode = new osg::Geode();
+    m_spNormalGeode->setName("Normals_Vertex");
+
+    for(std::vector<IMesh*>::iterator it = meshList.begin(); it != meshList.end(); it++)
+    {
+        IMesh* mesh = *it;
+
+
+            // for every vertice
+            for (int v = 0; v < mesh->GetVertexCount(); ++v)
+            {
+                osg::ref_ptr<Geometry> geometry = new osg::Geometry();
+
+                // vertices
+                osg::Vec3Array* vertices = new osg::Vec3Array();
+                vertices->push_back(osg::Vec3(mesh->GetVerts()[v]._v[0], mesh->GetVerts()[v]._v[1], mesh->GetVerts()[v]._v[2]));
+                vertices->push_back(osg::Vec3(mesh->GetVerts()[v]._v[0] + size * mesh->GetVertNormals()[v]._v[0], 
+                    mesh->GetVerts()[v]._v[1] + size * mesh->GetVertNormals()[v]._v[1], 
+                    mesh->GetVerts()[v]._v[2] + size * mesh->GetVertNormals()[v]._v[2]));
+
+                // indices
+                osg::DrawElementsUInt* line = new osg::DrawElementsUInt(osg::PrimitiveSet::LINES, 0);
+                line->push_back(0);
+                line->push_back(1);
+
+                // set geometry data
+                geometry->setVertexArray(vertices);
+                geometry->addPrimitiveSet(line);
+
+                // set colors
+                osg::Vec4Array* colors = new osg::Vec4Array;
+                colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+                colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+                osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
+                colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;
+                colorIndexArray->push_back(0);
+                colorIndexArray->push_back(1);
+
+                geometry->setColorArray(colors);
+                geometry->setColorIndices(colorIndexArray);
+                geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+
+                m_spNormalGeode->addDrawable(geometry);
+            }
+    }
+
+     this->addChild(m_spNormalGeode);
+};
 
 //--------------------------------------------------------------------------------------------------
 osg::ref_ptr<osg::Geode> Model::GetSkeletonGeode()

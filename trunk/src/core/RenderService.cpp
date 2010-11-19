@@ -11,6 +11,10 @@
 #include <osgGA/TerrainManipulator>
 #include <core/SkeletonNode.h>
 
+#include <core/Vec3.h>
+#include <osg/Geometry>
+
+
 #define pPat osg::PositionAttitudeTransform*
 
 //deprecated:
@@ -56,6 +60,14 @@ void RenderService::Inicialize(osg::Node* sceneRoot)
     widget = new QOSGViewer(NULL, 0, 0);
     widget->addEventHandler(new osgViewer::StatsHandler);
     widget->setCameraManipulator(cameraManipulator);
+
+    osg::Light *light = new osg::Light();
+
+    light->setPosition(osg::Vec4d(100, 0, 400, 10));
+    widget->setLight(light);
+    
+    widget->setLightingMode(osg::View::LightingMode::SKY_LIGHT);
+
     widget->setSceneData(sceneRoot);
 }
 
@@ -75,6 +87,7 @@ void RenderService::SetScene(osg::Group* root)
     }
 
     sceneRoot = root;
+
     widget->setSceneData(sceneRoot);
 }
 
@@ -124,9 +137,66 @@ void RenderService::InicizlizeModelMesh(Model* model)
 
 
     model->addChild(geode);
-
 	RenderBone(model);
+
+//    DrawNormals(model, 2.0f);
 }
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::DrawNormals(Model* model, float size)
+{
+    std::vector<IMesh*> meshList = model->GetMeshList();
+
+
+    osg::ref_ptr<osg::Geode> m_spNormalGeode = model->GetSkeletonGeode();
+    m_spNormalGeode->setName("Normals_Vertex");
+
+    for(std::vector<IMesh*>::iterator it = meshList.begin(); it != meshList.end(); it++)
+    {
+        IMesh* mesh = *it;
+
+
+        // for every vertice
+        for (int v = 0; v < mesh->GetVertexCount(); ++v)
+        {
+            osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry();
+
+            // vertices
+            osg::Vec3Array* vertices = new osg::Vec3Array();
+            vertices->push_back(osg::Vec3(mesh->GetVerts()[v]._v[0], mesh->GetVerts()[v]._v[1], mesh->GetVerts()[v]._v[2]));
+            vertices->push_back(osg::Vec3(mesh->GetVerts()[v]._v[0] + size * mesh->GetVertNormals()[v]._v[0], 
+                mesh->GetVerts()[v]._v[1] + size * mesh->GetVertNormals()[v]._v[1], 
+                mesh->GetVerts()[v]._v[2] + size * mesh->GetVertNormals()[v]._v[2]));
+
+            // indices
+            osg::DrawElementsUInt* line = new osg::DrawElementsUInt(osg::PrimitiveSet::LINES, 0);
+            line->push_back(0);
+            line->push_back(1);
+
+            // set geometry data
+            geometry->setVertexArray(vertices);
+            geometry->addPrimitiveSet(line);
+
+            // set colors
+            osg::Vec4Array* colors = new osg::Vec4Array;
+            colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            colors->push_back(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+            osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4> *colorIndexArray;
+            colorIndexArray = new osg::TemplateIndexArray<unsigned int, osg::Array::UIntArrayType,4,4>;
+            colorIndexArray->push_back(0);
+            colorIndexArray->push_back(1);
+
+            geometry->setColorArray(colors);
+            geometry->setColorIndices(colorIndexArray);
+            geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+
+            m_spNormalGeode->addDrawable(geometry);
+        }
+    }
+
+    model->addChild(m_spNormalGeode);
+};
 
 //--------------------------------------------------------------------------------------------------
 AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
@@ -158,7 +228,14 @@ void RenderService::RenderBone(Model* model)
 	model->addChild(skeletonGeode);
 }
 
+//--------------------------------------------------------------------------------------------------
 IWidget* RenderService::getWidget()
 {
     return reinterpret_cast<IWidget*>(widget);
+}
+
+//--------------------------------------------------------------------------------------------------
+osg::Light* RenderService::GetLight()
+{
+     return widget->getLight();
 }
