@@ -20,9 +20,7 @@ ChartViewer::ChartViewer(ChartWidget* chartWidget,int index,std::string c3dFile)
 	this->chartWidget=chartWidget;
 	osg::Vec4 background=osg::Vec4(255.0f/255.0f,252.0f/255.0f,238.0f/255.0f,1);
 	cam=createCamera();
-	chart=new Chart(chartWidget,c3dFile);
-	chart->addChartDecoration(0);
-	chart->addChart(0,3);
+	chart=new Chart(c3dFile,20,20,500,250);
 	cam->addChild(chart);
 	
 	getCamera()->setClearColor(background);

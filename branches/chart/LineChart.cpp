@@ -1,19 +1,23 @@
 #include "LineChart.h"
 
 
-LineChart::LineChart(ChartData* data,ChartDecoration* chartDecoration){
-	this->chartDecoration=chartDecoration;
+LineChart::LineChart(ChartData* data,int x,int y,int width, int height){
+	this->x=x;
+	this->y=y;
+	this->width=width;
+	this->height=height;
 	this->data=data;
 	LineChart::chartVertices=new osg::Vec3Array();
+
 	for(int i=0;i<data->getRNumber();i++)
 	{
-		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*chartDecoration->getXEnd()+chartDecoration->getStartPoint().x(),data->getNormalizedYValue(i)*chartDecoration->getYEnd()+chartDecoration->getStartPoint().y(),0));
+		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*(width-x)+x,data->getNormalizedYValue(i)*(height-y)+y,0));
 	}
 	
 	chart=ChartDataSeries::drawChart(chartVertices); 
 	this->addChild(chart);
 
-	pointer=new Pointer(chartDecoration->getStartPoint(),chartDecoration->getEndPoint(),data);
+	pointer=new Pointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data);
 	this->addChild(pointer);
 	
 }
@@ -24,17 +28,21 @@ LineChart::chartVertices->push_back(osg::Vec3(coord));
 Pointer* LineChart::getPointer(){
 return pointer;
 }
-void LineChart::repaint(){
+void LineChart::repaint(int x,int y,int width,int height){
+		this->x=x;
+	this->y=y;
+	this->width=width;
+	this->height=height;
 LineChart::chartVertices=new osg::Vec3Array();
 	for(int i=0;i<data->getRNumber();i++)
 	{
-		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*chartDecoration->getXEnd()+chartDecoration->getStartPoint().x(),data->getNormalizedYValue(i)*chartDecoration->getYEnd()+chartDecoration->getStartPoint().y(),0));
+		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*(width-x)+x,data->getNormalizedYValue(i)*(height-y)+y,0));
 	}
 	
 	osg::Geode* newChart=ChartDataSeries::drawChart(chartVertices); 
 	this->replaceChild(chart,newChart);
 chart=newChart;
-	Pointer* newPointer=new Pointer(chartDecoration->getStartPoint(),chartDecoration->getEndPoint(),data);
+	Pointer* newPointer=new Pointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data);
 	this->replaceChild(pointer,newPointer);
 	pointer=newPointer;
 }

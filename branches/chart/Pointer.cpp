@@ -1,7 +1,7 @@
 #include "Pointer.h"
 #include <plugins/timeline/ITimeline.h>
 #include <plugins/timeline/Stream.h>
-#define TIMERMULTIPLAY 0.0055
+#include "Chart.h"
 
 
 
@@ -86,19 +86,19 @@ osgText::Text* Pointer::createLabel(const osg::Vec3& pos, float size, const std:
 	return text;    
 }
 
-std::string float2str(float i)
+std::string formatNumber( float number )
 {
-	std::stringstream ss;
-	std::string temp;
-	ss << i;
-	ss >> temp;
-	return temp;
+ char s[100];
+        sprintf(s,"%.2f",number);
+
+  return s;
 }
 void Pointer::update(double targetTime){
 	
 	int frame=targetTime*data->getFPS();
 	//if(frame<data->getRNumber()-1){
 	trans->setMatrix(osg::Matrix::translate(data->getNormalizedXValue(frame) * (endPoint.x()-startPoint.x()),0.0f,0.0f));
-	text->setText(float2str(data->getValue(frame)-data->getYMin()));
+	text->setText(formatNumber(data->getValue(frame)-data->getYMin()));
 	//}
 }
+

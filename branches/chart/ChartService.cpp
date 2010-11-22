@@ -74,7 +74,7 @@ ChartService::ChartService()
   length(0.0)
 {
     widget = new ChartWidget(this);
-	length=(double)widget->getViewer()->getChart()->getFrameNumber(0)/(double)widget->getViewer()->getChart()->getFPS(0) ;
+	length=(double)widget->getViewer()->getChart()->getFrameNumber()/(double)widget->getViewer()->getChart()->getFPS() ;
 }
 
 

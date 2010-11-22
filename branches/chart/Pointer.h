@@ -26,6 +26,7 @@ private:
 
 	ChartData* data;
 	osg::ref_ptr<osgText::Text> text;
+
 public:
 	Pointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data);
 	osg::Geode* createPointer();

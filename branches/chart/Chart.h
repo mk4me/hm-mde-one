@@ -13,80 +13,75 @@ purpose:  Klasa ta zarzadza calym wykresem
 #include "ChartDecoration.h"
 #include "LineChart.h"
 #include "ChartData.h"
-class ChartWidget;
+
 
 class Chart : public osg::Group{
 private:
-	int chartCount;
-	int chartDecorationCount;
 	std::string c3dFile;
-	ChartWidget* chartWidget;
-	int index;
-	ChartData** data;
-	ChartDecoration** chartDecoration;
-	LineChart** chart;
-	void setChartCount(int chartCount);
-	void setChartDecorationCount(int chartDecorationCount);
+	int x,y,width,height;
+	std::vector<LineChart*> dataSeries;
+	std::vector<ChartData*> data;
+	void init();
+	//! odleglosc ramki od wykresu
+	int borderSize,fontSize;
+	osg::Node* createLine(int x,int y,int x1,int y1,osg::Vec4 lineColor);
+	osg::Group* createBorder();
+	osg::Group* border;
+	osg::Group* createGrid();
+	osg::Vec4 gridColor;
+	osg::Vec4 color;
+	osg::Group* grid;
+	int gridDensity;
+	osg::Node* createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps,float scale);
+	osg::Node* createLabel(const osg::Vec3& pos, float size, const std::string& label);
+	osg::Group* createXAxis(float scale);
+	osg::Group* createYAxis(float scale);
+	osg::Group* xAxis;
+	osg::Group* yAxis;
+	int xNumReps,yNumReps;
+	void repaint();
 public:
-	Chart(ChartWidget* chartWidget,std::string c3dFile);
+	Chart(std::string c3dFile,int x,int y,int width,int height);
 	~Chart();
-	LineChart* getChart(int index);
-	ChartData* getData(int index);
-	ChartDecoration* getDecoration(int index);
-	//! dodaje uklad wspolezdnych oraz wykres o zadanym indexie
-	void addChartDecoration(int index);
-	//! pobiera ilosc wykresow w scenie
-	int getChartCount();
-	//! pobiera ilosc kompletnych ukladow na scenie
-	int getChartDecorationCount();
-	//! Dodaje wykres do wybranego ukladu TODO poprawic skalowanie i wskazniki przy kilku wykresach w ukladzie
-	void addChart(int chartDecorationIndex,int index);
-	//! Funkcja pobierajaca ilosc przedzialek na osi X
-	int getXNumReps(int chartDecorationIndex);
-	//! Funkcja ustawiajaca ilosc przedzialek na osi X
-	void setXNumReps(int chartDecorationIndex,int xNumReps);
-	//! Funkcja pobierajaca ilosc przedzialek na osi Y
-	int getYNumReps(int chartDecorationIndex);
-	//! Funkcja ustawiajaca ilosc przedzialek na osi Y
-	void setYNumReps(int chartDecorationIndex,int xNumReps);
-	//! Funkcja zwracajaca dlugosc osi X
-	float getWidth(int chartDecorationIndex);
-	//! Funkcja zwracajaca dlugosc osi Y
-	float getHeight(int chartDecorationIndex);
-	//! Funkcja ustawiajaca dlugosc osi X
-	void setWidth(int chartDecorationIndex,float width);
-	//! Funkcja ustawiajaca dlugosc osi Y
-	void setHeight(int chartDecorationIndex,float height);
-	//! Funkcja zwracajaca odstep ramki od wykresu
-	int getBorderSize(int chartDecorationIndex);
-	//! Funkcja ustawiajaca odstep ramki od wykres
-	void setBorderSize(int chartDecorationIndex,int borderSize);
-	//! Funkcja zwracajaca wielkosc czcionki
-	int getFontSize(int chartDecorationIndex);
-	//! Funkcja ustawiajaca wielkosc czcionki 
-	void setFontSize(int chartDecorationIndex,int fontSize);
-	//! Funkcja pobierajaca gestosc siatki. Ile pixeli szerokosci ma jedna kratka
-	int getGridDensity(int chartDecorationIndex);
-	//! Funkcja ustawiajaca gestosc siatki. Ile pixeli szerokosci ma jedna kratka
-	void setGridDensity(int chartDecorationIndex,int gridDensity);
-	//! Funkcja pobierajaca kolor siatki w rgba
-	osg::Vec4 getGridColor(int chartDecorationIndex);
-	//! Funkcja ustawiajaca kolor siatki w rgba
-	void setGridColor(int chartDecorationIndex,osg::Vec4 gridColor);
-	//! Funkcja pobierajaca kolor wykresu w rgba
-	osg::Vec4 getColor(int chartDecorationIndex);
-	//! Funkcja ustawiajaca kolor wykresu w rgba
-	void setColor(int chartDecorationIndex,osg::Vec4 color);
-	//! przesuwa wykres o wybranym indexie
-	void setLocation(int chartDecorationIndex,int x,int y,int width,int height);
-	//! pobiera lokacje wykresu o wpisanym indexie
-	osg::Vec4 getLocation(int chartDecorationIndex);
-	//! pobiera ilosc klatek
-	int getFrameNumber(int chartIndex);
-	//! pobiera ile klatek wyswietla sie w ciagu sekundy
-	int getFPS(int chartIndex);
-	//! odswieza pozycje wskaznika
+	void addChartSeries(int index);
+	int getFrameNumber();
+	int getFPS();
 	void updatePointer(double targetTime);
+	std::string formatNumber( float number );
+	//! Funkcja zwracajaca odstep ramki od wykresu
+	int getBorderSize();
+	//! Funkcja ustawiajaca odstep ramki od wykres
+	void setBorderSize(int borderSize);
+	//! Funkcja zwracajaca wielkosc czcionki
+	int getFontSize();
+	//! Funkcja ustawiajaca wielkosc czcionki 
+	void setFontSize(int fontSize);
+	//! Funkcja pobierajaca gestosc siatki. Ile pixeli szerokosci ma jedna kratka
+	int getGridDensity();
+	//! Funkcja ustawiajaca gestosc siatki. Ile pixeli szerokosci ma jedna kratka
+	void setGridDensity(int gridDensity);
+	//! Funkcja pobierajaca kolor siatki w rgba
+	osg::Vec4 getGridColor();
+	//! Funkcja ustawiajaca kolor siatki w rgba
+	void setGridColor(osg::Vec4 gridColor);
+	//! Funkcja pobierajaca kolor wykresu w rgba
+	osg::Vec4 getColor();
+	//! Funkcja ustawiajaca kolor wykresu w rgba
+	void setColor(osg::Vec4 color);
+	//! Funkcja pobierajaca ilosc przedzialek na osi X
+	int getXNumReps();
+	//! Funkcja ustawiajaca ilosc przedzialek na osi X
+	void setXNumReps(int xNumReps);
+	//! Funkcja pobierajaca ilosc przedzialek na osi Y
+	int getYNumReps();
+	//! Funkcja ustawiajaca ilosc przedzialek na osi Y
+	void setYNumReps(int xNumReps);
+	//! Funkcja ustawiajaca lokacje wykresu
+	void setLocation(int x,int y,int width,int height);
+	//! Funkcja pobierajaca lokacje wykresu
+	osg::Vec4 getLocation();
+
+
 };
 
 

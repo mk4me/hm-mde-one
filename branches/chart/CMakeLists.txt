@@ -21,7 +21,6 @@ set(PRIVATE_H
 	ChartWidget.h
 	IChart.h
 	ChartDataSeries.h
-	ChartDecoration.h
 	ChartData.h
 	LineChart.h
 	Pointer.h
@@ -53,7 +52,6 @@ set(TARGET_SRC
 	ChartWidget.cpp
 	ChartService.cpp
 	ChartDataSeries.cpp
-	ChartDecoration.cpp
 	ChartData.cpp
 	LineChart.cpp
 	Pointer.cpp

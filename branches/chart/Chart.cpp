@@ -1,172 +1,329 @@
 #include "Chart.h"
-#include "ChartWidget.h"
 
-Chart::Chart(ChartWidget* chartWidget,std::string c3dFile){
-	this->chartWidget=chartWidget;
+
+Chart::Chart(std::string c3dFile,int x,int y,int width,int height){
+	gridColor=osg::Vec4(0.0f,0.0f,1.0f, 0.1f);
+	color = osg::Vec4(0,0,0, 1.0);
+	borderSize=20;
+	gridDensity=10;
+	xNumReps=5;
+	yNumReps=3;
+	fontSize=11;
 	this->c3dFile=c3dFile;
-	chartCount=0;
-	chartDecorationCount=0;
-	chartDecoration= new ChartDecoration*[chartDecorationCount];
-	data= new ChartData*[chartCount];
-	chart= new LineChart*[chartCount];
+	this->x=x;
+	this->y=y;
+	this->width=width;
+	this->height=height;
+	init();
+
+	
 }
 Chart::~Chart(){
 
 }
 
-LineChart* Chart::getChart(int index){
+void Chart::init(){
+	border=createBorder();
+	
+	grid=createGrid();
 
-	return chart[index];
+	
+	addChartSeries(1);
+	this->addChild(border);
+	
+	this->addChild(grid);
+	
+
 }
-ChartData* Chart::getData(int index){
-return data[index];
+osg::Node* Chart::createLine(int x,int y,int x1,int y1,osg::Vec4 lineColor){
+
+	osg::Vec3Array* vertices = new osg::Vec3Array;
+	vertices->push_back(osg::Vec3(x,y,0));
+	vertices->push_back(osg::Vec3(x1,y1,0));
+
+	osg::Group* group = new osg::Group;
+	osg::Geometry* geom = new osg::Geometry;
+	osg::Vec4Array* colors=new osg::Vec4Array();
+	colors->push_back(lineColor);
+
+
+	geom->setColorArray(colors);
+	geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);
+	geom->setVertexArray(vertices);
+
+	geom->addPrimitiveSet(new osg::DrawArrays(GL_LINE_STRIP,0,vertices->size()));
+
+	osg::Geode* geode = new osg::Geode;
+	osg::StateSet* ss = geode->getOrCreateStateSet();
+
+
+	ss->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+	ss->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+	geode->addDrawable(geom);
+
+	group->addChild(geode);
+
+
+	return group;
 }
-ChartDecoration* Chart::getDecoration(int index){
-return chartDecoration[index];
+
+osg::Group* Chart::createBorder(){
+
+
+	osg::Group* group=new osg::Group();
+	group->addChild(createLine(x,y,
+		width,y,
+		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
+	group->addChild(createLine(x,height,
+		width,height,
+		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
+	group->addChild(createLine(x,y,
+		x,height,
+		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
+	group->addChild(createLine( width,y,
+		 width,height,
+		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
+
+	return group;
 }
-void Chart::addChartDecoration(int index){
-	ChartData** newData= new ChartData*[chartCount+1];
-	ChartDecoration** newChartDecoration= new ChartDecoration*[chartDecorationCount+1];
-	LineChart** newChart=new LineChart*[chartCount+1];
-	for(int i=0;i<chartCount;i++){
-		newData[i]=data[i];
-		newChart[i]=chart[i];
+
+osg::Group* Chart::createGrid(){
+	osg::Group* group=new Group();
+
+	for(int i=gridDensity;i<height-y;i=i+gridDensity){
+		group->addChild(createLine(x,y+i,
+			width,y+i,
+			gridColor));
 	}
-	for(int i=0;i<chartDecorationCount;i++){
-		newChartDecoration[i]=chartDecoration[i];
+
+	for(int i=gridDensity;i<width-x;i=i+gridDensity){
+		group->addChild(createLine(x+i,y,
+			x+i,height,
+			gridColor));
+	}
+	return group;
+
+}
+
+osg::Node* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps,float scale)
+{
+	
+	osg::Group* group = new osg::Group;
+	
+	osg::Vec3 dv = e-s;
+	dv /= float(numReps-1);
+	scale /= float(numReps-1);
+	float actualScale=0.0f;
+	osg::Vec3 pos = s;
+	osg::Vec3 posX = osg::Vec3(0,30,0);
+	osg::Vec3 posY = osg::Vec3(30,0,0);
+	osg::Vec3Array* vertices = new osg::Vec3Array;
+
+	for(int i=0;i<numReps;++i)
+	{
+	
+
+		if(e.x()>s.x()){
+			group->addChild(createLabel(pos-posX,fontSize, (formatNumber(actualScale))));
+			if(i!=0)
+				group->addChild(createLine(pos.x(),pos.y()-5,
+				pos.x(),pos.y()+5,
+				osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
+		}
+		else{
+			group->addChild(createLabel(pos-posY ,fontSize,(formatNumber(actualScale))));
+			if(i!=0)
+				group->addChild(createLine(pos.x()-5,pos.y(),
+				pos.x()+5,pos.y(),
+				osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
+		}
+		vertices->push_back(pos);
+		pos += dv;
+		actualScale += scale;
 
 	}
-	newData[chartCount]= new ChartData(c3dFile,index);
-	newChartDecoration[chartDecorationCount]= new ChartDecoration(osg::Vec3(20,20,0),500,250,newData[chartCount]);
-	newChart[chartCount]=new LineChart(newData[chartCount],newChartDecoration[chartDecorationCount]);
-	this->addChild(newChartDecoration[chartDecorationCount]);
-	this->addChild(newChart[chartCount]);
 
-	data=newData;
-	chartDecoration=newChartDecoration;
-	chart=newChart;
-	chartCount++;
-	chartDecorationCount++;
+
+
+	osg::Geometry* geom = new osg::Geometry;
+	osg::Vec4Array* colors=new osg::Vec4Array();
+colors->push_back(color);
+
+ 
+	geom->setColorArray(colors);
+	geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);
+	geom->setVertexArray(vertices);
+
+	geom->addPrimitiveSet(new osg::DrawArrays(GL_LINE_STRIP,0,vertices->size()));
+
+	osg::Geode* geode = new osg::Geode;
+	osg::StateSet* stateset = geode->getOrCreateStateSet();
+	stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+	geode->addDrawable(geom);
+
+	group->addChild(geode);
+
+	return group;
+}
+osg::Node* Chart::createLabel(const osg::Vec3& pos, float size, const std::string& label)
+{
+	osg::Geode* geode = new osg::Geode();
+	osgText::Font* font = osgText::readFontFile("fonts/arial.ttf");
+	osg::StateSet* stateset = geode->getOrCreateStateSet();
+	stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+
+	{
+		osgText::Text* text = new  osgText::Text;
+
+		text->setColor(color);
+		text->setFontResolution(100,100);
+		text->setPosition(pos);
+		text->setFont(font);
+		text->setCharacterSize(size);
+		text->setAxisAlignment(osgText::Text::SCREEN); 
+		text->setAlignment(osgText::Text::CENTER_CENTER);
+		text->setText(label);
+		text->setLayout(osgText::Text::LEFT_TO_RIGHT);
+		text->setBoundingBoxMargin(0.25f);
+		geode->addDrawable( text );
+
+	}
+
+	return geode;    
 }
 
-int Chart::getChartCount(){
-return chartCount;
+osg::Group* Chart::createYAxis(float scale){
+	osg::Group* group=new Group();
+
+	group->addChild(createAxis(osg::Vec3(x+borderSize,y+borderSize,0),osg::Vec3(x+borderSize,height-borderSize,0),yNumReps,scale));
+	return group;
 }
-void Chart::setChartCount(int chartCount){
-	this->chartCount=chartCount;
+osg::Group* Chart::createXAxis(float scale){
+	osg::Group* group=new Group();
+
+	group->addChild( createAxis(osg::Vec3(x+borderSize,y+borderSize,0),osg::Vec3(width-borderSize,y+borderSize,0),xNumReps,scale));
+	return group;
+
 }
-int Chart::getChartDecorationCount(){
-return chartDecorationCount;
+void Chart::addChartSeries(int index){
+	data.push_back(new ChartData(c3dFile,index));
+	std::vector<ChartData*>::iterator itData= data.begin();
+	dataSeries.push_back(new LineChart((*itData),x+borderSize,y+borderSize,width-borderSize,height-borderSize));
+	std::vector<LineChart*>::iterator itDataSeries = dataSeries.begin();
+	this->addChild(*itDataSeries);
+	xAxis=createXAxis((*itData)->getScaleX()/(*itData)->getFPS());
+	yAxis=createYAxis((*itData)->getScaleY());
+	this->addChild(xAxis);
+	this->addChild(yAxis);
 }
-void Chart::setChartDecorationCount(int chartDecorationCount){
-	this->chartDecorationCount=chartDecorationCount;
+
+std::string Chart::formatNumber( float number )
+{
+ char s[100];
+        sprintf(s,"%.2f",number);
+
+  return s;
 }
-int Chart::getFrameNumber(int chartIndex){
-	return data[chartIndex]->getRNumber();
+int Chart::getFPS(){
+return (*data.begin())->getFPS();
 }
-int Chart::getFPS(int chartIndex){
-	return data[chartIndex]->getFPS();
+int Chart::getFrameNumber(){
+return (*data.begin())->getRNumber();
 }
+
 void Chart::updatePointer(double targetTime){
-	for(int i=0;i<chartCount;i++)
-		chart[i]->getPointer()->update(targetTime);
+	std::vector<LineChart*>::iterator itPos = dataSeries.begin();
+
+  for(; itPos < dataSeries.end(); itPos++)
+	  (*itPos)->getPointer()->update(targetTime);
 }
 
-int Chart::getXNumReps(int chartDecorationIndex){
-	return chartDecoration[chartDecorationIndex]->getXNumReps();
-}
-void Chart::setXNumReps(int chartDecorationIndex, int xNumReps){
-	chartDecoration[chartDecorationIndex]->setXNumReps(xNumReps);
-	chartDecoration[chartDecorationIndex]->repaint();
-}
-int Chart::getYNumReps(int chartDecorationIndex){
-	return chartDecoration[chartDecorationIndex]->getYNumReps();
-}
-void Chart::setYNumReps(int chartDecorationIndex, int yNumReps){
-	chartDecoration[chartDecorationIndex]->setXNumReps(yNumReps);
-	chartDecoration[chartDecorationIndex]->repaint();
+int Chart::getFontSize(){
+	return fontSize;
 }
 
-float Chart::getWidth(int chartDecorationIndex){
-	return chartDecoration[chartDecorationIndex]->getXEnd();
+void Chart::setFontSize(int fontSize){
+	this->fontSize=fontSize;
+	repaint();
 }
-void Chart::setWidth(int chartDecorationIndex, float width){
-	chartDecoration[chartDecorationIndex]->setXEnd(width);
-	chartDecoration[chartDecorationIndex]->repaint();
-}
-float Chart::getHeight(int chartDecorationIndex){
-	return chartDecoration[chartDecorationIndex]->getYEnd();
-}
-void Chart::setHeight(int chartDecorationIndex, float height){
-	chartDecoration[chartDecorationIndex]->setYEnd(height);
-	chartDecoration[chartDecorationIndex]->repaint();
+int Chart::getBorderSize(){
+	return borderSize;
 }
 
-int Chart::getBorderSize(int chartDecorationIndex){
-	return chartDecoration[chartDecorationIndex]->getBorderSize();
+void Chart::setBorderSize(int borderSize){
+	this->borderSize=borderSize;
+	repaint();
 }
-void Chart::setBorderSize(int chartDecorationIndex, int size){
-	chartDecoration[chartDecorationIndex]->setBorderSize(size);
-	chartDecoration[chartDecorationIndex]->repaint();
+int Chart::getGridDensity(){
+	return gridDensity;
 }
-
-int Chart::getFontSize(int chartDecorationIndex){
-	return chartDecoration[chartDecorationIndex]->getFontSize();
+void Chart::setGridDensity(int gridDensity){
+	this->gridDensity=gridDensity;
+	repaint();
 }
-void Chart::setFontSize(int chartDecorationIndex, int size){
-	chartDecoration[chartDecorationIndex]->setFontSize(size);
-	chartDecoration[chartDecorationIndex]->repaint();
+osg::Vec4 Chart::getGridColor(){
+	return gridColor;
 }
-
-int Chart::getGridDensity(int chartDecorationIndex){
-	return chartDecoration[chartDecorationIndex]->getGridDensity();
+void Chart::setGridColor(osg::Vec4 gridColor){
+	this->gridColor=gridColor;
+	repaint();
 }
-void Chart::setGridDensity(int chartDecorationIndex, int density){
-	chartDecoration[chartDecorationIndex]->setGridDensity(density);
-	chartDecoration[chartDecorationIndex]->repaint();
+osg::Vec4 Chart::getColor(){
+	return color;
 }
-
-osg::Vec4 Chart::getGridColor(int chartDecorationIndex){
-	return chartDecoration[chartDecorationIndex]->getGridColor();
-}
-void Chart::setGridColor(int chartDecorationIndex, osg::Vec4 color){
-	chartDecoration[chartDecorationIndex]->setGridColor(color);
-	chartDecoration[chartDecorationIndex]->repaint();
+void Chart::setColor(osg::Vec4 color){
+	this->color=color;
+	repaint();
 }
 
-osg::Vec4 Chart::getColor(int chartDecorationIndex){
-	return chartDecoration[chartDecorationIndex]->getColor();
+int Chart::getXNumReps(){
+return xNumReps;
 }
-void Chart::setColor(int chartDecorationIndex, osg::Vec4 color){
-	chartDecoration[chartDecorationIndex]->setColor(color);
-	chartDecoration[chartDecorationIndex]->repaint();
-}
-osg::Vec4 Chart::getLocation(int chartDecorationIndex){
-	return osg::Vec4(chartDecoration[chartDecorationIndex]->getStartPoint().x(),
-		chartDecoration[chartDecorationIndex]->getStartPoint().y(),getWidth(chartDecorationIndex)
-		,getHeight(chartDecorationIndex));
-}
-void Chart::setLocation(int chartDecorationIndex,int x,int y,int width,int height){
-	chartDecoration[chartDecorationIndex]->setLocation(x,y,width,height);
-	for(int i=0;i<chartCount;i++)
-		chart[i]->repaint();
-	chartDecoration[chartDecorationIndex]->repaint();
+	
+void Chart::setXNumReps(int xNumReps){
+	this->xNumReps=xNumReps;
+	repaint();
 }
 
-void Chart::addChart(int chartDecorationIndex, int index){
+int Chart::getYNumReps(){
+return yNumReps;
+}
 
-	ChartData** newData= new ChartData*[chartCount+1];
-	LineChart** newChart=new LineChart*[chartCount+1];
-	for(int i=0;i<chartCount;i++){
-		newData[i]=data[i];
-		newChart[i]=chart[i];
-	}
+void Chart::setYNumReps(int yNumReps){
+this->yNumReps=yNumReps;
+repaint();
+}
 
-	newData[chartCount]= new ChartData(c3dFile,index);
-	newChart[chartCount]=new LineChart(newData[chartCount],chartDecoration[chartDecorationIndex]);
-	this->addChild(newChart[chartCount]);
+void Chart::setLocation(int x,int y,int width,int height){
+	this->x=x;
+	this->y=y;
+	this->width=width;
+	this->height=height;
+	repaint();
+	
+}
+osg::Vec4 Chart::getLocation(){
+	return osg::Vec4(x,y,width,height);
+}
 
-	data=newData;
-	chart=newChart;
-	chartCount++;
+void Chart::repaint(){
+	osg::Group* newBorder=createBorder();
+	osg::Group* newGrid=createGrid();
+	osg::Group* newXAxis=createXAxis((*data.begin())->getScaleX()/(*data.begin())->getFPS());
+	osg::Group* newYAxis=createYAxis((*data.begin())->getScaleY());
+
+	this->replaceChild(border,newBorder);
+	this->replaceChild(grid,newGrid);
+	this->replaceChild(xAxis,newXAxis);
+	this->replaceChild(yAxis,newYAxis);
+
+	border=newBorder;
+	grid=newGrid;
+	xAxis=newXAxis;
+	yAxis=newYAxis;
+	std::vector<LineChart*>::iterator itPos = dataSeries.begin();
+
+  for(; itPos < dataSeries.end(); itPos++)
+	  (*itPos)->repaint(x+borderSize,y+borderSize,width-borderSize,height-borderSize);
 }
