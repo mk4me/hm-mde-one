@@ -14,7 +14,6 @@
 #include <osgViewer/Viewer>
 #include <core/QOSGWidget.h>
 #include "ChartViewer.h"
-#include "ChartDecoration.h"
 #include "LineChart.h"
 #include "ChartData.h"
 

@@ -10,7 +10,6 @@ purpose:  Klasa ta zarzadza calym wykresem
 
 #include <osg/Geode>
 #include <osg/Geometry>
-#include "ChartDecoration.h"
 #include "LineChart.h"
 #include "ChartData.h"
 
@@ -43,10 +42,15 @@ private:
 public:
 	Chart(std::string c3dFile,int x,int y,int width,int height);
 	~Chart();
+	//! dodaje serie danych o zadanym indexie
 	void addChartSeries(int index);
+	//! Pobiera calkowita ilosc klatek 
 	int getFrameNumber();
+	//! podbiera ilosc klatek na sekunde
 	int getFPS();
+	//! Odswieza polozenie wskaznikow
 	void updatePointer(double targetTime);
+	//! Zaokragla podana liczbe do 2 miejsc po przecinku
 	std::string formatNumber( float number );
 	//! Funkcja zwracajaca odstep ramki od wykresu
 	int getBorderSize();

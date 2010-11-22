@@ -12,7 +12,6 @@
 #include <QtGui/QWidget>
 #include <osgViewer/Viewer>
 #include <core/QOSGWidget.h>
-#include "ChartDecoration.h"
 #include "chart.h"
 #include "ChartData.h"
 class ChartWidget;
