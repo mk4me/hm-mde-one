@@ -10,6 +10,7 @@
 
 
 class IModel;
+class IMarker;
 class AnimationService;
 
 // TODO:
@@ -28,8 +29,16 @@ public:
         PLAYING			// we are plying it right now
     };
 
+    enum AnimationType
+    {
+        ACCLAIM = 0,
+        FMESH,
+        C3D
+    };
+
 public: 
     Animation(Skeleton* skeleton, SkeletonAnimation* skeletonAnimation, AnimationService* animationService);
+    Animation(std::vector<IMarker* > markerList, AnimationService* animationService);
 
     // play
     void Play();
@@ -54,6 +63,8 @@ public:
     Animation::AnimationState GetState(); 
 
 	void SetScale(double scale);
+
+    Animation::AnimationType GetAnimationType();
     
 private: 
     // update model - updates only mesh etc taking skeleton
@@ -69,6 +80,9 @@ private:
 
     void UpdateModelFmesh();
     void CalculateChildMatrixFmesh(Bone* bone);
+
+    void UpdateModelC3DFormat();
+    void CalculateChildMatrixC3DFormat(Bone* bone);
 
 private: 
 
@@ -95,6 +109,10 @@ private:
     double _firstNodeTime;
 
     AnimationService* m_pAnimationService;
+
+    // Marker Points
+    std::vector<IMarker* > m_markerList;
+    Animation::AnimationType m_animationType;
 };
 
 #endif

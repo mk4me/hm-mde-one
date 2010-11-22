@@ -7,10 +7,12 @@
 
 class ASFAMCParser;
 
+class C3DModel;
 class Model;
 class SkeletonNode;
 class DataManager;
 class Skeleton;
+class C3D_Data;
 
 struct SSkeletonAnimation;
 struct SFModel;
@@ -23,8 +25,9 @@ class FileReader2Motion
 public:
 	static void ReadFile(DataManager *dataManager);
 	static bool LoadMesh(std::string address, Model* model);
-    static bool LoadAnimation(SFModel* fmodel, Model* model);
-    static bool LoadAnimation(ASFAMCParser* acclaimObject, Model* model);
+    static bool LoadAnimationFromFmodel(SFModel* fmodel, Model* model);
+    static bool LoadAnimationFromAcclaim(ASFAMCParser* acclaimObject, Model* model);
+    static bool ParseC3DFile2EDR(C3D_Data* c3d, C3DModel* c3dModel);
 
     static bool LoadAnimationFromFAnnimation(std::string address, Model* model);
 
@@ -51,6 +54,8 @@ private:
 
     static void MirrorSkeleton(Skeleton* skeleton);
     static void ChangePlaces(Skeleton* skeleton, int from, int destination);
+
+    static C3D_Data* ReadC3DFile(std::string filePath);
 };
 
 #endif //FILE_READER_2_MOTION_H

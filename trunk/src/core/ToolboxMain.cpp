@@ -21,6 +21,7 @@
 
 #include <QtCore/QDir>
 
+#include "C3DModel.h"
 #include "ConsoleWidget.h"
 #include "Logger.h"
 
@@ -314,7 +315,8 @@ void ToolboxMain::onOpen()
         std::cout << "---------------------------------------------------------------" << std::endl; 
 
         Model* model = new Model();
-        DataManager* dataManaget = new DataManager(fileName.toStdString(), model);
+        C3DModel* c3dModel = new C3DModel();
+        DataManager* dataManaget = new DataManager(fileName.toStdString(), model, c3dModel);
 
         FileReader2Motion::ReadFile(dataManaget);
 

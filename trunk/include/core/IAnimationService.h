@@ -22,6 +22,7 @@ namespace osgViewer
 
 
 class IModel;
+class IC3DModel;
 class IDataManager;
 class IServiceManager;
 
@@ -40,6 +41,7 @@ public:
     virtual void PlayAnimation(std::string animationName) = 0;
     //virtual void SetScene(osg::Node* scene) = 0; // set animated scene
     virtual void LoadAnimation(IModel* model) = 0;
+    virtual void LoadAnimation(IC3DModel* model) = 0;
     virtual void ClearCaller() = 0; // clear caller
     virtual void NotifyStop() = 0; // notify stop
 

@@ -4,6 +4,7 @@
 #include <string>
 
 class IModel;
+class IC3DModel;
 
 class IDataManager
 {
@@ -26,7 +27,11 @@ public:
     virtual std::string GetMeshFilePathPath(int i) = 0;
     virtual int GetMeshFilePathCount() = 0;
 
+    virtual std::string GetC3dFilePath(int i) = 0;
+    virtual int GetC3dFilePathCount() = 0;
+
     virtual IModel* GetModel() = 0;
+    virtual IC3DModel* GetC3DModel() = 0;
 };
 
 #endif // I_DATA_MANAGER_H

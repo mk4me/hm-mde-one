@@ -2,6 +2,7 @@
 #include "RenderService.h"
 #include <QtGui/qwidget.h>
 
+#include "C3DModel.h"
 #include "Model.h"
 #include "Mesh.h"
 
@@ -132,7 +133,7 @@ void RenderService::InicizlizeModelMesh(Model* model)
 
     for( it = meshList.begin(); it != meshList.end(); it++)
     {
-            geode->addDrawable(dynamic_cast<Mesh*>(*it));
+        geode->addDrawable(dynamic_cast<Mesh*>(*it));
     }
 
 
@@ -204,6 +205,11 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
     if(dynamic_cast<Model* >(dataManager->GetModel())) {
         SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
     }
+
+    if(dynamic_cast<Model* >(dataManager->GetModel())) {
+        RenderC3D(dynamic_cast<C3DModel* >(dataManager->GetC3DModel()));
+    }
+
     return AsyncResult_Complete;
 }
 
@@ -226,6 +232,21 @@ void RenderService::RenderBone(Model* model)
 	}
 
 	model->addChild(skeletonGeode);
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::RenderC3D(C3DModel* c3dmodel)
+{
+    osg::ref_ptr<osg::Geode> markersGeode = c3dmodel->GetMarkerGeode();
+    markersGeode->setName("markers_geode");
+
+    c3dmodel->DrawMarkers();
+   
+    c3dmodel->addChild(markersGeode);
+
+    AddObjectToRender(c3dmodel);
+    //sceneRoot = c3dmodel;
+    //widget->setSceneData(sceneRoot);
 }
 
 //--------------------------------------------------------------------------------------------------

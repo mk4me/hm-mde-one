@@ -1,6 +1,8 @@
 #include <plugins/animation/Animation.h>
 
 #include <core/IServiceManager.h>
+#include <core/IMarker.h>
+
 #include <plugins/animation/AnimationService.h>
 
 using namespace std;
@@ -26,6 +28,26 @@ m_pAnimationService(animationService)
 , _isStartAnimation(true)
 , _firstNodeTime(0.0)
 , SCALE(1.0)
+, m_markerList(NULL)
+, m_animationType(ACCLAIM)
+{
+}
+
+//--------------------------------------------------------------------------------------------------
+Animation::Animation(std::vector<IMarker* > markerList, AnimationService* animationService):
+m_pAnimationService(animationService)
+, m_pSkeleton(NULL)
+, m_pSkeletonAnimaton(NULL)
+, _state(Animation::STOPPED)
+, _actTime(0.0), _length(0.0)
+, _bones(NULL)
+, _id(0)
+, _prevTime(0.0)
+, _isStartAnimation(true)
+, _firstNodeTime(0.0)
+, SCALE(1.0)
+, m_markerList(markerList)
+, m_animationType(C3D)
 {
 }
 
@@ -74,7 +96,12 @@ bool Animation::Stop()
     FirstFrame();
 
     // update model
-    UpdateModelAcclaimFormat();
+    if(m_animationType == ACCLAIM)
+        UpdateModelAcclaimFormat();
+
+    if(m_animationType == C3D)
+        UpdateModelC3DFormat();
+
     _state = Animation::STOPPED;
 
     m_pAnimationService->NotifyStop();
@@ -96,23 +123,33 @@ void Animation::Play()
         m_pAnimationService->setLength(_length);
         _state = Animation::PLAYING; 
 
-        int animatioBoneCount = m_pSkeletonAnimaton->m_boneAnimationList.size();
-		int boneCount = m_pSkeleton->m_pBoneList.size();
-
-        for(int ab = 0; ab <animatioBoneCount; ab++)
+        if(m_animationType == ACCLAIM)
         {
-			for(int b = 0; b <boneCount; b++)
-			{
-				if(m_pSkeletonAnimaton->m_boneAnimationList[ab]->idx == m_pSkeleton->m_pBoneList[b]->idx)
-				{
-					   m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
-				}
-			}
+            int animatioBoneCount = m_pSkeletonAnimaton->m_boneAnimationList.size();
+            int boneCount = m_pSkeleton->m_pBoneList.size();
+
+            for(int ab = 0; ab <animatioBoneCount; ab++)
+            {
+                for(int b = 0; b <boneCount; b++)
+                {
+                    if(m_pSkeletonAnimaton->m_boneAnimationList[ab]->idx == m_pSkeleton->m_pBoneList[b]->idx)
+                    {
+                        m_pSkeleton->m_pBoneList[b]->frame = m_pSkeletonAnimaton->m_boneAnimationList[ab]->m_frames;
+                    }
+                }
+            }
+
+            // ilosc kosci = ilosc obiektów frame w tablicy
+            m_pFrameCount = m_pSkeleton->m_pRootBone->frame.size();
+            _length = m_pSkeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
         }
 
-        // ilosc kosci = ilosc obiektów frame w tablicy
-        m_pFrameCount = m_pSkeleton->m_pRootBone->frame.size();
-        _length = m_pSkeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
+        if(m_animationType == C3D)
+        {
+            // ilosc kosci = ilosc obiektów frame w tablicy
+            m_pFrameCount = m_markerList[0]->GetAnimationList().size();
+            _length = m_markerList[0]->GetAnimationList()[m_pFrameCount-1]->m_time;
+        }
     }
 }
 
@@ -423,7 +460,11 @@ void Animation::Update(double dt)
     _actTime = dt;
 
     // update model
-    UpdateModelAcclaimFormat();
+    if(m_animationType == ACCLAIM)
+        UpdateModelAcclaimFormat();
+
+    if(m_animationType == C3D)
+        UpdateModelC3DFormat();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -569,4 +610,41 @@ Animation::AnimationState Animation::GetState()
 void Animation::SetScale( double scale )
 {
     SCALE = scale;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Animation::UpdateModelC3DFormat()
+{
+    // update skeleton
+    // for every bone
+
+    // OBLICZANIE ROOTA.
+
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
+    int index = _actTime / TIMERMULTIPLAY;
+
+    if(index > m_pFrameCount - 1)
+    {
+        _state = Animation::STOPPED;
+        index = m_pFrameCount -1;
+    }
+
+   
+    int childrenCount = m_markerList.size();
+    for(int m = 0; m<childrenCount; m++)
+    {
+        m_markerList[m]->SetActualPossition(m_markerList[m]->GetAnimationList()[index]->m_position);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void Animation::CalculateChildMatrixC3DFormat( Bone* bone )
+{
+
+}
+
+//--------------------------------------------------------------------------------------------------
+Animation::AnimationType Animation::GetAnimationType()
+{
+    return m_animationType;
 }

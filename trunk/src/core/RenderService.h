@@ -14,6 +14,7 @@
 
 #include <map>
 
+class C3DModel;
 class Model;
 class Mesh;
 class IModel;
@@ -49,6 +50,8 @@ public:
     osg::Light* GetLight();
 
 	void RenderBone(Model* model);
+    void RenderC3D(C3DModel* c3dmodel);
+
     void DrawNormals(Model* model, float size);
 
     virtual const std::string& getName() const

@@ -13,6 +13,7 @@ set(TARGET_TARGETNAME
 set(PRIVATE_H
 	ASFAMCData.h
 	ASFAMCParser.h
+	C3DModel.h
 	ConsoleWidget.h
 	DataManager.h
 	DataTransfer.h
@@ -24,6 +25,7 @@ set(PRIVATE_H
 	GridWidget.h
 	Intersection.h
 	Logger.h
+	Marker.h
 	Mesh.h
 	Model.h
 	ModelService.h
@@ -78,6 +80,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	ASFAMCData.cpp
 	ASFAMCParser.cpp
+	C3DModel.cpp
 	ConsoleWidget.cpp
 	DataManager.cpp
 	FileChunkReader.cpp
@@ -99,6 +102,7 @@ set(TARGET_SRC
 #	CustomGroup.cpp
 	FModel.cpp
 	Intersection.cpp
+	Marker.cpp
 	Mesh.cpp
 	Model.cpp
 	SkeletonNode.cpp	

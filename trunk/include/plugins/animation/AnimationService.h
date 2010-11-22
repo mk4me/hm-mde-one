@@ -22,6 +22,7 @@ namespace osgViewer
 
 
 class IModel;
+class IC3DModel;
 class IDataManager;
 class IServiceManager;
 class OsgControlWidget;
@@ -69,6 +70,7 @@ public:
     void PlayAnimation(std::string animationName);
     //void SetScene(osg::Node* scene); // set animated scene
     void LoadAnimation(IModel* model);
+    void LoadAnimation(IC3DModel* c3dModel);
     void ClearCaller(); // clear caller
     void NotifyStop(); // notify stop
 
@@ -146,6 +148,7 @@ private:
     osg::ref_ptr<osg::Geode> m_skeletonGeode;
 
     IModel* m_pModel;
+    IC3DModel* m_pC3MModel;
 
     STransform* m_pInitialBones;
     STransform* m_pActualBones;

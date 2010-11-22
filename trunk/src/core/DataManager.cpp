@@ -7,8 +7,9 @@
 
 // TODO: z optymalizowaæ kod.
 //--------------------------------------------------------------------------------------------------
-DataManager::DataManager(std::string address, IModel* model)
+DataManager::DataManager(std::string address, IModel* model, IC3DModel* c3dModel)
 {
+    m_pC3dModel = c3dModel;
     m_pFileName = address;
     m_pModel = model;
 
@@ -145,6 +146,37 @@ DataManager::DataManager(std::string address, IModel* model)
                     }
 
                 }
+                if(!node->ValueStr().compare("c3dFileList")&& node->FirstChild())
+                {
+                    TiXmlNode* c3dFile = node->FirstChild();
+                    if (!c3dFile->ValueStr().compare("File"))
+                    {
+                        // get all materials
+                        do 
+                        {
+                            // get all attributes
+                            TiXmlAttribute* att = c3dFile->ToElement()->FirstAttribute();
+                            if (att)
+                            {
+                                // material attributes
+                                do
+                                {
+                                    if (!att->NameTStr().compare("FileName"))
+                                    {
+                                        std::string val = path + att->Value();
+                                        m_c3dFilePathList.push_back(std::string(val.begin(), val.end()));
+                                    }
+                                    else
+                                        return;		
+
+                                } 
+                                while(att = att->Next());
+                            }
+                            else return;
+                        } 
+                        while (c3dFile = c3dFile->NextSibling());
+                    }
+                }
             } 
             while (node = node->NextSibling());
         }	
@@ -192,6 +224,15 @@ IModel* DataManager::GetModel()
 {
     if(m_pModel)
         return m_pModel;
+
+    return NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
+IC3DModel* DataManager::GetC3DModel()
+{
+    if(m_pC3dModel)
+        return m_pC3dModel;
 
     return NULL;
 }
@@ -245,4 +286,19 @@ std::string DataManager::GetMeshFilePathPath( int i )
 int DataManager::GetMeshFilePathCount()
 {
     return m_MeshFilePathList.size();
+}
+
+//--------------------------------------------------------------------------------------------------
+std::string DataManager::GetC3dFilePath( int i )
+{
+    if(m_c3dFilePathList.size() > i)
+        return m_c3dFilePathList[i];
+
+    return NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
+int DataManager::GetC3dFilePathCount()
+{
+    return m_c3dFilePathList.size();
 }

@@ -8,6 +8,7 @@
 #include <osg/Vec3d>
 #include <osg/Quat>
 
+#include <core/IC3DModel.h>
 #include <core/IModel.h>
 #include <core/IDataManager.h>
 #include <core/IMesh.h>
@@ -145,6 +146,7 @@ void AnimationService::Clear()
     m_pModel = NULL;
     m_pJoints = NULL;
     m_skeleton = NULL;
+    m_pC3MModel = NULL;
     m_pAnimation = NULL;
     m_pActualBones = NULL;
     m_pInitialBones = NULL;
@@ -202,9 +204,15 @@ AsyncResult AnimationService::update(double time, double timeDelta)
 		(*m_pAnimation)(targetTime);
   //      UpdateSkeleton();
   //      RecalculateChanges();
-        UpdateMesh();
 
-		m_pModel->DrawModelBone();
+        if(m_pModel)
+        {
+            UpdateMesh();
+            m_pModel->DrawModelBone();
+        }
+
+        if(m_pC3MModel)
+            m_pC3MModel->DrawMarkers();
 
 		// call functions that are to call every animation frame
 		for (std::vector<ISimpleOneArgFunctor<double>*>::iterator i = m_functionsToCall.begin(); i != m_functionsToCall.end(); ++i)
@@ -254,10 +262,10 @@ void AnimationService::LoadAnimation( IModel* model )
 {
     Clear();
 
-    m_pModel = model;
-
     if(!model->GetSkeleton())
         return;
+
+    m_pModel = model;
 
 //      m_pJoints = model->GetJoints();
 //      m_skeleton = (osg::Group*)model->GetSkeletonGroup();
@@ -307,6 +315,25 @@ void AnimationService::LoadAnimation( IModel* model )
     }
 }
 
+//--------------------------------------------------------------------------------------------------
+void AnimationService::LoadAnimation( IC3DModel* c3dModel )
+{
+    if(c3dModel->GetMarkerList().size() == 0)
+        return;
+
+    m_pC3MModel = c3dModel;
+
+    // extract number of animations				
+    unsigned int numOfAnims = 0;
+    vector<string> names;
+
+    names.push_back(("Marker_test"));
+
+    // create animations
+    Animation* animation = new Animation(c3dModel->GetMarkerList(), this);
+    m_animations.insert(make_pair(names[0], animation));	
+
+}
 
 //--------------------------------------------------------------------------------------------------
 // update skeleton
@@ -478,6 +505,7 @@ std::map<std::string, Animation*>* AnimationService::GetAnimations()
 AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
     LoadAnimation(dataManager->GetModel());
+    LoadAnimation(dataManager->GetC3DModel());
     widget->SetScene(m_pScene, serviceManager);
 
     ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);

@@ -74,6 +74,7 @@ find_package(TinyXML)
 find_package(Dae2ERD)
 find_package(cURL)
 find_package(wsdlpull)
+find_package(C3D2ERD)
 
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)
@@ -138,7 +139,7 @@ endif()
 
 ADD_PROJECT(utils "BOOST")
 ADD_PROJECT(corelib "utils;OSG;QT;TINYXML;STDINT")
-ADD_PROJECT(core "utils;OSG;QT;TINYXML;corelib;DAE2ERD;OPENGL")
+ADD_PROJECT(core "utils;OSG;QT;TINYXML;corelib;DAE2ERD;C3D2ERD;OPENGL")
 ADD_PROJECTS(plugins)
 
 
