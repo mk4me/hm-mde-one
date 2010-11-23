@@ -27,6 +27,9 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	QOSGWidget.cpp
 	Window.cpp
+	Chart.cpp
+	c3dParser.cpp
+	C3D_Data.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

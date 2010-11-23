@@ -70,6 +70,9 @@ set(PUBLIC_H
 	${HEADER_PATH}/PluginLoader.h
 	${HEADER_PATH}/Export.h
 	${HEADER_PATH}/SmartPtr.h
+	${HEADER_PATH}/Chart.h
+	${HEADER_PATH}/c3dParser.h
+	${HEADER_PATH}/C3D_Data.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
