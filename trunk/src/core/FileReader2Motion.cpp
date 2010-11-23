@@ -22,8 +22,10 @@
 
 #include <osg/Matrix>
 
-#include "c3dParser.h"
-#include "C3D_Data.h"
+// FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o
+//#include "c3dParser.h"
+//#include "C3D_Data.h"
+class C3D_Data;
 
 
 #define SCALE 1
@@ -111,23 +113,24 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 //--------------------------------------------------------------------------------------------------
 C3D_Data* FileReader2Motion::ReadC3DFile( std::string filePath)
 {
-    c3dParser* parser = 0;
-    parser = new c3dParser();
-
-    C3D_Data* c3d = parser->parseData(filePath);
-
-    if(c3d != NULL)
-    {
-        return c3d;
-    }
-    else
-    {
-        std::cout << "Wystapil blad odczytu.\n";
-        delete c3d;
-
-        if (parser) 
-            delete parser;
-    }
+        // FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o
+//     c3dParser* parser = 0;
+//     parser = new c3dParser();
+// 
+//     C3D_Data* c3d = parser->parseData(filePath);
+// 
+//     if(c3d != NULL)
+//     {
+//         return c3d;
+//     }
+//     else
+//     {
+//         std::cout << "Wystapil blad odczytu.\n";
+//         delete c3d;
+// 
+//         if (parser) 
+//             delete parser;
+//     }
 
     return NULL;
 }
@@ -136,42 +139,43 @@ C3D_Data* FileReader2Motion::ReadC3DFile( std::string filePath)
 bool FileReader2Motion::ParseC3DFile2EDR(C3D_Data* c3d, C3DModel* c3dModel)
 {
     // ******************************************************************************* //
-
-    std::vector<IMarker* > markerList;
-    markerList.resize(c3d->getHeader()->getNumberOfC3DPoints());
-
-    // alokacja pamiêci w liœcie
-    for(int i = 0; i < c3d->getHeader()->getNumberOfC3DPoints(); i++)
-        markerList[i] = new Marker();
-
-    for(int i=0; i < c3d->getData()->getNumberOfFrames(); i++)
-    {
-
-        float time = i*TIMERMULTIPLAY;
-
-        for(int marker=0; marker < c3d->getHeader()->getNumberOfC3DPoints(); marker++)
-        {
-            MarkerFrame *markerFrame = new MarkerFrame();
-
-            markerFrame->m_time = time;
-            markerFrame->m_position.x() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 0];
-            markerFrame->m_position.z() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 1];
-            markerFrame->m_position.y() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 2];
-
-            markerList[marker]->AddFrame(markerFrame);
-        }
-
-    }
-
-    // tymczasowe rozwi¹zanie
-    for(int m = 0; m < markerList.size(); m++)
-    {
-        markerList[m]->SetActualPossition(markerList[m]->GetAnimationList()[0]->m_position);
-    }
-
-    c3dModel->SetMarkerList(markerList);
-
-    std::cout << "saving finished !\n";
+    // FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o
+// 
+//     std::vector<IMarker* > markerList;
+//     markerList.resize(c3d->getHeader()->getNumberOfC3DPoints());
+// 
+//     // alokacja pamiêci w liœcie
+//     for(int i = 0; i < c3d->getHeader()->getNumberOfC3DPoints(); i++)
+//         markerList[i] = new Marker();
+// 
+//     for(int i=0; i < c3d->getData()->getNumberOfFrames(); i++)
+//     {
+// 
+//         float time = i*TIMERMULTIPLAY;
+// 
+//         for(int marker=0; marker < c3d->getHeader()->getNumberOfC3DPoints(); marker++)
+//         {
+//             MarkerFrame *markerFrame = new MarkerFrame();
+// 
+//             markerFrame->m_time = time;
+//             markerFrame->m_position.x() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 0];
+//             markerFrame->m_position.z() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 1];
+//             markerFrame->m_position.y() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 2];
+// 
+//             markerList[marker]->AddFrame(markerFrame);
+//         }
+// 
+//     }
+// 
+//     // tymczasowe rozwi¹zanie
+//     for(int m = 0; m < markerList.size(); m++)
+//     {
+//         markerList[m]->SetActualPossition(markerList[m]->GetAnimationList()[0]->m_position);
+//     }
+// 
+//     c3dModel->SetMarkerList(markerList);
+// 
+//     std::cout << "saving finished !\n";
 
     return TRUE;
 }
