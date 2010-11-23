@@ -2,7 +2,7 @@
 FIND_INIT(C3D2ERD c3dparser)
 
 # szukanie
-FIND_STATIC_EXT(C3D2ERD_LIB "c3dParser.lib" "c3dParser.lib")
+FIND_STATIC_EXT(C3D2ERD_LIB "c3dParser" "c3dParser")
 
 #koniec
 FIND_FINISH(C3D2ERD)
