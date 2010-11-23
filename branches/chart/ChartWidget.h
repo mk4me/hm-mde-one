@@ -11,15 +11,13 @@
 
 #include <QtGui/QWidget>
 #include <plugins/chart/ChartService.h>
-#include <osgViewer/Viewer>
+
 #include <core/QOSGWidget.h>
-#include "ChartViewer.h"
-#include "LineChart.h"
-#include "ChartData.h"
 
-
+	
 #include "ui_ChartWidget.h"
 
+class ChartViewer;
 class ChartWidget : public QWidget, public Ui::ChartWidget
 {
     Q_OBJECT
@@ -27,8 +25,7 @@ class ChartWidget : public QWidget, public Ui::ChartWidget
 private:
     //! Us³uga tworz¹ca widget.
     ChartService* service;
-	//! Widget z widokiem OSG.
-	ChartViewer** listViewer;
+
 	ChartViewer* mainViewer;
 	std::string c3dFile;
 	void createEMGChanels();

@@ -10,40 +10,40 @@ purpose:  Klasa ta zarzadza calym wykresem
 
 #include <osg/Geode>
 #include <osg/Geometry>
-#include "LineChart.h"
-#include "ChartData.h"
 
+class LineChart;
+class ChartData;
 
 class Chart : public osg::Group{
 private:
-	std::string c3dFile;
+
 	int x,y,width,height;
 	std::vector<LineChart*> dataSeries;
 	std::vector<ChartData*> data;
 	void init();
 	//! odleglosc ramki od wykresu
 	int borderSize,fontSize;
-	osg::Node* createLine(int x,int y,int x1,int y1,osg::Vec4 lineColor);
+	osg::Node* createLine(int x,int y,int x1,int y1,int z,osg::Vec4 lineColor);
 	osg::Group* createBorder();
-	osg::Group* border;
+	osg::ref_ptr<osg::Group> border;
 	osg::Group* createGrid();
 	osg::Vec4 gridColor;
 	osg::Vec4 color;
-	osg::Group* grid;
+	osg::ref_ptr<osg::Group> grid;
 	int gridDensity;
 	osg::Node* createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps,float scale);
 	osg::Node* createLabel(const osg::Vec3& pos, float size, const std::string& label);
 	osg::Group* createXAxis(float scale);
 	osg::Group* createYAxis(float scale);
-	osg::Group* xAxis;
-	osg::Group* yAxis;
+	osg::ref_ptr<osg::Group> xAxis;
+	osg::ref_ptr<osg::Group> yAxis;
 	int xNumReps,yNumReps;
 	void repaint();
 public:
-	Chart(std::string c3dFile,int x,int y,int width,int height);
+	Chart(int x,int y,int width,int height);
 	~Chart();
 	//! dodaje serie danych o zadanym indexie
-	void addChartSeries(int index);
+	void addChartSeries(ChartData* data);
 	//! Pobiera calkowita ilosc klatek 
 	int getFrameNumber();
 	//! podbiera ilosc klatek na sekunde

@@ -1,5 +1,8 @@
 #include "ChartViewer.h"
 #include "ChartWidget.h"
+#include "C3DChartData.h"
+#include "chart.h"
+
 osg::Camera* createCamera()
 {
 
@@ -20,9 +23,9 @@ ChartViewer::ChartViewer(ChartWidget* chartWidget,int index,std::string c3dFile)
 	this->chartWidget=chartWidget;
 	osg::Vec4 background=osg::Vec4(255.0f/255.0f,252.0f/255.0f,238.0f/255.0f,1);
 	cam=createCamera();
-	chart=new Chart(c3dFile,20,20,500,250);
+	chart=new Chart(20,20,500,250);
 	cam->addChild(chart);
-	
+	chart->	addChartSeries(new C3DChartData(c3dFile,0));
 	getCamera()->setClearColor(background);
 	setSceneData(cam);
 	setMinimumSize(300,100);

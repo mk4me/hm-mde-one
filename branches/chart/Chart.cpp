@@ -1,7 +1,10 @@
 #include "Chart.h"
+#include "ChartPCH.h"
+#include "LineChart.h"
+#include "ChartData.h"
+#include "Pointer.h"
 
-
-Chart::Chart(std::string c3dFile,int x,int y,int width,int height){
+Chart::Chart(int x,int y,int width,int height){
 	gridColor=osg::Vec4(0.0f,0.0f,1.0f, 0.1f);
 	color = osg::Vec4(0,0,0, 1.0);
 	borderSize=20;
@@ -9,7 +12,7 @@ Chart::Chart(std::string c3dFile,int x,int y,int width,int height){
 	xNumReps=5;
 	yNumReps=3;
 	fontSize=11;
-	this->c3dFile=c3dFile;
+
 	this->x=x;
 	this->y=y;
 	this->width=width;
@@ -28,18 +31,18 @@ void Chart::init(){
 	grid=createGrid();
 
 	
-	addChartSeries(1);
+
 	this->addChild(border);
 	
 	this->addChild(grid);
 	
 
 }
-osg::Node* Chart::createLine(int x,int y,int x1,int y1,osg::Vec4 lineColor){
+osg::Node* Chart::createLine(int x,int y,int x1,int y1,int z,osg::Vec4 lineColor){
 
 	osg::Vec3Array* vertices = new osg::Vec3Array;
-	vertices->push_back(osg::Vec3(x,y,0));
-	vertices->push_back(osg::Vec3(x1,y1,0));
+	vertices->push_back(osg::Vec3(x,y,z));
+	vertices->push_back(osg::Vec3(x1,y1,z));
 
 	osg::Group* group = new osg::Group;
 	osg::Geometry* geom = new osg::Geometry;
@@ -73,16 +76,16 @@ osg::Group* Chart::createBorder(){
 
 	osg::Group* group=new osg::Group();
 	group->addChild(createLine(x,y,
-		width,y,
+		width,y,-1,
 		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 	group->addChild(createLine(x,height,
-		width,height,
+		width,height,-1,
 		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 	group->addChild(createLine(x,y,
-		x,height,
+		x,height,-1,
 		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 	group->addChild(createLine( width,y,
-		 width,height,
+		 width,height,-1,
 		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 
 	return group;
@@ -93,13 +96,13 @@ osg::Group* Chart::createGrid(){
 
 	for(int i=gridDensity;i<height-y;i=i+gridDensity){
 		group->addChild(createLine(x,y+i,
-			width,y+i,
+			width,y+i,-1,
 			gridColor));
 	}
 
 	for(int i=gridDensity;i<width-x;i=i+gridDensity){
 		group->addChild(createLine(x+i,y,
-			x+i,height,
+			x+i,height,-1,
 			gridColor));
 	}
 	return group;
@@ -128,14 +131,14 @@ osg::Node* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps
 			group->addChild(createLabel(pos-posX,fontSize, (formatNumber(actualScale))));
 			if(i!=0)
 				group->addChild(createLine(pos.x(),pos.y()-5,
-				pos.x(),pos.y()+5,
+				pos.x(),pos.y()+5,0,
 				osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 		}
 		else{
 			group->addChild(createLabel(pos-posY ,fontSize,(formatNumber(actualScale))));
 			if(i!=0)
 				group->addChild(createLine(pos.x()-5,pos.y(),
-				pos.x()+5,pos.y(),
+				pos.x()+5,pos.y(),0,
 				osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 		}
 		vertices->push_back(pos);
@@ -206,8 +209,8 @@ osg::Group* Chart::createXAxis(float scale){
 	return group;
 
 }
-void Chart::addChartSeries(int index){
-	data.push_back(new ChartData(c3dFile,index));
+void Chart::addChartSeries(ChartData* chartData){
+	data.push_back(chartData);
 	std::vector<ChartData*>::iterator itData= data.begin();
 	dataSeries.push_back(new LineChart((*itData),x+borderSize,y+borderSize,width-borderSize,height-borderSize));
 	std::vector<LineChart*>::iterator itDataSeries = dataSeries.begin();

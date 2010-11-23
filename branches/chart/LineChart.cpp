@@ -1,5 +1,7 @@
 #include "LineChart.h"
+#include "ChartData.h"
 
+#include "Pointer.h"
 
 LineChart::LineChart(ChartData* data,int x,int y,int width, int height){
 	this->x=x;

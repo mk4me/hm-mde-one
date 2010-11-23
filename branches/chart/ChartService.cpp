@@ -1,27 +1,9 @@
+#include "ChartPCH.h"
 
-#include <core/IServiceManager.h>
-#include <plugins/chart/ChartService.h>
+
 #include "ChartWidget.h"
-
-#include <iostream>
-#include <osgViewer/Scene>
-#include <osg/Group>
-#include <osg/Geode>
-#include <osg/NodeVisitor>
-#include <osg/Vec3d>
-#include <osg/Quat>
-
-#include <core/IModel.h>
-#include <core/IDataManager.h>
-#include <core/IMesh.h>
-#include <core/Vec3.h>
-#include <core/ModelData.h>
-
-#include <core/ISkeletonNode.h>
-#include <core/IServiceManager.h>
-
-#include <plugins/timeline/ITimeline.h>
-#include <plugins/timeline/Stream.h>
+#include "ChartViewer.h"
+#include "Chart.h"
 
 
 using namespace std;

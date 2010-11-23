@@ -1,9 +1,8 @@
 #include "Pointer.h"
-#include <plugins/timeline/ITimeline.h>
-#include <plugins/timeline/Stream.h>
+
 #include "Chart.h"
 
-
+#include "ChartData.h"
 
 Pointer::Pointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data){
 	this->startPoint=startPoint;
@@ -36,7 +35,7 @@ Pointer::Pointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data){
 osg::Geode* Pointer::createPointer(){
 	osg::Vec3Array* vertices = new osg::Vec3Array;
 	vertices->push_back(startPoint);
-	vertices->push_back(osg::Vec3(startPoint.x(),endPoint.y(),0));
+	vertices->push_back(osg::Vec3(startPoint.x(),endPoint.y(),1));
 
 	osg::Group* group = new osg::Group;
 	osg::Geometry* geom = new osg::Geometry;

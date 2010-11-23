@@ -1,7 +1,7 @@
 
 #include "ChartWidget.h"
-
-
+#include "ChartPCH.h"
+#include "ChartViewer.h"
 
 ChartWidget::ChartWidget(ChartService* service)
 :   service(service)
@@ -9,7 +9,7 @@ ChartWidget::ChartWidget(ChartService* service)
     setupUi(this);
 
 	c3dFile="Przejscie1.c3d";
-	//createEMGChanels();
+
 	mainViewer=new ChartViewer(this,0,c3dFile);
 	mainViewer->setMinimumSize(300,300);
 	mainChart->addWidget(mainViewer);
@@ -32,25 +32,25 @@ void ChartWidget::createLargeChart(int chartIndex){
 }
 
 void ChartWidget::createEMGChanels(){
-	listViewer=new ChartViewer*[16];
-	for(int i=0;i<16;i++){
-		listViewer[i] = new ChartViewer(this,i+12,c3dFile);
-		//createChart(listViewer[i],i+12);
-		allChart->addWidget( listViewer[i] );
-	}
+	//listViewer=new ChartViewer*[16];
+	//for(int i=0;i<16;i++){
+	//	listViewer[i] = new ChartViewer(this,i+12,c3dFile);
+	//	//createChart(listViewer[i],i+12);
+	//	allChart->addWidget( listViewer[i] );
+	//}
 }
 void ChartWidget::createGRFChanels(){
-	listViewer=new ChartViewer*[12];
-	for(int i=0;i<12;i++){
-		listViewer[i] = new ChartViewer(this,i,c3dFile);
-		//createChart(listViewer[i],i);
-		allChart->addWidget( listViewer[i] );
-	}
+	//listViewer=new ChartViewer*[12];
+	//for(int i=0;i<12;i++){
+	//	listViewer[i] = new ChartViewer(this,i,c3dFile);
+	//	//createChart(listViewer[i],i);
+	//	allChart->addWidget( listViewer[i] );
+	//}
 	 
 }
 
 void ChartWidget::comboBoxChanged(int index){
-	switch(index){
+	/*switch(index){
 		case 0: {
 			for(int i = 0; i < 12; i++) 
 				delete[] listViewer[i]; 
@@ -66,7 +66,7 @@ void ChartWidget::comboBoxChanged(int index){
 				break;
 			 }
 	}
-	
+	*/
 }
 ChartViewer* ChartWidget::getViewer(){
 return mainViewer;

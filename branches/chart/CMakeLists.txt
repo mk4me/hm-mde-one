@@ -16,6 +16,7 @@ set(PUBLIC_H
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
+	ChartPCH.h
 	ChartPlugin.h
 	ChartService.h
 	ChartWidget.h
@@ -24,7 +25,6 @@ set(PRIVATE_H
 	ChartData.h
 	LineChart.h
 	Pointer.h
-	PointerUpdateCallback.h
 	C3D_Data.h
 	c3dParser.h
 	Data.h
@@ -38,7 +38,7 @@ set(PRIVATE_H
 	ProcessorReader.h
 	ChartViewer.h
 	Chart.h
-
+	C3DChartData.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -55,7 +55,6 @@ set(TARGET_SRC
 	ChartData.cpp
 	LineChart.cpp
 	Pointer.cpp
-	PointerUpdateCallback.cpp
 	C3D_Data.cpp
 	c3dParser.cpp
 	Chart.cpp
@@ -68,6 +67,7 @@ set(TARGET_SRC
 	Parameter.cpp
 	Parameters.cpp
 	ChartViewer.cpp
+	C3DChartData.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

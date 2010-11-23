@@ -12,9 +12,10 @@ purpose:  Klasa ta sluzy do rysowania wskaznika do wykresu
 #include <osg/Geometry>
 #include <osg/MatrixTransform>
 
-#include "ChartData.h"
+
 #include <osgText/Text>
-#include "PointerUpdateCallback.h"
+
+class ChartData;
 
 class Pointer : public osg::Group{
 private:
