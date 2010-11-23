@@ -19,27 +19,28 @@ namespace communication {
 	class CommunicationManager : public utils::Observable<CommunicationManager>
 	{
 	public:
-		typedef std::vector<Session> Sessions;
-		typedef std::vector<Trial> Trials;
-		typedef std::vector<File> Files;
+		typedef std::map<int, Session> Sessions;
+		typedef std::map<int, Trial> Trials;
+		typedef std::map<int, File> Files;
 
 		void setSessions(unsigned int lab_id);
 		const Sessions& getSessions(/*unsigned int lab_id*/) const;
 
 		void setTrials(unsigned int session_id);
-		const Trials& getTrials(/*unsigned int session_id*/) const;
+		const Trials& getTrials(unsigned int session_id) const;
 
-		void setFiles(unsigned int trial_id);
-		const Files& getFiles(/*unsigned int trial_id*/) const;
+		void setFiles(unsigned int session_id, unsigned int trial_id);
+		const Files& getFiles(unsigned int session_id, unsigned int trial_id) const;
 
 		void setFile(unsigned int file_id);
-		const std::string& getFile(/*unsigned int file_id*/) const;
+		const std::string& getFile(/*unsigned int session_id, unsigned int trial_id, unsigned int file_id*/) const;
 
-		void clearSessions(unsigned int lab_id);
-
+		void clearSessions();
 		void clearTrials(unsigned int session_id);
+		void clearFiles(unsigned int session_id, unsigned int trial_id);
 
-		void clearFiles(unsigned int trial_id);
+		void saveToXml(const std::string& filename);
+		void loadFromXml(const std::string& filename);
 
 		void setTransportManager(ITransportable* transport_manager);
 		ITransportable* getTransportManager();
@@ -56,8 +57,6 @@ namespace communication {
 		static CommunicationManager* m_instance;
 
 		Sessions m_sessions;
-		Trials m_trials;
-		Files m_files;
 		std::string m_file_path;
 
 		ITransportable* m_transport_manager;
@@ -67,8 +66,8 @@ namespace communication {
 		virtual ~CommunicationManager();
 
 		//metody just in case przy bledach parsera przy atrybutach
-		void labSessionsErrorCatcher(std::string& raw_data);
-		void parseSession(const TiXmlElement* element);
+		//void labSessionsErrorCatcher(std::string& raw_data);
+		//void parseSession(const TiXmlElement* element);
 	};
 }
 #endif

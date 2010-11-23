@@ -137,23 +137,6 @@ namespace communication
 			sstream << value;
 			return sstream.str();
 		}
-		/**
-		Metoda zamieniajaca przyjmuje wektor z liczbami i zwraca wektor z napisami
-		@param value wektor liczb do zamiany na napisy
-		@return wektor z napisami zamiast liczb
-		*/
-		template <typename T> static std::vector<std::string> toStringVector(std::vector<T>& value) 
-		{
-			std::vector<std::string> sVector;
-			for(unsigned int i = 0; i < value.size(); i++) 
-			{
-				std::ostringstream sstream;
-				sstream << value[i];
-				sVector.push_back(sstream.str());
-			}
-			return sVector;
-		}
-
 
 		//tymczasowe i pomocnicze
 		void displayOperations();

@@ -2,6 +2,7 @@
 #define COMMUNICATION_SERVICE_H
 
 #include <core/IService.h>
+#include <OpenThreads/Thread>
 #include <plugins/communication/ICommunication.h>
 #include <plugins/communication/CommunicationManager.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
@@ -10,7 +11,7 @@
 
 class CommunicationWidget;
 
-class CommunicationService : public IService, public ICommunication
+class CommunicationService : public IService, public ICommunication, public OpenThreads::Thread
 {
     UNIQUE_ID('COMM','SRVC');
 private:
@@ -20,7 +21,6 @@ private:
 	communication::CommunicationManager* m_model;
 	communication::TransportWSDL_FTPS* m_transport;
 	communication::QueryWSDL* m_query;
-    //! Nazwa.
     std::string m_name;
 
 public:
@@ -40,8 +40,13 @@ public:
 
 	virtual void listLabSessionsWithAttributes(unsigned int lab_id);
 	virtual void listSessionTrials(unsigned int session_id);
-	virtual void listTrialFiles(unsigned int trial_id);
+	virtual void listTrialFiles(unsigned int session_id, unsigned int trial_id);
+
 	virtual void downloadFile(unsigned int file_id);
+	virtual void updateSessionContents();
+
+	void loadFromXml();
+	void saveToXml();
 
 	const communication::TransportWSDL_FTPS* getTransportManager() const;
 	const communication::QueryWSDL* getQueryManager() const;
@@ -49,5 +54,7 @@ public:
 	void setQueryCredentials(const std::string& user, const std::string& password, const std::string& bqs_uri, const std::string& bus_uri);
 	void setTransportFTPCredentials(const std::string& user, const std::string& password, const std::string& uri);
 	void setTransportWSCredentials(const std::string& user, const std::string& password, const std::string& uri);
+
+	virtual void run();
 };
 #endif

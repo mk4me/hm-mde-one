@@ -20,6 +20,14 @@ CommunicationService::CommunicationService() : m_name("Communication")
 	this->m_model->setTransportManager(this->m_transport);
 	this->m_model->setQueryManager(this->m_query);
 	this->m_model->attach(this->m_widget);
+	try
+	{
+		this->loadFromXml();
+	}
+	catch(std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+	}
 }
 
 CommunicationService::~CommunicationService()
@@ -42,9 +50,9 @@ void CommunicationService::listSessionTrials(unsigned int session_id)
 	this->m_model->setTrials(session_id);
 }
 
-void CommunicationService::listTrialFiles(unsigned int trial_id)
+void CommunicationService::listTrialFiles(unsigned int session_id, unsigned int trial_id)
 {
-	this->m_model->setFiles(trial_id);
+	this->m_model->setFiles(session_id, trial_id);
 }
 
 void CommunicationService::downloadFile(unsigned int file_id)
@@ -77,4 +85,36 @@ void CommunicationService::setTransportFTPCredentials(const std::string& user, c
 void CommunicationService::setTransportWSCredentials(const std::string& user, const std::string& password, const std::string& uri)
 {
 	this->m_transport->setWSCredentials(uri, user, password);
+}
+
+void CommunicationService::run()
+{
+	std::cout << "thread run\n";
+}
+
+void CommunicationService::updateSessionContents()
+{
+	this->m_model->clearSessions();
+	//update sessions
+	this->m_model->setSessions(1);
+	for(std::map<int, communication::Session>::const_iterator sessions_iterator = this->m_model->getSessions().begin(); sessions_iterator != this->m_model->getSessions().end(); ++sessions_iterator)
+	{
+		//update trials
+		this->m_model->setTrials((*sessions_iterator).first);
+		for(std::map<int, communication::Trial>::const_iterator trials_iterator = (*sessions_iterator).second.session_trials.begin(); trials_iterator != (*sessions_iterator).second.session_trials.end(); ++trials_iterator)
+		{
+			//update files
+			this->m_model->setFiles((*sessions_iterator).first, (*trials_iterator).first);
+		}
+	}
+}
+
+void CommunicationService::loadFromXml()
+{
+	this->m_model->loadFromXml("test.xml");
+}
+
+void CommunicationService::saveToXml()
+{
+	this->m_model->saveToXml("test.xml");
 }

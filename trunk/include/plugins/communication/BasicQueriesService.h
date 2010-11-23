@@ -23,6 +23,14 @@ namespace communication {
 		*/
 		virtual ~BasicQueriesService();
 
+		std::map<int, Trial> listSessionTrials(int sessionID);
+
+		std::map<int, Session> listLabSessionsWithAttributes(int labID);
+
+		std::map<int, File> listFiles(int ID, const std::string& subjectType);
+
+		void listSessionContents();
+
 		//const Performer* getPerformerById(int performerID);
 
 		//const Session* getSessionById(int sessionID);
@@ -41,8 +49,6 @@ namespace communication {
 
 		//const std::vector<Performer>* listPerformersWithAttributes();
 
-		std::vector<Trial> listSessionTrials(int sessionID);
-
 		//const std::vector<Trial>* listSessionTrialsWithAttributes(int sessionID);
 
 		//const std::vector<Segment>* listTrialSegments(int strialID);
@@ -51,11 +57,7 @@ namespace communication {
 
 		//const std::vector<Performer>* listLabPerformersWithAttributes(int labID);
 
-		std::vector<Session> listLabSessionsWithAttributes(int labID);
-
 		//const std::vector<File>* listSessionFiles(int sessionID);
-
-		std::vector<File> listFiles(int ID, const std::string& subjectType);
 
 		//const std::vector<File>* listFilesWithAttributes(int ID, const std::string& subjectType);
 

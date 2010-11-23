@@ -17,6 +17,30 @@ namespace communication {
 		Wirtualny destruktor klasy IQueryable.
 		*/
 		virtual ~IQueryable() {}
+
+		/**
+		Listuje proby pomiarowe sesji.
+		@param sessionID id sesji ktorej proby pomiarowe maja zostac wylistowane
+		@return zbior prob pomiarowych dla wybranej sesji
+		*/
+		virtual std::map<int, Trial> listSessionTrials(int sessionID) = 0;
+		/**
+		Listuje sesje dla danego laboratorium.
+		@param labID id labu ktorego sesje maja zostac wylistowane
+		@return zbior sesji dla wybranego labu
+		*/
+		virtual std::map<int, Session> listLabSessionsWithAttributes(int labID) = 0;
+		/**
+		Listuje pliki dla encji typu subjectType i id ID.
+		@param ID id encji dla ktorej maja zostac wylistowane pliki
+		@param subjectType typ encji dla ktorej maja zostac wylistowane pliki
+		@return zbior plikow dla wybranej encji
+		*/
+		virtual std::map<int, File> listFiles(int ID, const std::string& subjectType) = 0;
+		/**
+		*/
+		virtual void listSessionContents() = 0;
+
 		///**
 		//*/
 		//virtual Performer* createPerformer(const std::string& name = "", const std::string& surname = "") = 0;
@@ -75,9 +99,6 @@ namespace communication {
 		//virtual const std::vector<Performer>* listPerformersWithAttributes() = 0;
 		/**
 		*/
-		virtual std::vector<Trial> listSessionTrials(int sessionID) = 0;
-		/**
-		*/
 		//virtual const std::vector<Trial>* listSessionTrialsWithAttributes(int sessionID) = 0;
 		///**
 		//*/
@@ -88,15 +109,9 @@ namespace communication {
 		///**
 		//*/
 		//virtual const std::vector<Performer>* listLabPerformersWithAttributes(int labID) = 0;
-		/**
-		*/
-		virtual std::vector<Session> listLabSessionsWithAttributes(int labID) = 0;
 		///**
 		//*/
 		//virtual const std::vector<File>* listSessionFiles(int sessionID) = 0;
-		/**
-		*/
-		virtual std::vector<File> listFiles(int ID, const std::string& subjectType) = 0;
 		///**
 		//*/
 		//virtual const std::vector<File>* listFilesWithAttributes(int ID, const std::string& subjectType) = 0;

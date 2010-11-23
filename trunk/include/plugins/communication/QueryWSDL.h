@@ -49,6 +49,19 @@ namespace communication {
 		@param uri uri do pliku definicji BasicUpdatesService
 		*/
 		void setBasicUpdatesServiceUri(const std::string& uri);
+		/**
+		*/
+		virtual std::map<int, Trial> listSessionTrials(int sessionID);
+		/**
+		*/
+		virtual std::map<int, Session> listLabSessionsWithAttributes(int labID);
+		/**
+		*/
+		virtual std::map<int, File> listFiles(int ID, const std::string& subjectType);
+		/**
+		*/
+		virtual void listSessionContents();
+
 		///**
 		//*/
 		//Performer* createPerformer(const std::string& name = "", const std::string& surname = "");
@@ -103,9 +116,6 @@ namespace communication {
 		///**
 		//*/
 		//const std::vector<Performer>* listPerformersWithAttributes();
-		/**
-		*/
-		std::vector<Trial> listSessionTrials(int sessionID);
 		///**
 		//*/
 		//const std::vector<Trial>* listSessionTrialsWithAttributes(int sessionID);
@@ -120,13 +130,7 @@ namespace communication {
 		//const std::vector<Performer>* listLabPerformersWithAttributes(int labID);
 		///**
 		//*/
-		std::vector<Session> listLabSessionsWithAttributes(int labID);
-		///**
-		//*/
 		//const std::vector<File>* listSessionFiles(int sessionID);
-		/**
-		*/
-		std::vector<File> listFiles(int ID, const std::string& subjectType);
 		///**
 		//*/
 		//const std::vector<File>* listFilesWithAttributes(int ID, const std::string& subjectType);

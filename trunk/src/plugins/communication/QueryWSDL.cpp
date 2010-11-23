@@ -38,6 +38,23 @@ void QueryWSDL::setBasicUpdatesServiceUri(const std::string& uri) {
 	bus->setUri(uri);
 }
 
+void QueryWSDL::listSessionContents()
+{
+	bqs->listSessionContents();
+}
+
+std::map<int, Trial> QueryWSDL::listSessionTrials(int sessionID) {
+	return bqs->listSessionTrials(sessionID);
+}
+
+std::map<int, Session> QueryWSDL::listLabSessionsWithAttributes(int labID) {
+	return bqs->listLabSessionsWithAttributes(labID);
+}
+
+std::map<int, File> QueryWSDL::listFiles(int ID, const std::string& subjectType) {
+	return bqs->listFiles(ID, subjectType);
+}
+
 //Performer* QueryWSDL::createPerformer(const std::string& name, const std::string& surname) {
 //	return bus->createPerformer(name, surname);
 //}
@@ -109,10 +126,6 @@ void QueryWSDL::setBasicUpdatesServiceUri(const std::string& uri) {
 //	return bqs->listPerformersWithAttributes();
 //}
 
-std::vector<Trial> QueryWSDL::listSessionTrials(int sessionID) {
-	return bqs->listSessionTrials(sessionID);
-}
-
 //const std::vector<Trial>* QueryWSDL::listSessionTrialsWithAttributes(int sessionID) {
 //	return bqs->listSessionTrialsWithAttributes(sessionID);
 //}
@@ -129,17 +142,9 @@ std::vector<Trial> QueryWSDL::listSessionTrials(int sessionID) {
 //	return bqs->listLabPerformersWithAttributes(labID);
 //}
 
-std::vector<Session> QueryWSDL::listLabSessionsWithAttributes(int labID) {
-	return bqs->listLabSessionsWithAttributes(labID);
-}
-
 //const std::vector<File>* QueryWSDL::listSessionFiles(int sessionID) {
 //	return bqs->listSessionFiles(sessionID);
 //}
-
-std::vector<File> QueryWSDL::listFiles(int ID, const std::string& subjectType) {
-	return bqs->listFiles(ID, subjectType);
-}
 
 //const std::vector<File>* QueryWSDL::listFilesWithAttributes(int ID, const std::string& subjectType) {
 //	return bqs->listFilesWithAttributes(ID, subjectType);
