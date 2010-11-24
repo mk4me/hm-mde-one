@@ -10,7 +10,7 @@ purpose:  Klasa ta sluzy do tworzenia wykresu liniowego
 
 #include <osg/Geode>
 #include <osg/Geometry>
-#include "ChartDataSeries.h"
+#include <plugins/chart/ChartDataSeries.h>
 class ChartData;
 class Pointer;
 class LineChart : public ChartDataSeries{

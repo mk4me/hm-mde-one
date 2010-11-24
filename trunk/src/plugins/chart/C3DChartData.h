@@ -8,7 +8,7 @@ purpose:  Klasa ta sluzy do pobierania danych z pliku c3d
 #ifndef __HEADER_GUARD__C3DCHARTDATA_H__
 #define __HEADER_GUARD__C3DCHARTDATA_H__
 
-#include "ChartData.h"
+#include <core/ChartData.h>
 
 class C3DChartData : public ChartData{
 private:

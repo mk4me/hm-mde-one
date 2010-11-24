@@ -1,8 +1,8 @@
 #include <core/Chart.h>
 #include <plugins/chart/ChartPCH.h>
-#include <plugins/chart/LineChart.h>
-#include <plugins/chart/ChartData.h>
-#include <plugins/chart/Pointer.h>
+#include <core/LineChart.h>
+#include <core/ChartData.h>
+#include <core/Pointer.h>
 
 Chart::Chart(int x,int y,int width,int height){
 	gridColor=osg::Vec4(0.0f,0.0f,1.0f, 0.1f);

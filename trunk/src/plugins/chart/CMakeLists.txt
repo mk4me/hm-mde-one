@@ -13,9 +13,7 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 
-		LineChart.h
-		ChartData.h
-		Pointer.h
+
 		Header.h
 		INTELreader.h
 		MIPSreader.h
@@ -47,14 +45,12 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-	main.cpp
+	
 	ChartPlugin.cpp
 	ChartWidget.cpp
 	ChartService.cpp
 	ChartDataSeries.cpp
-	ChartData.cpp
-	LineChart.cpp
-	Pointer.cpp
+	
 	
 
 	Data.cpp

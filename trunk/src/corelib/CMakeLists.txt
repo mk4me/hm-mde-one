@@ -30,6 +30,9 @@ set(TARGET_SRC
 	Chart.cpp
 	c3dParser.cpp
 	C3D_Data.cpp
+	ChartData.cpp
+	LineChart.cpp
+	Pointer.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

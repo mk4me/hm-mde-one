@@ -1,8 +1,8 @@
-#include "Pointer.h"
+#include <core/Pointer.h>
 
 #include <core/Chart.h>
 
-#include "ChartData.h"
+#include <core/ChartData.h>
 
 Pointer::Pointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data){
 	this->startPoint=startPoint;
