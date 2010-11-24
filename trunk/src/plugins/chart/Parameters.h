@@ -44,7 +44,7 @@ public:
 
 	/////////////////////////////////////
 
-	void saveParameters(std::ofstream& out, Header* header);
+	void saveParameters(std::ofstream& out, MarkerHeader* header);
 	bool parseParameters(short startData);
 	~Parameters();
 

@@ -23,10 +23,8 @@
 #include <osg/Matrix>
 
 // FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o
-//#include "c3dParser.h"
-//#include "C3D_Data.h"
-class C3D_Data;
-
+#include <core/c3dParser.h>
+#include <core/C3D_Data.h>
 
 #define SCALE 1
 #define TIMERMULTIPLAY 0.0055
@@ -150,8 +148,8 @@ C3D_Data* FileReader2Motion::ReadC3DFile( std::string filePath)
 //         if (parser) 
 //             delete parser;
 //     }
-
-    return NULL;
+// 
+       return NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -159,7 +157,7 @@ bool FileReader2Motion::ParseC3DFile2EDR(C3D_Data* c3d, C3DModel* c3dModel)
 {
     // ******************************************************************************* //
     // FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o
-// 
+
 //     std::vector<IMarker* > markerList;
 //     markerList.resize(c3d->getHeader()->getNumberOfC3DPoints());
 // 
@@ -167,7 +165,7 @@ bool FileReader2Motion::ParseC3DFile2EDR(C3D_Data* c3d, C3DModel* c3dModel)
 //     for(int i = 0; i < c3d->getHeader()->getNumberOfC3DPoints(); i++)
 //         markerList[i] = new Marker();
 // 
-//     for(int i=0; i < c3d->getData()->getNumberOfFrames(); i++)
+//     for(int i=0; i < (c3d->getData())->getNumberOfFrames(); i++)
 //     {
 // 
 //         float time = i*TIMERMULTIPLAY;

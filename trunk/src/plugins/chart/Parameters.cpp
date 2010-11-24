@@ -48,7 +48,7 @@ void Parameters::setProcessorType(unsigned char type){
 
 }
 
-void Parameters::saveParameters(std::ofstream& out, Header* header){
+void Parameters::saveParameters(std::ofstream& out, MarkerHeader* header){
 
 	/// param header 
 

@@ -1,5 +1,5 @@
-#ifndef _HEADER_DEF_
-#define _HEADER_DEF_
+#ifndef _MARKERHEADER_DEF_
+#define _MARKERHEADER_DEF_
 
 #include <string>
 #include "ProcessorReader.h"
@@ -14,7 +14,7 @@ Class responsible for holding data from the header section of c3d file.
 It contains mirrored values from the most important values from the parameters section.
 
 */
-class Header {
+class MarkerHeader {
 
 private:
 
@@ -43,7 +43,7 @@ private:
 
 public:
 
-	Header(ProcessorReader* proc);
+	MarkerHeader(ProcessorReader* proc);
 
 	unsigned char getParamStartBlock() { return paramStartBlock; }
 	int getNumberOfC3DPoints() { return numberOfC3DPoints; }
@@ -69,7 +69,7 @@ public:
 
 	bool parseHeader();
 	void saveHeader(std::ofstream& out);
-	~Header();
+	~MarkerHeader();
 
 	/////////////////////////////////
 
@@ -77,4 +77,4 @@ public:
 
 };
 
-#endif //_HEADER_DEF_
+#endif //_MARKERHEADER_DEF_

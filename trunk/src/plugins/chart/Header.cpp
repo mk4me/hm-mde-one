@@ -4,7 +4,7 @@
 
 //////////////////////
 
-Header::Header(ProcessorReader* proc) {
+MarkerHeader::MarkerHeader(ProcessorReader* proc) {
 
 	this->proc = proc;
 
@@ -17,7 +17,7 @@ Header::Header(ProcessorReader* proc) {
 ////////////////////////////////////////
 }
 
-Header::~Header() {
+MarkerHeader::~MarkerHeader() {
 
 	//std::cout << "destructor header\n";
 
@@ -38,7 +38,7 @@ Header::~Header() {
 
 }
 
-void Header::saveHeader(std::ofstream& out){
+void MarkerHeader::saveHeader(std::ofstream& out){
 
 	this->proc->writeStart(); // !!!!!
 
@@ -155,7 +155,7 @@ void Header::saveHeader(std::ofstream& out){
 
 }
 
-bool Header::parseHeader(){
+bool MarkerHeader::parseHeader(){
 
 	unsigned short word;
 	unsigned char singleByte;
@@ -502,7 +502,7 @@ bool Header::parseHeader(){
 	return true;
 }
 
-std::string Header::toString(){
+std::string MarkerHeader::toString(){
 
 	std::cout << "StartParamBlock: " << (short) paramStartBlock << "\n" <<
 	             "numberOfC3DPoints: " << numberOfC3DPoints << "\n" <<

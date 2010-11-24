@@ -14,7 +14,7 @@ class Data {
 
 private:
 
-	Header* header;
+	MarkerHeader* header;
 	ProcessorReader* proc;
 	int numberOfFrames;
 	int analogChannelsNumber;
@@ -23,7 +23,7 @@ private:
 
 public: 
 
-	Data(Header* head, ProcessorReader* proc);
+	Data(MarkerHeader* head, ProcessorReader* proc);
 
 	/////////////////////////////////////
 
@@ -36,7 +36,7 @@ public:
 	bool parseData();
 	void saveData(std::ofstream& out);
 
-	Header* getHeader() { return this->header; }
+	MarkerHeader* getHeader() { return this->header; }
 	~Data();
 
 	///////////////////////////////////

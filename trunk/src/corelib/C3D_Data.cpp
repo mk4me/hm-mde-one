@@ -3,7 +3,7 @@
 
 ///////////////////////////////////////////
 
-	C3D_Data::C3D_Data(Header* header, Parameters* parameters, Data* data){
+	C3D_Data::C3D_Data(MarkerHeader* header, Parameters* parameters, Data* data){
 
 		this->header = header;
 		this->parameters = parameters;

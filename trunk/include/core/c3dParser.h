@@ -20,7 +20,7 @@ class c3dParser {
 
 private:
 
-	Header* header;
+	MarkerHeader* header;
 	Parameters* parameters;
 	Data* data;
 	ProcessorReader* procRead;
@@ -35,7 +35,7 @@ public:
 	C3D_Data* parseData(std::string path);
 	bool saveData(std::string path, C3D_Data* data);
 
-	Header* getHeader() { return header; }
+	MarkerHeader* getHeader() { return header; }
 	Parameters* getParameters() { return parameters; }
 	Data* getData() { return data; }
 	ProcessorReader* getProcessorReader() { return procRead; }

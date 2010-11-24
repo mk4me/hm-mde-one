@@ -1,6 +1,6 @@
 #include "Data.h"
 
-Data::Data(Header* pam, ProcessorReader* proc){
+Data::Data(MarkerHeader* pam, ProcessorReader* proc){
 
 	this->header = pam;
 	this->proc = proc;

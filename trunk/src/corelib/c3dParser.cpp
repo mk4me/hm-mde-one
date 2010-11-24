@@ -170,7 +170,7 @@ default: {std::cout << "Unknown Processor - Parser Fatal error !"; return NULL; 
 
 	proc->readStart(); // !
 
-	this->header = new Header(proc);
+	this->header = new MarkerHeader(proc);
 
 	if(!this->header->parseHeader())
 	{

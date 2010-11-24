@@ -16,17 +16,17 @@ class C3D_Data {
 
 private:
 
-	Header* header;
+	MarkerHeader* header;
 	Parameters* parameters;
 	Data* data;
 
 public:
 
-	C3D_Data(Header* header, Parameters* parameters, Data* data);
+	C3D_Data(MarkerHeader* header, Parameters* parameters, Data* data);
 
 ///////////////////////////////////////////
 
-	Header* getHeader() { return header; }
+	MarkerHeader* getHeader() { return header; }
 	Parameters* getParameters() { return parameters; }
 	Data* getData() { return data; }
 	std::string toString();

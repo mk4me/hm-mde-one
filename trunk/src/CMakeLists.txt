@@ -74,7 +74,6 @@ find_package(TinyXML)
 find_package(Dae2ERD)
 find_package(cURL)
 find_package(wsdlpull)
-find_package(C3D2ERD)
 
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)
