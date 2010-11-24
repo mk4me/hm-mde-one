@@ -1,4 +1,3 @@
-
 #include "CommunicationPCH.h"
 #include <plugins/communication/CommunicationService.h>
 
@@ -22,7 +21,7 @@ CommunicationService::CommunicationService() : m_name("Communication")
 	this->m_model->attach(this->m_widget);
 	try
 	{
-		this->loadFromXml();
+		this->load();
 	}
 	catch(std::exception& e)
 	{
@@ -55,9 +54,9 @@ void CommunicationService::listTrialFiles(unsigned int session_id, unsigned int 
 	this->m_model->setFiles(session_id, trial_id);
 }
 
-void CommunicationService::downloadFile(unsigned int file_id)
+void CommunicationService::downloadFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id)
 {
-	this->m_model->setFile(file_id);
+	this->m_model->setFile(session_id, trial_id, file_id);
 }
 
 const communication::TransportWSDL_FTPS* CommunicationService::getTransportManager() const
@@ -109,12 +108,12 @@ void CommunicationService::updateSessionContents()
 	}
 }
 
-void CommunicationService::loadFromXml()
+void CommunicationService::load()
 {
-	this->m_model->loadFromXml("test.xml");
+	this->m_model->loadFromXml(this->m_name);
 }
 
-void CommunicationService::saveToXml()
+void CommunicationService::save()
 {
-	this->m_model->saveToXml("test.xml");
+	this->m_model->saveToXml(this->m_name);
 }

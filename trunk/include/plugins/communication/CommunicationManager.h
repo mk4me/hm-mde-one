@@ -32,8 +32,8 @@ namespace communication {
 		void setFiles(unsigned int session_id, unsigned int trial_id);
 		const Files& getFiles(unsigned int session_id, unsigned int trial_id) const;
 
-		void setFile(unsigned int file_id);
-		const std::string& getFile(/*unsigned int session_id, unsigned int trial_id, unsigned int file_id*/) const;
+		void setFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id);
+		const std::string& getFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id) const;
 
 		void clearSessions();
 		void clearTrials(unsigned int session_id);

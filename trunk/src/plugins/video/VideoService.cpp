@@ -31,9 +31,14 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
     VideoWidget* widget = reinterpret_cast<VideoWidget*>(this->widget);
 
     std::vector<std::string> files;
-    for (int i = 0; i < dataManager->GetVideoFilePathCount(); ++i) {
-        files.push_back(dataManager->GetVideoFilePath(i));
-    }
+	//TODO: ladowanie sciezek do plikow video [Marek Daniluk 23.11.10]
+	for(std::map<std::string, std::string>::const_iterator it = dataManager->getVideos().begin(); it != dataManager->getVideos().end(); ++it)
+	{
+		files.push_back((*it).second);
+	}
+    //for (int i = 0; i < dataManager->GetVideoFilePathCount(); ++i) {
+    //    files.push_back(dataManager->GetVideoFilePath(i));
+    //}
     widget->init(files);
 
     ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);

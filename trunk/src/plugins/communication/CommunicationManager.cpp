@@ -97,15 +97,33 @@ const CommunicationManager::Files& CommunicationManager::getFiles(unsigned int s
 	}
 }
 
-void CommunicationManager::setFile(unsigned int file_id)
+void CommunicationManager::setFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id)
 {
-	this->m_file_path = this->m_transport_manager->downloadFile(file_id, "");
+	this->m_transport_manager->downloadFile(file_id, "");
 	notify();
 }
 
-const std::string& CommunicationManager::getFile(/*unsigned int file_id*/) const
+const std::string& CommunicationManager::getFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id) const
 {
-	return this->m_file_path;
+	Sessions::const_iterator it = this->m_sessions.find(session_id);
+	if(it == this->m_sessions.end())
+	{
+		throw std::exception("No session with this ID.");
+	}
+	Trials::const_iterator it2 = (*it).second.session_trials.find(trial_id);
+	if(it2 == (*it).second.session_trials.end())
+	{
+		throw std::exception("No trial with this ID.");
+	}
+	Files::const_iterator it3 = (*it2).second.trial_files.find(file_id);
+	if(it3 != (*it2).second.trial_files.end())
+	{
+		return (*it3).second.file_name;
+	}
+	else
+	{
+		throw std::exception("No file with this ID.");
+	}
 }
 
 void CommunicationManager::clearSessions()

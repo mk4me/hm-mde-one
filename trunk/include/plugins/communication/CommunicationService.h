@@ -15,8 +15,6 @@ class CommunicationService : public IService, public ICommunication, public Open
 {
     UNIQUE_ID('COMM','SRVC');
 private:
-    // TODO
-    // tymczasowe
     CommunicationWidget* m_widget;
 	communication::CommunicationManager* m_model;
 	communication::TransportWSDL_FTPS* m_transport;
@@ -42,11 +40,11 @@ public:
 	virtual void listSessionTrials(unsigned int session_id);
 	virtual void listTrialFiles(unsigned int session_id, unsigned int trial_id);
 
-	virtual void downloadFile(unsigned int file_id);
+	virtual void downloadFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id);
 	virtual void updateSessionContents();
 
-	void loadFromXml();
-	void saveToXml();
+	void load();
+	void save();
 
 	const communication::TransportWSDL_FTPS* getTransportManager() const;
 	const communication::QueryWSDL* getQueryManager() const;

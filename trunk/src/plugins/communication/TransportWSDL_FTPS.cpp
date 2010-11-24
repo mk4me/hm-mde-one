@@ -72,9 +72,54 @@ void TransportWSDL_FTPS::storeTrialFiles(int trialID, const std::string& path) {
 const std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string& path) {
 	std::string filename;
 
+	//sciagnij plik
 	filename = wsdl->retrieveFile(fileID);
 	ftp->get(filename);
 	wsdl->downloadComplete(fileID, filename);
 	filename = filename.substr(filename.rfind("/") + 1, filename.npos);
+
+	//utworz foldery do odpowiedniej sciezki i przerzuc tam pliki
+	//TODO: dziala na pojedynczego slasha
+	std::string token = "/";
+	std::string sentence = path;
+	size_t s = 0;
+	size_t e = 0;
+	bool end = false;
+	std::vector<std::string> vec;
+
+	sentence.append(filename.substr(0, filename.find(".")));
+	while(!end)
+	{
+		s = 0;
+		if((e = sentence.find(token)) == sentence.npos)
+			end = true;
+		vec.push_back(sentence.substr(s, e));
+		sentence = sentence.substr(e + token.size());
+		s = e;
+	}
+	std::string dirs("");
+	for(std::vector<std::string>::iterator it = vec.begin(); it != vec.end(); ++it)
+	{
+		dirs.append((*it)).append(token);
+#if defined(__WIN32__)
+		BOOL ok = ::CreateDirectory(dirs.c_str(), 0);
+		//if(ok)
+		//	std::cout << "ok\n";
+		//else
+		//	std::cout << ::GetLastError() << std::endl;
+#elif defined(__UNIX__)
+		//FIX: nie znam api linuksa, na te chwile niech dziala z win
+#endif
+	}
+#if defined(__WIN32__)
+	//przenies plik
+	BOOL ok = ::MoveFile(filename.c_str(), dirs.append(token).append(filename).c_str());
+	if(ok == 0)
+	{
+		throw EDRException("Cannot move file to directory.");
+	}
+#elif defined(__UNIX__)
+	//FIX: nie znam api linuksa, na te chwile niech dziala z win
+#endif
 	return filename;
 }

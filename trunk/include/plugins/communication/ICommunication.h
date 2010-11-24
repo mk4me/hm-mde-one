@@ -12,6 +12,6 @@ public:
 
 	virtual void updateSessionContents() = 0;
 
-	virtual void downloadFile(unsigned int file_id) = 0;
+	virtual void downloadFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id) = 0;
 };
 #endif

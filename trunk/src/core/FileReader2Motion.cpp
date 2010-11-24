@@ -62,7 +62,9 @@ unsigned int Read(VOID* pData, unsigned int numBytes)
 //--------------------------------------------------------------------------------------------------
 void FileReader2Motion::ReadFile(DataManager *dataManager)
 {
-    std::string file = dataManager->GetFileName();
+	//TODO: pobiera nazwe pierwszego pliku tbs z zasobow [Marek Daniluk 23.11.10]
+	std::string file = dataManager->getMeshes().begin()->second;
+    //std::string file = dataManager->GetFileName();
     Model *model = dynamic_cast<Model* >(dataManager->GetModel());
     
     //TODO: poprawic wizualnie i zrzuwaæ koñcówke na ma³e litery
@@ -94,20 +96,37 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
     }
 
 
-    if(dataManager->GetC3dFilePathCount() > 0)
-    {
-        C3D_Data *c3d = ReadC3DFile(dataManager->GetC3dFilePath(0));
+	// TODO: ladowanie pierwszego pliku c3d jesli jakis znajduje sie w zasobach [Marek Daniluk 23.11.10]
+	std::map<std::string, std::string>::const_iterator c3ds_iterator = dataManager->getC3Ds().begin();
+	if(c3ds_iterator != dataManager->getC3Ds().end())
+	{
+		C3D_Data *c3d = ReadC3DFile((*c3ds_iterator).second);
+		if(c3d)
+		{
+			ParseC3DFile2EDR(c3d, dynamic_cast<C3DModel*>(dataManager->GetC3DModel()));
+		}
+	}
+    //if(dataManager->GetC3dFilePathCount() > 0)
+    //{
+    //    C3D_Data *c3d = ReadC3DFile(dataManager->GetC3dFilePath(0));
 
-        if(c3d)
-            ParseC3DFile2EDR(c3d, dynamic_cast<C3DModel*>(dataManager->GetC3DModel()));
+    //    if(c3d)
+    //        ParseC3DFile2EDR(c3d, dynamic_cast<C3DModel*>(dataManager->GetC3DModel()));
 
-    }
+    //}
 
-    if(dataManager->GetMeshFilePathCount() > 0)
-    {
-         //LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-         //dataManager->GetModel()->InicializeMesh();
-    }
+	// TODO: ladowanie pierwszego mesha jesli jakis znajduje sie w zasobach [Marek Daniluk 23.11.10]
+	std::map<std::string, std::string>::const_iterator meshes_iterator = dataManager->getMeshes().begin();
+	if(meshes_iterator != dataManager->getMeshes().end())
+	{
+		LoadMesh((*meshes_iterator).second, dynamic_cast<Model* >(dataManager->GetModel()));
+		dataManager->GetModel()->InicializeMesh();
+	}
+    //if(dataManager->GetMeshFilePathCount() > 0)
+    //{
+    //     LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
+    //     dataManager->GetModel()->InicializeMesh();
+    //}
 }
 
 //--------------------------------------------------------------------------------------------------
