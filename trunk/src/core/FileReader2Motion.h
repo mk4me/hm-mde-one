@@ -26,7 +26,7 @@ public:
 	static void ReadFile(DataManager *dataManager);
 	static bool LoadMesh(std::string address, Model* model);
     static bool LoadAnimationFromFmodel(SFModel* fmodel, Model* model);
-    static bool LoadAnimationFromAcclaim(ASFAMCParser* acclaimObject, Model* model);
+    static bool LoadAnimationFromAcclaim(std::string animationName, ASFAMCParser* acclaimObject, Model* model);
     static bool ParseC3DFile2EDR(C3D_Data* c3d, C3DModel* c3dModel);
 
     static bool LoadAnimationFromFAnnimation(std::string address, Model* model);

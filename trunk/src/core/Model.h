@@ -48,6 +48,7 @@ public:
 
     virtual Skeleton* GetSkeleton();
     virtual SkeletonAnimationList* GetAnimation();
+    virtual void RemoveGeode();
 
     void DrawBone(Bone* bone, osg::Geode* geode);
     void DrawNormals(float size);

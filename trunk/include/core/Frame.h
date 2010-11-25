@@ -31,6 +31,7 @@ struct BoneAnimation
 // struktura zawieraj¹ca liste koœci
 struct SkeletonAnimation
 {
+    std::string m_animationName;
     std::vector<BoneAnimation* > m_boneAnimationList;
 };
 

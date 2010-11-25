@@ -56,7 +56,7 @@ bool Animation::Pause()
 {
     if (_state == Animation::PLAYING)
     {
-        m_pAnimationService->UnregisterAnimation();
+        m_pAnimationService->UnregisterFunction(this, &Animation::SetTime);
 
         _state = Animation::PAUSED;
 
@@ -71,7 +71,7 @@ bool Animation::Resume()
 {
     if (_state == Animation::PAUSED)
     {
-        m_pAnimationService->RegisterAnimation(this, &Animation::SetTime);
+        m_pAnimationService->RegisterFunction(this, &Animation::SetTime);
         m_pAnimationService->setLength(_length);
 
         _state = Animation::PLAYING;
@@ -119,12 +119,16 @@ void Animation::Play()
     // add animation to caller
     if (_state != Animation::PLAYING)
     {
-        m_pAnimationService->RegisterAnimation(this, &Animation::SetTime);
+        m_pAnimationService->RegisterFunction(this, &Animation::SetTime);
         m_pAnimationService->setLength(_length);
         _state = Animation::PLAYING; 
 
         if(m_animationType == ACCLAIM)
         {
+//             m_pAnimationService->RegisterAnimation(this, &Animation::SetTime);
+//             m_pAnimationService->setLength(_length);
+//             _state = Animation::PLAYING; 
+
             int animatioBoneCount = m_pSkeletonAnimaton->m_boneAnimationList.size();
             int boneCount = m_pSkeleton->m_pBoneList.size();
 
@@ -146,6 +150,10 @@ void Animation::Play()
 
         if(m_animationType == C3D)
         {
+//             m_pAnimationService->RegisterC3DAnimation(this, &Animation::SetTime);
+//             m_pAnimationService->setLength(_length);
+//             _state = Animation::PLAYING; 
+
             // ilosc kosci = ilosc obiektów frame w tablicy
             m_pFrameCount = m_markerList[0]->GetAnimationList().size();
             _length = m_markerList[0]->GetAnimationList()[m_pFrameCount-1]->m_time;
@@ -443,13 +451,40 @@ void Animation::UpdateModelAcclaimFormat()
 }
 
 //--------------------------------------------------------------------------------------------------
+void Animation::UpdateModelC3DFormat()
+{
+    // update skeleton
+    // for every bone
+
+    // OBLICZANIE ROOTA.
+
+    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
+    int index = _actTime / TIMERMULTIPLAY;
+    if(index % 2 != 0)
+        index++;
+
+    if(index > m_pFrameCount - 1)
+    {
+        _state = Animation::STOPPED;
+        index = m_pFrameCount -1;
+    }
+
+
+    int childrenCount = m_markerList.size();
+    for(int m = 0; m<childrenCount; m++)
+    {
+        m_markerList[m]->SetActualPossition(m_markerList[m]->GetAnimationList()[index]->m_position);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
 void Animation::Update(double dt)
 {
     // if everything is done - stop animation
     if (_state == Animation::STOPPED)
     {
         // remove animation from caller
-        m_pAnimationService->UnregisterAnimation();
+        m_pAnimationService->UnregisterFunction(this, &Animation::SetTime);
 
         FirstFrame();
 
@@ -474,7 +509,7 @@ void Animation::SetTime( double time )
     if (_state == Animation::STOPPED)
     {
         // remove animation from caller
-        m_pAnimationService->UnregisterAnimation();
+        m_pAnimationService->UnregisterFunction(this, &Animation::SetTime);
 
         FirstFrame();
 
@@ -610,31 +645,6 @@ Animation::AnimationState Animation::GetState()
 void Animation::SetScale( double scale )
 {
     SCALE = scale;
-}
-
-//--------------------------------------------------------------------------------------------------
-void Animation::UpdateModelC3DFormat()
-{
-    // update skeleton
-    // for every bone
-
-    // OBLICZANIE ROOTA.
-
-    //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
-    int index = _actTime / TIMERMULTIPLAY;
-
-    if(index > m_pFrameCount - 1)
-    {
-        _state = Animation::STOPPED;
-        index = m_pFrameCount -1;
-    }
-
-   
-    int childrenCount = m_markerList.size();
-    for(int m = 0; m<childrenCount; m++)
-    {
-        m_markerList[m]->SetActualPossition(m_markerList[m]->GetAnimationList()[index]->m_position);
-    }
 }
 
 //--------------------------------------------------------------------------------------------------

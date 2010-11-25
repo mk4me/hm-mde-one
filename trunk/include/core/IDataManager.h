@@ -31,11 +31,11 @@ public:
 	virtual const Resources& getC3Ds() = 0;
 //------------------------------------------------------------------------------------------------------------------------------
 
-    //virtual void Clear() = 0;
+    virtual void Clear() = 0;
 
     //virtual void GetVideoFile() = 0;
 
-    //virtual std::string GetFileName() = 0;
+    virtual std::string GetFileName() = 0;
 
     //virtual std::string GetVideoFilePath(int i) = 0;
     //virtual int GetVideoFilePathCount() = 0;
@@ -46,14 +46,17 @@ public:
     virtual std::string GetAnimationFilePath(int i) = 0;
     virtual int GetAnimationFilePathCount() = 0;
 
-    //virtual std::string GetMeshFilePathPath(int i) = 0;
-    //virtual int GetMeshFilePathCount() = 0;
+    virtual std::string GetMeshFilePathPath(int i) = 0;
+    virtual int GetMeshFilePathCount() = 0;
 
-    //virtual std::string GetC3dFilePath(int i) = 0;
-    //virtual int GetC3dFilePathCount() = 0;
+    virtual std::string GetC3dFilePath(int i) = 0;
+    virtual int GetC3dFilePathCount() = 0;
 
     virtual IModel* GetModel() = 0;
-    virtual IC3DModel* GetC3DModel() = 0;
+
+    virtual int GetC3DModelCount() = 0;
+    virtual IC3DModel* GetC3DModel(int i = 0) = 0;
+    virtual void AddC3DModel(IC3DModel *c3dmodel) = 0;
 };
 
 #endif // I_DATA_MANAGER_H

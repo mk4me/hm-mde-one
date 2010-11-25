@@ -24,6 +24,7 @@ namespace osgViewer
 class IModel;
 class IC3DModel;
 class IDataManager;
+class IRenderService;
 class IServiceManager;
 class OsgControlWidget;
 
@@ -49,6 +50,15 @@ struct STransform
     osg::Quat	rotation;		// rotation: orig. bone -> act bone
 };
 
+enum AnimasionDisplay
+{
+    NONE = 0,
+    MESH = 1,
+    BONE = 2,
+    MARKER = 4,
+    ALL = 15
+};
+
 
 //--------------------------------------------------------------------------------------------------
 // Animation Service
@@ -65,16 +75,20 @@ public:
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
-    void RegisterAnimation(Animation* object, void (Animation::*fun)(double)); // add function to caller
-    void SetSelectedAnimationName(const std::string& name); // set act selected animation name 
-    void PlayAnimation(std::string animationName);
+    virtual void RegisterAnimation(Animation* object, void (Animation::*fun)(double)); // add function to caller
+    virtual void RegisterC3DAnimation(Animation* object, void (Animation::*fun)(double)); // add function to caller
+    
+    virtual void SetSelectedAnimationName(const std::string& name); // set act selected animation name 
+    virtual void PlayAnimation(std::string animationName);
     //void SetScene(osg::Node* scene); // set animated scene
-    void LoadAnimation(IModel* model);
-    void LoadAnimation(IC3DModel* c3dModel);
-    void ClearCaller(); // clear caller
-    void NotifyStop(); // notify stop
+    virtual void LoadAnimation(IModel* model);
+    virtual void LoadAnimation(IC3DModel* c3dModel);
+    virtual void ClearCaller(); // clear caller
+    virtual void NotifyStop(); // notify stop
 
-    bool UnregisterAnimation(); // remove function from caller
+    virtual bool UnregisterAnimation(); // remove function from caller
+
+    virtual bool UnregisterC3DAnimation(); // remove function from caller
 
     // adds function to caller - called on every animation update
     template<class T> void RegisterFunction(T* object, void (T::*fun)(double)); 
@@ -84,10 +98,10 @@ public:
     template<class T> void RegisterOnStopFunction(T* object, void (T::*fun)()); 
 
     
-    std::string& GetSelectedAnimationName(); // returns name of act selected animation
+    virtual std::string& GetSelectedAnimationName(); // returns name of act selected animation
 
-    Animation* GetAnimation(); // returns act animation
-    std::map<std::string, Animation*>* GetAnimations();
+    virtual Animation* GetAnimation(); // returns act animation
+    virtual std::map<std::string, Animation*>* GetAnimations();
 
 // IService (Piotr Gwiazdowski)
 public:
@@ -103,6 +117,10 @@ public:
     //! \param followTimeline
     void setFollowTimeline(bool followTimeline);
 
+    void SetShowMesh(bool showMesh);
+    void SetShowBone(bool showBone);
+    void SetShowMarker(bool showMarker);
+
 	void setScale(float scale);
 
     virtual const std::string& getName() const
@@ -117,6 +135,7 @@ private:
     OpenThreads::Mutex stateMutex;
     bool followTimeline;
     Animation* currentAnimation;
+    Animation* c3dcurrentAnimation;
     //! Nazwa.
     std::string name;
 
@@ -125,11 +144,10 @@ protected:
     osg::ref_ptr<osg::Node> m_pScene;
 
 private: 
-    void UpdateBone(osg::PositionAttitudeTransform* bone);
-    void RecalculateChanges();
-    void UpdateSkeleton();
-    void UpdateMesh();
-    void Clear();
+    virtual void UpdateMesh();
+    virtual void Clear();
+
+    void PlayC3DAnimation(std::string name);
 
     std::vector<std::vector<ISimpleOneArgFunctor<double>*>::iterator> m_functionsToRemove; // functions to remove from caller
     std::vector<ISimpleNoArgFunctor*> m_functionsToCallWhenAnimationStopped; // functions called when animation is being unregistered
@@ -137,8 +155,13 @@ private:
     std::vector<ISkeletonNode*>* m_pJoints;
 
     std::map<std::string, Animation*> m_animations;
+    std::map<IC3DModel*, Animation*> m_c3danimations;
+
+    std::vector<std::string> m_animationNames;
+    std::vector<std::string> m_c3dNames;
 
     ISimpleOneArgFunctor<double>* m_pAnimation;
+    ISimpleOneArgFunctor<double>* m_pC3DAnimation;
 
     unsigned int m_numOfBones;
 
@@ -156,7 +179,11 @@ private:
     osg::Vec3d _tempVectors[MAX_AFFECTING_BONES][2];
 
     IServiceManager* m_pServiceManager;
+
+    IRenderService* m_pRenderService;
     OsgControlWidget* widget;
+
+    int m_DisplayType;
 };
 
 //--------------------------------------------------------------------------------------------------

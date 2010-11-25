@@ -38,6 +38,7 @@ RenderService::~RenderService()
 void RenderService::Clear()
 {
     widget = NULL;
+    m_pModel = NULL;
     sceneRoot = NULL;
 }
 
@@ -55,7 +56,6 @@ void RenderService::Inicialize(osg::Node* sceneRoot)
     sceneRoot = dynamic_cast<osg::Group*>(sceneRoot);
     UTILS_ASSERT(sceneRoot != NULL);
 
-
     osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator();
 
     widget = new QOSGViewer(NULL, 0, 0);
@@ -64,11 +64,9 @@ void RenderService::Inicialize(osg::Node* sceneRoot)
 
     osg::Light *light = new osg::Light();
 
-    light->setPosition(osg::Vec4d(300, -200, 900, 40));
+    light->setPosition(osg::Vec4d(10, -10, 10, 4));
     widget->setLight(light);
-    
     widget->setLightingMode(osg::View::LightingMode::SKY_LIGHT);
-
     widget->setSceneData(sceneRoot);
 }
 
@@ -82,11 +80,10 @@ void RenderService::AddObjectToRender( osg::Node* node )
 void RenderService::SetScene(osg::Group* root)
 {
     Model* model = dynamic_cast<Model*>(root);
-    if(model)
-    {
-        InicizlizeModelMesh(model);
-    }
 
+    if(model)
+        InicizlizeModelMesh(model);
+    
     sceneRoot = root;
 
     widget->setSceneData(sceneRoot);
@@ -117,7 +114,7 @@ osgGroupPtr RenderService::GetRoot()
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::TestScreenForNewModel( Model* model )
+void RenderService::TestScreenForNewModel(IModel* model )
 {
     UTILS_ASSERT(false, "Nie powinien tutaj wejœæ...");
 }
@@ -129,6 +126,7 @@ void RenderService::InicizlizeModelMesh(Model* model)
     std::vector<IMesh*> meshList = model->GetMeshList();
 
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+
     geode->setName("NEW_MESH");
 
     for( it = meshList.begin(); it != meshList.end(); it++)
@@ -136,15 +134,134 @@ void RenderService::InicizlizeModelMesh(Model* model)
         geode->addDrawable(dynamic_cast<Mesh*>(*it));
     }
 
-
-    model->addChild(geode);
-	RenderBone(model);
-
-//    DrawNormals(model, 2.0f);
+    m_pMeshGeode = geode;
+    model->addChild(m_pMeshGeode);
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::DrawNormals(Model* model, float size)
+AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+{
+    if(dynamic_cast<Model* >(dataManager->GetModel())) {
+        SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
+        m_pModel = dynamic_cast<Model* >(dataManager->GetModel());
+    }
+
+    if(dynamic_cast<C3DModel* >(dataManager->GetC3DModel())) {
+        RenderC3D(dynamic_cast<C3DModel* >(dataManager->GetC3DModel()));
+        m_pC3DModel = dynamic_cast<C3DModel* >(dataManager->GetC3DModel());
+    }
+
+    return AsyncResult_Complete;
+}
+
+//--------------------------------------------------------------------------------------------------
+// TODO: kosci trzeba zamienic jako geometry i aktualizowaæ ich pozycje - tak jak mesh
+// Tymczasowo nie uzywana metoda - update  kosci robi sie poprzez model
+// this method is uset to display Skeleton from asf - only 1 time TODO: Change it
+void RenderService::RenderBone(IModel* model)
+{
+	m_pBoneGeode = model->GetSkeletonGeode().get();
+	m_pBoneGeode->setName("skeleton_geode");
+
+    if(!model->GetSkeleton())
+        return;
+
+	Bone* bone = model->GetSkeleton()->m_pRootBone;
+	int childcount = bone->child.size();
+
+	for (int i = 0; i<childcount; i++)
+	{
+		dynamic_cast<Model*>(model)->DrawBone(bone->child[i], m_pBoneGeode);
+	}
+
+	dynamic_cast<Model*>(model)->addChild(m_pBoneGeode);
+}
+
+//--------------------------------------------------------------------------------------------------
+// TODO: ten sam przypadek co koœci - poprawic i przekszta³ciæ aby dzia³a³y jak mesh
+void RenderService::RenderC3D(IC3DModel* c3dmodel)
+{
+    osg::ref_ptr<osg::Geode> markersGeode = c3dmodel->GetMarkerGeode();
+    markersGeode->setName("markers_geode");
+
+    c3dmodel->DrawMarkers();
+    dynamic_cast<C3DModel*>(c3dmodel)->addChild(markersGeode);
+
+    m_pMarkerGeode = markersGeode;
+
+    AddObjectToRender(dynamic_cast<C3DModel*>(c3dmodel));
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::SetC3DMarkerToRender(IC3DModel *c3dmodel)
+{
+    DisableMarker();
+
+    if(m_pC3DModel != dynamic_cast<C3DModel*>(c3dmodel) && m_pC3DModel)
+        m_pModel->removeChild(m_pC3DModel);
+
+    m_pC3DModel = dynamic_cast<C3DModel*>(c3dmodel);
+    AddObjectToRender(m_pC3DModel);
+
+   // DisableMarker();
+   // m_pC3DModel = dynamic_cast<C3DModel*>(c3dmodel);
+}
+
+//--------------------------------------------------------------------------------------------------
+IWidget* RenderService::getWidget()
+{
+    return reinterpret_cast<IWidget*>(widget);
+}
+
+//--------------------------------------------------------------------------------------------------
+osg::Light* RenderService::GetLight()
+{
+     return widget->getLight();
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::EnableMesh()
+{
+    InicizlizeModelMesh(m_pModel);
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::DisableMesh()
+{
+    if(m_pMeshGeode.valid() && m_pModel)
+        m_pModel->removeChild(m_pMeshGeode.get());
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::EnableBone()
+{
+    //RenderBone(m_pModel)
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::DisableBone()
+{
+    m_pModel->RemoveGeode();
+
+    if(m_pBoneGeode.valid() && m_pModel)
+        m_pModel->removeChild(m_pBoneGeode.get());
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::EnableMarker()
+{
+ //   RenderC3D(m_pC3DModel);
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::DisableMarker()
+{
+    m_pC3DModel->RemoveGeode();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Testowa metoda
+void RenderService::DrawNormals(IModel* model, float size)
 {
     std::vector<IMesh*> meshList = model->GetMeshList();
 
@@ -196,67 +313,5 @@ void RenderService::DrawNormals(Model* model, float size)
         }
     }
 
-    model->addChild(m_spNormalGeode);
+    dynamic_cast<Model*>(model)->addChild(m_spNormalGeode);
 };
-
-//--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
-{
-    if(dynamic_cast<Model* >(dataManager->GetModel())) {
-        SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
-    }
-
-    if(dynamic_cast<Model* >(dataManager->GetModel())) {
-        RenderC3D(dynamic_cast<C3DModel* >(dataManager->GetC3DModel()));
-    }
-
-    return AsyncResult_Complete;
-}
-
-//--------------------------------------------------------------------------------------------------
-void RenderService::RenderBone(Model* model)
-{
-	osg::ref_ptr<osg::Geode> skeletonGeode = model->GetSkeletonGeode();
-	skeletonGeode->setName("skeleton_geode");
-
-    if(!model->GetSkeleton())
-        return;
-
-	Bone* bone = model->GetSkeleton()->m_pRootBone;
-
-	int childcount = bone->child.size();
-
-	for (int i = 0; i<childcount; i++)
-	{
-		model->DrawBone(bone->child[i], skeletonGeode);
-	}
-
-	model->addChild(skeletonGeode);
-}
-
-//--------------------------------------------------------------------------------------------------
-void RenderService::RenderC3D(C3DModel* c3dmodel)
-{
-    osg::ref_ptr<osg::Geode> markersGeode = c3dmodel->GetMarkerGeode();
-    markersGeode->setName("markers_geode");
-
-    c3dmodel->DrawMarkers();
-   
-    c3dmodel->addChild(markersGeode);
-
-    AddObjectToRender(c3dmodel);
-    //sceneRoot = c3dmodel;
-    //widget->setSceneData(sceneRoot);
-}
-
-//--------------------------------------------------------------------------------------------------
-IWidget* RenderService::getWidget()
-{
-    return reinterpret_cast<IWidget*>(widget);
-}
-
-//--------------------------------------------------------------------------------------------------
-osg::Light* RenderService::GetLight()
-{
-     return widget->getLight();
-}

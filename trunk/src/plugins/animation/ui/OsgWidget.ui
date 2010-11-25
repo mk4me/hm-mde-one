@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>473</width>
+    <width>458</width>
     <height>595</height>
    </rect>
   </property>
@@ -26,7 +26,7 @@
    <string>OSG</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+   <item row="0" column="0" colspan="6">
     <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -86,24 +86,89 @@
     </layout>
    </item>
    <item row="1" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <widget class="QCheckBox" name="MeshCheckBox">
+     <property name="text">
+      <string>Mesh</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>80</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="2">
+    <widget class="QCheckBox" name="BoneCheckBox">
+     <property name="text">
+      <string>Bone</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <spacer name="horizontalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>59</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="4">
+    <widget class="QCheckBox" name="MarkerCheckBox">
+     <property name="text">
+      <string>Marker</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="5">
+    <spacer name="horizontalSpacer_4">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>80</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Animations:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="6">
+    <widget class="QListWidget" name="animationList">
      <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Animations:</string>
-       </property>
-      </widget>
+      <property name="text">
+       <string>[none]</string>
+      </property>
      </item>
-     <item>
-      <widget class="QListWidget" name="animationList">
-       <item>
-        <property name="text">
-         <string>[none]</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-    </layout>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -157,10 +222,61 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>MeshCheckBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>OsgTest</receiver>
+   <slot>MeshChecked(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>36</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>228</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BoneCheckBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>OsgTest</receiver>
+   <slot>BoneChecked(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>183</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>228</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MarkerCheckBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>OsgTest</receiver>
+   <slot>MarkerChecked(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>331</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>228</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>followTimelineChecked(int)</slot>
   <slot>animationSelectionChanged()</slot>
   <slot>scaleValueChanged(QString)</slot>
+  <slot>MeshChecked(int)</slot>
+  <slot>BoneChecked(int)</slot>
+  <slot>MarkerChecked(int)</slot>
  </slots>
 </ui>

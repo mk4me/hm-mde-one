@@ -18,7 +18,11 @@ public:
     virtual std::vector<IMarker* > GetMarkerList() = 0;
 
     virtual void DrawMarkers() = 0;
+    virtual void RemoveGeode() = 0;
     virtual osg::ref_ptr<osg::Geode> GetMarkerGeode() = 0;
+
+    virtual void SetName(std::string name) = 0;
+    virtual std::string GetName() const = 0;
 };
 
 

@@ -1,6 +1,7 @@
 #include "C3DModel.h"
 
 
+#define MARKER_SCALE 24.41463509083284
 
 //--------------------------------------------------------------------------------------------------
 void C3DModel::Clear()
@@ -23,8 +24,7 @@ std::vector<IMarker* > C3DModel::GetMarkerList()
 //--------------------------------------------------------------------------------------------------
 void C3DModel::DrawMarkers()
 {
-    if (m_spMarkerGeode.valid())
-        this->removeChild(m_spMarkerGeode.get());
+    RemoveGeode();
 
     // create new geode
     m_spMarkerGeode = new osg::Geode();
@@ -32,14 +32,18 @@ void C3DModel::DrawMarkers()
 
     for(int m = 0; m < m_MarkerList.size(); m++)
     {
-        m_spMarkerGeode->addDrawable(DrawMarker(m_MarkerList[m]));
+        osg::Box *sphere = new osg::Box((m_MarkerList[m]->GetActualPossition()/MARKER_SCALE), 1.2f);
+        osg::ShapeDrawable *shapeDrawable = new osg::ShapeDrawable(sphere);
+
+
+        m_spMarkerGeode->addDrawable(shapeDrawable);
     }
 
     this->addChild(m_spMarkerGeode);
 }
 
 //--------------------------------------------------------------------------------------------------
-osg::ref_ptr<osg::Geometry> C3DModel::DrawMarker(IMarker* marker)
+osg::ref_ptr<osg::Geometry> C3DModel::DrawMarkerAsPrimitivePoint(IMarker* marker)
 {
     // draw actual bone
     osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
@@ -47,6 +51,7 @@ osg::ref_ptr<osg::Geometry> C3DModel::DrawMarker(IMarker* marker)
     // vertices
     osg::Vec3Array* vertices = new osg::Vec3Array();
     vertices->push_back(marker->GetActualPossition());
+
 
     // indices
     osg::DrawElementsUInt* point = new osg::DrawElementsUInt(osg::PrimitiveSet::POINTS, 0);
@@ -78,4 +83,23 @@ osg::ref_ptr<osg::Geode> C3DModel::GetMarkerGeode()
         return m_spMarkerGeode;
 
     return m_spMarkerGeode = new osg::Geode();
+}
+
+//--------------------------------------------------------------------------------------------------
+void C3DModel::RemoveGeode()
+{
+    if (m_spMarkerGeode.valid())
+        this->removeChild(m_spMarkerGeode.get());
+}
+
+//--------------------------------------------------------------------------------------------------
+std::string C3DModel::GetName() const
+{
+    return m_Name;
+}
+
+//--------------------------------------------------------------------------------------------------
+void C3DModel::SetName( std::string name )
+{
+    m_Name = name;
 }

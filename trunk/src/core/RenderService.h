@@ -11,6 +11,7 @@
 
 #include <core/IService.h>
 #include <core/QOSGWidget.h>
+#include <core/IRenderService.h>
 
 #include <map>
 
@@ -26,7 +27,7 @@ class IDataManager;
 
 typedef osg::ref_ptr<osg::Group> osgGroupPtr;
 
-class RenderService: public IService
+class RenderService: public IRenderService
 {
     UNIQUE_ID('REND','SRVC');
 public:
@@ -36,23 +37,22 @@ public:
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
-    void TestScreenForNewModel(Model* model);
+    void TestScreenForNewModel(IModel* model);
     void AddObjectToRender(osg::Node* node);
     void SetScene(osg::Group* root);
     void Clear();
 
-    
-
+   
     osgViewer::Scene* GetMainWindowScene();
     osgGroupPtr GetRoot();
     QOSGViewer* GetMainAdapterWidget();
 
     osg::Light* GetLight();
 
-	void RenderBone(Model* model);
-    void RenderC3D(C3DModel* c3dmodel);
+	virtual void RenderBone(IModel* model);
+    virtual void RenderC3D(IC3DModel* c3dmodel);
 
-    void DrawNormals(Model* model, float size);
+    void DrawNormals(IModel* model, float size);
 
     virtual const std::string& getName() const
     {
@@ -61,14 +61,31 @@ public:
 
     virtual IWidget* getWidget();
 
+    virtual void EnableMesh();
+    virtual void DisableMesh();
+
+    virtual void EnableBone();
+    virtual void DisableBone();
+
+    virtual void EnableMarker();
+    virtual void DisableMarker();
+
+    virtual void SetC3DMarkerToRender(IC3DModel *c3dmodel);
+
 private: 
     void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);
+
+    osg::ref_ptr<osg::Geode> m_pMeshGeode;
+    osg::ref_ptr<osg::Geode> m_pBoneGeode;
+    osg::ref_ptr<osg::Geode> m_pMarkerGeode;
 
     QOSGViewer* widget; 
     osgGroupPtr sceneRoot;
     //! Nazwa.
     std::string name;
+    Model *m_pModel;
+    C3DModel *m_pC3DModel;
 };
 
 typedef CORE_SHARED_PTR(RenderService) RenderServicePtr;

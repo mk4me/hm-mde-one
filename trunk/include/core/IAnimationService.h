@@ -37,6 +37,7 @@ public:
     virtual ~IAnimationService() {};
 
     virtual void RegisterAnimation(Animation* object, void (Animation::*fun)(double)) = 0; // add function to caller
+    virtual void RegisterC3DAnimation(Animation* object, void (Animation::*fun)(double)) = 0; // add function to caller
     virtual void SetSelectedAnimationName(const std::string& name) = 0; // set act selected animation name 
     virtual void PlayAnimation(std::string animationName) = 0;
     //virtual void SetScene(osg::Node* scene) = 0; // set animated scene
@@ -46,6 +47,7 @@ public:
     virtual void NotifyStop() = 0; // notify stop
 
     virtual bool UnregisterAnimation() = 0; // remove function from caller
+    virtual bool UnregisterC3DAnimation() = 0; // remove function from caller
 
 
     virtual std::string& GetSelectedAnimationName() = 0; // returns name of act selected animation
@@ -53,9 +55,6 @@ public:
     virtual Animation* GetAnimation() = 0; // returns act animation
     virtual std::map<std::string, Animation*>* GetAnimations() = 0;
 
-    virtual void UpdateBone(osg::PositionAttitudeTransform* bone) = 0;
-    virtual void RecalculateChanges() = 0;
-    virtual void UpdateSkeleton() = 0;
     virtual void UpdateMesh() = 0;
     virtual void Clear() = 0;
 };

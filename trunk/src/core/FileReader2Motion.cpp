@@ -61,8 +61,8 @@ unsigned int Read(VOID* pData, unsigned int numBytes)
 void FileReader2Motion::ReadFile(DataManager *dataManager)
 {
 	//TODO: pobiera nazwe pierwszego pliku tbs z zasobow [Marek Daniluk 23.11.10]
-	std::string file = dataManager->getMeshes().begin()->second;
-    //std::string file = dataManager->GetFileName();
+//	std::string file = dataManager->getMeshes().begin()->second;
+    std::string file = dataManager->GetFileName();
     Model *model = dynamic_cast<Model* >(dataManager->GetModel());
     
     //TODO: poprawic wizualnie i zrzuwaæ koñcówke na ma³e litery
@@ -89,66 +89,73 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
         for(int i = 0; i < dataManager->GetAnimationFilePathCount(); i++)
         {
             if(object->ReadAMCFile(dataManager->GetAnimationFilePath(i)))
-                LoadAnimationFromAcclaim(object, dynamic_cast<Model*>(dataManager->GetModel()));
+                LoadAnimationFromAcclaim(dataManager->GetAnimationFilePath(i), object, dynamic_cast<Model*>(dataManager->GetModel()));
         }
     }
 
 
 	// TODO: ladowanie pierwszego pliku c3d jesli jakis znajduje sie w zasobach [Marek Daniluk 23.11.10]
 	std::map<std::string, std::string>::const_iterator c3ds_iterator = dataManager->getC3Ds().begin();
-	if(c3ds_iterator != dataManager->getC3Ds().end())
-	{
-		C3D_Data *c3d = ReadC3DFile((*c3ds_iterator).second);
-		if(c3d)
-		{
-			ParseC3DFile2EDR(c3d, dynamic_cast<C3DModel*>(dataManager->GetC3DModel()));
-		}
-	}
-    //if(dataManager->GetC3dFilePathCount() > 0)
-    //{
-    //    C3D_Data *c3d = ReadC3DFile(dataManager->GetC3dFilePath(0));
+// 	if(c3ds_iterator != dataManager->getC3Ds().end())
+// 	{
+// 		C3D_Data *c3d = ReadC3DFile((*c3ds_iterator).second);
+// 		if(c3d)
+// 		{
+// 			ParseC3DFile2EDR(c3d, dynamic_cast<C3DModel*>(dataManager->GetC3DModel()));
+// 		}
+// 	}
 
-    //    if(c3d)
-    //        ParseC3DFile2EDR(c3d, dynamic_cast<C3DModel*>(dataManager->GetC3DModel()));
+    for (int i = 0; i < dataManager->GetC3dFilePathCount(); i++)
+    {
+        C3D_Data *c3d = ReadC3DFile(dataManager->GetC3dFilePath(i));
 
-    //}
+        if(c3d)
+        {
+            C3DModel* c3dModel = new C3DModel();
+            std::string name = dataManager->GetC3dFilePath(i);
+
+            c3dModel->SetName(name.substr(name.find_last_of("/")+1, name.length()));
+            ParseC3DFile2EDR(c3d, c3dModel);
+            dataManager->AddC3DModel(c3dModel);
+        }
+    }
 
 	// TODO: ladowanie pierwszego mesha jesli jakis znajduje sie w zasobach [Marek Daniluk 23.11.10]
-	std::map<std::string, std::string>::const_iterator meshes_iterator = dataManager->getMeshes().begin();
-	if(meshes_iterator != dataManager->getMeshes().end())
-	{
-		LoadMesh((*meshes_iterator).second, dynamic_cast<Model* >(dataManager->GetModel()));
-		dataManager->GetModel()->InicializeMesh();
-	}
-    //if(dataManager->GetMeshFilePathCount() > 0)
-    //{
-    //     LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-    //     dataManager->GetModel()->InicializeMesh();
-    //}
+// 	std::map<std::string, std::string>::const_iterator meshes_iterator = dataManager->getMeshes().begin();
+// 	if(meshes_iterator != dataManager->getMeshes().end())
+// 	{
+// 		LoadMesh((*meshes_iterator).second, dynamic_cast<Model* >(dataManager->GetModel()));
+// 		dataManager->GetModel()->InicializeMesh();
+// 	}
+    if(dataManager->GetMeshFilePathCount() > 0)
+    {
+         LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
+         dataManager->GetModel()->InicializeMesh();
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
 C3D_Data* FileReader2Motion::ReadC3DFile( std::string filePath)
 {
         // FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o
-//     c3dParser* parser = 0;
-//     parser = new c3dParser();
-// 
-//     C3D_Data* c3d = parser->parseData(filePath);
-// 
-//     if(c3d != NULL)
-//     {
-//         return c3d;
-//     }
-//     else
-//     {
-//         std::cout << "Wystapil blad odczytu.\n";
-//         delete c3d;
-// 
-//         if (parser) 
-//             delete parser;
-//     }
-// 
+    c3dParser* parser = 0;
+    parser = new c3dParser();
+
+    C3D_Data* c3d = parser->parseData(filePath);
+
+    if(c3d != NULL)
+    {
+        return c3d;
+    }
+    else
+    {
+        std::cout << "Wystapil blad odczytu.\n";
+        delete c3d;
+
+        if (parser) 
+            delete parser;
+    }
+
        return NULL;
 }
 
@@ -158,41 +165,41 @@ bool FileReader2Motion::ParseC3DFile2EDR(C3D_Data* c3d, C3DModel* c3dModel)
     // ******************************************************************************* //
     // FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o
 
-//     std::vector<IMarker* > markerList;
-//     markerList.resize(c3d->getHeader()->getNumberOfC3DPoints());
-// 
-//     // alokacja pamiêci w liœcie
-//     for(int i = 0; i < c3d->getHeader()->getNumberOfC3DPoints(); i++)
-//         markerList[i] = new Marker();
-// 
-//     for(int i=0; i < (c3d->getData())->getNumberOfFrames(); i++)
-//     {
-// 
-//         float time = i*TIMERMULTIPLAY;
-// 
-//         for(int marker=0; marker < c3d->getHeader()->getNumberOfC3DPoints(); marker++)
-//         {
-//             MarkerFrame *markerFrame = new MarkerFrame();
-// 
-//             markerFrame->m_time = time;
-//             markerFrame->m_position.x() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 0];
-//             markerFrame->m_position.z() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 1];
-//             markerFrame->m_position.y() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 2];
-// 
-//             markerList[marker]->AddFrame(markerFrame);
-//         }
-// 
-//     }
-// 
-//     // tymczasowe rozwi¹zanie
-//     for(int m = 0; m < markerList.size(); m++)
-//     {
-//         markerList[m]->SetActualPossition(markerList[m]->GetAnimationList()[0]->m_position);
-//     }
-// 
-//     c3dModel->SetMarkerList(markerList);
-// 
-//     std::cout << "saving finished !\n";
+    std::vector<IMarker* > markerList;
+    markerList.resize(c3d->getHeader()->getNumberOfC3DPoints());
+
+    // alokacja pamiêci w liœcie
+    for(int i = 0; i < c3d->getHeader()->getNumberOfC3DPoints(); i++)
+        markerList[i] = new Marker();
+
+    for(int i=0; i < (c3d->getData())->getNumberOfFrames(); i++)
+    {
+
+        float time = i*TIMERMULTIPLAY;
+
+        for(int marker=0; marker < c3d->getHeader()->getNumberOfC3DPoints(); marker++)
+        {
+            MarkerFrame *markerFrame = new MarkerFrame();
+
+            markerFrame->m_time = time;
+            markerFrame->m_position.x() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 0];
+            markerFrame->m_position.z() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 1];
+            markerFrame->m_position.y() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 2];
+
+            markerList[marker]->AddFrame(markerFrame);
+        }
+
+    }
+
+    // tymczasowe rozwi¹zanie
+    for(int m = 0; m < markerList.size(); m++)
+    {
+        markerList[m]->SetActualPossition(markerList[m]->GetAnimationList()[0]->m_position);
+    }
+
+    c3dModel->SetMarkerList(markerList);
+
+    std::cout << "saving finished !\n";
 
     return TRUE;
 }
@@ -554,10 +561,11 @@ bool FileReader2Motion::LoadAnimationFromFmodel(SFModel* fmodel, Model* model)
 }
 
 //--------------------------------------------------------------------------------------------------
-bool FileReader2Motion::LoadAnimationFromAcclaim(ASFAMCParser* acclaimObject, Model* model )
+bool FileReader2Motion::LoadAnimationFromAcclaim(std::string animationName, ASFAMCParser* acclaimObject, Model* model )
 {
     SkeletonAnimationList *skeletonAnimationList = model->GetAnimation();
     SkeletonAnimation *skeletonAnimation = new SkeletonAnimation();
+    skeletonAnimation->m_animationName = animationName.substr(animationName.find_last_of("/")+1, animationName.length());
 
 
     Skeleton* skeleton = model->GetSkeleton();

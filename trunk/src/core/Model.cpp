@@ -201,17 +201,14 @@ void* Model::GetSkeletonGroup()
 
 //--------------------------------------------------------------------------------------------------
 void Model::DrawModelBone()
-{
-	if (m_spSkeletonGeode.valid())
-		this->removeChild(m_spSkeletonGeode.get());
+{   
+    RemoveGeode();
 
 	// create new geode
 	m_spSkeletonGeode = new osg::Geode();
-	m_spSkeletonGeode->setName("skeleton_geode");
+	m_spSkeletonGeode->setName("MODEL_skeleton_geode");
 
 	// Drawing Bones
-
-
 	Bone* bone = m_pSkeleton->m_pRootBone;
 	int childcount = bone->child.size();
 
@@ -352,4 +349,11 @@ void Model::DrawNormals(float size)
 osg::ref_ptr<osg::Geode> Model::GetSkeletonGeode()
 {
     return m_spSkeletonGeode;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Model::RemoveGeode()
+{
+    if (m_spSkeletonGeode.valid())
+        this->removeChild(m_spSkeletonGeode.get());
 }

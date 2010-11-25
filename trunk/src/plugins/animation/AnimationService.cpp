@@ -17,6 +17,7 @@
 
 #include <core/ISkeletonNode.h>
 #include <core/IServiceManager.h>
+#include <core/IRenderService.h>
 
 #include <plugins/timeline/ITimeline.h>
 #include <plugins/timeline/Stream.h>
@@ -73,6 +74,43 @@ template<> inline Stream* Stream::encapsulate(AnimationService* service)
 #define POSITION 0
 #define NORMALS  1
 
+
+//--------------------------------------------------------------------------------------------------
+AnimationService::AnimationService(void): 
+m_pAnimation(NULL)
+, m_pC3DAnimation(NULL)
+, m_pModel(NULL)
+, m_pC3MModel(NULL)
+, m_selectedAnimatonName("")
+, targetTime(0.0)
+, stateMutex()
+, length(0.0)
+, followTimeline(false)
+, currentAnimation(NULL)
+, c3dcurrentAnimation(NULL)
+, name("Animation")
+, SCALE(1)
+{
+    widget = new OsgControlWidget();
+}
+
+//--------------------------------------------------------------------------------------------------
+AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
+{
+    m_pServiceManager = serviceManager;
+    m_pScene = sceneRoot;
+    if ( widget ) {
+        widget->SetScene(sceneRoot, serviceManager);
+    }
+
+    m_pRenderService = dynamic_cast<IRenderService* >(m_pServiceManager->getService(UniqueID('REND','SRVC')).get());
+
+    m_DisplayType = AnimasionDisplay::ALL;
+
+    std::cout << "AnimationService ADDED!" << std::endl; 
+    return AsyncResult_Complete; 
+}
+
 //--------------------------------------------------------------------------------------------------
 // notify stop
 void AnimationService::NotifyStop()
@@ -90,6 +128,7 @@ Animation* AnimationService::GetAnimation()
 {
 	CSimpleOneArgFunctor<Animation, double>* anim = dynamic_cast<CSimpleOneArgFunctor<Animation, double>*>(m_pAnimation);
 
+
 	if (anim)
 		return anim->getObject();
 	else
@@ -101,7 +140,14 @@ Animation* AnimationService::GetAnimation()
 // add function to caller
 void AnimationService::RegisterAnimation(Animation* object, void (Animation::*fun)(double))
 {
-	m_pAnimation = new CSimpleOneArgFunctor<Animation, double>(object, fun);
+    RegisterFunction(object, fun);
+	//m_pAnimation = new CSimpleOneArgFunctor<Animation, double>(object, fun);
+}
+
+void AnimationService::RegisterC3DAnimation(Animation* object, void (Animation::*fun)(double))
+{
+    // RegisterFunction(object, fun);
+    m_pC3DAnimation = new CSimpleOneArgFunctor<Animation, double>(object, fun);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -118,6 +164,21 @@ bool AnimationService::UnregisterAnimation()
 	m_pAnimation = NULL;
 
 	return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool AnimationService::UnregisterC3DAnimation()
+{
+    // remove called functions etc if we have finished playing anim
+    //if (getAnimation()->GetState() == EAnimationState::STOPPED)
+    //	clearAll();
+
+    // remove animation
+    if (m_pC3DAnimation)
+        delete m_pC3DAnimation;
+    m_pC3DAnimation = NULL;
+
+    return true;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -154,26 +215,17 @@ void AnimationService::Clear()
   //  m_pServiceManager = NULL;
 
     m_animations.clear();
+    m_c3danimations.clear();
     m_functionsToCall.clear();
     m_functionsToRemove.clear();
     m_functionsToCallWhenAnimationStopped.clear();
 
-	ClearCaller();
-}
+    m_animationNames.clear();
+    m_c3dNames.clear();
 
-//--------------------------------------------------------------------------------------------------
-AnimationService::AnimationService(void): 
-  m_pAnimation(NULL)
-, m_selectedAnimatonName(""),
-  targetTime(0.0),
-  stateMutex(),
-  length(0.0),
-  followTimeline(false),
-  currentAnimation(NULL),
-  name("Animation"),
-  SCALE(1)
-{
-    widget = new OsgControlWidget();
+    m_DisplayType = AnimasionDisplay::ALL;
+
+	ClearCaller();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -189,7 +241,7 @@ AsyncResult AnimationService::update(double time, double timeDelta)
     if ( followTimeline ) {
         targetTime = this->targetTime;
         // HACK: ¿eby animacja siê nie "blokowa³a" (Piotr Gwiazdowski)
-        targetTime = std::min(targetTime, length - 0.1);
+        targetTime = (std::min)(targetTime, length - 0.1);
     } else {
         if ( currentAnimation ) {
             targetTime = currentAnimation->GetTime() + timeDelta;
@@ -198,49 +250,44 @@ AsyncResult AnimationService::update(double time, double timeDelta)
         }
     }
 
-	if (m_pAnimation)
-	{
-		// update animation
-		(*m_pAnimation)(targetTime);
-  //      UpdateSkeleton();
-  //      RecalculateChanges();
-
-        if(m_pModel)
-        {
+    if(m_pModel)
+    {
+        if(m_DisplayType & AnimasionDisplay::MESH)
             UpdateMesh();
+
+        if(m_DisplayType & AnimasionDisplay::BONE)
             m_pModel->DrawModelBone();
-        }
-
-        if(m_pC3MModel)
-            m_pC3MModel->DrawMarkers();
-
-		// call functions that are to call every animation frame
-		for (std::vector<ISimpleOneArgFunctor<double>*>::iterator i = m_functionsToCall.begin(); i != m_functionsToCall.end(); ++i)
-			(**i)(targetTime);
-
-		// remove functions that are to remove...
-		for (std::vector<std::vector<ISimpleOneArgFunctor<double>*>::iterator>::iterator i = m_functionsToRemove.begin(); 
-			i != m_functionsToRemove.end(); ++i)
-		{
-			delete (**i);
-			m_functionsToCall.erase((const vector<ISimpleOneArgFunctor<double>*>::iterator)(*i));
-		}
-		m_functionsToRemove.clear();
-	}
-
-    return AsyncResult_Complete; 
-}
-
-//--------------------------------------------------------------------------------------------------
-AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
-{
-    m_pServiceManager = serviceManager;
-    m_pScene = sceneRoot;
-    if ( widget ) {
-        widget->SetScene(sceneRoot, serviceManager);
     }
 
-    std::cout << "AnimationService ADDED!" << std::endl; 
+    if(m_pC3MModel)
+        if(m_DisplayType & AnimasionDisplay::MARKER)
+            m_pC3MModel->DrawMarkers();
+
+//     if(currentAnimation)
+//         (*m_pAnimation)(targetTime);
+// 
+//     if(c3dcurrentAnimation)
+//         (*m_pC3DAnimation)(targetTime);
+
+
+
+    // call functions that are to call every animation frame
+    for (std::vector<ISimpleOneArgFunctor<double>*>::iterator i = m_functionsToCall.begin(); i != m_functionsToCall.end(); ++i)
+        (**i)(targetTime);
+
+    // remove functions that are to remove...
+    for (std::vector<std::vector<ISimpleOneArgFunctor<double>*>::iterator>::iterator i = m_functionsToRemove.begin(); 
+        i != m_functionsToRemove.end(); ++i)
+    {
+        //delete (**i);
+        m_functionsToCall.erase((const vector<ISimpleOneArgFunctor<double>*>::iterator)(*i));
+        break;
+    }
+
+
+	m_functionsToRemove.clear();
+
+
     return AsyncResult_Complete; 
 }
 
@@ -258,6 +305,26 @@ std::string& AnimationService::GetSelectedAnimationName()
 }
 
 //--------------------------------------------------------------------------------------------------
+AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+{
+    LoadAnimation(dataManager->GetModel());
+
+    for (int i = 0; i < dataManager->GetC3DModelCount(); i++)
+        LoadAnimation(dataManager->GetC3DModel(i));
+
+    widget->SetScene(m_pScene, serviceManager);
+
+    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
+    if ( timeline ) {
+        timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
+    } else {
+        OSG_WARN<<"ITimeline not found."<<std::endl;
+    }
+
+    return AsyncResult_Complete;
+}
+
+//--------------------------------------------------------------------------------------------------
 void AnimationService::LoadAnimation( IModel* model )
 {
     Clear();
@@ -266,52 +333,13 @@ void AnimationService::LoadAnimation( IModel* model )
         return;
 
     m_pModel = model;
-
-//      m_pJoints = model->GetJoints();
-//      m_skeleton = (osg::Group*)model->GetSkeletonGroup();
-//  
-//      if(!m_pJoints || !m_skeleton)
-//          return;
-// 
-// 
-//     m_numOfBones = m_pJoints->size();
-//     m_numOfBones += 1; // because we don't added first node (root_of_Skeleton)
-// 
-//     // get 'global' (? - not another transformations but entire propagated from root) 
-//     // transformations of bones
-//     m_pActualBones = new STransform [m_numOfBones];
-//     UpdateSkeleton();
-// 
-//     // save initial values
-//     m_pInitialBones = new STransform [m_numOfBones];
-//     memcpy(m_pInitialBones, m_pActualBones, sizeof(STransform) * m_numOfBones);
-
-    //////////////////////////////////////////////////////////////////////////
-    // handle animations
-
-    // extract number of animations				
     unsigned int numOfAnims = 0;
-    vector<string> names;
-//     for (vector<ISkeletonNode*>::iterator i = m_pJoints->begin(); i != m_pJoints->end(); ++i)
-//     {
-//         if ((*i)->GetNumOfAnimations() > numOfAnims)
-//         {					
-//             for (unsigned int j = numOfAnims; j < (*i)->GetNumOfAnimations(); ++j)
-//                 names.push_back((*(*i)->GetAnimations())[j]->GetName());
-// 
-//             numOfAnims = (*i)->GetNumOfAnimations();
-//         }
-//     }
 
     for(int i = 0; i < model->GetAnimation()->m_SkeletonAnimationList.size(); i++)
     {
-        names.push_back(("anim_test" + i));
-        //numOfAnims++;
-        //    int counting = m_pJoints->size();
-
-        // create animations
-            Animation* animation = new Animation(model->GetSkeleton(), model->GetAnimation()->m_SkeletonAnimationList[i], this);
-            m_animations.insert(make_pair(names[i], animation));	
+        m_animationNames.push_back(model->GetAnimation()->m_SkeletonAnimationList[i]->m_animationName);
+        Animation* animation = new Animation(model->GetSkeleton(), model->GetAnimation()->m_SkeletonAnimationList[i], this);
+        m_animations.insert(make_pair(m_animationNames[i], animation));	
     }
 }
 
@@ -325,100 +353,87 @@ void AnimationService::LoadAnimation( IC3DModel* c3dModel )
 
     // extract number of animations				
     unsigned int numOfAnims = 0;
-    vector<string> names;
 
-    names.push_back(("Marker_test"));
+    m_c3dNames.push_back(c3dModel->GetName());
 
     // create animations
     Animation* animation = new Animation(c3dModel->GetMarkerList(), this);
-    m_animations.insert(make_pair(names[0], animation));	
-
-}
-
-//--------------------------------------------------------------------------------------------------
-// update skeleton
-void AnimationService::UpdateSkeleton()
-{
-    pPat skeleton = dynamic_cast<pPat>(m_skeleton.get());
-    if (skeleton)
-    {
-        for (unsigned int b = 0; b < skeleton->getNumChildren(); ++b)
-            if (dynamic_cast<ISkeletonNode*>(skeleton->getChild(b)) )
-                UpdateBone((pPat)skeleton->getChild(b));
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-// creates arrays of pointers at bones sorted by id
-void AnimationService::UpdateBone(osg::PositionAttitudeTransform* bone)
-{
-    unsigned int pId = (dynamic_cast<ISkeletonNode*>(bone->getParent(0)))->GetId();
-    unsigned int boneId = (dynamic_cast<ISkeletonNode*>(bone))->GetId();
-
-    std::string name = bone->getName();
-
-
-    osg::Vec3d ppos = pId ? m_pActualBones[pId].position : ((pPat)m_skeleton.get())->getPosition();
-    osg::Quat  prot = pId ? m_pActualBones[pId].attitude : ((pPat)m_skeleton.get())->getAttitude();
-
-    osg::Vec3d bpos = prot * bone->getPosition() + ppos;
-    osg::Quat  brot = bone->getAttitude() * prot;
-
-    STransform tr;
-    tr.attitude	= brot;
-    tr.position	= bpos;
-
-    tr.bone		= bpos - ppos;
-    tr.point	= ppos;
-
-    if (bone->getNumChildren() > 0)
-        tr.hasChild = true;
-    else
-        tr.hasChild = false;
-
-    m_pActualBones[boneId] = tr;
-
-    for (unsigned int b = 0; b < bone->getNumChildren(); ++b)
-        if (dynamic_cast<ISkeletonNode*>(bone->getChild(b)))
-            UpdateBone((pPat)bone->getChild(b));
-
+    m_c3danimations.insert(make_pair(c3dModel, animation));	
 }
 
 //--------------------------------------------------------------------------------------------------
 void AnimationService::PlayAnimation(std::string animationName)
 {
-    map<std::string, Animation*>::iterator i = m_animations.find(animationName);
-
-    if ( currentAnimation ) {
-        currentAnimation->Stop();
-    }
+ //   map<std::string, Animation*>::iterator i = m_animations.find(animationName);
     
-    if (i != m_animations.end()) {
-        currentAnimation = i->second;
-        i->second->Play();
-    } else {
-        UnregisterAnimation();
-        currentAnimation = NULL;
+    map<std::string, Animation*>::iterator i;
+
+    for(i = m_animations.begin(); i != m_animations.end(); i++)
+    {
+        if ( currentAnimation ) {
+            currentAnimation->Stop();
+        }
+        
+        if (i->first == animationName) 
+        {
+            currentAnimation = i->second;
+            i->second->Play();
+            break;
+        } 
+        else
+        {
+            ClearCaller();
+            UnregisterAnimation();
+            currentAnimation = NULL;
+        }
     }
+
+    // TODO: zrobiæ tak aby Geode by³o w jednym miejscu - jako singleton 
+    // skruci temu podobne zamieszania.
+    m_pRenderService->DisableBone();
+
+    PlayC3DAnimation(animationName);
 }
 
 //--------------------------------------------------------------------------------------------------
-// recalculates changes of skeleton
-void AnimationService::RecalculateChanges()
+void AnimationService::PlayC3DAnimation(std::string name)
 {
-    for (unsigned int b = 0; b < (m_numOfBones + 1); ++b)
+    std::string c3dName;
+    int nameCount = 0;
+    bool find = false;
+    for(int a = 0; a < m_animationNames.size(); a++)
     {
-        // cross product
-        Vec3d	cross	 = m_pInitialBones[b].bone ^ m_pActualBones[b].bone;	
-        // cos of angle between old and new bone
-        double  cosangle = (m_pInitialBones[b].bone * m_pActualBones[b].bone) / (m_pInitialBones[b].bone.length() * m_pActualBones[b].bone.length());
-        // angle between old and new bone
-        double	angle    = acos(cosangle);	// acos of dot product div by lenths
+        if(m_animationNames[a] == name){
+            find = true;
+            break;
+        }
 
-        // construct bone rotation...
-        m_pActualBones[b].rotation	= Quat(angle, cross);
-        // ...transformation
-        m_pActualBones[b].translation = m_pActualBones[b].point - m_pInitialBones[b].point;
+        nameCount++;
+    }
+
+    if (c3dcurrentAnimation) {
+        c3dcurrentAnimation->Stop();
+    }
+
+    if(m_c3danimations.size() < nameCount || !find)
+        return;
+
+    map<IC3DModel*, Animation*>::iterator i;
+    for(i = m_c3danimations.begin(); i != m_c3danimations.end(); i++)
+    {
+        if (i->first->GetName() == m_c3dNames[nameCount]) 
+        {
+            m_pC3MModel = i->first;
+         //   m_pRenderService->SetC3DMarkerToRender(i->first);
+            c3dcurrentAnimation = i->second;
+            i->second->Play();
+            break;
+        } 
+        else
+        {
+            m_pRenderService->DisableMarker();
+            c3dcurrentAnimation = NULL;
+        }
     }
 }
 
@@ -502,23 +517,6 @@ std::map<std::string, Animation*>* AnimationService::GetAnimations()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
-{
-    LoadAnimation(dataManager->GetModel());
-    LoadAnimation(dataManager->GetC3DModel());
-    widget->SetScene(m_pScene, serviceManager);
-
-    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
-    if ( timeline ) {
-        timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
-    } else {
-        OSG_WARN<<"ITimeline not found."<<std::endl;
-    }
-
-    return AsyncResult_Complete;
-}
-
-//--------------------------------------------------------------------------------------------------
 IWidget* AnimationService::getWidget()
 {
     return reinterpret_cast<IWidget*>(widget);
@@ -569,3 +567,49 @@ void AnimationService::setScale( float scale )
 	if(currentAnimation)
 		currentAnimation->SetScale(SCALE);
 }
+
+//--------------------------------------------------------------------------------------------------
+// TODO: ujednoliœciæ kod  nie potrzebnie uzywamy 6 metod srobiæ jedna sprawdzajaca sendera
+// Mo¿na to dowolnie zmieniæ.
+void AnimationService::SetShowMesh( bool showMesh )
+{
+    if(showMesh)
+    {
+        m_pRenderService->EnableMesh();
+        m_DisplayType = m_DisplayType | AnimasionDisplay::MESH;
+    }
+    else
+    {
+        m_pRenderService->DisableMesh();
+        m_DisplayType = m_DisplayType ^ AnimasionDisplay::MESH;
+    }
+
+}
+
+//--------------------------------------------------------------------------------------------------
+void AnimationService::SetShowBone( bool showBone )
+{
+    if(showBone)
+        m_DisplayType = m_DisplayType | AnimasionDisplay::BONE;
+    else
+    {
+        m_pRenderService->DisableBone();
+        m_DisplayType = m_DisplayType ^ AnimasionDisplay::BONE;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+void AnimationService::SetShowMarker( bool showMarker )
+{
+    if(showMarker)
+    {
+        m_pRenderService->EnableMarker();
+        m_DisplayType = m_DisplayType | AnimasionDisplay::MARKER;
+    }
+    else
+    {
+        m_pRenderService->DisableMarker();
+        m_DisplayType = m_DisplayType ^ AnimasionDisplay::MARKER;
+    }
+}
+

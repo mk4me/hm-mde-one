@@ -32,6 +32,9 @@ public:
         virtual void followTimelineChecked(int checked);
         virtual void animationSelectionChanged();
 		virtual void scaleValueChanged(QString scale);
+        virtual void MeshChecked(int checked);
+        virtual void BoneChecked(int checked);
+        virtual void MarkerChecked(int checked);
 
 private:
     AnimationService* m_pAnimationService;

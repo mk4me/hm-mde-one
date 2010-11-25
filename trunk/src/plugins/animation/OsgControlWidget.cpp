@@ -108,3 +108,21 @@ void OsgControlWidget::scaleValueChanged( QString scale )
 {
 	m_pAnimationService->setScale(scale.toFloat());
 }	
+
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::MeshChecked( int checked )
+{
+    m_pAnimationService->SetShowMesh(checked != 0);
+}
+
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::BoneChecked( int checked )
+{
+    m_pAnimationService->SetShowBone(checked != 0);
+}
+
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::MarkerChecked( int checked )
+{
+    m_pAnimationService->SetShowMarker(checked != 0);
+}

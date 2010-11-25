@@ -31,8 +31,17 @@ set(TARGET_SRC
 	c3dParser.cpp
 	C3D_Data.cpp
 	ChartData.cpp
+	Data.cpp
+	DECreader.cpp
+	GroupData.cpp
+	Header.cpp
+	INTELreader.cpp
 	LineChart.cpp
+	MIPSreader.cpp
+	Parameter.cpp
+	Parameters.cpp
 	Pointer.cpp
+	
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

@@ -18,8 +18,9 @@ public:
     virtual ~IModel() {};
 
     virtual void Clear() = 0;
-    virtual void AddMesh(IMesh* mesh) = 0;
+    virtual void RemoveGeode() = 0;
     virtual void InicializeMesh() = 0;
+    virtual void AddMesh(IMesh* mesh) = 0;
     virtual void SetSkeleton(Skeleton* skeleton) = 0;
     virtual void SetAnimation(SkeletonAnimationList* animation) = 0;
     virtual void SetJoints(std::vector<ISkeletonNode* >* joints) = 0;

@@ -9,8 +9,7 @@
 //--------------------------------------------------------------------------------------------------
 DataManager::DataManager(std::string address, IModel* model, IC3DModel* c3dModel)
 {
-    m_pC3dModel = c3dModel;
-//    m_pFileName = address;
+    m_pFileName = address;
     m_pModel = model;
 
     std::string add(address.begin(), address.end());
@@ -31,37 +30,37 @@ DataManager::DataManager(std::string address, IModel* model, IC3DModel* c3dModel
 
             do 
             {
-                //if(!node->ValueStr().compare("VideoList")&& node->FirstChild())
-                //{
-                //    TiXmlNode* video = node->FirstChild();
-                //    if (!video->ValueStr().compare("Video"))
-                //    {
-                //        // get all materials
-                //        do 
-                //        {
-                //            // get all attributes
-                //            TiXmlAttribute* att = video->ToElement()->FirstAttribute();
-                //            if (att)
-                //            {
-                //                // material attributes
-                //                do
-                //                {
-                //                    if (!att->NameTStr().compare("FileName"))
-                //                    {
-                //                        std::string val = path + att->Value();
-                //                        m_VideoFilePathList.push_back(std::string(val.begin(), val.end()));
-                //                    }
-                //                    else
-                //                        return;		
-
-                //                } 
-                //                while(att = att->Next());
-                //            }
-                //            else return;
-                //        } 
-                //        while (video = video->NextSibling());
-                //    } 
-                //}
+//                 if(!node->ValueStr().compare("VideoList")&& node->FirstChild())
+//                 {
+//                     TiXmlNode* video = node->FirstChild();
+//                     if (!video->ValueStr().compare("Video"))
+//                     {
+//                         // get all materials
+//                         do 
+//                         {
+//                             // get all attributes
+//                             TiXmlAttribute* att = video->ToElement()->FirstAttribute();
+//                             if (att)
+//                             {
+//                                 // material attributes
+//                                do
+//                                 {
+//                                     if (!att->NameTStr().compare("FileName"))
+//                                     {
+//                                         std::string val = path + att->Value();
+//                                         m_VideoFilePathList.push_back(std::string(val.begin(), val.end()));
+//                                     }
+//                                     else
+//                                         return;		
+// 
+//                                 } 
+//                                 while(att = att->Next());
+//                             }
+//                             else return;
+//                         } 
+//                         while (video = video->NextSibling());
+//                     } 
+//                 }
                 if(!node->ValueStr().compare("SkeletonList")&& node->FirstChild())
                 {
                     TiXmlNode* skeleton = node->FirstChild();
@@ -124,59 +123,59 @@ DataManager::DataManager(std::string address, IModel* model, IC3DModel* c3dModel
                         while (animation = animation->NextSibling());
                     }
                 }
-                //if(!node->ValueStr().compare("Model") && !node->FirstChild())
-                //{
-                //    // get all attributes
-                //    TiXmlAttribute* att = node->ToElement()->FirstAttribute();
-                //    if (att)
-                //    {
-                //        // material attributes
-                //        do
-                //        {
-                //            if (!att->NameTStr().compare("FileName"))
-                //            {
-                //                std::string val = path + att->Value();
-                //                m_MeshFilePathList.push_back(std::string(val.begin(), val.end()));
-                //            }
-                //            else
-                //                return;		
+                if(!node->ValueStr().compare("Model") && !node->FirstChild())
+                {
+                    // get all attributes
+                    TiXmlAttribute* att = node->ToElement()->FirstAttribute();
+                    if (att)
+                    {
+                        // material attributes
+                        do
+                        {
+                            if (!att->NameTStr().compare("FileName"))
+                            {
+                                std::string val = path + att->Value();
+                                m_MeshFilePathList.push_back(std::string(val.begin(), val.end()));
+                            }
+                            else
+                                return;		
 
-                //        } 
-                //        while(att = att->Next());
-                //    }
+                        } 
+                        while(att = att->Next());
+                    }
 
-                //}
-                //if(!node->ValueStr().compare("c3dFileList")&& node->FirstChild())
-                //{
-                //    TiXmlNode* c3dFile = node->FirstChild();
-                //    if (!c3dFile->ValueStr().compare("File"))
-                //    {
-                //        // get all materials
-                //        do 
-                //        {
-                //            // get all attributes
-                //            TiXmlAttribute* att = c3dFile->ToElement()->FirstAttribute();
-                //            if (att)
-                //            {
-                //                // material attributes
-                //                do
-                //                {
-                //                    if (!att->NameTStr().compare("FileName"))
-                //                    {
-                //                        std::string val = path + att->Value();
-                //                        m_c3dFilePathList.push_back(std::string(val.begin(), val.end()));
-                //                    }
-                //                    else
-                //                        return;		
+                }
+                if(!node->ValueStr().compare("c3dFileList")&& node->FirstChild())
+                {
+                    TiXmlNode* c3dFile = node->FirstChild();
+                    if (!c3dFile->ValueStr().compare("File"))
+                    {
+                        // get all materials
+                        do 
+                        {
+                            // get all attributes
+                            TiXmlAttribute* att = c3dFile->ToElement()->FirstAttribute();
+                            if (att)
+                            {
+                                // material attributes
+                                do
+                                {
+                                    if (!att->NameTStr().compare("FileName"))
+                                    {
+                                        std::string val = path + att->Value();
+                                        m_c3dFilePathList.push_back(std::string(val.begin(), val.end()));
+                                    }
+                                    else
+                                        return;		
 
-                //                } 
-                //                while(att = att->Next());
-                //            }
-                //            else return;
-                //        } 
-                //        while (c3dFile = c3dFile->NextSibling());
-                //    }
-                //}
+                                } 
+                                while(att = att->Next());
+                            }
+                            else return;
+                        } 
+                        while (c3dFile = c3dFile->NextSibling());
+                    }
+                }
             } 
             while (node = node->NextSibling());
         }	
@@ -191,12 +190,11 @@ DataManager::~DataManager()
 }
 
 //--------------------------------------------------------------------------------------------------
-//void DataManager::Clear()
-//{
-//    m_VideoFilePathList.clear();
-//    m_SkeletonFilePathList.clear();
-//    m_AnimationFilePathList.clear();
-//}
+void DataManager::Clear()
+{
+   m_SkeletonFilePathList.clear();
+   m_AnimationFilePathList.clear();
+}
 
 //--------------------------------------------------------------------------------------------------
 //void DataManager::GetVideoFile()
@@ -229,19 +227,19 @@ IModel* DataManager::GetModel()
 }
 
 //--------------------------------------------------------------------------------------------------
-IC3DModel* DataManager::GetC3DModel()
+IC3DModel* DataManager::GetC3DModel(int i)
 {
-    if(m_pC3dModel)
-        return m_pC3dModel;
+    if(m_pC3dModelList.size() > i)
+        return m_pC3dModelList[i];
 
     return NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
-//std::string DataManager::GetFileName()
-//{
-//    return m_pFileName;
-//}
+std::string DataManager::GetFileName()
+{
+    return m_pFileName;
+}
 
 //--------------------------------------------------------------------------------------------------
 std::string DataManager::GetSkeletonFilePath( int i )
@@ -274,34 +272,46 @@ int DataManager::GetAnimationFilePathCount()
 }
 
 //--------------------------------------------------------------------------------------------------
-//std::string DataManager::GetMeshFilePathPath( int i )
-//{
-//    if(m_MeshFilePathList.size() > i)
-//        return m_MeshFilePathList[i];
-//
-//    return NULL;
-//}
+int DataManager::GetC3DModelCount()
+{
+    return m_pC3dModelList.size();
+}
 
 //--------------------------------------------------------------------------------------------------
-//int DataManager::GetMeshFilePathCount()
-//{
-//    return m_MeshFilePathList.size();
-//}
+void DataManager::AddC3DModel( IC3DModel *c3dmodel )
+{
+    m_pC3dModelList.push_back(c3dmodel);
+}
 
 //--------------------------------------------------------------------------------------------------
-//std::string DataManager::GetC3dFilePath( int i )
-//{
-//    if(m_c3dFilePathList.size() > i)
-//        return m_c3dFilePathList[i];
-//
-//    return NULL;
-//}
+std::string DataManager::GetMeshFilePathPath( int i )
+{
+   if(m_MeshFilePathList.size() > i)
+       return m_MeshFilePathList[i];
+
+   return NULL;
+}
 
 //--------------------------------------------------------------------------------------------------
-//int DataManager::GetC3dFilePathCount()
-//{
-//    return m_c3dFilePathList.size();
-//}
+int DataManager::GetMeshFilePathCount()
+{
+   return m_MeshFilePathList.size();
+}
+
+//--------------------------------------------------------------------------------------------------
+std::string DataManager::GetC3dFilePath( int i )
+{
+   if(m_c3dFilePathList.size() > i)
+       return m_c3dFilePathList[i];
+
+   return NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
+int DataManager::GetC3dFilePathCount()
+{
+   return m_c3dFilePathList.size();
+}
 
 
 DataManager::DataManager(const std::string& meshes_dir, const std::string& shaders_dir, const std::string& trials_dir) : m_shaders_dir(shaders_dir), m_meshes_dir(meshes_dir), m_trials_dir(trials_dir)

@@ -42,8 +42,8 @@ public:
     virtual ~DataManager();
 
     //virtual void GetVideoFile();
-    //virtual void Clear();
-    //virtual std::string GetFileName();
+    virtual void Clear();
+    virtual std::string GetFileName();
     //virtual std::string GetVideoFilePath(int i);
     //virtual int GetVideoFilePathCount();
 
@@ -53,15 +53,18 @@ public:
     virtual std::string GetAnimationFilePath(int i);
     virtual int GetAnimationFilePathCount();
 
-    //virtual std::string GetMeshFilePathPath(int i);
-    //virtual int GetMeshFilePathCount();
+    virtual std::string GetMeshFilePathPath(int i);
+    virtual int GetMeshFilePathCount();
 
-    //virtual std::string GetC3dFilePath(int i);
-    //virtual int GetC3dFilePathCount();
+    virtual std::string GetC3dFilePath(int i);
+    virtual int GetC3dFilePathCount();
     
 
     virtual IModel* GetModel();
-    virtual IC3DModel* GetC3DModel();
+
+    virtual int GetC3DModelCount();
+    virtual IC3DModel* GetC3DModel(int i = 0);
+    virtual void AddC3DModel(IC3DModel *c3dmodel);
 
 private:
 //------------------------------------------------------------------------------------------------------------------------------
@@ -79,11 +82,14 @@ private:
 
     std::vector<std::string> m_SkeletonFilePathList;
     std::vector<std::string> m_AnimationFilePathList;
+    std::vector<std::string> m_MeshFilePathList;
 
-//    std::string m_pFileName;
+    std::vector<std::string> m_c3dFilePathList;
+
+    std::string m_pFileName;
 
     IModel* m_pModel;
-    IC3DModel* m_pC3dModel;
+    std::vector<IC3DModel* > m_pC3dModelList;
 };
 
 

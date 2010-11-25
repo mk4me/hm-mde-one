@@ -33,4 +33,5 @@ private:
     std::vector<MarkerFrame* > m_animationList;
 };
 
+
 #endif //MARKER_H
