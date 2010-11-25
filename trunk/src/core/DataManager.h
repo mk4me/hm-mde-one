@@ -3,14 +3,14 @@
 
 #include <core/IDataManager.h>
 
-//class IModel;
-//class IC3DModel;
+class IModel;
+class IC3DModel;
 
 class DataManager: public IDataManager
 {
 public:
 //------------------------------------------------------------------------------------------------------------------------------
-	DataManager(const std::string& meshes_dir = "resources/meshes", const std::string& shaders_dir = "resources/shaders", const std::string& trials_dir = "resources/trials");
+	DataManager(const std::string& meshes_dir = "data/resources/meshes/", const std::string& shaders_dir = "data/resources/shaders/", const std::string& trials_dir = "data/resources/trials/");
 
 	virtual void loadResources();
 
@@ -41,11 +41,11 @@ public:
     DataManager(std::string address, IModel* model, IC3DModel* c3dModel);
     virtual ~DataManager();
 
-    //virtual void GetVideoFile();
+    virtual void GetVideoFile();
     virtual void Clear();
     virtual std::string GetFileName();
-    //virtual std::string GetVideoFilePath(int i);
-    //virtual int GetVideoFilePathCount();
+    virtual std::string GetVideoFilePath(int i);
+    virtual int GetVideoFilePathCount();
 
     virtual std::string GetSkeletonFilePath(int i);
     virtual int GetSkeletonFilePathCount();
@@ -80,6 +80,7 @@ private:
 	void setDirSlashes(std::string& dir);
 //------------------------------------------------------------------------------------------------------------------------------
 
+	std::vector<std::string> m_VideoFilePathList;
     std::vector<std::string> m_SkeletonFilePathList;
     std::vector<std::string> m_AnimationFilePathList;
     std::vector<std::string> m_MeshFilePathList;

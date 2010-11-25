@@ -30,37 +30,37 @@ DataManager::DataManager(std::string address, IModel* model, IC3DModel* c3dModel
 
             do 
             {
-//                 if(!node->ValueStr().compare("VideoList")&& node->FirstChild())
-//                 {
-//                     TiXmlNode* video = node->FirstChild();
-//                     if (!video->ValueStr().compare("Video"))
-//                     {
-//                         // get all materials
-//                         do 
-//                         {
-//                             // get all attributes
-//                             TiXmlAttribute* att = video->ToElement()->FirstAttribute();
-//                             if (att)
-//                             {
-//                                 // material attributes
-//                                do
-//                                 {
-//                                     if (!att->NameTStr().compare("FileName"))
-//                                     {
-//                                         std::string val = path + att->Value();
-//                                         m_VideoFilePathList.push_back(std::string(val.begin(), val.end()));
-//                                     }
-//                                     else
-//                                         return;		
-// 
-//                                 } 
-//                                 while(att = att->Next());
-//                             }
-//                             else return;
-//                         } 
-//                         while (video = video->NextSibling());
-//                     } 
-//                 }
+                 if(!node->ValueStr().compare("VideoList")&& node->FirstChild())
+                 {
+                     TiXmlNode* video = node->FirstChild();
+                     if (!video->ValueStr().compare("Video"))
+                     {
+                         // get all materials
+                         do 
+                         {
+                             // get all attributes
+                             TiXmlAttribute* att = video->ToElement()->FirstAttribute();
+                             if (att)
+                             {
+                                 // material attributes
+                                do
+                                 {
+                                     if (!att->NameTStr().compare("FileName"))
+                                     {
+                                         std::string val = path + att->Value();
+                                         m_VideoFilePathList.push_back(std::string(val.begin(), val.end()));
+                                     }
+                                     else
+                                         return;		
+ 
+                                 } 
+                                 while(att = att->Next());
+                             }
+                             else return;
+                         } 
+                         while (video = video->NextSibling());
+                     } 
+                 }
                 if(!node->ValueStr().compare("SkeletonList")&& node->FirstChild())
                 {
                     TiXmlNode* skeleton = node->FirstChild();
@@ -180,12 +180,15 @@ DataManager::DataManager(std::string address, IModel* model, IC3DModel* c3dModel
             while (node = node->NextSibling());
         }	
     }
+	clear();
+	loadResources();
 }
 
 
 //--------------------------------------------------------------------------------------------------
 DataManager::~DataManager()
 {
+	this->Clear();
     this->clear();
 }
 
@@ -197,25 +200,25 @@ void DataManager::Clear()
 }
 
 //--------------------------------------------------------------------------------------------------
-//void DataManager::GetVideoFile()
-//{
-//
-//}
+void DataManager::GetVideoFile()
+{
+
+}
 
 //--------------------------------------------------------------------------------------------------
-//std::string DataManager::GetVideoFilePath(int i)
-//{
-//    if(m_VideoFilePathList.size() > i)
-//        return m_VideoFilePathList[i];
-//
-//    return "ERROR";
-//}
+std::string DataManager::GetVideoFilePath(int i)
+{
+    if(m_VideoFilePathList.size() > i)
+        return m_VideoFilePathList[i];
+
+    return "ERROR";
+}
 
 //--------------------------------------------------------------------------------------------------
-//int DataManager::GetVideoFilePathCount()
-//{
-//    return m_VideoFilePathList.size();
-//}
+int DataManager::GetVideoFilePathCount()
+{
+    return m_VideoFilePathList.size();
+}
 
 //--------------------------------------------------------------------------------------------------
 IModel* DataManager::GetModel()
@@ -327,65 +330,85 @@ void DataManager::loadResources()
 {
 #if defined(__WIN32__)
 	HANDLE file;
-	WIN32_FIND_DATA dataFind;
-	bool moreFiles = true;
+	WIN32_FIND_DATA data_find;
+	bool more_files = true;
 
 	//szukaj shaderow
-	const char* fileMask = "*.frag";
+	std::string file_mask = this->m_shaders_dir;
+	file_mask.append("*.frag");
 
-	::SetCurrentDirectory(this->m_shaders_dir.c_str());
-	file = ::FindFirstFile(fileMask, &dataFind);
-	while(file != INVALID_HANDLE_VALUE && moreFiles)
+	file = ::FindFirstFile(file_mask.c_str(), &data_find);
+	while(file != INVALID_HANDLE_VALUE && more_files)
 	{
 		std::string file_path(this->m_shaders_dir);
-		file_path.append(dataFind.cFileName);
-		this->m_shaders_paths[dataFind.cFileName] = file_path;
+		file_path.append(data_find.cFileName);
+		this->m_shaders_paths[data_find.cFileName] = file_path;
 		// czy dalej? (dziwna postaæ ¿eby pozbyæ siê warninga)
-		moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));
+		more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
 	}
 
 	//szukaj meshy
-	moreFiles = true;
-	fileMask = "*.tbs";
+	more_files = true;
+	file_mask = this->m_meshes_dir;
+	file_mask.append("*.tbs");
 
-	::SetCurrentDirectory(this->m_meshes_dir.c_str());
-	file = ::FindFirstFile(fileMask, &dataFind);
-	while(file != INVALID_HANDLE_VALUE && moreFiles)
+	file = ::FindFirstFile(file_mask.c_str(), &data_find);
+	while(file != INVALID_HANDLE_VALUE && more_files)
 	{
 		std::string file_path(this->m_meshes_dir);
-		file_path.append(dataFind.cFileName);
-		this->m_meshes_paths[dataFind.cFileName] = file_path;
-		// czy dalej? (dziwna postaæ ¿eby pozbyæ siê warninga)
-		moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));
+		file_path.append(data_find.cFileName);
+		this->m_meshes_paths[data_find.cFileName] = file_path;
+		more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
 	}
 
-	//szukaj video
-	moreFiles = true;
-	fileMask = "*.avi";
+	//przeszukaj foldery trialowe
+	more_files = true;
+	file_mask = this->m_trials_dir;
+	file_mask.append("*");
+	std::vector<std::string> trial_dirs;
 
-	::SetCurrentDirectory(this->m_trials_dir.c_str());
-	file = ::FindFirstFile(fileMask, &dataFind);
-	while(file != INVALID_HANDLE_VALUE && moreFiles)
+	file = ::FindFirstFile(file_mask.c_str(), &data_find);
+	while(file != INVALID_HANDLE_VALUE && more_files)
 	{
-		std::string file_path(this->m_trials_dir);
-		file_path.append(dataFind.cFileName);
-		this->m_videos_paths[dataFind.cFileName] = file_path;
-		// czy dalej? (dziwna postaæ ¿eby pozbyæ siê warninga)
-		moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));
+		if(data_find.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY && data_find.cFileName[0] != '.')
+		{
+			trial_dirs.push_back(data_find.cFileName);
+		}
+		more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
 	}
 
-	//szukaj c3d
-	moreFiles = true;
-	fileMask = "*.c3d";
-
-	file = ::FindFirstFile(fileMask, &dataFind);
-	while(file != INVALID_HANDLE_VALUE && moreFiles)
+	for(std::vector<std::string>::iterator it = trial_dirs.begin(); it != trial_dirs.end(); ++it)
 	{
-		std::string file_path(this->m_trials_dir);
-		file_path.append(dataFind.cFileName);
-		this->m_c3ds_paths[dataFind.cFileName] = file_path;
-		// czy dalej? (dziwna postaæ ¿eby pozbyæ siê warninga)
-		moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));
+		//szukaj video
+		more_files = true;
+		file_mask = this->m_trials_dir;
+		file_mask.append((*it)).append("/*.avi");
+
+		file = ::FindFirstFile(file_mask.c_str(), &data_find);
+		while(file != INVALID_HANDLE_VALUE && more_files)
+		{
+			std::string file_path(this->m_trials_dir);
+			file_path.append((*it)).append("/").append(data_find.cFileName);
+			this->m_videos_paths[data_find.cFileName] = file_path;
+			more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
+		}
+	}
+
+	for(std::vector<std::string>::iterator it = trial_dirs.begin(); it != trial_dirs.end(); ++it)
+	{
+		//szukaj c3d
+		more_files = true;
+		file_mask = this->m_trials_dir;
+		file_mask.append((*it)).append("/*.c3d");
+
+		file = ::FindFirstFile(file_mask.c_str(), &data_find);
+		while(file != INVALID_HANDLE_VALUE && more_files)
+		{
+			std::string file_path(this->m_trials_dir);
+			file_path.append((*it)).append("/").append(data_find.cFileName);
+			this->m_c3ds_paths[data_find.cFileName] = file_path;
+			more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
+		}
 	}
 #elif defined(__UNIX__)
 	//FIX: nie znam api linuksa, na te chwile niech dziala w win
