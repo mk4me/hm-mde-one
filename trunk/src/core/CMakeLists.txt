@@ -17,6 +17,7 @@ set(PRIVATE_H
 	ConsoleWidget.h
 	DataManager.h
 	DataTransfer.h
+	Factory.h
 	FAnimation.h
 	FileChunkReader.h
 	FileReader2Motion.h
@@ -89,6 +90,7 @@ set(TARGET_SRC
 	C3DModel.cpp
 	ConsoleWidget.cpp
 	DataManager.cpp
+	Factory.cpp
 	FileChunkReader.cpp
 	FileReader2Motion.cpp
 	FileUtil.cpp

@@ -67,6 +67,9 @@ public:
     virtual void AddC3DModel(IC3DModel *c3dmodel);
 
 private:
+    void ParseDataToNewManager();
+
+private:
 //------------------------------------------------------------------------------------------------------------------------------
 	Resources m_shaders_paths;
 	Resources m_meshes_paths;
