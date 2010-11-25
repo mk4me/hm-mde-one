@@ -7,7 +7,6 @@
 #define _WSDL_WSDLPULL_H_
 
 #include "IAuthenticable.h"
-#include "EDRException.h"
 
 namespace communication 
 {
@@ -33,7 +32,7 @@ namespace communication
 		WsdlPull::WsdlInvoker invoker;
 		/**
 		Metoda konfigurujaca obiekt invoker przed wykonaniem operacji web serwisowych.
-		@throw EDRException jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
+		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
 		potrzebnych do autentykacji
 		*/
 		void initializeInvoker();
@@ -101,7 +100,7 @@ namespace communication
 		/**
 		Metoda ustala operacje web serwisowa jaka ma zostac wykonana.
 		@param name nazwa operacji ktora ma zostac wykonana
-		@throw EDRException jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
+		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
 		potrzebnych do autentykacji
 		*/
 		void setOperation(const std::string& name);
@@ -109,20 +108,20 @@ namespace communication
 		Metoda podaje wartosc parametru operacji.
 		@param param nazwa parametru operacji
 		@param value wartosc parametru operacji
-		@throw EDRException jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
+		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
 		potrzebnych do autentykacji
 		*/
 		void setValue(const std::string& param, const std::string& value);
 		/**
 		Metoda wywoluje operacje web serwisowa.
-		@throw EDRException jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
+		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
 		potrzebnych do autentykacji
 		*/
 		void invokeOperation();
 		/**
 		Metoda zwraca odpowiedz serwera w formie XML.
 		@return odpowiedz serwera na operacje w formie XML
-		@throw EDRException jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
+		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
 		potrzebnych do autentykacji
 		*/
 		std::string getXMLResponse();

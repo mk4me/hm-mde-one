@@ -7,11 +7,12 @@
 #define _IQUERYABLE_H_
 
 #include "Entity.h"
-#include "DateTime.h"
 
-namespace communication {
+namespace communication
+{
 
-	class IQueryable {
+	class IQueryable
+	{
 	public:
 		/**
 		Wirtualny destruktor klasy IQueryable.

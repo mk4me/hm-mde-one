@@ -16,13 +16,13 @@ void FileStoremanService::downloadComplete(int fileID, const std::string& path) 
 	if(invoker.status()) {
 		if(!invoker.setValue("fileID", toString<int>(fileID)) ||
 			!invoker.setValue("path", new std::string(path))) {
-				throw EDRException("Bad operation arguments.");
+				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker.invoke()) {
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 	} else {
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
 
@@ -30,19 +30,19 @@ const std::string& FileStoremanService::retrieveFile(int fileID) {
 	this->setOperation("RetrieveFile");
 	if(invoker.status()) {
 		if(!invoker.setValue("fileID", toString<int>(fileID))) {
-			throw EDRException("Bad operation arguments.");
+			throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker.invoke()) {
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 		Schema::Type type;
 		void *val = invoker.getValue("FileLocation", type);
 		if(val == NULL) {
-			throw EDRException("Bad response in retrieveFile operation.");
+			throw std::runtime_error("Bad response in retrieveFile operation.");
 		}
 		return *(std::string*)val;
 	} else {
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
 
@@ -53,15 +53,15 @@ int FileStoremanService::storeSessionFile(int sessionID, const std::string& path
 			!invoker.setValue("path", new std::string(path)) ||
 			!invoker.setValue("description", new std::string(description)) ||
 			!invoker.setValue("filename", new std::string(filename))) {
-				throw EDRException("Bad operation arguments.");
+				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker.invoke()) {
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 		int val = invoker.getValue<int>("StoreSessionFileResult");
 		return val;
 	} else {
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
 
@@ -72,15 +72,15 @@ int FileStoremanService::storePerformerFile(int performerID, const std::string& 
 			!invoker.setValue("path", new std::string(path)) ||
 			!invoker.setValue("description", new std::string(description)) ||
 			!invoker.setValue("filename", new std::string(filename))) {
-				throw EDRException("Bad operation arguments.");
+				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker.invoke()) {
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 		int val = invoker.getValue<int>("StorePerformerFileResult");
 		return val;
 	} else {
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
 
@@ -91,15 +91,15 @@ int FileStoremanService::storeTrialFile(int trialID, const std::string& path, co
 			!invoker.setValue("path", new std::string(path)) ||
 			!invoker.setValue("description", new std::string(description)) ||
 			!invoker.setValue("filename", new std::string(filename))) {
-				throw EDRException("Bad operation arguments.");
+				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker.invoke()) {
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 		int val = invoker.getValue<int>("StoreTrialFileResult");
 		return val;
 	} else {
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
 
@@ -109,15 +109,15 @@ int FileStoremanService::storeSessionFiles(int sessionID, const std::string& pat
 		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
 			!invoker.setValue("path", new std::string(path)) ||
 			!invoker.setValue("description", new std::string(description))) {
-				throw EDRException("Bad operation arguments.");
+				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker.invoke()) {
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 		int val = invoker.getValue<int>("StoreSessionFilesResult");
 		return val;
 	} else {
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
 
@@ -126,13 +126,13 @@ void FileStoremanService::storePerformerFiles(int performerID, const std::string
 	if(invoker.status()) {
 		if(!invoker.setValue("performerID", toString<int>(performerID)) ||
 			!invoker.setValue("path", new std::string(path))) {
-				throw EDRException("Bad operation arguments.");
+				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker.invoke()) {
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 	} else {
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
 
@@ -141,12 +141,12 @@ void FileStoremanService::storeTrialFiles(int trialID, const std::string& path) 
 	if(invoker.status()) {
 		if(!invoker.setValue("trialID", toString<int>(trialID)) ||
 			!invoker.setValue("path", new std::string(path))) {
-				throw EDRException("Bad operation arguments.");
+				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker.invoke()) {
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 	} else {
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }

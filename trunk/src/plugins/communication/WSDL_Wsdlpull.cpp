@@ -86,12 +86,12 @@ void WSDL_Wsdlpull::initializeInvoker()
 	{
 		if(!invoker.setWSDLUri(uri)) 
 		{
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 	}
 	else
 	{
-		throw EDRException("No specified URI.");
+		throw std::runtime_error("No specified URI.");
 	}
 }
 
@@ -100,7 +100,7 @@ void WSDL_Wsdlpull::setOperation(const std::string& name)
 	initializeInvoker();
 	if(!invoker.setOperation(name)) 
 	{
-		throw EDRException("Cannot find operation.");
+		throw std::runtime_error("Cannot find operation.");
 	}
 }
 
@@ -108,7 +108,7 @@ void WSDL_Wsdlpull::setValue(const std::string& param, const std::string& value)
 {
 	if(!invoker.setValue(param, value))
 	{
-		throw EDRException("Bad param or value.");
+		throw std::runtime_error("Bad param or value.");
 	}
 }
 
@@ -119,13 +119,13 @@ void WSDL_Wsdlpull::invokeOperation()
 		//invoke operation
 		if(!invoker.invoke()) 
 		{
-			//throw EDRException(invoker.errors().c_str());
+			//throw std::runtime_error(invoker.errors().c_str());
 			throw std::string(this->getXMLResponse().c_str());
 		}
 	}
 	else 
 	{
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
 
@@ -150,7 +150,7 @@ void WSDL_Wsdlpull::displayOperations()
 	}
 	else 
 	{
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
 
@@ -193,6 +193,6 @@ void WSDL_Wsdlpull::displayPortTypes()
 	}
 	else 
 	{
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 }

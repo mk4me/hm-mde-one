@@ -6,9 +6,11 @@
 #ifndef _IAUTHENTICABLE_H_
 #define _IAUTHENTICABLE_H_
 
-namespace communication {
+namespace communication
+{
 
-	class IAuthenticable {
+	class IAuthenticable
+	{
 	public:
 		/**
 		Wirtualny destruktor klasy IAuthenticable.

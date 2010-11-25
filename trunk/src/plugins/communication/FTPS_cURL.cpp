@@ -20,7 +20,7 @@ FTPS_cURL::FTPS_cURL() {
 	curl_global_init(CURL_GLOBAL_ALL);
 	this->curl = curl_easy_init();
 	if(!this->curl) {
-		throw EDRException("Failed to initialize FTPS connection.");
+		throw std::runtime_error("Failed to initialize FTPS connection.");
 	}
 }
 
@@ -35,7 +35,7 @@ FTPS_cURL::FTPS_cURL(const std::string& uri, const std::string& usr, const std::
 	curl_global_init(CURL_GLOBAL_ALL);
 	this->curl = curl_easy_init();
 	if(!this->curl) {
-		throw EDRException("Failed to initialize FTPS connection.");
+		throw std::runtime_error("Failed to initialize FTPS connection.");
 	}
 }
 
@@ -106,7 +106,7 @@ void FTPS_cURL::get(const std::string& filename) {
 #endif
 	this->res = curl_easy_perform(this->curl);
 	if(CURLE_OK != this->res) {
-		throw EDRException(curl_easy_strerror(this->res));
+		throw std::runtime_error(curl_easy_strerror(this->res));
 	}
 	if(ftpfile.stream) {
 		fclose(ftpfile.stream);
@@ -125,7 +125,7 @@ void FTPS_cURL::put(const std::string& filename) {
 	url.append(filename);
 	ftpfile.stream = fopen(temp.c_str(), "rb");
 	if(ftpfile.stream == NULL) {
-		throw EDRException("No specified file.");
+		throw std::runtime_error("No specified file.");
 	}
 	//This option determines whether curl verifies the authenticity of the
 	//peer's certificate. A value of 1 means curl verifies; zero means it doesn't.
@@ -147,7 +147,7 @@ void FTPS_cURL::put(const std::string& filename) {
 #endif
 	this->res = curl_easy_perform(this->curl);
 	if(CURLE_OK != this->res) {
-		throw EDRException(curl_easy_strerror(this->res));
+		throw std::runtime_error(curl_easy_strerror(this->res));
 	}
 	if(ftpfile.stream) {
 		fclose(ftpfile.stream);
@@ -171,25 +171,25 @@ size_t FTPS_cURL::write(void* buffer, size_t size, size_t nmemb, void* stream) {
 }
 
 void FTPS_cURL::cd(const std::string& directory) {
-	throw EDRException("not supported yet.");
+	throw std::runtime_error("not supported yet.");
 }
 
 const std::string& FTPS_cURL::pwd() const {
-	throw EDRException("not supported yet.");
+	throw std::runtime_error("not supported yet.");
 }
 
 std::vector<const std::string&>& FTPS_cURL::ls() const {
-	throw EDRException("not supported yet.");
+	throw std::runtime_error("not supported yet.");
 }
 
 void FTPS_cURL::make(const std::string& dirname) {
-	throw EDRException("not supported yet.");
+	throw std::runtime_error("not supported yet.");
 }
 
 void FTPS_cURL::del(const std::string& filename) {
-	throw EDRException("not supported yet.");
+	throw std::runtime_error("not supported yet.");
 }
 
 void FTPS_cURL::disconnect() {
-	throw EDRException("not supported yet.");
+	throw std::runtime_error("not supported yet.");
 }

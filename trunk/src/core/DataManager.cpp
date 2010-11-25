@@ -317,11 +317,11 @@ int DataManager::GetC3dFilePathCount()
 }
 
 
-DataManager::DataManager(const std::string& meshes_dir, const std::string& shaders_dir, const std::string& trials_dir) : m_shaders_dir(shaders_dir), m_meshes_dir(meshes_dir), m_trials_dir(trials_dir)
+DataManager::DataManager(const std::string& meshesDir, const std::string& shadersDir, const std::string& trialsDir) : shadersDir(shadersDir), meshesDir(meshesDir), trialsDir(trialsDir)
 {
-	setDirSlashes(this->m_shaders_dir);
-	setDirSlashes(this->m_meshes_dir);
-	setDirSlashes(this->m_trials_dir);
+	setDirSlashes(this->shadersDir);
+	setDirSlashes(this->meshesDir);
+	setDirSlashes(this->trialsDir);
 	clear();
 	loadResources();
 }
@@ -334,36 +334,36 @@ void DataManager::loadResources()
 	bool more_files = true;
 
 	//szukaj shaderow
-	std::string file_mask = this->m_shaders_dir;
+	std::string file_mask = this->shadersDir;
 	file_mask.append("*.frag");
 
 	file = ::FindFirstFile(file_mask.c_str(), &data_find);
 	while(file != INVALID_HANDLE_VALUE && more_files)
 	{
-		std::string file_path(this->m_shaders_dir);
+		std::string file_path(this->shadersDir);
 		file_path.append(data_find.cFileName);
-		this->m_shaders_paths[data_find.cFileName] = file_path;
+		this->shadersPaths[data_find.cFileName] = file_path;
 		// czy dalej? (dziwna postaæ ¿eby pozbyæ siê warninga)
 		more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
 	}
 
 	//szukaj meshy
 	more_files = true;
-	file_mask = this->m_meshes_dir;
+	file_mask = this->meshesDir;
 	file_mask.append("*.tbs");
 
 	file = ::FindFirstFile(file_mask.c_str(), &data_find);
 	while(file != INVALID_HANDLE_VALUE && more_files)
 	{
-		std::string file_path(this->m_meshes_dir);
+		std::string file_path(this->meshesDir);
 		file_path.append(data_find.cFileName);
-		this->m_meshes_paths[data_find.cFileName] = file_path;
+		this->meshesPaths[data_find.cFileName] = file_path;
 		more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
 	}
 
 	//przeszukaj foldery trialowe
 	more_files = true;
-	file_mask = this->m_trials_dir;
+	file_mask = this->trialsDir;
 	file_mask.append("*");
 	std::vector<std::string> trial_dirs;
 
@@ -381,15 +381,15 @@ void DataManager::loadResources()
 	{
 		//szukaj video
 		more_files = true;
-		file_mask = this->m_trials_dir;
+		file_mask = this->trialsDir;
 		file_mask.append((*it)).append("/*.avi");
 
 		file = ::FindFirstFile(file_mask.c_str(), &data_find);
 		while(file != INVALID_HANDLE_VALUE && more_files)
 		{
-			std::string file_path(this->m_trials_dir);
+			std::string file_path(this->trialsDir);
 			file_path.append((*it)).append("/").append(data_find.cFileName);
-			this->m_videos_paths[data_find.cFileName] = file_path;
+			this->videosPaths[data_find.cFileName] = file_path;
 			more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
 		}
 	}
@@ -398,15 +398,15 @@ void DataManager::loadResources()
 	{
 		//szukaj c3d
 		more_files = true;
-		file_mask = this->m_trials_dir;
+		file_mask = this->trialsDir;
 		file_mask.append((*it)).append("/*.c3d");
 
 		file = ::FindFirstFile(file_mask.c_str(), &data_find);
 		while(file != INVALID_HANDLE_VALUE && more_files)
 		{
-			std::string file_path(this->m_trials_dir);
+			std::string file_path(this->trialsDir);
 			file_path.append((*it)).append("/").append(data_find.cFileName);
-			this->m_c3ds_paths[data_find.cFileName] = file_path;
+			this->c3dsPaths[data_find.cFileName] = file_path;
 			more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
 		}
 	}
@@ -424,10 +424,10 @@ void DataManager::setDirSlashes(std::string& dir)
 }
 
 void DataManager::clear() {
-	this->m_shaders_paths.clear();
-	this->m_meshes_paths.clear();
-	this->m_videos_paths.clear();
-	this->m_c3ds_paths.clear();
+	this->shadersPaths.clear();
+	this->meshesPaths.clear();
+	this->videosPaths.clear();
+	this->c3dsPaths.clear();
 
 //    m_VideoFilePathList.clear();
     m_SkeletonFilePathList.clear();
@@ -436,8 +436,8 @@ void DataManager::clear() {
 
 const std::string& DataManager::getShader(const std::string& name)
 {
-	std::map<std::string, std::string>::iterator it = this->m_shaders_paths.find(name);
-	if(it != this->m_shaders_paths.end())
+	std::map<std::string, std::string>::iterator it = this->shadersPaths.find(name);
+	if(it != this->shadersPaths.end())
 	{
 		return (*it).second;
 	}
@@ -446,13 +446,13 @@ const std::string& DataManager::getShader(const std::string& name)
 
 const std::map<std::string, std::string>& DataManager::getShaders()
 {
-	return this->m_shaders_paths;
+	return this->shadersPaths;
 }
 
 const std::string& DataManager::getMesh(const std::string& name)
 {
-	std::map<std::string, std::string>::iterator it = this->m_meshes_paths.find(name);
-	if(it != this->m_meshes_paths.end())
+	std::map<std::string, std::string>::iterator it = this->meshesPaths.find(name);
+	if(it != this->meshesPaths.end())
 	{
 		return (*it).second;
 	}
@@ -461,13 +461,13 @@ const std::string& DataManager::getMesh(const std::string& name)
 
 const std::map<std::string, std::string>& DataManager::getMeshes()
 {
-	return this->m_meshes_paths;
+	return this->meshesPaths;
 }
 
 const std::string& DataManager::getVideo(const std::string& name)
 {
-	std::map<std::string, std::string>::iterator it = this->m_videos_paths.find(name);
-	if(it != this->m_videos_paths.end())
+	std::map<std::string, std::string>::iterator it = this->videosPaths.find(name);
+	if(it != this->videosPaths.end())
 	{
 		return (*it).second;
 	}
@@ -476,13 +476,13 @@ const std::string& DataManager::getVideo(const std::string& name)
 
 const std::map<std::string, std::string>& DataManager::getVideos()
 {
-	return this->m_videos_paths;
+	return this->videosPaths;
 }
 
 const std::string& DataManager::getC3D(const std::string& name)
 {
-	std::map<std::string, std::string>::iterator it = this->m_c3ds_paths.find(name);
-	if(it != this->m_c3ds_paths.end())
+	std::map<std::string, std::string>::iterator it = this->c3dsPaths.find(name);
+	if(it != this->c3dsPaths.end())
 	{
 		return (*it).second;
 	}
@@ -491,5 +491,5 @@ const std::string& DataManager::getC3D(const std::string& name)
 
 const std::map<std::string, std::string>& DataManager::getC3Ds()
 {
-	return this->m_c3ds_paths;
+	return this->c3dsPaths;
 }

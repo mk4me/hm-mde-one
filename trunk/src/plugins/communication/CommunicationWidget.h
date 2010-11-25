@@ -16,7 +16,8 @@
 
 class CommunicationService;
 
-class CommunicationWidget : public QWidget, public utils::Observer<communication::CommunicationManager> {
+class CommunicationWidget : public QWidget, public utils::Observer<communication::CommunicationManager>
+{
 	Q_OBJECT
 public:
 	CommunicationWidget(CommunicationService* service);
@@ -29,9 +30,9 @@ public:
 		void itemDoubleClicked(QTreeWidgetItem*, int);
 
 private:
-	CommunicationService* m_service;
+	CommunicationService* communicationService;
 
-	QPushButton* m_update_button;
-	QTreeWidget* m_tree;
+	QPushButton* updateButton;
+	QTreeWidget* treeEntities;
 };
 #endif

@@ -44,7 +44,7 @@ int TransportWSDL_FTPS::storeSessionFile(int sessionID, const std::string& path,
 }
 
 int TransportWSDL_FTPS::storeSessionFiles(int sessionID, const std::string& path, const std::string& description) {
-	throw EDRException("not supported yet.");
+	throw std::runtime_error("not supported yet.");
 }
 
 int TransportWSDL_FTPS::storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename) {
@@ -55,7 +55,7 @@ int TransportWSDL_FTPS::storePerformerFile(int performerID, const std::string& p
 }
 
 void TransportWSDL_FTPS::storePerformerFiles(int performerID, const std::string& path) {
-	throw EDRException("not supported yet.");
+	throw std::runtime_error("not supported yet.");
 }
 
 int TransportWSDL_FTPS::storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename) {
@@ -66,7 +66,7 @@ int TransportWSDL_FTPS::storeTrialFile(int trialID, const std::string& path, con
 }
 
 void TransportWSDL_FTPS::storeTrialFiles(int trialID, const std::string& path) {
-	throw EDRException("not supported yet.");
+	throw std::runtime_error("not supported yet.");
 }
 
 const std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string& path) {
@@ -113,10 +113,11 @@ const std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string
 	}
 #if defined(__WIN32__)
 	//przenies plik
-	BOOL ok = ::MoveFile(filename.c_str(), dirs.append(token).append(filename).c_str());
+	BOOL ok = ::MoveFileEx(filename.c_str(), dirs.append(token).append(filename).c_str(), MOVEFILE_REPLACE_EXISTING);
 	if(ok == 0)
 	{
-		throw EDRException("Cannot move file to directory.");
+		std::cout << ::GetLastError() << std::endl;
+		throw std::runtime_error("Cannot move file to directory.");
 	}
 #elif defined(__UNIX__)
 	//FIX: nie znam api linuksa, na te chwile niech dziala z win

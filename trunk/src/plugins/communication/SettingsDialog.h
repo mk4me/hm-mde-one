@@ -10,7 +10,8 @@
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QFileDialog>
 
-class SettingsDialog : public QDialog {
+class SettingsDialog : public QDialog
+{
 public:
 	SettingsDialog(QWidget* parent = 0);
 	virtual ~SettingsDialog(void);

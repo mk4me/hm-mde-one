@@ -16,15 +16,15 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	if(invoker.status()) {
 //		if(!invoker.setValue("Name", new std::string(name)) ||
 //			!invoker.setValue("Surname", new std::string(surname))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		int val = invoker.getValue<int>("CreatePerformerResult");
 //		return new Performer(val, name, surname);
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 
@@ -37,15 +37,15 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //			!invoker.setValue("sessionDate", sessionDate.toString()) ||
 //			!invoker.setValue("sessionDescription", new std::string(sessionDescription)) ||
 //			!invoker.setValue("int", toStringVector<int>(groupsIDs))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		int val = invoker.getValue<int>("CreateSessionResult");
 //		return new Session(val, 0, performerID, sessionDate, sessionDescription);
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -55,15 +55,15 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
 //			!invoker.setValue("trialDuration", toString<int>(trialDuration)) ||
 //			!invoker.setValue("trialDescription", new std::string(trialDescription))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		int val = invoker.getValue<int>("CreateTrialResult");
 //		return new Trial(val, trialDescription, trialDuration);
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -74,15 +74,15 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //			!invoker.setValue("segmentName", new std::string(segmentName)) ||
 //			!invoker.setValue("startTime", toString<int>(startTime)) ||
 //			!invoker.setValue("endTime", toString<int>(endTime))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		int val = invoker.getValue<int>("DefineTrialSegment");
 //		return new Segment(val, trialID, segmentName, startTime, endTime);
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -91,14 +91,14 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	if(invoker.status()) {
 //		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
 //			!invoker.setValue("groupID", toString<int>(groupID))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		return invoker.getValue<bool>("AssignSessionToGroupResult");
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -109,14 +109,14 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //			!invoker.setValue("attributeName", new std::string(attributeName)) ||
 //			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
 //			!invoker.setValue("update", toString<bool>(update))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		return invoker.getValue<int>("SetPerformerAttributeResult");
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -127,14 +127,14 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //			!invoker.setValue("attributeName", new std::string(attributeName)) ||
 //			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
 //			!invoker.setValue("update", toString<bool>(update))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		return invoker.getValue<int>("SetTrialAttributeResult");
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -145,14 +145,14 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //			!invoker.setValue("attributeName", new std::string(attributeName)) ||
 //			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
 //			!invoker.setValue("update", toString<bool>(update))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		return invoker.getValue<int>("SetSessionAttributeResult");
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -163,14 +163,14 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //			!invoker.setValue("attributeName", new std::string(attributeName)) ||
 //			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
 //			!invoker.setValue("update", toString<bool>(update))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		return invoker.getValue<int>("SetFileAttributeResult");
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -181,13 +181,13 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //			!invoker.setValue("attributeName", new std::string(attributeName)) ||
 //			!invoker.setValue("attributeValue", new std::string(attributeVal)) ||
 //			!invoker.setValue("update", toString<bool>(update))) {
-//				throw EDRException("Bad operation arguments.");
+//				throw std::runtime_error("Bad operation arguments.");
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		return invoker.getValue<int>("SetSegmentAttributeResult");
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}

@@ -32,6 +32,7 @@ set(TARGET_SRC
 	C3D_Data.cpp
 	ChartData.cpp
 	Data.cpp
+	DateTime.cpp
 	DECreader.cpp
 	GroupData.cpp
 	Header.cpp

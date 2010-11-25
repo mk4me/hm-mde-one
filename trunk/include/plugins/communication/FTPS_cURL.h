@@ -10,11 +10,12 @@ innej metody), informacje sa przedstawiane w konsoli. Klasa implementuje interfe
 #define _FTPS_CURL_H_
 
 #include "IFTP.h"
-#include "EDRException.h"
 
-namespace communication {
+namespace communication
+{
 
-	class FTPS_cURL : public IFTP {
+	class FTPS_cURL : public IFTP
+	{
 	private:
 		/**
 		Metoda statyczna (wymagana przez curla) typu callback wymagana przy przesylaniu danych na serwer.

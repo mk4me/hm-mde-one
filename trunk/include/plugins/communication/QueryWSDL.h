@@ -10,9 +10,11 @@
 #include "BasicQueriesService.h"
 #include "BasicUpdatesService.h"
 
-namespace communication {
+namespace communication
+{
 
-	class QueryWSDL : public IQueryable {
+	class QueryWSDL : public IQueryable
+	{
 	protected:	
 		/**
 		Wskaznik na obiekt klasy BasicQueriesService pozwalajacy na korzystanie z web serwisu

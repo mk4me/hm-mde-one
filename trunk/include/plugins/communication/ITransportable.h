@@ -6,9 +6,11 @@
 #ifndef _ITRANSPORTABLE_H_
 #define _ITRANSPORTABLE_H_
 
-namespace communication {
+namespace communication
+{
 
-	class ITransportable {
+	class ITransportable
+	{
 	public:
 		/**
 		Wirtualny destruktor klasy ITransportable.

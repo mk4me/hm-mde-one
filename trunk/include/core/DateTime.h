@@ -1,14 +1,12 @@
 /**
 @author Marek Daniluk
-@brief Klasa DateTime reprezentuje wartosc typu DateTime. Jest typ prosty jeden z typow prostych dla 
+@brief Klasa DateTime reprezentuje wartosc typu DateTime. Jest jednym z typow prostych dla 
 dokumentow WSDL, dokladny opis znajduje sie pod adresem http://www.w3.org/TR/xmlschema-2/#dateTime.
 Na chwile obecna nie ma zadnej walidacji wprowadzanych danych.
 */
 
 #ifndef _DATETIME_H_
 #define _DATETIME_H_
-
-#include "EDRException.h"
 
 namespace communication {
 

@@ -10,9 +10,11 @@ Klasa powstala na bazie dokumentacji i kodu zrodlowego zespolu bazodanowego.
 #include "WSDL_Wsdlpull.h"
 #include "Entity.h"
 
-namespace communication {
+namespace communication
+{
 
-	class BasicQueriesService : public WSDL_Wsdlpull {
+	class BasicQueriesService : public WSDL_Wsdlpull
+	{
 	public:
 		/**
 		Konstruktor klasy BasicQueriesService.

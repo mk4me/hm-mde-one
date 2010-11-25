@@ -13,9 +13,10 @@
 #ifndef _ENTITY_H_
 #define _ENTITY_H_
 
-#include "DateTime.h"
+#include <core/DateTime.h>
 
-namespace communication {
+namespace communication
+{
 
 	struct Entity
 	{
@@ -34,49 +35,49 @@ namespace communication {
 
 	struct File : public Entity
 	{
-		File() : Entity(), file_name(""), file_description(""), file_subdir(""), file_attribute_name("") {};
+		File() : Entity(), fileName(""), fileDescription(""), fileSubdir(""), fileAttributeName("") {};
 
-		std::string file_name;
-		std::string file_description;
-		std::string file_subdir;
-		std::string file_attribute_name;
+		std::string fileName;
+		std::string fileDescription;
+		std::string fileSubdir;
+		std::string fileAttributeName;
 	};
 
 	struct Trial : public Entity
 	{
-		Trial() : Entity(), session_id(0), trial_description("") {};
+		Trial() : Entity(), sessionID(0), trialDescription("") {};
 
-		int session_id;
-		std::string trial_description;
-		std::map<int, File> trial_files;
+		int sessionID;
+		std::string trialDescription;
+		std::map<int, File> trialFiles;
 	};
 
 	struct Session : public Entity
 	{
-		Session() : Entity(), user_id(0), lab_id(0), motion_kind(""), session_description(""), session_label(""), session_date() {};
+		Session() : Entity(), userID(0), labID(0), motionKind(""), sessionDescription(""), sessionLabel(""), sessionDate() {};
 
-		int user_id;
-		int lab_id;
-		std::string motion_kind;
-		std::string session_description;
-		std::string session_label;
-		DateTime session_date;
-		std::map<int, Trial> session_trials;
+		int userID;
+		int labID;
+		std::string motionKind;
+		std::string sessionDescription;
+		std::string sessionLabel;
+		DateTime sessionDate;
+		std::map<int, Trial> sessionTrials;
 	};
 
 	struct SessionGroup : public Entity
 	{
-		SessionGroup() : Entity(), sessiongroup_name("") {};
+		SessionGroup() : Entity(), sessionGroupName("") {};
 
-		std::string sessiongroup_name;
+		std::string sessionGroupName;
 	};
 
 	struct Performer : public Entity
 	{
-		Performer() : Entity(), performer_firstname(""), performer_lastname("") {};
+		Performer() : Entity(), performerFirstname(""), performerLastname("") {};
 
-		std::string performer_firstname;
-		std::string performer_lastname;
+		std::string performerFirstname;
+		std::string performerLastname;
 	};
 
 	//struct Measurement : public Entity

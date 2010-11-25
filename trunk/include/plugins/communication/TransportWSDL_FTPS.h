@@ -10,11 +10,12 @@ Klasa implementuje interfejs ITransportable.
 #include "FileStoremanService.h"
 #include "ITransportable.h"
 #include "FTPS_cURL.h"
-#include "EDRException.h"
 
-namespace communication {
+namespace communication
+{
 
-	class TransportWSDL_FTPS : public ITransportable {
+	class TransportWSDL_FTPS : public ITransportable
+	{
 	protected:
 		/**
 		Wskaznik typu FTPS_cURL pozwalajacy na korzystanie z uslug szyfrowanego polaczenia FTP.

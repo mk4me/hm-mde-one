@@ -2,8 +2,7 @@
 @author Marek Daniluk
 */
 
-#include "CommunicationPCH.h"
-#include <plugins/communication/DateTime.h>
+#include <core/DateTime.h>
 
 using namespace communication;
 
@@ -27,25 +26,25 @@ void DateTime::setYear(int year) {
 
 void DateTime::setMonth(int month) {
 	if(month > 12 || month < 0)
-		throw new EDRException("Incorrect date format.");
+		throw std::exception("Incorrect date format.");
 	this->month = month;
 }
 //nalezy zrobic walidacje wzgledem miesiaca?
 void DateTime::setDay(int day) {
 	if(day > 31 || day < 0)
-		throw new EDRException("Incorrect date format.");
+		throw std::exception("Incorrect date format.");
 	this->day = day;
 }
 
 void DateTime::setHour(int hour) {
 	if(day > 24 || day < 0)
-		throw new EDRException("Incorrect date format.");
+		throw std::exception("Incorrect date format.");
 	this->hour = hour;
 }
 
 void DateTime::setMinutes(int minutes) {
 	if(day > 60 || day < 0)
-		throw new EDRException("Incorrect date format.");
+		throw std::exception("Incorrect date format.");
 	this->minutes = minutes;
 }
 
@@ -79,7 +78,7 @@ const int DateTime::getSeconds() const {
 //walidacja formatu!
 void DateTime::setDate(const std::string& date) {
 	if(date.size() != 19 && date.size() != 23) {
-		throw new EDRException("Incorrect date format.");
+		throw std::exception("Incorrect date format.");
 	}
 	std::istringstream iis(date.substr(0, 4));
 	iis >> this->year;

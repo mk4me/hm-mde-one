@@ -10,9 +10,11 @@ Klasa powstala na bazie dokumentacji i kodu zrodlowego zespolu bazodanowego.
 #include "WSDL_Wsdlpull.h"
 #include "ITransportable.h"
 
-namespace communication {
+namespace communication
+{
 
-	class FileStoremanService : public WSDL_Wsdlpull {
+	class FileStoremanService : public WSDL_Wsdlpull
+	{
 	protected:
 	public:
 		/**

@@ -9,11 +9,12 @@ Klasa powstala na bazie dokumentacji i kodu zrodlowego zespolu bazodanowego.
 
 #include "WSDL_Wsdlpull.h"
 #include "Entity.h"
-#include "DateTime.h"
 
-namespace communication {
+namespace communication
+{
 
-	class BasicUpdatesService : public WSDL_Wsdlpull {
+	class BasicUpdatesService : public WSDL_Wsdlpull
+	{
 	protected:
 	public:
 		/**

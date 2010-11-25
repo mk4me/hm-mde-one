@@ -23,8 +23,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/BasicUpdatesService.h
 	${HEADER_PATH}/CommunicationManager.h
 	${HEADER_PATH}/CommunicationService.h
-	${HEADER_PATH}/DateTime.h
-	${HEADER_PATH}/EDRException.h
 	${HEADER_PATH}/Entity.h
 	${HEADER_PATH}/FileStoremanService.h
 	${HEADER_PATH}/FTPS_cURL.h
@@ -52,8 +50,6 @@ set(TARGET_SRC
 	CommunicationPlugin.cpp
 	CommunicationService.cpp
 	CommunicationWidget.cpp
-	DateTime.cpp
-	EDRException.cpp
 	FileStoremanService.cpp
 	FTPS_cURL.cpp
 	QueryWSDL.cpp

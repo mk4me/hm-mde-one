@@ -16,7 +16,7 @@ std::map<int, Trial> BasicQueriesService::listSessionTrials(int sessionID) {
 	std::map<int, Trial> trials;
 	if(invoker.status()) {
 		if(!invoker.setValue("sessionID", WSDL_Wsdlpull::toString<int>(sessionID))) {
-			throw EDRException(invoker.errors().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
 		}
 		if(!invoker.invoke()) {
 			throw invoker.getXMLResponse();
@@ -24,11 +24,11 @@ std::map<int, Trial> BasicQueriesService::listSessionTrials(int sessionID) {
 		Schema::TypeContainer* tc = NULL;
 		tc = invoker.getOutput("ListSessionTrialsXMLResponse");
 		if(!tc) {
-			throw EDRException("Fail to get output.");
+			throw std::runtime_error("Fail to get output.");
 		}
 		tc = tc->getChildContainer("ListSessionTrialsXMLResult");
 		if(!tc) {
-			throw EDRException("Fail to get output.");
+			throw std::runtime_error("Fail to get output.");
 		}
 		TypeContainer* SessionTrialList = tc->getChildContainer("SessionTrialList");
 		TypeContainer* TrialDetails = SessionTrialList->getChildContainer("TrialDetails");
@@ -41,29 +41,29 @@ std::map<int, Trial> BasicQueriesService::listSessionTrials(int sessionID) {
 			}
 			else
 			{
-				throw EDRException("Bad document structure format.");
+				throw std::runtime_error("Bad document structure format.");
 			}
 			temp = TrialDetails->getAttributeContainer("SessionID");
 			if(temp) {
-				trial.session_id = *((int*)temp->getValue());
+				trial.sessionID = *((int*)temp->getValue());
 			}
 			else
 			{
-				throw EDRException("Bad document structure format.");
+				throw std::runtime_error("Bad document structure format.");
 			}
 			temp = TrialDetails->getAttributeContainer("TrialDescription");
 			if(temp) {
-				trial.trial_description = ((std::string*)temp->getValue())->c_str();
+				trial.trialDescription = ((std::string*)temp->getValue())->c_str();
 			}
 			else
 			{
-				throw EDRException("Bad document structure format.");
+				throw std::runtime_error("Bad document structure format.");
 			}
 			TrialDetails = SessionTrialList->getChildContainer("TrialDetails");
 			trials[trial.id] = trial;
 		}
 	} else {
-		throw EDRException(invoker.errors().c_str());
+		throw std::runtime_error(invoker.errors().c_str());
 	}
 	return trials;
 }
@@ -78,7 +78,7 @@ std::map<int, Session> BasicQueriesService::listLabSessionsWithAttributes(int la
 	tc = invoker.getOutput("ListLabSessionsWithAttributesXMLResponse");
 	if(!tc)
 	{
-		throw EDRException("Fail to get output.");
+		throw std::runtime_error("Fail to get output.");
 	}
 	TypeContainer* sessionDetails = tc->getChildContainer("SessionDetailsWithAttributes");
 	while(sessionDetails)
@@ -93,52 +93,52 @@ std::map<int, Session> BasicQueriesService::listLabSessionsWithAttributes(int la
 		}
 		else
 		{
-			throw EDRException("Bad document structure format: ID.");
+			throw std::runtime_error("Bad document structure format: ID.");
 		}
 		temp = sessionDetails->getValue("UserID", type);
 		if(temp)
 		{
-			session.user_id = *((int*)temp);
+			session.userID = *((int*)temp);
 		}
 		else
 		{
-			throw EDRException("Bad document structure format: user ID.");
+			throw std::runtime_error("Bad document structure format: user ID.");
 		}
 		temp = sessionDetails->getValue("LabID", type);
 		if(temp)
 		{
-			session.lab_id = *((int*)temp);
+			session.labID = *((int*)temp);
 		}
 		else
 		{
-			throw EDRException("Bad document structure format: lab ID.");
+			throw std::runtime_error("Bad document structure format: lab ID.");
 		}
 		temp = sessionDetails->getValue("MotionKind", type);
 		if(temp)
 		{
-			session.motion_kind = *((std::string*)temp);
+			session.motionKind = *((std::string*)temp);
 		}
 		else
 		{
-			throw EDRException("Bad document structure format: Motion kind.");
+			throw std::runtime_error("Bad document structure format: Motion kind.");
 		}
 		temp = sessionDetails->getValue("SessionDate", type);
 		if(temp)
 		{
-			session.session_date.setDate(*((std::string*)temp));
+			session.sessionDate.setDate(*((std::string*)temp));
 		}
 		else
 		{
-			throw EDRException("Bad document structure format: session date.");
+			throw std::runtime_error("Bad document structure format: session date.");
 		}
 		temp = sessionDetails->getValue("SessionDescription", type);
 		if(temp)
 		{
-			session.session_description = ((std::string*)temp)->c_str();
+			session.sessionDescription = ((std::string*)temp)->c_str();
 		}
 		else
 		{
-			throw EDRException("Bad document structure format: session description.");
+			throw std::runtime_error("Bad document structure format: session description.");
 		}
 		sessionDetails = tc->getChildContainer("SessionDetailsWithAttributes");
 		sessions[session.id] = session;
@@ -157,7 +157,7 @@ std::map<int, File> BasicQueriesService::listFiles(int ID, const std::string& su
 	tc = invoker.getOutput("ListFilesWithAttributesXMLResponse");
 	if(!tc)
 	{
-		throw EDRException("Fail to get output.");
+		throw std::runtime_error("Fail to get output.");
 	}
 	TypeContainer* fileDetails = tc->getChildContainer("FileDetailsWithAttributes");
 	while(fileDetails)
@@ -171,25 +171,25 @@ std::map<int, File> BasicQueriesService::listFiles(int ID, const std::string& su
 		}
 		else
 		{
-			throw EDRException("Bad document structure format.");
+			throw std::runtime_error("Bad document structure format.");
 		}
 		temp = fileDetails->getAttributeContainer("FileName");
 		if(temp)
 		{
-			file.file_name = *((std::string*)temp->getValue());
+			file.fileName = *((std::string*)temp->getValue());
 		}
 		else
 		{
-			throw EDRException("Bad document structure format.");
+			throw std::runtime_error("Bad document structure format.");
 		}
 		temp = fileDetails->getAttributeContainer("FileDescription");
 		if(temp)
 		{
-			file.file_description = *((std::string*)temp->getValue());
+			file.fileDescription = *((std::string*)temp->getValue());
 		}
 		else
 		{
-			throw EDRException("Bad document structure format.");
+			throw std::runtime_error("Bad document structure format.");
 		}
 		fileDetails = tc->getChildContainer("FileDetailsWithAttributes");
 		files[file.id] = file;
@@ -206,7 +206,7 @@ void BasicQueriesService::listSessionContents()
 	this->invokeOperation();
 }
 
-//TODO: A Schema Parser exception occurred while parsing the response at line 1:444
+//TODO: A Schema Parser runtime_error occurred while parsing the response at line 1:444
 //Schema Parser Exception : Could not find element PerformerDetailsWithAttributes
 //in GetPerformerByIdXMLResponse
 //Error validating schema instance
@@ -217,10 +217,10 @@ void BasicQueriesService::listSessionContents()
 //
 //	if(invoker.status()) {
 //		//if(!invoker.setValue("id", WSDL_Wsdlpull::toString<int>(performerID))) {
-//		//	throw EDRException(invoker.errors().c_str());
+//		//	throw std::runtime_error(invoker.errors().c_str());
 //		//}
 //		//if(!invoker.invoke()) {
-//		//	throw EDRException(invoker.errors().c_str());
+//		//	throw std::runtime_error(invoker.errors().c_str());
 //		//}
 //		Schema::Type type;
 //		std::string* name = ((std::string*)invoker.getValue("FirstName", type));
@@ -228,14 +228,14 @@ void BasicQueriesService::listSessionContents()
 //		if(name != NULL && surname != NULL) {
 //			return new Performer(performerID, name->c_str(), surname->c_str());
 //		} else {
-//			throw EDRException("Bad operation return values.");
+//			throw std::runtime_error("Bad operation return values.");
 //		}
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
-////A Schema Parser exception occurred while parsing the response at line 1:438
+////A Schema Parser runtime_error occurred while parsing the response at line 1:438
 ////Schema Parser Exception : Could not find element SessionDetailsWithAttributes in
 ////GetSessionByIdXMLResponse
 ////Error validating schema instance
@@ -243,10 +243,10 @@ void BasicQueriesService::listSessionContents()
 //	this->setOperation("GetSessionByIdXML");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("id", WSDL_Wsdlpull::toString<int>(sessionID))) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}/*
 //		Schema::Type type;
 //		int SessionID = invoker.getValue<int>("SessionID", type));
@@ -261,12 +261,12 @@ void BasicQueriesService::listSessionContents()
 //			session.setSurname(temp->c_str());
 //		}*/
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //	return new Session();
 //}
 //
-////A Schema Parser exception occurred while parsing the response at line 1:438
+////A Schema Parser runtime_error occurred while parsing the response at line 1:438
 ////Schema Parser Exception : Could not find element SegmentDetailsWithAttributes in
 ////GetSegmentByIdXMLResponse
 ////Error validating schema instance
@@ -274,10 +274,10 @@ void BasicQueriesService::listSessionContents()
 //	this->setOperation("GetSegmentByIdXML");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("id", WSDL_Wsdlpull::toString<int>(segmentID))) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		/*Schema::Type type;
 //		std::string* temp = ((std::string*)invoker.getValue("FirstName", type));
@@ -289,12 +289,12 @@ void BasicQueriesService::listSessionContents()
 //			session.setSurname(temp->c_str());
 //		}*/
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //	return new Segment();
 //}
 //
-////A Schema Parser exception occurred while parsing the response at line 1:432
+////A Schema Parser runtime_error occurred while parsing the response at line 1:432
 ////Schema Parser Exception : Could not find element TrialDetailsWithAttributes in
 ////GetTrialByIdXMLResponse
 ////Error validating schema instance
@@ -302,10 +302,10 @@ void BasicQueriesService::listSessionContents()
 //	this->setOperation("GetTrialByIdXML");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("id", WSDL_Wsdlpull::toString<int>(trialID))) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		/*Schema::Type type;
 //		std::string* temp = ((std::string*)invoker.getValue("FirstName", type));
@@ -317,7 +317,7 @@ void BasicQueriesService::listSessionContents()
 //			session.setSurname(temp->c_str());
 //		}*/
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //	return new Trial();
 //}
@@ -326,20 +326,20 @@ void BasicQueriesService::listSessionContents()
 //	this->setOperation("ListPerformerSessionsXML");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("performerID", WSDL_Wsdlpull::toString<int>(performerID))) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		std::vector<Session>* sessions = new std::vector<Session>();
 //		Schema::TypeContainer* tc = NULL;
 //		tc = invoker.getOutput("ListPerformerSessionsXMLResponse");
 //		if(!tc) {
-//			throw EDRException("Fail to get output.");
+//			throw std::runtime_error("Fail to get output.");
 //		}
 //		tc = tc->getChildContainer("ListPerformerSessionsXMLResult");
 //		if(!tc) {
-//			throw EDRException("Fail to get output.");
+//			throw std::runtime_error("Fail to get output.");
 //		}
 //		TypeContainer* performerSessionList = tc->getChildContainer("PerformerSessionList");
 //		TypeContainer* sessionDetails = performerSessionList->getChildContainer("SessionDetails");
@@ -352,7 +352,7 @@ void BasicQueriesService::listSessionContents()
 //			}
 //			else
 //			{
-//				throw EDRException("Bad document structure format.");
+//				throw std::runtime_error("Bad document structure format.");
 //			}
 //			temp = sessionDetails->getAttributeContainer("MotionKindID");
 //			if(temp) {
@@ -360,7 +360,7 @@ void BasicQueriesService::listSessionContents()
 //			}
 //			else
 //			{
-//				throw EDRException("Bad document structure format.");
+//				throw std::runtime_error("Bad document structure format.");
 //			}
 //			temp = sessionDetails->getAttributeContainer("PerformerID");
 //			if(temp) {
@@ -368,7 +368,7 @@ void BasicQueriesService::listSessionContents()
 //			}
 //			else
 //			{
-//				throw EDRException("Bad document structure format.");
+//				throw std::runtime_error("Bad document structure format.");
 //			}
 //			temp = sessionDetails->getAttributeContainer("SessionDate");
 //			if(temp) {
@@ -376,7 +376,7 @@ void BasicQueriesService::listSessionContents()
 //			}
 //			else
 //			{
-//				throw EDRException("Bad document structure format.");
+//				throw std::runtime_error("Bad document structure format.");
 //			}
 //			temp = sessionDetails->getAttributeContainer("SessionDescription");
 //			if(temp) {
@@ -384,40 +384,40 @@ void BasicQueriesService::listSessionContents()
 //			}
 //			else
 //			{
-//				throw EDRException("Bad document structure format.");
+//				throw std::runtime_error("Bad document structure format.");
 //			}
 //			sessionDetails = performerSessionList->getChildContainer("SessionDetails");
 //			sessions->push_back(session);
 //		}
 //		return sessions;
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
 //const std::vector<Session>* BasicQueriesService::listPerformerSessionsWithAttributes(int performerID) {
-//	throw EDRException("not supported yet.");
+//	throw std::runtime_error("not supported yet.");
 //}
 //
 //const std::vector<Session>* BasicQueriesService::listPerformerSessionsXML(int performerID) {
 //	this->setOperation("ListPerformerSessionsXML");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("performerID", WSDL_Wsdlpull::toString<int>(performerID))) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		std::vector<Session>* sessions = new std::vector<Session>();
 //		Schema::TypeContainer* tc = NULL;
 //		tc = invoker.getOutput("ListPerformerSessionsXMLResponse");
 //		if(!tc) {
-//			throw EDRException("Fail to get output.");
+//			throw std::runtime_error("Fail to get output.");
 //		}
 //
 //		tc = tc->getChildContainer("ListPerformerSessionsXMLResult");
 //		if(!tc) {
-//			throw EDRException("Fail to get output.");
+//			throw std::runtime_error("Fail to get output.");
 //		}
 //		TypeContainer* plainSession = tc->getChildContainer("PlainSessionDetails");
 //		while(plainSession) {
@@ -444,7 +444,7 @@ void BasicQueriesService::listSessionContents()
 //		}
 //		return sessions;
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -452,12 +452,12 @@ void BasicQueriesService::listSessionContents()
 //	this->setOperation("ListPerformersXML");
 //	if(invoker.status()) {
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		std::vector<Performer>* sessions = new std::vector<Performer>();
 //		return sessions;
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}
 //
@@ -465,37 +465,37 @@ void BasicQueriesService::listSessionContents()
 //	this->setOperation("ListPerformersWithAttributesXML");
 //	if(invoker.status()) {
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //	return new std::vector<Performer>();
 //}
 
 //const std::vector<Trial>* BasicQueriesService::listSessionTrialsWithAttributes(int sessionID) {
-//	throw EDRException("not supported yet.");
+//	throw std::runtime_error("not supported yet.");
 //}
 //
 //const std::vector<Segment>* BasicQueriesService::listTrialSegments(int trialID) {
-//	throw EDRException("not supported yet.");
+//	throw std::runtime_error("not supported yet.");
 //}
 //
 //const std::vector<Segment>* BasicQueriesService::listTrialSegmentsWithAttributes(int trialID) {
-//	throw EDRException("not supported yet.");
+//	throw std::runtime_error("not supported yet.");
 //}
 //
 //const std::vector<Performer>* BasicQueriesService::listLabPerformersWithAttributes(int labID) {
 //	this->setOperation("ListLabPerformersWithAttributesXML");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("labID", WSDL_Wsdlpull::toString<int>(labID))) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //	return new std::vector<Performer>();
 //}
@@ -504,29 +504,29 @@ void BasicQueriesService::listSessionContents()
 //	this->setOperation("ListSessionFiles");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("sessionID", WSDL_Wsdlpull::toString<int>(sessionID))) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //	return new std::vector<File>();
 //}
 
 //const std::vector<File>* BasicQueriesService::listFilesWithAttributes(int ID, const std::string& subjectType) {
-//	throw EDRException("not supported yet.");
+//	throw std::runtime_error("not supported yet.");
 //}
 //
 //const std::vector<SessionGroup>* BasicQueriesService::listSessionGroupsDefined() {
 //	this->setOperation("ListSessionGroupsDefined");
 //	if(invoker.status()) {
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //	return new std::vector<SessionGroup>();
 //}
@@ -535,10 +535,10 @@ void BasicQueriesService::listSessionContents()
 //	this->setOperation("ListMotionKindsDefined");
 //	if(invoker.status()) {
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //	return new std::vector<MotionKind>();
 //}
@@ -547,12 +547,12 @@ void BasicQueriesService::listSessionContents()
 //	this->setOperation("GenericQueryXML");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("query", new std::string(query))) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //		if(!invoker.invoke()) {
-//			throw EDRException(invoker.errors().c_str());
+//			throw std::runtime_error(invoker.errors().c_str());
 //		}
 //	} else {
-//		throw EDRException(invoker.errors().c_str());
+//		throw std::runtime_error(invoker.errors().c_str());
 //	}
 //}

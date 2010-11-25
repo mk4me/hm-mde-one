@@ -8,9 +8,11 @@
 
 #include "IAuthenticable.h"
 
-namespace communication {
+namespace communication
+{
 
-	class ISendable : public IAuthenticable {
+	class ISendable : public IAuthenticable
+	{
 	public:
 		/**
 		Wirtualny destruktor klasy ISendable.

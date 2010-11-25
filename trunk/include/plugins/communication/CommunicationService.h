@@ -15,11 +15,11 @@ class CommunicationService : public IService, public ICommunication, public Open
 {
     UNIQUE_ID('COMM','SRVC');
 private:
-    CommunicationWidget* m_widget;
-	communication::CommunicationManager* m_model;
-	communication::TransportWSDL_FTPS* m_transport;
-	communication::QueryWSDL* m_query;
-    std::string m_name;
+    CommunicationWidget* widget;
+	communication::CommunicationManager* model;
+	communication::TransportWSDL_FTPS* transport;
+	communication::QueryWSDL* query;
+    std::string name;
 
 public:
     CommunicationService();
@@ -28,19 +28,19 @@ public:
     virtual IWidget* getWidget()
     { 
         // HACK: ca³y ten system jest shackowany!
-        return reinterpret_cast<IWidget*>(m_widget);
+        return reinterpret_cast<IWidget*>(widget);
     }
 
     virtual const std::string& getName() const
     {
-        return m_name;
+        return name;
     }
 
-	virtual void listLabSessionsWithAttributes(unsigned int lab_id);
-	virtual void listSessionTrials(unsigned int session_id);
-	virtual void listTrialFiles(unsigned int session_id, unsigned int trial_id);
+	virtual void listLabSessionsWithAttributes(unsigned int labID);
+	virtual void listSessionTrials(unsigned int sessionID);
+	virtual void listTrialFiles(unsigned int sessionID, unsigned int trialID);
 
-	virtual void downloadFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id);
+	virtual void downloadFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID);
 	virtual void updateSessionContents();
 
 	void load();
@@ -49,7 +49,7 @@ public:
 	const communication::TransportWSDL_FTPS* getTransportManager() const;
 	const communication::QueryWSDL* getQueryManager() const;
 
-	void setQueryCredentials(const std::string& user, const std::string& password, const std::string& bqs_uri, const std::string& bus_uri);
+	void setQueryCredentials(const std::string& user, const std::string& password, const std::string& bqsUri, const std::string& busUri);
 	void setTransportFTPCredentials(const std::string& user, const std::string& password, const std::string& uri);
 	void setTransportWSCredentials(const std::string& user, const std::string& password, const std::string& uri);
 

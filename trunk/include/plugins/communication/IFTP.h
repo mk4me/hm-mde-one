@@ -9,9 +9,11 @@ protokolu FTP przy pomocy roznych bibliotek.
 
 #include "ISendable.h"
 
-namespace communication {
+namespace communication
+{
 
-	class IFTP : public ISendable {
+	class IFTP : public ISendable
+	{
 	public:
 		/**
 		Wirtualny destruktor klasy IFTP.

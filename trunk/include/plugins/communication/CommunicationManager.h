@@ -14,7 +14,8 @@ i web serwisy wsdl.
 #include "TransportWSDL_FTPS.h"
 #include "QueryWSDL.h"
 
-namespace communication {
+namespace communication
+{
 
 	class CommunicationManager : public utils::Observable<CommunicationManager>
 	{
@@ -23,29 +24,29 @@ namespace communication {
 		typedef std::map<int, Trial> Trials;
 		typedef std::map<int, File> Files;
 
-		void setSessions(unsigned int lab_id);
-		const Sessions& getSessions(/*unsigned int lab_id*/) const;
+		void setSessions(unsigned int labID);
+		const Sessions& getSessions(/*unsigned int labID*/) const;
 
-		void setTrials(unsigned int session_id);
-		const Trials& getTrials(unsigned int session_id) const;
+		void setTrials(unsigned int sessionID);
+		const Trials& getTrials(unsigned int sessionID) const;
 
-		void setFiles(unsigned int session_id, unsigned int trial_id);
-		const Files& getFiles(unsigned int session_id, unsigned int trial_id) const;
+		void setFiles(unsigned int sessionID, unsigned int trialID);
+		const Files& getFiles(unsigned int sessionID, unsigned int trialID) const;
 
-		void setFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id);
-		const std::string& getFile(unsigned int session_id, unsigned int trial_id, unsigned int file_id) const;
+		void setFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID);
+		const std::string& getFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID) const;
 
 		void clearSessions();
-		void clearTrials(unsigned int session_id);
-		void clearFiles(unsigned int session_id, unsigned int trial_id);
+		void clearTrials(unsigned int sessionID);
+		void clearFiles(unsigned int sessionID, unsigned int trialID);
 
 		void saveToXml(const std::string& filename);
 		void loadFromXml(const std::string& filename);
 
-		void setTransportManager(ITransportable* transport_manager);
+		void setTransportManager(ITransportable* transportManager);
 		ITransportable* getTransportManager();
 
-		void setQueryManager(IQueryable* query_manager);
+		void setQueryManager(IQueryable* queryManager);
 		IQueryable* getQueryManager();
 
 		static CommunicationManager* getInstance();
@@ -54,13 +55,12 @@ namespace communication {
 		/**
 		Wskaznik na jedyna instancje klasy CommunicationManager.
 		*/
-		static CommunicationManager* m_instance;
+		static CommunicationManager* instance;
 
-		Sessions m_sessions;
-		std::string m_file_path;
+		Sessions sessions;
 
-		ITransportable* m_transport_manager;
-		IQueryable* m_query_manager;
+		ITransportable* transportManager;
+		IQueryable* queryManager;
 
 		CommunicationManager();
 		virtual ~CommunicationManager();

@@ -10,7 +10,8 @@ class DataManager: public IDataManager
 {
 public:
 //------------------------------------------------------------------------------------------------------------------------------
-	DataManager(const std::string& meshes_dir = "data/resources/meshes/", const std::string& shaders_dir = "data/resources/shaders/", const std::string& trials_dir = "data/resources/trials/");
+	DataManager(const std::string& meshesDir = "data/resources/meshes/", const std::string& shadersDir = "data/resources/shaders/", const std::string& trialsDir = "data/resources/trials/");
+	DataManager(int i) {};
 
 	virtual void loadResources();
 
@@ -28,14 +29,14 @@ public:
 	virtual const std::string& getC3D(const std::string& name);
 	virtual const Resources& getC3Ds();
 
-	void setShadersDir(const std::string& dir) {this->m_shaders_dir = dir; setDirSlashes(this->m_shaders_dir);};
-	const std::string& getShadersDir() const {return this->m_shaders_dir;};
+	void setShadersDir(const std::string& dir) {this->shadersDir = dir; setDirSlashes(this->shadersDir);};
+	const std::string& getShadersDir() const {return this->shadersDir;};
 
-	void setMeshesDir(const std::string& dir) {this->m_meshes_dir = dir; setDirSlashes(this->m_meshes_dir);};
-	const std::string& getMeshesDir() const {return this->m_meshes_dir;};
+	void setMeshesDir(const std::string& dir) {this->meshesDir = dir; setDirSlashes(this->meshesDir);};
+	const std::string& getMeshesDir() const {return this->meshesDir;};
 
-	void setTrialsDir(const std::string& dir) {this->m_trials_dir = dir; setDirSlashes(this->m_trials_dir);};
-	const std::string& getTrialsDir() const {return this->m_trials_dir;};
+	void setTrialsDir(const std::string& dir) {this->trialsDir = dir; setDirSlashes(this->trialsDir);};
+	const std::string& getTrialsDir() const {return this->trialsDir;};
 //------------------------------------------------------------------------------------------------------------------------------
 
     DataManager(std::string address, IModel* model, IC3DModel* c3dModel);
@@ -71,14 +72,14 @@ private:
 
 private:
 //------------------------------------------------------------------------------------------------------------------------------
-	Resources m_shaders_paths;
-	Resources m_meshes_paths;
-	Resources m_videos_paths;
-	Resources m_c3ds_paths;
+	Resources shadersPaths;
+	Resources meshesPaths;
+	Resources videosPaths;
+	Resources c3dsPaths;
 
-	std::string m_shaders_dir;
-	std::string m_meshes_dir;
-	std::string m_trials_dir;
+	std::string shadersDir;
+	std::string meshesDir;
+	std::string trialsDir;
 
 	void setDirSlashes(std::string& dir);
 //------------------------------------------------------------------------------------------------------------------------------
