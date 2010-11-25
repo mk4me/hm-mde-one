@@ -35,7 +35,6 @@
 
 
 #include <core/IServiceManager.h>
-#include <plugins/chart/ChartService.h>
 #include <plugins/timeline/ITimeline.h>
 #include <plugins/timeline/Stream.h>
 

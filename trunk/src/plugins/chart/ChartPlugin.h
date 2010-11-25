@@ -12,15 +12,17 @@
 #include <string>
 #include <osgViewer/Scene>
 #include <core/PluginsInterfaces.h>
-#include <plugins/chart/ChartService.h>
+#include <core/IService.h>
+#include "EMGService.h"
+#include "GRFService.h"
 
-class VideoPlugin : public ISystemPlugin
+class ChartPlugin : public ISystemPlugin
 {
 private:
   //! Nazwa pluginu.
   std::string name;
   //!
-  ChartService* service;
+  IService* service;
 
 public:
   ChartPlugin();

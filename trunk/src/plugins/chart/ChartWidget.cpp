@@ -3,7 +3,7 @@
 #include "ChartPCH.h"
 #include "ChartViewer.h"
 
-ChartWidget::ChartWidget(ChartService* service)
+ChartWidget::ChartWidget(IService* service)
 :   service(service)
 {
     setupUi(this);
