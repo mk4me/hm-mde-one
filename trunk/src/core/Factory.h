@@ -1,7 +1,7 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
-#include <core/Singleton.h>
+#include <core/IFactory.h>
 #include <map>
 
 
@@ -12,7 +12,7 @@ typedef std::map<std::string, IModel*> ModelResources;
 typedef std::map<std::string, IC3DModel*> C3DModelResources;
 
 // Tworzenie klasy wywodz¹cej sie z Singleton
-class Factor: public Singleton
+class Factor: public IFactor
 {
 public:
     Factor()
@@ -24,27 +24,18 @@ public:
     virtual void Access()
     { std::cout << "Udostepiono Factor" << std::endl; }
 
-    virtual IModel* CreateModel(std::string pathToMesh, std::string pathToASF, std::string pathToAMC);
+    virtual IModel* CreateModel(std::string pathToMesh, std::string pathToASF, std::vector<std::string> pathToAMCList);
     virtual IC3DModel* CreateC3DModel(std::string pathToC3DModel);
 
-    virtual IModel* GetModel(std::string pathToMesh, std::string pathToASF, std::string pathToAMC); // modelPath = meshPath + asfPath + amcPath(0)
+    virtual IModel* GetModel(std::string pathToMesh, std::string pathToASF, std::vector<std::string> pathToAMCList); // modelPath = meshPath + asfPath + amcPath(0)
     virtual IC3DModel* GetC3DModel(std::string c3dObjectPath);
 
-protected:
+private:
 
     ModelResources m_ModelMap;
     C3DModelResources m_C3DModelMap;
 };
 
-inline Factor* Factory()
-{
-    assert(Factor::GetObj());
-    return (Factor*)Factor::GetObj();
-}
 
-// Factor::SetObj(new Factor);
-
-// odwo³anie Base->Access()
-// albo Factory->Access()
 
 #endif //FACTORY_H

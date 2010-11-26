@@ -10,66 +10,41 @@
 
 
 //--------------------------------------------------------------------------------------------------
-IModel* Factor::CreateModel(std::string pathToMesh, std::string pathToASF, std::string pathToAMC)
+IModel* Factor::CreateModel(std::string pathToMesh, std::string pathToASF, std::vector<std::string> pathToAMCList)
 {
-    // TODO sprawdzenie wycieku pamiêci.
+    IModel* model;
 
-//     ASFAMCParser* object = new ASFAMCParser();
-// 
-//     if(!pathToASF.empty())
-//     {
-//         if(object->ReadASFFile(pathToASF))
-//             FileReader2Motion->ParserAcclaimFile2EDR(NULL, object);
-// 
-//         for(int i = 0; i < dataManager->GetAnimationFilePathCount(); i++)
-//         {
-//             if(object->ReadAMCFile(dataManager->GetAnimationFilePath(i)))
-//                 LoadAnimationFromAcclaim(dataManager->GetAnimationFilePath(i), object, dynamic_cast<Model*>(dataManager->GetModel()));
-//         }
-//     }
-// 
-// 
-//     if(dataManager->GetMeshFilePathCount() > 0)
-//     {
-//         LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-//         dataManager->GetModel()->InicializeMesh();
-//     }
+    model = FileReader2Motion::ReadFromTBSFile(pathToMesh, pathToASF, pathToAMCList);
 
-    return NULL;
+    return model;
 }
 
 //--------------------------------------------------------------------------------------------------
 IC3DModel* Factor::CreateC3DModel(std::string pathToC3DModel)
 {
-//     for (int i = 0; i < dataManager->GetC3dFilePathCount(); i++)
-//     {
-//         C3D_Data *c3d = ReadC3DFile(dataManager->GetC3dFilePath(i));
-// 
-//         if(c3d)
-//         {
-//             C3DModel* c3dModel = new C3DModel();
-//             std::string name = dataManager->GetC3dFilePath(i);
-// 
-//             c3dModel->SetName(name.substr(name.find_last_of("/")+1, name.length()));
-//             ParseC3DFile2EDR(c3d, c3dModel);
-//             dataManager->AddC3DModel(c3dModel);
-//         }
-//     }
+    IC3DModel* c3dModel;
 
-    return NULL;
+    c3dModel = FileReader2Motion::ReadFromC3DFile(pathToC3DModel);
+
+    return c3dModel;
 }
 
 //--------------------------------------------------------------------------------------------------
-IModel* Factor::GetModel(std::string pathToMesh, std::string pathToASF, std::string pathToAMC)
+IModel* Factor::GetModel(std::string pathToMesh, std::string pathToASF, std::vector<std::string> pathToAMCList)
 {
-    std::string modelPath = pathToMesh + pathToASF + pathToAMC;
+    std::string modelPath;
+
+    if(!pathToAMCList.size())
+        modelPath = pathToMesh + pathToASF + pathToAMCList[0];
+    else
+        modelPath = pathToMesh + pathToASF;
 
     std::map<std::string, IModel* >::iterator i = m_ModelMap.find(modelPath);
 
     if (i != m_ModelMap.end()) {
         return i->second;
     } else {
-        IModel* newModel = CreateModel(pathToMesh, pathToASF, pathToAMC);
+        IModel* newModel = CreateModel(pathToMesh, pathToASF, pathToAMCList);
         m_ModelMap.insert(make_pair(modelPath, newModel));
 
         return newModel;

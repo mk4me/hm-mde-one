@@ -135,6 +135,56 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 }
 
 //--------------------------------------------------------------------------------------------------
+C3DModel* FileReader2Motion::ReadFromC3DFile( std::string c3dPath )
+{
+    C3DModel* c3dModel = new C3DModel();
+    if(!c3dPath.empty())
+    {
+        C3D_Data *c3d = ReadC3DFile(c3dPath);
+
+        if(c3d)
+        {
+            c3dModel->SetName(c3dPath.substr(c3dPath.find_last_of("/")+1, c3dPath.length()));
+            ParseC3DFile2EDR(c3d, c3dModel);
+            return c3dModel;
+        }
+    }
+
+    return NULL;
+}
+
+//--------------------------------------------------------------------------------------------------
+Model* FileReader2Motion::ReadFromTBSFile( std::string meshPath, std::string asfPath, std::vector<std::string> amcPathList)
+{
+    // TODO sprawdzenie wycieku pamiêci.
+
+    ASFAMCParser* object = new ASFAMCParser();
+    Model* model = new Model();
+
+    if(!asfPath.empty())
+    {
+        if(object->ReadASFFile(asfPath))
+            ParserAcclaimFile2EDR(model, object);
+    }
+
+    if(amcPathList.size() > 0)
+    {
+        for(int i = 0; i < amcPathList.size(); i++)
+        {
+            if(object->ReadAMCFile(amcPathList[i]))
+                LoadAnimationFromAcclaim(amcPathList[i], object, model);
+        }
+    }
+
+    if(!meshPath.empty())
+    {
+        LoadMesh(meshPath, model);
+        model->InicializeMesh();
+    }
+
+    return model;
+}
+//--------------------------------------------------------------------------------------------------
 C3D_Data* FileReader2Motion::ReadC3DFile( std::string filePath)
 {
         // FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o

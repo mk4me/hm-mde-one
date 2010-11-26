@@ -31,6 +31,10 @@ public:
 
     static bool LoadAnimationFromFAnnimation(std::string address, Model* model);
 
+
+    static Model* ReadFromTBSFile(std::string meshPath, std::string asfPath, std::vector<std::string> amcPathList);
+    static C3DModel* ReadFromC3DFile(std::string c3dPath);
+
 private:
     static void ReadFrmDAEFile(const std::string& file, Model* model);
     static void ReadFromTBSFile(DataManager *dataManager);

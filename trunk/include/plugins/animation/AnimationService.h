@@ -13,6 +13,7 @@
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <osg/ref_ptr>
+#include <core/IFactory.h>
 
 
 namespace osgViewer
@@ -184,6 +185,8 @@ private:
     OsgControlWidget* widget;
 
     int m_DisplayType;
+
+    IFactor* m_pFactory;
 };
 
 //--------------------------------------------------------------------------------------------------

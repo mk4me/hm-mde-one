@@ -53,6 +53,7 @@ public:
 
     virtual std::string GetAnimationFilePath(int i);
     virtual int GetAnimationFilePathCount();
+    virtual std::vector<std::string>* GetAnimationList();
 
     virtual std::string GetMeshFilePathPath(int i);
     virtual int GetMeshFilePathCount();

@@ -11,6 +11,7 @@
 class IC3DModel;
 class Mesh;
 class IModel;
+class IFactor;
 
 //--------------------------------------------------------------------------------------------------
 // Render Service
@@ -50,6 +51,8 @@ public:
     virtual void DisableMarker() = 0;
 
     virtual void SetC3DMarkerToRender(IC3DModel *c3dmarker) = 0;
+    virtual IFactor* GetFactory() = 0;
+
 };
 
 

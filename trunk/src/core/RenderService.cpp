@@ -15,6 +15,11 @@
 #include <core/Vec3.h>
 #include <osg/Geometry>
 
+#include "Factory.h"
+
+
+// TODO: tymczasowo RenderService bêdzie udostêpnia³ instancje Factory
+// jednkaze dla zachowania oddzielnosci zadañ trzeba bêdzie usun¹c t¹ mo¿liwoœæ w render servisie
 
 #define pPat osg::PositionAttitudeTransform*
 
@@ -45,15 +50,31 @@ void RenderService::Clear()
 //--------------------------------------------------------------------------------------------------
 AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
-    if(dynamic_cast<Model* >(dataManager->GetModel())) {
-        SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
-        m_pModel = dynamic_cast<Model* >(dataManager->GetModel());
+//    m_pFactory = new Factor();
+
+    //nowy SetScene
+    m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(dataManager->GetMeshFilePathPath(0), dataManager->GetSkeletonFilePath(0), *dataManager->GetAnimationList()));
+
+    if(m_pModel) {
+        SetScene(m_pModel);
     }
 
-    if(dynamic_cast<C3DModel* >(dataManager->GetC3DModel())) {
-        RenderC3D(dynamic_cast<C3DModel* >(dataManager->GetC3DModel()));
-        m_pC3DModel = dynamic_cast<C3DModel* >(dataManager->GetC3DModel());
+    m_pC3DModel = dynamic_cast<C3DModel* >(m_pFactory->GetC3DModel(dataManager->GetC3dFilePath(0)));
+
+    if(m_pC3DModel) {
+        RenderC3D(m_pC3DModel);
     }
+
+//     if(dynamic_cast<Model* >(dataManager->GetModel())) {
+//         SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
+//         m_pModel = dynamic_cast<Model* >(dataManager->GetModel());
+//     }
+
+
+//     if(dynamic_cast<C3DModel* >(dataManager->GetC3DModel())) {
+//         RenderC3D(dynamic_cast<C3DModel* >(dataManager->GetC3DModel()));
+//         m_pC3DModel = dynamic_cast<C3DModel* >(dataManager->GetC3DModel());
+//     }
 
     return AsyncResult_Complete;
 }
@@ -61,6 +82,8 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 //--------------------------------------------------------------------------------------------------
 AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
 {
+    m_pFactory = new Factor();
+
     std::cout<< "RenderService ADDED-test!" << std::endl; 
     Inicialize(sceneRoot);
     return AsyncResult_Complete; 
@@ -257,6 +280,12 @@ void RenderService::EnableMarker()
 void RenderService::DisableMarker()
 {
     m_pC3DModel->RemoveGeode();
+}
+
+//--------------------------------------------------------------------------------------------------
+IFactor* RenderService::GetFactory()
+{
+    return m_pFactory;
 }
 
 //--------------------------------------------------------------------------------------------------

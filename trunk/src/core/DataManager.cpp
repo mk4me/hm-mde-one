@@ -278,6 +278,12 @@ int DataManager::GetAnimationFilePathCount()
 }
 
 //--------------------------------------------------------------------------------------------------
+std::vector<std::string>* DataManager::GetAnimationList()
+{
+    return &m_AnimationFilePathList;
+}
+
+//--------------------------------------------------------------------------------------------------
 int DataManager::GetC3DModelCount()
 {
     return m_pC3dModelList.size();

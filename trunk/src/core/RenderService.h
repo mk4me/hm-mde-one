@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
+#include <map>
 
 #include <core/SimpleFunctors.h>
 #include <osg//Node>
@@ -12,14 +14,15 @@
 #include <core/IService.h>
 #include <core/QOSGWidget.h>
 #include <core/IRenderService.h>
+#include <core/IFactory.h>
 
-#include <map>
 
 class C3DModel;
 class Model;
 class Mesh;
 class IModel;
 class IDataManager;
+class Factor;
 
 //--------------------------------------------------------------------------------------------------
 // Render Service
@@ -72,6 +75,8 @@ public:
 
     virtual void SetC3DMarkerToRender(IC3DModel *c3dmodel);
 
+    virtual IFactor* GetFactory();
+
 private: 
     void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);
@@ -86,6 +91,8 @@ private:
     std::string name;
     Model *m_pModel;
     C3DModel *m_pC3DModel;
+
+    Factor* m_pFactory;
 };
 
 typedef CORE_SHARED_PTR(RenderService) RenderServicePtr;

@@ -112,6 +112,35 @@ AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* s
 }
 
 //--------------------------------------------------------------------------------------------------
+AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+{
+    Clear();
+
+    m_pFactory = m_pRenderService->GetFactory();
+
+    //nowy SetScene
+    m_pModel = m_pFactory->GetModel(dataManager->GetMeshFilePathPath(0), dataManager->GetSkeletonFilePath(0), *dataManager->GetAnimationList());
+    m_pC3MModel = m_pFactory->GetC3DModel(dataManager->GetC3dFilePath(0));
+
+
+    LoadAnimation(m_pModel);
+
+  //  for (int i = 0; i < dataManager->GetC3DModelCount(); i++)
+        LoadAnimation(m_pC3MModel);
+
+    widget->SetScene(m_pScene, serviceManager);
+
+    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
+    if ( timeline ) {
+        timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
+    } else {
+        OSG_WARN<<"ITimeline not found."<<std::endl;
+    }
+
+    return AsyncResult_Complete;
+}
+
+//--------------------------------------------------------------------------------------------------
 // notify stop
 void AnimationService::NotifyStop()
 {
@@ -305,30 +334,8 @@ std::string& AnimationService::GetSelectedAnimationName()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
-{
-    LoadAnimation(dataManager->GetModel());
-
-    for (int i = 0; i < dataManager->GetC3DModelCount(); i++)
-        LoadAnimation(dataManager->GetC3DModel(i));
-
-    widget->SetScene(m_pScene, serviceManager);
-
-    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
-    if ( timeline ) {
-        timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
-    } else {
-        OSG_WARN<<"ITimeline not found."<<std::endl;
-    }
-
-    return AsyncResult_Complete;
-}
-
-//--------------------------------------------------------------------------------------------------
 void AnimationService::LoadAnimation( IModel* model )
 {
-    Clear();
-
     if(!model->GetSkeleton())
         return;
 
