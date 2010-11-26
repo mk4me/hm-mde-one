@@ -43,6 +43,22 @@ void RenderService::Clear()
 }
 
 //--------------------------------------------------------------------------------------------------
+AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+{
+    if(dynamic_cast<Model* >(dataManager->GetModel())) {
+        SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
+        m_pModel = dynamic_cast<Model* >(dataManager->GetModel());
+    }
+
+    if(dynamic_cast<C3DModel* >(dataManager->GetC3DModel())) {
+        RenderC3D(dynamic_cast<C3DModel* >(dataManager->GetC3DModel()));
+        m_pC3DModel = dynamic_cast<C3DModel* >(dataManager->GetC3DModel());
+    }
+
+    return AsyncResult_Complete;
+}
+
+//--------------------------------------------------------------------------------------------------
 AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
 {
     std::cout<< "RenderService ADDED-test!" << std::endl; 
@@ -136,22 +152,6 @@ void RenderService::InicizlizeModelMesh(Model* model)
 
     m_pMeshGeode = geode;
     model->addChild(m_pMeshGeode);
-}
-
-//--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
-{
-    if(dynamic_cast<Model* >(dataManager->GetModel())) {
-        SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
-        m_pModel = dynamic_cast<Model* >(dataManager->GetModel());
-    }
-
-    if(dynamic_cast<C3DModel* >(dataManager->GetC3DModel())) {
-        RenderC3D(dynamic_cast<C3DModel* >(dataManager->GetC3DModel()));
-        m_pC3DModel = dynamic_cast<C3DModel* >(dataManager->GetC3DModel());
-    }
-
-    return AsyncResult_Complete;
 }
 
 //--------------------------------------------------------------------------------------------------
