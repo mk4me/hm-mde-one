@@ -8,9 +8,9 @@ ChartWidget::ChartWidget(IService* service)
 {
     setupUi(this);
 
-	c3dFile="Przejscie1.c3d";
+	
 
-	mainViewer=new ChartViewer(this,0,c3dFile);
+	mainViewer=new ChartViewer(this,0);
 	mainViewer->setMinimumSize(300,300);
 	mainChart->addWidget(mainViewer);
 	

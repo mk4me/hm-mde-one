@@ -5,7 +5,7 @@
 #include "ChartPCH.h"
 
 C3DChartData::C3DChartData(std::string c3dFile, int chanel){
-	std::ifstream plik;
+	std::ifstream plik(c3dFile.c_str());
 
 
 	if(!plik) {

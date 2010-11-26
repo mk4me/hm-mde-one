@@ -229,10 +229,16 @@ std::string Chart::formatNumber( float number )
   return s;
 }
 int Chart::getFPS(){
+	if(data.size()>0)
 return (*data.begin())->getFPS();
+	else 
+		return 0;
 }
 int Chart::getFrameNumber(){
+	if(data.size()>0)
 return (*data.begin())->getRNumber();
+	else
+		return 0;
 }
 
 void Chart::updatePointer(double targetTime){

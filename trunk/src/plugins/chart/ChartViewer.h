@@ -30,7 +30,7 @@ private:
 		int cSysCount;
 public:
 
-	ChartViewer(ChartWidget* chartWidget,int index,std::string c3dFile);
+	ChartViewer(ChartWidget* chartWidget,int index);
 	~ChartViewer();
 	Chart* chart;
 	Chart* getChart();
