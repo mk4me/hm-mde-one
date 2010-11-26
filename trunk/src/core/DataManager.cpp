@@ -1,6 +1,7 @@
 #include "DataManager.h"
 
 #include <core/IModel.h>
+#include <core/Filesystem.h>
 #include <tinyxml.h>
 
 
@@ -355,94 +356,66 @@ DataManager::DataManager(const std::string& meshesDir, const std::string& shader
 
 void DataManager::loadResources()
 {
-#if defined(__WIN32__)
-	HANDLE file;
-	WIN32_FIND_DATA data_find;
-	bool more_files = true;
-
 	//szukaj shaderow
-	std::string file_mask = this->shadersDir;
-	file_mask.append("*.frag");
-
-	file = ::FindFirstFile(file_mask.c_str(), &data_find);
-	while(file != INVALID_HANDLE_VALUE && more_files)
+	std::vector<std::string> shaders = Filesystem::listFiles(this->shadersDir, false, "*.frag");
+	for(std::vector<std::string>::iterator it = shaders.begin(); it != shaders.end(); ++it)
 	{
-		std::string file_path(this->shadersDir);
-		file_path.append(data_find.cFileName);
-		this->shadersPaths[data_find.cFileName] = file_path;
-		// czy dalej? (dziwna postaæ ¿eby pozbyæ siê warninga)
-		more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
+		std::string filename;
+		if((*it).rfind("/") == std::string.npos)
+		{
+			filename = (*it);
+		}
+		else
+		{
+			filename = (*it).substr((*it).rfind("/")+1);
+		}
+		this->shadersPaths[filename] = (*it);
 	}
-
 	//szukaj meshy
-	more_files = true;
-	file_mask = this->meshesDir;
-	file_mask.append("*.tbs");
-
-	file = ::FindFirstFile(file_mask.c_str(), &data_find);
-	while(file != INVALID_HANDLE_VALUE && more_files)
+	std::vector<std::string> meshes = Filesystem::listFiles(this->meshesDir, false, "*.tbs");
+	for(std::vector<std::string>::iterator it = meshes.begin(); it != meshes.end(); ++it)
 	{
-		std::string file_path(this->meshesDir);
-		file_path.append(data_find.cFileName);
-		this->meshesPaths[data_find.cFileName] = file_path;
-		more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
-	}
-
-	//przeszukaj foldery trialowe
-	more_files = true;
-	file_mask = this->trialsDir;
-	file_mask.append("*");
-	std::vector<std::string> trial_dirs;
-
-	file = ::FindFirstFile(file_mask.c_str(), &data_find);
-	while(file != INVALID_HANDLE_VALUE && more_files)
-	{
-		if(data_find.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY && data_find.cFileName[0] != '.')
+		std::string filename;
+		if((*it).rfind("/") == std::string.npos)
 		{
-			trial_dirs.push_back(data_find.cFileName);
+			filename = (*it);
 		}
-		more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
-	}
-
-	for(std::vector<std::string>::iterator it = trial_dirs.begin(); it != trial_dirs.end(); ++it)
-	{
-		//szukaj video
-		more_files = true;
-		file_mask = this->trialsDir;
-		file_mask.append((*it)).append("/*.avi");
-
-		file = ::FindFirstFile(file_mask.c_str(), &data_find);
-		while(file != INVALID_HANDLE_VALUE && more_files)
+		else
 		{
-			std::string file_path(this->trialsDir);
-			file_path.append((*it)).append("/").append(data_find.cFileName);
-			this->videosPaths[data_find.cFileName] = file_path;
-			more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
+			filename = (*it).substr((*it).rfind("/")+1);
 		}
+		this->meshesPaths[filename] = (*it);
 	}
-
-	for(std::vector<std::string>::iterator it = trial_dirs.begin(); it != trial_dirs.end(); ++it)
+	//szukaj plikow video
+	std::vector<std::string> videos = Filesystem::listFiles(this->trialsDir, true, "*.avi");
+	for(std::vector<std::string>::iterator it = videos.begin(); it != videos.end(); ++it)
 	{
-		//szukaj c3d
-		more_files = true;
-		file_mask = this->trialsDir;
-		file_mask.append((*it)).append("/*.c3d");
-
-		file = ::FindFirstFile(file_mask.c_str(), &data_find);
-		while(file != INVALID_HANDLE_VALUE && more_files)
+		std::string filename;
+		if((*it).rfind("/") == std::string.npos)
 		{
-			std::string file_path(this->trialsDir);
-			file_path.append((*it)).append("/").append(data_find.cFileName);
-			this->c3dsPaths[data_find.cFileName] = file_path;
-			more_files = (::FindNextFile(file, &data_find) == BOOL(TRUE));
+			filename = (*it);
 		}
+		else
+		{
+			filename = (*it).substr((*it).rfind("/")+1);
+		}
+		this->videosPaths[filename] = (*it);
 	}
-#elif defined(__UNIX__)
-    // R.Z. PluginLoader.cpp - zrobilismy tam przydatne funkcje rozwiazuj¹ce to zagadnienie równiez dzia³ajace na linuksa metoda - load()
-    // Napewno dzia³aja - testowane w poprzednich wersjach EDR
-
-	//FIX: nie znam api linuksa, na te chwile niech dziala w win
-#endif
+	//szukaj plikow c3d
+	std::vector<std::string> c3ds = Filesystem::listFiles(this->trialsDir, true, "*.c3d");
+	for(std::vector<std::string>::iterator it = c3ds.begin(); it != c3ds.end(); ++it)
+	{
+		std::string filename;
+		if((*it).rfind("/") == std::string.npos)
+		{
+			filename = (*it);
+		}
+		else
+		{
+			filename = (*it).substr((*it).rfind("/")+1);
+		}
+		this->c3dsPaths[filename] = (*it);
+	}
 }
 
 void DataManager::setDirSlashes(std::string& dir)

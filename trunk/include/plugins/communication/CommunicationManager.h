@@ -64,10 +64,6 @@ namespace communication
 
 		CommunicationManager();
 		virtual ~CommunicationManager();
-
-		//metody just in case przy bledach parsera przy atrybutach
-		//void labSessionsErrorCatcher(std::string& raw_data);
-		//void parseSession(const TiXmlElement* element);
 	};
 }
 #endif

@@ -204,6 +204,7 @@ void CommunicationManager::saveToXml(const std::string& filename)
 	document.SaveFile(filename);
 }
 
+//TODO: trzeba sprawdzic poprawnosc wczytywanych danych
 void CommunicationManager::loadFromXml(const std::string& filename)
 {
 	TiXmlDocument document(filename);
@@ -236,7 +237,14 @@ void CommunicationManager::loadFromXml(const std::string& filename)
 
 		std::string temp_date;
 		session_element->QueryStringAttribute("sessionDate", &temp_date);
-		session.sessionDate.setDate(temp_date);
+		try
+		{
+			session.sessionDate.setDate(temp_date);
+		}
+		catch(std::exception& e)
+		{
+			std::cout << e.what() << ": !Blad wczytania daty z pliku Communication\n";
+		}
 
 		this->sessions[session.id] = session;
 		
@@ -290,79 +298,3 @@ IQueryable* CommunicationManager::getQueryManager()
 {
 	return this->queryManager;
 }
-
-//void CommunicationManager::labSessionsErrorCatcher(std::string& raw_data)
-//{
-//	std::string filename = "response.xml";
-//	std::ofstream tempfile(filename.c_str(), std::ios::out);
-//	tempfile << raw_data;
-//
-//	//QDomDocument response;
-//	TiXmlDocument document(filename);
-//
-//	//if(!response.setContent(QString(data.c_str())))
-//	//{
-//	//	QMessageBox::warning(this, tr("Error"), tr("Cannot parse xml document."));
-//	//}
-//	if(!document.LoadFile())
-//	{
-//		throw std::ios_base::failure("Failed to load response temporary file.");
-//	}
-//	
-//	//QDomElement root = response.documentElement();
-//	//QDomNode n = root.firstChild();
-//	TiXmlElement* root = document.RootElement();
-//	TiXmlNode* node = root->FirstChild();
-//
-//	//while(!n.isNull()) {
-//	//	if(!n.toElement().isNull() && n.toElement().tagName() == "SessionDetailsWithAttributes")
-//	//	{
-//	//		parseSession(n.toElement());
-//	//	}
-//	//	if(n.nextSibling().toElement().isNull())
-//	//	{
-//	//		n = n.firstChild();
-//	//	}
-//	//	else
-//	//	{
-//	//		n = n.nextSibling();
-//	//	}
-//	//}
-//	while(node != NULL)
-//	{
-//		if(node->ToElement() != NULL && node->ToElement()->ValueStr() == "SessionDetailsWithAttributes")
-//		{
-//			std::cout << "YAY\n";
-//		}
-//		if(node->NextSibling()->ToElement() != NULL)
-//		{
-//			node = node->NextSibling();
-//		}
-//		else
-//		{
-//			node = node->FirstChild();
-//		}
-//	}
-//}
-//
-//void CommunicationManager::parseSession(const TiXmlElement* session_element)
-//{
-//	//this->sessions.push_back();
-// //     s.setID(session_element.firstChildElement("SessionID").text().toInt());
-// //     s.setmotionKindID(session_element.firstChildElement("MotionKindID").text().toInt());
-// //     std::string date(session_element.firstChildElement("SessionDate").text().toStdString());
-// //     s.setSessionDate(communication::DateTime(date));
-// //     s.setSessionDescription(session_element.firstChildElement("SessionDescription").text().toStdString());
-// //     sessions->push_back(s);
-//}
-//
-////void CommunicationService::parseSession(const QDomElement &session_element)
-////{
-////      communication::Session s;
-////      s.setID(session_element.firstChildElement("SessionID").text().toInt());
-////      s.setmotionKindID(session_element.firstChildElement("MotionKindID").text().toInt());
-////      std::string date(session_element.firstChildElement("SessionDate").text().toStdString());
-////      s.setSessionDate(communication::DateTime(date));
-////      s.setSessionDescription(session_element.firstChildElement("SessionDescription").text().toStdString());
-////      sessions->push_back(s);
-////}

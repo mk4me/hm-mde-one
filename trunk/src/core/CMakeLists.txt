@@ -47,7 +47,9 @@ set(PUBLIC_H
 	${HEADER_PATH}/BaseDataTypes.h
 	${HEADER_PATH}/Bone.h
 	${HEADER_PATH}/dae2Motion.h
+	${HEADER_PATH}/DateTime.h
 	${HEADER_PATH}/Enumerators.h
+	${HEADER_PATH}/Filesystem.h
 	${HEADER_PATH}/Frame.h
 	${HEADER_PATH}/IAnimationGroup.h
 	${HEADER_PATH}/IAnimationNode.h

@@ -54,6 +54,7 @@ set(TARGET_SRC
 	Data.cpp
 	DateTime.cpp
 	DECreader.cpp
+	Filesystem.cpp
 	GroupData.cpp
 	Header.cpp
 	INTELreader.cpp
