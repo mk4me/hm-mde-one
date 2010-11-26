@@ -180,8 +180,11 @@ DataManager::DataManager(std::string address, IModel* model, IC3DModel* c3dModel
             while (node = node->NextSibling());
         }	
     }
-	clear();
-	loadResources();
+
+    ParseDataToNewManager();
+
+// 	clear();
+// 	loadResources();
 }
 
 
@@ -316,7 +319,25 @@ int DataManager::GetC3dFilePathCount()
    return m_c3dFilePathList.size();
 }
 
+//--------------------------------------------------------------------------------------------------
+void DataManager::ParseDataToNewManager()
+{
+    // zakladam ze wszystkie potrzebne pliki sa w jednym foderze.
+    // Inaczej wystarczy podac kazda sciezke z resorces w pêtli dla wypelnienia map innym danym z kolejnych lokalizacji
+    if(GetMeshFilePathCount() > 0)
+        meshesDir = GetMeshFilePathPath(0).substr(0, GetMeshFilePathPath(0).find_last_of("/")+1);
 
+    if(GetAnimationFilePathCount() > 0)
+        trialsDir = GetAnimationFilePath(0).substr(0, GetAnimationFilePath(0).find_last_of("/")+1);
+
+    setDirSlashes(this->shadersDir);
+    setDirSlashes(this->meshesDir);
+    setDirSlashes(this->trialsDir);
+    clear();
+    loadResources();
+}
+
+//--------------------------------------------------------------------------------------------------
 DataManager::DataManager(const std::string& meshesDir, const std::string& shadersDir, const std::string& trialsDir) : shadersDir(shadersDir), meshesDir(meshesDir), trialsDir(trialsDir)
 {
 	setDirSlashes(this->shadersDir);
@@ -411,13 +432,17 @@ void DataManager::loadResources()
 		}
 	}
 #elif defined(__UNIX__)
+    // R.Z. PluginLoader.cpp - zrobilismy tam przydatne funkcje rozwiazuj¹ce to zagadnienie równiez dzia³ajace na linuksa metoda - load()
+    // Napewno dzia³aja - testowane w poprzednich wersjach EDR
+
 	//FIX: nie znam api linuksa, na te chwile niech dziala w win
 #endif
 }
 
 void DataManager::setDirSlashes(std::string& dir)
 {
-	if(dir[dir.size() - 1] != '/')
+    // R.Z. aplikacja sie wywala jesli nie dostanie ¿adnej œcie¿ki co moze sie zdazyc. Dodano sprawdzenie.
+	if(!dir.empty()  && dir[dir.size() - 1] != '/')
 	{
 		dir.append("/");
 	}
@@ -430,8 +455,8 @@ void DataManager::clear() {
 	this->c3dsPaths.clear();
 
 //    m_VideoFilePathList.clear();
-    m_SkeletonFilePathList.clear();
-    m_AnimationFilePathList.clear();
+//    m_SkeletonFilePathList.clear();
+//    m_AnimationFilePathList.clear();
 }
 
 const std::string& DataManager::getShader(const std::string& name)
