@@ -41,7 +41,7 @@ set(TARGET_SRC
 	MIPSreader.cpp
 	Parameter.cpp
 	Parameters.cpp
-	Pointer.cpp
+	ChartPointer.cpp
 	
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})

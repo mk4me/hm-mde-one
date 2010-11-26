@@ -12,11 +12,11 @@ purpose:  Klasa ta sluzy do tworzenia wykresu liniowego
 #include <osg/Geometry>
 #include <plugins/chart/ChartDataSeries.h>
 class ChartData;
-class Pointer;
+class ChartPointer;
 class LineChart : public ChartDataSeries{
 private:
 	osg::Vec3Array* chartVertices;
-	Pointer* pointer;
+	ChartPointer* pointer;
 	osg::Geode* chart;
 	ChartData* data;
 
@@ -27,7 +27,7 @@ public:
 
 	//! Funkcja dodajaca kolejny wierzcholek
 	void addCoord(osg::Vec3);
-	Pointer* getPointer();
+	ChartPointer* getPointer();
 	void repaint(int x,int y,int width,int height);
 };
 

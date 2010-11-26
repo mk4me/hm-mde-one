@@ -2,7 +2,7 @@
 #include <plugins/chart/ChartPCH.h>
 #include <core/LineChart.h>
 #include <core/ChartData.h>
-#include <core/Pointer.h>
+#include <core/ChartPointer.h>
 
 Chart::Chart(int x,int y,int width,int height){
 	gridColor=osg::Vec4(0.0f,0.0f,1.0f, 0.1f);

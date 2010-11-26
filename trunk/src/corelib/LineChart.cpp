@@ -1,7 +1,7 @@
 #include <core/LineChart.h>
 #include <core/ChartData.h>
 
-#include <core/Pointer.h>
+#include <core/ChartPointer.h>
 
 LineChart::LineChart(ChartData* data,int x,int y,int width, int height){
 	this->x=x;
@@ -13,21 +13,22 @@ LineChart::LineChart(ChartData* data,int x,int y,int width, int height){
 
 	for(int i=0;i<data->getRNumber();i++)
 	{
-		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*(width-x)+x,data->getNormalizedYValue(i)*(height-y)+y,0));
+		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*(width-x)+x,data->getNormalizedYValue(i)*(height-y)+y,-0.1));
 	}
 	
 	chart=ChartDataSeries::drawChart(chartVertices); 
-	this->addChild(chart);
+	
 
-	pointer=new Pointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data);
+	pointer=new ChartPointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data);
 	this->addChild(pointer);
+	this->addChild(chart);
 	
 }
 void LineChart::addCoord(osg::Vec3 coord){
 LineChart::chartVertices->push_back(osg::Vec3(coord));
 
 }
-Pointer* LineChart::getPointer(){
+ChartPointer* LineChart::getPointer(){
 return pointer;
 }
 void LineChart::repaint(int x,int y,int width,int height){
@@ -38,13 +39,13 @@ void LineChart::repaint(int x,int y,int width,int height){
 LineChart::chartVertices=new osg::Vec3Array();
 	for(int i=0;i<data->getRNumber();i++)
 	{
-		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*(width-x)+x,data->getNormalizedYValue(i)*(height-y)+y,0));
+		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*(width-x)+x,data->getNormalizedYValue(i)*(height-y)+y,-0.1f));
 	}
 	
 	osg::Geode* newChart=ChartDataSeries::drawChart(chartVertices); 
 	this->replaceChild(chart,newChart);
 chart=newChart;
-	Pointer* newPointer=new Pointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data);
+	ChartPointer* newPointer=new ChartPointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data);
 	this->replaceChild(pointer,newPointer);
 	pointer=newPointer;
 }
