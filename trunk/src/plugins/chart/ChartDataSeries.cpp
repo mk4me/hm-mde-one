@@ -4,13 +4,14 @@
 osg::Geode* ChartDataSeries::drawChart(osg::Vec3Array* chartVertices)
 {
 
-	colors = new osg::Vec4Array;
-	colors->push_back(osg::Vec4(0.0f,1.0f,0.0f, 1.0f));
+
+
 
 	osg::Geometry* geom = new osg::Geometry;
 	geom->setVertexArray(chartVertices);
+	if(colors){
 	geom->setColorArray(colors);
-	geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);
+	geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);}
 	geom->addPrimitiveSet(new osg::DrawArrays(GL_LINE_STRIP,0,chartVertices->size()));
 
 	osg::Geode* geode = new osg::Geode;
@@ -26,9 +27,9 @@ osg::Geode* ChartDataSeries::drawChart(osg::Vec3Array* chartVertices)
 }
 
 
-void ChartDataSeries::setColor(float r,float g, float b, float a){
-
+void ChartDataSeries::setColor(osg::Vec4 color){
+	colors = new osg::Vec4Array;
 	ChartDataSeries::colors=new osg::Vec4Array;
-	ChartDataSeries::colors->push_back(osg::Vec4(r,g,b,a));
+	ChartDataSeries::colors->push_back(color);
 
 }

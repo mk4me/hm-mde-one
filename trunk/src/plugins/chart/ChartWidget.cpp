@@ -1,6 +1,6 @@
+#include "ChartPCH.h"
 
 #include "ChartWidget.h"
-#include "ChartPCH.h"
 #include "ChartViewer.h"
 
 ChartWidget::ChartWidget(IService* service)

@@ -107,7 +107,7 @@ osg::Geode* ChartPointer::createLabelField(){
 	vertices->push_back(osg::Vec3(startPoint.x()-40.0f,startPoint.y(),1.0f));
 	vertices->push_back(osg::Vec3(startPoint.x()-40.0f,startPoint.y()-20,1.0f));
 	vertices->push_back(osg::Vec3(startPoint.x(),startPoint.y()-20,1.0f));
-	vertices->push_back(osg::Vec3(startPoint.x(),startPoint.y()+20,1.0f));
+	vertices->push_back(osg::Vec3(startPoint.x(),startPoint.y(),1.0f));
 	osg::Group* group = new osg::Group;
 	osg::Geometry* geom = new osg::Geometry;
 	osg::Vec4Array* colors=new osg::Vec4Array();

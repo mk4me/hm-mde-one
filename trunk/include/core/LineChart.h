@@ -23,12 +23,12 @@ private:
 	int x,y,width,height;
 public:
 	//konstruktor wykresu
-	LineChart(ChartData* data,int x,int y,int width, int height);
+	LineChart(ChartData* data,int x,int y,int width, int height,osg::Vec4 color);
 
 	//! Funkcja dodajaca kolejny wierzcholek
 	void addCoord(osg::Vec3);
 	ChartPointer* getPointer();
-	void repaint(int x,int y,int width,int height);
+	void repaint(ChartData* data,int x,int y,int width,int height);
 };
 
 

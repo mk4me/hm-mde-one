@@ -43,7 +43,7 @@ public:
 	Chart(int x,int y,int width,int height);
 	~Chart();
 	//! dodaje serie danych o zadanym indexie
-	void addChartSeries(ChartData* data);
+	void addChartSeries(ChartData* data,osg::Vec4 color);
 	//! Pobiera calkowita ilosc klatek 
 	int getFrameNumber();
 	//! podbiera ilosc klatek na sekunde

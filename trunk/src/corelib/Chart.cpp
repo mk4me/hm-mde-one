@@ -1,5 +1,5 @@
-#include <core/Chart.h>
 #include <plugins/chart/ChartPCH.h>
+#include <core/Chart.h>
 #include <core/LineChart.h>
 #include <core/ChartData.h>
 #include <core/ChartPointer.h>
@@ -209,16 +209,37 @@ osg::Group* Chart::createXAxis(float scale){
 	return group;
 
 }
-void Chart::addChartSeries(ChartData* chartData){
+void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
+	float yMaxScale=0;
+	if(chartData->getRNumber()>0){
 	data.push_back(chartData);
-	std::vector<ChartData*>::iterator itData= data.begin();
-	dataSeries.push_back(new LineChart((*itData),x+borderSize,y+borderSize,width-borderSize,height-borderSize));
-	std::vector<LineChart*>::iterator itDataSeries = dataSeries.begin();
+	std::vector<ChartData*>::iterator itData= data.end()-1;
+	dataSeries.push_back(new LineChart((*itData),x+borderSize,y+borderSize,width-borderSize,height-borderSize,color));
+	std::vector<LineChart*>::iterator itDataSeries = dataSeries.end()-1;
 	this->addChild(*itDataSeries);
+	
+	if(data.size()>1){
+		 itData=data.begin();
+		 for(; itData < data.end(); itData++){
+			 if(yMaxScale<(*itData)->getScaleY()){
+				 yMaxScale=(*itData)->getScaleY();
+			 }
+
+		 }
+		 itData=data.begin();
+		 for(; itData < data.end(); itData++){
+			 (*itData)->setScaleY(yMaxScale);
+			 (*itData)->normalize();
+		 }
+		repaint(); 
+	}else{
+
 	xAxis=createXAxis((*itData)->getScaleX()/(*itData)->getFPS());
 	yAxis=createYAxis((*itData)->getScaleY());
 	this->addChild(xAxis);
 	this->addChild(yAxis);
+	}
+	}
 }
 
 std::string Chart::formatNumber( float number )
@@ -332,7 +353,8 @@ void Chart::repaint(){
 	xAxis=newXAxis;
 	yAxis=newYAxis;
 	std::vector<LineChart*>::iterator itPos = dataSeries.begin();
-
-  for(; itPos < dataSeries.end(); itPos++)
-	  (*itPos)->repaint(x+borderSize,y+borderSize,width-borderSize,height-borderSize);
+	std::vector<ChartData*>::iterator dataPos = data.begin();
+	for(; itPos < dataSeries.end(); itPos++,dataPos++){
+	  (*itPos)->repaint((*dataPos),x+borderSize,y+borderSize,width-borderSize,height-borderSize);
+	}
 }

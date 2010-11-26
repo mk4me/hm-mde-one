@@ -28,10 +28,14 @@ public:
 	void setMax();
 	float getScaleX();
 	float getScaleY();
+	void setScaleX(float scaleX);
+	void setScaleY(float scaleY);
 	int getRNumber();
 	void setRNumber(int number);
 	float getXMin();
 	float getYMin();
+		float getXMax();
+	float getYMax();
 	int getFPS();
 	void setFPS(int FPS);
 		void normalize();

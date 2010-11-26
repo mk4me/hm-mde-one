@@ -1,8 +1,9 @@
+#include "ChartPCH.h"
+
 #include "C3DChartData.h"
 #include <core/c3dParser.h>
 #include <core/C3D_Data.h>
 #include "Data.h"
-#include "ChartPCH.h"
 
 C3DChartData::C3DChartData(std::string c3dFile, int chanel){
 	std::ifstream plik(c3dFile.c_str());
@@ -19,8 +20,11 @@ C3DChartData::C3DChartData(std::string c3dFile, int chanel){
 		C3D_Data* c3d = parser->parseData(c3dFile);
 		exportAnalogChannel(chanel,c3d);
 
-
-		normalize();
+			setMax();
+			setMin();
+			setScaleY(getYMax()-getYMin());
+			setScaleX(getXMax()-getXMin());
+			normalize();
 	}
 
 }

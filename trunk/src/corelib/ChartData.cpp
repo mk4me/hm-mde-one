@@ -1,18 +1,17 @@
+#include <plugins/chart/ChartPCH.h>
+
 #include <core/ChartData.h>
 #include <core/c3dParser.h>
 #include <core/C3D_Data.h>
 #include <plugins/chart/Data.h>
-#include <plugins/chart/ChartPCH.h>
+
 
 
 
 void ChartData::normalize(){
 			normalizedY=new float[getRNumber()];
 		normalizedX=new float[getRNumber()];
-	ChartData::setMax();
-	ChartData::setMin();
-	ChartData::yScale=ChartData::yMax-ChartData::yMin;
-	ChartData::xScale=ChartData::xMax-ChartData::xMin;
+
 	for(int i=0;i<ChartData::rNumber;i++){
 		normalizedY[i]=(y[i]-yMin)/yScale;
 		normalizedX[i]=(x[i]-xMin)/xScale;
@@ -70,6 +69,12 @@ float ChartData::getXMin(){
 float ChartData::getYMin(){
 	return yMin;
 }
+float ChartData::getXMax(){
+	return xMax;
+}
+float ChartData::getYMax(){
+	return yMax;
+}
 
 
 int ChartData::getFPS(){
@@ -89,4 +94,11 @@ this->x=x;
 }
 void ChartData::setY(float* y){
 this->y=y;
+}
+void ChartData::setScaleX(float scaleX){
+	this->xScale=scaleX;
+}
+void ChartData::setScaleY(float scaleY){
+	this->yScale=scaleY;
+
 }

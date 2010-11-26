@@ -23,7 +23,7 @@ public:
 	//! Funkcja rysujaca wykres na podstawie podanych wierzcholkow
 	osg::Geode* drawChart(osg::Vec3Array* chartVertices);
 	//! Funkcja ustawiajaca kolor wykresu
-	void setColor(float,float,float,float);
+	void setColor(osg::Vec4 color);
 };
 
 
