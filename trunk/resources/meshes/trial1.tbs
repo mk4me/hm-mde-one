@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?><fmd Version="2.50" Author="tdrosik" AuthoringTool="COLLADA_to_FModel_Converter" AuthoringToolVersion="0.9.01" Date="Wed Feb 24 12:01:54 2010">	<Model FileName="fixed_biped.fmesh"></Model>	<MaterialList>		<Material Name="Alien" ShaderName="std-model" Transparency="False">			<TextureList>			</TextureList>
+		</Material>	</MaterialList>
+	<MaterialSetList>		<Mesh>			<Material Id="0"></Material>
+		</Mesh>	</MaterialSetList>	<SkeletonList>		<Skeleton FileName="trial1.asf"/>	</SkeletonList>	<AnimationList>		<Animation FileName="trial1.amc"/>		<Animation FileName="trial2.amc"/>	</AnimationList>	<c3dFileList>		<File FileName="walkMoCapVideo_1.c3d"/>	</c3dFileList>	<VideoList>		<Video FileName="Alien_Walk.fanimation"/>		<Video FileName="Alien_TEST.fanimation"/>		<Video FileName="Alien_COST.fanimation"/>		<Video FileName="Alien_TAM.fanimation"/>	</VideoList>
+</fmd>
