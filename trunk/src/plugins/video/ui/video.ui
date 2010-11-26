@@ -21,43 +21,6 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QFrame" name="frame">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QComboBox" name="displayTypeCombo">
-        <item>
-         <property name="text">
-          <string>All: Grid</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>All: Horizontally</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>All: Vertically</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
     <layout class="QVBoxLayout" name="GLWidget">
      <item>
       <spacer name="horizontalSpacer">
@@ -156,22 +119,6 @@
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>displayTypeCombo</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>VideoWidget</receiver>
-   <slot>displayTypeChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>346</x>
-     <y>28</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>346</x>
-     <y>338</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>outputFormatCombo</sender>
    <signal>currentIndexChanged(int)</signal>

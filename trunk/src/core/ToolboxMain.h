@@ -54,11 +54,17 @@ public:
 
     void Clear();
 
+public:
+    void openFile( const std::string& path );
+
+
 public slots:    
     //! Aktualizacja us³ug.
     void updateServices();
 
     void onOpen();
+
+    
     void onExit();
     void onMaterial();
     void onBones();

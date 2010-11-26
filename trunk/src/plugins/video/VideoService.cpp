@@ -36,6 +36,11 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 	{
 		files.push_back((*it).second);
 	}
+
+//     files.push_back("trial1a.avi");
+//     files.push_back("trial1b.avi");
+//     files.push_back("trial1c.avi");
+//     files.push_back("trial1d.avi");
     //for (int i = 0; i < dataManager->GetVideoFilePathCount(); ++i) {
     //    files.push_back(dataManager->GetVideoFilePath(i));
     //}

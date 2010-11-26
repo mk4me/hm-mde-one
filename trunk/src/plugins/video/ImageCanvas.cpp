@@ -16,16 +16,6 @@ ImageCanvas::ImageCanvas( const std::string& name/*= ""*/ ) :
   // t³o przeŸroczyste
   getBackground()->setColor(0, 0, 0, 0);
 
-  // tworzymy labelkê
-  label = new osgWidget::Label("label", "NONE");
-  label->setColor(osgWidget::Color(0.5, 0.5, 0.5, 0.5));
-  label->setFontColor(osgWidget::Color(1, 1, 1, 1));
-  label->setAlignHorizontal(osgWidget::Widget::HA_CENTER);
-  label->setAlignVertical(osgWidget::Widget::VA_TOP);
-  label->setPadding(1);
-  label->setHeight(10);
-  label->setLayer(osgWidget::Widget::LAYER_HIGH);
-
   // tworzymy widget
   rect = new osgWidget::Widget("image", 64, 64);
   rect->setPadding(1);
@@ -33,21 +23,12 @@ ImageCanvas::ImageCanvas( const std::string& name/*= ""*/ ) :
   rect->setColor(1.0, 1.0, 1.0, 1.0);
   rect->setEventMask(osgWidget::EVENT_MOUSE_SCROLL);
 
-  // tworzymy ramkê
-  border[BorderLeft] = new osgWidget::Widget("borderLeft", 1, 1);
-  border[BorderLeft]->setColor(1, 1, 1, 1);
-  border[BorderLeft]->setLayer(osgWidget::Widget::LAYER_MIDDLE, 1);
-  border[BorderTop] = osg::clone(border[BorderLeft].get(), "borderTop", osg::CopyOp::DEEP_COPY_ALL);
-  border[BorderRight] = osg::clone(border[BorderLeft].get(), "borderRight", osg::CopyOp::DEEP_COPY_ALL);
-  border[BorderBottom] = osg::clone(border[BorderLeft].get(), "borderBottom", osg::CopyOp::DEEP_COPY_ALL);
-
   // dodajemy widgety
   addWidget(rect, 0, 0);
-  addWidget(label, 0, 0);
-  addWidget(border[BorderLeft], 0, 0);
-  addWidget(border[BorderTop], 0, 0);
-  addWidget(border[BorderRight], 0, 0);
-  addWidget(border[BorderBottom], 0, 0);
+
+  border.setParent(this);
+  border.setShowBorder(true);
+  border.setShowLabel(true);
 }
 
 ImageCanvas::ImageCanvas( const ImageCanvas& canvas, const osg::CopyOp& copyop ):
@@ -55,11 +36,8 @@ ImageCanvas::ImageCanvas( const ImageCanvas& canvas, const osg::CopyOp& copyop )
   keepImageRatio(canvas.keepImageRatio)
 {
   rect = getByName("image");
-  label = dynamic_cast<osgWidget::Label*>(getByName("label"));
-  border[BorderLeft] = getByName("borderLeft");
-  border[BorderTop] = getByName("borderTop");
-  border[BorderRight] = getByName("borderRight");
-  border[BorderBottom] = getByName("borderBottom");
+  border.setParent(this);
+  border.onClone(canvas.border);
 
   // ustawiamy zmienn¹ image
   osg::StateSet* ss = rect->getStateSet();
@@ -108,18 +86,11 @@ void ImageCanvas::setImage( osg::Image* image, bool useTextureRect /*= false*/ )
     rect->setTexture(texture, false, false);
     // ustawiamy wspó³rzêdne
     setTexCoord();
-    label->setLabel(image->getFileName());
+    getLabel()->setLabel(image->getFileName());
   } else {
     rect->setTexture(NULL);
-    label->setLabel("NONE");
+    getLabel()->setLabel("NONE");
   }
-}
-
-void ImageCanvas::setBorderColor( osgWidget::Color color )
-{
-    for (size_t i = 0; i < utils::length(border); ++i) {
-        border[i]->setColor(color);
-    }
 }
 
 void ImageCanvas::_resizeImplementation( osgWidget::point_type diffWidth, osgWidget::point_type diffHeight )
@@ -140,18 +111,10 @@ void ImageCanvas::_resizeImplementation( osgWidget::point_type diffWidth, osgWid
   // pozycja
   rect->setOrigin( rect->getPadLeft(), rect->getPadBottom() );
   // aktualizacja pozycji labelki
-  label->setSize( width - label->getPadHorizontal(), label->getHeight() );
-  label->setOrigin( label->getPadLeft(), height - label->getHeight() - label->getPadTop() );
+
 
   // resize ramki
-  border[BorderLeft]->setSize(rect->getPadLeft(), height);
-  border[BorderLeft]->setOrigin(0, 0);
-  border[BorderTop]->setSize(width, rect->getPadTop());
-  border[BorderTop]->setOrigin(0, height - border[BorderTop]->getHeight());
-  border[BorderRight]->setSize(rect->getPadRight(), height);
-  border[BorderRight]->setOrigin(width - border[BorderRight]->getWidth(), 0);
-  border[BorderBottom]->setSize(width, rect->getPadBottom());
-  border[BorderBottom]->setOrigin(0, 0);
+  border.setLocation( 0, 0, width, height, rect->getPadRight() );
 }
 
 osgWidget::Window::Sizes ImageCanvas::_getWidthImplementation() const
@@ -172,28 +135,6 @@ osgWidget::Window::Sizes ImageCanvas::_getHeightImplementation() const
   result.minimum = std::max(0.0f, result.minimum);
   result.current = std::max(result.current, result.minimum);
   return result;
-}
-
-void ImageCanvas::setShowLabel( bool value )
-{
-  if ( value && !getShowLabel() ) {
-    addWidget(label, 0, 0);
-  } else if ( !value && getShowLabel() ) {
-    removeWidget(label);
-  }
-}
-
-void ImageCanvas::setShowBorder( bool value )
-{
-    if (value && !getShowLabel() ) {
-        for (size_t i = 0; i < utils::length(border); ++i) {
-            addWidget(border[i], 0, 0);
-        }
-    } else {
-        for (size_t i = 0; i < utils::length(border); ++i) {
-            removeWidget(border[i]);
-        }
-    }
 }
 
 void ImageCanvas::setKeepImageRatio( bool keepImageRatio )

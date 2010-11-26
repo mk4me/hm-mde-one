@@ -1,46 +1,56 @@
 #include "../VideoPCH.h"
 #include <iostream>
+#include <osg/CopyOp>
 
 #include <osg/Notify>
 #include <utils/Align.h>
 
 #include "../core/VMPrivate.h"
 #include "VideoImageStream.h"
+#undef min
+#undef max
 
 namespace vmOSGPlugin {
 
 //------------------------------------------------------------------------------
 
 VideoImageStream::VideoImageStream() :
-innerStream(NULL), timeScale(1.0), prevTimestamp(vm::INVALID_TIMESTAMP), streamStateMutex(), 
-maxWidth(-1)
+innerStream(NULL), 
+mutex( new Mutex() ),
+timer( new Timer() ),
+timeScale(1.0), 
+prevTimestamp(vm::INVALID_TIMESTAMP), 
+maxWidth(-1),
+copies( new Copies() )
 {
-  VM_FUNCTION_PROLOG;
-  //utils::zero(frameData);
-  targetFormat = vm::VideoManager::getInstance()->getPrefferedFormat();
-  //frameData.format = targetFormat;
-  utils::zero(currentPicture);
-  currentPicture.format = targetFormat;
-  setOrigin(osg::Image::TOP_LEFT);
+    VM_FUNCTION_PROLOG;
+    // TODO: zmieniæ
+    targetFormat = vm::VideoManager::getInstance()->getPrefferedFormat();
 
-  
+    utils::zero(currentPicture);
+    currentPicture.format = targetFormat;
+    setOrigin(osg::Image::TOP_LEFT);
+
+    copies->get().insert(this);
 }
 
 VideoImageStream::VideoImageStream(const VideoImageStream & image, const osg::CopyOp & copyop) :
-osg::ImageStream(image, copyop), targetFormat(image.targetFormat), maxWidth(image.maxWidth)
+osg::ImageStream(image, copyop),
+timeScale(1.0),
+prevTimestamp(image.prevTimestamp), 
+maxWidth(image.maxWidth),
+targetFormat(image.targetFormat)
 {
-  VM_FUNCTION_PROLOG;
-  //utils::zero(frameData);
-  //frameData.format = targetFormat;
-  utils::zero(currentPicture);
-  currentPicture.format = targetFormat;
-  // TODO: nie bêdzie dzia³aæ!
-  // copy input decoder
-  innerStream = image.innerStream;
-//  if ( copyop != osg::CopyOp::SHALLOW_COPY ) {
-//    OSG_FATAL << "not implemented" << std::endl;
-//    assert(false);
-//  }
+    VM_FUNCTION_PROLOG;
+    innerStream = dynamic_cast<Stream*>(copyop(image.innerStream));
+    timer = dynamic_cast<Timer*>(copyop(image.timer));
+    mutex = dynamic_cast<Mutex*>(copyop(image.mutex));
+    copies = dynamic_cast<Copies*>(copyop(image.copies));
+    
+    utils::zero(currentPicture);
+    currentPicture.format = targetFormat;
+
+    copies->get().insert(this);
 }
 
 VideoImageStream::~VideoImageStream()
@@ -70,7 +80,7 @@ void VideoImageStream::run()
   {
     // pocz¹tek
     {
-      ScopedLock lock(streamStateMutex);
+      ScopedLock lock(getMutex());
       // synchronizacja timera
       setStreamTime(getStream()->getTime());
     }
@@ -82,16 +92,17 @@ void VideoImageStream::run()
       frameLength.setStartTick();
       {
         // aktualizacja
-        ScopedLock lock(streamStateMutex);
+        ScopedLock lock(getMutex());
 
         // bie¿¹ce tykniêcie
+        osg::Timer& timer = getTimer();
         osg::Timer_t tick = timer.tick();
         double delta = timer.delta_s(timer.getStartTick(), tick);
         // ustawiamy czas
         setStreamTime( getStream()->getTime() + delta * timeScale );
         // "poprawiamy" timer
         timer.setStartTick(tick);
-        publishFrame();
+        publishFrameAndNotify();
 
         if ( getStream()->isEndOfStream() ) {
           done = (_loopingMode != LOOPING);
@@ -133,7 +144,7 @@ bool VideoImageStream::open(const std::string &filename)
 
   // ustawiamy zerowy czas
   setStreamTime(0.0);
-  setMaxWidth(maxWidth);
+  setMaxWidth(getStream()->getWidth());
   prevTimestamp = getStream()->getFrameTimestamp();
 
   //currentPicture.free();
@@ -141,7 +152,7 @@ bool VideoImageStream::open(const std::string &filename)
 
 
   
-  //publishFrame();
+  //publishFrameAndNotify();
 
   // aspect ratio
   if ( targetFormat == vm::PixelFormatYV12 ) {
@@ -185,23 +196,23 @@ void VideoImageStream::rewind()
 {
   VM_FUNCTION_PROLOG;
   // trzeba synchronizowaæ
-  ScopedLock lock(streamStateMutex);
+  ScopedLock lock(getMutex());
   setStreamTime(0.0);
-  publishFrame();
+  publishFrameAndNotify();
 }
 
 void VideoImageStream::seek(double time)
 {
   VM_FUNCTION_PROLOG;
-  ScopedLock lock(streamStateMutex);
+  ScopedLock lock(getMutex());
   setStreamTime(time);
-  publishFrame();
+  publishFrameAndNotify();
 }
 
 void VideoImageStream::quit(bool waitForThreadToExit)
 {
   VM_FUNCTION_PROLOG;
-  ScopedLock lock(streamStateMutex);
+  ScopedLock lock(getMutex());
   if ( isRunning() ) {
     // zmieniamy stan...
     _status = PAUSED;
@@ -275,13 +286,13 @@ void VideoImageStream::setMaxWidth( int maxWidth )
   int streamHeight = getStream()->getHeight();
 
   // jaka szerokoœæ zostanie zastosowana?
-  if ( maxWidth <=0 || maxWidth >= streamWidth ) {
+  if ( maxWidth >= streamWidth ) {
     width = streamWidth;
     height = streamHeight;
   } else {
     int widthDiv = static_cast<int>((static_cast<double>(streamWidth)/maxWidth + 0.334));
-    width = streamWidth / widthDiv;
-    height = streamHeight / widthDiv;
+    width = std::max(16, streamWidth / widthDiv);
+    height = std::max(16, streamHeight / widthDiv);
     //if ( targetFormat == vm::PixelFormatYV12 ) {
       width = UTILS_ALIGN(width, 2);
       height = UTILS_ALIGN(height, 2);
@@ -291,7 +302,7 @@ void VideoImageStream::setMaxWidth( int maxWidth )
   // czy realokacja ramki?
   if ( currentPicture.width != width ) {
     OSG_NOTICE<<getStream()->getSource()<<":Changing frame size from "<<currentPicture.width<<" to "<<width<<std::endl;
-    ScopedLock lock(streamStateMutex);
+    ScopedLock lock(getMutex());
     currentPicture.free();
     currentPicture = vm::Picture::create(width, height, targetFormat);
     reloadImage(currentPicture);
@@ -302,8 +313,22 @@ void VideoImageStream::setStreamTime( double time )
 {
   VM_FUNCTION_PROLOG;
   getStream()->setTime(time);
-  timer.setStartTick();
+  getTimer().setStartTick();
 }
+
+
+void VideoImageStream::publishFrameAndNotify()
+{
+    publishFrame();
+    Copies::value_type& copies = this->copies->get();
+    for ( Copies::value_type::iterator it = copies.begin(); it != copies.end(); ++it ) {
+        VideoImageStream* stream = it->get();
+        if ( stream && stream != this ) {
+            stream->publishFrame();
+        }
+    }
+}
+
 
 void VideoImageStream::publishFrame()
 {

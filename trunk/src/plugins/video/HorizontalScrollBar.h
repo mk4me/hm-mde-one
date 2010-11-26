@@ -15,7 +15,7 @@
 // TODO
 // Jeœli wrzuci siê ten kod do osobnej biblioteki te includy trzeba
 // bêdzie przerobiæ na bezwzglêdne (nawiasy ostre)
-#include "Button.h"
+#include <core/Buttonized.h>
 #include "NestedNodeCallback.h"
 #include "Callback.h"
 

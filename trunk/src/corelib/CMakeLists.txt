@@ -15,10 +15,23 @@ set(PRIVATE_H
 #source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
 # nag³ówki publiczne
-string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
+#message("string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})")
+#string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
+set(HEADER_PATH ${EDR_INCLUDE_ROOT}/core)
 set(PUBLIC_H
+	${HEADER_PATH}/GridModel.h
+	${HEADER_PATH}/OsgWidgetGridView.h
+	${HEADER_PATH}/OsgWidgetBorder.h
+	${HEADER_PATH}/Buttonized.h
+	${HEADER_PATH}/Borderized.h
+	${HEADER_PATH}/LabeledView.h
+	${HEADER_PATH}/Placeable.h
+	${HEADER_PATH}/Grid.h
+	${HEADER_PATH}/AspectRatioKeeper.h
+	${HEADER_PATH}/MultiView.h
+	${HEADER_PATH}/MultiViewWidgetItem.h
 )
-#source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
+source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 #------------------------------------------------------------------------------
@@ -26,7 +39,14 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Ÿród³a
 set(TARGET_SRC
 	QOSGWidget.cpp
+	GridModel.cpp
+	OsgWidgetGridView.cpp
+	OsgWidgetBorder.cpp
 	Window.cpp
+	Grid.cpp
+	AspectRatioKeeper.cpp
+	MultiView.cpp
+	MultiViewWidgetItem.cpp
 	Chart.cpp
 	c3dParser.cpp
 	C3D_Data.cpp
@@ -42,7 +62,6 @@ set(TARGET_SRC
 	Parameter.cpp
 	Parameters.cpp
 	ChartPointer.cpp
-	
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

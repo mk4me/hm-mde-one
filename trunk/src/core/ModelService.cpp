@@ -66,6 +66,6 @@ IModel* ModelService::GetModel( int i /*= 0*/ )
 AsyncResult ModelService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
     Clear();
-    AddModel(dataManager->GetModel());
+    //AddModel(dataManager->GetModel());
     return AsyncResult_Complete;
 }

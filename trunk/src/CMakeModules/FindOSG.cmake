@@ -10,7 +10,7 @@ FIND_SHARED(OSG_LIBUTIL osgUtil "osg<${OSG_VERSIONS}>-osgUtil")
 FIND_SHARED(OSG_LIBGA osgGA "osg<${OSG_VERSIONS}>-osgGA")
 FIND_SHARED(OSG_LIBVIEWER osgViewer "osg<${OSG_VERSIONS}>-osgViewer")
 FIND_SHARED(OSG_LIBTEXT osgText "osg<${OSG_VERSIONS}>-osgText")
-FIND_SHARED(OSG_WIDGET osgWidget "osg<${OSG_VERSIONS}>-osgWidget")
+FIND_SHARED(OSG_LIBWIDGET osgWidget "osg<${OSG_VERSIONS}>-osgWidget")
 
 # OpenThreads
 set(OPENTHREADS_VERSIONS "12,11")
@@ -31,8 +31,10 @@ foreach (version ${OSGPLUGINS_VERSIONS})
 	set(FIND_DIR_DEBUG "${FIND_DIR_DEBUG_BACKUP}/osgPlugins-${version}")
 	set(FIND_DIR_RELEASE "${FIND_DIR_RELASE_BACKUP}/osgPlugins-${version}")
 	FIND_MODULE(OSG_PLUGIN_PNG FALSE "osgdb_png")
+	FIND_MODULE(OSG_PLUGIN_GLSL FALSE "osgdb_glsl")
 	# ustawiamy domyœln¹ lokalizacjê pluginów
-	if (OSG_PLUGIN_PNG_FOUND)
+	# TODO: zapewniæ tê sam¹ wersjê
+	if (OSG_PLUGIN_PNG_FOUND AND OSG_PLUGIN_GLSL_FOUND)
 		set(OSG_VERSION "${version}" CACHE STRING "Subfolder for osg plugins in the target directory")
 	endif()
 endforeach()
@@ -40,6 +42,8 @@ endforeach()
 # dla pluginów
 set(FIND_MODULE_PREFIX_osgdb_png "osgPlugins-${OSG_VERSION}/")
 set(FIND_MODULE_PREFIX_osgdb_pngd "osgPlugins-${OSG_VERSION}/")
+set(FIND_MODULE_PREFIX_osgdb_glsl "osgPlugins-${OSG_VERSION}/")
+set(FIND_MODULE_PREFIX_osgdb_glsld "osgPlugins-${OSG_VERSION}/")
 
 # skopiowanie
 FIND_FINISH(OSG)
@@ -52,7 +56,7 @@ if (OSG_LIBCORE_FOUND AND
 	OSG_LIBGA_FOUND AND
 	OSG_LIBVIEWER_FOUND AND
 	OSG_LIBTEXT_FOUND AND
-	OSG_WIDGET_FOUND AND
+	OSG_LIBWIDGET_FOUND AND
 	OSG_PLUGIN_PNG_FOUND)
 	set(OSG_FOUND 1)
 else()

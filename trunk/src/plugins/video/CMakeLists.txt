@@ -12,7 +12,6 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 set(PRIVATE_H
 	VideoPlugin.h
 	VideoWidget.h
-	Button.h
 	Callback.h
 	HorizontalScrollBar.h
 	ImageCanvas.h
@@ -24,6 +23,7 @@ set(PRIVATE_H
 	TimelineImageStreamWrapper.h
 	tm.h
 	WidgetFunctors.h
+	StreamOSGWidget.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -44,7 +44,6 @@ set(TARGET_SRC
 	VideoWidget.cpp
 	VideoWidgetQt.cpp
 	
-	Button.cpp
 	HorizontalScrollBar.cpp
 	ImageCanvas.cpp
 	osgmovie.cpp
@@ -53,6 +52,7 @@ set(TARGET_SRC
 	StaticKeyboardHandler.cpp
 	StreamsViewOSGWidget.cpp
 	tm.cpp
+	StreamOSGWidget.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

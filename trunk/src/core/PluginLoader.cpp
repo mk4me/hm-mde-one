@@ -152,6 +152,11 @@ bool PluginLoader::addPlugIn( const std::string& path )
             }
         }
     }
+    else
+    {
+        DWORD err = GetLastError();
+        err = err;
+    }
     FreeLibrary(library);
     return false;
 #elif defined(__UNIX__)

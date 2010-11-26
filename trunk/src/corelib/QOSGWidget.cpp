@@ -64,6 +64,7 @@ QOSGWidget::QOSGWidget( QWidget * parent, const char * name, const QGLWidget * s
 #else
     setFocusPolicy(QWidget::ClickFocus);
 #endif
+    setMouseTracking(true);
 }
 
 void QOSGWidget::resizeGL( int width, int height )

@@ -13,6 +13,8 @@
 #include <osgWidget/Widget>
 #include <osgWidget/Canvas>
 #include <osgWidget/Label>
+#include <core/Enumerators.h>
+#include <core/OsgWidgetBorder.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {
@@ -21,24 +23,14 @@ namespace osgUI {
 class ImageCanvas : public osgWidget::Canvas
 {
 private:
-    //! Indeks obramowania.
-    enum Border {
-        BorderLeft,
-        BorderTop,
-        BorderRight,
-        BorderBottom
-    };
-
   //! Obrazek.
   osg::ref_ptr<osg::Image> image;
   //! Prostok¹t zawieraj¹cy obrazek.
   osg::ref_ptr<osgWidget::Widget> rect;
-  //! Podpis.
-  osg::ref_ptr<osgWidget::Label> label;
-  //! Ramka.
-  osg::ref_ptr<osgWidget::Widget> border[4];
   //! Czy rozmiar ma odpowiadaæ rozmiarowi obrazka?
   bool keepImageRatio;
+  //!
+  core::OsgWidgetBorder border;
 
 public:
   META_Object(osgUI, ImageCanvas)
@@ -59,10 +51,16 @@ public:
   //! \return Rozmiar (przewa¿nie mniejszy) zgodny z proporcjami obrazka.
   osgWidget::XYCoord getRationedSize(float maxWidth, float maxHeight);
 
+
+  //! \return
+  core::OsgWidgetBorder* getBorder()
+  { 
+      return &border;
+  }
   //! \return
   osgWidget::Label * getLabel()
   {
-    return label.get();
+    return border.getLabel();
   }
   //! \return
   osgWidget::Widget * getRect()
@@ -72,7 +70,7 @@ public:
   //! \return
   const osgWidget::Label * getLabel() const
   {
-    return label.get();
+    return border.getLabel();
   }
   //! \return
   const osgWidget::Widget * getRect() const
@@ -96,39 +94,6 @@ public:
   //! \param normCoords Znormalizowane wspó³rzêdne.
   void setTexCoord(osgWidget::Quad normCoords = osgWidget::Quad(0,0,1,1) );
   
-  //! \return Kolor obramowania.
-  inline osgWidget::Color getBorderColor() const
-  {
-    return border[BorderTop]->getColor();
-  }
-  //! \param r
-  //! \param g
-  //! \param b
-  //! \param a
-  inline void setBorderColor(osgWidget::color_type r, osgWidget::color_type g, 
-    osgWidget::color_type b, osgWidget::color_type a)
-  {
-    setBorderColor(osgWidget::Color(r, g, b, a));
-  }
-  //! \param color Kolor obramowania.
-  void setBorderColor(osgWidget::Color color);
-
-  //! \return Czy pokazuje etykietê?
-  inline bool getShowLabel() const
-  {
-    return label->getParent() == this;
-  }
-  //! \param value Czy etykieta ma byæ pokazywana?
-
-  void setShowLabel(bool value);
-  //! \return Czy pokazuje obramowanie?
-  inline bool getShowBorder() const
-  {
-      return border[BorderTop]->getParent() == this;
-  }
-  //! \param value Czy obramowanie ma byæ pokazywane?
-  void setShowBorder(bool value);
-
   //! \return
   inline bool getKeepImageRatio() const
   { 
@@ -141,11 +106,11 @@ protected:
   //! Prze³adowanie metody rozmieszczaj¹cej elementy.
   //! \param diffWidth
   //! \param diffHeight
-  void _resizeImplementation( osgWidget::point_type diffWidth, osgWidget::point_type diffHeight );
+  virtual void _resizeImplementation( osgWidget::point_type diffWidth, osgWidget::point_type diffHeight );
   //! Prze³adowanie metody obliczaj¹cej rozmiar.
-  osgWidget::Window::Sizes _getWidthImplementation() const;
+  virtual osgWidget::Window::Sizes _getWidthImplementation() const;
   //! Prze³adowanie metody obliczaj¹cej rozmiar.
-  osgWidget::Window::Sizes _getHeightImplementation() const;
+  virtual osgWidget::Window::Sizes _getHeightImplementation() const;
 };
 
 

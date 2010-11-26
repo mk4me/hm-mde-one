@@ -20,59 +20,62 @@
 #include <utils/Profiler.h>
 #include "VideoWidget.h"
 #include "ImageCanvas.h"
+#include <core/MultiView.h>
+#include <core/AspectRatioKeeper.h>
+#include <core/MultiViewWidgetItem.h>
 
 
 using namespace timeline;
 
 
 #ifdef _DEBUG
-#define WM_FLAGS 0//osgWidget::WindowManager::WM_PICK_DEBUG
+#define WM_FLAGS 0// osgWidget::WindowManager::WM_PICK_DEBUG
 #else
 #define WM_FLAGS 0
 #endif
 
-
-
 VideoWidget::VideoWidget()
-:   viewType(ViewTypeGrid)
 {
-    last.rows = last.columns = 0;
-
     // inicjalizacja UI
     setupUi(this); 
-
 
     // TODO: do wyrzucenia!
     vm::VideoManager::getInstance()->setEnableBuffering( false );
     vm::VideoManager::getInstance()->setPrefferedFormat( vm::PixelFormatYV12);
-    //connect(displayTypeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(displayTypeChanged()));
 
     // tworzenie viewera
     viewer = new QOSGViewer(this, "OsgViewer");
     const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
 
-    //viewer->getCamera()->setViewport(50, 50, traits->width / 2, traits->height / 2);
+    // stworzenie helpera
+    streamHelper = new OsgWidgetStreamHelper( "data/resources/shaders/", textureRectangleCheck->isChecked() );
 
-    // przygotowanie widoków strumieni
-    view = new StreamViewOSGWidget(viewer, true, 
-        traits->width,
-        traits->height, 
-        0x1234, WM_FLAGS);
+    // tworzymy multi widok
+    multiView = new core::MultiView(viewer, traits->width, traits->height, 0xF0000000, WM_FLAGS);
 
-    textureRectangleCheck->setCheckState( view->getUseTextureRect() ? Qt::Checked : Qt::Unchecked );
+    // stworzenie kamery
+    osg::Camera* multiViewCamera = multiView->createParentOrthoCamera();
+    multiViewCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
+    multiViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
+    multiViewCamera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 
-    // kamera
-    osg::Camera * camera = view->createParentOrthoCamera();
-    camera->setClearMask(GL_DEPTH_BUFFER_BIT);
-    camera->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    viewer->setSceneData(camera);
+    osg::ref_ptr<osg::Group> root = new osg::Group();
+    root->addChild(multiViewCamera);
+    viewer->setSceneData(root);
+ 
+    osgWidget::Box* box = new osgWidget::Box("BOX");
+    osgWidget::Widget *aaa = new osgWidget::Widget("aaa", 666, 666);
+    box->setOrigin(400, 400);
+    //aaa->setColor(1,0,0,1);
+    //box->addWidget(aaa);
+    multiView->addChild(box);
 
-    // podpiêcie handlerów
-    viewer->addEventHandler( new osgWidget::MouseHandler(view) );
-    viewer->addEventHandler( new osgUI::StaticKeyboardHandler(view) );
-    viewer->addEventHandler( new osgWidget::ResizeHandler(view, camera) );
+    viewer->addEventHandler( new osgWidget::MouseHandler(multiView) );
+    viewer->addEventHandler( new osgUI::StaticKeyboardHandler(multiView) );
+    viewer->addEventHandler( new osgWidget::ResizeHandler(multiView, multiViewCamera) );
     viewer->addEventHandler( new osgViewer::StatsHandler );
     viewer->addEventHandler( new osgGA::StateSetManipulator( viewer->getCamera()->getOrCreateStateSet() ) );
+
     //viewer->addEventHandler( new osgViewer::WindowSizeHandler );
     viewer->getCamera()->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
 
@@ -93,45 +96,46 @@ VideoWidget::VideoWidget()
 
 void VideoWidget::configureView(int rows, int columns, ImagesList& images)
 {
-    view->clear();
-
-//   // okreœlamy liczbê kolumn i wierszy
-//   unsigned int rows = 0;
-//   unsigned int columns = 0;
-//   if ( !vertically && !horizontally ) {
-//     columns = static_cast<unsigned int>(ceil(sqrt(static_cast<double>(images.size()))));
-//     if ( columns != 0 ) {
-//       if ( columns * (columns-1) >= images.size() ) {
-//         rows = columns-1;
-//       } else {
-//         rows = columns;
-//       }
-//     }
-//   } else if ( vertically ) {
-//     rows = images.size();
-//     columns = 1;
-//   } else if ( horizontally ) {
-//     columns = images.size();
-//     rows = 1;
-//   }
-
-  view->setDimensions(rows, columns);
-
-  // tworzymy geometriê
-  for ( int y = 0; y < rows; ++y ) {
-    for ( int x = 0; x < columns; ++x ) {
-      // indeks obrazka
-      size_t idx = x + y * columns;
-      if ( idx < images.size() ) {
-        osg::Image* image = images[idx];
-        view->addStream(image, y, x);
-      }
-    }
-  }
-
-  last.images = images;
-  last.columns = columns;
-  last.rows = rows;
+    return;
+//    view->clear();
+//
+////   // okreœlamy liczbê kolumn i wierszy
+////   unsigned int rows = 0;
+////   unsigned int columns = 0;
+////   if ( !vertically && !horizontally ) {
+////     columns = static_cast<unsigned int>(ceil(sqrt(static_cast<double>(images.size()))));
+////     if ( columns != 0 ) {
+////       if ( columns * (columns-1) >= images.size() ) {
+////         rows = columns-1;
+////       } else {
+////         rows = columns;
+////       }
+////     }
+////   } else if ( vertically ) {
+////     rows = images.size();
+////     columns = 1;
+////   } else if ( horizontally ) {
+////     columns = images.size();
+////     rows = 1;
+////   }
+//
+//  view->setDimensions(rows, columns);
+//
+//  // tworzymy geometriê
+//  for ( int y = 0; y < rows; ++y ) {
+//    for ( int x = 0; x < columns; ++x ) {
+//      // indeks obrazka
+//      size_t idx = x + y * columns;
+//      if ( idx < images.size() ) {
+//        osg::Image* image = images[idx];
+//        view->addStream(image, y, x);
+//      }
+//    }
+//  }
+//
+//  last.images = images;
+//  last.columns = columns;
+//  last.rows = rows;
 
 //   // kontroler
 //   Controller * controller = new Controller();
@@ -149,9 +153,9 @@ void VideoWidget::init( std::vector<std::string> &files )
         if ( image != NULL ) {
             images.push_back(image);
 
-            std::ostringstream out;
-            out << i << ": " << files[i];
-            this->displayTypeCombo->addItem( QString::fromStdString(out.str()) );
+//             std::ostringstream out;
+//             out << i << ": " << files[i];
+//             this->displayTypeCombo->addItem( QString::fromStdString(out.str()) );
 
         }
         // czy to film?
@@ -161,78 +165,143 @@ void VideoWidget::init( std::vector<std::string> &files )
         }
     }
 
-    int rows, columns;
-    view->makeGrid(static_cast<int>(images.size()), rows, columns);
-    configureView(rows, columns, images);
+    //int rows, columns;
+    //view->makeGrid(static_cast<int>(images.size()), rows, columns);
+    //configureView(rows, columns, images);
+    float avgRatio = 0;
+    for (ImagesList::iterator it = images.begin(); it != images.end(); ++it) {
+        osg::Image* image = *it;
+        float ratio = image->getPixelAspectRatio() * image->s() / image->t();
+        avgRatio += ratio;
+
+        osgWidget::Box* box1 = new osgWidget::Box(image->getFileName());
+        video::StreamOsgWidget* aaa1 = streamHelper->createWidget( image );
+        //osgWidget::Widget *aaa1 = new osgWidget::Widget("aaa", 100, 100);
+        //aaa1->setColor(  osgWidget::Color(1,1,1,1) * std::distance(images.begin(), it) / 4 );
+        aaa1->setCanFill(true);
+        box1->addWidget(aaa1);
+        multiView->addChild(box1);
+        osgWidget::Box* clon = new osgWidget::Box(image->getFileName());
+
+        video::StreamOsgWidget* widget = streamHelper->createWidget( osg::clone(image) );
+        
+        osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(widget, ratio);
+        keeper->setColor(0,0,0,0);
+        clon->getBackground()->setColor(0,0,0,0);
+
+
+
+        clon->addWidget(keeper);
+        multiView->addChild(clon);
+        multiView->addItem(new core::MultiViewWidgetItem(box1, ratio), new core::MultiViewWidgetItem(clon, ratio));
+    }
+
+
+    // stworzenie widoku z girdem
+    avgRatio /= images.size();
+    unsigned rows;
+    unsigned columns = static_cast<unsigned>(ceil(sqrt(static_cast<double>(images.size()))));
+    if ( columns != 0 ) {
+        if ( columns * (columns-1) >= images.size() ) {
+            rows = columns-1;
+        } else {
+            rows = columns;
+        }
+    } else {
+        rows = 0;
+    }
+
+    // TODO: kopia
+    osgUI::Grid* gridThumbs = new osgUI::Grid("all", rows, columns);
+    gridThumbs->getBackground()->setColor(0,0,0,0);
+    osgUI::Grid* grid = new osgUI::Grid("all", rows, columns);
+    grid->getBackground()->setColor(0,0,0,0);
+    //osgUI::Grid* grid = osg::clone(gridThumbs, osg::CopyOp::DEEP_COPY_ALL);
+    for (unsigned row = 0; row < rows; ++row) {
+        for (unsigned col = 0; col < columns; ++col) {
+            osg::Image* image = images[ row * columns + col ];
+            video::StreamOsgWidget* thumb = streamHelper->createWidget( osg::clone(image) );
+            thumb->setCanFill(true);
+            gridThumbs->addWidget(thumb, row, col);
+            video::StreamOsgWidget* widget = streamHelper->createWidget( osg::clone(image) );
+            osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(widget, avgRatio);
+            grid->addWidget(keeper, row, col);
+        }
+    }
+    multiView->addChild(gridThumbs);
+    multiView->addChild(grid);
+    multiView->addItem(new core::MultiViewWidgetItem(gridThumbs, avgRatio), new core::MultiViewWidgetItem(grid, avgRatio));
+
+
 }
 
 
 VideoWidget::ViewType VideoWidget::getViewType( int * selected /*= NULL*/ ) const
 {
-    if ( (viewType & ViewTypeSingle) == ViewTypeSingle ) {
-        if ( selected ) {
-            *selected = (((ViewTypeSingleIdxMask) & int(viewType)) >> ViewTypeSingleIdxShift);
-        }
-        return ViewTypeSingle;
-    } else {
-        return viewType;
-    }
+//     if ( (viewType & ViewTypeSingle) == ViewTypeSingle ) {
+//         if ( selected ) {
+//             *selected = (((ViewTypeSingleIdxMask) & int(viewType)) >> ViewTypeSingleIdxShift);
+//         }
+//         return ViewTypeSingle;
+//     } else {
+//         return viewType;
+//     }
+    return (ViewType)0;
 }
 
 void VideoWidget::setViewType( ViewType viewType, int selected /*= 0*/ )
 {
-    this->viewType = viewType; 
-    if ( viewType == ViewTypeSingle ) {
-        int idx = (ViewTypeSingleIdxMask & (selected << ViewTypeSingleIdxShift));
-        reinterpret_cast<int&>(viewType) |= idx;
-    }
+//     this->viewType = viewType; 
+//     if ( viewType == ViewTypeSingle ) {
+//         int idx = (ViewTypeSingleIdxMask & (selected << ViewTypeSingleIdxShift));
+//         reinterpret_cast<int&>(viewType) |= idx;
+//     }
 }
 
 void VideoWidget::displayTypeChanged( int index )
 {
-    // TODO
-    // dodaæ sta³e albo rêcznie wype³niaæ
-    int count = static_cast<int>(images.size());
-    if (index == 0) {
-        // grid
-        int rows, columns;
-        view->makeGrid(count, rows, columns);
-        configureView(rows, columns, images);
-    } else if ( index == 1 ) {
-        // horizontally
-        configureView(1, count, images);
-    } else if ( index == 2 ) {
-        // vertically 
-        configureView(count, 1, images);
-    } else {
-        // single
-        index -= 3;
-        ImagesList selected;
-        if ( static_cast<size_t>(index) < images.size() ) {
-            selected.push_back( images[index] );
-        }
-        configureView(1, 1, selected);
-    }
+    //// TODO
+    //// dodaæ sta³e albo rêcznie wype³niaæ
+    //int count = static_cast<int>(images.size());
+    //if (index == 0) {
+    //    // grid
+    //    int rows, columns;
+    //    view->makeGrid(count, rows, columns);
+    //    configureView(rows, columns, images);
+    ///*} else if ( index == 1 ) {
+    //    // horizontally
+    //    configureView(1, count, images);
+    //} else if ( index == 2 ) {
+    //    // vertically 
+    //    configureView(count, 1, images);*/
+    //} else {
+    //    // single
+    //    index -= 1;
+    //    ImagesList selected;
+    //    if ( static_cast<size_t>(index) < images.size() ) {
+    //        selected.push_back( images[index] );
+    //    }
+    //    configureView(1, 1, selected);
+    //}
 }
 
 void VideoWidget::outputFormatChanged( int index )
 {
-    // TODO
-    // dodaæ sta³e albo rêcznie wype³niaæ
-    if ( index == 0 ) {
-        // yuv
-        view->setFormat(vm::PixelFormatYV12);
-    } else if ( index == 1 ) {
-        view->setFormat(vm::PixelFormatRGB24);
-    } else {
-        view->setFormat(vm::PixelFormatBGRA);
-    }
+    //// TODO
+    //// dodaæ sta³e albo rêcznie wype³niaæ
+    //if ( index == 0 ) {
+    //    // yuv
+    //    view->setFormat(vm::PixelFormatYV12);
+    //} else if ( index == 1 ) {
+    //    view->setFormat(vm::PixelFormatRGB24);
+    //} else {
+    //    view->setFormat(vm::PixelFormatBGRA);
+    //}
 }
 
 void VideoWidget::textureRectangleChecked( int checked )
 {
-    
-    view->clear();
-    view->setUseTextureRect( checked != 0 );
-    configureView(last.rows, last.columns, last.images);
+    //view->clear();
+    //view->setUseTextureRect( checked != 0 );
+    //configureView(last.rows, last.columns, last.images);
 }

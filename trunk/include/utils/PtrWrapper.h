@@ -16,6 +16,8 @@ namespace utils {
 template <class T, class PtrPolicy>
 class Adapter : public PtrPolicy::Base
 {
+public:
+    typedef T value_type;
 private:
     //! Wartoœæ.
     T value;

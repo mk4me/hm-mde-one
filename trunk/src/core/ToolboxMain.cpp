@@ -310,29 +310,13 @@ void ToolboxMain::onOpen()
     const QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::currentPath(), "*.tbs"); // TODO: tymczasowo dodaje asf do filtrów Open File
     if (!fileName.isEmpty()) 
     {
-        std::cout << " " << std::endl; 
-        std::cout << "File Opened: " << std::string(fileName.toUtf8()) << std::endl;
-        std::cout << "---------------------------------------------------------------" << std::endl; 
+        std::string pathVal = fileName.toStdString();
+        const std::string& path = pathVal;
 
-        Model* model = new Model();
-        C3DModel* c3dModel = new C3DModel();
-        DataManager* dataManaget = new DataManager(fileName.toStdString(), model, c3dModel);
 
-        FileReader2Motion::ReadFile(dataManaget);
+        openFile(path);
 
-        m_pServiceManager->loadDataPass(dataManaget);
-
-        m_pRenderService->AddObjectToRender(createGrid());
-
-        // manage scene
-        osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
-        osg::Node* sceneRoot = scene->getSceneData();
-        //   _osgControlWidget->SetScene(scene); 
-        _gridWidget->SetScene(sceneRoot);
         return;
-
-        if (model)
-            delete model;
     }
     QMessageBox::warning(this, QString("Error!"), QString("Failed to load model."));
 }
@@ -504,6 +488,35 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
             }
         }
     }
+}
+
+void ToolboxMain::openFile( const std::string& path )
+{
+    std::cout << " " << std::endl; 
+    std::cout << "File Opened: " << path << std::endl;
+    std::cout << "---------------------------------------------------------------" << std::endl; 
+
+    Model* model = new Model();
+    C3DModel* c3dModel = new C3DModel();
+    DataManager* dataManaget = new DataManager(path, model, c3dModel);
+
+    FileReader2Motion::ReadFile(dataManaget);
+
+    m_pServiceManager->loadDataPass(dataManaget);
+
+    m_pRenderService->AddObjectToRender(createGrid());
+
+    // manage scene
+    osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
+    osg::Node* sceneRoot = scene->getSceneData();
+    //   _osgControlWidget->SetScene(scene); 
+    _gridWidget->SetScene(sceneRoot);
+
+    return;
+
+    // TODO: po co to? tak by³o w oryginale?
+    if (model)
+        delete model;
 }
 
 // void ToolboxMain::SettingModel()

@@ -1,9 +1,14 @@
 #ifndef HEADER_GUARD_OSGFFMPEG_VIDEO_IMAGE_STREAM_H
 #define HEADER_GUARD_OSGFFMPEG_VIDEO_IMAGE_STREAM_H
 
+#include <set>
+#include <osg/ref_ptr>
+#include <osg/observer_ptr>
+
 #include <osg/ImageStream>
 #include <OpenThreads/Thread>
 #include <osg/Timer>
+
 
 #include <utils/PtrWrapper.h>
 #include <utils/PtrPolicyOSG.h>
@@ -21,25 +26,36 @@ class VideoImageStream : public osg::ImageStream, public OpenThreads::Thread
 protected:
   //! Typ wskaŸnika do strumienia.
   typedef utils::PtrWrapper<vm::VideoStream, utils::PtrPolicyOSG> Stream;
+  //!
+  typedef utils::Adapter<OpenThreads::Mutex, utils::PtrPolicyOSG> Mutex;
+  //!
+  typedef utils::Adapter<osg::Timer, utils::PtrPolicyOSG> Timer;
   //! Typ blokady opartej na muteksie.
   typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
+  //!
+  typedef utils::Adapter<std::set<osg::observer_ptr<VideoImageStream> >, utils::PtrPolicyOSG > Copies;
+
   //! Wewnêtrzy strumieñ.
   osg::ref_ptr<Stream> innerStream; 
   /** Mutex */
-  OpenThreads::Mutex streamStateMutex;
+  osg::ref_ptr<Mutex> mutex;
   /** Timer */
-  osg::Timer timer;
+  osg::ref_ptr<Timer> timer;
+  /** */
+  osg::ref_ptr<Copies> copies;
+
   /** Skala czasowa */
   double timeScale;
   /** Poprzednia pozycja w strumieniu */
   double prevTimestamp;
   /** Format piksela */
   vm::PixelFormat targetFormat;
+  //! Maksymalna szerokoœæ.
+  int maxWidth;
+
   /** Bufor na bie¿¹c¹ ramkê */
   // vm::FrameData frameData;
   vm::Picture currentPicture;
-  //! Maksymalna szerokoœæ.
-  int maxWidth;
 
 public:
   /** Konstruktor zeruj¹cy */
@@ -111,6 +127,8 @@ protected:
   /** Tryb zapêtlania */
   virtual void applyLoopingMode();
   /** Ustawia bie¿¹c¹ ramkê (jeœli jest nowsza ni¿ poprzednia)*/
+  virtual void publishFrameAndNotify();
+  /** Ustawia bie¿¹c¹ ramkê (jeœli jest nowsza ni¿ poprzednia)*/
   virtual void publishFrame();
   /** Ustawia bie¿¹cy czas */
   virtual void setStreamTime( double time );
@@ -126,6 +144,16 @@ protected:
   inline const vm::VideoStream* getStream() const
   {
     return *(innerStream.get());
+  }
+  //!
+  inline OpenThreads::Mutex& getMutex()
+  {
+      return mutex->get();
+  }
+  //!
+  inline osg::Timer& getTimer()
+  {
+      return timer->get();
   }
 
 };

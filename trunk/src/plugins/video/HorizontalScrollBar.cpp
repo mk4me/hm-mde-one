@@ -15,7 +15,7 @@ HorizontalScrollBar::HorizontalScrollBar( const std::string& name /*= ""*/ )
 : osgWidget::Canvas(name), currentValue(0.0), trackExtension(0.0), draggedValue(0.0)
 {
   // kursor
-  cursor = new Button("cursor", osgWidget::Color());
+  cursor = new Button("cursor");
   cursor->addCallback( new osgWidget::Callback(&HorizontalScrollBar::onScrollDrag, this, osgWidget::EVENT_MOUSE_DRAG) );
   cursor->addCallback( new osgWidget::Callback(&HorizontalScrollBar::onScrollPushed, this, osgWidget::EVENT_MOUSE_PUSH) );
   cursor->setLayer(osgWidget::Widget::LAYER_HIGH, 10);
@@ -151,7 +151,7 @@ void HorizontalScrollBar::operator()( osg::Node* node, osg::NodeVisitor* nv )
   }
 
   if ( tooltipWindow ) {
-    if ( cursor->isMouseOver() ) {
+    if ( cursor->isHovered() ) {
       if ( !tooltipWindow->isVisible() ) {
         tooltipWindow->show();
       }

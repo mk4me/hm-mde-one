@@ -14,6 +14,7 @@
 #include <vector>
 #include <osg/ImageStream>
 #include <osgViewer/Viewer>
+#include <core/MultiView.h>
 #include <core/QOSGWidget.h>
 #include "ui_video.h"
 #include "StreamsViewOSGWidget.h"
@@ -41,28 +42,14 @@ public:
     typedef std::vector<osg::ref_ptr<osg::Image> > ImagesList;
 
 private:
-    //! Bie¿¹cy typ widoku. W postaci unii, aby ³atwiejszy
-    //! by³ podgl¹d w debuggerze.
-    union {
-        ViewType viewType;
-        struct {
-            uint16_t type;
-            uint16_t idx;
-        } rawViewType;
-    };
     //! Obrazki pogrupowane wg. po³o¿enia.
     ImagesList images;
-    
     //! Widget z widokiem OSG.
     QOSGViewer* viewer;
-    //! Widok w³aœciwy.
-    StreamViewOSGWidget* view;
-
-    struct {
-        ImagesList images;
-        int rows;
-        int columns;
-    } last;
+    //! Multi view.
+    osg::ref_ptr<core::MultiView> multiView;
+    //!
+    osg::ref_ptr<OsgWidgetStreamHelper> streamHelper;
 
 public:
     //! Konstruktor inicjalizujacu UI.
