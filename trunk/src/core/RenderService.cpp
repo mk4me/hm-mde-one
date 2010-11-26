@@ -65,6 +65,7 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
         RenderC3D(m_pC3DModel);
     }
 
+
 //     if(dynamic_cast<Model* >(dataManager->GetModel())) {
 //         SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
 //         m_pModel = dynamic_cast<Model* >(dataManager->GetModel());

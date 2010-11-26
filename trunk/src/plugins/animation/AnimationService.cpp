@@ -125,8 +125,8 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 
     LoadAnimation(m_pModel);
 
-  //  for (int i = 0; i < dataManager->GetC3DModelCount(); i++)
-        LoadAnimation(m_pC3MModel);
+    for (int i = 0; i < dataManager->GetC3dFilePathCount(); i++)
+        LoadAnimation(m_pFactory->GetC3DModel(dataManager->GetC3dFilePath(i)));
 
     widget->SetScene(m_pScene, serviceManager);
 
@@ -431,7 +431,7 @@ void AnimationService::PlayC3DAnimation(std::string name)
         if (i->first->GetName() == m_c3dNames[nameCount]) 
         {
             m_pC3MModel = i->first;
-         //   m_pRenderService->SetC3DMarkerToRender(i->first);
+            m_pRenderService->SetC3DMarkerToRender(i->first);
             c3dcurrentAnimation = i->second;
             i->second->Play();
             break;
