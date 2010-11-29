@@ -253,8 +253,9 @@ std::string DataManager::GetSkeletonFilePath( int i )
 {
     if(m_SkeletonFilePathList.size() > i)
         return m_SkeletonFilePathList[i];
-
-    return NULL;
+    // tutaj powinien pójœæ wyj¹tek (zrobiæ po prostu return m_SkeletonFilePathList[i]), ale poniewa¿
+    // edytor siê sypie i tak ju¿, zwracamy pusty ³añcuch, nie NULL!
+    return std::string();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -269,7 +270,7 @@ std::string DataManager::GetAnimationFilePath( int i )
     if(m_AnimationFilePathList.size() > i)
         return m_AnimationFilePathList[i];
 
-    return NULL;
+    return std::string();
 }
 
 //--------------------------------------------------------------------------------------------------
