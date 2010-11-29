@@ -447,6 +447,9 @@ void AnimationService::PlayC3DAnimation(std::string name)
 //--------------------------------------------------------------------------------------------------
 void AnimationService::UpdateMesh()
 {
+    if(!m_pModel->GetSkeleton())
+        return;
+
     std::vector<IMesh*> meshList = m_pModel->GetMeshList();
     int countHandv = 0;
 

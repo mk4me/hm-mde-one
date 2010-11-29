@@ -221,14 +221,11 @@ void RenderService::SetC3DMarkerToRender(IC3DModel *c3dmodel)
 {
     DisableMarker();
 
-    if(m_pC3DModel != dynamic_cast<C3DModel*>(c3dmodel) && m_pC3DModel)
-        m_pModel->removeChild(m_pC3DModel);
+    C3DModel* tempModel = dynamic_cast<C3DModel*>(c3dmodel);
+    m_pMarkerGeode = tempModel->GetMarkerGeode();
 
-    m_pC3DModel = dynamic_cast<C3DModel*>(c3dmodel);
-    AddObjectToRender(m_pC3DModel);
-
-   // DisableMarker();
-   // m_pC3DModel = dynamic_cast<C3DModel*>(c3dmodel);
+    if(!sceneRoot->containsNode(tempModel))
+        AddObjectToRender(tempModel);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -280,7 +277,13 @@ void RenderService::EnableMarker()
 //--------------------------------------------------------------------------------------------------
 void RenderService::DisableMarker()
 {
-    m_pC3DModel->RemoveGeode();
+    for(int i = 0; i < sceneRoot->getNumChildren(); i++)
+    {
+        if(dynamic_cast<C3DModel*>(sceneRoot->getChild(i)))
+        {
+            dynamic_cast<C3DModel*>(sceneRoot->getChild(i))->RemoveGeode();
+        }
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
