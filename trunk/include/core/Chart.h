@@ -39,6 +39,8 @@ private:
 	osg::ref_ptr<osg::Group> yAxis;
 	int xNumReps,yNumReps;
 	void repaint();
+	osg::Group* createMainLabel(osg::Vec4 color);
+	int labelOffset;
 public:
 	Chart(int x,int y,int width,int height);
 	~Chart();

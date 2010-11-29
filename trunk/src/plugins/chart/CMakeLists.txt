@@ -36,6 +36,7 @@ set(PRIVATE_H
 	GroupData.h
 	ChartViewer.h
 	C3DChartData.h
+	MultiViewChartItem.h
 
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -61,6 +62,7 @@ set(TARGET_SRC
 	Parameters.cpp
 	ChartViewer.cpp
 	C3DChartData.cpp
+	MultiViewChartItem.cpp
 
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})

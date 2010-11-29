@@ -57,6 +57,7 @@ void ChartViewer::resizeEvent(QResizeEvent* event){
 	int h = this->height();
 	cam->setProjectionMatrix(osg::Matrix::ortho2D(0,w,0,h));
 	this->getGraphicsWindow()->resized(0,0,w,h);
+	getChart()->setLocation(1,1,w,h);
 }
 
 Chart* ChartViewer::getChart(){

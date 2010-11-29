@@ -7,12 +7,12 @@
 Chart::Chart(int x,int y,int width,int height){
 	gridColor=osg::Vec4(0.0f,0.0f,1.0f, 0.1f);
 	color = osg::Vec4(0,0,0, 1.0);
-	borderSize=20;
+	borderSize=50;
 	gridDensity=10;
 	xNumReps=5;
 	yNumReps=3;
 	fontSize=11;
-
+labelOffset=0;
 	this->x=x;
 	this->y=y;
 	this->width=width;
@@ -120,7 +120,7 @@ osg::Node* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps
 	float actualScale=0.0f;
 	osg::Vec3 pos = s;
 	osg::Vec3 posX = osg::Vec3(0,30,0);
-	osg::Vec3 posY = osg::Vec3(30,0,0);
+	osg::Vec3 posY = osg::Vec3(40,0,0);
 	osg::Vec3Array* vertices = new osg::Vec3Array;
 
 	for(int i=0;i<numReps;++i)
@@ -185,7 +185,7 @@ osg::Node* Chart::createLabel(const osg::Vec3& pos, float size, const std::strin
 		text->setFont(font);
 		text->setCharacterSize(size);
 		text->setAxisAlignment(osgText::Text::SCREEN); 
-		text->setAlignment(osgText::Text::CENTER_CENTER);
+		text->setAlignment(osgText::Text::LEFT_CENTER);
 		text->setText(label);
 		text->setLayout(osgText::Text::LEFT_TO_RIGHT);
 		text->setBoundingBoxMargin(0.25f);
@@ -239,7 +239,10 @@ void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
 	this->addChild(xAxis);
 	this->addChild(yAxis);
 	}
+		this->addChild(createMainLabel(color));
+	labelOffset+=100;
 	}
+
 }
 
 std::string Chart::formatNumber( float number )
@@ -343,6 +346,7 @@ void Chart::repaint(){
 	osg::Group* newXAxis=createXAxis((*data.begin())->getScaleX()/(*data.begin())->getFPS());
 	osg::Group* newYAxis=createYAxis((*data.begin())->getScaleY());
 
+
 	this->replaceChild(border,newBorder);
 	this->replaceChild(grid,newGrid);
 	this->replaceChild(xAxis,newXAxis);
@@ -357,4 +361,46 @@ void Chart::repaint(){
 	for(; itPos < dataSeries.end(); itPos++,dataPos++){
 	  (*itPos)->repaint((*dataPos),x+borderSize,y+borderSize,width-borderSize,height-borderSize);
 	}
+}
+
+
+osg::Group* Chart::createMainLabel(osg::Vec4 color){
+osg::Group* group=new Group();
+group->addChild(createLabel(osg::Vec3(x+30+labelOffset,height-10,0),12,"nazwa"));
+
+
+
+
+	osg::Vec3Array* vertices = new osg::Vec3Array;
+	vertices->push_back(osg::Vec3(x+10+labelOffset,height-20+5,0));
+	vertices->push_back(osg::Vec3(x+20+labelOffset,height-20+5,0));
+	vertices->push_back(osg::Vec3(x+20+labelOffset,height-20+15,0));
+	vertices->push_back(osg::Vec3(x+10+labelOffset,height-20+15,0));
+	vertices->push_back(osg::Vec3(x+10+labelOffset,height-20+5,0));
+
+	
+	osg::Geometry* geom = new osg::Geometry;
+	osg::Vec4Array* colors=new osg::Vec4Array();
+	colors->push_back(color);
+
+
+	geom->setColorArray(colors);
+	geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);
+	geom->setVertexArray(vertices);
+
+	geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,vertices->size()));
+
+	osg::Geode* geode = new osg::Geode;
+	osg::StateSet* ss = geode->getOrCreateStateSet();
+
+
+	ss->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+	ss->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+	geode->addDrawable(geom);
+
+	group->addChild(geode);
+
+
+return group;
 }

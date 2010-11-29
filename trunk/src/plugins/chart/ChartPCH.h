@@ -27,9 +27,12 @@
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <QtGui/QWidget>
-#include <osgViewer/Viewer>
-#include <core/QOSGWidget.h>
 #include <osgViewer/ViewerEventHandlers>
+#include <osgViewer/Viewer>
+#include <osgWidget/ViewerEventHandlers>
+#include <osgWidget/WindowManager>
+#include <core/QOSGWidget.h>
+#include <osgGA/StateSetManipulator>
 #include <osg/MatrixTransform>
 #include <osgText/Text>
 

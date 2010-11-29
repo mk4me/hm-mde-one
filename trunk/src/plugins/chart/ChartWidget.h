@@ -14,7 +14,7 @@
 
 #include <core/QOSGWidget.h>
 
-	
+#include <core/MultiView.h>	
 #include "ui_ChartWidget.h"
 
 class ChartViewer;
@@ -25,21 +25,27 @@ class ChartWidget : public QWidget, public Ui::ChartWidget
 private:
     //! Us³uga tworz¹ca widget.
 	IService* service;
-
+    //! Widget z widokiem OSG.
+    QOSGViewer* viewer;
 	ChartViewer* mainViewer;
 	std::string c3dFile;
 	void createEMGChanels();
 	void createGRFChanels();
 	void createChart(QOSGViewer* viewer,int chartIndex);
 	QWidget* actualWidget;
+    //! Multi view.
+    osg::ref_ptr<core::MultiView> multiView;
 
 public:
+
+
     //! 
 	ChartWidget(IService* service);
     //! 
     virtual ~ChartWidget();
 	void createLargeChart(int chartIndex);
 	ChartViewer* getViewer();
+	void addChart(int index);
 public slots:
     //! \param 
    void comboBoxChanged(int index);

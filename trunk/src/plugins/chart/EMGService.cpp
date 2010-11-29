@@ -57,6 +57,7 @@ EMGService::EMGService()
 {
     widget = new ChartWidget(this);
 	length=(double)widget->getViewer()->getChart()->getFrameNumber()/(double)widget->getViewer()->getChart()->getFPS() ;
+	
 }
 
 
