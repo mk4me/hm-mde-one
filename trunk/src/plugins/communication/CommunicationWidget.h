@@ -3,12 +3,9 @@
 
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
-#include <QtGui/QTableWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QTabWidget>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QMessageBox>
-#include <QtCore/QSettings>
+#include <QtGui/QProgressBar>
 #include <utils/ObserverPattern.h>
 #include <plugins/communication/CommunicationManager.h>
 #include <plugins/communication/CommunicationService.h>
@@ -34,5 +31,6 @@ private:
 
 	QPushButton* updateButton;
 	QTreeWidget* treeEntities;
+	QProgressBar* progressBar;
 };
 #endif

@@ -34,7 +34,7 @@ IModel* Factor::GetModel(std::string pathToMesh, std::string pathToASF, std::vec
 {
     std::string modelPath;
 
-    if(!pathToAMCList.size())
+    if(pathToAMCList.size() > 0)
         modelPath = pathToMesh + pathToASF + pathToAMCList[0];
     else
         modelPath = pathToMesh + pathToASF;

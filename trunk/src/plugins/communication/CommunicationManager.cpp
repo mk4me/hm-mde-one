@@ -25,6 +25,7 @@ CommunicationManager::CommunicationManager()
 {
 	this->transportManager = NULL;
 	this->queryManager = NULL;
+	this->trialsDir = "data/trials/";
 }
 
 CommunicationManager::~CommunicationManager()
@@ -39,14 +40,6 @@ void CommunicationManager::setSessions(unsigned int labID)
 {
 	this->sessions = this->queryManager->listLabSessionsWithAttributes(labID);
 	notify();
-	//try
-	//{
-	//	this->sessions = this->queryManager->listLabSessionsWithAttributes(labID);
-	//}
-	//catch(std::string& e)
-	//{
-	//	this->labSessionsErrorCatcher(e);
-	//}
 }
 
 const CommunicationManager::Sessions& CommunicationManager::getSessions(/*unsigned int labID*/) const
@@ -100,7 +93,7 @@ const CommunicationManager::Files& CommunicationManager::getFiles(unsigned int s
 void CommunicationManager::setFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID)
 {
 	//TODO: sciezka powinna byc pobierana/ustalana przez DataManagera
-	this->transportManager->downloadFile(fileID, "data/resources/trials/");
+	this->transportManager->downloadFile(fileID, this->trialsDir);
 	notify();
 }
 
@@ -297,4 +290,14 @@ ITransportable* CommunicationManager::getTransportManager()
 IQueryable* CommunicationManager::getQueryManager()
 {
 	return this->queryManager;
+}
+
+void CommunicationManager::setTrialsDir(const std::string& dir)
+{
+	this->trialsDir = dir;
+}
+
+const std::string& CommunicationManager::getTrialsDir() const
+{
+	return this->trialsDir;
 }

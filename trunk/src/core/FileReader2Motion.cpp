@@ -12,6 +12,7 @@
 #include "AnimationGroup.h"
 #include "SkeletonNode.h"
 #include "DataManager.h"
+#include "Factory.h"
 
 #include <core/Vec3.h>
 #include <core/Skeleton.h>
@@ -61,17 +62,33 @@ unsigned int Read(VOID* pData, unsigned int numBytes)
 void FileReader2Motion::ReadFile(DataManager *dataManager)
 {
 	//TODO: pobiera nazwe pierwszego pliku tbs z zasobow [Marek Daniluk 23.11.10]
-//	std::string file = dataManager->getMeshes().begin()->second;
-    std::string file = dataManager->GetFileName();
-    Model *model = dynamic_cast<Model* >(dataManager->GetModel());
+	std::string meshpath = "";
+	std::string skelpath = "";
+	std::string c3dpath = "";
+	if(dataManager->getMeshes().size() > 0)
+	{
+		meshpath = dataManager->getMeshes().begin()->second;
+	}
+	if(dataManager->getSkeletons().size() > 0)
+	{
+		skelpath = dataManager->getSkeletons().begin()->second;
+	}
+	if(dataManager->getC3Ds().size() > 0)
+	{
+		c3dpath = dataManager->getC3Ds().begin()->second;
+	}
+
+	//FIX: jak obslugiwac Factor? [Marek Daniluk 29.11.10]
+	Factor* factory = new Factor();
+    Model *model = dynamic_cast<Model* >(factory->GetModel(meshpath, skelpath, std::vector<std::string>()));
     
     //TODO: poprawic wizualnie i zrzuwaæ koñcówke na ma³e litery
-    if(file.substr(file.length() - 3, file.length()) == "DAE")
-        ReadFrmDAEFile(file, model);
-    else if(file.substr(file.length() - 3, file.length()) == "tbs")
+    if(meshpath.substr(meshpath.length() - 3, meshpath.length()) == "DAE")
+        ReadFrmDAEFile(meshpath, model);
+    else if(meshpath.substr(meshpath.length() - 3, meshpath.length()) == "tbs")
         ReadFromTBSFile(dataManager);
-    else if(file.substr(file.length() - 3, file.length()) == "asf")
-        ReadAcclaimFile(file, model);
+    else if(meshpath.substr(meshpath.length() - 3, meshpath.length()) == "asf")
+        ReadAcclaimFile(meshpath, model);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -81,56 +98,40 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 
     ASFAMCParser* object = new ASFAMCParser();
 
-    if(dataManager->GetSkeletonFilePathCount() > 0 && dataManager->GetAnimationFilePathCount() > 0)
+	//skeletons
+	if(dataManager->getSkeletons().size() > 0 && dataManager->getAnimations().size() > 0)
     {
-        if(object->ReadASFFile(dataManager->GetSkeletonFilePath(0)))
-            ParserAcclaimFile2EDR(dynamic_cast<Model*>(dataManager->GetModel()), object);
+		std::string meshpath = "";
+		if(dataManager->getMeshes().size() > 0)
+		{
+			meshpath = dataManager->getMeshes().begin()->second;
+		}
+		Factor* factory = new Factor();
+		Model *model = dynamic_cast<Model* >(factory->GetModel(meshpath, dataManager->getSkeletons().begin()->second, std::vector<std::string>()));
 
-        for(int i = 0; i < dataManager->GetAnimationFilePathCount(); i++)
+		if(object->ReadASFFile(dataManager->getSkeletons().begin()->second))
+            ParserAcclaimFile2EDR(model, object);
+
+		for(std::map<std::string, std::string>::const_iterator it = dataManager->getAnimations().begin(); it != dataManager->getAnimations().end(); ++it)
         {
-            if(object->ReadAMCFile(dataManager->GetAnimationFilePath(i)))
-                LoadAnimationFromAcclaim(dataManager->GetAnimationFilePath(i), object, dynamic_cast<Model*>(dataManager->GetModel()));
+			if(object->ReadAMCFile((*it).second))
+                LoadAnimationFromAcclaim((*it).second, object, model);
         }
     }
 
-
-	// TODO: ladowanie pierwszego pliku c3d jesli jakis znajduje sie w zasobach [Marek Daniluk 23.11.10]
-	std::map<std::string, std::string>::const_iterator c3ds_iterator = dataManager->getC3Ds().begin();
-// 	if(c3ds_iterator != dataManager->getC3Ds().end())
-// 	{
-// 		C3D_Data *c3d = ReadC3DFile((*c3ds_iterator).second);
-// 		if(c3d)
-// 		{
-// 			ParseC3DFile2EDR(c3d, dynamic_cast<C3DModel*>(dataManager->GetC3DModel()));
-// 		}
-// 	}
-
-    for (int i = 0; i < dataManager->GetC3dFilePathCount(); i++)
+	//c3ds
+	for (std::map<std::string, std::string>::const_iterator it = dataManager->getC3Ds().begin(); it != dataManager->getC3Ds().end(); ++it)
     {
-        C3D_Data *c3d = ReadC3DFile(dataManager->GetC3dFilePath(i));
+        C3D_Data *c3d = ReadC3DFile((*it).second);
 
         if(c3d)
         {
             C3DModel* c3dModel = new C3DModel();
-            std::string name = dataManager->GetC3dFilePath(i);
+            std::string name = (*it).second;
 
             c3dModel->SetName(name.substr(name.find_last_of("/")+1, name.length()));
             ParseC3DFile2EDR(c3d, c3dModel);
-            dataManager->AddC3DModel(c3dModel);
         }
-    }
-
-	// TODO: ladowanie pierwszego mesha jesli jakis znajduje sie w zasobach [Marek Daniluk 23.11.10]
-// 	std::map<std::string, std::string>::const_iterator meshes_iterator = dataManager->getMeshes().begin();
-// 	if(meshes_iterator != dataManager->getMeshes().end())
-// 	{
-// 		LoadMesh((*meshes_iterator).second, dynamic_cast<Model* >(dataManager->GetModel()));
-// 		dataManager->GetModel()->InicializeMesh();
-// 	}
-    if(dataManager->GetMeshFilePathCount() > 0)
-    {
-         LoadMesh(dataManager->GetMeshFilePathPath(0), dynamic_cast<Model* >(dataManager->GetModel()));
-         dataManager->GetModel()->InicializeMesh();
     }
 }
 

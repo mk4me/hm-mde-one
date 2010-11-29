@@ -3,7 +3,6 @@
 
 CommunicationService::CommunicationService() : name("Communication")
 {
-	this->widget = new CommunicationWidget(this);
 	this->transport = new communication::TransportWSDL_FTPS();
 	this->query = new communication::QueryWSDL();
 	//----------------------------------------------
@@ -14,10 +13,11 @@ CommunicationService::CommunicationService() : name("Communication")
 	this->query->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
 	this->query->setBasicUpdatesServiceUri("");
 	//----------------------------------------------
-
 	this->model = communication::CommunicationManager::getInstance();
 	this->model->setTransportManager(this->transport);
 	this->model->setQueryManager(this->query);
+
+	this->widget = new CommunicationWidget(this);
 	this->model->attach(this->widget);
 	try
 	{
@@ -86,11 +86,6 @@ void CommunicationService::setTransportWSCredentials(const std::string& user, co
 	this->transport->setWSCredentials(uri, user, password);
 }
 
-void CommunicationService::run()
-{
-	std::cout << "thread run\n";
-}
-
 void CommunicationService::updateSessionContents()
 {
 	this->model->clearSessions();
@@ -116,4 +111,14 @@ void CommunicationService::load()
 void CommunicationService::save()
 {
 	this->model->saveToXml(this->name);
+}
+
+void CommunicationService::run()
+{
+}
+
+AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
+{
+	this->model->setTrialsDir(dataManager->getTrialsDir());
+    return AsyncResult_Complete;
 }

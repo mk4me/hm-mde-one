@@ -67,7 +67,7 @@ void ServiceManager::loadDataPass(IDataManager* dataManager)
     while (it != servicesMap.end())
     {
         it->second->loadData(this, dataManager); 
-        it++; 
+        it++;
     }
 }
 

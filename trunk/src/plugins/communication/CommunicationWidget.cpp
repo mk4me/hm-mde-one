@@ -12,12 +12,14 @@ CommunicationWidget::CommunicationWidget(CommunicationService* service) : QWidge
 	
 	treeEntities = new QTreeWidget(this);
 	treeEntities->setSelectionMode(QTreeView::SingleSelection);
-	//treeEntities->setHeaderHidden(true);
 	treeEntities->setHeaderLabels(QStringList() << tr("Entity") << tr("ID") << tr("Description"));
+
+	progressBar = new QProgressBar(this);
 
 	QVBoxLayout* mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(buttonsBox);
 	mainLayout->addWidget(treeEntities);
+	mainLayout->addWidget(progressBar);
 	setLayout(mainLayout);
 
 	connect(updateButton, SIGNAL(clicked()), this, SLOT(updateButtonClicked()));
@@ -32,6 +34,7 @@ void CommunicationWidget::itemDoubleClicked(QTreeWidgetItem* item, int column)
 {
 	if(item && item->text(0) == tr("Trial"))
 	{
+		progressBar->setValue(0);
 		int session = item->parent()->text(1).toInt();
 		int trial = item->text(1).toInt();
 		QList<int> files;
@@ -40,17 +43,19 @@ void CommunicationWidget::itemDoubleClicked(QTreeWidgetItem* item, int column)
 			files.push_back(item->child(i)->text(1).toInt());
 		}
 		//TODO: trzeba wrzucic do osobnego watku
-		for(QList<int>::iterator it = files.begin(); it != files.end(); ++it)
+		for(int i = 0; i < files.size(); i++)
 		{
 			try
 			{
-				this->communicationService->downloadFile(session, trial, (*it));
+				this->communicationService->downloadFile(session, trial, files[i]);
 			}
 			catch(std::runtime_error& e)
 			{
 				QMessageBox::critical(this, tr("Error"), tr(e.what()));
 			}
+			progressBar->setValue((i + 1) * (100 / files.size()));
 		}
+		progressBar->reset();
 	}
 }
 

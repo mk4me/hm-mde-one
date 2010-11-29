@@ -3,16 +3,11 @@
 
 #include <core/IDataManager.h>
 
-
-class IModel;
-class IC3DModel;
-
 class DataManager: public IDataManager
 {
 public:
 //------------------------------------------------------------------------------------------------------------------------------
-	DataManager(const std::string& meshesDir = "data/resources/meshes/", const std::string& shadersDir = "data/resources/shaders/", const std::string& trialsDir = "data/resources/trials/");
-	DataManager(int i) {};
+	DataManager(const std::string& meshesDir = "data/resources/meshes/", const std::string& shadersDir = "data/resources/shaders/", const std::string& trialsDir = "data/trials/");
 
 	virtual void loadResources();
 
@@ -30,75 +25,35 @@ public:
 	virtual const std::string& getC3D(const std::string& name);
 	virtual const Resources& getC3Ds();
 
-	void setShadersDir(const std::string& dir) {this->shadersDir = dir; setDirSlashes(this->shadersDir);};
-	const std::string& getShadersDir() const {return this->shadersDir;};
+	virtual const std::string& getAnimation(const std::string& name);
+	virtual const Resources& getAnimations();
 
-	void setMeshesDir(const std::string& dir) {this->meshesDir = dir; setDirSlashes(this->meshesDir);};
-	const std::string& getMeshesDir() const {return this->meshesDir;};
+	virtual const std::string& getSkeleton(const std::string& name);
+	virtual const Resources& getSkeletons();
 
-	void setTrialsDir(const std::string& dir) {this->trialsDir = dir; setDirSlashes(this->trialsDir);};
-	const std::string& getTrialsDir() const {return this->trialsDir;};
-//------------------------------------------------------------------------------------------------------------------------------
+	void setShadersDir(const std::string& dir) {this->shadersDir = dir;};
+	virtual const std::string& getShadersDir() const {return this->shadersDir;};
 
-    DataManager(std::string address, IModel* model, IC3DModel* c3dModel);
+	void setMeshesDir(const std::string& dir) {this->meshesDir = dir;};
+	virtual const std::string& getMeshesDir() const {return this->meshesDir;};
+
+	void setTrialsDir(const std::string& dir) {this->trialsDir = dir;};
+	virtual const std::string& getTrialsDir() const {return this->trialsDir;};
+
     virtual ~DataManager();
-
-    virtual void GetVideoFile();
-    virtual void Clear();
-    virtual std::string GetFileName();
-    virtual std::string GetVideoFilePath(int i);
-    virtual int GetVideoFilePathCount();
-
-    virtual std::string GetSkeletonFilePath(int i);
-    virtual int GetSkeletonFilePathCount();
-
-    virtual std::string GetAnimationFilePath(int i);
-    virtual int GetAnimationFilePathCount();
-    virtual std::vector<std::string>* GetAnimationList();
-
-    virtual std::string GetMeshFilePathPath(int i);
-    virtual int GetMeshFilePathCount();
-
-    virtual std::string GetC3dFilePath(int i);
-    virtual int GetC3dFilePathCount();
-    
-
-    virtual IModel* GetModel();
-
-    virtual int GetC3DModelCount();
-    virtual IC3DModel* GetC3DModel(int i = 0);
-    virtual void AddC3DModel(IC3DModel *c3dmodel);
-
 private:
-    void ParseDataToNewManager();
-
-private:
-//------------------------------------------------------------------------------------------------------------------------------
 	Resources shadersPaths;
 	Resources meshesPaths;
 	Resources videosPaths;
 	Resources c3dsPaths;
+	Resources animationPaths;
+	Resources skeletonPaths;
 
 	std::string shadersDir;
 	std::string meshesDir;
 	std::string trialsDir;
 
-	void setDirSlashes(std::string& dir);
-//------------------------------------------------------------------------------------------------------------------------------
-
-	std::vector<std::string> m_VideoFilePathList;
-    std::vector<std::string> m_SkeletonFilePathList;
-    std::vector<std::string> m_AnimationFilePathList;
-    std::vector<std::string> m_MeshFilePathList;
-
-    std::vector<std::string> m_c3dFilePathList;
-
-    std::string m_pFileName;
-
-    IModel* m_pModel;
-    std::vector<IC3DModel* > m_pC3dModelList;
+	std::string getFilename(const std::string& dir);
 };
-
-
 
 #endif // DATA_MANAGER_H

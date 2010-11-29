@@ -496,13 +496,11 @@ void ToolboxMain::openFile( const std::string& path )
     std::cout << "File Opened: " << path << std::endl;
     std::cout << "---------------------------------------------------------------" << std::endl; 
 
-    Model* model = new Model();
-    C3DModel* c3dModel = new C3DModel();
-    DataManager* dataManaget = new DataManager(path, model, c3dModel);
+    DataManager* dataManager = new DataManager();
 
-    FileReader2Motion::ReadFile(dataManaget);
+    FileReader2Motion::ReadFile(dataManager);
 
-    m_pServiceManager->loadDataPass(dataManaget);
+    m_pServiceManager->loadDataPass(dataManager);
 
     m_pRenderService->AddObjectToRender(createGrid());
 
@@ -511,12 +509,6 @@ void ToolboxMain::openFile( const std::string& path )
     osg::Node* sceneRoot = scene->getSceneData();
     //   _osgControlWidget->SetScene(scene); 
     _gridWidget->SetScene(sceneRoot);
-
-    return;
-
-    // TODO: po co to? tak by³o w oryginale?
-    if (model)
-        delete model;
 }
 
 // void ToolboxMain::SettingModel()

@@ -24,6 +24,8 @@ namespace communication
 		typedef std::map<int, Trial> Trials;
 		typedef std::map<int, File> Files;
 
+		std::string trialsDir;
+
 		void setSessions(unsigned int labID);
 		const Sessions& getSessions(/*unsigned int labID*/) const;
 
@@ -48,6 +50,9 @@ namespace communication
 
 		void setQueryManager(IQueryable* queryManager);
 		IQueryable* getQueryManager();
+
+		void setTrialsDir(const std::string& dir);
+		const std::string& getTrialsDir() const;
 
 		static CommunicationManager* getInstance();
 		static void destoryInstance();

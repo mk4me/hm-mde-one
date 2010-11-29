@@ -50,32 +50,34 @@ void RenderService::Clear()
 //--------------------------------------------------------------------------------------------------
 AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
-//    m_pFactory = new Factor();
+    m_pFactory = new Factor();
 
     //nowy SetScene
-    m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(dataManager->GetMeshFilePathPath(0), dataManager->GetSkeletonFilePath(0), *dataManager->GetAnimationList()));
+	std::string meshpath = "";
+	std::string skelpath = "";
+	std::string c3dpath = "";
+	if(dataManager->getMeshes().size() > 0)
+	{
+		meshpath = dataManager->getMeshes().begin()->second;
+	}
+	if(dataManager->getSkeletons().size() > 0)
+	{
+		skelpath = dataManager->getSkeletons().begin()->second;
+	}
+	if(dataManager->getC3Ds().size() > 0)
+	{
+		c3dpath = dataManager->getC3Ds().begin()->second;
+	}
+	m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(meshpath, skelpath, std::vector<std::string>()));// *dataManager->GetAnimationList()));
 
     if(m_pModel) {
         SetScene(m_pModel);
     }
-
-    m_pC3DModel = dynamic_cast<C3DModel* >(m_pFactory->GetC3DModel(dataManager->GetC3dFilePath(0)));
+	m_pC3DModel = dynamic_cast<C3DModel* >(m_pFactory->GetC3DModel(c3dpath));
 
     if(m_pC3DModel) {
         RenderC3D(m_pC3DModel);
     }
-
-
-//     if(dynamic_cast<Model* >(dataManager->GetModel())) {
-//         SetScene(dynamic_cast<Model* >(dataManager->GetModel()));
-//         m_pModel = dynamic_cast<Model* >(dataManager->GetModel());
-//     }
-
-
-//     if(dynamic_cast<C3DModel* >(dataManager->GetC3DModel())) {
-//         RenderC3D(dynamic_cast<C3DModel* >(dataManager->GetC3DModel()));
-//         m_pC3DModel = dynamic_cast<C3DModel* >(dataManager->GetC3DModel());
-//     }
 
     return AsyncResult_Complete;
 }
