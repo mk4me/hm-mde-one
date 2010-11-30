@@ -6,32 +6,36 @@
 
 DataManager::DataManager(const std::string& resourcesPath, const std::string& trialsPath) : resourcesPath(resourcesPath), trialsPath(trialsPath)
 {
-	Clear();
-	LoadResources();
+	clear();
+	loadResources();
 }
 
 DataManager::~DataManager()
 {
-    this->Clear();
+    this->clear();
 }
 
-void DataManager::LoadResources()
+void DataManager::loadResources()
 {
 	//szukaj shaderow
 	shadersPaths = Filesystem::listFiles(this->resourcesPath, true, "*.frag");
 	//szukaj meshy
 	meshesPaths = Filesystem::listFiles(this->resourcesPath, true, "*.tbs");
-	//szukaj plikow video
-	videosPaths = Filesystem::listFiles(this->trialsPath, true, "*.avi");
-	//szukaj plikow c3d
-	c3dsPaths = Filesystem::listFiles(this->trialsPath, true, "*.c3d");
-	//szukaj plikow animacji
-	animationPaths = Filesystem::listFiles(this->trialsPath, true, "*.amc");
-	//szukaj plikow animacji szkieletowej
-	skeletonPaths = Filesystem::listFiles(this->trialsPath, true, "*.asf");
 }
 
-void DataManager::Clear() {
+void DataManager::loadTrials()
+{
+	//szukaj plikow video
+	videosPaths = Filesystem::listFiles(this->trialsPath, false, "*.avi");
+	//szukaj plikow c3d
+	c3dsPaths = Filesystem::listFiles(this->trialsPath, false, "*.c3d");
+	//szukaj plikow animacji
+	animationPaths = Filesystem::listFiles(this->trialsPath, false, "*.amc");
+	//szukaj plikow animacji szkieletowej
+	skeletonPaths = Filesystem::listFiles(this->trialsPath, false, "*.asf");
+}
+
+void DataManager::clear() {
 	this->shadersPaths.clear();
 	this->meshesPaths.clear();
 	this->videosPaths.clear();
@@ -40,82 +44,82 @@ void DataManager::Clear() {
 	this->skeletonPaths.clear();
 }
 
-const std::string& DataManager::GetShaderFilePath(int i)
+const std::string& DataManager::getShaderFilePath(int i)
 {
 	return shadersPaths[i];
 }
 
-int DataManager::GetShaderFilePathCount()
+int DataManager::getShaderFilePathCount()
 {
 	return shadersPaths.size();
 }
 
-const std::string& DataManager::GetMeshFilePath(int i)
+const std::string& DataManager::getMeshFilePath(int i)
 {
 	return meshesPaths[i];
 }
 
-int DataManager::GetMeshFilePathCount()
+int DataManager::getMeshFilePathCount()
 {
 	return meshesPaths.size();
 }
 
-const std::string& DataManager::GetVideoFilePath(int i)
+const std::string& DataManager::getVideoFilePath(int i)
 {
 	return videosPaths[i];
 }
 
-int DataManager::GetVideoFilePathCount()
+int DataManager::getVideoFilePathCount()
 {
 	return videosPaths.size();
 }
 
-const std::string& DataManager::GetC3dFilePath(int i)
+const std::string& DataManager::getC3dFilePath(int i)
 {
 	return c3dsPaths[i];
 }
 
-int DataManager::GetC3dFilePathCount()
+int DataManager::getC3dFilePathCount()
 {
 	return c3dsPaths.size();
 }
 
-const std::string& DataManager::GetAnimationFilePath(int i)
+const std::string& DataManager::getAnimationFilePath(int i)
 {
 	return animationPaths[i];
 }
 
-int DataManager::GetAnimationFilePathCount()
+int DataManager::getAnimationFilePathCount()
 {
 	return animationPaths.size();
 }
 
-const std::string& DataManager::GetSkeletonFilePath(int i)
+const std::string& DataManager::getSkeletonFilePath(int i)
 {
 	return skeletonPaths[i];
 }
 
-int DataManager::GetSkeletonFilePathCount()
+int DataManager::getSkeletonFilePathCount()
 {
 	return skeletonPaths.size();
 }
 
-const std::string& DataManager::GetResourcesPath() const
+const std::string& DataManager::getResourcesPath() const
 {
 	return resourcesPath;
 }
 
-const std::string& DataManager::GetTrialsPath() const
+const std::string& DataManager::getTrialsPath() const
 {
 	return trialsPath;
 }
 
-void DataManager::SetResourcesPath(const std::string& resources)
+void DataManager::setResourcesPath(const std::string& resources)
 {
 	resourcesPath = resources;
 }
 
-void DataManager::SetTrialsPath(const std::string& trials)
+void DataManager::setTrialsPath(const std::string& trials)
 {
 	trialsPath = trials;
 }

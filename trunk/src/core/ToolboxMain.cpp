@@ -41,7 +41,6 @@
 #include <utils/Debug.h>
 
 #include <plugins/video/core/PixelFormat.h>
-#include "DataManager.h"
 
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
@@ -92,14 +91,19 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     computeThread = new ComputeThread(m_pServiceManager, 0.02);
     computeThread->start();
 
+	/*
+	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
+	*/
+    dataManager = new DataManager();
+
 }
 
 ToolboxMain::~ToolboxMain()
 {
-    Clear();
+    clear();
 }
 
-void ToolboxMain::Clear()
+void ToolboxMain::clear()
 {
     delete ui;  // ui stuff
     std::streambuf *buf = std::cout.rdbuf(_streambuf);
@@ -110,6 +114,9 @@ void ToolboxMain::Clear()
     delete pluginLoader;
     m_pUserInterfaceService = NULL;
     m_pModelService = NULL;
+	if(dataManager)
+		delete dataManager;
+	dataManager = NULL;
     
 
     // remove all services
@@ -307,7 +314,7 @@ void ToolboxMain::registerPluginsServices()
 
 void ToolboxMain::onOpen()
 {
-    const QString fileName = QFileDialog::getOpenFileName(this, "Open File", QDir::currentPath(), "*.tbs"); // TODO: tymczasowo dodaje asf do filtrów Open File
+	const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath()); // TODO: tymczasowo dodaje asf do filtrów Open File
     if (!fileName.isEmpty()) 
     {
         std::string pathVal = fileName.toStdString();
@@ -318,7 +325,7 @@ void ToolboxMain::onOpen()
 
         return;
     }
-    QMessageBox::warning(this, QString("Error!"), QString("Failed to load model."));
+    QMessageBox::warning(this, QString("Error!"), QString("Failed to load trials."));
 }
 
 void ToolboxMain::onExit()
@@ -496,7 +503,9 @@ void ToolboxMain::openFile( const std::string& path )
     std::cout << "File Opened: " << path << std::endl;
     std::cout << "---------------------------------------------------------------" << std::endl; 
 
-    DataManager* dataManager = new DataManager();
+	//zaladowanie sciezek prob pomiarowych
+	dataManager->setTrialsPath(path);
+	dataManager->loadTrials();
 
     FileReader2Motion::ReadFile(dataManager);
 

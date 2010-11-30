@@ -9,33 +9,34 @@ public:
 //------------------------------------------------------------------------------------------------------------------------------
 	DataManager(const std::string& resourcesPath = "data/resources/", const std::string& trialsPath = "data/trials/");
 
- 	virtual void LoadResources();
+ 	virtual void loadResources();
+	virtual void loadTrials();
 
-	virtual void Clear();
+	virtual void clear();
 
-    virtual const std::string& GetShaderFilePath(int i);
-    virtual int GetShaderFilePathCount();
+    virtual const std::string& getShaderFilePath(int i);
+    virtual int getShaderFilePathCount();
 
-    virtual const std::string& GetMeshFilePath(int i);
-    virtual int GetMeshFilePathCount();
+    virtual const std::string& getMeshFilePath(int i);
+    virtual int getMeshFilePathCount();
 
-    virtual const std::string& GetVideoFilePath(int i);
-    virtual int GetVideoFilePathCount();
+    virtual const std::string& getVideoFilePath(int i);
+    virtual int getVideoFilePathCount();
 
-    virtual const std::string& GetC3dFilePath(int i);
-    virtual int GetC3dFilePathCount();
+    virtual const std::string& getC3dFilePath(int i);
+    virtual int getC3dFilePathCount();
 
-    virtual const std::string& GetSkeletonFilePath(int i);
-    virtual int GetSkeletonFilePathCount();
+    virtual const std::string& getSkeletonFilePath(int i);
+    virtual int getSkeletonFilePathCount();
 
-    virtual const std::string& GetAnimationFilePath(int i);
-    virtual int GetAnimationFilePathCount();
+    virtual const std::string& getAnimationFilePath(int i);
+    virtual int getAnimationFilePathCount();
 
-	virtual const std::string& GetResourcesPath() const;
-	virtual const std::string& GetTrialsPath() const;
+	virtual const std::string& getResourcesPath() const;
+	virtual const std::string& getTrialsPath() const;
 
-	virtual void SetResourcesPath(const std::string& resources);
-	virtual void SetTrialsPath(const std::string& trials);
+	virtual void setResourcesPath(const std::string& resources);
+	virtual void setTrialsPath(const std::string& trials);
 
     virtual ~DataManager();
 private:

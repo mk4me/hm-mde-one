@@ -124,6 +124,7 @@ std::vector<std::string> Filesystem::listSubdirectories(const std::string& path)
 		if(dataFind.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY && dataFind.cFileName[0] != '.')
 		{
 			std::string subdir = path;
+			Filesystem::preparePath(subdir);
 			subdir.append(dataFind.cFileName);
 			subdirs.push_back(subdir);
 		}

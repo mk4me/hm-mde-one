@@ -28,37 +28,29 @@ VideoService::VideoService()
 
 AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
 {
-    VideoWidget* widget = reinterpret_cast<VideoWidget*>(this->widget);
+	VideoWidget* widget = reinterpret_cast<VideoWidget*>(this->widget);
 
-    std::vector<std::string> files;
+	std::vector<std::string> files;
 	//TODO: ladowanie sciezek do plikow video [Marek Daniluk 23.11.10]
-	for(std::map<std::string, std::string>::const_iterator it = dataManager->getVideos().begin(); it != dataManager->getVideos().end(); ++it)
+	for(int i = 0; i < dataManager->getVideoFilePathCount(); i++)
 	{
-		files.push_back((*it).second);
+		files.push_back(dataManager->getVideoFilePath(i));
 	}
 
-//     files.push_back("trial1a.avi");
-//     files.push_back("trial1b.avi");
-//     files.push_back("trial1c.avi");
-//     files.push_back("trial1d.avi");
-    //for (int i = 0; i < dataManager->GetVideoFilePathCount(); ++i) {
-    //    files.push_back(dataManager->GetVideoFilePath(i));
-    //}
-    widget->init(files);
+	widget->init(files);
 
-    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
-    if ( timeline ) {
-        for ( size_t i = 0; i < widget->getImages().size(); ++i ) {
-            osg::Image* img = widget->getImages()[i].get();
-            osg::ImageStream* stream = dynamic_cast<osg::ImageStream*>(img);
-            if ( stream ) {
-                timeline->addStream(timeline::StreamPtr(timeline::Stream::encapsulate(stream)));
-            }
-        }
-    } else {
-        OSG_WARN<<"ITimeline not found."<<std::endl;
-    }
-
+	ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
+	if ( timeline ) {
+		for ( size_t i = 0; i < widget->getImages().size(); ++i ) {
+			osg::Image* img = widget->getImages()[i].get();
+			osg::ImageStream* stream = dynamic_cast<osg::ImageStream*>(img);
+			if ( stream ) {
+				timeline->addStream(timeline::StreamPtr(timeline::Stream::encapsulate(stream)));
+			}
+		}
+	} else {
+		OSG_WARN<<"ITimeline not found."<<std::endl;
+	}
     return AsyncResult_Complete;
 // 
 // 

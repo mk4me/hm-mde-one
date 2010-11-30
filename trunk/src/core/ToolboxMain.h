@@ -14,6 +14,7 @@
 
 #include <core/PluginLoader.h>
 #include <core/Window.h>
+#include <core/DataManager.h>
 
 class UserInterfaceService;
 class ServiceManager;
@@ -52,7 +53,7 @@ public:
     void InitializeConsoleWidget();
     void InitializeControlWidget();
 
-    void Clear();
+    void clear();
 
 public:
     void openFile( const std::string& path );
@@ -111,7 +112,8 @@ private:
 
 private:    
     ServiceManager* m_pServiceManager;
-    
+	//zasoby (model, triale)
+    DataManager* dataManager;
     UserInterfaceService* m_pUserInterfaceService;
     ModelService* m_pModelService;
 

@@ -162,7 +162,7 @@ void CommunicationService::run()
 
 AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
 {
-	this->model->setTrialsDir(dataManager->GetTrialsPath());
+	this->model->setTrialsDir(dataManager->getTrialsPath());
     return AsyncResult_Complete;
 }
 
