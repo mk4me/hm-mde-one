@@ -4,73 +4,34 @@
 #include <core/Filesystem.h>
 #include <tinyxml.h>
 
+DataManager::DataManager(const std::string& resourcesPath, const std::string& trialsPath) : resourcesPath(resourcesPath), trialsPath(trialsPath)
+{
+	Clear();
+	LoadResources();
+}
+
 DataManager::~DataManager()
 {
-    this->clear();
+    this->Clear();
 }
 
-DataManager::DataManager(const std::string& meshesDir, const std::string& shadersDir, const std::string& trialsDir) : shadersDir(shadersDir), meshesDir(meshesDir), trialsDir(trialsDir)
-{
-	clear();
-	loadResources();
-}
-
-void DataManager::loadResources()
+void DataManager::LoadResources()
 {
 	//szukaj shaderow
-	std::vector<std::string> shaders = Filesystem::listFiles(this->shadersDir, false, "*.frag");
-	for(std::vector<std::string>::iterator it = shaders.begin(); it != shaders.end(); ++it)
-	{
-		this->shadersPaths[getFilename((*it))] = (*it);
-	}
+	shadersPaths = Filesystem::listFiles(this->resourcesPath, true, "*.frag");
 	//szukaj meshy
-	std::vector<std::string> meshes = Filesystem::listFiles(this->meshesDir, false, "*.tbs");
-	for(std::vector<std::string>::iterator it = meshes.begin(); it != meshes.end(); ++it)
-	{
-		this->meshesPaths[getFilename((*it))] = (*it);
-	}
+	meshesPaths = Filesystem::listFiles(this->resourcesPath, true, "*.tbs");
 	//szukaj plikow video
-	std::vector<std::string> videos = Filesystem::listFiles(this->trialsDir, true, "*.avi");
-	for(std::vector<std::string>::iterator it = videos.begin(); it != videos.end(); ++it)
-	{
-		this->videosPaths[getFilename((*it))] = (*it);
-	}
+	videosPaths = Filesystem::listFiles(this->trialsPath, true, "*.avi");
 	//szukaj plikow c3d
-	std::vector<std::string> c3ds = Filesystem::listFiles(this->trialsDir, true, "*.c3d");
-	for(std::vector<std::string>::iterator it = c3ds.begin(); it != c3ds.end(); ++it)
-	{
-		this->c3dsPaths[getFilename((*it))] = (*it);
-	}
+	c3dsPaths = Filesystem::listFiles(this->trialsPath, true, "*.c3d");
 	//szukaj plikow animacji
-	std::vector<std::string> aniamtions = Filesystem::listFiles(this->trialsDir, true, "*.amc");
-	for(std::vector<std::string>::iterator it = aniamtions.begin(); it != aniamtions.end(); ++it)
-	{
-		this->animationPaths[getFilename((*it))] = (*it);
-	}
+	animationPaths = Filesystem::listFiles(this->trialsPath, true, "*.amc");
 	//szukaj plikow animacji szkieletowej
-	std::vector<std::string> skeletons = Filesystem::listFiles(this->trialsDir, true, "*.asf");
-	for(std::vector<std::string>::iterator it = skeletons.begin(); it != skeletons.end(); ++it)
-	{
-		this->skeletonPaths[getFilename((*it))] = (*it);
-	}
+	skeletonPaths = Filesystem::listFiles(this->trialsPath, true, "*.asf");
 }
 
-std::string DataManager::getFilename(const std::string& dir)
-{
-	std::string filename = dir;
-
-	if(filename.rfind("/") == std::string.npos)
-	{
-		return filename;
-	}
-	else
-	{
-		filename = filename.substr(filename.rfind("/")+1);
-	}
-	return filename;
-}
-
-void DataManager::clear() {
+void DataManager::Clear() {
 	this->shadersPaths.clear();
 	this->meshesPaths.clear();
 	this->videosPaths.clear();
@@ -79,92 +40,82 @@ void DataManager::clear() {
 	this->skeletonPaths.clear();
 }
 
-const std::string& DataManager::getShader(const std::string& name)
+const std::string& DataManager::GetShaderFilePath(int i)
 {
-	std::map<std::string, std::string>::iterator it = this->shadersPaths.find(name);
-	if(it != this->shadersPaths.end())
-	{
-		return (*it).second;
-	}
-	return std::string();
+	return shadersPaths[i];
 }
 
-const std::map<std::string, std::string>& DataManager::getShaders()
+int DataManager::GetShaderFilePathCount()
 {
-	return this->shadersPaths;
+	return shadersPaths.size();
 }
 
-const std::string& DataManager::getMesh(const std::string& name)
+const std::string& DataManager::GetMeshFilePath(int i)
 {
-	std::map<std::string, std::string>::iterator it = this->meshesPaths.find(name);
-	if(it != this->meshesPaths.end())
-	{
-		return (*it).second;
-	}
-	return std::string();
+	return meshesPaths[i];
 }
 
-const std::map<std::string, std::string>& DataManager::getMeshes()
+int DataManager::GetMeshFilePathCount()
 {
-	return this->meshesPaths;
+	return meshesPaths.size();
 }
 
-const std::string& DataManager::getVideo(const std::string& name)
+const std::string& DataManager::GetVideoFilePath(int i)
 {
-	std::map<std::string, std::string>::iterator it = this->videosPaths.find(name);
-	if(it != this->videosPaths.end())
-	{
-		return (*it).second;
-	}
-	return std::string();
+	return videosPaths[i];
 }
 
-const std::map<std::string, std::string>& DataManager::getVideos()
+int DataManager::GetVideoFilePathCount()
 {
-	return this->videosPaths;
+	return videosPaths.size();
 }
 
-const std::string& DataManager::getC3D(const std::string& name)
+const std::string& DataManager::GetC3dFilePath(int i)
 {
-	std::map<std::string, std::string>::iterator it = this->c3dsPaths.find(name);
-	if(it != this->c3dsPaths.end())
-	{
-		return (*it).second;
-	}
-	return std::string();
+	return c3dsPaths[i];
 }
 
-const std::map<std::string, std::string>& DataManager::getC3Ds()
+int DataManager::GetC3dFilePathCount()
 {
-	return this->c3dsPaths;
+	return c3dsPaths.size();
 }
 
-const std::string& DataManager::getAnimation(const std::string& name)
+const std::string& DataManager::GetAnimationFilePath(int i)
 {
-	std::map<std::string, std::string>::iterator it = this->animationPaths.find(name);
-	if(it != this->animationPaths.end())
-	{
-		return (*it).second;
-	}
-	return std::string();
+	return animationPaths[i];
 }
 
-const std::map<std::string, std::string>& DataManager::getAnimations()
+int DataManager::GetAnimationFilePathCount()
 {
-	return this->animationPaths;
+	return animationPaths.size();
 }
 
-const std::string& DataManager::getSkeleton(const std::string& name)
+const std::string& DataManager::GetSkeletonFilePath(int i)
 {
-	std::map<std::string, std::string>::iterator it = this->skeletonPaths.find(name);
-	if(it != this->skeletonPaths.end())
-	{
-		return (*it).second;
-	}
-	return std::string();
+	return skeletonPaths[i];
 }
 
-const std::map<std::string, std::string>& DataManager::getSkeletons()
+int DataManager::GetSkeletonFilePathCount()
 {
-	return this->skeletonPaths;
+	return skeletonPaths.size();
+}
+
+const std::string& DataManager::GetResourcesPath() const
+{
+	return resourcesPath;
+}
+
+const std::string& DataManager::GetTrialsPath() const
+{
+	return trialsPath;
+}
+
+void DataManager::SetResourcesPath(const std::string& resources)
+{
+	resourcesPath = resources;
+}
+
+void DataManager::SetTrialsPath(const std::string& trials)
+{
+	trialsPath = trials;
 }

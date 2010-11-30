@@ -1,7 +1,7 @@
 #include "CommunicationPCH.h"
 #include <plugins/communication/CommunicationService.h>
 
-CommunicationService::CommunicationService() : name("Communication")
+CommunicationService::CommunicationService() : name("Communication"), downloadMutex()
 {
 	this->transport = new communication::TransportWSDL_FTPS();
 	this->query = new communication::QueryWSDL();
@@ -33,6 +33,10 @@ CommunicationService::CommunicationService() : name("Communication")
 
 CommunicationService::~CommunicationService()
 {
+	if(isRunning())
+	{
+		join();
+	}
 	delete this->transport;
 	this->transport = NULL;
 	delete this->query;
@@ -43,6 +47,7 @@ CommunicationService::~CommunicationService()
 
 void CommunicationService::downloadFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID)
 {
+	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(downloadMutex);
 	actualSession = sessionID;
 	actualTrial = trialID;
 	actualFile = fileID;
@@ -53,6 +58,7 @@ void CommunicationService::downloadFile(unsigned int sessionID, unsigned int tri
 
 void CommunicationService::downloadTrial(unsigned int sessionID, unsigned int trialID)
 {
+	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(downloadMutex);
 	actualSession = sessionID;
 	actualTrial = trialID;
 	actualFile = 0;
@@ -156,7 +162,7 @@ void CommunicationService::run()
 
 AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
 {
-	this->model->setTrialsDir(dataManager->getTrialsDir());
+	this->model->setTrialsDir(dataManager->GetTrialsPath());
     return AsyncResult_Complete;
 }
 

@@ -7,53 +7,48 @@ class DataManager: public IDataManager
 {
 public:
 //------------------------------------------------------------------------------------------------------------------------------
-	DataManager(const std::string& meshesDir = "data/resources/meshes/", const std::string& shadersDir = "data/resources/shaders/", const std::string& trialsDir = "data/trials/");
+	DataManager(const std::string& resourcesPath = "data/resources/", const std::string& trialsPath = "data/trials/");
 
-	virtual void loadResources();
+ 	virtual void LoadResources();
 
-	virtual void clear();
+	virtual void Clear();
 
-	virtual const std::string& getShader(const std::string& name);
-	virtual const Resources& getShaders();
+    virtual const std::string& GetShaderFilePath(int i);
+    virtual int GetShaderFilePathCount();
 
-	virtual const std::string& getMesh(const std::string& name);
-	virtual const Resources& getMeshes();
+    virtual const std::string& GetMeshFilePath(int i);
+    virtual int GetMeshFilePathCount();
 
-	virtual const std::string& getVideo(const std::string& name);
-	virtual const Resources& getVideos();
+    virtual const std::string& GetVideoFilePath(int i);
+    virtual int GetVideoFilePathCount();
 
-	virtual const std::string& getC3D(const std::string& name);
-	virtual const Resources& getC3Ds();
+    virtual const std::string& GetC3dFilePath(int i);
+    virtual int GetC3dFilePathCount();
 
-	virtual const std::string& getAnimation(const std::string& name);
-	virtual const Resources& getAnimations();
+    virtual const std::string& GetSkeletonFilePath(int i);
+    virtual int GetSkeletonFilePathCount();
 
-	virtual const std::string& getSkeleton(const std::string& name);
-	virtual const Resources& getSkeletons();
+    virtual const std::string& GetAnimationFilePath(int i);
+    virtual int GetAnimationFilePathCount();
 
-	void setShadersDir(const std::string& dir) {this->shadersDir = dir;};
-	virtual const std::string& getShadersDir() const {return this->shadersDir;};
+	virtual const std::string& GetResourcesPath() const;
+	virtual const std::string& GetTrialsPath() const;
 
-	void setMeshesDir(const std::string& dir) {this->meshesDir = dir;};
-	virtual const std::string& getMeshesDir() const {return this->meshesDir;};
-
-	void setTrialsDir(const std::string& dir) {this->trialsDir = dir;};
-	virtual const std::string& getTrialsDir() const {return this->trialsDir;};
+	virtual void SetResourcesPath(const std::string& resources);
+	virtual void SetTrialsPath(const std::string& trials);
 
     virtual ~DataManager();
 private:
-	Resources shadersPaths;
-	Resources meshesPaths;
-	Resources videosPaths;
-	Resources c3dsPaths;
-	Resources animationPaths;
-	Resources skeletonPaths;
+	std::vector<std::string> shadersPaths;
+	std::vector<std::string> meshesPaths;
+	std::vector<std::string> videosPaths;
+	std::vector<std::string> c3dsPaths;
+	std::vector<std::string> animationPaths;
+	std::vector<std::string> skeletonPaths;
 
-	std::string shadersDir;
-	std::string meshesDir;
-	std::string trialsDir;
+	std::string resourcesPath;
+	std::string trialsPath;
 
-	std::string getFilename(const std::string& dir);
 };
 
 #endif // DATA_MANAGER_H

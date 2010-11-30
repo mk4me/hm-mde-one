@@ -21,6 +21,7 @@ private:
 	communication::TransportWSDL_FTPS* transport;
 	communication::QueryWSDL* query;
 	std::string name;
+    OpenThreads::Mutex downloadMutex;
 	bool downloading;
 	int progress;
 	unsigned int actualSession;

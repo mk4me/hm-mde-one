@@ -56,17 +56,17 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 	std::string meshpath = "";
 	std::string skelpath = "";
 	std::string c3dpath = "";
-	if(dataManager->getMeshes().size() > 0)
+	if(dataManager->GetMeshFilePathCount() > 0)
 	{
-		meshpath = dataManager->getMeshes().begin()->second;
+		meshpath = dataManager->GetMeshFilePath(0);
 	}
-	if(dataManager->getSkeletons().size() > 0)
+	if(dataManager->GetSkeletonFilePathCount() > 0)
 	{
-		skelpath = dataManager->getSkeletons().begin()->second;
+		skelpath = dataManager->GetSkeletonFilePath(0);
 	}
-	if(dataManager->getC3Ds().size() > 0)
+	if(dataManager->GetC3dFilePathCount() > 0)
 	{
-		c3dpath = dataManager->getC3Ds().begin()->second;
+		c3dpath = dataManager->GetC3dFilePath(0);
 	}
 	m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(meshpath, skelpath, std::vector<std::string>()));// *dataManager->GetAnimationList()));
 

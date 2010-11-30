@@ -122,17 +122,17 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 	std::string meshpath = "";
 	std::string skelpath = "";
 	std::string c3dpath = "";
-	if(dataManager->getMeshes().size() > 0)
+	if(dataManager->GetMeshFilePathCount() > 0)
 	{
-		meshpath = dataManager->getMeshes().begin()->second;
+		meshpath = dataManager->GetMeshFilePath(0);
 	}
-	if(dataManager->getSkeletons().size() > 0)
+	if(dataManager->GetSkeletonFilePathCount() > 0)
 	{
-		skelpath = dataManager->getSkeletons().begin()->second;
+		skelpath = dataManager->GetSkeletonFilePath(0);
 	}
-	if(dataManager->getC3Ds().size() > 0)
+	if(dataManager->GetC3dFilePathCount() > 0)
 	{
-		c3dpath = dataManager->getC3Ds().begin()->second;
+		c3dpath = dataManager->GetC3dFilePath(0);
 	}
 	m_pModel = m_pFactory->GetModel(meshpath, skelpath, std::vector<std::string>());// *dataManager->GetAnimationList());
 	m_pC3MModel = m_pFactory->GetC3DModel(c3dpath);
@@ -140,8 +140,8 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 
     LoadAnimation(m_pModel);
 
-	for (std::map<std::string, std::string>::const_iterator it = dataManager->getC3Ds().begin(); it != dataManager->getC3Ds().end(); ++it)
-        LoadAnimation(m_pFactory->GetC3DModel((*it).second));
+	for (int i = 0; i < dataManager->GetC3dFilePathCount(); i++)
+        LoadAnimation(m_pFactory->GetC3DModel(dataManager->GetC3dFilePath(i)));
 
     widget->SetScene(m_pScene, serviceManager);
 

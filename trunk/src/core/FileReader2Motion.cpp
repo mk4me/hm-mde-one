@@ -65,17 +65,17 @@ void FileReader2Motion::ReadFile(DataManager *dataManager)
 	std::string meshpath = "";
 	std::string skelpath = "";
 	std::string c3dpath = "";
-	if(dataManager->getMeshes().size() > 0)
+	if(dataManager->GetMeshFilePathCount() > 0)
 	{
-		meshpath = dataManager->getMeshes().begin()->second;
+		meshpath = dataManager->GetMeshFilePath(0);
 	}
-	if(dataManager->getSkeletons().size() > 0)
+	if(dataManager->GetSkeletonFilePathCount() > 0)
 	{
-		skelpath = dataManager->getSkeletons().begin()->second;
+		skelpath = dataManager->GetSkeletonFilePath(0);
 	}
-	if(dataManager->getC3Ds().size() > 0)
+	if(dataManager->GetC3dFilePathCount() > 0)
 	{
-		c3dpath = dataManager->getC3Ds().begin()->second;
+		c3dpath = dataManager->GetC3dFilePath(0);
 	}
 
 	//FIX: jak obslugiwac Factor? [Marek Daniluk 29.11.10]
@@ -99,35 +99,35 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
     ASFAMCParser* object = new ASFAMCParser();
 
 	//skeletons
-	if(dataManager->getSkeletons().size() > 0 && dataManager->getAnimations().size() > 0)
-    {
+	if(dataManager->GetSkeletonFilePathCount() > 0 && dataManager->GetAnimationFilePathCount() > 0)
+	{
 		std::string meshpath = "";
-		if(dataManager->getMeshes().size() > 0)
+		if(dataManager->GetMeshFilePathCount() > 0)
 		{
-			meshpath = dataManager->getMeshes().begin()->second;
+			meshpath = dataManager->GetMeshFilePath(0);
 		}
 		Factor* factory = new Factor();
-		Model *model = dynamic_cast<Model* >(factory->GetModel(meshpath, dataManager->getSkeletons().begin()->second, std::vector<std::string>()));
+		Model *model = dynamic_cast<Model* >(factory->GetModel(meshpath, dataManager->GetSkeletonFilePath(0), std::vector<std::string>()));
 
-		if(object->ReadASFFile(dataManager->getSkeletons().begin()->second))
+		if(object->ReadASFFile(dataManager->GetSkeletonFilePath(0)))
             ParserAcclaimFile2EDR(model, object);
 
-		for(std::map<std::string, std::string>::const_iterator it = dataManager->getAnimations().begin(); it != dataManager->getAnimations().end(); ++it)
+		for(int i = 0; i < dataManager->GetAnimationFilePathCount(); i++)
         {
-			if(object->ReadAMCFile((*it).second))
-                LoadAnimationFromAcclaim((*it).second, object, model);
+			if(object->ReadAMCFile(dataManager->GetAnimationFilePath(i)))
+                LoadAnimationFromAcclaim(dataManager->GetAnimationFilePath(i), object, model);
         }
     }
 
 	//c3ds
-	for (std::map<std::string, std::string>::const_iterator it = dataManager->getC3Ds().begin(); it != dataManager->getC3Ds().end(); ++it)
+	for (int i = 0; i < dataManager->GetC3dFilePathCount(); i++)
     {
-        C3D_Data *c3d = ReadC3DFile((*it).second);
+		C3D_Data *c3d = ReadC3DFile(dataManager->GetC3dFilePath(i));
 
         if(c3d)
         {
             C3DModel* c3dModel = new C3DModel();
-            std::string name = (*it).second;
+            std::string name = dataManager->GetC3dFilePath(i);
 
             c3dModel->SetName(name.substr(name.find_last_of("/")+1, name.length()));
             ParseC3DFile2EDR(c3d, c3dModel);
