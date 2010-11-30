@@ -21,6 +21,11 @@ private:
 	communication::TransportWSDL_FTPS* transport;
 	communication::QueryWSDL* query;
 	std::string name;
+	bool downloading;
+	int progress;
+	unsigned int actualSession;
+	unsigned int actualTrial;
+	unsigned int actualFile;
 
 public:
 	CommunicationService();
@@ -37,11 +42,9 @@ public:
 		return name;
 	}
 
-	virtual void listLabSessionsWithAttributes(unsigned int labID);
-	virtual void listSessionTrials(unsigned int sessionID);
-	virtual void listTrialFiles(unsigned int sessionID, unsigned int trialID);
-
 	virtual void downloadFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID);
+	virtual void downloadTrial(unsigned int sessionID, unsigned int trialID);
+
 	virtual void updateSessionContents();
 
 	void load();
@@ -56,6 +59,7 @@ public:
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
+	virtual AsyncResult update(double time, double timeDelta);
 	virtual void run();
 };
 #endif

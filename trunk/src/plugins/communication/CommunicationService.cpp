@@ -27,6 +27,8 @@ CommunicationService::CommunicationService() : name("Communication")
 	{
 		std::cout << e.what() << std::endl;
 	}
+	downloading = false;
+	progress = 100;
 }
 
 CommunicationService::~CommunicationService()
@@ -39,24 +41,24 @@ CommunicationService::~CommunicationService()
 	this->model = NULL;
 }
 
-void CommunicationService::listLabSessionsWithAttributes(unsigned int labID)
-{
-	this->model->setSessions(labID);
-}
-
-void CommunicationService::listSessionTrials(unsigned int sessionID)
-{
-	this->model->setTrials(sessionID);
-}
-
-void CommunicationService::listTrialFiles(unsigned int sessionID, unsigned int trialID)
-{
-	this->model->setFiles(sessionID, trialID);
-}
-
 void CommunicationService::downloadFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID)
 {
-	this->model->setFile(sessionID, trialID, fileID);
+	actualSession = sessionID;
+	actualTrial = trialID;
+	actualFile = fileID;
+	downloading = true;
+	progress = 0;
+	start();
+}
+
+void CommunicationService::downloadTrial(unsigned int sessionID, unsigned int trialID)
+{
+	actualSession = sessionID;
+	actualTrial = trialID;
+	actualFile = 0;
+	downloading = true;
+	progress = 0;
+	start();
 }
 
 const communication::TransportWSDL_FTPS* CommunicationService::getTransportManager() const
@@ -115,10 +117,52 @@ void CommunicationService::save()
 
 void CommunicationService::run()
 {
+	if(actualFile == 0)
+	{
+		int i = 1;
+		int size = model->getFiles(actualSession, actualTrial).size();
+		for(std::map<int, communication::File>::const_iterator it = model->getFiles(actualSession, actualTrial).begin(); it != model->getFiles(actualSession, actualTrial).end(); ++it)
+		{
+			try
+			{
+				this->model->setFile(actualSession , actualTrial, (*it).first);
+			}
+			catch(std::runtime_error& e)
+			{
+				progress = 100;
+				downloading = false;
+				std::cout << e.what();
+			}
+			progress = i * (100/size);
+			i++;
+		}
+	}
+	else
+	{
+		try
+		{
+			this->model->setFile(actualSession, actualTrial, actualFile);
+		}
+		catch(std::runtime_error& e)
+		{
+			progress = 100;
+			downloading = false;
+			std::cout << e.what();
+		}
+	}
+	progress = 100;
+	downloading = false;
 }
 
 AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
 {
 	this->model->setTrialsDir(dataManager->getTrialsDir());
+    return AsyncResult_Complete;
+}
+
+AsyncResult CommunicationService::update(double time, double timeDelta)
+{
+    widget->setBusy(downloading);
+	widget->setProgress(progress);
     return AsyncResult_Complete;
 }

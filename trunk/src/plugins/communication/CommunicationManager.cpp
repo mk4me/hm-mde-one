@@ -92,9 +92,7 @@ const CommunicationManager::Files& CommunicationManager::getFiles(unsigned int s
 
 void CommunicationManager::setFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID)
 {
-	//TODO: sciezka powinna byc pobierana/ustalana przez DataManagera
 	this->transportManager->downloadFile(fileID, this->trialsDir);
-	notify();
 }
 
 const std::string& CommunicationManager::getFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID) const

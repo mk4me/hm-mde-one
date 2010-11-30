@@ -32,30 +32,14 @@ CommunicationWidget::~CommunicationWidget()
 
 void CommunicationWidget::itemDoubleClicked(QTreeWidgetItem* item, int column)
 {
-	if(item && item->text(0) == tr("Trial"))
+	if(!busy)
 	{
-		progressBar->setValue(0);
-		int session = item->parent()->text(1).toInt();
-		int trial = item->text(1).toInt();
-		QList<int> files;
-		for(int i = 0; i < item->childCount(); i++)
+		if(item && item->text(0) == tr("Trial"))
 		{
-			files.push_back(item->child(i)->text(1).toInt());
+			int session = item->parent()->text(1).toInt();
+			int trial = item->text(1).toInt();
+			this->communicationService->downloadTrial(session, trial);
 		}
-		//TODO: trzeba wrzucic do osobnego watku
-		for(int i = 0; i < files.size(); i++)
-		{
-			try
-			{
-				this->communicationService->downloadFile(session, trial, files[i]);
-			}
-			catch(std::runtime_error& e)
-			{
-				QMessageBox::critical(this, tr("Error"), tr(e.what()));
-			}
-			progressBar->setValue((i + 1) * (100 / files.size()));
-		}
-		progressBar->reset();
 	}
 }
 
@@ -108,5 +92,35 @@ void CommunicationWidget::update(const communication::CommunicationManager* subj
 				f->setToolTip(2, QString::fromUtf8((*k).second.fileName.c_str()));
 			}
 		}
+	}
+}
+
+void CommunicationWidget::setBusy(bool busy)
+{
+	this->busy = busy;
+	if(busy)
+	{
+		treeEntities->setDisabled(true);
+	}
+	else
+	{
+		treeEntities->setDisabled(false);
+	}
+}
+
+bool CommunicationWidget::getBusy()
+{
+	return busy;
+}
+
+void CommunicationWidget::setProgress(int value)
+{
+	if(value > 99)
+	{
+		progressBar->reset();
+	}
+	else
+	{
+		progressBar->setValue(value);
 	}
 }

@@ -19,6 +19,9 @@ class CommunicationWidget : public QWidget, public utils::Observer<communication
 public:
 	CommunicationWidget(CommunicationService* service);
 	virtual ~CommunicationWidget();
+	void setBusy(bool busy);
+	bool getBusy();
+	void setProgress(int value);
 
     virtual void update(const communication::CommunicationManager* subject);
 
@@ -32,5 +35,6 @@ private:
 	QPushButton* updateButton;
 	QTreeWidget* treeEntities;
 	QProgressBar* progressBar;
+	bool busy;
 };
 #endif
