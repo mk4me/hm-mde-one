@@ -28,8 +28,12 @@ osg::Geode* ChartDataSeries::drawChart(osg::Vec3Array* chartVertices)
 
 
 void ChartDataSeries::setColor(osg::Vec4 color){
+	this->color=color;
 	colors = new osg::Vec4Array;
-	ChartDataSeries::colors=new osg::Vec4Array;
 	ChartDataSeries::colors->push_back(color);
 
+}
+
+osg::Vec4 ChartDataSeries::getColor(){
+	return color;
 }

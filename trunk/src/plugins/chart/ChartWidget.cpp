@@ -22,6 +22,7 @@ ChartWidget::ChartWidget(IService* service)
 
 	
    	multiView = new core::MultiView(viewer, traits->width, traits->height, 0xF0000000, WM_FLAGS);
+	multiView->addChild(new osgWidget::Box("osgWidgetHACK"));
 	 // stworzenie kamery
     osg::Camera* multiViewCamera = multiView->createParentOrthoCamera();
     multiViewCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
@@ -31,7 +32,6 @@ ChartWidget::ChartWidget(IService* service)
     osg::ref_ptr<osg::Group> root = new osg::Group();
     root->addChild(multiViewCamera);
     viewer->setSceneData(root);
-	mainViewer=new ChartViewer(this,0);
 
 
 	
@@ -59,64 +59,45 @@ ChartWidget::~ChartWidget()
 
 }
 
-void ChartWidget::createLargeChart(int chartIndex){
-//mainViewer->changeView(chartIndex);
-	//mainViewer=new ChartViewer(this,chartIndex,c3dFile);
-	////mainViewer->setMinimumSize(300,300);
-	//mainChart->addWidget(mainViewer);
 
 
-
-}
-
-void ChartWidget::createEMGChanels(){
-	//listViewer=new ChartViewer*[16];
-	//for(int i=0;i<16;i++){
-	//	listViewer[i] = new ChartViewer(this,i+12,c3dFile);
-	//	//createChart(listViewer[i],i+12);
-	//	allChart->addWidget( listViewer[i] );
-	//}
-}
-void ChartWidget::createGRFChanels(){
-	//listViewer=new ChartViewer*[12];
-	//for(int i=0;i<12;i++){
-	//	listViewer[i] = new ChartViewer(this,i,c3dFile);
-	//	//createChart(listViewer[i],i);
-	//	allChart->addWidget( listViewer[i] );
-	//}
-	 
-}
-
-void ChartWidget::comboBoxChanged(int index){
-	/*switch(index){
-		case 0: {
-			for(int i = 0; i < 12; i++) 
-				delete[] listViewer[i]; 
-				delete[] listViewer;
-				createEMGChanels();
-				break;
-			 }
-		case 1: {
-			for(int i = 0; i < 16; i++) 
-				delete[] listViewer[i]; 
-				delete[] listViewer;
-				createGRFChanels();
-				break;
-			 }
-	}
-	*/
-}
-ChartViewer* ChartWidget::getViewer(){
-return mainViewer;
-}
 
 void ChartWidget::addChart(int index){
+	
 	C3DChartData* c3dData=new C3DChartData("Przejscie1.c3d",index);
-	Chart* chart=new Chart(40,40,500,250);
-	chart->	addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
-	multiView->addChild(chart);
-	Chart* chart1=new Chart(40,40,500,250);
-	chart1->	addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
-	multiView->addChild(chart1);
-	multiView->addItem(new core::MultiViewChartItem(chart),new core::MultiViewChartItem(chart1));
+	if(c3dData->getRNumber()>0){
+	item.push_back(new Chart(40,40,500,250));
+	 itItem= item.end()-1;
+	(*itItem)->addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+	(*itItem)->setXNumReps(2);
+	(*itItem)->setYNumReps(2);
+	(*itItem)->setBorderSize(5);
+	(*itItem)->setLabelVisable(false);
+	multiView->addChild(*itItem);
+	previewItem.push_back(new Chart(40,40,500,250));
+	itPItem= previewItem.end()-1;
+	(*itPItem)->	addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+	multiView->addChild((*itPItem));
+	multiView->addItem(new core::MultiViewChartItem(*itItem),new core::MultiViewChartItem((*itPItem)));
+	}
+}
+
+void ChartWidget::update(double targetTime){
+	if(item.size()>0){
+	itItem=item.begin();
+	itPItem=previewItem.begin();
+
+	for(; itItem < item.end(); itItem++,itPItem++){
+	  (*itItem)->updatePointer(targetTime);
+	  (*itPItem)->updatePointer(targetTime);
+	}
+	}
+}
+
+double ChartWidget::getLenght(){
+	if(item.size()>0){
+	itItem=item.begin();
+	return (*itItem)->getFrameNumber()/(*itItem)->getFPS();}
+	else
+		return 0;
 }

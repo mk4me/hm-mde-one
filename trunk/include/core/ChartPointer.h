@@ -29,8 +29,9 @@ private:
 	osg::ref_ptr<osgText::Text> text;
 	osg::Geode* createPointer();
 	osg::Geode* createLabelField();
+	bool labelVisable;
 public:
-	ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data);
+	ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data,bool labelVisable);
 	
 
 	void update(double targetTime);

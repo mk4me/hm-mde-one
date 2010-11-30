@@ -102,3 +102,11 @@ void ChartData::setScaleY(float scaleY){
 	this->yScale=scaleY;
 
 }
+
+void ChartData::setName(std::string name){
+this->name=name;
+}
+
+std::string ChartData::getName(){
+return name;
+}

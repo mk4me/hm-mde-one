@@ -13,7 +13,7 @@
 #include <core/IService.h>
 
 #include <core/QOSGWidget.h>
-
+#include <core/Chart.h>
 #include <core/MultiView.h>	
 #include "ui_ChartWidget.h"
 
@@ -27,15 +27,15 @@ private:
 	IService* service;
     //! Widget z widokiem OSG.
     QOSGViewer* viewer;
-	ChartViewer* mainViewer;
+
 	std::string c3dFile;
-	void createEMGChanels();
-	void createGRFChanels();
-	void createChart(QOSGViewer* viewer,int chartIndex);
 	QWidget* actualWidget;
     //! Multi view.
     osg::ref_ptr<core::MultiView> multiView;
-
+	std::vector<Chart*> previewItem;
+	std::vector<Chart*> item;
+	std::vector<Chart*>::iterator itItem;
+	std::vector<Chart*>::iterator itPItem;
 public:
 
 
@@ -43,13 +43,11 @@ public:
 	ChartWidget(IService* service);
     //! 
     virtual ~ChartWidget();
-	void createLargeChart(int chartIndex);
-	ChartViewer* getViewer();
+
+
 	void addChart(int index);
-public slots:
-    //! \param 
-   void comboBoxChanged(int index);
-   
+void update(double targetTime);
+   double getLenght();
 };
 
 #endif  // __HEADER_GUARD__CHARTWIDGET_H__

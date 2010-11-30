@@ -56,14 +56,12 @@ GRFService::GRFService()
   length(0.0)
 {
     widget = new ChartWidget(this);
-	length=(double)widget->getViewer()->getChart()->getFrameNumber()/(double)widget->getViewer()->getChart()->getFPS() ;
-	widget->addChart(0);
-	widget->addChart(1);
-	widget->addChart(2);
 	
-	/*for(int i=0;i<12;i++){
+	for(int i=0;i<12;i++){
 		widget->addChart(i);
-	}*/
+	}
+	length=widget->getLenght() ;
+	
 }
 
 
@@ -97,7 +95,7 @@ AsyncResult GRFService::compute()
 AsyncResult GRFService::update( double time, double timeDelta )
 {
 
-	widget->getViewer()->getChart()->updatePointer(targetTime);
+	widget->update(targetTime);
     return AsyncResult_Complete;
 }
 

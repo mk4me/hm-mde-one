@@ -56,7 +56,10 @@ EMGService::EMGService()
   length(0.0)
 {
     widget = new ChartWidget(this);
-	length=(double)widget->getViewer()->getChart()->getFrameNumber()/(double)widget->getViewer()->getChart()->getFPS() ;
+for(int i=12;i<28;i++){
+		widget->addChart(i);
+	}
+	length=widget->getLenght() ;
 	
 }
 
@@ -91,8 +94,8 @@ AsyncResult EMGService::compute()
 AsyncResult EMGService::update( double time, double timeDelta )
 {
 
-	widget->getViewer()->getChart()->updatePointer(targetTime);
-    return AsyncResult_Complete;
+widget->update(targetTime);
+return AsyncResult_Complete;
 }
 
 AsyncResult EMGService::lateUpdate( double time, double timeDelta)

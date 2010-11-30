@@ -37,8 +37,7 @@ public:
 
 
 protected:
-	virtual void resizeEvent(QResizeEvent* event);
-	virtual void mouseDoubleClickEvent(QMouseEvent* event);
+
 };
 
 #endif  // __HEADER_GUARD__CHARTWIDGET_H__

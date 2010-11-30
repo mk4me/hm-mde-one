@@ -4,26 +4,26 @@
 
 #include <core/ChartData.h>
 
-ChartPointer::ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data){
+ChartPointer::ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data,bool labelVisable){
 	this->startPoint=startPoint;
 	this->endPoint=endPoint;
 	this->data=data;
+	this->labelVisable=labelVisable;
+
 	
 	
-	
-	labelTrans = new osg::MatrixTransform(	);
-	
-	labelTrans->setDataVariance(osg::Object::DYNAMIC);
-	labelTrans->setMatrix(osg::Matrix::identity());
-	labelTrans->addChild(createLabelField());
 	trans = new osg::MatrixTransform(	);
 	
 	trans->setDataVariance(osg::Object::DYNAMIC);
 	trans->setMatrix(osg::Matrix::identity());
 	pointer=createPointer();
 	trans->addChild (pointer);
-
-	trans->addChild(labelTrans);
+	if(labelVisable){
+	labelTrans = new osg::MatrixTransform(	);
+	labelTrans->setDataVariance(osg::Object::DYNAMIC);
+	labelTrans->setMatrix(osg::Matrix::identity());
+	labelTrans->addChild(createLabelField());
+	trans->addChild(labelTrans);}
 
 	this->addChild(trans);
 
@@ -94,9 +94,10 @@ void ChartPointer::update(double targetTime){
 	int frame=targetTime*data->getFPS();
 	//if(frame<data->getRNumber()-1){
 	trans->setMatrix(osg::Matrix::translate(data->getNormalizedXValue(frame) * (endPoint.x()-startPoint.x()),0.0f,0.0f));
+	if(labelVisable){
 	labelTrans->setMatrix(osg::Matrix::translate(0.0f,data->getNormalizedYValue(frame) * (endPoint.y()-startPoint.y()),0.0f));
 
-	text->setText(formatNumber(data->getValue(frame)-data->getYMin()));
+	text->setText(formatNumber(data->getValue(frame)-data->getYMin()));}
 	//}
 }
 

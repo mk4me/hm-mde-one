@@ -1,9 +1,9 @@
 /********************************************************************
-	created:  2010/09/20
-	filename: ChartData.h
-	author:	  Michal Szafarski
-	
-	purpose:  Klasa ta sluzy do przechowywania oraz pobierania danych
+created:  2010/09/20
+filename: ChartData.h
+author:	  Michal Szafarski
+
+purpose:  Klasa ta sluzy do przechowywania oraz pobierania danych
 *********************************************************************/
 #ifndef __HEADER_GUARD__CHARTDATA_H__
 #define __HEADER_GUARD__CHARTDATA_H__
@@ -19,9 +19,9 @@ class c3dParser;
 
 class ChartData {
 public:
-	
+
 	//ChartData(std::string c3dFile,int chanel);
-    float getValue(int frame);
+	float getValue(int frame);
 	float getNormalizedXValue(int frame);
 	float getNormalizedYValue(int frame);
 	void setMin();
@@ -34,15 +34,17 @@ public:
 	void setRNumber(int number);
 	float getXMin();
 	float getYMin();
-		float getXMax();
+	float getXMax();
 	float getYMax();
 	int getFPS();
 	void setFPS(int FPS);
-		void normalize();
-		float* getX();
-		float* getY();
-		void setX(float* x);
-		void setY(float* y);
+	void normalize();
+	float* getX();
+	float* getY();
+	void setX(float* x);
+	void setY(float* y);
+	std::string getName();
+	void setName(std::string name);
 private:
 	int rNumber;
 	float yScale,xScale;
@@ -52,7 +54,7 @@ private:
 	float *normalizedX;
 	float *normalizedY;
 	float xMax,xMin,yMax,yMin;
-	std::string description;
+	std::string name;
 
 
 	//void exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd);

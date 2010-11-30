@@ -5,6 +5,7 @@
 #include <core/ChartPointer.h>
 
 Chart::Chart(int x,int y,int width,int height){
+	labelVisable=true;
 	gridColor=osg::Vec4(0.0f,0.0f,1.0f, 0.1f);
 	color = osg::Vec4(0,0,0, 1.0);
 	borderSize=50;
@@ -128,6 +129,7 @@ osg::Node* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps
 	
 
 		if(e.x()>s.x()){
+			if(labelVisable)
 			group->addChild(createLabel(pos-posX,fontSize, (formatNumber(actualScale))));
 			if(i!=0)
 				group->addChild(createLine(pos.x(),pos.y()-5,
@@ -135,6 +137,7 @@ osg::Node* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps
 				osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 		}
 		else{
+			if(labelVisable)
 			group->addChild(createLabel(pos-posY ,fontSize,(formatNumber(actualScale))));
 			if(i!=0)
 				group->addChild(createLine(pos.x()-5,pos.y(),
@@ -239,7 +242,10 @@ void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
 	this->addChild(xAxis);
 	this->addChild(yAxis);
 	}
-		this->addChild(createMainLabel(color));
+	
+	mainLabel.push_back(createMainLabel((*itDataSeries)->getColor(),(*itData)->getName()));
+	std::vector<Group*>::iterator itLabel= mainLabel.end()-1;
+	this->addChild(*itLabel);
 	labelOffset+=100;
 	}
 
@@ -358,15 +364,23 @@ void Chart::repaint(){
 	yAxis=newYAxis;
 	std::vector<LineChart*>::iterator itPos = dataSeries.begin();
 	std::vector<ChartData*>::iterator dataPos = data.begin();
-	for(; itPos < dataSeries.end(); itPos++,dataPos++){
+	std::vector<Group*>::iterator itLabel= mainLabel.begin();
+	std::vector<osg::Group*> newMainLabel;
+	for(; itPos < dataSeries.end(); itPos++,dataPos++,itLabel++){
 	  (*itPos)->repaint((*dataPos),x+borderSize,y+borderSize,width-borderSize,height-borderSize);
+	  newMainLabel.push_back(createMainLabel((*itPos)->getColor(),(*dataPos)->getName()));
+	  std::vector<Group*>::iterator itNewLabel= newMainLabel.end()-1;
+	  this->replaceChild((*itLabel),  (*itNewLabel)  ); 
 	}
+mainLabel=newMainLabel;
 }
 
 
-osg::Group* Chart::createMainLabel(osg::Vec4 color){
+osg::Group* Chart::createMainLabel(osg::Vec4 color, std::string name){
+	
 osg::Group* group=new Group();
-group->addChild(createLabel(osg::Vec3(x+30+labelOffset,height-10,0),12,"nazwa"));
+if(labelVisable){
+group->addChild(createLabel(osg::Vec3(x+30+labelOffset,height-10,0),12,name));
 
 
 
@@ -401,6 +415,16 @@ group->addChild(createLabel(osg::Vec3(x+30+labelOffset,height-10,0),12,"nazwa"))
 
 	group->addChild(geode);
 
-
+}
 return group;
+}
+
+void Chart::setLabelVisable(bool labelVisable){
+	this->labelVisable=labelVisable;
+std::vector<LineChart*>::iterator itPos = dataSeries.begin();
+	std::vector<ChartData*>::iterator dataPos = data.begin();
+	for(; itPos < dataSeries.end(); itPos++,dataPos++){
+		(*itPos)->setLabelVisable(labelVisable);
+	}
+	repaint();
 }
