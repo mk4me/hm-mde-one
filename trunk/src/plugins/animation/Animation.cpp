@@ -180,6 +180,9 @@ void Animation::CalculateChildMatrixBVHFormat( Bone* bone )
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
 
+    if(index < 0)
+        index = 0;
+
     if(index > m_pFrameCount - 1)
     {
         _state = Animation::STOPPED;
@@ -242,6 +245,9 @@ void Animation::UpdateModelBVHFormat()
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
 
+    if(index < 0)
+        index = 0;
+
     if(index > m_pFrameCount - 1)
     {
         _state = Animation::STOPPED;
@@ -297,6 +303,9 @@ void Animation::CalculateChildMatrixAcclaimFormat(Bone *bone)
 {
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
+
+    if(index < 0)
+        index = 0;
 
     if(index > m_pFrameCount - 1)
     {
@@ -380,6 +389,9 @@ void Animation::UpdateModelAcclaimFormat()
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
 
+    if(index < 0)
+        index = 0;
+
     if(index > m_pFrameCount - 1)
     {
         _state = Animation::STOPPED;
@@ -459,6 +471,10 @@ void Animation::UpdateModelC3DFormat()
 
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
+
+    if(index < 0)
+        index = 0;
+
     if(index % 2 != 0)
         index++;
 
@@ -533,6 +549,9 @@ void Animation::CalculateChildMatrixFmesh( Bone* bone )
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
 
+    if(index < 0)
+        index = 0;
+
     if(index > m_pFrameCount - 1)
     {
         _state = Animation::STOPPED;
@@ -586,6 +605,9 @@ void Animation::UpdateModelFmesh()
 
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
+
+    if(index < 0)
+        index = 0;
 
     if(index > m_pFrameCount - 1)
     {
