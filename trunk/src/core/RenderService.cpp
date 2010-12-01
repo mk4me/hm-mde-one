@@ -47,8 +47,6 @@ void RenderService::Clear()
 //--------------------------------------------------------------------------------------------------
 AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
-    m_pFactory = new Factor();
-
     //nowy SetScene
 	std::string meshpath = "";
 	std::string skelpath = "";

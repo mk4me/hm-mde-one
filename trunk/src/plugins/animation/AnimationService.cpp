@@ -436,6 +436,9 @@ void AnimationService::PlayC3DAnimation(std::string name)
         nameCount++;
     }
 
+    c3dName = name.substr(0, name.find_last_of("."));
+    c3dName.append(".c3d");
+
     if (c3dcurrentAnimation) {
         c3dcurrentAnimation->Stop();
     }
@@ -446,7 +449,7 @@ void AnimationService::PlayC3DAnimation(std::string name)
     map<IC3DModel*, Animation*>::iterator i;
     for(i = m_c3danimations.begin(); i != m_c3danimations.end(); i++)
     {
-        if (i->first->GetName() == m_c3dNames[nameCount]) 
+        if (i->first->GetName() == c3dName) 
         {
             m_pC3MModel = i->first;
             m_pRenderService->SetC3DMarkerToRender(i->first);
@@ -505,6 +508,7 @@ void AnimationService::UpdateMesh()
                     // osg::Vec3f T = osg::Matrixd::transform3x3(*m_pActualBones[boneID]->matrix, m_pActualBones[boneID]->boneSpace_translation);
                     // T = m_pActualBones[boneID]->matrix->getTrans() + T;
                     // boneTransformation.setTrans(T);
+
 
                     osg::Vec3d temp = actPos * boneTransformation; 
                     _tempVectors[b][POSITION] = temp;
