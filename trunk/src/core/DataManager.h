@@ -31,6 +31,7 @@ public:
 
     virtual const std::string& getAnimationFilePath(int i);
     virtual int getAnimationFilePathCount();
+    virtual std::vector<std::string>* getAnimationPathList();
 
 	virtual const std::string& getResourcesPath() const;
 	virtual const std::string& getTrialsPath() const;

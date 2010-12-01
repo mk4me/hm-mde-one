@@ -19,20 +19,22 @@ void DataManager::loadResources()
 {
 	//szukaj shaderow
 	shadersPaths = Filesystem::listFiles(this->resourcesPath, true, "*.frag");
-	//szukaj meshy
+	//szukaj tbs file
 	meshesPaths = Filesystem::listFiles(this->resourcesPath, true, "*.tbs");
 }
 
 void DataManager::loadTrials()
 {
+    //szukaj meshy
+    meshesPaths = Filesystem::listFiles(this->trialsPath, true, "*.fmesh");
 	//szukaj plikow video
-	videosPaths = Filesystem::listFiles(this->trialsPath, false, "*.avi");
+	videosPaths = Filesystem::listFiles(this->trialsPath, true, "*.avi");
 	//szukaj plikow c3d
-	c3dsPaths = Filesystem::listFiles(this->trialsPath, false, "*.c3d");
+	c3dsPaths = Filesystem::listFiles(this->trialsPath, true, "*.c3d");
 	//szukaj plikow animacji
-	animationPaths = Filesystem::listFiles(this->trialsPath, false, "*.amc");
+	animationPaths = Filesystem::listFiles(this->trialsPath, true, "*.amc");
 	//szukaj plikow animacji szkieletowej
-	skeletonPaths = Filesystem::listFiles(this->trialsPath, false, "*.asf");
+	skeletonPaths = Filesystem::listFiles(this->trialsPath, true, "*.asf");
 }
 
 void DataManager::clear() {
@@ -122,4 +124,9 @@ void DataManager::setResourcesPath(const std::string& resources)
 void DataManager::setTrialsPath(const std::string& trials)
 {
 	trialsPath = trials;
+}
+
+std::vector<std::string>* DataManager::getAnimationPathList()
+{
+    return &animationPaths;
 }

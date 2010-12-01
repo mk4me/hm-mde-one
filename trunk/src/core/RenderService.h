@@ -6,14 +6,21 @@
 #include <string>
 #include <map>
 
-#include <core/SimpleFunctors.h>
-#include <osg//Node>
+#include <osgGA/TerrainManipulator>
 #include <osgViewer/GraphicsWindow>
+#include <osg/MatrixTransform>
+#include <osg/StateAttribute>
+#include <osg/LightSource>
 #include <osgViewer/View>
+#include <osg/Geometry>
+#include <osg//Node>
+#include <osg/Light>
+#include <osg/Point>
 
-#include <core/IService.h>
-#include <core/QOSGWidget.h>
+#include <core/SimpleFunctors.h>
 #include <core/IRenderService.h>
+#include <core/QOSGWidget.h>
+#include <core/IService.h>
 #include <core/IFactory.h>
 
 
@@ -78,6 +85,8 @@ public:
     virtual IFactor* GetFactory();
 
 private: 
+    osg::Node* createLights(osg::BoundingBox& bb,osg::StateSet* rootStateSet);
+
     void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);
 

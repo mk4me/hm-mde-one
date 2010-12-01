@@ -6,14 +6,10 @@
 #include "Model.h"
 #include "Mesh.h"
 
-#include <core/IModel.h>
 #include <core/IDataManager.h>
-
-#include <osgGA/TerrainManipulator>
 #include <core/SkeletonNode.h>
-
+#include <core/IModel.h>
 #include <core/Vec3.h>
-#include <osg/Geometry>
 
 #include "Factory.h"
 
@@ -22,6 +18,7 @@
 // jednkaze dla zachowania oddzielnosci zadañ trzeba bêdzie usun¹c t¹ mo¿liwoœæ w render servisie
 
 #define pPat osg::PositionAttitudeTransform*
+#define MODEL_SIZE 60
 
 //deprecated:
 //M_DECLARED_CLASS(RenderService, kCLASSID_RenderService);
@@ -68,7 +65,10 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 	{
 		c3dpath = dataManager->getC3dFilePath(0);
 	}
-	m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(meshpath, skelpath, std::vector<std::string>()));// *dataManager->GetAnimationList()));
+
+    std::vector<std::string> animationPathList = *dataManager->getAnimationPathList();
+
+	m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(meshpath, skelpath, animationPathList));// *dataManager->GetAnimationList()));
 
     if(m_pModel) {
         SetScene(m_pModel);
@@ -104,11 +104,17 @@ void RenderService::Inicialize(osg::Node* sceneRoot)
     widget->addEventHandler(new osgViewer::StatsHandler);
     widget->setCameraManipulator(cameraManipulator);
 
-    osg::Light *light = new osg::Light();
+    osg::Light* myLight2 = new osg::Light;
+    myLight2->setLightNum(1);
+    myLight2->setPosition(osg::Vec4(0.0,0.0,0.0,1.0f));
+    myLight2->setAmbient(osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    myLight2->setDiffuse(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+    //   myLight2->setConstantAttenuation(1.0f);
+    myLight2->setLinearAttenuation(1.0f/MODEL_SIZE);
+    myLight2->setQuadraticAttenuation(1.0f/osg::square(MODEL_SIZE));
 
-    light->setPosition(osg::Vec4d(10, -10, 10, 4));
-    widget->setLight(light);
-    widget->setLightingMode(osg::View::LightingMode::SKY_LIGHT);
+    widget->setLight(myLight2);
+
     widget->setSceneData(sceneRoot);
 }
 
@@ -292,6 +298,92 @@ void RenderService::DisableMarker()
 IFactor* RenderService::GetFactory()
 {
     return m_pFactory;
+}
+
+//--------------------------------------------------------------------------------------------------
+osg::Node* RenderService::createLights(osg::BoundingBox& bb,osg::StateSet* rootStateSet)
+{
+    osg::Group* lightGroup = new osg::Group;
+
+    float modelSize = bb.radius();
+
+    // create a spot light.
+    osg::Light* myLight1 = new osg::Light;
+    myLight1->setLightNum(0);
+    myLight1->setPosition(osg::Vec4(bb.corner(4),1.0f));
+    myLight1->setAmbient(osg::Vec4(1.0f,0.0f,0.0f,1.0f));
+    myLight1->setDiffuse(osg::Vec4(1.0f,0.0f,0.0f,1.0f));
+    myLight1->setSpotCutoff(20.0f);
+    myLight1->setSpotExponent(50.0f);
+    myLight1->setDirection(osg::Vec3(1.0f,1.0f,-1.0f));
+
+    osg::LightSource* lightS1 = new osg::LightSource;    
+    lightS1->setLight(myLight1);
+    lightS1->setLocalStateSetModes(osg::StateAttribute::ON); 
+
+    lightS1->setStateSetModes(*rootStateSet,osg::StateAttribute::ON);
+    lightGroup->addChild(lightS1);
+
+
+    // create a local light.
+    osg::Light* myLight2 = new osg::Light;
+    myLight2->setLightNum(1);
+    myLight2->setPosition(osg::Vec4(0.0,0.0,0.0,1.0f));
+    myLight2->setAmbient(osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    myLight2->setDiffuse(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+    //   myLight2->setConstantAttenuation(1.0f);
+    myLight2->setLinearAttenuation(1.0f/modelSize);
+    myLight2->setQuadraticAttenuation(1.0f/osg::square(modelSize));
+
+
+
+    osg::LightSource* lightS2 = new osg::LightSource;    
+    lightS2->setLight(myLight2);
+    lightS2->setLocalStateSetModes(osg::StateAttribute::ON); 
+
+    lightS2->setStateSetModes(*rootStateSet,osg::StateAttribute::ON);
+
+    osg::MatrixTransform* mt = new osg::MatrixTransform();
+    {
+        // set up the animation path 
+        osg::AnimationPath* animationPath = new osg::AnimationPath;
+        animationPath->insert(0.0,osg::AnimationPath::ControlPoint(bb.corner(0)));
+        animationPath->insert(1.0,osg::AnimationPath::ControlPoint(bb.corner(1)));
+        animationPath->insert(2.0,osg::AnimationPath::ControlPoint(bb.corner(2)));
+        animationPath->insert(3.0,osg::AnimationPath::ControlPoint(bb.corner(3)));
+        animationPath->insert(4.0,osg::AnimationPath::ControlPoint(bb.corner(4)));
+        animationPath->insert(5.0,osg::AnimationPath::ControlPoint(bb.corner(5)));
+        animationPath->insert(6.0,osg::AnimationPath::ControlPoint(bb.corner(6)));
+        animationPath->insert(7.0,osg::AnimationPath::ControlPoint(bb.corner(7)));
+        animationPath->insert(8.0,osg::AnimationPath::ControlPoint(bb.corner(0)));
+        animationPath->setLoopMode(osg::AnimationPath::SWING);
+
+        mt->setUpdateCallback(new osg::AnimationPathCallback(animationPath));
+    }
+
+    // create marker for point light.
+    osg::Geometry* marker = new osg::Geometry;
+    osg::Vec3Array* vertices = new osg::Vec3Array;
+    vertices->push_back(osg::Vec3(0.0,0.0,0.0));
+    marker->setVertexArray(vertices);
+    marker->addPrimitiveSet(new osg::DrawArrays(GL_POINTS,0,1));
+
+    osg::StateSet* stateset = new osg::StateSet;
+    osg::Point* point = new osg::Point;
+    point->setSize(4.0f);
+    stateset->setAttribute(point);
+
+    marker->setStateSet(stateset);
+
+    osg::Geode* markerGeode = new osg::Geode;
+    markerGeode->addDrawable(marker);
+
+    mt->addChild(lightS2);
+    mt->addChild(markerGeode);
+
+    lightGroup->addChild(mt);
+
+    return lightGroup;
 }
 
 //--------------------------------------------------------------------------------------------------

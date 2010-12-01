@@ -23,7 +23,6 @@ struct Bone;
 class FileReader2Motion
 {
 public:
-	static void ReadFile(DataManager *dataManager);
 	static bool LoadMesh(std::string address, Model* model);
     static bool LoadAnimationFromFmodel(SFModel* fmodel, Model* model);
     static bool LoadAnimationFromAcclaim(std::string animationName, ASFAMCParser* acclaimObject, Model* model);
@@ -32,8 +31,8 @@ public:
     static bool LoadAnimationFromFAnnimation(std::string address, Model* model);
 
 
-    static Model* ReadFromTBSFile(std::string meshPath, std::string asfPath, std::vector<std::string> amcPathList);
-    static C3DModel* ReadFromC3DFile(std::string c3dPath);
+    static Model* GetModelFromResources(std::string meshPath, std::string asfPath, std::vector<std::string> amcPathList);
+    static C3DModel* GetC3DModelFromResources(std::string c3dPath);
 
 private:
     static void ReadFrmDAEFile(const std::string& file, Model* model);

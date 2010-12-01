@@ -507,7 +507,8 @@ void ToolboxMain::openFile( const std::string& path )
 	dataManager->setTrialsPath(path);
 	dataManager->loadTrials();
 
-    FileReader2Motion::ReadFile(dataManager);
+    // nie potrzebne
+    //FileReader2Motion::ReadFile(dataManager);
 
     m_pServiceManager->loadDataPass(dataManager);
 

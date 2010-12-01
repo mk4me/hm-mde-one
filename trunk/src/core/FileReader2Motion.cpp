@@ -59,41 +59,9 @@ unsigned int Read(VOID* pData, unsigned int numBytes)
 }
 
 //--------------------------------------------------------------------------------------------------
-void FileReader2Motion::ReadFile(DataManager *dataManager)
-{
-	//TODO: pobiera nazwe pierwszego pliku tbs z zasobow [Marek Daniluk 23.11.10]
-	std::string meshpath = "";
-	std::string skelpath = "";
-	std::string c3dpath = "";
-	if(dataManager->getMeshFilePathCount() > 0)
-	{
-		meshpath = dataManager->getMeshFilePath(0);
-	}
-	if(dataManager->getSkeletonFilePathCount() > 0)
-	{
-		skelpath = dataManager->getSkeletonFilePath(0);
-	}
-	if(dataManager->getC3dFilePathCount() > 0)
-	{
-		c3dpath = dataManager->getC3dFilePath(0);
-	}
-
-	//FIX: jak obslugiwac Factor? [Marek Daniluk 29.11.10]
-	Factor* factory = new Factor();
-    Model *model = dynamic_cast<Model* >(factory->GetModel(meshpath, skelpath, std::vector<std::string>()));
-    
-    //TODO: poprawic wizualnie i zrzuwaæ koñcówke na ma³e litery
-    if(meshpath.substr(meshpath.length() - 3, meshpath.length()) == "DAE")
-        ReadFrmDAEFile(meshpath, model);
-    else if(meshpath.substr(meshpath.length() - 3, meshpath.length()) == "tbs")
-        ReadFromTBSFile(dataManager);
-    else if(meshpath.substr(meshpath.length() - 3, meshpath.length()) == "asf")
-        ReadAcclaimFile(meshpath, model);
-}
-
-//--------------------------------------------------------------------------------------------------
 void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 {
+    // R.Z Subiektywnie bêdize mo¿na pozbyæ sie tej metody ca³kowiecie. Przez chwile niech jeszce pozostanie 2010-12-01
     // TODO sprawdzenie wycieku pamiêci.
 
     ASFAMCParser* object = new ASFAMCParser();
@@ -136,7 +104,7 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 }
 
 //--------------------------------------------------------------------------------------------------
-C3DModel* FileReader2Motion::ReadFromC3DFile( std::string c3dPath )
+C3DModel* FileReader2Motion::GetC3DModelFromResources( std::string c3dPath )
 {
     C3DModel* c3dModel = new C3DModel();
     if(!c3dPath.empty())
@@ -155,7 +123,7 @@ C3DModel* FileReader2Motion::ReadFromC3DFile( std::string c3dPath )
 }
 
 //--------------------------------------------------------------------------------------------------
-Model* FileReader2Motion::ReadFromTBSFile( std::string meshPath, std::string asfPath, std::vector<std::string> amcPathList)
+Model* FileReader2Motion::GetModelFromResources( std::string meshPath, std::string asfPath, std::vector<std::string> amcPathList)
 {
     // TODO sprawdzenie wycieku pamiêci.
 

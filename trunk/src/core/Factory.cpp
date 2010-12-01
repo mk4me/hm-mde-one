@@ -14,7 +14,7 @@ IModel* Factor::CreateModel(std::string pathToMesh, std::string pathToASF, std::
 {
     IModel* model;
 
-    model = FileReader2Motion::ReadFromTBSFile(pathToMesh, pathToASF, pathToAMCList);
+    model = FileReader2Motion::GetModelFromResources(pathToMesh, pathToASF, pathToAMCList);
 
     return model;
 }
@@ -24,7 +24,7 @@ IC3DModel* Factor::CreateC3DModel(std::string pathToC3DModel)
 {
     IC3DModel* c3dModel;
 
-    c3dModel = FileReader2Motion::ReadFromC3DFile(pathToC3DModel);
+    c3dModel = FileReader2Motion::GetC3DModelFromResources(pathToC3DModel);
 
     return c3dModel;
 }

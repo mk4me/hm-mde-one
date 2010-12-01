@@ -6,6 +6,7 @@
 #include <osgViewer/View>
 
 #include <core/QOSGWidget.h>
+#include <core/IService.h>
 
 
 class IC3DModel;

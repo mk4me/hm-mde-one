@@ -134,7 +134,10 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 	{
 		c3dpath = dataManager->getC3dFilePath(0);
 	}
-	m_pModel = m_pFactory->GetModel(meshpath, skelpath, std::vector<std::string>());// *dataManager->GetAnimationList());
+
+    std::vector<std::string> animationPathList = *dataManager->getAnimationPathList();
+
+	m_pModel = m_pFactory->GetModel(meshpath, skelpath, animationPathList);// *dataManager->GetAnimationList());
 	m_pC3MModel = m_pFactory->GetC3DModel(c3dpath);
 
 

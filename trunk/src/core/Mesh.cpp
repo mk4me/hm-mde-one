@@ -241,6 +241,7 @@ void Mesh::InicializeFromTBSFile()
 
     this->setVertexArray(vertices);
     this->setNormalArray(normals);
+    this->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
 
     for(size_t j=0; j<m_semanticCount; j++)
     {
