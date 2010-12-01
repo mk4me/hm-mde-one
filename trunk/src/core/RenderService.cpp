@@ -41,7 +41,7 @@ void RenderService::Clear()
 {
     widget = NULL;
     m_pModel = NULL;
-    sceneRoot = NULL;
+    SceneRoot = NULL;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -93,8 +93,8 @@ AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* scen
 //--------------------------------------------------------------------------------------------------
 void RenderService::Inicialize(osg::Node* sceneRoot)
 {
-    sceneRoot = dynamic_cast<osg::Group*>(sceneRoot);
-    UTILS_ASSERT(sceneRoot != NULL);
+    SceneRoot = dynamic_cast<osg::Group*>(sceneRoot);
+    UTILS_ASSERT(SceneRoot != NULL);
 
     osgGA::TerrainManipulator *cameraManipulator = new osgGA::TerrainManipulator();
 
@@ -106,20 +106,20 @@ void RenderService::Inicialize(osg::Node* sceneRoot)
     myLight2->setLightNum(1);
     myLight2->setPosition(osg::Vec4(0.0,0.0,0.0,1.0f));
     myLight2->setAmbient(osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    myLight2->setDiffuse(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
-    //   myLight2->setConstantAttenuation(1.0f);
+    myLight2->setDiffuse(osg::Vec4(1.0f,1.0f,1.0f,0.0f));
+    myLight2->setConstantAttenuation(1.0f);
     myLight2->setLinearAttenuation(1.0f/MODEL_SIZE);
     myLight2->setQuadraticAttenuation(1.0f/osg::square(MODEL_SIZE));
 
     widget->setLight(myLight2);
 
-    widget->setSceneData(sceneRoot);
+    widget->setSceneData(SceneRoot);
 }
 
 //--------------------------------------------------------------------------------------------------
 void RenderService::AddObjectToRender( osg::Node* node )
 {
-    sceneRoot->addChild(node);
+    SceneRoot->addChild(node);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -130,9 +130,9 @@ void RenderService::SetScene(osg::Group* root)
     if(model)
         InicizlizeModelMesh(model);
     
-    sceneRoot = root;
+    SceneRoot = root;
 
-    widget->setSceneData(sceneRoot);
+    widget->setSceneData(SceneRoot);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ QOSGViewer* RenderService::GetMainAdapterWidget()
 //--------------------------------------------------------------------------------------------------
 osgGroupPtr RenderService::GetRoot()
 {
-    return sceneRoot;
+    return SceneRoot;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -225,13 +225,13 @@ void RenderService::RenderC3D(IC3DModel* c3dmodel)
 //--------------------------------------------------------------------------------------------------
 void RenderService::SetC3DMarkerToRender(IC3DModel *c3dmodel)
 {
-    DisableMarker();
-
     C3DModel* tempModel = dynamic_cast<C3DModel*>(c3dmodel);
     m_pMarkerGeode = tempModel->GetMarkerGeode();
 
-    if(!sceneRoot->containsNode(tempModel))
+    if(!SceneRoot->containsNode(tempModel))
         AddObjectToRender(tempModel);
+
+    DisableMarker();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -269,6 +269,7 @@ void RenderService::EnableBone()
 void RenderService::DisableBone()
 {
     m_pModel->RemoveGeode();
+    SceneRoot;
 
     if(m_pBoneGeode.valid() && m_pModel)
         m_pModel->removeChild(m_pBoneGeode.get());
@@ -283,11 +284,11 @@ void RenderService::EnableMarker()
 //--------------------------------------------------------------------------------------------------
 void RenderService::DisableMarker()
 {
-    for(int i = 0; i < sceneRoot->getNumChildren(); i++)
+    for(int i = 0; i < SceneRoot->getNumChildren(); i++)
     {
-        if(dynamic_cast<C3DModel*>(sceneRoot->getChild(i)))
+        if(dynamic_cast<C3DModel*>(SceneRoot->getChild(i)))
         {
-            dynamic_cast<C3DModel*>(sceneRoot->getChild(i))->RemoveGeode();
+            dynamic_cast<C3DModel*>(SceneRoot->getChild(i))->RemoveGeode();
         }
     }
 }

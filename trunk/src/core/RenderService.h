@@ -95,7 +95,7 @@ private:
     osg::ref_ptr<osg::Geode> m_pMarkerGeode;
 
     QOSGViewer* widget; 
-    osgGroupPtr sceneRoot;
+    osgGroupPtr SceneRoot;
     //! Nazwa.
     std::string name;
     Model *m_pModel;

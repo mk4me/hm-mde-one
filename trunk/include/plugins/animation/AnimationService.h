@@ -103,6 +103,7 @@ public:
 
     virtual Animation* GetAnimation(); // returns act animation
     virtual std::map<std::string, Animation*>* GetAnimations();
+    virtual std::vector<std::string>* GetAnimationDisplayList();
 
 // IService (Piotr Gwiazdowski)
 public:
@@ -158,8 +159,7 @@ private:
     std::map<std::string, Animation*> m_animations;
     std::map<IC3DModel*, Animation*> m_c3danimations;
 
-    std::vector<std::string> m_animationNames;
-    std::vector<std::string> m_c3dNames;
+    std::vector<std::string> m_animationDisplayList;
 
     ISimpleOneArgFunctor<double>* m_pAnimation;
     ISimpleOneArgFunctor<double>* m_pC3DAnimation;

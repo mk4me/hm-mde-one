@@ -32,6 +32,9 @@ IC3DModel* Factor::CreateC3DModel(std::string pathToC3DModel)
 //--------------------------------------------------------------------------------------------------
 IModel* Factor::GetModel(std::string pathToMesh, std::string pathToASF, std::vector<std::string> pathToAMCList)
 {
+    if(pathToASF.empty())
+        return NULL;
+
     std::string modelPath;
 
     if(pathToAMCList.size() > 0)
@@ -54,6 +57,9 @@ IModel* Factor::GetModel(std::string pathToMesh, std::string pathToASF, std::vec
 //--------------------------------------------------------------------------------------------------
 IC3DModel* Factor::GetC3DModel(std::string c3dObjectPath)
 {
+    if(c3dObjectPath.empty())
+        return NULL;
+
     std::map<std::string, IC3DModel* >::iterator i = m_C3DModelMap.find(c3dObjectPath);
 
     if (i != m_C3DModelMap.end()) {

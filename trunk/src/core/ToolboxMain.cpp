@@ -512,7 +512,7 @@ void ToolboxMain::openFile( const std::string& path )
 
     m_pServiceManager->loadDataPass(dataManager);
 
-    m_pRenderService->AddObjectToRender(createGrid());
+   // m_pRenderService->AddObjectToRender(createGrid());
 
     // manage scene
     osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 

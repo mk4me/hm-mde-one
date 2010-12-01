@@ -13,7 +13,6 @@ using namespace std;
 
 // #define SCALE 1
 #define TIMERMULTIPLAY 0.009
-#define ANIMATION_GROUP(pSkeletonNode) (*(pSkeletonNode)->GetAnimations())[_id]
 
 //--------------------------------------------------------------------------------------------------
 Animation::Animation(Skeleton* skeleton, SkeletonAnimation* skeletonAnimation, AnimationService* animationService):

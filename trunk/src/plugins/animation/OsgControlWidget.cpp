@@ -86,11 +86,11 @@ void OsgControlWidget::SetScene( osg::Node *scene, IServiceManager *pServiceMana
     m_pAnimationService = dynamic_cast<AnimationService*>(pServiceManager->getService(AnimationService::getClassID()).get());
 
     
-    std::map<std::string, Animation*>* animations = m_pAnimationService->GetAnimations();
-    for (std::map<std::string, Animation*>::iterator i = animations->begin(); i != animations->end(); ++i)
+    std::vector<std::string>* animations = m_pAnimationService->GetAnimationDisplayList();
+    for (std::vector<std::string>::iterator i = animations->begin(); i != animations->end(); ++i)
     {
         QListWidgetItem *nodeListItem = new QListWidgetItem(animationList); 
-        nodeListItem->setText(i->first.c_str()); 
+        nodeListItem->setText((*i).c_str()); 
     }
 }
 

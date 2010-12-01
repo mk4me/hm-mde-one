@@ -140,7 +140,6 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 	m_pModel = m_pFactory->GetModel(meshpath, skelpath, animationPathList);// *dataManager->GetAnimationList());
 	m_pC3MModel = m_pFactory->GetC3DModel(c3dpath);
 
-
     LoadAnimation(m_pModel);
 
 	for (int i = 0; i < dataManager->getC3dFilePathCount(); i++)
@@ -267,9 +266,6 @@ void AnimationService::Clear()
     m_functionsToRemove.clear();
     m_functionsToCallWhenAnimationStopped.clear();
 
-    m_animationNames.clear();
-    m_c3dNames.clear();
-
     m_DisplayType = AnimasionDisplay::ALL;
 
 	ClearCaller();
@@ -292,7 +288,10 @@ AsyncResult AnimationService::update(double time, double timeDelta)
     } else {
         if ( currentAnimation ) {
             targetTime = currentAnimation->GetTime() + timeDelta;
-        } else {
+        }else if(!currentAnimation && c3dcurrentAnimation){
+            targetTime = c3dcurrentAnimation->GetTime() + timeDelta;
+        }
+        else {
             targetTime = 0.0;
         }
     }
@@ -309,13 +308,6 @@ AsyncResult AnimationService::update(double time, double timeDelta)
     if(m_pC3MModel)
         if(m_DisplayType & AnimasionDisplay::MARKER)
             m_pC3MModel->DrawMarkers();
-
-//     if(currentAnimation)
-//         (*m_pAnimation)(targetTime);
-// 
-//     if(c3dcurrentAnimation)
-//         (*m_pC3DAnimation)(targetTime);
-
 
 
     // call functions that are to call every animation frame
@@ -354,7 +346,7 @@ std::string& AnimationService::GetSelectedAnimationName()
 //--------------------------------------------------------------------------------------------------
 void AnimationService::LoadAnimation( IModel* model )
 {
-    if(!model->GetSkeleton())
+    if(!model || !model->GetSkeleton())
         return;
 
     m_pModel = model;
@@ -362,9 +354,9 @@ void AnimationService::LoadAnimation( IModel* model )
 
     for(int i = 0; i < model->GetAnimation()->m_SkeletonAnimationList.size(); i++)
     {
-        m_animationNames.push_back(model->GetAnimation()->m_SkeletonAnimationList[i]->m_animationName);
         Animation* animation = new Animation(model->GetSkeleton(), model->GetAnimation()->m_SkeletonAnimationList[i], this);
-        m_animations.insert(make_pair(m_animationNames[i], animation));	
+        m_animations.insert(make_pair(model->GetAnimation()->m_SkeletonAnimationList[i]->m_animationName, animation));	
+        m_animationDisplayList.push_back(model->GetAnimation()->m_SkeletonAnimationList[i]->m_animationName);
     }
 }
 
@@ -379,39 +371,42 @@ void AnimationService::LoadAnimation( IC3DModel* c3dModel )
     // extract number of animations				
     unsigned int numOfAnims = 0;
 
-    m_c3dNames.push_back(c3dModel->GetName());
 
     // create animations
     Animation* animation = new Animation(c3dModel->GetMarkerList(), this);
     m_c3danimations.insert(make_pair(c3dModel, animation));	
+
+    std::string animationName = c3dModel->GetName();
+    animationName = animationName.substr(0, animationName.find_last_of("."));
+    animationName.append(".amc");
+
+
+    map<std::string, Animation*>::iterator i = m_animations.find(animationName);
+    if (i == m_animations.end())
+    {
+        m_animationDisplayList.push_back(animationName); 
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
 void AnimationService::PlayAnimation(std::string animationName)
 {
- //   map<std::string, Animation*>::iterator i = m_animations.find(animationName);
+    map<std::string, Animation*>::iterator i = m_animations.find(animationName);
     
-    map<std::string, Animation*>::iterator i;
-
-    for(i = m_animations.begin(); i != m_animations.end(); i++)
-    {
-        if ( currentAnimation ) {
-            currentAnimation->Stop();
-        }
-        
-        if (i->first == animationName) 
-        {
-            currentAnimation = i->second;
-            i->second->Play();
-            break;
-        } 
-        else
-        {
-            ClearCaller();
-            UnregisterAnimation();
-            currentAnimation = NULL;
-        }
+    if ( currentAnimation ) {
+        currentAnimation->Stop();
     }
+    
+    if (i != m_animations.end()){
+        currentAnimation = i->second;
+        i->second->Play();
+    } 
+    else{
+        ClearCaller();
+        UnregisterAnimation();
+        currentAnimation = NULL;
+    }
+
 
     // TODO: zrobiæ tak aby Geode by³o w jednym miejscu - jako singleton 
     // skruci temu podobne zamieszania.
@@ -424,17 +419,6 @@ void AnimationService::PlayAnimation(std::string animationName)
 void AnimationService::PlayC3DAnimation(std::string name)
 {
     std::string c3dName;
-    int nameCount = 0;
-    bool find = false;
-    for(int a = 0; a < m_animationNames.size(); a++)
-    {
-        if(m_animationNames[a] == name){
-            find = true;
-            break;
-        }
-
-        nameCount++;
-    }
 
     c3dName = name.substr(0, name.find_last_of("."));
     c3dName.append(".c3d");
@@ -442,9 +426,6 @@ void AnimationService::PlayC3DAnimation(std::string name)
     if (c3dcurrentAnimation) {
         c3dcurrentAnimation->Stop();
     }
-
-    if(m_c3danimations.size() < nameCount || !find)
-        return;
 
     map<IC3DModel*, Animation*>::iterator i;
     for(i = m_c3danimations.begin(); i != m_c3danimations.end(); i++)
@@ -645,3 +626,7 @@ void AnimationService::SetShowMarker( bool showMarker )
     }
 }
 
+std::vector<std::string>* AnimationService::GetAnimationDisplayList()
+{
+    return &m_animationDisplayList;
+}
