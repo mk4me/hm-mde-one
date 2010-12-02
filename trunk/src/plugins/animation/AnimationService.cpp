@@ -410,6 +410,7 @@ void AnimationService::PlayAnimation(std::string animationName)
         ClearCaller();
         UnregisterAnimation();
         currentAnimation = NULL;
+        setLength(0.0f);
     }
 
     if (timeline && followTimeline) {
