@@ -395,6 +395,9 @@ void AnimationService::LoadAnimation( IC3DModel* c3dModel )
 //--------------------------------------------------------------------------------------------------
 void AnimationService::PlayAnimation(std::string animationName)
 {
+    timeline->setPlaying(false);
+    timeline->setTime(0.0f);
+
     map<std::string, Animation*>::iterator i = m_animations.find(animationName);
     
     if ( currentAnimation ) {
