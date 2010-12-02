@@ -36,6 +36,13 @@ struct Filesystem
 	@return lista wszystkich podfolderów wraz ze œcie¿k¹
 	*/
 	static std::vector<std::string> listSubdirectories(const std::string& path);
+	/*
+	Do³¹cza œcie¿kê path2 do œcie¿ki path.
+	@param path œcie¿ka do folderu do którego ma byæ do³¹czony path2
+	@param path2 œcie¿ka do folderu lub pliku który ma byæ do³¹czony do path
+	@return œcie¿ka utworzona z do³¹czenia path2 do path
+	*/
+	static std::string append(const std::string& path, const std::string& path2);
 private:
 	/*
 	Unifikuje œcie¿kê ¿eby ³atwiej pracowa³o siê z Filesystem.

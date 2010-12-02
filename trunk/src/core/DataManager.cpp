@@ -2,7 +2,6 @@
 
 #include <core/IModel.h>
 #include <core/Filesystem.h>
-#include <tinyxml.h>
 
 DataManager::DataManager(const std::string& resourcesPath, const std::string& trialsPath) : resourcesPath(resourcesPath), trialsPath(trialsPath)
 {
@@ -21,25 +20,29 @@ void DataManager::loadResources()
 	shadersPaths = Filesystem::listFiles(this->resourcesPath, true, "*.frag");
 	//szukaj tbs file
 	meshesPaths = Filesystem::listFiles(this->resourcesPath, true, "*.tbs");
+	//szukaj styli qt
+	applicationSkinsPaths = Filesystem::listFiles(this->resourcesPath, true, "*.qss");
 }
 
 void DataManager::loadTrials()
 {
+	//nie przeszukujemy podkatalogow, sprawdzamy konkretny katalog aby wyluskac sciezki dla jednej proby pomiarowej
     //szukaj meshy
-    meshesPaths = Filesystem::listFiles(this->trialsPath, true, "*.fmesh");
+    meshesPaths = Filesystem::listFiles(this->trialsPath, false, "*.fmesh");
 	//szukaj plikow video
-	videosPaths = Filesystem::listFiles(this->trialsPath, true, "*.avi");
+	videosPaths = Filesystem::listFiles(this->trialsPath, false, "*.avi");
 	//szukaj plikow c3d
-	c3dsPaths = Filesystem::listFiles(this->trialsPath, true, "*.c3d");
+	c3dsPaths = Filesystem::listFiles(this->trialsPath, false, "*.c3d");
 	//szukaj plikow animacji
-	animationPaths = Filesystem::listFiles(this->trialsPath, true, "*.amc");
+	animationPaths = Filesystem::listFiles(this->trialsPath, false, "*.amc");
 	//szukaj plikow animacji szkieletowej
-	skeletonPaths = Filesystem::listFiles(this->trialsPath, true, "*.asf");
+	skeletonPaths = Filesystem::listFiles(this->trialsPath, false, "*.asf");
 }
 
 void DataManager::clear() {
 	this->shadersPaths.clear();
 	this->meshesPaths.clear();
+	this->applicationSkinsPaths.clear();
 	this->videosPaths.clear();
 	this->c3dsPaths.clear();
 	this->animationPaths.clear();
@@ -64,6 +67,16 @@ const std::string& DataManager::getMeshFilePath(int i)
 int DataManager::getMeshFilePathCount()
 {
 	return meshesPaths.size();
+}
+
+const std::string& DataManager::getApplicationSkinsFilePath(int i)
+{
+	return applicationSkinsPaths[i];
+}
+
+int DataManager::getApplicationSkinsFilePathCount()
+{
+	return applicationSkinsPaths.size();
 }
 
 const std::string& DataManager::getVideoFilePath(int i)

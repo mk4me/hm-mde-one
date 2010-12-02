@@ -20,6 +20,9 @@ public:
     virtual const std::string& getMeshFilePath(int i);
     virtual int getMeshFilePathCount();
 
+    virtual const std::string& getApplicationSkinsFilePath(int i);
+    virtual int getApplicationSkinsFilePathCount();
+
     virtual const std::string& getVideoFilePath(int i);
     virtual int getVideoFilePathCount();
 
@@ -43,6 +46,7 @@ public:
 private:
 	std::vector<std::string> shadersPaths;
 	std::vector<std::string> meshesPaths;
+	std::vector<std::string> applicationSkinsPaths;
 	std::vector<std::string> videosPaths;
 	std::vector<std::string> c3dsPaths;
 	std::vector<std::string> animationPaths;

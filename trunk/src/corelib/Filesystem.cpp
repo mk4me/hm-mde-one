@@ -65,39 +65,31 @@ void Filesystem::move(const std::string& pathOld, const std::string& pathNew)
 
 std::vector<std::string> Filesystem::listFiles(const std::string& path, bool recursive, const std::string& mask)
 {
-	std::string copyPath = path;
-	Filesystem::preparePath(copyPath);
 	std::vector<std::string> files;
 	HANDLE file;
 	WIN32_FIND_DATA dataFind;
 	bool moreFiles = true;
-	std::string fileMask = copyPath;
-
-	fileMask.append(mask);
 
 	//przeszukaj podfoldery
 	if(recursive)
 	{
 		std::vector<std::string> dirs = Filesystem::listSubdirectories(path);
-		for(int i = 0; i < dirs.size(); i++)
+		for(std::vector<std::string>::iterator i = dirs.begin(); i != dirs.end(); ++i)
 		{
-			Filesystem::preparePath(dirs[i]);
-			std::vector<std::string> subfiles = Filesystem::listFiles(dirs[i], recursive, mask);
-			for(int i = 0; i < subfiles.size(); i++)
+			std::vector<std::string> subfiles = Filesystem::listFiles((*i), recursive, mask);
+			for(std::vector<std::string>::iterator it = subfiles.begin(); it != subfiles.end(); ++it)
 			{
-				files.push_back(subfiles[i]);
+				files.push_back((*it));
 			}
 		}
 	}
 #if defined(__WIN32__)
-	file = ::FindFirstFile(fileMask.c_str(), &dataFind);
+	file = ::FindFirstFile(Filesystem::append(path, mask).c_str(), &dataFind);
 	while(file != INVALID_HANDLE_VALUE && moreFiles)
 	{
 		if(dataFind.dwFileAttributes != FILE_ATTRIBUTE_DIRECTORY)
 		{
-			std::string subfile = path;
-			subfile.append(dataFind.cFileName);
-			files.push_back(subfile);
+			files.push_back(Filesystem::append(path, dataFind.cFileName));
 		}
 		moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));
 	}
@@ -123,10 +115,7 @@ std::vector<std::string> Filesystem::listSubdirectories(const std::string& path)
 	{
 		if(dataFind.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY && dataFind.cFileName[0] != '.')
 		{
-			std::string subdir = path;
-			Filesystem::preparePath(subdir);
-			subdir.append(dataFind.cFileName);
-			subdirs.push_back(subdir);
+			subdirs.push_back(Filesystem::append(path, dataFind.cFileName));
 		}
 		moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));
 	}
@@ -134,6 +123,18 @@ std::vector<std::string> Filesystem::listSubdirectories(const std::string& path)
 		//FIX: do uzupelnienia
 #endif
 	return subdirs;
+}
+
+std::string Filesystem::append(const std::string& path, const std::string& path2)
+{
+	if(path.empty() && path2.empty())
+	{
+		throw std::exception("Empty strings in use.");
+	}
+	std::string appended = path;
+	Filesystem::preparePath(appended);
+	appended.append(path2);
+	return appended;
 }
 
 void Filesystem::preparePath(std::string& path)

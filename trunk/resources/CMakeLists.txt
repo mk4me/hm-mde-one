@@ -36,6 +36,12 @@ set(TRIAL
 )
 source_group("trial" FILES ${TRIAL})
 
+# style qt
+set(APPSKINS 
+	app_skins/dark.qss
+)
+source_group("appskins" FILES ${APPSKINS})
+
 # czy kopiowaæ zasoby?
 option(EDR_ENABLE_SVN_RESOURCES_COPYING "Enable copying resources?" OFF)
 if(EDR_ENABLE_SVN_RESOURCES_COPYING)
@@ -44,12 +50,12 @@ if(EDR_ENABLE_SVN_RESOURCES_COPYING)
 	# dodanie projektu, który kopiuje zawartoœæ bie¿¹cego katalogu
 	add_custom_target(resources ALL
 		COMMAND "@CMAKE_COMMAND@" -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${EDR_SVN_RESOURCES_DESTINATION}
-		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL}
+		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL} ${APPSKINS}
 	)
 	#message("COMMAND @CMAKE_COMMAND@ -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${MOTION_SVN_RESOURCES_DESTINATION}")
 else()
 	# dodanie projektu bez ¿adnego polecenia - mo¿na ge edytowaæ z IDE
 	add_custom_target(resources 
-		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL}
+		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL} ${APPSKINS}
 	)
 endif()

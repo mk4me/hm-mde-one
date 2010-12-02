@@ -79,6 +79,11 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     InitializeControlWidget();          // Control Widget + TimeLine
     LoadConfiguration();                // Wczytuje plik konfiguracyjny
 
+	/*
+	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
+	*/
+    dataManager = new DataManager();
+
     initializeUI();
 
 
@@ -90,11 +95,6 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 
     computeThread = new ComputeThread(m_pServiceManager, 0.02);
     computeThread->start();
-
-	/*
-	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
-	*/
-    dataManager = new DataManager();
 
 }
 
@@ -314,7 +314,7 @@ void ToolboxMain::registerPluginsServices()
 
 void ToolboxMain::onOpen()
 {
-	const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath()); // TODO: tymczasowo dodaje asf do filtrów Open File
+	const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/data/trials"));
     if (!fileName.isEmpty()) 
     {
         std::string pathVal = fileName.toStdString();
@@ -325,7 +325,6 @@ void ToolboxMain::onOpen()
 
         return;
     }
-    QMessageBox::warning(this, QString("Error!"), QString("Failed to load trials."));
 }
 
 void ToolboxMain::onExit()
@@ -350,7 +349,21 @@ void ToolboxMain::onWireframe()
 
 void ToolboxMain::initializeUI()
 {
-    // widget rendeer service - centralny
+	//ladowanie styli qt
+	QString style;
+	if(dataManager->getApplicationSkinsFilePathCount() > 0)
+	{
+		//style qt
+		QFile file(QString::fromStdString(dataManager->getApplicationSkinsFilePath(0)));
+		if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			style = file.readAll();
+			file.close();
+		}
+	}
+	setStyleSheet(style);
+
+	// widget rendeer service - centralny
     setCentralWidget(reinterpret_cast<QWidget*>(m_pRenderService->getWidget()));
 
     // pozosta³e widgety "p³ywaj¹ce"
@@ -366,9 +379,11 @@ void ToolboxMain::initializeUI()
             QWidget* qwidget = reinterpret_cast<QWidget*>(widget);
             QObject* parent = qwidget->parent();
             dock->setWidget(qwidget);
-            dock->setObjectName( QString::fromStdString( service->getName() ) + qwidget->objectName() + "WIDGET" );
-        }
-    }
+			dock->setObjectName( QString::fromStdString( service->getName() ) + qwidget->objectName() + "WIDGET" );
+			//przekazanie stylu do docka
+			dock->setStyleSheet(style);
+		}
+	}
 
     // uzupe³nienie podmenu z mo¿liwymi oknami
     populateWindowMenu(ui->menuWindow);

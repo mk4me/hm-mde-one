@@ -17,6 +17,9 @@ public:
     virtual const std::string& getMeshFilePath(int i) = 0;
     virtual int getMeshFilePathCount() = 0;
 
+    virtual const std::string& getApplicationSkinsFilePath(int i) = 0;
+    virtual int getApplicationSkinsFilePathCount() = 0;
+
     virtual const std::string& getVideoFilePath(int i) = 0;
     virtual int getVideoFilePathCount() = 0;
 
