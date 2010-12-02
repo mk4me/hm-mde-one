@@ -28,7 +28,7 @@
 #include <core/C3D_Data.h>
 
 #define SCALE 1
-#define TIMERMULTIPLAY 0.0055
+#define TIMERMULTIPLAY 0.009
 
 // helper - this name is quite long...
 #define pPat osg::PositionAttitudeTransform*

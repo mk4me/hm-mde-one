@@ -15,6 +15,9 @@
 #include <osg/ref_ptr>
 #include <core/IFactory.h>
 
+#include <plugins/timeline/ITimeline.h>
+#include <plugins/timeline/Stream.h>
+
 
 namespace osgViewer
 {
@@ -187,6 +190,8 @@ private:
     int m_DisplayType;
 
     IFactor* m_pFactory;
+
+    ITimelinePtr timeline;
 };
 
 //--------------------------------------------------------------------------------------------------

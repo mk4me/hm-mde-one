@@ -119,15 +119,11 @@ void Animation::Play()
     if (_state != Animation::PLAYING)
     {
         m_pAnimationService->RegisterFunction(this, &Animation::SetTime);
-        m_pAnimationService->setLength(_length);
+        //m_pAnimationService->setLength(_length);
         _state = Animation::PLAYING; 
 
         if(m_animationType == ACCLAIM)
         {
-//             m_pAnimationService->RegisterAnimation(this, &Animation::SetTime);
-//             m_pAnimationService->setLength(_length);
-//             _state = Animation::PLAYING; 
-
             int animatioBoneCount = m_pSkeletonAnimaton->m_boneAnimationList.size();
             int boneCount = m_pSkeleton->m_pBoneList.size();
 
@@ -145,14 +141,12 @@ void Animation::Play()
             // ilosc kosci = ilosc obiektów frame w tablicy
             m_pFrameCount = m_pSkeleton->m_pRootBone->frame.size();
             _length = m_pSkeleton->m_pRootBone->frame[m_pFrameCount-1]->m_time;
+
+            m_pAnimationService->setLength(_length);
         }
 
         if(m_animationType == C3D)
         {
-//             m_pAnimationService->RegisterC3DAnimation(this, &Animation::SetTime);
-//             m_pAnimationService->setLength(_length);
-//             _state = Animation::PLAYING; 
-
             // ilosc kosci = ilosc obiektów frame w tablicy
             m_pFrameCount = m_markerList[0]->GetAnimationList().size();
             _length = m_markerList[0]->GetAnimationList()[m_pFrameCount-1]->m_time;

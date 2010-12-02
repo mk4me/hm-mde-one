@@ -85,7 +85,7 @@ m_pAnimation(NULL)
 , targetTime(0.0)
 , stateMutex()
 , length(0.0)
-, followTimeline(false)
+, followTimeline(true)
 , currentAnimation(NULL)
 , c3dcurrentAnimation(NULL)
 , name("Animation")
@@ -147,7 +147,7 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 
     widget->SetScene(m_pScene, serviceManager);
 
-    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
+    timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
         timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
     } else {
@@ -411,9 +411,12 @@ void AnimationService::PlayAnimation(std::string animationName)
         currentAnimation = NULL;
     }
 
+    if ( timeline ) {
+        timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
+    } else {
+        OSG_WARN<<"ITimeline not found."<<std::endl;
+    }
 
-    // TODO: zrobiæ tak aby Geode by³o w jednym miejscu - jako singleton 
-    // skruci temu podobne zamieszania.
     m_pRenderService->DisableBone();
 
     PlayC3DAnimation(animationName);
