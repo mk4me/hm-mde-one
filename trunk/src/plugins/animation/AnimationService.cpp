@@ -399,6 +399,7 @@ void AnimationService::PlayAnimation(std::string animationName)
     
     if ( currentAnimation ) {
         currentAnimation->Stop();
+        ClearCaller();
     }
     
     if (i != m_animations.end()){
@@ -411,7 +412,7 @@ void AnimationService::PlayAnimation(std::string animationName)
         currentAnimation = NULL;
     }
 
-    if ( timeline ) {
+    if (timeline && followTimeline) {
         timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
     } else {
         OSG_WARN<<"ITimeline not found."<<std::endl;
