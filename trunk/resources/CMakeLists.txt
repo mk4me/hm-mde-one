@@ -3,10 +3,7 @@ project(Resources)
 # modele
 set(MESHES 
 	meshes/fixed_biped.fmesh
-	meshes/trial1.amc
-	meshes/trial1.asf
-	meshes/trial1.tbs
-	meshes/trial2.amc
+	meshes/Alien.tbs
 )
 source_group("meshes" FILES ${MESHES})
 
@@ -30,6 +27,14 @@ set(SCHEMAS
 )
 source_group("schemas" FILES ${SCHEMAS})
 
+set(TRIAL
+	trial/walkMoCap2.amc
+	trial/walkMoCap2.c3d
+	trial/walkMoCapVideo.amc
+	trial/walkMoCapVideo.asf
+	trial/walkMoCapVideo.c3d
+)
+source_group("trial" FILES ${TRIAL})
 
 # czy kopiowaæ zasoby?
 option(EDR_ENABLE_SVN_RESOURCES_COPYING "Enable copying resources?" OFF)
@@ -39,12 +44,12 @@ if(EDR_ENABLE_SVN_RESOURCES_COPYING)
 	# dodanie projektu, który kopiuje zawartoœæ bie¿¹cego katalogu
 	add_custom_target(resources ALL
 		COMMAND "@CMAKE_COMMAND@" -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${EDR_SVN_RESOURCES_DESTINATION}
-		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS}
+		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL}
 	)
 	#message("COMMAND @CMAKE_COMMAND@ -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${MOTION_SVN_RESOURCES_DESTINATION}")
 else()
 	# dodanie projektu bez ¿adnego polecenia - mo¿na ge edytowaæ z IDE
 	add_custom_target(resources 
-		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS}
+		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL}
 	)
 endif()
