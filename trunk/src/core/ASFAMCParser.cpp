@@ -506,6 +506,13 @@ int ASFAMCParser::ReadASFFile(std::string ASFFileName)
 
 int ASFAMCParser::ReadAMCFile(std::string AMCFileName)
 {
+    // Clear data
+    for(int j = 0; j< joints.size(); j++)
+    {
+        joints[j].clearFrame();
+    }
+
+
     FILE *tempFilePointerAMC ;
 
     //First argument, the AMC file, is opened

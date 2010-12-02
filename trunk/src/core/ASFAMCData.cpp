@@ -522,6 +522,11 @@ void Channel::clearEulerMarkers()
     eulerMarkers.clear();
 }
 
+void Channel::clearFrame()
+{
+    frames.clear();
+}
+
 // A true/false value as to whether or not the joint contains motion data.
 int Channel::hasFrameData()
 {

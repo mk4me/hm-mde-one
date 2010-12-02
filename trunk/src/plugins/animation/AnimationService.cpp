@@ -264,6 +264,7 @@ void AnimationService::Clear()
     m_c3danimations.clear();
     m_functionsToCall.clear();
     m_functionsToRemove.clear();
+    m_animationDisplayList.clear();
     m_functionsToCallWhenAnimationStopped.clear();
 
     m_DisplayType = AnimasionDisplay::ALL;
@@ -314,18 +315,21 @@ AsyncResult AnimationService::update(double time, double timeDelta)
     for (std::vector<ISimpleOneArgFunctor<double>*>::iterator i = m_functionsToCall.begin(); i != m_functionsToCall.end(); ++i)
         (**i)(targetTime);
 
+    // Ma³y Trick R.Z - metoda end() pojeminika nigdy nie wskazuje na ostati element - tylko na ten znajdujacy sie za nim. a on zawsze bedzie ró¿ny niz ten od m_functionsToCall
+    // Prawid³owo nie uzywa sie tych meoda w ten sposób. TODO: w przysz³oœci w razie problemów zast¹piæ czymœ innym
     // remove functions that are to remove...
-    for (std::vector<std::vector<ISimpleOneArgFunctor<double>*>::iterator>::iterator i = m_functionsToRemove.begin(); 
-        i != m_functionsToRemove.end(); ++i)
+    for (std::vector<std::vector<ISimpleOneArgFunctor<double>*>::iterator>::iterator i = m_functionsToRemove.begin(); i != m_functionsToRemove.end();)
     {
-        //delete (**i);
-        m_functionsToCall.erase((const vector<ISimpleOneArgFunctor<double>*>::iterator)(*i));
-        break;
+        if(m_functionsToCall.empty())
+            break;
+
+        delete (**i);
+        
+        *i = m_functionsToCall.erase((const vector<ISimpleOneArgFunctor<double>*>::iterator)(*i));
+       // i = m_functionsToRemove.erase(i);
     }
 
-
-	m_functionsToRemove.clear();
-
+    m_functionsToRemove.clear();
 
     return AsyncResult_Complete; 
 }

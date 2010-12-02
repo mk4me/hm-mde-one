@@ -26,6 +26,8 @@ public:
 
     virtual IModel* GetModel(std::string pathToMesh, std::string pathToASF, std::vector<std::string> pathToAMCList) = 0; // modelPath = meshPath + asfPath + amcPath(0)
     virtual IModel* CreateModel(std::string pathToMesh, std::string pathToASF, std::vector<std::string> pathToAMCList) = 0;
+
+    virtual void Clear() = 0;
 };
 
 

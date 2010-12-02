@@ -171,6 +171,7 @@ public:
     // markers and then call add___MarkerPosition again for the quaternions and eulers
     void	clearQuaternionMarkers();
     void	clearEulerMarkers();
+    void    clearFrame();
 
     // After you are finished computing your euler marker positions, call this function
     // to copy the euler markers so that they can be saved as the original

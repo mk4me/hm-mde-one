@@ -71,3 +71,10 @@ IC3DModel* Factor::GetC3DModel(std::string c3dObjectPath)
         return newC3DModel;
     }
 }
+
+//--------------------------------------------------------------------------------------------------
+void Factor::Clear()
+{
+    m_ModelMap.clear();
+    m_C3DModelMap.clear();
+}

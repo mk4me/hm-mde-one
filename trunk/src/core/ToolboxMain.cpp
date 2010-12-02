@@ -503,12 +503,11 @@ void ToolboxMain::openFile( const std::string& path )
     std::cout << "File Opened: " << path << std::endl;
     std::cout << "---------------------------------------------------------------" << std::endl; 
 
+    m_pRenderService->GetFactory()->Clear();
+
 	//zaladowanie sciezek prob pomiarowych
 	dataManager->setTrialsPath(path);
 	dataManager->loadTrials();
-
-    // nie potrzebne
-    //FileReader2Motion::ReadFile(dataManager);
 
     m_pServiceManager->loadDataPass(dataManager);
 

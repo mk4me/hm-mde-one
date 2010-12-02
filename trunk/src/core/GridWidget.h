@@ -8,6 +8,9 @@
 #include <osg/NodeVisitor>
 #include <string>
 
+#include <core/IModel.h>
+#include <core/Skeleton.h>
+
 #include "ui_GridWidget.h"
 
 class GridWidget: public QWidget, Ui::GridWidget
@@ -23,6 +26,8 @@ public:
 public slots: 
     virtual void SelectionChanged();
     virtual void MakeTest();
+    void AddChildToTreeView(Bone* bone, QTreeWidgetItem *parentTreeItem);
+
     void AddGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem);
     void AddGeodeToTreeView(osg::Geode *geode, QTreeWidgetItem *parentTreeItem);
 

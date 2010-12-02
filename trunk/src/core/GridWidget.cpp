@@ -78,35 +78,71 @@ void GridWidget::MakeTest()
 }
 
 //--------------------------------------------------------------------------------------------------
+void GridWidget::AddChildToTreeView(Bone* bone, QTreeWidgetItem *parentTreeItem)
+{
+    QTreeWidgetItem *nodeTreeItem = new QTreeWidgetItem(parentTreeItem); 
+    nodeTreeItem->setText(0, bone->name); 
+    nodeTreeItem->setText(1, tr("Group"));
+
+    int childCount = bone->child.size(); 
+    for (int i=0; i<childCount; ++i)
+    {
+
+            AddChildToTreeView(bone->child[i], nodeTreeItem); 
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
 void GridWidget::SetScene(osg::Node *scene)
 {
     // clear...
     ClearScene(); 
+
+    Bone* rootBone = dynamic_cast<IModel* >(scene)->GetSkeleton()->m_pRootBone;
+
 
     osg::Node *topNode = scene; 
     osg::Group *topGroup = 0; 
     if(topNode)
         topGroup = topNode->asGroup(); 
 
-    if(topGroup != 0)
+    if(rootBone != 0)
     {
         QTreeWidgetItem *rootTreeItem = new QTreeWidgetItem(sceneGraphWidget);
-        rootTreeItem->setText(0, topGroup->getName().c_str());
+        rootTreeItem->setText(0, rootBone->name);
 
-        int childCount = topGroup->getNumChildren(); 
+        int childCount = rootBone->child.size();
         for (int i=0; i<childCount; ++i)
         {
-            osg::Node *child = topGroup->getChild(i); 
-            if(child->asGroup() != 0)
-            {
-                AddGroupToTreeView(child->asGroup(), rootTreeItem); 
-            }
-            else if(child->asGeode())
-            {
-                AddGeodeToTreeView(child->asGeode(), rootTreeItem); 
-            }
+                AddChildToTreeView(rootBone->child[i], rootTreeItem); 
         }
     }
+
+
+//     osg::Node *topNode = scene; 
+//     osg::Group *topGroup = 0; 
+//     if(topNode)
+//         topGroup = topNode->asGroup(); 
+// 
+//     if(topGroup != 0)
+//     {
+//         QTreeWidgetItem *rootTreeItem = new QTreeWidgetItem(sceneGraphWidget);
+//         rootTreeItem->setText(0, topGroup->getName().c_str());
+// 
+//         int childCount = topGroup->getNumChildren(); 
+//         for (int i=0; i<childCount; ++i)
+//         {
+//             osg::Node *child = topGroup->getChild(i); 
+//             if(child->asGroup() != 0)
+//             {
+//                 AddGroupToTreeView(child->asGroup(), rootTreeItem); 
+//             }
+//             else if(child->asGeode())
+//             {
+//                 AddGeodeToTreeView(child->asGeode(), rootTreeItem); 
+//             }
+//         }
+//     }
 }
 
 //--------------------------------------------------------------------------------------------------

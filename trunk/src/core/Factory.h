@@ -30,6 +30,8 @@ public:
     virtual IModel* GetModel(std::string pathToMesh, std::string pathToASF, std::vector<std::string> pathToAMCList); // modelPath = meshPath + asfPath + amcPath(0)
     virtual IC3DModel* GetC3DModel(std::string c3dObjectPath);
 
+    virtual void Clear();
+
 private:
 
     ModelResources m_ModelMap;
