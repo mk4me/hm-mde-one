@@ -17,14 +17,6 @@ GridWidget::GridWidget(void):
 
     connect(testButton, SIGNAL(clicked()), this, SLOT(MakeTest()));
     connect(sceneGraphWidget, SIGNAL(itemSelectionChanged()), this, SLOT(SelectionChanged()));
-
-    /*
-    QTreeWidgetItem *cities = new QTreeWidgetItem(sceneGraphWidget);
-    cities->setText(0, tr("Cities"));
-    QTreeWidgetItem *osloItem = new QTreeWidgetItem(cities);
-    osloItem->setText(0, tr("Oslo"));
-    osloItem->setText(1, tr("Yes"));
-    /**/
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -117,32 +109,6 @@ void GridWidget::SetScene(osg::Node *scene)
                 AddChildToTreeView(rootBone->child[i], rootTreeItem); 
         }
     }
-
-
-//     osg::Node *topNode = scene; 
-//     osg::Group *topGroup = 0; 
-//     if(topNode)
-//         topGroup = topNode->asGroup(); 
-// 
-//     if(topGroup != 0)
-//     {
-//         QTreeWidgetItem *rootTreeItem = new QTreeWidgetItem(sceneGraphWidget);
-//         rootTreeItem->setText(0, topGroup->getName().c_str());
-// 
-//         int childCount = topGroup->getNumChildren(); 
-//         for (int i=0; i<childCount; ++i)
-//         {
-//             osg::Node *child = topGroup->getChild(i); 
-//             if(child->asGroup() != 0)
-//             {
-//                 AddGroupToTreeView(child->asGroup(), rootTreeItem); 
-//             }
-//             else if(child->asGeode())
-//             {
-//                 AddGeodeToTreeView(child->asGeode(), rootTreeItem); 
-//             }
-//         }
-//     }
 }
 
 //--------------------------------------------------------------------------------------------------

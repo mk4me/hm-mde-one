@@ -261,7 +261,6 @@ void Animation::UpdateModelBVHFormat()
     z = (bone->dir[2] * lenght) + bone->frame[index]->translationz;
 
 
-
     // tworzenie macierzy animacji. AMC file
     // minusowe wartoœci dla uzyskania po³o¿enia wzglêdem œwiata + zamiana na radiany
     rx=-bone->frame[index]->rotx*M_PI/180.;
@@ -416,9 +415,6 @@ void Animation::UpdateModelAcclaimFormat()
     rz=-bone->frame[index]->rotz*M_PI/180.;
     M.makeRotate(rx, osg::Vec3f(1.0f, 0.0f, 0.0f), ry, osg::Vec3f(0.0f, 0.0f, 1.0f), rz, osg::Vec3f(0.0f, 1.0f, 0.0f));
     M.postMultTranslate(osg::Vec3f(bone->frame[index]->translationx, bone->frame[index]->translationz, bone->frame[index]->translationy));
-
-   // M.makeRotate(0, osg::Vec3f(1.0f, 0.0f, 0.0f), 0, osg::Vec3f(0.0f, 0.0f, 1.0f), 0, osg::Vec3f(0.0f, 1.0f, 0.0f));
-  //  M.postMultTranslate(osg::Vec3f(0, 0, 0));
 
     float x,y,z;
     float lenght = bone->length;

@@ -5,6 +5,7 @@ CORE_PLUGIN_BEGIN("Animation", UniqueID('ANIM', 'PLUG'))
 CORE_PLUGIN_ADD_SERVICE(AnimationService)
 CORE_PLUGIN_END
 
+//TODO: R.Z. Jeœi nie jest potrzebne to sugeruje usuniêcie z kodu, spisuje siê b.dobrze
 #if 0
 
 #include "AnimationPlugin.h"
