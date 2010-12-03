@@ -8,7 +8,7 @@
 #include <core/Chart.h>
 #include "MultiViewChartItem.h"
 #ifdef _DEBUG
-#define WM_FLAGS 0// osgWidget::WindowManager::WM_PICK_DEBUG
+#define WM_FLAGS osgWidget::WindowManager::WM_PICK_DEBUG
 #else
 #define WM_FLAGS 0
 #endif
@@ -47,7 +47,7 @@ ChartWidget::ChartWidget(IService* service)
 
     // dodanie do widgeta
 	mainChart->addWidget( viewer );
-
+    multiView->addChild(new osgWidget::Box("osgWidgetHACK"));
 
 
 //	mainChart->addWidget(mainViewer);

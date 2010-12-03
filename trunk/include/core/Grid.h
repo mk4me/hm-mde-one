@@ -27,6 +27,7 @@ class Grid : public osgWidget::Table
 private:
     CellSizes columnsWeights;
     CellSizes rowsWeights;
+    bool dirtyMode;
 
 public:
     META_Object(osgUI, Grid)
@@ -76,11 +77,29 @@ public:
     void setDimensions(unsigned rows, unsigned columns);
 
     //! Nadaje wszystkim komórkom z flag¹ canFill zerowy rozmiar, na nastêpnie wywo³uje resize().
-    void resetFillable();
+    void resetFillables();
    
     //! Dopasowuje rozmiar komórek tak, aby zgodnie z zadanym wspó³czynnikiem proporcji
     //! komórki zajmowa³y jak najwiêkszy obszar.
-    void adjustDimensions(osgWidget::point_type width, osgWidget::point_type height, osgWidget::point_type aspectRatio = -1);
+    //! Wype³nia jedynkami rows/columnsWeights!
+    void adjustDimensions(osgWidget::point_type width, osgWidget::point_type height, const std::vector<osgWidget::point_type>& aspectRatios);
+
+    //! Wype³nia puste komórki grida przekazanym widgetem.
+    //! \param blank Widget do wype³niania. NULL spowoduje stworzenie w³asnego widgeta o zerowym rozmiarze z flag¹ canFill. Gdy nie jest NULL
+    //!        do grida dok³adanego s¹ jego klony (dlatego wskaŸnik jest ref_ptr)
+    void fillEmpty( osg::ref_ptr<osgWidget::Widget> prototype = osg::ref_ptr<osgWidget::Widget>() );
+
+    //! Ustawia wszystkie widgety
+    void flattenHorizontally();
+    void flattenVertically();
+
+    //! \return
+    bool isDirtyMode() const
+    { 
+        return dirtyMode;
+    }
+    //! \param dirtyMode
+    void setDirtyMode(bool dirtyMode);
 
     // JESZCZE NIE ZAIMPLEMENTOWANE
     //! Usuwa wiersz.

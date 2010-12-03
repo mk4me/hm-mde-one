@@ -30,6 +30,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/AspectRatioKeeper.h
 	${HEADER_PATH}/MultiView.h
 	${HEADER_PATH}/MultiViewWidgetItem.h
+	${HEADER_PATH}/EmbeddedWindow.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -63,6 +64,7 @@ set(TARGET_SRC
 	Parameter.cpp
 	Parameters.cpp
 	ChartPointer.cpp
+	EmbeddedWindow.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

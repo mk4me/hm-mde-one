@@ -24,6 +24,17 @@ VideoService::VideoService()
 //         files.push_back("s1.avi");
 //     }
 //     reinterpret_cast<VideoWidget*>(widget)->init(files);
+
+    std::vector<std::string> files;
+    files.push_back("trial1a.avi");
+    files.push_back("trial1b.avi");
+    files.push_back("trial1c.avi");
+    files.push_back("trial1d.avi");
+    //for (int i = 0; i < dataManager->GetVideoFilePathCount(); ++i) {
+    //    files.push_back(dataManager->GetVideoFilePath(i));
+    //}
+    ((VideoWidget*)(widget))->init(files);
+
 }
 
 AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
@@ -34,9 +45,19 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 	//TODO: ladowanie sciezek do plikow video [Marek Daniluk 23.11.10]
 	for(int i = 0; i < dataManager->getVideoFilePathCount(); i++)
 	{
-		files.push_back(dataManager->getVideoFilePath(i));
+        std::string path =  dataManager->getVideoFilePath(i);
+        std::replace(path.begin(), path.end(), '/', '\\');
+        files.push_back(path);
 	}
 
+//     files.push_back("trial1a.avi");
+//     files.push_back("trial1b.avi");
+//     files.push_back("trial1c.avi");
+//     files.push_back("trial1d.avi");
+//     //for (int i = 0; i < dataManager->GetVideoFilePathCount(); ++i) {
+//     //    files.push_back(dataManager->GetVideoFilePath(i));
+//     //}
+//     widget->init(files);
 	widget->init(files);
 
 	ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);

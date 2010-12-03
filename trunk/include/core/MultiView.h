@@ -15,6 +15,10 @@
 #include <osgWidget/WindowManager>
 #include <osgGA/GUIEventHandler>
 #include <core/Grid.h>
+#include <core/Buttonized.h>
+#include <core/Borderized.h>
+#include <core/LabeledView.h>
+#include <core/EmbeddedWindow.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -61,17 +65,25 @@ public:
         virtual void setSelected(bool selected) = 0;
     };
 
+    //! Typ overlay'a nad miniaturk¹.
+    typedef osgUI::Buttonized< osgUI::Borderized<osgWidget::Label>, osgUI::BorderStylePolicy<osgUI::LabelStylePolicy> > OverlayButton;
+    //! Typ okienka z miniaturk¹.
+    typedef osgUI::LabeledView< OverlayButton > OverlayWindow;
+    //! Typ miniaturki.
+    typedef osgUI::Embedded< OverlayWindow > Overlay;
+
 private:
     //! WskaŸnik na item.
     typedef osg::ref_ptr<Item> ItemPtr;
     //! WskaŸnik na item.
     typedef osg::ref_ptr<PreviewItem> PreviewItemPtr;
 
+    //! Wpis wewnêtrznie u¿ywany.
     struct Entry
     {
         ItemPtr item;
         PreviewItemPtr preview;
-        osg::ref_ptr<osgWidget::Widget> widget;
+        osg::ref_ptr<OverlayButton> widget;
     };
 
     //! W³aœciwa lista itemów.
@@ -83,6 +95,13 @@ private:
     osg::ref_ptr<osgUI::Grid> thumbnails;
     //! Bie¿¹cy item
     ItemPtr selectedItem;
+    //! Szablon dla miniaturek.
+    osg::ref_ptr<Overlay> thumbnailTemplate;
+    //! Szablon dla podgl¹dów. Na razie nieu¿ywany.
+    osg::ref_ptr<Overlay> viewTemplate;
+    //! Szerokoœæ (b¹dŸ wysokoœæ) panelu z miniaturkami.
+    osgWidget::point_type thumbnailsPaneWidth;
+
 
 public:
     //! \param view
@@ -99,6 +118,34 @@ public:
 
     //! Odœwie¿a roz³o¿enie elementów.
     void refreshLayout();
+
+    //! \return Prototyp 
+    const Overlay* getThumbnailTemplate() const
+    { 
+        return thumbnailTemplate;
+    }
+    //! \return
+    Overlay* getThumbnailTemplate()
+    { 
+        return thumbnailTemplate;
+    }
+    //! \return Prototyp 
+    const Overlay* getViewTemplate() const
+    { 
+        return viewTemplate;
+    }
+    //! \return
+    Overlay* getViewTemplate()
+    { 
+        return viewTemplate;
+    }
+    //! \return
+    osgWidget::point_type getThumbnailsPaneWidth() const
+    { 
+        return thumbnailsPaneWidth;
+    }
+    //! \param thumbnailsPaneWidth
+    void setThumbnailsPaneWidth(osgWidget::point_type thumbnailsPaneWidth);
 
 private:
     //! 

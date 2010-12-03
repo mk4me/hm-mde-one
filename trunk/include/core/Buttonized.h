@@ -10,6 +10,7 @@
 #define __HEADER_GUARD__BUTTON_H__
 
 #include <osgWidget/Widget>
+#include <osgWidget/Label>
 #include <boost/type_traits.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +65,7 @@ public:
     }
 
     //! Konstruktor dla obiektu o cechach osgWidget::Label
-    Buttonized(const std::string & name, const std::string& label, osgWidget::point_type width = 0, osgWidget::point_type height = 0) :
+    Buttonized(const std::string & name, const std::string& label) :
     Base(name, label, width, height),
     StylePolicy(),
     pushed(false),
@@ -291,6 +292,110 @@ protected:
         }
     }
 };
+
+class LabelStylePolicy : public DefaultStylePolicy
+{
+private:
+    //! Kolor normalny.
+    osgWidget::Color normalColor;
+    //! Kolor przy najechaniu.
+    osgWidget::Color hooverColor;
+    //! Kolor podczas klikniêcia.
+    osgWidget::Color pushedColor;
+    //! Kolor podczas klikniêcia.
+    osgWidget::Color toggleColor;
+public:
+    LabelStylePolicy()
+    {}
+    LabelStylePolicy(const LabelStylePolicy& policy, const osg::CopyOp& copyop) :
+    DefaultStylePolicy(policy),
+    normalColor(policy.normalColor),
+    hooverColor(policy.hooverColor),
+    pushedColor(policy.pushedColor),
+    toggleColor(policy.toggleColor)
+    {}
+
+public:
+    //! \param hooverColor
+    void setLabelAllColors(osgWidget::Color color) 
+    { 
+        normalColor = hooverColor = pushedColor = toggleColor = color;
+        onStyleChanged();
+    }
+    //! \return
+    osgWidget::Color getLabelHooverColor() const
+    { 
+        return hooverColor;
+    }
+    //! \param hooverColor
+    void setLabelHooverColor(osgWidget::Color hooverColor) 
+    { 
+        this->hooverColor = hooverColor;
+        onStyleChanged();
+    }
+    //! \return
+    osgWidget::Color getLabelPushedColor() const
+    { 
+        return pushedColor;
+    }
+    //! \param clickedColor
+    void setLabelPushedColor(osgWidget::Color clickedColor) 
+    { 
+        this->pushedColor = clickedColor;
+        onStyleChanged();
+    }
+    //! \return
+    osgWidget::Color getLabelNormalColor() const
+    { 
+        return normalColor;
+    }
+    //! \param normalColor
+    void setLabelNormalColor(osgWidget::Color normalColor) 
+    { 
+        this->normalColor = normalColor;
+        onStyleChanged();
+    }
+    //! \return
+    osgWidget::Color getLabelToggleColor() const
+    { 
+        return toggleColor;
+    }
+    //! \param toggleColor
+    void setLabelToggleColor(osgWidget::Color toggleColor) 
+    { 
+        this->toggleColor = toggleColor;
+        onStyleChanged();
+    }
+
+protected:
+
+    //! Metoda do implementacji przez klasê pochodn¹. Powinna wywo³ywaæ metodê applyStyle.
+    virtual void onStyleChanged() = 0;
+    //! 
+    //! \param widget
+    //! \param toggled
+    //! \param pushed
+    //! \param hoovered
+    void applyStyle(osgWidget::Widget* widget, bool toggled, bool pushed, bool hoovered)
+    {
+        DefaultStylePolicy::applyStyle(widget, toggled, pushed, hoovered);
+        osgWidget::Label* label = dynamic_cast<osgWidget::Label*>(widget);
+        UTILS_ASSERT(label);
+        if ( toggled ) {
+            label->setFontColor(toggleColor);
+        } else {
+            label->setFontColor(normalColor);
+        }
+        if ( hoovered ) {
+            if ( pushed ) {
+                label->setFontColor( pushedColor );
+            } else {
+                label->setFontColor( hooverColor );
+            }
+        }
+    }
+};
+
 
 typedef Buttonized< osgWidget::Widget > Button;
 

@@ -66,7 +66,7 @@ public:
 
     //! Konstruktor dla obiektu o cechach osgWidget::Label
     //! \param name
-    Borderized(const std::string & name, const std::string& label, osgWidget::point_type width = 0, osgWidget::point_type height = 0) :
+    Borderized(const std::string & name, const std::string& label) :
     Base(name, label, width, height)
     {
         init();
@@ -78,9 +78,10 @@ public:
     Borderized(const Borderized& borderized, const osg::CopyOp& copyop) :
         Base(borderized, copyop),
         thickness(borderized.thickness),
-        borderIdx(0)
+        borderIdx(borderized.borderIdx)
     {
-        border = dynamic_cast<osg::Geometry*>(copyop(borderized.border.get()));
+        // inspirowane osgWidget::Label
+        border = new osg::Geometry(*borderized.border, copyop);
     }
 
 
@@ -114,12 +115,25 @@ public:
     virtual void parented(osgWidget::Window* window)
     {
         Base::parented(window);
-        unsigned idx = window->getGeode()->getDrawableIndex(border.get());
-        if ( idx != window->getGeode()->getNumDrawables() ) {
-            borderIdx = idx;
+        osg::Geode* geode = window->getGeode();
+        if ( borderIdx ) {
+            // prawdopodobnie zostaliœmy sklonowani
+            osg::Geometry* geom = dynamic_cast<osg::Geometry*>(geode->getDrawable(borderIdx));
+            if ( geom ) {
+                geode->setDrawable( borderIdx, border.get() );
+            } else {
+                borderIdx = window->addDrawableAndGetIndex(border.get());
+            }
         } else {
             borderIdx = window->addDrawableAndGetIndex(border.get());
         }
+
+        //unsigned idx = geode->getDrawableIndex(border.get());
+        //if ( idx != geode->getNumDrawables() ) {
+        //    borderIdx = idx;
+        //} else {
+        //    borderIdx = window->addDrawableAndGetIndex(border.get());
+        //}
     }
     //! Usuwa ramkê z parenta.
     //! \param window

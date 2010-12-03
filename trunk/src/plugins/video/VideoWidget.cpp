@@ -29,7 +29,7 @@ using namespace timeline;
 
 
 #ifdef _DEBUG
-#define WM_FLAGS 0// osgWidget::WindowManager::WM_PICK_DEBUG
+#define WM_FLAGS 0//osgWidget::WindowManager::WM_PICK_DEBUG
 #else
 #define WM_FLAGS 0
 #endif
@@ -165,6 +165,8 @@ void VideoWidget::init( std::vector<std::string> &files )
         }
     }
 
+    
+
     //int rows, columns;
     //view->makeGrid(static_cast<int>(images.size()), rows, columns);
     //configureView(rows, columns, images);
@@ -193,7 +195,7 @@ void VideoWidget::init( std::vector<std::string> &files )
 
         clon->addWidget(keeper);
         multiView->addChild(clon);
-        multiView->addItem(new core::MultiViewWidgetItem(box1, ratio), new core::MultiViewWidgetItem(clon, ratio));
+        multiView->addItem(new core::MultiViewWidgetItem(box1, ratio), NULL);//new core::MultiViewWidgetItem(clon, ratio));
     }
 
 

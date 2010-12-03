@@ -51,6 +51,7 @@ Base(name), aspectRatio(aspectRatio)
 {
     setTarget(target);
     getBackground()->setColor(0, 0, 0, 0);
+    setEventMask(0);
 }
 
 //! \return
@@ -102,6 +103,8 @@ void AspectRatioKeeperWindow::_resizeImplementation(osgWidget::point_type diffWi
     if ( this->target.lock(target) ) {
         osgWidget::XYCoord targetSize = applyAspectRatio(size - osgWidget::XYCoord(target->getPadHorizontal(), target->getPadVertical()));
         target->setOrigin(0, 0);
+        targetSize.x() = osg::round(targetSize.x());
+        targetSize.y() = osg::round(targetSize.y());
         target->setSize( targetSize );
         _positionWidget( target, size.x(), size.y() );
     }

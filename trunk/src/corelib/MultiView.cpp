@@ -4,8 +4,7 @@
 #include <core/Placeable.h>
 #include <core/AspectRatioKeeper.h>
 #include <core/LabeledView.h>
-
-typedef osgUI::Buttonized< osgUI::Borderized<osgWidget::Widget>, osgUI::BorderStylePolicy<osgUI::DefaultStylePolicy> > Button;
+#include <boost/foreach.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -43,31 +42,62 @@ public:
     }
 };
 
-bool callbackWindowResize(osgWidget::Event& ev)
-{
-    if(!ev.getWindow() || !ev.getWindowManager()->isMiddleMouseButtonDown()) return false;
-    ev.getWindow()->resizeAdd(ev.x, ev.y);
-    ev.getWindow()->update();
-    return true;
-}
-
 MultiView::MultiView( osgViewer::View * view, float width, float height, unsigned int mask, unsigned int flags )
-: osgWidget::WindowManager(view, width, height, mask, flags)
+: osgWidget::WindowManager(view, width, height, mask, flags), thumbnailsPaneWidth(100.0f)
 {
+    // stworzenie szablonu dla miniaturek
+    OverlayWindow* thumbnailWindow = new OverlayWindow("OverlayWindow");
+    thumbnailWindow->getBackground()->setColor(0,0,0,0);
+    thumbnailWindow->setEventMask( 0 );
+    thumbnailWindow->getLabel()->setLabel("TEMPLATE");
+    thumbnailWindow->getLabel()->setColor(0.5,0.5,0.5,0.7);
+    thumbnailWindow->getOverlay()->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);
+    thumbnailWindow->getOverlay()->setBorderWidth(2);
+    thumbnailWindow->getOverlay()->setBorderNormalColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
+    thumbnailWindow->getOverlay()->setBorderPushedColor(osgWidget::Color(1.0f,0.0f,0.0f,1.0f));
+    thumbnailWindow->getOverlay()->setBorderToggleColor(osgWidget::Color(1.0f,0.0f,0.0f,1.0f));
+    thumbnailWindow->getOverlay()->setBorderHooverColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
+
+    thumbnailWindow->getOverlay()->setLabelNormalColor(osgWidget::Color(0.0f,0.0f,0.0f,0.0f));
+    thumbnailWindow->getOverlay()->setLabelPushedColor(osgWidget::Color(1.0f,0.0f,0.0f,1.0f));
+    thumbnailWindow->getOverlay()->setLabelToggleColor(osgWidget::Color(0.0f,0.0f,0.0f,0.0f));
+    thumbnailWindow->getOverlay()->setLabelHooverColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
+
+    thumbnailWindow->getOverlay()->setHooverColor(osgWidget::Color(1.0f,0.0f,0.0f,0.5f));
+    thumbnailWindow->getOverlay()->addCallback( new osgWidget::Callback( &MultiView::onItemClicked, this, osgWidget::EVENT_MOUSE_PUSH ) );
+    thumbnailWindow->getOverlay()->setToggleEnabled(false);
+    thumbnailTemplate = new Overlay("TEMPLATE", thumbnailWindow);
+    thumbnailTemplate->setCanFill(false);
+    thumbnailTemplate->setPadding(2);
+    thumbnailTemplate->setEventMask(0);
+
+    // stworzenie szablonu dla podgl¹du
+    OverlayWindow* viewWindow = new OverlayWindow("ViewWindow");
+    viewWindow->getBackground()->setColor(0,0,0,0);
+    viewWindow->setEventMask( 0 );
+    viewWindow->getLabel()->setLabel("TEMPLATE");
+    viewWindow->getLabel()->setColor(0.5,0.5,0.5,0.7);
+    viewWindow->getOverlay()->setEventMask(0);
+    viewWindow->getOverlay()->setBorderWidth(2);
+    viewWindow->getOverlay()->setBorderAllColors(osgWidget::Color(1,1,1,1));
+    viewTemplate = new Overlay("TEMPLATE", viewWindow);
+    viewTemplate->setCanFill(true);
+    viewTemplate->setPadding(2);
+
+
+    //thumbnailTemplate->resize(64, 64);
+
     thumbnails = new osgUI::Grid("thumbnails", 0, 0);
     thumbnails->getBackground()->setColor(0, 0, 0, 0);
-
-    thumbnails->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);
-    thumbnails->attachMoveCallback();
-    thumbnails->addCallback( new osgWidget::Callback(&callbackWindowResize, osgWidget::EVENT_MOUSE_DRAG));
-
+    thumbnails->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);    
     thumbnails->setStrata( osgWidget::Window::STRATA_FOREGROUND );
 
+
     //thumbnails->setDimensions(1, 2);
-    //thumbnails->addWidget( new Button("0, 0", 10, 64), 0, 0);
+    //thumbnails->addWidget( new OverlayButton("0, 0", 10, 64), 0, 0);
     //thumbnails->getByRowCol(0, 0)->setCanFill(true);
-    //static_cast<Button*>(thumbnails->getByRowCol(0, 0))->setBorderAllColors(osgWidget::Color(0,0,0,0));
-   // static_cast<Button*>(thumbnails->getByRowCol(0, 0))->setAllColors(osgWidget::Color(0,0,0,0));
+    //static_cast<OverlayButton*>(thumbnails->getByRowCol(0, 0))->setBorderAllColors(osgWidget::Color(0,0,0,0));
+   // static_cast<OverlayButton*>(thumbnails->getByRowCol(0, 0))->setAllColors(osgWidget::Color(0,0,0,0));
     //thumbnails->addWidget( osg::clone(thumbnails->getByRowCol(0, 0), "0, 1", osg::CopyOp::DEEP_COPY_ALL), 0, 1);
     //thumbnails->getByRowCol(0, 0)->setCanFill(true);
     //thumbnails->getByRowCol(0, 1)->setCanFill(true);
@@ -81,44 +111,36 @@ MultiView::MultiView( osgViewer::View * view, float width, float height, unsigne
 
 bool MultiView::addItem( Item* item, PreviewItem* preview /*= NULL*/ )
 {
+    UTILS_ASSERT(thumbnails->getNumObjects() >= items.size());
     if ( getIterator(item) == items.end() ) {
-        // stworzenie widoku
-        
-        typedef osgUI::LabeledView< Button > LabeledView;
-        LabeledView * view = new LabeledView(item->getName());
-        view->getBackground()->setColor(0,0,0,0);
-        view->setEventMask( 0 );
-        view->getOverlay()->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);
-        view->getOverlay()->setHooverColor(osgWidget::Color(1,0,0,0.5));
-        view->getLabel()->setLabel( item->getName() );
-        view->getLabel()->setColor(0.5,0.5,0.5,0.7);
 
-        view->getOverlay()->addCallback( new osgWidget::Callback( &MultiView::onItemClicked, this, osgWidget::EVENT_MOUSE_PUSH ) );
-        view->getOverlay()->setToggleEnabled(false);
-        
+        // stworzenie nowej miniaturki na podstawie prototypu
+        Overlay* widget = osg::clone(thumbnailTemplate.get(), item->getName(), osg::CopyOp::DEEP_COPY_ALL);
+        widget->getWindow()->setName( item->getName() + "Window" );
+        widget->getWindow()->getLabel()->setLabel( item->getName() );
+        widget->getWindow()->getOverlay()->setLabel( item->getName() );
 
-        // dodanie widoku do grida
-        osgWidget::Window::EmbeddedWindow* widget = view->embed();
-        
-        widget->setColor(0,0,0,0);
-        widget->setCanFill(false);
-
+        // opakowanie miniaturki tak, aby wspó³czynnik proporcji by³ zachowany
         osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(widget, item->getAspectRatio());
+        keeper->getWindow()->hide();
 
-        thumbnails->setDimensions( 1, thumbnails->getNumColumns() + 1 );
-        thumbnails->addWidget( keeper, 0, thumbnails->getNumColumns() - 1 );
-        thumbnails->resetFillable();
-
-        // dodanie do listy
-        Entry entry = { item, preview, view->getOverlay() };
+        // dodanie itema do listy
+        Entry entry = { item, preview, widget->getWindow()->getOverlay() };
         items.push_back( entry );
 
+        // dodanie widgeta kontroluj¹cego rozmiar do miniaturek
+        thumbnails->setDirtyMode(true);
+        thumbnails->flattenHorizontally();
+        thumbnails->setNumColumns(items.size());
+        thumbnails->addWidget( keeper, 0, items.size()-1 );
+        thumbnails->resetFillables();
+
+        // upewnienie siê, ¿e preview jest wy³¹czony
         if ( preview ) {
             preview->setSelected(false);
         }
 
         refreshLayout();
-
         return true;
     } else {
         // item zosta³ ju¿ dodany
@@ -131,24 +153,49 @@ void MultiView::removeItem( Item* item )
     throw std::runtime_error("not implemented");
 }
 
+
+
 void MultiView::refreshLayout()
 {
-    // grid na górze na œrodku
-    thumbnails->resize( getWidth(), 80 );
+    // pobranie wspó³czynników proporcji itemów
+    std::vector<float> aspectRatios;
+    aspectRatios.reserve(items.size());
+    BOOST_FOREACH(Entry& entry, items) {
+        aspectRatios.push_back( entry.item->getAspectRatio() );
+    } 
+
+    // przed automatycznym dostosowaniem rozmiaru
+    thumbnails->setDirtyMode(true);
+    // usuwamy niepotrzebne elementy
+    thumbnails->flattenHorizontally();
+    thumbnails->setNumColumns(items.size());
+    // dostosowujemy rozmiar oraz dodajemy widgety, które zape³ni¹ woln¹ przestrzeñ
+    thumbnails->adjustDimensions(getWidth(), thumbnailsPaneWidth, aspectRatios);
+    thumbnails->fillEmpty();
+    // faktyczny resize
+    thumbnails->resize( getWidth(), thumbnailsPaneWidth );
+    // aktualizacja po³o¿enia
     thumbnails->setOrigin( (getWidth() - thumbnails->getWidth())/2, getHeight() - thumbnails->getHeight());
     thumbnails->update();
-    thumbnails->resize();
+    // wy³¹czenie "brudnego" trybu
+    thumbnails->setDirtyMode(false);
 
-    for ( Items::iterator it = items.begin(); it != items.end(); ++it ) {
-        // ustawienie pozycji itema
-        Entry& entry= *it;
+
+    BOOST_FOREACH(Entry& entry, items) {
         UTILS_ASSERT(entry.item && entry.widget);
+
+        // nowe wspó³rzêdne i rozmiar itemów
         osgWidget::XYCoord position = entry.widget->getOrigin() + entry.widget->getParent()->getAbsoluteOrigin();
-        entry.item->setLocation( position, entry.widget->getSize() );
+        osgWidget::XYCoord size = entry.widget->getSize();
+        osgWidget::point_type margin = entry.widget->getBorderWidth();
+        entry.item->setLocation( position.x() + margin, position.y() + margin, size.x() - 2*margin, size.y() - 2*margin );
 
         // aktualizacja wyœwietlanego itema
         if ( selectedItem == entry.item && entry.preview ) {
-            entry.preview->setLocation(0, 0, getWidth(), getHeight() - thumbnails->getHeight());
+            //osgWidget::XYCoord position = previewOverlay->getOrigin() + previewOverlay->getParent()->getAbsoluteOrigin();
+            //osgWidget::XYCoord size = previewOverlay->getSize();
+            //osgWidget::point_type margin = previewOverlay->getBorderWidth();
+            entry.preview->setLocation(0, 0, getWidth(), getHeight() - thumbnails->getHeight() );
         }
     }
 }
@@ -175,12 +222,12 @@ MultiView::Items::iterator MultiView::getIterator( const osgWidget::Widget* widg
 
 bool MultiView::onItemClicked( osgWidget::Event& ev )
 {
-    if (Button* button = dynamic_cast<Button*>(ev.getWidget())) {
+    if (OverlayButton* button = dynamic_cast<OverlayButton*>(ev.getWidget())) {
 
         // wyszukujemy poprzednio zaznaczonego
         for ( Items::iterator it = items.begin(); it != items.end(); ++it ) {
             // ustawienie pozycji itema
-            Button* prevButton = dynamic_cast<Button*>(it->widget.get());
+            OverlayButton* prevButton = dynamic_cast<OverlayButton*>(it->widget.get());
             // wy³¹czenie poprzednio aktywnego
             if ( prevButton != button && prevButton->isToggled() ) {
                 prevButton->setToggled(false);
@@ -197,12 +244,19 @@ bool MultiView::onItemClicked( osgWidget::Event& ev )
             selectedItem = it->item;
             if ( it->preview ) {
                 it->preview->setSelected(true);
-                refreshLayout();
+                it->preview->setLocation(0, 0, getWidth(), getHeight() - thumbnails->getHeight());
+                //refreshLayout();
             }
         }
 
     }
     return true;
+}
+
+void MultiView::setThumbnailsPaneWidth( osgWidget::point_type thumbnailsPaneWidth )
+{
+    this->thumbnailsPaneWidth = thumbnailsPaneWidth;
+    refreshLayout();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -30,6 +30,9 @@ private:
     osg::ref_ptr<osgWidget::Label> label;
 
 public:
+
+    META_Object(osgUI, LabeledView);
+
     LabeledView(const std::string& name = "")  :
     osgWidget::Window(name)
     {
@@ -69,6 +72,15 @@ public:
         return overlay.get();
     }
     //!
+    void setOverlay(Overlay* overlay)
+    {
+        if ( this->overlay ) {
+            removeWidget(this->overlay);
+        }
+        this->overlay = overlay;
+        addWidget(overlay);
+    }
+    //!
     osgWidget::Label* getLabel()
     {
         return label.get();
@@ -106,6 +118,8 @@ protected:
         float width = getWidth() + diffWidth;
 
         overlay->setDimensions(0, 0, width, height);
+        //overlay->setOrigin(0, 0);
+        //_positionWidget(overlay, width, height);
 
         float margin = overlay->getBorderWidth();
         label->setSize( width - 2*margin, label->getHeight() );
@@ -117,15 +131,15 @@ protected:
     {
         osgWidget::Window::Sizes result;
         result.minimum = 2*getOverlay()->getBorderWidth();
-        result.current = getOverlay()->getWidth();
+        result.current = result.minimum > getOverlay()->getWidth() ? result.minimum : getOverlay()->getWidth();
         return result;
     }
     //! Prze³adowanie metody obliczaj¹cej rozmiar.
     virtual osgWidget::Window::Sizes _getHeightImplementation() const
     {
         osgWidget::Window::Sizes result;
-        result.minimum = 2*getOverlay()->getBorderWidth() + (isLabelVisible() ? getLabel()->getHeight() : 0.0f );
-        result.current = overlay->getHeight();
+        result.minimum = 2*getOverlay()->getBorderWidth() /*+ (isLabelVisible() ? getLabel()->getHeight() : 0.0f )*/;
+        result.current = result.minimum > getOverlay()->getHeight() ? result.minimum : getOverlay()->getHeight();
         return result;
     }
 };
