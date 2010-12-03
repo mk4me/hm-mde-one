@@ -48,6 +48,11 @@ namespace communication
 		Konczy polaczenie z serwerem FTP.
 		*/
 		virtual void disconnect() = 0;
+		/**
+		Postêp operacji przesy³ania.
+		@return postêp wyra¿ony w procentach
+		*/
+		virtual int getProgress() const = 0;
 	};
 }
 #endif

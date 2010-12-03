@@ -62,11 +62,17 @@ namespace communication
 		*/
 		virtual void storeTrialFiles(int trialID, const std::string& path) = 0;
 		/**
-		Realizuje wprowadzenie plikow pod kontrole bazy danych.
+		Realizuje pobranie plikow kontrolowanych przy pomocy bazy danych.
 		@param fileID
-		@param path sciezka do katalogu z plikami do wgrania na serwer
+		@param path sciezka do katalogu z plikami na serwerze
+		@return nazwa pobranego pliku na lokalnym komputerze
 		*/
 		virtual const std::string downloadFile(int fileID, const std::string& path) = 0;
+		/**
+		Pobiera informacje o postêpie operacji pobierania.
+		@return wartoœæ procentowa postêpu
+		*/
+		virtual int getProgress() const = 0;
 	};
 }
 #endif

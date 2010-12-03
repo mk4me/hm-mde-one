@@ -299,3 +299,8 @@ const std::string& CommunicationManager::getTrialsDir() const
 {
 	return this->trialsDir;
 }
+
+int CommunicationManager::getProgress() const
+{
+	return this->transportManager->getProgress();
+}

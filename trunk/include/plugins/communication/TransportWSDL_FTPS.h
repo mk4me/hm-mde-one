@@ -60,7 +60,7 @@ namespace communication
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		int storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename);
+		virtual int storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename);
 		/**
 		Realizuje wprowadzenie plikow pod kontrole bazy danych.
 		@param sessionID id sesji ktora wczesniej zostala juz umieszczona w bazie danych
@@ -68,7 +68,7 @@ namespace communication
 		@param description
 		@return ???
 		*/
-		int storeSessionFiles(int sessionID, const std::string& path, const std::string& description);
+		virtual int storeSessionFiles(int sessionID, const std::string& path, const std::string& description);
 		/**
 		Realizuje wprowadzenie pojedynczego pliku przez performera pod kontrole bazy danych.
 		@param performerID id performera
@@ -77,13 +77,13 @@ namespace communication
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		int storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename);
+		virtual int storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename);
 		/**
 		Realizuje wprowadzenie plikow pod kontrole bazy danych.
 		@param performerID id performera
 		@param path sciezka do katalogu z plikami do wgrania na serwer
 		*/
-		void storePerformerFiles(int performerID, const std::string& path);
+		virtual void storePerformerFiles(int performerID, const std::string& path);
 		/**
 		Realizuje wprowadzenie pojedynczego pliku sesji pod kontrole bazy danych.
 		@param trialID id trial
@@ -92,19 +92,21 @@ namespace communication
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		int storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename);
+		virtual int storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename);
 		/**
 		Realizuje wprowadzenie plikow pod kontrole bazy danych.
 		@param trialID id trial
 		@param path sciezka do katalogu z plikami do wgrania na serwer
 		*/
-		void storeTrialFiles(int trialID, const std::string& path);
+		virtual void storeTrialFiles(int trialID, const std::string& path);
 		/**
 		Realizuje wprowadzenie plikow pod kontrole bazy danych.
 		@param fileID
 		@param path sciezka do katalogu z plikami do wgrania na serwer
 		*/
-		const std::string downloadFile(int fileID, const std::string& path);
+		virtual const std::string downloadFile(int fileID, const std::string& path);
+
+		virtual int getProgress() const;
 	};
 }
 #endif

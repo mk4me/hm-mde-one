@@ -23,7 +23,6 @@ private:
 	std::string name;
     OpenThreads::Mutex downloadMutex;
 	bool downloading;
-	int progress;
 	unsigned int actualSession;
 	unsigned int actualTrial;
 	unsigned int actualFile;

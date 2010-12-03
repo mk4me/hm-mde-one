@@ -54,6 +54,8 @@ namespace communication
 		void setTrialsDir(const std::string& dir);
 		const std::string& getTrialsDir() const;
 
+		int getProgress() const;
+
 		static CommunicationManager* getInstance();
 		static void destoryInstance();
 	private:

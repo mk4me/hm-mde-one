@@ -86,3 +86,8 @@ const std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string
 	Filesystem::move(filename, filePath.append("/").append(filename));
 	return filename;
 }
+
+int TransportWSDL_FTPS::getProgress() const
+{
+	return ftp->getProgress();
+}

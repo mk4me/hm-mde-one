@@ -28,7 +28,6 @@ CommunicationService::CommunicationService() : name("Communication"), downloadMu
 		std::cout << e.what() << std::endl;
 	}
 	downloading = false;
-	progress = 100;
 }
 
 CommunicationService::~CommunicationService()
@@ -52,7 +51,6 @@ void CommunicationService::downloadFile(unsigned int sessionID, unsigned int tri
 	actualTrial = trialID;
 	actualFile = fileID;
 	downloading = true;
-	progress = 0;
 	start();
 }
 
@@ -63,7 +61,6 @@ void CommunicationService::downloadTrial(unsigned int sessionID, unsigned int tr
 	actualTrial = trialID;
 	actualFile = 0;
 	downloading = true;
-	progress = 0;
 	start();
 }
 
@@ -135,11 +132,9 @@ void CommunicationService::run()
 			}
 			catch(std::runtime_error& e)
 			{
-				progress = 100;
 				downloading = false;
 				std::cout << e.what();
 			}
-			progress = i * (100/size);
 			i++;
 		}
 	}
@@ -151,12 +146,10 @@ void CommunicationService::run()
 		}
 		catch(std::runtime_error& e)
 		{
-			progress = 100;
 			downloading = false;
 			std::cout << e.what();
 		}
 	}
-	progress = 100;
 	downloading = false;
 }
 
@@ -169,6 +162,9 @@ AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDat
 AsyncResult CommunicationService::update(double time, double timeDelta)
 {
     widget->setBusy(downloading);
-	widget->setProgress(progress);
+	if(downloading)
+	{
+		widget->setProgress(this->model->getProgress());
+	}
     return AsyncResult_Complete;
 }
