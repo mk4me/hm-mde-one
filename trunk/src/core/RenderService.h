@@ -17,6 +17,13 @@
 #include <osg/Light>
 #include <osg/Point>
 
+#include <osgDB/FileUtils>
+
+#include <osg/Shader>
+#include <osg/Program>
+#include <osg/VertexProgram>
+#include <osg/FragmentProgram>
+
 #include <core/SimpleFunctors.h>
 #include <core/IRenderService.h>
 #include <core/QOSGWidget.h>
@@ -89,6 +96,8 @@ private:
 
     void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);
+    bool loadShaderSource(osg::Shader* obj, const std::string& fileName);
+    void AddShaders();
 
     osg::ref_ptr<osg::Geode> m_pMeshGeode;
     osg::ref_ptr<osg::Geode> m_pBoneGeode;

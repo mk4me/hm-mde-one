@@ -66,7 +66,7 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 
     std::vector<std::string> animationPathList = *dataManager->getAnimationPathList();
 
-	m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(meshpath, skelpath, animationPathList));// *dataManager->GetAnimationList()));
+	m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(meshpath, skelpath, animationPathList));
 
     if(m_pModel) {
         SetScene(m_pModel);
@@ -132,7 +132,48 @@ void RenderService::SetScene(osg::Group* root)
     
     SceneRoot = root;
 
+   // AddShaders();
+
     widget->setSceneData(SceneRoot);
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::AddShaders()
+{
+    osg::StateSet* brickState = SceneRoot->getOrCreateStateSet();
+
+    osg::Program* brickProgramObject = new osg::Program;
+    osg::Shader* brickVertexObject = 
+        new osg::Shader( osg::Shader::VERTEX );
+    osg::Shader* brickFragmentObject = 
+        new osg::Shader( osg::Shader::FRAGMENT );
+    brickProgramObject->addShader( brickFragmentObject );
+    brickProgramObject->addShader( brickVertexObject );
+    loadShaderSource( brickVertexObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.vert" );
+    loadShaderSource( brickFragmentObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.frag" );
+
+    brickState->setAttributeAndModes(brickProgramObject, osg::StateAttribute::ON);
+}
+
+//--------------------------------------------------------------------------------------------------
+bool RenderService::loadShaderSource(osg::Shader* obj, const std::string& fileName )
+{
+    std::string fqFileName = osgDB::findDataFile(fileName);
+    if( fqFileName.length() == 0 )
+    {
+        std::cout << "File \"" << fileName << "\" not found." << std::endl;
+        return false;
+    }
+    bool success = obj->loadShaderSourceFromFile( fqFileName.c_str());
+    if ( !success  )
+    {
+        std::cout << "Couldn't load file: " << fileName << std::endl;
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 //--------------------------------------------------------------------------------------------------

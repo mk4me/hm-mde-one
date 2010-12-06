@@ -12,6 +12,9 @@ source_group("meshes" FILES ${MESHES})
 set(SHADERS 
 	shaders/textureRect_yuv_to_rgb.frag
 	shaders/texture2D_yuv_to_rgb.frag
+	
+	shaders/lighting.vert
+	shaders/lighting.frag
 )
 source_group("shaders" FILES ${SHADERS})
 
