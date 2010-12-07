@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <string>
 
-#include "ASFAMCData.h"
+#include <corelib/ASFAMCData.h>
 
 
 // This is the function used for comparing names in the stl map

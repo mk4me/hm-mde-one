@@ -97,7 +97,7 @@ private:
     void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);
     bool loadShaderSource(osg::Shader* obj, const std::string& fileName);
-    void AddShaders();
+    void AddShaders(osg::Group* group);
 
     osg::ref_ptr<osg::Geode> m_pMeshGeode;
     osg::ref_ptr<osg::Geode> m_pBoneGeode;

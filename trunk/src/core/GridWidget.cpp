@@ -88,27 +88,27 @@ void GridWidget::AddChildToTreeView(Bone* bone, QTreeWidgetItem *parentTreeItem)
 void GridWidget::SetScene(osg::Node *scene)
 {
     // clear...
-    ClearScene(); 
-
-    Bone* rootBone = dynamic_cast<IModel* >(scene)->GetSkeleton()->m_pRootBone;
-
-
-    osg::Node *topNode = scene; 
-    osg::Group *topGroup = 0; 
-    if(topNode)
-        topGroup = topNode->asGroup(); 
-
-    if(rootBone != 0)
-    {
-        QTreeWidgetItem *rootTreeItem = new QTreeWidgetItem(sceneGraphWidget);
-        rootTreeItem->setText(0, rootBone->name);
-
-        int childCount = rootBone->child.size();
-        for (int i=0; i<childCount; ++i)
-        {
-                AddChildToTreeView(rootBone->child[i], rootTreeItem); 
-        }
-    }
+//     ClearScene(); 
+// 
+//     Bone* rootBone = dynamic_cast<IModel* >(scene)->GetSkeleton()->m_pRootBone;
+// 
+// 
+//     osg::Node *topNode = scene; 
+//     osg::Group *topGroup = 0; 
+//     if(topNode)
+//         topGroup = topNode->asGroup(); 
+// 
+//     if(rootBone != 0)
+//     {
+//         QTreeWidgetItem *rootTreeItem = new QTreeWidgetItem(sceneGraphWidget);
+//         rootTreeItem->setText(0, rootBone->name);
+// 
+//         int childCount = rootBone->child.size();
+//         for (int i=0; i<childCount; ++i)
+//         {
+//                 AddChildToTreeView(rootBone->child[i], rootTreeItem); 
+//         }
+//     }
 }
 
 //--------------------------------------------------------------------------------------------------

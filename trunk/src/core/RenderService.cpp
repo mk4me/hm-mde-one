@@ -130,17 +130,20 @@ void RenderService::SetScene(osg::Group* root)
     if(model)
         InicizlizeModelMesh(model);
     
-    SceneRoot = root;
 
-   // AddShaders();
+    AddShaders(root);
+    SceneRoot->addChild(root);
+        
+    //widget->getCamera()->setViewMatrix(*dynamic_cast<Model*>(root)->GetSkeleton()->m_pBoneList[5]->matrix);
+
 
     widget->setSceneData(SceneRoot);
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::AddShaders()
+void RenderService::AddShaders(osg::Group* group)
 {
-    osg::StateSet* brickState = SceneRoot->getOrCreateStateSet();
+    osg::StateSet* brickState = group->getOrCreateStateSet();
 
     osg::Program* brickProgramObject = new osg::Program;
     osg::Shader* brickVertexObject = 

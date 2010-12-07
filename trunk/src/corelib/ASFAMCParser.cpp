@@ -19,13 +19,13 @@
 *		1.)  Read Acclaim format
 *********************************************************************************************/
 
+#include <core/ASFAMCParser.h>
+
 #include <mbstring.h>
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
 #include <windows.h>
-
-#include "ASFAMCParser.h"
 
 // Defines for Hardware Interaction
 #define PORTADDRESS 0x378			/* Enter Your Port Address Here */

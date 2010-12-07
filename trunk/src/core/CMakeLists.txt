@@ -11,8 +11,8 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
-	ASFAMCData.h
-	ASFAMCParser.h
+#	ASFAMCData.h
+#	ASFAMCParser.h
 	C3DModel.h
 	ConsoleWidget.h
 	DataManager.h
@@ -36,7 +36,7 @@ set(PRIVATE_H
 	TimeLine.h
 	ToolboxMain.h
 	UserInterfaceService.h
-	Quaternioncal.h
+	#Quaternioncal.h
 	ComputeThread.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -87,8 +87,8 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-	ASFAMCData.cpp
-	ASFAMCParser.cpp
+#	ASFAMCData.cpp
+#	ASFAMCParser.cpp
 	C3DModel.cpp
 	ConsoleWidget.cpp
 	DataManager.cpp
@@ -116,7 +116,7 @@ set(TARGET_SRC
 	Mesh.cpp
 	Model.cpp
 	SkeletonNode.cpp	
-	Quaternioncal.cpp
+	#Quaternioncal.cpp
 	ComputeThread.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})

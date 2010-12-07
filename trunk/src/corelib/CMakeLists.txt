@@ -39,6 +39,8 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	ASFAMCData.cpp
+	ASFAMCParser.cpp
 	QOSGWidget.cpp
 	GridModel.cpp
 	OsgWidgetGridView.cpp
@@ -65,6 +67,7 @@ set(TARGET_SRC
 	Parameters.cpp
 	ChartPointer.cpp
 	EmbeddedWindow.cpp
+	Quaternioncal.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

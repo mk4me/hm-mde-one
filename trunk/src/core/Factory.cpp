@@ -6,7 +6,6 @@
 #include "Model.h"
 #include "C3DModel.h"
 #include "FileReader2Motion.h"
-#include "ASFAMCParser.h"
 
 
 //--------------------------------------------------------------------------------------------------
