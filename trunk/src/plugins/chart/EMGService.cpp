@@ -1,11 +1,14 @@
 #include "ChartPCH.h"
 
+#include <core/IC3DModel.h>
+#include <core/IDataManager.h>
 #include "EMGService.h"
 #include "ChartWidget.h"
 #include "ChartViewer.h"
 #include <core/Chart.h>
-
-
+#include "C3DChartData.h"
+#include <core/c3dParser.h>
+#include <core/C3D_Data.h>
 using namespace std;
 using namespace osg;
 
@@ -56,9 +59,7 @@ EMGService::EMGService()
   length(0.0)
 {
     widget = new ChartWidget(this);
-for(int i=12;i<28;i++){
-		widget->addChart(i);
-	}
+
 	length=widget->getLenght() ;
 	
 }
@@ -131,4 +132,19 @@ void EMGService::setLength( double length )
 void EMGService::setWidget(ChartWidget* widget){
 this->widget=widget;
 }
+AsyncResult EMGService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+{
+std::string c3dpath = "";
+if(dataManager->getC3dFilePathCount() > 0)
+	{
+		c3dpath = dataManager->getC3dFilePath(0);
+		c3dParser* parser =  new c3dParser();
+		C3D_Data* c3d = parser->parseData(c3dpath);
+		for(int i=12;i<28;i++){
+		widget->addChart(new C3DChartData(c3d,i));
+	}
+	length=widget->getLenght() ;
+	}
 
+return AsyncResult_Complete;
+}

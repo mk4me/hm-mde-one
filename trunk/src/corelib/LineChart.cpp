@@ -17,10 +17,10 @@ LineChart::LineChart(ChartData* data,int x,int y,int width, int height,osg::Vec4
 	for(int i=0;i<data->getRNumber();i++)
 	{
 
-		if(currentX<data->getNormalizedXValue(i+1)*(width-x))
+		if(currentX<data->getNormalizedXValue(i+2)*(width-x))
 		{
 		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*(width-x)+x,data->getNormalizedYValue(i)*(height-y)+y,-0.1f));
-		currentX=data->getNormalizedXValue(i)*(width-x)+1;	
+		currentX=data->getNormalizedXValue(i)*(width-x)+2;	
 		}
 	}
 	chart=ChartDataSeries::drawChart(chartVertices); 
@@ -31,6 +31,7 @@ LineChart::LineChart(ChartData* data,int x,int y,int width, int height,osg::Vec4
 	this->addChild(chart);
 	
 }
+LineChart::~LineChart(){};
 void LineChart::addCoord(osg::Vec3 coord){
 LineChart::chartVertices->push_back(osg::Vec3(coord));
 
@@ -49,9 +50,9 @@ void LineChart::repaint(ChartData* data,int x,int y,int width,int height){
 	for(int i=0;i<data->getRNumber();i++)
 	{
 	
-		if(currentX<data->getNormalizedXValue(i+1)*(width-x)){
+		if(currentX<data->getNormalizedXValue(i+2)*(width-x)){
 		LineChart::chartVertices->push_back(osg::Vec3(data->getNormalizedXValue(i)*(width-x)+x,data->getNormalizedYValue(i)*(height-y)+y,-0.1f));
-		currentX=data->getNormalizedXValue(i)*(width-x)+1;
+		currentX=data->getNormalizedXValue(i)*(width-x)+2;
 		}
 		}
 	

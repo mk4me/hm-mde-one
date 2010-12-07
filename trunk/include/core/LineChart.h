@@ -24,7 +24,7 @@ private:
 public:
 	//konstruktor wykresu
 	LineChart(ChartData* data,int x,int y,int width, int height,osg::Vec4 color);
-
+~LineChart();
 	//! Funkcja dodajaca kolejny wierzcholek
 	void addCoord(osg::Vec3);
 	ChartPointer* getPointer();

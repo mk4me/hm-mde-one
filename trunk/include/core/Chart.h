@@ -20,27 +20,26 @@ private:
 	int x,y,width,height;
 	std::vector<LineChart*> dataSeries;
 	std::vector<ChartData*> data;
-	std::vector<osg::Group*> mainLabel;
+	std::vector<osg::Geode*> mainLabel;
 	void init();
 	//! odleglosc ramki od wykresu
 	int borderSize,fontSize;
-	osg::Node* createLine(int x,int y,int x1,int y1,int z,osg::Vec4 lineColor);
-	osg::Group* createBorder();
-	osg::ref_ptr<osg::Group> border;
-	osg::Group* createGrid();
+	osg::Geometry* createLine(int x,int y,int x1,int y1,int z,osg::Vec4 lineColor);
+	osg::Geode* createBorder();
+	osg::ref_ptr<osg::Geode> border;
+	osg::Geode* createGrid();
 	osg::Vec4 gridColor;
 	osg::Vec4 color;
-	osg::ref_ptr<osg::Group> grid;
+	osg::ref_ptr<osg::Geode> grid;
 	int gridDensity;
-	osg::Node* createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps,float scale);
-	osg::Node* createLabel(const osg::Vec3& pos, float size, const std::string& label);
-	osg::Group* createXAxis(float scale);
-	osg::Group* createYAxis(float scale);
-	osg::ref_ptr<osg::Group> xAxis;
-	osg::ref_ptr<osg::Group> yAxis;
+	osg::Geode* createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps,float scale,std::string unit);
+	osgText::Text* createLabel(const osg::Vec3& pos, float size, const std::string& label);
+
+	osg::ref_ptr<osg::Geode> xAxis;
+	osg::ref_ptr<osg::Geode> yAxis;
 	int xNumReps,yNumReps;
 	void repaint();
-	osg::Group* createMainLabel(osg::Vec4 color,std::string name);
+	osg::Geode* createMainLabel(osg::Vec4 color,std::string name);
 	int labelOffset;
 	bool labelVisable;
 public:
@@ -48,6 +47,7 @@ public:
 	~Chart();
 	//! dodaje serie danych o zadanym indexie
 	void addChartSeries(ChartData* data,osg::Vec4 color);
+	void addChartPreviewSeries(ChartData* data,osg::Vec4 color);
 	//! Pobiera calkowita ilosc klatek 
 	int getFrameNumber();
 	//! podbiera ilosc klatek na sekunde

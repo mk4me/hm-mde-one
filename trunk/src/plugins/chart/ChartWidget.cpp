@@ -4,7 +4,7 @@
 #include "ChartViewer.h"
 #include <core/MultiView.h>
 #include <core/MultiViewWidgetItem.h>
-#include "C3DChartData.h"
+
 #include <core/Chart.h>
 #include "MultiViewChartItem.h"
 #ifdef _DEBUG
@@ -37,8 +37,7 @@ ChartWidget::ChartWidget(IService* service)
 	
 
 	viewer->addEventHandler( new osgWidget::MouseHandler(multiView) );
-//   viewer->addEventHandler( new osgUI::StaticKeyboardHandler(multiView) );
-    viewer->addEventHandler( new osgWidget::ResizeHandler(multiView, multiViewCamera) );
+	viewer->addEventHandler( new osgWidget::ResizeHandler(multiView, multiViewCamera) );
     viewer->addEventHandler( new osgViewer::StatsHandler );
     viewer->addEventHandler( new osgGA::StateSetManipulator( viewer->getCamera()->getOrCreateStateSet() ) );
 
@@ -62,21 +61,17 @@ ChartWidget::~ChartWidget()
 
 
 
-void ChartWidget::addChart(int index){
+void ChartWidget::addChart(C3DChartData* c3dData){
 	
-	C3DChartData* c3dData=new C3DChartData("Przejscie1.c3d",index);
+	
 	if(c3dData->getRNumber()>0){
 	item.push_back(new Chart(40,40,500,250));
-	 itItem= item.end()-1;
+	itItem= item.end()-1;
 	(*itItem)->addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
-	(*itItem)->setXNumReps(2);
-	(*itItem)->setYNumReps(2);
-	(*itItem)->setBorderSize(5);
-	(*itItem)->setLabelVisable(false);
 	multiView->addChild(*itItem);
 	previewItem.push_back(new Chart(40,40,500,250));
 	itPItem= previewItem.end()-1;
-	(*itPItem)->	addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+	(*itPItem)->addChartPreviewSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
 	multiView->addChild((*itPItem));
 	multiView->addItem(new core::MultiViewChartItem(*itItem),new core::MultiViewChartItem((*itPItem)));
 	}
@@ -97,7 +92,7 @@ void ChartWidget::update(double targetTime){
 double ChartWidget::getLenght(){
 	if(item.size()>0){
 	itItem=item.begin();
-	return (*itItem)->getFrameNumber()/(*itItem)->getFPS();}
+	return (double)(*itItem)->getFrameNumber()/(double)(*itItem)->getFPS();}
 	else
 		return 0;
 }

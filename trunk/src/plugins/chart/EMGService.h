@@ -49,7 +49,8 @@ public:
     virtual AsyncResult update(double time, double timeDelta);
     //!
     virtual const std::string& getName() const;
-
+	
+	virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 // IChart
 public:
 

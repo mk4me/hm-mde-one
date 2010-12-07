@@ -28,7 +28,9 @@ ChartPointer::ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* da
 	this->addChild(trans);
 
 }
+ChartPointer::~ChartPointer(){
 
+}
 osg::Geode* ChartPointer::createPointer(){
 	osg::Vec3Array* vertices = new osg::Vec3Array;
 	vertices->push_back(startPoint);

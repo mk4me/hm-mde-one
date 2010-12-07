@@ -33,8 +33,8 @@
 	std::string C3D_Data::toString() {
 
 	this->header->toString();
-	//this->parameters->toString();
-	//this->data->toString();
+	this->parameters->toString();
+	this->data->toString();
 
 	return "";
 

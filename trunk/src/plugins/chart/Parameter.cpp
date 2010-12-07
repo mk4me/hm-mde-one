@@ -282,6 +282,52 @@
 	return res;
 
 	}
+std::string* Parameter::getDataAsStringsArray()
+			{
+			
+					std::string* result = new std::string[this->dimensions[1]];
+			
+					//////////////////////////
+			
+					char* buf = new char[this->dimensions[0]];
+	
+					// for every string
+					for(int i=0; i < this->dimensions[1]; i++)
+					{
+		
+					//create string data
+					for(int j=0; j < this->dimensions[0];j++)
+					{
+							buf[j] = (char) data[i * this->dimensions[0] + j];
+						}
+			
+						result[i] = std::string(buf,this->dimensions[0]);
+					}
+			
+					////////////////////////
+			
+					return result;
+				}
+			
+				// for 1D data e.g. SCALE,OFFSET etc.
+				float* Parameter::getDataAsFloatArray()
+				{
+			
+					float* result = new float[this->dimensions[0]];
+			
+					//////////////////////////
+			
+				for(int i=0; i < this->dimensions[0]; i++)
+					{
+			
+						result[i] = (float) data[i];
+			
+					}
+			
+					////////////////////////
+		
+				return result;
+				}
 
 	std::string Parameter::toString(){
 

@@ -29,6 +29,8 @@ public:
 	std::string getDescription();
 	char getDataType();
 
+	std::string* getDataAsStringsArray();
+	float* getDataAsFloatArray();
 	std::vector<short> getDimensions();
 	float* getData();
 

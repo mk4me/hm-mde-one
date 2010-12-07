@@ -32,7 +32,7 @@ private:
 	bool labelVisable;
 public:
 	ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data,bool labelVisable);
-	
+	~ChartPointer();
 
 	void update(double targetTime);
 };

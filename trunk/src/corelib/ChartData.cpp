@@ -7,9 +7,9 @@
 
 
 
-
+ChartData::~ChartData(){}
 void ChartData::normalize(){
-			normalizedY=new float[getRNumber()];
+		normalizedY=new float[getRNumber()];
 		normalizedX=new float[getRNumber()];
 
 	for(int i=0;i<ChartData::rNumber;i++){
@@ -109,4 +109,21 @@ this->name=name;
 
 std::string ChartData::getName(){
 return name;
+}
+
+void ChartData::setScale(float scale){
+	this->scale=scale;
+}
+void ChartData::setOffset(float scale){
+	this->scale=scale;
+}
+void ChartData::setDescription(std::string description){
+	this->description=description;
+}
+void ChartData::setUnit(std::string unit){
+	this->unit=unit;
+}
+
+std::string ChartData::getUnit(){
+return unit;
 }

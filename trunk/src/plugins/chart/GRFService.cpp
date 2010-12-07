@@ -1,11 +1,14 @@
 #include "ChartPCH.h"
 
+#include <core/IC3DModel.h>
+#include <core/IDataManager.h>
 #include "GRFService.h"
 #include "ChartWidget.h"
 #include "ChartViewer.h"
 #include <core/Chart.h>
-
-
+#include "C3DChartData.h"
+#include <core/c3dParser.h>
+#include <core/C3D_Data.h>
 using namespace std;
 using namespace osg;
 
@@ -57,9 +60,6 @@ GRFService::GRFService()
 {
     widget = new ChartWidget(this);
 	
-	for(int i=0;i<12;i++){
-		widget->addChart(i);
-	}
 	length=widget->getLenght() ;
 	
 }
@@ -133,3 +133,19 @@ void GRFService::setWidget(ChartWidget* widget){
 this->widget=widget;
 }
 
+AsyncResult GRFService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+{
+std::string c3dpath = "";
+if(dataManager->getC3dFilePathCount() > 0)
+	{
+		c3dpath = dataManager->getC3dFilePath(0);
+		c3dpath = dataManager->getC3dFilePath(0);
+		c3dParser* parser =  new c3dParser();
+		C3D_Data* c3d = parser->parseData(c3dpath);
+		for(int i=0;i<12;i++){
+		widget->addChart(new C3DChartData(c3d,i));
+	}
+	length=widget->getLenght() ;
+	}
+return AsyncResult_Complete;
+}

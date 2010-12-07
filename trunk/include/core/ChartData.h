@@ -19,8 +19,7 @@ class c3dParser;
 
 class ChartData {
 public:
-
-	//ChartData(std::string c3dFile,int chanel);
+	~ChartData();
 	float getValue(int frame);
 	float getNormalizedXValue(int frame);
 	float getNormalizedYValue(int frame);
@@ -45,19 +44,25 @@ public:
 	void setY(float* y);
 	std::string getName();
 	void setName(std::string name);
+	void setScale(float scale);
+	void setOffset(float offset);
+	void setDescription(std::string description);
+	void setUnit(std::string unit);
+	std::string getUnit();
 private:
 	int rNumber;
 	float yScale,xScale;
-	float offset;
 	float *x;
 	float *y;
 	float *normalizedX;
 	float *normalizedY;
 	float xMax,xMin,yMax,yMin;
 	std::string name;
+	float scale;
+	float offset;
+	std::string description;
+	std::string unit;
 
-
-	//void exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd);
 	int FPS;
 };
 #endif

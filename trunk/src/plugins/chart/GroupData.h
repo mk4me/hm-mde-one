@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <map>
 #include "Parameter.h"
 #include "ProcessorReader.h"
 
@@ -17,6 +18,7 @@ private:
 	short id;
 	std::string description;
 	std::vector<Parameter*> parameters;
+	std::map<std::string,Parameter*> parametersByName;
 
 public:
 
@@ -27,11 +29,12 @@ public:
 	short getId();
 	std::string getDescription();
 	std::vector<Parameter*> getParameters();
+	std::map<std::string,Parameter*> getParameterByName();
 
 	void setName(std::string name);
 	void setId(short id);
 	void setDescription(std::string description);
-	void addParameter(Parameter* param);
+	void addParameter(std::string name, Parameter* param);
 
 	////////////////////////////////////////
 

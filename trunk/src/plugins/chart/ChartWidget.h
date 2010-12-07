@@ -12,6 +12,7 @@
 #include <QtGui/QWidget>
 #include <core/IService.h>
 
+#include "C3DChartData.h"
 #include <core/QOSGWidget.h>
 #include <core/Chart.h>
 #include <core/MultiView.h>	
@@ -45,7 +46,7 @@ public:
     virtual ~ChartWidget();
 
 
-	void addChart(int index);
+	void addChart(C3DChartData* c3dData);
 void update(double targetTime);
    double getLenght();
 };

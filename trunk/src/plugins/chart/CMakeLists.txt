@@ -34,7 +34,6 @@ set(PRIVATE_H
 	IChart.h
 	ChartDataSeries.h
 	GroupData.h
-	ChartViewer.h
 	C3DChartData.h
 	MultiViewChartItem.h
 
@@ -60,7 +59,6 @@ set(TARGET_SRC
 	MIPSreader.cpp
 	Parameter.cpp
 	Parameters.cpp
-	ChartViewer.cpp
 	C3DChartData.cpp
 	MultiViewChartItem.cpp
 
