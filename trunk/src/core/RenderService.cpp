@@ -143,19 +143,102 @@ void RenderService::SetScene(osg::Group* root)
 //--------------------------------------------------------------------------------------------------
 void RenderService::AddShaders(osg::Group* group)
 {
+    Model* model = NULL;
+
+    if(dynamic_cast<Model*>(group))
+        model = dynamic_cast<Model*>(group);
+
     osg::StateSet* brickState = group->getOrCreateStateSet();
 
     osg::Program* brickProgramObject = new osg::Program;
     osg::Shader* brickVertexObject = 
-        new osg::Shader( osg::Shader::VERTEX );
+        new osg::Shader( osg::Shader::VERTEX);
     osg::Shader* brickFragmentObject = 
         new osg::Shader( osg::Shader::FRAGMENT );
-    brickProgramObject->addShader( brickFragmentObject );
-    brickProgramObject->addShader( brickVertexObject );
-    loadShaderSource( brickVertexObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.vert" );
-    loadShaderSource( brickFragmentObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.frag" );
 
-    brickState->setAttributeAndModes(brickProgramObject, osg::StateAttribute::ON);
+
+//     brickProgramObject->addShader(brickFragmentObject);
+//     brickProgramObject->addShader( brickVertexObject );
+//     loadShaderSource( brickVertexObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.vert" );
+//     loadShaderSource( brickFragmentObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.frag" );
+
+
+    osg::Shader* skinningVertexObject = 
+        new osg::Shader( osg::Shader::VERTEX);
+
+    brickProgramObject->addShader(skinningVertexObject);
+
+
+
+    if(model)
+    {
+        brickState->addUniform(new osg::Uniform( "normal", osg::Vec3(1.0f, 0.0f, 0.0f) ));  // prekazywanie paramterów do shaderu
+        brickState->addUniform(new osg::Uniform( "index", osg::Vec4(0.0f, 0.0f, 0.0f, 0.0) ));  // prekazywanie paramterów do shaderu
+
+        int boneCount = model->GetSkeleton()->m_pBoneList.size();
+
+        // attach some Uniforms to the root, to be inherited by Programs.
+
+        osg::Uniform* OffsetUniform = new osg::Uniform( "bones[0]", model->GetSkeleton()->m_pRootBone->matrix);
+
+
+        for(int b = 0; b < boneCount; b++)
+        {
+            std::stringstream ss;
+            ss << "bones[" << b << "]";
+            std::string s;
+            s = ss.str();
+
+            brickState->addUniform(new osg::Uniform(s.c_str(), model->GetSkeleton()->m_pBoneList[b]->matrix));
+        }
+
+
+        for(int m = 0; m < model->GetMeshList().size(); m++)
+        {   
+            SSkin* skin = model->GetMesh(m)->GetSkin();
+            
+            // update vertices using skin
+            for (int i = 0; i < skin->n; i++)
+            {
+                // vertice
+                SSkinnedVertice* vertice = &skin->skinned_vertices[i];
+
+                osg::Vec4* influance = new osg::Vec4();
+                osg::Vec3* weight = new osg::Vec3();
+
+                // for every affecting bone
+                for (int b = 0; b < vertice->n; b++)
+                {
+                    switch (b)
+                    {
+                    case 0:
+                        influance->x() = vertice->bones[b].boneID;
+                        weight->x() = vertice->bones[b].weight;
+                    	break;
+                    case 1:
+                        influance->y() = vertice->bones[b].boneID;
+                        weight->y() = vertice->bones[b].weight;
+                        break;
+                    case 2:
+                        influance->z() = vertice->bones[b].boneID;
+                        weight->z() = vertice->bones[b].weight;
+                        break;
+                    case 3:
+                        influance->w() = vertice->bones[b].boneID;
+                        break;
+                    }
+                }
+
+                
+                brickState->addUniform(new osg::Uniform("influences", influance));  // prekazywanie paramterów do shaderu
+                brickState->addUniform(new osg::Uniform( "weight", weight));  // prekazywanie paramterów do shaderu
+            }
+        }
+
+
+        loadShaderSource( skinningVertexObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\skinning.vert" );
+        brickState->setAttributeAndModes(brickProgramObject, osg::StateAttribute::ON);
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
