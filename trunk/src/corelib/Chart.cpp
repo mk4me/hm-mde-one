@@ -171,7 +171,7 @@ osg::Geode* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numRep
 
 	osg::Geometry* geom = new osg::Geometry;
 	osg::Vec4Array* colors=new osg::Vec4Array();
-colors->push_back(color);
+	colors->push_back(color);
 
  
 	geom->setColorArray(colors);

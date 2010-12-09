@@ -139,7 +139,6 @@ std::string c3dpath = "";
 if(dataManager->getC3dFilePathCount() > 0)
 	{
 		c3dpath = dataManager->getC3dFilePath(0);
-		c3dpath = dataManager->getC3dFilePath(0);
 		c3dParser* parser =  new c3dParser();
 		C3D_Data* c3d = parser->parseData(c3dpath);
 		for(int i=0;i<12;i++){
