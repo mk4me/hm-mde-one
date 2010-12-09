@@ -131,7 +131,7 @@ void RenderService::SetScene(osg::Group* root)
         InicizlizeModelMesh(model);
     
 
-    //AddShaders(root);
+   // AddShaders(root);
     SceneRoot->addChild(root);
         
     //widget->getCamera()->setViewMatrix(*dynamic_cast<Model*>(root)->GetSkeleton()->m_pBoneList[5]->matrix);
@@ -163,34 +163,28 @@ void RenderService::AddShaders(osg::Group* group)
 //     loadShaderSource( brickFragmentObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.frag" );
 
 
-    osg::Shader* skinningVertexObject = 
+    osg::Shader* skinningVertexShader = 
         new osg::Shader( osg::Shader::VERTEX);
-
-    brickProgramObject->addShader(skinningVertexObject);
-
 
 
     if(model)
     {
-        brickState->addUniform(new osg::Uniform( "normal", osg::Vec3(1.0f, 0.0f, 0.0f) ));  // prekazywanie paramterów do shaderu
-        brickState->addUniform(new osg::Uniform( "index", osg::Vec4(0.0f, 0.0f, 0.0f, 0.0) ));  // prekazywanie paramterów do shaderu
-
         int boneCount = model->GetSkeleton()->m_pBoneList.size();
 
         // attach some Uniforms to the root, to be inherited by Programs.
+        osg::Uniform* boneUniform = new osg::Uniform(osg::Uniform::FLOAT_MAT4, "boneMatrices", boneCount);
 
-        osg::Uniform* OffsetUniform = new osg::Uniform( "bones[0]", model->GetSkeleton()->m_pRootBone->matrix);
+        osg::FloatArray* influanceArray = new osg::FloatArray();
+        osg::FloatArray* weightArrary = new osg::FloatArray();
+        osg::FloatArray* numberOfBoneArrary = new osg::FloatArray();
 
 
         for(int b = 0; b < boneCount; b++)
         {
-            std::stringstream ss;
-            ss << "bones[" << b << "]";
-            std::string s;
-            s = ss.str();
-
-            brickState->addUniform(new osg::Uniform(s.c_str(), model->GetSkeleton()->m_pBoneList[b]->matrix));
+            boneUniform->setElement(b, *model->GetSkeleton()->m_pBoneList[b]->matrix);
         }
+
+        brickState->addUniform(boneUniform);
 
 
         for(int m = 0; m < model->GetMeshList().size(); m++)
@@ -206,37 +200,81 @@ void RenderService::AddShaders(osg::Group* group)
                 osg::Vec4* influance = new osg::Vec4();
                 osg::Vec3* weight = new osg::Vec3();
 
+                numberOfBoneArrary->push_back(vertice->n);
+
                 // for every affecting bone
                 for (int b = 0; b < vertice->n; b++)
                 {
-                    switch (b)
-                    {
-                    case 0:
-                        influance->x() = vertice->bones[b].boneID;
-                        weight->x() = vertice->bones[b].weight;
-                    	break;
-                    case 1:
-                        influance->y() = vertice->bones[b].boneID;
-                        weight->y() = vertice->bones[b].weight;
-                        break;
-                    case 2:
-                        influance->z() = vertice->bones[b].boneID;
-                        weight->z() = vertice->bones[b].weight;
-                        break;
-                    case 3:
-                        influance->w() = vertice->bones[b].boneID;
-                        break;
-                    }
+                    influanceArray->push_back(vertice->bones[b].boneID);
+                    weightArrary->push_back(vertice->bones[b].weight);
                 }
 
-                
-                brickState->addUniform(new osg::Uniform("influences", influance));  // prekazywanie paramterów do shaderu
-                brickState->addUniform(new osg::Uniform( "weight", weight));  // prekazywanie paramterów do shaderu
+                switch (vertice->n)
+                {
+                case 0:
+                    for(int b = 0; b < 4; b++)
+                        influanceArray->push_back(0.0f);
+                    for(int b = 0; b < 3; b++)
+                        weightArrary->push_back(0.0f);
+                    break;
+
+                case 1:
+                    for(int b = 0; b < 3; b++)
+                        influanceArray->push_back(0.0f);
+                    for(int b = 0; b < 2; b++)
+                        weightArrary->push_back(0.0f);
+                    break;
+
+                case 2:
+                    for(int b = 0; b < 2; b++)
+                        influanceArray->push_back(0.0f);
+                    for(int b = 0; b < 1; b++)
+                        weightArrary->push_back(0.0f);
+                    break;
+
+                case 3:
+                    for(int b = 0; b < 1; b++)
+                        influanceArray->push_back(0.0f);
+                    break;
+                }
             }
         }
 
+        int influanceCount = influanceArray->size();
+        int weightCount = weightArrary->size();
 
-        loadShaderSource( skinningVertexObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\skinning.vert" );
+        osg::Uniform* influanceUniform = new osg::Uniform();
+        osg::Uniform* weightUniform = new osg::Uniform();
+        osg::Uniform* numberOfBoneUniform = new osg::Uniform();
+
+
+        influanceUniform->setType(osg::Uniform::FLOAT);
+        influanceUniform->setName("index");
+        influanceUniform->setNumElements(influanceArray->size());
+        influanceUniform->setArray(influanceArray);
+
+        weightUniform->setType(osg::Uniform::FLOAT);
+        weightUniform->setName("weight");
+        weightUniform->setNumElements(weightArrary->size());
+        weightUniform->setArray(weightArrary);
+
+        numberOfBoneUniform->setType(osg::Uniform::FLOAT);
+        numberOfBoneUniform->setName("numBones");
+        numberOfBoneUniform->setNumElements(numberOfBoneArrary->size());
+        numberOfBoneUniform->setArray(numberOfBoneArrary);
+
+
+
+        brickState->addUniform(influanceUniform);
+        brickState->addUniform(weightUniform);
+        brickState->addUniform(numberOfBoneUniform);
+
+
+
+        loadShaderSource(skinningVertexShader, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\skinning.vert");
+            
+        brickProgramObject->addShader(skinningVertexShader);
+
         brickState->setAttributeAndModes(brickProgramObject, osg::StateAttribute::ON);
     }
 }
