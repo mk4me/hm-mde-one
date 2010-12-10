@@ -131,7 +131,7 @@ void RenderService::SetScene(osg::Group* root)
         InicizlizeModelMesh(model);
     
 
-   // AddShaders(root);
+    //AddShaders(root);
     SceneRoot->addChild(root);
         
     //widget->getCamera()->setViewMatrix(*dynamic_cast<Model*>(root)->GetSkeleton()->m_pBoneList[5]->matrix);

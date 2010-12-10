@@ -202,6 +202,8 @@ void* Model::GetSkeletonGroup()
 //--------------------------------------------------------------------------------------------------
 void Model::DrawModelBone()
 {   
+    return;
+
     RemoveGeode();
 
 	// create new geode
