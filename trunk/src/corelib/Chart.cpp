@@ -425,7 +425,7 @@ void Chart::repaint(){
 osg::Geode* Chart::createMainLabel(osg::Vec4 color, std::string name){
 		osg::Geode* geode = new osg::Geode;
 
-if(labelVisable){
+//if(labelVisable){
 	
 	osg::StateSet* ss = geode->getOrCreateStateSet();
 
@@ -459,7 +459,7 @@ if(labelVisable){
 
 	
 
-}
+//}
 return geode;
 }
 
