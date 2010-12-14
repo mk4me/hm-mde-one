@@ -56,37 +56,37 @@ public:
 	void updatePointer(double targetTime);
 	//! Zaokragla podana liczbe do 2 miejsc po przecinku
 	std::string formatNumber( float number );
-	//! Funkcja zwracajaca odstep ramki od wykresu
+	//! zwraca odstep ramki od wykresu
 	int getBorderSize();
-	//! Funkcja ustawiajaca odstep ramki od wykres
+	//! ustawia odstep ramki od wykres
 	void setBorderSize(int borderSize);
-	//! Funkcja zwracajaca wielkosc czcionki
+	//! zwraca wielkosc czcionki
 	int getFontSize();
-	//! Funkcja ustawiajaca wielkosc czcionki 
+	//! ustawia wielkosc czcionki 
 	void setFontSize(int fontSize);
-	//! Funkcja pobierajaca gestosc siatki. Ile pixeli szerokosci ma jedna kratka
+	//! pobiera gestosc siatki. Ile pixeli szerokosci ma jedna kratka
 	int getGridDensity();
-	//! Funkcja ustawiajaca gestosc siatki. Ile pixeli szerokosci ma jedna kratka
+	//! ustawia gestosc siatki. Ile pixeli szerokosci ma jedna kratka
 	void setGridDensity(int gridDensity);
-	//! Funkcja pobierajaca kolor siatki w rgba
+	//! pobiera kolor siatki w rgba
 	osg::Vec4 getGridColor();
-	//! Funkcja ustawiajaca kolor siatki w rgba
+	//! ustawia kolor siatki w rgba
 	void setGridColor(osg::Vec4 gridColor);
-	//! Funkcja pobierajaca kolor wykresu w rgba
+	//! pobiera kolor wykresu w rgba
 	osg::Vec4 getColor();
-	//! Funkcja ustawiajaca kolor wykresu w rgba
+	//! ustawia kolor wykresu w rgba
 	void setColor(osg::Vec4 color);
-	//! Funkcja pobierajaca ilosc przedzialek na osi X
+	//! pobiera ilosc przedzialek na osi X
 	int getXNumReps();
-	//! Funkcja ustawiajaca ilosc przedzialek na osi X
+	//! ustawia ilosc przedzialek na osi X
 	void setXNumReps(int xNumReps);
-	//! Funkcja pobierajaca ilosc przedzialek na osi Y
+	//! pobiera ilosc przedzialek na osi Y
 	int getYNumReps();
-	//! Funkcja ustawiajaca ilosc przedzialek na osi Y
+	//! ustawia ilosc przedzialek na osi Y
 	void setYNumReps(int xNumReps);
-	//! Funkcja ustawiajaca lokacje wykresu
+	//! ustawia lokacje wykresu
 	void setLocation(int x,int y,int width,int height);
-	//! Funkcja pobierajaca lokacje wykresu
+	//! pobiera lokacje wykresu
 	osg::Vec4 getLocation();
 
 	void setLabelVisable(bool labelVisable);

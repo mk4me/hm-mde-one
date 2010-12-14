@@ -38,10 +38,10 @@ public:
 	int getFPS();
 	void setFPS(int FPS);
 	void normalize();
-	float* getX();
-	float* getY();
-	void setX(float* x);
-	void setY(float* y);
+	std::vector<float> getX();
+	std::vector<float> getY();
+	void setX(std::vector<float> x);
+	void setY(std::vector<float> y);
 	std::string getName();
 	void setName(std::string name);
 	void setScale(float scale);
@@ -50,12 +50,14 @@ public:
 	void setUnit(std::string unit);
 	std::string getUnit();
 private:
+	std::vector<float>::iterator itX;
+	std::vector<float>::iterator itY;
 	int rNumber;
 	float yScale,xScale;
-	float *x;
-	float *y;
-	float *normalizedX;
-	float *normalizedY;
+	std::vector<float> x;
+	std::vector<float> y;
+	std::vector<float> normalizedX;
+	std::vector<float> normalizedY;
 	float xMax,xMin,yMax,yMin;
 	std::string name;
 	float scale;

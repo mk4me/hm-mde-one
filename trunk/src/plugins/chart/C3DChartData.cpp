@@ -17,8 +17,8 @@ C3DChartData::~C3DChartData(){
 void C3DChartData::exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd)
 {
 
-	float* x;
-	float* y;
+	std::vector<float> xData;
+	std::vector<float> yData;
 	float* result = new float[c3dd->getData()->getNumberOfFrames() *
 		c3dd->getHeader()->getNumberOfAnalogSamplesPerFrame()];
 	int counter = 0;
@@ -28,8 +28,7 @@ void C3DChartData::exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd)
 		throw std::runtime_error("plik c3d nie posiada wymaganych przez wykresy danych");
 	}
 	
-		x=new float[getRNumber()];
-		y=new float[getRNumber()];
+		
 		setFPS(c3dd->getHeader()->getNumberOfAnalogSamplesPerFrame()*c3dd->getHeader()->getFrameRate());
 		for(int i=0; i < c3dd->getData()->getNumberOfFrames(); i++) // every frame
 		{
@@ -42,8 +41,8 @@ void C3DChartData::exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd)
 					c3dd->getData()->getAnalog()[i*c3dd->getHeader()->getNumberOfAnalogSamplesPerFrame()*c3dd->getData()->getAnalogChannelsNumber()
 					+ j*c3dd->getData()->getAnalogChannelsNumber() + numberOfChannel];
 
-				x[counter-1]=counter;
-				y[counter-1]=result[counter-1];
+				xData.push_back(counter);
+				yData.push_back(result[counter-1]);
 
 
 			}
@@ -59,8 +58,8 @@ void C3DChartData::exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd)
 		setUnit(gData->getParameterByName()["UNITS"]->getDataAsStringsArray()[numberOfChannel]);
 
 
-		setX(x);
-		setY(y);
+		setX(xData);
+		setY(yData);
 
 		setMax();
 		setMin();

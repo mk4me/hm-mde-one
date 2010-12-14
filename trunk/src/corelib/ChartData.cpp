@@ -9,12 +9,12 @@
 
 ChartData::~ChartData(){}
 void ChartData::normalize(){
-		normalizedY=new float[getRNumber()];
-		normalizedX=new float[getRNumber()];
+	//std::vector<float>::iterator it= data.end()-1;
+
 
 	for(int i=0;i<ChartData::rNumber;i++){
-		normalizedY[i]=(y[i]-yMin)/yScale;
-		normalizedX[i]=(x[i]-xMin)/xScale;
+		normalizedY.push_back((y[i]-yMin)/yScale);
+		normalizedX.push_back((x[i]-xMin)/xScale);
 	}
 
 }
@@ -47,12 +47,18 @@ float ChartData::getValue(int frame){
 }
 
 float ChartData::getNormalizedYValue(int frame){
+		if(frame>rNumber)
+			return ChartData::normalizedY[rNumber-1];
+		else
 	return ChartData::normalizedY[frame];
 
 }
 
 
 float ChartData::getNormalizedXValue(int frame){
+	if(frame>rNumber)
+	return ChartData::normalizedX[rNumber-1];
+	else
 	return ChartData::normalizedX[frame];
 
 }
@@ -83,16 +89,16 @@ int ChartData::getFPS(){
 void ChartData::setFPS(int FPS){
 this->FPS=FPS;
 }
-float* ChartData::getX(){
+std::vector<float> ChartData::getX(){
 return x;
 }
-float* ChartData::getY(){
+std::vector<float> ChartData::getY(){
 return y;
 }
-void ChartData::setX(float* x){
+void ChartData::setX(std::vector<float> x){
 this->x=x;
 }
-void ChartData::setY(float* y){
+void ChartData::setY(std::vector<float> y){
 this->y=y;
 }
 void ChartData::setScaleX(float scaleX){

@@ -22,7 +22,7 @@ private:
 	osg::Vec3 startPoint;
 	osg::Vec3 endPoint;
 	osgText::Text* createLabel(const osg::Vec3& pos, float size, const std::string& label);
-	osg::Geode* pointer;
+	osg::ref_ptr<osg::Geode> pointer;
 	osg::ref_ptr<osg::MatrixTransform> trans;
 	osg::ref_ptr<osg::MatrixTransform> labelTrans;
 	ChartData* data;

@@ -49,7 +49,7 @@ ChartWidget::ChartWidget(IService* service)
     multiView->addChild(new osgWidget::Box("osgWidgetHACK"));
 
 
-//	mainChart->addWidget(mainViewer);
+
 	
 }
 
@@ -62,7 +62,7 @@ ChartWidget::~ChartWidget()
 
 
 void ChartWidget::addChart(C3DChartData* c3dData){
-	
+
 	
 	if(c3dData->getRNumber()>0){
 	item.push_back(new Chart(40,40,500,250));

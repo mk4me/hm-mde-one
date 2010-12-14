@@ -143,7 +143,7 @@ if(dataManager->getC3dFilePathCount() > 0)
 		C3D_Data* c3d = parser->parseData(c3dpath);
 		for(int i=0;i<12;i++){
 		widget->addChart(new C3DChartData(c3d,i));
-	}
+		}
 	length=widget->getLenght() ;
 	}
 return AsyncResult_Complete;

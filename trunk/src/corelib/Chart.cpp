@@ -8,7 +8,7 @@ Chart::Chart(int x,int y,int width,int height){
 	labelVisable=true;
 	gridColor=osg::Vec4(0.0f,0.0f,1.0f, 0.1f);
 	color = osg::Vec4(0,0,0, 1.0);
-	borderSize=50;
+	borderSize=40;
 	gridDensity=10;
 	xNumReps=5;
 	yNumReps=3;
@@ -58,10 +58,6 @@ osg::Geometry* Chart::createLine(int x,int y,int x1,int y1,int z,osg::Vec4 lineC
 	geom->addPrimitiveSet(new osg::DrawArrays(GL_LINE_STRIP,0,vertices->size()));
 
 	
-
-
-	
-
 	return geom;
 }
 
@@ -138,24 +134,28 @@ osg::Geode* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numRep
 	float actualScale=0.0f;
 	osg::Vec3 pos = s;
 	osg::Vec3 posX = osg::Vec3(0,30,0);
-	osg::Vec3 posY = osg::Vec3(40,0,0);
+	osg::Vec3 posY = osg::Vec3(5,0,0);
 	osg::Vec3Array* vertices = new osg::Vec3Array;
-
+	
 	for(int i=0;i<numReps;++i)
 	{
 	
 
 		if(e.x()>s.x()){
-			if(labelVisable)
-				geode->addDrawable(createLabel(pos-posX,fontSize, (formatNumber(actualScale))+unit));
+			if(labelVisable){
+				osgText::Text* text=createLabel(pos-posX,fontSize, (formatNumber(actualScale))+unit);
+				text->setAlignment(osgText::Text::RIGHT_CENTER);
+				geode->addDrawable(text);}
 			if(i!=0)
 				geode->addDrawable(createLine(pos.x(),pos.y()-5,
 				pos.x(),pos.y()+5,0,
 				osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 		}
 		else{
-			if(labelVisable)
-			geode->addDrawable(createLabel(pos-posY ,fontSize,(formatNumber(actualScale))+unit));
+			if(labelVisable){
+				osgText::Text* text=createLabel(pos ,fontSize,(formatNumber(actualScale))+unit);
+				text->setAlignment(osgText::Text::RIGHT_CENTER);
+					geode->addDrawable(text);}
 			if(i!=0)
 				geode->addDrawable(createLine(pos.x()-5,pos.y(),
 				pos.x()+5,pos.y(),0,
@@ -243,8 +243,8 @@ void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
 		repaint(); 
 	}else{
 
-	xAxis=createAxis(osg::Vec3(x+borderSize,y+borderSize,0),osg::Vec3(width-borderSize,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
-	yAxis=createAxis(osg::Vec3(x+borderSize,y+borderSize,0),osg::Vec3(x+borderSize,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
+	xAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
+	yAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
 	this->addChild(xAxis);
 	this->addChild(yAxis);
 	}
@@ -261,7 +261,7 @@ void Chart::addChartPreviewSeries(ChartData* chartData,osg::Vec4 color){
 	if(chartData->getRNumber()>0){
 	data.push_back(chartData);
 	std::vector<ChartData*>::iterator itData= data.end()-1;
-	dataSeries.push_back(new LineChart((*itData),x+borderSize,y+borderSize,width-borderSize,height-borderSize,color));
+	dataSeries.push_back(new LineChart((*itData),x+borderSize*2,y+borderSize,width-borderSize*2,height-borderSize,color));
 	std::vector<LineChart*>::iterator itDataSeries = dataSeries.end()-1;
 	this->addChild(*itDataSeries);
 	
@@ -281,8 +281,8 @@ void Chart::addChartPreviewSeries(ChartData* chartData,osg::Vec4 color){
 		repaint(); 
 	}else{
 
-	xAxis=createAxis(osg::Vec3(x+borderSize,y+borderSize,0),osg::Vec3(width-borderSize,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
-	yAxis=createAxis(osg::Vec3(x+borderSize,y+borderSize,0),osg::Vec3(x+borderSize,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
+	xAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
+	yAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
 	this->addChild(xAxis);
 	this->addChild(yAxis);
 	}
@@ -378,11 +378,14 @@ repaint();
 }
 
 void Chart::setLocation(int x,int y,int width,int height){
+	if(((x+width)<borderSize)||(y+height)<borderSize){
+		//throw std::runtime_error("plik c3d nie posiada wymaganych przez wykresy danych");
+	}else{
 	this->x=x;
 	this->y=y;
 	this->width=width;
 	this->height=height;
-	repaint();
+	repaint();}
 	
 }
 osg::Vec4 Chart::getLocation(){
@@ -392,8 +395,8 @@ osg::Vec4 Chart::getLocation(){
 void Chart::repaint(){
 	osg::Geode* newBorder=createBorder();
 	osg::Geode* newGrid=createGrid();
-	osg::Geode* newXAxis=createAxis(osg::Vec3(x+borderSize,y+borderSize,0),osg::Vec3(width-borderSize,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
-	osg::Geode* newYAxis=createAxis(osg::Vec3(x+borderSize,y+borderSize,0),osg::Vec3(x+borderSize,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
+	osg::Geode* newXAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
+	osg::Geode* newYAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
 
 
 	this->replaceChild(border,newBorder);
@@ -410,7 +413,7 @@ void Chart::repaint(){
 	std::vector<osg::Geode*>::iterator itLabel= mainLabel.begin();
 	std::vector<osg::Geode*> newMainLabel;
 	for(; itPos < dataSeries.end(); itPos++,dataPos++,itLabel++){
-	  (*itPos)->repaint((*dataPos),x+borderSize,y+borderSize,width-borderSize,height-borderSize);
+	  (*itPos)->repaint((*dataPos),x+borderSize*2,y+borderSize,width-borderSize*2,height-borderSize);
 	  newMainLabel.push_back(createMainLabel((*itPos)->getColor(),(*dataPos)->getName()));
 	  std::vector<osg::Geode*>::iterator itNewLabel= newMainLabel.end()-1;
 	  this->replaceChild((*itLabel),  (*itNewLabel)  ); 
