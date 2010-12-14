@@ -32,9 +32,10 @@ foreach (version ${OSGPLUGINS_VERSIONS})
 	set(FIND_DIR_RELEASE "${FIND_DIR_RELASE_BACKUP}/osgPlugins-${version}")
 	FIND_MODULE(OSG_PLUGIN_PNG FALSE "osgdb_png")
 	FIND_MODULE(OSG_PLUGIN_GLSL FALSE "osgdb_glsl")
+	FIND_MODULE(OSG_PLUGIN_FREETYPE FALSE "osgdb_freetype")
 	# ustawiamy domyœln¹ lokalizacjê pluginów
 	# TODO: zapewniæ tê sam¹ wersjê
-	if (OSG_PLUGIN_PNG_FOUND AND OSG_PLUGIN_GLSL_FOUND)
+	if (OSG_PLUGIN_PNG_FOUND AND OSG_PLUGIN_GLSL_FOUND AND OSG_PLUGIN_FREETYPE)
 		set(OSG_VERSION "${version}" CACHE STRING "Subfolder for osg plugins in the target directory")
 	endif()
 endforeach()
@@ -44,6 +45,9 @@ set(FIND_MODULE_PREFIX_osgdb_png "osgPlugins-${OSG_VERSION}/")
 set(FIND_MODULE_PREFIX_osgdb_pngd "osgPlugins-${OSG_VERSION}/")
 set(FIND_MODULE_PREFIX_osgdb_glsl "osgPlugins-${OSG_VERSION}/")
 set(FIND_MODULE_PREFIX_osgdb_glsld "osgPlugins-${OSG_VERSION}/")
+set(FIND_MODULE_PREFIX_osgdb_freetype "osgPlugins-${OSG_VERSION}/")
+set(FIND_MODULE_PREFIX_osgdb_freetyped "osgPlugins-${OSG_VERSION}/")
+
 
 # skopiowanie
 FIND_FINISH(OSG)

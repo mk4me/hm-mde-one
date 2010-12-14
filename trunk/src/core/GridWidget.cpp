@@ -8,6 +8,61 @@
 
 #include "ServiceManager.h"
 
+////////////////////////////////////////////////////////////////////////////////
+
+class TreeViewPopulator : public osg::NodeVisitor
+{
+private:
+    //! Bie¿¹cy rodzic.
+    QTreeWidgetItem* currentParent;
+    //! Widget.
+    QTreeWidget* widget;
+
+public:
+
+    TreeViewPopulator(QTreeWidget* widget, QTreeWidgetItem* root = NULL) :
+    widget(widget), currentParent(root)
+    {}
+
+    virtual void apply(osg::Group& group)
+    {
+        QTreeWidgetItem* prevParent = currentParent;
+        currentParent = createItem(group);
+        traverse(group);
+        currentParent = prevParent;
+    }
+
+    virtual void apply(osg::Node& node)
+    {
+        createItem(node);
+        traverse(node);
+    }
+
+    virtual void apply(osg::Geode& geode)
+    {
+        QTreeWidgetItem* prevParent = currentParent;
+        currentParent = createItem(geode);
+
+        for (unsigned i = 0; i < geode.getNumDrawables(); ++i) {
+            createItem( *geode.getDrawable(i) );
+        }
+
+        currentParent = prevParent;
+        traverse(geode);
+    }
+
+    QTreeWidgetItem* createItem(osg::Object& object)
+    {
+        QTreeWidgetItem* item = currentParent ? new QTreeWidgetItem(currentParent) : new QTreeWidgetItem(widget);
+        item->setText(1, QString::fromStdString(object.getName()) );
+        item->setText(0, QString::fromStdString(std::string(object.libraryName()) + "::" + object.className()));
+        return item;
+    }
+
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
 //--------------------------------------------------------------------------------------------------
 GridWidget::GridWidget(void):
   Ui::GridWidget()
@@ -84,9 +139,15 @@ void GridWidget::AddChildToTreeView(Bone* bone, QTreeWidgetItem *parentTreeItem)
     }
 }
 
+
+
 //--------------------------------------------------------------------------------------------------
 void GridWidget::SetScene(osg::Node *scene)
 {
+    TreeViewPopulator populator(sceneGraphWidget);
+    populator.setTraversalMode( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
+    scene->accept(populator);
+
     // clear...
 //     ClearScene(); 
 // 
@@ -142,6 +203,25 @@ void GridWidget::ClearScene()
 }
 
 //--------------------------------------------------------------------------------------------------
+
+// void GridWidget::addGraphToSceneView( osg::Node *node, QTreeWidgetItem *parentTreeItem )
+// {
+//     QTreeWidgetItem *treeItem = new QTreeWidgetItem(parentTreeItem); 
+// 
+//     treeItem->setText(0, QString::fromStdString(node->getName()) );
+//     treeItem->setText(1, QString::fromStdString(node->libraryName() + "::" + node->className()));
+// 
+//     if ( osg::Group* group = node->asGroup() ) {
+//         for ( unsigned i = 0; i != group->getNumChildren(); ++i ) {
+//             addGraphToSceneView( group->getChild(i), treeItem );
+//         }
+//     }
+// 
+// 
+// }
+
+//------------------------------------------------------------------------------
+
 void GridWidget::AddGroupToTreeView(osg::Group *group, QTreeWidgetItem *parentTreeItem)
 {
     QTreeWidgetItem *nodeTreeItem = new QTreeWidgetItem(parentTreeItem); 

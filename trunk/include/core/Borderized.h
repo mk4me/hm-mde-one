@@ -67,7 +67,7 @@ public:
     //! Konstruktor dla obiektu o cechach osgWidget::Label
     //! \param name
     Borderized(const std::string & name, const std::string& label) :
-    Base(name, label, width, height)
+    Base(name, label)
     {
         init();
     }

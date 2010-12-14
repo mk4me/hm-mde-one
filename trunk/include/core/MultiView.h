@@ -10,15 +10,13 @@
 #define __HEADER_GUARD__CORE_MULTIVIEW_H__
 
 #include <vector>
+#include <boost/function.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <osgWidget/Widget>
 #include <osgWidget/WindowManager>
 #include <osgGA/GUIEventHandler>
 #include <core/Grid.h>
-#include <core/Buttonized.h>
-#include <core/Borderized.h>
-#include <core/LabeledView.h>
-#include <core/EmbeddedWindow.h>
+#include <core/AspectRatioKeeper.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -27,6 +25,33 @@ namespace core {
 class MultiView : public osgWidget::WindowManager
 {
 public:
+    //! Wbudowane style miniaturek.
+    enum Templates {
+        TemplatesLabelBased,
+        TemplatesLabeledViewBased
+    };
+
+    //! Adapter widgetów. Pozwala na wykonania abstrakcyjnych czynnoœci na
+    //! widgetach nie znaj¹c przy tym ich typów.
+    class WidgetAdapter : public osg::Referenced
+    {
+    public:
+        //!
+        virtual ~WidgetAdapter() {}
+        //! Klonowanie. Trzeba pamiêtaæ, ¿e klasa ta u¿ywana jest jako prototyp i w zwi¹zku
+        //! przed przypisaniem do itema trzeba go skopiowaæ.
+        virtual WidgetAdapter* clone() = 0;
+        //! \param widget
+        virtual osgWidget::EventInterface* getEventSource(osgWidget::Widget* widget) = 0;
+        //! \param widget
+        //! \param label
+        virtual void setLabel(osgWidget::Widget* widget, const std::string& label) {};
+        //! \param widget
+        //! \param toggle
+        virtual void setToggle(osgWidget::Widget* widget, bool toggle) {};
+        //!
+        virtual osgWidget::point_type getMargin(osgWidget::Widget* widget) { return 0; }
+    };
 
     //! Item który mo¿na umieœciæ na p³aszczyŸnie.
     class Item : public osg::Referenced
@@ -65,13 +90,6 @@ public:
         virtual void setSelected(bool selected) = 0;
     };
 
-    //! Typ overlay'a nad miniaturk¹.
-    typedef osgUI::Buttonized< osgUI::Borderized<osgWidget::Label>, osgUI::BorderStylePolicy<osgUI::LabelStylePolicy> > OverlayButton;
-    //! Typ okienka z miniaturk¹.
-    typedef osgUI::LabeledView< OverlayButton > OverlayWindow;
-    //! Typ miniaturki.
-    typedef osgUI::Embedded< OverlayWindow > Overlay;
-
 private:
     //! WskaŸnik na item.
     typedef osg::ref_ptr<Item> ItemPtr;
@@ -81,9 +99,18 @@ private:
     //! Wpis wewnêtrznie u¿ywany.
     struct Entry
     {
+        //! Item (miniaturka).
         ItemPtr item;
+        //! Preview (du¿y widok).
         PreviewItemPtr preview;
-        osg::ref_ptr<OverlayButton> widget;
+        //! Widget.
+        osg::ref_ptr<osgWidget::Widget> widget;
+        //! Adapter widgeta.
+        osg::ref_ptr<WidgetAdapter> adapter;
+        //! Czy item jest zaznaczony?
+        bool toggled;
+        //! Okienko s³u¿¹ce do trzymania wspó³czynnika proporcji.
+        osg::ref_ptr<osgUI::AspectRatioKeeper> keeper;
     };
 
     //! W³aœciwa lista itemów.
@@ -93,15 +120,19 @@ private:
     Items items;
     //! Grid z miniaturkami.
     osg::ref_ptr<osgUI::Grid> thumbnails;
-    //! Bie¿¹cy item
-    ItemPtr selectedItem;
-    //! Szablon dla miniaturek.
-    osg::ref_ptr<Overlay> thumbnailTemplate;
-    //! Szablon dla podgl¹dów. Na razie nieu¿ywany.
-    osg::ref_ptr<Overlay> viewTemplate;
     //! Szerokoœæ (b¹dŸ wysokoœæ) panelu z miniaturkami.
     osgWidget::point_type thumbnailsPaneWidth;
+    //! Bie¿¹cy item
+    ItemPtr selectedItem;
 
+    //! Szablon dla miniaturek.
+    osg::ref_ptr<osgWidget::Widget> thumbnailTemplate;
+    //! Szablon adaptera dla miniaturek.
+    osg::ref_ptr<WidgetAdapter> adapterTemplate;
+    //! Wspó³rzêdne lewego dolnego rogu.
+    osgWidget::XYCoord origin;
+    //! Rozmiar multiwidoku;
+    osgWidget::XYCoord size;
 
 public:
     //! \param view
@@ -110,52 +141,46 @@ public:
     //! \param mask
     //! \param flags
     MultiView(osgViewer::View * view, float width, float height, unsigned int mask, unsigned int flags);
-        
+
     //! Dodaje item na koniec kolekcji.
     bool addItem(Item* item, PreviewItem* preview = NULL);
     //! Usuwa item z kolekcji.
     void removeItem(Item* item);
 
+    //! \return Prototyp 
+    const osgWidget::Widget* getThumbnailTemplate() const
+    { 
+        return thumbnailTemplate;
+    }
+    //! \return
+    osgWidget::Widget* getThumbnailTemplate()
+    { 
+        return thumbnailTemplate;
+    }
+    //! \param thumbnail
+    //! \param setLabelFunc
+    //! \param setToggleFunc
+    void setThumbnailTemplate(osgWidget::Widget* thumbnail, WidgetAdapter* adapter)
+    {
+        this->thumbnailTemplate = thumbnail;
+        this->adapterTemplate = adapter;
+    }
+
+    //! \param templ
+    void setThumbnailBuitinTemplate(Templates templ = TemplatesLabelBased);
+
+    //! \param thumbnailsPaneWidth
+    void setThumbnailsPaneWidth(osgWidget::point_type thumbnailsPaneWidth);
     //! Odœwie¿a roz³o¿enie elementów.
     void refreshLayout();
 
-    //! \return Prototyp 
-    const Overlay* getThumbnailTemplate() const
-    { 
-        return thumbnailTemplate;
-    }
-    //! \return
-    Overlay* getThumbnailTemplate()
-    { 
-        return thumbnailTemplate;
-    }
-    //! \return Prototyp 
-    const Overlay* getViewTemplate() const
-    { 
-        return viewTemplate;
-    }
-    //! \return
-    Overlay* getViewTemplate()
-    { 
-        return viewTemplate;
-    }
-    //! \return
-    osgWidget::point_type getThumbnailsPaneWidth() const
-    { 
-        return thumbnailsPaneWidth;
-    }
-    //! \param thumbnailsPaneWidth
-    void setThumbnailsPaneWidth(osgWidget::point_type thumbnailsPaneWidth);
-
 private:
-    //! 
+    //! Callback wywo³ywany gdy wybierze siê jakiœ item.
+    bool onItemClicked(osgWidget::Event& ev);
     //! \param item
     Items::iterator getIterator(const Item* item);
     //! \param item
     Items::iterator getIterator(const osgWidget::Widget* widget);
-
-    //! Callback wywo³ywany gdy wybierze siê jakiœ item.
-    bool onItemClicked(osgWidget::Event& ev);
 };
 
 

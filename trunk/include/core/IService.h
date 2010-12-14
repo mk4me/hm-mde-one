@@ -67,7 +67,10 @@ public:
     //! Us³uga nie musi mieæ wizualnej reprezentacji.
     //! \return Widget tworzony przez us³ugê b¹dŸ NULL.
     virtual IWidget* getWidget() = 0;
-
+    //! \return Widget kontroluj¹cy zachowanie us³ugi/us³ug zale¿nych.
+    virtual IWidget* getControlWidget() { return NULL; }
+    //! \return Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
+    virtual IWidget* getSettingsWidget() { return NULL; }
     //! \return Nazwa us³ugi.
     virtual const std::string& getName() const = 0;
 

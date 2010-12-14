@@ -30,6 +30,8 @@
 #include <core/IService.h>
 #include <core/IFactory.h>
 
+#include <core/MultiView.h>
+
 
 class C3DModel;
 class Model;
@@ -111,6 +113,14 @@ private:
     C3DModel *m_pC3DModel;
 
     Factor* m_pFactory;
+
+    osg::ref_ptr<core::MultiView> multiView;
+
+public:
+    //! \param name
+    //! \param camera
+    //! \param manipulator
+    virtual void addView(osg::Camera* camera, osgGA::CameraManipulator* manipulator);
 };
 
 typedef CORE_SHARED_PTR(RenderService) RenderServicePtr;

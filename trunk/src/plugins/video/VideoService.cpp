@@ -1,4 +1,5 @@
 #include "VideoPCH.h"
+#include <boost/foreach.hpp>
 #include <core/IServiceManager.h>
 #include <plugins/video/VideoService.h>
 #include <plugins/timeline/ITimeline.h>
@@ -6,14 +7,24 @@
 #include <core/IDataManager.h>
 #include "VideoWidget.h"
 #include "VideoWidgetQt.h"
+#include "VideoWidgetOptions.h"
 #include "TimelineImageStreamWrapper.h"
+#include "osg/VideoImageStream.h"
 
 //M_DECLARED_CLASS(VideoService, )
+
+static vm::PixelFormat comboTranslationTable[] = {
+    vm::PixelFormatYV12,
+    vm::PixelFormatRGB24,
+    vm::PixelFormatBGRA
+};
+
 
 VideoService::VideoService()
 :   name("Video")
 {
     widget = new VideoWidget();
+    optionsWidget = new VideoWidgetOptions();
     //int * dupa = new int[100000];
 
 //     std::vector<std::string> files;
@@ -33,7 +44,7 @@ VideoService::VideoService()
     //for (int i = 0; i < dataManager->GetVideoFilePathCount(); ++i) {
     //    files.push_back(dataManager->GetVideoFilePath(i));
     //}
-    ((VideoWidget*)(widget))->init(files);
+    //((VideoWidget*)(widget))->init(files);
 
 }
 
@@ -85,6 +96,57 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 
     //widget->init()
 }
+
+AsyncResult VideoService::update( double time, double timeDelta )
+{
+    VideoWidgetOptions* optionsWidget = reinterpret_cast<VideoWidgetOptions*>(this->optionsWidget);
+    return AsyncResult_Complete;
+}
+
+vm::PixelFormat VideoService::getOutputFormat()
+{
+    UTILS_ASSERT(optionsWidget);
+    VideoWidgetOptions* optionsWidget = reinterpret_cast<VideoWidgetOptions*>(this->optionsWidget);
+    int idx = optionsWidget->outputFormatCombo->currentIndex();
+    if ( idx < utils::length(comboTranslationTable) ) {
+        return comboTranslationTable[idx];
+    } else {
+        UTILS_ASSERT(false, "Nieobs³ugiwany format.");
+        return vm::PixelFormatUndefined;
+    }
+}
+
+
+void VideoService::setOutputFormat( vm::PixelFormat format )
+{
+    // wyszukanie indeksu komba
+    size_t i;
+    for ( i = 0; i < utils::length(comboTranslationTable) && comboTranslationTable[i] != format; ++i );
+    // ustawienie komba i wartoœci
+    if ( i != utils::length(comboTranslationTable) ) {
+        UTILS_ASSERT(optionsWidget);
+        VideoWidgetOptions* optionsWidget = reinterpret_cast<VideoWidgetOptions*>(this->optionsWidget);
+        optionsWidget->outputFormatCombo->setCurrentIndex(i);
+        // ustawienie formatu strumieni
+//         BOOST_FOREACH( osg::Image* image, imagesList ) {
+//             if ( vmOSGPlugin::VideoImageStream* stream = dynamic_cast<vmOSGPlugin::VideoImageStream>(image) ) {
+//                 stream->setTargetFormat(format);
+//             }
+//         }
+
+    } else {
+        UTILS_ASSERT(false, "Nieobs³ugiwany format.");
+    }
+}
+
+bool VideoService::isUsingTextureRectangle()
+{
+    UTILS_ASSERT(optionsWidget);
+    VideoWidgetOptions* optionsWidget = reinterpret_cast<VideoWidgetOptions*>(this->optionsWidget);
+    return optionsWidget->textureRectangleCheck->isChecked();
+}
+
+
 
 // timeline::Streams VideoService::getStreams()
 // {

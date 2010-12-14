@@ -31,6 +31,9 @@ set(PUBLIC_H
 	${HEADER_PATH}/MultiView.h
 	${HEADER_PATH}/MultiViewWidgetItem.h
 	${HEADER_PATH}/EmbeddedWindow.h
+	${HEADER_PATH}/MultiViewFunctorWidgetAdapter.h
+	${HEADER_PATH}/MultiViewCameraItem.h
+	${HEADER_PATH}/MultiViewManipulatorItem.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -67,7 +70,10 @@ set(TARGET_SRC
 	Parameters.cpp
 	ChartPointer.cpp
 	EmbeddedWindow.cpp
+	MultiViewFunctorWidgetAdapter.cpp
 	Quaternioncal.cpp
+	MultiViewCameraItem.cpp
+	MultiViewManipulatorItem.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

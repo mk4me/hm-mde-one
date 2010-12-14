@@ -50,7 +50,7 @@ public:
 
     // TODO: Embedded widgets initializations - should be in plugins!!! 
     void InitializeOGSWidget();
-    void InitializeConsoleWidget();
+    void initializeConsole();
     void InitializeControlWidget();
 
     void clear();
@@ -97,6 +97,8 @@ private:
     //! Wype³nia podmenu akcjami dla dostêpnych okien.
     //! \param target
     void populateWindowMenu(QMenu* target);
+
+    QDockWidget* embeddWidget(QWidget* widget, QString& name, QString& style, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
     void onAddMenuItem( const std::string& path, bool checkable, bool initialState );
 

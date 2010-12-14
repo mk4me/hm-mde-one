@@ -43,32 +43,24 @@ VideoWidget::VideoWidget()
     vm::VideoManager::getInstance()->setEnableBuffering( false );
     vm::VideoManager::getInstance()->setPrefferedFormat( vm::PixelFormatYV12);
 
-    // tworzenie viewera
-    viewer = new QOSGViewer(this, "OsgViewer");
-    const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
+
 
     // stworzenie helpera
     streamHelper = new OsgWidgetStreamHelper( "data/resources/shaders/", textureRectangleCheck->isChecked() );
 
+    // tworzenie viewera
+    viewer = new QOSGViewer(this, "OsgViewer");
+    const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
+
     // tworzymy multi widok
     multiView = new core::MultiView(viewer, traits->width, traits->height, 0xF0000000, WM_FLAGS);
+    multiView->addChild(new osgWidget::Box("HACK"));
 
     // stworzenie kamery
     osg::Camera* multiViewCamera = multiView->createParentOrthoCamera();
     multiViewCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
     multiViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
     multiViewCamera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-
-    osg::ref_ptr<osg::Group> root = new osg::Group();
-    root->addChild(multiViewCamera);
-    viewer->setSceneData(root);
- 
-    osgWidget::Box* box = new osgWidget::Box("BOX");
-    osgWidget::Widget *aaa = new osgWidget::Widget("aaa", 666, 666);
-    box->setOrigin(400, 400);
-    //aaa->setColor(1,0,0,1);
-    //box->addWidget(aaa);
-    multiView->addChild(box);
 
     viewer->addEventHandler( new osgWidget::MouseHandler(multiView) );
     viewer->addEventHandler( new osgUI::StaticKeyboardHandler(multiView) );
@@ -79,6 +71,10 @@ VideoWidget::VideoWidget()
     //viewer->addEventHandler( new osgViewer::WindowSizeHandler );
     viewer->getCamera()->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
 
+    osg::ref_ptr<osg::Group> root = new osg::Group();
+    root->addChild(multiViewCamera);
+    viewer->setSceneData(root);
+    
     // dodanie do widgeta
     GLWidget->addWidget( viewer );
 
@@ -195,7 +191,7 @@ void VideoWidget::init( std::vector<std::string> &files )
 
         clon->addWidget(keeper);
         multiView->addChild(clon);
-        multiView->addItem(new core::MultiViewWidgetItem(box1, ratio), NULL);//new core::MultiViewWidgetItem(clon, ratio));
+        multiView->addItem(new core::MultiViewWidgetItem(box1, ratio), new core::MultiViewWidgetItem(clon, ratio));
     }
 
 
@@ -235,56 +231,6 @@ void VideoWidget::init( std::vector<std::string> &files )
     multiView->addItem(new core::MultiViewWidgetItem(gridThumbs, avgRatio), new core::MultiViewWidgetItem(grid, avgRatio));
 
 
-}
-
-
-VideoWidget::ViewType VideoWidget::getViewType( int * selected /*= NULL*/ ) const
-{
-//     if ( (viewType & ViewTypeSingle) == ViewTypeSingle ) {
-//         if ( selected ) {
-//             *selected = (((ViewTypeSingleIdxMask) & int(viewType)) >> ViewTypeSingleIdxShift);
-//         }
-//         return ViewTypeSingle;
-//     } else {
-//         return viewType;
-//     }
-    return (ViewType)0;
-}
-
-void VideoWidget::setViewType( ViewType viewType, int selected /*= 0*/ )
-{
-//     this->viewType = viewType; 
-//     if ( viewType == ViewTypeSingle ) {
-//         int idx = (ViewTypeSingleIdxMask & (selected << ViewTypeSingleIdxShift));
-//         reinterpret_cast<int&>(viewType) |= idx;
-//     }
-}
-
-void VideoWidget::displayTypeChanged( int index )
-{
-    //// TODO
-    //// dodaæ sta³e albo rêcznie wype³niaæ
-    //int count = static_cast<int>(images.size());
-    //if (index == 0) {
-    //    // grid
-    //    int rows, columns;
-    //    view->makeGrid(count, rows, columns);
-    //    configureView(rows, columns, images);
-    ///*} else if ( index == 1 ) {
-    //    // horizontally
-    //    configureView(1, count, images);
-    //} else if ( index == 2 ) {
-    //    // vertically 
-    //    configureView(count, 1, images);*/
-    //} else {
-    //    // single
-    //    index -= 1;
-    //    ImagesList selected;
-    //    if ( static_cast<size_t>(index) < images.size() ) {
-    //        selected.push_back( images[index] );
-    //    }
-    //    configureView(1, 1, selected);
-    //}
 }
 
 void VideoWidget::outputFormatChanged( int index )

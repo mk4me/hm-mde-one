@@ -1,12 +1,15 @@
 #ifndef I_RENDER_SERVICE_H
 #define I_RENDER_SERVICE_H
 
+#include <osg/Camera>
+#include <osgGA/CameraManipulator>
 
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/View>
 
 #include <core/QOSGWidget.h>
 #include <core/IService.h>
+
 
 
 class IC3DModel;
@@ -53,6 +56,15 @@ public:
 
     virtual void SetC3DMarkerToRender(IC3DModel *c3dmarker) = 0;
     virtual IFactor* GetFactory() = 0;
+
+// nowy intefejs
+public:
+
+    //! Dodaje kamerê.
+    //! \param name Nazwa kamery.
+    //! \param camera Kamera.
+    //! \param manipulator Manipulator kamery.
+    virtual void addView(osg::Camera* camera, osgGA::CameraManipulator* manipulator) = 0;
 
 };
 

@@ -75,7 +75,7 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     }
 
 
-    InitializeConsoleWidget();          // Console Widget 
+    initializeConsole();          // Console Widget 
     InitializeControlWidget();          // Control Widget + TimeLine
     LoadConfiguration();                // Wczytuje plik konfiguracyjny
 
@@ -106,8 +106,8 @@ ToolboxMain::~ToolboxMain()
 void ToolboxMain::clear()
 {
     delete ui;  // ui stuff
-    std::streambuf *buf = std::cout.rdbuf(_streambuf);
-    delete buf;
+    //std::streambuf *buf = std::cout.rdbuf(_streambuf);
+    //delete buf;
 
     m_pRenderService.reset();
     delete m_pServiceManager;
@@ -169,10 +169,10 @@ void ToolboxMain::InitializeControlWidget()
     // inicjalizacja GridWidget
     QDockWidget *gDock = new QDockWidget(tr("GridWidget"), this, Qt::WindowTitleHint);
     gDock->setObjectName(QString("GridWidget"));
-    gDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    gDock->setAllowedAreas(Qt::LeftDockWidgetArea);
 
     _gridWidget = new GridWidget();    
-    addDockWidget(Qt::RightDockWidgetArea, gDock);
+    addDockWidget(Qt::LeftDockWidgetArea, gDock);
     gDock->setWidget((QWidget*)_gridWidget);
 }
 
@@ -198,18 +198,20 @@ void ToolboxMain::populateWindowMenu(QMenu* target)
     }
 }
 
-void ToolboxMain::InitializeConsoleWidget()
+void ToolboxMain::initializeConsole()
 {
+   
+
     QDockWidget *dock; 
     dock = new QDockWidget(tr("Console"), this, Qt::WindowTitleHint);
     dock->setObjectName("Console");
-    dock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    dock->setAllowedAreas(Qt::BottomDockWidgetArea);
     _consoleWidget = new ConsoleWidget();    
     addDockWidget(Qt::BottomDockWidgetArea, dock);
     dock->setWidget((QWidget*)_consoleWidget); 
     // Inicjalizacja konsoli
-    ConsoleWidgetOutputBuffer *ob = new ConsoleWidgetOutputBuffer(_consoleWidget, 256);
-    _streambuf = std::cout.rdbuf(ob);
+//     ConsoleWidgetOutputBuffer *ob = new ConsoleWidgetOutputBuffer(_consoleWidget, 256);
+//     _streambuf = std::cout.rdbuf(ob);
     std::cout << "Console initialized..." << std::endl; 
 }
 
@@ -347,6 +349,18 @@ void ToolboxMain::onWireframe()
 
 }
 
+
+QDockWidget* ToolboxMain::embeddWidget( QWidget* widget, QString& name, QString& style, Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/ )
+{
+    // dodajemy widget dokowalny
+    QDockWidget* dock = new QDockWidget( name, this, Qt::WindowTitleHint);        
+    dock->setAllowedAreas(area);
+    dock->setObjectName(name + widget->objectName() + "WIDGET" );
+    dock->setStyleSheet(style);
+    dock->setWidget(widget);
+    return dock;
+}
+
 void ToolboxMain::initializeUI()
 {
 	//ladowanie styli qt
@@ -364,25 +378,43 @@ void ToolboxMain::initializeUI()
 	setStyleSheet(style);
 
 	// widget rendeer service - centralny
-    setCentralWidget(reinterpret_cast<QWidget*>(m_pRenderService->getWidget()));
+    // setCentralWidget(reinterpret_cast<QWidget*>(m_pRenderService->getWidget()));
+    //centralWidget()->widget
 
     // pozosta³e widgety "p³ywaj¹ce"
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
         IServicePtr service = m_pServiceManager->getService(i);
-        IWidget* widget = service->getWidget();
-        if ( widget && service != m_pRenderService ) {
-            // dodajemy widget dokowalny
-            QDockWidget* dock = new QDockWidget( QString::fromStdString(service->getName()), this, Qt::WindowTitleHint);
-            dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-            addDockWidget(Qt::BottomDockWidgetArea, dock);
-            // HACK
-            QWidget* qwidget = reinterpret_cast<QWidget*>(widget);
-            QObject* parent = qwidget->parent();
-            dock->setWidget(qwidget);
-			dock->setObjectName( QString::fromStdString( service->getName() ) + qwidget->objectName() + "WIDGET" );
-			//przekazanie stylu do docka
-			dock->setStyleSheet(style);
+
+        // HACK
+        QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget());
+        QWidget* controlWidget = reinterpret_cast<QWidget*>(service->getControlWidget());
+        QWidget* settingsWidget = reinterpret_cast<QWidget*>(service->getSettingsWidget());
+
+        if ( viewWidget/* && service != m_pRenderService*/ ) {
+
+            this->ui->tabWidget->addTab(viewWidget, QString::fromStdString(service->getName()));
+
+            //centralWidget()->layout()->addWidget(viewWidget);
+//             addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
+//                 viewWidget, 
+//                 QString::fromStdString(service->getName()), 
+//                 style,
+//                 Qt::BottomDockWidgetArea));
 		}
+        if ( controlWidget ) {
+            addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
+                controlWidget, 
+                QString::fromStdString(service->getName()), 
+                style,
+                Qt::BottomDockWidgetArea));
+        }
+        if ( settingsWidget ) {
+            addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(
+                settingsWidget, 
+                QString::fromStdString(service->getName()), 
+                style,
+                Qt::LeftDockWidgetArea));
+        }
 	}
 
     // uzupe³nienie podmenu z mo¿liwymi oknami

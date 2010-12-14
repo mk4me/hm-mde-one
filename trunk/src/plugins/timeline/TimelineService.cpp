@@ -23,6 +23,11 @@ TimelineService::~TimelineService()
 
 IWidget* TimelineService::getWidget()
 {
+    return NULL;
+}
+
+IWidget* TimelineService::getControlWidget()
+{
     return reinterpret_cast<IWidget*>(widget);
 }
 
@@ -113,3 +118,4 @@ const std::string& TimelineService::getName() const
 {
     return name;
 }
+

@@ -7,6 +7,15 @@
 namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
+// class WidgetIndexHack : public osgWidget::Widget
+// {
+// public:
+//     void setIndex(unsigned index)
+//     {
+//         _index = index;
+//     }
+// };
+
 Grid::Grid( const std::string& name /*= ""*/, unsigned rows /*= 0*/, unsigned columns /*= 0*/ ) :
 osgWidget::Table(name, rows, columns), dirtyMode(false)
 {

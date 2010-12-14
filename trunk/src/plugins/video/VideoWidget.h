@@ -24,20 +24,6 @@ class VideoWidget : public QWidget, Ui::VideoWidget
 {
     Q_OBJECT
 public:
-    //! Tryby widoku.
-    enum ViewType {
-        ViewTypeGrid            = 0,
-        ViewTypeHorizontal      = 1,
-        ViewTypeVertical        = 2,
-        ViewTypeSingle          = 3,
-        ViewTypeSingleIdxMask   = 0xFFFF0000,
-        ViewTypeSingleIdxShift  = 16
-    };
-
-    // //! Obrazki pogrupowane wg. po³o¿enia.
-    // typedef std::map< std::pair<int, int>, osg::ref_ptr<osg::Image> > ImagesMap;
-    // //! Typy widoku.
-    // typedef std::map<ViewType, osg::ref_ptr<osg::Node> > ViewsList; 
     //! Lista strumieni.
     typedef std::vector<osg::ref_ptr<osg::Image> > ImagesList;
 
@@ -64,15 +50,6 @@ public:
 
 public:
 
-    //! \param selected Opcjonalny wskaŸnik na miejse, gdzie zapisaæ indeks 
-    //!                 aktualnie wyœwietlanego strumienia.
-    //! \return Typ widoku.
-    ViewType getViewType(int * selected = NULL) const;
-    //! \param viewType Typ widoku.
-    //! \param selected Indeks strumienia. Ignorowany, gdy 
-    //!                 viewType != ViewTypeSingle
-    void setViewType(ViewType viewType, int selected = 0);
-
     //! \return
     inline VideoWidget::ImagesList& getImages()
     { 
@@ -80,7 +57,6 @@ public:
     }
 
 public slots: 
-    void displayTypeChanged(int index);
     void outputFormatChanged(int index);
     void textureRectangleChecked(int checked);
 };

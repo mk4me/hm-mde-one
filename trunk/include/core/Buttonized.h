@@ -66,7 +66,7 @@ public:
 
     //! Konstruktor dla obiektu o cechach osgWidget::Label
     Buttonized(const std::string & name, const std::string& label) :
-    Base(name, label, width, height),
+    Base(name, label),
     StylePolicy(),
     pushed(false),
     hovered(false),

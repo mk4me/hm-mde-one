@@ -10,6 +10,7 @@
 #define __HEADER_GUARD__VIDEOSERVICE_H__
 
 #include <core/IService.h>
+#include <plugins/video/core/PixelFormat.h>
 
 class IModel;
 class IDataManager;
@@ -24,11 +25,27 @@ private:
     // TODO
     // tymczasowe
     QWidget* widget;
+    QWidget* optionsWidget;
     //! Nazwa.
     std::string name;
 
+    
+
+public:
+    //! \return Format u퓓wany przy rysowaniu.
+    vm::PixelFormat getOutputFormat();
+    //! \param format Format u퓓wany przy rysowaniu.
+    void setOutputFormat(vm::PixelFormat format);
+    //! \return Czy u퓓wa rozszerzenia TEXTURE_RECT?
+    bool isUsingTextureRectangle();
+    //! \param useTextureRectangle Czy u퓓wa rozszerzenia TEXTURE_RECT?
+    void setUseTextureRectangle(bool useTextureRectangle);
+    
+
 public:
     VideoService();
+
+
 
     virtual IWidget* getWidget()
     { 
@@ -36,10 +53,17 @@ public:
         return reinterpret_cast<IWidget*>(widget);
     }
 
+    virtual IWidget* getSettingsWidget()
+    {
+        return reinterpret_cast<IWidget*>(optionsWidget);
+    }
+
     virtual const std::string& getName() const
     {
         return name;
     }
+
+    virtual AsyncResult update(double time, double timeDelta);
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 };

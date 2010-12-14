@@ -69,6 +69,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 set(TARGET_UI
 	ui/video.ui
 	ui/VideoWidgetQt.ui
+	ui/VideoWidgetOptions.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

@@ -41,6 +41,8 @@ public:
     //!
     virtual IWidget* getWidget();
     //!
+    virtual IWidget* getControlWidget();
+    //!
     virtual AsyncResult compute();
     //!
     virtual AsyncResult lateUpdate(double time, double timeDelta);
