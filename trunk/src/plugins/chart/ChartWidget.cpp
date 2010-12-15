@@ -4,6 +4,7 @@
 #include "ChartViewer.h"
 #include <core/MultiView.h>
 #include <core/MultiViewWidgetItem.h>
+#include <core/OsgSceneDump.h>
 
 #include <core/Chart.h>
 #include "MultiViewChartItem.h"
@@ -35,7 +36,7 @@ ChartWidget::ChartWidget(IService* service)
 
 
 	
-
+    viewer->addEventHandler( new core::OsgSceneDumpFileHandler("dump_chart.txt") );
 	viewer->addEventHandler( new osgWidget::MouseHandler(multiView) );
 	viewer->addEventHandler( new osgWidget::ResizeHandler(multiView, multiViewCamera) );
     viewer->addEventHandler( new osgViewer::StatsHandler );

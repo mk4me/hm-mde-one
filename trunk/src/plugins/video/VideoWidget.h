@@ -56,6 +56,12 @@ public:
         return images;
     }
 
+    //! \return
+    QOSGViewer* getViewer() const
+    { 
+        return viewer;
+    }
+
 public slots: 
     void outputFormatChanged(int index);
     void textureRectangleChecked(int checked);

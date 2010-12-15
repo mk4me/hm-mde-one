@@ -74,9 +74,16 @@ public:
     //! \return Nazwa us³ugi.
     virtual const std::string& getName() const = 0;
 
+    //! \return Korzeñ lokalnej sceny osg.
+    virtual osg::Node* debugGetLocalSceneRoot()
+    {
+        return NULL;
+    }
+
 };
 
 typedef CORE_SHARED_PTR(IService) IServicePtr;
 typedef CORE_CONST_SHARED_PTR(IService) IServiceConstPtr;
+typedef CORE_WEAK_PTR(IService) IServiceWeakPtr;
 
 #endif //BASE_SERVICE_H

@@ -6,7 +6,7 @@
 #include "ui_toolboxmaindeffile.h"
 #include <core/QOSGWidget.h>
 #include "TimeLine.h"
-#include "GridWidget.h"
+#include "SceneGraphWidget.h"
 
 #include <osg/Vec3d>
 #include <osg/Quat>
@@ -69,6 +69,7 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     sceneRoot = new osg::Group();
     sceneRoot->setName("root");
 
+
     // inicjalizacja us³ug
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
         m_pServiceManager->getService(i)->init(m_pServiceManager, sceneRoot.get());
@@ -78,6 +79,11 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     initializeConsole();          // Console Widget 
     InitializeControlWidget();          // Control Widget + TimeLine
     LoadConfiguration();                // Wczytuje plik konfiguracyjny
+
+
+    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
+        sceneGraphWidget->addService(m_pServiceManager->getService(i));
+    }
 
 	/*
 	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
@@ -167,13 +173,13 @@ void ToolboxMain::InitializeControlWidget()
     osg::Node* sceneRoot = scene->getSceneData();
 
     // inicjalizacja GridWidget
-    QDockWidget *gDock = new QDockWidget(tr("GridWidget"), this, Qt::WindowTitleHint);
+    QDockWidget *gDock = new QDockWidget(tr("Service scene graph"), this, Qt::WindowTitleHint);
     gDock->setObjectName(QString("GridWidget"));
     gDock->setAllowedAreas(Qt::LeftDockWidgetArea);
 
-    _gridWidget = new GridWidget();    
+    sceneGraphWidget = new SceneGraphWidget();    
     addDockWidget(Qt::LeftDockWidgetArea, gDock);
-    gDock->setWidget((QWidget*)_gridWidget);
+    gDock->setWidget((QWidget*)sceneGraphWidget);
 }
 
 void ToolboxMain::populateWindowMenu(QMenu* target)
@@ -563,8 +569,6 @@ void ToolboxMain::openFile( const std::string& path )
     // manage scene
     osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
     osg::Node* sceneRoot = scene->getSceneData();
-    //   _osgControlWidget->SetScene(scene); 
-    _gridWidget->SetScene(sceneRoot);
 }
 
 // void ToolboxMain::SettingModel()
@@ -587,7 +591,7 @@ void ToolboxMain::openFile( const std::string& path )
 //          // manage scene
 //          osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene();
 //          _osgControlWidget->SetScene(scene); 
-//          _gridWidget->SetScene(scene);
+//          sceneGraphWidget->SetScene(scene);
 //          _timeLine->SetScene(scene); 
 //          m_model->UpdateMesh();
 //          m_model = (Model*)m_model;

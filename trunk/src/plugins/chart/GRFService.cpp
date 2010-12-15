@@ -148,3 +148,8 @@ if(dataManager->getC3dFilePathCount() > 0)
 	}
 return AsyncResult_Complete;
 }
+
+osg::Node* GRFService::debugGetLocalSceneRoot()
+{
+    return widget->getViewer()->getSceneData();
+}

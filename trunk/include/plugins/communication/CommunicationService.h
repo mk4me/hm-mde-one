@@ -34,8 +34,14 @@ public:
 	virtual IWidget* getWidget()
 	{ 
 		// HACK: ca³y ten system jest shackowany!
-		return reinterpret_cast<IWidget*>(widget);
+		//return reinterpret_cast<IWidget*>(widget);
+        return NULL;
 	}
+
+    virtual IWidget* getSettingsWidget()
+    {
+        return reinterpret_cast<IWidget*>(widget);
+    }
 
 	virtual const std::string& getName() const
 	{

@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include "ServiceManager.h"
 
+#include <core/Log.h>
 #include <core/IModel.h>
 #include <core/IDataManager.h>
 
@@ -66,7 +67,11 @@ void ServiceManager::loadDataPass(IDataManager* dataManager)
     ServicesMap::iterator it = servicesMap.begin();  
     while (it != servicesMap.end())
     {
-        it->second->loadData(this, dataManager); 
+        try {
+            it->second->loadData(this, dataManager); 
+        } catch (std::runtime_error& ex) {
+            LOG_ERROR << it->second->getName() << ": " << ex.what() << std::endl;
+        }
         it++;
     }
 }

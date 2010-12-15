@@ -128,11 +128,11 @@ void VideoService::setOutputFormat( vm::PixelFormat format )
         VideoWidgetOptions* optionsWidget = reinterpret_cast<VideoWidgetOptions*>(this->optionsWidget);
         optionsWidget->outputFormatCombo->setCurrentIndex(i);
         // ustawienie formatu strumieni
-//         BOOST_FOREACH( osg::Image* image, imagesList ) {
-//             if ( vmOSGPlugin::VideoImageStream* stream = dynamic_cast<vmOSGPlugin::VideoImageStream>(image) ) {
-//                 stream->setTargetFormat(format);
-//             }
-//         }
+        BOOST_FOREACH( osg::Image* image, imagesList ) {
+            if ( vmOSGPlugin::VideoImageStream* stream = dynamic_cast<vmOSGPlugin::VideoImageStream*>(image) ) {
+                stream->setTargetFormat(format);
+            }
+        }
 
     } else {
         UTILS_ASSERT(false, "Nieobs³ugiwany format.");
@@ -146,6 +146,10 @@ bool VideoService::isUsingTextureRectangle()
     return optionsWidget->textureRectangleCheck->isChecked();
 }
 
+osg::Node* VideoService::debugGetLocalSceneRoot()
+{
+    return reinterpret_cast<VideoWidget*>(this->widget)->getViewer()->getSceneData();
+}
 
 
 // timeline::Streams VideoService::getStreams()

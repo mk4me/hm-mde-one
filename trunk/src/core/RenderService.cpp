@@ -671,3 +671,7 @@ void RenderService::DrawNormals(IModel* model, float size)
     dynamic_cast<Model*>(model)->addChild(m_spNormalGeode);
 };
 
+osg::Node* RenderService::debugGetLocalSceneRoot()
+{
+    return widget->getSceneData();
+}

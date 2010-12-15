@@ -34,6 +34,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/MultiViewFunctorWidgetAdapter.h
 	${HEADER_PATH}/MultiViewCameraItem.h
 	${HEADER_PATH}/MultiViewManipulatorItem.h
+	${HEADER_PATH}/OsgSceneDump.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -74,6 +75,7 @@ set(TARGET_SRC
 	Quaternioncal.cpp
 	MultiViewCameraItem.cpp
 	MultiViewManipulatorItem.cpp
+	OsgSceneDump.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

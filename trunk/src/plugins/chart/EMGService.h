@@ -51,6 +51,10 @@ public:
     virtual const std::string& getName() const;
 	
 	virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
+
+    //!
+    virtual osg::Node* debugGetLocalSceneRoot();
+
 // IChart
 public:
 

@@ -29,7 +29,7 @@ class QObject;
 class ConsoleWidget; 
 class ViewerQT; 
 class TimeLine; 
-class GridWidget;
+class SceneGraphWidget;
 QT_END_NAMESPACE
 
 namespace Ui
@@ -124,7 +124,7 @@ private:
     Ui::ToolboxMain* ui;
 
     // TODO: Embedded widgets - should be in plugins !!
-    GridWidget* _gridWidget;
+    SceneGraphWidget* sceneGraphWidget;
     ConsoleWidget* _consoleWidget; 
 
     // Stary bufor cout

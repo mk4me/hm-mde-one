@@ -28,6 +28,7 @@ private:
 	IService* service;
     //! Widget z widokiem OSG.
     QOSGViewer* viewer;
+    
 
 	std::string c3dFile;
 	QWidget* actualWidget;
@@ -49,6 +50,13 @@ public:
 	void addChart(C3DChartData* c3dData);
 void update(double targetTime);
    double getLenght();
+
+public:
+    //! \return
+    QOSGViewer* getViewer() const
+    { 
+        return viewer;
+    }
 };
 
 #endif  // __HEADER_GUARD__CHARTWIDGET_H__

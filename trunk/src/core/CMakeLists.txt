@@ -23,7 +23,7 @@ set(PRIVATE_H
 	FileReader2Motion.h
 	FileUtil.h
 	FModel.h
-	GridWidget.h
+	SceneGraphWidget.h
 	Intersection.h
 	Logger.h
 	Marker.h
@@ -96,7 +96,7 @@ set(TARGET_SRC
 	FileChunkReader.cpp
 	FileReader2Motion.cpp
 	FileUtil.cpp
-	GridWidget.cpp
+	SceneGraphWidget.cpp
 	Logger.cpp
 	main.cpp
 	ModelService.cpp
@@ -126,7 +126,7 @@ SET(TARGET_MOC_H
     ConsoleWidget.h
     TimeLine.h
     ToolboxMain.h
-	GridWidget.h
+	SceneGraphWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -136,7 +136,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 # UI
 set(TARGET_UI
 	ui/ConsoleWidget.ui
-	ui/GridWidget.ui
+	ui/SceneGraphWidget.ui
 	ui/OsgWidget.ui
 	ui/TimeLine.ui
 	ui/toolboxmaindeffile.ui

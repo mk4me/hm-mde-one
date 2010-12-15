@@ -121,6 +121,9 @@ public:
     //! \param camera
     //! \param manipulator
     virtual void addView(osg::Camera* camera, osgGA::CameraManipulator* manipulator);
+
+    //!
+    virtual osg::Node* debugGetLocalSceneRoot();
 };
 
 typedef CORE_SHARED_PTR(RenderService) RenderServicePtr;

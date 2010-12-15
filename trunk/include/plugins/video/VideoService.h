@@ -29,6 +29,10 @@ private:
     //! Nazwa.
     std::string name;
 
+    //! Lista strumieni.
+    typedef std::vector<osg::ref_ptr<osg::Image> > ImagesList;
+    //! Lista strumieni.
+    ImagesList imagesList;
     
 
 public:
@@ -66,6 +70,9 @@ public:
     virtual AsyncResult update(double time, double timeDelta);
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
+
+    //!
+    virtual osg::Node* debugGetLocalSceneRoot();
 };
 
 

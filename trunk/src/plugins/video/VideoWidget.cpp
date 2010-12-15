@@ -23,6 +23,7 @@
 #include <core/MultiView.h>
 #include <core/AspectRatioKeeper.h>
 #include <core/MultiViewWidgetItem.h>
+#include <core/OsgSceneDump.h>
 
 
 using namespace timeline;
@@ -62,6 +63,7 @@ VideoWidget::VideoWidget()
     multiViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
     multiViewCamera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 
+    viewer->addEventHandler( new core::OsgSceneDumpFileHandler("dump.txt") );
     viewer->addEventHandler( new osgWidget::MouseHandler(multiView) );
     viewer->addEventHandler( new osgUI::StaticKeyboardHandler(multiView) );
     viewer->addEventHandler( new osgWidget::ResizeHandler(multiView, multiViewCamera) );
@@ -190,7 +192,7 @@ void VideoWidget::init( std::vector<std::string> &files )
 
 
         clon->addWidget(keeper);
-        multiView->addChild(clon);
+        //multiView->addChild(clon);
         multiView->addItem(new core::MultiViewWidgetItem(box1, ratio), new core::MultiViewWidgetItem(clon, ratio));
     }
 

@@ -110,6 +110,7 @@ public:
 public:
     // HACK ten podzia³ powinien byæ tymczasowy
     virtual IWidget* getWidget();
+    virtual IWidget* getSettingsWidget();
     
     double getTargetTime() const;
     void setTargetTime(double time);

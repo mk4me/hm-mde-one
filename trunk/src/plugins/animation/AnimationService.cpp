@@ -587,6 +587,12 @@ std::map<std::string, Animation*>* AnimationService::GetAnimations()
 //--------------------------------------------------------------------------------------------------
 IWidget* AnimationService::getWidget()
 {
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
+IWidget* AnimationService::getSettingsWidget()
+{
     return reinterpret_cast<IWidget*>(widget);
 }
 
@@ -685,3 +691,4 @@ std::vector<std::string>* AnimationService::GetAnimationDisplayList()
 {
     return &m_animationDisplayList;
 }
+
