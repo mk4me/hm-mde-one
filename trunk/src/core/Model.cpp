@@ -202,7 +202,7 @@ void* Model::GetSkeletonGroup()
 //--------------------------------------------------------------------------------------------------
 void Model::DrawModelBone()
 {   
-    return;
+   // return;
 
     RemoveGeode();
 

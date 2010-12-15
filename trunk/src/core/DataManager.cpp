@@ -27,6 +27,8 @@ void DataManager::loadResources()
 void DataManager::loadTrials()
 {
 	//nie przeszukujemy podkatalogow, sprawdzamy konkretny katalog aby wyluskac sciezki dla jednej proby pomiarowej
+    //szukaj shaderow
+    shadersPaths = Filesystem::listFiles(this->trialsPath, true, "*.vert");
     //szukaj meshy
     meshesPaths = Filesystem::listFiles(this->trialsPath, false, "*.fmesh");
 	//szukaj plikow video

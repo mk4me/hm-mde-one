@@ -5,6 +5,11 @@
 #include <core/ModelData.h>
 #include <core/IMesh.h>
 
+#include <osg/Shader>
+#include <osg/Program>
+#include <osg/VertexProgram>
+#include <osg/FragmentProgram>
+
 //class CDataTransfer;
 class CVec3;
 
@@ -20,6 +25,7 @@ public:
 
     virtual void Clear();//
 
+    virtual void HardwareAnimation(osg::Uniform* uniform, osg::Uniform* bonespaceUniform, std::string shaderPath);//
     virtual void Allocate(int nVerts, int nTris);//
     virtual void MarkBackfacing(CVec3 CamPos);//
     virtual void SelectTriangle(int nTri);//
@@ -122,6 +128,14 @@ private:
     CVec3 *m_pTriNormals;
     int *m_pTriFlags;
     eSelectionModes m_SelectMode;
+
+    osg::ref_ptr<osg::Program> m_pProgram;
+    osg::ref_ptr<osg::Shader> m_pShader;
+
+
+    osg::Vec4Array* m_pInfluanceArray;
+    osg::Vec4Array* m_pWeightArrary;
+    osg::FloatArray* m_pNumberOfBoneArrary;
 };
 
 

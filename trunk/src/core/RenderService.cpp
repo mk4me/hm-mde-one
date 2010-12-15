@@ -326,7 +326,6 @@ void RenderService::SetScene(osg::Group* root)
         InicizlizeModelMesh(model);
     
 
-    //AddShaders(root);
     SceneRoot->addChild(root);
 
     // ustawienie korzenia sceny
@@ -340,145 +339,6 @@ void RenderService::SetScene(osg::Group* root)
                 camera->setChild(0, SceneRoot);
             }
         }
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-void RenderService::AddShaders(osg::Group* group)
-{
-    Model* model = NULL;
-
-    if(dynamic_cast<Model*>(group))
-        model = dynamic_cast<Model*>(group);
-
-    osg::StateSet* brickState = group->getOrCreateStateSet();
-
-    osg::Program* brickProgramObject = new osg::Program;
-    osg::Shader* brickVertexObject = 
-        new osg::Shader( osg::Shader::VERTEX);
-    osg::Shader* brickFragmentObject = 
-        new osg::Shader( osg::Shader::FRAGMENT );
-
-
-//     brickProgramObject->addShader(brickFragmentObject);
-//     brickProgramObject->addShader( brickVertexObject );
-//     loadShaderSource( brickVertexObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.vert" );
-//     loadShaderSource( brickFragmentObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.frag" );
-
-
-    osg::Shader* skinningVertexShader = 
-        new osg::Shader( osg::Shader::VERTEX);
-
-
-    if(model)
-    {
-        int boneCount = model->GetSkeleton()->m_pBoneList.size();
-
-        // attach some Uniforms to the root, to be inherited by Programs.
-        osg::Uniform* boneUniform = new osg::Uniform(osg::Uniform::FLOAT_MAT4, "boneMatrices", boneCount);
-
-        osg::FloatArray* influanceArray = new osg::FloatArray();
-        osg::FloatArray* weightArrary = new osg::FloatArray();
-        osg::FloatArray* numberOfBoneArrary = new osg::FloatArray();
-
-
-        for(int b = 0; b < boneCount; b++)
-        {
-            boneUniform->setElement(b, *model->GetSkeleton()->m_pBoneList[b]->matrix);
-        }
-
-        brickState->addUniform(boneUniform);
-
-
-        for(int m = 0; m < model->GetMeshList().size(); m++)
-        {   
-            SSkin* skin = model->GetMesh(m)->GetSkin();
-            
-            // update vertices using skin
-            for (int i = 0; i < skin->n; i++)
-            {
-                // vertice
-                SSkinnedVertice* vertice = &skin->skinned_vertices[i];
-
-                osg::Vec4* influance = new osg::Vec4();
-                osg::Vec3* weight = new osg::Vec3();
-
-                numberOfBoneArrary->push_back(vertice->n);
-
-                // for every affecting bone
-                for (int b = 0; b < vertice->n; b++)
-                {
-                    influanceArray->push_back(vertice->bones[b].boneID);
-                    weightArrary->push_back(vertice->bones[b].weight);
-                }
-
-                switch (vertice->n)
-                {
-                case 0:
-                    for(int b = 0; b < 4; b++)
-                        influanceArray->push_back(0.0f);
-                    for(int b = 0; b < 3; b++)
-                        weightArrary->push_back(0.0f);
-                    break;
-
-                case 1:
-                    for(int b = 0; b < 3; b++)
-                        influanceArray->push_back(0.0f);
-                    for(int b = 0; b < 2; b++)
-                        weightArrary->push_back(0.0f);
-                    break;
-
-                case 2:
-                    for(int b = 0; b < 2; b++)
-                        influanceArray->push_back(0.0f);
-                    for(int b = 0; b < 1; b++)
-                        weightArrary->push_back(0.0f);
-                    break;
-
-                case 3:
-                    for(int b = 0; b < 1; b++)
-                        influanceArray->push_back(0.0f);
-                    break;
-                }
-            }
-        }
-
-        int influanceCount = influanceArray->size();
-        int weightCount = weightArrary->size();
-
-        osg::Uniform* influanceUniform = new osg::Uniform();
-        osg::Uniform* weightUniform = new osg::Uniform();
-        osg::Uniform* numberOfBoneUniform = new osg::Uniform();
-
-
-        influanceUniform->setType(osg::Uniform::FLOAT);
-        influanceUniform->setName("index");
-        influanceUniform->setNumElements(influanceArray->size());
-        influanceUniform->setArray(influanceArray);
-
-        weightUniform->setType(osg::Uniform::FLOAT);
-        weightUniform->setName("weight");
-        weightUniform->setNumElements(weightArrary->size());
-        weightUniform->setArray(weightArrary);
-
-        numberOfBoneUniform->setType(osg::Uniform::FLOAT);
-        numberOfBoneUniform->setName("numBones");
-        numberOfBoneUniform->setNumElements(numberOfBoneArrary->size());
-        numberOfBoneUniform->setArray(numberOfBoneArrary);
-
-
-
-        brickState->addUniform(influanceUniform);
-        brickState->addUniform(weightUniform);
-        brickState->addUniform(numberOfBoneUniform);
-
-
-
-        loadShaderSource(skinningVertexShader, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\skinning.vert");
-            
-        brickProgramObject->addShader(skinningVertexShader);
-
-        brickState->setAttributeAndModes(brickProgramObject, osg::StateAttribute::ON);
     }
 }
 
@@ -668,6 +528,7 @@ IFactor* RenderService::GetFactory()
 }
 
 //--------------------------------------------------------------------------------------------------
+//metoda dla testów
 osg::Node* RenderService::createLights(osg::BoundingBox& bb,osg::StateSet* rootStateSet)
 {
     osg::Group* lightGroup = new osg::Group;

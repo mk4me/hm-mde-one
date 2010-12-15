@@ -21,6 +21,7 @@ public:
     virtual ~IMesh() {};
     virtual void Clear() = 0;
 
+    virtual void HardwareAnimation( osg::Uniform* uniform, osg::Uniform* bonespaceUniform, std::string shaderPath) = 0;
     virtual void Allocate(int nVerts, int nTris) = 0;
     virtual void MarkBackfacing(CVec3 CamPos) = 0;
     virtual void SelectTriangle(int nTri) = 0;

@@ -25,14 +25,6 @@
 #include "OsgControlWidget.h"
 
 
-#include <core/Model.h>
-
-#include <osgDB/FileUtils>
-
-#include <osg/Shader>
-#include <osg/Program>
-#include <osg/VertexProgram>
-#include <osg/FragmentProgram>
 
 using namespace std;
 using namespace osg;
@@ -114,7 +106,6 @@ AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* s
     }
 
     m_pRenderService = dynamic_cast<IRenderService* >(m_pServiceManager->getService(UniqueID('REND','SRVC')).get());
-
     m_DisplayType = AnimasionDisplay::ALL;
 
     std::cout << "AnimationService ADDED!" << std::endl; 
@@ -164,6 +155,18 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
         OSG_WARN<<"ITimeline not found."<<std::endl;
     }
 
+    for(int i = 0; i < dataManager->getShaderFilePathCount(); i++)
+    {
+        std::string shaderName = dataManager->getShaderFilePath(i);
+        if(shaderName.substr(shaderName.find_last_of("/") + 1, shaderName.length()) == "skinning.vert")
+        {
+            m_HardwareAnimationShaderPath = dataManager->getShaderFilePath(i);
+            break;
+        }
+
+    }
+
+
     return AsyncResult_Complete;
 }
 
@@ -198,12 +201,6 @@ void AnimationService::RegisterAnimation(Animation* object, void (Animation::*fu
 {
     RegisterFunction(object, fun);
 	//m_pAnimation = new CSimpleOneArgFunctor<Animation, double>(object, fun);
-}
-
-void AnimationService::RegisterC3DAnimation(Animation* object, void (Animation::*fun)(double))
-{
-    // RegisterFunction(object, fun);
-    m_pC3DAnimation = new CSimpleOneArgFunctor<Animation, double>(object, fun);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -270,6 +267,9 @@ void AnimationService::Clear()
     m_skeletonGeode = NULL;
   //  m_pServiceManager = NULL;
 
+    m_BoneUniform = NULL;
+    m_BoneSpaceUniform = NULL;
+
     m_animations.clear();
     m_c3danimations.clear();
     m_functionsToCall.clear();
@@ -310,7 +310,7 @@ AsyncResult AnimationService::update(double time, double timeDelta)
     if(m_pModel)
     {
         if(m_DisplayType & AnimasionDisplay::MESH)
-            UpdateMesh();
+            GPUUpdateMesh();
 
         if(m_DisplayType & AnimasionDisplay::BONE)
             m_pModel->DrawModelBone();
@@ -469,85 +469,40 @@ void AnimationService::PlayC3DAnimation(std::string name)
 }
 
 //--------------------------------------------------------------------------------------------------
-bool loadShaderSource(osg::Shader* obj, const std::string& fileName )
+void AnimationService::GPUUpdateMesh()
 {
-    std::string fqFileName = osgDB::findDataFile(fileName);
-    if( fqFileName.length() == 0 )
+    if(!m_pModel->GetSkeleton())
+        return;
+
+    Skeleton* skeleton = m_pModel->GetSkeleton();
+    int boneCount = skeleton->m_pBoneList.size();
+
+    // attach some Uniforms to the root, to be inherited by Programs.
+    if(!m_BoneUniform)
+        m_BoneUniform = new osg::Uniform(osg::Uniform::FLOAT_MAT4, "boneMatrices", boneCount);
+
+    if(!m_BoneSpaceUniform)
+        m_BoneSpaceUniform = new osg::Uniform(osg::Uniform::FLOAT_MAT4, "boneSpaceMatrices", boneCount);
+
+    for(int b = 0; b < boneCount; b++)
     {
-        std::cout << "File \"" << fileName << "\" not found." << std::endl;
-        return false;
+        m_BoneUniform->setElement(b, *skeleton->m_pBoneList[b]->matrix);
     }
-    bool success = obj->loadShaderSourceFromFile( fqFileName.c_str());
-    if ( !success  )
+    for(int b = 0; b < boneCount; b++)
     {
-        std::cout << "Couldn't load file: " << fileName << std::endl;
-        return false;
+        m_BoneSpaceUniform->setElement(b, skeleton->m_pBoneList[b]->bonespace);
     }
-    else
+
+    std::vector<IMesh* > meshList = m_pModel->GetMeshList();
+
+    for(int i = 0; i < meshList.size(); ++i)
     {
-        return true;
-    }
+        meshList[i]->HardwareAnimation(m_BoneUniform, m_BoneSpaceUniform, m_HardwareAnimationShaderPath);
+    } 
 }
 
 //--------------------------------------------------------------------------------------------------
-// void AnimationService::UpdateMesh()
-// {
-//     if(!m_pModel->GetSkeleton())
-//         return;
-// 
-//     Model* model = dynamic_cast<Model*>(m_pModel);
-// 
-// 
-//     osg::StateSet* brickState = model->getOrCreateStateSet();
-// 
-//     osg::Program* ProgramObject = new osg::Program;
-//     osg::Shader* brickVertexObject = 
-//         new osg::Shader( osg::Shader::VERTEX);
-//     osg::Shader* brickFragmentObject = 
-//         new osg::Shader( osg::Shader::FRAGMENT );
-// 
-// 
-//     //     brickProgramObject->addShader(brickFragmentObject);
-//     //     brickProgramObject->addShader( brickVertexObject );
-//     //     loadShaderSource( brickVertexObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.vert" );
-//     //     loadShaderSource( brickFragmentObject, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\lighting.frag" );
-// 
-// 
-//     osg::Shader* skinningVertexShader = 
-//         new osg::Shader( osg::Shader::VERTEX);
-// 
-// 
-//     if(model)
-//     {
-//         int boneCount = model->GetSkeleton()->m_pBoneList.size();
-// 
-//         // attach some Uniforms to the root, to be inherited by Programs.
-//         osg::Uniform* boneUniform = new osg::Uniform(osg::Uniform::FLOAT_MAT4, "boneMatrices", boneCount);
-// 
-// 
-// 
-//         for(int b = 0; b < boneCount; b++)
-//         {
-//             boneUniform->setElement(b, *model->GetSkeleton()->m_pBoneList[b]->matrix);
-//         }
-// 
-//         brickState->addUniform(boneUniform);
-// 
-// 
-//         ProgramObject->addBindAttribLocation("index", 12);
-//         ProgramObject->addBindAttribLocation("weight", 13);
-//         ProgramObject->addBindAttribLocation("numBones", 14);
-// 
-// 
-//         loadShaderSource(skinningVertexShader, "D:\\GRANT\\Nowa_galaz\\resources\\shaders\\skinning.vert");
-//         ProgramObject->addShader(skinningVertexShader);
-//         
-//         brickState->setAttributeAndModes(ProgramObject, osg::StateAttribute::ON);
-//     }
-// }
-
-//--------------------------------------------------------------------------------------------------
-void AnimationService::UpdateMesh()
+void AnimationService::CPUUpdateMesh()
 {
     if(!m_pModel->GetSkeleton())
         return;

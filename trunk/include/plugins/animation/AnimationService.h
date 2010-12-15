@@ -80,8 +80,6 @@ public:
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
     virtual void RegisterAnimation(Animation* object, void (Animation::*fun)(double)); // add function to caller
-    virtual void RegisterC3DAnimation(Animation* object, void (Animation::*fun)(double)); // add function to caller
-    
     virtual void SetSelectedAnimationName(const std::string& name); // set act selected animation name 
     virtual void PlayAnimation(std::string animationName);
     //void SetScene(osg::Node* scene); // set animated scene
@@ -143,13 +141,15 @@ private:
     Animation* c3dcurrentAnimation;
     //! Nazwa.
     std::string name;
+    std::string m_HardwareAnimationShaderPath;
 
 protected: 
     // scene
     osg::ref_ptr<osg::Node> m_pScene;
 
 private: 
-    virtual void UpdateMesh();
+    virtual void GPUUpdateMesh();
+    virtual void CPUUpdateMesh();
     virtual void Clear();
 
     void PlayC3DAnimation(std::string name);
@@ -188,10 +188,11 @@ private:
     OsgControlWidget* widget;
 
     int m_DisplayType;
-
     IFactor* m_pFactory;
-
     ITimelinePtr timeline;
+
+    osg::Uniform* m_BoneUniform;
+    osg::Uniform* m_BoneSpaceUniform;
 };
 
 //--------------------------------------------------------------------------------------------------
