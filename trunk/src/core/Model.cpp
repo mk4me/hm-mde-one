@@ -6,6 +6,8 @@
 #include <core/FModel.h>
 #include <core/Matrix.h>
 
+#include <osg/MatrixTransform>
+
 #include <core/Vec3.h>
 
 #define pPat osg::PositionAttitudeTransform*
@@ -232,6 +234,9 @@ void Model::DrawBone( Bone* bone, osg::Geode* geode)
     if(!strcmp(bone->name, "LeftHand"))
         istrue = true;
 
+    osg::MatrixTransform* matrixTrans = new osg::MatrixTransform();
+    matrixTrans->setMatrix(*bone->matrix);
+
 	geode->addDrawable(DrawLine(&osg::Vec3f((bone->parent)->positionx, (bone->parent)->positiony, (bone->parent)->positionz), &osg::Vec3f(bone->positionx,bone->positiony,bone->positionz), istrue));
 
 	int childcount = bone->child.size();
@@ -239,6 +244,17 @@ void Model::DrawBone( Bone* bone, osg::Geode* geode)
 	{
 		this->DrawBone(bone->child[i], geode);
 	}
+}
+
+//--------------------------------------------------------------------------------------------------
+osg::ref_ptr<osg::Drawable> Model::DrawDiamond( const osg::Vec3f* startPos, const osg::Vec3f* endPos, bool isSelected )
+{
+    osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
+
+    osg::Box* box = new osg::Box(*startPos, (*startPos - *endPos).length(), (*startPos - *endPos).length()/2, (*startPos - *endPos).length()/2);
+    osg::ShapeDrawable *shapeDrawable = new osg::ShapeDrawable(box);
+
+    return shapeDrawable;
 }
 
 //--------------------------------------------------------------------------------------------------
