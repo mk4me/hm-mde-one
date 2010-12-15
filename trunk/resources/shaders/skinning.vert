@@ -1,6 +1,3 @@
-uniform vec4 position;
-//uniform vec3 normal;
-
 attribute vec4 weight;
 attribute vec4 index;
 attribute float numBones;
