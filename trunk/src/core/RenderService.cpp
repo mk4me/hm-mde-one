@@ -510,3 +510,61 @@ osg::Node* RenderService::debugGetLocalSceneRoot()
 {
     return widget->getSceneData();
 }
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::CreatingAndRenderMarkerPath()
+{
+    /*
+
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+    // create Geometry object to store all the vertices and lines primitive.
+    osg::ref_ptr<osg::Geometry>	linesGeom = new osg::Geometry();
+    float size = 0.5f; 
+    int sizeX = 21; 
+    int sizeY = 21; 
+    // this time we'll preallocate the vertex array to the size we
+    // need and then simple set them as array elements, 8 points
+    // makes 4 line segments.
+    osg::Vec3Array* vertices = new osg::Vec3Array((sizeX+sizeY)*2);
+    for (int i=0; i<sizeX; ++i)
+    {
+        float a_x = (float(i - sizeX/2) )*size; 
+        float a_y = -1.0f*(sizeX/2)*size; 
+        float b_x = (float(i - sizeX/2) )*size; 
+        float b_y = 1.0f*(sizeX/2)*size; 
+        (*vertices)[2*i].set( a_x, a_y, 0.0f);
+        (*vertices)[2*i+1].set( b_x, b_y, 0.0f);
+    }
+
+    for (int i=0; i<sizeY; ++i)
+    {
+        float a_x = -1.0f*(sizeY/2)*size; 
+        float a_y = (float(i - sizeY/2) )*size; 
+        float b_x = 1.0f*(sizeY/2)*size; 
+        float b_y = (float(i - sizeY/2) )*size; 
+        (*vertices)[sizeX*2+2*i].set( a_x, a_y, 0.0f);
+        (*vertices)[sizeX*2+2*i+1].set( b_x, b_y, 0.0f);
+    }
+    // pass the created vertex array to the points geometry object.
+    linesGeom->setVertexArray(vertices);
+    // set the colors as before, plus using the above
+    osg::Vec4Array* colors = new osg::Vec4Array;
+    colors->push_back( osg::Vec4(0.5f, 0.5f, 0.5f, 0.5f) );
+    linesGeom->setColorArray(colors);
+    linesGeom->setColorBinding( osg::Geometry::BIND_OVERALL );
+    // set the normal in the same way color.
+    osg::Vec3Array* normals = new osg::Vec3Array;
+    normals->push_back( osg::Vec3(0.0f, -1.0f, 0.0f) );
+    linesGeom->setNormalArray(normals);
+    linesGeom->setNormalBinding( osg::Geometry::BIND_OVERALL );
+    // This time we simply use primitive, and hardwire the number of coords to use 
+    // since we know up front,
+    linesGeom->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, (sizeX+sizeY)*2) );
+    // add the points geometry to the geode.
+    geode->addDrawable(linesGeom);
+    //osgView_->setSceneData((osg::Node *)geode);
+    geode->setName("grid");
+    return geode; 
+
+    */
+}

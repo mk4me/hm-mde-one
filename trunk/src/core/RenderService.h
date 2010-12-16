@@ -100,6 +100,9 @@ public:
 
     virtual IFactor* GetFactory();
 
+    //! \ Creating and render Marker Path
+    virtual void CreatingAndRenderMarkerPath();
+
 private: 
 
     void Inicialize(osg::Node* sceneRoot);
