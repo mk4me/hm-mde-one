@@ -1,12 +1,5 @@
 #include "CorePCH.h"
 #include "SceneGraphWidget.h"
-
-#include <iostream>
-#include <osgViewer/Scene>
-#include <osg/Group>
-#include <stack> // TODO: Wszystko std musi byæ w przysz³oœci na STLport (sugestia)
-
-#include "ServiceManager.h"
 #include <core/OsgSceneDump.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +8,6 @@ Q_DECLARE_METATYPE(IServiceWeakPtr);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//--------------------------------------------------------------------------------------------------
 SceneGraphWidget::SceneGraphWidget(void):
 Ui::SceneGraphWidget(), 
 QWidget()
@@ -47,13 +39,21 @@ void SceneGraphWidget::setSceneGraph(osg::Node* root)
         root->accept(populator);
     } else {
         sceneGraphTree->setEnabled(false);
-        new QTreeWidgetItem(sceneGraphTree, QStringList()<<"Scene is empty"<<"");
+        new QTreeWidgetItem(sceneGraphTree, QStringList()<<""<<"Scene is empty"<<"");
     }
 }
 
 void SceneGraphWidget::clearTreeWidget()
 {
     sceneGraphTree->clear();
+}
+
+
+void SceneGraphWidget::addServices( IServiceManager* manager )
+{
+    for ( int i = 0; i < manager->getNumServices(); ++i ) {
+        addService( manager->getService(i) );
+    }
 }
 
 void SceneGraphWidget::addService( IServicePtr service )
@@ -77,6 +77,6 @@ void SceneGraphWidget::setCurrentService( int index )
         setSceneGraph( service->debugGetLocalSceneRoot() );
     } else {
         clearTreeWidget();
-        new QTreeWidgetItem(sceneGraphTree, QStringList()<<"Service pointer is outdated"<<"");
+        new QTreeWidgetItem(sceneGraphTree, QStringList()<<""<<"Service pointer is outdated"<<"");
     }
 }

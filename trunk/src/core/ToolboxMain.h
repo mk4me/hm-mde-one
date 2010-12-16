@@ -73,17 +73,13 @@ public slots:
     void onCustomAction();
     void onCustomAction(bool triggered);
 
-
 // core::Window
-protected:
-//     //! Natywne dodanie opcji do menu.
-//     virtual void onAddMenuItem( const std::string& path );
-// 
-//     
-//     //! Natywne dodanie opcji z flag¹ do menu.
-//     virtual void onAddMenuToggle( const std::string& path, bool state );
+protected:    
+    //! Natywne dodanie opcji do menu.
+    virtual void onAddMenuItem( const std::string& path, bool checkable, bool initialState );
     //! Natywne usuniêcie opcji z menu.
     virtual void onRemoveMenuItem( const std::string& path );
+
 
 private:
     //! Tworzy siatkê rozci¹gniêt¹ na p³aszczyŸnie.
@@ -95,12 +91,17 @@ private:
     void registerPluginsServices();
 
     //! Wype³nia podmenu akcjami dla dostêpnych okien.
-    //! \param target
+    //! \param target Menu do wype³nienia.
     void populateWindowMenu(QMenu* target);
 
+    //! Opakowuje zadany widget QDockWidgetem.
+    //! \param widget
+    //! \param name
+    //! \param style
+    //! \param area
     QDockWidget* embeddWidget(QWidget* widget, QString& name, QString& style, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
-    void onAddMenuItem( const std::string& path, bool checkable, bool initialState );
+
 
 
 protected:

@@ -1,7 +1,6 @@
 #include "CorePCH.h"
 #include <core/Grid.h>
 #include <boost/foreach.hpp>
-#define for_each BOOST_FOREACH
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {
@@ -26,6 +25,8 @@ osgWidget::Table(name, rows, columns), dirtyMode(false)
 Grid::Grid( const Grid& grid, const osg::CopyOp& copyop ) :
 osgWidget::Table(grid, copyop), rowsWeights(grid.rowsWeights), columnsWeights(grid.columnsWeights), dirtyMode(grid.dirtyMode)
 {
+    // TODO: zaproponowaæ fixa dla OSG
+    UTILS_ASSERT(false, "osgWidget::Table ma b³êdnie dzia³aj¹cy konstruktor kopiuj¹cy");
 }
 
 void Grid::setDimensions( unsigned rows, unsigned columns )
@@ -90,7 +91,7 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
         double usedField = 0.0;
 
         // zsumowanie pól widgetów
-        for_each (point_type aspectRatio, aspectRatios) {
+        BOOST_FOREACH (point_type aspectRatio, aspectRatios) {
             XYCoord widgetSize = cellSize;
             if ( aspectRatio > cellRatio ) {
                 widgetSize.y() = widgetSize.x() / aspectRatio;
@@ -438,6 +439,22 @@ void Grid::setDirtyMode( bool dirtyMode )
         }
     }
     this->dirtyMode = dirtyMode;
+}
+
+osg::Vec2s Grid::getDimensionsAsSquare( unsigned numItems )
+{
+    unsigned rows;
+    unsigned columns = static_cast<unsigned>(ceil(sqrt(static_cast<double>(numItems))));
+    if ( columns != 0 ) {
+        if ( columns * (columns-1) >= numItems ) {
+            rows = columns-1;
+        } else {
+            rows = columns;
+        }
+    } else {
+        rows = 0;
+    }
+    return osg::Vec2s(columns, rows);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

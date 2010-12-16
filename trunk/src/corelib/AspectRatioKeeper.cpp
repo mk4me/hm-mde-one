@@ -19,8 +19,11 @@ private:
     osg::observer_ptr<osgWidget::Widget> target;
 
 public:
+    META_Object(osgUI, AspectRatioKeeperWindow);
     //!
-    AspectRatioKeeperWindow(const std::string& name, osgWidget::Widget* target, osgWidget::point_type aspectRatio);
+    AspectRatioKeeperWindow(const std::string& name = "", osgWidget::Widget* target = NULL, osgWidget::point_type aspectRatio = 1);
+    //!
+    AspectRatioKeeperWindow(const AspectRatioKeeperWindow& window, const osg::CopyOp& copyop);
     //! \return
     osgWidget::Widget* getTarget();
     //! \return
@@ -52,6 +55,16 @@ Base(name), aspectRatio(aspectRatio)
     setTarget(target);
     getBackground()->setColor(0, 0, 0, 0);
     setEventMask(0);
+}
+
+AspectRatioKeeperWindow::AspectRatioKeeperWindow( const AspectRatioKeeperWindow& window, const osg::CopyOp& copyop ) :
+Base(window, copyop), aspectRatio(window.aspectRatio), size(window.size)
+{
+    osg::ref_ptr<osgWidget::Widget> windowTarget;
+    if ( window.target.lock(windowTarget) ) {
+        const std::string& name = windowTarget->getName();
+        target = getByName(name);
+    }
 }
 
 //! \return
@@ -156,6 +169,11 @@ osgWidget::Window::EmbeddedWindow()
     setSize( widget->getWidthTotal(), widget->getHeightTotal() );
     setColor(0, 0, 0, 0);
     setCanFill(true);
+}
+
+AspectRatioKeeper::AspectRatioKeeper( const AspectRatioKeeper& keeper, const osg::CopyOp& copyop ) :
+osgWidget::Window::EmbeddedWindow(keeper, copyop)
+{
 }
 
 osgWidget::Widget* AspectRatioKeeper::getTarget()

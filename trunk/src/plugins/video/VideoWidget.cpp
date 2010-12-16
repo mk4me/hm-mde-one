@@ -1,6 +1,7 @@
 #include "VideoPCH.h"
 #include "VideoWidget.h"
 
+#include <boost/foreach.hpp>
 #include <osg/GraphicsContext>
 
 #include <utils/ObserverPattern.h>
@@ -24,6 +25,7 @@
 #include <core/AspectRatioKeeper.h>
 #include <core/MultiViewWidgetItem.h>
 #include <core/OsgSceneDump.h>
+#include <core/Log.h>
 
 
 using namespace timeline;
@@ -144,75 +146,51 @@ void VideoWidget::configureView(int rows, int columns, ImagesList& images)
 
 void VideoWidget::init( std::vector<std::string> &files )
 {
+    // odczytanie plików
     images.clear();
-    std::vector<osg::ImageStream*> streams;
-    for (size_t i = 0; i < files.size(); ++i) {
-        osg::Image* image = osgDB::readImageFile(files[i]);
-        if ( image != NULL ) {
+    BOOST_FOREACH(const std::string& file, files) {
+        if ( osg::Image* image = osgDB::readImageFile(file) ) {
             images.push_back(image);
-
-//             std::ostringstream out;
-//             out << i << ": " << files[i];
-//             this->displayTypeCombo->addItem( QString::fromStdString(out.str()) );
-
-        }
-        // czy to film?
-        osg::ImageStream* imageStream = dynamic_cast<osg::ImageStream*>(image);
-        if ( imageStream != NULL ) {
-            streams.push_back(imageStream);
+        } else {
+            LOG_ERROR<<"VideoService: "<<file<<" could not be read.";
         }
     }
-
-    
-
-    //int rows, columns;
-    //view->makeGrid(static_cast<int>(images.size()), rows, columns);
-    //configureView(rows, columns, images);
+   
+    // stworzenie widgetów i dodanie ich do multi widoku
     float avgRatio = 0;
-    for (ImagesList::iterator it = images.begin(); it != images.end(); ++it) {
-        osg::Image* image = *it;
+    BOOST_FOREACH(osg::Image* image, images) {
+        // wyliczenie wspó³czynnika proporcji oraz aktualizacja zbiorczego wspó³czynnika
         float ratio = image->getPixelAspectRatio() * image->s() / image->t();
         avgRatio += ratio;
 
-        osgWidget::Box* box1 = new osgWidget::Box(image->getFileName());
-        video::StreamOsgWidget* aaa1 = streamHelper->createWidget( image );
-        //osgWidget::Widget *aaa1 = new osgWidget::Widget("aaa", 100, 100);
-        //aaa1->setColor(  osgWidget::Color(1,1,1,1) * std::distance(images.begin(), it) / 4 );
-        aaa1->setCanFill(true);
-        box1->addWidget(aaa1);
-        multiView->addChild(box1);
-        osgWidget::Box* clon = new osgWidget::Box(image->getFileName());
+        // faktyczne dodanie miniaturki do grida
+        osgWidget::Box* thumbnail = new osgWidget::Box(image->getFileName() + "thumbnail");
+        video::StreamOsgWidget* streamWidget = streamHelper->createWidget( image );
+        streamWidget->setCanFill(true);
+        thumbnail->addWidget(streamWidget);
+        multiView->addChild(thumbnail);
 
-        video::StreamOsgWidget* widget = streamHelper->createWidget( osg::clone(image) );
-        
-        osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(widget, ratio);
-        keeper->setColor(0,0,0,0);
-        clon->getBackground()->setColor(0,0,0,0);
+        // faktyczne dodanie du¿ego okna
+        osgWidget::Box* preview = new osgWidget::Box(image->getFileName());
+        video::StreamOsgWidget* streamWidgetClone = streamHelper->createWidget( osg::clone(image) );
+        osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(streamWidgetClone, ratio);
+        keeper->setColor(0, 0, 0, 0);
+        preview->getBackground()->setColor(0,0,0,0);
+        preview->addWidget(keeper);
+        multiView->addChild(preview);
 
-
-
-        clon->addWidget(keeper);
-        //multiView->addChild(clon);
-        multiView->addItem(new core::MultiViewWidgetItem(box1, ratio), new core::MultiViewWidgetItem(clon, ratio));
+        // dodanie itemów do multiviewa
+        multiView->addItem(new core::MultiViewWidgetItem(thumbnail, ratio), new core::MultiViewWidgetItem(preview, ratio));
     }
 
-
-    // stworzenie widoku z girdem
+    // obliczenie rozmiaru grida (jak najbardziej kwadratowy)
     avgRatio /= images.size();
-    unsigned rows;
-    unsigned columns = static_cast<unsigned>(ceil(sqrt(static_cast<double>(images.size()))));
-    if ( columns != 0 ) {
-        if ( columns * (columns-1) >= images.size() ) {
-            rows = columns-1;
-        } else {
-            rows = columns;
-        }
-    } else {
-        rows = 0;
-    }
+    osg::Vec2s dimensions = osgUI::Grid::getDimensionsAsSquare(images.size());
+    unsigned rows = dimensions.y();
+    unsigned columns = dimensions.x();
 
     // TODO: kopia
-    osgUI::Grid* gridThumbs = new osgUI::Grid("all", rows, columns);
+    osgUI::Grid* gridThumbs = new osgUI::Grid("allThumbnails", rows, columns);
     gridThumbs->getBackground()->setColor(0,0,0,0);
     osgUI::Grid* grid = new osgUI::Grid("all", rows, columns);
     grid->getBackground()->setColor(0,0,0,0);
@@ -220,11 +198,11 @@ void VideoWidget::init( std::vector<std::string> &files )
     for (unsigned row = 0; row < rows; ++row) {
         for (unsigned col = 0; col < columns; ++col) {
             osg::Image* image = images[ row * columns + col ];
-            video::StreamOsgWidget* thumb = streamHelper->createWidget( osg::clone(image) );
-            thumb->setCanFill(true);
-            gridThumbs->addWidget(thumb, row, col);
-            video::StreamOsgWidget* widget = streamHelper->createWidget( osg::clone(image) );
-            osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(widget, avgRatio);
+            video::StreamOsgWidget* thumbnail = streamHelper->createWidget( osg::clone(image) );
+            thumbnail->setCanFill(true);
+            gridThumbs->addWidget(thumbnail, row, col);
+            video::StreamOsgWidget* preview = streamHelper->createWidget( osg::clone(image) );
+            osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(preview, avgRatio);
             grid->addWidget(keeper, row, col);
         }
     }

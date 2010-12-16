@@ -40,6 +40,11 @@ public:
     Grid(const Grid& grid, const osg::CopyOp& copyop);
 
 public:
+
+    //! \return Wymiary grida jak najbardziej zblio¿one do kwadratu dla zadanej liczby
+    //!         elementów.
+    static osg::Vec2s getDimensionsAsSquare(unsigned numItems);
+
     //! \param row
     osgWidget::point_type getRowWeight(unsigned row) const;
     //! \param row

@@ -23,6 +23,12 @@
 #include <stack>
 #include <iostream>
 
+#include <boost/shared_ptr.hpp>
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
+#include <boost/foreach.hpp>
+#include <boost/type_traits.hpp>
+
 #include <osg/Node>
 #include <osg/AnimationPath>
 #include <osg/Config>

@@ -110,8 +110,9 @@ void OsgSceneDumpQtTree::apply( osg::Drawable& drawable )
 QTreeWidgetItem* OsgSceneDumpQtTree::createItem( osg::Object& object, osg::StateSet* stateset )
 {
     QTreeWidgetItem* item = currentParent ? new QTreeWidgetItem(currentParent) : new QTreeWidgetItem(widget);
-    item->setText(1, QString::fromStdString(object.getName()) );
-    item->setText(0, QString::fromStdString(std::string(object.libraryName()) + "::" + object.className()));
+    item->setText(1, QString::fromStdString(std::string(object.libraryName()) + "::" + object.className()));
+    item->setText(2, QString::fromStdString(object.getName()) );
+    item->setText(0, QString::fromStdString( boost::lexical_cast<std::string>( &object ) ));
     if ( stateset ) {
         QTreeWidgetItem* prevParent = currentParent;
         currentParent = item;

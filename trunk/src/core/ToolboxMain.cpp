@@ -80,11 +80,6 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     InitializeControlWidget();          // Control Widget + TimeLine
     LoadConfiguration();                // Wczytuje plik konfiguracyjny
 
-
-    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        sceneGraphWidget->addService(m_pServiceManager->getService(i));
-    }
-
 	/*
 	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
 	*/
@@ -180,6 +175,7 @@ void ToolboxMain::InitializeControlWidget()
     sceneGraphWidget = new SceneGraphWidget();    
     addDockWidget(Qt::LeftDockWidgetArea, gDock);
     gDock->setWidget((QWidget*)sceneGraphWidget);
+    sceneGraphWidget->addServices(m_pServiceManager);
 }
 
 void ToolboxMain::populateWindowMenu(QMenu* target)

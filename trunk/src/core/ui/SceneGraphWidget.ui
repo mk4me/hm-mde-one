@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>325</width>
+    <width>499</width>
     <height>567</height>
    </rect>
   </property>
@@ -59,26 +59,13 @@
       <bool>true</bool>
      </property>
      <property name="columnCount">
-      <number>2</number>
+      <number>3</number>
      </property>
-     <attribute name="headerDefaultSectionSize">
-      <number>150</number>
-     </attribute>
-     <attribute name="headerMinimumSectionSize">
-      <number>150</number>
-     </attribute>
-     <attribute name="headerShowSortIndicator" stdset="0">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="headerDefaultSectionSize">
-      <number>150</number>
-     </attribute>
-     <attribute name="headerMinimumSectionSize">
-      <number>150</number>
-     </attribute>
-     <attribute name="headerShowSortIndicator" stdset="0">
-      <bool>true</bool>
-     </attribute>
+     <column>
+      <property name="text">
+       <string notr="true">address</string>
+      </property>
+     </column>
      <column>
       <property name="text">
        <string notr="true">type</string>

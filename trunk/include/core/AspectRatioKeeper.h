@@ -18,9 +18,12 @@ namespace osgUI {
 class AspectRatioKeeper : public osgWidget::Window::EmbeddedWindow
 {
 public:
+    META_Object(osgUI, AspectRatioKeeper);
     //! \param widget
     //! \param aspectRatio
-    AspectRatioKeeper(osgWidget::Widget* widget, osgWidget::point_type aspectRatio);
+    AspectRatioKeeper(osgWidget::Widget* widget = NULL, osgWidget::point_type aspectRatio = 1);
+    //!
+    AspectRatioKeeper(const AspectRatioKeeper& keeper, const osg::CopyOp& copyop);
 
 public:
     //! \return
