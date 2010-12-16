@@ -156,7 +156,6 @@ Model* FileReader2Motion::GetModelFromResources( std::string meshPath, std::stri
 //--------------------------------------------------------------------------------------------------
 C3D_Data* FileReader2Motion::ReadC3DFile( std::string filePath)
 {
-        // FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o
     c3dParser* parser = 0;
     parser = new c3dParser();
 
@@ -181,9 +180,6 @@ C3D_Data* FileReader2Motion::ReadC3DFile( std::string filePath)
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::ParseC3DFile2EDR(C3D_Data* c3d, C3DModel* c3dModel)
 {
-    // ******************************************************************************* //
-    // FIX: Piotr Gwiazdowski, ¿eby siê kompilowa³o
-
     std::vector<IMarker* > markerList;
     markerList.resize(c3d->getHeader()->getNumberOfC3DPoints());
 
@@ -405,7 +401,27 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
 }
 
 //--------------------------------------------------------------------------------------------------
-void calculateChildMatrix(Bone *bone)
+void FileReader2Motion::SetBoneLegnhtInSpace(Bone* bone, float size)
+{
+    BoneLenght* boneLength = bone->m_pboneLengthInSpace;
+    osg::Vec3f* startPos = new osg::Vec3f((bone->parent)->positionx, (bone->parent)->positiony, (bone->parent)->positionz);
+    osg::Vec3f* endPos = new osg::Vec3f(bone->positionx,bone->positiony,bone->positionz);
+
+    float absX, absY, absZ;
+    absX = std::abs((startPos->x() - endPos->x()));
+    absY = std::abs((startPos->y() - endPos->y()));
+    absZ = std::abs((startPos->z() - endPos->z()));
+
+    // X = (absX > absY) ? (absX > absZ ? absX : absZ) : (absY > absZ ? absY : absZ);
+    boneLength->sizeofBone = size;
+
+    boneLength->X = (absX > absY) ? (absX > absZ ? absX : size) : size;
+    boneLength->Y = (absY > absZ) ? (absY > absX ? absY : size) : size;
+    boneLength->Z = (absZ > absY) ? (absZ > absX ? absZ : size) : size;
+}
+
+//--------------------------------------------------------------------------------------------------
+void FileReader2Motion::calculateChildMatrix(Bone *bone)
 {
     // C - macierz obrotów (axis) plik ASF
     // Cinv - inversja maierzy C
@@ -445,10 +461,7 @@ void calculateChildMatrix(Bone *bone)
     bone->positiony = trans.y();
     bone->positionz = trans.z();
 
-   // bone->bonespace = osg::Matrixd::inverse(*bone->matrix);
-
-//    bone->bonespace = osg::Matrixd(bone->boneSpace_quaternion);
-//    bone->bonespace.postMultTranslate( bone->boneSpace_translation);
+    SetBoneLegnhtInSpace(bone, 4.0);
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)

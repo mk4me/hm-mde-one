@@ -39,6 +39,8 @@ private:
     static void ReadFromTBSFile(DataManager *dataManager);
     static void ReadAcclaimFile(const std::string& file, Model* model);
 
+    static void SetBoneLegnhtInSpace(Bone* bone, float size = 4.0f);
+    static void calculateChildMatrix(Bone *bone);
     static void LoadMeshFromDAE(Model* model, SDea2Motion* io_data);
     static void ParserAcclaimFile2EDR(Model* model, ASFAMCParser* acclaimObject);
 

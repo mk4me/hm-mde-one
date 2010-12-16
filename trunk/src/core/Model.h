@@ -54,7 +54,7 @@ public:
     void DrawNormals(float size);
 
     osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3f* startPos, const osg::Vec3f* endPos, bool isSelected);
-    osg::ref_ptr<osg::Drawable> DrawDiamond(const osg::Vec3f* startPos, const osg::Vec3f* endPos, bool isSelected);
+    osg::ref_ptr<osg::Drawable> DrawBoxBone(const osg::Vec3f* startPos, const osg::Vec3f* endPos, osg::Quat* rotation, BoneLenght* boneLength, bool isSelected);
 
     osg::ref_ptr<osg::Geometry>  m_geometry;
     osg::ref_ptr<osg::Geode> m_spSkeletonGeode;

@@ -222,7 +222,6 @@ void Model::DrawModelBone()
 	}
 
 	this->addChild(m_spSkeletonGeode);
-
  //   DrawNormals(0.7f);
 }
 
@@ -234,10 +233,11 @@ void Model::DrawBone( Bone* bone, osg::Geode* geode)
     if(!strcmp(bone->name, "LeftHand"))
         istrue = true;
 
-    osg::MatrixTransform* matrixTrans = new osg::MatrixTransform();
-    matrixTrans->setMatrix(*bone->matrix);
+    osg::Vec3f* startPos = new osg::Vec3f((bone->parent)->positionx, (bone->parent)->positiony, (bone->parent)->positionz);
+    osg::Vec3f* endPos = new osg::Vec3f(bone->positionx,bone->positiony,bone->positionz);
 
-	geode->addDrawable(DrawLine(&osg::Vec3f((bone->parent)->positionx, (bone->parent)->positiony, (bone->parent)->positionz), &osg::Vec3f(bone->positionx,bone->positiony,bone->positionz), istrue));
+    geode->addDrawable(DrawBoxBone(startPos, endPos, &bone->matrix->getRotate(), bone->m_pboneLengthInSpace, istrue));
+
 
 	int childcount = bone->child.size();
 	for (int i = 0; i<childcount; i++)
@@ -247,11 +247,12 @@ void Model::DrawBone( Bone* bone, osg::Geode* geode)
 }
 
 //--------------------------------------------------------------------------------------------------
-osg::ref_ptr<osg::Drawable> Model::DrawDiamond( const osg::Vec3f* startPos, const osg::Vec3f* endPos, bool isSelected )
+osg::ref_ptr<osg::Drawable> Model::DrawBoxBone( const osg::Vec3f* startPos, const osg::Vec3f* endPos, osg::Quat* rotation, BoneLenght* boneLength, bool isSelected )
 {
     osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
 
-    osg::Box* box = new osg::Box(*startPos, (*startPos - *endPos).length(), (*startPos - *endPos).length()/2, (*startPos - *endPos).length()/2);
+    osg::Box* box = new osg::Box((*startPos + *endPos)/2, boneLength->X, boneLength->Y, boneLength->Z);
+    box->setRotation(*rotation);
     osg::ShapeDrawable *shapeDrawable = new osg::ShapeDrawable(box);
 
     return shapeDrawable;

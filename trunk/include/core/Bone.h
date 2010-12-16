@@ -10,11 +10,20 @@
 // This holds the names of a joint's children
 typedef std::vector<char*> childVector;
 
+struct BoneLenght 
+{
+    float X;
+    float Y;
+    float Z;
+
+    float sizeofBone;
+};
+
 //class Bone
 struct Bone
 {
-    Bone(){ matrix = new osg::Matrixd(); isCleared = false;}
-    ~Bone() { delete matrix; }
+    Bone(){ matrix = new osg::Matrixd(); m_pboneLengthInSpace = new BoneLenght(); isCleared = false;}
+    ~Bone() { delete matrix; delete m_pboneLengthInSpace; }
 	int idx;					// Bone inde
 
     int parent_id;
@@ -66,6 +75,8 @@ struct Bone
 
     std::vector<int> childBoneId;
 	bool isCleared;
+
+    BoneLenght* m_pboneLengthInSpace;
 };
 
 #endif
