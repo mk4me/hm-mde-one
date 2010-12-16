@@ -66,20 +66,38 @@ osg::Geode* Chart::createBorder(){
 
 	osg::Geode* geode=new osg::Geode();
 	geode->setName("border");
-	if(showBorder){
-	geode->addDrawable(createLine(x,y,
-		width,y,-0.5f,
-		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
-	geode->addDrawable(createLine(x,height,
-		width,height,-0.5f,
-		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
-	geode->addDrawable(createLine(x,y,
-		x,height,-0.5f,
-		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
-	geode->addDrawable(createLine( width,y,
-		 width,height,-0.5f,
-		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
-	}
+	
+
+
+	   osg::Geometry* geom = new osg::Geometry;
+		osg::Vec3Array* vertices = new osg::Vec3Array;
+
+				vertices->push_back(osg::Vec3(x+1,y+1,-0.1f));
+				vertices->push_back(osg::Vec3(width,y+1,-0.1f));
+				vertices->push_back(osg::Vec3(x+1,height,-0.1));
+				vertices->push_back(osg::Vec3(width,height,-0.1f));
+				vertices->push_back(osg::Vec3(x+1,y+1,-0.1f));
+				vertices->push_back(osg::Vec3(x+1,height,-0.1f));
+				vertices->push_back(osg::Vec3( width,y+1,-0.1f));
+				vertices->push_back(osg::Vec3(width,height,-0.1f));
+	
+	      
+		   geom->setVertexArray(vertices);
+	
+	     osg::Vec4Array* colors=new osg::Vec4Array();
+		 colors->push_back(color);
+
+	
+		geom->setColorArray(colors);
+		geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+	
+		    geom->addPrimitiveSet(new osg::DrawArrays(GL_LINES,0,vertices->getNumElements())); 
+
+		    geom->getOrCreateStateSet()->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+	
+	 
+	        geode->addDrawable(geom);
+	
 	return geode;
 }
 
@@ -138,7 +156,8 @@ osg::Geode* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numRep
 	osg::Vec3 posX = osg::Vec3(0,30,0);
 	osg::Vec3 posY = osg::Vec3(5,0,0);
 	osg::Vec3Array* vertices = new osg::Vec3Array;
-	
+	vertices->push_back(s);
+	vertices->push_back(e);
 	for(int i=0;i<numReps;++i)
 	{
 	
@@ -148,22 +167,25 @@ osg::Geode* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numRep
 				osgText::Text* text=createLabel(pos-posX,fontSize, (formatNumber(actualScale))+unit);
 				text->setAlignment(osgText::Text::RIGHT_CENTER);
 				geode->addDrawable(text);}
-			if(i!=0)
-				geode->addDrawable(createLine(pos.x(),pos.y()-5,
-				pos.x(),pos.y()+5,0,
-				osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
+			if(i!=0){
+				vertices->push_back(osg::Vec3(pos.x(),pos.y()-5,1));
+				vertices->push_back(osg::Vec3(pos.x(),pos.y()+5,1));
+			}
+				//geode->addDrawable(createLine(pos.x(),pos.y()-5,}
+				//pos.x(),pos.y()+5,0,
+				//osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 		}
 		else{
 			if(labelVisable){
 				osgText::Text* text=createLabel(pos ,fontSize,(formatNumber(actualScale))+unit);
 				text->setAlignment(osgText::Text::RIGHT_CENTER);
 					geode->addDrawable(text);}
-			if(i!=0)
-				geode->addDrawable(createLine(pos.x()-5,pos.y(),
-				pos.x()+5,pos.y(),0,
-				osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
+				if(i!=0){
+				vertices->push_back(osg::Vec3(pos.x()-5,pos.y(),1));
+				vertices->push_back(osg::Vec3(pos.x()+5,pos.y(),1));
+			}
 		}
-		vertices->push_back(pos);
+		
 		pos += dv;
 		actualScale += scale;
 
@@ -177,10 +199,10 @@ osg::Geode* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numRep
 
  
 	geom->setColorArray(colors);
-	geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);
+	geom->setColorBinding(osg::Geometry::BIND_OVERALL);
 	geom->setVertexArray(vertices);
 
-	geom->addPrimitiveSet(new osg::DrawArrays(GL_LINE_STRIP,0,vertices->size()));
+ geom->addPrimitiveSet(new osg::DrawArrays(GL_LINES,0,vertices->getNumElements())); 
 
 	
 	geode->addDrawable(geom);
@@ -220,6 +242,7 @@ void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
 	yNumReps=2;
 	borderSize=5;
 	labelVisable=false;
+	showBorder=false;
 	float yMaxScale=0;
 	if(chartData->getRNumber()>0){
 	data.push_back(chartData);
@@ -395,18 +418,23 @@ osg::Vec4 Chart::getLocation(){
 }
 
 void Chart::repaint(){
+	if(showBorder){
 	osg::Geode* newBorder=createBorder();
+	this->replaceChild(border,newBorder);
+	border=newBorder;
+	}else
+		this->removeChild(this->getChildIndex(border));
 	osg::Geode* newGrid=createGrid();
 	osg::Geode* newXAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
 	osg::Geode* newYAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
 
 
-	this->replaceChild(border,newBorder);
+	
 	this->replaceChild(grid,newGrid);
 	this->replaceChild(xAxis,newXAxis);
 	this->replaceChild(yAxis,newYAxis);
 
-	border=newBorder;
+	
 	grid=newGrid;
 	xAxis=newXAxis;
 	yAxis=newYAxis;
@@ -426,9 +454,9 @@ void Chart::repaint(){
 
 osg::Geode* Chart::createMainLabel(osg::Vec4 color, std::string name){
 		osg::Geode* geode = new osg::Geode;
-
-		
-	
+		this->setName(name);
+			geode->setName("label");
+	if(labelVisable){
 	osg::StateSet* ss = geode->getOrCreateStateSet();
 
 
@@ -436,7 +464,7 @@ osg::Geode* Chart::createMainLabel(osg::Vec4 color, std::string name){
 
 	ss->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
 	geode->addDrawable(createLabel(osg::Vec3(x+30+labelOffset,height-10,0),12,name));
-	if(labelVisable){
+	
 	osg::Vec3Array* vertices = new osg::Vec3Array;
 	vertices->push_back(osg::Vec3(x+10+labelOffset,height-20+5,0));
 	vertices->push_back(osg::Vec3(x+20+labelOffset,height-20+5,0));
