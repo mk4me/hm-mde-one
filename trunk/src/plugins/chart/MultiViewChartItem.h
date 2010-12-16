@@ -24,8 +24,9 @@ class MultiViewChartItem : public MultiView::PreviewItem
 private:
 	std::string name;
 	Chart* chart;
+osg::Switch* multiViewSwitch;
 public:
-	MultiViewChartItem(Chart* chart);
+	MultiViewChartItem(Chart* chart,osg::Switch* multiViewSwitch);
 	
 
 public:

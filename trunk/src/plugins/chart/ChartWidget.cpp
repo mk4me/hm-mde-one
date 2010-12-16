@@ -74,7 +74,7 @@ void ChartWidget::addChart(C3DChartData* c3dData){
 	itPItem= previewItem.end()-1;
 	(*itPItem)->addChartPreviewSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
 	multiView->addChild((*itPItem));
-	multiView->addItem(new core::MultiViewChartItem(*itItem),new core::MultiViewChartItem((*itPItem)));
+	multiView->addItem(new core::MultiViewChartItem(*itItem,multiView),new core::MultiViewChartItem((*itPItem),multiView));
 	}
 }
 

@@ -40,7 +40,7 @@ private:
 	std::vector<Chart*>::iterator itPItem;
 	osg::ref_ptr<osg::Group> root;
 public:
-
+	
 
     //! 
 	ChartWidget(IService* service);

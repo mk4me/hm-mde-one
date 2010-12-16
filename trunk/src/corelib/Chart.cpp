@@ -419,9 +419,12 @@ osg::Vec4 Chart::getLocation(){
 
 void Chart::repaint(){
 	if(showBorder){
+		if(border){
 	osg::Geode* newBorder=createBorder();
 	this->replaceChild(border,newBorder);
-	border=newBorder;
+	border=newBorder;}else{
+		border=createBorder();
+		this->addChild(border);}
 	}else
 		this->removeChild(this->getChildIndex(border));
 	osg::Geode* newGrid=createGrid();

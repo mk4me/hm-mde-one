@@ -3,8 +3,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 	////////////////////////////////////////////////////////////////////////////////
-	MultiViewChartItem::MultiViewChartItem(Chart* chart):
-chart(chart)
+	MultiViewChartItem::MultiViewChartItem(Chart* chart,osg::Switch* multiViewSwitch):
+chart(chart),
+multiViewSwitch(multiViewSwitch)
 {
 	UTILS_ASSERT(chart);
 }
@@ -21,11 +22,8 @@ osgWidget::point_type MultiViewChartItem::getAspectRatio()
 
 void MultiViewChartItem::setSelected( bool selected )
 {
-	if ( selected ) {
-		chart->setNodeMask(1);
-	} else {
-		chart->setNodeMask(0); 
-	}
+	multiViewSwitch->setValue(multiViewSwitch->getChildIndex(chart),selected);
+
 }
 
 void MultiViewChartItem::setLocation( osgWidget::point_type x, osgWidget::point_type y, osgWidget::point_type w, osgWidget::point_type h )
