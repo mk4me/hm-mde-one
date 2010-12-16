@@ -57,7 +57,7 @@ osg::Geometry* Chart::createLine(int x,int y,int x1,int y1,int z,osg::Vec4 lineC
 
 	geom->addPrimitiveSet(new osg::DrawArrays(GL_LINE_STRIP,0,vertices->size()));
 
-	
+	geom->setName("line");
 	return geom;
 }
 
@@ -65,19 +65,21 @@ osg::Geode* Chart::createBorder(){
 
 
 	osg::Geode* geode=new osg::Geode();
+	geode->setName("border");
+	if(showBorder){
 	geode->addDrawable(createLine(x,y,
-		width,y,-1,
+		width,y,-0.5f,
 		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 	geode->addDrawable(createLine(x,height,
-		width,height,-1,
+		width,height,-0.5f,
 		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 	geode->addDrawable(createLine(x,y,
-		x,height,-1,
+		x,height,-0.5f,
 		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 	geode->addDrawable(createLine( width,y,
-		 width,height,-1,
+		 width,height,-0.5f,
 		osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
-
+	}
 	return geode;
 }
 
@@ -116,7 +118,7 @@ osg::Geode* Chart::createGrid(){
 	        osg::Geode* geode = new osg::Geode;
 	        geode->addDrawable(geom);
 	               
-	     
+	     geode->setName("grid");
 	return geode;
 
 }
@@ -182,7 +184,7 @@ osg::Geode* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numRep
 
 	
 	geode->addDrawable(geom);
-
+	geode->setName("axis");
 
 
 	return geode;
@@ -425,7 +427,7 @@ void Chart::repaint(){
 osg::Geode* Chart::createMainLabel(osg::Vec4 color, std::string name){
 		osg::Geode* geode = new osg::Geode;
 
-//if(labelVisable){
+		
 	
 	osg::StateSet* ss = geode->getOrCreateStateSet();
 
@@ -434,7 +436,7 @@ osg::Geode* Chart::createMainLabel(osg::Vec4 color, std::string name){
 
 	ss->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
 	geode->addDrawable(createLabel(osg::Vec3(x+30+labelOffset,height-10,0),12,name));
-
+	if(labelVisable){
 	osg::Vec3Array* vertices = new osg::Vec3Array;
 	vertices->push_back(osg::Vec3(x+10+labelOffset,height-20+5,0));
 	vertices->push_back(osg::Vec3(x+20+labelOffset,height-20+5,0));
@@ -459,7 +461,7 @@ osg::Geode* Chart::createMainLabel(osg::Vec4 color, std::string name){
 
 	
 
-//}
+}
 return geode;
 }
 
@@ -471,4 +473,12 @@ std::vector<LineChart*>::iterator itPos = dataSeries.begin();
 		(*itPos)->setLabelVisable(labelVisable);
 	}
 	repaint();
+}
+
+void Chart::setShowBorder(bool showBorder){
+	this->showBorder=showBorder;
+	repaint();
+}
+bool Chart::isShowingBorder(){
+	return showBorder;
 }

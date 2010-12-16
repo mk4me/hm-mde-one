@@ -42,6 +42,7 @@ private:
 	osg::Geode* createMainLabel(osg::Vec4 color,std::string name);
 	int labelOffset;
 	bool labelVisable;
+	bool showBorder;
 public:
 	Chart(int x,int y,int width,int height);
 	~Chart();
@@ -90,6 +91,8 @@ public:
 	osg::Vec4 getLocation();
 
 	void setLabelVisable(bool labelVisable);
+	void setShowBorder(bool showBorder);
+	bool isShowingBorder();
 };
 
 

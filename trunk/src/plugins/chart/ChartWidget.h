@@ -38,6 +38,7 @@ private:
 	std::vector<Chart*> item;
 	std::vector<Chart*>::iterator itItem;
 	std::vector<Chart*>::iterator itPItem;
+	osg::ref_ptr<osg::Group> root;
 public:
 
 
@@ -46,7 +47,7 @@ public:
     //! 
     virtual ~ChartWidget();
 
-
+	osg::Node* getSceneRoot();
 	void addChart(C3DChartData* c3dData);
 void update(double targetTime);
    double getLenght();

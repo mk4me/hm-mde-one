@@ -30,7 +30,7 @@ ChartWidget::ChartWidget(IService* service)
     multiViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
     multiViewCamera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 
-    osg::ref_ptr<osg::Group> root = new osg::Group();
+    root = new osg::Group();
     root->addChild(multiViewCamera);
     viewer->setSceneData(root);
 
@@ -96,4 +96,7 @@ double ChartWidget::getLenght(){
 	return (double)(*itItem)->getFrameNumber()/(double)(*itItem)->getFPS();}
 	else
 		return 0;
+}
+osg::Node* ChartWidget::getSceneRoot(){
+return root;
 }

@@ -5,6 +5,7 @@
 #include <core/ChartPointer.h>
 
 LineChart::LineChart(ChartData* data,int x,int y,int width, int height,osg::Vec4 color){
+	this->setName("data seires");
 	this->x=x;
 	this->y=y;
 	this->width=width;
