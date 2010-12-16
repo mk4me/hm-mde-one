@@ -135,16 +135,26 @@ this->widget=widget;
 AsyncResult EMGService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
 std::string c3dpath = "";
-if(dataManager->getC3dFilePathCount() > 0)
-	{
-		c3dpath = dataManager->getC3dFilePath(0);
-		c3dParser* parser =  new c3dParser();
-		C3D_Data* c3d = parser->parseData(c3dpath);
-		for(int i=12;i<28;i++){
+//if(dataManager->getC3dFilePathCount() > 0)
+//	{
+//		c3dpath = dataManager->getC3dFilePath(0);
+//		c3dParser* parser =  new c3dParser();
+//		C3D_Data* c3d = parser->parseData(c3dpath);
+//		for(int i=12;i<28;i++){
+//		widget->addChart(new C3DChartData(c3d,i));
+//	}
+//	length=widget->getLenght() ;
+//	}
+if(dataManager->getActualTrial().isC3d())
+{
+	c3dpath = dataManager->getActualTrial().getC3dPath();
+	c3dParser* parser =  new c3dParser();
+	C3D_Data* c3d = parser->parseData(c3dpath);
+	for(int i=12;i<28;i++){
 		widget->addChart(new C3DChartData(c3d,i));
 	}
 	length=widget->getLenght() ;
-	}
+}
 
 return AsyncResult_Complete;
 }

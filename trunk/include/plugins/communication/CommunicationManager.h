@@ -12,6 +12,7 @@ i web serwisy wsdl.
 #include <OpenThreads/Thread>
 #include <utils/ObserverPattern.h>
 #include <core/IDataManager.h>
+#include <core/IServiceManager.h>
 #include <core/LocalTrial.h>
 #include "Entity.h"
 #include "TransportWSDL_FTPS.h"
@@ -20,8 +21,7 @@ i web serwisy wsdl.
 namespace communication
 {
 
-	class CommunicationManager : public utils::Observable<CommunicationManager>
-		//, public OpenThreads::Thread
+	class CommunicationManager : public utils::Observable<CommunicationManager>, public OpenThreads::Thread
 	{
 	public:
 	enum State
@@ -59,10 +59,15 @@ namespace communication
 		const DateTime& getLastUpdateTime() const {return lastUpdate;};
 
 		void setDataManager(IDataManager* dataManager) {this->dataManager = dataManager;loadLocalTrials();};
+		IDataManager* getDataManager() {return dataManager;};
+
+		void setServiceManager(IServiceManager* serviceManager) {this->serviceManager = serviceManager;};
+		IServiceManager* getServiceManager() {return serviceManager;};
+
+		void loadActualTrial(const std::string& path);
 
 		const State& getState() const {return state;};
 		void setState(const State& state) {this->state = state;};
-		OpenThreads::Mutex& getMutex() {return trialsMutex;};
 		virtual void run();
 
 		const std::string& getErrorMessage() const {return errorMessage;};
@@ -86,11 +91,11 @@ namespace communication
 		bool isLastUpdate;
 		int entityID;
 
+		IServiceManager* serviceManager;
 		IDataManager* dataManager;
 
 		ITransportable* transportManager;
 		IQueryable* queryManager;
-		OpenThreads::Mutex trialsMutex;
 
 		CommunicationManager();
 		virtual ~CommunicationManager();

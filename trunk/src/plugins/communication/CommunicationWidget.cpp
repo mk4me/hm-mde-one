@@ -5,7 +5,7 @@
 
 typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
 
-CommunicationWidget::CommunicationWidget(CommunicationService* service, OpenThreads::Mutex& trialsMutex) : QWidget(), communicationService(service), trialsMutex(trialsMutex)
+CommunicationWidget::CommunicationWidget(CommunicationService* service) : QWidget(), communicationService(service), trialsMutex()
 {
 	updateButton = new QPushButton(tr("Get trials"));
 	downloadButton = new QPushButton(tr("Download"));
@@ -29,6 +29,7 @@ CommunicationWidget::CommunicationWidget(CommunicationService* service, OpenThre
 	mainLayout->addWidget(progressBar);
 	mainLayout->addWidget(infoLabel);
 	setLayout(mainLayout);
+	updateView = false;
 
 	connect(updateButton, SIGNAL(clicked()), this, SLOT(updateButtonClicked()));
 	connect(downloadButton, SIGNAL(clicked()), this, SLOT(download()));
@@ -42,34 +43,56 @@ CommunicationWidget::~CommunicationWidget()
 
 void CommunicationWidget::update(const communication::CommunicationManager* subject)
 {
-	//ScopedLock lock(trialsMutex);
+	ScopedLock lock(trialsMutex);
 
-	trials->clear();
-	trials->setSortingEnabled(true);
+	serverTrials = subject->getServerTrials();
+	localTrials = subject->getLocalTrials();
+
 	if(subject->isUpdated())
 	{
-		infoLabel->setText(QString().append("Last trial update:").append(QString::fromStdString(subject->getLastUpdateTime().toString())));
+		infoText = "Last trial update:";
+		infoText.append(subject->getLastUpdateTime().toString());
 	}
 	else
 	{
-		infoLabel->setText(QString("Cannot find date of last trial update"));
+		infoText = "Cannot find date of last trial update";
 	}
+	updateView = true;
+}
+
+void CommunicationWidget::refresh()
+{
+	ScopedLock lock(trialsMutex);
+	if(updateView)
+	{
+		refreshUI();
+		updateView = false;
+	}
+}
+
+void CommunicationWidget::refreshUI()
+{
+	trials->clear();
+	trials->setSortingEnabled(true);
+
+	infoLabel->setText(QString::fromStdString(infoText));
+
 	//lokalne proby pomiarowe
-	for(std::vector<LocalTrial>::const_iterator it = subject->getLocalTrials().begin(); it != subject->getLocalTrials().end(); ++it)
+	for(std::vector<LocalTrial>::const_iterator it = localTrials.begin(); it != localTrials.end(); ++it)
 	{
 		LocalTrialItem* item = new LocalTrialItem();
 		trials->addItem(item);
-		item->setPath(it->trialPath);
-		item->setText(QString::fromStdString(it->name));
+		item->setPath(it->getTrialPath());
+		item->setText(QString::fromStdString(it->getName()));
 	}
 	//serwerowe proby pomiarowe, sprawdzamy czy sie nie powtarzaja z lokalnymi
 	bool isLocal;
-	for(std::vector<communication::Trial>::const_iterator it = subject->getServerTrials().begin(); it != subject->getServerTrials().end(); ++it)
+	for(std::vector<communication::Trial>::const_iterator it = serverTrials.begin(); it != serverTrials.end(); ++it)
 	{
 		isLocal = false;
-		for(std::vector<LocalTrial>::const_iterator it2 = subject->getLocalTrials().begin(); it2 != subject->getLocalTrials().end(); ++it2)
+		for(std::vector<LocalTrial>::const_iterator it2 = localTrials.begin(); it2 != localTrials.end(); ++it2)
 		{
-			if(it->trialDescription.compare(it2->name) == 0)
+			if(it->trialDescription.compare(it2->getName()) == 0)
 			{
 				isLocal = true;
 				break;
@@ -99,6 +122,7 @@ void CommunicationWidget::setBusy(bool busy)
 	{
 		trials->setDisabled(false);
 		updateButton->setDisabled(false);
+		progressBar->reset();
 	}
 }
 
@@ -126,9 +150,11 @@ void CommunicationWidget::showErrorMessage(const std::string& error)
 
 void CommunicationWidget::itemDoubleClicked(QListWidgetItem* item)
 {
-	if(item->textColor() != QColor(0, 0, 255))
+	if(item->textColor() == QColor(0, 0, 255))
 	{
-		download();
+		//download();
+		LocalTrialItem* temp = reinterpret_cast<LocalTrialItem*>(trials->item(trials->currentRow()));
+		communicationService->loadTrial(temp->getPath());
 	}
 }
 

@@ -45,12 +45,13 @@ class CommunicationWidget : public QWidget, public utils::Observer<communication
 {
 	Q_OBJECT
 public:
-	CommunicationWidget(CommunicationService* service, OpenThreads::Mutex& trialsMutex);
+	CommunicationWidget(CommunicationService* service);
 	virtual ~CommunicationWidget();
 	void setBusy(bool busy);
 	bool getBusy();
 	void setProgress(int value);
 	void showErrorMessage(const std::string& error);
+	void refresh();
 
     virtual void update(const communication::CommunicationManager* subject);
 
@@ -62,7 +63,14 @@ public:
 
 private:
 	CommunicationService* communicationService;
-	OpenThreads::Mutex& trialsMutex;
+	OpenThreads::Mutex trialsMutex;
+
+	std::vector<communication::Trial> serverTrials;
+	std::vector<LocalTrial> localTrials;
+	std::string infoText;
+	bool updateView;
+
+	void refreshUI();
 
 	QPushButton* updateButton;
 	QPushButton* downloadButton;

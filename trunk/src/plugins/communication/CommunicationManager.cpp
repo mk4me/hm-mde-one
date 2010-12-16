@@ -12,8 +12,6 @@ using namespace communication;
 typedef std::vector<Trial> ServerTrials;
 typedef std::vector<LocalTrial> LocalTrials;
 
-typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
-
 CommunicationManager* CommunicationManager::instance = NULL;
 
 CommunicationManager* CommunicationManager::getInstance()
@@ -28,7 +26,7 @@ void CommunicationManager::destoryInstance()
 {
 }
 
-CommunicationManager::CommunicationManager() : trialsMutex()
+CommunicationManager::CommunicationManager()
 {
 	this->transportManager = NULL;
 	this->queryManager = NULL;
@@ -38,10 +36,10 @@ CommunicationManager::CommunicationManager() : trialsMutex()
 
 CommunicationManager::~CommunicationManager()
 {
-	//if(isRunning())
-	//{
-	//	join();
-	//}
+	if(isRunning())
+	{
+		join();
+	}
 	if(instance) {
 		delete instance;
 	}
@@ -181,24 +179,24 @@ int CommunicationManager::getProgress() const
 void CommunicationManager::listSessionContents()
 {
 	state = UpdatingServerTrials;
-	run();
-	//start();
+	//run();
+	start();
 }
 
 void CommunicationManager::downloadTrial(unsigned int trialID)
 {
 	state = DownloadingTrial;
 	entityID = trialID;
-	run();
-	//start();
+	//run();
+	start();
 }
 
 void CommunicationManager::downloadFile(unsigned int fileID)
 {
 	state = DownloadingFile;
 	entityID = fileID;
-	run();
-	//start();
+	//run();
+	start();
 }
 
 void CommunicationManager::loadLocalTrials()
@@ -215,9 +213,13 @@ void CommunicationManager::loadLocalTrials()
 	notify();
 }
 
+void CommunicationManager::loadActualTrial(const std::string& path)
+{
+	dataManager->setActualTrial(path);
+}
+
 void CommunicationManager::run()
 {
-	//ScopedLock lock(trialsMutex);
 	switch(state)
 	{
 	case DownloadingFile:

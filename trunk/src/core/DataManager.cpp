@@ -43,61 +43,67 @@ void DataManager::loadTrials()
 		{
 			//mamy triala, zapisujemy jego nazwe i sciezke do katalogu
 			LocalTrial t;
-			t.trialPath = it->c_str();
-			t.name = matches[2];
+			//t.trialPath = it->c_str();
+			//t.name = matches[2];
+			t.setTrialPath(it->c_str());
+			t.setName(matches[2]);
 			//przeszukujemy katalog w poszukiwaniu plikow:
 			//proba pomiarowa moze miec maksymalnie 1 plik c3d, amc, asf i 4 avi
-			std::vector<std::string> filesPath = Filesystem::listFiles(t.trialPath, false, "*.c3d");
+			std::vector<std::string> filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.c3d");
 			if(filesPath.size() > 0)
 			{
-				t.c3dPath = filesPath[0];
+				t.setC3dPath(filesPath[0]);
+				//t.c3dPath = filesPath[0];
 			}
-			filesPath = Filesystem::listFiles(t.trialPath, false, "*.amc");
+			filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.amc");
 			if(filesPath.size() > 0)
 			{
-				t.animationPath = filesPath[0];
+				t.setAnimationsPaths(filesPath);
+				//t.animationPath = filesPath[0];
 			}
-			filesPath = Filesystem::listFiles(t.trialPath, false, "*.asf");
+			filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.asf");
 			if(filesPath.size() > 0)
 			{
-				t.skeletonPath = filesPath[0];
+				t.setSkeletonPath(filesPath[0]);
+				//t.skeletonPath = filesPath[0];
 			}
-			filesPath = Filesystem::listFiles(t.trialPath, false, "*.avi");
-			if(filesPath.size() > 3)
+			filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.avi");
+			if(filesPath.size() == 4)
 			{
-				t.videosPaths.clear();
-				t.videosPaths.push_back(filesPath[0]);
-				t.videosPaths.push_back(filesPath[1]);
-				t.videosPaths.push_back(filesPath[2]);
-				t.videosPaths.push_back(filesPath[3]);
+				t.setVideosPaths(filesPath);
+				//t.videosPaths.clear();
+				//t.videosPaths.push_back(filesPath[0]);
+				//t.videosPaths.push_back(filesPath[1]);
+				//t.videosPaths.push_back(filesPath[2]);
+				//t.videosPaths.push_back(filesPath[3]);
 			}
 			trials.push_back(t);
 		}
 	}
 
-	videosPaths.clear();
-	c3dsPaths.clear();
-	animationPaths.clear();
-	skeletonPaths.clear();
-	//nie przeszukujemy podkatalogow, sprawdzamy konkretny katalog aby wyluskac sciezki dla jednej proby pomiarowej
-	//szukaj plikow video
-	videosPaths = Filesystem::listFiles(this->trialsPath, false, "*.avi");
-	//szukaj plikow c3d
-	c3dsPaths = Filesystem::listFiles(this->trialsPath, false, "*.c3d");
-	//szukaj plikow animacji
-	animationPaths = Filesystem::listFiles(this->trialsPath, false, "*.amc");
-	//szukaj plikow animacji szkieletowej
-	skeletonPaths = Filesystem::listFiles(this->trialsPath, false, "*.asf");
+	//videosPaths.clear();
+	//c3dsPaths.clear();
+	//animationPaths.clear();
+	//skeletonPaths.clear();
+	////nie przeszukujemy podkatalogow, sprawdzamy konkretny katalog aby wyluskac sciezki dla jednej proby pomiarowej
+	////szukaj plikow video
+	//videosPaths = Filesystem::listFiles(this->trialsPath, false, "*.avi");
+	////szukaj plikow c3d
+	//c3dsPaths = Filesystem::listFiles(this->trialsPath, false, "*.c3d");
+	////szukaj plikow animacji
+	//animationPaths = Filesystem::listFiles(this->trialsPath, false, "*.amc");
+	////szukaj plikow animacji szkieletowej
+	//skeletonPaths = Filesystem::listFiles(this->trialsPath, false, "*.asf");
 }
 
 void DataManager::clear() {
 	this->shadersPaths.clear();
 	this->meshesPaths.clear();
 	this->applicationSkinsPaths.clear();
-	this->videosPaths.clear();
-	this->c3dsPaths.clear();
-	this->animationPaths.clear();
-	this->skeletonPaths.clear();
+	//this->videosPaths.clear();
+	//this->c3dsPaths.clear();
+	//this->animationPaths.clear();
+	//this->skeletonPaths.clear();
 	this->trials.clear();
 }
 
@@ -140,46 +146,46 @@ int DataManager::getApplicationSkinsFilePathCount()
 {
 	return applicationSkinsPaths.size();
 }
-
-const std::string& DataManager::getVideoFilePath(int i)
-{
-	return videosPaths[i];
-}
-
-int DataManager::getVideoFilePathCount()
-{
-	return videosPaths.size();
-}
-
-const std::string& DataManager::getC3dFilePath(int i)
-{
-	return c3dsPaths[i];
-}
-
-int DataManager::getC3dFilePathCount()
-{
-	return c3dsPaths.size();
-}
-
-const std::string& DataManager::getAnimationFilePath(int i)
-{
-	return animationPaths[i];
-}
-
-int DataManager::getAnimationFilePathCount()
-{
-	return animationPaths.size();
-}
-
-const std::string& DataManager::getSkeletonFilePath(int i)
-{
-	return skeletonPaths[i];
-}
-
-int DataManager::getSkeletonFilePathCount()
-{
-	return skeletonPaths.size();
-}
+//
+//const std::string& DataManager::getVideoFilePath(int i)
+//{
+//	return videosPaths[i];
+//}
+//
+//int DataManager::getVideoFilePathCount()
+//{
+//	return videosPaths.size();
+//}
+//
+//const std::string& DataManager::getC3dFilePath(int i)
+//{
+//	return c3dsPaths[i];
+//}
+//
+//int DataManager::getC3dFilePathCount()
+//{
+//	return c3dsPaths.size();
+//}
+//
+//const std::string& DataManager::getAnimationFilePath(int i)
+//{
+//	return animationPaths[i];
+//}
+//
+//int DataManager::getAnimationFilePathCount()
+//{
+//	return animationPaths.size();
+//}
+//
+//const std::string& DataManager::getSkeletonFilePath(int i)
+//{
+//	return skeletonPaths[i];
+//}
+//
+//int DataManager::getSkeletonFilePathCount()
+//{
+//	return skeletonPaths.size();
+//}
 
 const std::string& DataManager::getResourcesPath() const
 {
@@ -200,11 +206,11 @@ void DataManager::setTrialsPath(const std::string& trials)
 {
 	trialsPath = trials;
 }
-
-std::vector<std::string>* DataManager::getAnimationPathList()
-{
-    return &animationPaths;
-}
+//
+//std::vector<std::string>* DataManager::getAnimationPathList()
+//{
+//    return &animationPaths;
+//}
 
 const LocalTrial& DataManager::getActualTrial() const
 {
@@ -215,4 +221,15 @@ void DataManager::setActualTrial(int i)
 {
 	actualTrialIndex = i;
 
+}
+void DataManager::setActualTrial(const std::string& path)
+{
+	for(size_t i = 0; i < trials.size(); i++)
+	{
+		if(trials.at(i).getTrialPath().compare(path))
+		{
+			actualTrialIndex = i;
+			return;
+		}
+	}
 }

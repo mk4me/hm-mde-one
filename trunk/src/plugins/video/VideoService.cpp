@@ -53,13 +53,16 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 	VideoWidget* widget = reinterpret_cast<VideoWidget*>(this->widget);
 
 	std::vector<std::string> files;
-	//TODO: ladowanie sciezek do plikow video [Marek Daniluk 23.11.10]
-	for(int i = 0; i < dataManager->getVideoFilePathCount(); i++)
+	if(dataManager->getActualTrial().isVideos())
 	{
-        std::string path =  dataManager->getVideoFilePath(i);
-        std::replace(path.begin(), path.end(), '/', '\\');
-        files.push_back(path);
+		files = dataManager->getActualTrial().getVideosPaths();
 	}
+	//for(int i = 0; i < dataManager->getVideoFilePathCount(); i++)
+	//{
+ //       std::string path =  dataManager->getVideoFilePath(i);
+ //       std::replace(path.begin(), path.end(), '/', '\\');
+ //       files.push_back(path);
+	//}
 
 //     files.push_back("trial1a.avi");
 //     files.push_back("trial1b.avi");

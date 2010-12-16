@@ -17,7 +17,7 @@ CommunicationService::CommunicationService() : name("Communication")
 	this->model->setTransportManager(this->transport);
 	this->model->setQueryManager(this->query);
 
-	this->widget = new CommunicationWidget(this, model->getMutex());
+	this->widget = new CommunicationWidget(this);
 	this->model->attach(this->widget);
 	try
 	{
@@ -27,11 +27,11 @@ CommunicationService::CommunicationService() : name("Communication")
 	{
 		LOG_ERROR << e.what() << std::endl;
 	}
-	this->serviceManager = NULL;
 }
 
 CommunicationService::~CommunicationService()
 {
+	save();
 	delete this->transport;
 	this->transport = NULL;
 	delete this->query;
@@ -118,12 +118,18 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
 		}
 		widget->setBusy(false);
 	}
+	widget->refresh();
 	return AsyncResult_Complete;
 }
 
 AsyncResult CommunicationService::init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
 {
+	model->setServiceManager(serviceManager);
 	model->setDataManager(dataManager);
-	this->serviceManager = serviceManager;
 	return AsyncResult_Complete;
+}
+
+void CommunicationService::loadTrial(const std::string& path)
+{
+	model->loadActualTrial(path);
 }

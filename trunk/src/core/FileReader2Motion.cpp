@@ -67,7 +67,8 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
     ASFAMCParser* object = new ASFAMCParser();
 
 	//skeletons
-	if(dataManager->getSkeletonFilePathCount() > 0 && dataManager->getAnimationFilePathCount() > 0)
+	if(dataManager->getActualTrial().isSkeleton() && dataManager->getActualTrial().isAnimations())
+	//if(dataManager->getSkeletonFilePathCount() > 0 && dataManager->getAnimationFilePathCount() > 0)
 	{
 		std::string meshpath = "";
 		if(dataManager->getMeshFilePathCount() > 0)
@@ -75,27 +76,35 @@ void FileReader2Motion::ReadFromTBSFile(DataManager *dataManager)
 			meshpath = dataManager->getMeshFilePath(0);
 		}
 		Factor* factory = new Factor();
-		Model *model = dynamic_cast<Model* >(factory->GetModel(meshpath, dataManager->getSkeletonFilePath(0), std::vector<std::string>()));
+		Model *model = dynamic_cast<Model* >(factory->GetModel(meshpath, dataManager->getActualTrial().getSkeletonPath()/*dataManager->getSkeletonFilePath(0)*/, std::vector<std::string>()));
 
-		if(object->ReadASFFile(dataManager->getSkeletonFilePath(0)))
+		if(object->ReadASFFile(dataManager->getActualTrial().getSkeletonPath()/*dataManager->getSkeletonFilePath(0)*/))
             ParserAcclaimFile2EDR(model, object);
 
-		for(int i = 0; i < dataManager->getAnimationFilePathCount(); i++)
+		if(dataManager->getActualTrial().isAnimations())
+		{
+			for(int i = 0; i < dataManager->getActualTrial().getAnimationsPaths().size(); i++)
+		//for(int i = 0; i < dataManager->getAnimationFilePathCount(); i++)
         {
-			if(object->ReadAMCFile(dataManager->getAnimationFilePath(i)))
-                LoadAnimationFromAcclaim(dataManager->getAnimationFilePath(i), object, model);
+			if(object->ReadAMCFile(dataManager->getActualTrial().getAnimationsPaths().at(i)))
+				LoadAnimationFromAcclaim(dataManager->getActualTrial().getAnimationsPaths().at(i), object, model);
+			//if(object->ReadAMCFile(dataManager->getAnimationFilePath(i)))
+                //LoadAnimationFromAcclaim(dataManager->getAnimationFilePath(i), object, model);
         }
+		}
     }
 
 	//c3ds
-	for (int i = 0; i < dataManager->getC3dFilePathCount(); i++)
+	//na probe pomiarowa przypada jeden plik c3d
+	//for (int i = 0; i < dataManager->getC3dFilePathCount(); i++)
+	if(dataManager->getActualTrial().isC3d())
     {
-		C3D_Data *c3d = ReadC3DFile(dataManager->getC3dFilePath(i));
+		C3D_Data *c3d = ReadC3DFile(dataManager->getActualTrial().getC3dPath()/*dataManager->getC3dFilePath(i)*/);
 
         if(c3d)
         {
             C3DModel* c3dModel = new C3DModel();
-            std::string name = dataManager->getC3dFilePath(i);
+            std::string name = dataManager->getActualTrial().getC3dPath();//dataManager->getC3dFilePath(i);
 
             c3dModel->SetName(name.substr(name.find_last_of("/")+1, name.length()));
             ParseC3DFile2EDR(c3d, c3dModel);

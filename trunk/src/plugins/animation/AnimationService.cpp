@@ -171,20 +171,29 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 	std::string meshpath = "";
 	std::string skelpath = "";
 	std::string c3dpath = "";
+
 	if(dataManager->getMeshFilePathCount() > 0)
 	{
 		meshpath = dataManager->getMeshFilePath(0);
 	}
-	if(dataManager->getSkeletonFilePathCount() > 0)
+	if(dataManager->getActualTrial().isSkeleton())
 	{
-		skelpath = dataManager->getSkeletonFilePath(0);
+		skelpath = dataManager->getActualTrial().getSkeletonPath();
 	}
-	if(dataManager->getC3dFilePathCount() > 0)
+	if(dataManager->getActualTrial().isC3d())
 	{
-		c3dpath = dataManager->getC3dFilePath(0);
+		c3dpath = dataManager->getActualTrial().getC3dPath();
 	}
+	//if(dataManager->getSkeletonFilePathCount() > 0)
+	//{
+	//	skelpath = dataManager->getSkeletonFilePath(0);
+	//}
+	//if(dataManager->getC3dFilePathCount() > 0)
+	//{
+	//	c3dpath = dataManager->getC3dFilePath(0);
+	//}
 
-    std::vector<std::string> animationPathList = *dataManager->getAnimationPathList();
+    std::vector<std::string> animationPathList = dataManager->getActualTrial().getAnimationsPaths();//*dataManager->getAnimationPathList();
 
     // uzyskanie obiekty klasy model i C3DModel poprzez fabryke modeli
 	m_pModel = m_pFactory->GetModel(meshpath, skelpath, animationPathList);
@@ -194,8 +203,12 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
     LoadAnimation(m_pModel);
 
     // za³adownie wszystkich modeli typu 3cd - poniewaz modele 3cd same w sobie sa odrebnym modelem posiadajacym w³asna animacje
-	for (int i = 0; i < dataManager->getC3dFilePathCount(); i++)
-        LoadAnimation(m_pFactory->GetC3DModel(dataManager->getC3dFilePath(i)));
+	//for (int i = 0; i < dataManager->getC3dFilePathCount(); i++)
+ //       LoadAnimation(m_pFactory->GetC3DModel(dataManager->getC3dFilePath(i)));
+	if(dataManager->getActualTrial().isC3d())
+	{
+		LoadAnimation(m_pFactory->GetC3DModel(dataManager->getActualTrial().getC3dPath()));
+	}
 
     widget->SetScene(m_pScene, serviceManager);
 

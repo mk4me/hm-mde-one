@@ -554,9 +554,8 @@ void ToolboxMain::openFile( const std::string& path )
 
     m_pRenderService->GetFactory()->Clear();
 
-	//zaladowanie sciezek prob pomiarowych
-	dataManager->setTrialsPath(path);
-	dataManager->loadTrials();
+	//wskazanie aktualnej proby pomiarowej
+	dataManager->setActualTrial(path);
 
     m_pServiceManager->loadDataPass(dataManager);
 

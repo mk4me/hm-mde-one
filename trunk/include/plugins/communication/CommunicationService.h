@@ -2,7 +2,6 @@
 #define COMMUNICATION_SERVICE_H
 
 #include <core/IService.h>
-#include <core/IDataManager.h>
 #include <plugins/communication/ICommunication.h>
 #include <plugins/communication/CommunicationManager.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
@@ -20,7 +19,6 @@ private:
 	communication::TransportWSDL_FTPS* transport;
 	communication::QueryWSDL* query;
 	std::string name;
-	IServiceManager* serviceManager;
 
 public:
 	CommunicationService();
@@ -49,6 +47,7 @@ public:
 	virtual void updateSessionContents();
 	virtual void downloadTrial(unsigned int trialID);
 	virtual void downloadFile(unsigned int fileID);
+	virtual void loadTrial(const std::string& path);
 
 	void load();
 	void save();
