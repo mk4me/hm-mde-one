@@ -205,3 +205,14 @@ std::vector<std::string>* DataManager::getAnimationPathList()
 {
     return &animationPaths;
 }
+
+const LocalTrial& DataManager::getActualTrial() const
+{
+	return trials[actualTrialIndex];
+}
+
+void DataManager::setActualTrial(int i)
+{
+	actualTrialIndex = i;
+
+}
