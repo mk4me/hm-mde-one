@@ -340,8 +340,6 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
     for(int i = 0; i < boneCount; i++)
     {
         Bone* bone = new Bone();
-		bone->initialPosition = osg::Vec3d(0.f,0.f,0.f);
-		bone->isInitialPosition = false;
         bone->parent = NULL;
 
         bone->idx = joint->getID();
@@ -461,7 +459,7 @@ void FileReader2Motion::calculateChildMatrix(Bone *bone)
     bone->positiony = trans.y();
     bone->positionz = trans.z();
 
-    SetBoneLegnhtInSpace(bone, 4.0);
+    SetBoneLegnhtInSpace(bone, 3.0);
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
@@ -588,14 +586,14 @@ bool FileReader2Motion::LoadAnimationFromFmodel(SFModel* fmodel, Model* model)
             return false;
     }
 
-    model->SetAnimation(animations);
+    model->SetAnimationList(animations);
     return true;
 }
 
 //--------------------------------------------------------------------------------------------------
 bool FileReader2Motion::LoadAnimationFromAcclaim(std::string animationName, ASFAMCParser* acclaimObject, Model* model )
 {
-    SkeletonAnimationList *skeletonAnimationList = model->GetAnimation();
+    SkeletonAnimationList *skeletonAnimationList = model->GetAnimationList();
     SkeletonAnimation *skeletonAnimation = new SkeletonAnimation();
     skeletonAnimation->m_animationName = animationName.substr(animationName.find_last_of("/")+1, animationName.length());
 
@@ -1120,7 +1118,7 @@ bool FileReader2Motion::LoadAnimationFromFAnnimation(std::string address, Model*
     }
 
 
-    SkeletonAnimationList *skeletonAnimationList = model->GetAnimation();
+    SkeletonAnimationList *skeletonAnimationList = model->GetAnimationList();
     SkeletonAnimation *skeletonAnimation = new SkeletonAnimation();
 
     Skeleton* skeleton = model->GetSkeleton();

@@ -82,7 +82,7 @@ AnimationService::AnimationService(void):
 m_pAnimation(NULL)
 , m_pC3DAnimation(NULL)
 , m_pModel(NULL)
-, m_pC3MModel(NULL)
+, m_pC3DModel(NULL)
 , m_selectedAnimatonName("")
 , targetTime(0.0)
 , stateMutex()
@@ -113,6 +113,54 @@ AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* s
 }
 
 //--------------------------------------------------------------------------------------------------
+// clears caller
+void AnimationService::ClearCaller()
+{
+    for (std::vector<ISimpleOneArgFunctor<double>*>::iterator i = m_functionsToCall.begin(); i != m_functionsToCall.end(); ++i)
+        delete (*i);
+    for (std::vector<ISimpleNoArgFunctor*>::iterator i = m_functionsToCallWhenAnimationStopped.begin();
+        i != m_functionsToCallWhenAnimationStopped.end(); ++i)
+        delete (*i);
+
+    m_functionsToCallWhenAnimationStopped.clear();
+    m_functionsToCall.clear();
+    m_functionsToRemove.clear();
+}
+
+//--------------------------------------------------------------------------------------------------
+void AnimationService::Clear()
+{
+    SCALE = 1;
+    m_numOfBones = 0;
+    m_selectedAnimatonName= "";
+
+    // widget = NULL;
+    m_pModel = NULL;
+    m_pJoints = NULL;
+    m_skeleton = NULL;
+    m_pC3DModel = NULL;
+    m_pAnimation = NULL;
+    m_pActualBones = NULL;
+    m_pInitialBones = NULL;
+    m_skeletonGeode = NULL;
+    //  m_pServiceManager = NULL;
+
+    m_BoneUniform = NULL;
+    m_BoneSpaceUniform = NULL;
+
+    m_animations.clear();
+    m_c3danimations.clear();
+    m_functionsToCall.clear();
+    m_functionsToRemove.clear();
+    m_animationDisplayList.clear();
+    m_functionsToCallWhenAnimationStopped.clear();
+
+    m_DisplayType = AnimasionDisplay::ALL;
+
+    ClearCaller();
+}
+
+//--------------------------------------------------------------------------------------------------
 AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
     Clear();
@@ -138,11 +186,14 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 
     std::vector<std::string> animationPathList = *dataManager->getAnimationPathList();
 
-	m_pModel = m_pFactory->GetModel(meshpath, skelpath, animationPathList);// *dataManager->GetAnimationList());
-	m_pC3MModel = m_pFactory->GetC3DModel(c3dpath);
+    // uzyskanie obiekty klasy model i C3DModel poprzez fabryke modeli
+	m_pModel = m_pFactory->GetModel(meshpath, skelpath, animationPathList);
+	m_pC3DModel = m_pFactory->GetC3DModel(c3dpath);
 
+    // ladowanie modelu animacji animacji - poprzez dane zapisane w obiekcie kalsu Model
     LoadAnimation(m_pModel);
 
+    // za³adownie wszystkich modeli typu 3cd - poniewaz modele 3cd same w sobie sa odrebnym modelem posiadajacym w³asna animacje
 	for (int i = 0; i < dataManager->getC3dFilePathCount(); i++)
         LoadAnimation(m_pFactory->GetC3DModel(dataManager->getC3dFilePath(i)));
 
@@ -155,6 +206,7 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
         OSG_WARN<<"ITimeline not found."<<std::endl;
     }
 
+    // szukanie sciezki odpowiedniego shadera - przy ewentualnym wowo³anie Hardware  animation
     for(int i = 0; i < dataManager->getShaderFilePathCount(); i++)
     {
         std::string shaderName = dataManager->getShaderFilePath(i);
@@ -200,86 +252,6 @@ Animation* AnimationService::GetAnimation()
 void AnimationService::RegisterAnimation(Animation* object, void (Animation::*fun)(double))
 {
     RegisterFunction(object, fun);
-	//m_pAnimation = new CSimpleOneArgFunctor<Animation, double>(object, fun);
-}
-
-//--------------------------------------------------------------------------------------------------
-// clears caller - remove function from caller
-bool AnimationService::UnregisterAnimation()
-{
-	// remove called functions etc if we have finished playing anim
-	//if (getAnimation()->GetState() == EAnimationState::STOPPED)
-	//	clearAll();
-
-	// remove animation
-	if (m_pAnimation)
-		delete m_pAnimation;
-	m_pAnimation = NULL;
-
-	return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-bool AnimationService::UnregisterC3DAnimation()
-{
-    // remove called functions etc if we have finished playing anim
-    //if (getAnimation()->GetState() == EAnimationState::STOPPED)
-    //	clearAll();
-
-    // remove animation
-    if (m_pC3DAnimation)
-        delete m_pC3DAnimation;
-    m_pC3DAnimation = NULL;
-
-    return true;
-}
-
-//--------------------------------------------------------------------------------------------------
-// clears caller
-void AnimationService::ClearCaller()
-{
-	for (std::vector<ISimpleOneArgFunctor<double>*>::iterator i = m_functionsToCall.begin(); i != m_functionsToCall.end(); ++i)
-		delete (*i);
-	for (std::vector<ISimpleNoArgFunctor*>::iterator i = m_functionsToCallWhenAnimationStopped.begin();
-		i != m_functionsToCallWhenAnimationStopped.end(); ++i)
-		delete (*i);
-	
-	m_functionsToCallWhenAnimationStopped.clear();
-	m_functionsToCall.clear();
-	m_functionsToRemove.clear();
-}
-
-//--------------------------------------------------------------------------------------------------
-void AnimationService::Clear()
-{
-	SCALE = 1;
-    m_numOfBones = 0;
-    m_selectedAnimatonName= "";
-
-   // widget = NULL;
-    m_pModel = NULL;
-    m_pJoints = NULL;
-    m_skeleton = NULL;
-    m_pC3MModel = NULL;
-    m_pAnimation = NULL;
-    m_pActualBones = NULL;
-    m_pInitialBones = NULL;
-    m_skeletonGeode = NULL;
-  //  m_pServiceManager = NULL;
-
-    m_BoneUniform = NULL;
-    m_BoneSpaceUniform = NULL;
-
-    m_animations.clear();
-    m_c3danimations.clear();
-    m_functionsToCall.clear();
-    m_functionsToRemove.clear();
-    m_animationDisplayList.clear();
-    m_functionsToCallWhenAnimationStopped.clear();
-
-    m_DisplayType = AnimasionDisplay::ALL;
-
-	ClearCaller();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -316,9 +288,9 @@ AsyncResult AnimationService::update(double time, double timeDelta)
             m_pModel->DrawModelBone();
     }
 
-    if(m_pC3MModel)
+    if(m_pC3DModel)
         if(m_DisplayType & AnimasionDisplay::MARKER)
-            m_pC3MModel->DrawMarkers();
+            m_pC3DModel->DrawMarkers();
 
 
     // call functions that are to call every animation frame
@@ -366,21 +338,23 @@ void AnimationService::LoadAnimation( IModel* model )
     m_pModel = model;
     unsigned int numOfAnims = 0;
 
-    for(int i = 0; i < model->GetAnimation()->m_SkeletonAnimationList.size(); i++)
+    // utworzenie tylu obiektów Animation ile animacji posaida Model / usupe³nienie mapy animacji, jak i listy wyswietlajacej pasiadane animacje
+    for(int i = 0; i < model->GetAnimationList()->m_SkeletonAnimationList.size(); i++)
     {
-        Animation* animation = new Animation(model->GetSkeleton(), model->GetAnimation()->m_SkeletonAnimationList[i], this);
-        m_animations.insert(make_pair(model->GetAnimation()->m_SkeletonAnimationList[i]->m_animationName, animation));	
-        m_animationDisplayList.push_back(model->GetAnimation()->m_SkeletonAnimationList[i]->m_animationName);
+        Animation* animation = new Animation(model->GetSkeleton(), model->GetAnimationList()->m_SkeletonAnimationList[i], this);
+        m_animations.insert(make_pair(model->GetAnimationList()->m_SkeletonAnimationList[i]->m_animationName, animation));	
+        m_animationDisplayList.push_back(model->GetAnimationList()->m_SkeletonAnimationList[i]->m_animationName);
     }
 }
 
 //--------------------------------------------------------------------------------------------------
+// ladownie animcji z obiektów C3DModel
 void AnimationService::LoadAnimation( IC3DModel* c3dModel )
 {
     if(c3dModel->GetMarkerList().size() == 0)
         return;
 
-    m_pC3MModel = c3dModel;
+    m_pC3DModel = c3dModel;
 
     // extract number of animations				
     unsigned int numOfAnims = 0;
@@ -398,7 +372,7 @@ void AnimationService::LoadAnimation( IC3DModel* c3dModel )
     map<std::string, Animation*>::iterator i = m_animations.find(animationName);
     if (i == m_animations.end())
     {
-        m_animationDisplayList.push_back(animationName); 
+        m_animationDisplayList.push_back(c3dModel->GetName()); 
     }
 }
 
@@ -408,20 +382,23 @@ void AnimationService::PlayAnimation(std::string animationName)
     timeline->setPlaying(false);
     timeline->setTime(0.0f);
 
+    // znalezienie animacji w mapie
     map<std::string, Animation*>::iterator i = m_animations.find(animationName);
     
+    // zatrzymanie aktualnej animacji
     if ( currentAnimation ) {
         currentAnimation->Stop();
         ClearCaller();
     }
     
+    // jesli istnieje nowwa aniamacja - zgodna wybrana nazwa - pusc ja
+    // jelsi nie wyczysc funktory - aktualne animajce.
     if (i != m_animations.end()){
         currentAnimation = i->second;
         i->second->Play();
     } 
     else{
         ClearCaller();
-        UnregisterAnimation();
         currentAnimation = NULL;
         setLength(0.0f);
     }
@@ -438,6 +415,8 @@ void AnimationService::PlayAnimation(std::string animationName)
 }
 
 //--------------------------------------------------------------------------------------------------
+//Metoda na podstawie wybory z Diplaylisty - odpowiedniej animacji wybiera animacje dla markerów - obiekt C3DModel
+// ktory powinnien posiada cidentyczna nazwe jak anmacje acm - z modelu
 void AnimationService::PlayC3DAnimation(std::string name)
 {
     std::string c3dName;
@@ -454,7 +433,8 @@ void AnimationService::PlayC3DAnimation(std::string name)
     {
         if (i->first->GetName() == c3dName) 
         {
-            m_pC3MModel = i->first;
+            m_pC3DModel = i->first;
+            // ustawienie nowego modelu C3D do renderowania
             m_pRenderService->SetC3DMarkerToRender(i->first);
             c3dcurrentAnimation = i->second;
             i->second->Play();
@@ -477,7 +457,8 @@ void AnimationService::GPUUpdateMesh()
     Skeleton* skeleton = m_pModel->GetSkeleton();
     int boneCount = skeleton->m_pBoneList.size();
 
-    // attach some Uniforms to the root, to be inherited by Programs.
+    // inicjalizacja daneych Uniform - tablicy macierzy kosci jak i bonspec tych kosci - na potrzebe wywo³ania i shadera 
+    // Hardware animation
     if(!m_BoneUniform)
         m_BoneUniform = new osg::Uniform(osg::Uniform::FLOAT_MAT4, "boneMatrices", boneCount);
 
@@ -495,6 +476,9 @@ void AnimationService::GPUUpdateMesh()
 
     std::vector<IMesh* > meshList = m_pModel->GetMeshList();
 
+    // shader jest wykonywnay dla kazde VBO obiektu Geometry - co pozwala na wieksza elstycznosc.
+    // np nie trzeba sie martwic o wierzcho³ki szkieletu. które moga sie reenderowac inaczej.
+    // bezproblemowe powiazanie danych z shederaz atrybutami wrzycanymi do VBO z aplikacji
     for(int i = 0; i < meshList.size(); ++i)
     {
         meshList[i]->HardwareAnimation(m_BoneUniform, m_BoneSpaceUniform, m_HardwareAnimationShaderPath);
@@ -687,6 +671,7 @@ void AnimationService::SetShowMarker( bool showMarker )
     }
 }
 
+//--------------------------------------------------------------------------------------------------
 std::vector<std::string>* AnimationService::GetAnimationDisplayList()
 {
     return &m_animationDisplayList;

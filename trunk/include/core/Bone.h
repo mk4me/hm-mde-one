@@ -1,3 +1,13 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: Animation.h
+	author:	  Rafal Zowal
+	
+	purpose: Model przechowuj¹cy dane o koœci
+
+*********************************************************************/
+
 #ifndef BONE_H
 #define BONE_H
 
@@ -60,23 +70,19 @@ struct Bone
     // this is position what we get "po" loading matrix;
     float positionx,positiony,positionz;
 
-	osg::Vec3d initialPosition;
-	bool isInitialPosition;
+    osg::Vec3f boneSpace_translation; // dane wczytywane z *.fmesha. - jelsi aplikacja chce wczytac modele bezposrednio z naszego parsera
+    osg::Quat boneSpace_quaternion; // dane wczytywane z *.fmesha. - jelsi aplikacja chce wczytac modele bezposrednio z naszego parsera
 
-    osg::Vec3f boneSpace_translation;
-    osg::Quat boneSpace_quaternion;
-
-    osg::Vec3f trans;
-    osg::Quat rot;
+    osg::Vec3f trans;  //zmienna pomocnicze - przy ³adowniu daneych z fmesha - kosci
+    osg::Quat rot; //zmienna pomocnicze - przy ³adowniu daneych z fmesha - kosci
 
     // Bonespace
-    osg::Matrixd bonespace;
-    osg::Matrixd apsolute;
+    osg::Matrixd bonespace;  // bonespace
 
     std::vector<int> childBoneId;
 	bool isCleared;
 
-    BoneLenght* m_pboneLengthInSpace;
+    BoneLenght* m_pboneLengthInSpace;  // zmienna uzywana do okreœlenia d³ugosci boxa(który jest koœci¹) przy malowanie kosci
 };
 
 #endif

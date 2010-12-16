@@ -1,3 +1,20 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: AnimationServicec.h
+	author:	  Rafal Zowal
+	
+	purpose: Us³uga  Zarz¹dzanie animacjami modelu:
+        - rejestrowanie animacji
+        - wyrejestrowywanie animacji
+        - tworzenie obiektów animacji
+        - wywo³ywanie ich
+        - integracja z widgetem - podpietym pod animacje
+        - pomst miedzy obiektami animacji a timelinem
+        - skinning CPU jak i GPU
+
+*********************************************************************/
+
 #ifndef ANIMATION_SERVICE_H
 #define ANIMATION_SERVICE_H
 
@@ -79,20 +96,30 @@ public:
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
+    //************************************
+    // Method:    RegisterAnimation
+    // FullName:  AnimationService::RegisterAnimation
+    // Access:    public 
+    // Returns:   void
+    // Qualifier:
+    // Parameter: Animation * object  - obiekt prezchowujacy dane do animacji
+    // Parameter: void (Animation::*fun)(double)) - wskaŸnik na metode wywo³ywana prezz functor - metoda znajdujaca sie w obiekcie wskazywanym prezz paramtr object
+    //************************************
     virtual void RegisterAnimation(Animation* object, void (Animation::*fun)(double)); // add function to caller
     virtual void SetSelectedAnimationName(const std::string& name); // set act selected animation name 
     virtual void PlayAnimation(std::string animationName);
-    //void SetScene(osg::Node* scene); // set animated scene
+    //! \£adownie animcji z obiektów Model
     virtual void LoadAnimation(IModel* model);
+    //! \£adownie animcji z obiektów C3DModel
     virtual void LoadAnimation(IC3DModel* c3dModel);
     virtual void ClearCaller(); // clear caller
     virtual void NotifyStop(); // notify stop
 
-    virtual bool UnregisterAnimation(); // remove function from caller
-
-    virtual bool UnregisterC3DAnimation(); // remove function from caller
 
     // adds function to caller - called on every animation update
+
+    // Parameter: Animation * object  - obiekt prezchowujacy dane do animacji
+    // Parameter: void (T::*fun)(double)) - wskaŸnik na metode wywo³ywana prezz functor - metoda znajdujaca sie w obiekcie wskazywanym prezz paramtr object
     template<class T> void RegisterFunction(T* object, void (T::*fun)(double)); 
     // remove function from caller
     template<class T> bool UnregisterFunction(T* object, void (T::*fun)(double)); 
@@ -176,7 +203,7 @@ private:
     osg::ref_ptr<osg::Geode> m_skeletonGeode;
 
     IModel* m_pModel;
-    IC3DModel* m_pC3MModel;
+    IC3DModel* m_pC3DModel;
 
     STransform* m_pInitialBones;
     STransform* m_pActualBones;

@@ -1,3 +1,12 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: !Model.h
+	author:	  Rafal Zowal
+	
+	purpose: Interface Siatki (Mesh.h) Przechowywuj¹cej szereg danych zwiazanych z saitk¹
+*********************************************************************/
+
 #ifndef I_MESH_H
 #define I_MESH_H
 
@@ -19,23 +28,40 @@ public:
     enum eTriFlags{ TF_SELECTED = 1, TF_BACKFACING = (1<<1) };	
 
     virtual ~IMesh() {};
+    //! \Czyszczenie zasobów modelu
     virtual void Clear() = 0;
 
+        //! \update siatki za pomoc¹ vertex shadera
+    //************************************
+    // Method:    HardwareAnimation
+    // FullName:  Mesh::HardwareAnimation
+    // Access:    public 
+    // Returns:   void
+    // Qualifier:
+    // Parameter: osg::Uniform * uniform - dane: tablica szkieletu : macierze
+    // Parameter: osg::Uniform * bonespaceUniform - dane : tablica bonspace szkieletu
+    // Parameter: std::string shaderPath - œcie¿ka do shadera
+    //************************************
     virtual void HardwareAnimation( osg::Uniform* uniform, osg::Uniform* bonespaceUniform, std::string shaderPath) = 0;
-    virtual void Allocate(int nVerts, int nTris) = 0;
+
+    //! \rezerwowanie pamieci dla zmiennych
+    virtual void Allocate(int vertexCoun) = 0;
     virtual void MarkBackfacing(CVec3 CamPos) = 0;
     virtual void SelectTriangle(int nTri) = 0;
     virtual void CalculateFaceNormals() = 0;
     virtual void CalculateVertNormals() = 0;
     virtual void ClearSelection() = 0;
     virtual void ClearTriFlags() = 0;
+    //! \zwalnianie pamiêci
     virtual void Deallocate() = 0;
+    //! \odœwierzenie wartosci siatki dla osg::geometry ( VBO )
     virtual void Update() = 0;
 
     //Akccessors - Set
     virtual void SetSementicVertexFormat(SVertexElement* val) = 0;
     virtual void SetSelectionMode(eSelectionModes nMode) = 0;
     virtual void SetRootVertNormals(CVec3 * val) = 0;
+    //! \za³¹dowanie buffora danymi o wierzcho³kach
     virtual void SetBuffer(unsigned char * val) = 0;
     virtual void SetTris(unsigned long * val) = 0;
     virtual void SetClsid(unsigned char* val) = 0;
@@ -53,6 +79,7 @@ public:
     virtual void SetVerts(CVec3 * val) = 0;
     virtual void SetFaceCount(int val) = 0;
     virtual void SetVertex(float* val) = 0;
+    //! \za³adowanie faców w nasyzm pryzpadku danymi z fmesha
     virtual void SetFaces(SFace* val) = 0;
     virtual void SetSkin(SSkin* val) = 0;
 

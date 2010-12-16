@@ -1,3 +1,13 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: FileReader2Modion.h
+	author:	  Rafal Zowal
+	
+	purpose: Model ³aduj¹cy dane z plików zewnêtrznych takich jak *.fmesh, C3D, DAE - COLLADA
+
+*********************************************************************/
+
 #ifndef FILE_READER_2_MOTION_H
 #define FILE_READER_2_MOTION_H
 

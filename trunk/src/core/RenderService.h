@@ -1,3 +1,13 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: FileReader2Modion.h
+	author:	  Rafal Zowal
+	
+    purpose: Us³uga  Zarz¹dzanie Renderingiem
+
+*********************************************************************/
+
 #ifndef RENDER_SERVICE_H
 #define RENDER_SERVICE_H
 
@@ -68,10 +78,7 @@ public:
 
     osg::Light* GetLight();
 
-	virtual void RenderBone(IModel* model);
     virtual void RenderC3D(IC3DModel* c3dmodel);
-
-    void DrawNormals(IModel* model, float size);
 
     virtual const std::string& getName() const
     {
@@ -94,7 +101,6 @@ public:
     virtual IFactor* GetFactory();
 
 private: 
-    osg::Node* createLights(osg::BoundingBox& bb,osg::StateSet* rootStateSet);
 
     void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);

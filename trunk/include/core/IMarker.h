@@ -1,3 +1,13 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: FileReader2Modion.h
+	author:	  Rafal Zowal
+	
+    purpose: Inderface do Marker.h
+
+*********************************************************************/
+
 #ifndef I_MARKER_H
 #define I_MARKER_H
 

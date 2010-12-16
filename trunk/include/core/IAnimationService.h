@@ -1,3 +1,13 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: IAnimationServicec.h
+	author:	  Rafal Zowal
+	
+	purpose: Interfejs do u³ugi zarz¹dzania Animacji
+
+*********************************************************************/
+
 #ifndef I_ANIMATION_SERVICE_H
 #define I_ANIMATION_SERVICE_H
 
@@ -36,17 +46,24 @@ class IAnimationService: public IService
 public:
     virtual ~IAnimationService() {};
 
+        //************************************
+    // Method:    RegisterAnimation
+    // FullName:  AnimationService::RegisterAnimation
+    // Access:    public 
+    // Returns:   void
+    // Qualifier:
+    // Parameter: Animation * object  - obiekt prezchowujacy dane do animacji
+    // Parameter: void (Animation::*fun)(double)) - wskaŸnik na metode wywo³ywana prezz functor - metoda znajdujaca sie w obiekcie wskazywanym prezz paramtr object
+    //************************************
     virtual void RegisterAnimation(Animation* object, void (Animation::*fun)(double)) = 0; // add function to caller
     virtual void SetSelectedAnimationName(const std::string& name) = 0; // set act selected animation name 
     virtual void PlayAnimation(std::string animationName) = 0;
-    //virtual void SetScene(osg::Node* scene) = 0; // set animated scene
+    //! \£adownie animcji z obiektów Model
     virtual void LoadAnimation(IModel* model) = 0;
+    //! \£adownie animcji z obiektów C3DModel
     virtual void LoadAnimation(IC3DModel* model) = 0;
     virtual void ClearCaller() = 0; // clear caller
     virtual void NotifyStop() = 0; // notify stop
-
-    virtual bool UnregisterAnimation() = 0; // remove function from caller
-    virtual bool UnregisterC3DAnimation() = 0; // remove function from caller
 
 
     virtual std::string& GetSelectedAnimationName() = 0; // returns name of act selected animation

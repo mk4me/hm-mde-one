@@ -40,10 +40,7 @@ public:
 
     virtual osg::Light* GetLight() = 0;
 
-    virtual void RenderBone(IModel* model) = 0;       // TODO: prawdopodobnie usunac t¹metode
-    virtual void RenderC3D(IC3DModel* c3dmodel) = 0;  // TODO: prawdopodobnie usunac t¹metode
-
-    virtual void DrawNormals(IModel* model, float size) = 0; // TODO: prawdopodobnie usunac t¹metode
+    virtual void RenderC3D(IC3DModel* c3dmodel) = 0;  
 
     virtual void EnableMesh() = 0;
     virtual void DisableMesh() = 0;

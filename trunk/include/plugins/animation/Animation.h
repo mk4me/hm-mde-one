@@ -1,3 +1,13 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: Animation.h
+	author:	  Rafal Zowal
+	
+	purpose: Obiekt przechowujacy dane animacji modelu. uaktualizujacy je wzglêdem czasu z timelina.
+
+*********************************************************************/
+
 #ifndef ANIMATION_H
 #define ANIMATION_H
 

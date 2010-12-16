@@ -122,11 +122,13 @@ void Animation::Play()
         //m_pAnimationService->setLength(_length);
         _state = Animation::PLAYING; 
 
+        // sprawdzenie typu modelu animacji. - acclaim jest tworzony z danych obiektu typu Model
         if(m_animationType == ACCLAIM)
         {
             int animatioBoneCount = m_pSkeletonAnimaton->m_boneAnimationList.size();
             int boneCount = m_pSkeleton->m_pBoneList.size();
 
+            // przypsisanie odpowiednich animacji kosci (frame) z animationlist - wpisanych w modelu do struktury kosci przechowujace wskaünik na nie (frame - y)
             for(int ab = 0; ab <animatioBoneCount; ab++)
             {
                 for(int b = 0; b <boneCount; b++)
@@ -145,6 +147,7 @@ void Animation::Play()
             m_pAnimationService->setLength(_length);
         }
 
+        // sprawdzenie typu modelu animacji. - acclaim jest tworzony z danych obiektu typu C3DModel
         if(m_animationType == C3D)
         {
             // ilosc kosci = ilosc obiektÛw frame w tablicy
@@ -215,11 +218,6 @@ void Animation::CalculateChildMatrixBVHFormat( Bone* bone )
     bone->positiony = trans.y() * SCALE;
     bone->positionz = trans.z() * SCALE;
 
-    if(!bone->isInitialPosition)
-    {
-        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
-        bone->isInitialPosition = true;
-    }
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
@@ -278,11 +276,6 @@ void Animation::UpdateModelBVHFormat()
     bone->positiony = trans.y() * SCALE;
     bone->positionz = trans.z() * SCALE;
 
-    if(!bone->isInitialPosition)
-    {
-        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
-        bone->isInitialPosition = true;
-    }
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
@@ -356,11 +349,6 @@ void Animation::CalculateChildMatrixAcclaimFormat(Bone *bone)
     bone->positiony = trans.y() * SCALE;
     bone->positionz = trans.z() * SCALE;
 
-	if(!bone->isInitialPosition)
-	{
-		bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
-		bone->isInitialPosition = true;
-	}
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
@@ -438,11 +426,6 @@ void Animation::UpdateModelAcclaimFormat()
     bone->positiony = trans.y() * SCALE;
     bone->positionz = trans.z() * SCALE;
 
-	if(!bone->isInitialPosition)
-	{
-		bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
-		bone->isInitialPosition = true;
-	}
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)
@@ -561,21 +544,17 @@ void Animation::CalculateChildMatrixFmesh( Bone* bone )
         temp.setTrans(bone->trans);
     }
 
-    *bone->matrix = temp;
 
+    // obliczenie macierzy kosci.  bezwzglÍdnej pozycji (wzglÍdem úwiata)
+    *bone->matrix = temp;
     *bone->matrix =  (*bone->matrix) * (*bone->parent->matrix);
 
     osg::Vec3d trans = bone->matrix->getTrans();
 
+    // aktualizacja pozycji
     bone->positionx = trans.x();
     bone->positiony = trans.y();
     bone->positionz = trans.z();
-
-    if(!bone->isInitialPosition)
-    {
-        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
-        bone->isInitialPosition = true;
-    }
 
 
     int childrenCount = bone->child.size();
@@ -607,25 +586,22 @@ void Animation::UpdateModelFmesh()
 
     Bone* bone = m_pSkeleton->m_pRootBone;
 
+    // obliczenie macierzy kosci
     osg::Matrixd temp;
 
     temp.setRotate(bone->frame[index]->rotation);
     temp.setTrans(bone->frame[index]->translation);
 
-
+    // aktualizacja maceirzy wzgledem czasu
     *bone->matrix = temp;
 
     osg::Vec3d trans = bone->matrix->getTrans();
 
+    // aktualizacja pozycji
     bone->positionx = trans.x();
     bone->positiony = trans.y();
     bone->positionz = trans.z();
 
-    if(!bone->isInitialPosition)
-    {
-        bone->initialPosition = osg::Vec3d(bone->positionx, bone->positiony, bone->positionz);
-        bone->isInitialPosition = true;
-    }
 
     int childrenCount = bone->child.size();
     for(int i = 0; i<childrenCount; i++)

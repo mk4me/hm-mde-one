@@ -1,3 +1,13 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: FileReader2Modion.h
+	author:	  Rafal Zowal
+	
+    purpose: Model C3D zawieraj¹cy informacje o animacji i pozycji markerach
+
+*********************************************************************/
+
 #ifndef MARKER_H
 #define MARKER_H
 

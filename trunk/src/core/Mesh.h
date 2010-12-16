@@ -1,3 +1,12 @@
+/********************************************************************
+	created:  
+	created:  
+	filename: Model.h
+	author:	  Rafal Zowal
+	
+	purpose: Przechowywanie szereg danych zwiazanych z saitk¹
+*********************************************************************/
+
 #ifndef NEW_MESH_H
 #define NEW_MESH_H
 
@@ -16,6 +25,7 @@ class CVec3;
 typedef unsigned char byte;
 
 
+//! \dziedziczenie po osg::Geometry w celu lepszego i p³ynniejszego reenderowania siatki w osg
 class Mesh: public IMesh, public osg::Geometry
 {
 public:
@@ -23,65 +33,83 @@ public:
     Mesh();
     ~Mesh();
 
-    virtual void Clear();//
+    //! \Czyszczenie zasobów modelu
+    virtual void Clear();
 
-    virtual void HardwareAnimation(osg::Uniform* uniform, osg::Uniform* bonespaceUniform, std::string shaderPath);//
-    virtual void Allocate(int nVerts, int nTris);//
-    virtual void MarkBackfacing(CVec3 CamPos);//
-    virtual void SelectTriangle(int nTri);//
-    virtual void CalculateFaceNormals();//
-    virtual void CalculateVertNormals();//
-    virtual void ClearSelection();//
-    virtual void ClearTriFlags();//
-    virtual void Deallocate();//
-    virtual void Update();//
+    //! \update siatki za pomoc¹ vertex shadera
+    //************************************
+    // Method:    HardwareAnimation
+    // FullName:  Mesh::HardwareAnimation
+    // Access:    public 
+    // Returns:   void
+    // Qualifier:
+    // Parameter: osg::Uniform * uniform - dane: tablica szkieletu : macierze
+    // Parameter: osg::Uniform * bonespaceUniform - dane : tablica bonspace szkieletu
+    // Parameter: std::string shaderPath - œcie¿ka do shadera
+    //************************************
+    virtual void HardwareAnimation(osg::Uniform* uniform, osg::Uniform* bonespaceUniform, std::string shaderPath);
+
+    //! \rezerwowanie pamieci dla zmiennych
+    virtual void Allocate(int vertexCoun);
+    virtual void MarkBackfacing(CVec3 CamPos);
+    virtual void SelectTriangle(int nTri);
+    virtual void CalculateFaceNormals();
+    virtual void CalculateVertNormals();
+    virtual void ClearSelection();
+    virtual void ClearTriFlags();
+    //! \zwalnianie pamiêci
+    virtual void Deallocate();
+    //! \odœwierzenie wartosci siatki dla osg::geometry ( VBO )
+    virtual void Update();
 
     //Akccessors - Set
-    virtual void SetSementicVertexFormat(SVertexElement* val);//
-    virtual void SetSelectionMode(eSelectionModes nMode);//
-    virtual void SetRootVertNormals(CVec3 * val);//
-    virtual void SetBuffer(unsigned char * val);//
-    virtual void SetClsid(unsigned char* val);//
-    virtual void SetVertNormals(CVec3 * val);//
+    virtual void SetSementicVertexFormat(SVertexElement* val);
+    virtual void SetSelectionMode(eSelectionModes nMode);
+    virtual void SetRootVertNormals(CVec3 * val);
+    //! \za³¹dowanie buffora danymi o wierzcho³kach
+    virtual void SetBuffer(unsigned char * val);
+    virtual void SetClsid(unsigned char* val);
+    virtual void SetVertNormals(CVec3 * val);
     virtual void SetMaterialIndex(int val);
-    virtual void SetBiNormals(CVec3 * val);//
-    virtual void SetSemanticCount(int val);//
-    virtual void SetRootVerts(CVec3 * val);//
-    virtual void SetName(std::string val);//
-    virtual void SetTangent(CVec3 * val);//
-    virtual void SetVertexCount(int val);//
-    virtual void SetUVs(TexCoord * val);//
-    virtual void SetBufferSize(int val);//
-    virtual void SetVerts(CVec3 * val);//
-    virtual void SetFaceCount(int val);//
-    virtual void SetFaces(SFace* val);//
-    virtual void SetSkin(SSkin* val);//
+    virtual void SetBiNormals(CVec3 * val);
+    virtual void SetSemanticCount(int val);
+    virtual void SetRootVerts(CVec3 * val);
+    virtual void SetName(std::string val);
+    virtual void SetTangent(CVec3 * val);
+    virtual void SetVertexCount(int val);
+    virtual void SetUVs(TexCoord * val);
+    virtual void SetBufferSize(int val);
+    virtual void SetVerts(CVec3 * val);
+    virtual void SetFaceCount(int val);
+    //! \za³adowanie faców w nasyzm pryzpadku danymi z fmesha
+    virtual void SetFaces(SFace* val);
+    virtual void SetSkin(SSkin* val);
 
-    //virtual bool DataIO(class CDataTransfer& IO);//
-    virtual bool Inicialize();//
+    //virtual bool DataIO(class CDataTransfer& IO);
+    virtual bool Inicialize();
 
-    virtual int FrustumSelect(CVec3 Normals[4], CVec3 Points[8]);//
-    virtual int LineSelect(const CVec3 &LP1, const CVec3 &LP2);//
+    virtual int FrustumSelect(CVec3 Normals[4], CVec3 Points[8]);
+    virtual int LineSelect(const CVec3 &LP1, const CVec3 &LP2);
     virtual int& GetMaterialIndex();
-    virtual int& GetSemanticCount();//
-    virtual int& GetVertexCount();//
-    virtual int& GetBufferSize();//
-    virtual int& GetFaceCount();//
+    virtual int& GetSemanticCount();
+    virtual int& GetVertexCount();
+    virtual int& GetBufferSize();
+    virtual int& GetFaceCount();
 
-    virtual unsigned char * GetBuffer() const;//
-    virtual unsigned char* GetClsid();//
-    virtual std::string GetName() const;//
+    virtual unsigned char * GetBuffer() const;
+    virtual unsigned char* GetClsid();
+    virtual std::string GetName() const;
 
-    virtual CVec3 * GetRootVertNormals() const;//
-    virtual CVec3 * GetVertNormals() const;//
-    virtual CVec3 * GetBiNormals() const;//
-    virtual CVec3 * GetRootVerts() const;//
-    virtual CVec3 * GetTangent() const;//
-    virtual CVec3 * GetVerts() const;//
+    virtual CVec3 * GetRootVertNormals() const;
+    virtual CVec3 * GetVertNormals() const;
+    virtual CVec3 * GetBiNormals() const;
+    virtual CVec3 * GetRootVerts() const;
+    virtual CVec3 * GetTangent() const;
+    virtual CVec3 * GetVerts() const;
 
-    virtual SVertexElement* GetSementicVertexFormat() const;//
-    virtual TexCoord * GetUVs() const;//
-    virtual SFace* GetFaces() const;//
+    virtual SVertexElement* GetSementicVertexFormat() const;
+    virtual TexCoord * GetUVs() const;
+    virtual SFace* GetFaces() const;
     virtual SSkin* GetSkin() const;
 
     virtual int GetTrisCount() const;
@@ -94,8 +122,11 @@ public:
     virtual void SetVertex(float* val);
 
 private:
+    //! \inicjalizacja i wczytane danych DAE file - to wynikowy plik eksporty z 3ds prezz COLLADE
     void InicializeFromDAEFile();
-    void InicializeFromTBSFile();
+
+    //! \inicjalizacja i sprawsowanie danych dla modelu Mesh z pliku *.fmesha
+    void InicializeFromFMeshFile();
 
     size_t GetVertexSize();//
 
