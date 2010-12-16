@@ -62,7 +62,7 @@ namespace communication
 		virtual std::map<int, File> listFiles(int ID, const std::string& subjectType);
 		/**
 		*/
-		virtual void listSessionContents();
+		virtual std::vector<Trial> listSessionContents();
 
 		///**
 		//*/

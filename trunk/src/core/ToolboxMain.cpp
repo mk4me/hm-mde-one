@@ -69,21 +69,21 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     sceneRoot = new osg::Group();
     sceneRoot->setName("root");
 
+	/*
+	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
+	*/
+    dataManager = new DataManager();
+
 
     // inicjalizacja us³ug
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        m_pServiceManager->getService(i)->init(m_pServiceManager, sceneRoot.get());
+        m_pServiceManager->getService(i)->init(m_pServiceManager, sceneRoot.get(), dataManager);
     }
 
 
     initializeConsole();          // Console Widget 
     InitializeControlWidget();          // Control Widget + TimeLine
     LoadConfiguration();                // Wczytuje plik konfiguracyjny
-
-	/*
-	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
-	*/
-    dataManager = new DataManager();
 
     initializeUI();
 

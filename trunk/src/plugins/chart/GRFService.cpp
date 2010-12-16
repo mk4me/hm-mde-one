@@ -75,7 +75,7 @@ IWidget* GRFService::getWidget()
     return reinterpret_cast<IWidget*>(widget);
 }
 
-AsyncResult GRFService::init( IServiceManager* serviceManager, osg::Node* sceneRoot )
+AsyncResult GRFService::init( IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager )
 {
  ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {

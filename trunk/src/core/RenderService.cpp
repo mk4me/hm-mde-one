@@ -187,7 +187,7 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
+AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
 {
     m_pFactory = new Factor();
 

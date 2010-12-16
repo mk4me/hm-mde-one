@@ -6,6 +6,10 @@ void Filesystem::createDirectory(const std::string& path)
 	{
 		return;
 	}
+
+	//boost::filesystem::path dirPath;
+	//boost::filesystem::create_directory(dirPath);
+	
 	std::string copyPath = path;
 	Filesystem::preparePath(copyPath);
 

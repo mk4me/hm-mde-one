@@ -38,7 +38,7 @@ public:
 // IService
 public:
     //!
-    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot);
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager);
     //!
     virtual IWidget* getWidget();
     //!

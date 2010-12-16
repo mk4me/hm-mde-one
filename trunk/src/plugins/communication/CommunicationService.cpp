@@ -1,7 +1,7 @@
 #include "CommunicationPCH.h"
 #include <plugins/communication/CommunicationService.h>
 
-CommunicationService::CommunicationService() : name("Communication"), downloadMutex()
+CommunicationService::CommunicationService() : name("Communication")
 {
 	this->transport = new communication::TransportWSDL_FTPS();
 	this->query = new communication::QueryWSDL();
@@ -17,7 +17,7 @@ CommunicationService::CommunicationService() : name("Communication"), downloadMu
 	this->model->setTransportManager(this->transport);
 	this->model->setQueryManager(this->query);
 
-	this->widget = new CommunicationWidget(this);
+	this->widget = new CommunicationWidget(this, model->getMutex());
 	this->model->attach(this->widget);
 	try
 	{
@@ -25,43 +25,19 @@ CommunicationService::CommunicationService() : name("Communication"), downloadMu
 	}
 	catch(std::runtime_error& e)
 	{
-		std::cout << e.what() << std::endl;
+		LOG_ERROR << e.what() << std::endl;
 	}
-	downloading = false;
+	this->serviceManager = NULL;
 }
 
 CommunicationService::~CommunicationService()
 {
-	if(isRunning())
-	{
-		join();
-	}
 	delete this->transport;
 	this->transport = NULL;
 	delete this->query;
 	this->query = NULL;
 	communication::CommunicationManager::destoryInstance();
 	this->model = NULL;
-}
-
-void CommunicationService::downloadFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID)
-{
-	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(downloadMutex);
-	actualSession = sessionID;
-	actualTrial = trialID;
-	actualFile = fileID;
-	downloading = true;
-	start();
-}
-
-void CommunicationService::downloadTrial(unsigned int sessionID, unsigned int trialID)
-{
-	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(downloadMutex);
-	actualSession = sessionID;
-	actualTrial = trialID;
-	actualFile = 0;
-	downloading = true;
-	start();
 }
 
 const communication::TransportWSDL_FTPS* CommunicationService::getTransportManager() const
@@ -93,19 +69,17 @@ void CommunicationService::setTransportWSCredentials(const std::string& user, co
 
 void CommunicationService::updateSessionContents()
 {
-	this->model->clearSessions();
-	//update sessions
-	this->model->setSessions(1);
-	for(std::map<int, communication::Session>::const_iterator sessions_iterator = this->model->getSessions().begin(); sessions_iterator != this->model->getSessions().end(); ++sessions_iterator)
-	{
-		//update trials
-		this->model->setTrials((*sessions_iterator).first);
-		for(std::map<int, communication::Trial>::const_iterator trials_iterator = (*sessions_iterator).second.sessionTrials.begin(); trials_iterator != (*sessions_iterator).second.sessionTrials.end(); ++trials_iterator)
-		{
-			//update files
-			this->model->setFiles((*sessions_iterator).first, (*trials_iterator).first);
-		}
-	}
+	model->listSessionContents();
+}
+
+void CommunicationService::downloadFile(unsigned int fileID)
+{
+	model->downloadFile(fileID);
+}
+
+void CommunicationService::downloadTrial(unsigned int trialID)
+{
+	model->downloadTrial(trialID);
 }
 
 void CommunicationService::load()
@@ -118,53 +92,38 @@ void CommunicationService::save()
 	this->model->saveToXml(this->name);
 }
 
-void CommunicationService::run()
-{
-	if(actualFile == 0)
-	{
-		int i = 1;
-		int size = model->getFiles(actualSession, actualTrial).size();
-		for(std::map<int, communication::File>::const_iterator it = model->getFiles(actualSession, actualTrial).begin(); it != model->getFiles(actualSession, actualTrial).end(); ++it)
-		{
-			try
-			{
-				this->model->setFile(actualSession , actualTrial, (*it).first);
-			}
-			catch(std::runtime_error& e)
-			{
-				downloading = false;
-				std::cout << e.what();
-			}
-			i++;
-		}
-	}
-	else
-	{
-		try
-		{
-			this->model->setFile(actualSession, actualTrial, actualFile);
-		}
-		catch(std::runtime_error& e)
-		{
-			downloading = false;
-			std::cout << e.what();
-		}
-	}
-	downloading = false;
-}
-
 AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
 {
 	this->model->setTrialsDir(dataManager->getTrialsPath());
-    return AsyncResult_Complete;
+	return AsyncResult_Complete;
 }
 
 AsyncResult CommunicationService::update(double time, double timeDelta)
 {
-    widget->setBusy(downloading);
-	if(downloading)
+	if(model->getState() != communication::CommunicationManager::Ready && model->getState() != communication::CommunicationManager::Error)
 	{
-		widget->setProgress(this->model->getProgress());
+		widget->setBusy(true);
+		widget->setProgress(model->getProgress());
 	}
-    return AsyncResult_Complete;
+	else
+	{
+		//wystapil blad
+		if(model->getState() == communication::CommunicationManager::Error)
+		{
+			//przekaz info
+			widget->showErrorMessage(model->getErrorMessage());
+			model->setState(communication::CommunicationManager::Ready);
+			//przeladuj zasoby
+			load();
+		}
+		widget->setBusy(false);
+	}
+	return AsyncResult_Complete;
+}
+
+AsyncResult CommunicationService::init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
+{
+	model->setDataManager(dataManager);
+	this->serviceManager = serviceManager;
+	return AsyncResult_Complete;
 }

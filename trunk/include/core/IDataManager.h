@@ -1,6 +1,9 @@
 #ifndef I_DATA_MANAGER_H
 #define I_DATA_MANAGER_H
 
+#include <core/LocalTrial.h>
+#include <vector>
+
 class IDataManager
 {
 public:
@@ -8,6 +11,12 @@ public:
 
  	virtual void loadResources() = 0;
 	virtual void loadTrials() = 0;
+
+	virtual const LocalTrial& getLocalTrial(int i) const = 0;
+	virtual int getLocalTrialsCount() const = 0;
+
+	virtual const LocalTrial& getActualTrial() const = 0;
+	virtual void setActualTrial(int i) = 0;
 
 	virtual void clear() = 0;
 

@@ -49,7 +49,8 @@ namespace communication
 
 		int sessionID;
 		std::string trialDescription;
-		std::map<int, File> trialFiles;
+		std::vector<int> trialFiles;
+		//std::map<int, File> trialFiles;
 	};
 
 	struct Session : public Entity

@@ -75,7 +75,7 @@ IWidget* EMGService::getWidget()
     return reinterpret_cast<IWidget*>(widget);
 }
 
-AsyncResult EMGService::init( IServiceManager* serviceManager, osg::Node* sceneRoot )
+AsyncResult EMGService::init( IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager )
 {
  ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {

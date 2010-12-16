@@ -2,7 +2,6 @@
 #define COMMUNICATION_SERVICE_H
 
 #include <core/IService.h>
-#include <OpenThreads/Thread>
 #include <core/IDataManager.h>
 #include <plugins/communication/ICommunication.h>
 #include <plugins/communication/CommunicationManager.h>
@@ -12,7 +11,7 @@
 
 class CommunicationWidget;
 
-class CommunicationService : public IService, public ICommunication, public OpenThreads::Thread
+class CommunicationService : public IService, public ICommunication
 {
 	UNIQUE_ID('COMM','SRVC');
 private:
@@ -21,23 +20,22 @@ private:
 	communication::TransportWSDL_FTPS* transport;
 	communication::QueryWSDL* query;
 	std::string name;
-    OpenThreads::Mutex downloadMutex;
-	bool downloading;
-	unsigned int actualSession;
-	unsigned int actualTrial;
-	unsigned int actualFile;
+	IServiceManager* serviceManager;
 
 public:
 	CommunicationService();
 	virtual ~CommunicationService();
 
+	//IService
+	virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
+	virtual AsyncResult update(double time, double timeDelta);
 	virtual IWidget* getWidget()
 	{ 
 		// HACK: ca³y ten system jest shackowany!
 		//return reinterpret_cast<IWidget*>(widget);
         return NULL;
 	}
-
     virtual IWidget* getSettingsWidget()
     {
         return reinterpret_cast<IWidget*>(widget);
@@ -47,11 +45,10 @@ public:
 	{
 		return name;
 	}
-
-	virtual void downloadFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID);
-	virtual void downloadTrial(unsigned int sessionID, unsigned int trialID);
-
+	//ICommunication
 	virtual void updateSessionContents();
+	virtual void downloadTrial(unsigned int trialID);
+	virtual void downloadFile(unsigned int fileID);
 
 	void load();
 	void save();
@@ -62,10 +59,5 @@ public:
 	void setQueryCredentials(const std::string& user, const std::string& password, const std::string& bqsUri, const std::string& busUri);
 	void setTransportFTPCredentials(const std::string& user, const std::string& password, const std::string& uri);
 	void setTransportWSCredentials(const std::string& user, const std::string& password, const std::string& uri);
-
-    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
-
-	virtual AsyncResult update(double time, double timeDelta);
-	virtual void run();
 };
 #endif

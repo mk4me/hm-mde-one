@@ -31,7 +31,7 @@ IWidget* TimelineService::getControlWidget()
     return reinterpret_cast<IWidget*>(widget);
 }
 
-AsyncResult TimelineService::init( IServiceManager* serviceManager, osg::Node* sceneRoot )
+AsyncResult TimelineService::init( IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager )
 {
     return AsyncResult_Complete;
 }

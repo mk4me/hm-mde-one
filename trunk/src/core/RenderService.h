@@ -52,7 +52,7 @@ class RenderService: public IRenderService
 public:
     RenderService();
     virtual ~RenderService();
-    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot); 
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager); 
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 

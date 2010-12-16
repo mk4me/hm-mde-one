@@ -97,7 +97,7 @@ m_pAnimation(NULL)
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* sceneRoot)
+AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
 {
     m_pServiceManager = serviceManager;
     m_pScene = sceneRoot;

@@ -29,7 +29,8 @@ public:
     //! (nie zainicjalizowaniu!) wszystkich us³ug. Mo¿na wiêc pobieraæ wskaŸniki.
     //! \param serviceManager Manager us³ug.
     //! \param root Korzeñ wspólnej sceny 3D.
-    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot)
+	//! \param dataManager Manager zasobów.
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
     {
         return AsyncResult_Complete;
     }

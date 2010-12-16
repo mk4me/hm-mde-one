@@ -197,13 +197,83 @@ std::map<int, File> BasicQueriesService::listFiles(int ID, const std::string& su
 	return files;
 }
 
-void BasicQueriesService::listSessionContents()
+std::vector<Trial> BasicQueriesService::listSessionContents()
 {
-	int id = 0;
+	int id = 1;
 	this->setOperation("ListSessionContents");
 	this->setValue("pageSize", WSDL_Wsdlpull::toString<int>(id));
 	this->setValue("pageNo", WSDL_Wsdlpull::toString<int>(id));
 	this->invokeOperation();
+
+	std::vector<Trial> trials;
+	Schema::TypeContainer* tc = NULL;
+	tc = invoker.getOutput("ListSessionContentsResponse");
+	if(!tc)
+	{
+		throw std::runtime_error("Fail to get output.");
+	}
+	TypeContainer* SessionContent = tc->getChildContainer("SessionContent");
+	while(SessionContent)
+	{
+		int sessionId = 0;
+		TypeContainer* temp;
+		temp = SessionContent->getChildContainer("SessionID");
+		if(temp)
+		{
+			sessionId = *((int*)temp->getValue());
+		}
+		TypeContainer* TrialContent = SessionContent->getChildContainer("TrialContent");
+		while(TrialContent)
+		{
+			Trial trial;
+			trial.sessionID = sessionId;
+
+			temp = TrialContent->getChildContainer("TrialID");
+			if(temp)
+			{
+				trial.id = *((int*)temp->getValue());
+			}
+			else
+			{
+				throw std::runtime_error("Bad document structure format.");
+			}
+			temp = TrialContent->getChildContainer("Attribute");
+			if(temp)
+			{
+				temp = temp->getAttributeContainer("Value");
+				if(temp)
+				{
+					trial.trialDescription = *((std::string*)temp->getValue());
+				}
+				else
+				{
+					throw std::runtime_error("Bad document structure format.");
+				}
+			}
+			else
+			{
+				throw std::runtime_error("Bad document structure format.");
+			}
+			temp = TrialContent->getChildContainer("FileDetailsWithAttributes");
+			while(temp)
+			{
+				TypeContainer* temp2 = temp->getAttributeContainer("FileID");
+				if(temp2)
+				{
+					trial.trialFiles.push_back(*((int*)temp2->getValue()));
+				}
+				else
+				{
+					throw std::runtime_error("Bad document structure format.");
+				}
+				temp = TrialContent->getChildContainer("FileDetailsWithAttributes");
+			}
+			TrialContent = SessionContent->getChildContainer("TrialContent");
+			trials.push_back(trial);
+		}
+		SessionContent = tc->getChildContainer("SessionContent");
+	}
+	return trials;
 }
 
 //TODO: A Schema Parser runtime_error occurred while parsing the response at line 1:444

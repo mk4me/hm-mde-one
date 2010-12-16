@@ -16,6 +16,7 @@
 
 #include <curl/curl.h>
 #include <wsdlparser/WsdlInvoker.h>
+#include <core/Log.h>
 
 #endif
 #endif

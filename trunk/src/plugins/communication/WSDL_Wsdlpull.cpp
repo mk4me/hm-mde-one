@@ -119,8 +119,8 @@ void WSDL_Wsdlpull::invokeOperation()
 		//invoke operation
 		if(!invoker.invoke()) 
 		{
-			//throw std::runtime_error(invoker.errors().c_str());
-			throw std::string(this->getXMLResponse().c_str());
+			throw std::runtime_error(invoker.errors().c_str());
+			//throw std::string(this->getXMLResponse().c_str());
 		}
 	}
 	else 

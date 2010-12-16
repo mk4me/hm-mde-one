@@ -31,7 +31,7 @@ namespace communication
 
 		std::map<int, File> listFiles(int ID, const std::string& subjectType);
 
-		void listSessionContents();
+		std::vector<Trial> listSessionContents();
 
 		//const Performer* getPerformerById(int performerID);
 

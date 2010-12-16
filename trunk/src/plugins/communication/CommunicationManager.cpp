@@ -3,9 +3,16 @@
 */
 
 #include "CommunicationPCH.h"
+#include <core/Filesystem.h>
 #include <plugins/communication/CommunicationManager.h>
 
+
 using namespace communication;
+
+typedef std::vector<Trial> ServerTrials;
+typedef std::vector<LocalTrial> LocalTrials;
+
+typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
 
 CommunicationManager* CommunicationManager::instance = NULL;
 
@@ -21,131 +28,24 @@ void CommunicationManager::destoryInstance()
 {
 }
 
-CommunicationManager::CommunicationManager()
+CommunicationManager::CommunicationManager() : trialsMutex()
 {
 	this->transportManager = NULL;
 	this->queryManager = NULL;
 	this->trialsDir = "data/trials/";
+	this->state = Ready;
 }
 
 CommunicationManager::~CommunicationManager()
 {
+	//if(isRunning())
+	//{
+	//	join();
+	//}
 	if(instance) {
 		delete instance;
 	}
 	instance = NULL;
-}
-
-void CommunicationManager::setSessions(unsigned int labID)
-{
-	this->sessions = this->queryManager->listLabSessionsWithAttributes(labID);
-	notify();
-}
-
-const CommunicationManager::Sessions& CommunicationManager::getSessions(/*unsigned int labID*/) const
-{
-	return this->sessions;
-}
-
-void CommunicationManager::setTrials(unsigned int sessionID)
-{
-	this->sessions[sessionID].sessionTrials = this->queryManager->listSessionTrials(sessionID);
-	notify();
-}
-
-const CommunicationManager::Trials& CommunicationManager::getTrials(unsigned int sessionID) const
-{
-	Sessions::const_iterator it = this->sessions.find(sessionID);
-	if(it != this->sessions.end())
-	{
-		return (*it).second.sessionTrials;
-	}
-	else
-	{
-		throw std::runtime_error("No session with this ID.");
-	}
-}
-
-void CommunicationManager::setFiles(unsigned int sessionID, unsigned int trialID)
-{
-	this->sessions[sessionID].sessionTrials[trialID].trialFiles = this->queryManager->listFiles(trialID, "trial");
-	notify();
-}
-
-const CommunicationManager::Files& CommunicationManager::getFiles(unsigned int sessionID, unsigned int trialID) const
-{
-	Sessions::const_iterator it = this->sessions.find(sessionID);
-	if(it == this->sessions.end())
-	{
-		throw std::runtime_error("No session with this ID.");
-	}
-	Trials::const_iterator it2 = (*it).second.sessionTrials.find(trialID);
-	if(it2 != (*it).second.sessionTrials.end())
-	{
-		return (*it2).second.trialFiles;
-	}
-	else
-	{
-		throw std::runtime_error("No trial with this ID.");
-	}
-}
-
-void CommunicationManager::setFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID)
-{
-	this->transportManager->downloadFile(fileID, this->trialsDir);
-}
-
-const std::string& CommunicationManager::getFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID) const
-{
-	Sessions::const_iterator it = this->sessions.find(sessionID);
-	if(it == this->sessions.end())
-	{
-		throw std::runtime_error("No session with this ID.");
-	}
-	Trials::const_iterator it2 = (*it).second.sessionTrials.find(trialID);
-	if(it2 == (*it).second.sessionTrials.end())
-	{
-		throw std::runtime_error("No trial with this ID.");
-	}
-	Files::const_iterator it3 = (*it2).second.trialFiles.find(fileID);
-	if(it3 != (*it2).second.trialFiles.end())
-	{
-		return (*it3).second.fileName;
-	}
-	else
-	{
-		throw std::runtime_error("No file with this ID.");
-	}
-}
-
-void CommunicationManager::clearSessions()
-{
-	this->sessions.clear();
-	notify();
-}
-
-void CommunicationManager::clearTrials(unsigned int sessionID)
-{
-	Sessions::iterator it = this->sessions.find(sessionID);
-	if(it != this->sessions.end())
-	{
-		(*it).second.sessionTrials.clear();
-	}
-	notify();
-}
-
-void CommunicationManager::clearFiles(unsigned int sessionID, unsigned int trialID)
-{
-	Sessions::iterator it = this->sessions.find(sessionID);
-	if(it != this->sessions.end())
-	{
-		Trials::iterator itr = this->sessions[sessionID].sessionTrials.find(trialID);
-		if(itr != this->sessions[sessionID].sessionTrials.end())
-		{
-			(*itr).second.trialFiles.clear();
-		}
-	}
-	notify();
 }
 
 void CommunicationManager::saveToXml(const std::string& filename)
@@ -156,41 +56,27 @@ void CommunicationManager::saveToXml(const std::string& filename)
 	document.LinkEndChild(declaration);
 	document.LinkEndChild(root);
 
-	for(Sessions::iterator sessions_iterator = this->sessions.begin(); sessions_iterator != this->sessions.end(); ++sessions_iterator)
+	//zapis daty
+	DateTime dt;
+	root->SetAttribute("date", dt.toString());
+
+	for(ServerTrials::iterator iterator = this->serverTrials.begin(); iterator != this->serverTrials.end(); ++iterator)
 	{
-		//<Session>
-		TiXmlElement* session_element = new TiXmlElement("Session");
-		root->LinkEndChild(session_element);
-		session_element->SetAttribute("id", (*sessions_iterator).second.id);
-		session_element->SetAttribute("labID", (*sessions_iterator).second.labID);
-		session_element->SetAttribute("motionKind", (*sessions_iterator).second.motionKind);
-		session_element->SetAttribute("sessionDate", (*sessions_iterator).second.sessionDate.toString());
-		session_element->SetAttribute("sessionDescription", (*sessions_iterator).second.sessionDescription);
-		session_element->SetAttribute("sessionLabel", (*sessions_iterator).second.sessionLabel);
-		session_element->SetAttribute("userID", (*sessions_iterator).second.userID);
-		for(Trials::iterator trials_iterator = (*sessions_iterator).second.sessionTrials.begin(); trials_iterator != (*sessions_iterator).second.sessionTrials.end(); ++trials_iterator)
+		//<ServerTrial>
+		TiXmlElement* strial_element = new TiXmlElement("ServerTrial");
+		root->LinkEndChild(strial_element);
+		strial_element->SetAttribute("id", (*iterator).id);
+		strial_element->SetAttribute("sessionID", (*iterator).sessionID);
+		strial_element->SetAttribute("trialDescription", (*iterator).trialDescription);
+		for(std::vector<int>::iterator it = (*iterator).trialFiles.begin(); it != (*iterator).trialFiles.end(); ++it)
 		{
-		//<Trial>
-			TiXmlElement* trial_element = new TiXmlElement("Trial");
-			session_element->LinkEndChild(trial_element);
-			trial_element->SetAttribute("id", (*trials_iterator).second.id);
-			trial_element->SetAttribute("sessionID", (*trials_iterator).second.sessionID);
-			trial_element->SetAttribute("trialDescription", (*trials_iterator).second.trialDescription);
-			for(Files::iterator files_iterator = (*trials_iterator).second.trialFiles.begin(); files_iterator != (*trials_iterator).second.trialFiles.end(); ++files_iterator)
-			{
-				//<File>
-				TiXmlElement* file_element = new TiXmlElement("File");
-				trial_element->LinkEndChild(file_element);
-				file_element->SetAttribute("id", (*files_iterator).second.id);
-				file_element->SetAttribute("fileName", (*files_iterator).second.fileName);
-				file_element->SetAttribute("fileDescription", (*files_iterator).second.fileDescription);
-				file_element->SetAttribute("fileAttributeName", (*files_iterator).second.fileAttributeName);
-				file_element->SetAttribute("fileSubdir", (*files_iterator).second.fileSubdir);
-				//</File>
-			}
-			//</Trial>
+			//<File>
+			TiXmlElement* file_element = new TiXmlElement("File");
+			strial_element->LinkEndChild(file_element);
+			file_element->SetAttribute("id", (*it));
+			//</File>
 		}
-		//</Session>
+		//</ServerTrial>
 	}
 	document.SaveFile(filename);
 }
@@ -201,69 +87,56 @@ void CommunicationManager::loadFromXml(const std::string& filename)
 	TiXmlDocument document(filename);
 	if(!document.LoadFile())
 	{
-		throw std::ios_base::failure("Failed to load file.");
+		LOG_ERROR << ": !Blad wczytania pliku Communication\n";
+		return;
 	}
 	TiXmlHandle hDocument(&document);
-	TiXmlElement* session_element;
+	TiXmlElement* strial_element;
 	TiXmlHandle hParent(0);
 
-	session_element = hDocument.FirstChildElement().Element();
-	if(!session_element)
+	strial_element = hDocument.FirstChildElement().Element();
+	if(!strial_element)
 	{
-		throw std::runtime_error("Failed to read file.");
+		LOG_ERROR << ": !Blad czytania z pliku Communication\n";
+		return;
 	}
-	hParent = TiXmlHandle(session_element);
+	hParent = TiXmlHandle(strial_element);
 
-	this->sessions.clear();
-	session_element = hParent.FirstChild("Session").ToElement();
-	while(session_element)
+	//data ostatniej aktualizacji danych z serwera
+	std::string temp;
+	hParent.ToElement()->QueryStringAttribute("date", &temp);
+	isLastUpdate = false;
+	if(!temp.empty())
 	{
-		communication::Session session;
-		session_element->QueryIntAttribute("id", &session.id);
-		session_element->QueryIntAttribute("labID", &session.labID);
-		session_element->QueryIntAttribute("userID", &session.userID);
-		session_element->QueryStringAttribute("motionKind", &session.motionKind);
-		session_element->QueryStringAttribute("sessionDescription", &session.sessionDescription);
-		session_element->QueryStringAttribute("sessionLabel", &session.sessionLabel);
-
-		std::string temp_date;
-		session_element->QueryStringAttribute("sessionDate", &temp_date);
 		try
 		{
-			session.sessionDate.setDate(temp_date);
+			lastUpdate.setDate(temp);
+			isLastUpdate = true;
 		}
 		catch(std::exception& e)
 		{
-			std::cout << e.what() << ": !Blad wczytania daty z pliku Communication\n";
+			LOG_ERROR << e.what() << ": !Blad wczytania daty z pliku Communication\n";
 		}
-
-		this->sessions[session.id] = session;
-		
-		TiXmlElement* trial_element = session_element->FirstChildElement("Trial");
-		while(trial_element)
+	}
+	//wczytanie zrzutu danych pomiarowych z serwera
+	this->serverTrials.clear();
+	strial_element = hParent.FirstChild("ServerTrial").ToElement();
+	while(strial_element)
+	{
+		Trial serverTrial;
+		strial_element->QueryIntAttribute("id", &serverTrial.id);
+		strial_element->QueryIntAttribute("sessionID", &serverTrial.sessionID);
+		strial_element->QueryStringAttribute("trialDescription", &serverTrial.trialDescription);
+		TiXmlElement* file_element = strial_element->FirstChildElement("File");
+		while(file_element)
 		{
-			communication::Trial trial;
-			trial_element->QueryIntAttribute("id", &trial.id);
-			trial_element->QueryIntAttribute("sessionID", &trial.sessionID);
-			trial_element->QueryStringAttribute("trialDescription", &trial.trialDescription);
-			this->sessions[session.id].sessionTrials[trial.id] = trial;
-
-			TiXmlElement* file_element = trial_element->FirstChildElement("File");
-			while(file_element)
-			{
-				communication::File file;
-				file_element->QueryIntAttribute("id", &file.id);
-				file_element->QueryStringAttribute("fileName", &file.fileName);
-				file_element->QueryStringAttribute("fileDescription", &file.fileDescription);
-				file_element->QueryStringAttribute("fileAttributeName", &file.fileAttributeName);
-				file_element->QueryStringAttribute("fileSubdir", &file.fileSubdir);
-
-				this->sessions[session.id].sessionTrials[trial.id].trialFiles[file.id] = file;
-				file_element = file_element->NextSiblingElement();
-			}
-			trial_element = trial_element->NextSiblingElement();
+			int id;
+			file_element->QueryIntAttribute("id", &id);
+			serverTrial.trialFiles.push_back(id);
+			file_element = file_element->NextSiblingElement();
 		}
-		session_element = session_element->NextSiblingElement();
+		serverTrials.push_back(serverTrial);
+		strial_element = strial_element->NextSiblingElement("ServerTrial");
 	}
 	notify();
 }
@@ -302,5 +175,110 @@ const std::string& CommunicationManager::getTrialsDir() const
 
 int CommunicationManager::getProgress() const
 {
-	return this->transportManager->getProgress();
+	return transportManager->getProgress();
+}
+
+void CommunicationManager::listSessionContents()
+{
+	state = UpdatingServerTrials;
+	run();
+	//start();
+}
+
+void CommunicationManager::downloadTrial(unsigned int trialID)
+{
+	state = DownloadingTrial;
+	entityID = trialID;
+	run();
+	//start();
+}
+
+void CommunicationManager::downloadFile(unsigned int fileID)
+{
+	state = DownloadingFile;
+	entityID = fileID;
+	run();
+	//start();
+}
+
+void CommunicationManager::loadLocalTrials()
+{
+	localTrials.clear();
+	dataManager->loadTrials();
+	if(dataManager && dataManager->getLocalTrialsCount() > 0)
+	{
+		for(int i = 0; i < dataManager->getLocalTrialsCount(); i++)
+		{
+			localTrials.push_back(dataManager->getLocalTrial(i));
+		}
+	}
+	notify();
+}
+
+void CommunicationManager::run()
+{
+	//ScopedLock lock(trialsMutex);
+	switch(state)
+	{
+	case DownloadingFile:
+		{
+			try
+			{
+				this->transportManager->downloadFile(entityID, this->trialsDir);
+				state = Ready;
+			}
+			catch(std::runtime_error& e)
+			{
+				state = Error;
+				errorMessage = e.what();
+			}
+			break;
+		}
+	case DownloadingTrial:
+		{
+			try
+			{
+				for(std::vector<Trial>::iterator it = serverTrials.begin(); it != serverTrials.end(); ++it)
+				{
+					if(it->id == entityID)
+					{
+						for(std::vector<int>::iterator id = it->trialFiles.begin(); id != it->trialFiles.end(); ++id)
+						{
+							this->transportManager->downloadFile((*id), this->trialsDir);
+						}
+						break;
+					}
+				}
+				state = Ready;
+			}
+			catch(std::runtime_error& e)
+			{
+				state = Error;
+				errorMessage = e.what();
+			}
+			break;
+		}
+	case UpdatingServerTrials:
+		{
+			try
+			{
+				serverTrials.clear();
+				serverTrials = queryManager->listSessionContents();
+				lastUpdate = DateTime();
+				state = Ready;
+			}
+			catch(std::runtime_error& e)
+			{
+				state = Error;
+				errorMessage = e.what();
+			}
+			break;
+		}
+	default:
+		{
+			return;
+		}
+	}
+	//przeladuj localne zasoby
+	loadLocalTrials();
 }

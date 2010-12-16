@@ -38,9 +38,9 @@ void QueryWSDL::setBasicUpdatesServiceUri(const std::string& uri) {
 	bus->setUri(uri);
 }
 
-void QueryWSDL::listSessionContents()
+std::vector<Trial> QueryWSDL::listSessionContents()
 {
-	bqs->listSessionContents();
+	return bqs->listSessionContents();
 }
 
 std::map<int, Trial> QueryWSDL::listSessionTrials(int sessionID) {

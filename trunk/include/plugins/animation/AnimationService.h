@@ -75,7 +75,7 @@ public:
 
     virtual ~AnimationService(void);
     virtual AsyncResult update(double time, double timeDelta); 
-    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot); 
+    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager); 
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
