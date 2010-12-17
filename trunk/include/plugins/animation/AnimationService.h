@@ -132,6 +132,7 @@ public:
     virtual Animation* GetAnimation(); // returns act animation
     virtual std::map<std::string, Animation*>* GetAnimations();
     virtual std::vector<std::string>* GetAnimationDisplayList();
+    virtual bool IsModelAnimation();
 
 // IService (Piotr Gwiazdowski)
 public:

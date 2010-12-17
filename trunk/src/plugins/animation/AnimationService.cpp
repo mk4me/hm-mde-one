@@ -690,3 +690,11 @@ std::vector<std::string>* AnimationService::GetAnimationDisplayList()
     return &m_animationDisplayList;
 }
 
+//--------------------------------------------------------------------------------------------------
+bool AnimationService::IsModelAnimation()
+{
+    if(currentAnimation)
+        return true;
+
+    return false;
+}

@@ -74,6 +74,9 @@ public:
     virtual void GPUUpdateMesh() = 0;
     virtual void CPUUpdateMesh() = 0;
     virtual void Clear() = 0;
+
+    //! \ Sprawdzenie czy istenieje animacja z modelu - amc
+    virtual bool IsModelAnimation() = 0;
 };
 
 #endif //I_ANIMATION_SERVICE_H

@@ -207,8 +207,8 @@ bool FileReader2Motion::ParseC3DFile2EDR(C3D_Data* c3d, C3DModel* c3dModel)
 
             markerFrame->m_time = time;
             markerFrame->m_position.x() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 0];
-            markerFrame->m_position.z() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 1];
-            markerFrame->m_position.y() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 2];
+            markerFrame->m_position.y() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 1];
+            markerFrame->m_position.z() = c3d->getData()->getData()[i*c3d->getHeader()->getNumberOfC3DPoints()*4 + marker*4 + 2];
 
             markerList[marker]->AddFrame(markerFrame);
         }

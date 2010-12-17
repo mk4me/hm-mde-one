@@ -28,6 +28,7 @@
 
 #define pPat osg::PositionAttitudeTransform*
 #define MODEL_SIZE 60
+#define MARKER_SCALE 24.41463509083284
 
 // This handles the forwarding of keypress events.
 class ShowHideWindowHandler: public osgGA::GUIEventHandler 
@@ -193,6 +194,7 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 	m_pC3DModel = dynamic_cast<C3DModel* >(m_pFactory->GetC3DModel(c3dpath));
 
     if(m_pC3DModel) {
+        DisableMarker();
         RenderC3D(m_pC3DModel);
     }
 
@@ -298,8 +300,6 @@ void RenderService::Inicialize(osg::Node* sceneRoot)
         infoBox->addWidget(label);
     }
 
-    
-
 
     widget->addEventHandler( new ShowHideWindowHandler(infoBox) );
     widget->addEventHandler( new osgWidget::MouseHandler(multiView) );
@@ -353,27 +353,6 @@ void RenderService::SetScene(osg::Group* root)
                 camera->setChild(0, SceneRoot);
             }
         }
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-bool RenderService::loadShaderSource(osg::Shader* obj, const std::string& fileName )
-{
-    std::string fqFileName = osgDB::findDataFile(fileName);
-    if( fqFileName.length() == 0 )
-    {
-        std::cout << "File \"" << fileName << "\" not found." << std::endl;
-        return false;
-    }
-    bool success = obj->loadShaderSourceFromFile( fqFileName.c_str());
-    if ( !success  )
-    {
-        std::cout << "Couldn't load file: " << fileName << std::endl;
-        return false;
-    }
-    else
-    {
-        return true;
     }
 }
 
@@ -451,6 +430,8 @@ void RenderService::SetC3DMarkerToRender(IC3DModel *c3dmodel)
         AddObjectToRender(tempModel);
 
     DisableMarker();
+
+    CreatingAndRenderMarkerPath(tempModel);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -487,6 +468,9 @@ void RenderService::EnableBone()
 //--------------------------------------------------------------------------------------------------
 void RenderService::DisableBone()
 {
+    if(!m_pModel)
+        return;
+
     m_pModel->RemoveGeode();
     SceneRoot;
 
@@ -525,59 +509,57 @@ osg::Node* RenderService::debugGetLocalSceneRoot()
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::CreatingAndRenderMarkerPath()
+void RenderService::CreatingAndRenderMarkerPath(IC3DModel* tempModel)
 {
-    /*
+    if(m_pMarkerLineGeode.valid())
+        SceneRoot->removeChild(m_pMarkerLineGeode.get());
 
-    osg::ref_ptr<osg::Geode> geode = new osg::Geode();
-    // create Geometry object to store all the vertices and lines primitive.
+    std::vector<IMarker* > markerList = tempModel->GetMarkerList();
+    std::vector<MarkerFrame* > animationList = markerList[1]->GetAnimationList();
+
+    float animationLenght = animationList[animationList.size() - 1]->m_time;
+
+    // aby wybieraæ pozycje markerów zak¹³daj¹c wyœiwetlanie klatek 30/s
+    int delta = (animationList.size()/animationLenght) / 30;
+    int animationSize = animationList.size();
+
+    m_pMarkerLineGeode = new osg::Geode();
+    osg::Vec3Array* vertices = new osg::Vec3Array;
     osg::ref_ptr<osg::Geometry>	linesGeom = new osg::Geometry();
-    float size = 0.5f; 
-    int sizeX = 21; 
-    int sizeY = 21; 
-    // this time we'll preallocate the vertex array to the size we
-    // need and then simple set them as array elements, 8 points
-    // makes 4 line segments.
-    osg::Vec3Array* vertices = new osg::Vec3Array((sizeX+sizeY)*2);
-    for (int i=0; i<sizeX; ++i)
-    {
-        float a_x = (float(i - sizeX/2) )*size; 
-        float a_y = -1.0f*(sizeX/2)*size; 
-        float b_x = (float(i - sizeX/2) )*size; 
-        float b_y = 1.0f*(sizeX/2)*size; 
-        (*vertices)[2*i].set( a_x, a_y, 0.0f);
-        (*vertices)[2*i+1].set( b_x, b_y, 0.0f);
-    }
 
-    for (int i=0; i<sizeY; ++i)
+    int index;
+    for(int m = 9; m < 11; ++m)
     {
-        float a_x = -1.0f*(sizeY/2)*size; 
-        float a_y = (float(i - sizeY/2) )*size; 
-        float b_x = 1.0f*(sizeY/2)*size; 
-        float b_y = (float(i - sizeY/2) )*size; 
-        (*vertices)[sizeX*2+2*i].set( a_x, a_y, 0.0f);
-        (*vertices)[sizeX*2+2*i+1].set( b_x, b_y, 0.0f);
+        index = 0;
+        animationList = markerList[m]->GetAnimationList();
+        for(int t = 0; index < animationSize; t++)
+        {
+            if((animationList[index]->m_position).length() == 0)
+                index++;
+            else
+            {
+                (*vertices).push_back(animationList[index]->m_position/MARKER_SCALE);
+                index += delta;
+            }
+        }
+        if(vertices->size()%2 != 0)
+            (*vertices).push_back(animationList[animationList.size()-1]->m_position/MARKER_SCALE);
     }
-    // pass the created vertex array to the points geometry object.
     linesGeom->setVertexArray(vertices);
-    // set the colors as before, plus using the above
+
     osg::Vec4Array* colors = new osg::Vec4Array;
     colors->push_back( osg::Vec4(0.5f, 0.5f, 0.5f, 0.5f) );
     linesGeom->setColorArray(colors);
     linesGeom->setColorBinding( osg::Geometry::BIND_OVERALL );
-    // set the normal in the same way color.
+
     osg::Vec3Array* normals = new osg::Vec3Array;
     normals->push_back( osg::Vec3(0.0f, -1.0f, 0.0f) );
     linesGeom->setNormalArray(normals);
     linesGeom->setNormalBinding( osg::Geometry::BIND_OVERALL );
-    // This time we simply use primitive, and hardwire the number of coords to use 
-    // since we know up front,
-    linesGeom->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, (sizeX+sizeY)*2) );
-    // add the points geometry to the geode.
-    geode->addDrawable(linesGeom);
-    //osgView_->setSceneData((osg::Node *)geode);
-    geode->setName("grid");
-    return geode; 
 
-    */
+    linesGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, vertices->size()));
+    m_pMarkerLineGeode->addDrawable(linesGeom);
+    m_pMarkerLineGeode->setName("Line");
+
+    AddObjectToRender(m_pMarkerLineGeode);
 }

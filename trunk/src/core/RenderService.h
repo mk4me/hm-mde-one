@@ -101,18 +101,18 @@ public:
     virtual IFactor* GetFactory();
 
     //! \ Creating and render Marker Path
-    virtual void CreatingAndRenderMarkerPath();
+    virtual void CreatingAndRenderMarkerPath(IC3DModel* tempModel);
 
 private: 
 
     void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);
-    bool loadShaderSource(osg::Shader* obj, const std::string& fileName);
     void AddShaders(osg::Group* group);
 
     osg::ref_ptr<osg::Geode> m_pMeshGeode;
     osg::ref_ptr<osg::Geode> m_pBoneGeode;
     osg::ref_ptr<osg::Geode> m_pMarkerGeode;
+    osg::ref_ptr<osg::Geode> m_pMarkerLineGeode;
 
     QOSGViewer* widget; 
     osgGroupPtr SceneRoot;

@@ -153,6 +153,9 @@ void Animation::Play()
             // ilosc kosci = ilosc obiektów frame w tablicy
             m_pFrameCount = m_markerList[0]->GetAnimationList().size();
             _length = m_markerList[0]->GetAnimationList()[m_pFrameCount-1]->m_time;
+
+            if(!m_pAnimationService->IsModelAnimation())
+                m_pAnimationService->setLength(_length);
         }
     }
 }

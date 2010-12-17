@@ -17,10 +17,8 @@
 // struktura ramkai czyli animacji. s³u¿a do przchowywania informacji zawarych w C3D file
 struct MarkerFrame
 {
-    MarkerFrame() {m_time = positionx = positiony = positionz = 0; };
-
+    MarkerFrame() { m_time = 0; };
     float m_time;
-    float positionx, positiony, positionz;
 
     osg::Vec3f m_position;
 };
