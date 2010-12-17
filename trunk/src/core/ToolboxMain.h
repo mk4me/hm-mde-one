@@ -57,6 +57,7 @@ public:
 
 public:
     void openFile( const std::string& path );
+	void loadData();
 
 
 public slots:    

@@ -73,7 +73,7 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
 	*/
     dataManager = new DataManager();
-
+	dataManager->setToolBoxMain(this);
 
     // inicjalizacja us³ug
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
@@ -548,22 +548,25 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
 
 void ToolboxMain::openFile( const std::string& path )
 {
-    std::cout << " " << std::endl; 
-    std::cout << "File Opened: " << path << std::endl;
-    std::cout << "---------------------------------------------------------------" << std::endl; 
-
-    m_pRenderService->GetFactory()->Clear();
+	std::cout << " " << std::endl; 
+	std::cout << "File Opened: " << path << std::endl;
+	std::cout << "---------------------------------------------------------------" << std::endl; 
 
 	//wskazanie aktualnej proby pomiarowej
 	dataManager->setActualTrial(path);
+	loadData();
+}
 
-    m_pServiceManager->loadDataPass(dataManager);
+void ToolboxMain::loadData()
+{
+	m_pRenderService->GetFactory()->Clear();
+	m_pServiceManager->loadDataPass(dataManager);
 
-   // m_pRenderService->AddObjectToRender(createGrid());
+	// m_pRenderService->AddObjectToRender(createGrid());
 
-    // manage scene
-    osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
-    osg::Node* sceneRoot = scene->getSceneData();
+	// manage scene
+	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
+	osg::Node* sceneRoot = scene->getSceneData();
 }
 
 // void ToolboxMain::SettingModel()

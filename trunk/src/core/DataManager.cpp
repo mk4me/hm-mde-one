@@ -1,8 +1,10 @@
 #include "DataManager.h"
 
+#include <core/Log.h>
 #include <core/IModel.h>
 #include <boost/regex.hpp>
 #include <core/Filesystem.h>
+#include <core/ToolboxMain.h>
 
 DataManager::DataManager(const std::string& resourcesPath, const std::string& trialsPath) : resourcesPath(resourcesPath), trialsPath(trialsPath)
 {
@@ -80,30 +82,12 @@ void DataManager::loadTrials()
 			trials.push_back(t);
 		}
 	}
-
-	//videosPaths.clear();
-	//c3dsPaths.clear();
-	//animationPaths.clear();
-	//skeletonPaths.clear();
-	////nie przeszukujemy podkatalogow, sprawdzamy konkretny katalog aby wyluskac sciezki dla jednej proby pomiarowej
-	////szukaj plikow video
-	//videosPaths = Filesystem::listFiles(this->trialsPath, false, "*.avi");
-	////szukaj plikow c3d
-	//c3dsPaths = Filesystem::listFiles(this->trialsPath, false, "*.c3d");
-	////szukaj plikow animacji
-	//animationPaths = Filesystem::listFiles(this->trialsPath, false, "*.amc");
-	////szukaj plikow animacji szkieletowej
-	//skeletonPaths = Filesystem::listFiles(this->trialsPath, false, "*.asf");
 }
 
 void DataManager::clear() {
 	this->shadersPaths.clear();
 	this->meshesPaths.clear();
 	this->applicationSkinsPaths.clear();
-	//this->videosPaths.clear();
-	//this->c3dsPaths.clear();
-	//this->animationPaths.clear();
-	//this->skeletonPaths.clear();
 	this->trials.clear();
 }
 
@@ -146,46 +130,6 @@ int DataManager::getApplicationSkinsFilePathCount()
 {
 	return applicationSkinsPaths.size();
 }
-//
-//const std::string& DataManager::getVideoFilePath(int i)
-//{
-//	return videosPaths[i];
-//}
-//
-//int DataManager::getVideoFilePathCount()
-//{
-//	return videosPaths.size();
-//}
-//
-//const std::string& DataManager::getC3dFilePath(int i)
-//{
-//	return c3dsPaths[i];
-//}
-//
-//int DataManager::getC3dFilePathCount()
-//{
-//	return c3dsPaths.size();
-//}
-//
-//const std::string& DataManager::getAnimationFilePath(int i)
-//{
-//	return animationPaths[i];
-//}
-//
-//int DataManager::getAnimationFilePathCount()
-//{
-//	return animationPaths.size();
-//}
-//
-//const std::string& DataManager::getSkeletonFilePath(int i)
-//{
-//	return skeletonPaths[i];
-//}
-//
-//int DataManager::getSkeletonFilePathCount()
-//{
-//	return skeletonPaths.size();
-//}
 
 const std::string& DataManager::getResourcesPath() const
 {
@@ -206,11 +150,6 @@ void DataManager::setTrialsPath(const std::string& trials)
 {
 	trialsPath = trials;
 }
-//
-//std::vector<std::string>* DataManager::getAnimationPathList()
-//{
-//    return &animationPaths;
-//}
 
 const LocalTrial& DataManager::getActualTrial() const
 {
@@ -220,6 +159,7 @@ const LocalTrial& DataManager::getActualTrial() const
 void DataManager::setActualTrial(int i)
 {
 	actualTrialIndex = i;
+	toolbox->loadData();
 
 }
 void DataManager::setActualTrial(const std::string& path)
@@ -229,7 +169,9 @@ void DataManager::setActualTrial(const std::string& path)
 		if(trials.at(i).getTrialPath().compare(path))
 		{
 			actualTrialIndex = i;
+			toolbox->loadData();
 			return;
 		}
 	}
+	LOG_ERROR << ": !Blad ladowania proby pomiarowej, brak proby pomiarowej w zasobach\n";
 }

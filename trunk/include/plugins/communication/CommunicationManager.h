@@ -24,14 +24,14 @@ namespace communication
 	class CommunicationManager : public utils::Observable<CommunicationManager>, public OpenThreads::Thread
 	{
 	public:
-	enum State
-	{
-		Ready,
-		DownloadingFile,
-		DownloadingTrial,
-		UpdatingServerTrials,
-		Error
-	};
+		enum State
+		{
+			Ready,
+			DownloadingFile,
+			DownloadingTrial,
+			UpdatingServerTrials,
+			Error
+		};
 
 		void setTransportManager(ITransportable* transportManager);
 		ITransportable* getTransportManager();
