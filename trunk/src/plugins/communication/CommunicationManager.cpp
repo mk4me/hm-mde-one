@@ -55,8 +55,15 @@ void CommunicationManager::saveToXml(const std::string& filename)
 	document.LinkEndChild(root);
 
 	//zapis daty
-	DateTime dt;
-	root->SetAttribute("date", dt.toString());
+	if(isLastUpdate)
+	{
+		root->SetAttribute("date", lastUpdate.toString());
+	}
+	else
+	{
+		DateTime dt;
+		root->SetAttribute("date", dt.toString());
+	}
 
 	for(ServerTrials::iterator iterator = this->serverTrials.begin(); iterator != this->serverTrials.end(); ++iterator)
 	{
@@ -226,6 +233,8 @@ void CommunicationManager::run()
 		{
 			try
 			{
+				filesToDownload = 1;
+				actualFile = 1;
 				this->transportManager->downloadFile(entityID, this->trialsDir);
 				state = Ready;
 			}
@@ -244,8 +253,11 @@ void CommunicationManager::run()
 				{
 					if(it->id == entityID)
 					{
+						filesToDownload = it->trialFiles.size();
+						actualFile = 0;
 						for(std::vector<int>::iterator id = it->trialFiles.begin(); id != it->trialFiles.end(); ++id)
 						{
+							actualFile++;
 							this->transportManager->downloadFile((*id), this->trialsDir);
 						}
 						break;

@@ -27,6 +27,7 @@ CommunicationService::CommunicationService() : name("Communication")
 	{
 		LOG_ERROR << e.what() << std::endl;
 	}
+	widget->refresh();
 }
 
 CommunicationService::~CommunicationService()
@@ -100,25 +101,48 @@ AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDat
 
 AsyncResult CommunicationService::update(double time, double timeDelta)
 {
-	if(model->getState() != communication::CommunicationManager::Ready && model->getState() != communication::CommunicationManager::Error)
+	switch(model->getState())
 	{
-		widget->setBusy(true);
-		widget->setProgress(model->getProgress());
-	}
-	else
-	{
-		//wystapil blad
-		if(model->getState() == communication::CommunicationManager::Error)
+	case communication::CommunicationManager::UpdatingServerTrials:
+		{
+			widget->setBusy(true);
+			widget->setInfoLabel("Updating server trials");
+			break;
+		}
+	case communication::CommunicationManager::DownloadingFile:
+		{
+			widget->setBusy(true);
+			widget->setInfoLabel("Downloading file");
+			widget->setProgress(model->getProgress());
+			break;
+		}
+	case communication::CommunicationManager::DownloadingTrial:
+		{
+			widget->setBusy(true);
+			std::ostringstream stream;
+			stream << "Downloading file " << model->getActualDownloadFileNumber() << " from " << model->getFilesToDownloadCount();
+			widget->setInfoLabel(stream.str());
+			widget->setProgress(model->getProgress());
+			break;
+		}
+	case communication::CommunicationManager::Error:
 		{
 			//przekaz info
 			widget->showErrorMessage(model->getErrorMessage());
 			model->setState(communication::CommunicationManager::Ready);
 			//przeladuj zasoby
 			load();
+			break;
 		}
-		widget->setBusy(false);
+	default:
+		{
+			widget->setBusy(false);
+			break;
+		}
+
 	}
 	widget->refresh();
+
 	return AsyncResult_Complete;
 }
 

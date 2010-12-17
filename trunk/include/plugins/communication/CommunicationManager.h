@@ -47,6 +47,8 @@ namespace communication
 		const std::string& getTrialsDir() const;
 
 		int getProgress() const;
+		int getFilesToDownloadCount() const {return filesToDownload;};
+		int getActualDownloadFileNumber() const {return actualFile;};
 
 		void listSessionContents();
 		void downloadTrial(unsigned int trialID);
@@ -90,6 +92,10 @@ namespace communication
 		DateTime lastUpdate;
 		bool isLastUpdate;
 		int entityID;
+
+		int progress;
+		int filesToDownload;
+		int actualFile;
 
 		IServiceManager* serviceManager;
 		IDataManager* dataManager;

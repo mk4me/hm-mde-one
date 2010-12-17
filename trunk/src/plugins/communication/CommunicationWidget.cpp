@@ -160,7 +160,7 @@ void CommunicationWidget::itemDoubleClicked(QListWidgetItem* item)
 
 void CommunicationWidget::updateButtonClicked()
 {
-	infoLabel->setText(QString("Updating..."));
+	//infoLabel->setText(QString("Updating..."));
 	this->communicationService->updateSessionContents();
 }
 
@@ -182,7 +182,7 @@ void CommunicationWidget::download()
 	{
 		if(trials->item(trials->currentRow()))
 		{
-			infoLabel->setText(QString("Downloading..."));
+			//infoLabel->setText(QString("Downloading..."));
 			EntityTrialItem* temp = reinterpret_cast<EntityTrialItem*>(trials->item(trials->currentRow()));
 			int trial = temp->getID();
 			this->communicationService->downloadTrial(trial);

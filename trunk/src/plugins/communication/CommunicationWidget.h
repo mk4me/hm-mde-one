@@ -50,6 +50,7 @@ public:
 	void setBusy(bool busy);
 	bool getBusy();
 	void setProgress(int value);
+	void setInfoLabel(const std::string& info) {infoLabel->setText(QString::fromStdString(info));};
 	void showErrorMessage(const std::string& error);
 	void refresh();
 
