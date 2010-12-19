@@ -5,7 +5,7 @@
 #include <core/ChartPointer.h>
 
 Chart::Chart(int x,int y,int width,int height){
-	labelVisable=true;
+	showLabel=true;
 	gridColor=osg::Vec4(0.0f,0.0f,1.0f, 0.1f);
 	color = osg::Vec4(0,0,0, 1.0);
 	borderSize=40;
@@ -163,7 +163,7 @@ osg::Geode* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numRep
 	
 
 		if(e.x()>s.x()){
-			if(labelVisable){
+			if(showLabel){
 				osgText::Text* text=createLabel(pos-posX,fontSize, (formatNumber(actualScale))+unit);
 				text->setAlignment(osgText::Text::RIGHT_CENTER);
 				geode->addDrawable(text);}
@@ -176,7 +176,7 @@ osg::Geode* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numRep
 				//osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
 		}
 		else{
-			if(labelVisable){
+			if(showLabel){
 				osgText::Text* text=createLabel(pos ,fontSize,(formatNumber(actualScale))+unit);
 				text->setAlignment(osgText::Text::RIGHT_CENTER);
 					geode->addDrawable(text);}
@@ -241,7 +241,7 @@ void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
 	xNumReps=2;
 	yNumReps=2;
 	borderSize=5;
-	labelVisable=false;
+	showLabel=false;
 	showBorder=false;
 	float yMaxScale=0;
 	if(chartData->getRNumber()>0){
@@ -249,7 +249,7 @@ void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
 	std::vector<ChartData*>::iterator itData= data.end()-1;
 	dataSeries.push_back(new LineChart((*itData),x+borderSize,y+borderSize,width-borderSize,height-borderSize,color));
 	std::vector<LineChart*>::iterator itDataSeries = dataSeries.end()-1;
-	(*itDataSeries)->setLabelVisable(labelVisable);
+	(*itDataSeries)->setShowLabel(showLabel);
 	this->addChild(*itDataSeries);
 	
 	if(data.size()>1){
@@ -459,7 +459,7 @@ osg::Geode* Chart::createMainLabel(osg::Vec4 color, std::string name){
 		osg::Geode* geode = new osg::Geode;
 		this->setName(name);
 			geode->setName("label");
-	if(labelVisable){
+	if(showLabel){
 	osg::StateSet* ss = geode->getOrCreateStateSet();
 
 
@@ -496,12 +496,12 @@ osg::Geode* Chart::createMainLabel(osg::Vec4 color, std::string name){
 return geode;
 }
 
-void Chart::setLabelVisable(bool labelVisable){
-	this->labelVisable=labelVisable;
+void Chart::setShowLabel(bool showLabel){
+	this->showLabel=showLabel;
 std::vector<LineChart*>::iterator itPos = dataSeries.begin();
 	std::vector<ChartData*>::iterator dataPos = data.begin();
 	for(; itPos < dataSeries.end(); itPos++,dataPos++){
-		(*itPos)->setLabelVisable(labelVisable);
+		(*itPos)->setShowLabel(showLabel);
 	}
 	repaint();
 }

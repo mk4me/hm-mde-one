@@ -14,7 +14,7 @@ LineChart::LineChart(ChartData* data,int x,int y,int width, int height,osg::Vec4
 	LineChart::chartVertices=new osg::Vec3Array();
 	setColor(color);
 	float currentX=0;
-	labelVisable=true;
+	showLabel=true;
 	for(int i=0;i<data->getRNumber();i++)
 	{
 
@@ -27,7 +27,7 @@ LineChart::LineChart(ChartData* data,int x,int y,int width, int height,osg::Vec4
 	chart=ChartDataSeries::drawChart(chartVertices); 
 	
 
-	pointer=new ChartPointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data,labelVisable);
+	pointer=new ChartPointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data,showLabel);
 	this->addChild(pointer);
 	this->addChild(chart);
 	
@@ -60,11 +60,11 @@ void LineChart::repaint(ChartData* data,int x,int y,int width,int height){
 	osg::Geode* newChart=ChartDataSeries::drawChart(chartVertices); 
 	this->replaceChild(chart,newChart);
 	chart=newChart;
-	ChartPointer* newPointer=new ChartPointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data,labelVisable);
+	ChartPointer* newPointer=new ChartPointer(osg::Vec3(x,y,0),osg::Vec3(width,height,0),data,showLabel);
 	this->replaceChild(pointer,newPointer);
 	pointer=newPointer;
 }
 
-void LineChart::setLabelVisable(bool labelVisable){
-	this->labelVisable=labelVisable;
+void LineChart::setShowLabel(bool showLabel){
+	this->showLabel=showLabel;
 }

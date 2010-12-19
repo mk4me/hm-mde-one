@@ -19,7 +19,7 @@ private:
 	ChartPointer* pointer;
 	osg::Geode* chart;
 	ChartData* data;
-	bool labelVisable;
+	bool showLabel;
 	int x,y,width,height;
 public:
 	//konstruktor wykresu
@@ -29,7 +29,7 @@ public:
 	void addCoord(osg::Vec3);
 	ChartPointer* getPointer();
 	void repaint(ChartData* data,int x,int y,int width,int height);
-	void setLabelVisable(bool labelVisable);
+	void setShowLabel(bool showLabel);
 };
 
 

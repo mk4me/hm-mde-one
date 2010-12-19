@@ -41,7 +41,7 @@ private:
 	void repaint();
 	osg::Geode* createMainLabel(osg::Vec4 color,std::string name);
 	int labelOffset;
-	bool labelVisable;
+	bool showLabel;
 	bool showBorder;
 public:
 	Chart(int x,int y,int width,int height);
@@ -90,7 +90,7 @@ public:
 	//! pobiera lokacje wykresu
 	osg::Vec4 getLocation();
 
-	void setLabelVisable(bool labelVisable);
+	void setShowLabel(bool showLabel);
 	void setShowBorder(bool showBorder);
 	bool isShowingBorder();
 };
