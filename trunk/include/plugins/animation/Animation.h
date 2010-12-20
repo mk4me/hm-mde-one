@@ -43,6 +43,7 @@ public:
     {
         ACCLAIM = 0,
         FMESH,
+        BVH,
         C3D
     };
 
@@ -75,6 +76,8 @@ public:
 	void SetScale(double scale);
 
     Animation::AnimationType GetAnimationType();
+
+    void PlayFirstFrame();
     
 private: 
     // update model - updates only mesh etc taking skeleton

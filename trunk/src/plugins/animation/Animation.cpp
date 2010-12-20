@@ -29,6 +29,7 @@ m_pAnimationService(animationService)
 , SCALE(1.0)
 , m_markerList(NULL)
 , m_animationType(ACCLAIM)
+, m_pFrameCount(0)
 {
 }
 
@@ -47,6 +48,7 @@ m_pAnimationService(animationService)
 , SCALE(1.0)
 , m_markerList(markerList)
 , m_animationType(C3D)
+, m_pFrameCount(0)
 {
 }
 
@@ -79,6 +81,26 @@ bool Animation::Resume()
     }
 
     return false;
+}
+//--------------------------------------------------------------------------------------------------
+void Animation::PlayFirstFrame()
+{
+    FirstFrame();
+
+    switch(m_animationType)
+    {
+    case AnimationType::ACCLAIM:
+        UpdateModelAcclaimFormat();
+    	break;
+
+    case AnimationType::C3D:
+        UpdateModelC3DFormat();
+        break;
+
+    case AnimationType::BVH:
+        UpdateModelBVHFormat();
+        break;
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -293,10 +315,9 @@ void Animation::CalculateChildMatrixAcclaimFormat(Bone *bone)
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
 
-    if(index < 0)
+    if(index <= 0)
         index = 0;
-
-    if(index > m_pFrameCount - 1)
+    else if(index > m_pFrameCount - 1)
     {
         // tymczasowo za³ozenie polega na tym iz dojscie do konca animacji wcale jej nie wy³¹cza - animacja dalej jest aktywna
         // pozwala to na prewijanie w ty³ animacji - timeline nie obs³uguje ponownego w³¹czenia animacji - jedynie swojego czasu
@@ -375,10 +396,9 @@ void Animation::UpdateModelAcclaimFormat()
     //znalezienie odpowiedniej ramki uwzglêdniaj¹c czas
     int index = _actTime / TIMERMULTIPLAY;
 
-    if(index < 0)
+    if(index <= 0)
         index = 0;
-
-    if(index > m_pFrameCount - 1)
+    else if(index > m_pFrameCount - 1)
     {
         // tymczasowo za³ozenie polega na tym iz dojscie do konca animacji wcale jej nie wy³¹cza - animacja dalej jest aktywna
         // pozwala to na prewijanie w ty³ animacji - timeline nie obs³uguje ponownego w³¹czenia animacji - jedynie swojego czasu

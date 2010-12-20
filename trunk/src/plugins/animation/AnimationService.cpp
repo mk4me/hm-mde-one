@@ -360,6 +360,9 @@ void AnimationService::LoadAnimation( IModel* model )
         m_animations.insert(make_pair(model->GetAnimationList()->m_SkeletonAnimationList[i]->m_animationName, animation));	
         m_animationDisplayList.push_back(model->GetAnimationList()->m_SkeletonAnimationList[i]->m_animationName);
     }
+
+    if(!m_animations.empty())
+        m_animations.begin()->second->PlayFirstFrame();
 }
 
 //--------------------------------------------------------------------------------------------------
