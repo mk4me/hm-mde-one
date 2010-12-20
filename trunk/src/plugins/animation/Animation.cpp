@@ -296,7 +296,7 @@ void Animation::CalculateChildMatrixAcclaimFormat(Bone *bone)
     if(index < 0)
         index = 0;
 
-    if(index > m_pFrameCount - 1)
+    if(index > m_pFrameCount - 60)
     {
         _state = Animation::STOPPED;
         index = m_pFrameCount -1;
@@ -376,7 +376,7 @@ void Animation::UpdateModelAcclaimFormat()
     if(index < 0)
         index = 0;
 
-    if(index > m_pFrameCount - 1)
+    if(index > m_pFrameCount - 60)
     {
         _state = Animation::STOPPED;
         index = m_pFrameCount -1;

@@ -318,10 +318,12 @@ AsyncResult AnimationService::update(double time, double timeDelta)
         if(m_functionsToCall.empty())
             break;
 
+
         delete (**i);
-        
-        *i = m_functionsToCall.erase((const vector<ISimpleOneArgFunctor<double>*>::iterator)(*i));
-       // i = m_functionsToRemove.erase(i);
+
+        //*i = m_functionsToCall.erase((const vector<ISimpleOneArgFunctor<double>*>::iterator)(*i));
+        m_functionsToCall.erase((const vector<ISimpleOneArgFunctor<double>*>::iterator)(*i));
+        i = m_functionsToRemove.erase(i);
     }
 
     m_functionsToRemove.clear();
