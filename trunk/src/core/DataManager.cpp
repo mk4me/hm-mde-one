@@ -4,13 +4,14 @@
 #include <core/IModel.h>
 #include <boost/regex.hpp>
 #include <core/Filesystem.h>
-#include <core/ToolboxMain.h>
 
 DataManager::DataManager(const std::string& resourcesPath, const std::string& trialsPath) : resourcesPath(resourcesPath), trialsPath(trialsPath)
 {
 	clear();
 	loadResources();
 	loadTrials();
+	loadTrialData = false;
+	actualTrialIndex = 0;
 }
 
 DataManager::~DataManager()
@@ -159,17 +160,17 @@ const LocalTrial& DataManager::getActualTrial() const
 void DataManager::setActualTrial(int i)
 {
 	actualTrialIndex = i;
-	toolbox->loadData();
+	loadTrialData = true;
 
 }
-void DataManager::setActualTrial(const std::string& path)
+void DataManager::setActualTrial(const std::string& name)
 {
 	for(size_t i = 0; i < trials.size(); i++)
 	{
-		if(trials.at(i).getTrialPath().compare(path))
+		if(trials.at(i).getName().compare(name) == 0)
 		{
 			actualTrialIndex = i;
-			toolbox->loadData();
+			loadTrialData = true;
 			return;
 		}
 	}

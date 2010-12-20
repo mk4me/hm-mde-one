@@ -153,7 +153,7 @@ AsyncResult CommunicationService::init(IServiceManager* serviceManager, osg::Nod
 	return AsyncResult_Complete;
 }
 
-void CommunicationService::loadTrial(const std::string& path)
+void CommunicationService::loadTrial(const std::string& name)
 {
-	model->loadActualTrial(path);
+	model->loadActualTrial(name);
 }

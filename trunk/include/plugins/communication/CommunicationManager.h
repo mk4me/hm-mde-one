@@ -66,7 +66,7 @@ namespace communication
 		void setServiceManager(IServiceManager* serviceManager) {this->serviceManager = serviceManager;};
 		IServiceManager* getServiceManager() {return serviceManager;};
 
-		void loadActualTrial(const std::string& path);
+		void loadActualTrial(const std::string& name);
 
 		const State& getState() const {return state;};
 		void setState(const State& state) {this->state = state;};

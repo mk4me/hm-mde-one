@@ -73,7 +73,6 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
 	*/
     dataManager = new DataManager();
-	dataManager->setToolBoxMain(this);
 
     // inicjalizacja us³ug
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
@@ -283,6 +282,10 @@ osg::ref_ptr<osg::Node> ToolboxMain::createGrid()
 
 void ToolboxMain::updateServices()
 {
+	if(dataManager->isLoadTrialData())
+	{
+		loadData();
+	}
     m_pServiceManager->updatePass();
 }
 
@@ -552,9 +555,20 @@ void ToolboxMain::openFile( const std::string& path )
 	std::cout << "File Opened: " << path << std::endl;
 	std::cout << "---------------------------------------------------------------" << std::endl; 
 
-	//wskazanie aktualnej proby pomiarowej
-	dataManager->setActualTrial(path);
-	loadData();
+	std::string name;
+	
+	size_t position = path.rfind('/');
+	if(position == path.npos)
+	{
+		name = path;
+	}
+	else
+	{
+		name = path.substr(position+1);
+	}
+	std::cout << name << std::endl;
+	//wskazanie aktualnej proby pomiarowej przez nazwe
+	dataManager->setActualTrial(name);
 }
 
 void ToolboxMain::loadData()
@@ -567,6 +581,7 @@ void ToolboxMain::loadData()
 	// manage scene
 	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
 	osg::Node* sceneRoot = scene->getSceneData();
+	dataManager->setLoadTrialData(false);
 }
 
 // void ToolboxMain::SettingModel()

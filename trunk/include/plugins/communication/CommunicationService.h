@@ -47,7 +47,7 @@ public:
 	virtual void updateSessionContents();
 	virtual void downloadTrial(unsigned int trialID);
 	virtual void downloadFile(unsigned int fileID);
-	virtual void loadTrial(const std::string& path);
+	virtual void loadTrial(const std::string& name);
 
 	void load();
 	void save();

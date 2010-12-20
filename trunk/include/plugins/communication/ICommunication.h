@@ -12,7 +12,7 @@ public:
 
 	virtual void downloadTrial(unsigned int trialID) = 0;
 
-	virtual void loadTrial(const std::string& path) = 0;
+	virtual void loadTrial(const std::string& name) = 0;
 
 	//virtual void downloadFile(unsigned int sessionID, unsigned int trialID, unsigned int fileID) = 0;
 

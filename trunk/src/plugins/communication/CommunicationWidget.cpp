@@ -83,6 +83,7 @@ void CommunicationWidget::refreshUI()
 		LocalTrialItem* item = new LocalTrialItem();
 		trials->addItem(item);
 		item->setPath(it->getTrialPath());
+		item->setName(it->getName());
 		item->setText(QString::fromStdString(it->getName()));
 	}
 	//serwerowe proby pomiarowe, sprawdzamy czy sie nie powtarzaja z lokalnymi
@@ -154,7 +155,7 @@ void CommunicationWidget::itemDoubleClicked(QListWidgetItem* item)
 	{
 		//download();
 		LocalTrialItem* temp = reinterpret_cast<LocalTrialItem*>(trials->item(trials->currentRow()));
-		communicationService->loadTrial(temp->getPath());
+		communicationService->loadTrial(temp->getName());
 	}
 }
 

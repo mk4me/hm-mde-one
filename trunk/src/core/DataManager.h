@@ -4,8 +4,6 @@
 #include <core/IDataManager.h>
 #include <core/LocalTrial.h>
 
-class ToolboxMain;
-
 class DataManager: public IDataManager
 {
 public:
@@ -20,7 +18,7 @@ public:
 
 	virtual const LocalTrial& getActualTrial() const;
 	virtual void setActualTrial(int i);
-	virtual void setActualTrial(const std::string& path);
+	virtual void setActualTrial(const std::string& name);
 
 	virtual void clear();
 
@@ -39,7 +37,8 @@ public:
 	virtual void setResourcesPath(const std::string& resources);
 	virtual void setTrialsPath(const std::string& trials);
 
-	void setToolBoxMain(ToolboxMain* toolbox) {this->toolbox = toolbox;};
+	virtual bool isLoadTrialData() const {return loadTrialData;};
+	virtual void setLoadTrialData(bool load) {loadTrialData = load;};
 
 	virtual ~DataManager();
 private:
@@ -52,7 +51,7 @@ private:
 	std::string resourcesPath;
 	std::string trialsPath;
 
-	ToolboxMain* toolbox;
+	bool loadTrialData;
 
 };
 

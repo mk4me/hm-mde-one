@@ -35,10 +35,13 @@ class LocalTrialItem : public QListWidgetItem
 {
 private:
 	std::string path;
+	std::string name;
 public:
 	LocalTrialItem() {setTextColor(QColor(0, 0, 255));};
 	void setPath(const std::string& path) {this->path = path;};
 	const std::string& getPath() const {return path;};
+	void setName(const std::string& name) {this->name = name;};
+	const std::string& getName() const {return name;};
 };
 
 class CommunicationWidget : public QWidget, public utils::Observer<communication::CommunicationManager>

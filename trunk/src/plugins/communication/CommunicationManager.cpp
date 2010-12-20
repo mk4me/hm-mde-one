@@ -220,9 +220,9 @@ void CommunicationManager::loadLocalTrials()
 	notify();
 }
 
-void CommunicationManager::loadActualTrial(const std::string& path)
+void CommunicationManager::loadActualTrial(const std::string& name)
 {
-	dataManager->setActualTrial(path);
+	dataManager->setActualTrial(name);
 }
 
 void CommunicationManager::run()
