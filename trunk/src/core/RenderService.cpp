@@ -186,6 +186,16 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 
     //std::vector<std::string> animationPathList = *dataManager->getAnimationPathList();
 
+    if(m_pModel){
+        DisableBone();
+        DisableMesh();
+    }
+
+    if(m_pC3DModel){
+        DisableMarker();
+        DisablemarkerPath();
+    }
+
 	m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(meshpath, skelpath, animationPathList));
 
     if(m_pModel) {
@@ -205,6 +215,8 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
 {
     m_pFactory = new Factor();
+    m_pModel = NULL;
+    m_pC3DModel = NULL;
 
     std::cout<< "RenderService ADDED-test!" << std::endl; 
     Inicialize(sceneRoot);
@@ -506,6 +518,13 @@ IFactor* RenderService::GetFactory()
 osg::Node* RenderService::debugGetLocalSceneRoot()
 {
     return widget->getSceneData();
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderService::DisablemarkerPath()
+{
+    if(m_pMarkerLineGeode.valid())
+        SceneRoot->removeChild(m_pMarkerLineGeode.get());
 }
 
 //--------------------------------------------------------------------------------------------------

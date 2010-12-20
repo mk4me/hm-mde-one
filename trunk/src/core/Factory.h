@@ -11,7 +11,6 @@ class IC3DModel;
 typedef std::map<std::string, IModel*> ModelResources;
 typedef std::map<std::string, IC3DModel*> C3DModelResources;
 
-// Tworzenie klasy wywodz¹cej sie z Singleton
 class Factor: public IFactor
 {
 public:

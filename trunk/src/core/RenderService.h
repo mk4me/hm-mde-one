@@ -104,6 +104,7 @@ public:
     virtual void CreatingAndRenderMarkerPath(IC3DModel* tempModel);
 
 private: 
+    void DisablemarkerPath();
 
     void Inicialize(osg::Node* sceneRoot);
     void InicizlizeModelMesh(Model* model);

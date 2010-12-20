@@ -296,9 +296,11 @@ void Animation::CalculateChildMatrixAcclaimFormat(Bone *bone)
     if(index < 0)
         index = 0;
 
-    if(index > m_pFrameCount - 60)
+    if(index > m_pFrameCount - 1)
     {
-        _state = Animation::STOPPED;
+        // tymczasowo za³ozenie polega na tym iz dojscie do konca animacji wcale jej nie wy³¹cza - animacja dalej jest aktywna
+        // pozwala to na prewijanie w ty³ animacji - timeline nie obs³uguje ponownego w³¹czenia animacji - jedynie swojego czasu
+        //_state = Animation::STOPPED;
         index = m_pFrameCount -1;
     }
 
@@ -376,9 +378,11 @@ void Animation::UpdateModelAcclaimFormat()
     if(index < 0)
         index = 0;
 
-    if(index > m_pFrameCount - 60)
+    if(index > m_pFrameCount - 1)
     {
-        _state = Animation::STOPPED;
+        // tymczasowo za³ozenie polega na tym iz dojscie do konca animacji wcale jej nie wy³¹cza - animacja dalej jest aktywna
+        // pozwala to na prewijanie w ty³ animacji - timeline nie obs³uguje ponownego w³¹czenia animacji - jedynie swojego czasu
+      //  _state = Animation::STOPPED;
         index = m_pFrameCount -1;
     }
 
@@ -456,7 +460,9 @@ void Animation::UpdateModelC3DFormat()
 
     if(index > m_pFrameCount - 1)
     {
-        _state = Animation::STOPPED;
+        // tymczasowo za³ozenie polega na tym iz dojscie do konca animacji wcale jej nie wy³¹cza - animacja dalej jest aktywna
+        // pozwala to na prewijanie w ty³ animacji - timeline nie obs³uguje ponownego w³¹czenia animacji - jedynie swojego czasu
+       // _state = Animation::STOPPED;
         index = m_pFrameCount -1;
     }
 
