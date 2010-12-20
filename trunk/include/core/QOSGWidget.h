@@ -57,28 +57,15 @@ protected:
 
 class QOSGViewer : public QOSGWidget, public osgViewer::Viewer
 {
-public:
-    //! TODO: tymczasowo publiczne!
-    QTimer _timer;
+private:
+    QTimer updateTimer;
 
 public:
     QOSGViewer(QWidget * parent = 0, const char * name = 0, 
-        const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0) 
-        : QOSGWidget( parent, name, shareWidget, f )
-    {
-        getCamera()->setViewport(new osg::Viewport(0,0,width(),height()));
-        getCamera()->setProjectionMatrixAsPerspective(45.0, double(width())/height(), 1.0, 10000.0);
-        getCamera()->setGraphicsContext(getGraphicsWindow());
-        setThreadingModel(osgViewer::Viewer::SingleThreaded);
-        connect(&_timer, SIGNAL(timeout()), this, SLOT(updateGL()));
-        _timer.start(34);
-    }
+        const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0);
 
 protected:
-    virtual void paintGL()
-    {
-        frame();
-    }
+    virtual void paintGL();
 };
 
 #endif  // __HEADER_GUARD__QOSGWIDGET_H__

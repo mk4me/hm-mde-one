@@ -10,21 +10,19 @@
 #include "VideoWidgetOptions.h"
 #include "TimelineImageStreamWrapper.h"
 #include "osg/VideoImageStream.h"
+#include <boost/foreach.hpp>
 
 //M_DECLARED_CLASS(VideoService, )
-
-static vm::PixelFormat comboTranslationTable[] = {
-    vm::PixelFormatYV12,
-    vm::PixelFormatRGB24,
-    vm::PixelFormatBGRA
-};
 
 
 VideoService::VideoService()
 :   name("Video")
 {
     widget = new VideoWidget();
-    optionsWidget = new VideoWidgetOptions();
+    optionsWidget = new VideoWidgetOptions(this);
+
+
+
     //int * dupa = new int[100000];
 
 //     std::vector<std::string> files;
@@ -50,6 +48,8 @@ VideoService::VideoService()
 
 AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
 {
+
+
 	VideoWidget* widget = reinterpret_cast<VideoWidget*>(this->widget);
 
 	std::vector<std::string> files;
@@ -76,13 +76,19 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 
 	ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
 	if ( timeline ) {
-		for ( size_t i = 0; i < widget->getImages().size(); ++i ) {
-			osg::Image* img = widget->getImages()[i].get();
-			osg::ImageStream* stream = dynamic_cast<osg::ImageStream*>(img);
-			if ( stream ) {
-				timeline->addStream(timeline::StreamPtr(timeline::Stream::encapsulate(stream)));
-			}
-		}
+        // usuniêcie starych strumieni
+        BOOST_FOREACH(timeline::StreamPtr stream, streams) {
+            timeline->removeStream(stream);
+        }
+        streams.clear();
+
+        // dodanie nowych strumieni
+        BOOST_FOREACH(osg::Image* img, widget->getImages()) {
+            if ( osg::ImageStream* stream = dynamic_cast<osg::ImageStream*>(img) ) {
+                streams.push_back( timeline::StreamPtr(timeline::Stream::encapsulate(stream)) );
+                timeline->addStream( streams.back() );
+            }
+        }
 	} else {
 		OSG_WARN<<"ITimeline not found."<<std::endl;
 	}
@@ -109,11 +115,11 @@ AsyncResult VideoService::update( double time, double timeDelta )
 vm::PixelFormat VideoService::getOutputFormat()
 {
     UTILS_ASSERT(optionsWidget);
-    VideoWidgetOptions* optionsWidget = reinterpret_cast<VideoWidgetOptions*>(this->optionsWidget);
-    int idx = optionsWidget->outputFormatCombo->currentIndex();
-    if ( idx < utils::length(comboTranslationTable) ) {
-        return comboTranslationTable[idx];
-    } else {
+//     int idx = optionsWidget->outputFormatCombo->currentIndex();
+//     if ( idx < utils::length(comboTranslationTable) ) {
+//         return comboTranslationTable[idx];
+//     } else {
+    {
         UTILS_ASSERT(false, "Nieobs³ugiwany format.");
         return vm::PixelFormatUndefined;
     }
@@ -122,37 +128,40 @@ vm::PixelFormat VideoService::getOutputFormat()
 
 void VideoService::setOutputFormat( vm::PixelFormat format )
 {
-    // wyszukanie indeksu komba
-    size_t i;
-    for ( i = 0; i < utils::length(comboTranslationTable) && comboTranslationTable[i] != format; ++i );
-    // ustawienie komba i wartoœci
-    if ( i != utils::length(comboTranslationTable) ) {
-        UTILS_ASSERT(optionsWidget);
-        VideoWidgetOptions* optionsWidget = reinterpret_cast<VideoWidgetOptions*>(this->optionsWidget);
-        optionsWidget->outputFormatCombo->setCurrentIndex(i);
-        // ustawienie formatu strumieni
-        BOOST_FOREACH( osg::Image* image, imagesList ) {
-            if ( vmOSGPlugin::VideoImageStream* stream = dynamic_cast<vmOSGPlugin::VideoImageStream*>(image) ) {
-                stream->setTargetFormat(format);
-            }
-        }
-
-    } else {
-        UTILS_ASSERT(false, "Nieobs³ugiwany format.");
-    }
+    UTILS_ASSERT(optionsWidget && widget);
+//     if ( optionsWidget->outputFormatCombo->currentIndex() != i ) {
+//         optionsWidget->blockSignals(true);
+//         optionsWidget->outputFormatCombo->setCurrentIndex(i);
+//         optionsWidget->blockSignals(false);
+//     }
+    widget->setPixelFormat(format);
 }
+
 
 bool VideoService::isUsingTextureRectangle()
 {
     UTILS_ASSERT(optionsWidget);
-    VideoWidgetOptions* optionsWidget = reinterpret_cast<VideoWidgetOptions*>(this->optionsWidget);
     return optionsWidget->textureRectangleCheck->isChecked();
+}
+
+void VideoService::setUseTextureRectangle( bool useTextureRectangle )
+{
+    UTILS_ASSERT(optionsWidget && widget);
+    QCheckBox* textureRectangleCheck = optionsWidget->textureRectangleCheck;
+    if ( textureRectangleCheck->isChecked() ) {
+        textureRectangleCheck->blockSignals(true);
+        textureRectangleCheck->setChecked(useTextureRectangle);
+        textureRectangleCheck->blockSignals(false);
+    }
+    optionsWidget->textureRectangleCheck->setChecked(useTextureRectangle);
+    widget->setUseTextureRect(useTextureRectangle);
 }
 
 osg::Node* VideoService::debugGetLocalSceneRoot()
 {
-    return reinterpret_cast<VideoWidget*>(this->widget)->getViewer()->getSceneData();
+    return widget->getViewer()->getSceneData();
 }
+
 
 
 // timeline::Streams VideoService::getStreams()

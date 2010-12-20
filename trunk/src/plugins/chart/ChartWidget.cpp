@@ -30,7 +30,7 @@ ChartWidget::ChartWidget(IService* service)
     multiViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
     multiViewCamera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 
-    root = new osg::Group();
+    osg::ref_ptr<osg::Group> root = new osg::Group();
     root->addChild(multiViewCamera);
     viewer->setSceneData(root);
 
@@ -69,6 +69,8 @@ void ChartWidget::addChart(C3DChartData* c3dData){
 	item.push_back(new Chart(40,40,500,250));
 	itItem= item.end()-1;
 	(*itItem)->addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+    (*itItem)->setLabelVisable(false);
+    (*itItem)->setShowBorder(false);
 	multiView->addChild(*itItem);
 	previewItem.push_back(new Chart(40,40,500,250));
 	itPItem= previewItem.end()-1;
@@ -96,7 +98,4 @@ double ChartWidget::getLenght(){
 	return (double)(*itItem)->getFrameNumber()/(double)(*itItem)->getFPS();}
 	else
 		return 0;
-}
-osg::Node* ChartWidget::getSceneRoot(){
-return root;
 }

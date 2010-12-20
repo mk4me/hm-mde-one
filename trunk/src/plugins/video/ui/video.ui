@@ -37,79 +37,6 @@
      </item>
     </layout>
    </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>80</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>Prototype options</string>
-     </property>
-     <widget class="QComboBox" name="outputFormatCombo">
-      <property name="geometry">
-       <rect>
-        <x>90</x>
-        <y>20</y>
-        <width>215</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <item>
-       <property name="text">
-        <string>YUV (12 bpp, fragment shader)</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>RGB (24 bpp)</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>BGRA (32 bpp)</string>
-       </property>
-      </item>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>20</y>
-        <width>71</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Output format</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="textureRectangleCheck">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>50</y>
-        <width>181</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Use TextureRectangle extension</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </widget>
-   </item>
   </layout>
   <action name="actionUse_Texture_Rectangle">
    <property name="text">
@@ -118,40 +45,7 @@
   </action>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>outputFormatCombo</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>VideoWidget</receiver>
-   <slot>outputFormatChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>206</x>
-     <y>618</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>346</x>
-     <y>338</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>textureRectangleCheck</sender>
-   <signal>stateChanged(int)</signal>
-   <receiver>VideoWidget</receiver>
-   <slot>textureRectangleChecked(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>109</x>
-     <y>648</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>346</x>
-     <y>338</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>displayTypeChanged(int)</slot>
   <slot>outputFormatChanged(int)</slot>

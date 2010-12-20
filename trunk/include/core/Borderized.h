@@ -84,6 +84,9 @@ public:
         border = new osg::Geometry(*borderized.border, copyop);
     }
 
+    virtual ~Borderized()
+    {}
+
 
     //! \return Gruboœæ ramki.
     float getBorderWidth() const

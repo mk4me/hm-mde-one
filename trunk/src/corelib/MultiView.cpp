@@ -7,6 +7,7 @@
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
 #include <boost/cast.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <core/MultiViewFunctorWidgetAdapter.h>
 #include <core/EmbeddedWindow.h>
 
@@ -45,6 +46,9 @@ public:
         traverse(node, nv);
     }
 };
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -113,7 +117,28 @@ void MultiView::removeItem( Item* item )
     throw std::runtime_error("not implemented");
 }
 
+void MultiView::removeAllItems()
+{
+    // wy³¹czenie wybranego elementu
+    if ( selectedItem ) {
+        BOOST_FOREACH(Entry& entry, items) {
+            if ( selectedItem == entry.item ) {
+                UTILS_ASSERT(entry.preview);
+                entry.preview->setSelected(false);
+            }
+        }
+        selectedItem = NULL;
+    }
 
+    // wyczyszczenie _lastEvent oraz flag przycisków
+    pointerMove(-FLT_MAX, -FLT_MAX);
+    // wyczyszczenie _lastPush
+    mouseReleasedLeft(0, 0);
+
+    // wyczysczenie
+    thumbnails->setDimensions(0, 0);
+    items.clear();
+}
 
 void MultiView::refreshLayout()
 {
@@ -275,54 +300,150 @@ bool MultiView::onItemClicked( osgWidget::Event& ev )
     BOOST_FOREACH(Entry& entry, items) {
         UTILS_ASSERT(entry.adapter->getEventSource(entry.widget));
         if ( entry.adapter->getEventSource(entry.widget) != ev.getWidget() ) {
-            if ( entry.toggled ) {
-                entry.toggled = false;
-                entry.adapter->setToggle(entry.widget, false);
-                if ( entry.preview ) {
-                    entry.preview->setSelected(false);
-                }
-            }
+            setEntrySelected(entry, false);
         } else {
             selected = &entry;
         }
     }
     // w³¹czenie wybranego
     if ( selected ) {
-        Entry& entry = *selected;
-        if ( !entry.toggled ) {
-            entry.adapter->setToggle(entry.widget, true);
-            entry.toggled = true;
-            selectedItem = entry.item;
-            if ( entry.preview ) {
-                entry.preview->setSelected(true);
-                entry.preview->setLocation(0, 0, getWidth(), getHeight() - thumbnails->getHeight());
-                //refreshLayout();
-            }
-        }
+        setEntrySelected(*selected, true);
+        selectedItem = selected->item;
     }
     return true;
 }
 
 MultiView::Items::iterator MultiView::getIterator( const Item* item )
 {
-    for ( Items::iterator it = items.begin(); it != items.end(); ++it ) {
-        if ( it->item == item ) {
-            return it;
-        }
-    }
-    return items.end();
+    return std::find_if( items.begin(), items.end(), bind(&Entry::item, _1) == item );
 }
 
 MultiView::Items::iterator MultiView::getIterator( const osgWidget::Widget* widget )
 {
-    for ( Items::iterator it = items.begin(); it != items.end(); ++it ) {
-        if ( it->widget == widget ) {
-            return it;
-        }
-    }
-    return items.end();
+    return std::find_if( items.begin(), items.end(), bind(&Entry::widget, _1) == widget );
 }
 
+MultiView::Items::const_iterator MultiView::getIterator( const Item* item ) const
+{
+    return std::find_if( items.begin(), items.end(), bind(&Entry::item, _1) == item );
+}
+
+MultiView::Items::const_iterator MultiView::getIterator( const osgWidget::Widget* widget ) const
+{
+    return std::find_if( items.begin(), items.end(), bind(&Entry::widget, _1) == widget );
+//     for ( Items::const_iterator it = items.begin(); it != items.end(); ++it ) {
+//         if ( it->widget == widget ) {
+//             return it;
+//         }
+//     }
+//     return items.end();
+}
+
+void MultiView::setSelected( Item* item )
+{
+    if ( item != selectedItem ) {
+        if ( selectedItem ) {
+            setEntrySelected( *checked(getIterator(selectedItem)), false);
+            selectedItem = NULL;
+        }
+        if ( item ) {
+            setEntrySelected( *checked(getIterator(item)), true);
+            selectedItem = item;
+        }
+    }
+}
+
+void MultiView::setEntrySelected( Entry &entry, bool selected )
+{
+    if ( !selected ) {
+        if ( entry.toggled ) {
+            entry.toggled = false;
+            entry.adapter->setToggle(entry.widget, false);
+            if ( entry.preview ) {
+                entry.preview->setSelected(false);
+            }
+        }
+    } else {
+        if ( !entry.toggled ) {
+            entry.adapter->setToggle(entry.widget, true);
+            entry.toggled = true;
+            if ( entry.preview ) {
+                entry.preview->setSelected(true);
+                // poniewa¿ dopiero co pokazaliœmy trzeba wypozycjonowaæ
+                entry.preview->setLocation(0, 0, getWidth(), getHeight() - thumbnails->getHeight());
+            }
+        }
+    }
+}
+std::pair<MultiView::Item*, MultiView::PreviewItem*> MultiView::getSelected()
+{
+    if ( selectedItem ) {
+        Items::iterator found = checked(getIterator(selectedItem));
+        return std::make_pair(found->item.get(), found->preview.get());
+    } else {
+        return std::make_pair<Item*, PreviewItem*>(NULL, NULL); 
+    }
+}
+
+std::pair<const MultiView::Item*, const MultiView::PreviewItem*> MultiView::getSelected() const
+{
+    if ( selectedItem ) {
+        Items::const_iterator found = checked(getIterator(selectedItem));
+        return std::make_pair(found->item.get(), found->preview.get());
+    } else {
+        return std::make_pair<Item*, PreviewItem*>(NULL, NULL); 
+    }
+}
+
+unsigned MultiView::getSelectedIndex() const
+{
+    if ( selectedItem ) {
+        Items::const_iterator found = checked(getIterator(selectedItem));
+        return std::distance(items.begin(), found);
+    } else {
+        return items.size();
+    }
+}
+
+void MultiView::setSelectedByIndex( unsigned idx )
+{
+    if ( idx >= items.size() ) {
+        throw std::out_of_range("No such item.");
+    }
+    if ( selectedItem ) {
+        Items::iterator found = checked(getIterator(selectedItem));
+        setEntrySelected(*found, false);
+        selectedItem = NULL;
+    }
+    setEntrySelected( items[idx], true );
+    selectedItem = items[idx].item;
+}
+
+MultiView::Items::iterator& MultiView::checked( Items::iterator& it )
+{
+    if ( it == items.end() ) {
+        throw std::runtime_error("Not found.");
+    }
+    return it;
+}
+
+MultiView::Items::const_iterator& MultiView::checked( Items::const_iterator& it ) const
+{
+    if ( it == items.end() ) {
+        throw std::runtime_error("Not found.");
+    }
+    return it;
+}
+
+unsigned MultiView::getNumItems() const
+{
+    return items.size();
+}
+
+void MultiView::restoreRequiredChildren()
+{
+    addChild(thumbnails);
+}
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////

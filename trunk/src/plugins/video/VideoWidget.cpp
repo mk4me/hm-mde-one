@@ -46,13 +46,12 @@ VideoWidget::VideoWidget()
     vm::VideoManager::getInstance()->setEnableBuffering( false );
     vm::VideoManager::getInstance()->setPrefferedFormat( vm::PixelFormatYV12);
 
-
-
     // stworzenie helpera
-    streamHelper = new OsgWidgetStreamHelper( "data/resources/shaders/", textureRectangleCheck->isChecked() );
+    streamHelper = new OsgWidgetStreamHelper( "data/resources/shaders/", true );
 
     // tworzenie viewera
     viewer = new QOSGViewer(this, "OsgViewer");
+    viewer->getCamera()->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
     const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
 
     // tworzymy multi widok
@@ -65,19 +64,15 @@ VideoWidget::VideoWidget()
     multiViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
     multiViewCamera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 
-    viewer->addEventHandler( new core::OsgSceneDumpFileHandler("dump.txt") );
+    viewer->addEventHandler( new core::OsgSceneDumpFileHandler( "dump_VideoService.txt") );
     viewer->addEventHandler( new osgWidget::MouseHandler(multiView) );
     viewer->addEventHandler( new osgUI::StaticKeyboardHandler(multiView) );
     viewer->addEventHandler( new osgWidget::ResizeHandler(multiView, multiViewCamera) );
     viewer->addEventHandler( new osgViewer::StatsHandler );
     viewer->addEventHandler( new osgGA::StateSetManipulator( viewer->getCamera()->getOrCreateStateSet() ) );
 
-    //viewer->addEventHandler( new osgViewer::WindowSizeHandler );
-    viewer->getCamera()->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
-
-    osg::ref_ptr<osg::Group> root = new osg::Group();
-    root->addChild(multiViewCamera);
-    viewer->setSceneData(root);
+    // ustawienie sceny
+    viewer->setSceneData(multiViewCamera);
     
     // dodanie do widgeta
     GLWidget->addWidget( viewer );
@@ -156,6 +151,34 @@ void VideoWidget::init( std::vector<std::string> &files )
         }
     }
    
+    createScene();
+}
+
+void VideoWidget::setPixelFormat( vm::PixelFormat format )
+{
+    // ustawienie formatu strumieni
+    BOOST_FOREACH( osg::Image* image, images ) {
+        if ( vmOSGPlugin::VideoImageStream* stream = dynamic_cast<vmOSGPlugin::VideoImageStream*>(image) ) {
+            stream->setTargetFormat(format);
+        }
+    }
+    createScene();
+}
+
+void VideoWidget::setUseTextureRect( bool useTextureRect )
+{
+    streamHelper->setUseTextureRect( useTextureRect );
+    createScene();
+}
+
+void VideoWidget::createScene()
+{
+    unsigned sel = multiView->getSelectedIndex();
+    bool doSelect = ( sel != multiView->getNumItems() );
+
+    // na wszelki wypadek czyœcimy scenê
+    clearScene();
+
     // stworzenie widgetów i dodanie ich do multi widoku
     float avgRatio = 0;
     BOOST_FOREACH(osg::Image* image, images) {
@@ -210,26 +233,19 @@ void VideoWidget::init( std::vector<std::string> &files )
     multiView->addChild(grid);
     multiView->addItem(new core::MultiViewWidgetItem(gridThumbs, avgRatio), new core::MultiViewWidgetItem(grid, avgRatio));
 
-
+    if ( doSelect ) {
+        multiView->setSelectedByIndex(sel);
+    }
 }
 
-void VideoWidget::outputFormatChanged( int index )
+void VideoWidget::clearScene()
 {
-    //// TODO
-    //// dodaæ sta³e albo rêcznie wype³niaæ
-    //if ( index == 0 ) {
-    //    // yuv
-    //    view->setFormat(vm::PixelFormatYV12);
-    //} else if ( index == 1 ) {
-    //    view->setFormat(vm::PixelFormatRGB24);
-    //} else {
-    //    view->setFormat(vm::PixelFormatBGRA);
-    //}
-}
+    // usuniêcie itemów
+    multiView->removeAllItems();
+    // usuniêcie wszystkich wêz³ów (!)
+    multiView->removeChildren(0, multiView->getNumChildren());
+    // reinicjalizacja multi view (po usunieciu wszystkich wêz³ów - wymagana)
+    multiView->restoreRequiredChildren();
 
-void VideoWidget::textureRectangleChecked( int checked )
-{
-    //view->clear();
-    //view->setUseTextureRect( checked != 0 );
-    //configureView(last.rows, last.columns, last.images);
+    multiView->addChild(new osgWidget::Box("HACK"));
 }

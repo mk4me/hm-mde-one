@@ -227,3 +227,19 @@ int mainQOSGWidget(QApplication& a, osg::ArgumentParser& arguments)
 }/**/
 
 /*EOF*/
+
+QOSGViewer::QOSGViewer( QWidget * parent /*= 0*/, const char * name /*= 0*/, const QGLWidget * shareWidget /*= 0*/, Qt::WindowFlags f /*= 0*/ ) : 
+QOSGWidget( parent, name, shareWidget, f )
+{
+    getCamera()->setViewport(new osg::Viewport(0,0,width(),height()));
+    getCamera()->setProjectionMatrixAsPerspective(45.0, double(width())/height(), 1.0, 10000.0);
+    getCamera()->setGraphicsContext(getGraphicsWindow());
+    //setThreadingModel(osgViewer::Viewer::SingleThreaded);
+    connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+    updateTimer.start(16);
+}
+
+void QOSGViewer::paintGL()
+{
+    frame();
+}

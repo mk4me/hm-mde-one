@@ -130,9 +130,9 @@ private:
     //! Szablon adaptera dla miniaturek.
     osg::ref_ptr<WidgetAdapter> adapterTemplate;
     //! Wspó³rzêdne lewego dolnego rogu.
-    osgWidget::XYCoord origin;
+    //osgWidget::XYCoord origin;
     //! Rozmiar multiwidoku;
-    osgWidget::XYCoord size;
+    //osgWidget::XYCoord size;
 
 public:
     //! \param view
@@ -146,6 +146,22 @@ public:
     bool addItem(Item* item, PreviewItem* preview = NULL);
     //! Usuwa item z kolekcji.
     void removeItem(Item* item);
+    //! Usuwa wszystkie itemy.
+    void removeAllItems();
+
+    void restoreRequiredChildren();
+    //! \return Wybrany element.
+    std::pair<Item*, PreviewItem*> getSelected();
+    //! \return Wybrany element.
+    std::pair<const Item*, const PreviewItem*> getSelected() const;
+    //! \param item Wybrana miniaturka.
+    void setSelected(Item* item);
+    //! \return Indeks wybranego itema.
+    unsigned getSelectedIndex() const;
+    //! \param idx Indeks wybranego itema.
+    void setSelectedByIndex(unsigned idx);
+    //! \return Liczba itemów.
+    unsigned getNumItems() const;
 
     //! \return Prototyp 
     const osgWidget::Widget* getThumbnailTemplate() const
@@ -177,10 +193,19 @@ public:
 private:
     //! Callback wywo³ywany gdy wybierze siê jakiœ item.
     bool onItemClicked(osgWidget::Event& ev);
+
+    void setEntrySelected( Entry &entry, bool selected );
     //! \param item
     Items::iterator getIterator(const Item* item);
     //! \param item
     Items::iterator getIterator(const osgWidget::Widget* widget);
+    //! \param item
+    Items::const_iterator getIterator(const Item* item) const;
+    //! \param item
+    Items::const_iterator getIterator(const osgWidget::Widget* widget) const;
+
+    Items::iterator& checked(Items::iterator& it);
+    Items::const_iterator& checked(Items::const_iterator& it) const;
 };
 
 

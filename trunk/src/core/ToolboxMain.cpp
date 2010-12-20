@@ -105,6 +105,8 @@ ToolboxMain::~ToolboxMain()
 
 void ToolboxMain::clear()
 {
+    delete computeThread;
+
     delete ui;  // ui stuff
     //std::streambuf *buf = std::cout.rdbuf(_streambuf);
     //delete buf;
@@ -122,7 +124,7 @@ void ToolboxMain::clear()
     // remove all services
     //m_pServiceManager = NULL;
 
-    delete computeThread;
+    
 }
 
 void ToolboxMain::LoadConfiguration()

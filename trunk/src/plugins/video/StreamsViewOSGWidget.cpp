@@ -615,7 +615,21 @@ const bool OsgWidgetStreamHelper::getUseTextureRect() const
 
 void OsgWidgetStreamHelper::setUseTextureRect( bool useTextureRect )
 {
+    while ( yuvProgram->getNumShaders() ) {
+       yuvProgram->removeShader( yuvProgram->getShader(0) );
+    }
+    if ( useTextureRect ) {
+       if (yuvTextureRectShader) {
+           yuvProgram->addShader(yuvTextureRectShader);
+       }
+    } else {
+       if (yuvTexture2DShader) {
+           yuvProgram->addShader(yuvTexture2DShader);
+       }
+    }
     this->useTextureRect = useTextureRect;
+    this->useTextureRect = useTextureRect;
+
 }
 
 video::StreamOsgWidget* OsgWidgetStreamHelper::createWidget( osg::Image* image )
@@ -630,9 +644,9 @@ video::StreamOsgWidget* OsgWidgetStreamHelper::createWidget( osg::Image* image )
         osg::StateSet* state = widget->getOrCreateStateSet();
         state->addUniform(new osg::Uniform("movie_texture",0));
         state->addUniform(textureSize = new osg::Uniform("texture_size", 0, 0));
+        widget->setTextureSize(textureSize);
         state->setAttribute(yuvProgram);
         widget->setImage(image, true, useTextureRect);
-        widget->setTextureSize(textureSize);
     } else {
         widget->setImage(image, true, useTextureRect);
     }
@@ -645,6 +659,14 @@ video::StreamOsgWidget* OsgWidgetStreamHelper::createWidget( osg::Image* image )
         temp = widget->getTexCoord(osgWidget::Widget::UPPER_RIGHT);
         widget->setTexCoord(widget->getTexCoord(osgWidget::Widget::LOWER_RIGHT), osgWidget::Widget::UPPER_RIGHT);
         widget->setTexCoord(temp, osgWidget::Widget::LOWER_RIGHT);
+    }
+
+    if ( !useTextureRect ) {
+        osg::StateSet* state = widget->getOrCreateStateSet();
+        if ( osg::Texture* texture = dynamic_cast<osg::Texture*>(state->getTextureAttribute(0, osg::StateAttribute::TEXTURE)) ) {
+            texture->setResizeNonPowerOfTwoHint(false);
+        }
+        
     }
 
     return widget;

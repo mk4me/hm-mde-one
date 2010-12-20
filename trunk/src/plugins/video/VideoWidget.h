@@ -18,7 +18,7 @@
 #include <core/QOSGWidget.h>
 #include "ui_video.h"
 #include "StreamsViewOSGWidget.h"
-
+#include <plugins/video/core/PixelFormat.h>
 
 class VideoWidget : public QWidget, Ui::VideoWidget
 {
@@ -46,9 +46,14 @@ public:
     }
 
     void init( std::vector<std::string> &files );
+
+    
     void configureView(int rows, int columns, ImagesList & images);
 
 public:
+
+    void setPixelFormat(vm::PixelFormat format);
+    void setUseTextureRect(bool useTextureRect);
 
     //! \return
     inline VideoWidget::ImagesList& getImages()
@@ -62,9 +67,11 @@ public:
         return viewer;
     }
 
-public slots: 
-    void outputFormatChanged(int index);
-    void textureRectangleChecked(int checked);
+private:
+    //! Tworzy scenê.
+    void createScene();
+    //! Czyœci scenê.
+    void clearScene();
 };
 
 #endif  // __HEADER_GUARD__VIDEOWIDGET_H__

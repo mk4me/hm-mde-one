@@ -77,6 +77,7 @@ private:
 public:
     OsgSceneDumpQtTree(QTreeWidget* widget, QTreeWidgetItem* root = NULL);
 
+    virtual void apply(osg::Switch& group);
     virtual void apply(osg::Group& group);
     virtual void apply(osg::Node& node);
     virtual void apply(osg::Geode& geode);

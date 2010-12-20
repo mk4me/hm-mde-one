@@ -18,16 +18,25 @@
 #include <core/QOSGWidget.h>
 #include "ui_VideoWidgetOptions.h"
 #include "StreamsViewOSGWidget.h"
+#include <plugins/video/core/PixelFormat.h>
 
+Q_DECLARE_METATYPE(vm::PixelFormat);
+
+class VideoService;
 
 class VideoWidgetOptions : public QWidget, public Ui::VideoWidgetOptions
 {
+    Q_OBJECT
+private:
+    VideoService* service;
+
 public:
     //!
-    VideoWidgetOptions()
-    {
-        setupUi(this);
-    }
+    VideoWidgetOptions(VideoService* service);
+
+public slots:
+    void outputFormatChanged(int);
+    void textureRectangleChecked(int);
 };
 
 

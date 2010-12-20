@@ -12,6 +12,7 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 set(PRIVATE_H
 	VideoPlugin.h
 	VideoWidget.h
+	VideoWidgetOptions.h
 	Callback.h
 	HorizontalScrollBar.h
 	ImageCanvas.h
@@ -43,6 +44,7 @@ set(TARGET_SRC
 	VideoService.cpp
 	VideoWidget.cpp
 	VideoWidgetQt.cpp
+	VideoWidgetOptions.cpp
 	
 	HorizontalScrollBar.cpp
 	ImageCanvas.cpp
@@ -59,6 +61,7 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
 	VideoWidget.h
+	VideoWidgetOptions.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})

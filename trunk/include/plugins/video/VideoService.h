@@ -11,11 +11,13 @@
 
 #include <core/IService.h>
 #include <plugins/video/core/PixelFormat.h>
+#include <plugins/timeline/Stream.h>
 
 class IModel;
 class IDataManager;
 class IWidget;
 class VideoWidget;
+class VideoWidgetOptions;
 
 class VideoService : public IService
 {
@@ -24,8 +26,8 @@ class VideoService : public IService
 private:
     // TODO
     // tymczasowe
-    QWidget* widget;
-    QWidget* optionsWidget;
+    VideoWidget* widget;
+    VideoWidgetOptions* optionsWidget;
     //! Nazwa.
     std::string name;
 
@@ -34,6 +36,12 @@ private:
     //! Lista strumieni.
     ImagesList imagesList;
     
+
+    //! Lista strumieni.
+    typedef std::vector<timeline::StreamPtr> Streams;
+    //! Lista strumieni.
+    Streams streams;
+
 
 public:
     //! \return Format u¿ywany przy rysowaniu.

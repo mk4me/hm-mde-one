@@ -76,6 +76,15 @@ widget(widget), currentParent(root)
 {
 }
 
+void OsgSceneDumpQtTree::apply( osg::Switch& group )
+{
+    QTreeWidgetItem* prevParent = currentParent;
+    currentParent = createItem(group, group.getStateSet());
+    traverse(group);
+    currentParent = prevParent;
+}
+
+
 void OsgSceneDumpQtTree::apply( osg::Group& group )
 {
     QTreeWidgetItem* prevParent = currentParent;
@@ -109,10 +118,27 @@ void OsgSceneDumpQtTree::apply( osg::Drawable& drawable )
 
 QTreeWidgetItem* OsgSceneDumpQtTree::createItem( osg::Object& object, osg::StateSet* stateset )
 {
+    osg::Node* node = dynamic_cast<osg::Node*>(&object);
+    bool active = true;
+    if ( node ) {
+        if ( getNodePath().size() > 1 ) {
+            osg::Switch* parent = (*(getNodePath().rbegin()+1))->asSwitch();
+            if ( parent ) {
+                active = parent->getChildValue(node);
+            }
+        }
+    }
+
     QTreeWidgetItem* item = currentParent ? new QTreeWidgetItem(currentParent) : new QTreeWidgetItem(widget);
-    item->setText(1, QString::fromStdString(std::string(object.libraryName()) + "::" + object.className()));
+    std::string name = std::string(object.libraryName()) + "::" + object.className();
+    if (!active) {
+        name.insert(0, "[inactive] ");
+    }
+
+    item->setText(1, QString::fromStdString(name));
     item->setText(2, QString::fromStdString(object.getName()) );
     item->setText(0, QString::fromStdString( boost::lexical_cast<std::string>( &object ) ));
+
     if ( stateset ) {
         QTreeWidgetItem* prevParent = currentParent;
         currentParent = item;
