@@ -25,11 +25,14 @@ void DataManager::loadResources()
 	meshesPaths.clear();
 	applicationSkinsPaths.clear();
 	//szukaj shaderow
-	shadersPaths = Filesystem::listFiles(this->resourcesPath, true, "*.frag");
+	std::vector<std::string> ext;
+	ext.push_back(".frag");
+	ext.push_back(".vert");
+	shadersPaths = Filesystem::listFiles(this->resourcesPath, true, ext);
 	//szukaj tbs file
-	meshesPaths = Filesystem::listFiles(this->resourcesPath, true, "*.fmesh");
+	meshesPaths = Filesystem::listFiles(this->resourcesPath, true, ".fmesh");
 	//szukaj styli qt
-	applicationSkinsPaths = Filesystem::listFiles(this->resourcesPath, true, "*.qss");
+	applicationSkinsPaths = Filesystem::listFiles(this->resourcesPath, true, ".qss");
 }
 
 void DataManager::loadTrials()
@@ -50,22 +53,22 @@ void DataManager::loadTrials()
 			t.setName(matches[2]);
 			//przeszukujemy katalog w poszukiwaniu plikow:
 			//proba pomiarowa moze miec maksymalnie 1 plik c3d, amc, asf i 4 avi
-			std::vector<std::string> filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.c3d");
+			std::vector<std::string> filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".c3d");
 			if(filesPath.size() > 0)
 			{
 				t.setC3dPath(filesPath[0]);
 			}
-			filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.amc");
+			filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".amc");
 			if(filesPath.size() > 0)
 			{
 				t.setAnimationsPaths(filesPath);
 			}
-			filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.asf");
+			filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".asf");
 			if(filesPath.size() > 0)
 			{
 				t.setSkeletonPath(filesPath[0]);
 			}
-			filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.avi");
+			filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".avi");
 			if(filesPath.size() == 4)
 			{
 				t.setVideosPaths(filesPath);

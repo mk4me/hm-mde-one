@@ -18,6 +18,36 @@ void Filesystem::createDirectory(const std::string& path)
 	}
 }
 
+void Filesystem::deleteDirectory(const std::string& path)
+{
+	if(path.empty())
+	{
+		return;
+	}
+
+	filesystem::path dirPath(path);
+
+	if(filesystem::is_directory(dirPath))
+	{
+		filesystem::remove_all(dirPath);
+	}
+}
+
+void Filesystem::deleteFile(const std::string& path)
+{
+	if(path.empty())
+	{
+		return;
+	}
+
+	filesystem::path dirPath(path);
+
+	if(filesystem::exists(dirPath) && !filesystem::is_directory(dirPath))
+	{
+		filesystem::remove(dirPath);
+	}
+}
+
 void Filesystem::move(const std::string& pathOld, const std::string& pathNew)
 {
 	if(pathOld.empty() || pathNew.empty())
@@ -34,102 +64,82 @@ std::vector<std::string> Filesystem::listFiles(const std::string& path, bool rec
 {
 	std::vector<std::string> files;
 
-	HANDLE file;
-	WIN32_FIND_DATA dataFind;
-	bool moreFiles = true;
-
-	//przeszukaj podfoldery
-	if(recursive)
+	filesystem::path dirPath(path);
+	if(filesystem::exists(dirPath))
 	{
-		std::vector<std::string> dirs = Filesystem::listSubdirectories(path);
-		for(std::vector<std::string>::iterator i = dirs.begin(); i != dirs.end(); ++i)
+		if(recursive)
 		{
-			std::vector<std::string> subfiles = Filesystem::listFiles((*i), recursive, mask);
-			for(std::vector<std::string>::iterator it = subfiles.begin(); it != subfiles.end(); ++it)
+			std::vector<std::string> dirs = Filesystem::listSubdirectories(path);
+			BOOST_FOREACH(std::string& dir, dirs)
 			{
-				files.push_back((*it));
+				std::vector<std::string> subfiles = Filesystem::listFiles(dir, recursive, mask);
+				BOOST_FOREACH(std::string& file, subfiles)
+				{
+					files.push_back(file);
+				}
+			}
+		}
+		filesystem::directory_iterator end;
+		for(filesystem::directory_iterator iter(dirPath) ; iter != end ; ++iter)
+		{
+			if(!filesystem::is_directory(iter->status()) && iter->path().extension().compare(mask) == 0)
+			{
+				files.push_back(iter->path().string());
 			}
 		}
 	}
-#if defined(__WIN32__)
-	file = ::FindFirstFile(Filesystem::append(path, mask).c_str(), &dataFind);
-	while(file != INVALID_HANDLE_VALUE && moreFiles)
+	return files;
+}
+
+std::vector<std::string> Filesystem::listFiles(const std::string& path, bool recursive, const std::vector<std::string>& masks)
+{
+	std::vector<std::string> files;
+
+	filesystem::path dirPath(path);
+	if(filesystem::exists(dirPath))
 	{
-		if(dataFind.dwFileAttributes != FILE_ATTRIBUTE_DIRECTORY)
+		if(recursive)
 		{
-			files.push_back(Filesystem::append(path, dataFind.cFileName));
+			std::vector<std::string> dirs = Filesystem::listSubdirectories(path);
+			BOOST_FOREACH(std::string& dir, dirs)
+			{
+				std::vector<std::string> subfiles = Filesystem::listFiles(dir, recursive, masks);
+				BOOST_FOREACH(std::string& file, subfiles)
+				{
+					files.push_back(file);
+				}
+			}
 		}
-		moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));
+		filesystem::directory_iterator end;
+		for(filesystem::directory_iterator iter(dirPath) ; iter != end ; ++iter)
+		{
+			BOOST_FOREACH(std::string mask, masks)
+			{
+				if(!filesystem::is_directory(iter->status()) && iter->path().extension().compare(mask) == 0)
+				{
+					files.push_back(iter->path().string());
+				}
+			}
+		}
 	}
-#elif defined(__UNIX__)
-		//FIX: do uzupelnienia
-#endif
 	return files;
 }
 
 std::vector<std::string> Filesystem::listSubdirectories(const std::string& path)
 {
-	std::string copyPath = path;
-	Filesystem::preparePath(copyPath);
 	std::vector<std::string> subdirs;
-	HANDLE file;
-	WIN32_FIND_DATA dataFind;
-	bool moreFiles = true;
-	copyPath.append("*");
 
-#if defined(__WIN32__)
-	file = ::FindFirstFile(copyPath.c_str(), &dataFind);
-	while(file != INVALID_HANDLE_VALUE && moreFiles)
+	filesystem::path dirPath(path);
+	if(filesystem::exists(dirPath))
 	{
-		if(dataFind.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY && dataFind.cFileName[0] != '.')
+		filesystem::directory_iterator end;
+		for(filesystem::directory_iterator iter(dirPath) ; iter != end ; ++iter)
 		{
-			subdirs.push_back(Filesystem::append(path, dataFind.cFileName));
+			if(filesystem::is_directory(iter->status()))
+			{
+				subdirs.push_back(iter->path().string());
+			}
 		}
-		moreFiles = (::FindNextFile(file, &dataFind) == BOOL(TRUE));
 	}
-#elif defined(__UNIX__)
-		//FIX: do uzupelnienia
-#endif
 	return subdirs;
-}
-
-std::string Filesystem::append(const std::string& path, const std::string& path2)
-{
-	if(path.empty() && path2.empty())
-	{
-		throw std::exception("Empty strings in use.");
-	}
-	std::string appended = path;
-	Filesystem::preparePath(appended);
-	appended.append(path2);
-	return appended;
-}
-
-void Filesystem::preparePath(std::string& path)
-{
-	if(path.empty())
-	{
-		return;
-	}
-	std::string token = "/";
-	if(path[path.size() -1] != '/')
-	{
-		path.append(token);
-	}
-	Filesystem::changeSlashes(path);
-}
-
-void Filesystem::changeSlashes(std::string& path)
-{
-	if(path.empty())
-	{
-		return;
-	}
-	//dostosuj sciezke
-	size_t position = path.find_first_of("\\");
-	while (position != path.npos)
-	{
-		path[position] = '/';
-		position = path.find_first_of("\\", position+1);
-	}
 }

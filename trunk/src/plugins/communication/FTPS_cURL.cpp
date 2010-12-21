@@ -4,6 +4,7 @@
 
 #include "CommunicationPCH.h"
 #include <plugins/communication/FTPS_cURL.h>
+#include <core/Filesystem.h>
 
 using namespace communication;
 
@@ -128,6 +129,14 @@ void FTPS_cURL::get(const std::string& filename)
 	this->res = curl_easy_perform(this->curl);
 	if(CURLE_OK != this->res)
 	{
+		if(res == CURLE_ABORTED_BY_CALLBACK)
+		{
+			if(ftpfile.stream)
+			{
+				fclose(ftpfile.stream);
+			}
+			Filesystem::deleteFile(temp);
+		}
 		throw std::runtime_error(curl_easy_strerror(this->res));
 	}
 	if(ftpfile.stream)
