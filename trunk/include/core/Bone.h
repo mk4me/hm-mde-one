@@ -1,7 +1,7 @@
 /********************************************************************
 	created:  
 	created:  
-	filename: Animation.h
+	filename: Bone.h
 	author:	  Rafal Zowal
 	
 	purpose: Model przechowuj¹cy dane o koœci
@@ -20,6 +20,47 @@
 // This holds the names of a joint's children
 typedef std::vector<char*> childVector;
 
+
+enum BoneType
+{
+    eBONE_UNKNOW = 0,
+    eLEFT_UP_LEG_DUM,
+    eRIGHT_UP_LEG_DUM,
+    eSPINE_DUM,
+    eLEFT_UP_LEG,
+    eLEFT_LEG,
+    eLEFT_FOOT,
+    eLEFT_TOE_BASE,
+    eRIGHT_UP_LEG,
+    eRIGHT_LEG,
+    eRIGHT_FOOT,
+    eRIGHT_TOE_BASE,
+    eSPINE,
+    eSPINE1,
+    eSPINE1_DUM1,
+    eSPINE1_DUM2,
+    eSPINE1_DUM3,
+    eNECK,
+    eHEAD,
+    eLEFT_SHOULDER,
+    eLEFT_ARM,
+    eLEFT_FORE_ARM,
+    eLEFT_HAND,
+    eLEFT_HAND_DUM1,
+    eLEFT_HAND_DUM2,
+    eLEFT_HAND_THUMB,
+    eRIGHT_SHOULDER,
+    eRIGHT_ARM,
+    eRIGHT_FORE_ARM,
+    eRIGHT_HAND,
+    eRIGHT_HAND_DUM1,
+    eRIGHT_HAND_DUM2,
+    eRIGHT_HAND_THUMB,
+
+    eBONE_MAX,
+};
+
+
 struct BoneLenght 
 {
     float X;
@@ -32,7 +73,7 @@ struct BoneLenght
 //class Bone
 struct Bone
 {
-    Bone(){ matrix = new osg::Matrixd(); m_pboneLengthInSpace = new BoneLenght(); isCleared = false;}
+    Bone(){ matrix = new osg::Matrixd(); m_pboneLengthInSpace = new BoneLenght(); isCleared = false; m_type = eBONE_UNKNOW; }
     ~Bone() { delete matrix; delete m_pboneLengthInSpace; }
 	int idx;					// Bone inde
 
@@ -42,7 +83,7 @@ struct Bone
     Bone *parent;		// Pointer to the sibling (branch bone) in the hierarchy tree 
 	std::vector<Bone *> child;			// Pointer to the child (outboard bone) in the hierarchy tree 
 	std::vector<Frame*> frame;			// Animacja TODO: zrobiæ pointera na jak¹s liste przechowuj¹c¹ te ramki - dzieki temu istnieje szybka podmiana animacji
-	childVector			children;			// STL vector of char* to children names
+	childVector			children;		// STL vector of char* to children names
 	char *parentName;
 
     float dir[3];				// Unit vector describes the direction from local origin to 
@@ -83,6 +124,7 @@ struct Bone
 	bool isCleared;
 
     BoneLenght* m_pboneLengthInSpace;  // zmienna uzywana do okreœlenia d³ugosci boxa(który jest koœci¹) przy malowanie kosci
+    BoneType m_type;
 };
 
 #endif

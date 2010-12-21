@@ -91,7 +91,7 @@ private:
     //! \za³adowanie kolejnej grupy obiektów takich jak box w celu uyzkania wizualizacji szkieletu
     void DrawBone(Bone* bone, osg::Geode* geode);
     osg::ref_ptr<osg::Geometry> DrawLine(const osg::Vec3f* startPos, const osg::Vec3f* endPos, bool isSelected);
-    osg::ref_ptr<osg::Drawable> DrawBoxBone(const osg::Vec3f* startPos, const osg::Vec3f* endPos, osg::Quat* rotation, BoneLenght* boneLength, bool isSelected);
+    osg::ref_ptr<osg::Drawable> DrawBoxBone(const osg::Vec3f* startPos, const osg::Vec3f* endPos, osg::Quat* rotation, BoneLenght* boneLength, bool isSelected, BoneType boneType);
 
 
     std::vector<ISkeletonNode* >* m_pJoints;

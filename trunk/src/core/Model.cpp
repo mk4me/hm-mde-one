@@ -15,6 +15,7 @@
 using namespace osg;
 using namespace std;
 
+
 //--------------------------------------------------------------------------------------------------
 Model::Model()
 {
@@ -235,7 +236,7 @@ void Model::DrawBone( Bone* bone, osg::Geode* geode)
     osg::Vec3f* startPos = new osg::Vec3f((bone->parent)->positionx, (bone->parent)->positiony, (bone->parent)->positionz);
     osg::Vec3f* endPos = new osg::Vec3f(bone->positionx,bone->positiony,bone->positionz);
 
-    geode->addDrawable(DrawBoxBone(startPos, endPos, &bone->matrix->getRotate(), bone->m_pboneLengthInSpace, istrue));
+    geode->addDrawable(DrawBoxBone(startPos, endPos, &bone->matrix->getRotate(), bone->m_pboneLengthInSpace, istrue, bone->m_type));
 
 
 	int childcount = bone->child.size();
@@ -246,14 +247,16 @@ void Model::DrawBone( Bone* bone, osg::Geode* geode)
 }
 
 //--------------------------------------------------------------------------------------------------
-osg::ref_ptr<osg::Drawable> Model::DrawBoxBone( const osg::Vec3f* startPos, const osg::Vec3f* endPos, osg::Quat* rotation, BoneLenght* boneLength, bool isSelected )
+osg::ref_ptr<osg::Drawable> Model::DrawBoxBone( const osg::Vec3f* startPos, const osg::Vec3f* endPos, osg::Quat* rotation, BoneLenght* boneLength, bool isSelected, BoneType boneType )
 {
     osg::ref_ptr<osg::Geometry>  geometry = new osg::Geometry();
 
     osg::Box* box = new osg::Box((*startPos + *endPos)/2, boneLength->X, boneLength->Y, boneLength->Z);
     box->setRotation(*rotation);
+    
     osg::ShapeDrawable *shapeDrawable = new osg::ShapeDrawable(box);
 
+    shapeDrawable->setColor(*s_BonesInfo[boneType].m_pColor);
     return shapeDrawable;
 }
 

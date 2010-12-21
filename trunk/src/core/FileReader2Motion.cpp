@@ -360,6 +360,15 @@ void FileReader2Motion::ParserAcclaimFile2EDR(Model *model, ASFAMCParser *acclai
         joint->getAxis(bone->axis_x, bone->axis_y, bone->axis_z);
 
         bone->name = joint->getName();
+
+        for(int b = 0; b < eBONE_MAX; b++)
+        {
+            if(s_BonesInfo[b].m_name == bone->name){
+                bone->m_type = s_BonesInfo[b].m_type;
+                break;
+            }
+        }
+
         bone->parentName = joint->getParent();
 
         int numeOfChild = joint->numOfChildren();
