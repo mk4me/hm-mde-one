@@ -45,6 +45,7 @@
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
 #include <functional>
+#include <boost/filesystem.hpp>
 
 #include "ComputeThread.h"
 

@@ -1,9 +1,9 @@
 #include "DataManager.h"
 
 #include <core/Log.h>
-#include <core/IModel.h>
 #include <boost/regex.hpp>
 #include <core/Filesystem.h>
+#include <boost/foreach.hpp>
 
 DataManager::DataManager(const std::string& resourcesPath, const std::string& trialsPath) : resourcesPath(resourcesPath), trialsPath(trialsPath)
 {
@@ -27,7 +27,7 @@ void DataManager::loadResources()
 	//szukaj shaderow
 	shadersPaths = Filesystem::listFiles(this->resourcesPath, true, "*.frag");
 	//szukaj tbs file
-	meshesPaths = Filesystem::listFiles(this->resourcesPath, true, "*.tbs");
+	meshesPaths = Filesystem::listFiles(this->resourcesPath, true, "*.fmesh");
 	//szukaj styli qt
 	applicationSkinsPaths = Filesystem::listFiles(this->resourcesPath, true, "*.qss");
 }
@@ -39,16 +39,14 @@ void DataManager::loadTrials()
 	std::vector<std::string> tempPaths = Filesystem::listSubdirectories(trialsPath);
 	boost::cmatch matches;
 	boost::regex e("(.+)(\\d{4}-\\d{2}-\\d{2}.+)");
-	for(std::vector<std::string>::iterator it = tempPaths.begin(); it != tempPaths.end(); ++it)
+	BOOST_FOREACH(std::string path, tempPaths)
 	{
 		//sprawdzamy, czy zgadza sie nazwa folderu
-		if(boost::regex_match(it->c_str(), matches, e))
+		if(boost::regex_match(path.c_str(), matches, e))
 		{
 			//mamy triala, zapisujemy jego nazwe i sciezke do katalogu
 			LocalTrial t;
-			//t.trialPath = it->c_str();
-			//t.name = matches[2];
-			t.setTrialPath(it->c_str());
+			t.setTrialPath(path.c_str());
 			t.setName(matches[2]);
 			//przeszukujemy katalog w poszukiwaniu plikow:
 			//proba pomiarowa moze miec maksymalnie 1 plik c3d, amc, asf i 4 avi
@@ -56,29 +54,21 @@ void DataManager::loadTrials()
 			if(filesPath.size() > 0)
 			{
 				t.setC3dPath(filesPath[0]);
-				//t.c3dPath = filesPath[0];
 			}
 			filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.amc");
 			if(filesPath.size() > 0)
 			{
 				t.setAnimationsPaths(filesPath);
-				//t.animationPath = filesPath[0];
 			}
 			filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.asf");
 			if(filesPath.size() > 0)
 			{
 				t.setSkeletonPath(filesPath[0]);
-				//t.skeletonPath = filesPath[0];
 			}
 			filesPath = Filesystem::listFiles(t.getTrialPath(), false, "*.avi");
 			if(filesPath.size() == 4)
 			{
 				t.setVideosPaths(filesPath);
-				//t.videosPaths.clear();
-				//t.videosPaths.push_back(filesPath[0]);
-				//t.videosPaths.push_back(filesPath[1]);
-				//t.videosPaths.push_back(filesPath[2]);
-				//t.videosPaths.push_back(filesPath[3]);
 			}
 			trials.push_back(t);
 		}

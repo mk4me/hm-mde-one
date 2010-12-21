@@ -1,4 +1,7 @@
 #include <core/Filesystem.h>
+#include <boost/filesystem.hpp>
+
+using namespace boost;
 
 void Filesystem::createDirectory(const std::string& path)
 {
@@ -7,40 +10,11 @@ void Filesystem::createDirectory(const std::string& path)
 		return;
 	}
 
-	//boost::filesystem::path dirPath;
-	//boost::filesystem::create_directory(dirPath);
-	
-	std::string copyPath = path;
-	Filesystem::preparePath(copyPath);
+	filesystem::path dirPath(path);
 
-	std::string token = "/";
-	size_t s = 0;
-	size_t e = 0;
-	bool end = false;
-	std::vector<std::string> vec;
-
-	while(true)
+	if(!filesystem::is_directory(dirPath))
 	{
-		s = 0;
-		if((e = copyPath.find(token)) == copyPath.npos)
-			break;
-		vec.push_back(copyPath.substr(s, e));
-		copyPath = copyPath.substr(e + token.size());
-		s = e;
-	}
-	std::string dirs("");
-	for(std::vector<std::string>::iterator it = vec.begin(); it != vec.end(); ++it)
-	{
-		dirs.append((*it)).append(token);
-#if defined(__WIN32__)
-		BOOL ok = ::CreateDirectory(dirs.c_str(), 0);
-		if(!ok && ::GetLastError() != 183)
-		{
-			throw std::runtime_error("Cannot create directory.");
-		}
-#elif defined(__UNIX__)
-		//FIX: do uzupelnienia
-#endif
+		filesystem::create_directories(dirPath);
 	}
 }
 
@@ -50,26 +24,16 @@ void Filesystem::move(const std::string& pathOld, const std::string& pathNew)
 	{
 		return;
 	}
-	std::string copyOldPath = pathOld;
-	std::string copyNewPath = pathNew;
-	Filesystem::changeSlashes(copyOldPath);
-	Filesystem::changeSlashes(copyNewPath);
+	filesystem::path oldPath(pathOld);
+	filesystem::path newPath(pathNew);
 
-#if defined(__WIN32__)
-	//przenies plik
-	BOOL ok = ::MoveFileEx(copyOldPath.c_str(), copyNewPath.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_REPLACE_EXISTING);
-	if(ok == 0)
-	{
-		throw std::runtime_error("Cannot move file or directory.");
-	}
-#elif defined(__UNIX__)
-		//FIX: do uzupelnienia
-#endif
+	rename(oldPath, newPath);
 }
 
 std::vector<std::string> Filesystem::listFiles(const std::string& path, bool recursive, const std::string& mask)
 {
 	std::vector<std::string> files;
+
 	HANDLE file;
 	WIN32_FIND_DATA dataFind;
 	bool moreFiles = true;

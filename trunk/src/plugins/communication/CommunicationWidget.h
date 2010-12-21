@@ -58,6 +58,8 @@ public:
 	void refresh();
 	void download();
 	void abort();
+	void loadTrial(const std::string& name);
+	void updateTrials();
 
     virtual void update(const communication::CommunicationManager* subject);
 

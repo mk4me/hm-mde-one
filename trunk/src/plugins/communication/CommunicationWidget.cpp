@@ -78,22 +78,22 @@ void CommunicationWidget::refreshUI()
 	infoLabel->setText(QString::fromStdString(infoText));
 
 	//lokalne proby pomiarowe
-	for(std::vector<LocalTrial>::const_iterator it = localTrials.begin(); it != localTrials.end(); ++it)
+	BOOST_FOREACH(LocalTrial& trial, localTrials)
 	{
 		LocalTrialItem* item = new LocalTrialItem();
 		trials->addItem(item);
-		item->setPath(it->getTrialPath());
-		item->setName(it->getName());
-		item->setText(QString::fromStdString(it->getName()));
+		item->setPath(trial.getTrialPath());
+		item->setName(trial.getName());
+		item->setText(QString::fromStdString(trial.getName()));
 	}
 	//serwerowe proby pomiarowe, sprawdzamy czy sie nie powtarzaja z lokalnymi
 	bool isLocal;
-	for(std::vector<communication::Trial>::const_iterator it = serverTrials.begin(); it != serverTrials.end(); ++it)
+	BOOST_FOREACH(communication::Trial& trial, serverTrials)
 	{
 		isLocal = false;
-		for(std::vector<LocalTrial>::const_iterator it2 = localTrials.begin(); it2 != localTrials.end(); ++it2)
+		BOOST_FOREACH(LocalTrial& local, localTrials)
 		{
-			if(it->trialDescription.compare(it2->getName()) == 0)
+			if(trial.trialDescription.compare(local.getName()) == 0)
 			{
 				isLocal = true;
 				break;
@@ -103,11 +103,16 @@ void CommunicationWidget::refreshUI()
 		{
 			EntityTrialItem* item = new EntityTrialItem();
 			trials->addItem(item);
-			item->setText(QString::fromStdString((*it).trialDescription));
-			item->setSession((*it).sessionID);
-			item->setID((*it).id);
+			item->setText(QString::fromStdString(trial.trialDescription));
+			item->setSession(trial.sessionID);
+			item->setID(trial.id);
 		}
 	}
+}
+
+void CommunicationWidget::showErrorMessage(const std::string& error)
+{
+	QMessageBox::warning(this, "Error", QString::fromStdString(error));
 }
 
 void CommunicationWidget::setBusy(bool busy)
@@ -118,12 +123,14 @@ void CommunicationWidget::setBusy(bool busy)
 		trials->setDisabled(true);
 		//downloadButton->setDisabled(true);
 		updateButton->setDisabled(true);
+		downloadButton->setText("Cancel");
 	}
 	else
 	{
 		trials->setDisabled(false);
 		updateButton->setDisabled(false);
 		progressBar->reset();
+		downloadButton->setText("Download");
 	}
 }
 
@@ -144,24 +151,25 @@ void CommunicationWidget::setProgress(int value)
 	}
 }
 
-void CommunicationWidget::showErrorMessage(const std::string& error)
-{
-	QMessageBox::warning(this, "Error", QString::fromStdString(error));
-}
-
 void CommunicationWidget::itemDoubleClicked(QListWidgetItem* item)
 {
 	if(item->textColor() == QColor(0, 0, 255))
 	{
 		LocalTrialItem* temp = reinterpret_cast<LocalTrialItem*>(trials->item(trials->currentRow()));
-		communicationService->loadTrial(temp->getName());
+		loadTrial(temp->getName());
+	}
+	else
+	{
+		download();
 	}
 }
 
 void CommunicationWidget::updateButtonClicked()
 {
-	//infoLabel->setText(QString("Updating..."));
-	this->communicationService->updateSessionContents();
+	if(!busy)
+	{
+		updateTrials();
+	}
 }
 
 void CommunicationWidget::downloadButtonClicked()
@@ -194,7 +202,6 @@ void CommunicationWidget::download()
 	{
 		EntityTrialItem* temp = reinterpret_cast<EntityTrialItem*>(trials->item(trials->currentRow()));
 		int trial = temp->getID();
-		downloadButton->setText("Cancel");
 		this->communicationService->downloadTrial(trial);
 	}
 }
@@ -202,5 +209,14 @@ void CommunicationWidget::download()
 void CommunicationWidget::abort()
 {
 	communicationService->cancelDownloading();
-	downloadButton->setText("Download");
+}
+
+void CommunicationWidget::loadTrial(const std::string& name)
+{
+	communicationService->loadTrial(name);
+}
+
+void CommunicationWidget::updateTrials()
+{
+	communicationService->updateSessionContents();
 }

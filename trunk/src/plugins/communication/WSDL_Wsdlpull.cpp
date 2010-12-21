@@ -143,9 +143,9 @@ void WSDL_Wsdlpull::displayOperations()
 		invoker.getOperations(operations);
 		std::cout << "Operations number: " << operations.size() << std::endl;
 		std::cout << "Input headers: " << invoker.nInputHeaders() << std::endl;
-		for(unsigned int i = 0; i < operations.size(); i++) 
+		BOOST_FOREACH(std::string& name, operations)
 		{
-			std::cout << i + 1 << ". " << operations[i] << std::endl;
+			std::cout << name << std::endl;
 		}
 	}
 	else 

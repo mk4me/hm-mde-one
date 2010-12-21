@@ -65,23 +65,22 @@ void CommunicationManager::saveToXml(const std::string& filename)
 		root->SetAttribute("date", dt.toString());
 	}
 
-	for(ServerTrials::iterator iterator = this->serverTrials.begin(); iterator != this->serverTrials.end(); ++iterator)
+	BOOST_FOREACH(Trial& trial, serverTrials)
 	{
 		//<ServerTrial>
 		TiXmlElement* strial_element = new TiXmlElement("ServerTrial");
 		root->LinkEndChild(strial_element);
-		strial_element->SetAttribute("id", (*iterator).id);
-		strial_element->SetAttribute("sessionID", (*iterator).sessionID);
-		strial_element->SetAttribute("trialDescription", (*iterator).trialDescription);
-		for(std::vector<int>::iterator it = (*iterator).trialFiles.begin(); it != (*iterator).trialFiles.end(); ++it)
+		strial_element->SetAttribute("id", trial.id);
+		strial_element->SetAttribute("sessionID", trial.sessionID);
+		strial_element->SetAttribute("trialDescription", trial.trialDescription);
+		BOOST_FOREACH(int id, trial.trialFiles)
 		{
 			//<File>
 			TiXmlElement* file_element = new TiXmlElement("File");
 			strial_element->LinkEndChild(file_element);
-			file_element->SetAttribute("id", (*it));
+			file_element->SetAttribute("id", id);
 			//</File>
 		}
-		//</ServerTrial>
 	}
 	document.SaveFile(filename);
 }
@@ -249,16 +248,16 @@ void CommunicationManager::run()
 		{
 			try
 			{
-				for(std::vector<Trial>::iterator it = serverTrials.begin(); it != serverTrials.end(); ++it)
+				BOOST_FOREACH(Trial& trial, serverTrials)
 				{
-					if(it->id == entityID)
+					if(trial.id == entityID)
 					{
-						filesToDownload = it->trialFiles.size();
+						filesToDownload = trial.trialFiles.size();
 						actualFile = 0;
-						for(std::vector<int>::iterator id = it->trialFiles.begin(); id != it->trialFiles.end(); ++id)
+						BOOST_FOREACH(int i, trial.trialFiles)
 						{
 							actualFile++;
-							this->transportManager->downloadFile((*id), this->trialsDir);
+							transportManager->downloadFile(i, trialsDir);
 						}
 						break;
 					}

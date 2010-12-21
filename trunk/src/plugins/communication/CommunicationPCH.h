@@ -13,7 +13,7 @@
 #include <stack>
 #include <iostream>
 //#include <fstream>
-
+#include <boost/foreach.hpp>
 #include <curl/curl.h>
 #include <wsdlparser/WsdlInvoker.h>
 #include <core/Log.h>
