@@ -584,6 +584,7 @@ void ToolboxMain::loadData()
 	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
 	osg::Node* sceneRoot = scene->getSceneData();
 	dataManager->setLoadTrialData(false);
+	this->setWindowTitle(tr("ToolboxMain - ").append(QString::fromStdString(dataManager->getActualTrial().getName())));
 }
 
 // void ToolboxMain::SettingModel()

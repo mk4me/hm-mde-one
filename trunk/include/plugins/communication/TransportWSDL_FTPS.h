@@ -107,6 +107,8 @@ namespace communication
 		virtual const std::string downloadFile(int fileID, const std::string& path);
 
 		virtual int getProgress() const;
+
+		virtual void abort();
 	};
 }
 #endif

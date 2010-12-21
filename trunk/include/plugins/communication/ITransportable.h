@@ -73,6 +73,10 @@ namespace communication
 		@return wartoœæ procentowa postêpu
 		*/
 		virtual int getProgress() const = 0;
+		/**
+		Anuluje obecnie wykonywan¹ operacjê.
+		*/
+		virtual void abort() = 0;
 	};
 }
 #endif

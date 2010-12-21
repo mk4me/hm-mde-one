@@ -12,7 +12,8 @@ FTPS_cURL::FTPS_cURL()
 	this->usr = "";
 	this->pswd = "";
 	this->uri = "";
-	this->progress = 0;
+	this->progress.progress = 0;
+	this->progress.abort = false;
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	this->curl = curl_easy_init();
@@ -30,7 +31,8 @@ FTPS_cURL::FTPS_cURL(const std::string& uri, const std::string& usr, const std::
 	{
 		this->uri.append("/");
 	}
-	this->progress = 0;
+	this->progress.progress = 0;
+	this->progress.abort = false;
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	this->curl = curl_easy_init();
@@ -88,7 +90,8 @@ const std::string& FTPS_cURL::getPassword() const
 
 void FTPS_cURL::get(const std::string& filename)
 {
-	progress = 0;
+	progress.progress = 0;
+	progress.abort = false;
 	std::string temp;
 	temp = filename;
 	temp = temp.substr(temp.find_last_of("/") + 1);
@@ -200,9 +203,13 @@ size_t FTPS_cURL::write(void* buffer, size_t size, size_t nmemb, void* stream)
 	return fwrite(buffer, size, nmemb, out->stream);
 }
 
-size_t FTPS_cURL::setProgress(int* progress, double t, double d, double ultotal, double ulnow)
+size_t FTPS_cURL::setProgress(Progress* progress, double t, double d, double ultotal, double ulnow)
 {
-	(*progress) = static_cast<int>((d * 100.0)/t);
+	if(progress->abort)
+	{
+		return -1;
+	}
+	progress->progress = static_cast<int>((d * 100.0)/t);
 	return 0;
 }
 
@@ -238,5 +245,10 @@ void FTPS_cURL::disconnect()
 
 int FTPS_cURL::getProgress() const
 {
-	return this->progress;
+	return this->progress.progress;
+}
+
+void FTPS_cURL::abort()
+{
+	progress.abort = true;
 }

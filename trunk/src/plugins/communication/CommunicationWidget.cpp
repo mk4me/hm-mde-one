@@ -32,7 +32,7 @@ CommunicationWidget::CommunicationWidget(CommunicationService* service) : QWidge
 	updateView = false;
 
 	connect(updateButton, SIGNAL(clicked()), this, SLOT(updateButtonClicked()));
-	connect(downloadButton, SIGNAL(clicked()), this, SLOT(download()));
+	connect(downloadButton, SIGNAL(clicked()), this, SLOT(downloadButtonClicked()));
 	connect(trials, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
 	connect(trials, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
 }
@@ -116,7 +116,7 @@ void CommunicationWidget::setBusy(bool busy)
 	if(busy)
 	{
 		trials->setDisabled(true);
-		downloadButton->setDisabled(true);
+		//downloadButton->setDisabled(true);
 		updateButton->setDisabled(true);
 	}
 	else
@@ -153,7 +153,6 @@ void CommunicationWidget::itemDoubleClicked(QListWidgetItem* item)
 {
 	if(item->textColor() == QColor(0, 0, 255))
 	{
-		//download();
 		LocalTrialItem* temp = reinterpret_cast<LocalTrialItem*>(trials->item(trials->currentRow()));
 		communicationService->loadTrial(temp->getName());
 	}
@@ -163,6 +162,18 @@ void CommunicationWidget::updateButtonClicked()
 {
 	//infoLabel->setText(QString("Updating..."));
 	this->communicationService->updateSessionContents();
+}
+
+void CommunicationWidget::downloadButtonClicked()
+{
+	if(!busy)
+	{
+		download();
+	}
+	else
+	{
+		abort();
+	}
 }
 
 void CommunicationWidget::itemClicked(QListWidgetItem* item)
@@ -179,14 +190,17 @@ void CommunicationWidget::itemClicked(QListWidgetItem* item)
 
 void CommunicationWidget::download()
 {
-	if(!busy)
+	if(trials->item(trials->currentRow()))
 	{
-		if(trials->item(trials->currentRow()))
-		{
-			//infoLabel->setText(QString("Downloading..."));
-			EntityTrialItem* temp = reinterpret_cast<EntityTrialItem*>(trials->item(trials->currentRow()));
-			int trial = temp->getID();
-			this->communicationService->downloadTrial(trial);
-		}
+		EntityTrialItem* temp = reinterpret_cast<EntityTrialItem*>(trials->item(trials->currentRow()));
+		int trial = temp->getID();
+		downloadButton->setText("Cancel");
+		this->communicationService->downloadTrial(trial);
 	}
+}
+
+void CommunicationWidget::abort()
+{
+	communicationService->cancelDownloading();
+	downloadButton->setText("Download");
 }

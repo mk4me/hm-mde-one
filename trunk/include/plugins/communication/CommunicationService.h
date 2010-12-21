@@ -48,6 +48,9 @@ public:
 	virtual void downloadTrial(unsigned int trialID);
 	virtual void downloadFile(unsigned int fileID);
 	virtual void loadTrial(const std::string& name);
+	virtual bool ping();
+	//TODO: sprzatanie w folderach po przerwaniu jak i po bledach
+	virtual void cancelDownloading();
 
 	void load();
 	void save();

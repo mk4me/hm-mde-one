@@ -14,6 +14,37 @@ innej metody), informacje sa przedstawiane w konsoli. Klasa implementuje interfe
 namespace communication
 {
 
+
+	/**
+	@author Marek Daniluk
+	@brief Struktura dla plikow pobieranych lub wyslanych przy pomocy bibliotek LibCurl. Zawiera informacje o nazwie
+	pliku i wskaznik na plik.
+	*/
+	struct FtpFile {
+		/**
+		Nazwa pliku.
+		*/
+		const std::string& filename;
+		/**
+		Wskaznik na plik.
+		*/
+		FILE* stream;
+	};
+
+	/**
+	@author Marek Daniluk
+	@brief Struktura pozwalaj¹ca anulowanie operacji. Przechowuje te¿ informacjê o postêpie operacji.
+	*/
+	struct Progress {
+		/**
+		Postêp
+		*/
+		int progress;
+		/**
+		czy anulowac?
+		*/
+		bool abort;
+	};
 	class FTPS_cURL : public IFTP
 	{
 	private:
@@ -44,7 +75,7 @@ namespace communication
 		@param ultotal 
 		@param ulnow 
 		*/
-		static size_t setProgress(int* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow);
+		static size_t setProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow);
 	protected:
 		/**
 		Pole klasy przechowujace uri do serwera FTPS. Pole jest typu string.
@@ -67,9 +98,9 @@ namespace communication
 		*/
 		CURLcode res;
 		/**
-		Pole klasy przechowuj¹ce informacje procentowym postêpie pobierania.
+		Pole klasy przechowuj¹ce informacje o procentowym postêpie operacji. S³u¿y te¿ do przerwañ operacji.
 		*/
-		int progress;
+		Progress progress;
 	public:
 		/**
 		Konstruktor klasy FTPS_cURL.
@@ -181,25 +212,15 @@ namespace communication
 		Ta metoda pochodzi z interfejsu IFTP i zostala przeslonieta.
 		*/
 		virtual void disconnect();
-
+		/**
+		Postêp operacji przesy³ania.
+		@return postêp wyra¿ony w procentach
+		*/
 		virtual int getProgress() const;
-	};
-
-	/**
-	@author Marek Daniluk
-	@brief Struktura dla plikow pobieranych lub wyslanych przy pomocy bibliotek LibCurl. Zawiera informacje o nazwie
-	pliku i wskaznik na plik.
-	*/
-
-	struct FtpFile {
 		/**
-		Nazwa pliku.
+		Anuluje obecnie wykonywan¹ operacjê.
 		*/
-		const std::string& filename;
-		/**
-		Wskaznik na plik.
-		*/
-		FILE* stream;
+		virtual void abort();
 	};
 }
 #endif

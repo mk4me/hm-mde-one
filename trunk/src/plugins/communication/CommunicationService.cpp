@@ -157,3 +157,13 @@ void CommunicationService::loadTrial(const std::string& name)
 {
 	model->loadActualTrial(name);
 }
+
+bool CommunicationService::ping()
+{
+	return true;
+}
+
+void CommunicationService::cancelDownloading()
+{
+	model->cancelDownloading();
+}

@@ -91,3 +91,8 @@ int TransportWSDL_FTPS::getProgress() const
 {
 	return ftp->getProgress();
 }
+
+void TransportWSDL_FTPS::abort()
+{
+	ftp->abort();
+}

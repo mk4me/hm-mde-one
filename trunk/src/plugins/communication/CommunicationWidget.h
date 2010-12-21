@@ -56,12 +56,14 @@ public:
 	void setInfoLabel(const std::string& info) {infoLabel->setText(QString::fromStdString(info));};
 	void showErrorMessage(const std::string& error);
 	void refresh();
+	void download();
+	void abort();
 
     virtual void update(const communication::CommunicationManager* subject);
 
 	private slots:
 		void updateButtonClicked();
-		void download();
+		void downloadButtonClicked();
 		void itemDoubleClicked(QListWidgetItem*);
 		void itemClicked(QListWidgetItem*);
 

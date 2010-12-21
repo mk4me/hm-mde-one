@@ -53,6 +53,7 @@ namespace communication
 		void listSessionContents();
 		void downloadTrial(unsigned int trialID);
 		void downloadFile(unsigned int fileID);
+		void cancelDownloading() {transportManager->abort();};
 
 		const std::vector<Trial>& getServerTrials() const {return serverTrials;};
 		const std::vector<LocalTrial>& getLocalTrials() const {return localTrials;};
