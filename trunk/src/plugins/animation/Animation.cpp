@@ -89,15 +89,15 @@ void Animation::PlayFirstFrame()
 
     switch(m_animationType)
     {
-    case AnimationType::ACCLAIM:
+    case ACCLAIM:
         UpdateModelAcclaimFormat();
     	break;
 
-    case AnimationType::C3D:
+    case C3D:
         UpdateModelC3DFormat();
         break;
 
-    case AnimationType::BVH:
+    case BVH:
         UpdateModelBVHFormat();
         break;
     }

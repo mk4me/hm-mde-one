@@ -1,5 +1,6 @@
 #include "C3DModel.h"
 
+#pragma warning (disable: 4018)
 
 #define MARKER_SCALE 24.41463509083284
 

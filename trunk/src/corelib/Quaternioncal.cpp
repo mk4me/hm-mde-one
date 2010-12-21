@@ -20,7 +20,10 @@
 #define PI (3.1415926535)
 #endif
 
+#ifndef FLT_EPSILON
 #define FLT_EPSILON 0.005
+#endif
+
 
 //--------------------------------------------------------------------------------------------------
 Quaternion::Quaternion()

@@ -5,7 +5,7 @@
 #include <core/IDataManager.h>
 #include "ServiceManager.h"
 
-
+#pragma warning (disable: 4018)
 
 //deprecated:
 //M_DECLARED_CLASS(ModelService, kCLASSID_ModelService);

@@ -34,6 +34,7 @@
 #define STATUS_ADDRESS PORTADDRESS+1
 #define CONTROL_ADDRESS PORTADDRESS+2
 
+#pragma warning (disable: 4018)
 
 #ifndef PI
 #define PI 3.1415926536

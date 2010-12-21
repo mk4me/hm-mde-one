@@ -24,7 +24,7 @@
 
 #include "OsgControlWidget.h"
 
-
+#pragma warning (disable: 4018)
 
 using namespace std;
 using namespace osg;
@@ -106,7 +106,7 @@ AsyncResult AnimationService::init(IServiceManager* serviceManager, osg::Node* s
     }
 
     m_pRenderService = dynamic_cast<IRenderService* >(m_pServiceManager->getService(UniqueID('REND','SRVC')).get());
-    m_DisplayType = AnimasionDisplay::ALL;
+    m_DisplayType = ALL;
 
     std::cout << "AnimationService ADDED!" << std::endl; 
     return AsyncResult_Complete; 
@@ -155,7 +155,7 @@ void AnimationService::Clear()
     m_animationDisplayList.clear();
     m_functionsToCallWhenAnimationStopped.clear();
 
-    m_DisplayType = AnimasionDisplay::ALL;
+    m_DisplayType = ALL;
 
     ClearCaller();
 }
@@ -304,15 +304,15 @@ AsyncResult AnimationService::update(double time, double timeDelta)
 
     if(m_pModel)
     {
-        if(m_DisplayType & AnimasionDisplay::MESH)
+        if(m_DisplayType & MESH)
             GPUUpdateMesh();
 
-        if(m_DisplayType & AnimasionDisplay::BONE)
+        if(m_DisplayType & BONE)
             m_pModel->DrawModelBone();
     }
 
     if(m_pC3DModel)
-        if(m_DisplayType & AnimasionDisplay::MARKER)
+        if(m_DisplayType & MARKER)
             m_pC3DModel->DrawMarkers();
 
 
@@ -659,12 +659,12 @@ void AnimationService::SetShowMesh( bool showMesh )
     if(showMesh)
     {
         m_pRenderService->EnableMesh();
-        m_DisplayType = m_DisplayType | AnimasionDisplay::MESH;
+        m_DisplayType = m_DisplayType | MESH;
     }
     else
     {
         m_pRenderService->DisableMesh();
-        m_DisplayType = m_DisplayType ^ AnimasionDisplay::MESH;
+        m_DisplayType = m_DisplayType ^ MESH;
     }
 
 }
@@ -673,11 +673,11 @@ void AnimationService::SetShowMesh( bool showMesh )
 void AnimationService::SetShowBone( bool showBone )
 {
     if(showBone)
-        m_DisplayType = m_DisplayType | AnimasionDisplay::BONE;
+        m_DisplayType = m_DisplayType | BONE;
     else
     {
         m_pRenderService->DisableBone();
-        m_DisplayType = m_DisplayType ^ AnimasionDisplay::BONE;
+        m_DisplayType = m_DisplayType ^ BONE;
     }
 }
 
@@ -687,12 +687,12 @@ void AnimationService::SetShowMarker( bool showMarker )
     if(showMarker)
     {
         m_pRenderService->EnableMarker();
-        m_DisplayType = m_DisplayType | AnimasionDisplay::MARKER;
+        m_DisplayType = m_DisplayType | MARKER;
     }
     else
     {
         m_pRenderService->DisableMarker();
-        m_DisplayType = m_DisplayType ^ AnimasionDisplay::MARKER;
+        m_DisplayType = m_DisplayType ^ MARKER;
     }
 }
 

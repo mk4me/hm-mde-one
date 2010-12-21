@@ -27,6 +27,9 @@
 #include <core/c3dParser.h>
 #include <core/C3D_Data.h>
 
+#pragma warning (disable: 4018)
+
+
 #define SCALE 1
 #define TIMERMULTIPLAY 0.009
 

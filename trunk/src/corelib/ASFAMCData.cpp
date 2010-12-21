@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#pragma warning (disable: 4018)
+
 #ifndef PI
 #define PI (3.1415926535)
 #endif
