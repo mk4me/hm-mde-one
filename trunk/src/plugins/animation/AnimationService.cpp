@@ -202,7 +202,7 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
     // ladowanie modelu animacji animacji - poprzez dane zapisane w obiekcie kalsu Model
     LoadAnimation(m_pModel);
 
-    // za³adownie wszystkich modeli typu 3cd - poniewaz modele 3cd same w sobie sa odrebnym modelem posiadajacym w³asna animacje
+    // za³adownie wszystkich modeli typu 3cd - poniewaz modele c3d same w sobie sa odrebnym modelem posiadajacym w³asna animacje
 	//for (int i = 0; i < dataManager->getC3dFilePathCount(); i++)
  //       LoadAnimation(m_pFactory->GetC3DModel(dataManager->getC3dFilePath(i)));
 	if(dataManager->getActualTrial().isC3d())
@@ -231,8 +231,18 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 
     }
 
+    InicializeAnimation();
 
     return AsyncResult_Complete;
+}
+
+//--------------------------------------------------------------------------------------------------
+void AnimationService::InicializeAnimation()
+{
+    if(!m_animations.empty()){
+        m_animations.begin()->second->PlayFirstFrame();
+        PlayAnimation(m_animations.begin()->first);
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -360,9 +370,6 @@ void AnimationService::LoadAnimation( IModel* model )
         m_animations.insert(make_pair(model->GetAnimationList()->m_SkeletonAnimationList[i]->m_animationName, animation));	
         m_animationDisplayList.push_back(model->GetAnimationList()->m_SkeletonAnimationList[i]->m_animationName);
     }
-
-    if(!m_animations.empty())
-        m_animations.begin()->second->PlayFirstFrame();
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -181,6 +181,7 @@ private:
     virtual void CPUUpdateMesh();
     virtual void Clear();
 
+    void InicializeAnimation();
     void PlayC3DAnimation(std::string name);
 
     std::vector<std::vector<ISimpleOneArgFunctor<double>*>::iterator> m_functionsToRemove; // functions to remove from caller

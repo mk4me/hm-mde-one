@@ -11,6 +11,17 @@ class IC3DModel;
 typedef std::map<std::string, IModel*> ModelResources;
 typedef std::map<std::string, IC3DModel*> C3DModelResources;
 
+/******************************************************************************************/
+
+/*Metoda Factory dzia³a na zasadzie kontenera obiektów które posiada nasza aplikacja      */
+/*Chodzi oczywiœcie o obiekty wykorzystywane w celu wizualizacji danych z motion          */
+/*capture czyli obiektów typu Model i C3DModel.                                           */
+/*Dzia³anie klasy polega na tworzeniu b¹dŸ udostepnianiu isnstancji tych modeli           */
+/*dane s¹ zapisywane w mapie. kluczem jest œcie¿ka do szkieletu i animacji - jeœli        */
+/*danego modelu nie ma w mapie zostanie utworzony nowy model wykorzystuj¹c                */
+/*œcie¿ki z podanej lokalizacji                                                           */
+
+/******************************************************************************************/
 class Factor: public IFactor
 {
 public:
