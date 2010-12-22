@@ -69,7 +69,7 @@ void ChartWidget::addChart(C3DChartData* c3dData){
 	item.push_back(new Chart(40,40,500,250));
 	itItem= item.end()-1;
 	(*itItem)->addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
-    (*itItem)->setLabelVisable(false);
+  //  (*itItem)->setLabelVisable(false);
     (*itItem)->setShowBorder(false);
 	multiView->addChild(*itItem);
 	previewItem.push_back(new Chart(40,40,500,250));

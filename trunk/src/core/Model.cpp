@@ -7,6 +7,7 @@
 #include <core/Matrix.h>
 
 #include <osg/MatrixTransform>
+#include <osg/BlendEquation>
 
 #include <core/Vec3.h>
 
@@ -255,6 +256,23 @@ osg::ref_ptr<osg::Drawable> Model::DrawBoxBone( const osg::Vec3f* startPos, cons
     box->setRotation(*rotation);
     
     osg::ShapeDrawable *shapeDrawable = new osg::ShapeDrawable(box);
+
+
+
+    osg::StateSet* stateset = new osg::StateSet;
+    stateset->setDataVariance(osg::Object::DYNAMIC);
+
+    osg::BlendEquation* blendEquation = new osg::BlendEquation(osg::BlendEquation::FUNC_ADD);
+    blendEquation->setDataVariance(osg::Object::DYNAMIC);
+
+    stateset->setAttributeAndModes(blendEquation,osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
+
+    //tell to sort the mesh before displaying it
+    stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN); 
+
+
+
+    shapeDrawable->setStateSet(stateset);
 
     shapeDrawable->setColor(*s_BonesInfo[boneType].m_pColor);
     return shapeDrawable;
