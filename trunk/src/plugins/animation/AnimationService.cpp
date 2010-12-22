@@ -243,6 +243,8 @@ void AnimationService::InicializeAnimation()
         m_animations.begin()->second->PlayFirstFrame();
         PlayAnimation(m_animations.begin()->first);
     }
+
+    InitMarkerList();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -449,6 +451,8 @@ void AnimationService::PlayC3DAnimation(std::string name)
     c3dName = name.substr(0, name.find_last_of("."));
     c3dName.append(".c3d");
 
+    widget->ClearMarkerList();
+
     if (c3dcurrentAnimation) {
         c3dcurrentAnimation->Stop();
     }
@@ -471,6 +475,8 @@ void AnimationService::PlayC3DAnimation(std::string name)
             c3dcurrentAnimation = NULL;
         }
     }
+
+    InitMarkerList();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -709,4 +715,20 @@ bool AnimationService::IsModelAnimation()
         return true;
 
     return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+void AnimationService::InitMarkerList()
+{
+    if(!m_pC3DModel)
+        return;
+
+    // hack - skoro na raize i tak wyswietlamy po kolei numery markerów
+    widget->AddMarkerTODisplayPathList(m_pC3DModel->GetMarkerList().size());
+}
+
+//--------------------------------------------------------------------------------------------------
+void AnimationService::CreatingAndRenderMarkerPath(std::vector<int > markerSelectedList )
+{
+    m_pRenderService->CreatingAndRenderMarkerPath(m_pC3DModel, markerSelectedList);
 }

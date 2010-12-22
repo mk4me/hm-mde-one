@@ -54,7 +54,7 @@ public:
     virtual void SetC3DMarkerToRender(IC3DModel *c3dmarker) = 0;
     virtual IFactor* GetFactory() = 0;
 
-    virtual void CreatingAndRenderMarkerPath(IC3DModel* tempModel) = 0;
+    virtual void CreatingAndRenderMarkerPath(IC3DModel* c3dModel, std::vector<int > markerSelectedList) = 0;
 
 // nowy intefejs
 public:

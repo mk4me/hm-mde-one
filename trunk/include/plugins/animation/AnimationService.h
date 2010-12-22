@@ -134,6 +134,8 @@ public:
     virtual std::vector<std::string>* GetAnimationDisplayList();
     virtual bool IsModelAnimation();
 
+    virtual void CreatingAndRenderMarkerPath(std::vector<int > markerSelectedList);
+
 // IService (Piotr Gwiazdowski)
 public:
     // HACK ten podzia³ powinien byæ tymczasowy
@@ -181,6 +183,7 @@ private:
     virtual void CPUUpdateMesh();
     virtual void Clear();
 
+    void InitMarkerList();
     void InicializeAnimation();
     void PlayC3DAnimation(std::string name);
 

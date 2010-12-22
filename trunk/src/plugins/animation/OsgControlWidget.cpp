@@ -46,6 +46,22 @@ void OsgControlWidget::animationSelectionChanged()
         }
     }
 }
+
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::AddMarkerTODisplayPathList( int markerNumber )
+{
+    markerList->clear();
+
+    for(int i = 0; i < markerNumber; i++)
+    {
+        std::stringstream ss;
+        ss << i;
+        std::string s = ss.str();
+
+        markerList->addItem(s.c_str());
+    }
+}
+
 //------------------------------------------------------------------------------
 
 void OsgControlWidget::followTimelineChecked( int checked )
@@ -97,9 +113,18 @@ void OsgControlWidget::SetScene( osg::Node *scene, IServiceManager *pServiceMana
 //--------------------------------------------------------------------------------------------------
 void OsgControlWidget::ClearScene()
 {
+    m_markerSelectedList.clear();
+
     animationList->reset();
     animationList->clear();
+
+    markerList->reset();
+    markerList->clear();
+
     QListWidgetItem* node = new QListWidgetItem(animationList);
+    node->setText("[none]");
+
+    node = new QListWidgetItem(markerList);
     node->setText("[none]");
 }
 
@@ -125,4 +150,32 @@ void OsgControlWidget::BoneChecked( int checked )
 void OsgControlWidget::MarkerChecked( int checked )
 {
     m_pAnimationService->SetShowMarker(checked != 0);
+}
+
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::ClearMarkerList()
+{
+    markerList->clear();
+
+//     QListWidgetItem* node = new QListWidgetItem(markerList);
+//     node->setText("[none]");
+}
+
+//--------------------------------------------------------------------------------------------------
+void OsgControlWidget::MarkerListSelectionChanged()
+{
+    m_markerSelectedList.clear();
+    QList<QListWidgetItem* > selected =  markerList->selectedItems();
+    QList<QListWidgetItem* >::iterator item;
+
+    for(item = selected.begin(); item != selected.end(); item++)
+    {
+        std::string anim = "";
+        QString	str = (*item)->text();
+        anim = str.toAscii().constData();
+       
+        m_markerSelectedList.push_back(atoi(anim.c_str()));
+    }
+
+    m_pAnimationService->CreatingAndRenderMarkerPath(m_markerSelectedList);
 }

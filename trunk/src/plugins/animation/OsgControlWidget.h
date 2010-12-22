@@ -25,7 +25,10 @@ public:
 
     void SetScene(osg::Node *scene); 
     void SetScene(osg::Node *scene, IServiceManager *pServiceManager); 
-    void ClearScene(); 
+    void ClearScene();
+
+    void AddMarkerTODisplayPathList(int markerNumber);
+    void ClearMarkerList();
 
     public slots: 
 
@@ -35,9 +38,12 @@ public:
         virtual void MeshChecked(int checked);
         virtual void BoneChecked(int checked);
         virtual void MarkerChecked(int checked);
+        virtual void MarkerListSelectionChanged();
 
 private:
     AnimationService* m_pAnimationService;
+
+    std::vector<int > m_markerSelectedList;
 };
 
 

@@ -77,6 +77,8 @@ public:
 
     //! \ Sprawdzenie czy istenieje animacja z modelu - amc
     virtual bool IsModelAnimation() = 0;
+
+    virtual void CreatingAndRenderMarkerPath(std::vector<int > markerSelectedList) = 0;
 };
 
 #endif //I_ANIMATION_SERVICE_H

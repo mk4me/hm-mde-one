@@ -101,7 +101,7 @@ public:
     virtual IFactor* GetFactory();
 
     //! \ Creating and render Marker Path
-    virtual void CreatingAndRenderMarkerPath(IC3DModel* tempModel);
+    virtual void CreatingAndRenderMarkerPath(IC3DModel* c3dModel, std::vector<int > markerSelectedList);
 
 private: 
     void DisablemarkerPath();

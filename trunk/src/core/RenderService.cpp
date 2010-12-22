@@ -443,7 +443,7 @@ void RenderService::SetC3DMarkerToRender(IC3DModel *c3dmodel)
 
     DisableMarker();
 
-    CreatingAndRenderMarkerPath(tempModel);
+    //CreatingAndRenderMarkerPath(tempModel);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -528,12 +528,12 @@ void RenderService::DisablemarkerPath()
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::CreatingAndRenderMarkerPath(IC3DModel* tempModel)
+void RenderService::CreatingAndRenderMarkerPath(IC3DModel* c3dModel, std::vector<int > markerSelectedList)
 {
     if(m_pMarkerLineGeode.valid())
         SceneRoot->removeChild(m_pMarkerLineGeode.get());
 
-    std::vector<IMarker* > markerList = tempModel->GetMarkerList();
+    std::vector<IMarker* > markerList = c3dModel->GetMarkerList();
     std::vector<MarkerFrame* > animationList = markerList[1]->GetAnimationList();
 
     float animationLenght = animationList[animationList.size() - 1]->m_time;
@@ -547,8 +547,11 @@ void RenderService::CreatingAndRenderMarkerPath(IC3DModel* tempModel)
     osg::ref_ptr<osg::Geometry>	linesGeom = new osg::Geometry();
 
     int index;
-    for(int m = 9; m < 11; ++m)
+    int markerPathCount = markerSelectedList.size();
+
+    for(int i = 0; i < markerPathCount; ++i)
     {
+        int m = markerSelectedList[i];
         index = 0;
         animationList = markerList[m]->GetAnimationList();
         for(int t = 0; index < animationSize; t++)

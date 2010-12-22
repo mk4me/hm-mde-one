@@ -14,9 +14,9 @@ struct sBoneColorInfo
     osg::Vec4		*m_pColor;
 };
 
-#define LEFT_SIDE_COLOR   new osg::Vec4(0.0, 0.0, 1.0, 0.4)
-#define RIGHT_SIDE_COLOR  new osg::Vec4(1.0, 0.0, 0.0, 0.4)
-#define CENTER_COLOR      new osg::Vec4(0.5, 0.0, 0.5, 0.4)
+#define LEFT_SIDE_COLOR   new osg::Vec4f(0.0, 0.0, 1.0, 0.4)
+#define RIGHT_SIDE_COLOR  new osg::Vec4f(1.0, 0.0, 0.0, 0.4)
+#define CENTER_COLOR      new osg::Vec4f(0.5, 0.0, 0.5, 0.4)
 
 // Bone segment names used in ASF file
 static int root = 0;
