@@ -246,12 +246,15 @@ void CommunicationManager::run()
 		}
 	case DownloadingTrial:
 		{
+			std::string pathToDownloadingTrial;
 			try
 			{
 				BOOST_FOREACH(Trial& trial, serverTrials)
 				{
 					if(trial.id == entityID)
 					{
+						pathToDownloadingTrial = trialsDir;
+						pathToDownloadingTrial.append("/").append(trial.trialDescription);
 						filesToDownload = trial.trialFiles.size();
 						actualFile = 0;
 						BOOST_FOREACH(int i, trial.trialFiles)
@@ -266,6 +269,10 @@ void CommunicationManager::run()
 			}
 			catch(std::runtime_error& e)
 			{
+				if(!pathToDownloadingTrial.empty())
+				{
+					Filesystem::deleteDirectory(pathToDownloadingTrial);
+				}
 				state = Error;
 				errorMessage = e.what();
 			}

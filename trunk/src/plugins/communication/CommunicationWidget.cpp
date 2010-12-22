@@ -9,7 +9,7 @@ CommunicationWidget::CommunicationWidget(CommunicationService* service) : QWidge
 {
 	updateButton = new QPushButton(tr("Get trials"));
 	downloadButton = new QPushButton(tr("Download"));
-	downloadButton->setDisabled(true);
+	//downloadButton->setDisabled(true);
 
 	QDialogButtonBox* buttonsBox = new QDialogButtonBox(Qt::Horizontal);	
 	buttonsBox->addButton(updateButton, QDialogButtonBox::ActionRole);
@@ -130,7 +130,23 @@ void CommunicationWidget::setBusy(bool busy)
 		trials->setDisabled(false);
 		updateButton->setDisabled(false);
 		progressBar->reset();
-		downloadButton->setText("Download");
+		if(trials->item(trials->currentRow()))
+		{
+			if(trials->item(trials->currentRow())->textColor() == QColor(0, 0, 255))
+			{
+				downloadButton->setText("Load");
+			}
+			else
+			{
+				downloadButton->setText("Download");
+			}
+			downloadButton->setDisabled(false);
+		}
+		else
+		{
+			downloadButton->setText("Load");
+			downloadButton->setDisabled(true);
+		}
 	}
 }
 
@@ -153,7 +169,7 @@ void CommunicationWidget::setProgress(int value)
 
 void CommunicationWidget::itemDoubleClicked(QListWidgetItem* item)
 {
-	if(item->textColor() == QColor(0, 0, 255))
+	if(item && item->textColor() == QColor(0, 0, 255))
 	{
 		LocalTrialItem* temp = reinterpret_cast<LocalTrialItem*>(trials->item(trials->currentRow()));
 		loadTrial(temp->getName());
@@ -176,7 +192,7 @@ void CommunicationWidget::downloadButtonClicked()
 {
 	if(!busy)
 	{
-		download();
+		itemDoubleClicked(trials->item(trials->currentRow()));
 	}
 	else
 	{
@@ -186,14 +202,6 @@ void CommunicationWidget::downloadButtonClicked()
 
 void CommunicationWidget::itemClicked(QListWidgetItem* item)
 {
-	if(item->textColor() == QColor(0, 0, 255))
-	{
-		downloadButton->setEnabled(false);
-	}
-	else
-	{
-		downloadButton->setEnabled(true);
-	}
 }
 
 void CommunicationWidget::download()
