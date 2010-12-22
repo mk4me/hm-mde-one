@@ -564,8 +564,12 @@ void RenderService::CreatingAndRenderMarkerPath(IC3DModel* c3dModel, std::vector
                 index += delta;
             }
         }
+
+
+        // potrzebujemy parzystej liczby danych
         if(vertices->size()%2 != 0)
-            (*vertices).push_back(animationList[animationList.size()-1]->m_position/MARKER_SCALE);
+            (*vertices).erase(vertices->end()-1);// push_back(animationList[animationList.size()-1]->m_position/MARKER_SCALE);
+
     }
     linesGeom->setVertexArray(vertices);
 
