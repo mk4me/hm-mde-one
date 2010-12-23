@@ -46,6 +46,10 @@ public:
         return window;
     }
 
+    //!
+    bool isSelected();
+
+// MultiView::PreviewItem
 public:
     //! \return Nazwa widgetu.
     virtual const std::string& getName() const;

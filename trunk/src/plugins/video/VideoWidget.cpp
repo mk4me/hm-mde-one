@@ -8,27 +8,24 @@
 #include <utils/PtrPolicyOSG.h>
 #include <utils/PtrWrapper.h>
 
-#include "Callback.h"
-#include "HorizontalScrollBar.h"
-#include "Potentiometer.h"
-#include "StreamsViewOSGWidget.h"
-
-#include "tm.h"
+#include "osg/VideoImageStreamSizeOptimizer.h"
+#include "StreamOsgWidget.h"
 
 #include "core/VM.h"
 #include "osg/VideoImageStream.h"
-#include "StaticKeyboardHandler.h"
 #include <utils/Profiler.h>
 #include "VideoWidget.h"
-#include "ImageCanvas.h"
 #include <core/MultiView.h>
 #include <core/AspectRatioKeeper.h>
 #include <core/MultiViewWidgetItem.h>
 #include <core/OsgSceneDump.h>
 #include <core/Log.h>
 
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
+#include <core/OsgWidgetUtils.h>
 
-using namespace timeline;
+
 
 
 #ifdef _DEBUG
@@ -37,17 +34,64 @@ using namespace timeline;
 #define WM_FLAGS 0
 #endif
 
-VideoWidget::VideoWidget()
+using namespace video;
+
+
+class OsgWidgetWindowItem : public VideoImageStreamSizeOptimizer::Client
+{
+    //! Okno wzglêdem którego sprawdzaæ widocznoœæ.
+    osg::observer_ptr<osgWidget::Window> window;
+    //! Widget dla którego dostosowywaæ wspó³rzêdne tekstury.
+    osg::observer_ptr<osgWidget::Widget> widget;
+
+public:
+    OsgWidgetWindowItem(osgWidget::Window* window, osgWidget::Widget* widget) :
+      window(window), widget(widget)
+      {}
+
+public:
+
+    //! 
+    virtual bool isValid()
+    {
+        return window.valid() && widget.valid();
+    }
+
+    //! \return Czy 
+    virtual osg::Vec2 getDesiredImageSize()
+    {
+        if ( window->isVisible() ) {
+            return widget->getSize();
+        } else {
+            return osg::Vec2(0, 0);
+        }
+    }
+
+    //! \param optimizer
+    //! \param prevS
+    //! \param prevT
+    virtual void onImageResized(VideoImageStreamSizeOptimizer* optimizer, int prevS, int prevT)
+    {
+        osg::Image* image = optimizer->getImage();
+        if ( osg::StateSet* state = widget->getStateSet() ) {
+            if ( osg::TextureRectangle* rect = dynamic_cast<osg::TextureRectangle*>(state->getTextureAttribute(0, osg::StateAttribute::TEXTURE)) ) {
+                // przeskalowanie wspó³rzêdnych tekstury
+                for (unsigned i = 0; i < 4; ++i) {
+                    osgWidget::TexCoord coord = widget->getTexCoord(static_cast<osgWidget::Widget::Corner>(i));
+                    coord.x() *= image->s()/static_cast<double>(prevS);
+                    coord.y() *= image->t()/static_cast<double>(prevT);
+                    widget->setTexCoord( coord, static_cast<osgWidget::Widget::Corner>(i) );
+                }
+            }
+        }
+    }
+};
+
+VideoWidget::VideoWidget() :
+format(PixelFormatBGRA)
 {
     // inicjalizacja UI
     setupUi(this); 
-
-    // TODO: do wyrzucenia!
-    vm::VideoManager::getInstance()->setEnableBuffering( false );
-    vm::VideoManager::getInstance()->setPrefferedFormat( vm::PixelFormatYV12);
-
-    // stworzenie helpera
-    streamHelper = new OsgWidgetStreamHelper( "data/resources/shaders/", true );
 
     // tworzenie viewera
     viewer = new QOSGViewer(this, "OsgViewer");
@@ -66,7 +110,7 @@ VideoWidget::VideoWidget()
 
     viewer->addEventHandler( new core::OsgSceneDumpFileHandler( "dump_VideoService.txt") );
     viewer->addEventHandler( new osgWidget::MouseHandler(multiView) );
-    viewer->addEventHandler( new osgUI::StaticKeyboardHandler(multiView) );
+    viewer->addEventHandler( new osgWidget::KeyboardHandler(multiView) );
     viewer->addEventHandler( new osgWidget::ResizeHandler(multiView, multiViewCamera) );
     viewer->addEventHandler( new osgViewer::StatsHandler );
     viewer->addEventHandler( new osgGA::StateSetManipulator( viewer->getCamera()->getOrCreateStateSet() ) );
@@ -88,57 +132,6 @@ VideoWidget::VideoWidget()
 //   init(files);
 }
 
-
-void VideoWidget::configureView(int rows, int columns, ImagesList& images)
-{
-    return;
-//    view->clear();
-//
-////   // okreœlamy liczbê kolumn i wierszy
-////   unsigned int rows = 0;
-////   unsigned int columns = 0;
-////   if ( !vertically && !horizontally ) {
-////     columns = static_cast<unsigned int>(ceil(sqrt(static_cast<double>(images.size()))));
-////     if ( columns != 0 ) {
-////       if ( columns * (columns-1) >= images.size() ) {
-////         rows = columns-1;
-////       } else {
-////         rows = columns;
-////       }
-////     }
-////   } else if ( vertically ) {
-////     rows = images.size();
-////     columns = 1;
-////   } else if ( horizontally ) {
-////     columns = images.size();
-////     rows = 1;
-////   }
-//
-//  view->setDimensions(rows, columns);
-//
-//  // tworzymy geometriê
-//  for ( int y = 0; y < rows; ++y ) {
-//    for ( int x = 0; x < columns; ++x ) {
-//      // indeks obrazka
-//      size_t idx = x + y * columns;
-//      if ( idx < images.size() ) {
-//        osg::Image* image = images[idx];
-//        view->addStream(image, y, x);
-//      }
-//    }
-//  }
-//
-//  last.images = images;
-//  last.columns = columns;
-//  last.rows = rows;
-
-//   // kontroler
-//   Controller * controller = new Controller();
-//   for (  std::vector<osg::ImageStream*>::iterator it = streams.begin(); it != streams.end(); ++it ) {
-//     controller->getModel()->addStream(  *it );
-//   }  
-}
-
 void VideoWidget::init( std::vector<std::string> &files )
 {
     // odczytanie plików
@@ -146,6 +139,9 @@ void VideoWidget::init( std::vector<std::string> &files )
     BOOST_FOREACH(const std::string& file, files) {
         if ( osg::Image* image = osgDB::readImageFile(file) ) {
             images.push_back(image);
+            if ( osgPlugin::VideoImageStream* stream = dynamic_cast<osgPlugin::VideoImageStream*>(image) ) {
+                stream->setTargetFormat(format);
+            }
         } else {
             LOG_ERROR<<"VideoService: "<<file<<" could not be read.";
         }
@@ -154,20 +150,21 @@ void VideoWidget::init( std::vector<std::string> &files )
     createScene();
 }
 
-void VideoWidget::setPixelFormat( vm::PixelFormat format )
+void VideoWidget::setPixelFormat( PixelFormat format )
 {
     // ustawienie formatu strumieni
     BOOST_FOREACH( osg::Image* image, images ) {
-        if ( vmOSGPlugin::VideoImageStream* stream = dynamic_cast<vmOSGPlugin::VideoImageStream*>(image) ) {
+        if ( osgPlugin::VideoImageStream* stream = dynamic_cast<osgPlugin::VideoImageStream*>(image) ) {
             stream->setTargetFormat(format);
         }
     }
+    this->format = format;
     createScene();
 }
 
 void VideoWidget::setUseTextureRect( bool useTextureRect )
 {
-    streamHelper->setUseTextureRect( useTextureRect );
+    this->useTextureRect = useTextureRect;
     createScene();
 }
 
@@ -178,6 +175,10 @@ void VideoWidget::createScene()
 
     // na wszelki wypadek czyœcimy scenê
     clearScene();
+    
+
+    
+    
 
     // stworzenie widgetów i dodanie ich do multi widoku
     float avgRatio = 0;
@@ -186,16 +187,19 @@ void VideoWidget::createScene()
         float ratio = image->getPixelAspectRatio() * image->s() / image->t();
         avgRatio += ratio;
 
+        VideoImageStreamSizeOptimizer* optimizer = new VideoImageStreamSizeOptimizer(new osg::Uniform(yuvImageSizeName.c_str(), 0, 0));
+        
+
         // faktyczne dodanie miniaturki do grida
-        osgWidget::Box* thumbnail = new osgWidget::Box(image->getFileName() + "thumbnail");
-        video::StreamOsgWidget* streamWidget = streamHelper->createWidget( image );
+        osgWidget::Widget* streamWidget = createStreamWidget( image, optimizer );
+        osgWidget::Box* thumbnail = new osgWidget::Box(streamWidget->getName());
         streamWidget->setCanFill(true);
         thumbnail->addWidget(streamWidget);
         multiView->addChild(thumbnail);
 
         // faktyczne dodanie du¿ego okna
-        osgWidget::Box* preview = new osgWidget::Box(image->getFileName());
-        video::StreamOsgWidget* streamWidgetClone = streamHelper->createWidget( osg::clone(image) );
+        osgWidget::Widget* streamWidgetClone = createStreamWidget( /*osg::clone*/(image), optimizer);
+        osgWidget::Box* preview = new osgWidget::Box(std::string(streamWidgetClone->getName()) + "Preview");        
         osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(streamWidgetClone, ratio);
         keeper->setColor(0, 0, 0, 0);
         preview->getBackground()->setColor(0,0,0,0);
@@ -203,7 +207,15 @@ void VideoWidget::createScene()
         multiView->addChild(preview);
 
         // dodanie itemów do multiviewa
-        multiView->addItem(new core::MultiViewWidgetItem(thumbnail, ratio), new core::MultiViewWidgetItem(preview, ratio));
+        core::MultiViewWidgetItem* thumbnailItem = new core::MultiViewWidgetItem(thumbnail, ratio);
+        core::MultiViewWidgetItem* previewItem = new core::MultiViewWidgetItem(preview, ratio);
+        multiView->addItem(thumbnailItem, previewItem);
+
+        optimizer->setImage(image);
+        optimizer->getClients().push_back(new OsgWidgetWindowItem(thumbnail, streamWidget));
+        optimizer->getClients().push_back(new OsgWidgetWindowItem(preview, streamWidgetClone));
+        optimizers.push_back(optimizer);
+        multiView->addUpdateCallback(optimizer);
     }
 
     // obliczenie rozmiaru grida (jak najbardziej kwadratowy)
@@ -221,12 +233,17 @@ void VideoWidget::createScene()
     for (unsigned row = 0; row < rows; ++row) {
         for (unsigned col = 0; col < columns; ++col) {
             osg::Image* image = images[ row * columns + col ];
-            video::StreamOsgWidget* thumbnail = streamHelper->createWidget( osg::clone(image) );
+            osgWidget::Widget* thumbnail = createStreamWidget( /*osg::clone*/(image), optimizers[row*columns+col] );
             thumbnail->setCanFill(true);
             gridThumbs->addWidget(thumbnail, row, col);
-            video::StreamOsgWidget* preview = streamHelper->createWidget( osg::clone(image) );
+            osgWidget::Widget* preview = createStreamWidget( /*osg::clone*/(image), optimizers[row*columns+col] );
             osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(preview, avgRatio);
             grid->addWidget(keeper, row, col);
+
+            optimizers[ row * columns + col ]->getClients().push_back(new OsgWidgetWindowItem(gridThumbs, thumbnail));
+            optimizers[ row * columns + col ]->getClients().push_back(new OsgWidgetWindowItem(grid, preview));
+            
+
         }
     }
     multiView->addChild(gridThumbs);
@@ -240,6 +257,12 @@ void VideoWidget::createScene()
 
 void VideoWidget::clearScene()
 {
+    // usuniêcie callbacków
+    BOOST_FOREACH(VideoImageStreamSizeOptimizer* optimizer, optimizers) {
+        multiView->removeUpdateCallback(optimizer);
+    }
+    optimizers.clear();
+
     // usuniêcie itemów
     multiView->removeAllItems();
     // usuniêcie wszystkich wêz³ów (!)
@@ -247,5 +270,70 @@ void VideoWidget::clearScene()
     // reinicjalizacja multi view (po usunieciu wszystkich wêz³ów - wymagana)
     multiView->restoreRequiredChildren();
 
+    // dodanie "hacka"
     multiView->addChild(new osgWidget::Box("HACK"));
+}
+
+
+osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image )
+{
+    return createStreamWidget(image, new osg::Uniform(yuvSamplerName.c_str(), 0), new osg::Uniform(yuvImageSizeName.c_str(), 0, 0) );
+}
+
+osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, VideoImageStreamSizeOptimizer* optimizer )
+{
+    return createStreamWidget(image, new osg::Uniform(yuvSamplerName.c_str(), 0), optimizer->getImageSize() );
+}
+
+osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Uniform* sampler, osg::Uniform* imageSize )
+{
+    UTILS_ASSERT(image);
+    // tworzymy kontrolkê
+    StreamOsgWidget* widget = new StreamOsgWidget( boost::filesystem::path(image->getFileName()).filename() );
+
+    // ustawienie tekstury
+    widget->setImage(image, true, useTextureRect);
+    // czy trzeba zrobiæ flipa?
+    osgUI::correctTexCoords(image, widget);
+    // poprawki
+    if ( !useTextureRect && osgUI::getTexture(widget) ) {
+        osgUI::getTexture(widget)->setResizeNonPowerOfTwoHint(false);
+    }
+
+    // ustawienie formatu
+    if (osgPlugin::VideoImageStream* stream = dynamic_cast<osgPlugin::VideoImageStream*>(image)) {
+        widget->setPixelFormat(stream->getTargetFormat());   
+        if ( stream->getTargetFormat() == PixelFormatYV12 ) {
+            // ustawienie shaderów
+            widget->setYuvTexture2DShader(yuvTexture2DShader);
+            widget->setYuvTextureRectShader(yuvTextureRectShader);
+            widget->getOrCreateStateSet()->addUniform( sampler );
+            widget->getOrCreateStateSet()->addUniform( imageSize );
+        }
+    }
+
+    widget->refreshShaders();
+    return widget;
+}
+
+
+
+void VideoWidget::loadShaders(const std::string& yuvTextureRect, const std::string& yuvTexture2D)
+{
+    yuvTexture2DShader = osg::Shader::readShaderFile(osg::Shader::FRAGMENT, yuvTexture2D);
+    if (!yuvTexture2DShader) {
+        LOG_ERROR<<"Could not load shader: "<<yuvTextureRect<<std::endl;
+    }
+    yuvTextureRectShader = osg::Shader::readShaderFile(osg::Shader::FRAGMENT, yuvTextureRect);
+    if (!yuvTextureRectShader) {
+        LOG_ERROR<<"Could not load shader: "<<yuvTexture2D<<std::endl;
+    }
+}
+
+void VideoWidget::loadShaders()
+{
+    loadShaders( 
+        yuvTextureRectShader ? yuvTextureRectShader->getFileName() : "",
+        yuvTexture2DShader ? yuvTexture2DShader->getFileName() : "" 
+    );
 }

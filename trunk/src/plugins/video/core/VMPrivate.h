@@ -49,7 +49,6 @@ extern "C" {
 #include "Utils.h"
 #include "VideoBufferChunk.h"
 #include "VideoBuffer.h"
-#include "VideoManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 

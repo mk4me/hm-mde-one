@@ -59,14 +59,12 @@ MultiView::MultiView( osgViewer::View * view, float width, float height, unsigne
     thumbnails->getBackground()->setColor(0, 0, 0, 0);
     thumbnails->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);    
     thumbnails->setStrata( osgWidget::Window::STRATA_FOREGROUND );
+    setThumbnailBuitinTemplate(TemplatesLabelBased);
 
     // dodanie obs³ugi zdarzeñ
     setUpdateCallback( new ResizeNotifier(width, height) );
-
     // dodanie dziecka
     addChild(thumbnails);
-
-    setThumbnailBuitinTemplate(TemplatesLabelBased);
 }
 
 bool MultiView::addItem( Item* item, PreviewItem* preview /*= NULL*/ )
@@ -120,15 +118,7 @@ void MultiView::removeItem( Item* item )
 void MultiView::removeAllItems()
 {
     // wy³¹czenie wybranego elementu
-    if ( selectedItem ) {
-        BOOST_FOREACH(Entry& entry, items) {
-            if ( selectedItem == entry.item ) {
-                UTILS_ASSERT(entry.preview);
-                entry.preview->setSelected(false);
-            }
-        }
-        selectedItem = NULL;
-    }
+    setSelected(NULL);
 
     // wyczyszczenie _lastEvent oraz flag przycisków
     pointerMove(-FLT_MAX, -FLT_MAX);
@@ -313,31 +303,6 @@ bool MultiView::onItemClicked( osgWidget::Event& ev )
     return true;
 }
 
-MultiView::Items::iterator MultiView::getIterator( const Item* item )
-{
-    return std::find_if( items.begin(), items.end(), bind(&Entry::item, _1) == item );
-}
-
-MultiView::Items::iterator MultiView::getIterator( const osgWidget::Widget* widget )
-{
-    return std::find_if( items.begin(), items.end(), bind(&Entry::widget, _1) == widget );
-}
-
-MultiView::Items::const_iterator MultiView::getIterator( const Item* item ) const
-{
-    return std::find_if( items.begin(), items.end(), bind(&Entry::item, _1) == item );
-}
-
-MultiView::Items::const_iterator MultiView::getIterator( const osgWidget::Widget* widget ) const
-{
-    return std::find_if( items.begin(), items.end(), bind(&Entry::widget, _1) == widget );
-//     for ( Items::const_iterator it = items.begin(); it != items.end(); ++it ) {
-//         if ( it->widget == widget ) {
-//             return it;
-//         }
-//     }
-//     return items.end();
-}
 
 void MultiView::setSelected( Item* item )
 {
@@ -398,8 +363,7 @@ std::pair<const MultiView::Item*, const MultiView::PreviewItem*> MultiView::getS
 unsigned MultiView::getSelectedIndex() const
 {
     if ( selectedItem ) {
-        Items::const_iterator found = checked(getIterator(selectedItem));
-        return std::distance(items.begin(), found);
+        return std::distance(items.begin(), checked(getIterator(selectedItem)));
     } else {
         return items.size();
     }
@@ -411,8 +375,7 @@ void MultiView::setSelectedByIndex( unsigned idx )
         throw std::out_of_range("No such item.");
     }
     if ( selectedItem ) {
-        Items::iterator found = checked(getIterator(selectedItem));
-        setEntrySelected(*found, false);
+        setEntrySelected(*checked(getIterator(selectedItem)), false);
         selectedItem = NULL;
     }
     setEntrySelected( items[idx], true );
@@ -444,6 +407,34 @@ void MultiView::restoreRequiredChildren()
 {
     addChild(thumbnails);
 }
+
+
+MultiView::Items::iterator MultiView::getIterator( const Item* item )
+{
+    return std::find_if( items.begin(), items.end(), bind(&Entry::item, _1) == item );
+}
+
+MultiView::Items::iterator MultiView::getIterator( const osgWidget::Widget* widget )
+{
+    return std::find_if( items.begin(), items.end(), bind(&Entry::widget, _1) == widget );
+}
+
+MultiView::Items::const_iterator MultiView::getIterator( const Item* item ) const
+{
+    return std::find_if( items.begin(), items.end(), bind(&Entry::item, _1) == item );
+}
+
+MultiView::Items::const_iterator MultiView::getIterator( const osgWidget::Widget* widget ) const
+{
+    return std::find_if( items.begin(), items.end(), bind(&Entry::widget, _1) == widget );
+    //     for ( Items::const_iterator it = items.begin(); it != items.end(); ++it ) {
+    //         if ( it->widget == widget ) {
+    //             return it;
+    //         }
+    //     }
+    //     return items.end();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////

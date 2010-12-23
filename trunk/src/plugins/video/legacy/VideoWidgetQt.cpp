@@ -24,16 +24,16 @@ VideoWidgetQt::~VideoWidgetQt()
 void VideoWidgetQt::init( const std::vector<std::string> &files )
 {
     for (size_t i = 0; i < files.size(); ++i) {
-        vm::VideoStream* stream = NULL;
+        video::VideoStream* stream = NULL;
         try {
-            stream = vm::VideoStream::create(vm::VideoStream::FFmpeg, files[i]);
-        } catch ( vm::VideoError& error ) {
+            stream = video::VideoStream::create(video::VideoStream::FFmpeg, files[i]);
+        } catch ( video::VideoError& error ) {
             
         }
         // TODO
         // mo¿e przekroczyæ zakres
         if ( stream ) {
-            vm::Picture picture = vm::Picture::create( stream->getWidth(), stream->getHeight(), vm::PixelFormatRGB24 );
+            video::Picture picture = video::Picture::create( stream->getWidth(), stream->getHeight(), video::PixelFormatRGB24 );
             stream->setTime(0);
             stream->getFrame(picture);
 

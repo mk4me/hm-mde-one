@@ -13,51 +13,55 @@
 #include <osg/ref_ptr>
 #include <osg/Uniform>
 #include <osgWidget/Widget>
+#include <plugins/video/core/PixelFormat.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace video {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- *	Widget wspó³pracuj¹cy ze strumieniem video HD. Pozwala na dostosowanie
- *  rozmiaru tekstury do swojego wymiaru.
- *  Zak³ada, ¿e widget wype³niony jest ca³ym obrazkiem.
- *  TODO: zaktualizowaæ pod wszystkie ImageStreamy.
+ *	Widget dostowany do wymagañ strumieni video. Obs³uguje niestandardowe
+ *  formaty pikseli.
  */
 class StreamOsgWidget : public osgWidget::Widget
 {
-private:
-
-//     class Optimizer : public osg::Referenced
-//     {
-//         //! Zestaw widgetów, na podstawie którego okreœlany bêdzie rozmiar tekstury.
-//         typedef utils::Adapter< std::set< osg::observer_ptr<StreamOsgWidget> > > Streams;
-//         //! Zestaw widgetów, na podstawie którego okreœlany bêdzie rozmiar tekstury.
-//         Streams 
-//     };
-
-private:
-    //! Rozmiar tekstury.
-    osg::ref_ptr<osg::Uniform> textureSize;
+    //! Program u¿ywany w przypadku konwersji yuv w karcie graficznej.
+    osg::ref_ptr<osg::Program> yuvProgram;
+    //! Shader u¿ywany dla texture_rectów.
+    osg::ref_ptr<osg::Shader> yuvTextureRectShader;
+    //! Shader u¿ywany dla texture2D.
+    osg::ref_ptr<osg::Shader> yuvTexture2DShader;
+    //! Format pikseli.
+    video::PixelFormat format;
 
 public: 
-    //! \param name
+    //! \param name Nazwa widgetu.
     StreamOsgWidget(const std::string& name);
     //! 
     virtual ~StreamOsgWidget();
 
 public:
-    //! \return Zmienna na rozmiar tekstury.
-    osg::Uniform* getTextureSize();
-    //! \param textureSize Zmienna na rozmiar tekstury.
-    void setTextureSize(osg::Uniform* textureSize);
-    //! Dostosowuje
-    //! rozmiar strumienia do bie¿¹cego rozmiaru. Sam strumieñ pobierany
-    //! jest z bie¿¹cego stanu widgeta, wiêc zawsze jest prawid³owy.
-    void adjustStreamSize();
-    //! Prze³adowanie metody wywo³ywanej po pozycjonowaniu widgetu. Wywo³uje
-    //! adjustStreamSize
-    virtual void positioned();
+    //! \return
+    video::PixelFormat getPixelFormat() const;
+    //! \param format
+    void setPixelFormat(video::PixelFormat format);
+    //! \return Czy u¿ywany jest texture_rectangle
+    bool isUsingTextureRectangle() const;
+    //! \return
+    osg::Shader* getYuvTextureRectShader() const;
+    //! \param yuvTextureRectShader
+    void setYuvTextureRectShader(osg::Shader* yuvTextureRectShader);
+    //! \return
+    osg::Shader* getYuvTexture2DShader() const;
+    //! \param yuvTexture2DShader
+    void setYuvTexture2DShader(osg::Shader* yuvTexture2DShader);
+    //!
+    void refreshShaders();
+
+private:
+    //! \param useTextureRect
+    //! \param format
+    void refreshShaders(bool useTextureRect, video::PixelFormat format);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -236,10 +236,14 @@ QOSGWidget( parent, name, shareWidget, f )
     getCamera()->setGraphicsContext(getGraphicsWindow());
     //setThreadingModel(osgViewer::Viewer::SingleThreaded);
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
-    updateTimer.start(16);
+    updateTimer.start(20);
 }
 
 void QOSGViewer::paintGL()
 {
-    frame();
+    if ( isVisible() ) {
+        frame();
+    } else {
+        int deb = 0; 
+    }
 }

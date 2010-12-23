@@ -13,7 +13,8 @@
 #include <osg/observer_ptr>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace vmOSGPlugin {
+namespace video {
+namespace osgPlugin {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -35,7 +36,7 @@ private:
     virtual void run();
   };
   //! Wrapper bufora ramek.
-  typedef utils::PtrWrapper<vm::VideoBuffer, utils::PtrPolicyOSG> FrameBuffer;
+  typedef utils::PtrWrapper<VideoBuffer, utils::PtrPolicyOSG> FrameBuffer;
 
 private:
   //! Bufor ramek.
@@ -49,7 +50,7 @@ public:
   /** Konstruktor kopiuj¹cy */
   BufferedVideoImageStream(const BufferedVideoImageStream & image, const osg::CopyOp & copyop = osg::CopyOp::SHALLOW_COPY);
   /** Domyœlne implementacje */
-  META_Object(vmOSGPlugin, BufferedVideoImageStream);
+  META_Object(osgPlugin, BufferedVideoImageStream);
 
   /** Otwiera strumieñ */
   virtual bool open(const std::string & filename);
@@ -73,7 +74,8 @@ public:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace vmOSGPlugin
+} // namespace osgPlugin
+} // namespace video
 ////////////////////////////////////////////////////////////////////////////////
 
 

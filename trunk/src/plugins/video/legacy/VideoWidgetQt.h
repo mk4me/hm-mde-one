@@ -20,11 +20,11 @@ class VideoWidgetQt : public QWidget, public Ui::VideoWidgetQt
 {
 private:
     //! Strumienie video.
-    std::vector<vm::VideoStream*> streams;
+    std::vector<video::VideoStream*> streams;
     //! Bitmapki na grafikê ze strumeni.
     std::vector<QImage*> images;
     //! Bufory na dane ze srumieni.
-    std::vector<vm::Picture> buffers;
+    std::vector<video::Picture> buffers;
     //!
     QGraphicsView* views[4];
 

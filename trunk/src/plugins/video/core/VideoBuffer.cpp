@@ -55,7 +55,7 @@ Iter upperBound( Iter first, Iter last, const Val& val, Pred pred )
 
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace vm {
+namespace video {
 ////////////////////////////////////////////////////////////////////////////////
 
 struct PredStartTimeLE
@@ -81,7 +81,7 @@ struct PredStartTimeL
 
 //------------------------------------------------------------------------------
 
-VideoBuffer::VideoBuffer(int maxSize, int width, int height, vm::PixelFormat format)
+VideoBuffer::VideoBuffer(int maxSize, int width, int height, video::PixelFormat format)
   : maxSize(maxSize), width(width), height(height), format(format)
 {
   VM_FUNCTION_PROLOG;
@@ -113,13 +113,13 @@ Picture * VideoBuffer::pop()
     }
   } else {
     // zdejmujemy ze stosu nieu¿ywanych
-    vm::Picture * result = unused.top();
+    video::Picture * result = unused.top();
     unused.pop();
     return result;
   }
 }
 
-void VideoBuffer::push( vm::Picture * frame )
+void VideoBuffer::push( video::Picture * frame )
 {
   VM_FUNCTION_PROLOG;
   // dodajemy do stosu nieu¿ywanych
@@ -360,5 +360,5 @@ Iter VideoBuffer::getChunk( double time, Iter begin, Iter end ) const
 // }
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace vm
+} // namespace video
 ////////////////////////////////////////////////////////////////////////////////

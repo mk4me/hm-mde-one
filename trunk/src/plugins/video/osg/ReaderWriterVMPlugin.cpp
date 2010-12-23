@@ -33,7 +33,7 @@ public:
     supportsProtocol("http","Read video/audio from http using ffmpeg.");
     supportsProtocol("rtsp","Read video/audio from rtsp using ffmpeg.");
 
-    supportsExtension("vm",     "");
+    supportsExtension("video",     "");
     supportsExtension("avi",    "");
     supportsExtension("flv",    "Flash video");
     supportsExtension("mov",    "Quicktime");
@@ -51,7 +51,7 @@ public:
 
     // teoretycznie to powinno znaleŸæ siê gdzieœ w kodzie FFmpegVideoStream,
     // ale nie mam pomys³u, jak to tam umieœciæ
-    vm::FFmpegVideoStream::setLockManager(lockManager);
+    video::FFmpegVideoStream::setLockManager(lockManager);
   }
 
   //! 
@@ -72,7 +72,7 @@ public:
   {
     const std::string ext = osgDB::getLowerCaseFileExtension(filename);
     
-    if (ext=="vm") { 
+    if (ext=="video") { 
       return readImage(osgDB::getNameLessExtension(filename),options);
     }
 
@@ -102,7 +102,7 @@ public:
   {
     OSG_INFO<< "ReaderWriterVMPlugin::readImage " << filename << std::endl;
 
-    osg::ref_ptr<vmOSGPlugin::VideoImageStream> image_stream(new vmOSGPlugin::VideoImageStream);
+    osg::ref_ptr<video::osgPlugin::VideoImageStream> image_stream(new video::osgPlugin::VideoImageStream);
 
     if (! image_stream->open(filename)) {
       return ReadResult::FILE_NOT_HANDLED;
@@ -115,9 +115,9 @@ private:
   //! 
   //! \param mutex
   //! \param op
-  static int lockManager(void **mutex, vm::FFmpegVideoStream::LockOp op)
+  static int lockManager(void **mutex, video::FFmpegVideoStream::LockOp op)
   {    
-    using namespace vm;
+    using namespace video;
     // pobieramy mutexa
     OpenThreads::Mutex **m=(OpenThreads::Mutex**)mutex;
     // operacja na mutexie

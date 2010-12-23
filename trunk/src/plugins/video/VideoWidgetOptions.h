@@ -9,18 +9,8 @@
 #ifndef __HEADER_GUARD__VIDEOWIDGETOPTIONS_H__
 #define __HEADER_GUARD__VIDEOWIDGETOPTIONS_H__
 
-#include <stdint.h>
-#include <map>
-#include <vector>
-#include <osg/ImageStream>
-#include <osgViewer/Viewer>
-#include <core/MultiView.h>
 #include <core/QOSGWidget.h>
 #include "ui_VideoWidgetOptions.h"
-#include "StreamsViewOSGWidget.h"
-#include <plugins/video/core/PixelFormat.h>
-
-Q_DECLARE_METATYPE(vm::PixelFormat);
 
 class VideoService;
 
@@ -31,7 +21,6 @@ private:
     VideoService* service;
 
 public:
-    //!
     VideoWidgetOptions(VideoService* service);
 
 public slots:

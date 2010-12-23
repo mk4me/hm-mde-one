@@ -6,7 +6,6 @@
 #include <core/IModel.h>
 #include <core/IDataManager.h>
 #include "VideoWidget.h"
-#include "VideoWidgetQt.h"
 #include "VideoWidgetOptions.h"
 #include "TimelineImageStreamWrapper.h"
 #include "osg/VideoImageStream.h"
@@ -72,6 +71,10 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 //     //    files.push_back(dataManager->GetVideoFilePath(i));
 //     //}
 //     widget->init(files);
+
+    widget->loadShaders("data/resources/shaders/textureRect_yuv_to_rgb.frag", "data/resources/shaders/texture2D_yuv_to_rgb.frag");
+    widget->setYuvImageSizeName("texture_size");
+    widget->setYuvSamplerName("movie_texture");
 	widget->init(files);
 
 	ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
@@ -112,7 +115,7 @@ AsyncResult VideoService::update( double time, double timeDelta )
     return AsyncResult_Complete;
 }
 
-vm::PixelFormat VideoService::getOutputFormat()
+video::PixelFormat VideoService::getOutputFormat()
 {
     UTILS_ASSERT(optionsWidget);
 //     int idx = optionsWidget->outputFormatCombo->currentIndex();
@@ -121,12 +124,12 @@ vm::PixelFormat VideoService::getOutputFormat()
 //     } else {
     {
         UTILS_ASSERT(false, "Nieobs³ugiwany format.");
-        return vm::PixelFormatUndefined;
+        return video::PixelFormatUndefined;
     }
 }
 
 
-void VideoService::setOutputFormat( vm::PixelFormat format )
+void VideoService::setOutputFormat( video::PixelFormat format )
 {
     UTILS_ASSERT(optionsWidget && widget);
 //     if ( optionsWidget->outputFormatCombo->currentIndex() != i ) {

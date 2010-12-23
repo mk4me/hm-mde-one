@@ -10,21 +10,12 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	StreamOsgWidget.h
+	VideoPCH.h
 	VideoPlugin.h
 	VideoWidget.h
 	VideoWidgetOptions.h
-	Callback.h
-	HorizontalScrollBar.h
-	ImageCanvas.h
-	NestedNodeCallback.h
-	Potentiometer.h
-	PotentiometerModel.h
-	StaticKeyboardHandler.h
-	StreamsViewOSGWidget.h
 	TimelineImageStreamWrapper.h
-	tm.h
-	WidgetFunctors.h
-	StreamOSGWidget.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -40,21 +31,13 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	osgmovie.cpp
+	StreamOsgWidget.cpp
+	VideoPCH.cpp
 	VideoPlugin.cpp
 	VideoService.cpp
 	VideoWidget.cpp
-	VideoWidgetQt.cpp
 	VideoWidgetOptions.cpp
-	
-	HorizontalScrollBar.cpp
-	ImageCanvas.cpp
-	osgmovie.cpp
-	Potentiometer.cpp
-	PotentiometerModel.cpp
-	StaticKeyboardHandler.cpp
-	StreamsViewOSGWidget.cpp
-	tm.cpp
-	StreamOSGWidget.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -87,7 +70,6 @@ set(CORE_PRIVATE_H
 	core/Utils.h
 	core/VideoBuffer.h
 	core/VideoBufferChunk.h
-	core/VideoManager.h
 	core/VM.h
 	core/VMPrivate.h
 )
@@ -113,7 +95,6 @@ set(CORE_SRC
 	core/PixelFormat.cpp
 	core/VideoBuffer.cpp
 	core/VideoBufferChunk.cpp
-	core/VideoManager.cpp
 	core/VideoStream.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}\\core" FILES ${CORE_SRC})
@@ -124,6 +105,7 @@ set(TARGET_SRC ${TARGET_SRC} ${CORE_SRC})
 set(OSG_H
 	osg/BufferedVideoImageStream.h
 	osg/VideoImageStream.h
+	osg/VideoImageStreamSizeOptimizer.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\osg" FILES ${OSG_H})
 set(TARGET_H ${TARGET_H} ${OSG_H})
@@ -132,6 +114,7 @@ set(OSG_SRC
 	osg/BufferedVideoImageStream.cpp
 	osg/ReaderWriterVMPlugin.cpp
 	osg/VideoImageStream.cpp
+	osg/VideoImageStreamSizeOptimizer.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}\\osg" FILES ${OSG_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${OSG_SRC})

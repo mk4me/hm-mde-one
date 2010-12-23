@@ -10,22 +10,23 @@
 #undef min
 #undef max
 
-namespace vmOSGPlugin {
-
-//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+namespace video {
+namespace osgPlugin {
+////////////////////////////////////////////////////////////////////////////////
 
 VideoImageStream::VideoImageStream() :
 innerStream(NULL), 
 mutex( new Mutex() ),
 timer( new Timer() ),
 timeScale(1.0), 
-prevTimestamp(vm::INVALID_TIMESTAMP), 
+prevTimestamp(INVALID_TIMESTAMP), 
 maxWidth(-1),
-copies( new Copies() )
+copies( new Copies() ),
+targetFormat( defaultFormat)
 {
     VM_FUNCTION_PROLOG;
     // TODO: zmieniæ
-    targetFormat = vm::VideoManager::getInstance()->getPrefferedFormat();
 
     utils::zero(currentPicture);
     currentPicture.format = targetFormat;
@@ -134,8 +135,8 @@ bool VideoImageStream::open(const std::string &filename)
   // try open file
   try {
     //innerStream = new VideoAdapter(filename);
-    innerStream = new Stream(vm::VideoManager::getInstance()->createStream(filename));
-  } catch ( vm::VideoError & err ) {
+    innerStream = new Stream(VideoStream::create(VideoStream::FFmpeg, filename));
+  } catch ( VideoError & err ) {
     // failed!
     OSG_NOTICE<<"ffmpeg::open("<<filename<<") reported an error: "<< err.what() << std::endl;
     return false;
@@ -148,14 +149,14 @@ bool VideoImageStream::open(const std::string &filename)
   prevTimestamp = getStream()->getFrameTimestamp();
 
   //currentPicture.free();
-  //currentPicture = vm::Picture::create(getStream()->getWidth(), getStream()->getHeight(), targetFormat);
+  //currentPicture = Picture::create(getStream()->getWidth(), getStream()->getHeight(), targetFormat);
 
 
   
   //publishFrameAndNotify();
 
   // aspect ratio
-  if ( targetFormat == vm::PixelFormatYV12 ) {
+  if ( targetFormat == PixelFormatYV12 ) {
     // poniewa¿ wymagamy konwersji w shaderach, ustawiamy aspect ratio
     setPixelAspectRatio( static_cast<float>(getStream()->getAspectRatio()) * 1.5f );
   } else {
@@ -164,8 +165,8 @@ bool VideoImageStream::open(const std::string &filename)
 
   // info
   OSG_NOTICE<<"ffmpeg::open("<<filename<<") size("<<s()<<", "<<t()<<") aspect ratio "<<getPixelAspectRatio()<<std::endl;
-  OSG_NOTICE<<"\tinner format: "<<utils::Enum<vm::PixelFormat>::getName(getStream()->getPixelFormat())<<std::endl;
-  OSG_NOTICE<<"\tstream format: "<<utils::Enum<vm::PixelFormat>::getName(targetFormat)<<std::endl;
+  OSG_NOTICE<<"\tinner format: "<<utils::Enum<PixelFormat>::getName(getStream()->getPixelFormat())<<std::endl;
+  OSG_NOTICE<<"\tstream format: "<<utils::Enum<PixelFormat>::getName(targetFormat)<<std::endl;
 
   // domyœlnie pauzujemy
   _status = PAUSED;
@@ -293,7 +294,7 @@ void VideoImageStream::setMaxWidth( int maxWidth )
     int widthDiv = static_cast<int>((static_cast<double>(streamWidth)/maxWidth + 0.334));
     width = std::max(16, streamWidth / widthDiv);
     height = std::max(16, streamHeight / widthDiv);
-    //if ( targetFormat == vm::PixelFormatYV12 ) {
+    //if ( targetFormat == PixelFormatYV12 ) {
       width = UTILS_ALIGN(width, 2);
       height = UTILS_ALIGN(height, 2);
     //}
@@ -304,7 +305,7 @@ void VideoImageStream::setMaxWidth( int maxWidth )
     OSG_NOTICE<<getStream()->getSource()<<":Changing frame size from "<<currentPicture.width<<" to "<<width<<std::endl;
     ScopedLock lock(getMutex());
     currentPicture.free();
-    currentPicture = vm::Picture::create(width, height, targetFormat);
+    currentPicture = Picture::create(width, height, targetFormat);
     reloadImage(currentPicture);
   }
 }
@@ -340,25 +341,25 @@ void VideoImageStream::publishFrame()
   }
 }
 
-void VideoImageStream::reloadImage(vm::Picture & picture)
+void VideoImageStream::reloadImage(Picture & picture)
 {
   VM_FUNCTION_PROLOG;
   getStream()->getFrame(picture);
   switch (targetFormat) {
 
-    case vm::PixelFormatYV12:
+    case PixelFormatYV12:
       setImage(picture.width, picture.dataHeight,
         1, GL_LUMINANCE, GL_LUMINANCE, GL_UNSIGNED_BYTE,
         picture.data, NO_DELETE);
       break;
     
-    case vm::PixelFormatRGB24:
+    case PixelFormatRGB24:
       setImage(picture.width, picture.height,
         1, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE,
         picture.data, NO_DELETE);
       break;
 
-    case vm::PixelFormatBGRA:
+    case PixelFormatBGRA:
       setImage(picture.width, picture.height,
         1, GL_RGBA, GL_BGRA, GL_UNSIGNED_BYTE,
         picture.data, NO_DELETE);
@@ -374,11 +375,11 @@ void VideoImageStream::reloadImage(vm::Picture & picture)
   }
 }
 
-void VideoImageStream::setTargetFormat( vm::PixelFormat targetFormat )
+void VideoImageStream::setTargetFormat( PixelFormat targetFormat )
 {
     if ( targetFormat != this->targetFormat ) {
 
-        if ( targetFormat == vm::PixelFormatYV12 ) {
+        if ( targetFormat == PixelFormatYV12 ) {
             // poniewa¿ wymagamy konwersji w shaderach, ustawiamy aspect ratio
             setPixelAspectRatio( static_cast<float>(getStream()->getAspectRatio()) * 1.5f );
         } else {
@@ -390,10 +391,14 @@ void VideoImageStream::setTargetFormat( vm::PixelFormat targetFormat )
         int height = currentPicture.height;
         currentPicture.free();
         currentPicture.format = targetFormat;
-        currentPicture = vm::Picture::create(width, height, targetFormat);
+        currentPicture = Picture::create(width, height, targetFormat);
         reloadImage(currentPicture);
     }
 }
 
 
-} // namespace vmOSGPlugin
+
+////////////////////////////////////////////////////////////////////////////////
+} // namespace osgPlugin
+} // namespace video
+////////////////////////////////////////////////////////////////////////////////

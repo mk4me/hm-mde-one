@@ -45,9 +45,9 @@ private:
 
 public:
     //! \return Format u퓓wany przy rysowaniu.
-    vm::PixelFormat getOutputFormat();
+    video::PixelFormat getOutputFormat();
     //! \param format Format u퓓wany przy rysowaniu.
-    void setOutputFormat(vm::PixelFormat format);
+    void setOutputFormat(video::PixelFormat format);
     //! \return Czy u퓓wa rozszerzenia TEXTURE_RECT?
     bool isUsingTextureRectangle();
     //! \param useTextureRectangle Czy u퓓wa rozszerzenia TEXTURE_RECT?

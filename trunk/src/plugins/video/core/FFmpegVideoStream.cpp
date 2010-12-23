@@ -45,14 +45,14 @@ extern "C" {
 
 
 //! Wyzerowany callback.
-static vm::FFmpegVideoStream::LockManager lockManager = NULL;
+static video::FFmpegVideoStream::LockManager lockManager = NULL;
 
 //! Funkcja przekazuj¹ca ¿¹danie locka do ustawionego callbacka.
 //! \param mutex
 //! \param op
 static int FFmpegLockForwarder( void **mutex, enum AVLockOp op )
 {
-  using namespace vm;
+  using namespace video;
   // t³umaczymy operacjê
   FFmpegVideoStream::LockOp lockOp =
   op == AV_LOCK_CREATE ? FFmpegVideoStream::LockOpCreate :
@@ -68,7 +68,7 @@ static int FFmpegLockForwarder( void **mutex, enum AVLockOp op )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace vm {
+namespace video {
 ////////////////////////////////////////////////////////////////////////////////
 
 FFmpegVideoStream::Initializer::Initializer()
@@ -204,7 +204,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
   // parametry strumienia
   double frameRate = av_q2d(videoStream->r_frame_rate);
   double durationSec = static_cast<double>(videoStream->duration) * videoStream->time_base.num / videoStream->time_base.den;
-  PixelFormat format = static_cast<vm::PixelFormat>(codecContext->pix_fmt);
+  PixelFormat format = static_cast<video::PixelFormat>(codecContext->pix_fmt);
 
   // format
   double aspectRatio = 0.0f;
@@ -679,5 +679,5 @@ bool FFmpegVideoStream::getData( PictureLayered & dst )
 
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace vm
+} // namespace video
 ////////////////////////////////////////////////////////////////////////////////

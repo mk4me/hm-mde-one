@@ -92,7 +92,7 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 
 
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
-    updateTimer.start(50);
+    updateTimer.start(20);
 
     computeThread = new ComputeThread(m_pServiceManager, 0.02);
     computeThread->start();
