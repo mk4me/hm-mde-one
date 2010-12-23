@@ -20,12 +20,12 @@ source_group("shaders" FILES ${SHADERS})
 
 set(SCHEMAS
 	schemas/http.xsd
-	schemas/http12.xsd
 	schemas/mime.xsd
 	schemas/schema.dtd
+	schemas/soap.xsd
+	schemas/soap12.xsd
 	schemas/soap-encoding.xsd
 	schemas/soap-encoding12.xsd
-	schemas/soap.xsd
 	schemas/wsdl10.xsd
 )
 source_group("schemas" FILES ${SCHEMAS})
