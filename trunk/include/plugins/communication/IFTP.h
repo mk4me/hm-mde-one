@@ -1,7 +1,7 @@
 /**
 @author Marek Daniluk
-@brief Interfejs IFTP implementuje interfejs ISendable. Dostarcza funkcjonalnosci potrzebnej do implementacji
-protokolu FTP przy pomocy roznych bibliotek.
+@brief Interfejs IFTP implementuje interfejs ISendable. Dostarcza funkcjonalnoœci potrzebnej do implementacji
+protoko³u FTP.
 */
 
 #ifndef _IFTP_H_
@@ -20,32 +20,32 @@ namespace communication
 		*/
 		virtual ~IFTP() {}
 		/**
-		Przejscie do katalogu direcotry na serwerze FTP.
-		@param directory katalog do ktorego chcemy przejsc
+		Przejœcie do katalogu direcotry na serwerze FTP.
+		@param directory katalog do którego chcemy przejœæ
 		*/
 		virtual void cd(const std::string& directory) = 0;
 		/**
-		Zwraca nazwe katalogu w ktorym aktualnie przebywa klient.
-		@return nazwa zdalnego katalogu w ktorym znajduje sie klient
+		Zwraca nazwe katalogu w którym aktualnie przebywa klient.
+		@return nazwa zdalnego katalogu w którym znajduje siê klient
 		*/
 		virtual const std::string& pwd() const = 0;
 		/**
-		Wylistowanie plikow i katalogow w zdalnym katalogu w ktorym aktualnie przebywa klient.
-		@return lista katalogow i plikow ze zdalnego katalogu w ktorym znajduje sie klient
+		Wylistowanie plików i katalogów w zdalnym katalogu w którym aktualnie przebywa klient.
+		@return lista katalogów i plików ze zdalnego katalogu w którym znajduje siê klient
 		*/
 		virtual std::vector<const std::string&>& ls() const = 0;
 		/**
-		Tworzy katalog na serwerze w zdalnym katalogu w ktorym aktualnie przebywa klient.
+		Tworzy katalog na serwerze w zdalnym katalogu w którym aktualnie przebywa klient.
 		@param dirname nazwa katalogu do utworzenia
 		*/
 		virtual void make(const std::string& dirname) = 0;
 		/**
-		Usuwa katalog lub plik na serwerze w zdalnym katalogu w ktorym aktualnie przebywa klient.
-		@param filename nazwa katalogu lub pliku do usuniecia
+		Usuwa katalog lub plik na serwerze w zdalnym katalogu w którym aktualnie przebywa klient.
+		@param filename nazwa katalogu lub pliku do usuniêcia
 		*/
 		virtual void del(const std::string& filename) = 0;
 		/**
-		Konczy polaczenie z serwerem FTP.
+		Konczy po³¹czenie z serwerem FTP.
 		*/
 		virtual void disconnect() = 0;
 		/**

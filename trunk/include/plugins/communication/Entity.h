@@ -1,6 +1,6 @@
 /**
 @author Marek Daniluk
-@brief Klasa Entity jest klasa bazowa dla obiektow reprezentujacych byty po stronie serwera.
+@brief Dokument z encjami bazodanowymi.
 */
 
 //<xsd:enumeration value=" performer"/>
@@ -35,7 +35,7 @@ namespace communication
 
 	struct File : public Entity
 	{
-		File() : Entity(), fileName(""), fileDescription(""), fileSubdir(""), fileAttributeName("") {};
+		File() : Entity() {};
 
 		std::string fileName;
 		std::string fileDescription;
@@ -45,7 +45,7 @@ namespace communication
 
 	struct Trial : public Entity
 	{
-		Trial() : Entity(), sessionID(0), trialDescription("") {};
+		Trial() : Entity(), sessionID(0) {};
 
 		int sessionID;
 		std::string trialDescription;
@@ -55,7 +55,7 @@ namespace communication
 
 	struct Session : public Entity
 	{
-		Session() : Entity(), userID(0), labID(0), motionKind(""), sessionDescription(""), sessionLabel(""), sessionDate() {};
+		Session() : Entity(), userID(0), labID(0), sessionDate() {};
 
 		int userID;
 		int labID;
@@ -68,14 +68,14 @@ namespace communication
 
 	struct SessionGroup : public Entity
 	{
-		SessionGroup() : Entity(), sessionGroupName("") {};
+		SessionGroup() : Entity() {};
 
 		std::string sessionGroupName;
 	};
 
 	struct Performer : public Entity
 	{
-		Performer() : Entity(), performerFirstname(""), performerLastname("") {};
+		Performer() : Entity() {};
 
 		std::string performerFirstname;
 		std::string performerLastname;

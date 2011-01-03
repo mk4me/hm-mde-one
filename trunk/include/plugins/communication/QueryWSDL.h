@@ -1,6 +1,6 @@
 /**
 @author Marek Daniluk
-@brief Klasa QueryWSDL implementuje funkcjonalnosc interfejsu IQueryable przy pomocy web serwisow.
+@brief Klasa QueryWSDL implementuje funkcjonalnoœæ interfejsu IQueryable przy pomocy web serwisów.
 */
 
 #ifndef _QUERYWSDL_H_
@@ -17,13 +17,13 @@ namespace communication
 	{
 	protected:	
 		/**
-		Wskaznik na obiekt klasy BasicQueriesService pozwalajacy na korzystanie z web serwisu
-		zdefiniowanego do komunikacji z baza danych generujacego zapytania
+		WskaŸnik na obiekt klasy BasicQueriesService pozwalaj¹cy na korzystanie z web serwisu
+		zdefiniowanego do komunikacji z baz¹ danych generuj¹cego zapytania
 		*/
 		BasicQueriesService* bqs;
 		/**
-		Wskaznik na obiekt klasy BasicUpdatesService pozwalajacy na korzystanie z web serwisu
-		zdefiniowanego do komunikacji z baza danych pozwalajacego tworzenie nowych encji
+		WskaŸnik na obiekt klasy BasicUpdatesService pozwalaj¹cy na korzystanie z web serwisu
+		zdefiniowanego do komunikacji z baz¹ danych pozwalaj¹cego tworzenie nowych encji
 		*/
 		BasicUpdatesService* bus;
 	public:
@@ -36,9 +36,9 @@ namespace communication
 		*/
 		virtual ~QueryWSDL();
 		/**
-		Metoda setWSCredentials ustala login i haslo potrzebne do autoryzacji web serwisow.
-		@param usr nazwa uzytkownika typu string
-		@param pswd haslo uzytkownika typu string
+		Metoda setWSCredentials ustala login i has³o potrzebne do autoryzacji web serwisów.
+		@param usr nazwa u¿ytkownika
+		@param pswd haslo u¿ytkownika
 		*/
 		void setWSCredentials(const std::string& usr, const std::string& pswd);
 		/**
@@ -52,15 +52,28 @@ namespace communication
 		*/
 		void setBasicUpdatesServiceUri(const std::string& uri);
 		/**
+		Listuje próby pomiarowe sesji.
+		@param sessionID id sesji której próby pomiarowe maj¹ zostaæ wylistowane
+		@return zbiór prób pomiarowych dla wybranej sesji
 		*/
 		virtual std::map<int, Trial> listSessionTrials(int sessionID);
 		/**
+		Listuje sesje dla danego laboratorium.
+		@param labID id labu którego sesje maj¹ zostaæ wylistowane
+		@return zbiór sesji dla wybranego labu
 		*/
 		virtual std::map<int, Session> listLabSessionsWithAttributes(int labID);
 		/**
+		Listuje pliki dla encji typu subjectType i id ID.
+		@param ID id encji dla której maj¹ zostaæ wylistowane pliki
+		@param subjectType typ encji dla której maj¹ zostaæ wylistowane pliki
+		@return zbiór plików dla wybranej encji
 		*/
 		virtual std::map<int, File> listFiles(int ID, const std::string& subjectType);
 		/**
+		TODO: Listuje encje bazodanowe, sesje, podleg³e sesjom próby pomiarowe i
+		informacje o plikach poszczególnych sesji i prób pomiarowych.
+		@return lista prób pomiarowych, w przysz³oœci powinno znaleŸæ siê drzewko zale¿noœci miêdzy encjami
 		*/
 		virtual std::vector<Trial> listSessionContents();
 

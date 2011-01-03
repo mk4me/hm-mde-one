@@ -1,6 +1,6 @@
 /**
 @author Marek Daniluk
-@brief Klasa WSDL_Wsdlpull implementuje technologie WSDL przy pomocy biblioteki wsdlpull.
+@brief Klasa WSDL_Wsdlpull implementuje technologiê WSDL przy pomocy biblioteki wsdlpull.
 */
 
 #ifndef _WSDL_WSDLPULL_H_
@@ -15,15 +15,15 @@ namespace communication
 	{
 	protected:
 		/**
-		Pole klasy przechowujace nazwe uzytkownika. Pole jest typu string.
+		Pole klasy przechowuj¹ce nazwê u¿ytkownika.
 		*/
 		std::string usr;
 		/**
-		Pole klasy przechowujace haslo uzytkownika. Pole jest typu string.
+		Pole klasy przechowuj¹ce has³o u¿ytkownika.
 		*/
 		std::string pswd;
 		/**
-		Pole klasy przechowujace URI do definicji operacji. Pole jest typu string.
+		Pole klasy przechowuj¹ce URI do definicji operacji.
 		*/
 		std::string uri;
 		/**
@@ -31,9 +31,7 @@ namespace communication
 		*/
 		WsdlPull::WsdlInvoker invoker;
 		/**
-		Metoda konfigurujaca obiekt invoker przed wykonaniem operacji web serwisowych.
-		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
-		potrzebnych do autentykacji
+		Metoda konfiguruj¹ca obiekt invoker przed wykonaniem operacji web serwisowych.
 		*/
 		void initializeInvoker();
 	public:
@@ -43,9 +41,9 @@ namespace communication
 		WSDL_Wsdlpull();
 		/**
 		Konstruktor klasy WSDL_Wsdlpull.
-		@param uri URI do dokumentu definicji operacji sieciowych typu string
-		@param usr nazwa uzytkownika typu string
-		@param pswd haslo uzytkownika typu string
+		@param uri URI do dokumentu definicji operacji sieciowych
+		@param usr nazwa u¿ytkownika
+		@param pswd has³o u¿ytkownika
 		*/
 		WSDL_Wsdlpull(const std::string& uri, const std::string& usr, const std::string& pswd);
 		/**
@@ -53,82 +51,67 @@ namespace communication
 		*/
 		virtual ~WSDL_Wsdlpull();
 		/**
-		Metoda setUri ustala URI do dokumentu definicji operacji sieciowych typu string
-		Ta metoda pochodzi z interfejsu IAuthenticable i zostala przeslonieta.
-		@param uri URI do definicji operacji sieciowych typu string
+		Metoda setUri ustala URI do dokumentu definicji operacji sieciowych
+		@param uri URI do definicji operacji sieciowych
 		*/
-		void setUri(const std::string& uri);
+		virtual void setUri(const std::string& uri);
 		/**
-		Metoda setUser ustala nazwe uzytkownika wykorzystywana do logowania.
-		Ta metoda pochodzi z interfejsu IAuthenticable i zostala przeslonieta.
-		@param usr nazwa uzytkownika typu string
+		Metoda setUser ustala nazwê u¿ytkownika wykorzystywana do logowania.
+		@param usr nazwa u¿ytkownika
 		*/
-		void setUser(const std::string& usr);
+		virtual void setUser(const std::string& usr);
 		/**
-		Metoda setUser ustala haslo uzytkownika wykorzystywane do logowania.
-		Ta metoda pochodzi z interfejsu IAuthenticable i zostala przeslonieta.
-		@param pswd haslo uzytkownika typu string
+		Metoda setPassword ustala has³o u¿ytkownika wykorzystywane do logowania.
+		@param pswd has³o u¿ytkownika 
 		*/
-		void setPassword(const std::string& pswd);
+		virtual void setPassword(const std::string& pswd);
 		/**
-		Metoda setCredentials ustala dane uzytkownika wykorzystywane do logowania takie jak host,
-		nazwa i haslo uzytkownika.
-		Ta metoda pochodzi z interfejsu IAuthenticable i zostala przeslonieta.
-		@param uri adres zasobu typu string
-		@param usr nazwa uzytkownika typu string
-		@param pswd haslo uzytkownika typu string
+		Metoda setCredentials ustala dane u¿ytkownika wykorzystywane do logowania takie jak host,
+		nazwa i has³o u¿ytkownika.
+		@param uri adres zasobu
+		@param usr nazwa u¿ytkownika
+		@param pswd has³o u¿ytkownika
 		*/
-		void setCredentials(const std::string& uri, const std::string& usr, const std::string& pswd);
+		virtual void setCredentials(const std::string& uri, const std::string& usr, const std::string& pswd);
 		/**
-		Metoda zwraca nazwe hosta lub adres ip (w zaleznosci co zostalo podane) uzywana dla danego polaczenia.
-		Ta metoda pochodzi z interfejsu IAuthenticable i zostala przeslonieta.
+		Metoda zwraca nazwê hosta lub adres ip (w zaleznosci co zostalo podane) uzywana dla danego polaczenia.
 		@return URI do definicji operacji sieciowych
 		*/
-		const std::string& getUri() const;
+		virtual const std::string& getUri() const;
 		/**
-		Metoda zwraca login uzytkownika uzywana dla danego polaczenia.
-		Ta metoda pochodzi z interfejsu IAuthenticable i zostala przeslonieta.
-		@return login uzytkownika
+		Metoda zwraca login u¿ytkownika u¿ywany dla danego po³¹czenia.
+		@return login u¿ytkownika
 		*/
-		const std::string& getUser() const;
+		virtual const std::string& getUser() const;
 		/**
-		Metoda zwraca haslo uzytkownika uzywane dla danego polaczenia.
-		Ta metoda pochodzi z interfejsu IAuthenticable i zostala przeslonieta.
-		@return haslo uzytkownika
+		Metoda zwraca has³o u¿ytkownika u¿ywane dla danego po³¹czenia.
+		@return has³o u¿ytkownika
 		*/
-		const std::string& getPassword() const;
+		virtual const std::string& getPassword() const;
 		/**
-		Metoda ustala operacje web serwisowa jaka ma zostac wykonana.
-		@param name nazwa operacji ktora ma zostac wykonana
-		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
-		potrzebnych do autentykacji
+		Metoda ustala operacje web serwisow¹ jaka ma zostaæ wykonana.
+		@param name nazwa operacji która ma zostaæ wykonana
 		*/
 		void setOperation(const std::string& name);
 		/**
-		Metoda podaje wartosc parametru operacji.
+		Metoda podaje wartoœæ parametru operacji.
 		@param param nazwa parametru operacji
-		@param value wartosc parametru operacji
-		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
-		potrzebnych do autentykacji
+		@param value wartoœæ parametru operacji
 		*/
 		void setValue(const std::string& param, const std::string& value);
 		/**
-		Metoda wywoluje operacje web serwisowa.
-		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
-		potrzebnych do autentykacji
+		Metoda wywo³uje operacje web serwisow¹.
 		*/
 		void invokeOperation();
 		/**
-		Metoda zwraca odpowiedz serwera w formie XML.
-		@return odpowiedz serwera na operacje w formie XML
-		@throw std::runtime_error jesli inicjalizacja nie przebiegla pomyslnie lub nie ustawiono danych
-		potrzebnych do autentykacji
+		Metoda zwraca odpowiedŸ serwera w formie XML.
+		@return odpowiedŸ serwera na operacje w formie XML
 		*/
 		std::string getXMLResponse();
 		/**
-		Metoda zamieniajaca liczbe na string
+		Metoda zamieniaj¹ca liczbê na string
 		@param value liczba do zamiany na string
-		@return wartosc value zapisana jako string
+		@return wartoœæ value zapisana jako string
 		*/
 		template <typename T> static std::string toString(T& value) 
 		{
@@ -138,11 +121,6 @@ namespace communication
 		}
 
 		//tymczasowe i pomocnicze
-		void displayOperations();
-		void displayPortTypes();
-		static const std::string wsdl_domain;
-		static const std::string wsdl_usr;
-		static const std::string wsdl_pswd;
 	};
 }
 #endif

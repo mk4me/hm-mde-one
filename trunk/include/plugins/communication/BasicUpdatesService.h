@@ -1,7 +1,6 @@
 /**
 @author Marek Daniluk
-@brief Klasa BasicUpdatesService dziedziczaca po EDRWSDL wykonujaca operacje dokumentu BasicUpdatesService.wsdl.
-Klasa powstala na bazie dokumentacji i kodu zrodlowego zespolu bazodanowego.
+@brief Klasa BasicUpdatesService dziedzicz¹ca po WSDL_Wsdlpull wykonuj¹ca operacje dokumentu BasicUpdatesService.wsdl.
 */
 
 #ifndef _BASICUPDATESSERVICE_H_
@@ -27,21 +26,21 @@ namespace communication
 		virtual ~BasicUpdatesService();
 		/**
 		Manualne utworzenie encji performera w oparciu o dane z aplikacji klienckiej
-		@param name imie performera
+		@param name imiê performera
 		@param surname nazwisko performera
-		@return wskaznik na obiekt klasy Performer
+		@return wskaŸnik na obiekt klasy Performer
 		*/
 		Performer* createPerformer(const std::string& name = "", const std::string& surname = "");
 		/**
-		Manualne utworzenie encji sesji przez uzytkownika (oznaczone TODO)
-		@param userID identyfikator uzytkownika
+		Manualne utworzenie encji sesji przez u¿ytkownika (oznaczone TODO)
+		@param userID identyfikator u¿ytkownika
 		@param labID identyfikator laboratorium
 		@param performerID identyfikator performera
-		@param sessionDate ???
+		@param sessionDate data powstania sesji
 		@param sessionDescription opis sesji
 		@param motionKindName ???
-		@param groupsIDs referencja do wektora przechowujacego identyfikatory grup do ktorych ma nalezec sesja
-		@return wskaznik na obiekt klasy Session
+		@param groupsIDs referencja do wektora przechowuj¹cego identyfikatory grup do których ma nale¿eæ sesja
+		@return wskaŸnik na obiekt klasy Session
 		*/
 		//Session* createSession(int labID, int performerID, DateTime& sessionDate, const std::string& sessionDescription, const std::string& motionKindName, std::vector<int>& groupsIDs);
 		///**

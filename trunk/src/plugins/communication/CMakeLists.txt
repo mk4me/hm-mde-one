@@ -12,7 +12,6 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 set(PRIVATE_H
 	CommunicationPlugin.h
 	CommunicationWidget.h
-	SettingsDialog.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -53,7 +52,6 @@ set(TARGET_SRC
 	FileStoremanService.cpp
 	FTPS_cURL.cpp
 	QueryWSDL.cpp
-	SettingsDialog.cpp
 	TransportWSDL_FTPS.cpp
 	WSDL_Wsdlpull.cpp
 )

@@ -219,7 +219,7 @@ void CommunicationManager::loadLocalTrials()
 	notify();
 }
 
-void CommunicationManager::loadActualTrial(const std::string& name)
+void CommunicationManager::loadTrial(const std::string& name)
 {
 	dataManager->setActualTrial(name);
 }

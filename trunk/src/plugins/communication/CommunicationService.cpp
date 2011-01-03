@@ -148,14 +148,14 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
 
 AsyncResult CommunicationService::init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
 {
-	model->setServiceManager(serviceManager);
+	//model->setServiceManager(serviceManager);
 	model->setDataManager(dataManager);
 	return AsyncResult_Complete;
 }
 
 void CommunicationService::loadTrial(const std::string& name)
 {
-	model->loadActualTrial(name);
+	model->loadTrial(name);
 }
 
 bool CommunicationService::ping()

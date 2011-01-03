@@ -1,7 +1,6 @@
 /**
 @author Marek Daniluk
-@brief Klasa BasicQueriesService dziedziczaca po EDRWSDL wykonujaca operacje dokumentu BasicQueriesService.wsdl.
-Klasa powstala na bazie dokumentacji i kodu zrodlowego zespolu bazodanowego.
+@brief Klasa BasicQueriesService dziedzicz¹ca po WSDL_Wsdlpull wykonuj¹ca operacje dokumentu BasicQueriesService.wsdl.
 */
 
 #ifndef _BASICQUERIESSERVICE_H_
@@ -24,13 +23,30 @@ namespace communication
 		Wirtualny destruktor klasy BasicQueriesService.
 		*/
 		virtual ~BasicQueriesService();
-
+		/**
+		Listuje próby pomiarowe sesji.
+		@param sessionID id sesji której próby pomiarowe maj¹ zostaæ wylistowane
+		@return zbiór prób pomiarowych dla wybranej sesji
+		*/
 		std::map<int, Trial> listSessionTrials(int sessionID);
-
+		/**
+		Listuje sesje dla danego laboratorium.
+		@param labID id labu którego sesje maj¹ zostaæ wylistowane
+		@return zbiór sesji dla wybranego labu
+		*/
 		std::map<int, Session> listLabSessionsWithAttributes(int labID);
-
+		/**
+		Listuje pliki dla encji typu subjectType i id ID.
+		@param ID id encji dla której maj¹ zostaæ wylistowane pliki
+		@param subjectType typ encji dla której maj¹ zostaæ wylistowane pliki
+		@return zbiór plików dla wybranej encji
+		*/
 		std::map<int, File> listFiles(int ID, const std::string& subjectType);
-
+		/**
+		TODO: Listuje encje bazodanowe, sesje, podleg³e sesjom próby pomiarowe i
+		informacje o plikach poszczególnych sesji i prób pomiarowych.
+		@return lista prób pomiarowych, w przysz³oœci powinno znaleŸæ siê drzewko zale¿noœci miêdzy encjami
+		*/
 		std::vector<Trial> listSessionContents();
 
 		//const Performer* getPerformerById(int performerID);

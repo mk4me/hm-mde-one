@@ -1,8 +1,8 @@
 /**
 @author Marek Daniluk
-@brief Interfejs ICommunication dostarcza metod zwiazanych z komunikacja klient - serwer. Za jego pomoca
-mozliwe jest pobieranie informacji o probach pomiarowych przechowywanych na serwerze, oraz pobieranie ich
-na lokalna maszyne.
+@brief Interfejs ICommunication dostarcza metod zwi¹zanych z komunikacj¹ klient - serwer. Za jego pomoc¹
+mo¿liwe jest pobieranie informacji o próbach pomiarowych przechowywanych na serwerze, oraz pobieranie ich
+na lokaln¹ maszyne.
 */
 
 #ifndef ICOMMUNICATION_H
@@ -11,28 +11,37 @@ na lokalna maszyne.
 class ICommunication
 {
 public:
+	/**
+	Wirtualny destruktor
+	*/
     virtual ~ICommunication() {}
-
-    //! Pobieranie informacji o probach pomiarowych z serwera.
+	/**
+	Pobieranie informacji o próbach pomiarowych z serwera.
+	*/
 	virtual void updateSessionContents() = 0;
-
-    //! Pobieranie pojedynczego pliku.
-    //! \param fileID id pliku w bazie danych ktory ma byc pobrany
+	/**
+	Pobieranie pojedynczego pliku.
+	@param fileID id pliku w bazie danych który ma byæ pobrany
+	*/
 	virtual void downloadFile(unsigned int fileID) = 0;
-
-    //! Pobieranie wszystkich plikow proby pomiarowej.
-    //! \param trialID id triala w bazie danych ktorego pliki maja byc pobrane
+	/**
+	Pobieranie wszystkich plików próby pomiarowej.
+	@param trialID id triala w bazie danych którego pliki maj¹ byæ pobrane
+	*/
 	virtual void downloadTrial(unsigned int trialID) = 0;
-
-    //! Ladowanie lokalnej proby pomiarowej do edytora.
-    //! \param name nazwa lokalnej proby do zaladowania
+	/**
+	£adowanie lokalnej próby pomiarowej do edytora.
+	@param name nazwa lokalnej próby do za³adowania
+	*/
 	virtual void loadTrial(const std::string& name) = 0;
-
-    //! Pingowanie serwera.
-    //! \return czy serwer odpowiedzial?
+	/**
+	Pingowanie serwera.
+	@return czy serwer odpowiedzia³?
+	*/
 	virtual bool ping() = 0;
-
-    //! Przerwanie pobierania pliku lub triala.
+	/**
+	Przerwanie pobierania pliku lub triala.
+	*/
 	virtual void cancelDownloading() = 0;
 };
 #endif
