@@ -17,17 +17,21 @@ CommunicationWidget::CommunicationWidget(CommunicationService* service) : QWidge
 
 	infoLabel = new QLabel("");
 	aviableTrialsLabel = new QLabel("Aviable trials:");
-
+	serverStateLabel = new QLabel("Online");
+	serverStateLabel->setStyleSheet("QLabel {font: bold; color : green;}");
 	trials = new QListWidget(this);
-
 	progressBar = new QProgressBar(this);
+
+	QHBoxLayout* hbox = new QHBoxLayout();
+	hbox->addWidget(serverStateLabel);
+	hbox->addWidget(infoLabel);
 
 	QVBoxLayout* mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(aviableTrialsLabel);
 	mainLayout->addWidget(trials);
 	mainLayout->addWidget(buttonsBox);
 	mainLayout->addWidget(progressBar);
-	mainLayout->addWidget(infoLabel);
+	mainLayout->addLayout(hbox);
 	setLayout(mainLayout);
 	updateView = false;
 

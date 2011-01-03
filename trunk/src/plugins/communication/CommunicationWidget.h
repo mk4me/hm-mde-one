@@ -196,6 +196,10 @@ private:
 	*/
 	QLabel* infoLabel;
 	/**
+	Etykieta informacyjna odnoœnie stanu serwera
+	*/
+	QLabel* serverStateLabel;
+	/**
 	czy widok jest zajêty
 	*/
 	bool busy;

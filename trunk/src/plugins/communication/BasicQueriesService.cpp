@@ -235,24 +235,40 @@ std::vector<Trial> BasicQueriesService::listSessionContents()
 			}
 			else
 			{
-				throw std::runtime_error("Bad document structure format.");
+				throw std::runtime_error("Bad document structure format. There is no TrialID.");
 			}
-			temp = TrialContent->getChildContainer("Attribute");
+			temp = TrialContent->getChildContainer("TrialName");
 			if(temp)
 			{
-				temp = temp->getAttributeContainer("Value");
-				if(temp)
+				std::string trialName;
+				trialName = *((std::string*)temp->getValue());
+				if(trialName.empty())
 				{
-					trial.trialDescription = *((std::string*)temp->getValue());
+					temp = TrialContent->getChildContainer("Attribute");
+					if(temp)
+					{
+						temp = temp->getAttributeContainer("Value");
+						if(temp)
+						{
+							trialName = *((std::string*)temp->getValue());
+						}
+						else
+						{
+							std::cout << "Value " << trial.id << std::endl;
+							throw std::runtime_error("Bad document structure format. There is no TrialName.");
+						}
+					}
+					else
+					{
+						throw std::runtime_error("Bad document structure format. There is no Attribute when TrialName is empty.");
+					}
 				}
-				else
-				{
-					throw std::runtime_error("Bad document structure format.");
-				}
+				trial.trialDescription = trialName;
 			}
 			else
 			{
-				throw std::runtime_error("Bad document structure format.");
+				std::cout << "Attribute " << trial.id << std::endl;
+				throw std::runtime_error("Bad document structure format. There is no TrialName.");
 			}
 			temp = TrialContent->getChildContainer("FileDetailsWithAttributes");
 			while(temp)
@@ -264,7 +280,7 @@ std::vector<Trial> BasicQueriesService::listSessionContents()
 				}
 				else
 				{
-					throw std::runtime_error("Bad document structure format.");
+					throw std::runtime_error("Bad document structure format. There is no FileID.");
 				}
 				temp = TrialContent->getChildContainer("FileDetailsWithAttributes");
 			}
