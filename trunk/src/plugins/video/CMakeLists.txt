@@ -11,7 +11,6 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 # nag³ówki prywatne
 set(PRIVATE_H
 	StreamOsgWidget.h
-	VideoPCH.h
 	VideoPlugin.h
 	VideoWidget.h
 	VideoWidgetOptions.h
@@ -33,7 +32,6 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	osgmovie.cpp
 	StreamOsgWidget.cpp
-	VideoPCH.cpp
 	VideoPlugin.cpp
 	VideoService.cpp
 	VideoWidget.cpp
