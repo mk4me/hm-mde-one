@@ -47,7 +47,7 @@ ChartWidget::ChartWidget(IService* service)
 
     // dodanie do widgeta
 	mainChart->addWidget( viewer );
-    multiView->addChild(new osgWidget::Box("osgWidgetHACK"));
+    //multiView->addChild(new osgWidget::Box("osgWidgetHACK"));
 
 
 
@@ -98,4 +98,17 @@ double ChartWidget::getLenght(){
 	return (double)(*itItem)->getFrameNumber()/(double)(*itItem)->getFPS();}
 	else
 		return 0;
+}
+void ChartWidget::clear(){
+	multiView->removeAllItems();
+	itItem=item.begin();
+	itPItem=previewItem.begin();
+
+	for(; itItem < item.end(); itItem++,itPItem++){
+	multiView->removeChild(multiView->getChildIndex((*itItem)));
+	multiView->removeChild(multiView->getChildIndex((*itPItem)));
+	}
+	item.clear();
+	previewItem.clear();
+	//	multiView->addChild(new osgWidget::Box("osgWidgetHACK"));
 }

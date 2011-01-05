@@ -148,6 +148,7 @@ std::string c3dpath = "";
 //	}
 if(dataManager->getActualTrial().isC3d())
 {
+	widget->clear();
 	c3dpath = dataManager->getActualTrial().getC3dPath();
 	c3dParser* parser =  new c3dParser();
 	C3D_Data* c3d = parser->parseData(c3dpath);

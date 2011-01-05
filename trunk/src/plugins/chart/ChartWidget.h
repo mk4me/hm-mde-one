@@ -49,9 +49,9 @@ public:
 
 	osg::Node* getSceneRoot();
 	void addChart(C3DChartData* c3dData);
-void update(double targetTime);
-   double getLenght();
-
+	void update(double targetTime);
+    double getLenght();
+	void clear();
 public:
     //! \return
     QOSGViewer* getViewer() const
