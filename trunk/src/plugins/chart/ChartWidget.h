@@ -13,7 +13,6 @@
 #include <core/IService.h>
 
 #include "C3DChartData.h"
-#include <core/QOSGWidget.h>
 #include <core/Chart.h>
 #include <core/MultiView.h>	
 #include <core/QOsgWidgets.h>

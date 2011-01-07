@@ -11,12 +11,12 @@
 
 
 #include <osgViewer/Viewer>
-#include <core/QOSGWidget.h>
+#include <core/QOsgWidgets.h>
 
 class Chart;
 class ChartWidget;
 
-class ChartViewer : public QOSGViewer
+class ChartViewer : public core::QOsgViewer
 {
 
 

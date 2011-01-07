@@ -16,7 +16,7 @@
 #include <osgViewer/Viewer>
 #include <osgWidget/Widget>
 #include <core/MultiView.h>
-#include <core/QOSGWidget.h>
+#include <core/QOsgWidgets.h>
 #include <plugins/video/core/PixelFormat.h>
 
 #include "osg/VideoImageStreamSizeOptimizer.h"

@@ -31,12 +31,11 @@
 #include <osgViewer/Viewer>
 #include <osgWidget/ViewerEventHandlers>
 #include <osgWidget/WindowManager>
-#include <core/QOSGWidget.h>
 #include <osgGA/StateSetManipulator>
 #include <osg/MatrixTransform>
 #include <osgText/Text>
 
-
+#include <core/QOsgWidgets.h>
 #include <core/IServiceManager.h>
 #include <plugins/timeline/ITimeline.h>
 #include <plugins/timeline/Stream.h>

@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD__VIDEOWIDGETOPTIONS_H__
 #define __HEADER_GUARD__VIDEOWIDGETOPTIONS_H__
 
-#include <core/QOSGWidget.h>
+#include <core/QOsgWidgets.h>
 #include "ui_VideoWidgetOptions.h"
 
 class VideoService;
