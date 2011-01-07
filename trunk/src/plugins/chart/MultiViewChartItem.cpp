@@ -20,7 +20,7 @@ osgWidget::point_type MultiViewChartItem::getAspectRatio()
 	return 3;
 }
 
-void MultiViewChartItem::setSelected( bool selected )
+void MultiViewChartItem::setVisible( bool selected )
 {
 	multiViewSwitch->setValue(multiViewSwitch->getChildIndex(chart),selected);
 

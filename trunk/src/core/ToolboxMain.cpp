@@ -4,7 +4,7 @@
     
 #include "ToolboxMain.h"
 #include "ui_toolboxmaindeffile.h"
-#include <core/QOSGWidget.h>
+#include <core/QOsgWidgets.h>
 #include "TimeLine.h"
 #include "SceneGraphWidget.h"
 
@@ -58,6 +58,8 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     ui(new Ui::ToolboxMain),
     removeOnClick(false)
 {
+    setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
+
     pluginLoader = new core::PluginLoader();
 
 
@@ -77,7 +79,7 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 
     // inicjalizacja us³ug
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        m_pServiceManager->getService(i)->init(m_pServiceManager, sceneRoot.get(), dataManager);
+        m_pServiceManager->getService(i)->init(m_pServiceManager, dataManager, sceneRoot.get(), this);
     }
 
 
@@ -97,6 +99,11 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     computeThread = new ComputeThread(m_pServiceManager, 0.02);
     computeThread->start();
 
+
+    if ( getNumViews() ) {
+        connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
+        _timer.start( 20 );
+    }
 }
 
 ToolboxMain::~ToolboxMain()
@@ -366,6 +373,7 @@ QDockWidget* ToolboxMain::embeddWidget( QWidget* widget, QString& name, QString&
     dock->setObjectName(name + widget->objectName() + "WIDGET" );
     dock->setStyleSheet(style);
     dock->setWidget(widget);
+    QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
     return dock;
 }
 
@@ -389,6 +397,9 @@ void ToolboxMain::initializeUI()
     // setCentralWidget(reinterpret_cast<QWidget*>(m_pRenderService->getWidget()));
     //centralWidget()->widget
 
+    setDockOptions( AllowNestedDocks | AllowTabbedDocks );
+    //setCentralWidget(NULL);
+
     // pozosta³e widgety "p³ywaj¹ce"
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
         IServicePtr service = m_pServiceManager->getService(i);
@@ -400,14 +411,14 @@ void ToolboxMain::initializeUI()
 
         if ( viewWidget/* && service != m_pRenderService*/ ) {
 
-            this->ui->tabWidget->addTab(viewWidget, QString::fromStdString(service->getName()));
+//            this->ui->tabWidget->addTab(viewWidget, QString::fromStdString(service->getName()));
 
-            //centralWidget()->layout()->addWidget(viewWidget);
-//             addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
+//              centralWidget()->layout()->addWidget(viewWidget);
+//             addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
 //                 viewWidget, 
 //                 QString::fromStdString(service->getName()), 
 //                 style,
-//                 Qt::BottomDockWidgetArea));
+//                 Qt::RightDockWidgetArea));
 		}
         if ( controlWidget ) {
             addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
@@ -436,6 +447,8 @@ void ToolboxMain::initializeUI()
     m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option2", onTestItemClickedPtr);
     m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested2/Option", onTestItemClickedPtr);
     m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Remove on click?", onTestRemoveToggledPtr, true, removeOnClick);
+
+    ui->actionTabbedView->setChecked(true);
 }
 
 void ToolboxMain::onCustomAction()
@@ -586,6 +599,190 @@ void ToolboxMain::loadData()
 	osg::Node* sceneRoot = scene->getSceneData();
 	dataManager->setLoadTrialData(false);
 	this->setWindowTitle(tr("ToolboxMain - ").append(QString::fromStdString(dataManager->getActualTrial().getName())));
+}
+
+void ToolboxMain::onTabbedViewSelected(bool toggled)
+{
+    if ( toggled ) {
+        ui->actionDockableView->setChecked(false);
+        ui->actionDockableView->setEnabled(true);
+        ui->actionTabbedView->setEnabled(false);
+        reorganizeWidgets(WidgetsOrganizationTabbed);
+    }
+}
+
+void ToolboxMain::onDockableViewSelected(bool toggled)
+{
+    if ( toggled ) {
+        ui->actionTabbedView->setChecked(false);
+        ui->actionTabbedView->setEnabled(true);
+        ui->actionDockableView->setEnabled(false);
+        reorganizeWidgets(WidgetsOrganizationDocked);
+    }
+}
+
+void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
+{
+    // usuwamy stare œmieci
+    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
+        IServicePtr service = m_pServiceManager->getService(i);
+        if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
+            // co musimy usun¹æ?
+            if ( QDockWidget* dock = qobject_cast<QDockWidget*>(viewWidget->parent()) ) {
+                viewWidget->setParent(NULL);
+                removeDockWidget(dock);
+                delete dock;
+            }
+        }   
+    }
+
+    // za³adowanie styli
+    QString style;
+    if(dataManager->getApplicationSkinsFilePathCount() > 0) {
+        QFile file(QString::fromStdString(dataManager->getApplicationSkinsFilePath(0)));
+        if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            style = file.readAll();
+            file.close();
+        }
+    }
+    setStyleSheet(style);
+
+    setDockOptions( AllowNestedDocks | AllowTabbedDocks );
+    setTabPosition( Qt::RightDockWidgetArea, QTabWidget::North );
+    setCentralWidget(NULL);
+
+    // tworzymy listê dokowalnych widgetów
+    std::vector< QDockWidget* > widgets;
+    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
+        IServicePtr service = m_pServiceManager->getService(i);
+        if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
+            widgets.push_back(embeddWidget(
+                viewWidget, 
+                QString::fromStdString(service->getName()), 
+                style,
+                Qt::RightDockWidgetArea)
+            );
+        }
+    }
+    
+    if ( organization == WidgetsOrganizationDocked ) {
+        // dodajemy pierwszy...
+        std::vector< QDockWidget* >::iterator iter = widgets.begin();
+        addDockWidget( Qt::RightDockWidgetArea, *iter );
+        // kolejne tabujemy
+        while ( ++iter != widgets.end() ) {
+            splitDockWidget( widgets.front(), *iter, Qt::Horizontal );
+        }
+    } else if ( organization == WidgetsOrganizationTabbed ) {
+        // dodajemy pierwszy...
+        std::vector< QDockWidget* >::iterator iter = widgets.begin();
+        addDockWidget( Qt::RightDockWidgetArea, *iter );
+        // kolejne tabujemy
+        while ( ++iter != widgets.end() ) {
+            tabifyDockWidget( widgets.front(), *iter );
+        }
+
+    } else {
+        UTILS_ASSERT(false);
+    }
+
+
+
+
+//     // usuniêcie starych "œmieci"
+//     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
+//         IServicePtr service = m_pServiceManager->getService(i);
+//         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
+//             // co musimy usun¹æ?
+//             QDockWidget* dock = qobject_cast<QDockWidget*>(viewWidget->parent());
+//             int index = ui->tabWidget->indexOf(viewWidget);
+//             if ( dock ) {
+//                 viewWidget->setParent(NULL);
+//                 removeDockWidget(dock);
+//                 delete dock;
+//                 
+//                 
+// 
+//             }
+//             if ( index != -1 ) {
+//                 ui->tabWidget->removeTab(index);
+//             }
+//         }
+//     }
+// 
+//     // usniêcie starych "œmieci"
+//     if ( organization == WidgetsOrganizationDocked ) {
+//         centralWidget()->hide();
+//     } else {
+//         //
+//         centralWidget()->show();
+//     }
+// 
+// 
+//     // za³adowanie styli
+//     QString style;
+//     if(dataManager->getApplicationSkinsFilePathCount() > 0) {
+//         QFile file(QString::fromStdString(dataManager->getApplicationSkinsFilePath(0)));
+//         if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+//             style = file.readAll();
+//             file.close();
+//         }
+//     }
+//     setStyleSheet(style);
+// 
+// 
+//     // widget rendeer service - centralny
+//     // setCentralWidget(reinterpret_cast<QWidget*>(m_pRenderService->getWidget()));
+//     //centralWidget()->widget
+// 
+//     QDockWidget *dock = new QDockWidget("test");
+//     addDockWidget(Qt:TopDockWidgetArea, dock);
+//     
+// 
+// 
+// 
+//     setDockOptions( AllowNestedDocks | AllowTabbedDocks );
+//     setTabPosition( Qt::RightDockWidgetArea, QTabWidget::North );
+//     
+// 
+//     // pozosta³e widgety "p³ywaj¹ce"
+//     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
+//         IServicePtr service = m_pServiceManager->getService(i);
+//         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
+//             if ( organization == WidgetsOrganizationDocked ) {
+//                 // dodanie dokowalnego widgetu
+//                 addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
+//                     viewWidget, 
+//                     QString::fromStdString(service->getName()), 
+//                     style,
+//                     Qt::RightDockWidgetArea));
+//             } else {
+//                 // dodanie strony do zak³adek
+//                 ui->tabWidget->addTab(viewWidget, QString::fromStdString(service->getName()));
+//             }
+//         }
+//     }
+}
+
+void ToolboxMain::paintEvent( QPaintEvent* event )
+{
+    if ( getNumViews() ) {
+        frame();
+    }
+}
+
+void ToolboxMain::onDockWidgetVisiblityChanged( bool visible )
+{
+    if ( QDockWidget* sender = qobject_cast<QDockWidget*>(QObject::sender()) ) {
+        // wyszukanie us³ugi do której widget nale¿y
+        for ( int i = 0; i < m_pServiceManager->getNumServices(); ++i ) {
+            IServicePtr service = m_pServiceManager->getService(i);
+            if ( reinterpret_cast<QWidget*>(service->getWidget()) == sender->widget() ) {
+                service->visibilityChanged( service->getWidget(), visible );
+            }
+        }
+    }
+
 }
 
 // void ToolboxMain::SettingModel()

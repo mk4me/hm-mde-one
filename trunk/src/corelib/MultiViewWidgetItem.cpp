@@ -33,9 +33,9 @@ osgWidget::point_type MultiViewWidgetItem::getAspectRatio()
     return aspectRatio;
 }
 
-void MultiViewWidgetItem::setSelected( bool selected )
+void MultiViewWidgetItem::setVisible( bool visible )
 {
-    if ( selected ) {
+    if ( visible ) {
         window->show();
     } else {
         window->hide();

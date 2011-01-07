@@ -36,7 +36,7 @@
 
 #include <core/SimpleFunctors.h>
 #include <core/IRenderService.h>
-#include <core/QOSGWidget.h>
+#include <core/QOsgWidgets.h>
 #include <core/IService.h>
 #include <core/IFactory.h>
 
@@ -62,7 +62,7 @@ class RenderService: public IRenderService
 public:
     RenderService();
     virtual ~RenderService();
-    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager); 
+    virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer); 
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 
@@ -74,7 +74,6 @@ public:
    
     osgViewer::Scene* GetMainWindowScene();
     osgGroupPtr GetRoot();
-    QOSGViewer* GetMainAdapterWidget();
 
     osg::Light* GetLight();
 
@@ -86,6 +85,7 @@ public:
     }
 
     virtual IWidget* getWidget();
+    virtual void visibilityChanged(IWidget* widget, bool visible);
 
     virtual void EnableMesh();
     virtual void DisableMesh();
@@ -106,7 +106,7 @@ public:
 private: 
     void DisablemarkerPath();
 
-    void Inicialize(osg::Node* sceneRoot);
+    void Inicialize(osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
     void InicizlizeModelMesh(Model* model);
     void AddShaders(osg::Group* group);
 
@@ -115,7 +115,7 @@ private:
     osg::ref_ptr<osg::Geode> m_pMarkerGeode;
     osg::ref_ptr<osg::Geode> m_pMarkerLineGeode;
 
-    QOSGViewer* widget; 
+    core::QOsgDefaultWidget* widget; 
     osgGroupPtr SceneRoot;
     //! Nazwa.
     std::string name;

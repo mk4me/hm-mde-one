@@ -43,6 +43,19 @@ VideoService::VideoService()
     //}
     //((VideoWidget*)(widget))->init(files);
 
+    // powi¹zanie akcji z kontrolkami z widgetu z opcjami (docelowo ma wylecieæ)
+    QObject::connect( widget->actionTextureRectangle, SIGNAL(toggled(bool)), optionsWidget->textureRectangleCheck, SLOT(setChecked(bool)) );
+    QObject::connect( optionsWidget->textureRectangleCheck, SIGNAL(toggled(bool)), widget->actionTextureRectangle, SLOT(setChecked(bool)) );
+    QObject::connect( widget->actionFormatYUV, SIGNAL(toggled(bool)), optionsWidget->radioYUV, SLOT(setChecked(bool)) );
+    QObject::connect( optionsWidget->radioYUV, SIGNAL(toggled(bool)), widget->actionFormatYUV, SLOT(setChecked(bool)) );
+    QObject::connect( widget->actionFormatRGB, SIGNAL(toggled(bool)), optionsWidget->radioRGB, SLOT(setChecked(bool)) );
+    QObject::connect( optionsWidget->radioRGB, SIGNAL(toggled(bool)), widget->actionFormatRGB, SLOT(setChecked(bool)) );
+    QObject::connect( widget->actionFormatBGRA, SIGNAL(toggled(bool)), optionsWidget->radioBGRA, SLOT(setChecked(bool)) );
+    QObject::connect( optionsWidget->radioBGRA, SIGNAL(toggled(bool)), widget->actionFormatBGRA, SLOT(setChecked(bool)) );
+
+    // domyœlne wartoœci
+    widget->actionTextureRectangle->setChecked(true);
+    widget->actionFormatYUV->setChecked(true);
 }
 
 AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
@@ -165,7 +178,19 @@ osg::Node* VideoService::debugGetLocalSceneRoot()
     return widget->getViewer()->getSceneData();
 }
 
+AsyncResult VideoService::init( IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer )
+{
+    widget->getViewer()->onInit(viewer);
+    //widget->getViewer()->init();
+    return AsyncResult_Complete;
+}
 
+void VideoService::visibilityChanged( IWidget* widget, bool visible )
+{
+    if ( widget == reinterpret_cast<IWidget*>(this->widget) ) {
+        this->widget->getViewer()->setRenderingEnabled(visible);
+    }
+}
 
 // timeline::Streams VideoService::getStreams()
 // {

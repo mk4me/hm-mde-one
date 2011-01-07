@@ -5,76 +5,69 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-MultiViewCameraItem::MultiViewCameraItem( osg::Camera* camera, osg::View* view ) : 
-camera(camera), view(view), aspectRatio(1), childIdx(-1)
+MultiViewCameraItem::MultiViewCameraItem( osg::Camera* camera, osg::Group* parent, osg::View* view ) : 
+camera(camera), view(view), aspectRatio(1), childIdx(-1), parent(parent)
 {
     UTILS_ASSERT(camera);
+    UTILS_ASSERT(parent);
 }
 
-MultiViewCameraItem::MultiViewCameraItem( osg::Camera* camera, osgWidget::point_type aspectRatio /*= 1*/ ) :
-camera(camera), aspectRatio(aspectRatio), childIdx(-1)
+MultiViewCameraItem::MultiViewCameraItem( osg::Camera* camera, osg::Group* parent, osgWidget::point_type aspectRatio /*= 1*/ ) :
+camera(camera), aspectRatio(aspectRatio), childIdx(-1), parent(parent)
 {
     UTILS_ASSERT(camera);
+    UTILS_ASSERT(parent);
 }
 
-void MultiViewCameraItem::setSelected( bool selected )
+bool MultiViewCameraItem::isVisible() const
 {
-    if ( selected ) {
-        // dodajemy z powrotem do rodzica
-        UTILS_ASSERT(parent.valid());
-        UTILS_ASSERT(childIdx != -1);
-        if ( parent->asSwitch() ) {
-            parent->asSwitch()->setValue(childIdx, true);
+    if ( parent->getChildIndex(camera) != parent->getNumChildren() ) {
+        // gdy mamy swticha dziecko mo¿e byæ wy³¹czone
+        if ( osg::Switch* sw = parent->asSwitch() ) {
+            // dziecko mo¿e byæ wy³¹czone
+            return sw->getChildValue(camera);
         } else {
-            parent->insertChild(childIdx, camera);
-        }
-        childIdx = -1;
-        parent = NULL;
-
-    } else {
-        // czy to slave?
-        if ( osg::View* slaveView = camera->getView() ) {
-            if ( unsigned slaveIdx = slaveView->findSlaveIndexForCamera(camera.get()) ) {
-                UTILS_ASSERT(false, "Not supported yet");
-            }
-        }
-        // wyznaczamy rodzica, indeks oraz usuwamy
-        UTILS_ASSERT(camera->getNumParents() == 1);
-        parent = camera->getParent(0);
-        childIdx = parent->getChildIndex(camera.get());
-        if ( parent->asSwitch() ) {
-            parent->asSwitch()->setValue(childIdx, false);
-        } else {
-            parent->removeChild(childIdx);
+            // gdy jest zwyk³a grupa na pewno dzieko jest widoczne
+            return true;
         }
     }
+    return false;
+}
 
-
-    //         if ( isSlave ) {
-    //             UTILS_ASSERT(view.valid());
-    //             if ( selected ) {
-    //                 // dodajemy slave'a
-    //                 view->addSlave( camera, slaveData._projectionOffset, slaveData._viewOffset, slaveData._useMastersSceneData );
-    //             } else {
-    //                 // kopiujemy dane i usuwamy
-    //                 unsigned slaveIdx = view->findSlaveIndexForCamera(camera);
-    //                 slaveData = view->getSlave(slaveIdx);
-    //                 view->removeSlave(slaveIdx);
-    //             }
-    //         } else {
-    //             UTILS_ASSERT(parent.valid());
-    //             if ( parent->asSwitch() ) {
-    //                 // w switchu mo¿na ³atwo w³¹czaæ/wy³¹czaæ
-    //                 parent->asSwitch()->setValue(idx, selected);
-    //             } else {
-    //                 // z grupê trzeba niestety rêcznie kontrolowaæ
-    //                 if ( selected ) {
-    //                     parent->insertChild(idx, camera);
-    //                 } else {
-    //                     parent->removeChild(idx);
-    //                 }
-    //             }
-    //         }
+void MultiViewCameraItem::setVisible( bool visible )
+{
+    if ( visible ) {
+        if ( !isVisible() ) {
+            if ( childIdx < 0 ) {
+                // rozpoczyna³ jako niewidoczny
+                parent->addChild(camera);
+            } else {
+                // wczeœniej wy³¹czyliœmy
+                if ( parent->asSwitch() ) {
+                    parent->asSwitch()->setValue(childIdx, true);
+                } else {
+                    parent->insertChild(childIdx, camera);
+                }
+                childIdx = -1;
+            }
+        }
+    } else {
+        if ( isVisible() ) {
+            // czy to slave?
+            if ( osg::View* slaveView = camera->getView() ) {
+                if ( unsigned slaveIdx = slaveView->findSlaveIndexForCamera(camera.get()) ) {
+                    UTILS_ASSERT(false, "Not supported yet");
+                }
+            }
+            // pobieramy indeks dziecka
+            childIdx = parent->getChildIndex(camera.get());
+            if ( parent->asSwitch() ) {
+                parent->asSwitch()->setValue(childIdx, false);
+            } else {
+                parent->removeChild(childIdx);
+            }
+        }
+    }
 }
 
 void MultiViewCameraItem::setLocation( osgWidget::point_type x, osgWidget::point_type y, osgWidget::point_type w, osgWidget::point_type h )

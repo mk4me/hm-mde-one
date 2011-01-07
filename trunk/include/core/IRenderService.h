@@ -7,7 +7,7 @@
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/View>
 
-#include <core/QOSGWidget.h>
+#include <core/QOsgWidgets.h>
 #include <core/IService.h>
 
 
@@ -36,7 +36,6 @@ public:
 
     virtual osgViewer::Scene* GetMainWindowScene() = 0;
     virtual osgGroupPtr GetRoot() = 0;
-    virtual QOSGViewer* GetMainAdapterWidget() = 0;
 
     virtual osg::Light* GetLight() = 0;
 

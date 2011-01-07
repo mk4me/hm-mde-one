@@ -75,8 +75,9 @@ IWidget* GRFService::getWidget()
     return reinterpret_cast<IWidget*>(widget);
 }
 
-AsyncResult GRFService::init( IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager )
+AsyncResult GRFService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
+    widget->getViewer()->onInit(viewer);
  ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
         timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
@@ -163,4 +164,11 @@ return AsyncResult_Complete;
 osg::Node* GRFService::debugGetLocalSceneRoot()
 {
     return widget->getViewer()->getSceneData();
+}
+
+void GRFService::visibilityChanged( IWidget* widget, bool visible )
+{
+    if ( widget == reinterpret_cast<IWidget*>(this->widget) ) {
+        this->widget->getViewer()->setRenderingEnabled(visible);
+    }
 }

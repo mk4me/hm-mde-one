@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include <core/Grid.h>
 #include <boost/foreach.hpp>
+#include <core/Log.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {
@@ -78,10 +79,12 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
     using namespace osgWidget;
     UTILS_ASSERT(aspectRatios.size() == getNumObjects());
    
+    
+
     // obliczenie optymalnego rozmiaru
     osg::Vec2s optimalDimensions(1, 1);
     XYCoord optimalCellSize(width, height);
-    double optimalField = 0.0;    
+    double optimalField = -DBL_MAX;    
     for (unsigned rows = 1; rows <= getNumObjects(); ++rows) {
         unsigned columns = static_cast<unsigned>( ceil(static_cast<double>(getNumObjects())/rows) );
         
@@ -108,6 +111,8 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
             optimalCellSize = cellSize;
         }
     }
+
+    //LOG_ERROR<<"size: "<<width<<" "<<height<<" dim"<<optimalDimensions.x()<<" "<<optimalDimensions.y()<<std::endl;
 
     // nadanie optymalnego rozmiaru
     // tutaj lekko zhackowana zmiana rozmiaru w stosunku do setDimensions

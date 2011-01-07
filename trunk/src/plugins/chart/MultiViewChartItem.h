@@ -19,7 +19,7 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-class MultiViewChartItem : public MultiView::PreviewItem
+class MultiViewChartItem : public MultiView::Item
 {
 private:
 	std::string name;
@@ -35,7 +35,7 @@ public:
     //! \return Wspó³czynnik proporcji.
     virtual osgWidget::point_type getAspectRatio();
     //! Dodaje b¹dŸ usuwa widget podgl¹du ze sceny.
-    virtual void setSelected(bool selected);
+    virtual void setVisible(bool selected);
     //! Umieszcza widget w zadanej lokalizacji.
     virtual void setLocation(osgWidget::point_type x, osgWidget::point_type y,
         osgWidget::point_type w, osgWidget::point_type h);

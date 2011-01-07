@@ -18,7 +18,7 @@ ChartWidget::ChartWidget(IService* service)
 :   service(service)
 {
     setupUi(this);
-	viewer = new QOSGViewer(this, "OsgViewer");
+    viewer = new core::QOsgDefaultWidget(this, "OsgViewer");
     const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
 
 	

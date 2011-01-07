@@ -75,9 +75,10 @@ IWidget* EMGService::getWidget()
     return reinterpret_cast<IWidget*>(widget);
 }
 
-AsyncResult EMGService::init( IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager )
+AsyncResult EMGService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
- ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
+    widget->getViewer()->onInit(viewer);
+    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
         timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
     } else {
@@ -163,4 +164,11 @@ return AsyncResult_Complete;
 osg::Node* EMGService::debugGetLocalSceneRoot()
 {
     return widget->getViewer()->getSceneData();
+}
+
+void EMGService::visibilityChanged( IWidget* widget, bool visible )
+{
+    if ( widget == reinterpret_cast<IWidget*>(this->widget) ) {
+        this->widget->getViewer()->setRenderingEnabled(visible);
+    }
 }

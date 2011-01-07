@@ -8,6 +8,7 @@
 #include <osg/Node>
 #include <osg/PositionAttitudeTransform>
 #include <osg/Geometry>
+#include <osgViewer/CompositeViewer>
 
 #include <streambuf>
 #include <QtCore/QVector>
@@ -37,9 +38,17 @@ namespace Ui
 	class ToolboxMain;
 }
 
-class ToolboxMain : public QMainWindow, core::Window
+class ToolboxMain : public QMainWindow, public core::Window, public osgViewer::CompositeViewer
 {
     Q_OBJECT
+
+private:
+    enum WidgetsOrganization {
+        WidgetsOrganizationTabbed,
+        WidgetsOrganizationDocked,
+    };
+
+
 
 public:
     ToolboxMain(QWidget* parent = 0);
@@ -74,6 +83,10 @@ public slots:
     void onCustomAction();
     void onCustomAction(bool triggered);
 
+    void onTabbedViewSelected(bool toggled);
+    void onDockableViewSelected(bool toggled);
+    void onDockWidgetVisiblityChanged(bool visible);
+
 // core::Window
 protected:    
     //! Natywne dodanie opcji do menu.
@@ -102,6 +115,7 @@ private:
     //! \param area
     QDockWidget* embeddWidget(QWidget* widget, QString& name, QString& style, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
+    void reorganizeWidgets(WidgetsOrganization organization);
 
 
 
@@ -157,6 +171,10 @@ private:
     core::Window::ItemPressedPtr onTestItemClickedPtr;
     core::Window::ItemPressedPtr onTestRemoveToggledPtr;
     bool removeOnClick;
+
+        QTimer _timer;
+
+        virtual void paintEvent( QPaintEvent* event );
 };
 
 #endif // TOOLBOXMAIN_H

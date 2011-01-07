@@ -75,6 +75,11 @@ public:
         return name;
     }
 
+    virtual void visibilityChanged(IWidget* widget, bool visible);
+
+    //!
+    virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
+
     virtual AsyncResult update(double time, double timeDelta);
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);

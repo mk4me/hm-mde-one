@@ -68,7 +68,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/IUserInterface.h
 	${HEADER_PATH}/Vec3.h
 	${HEADER_PATH}/WidgetInterface.h
-	${HEADER_PATH}/QOSGWidget.h
 	${HEADER_PATH}/Plugin.h
 	${HEADER_PATH}/PluginLoader.h
 	${HEADER_PATH}/Export.h

@@ -146,7 +146,7 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
 	return AsyncResult_Complete;
 }
 
-AsyncResult CommunicationService::init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
+AsyncResult CommunicationService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
 	//model->setServiceManager(serviceManager);
 	model->setDataManager(dataManager);

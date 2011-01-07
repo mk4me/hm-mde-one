@@ -19,9 +19,9 @@ namespace core {
 
 /**
  *	Item bêd¹cy widgetem. Trzeba pamiêtaæ ¿e widget/okno trzeba dodaæ do
- *  window managera OSOBNO! Mo¿na go u¿ywaæ zarówno jako Item oraz PreviewItem.
+ *  window managera OSOBNO! Mo¿na go u¿ywaæ zarówno jako Item oraz Item.
  */
-class MultiViewWidgetItem : public MultiView::PreviewItem
+class MultiViewWidgetItem : public MultiView::Item
 {
 private:
     //! Pe³en podgl¹d.
@@ -49,14 +49,14 @@ public:
     //!
     bool isSelected();
 
-// MultiView::PreviewItem
+// MultiView::Item
 public:
     //! \return Nazwa widgetu.
     virtual const std::string& getName() const;
     //! \return Wspó³czynnik proporcji.
     virtual osgWidget::point_type getAspectRatio();
     //! Dodaje b¹dŸ usuwa widget podgl¹du ze sceny.
-    virtual void setSelected(bool selected);
+    virtual void setVisible(bool visible);
     //! Umieszcza widget w zadanej lokalizacji.
     virtual void setLocation(osgWidget::point_type x, osgWidget::point_type y,
         osgWidget::point_type w, osgWidget::point_type h);

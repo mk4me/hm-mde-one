@@ -212,26 +212,27 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
+AsyncResult RenderService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
     m_pFactory = new Factor();
     m_pModel = NULL;
     m_pC3DModel = NULL;
 
     std::cout<< "RenderService ADDED-test!" << std::endl; 
-    Inicialize(sceneRoot);
+    Inicialize(sceneRoot, viewer);
     return AsyncResult_Complete; 
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::Inicialize(osg::Node* sceneRoot)
+void RenderService::Inicialize(osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
     SceneRoot = dynamic_cast<osg::Group*>(sceneRoot);
     UTILS_ASSERT(SceneRoot != NULL);
 
     osgGA::OrbitManipulator *cameraManipulator = new osgGA::OrbitManipulator();
 
-    widget = new QOSGViewer(NULL, 0, 0);
+    widget = new core::QOsgDefaultWidget();
+    widget->onInit(viewer);
     widget->addEventHandler(new osgViewer::StatsHandler);
     widget->setCameraManipulator(cameraManipulator);
     widget->setMinimumSize(100, 100);
@@ -330,7 +331,7 @@ void RenderService::addView( osg::Camera* camera, osgGA::CameraManipulator* mani
     // dodanie kamery do sceny
     widget->getSceneData()->asGroup()->addChild(camera);
 
-    core::MultiViewCameraItem* item = new core::MultiViewCameraItem(camera, widget);
+    core::MultiViewCameraItem* item = new core::MultiViewCameraItem(camera, widget->getSceneData()->asGroup(), widget);
     multiView->addItem(item, new core::MultiViewManipulatorItem(camera, widget, manipulator) );
 
     camera->setProjectionMatrix( widget->getCamera()->getProjectionMatrix() );
@@ -373,15 +374,6 @@ osgViewer::Scene* RenderService::GetMainWindowScene()
 {
     if(widget)
         return widget->getScene();
-
-    return NULL;
-}
-
-//--------------------------------------------------------------------------------------------------
-QOSGViewer* RenderService::GetMainAdapterWidget()
-{
-    if(widget)
-        return widget;
 
     return NULL;
 }
@@ -588,4 +580,11 @@ void RenderService::CreatingAndRenderMarkerPath(IC3DModel* c3dModel, std::vector
     m_pMarkerLineGeode->setName("Line");
 
     AddObjectToRender(m_pMarkerLineGeode);
+}
+
+void RenderService::visibilityChanged( IWidget* widget, bool visible )
+{
+    if ( widget == reinterpret_cast<IWidget*>(this->widget) ) {
+        this->widget->setRenderingEnabled(visible);
+    }
 }

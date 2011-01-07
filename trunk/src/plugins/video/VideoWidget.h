@@ -22,7 +22,7 @@
 #include "osg/VideoImageStreamSizeOptimizer.h"
 #include "ui_video.h"
 
-class VideoWidget : public QWidget, Ui::VideoWidget
+class VideoWidget : public QWidget, public Ui::VideoWidget
 {
     Q_OBJECT
 public:
@@ -32,8 +32,6 @@ public:
 private:
     //! Obrazki pogrupowane wg. po³o¿enia.
     ImagesList images;
-    //! Widget z widokiem OSG.
-    QOSGViewer* viewer;
     //! Multi view.
     osg::ref_ptr<core::MultiView> multiView;
     
@@ -58,9 +56,7 @@ public:
     //! Konstruktor inicjalizujacu UI.
     VideoWidget();
 
-    virtual ~VideoWidget()
-    {
-    }
+    virtual ~VideoWidget();
 
     void init( std::vector<std::string> &files );
 
@@ -79,7 +75,7 @@ public:
     }
 
     //! \return
-    QOSGViewer* getViewer() const
+    core::QOsgDefaultWidget* getViewer() const
     { 
         return viewer;
     }
@@ -111,6 +107,19 @@ public:
     void loadShaders(const std::string& yuvTextureRect, const std::string& yuvTexture2D);
     //! Prze³adowuje shadery.
     void loadShaders();
+
+public slots:
+    //! Pokazuje menu kontekstowe.
+    void onContextMenuRequested(QPoint position);
+    //! Pokazuje menu kontekstowe.
+    void onFormatYUVToggled(bool toggled);
+    //! Pokazuje menu kontekstowe.
+    void onFormatRGBToggled(bool toggled);
+    //! Pokazuje menu kontekstowe.
+    void onFormatBGRAToggled(bool toggled);
+    //!
+    void onTextureRectangleToggled(bool toggled);
+
 
 private:
 

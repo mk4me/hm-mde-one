@@ -35,6 +35,10 @@ set(PUBLIC_H
 	${HEADER_PATH}/MultiViewCameraItem.h
 	${HEADER_PATH}/MultiViewManipulatorItem.h
 	${HEADER_PATH}/OsgSceneDump.h
+	${HEADER_PATH}/OsgWidgetUtils.h
+	${HEADER_PATH}/QOsgWidgets.h
+	${HEADER_PATH}/QOsgWidgetsDeprecated.h
+	${HEADER_PATH}/DisableableRenderer.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -45,7 +49,6 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	ASFAMCData.cpp
 	ASFAMCParser.cpp
-	QOSGWidget.cpp
 	GridModel.cpp
 	OsgWidgetGridView.cpp
 	OsgWidgetBorder.cpp
@@ -76,6 +79,10 @@ set(TARGET_SRC
 	MultiViewCameraItem.cpp
 	MultiViewManipulatorItem.cpp
 	OsgSceneDump.cpp
+	OsgWidgetUtils.cpp
+	QOsgWidgets.cpp
+	QOsgWidgetsDeprecated.cpp
+	DisableableRenderer.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

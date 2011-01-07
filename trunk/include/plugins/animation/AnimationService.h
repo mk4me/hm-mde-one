@@ -92,7 +92,7 @@ public:
 
     virtual ~AnimationService(void);
     virtual AsyncResult update(double time, double timeDelta); 
-    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager); 
+    virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer); 
 
     virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
 

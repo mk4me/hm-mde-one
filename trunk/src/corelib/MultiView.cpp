@@ -15,6 +15,22 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
+template <class T>
+class Push
+{
+private:
+    T& ref;
+    T value;
+
+public:
+    Push(T& ref) : ref(ref), value(ref)
+    {}
+    ~Push()
+    {
+        ref = value;
+    }
+};
+
 /**
  *	Typ powiadamiaj¹cy MultiView o tym, ¿e nast¹pi³ resize (nie da siê prze³adowaæ,
  *  bo nie ma wirtualnych metod :()
@@ -49,45 +65,57 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
 ////////////////////////////////////////////////////////////////////////////////
 
-MultiView::MultiView( osgViewer::View * view, float width, float height, unsigned int mask, unsigned int flags )
-: osgWidget::WindowManager(view, width, height, mask, flags), thumbnailsPaneWidth(100.0f)
+MultiView::MultiView( osgViewer::View * view, float width, float height, unsigned int mask, unsigned int flags ) : 
+osgWidget::WindowManager(view, width, height, mask, flags), 
+thumbnailsPaneWidth(100.0f), 
+previewVisible(true)
 {
+    osgWidget::Widget* button = new osgWidget::Widget("button", 32, 32);
+    button->addCallback( new osgWidget::Callback( &MultiView::onShowHideButtonClicked, this, osgWidget::EVENT_MOUSE_PUSH ) );
+    //button->addCallback( new osgWidget::Callback( &MultiView::onShowHideButtonClicked, this, osgWidget::EVENT_MOUSE_ENTER ) );
+    button->setEventMask( osgWidget::EVENT_MASK_MOUSE_DRAG );
+
+    buttons = new osgWidget::Box("buttons");
+    buttons->getBackground()->setColor(0, 0, 0, 0);
+    buttons->setStrata( osgWidget::Window::STRATA_FOREGROUND );
+    buttons->addWidget( button );
+
     thumbnails = new osgUI::Grid("thumbnails", 0, 0);
     thumbnails->getBackground()->setColor(0, 0, 0, 0);
-    thumbnails->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);    
-    thumbnails->setStrata( osgWidget::Window::STRATA_FOREGROUND );
+    //thumbnails->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);    
+    thumbnails->setStrata( osgWidget::Window::STRATA_NONE );
     setThumbnailBuitinTemplate(TemplatesLabelBased);
 
     // dodanie obs³ugi zdarzeñ
     setUpdateCallback( new ResizeNotifier(width, height) );
     // dodanie dziecka
     addChild(thumbnails);
+    addChild(buttons);
 }
 
-bool MultiView::addItem( Item* item, PreviewItem* preview /*= NULL*/ )
+bool MultiView::addItem( Item* thumbnail, Item* preview /*= NULL*/ )
 {
     UTILS_ASSERT(thumbnails->getNumObjects() >= items.size());
-    if ( getIterator(item) == items.end() ) {
+    if ( getIterator(thumbnail) == items.end() ) {
 
         // stworzenie nowej miniaturki na podstawie prototypu
-        osgWidget::Widget* widget = osg::clone(thumbnailTemplate.get(), item->getName(), osg::CopyOp::DEEP_COPY_ALL);
+        osgWidget::Widget* widget = osg::clone(thumbnailTemplate.get(), thumbnail->getName(), osg::CopyOp::DEEP_COPY_ALL);
         // nadanie stanu
         WidgetAdapter* adapter = adapterTemplate->clone();
-        adapter->setLabel(widget, item->getName());
+        adapter->setLabel(widget, thumbnail->getName());
         adapter->setToggle(widget, false);
         osgWidget::EventInterface* ei = adapter->getEventSource(widget); 
         UTILS_ASSERT(ei, "Musi byc zrodlo eventow!");
         ei->addCallback( new osgWidget::Callback( &MultiView::onItemClicked, this, osgWidget::EVENT_MOUSE_PUSH ) );
 
         // opakowanie miniaturki tak, aby wspó³czynnik proporcji by³ zachowany
-        osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(widget, item->getAspectRatio());
+        osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(widget, thumbnail->getAspectRatio());
         keeper->getWindow()->hide();
 
         // dodanie itema do listy
-        Entry entry = { item, preview, widget, adapter, false, keeper };
+        Entry entry = { thumbnail, preview, widget, adapter, false, keeper };
         items.push_back( entry );
 
         // dodanie widgeta kontroluj¹cego rozmiar do miniaturek
@@ -98,8 +126,9 @@ bool MultiView::addItem( Item* item, PreviewItem* preview /*= NULL*/ )
         thumbnails->resetFillables();
 
         // upewnienie siê, ¿e preview jest wy³¹czony
+        thumbnail->setVisible(true);
         if ( preview ) {
-            preview->setSelected(false);
+            preview->setVisible(false);
         }
 
         refreshLayout();
@@ -130,50 +159,94 @@ void MultiView::removeAllItems()
     items.clear();
 }
 
+void MultiView::setThumbnailsVisible( bool visible )
+{
+    if ( visible ) {
+        thumbnails->show();
+    } else {
+        thumbnails->hide();
+    }
+    refreshLayout();
+}
+
+bool MultiView::isThumbnailsVisible() const
+{
+    return thumbnails->isVisible();
+}
+
+void MultiView::setPreviewVisible( bool visible )
+{
+    previewVisible = visible;
+    refreshLayout();
+}
+
+bool MultiView::isPreviewVisible() const
+{
+    return previewVisible;
+}
+
+
 void MultiView::refreshLayout()
 {
-    // pobranie wspó³czynników proporcji itemów
-    std::vector<float> aspectRatios;
-    aspectRatios.reserve(items.size());
+    // obs³uga grida z miniaturkami
+    if ( isThumbnailsVisible() ) {
+        // dostêpna wysokoœæ
+        osgWidget::point_type height = isPreviewVisible() ? thumbnailsPaneWidth : getHeight();
+        // pobranie wspó³czynników proporcji itemów
+        std::vector<float> aspectRatios;
+        aspectRatios.reserve(items.size());
+        BOOST_FOREACH(Entry& entry, items) {
+            aspectRatios.push_back( entry.thumbnail->getAspectRatio() );
+            entry.keeper->setAspectRatio( aspectRatios.back() );
+        } 
+        // przed automatycznym dostosowaniem rozmiaru
+        thumbnails->setDirtyMode(true);
+        // usuwamy niepotrzebne elementy
+        thumbnails->flattenHorizontally();
+        thumbnails->setNumColumns(items.size());
+        // dostosowujemy rozmiar oraz dodajemy widgety, które zape³ni¹ woln¹ przestrzeñ
+        thumbnails->adjustDimensions(getWidth(), height, aspectRatios);
+        thumbnails->fillEmpty();
+        // faktyczny resize
+        thumbnails->resize( getWidth(), height );
+        // aktualizacja po³o¿enia
+        thumbnails->setOrigin( (getWidth() - thumbnails->getWidth())/2, getHeight() - thumbnails->getHeight());
+        thumbnails->update();
+        // wy³¹czenie "brudnego" trybu
+        thumbnails->setDirtyMode(false);
+    }
+
+    Item* selectedPreview = NULL;
     BOOST_FOREACH(Entry& entry, items) {
-        aspectRatios.push_back( entry.item->getAspectRatio() );
-        entry.keeper->setAspectRatio( aspectRatios.back() );
-    } 
-
-    // przed automatycznym dostosowaniem rozmiaru
-    thumbnails->setDirtyMode(true);
-    // usuwamy niepotrzebne elementy
-    thumbnails->flattenHorizontally();
-    thumbnails->setNumColumns(items.size());
-
-    // dostosowujemy rozmiar oraz dodajemy widgety, które zape³ni¹ woln¹ przestrzeñ
-    thumbnails->adjustDimensions(getWidth(), thumbnailsPaneWidth, aspectRatios);
-    thumbnails->fillEmpty();
-    // faktyczny resize
-    thumbnails->resize( getWidth(), thumbnailsPaneWidth );
-    // aktualizacja po³o¿enia
-    thumbnails->setOrigin( (getWidth() - thumbnails->getWidth())/2, getHeight() - thumbnails->getHeight());
-    thumbnails->update();
-    // wy³¹czenie "brudnego" trybu
-    thumbnails->setDirtyMode(false);
-
-
-    BOOST_FOREACH(Entry& entry, items) {
-        UTILS_ASSERT(entry.item && entry.widget);
-
-        // nowe wspó³rzêdne i rozmiar itemów
-        osgWidget::XYCoord position = entry.widget->getOrigin() + entry.widget->getParent()->getAbsoluteOrigin();
-        osgWidget::XYCoord size = entry.widget->getSize();
-        osgWidget::point_type margin = entry.adapter->getMargin(entry.widget);
-        entry.item->setLocation( position.x() + margin, position.y() + margin, size.x() - 2*margin, size.y() - 2*margin );
-
-        // aktualizacja wyœwietlanego itema
-        if ( selectedItem == entry.item && entry.preview ) {
-            //osgWidget::XYCoord position = previewOverlay->getOrigin() + previewOverlay->getParent()->getAbsoluteOrigin();
-            //osgWidget::XYCoord size = previewOverlay->getSize();
-            //osgWidget::point_type margin = previewOverlay->getBorderWidth();
-            entry.preview->setLocation(0, 0, getWidth(), getHeight() - thumbnails->getHeight() );
+        UTILS_ASSERT(entry.thumbnail && entry.widget);
+        // obs³uga miniaturek
+        if ( isThumbnailsVisible() ) {
+            // nowe wspó³rzêdne i rozmiar itemów
+            osgWidget::XYCoord position = entry.widget->getOrigin() + entry.widget->getParent()->getAbsoluteOrigin();
+            osgWidget::XYCoord size = entry.widget->getSize();
+            osgWidget::point_type margin = entry.adapter->getMargin(entry.widget);
+            entry.thumbnail->setVisible( true );
+            entry.thumbnail->setLocation( position.x() + margin, position.y() + margin, size.x() - 2*margin, size.y() - 2*margin );
+        } else {
+            // schowanie itemów
+            entry.thumbnail->setVisible( false );
         }
+        // obs³uga podgl¹du
+        if ( entry.preview ) {
+            if ( selectedItem == entry.thumbnail ) {
+                if ( isPreviewVisible() ) {
+                    selectedPreview = entry.preview;
+                } else {
+                    entry.preview->setVisible(false);
+                }
+            } else {
+                entry.preview->setVisible(false);
+            }
+        }
+    }
+    if ( selectedPreview ) {
+        selectedPreview->setVisible(true);
+        selectedPreview->setLocation(0, 0, getWidth(), getHeight() - thumbnails->getHeight());
     }
 }
 
@@ -285,35 +358,100 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
 
 bool MultiView::onItemClicked( osgWidget::Event& ev )
 {
-    // wy³¹czenie pozosta³ych itemów
-    Entry* selected = NULL;
+    if(!ev.getWindow() || !ev.getWindowManager()->isLeftMouseButtonDown()) {
+        return false;
+    }
+
+    // wybór itema bazuj¹cy na Ÿródle eventów
     BOOST_FOREACH(Entry& entry, items) {
         UTILS_ASSERT(entry.adapter->getEventSource(entry.widget));
-        if ( entry.adapter->getEventSource(entry.widget) != ev.getWidget() ) {
-            setEntrySelected(entry, false);
-        } else {
-            selected = &entry;
+        if ( entry.adapter->getEventSource(entry.widget) == ev.getWidget() ) {
+            setSelectedByEntry( &entry );
+            break;
         }
     }
-    // w³¹czenie wybranego
-    if ( selected ) {
-        setEntrySelected(*selected, true);
-        selectedItem = selected->item;
+
+    // po wyborze itema przywracamy panel z podgl¹dem
+    if ( !isPreviewVisible() ) {
+        setPreviewVisible(true);
     }
+
+
+//     // wy³¹czenie pozosta³ych itemów
+//     Entry* selected = NULL;
+//     BOOST_FOREACH(Entry& entry, items) {
+//         UTILS_ASSERT(entry.adapter->getEventSource(entry.widget));
+//         if ( entry.adapter->getEventSource(entry.widget) != ev.getWidget() ) {
+//             setEntrySelected(entry, false);
+//         } else {
+//             selected = &entry;
+//         }
+//     }
+//     // w³¹czenie wybranego
+//     if ( selected ) {
+//         setEntrySelected(*selected, true);
+//         selectedItem = selected->thumbnail;
+//     }
+//     if ( !isPreviewVisible() ) {
+//         setPreviewVisible(true);
+//     }
+    
+    return true;
+}
+
+bool MultiView::onShowHideButtonClicked( osgWidget::Event& ev )
+{
+    setPreviewVisible( !isPreviewVisible() );
+//     thumbnailsPaneExtended = !thumbnailsPaneExtended;
+//     if (thumbnailsPaneExtended) {
+//         prevSelectedItem = selectedItem;
+//         selectedItem = NULL;
+//         BOOST_FOREACH(Entry& entry, items) {
+//             if ( entry.preview ) {
+//                 entry.preview->setVisible(false);
+//             }
+//         }
+//     } else {
+//         selectedItem = prevSelectedItem;
+//         BOOST_FOREACH(Entry& entry, items) {
+//             if ( entry.thumbnail == selectedItem && entry.preview ) {
+//                 entry.preview->setVisible(true);
+//             }
+//         }
+//     }
+//     refreshLayout();
     return true;
 }
 
 
+void MultiView::setSelectedByEntry( Entry* selected )
+{
+    // wy³¹czenie pozosta³ych itemów
+    BOOST_FOREACH(Entry& entry, items) {
+        UTILS_ASSERT(entry.adapter->getEventSource(entry.widget));
+        if ( !selected || entry.thumbnail != selected->thumbnail ) {
+            entry.toggled = false;
+            entry.adapter->setToggle( entry.widget, false );
+        }
+    }
+    // w³¹czenie wybranego
+    if ( selected ) {
+        selected->toggled = true;
+        selected->adapter->setToggle( selected->widget, true );
+        selectedItem = selected->thumbnail;
+    } else {
+        selectedItem = NULL;
+    }
+    refreshLayout();
+}
+
 void MultiView::setSelected( Item* item )
 {
     if ( item != selectedItem ) {
-        if ( selectedItem ) {
-            setEntrySelected( *checked(getIterator(selectedItem)), false);
-            selectedItem = NULL;
-        }
         if ( item ) {
-            setEntrySelected( *checked(getIterator(item)), true);
-            selectedItem = item;
+            setSelectedByEntry( &*checked(getIterator(item)) );
+        } else {
+            setSelectedByEntry( NULL );
         }
     }
 }
@@ -325,7 +463,7 @@ void MultiView::setEntrySelected( Entry &entry, bool selected )
             entry.toggled = false;
             entry.adapter->setToggle(entry.widget, false);
             if ( entry.preview ) {
-                entry.preview->setSelected(false);
+                entry.preview->setVisible(false);
             }
         }
     } else {
@@ -333,30 +471,30 @@ void MultiView::setEntrySelected( Entry &entry, bool selected )
             entry.adapter->setToggle(entry.widget, true);
             entry.toggled = true;
             if ( entry.preview ) {
-                entry.preview->setSelected(true);
+                entry.preview->setVisible(true);
                 // poniewa¿ dopiero co pokazaliœmy trzeba wypozycjonowaæ
                 entry.preview->setLocation(0, 0, getWidth(), getHeight() - thumbnails->getHeight());
             }
         }
     }
 }
-std::pair<MultiView::Item*, MultiView::PreviewItem*> MultiView::getSelected()
+std::pair<MultiView::Item*, MultiView::Item*> MultiView::getSelected()
 {
     if ( selectedItem ) {
         Items::iterator found = checked(getIterator(selectedItem));
-        return std::make_pair(found->item.get(), found->preview.get());
+        return std::make_pair(found->thumbnail.get(), found->preview.get());
     } else {
-        return std::make_pair<Item*, PreviewItem*>(NULL, NULL); 
+        return std::make_pair<Item*, Item*>(NULL, NULL); 
     }
 }
 
-std::pair<const MultiView::Item*, const MultiView::PreviewItem*> MultiView::getSelected() const
+std::pair<const MultiView::Item*, const MultiView::Item*> MultiView::getSelected() const
 {
     if ( selectedItem ) {
         Items::const_iterator found = checked(getIterator(selectedItem));
-        return std::make_pair(found->item.get(), found->preview.get());
+        return std::make_pair(found->thumbnail.get(), found->preview.get());
     } else {
-        return std::make_pair<Item*, PreviewItem*>(NULL, NULL); 
+        return std::make_pair<Item*, Item*>(NULL, NULL); 
     }
 }
 
@@ -372,14 +510,11 @@ unsigned MultiView::getSelectedIndex() const
 void MultiView::setSelectedByIndex( unsigned idx )
 {
     if ( idx >= items.size() ) {
-        throw std::out_of_range("No such item.");
+        throw std::out_of_range("No such thumbnail.");
     }
-    if ( selectedItem ) {
-        setEntrySelected(*checked(getIterator(selectedItem)), false);
-        selectedItem = NULL;
+    if ( getSelectedIndex() != idx ) {
+        setSelectedByEntry( &items[idx] );
     }
-    setEntrySelected( items[idx], true );
-    selectedItem = items[idx].item;
 }
 
 MultiView::Items::iterator& MultiView::checked( Items::iterator& it )
@@ -406,12 +541,13 @@ unsigned MultiView::getNumItems() const
 void MultiView::restoreRequiredChildren()
 {
     addChild(thumbnails);
+    addChild(buttons);
 }
 
 
 MultiView::Items::iterator MultiView::getIterator( const Item* item )
 {
-    return std::find_if( items.begin(), items.end(), bind(&Entry::item, _1) == item );
+    return std::find_if( items.begin(), items.end(), bind(&Entry::thumbnail, _1) == item );
 }
 
 MultiView::Items::iterator MultiView::getIterator( const osgWidget::Widget* widget )
@@ -421,7 +557,7 @@ MultiView::Items::iterator MultiView::getIterator( const osgWidget::Widget* widg
 
 MultiView::Items::const_iterator MultiView::getIterator( const Item* item ) const
 {
-    return std::find_if( items.begin(), items.end(), bind(&Entry::item, _1) == item );
+    return std::find_if( items.begin(), items.end(), bind(&Entry::thumbnail, _1) == item );
 }
 
 MultiView::Items::const_iterator MultiView::getIterator( const osgWidget::Widget* widget ) const

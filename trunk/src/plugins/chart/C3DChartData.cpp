@@ -3,6 +3,7 @@
 #include "C3DChartData.h"
 
 #include "Data.h"
+#include <boost/algorithm/string.hpp>
 
 C3DChartData::C3DChartData(C3D_Data* c3d, int chanel){
 
@@ -51,7 +52,7 @@ void C3DChartData::exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd)
 		GroupData* gData = c3dd->getParameters()->getGroupsByName()["ANALOG"];
 
 
-		setName(gData->getParameterByName()["LABELS"]->getDataAsStringsArray()[numberOfChannel]);
+        setName( boost::trim_copy(gData->getParameterByName()["LABELS"]->getDataAsStringsArray()[numberOfChannel]) );
 		setScale(gData->getParameterByName()["SCALE"]->getDataAsFloatArray()[numberOfChannel]);
 		setOffset(gData->getParameterByName()["OFFSET"]->getDataAsFloatArray()[numberOfChannel]);
 		setDescription(gData->getParameterByName()["DESCRIPTIONS"]->getDataAsStringsArray()[numberOfChannel]);

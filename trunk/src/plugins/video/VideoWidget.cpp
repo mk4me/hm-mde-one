@@ -93,8 +93,14 @@ format(PixelFormatBGRA)
     // inicjalizacja UI
     setupUi(this); 
 
+    // dodanie grupy akcji (designer na to nie pozwala :()
+    // TIP: w przyk³adach Qt nie ma jawnego zwalniania akcji
+    QActionGroup* formatGroup = new QActionGroup(this);
+    formatGroup->addAction( actionFormatYUV );
+    formatGroup->addAction( actionFormatRGB );
+    formatGroup->addAction( actionFormatBGRA );
+
     // tworzenie viewera
-    viewer = new QOSGViewer(this, "OsgViewer");
     viewer->getCamera()->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
     const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
 
@@ -118,8 +124,6 @@ format(PixelFormatBGRA)
     // ustawienie sceny
     viewer->setSceneData(multiViewCamera);
     
-    // dodanie do widgeta
-    GLWidget->addWidget( viewer );
 
   // bufory
 
@@ -195,6 +199,7 @@ void VideoWidget::createScene()
         osgWidget::Box* thumbnail = new osgWidget::Box(streamWidget->getName());
         streamWidget->setCanFill(true);
         thumbnail->addWidget(streamWidget);
+        thumbnail->setStrata( osgWidget::Window::STRATA_BACKGROUND );
         multiView->addChild(thumbnail);
 
         // faktyczne dodanie du¿ego okna
@@ -204,6 +209,7 @@ void VideoWidget::createScene()
         keeper->setColor(0, 0, 0, 0);
         preview->getBackground()->setColor(0,0,0,0);
         preview->addWidget(keeper);
+        preview->setStrata( osgWidget::Window::STRATA_BACKGROUND );
         multiView->addChild(preview);
 
         // dodanie itemów do multiviewa
@@ -225,30 +231,32 @@ void VideoWidget::createScene()
     unsigned columns = dimensions.x();
 
     // TODO: kopia
-    osgUI::Grid* gridThumbs = new osgUI::Grid("allThumbnails", rows, columns);
-    gridThumbs->getBackground()->setColor(0,0,0,0);
-    osgUI::Grid* grid = new osgUI::Grid("all", rows, columns);
-    grid->getBackground()->setColor(0,0,0,0);
-    //osgUI::Grid* grid = osg::clone(gridThumbs, osg::CopyOp::DEEP_COPY_ALL);
-    for (unsigned row = 0; row < rows; ++row) {
-        for (unsigned col = 0; col < columns; ++col) {
-            osg::Image* image = images[ row * columns + col ];
-            osgWidget::Widget* thumbnail = createStreamWidget( /*osg::clone*/(image), optimizers[row*columns+col] );
-            thumbnail->setCanFill(true);
-            gridThumbs->addWidget(thumbnail, row, col);
-            osgWidget::Widget* preview = createStreamWidget( /*osg::clone*/(image), optimizers[row*columns+col] );
-            osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(preview, avgRatio);
-            grid->addWidget(keeper, row, col);
-
-            optimizers[ row * columns + col ]->getClients().push_back(new OsgWidgetWindowItem(gridThumbs, thumbnail));
-            optimizers[ row * columns + col ]->getClients().push_back(new OsgWidgetWindowItem(grid, preview));
-            
-
-        }
-    }
-    multiView->addChild(gridThumbs);
-    multiView->addChild(grid);
-    multiView->addItem(new core::MultiViewWidgetItem(gridThumbs, avgRatio), new core::MultiViewWidgetItem(grid, avgRatio));
+//     osgUI::Grid* gridThumbs = new osgUI::Grid("allThumbnails", rows, columns);
+//     gridThumbs->getBackground()->setColor(0,0,0,0);
+//     osgUI::Grid* grid = new osgUI::Grid("all", rows, columns);
+//     grid->getBackground()->setColor(0,0,0,0);
+//     //osgUI::Grid* grid = osg::clone(gridThumbs, osg::CopyOp::DEEP_COPY_ALL);
+//     for (unsigned row = 0; row < rows; ++row) {
+//         for (unsigned col = 0; col < columns; ++col) {
+//             osg::Image* image = images[ row * columns + col ];
+//             osgWidget::Widget* thumbnail = createStreamWidget( /*osg::clone*/(image), optimizers[row*columns+col] );
+//             thumbnail->setCanFill(true);
+//             gridThumbs->addWidget(thumbnail, row, col);
+//             osgWidget::Widget* preview = createStreamWidget( /*osg::clone*/(image), optimizers[row*columns+col] );
+//             osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(preview, avgRatio);
+//             grid->addWidget(keeper, row, col);
+// 
+//             optimizers[ row * columns + col ]->getClients().push_back(new OsgWidgetWindowItem(gridThumbs, thumbnail));
+//             optimizers[ row * columns + col ]->getClients().push_back(new OsgWidgetWindowItem(grid, preview));
+//             
+// 
+//         }
+//     }
+//     gridThumbs->setStrata( osgWidget::Window::STRATA_BACKGROUND );
+//     grid->setStrata( osgWidget::Window::STRATA_BACKGROUND );
+//     multiView->addChild(gridThumbs);
+//     multiView->addChild(grid);
+//     multiView->addItem(new core::MultiViewWidgetItem(gridThumbs, avgRatio), new core::MultiViewWidgetItem(grid, avgRatio));
 
     if ( doSelect ) {
         multiView->setSelectedByIndex(sel);
@@ -294,7 +302,7 @@ osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Unif
     // ustawienie tekstury
     widget->setImage(image, true, useTextureRect);
     // czy trzeba zrobiæ flipa?
-    osgUI::correctTexCoords(image, widget);
+    osgUI::correctTexCoords(widget, image);
     // poprawki
     if ( !useTextureRect && osgUI::getTexture(widget) ) {
         osgUI::getTexture(widget)->setResizeNonPowerOfTwoHint(false);
@@ -336,4 +344,51 @@ void VideoWidget::loadShaders()
         yuvTextureRectShader ? yuvTextureRectShader->getFileName() : "",
         yuvTexture2DShader ? yuvTexture2DShader->getFileName() : "" 
     );
+}
+
+VideoWidget::~VideoWidget()
+{
+
+}
+
+void VideoWidget::onContextMenuRequested( QPoint position )
+{
+    QPoint globalPos = mapToGlobal(position);
+
+    QMenu *menu=new QMenu;
+    menu->addSeparator();
+    menu->addAction("Format")->setEnabled(false);
+    menu->addAction(actionFormatYUV);
+    menu->addAction(actionFormatRGB);
+    menu->addAction(actionFormatBGRA);
+    menu->addSeparator();
+    menu->addAction(actionTextureRectangle);
+
+    menu->exec(globalPos);
+}
+
+void VideoWidget::onFormatYUVToggled(bool toggled)
+{
+    if ( toggled ) {
+        setPixelFormat(video::PixelFormatYV12);
+    }
+}
+
+void VideoWidget::onFormatRGBToggled(bool toggled)
+{
+    if ( toggled ) {
+        setPixelFormat(video::PixelFormatRGB24);
+    }
+}
+
+void VideoWidget::onFormatBGRAToggled(bool toggled)
+{
+    if ( toggled ) {
+        setPixelFormat(video::PixelFormatBGRA);
+    }
+}
+
+void VideoWidget::onTextureRectangleToggled( bool toggled )
+{
+    setUseTextureRect( toggled );
 }

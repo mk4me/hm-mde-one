@@ -16,6 +16,7 @@
 #include <core/QOSGWidget.h>
 #include <core/Chart.h>
 #include <core/MultiView.h>	
+#include <core/QOsgWidgets.h>
 #include "ui_ChartWidget.h"
 
 class ChartViewer;
@@ -27,7 +28,7 @@ private:
     //! Us³uga tworz¹ca widget.
 	IService* service;
     //! Widget z widokiem OSG.
-    QOSGViewer* viewer;
+    core::QOsgDefaultWidget* viewer;
     
 
 	std::string c3dFile;
@@ -54,7 +55,7 @@ public:
 	void clear();
 public:
     //! \return
-    QOSGViewer* getViewer() const
+    core::QOsgDefaultWidget* getViewer() const
     { 
         return viewer;
     }

@@ -20,7 +20,7 @@ namespace core {
 
 //! Item powinien byæ u¿ywany wy³¹cznie jako preview. Jego dzia³anie polega
 //! na kontrolowaniu manipulatorów kamer.
-class MultiViewManipulatorItem : public core::MultiView::PreviewItem
+class MultiViewManipulatorItem : public core::MultiView::Item
 {
 private:
     //! Kamera z miniaturka.
@@ -44,7 +44,7 @@ public:
     virtual osgWidget::point_type getAspectRatio();
 
     //! Ustawia/usuwa manipulator viewera oraz przenosi transformacjê z/do kamery.
-    virtual void setSelected(bool selected);
+    virtual void setVisible(bool visible);
 
     //! Tutaj nic siê nie dzieje - pracujemy na g³ównej kamerze viewera, która
     //! zawsze zajmuje pe³ny ekran.

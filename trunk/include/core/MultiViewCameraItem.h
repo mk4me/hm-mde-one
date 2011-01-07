@@ -32,20 +32,19 @@ private:
     osg::observer_ptr<osg::View> view;
     //! Wspó³czynnik proporcji.
     osgWidget::point_type aspectRatio;
-
     //! Indeks w grupie (rodzicu).
     unsigned childIdx;
     //! Rodzic wêz³a.
-    osg::observer_ptr<osg::Group> parent;
+    osg::ref_ptr<osg::Group> parent;
 
 public:
     //! \param camera
     //! \param aspectRatio
-    MultiViewCameraItem(osg::Camera* camera, osgWidget::point_type aspectRatio = 1);
+    MultiViewCameraItem(osg::Camera* camera, osg::Group* parent, osgWidget::point_type aspectRatio = 1);
     //! 
     //! \param camera
     //! \param view
-    MultiViewCameraItem(osg::Camera* camera, osg::View* view);
+    MultiViewCameraItem(osg::Camera* camera, osg::Group* parent, osg::View* view);
 
 public:
     //! \return Nazwa widgetu.
@@ -76,7 +75,9 @@ public:
 
 
     //! Dodaje b¹dŸ usuwa widget podgl¹du ze sceny.
-    virtual void setSelected(bool selected);
+    virtual void setVisible(bool visible);
+    //! Pomocnicza metoda do okreœlania widocznoœci.
+    bool isVisible() const;
 
 };
 

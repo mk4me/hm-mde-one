@@ -80,34 +80,27 @@ public:
 
         //! \return Wspó³czynnik proporcji.
         virtual osgWidget::point_type getAspectRatio() = 0;
-    };
 
-    //! Item, który mo¿na dodatkowo ustawiæ jako bie¿¹cy.
-    class PreviewItem : public Item
-    {
-    public:
-        //! \param selected
-        virtual void setSelected(bool selected) = 0;
+        //! \param visible Czy item jest widoczny?
+        virtual void setVisible(bool visible) = 0;
     };
 
 private:
     //! WskaŸnik na item.
     typedef osg::ref_ptr<Item> ItemPtr;
-    //! WskaŸnik na item.
-    typedef osg::ref_ptr<PreviewItem> PreviewItemPtr;
 
     //! Wpis wewnêtrznie u¿ywany.
     struct Entry
     {
         //! Item (miniaturka).
-        ItemPtr item;
+        ItemPtr thumbnail;
         //! Preview (du¿y widok).
-        PreviewItemPtr preview;
+        ItemPtr preview;
         //! Widget.
         osg::ref_ptr<osgWidget::Widget> widget;
         //! Adapter widgeta.
         osg::ref_ptr<WidgetAdapter> adapter;
-        //! Czy item jest zaznaczony?
+        //! Czy thumbnail jest zaznaczony?
         bool toggled;
         //! Okienko s³u¿¹ce do trzymania wspó³czynnika proporcji.
         osg::ref_ptr<osgUI::AspectRatioKeeper> keeper;
@@ -120,15 +113,24 @@ private:
     Items items;
     //! Grid z miniaturkami.
     osg::ref_ptr<osgUI::Grid> thumbnails;
+    //! Okienko z guzikami.
+    osg::ref_ptr<osgWidget::Box> buttons;
     //! Szerokoœæ (b¹dŸ wysokoœæ) panelu z miniaturkami.
     osgWidget::point_type thumbnailsPaneWidth;
-    //! Bie¿¹cy item
+
+    //! Czy widoczny jest podgl¹d?
+    bool previewVisible;
+
+    //! Bie¿¹cy thumbnail
     ItemPtr selectedItem;
 
     //! Szablon dla miniaturek.
     osg::ref_ptr<osgWidget::Widget> thumbnailTemplate;
     //! Szablon adaptera dla miniaturek.
     osg::ref_ptr<WidgetAdapter> adapterTemplate;
+
+    //!
+    ItemPtr prevSelectedItem;
     //! Wspó³rzêdne lewego dolnego rogu.
     //osgWidget::XYCoord origin;
     //! Rozmiar multiwidoku;
@@ -143,17 +145,22 @@ public:
     MultiView(osgViewer::View * view, float width, float height, unsigned int mask, unsigned int flags);
 
     //! Dodaje item na koniec kolekcji.
-    bool addItem(Item* item, PreviewItem* preview = NULL);
+    //! \param item Item do dodania. Miniaturka.
+    //! \param preview Opcjonalny item, który bêdzie pokazywany/chowany, gdy miniaturka zostanie wybrana.
+    bool addItem(Item* thumbnail, Item* preview = NULL);
+
     //! Usuwa item z kolekcji.
     void removeItem(Item* item);
     //! Usuwa wszystkie itemy.
     void removeAllItems();
 
     void restoreRequiredChildren();
+
     //! \return Wybrany element.
-    std::pair<Item*, PreviewItem*> getSelected();
+    std::pair<Item*, Item*> getSelected();
     //! \return Wybrany element.
-    std::pair<const Item*, const PreviewItem*> getSelected() const;
+    std::pair<const Item*, const Item*> getSelected() const;
+
     //! \param item Wybrana miniaturka.
     void setSelected(Item* item);
     //! \return Indeks wybranego itema.
@@ -190,21 +197,40 @@ public:
     //! Odœwie¿a roz³o¿enie elementów.
     void refreshLayout();
 
+    //! \param visible Czy miniaturki maj¹ byæ widoczne?
+    void setThumbnailsVisible(bool visible);
+    //! Byk ortograficzny zamierzony (powinno byæ: areThumbnailsVisible).
+    //! \return Czy miniaturki maj¹ byæ widoczne?
+    bool isThumbnailsVisible() const;
+
+    //! \param visible Czy podgl¹d jest widoczny?
+    void setPreviewVisible(bool visible);
+    //! \return Czy podgl¹d jest widoczny?
+    bool isPreviewVisible() const;
+
 private:
+
+    void setSelectedByEntry(Entry* selected);
+
     //! Callback wywo³ywany gdy wybierze siê jakiœ item.
     bool onItemClicked(osgWidget::Event& ev);
+    //! Callback wywo³ywany gdy kliknie siê w przycisk mini/maksymalizacji.
+    bool onShowHideButtonClicked(osgWidget::Event& ev);
 
     void setEntrySelected( Entry &entry, bool selected );
-    //! \param item
+
+    //! Pomocnicza funkcja wyszukuj¹ca.
     Items::iterator getIterator(const Item* item);
-    //! \param item
+    //! Pomocnicza funkcja wyszukuj¹ca.
     Items::iterator getIterator(const osgWidget::Widget* widget);
-    //! \param item
+    //! Pomocnicza funkcja wyszukuj¹ca.
     Items::const_iterator getIterator(const Item* item) const;
-    //! \param item
+    //! Pomocnicza funkcja wyszukuj¹ca.
     Items::const_iterator getIterator(const osgWidget::Widget* widget) const;
 
+    //! Pomocnicza funkcja sprawdzaj¹ca zakres iteratora.
     Items::iterator& checked(Items::iterator& it);
+    //! Pomocnicza funkcja sprawdzaj¹ca zakres iteratora.
     Items::const_iterator& checked(Items::const_iterator& it) const;
 };
 

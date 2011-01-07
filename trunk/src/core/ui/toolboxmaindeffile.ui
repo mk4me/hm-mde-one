@@ -26,6 +26,12 @@
       <property name="currentIndex">
        <number>-1</number>
       </property>
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -45,6 +51,8 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionAbout"/>
+   <addaction name="actionTabbedView"/>
+   <addaction name="actionDockableView"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">
@@ -98,6 +106,9 @@
     <property name="title">
      <string>Window</string>
     </property>
+    <addaction name="actionTabbedView"/>
+    <addaction name="actionDockableView"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
@@ -207,6 +218,28 @@
     <string>Exit</string>
    </property>
   </action>
+  <action name="actionTabbedView">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tabbed view</string>
+   </property>
+   <property name="toolTip">
+    <string>Switch to tabbed view</string>
+   </property>
+  </action>
+  <action name="actionDockableView">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dockable view</string>
+   </property>
+   <property name="toolTip">
+    <string>Switch to dock view</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
@@ -291,6 +324,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onPageChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>440</x>
+     <y>356</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>440</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDockableView</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onDockableViewSelected(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>440</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionTabbedView</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onTabbedViewSelected(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>440</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onOpen()</slot>
@@ -298,5 +379,8 @@
   <slot>onWireframe()</slot>
   <slot>onBones()</slot>
   <slot>onMaterial()</slot>
+  <slot>onPageChanged(int)</slot>
+  <slot>onTabbedViewSelected(bool)</slot>
+  <slot>onDockableViewSelected(bool)</slot>
  </slots>
 </ui>

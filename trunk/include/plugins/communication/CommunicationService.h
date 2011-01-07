@@ -60,7 +60,7 @@ public:
 	@param root Korzeñ wspólnej sceny 3D.
 	@param dataManager Manager zasobów.
 	*/
-	virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager);
+	virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
 	/**
 	Metoda z interfejsu IService. £aduje.
 	@param serviceManager Manager us³ug.

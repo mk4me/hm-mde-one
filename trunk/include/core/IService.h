@@ -5,6 +5,8 @@
 #include <core/IIdentifiable.h>
 #include <core/WidgetInterface.h>
 #include <core/SmartPtr.h>
+#include <osg/Node>
+#include <osgViewer/CompositeViewer>
 
 enum AsyncResult
 {
@@ -30,7 +32,7 @@ public:
     //! \param serviceManager Manager us³ug.
     //! \param root Korzeñ wspólnej sceny 3D.
 	//! \param dataManager Manager zasobów.
-    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot, IDataManager* dataManager)
+    virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
     {
         return AsyncResult_Complete;
     }
@@ -63,6 +65,19 @@ public:
     virtual AsyncResult compute()
     {
         return AsyncResult_Complete;
+    }
+
+
+    //! Callback wywo³ywany gdy widget zniknie (np. bêdzie schowany w tabach
+    //! albo z jakiegoœ innego powodu nie bêdzie widoczny). Docelowo powinna to
+    //! byæ metoda IWidget, ale poniewa¿ u nas mo¿na by ten typ zast¹piæ void*,
+    //! metoda CZASOWO dodana do IService.
+    //! W tej metodzie mo¿na kontrolowaæ w³¹czanie/wy³¹czanie pewnych czêœci
+    //! us³ug, np. rendering OSG.
+    //! \param widget
+    //! \param visible
+    virtual void visibilityChanged(IWidget* widget, bool visible)
+    {
     }
 
     //! Us³uga nie musi mieæ wizualnej reprezentacji.

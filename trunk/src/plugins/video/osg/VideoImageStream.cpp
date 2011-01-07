@@ -302,7 +302,7 @@ void VideoImageStream::setMaxWidth( int maxWidth )
 
   // czy realokacja ramki?
   if ( currentPicture.width != width ) {
-    OSG_NOTICE<<getStream()->getSource()<<":Changing frame size from "<<currentPicture.width<<" to "<<width<<std::endl;
+    //OSG_NOTICE<<getStream()->getSource()<<":Changing frame size from "<<currentPicture.width<<" to "<<width<<std::endl;
     ScopedLock lock(getMutex());
     currentPicture.free();
     currentPicture = Picture::create(width, height, targetFormat);
