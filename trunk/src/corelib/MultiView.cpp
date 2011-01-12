@@ -478,7 +478,7 @@ void MultiView::setEntrySelected( Entry &entry, bool selected )
         }
     }
 }
-std::pair<MultiView::Item*, MultiView::Item*> MultiView::getSelected()
+std::pair<MultiViewItem*, MultiViewItem*> MultiView::getSelected()
 {
     if ( selectedItem ) {
         Items::iterator found = checked(getIterator(selectedItem));
@@ -488,7 +488,7 @@ std::pair<MultiView::Item*, MultiView::Item*> MultiView::getSelected()
     }
 }
 
-std::pair<const MultiView::Item*, const MultiView::Item*> MultiView::getSelected() const
+std::pair<const MultiViewItem*, const MultiViewItem*> MultiView::getSelected() const
 {
     if ( selectedItem ) {
         Items::const_iterator found = checked(getIterator(selectedItem));

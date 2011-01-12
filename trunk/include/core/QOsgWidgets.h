@@ -25,6 +25,9 @@ public:
     //! \param shareWidget
     //! \param f
     QOsgContextWidget(QWidget * parent = 0, const char * name = 0, const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0);
+    //!
+    virtual ~QOsgContextWidget();
+
     //! \return Kontekst OSG.
     inline osgViewer::GraphicsWindow* getGraphicsWindow()
     {
@@ -99,6 +102,8 @@ public:
     //! \param f
     QOsgViewer(QWidget * parent = 0, const char * name = 0, const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0);
 
+    virtual ~QOsgViewer();
+
     //! \return Czy timer jest aktywny? Je¿eli nie ramki nie bêd¹ aktualizowane i nale¿y dodaæ go do rodzica, czyli
     //! do osgViewer::CompositeViewer
     inline bool isTimerActive() const
@@ -161,7 +166,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef QOsgViewer QOsgDefaultWidget;
+typedef QOsgDeprecatedViewer QOsgDefaultWidget;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

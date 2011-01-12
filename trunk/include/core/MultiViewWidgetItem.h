@@ -21,7 +21,7 @@ namespace core {
  *	Item bêd¹cy widgetem. Trzeba pamiêtaæ ¿e widget/okno trzeba dodaæ do
  *  window managera OSOBNO! Mo¿na go u¿ywaæ zarówno jako Item oraz Item.
  */
-class MultiViewWidgetItem : public MultiView::Item
+class MultiViewWidgetItem : public MultiViewItem
 {
 private:
     //! Pe³en podgl¹d.
@@ -49,7 +49,7 @@ public:
     //!
     bool isSelected();
 
-// MultiView::Item
+// MultiViewItem
 public:
     //! \return Nazwa widgetu.
     virtual const std::string& getName() const;

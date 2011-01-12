@@ -23,15 +23,8 @@ class IAnimationService;
 class ModelService;
 class RenderService;
 class ComputeThread;
-
-QT_BEGIN_NAMESPACE
-class QMainWindowPrivate;
-class QObject; 
-class ConsoleWidget; 
-class ViewerQT; 
-class TimeLine; 
 class SceneGraphWidget;
-QT_END_NAMESPACE
+class ConsoleWidget; 
 
 namespace Ui
 {
@@ -66,6 +59,8 @@ public:
 
 public:
     void openFile( const std::string& path );
+    void openLayout( const QString& path );
+
 	void loadData();
 
 
@@ -83,9 +78,15 @@ public slots:
     void onCustomAction();
     void onCustomAction(bool triggered);
 
+    void onSaveLayout();
+    void onOpenLayout();
+    void onShowSavedLayouts();
+
+    void addLayoutsToMenu( QDir &dir );
     void onTabbedViewSelected(bool toggled);
     void onDockableViewSelected(bool toggled);
     void onDockWidgetVisiblityChanged(bool visible);
+    void onLayoutTriggered();
 
 // core::Window
 protected:    
@@ -113,7 +114,7 @@ private:
     //! \param name
     //! \param style
     //! \param area
-    QDockWidget* embeddWidget(QWidget* widget, QString& name, QString& style, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
+    QDockWidget* embeddWidget(QWidget* widget, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
     void reorganizeWidgets(WidgetsOrganization organization);
 
@@ -125,7 +126,7 @@ protected:
 private: 
     void LoadConfiguration();
 
-    void ReadSettings();
+    void readSettings(const QSettings& settings, bool readGeometry);
     void WriteSettings();
 
 private:    

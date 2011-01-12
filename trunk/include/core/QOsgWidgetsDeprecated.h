@@ -34,7 +34,7 @@ public:
         const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0 );
 
     //! Pusty polimorficzny destruktor.
-    virtual ~QOsgDeprecatedWidget() {}
+    virtual ~QOsgDeprecatedWidget();
 
 public:
     //! \return Okno z punktu widzenia Osg.
@@ -68,6 +68,8 @@ private:
 public:
     QOsgDeprecatedViewer(QWidget * parent = 0, const char * name = 0, 
         const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0);
+
+    virtual ~QOsgDeprecatedViewer();
 
     //! Metoda usprawniaj¹ca testowanie ró¿nych wariantów ³¹czenia OSG/QT.
     void onInit(osgViewer::CompositeViewer* composite)

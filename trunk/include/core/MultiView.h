@@ -10,8 +10,6 @@
 #define __HEADER_GUARD__CORE_MULTIVIEW_H__
 
 #include <vector>
-#include <boost/function.hpp>
-#include <boost/tuple/tuple.hpp>
 #include <osgWidget/Widget>
 #include <osgWidget/WindowManager>
 #include <osgGA/GUIEventHandler>
@@ -22,6 +20,39 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
+//! Item ktÛry moøna umieúciÊ na p≥aszczyünie.
+class MultiViewItem : public osg::Referenced
+{
+public:
+    //! \return Etykieta skojarzona z itemem.
+    virtual const std::string& getName() const = 0;
+
+    //! \param x Koordynat x na p≥aszczyünie.
+    //! \param y Koordynat y na p≥aszczyünie.
+    //! \param w SzerokoúÊ na p≥aszczyünie.
+    //! \param h WysokoúÊ na p≥aszczyünie.
+    virtual void setLocation(osgWidget::point_type x, osgWidget::point_type y,
+        osgWidget::point_type w, osgWidget::point_type h) = 0;
+    //! \param position Pozycja na p≥aszcznie.
+    //! \param size Rozmiar na p≥aszczyünie.
+    void setLocation(osgWidget::XYCoord position, osgWidget::XYCoord size)
+    {
+        setLocation(position.x(), position.y(), size.x(), size.y());
+    }
+    //! \param location Wymiary na p≥aszczyünie.
+    void setLocation(osgWidget::Quad location)
+    {
+        setLocation(location.x(), location.y(), location.z(), location.w());
+    }
+
+    //! \return WspÛ≥czynnik proporcji.
+    virtual osgWidget::point_type getAspectRatio() = 0;
+
+    //! \param visible Czy item jest widoczny?
+    virtual void setVisible(bool visible) = 0;
+};
+
+//! Multiwidok.
 class MultiView : public osgWidget::WindowManager
 {
 public:
@@ -53,37 +84,8 @@ public:
         virtual osgWidget::point_type getMargin(osgWidget::Widget* widget) { return 0; }
     };
 
-    //! Item ktÛry moøna umieúciÊ na p≥aszczyünie.
-    class Item : public osg::Referenced
-    {
-    public:
-        //! \return Etykieta skojarzona z itemem.
-        virtual const std::string& getName() const = 0;
-
-        //! \param x Koordynat x na p≥aszczyünie.
-        //! \param y Koordynat y na p≥aszczyünie.
-        //! \param w SzerokoúÊ na p≥aszczyünie.
-        //! \param h WysokoúÊ na p≥aszczyünie.
-        virtual void setLocation(osgWidget::point_type x, osgWidget::point_type y,
-            osgWidget::point_type w, osgWidget::point_type h) = 0;
-        //! \param position Pozycja na p≥aszcznie.
-        //! \param size Rozmiar na p≥aszczyünie.
-        void setLocation(osgWidget::XYCoord position, osgWidget::XYCoord size)
-        {
-            setLocation(position.x(), position.y(), size.x(), size.y());
-        }
-        //! \param location Wymiary na p≥aszczyünie.
-        void setLocation(osgWidget::Quad location)
-        {
-            setLocation(location.x(), location.y(), location.z(), location.w());
-        }
-
-        //! \return WspÛ≥czynnik proporcji.
-        virtual osgWidget::point_type getAspectRatio() = 0;
-
-        //! \param visible Czy item jest widoczny?
-        virtual void setVisible(bool visible) = 0;
-    };
+    //!
+    typedef MultiViewItem Item;
 
 private:
     //! Wskaünik na item.

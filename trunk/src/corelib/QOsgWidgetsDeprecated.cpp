@@ -150,6 +150,11 @@ osgGA::GUIEventAdapter::KeySymbol QOsgDeprecatedWidget::translateKey( QKeyEvent*
     }
 }
 
+QOsgDeprecatedWidget::~QOsgDeprecatedWidget()
+{
+
+}
+
 
 /*
 int mainQOSGWidget(QApplication& a, osg::ArgumentParser& arguments)
@@ -255,6 +260,11 @@ void QOsgDeprecatedViewer::paintGL()
 void QOsgDeprecatedViewer::hideEvent( QHideEvent * event )
 {
     QWidget::hideEvent(event);
+}
+
+QOsgDeprecatedViewer::~QOsgDeprecatedViewer()
+{
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////

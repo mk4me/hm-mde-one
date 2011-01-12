@@ -49,6 +49,8 @@
 
 #include "ComputeThread.h"
 
+#include <core/Log.h>
+
 const QString ToolboxMain::configName = QString("Toolbox_config.ini");
 const QString ToolboxMain::organizationName = QString("PJWSTK");
 const QString ToolboxMain::applicationName = QString("EDR");
@@ -90,7 +92,7 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     initializeUI();
 
 
-    ReadSettings();
+    readSettings(QSettings(QSettings::IniFormat, QSettings::UserScope, organizationName, applicationName), true);
 
 
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
@@ -145,13 +147,14 @@ void ToolboxMain::LoadConfiguration()
     config->loadConfiguration( std::string(path.toUtf8()) ); /**/
 }
 
-void ToolboxMain::ReadSettings()
+void ToolboxMain::readSettings( const QSettings& settings, bool readGeometry )
 {
-    QSettings settings(QSettings::IniFormat,
-        QSettings::UserScope, organizationName, applicationName);
-
-    restoreGeometry(settings.value("Geometry").toByteArray());
-    restoreState(settings.value("WindowState").toByteArray());
+    if ( settings.contains("WindowState") ) {
+        restoreState(settings.value("WindowState").toByteArray());
+    }
+    if ( readGeometry && settings.contains("Geometry") ) {
+        restoreGeometry(settings.value("Geometry").toByteArray());
+    }
 }
 
 void ToolboxMain::WriteSettings()
@@ -365,12 +368,12 @@ void ToolboxMain::onWireframe()
 }
 
 
-QDockWidget* ToolboxMain::embeddWidget( QWidget* widget, QString& name, QString& style, Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/ )
+QDockWidget* ToolboxMain::embeddWidget( QWidget* widget, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/ )
 {
     // dodajemy widget dokowalny
     QDockWidget* dock = new QDockWidget( name, this, Qt::WindowTitleHint);        
     dock->setAllowedAreas(area);
-    dock->setObjectName(name + widget->objectName() + "WIDGET" );
+    dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
     dock->setStyleSheet(style);
     dock->setWidget(widget);
     QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
@@ -425,6 +428,7 @@ void ToolboxMain::initializeUI()
                 controlWidget, 
                 QString::fromStdString(service->getName()), 
                 style,
+                "Control",
                 Qt::BottomDockWidgetArea));
         }
         if ( settingsWidget ) {
@@ -432,6 +436,7 @@ void ToolboxMain::initializeUI()
                 settingsWidget, 
                 QString::fromStdString(service->getName()), 
                 style,
+                "Settings",
                 Qt::LeftDockWidgetArea));
         }
 	}
@@ -660,6 +665,7 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
                 viewWidget, 
                 QString::fromStdString(service->getName()), 
                 style,
+                "",
                 Qt::RightDockWidgetArea)
             );
         }
@@ -783,6 +789,75 @@ void ToolboxMain::onDockWidgetVisiblityChanged( bool visible )
         }
     }
 
+}
+
+void ToolboxMain::onSaveLayout()
+{
+    // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
+    QString dir = QDir::currentPath().append("/data/layouts");
+    if ( QDir(dir).exists() || QDir().mkdir(dir) ) {        
+        const QString fileName = QFileDialog::getSaveFileName(this, 0, dir, "*.layout");
+        if ( !fileName.isEmpty() ) {
+            QSettings settings(fileName, QSettings::IniFormat);
+            settings.setValue("Geometry", saveGeometry());
+            settings.setValue("WindowState", saveState());
+        }
+    } else {
+        LOG_ERROR<<"Could not create directory: "<<dir.toStdString()<<std::endl;
+    }
+}
+
+void ToolboxMain::openLayout( const QString& path )
+{
+    readSettings(QSettings(path, QSettings::IniFormat), false);
+}
+
+void ToolboxMain::onOpenLayout()
+{
+    // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
+    QString dir = QDir::currentPath().append("/data/layouts");        
+    const QString fileName = QFileDialog::getOpenFileName(this, 0, dir, "*.layout");
+    if ( !fileName.isEmpty() ) {
+        openLayout(fileName);
+    }
+}
+
+void ToolboxMain::onShowSavedLayouts()
+{
+    // usuniêcie starych akcji
+    ui->menuLoad_layout->clear();
+    ui->menuLoad_layout->addAction(ui->actionLayout_open);
+
+    // layouty wbudowane
+    addLayoutsToMenu(QDir(QDir::currentPath().append("/data/resources/layouts")));
+    // layouty zdefiniowane przez u¿ytkownika
+    addLayoutsToMenu(QDir(QDir::currentPath().append("/data/layouts")));
+}
+
+
+
+void ToolboxMain::onLayoutTriggered()
+{
+    if ( QAction* action = qobject_cast<QAction*>(QObject::sender()) ) {
+        openLayout( action->data().toString() );
+    }
+}
+
+void ToolboxMain::addLayoutsToMenu( QDir &dir )
+{
+    if ( dir.exists() ) {     
+        QStringList files = dir.entryList( QStringList("*.layout"), QDir::Files | QDir::Readable );
+        if ( files.size() ) {
+            ui->menuLoad_layout->addSeparator();
+            Q_FOREACH(const QString& file, files) {
+                QAction* action = new QAction(ui->menuLoad_layout);
+                action->setText(file);
+                action->setData(QVariant(dir.absoluteFilePath(file)));
+                ui->menuLoad_layout->addAction(action);
+                QObject::connect(action, SIGNAL(triggered()), this, SLOT(onLayoutTriggered()));
+            }
+        }
+    }
 }
 
 // void ToolboxMain::SettingModel()

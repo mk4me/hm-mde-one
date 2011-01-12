@@ -23,7 +23,7 @@ namespace core {
 /**
  *	Item s³u¿¹cy do podgl¹du kamery. 
  */
-class MultiViewCameraItem : public core::MultiView::Item
+class MultiViewCameraItem : public core::MultiViewItem
 {
 private:
     //! Kamera.

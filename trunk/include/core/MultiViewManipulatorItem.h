@@ -20,7 +20,7 @@ namespace core {
 
 //! Item powinien byæ u¿ywany wy³¹cznie jako preview. Jego dzia³anie polega
 //! na kontrolowaniu manipulatorów kamer.
-class MultiViewManipulatorItem : public core::MultiView::Item
+class MultiViewManipulatorItem : public core::MultiViewItem
 {
 private:
     //! Kamera z miniaturka.

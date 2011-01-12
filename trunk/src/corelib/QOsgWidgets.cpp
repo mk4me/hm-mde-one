@@ -78,6 +78,10 @@ osg::ref_ptr<osg::GraphicsContext::Traits> QOsgContextWidget::createTraits()
     return traits;
 }
 
+QOsgContextWidget::~QOsgContextWidget()
+{
+
+}
 
 QOsgView::QOsgView( QWidget * parent /*= 0*/, const char * name /*= 0*/, const QGLWidget * shareWidget /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
 QOsgContextWidget(parent, name, shareWidget, f)
@@ -173,6 +177,10 @@ void QOsgViewer::setRenderingEnabled( bool renderingEnabled )
     }
 }
 
+QOsgViewer::~QOsgViewer()
+{
+    setCamera(NULL);
+}   
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////

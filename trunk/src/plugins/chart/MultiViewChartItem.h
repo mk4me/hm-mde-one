@@ -19,7 +19,7 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-class MultiViewChartItem : public MultiView::Item
+class MultiViewChartItem : public MultiViewItem
 {
 private:
 	std::string name;

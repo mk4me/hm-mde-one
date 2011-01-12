@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>881</width>
+    <width>455</width>
     <height>689</height>
    </rect>
   </property>
@@ -60,7 +60,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>881</width>
+     <width>455</width>
      <height>21</height>
     </rect>
    </property>
@@ -106,8 +106,14 @@
     <property name="title">
      <string>Window</string>
     </property>
-    <addaction name="actionTabbedView"/>
-    <addaction name="actionDockableView"/>
+    <widget class="QMenu" name="menuLoad_layout">
+     <property name="title">
+      <string>Load layout</string>
+     </property>
+     <addaction name="actionLayout_open"/>
+    </widget>
+    <addaction name="actionSave_layout"/>
+    <addaction name="menuLoad_layout"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
@@ -238,6 +244,16 @@
    </property>
    <property name="toolTip">
     <string>Switch to dock view</string>
+   </property>
+  </action>
+  <action name="actionSave_layout">
+   <property name="text">
+    <string>Save layout</string>
+   </property>
+  </action>
+  <action name="actionLayout_open">
+   <property name="text">
+    <string>Open...</string>
    </property>
   </action>
  </widget>
@@ -372,6 +388,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSave_layout</sender>
+   <signal>triggered()</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onSaveLayout()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>369</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLayout_open</sender>
+   <signal>triggered()</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onOpenLayout()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuLoad_layout</sender>
+   <signal>aboutToShow()</signal>
+   <receiver>ToolboxMain</receiver>
+   <slot>onShowSavedLayouts()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>67</x>
+     <y>35</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onOpen()</slot>
@@ -382,5 +446,8 @@
   <slot>onPageChanged(int)</slot>
   <slot>onTabbedViewSelected(bool)</slot>
   <slot>onDockableViewSelected(bool)</slot>
+  <slot>onSaveLayout()</slot>
+  <slot>onShowSavedLayouts()</slot>
+  <slot>onOpenLayout()</slot>
  </slots>
 </ui>
