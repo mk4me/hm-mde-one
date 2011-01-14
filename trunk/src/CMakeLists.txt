@@ -74,13 +74,14 @@ find_package(TinyXML)
 find_package(Dae2ERD)
 find_package(cURL)
 find_package(wsdlpull)
+#find_package(Prerequi)
 
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)
 set(OPENGL_LIBRARIES_PROXY ${OPENGL_LIBRARIES})
 set(OPENGL_LIBRARIES OPENGL_LIBRARIES_PROXY)
 
-#find_package(Prerequisites)
+find_package(Prerequisites)
 if (EDR_ENABLE_TESTS)
 	find_package(CppUnit)
 endif()

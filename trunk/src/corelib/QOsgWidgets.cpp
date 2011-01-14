@@ -7,26 +7,32 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-
-
-QOsgContextWidget::QOsgContextWidget(QWidget * parent /*= 0*/, const char * name /*= 0*/, const QGLWidget * shareWidget /*= 0*/, Qt::WindowFlags f /*= 0*/) :
-osgQt::GraphWidget( QGLFormat::defaultFormat(), parent, shareWidget, f )
+QOsgContextWidget::QOsgContextWidget( QWidget * parent, const osg::GraphicsContext::Traits* traits /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
+osgQt::GraphWidget( translateFormat( traits ? *traits : osg::GraphicsContext::Traits(osg::DisplaySettings::instance()) ), parent, NULL, f )
 {
-    this->setWindowTitle(name);
+    osg::GraphicsContext::Traits* t = new osg::GraphicsContext::Traits;
+    *t = traits ? *traits : osg::GraphicsContext::Traits(osg::DisplaySettings::instance());
+
+    // korekcja rozmiaru
+    if ( t->width == 0 && t->height == 0 ) {
+        t->width = width();
+        t->height = height();
+    }
+    UTILS_ASSERT(t->inheritedWindowData == NULL);
+    t->inheritedWindowData = new osgQt::GraphicsWindowQt::WindowData( this );
+
+    // wygl¹da dziwnie, ale w kontruktorze ustawiana jest zmienna _gw
+    osgQt::GraphicsWindowQt* temp = new osgQt::GraphicsWindowQt(t);
+    UTILS_ASSERT(temp == _gw);
 }
 
-//! 
-osg::ref_ptr<osg::Camera> QOsgContextWidget::createCamera()
+QOsgContextWidget::~QOsgContextWidget()
 {
-    osg::ref_ptr<osg::GraphicsContext::Traits> traits = createTraits();
-    osg::ref_ptr<osg::Camera> camera = createCamera(traits);
-    return camera;
 }
 
-//! Tworzy kamerê dla zadanego okna.
-osg::ref_ptr<osg::Camera> QOsgContextWidget::createCamera( osg::GraphicsContext::Traits* traits )
+QGLFormat QOsgContextWidget::translateFormat( const osg::GraphicsContext::Traits& traits )
 {
-    osg::GraphicsContext::Traits* _traits = traits;
+    const osg::GraphicsContext::Traits* _traits = &traits;
     // kod zaczerpniety z osgQt/GraphicsWindowQt.cpp
     QGLFormat format( QGLFormat::defaultFormat() );
     format.setAlphaBufferSize( _traits->alpha );
@@ -42,56 +48,26 @@ osg::ref_ptr<osg::Camera> QOsgContextWidget::createCamera( osg::GraphicsContext:
     format.setStencil( _traits->stencil>0 );
     format.setDoubleBuffer( _traits->doubleBuffer );
     format.setSwapInterval( _traits->vsync ? 1 : 0 );
-    // ustawienie formatu
-    setFormat(format);
-
-    std::string name = windowTitle().toStdString();
-    // kod zaczerpniêty z osgViewerQtContext.cpp
-    osg::ref_ptr<osg::Camera> camera = new osg::Camera();
-    // to tutaj dzieje siê magia!
-    camera->setGraphicsContext( new osgQt::GraphicsWindowQt(traits) );
-    camera->setName(name);
-    camera->setClearColor( osg::Vec4(0.2, 0.2, 0.6, 1.0) );
-    camera->setViewport( new osg::Viewport(0, 0, traits->width, traits->height) );
-    camera->setProjectionMatrixAsPerspective(
-        45.0f, static_cast<double>(traits->width)/static_cast<double>(traits->height), 1.0f, 10000.0f );
-    return camera;
+    return format;
 }
 
-//! Tworzy cechy kontekstu na podstawie bie¿¹cego okna.
-osg::ref_ptr<osg::GraphicsContext::Traits> QOsgContextWidget::createTraits()
-{
-    osg::DisplaySettings* ds = osg::DisplaySettings::instance().get();
-    osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
-    traits->windowName = windowTitle().toStdString();
-    traits->windowDecoration = false;
-    traits->x = x();
-    traits->y = y();
-    traits->width = width();
-    traits->height = height();
-    traits->doubleBuffer = true;
-    traits->alpha = ds->getMinimumNumAlphaBits();
-    traits->stencil = ds->getMinimumNumStencilBits();
-    traits->sampleBuffers = ds->getMultiSamples();
-    traits->samples = ds->getNumMultiSamples();
-    traits->inheritedWindowData = new osgQt::GraphicsWindowQt::WindowData( this );
-    return traits;
-}
 
-QOsgContextWidget::~QOsgContextWidget()
-{
-
-}
-
-QOsgView::QOsgView( QWidget * parent /*= 0*/, const char * name /*= 0*/, const QGLWidget * shareWidget /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
-QOsgContextWidget(parent, name, shareWidget, f)
+QOsgView::QOsgView( QWidget * parent /*= 0*/, const osg::GraphicsContext::Traits* traits /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
+QOsgContextWidget(parent, traits, f)
 {
     init();
 }
 
 void QOsgView::init()
 {
-    setCamera( createCamera() );
+    int width = getGraphicsWindow()->getTraits()->width;
+    int height = getGraphicsWindow()->getTraits()->height;
+
+    _camera->setGraphicsContext( getGraphicsWindow() );
+    _camera->setClearColor( osg::Vec4(0.2, 0.2, 0.6, 1.0) );
+    _camera->setViewport( new osg::Viewport(0, 0, width, height) );
+    _camera->setProjectionMatrixAsPerspective(45.0f, static_cast<double>(width)/height, 1.0f, 10000.0f );
+
 }
 
 //! \param camera
@@ -121,16 +97,24 @@ void QOsgView::setRenderingEnabled( bool renderingEnabled )
     }
 }
 
-QOsgViewer::QOsgViewer( QWidget * parent /*= 0*/, const char * name /*= 0*/, const QGLWidget * shareWidget /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
-QOsgContextWidget(parent, name, shareWidget, f), skipFramesIfInvisible(true)
+QOsgViewer::QOsgViewer( QWidget * parent /*= 0*/, const osg::GraphicsContext::Traits* traits /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
+QOsgContextWidget(parent, traits, f), skipFramesIfInvisible(true)
 {
-    setThreadingModel(osgViewer::Viewer::SingleThreaded);
     init();
 }
 
 void QOsgViewer::init()
 {
-    setCamera( createCamera() );
+    setThreadingModel(osgViewer::Viewer::SingleThreaded);
+
+    int width = getGraphicsWindow()->getTraits()->width;
+    int height = getGraphicsWindow()->getTraits()->height;
+
+    _camera->setGraphicsContext( getGraphicsWindow() );
+    _camera->setClearColor( osg::Vec4(0.2, 0.2, 0.6, 1.0) );
+    _camera->setViewport( new osg::Viewport(0, 0, width, height) );
+    _camera->setProjectionMatrixAsPerspective(45.0f, static_cast<double>(width)/height, 1.0f, 10000.0f );
+
     frameTimer.setInterval(defaultInterval);
     connect(&frameTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
     frameTimer.start();
@@ -179,7 +163,6 @@ void QOsgViewer::setRenderingEnabled( bool renderingEnabled )
 
 QOsgViewer::~QOsgViewer()
 {
-    setCamera(NULL);
 }   
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

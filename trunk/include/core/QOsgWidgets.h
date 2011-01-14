@@ -20,11 +20,15 @@ namespace core {
 class QOsgContextWidget : public osgQt::GraphWidget
 {
 public:
+    //! T³umaczy format osg do formatu qt
+    static QGLFormat translateFormat(const osg::GraphicsContext::Traits& traits);
+
+public:
     //! \param parent
     //! \param name
     //! \param shareWidget
     //! \param f
-    QOsgContextWidget(QWidget * parent = 0, const char * name = 0, const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0);
+    QOsgContextWidget(QWidget * parent, const osg::GraphicsContext::Traits* traits = 0, Qt::WindowFlags f = 0);
     //!
     virtual ~QOsgContextWidget();
 
@@ -38,14 +42,6 @@ public:
     {
         return _gw;
     }
-
-public:
-    //! Tworzy kamerê dla zadanego okna.
-    osg::ref_ptr<osg::Camera> createCamera();
-    //! Tworzy kamerê dla zadanego okna.
-    osg::ref_ptr<osg::Camera> createCamera( osg::GraphicsContext::Traits* traits );
-    //! Tworzy cechy kontekstu na podstawie bie¿¹cego okna.
-    osg::ref_ptr<osg::GraphicsContext::Traits> createTraits();
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +53,7 @@ public:
     //! \param name
     //! \param shareWidget
     //! \param f
-    QOsgView(QWidget * parent = 0, const char * name = 0, const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0);
+    QOsgView(QWidget * parent = 0, const osg::GraphicsContext::Traits* traits = 0, Qt::WindowFlags f = 0);
 
 public:
 
@@ -100,7 +96,7 @@ public:
     //! \param name
     //! \param shareWidget
     //! \param f
-    QOsgViewer(QWidget * parent = 0, const char * name = 0, const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0);
+    QOsgViewer(QWidget * parent = 0, const osg::GraphicsContext::Traits* traits = 0, Qt::WindowFlags f = 0);
 
     virtual ~QOsgViewer();
 
@@ -166,7 +162,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef QOsgDeprecatedViewer QOsgDefaultWidget;
+typedef QOsgViewer QOsgDefaultWidget;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core
