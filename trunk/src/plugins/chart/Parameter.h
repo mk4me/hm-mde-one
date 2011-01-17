@@ -29,7 +29,7 @@ public:
 	std::string getDescription();
 	char getDataType();
 
-	std::string* getDataAsStringsArray();
+	std::string getDataAsStringsArray(int i);
 	float* getDataAsFloatArray();
 	std::vector<short> getDimensions();
 	float* getData();

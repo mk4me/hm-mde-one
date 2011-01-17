@@ -120,8 +120,8 @@ return name;
 void ChartData::setScale(float scale){
 	this->scale=scale;
 }
-void ChartData::setOffset(float scale){
-	this->scale=scale;
+void ChartData::setOffset(float offset){
+	this->offset=offset;
 }
 void ChartData::setDescription(std::string description){
 	this->description=description;
