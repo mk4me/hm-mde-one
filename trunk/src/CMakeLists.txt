@@ -51,6 +51,7 @@ endif()
 option(EDR_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
 # Opcje konfiguracji
 CONFIG_OPTION(VM_ENABLE_EXCEPTIONS "Enable exeptions?" ON)
+CONFIG_OPTION(CORELIB_ENABLE_LOGGING "Enable logging?" ON)
 
 set(SOURCEGROUP_PRIVATE_HEADERS "Header files" CACHE STRING "Filter for private headers.")
 set(SOURCEGROUP_SOURCES "Source files" CACHE STRING "Filter for sources.")
@@ -74,6 +75,7 @@ find_package(TinyXML)
 find_package(Dae2ERD)
 find_package(cURL)
 find_package(wsdlpull)
+find_package(log4cxx)
 #find_package(Prerequi)
 
 # Biblioteczne wyszukanie OGL;
@@ -138,7 +140,11 @@ endif()
 #ADD_PROJECT(main "")
 
 ADD_PROJECT(utils "BOOST")
-ADD_PROJECT(corelib "utils;OSG;QT;TINYXML;STDINT")
+if (CONFIG_CORELIB_ENABLE_LOGGING)
+	ADD_PROJECT(corelib "LOG4CXX;utils;OSG;QT;TINYXML;STDINT")
+else()
+	ADD_PROJECT(corelib "utils;OSG;QT;TINYXML;STDINT")
+endif()
 ADD_PROJECT(core "utils;OSG;QT;TINYXML;corelib;DAE2ERD;OPENGL")
 ADD_PROJECTS(plugins)
 

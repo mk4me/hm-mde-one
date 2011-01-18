@@ -46,8 +46,8 @@ void ComputeThread::run()
             }
         } 
     } catch (const std::exception & error) {
-        LOG_ERROR<< "ComputeThread::run : " << error.what() << std::endl;
+        LOG_ERROR("ComputeThread::run : " << error.what());
     } catch (...) {
-        LOG_ERROR<< "ComputeThread::run : unhandled exception" << std::endl;
+        LOG_ERROR("ComputeThread::run : unhandled exception");
     }
 }

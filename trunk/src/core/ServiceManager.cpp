@@ -70,7 +70,7 @@ void ServiceManager::loadDataPass(IDataManager* dataManager)
         try {
             it->second->loadData(this, dataManager); 
         } catch (std::runtime_error& ex) {
-            LOG_ERROR << it->second->getName() << ": " << ex.what() << std::endl;
+            LOG_ERROR(it->second->getName() << ": " << ex.what());
         }
         it++;
     }

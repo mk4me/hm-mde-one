@@ -39,9 +39,19 @@ set(PUBLIC_H
 	${HEADER_PATH}/QOsgWidgets.h
 	${HEADER_PATH}/QOsgWidgetsDeprecated.h
 	${HEADER_PATH}/DisableableRenderer.h
+	${HEADER_PATH}/Log.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
+
+#------------------------------------------------------------------------------
+# konfiguracja
+
+# Kopiujemy konfiguracja
+# Uwaga: normalnie powinno byæ bez /../core !!!
+configure_file( "Config.h.in" "${PROJECT_BINARY_DIR}/../core/Config.h" )
+set(TARGET_H ${TARGET_H} "${PROJECT_BINARY_DIR}/../core/Config.h")
+source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/../core/Config.h")
 
 #------------------------------------------------------------------------------
 

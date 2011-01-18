@@ -15,22 +15,6 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-template <class T>
-class Push
-{
-private:
-    T& ref;
-    T value;
-
-public:
-    Push(T& ref) : ref(ref), value(ref)
-    {}
-    ~Push()
-    {
-        ref = value;
-    }
-};
-
 /**
  *	Typ powiadamiaj¹cy MultiView o tym, ¿e nast¹pi³ resize (nie da siê prze³adowaæ,
  *  bo nie ma wirtualnych metod :()

@@ -51,6 +51,33 @@
 
 #include <core/Log.h>
 
+/**
+ *	U¿ytkowa klasa, u¿ywana tam, gdzie mêcz¹ca jest zmiana wartoœci jakiejœ zmiennej
+ *  a nastêpnie rêczne jej przywracanie; jest to uci¹¿liwe zw³aszcza gdy funkcja ma
+ *  wiele punktów wyjœcia.
+ */
+template <class T>
+class Push
+{
+private:
+    //! Poprzednia wartoœæ.
+    T oldValue;
+    //! Zmienna.
+    T& variable;
+public:
+    //! \param variable
+    //! \param newValue
+    Push(T& variable, const T& newValue) : oldValue(variable), variable(variable)
+    {
+        variable = newValue;
+    }
+    //! 
+    ~Push()
+    {
+        variable = oldValue;
+    }
+};
+
 const QString ToolboxMain::configName = QString("Toolbox_config.ini");
 const QString ToolboxMain::organizationName = QString("PJWSTK");
 const QString ToolboxMain::applicationName = QString("EDR");
@@ -58,7 +85,8 @@ const QString ToolboxMain::applicationName = QString("EDR");
 ToolboxMain::ToolboxMain(QWidget *parent)
 :   QMainWindow(parent),
     ui(new Ui::ToolboxMain),
-    removeOnClick(false)
+    removeOnClick(false),
+    updateEnabled(true)
 {
     setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 
@@ -299,7 +327,9 @@ void ToolboxMain::updateServices()
 	{
 		loadData();
 	}
-    m_pServiceManager->updatePass();
+    if ( updateEnabled ) {
+        m_pServiceManager->updatePass();
+    }
 }
 
 void ToolboxMain::registerCoreServices()
@@ -334,7 +364,8 @@ void ToolboxMain::registerPluginsServices()
 
 void ToolboxMain::onOpen()
 {
-	const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/data/trials"));
+    Push<bool> pushed(updateEnabled, false);
+    const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/data/trials"));
     if (!fileName.isEmpty()) 
     {
         std::string pathVal = fileName.toStdString();
@@ -401,6 +432,7 @@ void ToolboxMain::initializeUI()
     //centralWidget()->widget
 
     setDockOptions( AllowNestedDocks | AllowTabbedDocks );
+    setDocumentMode(true);
     //setCentralWidget(NULL);
 
     // pozosta³e widgety "p³ywaj¹ce"
@@ -803,7 +835,7 @@ void ToolboxMain::onSaveLayout()
             settings.setValue("WindowState", saveState());
         }
     } else {
-        LOG_ERROR<<"Could not create directory: "<<dir.toStdString()<<std::endl;
+        LOG_ERROR("Could not create directory: "<<dir.toStdString());
     }
 }
 
@@ -816,6 +848,7 @@ void ToolboxMain::onOpenLayout()
 {
     // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
     QString dir = QDir::currentPath().append("/data/layouts");        
+    Push<bool> pushed(updateEnabled, false);
     const QString fileName = QFileDialog::getOpenFileName(this, 0, dir, "*.layout");
     if ( !fileName.isEmpty() ) {
         openLayout(fileName);

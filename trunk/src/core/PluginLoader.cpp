@@ -62,8 +62,8 @@ void PluginLoader::addDefaultPaths()
     } 
     else 
     {
-        LOG_ERROR << "Could not get application directory "
-            "using Win32 API. It will not be searched." << std::endl;
+        LOG_ERROR("Could not get application directory "
+            "using Win32 API. It will not be searched.");
     }
 
     // katalog plugins
@@ -75,8 +75,8 @@ void PluginLoader::addDefaultPaths()
     } 
     else 
     {
-        LOG_ERROR << "Could not get application directory -- plugins folder"
-            "using Win32 API. It will not be searched." << std::endl;
+        LOG_ERROR("Could not get application directory -- plugins folder"
+            "using Win32 API. It will not be searched.");
     }
 #elif defined(__UNIX__)
     // katalog uruchomieniowy
@@ -122,7 +122,7 @@ void PluginLoader::load()
         struct dirent *dirp;
         if( (dp  = opendir(itr->c_str())) == NULL) 
         {
-            LOG_ERROR << "Error(" << errno << ") opening " << (*itr) << std::endl;
+            LOG_ERROR("Error(" << errno << ") opening " << (*itr));
             continue;;
         }
 
@@ -210,26 +210,26 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
     } 
     catch ( std::exception& ex ) 
     {
-        LOG_ERROR<<"Error loading plugin "<<path<<": "<<ex.what()<<std::endl;
+        LOG_ERROR("Error loading plugin "<<path<<": "<<ex.what());
         return false;
     } 
     catch ( ... ) 
     {
-        LOG_ERROR<<"Error loading plugin "<<path<<": Unknown"<<std::endl;
+        LOG_ERROR("Error loading plugin "<<path<<": Unknown");
         return false;
     }
 
     // czy uda³o siê wczytaæ?
     if ( !plugin ) 
     {
-        LOG_ERROR<<"Error loading plugin "<<path<<": Plugin not created"<<std::endl;
+        LOG_ERROR("Error loading plugin "<<path<<": Plugin not created");
         return false;
     }
 
     plugin->setPath(path);
     plugins.push_back( PluginPtr(plugin) );
     libraries.push_back(library);
-    LOG_INFO << "Plugin loaded: " << plugin->getName() << std::endl;
+    LOG_INFO("Plugin loaded: " << plugin->getName());
     return true;
 }
 

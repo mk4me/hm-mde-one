@@ -157,6 +157,8 @@ private:
     //! Nazwa aplikacji.
     static const QString applicationName;
 
+    //!
+    bool updateEnabled;
     //! Timer wyznaczaj¹cy update'y.
     QTimer updateTimer;
     //! Korzeñ sceny.

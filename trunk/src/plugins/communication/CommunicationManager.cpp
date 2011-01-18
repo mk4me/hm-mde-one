@@ -91,7 +91,7 @@ void CommunicationManager::loadFromXml(const std::string& filename)
 	TiXmlDocument document(filename);
 	if(!document.LoadFile())
 	{
-		LOG_ERROR << ": !Blad wczytania pliku Communication\n";
+		LOG_ERROR(": !Blad wczytania pliku Communication\n");
 		return;
 	}
 	TiXmlHandle hDocument(&document);
@@ -101,7 +101,7 @@ void CommunicationManager::loadFromXml(const std::string& filename)
 	strial_element = hDocument.FirstChildElement().Element();
 	if(!strial_element)
 	{
-		LOG_ERROR << ": !Blad czytania z pliku Communication\n";
+		LOG_ERROR(": !Blad czytania z pliku Communication\n");
 		return;
 	}
 	hParent = TiXmlHandle(strial_element);
@@ -119,7 +119,7 @@ void CommunicationManager::loadFromXml(const std::string& filename)
 		}
 		catch(std::exception& e)
 		{
-			LOG_ERROR << e.what() << ": !Blad wczytania daty z pliku Communication\n";
+			LOG_ERROR(e.what() << ": !Blad wczytania daty z pliku Communication\n");
 		}
 	}
 	//wczytanie zrzutu danych pomiarowych z serwera

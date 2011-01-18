@@ -25,7 +25,7 @@ CommunicationService::CommunicationService() : name("Communication")
 	}
 	catch(std::runtime_error& e)
 	{
-		LOG_ERROR << e.what() << std::endl;
+		LOG_ERROR(e.what());
 	}
 	widget->refresh();
 }

@@ -9,7 +9,7 @@ namespace core {
 void Window::addMenuItem(const std::string& path, ItemPressedWeakPtr callback, bool checkable, bool initialState)
 {
     if ( !menuItems.insert(std::make_pair(path, callback)).second ) {
-        LOG_ERROR<<"Menu item " << path << " already exists.";
+        LOG_ERROR("Menu item " << path << " already exists.");
     } else {
         onAddMenuItem(path, checkable, initialState);
     }
@@ -21,11 +21,11 @@ void Window::removeMenuItem( const std::string& path )
     size_t erased = menuItems.erase(path);
     if ( erased != 0 ) {
         if ( erased > 1 ) {
-            LOG_ERROR<<"Erased multiple items " << path;
+            LOG_ERROR("Erased multiple items " << path);
         }
         onRemoveMenuItem(path);
     } else {
-        LOG_ERROR<<"Item " << path << " does not exist.";
+        LOG_ERROR("Item " << path << " does not exist.");
     }
 }
 
@@ -41,7 +41,7 @@ void Window::triggerMenuItem( const std::string& path, bool state )
             onRemoveMenuItem(path);
         }
     } else {
-        LOG_ERROR<<"Menu item " << path << " does not exist.";
+        LOG_ERROR("Menu item " << path << " does not exist.");
     }
 }
 

@@ -167,5 +167,5 @@ void DataManager::setActualTrial(const std::string& name)
 			return;
 		}
 	}
-	LOG_ERROR << ": !Blad ladowania proby pomiarowej, brak proby pomiarowej w zasobach\n";
+	LOG_ERROR(": !Blad ladowania proby pomiarowej, brak proby pomiarowej w zasobach\n");
 }

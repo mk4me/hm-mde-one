@@ -147,7 +147,7 @@ void VideoWidget::init( std::vector<std::string> &files )
                 stream->setTargetFormat(format);
             }
         } else {
-            LOG_ERROR<<"VideoService: "<<file<<" could not be read.";
+            LOG_ERROR("VideoService: "<<file<<" could not be read.");
         }
     }
    
@@ -330,11 +330,11 @@ void VideoWidget::loadShaders(const std::string& yuvTextureRect, const std::stri
 {
     yuvTexture2DShader = osg::Shader::readShaderFile(osg::Shader::FRAGMENT, yuvTexture2D);
     if (!yuvTexture2DShader) {
-        LOG_ERROR<<"Could not load shader: "<<yuvTextureRect<<std::endl;
+        LOG_ERROR("Could not load shader: "<<yuvTextureRect);
     }
     yuvTextureRectShader = osg::Shader::readShaderFile(osg::Shader::FRAGMENT, yuvTextureRect);
     if (!yuvTextureRectShader) {
-        LOG_ERROR<<"Could not load shader: "<<yuvTexture2D<<std::endl;
+        LOG_ERROR("Could not load shader: "<<yuvTexture2D);
     }
 }
 

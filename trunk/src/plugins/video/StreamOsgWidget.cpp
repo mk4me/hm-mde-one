@@ -74,13 +74,13 @@ void StreamOsgWidget::refreshShaders( bool useTextureRect, video::PixelFormat fo
             if (yuvTextureRectShader) {
                 yuvProgram->addShader(yuvTextureRectShader);
             } else {
-                LOG_ERROR << "Missing yuv texture_rect shader. As a result image may be incorrect.";        
+                LOG_ERROR("Missing yuv texture_rect shader. As a result image may be incorrect.");        
             }
         } else {
             if (yuvTexture2DShader) {
                 yuvProgram->addShader(yuvTexture2DShader);
             } else {
-                LOG_ERROR << "Missing yuv texture2D shader. As a result image may be incorrect.";
+                LOG_ERROR("Missing yuv texture2D shader. As a result image may be incorrect.");
             }
         }
         // TODO: sprawdziæ czy wielokrotnie nie dodajemy
@@ -91,7 +91,7 @@ void StreamOsgWidget::refreshShaders( bool useTextureRect, video::PixelFormat fo
             state->removeAttribute(yuvProgram);
         }
     } else {
-        LOG_ERROR<<"Nieobs³ugiwany format: "<<utils::Enum<video::PixelFormat>::getName(format)<<std::endl;
+        LOG_ERROR("Nieobs³ugiwany format: "<<utils::Enum<video::PixelFormat>::getName(format));
     }
 }
 
@@ -203,7 +203,7 @@ video::PixelFormat StreamOsgWidget::getPixelFormat() const
 //         stream->setTargetFormat(format);
 //         refreshShaders(true, format);
 //     } else {
-//         LOG_ERROR << "Couldn't set desired format.";
+//         LOG_ERROR("Couldn't set desired format.");
 //     }
 // }
 
