@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "ProcessorReader.h"
+#include <plugins/chart/ProcessorReader.h>
 
 /*
 

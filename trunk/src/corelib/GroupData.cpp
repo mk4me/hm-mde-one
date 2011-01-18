@@ -1,4 +1,4 @@
-#include "GroupData.h"
+#include <core/GroupData.h>
 
 	GroupData::GroupData() {
 
@@ -44,7 +44,11 @@
 		return this->parameters;
 
 	}
-
+std::map<std::string,Parameter*> GroupData::getParameterByName(){
+			
+					return this->parametersByName;
+			
+			}
 	////////////////////////////////////////////////////
 
 	void GroupData::setName(std::string name){
@@ -65,9 +69,10 @@
 
 	}
 
-	void GroupData::addParameter(Parameter* param){
+	void GroupData::addParameter(std::string name, Parameter* param){
 
 		this->parameters.push_back(param);
+		this->parametersByName[name] = param;
 
 	}
 

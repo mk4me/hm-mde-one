@@ -2,11 +2,11 @@
 #define _PARAMETERS_DEF_
 
 #include <iostream>
-#include "ProcessorReader.h"
-#include "Header.h"
+#include <plugins/chart/ProcessorReader.h>
+#include <plugins/chart/Header.h>
 #include <string>
 #include <map>
-#include "GroupData.h"
+#include <core/GroupData.h>
 
 /*
 

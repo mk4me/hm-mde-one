@@ -1,4 +1,4 @@
-#include "Parameters.h"
+#include <core/Parameters.h>
 
 Parameters::Parameters(ProcessorReader* proc) {
 
@@ -550,7 +550,7 @@ bool Parameters::parseParameters( short startData){
 				group = this->groups[-groupNumber];
 				if(group != NULL) {
 
-					this->groups[-groupNumber]->addParameter(param); // adding new param to its group
+					this->groups[-groupNumber]->addParameter(param->getName(),param); // adding new param to its group
 
 				}
 			

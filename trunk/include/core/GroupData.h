@@ -1,8 +1,8 @@
 #include <string>
 #include <iostream>
 #include <map>
-#include "Parameter.h"
-#include "ProcessorReader.h"
+#include <core/Parameter.h>
+#include <plugins/chart/ProcessorReader.h>
 
 /*
 

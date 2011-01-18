@@ -93,6 +93,7 @@ set(TARGET_SRC
 	QOsgWidgets.cpp
 	QOsgWidgetsDeprecated.cpp
 	DisableableRenderer.cpp
+	GroupData.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

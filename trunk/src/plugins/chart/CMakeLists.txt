@@ -17,8 +17,6 @@ set(PUBLIC_H
 		Header.h
 		INTELreader.h
 		MIPSreader.h
-		Parameter.h
-		Parameters.h
 		ProcessorReader.h
 		Data.h
 		DECreader.h
@@ -33,7 +31,6 @@ set(PRIVATE_H
 	ChartWidget.h
 	IChart.h
 	ChartDataSeries.h
-	GroupData.h
 	C3DChartData.h
 	MultiViewChartItem.h
 
@@ -53,12 +50,9 @@ set(TARGET_SRC
 	ChartDataSeries.cpp
 	Data.cpp
 	DECreader.cpp
-	GroupData.cpp
 	Header.cpp
 	INTELreader.cpp
 	MIPSreader.cpp
-	Parameter.cpp
-	Parameters.cpp
 	C3DChartData.cpp
 	MultiViewChartItem.cpp
 

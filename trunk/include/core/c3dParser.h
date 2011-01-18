@@ -1,5 +1,5 @@
 #include <plugins/chart/Header.h>
-#include <plugins/chart/Parameters.h>
+#include <core/Parameters.h>
 #include <plugins/chart/Data.h>
 #include <plugins/chart/ProcessorReader.h>
 #include <core/C3D_Data.h>

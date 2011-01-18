@@ -2,7 +2,7 @@
 #define _C3_DATA_DEF_
 
 #include <plugins/chart/Header.h>
-#include <plugins/chart/Parameters.h>
+#include <core/Parameters.h>
 #include <plugins/chart/Data.h>
 
 ///////////////////////////////////////////
