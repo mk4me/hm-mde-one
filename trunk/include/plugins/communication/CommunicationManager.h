@@ -33,6 +33,7 @@ namespace communication
 			DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
 			DownloadingTrial, /** Trwa pobieranie plików próby pomiarowej */
 			UpdatingServerTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
+			PingServer, /** Pingowanie serwera */
 			Error /** Wyst¹pi³ b³¹d */
 		};
 		/**
@@ -160,6 +161,15 @@ namespace communication
 		*/
 		const State& getState() const {return state;};
 		/**
+		Pingowanie serwera.
+		*/
+		void ping();
+		/**
+		Podaje informacjê czy serwer odpowiedzia³ na ostatni ping.
+		@return czy serwer odpowiedzia³?
+		*/
+		bool isServerResponse() const {return serverResponse;};
+		/**
 		Metoda run pochodzi z interfejsu OpenThreads::Thread i zosta³a przes³oniêta do przeniesienia operacji do osobnego w¹tku.
 		*/
 		virtual void run();
@@ -226,6 +236,18 @@ namespace communication
 		Który z kolei plik jest aktualnie pobierany
 		*/
 		int actualFile;
+		/**
+		Czy serwer odpowiada na ping
+		*/
+		bool serverResponse;
+		/**
+		Instancja curla do pingowania serwera.
+		*/
+		CURL* pingCurl;
+		/**
+		Informacja o stanie instancji curla.
+		*/
+		CURLcode pingCurlResult;
 		//IServiceManager* serviceManager;
 		/**
 		WskaŸnik na instancjê zajmuj¹c¹ siê obs³ug¹ zasobów lokalnych

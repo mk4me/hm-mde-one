@@ -32,10 +32,20 @@ CommunicationManager::CommunicationManager()
 	this->queryManager = NULL;
 	this->trialsDir = "data/trials/";
 	this->state = Ready;
+	pingCurl = curl_easy_init();
+	if(pingCurl)
+	{
+		curl_easy_setopt(pingCurl, CURLOPT_URL, "http://83.230.112.43/");
+		curl_easy_setopt(pingCurl, CURLOPT_CONNECTTIMEOUT, 1);
+	}
 }
 
 CommunicationManager::~CommunicationManager()
 {
+	if(pingCurl)
+	{
+		curl_easy_cleanup(pingCurl);
+	}
 	if(isRunning())
 	{
 		join();
@@ -185,7 +195,6 @@ int CommunicationManager::getProgress() const
 void CommunicationManager::listSessionContents()
 {
 	state = UpdatingServerTrials;
-	//run();
 	start();
 }
 
@@ -193,7 +202,6 @@ void CommunicationManager::downloadTrial(unsigned int trialID)
 {
 	state = DownloadingTrial;
 	entityID = trialID;
-	//run();
 	start();
 }
 
@@ -201,7 +209,12 @@ void CommunicationManager::downloadFile(unsigned int fileID)
 {
 	state = DownloadingFile;
 	entityID = fileID;
-	//run();
+	start();
+}
+
+void CommunicationManager::ping()
+{
+	state = PingServer;
 	start();
 }
 
@@ -221,7 +234,7 @@ void CommunicationManager::loadLocalTrials()
 
 void CommunicationManager::loadTrial(const std::string& name)
 {
-	dataManager->setActualTrial(name);
+	dataManager->setActualLocalTrial(name);
 }
 
 void CommunicationManager::run()
@@ -292,6 +305,27 @@ void CommunicationManager::run()
 				state = Error;
 				errorMessage = e.what();
 			}
+			break;
+		}
+	case PingServer:
+		{
+			if(pingCurl)
+			{
+				pingCurlResult = curl_easy_perform(pingCurl);
+				if(pingCurlResult)
+				{
+					serverResponse = false;
+				}
+				else
+				{
+					serverResponse = true;
+				}
+			}
+			else
+			{
+				serverResponse = false;
+			}
+			state = Ready;
 			break;
 		}
 	default:

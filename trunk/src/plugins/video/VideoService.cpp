@@ -65,9 +65,9 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 	VideoWidget* widget = reinterpret_cast<VideoWidget*>(this->widget);
 
 	std::vector<std::string> files;
-	if(dataManager->getActualTrial().isVideos())
+	if(dataManager->getActualLocalTrial().isVideos())
 	{
-		files = dataManager->getActualTrial().getVideosPaths();
+		files = dataManager->getActualLocalTrial().getVideosPaths();
 	}
 	//for(int i = 0; i < dataManager->getVideoFilePathCount(); i++)
 	//{

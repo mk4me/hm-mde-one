@@ -323,7 +323,7 @@ osg::ref_ptr<osg::Node> ToolboxMain::createGrid()
 
 void ToolboxMain::updateServices()
 {
-	if(dataManager->isLoadTrialData())
+	if(dataManager->isLoadLocalTrialData())
 	{
 		loadData();
 	}
@@ -608,20 +608,7 @@ void ToolboxMain::openFile( const std::string& path )
 	std::cout << "File Opened: " << path << std::endl;
 	std::cout << "---------------------------------------------------------------" << std::endl; 
 
-	std::string name;
-	
-	size_t position = path.rfind('/');
-	if(position == path.npos)
-	{
-		name = path;
-	}
-	else
-	{
-		name = path.substr(position+1);
-	}
-	std::cout << name << std::endl;
-	//wskazanie aktualnej proby pomiarowej przez nazwe
-	dataManager->setActualTrial(name);
+	dataManager->setActualLocalTrial(path);
 }
 
 void ToolboxMain::loadData()
@@ -634,8 +621,8 @@ void ToolboxMain::loadData()
 	// manage scene
 	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
 	osg::Node* sceneRoot = scene->getSceneData();
-	dataManager->setLoadTrialData(false);
-	this->setWindowTitle(tr("ToolboxMain - ").append(QString::fromStdString(dataManager->getActualTrial().getName())));
+	dataManager->setLoadLocalTrialData(false);
+	this->setWindowTitle(tr("ToolboxMain - ").append(QString::fromStdString(dataManager->getActualLocalTrial().getName())));
 }
 
 void ToolboxMain::onTabbedViewSelected(bool toggled)

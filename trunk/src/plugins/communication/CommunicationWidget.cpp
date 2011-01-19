@@ -17,8 +17,7 @@ CommunicationWidget::CommunicationWidget(CommunicationService* service) : QWidge
 
 	infoLabel = new QLabel("");
 	aviableTrialsLabel = new QLabel("Aviable trials:");
-	serverStateLabel = new QLabel("Online");
-	serverStateLabel->setStyleSheet("QLabel {font: bold; color : green;}");
+	serverStateLabel = new QLabel();
 	trials = new QListWidget(this);
 	progressBar = new QProgressBar(this);
 
@@ -51,6 +50,7 @@ void CommunicationWidget::update(const communication::CommunicationManager* subj
 
 	serverTrials = subject->getServerTrials();
 	localTrials = subject->getLocalTrials();
+	isOnline = subject->isServerResponse();
 
 	if(subject->isUpdated())
 	{
@@ -90,27 +90,37 @@ void CommunicationWidget::refreshUI()
 		item->setName(trial.getName());
 		item->setText(QString::fromStdString(trial.getName()));
 	}
-	//serwerowe proby pomiarowe, sprawdzamy czy sie nie powtarzaja z lokalnymi
-	bool isLocal;
-	BOOST_FOREACH(communication::Trial& trial, serverTrials)
+	//serwerowe proby pomiarowe, sprawdzamy czy serwer jest online i jesli tak to czy sie nie powtarzaja z lokalnymi
+	if(isOnline)
 	{
-		isLocal = false;
-		BOOST_FOREACH(LocalTrial& local, localTrials)
+		serverStateLabel->setText("Online");
+		serverStateLabel->setStyleSheet("QLabel {font: bold; color : green;}");
+		bool isLocal;
+		BOOST_FOREACH(communication::Trial& trial, serverTrials)
 		{
-			if(trial.trialDescription.compare(local.getName()) == 0)
+			isLocal = false;
+			BOOST_FOREACH(LocalTrial& local, localTrials)
 			{
-				isLocal = true;
-				break;
+				if(trial.trialDescription.compare(local.getName()) == 0)
+				{
+					isLocal = true;
+					break;
+				}
+			}
+			if(!isLocal)
+			{
+				EntityTrialItem* item = new EntityTrialItem();
+				trials->addItem(item);
+				item->setText(QString::fromStdString(trial.trialDescription));
+				item->setSession(trial.sessionID);
+				item->setID(trial.id);
 			}
 		}
-		if(!isLocal)
-		{
-			EntityTrialItem* item = new EntityTrialItem();
-			trials->addItem(item);
-			item->setText(QString::fromStdString(trial.trialDescription));
-			item->setSession(trial.sessionID);
-			item->setID(trial.id);
-		}
+	}
+	else
+	{
+		serverStateLabel->setText("Offline");
+		serverStateLabel->setStyleSheet("QLabel {font: bold; color : red;}");
 	}
 }
 
@@ -132,7 +142,14 @@ void CommunicationWidget::setBusy(bool busy)
 	else
 	{
 		trials->setDisabled(false);
-		updateButton->setDisabled(false);
+		if(isOnline)
+		{
+			updateButton->setDisabled(false);
+		}
+		else
+		{
+			updateButton->setDisabled(true);
+		}
 		progressBar->reset();
 		if(trials->item(trials->currentRow()))
 		{

@@ -15,9 +15,9 @@ public:
 	virtual const LocalTrial& getLocalTrial(int i) const = 0;
 	virtual int getLocalTrialsCount() const = 0;
 
-	virtual const LocalTrial& getActualTrial() const = 0;
-	virtual void setActualTrial(int i) = 0;
-	virtual void setActualTrial(const std::string& name) = 0;
+	virtual const LocalTrial& getActualLocalTrial() const = 0;
+	virtual void setActualLocalTrial(int i) = 0;
+	virtual void setActualLocalTrial(const std::string& name) = 0;
 
 	virtual void clear() = 0;
 
@@ -30,8 +30,8 @@ public:
     virtual const std::string& getApplicationSkinsFilePath(int i) = 0;
     virtual int getApplicationSkinsFilePathCount() = 0;
 
-	virtual bool isLoadTrialData() const = 0;
-	virtual void setLoadTrialData(bool load) = 0;
+	virtual bool isLoadLocalTrialData() const = 0;
+	virtual void setLoadLocalTrialData(bool load) = 0;
 
 	virtual const std::string& getResourcesPath() const = 0;
 	virtual const std::string& getTrialsPath() const = 0;

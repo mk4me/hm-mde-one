@@ -101,6 +101,11 @@ AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDat
 
 AsyncResult CommunicationService::update(double time, double timeDelta)
 {
+	if(static_cast<int>(time + 0.5f)%30 == 0 && model->getState() == communication::CommunicationManager::Ready)
+	{
+		std::cout << static_cast<int>(time + 0.5f) << " " << time << " " << model->getState() << std::endl;
+		ping();
+	}
 	switch(model->getState())
 	{
 	case communication::CommunicationManager::UpdatingServerTrials:
@@ -150,17 +155,13 @@ AsyncResult CommunicationService::init(IServiceManager* serviceManager, IDataMan
 {
 	//model->setServiceManager(serviceManager);
 	model->setDataManager(dataManager);
+	ping();
 	return AsyncResult_Complete;
 }
 
 void CommunicationService::loadTrial(const std::string& name)
 {
 	model->loadTrial(name);
-}
-
-bool CommunicationService::ping()
-{
-	return true;
 }
 
 void CommunicationService::cancelDownloading()

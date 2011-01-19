@@ -176,13 +176,13 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 	{
 		meshpath = dataManager->getMeshFilePath(0);
 	}
-	if(dataManager->getActualTrial().isSkeleton())
+	if(dataManager->getActualLocalTrial().isSkeleton())
 	{
-		skelpath = dataManager->getActualTrial().getSkeletonPath();
+		skelpath = dataManager->getActualLocalTrial().getSkeletonPath();
 	}
-	if(dataManager->getActualTrial().isC3d())
+	if(dataManager->getActualLocalTrial().isC3d())
 	{
-		c3dpath = dataManager->getActualTrial().getC3dPath();
+		c3dpath = dataManager->getActualLocalTrial().getC3dPath();
 	}
 	//if(dataManager->getSkeletonFilePathCount() > 0)
 	//{
@@ -193,7 +193,7 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
 	//	c3dpath = dataManager->getC3dFilePath(0);
 	//}
 
-    std::vector<std::string> animationPathList = dataManager->getActualTrial().getAnimationsPaths();//*dataManager->getAnimationPathList();
+    std::vector<std::string> animationPathList = dataManager->getActualLocalTrial().getAnimationsPaths();//*dataManager->getAnimationPathList();
 
     // uzyskanie obiekty klasy model i C3DModel poprzez fabryke modeli
 	m_pModel = m_pFactory->GetModel(meshpath, skelpath, animationPathList);
@@ -205,9 +205,9 @@ AsyncResult AnimationService::loadData(IServiceManager* serviceManager, IDataMan
     // za³adownie wszystkich modeli typu 3cd - poniewaz modele c3d same w sobie sa odrebnym modelem posiadajacym w³asna animacje
 	//for (int i = 0; i < dataManager->getC3dFilePathCount(); i++)
  //       LoadAnimation(m_pFactory->GetC3DModel(dataManager->getC3dFilePath(i)));
-	if(dataManager->getActualTrial().isC3d())
+	if(dataManager->getActualLocalTrial().isC3d())
 	{
-		LoadAnimation(m_pFactory->GetC3DModel(dataManager->getActualTrial().getC3dPath()));
+		LoadAnimation(m_pFactory->GetC3DModel(dataManager->getActualLocalTrial().getC3dPath()));
 	}
 
     widget->SetScene(m_pScene, serviceManager);

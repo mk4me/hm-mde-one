@@ -11,6 +11,7 @@ DataManager::DataManager(const std::string& resourcesPath, const std::string& tr
 	loadResources();
 	loadTrials();
 	loadTrialData = false;
+	loadUnknownTrialData = false;
 	actualTrialIndex = 0;
 }
 
@@ -29,7 +30,7 @@ void DataManager::loadResources()
 	ext.push_back(".frag");
 	ext.push_back(".vert");
 	shadersPaths = Filesystem::listFiles(this->resourcesPath, true, ext);
-	//szukaj tbs file
+	//TODO: szukaj fmesh file czy tbs? na razie daje fmesh...
 	meshesPaths = Filesystem::listFiles(this->resourcesPath, true, ".fmesh");
 	//szukaj styli qt
 	applicationSkinsPaths = Filesystem::listFiles(this->resourcesPath, true, ".qss");
@@ -38,47 +39,61 @@ void DataManager::loadResources()
 void DataManager::loadTrials()
 {
 	trials.clear();
-	//teraz przeszukujemy liste prob pomiarowych, nie plikow
+	//przeszukujemy liste prob pomiarowych, nie plikow
 	std::vector<std::string> tempPaths = Filesystem::listSubdirectories(trialsPath);
-	boost::cmatch matches;
-	boost::regex e("(.+)(\\d{4}-\\d{2}-\\d{2}.+)");
 	BOOST_FOREACH(std::string path, tempPaths)
 	{
-		//sprawdzamy, czy zgadza sie nazwa folderu
-		if(boost::regex_match(path.c_str(), matches, e))
+		try
 		{
-			//mamy triala, zapisujemy jego nazwe i sciezke do katalogu
-			LocalTrial t;
-			t.setTrialPath(path.c_str());
-			t.setName(matches[2]);
-			//przeszukujemy katalog w poszukiwaniu plikow:
-			//proba pomiarowa moze miec maksymalnie 1 plik c3d, amc, asf i 4 avi
-			std::vector<std::string> filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".c3d");
-			if(filesPath.size() > 0)
-			{
-				t.setC3dPath(filesPath[0]);
-			}
-			filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".amc");
-			if(filesPath.size() > 0)
-			{
-				t.setAnimationsPaths(filesPath);
-			}
-			filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".asf");
-			if(filesPath.size() > 0)
-			{
-				t.setSkeletonPath(filesPath[0]);
-			}
-			filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".avi");
-			if(filesPath.size() == 4)
-			{
-				t.setVideosPaths(filesPath);
-			}
+			LocalTrial t = loadLocalTrial(path);
 			trials.push_back(t);
 		}
+		catch(std::runtime_error& e) { }
 	}
 }
 
-void DataManager::clear() {
+LocalTrial DataManager::loadLocalTrial(const std::string& path)
+{
+	LocalTrial t;
+	boost::cmatch matches;
+	boost::regex e("(.+)(\\d{4}-\\d{2}-\\d{2}.+)");
+	//sprawdzamy, czy zgadza sie nazwa folderu
+	if(boost::regex_match(path.c_str(), matches, e))
+	{
+		t.setTrialPath(path.c_str());
+		t.setName(matches[2]);
+		//przeszukujemy katalog w poszukiwaniu plikow:
+		//proba pomiarowa moze miec maksymalnie 1 plik c3d, amc, asf i 4 avi
+		std::vector<std::string> filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".c3d");
+		if(filesPath.size() > 0)
+		{
+			t.setC3dPath(filesPath[0]);
+		}
+		filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".amc");
+		if(filesPath.size() > 0)
+		{
+			t.setAnimationsPaths(filesPath);
+		}
+		filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".asf");
+		if(filesPath.size() > 0)
+		{
+			t.setSkeletonPath(filesPath[0]);
+		}
+		filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".avi");
+		if(filesPath.size() == 4)
+		{
+			t.setVideosPaths(filesPath);
+		}
+	}
+	else
+	{
+		throw std::runtime_error("Invalid trial name.");
+	}
+	return t;
+}
+
+void DataManager::clear()
+{
 	this->shadersPaths.clear();
 	this->meshesPaths.clear();
 	this->applicationSkinsPaths.clear();
@@ -145,27 +160,43 @@ void DataManager::setTrialsPath(const std::string& trials)
 	trialsPath = trials;
 }
 
-const LocalTrial& DataManager::getActualTrial() const
+const LocalTrial& DataManager::getActualLocalTrial() const
 {
+	if(loadUnknownTrialData)
+	{
+		return unknownTrial;
+	}
 	return trials[actualTrialIndex];
 }
 
-void DataManager::setActualTrial(int i)
+void DataManager::setActualLocalTrial(int i)
 {
 	actualTrialIndex = i;
 	loadTrialData = true;
+	loadUnknownTrialData = false;
 
 }
-void DataManager::setActualTrial(const std::string& name)
+void DataManager::setActualLocalTrial(const std::string& name)
 {
-	for(size_t i = 0; i < trials.size(); i++)
+	//sprawdzamy nazwe
+	boost::cmatch matches;
+	boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}.+)");
+	//sprawdzamy, czy zgadza sie nazwa folderu
+	if(boost::regex_match(name.c_str(), matches, e))
 	{
-		if(trials.at(i).getName().compare(name) == 0)
+		for(size_t i = 0; i < trials.size(); i++)
 		{
-			actualTrialIndex = i;
-			loadTrialData = true;
-			return;
+			if(trials.at(i).getName().compare(matches[2]) == 0)
+			{
+				actualTrialIndex = i;
+				loadTrialData = true;
+				loadUnknownTrialData = false;
+				return;
+			}
 		}
 	}
-	LOG_ERROR(": !Blad ladowania proby pomiarowej, brak proby pomiarowej w zasobach\n");
+	unknownTrial = loadLocalTrial(name);
+	loadTrialData = true;
+	loadUnknownTrialData = true;
+	LOG_WARNING(": !Brak wskazanej pomiarowej w zasobach. Ladowanie nieznanej proby pomiarowej.\n");
 }

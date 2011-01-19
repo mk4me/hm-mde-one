@@ -36,9 +36,8 @@ public:
 	virtual void loadTrial(const std::string& name) = 0;
 	/**
 	Pingowanie serwera.
-	@return czy serwer odpowiedzia³?
 	*/
-	virtual bool ping() = 0;
+	virtual void ping() = 0;
 	/**
 	Przerwanie pobierania pliku lub triala.
 	*/

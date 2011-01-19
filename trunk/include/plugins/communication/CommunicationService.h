@@ -42,7 +42,10 @@ private:
 	Nazwa serwisu
 	*/
 	std::string name;
-
+	/**
+	ping serwera
+	*/
+	void ping() {model->ping();};
 public:
 	/**
 	Konstruktor
@@ -117,11 +120,6 @@ public:
 	@param name nazwa lokalnej próby do za³adowania
 	*/
 	virtual void loadTrial(const std::string& name);
-	/**
-	Metoda z interfejsu ICommunication. Pingowanie serwera.
-	@return czy serwer odpowiedzia³?
-	*/
-	virtual bool ping();
 	/**
 	Metoda z interfejsu ICommunication. Przerwanie pobierania pliku lub triala.
 	*/

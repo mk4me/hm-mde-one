@@ -196,6 +196,10 @@ private:
 	*/
 	QLabel* infoLabel;
 	/**
+	Serwer online/offline?
+	*/
+	bool isOnline;
+	/**
 	Etykieta informacyjna odnoœnie stanu serwera
 	*/
 	QLabel* serverStateLabel;

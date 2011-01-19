@@ -1,3 +1,9 @@
+/**
+@author Marek Daniluk
+@brief Klasa DataManager implementuje interfejs IDataManager. S³u¿y do zarz¹dzania zasobami edytora, które dziel¹ siê na dane
+konfiguracyjne i próby pomiarowe. Zasoby ³adowane s¹ z odpowiednich œcie¿ek, domyœlnie zasoby sta³e powinny znajdowaæ siê w
+data/resources, próby pomiarowe s¹ wyszukiwane i pobierane do data/trials.
+*/
 #ifndef DATA_MANAGER_H
 #define DATA_MANAGER_H
 
@@ -16,9 +22,9 @@ public:
 	virtual const LocalTrial& getLocalTrial(int i) const;
 	virtual int getLocalTrialsCount() const;
 
-	virtual const LocalTrial& getActualTrial() const;
-	virtual void setActualTrial(int i);
-	virtual void setActualTrial(const std::string& name);
+	virtual const LocalTrial& getActualLocalTrial() const;
+	virtual void setActualLocalTrial(int i);
+	virtual void setActualLocalTrial(const std::string& name);
 
 	virtual void clear();
 
@@ -37,10 +43,12 @@ public:
 	virtual void setResourcesPath(const std::string& resources);
 	virtual void setTrialsPath(const std::string& trials);
 
-	virtual bool isLoadTrialData() const {return loadTrialData;};
-	virtual void setLoadTrialData(bool load) {loadTrialData = load;};
+	virtual bool isLoadLocalTrialData() const {return loadTrialData;};
+	virtual void setLoadLocalTrialData(bool load) {loadTrialData = load;};
 
 	virtual ~DataManager();
+protected:
+	LocalTrial loadLocalTrial(const std::string& path);
 private:
 	std::vector<std::string> shadersPaths;
 	std::vector<std::string> meshesPaths;
@@ -48,10 +56,13 @@ private:
 	std::vector<LocalTrial> trials;
 	size_t actualTrialIndex;
 
+	LocalTrial unknownTrial;
+
 	std::string resourcesPath;
 	std::string trialsPath;
 
 	bool loadTrialData;
+	bool loadUnknownTrialData;
 
 };
 

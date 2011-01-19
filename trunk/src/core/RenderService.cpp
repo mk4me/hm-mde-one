@@ -165,15 +165,15 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 	}
 
 	
-	if(dataManager->getActualTrial().isSkeleton())
+	if(dataManager->getActualLocalTrial().isSkeleton())
 	{
-		skelpath = dataManager->getActualTrial().getSkeletonPath();
+		skelpath = dataManager->getActualLocalTrial().getSkeletonPath();
 	}
-	if(dataManager->getActualTrial().isC3d())
+	if(dataManager->getActualLocalTrial().isC3d())
 	{
-		c3dpath = dataManager->getActualTrial().getC3dPath();
+		c3dpath = dataManager->getActualLocalTrial().getC3dPath();
 	}
-	std::vector<std::string> animationPathList = dataManager->getActualTrial().getAnimationsPaths();
+	std::vector<std::string> animationPathList = dataManager->getActualLocalTrial().getAnimationsPaths();
 
 	//if(dataManager->getSkeletonFilePathCount() > 0)
 	//{
