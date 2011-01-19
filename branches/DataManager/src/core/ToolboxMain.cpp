@@ -95,17 +95,15 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 
     ui->setupUi(this);
 
-    registerCoreServices(); 
+    registerCoreServices();
     registerPluginsServices();
+	registerPluginsParsers();
 
 
     sceneRoot = new osg::Group();
     sceneRoot->setName("root");
 
-	/*
-	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
-	*/
-    dataManager = new DataManager();
+	dataManager->loadResources();
 
     // inicjalizacja us³ug
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
@@ -337,6 +335,11 @@ void ToolboxMain::registerCoreServices()
     //1. Service manafger
     m_pUserInterfaceService = new UserInterfaceService();
     m_pServiceManager = new ServiceManager();
+	/*
+	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
+	*/
+    dataManager = new DataManager();
+
     m_pModelService = new ModelService();
     m_pRenderService = RenderServicePtr(new RenderService());
 
@@ -360,6 +363,17 @@ void ToolboxMain::registerPluginsServices()
             m_pServiceManager->registerService(plugin->getService(j));
         }
     }
+}
+
+void ToolboxMain::registerPluginsParsers()
+{
+	pluginLoader->load();
+	for ( size_t i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
+		core::PluginPtr plugin = pluginLoader->getPlugin(i);
+		for ( size_t j = 0; j < plugin->getNumParsers(); ++j ) {
+			dataManager->registerParser(plugin->getParser(j));
+		}
+	}
 }
 
 void ToolboxMain::onOpen()

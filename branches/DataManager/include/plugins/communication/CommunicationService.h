@@ -14,6 +14,7 @@ implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
 #include <plugins/communication/CommunicationManager.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
 #include <plugins/communication/QueryWSDL.h>
+#include <plugins/communication/TextParser.h>
 #include "CommunicationWidget.h"
 
 class CommunicationWidget;

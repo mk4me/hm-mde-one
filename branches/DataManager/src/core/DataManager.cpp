@@ -5,6 +5,8 @@
 #include <core/Filesystem.h>
 #include <boost/foreach.hpp>
 
+using namespace core;
+
 DataManager::DataManager(const std::string& resourcesPath, const std::string& trialsPath) : resourcesPath(resourcesPath), trialsPath(trialsPath)
 {
 	clear();
@@ -17,7 +19,7 @@ DataManager::DataManager(const std::string& resourcesPath, const std::string& tr
 
 DataManager::~DataManager()
 {
-    this->clear();
+	this->clear();
 }
 
 void DataManager::loadResources()
@@ -199,4 +201,41 @@ void DataManager::setActualLocalTrial(const std::string& name)
 	loadTrialData = true;
 	loadUnknownTrialData = true;
 	LOG_WARNING(": !Brak wskazanej pomiarowej w zasobach. Ladowanie nieznanej proby pomiarowej.\n");
+}
+
+void DataManager::registerParser(core::IParserPtr parser)
+{
+	if (parsersMap.find(parser->getID()) == parsersMap.end())
+	{
+		parsersMap.insert( std::make_pair(parser->getID(), parser)); 
+		parsersList.push_back(parser);
+	}
+	else
+	{
+		LOG_WARNING("Parser with this ID already registered.");
+	}
+}
+
+int DataManager::getNumParsers() const
+{
+	return static_cast<int>(parsersList.size());
+}
+
+core::IParserPtr DataManager::getParser(int idx)
+{
+	if ( idx < static_cast<int>(parsersList.size()) ) {
+		return parsersList[idx];
+	} else {
+		return core::IParserPtr();
+	}
+}
+
+core::IParserPtr DataManager::getParser(UniqueID id)
+{
+	ParsersMap::iterator it = parsersMap.find(id);
+	if (it != parsersMap.end()) {
+		return it->second; 
+	} else {
+		return core::IParserPtr();
+	}
 }

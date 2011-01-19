@@ -104,6 +104,8 @@ private:
     void registerCoreServices(); 
     //! Rejestruje us³ugi pochodz¹ce z pluginów.
     void registerPluginsServices();
+    //! Rejestruje parsery pochodz¹ce z pluginów.
+    void registerPluginsParsers();
 
     //! Wype³nia podmenu akcjami dla dostêpnych okien.
     //! \param target Menu do wype³nienia.
