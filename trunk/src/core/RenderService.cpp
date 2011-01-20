@@ -23,6 +23,8 @@
 #include <core/MultiViewCameraItem.h>
 #include <core/MultiViewManipulatorItem.h>
 
+#include <core/Log.h>
+
 // TODO: tymczasowo RenderService bêdzie udostêpnia³ instancje Factory
 // jednkaze dla zachowania oddzielnosci zadañ trzeba bêdzie usun¹c t¹ mo¿liwoœæ w render servisie
 
@@ -217,8 +219,6 @@ AsyncResult RenderService::init(IServiceManager* serviceManager, IDataManager* d
     m_pFactory = new Factor();
     m_pModel = NULL;
     m_pC3DModel = NULL;
-
-    std::cout<< "RenderService ADDED-test!" << std::endl; 
     Inicialize(sceneRoot, viewer);
     return AsyncResult_Complete; 
 }
@@ -279,10 +279,11 @@ void RenderService::Inicialize(osg::Node* sceneRoot, osgViewer::CompositeViewer*
         MaskableOrbitManipulator* manipulator = new MaskableOrbitManipulator();
         manipulator->setMaskedMouseButtons( osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON );
         manipulator->setHomePosition( 
-            osg::Vec3d((i%2) ? 150 - (i/2)*300 : 0 , (i%2) ? 0 : 150 - (i/2)*300, 50), 
-            osg::Vec3d(0, 0, 50), 
-            osg::Vec3d(0, 0, 1)
+            osg::Vec3d(((i%2) ? (150 - (i/2)*300) : 0), 50, ((i%2) ? 0 : (150 - (i/2)*300))), 
+            osg::Vec3d(0, 50, 0), 
+            osg::Vec3d(0, 1, 0)
             );
+        manipulator->setVerticalAxisFixed(false);
         manipulator->home(0);
 
         addView(camera, manipulator);
@@ -324,6 +325,7 @@ void RenderService::addView( osg::Camera* camera, osgGA::CameraManipulator* mani
 {
     UTILS_ASSERT(camera && manipulator);
 
+
     // inicjalizacja kamery
     camera->insertChild(0, SceneRoot);
     camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
@@ -335,6 +337,7 @@ void RenderService::addView( osg::Camera* camera, osgGA::CameraManipulator* mani
     multiView->addItem(item, new core::MultiViewManipulatorItem(camera, widget, manipulator) );
 
     camera->setProjectionMatrix( widget->getCamera()->getProjectionMatrix() );
+
     camera->setViewMatrix( manipulator->getInverseMatrix() );
 }
 

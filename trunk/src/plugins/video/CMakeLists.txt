@@ -121,9 +121,9 @@ set(TARGET_SRC ${TARGET_SRC} ${OSG_SRC})
 # konfiguracja
 
 # Kopiujemy konfiguracja
-configure_file( "core/Config.h.in" "${PROJECT_BINARY_DIR}/core/Config.h" )
-set(TARGET_H ${TARGET_H} "${PROJECT_BINARY_DIR}/core/Config.h")
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\core" FILES "${PROJECT_BINARY_DIR}/core/Config.h")
+configure_file( "core/ConfigVideo.h.in" "${PROJECT_BINARY_DIR}/core/ConfigVideo.h" )
+set(TARGET_H ${TARGET_H} "${PROJECT_BINARY_DIR}/core/ConfigVideo.h")
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\core" FILES "${PROJECT_BINARY_DIR}/core/ConfigVideo.h")
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek

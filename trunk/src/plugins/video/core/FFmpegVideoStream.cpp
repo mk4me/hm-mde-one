@@ -26,6 +26,7 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/mathematics.h>
+#include <libavutil/log.h>
 #pragma warning (pop)
 }
 
@@ -46,6 +47,7 @@ extern "C" {
 
 //! Wyzerowany callback.
 static video::FFmpegVideoStream::LockManager lockManager = NULL;
+static video::FFmpegVideoStream::LogCallback logCallback = NULL;
 
 //! Funkcja przekazuj¹ca ¿¹danie locka do ustawionego callbacka.
 //! \param mutex
@@ -65,6 +67,129 @@ static int FFmpegLockForwarder( void **mutex, enum AVLockOp op )
   } else {
     return 0;
   }
+}
+
+//! Funkcja przekazuj¹ca ¿¹danie logowania do ustawionego callbacka.
+//! \param ptr
+//! \param level
+//! \param fmt
+//! \param vl
+static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl)
+{
+    using namespace video;
+
+    if (!logCallback) {
+        // nie ma callbacka, nic nie robimy
+        return;
+    }
+
+    FFmpegVideoStream::FFmpegClass itemClass = { NULL, NULL };
+    FFmpegVideoStream::FFmpegClass parentClass = { NULL, NULL };
+
+    // wersja wzorowana na av_log_default_callback (log.c)
+    static int print_prefix=1;
+    static char line[4096] = { 0 };
+    static char buffer[4096];
+
+    AVClass* avc = ptr ? *reinterpret_cast<AVClass**>(ptr) : NULL;
+
+    int avLogLevel = av_log_get_level();
+    if(level>avLogLevel) {
+        return;
+    }
+
+    //line[0]=0;
+
+    // pobieramy wskaŸniki na klasy
+    if(avc) {
+        if(avc->version >= (50<<16 | 15<<8 | 3) && avc->parent_log_context_offset){
+            AVClass** parent= *(AVClass***)(((uint8_t*)ptr) + avc->parent_log_context_offset);
+            if(parent && *parent) {
+                parentClass.ptr = parent;
+                parentClass.name = (*parent)->item_name(parent);
+            }
+        }
+        itemClass.ptr = avc;
+        itemClass.name = avc->item_name(ptr);
+    }
+
+    // formatowanie wiadomoœci
+    size_t len = strlen(line);
+    vsnprintf(line + len, sizeof(line) - len, fmt, vl);
+
+    // czy ostatni znak to nowa linia? 
+    len = strlen(line);
+    print_prefix = line[len-1] == '\n';
+    if ( !print_prefix ) {
+        // nie?
+        return;
+    }
+    // usuwamy znak nowej linii
+    line[len - 1] = 0;
+
+    // przet³umaczenie poziomu wa¿noœci komunikatu
+    FFmpegVideoStream::LogSeverity severity;
+    if ( level <= AV_LOG_QUIET ) {
+        severity = FFmpegVideoStream::LogSeverityQuiet;
+    } else if ( level <= AV_LOG_PANIC ) {
+        severity = FFmpegVideoStream::LogSeverityPanic;
+    } else if ( level < AV_LOG_FATAL ) {
+        severity = FFmpegVideoStream::LogSeverityFatal;
+    } else if ( level < AV_LOG_ERROR ) {
+        severity = FFmpegVideoStream::LogSeverityError;
+    } else if ( level < AV_LOG_WARNING ) {
+        severity = FFmpegVideoStream::LogSeverityWarning;
+    } else if ( level < AV_LOG_INFO ) {
+        severity = FFmpegVideoStream::LogSeverityInfo;
+    } else if ( level < AV_LOG_VERBOSE ) {
+        severity = FFmpegVideoStream::LogSeverityVerbose;
+    } else {
+        severity = FFmpegVideoStream::LogSeverityDebug;
+    }
+
+    // przekierowanie do callbacka w³aœciwego
+    logCallback(severity, line, itemClass.ptr ? &itemClass : NULL, parentClass.ptr ? &parentClass : NULL);
+    line[0] = 0;
+
+    //colored_fputs(av_clip(level>>3, 0, 6), line);
+    //strcpy(prev, line);
+
+//     void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl)
+//     {
+//         static int print_prefix=1;
+//         static int count;
+//         static char line[1024], prev[1024];
+//         AVClass* avc= ptr ? *(AVClass**)ptr : NULL;
+//         if(level>av_log_level)
+//             return;
+//         line[0]=0;
+// #undef fprintf
+//         if(print_prefix && avc) {
+//             if(avc->version >= (50<<16 | 15<<8 | 3) && avc->parent_log_context_offset){
+//                 AVClass** parent= *(AVClass***)(((uint8_t*)ptr) + avc->parent_log_context_offset);
+//                 if(parent && *parent){
+//                     snprintf(line, sizeof(line), "[%s @ %p] ", (*parent)->item_name(parent), parent);
+//                 }
+//             }
+//             snprintf(line + strlen(line), sizeof(line) - strlen(line), "[%s @ %p] ", avc->item_name(ptr), ptr);
+//         }
+// 
+//         vsnprintf(line + strlen(line), sizeof(line) - strlen(line), fmt, vl);
+// 
+//         print_prefix= line[strlen(line)-1] == '\n';
+//         if(print_prefix && !strcmp(line, prev)){
+//             count++;
+//             fprintf(stderr, "    Last message repeated %d times\r", count);
+//             return;
+//         }
+//         if(count>0){
+//             fprintf(stderr, "    Last message repeated %d times\n", count);
+//             count=0;
+//         }
+//         colored_fputs(av_clip(level>>3, 0, 6), line);
+//         strcpy(prev, line);
+//     }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -676,6 +801,11 @@ bool FFmpegVideoStream::getData( PictureLayered & dst )
   return true;
 }
 
+void FFmpegVideoStream::setLogCallback( LogCallback callback )
+{
+    logCallback = callback;
+    av_log_set_callback(FFmpegLogForwarder);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

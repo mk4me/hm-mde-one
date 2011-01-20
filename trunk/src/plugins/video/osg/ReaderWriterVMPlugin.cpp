@@ -19,6 +19,7 @@
 #include "../core/VMPrivate.h"
 #include "../core/FFmpegVideoStream.h"
 #include "VideoImageStream.h"
+#include <core/Log.h>
 
 /**
  *	Wtyczka do OSG.
@@ -52,6 +53,7 @@ public:
     // teoretycznie to powinno znaleŸæ siê gdzieœ w kodzie FFmpegVideoStream,
     // ale nie mam pomys³u, jak to tam umieœciæ
     video::FFmpegVideoStream::setLockManager(lockManager);
+    video::FFmpegVideoStream::setLogCallback(logCallback);
   }
 
   //! 
@@ -138,6 +140,39 @@ private:
         return -1;
     }
   }
+
+  static void logCallback(video::FFmpegVideoStream::LogSeverity severity, const char* msg, video::FFmpegVideoStream::FFmpegClass* item, video::FFmpegVideoStream::FFmpegClass* parent)
+  {
+    using namespace video;
+    switch ( severity ) {
+        case FFmpegVideoStream::LogSeverityQuiet:
+            break;
+
+        case FFmpegVideoStream::LogSeverityPanic:
+        case FFmpegVideoStream::LogSeverityFatal:
+        case FFmpegVideoStream::LogSeverityError:
+            LOG_ERROR_STATIC_NAMED("ffmpeg", msg);
+            break;
+
+        case FFmpegVideoStream::LogSeverityWarning:
+            LOG_WARNING_STATIC_NAMED("ffmpeg", msg);
+            break;
+
+        case FFmpegVideoStream::LogSeverityInfo:
+        case FFmpegVideoStream::LogSeverityVerbose:
+            LOG_INFO_STATIC_NAMED("ffmpeg", msg);
+            break;
+
+        case FFmpegVideoStream::LogSeverityDebug:
+            LOG_DEBUG_STATIC_NAMED("ffmpeg", msg);
+            break;
+
+        default:
+            UTILS_ASSERT(false, "Nieznany poziom FFmpeg. Wiadomoœæ: %s", msg);
+            break;
+    }
+  }
+
 };
 
 REGISTER_OSGPLUGIN(VideoManager, ReaderWriterVMPlugin)

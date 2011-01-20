@@ -5,7 +5,6 @@
 #include "ToolboxMain.h"
 #include "ui_toolboxmaindeffile.h"
 #include <core/QOsgWidgets.h>
-#include "TimeLine.h"
 #include "SceneGraphWidget.h"
 
 #include <osg/Vec3d>
@@ -27,7 +26,6 @@
 
 #include "ServiceManager.h"
 #include <core/IAnimationService.h>
-#include "ModelService.h"
 #include "UserInterfaceService.h"
 #include "RenderService.h"
 #include "config/ConfigurationFileService.h"
@@ -50,6 +48,8 @@
 #include "ComputeThread.h"
 
 #include <core/Log.h>
+
+DEFINE_DEFAULT_LOGGER("edr.core");
 
 /**
  *	U¿ytkowa klasa, u¿ywana tam, gdzie mêcz¹ca jest zmiana wartoœci jakiejœ zmiennej
@@ -82,6 +82,9 @@ const QString ToolboxMain::configName = QString("Toolbox_config.ini");
 const QString ToolboxMain::organizationName = QString("PJWSTK");
 const QString ToolboxMain::applicationName = QString("EDR");
 
+
+
+
 ToolboxMain::ToolboxMain(QWidget *parent)
 :   QMainWindow(parent),
     ui(new Ui::ToolboxMain),
@@ -91,6 +94,17 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 
     pluginLoader = new core::PluginLoader();
+
+
+
+
+
+//     LoggerPtr root = Logger::getRootLogger();
+//     static const LogString TTCC_CONVERSION_PATTERN(LOG4CXX_STR("%r [%t] %p %c %x - %m%n"));
+//     //LayoutPtr layout(new PatternLayout(TTCC_CONVERSION_PATTERN));
+//     AppenderPtr appender(new OutputDebugStringAppender(/*layout*/));
+//     appender->setLayout(new PatternLayout(LOG4CXX_STR("%F(%L): %m\n")));
+//     root->addAppender(appender);
 
 
     ui->setupUi(this);
@@ -139,6 +153,7 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 ToolboxMain::~ToolboxMain()
 {
     clear();
+
 }
 
 void ToolboxMain::clear()
@@ -153,7 +168,6 @@ void ToolboxMain::clear()
     delete m_pServiceManager;
     delete pluginLoader;
     m_pUserInterfaceService = NULL;
-    m_pModelService = NULL;
 	if(dataManager)
 		delete dataManager;
 	dataManager = NULL;
@@ -254,7 +268,6 @@ void ToolboxMain::initializeConsole()
     // Inicjalizacja konsoli
 //     ConsoleWidgetOutputBuffer *ob = new ConsoleWidgetOutputBuffer(_consoleWidget, 256);
 //     _streambuf = std::cout.rdbuf(ob);
-    std::cout << "Console initialized..." << std::endl; 
 }
 
 void ToolboxMain::InitializeOGSWidget()
@@ -337,11 +350,7 @@ void ToolboxMain::registerCoreServices()
     //1. Service manafger
     m_pUserInterfaceService = new UserInterfaceService();
     m_pServiceManager = new ServiceManager();
-    m_pModelService = new ModelService();
     m_pRenderService = RenderServicePtr(new RenderService());
-
-    //2. Model Service
-    m_pServiceManager->registerService(IServicePtr(m_pModelService));
 
     //3. UserInterface Service
     m_pServiceManager->registerService(IServicePtr(m_pUserInterfaceService));
@@ -604,10 +613,7 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
 
 void ToolboxMain::openFile( const std::string& path )
 {
-	std::cout << " " << std::endl; 
-	std::cout << "File Opened: " << path << std::endl;
-	std::cout << "---------------------------------------------------------------" << std::endl; 
-
+    LOG_INFO("Opening file: " << path);
 	dataManager->setActualLocalTrial(path);
 }
 

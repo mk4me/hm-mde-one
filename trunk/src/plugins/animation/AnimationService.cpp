@@ -107,8 +107,6 @@ AsyncResult AnimationService::init(IServiceManager* serviceManager, IDataManager
 
     m_pRenderService = dynamic_cast<IRenderService* >(m_pServiceManager->getService(UniqueID('REND','SRVC')).get());
     m_DisplayType = ALL;
-
-    std::cout << "AnimationService ADDED!" << std::endl; 
     return AsyncResult_Complete; 
 }
 

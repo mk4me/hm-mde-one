@@ -41,7 +41,7 @@ extern "C" {
 #include <utils/Debug.h>
 #include <utils/Profiler.h>
 #include <utils/Enum.h>
-#include <plugins/video/core/Config.h>
+#include <plugins/video/core/ConfigVideo.h>
 #include <plugins/video/core/PixelFormat.h>
 #include <plugins/video/core/Picture.h>
 #include <plugins/video/core/VideoError.h>

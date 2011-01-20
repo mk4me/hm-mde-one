@@ -310,7 +310,6 @@ osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Unif
 
     // ustawienie formatu
     if (osgPlugin::VideoImageStream* stream = dynamic_cast<osgPlugin::VideoImageStream*>(image)) {
-        widget->setPixelFormat(stream->getTargetFormat());   
         if ( stream->getTargetFormat() == PixelFormatYV12 ) {
             // ustawienie shaderów
             widget->setYuvTexture2DShader(yuvTexture2DShader);
@@ -318,6 +317,7 @@ osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Unif
             widget->getOrCreateStateSet()->addUniform( sampler );
             widget->getOrCreateStateSet()->addUniform( imageSize );
         }
+        widget->setPixelFormat(stream->getTargetFormat());   
     }
 
     widget->refreshShaders();

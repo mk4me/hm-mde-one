@@ -4,7 +4,6 @@
 #include <utils/Profiler.h>
 #include <utils/Enum.h>
 #include <plugins/video/core/VideoStream.h>
-#include <plugins/video/core/Config.h>
 #include <plugins/video/core/Converter.h>
 #include "VMPrivate.h"
 #include "FFmpegVideoStream.h"

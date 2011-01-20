@@ -38,6 +38,30 @@ public:
   //!
   typedef int (*LockManager)(void **mutex, LockOp lock);
 
+  //! Klasa FFmpeg u¿ywana podczas logowania wiadomoœci.
+  struct FFmpegClass {
+      //! Nazwa klasy.
+      const char* name;
+      //! WskaŸnik do AVClass. Gdy chce siê wiêcej informacji - nale¿y zaincludowaæ
+      //! avutil/log.h oraz rêcznie rzutowaæ.
+      void* ptr;
+  };
+
+  //! Poziom wa¿noœci komunikatów.
+  enum LogSeverity {
+    LogSeverityQuiet,
+    LogSeverityPanic,
+    LogSeverityFatal,
+    LogSeverityError,
+    LogSeverityWarning,
+    LogSeverityInfo,
+    LogSeverityVerbose,
+    LogSeverityDebug
+  };
+
+  //! Typ callbacka otrzymuj¹cego komunikaty z ffmpeg.
+  typedef void (*LogCallback)(LogSeverity severity, const char* msg, FFmpegClass* item, FFmpegClass* parent);
+
 //------------------------------------------------------------------------------
 private:
   //! Pomocnicza klasa do inicjalizacji ffmpega.
@@ -117,6 +141,10 @@ public:
 
   //! \param callback
   static void setLockManager(LockManager callback);
+
+  //! 
+  //! \param callback
+  static void setLogCallback(LogCallback callback);
 
 //------------------------------------------------------------------------------
 protected:

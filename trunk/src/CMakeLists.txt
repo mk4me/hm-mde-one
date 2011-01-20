@@ -51,7 +51,7 @@ endif()
 option(EDR_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
 # Opcje konfiguracji
 CONFIG_OPTION(VM_ENABLE_EXCEPTIONS "Enable exeptions?" ON)
-CONFIG_OPTION(CORELIB_ENABLE_LOGGING "Enable logging?" ON)
+CONFIG_OPTION(CORELIB_ENABLE_LOGGING "Enable logging?" OFF)
 
 set(SOURCEGROUP_PRIVATE_HEADERS "Header files" CACHE STRING "Filter for private headers.")
 set(SOURCEGROUP_SOURCES "Source files" CACHE STRING "Filter for sources.")

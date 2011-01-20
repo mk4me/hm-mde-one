@@ -1,7 +1,9 @@
 #include "VideoPCH.h"
 #include <core/Plugin.h>
 #include <plugins/video/VideoService.h>
+#include <core/Log.h>
 
+DEFINE_DEFAULT_LOGGER("edr.video")
 CORE_PLUGIN_BEGIN("Video", UniqueID('VIDE', 'PLUG'))
 CORE_PLUGIN_ADD_SERVICE(VideoService)
 CORE_PLUGIN_END

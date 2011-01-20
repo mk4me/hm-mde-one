@@ -32,7 +32,7 @@ void StreamOsgWidget::setYuvTextureRectShader( osg::Shader* yuvTextureRectShader
             yuvProgram->removeShader(this->yuvTextureRectShader);
         }
         if ( this->yuvTextureRectShader = yuvTextureRectShader ) {
-            yuvProgram->removeShader(this->yuvTextureRectShader);
+            yuvProgram->addShader(this->yuvTextureRectShader);
         }
     }
 }
@@ -49,7 +49,7 @@ void StreamOsgWidget::setYuvTexture2DShader( osg::Shader* yuvTexture2DShader )
             yuvProgram->removeShader(this->yuvTexture2DShader);
         }
         if ( this->yuvTexture2DShader = yuvTexture2DShader ) {
-            yuvProgram->removeShader(this->yuvTexture2DShader);
+            yuvProgram->addShader(this->yuvTexture2DShader);
         }
     }
 }

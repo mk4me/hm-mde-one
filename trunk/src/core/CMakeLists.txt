@@ -29,15 +29,14 @@ set(PRIVATE_H
 	Marker.h
 	Mesh.h
 	Model.h
-	ModelService.h
 	RenderService.h
 	ServiceManager.h
 	SkeletonNode.h
-	TimeLine.h
 	ToolboxMain.h
 	UserInterfaceService.h
 	#Quaternioncal.h
 	ComputeThread.h
+	OsgNotifyHandlerLog4cxx.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -101,11 +100,9 @@ set(TARGET_SRC
 	SceneGraphWidget.cpp
 	Logger.cpp
 	main.cpp
-	ModelService.cpp
 	PluginLoader.cpp
 	RenderService.cpp
 	ServiceManager.cpp
-	TimeLine.cpp
 	ToolboxMain.cpp
 	UserInterfaceService.cpp
 	
@@ -120,13 +117,13 @@ set(TARGET_SRC
 	SkeletonNode.cpp	
 	#Quaternioncal.cpp
 	ComputeThread.cpp
+	OsgNotifyHandlerLog4cxx.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
     ConsoleWidget.h
-    TimeLine.h
     ToolboxMain.h
 	SceneGraphWidget.h
 )
@@ -140,7 +137,6 @@ set(TARGET_UI
 	ui/ConsoleWidget.ui
 	ui/SceneGraphWidget.ui
 	ui/OsgWidget.ui
-	ui/TimeLine.ui
 	ui/toolboxmaindeffile.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})

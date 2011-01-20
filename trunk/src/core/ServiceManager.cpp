@@ -26,6 +26,7 @@ void ServiceManager::registerService(IServicePtr service)
     if (servicesMap.find(service->getID()) == servicesMap.end()) {
         servicesMap.insert( std::make_pair(service->getID(), service)); 
         servicesList.push_back(service);
+        LOG_INFO("Service "<<service->getName()<<" registered.");
         //service->init(this); 
     } else {
         throw std::runtime_error("Service with this ID already registered.");

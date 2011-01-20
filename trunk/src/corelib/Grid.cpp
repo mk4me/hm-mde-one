@@ -114,6 +114,7 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
 
     //LOG_ERROR("size: "<<width<<" "<<height<<" dim"<<optimalDimensions.x()<<" "<<optimalDimensions.y());
 
+
     // nadanie optymalnego rozmiaru
     // tutaj lekko zhackowana zmiana rozmiaru w stosunku do setDimensions
 

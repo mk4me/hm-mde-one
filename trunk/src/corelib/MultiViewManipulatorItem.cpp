@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include <core/MultiViewManipulatorItem.h>
+#include <core/Log.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {

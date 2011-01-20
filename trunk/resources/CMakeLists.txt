@@ -1,5 +1,11 @@
 project(Resources)
 
+# ustawienia
+set(SETTINGS 
+	settings/log.ini
+)
+source_group("settings" FILES ${SETTINGS})
+
 # modele
 set(MESHES 
 	meshes/fixed_biped.fmesh
@@ -53,12 +59,12 @@ if(EDR_ENABLE_SVN_RESOURCES_COPYING)
 	# dodanie projektu, który kopiuje zawartoœæ bie¿¹cego katalogu
 	add_custom_target(resources ALL
 		COMMAND "@CMAKE_COMMAND@" -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${EDR_SVN_RESOURCES_DESTINATION}
-		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL} ${APPSKINS}
+		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL} ${APPSKINS} ${SETTINGS}
 	)
 	#message("COMMAND @CMAKE_COMMAND@ -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${MOTION_SVN_RESOURCES_DESTINATION}")
 else()
 	# dodanie projektu bez ¿adnego polecenia - mo¿na ge edytowaæ z IDE
 	add_custom_target(resources 
-		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL} ${APPSKINS}
+		SOURCES ${MESHES} ${SHADERS} ${SCHEMAS} ${TRIAL} ${APPSKINS} ${SETTINGS}
 	)
 endif()

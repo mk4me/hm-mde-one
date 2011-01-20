@@ -254,7 +254,7 @@ std::vector<Trial> BasicQueriesService::listSessionContents()
 						}
 						else
 						{
-							std::cout << "Value " << trial.id << std::endl;
+							LOG_DEBUG("Value " << trial.id);
 							throw std::runtime_error("Bad document structure format. There is no TrialName.");
 						}
 					}
@@ -267,7 +267,7 @@ std::vector<Trial> BasicQueriesService::listSessionContents()
 			}
 			else
 			{
-				std::cout << "Attribute " << trial.id << std::endl;
+				LOG_DEBUG("Attribute " << trial.id);
 				throw std::runtime_error("Bad document structure format. There is no TrialName.");
 			}
 			temp = TrialContent->getChildContainer("FileDetailsWithAttributes");

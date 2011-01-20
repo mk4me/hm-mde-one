@@ -20,7 +20,6 @@
 class UserInterfaceService;
 class ServiceManager;
 class IAnimationService;
-class ModelService;
 class RenderService;
 class ComputeThread;
 class SceneGraphWidget;
@@ -134,7 +133,6 @@ private:
 	//zasoby (model, triale)
     DataManager* dataManager;
     UserInterfaceService* m_pUserInterfaceService;
-    ModelService* m_pModelService;
 
     CORE_SHARED_PTR(RenderService) m_pRenderService;
 

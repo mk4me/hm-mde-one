@@ -142,14 +142,14 @@ bool PluginLoader::addPlugIn( const std::string& path )
     if ( library ) 
     {
         FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
-        if ( proc ) 
-        {
+        if ( proc ) {
             bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
                 reinterpret_cast<Plugin::CreateFunction>(proc));
-            if ( success ) 
-            {
+            if ( success ) {
                 return true;
             }
+        } else {
+            LOG_INFO(path<<" is a .dll, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
         }
     }
     else

@@ -10,6 +10,7 @@
 #include "TimelineImageStreamWrapper.h"
 #include "osg/VideoImageStream.h"
 #include <boost/foreach.hpp>
+#include <core/Log.h>
 
 //M_DECLARED_CLASS(VideoService, )
 

@@ -24,7 +24,7 @@
 #include <utils/Debug.h>
 #include <utils/Enum.h>
 
-#include <plugins/video/core/Config.h>
+#include <plugins/video/core/ConfigVideo.h>
 #include <plugins/video/core/Utils.h>
 #include <plugins/video/core/PixelFormat.h>
 #include <plugins/video/core/Picture.h>
