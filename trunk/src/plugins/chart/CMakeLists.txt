@@ -14,11 +14,10 @@ string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR}
 set(PUBLIC_H
 
 
-		Header.h
+		
 		INTELreader.h
 		MIPSreader.h
 		ProcessorReader.h
-		Data.h
 		DECreader.h
 
 )
@@ -48,9 +47,7 @@ set(TARGET_SRC
 	EMGService.cpp
 	GRFService.cpp	
 	ChartDataSeries.cpp
-	Data.cpp
 	DECreader.cpp
-	Header.cpp
 	INTELreader.cpp
 	MIPSreader.cpp
 	C3DChartData.cpp

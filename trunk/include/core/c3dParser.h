@@ -1,4 +1,4 @@
-#include <plugins/chart/Header.h>
+#include <core/Header.h>
 #include <core/Parameters.h>
 #include <plugins/chart/Data.h>
 #include <plugins/chart/ProcessorReader.h>

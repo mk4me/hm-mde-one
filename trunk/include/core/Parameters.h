@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <plugins/chart/ProcessorReader.h>
-#include <plugins/chart/Header.h>
+#include <core/Header.h>
 #include <string>
 #include <map>
 #include <core/GroupData.h>

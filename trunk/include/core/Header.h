@@ -2,7 +2,7 @@
 #define _MARKERHEADER_DEF_
 
 #include <string>
-#include "ProcessorReader.h"
+#include <plugins/chart/ProcessorReader.h>
 #include <iostream>
 #include <fstream>
 #include <bitset>
