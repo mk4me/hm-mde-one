@@ -2,7 +2,7 @@
 #define _DATA_DEF_
 
 #include "Header.h"
-#include "ProcessorReader.h"
+#include <plugins/chart/ProcessorReader.h>
 
 /*
 

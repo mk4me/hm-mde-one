@@ -1,6 +1,6 @@
 #include <core/Header.h>
 #include <core/Parameters.h>
-#include <plugins/chart/Data.h>
+#include <core/Data.h>
 #include <plugins/chart/ProcessorReader.h>
 #include <core/C3D_Data.h>
 

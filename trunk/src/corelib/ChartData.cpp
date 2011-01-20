@@ -3,7 +3,7 @@
 #include <core/ChartData.h>
 #include <core/c3dParser.h>
 #include <core/C3D_Data.h>
-#include <plugins/chart/Data.h>
+#include <core/Data.h>
 
 
 

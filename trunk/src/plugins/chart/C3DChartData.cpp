@@ -2,7 +2,7 @@
 
 #include "C3DChartData.h"
 
-#include "Data.h"
+#include <core/Data.h>
 #include <boost/algorithm/string.hpp>
 
 C3DChartData::C3DChartData(C3D_Data* c3d, int chanel){

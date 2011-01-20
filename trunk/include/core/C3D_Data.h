@@ -3,7 +3,7 @@
 
 #include <core/Header.h>
 #include <core/Parameters.h>
-#include <plugins/chart/Data.h>
+#include <core/Data.h>
 
 ///////////////////////////////////////////
 
