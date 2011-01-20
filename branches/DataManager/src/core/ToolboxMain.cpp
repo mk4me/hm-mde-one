@@ -96,6 +96,8 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     ui->setupUi(this);
 
     registerCoreServices();
+
+	pluginLoader->load();
     registerPluginsServices();
 	registerPluginsParsers();
 
@@ -356,7 +358,6 @@ void ToolboxMain::registerCoreServices()
 
 void ToolboxMain::registerPluginsServices()
 {
-    pluginLoader->load();
     for ( size_t i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
         core::PluginPtr plugin = pluginLoader->getPlugin(i);
         for ( size_t j = 0; j < plugin->getNumServices(); ++j ) {
@@ -367,7 +368,6 @@ void ToolboxMain::registerPluginsServices()
 
 void ToolboxMain::registerPluginsParsers()
 {
-	pluginLoader->load();
 	for ( size_t i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
 		core::PluginPtr plugin = pluginLoader->getPlugin(i);
 		for ( size_t j = 0; j < plugin->getNumParsers(); ++j ) {

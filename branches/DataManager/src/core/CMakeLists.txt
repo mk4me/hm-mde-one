@@ -58,6 +58,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/IDataManager.h
 	${HEADER_PATH}/IMesh.h
 	${HEADER_PATH}/IModel.h
+	${HEADER_PATH}/IParser.h
 	${HEADER_PATH}/IServiceManager.h
 	${HEADER_PATH}/ISkeletonNode.h
 	${HEADER_PATH}/Window.h

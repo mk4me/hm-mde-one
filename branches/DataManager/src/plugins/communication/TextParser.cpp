@@ -3,34 +3,40 @@
 
 TextParser::TextParser()
 {
-	extensions.push_back(".txt");
+    extensions.push_back(".txt");
 }
 
 TextParser::~TextParser()
 {
-	textFile.close();
+    textFile.close();
 }
 
 void TextParser::parseFile(const std::string& path)
 {
-	this->path = path;
-	textFile.open(path.c_str());
-	if(textFile.is_open())
-	{
-		textFile >> output;
-	}
+    this->path = path;
+    textFile.open(path.c_str());
+    if(textFile.is_open())
+    {
+        textFile >> output;
+    }
 }
 
 core::IParser* TextParser::clone()
 {
-	return new TextParser();
+    return new TextParser();
 }
 
-bool TextParser::isExtensionSupported(const std::string& extension) const
+core::IParser::Extensions TextParser::getSupportedExtensions() const
 {
-	if(extension.compare(extensions[0]) == 0)
-	{
-		return true;
-	}
-	return false;
+    return extensions;
+}
+
+const std::string& TextParser::getOutput() const
+{
+    return output;
+}
+
+const std::string& TextParser::getPath() const
+{
+    return path;
 }

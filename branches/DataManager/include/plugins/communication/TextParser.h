@@ -5,27 +5,25 @@
 
 class TextParser : public core::IParser
 {
-	UNIQUE_ID('TXTP','PARS');
+    UNIQUE_ID('TXTP','PARS');
 public:
-	TextParser();
+    TextParser();
 
-	virtual ~TextParser();
+    virtual ~TextParser();
 
-	virtual void parseFile(const std::string& path);
+    virtual void parseFile(const std::string& path);
 
-	virtual IParser* clone();
+    virtual IParser* clone();
 
-	virtual const Extensions& getSupportedExtensions() const {return extensions;};
+    virtual Extensions getSupportedExtensions() const;
 
-	virtual bool isExtensionSupported(const std::string& extension) const;
+    const std::string& getOutput() const;
 
-	const std::string& getOutput() const {return output;};
-
-	const std::string& getPath() const {return path;};
+    const std::string& getPath() const;
 private:
-	Extensions extensions;
-	std::ifstream textFile;
-	std::string path;
-	std::string output;
+    Extensions extensions;
+    std::ifstream textFile;
+    std::string path;
+    std::string output;
 };
 #endif

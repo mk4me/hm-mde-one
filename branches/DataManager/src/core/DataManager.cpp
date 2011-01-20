@@ -212,7 +212,7 @@ void DataManager::registerParser(core::IParserPtr parser)
 	}
 	else
 	{
-		LOG_WARNING("Parser with this ID already registered.");
+		throw std::runtime_error("Parser with this ID already registered.");
 	}
 }
 
