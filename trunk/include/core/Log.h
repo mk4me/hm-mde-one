@@ -16,6 +16,7 @@
 #ifdef CORELIB_ENABLE_LOGGING
 
 #include <log4cxx/logger.h>
+#include <utils/Utils.h>
 
 //! Tutaj dzieje siê magia. Binarka kliencka za³¹czaj¹c corelib (bibliotekê statyczn¹)
 //! musi gdzieœ stworzyæ tê zmienn¹, bo inaczej bêd¹ b³êdy linkera.

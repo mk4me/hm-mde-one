@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 {
 #ifdef CORELIB_ENABLE_LOGGING
     // za³adowanie parametów logowania
-    log4cxx::PropertyConfigurator::configure("data/resources/settings/log.ini");
+    log4cxx::PropertyConfigurator::configure("B:\\edytor_trunk\\bin\\Debug\\data\\resources\\settings\\log.ini");
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(log4cxx::Logger::getLogger( "osg" ) ));
 #endif
 

@@ -103,7 +103,6 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
 {
 	if(static_cast<int>(time + 0.5f)%30 == 0 && model->getState() == communication::CommunicationManager::Ready)
 	{
-		LOG_DEBUG(static_cast<int>(time + 0.5f) << " " << time << " " << model->getState());
 		ping();
 	}
 	switch(model->getState())

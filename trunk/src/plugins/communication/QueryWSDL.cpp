@@ -8,51 +8,51 @@
 using namespace communication;
 
 QueryWSDL::QueryWSDL() {
-	bqs = new BasicQueriesService();
-	bus = new BasicUpdatesService();
+    bqs = new BasicQueriesService();
+    bus = new BasicUpdatesService();
 }
 
 QueryWSDL::~QueryWSDL() {
-	if(bqs) {
-		delete bqs;
-		bqs = NULL;
-	}
-	if(bus) {
-		delete bus;
-		bus = NULL;
-	}
+    if(bqs) {
+        delete bqs;
+        bqs = NULL;
+    }
+    if(bus) {
+        delete bus;
+        bus = NULL;
+    }
 }
 
 void QueryWSDL::setWSCredentials(const std::string& usr, const std::string& pswd) {
-	bqs->setUser(usr);
-	bqs->setPassword(pswd);
-	bus->setUser(usr);
-	bus->setPassword(pswd);
+    bqs->setUser(usr);
+    bqs->setPassword(pswd);
+    bus->setUser(usr);
+    bus->setPassword(pswd);
 }
 
 void QueryWSDL::setBasicQueriesServiceUri(const std::string& uri) {
-	bqs->setUri(uri);
+    bqs->setUri(uri);
 }
 
 void QueryWSDL::setBasicUpdatesServiceUri(const std::string& uri) {
-	bus->setUri(uri);
+    bus->setUri(uri);
 }
 
 std::vector<Trial> QueryWSDL::listSessionContents()
 {
-	return bqs->listSessionContents();
+    return bqs->listSessionContents();
 }
 
 std::map<int, Trial> QueryWSDL::listSessionTrials(int sessionID) {
-	return bqs->listSessionTrials(sessionID);
+    return bqs->listSessionTrials(sessionID);
 }
 
 std::map<int, Session> QueryWSDL::listLabSessionsWithAttributes(int labID) {
-	return bqs->listLabSessionsWithAttributes(labID);
+    return bqs->listLabSessionsWithAttributes(labID);
 }
 
 std::map<int, File> QueryWSDL::listFiles(int ID, const std::string& subjectType) {
-	return bqs->listFiles(ID, subjectType);
+    return bqs->listFiles(ID, subjectType);
 }
 
 //Performer* QueryWSDL::createPerformer(const std::string& name, const std::string& surname) {
