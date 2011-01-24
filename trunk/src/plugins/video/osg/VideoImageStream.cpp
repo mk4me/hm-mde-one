@@ -57,12 +57,12 @@ targetFormat(image.targetFormat)
 VideoImageStream::~VideoImageStream()
 {
   VM_FUNCTION_PROLOG;
-  OSG_INFO<<"Destructing VideoImageStream..."<<std::endl;
+  OSG_DEBUG<<"Destructing VideoImageStream..."<<std::endl;
 
   // quit
   quit(true);
 
-  OSG_INFO<<"Have done quit"<<std::endl;
+  OSG_DEBUG<<"Have done quit"<<std::endl;
 
   // release athe audio streams to make sure that the decoder doesn't retain any external
   // refences.
@@ -70,7 +70,7 @@ VideoImageStream::~VideoImageStream()
 
   //utils::deletePtr(innerStream);
 
-  OSG_INFO<<"Destructed VideoImageStream."<<std::endl;
+  OSG_DEBUG<<"Destructed VideoImageStream."<<std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -121,7 +121,7 @@ void VideoImageStream::run()
   } catch (...) {
     OSG_WARN << "VideoImageStream::run : unhandled exception" << std::endl;
   }
-  OSG_NOTICE<<"Finished VideoImageStream::run()"<<std::endl;
+  OSG_DEBUG<<"Finished VideoImageStream::run()"<<std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ bool VideoImageStream::open(const std::string &filename)
     innerStream = new Stream(VideoStream::create(VideoStream::FFmpeg, filename));
   } catch ( VideoError & err ) {
     // failed!
-    OSG_NOTICE<<"ffmpeg::open("<<filename<<") reported an error: "<< err.what() << std::endl;
+    OSG_FATAL<<"ffmpeg::open("<<filename<<") reported an error: "<< err.what() << std::endl;
     return false;
   }
 
@@ -164,9 +164,9 @@ bool VideoImageStream::open(const std::string &filename)
   }
 
   // info
-  OSG_NOTICE<<"ffmpeg::open("<<filename<<") size("<<s()<<", "<<t()<<") aspect ratio "<<getPixelAspectRatio()<<std::endl;
-  OSG_NOTICE<<"\tinner format: "<<utils::Enum<PixelFormat>::getName(getStream()->getPixelFormat())<<std::endl;
-  OSG_NOTICE<<"\tstream format: "<<utils::Enum<PixelFormat>::getName(targetFormat)<<std::endl;
+  OSG_DEBUG<<"ffmpeg::open("<<filename<<") size("<<s()<<", "<<t()<<") aspect ratio "<<getPixelAspectRatio()<<std::endl;
+  OSG_DEBUG<<"\tinner format: "<<utils::Enum<PixelFormat>::getName(getStream()->getPixelFormat())<<std::endl;
+  OSG_DEBUG<<"\tstream format: "<<utils::Enum<PixelFormat>::getName(targetFormat)<<std::endl;
 
   // domyœlnie pauzujemy
   _status = PAUSED;
@@ -228,7 +228,7 @@ void VideoImageStream::quit(bool waitForThreadToExit)
 
 double VideoImageStream::getCreationTime() const
 {
-  OSG_NOTICE<<"Not implemented."<<std::endl;
+  OSG_FATAL<<"Not implemented."<<std::endl;
   return 0.0;
 }
 

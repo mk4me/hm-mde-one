@@ -3,25 +3,14 @@
 #include "ToolboxMain.h"
 #include <core/PluginLoader.h>
 #include <utils/LeakDetection.h>
-
 #include <core/Log.h>
 
-// TODO: najlepiej by³oby te ifdefy zebraæ tak, ¿eby wystêpowa³y w tylko jednym miejscu.
-#ifdef CORELIB_ENABLE_LOGGING
-#include <log4cxx/logger.h>
-#include <log4cxx/propertyconfigurator.h>
-#include "OsgNotifyHandlerLog4cxx.h"
-#endif 
 
 using namespace core;
 
 int main(int argc, char *argv[])
 {
-#ifdef CORELIB_ENABLE_LOGGING
-    // za³adowanie parametów logowania
-    log4cxx::PropertyConfigurator::configure("B:\\edytor_trunk\\bin\\Debug\\data\\resources\\settings\\log.ini");
-    osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(log4cxx::Logger::getLogger( "osg" ) ));
-#endif
+    core::LogInitializer logger("data/resources/settings/log.ini");
 
     osg::ArgumentParser arguments(&argc,argv);
     arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
@@ -50,21 +39,17 @@ int main(int argc, char *argv[])
     {
         QApplication application(argc, argv);
         ToolboxMain window;
+        logger.setConsoleWidget( window.getConsole() );
         window.show();
         if (!filePath.empty()) 
         {
             window.openFile(filePath);
         }
         result = application.exec();
+        logger.setConsoleWidget(NULL);
     }
 
     // zwolnienie bibliotek
     core::PluginLoader::freeLibraries();
-
-#ifdef CORELIB_ENABLE_LOGGING
-    // trzeba przywróciæ domyœlnego notifiera, inaczej bêd¹ b³êdy z destruktorem
-    // (konflikty zmiennych globalnych)
-    osg::setNotifyHandler( new osg::StandardNotifyHandler() );
-#endif
     return result;
 }

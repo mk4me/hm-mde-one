@@ -36,7 +36,6 @@ set(PRIVATE_H
 	UserInterfaceService.h
 	#Quaternioncal.h
 	ComputeThread.h
-	OsgNotifyHandlerLog4cxx.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -82,6 +81,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/GroupData.h
 	${HEADER_PATH}/Header.h
 	${HEADER_PATH}/Data.h
+	${HEADER_PATH}/Log.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -119,7 +119,7 @@ set(TARGET_SRC
 	SkeletonNode.cpp	
 	#Quaternioncal.cpp
 	ComputeThread.cpp
-	OsgNotifyHandlerLog4cxx.cpp
+	Log.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

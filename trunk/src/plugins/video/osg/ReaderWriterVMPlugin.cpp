@@ -141,6 +141,11 @@ private:
     }
   }
 
+  //! 
+  //! \param severity
+  //! \param msg
+  //! \param item
+  //! \param parent
   static void logCallback(video::FFmpegVideoStream::LogSeverity severity, const char* msg, video::FFmpegVideoStream::FFmpegClass* item, video::FFmpegVideoStream::FFmpegClass* parent)
   {
     using namespace video;

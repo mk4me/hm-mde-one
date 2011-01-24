@@ -51,7 +51,7 @@ endif()
 option(EDR_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
 # Opcje konfiguracji
 CONFIG_OPTION(VM_ENABLE_EXCEPTIONS "Enable exeptions?" ON)
-CONFIG_OPTION(CORELIB_ENABLE_LOGGING "Enable logging?" OFF)
+CONFIG_OPTION(CORELIB_LOG4CXX_ENABLED "Enable logging?" OFF)
 
 set(SOURCEGROUP_PRIVATE_HEADERS "Header files" CACHE STRING "Filter for private headers.")
 set(SOURCEGROUP_SOURCES "Source files" CACHE STRING "Filter for sources.")
@@ -140,7 +140,7 @@ endif()
 #ADD_PROJECT(main "")
 
 ADD_PROJECT(utils "BOOST")
-if (CONFIG_CORELIB_ENABLE_LOGGING)
+if (CONFIG_CORELIB_LOG4CXX_ENABLED)
 	ADD_PROJECT(corelib "LOG4CXX;utils;OSG;QT;TINYXML;STDINT")
 else()
 	ADD_PROJECT(corelib "utils;OSG;QT;TINYXML;STDINT")

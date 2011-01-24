@@ -39,7 +39,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/QOsgWidgets.h
 	${HEADER_PATH}/QOsgWidgetsDeprecated.h
 	${HEADER_PATH}/DisableableRenderer.h
-	${HEADER_PATH}/Log.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})

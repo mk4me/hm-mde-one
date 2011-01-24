@@ -340,9 +340,11 @@ void ToolboxMain::updateServices()
 	{
 		loadData();
 	}
+    _consoleWidget->flushQueue();
     if ( updateEnabled ) {
         m_pServiceManager->updatePass();
     }
+    _consoleWidget->flushQueue();
 }
 
 void ToolboxMain::registerCoreServices()

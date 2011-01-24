@@ -149,7 +149,7 @@ bool PluginLoader::addPlugIn( const std::string& path )
                 return true;
             }
         } else {
-            LOG_INFO(path<<" is a .dll, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
+            LOG_DEBUG(path<<" is a .dll, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
         }
     }
     else
@@ -229,7 +229,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
     plugin->setPath(path);
     plugins.push_back( PluginPtr(plugin) );
     libraries.push_back(library);
-    LOG_INFO("Plugin loaded: " << plugin->getName());
+    LOG_INFO("Plugin " << plugin->getName() << " loaded from " << path);
     return true;
 }
 

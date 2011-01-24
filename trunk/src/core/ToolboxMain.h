@@ -62,6 +62,10 @@ public:
 
 	void loadData();
 
+    ConsoleWidget* getConsole()
+    {
+        return _consoleWidget;
+    }
 
 public slots:    
     //! Aktualizacja us³ug.

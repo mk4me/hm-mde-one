@@ -12,8 +12,56 @@
 // tymczasowe rozwi¹zanie: u¿ywamy strumieni OSG
 #include <core/Config.h>
 #include <osg/Notify>
+#include <utils/Enum.h>
+#include <utils/Utils.h>
 
-#ifdef CORELIB_ENABLE_LOGGING
+class ConsoleWidget;
+
+////////////////////////////////////////////////////////////////////////////////
+namespace core {
+////////////////////////////////////////////////////////////////////////////////
+
+//! Obiekt logu. Powinien byæ tworzony w g³ównej binarce na samym pocz¹tku maina.
+class LogInitializer 
+{
+public:
+    //! \param configPath Œcie¿ka do pliku konfiguracyjnego.
+    LogInitializer(const char* configPath);
+    //!
+    ~LogInitializer();
+
+public:
+    //! \param console Widget konsoli.
+    void setConsoleWidget(ConsoleWidget* widget);
+
+private:
+    /**
+     *	Prze³adowania operatorów new-delete. Prywatne, aby niemo¿liwe by³o
+     *  tworzenie instancji typu na stercie.
+     */     
+    void *operator new(size_t bytes);
+    //! \see LogInitializer::operator new
+    void *operator new[](size_t bytes);
+    //! \see LogInitializer::operator new
+    void operator delete(void* p);
+    //! \see LogInitializer::operator new
+    void operator delete[](void* p);
+};
+
+//! Poziom wa¿noœci wiadomoœci.
+enum LogSeverity {
+    LogSeverityError,
+    LogSeverityWarning,
+    LogSeverityInfo,
+    LogSeverityDebug
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+} // namespace core
+////////////////////////////////////////////////////////////////////////////////
+
+#ifdef CORELIB_LOG4CXX_ENABLED
 
 #include <log4cxx/logger.h>
 #include <utils/Utils.h>
