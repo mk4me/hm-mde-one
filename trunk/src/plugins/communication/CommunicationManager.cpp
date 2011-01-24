@@ -36,7 +36,9 @@ CommunicationManager::CommunicationManager()
 	if(pingCurl)
 	{
 		curl_easy_setopt(pingCurl, CURLOPT_URL, "http://83.230.112.43/");
-		curl_easy_setopt(pingCurl, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_easy_setopt(pingCurl, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_easy_setopt(pingCurl, CURLOPT_WRITEFUNCTION, pingDataCallback);
+        //curl_easy_setopt(pingCurl, CURLOPT_WRITEDATA, &pingResp);
 	}
 }
 
@@ -335,4 +337,9 @@ void CommunicationManager::run()
 	}
 	//przeladuj localne zasoby
 	loadLocalTrials();
+}
+
+size_t CommunicationManager::pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream)
+{
+    return size*nmemb;
 }

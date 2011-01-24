@@ -123,9 +123,6 @@ void FTPS_cURL::get(const std::string& filename)
 	curl_easy_setopt(this->curl, CURLOPT_PROGRESSFUNCTION, setProgress);
 	curl_easy_setopt(this->curl, CURLOPT_PROGRESSDATA, &this->progress);
 
-#ifdef _DEBUG
-	curl_easy_setopt(this->curl, CURLOPT_VERBOSE, 1L);
-#endif
 	this->res = curl_easy_perform(this->curl);
 	if(CURLE_OK != this->res)
 	{

@@ -269,6 +269,15 @@ namespace communication
 		Ukryty destruktor
 		*/
 		virtual ~CommunicationManager();
+		/**
+		Metoda statyczna (wymagana przez curla) typu callback do odbierania danych podczas pingowania.
+		@param buffer wskaŸnik do bloku pamiêci o rozmiarze size*nmemb
+		@param size rozmiar w bajtach elementu do odczytania
+		@param nmemb liczba elementów do odczytania
+		@param stream wskaŸnik na strumieñ danych
+		@return iloœæ bajtów przetworzonych przez funkcjê
+		*/
+		static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
 	};
 }
 #endif
