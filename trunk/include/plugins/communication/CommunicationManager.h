@@ -18,6 +18,8 @@ i web serwisy wsdl.
 #include "TransportWSDL_FTPS.h"
 #include "QueryWSDL.h"
 
+typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
+
 namespace communication
 {
 
@@ -33,6 +35,7 @@ namespace communication
             DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
             DownloadingTrial, /** Trwa pobieranie plików próby pomiarowej */
             UpdatingServerTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
+            UpdateTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
             PingServer, /** Pingowanie serwera */
             Error /** Wyst¹pi³ b³¹d */
         };
@@ -89,12 +92,18 @@ namespace communication
         Informuje ile plików ma byæ œci¹gniêtych przy operacji pobierania plików.
         @return ile plików ma byæ œci¹gnietych
         */
-        int getFilesToDownloadCount() const {return filesToDownload;};
+        int getFilesToDownloadCount() const
+        {
+            return filesToDownload;
+        };
         /**
         Informuje który z kolei plik jest aktualnie œci¹gany,
         @return który plik z kolei jest aktualnie œci¹gany
         */
-        int getActualDownloadFileNumber() const {return actualFile;};
+        int getActualDownloadFileNumber() const
+        {
+            return actualFile;
+        };
         /**
         Aktualizacja informacji o próbach pomiarowych z serwera.
         */
@@ -112,37 +121,58 @@ namespace communication
         /**
         Przerwanie operacji pobierania pliku lub próby pomiarowej.
         */
-        void cancelDownloading() {transportManager->abort();};
+        void cancelDownloading()
+        {
+            transportManager->abort();
+        };
         /**
         Listuje próby pomiarowe znajduj¹ce siê na serwerze.
         @return lista prób pomiarowych z serwera
         */
-        const std::vector<Trial>& getServerTrials() const {return serverTrials;};
+        const std::vector<Trial>& getServerTrials() const
+        {
+            return serverTrials;
+        };
         /**
         Listuje próby pomiarowe znajduj¹ce siê na lokalnym dysku.
         @return lista prób pomiarowych z lokalnego dysku
         */
-        const std::vector<LocalTrial>& getLocalTrials() const {return localTrials;};
+        const std::vector<LocalTrial>& getLocalTrials() const
+        {
+            return localTrials;
+        };
         /**
         Czy robiono aktualizacjê informacji o próbach pomiarowych serwera?
         @return true gdy robiono aktualizacjê, w przeciwnym przypadku zwraca false
         */
-        bool isUpdated() const {return this->isLastUpdate;};
+        bool isUpdated() const
+        {
+            return this->isLastUpdate;
+        };
         /**
         Zwraca datê ostatniej aktualizacji informacji o próbach. Nale¿y u¿ywaæ z metod¹ isUpdated().
         @return data ostatniej aktualizacji informacji
         */
-        const DateTime& getLastUpdateTime() const {return lastUpdate;};
+        const DateTime& getLastUpdateTime() const
+        {
+            return lastUpdate;
+        };
         /**
         Ustala Data Managera. Potrzebne przy ³adowaniu prób pomiarowych z lokalnego dysku.
         @param dataManager wskaŸnik na instancjê Data Managera
         */
-        void setDataManager(IDataManager* dataManager) {this->dataManager = dataManager;loadLocalTrials();};
+        void setDataManager(IDataManager* dataManager)
+        {
+            this->dataManager = dataManager;loadLocalTrials();
+        };
         /**
         Zwraca wskaŸnik na instancjê Data Managera.
         @return wskaŸnik na instancjê Data Managera
         */
-        IDataManager* getDataManager() {return dataManager;};
+        IDataManager* getDataManager()
+        {
+            return dataManager;
+        };
         //void setServiceManager(IServiceManager* serviceManager) {this->serviceManager = serviceManager;};
         //IServiceManager* getServiceManager() {return serviceManager;};
         /**
@@ -154,12 +184,20 @@ namespace communication
         Ustala stan w jakim znajduje siê Communication Service.
         @param state stan jaki ustaliæ jako aktualny dla CS
         */
-        void setState(const State& state) {this->state = state;};
+        void setState(const State& state)
+        {
+            ScopedLock lock(trialsMutex);
+            this->state = state;
+        };
         /**
         Sprawdza stan w jakim znajduje siê Communication Service.
         @return aktualny stan CS
         */
-        const State& getState() const {return state;};
+        const State& getState()
+        {
+            ScopedLock lock(trialsMutex);
+            return state;
+        };
         /**
         Pingowanie serwera.
         */
@@ -168,7 +206,10 @@ namespace communication
         Podaje informacjê czy serwer odpowiedzia³ na ostatni ping.
         @return czy serwer odpowiedzia³?
         */
-        bool isServerResponse() const {return serverResponse;};
+        bool isServerResponse() const
+        {
+            return serverResponse;
+        };
         /**
         Metoda run pochodzi z interfejsu OpenThreads::Thread i zosta³a przes³oniêta do przeniesienia operacji do osobnego w¹tku.
         */
@@ -177,7 +218,10 @@ namespace communication
         Zwraca komunikat b³êdu gdy CS znajduje siê w stanie Error.
         @return komunikat o b³êdzie
         */
-        const std::string& getErrorMessage() const {return errorMessage;};
+        const std::string& getErrorMessage() const
+        {
+            return errorMessage;
+        };
         /**
         Statyczna metoda pobieraj¹ca jedyna instancjê klasy CommuniationManagera.
         @return jedyna instancja CommunicationManagera
@@ -261,6 +305,10 @@ namespace communication
         WskaŸnik na instancjê zajmuj¹c¹ siê odpytywaniem bazy danych
         */
         IQueryable* queryManager;
+        /**
+        Muteks zabezpieczaj¹cy przed zakleszczeniami.
+        */
+        OpenThreads::Mutex trialsMutex;
         /**
         Ukryty konstruktor
         */

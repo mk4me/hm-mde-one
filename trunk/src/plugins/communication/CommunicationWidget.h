@@ -26,14 +26,14 @@ class CommunicationService;
 class EntityTrialItem : public QListWidgetItem
 {
 private:
-	int session;
-	int id;
+    int session;
+    int id;
 public:
-	EntityTrialItem() {session = 0;};
-	void setSession(int session) {this->session = session;};
-	int getSession() {return session;};
-	void setID(int ID) {this->id = ID;};
-	int getID() {return id;};
+    EntityTrialItem() {session = 0;};
+    void setSession(int session) {this->session = session;};
+    int getSession() {return session;};
+    void setID(int ID) {this->id = ID;};
+    int getID() {return id;};
 };
 
 /**
@@ -44,14 +44,14 @@ public:
 class LocalTrialItem : public QListWidgetItem
 {
 private:
-	std::string path;
-	std::string name;
+    std::string path;
+    std::string name;
 public:
-	LocalTrialItem() {setTextColor(QColor(0, 0, 255));};
-	void setPath(const std::string& path) {this->path = path;};
-	const std::string& getPath() const {return path;};
-	void setName(const std::string& name) {this->name = name;};
-	const std::string& getName() const {return name;};
+    LocalTrialItem() {setTextColor(QColor(0, 0, 255));};
+    void setPath(const std::string& path) {this->path = path;};
+    const std::string& getPath() const {return path;};
+    void setName(const std::string& name) {this->name = name;};
+    const std::string& getName() const {return name;};
 };
 
 /**
@@ -61,151 +61,132 @@ public:
 
 class CommunicationWidget : public QWidget, public utils::Observer<communication::CommunicationManager>
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	/**
-	Konstruktor CommunicationWidget
-	*/
-	CommunicationWidget(CommunicationService* service);
-	/**
-	Wirtualny destruktor CommunicationWidget
-	*/
-	virtual ~CommunicationWidget();
-	/**
-	Ustala czy widok ma przejœæ w stan zajêty przez czasoch³onn¹ operacjê.
-	@param busy czy przejœæ w stan zajêty?
-	*/
-	void setBusy(bool busy);
-	/**
-	Zwraca czy widok jest w stanie zajêtym
-	@return czy jest zajêty?
-	*/
-	bool getBusy();
-	/**
-	Ustala wartoœæ procentow¹ w pasku pobierania.
-	@parem value wartoœæ do przedstawienia przez pasek pobierania
-	*/
-	void setProgress(int value);
-	/**
-	Ustala informacjê na etykiecie.
-	@info informacja do wyœwietlenia na etykiecie
-	*/
-	void setInfoLabel(const std::string& info) {infoText=info;infoLabel->setText(QString::fromStdString(infoText));};
-	/**
-	Wyœwietla okno z komunikatem b³êdu.
-	@param error komunikat b³êdu
-	*/
-	void showErrorMessage(const std::string& error);
-	/**
-	Ominiêcie aktualizacji widoku spoza g³ównego w¹tku Qt. Sprawdza czy odœwie¿yæ widok.
-	*/
-	void refresh();
-	/**
-	Pobiera zaznaczon¹ z listy próbê pomiarow¹. Pobieranie rozpocznie siê tylko gdy jest zaznaczona
-	próba pomiarowa nie znajduj¹ca siê na lokalnym dysku.
-	*/
-	void download();
-	/**
-	Przerywa pobieranie plików.
-	*/
-	void abort();
-	/**
-	£aduje wybran¹ próbê pomiarow¹ do edytora EDR.
-	@param name nazwa lokalnej próby pomiarowej do za³adowania
-	*/
-	void loadTrial(const std::string& name);
-	/**
-	Aktualizuje informacje o próbach pomiarowych.
-	*/
-	void updateTrials();
-	/**
-	Metoda aktualizuj¹ca dane widoku.
-	@param subject dane pozwalaj¹ce zaktualizowaæ widok
-	*/
+    /**
+    Konstruktor CommunicationWidget
+    */
+    CommunicationWidget(CommunicationService* service);
+    /**
+    Wirtualny destruktor CommunicationWidget
+    */
+    virtual ~CommunicationWidget();
+    /**
+    Ustala wartoœæ procentow¹ w pasku pobierania.
+    @parem value wartoœæ do przedstawienia przez pasek pobierania
+    */
+    void setProgress(int value);
+    /**
+    Ustala informacjê na etykiecie.
+    @info informacja do wyœwietlenia na etykiecie
+    */
+    void setInfoLabel(const std::string& info) {infoText=info;infoLabel->setText(QString::fromStdString(infoText));};
+    /**
+    Wyœwietla okno z komunikatem b³êdu.
+    @param error komunikat b³êdu
+    */
+    void showErrorMessage(const std::string& error);
+    /**
+    Pobiera zaznaczon¹ z listy próbê pomiarow¹. Pobieranie rozpocznie siê tylko gdy jest zaznaczona
+    próba pomiarowa nie znajduj¹ca siê na lokalnym dysku.
+    */
+    void download();
+    /**
+    Przerywa pobieranie plików.
+    */
+    void abort();
+    /**
+    £aduje wybran¹ próbê pomiarow¹ do edytora EDR.
+    @param name nazwa lokalnej próby pomiarowej do za³adowania
+    */
+    void loadTrial(const std::string& name);
+    /**
+    Aktualizuje informacje o próbach pomiarowych.
+    */
+    void updateTrials();
+    /**
+    Metoda aktualizuj¹ca dane widoku.
+    @param subject dane pozwalaj¹ce zaktualizowaæ widok
+    */
     virtual void update(const communication::CommunicationManager* subject);
 
-	private slots:
-		/**
-		Slot klikniêcia przycisku aktualizacji.
-		*/
-		void updateButtonClicked();
-		/**
-		Slot klikniêcia przycisku pobierania/³adowania prób pomiarowych.
-		*/
-		void downloadButtonClicked();
-		/**
-		Slot dwukliku na liœcie prób pomiarowych.
-		*/
-		void itemDoubleClicked(QListWidgetItem*);
-		/**
-		Slot klikniêcia na liœcie prób pomiarowych.
-		*/
-		void itemClicked(QListWidgetItem*);
-
+    private slots:
+        /**
+        Slot klikniêcia przycisku aktualizacji.
+        */
+        void updateButtonClicked();
+        /**
+        Slot klikniêcia przycisku pobierania/³adowania prób pomiarowych.
+        */
+        void downloadButtonClicked();
+        /**
+        Slot klikniêcia przycisku anulowania pobierania.
+        */
+        void abortButtonClicked();
+        /**
+        Slot dwukliku na liœcie prób pomiarowych.
+        */
+        void itemDoubleClicked(QListWidgetItem*);
+        /**
+        Slot klikniêcia na liœcie prób pomiarowych.
+        */
+        void itemClicked(QListWidgetItem*);
 private:
-	/**
-	WskaŸnik na kontroler serwisu
-	*/
-	CommunicationService* communicationService;
-	/**
-	Muteks zabezpieczaj¹cy przed zakleszczeniami.
-	*/
-	OpenThreads::Mutex trialsMutex;
-	/**
-	Kopia prób pomiarowych znajduj¹cych siê na serwerze.
-	*/
-	std::vector<communication::Trial> serverTrials;
-	/**
-	Kopia prób pomiarowych znajduj¹cych siê lokalnie.
-	*/
-	std::vector<LocalTrial> localTrials;
-	/**
-	Informacja wykorzystywana przy etykietach.
-	*/
-	std::string infoText;
-	/**
-	Czy zaktualizowaæ widok?
-	*/
-	bool updateView;
-	/**
-	W³aœciwa metoda aktualizuj¹ca widok. powinna wykonywaæ siê w g³ównym w¹tku.
-	*/
-	void refreshUI();
-	/**
-	Przycisk aktualizacji informacji o próbach pomiarowych
-	*/
-	QPushButton* updateButton;
-	/**
-	Przycisk pobierania prób pomiarowych
-	*/
-	QPushButton* downloadButton;
-	/**
-	Lista z próbami pomiarowymi
-	*/
-	QListWidget* trials;
-	/**
-	Pasek postêpu
-	*/
-	QProgressBar* progressBar;
-	/**
-	Etykieta informacyjna nad list¹
-	*/
-	QLabel* aviableTrialsLabel;
-	/**
-	Etykieta informacyjna odnoœnie aktualizacji i stanu widoku
-	*/
-	QLabel* infoLabel;
-	/**
-	Serwer online/offline?
-	*/
-	bool isOnline;
-	/**
-	Etykieta informacyjna odnoœnie stanu serwera
-	*/
-	QLabel* serverStateLabel;
-	/**
-	czy widok jest zajêty
-	*/
-	bool busy;
+    /**
+    WskaŸnik na kontroler serwisu
+    */
+    CommunicationService* communicationService;
+    /**
+    Kopia prób pomiarowych znajduj¹cych siê na serwerze.
+    */
+    std::vector<communication::Trial> serverTrials;
+    /**
+    Kopia prób pomiarowych znajduj¹cych siê lokalnie.
+    */
+    std::vector<LocalTrial> localTrials;
+    /**
+    Informacja wykorzystywana przy etykietach.
+    */
+    std::string infoText;
+    /**
+    W³aœciwa metoda aktualizuj¹ca widok. powinna wykonywaæ siê w g³ównym w¹tku.
+    */
+    void refreshUI();
+    /**
+    Przycisk aktualizacji informacji o próbach pomiarowych
+    */
+    QPushButton* updateButton;
+    /**
+    Przycisk pobierania prób pomiarowych
+    */
+    QPushButton* downloadButton;
+    /**
+    Przycisk anulowania pobierania próby pomiarowej
+    */
+    QPushButton* abortButton;
+    /**
+    Lista z próbami pomiarowymi
+    */
+    QListWidget* trials;
+    /**
+    Pasek postêpu
+    */
+    QProgressBar* progressBar;
+    /**
+    Etykieta informacyjna nad list¹
+    */
+    QLabel* aviableTrialsLabel;
+    /**
+    Etykieta informacyjna odnoœnie aktualizacji i stanu widoku
+    */
+    QLabel* infoLabel;
+    /**
+    Serwer online/offline?
+    */
+    bool isOnline;
+    /**
+    Etykieta informacyjna odnoœnie stanu serwera
+    */
+    QLabel* serverStateLabel;
 };
 #endif

@@ -6,7 +6,6 @@
 #include <core/Filesystem.h>
 #include <plugins/communication/CommunicationManager.h>
 
-
 using namespace communication;
 
 typedef std::vector<Trial> ServerTrials;
@@ -24,14 +23,19 @@ CommunicationManager* CommunicationManager::getInstance()
 
 void CommunicationManager::destoryInstance()
 {
+    if(instance)
+    {
+        delete instance;
+    }
+    instance = NULL;
 }
 
-CommunicationManager::CommunicationManager()
+CommunicationManager::CommunicationManager() : trialsMutex()
 {
     this->transportManager = NULL;
     this->queryManager = NULL;
     this->trialsDir = "data/trials/";
-    this->state = Ready;
+    this->setState(Ready);
     pingCurl = curl_easy_init();
     if(pingCurl)
     {
@@ -52,10 +56,6 @@ CommunicationManager::~CommunicationManager()
     {
         join();
     }
-    if(instance) {
-        delete instance;
-    }
-    instance = NULL;
 }
 
 void CommunicationManager::saveToXml(const std::string& filename)
@@ -196,32 +196,34 @@ int CommunicationManager::getProgress() const
 
 void CommunicationManager::listSessionContents()
 {
-    state = UpdatingServerTrials;
+    setState(UpdatingServerTrials);
     start();
 }
 
 void CommunicationManager::downloadTrial(unsigned int trialID)
 {
-    state = DownloadingTrial;
+    setState(DownloadingTrial);
     entityID = trialID;
     start();
 }
 
 void CommunicationManager::downloadFile(unsigned int fileID)
 {
-    state = DownloadingFile;
+    setState(DownloadingFile);
     entityID = fileID;
     start();
 }
 
 void CommunicationManager::ping()
 {
-    state = PingServer;
+    setState(PingServer);
     start();
 }
 
 void CommunicationManager::loadLocalTrials()
 {
+    //ScopedLock lock(trialsMutex);
+    setState(Ready);
     localTrials.clear();
     dataManager->loadTrials();
     if(dataManager && dataManager->getLocalTrialsCount() > 0)
@@ -241,24 +243,25 @@ void CommunicationManager::loadTrial(const std::string& name)
 
 void CommunicationManager::run()
 {
-    switch(state)
+    switch(getState())
     {
-    case DownloadingFile:
-        {
-            try
-            {
-                filesToDownload = 1;
-                actualFile = 1;
-                this->transportManager->downloadFile(entityID, this->trialsDir);
-                state = Ready;
-            }
-            catch(std::runtime_error& e)
-            {
-                state = Error;
-                errorMessage = e.what();
-            }
-            break;
-        }
+        //nie uzywamy na razie
+        //case DownloadingFile:
+        //    {
+        //        try
+        //        {
+        //            filesToDownload = 1;
+        //            actualFile = 1;
+        //            this->transportManager->downloadFile(entityID, this->trialsDir);
+        //            state = Ready;
+        //        }
+        //        catch(std::runtime_error& e)
+        //        {
+        //            state = Error;
+        //            errorMessage = e.what();
+        //        }
+        //        break;
+        //    }
     case DownloadingTrial:
         {
             std::string pathToDownloadingTrial;
@@ -280,7 +283,7 @@ void CommunicationManager::run()
                         break;
                     }
                 }
-                state = Ready;
+                state = UpdateTrials;
             }
             catch(std::runtime_error& e)
             {
@@ -300,7 +303,7 @@ void CommunicationManager::run()
                 serverTrials.clear();
                 serverTrials = queryManager->listSessionContents();
                 lastUpdate = DateTime();
-                state = Ready;
+                state = UpdateTrials;
             }
             catch(std::runtime_error& e)
             {
@@ -335,8 +338,6 @@ void CommunicationManager::run()
             return;
         }
     }
-    //przeladuj localne zasoby
-    loadLocalTrials();
 }
 
 size_t CommunicationManager::pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream)

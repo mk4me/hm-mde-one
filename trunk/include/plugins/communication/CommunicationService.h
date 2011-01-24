@@ -42,10 +42,6 @@ private:
 	Nazwa serwisu
 	*/
 	std::string name;
-	/**
-	ping serwera
-	*/
-	void ping() {model->ping();};
 public:
 	/**
 	Konstruktor
@@ -100,6 +96,13 @@ public:
 	{
 		return name;
 	}
+	/**
+	ping serwera
+	*/
+	void ping()
+    {
+        model->ping();
+    };
 	//ICommunication
 	/**
 	Metoda z interfejsu ICommunication. Pobieranie informacji o próbach pomiarowych z serwera.
