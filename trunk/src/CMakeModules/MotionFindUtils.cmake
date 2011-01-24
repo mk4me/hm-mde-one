@@ -467,7 +467,7 @@ macro(FIND_COPY_AND_INSTALL_MODULES buildType subDir)
 			message(STATUS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${subDir}/${moduleName} <- ${module}")
 		endif()
 		# instalacja pliku
-		install(FILES ${module} DESTINATION bin/${FIND_MODULE_PREFIX_${moduleNameWE}} CONFIGURATIONS ${buildType})
+		install(FILES ${module} DESTINATION bin/${FIND_MODULE_PREFIX_${moduleNameWE}} CONFIGURATIONS ${buildType} COMPONENT core)
 	endforeach()
 
 endmacro(FIND_COPY_AND_INSTALL_MODULES)

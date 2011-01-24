@@ -146,7 +146,7 @@ include(${QT_USE_FILE})
 # kompilacja do wspó³dzielonej biblioteki
 add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
 #instalacja
-install(TARGETS ${TARGET_TARGETNAME} DESTINATION bin )
+install(TARGETS ${TARGET_TARGETNAME} DESTINATION bin COMPONENT video)
 #add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
 # nag³ówki
 include_directories(${DEFAULT_PROJECT_INCLUDES})

@@ -150,9 +150,11 @@ ADD_PROJECTS(plugins)
 
 
 #---------------------------------------------------
-# zaspby
-set(EDR_DATA_ROOT "${PROJECT_SOURCE_DIR}/../data/" CACHE PATH "Location of data.")
-install(DIRECTORY ${EDR_DATA_ROOT} DESTINATION bin/ FILES_MATCHING PATTERN "*.png") 
+# zasoby
+
+
+set(EDR_TRIALS_ROOT "${PROJECT_SOURCE_DIR}/../trials/" CACHE PATH "Location of trials.")
+install(DIRECTORY ${EDR_TRIALS_ROOT} DESTINATION bin/data COMPONENT trials) 
 
 #---------------------------------------------------
 # testy
@@ -168,13 +170,27 @@ option(EDR_ENABLE_SVN_RESOURCES "Enable svn resources?" OFF)
 if(EDR_ENABLE_SVN_RESOURCES)
 	set(EDR_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/../resources/" CACHE PATH "Location of resources being part of repository.")
 	add_subdirectory(${EDR_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
-	install(DIRECTORY ${EDR_SVN_RESOURCES_ROOT} DESTINATION bin/data/ 
+	install(DIRECTORY ${EDR_SVN_RESOURCES_ROOT} DESTINATION bin/data/ COMPONENT core
 		PATTERN ".svn" EXCLUDE
-		PATTERN "CMakeLists.txt" EXCLUDE)
+		PATTERN "CMakeLists.txt" EXCLUDE )
 endif()
 
 #---------------------------------------------------
 # CPack
+set(CPACK_COMPONENT_COMMUNICATION_GROUP "Plugins")
+set(CPACK_COMPONENT_ANIMATION_GROUP "Plugins")
+set(CPACK_COMPONENT_VIDEO_GROUP "Plugins")
+set(CPACK_COMPONENT_CHART_GROUP "Plugins")
+set(CPACK_COMPONENT_TIMELINE_GROUP "Plugins")
+set(CPACK_COMPONENT_CORE_GROUP "Runtime")
+set(CPACK_COMPONENT_COMMUNICATION_DISPLAY_NAME "Communication plugin")
+set(CPACK_COMPONENT_ANIMATION_DISPLAY_NAME "Animation plugin")
+set(CPACK_COMPONENT_VIDEO_DISPLAY_NAME "Video plugin")
+set(CPACK_COMPONENT_CHART_DISPLAY_NAME "Chart plugin")
+set(CPACK_COMPONENT_TIMELINE_DISPLAY_NAME "Timeline plugin")
+set(CPACK_COMPONENT_CORE_DISPLAY_NAME "Main application")
+set(CPACK_COMPONENT_TRIALS_DISPLAY_NAME "Demo data")
+set(CPACK_COMPONENTS_ALL communication core chart animation video timeline trials)
 option(ENABLE_CPACK "Set on to enable CPack" OFF)
 #wlaczamy CTest
 include(CTest)
