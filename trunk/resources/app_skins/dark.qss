@@ -84,7 +84,8 @@
  }
 
   QToolButton {
-     min-width: 20px;
+     min-height: 10px;
+     min-width: 10px;
  }
 
  QPushButton:hover, QToolButton:hover {
