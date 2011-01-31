@@ -153,7 +153,7 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
 AsyncResult CommunicationService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
     //jakies makro na rzutowanie?
-    tp = boost::dynamic_pointer_cast<TextParser, core::IParser>(core::queryParsers<TextParser>(dataManager));
+    tp = core::queryParsers<TextParser>(dataManager);
     if(tp)
     {
         tp->parseFile("Communication");
