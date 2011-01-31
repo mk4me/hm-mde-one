@@ -15,13 +15,13 @@ public:
 
     virtual IParser* clone();
 
-    virtual Extensions getSupportedExtensions() const;
+    virtual const std::string& getSupportedExtension() const;
 
     const std::string& getOutput() const;
 
     const std::string& getPath() const;
 private:
-    Extensions extensions;
+    std::string extension;
     std::ifstream textFile;
     std::string path;
     std::string output;

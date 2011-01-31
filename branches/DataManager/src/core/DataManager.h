@@ -9,15 +9,11 @@ data/resources, próby pomiarowe s¹ wyszukiwane i pobierane do data/trials.
 
 #include <core/IDataManager.h>
 #include <core/LocalTrial.h>
+#include <core/IParser.h>
 
 class DataManager: public IDataManager
 {
 public:
-    //! S³ownik us³ug.
-    typedef std::map<UniqueID, core::IParserPtr> ParsersMap;
-    //! Sekwencja us³ug.
-    typedef std::vector<core::IParserPtr> ParsersList;
-	//------------------------------------------------------------------------------------------------------------------------------
 	DataManager(const std::string& resourcesPath = "data/resources/", const std::string& trialsPath = "data/trials/");
 
 	virtual void loadResources();
@@ -50,21 +46,9 @@ public:
 	virtual bool isLoadLocalTrialData() const {return loadTrialData;};
 	virtual void setLoadLocalTrialData(bool load) {loadTrialData = load;};
 
-    //! Rejestruje zadan¹ us³ugê.
-    //! \param newService
-    virtual void registerParser(core::IParserPtr parser);
-    //! \return Liczba us³ug.
-    virtual int getNumParsers() const;
-    //! \param idx Indeks us³ugi.
-    //! \return Us³uga o zadanym indeksie.
-    virtual core::IParserPtr getParser(int idx);
-    //! \param id ID us³ugi do wyszukania.
-    //! \return Odnaleziona us³uga b¹dŸ NULL.
-    virtual core::IParserPtr getParser(UniqueID id);
-
 	virtual ~DataManager();
 protected:
-	LocalTrial loadLocalTrial(const std::string& path);
+//	LocalTrial loadLocalTrial(const std::string& path);
 private:
 	std::vector<std::string> shadersPaths;
 	std::vector<std::string> meshesPaths;
@@ -79,12 +63,48 @@ private:
 
 	bool loadTrialData;
 	bool loadUnknownTrialData;
-
-	
-    //! S³ownik us³ug.
-    ParsersMap parsersMap; 
-    //! Sekwencja us³ug.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+    //! S³ownik parserów wed³ug ID.
+    typedef std::map<UniqueID, core::IParserPtr> ParsersIDMap;
+    //! S³ownik parserów wed³ug rozszerzeñ.
+    typedef std::map<std::string, core::IParserPtr> ParsersExtMap;
+    //! Sekwencja parserów.
+    typedef std::vector<core::IParserPtr> ParsersList;
+	//------------------------------------------------------------------------------------------------------------------------------
+    //! S³owniki parserów niezainicjalizowanych.
+    ParsersIDMap parsersIDMap;
+    ParsersExtMap parsersExtMap;
+    //! Sekwencja parserów niezainicjalizowanych.
     ParsersList parsersList;
+    //! Sekwencja parserów aktualnej próby pomiarowej.
+    ParsersList actualTrialParsersList;
+    //! Lista lokalnych prób pomiarowych.
+	std::vector<LocalTrial> localTrialsList;
+public:
+    //! Rejestruje zadany parser.
+    //! \param newService
+    virtual void registerParser(core::IParserPtr parser);
+    //! \return Liczba parserów.
+    virtual int getNumParsers() const;
+    //! \param idx Indeks parsera.
+    //! \return Parser o zadanym indeksie.
+    virtual core::IParserPtr getParser(int idx);
+    //! \param id ID parsera do wyszukania.
+    //! \return Odnaleziony parser b¹dŸ NULL.
+    virtual core::IParserPtr getParser(UniqueID id);
+
+    //! \param extension rozszerzenie parsera.
+    //! \return Odnaleziony parser b¹dŸ NULL.
+    core::IParserPtr getParser(const std::string& extension);
+    //! \return rozszerzenia plików obs³ugiwanych przez parsery.
+    const std::vector<std::string> getSupportedExtensions();
+    void findLocalTrials();
+	LocalTrial findLocalTrialsPaths(const std::string& path);
+    void loadLocalTrial(int i);
+    void loadLocalTrial(const std::string& name);
+    void loadActualTrialParsers(const LocalTrial& trial);
+    ParsersList& getActualTrialParsers();
 
 };
 

@@ -10,7 +10,6 @@ namespace core
     class IParser : public IIdentifiable
     {
     public:
-        typedef std::vector<std::string> Extensions;
 
         virtual ~IParser() {}
 
@@ -18,7 +17,7 @@ namespace core
 
         virtual IParser* clone() = 0;
 
-        virtual Extensions getSupportedExtensions() const = 0;
+        virtual const std::string& getSupportedExtension() const = 0;
     };
 
     typedef CORE_SHARED_PTR(IParser) IParserPtr;

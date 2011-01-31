@@ -3,7 +3,7 @@
 
 TextParser::TextParser()
 {
-    extensions.push_back(".txt");
+    extension = ".txt";
 }
 
 TextParser::~TextParser()
@@ -26,9 +26,9 @@ core::IParser* TextParser::clone()
     return new TextParser();
 }
 
-core::IParser::Extensions TextParser::getSupportedExtensions() const
+const std::string& TextParser::getSupportedExtension() const
 {
-    return extensions;
+    return extension;
 }
 
 const std::string& TextParser::getOutput() const
