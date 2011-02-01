@@ -38,8 +38,6 @@
 #include "FileReader2Motion.h"
 #include <utils/Debug.h>
 
-#include <plugins/video/core/PixelFormat.h>
-
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
 #include <functional>

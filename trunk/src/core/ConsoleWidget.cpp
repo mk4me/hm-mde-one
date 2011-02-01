@@ -9,6 +9,7 @@ ConsoleWidget::ConsoleWidget(void):
     qRegisterMetaType<ConsoleWidgetEntry>("ConsoleWidgetEntry");
     qRegisterMetaType<ConsoleWidgetEntryPtr>("ConsoleWidgetEntryPtr");
     setupUi(this); 
+    toggleWordWrapButton->setChecked( textEdit->lineWrapMode() != QTextOption::NoWrap );
 }
 
 ConsoleWidget::~ConsoleWidget(void)
@@ -79,4 +80,9 @@ void ConsoleWidget::logOrQueueEntry( ConsoleWidgetEntryPtr entry )
     } else {
         queueEntry(entry);
     }
+}
+
+void ConsoleWidget::setWordWrap( bool wrap )
+{
+    textEdit->setWordWrapMode( wrap ? QTextOption::WrapAtWordBoundaryOrAnywhere : QTextOption::NoWrap );
 }

@@ -1,6 +1,6 @@
 #include "VideoPCH.h"
 #include "StreamOsgWidget.h"
-#include "osg/VideoImageStream.h"
+#include <vidlib/osg/VideoImageStream.h>
 #include <core/Log.h>
 
 
@@ -11,7 +11,7 @@ namespace video {
 StreamOsgWidget::StreamOsgWidget( const std::string& name ) : 
 osgWidget::Widget(name),
 yuvProgram(new osg::Program),
-format(video::PixelFormatBGRA)
+format(vidlib::PixelFormatBGRA)
 {
     getOrCreateStateSet()->setAttribute(yuvProgram);
 }
@@ -63,9 +63,9 @@ bool StreamOsgWidget::isUsingTextureRectangle() const
     }
 }
 
-void StreamOsgWidget::refreshShaders( bool useTextureRect, video::PixelFormat format )
+void StreamOsgWidget::refreshShaders( bool useTextureRect, vidlib::PixelFormat format )
 {
-    if ( format == video::PixelFormatYV12 ) {
+    if ( format == vidlib::PixelFormatYV12 ) {
         // usuniêcie shaderów z programu
         while ( yuvProgram->getNumShaders() ) {
             yuvProgram->removeShader( yuvProgram->getShader(0) );
@@ -85,13 +85,13 @@ void StreamOsgWidget::refreshShaders( bool useTextureRect, video::PixelFormat fo
         }
         // TODO: sprawdziæ czy wielokrotnie nie dodajemy
         getOrCreateStateSet()->setAttribute(yuvProgram);
-    } else if ( format == video::PixelFormatARGB || format == video::PixelFormatBGRA || format == video::PixelFormatRGB24 ) {
+    } else if ( format == vidlib::PixelFormatARGB || format == vidlib::PixelFormatBGRA || format == vidlib::PixelFormatRGB24 ) {
         // usuwamy shadera, poniewaz mo¿na odrysowaæ wprost
         if ( osg::StateSet* state = getOrCreateStateSet() ) {
             state->removeAttribute(yuvProgram);
         }
     } else {
-        LOG_ERROR("Nieobs³ugiwany format: "<<utils::Enum<video::PixelFormat>::getName(format));
+        LOG_ERROR("Nieobs³ugiwany format: "<<utils::Enum<vidlib::PixelFormat>::getName(format));
     }
 }
 
@@ -100,13 +100,13 @@ void StreamOsgWidget::refreshShaders()
     refreshShaders( isUsingTextureRectangle(), format );
 }
 
-void StreamOsgWidget::setPixelFormat( video::PixelFormat format )
+void StreamOsgWidget::setPixelFormat( vidlib::PixelFormat format )
 {
     this->format = format;
     refreshShaders();
 }
 
-video::PixelFormat StreamOsgWidget::getPixelFormat() const
+vidlib::PixelFormat StreamOsgWidget::getPixelFormat() const
 {
     return format;
 }
@@ -188,16 +188,16 @@ video::PixelFormat StreamOsgWidget::getPixelFormat() const
 // //     this->useTextureRect = useTextureRect;
 // //     refreshShaders(useTextureRect, getPixelFormat());
 // }
-// video::PixelFormat StreamOsgWidget::getPixelFormat() const
+// vidlib::PixelFormat StreamOsgWidget::getPixelFormat() const
 // {
 //     if (const vmOSGPlugin::VideoImageStream* stream = getStream(getStateSet())) {
 //         return stream->getTargetFormat();
 //     } else {
-//         return video::PixelFormatUndefined;
+//         return vidlib::PixelFormatUndefined;
 //     }
 // }
 
-// void StreamOsgWidget::setPixelFormat( video::PixelFormat format )
+// void StreamOsgWidget::setPixelFormat( vidlib::PixelFormat format )
 // {
 //     if (vmOSGPlugin::VideoImageStream* stream = getStream(getStateSet())) {
 //         stream->setTargetFormat(format);

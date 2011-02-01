@@ -59,6 +59,9 @@ public slots:
     void logEntry(const ConsoleWidgetEntry& entry);
     //! Opró¿nia kolejkê komunikatów.
     void flushQueue();
+    //! \param wrap Czy zawijaæ tekst?
+    void setWordWrap(bool wrap);
+
 };
 
 //------------------------------------------------------------------------------

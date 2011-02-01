@@ -12,6 +12,8 @@
 #include <vector>
 #include <string>
 
+#include <core/Log.h>
+
 #include "SmartPtr.h"
 #include "IService.h"
 #include "IParser.h"
@@ -30,6 +32,7 @@ namespace core {
 //! \param name Nazwa pluginu.
 //! \param id ID pluginu.
 #define CORE_PLUGIN_BEGIN(name, id)                                     \
+DEFINE_DEFAULT_LOGGER("edr." name)                                      \
 extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME() \
 {                                                                       \
     core::Plugin* instance = new core::Plugin((name), (id));    
@@ -45,7 +48,7 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME() \
 
 //! Dodaje parser zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_PARSER(className)                              \
-	instance->addParser( IParserPtr(new className) );
+    instance->addParser( core::IParserPtr(new className) );
 
 /**
  *	Kontener na us³ugi.

@@ -2,9 +2,12 @@
 #include <QtGui/QApplication>
 #include "ToolboxMain.h"
 #include <core/PluginLoader.h>
-#include <utils/LeakDetection.h>
 #include <core/Log.h>
+#include <core/Config.h>
 
+#ifdef CORE_ENABLE_LEAK_DETECTION
+#include <utils/LeakDetection.h>
+#endif
 
 using namespace core;
 

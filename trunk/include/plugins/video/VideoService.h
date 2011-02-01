@@ -10,7 +10,7 @@
 #define __HEADER_GUARD__VIDEOSERVICE_H__
 
 #include <core/IService.h>
-#include <plugins/video/core/PixelFormat.h>
+#include <vidlib/PixelFormat.h>
 #include <plugins/timeline/Stream.h>
 
 class IModel;
@@ -45,9 +45,9 @@ private:
 
 public:
     //! \return Format u퓓wany przy rysowaniu.
-    video::PixelFormat getOutputFormat();
+    vidlib::PixelFormat getOutputFormat();
     //! \param format Format u퓓wany przy rysowaniu.
-    void setOutputFormat(video::PixelFormat format);
+    void setOutputFormat(vidlib::PixelFormat format);
     //! \return Czy u퓓wa rozszerzenia TEXTURE_RECT?
     bool isUsingTextureRectangle();
     //! \param useTextureRectangle Czy u퓓wa rozszerzenia TEXTURE_RECT?

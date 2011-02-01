@@ -17,9 +17,9 @@
 #include <osgWidget/Widget>
 #include <core/MultiView.h>
 #include <core/QOsgWidgets.h>
-#include <plugins/video/core/PixelFormat.h>
+#include <vidlib/PixelFormat.h>
 
-#include "osg/VideoImageStreamSizeOptimizer.h"
+#include <vidlib/osg/VideoImageStreamSizeOptimizer.h>
 #include "ui_video.h"
 
 class VideoWidget : public QWidget, public Ui::VideoWidget
@@ -36,7 +36,7 @@ private:
     osg::ref_ptr<core::MultiView> multiView;
     
     //! Lista optymatozatorów odpowiadaj¹cych za wybieranie optymalnego rozmiaru dekodowanego obrazka.
-    std::vector< osg::ref_ptr<VideoImageStreamSizeOptimizer> > optimizers;
+    std::vector< osg::ref_ptr<vidlib::VideoImageStreamSizeOptimizer> > optimizers;
 
     //! Shader odpowiedzialny za konwersjê yuv->rgb.
     osg::ref_ptr<osg::Shader> yuvTextureRectShader;
@@ -45,7 +45,7 @@ private:
     //! Czy ma byæ u¿ywane rozszerzenie texture_rectangle.
     bool useTextureRect;
     //! Format video.
-    video::PixelFormat format;
+    vidlib::PixelFormat format;
     //! Nazwa samplera w obu shaderach YUV.
     std::string yuvSamplerName;
     //! Nazwa zmiennej trzymaj¹cej rozmiar obrazka w obu shaderach YUV. W zasadzie
@@ -65,7 +65,7 @@ public:
 
 public:
 
-    void setPixelFormat(video::PixelFormat format);
+    void setPixelFormat(vidlib::PixelFormat format);
     void setUseTextureRect(bool useTextureRect);
 
     //! \return
@@ -130,7 +130,7 @@ private:
     osgWidget::Widget* createStreamWidget(osg::Image* image);
     //! Tworzy widget ze strumieniem.
     //! \param image
-    osgWidget::Widget* createStreamWidget(osg::Image* image, VideoImageStreamSizeOptimizer* optimizer );
+    osgWidget::Widget* createStreamWidget(osg::Image* image, vidlib::VideoImageStreamSizeOptimizer* optimizer );
     //! 
     //! \param image
     //! \param sampler

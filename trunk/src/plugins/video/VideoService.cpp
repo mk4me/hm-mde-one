@@ -8,7 +8,7 @@
 #include "VideoWidget.h"
 #include "VideoWidgetOptions.h"
 #include "TimelineImageStreamWrapper.h"
-#include "osg/VideoImageStream.h"
+#include <vidlib/osg/VideoImageStream.h>
 #include <boost/foreach.hpp>
 #include <core/Log.h>
 
@@ -129,7 +129,7 @@ AsyncResult VideoService::update( double time, double timeDelta )
     return AsyncResult_Complete;
 }
 
-video::PixelFormat VideoService::getOutputFormat()
+vidlib::PixelFormat VideoService::getOutputFormat()
 {
     UTILS_ASSERT(optionsWidget);
 //     int idx = optionsWidget->outputFormatCombo->currentIndex();
@@ -138,12 +138,12 @@ video::PixelFormat VideoService::getOutputFormat()
 //     } else {
     {
         UTILS_ASSERT(false, "Nieobs³ugiwany format.");
-        return video::PixelFormatUndefined;
+        return vidlib::PixelFormatUndefined;
     }
 }
 
 
-void VideoService::setOutputFormat( video::PixelFormat format )
+void VideoService::setOutputFormat( vidlib::PixelFormat format )
 {
     UTILS_ASSERT(optionsWidget && widget);
 //     if ( optionsWidget->outputFormatCombo->currentIndex() != i ) {

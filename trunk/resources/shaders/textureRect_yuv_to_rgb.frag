@@ -9,13 +9,13 @@ const float yScale = 2.0/3.0;
 const float uvScale = 1.0-yScale;
 
 // rozmiar tekstury (pobieranie instrukcjami texture*Size nie zawsze dzia³a)
-uniform ivec2 texture_size;
+uniform vec2 texture_size;
 
 void main(void)
 {
 	// rozmiar tekstury
-	int texWidth = texture_size.x;
-	int texHeight = texture_size.y;
+	float texWidth = texture_size.x;
+	float texHeight = texture_size.y;
 
 	// wyznaczenie koordynatów
 	vec2 stY = gl_TexCoord[0].st;

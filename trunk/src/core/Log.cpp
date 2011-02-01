@@ -9,7 +9,23 @@
 
 using namespace core;
 
-#ifdef CORELIB_LOG4CXX_ENABLED
+void QtMessageHandler(QtMsgType type, const char *msg)
+{
+    switch (type) {
+        case QtDebugMsg:
+            LOG_DEBUG_STATIC_NAMED("qt", msg);
+            break;
+        case QtWarningMsg:
+            LOG_WARNING_STATIC_NAMED("qt", msg);
+            break;
+        default:
+            // pozosta³e poziomy komunikatu s¹ ju¿ to¿same errorowi
+            LOG_ERROR_STATIC_NAMED("qt", msg);
+            break;
+    }
+}
+
+#ifdef CORE_ENABLE_LOG4CXX
 
 #include <log4cxx/logger.h>
 #include <log4cxx/propertyconfigurator.h>
@@ -164,6 +180,7 @@ LogInitializer::LogInitializer( const char* configPath )
     // za³adowanie parametów logowania
     PropertyConfigurator::configure(configPath);
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(Logger::getLogger( "osg" ) ));
+    qInstallMsgHandler(QtMessageHandler);
 }
 
 LogInitializer::~LogInitializer()
@@ -197,22 +214,105 @@ void core::LogInitializer::setConsoleWidget( ConsoleWidget* widget )
 
 #else // fallback do logowania OSG
 
+
+/** Strumieñ przekierowywuj¹cy logowania do konsoli */
+class OsgNotifyHandlerConsoleWidget : public osg::NotifyHandler
+{
+private:
+    //! Konsola w³aœciwa.
+    ConsoleWidget* console;
+    //!
+    osg::ref_ptr<osg::NotifyHandler> defaultHandler;
+    //! Kolejka wiadomoœci dla konsoli. U¿ywana, gdy pojawiaj¹ siê zdarzenia logowania,
+    //! a konsoli jeszcze nie ma (inicjalizacja).
+    std::queue<ConsoleWidgetEntryPtr> queuedEntries;
+    typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
+    OpenThreads::Mutex queueMutex;
+
+public:
+    //! \param console Konsola.
+    OsgNotifyHandlerConsoleWidget(osg::NotifyHandler* handler) : 
+    console(NULL), defaultHandler(handler)
+    {}
+
+    //! \return Domyœlny handler.
+    osg::NotifyHandler* getDefaultHandler()
+    {
+        return defaultHandler.get();
+    }
+
+    //! \param console
+    void setConsole(ConsoleWidget* console) 
+    { 
+        this->console = console;
+        // opró¿niamy kolejkê komunikatów
+        if ( console ) {
+            ScopedLock lock(queueMutex);
+            for ( ; !queuedEntries.empty(); queuedEntries.pop() ) {
+                console->logOrQueueEntry(queuedEntries.front());
+            }
+        }
+    }
+
+    //! \param severity
+    //! \param message
+    void notify(osg::NotifySeverity severity, const char *message)
+    {
+        // standardowe drukowanie
+        defaultHandler->notify(severity, message);
+
+        // z wiadomoœci usuwamy zbêdne znaki (osg zawsze na koniec daje now¹ liniê)
+        std::string msg = message;
+        boost::trim(msg);
+
+        ConsoleWidgetEntryPtr entry(new ConsoleWidgetEntry());
+        //entry.message = QString::fromWCharArray( event->getMessage().c_str() );
+        if ( severity >= osg::DEBUG_INFO ) {
+            entry->severity = core::LogSeverityDebug;
+        } else if ( severity >= osg::NOTICE ) {
+            entry->severity = core::LogSeverityInfo;
+        } else if ( severity >= osg::WARN ) {
+            entry->severity = core::LogSeverityWarning;
+        } else {
+            entry->severity = core::LogSeverityError;
+        }
+        entry->message = QString::fromStdString(msg);
+        entry->line = -1;
+        entry->timestamp = QDate::currentDate();
+        entry->theadId = QThread::currentThreadId();
+        if ( console ) {
+            // mamy konsolê - wys³amy jej komunikat
+            console->logOrQueueEntry(entry);
+        } else {
+            // nie ma konsoli - kolejkujemy
+            ScopedLock lock(queueMutex);
+            queuedEntries.push(entry);
+        }
+    }
+};
+
+
 LogInitializer::LogInitializer( const char* configPath )
 {
-    // nic nie musimy robiæ
+    qInstallMsgHandler(QtMessageHandler);
+    osg::setNotifyHandler( new OsgNotifyHandlerConsoleWidget(osg::getNotifyHandler()) );
 }
 
 LogInitializer::~LogInitializer()
 {
-    // nic nie musimy robiæ
+    OsgNotifyHandlerConsoleWidget* handler = dynamic_cast<OsgNotifyHandlerConsoleWidget*>(osg::getNotifyHandler());
+    UTILS_ASSERT(handler);
+    osg::setNotifyHandler( handler->getDefaultHandler() );
 }
 
 
 void core::LogInitializer::setConsoleWidget( ConsoleWidget* widget )
 {
-
+    OsgNotifyHandlerConsoleWidget* handler = dynamic_cast<OsgNotifyHandlerConsoleWidget*>(osg::getNotifyHandler());
+    UTILS_ASSERT(handler);
+    handler->setConsole(widget);
 }
 
-#endif
+#endif // CORE_ENABLE_LOG4CXX
 
 

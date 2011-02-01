@@ -8,11 +8,10 @@
 #include <utils/PtrPolicyOSG.h>
 #include <utils/PtrWrapper.h>
 
-#include "osg/VideoImageStreamSizeOptimizer.h"
+#include <vidlib/osg/VideoImageStreamSizeOptimizer.h>
 #include "StreamOsgWidget.h"
 
-#include "core/VM.h"
-#include "osg/VideoImageStream.h"
+#include <vidlib/osg/VideoImageStream.h>
 #include <utils/Profiler.h>
 #include "VideoWidget.h"
 #include <core/MultiView.h>
@@ -26,7 +25,8 @@
 #include <core/OsgWidgetUtils.h>
 
 
-
+using namespace vidlib;
+using namespace video;
 
 #ifdef _DEBUG
 #define WM_FLAGS 0//osgWidget::WindowManager::WM_PICK_DEBUG
@@ -34,10 +34,8 @@
 #define WM_FLAGS 0
 #endif
 
-using namespace video;
 
-
-class OsgWidgetWindowItem : public VideoImageStreamSizeOptimizer::Client
+class OsgWidgetWindowItem : public vidlib::VideoImageStreamSizeOptimizer::Client
 {
     //! Okno wzglêdem którego sprawdzaæ widocznoœæ.
     osg::observer_ptr<osgWidget::Window> window;
@@ -70,7 +68,7 @@ public:
     //! \param optimizer
     //! \param prevS
     //! \param prevT
-    virtual void onImageResized(VideoImageStreamSizeOptimizer* optimizer, int prevS, int prevT)
+    virtual void onImageResized(vidlib::VideoImageStreamSizeOptimizer* optimizer, int prevS, int prevT)
     {
         osg::Image* image = optimizer->getImage();
         if ( osg::StateSet* state = widget->getStateSet() ) {
@@ -143,7 +141,7 @@ void VideoWidget::init( std::vector<std::string> &files )
     BOOST_FOREACH(const std::string& file, files) {
         if ( osg::Image* image = osgDB::readImageFile(file) ) {
             images.push_back(image);
-            if ( osgPlugin::VideoImageStream* stream = dynamic_cast<osgPlugin::VideoImageStream*>(image) ) {
+            if ( VideoImageStream* stream = dynamic_cast<VideoImageStream*>(image) ) {
                 stream->setTargetFormat(format);
             }
         } else {
@@ -158,7 +156,7 @@ void VideoWidget::setPixelFormat( PixelFormat format )
 {
     // ustawienie formatu strumieni
     BOOST_FOREACH( osg::Image* image, images ) {
-        if ( osgPlugin::VideoImageStream* stream = dynamic_cast<osgPlugin::VideoImageStream*>(image) ) {
+        if ( VideoImageStream* stream = dynamic_cast<VideoImageStream*>(image) ) {
             stream->setTargetFormat(format);
         }
     }
@@ -191,7 +189,7 @@ void VideoWidget::createScene()
         float ratio = image->getPixelAspectRatio() * image->s() / image->t();
         avgRatio += ratio;
 
-        VideoImageStreamSizeOptimizer* optimizer = new VideoImageStreamSizeOptimizer(new osg::Uniform(yuvImageSizeName.c_str(), 0, 0));
+        VideoImageStreamSizeOptimizer* optimizer = new VideoImageStreamSizeOptimizer(new osg::Uniform(yuvImageSizeName.c_str(), osg::Vec2(0, 0)));
         
 
         // faktyczne dodanie miniaturki do grida
@@ -285,7 +283,7 @@ void VideoWidget::clearScene()
 
 osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image )
 {
-    return createStreamWidget(image, new osg::Uniform(yuvSamplerName.c_str(), 0), new osg::Uniform(yuvImageSizeName.c_str(), 0, 0) );
+    return createStreamWidget(image, new osg::Uniform(yuvSamplerName.c_str(), 0), new osg::Uniform(yuvImageSizeName.c_str(), osg::Vec2(0, 0)) );
 }
 
 osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, VideoImageStreamSizeOptimizer* optimizer )
@@ -309,7 +307,7 @@ osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Unif
     }
 
     // ustawienie formatu
-    if (osgPlugin::VideoImageStream* stream = dynamic_cast<osgPlugin::VideoImageStream*>(image)) {
+    if (VideoImageStream* stream = dynamic_cast<VideoImageStream*>(image)) {
         if ( stream->getTargetFormat() == PixelFormatYV12 ) {
             // ustawienie shaderów
             widget->setYuvTexture2DShader(yuvTexture2DShader);
@@ -370,21 +368,21 @@ void VideoWidget::onContextMenuRequested( QPoint position )
 void VideoWidget::onFormatYUVToggled(bool toggled)
 {
     if ( toggled ) {
-        setPixelFormat(video::PixelFormatYV12);
+        setPixelFormat(vidlib::PixelFormatYV12);
     }
 }
 
 void VideoWidget::onFormatRGBToggled(bool toggled)
 {
     if ( toggled ) {
-        setPixelFormat(video::PixelFormatRGB24);
+        setPixelFormat(vidlib::PixelFormatRGB24);
     }
 }
 
 void VideoWidget::onFormatBGRAToggled(bool toggled)
 {
     if ( toggled ) {
-        setPixelFormat(video::PixelFormatBGRA);
+        setPixelFormat(vidlib::PixelFormatBGRA);
     }
 }
 

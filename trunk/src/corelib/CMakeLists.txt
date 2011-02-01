@@ -49,7 +49,8 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Kopiujemy konfiguracja
 # Uwaga: normalnie powinno byæ bez /../core !!!
 configure_file( "Config.h.in" "${PROJECT_BINARY_DIR}/../core/Config.h" )
-set(TARGET_H ${TARGET_H} "${PROJECT_BINARY_DIR}/../core/Config.h")
+set(TARGET_H ${TARGET_H} "${PROJECT_BINARY_DIR}/../core/Config.h" Config.h.in )
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES Config.h.in)
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/../core/Config.h")
 
 #------------------------------------------------------------------------------

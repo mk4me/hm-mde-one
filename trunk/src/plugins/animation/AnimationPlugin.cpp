@@ -1,7 +1,7 @@
 #include <plugins/animation/AnimationService.h>
 #include <core/Plugin.h>
 
-CORE_PLUGIN_BEGIN("Animation", UniqueID('ANIM', 'PLUG'))
+CORE_PLUGIN_BEGIN("animation", UniqueID('ANIM', 'PLUG'))
 CORE_PLUGIN_ADD_SERVICE(AnimationService)
 CORE_PLUGIN_END
 

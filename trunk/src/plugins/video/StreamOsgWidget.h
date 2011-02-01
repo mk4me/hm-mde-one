@@ -11,9 +11,8 @@
 
 #include <string>
 #include <osg/ref_ptr>
-#include <osg/Uniform>
 #include <osgWidget/Widget>
-#include <plugins/video/core/PixelFormat.h>
+#include <vidlib/PixelFormat.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace video {
@@ -32,7 +31,7 @@ class StreamOsgWidget : public osgWidget::Widget
     //! Shader u¿ywany dla texture2D.
     osg::ref_ptr<osg::Shader> yuvTexture2DShader;
     //! Format pikseli.
-    video::PixelFormat format;
+    vidlib::PixelFormat format;
 
 public: 
     //! \param name Nazwa widgetu.
@@ -42,9 +41,9 @@ public:
 
 public:
     //! \return
-    video::PixelFormat getPixelFormat() const;
+    vidlib::PixelFormat getPixelFormat() const;
     //! \param format
-    void setPixelFormat(video::PixelFormat format);
+    void setPixelFormat(vidlib::PixelFormat format);
     //! \return Czy u¿ywany jest texture_rectangle
     bool isUsingTextureRectangle() const;
     //! \return
@@ -61,7 +60,7 @@ public:
 private:
     //! \param useTextureRect
     //! \param format
-    void refreshShaders(bool useTextureRect, video::PixelFormat format);
+    void refreshShaders(bool useTextureRect, vidlib::PixelFormat format);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

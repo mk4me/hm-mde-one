@@ -61,7 +61,7 @@ enum LogSeverity {
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef CORELIB_LOG4CXX_ENABLED
+#ifdef CORE_ENABLE_LOG4CXX
 
 #include <log4cxx/logger.h>
 #include <utils/Utils.h>
@@ -97,7 +97,7 @@ extern log4cxx::LoggerPtr __logger;
     operation(__staticLogger, msg);                                                 \
     UTILS_MULTISTATEMENT_END
 
-#else
+#else // CORE_ENABLE_LOG4CXX
 
 #include <string>
 
@@ -112,10 +112,10 @@ extern std::string __loggerPath;
 #define LOG_WARNING(msg)  OSG_WARN<<__loggerPath<<": "<<msg<<std::endl
 
 // Makra do logowania z u¿yciem loggera o zadanej œcie¿ce
-#define LOG_DEBUG_NAMED(path, msg)      LOG_DEBUG(path<<": "<<msg)
-#define LOG_ERROR_NAMED(path, msg)      LOG_ERROR(path<<": "<<msg)
-#define LOG_INFO_NAMED(path, msg)       LOG_INFO(path<<": "<<msg)
-#define LOG_WARNING_NAMED(path, msg)    LOG_WARNING(path<<": "<<msg)
+#define LOG_DEBUG_NAMED(path, msg)      OSG_DEBUG<<path<<": "<<msg<<std::endl
+#define LOG_ERROR_NAMED(path, msg)      OSG_FATAL<<path<<": "<<msg<<std::endl
+#define LOG_INFO_NAMED(path, msg)       OSG_NOTICE<<path<<": "<<msg<<std::endl
+#define LOG_WARNING_NAMED(path, msg)    OSG_WARN<<path<<": "<<msg<<std::endl
 
 // Zoptymalizowane makra do logowania z u¿yciem loggera o zadanej œcie¿e. Parametr "path" musi byæ
 // zawsze sta³y.
@@ -124,7 +124,7 @@ extern std::string __loggerPath;
 #define LOG_INFO_STATIC_NAMED(path, msg)    LOG_INFO_NAMED(path, msg)
 #define LOG_WARNING_STATIC_NAMED(path, msg) LOG_WARNING_NAMED(path, msg)
 
-#endif
+#endif  // CORE_ENABLE_LOG4CXX
 
 
 

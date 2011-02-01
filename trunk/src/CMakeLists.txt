@@ -50,8 +50,8 @@ endif()
 # Czy skopiowaæ modu³y (niezlinkowane .so oraz .dll)?
 option(EDR_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
 # Opcje konfiguracji
-CONFIG_OPTION(VM_ENABLE_EXCEPTIONS "Enable exeptions?" ON)
-CONFIG_OPTION(CORELIB_LOG4CXX_ENABLED "Enable logging?" OFF)
+CONFIG_OPTION(CORE_ENABLE_LOG4CXX "Enable logging?" OFF)
+CONFIG_OPTION(CORE_ENABLE_LEAK_DETECTION "Enable leak detection?" OFF)
 
 set(SOURCEGROUP_PRIVATE_HEADERS "Header files" CACHE STRING "Filter for private headers.")
 set(SOURCEGROUP_SOURCES "Source files" CACHE STRING "Filter for sources.")
@@ -67,7 +67,6 @@ set(TARGET_VERBOSE ${EDR_VEBOSE_CONFIG})
 
 # Szukamy bibliotek
 find_package(Boost)
-find_package(FFmpeg)
 find_package(OSG)
 find_package(Stdint)
 find_package(Qt)
@@ -76,6 +75,8 @@ find_package(Dae2ERD)
 find_package(cURL)
 find_package(wsdlpull)
 find_package(log4cxx)
+find_package(VidLib)
+find_package(Utils)
 #find_package(Prerequi)
 
 # Biblioteczne wyszukanie OGL;
@@ -139,13 +140,12 @@ endif()
 #ADD_PROJECT(anim "")
 #ADD_PROJECT(main "")
 
-ADD_PROJECT(utils "BOOST")
-if (CONFIG_CORELIB_LOG4CXX_ENABLED)
-	ADD_PROJECT(corelib "LOG4CXX;utils;OSG;QT;TINYXML;STDINT")
+if (CONFIG_CORE_ENABLE_LOG4CXX)
+	ADD_PROJECT(corelib "LOG4CXX;BOOST;UTILS;OSG;QT;TINYXML;STDINT")
 else()
-	ADD_PROJECT(corelib "utils;OSG;QT;TINYXML;STDINT")
+	ADD_PROJECT(corelib "UTILS;OSG;QT;TINYXML;STDINT")
 endif()
-ADD_PROJECT(core "utils;OSG;QT;TINYXML;corelib;DAE2ERD;OPENGL")
+ADD_PROJECT(core "UTILS;OSG;QT;TINYXML;corelib;DAE2ERD;OPENGL")
 ADD_PROJECTS(plugins)
 
 

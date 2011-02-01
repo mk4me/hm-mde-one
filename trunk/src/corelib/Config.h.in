@@ -2,6 +2,8 @@
 #define __CORELIB_CONFIG_H__
 
 //! Czy ma byæ w³¹czone logowanie?
-#cmakedefine CORELIB_LOG4CXX_ENABLED
+#cmakedefine CORE_ENABLE_LEAK_DETECTION
+//! Czy ma byæ w³¹czone logowanie z u¿yciem log4cxx?
+#cmakedefine CORE_ENABLE_LOG4CXX
 
 #endif // __CORELIB_CONFIG_H__

@@ -2,7 +2,7 @@
 #include <plugins/chart/EMGService.h>
 #include <plugins/chart/GRFService.h>
 
-CORE_PLUGIN_BEGIN("Chart", UniqueID('CHAR', 'PLUG'))
+CORE_PLUGIN_BEGIN("chart", UniqueID('CHAR', 'PLUG'))
 CORE_PLUGIN_ADD_SERVICE(EMGService)
 CORE_PLUGIN_ADD_SERVICE(GRFService)
 CORE_PLUGIN_END
