@@ -198,8 +198,11 @@ set(CPACK_COMPONENT_CORE_DISPLAY_NAME "Main application")
 set(CPACK_COMPONENT_TRIALS_DISPLAY_NAME "Demo data")
 set(CPACK_COMPONENTS_ALL communication core chart animation video timeline trials)
 option(ENABLE_CPACK "Set on to enable CPack" OFF)
-#wlaczamy CTest
-include(CTest)
+option(ENABLE_CTEST "Set on to enable CTest" OFF)
+if(ENABLE_CTEST)
+	#wlaczamy CTest
+	include(CTest)
+endif()
 if(ENABLE_CPACK) 
 	#konfigurujemy cpacka w zaleznosci od systemu operacyjnego
 	if(WIN32)
