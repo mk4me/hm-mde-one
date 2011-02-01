@@ -229,7 +229,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
     plugin->setPath(path);
     plugins.push_back( PluginPtr(plugin) );
     libraries.push_back(library);
-    LOG_INFO("Plugin " << plugin->getName() << " loaded from " << path);
+    //LOG_INFO("Plugin " << plugin->getName() << " loaded from " << path);
     return true;
 }
 

@@ -83,7 +83,8 @@ public:
     //! \param name Nazwa pluginu.
     Plugin(const std::string& name, UniqueID id) 
         : name(name), path("UNKNOWN")
-    {}
+    {
+    }
 
 public:
     //! \return ID pluginu.
@@ -132,24 +133,24 @@ public:
     //! \parser Parser do dodania do pluginu.
 	void addParser(IParserPtr parser)
     {
-        parsers.push_back(parser);
+        this->parsers.push_back(parser);
     }
     //! \return Liczba parserów dostarczanych przez plugin.
     size_t getNumParsers() const
     {
-		return parsers.size();
+		return this->parsers.size();
     }
     //! 
     //! \param i
 	IParserPtr getParser(size_t i)
     {
-        return parsers[i];
+        return this->parsers[i];
     }
     //! 
     //! \param i
 	IParserConstPtr getParser(size_t i) const
     {
-        return parsers[i];
+        return this->parsers[i];
     }
 };
 

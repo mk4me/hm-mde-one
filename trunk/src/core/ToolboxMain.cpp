@@ -355,6 +355,11 @@ void ToolboxMain::registerCoreServices()
     m_pServiceManager = new ServiceManager();
     m_pRenderService = RenderServicePtr(new RenderService());
 
+	/*
+	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
+	*/
+    dataManager = new DataManager();
+
     //3. UserInterface Service
     m_pServiceManager->registerService(IServicePtr(m_pUserInterfaceService));
     m_pUserInterfaceService->setMainWindow(this);
@@ -377,7 +382,8 @@ void ToolboxMain::registerPluginsParsers()
 {
 	for ( size_t i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
 		core::PluginPtr plugin = pluginLoader->getPlugin(i);
-		for ( size_t j = 0; j < plugin->getNumParsers(); ++j ) {
+            int z = static_cast<int>(plugin->getNumParsers());
+		for ( size_t j = 0; j < z; ++j ) {
 			dataManager->registerParser(plugin->getParser(j));
 		}
 	}
