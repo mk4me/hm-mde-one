@@ -56,6 +56,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/IDataManager.h
 	${HEADER_PATH}/IMesh.h
 	${HEADER_PATH}/IModel.h
+	${HEADER_PATH}/IParser.h
 	${HEADER_PATH}/IServiceManager.h
 	${HEADER_PATH}/ISkeletonNode.h
 	${HEADER_PATH}/Window.h
@@ -82,6 +83,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/Header.h
 	${HEADER_PATH}/Data.h
 	${HEADER_PATH}/Log.h
+	${HEADER_PATH}/LocalTrial.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})

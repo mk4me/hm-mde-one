@@ -104,22 +104,23 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 //     //LayoutPtr layout(new PatternLayout(TTCC_CONVERSION_PATTERN));
 //     AppenderPtr appender(new OutputDebugStringAppender(/*layout*/));
 //     appender->setLayout(new PatternLayout(LOG4CXX_STR("%F(%L): %m\n")));
-//     root->addAppender(appender);
+//     root->addAppender(appender);
+
 
 
     ui->setupUi(this);
 
-    registerCoreServices(); 
+    registerCoreServices();
+
+	pluginLoader->load();
     registerPluginsServices();
+	registerPluginsParsers();
 
 
     sceneRoot = new osg::Group();
     sceneRoot->setName("root");
 
-	/*
-	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
-	*/
-    dataManager = new DataManager();
+	dataManager->loadResources();
 
     // inicjalizacja us³ug
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
@@ -364,13 +365,22 @@ void ToolboxMain::registerCoreServices()
 
 void ToolboxMain::registerPluginsServices()
 {
-    pluginLoader->load();
     for ( size_t i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
         core::PluginPtr plugin = pluginLoader->getPlugin(i);
         for ( size_t j = 0; j < plugin->getNumServices(); ++j ) {
             m_pServiceManager->registerService(plugin->getService(j));
         }
     }
+}
+
+void ToolboxMain::registerPluginsParsers()
+{
+	for ( size_t i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
+		core::PluginPtr plugin = pluginLoader->getPlugin(i);
+		for ( size_t j = 0; j < plugin->getNumParsers(); ++j ) {
+			dataManager->registerParser(plugin->getParser(j));
+		}
+	}
 }
 
 void ToolboxMain::onOpen()

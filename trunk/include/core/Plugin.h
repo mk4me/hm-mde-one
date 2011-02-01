@@ -14,6 +14,7 @@
 
 #include "SmartPtr.h"
 #include "IService.h"
+#include "IParser.h"
 #include "BaseDataTypes.h"
 #include "Export.h"
 #include "IIdentifiable.h"
@@ -42,6 +43,10 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME() \
 #define CORE_PLUGIN_ADD_SERVICE(className)                              \
     instance->addService( IServicePtr(new className) );
 
+//! Dodaje parser zadanego typu do pluginu.
+#define CORE_PLUGIN_ADD_PARSER(className)                              \
+	instance->addParser( IParserPtr(new className) );
+
 /**
  *	Kontener na us³ugi.
  */
@@ -57,9 +62,16 @@ public:
     //!
     typedef Services::const_iterator const_iterator;
 
+    //! Typ listy parserów.
+    typedef std::vector<IParserPtr> Parsers;
+
 private:
     //! Lista us³ug pluginu.
     Services services;
+
+    //! Lista parserów pluginu.
+	Parsers parsers;
+
     //! Nazwa pluginu.
     std::string name;
     //! ID pluginu.
@@ -115,6 +127,29 @@ public:
     void setPath(const std::string& path) 
     { 
         this->path = path; 
+    }
+	
+    //! \parser Parser do dodania do pluginu.
+	void addParser(IParserPtr parser)
+    {
+        parsers.push_back(parser);
+    }
+    //! \return Liczba parserów dostarczanych przez plugin.
+    size_t getNumParsers() const
+    {
+		return parsers.size();
+    }
+    //! 
+    //! \param i
+	IParserPtr getParser(size_t i)
+    {
+        return parsers[i];
+    }
+    //! 
+    //! \param i
+	IParserConstPtr getParser(size_t i) const
+    {
+        return parsers[i];
     }
 };
 

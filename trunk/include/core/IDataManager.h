@@ -2,6 +2,7 @@
 #define I_DATA_MANAGER_H
 
 #include <core/LocalTrial.h>
+#include <core/IParser.h>
 #include <vector>
 
 class IDataManager
@@ -35,6 +36,56 @@ public:
 
 	virtual const std::string& getResourcesPath() const = 0;
 	virtual const std::string& getTrialsPath() const = 0;
+
+    //! Rejestruje zadan¹ us³ugê.
+    //! \param newService
+    virtual void registerParser(core::IParserPtr parser) = 0;
+
+    //! \return Liczba us³ug.
+    virtual int getNumParsers() const = 0;
+    //! \param idx Indeks us³ugi.
+    //! \return Us³uga o zadanym indeksie.
+	virtual core::IParserPtr getParser(int idx) = 0;
+    //! \param id ID us³ugi do wyszukania.
+    //! \return Odnaleziona us³uga b¹dŸ NULL.
+    virtual core::IParserPtr getParser(UniqueID id) = 0;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+namespace core {
+////////////////////////////////////////////////////////////////////////////////
+
+    //! Metoda wyszukuj¹ca wszystkie us³ugi danego typu (np. implementuj¹ce
+    //! dany interfejs).
+    template <class T>
+    CORE_SHARED_PTR(T) queryParsers(IDataManager* manager, T* dummy = NULL)
+    {
+        std::vector<CORE_SHARED_PTR(T)> result;
+        queryParsers(manager, result);
+        if ( result.empty() ) {
+            return CORE_SHARED_PTR(T)();
+        } else {
+            UTILS_ASSERT(result.size()==1, "Multiple parsers found.");
+            return result[0];
+        }
+    }
+
+    //! Metoda wyszukuj¹ca wszystkie us³ugi danego typu (np. implementuj¹ce
+    //! dany interfejs).
+    template <class T>
+    void queryParsers(IDataManager* manager, std::vector<CORE_SHARED_PTR(T)>& target)
+    {
+        for ( int i = 0; i < manager->getNumParsers(); ++i ) {
+            IParserPtr parser = manager->getParser(i);
+            CORE_SHARED_PTR(T) casted = dynamic_pointer_cast<T>(parser);
+            if ( casted ) {
+                target.push_back(casted);
+            }
+        }
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+} // namespace core
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // I_DATA_MANAGER_H

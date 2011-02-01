@@ -32,6 +32,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/ISendable.h
 	${HEADER_PATH}/ITransportable.h
 	${HEADER_PATH}/QueryWSDL.h
+	${HEADER_PATH}/TextParser.h
 	${HEADER_PATH}/TransportWSDL_FTPS.h
 	${HEADER_PATH}/WSDL_Wsdlpull.h
 )
@@ -52,6 +53,7 @@ set(TARGET_SRC
 	FileStoremanService.cpp
 	FTPS_cURL.cpp
 	QueryWSDL.cpp
+	TextParser.cpp
 	TransportWSDL_FTPS.cpp
 	WSDL_Wsdlpull.cpp
 )
