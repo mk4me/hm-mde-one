@@ -1,0 +1,24 @@
+/********************************************************************
+	created:  2011/01/27
+	created:  27:1:2011   10:47
+	filename: ReaderWriterVidLib.h
+	author:	  Piotr Gwiazdowski
+	
+	purpose:  
+*********************************************************************/
+#ifndef __HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
+#define __HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
+
+#include <vidlib/Export.h>
+#include <osgDB/Registry>
+
+//! Pomocnicze makro dla modu³ów, które chc¹ za³adowaæ plugin tak, jakby by³ zbudowany statycznie.
+#ifdef VIDLIB_LIBRARY_STATIC
+#   define USE_OSGPLUGIN_VIDLIB() USE_OSGPLUGIN(vidlib)
+#else 
+#   define USE_OSGPLUGIN_VIDLIB() osgDB::PluginFunctionProxy proxy_vidlib(osgdb_vidlib_init);
+#endif
+
+extern VIDLIB_EXPORT void osgdb_vidlib_init(void);
+
+#endif  // __HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
