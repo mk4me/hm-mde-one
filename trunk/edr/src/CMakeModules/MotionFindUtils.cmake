@@ -4,10 +4,10 @@ macro(FIND_INIT variable dirName)
 
 	# g³ówne œcie¿ki
 	if (NOT FIND_DISABLE_INCLUDES)
-		set(${variable}_INCLUDE_DIR "${EDR_LIBRARIES_INCLUDE_ROOT}/${dirName}" CACHE PATH "Location of ${variable} headers.")
+		set(${variable}_INCLUDE_DIR "${FIND_LIBRARIES_INCLUDE_ROOT}/${dirName}" CACHE PATH "Location of ${variable} headers.")
 	endif()
-	set(${variable}_LIBRARY_DIR_DEBUG "${EDR_LIBRARIES_ROOT_DEBUG}/${dirName}" CACHE PATH "Location of ${variable} debug libraries.")
-	set(${variable}_LIBRARY_DIR_RELEASE "${EDR_LIBRARIES_ROOT_RELEASE}/${dirName}" CACHE PATH "Location of ${variable} libraries.")
+	set(${variable}_LIBRARY_DIR_DEBUG "${FIND_LIBRARIES_ROOT_DEBUG}/${dirName}" CACHE PATH "Location of ${variable} debug libraries.")
+	set(${variable}_LIBRARY_DIR_RELEASE "${FIND_LIBRARIES_ROOT_RELEASE}/${dirName}" CACHE PATH "Location of ${variable} libraries.")
 	# lokalizacja bibliotek dla trybu debug
 	set (FIND_DIR_DEBUG ${${variable}_LIBRARY_DIR_DEBUG})
 	# lokalizacja bibliotek
@@ -29,7 +29,7 @@ endmacro(FIND_INIT)
 
 macro(FIND_INCLUDE_PLATFORM_HEADERS variable dirName)
 	# okreœlamy œcie¿kê do katalogu z nag³ówkami konfiguracyjnymi
-	set(${variable}_INCLUDE_CONFIG_DIR "${${variable}_INCLUDE_DIR}/../${EDR_LIBRARIES_PLATFORM}/${dirName}" 
+	set(${variable}_INCLUDE_CONFIG_DIR "${${variable}_INCLUDE_DIR}/../${FIND_PLATFORM}/${dirName}" 
 		CACHE PATH "Location of config headers")
 	FIND_NOTIFY(${variable} "FIND_INIT: platform headers: ${${variable}_INCLUDE_CONFIG_DIR}")
 endmacro(FIND_INCLUDE_PLATFORM_HEADERS)
@@ -471,6 +471,39 @@ macro(FIND_COPY_AND_INSTALL_MODULES buildType subDir)
 	endforeach()
 
 endmacro(FIND_COPY_AND_INSTALL_MODULES)
+
+###############################################################################
+
+macro(FIND_HANDLE_MODULES)
+
+	if (FIND_COPY_MODULES)
+		message(STATUS "Copying modules...")
+		# wybieramy listê konfiguracji
+		if ( WIN32 )
+			# lecimy po build typach
+			foreach (buildType ${CMAKE_CONFIGURATION_TYPES})
+				FIND_COPY_AND_INSTALL_MODULES(${buildType} ${buildType})
+			endforeach()
+		else()
+			FIND_COPY_AND_INSTALL_MODULES("${CMAKE_BUILD_TYPE}" "")
+		endif()
+		message(STATUS "Copying finished.")
+	endif()
+	if ( UNIX )
+		# http://www.cmake.org/Wiki/CMake_RPATH_handling
+		# use, i.e. don't skip the full RPATH for the build tree
+		set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+		# when building, don't use the install RPATH already
+		# (but later on when installing)
+		set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+		# the RPATH to be used when installing
+		set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+		# add the automatically determined parts of the RPATH
+		# which point to directories outside the build tree to the install RPATH
+		set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+	endif()
+
+endmacro(FIND_HANDLE_MODULES)
 
 ###############################################################################
 

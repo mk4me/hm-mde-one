@@ -17,7 +17,7 @@ if (FIND_RESULTS_LOGICAL_AND)
 	set(QT_FOUND 1)
 endif()
 
-SET(QT_USE_FILE "${EDR_ROOT}/CMakeModules/UseQt.cmake")
+SET(QT_USE_FILE "${PROJECT_SOURCE_DIR}/CMakeModules/UseQt.cmake")
 
 # makra skopiowane z oryginalnego FindQt4.cmake
 if (QT_FOUND)

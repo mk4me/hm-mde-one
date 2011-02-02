@@ -10,7 +10,7 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 #------------------------------------------------------------------------------
 
 # nag³ówki
-string(REPLACE ${EDR_ROOT} ${EDR_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
+string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/TimelineService.h
 	${HEADER_PATH}/Stream.h

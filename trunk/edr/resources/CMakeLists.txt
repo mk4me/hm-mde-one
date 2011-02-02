@@ -52,21 +52,21 @@ set(APPSKINS
 source_group("appskins" FILES ${APPSKINS})
 
 # czy kopiowaæ zasoby?
-option(EDR_ENABLE_SVN_RESOURCES_COPYING "Enable copying resources?" ON)
-if(EDR_ENABLE_SVN_RESOURCES_COPYING)
+option(PROJECT_ENABLE_SVN_RESOURCES_COPYING "Enable copying resources?" ON)
+if(PROJECT_ENABLE_SVN_RESOURCES_COPYING)
 
 	# stworzenie domyœlnej listy katalogó
 	if ( WIN32 )
 		set(_DEFAULT_RESOURCES_LOC)
 		foreach (buildType ${CMAKE_CONFIGURATION_TYPES})
-			list(APPEND _DEFAULT_RESOURCES_LOC "${EDR_BUILD_ROOT}/bin/${buildType}/data/resources")
+			list(APPEND _DEFAULT_RESOURCES_LOC "${PROJECT_BUILD_ROOT}/bin/${buildType}/data/resources")
 		endforeach()
 	else()
-		set(_DEFAULT_RESOURCES_LOC "${EDR_BUILD_ROOT}/bin/Debug/data/resources")
+		set(_DEFAULT_RESOURCES_LOC "${PROJECT_BUILD_ROOT}/bin/Debug/data/resources")
 	endif()
 	
 	# tak, trzeba wskazaæ œcie¿kê, gdzie to ma nast¹piæ
-	set(EDR_SVN_RESOURCES_DESTINATION ${_DEFAULT_RESOURCES_LOC} CACHE PATH "Location of resources being part of repository.")
+	set(PROJECT_SVN_RESOURCES_DESTINATION ${_DEFAULT_RESOURCES_LOC} CACHE PATH "Location of resources being part of repository.")
 	
 	# dodanie projektu, który kopiuje zawartoœæ bie¿¹cego katalogu
 	add_custom_target(resources
@@ -74,12 +74,12 @@ if(EDR_ENABLE_SVN_RESOURCES_COPYING)
 	)
 	
 	# dodanie poleceñ kopiowania
-	foreach (path ${EDR_SVN_RESOURCES_DESTINATION})
+	foreach (path ${PROJECT_SVN_RESOURCES_DESTINATION})
 		# wyjaœnienie: komentarz dodajemy ze wszystkimi œcie¿kami, poniewa¿ w VS i tak tylko pierwszy komentarz
 		# jest uwzglêdniony
 		add_custom_command(TARGET resources PRE_BUILD 
 			COMMAND "@CMAKE_COMMAND@" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}" "${path}"
-			COMMENT "Copying resources to ${EDR_SVN_RESOURCES_DESTINATION}"
+			COMMENT "Copying resources to ${PROJECT_SVN_RESOURCES_DESTINATION}"
 		)
 	endforeach()
 	

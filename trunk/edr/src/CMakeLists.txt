@@ -9,61 +9,64 @@ include(MotionTargetUtils)
 #---------------------------------------------------
 # blok definicji dla CMake'a
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-set(EDR_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../libs/lib" CACHE PATH "Location of libraries.")
-set(EDR_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../include" CACHE PATH "Location of includes.")
-set(EDR_LIBRARIES_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../libs/include" CACHE PATH "Location of includes.")
-set(EDR_ROOT "${PROJECT_SOURCE_DIR}")
-set(EDR_BUILD_ROOT "${PROJECT_BINARY_DIR}")
+set(PROJECT_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../../lib" CACHE PATH "Location of libraries.")
+set(PROJECT_LIBRARIES_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../../include" CACHE PATH "Location of includes.")
+set(PROJECT_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../include" CACHE PATH "Location of includes.")
+set(PROJECT_ROOT "${PROJECT_SOURCE_DIR}")
+set(PROJECT_BUILD_ROOT "${PROJECT_BINARY_DIR}")
 
 # Blok definicje zale¿ne od platformy
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 if(WIN32)
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-	set(EDR_LIBRARIES_PLATFORM "win32" CACHE STRING "Platform")
+	set(PROJECT_LIBRARIES_PLATFORM "win32" CACHE STRING "Platform")
+	add_definitions(-D__WIN32__)
 elseif(UNIX)
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
-	set(EDR_LIBRARIES_PLATFORM "linux" CACHE STRING "Platform")
+	set(PROJECT_LIBRARIES_PLATFORM "linux" CACHE STRING "Platform")
+	add_definitions(-D__UNIX__)
 else()
 	message(FATAL_ERROR "Platform not supported.")
 endif()
 
-set(EDR_LIBRARIES_ROOT_DEBUG "${EDR_LIBRARIES_ROOT}/${EDR_LIBRARIES_PLATFORM}/debug" CACHE PATH "Location of debug libraries")
-set(EDR_LIBRARIES_ROOT_RELEASE "${EDR_LIBRARIES_ROOT}/${EDR_LIBRARIES_PLATFORM}/release" CACHE PATH "Location of release libraries")
+set(PROJECT_LIBRARIES_ROOT_DEBUG "${PROJECT_LIBRARIES_ROOT}/${PROJECT_LIBRARIES_PLATFORM}/debug" CACHE PATH "Location of debug libraries")
+set(PROJECT_LIBRARIES_ROOT_RELEASE "${PROJECT_LIBRARIES_ROOT}/${PROJECT_LIBRARIES_PLATFORM}/release" CACHE PATH "Location of release libraries")
 
 # tylko debug/release - nie dzia³a!
 # set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Typy konfiguracji" FORCE)
 
 #---------------------------------------------------
-# definicje dla Ÿróde³
-
-if(WIN32)
-	add_definitions(-D__WIN32__)
-elseif(UNIX)
-	add_definitions(-D__UNIX__)
-endif()
-
-#---------------------------------------------------
 # opcje
 
+option(PROJECT_VEBOSE_CONFIG "Print verbose info?" OFF)
+set(FIND_VERBOSE ${PROJECT_VEBOSE_CONFIG})
+set(TARGET_VERBOSE ${PROJECT_VEBOSE_CONFIG})
 
 # Czy skopiowaæ modu³y (niezlinkowane .so oraz .dll)?
-option(EDR_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
+option(PROJECT_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
+
 # Opcje konfiguracji
 CONFIG_OPTION(CORE_ENABLE_LOG4CXX "Enable logging?" OFF)
 CONFIG_OPTION(CORE_ENABLE_LEAK_DETECTION "Enable leak detection?" OFF)
 
+# Grupy Ÿróde³
 set(SOURCEGROUP_PRIVATE_HEADERS "Header files" CACHE STRING "Filter for private headers.")
 set(SOURCEGROUP_SOURCES "Source files" CACHE STRING "Filter for sources.")
 set(SOURCEGROUP_PUBLIC_HEADERS "Header files" CACHE STRING "Filter for public headers.")
 set(SOURCEGROUP_UI "UI" CACHE STRING "Filter for .ui files and generated headers.")
 
-option(EDR_VEBOSE_CONFIG "Print verbose info?" OFF)
-set(FIND_VERBOSE ${EDR_VEBOSE_CONFIG})
-set(TARGET_VERBOSE ${EDR_VEBOSE_CONFIG})
-
 #---------------------------------------------------
 # wyszukanie potrzebnych bibliotek
+
+# konfiguracja modu³u wyszukuj¹cego
+set(FIND_LIBRARIES_INCLUDE_ROOT ${PROJECT_LIBRARIES_INCLUDE_ROOT})
+set(FIND_LIBRARIES_ROOT ${PROJECT_LIBRARIES_ROOT})
+set(FIND_LIBRARIES_ROOT_DEBUG ${PROJECT_LIBRARIES_ROOT_DEBUG})
+set(FIND_LIBRARIES_ROOT_RELEASE ${PROJECT_LIBRARIES_ROOT_RELEASE})
+set(FIND_PLATFORM ${PROJECT_LIBRARIES_PLATFORM})
+set(FIND_COPY_MODULES ${PROJECT_COPY_MODULES})
 
 # Szukamy bibliotek
 find_package(Boost)
@@ -77,7 +80,6 @@ find_package(wsdlpull)
 find_package(log4cxx)
 find_package(VidLib)
 find_package(Utils)
-#find_package(Prerequi)
 
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)
@@ -85,60 +87,15 @@ set(OPENGL_LIBRARIES_PROXY ${OPENGL_LIBRARIES})
 set(OPENGL_LIBRARIES OPENGL_LIBRARIES_PROXY)
 
 find_package(Prerequisites)
-if (EDR_ENABLE_TESTS)
-	find_package(CppUnit)
-endif()
 
-#---------------------------------------------------
-# obs³uga kwestii modu³ów (so dynamicznie wczytywanych oraz dll)
-
-if (EDR_COPY_MODULES)
-	message(STATUS "Copying modules...")
-	# wybieramy listê konfiguracji
-	if ( WIN32 )
-		# lecimy po build typach
-		foreach (buildType ${CMAKE_CONFIGURATION_TYPES})
-			FIND_COPY_AND_INSTALL_MODULES(${buildType} ${buildType})
-		endforeach()
-	else()
-		FIND_COPY_AND_INSTALL_MODULES("${CMAKE_BUILD_TYPE}" "")
-	endif()
-
-	message("Copying finished. You should turn of EDR_COPY_MODULES option now.")
-endif()
-if ( UNIX )
-	# http://www.cmake.org/Wiki/CMake_RPATH_handling
-	# use, i.e. don't skip the full RPATH for the build tree
-	set(CMAKE_SKIP_BUILD_RPATH  FALSE)
-	# when building, don't use the install RPATH already
-	# (but later on when installing)
-	set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
-	# the RPATH to be used when installing
-	set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-	# add the automatically determined parts of the RPATH
-	# which point to directories outside the build tree to the install RPATH
-	set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-endif()
-
-#---------------------------------------------------
-# nag³ówki
-#set(EDR_INCLUDE_ROOT "../include/" CACHE PATH "Location of data.")
-#install(DIRECTORY ${EDR_DATA_ROOT} DESTINATION bin/ FILES_MATCHING PATTERN "*.png") 
+# obs³uga modu³ów (.dll/.so)
+FIND_HANDLE_MODULES()
 
 #---------------------------------------------------
 # Projekty sk³adaj¹ce siê z podprojektów dodajamy makrem ADD_PROJECTS,
 # natiomast pojedyncze - ADD_PROJECT
 # ADD_PROJECT(template [{zalezne_projekty}])
-# ADD_PROJECTS(template [{zalezne_projekty}])
-
-#ADD_PROJECT(utils "BOOST")
-#ADD_PROJECTS(vm)
-#ADD_PROJECT(tm "OSG;utils")
-#ADD_PROJECT(main "OSG;vm;tm")
-
-
-#ADD_PROJECT(anim "")
-#ADD_PROJECT(main "")
+# ADD_PROJECTS(template)
 
 if (CONFIG_CORE_ENABLE_LOG4CXX)
 	ADD_PROJECT(corelib "LOG4CXX;BOOST;UTILS;OSG;QT;TINYXML;STDINT")
@@ -148,29 +105,13 @@ endif()
 ADD_PROJECT(core "UTILS;OSG;QT;TINYXML;corelib;DAE2ERD;OPENGL")
 ADD_PROJECTS(plugins)
 
-
-#---------------------------------------------------
-# zasoby
-
-
-set(EDR_TRIALS_ROOT "${PROJECT_SOURCE_DIR}/../trials/" CACHE PATH "Location of trials.")
-install(DIRECTORY ${EDR_TRIALS_ROOT} DESTINATION bin/data COMPONENT trials) 
-
-#---------------------------------------------------
-# testy
-option(EDR_ENABLE_TESTS "Build test projects?" OFF)
-if (EDR_ENABLE_TESTS)
-	set(EDR_TESTS_ROOT "../tests/" CACHE PATH "Location of data.")
-	add_subdirectory(${EDR_TESTS_ROOT} ${PROJECT_BINARY_DIR}/tests)
-endif()
-
 #---------------------------------------------------
 # projekt zasobów
-option(EDR_ENABLE_SVN_RESOURCES "Enable svn resources?" ON)
-if(EDR_ENABLE_SVN_RESOURCES)
-	set(EDR_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/../resources/" CACHE PATH "Location of resources being part of repository.")
-	add_subdirectory(${EDR_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
-	install(DIRECTORY ${EDR_SVN_RESOURCES_ROOT} DESTINATION bin/data/ COMPONENT core
+option(PROJECT_ENABLE_SVN_RESOURCES "Enable svn resources?" ON)
+if(PROJECT_ENABLE_SVN_RESOURCES)
+	set(PROJECT_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/../resources/" CACHE PATH "Location of resources being part of repository.")
+	add_subdirectory(${PROJECT_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
+	install(DIRECTORY ${PROJECT_SVN_RESOURCES_ROOT} DESTINATION bin/data/ COMPONENT core
 		PATTERN ".svn" EXCLUDE
 		PATTERN "CMakeLists.txt" EXCLUDE )
 endif()
@@ -179,10 +120,10 @@ endif()
 # CPack
 set(CPACK_PACKAGE_NAME "EDR")
 set(CPACK_PACKAGE_FILE_NAME "EDR")
-SET(CPACK_NSIS_DISPLAY_NAME "EDR")
-SET(CPACK_NSIS_PACKAGE_NAME "EDR")
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "EDR")
-SET(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "EDR")
+set(CPACK_NSIS_DISPLAY_NAME "EDR")
+set(CPACK_NSIS_PACKAGE_NAME "EDR")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "EDR")
+set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "EDR")
 set(CPACK_COMPONENT_COMMUNICATION_GROUP "Plugins")
 set(CPACK_COMPONENT_ANIMATION_GROUP "Plugins")
 set(CPACK_COMPONENT_VIDEO_GROUP "Plugins")
