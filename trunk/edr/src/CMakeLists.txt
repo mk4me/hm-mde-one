@@ -166,7 +166,7 @@ endif()
 
 #---------------------------------------------------
 # projekt zasobów
-option(EDR_ENABLE_SVN_RESOURCES "Enable svn resources?" OFF)
+option(EDR_ENABLE_SVN_RESOURCES "Enable svn resources?" ON)
 if(EDR_ENABLE_SVN_RESOURCES)
 	set(EDR_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/../resources/" CACHE PATH "Location of resources being part of repository.")
 	add_subdirectory(${EDR_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
