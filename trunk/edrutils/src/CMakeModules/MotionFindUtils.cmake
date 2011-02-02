@@ -474,6 +474,39 @@ endmacro(FIND_COPY_AND_INSTALL_MODULES)
 
 ###############################################################################
 
+macro(FIND_HANDLE_MODULES)
+
+	if (FIND_COPY_MODULES)
+		message(STATUS "Copying modules...")
+		# wybieramy listê konfiguracji
+		if ( WIN32 )
+			# lecimy po build typach
+			foreach (buildType ${CMAKE_CONFIGURATION_TYPES})
+				FIND_COPY_AND_INSTALL_MODULES(${buildType} ${buildType})
+			endforeach()
+		else()
+			FIND_COPY_AND_INSTALL_MODULES("${CMAKE_BUILD_TYPE}" "")
+		endif()
+		message(STATUS "Copying finished.")
+	endif()
+	if ( UNIX )
+		# http://www.cmake.org/Wiki/CMake_RPATH_handling
+		# use, i.e. don't skip the full RPATH for the build tree
+		set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+		# when building, don't use the install RPATH already
+		# (but later on when installing)
+		set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+		# the RPATH to be used when installing
+		set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+		# add the automatically determined parts of the RPATH
+		# which point to directories outside the build tree to the install RPATH
+		set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+	endif()
+
+endmacro(FIND_HANDLE_MODULES)
+
+###############################################################################
+
 # Tworzy listê nazw na podstawie wzoru; miejsca podmiany musz¹ byæ w ostrych
 # nawiasach, natomiast wartoœci oddzielone przecinkiem; znak "?" to specjalna
 # wartoœæ oznaczaj¹ca pusty ³añcuch

@@ -72,7 +72,7 @@ macro(ADD_PROJECT name dependencies)
 		#message("${name}: ${dependencies}")
 		set (DEFAULT_PROJECT_DEPENDENCIES ${dependencies})
 		set (DEFAULT_PROJECT_LIBS)
-		set (DEFAULT_PROJECT_INCLUDES "${PROJECT_BINARY_DIR}/${name};${GLOBAL_BUILD_ROOT};${GLOBAL_INCLUDE_ROOT};${GLOBAL_ROOT}" )
+		set (DEFAULT_PROJECT_INCLUDES "${PROJECT_BINARY_DIR}/${name};${PROJECT_BUILD_ROOT};${PROJECT_INCLUDE_ROOT};${PROJECT_ROOT}" )
 		# kopiujemy dane
 		foreach (value ${dependencies})
 			#if (NOT ${createDependency})
