@@ -49,13 +49,20 @@ public:
     //! \param id ID us³ugi do wyszukania.
     //! \return Odnaleziona us³uga b¹dŸ NULL.
     virtual core::IParserPtr getParser(UniqueID id) = 0;
+    //! \param extension rozszerzenie parsera.
+    //! \return Odnaleziony parser b¹dŸ NULL.
+    virtual core::IParserPtr getParser(const std::string& extension) = 0;
+
+    virtual void loadLocalTrial(int i) = 0;
+    //! \param Za³aduj próbê pomiarow¹ o podanej nazwie.
+    virtual void loadLocalTrial(const std::string& name) = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-    //! Metoda wyszukuj¹ca wszystkie us³ugi danego typu (np. implementuj¹ce
+    //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
     CORE_SHARED_PTR(T) queryParsers(IDataManager* manager, T* dummy = NULL)
@@ -70,7 +77,7 @@ namespace core {
         }
     }
 
-    //! Metoda wyszukuj¹ca wszystkie us³ugi danego typu (np. implementuj¹ce
+    //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
     void queryParsers(IDataManager* manager, std::vector<CORE_SHARED_PTR(T)>& target)

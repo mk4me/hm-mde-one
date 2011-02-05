@@ -155,6 +155,17 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
 AsyncResult CommunicationService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
     //model->setServiceManager(serviceManager);
+    TextParserPtr tp = core::queryParsers<TextParser>(dataManager);
+    if(tp)
+    {
+        tp->parseFile("Communication");
+    }
+    else
+    {
+        std::cout << "nie ma";
+    }
+    model->setDataManager(dataManager);
+
     model->setDataManager(dataManager);
     ping();
     return AsyncResult_Complete;

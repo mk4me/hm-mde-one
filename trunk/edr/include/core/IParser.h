@@ -17,7 +17,7 @@ namespace core
 
         virtual IParser* clone() = 0;
 
-        virtual const std::string& getSupportedExtension() const = 0;
+        virtual const std::string& getSupportedExtensions() const = 0;
     };
 
     typedef CORE_SHARED_PTR(IParser) IParserPtr;
