@@ -329,39 +329,41 @@ void DataManager::loadLocalTrial(const std::string& name)
 LocalTrial DataManager::findLocalTrialsPaths(const std::string& path)
 {
     LocalTrial t;
+    t.setTrialPath(path.c_str());
+    //TODO: przerzucic filtracje nazw folderow prob pomiarowych do communication service
     boost::cmatch matches;
     boost::regex e("(.+)(\\d{4}-\\d{2}-\\d{2}.+)");
     //sprawdzamy, czy zgadza sie nazwa folderu
     if(boost::regex_match(path.c_str(), matches, e))
     {
-        t.setTrialPath(path.c_str());
         t.setName(matches[2]);
-        //przeszukujemy katalog w poszukiwaniu plikow:
-        //proba pomiarowa moze miec maksymalnie 1 plik c3d, amc, asf i 4 avi
-        std::vector<std::string> filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".c3d");
-        if(filesPath.size() > 0)
-        {
-            t.setC3dPath(filesPath[0]);
-        }
-        filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".amc");
-        if(filesPath.size() > 0)
-        {
-            t.setAnimationsPaths(filesPath);
-        }
-        filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".asf");
-        if(filesPath.size() > 0)
-        {
-            t.setSkeletonPath(filesPath[0]);
-        }
-        filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".avi");
-        if(filesPath.size() == 4)
-        {
-            t.setVideosPaths(filesPath);
-        }
     }
     else
     {
-        throw std::runtime_error("Invalid trial name.");
+        //nazwa sie nie zgadza, ale pozwalamy na zaladowanie pliku mimo wszystko...
+        t.setName("unnamed");
+    }
+    //przeszukujemy katalog w poszukiwaniu plikow:
+    //proba pomiarowa moze miec maksymalnie 1 plik c3d, amc, asf i 4 avi
+    std::vector<std::string> filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".c3d");
+    if(filesPath.size() > 0)
+    {
+        t.setC3dPath(filesPath[0]);
+    }
+    filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".amc");
+    if(filesPath.size() > 0)
+    {
+        t.setAnimationsPaths(filesPath);
+    }
+    filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".asf");
+    if(filesPath.size() > 0)
+    {
+        t.setSkeletonPath(filesPath[0]);
+    }
+    filesPath = Filesystem::listFiles(t.getTrialPath(), false, ".avi");
+    if(filesPath.size() == 4)
+    {
+        t.setVideosPaths(filesPath);
     }
     return t;
 }
