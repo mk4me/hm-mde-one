@@ -80,7 +80,7 @@ public:
     Ustala informacjê na etykiecie.
     @info informacja do wyœwietlenia na etykiecie
     */
-    void setInfoLabel(const std::string& info) {infoText=info;infoLabel->setText(QString::fromStdString(infoText));};
+    void setInfoLabel(const std::string& info);;
     /**
     Wyœwietla okno z komunikatem b³êdu.
     @param error komunikat b³êdu

@@ -43,8 +43,7 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/BaseDataTypes.h
-	${HEADER_PATH}/Bone.h
-	${HEADER_PATH}/dae2Motion.h
+	${HEADER_PATH}/Bone.h	
 	${HEADER_PATH}/DateTime.h
 	${HEADER_PATH}/Enumerators.h
 	${HEADER_PATH}/Filesystem.h

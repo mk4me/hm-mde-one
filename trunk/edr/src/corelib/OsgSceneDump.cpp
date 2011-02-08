@@ -2,7 +2,7 @@
 #include <fstream>
 #include <Qt/qtreewidget.h>
 #include <core/OsgSceneDump.h>
-
+#include <core/StringTools.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -135,9 +135,9 @@ QTreeWidgetItem* OsgSceneDumpQtTree::createItem( osg::Object& object, osg::State
         name.insert(0, "[inactive] ");
     }
 
-    item->setText(1, QString::fromStdString(name));
-    item->setText(2, QString::fromStdString(object.getName()) );
-    item->setText(0, QString::fromStdString( boost::lexical_cast<std::string>( &object ) ));
+    item->setText(1, core::toQString(name));
+    item->setText(2, core::toQString(object.getName()) );
+    item->setText(0, core::toQString( boost::lexical_cast<std::string>( &object ) ));
 
     if ( stateset ) {
         QTreeWidgetItem* prevParent = currentParent;

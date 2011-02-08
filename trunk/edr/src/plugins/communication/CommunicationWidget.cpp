@@ -1,5 +1,6 @@
 #include "CommunicationPCH.h"
 #include "CommunicationWidget.h"
+#include <core/StringTools.h>
 //http://hmdb.pjwstk.edu.pl/Motion/FileStoremanWS.svc?wsdl
 //http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl
 
@@ -74,7 +75,7 @@ void CommunicationWidget::refreshUI()
     abortButton->setDisabled(true);
     progressBar->reset();
 
-    infoLabel->setText(QString::fromStdString(infoText));
+    infoLabel->setText(core::toQString(infoText));
 
     //lokalne proby pomiarowe
     BOOST_FOREACH(LocalTrial& trial, localTrials)
@@ -83,7 +84,7 @@ void CommunicationWidget::refreshUI()
         trials->addItem(item);
         item->setPath(trial.getTrialPath());
         item->setName(trial.getName());
-        item->setText(QString::fromStdString(trial.getName()));
+        item->setText(core::toQString(trial.getName()));
     }
     //serwerowe proby pomiarowe, sprawdzamy czy serwer jest online i jesli tak to czy sie nie powtarzaja z lokalnymi
     if(isOnline)
@@ -106,7 +107,7 @@ void CommunicationWidget::refreshUI()
             {
                 EntityTrialItem* item = new EntityTrialItem();
                 trials->addItem(item);
-                item->setText(QString::fromStdString(trial.trialDescription));
+                item->setText(core::toQString(trial.trialDescription));
                 item->setSession(trial.sessionID);
                 item->setID(trial.id);
             }
@@ -121,7 +122,7 @@ void CommunicationWidget::refreshUI()
 
 void CommunicationWidget::showErrorMessage(const std::string& error)
 {
-    QMessageBox::warning(this, "Error", QString::fromStdString(error));
+    QMessageBox::warning(this, "Error", core::toQString(error));
 }
 
 void CommunicationWidget::setProgress(int value)
@@ -192,7 +193,7 @@ void CommunicationWidget::download()
             trials->addItem(item);
             item->setPath(trial.getTrialPath());
             item->setName(trial.getName());
-            item->setText(QString::fromStdString(trial.getName()));
+            item->setText(core::toQString(trial.getName()));
         }
         updateButton->setDisabled(true);
         this->communicationService->downloadTrial(trial);
@@ -223,7 +224,13 @@ void CommunicationWidget::updateTrials()
         trials->addItem(item);
         item->setPath(trial.getTrialPath());
         item->setName(trial.getName());
-        item->setText(QString::fromStdString(trial.getName()));
+        item->setText(core::toQString(trial.getName()));
     }
     communicationService->updateSessionContents();
+}
+
+void CommunicationWidget::setInfoLabel( const std::string& info )
+{
+    infoText=info;
+    infoLabel->setText(core::toQString(infoText));
 }

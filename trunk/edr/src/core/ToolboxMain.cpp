@@ -46,6 +46,7 @@
 #include "ComputeThread.h"
 
 #include <core/Log.h>
+#include <core/StringTools.h>
 
 DEFINE_DEFAULT_LOGGER("edr.core");
 
@@ -163,7 +164,7 @@ void ToolboxMain::clear()
     //std::streambuf *buf = std::cout.rdbuf(_streambuf);
     //delete buf;
 
-    m_pRenderService.reset();
+    //m_pRenderService.reset();
     delete m_pServiceManager;
     delete pluginLoader;
     m_pUserInterfaceService = NULL;
@@ -217,8 +218,8 @@ void ToolboxMain::InitializeControlWidget()
 {
     InitializeOGSWidget();  // MainWidget 
 
-    osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
-    osg::Node* sceneRoot = scene->getSceneData();
+//     osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
+//     osg::Node* sceneRoot = scene->getSceneData();
 
     // inicjalizacja GridWidget
     QDockWidget *gDock = new QDockWidget(tr("Service scene graph"), this, Qt::WindowTitleHint);
@@ -276,7 +277,7 @@ void ToolboxMain::InitializeOGSWidget()
     root->setName("root");
     root->addChild(createGrid());
 
-    m_pRenderService->SetScene(root);
+    //m_pRenderService->SetScene(root);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -351,7 +352,7 @@ void ToolboxMain::registerCoreServices()
     //1. Service manafger
     m_pUserInterfaceService = new UserInterfaceService();
     m_pServiceManager = new ServiceManager();
-    m_pRenderService = RenderServicePtr(new RenderService());
+   // m_pRenderService = RenderServicePtr(new RenderService());
 
 	/*
 	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
@@ -363,7 +364,7 @@ void ToolboxMain::registerCoreServices()
     m_pUserInterfaceService->setMainWindow(this);
 
     //4. Render Service
-    m_pServiceManager->registerService(IServicePtr(m_pRenderService));
+   // m_pServiceManager->registerService(IServicePtr(m_pRenderService));
 }
 
 void ToolboxMain::registerPluginsServices()
@@ -393,7 +394,7 @@ void ToolboxMain::onOpen()
     const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/data/trials"));
     if (!fileName.isEmpty()) 
     {
-        std::string pathVal = fileName.toStdString();
+        std::string pathVal = core::toStdString(fileName);
         const std::string& path = pathVal;
 
 
@@ -443,7 +444,7 @@ void ToolboxMain::initializeUI()
 	if(dataManager->getApplicationSkinsFilePathCount() > 0)
 	{
 		//style qt
-		QFile file(QString::fromStdString(dataManager->getApplicationSkinsFilePath(0)));
+		QFile file(QString::fromAscii(dataManager->getApplicationSkinsFilePath(0).c_str(), dataManager->getApplicationSkinsFilePath(0).size()));
 		if(file.open(QIODevice::ReadOnly | QIODevice::Text))
 		{
 			style = file.readAll();
@@ -471,19 +472,19 @@ void ToolboxMain::initializeUI()
 
         if ( viewWidget/* && service != m_pRenderService*/ ) {
 
-//            this->ui->tabWidget->addTab(viewWidget, QString::fromStdString(service->getName()));
+//            this->ui->tabWidget->addTab(viewWidget, string_cast(service->getName()));
 
 //              centralWidget()->layout()->addWidget(viewWidget);
 //             addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
 //                 viewWidget, 
-//                 QString::fromStdString(service->getName()), 
+//                 core::toQString(service->getName()), 
 //                 style,
 //                 Qt::RightDockWidgetArea));
 		}
         if ( controlWidget ) {
             addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
                 controlWidget, 
-                QString::fromStdString(service->getName()), 
+                core::toQString(service->getName()), 
                 style,
                 "Control",
                 Qt::BottomDockWidgetArea));
@@ -491,7 +492,7 @@ void ToolboxMain::initializeUI()
         if ( settingsWidget ) {
             addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(
                 settingsWidget, 
-                QString::fromStdString(service->getName()), 
+                core::toQString(service->getName()), 
                 style,
                 "Settings",
                 Qt::LeftDockWidgetArea));
@@ -516,21 +517,21 @@ void ToolboxMain::initializeUI()
 void ToolboxMain::onCustomAction()
 {
     QObject* obj = QObject::sender();
-    std::string path = obj->objectName().toStdString();
+    std::string path = core::toStdString(obj->objectName());
     this->triggerMenuItem(path, false);
 }
 
 void ToolboxMain::onCustomAction( bool triggered )
 {
     QObject* obj = QObject::sender();
-    std::string path = obj->objectName().toStdString();
+    std::string path = core::toStdString(obj->objectName());
     this->triggerMenuItem(path, triggered);
 }
 
 void ToolboxMain::onRemoveMenuItem( const std::string& path )
 {
     // TODO: rekurencyjne usuwanie niepotrzebnych podmenu
-    QAction* action = findChild<QAction*>(QString::fromStdString(path));
+    QAction* action = findChild<QAction*>(core::toQString(path));
     if ( action ) 
     {
         delete action;
@@ -587,13 +588,13 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
         pathPart += *token;
 
         // wyszukanie dziecka
-        QString itemName = QString::fromStdString(pathPart);
+        QString itemName = core::toQString(pathPart);
 
         if ( next == tokens.end() ) 
         {
             // liœæ
             QAction* action = new QAction(this);
-            action->setObjectName( QString::fromStdString(pathPart) );
+            action->setObjectName( core::toQString(pathPart) );
             action->setText(QApplication::translate("ToolboxMain", token->c_str(), 0, QApplication::UnicodeUTF8));
             currentMenu->addAction(action);
             if ( checkable ) 
@@ -635,16 +636,16 @@ void ToolboxMain::openFile( const std::string& path )
 
 void ToolboxMain::loadData()
 {
-	m_pRenderService->GetFactory()->Clear();
+	//m_pRenderService->GetFactory()->Clear();
 	m_pServiceManager->loadDataPass(dataManager);
 
 	// m_pRenderService->AddObjectToRender(createGrid());
 
 	// manage scene
-	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
-	osg::Node* sceneRoot = scene->getSceneData();
+// 	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
+// 	osg::Node* sceneRoot = scene->getSceneData();
 	dataManager->setLoadLocalTrialData(false);
-	this->setWindowTitle(tr("ToolboxMain - ").append(QString::fromStdString(dataManager->getActualLocalTrial().getName())));
+	this->setWindowTitle(tr("ToolboxMain - ").append(core::toQString(dataManager->getActualLocalTrial().getName())));
 }
 
 void ToolboxMain::onTabbedViewSelected(bool toggled)
@@ -685,7 +686,7 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
     // za³adowanie styli
     QString style;
     if(dataManager->getApplicationSkinsFilePathCount() > 0) {
-        QFile file(QString::fromStdString(dataManager->getApplicationSkinsFilePath(0)));
+        QFile file(core::toQString(dataManager->getApplicationSkinsFilePath(0)));
         if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             style = file.readAll();
             file.close();
@@ -704,7 +705,7 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
             widgets.push_back(embeddWidget(
                 viewWidget, 
-                QString::fromStdString(service->getName()), 
+                core::toQString(service->getName()), 
                 style,
                 "",
                 Qt::RightDockWidgetArea)
@@ -715,18 +716,22 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
     if ( organization == WidgetsOrganizationDocked ) {
         // dodajemy pierwszy...
         std::vector< QDockWidget* >::iterator iter = widgets.begin();
-        addDockWidget( Qt::RightDockWidgetArea, *iter );
-        // kolejne tabujemy
-        while ( ++iter != widgets.end() ) {
-            splitDockWidget( widgets.front(), *iter, Qt::Horizontal );
+        if ( iter != widgets.end() ) {
+            addDockWidget( Qt::RightDockWidgetArea, *iter );
+            // kolejne tabujemy
+            while ( ++iter != widgets.end() ) {
+                splitDockWidget( widgets.front(), *iter, Qt::Horizontal );
+            }
         }
     } else if ( organization == WidgetsOrganizationTabbed ) {
         // dodajemy pierwszy...
         std::vector< QDockWidget* >::iterator iter = widgets.begin();
-        addDockWidget( Qt::RightDockWidgetArea, *iter );
-        // kolejne tabujemy
-        while ( ++iter != widgets.end() ) {
-            tabifyDockWidget( widgets.front(), *iter );
+        if ( iter != widgets.end() ) {
+            addDockWidget( Qt::RightDockWidgetArea, *iter );
+            // kolejne tabujemy
+            while ( ++iter != widgets.end() ) {
+                tabifyDockWidget( widgets.front(), *iter );
+            }
         }
 
     } else {
@@ -769,7 +774,7 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 //     // za³adowanie styli
 //     QString style;
 //     if(dataManager->getApplicationSkinsFilePathCount() > 0) {
-//         QFile file(QString::fromStdString(dataManager->getApplicationSkinsFilePath(0)));
+//         QFile file(core::toQString(dataManager->getApplicationSkinsFilePath(0)));
 //         if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
 //             style = file.readAll();
 //             file.close();
@@ -800,12 +805,12 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 //                 // dodanie dokowalnego widgetu
 //                 addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
 //                     viewWidget, 
-//                     QString::fromStdString(service->getName()), 
+//                     core::toQString(service->getName()), 
 //                     style,
 //                     Qt::RightDockWidgetArea));
 //             } else {
 //                 // dodanie strony do zak³adek
-//                 ui->tabWidget->addTab(viewWidget, QString::fromStdString(service->getName()));
+//                 ui->tabWidget->addTab(viewWidget, core::toQString(service->getName()));
 //             }
 //         }
 //     }
@@ -844,7 +849,7 @@ void ToolboxMain::onSaveLayout()
             settings.setValue("WindowState", saveState());
         }
     } else {
-        LOG_ERROR("Could not create directory: "<<dir.toStdString());
+        LOG_ERROR("Could not create directory: "<<core::toStdString(dir));
     }
 }
 

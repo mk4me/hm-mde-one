@@ -5,6 +5,7 @@ project (EDR)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 include(MotionFindUtils)
 include(MotionTargetUtils)
+set(CMAKE_USE_RELATIVE_PATHS TRUE)
 
 #---------------------------------------------------
 # blok definicji dla CMake'a
@@ -44,9 +45,6 @@ option(PROJECT_VEBOSE_CONFIG "Print verbose info?" OFF)
 set(FIND_VERBOSE ${PROJECT_VEBOSE_CONFIG})
 set(TARGET_VERBOSE ${PROJECT_VEBOSE_CONFIG})
 
-# Czy skopiowaæ modu³y (niezlinkowane .so oraz .dll)?
-option(PROJECT_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
-
 # Opcje konfiguracji
 CONFIG_OPTION(CORE_ENABLE_LOG4CXX "Enable logging?" OFF)
 CONFIG_OPTION(CORE_ENABLE_LEAK_DETECTION "Enable leak detection?" OFF)
@@ -66,7 +64,6 @@ set(FIND_LIBRARIES_ROOT ${PROJECT_LIBRARIES_ROOT})
 set(FIND_LIBRARIES_ROOT_DEBUG ${PROJECT_LIBRARIES_ROOT_DEBUG})
 set(FIND_LIBRARIES_ROOT_RELEASE ${PROJECT_LIBRARIES_ROOT_RELEASE})
 set(FIND_PLATFORM ${PROJECT_LIBRARIES_PLATFORM})
-set(FIND_COPY_MODULES ${PROJECT_COPY_MODULES})
 
 # Szukamy bibliotek
 find_package(Boost)
@@ -74,7 +71,7 @@ find_package(OSG)
 find_package(Stdint)
 find_package(Qt)
 find_package(TinyXML)
-find_package(Dae2ERD)
+#find_package(Dae2ERD)
 find_package(cURL)
 find_package(wsdlpull)
 find_package(log4cxx)
@@ -88,8 +85,23 @@ set(OPENGL_LIBRARIES OPENGL_LIBRARIES_PROXY)
 
 find_package(Prerequisites)
 
+#---------------------------------------------------
+
 # obs³uga modu³ów (.dll/.so)
-FIND_HANDLE_MODULES()
+option(PROJECT_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
+if(PROJECT_COPY_MODULES)
+	message("Copying modules")
+	FIND_HANDLE_MODULES(PROJECT_COPY_MODULES)
+	message("Copying finished. You should turn off option PROJECT_COPY_MODULES.")
+endif()
+
+set(PROJECT_REBUILD_DEPENDENCIES_DST "${PROJECT_SOURCE_DIR}/../../" CACHE PATH "Location of rebuilt dependencies structure")
+option(PROJECT_REBUILD_DEPENDENCIES "Rebuild dependencies?" OFF)
+if(PROJECT_REBUILD_DEPENDENCIES)
+	message("Rebuiling dependencies structure in ${PROJECT_REBUILD_DEPENDENCIES_DST}")
+	FIND_REBUILD_DEPENDENCIES("${PROJECT_REBUILD_DEPENDENCIES_DST}")
+	message("Rebuiling dependencies finished. You should turn off option PROJECT_REBUILD_DEPENDENCIES.")
+endif()
 
 #---------------------------------------------------
 # Projekty sk³adaj¹ce siê z podprojektów dodajamy makrem ADD_PROJECTS,
@@ -100,9 +112,9 @@ FIND_HANDLE_MODULES()
 if (CONFIG_CORE_ENABLE_LOG4CXX)
 	ADD_PROJECT(corelib "LOG4CXX;BOOST;UTILS;OSG;QT;TINYXML;STDINT")
 else()
-	ADD_PROJECT(corelib "UTILS;OSG;QT;TINYXML;STDINT")
+	ADD_PROJECT(corelib "BOOST;UTILS;OSG;QT;TINYXML;STDINT")
 endif()
-ADD_PROJECT(core "UTILS;OSG;QT;TINYXML;corelib;DAE2ERD;OPENGL")
+ADD_PROJECT(core "UTILS;OSG;QT;TINYXML;corelib;OPENGL")
 ADD_PROJECTS(plugins)
 
 #---------------------------------------------------

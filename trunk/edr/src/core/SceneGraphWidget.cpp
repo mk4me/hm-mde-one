@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include "SceneGraphWidget.h"
 #include <core/OsgSceneDump.h>
+#include <core/StringTools.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -62,7 +63,7 @@ void SceneGraphWidget::addService( IServicePtr service )
     QComboBox* currentServiceCombo = this->currentServiceCombo;
 
     // ustalenie parametrów...
-    QString name = QString::fromStdString(service->getName());
+    QString name = core::toQString(service->getName());
     QVariant userData = qVariantFromValue(IServiceWeakPtr(service));
 
     // dodanie do komba

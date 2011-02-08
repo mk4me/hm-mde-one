@@ -234,7 +234,7 @@ bool FileReader2Motion::ParseC3DFile2EDR(C3D_Data* c3d, C3DModel* c3dModel)
 //--------------------------------------------------------------------------------------------------
 void FileReader2Motion::ReadFrmDAEFile(const std::string& file, Model* model )
 {
-    // opcjnalnie ob³ugujemy tylko format TBS;
+    /* // opcjnalnie ob³ugujemy tylko format TBS;
     m_Fs.open(file.c_str(), ios::binary);
 
     std::string buffer = "";
@@ -274,7 +274,7 @@ void FileReader2Motion::ReadFrmDAEFile(const std::string& file, Model* model )
     }
 
     m_Fs.seekg(0,ios::beg);
-    m_Fs.close();
+    m_Fs.close();*/
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -289,7 +289,7 @@ void FileReader2Motion::ReadAcclaimFile( const std::string& file, Model* model )
 //--------------------------------------------------------------------------------------------------
 void FileReader2Motion::LoadMeshFromDAE( Model* model, SDea2Motion* io_data )
 {
-    for(unsigned int i=0; i<io_data->out_meshes.size(); i++)
+    /*for(unsigned int i=0; i<io_data->out_meshes.size(); i++)
     {
         IIMesh* mesh = io_data->out_meshes[i];
         unsigned int subMeshes = mesh->GetSubMeshCount();
@@ -336,7 +336,7 @@ void FileReader2Motion::LoadMeshFromDAE( Model* model, SDea2Motion* io_data )
             mMesh->SetVerts(vertex);
             model->AddMesh(mMesh);
         }
-    }
+    }*/
 }
 
 //--------------------------------------------------------------------------------------------------

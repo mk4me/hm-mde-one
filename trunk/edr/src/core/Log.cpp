@@ -6,6 +6,7 @@
 #include <boost/algorithm/string.hpp>
 #include <utils/Debug.h>
 #include "ConsoleWidget.h"
+#include <core/StringTools.h>
 
 using namespace core;
 
@@ -276,7 +277,7 @@ public:
         } else {
             entry->severity = core::LogSeverityError;
         }
-        entry->message = QString::fromStdString(msg);
+        entry->message = core::toQString(msg);
         entry->line = -1;
         entry->timestamp = QDate::currentDate();
         entry->theadId = QThread::currentThreadId();

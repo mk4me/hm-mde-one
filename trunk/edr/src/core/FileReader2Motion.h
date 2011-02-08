@@ -13,7 +13,6 @@
 
 #include <string>
 #include <vector>
-#include <core/dae2Motion.h>
 
 class ASFAMCParser;
 
@@ -24,6 +23,7 @@ class DataManager;
 class Skeleton;
 class C3D_Data;
 
+struct SDea2Motion;
 struct SSkeletonAnimation;
 struct SFModel;
 struct SSkeleton;
