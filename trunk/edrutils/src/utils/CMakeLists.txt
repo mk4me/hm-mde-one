@@ -6,7 +6,6 @@ set(TARGET_TARGETNAME
 
 # Opcje konfiguracji
 CONFIG_OPTION(UTILS_ENABLE_PROFILER "Enable profiling?" OFF)
-CONFIG_OPTION(UTILS_ENABLE_LEAK_DETECTION "Enable leak detection?" OFF)
 if(WIN32)
 	CONFIG_OPTION(UTILS_ENABLE_LEAK_DETECTION_VLD "Enable leak detection with VLD? (http://sites.google.com/site/dmoulding/vld)" OFF)
 endif()

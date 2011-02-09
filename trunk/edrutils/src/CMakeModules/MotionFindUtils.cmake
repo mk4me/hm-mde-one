@@ -23,6 +23,12 @@ macro(FIND_INIT variable dirName)
 	
 	FIND_NOTIFY(${variable} "FIND_INIT: include: ${${variable}_INCLUDE_DIR}; debug: ${${variable}_LIBRARY_DIR_DEBUG}; release: ${${variable}_LIBRARY_DIR_RELEASE}")
 	
+	# wyzerowanie listy plików
+	set(FIND_ALL_DEBUG_FILES)
+	set(FIND_ALL_RELEASE_FILES)
+	set(${variable}_DIR_NAME ${dirName})	
+	list(APPEND FIND_ALL_RESULT ${variable})
+
 endmacro(FIND_INIT)
 
 ###############################################################################
@@ -43,6 +49,8 @@ macro(FIND_FINISH variable)
 	set (${variable}_LIBRARIES ${FIND_RESULTS})	
 	set (FIND_DISABLE_INCLUDES OFF)
 	FIND_NOTIFY(${variable} "FIND_FINISH: found libraries ${FIND_RESULTS}")
+	set(${variable}_ALL_RELEASE_FILES ${FIND_ALL_RELEASE_FILES})
+	set(${variable}_ALL_DEBUG_FILES ${FIND_ALL_DEBUG_FILES})
 
 endmacro(FIND_FINISH)
 
@@ -210,6 +218,7 @@ macro(FIND_EXECUTABLE variable pattern)
 		FIND_MESSAGE(WARNING "Static library ${variable} not found")
 		FIND_NOTIFY_RESULT(0)
 	else()
+		list(APPEND FIND_ALL_RELEASE_FILES ${variable}_EXECUTABLE)
 		set(${variable}_FOUND 1)
 		FIND_NOTIFY_RESULT(1)
 	endif()
@@ -259,12 +268,16 @@ macro(ADD_LIBRARY_SINGLE variable names debugNames static)
 	
 		# czy uda³o siê znaleŸæ odpowiednie warianty?
 		if ( ${variable}_LIBRARY_DEBUG AND ${variable}_LIBRARY_RELEASE )
-			set(${variable} optimized ${${variable}_LIBRARY_RELEASE} debug ${${variable}_LIBRARY_DEBUG})			
+			set(${variable} optimized ${${variable}_LIBRARY_RELEASE} debug ${${variable}_LIBRARY_DEBUG})
+			list(APPEND FIND_ALL_RELEASE_FILES ${variable}_LIBRARY_RELEASE)
+			list(APPEND FIND_ALL_DEBUG_FILES ${variable}_LIBRARY_DEBUG)
 		elseif ( ${variable}_LIBRARY_DEBUG )
 			set(${variable} ${${variable}_LIBRARY_DEBUG})
+			list(APPEND FIND_ALL_DEBUG_FILES ${variable}_LIBRARY_DEBUG)
 			FIND_MESSAGE("Release version of ${variable} not found, using Debug version.")
 		else()
 			set(${variable} ${${variable}_LIBRARY_RELEASE})
+			list(APPEND FIND_ALL_RELEASE_FILES ${variable}_LIBRARY_RELEASE)
 			FIND_MESSAGE("Debug version of ${variable} not found, using Release version.")
 		endif()
 		
@@ -322,13 +335,17 @@ macro (FIND_SHARED_EXT variable names debugNames dllNames dllDebugNames)
 			if ((${variable}_LIBRARY_DEBUG AND ${variable}_LIBRARY_DEBUG_DLL) AND
 				(${variable}_LIBRARY_RELEASE AND ${variable}_LIBRARY_RELEASE_DLL))
 				set(${variable} optimized ${${variable}_LIBRARY_RELEASE} debug ${${variable}_LIBRARY_DEBUG})
-			elseif (${variable}_LIBRARY_DEBUG AND ${variable}_LIBRARY_DEBUG_DLL)
+				list(APPEND FIND_ALL_RELEASE_FILES ${variable}_LIBRARY_RELEASE ${variable}_LIBRARY_RELEASE_DLL)
+				list(APPEND FIND_ALL_DEBUG_FILES ${variable}_LIBRARY_DEBUG ${variable}_LIBRARY_DEBUG_DLL )
+			elseif (${variable}_LIBRARY_DEBUG AND ${variable}_LIBRARY_DEBUG_DLL)				
 				set(${variable} ${${variable}_LIBRARY_DEBUG})
 				set(${variable}_LIBRARY_RELEASE_DLL ${${variable}_LIBRARY_DEBUG_DLL})
+				list(APPEND FIND_ALL_DEBUG_FILES ${variable}_LIBRARY_DEBUG ${variable}_LIBRARY_DEBUG_DLL )
 				FIND_MESSAGE("Release version of ${MESSAGE_BODY} not found, using Debug version.")
-			else()
+			else()				
 				set(${variable} ${${variable}_LIBRARY_RELEASE})
 				set(${variable}_LIBRARY_DEBUG_DLL ${${variable}_LIBRARY_RELEASE_DLL})
+				list(APPEND FIND_ALL_RELEASE_FILES ${variable}_LIBRARY_RELEASE ${variable}_LIBRARY_RELEASE_DLL)
 				FIND_MESSAGE("Debug version of ${MESSAGE_BODY} not found, using Release version.")
 			endif()
 		
@@ -377,11 +394,13 @@ macro (FIND_MODULE_EXT variable isSystemModule names debugNames)
 			FIND_NOTIFY(${variable} "FIND_MODULE_EXT: will copy; debug dll: ${${variable}_LIBRARY_DEBUG}; release dll: ${${variable}_LIBRARY_RELEASE}")
 			if (${variable}_LIBRARY_DEBUG)
 				list( APPEND FIND_MODULES_TO_COPY_DEBUG ${${variable}_LIBRARY_DEBUG} )
+				list( APPEND FIND_ALL_DEBUG_FILES ${variable}_LIBRARY_DEBUG)
 			else()
 				list( APPEND FIND_MODULES_TO_COPY_DEBUG ${${variable}_LIBRARY_RELEASE} )
 			endif()
-			if (${variable}_LIBRARY_RELEASE)
+			if (${variable}_LIBRARY_RELEASE)				
 				list( APPEND FIND_MODULES_TO_COPY_RELEASE ${${variable}_LIBRARY_RELEASE} )
+				list( APPEND FIND_ALL_RELEASE_FILES ${variable}_LIBRARY_RELEASE)
 			else()
 				list( APPEND FIND_MODULES_TO_COPY_RELEASE ${${variable}_LIBRARY_DEBUG} )
 			endif()
@@ -474,10 +493,10 @@ endmacro(FIND_COPY_AND_INSTALL_MODULES)
 
 ###############################################################################
 
-macro(FIND_HANDLE_MODULES)
+macro(FIND_HANDLE_MODULES doCopy)
 
-	if (FIND_COPY_MODULES)
-		message(STATUS "Copying modules...")
+	if(${doCopy})
+		
 		# wybieramy listê konfiguracji
 		if ( WIN32 )
 			# lecimy po build typach
@@ -487,7 +506,7 @@ macro(FIND_HANDLE_MODULES)
 		else()
 			FIND_COPY_AND_INSTALL_MODULES("${CMAKE_BUILD_TYPE}" "")
 		endif()
-		message(STATUS "Copying finished.")
+		
 	endif()
 	if ( UNIX )
 		# http://www.cmake.org/Wiki/CMake_RPATH_handling
@@ -504,6 +523,65 @@ macro(FIND_HANDLE_MODULES)
 	endif()
 
 endmacro(FIND_HANDLE_MODULES)
+
+###############################################################################
+
+macro(FIND_REBUILD_DEPENDENCIES dst)
+
+	foreach( variable ${FIND_ALL_RESULT} )
+		if (${variable}_FOUND)
+		
+			if ( DEFINED ${variable}_INCLUDE_DIR )
+				#file(COPY "${${variable}_INCLUDE_DIR} DESTINATION "${dst}/${${variable}_DIR_NAME}")
+				message(STATUS "${${variable}_INCLUDE_DIR} -> ${dst}/include/${${variable}_DIR_NAME}")
+				execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory "${${variable}_INCLUDE_DIR}" "${dst}/include/${${variable}_DIR_NAME}")
+			else()
+				#message("${variable} dosent have inlcude dir")
+			endif()
+			
+			if ( DEFINED ${variable}_INCLUDE_CONFIG_DIR )
+				#file(COPY ${${variable}_INCLUDE_CONFIG_DIR} DESTINATION "${dst}/${FIND_PLATFORM}/${${variable}_DIR_NAME}")
+				message(STATUS "${${variable}_INCLUDE_CONFIG_DIR} -> ${dst}/include/${FIND_PLATFORM}/${${variable}_DIR_NAME}")
+				execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory "${${variable}_INCLUDE_CONFIG_DIR}" "${dst}/include/${FIND_PLATFORM}/${${variable}_DIR_NAME}")
+			else()
+				#message("${variable} dosent have inlcude config dir")
+			endif()
+			
+			if ( DEFINED ${variable}_LIBRARIES )
+				__FIND_REBUILD_DEPENDENCIES_COPY_FILES( ${variable}_ALL_DEBUG_FILES 	"${dst}/lib/${FIND_PLATFORM}/debug/${${variable}_DIR_NAME}")
+				__FIND_REBUILD_DEPENDENCIES_COPY_FILES( ${variable}_ALL_RELEASE_FILES 	"${dst}/lib/${FIND_PLATFORM}/release/${${variable}_DIR_NAME}")
+				#foreach (library ${${variable}_LIBRARIES})
+				#	#message(${library})
+				#	__FIND_REBUILD_DEPENDENCIES_COPY_LIBRARY( ${library}_LIBRARY_DEBUG "debug/${${variable}_DIR_NAME}")
+				#	__FIND_REBUILD_DEPENDENCIES_COPY_LIBRARY( ${library}_LIBRARY_DEBUG_DLL "debug/${${variable}_DIR_NAME}")
+				#	__FIND_REBUILD_DEPENDENCIES_COPY_LIBRARY( ${library}_LIBRARY_RELEASE "release/${${variable}_DIR_NAME}")
+				#	__FIND_REBUILD_DEPENDENCIES_COPY_LIBRARY( ${library}_LIBRARY_RELEASE_DLL "release/${${variable}_DIR_NAME}")
+				#endforeach()
+			else()
+				#message("${variable} dosent have libraries")
+			endif()
+		endif()
+	endforeach()
+
+endmacro(FIND_REBUILD_DEPENDENCIES)
+
+###############################################################################
+
+macro(__FIND_REBUILD_DEPENDENCIES_COPY_FILES files path)
+
+	foreach(fl ${${files}})
+		get_filename_component(_fileName ${${fl}} NAME)
+		get_filename_component(_fileNameWE ${${fl}} NAME_WE)
+		set(_sufix)
+		if (FIND_MODULE_PREFIX_${_fileNameWE})
+			set(_sufix "${FIND_MODULE_PREFIX_${_fileNameWE}}")
+		endif()
+		set(_dst "${path}/${_sufix}")
+		message(STATUS "${${fl}} -> ${_dst}${_fileName}")
+		file(COPY ${${fl}} DESTINATION ${_dst})
+	endforeach()
+
+endmacro(__FIND_REBUILD_DEPENDENCIES_COPY_FILES)
 
 ###############################################################################
 
@@ -555,6 +633,6 @@ macro(FIND_NOTIFY var msg)
 	if (FIND_VERBOSE)
 		message(STATUS "FIND>${var}>${msg}")
 	endif()
-endmacro()
+endmacro(FIND_NOTIFY)
 
 ###############################################################################

@@ -42,7 +42,6 @@ set(FIND_VERBOSE ${PROJECT_VEBOSE_CONFIG})
 set(TARGET_VERBOSE ${PROJECT_VEBOSE_CONFIG})
 
 # Czy skopiowaæ modu³y (niezlinkowane .so oraz .dll)?
-option(PROJECT_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
 option(PROJECT_ENABLE_EXAMPLES "Build examples?" OFF)
 option(PROJECT_ENABLE_TESTS "Build test projects?" OFF)
 
@@ -65,7 +64,6 @@ set(FIND_LIBRARIES_ROOT ${PROJECT_LIBRARIES_ROOT})
 set(FIND_LIBRARIES_ROOT_DEBUG ${PROJECT_LIBRARIES_ROOT_DEBUG})
 set(FIND_LIBRARIES_ROOT_RELEASE ${PROJECT_LIBRARIES_ROOT_RELEASE})
 set(FIND_PLATFORM ${PROJECT_LIBRARIES_PLATFORM})
-set(FIND_COPY_MODULES ${PROJECT_COPY_MODULES})
 
 # Szukamy bibliotek
 find_package(Boost)
@@ -79,8 +77,23 @@ if (PROJECT_ENABLE_TESTS)
 	find_package(CppUnit)
 endif()
 
+#---------------------------------------------------
+
 # obs³uga modu³ów (.dll/.so)
-FIND_HANDLE_MODULES()
+option(PROJECT_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
+if(PROJECT_COPY_MODULES)
+	message("Copying modules")
+	FIND_HANDLE_MODULES(PROJECT_COPY_MODULES)
+	message("Copying finished. You should turn off option PROJECT_COPY_MODULES.")
+endif()
+
+set(PROJECT_REBUILD_DEPENDENCIES_DST "${PROJECT_SOURCE_DIR}/../../" CACHE PATH "Location of rebuilt dependencies structure")
+option(PROJECT_REBUILD_DEPENDENCIES "Rebuild dependencies?" OFF)
+if(PROJECT_REBUILD_DEPENDENCIES)
+	message("Rebuiling dependencies structure in ${PROJECT_REBUILD_DEPENDENCIES_DST}")
+	FIND_REBUILD_DEPENDENCIES("${PROJECT_REBUILD_DEPENDENCIES_DST}")
+	message("Rebuiling dependencies finished. You should turn off option PROJECT_REBUILD_DEPENDENCIES.")
+endif()
 
 #---------------------------------------------------
 # Projekty sk³adaj¹ce siê z podprojektów dodajamy makrem ADD_PROJECTS,
@@ -103,7 +116,7 @@ ADD_PROJECT(vidlib "FFMPEG;STDINT;utils;${VIDLIB_DEPENDENCIES}")
 # przyk³ady
 
 if (PROJECT_ENABLE_EXAMPLES)
-	set(PROJECT_EXAMPLES_ROOT "../examples/" CACHE PATH "Location of data.")
+	set(PROJECT_EXAMPLES_ROOT "${PROJECT_SOURCE_DIR}/../examples/" CACHE PATH "Location of data.")
 	add_subdirectory(${PROJECT_EXAMPLES_ROOT} ${PROJECT_BINARY_DIR}/examples)
 endif()
 
@@ -111,7 +124,7 @@ endif()
 # testy
 
 if (PROJECT_ENABLE_TESTS)
-	set(PROJECT_TESTS_ROOT "../tests/" CACHE PATH "Location of data.")
+	set(PROJECT_TESTS_ROOT "${PROJECT_SOURCE_DIR}/../tests/" CACHE PATH "Location of data.")
 	add_subdirectory(${PROJECT_TESTS_ROOT} ${PROJECT_BINARY_DIR}/tests)
 endif()
 

@@ -375,7 +375,7 @@ void Profiler::enableThread(threadID thread)
     if ( threadCount == UTILS_PROFILER_LIST_SIZE ) {
         threadMap.insert(threadList, threadList+UTILS_PROFILER_LIST_SIZE);
         // usuwamy œmieci
-        std::fill(threadList, threadList+UTILS_PROFILER_LIST_SIZE, ThreadEntry(0, NULL));
+        std::fill(threadList, threadList+UTILS_PROFILER_LIST_SIZE, ThreadEntry(0, nullptr));
     }
 
     // stworzenie nowego stanu
@@ -433,7 +433,7 @@ void Profiler::disableThread(threadID thread)
             UTILS_ASSERT(inserted.second);
             // usuwamy zbêdne
             ThreadEntry* last = std::remove(threadList, threadList+UTILS_PROFILER_LIST_SIZE, *toRemove);
-            std::fill(last, threadList+UTILS_PROFILER_LIST_SIZE, ThreadEntry(0, NULL));
+            std::fill(last, threadList+UTILS_PROFILER_LIST_SIZE, ThreadEntry(0, nullptr));
             --threadCount;
         }
     }
