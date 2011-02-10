@@ -54,7 +54,7 @@ template <class T> struct AlignType {
 //! Typ wyrównuj¹cy adres przy zadanym wyrównaniu
 template <int Addr, int AlignBytes> struct AlignTo {
     // Liczba bajtów musi byc potega dwójki!
-    UTILS_STATIC_ASSERT((AlignBytes & (AlignBytes-1)) == 0 );
+    UTILS_STATIC_ASSERT((AlignBytes & (AlignBytes-1)) == 0, "Power of 2 error");
     //! Warunek: je¿eli ostatnie bajty nie s¹ wyzerowane to je zerujê i dodajê bajty alignu;
     //! w przeciwnym wypadku wartoœæ jest ju¿ wyalignowana.
     enum { value = UTILS_ALIGN(Addr, AlignBytes) };

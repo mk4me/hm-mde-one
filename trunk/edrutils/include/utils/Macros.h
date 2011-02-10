@@ -6,8 +6,21 @@ author:	  Piotr Gwiazdowski
 
 purpose:
 *********************************************************************/
-#ifndef __MOTIONUTIL_MACROS_H__
-#define __MOTIONUTIL_MACROS_H__
+
+#ifndef __HEADER_GUARD_UTILS__MACROS_H__
+#define __HEADER_GUARD_UTILS__MACROS_H__
+
+//------------------------------------------------------------------------------
+
+#if _MSC_VER >= 1600 || defined(__GXX_EXPERIMENTAL_CXX0X__)
+#define UTILS_CXX0X
+#endif
+
+//------------------------------------------------------------------------------
+
+#if defined(_DEBUG) || defined(DEBUG)
+#define UTILS_DEBUG
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -139,4 +152,4 @@ purpose:
 
 //------------------------------------------------------------------------------
 
-#endif  // __MOTIONUTIL_MACROS_H__
+#endif  // __HEADER_GUARD_UTILS__MACROS_H__
