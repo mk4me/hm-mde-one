@@ -158,11 +158,11 @@ AsyncResult CommunicationService::init(IServiceManager* serviceManager, IDataMan
     TextParserPtr tp = core::queryParsers<TextParser>(dataManager);
     if(tp)
     {
-        tp->parseFile("Communication");
+        LOG_INFO("There is initialized TextParser.");
     }
     else
     {
-        std::cout << "nie ma";
+        LOG_INFO("Initialized TextParser wasn't found.");
     }
     model->setDataManager(dataManager);
 

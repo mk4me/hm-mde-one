@@ -4,6 +4,7 @@
 #include <core/LocalTrial.h>
 #include <core/IParser.h>
 #include <vector>
+#include <boost/filesystem.hpp>
 
 class IDataManager
 {
@@ -46,9 +47,6 @@ public:
     //! \param idx Indeks us≥ugi.
     //! \return Us≥uga o zadanym indeksie.
 	virtual core::IParserPtr getParser(int idx) = 0;
-    //! \param id ID us≥ugi do wyszukania.
-    //! \return Odnaleziona us≥uga bπdü NULL.
-    virtual core::IParserPtr getParser(UniqueID id) = 0;
     //! \param extension rozszerzenie parsera.
     //! \return Odnaleziony parser bπdü NULL.
     virtual core::IParserPtr getParser(const std::string& extension) = 0;
@@ -61,7 +59,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
-
+    
     //! Metoda wyszukujπca wszystkie parsery danego typu (np. implementujπce
     //! dany interfejs).
     template <class T>
@@ -76,7 +74,32 @@ namespace core {
             return result[0];
         }
     }
-
+    
+    //! Metoda wyszukujπca wszystkie parsery danego typu (np. implementujπce
+    //! dany interfejs).
+    template <class T>
+    CORE_SHARED_PTR(T) queryParsers(IDataManager* manager, const std::string& filename)
+    {
+        std::vector<CORE_SHARED_PTR(T)> result;
+        queryParsers(manager, result);
+        if ( result.empty() ) {
+            return CORE_SHARED_PTR(T)();
+        } else {
+            UTILS_ASSERT(result.size()==1, "Multiple parsers found.");
+            //mamy parsery, teraz szukamy po nazwie pliku
+            BOOST_FOREACH(CORE_SHARED_PTR(T) ptr, result)
+            {
+                boost::filesystem::path path(ptr->getPath());
+                //sciezka istnieje, jest plikiem i zgadza sie nazwa
+                if(boost::filesystem::exists(path) && !boost::filesystem::is_directory(path) && !path.filename().compare(filename))
+                {
+                    return ptr;
+                }
+            }
+            return CORE_SHARED_PTR(T)();
+        }
+    }
+    
     //! Metoda wyszukujπca wszystkie parsery danego typu (np. implementujπce
     //! dany interfejs).
     template <class T>

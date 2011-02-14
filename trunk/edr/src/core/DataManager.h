@@ -72,27 +72,30 @@ public:
     //! Sekwencja parserów.
     typedef std::vector<core::IParserPtr> ParsersList;
     //------------------------------------------------------------------------------------------------------------------------------
+private:
     //! S³owniki parserów niezainicjalizowanych.
-    ParsersIDMap parsersIDMap;
-    ParsersExtMap parsersExtMap;
+    ParsersIDMap registeredParsersIDMap;
+    ParsersExtMap registeredParsersExtMap;
     //! Sekwencja parserów niezainicjalizowanych.
-    ParsersList parsersList;
+    ParsersList registeredParsersList;
+    
+    //! S³ownik parserów aktualnie zainicjalizowanych.
+    ParsersExtMap actualParsersExtMap;
+    //! Sekwencja parserów aktualnie zainicjalizowanych.
+    ParsersList actualParsersList;
 
-    //! S³owniki parserów aktualnej próby pomiarowej.
-    ParsersIDMap actualTrialParsersIDMap;
-    ParsersExtMap actualTrialParsersExtMap;
     //! Sekwencja parserów aktualnej próby pomiarowej.
     ParsersList actualTrialParsersList;
 
     //! Lista lokalnych prób pomiarowych.
     std::vector<LocalTrial> localTrialsList;
+
+    //! Lista zasobów.
+    std::vector<std::string> resourcesPaths;
 protected:
     //! \param idx Indeks parsera.
     //! \return Parser o zadanym indeksie.
     virtual core::IParserPtr getParser(int idx);
-    //! \param id ID parsera do wyszukania.
-    //! \return Odnaleziony parser b¹dŸ NULL.
-    virtual core::IParserPtr getParser(UniqueID id);
     //! \param extension rozszerzenie parsera.
     //! \return Odnaleziony parser b¹dŸ NULL.
     core::IParserPtr getParser(const std::string& extension);
@@ -100,19 +103,20 @@ protected:
     //! \param idx Indeks niezainicjalizowanego parsera.
     //! \return Parser o zadanym indeksie z listy parserów niezainicjalizowanych.
     core::IParserPtr getRawParser(int idx);
-    //! \param id ID niezainicjalizowanego parsera do wyszukania.
-    //! \return Odnaleziony parser b¹dŸ NULL.
-    core::IParserPtr getRawParser(UniqueID id);
     //! \param extension rozszerzenie niezainicjalizowanego parsera.
     //! \return Odnaleziony parser b¹dŸ NULL.
     core::IParserPtr getRawParser(const std::string& extension);
     //! \return Liczba niezainicjalizowanych parserów.
     virtual int getNumRawParsers() const;
-
-    //! Szuka na dysku lokalnych prob pomiarowych.
+    
+    //! Szuka na dysku lokalnych prób pomiarowych.
     void findLocalTrials();
+    //! Szuka na dysku zasobów.
+    void findResources();
     //! \param trial do za³adowania, czyli inicjalizacja parserów
-    void loadActualTrialParsers(const LocalTrial& trial);
+    void loadActualTrial(const LocalTrial& trial);
+    //! ³adowanie zasobów, czyli inicjalizacja parserów
+    void loadResourcesEx();
     //! \param œcie¿ka do folderu z plikami próby pomiarowej
     //! \return Pojedyncza próba pomiarowa ze œcie¿kami do wszystkich jej plików.
     LocalTrial findLocalTrialsPaths(const std::string& path);
@@ -130,6 +134,8 @@ public:
     void clearLocalTrials();
     //! Czyœci informacje o aktualnej próbie pomiarowej.
     void clearActualLocalTrial();
+    //! Czyszczenie po parserach.
+    void clearParsers();
 };
 
 #endif // DATA_MANAGER_H

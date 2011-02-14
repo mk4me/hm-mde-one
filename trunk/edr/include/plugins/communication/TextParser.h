@@ -17,9 +17,9 @@ public:
 
     virtual const std::string& getSupportedExtensions() const;
 
-    const std::string& getOutput() const;
+    virtual const std::string& getPath() const;
 
-    const std::string& getPath() const;
+    const std::string& getOutput() const;
 private:
     std::string extension;
     std::ifstream textFile;

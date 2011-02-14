@@ -12,8 +12,10 @@ namespace core
     public:
 
         virtual ~IParser() {}
-
+        
         virtual void parseFile(const std::string& path) = 0;
+
+        virtual const std::string& getPath() const = 0;
 
         virtual IParser* clone() = 0;
 

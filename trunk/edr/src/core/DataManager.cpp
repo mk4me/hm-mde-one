@@ -1,3 +1,4 @@
+#include "CorePCH.h"
 #include "DataManager.h"
 
 #include <core/Log.h>
@@ -12,8 +13,6 @@ using namespace core;
 DataManager::DataManager(const std::string& resourcesPath, const std::string& trialsPath) : resourcesPath(resourcesPath), trialsPath(trialsPath)
 {
     clear();
-    loadResources();
-    loadTrials();
     loadTrialData = false;
     loadUnknownTrialData = false;
     actualTrialIndex = 0;
@@ -38,6 +37,8 @@ void DataManager::loadResources()
     meshesPaths = Filesystem::listFiles(this->resourcesPath, true, ".fmesh");
     //szukaj styli qt
     applicationSkinsPaths = Filesystem::listFiles(this->resourcesPath, true, ".qss");
+    findResources();
+    loadResourcesEx();
 }
 
 void DataManager::loadTrials()
@@ -65,7 +66,7 @@ void DataManager::clear()
     this->applicationSkinsPaths.clear();
     this->trials.clear();
     //nowy DM
-    clearLocalTrials();
+    clearParsers();
 }
 
 const LocalTrial& DataManager::getLocalTrial(int i) const
@@ -174,11 +175,11 @@ void DataManager::setActualLocalTrial(const std::string& name)
 void DataManager::registerParser(core::IParserPtr parser)
 {
     //unikalne ID parsera
-    if(parsersIDMap.find(parser->getID()) == parsersIDMap.end())
+    if(registeredParsersIDMap.find(parser->getID()) == registeredParsersIDMap.end())
     {
-        parsersIDMap.insert(std::make_pair(parser->getID(), parser));
-        parsersExtMap.insert(std::make_pair(boost::to_lower_copy(parser->getSupportedExtensions()), parser));
-        parsersList.push_back(parser);
+        registeredParsersIDMap.insert(std::make_pair(parser->getID(), parser));
+        registeredParsersExtMap.insert(std::make_pair(boost::to_lower_copy(parser->getSupportedExtensions()), parser));
+        registeredParsersList.push_back(parser);
     }
     else
     {
@@ -188,28 +189,18 @@ void DataManager::registerParser(core::IParserPtr parser)
 
 int DataManager::getNumParsers() const
 {
-    return static_cast<int>(actualTrialParsersList.size());
+    return static_cast<int>(actualParsersList.size());
 }
 
 int DataManager::getNumRawParsers() const
 {
-    return static_cast<int>(parsersList.size());
+    return static_cast<int>(registeredParsersList.size());
 }
 
 core::IParserPtr DataManager::getParser(int idx)
 {
-    if ( idx < static_cast<int>(actualTrialParsersList.size()) ) {
-        return actualTrialParsersList[idx];
-    } else {
-        return core::IParserPtr();
-    }
-}
-
-core::IParserPtr DataManager::getParser(UniqueID id)
-{
-    ParsersIDMap::iterator it = actualTrialParsersIDMap.find(id);
-    if (it != actualTrialParsersIDMap.end()) {
-        return it->second; 
+    if ( idx < static_cast<int>(actualParsersList.size()) ) {
+        return actualParsersList[idx];
     } else {
         return core::IParserPtr();
     }
@@ -221,7 +212,7 @@ core::IParserPtr DataManager::getParser(const std::string& extension)
     boost::tokenizer<boost::char_separator<char>> parameterExtensionToker(extension, separators);
     std::string readyToCompareExtension = *parameterExtensionToker.begin();
     boost::to_lower(readyToCompareExtension);
-    for(ParsersExtMap::iterator it = actualTrialParsersExtMap.begin(); it != actualTrialParsersExtMap.end(); ++it)
+    for(ParsersExtMap::iterator it = actualParsersExtMap.begin(); it != actualParsersExtMap.end(); ++it)
     {
         std::string extensions = it->first;
         boost::tokenizer<boost::char_separator<char>> tokens(extensions, separators);
@@ -244,18 +235,8 @@ core::IParserPtr DataManager::getParser(const std::string& extension)
 
 core::IParserPtr DataManager::getRawParser(int idx)
 {
-    if ( idx < static_cast<int>(parsersList.size()) ) {
-        return parsersList[idx];
-    } else {
-        return core::IParserPtr();
-    }
-}
-
-core::IParserPtr DataManager::getRawParser(UniqueID id)
-{
-    ParsersIDMap::iterator it = parsersIDMap.find(id);
-    if (it != parsersIDMap.end()) {
-        return it->second; 
+    if ( idx < static_cast<int>(registeredParsersList.size()) ) {
+        return registeredParsersList[idx];
     } else {
         return core::IParserPtr();
     }
@@ -267,7 +248,7 @@ core::IParserPtr DataManager::getRawParser(const std::string& extension)
     boost::tokenizer<boost::char_separator<char>> parameterExtensionToker(extension, separators);
     std::string readyToCompareExtension = *parameterExtensionToker.begin();
     boost::to_lower(readyToCompareExtension);
-    for(ParsersExtMap::iterator it = parsersExtMap.begin(); it != parsersExtMap.end(); ++it)
+    for(ParsersExtMap::iterator it = registeredParsersExtMap.begin(); it != registeredParsersExtMap.end(); ++it)
     {
         std::string extensions = it->first;
         boost::tokenizer<boost::char_separator<char>> tokens(extensions, separators);
@@ -298,12 +279,29 @@ void DataManager::findLocalTrials()
     }
 }
 
+void DataManager::findResources()
+{
+    resourcesPaths.clear();
+    //szukaj shaderow
+    std::vector<std::string> ext;
+    ext.push_back(".frag");
+    ext.push_back(".vert");
+    std::vector<std::string> temp = Filesystem::listFiles(this->resourcesPath, true, ext);
+    resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
+    //TODO: szukaj fmesh file czy tbs? na razie daje fmesh...
+    temp = Filesystem::listFiles(this->resourcesPath, true, ".fmesh");
+    resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
+    //szukaj styli qt
+    temp = Filesystem::listFiles(this->resourcesPath, true, ".qss");
+    resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
+}
+
 void DataManager::loadLocalTrial(int i)
 {
     //czyscimy dotychczasowa liste zaladowanych parserow
     clearActualLocalTrial();
     //ladowanie parserow dla i-tego triala z listy
-    loadActualTrialParsers(localTrialsList[i]);
+    loadActualTrial(localTrialsList[i]);
 }
 
 void DataManager::loadLocalTrial(const std::string& name)
@@ -368,7 +366,7 @@ LocalTrial DataManager::findLocalTrialsPaths(const std::string& path)
     return t;
 }
 
-void DataManager::loadActualTrialParsers(const LocalTrial& trial)
+void DataManager::loadActualTrial(const LocalTrial& trial)
 {
     //proba zaladowania parsera plikow c3d jesli takowy plik i parser istnieje
     if(trial.isC3d())
@@ -380,6 +378,7 @@ void DataManager::loadActualTrialParsers(const LocalTrial& trial)
             //parsujemy
             c3dParser->parseFile(trial.getC3dPath());
             //dodajemy do listy parserow aktualnej proby pomiarowej
+            actualParsersList.push_back(c3dParser);
             actualTrialParsersList.push_back(c3dParser);
         }
     }
@@ -389,6 +388,7 @@ void DataManager::loadActualTrialParsers(const LocalTrial& trial)
         if(asfParser)
         {
             asfParser->parseFile(trial.getSkeletonPath());
+            actualParsersList.push_back(asfParser);
             actualTrialParsersList.push_back(asfParser);
         }
     }
@@ -401,6 +401,7 @@ void DataManager::loadActualTrialParsers(const LocalTrial& trial)
             if(animParser)
             {
                 animParser->parseFile(anim);
+                actualParsersList.push_back(animParser);
                 actualTrialParsersList.push_back(animParser);
             }
         }
@@ -414,7 +415,27 @@ void DataManager::loadActualTrialParsers(const LocalTrial& trial)
             if(videoParser)
             {
                 videoParser->parseFile(vid);
+                actualParsersList.push_back(videoParser);
                 actualTrialParsersList.push_back(videoParser);
+            }
+        }
+    }
+}
+
+void DataManager::loadResourcesEx()
+{
+    BOOST_FOREACH(std::string resourcePath, resourcesPaths)
+    {
+        boost::filesystem::path path(resourcePath);
+        //sciezka istnieje, jest plikiem i zgadza sie nazwa
+        if(boost::filesystem::exists(path) && !boost::filesystem::is_directory(path))// && !path.extension().compare(filename))
+        {
+            IParserPtr parser = getParser(path.extension());
+            //jesli parser dla tego rozszerzenia istnieje, dodajemy go do listy aktualnie zaladowanych parserow (zasobow)
+            if(parser)
+            {
+                actualParsersExtMap.insert(std::make_pair(path.extension(), parser));
+                actualParsersList.push_back(parser);
             }
         }
     }
@@ -428,7 +449,12 @@ void DataManager::clearLocalTrials()
 
 void DataManager::clearActualLocalTrial()
 {
-    actualTrialParsersIDMap.clear();
-    actualTrialParsersExtMap.clear();
     actualTrialParsersList.clear();
+}
+
+void DataManager::clearParsers()
+{
+    actualParsersExtMap.clear();
+    actualParsersList.clear();
+    clearActualLocalTrial();
 }
