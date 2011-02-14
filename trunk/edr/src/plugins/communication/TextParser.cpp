@@ -26,7 +26,7 @@ core::IParser* TextParser::clone()
     return new TextParser();
 }
 
-const std::string& TextParser::getSupportedExtensions() const
+std::string TextParser::getSupportedExtensions() const
 {
     return extension;
 }

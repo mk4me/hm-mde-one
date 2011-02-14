@@ -206,30 +206,16 @@ core::IParserPtr DataManager::getParser(int idx)
     }
 }
 
-core::IParserPtr DataManager::getParser(const std::string& extension)
+core::IParserPtr DataManager::getParser(const std::string& filename)
 {
-    boost::char_separator<char> separators(";*.");
-    boost::tokenizer<boost::char_separator<char>> parameterExtensionToker(extension, separators);
-    std::string readyToCompareExtension = *parameterExtensionToker.begin();
-    boost::to_lower(readyToCompareExtension);
-    for(ParsersExtMap::iterator it = actualParsersExtMap.begin(); it != actualParsersExtMap.end(); ++it)
+    for(ParsersMap::iterator it = actualParsersFilenameMap.begin(); it != actualParsersFilenameMap.end(); ++it)
     {
-        std::string extensions = it->first;
-        boost::tokenizer<boost::char_separator<char>> tokens(extensions, separators);
-        BOOST_FOREACH(std::string ext, tokens)
+        std::string parserFilename = it->first;
+        if(parserFilename.compare(filename) == 0)
         {
-            if(readyToCompareExtension.compare(ext) == 0)
-            {
-                return it->second;
-            }
+            return it->second;
         }
     }
-    //ParsersExtMap::iterator it = actualTrialParsersExtMap.find(extension);
-    //if (it != actualTrialParsersExtMap.end()) {
-    //    return it->second; 
-    //} else {
-    //    return core::IParserPtr();
-    //}
     return core::IParserPtr();
 }
 
@@ -248,7 +234,7 @@ core::IParserPtr DataManager::getRawParser(const std::string& extension)
     boost::tokenizer<boost::char_separator<char>> parameterExtensionToker(extension, separators);
     std::string readyToCompareExtension = *parameterExtensionToker.begin();
     boost::to_lower(readyToCompareExtension);
-    for(ParsersExtMap::iterator it = registeredParsersExtMap.begin(); it != registeredParsersExtMap.end(); ++it)
+    for(ParsersMap::iterator it = registeredParsersExtMap.begin(); it != registeredParsersExtMap.end(); ++it)
     {
         std::string extensions = it->first;
         boost::tokenizer<boost::char_separator<char>> tokens(extensions, separators);
@@ -368,6 +354,7 @@ LocalTrial DataManager::findLocalTrialsPaths(const std::string& path)
 
 void DataManager::loadActualTrial(const LocalTrial& trial)
 {
+    //TODO: LocalTrial nie bedzie juz raczej potrzebne
     //proba zaladowania parsera plikow c3d jesli takowy plik i parser istnieje
     if(trial.isC3d())
     {
@@ -380,6 +367,9 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
             //dodajemy do listy parserow aktualnej proby pomiarowej
             actualParsersList.push_back(c3dParser);
             actualTrialParsersList.push_back(c3dParser);
+
+            boost::filesystem::path path(trial.getC3dPath());
+            actualParsersFilenameMap.insert(std::make_pair(path.filename(), c3dParser));
         }
     }
     if(trial.isSkeleton())
@@ -390,6 +380,9 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
             asfParser->parseFile(trial.getSkeletonPath());
             actualParsersList.push_back(asfParser);
             actualTrialParsersList.push_back(asfParser);
+
+            boost::filesystem::path path(trial.getSkeletonPath());
+            actualParsersFilenameMap.insert(std::make_pair(path.filename(), asfParser));
         }
     }
     if(trial.isAnimations())
@@ -403,6 +396,9 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
                 animParser->parseFile(anim);
                 actualParsersList.push_back(animParser);
                 actualTrialParsersList.push_back(animParser);
+
+                boost::filesystem::path path(anim);
+                actualParsersFilenameMap.insert(std::make_pair(path.filename(), animParser));
             }
         }
     }
@@ -417,6 +413,9 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
                 videoParser->parseFile(vid);
                 actualParsersList.push_back(videoParser);
                 actualTrialParsersList.push_back(videoParser);
+
+                boost::filesystem::path path(vid);
+                actualParsersFilenameMap.insert(std::make_pair(path.filename(), videoParser));
             }
         }
     }
@@ -430,12 +429,14 @@ void DataManager::loadResourcesEx()
         //sciezka istnieje, jest plikiem i zgadza sie nazwa
         if(boost::filesystem::exists(path) && !boost::filesystem::is_directory(path))// && !path.extension().compare(filename))
         {
-            IParserPtr parser = getParser(path.extension());
+            IParserPtr parser = getRawParser(path.extension());
             //jesli parser dla tego rozszerzenia istnieje, dodajemy go do listy aktualnie zaladowanych parserow (zasobow)
             if(parser)
             {
                 actualParsersExtMap.insert(std::make_pair(path.extension(), parser));
                 actualParsersList.push_back(parser);
+
+                actualParsersFilenameMap.insert(std::make_pair(path.filename(), parser));
             }
         }
     }

@@ -47,9 +47,9 @@ public:
     //! \param idx Indeks us³ugi.
     //! \return Us³uga o zadanym indeksie.
 	virtual core::IParserPtr getParser(int idx) = 0;
-    //! \param extension rozszerzenie parsera.
+    //! \param filename nazwa pliku parsera.
     //! \return Odnaleziony parser b¹dŸ NULL.
-    virtual core::IParserPtr getParser(const std::string& extension) = 0;
+    virtual core::IParserPtr getParser(const std::string& filename) = 0;
 
     virtual void loadLocalTrial(int i) = 0;
     //! \param Za³aduj próbê pomiarow¹ o podanej nazwie.
@@ -80,24 +80,7 @@ namespace core {
     template <class T>
     CORE_SHARED_PTR(T) queryParsers(IDataManager* manager, const std::string& filename)
     {
-        std::vector<CORE_SHARED_PTR(T)> result;
-        queryParsers(manager, result);
-        if ( result.empty() ) {
-            return CORE_SHARED_PTR(T)();
-        } else {
-            UTILS_ASSERT(result.size()==1, "Multiple parsers found.");
-            //mamy parsery, teraz szukamy po nazwie pliku
-            BOOST_FOREACH(CORE_SHARED_PTR(T) ptr, result)
-            {
-                boost::filesystem::path path(ptr->getPath());
-                //sciezka istnieje, jest plikiem i zgadza sie nazwa
-                if(boost::filesystem::exists(path) && !boost::filesystem::is_directory(path) && !path.filename().compare(filename))
-                {
-                    return ptr;
-                }
-            }
-            return CORE_SHARED_PTR(T)();
-        }
+        return manager->getParser(filename);
     }
     
     //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce

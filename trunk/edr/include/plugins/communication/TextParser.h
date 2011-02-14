@@ -15,7 +15,7 @@ public:
 
     virtual IParser* clone();
 
-    virtual const std::string& getSupportedExtensions() const;
+    virtual std::string getSupportedExtensions() const;
 
     virtual const std::string& getPath() const;
 

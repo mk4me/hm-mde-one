@@ -68,19 +68,20 @@ public:
     //! S³ownik parserów wed³ug ID.
     typedef std::map<UniqueID, core::IParserPtr> ParsersIDMap;
     //! S³ownik parserów wed³ug rozszerzeñ.
-    typedef std::map<std::string, core::IParserPtr> ParsersExtMap;
+    typedef std::map<std::string, core::IParserPtr> ParsersMap;
     //! Sekwencja parserów.
     typedef std::vector<core::IParserPtr> ParsersList;
     //------------------------------------------------------------------------------------------------------------------------------
 private:
     //! S³owniki parserów niezainicjalizowanych.
     ParsersIDMap registeredParsersIDMap;
-    ParsersExtMap registeredParsersExtMap;
+    ParsersMap registeredParsersExtMap;
     //! Sekwencja parserów niezainicjalizowanych.
     ParsersList registeredParsersList;
     
     //! S³ownik parserów aktualnie zainicjalizowanych.
-    ParsersExtMap actualParsersExtMap;
+    ParsersMap actualParsersExtMap;
+    ParsersMap actualParsersFilenameMap;
     //! Sekwencja parserów aktualnie zainicjalizowanych.
     ParsersList actualParsersList;
 
@@ -96,9 +97,9 @@ protected:
     //! \param idx Indeks parsera.
     //! \return Parser o zadanym indeksie.
     virtual core::IParserPtr getParser(int idx);
-    //! \param extension rozszerzenie parsera.
+    //! \param filename nazwa pliku parsera.
     //! \return Odnaleziony parser b¹dŸ NULL.
-    core::IParserPtr getParser(const std::string& extension);
+    core::IParserPtr getParser(const std::string& filename);
     
     //! \param idx Indeks niezainicjalizowanego parsera.
     //! \return Parser o zadanym indeksie z listy parserów niezainicjalizowanych.
