@@ -179,7 +179,8 @@ void DataManager::registerParser(core::IParserPtr parser)
     {
         //wyci¹gamy kazde supportowane rozszerzenie
         boost::char_separator<char> separators(";*");
-        boost::tokenizer<boost::char_separator<char>> parameterExtensionToker(parser->getSupportedExtensions(), separators);
+        std::string ext = parser->getSupportedExtensions();
+        boost::tokenizer<boost::char_separator<char>> parameterExtensionToker(ext, separators);
         for(boost::tokenizer<boost::char_separator<char>>::iterator it = parameterExtensionToker.begin(); it != parameterExtensionToker.end(); ++it)
         {
             std::string extension = *it;
@@ -297,7 +298,6 @@ void DataManager::findResources()
 void DataManager::loadLocalTrial(int i)
 {
     //czyscimy dotychczasowa liste zaladowanych parserow
-    clearActualLocalTrial();
     //ladowanie parserow dla i-tego triala z listy
     loadActualTrial(localTrialsList[i]);
 }
@@ -315,11 +315,12 @@ void DataManager::loadLocalTrial(const std::string& name)
             if(localTrialsList.at(i).getName().compare(matches[2]) == 0)
             {
                 loadLocalTrial(i);
+                loadTrialData = true;
                 return;
             }
         }
     }
-    LOG_WARNING(": !Brak wskazanej pomiarowej w zasobach.\n");
+    LOG_WARNING("No trial in resources.\n");
 }
 
 LocalTrial DataManager::findLocalTrialsPaths(const std::string& path)
@@ -366,11 +367,13 @@ LocalTrial DataManager::findLocalTrialsPaths(const std::string& path)
 
 void DataManager::loadActualTrial(const LocalTrial& trial)
 {
+    clearActualTrial();
     //TODO: LocalTrial nie bedzie juz raczej potrzebne
     //proba zaladowania parsera plikow c3d jesli takowy plik i parser istnieje
     if(trial.isC3d())
     {
         //szukamy czy jest parser obslugujacy c3d
+        boost::filesystem::path path(trial.getC3dPath());
         core::IParserPtr c3dParser = getRawParser(".c3d");
         if(c3dParser)
         {
@@ -380,12 +383,16 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
             actualParsersList.push_back(c3dParser);
             actualTrialParsersList.push_back(c3dParser);
 
-            boost::filesystem::path path(trial.getC3dPath());
             actualParsersFilenameMap.insert(std::make_pair(path.filename(), c3dParser));
+        }
+        else
+        {
+            LOG_WARNING("No parser found for " << path.filename());
         }
     }
     if(trial.isSkeleton())
     {
+        boost::filesystem::path path(trial.getSkeletonPath());
         core::IParserPtr asfParser = getRawParser(".asf");
         if(asfParser)
         {
@@ -393,8 +400,11 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
             actualParsersList.push_back(asfParser);
             actualTrialParsersList.push_back(asfParser);
 
-            boost::filesystem::path path(trial.getSkeletonPath());
             actualParsersFilenameMap.insert(std::make_pair(path.filename(), asfParser));
+        }
+        else
+        {
+            LOG_WARNING("No parser found for " << path.filename());
         }
     }
     if(trial.isAnimations())
@@ -402,6 +412,7 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
         std::vector<std::string> anims = trial.getAnimationsPaths();
         BOOST_FOREACH(std::string anim, anims)
         {
+            boost::filesystem::path path(anim);
             core::IParserPtr animParser = getRawParser(".amc");
             if(animParser)
             {
@@ -409,8 +420,11 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
                 actualParsersList.push_back(animParser);
                 actualTrialParsersList.push_back(animParser);
 
-                boost::filesystem::path path(anim);
                 actualParsersFilenameMap.insert(std::make_pair(path.filename(), animParser));
+            }
+            else
+            {
+                LOG_WARNING("No parser found for " << path.filename());
             }
         }
     }
@@ -419,6 +433,7 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
         std::vector<std::string> vids = trial.getVideosPaths();
         BOOST_FOREACH(std::string vid, vids)
         {
+            boost::filesystem::path path(vid);
             core::IParserPtr videoParser = getRawParser(".avi");
             if(videoParser)
             {
@@ -426,8 +441,11 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
                 actualParsersList.push_back(videoParser);
                 actualTrialParsersList.push_back(videoParser);
 
-                boost::filesystem::path path(vid);
                 actualParsersFilenameMap.insert(std::make_pair(path.filename(), videoParser));
+            }
+            else
+            {
+                LOG_WARNING("No parser found for " << path.filename());
             }
         }
     }
@@ -445,10 +463,14 @@ void DataManager::loadResourcesEx()
             //jesli parser dla tego rozszerzenia istnieje, dodajemy go do listy aktualnie zaladowanych parserow (zasobow)
             if(parser)
             {
-                actualParsersExtMap.insert(std::make_pair(path.extension(), parser));
+                //actualParsersExtMap.insert(std::make_pair(path.extension(), parser));
                 actualParsersList.push_back(parser);
 
                 actualParsersFilenameMap.insert(std::make_pair(path.filename(), parser));
+            }
+            else
+            {
+                LOG_WARNING("No parser found for " << path.filename());
             }
         }
     }
@@ -457,17 +479,37 @@ void DataManager::loadResourcesEx()
 void DataManager::clearLocalTrials()
 {
     localTrialsList.clear();
-    clearActualLocalTrial();
+    clearActualTrial();
 }
 
-void DataManager::clearActualLocalTrial()
+void DataManager::clearActualTrial()
 {
+    //wyszukaj parsery triala w listach i slownikach
+    BOOST_FOREACH(core::IParserPtr trial, actualTrialParsersList)
+    {
+        for(ParsersList::iterator it = actualTrialParsersList.begin(); it != actualTrialParsersList.end(); ++it)
+        {
+            if(trial == (*it))
+            {
+                actualTrialParsersList.erase(it);
+                break;
+            }
+        }
+        for(ParsersMap::iterator it = actualParsersFilenameMap.begin(); it != actualParsersFilenameMap.end(); ++it)
+        {
+            if(trial == (*it).second)
+            {
+                actualParsersFilenameMap.erase(it);
+                break;
+            }
+        }
+    }
     actualTrialParsersList.clear();
 }
 
 void DataManager::clearParsers()
 {
-    actualParsersExtMap.clear();
+    //actualParsersExtMap.clear();
     actualParsersList.clear();
-    clearActualLocalTrial();
+    clearActualTrial();
 }

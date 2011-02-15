@@ -23,8 +23,6 @@ public:
     virtual int getLocalTrialsCount() const;
 
     virtual const LocalTrial& getActualLocalTrial() const;
-    virtual void setActualLocalTrial(int i);
-    virtual void setActualLocalTrial(const std::string& name);
 
     virtual void clear();
 
@@ -43,8 +41,17 @@ public:
     virtual void setResourcesPath(const std::string& resources);
     virtual void setTrialsPath(const std::string& trials);
 
-    virtual bool isLoadLocalTrialData() const {return loadTrialData;};
-    virtual void setLoadLocalTrialData(bool load) {loadTrialData = load;};
+    virtual bool isLoadLocalTrialData() const
+    {
+        return loadTrialData;
+    };
+    virtual void setLoadLocalTrialData(bool load)
+    {
+        loadTrialData = load;
+    };
+    
+    virtual void setActualLocalTrial(int i);
+    virtual void setActualLocalTrial(const std::string& name);
 
     virtual ~DataManager();
 protected:
@@ -82,7 +89,7 @@ private:
     ParsersList registeredParsersList;
     
     //! S³ownik parserów aktualnie zainicjalizowanych.
-    ParsersMultimap actualParsersExtMap;
+    //ParsersMultimap actualParsersExtMap;
     ParsersMap actualParsersFilenameMap;
     //! Sekwencja parserów aktualnie zainicjalizowanych.
     ParsersList actualParsersList;
@@ -102,7 +109,7 @@ protected:
     //! \param filename nazwa pliku parsera.
     //! \return Odnaleziony parser b¹dŸ NULL.
     core::IParserPtr getParser(const std::string& filename);
-    
+
     //! \param idx Indeks niezainicjalizowanego parsera.
     //! \return Parser o zadanym indeksie z listy parserów niezainicjalizowanych.
     core::IParserPtr getRawParser(int idx);
@@ -116,14 +123,14 @@ protected:
     void findLocalTrials();
     //! Szuka na dysku zasobów.
     void findResources();
-    //! \param trial do za³adowania, czyli inicjalizacja parserów
-    void loadActualTrial(const LocalTrial& trial);
-    //! ³adowanie zasobów, czyli inicjalizacja parserów
-    void loadResourcesEx();
     //! \param œcie¿ka do folderu z plikami próby pomiarowej
     //! \return Pojedyncza próba pomiarowa ze œcie¿kami do wszystkich jej plików.
     LocalTrial findLocalTrialsPaths(const std::string& path);
 public:
+    //! \param trial do za³adowania, czyli inicjalizacja parserów
+    void loadActualTrial(const LocalTrial& trial);
+    //! ³adowanie zasobów, czyli inicjalizacja parserów
+    void loadResourcesEx();
     //! Rejestruje zadany parser.
     //! \param newService
     virtual void registerParser(core::IParserPtr parser);
@@ -136,7 +143,7 @@ public:
     //! Czyœci informacje o lokalnych próbach pomiarowych.
     void clearLocalTrials();
     //! Czyœci informacje o aktualnej próbie pomiarowej.
-    void clearActualLocalTrial();
+    void clearActualTrial();
     //! Czyszczenie po parserach.
     void clearParsers();
 };

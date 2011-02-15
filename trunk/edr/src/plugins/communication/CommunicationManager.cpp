@@ -238,8 +238,8 @@ void CommunicationManager::loadLocalTrials()
 
 void CommunicationManager::loadTrial(const std::string& name)
 {
-    dataManager->setActualLocalTrial(name);
-    //dataManager->loadLocalTrial(name);
+    //dataManager->setActualLocalTrial(name);
+    dataManager->loadLocalTrial(name);
 }
 
 void CommunicationManager::run()
