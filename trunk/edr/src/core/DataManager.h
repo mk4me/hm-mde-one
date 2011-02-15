@@ -67,20 +67,22 @@ private:
 public:
     //! S³ownik parserów wed³ug ID.
     typedef std::map<UniqueID, core::IParserPtr> ParsersIDMap;
-    //! S³ownik parserów wed³ug rozszerzeñ.
+    //! S³ownik parserów.
     typedef std::map<std::string, core::IParserPtr> ParsersMap;
+    //! Multis³ownik parserów.
+    typedef std::multimap<std::string, core::IParserPtr> ParsersMultimap;
     //! Sekwencja parserów.
     typedef std::vector<core::IParserPtr> ParsersList;
     //------------------------------------------------------------------------------------------------------------------------------
 private:
     //! S³owniki parserów niezainicjalizowanych.
     ParsersIDMap registeredParsersIDMap;
-    ParsersMap registeredParsersExtMap;
+    ParsersMultimap registeredParsersExtMap;
     //! Sekwencja parserów niezainicjalizowanych.
     ParsersList registeredParsersList;
     
     //! S³ownik parserów aktualnie zainicjalizowanych.
-    ParsersMap actualParsersExtMap;
+    ParsersMultimap actualParsersExtMap;
     ParsersMap actualParsersFilenameMap;
     //! Sekwencja parserów aktualnie zainicjalizowanych.
     ParsersList actualParsersList;

@@ -177,8 +177,26 @@ void DataManager::registerParser(core::IParserPtr parser)
     //unikalne ID parsera
     if(registeredParsersIDMap.find(parser->getID()) == registeredParsersIDMap.end())
     {
+        //wyci¹gamy kazde supportowane rozszerzenie
+        boost::char_separator<char> separators(";*");
+        boost::tokenizer<boost::char_separator<char>> parameterExtensionToker(parser->getSupportedExtensions(), separators);
+        for(boost::tokenizer<boost::char_separator<char>>::iterator it = parameterExtensionToker.begin(); it != parameterExtensionToker.end(); ++it)
+        {
+            std::string extension = *it;
+            if(extension[0] == '.')
+            {
+                extension.erase(extension.begin());
+            }
+            boost::to_lower(extension);
+            //czy jest juz jakis parser obslugujacy to rozszerzenie?
+            if(registeredParsersExtMap.find(extension) != registeredParsersExtMap.end())
+            {
+                LOG_WARNING("There is at least one parser that support extension" << extension);
+            }
+            //rejestrujemy parser dla kazdego rozszerzenia z osobna
+            registeredParsersExtMap.insert(std::make_pair(extension, parser));
+        }
         registeredParsersIDMap.insert(std::make_pair(parser->getID(), parser));
-        registeredParsersExtMap.insert(std::make_pair(boost::to_lower_copy(parser->getSupportedExtensions()), parser));
         registeredParsersList.push_back(parser);
     }
     else
@@ -230,21 +248,15 @@ core::IParserPtr DataManager::getRawParser(int idx)
 
 core::IParserPtr DataManager::getRawParser(const std::string& extension)
 {
-    boost::char_separator<char> separators(";*.");
-    boost::tokenizer<boost::char_separator<char>> parameterExtensionToker(extension, separators);
-    std::string readyToCompareExtension = *parameterExtensionToker.begin();
-    boost::to_lower(readyToCompareExtension);
-    for(ParsersMap::iterator it = registeredParsersExtMap.begin(); it != registeredParsersExtMap.end(); ++it)
+    ParsersMultimap::iterator it = registeredParsersExtMap.find(extension);
+    if(it != registeredParsersExtMap.end())
     {
-        std::string extensions = it->first;
-        boost::tokenizer<boost::char_separator<char>> tokens(extensions, separators);
-        BOOST_FOREACH(std::string ext, tokens)
+        if(registeredParsersExtMap.count(extension) > 1)
         {
-            if(readyToCompareExtension.compare(ext) == 0)
-            {
-                return it->second;
-            }
+            LOG_WARNING("Multiple parsers found for extension: " << extension << ".");
         }
+        //jesli sa parsery - zwracamy tylko pierwszy!
+        return it->second;
     }
     return core::IParserPtr();
 }
