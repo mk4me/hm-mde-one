@@ -89,6 +89,10 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
     widget->loadShaders("data/resources/shaders/textureRect_yuv_to_rgb.frag", "data/resources/shaders/texture2D_yuv_to_rgb.frag");
     widget->setYuvImageSizeName("texture_size");
     widget->setYuvSamplerName("movie_texture");
+
+    std::vector<IVideoParserPtr> parsers;
+    core::queryParsers<IVideoParser>(dataManager, parsers);
+    //widget->init(parsers);
 	widget->init(files);
 
 	ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);

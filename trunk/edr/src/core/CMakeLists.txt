@@ -83,6 +83,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/Data.h
 	${HEADER_PATH}/Log.h
 	${HEADER_PATH}/LocalTrial.h
+	${HEADER_PATH}/ObjectWrapper.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})

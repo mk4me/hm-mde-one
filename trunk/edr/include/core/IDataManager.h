@@ -44,6 +44,7 @@ public:
 
     //! \return Liczba us³ug.
     virtual int getNumParsers() const = 0;
+
     //! \param idx Indeks us³ugi.
     //! \return Us³uga o zadanym indeksie.
 	virtual core::IParserPtr getParser(int idx) = 0;
@@ -63,12 +64,12 @@ namespace core {
     //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
-    CORE_SHARED_PTR(T) queryParsers(IDataManager* manager, T* dummy = NULL)
+    shared_ptr<T> queryParsers(IDataManager* manager, T* dummy = NULL)
     {
-        std::vector<CORE_SHARED_PTR(T)> result;
+        std::vector<shared_ptr<T> > result;
         queryParsers(manager, result);
         if ( result.empty() ) {
-            return CORE_SHARED_PTR(T)();
+            return shared_ptr<T>();
         } else {
             UTILS_ASSERT(result.size()==1, "Multiple parsers found.");
             return result[0];
@@ -78,7 +79,7 @@ namespace core {
     //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
-    CORE_SHARED_PTR(T) queryParsers(IDataManager* manager, const std::string& filename)
+    shared_ptr<T> queryParsers(IDataManager* manager, const std::string& filename)
     {
         return manager->getParser(filename);
     }
@@ -86,15 +87,36 @@ namespace core {
     //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
-    void queryParsers(IDataManager* manager, std::vector<CORE_SHARED_PTR(T)>& target)
+    void queryParsers(IDataManager* manager, std::vector<shared_ptr<T>>& target)
     {
         for ( int i = 0; i < manager->getNumParsers(); ++i ) {
             IParserPtr parser = manager->getParser(i);
-            CORE_SHARED_PTR(T) casted = dynamic_pointer_cast<T>(parser);
+            shared_ptr<T> casted = dynamic_pointer_cast<T>(parser);
             if ( casted ) {
                 target.push_back(casted);
             }
         }
+    }
+
+    template <class T>
+    void queryData(IDataManager* manager, std::vector< typename ObjectWrapperT<T>::Ptr >& target, bool exact = false )
+    {
+        for ( int i = 0; i < manager->getNumParsers(); ++i ) {
+            IParserPtr parser = manager->getParser(i);
+            ObjectWrapperPtr object = parser->getObject();
+            typename ObjectWrapperT<T>::Ptr ptr;
+            if ( object->tryGet<T>(ptr, exact) ) {
+                target.push_back(ptr);
+            }
+        }
+    }
+
+    template <class T>
+    std::vector< typename ObjectWrapperT<T>::Ptr > queryData(IDataManager* manager, bool exact = false )
+    {
+        std::vector< typename ObjectWrapperT<T>::Ptr > result;
+        queryData<T>(manager, result, exact);
+        return result;
     }
 
 ////////////////////////////////////////////////////////////////////////////////

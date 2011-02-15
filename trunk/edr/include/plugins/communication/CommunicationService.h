@@ -23,7 +23,7 @@ class CommunicationService : public IService, public ICommunication
 {
     UNIQUE_ID('COMM','SRVC');
 public:
-    typedef CORE_SHARED_PTR(TextParser) TextParserPtr;
+    typedef core::shared_ptr<TextParser> TextParserPtr;
 private:
     /**
     Widok serwisu

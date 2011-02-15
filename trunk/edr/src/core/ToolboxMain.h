@@ -140,7 +140,7 @@ private:
     DataManager* dataManager;
     UserInterfaceService* m_pUserInterfaceService;
 
-    CORE_SHARED_PTR(RenderService) m_pRenderService;
+    core::shared_ptr<RenderService> m_pRenderService;
 
     Ui::ToolboxMain* ui;
 
@@ -153,13 +153,6 @@ private:
 
     //! W¹tek obliczaj¹cy.
     ComputeThread* computeThread;
-
-    //! Nazwa pliku konfiguracyjnego.
-    static const QString configName;
-    //! Nazwa organizacji.
-    static const QString organizationName;
-    //! Nazwa aplikacji.
-    static const QString applicationName;
 
     //!
     bool updateEnabled;

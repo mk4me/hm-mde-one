@@ -158,8 +158,8 @@ public:
 };
 
 //! Definicja wskaünika.
-typedef CORE_SHARED_PTR(Plugin) PluginPtr;
-typedef CORE_CONST_SHARED_PTR(Plugin) PluginConstPtr;
+typedef shared_ptr<Plugin> PluginPtr;
+typedef core::shared_ptr<const Plugin> PluginConstPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

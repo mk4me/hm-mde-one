@@ -98,8 +98,8 @@ public:
 
 };
 
-typedef CORE_SHARED_PTR(IService) IServicePtr;
-typedef CORE_CONST_SHARED_PTR(IService) IServiceConstPtr;
-typedef CORE_WEAK_PTR(IService) IServiceWeakPtr;
+typedef core::shared_ptr<IService> IServicePtr;
+typedef core::shared_ptr<const IService> IServiceConstPtr;
+typedef core::weak_ptr<IService> IServiceWeakPtr;
 
 #endif //BASE_SERVICE_H

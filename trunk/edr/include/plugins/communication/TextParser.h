@@ -3,6 +3,8 @@
 
 #include <core/IParser.h>
 
+CORE_DEFINE_WRAPPER(std::string, utils::PtrPolicyBoost);
+
 class TextParser : public core::IParser
 {
     UNIQUE_ID('TXTP','PARS');
@@ -20,10 +22,13 @@ public:
     virtual const std::string& getPath() const;
 
     const std::string& getOutput() const;
+
+    virtual core::ObjectWrapperPtr getObject();
+
 private:
     std::string extension;
     std::ifstream textFile;
     std::string path;
-    std::string output;
+    core::ObjectWrapperPtr object;
 };
 #endif

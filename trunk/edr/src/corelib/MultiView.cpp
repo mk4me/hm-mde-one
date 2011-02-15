@@ -299,6 +299,10 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
 
         MultiViewFunctorWidgetAdapter* adapter = new MultiViewFunctorWidgetAdapter();
         // najpierw po prostu rzutujemy na typ OverlayButton
+//         boost::function< OverlayButton* (osgWidget::Widget*) > getOverlayFunc = [](osgWidget::Widget* widget) {
+//             return dynamic_cast<Overlay&>(*widget).getWindow()->getOverlay();
+//         };
+
         boost::function< OverlayButton* (osgWidget::Widget*) > getOverlayFunc = boost::bind(
             // wywo³ujemy getOverlay...
             &OverlayWindow::getOverlay, boost::bind(
@@ -532,6 +536,7 @@ void MultiView::restoreRequiredChildren()
 MultiView::Items::iterator MultiView::getIterator( const Item* item )
 {
     return std::find_if( items.begin(), items.end(), bind(&Entry::thumbnail, _1) == item );
+    //return std::find_if(items.begin(), items.end(), [=](const Entry& entry) { return entry.thumbnail == item }  );
 }
 
 MultiView::Items::iterator MultiView::getIterator( const osgWidget::Widget* widget )

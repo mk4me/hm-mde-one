@@ -70,8 +70,8 @@ public:
 
     //! Typ callbacka.
     typedef boost::function1<void, Item*> ItemSelected;
-    typedef CORE_WEAK_PTR(ItemSelected) ItemSelectedWeakPtr;
-    typedef CORE_SHARED_PTR(ItemSelected) ItemSelectedPtr;
+    typedef weak_ptr<ItemSelected> ItemSelectedWeakPtr;
+    typedef shared_ptr<ItemSelected> ItemSelectedPtr;
 
     //! Wskaünik na item.
     typedef osg::ref_ptr<Item> ItemPtr;

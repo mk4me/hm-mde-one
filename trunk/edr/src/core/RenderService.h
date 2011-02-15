@@ -136,8 +136,8 @@ public:
     virtual osg::Node* debugGetLocalSceneRoot();
 };
 
-typedef CORE_SHARED_PTR(RenderService) RenderServicePtr;
-typedef CORE_CONST_SHARED_PTR(RenderService) RenderServiceConstPtr;
-typedef CORE_WEAK_PTR(RenderService) RenderServiceWeakPtr;
+typedef core::shared_ptr<RenderService> RenderServicePtr;
+typedef core::shared_ptr<const RenderService> RenderServiceConstPtr;
+typedef core::weak_ptr<RenderService> RenderServiceWeakPtr;
 
 #endif //RENDER_SERVICE_H

@@ -93,7 +93,7 @@ public:
 template <class Base, class PlacementCallback>
 class Placeable : public Base
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value));
+    UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value), "Base class should inherit from osgWidget::Widget");
 private:
     //! Obiekt do umieszczenia.
     PlacementCallback callback;

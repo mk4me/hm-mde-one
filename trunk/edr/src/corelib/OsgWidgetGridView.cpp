@@ -47,6 +47,7 @@ struct OsgCallbackBase2 : public osgUI::OsgCallbackBase
     }
 };
 
+
 OsgWidgetGrid::OsgWidgetGrid( const std::string& name ) 
 :   osgUI::LabeledView<>(name)
 {

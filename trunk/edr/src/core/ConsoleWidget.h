@@ -3,6 +3,7 @@
 
 #include <QtGui/QWidget>
 #include <core/Log.h>
+#include <core/SmartPtr.h>
 #include <queue>
 
 #include "ui_ConsoleWidget.h"
@@ -26,7 +27,8 @@ struct ConsoleWidgetEntry {
     Qt::HANDLE theadId;
 };
 
-typedef CORE_SHARED_PTR(ConsoleWidgetEntry) ConsoleWidgetEntryPtr;
+typedef core::shared_ptr<ConsoleWidgetEntry> ConsoleWidgetEntryPtr;
+
 Q_DECLARE_METATYPE(ConsoleWidgetEntryPtr);
 Q_DECLARE_METATYPE(ConsoleWidgetEntry);
 

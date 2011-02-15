@@ -1,11 +1,13 @@
 #include "VideoPCH.h"
 #include <core/Plugin.h>
 #include <plugins/video/VideoService.h>
+#include "VideoParser.h"
 #include <core/Log.h>
 #include <vidlib/osg/FFmpegImageStream.h>
 
 CORE_PLUGIN_BEGIN("video", UniqueID('VIDE', 'PLUG'));
 CORE_PLUGIN_ADD_SERVICE(VideoService);
+CORE_PLUGIN_ADD_PARSER(VideoParser);
 CORE_PLUGIN_END;
 
 //! \param severity

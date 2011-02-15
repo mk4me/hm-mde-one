@@ -18,6 +18,7 @@
 #include <core/MultiView.h>
 #include <core/QOsgWidgets.h>
 #include <vidlib/PixelFormat.h>
+#include <plugins/video/IVideoParser.h>
 
 #include <vidlib/osg/VideoImageStreamSizeOptimizer.h>
 #include "ui_video.h"
@@ -59,6 +60,7 @@ public:
     virtual ~VideoWidget();
 
     void init( std::vector<std::string> &files );
+    void init( std::vector<IVideoParserPtr> &parsers );
 
     
     void configureView(int rows, int columns, ImagesList & images);

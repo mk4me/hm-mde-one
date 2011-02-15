@@ -29,9 +29,9 @@ public:
     virtual void setNormalizedTime(double time) = 0;
 };
 
-typedef CORE_SHARED_PTR(ITimeline) ITimelinePtr;
-typedef CORE_CONST_SHARED_PTR(ITimeline) ITimelineConstPtr;
-typedef CORE_WEAK_PTR(ITimeline) ITimelineWeakPtr;
+typedef core::shared_ptr<ITimeline> ITimelinePtr;
+typedef core::shared_ptr<const ITimeline> ITimelineConstPtr;
+typedef core::weak_ptr<ITimeline> ITimelineWeakPtr;
 
 
 

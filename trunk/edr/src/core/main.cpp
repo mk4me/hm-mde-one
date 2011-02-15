@@ -41,6 +41,10 @@ int main(int argc, char *argv[])
     int result = 0;
     {
         QApplication application(argc, argv);
+        application.setApplicationName("EDR");
+        application.setOrganizationName("PJWSTK");
+        QSettings::setDefaultFormat(QSettings::IniFormat);
+
         ToolboxMain window;
         logger.setConsoleWidget( window.getConsole() );
         window.show();

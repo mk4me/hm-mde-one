@@ -47,6 +47,7 @@
 
 #include <core/Log.h>
 #include <core/StringTools.h>
+#include <boost/foreach.hpp>
 
 DEFINE_DEFAULT_LOGGER("edr.core");
 
@@ -77,13 +78,6 @@ public:
     }
 };
 
-const QString ToolboxMain::configName = QString("Toolbox_config.ini");
-const QString ToolboxMain::organizationName = QString("PJWSTK");
-const QString ToolboxMain::applicationName = QString("EDR");
-
-
-
-
 ToolboxMain::ToolboxMain(QWidget *parent)
 :   QMainWindow(parent),
     ui(new Ui::ToolboxMain),
@@ -93,9 +87,6 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 
     pluginLoader = new core::PluginLoader();
-
-
-
 
 
 //     LoggerPtr root = Logger::getRootLogger();
@@ -134,7 +125,7 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     initializeUI();
 
 
-    readSettings(QSettings(QSettings::IniFormat, QSettings::UserScope, organizationName, applicationName), true);
+    readSettings(QSettings(), true);
 
 
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
@@ -201,9 +192,7 @@ void ToolboxMain::readSettings( const QSettings& settings, bool readGeometry )
 
 void ToolboxMain::WriteSettings()
 {
-    QSettings settings(QSettings::IniFormat,
-        QSettings::UserScope, organizationName, applicationName);
-
+    QSettings settings;
     settings.setValue("Geometry", saveGeometry());
     settings.setValue("WindowState", saveState());
 }

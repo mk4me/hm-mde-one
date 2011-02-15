@@ -4,6 +4,7 @@
 TextParser::TextParser()
 {
     extension = "TXT";
+    object = core::ObjectWrapper::createWrapper(new std::string());
 }
 
 TextParser::~TextParser()
@@ -17,7 +18,7 @@ void TextParser::parseFile(const std::string& path)
     textFile.open(path.c_str());
     if(textFile.is_open())
     {
-        textFile >> output;
+        textFile >> *object->get<std::string>();
     }
 }
 
@@ -33,10 +34,15 @@ std::string TextParser::getSupportedExtensions() const
 
 const std::string& TextParser::getOutput() const
 {
-    return output;
+    return *object->get<std::string>();
 }
 
 const std::string& TextParser::getPath() const
 {
     return path;
+}
+
+core::ObjectWrapperPtr TextParser::getObject()
+{
+    return object;
 }

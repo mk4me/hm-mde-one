@@ -15,8 +15,8 @@ class Window
 {
 public:
     typedef boost::function2<void, const std::string&, bool> ItemPressed;
-    typedef CORE_SHARED_PTR(ItemPressed) ItemPressedPtr;
-    typedef CORE_WEAK_PTR(ItemPressed) ItemPressedWeakPtr;
+    typedef shared_ptr<ItemPressed> ItemPressedPtr;
+    typedef weak_ptr<ItemPressed> ItemPressedWeakPtr;
 
 private:
     //! Opcje menu.

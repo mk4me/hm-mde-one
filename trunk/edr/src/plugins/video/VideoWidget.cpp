@@ -152,6 +152,16 @@ void VideoWidget::init( std::vector<std::string> &files )
     createScene();
 }
 
+void VideoWidget::init( std::vector<IVideoParserPtr> &parsers )
+{
+    images.clear();
+    BOOST_FOREACH(IVideoParserPtr parser, parsers) {
+        images.push_back( parser->getOsgStream() );
+    }
+    createScene();
+}
+
+
 void VideoWidget::setPixelFormat( PixelFormat format )
 {
     // ustawienie formatu strumieni

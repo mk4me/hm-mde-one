@@ -94,7 +94,7 @@ private:
     std::string getFileName(const std::string& fileName);
 };
 
-typedef CORE_SHARED_PTR(PluginLoader) PluginLoaderPtr;
+typedef shared_ptr<PluginLoader> PluginLoaderPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

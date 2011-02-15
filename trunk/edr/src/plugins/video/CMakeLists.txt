@@ -15,6 +15,7 @@ set(PRIVATE_H
 	VideoWidget.h
 	VideoWidgetOptions.h
 	TimelineImageStreamWrapper.h
+	VideoParser.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -22,6 +23,7 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/VideoService.h
+	${HEADER_PATH}/IVideoParser.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -36,6 +38,7 @@ set(TARGET_SRC
 	VideoService.cpp
 	VideoWidget.cpp
 	VideoWidgetOptions.cpp
+	VideoParser.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

@@ -29,10 +29,10 @@ public:
     virtual IServicePtr getService(UniqueID id) = 0;
 };
 
-typedef CORE_SHARED_PTR(IServiceManager) IServiceManagerPtr;
-typedef CORE_CONST_SHARED_PTR(IServiceManager) IServiceManagerConstPtr;
-typedef CORE_WEAK_PTR(IServiceManager) IServiceManagerWeakPtr;
-typedef CORE_CONST_WEAK_PTR(IServiceManager) IServiceManagerWeakConstPtr;
+typedef core::shared_ptr<IServiceManager> IServiceManagerPtr;
+typedef core::shared_ptr<const IServiceManager> IServiceManagerConstPtr;
+typedef core::weak_ptr<IServiceManager> IServiceManagerWeakPtr;
+typedef core::weak_ptr<const IServiceManager> IServiceManagerWeakConstPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -41,12 +41,12 @@ namespace core {
     //! Metoda wyszukuj¹ca wszystkie us³ugi danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
-    CORE_SHARED_PTR(T) queryServices(IServiceManager* manager, T* dummy = NULL)
+    shared_ptr<T> queryServices(IServiceManager* manager, T* dummy = NULL)
     {
-        std::vector<CORE_SHARED_PTR(T)> result;
+        std::vector<shared_ptr<T>> result;
         queryServices(manager, result);
         if ( result.empty() ) {
-            return CORE_SHARED_PTR(T)();
+            return shared_ptr<T>();
         } else {
             UTILS_ASSERT(result.size()==1, "Multiple services found.");
             return result[0];
@@ -56,11 +56,11 @@ namespace core {
     //! Metoda wyszukuj¹ca wszystkie us³ugi danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
-    void queryServices(IServiceManager* manager, std::vector<CORE_SHARED_PTR(T)>& target)
+    void queryServices(IServiceManager* manager, std::vector<shared_ptr<T>>& target)
     {
         for ( int i = 0; i < manager->getNumServices(); ++i ) {
             IServicePtr service = manager->getService(i);
-            CORE_SHARED_PTR(T) casted = dynamic_pointer_cast<T>(service);
+            shared_ptr<T> casted = dynamic_pointer_cast<T>(service);
             if ( casted ) {
                 target.push_back(casted);
             }

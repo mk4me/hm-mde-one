@@ -20,7 +20,7 @@ namespace osgUI {
 template <class Base, class StylePolicy = DefaultStylePolicy>
 class Buttonized : public Base, public StylePolicy
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value));
+    UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value), "Base class should inherit from osgWidget::Widget");
 
 public:
     META_Object(osgUI, Buttonized);

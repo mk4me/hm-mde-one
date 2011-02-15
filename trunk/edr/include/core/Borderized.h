@@ -30,7 +30,7 @@ namespace osgUI {
 template <class Base, osg::PrimitiveSet::Mode Primitives = osg::PrimitiveSet::QUADS>
 class Borderized : public Base
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value));
+    UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value), "Base class should inherit from osgWidget::Widget");
 
 public:
     META_Object(osgUI, Borderized);
@@ -302,7 +302,7 @@ private:
     template <osg::PrimitiveSet::Mode Primitives>
     void positionBorder( Mode<Primitives> )
     {
-        UTILS_STATIC_ASSERT(false);
+        UTILS_STATIC_ASSERT(false, "Not supported");
     }
 };
 
