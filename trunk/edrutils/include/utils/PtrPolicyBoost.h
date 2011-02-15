@@ -11,6 +11,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <utils/Utils.h>
+#include <utils/PtrPolicyHelper.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -29,9 +30,9 @@ struct PtrPolicyBoost
     //! Tylko deklaracja, specjalizacja wyciπga wskaünik!
     template <class T> struct Pointed;
     //! Specjalizacja wyciπgajπca wskaünik.
-    template <class T> struct Pointed<boost::shared_ptr<T> >
+    template <class T> struct Pointed< boost::shared_ptr<T> >
     {
-        typedef T::element_type Type;
+        typedef typename boost::shared_ptr<T>::element_type Type;
     };
 
     //! Klasa bazowa.
@@ -56,7 +57,7 @@ struct PtrPolicyBoost
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(boost::shared_ptr<T> & ptr, boost::shared_ptr<T> & data)
+    void setPtr(boost::shared_ptr<T> & ptr, const boost::shared_ptr<T> & data)
     {
         ptr = data;
     }
@@ -70,6 +71,7 @@ struct PtrPolicyBoost
     }
 };
 
+template <> struct is_ptr_policy<PtrPolicyBoost> : public __traits::true_type {};
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils

@@ -10,6 +10,7 @@
 #define __AVINOUT_POLICIES_H__
 
 #include <utils/Utils.h>
+#include <utils/PtrPolicyHelper.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -61,6 +62,8 @@ struct PtrPolicyRaw
     }
 };
 
+template <> struct is_ptr_policy<PtrPolicyRaw> : public __traits::true_type {};
+
 //! Klasa bazowa dla adaptera umo¿liwiaj¹ca wykorzystanie zwyk³ych wskaŸników.
 //! Dodaj¹c rozszerzenie dla innych typów wskaŸników nale¿y powieliæ
 //! ca³y interfejs publiczny.
@@ -73,6 +76,8 @@ struct PtrPolicyRawWeak : public PtrPolicyRaw
         ptr = data;
     }
 };
+
+template <> struct is_ptr_policy<PtrPolicyRawWeak> : public __traits::true_type {};
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils

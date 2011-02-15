@@ -11,6 +11,7 @@
 
 #include <osg/ref_ptr>
 #include <osg/Referenced>
+#include <utils/PtrPolicyHelper.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -56,7 +57,7 @@ struct PtrPolicyOSG
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(osg::ref_ptr<T> & ptr, osg::ref_ptr<T> & data)
+    void setPtr(osg::ref_ptr<T> & ptr, const osg::ref_ptr<T> & data)
     {
         ptr = data;
     }
@@ -69,6 +70,8 @@ struct PtrPolicyOSG
         return ptr->referenceCount() == 0;
     }
 };
+
+template <> struct is_ptr_policy<PtrPolicyOSG> : public __traits::true_type {};
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils

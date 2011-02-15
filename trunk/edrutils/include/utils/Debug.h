@@ -93,7 +93,7 @@ UTILS_MULTISTATEMENT_END
  *	Definicja satycznej asercji.
  */
 #ifdef UTILS_CXX0X
-#   define UTILS_STATIC_ASSERT(cond, msg) static_assert(cond, msg)
+#   define UTILS_STATIC_ASSERT(cond, msg) static_assert((cond), msg)
 #else
 #   include <boost/static_assert.hpp>
 #   define UTILS_STATIC_ASSERT(cond, msg) BOOST_STATIC_ASSERT((cond))

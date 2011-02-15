@@ -26,6 +26,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/PtrPolicyRaw.h
 	${HEADER_PATH}/PtrPolicyBoost.h
 	${HEADER_PATH}/PtrPolicyOSG.h
+	${HEADER_PATH}/PtrPolicyHelper.h
 	${HEADER_PATH}/PtrWrapper.h
 	${HEADER_PATH}/ObserverPattern.h
 	${HEADER_PATH}/Macros.h
