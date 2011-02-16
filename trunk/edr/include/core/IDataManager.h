@@ -11,26 +11,28 @@ class IDataManager
 public:
 	virtual ~IDataManager() {};
 
+    virtual void findResources() = 0;
+    virtual void findLocalTrials() = 0;
+
  	virtual void loadResources() = 0;
-	virtual void loadTrials() = 0;
+    virtual void loadTrial(const LocalTrial& trial) = 0;
 
 	virtual const LocalTrial& getLocalTrial(int i) const = 0;
 	virtual int getLocalTrialsCount() const = 0;
 
 	virtual const LocalTrial& getActualLocalTrial() const = 0;
-	virtual void setActualLocalTrial(int i) = 0;
-	virtual void setActualLocalTrial(const std::string& name) = 0;
 
 	virtual void clear() = 0;
 
+    //TODO: te metody sa pozostaloscia po starym sposobie zarzadzania danymi
     virtual const std::string& getShaderFilePath(int i) = 0;
     virtual int getShaderFilePathCount() = 0;
-
     virtual const std::string& getMeshFilePath(int i) = 0;
     virtual int getMeshFilePathCount() = 0;
-
     virtual const std::string& getApplicationSkinsFilePath(int i) = 0;
     virtual int getApplicationSkinsFilePathCount() = 0;
+
+
 
 	virtual bool isLoadLocalTrialData() const = 0;
 	virtual void setLoadLocalTrialData(bool load) = 0;

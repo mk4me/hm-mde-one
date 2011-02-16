@@ -225,7 +225,7 @@ void CommunicationManager::loadLocalTrials()
     //ScopedLock lock(trialsMutex);
     setState(Ready);
     localTrials.clear();
-    dataManager->loadTrials();
+    dataManager->findLocalTrials();
     if(dataManager && dataManager->getLocalTrialsCount() > 0)
     {
         for(int i = 0; i < dataManager->getLocalTrialsCount(); i++)

@@ -14,8 +14,6 @@ DataManager::DataManager(const std::string& resourcesPath, const std::string& tr
 {
     clear();
     loadTrialData = false;
-    loadUnknownTrialData = false;
-    actualTrialIndex = 0;
 }
 
 DataManager::~DataManager()
@@ -23,60 +21,20 @@ DataManager::~DataManager()
     this->clear();
 }
 
-void DataManager::loadResources()
-{
-    shadersPaths.clear();
-    meshesPaths.clear();
-    applicationSkinsPaths.clear();
-    //szukaj shaderow
-    std::vector<std::string> ext;
-    ext.push_back(".frag");
-    ext.push_back(".vert");
-    shadersPaths = Filesystem::listFiles(this->resourcesPath, true, ext);
-    //TODO: szukaj fmesh file czy tbs? na razie daje fmesh...
-    meshesPaths = Filesystem::listFiles(this->resourcesPath, true, ".fmesh");
-    //szukaj styli qt
-    applicationSkinsPaths = Filesystem::listFiles(this->resourcesPath, true, ".qss");
-    findResources();
-    loadResourcesEx();
-}
-
-void DataManager::loadTrials()
-{
-    trials.clear();
-    //przeszukujemy liste prob pomiarowych, nie plikow
-    std::vector<std::string> tempPaths = Filesystem::listSubdirectories(trialsPath);
-    BOOST_FOREACH(std::string path, tempPaths)
-    {
-        try
-        {
-            LocalTrial t = findLocalTrialsPaths(path);
-            trials.push_back(t);
-        }
-        catch(std::runtime_error& e) { }
-    }
-    //nowy DM
-    findLocalTrials();
-}
-
 void DataManager::clear()
 {
-    this->shadersPaths.clear();
-    this->meshesPaths.clear();
-    this->applicationSkinsPaths.clear();
-    this->trials.clear();
-    //nowy DM
+    clearLocalTrials();
     clearParsers();
 }
 
 const LocalTrial& DataManager::getLocalTrial(int i) const
 {
-    return trials[i];
+    return localTrialsList[i];
 }
 
 int DataManager::getLocalTrialsCount() const
 {
-    return trials.size();
+    return localTrialsList.size();
 }
 
 const std::string& DataManager::getShaderFilePath(int i)
@@ -131,44 +89,40 @@ void DataManager::setTrialsPath(const std::string& trials)
 
 const LocalTrial& DataManager::getActualLocalTrial() const
 {
-    if(loadUnknownTrialData)
-    {
-        return unknownTrial;
-    }
-    return trials[actualTrialIndex];
+    return actualTrial;
 }
-
-void DataManager::setActualLocalTrial(int i)
-{
-    actualTrialIndex = i;
-    loadTrialData = true;
-    loadUnknownTrialData = false;
-
-}
-void DataManager::setActualLocalTrial(const std::string& name)
-{
-    //sprawdzamy nazwe
-    boost::cmatch matches;
-    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}.+)");
-    //sprawdzamy, czy zgadza sie nazwa folderu
-    if(boost::regex_match(name.c_str(), matches, e))
-    {
-        for(size_t i = 0; i < trials.size(); i++)
-        {
-            if(trials.at(i).getName().compare(matches[2]) == 0)
-            {
-                actualTrialIndex = i;
-                loadTrialData = true;
-                loadUnknownTrialData = false;
-                return;
-            }
-        }
-    }
-    unknownTrial = findLocalTrialsPaths(name);
-    loadTrialData = true;
-    loadUnknownTrialData = true;
-    LOG_WARNING(": !Brak wskazanej pomiarowej w zasobach. Ladowanie nieznanej proby pomiarowej.\n");
-}
+//
+//void DataManager::setActualLocalTrial(int i)
+//{
+//    actualTrialIndex = i;
+//    loadTrialData = true;
+//    loadUnknownTrialData = false;
+//
+//}
+//void DataManager::setActualLocalTrial(const std::string& name)
+//{
+//    //sprawdzamy nazwe
+//    boost::cmatch matches;
+//    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}.+)");
+//    //sprawdzamy, czy zgadza sie nazwa folderu
+//    if(boost::regex_match(name.c_str(), matches, e))
+//    {
+//        for(size_t i = 0; i < trials.size(); i++)
+//        {
+//            if(trials.at(i).getName().compare(matches[2]) == 0)
+//            {
+//                actualTrialIndex = i;
+//                loadTrialData = true;
+//                loadUnknownTrialData = false;
+//                return;
+//            }
+//        }
+//    }
+//    unknownTrial = findLocalTrialsPaths(name);
+//    loadTrialData = true;
+//    loadUnknownTrialData = true;
+//    LOG_WARNING(": !Brak wskazanej pomiarowej w zasobach. Ladowanie nieznanej proby pomiarowej.\n");
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -299,7 +253,7 @@ void DataManager::loadLocalTrial(int i)
 {
     //czyscimy dotychczasowa liste zaladowanych parserow
     //ladowanie parserow dla i-tego triala z listy
-    loadActualTrial(localTrialsList[i]);
+    loadTrial(localTrialsList[i]);
 }
 
 void DataManager::loadLocalTrial(const std::string& name)
@@ -315,7 +269,6 @@ void DataManager::loadLocalTrial(const std::string& name)
             if(localTrialsList.at(i).getName().compare(matches[2]) == 0)
             {
                 loadLocalTrial(i);
-                loadTrialData = true;
                 return;
             }
         }
@@ -365,9 +318,11 @@ LocalTrial DataManager::findLocalTrialsPaths(const std::string& path)
     return t;
 }
 
-void DataManager::loadActualTrial(const LocalTrial& trial)
+void DataManager::loadTrial(const LocalTrial& trial)
 {
     clearActualTrial();
+    actualTrial = trial;
+    loadTrialData = true;
     //TODO: LocalTrial nie bedzie juz raczej potrzebne
     //proba zaladowania parsera plikow c3d jesli takowy plik i parser istnieje
     if(trial.isC3d())
@@ -451,7 +406,7 @@ void DataManager::loadActualTrial(const LocalTrial& trial)
     }
 }
 
-void DataManager::loadResourcesEx()
+void DataManager::loadResources()
 {
     BOOST_FOREACH(std::string resourcePath, resourcesPaths)
     {

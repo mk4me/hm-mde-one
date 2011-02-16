@@ -110,7 +110,9 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     sceneRoot = new osg::Group();
     sceneRoot->setName("root");
 
-	dataManager->loadResources();
+	dataManager->findResources();
+    dataManager->findLocalTrials();
+    dataManager->loadResources();
 
     // inicjalizacja us³ug
     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
@@ -368,13 +370,15 @@ void ToolboxMain::registerPluginsServices()
 
 void ToolboxMain::registerPluginsParsers()
 {
-	for ( size_t i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
-		core::PluginPtr plugin = pluginLoader->getPlugin(i);
-            int z = static_cast<int>(plugin->getNumParsers());
-		for ( size_t j = 0; j < z; ++j ) {
-			dataManager->registerParser(plugin->getParser(j));
-		}
-	}
+    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i)
+    {
+        core::PluginPtr plugin = pluginLoader->getPlugin(i);
+        int z = static_cast<int>(plugin->getNumParsers());
+        for(size_t j = 0; j < z; ++j)
+        {
+            dataManager->registerParser(plugin->getParser(j));
+        }
+    }
 }
 
 void ToolboxMain::onOpen()
@@ -620,7 +624,7 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
 void ToolboxMain::openFile( const std::string& path )
 {
     LOG_INFO("Opening file: " << path);
-	dataManager->setActualLocalTrial(path);
+	dataManager->loadLocalTrial(path);
 }
 
 void ToolboxMain::loadData()

@@ -16,12 +16,6 @@ class DataManager: public IDataManager
 public:
     DataManager(const std::string& resourcesPath = "data/resources/", const std::string& trialsPath = "data/trials/");
 
-    virtual void loadResources();
-    virtual void loadTrials();
-
-    virtual const LocalTrial& getLocalTrial(int i) const;
-    virtual int getLocalTrialsCount() const;
-
     virtual const LocalTrial& getActualLocalTrial() const;
 
     virtual void clear();
@@ -50,26 +44,18 @@ public:
         loadTrialData = load;
     };
     
-    virtual void setActualLocalTrial(int i);
-    virtual void setActualLocalTrial(const std::string& name);
+    //virtual void setActualLocalTrial(int i);
+    //virtual void setActualLocalTrial(const std::string& name);
 
     virtual ~DataManager();
-protected:
-    //	LocalTrial loadLocalTrial(const std::string& path);
 private:
     std::vector<std::string> shadersPaths;
     std::vector<std::string> meshesPaths;
     std::vector<std::string> applicationSkinsPaths;
-    std::vector<LocalTrial> trials;
-    size_t actualTrialIndex;
-
-    LocalTrial unknownTrial;
-
     std::string resourcesPath;
     std::string trialsPath;
 
     bool loadTrialData;
-    bool loadUnknownTrialData;
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
     //! S³ownik parserów wed³ug ID.
@@ -99,6 +85,8 @@ private:
 
     //! Lista lokalnych prób pomiarowych.
     std::vector<LocalTrial> localTrialsList;
+    //! Aktualnie za³adowany trial
+    LocalTrial actualTrial;
 
     //! Lista zasobów.
     std::vector<std::string> resourcesPaths;
@@ -119,18 +107,22 @@ protected:
     //! \return Liczba niezainicjalizowanych parserów.
     virtual int getNumRawParsers() const;
     
-    //! Szuka na dysku lokalnych prób pomiarowych.
-    void findLocalTrials();
-    //! Szuka na dysku zasobów.
-    void findResources();
     //! \param œcie¿ka do folderu z plikami próby pomiarowej
     //! \return Pojedyncza próba pomiarowa ze œcie¿kami do wszystkich jej plików.
     LocalTrial findLocalTrialsPaths(const std::string& path);
 public:
+    //! Szuka na dysku lokalnych prób pomiarowych.
+    virtual void findLocalTrials();
+    //! Szuka na dysku zasobów.
+    virtual void findResources();
     //! \param trial do za³adowania, czyli inicjalizacja parserów
-    void loadActualTrial(const LocalTrial& trial);
+    virtual void loadTrial(const LocalTrial& trial);
     //! ³adowanie zasobów, czyli inicjalizacja parserów
-    void loadResourcesEx();
+    virtual void loadResources();
+
+    virtual const LocalTrial& getLocalTrial(int i) const;
+    virtual int getLocalTrialsCount() const;
+
     //! Rejestruje zadany parser.
     //! \param newService
     virtual void registerParser(core::IParserPtr parser);
