@@ -85,9 +85,8 @@ void DataManager::registerParser(core::IParserPtr parser)
         for(boost::tokenizer<boost::char_separator<char>>::iterator it = parameterExtensionToker.begin(); it != parameterExtensionToker.end(); ++it)
         {
             std::string extension = *it;
-            if(extension[0] == '.')
-            {
-                extension.erase(extension.begin());
+            if ( extension.front() != '.' ) {
+                extension.insert( extension.begin(), '.' );
             }
             boost::to_lower(extension);
             //czy jest juz jakis parser obslugujacy to rozszerzenie?
