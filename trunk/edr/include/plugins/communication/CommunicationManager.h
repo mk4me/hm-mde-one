@@ -13,7 +13,7 @@ i web serwisy wsdl.
 #include <utils/ObserverPattern.h>
 #include <core/IDataManager.h>
 #include <core/IServiceManager.h>
-#include <core/LocalTrial.h>
+//#include <core/LocalTrial.h>
 #include "Entity.h"
 #include "TransportWSDL_FTPS.h"
 #include "QueryWSDL.h"
@@ -25,6 +25,9 @@ namespace communication
 
     class CommunicationManager : public utils::Observable<CommunicationManager>, public OpenThreads::Thread
     {
+    private:
+        //! Sekwencja lokalnych prób pomiarowych.
+        typedef std::vector<IDataManager::LocalTrial> LocalTrialsList;
     public:
         /**
         Stany managera pomocne przy wykonywaniu dzia³añ wspó³bie¿nie.
@@ -137,7 +140,7 @@ namespace communication
         Listuje próby pomiarowe znajduj¹ce siê na lokalnym dysku.
         @return lista prób pomiarowych z lokalnego dysku
         */
-        const std::vector<LocalTrial>& getLocalTrials() const
+        const LocalTrialsList& getLocalTrials() const
         {
             return localTrials;
         };
@@ -177,9 +180,9 @@ namespace communication
         //IServiceManager* getServiceManager() {return serviceManager;};
         /**
         Metoda ustala próbê pomiarow¹ jako aktualn¹ i ³aduje j¹ do edytora.
-        @param name nazwa lokalnej próby pomiarowej
+        @param localTrial lokalna próba pomiarowa do za³adowania
         */
-        void loadTrial(const std::string& name);
+        void loadTrial(const IDataManager::LocalTrial& localTrial);
         /**
         Ustala stan w jakim znajduje siê Communication Service.
         @param state stan jaki ustaliæ jako aktualny dla CS
@@ -251,7 +254,7 @@ namespace communication
         /**
         Lista lokalnych prób pomiarowych
         */
-        std::vector<LocalTrial> localTrials;
+        LocalTrialsList localTrials;
         /**
         Lista prób pomiarowych na serwerze
         */

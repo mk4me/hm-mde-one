@@ -127,9 +127,9 @@ public:
     virtual void downloadFile(unsigned int fileID);
     /**
     Metoda z interfejsu ICommunication. £adowanie lokalnej próby pomiarowej do edytora.
-    @param name nazwa lokalnej próby do za³adowania
+    @param localTrial lokalna próba pomiarowa do za³adowania
     */
-    virtual void loadTrial(const std::string& name);
+    virtual void loadTrial(const IDataManager::LocalTrial& localTrial);
     /**
     Metoda z interfejsu ICommunication. Przerwanie pobierania pliku lub triala.
     */

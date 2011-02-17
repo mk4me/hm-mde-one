@@ -147,17 +147,17 @@ std::string c3dpath = "";
 //		}
 //	length=widget->getLenght() ;
 //	}
-if(dataManager->getActualLocalTrial().isC3d())
-{
-	widget->clear();
-	c3dpath = dataManager->getActualLocalTrial().getC3dPath();
-	c3dParser* parser =  new c3dParser();
-	C3D_Data* c3d = parser->parseData(c3dpath);
-	for(int i=0;i<12;i++){
-		widget->addChart(new C3DChartData(c3d,i));
-	}
-	length=widget->getLenght() ;
-}
+//if(dataManager->getCurrentLocalTrial().isC3d())
+//{
+//	widget->clear();
+//	c3dpath = dataManager->getCurrentLocalTrial().getC3dPath();
+//	c3dParser* parser =  new c3dParser();
+//	C3D_Data* c3d = parser->parseData(c3dpath);
+//	for(int i=0;i<12;i++){
+//		widget->addChart(new C3DChartData(c3d,i));
+//	}
+//	length=widget->getLenght() ;
+//}
 return AsyncResult_Complete;
 }
 

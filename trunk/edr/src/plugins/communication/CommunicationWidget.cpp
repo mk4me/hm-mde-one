@@ -78,13 +78,23 @@ void CommunicationWidget::refreshUI()
     infoLabel->setText(core::toQString(infoText));
 
     //lokalne proby pomiarowe
-    BOOST_FOREACH(LocalTrial& trial, localTrials)
+    BOOST_FOREACH(IDataManager::LocalTrial& trial, localTrials)
     {
         LocalTrialItem* item = new LocalTrialItem();
         trials->addItem(item);
-        item->setPath(trial.getTrialPath());
-        item->setName(trial.getName());
-        item->setText(core::toQString(trial.getName()));
+        item->localTrial = trial;
+
+        boost::cmatch matches;
+        boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+        //sprawdzamy, czy zgadza sie nazwa folderu
+        if(trial.size() > 0 && boost::regex_match(trial[0].string().c_str(), matches, e))
+        {
+            item->setText(core::toQString(matches[2]));
+        }
+        else
+        {
+            item->setText(core::toQString("Unknown trial"));
+        }
     }
     //serwerowe proby pomiarowe, sprawdzamy czy serwer jest online i jesli tak to czy sie nie powtarzaja z lokalnymi
     if(isOnline)
@@ -95,9 +105,12 @@ void CommunicationWidget::refreshUI()
         BOOST_FOREACH(communication::Trial& trial, serverTrials)
         {
             isLocal = false;
-            BOOST_FOREACH(LocalTrial& local, localTrials)
+            BOOST_FOREACH(IDataManager::LocalTrial& local, localTrials)
             {
-                if(trial.trialDescription.compare(local.getName()) == 0)
+                boost::cmatch matches;
+                boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                //sprawdzamy, czy zgadza sie nazwa folderu
+                if(local.size() > 0 && boost::regex_match(local[0].string().c_str(), matches, e) && trial.trialDescription.compare(matches[2]) == 0)
                 {
                     isLocal = true;
                     break;
@@ -108,8 +121,8 @@ void CommunicationWidget::refreshUI()
                 EntityTrialItem* item = new EntityTrialItem();
                 trials->addItem(item);
                 item->setText(core::toQString(trial.trialDescription));
-                item->setSession(trial.sessionID);
-                item->setID(trial.id);
+                item->session = trial.sessionID;
+                item->id = trial.id;
             }
         }
     }
@@ -142,7 +155,7 @@ void CommunicationWidget::itemDoubleClicked(QListWidgetItem* item)
     if(item && item->textColor() == QColor(0, 0, 255))
     {
         LocalTrialItem* temp = reinterpret_cast<LocalTrialItem*>(trials->item(trials->currentRow()));
-        loadTrial(temp->getName());
+        loadTrial(temp->localTrial);
     }
     else
     {
@@ -182,18 +195,29 @@ void CommunicationWidget::download()
     if(trials->item(trials->currentRow()))
     {
         EntityTrialItem* temp = reinterpret_cast<EntityTrialItem*>(trials->item(trials->currentRow()));
-        int trial = temp->getID();
+        int trial = temp->id;
         downloadButton->setText("Load");
         abortButton->setDisabled(false);
         trials->clear();
         //lokalne proby pomiarowe
-        BOOST_FOREACH(LocalTrial& trial, localTrials)
+        BOOST_FOREACH(IDataManager::LocalTrial& trial, localTrials)
         {
             LocalTrialItem* item = new LocalTrialItem();
             trials->addItem(item);
-            item->setPath(trial.getTrialPath());
-            item->setName(trial.getName());
-            item->setText(core::toQString(trial.getName()));
+
+            item->localTrial = trial;
+
+            boost::cmatch matches;
+            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+            //sprawdzamy, czy zgadza sie nazwa folderu
+            if(trial.size() > 0 && boost::regex_match(trial[0].string().c_str(), matches, e))
+            {
+                item->setText(core::toQString(matches[2]));
+            }
+            else
+            {
+                item->setText(core::toQString("Unknown trial"));
+            }
         }
         updateButton->setDisabled(true);
         this->communicationService->downloadTrial(trial);
@@ -207,9 +231,9 @@ void CommunicationWidget::abort()
     communicationService->cancelDownloading();
 }
 
-void CommunicationWidget::loadTrial(const std::string& name)
+void CommunicationWidget::loadTrial(const IDataManager::LocalTrial& localTrial)
 {
-    communicationService->loadTrial(name);
+    communicationService->loadTrial(localTrial);
 }
 
 void CommunicationWidget::updateTrials()
@@ -218,13 +242,24 @@ void CommunicationWidget::updateTrials()
     downloadButton->setText("Load");
     trials->clear();
     //lokalne proby pomiarowe
-    BOOST_FOREACH(LocalTrial& trial, localTrials)
+    BOOST_FOREACH(IDataManager::LocalTrial& trial, localTrials)
     {
         LocalTrialItem* item = new LocalTrialItem();
         trials->addItem(item);
-        item->setPath(trial.getTrialPath());
-        item->setName(trial.getName());
-        item->setText(core::toQString(trial.getName()));
+
+        item->localTrial = trial;
+
+        boost::cmatch matches;
+        boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+        //sprawdzamy, czy zgadza sie nazwa folderu
+        if(trial.size() > 0 && boost::regex_match(trial[0].string().c_str(), matches, e))
+        {
+            item->setText(core::toQString(matches[2]));
+        }
+        else
+        {
+            item->setText(core::toQString("Unknown trial"));
+        }
     }
     communicationService->updateSessionContents();
 }

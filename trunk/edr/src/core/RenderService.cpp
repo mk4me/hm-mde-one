@@ -161,21 +161,21 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 	std::string skelpath = "";
 	std::string c3dpath = "";
 
-	if(dataManager->getMeshFilePathCount() > 0)
-	{
-		meshpath = dataManager->getMeshFilePath(0);
-	}
+	//if(dataManager->getMeshFilePathCount() > 0)
+	//{
+	//	meshpath = dataManager->getMeshFilePath(0);
+	//}
 
 	
-	if(dataManager->getActualLocalTrial().isSkeleton())
-	{
-		skelpath = dataManager->getActualLocalTrial().getSkeletonPath();
-	}
-	if(dataManager->getActualLocalTrial().isC3d())
-	{
-		c3dpath = dataManager->getActualLocalTrial().getC3dPath();
-	}
-	std::vector<std::string> animationPathList = dataManager->getActualLocalTrial().getAnimationsPaths();
+	//if(dataManager->getCurrentLocalTrial().isSkeleton())
+	//{
+	//	skelpath = dataManager->getCurrentLocalTrial().getSkeletonPath();
+	//}
+	//if(dataManager->getCurrentLocalTrial().isC3d())
+	//{
+	//	c3dpath = dataManager->getCurrentLocalTrial().getC3dPath();
+	//}
+	//std::vector<std::string> animationPathList = dataManager->getCurrentLocalTrial().getAnimationsPaths();
 
 	//if(dataManager->getSkeletonFilePathCount() > 0)
 	//{
@@ -198,7 +198,7 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
         DisablemarkerPath();
     }
 
-	m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(meshpath, skelpath, animationPathList));
+	//m_pModel = dynamic_cast<Model* >(m_pFactory->GetModel(meshpath, skelpath, animationPathList));
 
     if(m_pModel) {
         SetScene(m_pModel);

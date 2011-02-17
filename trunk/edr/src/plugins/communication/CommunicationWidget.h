@@ -23,17 +23,10 @@ class CommunicationService;
 @brief Klasa EntityTrialItem dziedziczy po QListWidgetItem i reprezentuje próbê pomiarow¹ w widgecie QListWidget.
 */
 
-class EntityTrialItem : public QListWidgetItem
+struct EntityTrialItem : public QListWidgetItem
 {
-private:
     int session;
     int id;
-public:
-    EntityTrialItem() {session = 0;};
-    void setSession(int session) {this->session = session;};
-    int getSession() {return session;};
-    void setID(int ID) {this->id = ID;};
-    int getID() {return id;};
 };
 
 /**
@@ -41,17 +34,15 @@ public:
 @brief Klasa LocalTrialItem dziedziczy po QListWidgetItem i reprezentuje lokaln¹ próbê pomiarow¹ w widgecie QListWidget.
 */
 
-class LocalTrialItem : public QListWidgetItem
+struct LocalTrialItem : public QListWidgetItem
 {
-private:
-    std::string path;
+    IDataManager::LocalTrial localTrial;
     std::string name;
 public:
-    LocalTrialItem() {setTextColor(QColor(0, 0, 255));};
-    void setPath(const std::string& path) {this->path = path;};
-    const std::string& getPath() const {return path;};
-    void setName(const std::string& name) {this->name = name;};
-    const std::string& getName() const {return name;};
+    LocalTrialItem()
+    {
+        setTextColor(QColor(0, 0, 255));
+    };
 };
 
 /**
@@ -97,9 +88,9 @@ public:
     void abort();
     /**
     £aduje wybran¹ próbê pomiarow¹ do edytora EDR.
-    @param name nazwa lokalnej próby pomiarowej do za³adowania
+    @param localTrial lokalna próba pomiarowa do za³adowania
     */
-    void loadTrial(const std::string& name);
+    void loadTrial(const IDataManager::LocalTrial& localTrial);
     /**
     Aktualizuje informacje o próbach pomiarowych.
     */
@@ -143,7 +134,7 @@ private:
     /**
     Kopia prób pomiarowych znajduj¹cych siê lokalnie.
     */
-    std::vector<LocalTrial> localTrials;
+    std::vector<IDataManager::LocalTrial> localTrials;
     /**
     Informacja wykorzystywana przy etykietach.
     */

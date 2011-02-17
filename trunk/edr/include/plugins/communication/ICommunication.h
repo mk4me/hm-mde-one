@@ -8,6 +8,8 @@ na lokaln¹ maszyne.
 #ifndef ICOMMUNICATION_H
 #define ICOMMUNICATION_H
 
+#include <core/IDataManager.h>
+
 class ICommunication
 {
 public:
@@ -31,9 +33,9 @@ public:
 	virtual void downloadTrial(unsigned int trialID) = 0;
 	/**
 	£adowanie lokalnej próby pomiarowej do edytora.
-	@param name nazwa lokalnej próby do za³adowania
+	@param localTrial lokalna próba pomiarowa do za³adowania
 	*/
-	virtual void loadTrial(const std::string& name) = 0;
+	virtual void loadTrial(const IDataManager::LocalTrial& localTrial) = 0;
 	/**
 	Pingowanie serwera.
 	*/

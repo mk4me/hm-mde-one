@@ -9,7 +9,7 @@
 using namespace communication;
 
 typedef std::vector<Trial> ServerTrials;
-typedef std::vector<LocalTrial> LocalTrials;
+typedef std::vector<IDataManager::LocalTrial> LocalTrials;
 
 CommunicationManager* CommunicationManager::instance = NULL;
 
@@ -236,10 +236,10 @@ void CommunicationManager::loadLocalTrials()
     notify();
 }
 
-void CommunicationManager::loadTrial(const std::string& name)
+void CommunicationManager::loadTrial(const IDataManager::LocalTrial& localTrial)
 {
     //dataManager->setActualLocalTrial(name);
-    dataManager->loadLocalTrial(name);
+    dataManager->loadTrial(localTrial);
 }
 
 void CommunicationManager::run()

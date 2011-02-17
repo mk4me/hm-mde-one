@@ -65,11 +65,11 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 
 	VideoWidget* widget = reinterpret_cast<VideoWidget*>(this->widget);
 
-	std::vector<std::string> files;
-	if(dataManager->getActualLocalTrial().isVideos())
-	{
-		files = dataManager->getActualLocalTrial().getVideosPaths();
-	}
+	//std::vector<std::string> files;
+	//if(dataManager->getCurrentLocalTrial().isVideos())
+	//{
+	//	files = dataManager->getCurrentLocalTrial().getVideosPaths();
+	//}
 	//for(int i = 0; i < dataManager->getVideoFilePathCount(); i++)
 	//{
  //       std::string path =  dataManager->getVideoFilePath(i);
@@ -93,7 +93,7 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
     std::vector<IVideoParserPtr> parsers;
     core::queryParsers<IVideoParser>(dataManager, parsers);
     //widget->init(parsers);
-	widget->init(files);
+	//widget->init(files);
 
 	ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
 	if ( timeline ) {

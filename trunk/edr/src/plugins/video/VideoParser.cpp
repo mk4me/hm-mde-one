@@ -29,7 +29,7 @@ void VideoParser::parseFile( const std::string& path )
     }
 }
 
-core::IParser* VideoParser::clone()
+core::IParser* VideoParser::create()
 {
     return new VideoParser();
 }

@@ -94,7 +94,7 @@ void CommunicationService::save()
 
 AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
 {
-    this->model->setTrialsDir(dataManager->getTrialsPath());
+    this->model->setTrialsDir(dataManager->getTrialsPath().string());
     return AsyncResult_Complete;
 }
 
@@ -171,9 +171,9 @@ AsyncResult CommunicationService::init(IServiceManager* serviceManager, IDataMan
     return AsyncResult_Complete;
 }
 
-void CommunicationService::loadTrial(const std::string& name)
+void CommunicationService::loadTrial(const IDataManager::LocalTrial& localTrial)
 {
-    model->loadTrial(name);
+    model->loadTrial(localTrial);
 }
 
 void CommunicationService::cancelDownloading()

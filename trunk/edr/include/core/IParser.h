@@ -27,7 +27,7 @@ namespace core
         virtual void parseFile(const std::string& path) = 0;
 
         //! \return Instancja tego samego typu.
-        virtual IParser* clone() = 0;
+        virtual IParser* create() = 0;
 
         //! \retrun Lista rozszerzeñ, które parser obs³uguje. Musz¹ byæ oddzielone œrednikiem.
         //!         Obs³ugiwany format rozszerzenia: [ { *. | . } ]ext

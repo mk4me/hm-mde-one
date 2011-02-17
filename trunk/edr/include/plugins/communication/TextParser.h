@@ -15,7 +15,7 @@ public:
 
     virtual void parseFile(const std::string& path);
 
-    virtual IParser* clone();
+    virtual IParser* create();
 
     virtual std::string getSupportedExtensions() const;
 

@@ -42,6 +42,7 @@
 #include <boost/bind.hpp>
 #include <functional>
 #include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
 
 #include "ComputeThread.h"
 
@@ -638,7 +639,18 @@ void ToolboxMain::loadData()
 // 	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
 // 	osg::Node* sceneRoot = scene->getSceneData();
 	dataManager->setLoadLocalTrialData(false);
-	this->setWindowTitle(tr("ToolboxMain - ").append(core::toQString(dataManager->getActualLocalTrial().getName())));
+
+    boost::cmatch matches;
+    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+    //sprawdzamy, czy zgadza sie nazwa folderu
+    if(dataManager->getCurrentLocalTrial().size() > 0 && boost::regex_match(dataManager->getCurrentLocalTrial()[0].string().c_str(), matches, e))
+    {
+        this->setWindowTitle(tr("ToolboxMain - ").append(core::toQString(matches[2])));
+    }
+    else
+    {
+        this->setWindowTitle(tr("ToolboxMain - Unknown trial"));
+    }
 }
 
 void ToolboxMain::onTabbedViewSelected(bool toggled)

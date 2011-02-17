@@ -29,7 +29,7 @@ public:
 // IParser
 public:
     virtual void parseFile(const std::string& path);
-    virtual core::IParser* clone();
+    virtual core::IParser* create();
     virtual std::string getSupportedExtensions() const;
     virtual core::ObjectWrapperPtr getObject();
 

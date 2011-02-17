@@ -1,7 +1,6 @@
 #ifndef I_DATA_MANAGER_H
 #define I_DATA_MANAGER_H
 
-#include <core/LocalTrial.h>
 #include <core/IParser.h>
 #include <vector>
 #include <boost/filesystem.hpp>
@@ -9,6 +8,9 @@
 class IDataManager
 {
 public:
+    typedef boost::filesystem::path Path;
+    typedef std::vector<Path> LocalTrial;
+
 	virtual ~IDataManager() {};
 
     virtual void findResources() = 0;
@@ -18,27 +20,19 @@ public:
     virtual void loadTrial(const LocalTrial& trial) = 0;
 
 	virtual const LocalTrial& getLocalTrial(int i) const = 0;
-	virtual int getLocalTrialsCount() const = 0;
 
-	virtual const LocalTrial& getActualLocalTrial() const = 0;
+	virtual const LocalTrial& getCurrentLocalTrial() const = 0;
 
 	virtual void clear() = 0;
 
-    //TODO: te metody sa pozostaloscia po starym sposobie zarzadzania danymi
-    virtual const std::string& getShaderFilePath(int i) = 0;
-    virtual int getShaderFilePathCount() = 0;
-    virtual const std::string& getMeshFilePath(int i) = 0;
-    virtual int getMeshFilePathCount() = 0;
     virtual const std::string& getApplicationSkinsFilePath(int i) = 0;
     virtual int getApplicationSkinsFilePathCount() = 0;
-
-
 
 	virtual bool isLoadLocalTrialData() const = 0;
 	virtual void setLoadLocalTrialData(bool load) = 0;
 
-	virtual const std::string& getResourcesPath() const = 0;
-	virtual const std::string& getTrialsPath() const = 0;
+	virtual const Path& getResourcesPath() const = 0;
+	virtual const Path& getTrialsPath() const = 0;
 
     //! Rejestruje zadan¹ us³ugê.
     //! \param newService
@@ -53,10 +47,13 @@ public:
     //! \param filename nazwa pliku parsera.
     //! \return Odnaleziony parser b¹dŸ NULL.
     virtual core::IParserPtr getParser(const std::string& filename) = 0;
-
+    
+    //! Liczba prób pomiarowych w zasobach
+	virtual int getLocalTrialsCount() const = 0;
+    //! \param i za³aduj i-t¹ próbê pomiarow¹ z zasobów
     virtual void loadLocalTrial(int i) = 0;
-    //! \param Za³aduj próbê pomiarow¹ o podanej nazwie.
-    virtual void loadLocalTrial(const std::string& name) = 0;
+    //! \param path Za³aduj próbê pomiarow¹ z podanej œcie¿ki.
+    virtual void loadLocalTrial(const Path& path) = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

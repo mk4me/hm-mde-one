@@ -22,7 +22,7 @@ void TextParser::parseFile(const std::string& path)
     }
 }
 
-core::IParser* TextParser::clone()
+core::IParser* TextParser::create()
 {
     return new TextParser();
 }
