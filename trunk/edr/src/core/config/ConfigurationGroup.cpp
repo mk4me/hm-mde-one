@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------------------------
 bool ConfigurationGroup::GetParametrVal( std::string pName, std::string &val)
 {
-    for(std::list<Parameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
+    for(std::list<ConfigParameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
     {
         if((*it)->GetName() == pName)
         {
@@ -20,7 +20,7 @@ bool ConfigurationGroup::GetParametrVal( std::string pName, std::string &val)
 //------------------------------------------------------------------------------------------------
 void ConfigurationGroup::SetParametrVal( std::string pName, std::string val )
 {
-    for(std::list<Parameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
+    for(std::list<ConfigParameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
     {
         if((*it)->GetName() == pName)
         {
@@ -32,12 +32,12 @@ void ConfigurationGroup::SetParametrVal( std::string pName, std::string val )
 //------------------------------------------------------------------------------------------------
 void ConfigurationGroup::AddNewParametr( std::string name, std::string val )
 {
-	Parameter *parameter = new Parameter(name, val);
+	ConfigParameter *parameter = new ConfigParameter(name, val);
 	m_ParameterList.push_back(parameter);
 }
 
 //------------------------------------------------------------------------------------------------
-void ConfigurationGroup::AddNewParamter(Parameter& parameter)
+void ConfigurationGroup::AddNewParamter(ConfigParameter& parameter)
 {
     m_ParameterList.push_back(&parameter);
 }
@@ -45,7 +45,7 @@ void ConfigurationGroup::AddNewParamter(Parameter& parameter)
 //------------------------------------------------------------------------------------------------
 void ConfigurationGroup::DeleteParametr( std::string name )
 {
-    for(std::list<Parameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
+    for(std::list<ConfigParameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
     {
         if((*it)->GetName() == name)
         {
@@ -56,9 +56,9 @@ void ConfigurationGroup::DeleteParametr( std::string name )
 }
 
 //------------------------------------------------------------------------------------------------
-void ConfigurationGroup::DeleteParametr( Parameter& parametr )
+void ConfigurationGroup::DeleteParametr( ConfigParameter& parametr )
 {
-    for(std::list<Parameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
+    for(std::list<ConfigParameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
     {
         if((*it)->GetName() == parametr.GetName())
         {
@@ -71,7 +71,7 @@ void ConfigurationGroup::DeleteParametr( Parameter& parametr )
 //------------------------------------------------------------------------------------------------
 bool ConfigurationGroup::IsExistParameter(std::string pName)
 {
-    for (std::list<Parameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
+    for (std::list<ConfigParameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
     {
         if((*it)->GetName() == pName)
         {
@@ -95,15 +95,15 @@ void ConfigurationGroup::SetName(std::string name)
 }
 
 //------------------------------------------------------------------------------------------------
-std::list<Parameter*>& ConfigurationGroup::GetParametersList()
+std::list<ConfigParameter*>& ConfigurationGroup::GetParametersList()
 {
     return m_ParameterList;
 }
 
 //------------------------------------------------------------------------------------------------
-Parameter* ConfigurationGroup::GetParameter( std::string pName )
+ConfigParameter* ConfigurationGroup::GetParameter( std::string pName )
 {
-    for (std::list<Parameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
+    for (std::list<ConfigParameter*>::iterator it = m_ParameterList.begin(); it != m_ParameterList.end(); it++)
     {
         if((*it)->GetName() == pName)
         {

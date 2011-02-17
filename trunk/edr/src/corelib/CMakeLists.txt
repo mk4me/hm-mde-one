@@ -69,6 +69,7 @@ set(TARGET_SRC
 	MultiViewWidgetItem.cpp
 	Chart.cpp
 	c3dParser.cpp
+	c3dParserEx.cpp
 	C3D_Data.cpp
 	ChartData.cpp
 	Data.cpp

@@ -4,7 +4,7 @@
 
 using namespace vidlib;
 
-VideoParser::VideoParser()
+VideoParser::VideoParser() : parsed(false)
 {
     object = core::ObjectWrapper::createWrapper<vidlib::VideoImageStream>();
 }
@@ -13,20 +13,20 @@ VideoParser::~VideoParser()
 {
 }
 
-void VideoParser::parseFile( const std::string& path )
+void VideoParser::parse()
 {
     UTILS_ASSERT(stream != NULL);
-    this->path = path;
-    osg::Image* image = osgDB::readImageFile(path);
+    osg::Image* image = osgDB::readImageFile(path.string());
     stream = dynamic_cast<VideoImageStream*>(image);
     if (!stream) {
         std::ostringstream buff;
-        buff << "Error loading video file: " << path;
+        buff << "Error loading video file: " << path.string();
         throw new std::runtime_error(buff.str());
     } else {
         object->set<vidlib::VideoImageStream>(stream);
-        object->setName(boost::filesystem::path(path).stem());
+        object->setName(path.stem());
     }
+    parsed = true;
 }
 
 core::IParser* VideoParser::create()

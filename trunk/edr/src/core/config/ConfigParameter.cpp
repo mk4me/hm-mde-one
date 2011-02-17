@@ -1,31 +1,31 @@
-#include "Parameter.h"
+#include "ConfigParameter.h"
 
 //------------------------------------------------------------------------------------------------
-std::string Parameter::GetName()
+std::string ConfigParameter::GetName()
 {
     return m_name;
 }
 
 //------------------------------------------------------------------------------------------------
-std::string Parameter::GetValue()
+std::string ConfigParameter::GetValue()
 {
     return m_value;
 }
 
 //------------------------------------------------------------------------------------------------
-void Parameter::SetName(std::string name)
+void ConfigParameter::SetName(std::string name)
 {
     m_name = name;
 }
 
 //------------------------------------------------------------------------------------------------
-void Parameter::SetValue(std::string val)
+void ConfigParameter::SetValue(std::string val)
 {
     m_value = val;
 }
 
 //------------------------------------------------------------------------------------------------
-void Parameter::Clear()
+void ConfigParameter::Clear()
 {
 
 }

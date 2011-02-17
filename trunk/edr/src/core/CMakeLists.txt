@@ -72,6 +72,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/SmartPtr.h
 	${HEADER_PATH}/Chart.h
 	${HEADER_PATH}/c3dParser.h
+	${HEADER_PATH}/c3dParserEx.h
 	${HEADER_PATH}/C3D_Data.h
 	${HEADER_PATH}/LineChart.h
 	${HEADER_PATH}/ChartData.h
@@ -163,7 +164,7 @@ set(CONFIG_H
 	config/ConfigurationGroup.h
 	config/FileReader.h
 	config/IConfigManager.h
-	config/Parameter.h
+	config/ConfigParameter.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\config" FILES ${CONFIG_H})
 set(TARGET_H ${TARGET_H} ${CONFIG_H})
@@ -172,7 +173,7 @@ set(CONFIG_SRC
 	config/ConfigBuffer.cpp
 	config/ConfigurationGroup.cpp
 	config/FileReader.cpp
-	config/Parameter.cpp
+	config/ConfigParameter.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}\\config" FILES ${CONFIG_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${CONFIG_SRC})

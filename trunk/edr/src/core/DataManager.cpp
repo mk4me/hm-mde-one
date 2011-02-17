@@ -85,8 +85,9 @@ void DataManager::registerParser(core::IParserPtr parser)
         for(boost::tokenizer<boost::char_separator<char>>::iterator it = parameterExtensionToker.begin(); it != parameterExtensionToker.end(); ++it)
         {
             std::string extension = *it;
-            if ( extension.front() != '.' ) {
-                extension.insert( extension.begin(), '.' );
+            if(extension.front() != '.')
+            {
+                extension.insert(extension.begin(), '.');
             }
             boost::to_lower(extension);
             //czy jest juz jakis parser obslugujacy to rozszerzenie?
@@ -118,36 +119,51 @@ int DataManager::getNumRawParsers() const
 
 core::IParserPtr DataManager::getParser(int idx)
 {
-    if ( idx < static_cast<int>(currentParsersList.size()) ) {
+    if(idx < static_cast<int>(currentParsersList.size()))
+    {
+        //nie jest sparsowany
+        if(!currentParsersList[idx]->isParsed())
+        {
+            currentParsersList[idx]->parse();
+        }
         return currentParsersList[idx];
-    } else {
+    }
+    else
+    {
         return core::IParserPtr();
     }
 }
 
 core::IParserPtr DataManager::getParser(const std::string& filename)
 {
-    for(ParsersMap::iterator it = currentParsersFilenameMap.begin(); it != currentParsersFilenameMap.end(); ++it)
+    for(ParsersMap::iterator it = currentParsersFilepathMap.begin(); it != currentParsersFilepathMap.end(); ++it)
     {
-        std::string parserFilename = it->first;
-        if(parserFilename.compare(filename) == 0)
+        if(it->first.filename().compare(filename) == 0)
         {
+            //nie jest sparsowany
+            if(!it->second->isParsed())
+            {
+                it->second->parse();
+            }
             return it->second;
         }
     }
     return core::IParserPtr();
 }
 
-core::IParserPtr DataManager::getRawParser(int idx)
+core::IParserPtr DataManager::createRawParser(int idx)
 {
-    if ( idx < static_cast<int>(registeredParsersList.size()) ) {
+    if(idx < static_cast<int>(registeredParsersList.size()))
+    {
         return core::IParserPtr(registeredParsersList[idx]->create());
-    } else {
+    }
+    else
+    {
         return core::IParserPtr();
     }
 }
 
-core::IParserPtr DataManager::getRawParser(const std::string& extension)
+core::IParserPtr DataManager::createRawParser(const std::string& extension)
 {
     ParsersMultimap::iterator it = registeredParsersExtMap.find(extension);
     if(it != registeredParsersExtMap.end())
@@ -243,19 +259,18 @@ void DataManager::loadTrial(const IDataManager::LocalTrial& trial)
     //proba zaladowania parsera plikow c3d jesli takowy plik i parser istnieje
     BOOST_FOREACH(boost::filesystem::path path, trial)
     {
-        core::IParserPtr parser = getRawParser(path.extension());
+        core::IParserPtr parser = createRawParser(path.extension());
         if(parser)
         {
-            //parsujemy
-            parser->parseFile(path.string());
+            parser->setPath(path);
             //dodajemy do listy parserow aktualnej proby pomiarowej
             currentParsersList.push_back(parser);
             currentTrialParsersList.push_back(parser);
-            currentParsersFilenameMap.insert(std::make_pair(path.filename(), parser));
+            currentParsersFilepathMap.insert(std::make_pair(path, parser));
         }
         else
         {
-            LOG_WARNING("No parser found for " << path.filename());
+            LOG_WARNING("No parser found for " << path.string());
         }
     }
 }
@@ -268,13 +283,13 @@ void DataManager::loadResources()
         //sciezka istnieje, jest plikiem i zgadza sie nazwa
         if(boost::filesystem::exists(path) && !boost::filesystem::is_directory(path))// && !path.extension().compare(filename))
         {
-            IParserPtr parser = getRawParser(path.extension());
+            IParserPtr parser = createRawParser(path.extension());
             //jesli parser dla tego rozszerzenia istnieje, dodajemy go do listy aktualnie zaladowanych parserow (zasobow)
             if(parser)
             {
                 currentParsersList.push_back(parser);
 
-                currentParsersFilenameMap.insert(std::make_pair(path.filename(), parser));
+                currentParsersFilepathMap.insert(std::make_pair(path, parser));
             }
             else
             {
@@ -296,19 +311,19 @@ void DataManager::clearCurrentTrial()
     //wyszukaj parsery triala w listach i slownikach
     BOOST_FOREACH(core::IParserPtr trial, currentTrialParsersList)
     {
-        for(ParsersList::iterator it = currentTrialParsersList.begin(); it != currentTrialParsersList.end(); ++it)
+        for(ParsersList::iterator it = currentParsersList.begin(); it != currentParsersList.end(); ++it)
         {
             if(trial == (*it))
             {
-                currentTrialParsersList.erase(it);
+                currentParsersList.erase(it);
                 break;
             }
         }
-        for(ParsersMap::iterator it = currentParsersFilenameMap.begin(); it != currentParsersFilenameMap.end(); ++it)
+        for(ParsersMap::iterator it = currentParsersFilepathMap.begin(); it != currentParsersFilepathMap.end(); ++it)
         {
             if(trial == (*it).second)
             {
-                currentParsersFilenameMap.erase(it);
+                currentParsersFilepathMap.erase(it);
                 break;
             }
         }

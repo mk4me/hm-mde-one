@@ -26,6 +26,7 @@
 
 #include "ServiceManager.h"
 #include <core/IAnimationService.h>
+#include <core/C3DParserEx.h>
 #include "UserInterfaceService.h"
 #include "RenderService.h"
 #include "config/ConfigurationFileService.h"
@@ -380,6 +381,8 @@ void ToolboxMain::registerPluginsParsers()
             dataManager->registerParser(plugin->getParser(j));
         }
     }
+    core::IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
+    dataManager->registerParser(c3dParser);
 }
 
 void ToolboxMain::onOpen()

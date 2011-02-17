@@ -1,7 +1,7 @@
 #include "CommunicationPCH.h"
 #include <plugins/communication/TextParser.h>
 
-TextParser::TextParser()
+TextParser::TextParser() : parsed(false)
 {
     extension = "TXT";
     object = core::ObjectWrapper::createWrapper(new std::string());
@@ -12,14 +12,14 @@ TextParser::~TextParser()
     textFile.close();
 }
 
-void TextParser::parseFile(const std::string& path)
+void TextParser::parse()
 {
-    this->path = path;
-    textFile.open(path.c_str());
+    textFile.open(path.string().c_str());
     if(textFile.is_open())
     {
         textFile >> *object->get<std::string>();
     }
+    parsed = true;
 }
 
 core::IParser* TextParser::create()
@@ -35,11 +35,6 @@ std::string TextParser::getSupportedExtensions() const
 const std::string& TextParser::getOutput() const
 {
     return *object->get<std::string>();
-}
-
-const std::string& TextParser::getPath() const
-{
-    return path;
 }
 
 core::ObjectWrapperPtr TextParser::getObject()

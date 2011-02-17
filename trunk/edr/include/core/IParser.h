@@ -5,6 +5,7 @@
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
 #include <core/ObjectWrapper.h>
+#include <boost/filesystem.hpp>
 
 namespace core
 {
@@ -21,10 +22,15 @@ namespace core
         //! Pusty polimorficzny destruktor.
         virtual ~IParser() {}
         
-        //! Przyporz¹dkowanie parsera do konkretnego pliku. Na ka¿dej instancji parsera
-        //! ta metoda wywo³ywana jest maksymalnie jeden raz.
+        //! Przyporz¹dkowanie parsera do konkretnego pliku.
         //! \param path Œcie¿ka do pliku.
-        virtual void parseFile(const std::string& path) = 0;
+        virtual void setPath(const boost::filesystem::path& path) = 0;
+        
+        //! Na ka¿dej instancji parsera ta metoda wywo³ywana jest maksymalnie jeden raz.
+        virtual void parse() = 0;
+
+        //! \return Informacja czy parser ju¿ zosta³ zainicjalizowany.
+        virtual bool isParsed() = 0;
 
         //! \return Instancja tego samego typu.
         virtual IParser* create() = 0;

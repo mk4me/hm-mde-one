@@ -7,8 +7,6 @@
 #include "ChartViewer.h"
 #include <core/Chart.h>
 #include "C3DChartData.h"
-#include <core/c3dParser.h>
-#include <core/C3D_Data.h>
 using namespace std;
 using namespace osg;
 
@@ -133,19 +131,19 @@ void EMGService::setLength( double length )
 void EMGService::setWidget(ChartWidget* widget){
 this->widget=widget;
 }
+
 AsyncResult EMGService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
 {
-std::string c3dpath = "";
-//if(dataManager->getC3dFilePathCount() > 0)
-//	{
-//		c3dpath = dataManager->getC3dFilePath(0);
-//		c3dParser* parser =  new c3dParser();
-//		C3D_Data* c3d = parser->parseData(c3dpath);
-//		for(int i=12;i<28;i++){
-//		widget->addChart(new C3DChartData(c3d,i));
-//	}
-//	length=widget->getLenght() ;
-//	}
+    core::shared_ptr<C3DParser> parser = core::queryParsers<C3DParser>(dataManager);
+    if(parser)
+    {
+        widget->clear();
+        C3D_Data* c3d = parser->getC3dData();
+        for(int i=12;i<28;i++){
+            widget->addChart(new C3DChartData(c3d,i));
+        }
+        length=widget->getLenght() ;
+    }
 //if(dataManager->getCurrentLocalTrial().isC3d())
 //{
 //	widget->clear();

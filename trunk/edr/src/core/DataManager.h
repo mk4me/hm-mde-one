@@ -46,7 +46,7 @@ public:
     //! S³ownik parserów wed³ug ID.
     typedef std::map<UniqueID, core::IParserPtr> ParsersIDMap;
     //! S³ownik parserów.
-    typedef std::map<std::string, core::IParserPtr> ParsersMap;
+    typedef std::map<IDataManager::Path, core::IParserPtr> ParsersMap;
     //! Multis³ownik parserów.
     typedef std::multimap<std::string, core::IParserPtr> ParsersMultimap;
     //! Sekwencja parserów.
@@ -64,7 +64,7 @@ private:
     ParsersList registeredParsersList;
     
     //! S³ownik parserów aktualnie zainicjalizowanych.
-    ParsersMap currentParsersFilenameMap;
+    ParsersMap currentParsersFilepathMap;
     //! Sekwencja parserów aktualnie zainicjalizowanych.
     ParsersList currentParsersList;
 
@@ -89,19 +89,12 @@ private:
 
     bool loadTrialData;
 protected:
-    //! \param idx Indeks parsera.
-    //! \return Parser o zadanym indeksie.
-    virtual core::IParserPtr getParser(int idx);
-    //! \param filename nazwa pliku parsera.
-    //! \return Odnaleziony parser b¹dŸ NULL.
-    core::IParserPtr getParser(const std::string& filename);
-
     //! \param idx Indeks niezainicjalizowanego parsera.
     //! \return Parser o zadanym indeksie z listy parserów niezainicjalizowanych.
-    core::IParserPtr getRawParser(int idx);
+    core::IParserPtr createRawParser(int idx);
     //! \param extension rozszerzenie niezainicjalizowanego parsera.
     //! \return Odnaleziony parser b¹dŸ NULL.
-    core::IParserPtr getRawParser(const std::string& extension);
+    core::IParserPtr createRawParser(const std::string& extension);
     //! \return Liczba niezainicjalizowanych parserów.
     virtual int getNumRawParsers() const;
     
@@ -109,6 +102,13 @@ protected:
     //! \return Pojedyncza próba pomiarowa ze œcie¿kami do wszystkich jej plików.
     LocalTrial findLocalTrialsPaths(const Path& path);
 public:
+    //! \param idx Indeks parsera.
+    //! \return Parser o zadanym indeksie.
+    virtual core::IParserPtr getParser(int idx);
+    //! \param filename nazwa pliku parsera.
+    //! \return Odnaleziony parser b¹dŸ NULL.
+    virtual core::IParserPtr getParser(const std::string& filename);
+
     //! Szuka na dysku lokalnych prób pomiarowych.
     virtual void findLocalTrials();
     //! Szuka na dysku zasobów.

@@ -1,15 +1,15 @@
 #pragma once
-#ifndef PARAMETER_H
-#define PARAMETER_H
+#ifndef CONFIG_PARAMETER_H
+#define CONFIG_PARAMETER_H
 
 #include <string>
 
-class Parameter
+class ConfigParameter
 {
 public:
-    Parameter():m_name(""), m_value("") {};
-	Parameter(std::string name, std::string val):m_name(name), m_value(val) {};
-    ~Parameter() {};
+    ConfigParameter():m_name(""), m_value("") {};
+	ConfigParameter(std::string name, std::string val):m_name(name), m_value(val) {};
+    ~ConfigParameter() {};
 
     std::string GetName();
     std::string GetValue();
@@ -24,4 +24,4 @@ private:
     std::string m_value;
 };
 
-#endif // PARAMETER_H
+#endif // CONFIG_PARAMETER_H

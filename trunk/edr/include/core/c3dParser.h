@@ -1,3 +1,6 @@
+#ifndef _C3D_PARSER_H_
+#define _C3D_PARSER_H_
+
 #include <core/Header.h>
 #include <core/Parameters.h>
 #include <core/Data.h>
@@ -45,3 +48,4 @@ public:
 	~c3dParser();
 
 };
+#endif

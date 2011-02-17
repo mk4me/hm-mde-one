@@ -34,15 +34,15 @@ public:
 	virtual const Path& getResourcesPath() const = 0;
 	virtual const Path& getTrialsPath() const = 0;
 
-    //! Rejestruje zadan¹ us³ugê.
-    //! \param newService
+    //! Rejestruje zadany parser.
+    //! \param parser Parser do rejestracji.
     virtual void registerParser(core::IParserPtr parser) = 0;
 
     //! \return Liczba us³ug.
     virtual int getNumParsers() const = 0;
 
-    //! \param idx Indeks us³ugi.
-    //! \return Us³uga o zadanym indeksie.
+    //! \param idx Indeks parsera.
+    //! \return Parser o zadanym indeksie.
 	virtual core::IParserPtr getParser(int idx) = 0;
     //! \param filename nazwa pliku parsera.
     //! \return Odnaleziony parser b¹dŸ NULL.
