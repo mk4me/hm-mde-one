@@ -4,21 +4,21 @@
 #include <core/c3dParser.h>
 #include <core/C3D_Data.h>
 #include <core/Data.h>
+#include <core/C3DChannels.h>
 
 
-
-ChartData::~ChartData(){}
-void ChartData::normalize(){
+deprecated_ChartData::~deprecated_ChartData(){}
+void deprecated_ChartData::normalize(){
 	//std::vector<float>::iterator it= data.end()-1;
 
 
-	for(int i=0;i<ChartData::rNumber;i++){
+	for(int i=0;i<deprecated_ChartData::rNumber;i++){
 		normalizedY.push_back((y[i]-yMin)/yScale);
 		normalizedX.push_back((x[i]-xMin)/xScale);
 	}
 
 }
-void ChartData::setMin(){
+void deprecated_ChartData::setMin(){
 	xMin=x[0];
 	yMin=y[0];
 	for(int i=0;i<rNumber;i++){
@@ -30,7 +30,7 @@ void ChartData::setMin(){
 
 }
 
-void ChartData::setMax(){
+void deprecated_ChartData::setMax(){
 	xMax=x[0];
 	yMax=y[0];
 	for(int i=0;i<rNumber;i++){
@@ -41,95 +41,95 @@ void ChartData::setMax(){
 	}
 
 }
-float ChartData::getValue(int frame){
-	return ChartData::y[frame];
+float deprecated_ChartData::getValue(int frame){
+	return deprecated_ChartData::y[frame];
 
 }
 
-float ChartData::getNormalizedYValue(int frame){
+float deprecated_ChartData::getNormalizedYValue(int frame){
 		if(frame>rNumber)
-			return ChartData::normalizedY[rNumber-1];
+			return deprecated_ChartData::normalizedY[rNumber-1];
 		else
-	return ChartData::normalizedY[frame];
+	return deprecated_ChartData::normalizedY[frame];
 
 }
 
 
-float ChartData::getNormalizedXValue(int frame){
+float deprecated_ChartData::getNormalizedXValue(int frame){
 	if(frame>rNumber)
-	return ChartData::normalizedX[rNumber-1];
+	return deprecated_ChartData::normalizedX[rNumber-1];
 	else
-	return ChartData::normalizedX[frame];
+	return deprecated_ChartData::normalizedX[frame];
 
 }
-float ChartData::getScaleX(){return ChartData::xScale;}
-float ChartData::getScaleY(){return ChartData::yScale;}
-int ChartData::getRNumber(){return ChartData::rNumber-1;}
-void ChartData::setRNumber(int rNumber){
+float deprecated_ChartData::getScaleX(){return deprecated_ChartData::xScale;}
+float deprecated_ChartData::getScaleY(){return deprecated_ChartData::yScale;}
+int deprecated_ChartData::getRNumber(){return deprecated_ChartData::rNumber-1;}
+void deprecated_ChartData::setRNumber(int rNumber){
 	this->rNumber=rNumber;
 }
 
-float ChartData::getXMin(){
+float deprecated_ChartData::getXMin(){
 	return xMin;
 }
-float ChartData::getYMin(){
+float deprecated_ChartData::getYMin(){
 	return yMin;
 }
-float ChartData::getXMax(){
+float deprecated_ChartData::getXMax(){
 	return xMax;
 }
-float ChartData::getYMax(){
+float deprecated_ChartData::getYMax(){
 	return yMax;
 }
 
 
-int ChartData::getFPS(){
+int deprecated_ChartData::getFPS(){
  return FPS;
 }
-void ChartData::setFPS(int FPS){
+void deprecated_ChartData::setFPS(int FPS){
 this->FPS=FPS;
 }
-std::vector<float> ChartData::getX(){
+std::vector<float> deprecated_ChartData::getX(){
 return x;
 }
-std::vector<float> ChartData::getY(){
+std::vector<float> deprecated_ChartData::getY(){
 return y;
 }
-void ChartData::setX(std::vector<float> x){
+void deprecated_ChartData::setX(std::vector<float> x){
 this->x=x;
 }
-void ChartData::setY(std::vector<float> y){
+void deprecated_ChartData::setY(std::vector<float> y){
 this->y=y;
 }
-void ChartData::setScaleX(float scaleX){
+void deprecated_ChartData::setScaleX(float scaleX){
 	this->xScale=scaleX;
 }
-void ChartData::setScaleY(float scaleY){
+void deprecated_ChartData::setScaleY(float scaleY){
 	this->yScale=scaleY;
 
 }
 
-void ChartData::setName(std::string name){
+void deprecated_ChartData::setName(std::string name){
 this->name=name;
 }
 
-std::string ChartData::getName(){
+std::string deprecated_ChartData::getName(){
 return name;
 }
 
-void ChartData::setScale(float scale){
+void deprecated_ChartData::setScale(float scale){
 	this->scale=scale;
 }
-void ChartData::setOffset(float offset){
+void deprecated_ChartData::setOffset(float offset){
 	this->offset=offset;
 }
-void ChartData::setDescription(std::string description){
+void deprecated_ChartData::setDescription(std::string description){
 	this->description=description;
 }
-void ChartData::setUnit(std::string unit){
+void deprecated_ChartData::setUnit(std::string unit){
 	this->unit=unit;
 }
 
-std::string ChartData::getUnit(){
+std::string deprecated_ChartData::getUnit(){
 return unit;
 }

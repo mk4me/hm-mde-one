@@ -290,7 +290,7 @@ void CommunicationManager::run()
             {
                 if(!pathToDownloadingTrial.empty())
                 {
-                    Filesystem::deleteDirectory(pathToDownloadingTrial);
+                    core::Filesystem::deleteDirectory(pathToDownloadingTrial);
                 }
                 state = Error;
                 errorMessage = e.what();

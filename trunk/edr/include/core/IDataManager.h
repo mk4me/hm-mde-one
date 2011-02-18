@@ -97,6 +97,7 @@ namespace core {
         }
     }
 
+    //! Metoda wyszukuj¹ca wszystkie dane okreœlonego typu.
     template <class T>
     void queryData(IDataManager* manager, std::vector< typename ObjectWrapperT<T>::Ptr >& target, bool exact = false )
     {
@@ -110,6 +111,7 @@ namespace core {
         }
     }
 
+    //! Metoda wyszukuj¹ca wszystkie dane okreœlonego typu.
     template <class T>
     std::vector< typename ObjectWrapperT<T>::Ptr > queryData(IDataManager* manager, bool exact = false )
     {

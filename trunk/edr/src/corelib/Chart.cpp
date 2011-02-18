@@ -237,7 +237,7 @@ osgText::Text* Chart::createLabel(const osg::Vec3& pos, float size, const std::s
 }
 
 
-void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
+void Chart::deprecated_addChartSeries(deprecated_ChartData* chartData,osg::Vec4 color){
 	xNumReps=2;
 	yNumReps=2;
 	borderSize=5;
@@ -245,31 +245,31 @@ void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
 	showBorder=false;
 	float yMaxScale=0;
 	if(chartData->getRNumber()>0){
-	data.push_back(chartData);
-	std::vector<ChartData*>::iterator itData= data.end()-1;
-	dataSeries.push_back(new LineChart((*itData),x+borderSize,y+borderSize,width-borderSize,height-borderSize,color));
-	std::vector<LineChart*>::iterator itDataSeries = dataSeries.end()-1;
+	deprecated_data.push_back(chartData);
+	std::vector<deprecated_ChartData*>::iterator itData= deprecated_data.end()-1;
+	deprecated_dataSeries.push_back(new deprecated_LineChart((*itData),x+borderSize,y+borderSize,width-borderSize,height-borderSize,color));
+	std::vector<deprecated_LineChart*>::iterator itDataSeries = deprecated_dataSeries.end()-1;
 	(*itDataSeries)->setShowLabel(showLabel);
 	this->addChild(*itDataSeries);
 	
-	if(data.size()>1){
-		 itData=data.begin();
-		 for(; itData < data.end(); itData++){
+	if(deprecated_data.size()>1){
+		 itData=deprecated_data.begin();
+		 for(; itData < deprecated_data.end(); itData++){
 			 if(yMaxScale<(*itData)->getScaleY()){
 				 yMaxScale=(*itData)->getScaleY();
 			 }
 
 		 }
-		 itData=data.begin();
-		 for(; itData < data.end(); itData++){
+		 itData=deprecated_data.begin();
+		 for(; itData < deprecated_data.end(); itData++){
 			 (*itData)->setScaleY(yMaxScale);
 			 (*itData)->normalize();
 		 }
 		repaint(); 
 	}else{
 
-	xAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
-	yAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
+	xAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*deprecated_data.begin())->getScaleX()/(*deprecated_data.begin())->getFPS(),"s");
+	yAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*deprecated_data.begin())->getScaleY(),(*deprecated_data.begin())->getUnit());
 	this->addChild(xAxis);
 	this->addChild(yAxis);
 	}
@@ -281,33 +281,34 @@ void Chart::addChartSeries(ChartData* chartData,osg::Vec4 color){
 	}
 
 }
-void Chart::addChartPreviewSeries(ChartData* chartData,osg::Vec4 color){
+
+void Chart::deprecated_addChartPreviewSeries(deprecated_ChartData* chartData,osg::Vec4 color){
 	float yMaxScale=0;
 	if(chartData->getRNumber()>0){
-	data.push_back(chartData);
-	std::vector<ChartData*>::iterator itData= data.end()-1;
-	dataSeries.push_back(new LineChart((*itData),x+borderSize*2,y+borderSize,width-borderSize*2,height-borderSize,color));
-	std::vector<LineChart*>::iterator itDataSeries = dataSeries.end()-1;
+	deprecated_data.push_back(chartData);
+	std::vector<deprecated_ChartData*>::iterator itData= deprecated_data.end()-1;
+	deprecated_dataSeries.push_back(new deprecated_LineChart((*itData),x+borderSize*2,y+borderSize,width-borderSize*2,height-borderSize,color));
+	std::vector<deprecated_LineChart*>::iterator itDataSeries = deprecated_dataSeries.end()-1;
 	this->addChild(*itDataSeries);
 	
-	if(data.size()>1){
-		 itData=data.begin();
-		 for(; itData < data.end(); itData++){
+	if(deprecated_data.size()>1){
+		 itData=deprecated_data.begin();
+		 for(; itData < deprecated_data.end(); itData++){
 			 if(yMaxScale<(*itData)->getScaleY()){
 				 yMaxScale=(*itData)->getScaleY();
 			 }
 
 		 }
-		 itData=data.begin();
-		 for(; itData < data.end(); itData++){
+		 itData=deprecated_data.begin();
+		 for(; itData < deprecated_data.end(); itData++){
 			 (*itData)->setScaleY(yMaxScale);
 			 (*itData)->normalize();
 		 }
 		repaint(); 
 	}else{
 
-	xAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
-	yAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
+	xAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*deprecated_data.begin())->getScaleX()/(*deprecated_data.begin())->getFPS(),"s");
+	yAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*deprecated_data.begin())->getScaleY(),(*deprecated_data.begin())->getUnit());
 	this->addChild(xAxis);
 	this->addChild(yAxis);
 	}
@@ -326,23 +327,23 @@ std::string Chart::formatNumber( float number )
 
   return s;
 }
-int Chart::getFPS(){
-	if(data.size()>0)
-return (*data.begin())->getFPS();
+int Chart::deprecated_getFPS(){
+	if(deprecated_data.size()>0)
+return (*deprecated_data.begin())->getFPS();
 	else 
 		return 0;
 }
 int Chart::getFrameNumber(){
-	if(data.size()>0)
-return (*data.begin())->getRNumber();
+	if(deprecated_data.size()>0)
+return (*deprecated_data.begin())->getRNumber();
 	else
 		return 0;
 }
 
 void Chart::updatePointer(double targetTime){
-	std::vector<LineChart*>::iterator itPos = dataSeries.begin();
+	std::vector<deprecated_LineChart*>::iterator itPos = deprecated_dataSeries.begin();
 
-  for(; itPos < dataSeries.end(); itPos++)
+  for(; itPos < deprecated_dataSeries.end(); itPos++)
 	  (*itPos)->getPointer()->update(targetTime);
 }
 
@@ -428,8 +429,8 @@ void Chart::repaint(){
 	}else
 		this->removeChild(this->getChildIndex(border));
 	osg::Geode* newGrid=createGrid();
-	osg::Geode* newXAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*data.begin())->getScaleX()/(*data.begin())->getFPS(),"s");
-	osg::Geode* newYAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*data.begin())->getScaleY(),(*data.begin())->getUnit());
+	osg::Geode* newXAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(width-borderSize*2,y+borderSize,0),xNumReps,(*deprecated_data.begin())->getScaleX()/(*deprecated_data.begin())->getFPS(),"s");
+	osg::Geode* newYAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,height-borderSize,0),yNumReps,(*deprecated_data.begin())->getScaleY(),(*deprecated_data.begin())->getUnit());
 
 
 	
@@ -441,11 +442,11 @@ void Chart::repaint(){
 	grid=newGrid;
 	xAxis=newXAxis;
 	yAxis=newYAxis;
-	std::vector<LineChart*>::iterator itPos = dataSeries.begin();
-	std::vector<ChartData*>::iterator dataPos = data.begin();
+	std::vector<deprecated_LineChart*>::iterator itPos = deprecated_dataSeries.begin();
+	std::vector<deprecated_ChartData*>::iterator dataPos = deprecated_data.begin();
 	std::vector<osg::Geode*>::iterator itLabel= mainLabel.begin();
 	std::vector<osg::Geode*> newMainLabel;
-	for(; itPos < dataSeries.end(); itPos++,dataPos++,itLabel++){
+	for(; itPos < deprecated_dataSeries.end(); itPos++,dataPos++,itLabel++){
 	  (*itPos)->repaint((*dataPos),x+borderSize*2,y+borderSize,width-borderSize*2,height-borderSize);
 	  newMainLabel.push_back(createMainLabel((*itPos)->getColor(),(*dataPos)->getName()));
 	  std::vector<osg::Geode*>::iterator itNewLabel= newMainLabel.end()-1;
@@ -498,9 +499,9 @@ return geode;
 
 void Chart::setShowLabel(bool showLabel){
 	this->showLabel=showLabel;
-std::vector<LineChart*>::iterator itPos = dataSeries.begin();
-	std::vector<ChartData*>::iterator dataPos = data.begin();
-	for(; itPos < dataSeries.end(); itPos++,dataPos++){
+    std::vector<deprecated_LineChart*>::iterator itPos = deprecated_dataSeries.begin();
+	std::vector<deprecated_ChartData*>::iterator dataPos = deprecated_data.begin();
+	for(; itPos < deprecated_dataSeries.end(); itPos++,dataPos++){
 		(*itPos)->setShowLabel(showLabel);
 	}
 	repaint();

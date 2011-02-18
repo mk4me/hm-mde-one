@@ -10,16 +10,19 @@ purpose:  Klasa ta zarzadza calym wykresem
 
 #include <osg/Geode>
 #include <osg/Geometry>
+#include <core/C3DChannels.h>
+#include <core/LineChart.h>
 
-class LineChart;
-class ChartData;
+class deprecated_LineChart;
+class deprecated_ChartData;
 
 class Chart : public osg::Group{
 private:
 
 	int x,y,width,height;
-	std::vector<LineChart*> dataSeries;
-	std::vector<ChartData*> data;
+	std::vector<deprecated_LineChart*> deprecated_dataSeries;
+	std::vector<deprecated_ChartData*> deprecated_data;
+    //std::vector<osg::ref_ptr<core::LineChart> > 
 	std::vector<osg::Geode*> mainLabel;
 	void init();
 	//! odleglosc ramki od wykresu
@@ -47,12 +50,13 @@ public:
 	Chart(int x,int y,int width,int height);
 	~Chart();
 	//! dodaje serie danych o zadanym indexie
-	void addChartSeries(ChartData* data,osg::Vec4 color);
-	void addChartPreviewSeries(ChartData* data,osg::Vec4 color);
+	void deprecated_addChartSeries(deprecated_ChartData* data,osg::Vec4 color);
+/*    void addChartSeries(ScalarChannel* data,osg::Vec4 color);*/
+	void deprecated_addChartPreviewSeries(deprecated_ChartData* data,osg::Vec4 color);
 	//! Pobiera calkowita ilosc klatek 
 	int getFrameNumber();
 	//! podbiera ilosc klatek na sekunde
-	int getFPS();
+	int deprecated_getFPS();
 	//! Odswieza polozenie wskaznikow
 	void updatePointer(double targetTime);
 	//! Zaokragla podana liczbe do 2 miejsc po przecinku

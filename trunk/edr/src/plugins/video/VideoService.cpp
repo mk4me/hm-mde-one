@@ -65,11 +65,11 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 
 	VideoWidget* widget = reinterpret_cast<VideoWidget*>(this->widget);
 
-	//std::vector<std::string> files;
-	//if(dataManager->getCurrentLocalTrial().isVideos())
-	//{
-	//	files = dataManager->getCurrentLocalTrial().getVideosPaths();
-	//}
+// 	std::vector<std::string> files;
+// 	if(dataManager->getActualLocalTrial().isVideos())
+// 	{
+// 		files = dataManager->getActualLocalTrial().getVideosPaths();
+// 	}
 	//for(int i = 0; i < dataManager->getVideoFilePathCount(); i++)
 	//{
  //       std::string path =  dataManager->getVideoFilePath(i);
@@ -92,7 +92,20 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
 
     std::vector<IVideoParserPtr> parsers;
     core::queryParsers<IVideoParser>(dataManager, parsers);
-    //widget->init(parsers);
+    widget->init(parsers);
+
+//     ObjectWrapper* myStream;
+// 
+//     auto __streams = core::queryData<vidlib::VideoImageStream>(dataManager);
+//     for (size_t i = 0; i < __streams.size(); ++i) {
+//         const vidlib::VideoImageStream* stream = &*__streams[i];
+//         vidlib::VideoImageStream* cloned = osg::clone( stream, osg::CopyOp::DEEP_COPY_ALL );
+//         
+//         myStream = ObjectWrapper::createWrapper(cloned);
+//     }
+// 
+//     osg::ref_ptr<vidlib::VideoImageStream> cloned = myStream->get<vidlib::VideoImageStream>();
+
 	//widget->init(files);
 
 	ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);

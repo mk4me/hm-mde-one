@@ -28,6 +28,7 @@
 #include <boost/function.hpp>
 #include <boost/foreach.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/filesystem.hpp>
 
 #include <osg/Node>
 #include <osg/AnimationPath>

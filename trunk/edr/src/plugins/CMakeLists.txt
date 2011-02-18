@@ -3,7 +3,7 @@ set(PROJECTS_NAME plugins)
 
 # animation
 # ADD_PROJECT(animation "OSG;QT;corelib")
-ADD_PROJECT(video "OSG;QT;VIDLIB;corelib")
+ADD_PROJECT(video "OSG;QT;VIDLIB;FFMPEG;corelib")
 ADD_PROJECT(timeline "BOOST;QT;corelib")
 ADD_PROJECT(communication "QT;CURL;WSDLPULL;TINYXML;corelib")
 ADD_PROJECT(chart "BOOST;OSG;QT;corelib")

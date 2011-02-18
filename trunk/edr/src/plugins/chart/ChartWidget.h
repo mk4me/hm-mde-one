@@ -17,6 +17,7 @@
 #include <core/MultiView.h>	
 #include <core/QOsgWidgets.h>
 #include "ui_ChartWidget.h"
+#include <core/C3DChannels.h>
 
 class ChartViewer;
 class ChartWidget : public QWidget, public Ui::ChartWidget
@@ -49,6 +50,7 @@ public:
 
 	osg::Node* getSceneRoot();
 	void addChart(C3DChartData* c3dData);
+    void addChart(core::ScalarChannel* channel);
 	void update(double targetTime);
     double getLenght();
 	void clear();

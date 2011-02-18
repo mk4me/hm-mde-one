@@ -10,7 +10,7 @@ purpose:  Klasa ta sluzy do pobierania danych z pliku c3d
 
 #include <core/ChartData.h>
 #include <core/C3D_Data.h>
-class C3DChartData : public ChartData{
+class C3DChartData : public deprecated_ChartData{
 private:
 	void exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd);
 

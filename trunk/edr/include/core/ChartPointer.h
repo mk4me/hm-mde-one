@@ -15,7 +15,7 @@ purpose:  Klasa ta sluzy do rysowania wskaznika do wykresu
 
 #include <osgText/Text>
 
-class ChartData;
+class deprecated_ChartData;
 
 class ChartPointer : public osg::Group{
 private:
@@ -25,13 +25,13 @@ private:
 	osg::ref_ptr<osg::Geode> pointer;
 	osg::ref_ptr<osg::MatrixTransform> trans;
 	osg::ref_ptr<osg::MatrixTransform> labelTrans;
-	ChartData* data;
+	deprecated_ChartData* data;
 	osg::ref_ptr<osgText::Text> text;
 	osg::Geode* createPointer();
 	osg::Geode* createLabelField();
 	bool labelVisable;
 public:
-	ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data,bool labelVisable);
+	ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,deprecated_ChartData* data,bool labelVisable);
 	~ChartPointer();
 
 	void update(double targetTime);

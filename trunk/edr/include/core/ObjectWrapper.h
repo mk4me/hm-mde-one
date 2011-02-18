@@ -11,12 +11,14 @@
 
 #include <string>
 #include <typeinfo>
+#include <boost/any.hpp>
 #include <boost/type_traits.hpp>
 #include <utils/PtrPolicyBoost.h>
 #include <utils/PtrPolicyRaw.h>
 #include <utils/PtrPolicyOSG.h>
 #include <utils/Debug.h>
 #include <core/SmartPtr.h>
+
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -91,13 +93,19 @@ public:
     bool tryGet( typename ObjectWrapperT<T>::Ptr& target, bool exact = false )
     {
         typedef ObjectWrapperT<T> Wrapper;
-        Wrapper* wrapper = dynamic_cast<Wrapper*>(this);
-        if ( !wrapper ) {
-            return false;
+        if ( exact ) {
+            if ( compare(getTypeInfo(), typeid(T)) ) {
+                target = static_cast<Wrapper*>(this)->get();
+                return true;
+            }
         } else {
-            target = wrapper->get();
-            return true;
+            Wrapper* wrapper = dynamic_cast<Wrapper*>(this);
+            if ( wrapper ) {
+                target = wrapper->get();
+                return true;
+            }
         }
+        return false;
     }
 
     //! \param dummy Pozostawiæ pusty.
@@ -137,6 +145,17 @@ public:
 
     //! \return Informacje o typie.
     virtual const std::type_info& getTypeInfo() const = 0;
+
+private:
+    static inline bool compare(const std::type_info& t1, const std::type_info& t2)
+    {
+        // tutaj u¿ywamy sta³ej z boost/any - pozwala okreœliæ, czy lepiej porównywaæ po nazwie, czy po adresie
+#ifdef BOOST_AUX_ANY_TYPE_ID_NAME
+        return std::strcmp(t1.name(), t2.name()) == 0;
+#else
+        return t1 == t2;
+#endif
+    }
 };
 
 typedef shared_ptr<ObjectWrapper> ObjectWrapperPtr;

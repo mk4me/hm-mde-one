@@ -15,7 +15,7 @@ VideoParser::~VideoParser()
 
 void VideoParser::parse()
 {
-    UTILS_ASSERT(stream != NULL);
+    UTILS_ASSERT(stream == nullptr);
     osg::Image* image = osgDB::readImageFile(path.string());
     stream = dynamic_cast<VideoImageStream*>(image);
     if (!stream) {

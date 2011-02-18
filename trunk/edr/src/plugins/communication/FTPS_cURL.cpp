@@ -132,7 +132,7 @@ void FTPS_cURL::get(const std::string& filename)
             {
                 fclose(ftpfile.stream);
             }
-            Filesystem::deleteFile(temp);
+            core::Filesystem::deleteFile(temp);
         }
         throw std::runtime_error(curl_easy_strerror(this->res));
     }

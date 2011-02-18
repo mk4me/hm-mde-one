@@ -17,9 +17,9 @@ class C3D_Data;
 class c3dParser;
 
 
-class ChartData {
+class deprecated_ChartData {
 public:
-	~ChartData();
+	~deprecated_ChartData();
 	float getValue(int frame);
 	float getNormalizedXValue(int frame);
 	float getNormalizedYValue(int frame);

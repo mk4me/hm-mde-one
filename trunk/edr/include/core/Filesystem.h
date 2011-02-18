@@ -8,8 +8,15 @@
 #include <vector>
 #include <string>
 
-struct Filesystem
+////////////////////////////////////////////////////////////////////////////////
+namespace core {
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+class Filesystem
 {
+public:
 	/*
 	Tworzy foldery z podanej œcie¿ki.
 	@param path œcie¿ka z której maj¹ byæ utworzone foldery
@@ -54,5 +61,14 @@ struct Filesystem
 	@return lista wszystkich podfolderów wraz ze œcie¿k¹
 	*/
 	static std::vector<std::string> listSubdirectories(const std::string& path);
+
+private:
+    //! Prywatny konstruktor uniemo¿liwiaj¹cy tworzenie instancji typu.
+    Filesystem() {}
 };
+
+////////////////////////////////////////////////////////////////////////////////
+} // namespace core
+////////////////////////////////////////////////////////////////////////////////
+
 #endif

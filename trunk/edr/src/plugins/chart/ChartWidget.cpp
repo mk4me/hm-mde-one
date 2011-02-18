@@ -68,17 +68,33 @@ void ChartWidget::addChart(C3DChartData* c3dData){
 	if(c3dData->getRNumber()>0){
 	item.push_back(new Chart(40,40,500,250));
 	itItem= item.end()-1;
-	(*itItem)->addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+	(*itItem)->deprecated_addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
     (*itItem)->setShowLabel(false);
     (*itItem)->setShowBorder(false);
 	multiView->addChild(*itItem);
 	previewItem.push_back(new Chart(40,40,500,250));
 	itPItem= previewItem.end()-1;
-	(*itPItem)->addChartPreviewSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+	(*itPItem)->deprecated_addChartPreviewSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
 	multiView->addChild((*itPItem));
 	multiView->addItem(new core::MultiViewChartItem(*itItem,multiView),new core::MultiViewChartItem((*itPItem),multiView));
 	}
 }
+
+// void ChartWidget::addChart( core::ScalarChannel* channel )
+// {
+//     item.push_back( new Chart(40, 40, 500, 250) );
+//     itItem = item.end() - 1;
+//     (*itItem)->addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+//     (*itItem)->setShowLabel(false);
+//     (*itItem)->setShowBorder(false);
+//     multiView->addChild(*itItem);
+//     previewItem.push_back(new Chart(40,40,500,250));
+//     itPItem= previewItem.end()-1;
+//     (*itPItem)->addChartPreviewSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+//     multiView->addChild((*itPItem));
+//     multiView->addItem(new core::MultiViewChartItem(*itItem,multiView),new core::MultiViewChartItem((*itPItem),multiView));
+// 
+// }
 
 void ChartWidget::update(double targetTime){
 	if(item.size()>0){
@@ -95,7 +111,7 @@ void ChartWidget::update(double targetTime){
 double ChartWidget::getLenght(){
 	if(item.size()>0){
 	itItem=item.begin();
-	return (double)(*itItem)->getFrameNumber()/(double)(*itItem)->getFPS();}
+	return (double)(*itItem)->getFrameNumber()/(double)(*itItem)->deprecated_getFPS();}
 	else
 		return 0;
 }

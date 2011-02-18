@@ -4,7 +4,7 @@
 
 #include <core/ChartData.h>
 
-ChartPointer::ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,ChartData* data,bool labelVisable){
+ChartPointer::ChartPointer(osg::Vec3 startPoint,osg::Vec3 endPoint,deprecated_ChartData* data,bool labelVisable){
 	this->startPoint=startPoint;
 	this->endPoint=endPoint;
 	this->data=data;
