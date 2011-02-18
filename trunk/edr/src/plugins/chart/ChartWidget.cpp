@@ -111,7 +111,7 @@ void ChartWidget::update(double targetTime){
 double ChartWidget::getLenght(){
 	if(item.size()>0){
 	itItem=item.begin();
-	return (double)(*itItem)->getFrameNumber()/(double)(*itItem)->deprecated_getFPS();}
+	return (double)(*itItem)->deprecated_getFrameNumber()/(double)(*itItem)->deprecated_getFPS();}
 	else
 		return 0;
 }

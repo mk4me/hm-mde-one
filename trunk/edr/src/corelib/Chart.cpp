@@ -333,7 +333,7 @@ return (*deprecated_data.begin())->getFPS();
 	else 
 		return 0;
 }
-int Chart::getFrameNumber(){
+int Chart::deprecated_getFrameNumber(){
 	if(deprecated_data.size()>0)
 return (*deprecated_data.begin())->getRNumber();
 	else

@@ -54,7 +54,7 @@ public:
 /*    void addChartSeries(ScalarChannel* data,osg::Vec4 color);*/
 	void deprecated_addChartPreviewSeries(deprecated_ChartData* data,osg::Vec4 color);
 	//! Pobiera calkowita ilosc klatek 
-	int getFrameNumber();
+	int deprecated_getFrameNumber();
 	//! podbiera ilosc klatek na sekunde
 	int deprecated_getFPS();
 	//! Odswieza polozenie wskaznikow
