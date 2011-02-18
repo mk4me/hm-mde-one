@@ -140,7 +140,7 @@ AsyncResult GRFService::loadData(IServiceManager* serviceManager, IDataManager* 
         widget->clear();
         C3D_Data* c3d = parser->getC3dData();
         for(int i=0;i<12;i++){
-            widget->addChart(new C3DChartData(c3d,i));
+            widget->deprecated_addChart(new C3DChartData(c3d,i));
         }
         length=widget->getLenght() ;
     }
