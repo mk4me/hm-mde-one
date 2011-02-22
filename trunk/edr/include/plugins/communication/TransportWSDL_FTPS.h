@@ -4,8 +4,8 @@
 Klasa implementuje interfejs ITransportable.
 */
 
-#ifndef _TRANSPORTWSDL_FTPS_H_
-#define _TRANSPORTWSDL_FTPS_H_
+#ifndef HEADER_GUARD_COMMUNICATION_TRANSPORTWSDL_FTPS_H__
+#define HEADER_GUARD_COMMUNICATION_TRANSPORTWSDL_FTPS_H__
 
 #include "FileStoremanService.h"
 #include "ITransportable.h"

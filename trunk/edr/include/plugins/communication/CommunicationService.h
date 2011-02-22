@@ -6,8 +6,8 @@ ca³ego serwisu korzystaj¹cego z MVC. Dostarcza widoku do³¹czanego jako dokowany 
 implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
 */
 
-#ifndef COMMUNICATION_SERVICE_H
-#define COMMUNICATION_SERVICE_H
+#ifndef HEADER_GUARD_COMMUNICATION_COMMUNICATIONSERVICE_H__
+#define HEADER_GUARD_COMMUNICATION_COMMUNICATIONSERVICE_H__
 
 #include <core/IService.h>
 #include <plugins/communication/ICommunication.h>

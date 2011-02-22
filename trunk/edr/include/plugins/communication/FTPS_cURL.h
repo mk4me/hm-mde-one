@@ -5,8 +5,8 @@ zosta³y zaimplementowane w sposób zapobiegaj¹cy blokowania siê nawzajem klienta 
 interfejs ISendable.
 */
 
-#ifndef _FTPS_CURL_H_
-#define _FTPS_CURL_H_
+#ifndef HEADER_GUARD_COMMUNICATION_FTPS_CURL_H__
+#define HEADER_GUARD_COMMUNICATION_FTPS_CURL_H__
 
 #include "IFTP.h"
 

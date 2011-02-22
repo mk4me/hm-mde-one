@@ -5,8 +5,8 @@ z baz¹ danych i przesy³ania/odbierania plików miêdzy serwerem i klientem. Obecni
 i web serwisy wsdl.
 */
 
-#ifndef _COMMUNICATIONMANAGER_H_
-#define _COMMUNICATIONMANAGER_H_
+#ifndef HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
+#define HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
 
 #include <tinyxml.h>
 #include <OpenThreads/Thread>

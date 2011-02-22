@@ -3,8 +3,8 @@
 @brief Klasa QueryWSDL implementuje funkcjonalnoœæ interfejsu IQueryable przy pomocy web serwisów.
 */
 
-#ifndef _QUERYWSDL_H_
-#define _QUERYWSDL_H_
+#ifndef HEADER_GUARD_COMMUNICATION_QUERYWSDL_H__
+#define HEADER_GUARD_COMMUNICATION_QUERYWSDL_H__
 
 #include "IQueryable.h"
 #include "BasicQueriesService.h"

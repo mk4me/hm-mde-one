@@ -1,5 +1,5 @@
-#ifndef TEXTPARSER_H
-#define TEXTPARSER_H
+#ifndef HEADER_GUARD_COMMUNICATION_TEXTPARSER_H__
+#define HEADER_GUARD_COMMUNICATION_TEXTPARSER_H__
 
 #include <core/IParser.h>
 
@@ -13,17 +13,7 @@ public:
 
     virtual ~TextParser();
     
-    virtual void setPath(const boost::filesystem::path& path)
-    {
-        this->path = path;
-    };
-
-    virtual bool isParsed()
-    {
-        return parsed;
-    };
-
-    virtual void parse();
+    virtual void parseFile(const boost::filesystem::path& path);
 
     virtual IParser* create();
 
@@ -38,6 +28,5 @@ private:
     std::ifstream textFile;
     boost::filesystem::path path;
     core::ObjectWrapperPtr object;
-    bool parsed;
 };
 #endif

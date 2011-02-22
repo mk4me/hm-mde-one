@@ -21,8 +21,6 @@ private:
     boost::filesystem::path path;
     //! Obiekt wewnêtrzny.
     core::ObjectWrapperPtr object;
-    //! czy juz u¿yto metody parse
-    bool parsed;
 
 public:
     VideoParser();
@@ -30,20 +28,10 @@ public:
 
 // IParser
 public:
-    virtual void parse();
+    virtual void parseFile(const boost::filesystem::path& path);
     virtual core::IParser* create();
     virtual std::string getSupportedExtensions() const;
     virtual core::ObjectWrapperPtr getObject();
-
-    virtual void setPath(const boost::filesystem::path& path)
-    {
-        this->path = path;
-    };
-
-    virtual bool isParsed()
-    {
-        return parsed;
-    };
 
 // IVideoParser
 public:

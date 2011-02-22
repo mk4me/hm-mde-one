@@ -3,8 +3,8 @@
 @brief Interfejs IAuthenticable dodaje funkcjonalnoœæ autentykacji.
 */
 
-#ifndef _IAUTHENTICABLE_H_
-#define _IAUTHENTICABLE_H_
+#ifndef HEADER_GUARD_COMMUNICATION_IAUTHENTICABLE_H__
+#define HEADER_GUARD_COMMUNICATION_IAUTHENTICABLE_H__
 
 namespace communication
 {

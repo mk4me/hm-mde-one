@@ -4,8 +4,8 @@
 protoko³u FTP.
 */
 
-#ifndef _IFTP_H_
-#define _IFTP_H_
+#ifndef HEADER_GUARD_COMMUNICATION_IFTP_H__
+#define HEADER_GUARD_COMMUNICATION_IFTP_H__
 
 #include "ISendable.h"
 

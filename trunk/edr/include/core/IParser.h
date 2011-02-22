@@ -1,5 +1,5 @@
-#ifndef IPARSER_H
-#define IPARSER_H
+#ifndef HEADER_GUARD_CORE_IPARSER_H__
+#define HEADER_GUARD_CORE_IPARSER_H__
 
 #include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
@@ -23,14 +23,9 @@ namespace core
         virtual ~IParser() {}
         
         //! Przyporz¹dkowanie parsera do konkretnego pliku.
-        //! \param path Œcie¿ka do pliku.
-        virtual void setPath(const boost::filesystem::path& path) = 0;
-        
         //! Na ka¿dej instancji parsera ta metoda wywo³ywana jest maksymalnie jeden raz.
-        virtual void parse() = 0;
-
-        //! \return Informacja czy parser ju¿ zosta³ zainicjalizowany.
-        virtual bool isParsed() = 0;
+        //! \param path Œcie¿ka do pliku.
+        virtual void parseFile(const boost::filesystem::path& path) = 0;
 
         //! \return Instancja tego samego typu.
         virtual IParser* create() = 0;

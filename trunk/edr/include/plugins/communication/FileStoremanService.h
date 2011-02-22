@@ -3,8 +3,8 @@
 @brief Klasa FileStoremanService dziedzicz¹ca po WSDL_Wsdlpull wykonuj¹ca operacje dokumentu FileStoremanService.wsdl.
 */
 
-#ifndef _FILESTOREMANSERVICE_H_
-#define _FILESTOREMANSERVICE_H_
+#ifndef HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__
+#define HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__
 
 #include "WSDL_Wsdlpull.h"
 #include "ITransportable.h"

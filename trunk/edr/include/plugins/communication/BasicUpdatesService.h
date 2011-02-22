@@ -3,8 +3,8 @@
 @brief Klasa BasicUpdatesService dziedzicz¹ca po WSDL_Wsdlpull wykonuj¹ca operacje dokumentu BasicUpdatesService.wsdl.
 */
 
-#ifndef _BASICUPDATESSERVICE_H_
-#define _BASICUPDATESSERVICE_H_
+#ifndef HEADER_GUARD_COMMUNICATION_BASICUPDATESSERVICE_H__
+#define HEADER_GUARD_COMMUNICATION_BASICUPDATESSERVICE_H__
 
 #include "WSDL_Wsdlpull.h"
 #include "Entity.h"

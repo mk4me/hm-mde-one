@@ -1,5 +1,5 @@
-#ifndef C3DPARSER_H
-#define C3DPARSER_H
+#ifndef HEADER_GUARD_CORE_C3DPARSER_H__
+#define HEADER_GUARD_CORE_C3DPARSER_H__
 
 #include <core/IParser.h>
 #include <core/c3dParser.h>
@@ -15,17 +15,7 @@ public:
 
     virtual ~C3DParser();
     
-    virtual void setPath(const boost::filesystem::path& path)
-    {
-        this->path = path;
-    };
-
-    virtual bool isParsed()
-    {
-        return parsed;
-    };
-
-    virtual void parse();
+    virtual void parseFile(const boost::filesystem::path& path);
 
     virtual core::IParser* create();
 
@@ -36,7 +26,6 @@ public:
     C3D_Data* getC3dData();
 
 private:
-    bool parsed;
     boost::filesystem::path path;
     core::ObjectWrapperPtr object;
 };

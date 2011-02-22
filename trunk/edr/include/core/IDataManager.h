@@ -1,5 +1,5 @@
-#ifndef I_DATA_MANAGER_H
-#define I_DATA_MANAGER_H
+#ifndef HEADER_GUARD_CORE_IDATAMANAGER_H__
+#define HEADER_GUARD_CORE_IDATAMANAGER_H__
 
 #include <core/IParser.h>
 #include <vector>

@@ -5,8 +5,8 @@ mo¿liwe jest pobieranie informacji o próbach pomiarowych przechowywanych na serw
 na lokaln¹ maszyne.
 */
 
-#ifndef ICOMMUNICATION_H
-#define ICOMMUNICATION_H
+#ifndef HEADER_GUARD_COMMUNICATION_ICOMMUNICATION_H__
+#define HEADER_GUARD_COMMUNICATION_ICOMMUNICATION_H__
 
 #include <core/IDataManager.h>
 

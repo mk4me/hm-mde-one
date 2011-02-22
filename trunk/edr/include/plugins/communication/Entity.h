@@ -10,8 +10,8 @@
 //<xsd:enumeration value="measurement_conf"/>
 //<xsd:enumeration value=" measurement"/>
 //<xsd:enumeration value=" file"/>
-#ifndef _ENTITY_H_
-#define _ENTITY_H_
+#ifndef HEADER_GUARD_COMMUNICATION_ENTITY_H__
+#define HEADER_GUARD_COMMUNICATION_ENTITY_H__
 
 #include <core/DateTime.h>
 

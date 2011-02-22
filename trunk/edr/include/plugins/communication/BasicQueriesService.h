@@ -3,8 +3,8 @@
 @brief Klasa BasicQueriesService dziedzicz¹ca po WSDL_Wsdlpull wykonuj¹ca operacje dokumentu BasicQueriesService.wsdl.
 */
 
-#ifndef _BASICQUERIESSERVICE_H_
-#define _BASICQUERIESSERVICE_H_
+#ifndef HEADER_GUARD_COMMUNICATION_BASICQUERIESSERVICE_H__
+#define HEADER_GUARD_COMMUNICATION_BASICQUERIESSERVICE_H__
 
 #include "WSDL_Wsdlpull.h"
 #include "Entity.h"

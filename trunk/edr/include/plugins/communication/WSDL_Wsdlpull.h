@@ -3,8 +3,8 @@
 @brief Klasa WSDL_Wsdlpull implementuje technologiê WSDL przy pomocy biblioteki wsdlpull.
 */
 
-#ifndef _WSDL_WSDLPULL_H_
-#define _WSDL_WSDLPULL_H_
+#ifndef HEADER_GUARD_COMMUNICATION_WSDL_WSDLPULL_H__
+#define HEADER_GUARD_COMMUNICATION_WSDL_WSDLPULL_H__
 
 #include "IAuthenticable.h"
 

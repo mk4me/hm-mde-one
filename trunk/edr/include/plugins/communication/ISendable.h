@@ -3,8 +3,8 @@
 @brief Interfejs ISendable przykrywa uslugi do wysylania i pobierania danych wraz z autentykacja.
 */
 
-#ifndef _ISENDABLE_H_
-#define _ISENDABLE_H_
+#ifndef HEADER_GUARD_COMMUNICATION_ISENDABLE_H__
+#define HEADER_GUARD_COMMUNICATION_ISENDABLE_H__
 
 #include "IAuthenticable.h"
 

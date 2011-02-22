@@ -3,8 +3,8 @@
 @brief Interfejs IQueryable przykrywa uslugi do odpytywania bazy danych.
 */
 
-#ifndef _IQUERYABLE_H_
-#define _IQUERYABLE_H_
+#ifndef HEADER_GUARD_COMMUNICATION_IQUERYABLE_H__
+#define HEADER_GUARD_COMMUNICATION_IQUERYABLE_H__
 
 #include "Entity.h"
 

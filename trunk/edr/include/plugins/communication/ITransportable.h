@@ -3,8 +3,8 @@
 @brief Interfejs ITransportable przykrywa uslugi do wysylania i pobierania danych.
 */
 
-#ifndef _ITRANSPORTABLE_H_
-#define _ITRANSPORTABLE_H_
+#ifndef HEADER_GUARD_COMMUNICATION_ITRANSPORTABLE_H__
+#define HEADER_GUARD_COMMUNICATION_ITRANSPORTABLE_H__
 
 namespace communication
 {

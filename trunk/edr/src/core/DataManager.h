@@ -4,8 +4,8 @@
 konfiguracyjne i próby pomiarowe. Zasoby ³adowane s¹ z odpowiednich œcie¿ek, domyœlnie zasoby sta³e powinny znajdowaæ siê w
 data/resources, próby pomiarowe s¹ wyszukiwane i pobierane do data/trials.
 */
-#ifndef DATA_MANAGER_H
-#define DATA_MANAGER_H
+#ifndef HEADER_GUARD_CORE_DATAMANAGER_H__
+#define HEADER_GUARD_CORE_DATAMANAGER_H__
 
 #include <core/IDataManager.h>
 #include <core/IParser.h>
@@ -51,10 +51,14 @@ public:
     typedef std::multimap<std::string, core::IParserPtr> ParsersMultimap;
     //! Sekwencja parserów.
     typedef std::vector<core::IParserPtr> ParsersList;
+    //! Sekwencja parserów.
+    typedef std::vector<std::pair<IDataManager::Path, core::IParserPtr>> ParsersPathList;
     //! S³ownik lokalnych prób pomiarowych wed³ug œcie¿ek.
     typedef std::map<IDataManager::Path, LocalTrial> LocalTrialsMap;
     //! Sekwencja lokalnych prób pomiarowych.
     typedef std::vector<LocalTrial> LocalTrialsList;
+
+    typedef std::map<IDataManager::Path, bool> ParsedFilesMap;
     //------------------------------------------------------------------------------------------------------------------------------
 private:
     //! S³owniki parserów niezainicjalizowanych.
@@ -66,7 +70,9 @@ private:
     //! S³ownik parserów aktualnie zainicjalizowanych.
     ParsersMap currentParsersFilepathMap;
     //! Sekwencja parserów aktualnie zainicjalizowanych.
-    ParsersList currentParsersList;
+    ParsersPathList currentParsersList;
+    //! S³ownik przeparsowanych plików.
+    ParsedFilesMap parsedFilesMap;
 
     //! Sekwencja parserów aktualnej próby pomiarowej.
     ParsersList currentTrialParsersList;
