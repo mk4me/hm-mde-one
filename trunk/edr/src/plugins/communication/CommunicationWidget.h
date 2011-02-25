@@ -36,7 +36,7 @@ struct EntityTrialItem : public QListWidgetItem
 
 struct LocalTrialItem : public QListWidgetItem
 {
-    IDataManager::LocalTrial localTrial;
+    core::IDataManager::LocalTrial localTrial;
     std::string name;
 public:
     LocalTrialItem()
@@ -90,7 +90,7 @@ public:
     £aduje wybran¹ próbê pomiarow¹ do edytora EDR.
     @param localTrial lokalna próba pomiarowa do za³adowania
     */
-    void loadTrial(const IDataManager::LocalTrial& localTrial);
+    void loadTrial(const core::IDataManager::LocalTrial& localTrial);
     /**
     Aktualizuje informacje o próbach pomiarowych.
     */
@@ -134,7 +134,7 @@ private:
     /**
     Kopia prób pomiarowych znajduj¹cych siê lokalnie.
     */
-    std::vector<IDataManager::LocalTrial> localTrials;
+    std::vector<core::IDataManager::LocalTrial> localTrials;
     /**
     Informacja wykorzystywana przy etykietach.
     */

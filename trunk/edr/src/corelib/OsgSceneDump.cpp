@@ -28,7 +28,13 @@ void OsgSceneDumpString::apply( osg::Geode& geode )
 
     increaseIdent();
     for (unsigned i = 0; i < geode.getNumDrawables(); ++i) {
-        apply( *geode.getDrawable(i) );
+        osg::Drawable* drawable = geode.getDrawable(i);
+        osg::Geometry* geometry = drawable->asGeometry();
+        if ( geometry ) {
+            apply(*geometry);
+        } else {
+            apply(*drawable);
+        }
     }
     decreaseIdent();
 
@@ -38,6 +44,11 @@ void OsgSceneDumpString::apply( osg::Geode& geode )
 void OsgSceneDumpString::apply( osg::Drawable& drawable )
 {
     log(drawable, drawable.getStateSet());
+}
+
+void OsgSceneDumpString::apply( osg::Geometry& geometry )
+{
+    log(geometry, geometry.getStateSet());
 }
 
 void OsgSceneDumpString::log( osg::Object& object, osg::StateSet* stateset )
@@ -104,7 +115,13 @@ void OsgSceneDumpQtTree::apply( osg::Geode& geode )
     QTreeWidgetItem* prevParent = currentParent;
     currentParent = createItem(geode, geode.getStateSet());
     for (unsigned i = 0; i < geode.getNumDrawables(); ++i) {
-        apply( *geode.getDrawable(i) );
+        osg::Drawable* drawable = geode.getDrawable(i);
+        osg::Geometry* geometry = drawable->asGeometry();
+        if ( geometry ) {
+            apply(*geometry);
+        } else {
+            apply(*drawable);
+        }
     }
     currentParent = prevParent;
     traverse(geode);
@@ -114,6 +131,18 @@ void OsgSceneDumpQtTree::apply( osg::Geode& geode )
 void OsgSceneDumpQtTree::apply( osg::Drawable& drawable )
 {
     createItem(drawable, drawable.getStateSet());
+}
+
+void OsgSceneDumpQtTree::apply( osg::Geometry& geometry )
+{
+    QTreeWidgetItem* prevParent = currentParent;
+    currentParent = createItem(geometry, geometry.getStateSet());
+    osg::Array* vertexArray = geometry.getVertexArray();
+    if ( vertexArray ) {
+        vertexArray->setName( boost::lexical_cast<std::string>(vertexArray->getNumElements()) );
+        createItem(*vertexArray, nullptr);
+    }
+    currentParent = prevParent;
 }
 
 QTreeWidgetItem* OsgSceneDumpQtTree::createItem( osg::Object& object, osg::StateSet* stateset )

@@ -62,7 +62,7 @@ void ServiceManager::computePass()
     }
 }
 
-void ServiceManager::loadDataPass(IDataManager* dataManager)
+void ServiceManager::loadDataPass(core::IDataManager* dataManager)
 {
     //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
     ServicesMap::iterator it = servicesMap.begin();  

@@ -12,7 +12,12 @@
 #include <boost/foreach.hpp>
 #include <core/Log.h>
 
+#include <core/C3D_Data.h>
+#include <core/C3DParserEx.h>
+
 //M_DECLARED_CLASS(VideoService, )
+
+using namespace core;
 
 
 VideoService::VideoService()
@@ -59,7 +64,7 @@ VideoService::VideoService()
     widget->actionFormatYUV->setChecked(true);
 }
 
-AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
+AsyncResult VideoService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
 
 
@@ -90,9 +95,17 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, IDataManager
     widget->setYuvImageSizeName("texture_size");
     widget->setYuvSamplerName("movie_texture");
 
-    std::vector<IVideoParserPtr> parsers;
-    core::queryParsers<IVideoParser>(dataManager, parsers);
-    widget->init(parsers);
+    std::vector< osg::ref_ptr<vidlib::VideoImageStream> > images;
+    core::queryData<vidlib::VideoImageStream>(dataManager, images);
+    widget->init(images);
+
+//     std::vector<IVideoParserPtr> parsers;
+//     core::queryParsers<IVideoParser>(dataManager, parsers);
+//     widget->init(parsers);
+
+//     std::vector< osg::ref_ptr<vidlib::VideoImageStream> > objects;
+//     core::queryData< vidlib::VideoImageStream >(dataManager, objects);
+
 
 //     ObjectWrapper* myStream;
 // 
@@ -196,7 +209,7 @@ osg::Node* VideoService::debugGetLocalSceneRoot()
     return widget->getViewer()->getSceneData();
 }
 
-AsyncResult VideoService::init( IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer )
+AsyncResult VideoService::init( IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer )
 {
     widget->getViewer()->onInit(viewer);
     //widget->getViewer()->init();

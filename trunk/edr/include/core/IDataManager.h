@@ -4,6 +4,12 @@
 #include <core/IParser.h>
 #include <vector>
 #include <boost/filesystem.hpp>
+#include <boost/type_traits.hpp>
+#include <utils/Utils.h>
+
+////////////////////////////////////////////////////////////////////////////////
+namespace core {
+////////////////////////////////////////////////////////////////////////////////
 
 class IDataManager
 {
@@ -44,19 +50,27 @@ public:
     //! \return œcie¿ka do katalogu z próbami pomiarowymi
 	virtual const Path& getTrialsPath() const = 0;
 
-    //! Rejestruje zadany parser.
-    //! \param parser Parser do rejestracji.
-    virtual void registerParser(core::IParserPtr parser) = 0;
-
     //! \return Liczba parserów.
-    virtual int getNumParsers() const = 0;
-
+    UTILS_DEPRECATED(virtual int getNumParsers() const = 0);
     //! \param idx Indeks parsera.
-    //! \return Parser o zadanym indeksie.
-	virtual core::IParserPtr getParser(int idx) = 0;
-    //! \param filename nazwa pliku parsera.
-    //! \return Odnaleziony parser b¹dŸ NULL.
-    virtual core::IParserPtr getParser(const std::string& filename) = 0;
+    //! \return Parser o zadanym indeksie. Zainicjowany b¹dŸ nie.
+	UTILS_DEPRECATED(virtual core::IParserPtr getParser(int idx) = 0);
+    //! \return Zainicjowany parser o indeksie idx.
+    UTILS_DEPRECATED(virtual core::IParserPtr getInitializedParser(int idx) = 0);
+    //! \param filename nazwa pliku parsera. 
+    //! \return Odnaleziony parser (zainicjowany b¹dŸ nie) b¹dŸ NULL.
+    UTILS_DEPRECATED(virtual core::IParserPtr getParser(const std::string& filename) = 0);
+    //! \param filename nazwa pliku parsera. 
+    //! \return Odnaleziony parser (zainicjowany b¹dŸ nie) b¹dŸ NULL.
+    UTILS_DEPRECATED(virtual core::IParserPtr getInitializedParser(const std::string& filename) = 0);
+
+    //! \param type Typ obiektu który chcemy wyszukaæ.
+    //! \param exact Czy wyszukiwaæ te¿ typy pochodne?
+    //! \return Lista obiektów wype³niaj¹cych zadane kryterium.
+    virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact = false) = 0;
+
+    //! \return Czy zadane rozszerzenie jest wspierane?
+    virtual bool isExtensionSupported(const std::string& extension) const = 0;
     
     //! Liczba prób pomiarowych w zasobach
 	virtual int getLocalTrialsCount() const = 0;
@@ -65,15 +79,11 @@ public:
     //! \param path Za³aduj próbê pomiarow¹ z podanej œcie¿ki.
     virtual void loadLocalTrial(const Path& path) = 0;
 };
-
-////////////////////////////////////////////////////////////////////////////////
-namespace core {
-////////////////////////////////////////////////////////////////////////////////
     
     //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
-    shared_ptr<T> queryParsers(IDataManager* manager, T* dummy = NULL)
+    UTILS_DEPRECATED(shared_ptr<T> queryParsers(core::IDataManager* manager, T* dummy = NULL))
     {
         std::vector<shared_ptr<T> > result;
         queryParsers(manager, result);
@@ -88,46 +98,49 @@ namespace core {
     //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
-    shared_ptr<T> queryParsers(IDataManager* manager, const std::string& filename)
-    {
-        return manager->getParser(filename);
-    }
-    
-    //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
-    //! dany interfejs).
-    template <class T>
-    void queryParsers(IDataManager* manager, std::vector<shared_ptr<T>>& target)
+    UTILS_DEPRECATED(void queryParsers(core::IDataManager* manager, std::vector<shared_ptr<T>>& target))
     {
         for ( int i = 0; i < manager->getNumParsers(); ++i ) {
             IParserPtr parser = manager->getParser(i);
             shared_ptr<T> casted = dynamic_pointer_cast<T>(parser);
             if ( casted ) {
-                target.push_back(casted);
+                parser = manager->getInitializedParser(i);
+                casted = dynamic_pointer_cast<T>(parser);
+                if ( casted ) {
+                    target.push_back(casted);
+                }
             }
         }
     }
 
-    //! Metoda wyszukuj¹ca wszystkie dane okreœlonego typu.
-    template <class T>
-    void queryData(IDataManager* manager, std::vector< typename ObjectWrapperT<T>::Ptr >& target, bool exact = false )
+    //! \param manager Data manager.
+    //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
+    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
+    //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
+    template <class T, class U>
+    inline void queryData(IDataManager* manager, std::vector<U>& target, bool exact = false)
     {
-        for ( int i = 0; i < manager->getNumParsers(); ++i ) {
-            IParserPtr parser = manager->getParser(i);
-            ObjectWrapperPtr object = parser->getObject();
-            typename ObjectWrapperT<T>::Ptr ptr;
-            if ( object->tryGet<T>(ptr, exact) ) {
-                target.push_back(ptr);
-            }
+        __queryData<T, U>(manager, target, exact, boost::is_convertible<U, typename ObjectWrapperT<T>::Ptr>());
+    }
+
+    //! Przekierowanie z queryData dla poprawnych danych.
+    template <class T, class U>
+    void __queryData(IDataManager* manager, std::vector<U>& target, bool exact, boost::true_type)
+    {
+        // pobieramy wrappery
+        std::vector<ObjectWrapperPtr> objects;
+        manager->getObjects(objects, typeid(T), exact);
+        // wyci¹gamy obiekty z wrapperów
+        for ( auto it = objects.begin(), last = objects.end(); it != last; ++it ) {
+            target.push_back( (*it)->get<T>() );
         }
     }
 
-    //! Metoda wyszukuj¹ca wszystkie dane okreœlonego typu.
-    template <class T>
-    std::vector< typename ObjectWrapperT<T>::Ptr > queryData(IDataManager* manager, bool exact = false )
+    //! Przekierowanie z queryData dla niepoprawnych danych.
+    template <class T, class U>
+    void __queryData(IDataManager*, std::vector<U>&, bool, boost::false_type)
     {
-        std::vector< typename ObjectWrapperT<T>::Ptr > result;
-        queryData<T>(manager, result, exact);
-        return result;
+        UTILS_STATIC_ASSERT( false, "Niewlasciwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
     }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -7,6 +7,7 @@
 #include <core/SmartPtr.h>
 #include <osg/Node>
 #include <osgViewer/CompositeViewer>
+#include <core/IDataManager.h>
 
 enum AsyncResult
 {
@@ -15,7 +16,6 @@ enum AsyncResult
     AsyncResult_Complete,
 };
 
-class IDataManager;
 class IServiceManager;
 
 class IService : public IIdentifiable
@@ -32,13 +32,13 @@ public:
     //! \param serviceManager Manager us³ug.
     //! \param root Korzeñ wspólnej sceny 3D.
 	//! \param dataManager Manager zasobów.
-    virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
     {
         return AsyncResult_Complete;
     }
 
     //! £aduje 
-    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager)
+    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
     {
         return AsyncResult_Complete;
     }

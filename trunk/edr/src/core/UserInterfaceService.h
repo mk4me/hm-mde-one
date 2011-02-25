@@ -20,7 +20,7 @@ public:
 // IService
 public:
     virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot);
-    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
     virtual AsyncResult update(double time, double timeDelta);
     virtual AsyncResult lateUpdate(double time, double timeDelta);
     virtual AsyncResult compute();

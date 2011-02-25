@@ -45,18 +45,17 @@ void C3DChartData::exportAnalogChannel(int numberOfChannel, C3D_Data* c3dd)
 				xData.push_back(counter);
 				yData.push_back(result[counter-1]);
 
-
 			}
 
 		}
-		GroupData* gData = c3dd->getParameters()->getGroupsByName()["ANALOG"];
+		GroupData* gData = c3dd->getParameters()->getGroup("ANALOG");
 
 
-        setName( boost::trim_copy(gData->getParameterByName()["LABELS"]->getDataAsStringsArray(numberOfChannel)) );
-		setScale(gData->getParameterByName()["SCALE"]->getDataAsFloatArray()[numberOfChannel]);
-		setOffset(gData->getParameterByName()["OFFSET"]->getDataAsFloatArray()[numberOfChannel]);
-		setDescription(gData->getParameterByName()["DESCRIPTIONS"]->getDataAsStringsArray(numberOfChannel));
-		setUnit(gData->getParameterByName()["UNITS"]->getDataAsStringsArray(numberOfChannel));
+        setName(boost::trim_copy(gData->getParameter("LABELS")->getDataAsStringsArray(numberOfChannel)));
+		setScale(gData->getParameter("SCALE")->getDataAsFloatArray()[numberOfChannel]);
+		setOffset(gData->getParameter("OFFSET")->getDataAsFloatArray()[numberOfChannel]);
+		setDescription(gData->getParameter("DESCRIPTIONS")->getDataAsStringsArray(numberOfChannel));
+		setUnit(gData->getParameter("UNITS")->getDataAsStringsArray(numberOfChannel));
 
 
 		setX(xData);

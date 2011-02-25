@@ -27,9 +27,12 @@ public:
 
 	std::string getName();
 	short getId();
-	std::string getDescription();
-	std::vector<Parameter*> getParameters();
-	std::map<std::string,Parameter*> getParameterByName();
+
+	const std::string& getDescription() const;
+    Parameter* getParameter(int index);
+    Parameter* getParameter(const std::string& name);
+    const Parameter* getParameter(int index) const;
+    const Parameter* getParameter(const std::string& name) const;
 
 	void setName(std::string name);
 	void setId(short id);

@@ -12,6 +12,7 @@
 #include <core/SmartPtr.h>
 #include <core/DataChannel.h>
 #include <core/ObjectWrapper.h>
+#include <core/C3D_Data.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -22,19 +23,31 @@ namespace core {
 
     typedef DataChannel<float, float> ScalarChannel;
     typedef shared_ptr<ScalarChannel> ScalarChannelPtr;
+    typedef shared_ptr<const ScalarChannel> ScalarChannelConstPtr;
 
-    class EMGChannel : public ScalarChannel
+    class C3DAnalogChannel : public ScalarChannel
+    {
+    protected:
+        C3DAnalogChannel(int samplesPerSec);
+        C3DAnalogChannel(const C3DAnalogChannel& channel);
+        C3DAnalogChannel(const C3D_Data& data, int channelNo);
+    };
+
+    class EMGChannel : public C3DAnalogChannel
     {
     public:
-        EMGChannel(int samplesPerSec) :
-        DataChannel(samplesPerSec)
+        explicit EMGChannel(int samplesPerSec) :
+        C3DAnalogChannel(samplesPerSec)
         {}
         EMGChannel(const EMGChannel& channel) :
-        DataChannel(channel)
+        C3DAnalogChannel(channel)
+        {}
+        EMGChannel(const C3D_Data& data, int channelNo) :
+        C3DAnalogChannel(data, channelNo)
         {}
         
     public:
-        virtual DataChannel* clone()
+        virtual ScalarChannel* clone()
         {
             return new EMGChannel(*this);
         }
@@ -43,18 +56,21 @@ namespace core {
 
 
 
-    class GRFChannel : public ScalarChannel
+    class GRFChannel : public C3DAnalogChannel
     {
     public:
-        GRFChannel(int samplesPerSec) :
-        DataChannel(samplesPerSec)
+        explicit GRFChannel(int samplesPerSec) :
+        C3DAnalogChannel(samplesPerSec)
         {}
         GRFChannel(const GRFChannel& channel) :
-        DataChannel(channel)
+        C3DAnalogChannel(channel)
+        {}
+        GRFChannel(const C3D_Data& data, int channelNo) :
+        C3DAnalogChannel(data, channelNo)
         {}
 
     public:
-        virtual DataChannel* clone()
+        virtual ScalarChannel* clone()
         {
             return new GRFChannel(*this);
         }
@@ -67,7 +83,7 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost);
-CORE_DEFINE_WRAPPER(EMGChannel, utils::PtrPolicyBoost);
-CORE_DEFINE_WRAPPER(GRFChannel, utils::PtrPolicyBoost);
+CORE_DEFINE_WRAPPER(EMGChannel, ScalarChannel);
+CORE_DEFINE_WRAPPER(GRFChannel, ScalarChannel);
 
 #endif  // __HEADER_GUARD_CORE__C3DCHANNELS_H__

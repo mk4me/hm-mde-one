@@ -13,12 +13,6 @@ std::map<short,GroupData*> Parameters::getGroups(){
 
 }
 
-std::map<std::string,GroupData*> Parameters::getGroupsByName(){
-
-	return this->groupsByName;
-
-}
-
 void Parameters::addGroup(short key, std::string name, GroupData* value){
 
 	this->groups[key] = value;
@@ -618,4 +612,14 @@ Parameters::~Parameters() {
 
 	this->groups.clear();
 
+}
+
+GroupData* Parameters::getGroup( const std::string& name )
+{
+    return groupsByName[name];
+}
+
+const GroupData* Parameters::getGroup( const std::string& name ) const
+{
+    return groupsByName.find(name)->second;
 }

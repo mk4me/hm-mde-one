@@ -7,6 +7,7 @@
 #include "ChartViewer.h"
 #include <core/Chart.h>
 #include "C3DChartData.h"
+#include <boost/foreach.hpp>
 using namespace std;
 using namespace osg;
 
@@ -73,7 +74,7 @@ IWidget* EMGService::getWidget()
     return reinterpret_cast<IWidget*>(widget);
 }
 
-AsyncResult EMGService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+AsyncResult EMGService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
     widget->getViewer()->onInit(viewer);
     ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
@@ -132,15 +133,40 @@ void EMGService::setWidget(ChartWidget* widget){
 this->widget=widget;
 }
 
-AsyncResult EMGService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+AsyncResult EMGService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
     core::shared_ptr<C3DParser> parser = core::queryParsers<C3DParser>(dataManager);
     if(parser)
     {
         widget->clear();
+        using namespace core;
+//         for (int j = 0; j < 1; ++j) {
+//             EMGChannelPtr channel = EMGChannelPtr(new EMGChannel(33));
+//             for ( int i = 0; i < 500; ++i ) {
+//                 channel->addPoint(i /*% 2 ? 100 : 0*/);
+//             }
+//             channel->normalize();
+//             widget->addChart(channel);
+// 
+//             channel = EMGChannelPtr(new EMGChannel(33));
+//             for ( int i = 0; i < 500; ++i ) {
+//                 channel->addPoint(i % 2 ? 100 : 0);
+//             }
+//             channel->normalize();
+//             widget->addChart(channel);
+// 
+//             channel = EMGChannelPtr(new EMGChannel(33));
+//             for ( int i = 0; i < 500; ++i ) {
+//                 channel->addPoint( rand() % 100 );
+//             }
+//             channel->normalize();
+//             widget->addChart(channel);
+//         }
+
+        
         C3D_Data* c3d = parser->getC3dData();
         for(int i=12;i<28;i++){
-            widget->deprecated_addChart(new C3DChartData(c3d,i));
+            widget->addChart(EMGChannelPtr( new EMGChannel(*c3d, i) ));
         }
         length=widget->getLenght() ;
     }

@@ -12,6 +12,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/scoped_ptr.hpp>
 
 // #define CORE_SMART_PTR_TEMPLATE boost::shared_ptr
 // #define CORE_SHARED_PTR(type) boost::shared_ptr<type>
@@ -30,8 +31,10 @@ namespace core {
 
     using boost::shared_ptr;
     using boost::weak_ptr;
+    using boost::scoped_ptr;
     using boost::dynamic_pointer_cast;
     using boost::static_pointer_cast;
+    using boost::const_pointer_cast;
     using boost::make_shared;
 
 ////////////////////////////////////////////////////////////////////////////////

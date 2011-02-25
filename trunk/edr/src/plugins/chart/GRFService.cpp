@@ -73,7 +73,7 @@ IWidget* GRFService::getWidget()
     return reinterpret_cast<IWidget*>(widget);
 }
 
-AsyncResult GRFService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+AsyncResult GRFService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
     widget->getViewer()->onInit(viewer);
  ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
@@ -132,15 +132,16 @@ void GRFService::setWidget(ChartWidget* widget){
 this->widget=widget;
 }
 
-AsyncResult GRFService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+AsyncResult GRFService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
     core::shared_ptr<C3DParser> parser = core::queryParsers<C3DParser>(dataManager);
     if(parser)
     {
         widget->clear();
+        using namespace core;
         C3D_Data* c3d = parser->getC3dData();
         for(int i=0;i<12;i++){
-            widget->deprecated_addChart(new C3DChartData(c3d,i));
+            widget->addChart(GRFChannelPtr( new GRFChannel(*c3d, i) ));
         }
         length=widget->getLenght() ;
     }

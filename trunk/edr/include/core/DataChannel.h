@@ -13,6 +13,7 @@
 #include <utility>
 #include <stdexcept>
 #include <sstream>
+#include <string>
 #include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +41,7 @@ namespace core {
     //! Uniwersalny kontener na dane dyskretno-czasowe.
     template <class PointType, class TimeType = double, 
         class Manipulator = DataOperatorsManipulator<PointType, TimeType> >
-    class DataChannel : protected Manipulator
+    class DataChannel : public Manipulator
     {
     public:
         typedef TimeType time_type;
@@ -82,10 +83,16 @@ namespace core {
         time_type minValueTime;
         //! D³ugoœæ czasowa.
         time_type length;
+        //! Opis jednostki X.
+        std::string xUnit;
+        //! Opis jednostki Y.
+        std::string yUnit;
+        //! Nazwa 
+        std::string name;
 
     public:
         //! \param samplesPerSec Liczba próbek na sekundê.
-        DataChannel(int samplesPerSec) :
+        explicit DataChannel(int samplesPerSec) :
         samplesPerSec(samplesPerSec),
         samplesPerSecInv( time_type(1.0) / time_type(samplesPerSec) )
         {
@@ -118,6 +125,37 @@ namespace core {
         {
             return new DataChannel(*this);
         }
+
+        //! \return
+        const std::string& getXUnit() const
+        { 
+            return xUnit;
+        }
+        //! \param xUnit
+        void setXUnit(const std::string& xUnit) 
+        { 
+            this->xUnit = xUnit; 
+        }
+        //! \return
+        const std::string& getYUnit() const
+        { 
+            return yUnit;
+        }
+        //! \param yUnit
+        void setYUnit(const std::string& yUnit) 
+        { 
+            this->yUnit = yUnit; 
+        }
+        //! \return
+        const std::string& getName() const
+        { 
+            return name;
+        }
+        //! \param name
+        void setName(const std::string& name) 
+        { 
+            this->name = name; 
+        }
         //! \return Liczba próbek na sekundê.
         int getSamplesPerSec() const
         { 
@@ -137,7 +175,7 @@ namespace core {
         point_type getMaxValue() const
         { 
             if ( !getNumPoints() ) {
-                throw std::runtime_error("No data points yet.")
+                throw std::runtime_error("No data points yet.");
             }
             return maxValue;
         }
@@ -168,14 +206,15 @@ namespace core {
         //! \param point Punkt pomiarowy do dodania.
         void addPoint(point_type point)
         {
-            value_type added = { 0, point, point_type() };
             if ( data.size() == 0 ) {
                 length = 0;
+                value_type added = { 0, point, point_type() };
                 maxValue = minValue = added.value;
                 maxValueTime = minValueTime = added.time;
+                data.push_back( added );
             } else {
                 length += samplesPerSecInv;
-                added.time = length;
+                value_type added = { length, point, point_type() };
                 if ( Manipulator::isLower(maxValue, added.value) ) {
                     maxValue = added.value;
                     minValueTime = added.time;
@@ -183,8 +222,8 @@ namespace core {
                     minValue = added.value;
                     minValueTime = added.time;
                 }
+                data.push_back( added );
             }
-            data.push_back( added );
         }
 
         //! \param first
@@ -207,12 +246,12 @@ namespace core {
         void normalize()
         {
             if ( !getNumPoints() ) {
-                throw std::runtime_error("No data points yet.")
+                throw std::runtime_error("No data points yet.");
             }
             // w ten sposób istnieje szansa, ¿e bêdzie zrobione z u¿yciem instrukcji
             // wektorowych...
             iterator last = end();
-            for (iterator it = begin(); ; it != last; ++it) {
+            for (iterator it = begin(); it != last; ++it) {
                 it->normalizedValue = Manipulator::normalize(it->value, minValue, maxValue);
             }
         }
@@ -236,6 +275,12 @@ namespace core {
             } else {
                 return Manipulator::normalize( getValue(time), minValue, maxValue );
             }
+        }
+
+        //! \param size Miejsce na ile elementów zarezerwowaæ?
+        void reserve(int size)
+        {
+            data.reserve(size);
         }
 
     public:
@@ -306,7 +351,7 @@ namespace core {
             if ( time > getLength() ) {
                 throw std::runtime_error("Time overflow.");
             }
-            int idx = static_cast<int>(time * samplesPerSecInv);
+            int idx = static_cast<int>(time * samplesPerSec);
             UTILS_ASSERT( idx <= getNumPoints() );
             if ( idx == getNumPoints()-1 ) {
                 const_reference p = operator[](getNumPoints()-1);

@@ -29,6 +29,10 @@ public:
 	MarkerHeader* getHeader() { return header; }
 	Parameters* getParameters() { return parameters; }
 	Data* getData() { return data; }
+    const MarkerHeader* getHeader() const { return header; }
+    const Parameters* getParameters() const { return parameters; }
+    const Data* getData() const { return data; }
+
 	std::string toString();
 
 ///////////////////////////////////////////

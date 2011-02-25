@@ -92,7 +92,7 @@ void CommunicationService::save()
     this->model->saveToXml(this->name);
 }
 
-AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, IDataManager* dataManager)
+AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
     this->model->setTrialsDir(dataManager->getTrialsPath().string());
     return AsyncResult_Complete;
@@ -152,7 +152,7 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
     return AsyncResult_Complete;
 }
 
-AsyncResult CommunicationService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+AsyncResult CommunicationService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
     //model->setServiceManager(serviceManager);
     TextParserPtr tp = core::queryParsers<TextParser>(dataManager);
@@ -171,7 +171,7 @@ AsyncResult CommunicationService::init(IServiceManager* serviceManager, IDataMan
     return AsyncResult_Complete;
 }
 
-void CommunicationService::loadTrial(const IDataManager::LocalTrial& localTrial)
+void CommunicationService::loadTrial(const core::IDataManager::LocalTrial& localTrial)
 {
     model->loadTrial(localTrial);
 }

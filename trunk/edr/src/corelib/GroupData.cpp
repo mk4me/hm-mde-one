@@ -33,23 +33,42 @@
 
 	}
 
-	std::string GroupData::getDescription(){
-	
+	const std::string& GroupData::getDescription() const
+    {
 		return this->description;
-
 	}
 
-	std::vector<Parameter*> GroupData::getParameters(){
+// 	std::vector<Parameter*>& GroupData::getParameters()
+//     {
+// 		return this->parameters;
+// 	}
+// 
+//     std::map<std::string,Parameter*>& GroupData::getParameterByName()
+//     {
+// 		return this->parametersByName;
+// 	}
 
-		return this->parameters;
+    Parameter* GroupData::getParameter( int index )
+    {
+        return parameters[index];
+    }
 
-	}
-std::map<std::string,Parameter*> GroupData::getParameterByName(){
-			
-					return this->parametersByName;
-			
-			}
-	////////////////////////////////////////////////////
+    Parameter* GroupData::getParameter( const std::string& name )
+    {
+        return parametersByName[name];
+    }
+
+    const Parameter* GroupData::getParameter( int index ) const
+    {
+        return parameters[index];
+    }
+
+    const Parameter* GroupData::getParameter( const std::string& name ) const
+    {
+        return parametersByName.find(name)->second;
+    }
+
+    ////////////////////////////////////////////////////
 
 	void GroupData::setName(std::string name){
 
@@ -154,4 +173,5 @@ std::map<std::string,Parameter*> GroupData::getParameterByName(){
 	    std::cout << "\n";
 
 		return "";
-	}
+    }
+

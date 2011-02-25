@@ -37,6 +37,7 @@ public:
     virtual void apply(osg::Node& node);
     virtual void apply(osg::Geode& geode);
     virtual void apply(osg::Drawable& drawable);
+    virtual void apply(osg::Geometry& geometry);
     
 private:
     void log(osg::Object& object, osg::StateSet* stateset);
@@ -82,6 +83,7 @@ public:
     virtual void apply(osg::Node& node);
     virtual void apply(osg::Geode& geode);
     virtual void apply(osg::Drawable& drawable);
+    virtual void apply(osg::Geometry& geometry);
 
 private:
     QTreeWidgetItem* createItem(osg::Object& object, osg::StateSet* stateset);

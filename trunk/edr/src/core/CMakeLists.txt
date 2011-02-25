@@ -74,7 +74,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/c3dParser.h
 	${HEADER_PATH}/c3dParserEx.h
 	${HEADER_PATH}/C3D_Data.h
-	${HEADER_PATH}/LineChart.h
 	${HEADER_PATH}/ChartData.h
 	${HEADER_PATH}/ChartPointer.h
 	${HEADER_PATH}/Parameter.h

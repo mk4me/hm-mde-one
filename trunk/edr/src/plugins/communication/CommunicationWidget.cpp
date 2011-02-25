@@ -78,7 +78,7 @@ void CommunicationWidget::refreshUI()
     infoLabel->setText(core::toQString(infoText));
 
     //lokalne proby pomiarowe
-    BOOST_FOREACH(IDataManager::LocalTrial& trial, localTrials)
+    BOOST_FOREACH(core::IDataManager::LocalTrial& trial, localTrials)
     {
         LocalTrialItem* item = new LocalTrialItem();
         trials->addItem(item);
@@ -105,7 +105,7 @@ void CommunicationWidget::refreshUI()
         BOOST_FOREACH(communication::Trial& trial, serverTrials)
         {
             isLocal = false;
-            BOOST_FOREACH(IDataManager::LocalTrial& local, localTrials)
+            BOOST_FOREACH(core::IDataManager::LocalTrial& local, localTrials)
             {
                 boost::cmatch matches;
                 boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
@@ -200,7 +200,7 @@ void CommunicationWidget::download()
         abortButton->setDisabled(false);
         trials->clear();
         //lokalne proby pomiarowe
-        BOOST_FOREACH(IDataManager::LocalTrial& trial, localTrials)
+        BOOST_FOREACH(core::IDataManager::LocalTrial& trial, localTrials)
         {
             LocalTrialItem* item = new LocalTrialItem();
             trials->addItem(item);
@@ -231,7 +231,7 @@ void CommunicationWidget::abort()
     communicationService->cancelDownloading();
 }
 
-void CommunicationWidget::loadTrial(const IDataManager::LocalTrial& localTrial)
+void CommunicationWidget::loadTrial(const core::IDataManager::LocalTrial& localTrial)
 {
     communicationService->loadTrial(localTrial);
 }
@@ -242,7 +242,7 @@ void CommunicationWidget::updateTrials()
     downloadButton->setText("Load");
     trials->clear();
     //lokalne proby pomiarowe
-    BOOST_FOREACH(IDataManager::LocalTrial& trial, localTrials)
+    BOOST_FOREACH(core::IDataManager::LocalTrial& trial, localTrials)
     {
         LocalTrialItem* item = new LocalTrialItem();
         trials->addItem(item);

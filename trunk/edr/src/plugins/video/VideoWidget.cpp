@@ -161,6 +161,14 @@ void VideoWidget::init( std::vector<IVideoParserPtr> &parsers )
     createScene();
 }
 
+void VideoWidget::init( std::vector<osg::ref_ptr<vidlib::VideoImageStream> > &streams )
+{
+    images.clear();
+    BOOST_FOREACH(vidlib::VideoImageStream* stream, streams) {
+        images.push_back( stream );
+    }
+    createScene();
+}
 
 void VideoWidget::setPixelFormat( PixelFormat format )
 {

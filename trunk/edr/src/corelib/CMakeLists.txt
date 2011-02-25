@@ -41,6 +41,8 @@ set(PUBLIC_H
 	${HEADER_PATH}/DisableableRenderer.h
 	${HEADER_PATH}/DataChannel.h
 	${HEADER_PATH}/C3DChannels.h
+	${HEADER_PATH}/ChartSerie.h
+	${HEADER_PATH}/LineChartSerie.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -81,7 +83,7 @@ set(TARGET_SRC
 	GroupData.cpp
 	Header.cpp
 	INTELreader.cpp
-	LineChart.cpp
+	LineChartSerie.cpp
 	MIPSreader.cpp
 	Parameter.cpp
 	Parameters.cpp
@@ -99,6 +101,7 @@ set(TARGET_SRC
 	GroupData.cpp
 	Header.cpp
 	Data.cpp
+	ChartSerie.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

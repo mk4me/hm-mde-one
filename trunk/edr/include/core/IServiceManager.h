@@ -7,7 +7,7 @@
 #include <utils/Debug.h>
 
 class IModel;
-class IDataManager;
+class core::IDataManager;
 class IService;
 
 class IServiceManager

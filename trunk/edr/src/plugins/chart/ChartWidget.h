@@ -49,7 +49,8 @@ public:
     virtual ~ChartWidget();
 
 	osg::Node* getSceneRoot();
-	void deprecated_addChart(C3DChartData* c3dData);
+/*	void deprecated_addChart(C3DChartData* c3dData);*/
+    void addChart(const core::ScalarChannelPtr& channel);
 	void update(double targetTime);
     double getLenght();
 	void clear();

@@ -73,13 +73,13 @@ public:
     @param root Korzeñ wspólnej sceny 3D.
     @param dataManager Manager zasobów.
     */
-    virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
+    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
     /**
     Metoda z interfejsu IService. £aduje.
     @param serviceManager Manager us³ug.
     @param dataManager Manager zasobów.
     */
-    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
     /**
     Metoda z interfejsu IService. Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
     */
@@ -129,7 +129,7 @@ public:
     Metoda z interfejsu ICommunication. £adowanie lokalnej próby pomiarowej do edytora.
     @param localTrial lokalna próba pomiarowa do za³adowania
     */
-    virtual void loadTrial(const IDataManager::LocalTrial& localTrial);
+    virtual void loadTrial(const core::IDataManager::LocalTrial& localTrial);
     /**
     Metoda z interfejsu ICommunication. Przerwanie pobierania pliku lub triala.
     */

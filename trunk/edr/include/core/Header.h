@@ -45,25 +45,25 @@ public:
 
 	MarkerHeader(ProcessorReader* proc);
 
-	unsigned char getParamStartBlock() { return paramStartBlock; }
-	int getNumberOfC3DPoints() { return numberOfC3DPoints; }
-	int getNumberOfAllAnalogMesPerFrame(){ return numberOfAllAnalogMesPerFrame; }
-	int getFirstDataFrame(){ return firstDataFrame; }
-	int getLastDataFrame(){ return lastDataFrame; }
-	int getMaxInterpolation(){ return maxInterpolation; }
+	unsigned char getParamStartBlock() const { return paramStartBlock; }
+	int getNumberOfC3DPoints() const { return numberOfC3DPoints; }
+	int getNumberOfAllAnalogMesPerFrame() const { return numberOfAllAnalogMesPerFrame; }
+	int getFirstDataFrame() const { return firstDataFrame; }
+	int getLastDataFrame() const { return lastDataFrame; }
+	int getMaxInterpolation() const { return maxInterpolation; }
 
-	float getScaleFactor(){ return scaleFactor; }
-	int getdDtaStartBlockNumber(){ return dataStartBlockNumber; }
-	int getNumberOfAnalogSamplesPerFrame(){ return numberOfAnalogSamplesPerFrame; }
-	float getFrameRate(){ return frameRate; }
+	float getScaleFactor() const { return scaleFactor; }
+	int getdDtaStartBlockNumber() const { return dataStartBlockNumber; }
+	int getNumberOfAnalogSamplesPerFrame() const { return numberOfAnalogSamplesPerFrame; }
+	float getFrameRate() const { return frameRate; }
 
-	bool getLabelAndRangeDataIsPresent(){ return labelAndRangeDataIsPresent; }
-	bool getFourOrTwoLettersLabels(){ return fourOrTwoLettersLabels; }
+	bool getLabelAndRangeDataIsPresent() const { return labelAndRangeDataIsPresent; }
+	bool getFourOrTwoLettersLabels() const { return fourOrTwoLettersLabels; }
 
-	int getNumberOfEvents(){ return numberOfEvents; }
-	float* getEventTimes(){ return eventTimes; }
-	std::string* getEventLabels(){ return eventLabels; }
-	bool* getEventStatus(){ return eventStatus; }
+	int getNumberOfEvents() const { return numberOfEvents; }
+	float* getEventTimes() const { return eventTimes; }
+	std::string* getEventLabels() const { return eventLabels; }
+	bool* getEventStatus() const { return eventStatus; }
 
 	///////////////////////////////////////
 

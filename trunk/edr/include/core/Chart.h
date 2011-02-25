@@ -11,29 +11,50 @@ purpose:  Klasa ta zarzadza calym wykresem
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <core/C3DChannels.h>
-#include <core/LineChart.h>
+#include <core/ChartSerie.h>
 
 class deprecated_LineChart;
 class deprecated_ChartData;
 
-class Chart : public osg::Group{
+////////////////////////////////////////////////////////////////////////////////
+namespace osg {
+////////////////////////////////////////////////////////////////////////////////
+
+    typedef osg::ref_ptr<osg::Geode> GeodePtr;
+    typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
+
+////////////////////////////////////////////////////////////////////////////////
+} // namespace osg
+////////////////////////////////////////////////////////////////////////////////
+
+class Chart : public osg::Group
+{
+private:
+    osg::GeodePtr background;
+    osg::GeometryPtr grid;
+    osg::GeometryPtr axisX;
+    osg::GeometryPtr axisY;
+    
+    bool showGridX;
+    bool showGridY;
+    float margin;
+
 private:
 
 	int x,y,width,height;
-	std::vector<deprecated_LineChart*> deprecated_dataSeries;
-	std::vector<deprecated_ChartData*> deprecated_data;
-    //std::vector<osg::ref_ptr<core::LineChart> > 
+	//std::vector<deprecated_LineChart*> deprecated_dataSeries;
+	//std::vector<deprecated_ChartData*> deprecated_data;
+    std::vector<core::ChartSeriePtr> series;
 	std::vector<osg::Geode*> mainLabel;
 	void init();
 	//! odleglosc ramki od wykresu
-	int borderSize,fontSize;
+	int fontSize;
 	osg::Geometry* createLine(int x,int y,int x1,int y1,int z,osg::Vec4 lineColor);
-	osg::Geode* createBorder();
-	osg::ref_ptr<osg::Geode> border;
-	osg::Geode* createGrid();
+	void refreshAxis();
+	void refreshGrid();
 	osg::Vec4 gridColor;
 	osg::Vec4 color;
-	osg::ref_ptr<osg::Geode> grid;
+	//osg::ref_ptr<osg::Geode> grid;
 	int gridDensity;
 	osg::Geode* createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps,float scale,std::string unit);
 	osgText::Text* createLabel(const osg::Vec3& pos, float size, const std::string& label);
@@ -41,7 +62,7 @@ private:
 	osg::ref_ptr<osg::Geode> xAxis;
 	osg::ref_ptr<osg::Geode> yAxis;
 	int xNumReps,yNumReps;
-	void repaint();
+	void refresh();
 	osg::Geode* createMainLabel(osg::Vec4 color,std::string name);
 	int labelOffset;
 	bool showLabel;
@@ -49,22 +70,27 @@ private:
 public:
 	Chart(int x,int y,int width,int height);
 	~Chart();
-	//! dodaje serie danych o zadanym indexie
-	void deprecated_addChartSeries(deprecated_ChartData* data,osg::Vec4 color);
-/*    void addChartSeries(ScalarChannel* data,osg::Vec4 color);*/
-	void deprecated_addChartPreviewSeries(deprecated_ChartData* data,osg::Vec4 color);
-	//! Pobiera calkowita ilosc klatek 
-	int deprecated_getFrameNumber();
-	//! podbiera ilosc klatek na sekunde
-	int deprecated_getFPS();
+// 	//! dodaje serie danych o zadanym indexie
+// 	void deprecated_addChartSeries(deprecated_ChartData* data,osg::Vec4 color);
+// /*    void addChartSeries(ScalarChannel* data,osg::Vec4 color);*/
+// 	void deprecated_addChartPreviewSeries(deprecated_ChartData* data,osg::Vec4 color);
+// 	//! Pobiera calkowita ilosc klatek 
+// 	int deprecated_getFrameNumber();
+// 	//! podbiera ilosc klatek na sekunde
+// 	int deprecated_getFPS();
+
+    void addChannel( const core::ScalarChannelPtr& channel, osg::Vec4 color );
+
 	//! Odswieza polozenie wskaznikow
 	void updatePointer(double targetTime);
 	//! Zaokragla podana liczbe do 2 miejsc po przecinku
 	std::string formatNumber( float number );
+
 	//! zwraca odstep ramki od wykresu
-	int getBorderSize();
+	float getMargin() const;
 	//! ustawia odstep ramki od wykres
-	void setBorderSize(int borderSize);
+	void setMargin(float margin);
+
 	//! zwraca wielkosc czcionki
 	int getFontSize();
 	//! ustawia wielkosc czcionki 
@@ -94,9 +120,15 @@ public:
 	//! pobiera lokacje wykresu
 	osg::Vec4 getLocation();
 
+    //! \return D³ugoœæ.
+    float getLength() const;
+
 	void setShowLabel(bool showLabel);
 	void setShowBorder(bool showBorder);
 	bool isShowingBorder();
+
+private:
+    bool prepareGeometry(osg::GeometryPtr& geom, bool condition, const char* name);
 };
 
 

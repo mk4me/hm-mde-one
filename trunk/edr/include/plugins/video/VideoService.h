@@ -14,7 +14,6 @@
 #include <plugins/timeline/Stream.h>
 
 class IModel;
-class IDataManager;
 class IWidget;
 class VideoWidget;
 class VideoWidgetOptions;
@@ -78,11 +77,11 @@ public:
     virtual void visibilityChanged(IWidget* widget, bool visible);
 
     //!
-    virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
+    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
 
     virtual AsyncResult update(double time, double timeDelta);
 
-    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
 
     //!
     virtual osg::Node* debugGetLocalSceneRoot();

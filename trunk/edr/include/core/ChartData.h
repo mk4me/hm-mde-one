@@ -49,7 +49,7 @@ public:
 	void setDescription(std::string description);
 	void setUnit(std::string unit);
 	std::string getUnit();
-private:
+public:
 	std::vector<float>::iterator itX;
 	std::vector<float>::iterator itY;
 	int rNumber;

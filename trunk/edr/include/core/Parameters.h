@@ -33,7 +33,9 @@ public:
 	/////////////////////////////////////
 
 	std::map<short,GroupData*> getGroups();
-	std::map<std::string,GroupData*> getGroupsByName();
+    GroupData* getGroup(const std::string& name);
+    const GroupData* getGroup(const std::string& name) const;
+
 	void addGroup(short key, std::string name, GroupData* value);
 
 	short getNumberOfParamBlocks();

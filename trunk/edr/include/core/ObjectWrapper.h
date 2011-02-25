@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
 #define __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
 
+#include <list>
 #include <string>
 #include <typeinfo>
 #include <boost/any.hpp>
@@ -24,14 +25,58 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Deklaracja typu. Trzeba go specjalizowaæ za pomoc¹ makr.
+//! Deklaracja typu. Trzeba go specjalizowaæ za pomoc¹ makr. Ta wersja bêdzie
+//! rzucaæ statyczn¹ asercj¹.
 template <class T>
-class ObjectWrapperT;
+class ObjectWrapperT : public ObjectWrapper
+{
+public:
+    typedef T* Ptr;
+    Ptr get()
+    {
+        UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+        return nullptr;
+    }
+    void set(Ptr)
+    {
+        UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
+    }
+};
 
 //! Baza dla typu wrapuj¹cego jakiœ obiekt. Poza trzymaniem metadanych klasy pochodne
 //! trzymaj¹ referencje do obiektów.
 class ObjectWrapper
 {
+public:
+    //! Struktura reprezentuj¹ca typ obiektu.
+    struct Type
+    {
+        //! Wewnêtrzna informacja o typie.
+        const std::type_info& typeinfo;
+
+        //! \param typeinfo
+        Type(const std::type_info& typeinfo) :
+        typeinfo(typeinfo)
+        {}
+
+        //! \param type
+        Type(const Type& type) :
+        typeinfo(type.typeinfo)
+        {}
+
+        //! Jawny operator rzutowania na type_info.
+        operator const std::type_info&() const
+        {
+            return typeinfo;
+        }
+
+        //! \param obj
+        bool operator<(const Type& obj) const
+        {
+            return typeinfo.before(obj.typeinfo) != 0;
+        } 
+    };
+
 protected:
     //! Nazwa instancji.
     std::string name;
@@ -94,7 +139,7 @@ public:
     {
         typedef ObjectWrapperT<T> Wrapper;
         if ( exact ) {
-            if ( compare(getTypeInfo(), typeid(T)) ) {
+            if ( areTypesEqual(getTypeInfo(), typeid(T)) ) {
                 target = static_cast<Wrapper*>(this)->get();
                 return true;
             }
@@ -143,11 +188,28 @@ public:
         this->name = name;
     }
 
+    //! \param type Typ do porównania.
+    //! \return Czy to te same typy?
+    inline bool isTypeEqual(const std::type_info& type)
+    {
+        return areTypesEqual(getTypeInfo(), type);
+    }
+
+    //! \param type 
+    //! \return Czy obiekt wspira okreœlony typ?
+    virtual bool supports(const std::type_info& type) const = 0;
+
     //! \return Informacje o typie.
     virtual const std::type_info& getTypeInfo() const = 0;
 
-private:
-    static inline bool compare(const std::type_info& t1, const std::type_info& t2)
+    //! \param supported Lista wspieranych rozszerzeñ.
+    virtual void appendSupported(std::list<Type>& supported) const = 0;
+
+    //! \return Czy wrappowany obiekt jest wyzerowany?
+    virtual bool isNull() const = 0;
+
+protected:
+    static inline bool areTypesEqual(const std::type_info& t1, const std::type_info& t2)
     {
         // tutaj u¿ywamy sta³ej z boost/any - pozwala okreœliæ, czy lepiej porównywaæ po nazwie, czy po adresie
 #ifdef BOOST_AUX_ANY_TYPE_ID_NAME
@@ -214,6 +276,22 @@ public:
     {
         return typeid(T);
     }
+    //! \param type 
+    //! \return Czy obiekt wspira okreœlony typ?
+    virtual bool supports(const std::type_info& type) const
+    {
+        return ObjectWrapper::areTypesEqual(type, typeid(T));
+    }
+    //! \param supported
+    virtual void appendSupported(std::list<ObjectWrapper::Type>& supported) const
+    {
+        supported.push_back(typeid(T));
+    }
+    //! \return Czy wewnêtrzny wskaŸnik jest wyzerowany?
+    virtual bool isNull() const
+    {
+        return wrapped ? false : true;
+    }
 };
 
 template <class T, class B>
@@ -248,6 +326,27 @@ public:
     {
         Base::set(static_pointer_cast<B>(wrapped));
     }
+    //! \return Informacja o typie.
+    virtual const std::type_info& getTypeInfo() const
+    {
+        return typeid(T);
+    }
+    //! \param type 
+    //! \return Czy obiekt wspira okreœlony typ?
+    virtual bool supports(const std::type_info& type) const
+    {
+        if ( ObjectWrapper::areTypesEqual(type, typeid(T)) ) {
+            return true;
+        } else {
+            return Base::supports(type);
+        }
+    }
+    //! \param supported
+    virtual void appendSupported(std::list<ObjectWrapper::Type>& supported) const
+    {
+        Base::appendSupported(supported);
+        supported.push_back(typeid(T));
+    }
 };
 
 template <class T> 
@@ -255,10 +354,6 @@ struct __ObjectWrapperBaseSelector
 {
     typedef T Type;
 };
-
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

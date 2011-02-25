@@ -282,7 +282,7 @@ int Parameter::saveParam(std::ofstream& out, ProcessorReader* proc, char id) {
 	return res;
 
 }
-std::string Parameter::getDataAsStringsArray(int i)
+std::string Parameter::getDataAsStringsArray(int i) const
 {
 
 	std::string result ;

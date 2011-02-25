@@ -28,8 +28,8 @@ public:
 	std::string getName();
 	std::string getDescription();
 	char getDataType();
-
-	std::string getDataAsStringsArray(int i);
+    
+	std::string getDataAsStringsArray(int i) const;
 	float* getDataAsFloatArray();
 	std::vector<short> getDimensions();
 	float* getData();

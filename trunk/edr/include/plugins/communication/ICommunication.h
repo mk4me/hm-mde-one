@@ -35,7 +35,7 @@ public:
 	£adowanie lokalnej próby pomiarowej do edytora.
 	@param localTrial lokalna próba pomiarowa do za³adowania
 	*/
-	virtual void loadTrial(const IDataManager::LocalTrial& localTrial) = 0;
+	virtual void loadTrial(const core::IDataManager::LocalTrial& localTrial) = 0;
 	/**
 	Pingowanie serwera.
 	*/

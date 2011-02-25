@@ -62,22 +62,41 @@ ChartWidget::~ChartWidget()
 
 
 
-void ChartWidget::deprecated_addChart(C3DChartData* c3dData){
+// void ChartWidget::deprecated_addChart(C3DChartData* c3dData){
+// 
+// 	
+// 	if(c3dData->getRNumber()>0){
+// 	item.push_back(new Chart(40,40,500,250));
+// 	itItem= item.end()-1;
+// 	(*itItem)->deprecated_addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+//     (*itItem)->setShowLabel(false);
+//     (*itItem)->setShowBorder(false);
+// 	multiView->addChild(*itItem);
+// 	previewItem.push_back(new Chart(40,40,500,250));
+// 	itPItem= previewItem.end()-1;
+// 	(*itPItem)->deprecated_addChartPreviewSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+// 	multiView->addChild((*itPItem));
+// 	multiView->addItem(new core::MultiViewChartItem(*itItem,multiView),new core::MultiViewChartItem((*itPItem),multiView));
+// 	}
+// }
 
-	
-	if(c3dData->getRNumber()>0){
-	item.push_back(new Chart(40,40,500,250));
-	itItem= item.end()-1;
-	(*itItem)->deprecated_addChartSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
-    (*itItem)->setShowLabel(false);
-    (*itItem)->setShowBorder(false);
-	multiView->addChild(*itItem);
-	previewItem.push_back(new Chart(40,40,500,250));
-	itPItem= previewItem.end()-1;
-	(*itPItem)->deprecated_addChartPreviewSeries(c3dData,osg::Vec4(0.0f,1.0f,0.0f,1.0f));
-	multiView->addChild((*itPItem));
-	multiView->addItem(new core::MultiViewChartItem(*itItem,multiView),new core::MultiViewChartItem((*itPItem),multiView));
-	}
+
+
+void ChartWidget::addChart( const core::ScalarChannelPtr& channel )
+{
+    Chart* chart = new Chart(40, 40, 500, 250);
+    item.push_back( chart );
+    chart->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+    chart->setShowLabel(false);
+    chart->setShowBorder(false);
+    multiView->addChild(chart);
+
+    Chart* preview = new Chart(40, 40, 500, 250);
+    previewItem.push_back(preview);
+    preview->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+    multiView->addChild(preview);
+
+    multiView->addItem(new core::MultiViewChartItem(chart, multiView), new core::MultiViewChartItem(preview, multiView));
 }
 
 void ChartWidget::update(double targetTime){
@@ -93,11 +112,16 @@ void ChartWidget::update(double targetTime){
 }
 
 double ChartWidget::getLenght(){
-	if(item.size()>0){
-	itItem=item.begin();
-	return (double)(*itItem)->deprecated_getFrameNumber()/(double)(*itItem)->deprecated_getFPS();}
-	else
-		return 0;
+// 	if(item.size()>0){
+// 	itItem=item.begin();
+// 	return (double)(*itItem)->deprecated_getFrameNumber()/(double)(*itItem)->deprecated_getFPS();}
+// 	else
+// 		return 0;
+    if ( item.size() ) {
+        return item.front()->getLength();
+    } else {
+        return 0;
+    }
 }
 void ChartWidget::clear(){
 	multiView->removeAllItems();

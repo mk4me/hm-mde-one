@@ -13,19 +13,24 @@ purpose:  Klasa ta sluzy do tworzenia wykresu
 
 
 
-class ChartDataSeries : public osg::Group{
-private:
-	//! kolor wykresu
-	osg::ref_ptr<osg::Vec4Array> colors ;
-	//! wierzcholki wykresu
-	osg::Vec4 color;
-public:
-	//! Funkcja rysujaca wykres na podstawie podanych wierzcholkow
-	osg::Geode* drawChart(osg::Vec3Array* chartVertices);
-	//! Funkcja ustawiajaca kolor wykresu
-	void setColor(osg::Vec4 color);
-	osg::Vec4 getColor();
-};
+//class ChartDataSeries : public osg::Group{
+//
+//
+//
+//private:
+//	//! kolor wykresu
+//	osg::ref_ptr<osg::Vec4Array> colors ;
+//	//! wierzcholki wykresu
+//	osg::Vec4 color;
+//public:
+//	//! Funkcja rysujaca wykres na podstawie podanych wierzcholkow
+//	osg::Geode* drawChart(osg::Vec3Array* chartVertices);
+//
+//    
+//	//! Funkcja ustawiajaca kolor wykresu
+//	void setColor(osg::Vec4 color);
+//	osg::Vec4 getColor();
+//};
 
 
 #endif

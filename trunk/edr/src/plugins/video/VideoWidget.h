@@ -59,6 +59,7 @@ public:
 
     virtual ~VideoWidget();
 
+    void init( std::vector<osg::ref_ptr<vidlib::VideoImageStream> > &streams );
     void init( std::vector<std::string> &files );
     void init( std::vector<IVideoParserPtr> &parsers );
 

@@ -27,7 +27,7 @@ namespace communication
     {
     private:
         //! Sekwencja lokalnych prób pomiarowych.
-        typedef std::vector<IDataManager::LocalTrial> LocalTrialsList;
+        typedef std::vector<core::IDataManager::LocalTrial> LocalTrialsList;
     public:
         /**
         Stany managera pomocne przy wykonywaniu dzia³añ wspó³bie¿nie.
@@ -164,7 +164,7 @@ namespace communication
         Ustala Data Managera. Potrzebne przy ³adowaniu prób pomiarowych z lokalnego dysku.
         @param dataManager wskaŸnik na instancjê Data Managera
         */
-        void setDataManager(IDataManager* dataManager)
+        void setDataManager(core::IDataManager* dataManager)
         {
             this->dataManager = dataManager;loadLocalTrials();
         };
@@ -172,7 +172,7 @@ namespace communication
         Zwraca wskaŸnik na instancjê Data Managera.
         @return wskaŸnik na instancjê Data Managera
         */
-        IDataManager* getDataManager()
+        core::IDataManager* getDataManager()
         {
             return dataManager;
         };
@@ -182,7 +182,7 @@ namespace communication
         Metoda ustala próbê pomiarow¹ jako aktualn¹ i ³aduje j¹ do edytora.
         @param localTrial lokalna próba pomiarowa do za³adowania
         */
-        void loadTrial(const IDataManager::LocalTrial& localTrial);
+        void loadTrial(const core::IDataManager::LocalTrial& localTrial);
         /**
         Ustala stan w jakim znajduje siê Communication Service.
         @param state stan jaki ustaliæ jako aktualny dla CS
@@ -299,7 +299,7 @@ namespace communication
         /**
         WskaŸnik na instancjê zajmuj¹c¹ siê obs³ug¹ zasobów lokalnych
         */
-        IDataManager* dataManager;
+        core::IDataManager* dataManager;
         /**
         WskaŸnik na instancjê zajmuj¹c¹ siê transportem danych
         */

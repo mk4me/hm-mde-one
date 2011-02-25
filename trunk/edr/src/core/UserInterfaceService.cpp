@@ -31,7 +31,7 @@ AsyncResult UserInterfaceService::init( IServiceManager* serviceManager, osg::No
     return AsyncResult_Complete;
 }
 
-AsyncResult UserInterfaceService::loadData( IServiceManager* serviceManager, IDataManager* dataManager )
+AsyncResult UserInterfaceService::loadData( IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
     return AsyncResult_Complete;
 }

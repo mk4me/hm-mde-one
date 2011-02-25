@@ -20,6 +20,7 @@ private:
 	int analogChannelsNumber;
 	float* data;
 	float* analog;
+    //std::vector< std::vector<float> > analogDataSeparated;
 
 public: 
 
@@ -27,11 +28,12 @@ public:
 
 	/////////////////////////////////////
 
-	int getNumberOfFrames();
-	int getAnalogChannelsNumber();
+	int getNumberOfFrames() const;
+	int getAnalogChannelsNumber() const;
 
 	float* getData();
 	float* getAnalog();
+    const float* getAnalog() const;
 
 	bool parseData();
 	void saveData(std::ofstream& out);

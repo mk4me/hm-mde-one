@@ -8,7 +8,7 @@
 #include <osg/Timer>
 
 class IModel;
-class IDataManager;
+class core::IDataManager;
 
 class ServiceManager: public IServiceManager
 {
@@ -40,7 +40,7 @@ public:
 
     //! Ustawia dane dla wszystkich us³ug.
     //! \param dataManager
-    void loadDataPass(IDataManager* dataManager);
+    void loadDataPass(core::IDataManager* dataManager);
     //! Przebieg update/lateUpdate.
     void updatePass(); 
     //! Przebieg compute.

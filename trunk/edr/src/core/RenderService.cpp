@@ -154,7 +154,7 @@ void RenderService::Clear()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManager* dataManager )
+AsyncResult RenderService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
     //nowy SetScene
 	std::string meshpath = "";
@@ -214,7 +214,7 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, IDataManage
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+AsyncResult RenderService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
     m_pFactory = new Factor();
     m_pModel = NULL;

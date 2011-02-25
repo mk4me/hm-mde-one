@@ -38,7 +38,7 @@ public:
 // IService
 public:
     //!
-    virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
+    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
     //!
     virtual IWidget* getWidget();
     //!
@@ -50,7 +50,7 @@ public:
     //!
     virtual const std::string& getName() const;
 	
-	virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
+	virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
 
     //!
     virtual osg::Node* debugGetLocalSceneRoot();

@@ -129,6 +129,28 @@ bool Data::parseData(){
 
 //////////////////////////////////////////////
 
+//     {
+//         analogDataSeparated.resize( analogChannelsNumber );
+//         size_t numSamplesPerChannel = numberOfFrames * header->getNumberOfAnalogSamplesPerFrame();
+//         size_t numSamples = numSamplesPerChannel * analogChannelsNumber;
+//         for ( size_t channel = 0; channel < analogChannelsNumber; ++channel ) {
+//             auto channel = analogDataSeparated[channelNo];
+//             channel.reserve(samplesPerFrame);
+//         }
+// 
+//         for ( size_t sample = 0; )
+//         
+//         size_t samplesPerFrame = header->getNumberOfAnalogSamplesPerFrame();
+//         size_t totalSamples = analogChannelsNumber * samplesPerFrame;
+//         for ( size_t channelNo = 0; channelNo < analogChannelsNumber; ++channelNo ) {
+//             
+//             for ( size_t idx = channelNo; idx < totalSamples; idx += analogChannelsNumber ) {
+//                 channel.push_back( analog[idx] );
+//             }
+//         }
+//     }
+
+
 	return true;
 
 }
@@ -257,13 +279,13 @@ return "";
 
 }
 
-int Data::getNumberOfFrames() {
+int Data::getNumberOfFrames() const {
 
 	return this->numberOfFrames;
 
 }
 
-int Data::getAnalogChannelsNumber() {
+int Data::getAnalogChannelsNumber() const {
 
 	return this->analogChannelsNumber;
 
@@ -279,5 +301,11 @@ float* Data::getData() {
 float* Data::getAnalog() {
 
 	return this->analog;
+
+}
+
+const float* Data::getAnalog() const {
+
+    return this->analog;
 
 }

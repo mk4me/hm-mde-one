@@ -47,7 +47,7 @@ class C3DModel;
 class Model;
 class Mesh;
 class IModel;
-class IDataManager;
+class core::IDataManager;
 class Factor;
 
 //--------------------------------------------------------------------------------------------------
@@ -62,9 +62,9 @@ class RenderService: public IRenderService
 public:
     RenderService();
     virtual ~RenderService();
-    virtual AsyncResult init(IServiceManager* serviceManager, IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer); 
+    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer); 
 
-    virtual AsyncResult loadData(IServiceManager* serviceManager, IDataManager* dataManager);
+    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
 
     void TestScreenForNewModel(IModel* model);
     void AddObjectToRender(osg::Node* node);
