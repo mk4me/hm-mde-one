@@ -102,6 +102,7 @@ set(TARGET_SRC
 	Header.cpp
 	Data.cpp
 	ChartSerie.cpp
+	C3DChannels.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
