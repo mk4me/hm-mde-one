@@ -11,10 +11,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( FFmpegVideoStreamTest );
 
 typedef boost::scoped_ptr<FFmpegVideoStream> StreamPtr;
 
-#define FILE_PATH "test.avi"
-#define NONEXISTENT_FILE_PATH "nonexistent.avi"
-
-
+#define FILE_PATH "video/1.avi"
+#define NONEXISTENT_FILE_PATH "video/nonexistent.avi"
 
 void FFmpegVideoStreamTest::testOpen()
 {
