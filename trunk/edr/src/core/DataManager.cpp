@@ -28,7 +28,7 @@ void DataManager::clear()
 
 const IDataManager::LocalTrial& DataManager::getLocalTrial(int i) const
 {
-    return localTrialsList[i];
+    return localTrialsList[i].second;
 }
 
 int DataManager::getLocalTrialsCount() const
@@ -56,19 +56,14 @@ const boost::filesystem::path& DataManager::getTrialsPath() const
     return trialsPath;
 }
 
-void DataManager::setResourcesPath(const std::string& resources)
+void DataManager::setResourcesPath(const IDataManager::Path& resources)
 {
     resourcesPath = resources;
 }
 
-void DataManager::setTrialsPath(const std::string& trials)
+void DataManager::setTrialsPath(const IDataManager::Path& trials)
 {
     trialsPath = trials;
-}
-
-const IDataManager::LocalTrial& DataManager::getCurrentLocalTrial() const
-{
-    return currentTrial;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,80 +115,57 @@ int DataManager::getNumRawParsers() const
 
 core::IParserPtr DataManager::getParser(int idx)
 {
-    if(idx < static_cast<int>(currentParsersList.size()))
+    UTILS_ASSERT(idx < static_cast<int>(currentParsersList.size()));
+
+    if(!currentParsersList[idx].second.first)
     {
-        //sprawdzamy, czy wybrany parser przeprowadzil juz parsowanie na pliku, jesli nie, parsujemy
-        ParsedFilesMap::iterator parsedItr = parsedFilesMap.find(currentParsersList[idx].first);
-        if(parsedItr == parsedFilesMap.end())
-        {
-            currentParsersList[idx].second->parseFile(currentParsersList[idx].first);
-            parsedFilesMap.insert(std::make_pair<IDataManager::Path, bool>(currentParsersList[idx].first, true));
-        }
-        if(parsedItr != parsedFilesMap.end() && parsedItr->second == false)
-        {
-            currentParsersList[idx].second->parseFile(currentParsersList[idx].first);
-            parsedItr->second = true;
-        }
-        return currentParsersList[idx].second;
+        currentParsersList[idx].second.second->parseFile(currentParsersList[idx].first);
+        currentParsersList[idx].second.first = true;
     }
-    return core::IParserPtr();
+    return currentParsersList[idx].second.second;
 }
 
 core::IParserPtr DataManager::getParser(const std::string& filename)
 {
-    for(ParsersMap::iterator it = currentParsersFilepathMap.begin(); it != currentParsersFilepathMap.end(); ++it)
+    ParsersPathList::iterator it;
+    for(it = currentParsersList.begin(); it != currentParsersList.end(); ++it)
     {
         //plik ma taka sama nazwe co szukany
         if(it->first.filename().compare(filename) == 0)
         {
-            //sprawdzamy, czy wybrany parser przeprowadzil juz parsowanie na pliku, jesli nie, parsujemy
-            ParsedFilesMap::iterator parsedItr = parsedFilesMap.find(it->first);
-            if(parsedItr == parsedFilesMap.end())
+            if(!it->second.first)
             {
-                it->second->parseFile(it->first);
-                parsedFilesMap.insert(std::make_pair<IDataManager::Path, bool>(it->first, true));
+                it->second.second->parseFile(it->first);
+                it->second.first = true;
             }
-            if(parsedItr != parsedFilesMap.end() && parsedItr->second == false)
-            {
-                it->second->parseFile(it->first);
-                parsedItr->second = true;
-            }
-            return it->second;
+            return it->second.second;
         }
     }
+    UTILS_ASSERT(it != currentParsersList.end());
     return core::IParserPtr();
 }
 
 core::IParserPtr DataManager::createRawParser(int idx)
 {
-    if(idx < static_cast<int>(registeredParsersList.size()))
-    {
-        return core::IParserPtr(registeredParsersList[idx]->create());
-    }
-    else
-    {
-        return core::IParserPtr();
-    }
+    UTILS_ASSERT(idx < static_cast<int>(registeredParsersList.size()));
+
+    return core::IParserPtr(registeredParsersList[idx]->create());
 }
 
 core::IParserPtr DataManager::createRawParser(const std::string& extension)
 {
     ParsersMultimap::iterator it = registeredParsersExtMap.find(extension);
-    if(it != registeredParsersExtMap.end())
+    UTILS_ASSERT(it != registeredParsersExtMap.end());
+    if(registeredParsersExtMap.count(extension) > 1)
     {
-        if(registeredParsersExtMap.count(extension) > 1)
-        {
-            LOG_WARNING("Multiple parsers found for extension: " << extension << ".");
-        }
-        //jesli sa parsery - zwracamy tylko pierwszy!
-        return core::IParserPtr(it->second->create());
+        LOG_WARNING("Multiple parsers found for extension: " << extension << ".");
     }
-    return core::IParserPtr();
+    //jesli sa parsery - zwracamy tylko pierwszy!
+    return core::IParserPtr(it->second->create());
 }
 
 void DataManager::findLocalTrials()
 {
-    localTrialsMap.clear();
     localTrialsList.clear();
     //przeszukujemy liste prob pomiarowych, nie plikow
     std::vector<std::string> tempPaths = Filesystem::listSubdirectories(trialsPath.string());
@@ -202,8 +174,7 @@ void DataManager::findLocalTrials()
         try
         {
             LocalTrial trial = findLocalTrialsPaths(path);
-            localTrialsMap.insert(std::make_pair<IDataManager::Path, IDataManager::LocalTrial>(IDataManager::Path(path), trial));
-            localTrialsList.push_back(trial);
+            localTrialsList.push_back(std::make_pair<IDataManager::Path, IDataManager::LocalTrial>(IDataManager::Path(path), trial));
         }
         catch(std::runtime_error& e) { }
     }
@@ -229,12 +200,12 @@ void DataManager::findResources()
 void DataManager::loadLocalTrial(int i)
 {
     //ladowanie parserow dla i-tego triala z listy
-    loadTrial(localTrialsList[i]);
+    loadTrial(localTrialsList[i].second);
 }
 
 void DataManager::loadLocalTrial(const IDataManager::Path& path)
 {
-    for(LocalTrialsMap::iterator it = localTrialsMap.begin(); it != localTrialsMap.end(); ++it)
+    for(LocalTrialsList::iterator it = localTrialsList.begin(); it != localTrialsList.end(); ++it)
     {
         if(it->first == path)
         {
@@ -242,7 +213,7 @@ void DataManager::loadLocalTrial(const IDataManager::Path& path)
             return;
         }
     }
-    LOG_WARNING("No trial in resources.\n");
+    LOG_WARNING("No such trial in local resources.\n");
     loadTrial(findLocalTrialsPaths(path));
 }
 
@@ -267,7 +238,6 @@ IDataManager::LocalTrial DataManager::findLocalTrialsPaths(const IDataManager::P
 void DataManager::loadTrial(const IDataManager::LocalTrial& trial)
 {
     clearCurrentTrial();
-    currentTrial = trial;
     loadTrialData = true;
     //proba zaladowania parsera plikow c3d jesli takowy plik i parser istnieje
     BOOST_FOREACH(boost::filesystem::path path, trial)
@@ -276,9 +246,8 @@ void DataManager::loadTrial(const IDataManager::LocalTrial& trial)
         if(parser)
         {
             //dodajemy do listy parserow aktualnej proby pomiarowej
-            currentParsersList.push_back(std::make_pair(path, parser));
+            currentParsersList.push_back(std::make_pair(path, std::make_pair(false, parser)));
             currentTrialParsersList.push_back(parser);
-            currentParsersFilepathMap.insert(std::make_pair(path, parser));
         }
         else
         {
@@ -299,9 +268,7 @@ void DataManager::loadResources()
             //jesli parser dla tego rozszerzenia istnieje, dodajemy go do listy aktualnie zaladowanych parserow (zasobow)
             if(parser)
             {
-                currentParsersList.push_back(std::make_pair(path, parser));
-
-                currentParsersFilepathMap.insert(std::make_pair(path, parser));
+                currentParsersList.push_back(std::make_pair(path, std::make_pair(false, parser)));
             }
             else
             {
@@ -313,7 +280,6 @@ void DataManager::loadResources()
 
 void DataManager::clearLocalTrials()
 {
-    localTrialsMap.clear();
     localTrialsList.clear();
     clearCurrentTrial();
 }
@@ -325,18 +291,9 @@ void DataManager::clearCurrentTrial()
     {
         for(ParsersPathList::iterator it = currentParsersList.begin(); it != currentParsersList.end(); ++it)
         {
-            if(trial == (*it).second)
+            if(trial == (*it).second.second)
             {
-                parsedFilesMap.erase(parsedFilesMap.find(it->first));
                 currentParsersList.erase(it);
-                break;
-            }
-        }
-        for(ParsersMap::iterator it = currentParsersFilepathMap.begin(); it != currentParsersFilepathMap.end(); ++it)
-        {
-            if(trial == (*it).second)
-            {
-                currentParsersFilepathMap.erase(it);
                 break;
             }
         }

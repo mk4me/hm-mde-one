@@ -15,18 +15,16 @@ class DataManager: public IDataManager
 public:
     DataManager(const std::string& resourcesPath = "data/resources/", const std::string& trialsPath = "data/trials/");
 
-    virtual const LocalTrial& getCurrentLocalTrial() const;
-
     virtual void clear();
 
     virtual const std::string& getApplicationSkinsFilePath(int i);
     virtual int getApplicationSkinsFilePathCount();
 
-    virtual const Path& getResourcesPath() const;
-    virtual const Path& getTrialsPath() const;
+    virtual const IDataManager::Path& getResourcesPath() const;
+    virtual const IDataManager::Path& getTrialsPath() const;
 
-    virtual void setResourcesPath(const std::string& resources);
-    virtual void setTrialsPath(const std::string& trials);
+    virtual void setResourcesPath(const IDataManager::Path& resources);
+    virtual void setTrialsPath(const IDataManager::Path& trials);
 
     virtual bool isLoadLocalTrialData() const
     {
@@ -38,27 +36,18 @@ public:
     };
     
     virtual ~DataManager();
-private:
-    std::vector<std::string> shadersPaths;
-    std::vector<std::string> meshesPaths;
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
     //! S³ownik parserów wed³ug ID.
     typedef std::map<UniqueID, core::IParserPtr> ParsersIDMap;
-    //! S³ownik parserów.
-    typedef std::map<IDataManager::Path, core::IParserPtr> ParsersMap;
     //! Multis³ownik parserów.
     typedef std::multimap<std::string, core::IParserPtr> ParsersMultimap;
     //! Sekwencja parserów.
     typedef std::vector<core::IParserPtr> ParsersList;
-    //! Sekwencja parserów.
-    typedef std::vector<std::pair<IDataManager::Path, core::IParserPtr>> ParsersPathList;
-    //! S³ownik lokalnych prób pomiarowych wed³ug œcie¿ek.
-    typedef std::map<IDataManager::Path, LocalTrial> LocalTrialsMap;
+    //! Sekwencja parserów z informacj¹ czy zosta³y przeparsowane.
+    typedef std::vector<std::pair<IDataManager::Path, std::pair<bool, core::IParserPtr> > > ParsersPathList;
     //! Sekwencja lokalnych prób pomiarowych.
-    typedef std::vector<LocalTrial> LocalTrialsList;
-
-    typedef std::map<IDataManager::Path, bool> ParsedFilesMap;
+    typedef std::vector<std::pair<IDataManager::Path, LocalTrial> > LocalTrialsList;
     //------------------------------------------------------------------------------------------------------------------------------
 private:
     //! S³owniki parserów niezainicjalizowanych.
@@ -67,22 +56,14 @@ private:
     //! Sekwencja parserów niezainicjalizowanych.
     ParsersList registeredParsersList;
     
-    //! S³ownik parserów aktualnie zainicjalizowanych.
-    ParsersMap currentParsersFilepathMap;
     //! Sekwencja parserów aktualnie zainicjalizowanych.
     ParsersPathList currentParsersList;
-    //! S³ownik przeparsowanych plików.
-    ParsedFilesMap parsedFilesMap;
 
     //! Sekwencja parserów aktualnej próby pomiarowej.
     ParsersList currentTrialParsersList;
     
-    //! S³ownik lokalnych prób pomiarowych.
-    LocalTrialsMap localTrialsMap;
     //! Sekwencja lokalnych prób pomiarowych.
     LocalTrialsList localTrialsList;
-    //! Aktualnie za³adowany trial
-    LocalTrial currentTrial;
 
     //! Lista zasobów.
     std::vector<std::string> resourcesPaths;

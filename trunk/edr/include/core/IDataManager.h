@@ -11,34 +11,44 @@ public:
     typedef boost::filesystem::path Path;
     typedef std::vector<Path> LocalTrial;
 
+    //! Wirtualny destruktor.
 	virtual ~IDataManager() {};
 
+    //! Wyszukiwanie zasobów na lokalnym dysku.
     virtual void findResources() = 0;
+    //! Wyszukiwanie prób pomiarowych na lokalnym dysku.
     virtual void findLocalTrials() = 0;
-
+    //! £adowanie zasobów znalezionych na dysku.
  	virtual void loadResources() = 0;
+    //! £adowanie próby pomiarowej z lokalnego dysku.
+    //! \param trial próba pomiarowa do za³adowania.
     virtual void loadTrial(const LocalTrial& trial) = 0;
-
+    //! Zwraca i-t¹ próbê pomiarow¹ z listy kolalnych prób pomiarowych.
+    //! \param i indeks.
+    //! \return i-ta próba pomiarowa.
 	virtual const LocalTrial& getLocalTrial(int i) const = 0;
-
-	virtual const LocalTrial& getCurrentLocalTrial() const = 0;
-
+    //! Czyœci zasoby i próby pomiarowe.
 	virtual void clear() = 0;
-
+    //! Zwraca i-t¹ œcie¿kê do skórki UI aplikacji.
+    //! \param i indeks.
+    //! \return œcie¿ka do srórki aplikacji.
     virtual const std::string& getApplicationSkinsFilePath(int i) = 0;
+    //! \return iloœæ skórek aplikacji.
     virtual int getApplicationSkinsFilePathCount() = 0;
-
+    //! \return czy za³adowano próbê pomiarow¹.
 	virtual bool isLoadLocalTrialData() const = 0;
+    //! \param load ustaw flagê ³adowania lokalnej próby pomiarowej.
 	virtual void setLoadLocalTrialData(bool load) = 0;
-
+    //! \return œcie¿ka do katalogu z zasobami
 	virtual const Path& getResourcesPath() const = 0;
+    //! \return œcie¿ka do katalogu z próbami pomiarowymi
 	virtual const Path& getTrialsPath() const = 0;
 
     //! Rejestruje zadany parser.
     //! \param parser Parser do rejestracji.
     virtual void registerParser(core::IParserPtr parser) = 0;
 
-    //! \return Liczba us³ug.
+    //! \return Liczba parserów.
     virtual int getNumParsers() const = 0;
 
     //! \param idx Indeks parsera.
