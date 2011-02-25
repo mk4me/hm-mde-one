@@ -106,6 +106,22 @@ inline std::string toString(const T& source)
 
 //------------------------------------------------------------------------------
 
+/**
+ *	Definicja ostrze¿enia o przestarza³ej funkcjonalnoœci
+ */
+#ifdef __GNUC__
+#   define UTILS_DEPRECATED(func) func __attribute__ ((deprecated))
+#elif defined(_MSC_VER)
+#   define UTILS_DEPRECATED(func) __declspec(deprecated) func
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#   define UTILS_DEPRECATED(func) func
+#endif
+
+
+
+//------------------------------------------------------------------------------
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace util
 ////////////////////////////////////////////////////////////////////////////////
