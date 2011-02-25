@@ -77,7 +77,7 @@ private:
     SkeletalModel::Ptr                      model;           //!< model dla ktorego nastapi zapis lub odczyta
     int                             boneCounter;     //!< dzieki tej zmiennej mozna nadac unikatowe identyfikatory dla kosci 
     std::vector<std::string>        tempParentVector;//!< stos, umozliwia popranwe ustalenie zaleznosci rodzic - dziecko (w rekurencji)
-    SkeletalModel::BoneIdMap                tempBonesID;     //!< pomocne przy wczytywaniu i tworzeniu hierarchii
+    SkeletalModel::JointIdMap                tempBonesID;     //!< pomocne przy wczytywaniu i tworzeniu hierarchii
     SkeletalModel::JointMap                  tempBonesMap;    //!< pomocne przy wczytywaniu i tworzeniu hierarchii
 };
 }

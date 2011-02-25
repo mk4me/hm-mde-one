@@ -9,16 +9,9 @@ namespace hmAnimation
     class Skeleton
     {
     public:
-        Skeleton() : 
-          position(0.0,0.0,0.0),
-          orientation(0.0,0.0,0.0),
-          axisOrder(Axis::XYZ),
-          rootName("root")
-          {
-          }
+        Skeleton();
 
     public: 
-
         /// \brief  Zwraca korzen, czyli kosc od ktorej zaczyna sie hierarchia. 
         /// \return Wskaznik do kosci. 
         const Joint::Ptr getRoot() const { return this->root; }

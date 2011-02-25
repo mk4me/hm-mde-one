@@ -1,4 +1,4 @@
-#include <KinematicModelLibrary/stdafx.h>
+#include "stdafx.h"
 #include <KinematicModelLibrary/SkeletalParsers.h>
 #include <KinematicModelLibrary/hmException.h>
 #include <KinematicModelLibrary/DegreeOfFreedom.h>
@@ -29,17 +29,19 @@ int hmAnimation::DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::Channel chann
 }
 
 hmAnimation::Axis::Order hmAnimation::Axis::getAxisOrder( const std::string& axis ) {
-    if (axis == "XYZ") {
+    std::string s(axis);
+    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+    if (s == "XYZ") {
         return Axis::XYZ;
-    } else if (axis == "XZY") {
+    } else if (s == "XZY") {
         return Axis::XZY;
-    } else if (axis == "YXZ") {
+    } else if (s == "YXZ") {
         return Axis::XZY;
-    } else if (axis == "YZX") {
+    } else if (s == "YZX") {
         return Axis::YZX;
-    } else if (axis == "ZXY") {
+    } else if (s == "ZXY") {
         return Axis::ZXY;
-    } else if (axis == "ZYX") {
+    } else if (s == "ZYX") {
         return Axis::ZYX;
     } else {
         return Axis::UnknownAxisOrder;

@@ -1,7 +1,6 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__JOINT_H__
 #define HEADER_GUARD_KINEMATICMODEL__JOINT_H__
 
-#include "stdafx.h"
 #include "DegreeOfFreedom.h"
 namespace hmAnimation
 {
@@ -40,6 +39,8 @@ struct Joint {
     bodymass(std::numeric_limits<double>::infinity()),
     cofmass(std::numeric_limits<double>::infinity())
    {}
+
+    virtual ~Joint() {}
     
     /// \brief  Kopiuje zawartosc kosci bez kopiowania informacji o rodzicu i dzieciach
     /// \param  source      Kosc, z ktorej kopiujemy

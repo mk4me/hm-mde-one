@@ -1,4 +1,4 @@
-#include <KinematicModelLibrary/stdafx.h>
+#include "stdafx.h"
 #include <typeinfo>
 #include <KinematicModelLibrary/SkeletalParsers.h>
 
@@ -6,15 +6,16 @@
 hmAnimation::HmException::HmException( const std::string& message ) {
     //TODO: Czy takie konstrukcje sa bezpieczne ? 
     this->message = message;
-    std::string log = typeid(this).name();
-    Logger::getInstance().log(Logger::Error, log + " " + message);
+    Logger::getInstance().log(Logger::Warning, "Exception was thrown : " +  message);
 }
 hmAnimation::HmException::~HmException() {
     
 }
 
 const char* hmAnimation::HmException::what() const {
-    return message.c_str();
+    std::string exc = typeid(*this).name();
+    exc += (": " + message);
+    return exc.c_str();
 }
 //----------------------------------------------------------------------------------
 hmAnimation::AcclaimUnableToOpenFileException::AcclaimUnableToOpenFileException( const std::string& message )

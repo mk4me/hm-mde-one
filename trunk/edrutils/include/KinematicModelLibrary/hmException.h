@@ -44,10 +44,10 @@ namespace hmAnimation
     };
 
     /// \brief  Wyjatek rzucany, gdy probuje sie wykonac niezaimplementowana czesc kodu
-    class AcclaimNotYetImplemented : public HmException
+    class NotYetImplemented : public HmException
     {
     public:
-        AcclaimNotYetImplemented(const std::string& message) : HmException(message) { };
+        NotYetImplemented(const std::string& message) : HmException(message) { };
     };
 
 
@@ -71,6 +71,13 @@ namespace hmAnimation
           unmappedJoint(jointName)
           {
           }
+    };
+
+    class DictionaryNotLoadedException : public KinematicModelException 
+    {
+    public:
+        DictionaryNotLoadedException(const std::string& message) :
+            KinematicModelException(message) {}
     };
 
     class NotHAnimJointException : public KinematicModelException

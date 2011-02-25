@@ -2,6 +2,12 @@ project(KinematicModelLibrary)
 # nazwa
 set(TARGET_TARGETNAME KinematicModelLibrary)
 
+# nag³ówki prywatne
+set(PRIVATE_H
+	#stdafx.h
+)
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
+
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
@@ -15,7 +21,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/SkeletalModel.h
 	${HEADER_PATH}/SkeletalParsers.h
 	${HEADER_PATH}/Skeleton.h
-	${HEADER_PATH}/stdafx.h
 	${HEADER_PATH}/Logger.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
@@ -43,10 +48,22 @@ set(TARGET_SRC
 	Joint.cpp
 	KinematicModel.cpp
 	SkeletalModel.cpp
-	stdafx.cpp
+	Skeleton.cpp
+	#stdafx.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
-set(TARGET_SRC ${TARGET_SRC})
+#set(TARGET_SRC ${TARGET_SRC})
+
+#------------------------------------------------------------------------------
+# prekompilowany nag³ówek
+set(PRECOMPILED_H stdafx.h)
+set(PRECOMPILED_SRC stdafx.cpp)
+SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
+set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
+
 
 # kompilacja do wspó³dzielonej biblioteki
 add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})

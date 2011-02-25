@@ -94,7 +94,10 @@ public:
 public:
     /// \brief  Zwraca surowe dane z parsera
     hmAnimation::SkeletalModel::Ptr getSkeletalData() { return skeletalModel; }
-
+    hmAnimation::SkeletalModel::Ptr createSkeletalData() const;
+    /// \brief  Wczytuje slownik z nazwami do mapowania. 
+    /// \param  filename   Plik ze slownikiem. 
+    void loadMappingDictionary(const std::string& filename);
     /// \brief  Ustawia dane z parsera
     /// \details W tym miejscu tworzony jest pe³ny szkielet h-anim, robiona jest normalizacja danych
     /// \param  skeletalModel   The skeletal model. 
@@ -132,11 +135,14 @@ public:
     /// \param  name    Nazwa pobieranej kosci
     /// \return Wyszukana kosc, jesli takiej nie ma to rzucany jest wyjatek
     hAnimBone::Ptr getBoneByName(const std::string& name);
-
     /// \brief  Metoda aktywuje lub dezaktywuje staw, operacja ta zmienia strukture szkieletu i dane o rotacjach 
     /// \param  joint   Aktywowany staw. 
     /// \param  active  true - staw staje sie aktywny , false - staw staje sie nieaktywny 
     void activateJoint(hAnimJoint::Ptr joint, bool active);
+    //! Metoda aktywuje lub dezaktywuje staw, operacja ta zmienia strukture szkieletu i dane o rotacjach 
+    //! \param jointName nazwa aktywowanego stawu
+    //! \param active  true - staw staje sie aktywny , false - staw staje sie nieaktywny 
+    void activateJoint(const std::string& jointName, bool active);
 
 private:
     //void createHAnimSkeleton(hmAnimation::SkeletalModel::Ptr SkeletalModel);
@@ -162,9 +168,6 @@ private:
     /// \param [in,out] parentJoint Referencja do wskaznika, tutaj laduje tworzony staw. 
     /// \param [in,out] parentBone  Referencja do wskaznika, tutaj laduje tworzona kosc.
     void createJointAndBone(std::string newJointName, std::string newBoneName, hAnimJoint::Ptr& parentJoint, hAnimBone::Ptr& parentBone);
-    /// \brief  Wczytuje slownik z nazwami do mapowania. 
-    /// \param  filename   Plik ze slownikiem. 
-    void loadMappingDictionary(const std::string& filename);
     /// \brief  Executes the skeleton mapping operation. 
     /// \param  skeletalModel   The skeletal model. 
     void doSkeletonMapping(SkeletalModel::Ptr skeletalModel);
@@ -179,6 +182,12 @@ private:
     /// \param  maxLength   Length of the maximum. 
     /// \return The maximum length. 
     double getMaxLength(Joint::Ptr joint, double maxLength) const;
+    
+    Joint::Ptr cloneRootWithActivated(const Joint::Ptr origin) const;
+
+    void changeNameInFrames(const std::string& oldName, const std::string& newName);
+
+    bool checkLink(hAnimJoint::Ptr parent, hAnimJoint::Ptr middle, hAnimJoint::Ptr child);
 
 private:
     void* markers;                                                      //!< dane z markerami
@@ -189,7 +198,8 @@ private:
     std::map<std::string, hAnimBone::Ptr> bones;                        //!< mapa wszystkich kosci h-anim
     std::map<std::string, std::string> jointMappingDictionary;          //!< mapa dzieki ktorej mapuje sie do nomenklatury h-anim
     std::map<std::string, std::string> boneMappingDictionary;           //!< mapa dzieki ktorej mapuje sie do nomenklatury h-anim
-    double lengthRatio;                                                 //!< w zasadzie dlugos 
+    double lengthRatio;                                                 //!< dlugosc przez ktora nalezy pomnozyc aby uzyskac poczatkowe dlugosci kosci 
+    std::vector<SkeletalModel::singleFrame> frames;                     //!< 
 };
 }
 

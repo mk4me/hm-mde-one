@@ -1,4 +1,4 @@
-#include <KinematicModelLibrary/stdafx.h>
+#include "stdafx.h"
 #include <KinematicModelLibrary/DegreeOfFreedom.h>
 #include <KinematicModelLibrary/Joint.h>
 

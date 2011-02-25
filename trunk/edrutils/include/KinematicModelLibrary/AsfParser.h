@@ -29,6 +29,11 @@ namespace hmAnimation
             \param filename Nazwa pliku do wczytania */
         void save(const SkeletalModel::Ptr model, const std::string& filename);
 
+        //! Niektore parsery wymagaja, aby rotacje roota byly w kolejnosci XYZ
+        //! Jesli flaga jest ustawiona, to taka kolejnosc bedzie wymuszona przy zapisie
+        //! \param flag czy wymuszac kolejnosc rotacji XYZ przy zapisie
+        void setForceXYZRoot(bool flag) {forceRootXYZ = flag;}
+
     protected:
         /** Dzieli wejsciowy plik na poszczegolne sekcje. 
             \param asf lancuch z calym plikiem asf*/
@@ -61,6 +66,7 @@ namespace hmAnimation
         /** Parsuje linijke z limitami dla stopnia swobody. 
             Dopisuje wynik do wektora limitValues*/
         void parseLimit(const std::string& token, std::vector<double>& limitValues ); 
+        
 
     protected:
         std::string                     version;        //!< wersja wg ktorej zostal zapisany plik
@@ -76,6 +82,7 @@ namespace hmAnimation
     private:
         SkeletalModel::Ptr               model;          //!< przechowuje model ze szkieletem
         bool                             forceRootXYZ;   //!< wymuszenie kolejnosci rotacji roota (zapewnia zgodnosc z niektorymi parserami)
+        int                              idCounter;      //!< wymusza tworzenie, identyfikatorow kosci od nowa
        
      };
 }

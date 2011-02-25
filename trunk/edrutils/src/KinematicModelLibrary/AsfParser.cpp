@@ -1,11 +1,14 @@
-#include <KinematicModelLibrary/stdafx.h>
+#include "stdafx.h"
 
 #include <KinematicModelLibrary/SkeletalParsers.h>
 
 using namespace hmAnimation;
 using namespace std;
 
-AsfParser::AsfParser() : forceRootXYZ(true) {
+AsfParser::AsfParser() : 
+    forceRootXYZ(true),
+    idCounter(0)
+{
 }
 
 AsfParser::~AsfParser() {
@@ -33,7 +36,17 @@ void AsfParser::parse(SkeletalModel::Ptr model, const string& filename) {
     // usun komentarze z pliku
     storage = removeComments(storage);
     // podziel plik na sekcje
-    splitAsf(storage);
+    bool result = splitAsf(storage);
+    if (result) {
+        result &= parseUnits(units);
+        result &= parseRoot(root, model->getSkeleton());
+        result &= parseBones(bonedata);
+        result &= parseHierarchy(hierarchy, model->getSkeleton());
+    }
+    if (!result)
+    {
+        throw AcclaimWrongFileException("Error in file");
+    }
 }
 
 // Dzieli wejsciowy plik na poszczegolne sekcje
@@ -72,18 +85,7 @@ bool AsfParser::splitAsf (const string& asf) {
         version.resize(size - 1, ' ');
     }
 
-    
-    bool result = true;
-    result &= parseUnits(units);
-    result &= parseRoot(root, model->getSkeleton());
-    result &= parseBones(bonedata);
-    result &= parseHierarchy(hierarchy, model->getSkeleton());
-
-    if (!result)
-    {
-        throw AcclaimWrongFileException("Error in file");
-    }
-    return result;
+    return true;
 }
 
 void AsfParser::parseLimit(const string& token, vector<double>& limitValues) {
@@ -128,6 +130,8 @@ bool AsfParser::parseSingleBone(const string& singleBone, Joint& bone) {
     while (is >> token)    {
         if (token.compare("id") == 0) {
             is >> bone.id;
+            // niektore pliki maja powtorzony unikalny id..
+            bone.id = ++idCounter;
         } else if (token.compare("name") == 0) {
             is >> bone.name;
         } else if (token.compare("bodymass") == 0) {
@@ -179,7 +183,7 @@ bool AsfParser::parseSingleBone(const string& singleBone, Joint& bone) {
 bool AsfParser::parseBones(const string& bones) {
     istringstream is (bones);
     string bone;
-    SkeletalModel::BoneIdMap& bonesIds = model->getBoneIDMap();
+    SkeletalModel::JointIdMap& bonesIds = model->getJointIDMap();
     SkeletalModel::JointMap& bonesMap = model->getJointMap();
     string token;
     string::size_type shift = strlen("begin");
@@ -260,7 +264,11 @@ bool AsfParser::parseRoot(const string& root, Skeleton& skeleton) {
     channels.clear();
     while (getline(lines, line)) {
         istringstream is(line);
-        is >> token;
+        if (line.size() == 0) {
+            token = "";
+        } else {
+            is >> token;
+        }
         if (token.compare("axis") == 0) {
             is >> token;
             order = Axis::getAxisOrder(token);
@@ -326,14 +334,14 @@ bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton
     }
 
     skeleton.setRoot(root);
-    model->getBoneIDMap()[root->id] = root;
+    model->getJointIDMap()[root->id] = root;
     model->getJointMap()[root->name] = root;
     
     for (int i = 0; i < linesCount; i++) {
         hierarchyLine line = hierarchy[i];
-        Joint::Ptr parent = model->getBoneByName(line.first);
+        Joint::Ptr parent = model->getJointByName(line.first);
         for (int j = line.second.size() - 1; j >= 0; --j) {
-            Joint::Ptr bone = model->getBoneByName(line.second[j]);
+            Joint::Ptr bone = model->getJointByName(line.second[j]);
             bone->parent = parent;
             parent->children.push_back(bone);
         }
@@ -425,7 +433,7 @@ void hmAnimation::AsfParser::saveRoot( std::ostream& out ) {
 void hmAnimation::AsfParser::saveBones( std::ostream& out ) {
     out << ":bonedata" << endl;
     
-    SkeletalModel::BoneIdMap bonesIds = model->getBoneIDMap();
+    SkeletalModel::JointIdMap bonesIds = model->getJointIDMap();
     map<int, Joint::Ptr>::iterator it;
     map<int, Joint::Ptr>::iterator end = bonesIds.end();
 

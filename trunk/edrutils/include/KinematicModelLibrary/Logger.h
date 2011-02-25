@@ -1,6 +1,7 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__LOGGER_H__
 #define HEADER_GUARD_KINEMATICMODEL__LOGGER_H__
 
+#include <string>
 namespace hmAnimation {
 //! Klasa, która jest odpowiedzialna za logowanie informacji.
 class Logger
@@ -21,6 +22,7 @@ private:
     Logger(const Logger &);
     Logger& operator=(const Logger&);
 public:
+    //! zwraca instancje logera
     static Logger& getInstance() {
         static Logger instance;
         instance.setLogCallback(Logger::logConsole);

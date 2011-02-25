@@ -123,12 +123,24 @@ endif()
 
 #---------------------------------------------------
 # testy
-
 if (PROJECT_ENABLE_TESTS)
-	set(PROJECT_TESTS_ROOT "${PROJECT_SOURCE_DIR}/../tests/" CACHE PATH "Location of data.")
-	add_subdirectory(${PROJECT_TESTS_ROOT} ${PROJECT_BINARY_DIR}/tests)
+ include(CTest)
+ set(GLOBAL_TESTS_ROOT "../tests/" CACHE PATH "Location of data.")
+ add_subdirectory(${GLOBAL_TESTS_ROOT} ${PROJECT_BINARY_DIR}/tests)
+ ENABLE_TESTING()
+ ADD_TEST(vidlib_test ${PROJECT_BINARY_DIR}/bin/Debug/vidlib_test)
+ SET_TESTS_PROPERTIES(vidlib_test PROPERTIES PASS_REGULAR_EXPRESSION "OK")
+ ADD_TEST(utils_test ${PROJECT_BINARY_DIR}/bin/Debug/utils_test)
+ SET_TESTS_PROPERTIES(utils_test PROPERTIES PASS_REGULAR_EXPRESSION "OK")
+ ADD_TEST(KinematicModelLibrary_test ${PROJECT_BINARY_DIR}/bin/Release/KinematicModelLibrary_test)
+ SET_TESTS_PROPERTIES(KinematicModelLibrary_test PROPERTIES PASS_REGULAR_EXPRESSION "OK")
 endif()
 
+#if (PROJECT_ENABLE_TESTS)
+#	set(PROJECT_TESTS_ROOT "${PROJECT_SOURCE_DIR}/../tests/" CACHE PATH "Location of data.")
+#	add_subdirectory(${PROJECT_TESTS_ROOT} ${PROJECT_BINARY_DIR}/tests)
+#endif()
+#
 #---------------------------------------------------
 # dodanie uninstalla
 

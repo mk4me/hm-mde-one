@@ -1,4 +1,4 @@
-#include <KinematicModelLibrary/stdafx.h>
+#include "stdafx.h"
 #include <osg/MatrixTransform>
 #include <osg/Transform>
 #include <osg/Math>
@@ -183,7 +183,7 @@ void BvhParser::save(const SkeletalModel::Ptr model, const std::string& filename
         for (it = jointList.begin(); it != jointList.end(); it++) {
 
             SkeletalModel::singleBoneState boneState = getSingleBoneState(i, *it);
-            Joint::Ptr bone = model->getBoneByName(boneState.name);
+            Joint::Ptr bone = model->getJointByName(boneState.name);
 
             if (DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::L, bone->dofs) != -1) {
                 Logger::getInstance().log(Logger::Warning, "Acclaim 'L' degree of freedom is not supported");
@@ -302,18 +302,17 @@ hmAnimation::BvhParser::~BvhParser()
 
 }
 //----------------------------------------------------------------------------------
-void hmAnimation::BvhParser::readSingleJoint( std::istream& in, std::list<std::string>& jointList )
-{
+void hmAnimation::BvhParser::readSingleJoint( std::istream& in, std::list<std::string>& jointList ) {
     // dane o kosciach na razie trafiaja do tymczasowych struktur (trafia do wlasciwych po utworzeniu dummy bones)
-    SkeletalModel::BoneIdMap& bonesIds = tempBonesID;
+    SkeletalModel::JointIdMap& bonesIds = tempBonesID;
     SkeletalModel::JointMap& bonesMap = tempBonesMap;
     Joint::Ptr root;
-    std::string line;
+    std::string token;
     int intBuffer;
 
-    in >> line;
-    if (line == "}")
-    {	
+    in >> token;
+    while (token.size() == 0 && (in >> token)); 
+    if (token == "}") {	
         tempParentVector.pop_back();
         // koniec rekurencji
         return ;
@@ -322,16 +321,16 @@ void hmAnimation::BvhParser::readSingleJoint( std::istream& in, std::list<std::s
     
     Joint::Ptr j(new Joint());
 
-    if (boost::iequals(line, "End"))	
+    if (boost::iequals(token, "End"))	
     {
         // natrafiono na lisc
-        in >> line;
+        in >> token;
         string parentName = tempParentVector.back();
      
         tempParentVector.push_back("dummy");
        
         osg::Vec3d ofs;
-        in >> line >> line >> ofs[0] >> ofs[1] >> ofs[2];
+        in >> token >> token >> ofs[0] >> ofs[1] >> ofs[2];
         j->length = ofs.normalize();
         j->direction = ofs;
         Joint::Ptr parent = bonesMap[parentName];
@@ -343,7 +342,7 @@ void hmAnimation::BvhParser::readSingleJoint( std::istream& in, std::list<std::s
     else
     {
         Joint::Ptr parent;
-        if(line == "ROOT") {
+        if(token == "ROOT") {
             root = j;
         } else {
             // pobranie nazwy parenta ze stosu
@@ -351,32 +350,46 @@ void hmAnimation::BvhParser::readSingleJoint( std::istream& in, std::list<std::s
         }
         j->parent = parent;
 
-        in >> line;
-        if (bonesMap.find(line) != bonesMap.end()) {
-            Logger::getInstance().log(Logger::Warning, "Bone '" + line +  "' already exists! - renaming");
+        token = "";
+        string name; 
+        while (in >> token) {
+            if (token != "{") {
+                name += token + ' ';
+            } else {
+                break;
+            }
+        }
+        int size = name.size();
+        if (size > 0) {
+            name.resize(size - 1);
+        }
+
+        //Logger::getInstance().log(Logger::Debug, name);
+        if (bonesMap.find(name) != bonesMap.end()) {
+            Logger::getInstance().log(Logger::Warning, "Bone '" + name +  "' already exists! - renaming");
             // istnieje juz taka kosc! zmiana nazwy.
             int c = 1;
             std::stringstream newline;
-            newline << line << c;
+            newline << name << c;
             while (bonesMap.find(newline.str()) != bonesMap.end()) {
                 newline.str(std::string());
-                newline << line << ++c;
+                newline << name << ++c;
             }
-            line = newline.str();
+            name = newline.str();
         }
-        j->name = line;
-        jointList.push_back(line);
+        j->name = name;
+        jointList.push_back(name);
         j->id = ++boneCounter;
         bonesMap[j->name] = j;
         bonesIds[j->id] = j;
         
-        tempParentVector.push_back( line );
+        tempParentVector.push_back( name );
         
         if(parent) {
             parent->children.push_back(j);
         }
 
-        in >> line >> line;
+        in  >> token;
         osg::Vec3d ofs;
         in >> ofs[0] >> ofs[1] >> ofs[2];
         if (!parent) {
@@ -386,13 +399,13 @@ void hmAnimation::BvhParser::readSingleJoint( std::istream& in, std::list<std::s
             j->length = ofs.normalize();
             j->direction = ofs;
         }
-        in >> line;
+        in >> token;
         in >> intBuffer;
         for (int i = 0; i < intBuffer; i++)
         {
             DegreeOfFreedom dof;
-            in >> line;
-            dof.channel = DegreeOfFreedom::getChannel(line);
+            in >> token;
+            dof.channel = DegreeOfFreedom::getChannel(token);
             j ->dofs.push_back(dof);
         }
     }
@@ -400,14 +413,14 @@ void hmAnimation::BvhParser::readSingleJoint( std::istream& in, std::list<std::s
     readSingleJoint (in, jointList) ;
 
 
-    in >> line;
+    in >> token;
 
     // po wczytaniu tokena trzeba sie cofnac (zeby nie zaburzyc przetwarzania pliku
-    for (int i = line.size() - 1; i >= 0; --i) {
-        in.putback(line[i]);
+    for (int i = token.size() - 1; i >= 0; --i) {
+        in.putback(token[i]);
     }
     
-    if (line == "MOTION") {
+    if (token == "MOTION") {
         // zakonczyla sie sekcja z hierarchia
         model->getSkeleton().setRootName(root->name);
         // sztywna zmiana nazwy roota (zgodnosc z acclaim)
@@ -433,7 +446,7 @@ void hmAnimation::BvhParser::HandleBone(Joint::Ptr newBone)
 
     Joint::Ptr nullBone;
     SkeletalModel::JointMap& boneMap = model->getJointMap();
-    SkeletalModel::BoneIdMap& boneIdMap = model->getBoneIDMap();
+    SkeletalModel::JointIdMap& boneIdMap = model->getJointIDMap();
     newBone->id = boneCounter++;
     boneMap[newBone->name] = newBone;
     boneIdMap[newBone->id] = newBone;

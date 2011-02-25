@@ -4,12 +4,20 @@ set(TARGET_TARGETNAME KinematicModelLibrary_test)
 # Ÿród³a
 set(TARGET_SRC 
 	test.cpp
-	AsfParserTest.cpp
+	#AsfParserTest.cpp
+	#AmcParserTest.cpp
+	#BvhParserTest.cpp
+	MiscTest.cpp
+	#KinematicModelTest.cpp
 )
 
 # nag³ówki
 set(TARGET_H
-	AsfParserTest.h
+	#AsfParserTest.h
+	#AmcParserTest.h
+	#BvhParserTest.h
+	MiscTest.h
+	#KinematicModelTest.h
 )
 
 # kompilacja do wspó³dzielonej biblioteki

@@ -1,4 +1,4 @@
-#include <KinematicModelLibrary/stdafx.h>
+#include "stdafx.h"
 #include <KinematicModelLibrary/SkeletalParsers.h>
 #include <osgAnimation/Bone>
 #include <osgAnimation/Skeleton>
@@ -33,7 +33,39 @@ void KinematicModel::createJointAndBone(std::string newJointName, std::string ne
 }
 //----------------------------------------------------------------------------------
 hmAnimation::KinematicModel::KinematicModel(void) {
-    loadMappingDictionary("dictionary.txt");
+    //TODO : zamiast takiego rozwiazania wymusic zaladowanie slownika
+    //loadMappingDictionary("dictionary.txt");
+     jointMappingDictionary["root"] = "HumanoidRoot";
+     jointMappingDictionary["lhipjoint"] = "l_hip";
+     jointMappingDictionary["lfemur"] = "l_knee";
+     jointMappingDictionary["ltibia"] = "l_ankle";
+     jointMappingDictionary["lfoot"] = "l_subtalar";
+     jointMappingDictionary["ltoes"] = "l_metatarsal";
+     jointMappingDictionary["rhipjoint"] = "r_hip";
+     jointMappingDictionary["rfemur"] = "r_knee";
+     jointMappingDictionary["rtibia"] = "r_ankle";
+     jointMappingDictionary["rfoot"] = "r_subtalar";
+     jointMappingDictionary["rtoes"] = "r_metatarsal";
+     jointMappingDictionary["lowerback"] = "vl5";
+     jointMappingDictionary["upperback"] = "vt12";
+     jointMappingDictionary["thorax"] = "vt1";
+     jointMappingDictionary["lowerneck"] = "vc7";
+     jointMappingDictionary["upperneck"] = "vc1";
+     jointMappingDictionary["head"] = "skullbase";
+     jointMappingDictionary["lclavicle"] = "l_sternoclavicular";
+     jointMappingDictionary["lhumerus"] = "l_shoulder";
+     jointMappingDictionary["lradius"] = "l_elbow";
+     jointMappingDictionary["lwrist"] = "l_wrist";
+     jointMappingDictionary["lhand"] = "l_middle0";
+     jointMappingDictionary["lfingers"] = "l_middle1";
+     jointMappingDictionary["lthumb"] = "l_thumb1";
+     jointMappingDictionary["rclavicle"] = "r_sternoclavicular";
+     jointMappingDictionary["rhumerus"] = "r_shoulder";
+     jointMappingDictionary["rradius"] = "r_elbow";
+     jointMappingDictionary["rwrist"] = "r_wrist";
+     jointMappingDictionary["rhand"] = "r_middle0";
+     jointMappingDictionary["rfingers"] = "r_middle1";
+     jointMappingDictionary["rthumb"] = "r_thumb1";
 }
 //----------------------------------------------------------------------------------
 hmAnimation::KinematicModel::KinematicModel(const std::string& dictionaryFilename)
@@ -168,7 +200,9 @@ hAnimSkeleton::Ptr KinematicModel::createHAnim(/*HAnimHelper::LevelOfArticulatio
 }
 //----------------------------------------------------------------------------------
 std::string hmAnimation::KinematicModel::mapJointName(const std::string& given) {
-
+    if (boneMappingDictionary.size() == 0 && jointMappingDictionary.size() == 0) {
+        throw hmAnimation::DictionaryNotLoadedException("dictionary with mapping scheme was not loaded");
+    }
     std::map<std::string, std::string>::iterator it = boneMappingDictionary.find(given);
     if (it != boneMappingDictionary.end()) {
         hAnimBone::Ptr bone = bones[it->second];
@@ -193,14 +227,16 @@ void hmAnimation::KinematicModel::setSkeletalData(hmAnimation::SkeletalModel::Pt
     //double maxLength = getMaxBoneLength(
     this->skeletalModel = skeletalModel;
 
+    this->frames = skeletalModel->getFrames();
+
    this->haSkeleton = createHAnim(/*hmAnimation::HAnimHelper::_3_Full_HAnim_Hierarchy*/);
    double maxLength = getMaxBoneLength(skeletalModel->getSkeleton());
    doSkeletonMapping(skeletalModel);
    lengthRatio = maxLength;
-   SkeletalModel::JointMap jointMap = skeletalModel->getJointMap();
-   SkeletalModel::JointMap::iterator it;
-   for (it = jointMap.begin(); it != jointMap.end(); it++) {
-       ((*it).second)->length /= maxLength;
+
+   map<string, hAnimJoint::Ptr>::iterator it;
+   for (it = joints.begin(); it != joints.end(); it++) {
+       (it->second)->length /= maxLength;
    }
 }
 //----------------------------------------------------------------------------------
@@ -227,37 +263,6 @@ void hmAnimation::KinematicModel::loadMappingDictionary(const std::string& filen
             jointMappingDictionary[tokens[0] ] = tokens[i];
         }
     }
-
-     /*jointMappingDictionary["lhipjoint"] = "l_hip";
-     jointMappingDictionary["lfemur"] = "l_knee";
-     jointMappingDictionary["ltibia"] = "l_ankle";
-     jointMappingDictionary["lfoot"] = "l_subtalar";
-     jointMappingDictionary["ltoes"] = "l_metatarsal";
-     jointMappingDictionary["rhipjoint"] = "r_hip";
-     jointMappingDictionary["rfemur"] = "r_knee";
-     jointMappingDictionary["rtibia"] = "r_ankle";
-     jointMappingDictionary["rfoot"] = "l_subtalar";
-     jointMappingDictionary["rtoes"] = "r_metatarsal";
-     jointMappingDictionary["lowerback"] = "vl5";
-     jointMappingDictionary["upperback"] = "vt12";
-     jointMappingDictionary["thorax"] = "vt1";
-     jointMappingDictionary["lowerneck"] = "vc7";
-     jointMappingDictionary["upperneck"] = "vc1";
-     jointMappingDictionary["head"] = "skullbase";
-     jointMappingDictionary["lclavicle"] = "l_sternoclavicular";
-     jointMappingDictionary["lhumerus"] = "l_shoulder";
-     jointMappingDictionary["lradius"] = "l_elbow";
-     jointMappingDictionary["lwrist"] = "l_wrist";
-     jointMappingDictionary["lhand"] = "l_middle0";
-     jointMappingDictionary["lfingers"] = "l_middle1";
-     jointMappingDictionary["lthumb"] = "r_thumb1";
-     jointMappingDictionary["rclavicle"] = "r_sternoclavicular";
-     jointMappingDictionary["rhumerus"] = "r_shoulder";
-     jointMappingDictionary["rradius"] = "r_elbow";
-     jointMappingDictionary["rwrist"] = "r_wrist";
-     jointMappingDictionary["rhand"] = "r_middle0";
-     jointMappingDictionary["rfingers"] = "r_middle1";
-     jointMappingDictionary["rthumb"] = "r_thumb1";*/
 }
 //----------------------------------------------------------------------------------
 double hmAnimation::KinematicModel::getMaxBoneLength(const Skeleton& skeleton) const {
@@ -272,16 +277,20 @@ double hmAnimation::KinematicModel::getMaxLength(Joint::Ptr joint, double maxLen
     }
 	return(maxLength);
 }
+
+
 //----------------------------------------------------------------------------------
 void hmAnimation::KinematicModel::doSkeletonMapping(SkeletalModel::Ptr skeletalModel) {
     SkeletalModel::JointMap& jointMap = skeletalModel->getJointMap();
     SkeletalModel::JointMap::iterator it;
     for (it = jointMap.begin(); it != jointMap.end(); it++) {
-        std::string mappedName = mapJointName((*it).first);
-        Joint::Ptr joint = (*it).second;
+        std::string mappedName = mapJointName(it->first);
+        changeNameInFrames(it->first, mappedName);
+        Joint::Ptr joint = it->second;
         hAnimJoint::Ptr hJoint = joints[mappedName];
         Joint::copyContent(joint, hJoint);
-
+        hJoint->name = mappedName;
+        hJoint->active = true;
         Joint::Ptr parent = joint->parent.lock();
         if (parent) {
             std::string parentName = mapJointName(parent->name);
@@ -304,7 +313,7 @@ std::vector<osg::Quat>& hmAnimation::KinematicModel::getQuaternionRotation(int f
 }
 //----------------------------------------------------------------------------------
 std::vector<osg::Quat>& hmAnimation::KinematicModel::getQuaternionRotation(double time) {
-	std::vector<SkeletalModel::singleFrame>& frames = this->skeletalModel->getFrames();
+	//std::vector<SkeletalModel::singleFrame>& frames = this->skeletalModel->getFrames();
     int framesNo = frames.size();
     // TODO : Slerp
     time /= 100;
@@ -313,21 +322,22 @@ std::vector<osg::Quat>& hmAnimation::KinematicModel::getQuaternionRotation(doubl
 }
 //----------------------------------------------------------------------------------
 void hmAnimation::KinematicModel::createQuaternionRepresentation(void) {
-    std::vector<SkeletalModel::singleFrame>& frames = this->skeletalModel->getFrames();
+    //std::vector<SkeletalModel::singleFrame>& frames = this->skeletalModel->getFrames();
     int framesNo = frames.size();
     this->quaternionRepresentation.resize(framesNo);
     //SkeletalModel::JointMap& jointsMap = this->skeletalModel->getJointMap();
     //int jointsNo = jointsMap.size();
 
     for (int i = 0; i < framesNo; i++) {
-        SkeletalModel::JointMap::iterator it;
+        //SkeletalModel::JointMap::iterator it;
         int jointStatesNo = frames[i].bonesData.size();
         this->quaternionRepresentation[i].resize(jointStatesNo);
         //for (it = jointsMap.begin(); it != jointsMap.end(); it++) {
         for (int j = 0; j < jointStatesNo; j++) {
             double rx, ry, rz;
             int index;
-            Joint::Ptr joint = it->second;
+            std::string name = frames[i].bonesData[j].name;
+            Joint::Ptr joint = joints[name];//it->second;
             
             SkeletalModel::singleBoneState jointState = frames[i].bonesData[j];
             index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RZ, joint->dofs);
@@ -576,26 +586,108 @@ void hmAnimation::KinematicModel::activateJoint(hAnimJoint::Ptr joint, bool acti
         throw hmAnimation::KinematicModelException("Unknown error");
     }
 
-    if (parent->children.size() != 0) {
-        throw hmAnimation::AcclaimNotYetImplemented("");
-    }
+    int childCount = parent->children.size();
+    if (childCount > 1) {
+        //throw hmAnimation::AcclaimNotYetImplemented("");
+        int index = -1;
+        for (int i = 0; i < childCount; i++) {
+            if (checkLink(parent, joint, boost::shared_dynamic_cast<hAnimJoint>(parent->children[i]))) {
+                index = i; 
+                break;
+            }
+        }
 
-    if (active) {
-        Joint::Ptr child = parent->children[0];
-        joint->active = true;
-        joint->children.clear();
-        joint->children.push_back(child);
-        joint->parent = parent;
-        parent->children[0] = joint;
+        if (active) {
+            joint->active = true;
+            joint->children.clear();
+            if (index == -1) {
+                parent->children.push_back(joint);
+            } else {
+                hAnimJoint::Ptr temp = boost::shared_dynamic_cast<hAnimJoint>(parent->children[index]);
+                parent->children[index] = joint;
+                joint->children.push_back(temp);
+                    
+            }
+        } else {
+            throw hmAnimation::NotYetImplemented("Setting active to false when children.size > 1");
+        }
     } else {
-        parent->children = joint->children;
-        joint->children.clear();
-        joint->parent = null;
-        for (int i = parent->children.size() - 1; i >= 0; --i) {
-            parent->children[i]->parent = parent;
+        if (active) {
+            Joint::Ptr child = parent->children[0];
+            joint->active = true;
+            joint->children.clear();
+            joint->children.push_back(child);
+            joint->parent = parent;
+            parent->children[0] = joint;
+            int size = frames.size();
+            /*for (int i = 0; i < size; ++i) {
+                SkeletalModel::singleBoneState state;
+                state.name = joint->name;
+                frames[i].bonesData.push_back(state);
+            }*/
+        } else {
+            parent->children = joint->children;
+            joint->children.clear();
+            joint->parent = null;
+            for (int i = parent->children.size() - 1; i >= 0; --i) {
+                parent->children[i]->parent = parent;
+            }
         }
     }
-
     this->createQuaternionRepresentation();
 }
+
+void hmAnimation::KinematicModel::activateJoint( const std::string& jointName, bool active ) {
+    hAnimJoint::Ptr joint = getJointByName(jointName);
+    activateJoint(joint, active);
+}
+
+hmAnimation::SkeletalModel::Ptr hmAnimation::KinematicModel::createSkeletalData() const {
+    SkeletalModel::Ptr model(new SkeletalModel);
+    Skeleton& skeleton = model->getSkeleton();
+    Joint::Ptr newRoot = cloneRootWithActivated(this->haSkeleton->getRoot());
+    skeleton.setRoot(newRoot);
+
+    model->setName("HumanModel");
+    model->getFrames() = frames;
+    model->RecreateMaps();
+    return model;
+}
+
+Joint::Ptr hmAnimation::KinematicModel::cloneRootWithActivated(const Joint::Ptr origin ) const {
+    return Joint::clone(origin);
+}
+
+void hmAnimation::KinematicModel::changeNameInFrames( const std::string& oldName, const std::string& newName ) {
+    // TODO : ASSERT
+    int index = -1;
+    for (int i = frames[0].bonesData.size() - 1; i >= 0; --i) {
+        if (frames[0].bonesData[i].name == oldName) {
+            index = i;
+            break;
+        }
+    }
+    if (index == -1) {
+        return;
+    }
+    for (int i = frames.size() -1; i >= 0; --i) {
+        frames[i].bonesData[index].name = newName;
+    }
+}
+
+bool hmAnimation::KinematicModel::checkLink( hAnimJoint::Ptr parent, hAnimJoint::Ptr middle, hAnimJoint::Ptr child )
+{
+    Joint::Ptr tempParent = child->parent.lock();
+    hAnimJoint::Ptr cp = boost::shared_dynamic_cast<hAnimJoint>(tempParent);
+    while (cp && cp != parent) {
+        if (cp == middle) {
+            return true;
+        }
+        tempParent = cp->parent.lock();
+        cp = boost::shared_dynamic_cast<hAnimJoint>(tempParent);
+    }
+
+    return false;
+}
+
 

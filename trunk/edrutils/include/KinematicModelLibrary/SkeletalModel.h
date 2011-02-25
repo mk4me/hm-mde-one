@@ -1,6 +1,5 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__SKELETALMODEL_H__
 #define HEADER_GUARD_KINEMATICMODEL__SKELETALMODEL_H__
-#include "stdafx.h"
 #include "Joint.h"
 #include "Skeleton.h"
 namespace hmAnimation 
@@ -22,7 +21,7 @@ namespace hmAnimation
         /// \brief  mapa nazwa kosci -> kosc
         typedef std::map<std::string, Joint::Ptr> JointMap;
         /// \brief  mapa identyfikator kosci -> kosc
-        typedef std::map<int, Joint::Ptr> BoneIdMap;
+        typedef std::map<int, Joint::Ptr> JointIdMap;
 
         /// \brief  Struktura zawiera wartosci kanalow dla
         /// 	    konkretnej kosci i konkretnego kanalu
@@ -55,15 +54,19 @@ namespace hmAnimation
 
     public:
         /** Zwraca kosc na podstawie nazwy */
-        Joint::Ptr getBoneByName(const std::string& name) { return bonesMap[name];}
+        Joint::Ptr getJointByName(const std::string& name) {
+            JointMap::iterator it = jointsMap.find(name);
+            Joint::Ptr nullJoint;
+            return it != jointsMap.end() ? it->second : nullJoint;
+        }
         /** Zwraca kosc na podstawie identyfikatora */
-        Joint::Ptr getBoneByID(int id) { return bonesIds[id]; }
+        Joint::Ptr getJointByID(int id) { return jointsIds[id]; }
         /** Zwraca szkielet modelu */
         Skeleton& getSkeleton() { return skeleton; }
         /** Zwraca referencje do mapy : nazwa kosci -> kosc*/
-        JointMap& getJointMap() { return bonesMap; }
+        JointMap& getJointMap() { return jointsMap; }
         /** Zwraca referencje do mapy : identyfikator kosci -> kosc*/
-        BoneIdMap& getBoneIDMap() { return bonesIds; }
+        JointIdMap& getJointIDMap() { return jointsIds; }
         // akcesory
         Angle getAngle() const { return angle; }
         void setAngle(Angle angle) { this->angle = angle;}
@@ -80,6 +83,10 @@ namespace hmAnimation
         std::vector<singleFrame>& getFrames() { return frames; }
         void setFrameTime(double frameTime) { this->frameTime = frameTime; }
         double getFrameTime() { return frameTime; }
+        void RecreateMaps();
+
+    protected:
+        void Recreate(Joint::Ptr joint);
 
     protected:
         std::string                  version;        //!< wersja wg ktorej zostal zapisany plik
@@ -88,8 +95,8 @@ namespace hmAnimation
         double                       length;         //!< globalny modyfikator dlugosci kosci
         double                       mass;           //!< globalny modyfikator masy
         Angle                        angle;          //!< okresla, czy dane sa w stopniach czy radianach
-        JointMap                      bonesMap;       //!< mapa nazwa kosci -> kosc
-        BoneIdMap                    bonesIds;       //!< mapa identyfikator kosci -> kosc
+        JointMap                      jointsMap;       //!< mapa nazwa kosci -> kosc
+        JointIdMap                    jointsIds;       //!< mapa identyfikator kosci -> kosc
         Skeleton                     skeleton;       //!< szkielet z koscmi
         std::vector<singleFrame>     frames;         //!< kolejka z wszystkimi ramkami
         double                       frameTime;      //!< czas pomiedzy klatkami
