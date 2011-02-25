@@ -35,7 +35,6 @@ void MiscTest::testOK()
     Logger::getInstance().log(Logger::Info, "Test ktory powinien sie udac");
     AsfParser asf;
     SkeletalModel::Ptr model(new SkeletalModel);
-    system("dir");
     asf.parse(model, "kinematic/acclaim/cmu/01/01.asf");
     CPPUNIT_ASSERT(true);
 
