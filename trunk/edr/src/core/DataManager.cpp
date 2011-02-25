@@ -147,21 +147,29 @@ core::IParserPtr DataManager::getParser(const std::string& filename)
 
 core::IParserPtr DataManager::createRawParser(int idx)
 {
-    UTILS_ASSERT(idx < static_cast<int>(registeredParsersList.size()));
-
-    return core::IParserPtr(registeredParsersList[idx]->create());
+    if(idx < static_cast<int>(registeredParsersList.size()))
+    {
+        return core::IParserPtr(registeredParsersList[idx]->create());
+    }
+    else
+    {
+        return core::IParserPtr();
+    }
 }
 
 core::IParserPtr DataManager::createRawParser(const std::string& extension)
 {
     ParsersMultimap::iterator it = registeredParsersExtMap.find(extension);
-    UTILS_ASSERT(it != registeredParsersExtMap.end());
-    if(registeredParsersExtMap.count(extension) > 1)
+    if(it != registeredParsersExtMap.end())
     {
-        LOG_WARNING("Multiple parsers found for extension: " << extension << ".");
+        if(registeredParsersExtMap.count(extension) > 1)
+        {
+            LOG_WARNING("Multiple parsers found for extension: " << extension << ".");
+        }
+        //jesli sa parsery - zwracamy tylko pierwszy!
+        return core::IParserPtr(it->second->create());
     }
-    //jesli sa parsery - zwracamy tylko pierwszy!
-    return core::IParserPtr(it->second->create());
+    return core::IParserPtr();
 }
 
 void DataManager::findLocalTrials()
