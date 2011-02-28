@@ -14,10 +14,18 @@
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
 
+//! Bufor ramek o maksymalnym zadanym rozmiarze.
+class VideoStreamImpl
+{
+public:
+    std::string path;
+};
+
 VideoStream::VideoStream( const std::string& source )
 {
     VIDLIB_FUNCTION_PROLOG;
-    this->source = source;
+    impl = new VideoStreamImpl;
+    impl->path = source;
     lastError = NULL;
     frameRate = 0.0;
     frameDuration = 0.0;
@@ -36,6 +44,7 @@ VideoStream::~VideoStream()
     VIDLIB_FUNCTION_PROLOG;
     utils::deletePtr(lastError);
     utils::deletePtr(converter);
+    utils::deletePtr(impl);
 }
 
 
@@ -47,8 +56,8 @@ bool VideoStream::notifyError( const VideoError& error )
 #else   // VIDLIB_ENABLE_EXCEPTIONS
     utils::deletePtr(lastError);
     lastError = error.clone();
-#endif  // VIDLIB_ENABLE_EXCEPTIONS
     return false;
+#endif  // VIDLIB_ENABLE_EXCEPTIONS
 }
 
 
@@ -159,6 +168,10 @@ void VideoStream::setNormalizedTime( double normalizedTime )
     setTime( normalizedTime * getDuration() );
 }
 
+const std::string& VideoStream::getSource() const
+{
+    return impl->path;
+}
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////

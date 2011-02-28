@@ -189,65 +189,65 @@ public:
     //! \return true jeœli siê uda³o.
     bool init(const std::vector<__EnumInitHelper::value_type>& values, std::string input)
     {
-        // usuwamy komentarze (w stylu C) oraz bia³e znaki
-        boost::regex removeComments("/\\*(.|[\r\n])*?\\*/|[\\s\n\r]");
-        input = boost::regex_replace(input, removeComments, std::string(""));
-
-        // teraz szukamy poszczególnych wartoœci
-        boost::regex enrtySearch("(\\w+).*?(,|$)");
-
-        boost::sregex_iterator it(input.begin(), input.end(), enrtySearch);
-        boost::sregex_iterator end;
-        for (size_t i = 0; it != end; ++it, ++i) {
-            // pobieramy nazwê i wartoæœ
-            const std::string & name = (*it)[1];
-            EnumType value = static_cast<EnumType>(values[i]);
-            // uzupe³niamy s³owniki
-            byNames[name] = value;
-            byValues.insert( std::make_pair(value, name) );
-        }
-        return true;
-
-//         // odpowiednik wyszukiwania z u¿yciem klasycznych metod
-//         // usuwamy bia³e znaki
-//         std::string::iterator lastSign = std::remove_if(input.begin(), input.end(), isspace);
-//         input.resize( std::distance(input.begin(), lastSign) );
+//         // usuwamy komentarze (w stylu C) oraz bia³e znaki
+//         boost::regex removeComments("/\\*(.|[\r\n])*?\\*/|[\\s\n\r]");
+//         input = boost::regex_replace(input, removeComments, std::string(""));
 // 
-//         // ustawiamy zmienne stanu
-//         size_t entryBegin = 0;
-//         size_t entryEnd = input.find_first_of(',');
-//         size_t equalPos = input.find_first_of('=');
-//         size_t entryNo = 0;
+//         // teraz szukamy poszczególnych wartoœci
+//         boost::regex enrtySearch("(\\w+).*?(,|$)");
 // 
-//         while (entryEnd != std::string::npos) {
-//             // koniec tokenu
-//             size_t nameEnd = entryEnd;
-//             if ( equalPos != std::string::npos && equalPos < entryEnd ) {
-//                 // przechodzimy na kolejny znak równoœci
-//                 nameEnd = equalPos;
-//                 equalPos = input.find_first_of('=', equalPos + 1);
-//             }
-//             // pobieramy token
-//             std::string name = input.substr(entryBegin, nameEnd - entryBegin);
-//             EnumType value = static_cast<EnumType>(values[entryNo]);
+//         boost::sregex_iterator it(input.begin(), input.end(), enrtySearch);
+//         boost::sregex_iterator end;
+//         for (size_t i = 0; it != end; ++it, ++i) {
+//             // pobieramy nazwê i wartoæœ
+//             const std::string & name = (*it)[1];
+//             EnumType value = static_cast<EnumType>(values[i]);
+//             // uzupe³niamy s³owniki
 //             byNames[name] = value;
 //             byValues.insert( std::make_pair(value, name) );
-//             
-//             // przechodzimy na nastêpny wpis
-//             entryBegin = entryEnd + 1;
-// 
-//             // sprawdzamy, czy to nie przypadkiem koniec ³añcucha
-//             if ( entryEnd != input.size() ) {
-//                 entryEnd = input.find_first_of(",\0", entryBegin);
-//                 if ( entryEnd == std::string::npos ) {
-//                     entryEnd = input.size();
-//                 }
-//             } else {
-//                 entryEnd = std::string::npos;
-//             }
-//             ++entryNo;
 //         }
 //         return true;
+
+        // odpowiednik wyszukiwania z u¿yciem klasycznych metod
+        // usuwamy bia³e znaki
+        std::string::iterator lastSign = std::remove_if(input.begin(), input.end(), isspace);
+        input.resize( std::distance(input.begin(), lastSign) );
+
+        // ustawiamy zmienne stanu
+        size_t entryBegin = 0;
+        size_t entryEnd = input.find_first_of(',');
+        size_t equalPos = input.find_first_of('=');
+        size_t entryNo = 0;
+
+        while (entryEnd != std::string::npos) {
+            // koniec tokenu
+            size_t nameEnd = entryEnd;
+            if ( equalPos != std::string::npos && equalPos < entryEnd ) {
+                // przechodzimy na kolejny znak równoœci
+                nameEnd = equalPos;
+                equalPos = input.find_first_of('=', equalPos + 1);
+            }
+            // pobieramy token
+            std::string name = input.substr(entryBegin, nameEnd - entryBegin);
+            EnumType value = static_cast<EnumType>(values[entryNo]);
+            byNames[name] = value;
+            byValues.insert( std::make_pair(value, name) );
+            
+            // przechodzimy na nastêpny wpis
+            entryBegin = entryEnd + 1;
+
+            // sprawdzamy, czy to nie przypadkiem koniec ³añcucha
+            if ( entryEnd != input.size() ) {
+                entryEnd = input.find_first_of(",\0", entryBegin);
+                if ( entryEnd == std::string::npos ) {
+                    entryEnd = input.size();
+                }
+            } else {
+                entryEnd = std::string::npos;
+            }
+            ++entryNo;
+        }
+        return true;
     }
 };
 

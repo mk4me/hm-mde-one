@@ -16,9 +16,8 @@
 // blok definicji dla ffmpeg'a
 #define inline _inline
 #define snprintf _snprintf
+#define vsnprintf(buffer, count, format, argptr) vsnprintf_s((buffer), (count), _TRUNCATE, (format), (argptr))
 #endif
-
-// "e:\Filmy\The Simpsons\21x01 - Homer the Whopper.avi" --window 10 10 200 200
 
 extern "C" {
 #pragma warning (push)
@@ -114,11 +113,12 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
     }
 
     // formatowanie wiadomoœci
-    size_t len = strlen(line);
-    vsnprintf(line + len, sizeof(line) - len, fmt, vl);
+    int len = vsnprintf(line, sizeof(line) - 1, fmt, vl);
+    if ( len < 0 ) {
+        len = sizeof(line);
+    }
 
     // czy ostatni znak to nowa linia? 
-    len = strlen(line);
     print_prefix = line[len-1] == '\n';
     if ( !print_prefix ) {
         // nie?
@@ -396,7 +396,6 @@ bool FFmpegVideoStream::setTime( double time )
     if ( time < 0.0 || time > getDuration() ) {
         // przy debugowaniu mo¿na zakomentowaæ ten b³¹d i wyzerowaæ czas
         VIDLIB_ERROR( FFmpegError("time < 0.0 || time > getDuration()") );
-        time = 0.0;
     }
 //     if ( time == getDuration() ) {
 //         // TODO
@@ -561,7 +560,6 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
     } else {
         VIDLIB_ERROR( *getLastError() );
     }
-    return false;
 }
 
 //------------------------------------------------------------------------------
@@ -573,7 +571,7 @@ bool FFmpegVideoStream::readFrame()
     int error = 0;
     int gotPicture = 0;
 
-    while (true) {
+    for (;;) {
 
 #ifndef VIDLIB_FFMPEG_ENABLE_NEWAPI
         //!
@@ -655,7 +653,6 @@ bool FFmpegVideoStream::readFrame()
 #endif // VIDLIB_FFMPEG_ENABLE_NEWAPI
         }
     }
-    return false;
 }
 
 //------------------------------------------------------------------------------

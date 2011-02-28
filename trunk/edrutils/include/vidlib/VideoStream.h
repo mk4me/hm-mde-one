@@ -52,6 +52,7 @@ protected:
     //!
     Converter * converter;
 
+
 private:
     //! Uøywane tylko w przypadku nieobs≥ugiwania wyjπtkÛw.
     VideoError * lastError;
@@ -69,10 +70,10 @@ private:
     int width;
     //! SzerokoúÊ ramki.
     int height;
-    //! åcieøka.
-    std::string source;
     //!
     Callback * callback;
+    //! Zastosowany wzorzec "Pimpl" (øeby usunπÊ warningi przy budowie DLL)
+    class VideoStreamImpl* impl;
 
 protected:
     //! \param source èrÛd≥o obrazu.
@@ -108,10 +109,7 @@ public:
     virtual bool getFrame(PictureLayered & dst);
 
     //! \return èrÛd≥o.
-    inline const std::string& getSource() const
-    {
-        return source;
-    }
+    const std::string& getSource() const;
     //! \return SzerokoúÊ strumienia.
     inline int getWidth() const
     {

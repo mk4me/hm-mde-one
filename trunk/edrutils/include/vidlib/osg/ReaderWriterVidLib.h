@@ -10,7 +10,10 @@
 #define __HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
 
 #include <vidlib/Export.h>
+#include <utils/Utils.h>
+UTILS_PUSH_WARNINGS
 #include <osgDB/Registry>
+UTILS_POP_WARNINGS
 
 //! Pomocnicze makro dla modu³ów, które chc¹ za³adowaæ plugin tak, jakby by³ zbudowany statycznie.
 #ifdef VIDLIB_LIBRARY_STATIC

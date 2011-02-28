@@ -9,7 +9,10 @@
 #ifndef __HEADER_GUARD_VIDLIB__BUFFEREDVIDEOIMAGESTREAM_H__
 #define __HEADER_GUARD_VIDLIB__BUFFEREDVIDEOIMAGESTREAM_H__
 
+#include <utils/Utils.h>
+UTILS_PUSH_WARNINGS
 #include <osg/observer_ptr>
+UTILS_POP_WARNINGS
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/VideoBuffer.h>
 #include <vidlib/Export.h>
@@ -17,6 +20,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
+UTILS_PUSH_WARNINGS
+UTILS_DISABLE_DLL_INTERFACE_WARNING
 
 /**
  *	Strumieñ obrazków z z buforowaniem.
@@ -73,10 +78,9 @@ public:
 
 };
 
-
+UTILS_POP_WARNINGS
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////
-
 
 #endif  // __HEADER_GUARD_VIDLIB__BUFFEREDVIDEOIMAGESTREAM_H__

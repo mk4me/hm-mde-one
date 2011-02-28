@@ -1,13 +1,14 @@
 #include "../PCH.h"
 #include <vidlib/osg/VideoImageStream.h>
 
-
 #include <iostream>
+
+UTILS_PUSH_WARNINGS
 #include <osg/CopyOp>
-
 #include <osg/Notify>
-#include <utils/Align.h>
+UTILS_POP_WARNINGS
 
+#include <utils/Align.h>
 #include <vidlib/osg/VideoImageStream.h>
 #include "../VidLibPrivate.h"
 #include <vidlib/FFmpegVideoStream.h>
@@ -117,7 +118,7 @@ void VideoImageStream::run()
             double waitTime = getStream()->getFrameDuration() / timeScale - frameLength.time_s();
             if ( waitTime > 0.0 ) {
                 // czekamy
-                OpenThreads::Thread::microSleep( waitTime * 1000000 );
+                OpenThreads::Thread::microSleep( static_cast<unsigned>(waitTime * 1000000) );
             }
         }
     } catch (const std::exception & error) {

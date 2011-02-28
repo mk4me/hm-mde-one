@@ -9,20 +9,35 @@ namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Wyj¹tek u¿ywany przez bibliotekê.
-class FFmpegError : public VideoError
+class VIDLIB_EXPORT FFmpegError : public VideoError
 {
 public:
-  FFmpegError(const std::string& msg, int id = VideoError::UnknownID) : VideoError(msg, id)
-  {}
+    enum {
+        //! B³ad posiada nieznane ID.
+        UnknownID = -1
+    };
 
-  FFmpegError(const FFmpegError& error) : VideoError(error)
-  {}
+private:
+    //! Wewnêtrzne ID b³êdu.
+    const int id;
 
-  //! \return Klon obiektu.
-  virtual VideoError * clone() const
-  {
-    return new FFmpegError(*this);
-  }
+public:
+    FFmpegError(const char* msg, int id = UnknownID);
+    FFmpegError(const std::string& msg, int id = UnknownID);
+    FFmpegError(const FFmpegError& error);
+
+    //! \return Wewnêtrzne ID b³êdu.
+    inline int getID()
+    {
+        return id;
+    }
+
+    //! \return Klon obiektu.
+    virtual VideoError * clone() const;
+
+protected:
+    //! Specjalnie niewirtualna!
+    void setMessage(const char* msg, size_t length);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

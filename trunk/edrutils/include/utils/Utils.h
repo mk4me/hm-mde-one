@@ -114,10 +114,29 @@ inline std::string toString(const T& source)
 #elif defined(_MSC_VER)
 #   define UTILS_DEPRECATED(func) __declspec(deprecated) func
 #else
-#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#   pragma message("WARNING: You need to implement DEPRECATED for this compiler")
 #   define UTILS_DEPRECATED(func) func
 #endif
 
+//------------------------------------------------------------------------------
+
+/**
+ *	Makra zapamiêtuj¹ce/odtwarzaj¹ce stan warningów.
+ */
+#if defined(_MSC_VER)
+#   define UTILS_PUSH_WARNINGS  __pragma(warning(push))
+#   define UTILS_POP_WARNINGS   __pragma(warning(pop))
+#   define UTILS_DISABLE_DLL_INTERFACE_WARNING __pragma(warning(disable: 4251))
+#elif defined(__GNUC__) && defined(UTILS_CXX0X)
+#   define UTILS_PUSH_WARNINGS  _Pragma(GCC diagnostic push)
+#   define UTILS_POP_WARNINGS   _Pragma(GCC diagnostic pop)
+#   define UTILS_DISABLE_DLL_INTERFACE_WARNING
+#else
+#   pragma message("WARNING: You need to implement _Pragma for this compiler")
+#   define UTILS_PUSH_WARNINGS
+#   define UTILS_POP_WARNINGS 
+#   define UTILS_DISABLE_DLL_INTERFACE_WARNING
+#endif
 
 
 //------------------------------------------------------------------------------

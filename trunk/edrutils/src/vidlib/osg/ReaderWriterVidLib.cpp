@@ -14,10 +14,12 @@
  * OpenSceneGraph Public License for more details.
 */
 
+#include <utils/Utils.h>
+UTILS_PUSH_WARNINGS
 #include <osgDB/Registry>
 #include <osgDB/FileNameUtils>
 #include <osgDB/FileUtils>
-
+UTILS_POP_WARNINGS
 
 #include <vidlib/FFmpegVideoStream.h>
 #include <vidlib/osg/VideoImageStream.h>

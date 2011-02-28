@@ -15,7 +15,12 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include <utils/Utils.h>
+#include <utils/Debug.h>
+#include <utils/Enum.h>
+
 #ifdef VIDLIB_ENABLE_OSG
+UTILS_PUSH_WARNINGS
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/StateSet>
@@ -38,11 +43,8 @@
 #include <osgGA/StateSetManipulator>
 #include <osgGA/EventVisitor>
 #include <osgDB/ReadFile>
+UTILS_POP_WARNINGS
 #endif // VIDLIB_ENABLE_OSG
-
-#include <utils/Utils.h>
-#include <utils/Debug.h>
-#include <utils/Enum.h>
 
 #endif // DISABLE_PRECOMPILED_HEADERS
 #endif // __HEADER_GUARD_VIDLIB__PCH_H__

@@ -10,15 +10,21 @@
 #define __HEADER_GUARD_VIDLIB__VIDEOIMAGESTREAMSIZEOPTIMIZER_H__
 
 #include <vector>
+#include <utils/Utils.h>
+UTILS_PUSH_WARNINGS
 #include <osg/NodeCallback>
 #include <osg/Referenced>
 #include <osg/Image>
+UTILS_POP_WARNINGS
 #include <vidlib/Export.h>
 #include "VideoImageStream.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
+UTILS_PUSH_WARNINGS
+UTILS_DISABLE_DLL_INTERFACE_WARNING
 
 class VIDLIB_EXPORT VideoImageStreamSizeOptimizer : public osg::NodeCallback
 {
@@ -79,6 +85,7 @@ public:
     virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 };
 
+UTILS_POP_WARNINGS
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////

@@ -10,14 +10,20 @@
 #define __HEADER_GUARD_VIDLIB__VIDEOIMAGESTREAM_H__
 
 #include <vidlib/Config.h>
+#include <utils/Utils.h>
 
 #include <set>
+
+// POPa zrobimy na koñcu, bo inaczej powstan¹ warningi zwi¹zane z tym, ¿e
+// osg::ref_ptr nie ma DLL interface; OSG domyœlnie wy³¹cza te warningi w
+// nag³ówkach, wiêc zdajemy siê na ichnie rozwi¹zania
+UTILS_PUSH_WARNINGS
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
-
 #include <osg/ImageStream>
 #include <OpenThreads/Thread>
 #include <osg/Timer>
+UTILS_POP_WARNINGS
 
 #include <utils/PtrWrapper.h>
 #include <utils/PtrPolicyOSG.h>
@@ -29,7 +35,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {
 ////////////////////////////////////////////////////////////////////////////////
-
+UTILS_PUSH_WARNINGS
+UTILS_DISABLE_DLL_INTERFACE_WARNING
 
 /**
  *	Strumieñ wideo.
@@ -87,7 +94,7 @@ public:
     //! \param filename Œcie¿ka do pliku.
     //! \param dummy Pozostawiæ wartoœæ domyœln¹.
     template <class VideoStreamImpl>
-    bool open(const std::string & filename, VideoStreamImpl* dummy = NULL)
+    bool open(const std::string & filename, VideoStreamImpl* = 0)
     {
         try {
             setStream( new VideoStreamImpl(filename) );
@@ -195,6 +202,7 @@ protected:
 
 };
 
+UTILS_POP_WARNINGS
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////

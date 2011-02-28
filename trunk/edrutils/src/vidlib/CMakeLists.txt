@@ -40,11 +40,13 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	BufferedVideoStream.cpp
 	Converter.cpp
+	FFmpegError.cpp
 	FFmpegVideoStream.cpp
 	Picture.cpp
 	VideoBuffer.cpp
 	VideoBufferChunk.cpp
 	VideoStream.cpp
+	VideoError.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
