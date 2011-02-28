@@ -17,13 +17,13 @@ void AsfParserTest::testLoad()
 {
     hmAnimation::AsfParser asf;
     hmAnimation::SkeletalModel::Ptr model(new hmAnimation::SkeletalModel);
-    // TODO zmienic ktorys z plikow CMakeLists bo na razie ten test nie ma sensu
-    //asf.parse(model, "C:\\Programming\\Projects\\HDEdr\\TestsOfKinematicModelLibrary\\11.asf");
-
+    
+    asf.parse(model, "kinematic/acclaim/cmu/01/01.asf");
+    asf.save(model, "asftest.asf");
 }
 
 void AsfParserTest::testLoadNotExisting() {
     hmAnimation::AsfParser asf;
     hmAnimation::SkeletalModel::Ptr model(new hmAnimation::SkeletalModel);
-    asf.parse(model, "NULLER.asf");
+    asf.parse(model, "NotExist.asf");
 }

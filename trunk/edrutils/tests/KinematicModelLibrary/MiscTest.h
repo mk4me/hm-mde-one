@@ -8,9 +8,9 @@
 class MiscTest : public CPPUNIT_NS::TestCase
 {
     CPPUNIT_TEST_SUITE(MiscTest);
-    //CPPUNIT_TEST(test1);
+    CPPUNIT_TEST(test1);
     CPPUNIT_TEST(testOK);
-    CPPUNIT_TEST(testFail);
+    //CPPUNIT_TEST(testFail);
     CPPUNIT_TEST_SUITE_END();
 public:
     MiscTest(void);
@@ -19,16 +19,30 @@ public:
 public:
     void testOK();
     void testFail();
-    //void test1();
+    void test1();
 
-    //bool substestAsfAmc(const std::string& asfFile, const std::string& amcFile);
+    bool substestAsfAmc(const std::string& asfFile, const std::string& amcFile);
 
 public:
-    #define _epsilon = 0.000000001
     static bool testJointContentEquality(hmAnimation::Joint::Ptr joint1, hmAnimation::Joint::Ptr joint2, bool testNames = true, bool testDofs = true);
-    template <class T>
-    static bool isEqual(T left, T right, double epsilon = 0.001) { 
-        return fabs(left - right) < epsilon;
+    //template <class T>
+    //static bool isEqual(T left, T right, double epsilon = 0.001) { 
+    //    return fabs(left - right) < epsilon;
+    //}
+
+    static bool isEqual(double left, double right, double epsilon = 0.001) {
+        double inf = std::numeric_limits<double>::infinity();
+        double ninf = -inf;
+        if (left != left || right != right) {
+            CPPUNIT_ASSERT(false);
+            return false;
+        }
+        else if ((left == inf && right == inf) || (left == ninf && right == ninf)) {
+            return true;
+
+        } else {
+            return fabs(left - right) < epsilon;
+        }
     }
 
     static bool isEqual(osg::Vec3d left, osg::Vec3d right, double epsilon = 0.001) {
@@ -37,6 +51,6 @@ public:
                isEqual(left[2], right[2], epsilon);
     }
 
-    //static bool testSkeletonEquality(const hmAnimation::Skeleton& s1, const hmAnimation::Skeleton& s2);
+    static bool testSkeletonEquality(const hmAnimation::Skeleton& s1, const hmAnimation::Skeleton& s2);
 };
 #endif
