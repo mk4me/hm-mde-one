@@ -88,7 +88,7 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
     // wersja wzorowana na av_log_default_callback (log.c)
     static int print_prefix=1;
     static char line[4096] = { 0 };
-    static char buffer[4096];
+    static int len = 0;
 
     AVClass* avc = ptr ? *reinterpret_cast<AVClass**>(ptr) : NULL;
 
@@ -113,9 +113,12 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
     }
 
     // formatowanie wiadomoœci
-    int len = vsnprintf(line, sizeof(line) - 1, fmt, vl);
+    int prevLen = len;
+    len = vsnprintf(line+len, sizeof(line) - len - 1, fmt, vl);
     if ( len < 0 ) {
         len = sizeof(line);
+    } else {
+        len += prevLen;
     }
 
     // czy ostatni znak to nowa linia? 
@@ -150,6 +153,7 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
     // przekierowanie do callbacka w³aœciwego
     logCallback(severity, line, itemClass.ptr ? &itemClass : NULL, parentClass.ptr ? &parentClass : NULL);
     line[0] = 0;
+    len = 0;
 
     //colored_fputs(av_clip(level>>3, 0, 6), line);
     //strcpy(prev, line);
