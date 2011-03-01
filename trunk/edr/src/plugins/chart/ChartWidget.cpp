@@ -89,11 +89,13 @@ void ChartWidget::addChart( const core::ScalarChannelPtr& channel )
     chart->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
     chart->setShowLabel(false);
     chart->setShowBorder(false);
+    chart->setName(channel->getName());
     multiView->addChild(chart);
 
     Chart* preview = new Chart(40, 40, 500, 250);
     previewItem.push_back(preview);
     preview->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+    preview->setName(channel->getName());
     multiView->addChild(preview);
 
     multiView->addItem(new core::MultiViewChartItem(chart, multiView), new core::MultiViewChartItem(preview, multiView));

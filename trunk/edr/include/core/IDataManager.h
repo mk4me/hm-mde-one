@@ -117,15 +117,49 @@ public:
     //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
     //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
     //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
-    template <class T, class U>
-    inline void queryData(IDataManager* manager, std::vector<U>& target, bool exact = false)
+    template <class Ptr>
+    inline void queryDataPtr(IDataManager* manager, std::vector<Ptr>& target, bool exact = false)
     {
-        __queryData<T, U>(manager, target, exact, boost::is_convertible<U, typename ObjectWrapperT<T>::Ptr>());
+        __queryDataIsConvertible<typename Ptr::element_type, Ptr>(manager, target, exact, boost::true_type());
+    }
+
+    //! \param manager Data manager.
+    //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
+    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
+    //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
+    template <class Ptr>
+    inline std::vector<Ptr> queryDataPtr(IDataManager* manager, bool exact = false, Ptr* /*dummy*/ = nullptr)
+    {
+        std::vector<Ptr> target;
+        queryDataPtr<Ptr>(manager, target, exact);
+        return target;
+    }
+
+    //! \param manager Data manager.
+    //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
+    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
+    //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
+    template <class T, class Ptr>
+    inline void queryData(IDataManager* manager, std::vector<Ptr>& target, bool exact = false)
+    {
+        __queryDataIsConvertible<T, Ptr>(manager, target, exact, boost::is_convertible<Ptr, typename ObjectWrapperT<T>::Ptr>());
+    }
+
+    //! \param manager Data manager.
+    //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
+    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
+    //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
+    template <class T>
+    inline std::vector<typename ObjectWrapperT<T>::Ptr> queryData(IDataManager* manager, bool exact = false, T* /*dummy*/ = nullptr)
+    {
+        std::vector<typename ObjectWrapperT<T>::Ptr> target;
+        queryData<T>(manager, target, exact);
+        return target;
     }
 
     //! Przekierowanie z queryData dla poprawnych danych.
-    template <class T, class U>
-    void __queryData(IDataManager* manager, std::vector<U>& target, bool exact, boost::true_type)
+    template <class T, class Ptr>
+    void __queryDataIsConvertible(IDataManager* manager, std::vector<Ptr>& target, bool exact, boost::true_type)
     {
         // pobieramy wrappery
         std::vector<ObjectWrapperPtr> objects;
@@ -137,8 +171,8 @@ public:
     }
 
     //! Przekierowanie z queryData dla niepoprawnych danych.
-    template <class T, class U>
-    void __queryData(IDataManager*, std::vector<U>&, bool, boost::false_type)
+    template <class T, class Ptr>
+    void __queryDataIsConvertible(IDataManager*, std::vector<Ptr>&, bool, boost::false_type)
     {
         UTILS_STATIC_ASSERT( false, "Niewlasciwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
     }

@@ -16,14 +16,14 @@ set(PRIVATE_H
 	VideoWidgetOptions.h
 	TimelineImageStreamWrapper.h
 	VideoParser.h
+	VideoService.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
-	${HEADER_PATH}/VideoService.h
-	${HEADER_PATH}/IVideoParser.h
+	${HEADER_PATH}/Wrappers.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})

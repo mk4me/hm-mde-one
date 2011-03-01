@@ -23,12 +23,18 @@
 #include <stack>
 #include <iostream>
 
+#include <utils/Utils.h>
+#include <utils/Debug.h>
+#include <utils/Enum.h>
+
+UTILS_PUSH_WARNINGS
 #include <osg/Node>
 #include <osg/AnimationPath>
 #include <osg/Config>
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/Group>
+#include <osg/Image>
 #include <osg/ImageStream>
 #include <osg/Node>
 #include <osg/NodeVisitor>
@@ -58,7 +64,15 @@
 #include <osgGA/AnimationPathManipulator>
 #include <osgGA/TerrainManipulator>
 
+#include <osgWidget/Widget>
+#include <osgWidget/Window>
+#include <osgWidget/Label>
+#include <osgWidget/Box>
+#include <osgWidget/Canvas>
+#include <osgWidget/Table>
+
 #include <osgDB/ReadFile>
+UTILS_POP_WARNINGS
 
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
@@ -71,11 +85,18 @@
 #include <boost/bind.hpp>
 #include <boost/tokenizer.hpp>
 
-#include <utils/Utils.h>
-#include <utils/Debug.h>
-#include <utils/Enum.h>
-
 #include <core/SmartPtr.h>
+
+// przywrócenie warningów wy³¹czonych przez OSG
+#if defined(_MSC_VER)
+#   pragma warning( default : 4244 )
+//#   pragma warning( default : 4251 )
+#   pragma warning( default : 4275 )
+#   pragma warning( default : 4512 )
+#   pragma warning( default : 4267 )
+#   pragma warning( default : 4702 )
+#   pragma warning( default : 4511 )
+#endif
 
 #endif  // DISABLE_PRECOMPILED_HEADERS
 #endif  // __HEADER_GUARD__COREPCH_H__

@@ -44,58 +44,20 @@ public:
     //! Sekwencja lokalnych prób pomiarowych.
     typedef std::vector<std::pair<IDataManager::Path, LocalTrial> > LocalTrialsList;
 
-// private:
-    //! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
-    class Parser
-    {
-    private:
-        //! Prawdziwy wewnêtrzny parser.
-        const core::IParserPtr parser;
-        //! Parsowany plik.
-        const Path filePath;
-        //! Czy parser zwi¹zany jest z zasobami sta³ymi?
-        const bool resource;
-        //! Czy przeparsowano plik?
-        bool parsed;
-        //! Czy u¿yto parsera do przeparsowania?
-        bool used;
+private:
+    //! Deklaracja wewnêtrznej reprezentacji parsera, obudowauj¹cej core::IParser
+    class Parser;
+    //! Deklaracja predykatu. Zagnie¿d¿ony, aby mieæ dostêp do typu Parser.
+    struct FindByFilenamePredicate;
+    //! Deklaracja predykatu. Zagnie¿d¿ony, aby mieæ dostêp do typu Parser.
+    struct FindByRelativePathPredicate;
 
-
-    public:
-        //! \param parser Faktyczny parser. To ten obiekt kontroluje jego
-        //!     czas ¿ycia.
-        //! \param resource Czy parser jest zwi¹zany z zasobami sta³ymi?
-        Parser(core::IParser* parser, const Path& path, bool resource = false);
-        //! Destruktor drukuj¹cy wiadomoœæ o wy³adowaniu pliku.
-        ~Parser();
-
-    public:
-        //! \return Czy parser zwi¹zany jest z zasobami sta³ymi?
-        bool isResource() const;
-        //! \return Czy u¿yto tego parsera?
-        bool isUsed() const;
-        //! \return Czy uda³o siê przeparsowaæ plik?
-        bool isParsed() const;
-        //! \return Œcie¿ka do pliku.
-        const Path& getPath() const;
-        //! \return
-        core::IParserPtr getParser() const;
-
-        //! Mo¿e rzucaæ wyj¹tkami!
-        void parseFile();
-        //! Nie rzuca wyj¹tkami.
-        //! \return Czy uda³o siê przeparsowaæ?
-        bool tryParse();
-        //! \return Lista wrappowanych obiektów, zainicjowanych (przeparsowany parser)
-        //!         b¹dŸ nie.
-        std::vector<core::ObjectWrapperPtr> getObjects();
-    };
     //! WskaŸnik na parser.
     typedef core::shared_ptr<Parser> ParserPtr;
     //! S³aby wskaŸnik na parser
     typedef core::weak_ptr<Parser> ParserWeakPtr;
     // TODO: zastanwoiæ siê nad u¿yciem s³abych wskaŸników
-    
+
 private:
     //! Wpis s³ownika obiektów.
     struct ObjectsMapEntry {
@@ -142,6 +104,7 @@ protected:
     //! \param resource Czy to jest zasób niezmienny?
     ParserPtr createParser(const Path& path, bool resource);
 
+    
     
     //! \param œcie¿ka do folderu z plikami próby pomiarowej
     //! \return Pojedyncza próba pomiarowa ze œcie¿kami do wszystkich jej plików.
@@ -204,6 +167,10 @@ public:
     void clearParsers();
     //! Czyœci informacje o aktualnej próbie pomiarowej.
     void clearCurrentTrial();
+
+private:
+    //! Mapuje obiekty 
+    void mapObjectsToTypes(const std::vector<core::ObjectWrapperPtr>& objects, ParserPtr parser );
 
 
 

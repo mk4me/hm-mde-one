@@ -9,34 +9,23 @@
 #ifndef __HEADER_GUARD_VIDEO__VIDEOPARSER_H__
 #define __HEADER_GUARD_VIDEO__VIDEOPARSER_H__
 
-#include <plugins/video/IVideoParser.h>
+#include <core/IParser.h>
 
-class VideoParser : public IVideoParser
+class VideoParser : public core::IParser
 {
     UNIQUE_ID('VIDE','PARS');
 private:
-    //! Wewnêtrzny strumieñ.
-    osg::ref_ptr<vidlib::VideoImageStream> stream;
-    //! Œcie¿ka.
-    boost::filesystem::path path;
     //! Obiekt wewnêtrzny.
-    core::ObjectWrapperPtr object;
-
+    core::ObjectWrapperPtr stream;
 public:
     VideoParser();
     virtual ~VideoParser();
-
 // IParser
 public:
     virtual void parseFile(const boost::filesystem::path& path);
     virtual core::IParser* create();
     virtual std::string getSupportedExtensions() const;
-    virtual core::ObjectWrapperPtr getObject();
-
-// IVideoParser
-public:
-    virtual vidlib::VideoImageStream* getOsgStream();
-    virtual vidlib::VideoStream* getStream();
+    virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 };
 
 

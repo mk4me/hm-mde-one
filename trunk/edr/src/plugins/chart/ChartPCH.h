@@ -24,6 +24,8 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include <utils/Utils.h>
+UTILS_PUSH_WARNINGS
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <QtGui/QWidget>
@@ -34,6 +36,7 @@
 #include <osgGA/StateSetManipulator>
 #include <osg/MatrixTransform>
 #include <osgText/Text>
+UTILS_POP_WARNINGS
 
 #include <core/QOsgWidgets.h>
 #include <core/IServiceManager.h>

@@ -18,24 +18,19 @@ namespace core
     class IParser : public IIdentifiable
     {
     public:
-
         //! Pusty polimorficzny destruktor.
         virtual ~IParser() {}
-        
+        //! \return Instancja tego samego typu.
+        virtual IParser* create() = 0;
         //! Przyporz¹dkowanie parsera do konkretnego pliku.
         //! Na ka¿dej instancji parsera ta metoda wywo³ywana jest maksymalnie jeden raz.
         //! \param path Œcie¿ka do pliku.
         virtual void parseFile(const boost::filesystem::path& path) = 0;
-
-        //! \return Instancja tego samego typu.
-        virtual IParser* create() = 0;
-
         //! \retrun Lista rozszerzeñ, które parser obs³uguje. Musz¹ byæ oddzielone œrednikiem.
         //!         Obs³ugiwany format rozszerzenia: [ { *. | . } ]ext
         virtual std::string getSupportedExtensions() const = 0;
-
         //! \return Obiekt danych parsera.
-        virtual ObjectWrapperPtr getObject() = 0;
+        virtual void getObjects(std::vector<ObjectWrapperPtr>& objects) = 0;
     };
 
     typedef shared_ptr<IParser> IParserPtr;

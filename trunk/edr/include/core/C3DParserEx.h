@@ -9,6 +9,12 @@ CORE_DEFINE_WRAPPER(C3D_Data, utils::PtrPolicyBoost);
 class C3DParser : public core::IParser
 {
     UNIQUE_ID('C3DP','PARS');
+
+private:
+    boost::filesystem::path path;
+    std::vector<core::ObjectWrapperPtr> GRFChannels;
+    std::vector<core::ObjectWrapperPtr> EMGChannels;
+
 public:
 
     C3DParser();
@@ -21,12 +27,10 @@ public:
 
     virtual std::string getSupportedExtensions() const;
 
-    virtual core::ObjectWrapperPtr getObject();
+    virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 
-    C3D_Data* getC3dData();
+    UTILS_DEPRECATED(C3D_Data* getC3dData());
 
-private:
-    boost::filesystem::path path;
-    core::ObjectWrapperPtr object;
+
 };
 #endif

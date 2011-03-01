@@ -37,7 +37,7 @@ const std::string& TextParser::getOutput() const
     return *object->get<std::string>();
 }
 
-core::ObjectWrapperPtr TextParser::getObject()
+void TextParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 {
-    return object;
+
 }

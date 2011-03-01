@@ -135,41 +135,49 @@ this->widget=widget;
 
 AsyncResult EMGService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
-    core::shared_ptr<C3DParser> parser = core::queryParsers<C3DParser>(dataManager);
-    if(parser)
-    {
-        widget->clear();
-        using namespace core;
-//         for (int j = 0; j < 1; ++j) {
-//             EMGChannelPtr channel = EMGChannelPtr(new EMGChannel(33));
-//             for ( int i = 0; i < 500; ++i ) {
-//                 channel->addPoint(i /*% 2 ? 100 : 0*/);
-//             }
-//             channel->normalize();
-//             widget->addChart(channel);
-// 
-//             channel = EMGChannelPtr(new EMGChannel(33));
-//             for ( int i = 0; i < 500; ++i ) {
-//                 channel->addPoint(i % 2 ? 100 : 0);
-//             }
-//             channel->normalize();
-//             widget->addChart(channel);
-// 
-//             channel = EMGChannelPtr(new EMGChannel(33));
-//             for ( int i = 0; i < 500; ++i ) {
-//                 channel->addPoint( rand() % 100 );
-//             }
-//             channel->normalize();
-//             widget->addChart(channel);
-//         }
-
-        
-        C3D_Data* c3d = parser->getC3dData();
-        for(int i=12;i<28;i++){
-            widget->addChart(EMGChannelPtr( new EMGChannel(*c3d, i) ));
-        }
-        length=widget->getLenght() ;
+    widget->clear();
+    auto channels = core::queryDataPtr<core::EMGChannelPtr>(dataManager);
+    BOOST_FOREACH( auto channel, channels ) {
+        widget->addChart(channel);
     }
+    length=widget->getLenght() ;
+
+
+//     core::shared_ptr<C3DParser> parser = core::queryParsers<C3DParser>(dataManager);
+//     if(parser)
+//     {
+//         widget->clear();
+//         using namespace core;
+// //         for (int j = 0; j < 1; ++j) {
+// //             EMGChannelPtr channel = EMGChannelPtr(new EMGChannel(33));
+// //             for ( int i = 0; i < 500; ++i ) {
+// //                 channel->addPoint(i /*% 2 ? 100 : 0*/);
+// //             }
+// //             channel->normalize();
+// //             widget->addChart(channel);
+// // 
+// //             channel = EMGChannelPtr(new EMGChannel(33));
+// //             for ( int i = 0; i < 500; ++i ) {
+// //                 channel->addPoint(i % 2 ? 100 : 0);
+// //             }
+// //             channel->normalize();
+// //             widget->addChart(channel);
+// // 
+// //             channel = EMGChannelPtr(new EMGChannel(33));
+// //             for ( int i = 0; i < 500; ++i ) {
+// //                 channel->addPoint( rand() % 100 );
+// //             }
+// //             channel->normalize();
+// //             widget->addChart(channel);
+// //         }
+// 
+//         
+//         C3D_Data* c3d = parser->getC3dData();
+//         for(int i=12;i<28;i++){
+//             widget->addChart(EMGChannelPtr( new EMGChannel(*c3d, i) ));
+//         }
+//         length=widget->getLenght() ;
+//     }
 //if(dataManager->getCurrentLocalTrial().isC3d())
 //{
 //	widget->clear();

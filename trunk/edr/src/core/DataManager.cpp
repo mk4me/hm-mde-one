@@ -13,7 +13,107 @@ using namespace core;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-struct FindByFilenamePredicate {
+//! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
+class DataManager::Parser
+{
+public:
+    typedef IDataManager::Path Path;
+
+private:
+    //! Prawdziwy wewnêtrzny parser.
+    const IParserPtr parser;
+    //! Parsowany plik.
+    const Path filePath;
+    //! Czy parser zwi¹zany jest z zasobami sta³ymi?
+    const bool resource;
+    //! Czy przeparsowano plik?
+    bool parsed;
+    //! Czy u¿yto parsera do przeparsowania?
+    bool used;
+
+
+public:
+    //! \param parser Faktyczny parser. To ten obiekt kontroluje jego
+    //!     czas ¿ycia.
+    //! \param resource Czy parser jest zwi¹zany z zasobami sta³ymi?
+    Parser(IParser* parser, const Path& path, bool resource = false) :
+    parser(parser), parsed(false), used(false), resource(resource), filePath(path)
+    {
+        UTILS_ASSERT(parser);
+        UTILS_ASSERT(!filePath.empty());
+    }
+    //! Destruktor drukuj¹cy wiadomoœæ o wy³adowaniu pliku.
+    ~Parser()
+    {
+        if ( isParsed() ) {
+            LOG_DEBUG("Unloading parser for file: " << getPath() )
+        } else if ( isUsed() ) {
+            LOG_DEBUG("Unloading invalid parser for file: " << getPath() );
+        } else {
+            LOG_DEBUG("Unloading unused parser for file: " << getPath() );
+        }
+    }
+
+public:
+    //! \return Czy parser zwi¹zany jest z zasobami sta³ymi?
+    inline bool isResource() const
+    {
+        return resource;
+    }
+    //! \return Czy u¿yto tego parsera?
+    inline bool isUsed() const
+    {
+        return used;
+    }
+    //! \return Czy uda³o siê przeparsowaæ plik?
+    inline bool isParsed() const
+    {
+        return parsed;
+    }
+    //! \return Œcie¿ka do pliku.
+    inline const Path& getPath() const
+    {
+        return filePath;
+    }
+    //! \return
+    inline IParserPtr getParser() const
+    {
+        return parser;
+    }
+
+    //! Mo¿e rzucaæ wyj¹tkami!
+    void parseFile()
+    {
+        UTILS_ASSERT(!isUsed());
+        UTILS_ASSERT(!filePath.empty());
+        LOG_DEBUG("Parsing file: " << getPath() );
+        used = true;
+        parser->parseFile(filePath);
+        parsed = true;
+    }
+    //! Nie rzuca wyj¹tkami.
+    //! \return Czy uda³o siê przeparsowaæ?
+    bool tryParse()
+    {
+        try {
+            parseFile();
+            return true;
+        } catch (const std::exception& ex) {
+            LOG_ERROR("Error during parsing file " << getPath() << ": " << ex.what());
+            return false;
+        }
+    }
+    //! \param objects Lista wrappowanych obiektów, zainicjowanych (przeparsowany parser)
+    //!         b¹dŸ nie.
+    inline void getObjects(std::vector<ObjectWrapperPtr>& objects)
+    {
+        parser->getObjects(objects);
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+struct DataManager::FindByFilenamePredicate {
     std::string filter;
 
     FindByFilenamePredicate(const std::string& filetr) :
@@ -28,7 +128,9 @@ struct FindByFilenamePredicate {
     }
 };
 
-struct FindByRelativePathPredicate {
+////////////////////////////////////////////////////////////////////////////////
+
+struct DataManager::FindByRelativePathPredicate {
     std::string filter;
 
     FindByRelativePathPredicate(const std::string& filetr) :
@@ -42,78 +144,6 @@ struct FindByRelativePathPredicate {
         return filter == filename;
     }
 };
-
-////////////////////////////////////////////////////////////////////////////////
-
-DataManager::Parser::Parser(core::IParser* parser, const Path& path, bool resource /*= false*/) :
-parser(parser), parsed(false), used(false), resource(resource), filePath(path)
-{
-    UTILS_ASSERT(parser);
-    UTILS_ASSERT(!filePath.empty());
-}
-
-DataManager::Parser::~Parser()
-{
-    if ( isParsed() ) {
-        LOG_DEBUG("Unloading parser for file: " << getPath() )
-    } else if ( isUsed() ) {
-        LOG_DEBUG("Unloading invalid parser for file: " << getPath() );
-    } else {
-        LOG_DEBUG("Unloading unused parser for file: " << getPath() );
-    }
-}
-
-inline bool DataManager::Parser::isUsed() const
-{
-    return used;
-}
-
-inline bool DataManager::Parser::isParsed() const
-{
-    return parsed;
-}
-
-inline const DataManager::Path& DataManager::Parser::getPath() const
-{
-    return filePath;
-}
-
-void DataManager::Parser::parseFile()
-{
-    UTILS_ASSERT(!isUsed());
-    UTILS_ASSERT(!filePath.empty());
-    used = true;
-    parser->parseFile(filePath);
-    parsed = true;
-}
-
-bool DataManager::Parser::tryParse()
-{
-    try {
-        parseFile();
-        return true;
-    } catch (const std::exception& ex) {
-        LOG_ERROR("Error during parsing file " << getPath() << ": " << ex.what());
-        return false;
-    }
-}
-
-inline std::vector<core::ObjectWrapperPtr> DataManager::Parser::getObjects()
-{
-    // tymczasowo
-    return std::vector<core::ObjectWrapperPtr>(1, parser->getObject());
-}
-
-bool DataManager::Parser::isResource() const
-{
-    return resource;
-}
-
-core::IParserPtr DataManager::Parser::getParser() const
-{
-    return parser;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -286,16 +316,12 @@ DataManager::ParserPtr DataManager::createParser( const Path& path, bool resourc
 
         // tworzymy parser
         ParserPtr parser(new Parser(it->second->create(), path, resource));
+        std::vector<ObjectWrapperPtr> objects;
+        parser->getObjects(objects);
 
-        // pobieramy obiekty i dodajemy je do s³ownika obiektów
-        BOOST_FOREACH(ObjectWrapperPtr object, parser->getObjects()) {
-            ObjectsMapEntry entry = { object, parser };
-            std::list<ObjectWrapper::Type> supportedTypes;
-            object->appendSupported(supportedTypes);
-            BOOST_FOREACH( ObjectWrapper::Type type, supportedTypes ) {
-                currentObjects.insert( std::make_pair(type, entry) );
-            }
-        }
+        // mapujemy obiekty
+        mapObjectsToTypes(objects, parser);
+
         return parser;
     }
     return ParserPtr();
@@ -478,6 +504,19 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
                     objects.push_back(object);
                 }
             }
+        }
+    }
+}
+
+void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& objects, ParserPtr parser )
+{
+    // pobieramy obiekty i dodajemy je do s³ownika obiektów
+    BOOST_FOREACH(ObjectWrapperPtr object, objects) {
+        ObjectsMapEntry entry = { object, parser };
+        std::list<ObjectWrapper::Type> supportedTypes;
+        object->getSupportedTypes(supportedTypes);
+        BOOST_FOREACH( ObjectWrapper::Type type, supportedTypes ) {
+            currentObjects.insert( std::make_pair(type, entry) );
         }
     }
 }

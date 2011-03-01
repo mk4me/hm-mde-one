@@ -197,13 +197,13 @@ public:
 
     //! \param type 
     //! \return Czy obiekt wspira okreœlony typ?
-    virtual bool supports(const std::type_info& type) const = 0;
+    virtual bool isSupported(const std::type_info& type) const = 0;
 
     //! \return Informacje o typie.
     virtual const std::type_info& getTypeInfo() const = 0;
 
     //! \param supported Lista wspieranych rozszerzeñ.
-    virtual void appendSupported(std::list<Type>& supported) const = 0;
+    virtual void getSupportedTypes(std::list<Type>& supported) const = 0;
 
     //! \return Czy wrappowany obiekt jest wyzerowany?
     virtual bool isNull() const = 0;
@@ -278,12 +278,12 @@ public:
     }
     //! \param type 
     //! \return Czy obiekt wspira okreœlony typ?
-    virtual bool supports(const std::type_info& type) const
+    virtual bool isSupported(const std::type_info& type) const
     {
         return ObjectWrapper::areTypesEqual(type, typeid(T));
     }
     //! \param supported
-    virtual void appendSupported(std::list<ObjectWrapper::Type>& supported) const
+    virtual void getSupportedTypes(std::list<ObjectWrapper::Type>& supported) const
     {
         supported.push_back(typeid(T));
     }
@@ -333,22 +333,25 @@ public:
     }
     //! \param type 
     //! \return Czy obiekt wspira okreœlony typ?
-    virtual bool supports(const std::type_info& type) const
+    virtual bool isSupported(const std::type_info& type) const
     {
         if ( ObjectWrapper::areTypesEqual(type, typeid(T)) ) {
             return true;
         } else {
-            return Base::supports(type);
+            return Base::isSupported(type);
         }
     }
     //! \param supported
-    virtual void appendSupported(std::list<ObjectWrapper::Type>& supported) const
+    virtual void getSupportedTypes(std::list<ObjectWrapper::Type>& supported) const
     {
-        Base::appendSupported(supported);
+        Base::getSupportedTypes(supported);
         supported.push_back(typeid(T));
     }
 };
 
+//! Typ wyznaczaj¹cy bazê dla wrapperów chc¹cych dziedzyczyæ po:
+//! 1) PtrPolicy (ten wariant)
+//! 2) Wrapperach dla typów (specjalizacje w makrze)
 template <class T> 
 struct __ObjectWrapperBaseSelector
 {

@@ -7,6 +7,7 @@
 #include "ChartViewer.h"
 #include <core/Chart.h>
 #include "C3DChartData.h"
+#include <boost/foreach.hpp>
 using namespace std;
 using namespace osg;
 
@@ -134,17 +135,26 @@ this->widget=widget;
 
 AsyncResult GRFService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
-    core::shared_ptr<C3DParser> parser = core::queryParsers<C3DParser>(dataManager);
-    if(parser)
-    {
-        widget->clear();
-        using namespace core;
-        C3D_Data* c3d = parser->getC3dData();
-        for(int i=0;i<12;i++){
-            widget->addChart(GRFChannelPtr( new GRFChannel(*c3d, i) ));
-        }
-        length=widget->getLenght() ;
+    widget->clear();
+    auto channels = core::queryDataPtr<core::GRFChannelPtr>(dataManager);
+    BOOST_FOREACH( auto channel, channels ) {
+        widget->addChart(channel);
     }
+    length=widget->getLenght();
+
+
+//     core::shared_ptr<C3DParser> parser = core::queryParsers<C3DParser>(dataManager);
+//     if(parser)
+//     {
+//         widget->clear();
+//         using namespace core;
+//         if ( C3D_Data* c3d = parser->getC3dData() ) {
+//         for(int i=0;i<12;i++){
+//             widget->addChart(GRFChannelPtr( new GRFChannel(*c3d, i) ));
+//         }
+//         length=widget->getLenght() ;
+//         }
+//     }
 //if(dataManager->getCurrentLocalTrial().isC3d())
 //{
 //	widget->clear();

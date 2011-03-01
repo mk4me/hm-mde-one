@@ -21,6 +21,8 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include <utils/Utils.h>
+UTILS_PUSH_WARNINGS
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/StateSet>
@@ -43,13 +45,25 @@
 #include <osgGA/StateSetManipulator>
 #include <osgGA/EventVisitor>
 #include <osgDB/ReadFile>
+UTILS_POP_WARNINGS
+
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
 
-#include <utils/Utils.h>
 #include <utils/Debug.h>
 #include <utils/Enum.h>
+
+// przywrócenie warningów wy³¹czonych przez OSG
+#if defined(_MSC_VER)
+#   pragma warning( default : 4244 )
+//#   pragma warning( default : 4251 )
+#   pragma warning( default : 4275 )
+#   pragma warning( default : 4512 )
+#   pragma warning( default : 4267 )
+#   pragma warning( default : 4702 )
+#   pragma warning( default : 4511 )
+#endif
 
 #endif  // DISABLE_PRECOMPILED_HEADERS
 #endif  // __HEADER_GUARD__VIDEOPCH_H__

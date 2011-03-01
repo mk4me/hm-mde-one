@@ -21,7 +21,7 @@ public:
 
     const std::string& getOutput() const;
 
-    virtual core::ObjectWrapperPtr getObject();
+    virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 
 private:
     std::string extension;
