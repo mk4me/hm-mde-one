@@ -3,9 +3,9 @@
 #include <KinematicModelLibrary/Joint.h>
 
 using namespace std;
-using namespace hmAnimation;
+using namespace kinematic;
 
-void Joint::copyContent(Joint::Ptr source, Joint::Ptr destination) {
+void Joint::copyContent(JointPtr source, JointPtr destination) {
     destination->id = source->id;                             
     destination->name = source->name;                   
     destination->direction = source->direction;               
@@ -17,13 +17,13 @@ void Joint::copyContent(Joint::Ptr source, Joint::Ptr destination) {
     destination->cofmass = source->cofmass;                     
 }
 
-Joint::Ptr Joint::clone(Joint::Ptr bone) {
-    Joint::Ptr null;
+JointPtr Joint::clone(JointPtr bone) {
+    JointPtr null;
     return clone(bone, null);
 }
 
-Joint::Ptr Joint::clone(Joint::Ptr bone, Joint::Ptr clonedParent) {
-    Joint::Ptr newBone(new Joint);
+JointPtr Joint::clone(JointPtr bone, JointPtr clonedParent) {
+    JointPtr newBone(new Joint);
     copyContent(bone, newBone);
     newBone->parent = clonedParent;
     int count = bone->children.size();

@@ -4,13 +4,13 @@
 #include <KinematicModelLibrary/Skeleton.h>
 #include <KinematicModelLibrary/SkeletalModel.h>
 
-void hmAnimation::SkeletalModel::RecreateMaps() {
+void kinematic::SkeletalModel::RecreateMaps() {
     jointsMap.clear();
     jointsIds.clear();
     Recreate(getSkeleton().getRoot());
 }
 
-void hmAnimation::SkeletalModel::Recreate( Joint::Ptr joint ) {
+void kinematic::SkeletalModel::Recreate( JointPtr joint ) {
     static int id = 0;
     jointsMap[joint->name] = joint;
     jointsIds[id++] = joint;

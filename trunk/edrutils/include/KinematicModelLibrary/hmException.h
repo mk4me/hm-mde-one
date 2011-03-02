@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__HMEXCEPTION_H__
 #define HEADER_GUARD_KINEMATICMODEL__HMEXCEPTION_H__
 
-namespace hmAnimation
+namespace kinematic
 {
     /// \brief  Ogolny wyjatek dla parserow. 
     class HmException : public std::exception
@@ -30,10 +30,10 @@ namespace hmAnimation
     };
 
     /// \brief  Wyjatek rzucany, gdy nie udalo sie otworzyc pliku
-    class AcclaimUnableToOpenFileException : public HmException 
+    class UnableToOpenFileException : public HmException 
     {
     public:
-        AcclaimUnableToOpenFileException(const std::string& message);
+        UnableToOpenFileException(const std::string& message);
     };
     
     /// \brief  Wyjatek rzucany, gdy plik zawiera niepoprawna tresc dla parsera

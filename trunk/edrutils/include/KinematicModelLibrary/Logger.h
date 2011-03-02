@@ -2,30 +2,38 @@
 #define HEADER_GUARD_KINEMATICMODEL__LOGGER_H__
 
 #include <string>
-namespace hmAnimation {
+namespace kinematic {
+    
+    /// \brief Makro, dzieki ktoremu nie wykona sie niepotrzebne skladanie wiadomosci (message)
+    #define LOGGER(severity, message) \
+                           if (Logger::getInstance().getLogCallback() && (severity) >= Logger::getInstance().getOutSeverity()) { \
+                               Logger::getInstance().log((severity), (message)); \
+                           }
 //! Klasa, która jest odpowiedzialna za logowanie informacji.
 class Logger
 {
 public:
     //! Poziom waznosci komunikatow.
     enum LogSeverity {
-        Info,
         Debug,
-        Error,
+        Info,
         Warning,
+        Error,
     };
     //! wskaznik na funkcje do ktorej trafiaja komunikaty
     typedef void (*LogCallback)(LogSeverity severity, const std::string& msg);
 
 private:
-    Logger() {}
+    Logger() {
+        setOutSeverity(Logger::Debug);      
+        setLogCallback(Logger::logConsole);
+    }
     Logger(const Logger &);
     Logger& operator=(const Logger&);
 public:
     //! zwraca instancje logera
     static Logger& getInstance() {
         static Logger instance;
-        instance.setLogCallback(Logger::logConsole);
         return instance;
     }
 
@@ -34,7 +42,7 @@ public:
     //! \param severity
     //! \param msg
     void log(LogSeverity severity, const std::string& msg) {
-        if (callback) {
+        if (callback && severity >= outSeverity) {
             callback(severity, msg);
         }
     }
@@ -42,6 +50,13 @@ public:
     //! Metoda zmienia wskaznik na funkcje logujaca (domyslnie jest konsola)
     //! \param _callback wskaznik na nowa funkcje (moze byc NULL)
     void setLogCallback(LogCallback _callback) { callback = _callback; }
+    LogCallback getLogCallback() { return callback; }
+    void setOutSeverity(LogSeverity severity) {
+        this->outSeverity = severity;
+    }
+    LogSeverity getOutSeverity() {
+        return this->outSeverity;
+    }
 
 private:
     //! Metoda wypisuje informacje prosto do konsoli
@@ -61,6 +76,8 @@ private:
 private:
     //! Wskaznik na funkcje logujaca
     LogCallback callback;
+    //! obecny poziom logowania (wiadomosci o nizszym poziomie nie beda logowane)
+    LogSeverity outSeverity;
 };
 } 
 #endif

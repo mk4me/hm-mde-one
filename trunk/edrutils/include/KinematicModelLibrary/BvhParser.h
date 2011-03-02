@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__BVHPARSER_H__
 #define HEADER_GUARD_KINEMATICMODEL__BVHPARSER_H__
 
-namespace hmAnimation
+namespace kinematic
 {
 
 struct Bone;
@@ -48,12 +48,12 @@ private:
     /// \param  parent				Kosc rodzica (przydatne przy sprawdzaniu i usuwaniu dummy bones).
     /// \param  lvl                 Poziom rekurencji (do wciec w pliku) 
     /// \param [in,out] jointList   Do listy trafiaja w odpowiedniej kolejnosci nazwy zapisywanych kosci 
-    void saveBone(std::ostream& out, Joint::Ptr bone, Joint::Ptr parent, int lvl, std::list<std::string>& jointList) const;
+    void saveBone(std::ostream& out, JointPtr bone, JointPtr parent, int lvl, std::list<std::string>& jointList) const;
     /// \brief  Zapisuje kolejnosc zapisu kanalow dla jointa 
     /// \param [in]        Strumien wyjsciowy. 
     /// \param  bone       Kosc, dla ktorej bedzie zapisana hierarchia. 
     /// \param  lvl        Poziom rekurencji (do wciec w pliku) 
-    void saveChannelsInHierarchy(std::ostream& out, Joint::Ptr bone, int lvl) const;
+    void saveChannelsInHierarchy(std::ostream& out, JointPtr bone, int lvl) const;
     /// \brief  Czy podane stopnie swobody zawieraja tez dotyczace przesuniecia
     /// \param [in] dofs    Wektor ze stopniami swobody 
     /// \return true jesli znaleziono kanal z transformacja. 
@@ -63,11 +63,11 @@ private:
     /// \brief  Wywolywane z setBones. Bierze udzial w tworzeniu nowej hierarchi (kosci zamiast joinow)
     /// \param  newBone Nowo stworzona kosc w hierarchii. 
     /// \param  oldBone The old bone. 
-    void HandleBone(Joint::Ptr newBone);
+    void HandleBone(JointPtr newBone);
     /// \brief  Zwraca kolejnosc rotacji.
     /// \param  bone    Kosc, dla ktorej ma byc zwrocona kolejnosc. 
     /// \return Kolejnosc rotacji
-    Axis::Order getAxisOrder(Joint::Ptr bone) const;
+    Axis::Order getAxisOrder(JointPtr bone) const;
     /// \brief  Zwraca stringa zawierajacego podana liczbe spacji 
     std::string space(int no) const;
     /// \brief  Zwraca stringa zawierajacego liczbe spacji lub tabulatorow uzalezniona od poziomu rekurencji

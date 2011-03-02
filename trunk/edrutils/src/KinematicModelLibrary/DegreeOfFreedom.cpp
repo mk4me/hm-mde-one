@@ -3,7 +3,7 @@
 #include <KinematicModelLibrary/hmException.h>
 #include <KinematicModelLibrary/DegreeOfFreedom.h>
 
-using namespace hmAnimation;
+using namespace kinematic;
 
 
 std::string Axis::getAxisOrderName( Axis::Order order ) {
@@ -19,7 +19,7 @@ std::string Axis::getAxisOrderName( Axis::Order order ) {
     }
 }
 
-int hmAnimation::DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::Channel channel, const std::vector<DegreeOfFreedom>& dofs ) {
+int kinematic::DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::Channel channel, const std::vector<DegreeOfFreedom>& dofs ) {
     for (int i = dofs.size() - 1; i >= 0; --i) {
         if (dofs[i].channel == channel) {
             return i;
@@ -28,7 +28,7 @@ int hmAnimation::DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::Channel chann
     return -1;
 }
 
-hmAnimation::Axis::Order hmAnimation::Axis::getAxisOrder( const std::string& axis ) {
+kinematic::Axis::Order kinematic::Axis::getAxisOrder( const std::string& axis ) {
     std::string s(axis);
     std::transform(s.begin(), s.end(), s.begin(), ::toupper);
     if (s == "XYZ") {
@@ -71,7 +71,7 @@ DegreeOfFreedom::Channel DegreeOfFreedom::getChannel( const std::string& channel
 }
 
 
-std::string hmAnimation::DegreeOfFreedom::getChannelName( DegreeOfFreedom::Channel channel, bool uppercase) {
+std::string kinematic::DegreeOfFreedom::getChannelName( DegreeOfFreedom::Channel channel, bool uppercase) {
     switch (channel) {
         case DegreeOfFreedom::TX : return uppercase ? "TX" : "tx";
         case DegreeOfFreedom::TY : return uppercase ? "TY" : "ty";
@@ -81,7 +81,7 @@ std::string hmAnimation::DegreeOfFreedom::getChannelName( DegreeOfFreedom::Chann
         case DegreeOfFreedom::RZ : return uppercase ? "RZ" : "rz";
         case DegreeOfFreedom::L  : return uppercase ? "L"  : "l";
     }
-    Logger::getInstance().log(Logger::Error, "Unknown Degree Of Freedom");
+    LOGGER(Logger::Error, "Unknown Degree Of Freedom");
     assert(false);
     //TODO : warning;
     return "unknown";

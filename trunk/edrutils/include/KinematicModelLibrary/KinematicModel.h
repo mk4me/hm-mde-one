@@ -1,30 +1,33 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__KINEMATICMODEL_H__
 #define HEADER_GUARD_KINEMATICMODEL__KINEMATICMODEL_H__
 
-namespace hmAnimation {
+namespace kinematic {
 
 class hAnimJoint;
-typedef boost::shared_ptr<hAnimJoint> JointPtr;
-typedef boost::weak_ptr<hAnimJoint> JointWeak;
+typedef boost::shared_ptr<hAnimJoint> hAnimJointPtr;
+typedef boost::weak_ptr<hAnimJoint> hAnimJointWeak;
 
 
 /// \brief Struktura reprezentuje kosc standardu h-anim
 struct hAnimBone {
-    typedef boost::shared_ptr<hAnimBone> Ptr;   
-    typedef boost::weak_ptr<hAnimBone> Weak;    
+    //typedef boost::shared_ptr<hAnimBone> Ptr;   
+    //typedef boost::weak_ptr<hAnimBone> Weak;    
     std::string name;                           //!< nazwa kosci (powinna byc taka jak w h-anim 1.1)
     std::vector<JointPtr> childrenJoints;       //!< do jednej kosci moze byc podlaczone wiele stawow
-    JointWeak parentJoint;                      //!< staw, z ktorego wychodzi kosc
+    hAnimJointWeak parentJoint;                      //!< staw, z ktorego wychodzi kosc
 };
+
+typedef boost::shared_ptr<hAnimBone> hAnimBonePtr;
+typedef boost::weak_ptr<hAnimBone> hAnimBoneWeak;
 
 /// \brief Klasa reprezentuje staw standardu h-anim
 class hAnimJoint : public Joint {
     friend class KinematicModel;
 public:
-    typedef boost::shared_ptr<hAnimJoint> Ptr;
-    typedef boost::weak_ptr<hAnimJoint> Weak;
-    hAnimBone::Weak parentBone;                  //!< kosc, z ktorej wychodzi staw
-    std::vector<hAnimBone::Ptr> childrenBones;   //!< do jednego stawu moze byc podlaczone wiele kosci
+    //typedef boost::shared_ptr<hAnimJoint> Ptr;
+    //typedef boost::weak_ptr<hAnimJoint> Weak;
+    hAnimBoneWeak parentBone;                  //!< kosc, z ktorej wychodzi staw
+    std::vector<hAnimBonePtr> childrenBones;   //!< do jednego stawu moze byc podlaczone wiele kosci
                                                  
 public:
     /// \brief  Domyslny konstruktor, wszystkie stawy sa nieaktywne, dopiero podanie danych z parsera moze zmienic ten stan
@@ -33,11 +36,11 @@ public:
 public: // akcesory
     void setName(const std::string& name)                   { this->name = name; }
     const std::string& getName(void) const                  { return name; }
-    const hAnimBone::Weak& getParentBone(void) const		{ return(parentBone);		};
-    void setParentBone(const hAnimBone::Weak& _parentBone)	{ parentBone = _parentBone;	};
-    const std::vector<hAnimBone::Ptr>& GetChildrenBones(void) const				{ return(childrenBones);			};
-    void SetChildrenBones(const std::vector<hAnimBone::Ptr>& _childrenBones)	{ childrenBones = _childrenBones;	};
-    const hAnimJoint::Ptr getRoot();
+    const hAnimBoneWeak& getParentBone(void) const		    { return(parentBone);		};
+    void setParentBone(const hAnimBoneWeak& _parentBone)	{ parentBone = _parentBone;	};
+    const std::vector<hAnimBonePtr>& GetChildrenBones(void) const				{ return(childrenBones);			};
+    void SetChildrenBones(const std::vector<hAnimBonePtr>& _childrenBones)	{ childrenBones = _childrenBones;	};
+    const hAnimJointPtr getRoot();
 
     bool isActive() { return this->active; }
 
@@ -45,13 +48,29 @@ private:
     bool active;                                 //!< okresla, czy staw jest aktywny (jesli model ma jakies stawy nieaktywne, to mamy do czynienia z niekompletnym szkieletem h-anim 1.1)
 };
 
+// TODO: moze przeniesc to lepiej do prywatnych
+class SkeletonMappingScheme {
+public:
+    typedef std::map<std::string, std::string> mappingDict;
+    static std::vector<SkeletonMappingScheme> LoadFromXML(const std::string& filename);
+    const mappingDict& getMappingDictionary() { return mappingDictionary; }
 
+private:
+    SkeletonMappingScheme(mappingDict mapping) {
+        this->mappingDictionary = mapping;
+      }
+
+private:
+    mappingDict mappingDictionary;
+    static void readNode(TiXmlNode* node, std::vector<SkeletonMappingScheme>& result);
+    static mappingDict readMappingNode(TiXmlNode* node);
+};
 
 /// \brief  klasa reprezentuje szkielet h-anim
 class hAnimSkeleton : public Skeleton {
 public:
     typedef boost::shared_ptr<hAnimSkeleton> Ptr;
-    //void setRoot(hAnimJoint::Ptr root) { this->root = root; }
+    //void setRoot(hAnimJointPtr root) { this->root = root; }
 };
 
 
@@ -93,15 +112,18 @@ public:
 
 public:
     /// \brief  Zwraca surowe dane z parsera
-    hmAnimation::SkeletalModel::Ptr getSkeletalData() { return skeletalModel; }
-    hmAnimation::SkeletalModel::Ptr createSkeletalData() const;
+    kinematic::SkeletalModel::Ptr getSkeletalData() { return skeletalModel; }
+    
+    //! Tworzy dane zgodne z parserami na podstawie reprezentacji wewnetrznej
+    kinematic::SkeletalModel::Ptr createSkeletalData() const;
     /// \brief  Wczytuje slownik z nazwami do mapowania. 
     /// \param  filename   Plik ze slownikiem. 
+    // TODO : format slownika 
     void loadMappingDictionary(const std::string& filename);
     /// \brief  Ustawia dane z parsera
     /// \details W tym miejscu tworzony jest pe³ny szkielet h-anim, robiona jest normalizacja danych
     /// \param  skeletalModel   The skeletal model. 
-    void setSkeletalData(hmAnimation::SkeletalModel::Ptr skeletalModel);
+    void setSkeletalData(kinematic::SkeletalModel::Ptr skeletalModel);
 
     // akcesory do markerow
     void* getMarkersData() { return markers;}
@@ -130,15 +152,15 @@ public:
     /// \brief  Pobiera joint z hierarchii o podanej nazwie (zgodnej z h-anim 1.1)
     /// \param  name    Nazwa pobieranego stawu 
     /// \return Wyszukany staw, jesli takiego nie ma to rzucany jest wyjatek
-    hAnimJoint::Ptr getJointByName(const std::string& name);
+    hAnimJointPtr getJointByName(const std::string& name);
     /// \brief  Pobiera kosc z hierarchii o podanej nazwie (zgodnej z h-anim 1.1)
     /// \param  name    Nazwa pobieranej kosci
     /// \return Wyszukana kosc, jesli takiej nie ma to rzucany jest wyjatek
-    hAnimBone::Ptr getBoneByName(const std::string& name);
+    hAnimBonePtr getBoneByName(const std::string& name);
     /// \brief  Metoda aktywuje lub dezaktywuje staw, operacja ta zmienia strukture szkieletu i dane o rotacjach 
     /// \param  joint   Aktywowany staw. 
     /// \param  active  true - staw staje sie aktywny , false - staw staje sie nieaktywny 
-    void activateJoint(hAnimJoint::Ptr joint, bool active);
+    void activateJoint(hAnimJointPtr joint, bool active);
     //! Metoda aktywuje lub dezaktywuje staw, operacja ta zmienia strukture szkieletu i dane o rotacjach 
     //! \param jointName nazwa aktywowanego stawu
     //! \param active  true - staw staje sie aktywny , false - staw staje sie nieaktywny 
@@ -160,14 +182,14 @@ private:
     /// \param  newBoneName        Nazwa kosci do wyszukania. 
     /// \param [out] parentJoint Referencja do wskaznika, tutaj laduje znaleziony staw. 
     /// \param [out] parentBone  Referencja do wskaznika, tutaj laduje znaleziona kosc. 
-    void backJointAndBone(std::string newJointName, std::string newBoneName, hAnimJoint::Ptr& parentJoint, hAnimBone::Ptr& parentBone);
+    void backJointAndBone(std::string newJointName, std::string newBoneName, hAnimJointPtr& parentJoint, hAnimBonePtr& parentBone);
     /// \brief  Tworzy kosc i staw na podstawie podanych nazw i zmienia referencje do wskaznikow.
     /// \details Pomocnicze przy tworzeniu drzewa h-anim 
     /// \param  newJointName       Nazwa nowego stawu. 
     /// \param  newBoneName        Nazwa nowej kosci.
     /// \param [in,out] parentJoint Referencja do wskaznika, tutaj laduje tworzony staw. 
     /// \param [in,out] parentBone  Referencja do wskaznika, tutaj laduje tworzona kosc.
-    void createJointAndBone(std::string newJointName, std::string newBoneName, hAnimJoint::Ptr& parentJoint, hAnimBone::Ptr& parentBone);
+    void createJointAndBone(std::string newJointName, std::string newBoneName, hAnimJointPtr& parentJoint, hAnimBonePtr& parentBone);
     /// \brief  Executes the skeleton mapping operation. 
     /// \param  skeletalModel   The skeletal model. 
     void doSkeletonMapping(SkeletalModel::Ptr skeletalModel);
@@ -181,26 +203,27 @@ private:
     /// \param  joint       The joint. 
     /// \param  maxLength   Length of the maximum. 
     /// \return The maximum length. 
-    double getMaxLength(Joint::Ptr joint, double maxLength) const;
+    double getMaxLength(JointPtr joint, double maxLength) const;
     
-    Joint::Ptr cloneRootWithActivated(const Joint::Ptr origin) const;
+    JointPtr cloneRootWithActivated(const JointPtr origin) const;
 
     void changeNameInFrames(const std::string& oldName, const std::string& newName);
 
-    bool checkLink(hAnimJoint::Ptr parent, hAnimJoint::Ptr middle, hAnimJoint::Ptr child);
+    bool checkLink(hAnimJointPtr parent, hAnimJointPtr middle, hAnimJointPtr child);
 
 private:
     void* markers;                                                      //!< dane z markerami
-    hmAnimation::SkeletalModel::Ptr skeletalModel;                      //!< dane z parsera acclaim / bvh
-    hmAnimation::hAnimSkeleton::Ptr haSkeleton;                         //!< pelny szkielet h-anim
+    kinematic::SkeletalModel::Ptr skeletalModel;                        //!< dane z parsera acclaim / biovision
+    kinematic::hAnimSkeleton::Ptr haSkeleton;                           //!< pelny szkielet h-anim
     std::vector< std::vector<osg::Quat> > quaternionRepresentation;     //!< tablica z kwaternionami dla kazdego ze stawow
-    std::map<std::string, hAnimJoint::Ptr> joints;                      //!< mapa wszystkich jointow h-anim
-    std::map<std::string, hAnimBone::Ptr> bones;                        //!< mapa wszystkich kosci h-anim
+    std::map<std::string, hAnimJointPtr> joints;                        //!< mapa wszystkich jointow h-anim
+    std::map<std::string, hAnimBonePtr> bones;                          //!< mapa wszystkich kosci h-anim
     std::map<std::string, std::string> jointMappingDictionary;          //!< mapa dzieki ktorej mapuje sie do nomenklatury h-anim
     std::map<std::string, std::string> boneMappingDictionary;           //!< mapa dzieki ktorej mapuje sie do nomenklatury h-anim
     double lengthRatio;                                                 //!< dlugosc przez ktora nalezy pomnozyc aby uzyskac poczatkowe dlugosci kosci 
-    std::vector<SkeletalModel::singleFrame> frames;                     //!< 
-};
+    std::vector<SkeletalModel::singleFrame> frames;                     //!< zbior wszystkich klatek animacji
+    std::vector<SkeletonMappingScheme> mappingSchemes;                  //!< slowniki ze sposobem mapowania
+}; 
 }
 
 #endif

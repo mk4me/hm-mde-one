@@ -1,13 +1,32 @@
-#include <KinematicModelLibrary/stdafx.h>
+#include <tinyxml.h>
+#include <limits>
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <istream>
+#include <string>
+#include <map>
+#include <boost/smart_ptr.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/smart_ptr.hpp>
+#include <osg/Vec3d>
+#include <osg/Quat>
+#include <boost/shared_ptr.hpp>
+#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <list>
 #include <KinematicModelLibrary/SkeletalParsers.h>
 #include <KinematicModelLibrary/KinematicModel.h>
 #include "KinematicModelTest.h"
 
-CPPUNIT_TEST_SUITE_REGISTRATION( KinematicModelTest );
 
-using namespace hmAnimation;
+//CPPUNIT_TEST_SUITE_REGISTRATION( KinematicModelTest );
+
+using namespace kinematic;
 void KinematicModelTest::test1()
 {
+   KinematicModel kinematic;
+   kinematic.loadMappingDictionary("kinematic/dictionary.xml");
    AsfParser asf;
    AmcParser amc;
    SkeletalModel::Ptr model(new SkeletalModel);
@@ -16,11 +35,11 @@ void KinematicModelTest::test1()
     asf.parse(model, "kinematic/acclaim/cmu/01/01.asf");
     amc.parse(model, "kinematic/acclaim/cmu/01/01_01.amc");
     
-    KinematicModel kinematic;
+    
     kinematic.setSkeletalData(model);
-    hAnimJoint::Ptr vt6 = kinematic.getJointByName("vt6");
+    hAnimJointPtr vt6 = kinematic.getJointByName("vt6");
     kinematic.activateJoint(vt6, true);
-    hAnimJoint::Ptr l_index3 = kinematic.getJointByName("l_index3");
+    hAnimJointPtr l_index3 = kinematic.getJointByName("l_index3");
     kinematic.activateJoint(l_index3, true);
     kinematic.activateJoint("r_index0", true);
 

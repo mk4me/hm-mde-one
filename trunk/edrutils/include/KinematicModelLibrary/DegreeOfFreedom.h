@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__DEGREEOFFREEDOM_H__
 #define HEADER_GUARD_KINEMATICMODEL__DEGREEOFFREEDOM_H__
 
-namespace hmAnimation
+namespace kinematic
 {
      /*! 
      * \brief Struktura pelni funkcje przestrzeni nazw dla 

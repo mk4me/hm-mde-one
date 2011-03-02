@@ -16,5 +16,8 @@ public:
 public:
     void testLoad();
     void fullTest();
+
+private:
+    std::vector<std::string> fill(const std::string& rootPath);
 };
 #endif

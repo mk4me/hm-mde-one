@@ -4,7 +4,7 @@
 #define PARSER_VERSION "0.11"
 //#define forceRootXYZ true
 
-namespace hmAnimation
+namespace kinematic
 {
     class Skeleton;
 

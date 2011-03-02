@@ -3,7 +3,7 @@
 
 #include <boost/smart_ptr.hpp>
 #include "DegreeOfFreedom.h"
-namespace hmAnimation
+namespace kinematic
 {
     /// \brief  Klasa przechowuje hierarchie kosci 
     class Skeleton
@@ -14,10 +14,10 @@ namespace hmAnimation
     public: 
         /// \brief  Zwraca korzen, czyli kosc od ktorej zaczyna sie hierarchia. 
         /// \return Wskaznik do kosci. 
-        const Joint::Ptr getRoot() const { return this->root; }
+        const JointPtr getRoot() const { return this->root; }
         /// \brief  Ustawia korzen, czyli kosc od ktorej zaczyna sie hierarchia. 
         /// \param  root  Wskaznik do kosci roota. 
-        void setRoot(Joint::Ptr root) { this->root = root; }
+        void setRoot(JointPtr root) { this->root = root; }
         /// \brief  Zwraca nazwe korzenia
         std::string getRootName() { return this->rootName; };
         /// \brief  Ustawia nazwe korzenia
@@ -36,7 +36,7 @@ namespace hmAnimation
         void setAxisOrder(Axis::Order order) {this->axisOrder = order; }
 
     protected:
-        Joint::Ptr       root;          //!< korzen, czyli kosc od ktorej zaczyna sie hierarchia. 
+        JointPtr       root;          //!< korzen, czyli kosc od ktorej zaczyna sie hierarchia. 
         osg::Vec3d       position;      //!< poczatkowa pozycja w globalnym ukladzie odniesienia
         osg::Vec3d       orientation;   //!< poczatkowa orientacja w globalnym ukladzie odniesienia
         Axis::Order      axisOrder;     //!< kolejnosc rotacji

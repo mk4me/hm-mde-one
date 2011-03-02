@@ -13,4 +13,8 @@
 #include <boost/smart_ptr.hpp>
 #include <osg/Vec3d>
 #include <osg/Quat>
+#include <utils/Utils.h>
+#include <utils/Debug.h>
+#include <utils/Enum.h>
+#include <tinyxml.h>
 #endif

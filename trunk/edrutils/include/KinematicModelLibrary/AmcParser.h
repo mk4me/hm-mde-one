@@ -2,7 +2,7 @@
 #define HEADER_GUARD_KINEMATICMODEL__AMCPARSER_H__
 
 #include "SkeletalModel.h"
-namespace hmAnimation
+namespace kinematic
 {
     /// \brief Klasa realizuje zapis i odczyt plikow *.amc
     class AmcParser

@@ -2,7 +2,7 @@
 
 #include <KinematicModelLibrary\SkeletalParsers.h>
 
-using namespace hmAnimation;
+using namespace kinematic;
 using namespace boost;
 //----------------------------------------------------------------------------------
 AmcParser::AmcParser() : forceRootXYZ(true) {
@@ -46,6 +46,7 @@ void AmcParser::save (const SkeletalModel::Ptr model , const std::string& filena
             out << std::endl;
         }
     }
+    out.close();
 }
 //----------------------------------------------------------------------------------
 void AmcParser::parse(SkeletalModel::Ptr model, const std::string& filename ) {
@@ -57,7 +58,7 @@ void AmcParser::parse(SkeletalModel::Ptr model, const std::string& filename ) {
     std::ifstream ifs( filename.c_str() );
 
     if (!ifs) {
-        throw AcclaimUnableToOpenFileException(filename);
+        throw UnableToOpenFileException(filename);
     }
 
     std::string line;
@@ -102,5 +103,7 @@ void AmcParser::parse(SkeletalModel::Ptr model, const std::string& filename ) {
      if (frames.size() == 0) {
          throw AcclaimWrongFileException("No frames defined in " + filename + " file");
      }
+
+     ifs.close();
 }
 

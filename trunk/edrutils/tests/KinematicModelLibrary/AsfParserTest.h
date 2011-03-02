@@ -7,7 +7,7 @@ class AsfParserTest : public CPPUNIT_NS::TestCase
 {
     CPPUNIT_TEST_SUITE(AsfParserTest);
     CPPUNIT_TEST(testLoad);
-    CPPUNIT_TEST_EXCEPTION(testLoadNotExisting, hmAnimation::AcclaimUnableToOpenFileException);
+    CPPUNIT_TEST_EXCEPTION(testLoadNotExisting, kinematic::UnableToOpenFileException);
     CPPUNIT_TEST_SUITE_END();
 public:
     AsfParserTest(void);

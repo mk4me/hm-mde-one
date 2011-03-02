@@ -3,34 +3,35 @@
 #include <KinematicModelLibrary/SkeletalParsers.h>
 
 //----------------------------------------------------------------------------------
-hmAnimation::HmException::HmException( const std::string& message ) {
+kinematic::HmException::HmException( const std::string& message ) {
     //TODO: Czy takie konstrukcje sa bezpieczne ? 
     this->message = message;
-    Logger::getInstance().log(Logger::Warning, "Exception was thrown : " +  message);
+    //Logger::getInstance().log(Logger::Warning, "Exception was thrown : " +  message);
+    LOGGER(Logger::Warning, "Exception was thrown : " +  message);
 }
-hmAnimation::HmException::~HmException() {
+kinematic::HmException::~HmException() {
     
 }
 
-const char* hmAnimation::HmException::what() const {
+const char* kinematic::HmException::what() const {
     std::string exc = typeid(*this).name();
     exc += (": " + message);
     return exc.c_str();
 }
 //----------------------------------------------------------------------------------
-hmAnimation::AcclaimUnableToOpenFileException::AcclaimUnableToOpenFileException( const std::string& message )
+kinematic::UnableToOpenFileException::UnableToOpenFileException( const std::string& message )
 :HmException(message)
 {
 
 }
 //----------------------------------------------------------------------------------
-hmAnimation::AcclaimWrongFileException::AcclaimWrongFileException( const std::string& message )
+kinematic::AcclaimWrongFileException::AcclaimWrongFileException( const std::string& message )
 :HmException(message)
 {
 
 }
 //----------------------------------------------------------------------------------
-hmAnimation::AcclaimDataNotLoaded::AcclaimDataNotLoaded( const std::string& message )
+kinematic::AcclaimDataNotLoaded::AcclaimDataNotLoaded( const std::string& message )
 :HmException(message)
 {
 

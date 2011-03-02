@@ -4,7 +4,7 @@
 #include <KinematicModelLibrary/Skeleton.h>
 #include <KinematicModelLibrary/SkeletalModel.h>
 
-using namespace hmAnimation;
+using namespace kinematic;
 using namespace std;
 
 Skeleton::Skeleton(): 

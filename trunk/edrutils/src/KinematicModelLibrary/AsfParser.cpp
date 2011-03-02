@@ -2,7 +2,7 @@
 
 #include <KinematicModelLibrary/SkeletalParsers.h>
 
-using namespace hmAnimation;
+using namespace kinematic;
 using namespace std;
 
 AsfParser::AsfParser() : 
@@ -21,7 +21,7 @@ void AsfParser::parse(SkeletalModel::Ptr model, const string& filename) {
     ifstream in(filename.c_str(), ios_base::in);
     // czy plik zostal poprawnie otwarty?
     if (!in) {
-       throw AcclaimUnableToOpenFileException(filename);
+       throw UnableToOpenFileException(filename);
     }
     // skopiowanie zawartosci pliku do pojedynczego stringa
     string storage; 
@@ -32,7 +32,7 @@ void AsfParser::parse(SkeletalModel::Ptr model, const string& filename) {
         istream_iterator<char>(),
         back_inserter(storage)
         );
-
+    in.close();
     // usun komentarze z pliku
     storage = removeComments(storage);
     // podziel plik na sekcje
@@ -95,8 +95,8 @@ void AsfParser::parseLimit(const string& token, vector<double>& limitValues) {
     // na pewno jest jakas funkcja do tego...
     for (int i = 0; i < count; i++) {
         char c = token[i];
-        if (c != '(' && c != ')' && c != ',') {
-            limit += c;
+        if (c != '(' && c != ')') {
+            limit += (c != ',' ? c : ' ');
         }
     }
     
@@ -195,7 +195,7 @@ bool AsfParser::parseBones(const string& bones) {
         begin += shift;
         if (begin != string::npos && end != string::npos && end > begin) {
             bone = bones.substr(begin, end - begin);
-            Joint::Ptr singleBone(new Joint());
+            JointPtr singleBone(new Joint());
             bool boneParse = parseSingleBone(bone, *singleBone);
 
             if (boneParse) {
@@ -240,10 +240,10 @@ bool AsfParser::parseUnits (const string& units) {
             } else if (token.compare("rad")) {
                 model->setAngle(SkeletalModel::radians);
             } else {
-                Logger::getInstance().log(Logger::Warning, "Unknown angle token");
+                LOGGER(Logger::Warning, "Unknown angle token");
             }
         } else {
-            Logger::getInstance().log(Logger::Warning, "Unknown units token");
+           LOGGER(Logger::Warning, "Unknown units token");
         }
         
     }
@@ -281,7 +281,7 @@ bool AsfParser::parseRoot(const string& root, Skeleton& skeleton) {
         } else if (token.compare("orientation")== 0) {
             is >> orientation[0] >> orientation[1] >> orientation[2];
         } else if (token.size() != 0) {
-            Logger::getInstance().log(Logger::Warning, "Unknown root token : " + token);
+            LOGGER(Logger::Warning, "Unknown root token : " + token);
         }
     }
     
@@ -322,7 +322,7 @@ bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton
     }
 
     int linesCount = hierarchy.size();
-    Joint::Ptr root(new Joint());
+    JointPtr root(new Joint());
     root->id = -1;
     root->name = "root";
     root->parent.reset();
@@ -339,9 +339,9 @@ bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton
     
     for (int i = 0; i < linesCount; i++) {
         hierarchyLine line = hierarchy[i];
-        Joint::Ptr parent = model->getJointByName(line.first);
+        JointPtr parent = model->getJointByName(line.first);
         for (int j = line.second.size() - 1; j >= 0; --j) {
-            Joint::Ptr bone = model->getJointByName(line.second[j]);
+            JointPtr bone = model->getJointByName(line.second[j]);
             bone->parent = parent;
             parent->children.push_back(bone);
         }
@@ -353,7 +353,7 @@ bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton
     return true;
 }
 
-string hmAnimation::AsfParser::removeComments( const string& txt )
+string kinematic::AsfParser::removeComments( const string& txt )
 {
     string result;
     string line;
@@ -374,7 +374,7 @@ string hmAnimation::AsfParser::removeComments( const string& txt )
     return result;
 }
 
-string* hmAnimation::AsfParser::getSectionContainter( const string& token ) {
+string* kinematic::AsfParser::getSectionContainter( const string& token ) {
     if (token.compare(":name") == 0) 
         return &this->name;
     if (token.compare(":documentation") == 0) 
@@ -390,11 +390,11 @@ string* hmAnimation::AsfParser::getSectionContainter( const string& token ) {
     if (token.compare(":hierarchy") == 0) 
         return &this->hierarchy;
 
-    Logger::getInstance().log(Logger::Warning, "Unknown section : " + token);
+    LOGGER(Logger::Warning, "Unknown section : " + token);
     return &this->unknown;
 }
 
-void hmAnimation::AsfParser::saveRoot( std::ostream& out ) {
+void kinematic::AsfParser::saveRoot( std::ostream& out ) {
     out << ":root" << endl;
     out << "   " << "order";
     
@@ -430,12 +430,12 @@ void hmAnimation::AsfParser::saveRoot( std::ostream& out ) {
         << orientation[2] << endl;
 }
 
-void hmAnimation::AsfParser::saveBones( std::ostream& out ) {
+void kinematic::AsfParser::saveBones( std::ostream& out ) {
     out << ":bonedata" << endl;
     
     SkeletalModel::JointIdMap bonesIds = model->getJointIDMap();
-    map<int, Joint::Ptr>::iterator it;
-    map<int, Joint::Ptr>::iterator end = bonesIds.end();
+    map<int, JointPtr>::iterator it;
+    map<int, JointPtr>::iterator end = bonesIds.end();
 
     for (it = bonesIds.begin(); it != end; it++) {
         if (it->second->id != -1) {
@@ -447,7 +447,7 @@ void hmAnimation::AsfParser::saveBones( std::ostream& out ) {
     }
 }
 
-void hmAnimation::AsfParser::saveSingleBone( std::ostream& out, const Joint& bone) {
+void kinematic::AsfParser::saveSingleBone( std::ostream& out, const Joint& bone) {
     out << "  begin" << endl;
     out << "     " << "id " << bone.id << endl;
     out << "     " << "name " << bone.name << endl;
@@ -502,14 +502,14 @@ void hmAnimation::AsfParser::saveSingleBone( std::ostream& out, const Joint& bon
     out << "  end" << endl;
 }
 
-void saveBoneInHierarchy(std::ostream& out,const hmAnimation::Joint::Ptr& bone) {
+void saveBoneInHierarchy(std::ostream& out,const kinematic::JointPtr& bone) {
 
-    typedef std::vector<hmAnimation::Joint::Ptr> BoneTable;
+    typedef std::vector<kinematic::JointPtr> BoneTable;
     BoneTable toInsert;
     BoneTable& children = bone->children;
     for (int i = children.size() - 1; i >= 0; --i) {
         
-        Joint::Ptr child = children[i];
+        JointPtr child = children[i];
         out << " " << child->name;
         if (child->children.size() > 0) {
            toInsert.push_back(child);
@@ -527,7 +527,7 @@ void saveBoneInHierarchy(std::ostream& out,const hmAnimation::Joint::Ptr& bone) 
     
 }
 
-void hmAnimation::AsfParser::saveHierarchy( std::ostream& out ) {
+void kinematic::AsfParser::saveHierarchy( std::ostream& out ) {
     out << ":hierarchy" << endl;
     out << "  begin" << endl;
     out << "    " << "root";
@@ -538,7 +538,7 @@ void hmAnimation::AsfParser::saveHierarchy( std::ostream& out ) {
 
 
 
-void hmAnimation::AsfParser::saveUnits( std::ostream& out )
+void kinematic::AsfParser::saveUnits( std::ostream& out )
 {
     out << ":units" << endl;
     out << "  length " << model->getLength() << endl;

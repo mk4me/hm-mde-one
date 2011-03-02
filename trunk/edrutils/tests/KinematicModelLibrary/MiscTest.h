@@ -8,8 +8,8 @@
 class MiscTest : public CPPUNIT_NS::TestCase
 {
     CPPUNIT_TEST_SUITE(MiscTest);
-    CPPUNIT_TEST(test1);
     CPPUNIT_TEST(testOK);
+    CPPUNIT_TEST(test1);
     //CPPUNIT_TEST(testFail);
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -24,7 +24,7 @@ public:
     bool substestAsfAmc(const std::string& asfFile, const std::string& amcFile);
 
 public:
-    static bool testJointContentEquality(hmAnimation::Joint::Ptr joint1, hmAnimation::Joint::Ptr joint2, bool testNames = true, bool testDofs = true);
+    static bool testJointContentEquality(kinematic::JointPtr joint1, kinematic::JointPtr joint2, bool testNames = true, bool testDofs = true);
     //template <class T>
     //static bool isEqual(T left, T right, double epsilon = 0.001) { 
     //    return fabs(left - right) < epsilon;
@@ -51,6 +51,9 @@ public:
                isEqual(left[2], right[2], epsilon);
     }
 
-    static bool testSkeletonEquality(const hmAnimation::Skeleton& s1, const hmAnimation::Skeleton& s2);
+    static bool testSkeletonEquality(const kinematic::Skeleton& s1, const kinematic::Skeleton& s2);
+private:
+    typedef std::list<std::pair<std::string, std::string> > pairs;
+    pairs fill(const std::string& rootDir);
 };
 #endif

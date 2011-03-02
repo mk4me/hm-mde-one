@@ -2,7 +2,7 @@
 #define HEADER_GUARD_KINEMATICMODEL__SKELETALMODEL_H__
 #include "Joint.h"
 #include "Skeleton.h"
-namespace hmAnimation 
+namespace kinematic 
 {
     struct Bone;
     class Skeleton;
@@ -19,9 +19,9 @@ namespace hmAnimation
         /// \brief  inteligentny wskaznik do klasy
         typedef boost::shared_ptr<SkeletalModel> Ptr;
         /// \brief  mapa nazwa kosci -> kosc
-        typedef std::map<std::string, Joint::Ptr> JointMap;
+        typedef std::map<std::string, JointPtr> JointMap;
         /// \brief  mapa identyfikator kosci -> kosc
-        typedef std::map<int, Joint::Ptr> JointIdMap;
+        typedef std::map<int, JointPtr> JointIdMap;
 
         /// \brief  Struktura zawiera wartosci kanalow dla
         /// 	    konkretnej kosci i konkretnego kanalu
@@ -54,13 +54,13 @@ namespace hmAnimation
 
     public:
         /** Zwraca kosc na podstawie nazwy */
-        Joint::Ptr getJointByName(const std::string& name) {
+        JointPtr getJointByName(const std::string& name) {
             JointMap::iterator it = jointsMap.find(name);
-            Joint::Ptr nullJoint;
+            JointPtr nullJoint;
             return it != jointsMap.end() ? it->second : nullJoint;
         }
         /** Zwraca kosc na podstawie identyfikatora */
-        Joint::Ptr getJointByID(int id) { return jointsIds[id]; }
+        JointPtr getJointByID(int id) { return jointsIds[id]; }
         /** Zwraca szkielet modelu */
         Skeleton& getSkeleton() { return skeleton; }
         /** Zwraca referencje do mapy : nazwa kosci -> kosc*/
@@ -86,7 +86,7 @@ namespace hmAnimation
         void RecreateMaps();
 
     protected:
-        void Recreate(Joint::Ptr joint);
+        void Recreate(JointPtr joint);
 
     protected:
         std::string                  version;        //!< wersja wg ktorej zostal zapisany plik

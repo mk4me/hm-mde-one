@@ -1,12 +1,27 @@
-#include <KinematicModelLibrary/stdafx.h>
+#include <limits>
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <istream>
+#include <string>
+#include <map>
+#include <boost/smart_ptr.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/smart_ptr.hpp>
+#include <osg/Vec3d>
+#include <osg/Quat>
+#include <boost/shared_ptr.hpp>
+#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <list>
 #include <KinematicModelLibrary/SkeletalParsers.h>
 #include "MiscTest.h"
 #include "BvhParserTest.h"
-
+#include <boost/filesystem.hpp>
 CPPUNIT_TEST_SUITE_REGISTRATION( BvhParserTest );
 using namespace std;
-using namespace hmAnimation;
-string files[];
+using namespace kinematic;
+using namespace boost::filesystem;
 
 BvhParserTest::BvhParserTest(void)
 {
@@ -19,19 +34,18 @@ BvhParserTest::~BvhParserTest(void)
 
 void BvhParserTest::testLoad()
 {
-    hmAnimation::BvhParser bvh;
-    hmAnimation::SkeletalModel::Ptr model(new hmAnimation::SkeletalModel);
+    kinematic::BvhParser bvh;
+    kinematic::SkeletalModel::Ptr model(new kinematic::SkeletalModel);
     // TODO zmienic ktorys z plikow CMakeLists bo na razie ten test nie ma sensu
     bvh.parse(model, "kinematic/biovision/walks/backwards_walk.bvh");
 
 }
 
-void BvhParserTest::fullTest()
-{
-    int number = 0;
-    string s;
-    while ((s = files[number++]) != "") {
-        Logger::getInstance().log(Logger::Info, "Test : " + s);
+void BvhParserTest::fullTest() {
+    vector<string> files = fill("kinematic");
+    for (unsigned int i = 0; i < files.size(); i++) {
+        string s = files[i];
+        LOGGER(Logger::Info, "Test : " + s);
         SkeletalModel::Ptr model1(new SkeletalModel);
         SkeletalModel::Ptr model2(new SkeletalModel);
         BvhParser b1, b2;
@@ -49,296 +63,24 @@ void BvhParserTest::fullTest()
     }
 }
 
+std::vector<std::string> BvhParserTest::fill( const std::string& rootPath ) {
+    typedef std::vector<std::string> v;
+    v temp;
+    if (exists(rootPath) && is_directory(rootPath)) {
 
-string files[] = {
-    "kinematic/biovision/walks/backwards_walk.bvh",
-    "kinematic/biovision/walks/backwards_walk2turn2.bvh",
-    "kinematic/biovision/walks/backwards_walk2turn1.bvh",
-    "kinematic/biovision/accad/male1_b23_sidestepright.bvh",
-    "kinematic/biovision/accad/male1_c18_runturnchangedirection.bvh",
-    "kinematic/biovision/accad/male1_c22_runwithbox.bvh",
-    "kinematic/biovision/accad/male1_c19_run2hop2walk.bvh",
-    "kinematic/biovision/accad/male1_b7_walkbackturnforward.bvh",
-    "kinematic/biovision/accad/male1_a9_liedown.bvh",
-    "kinematic/biovision/accad/male1_b18_walk2leap2walk.bvh",
-    "kinematic/biovision/accad/male1_b11_walkturnleft135.bvh",
-    "kinematic/biovision/accad/male1_c01_standtorun.bvh",
-    "kinematic/biovision/accad/male1_b1_standtowalk.bvh",
-    "kinematic/biovision/accad/male1_b26_walktoskip.bvh",
-    "kinematic/biovision/accad/male1_c04_runtowalk.bvh",
-    "kinematic/biovision/accad/male1_a8_crouchtolie.bvh",
-    "kinematic/biovision/accad/male1_c27_crouchtorun.bvh",
-    "kinematic/biovision/accad/male1_b17_walk2hop2walk.bvh",
-    "kinematic/biovision/accad/male1_c02_runtostand.bvh",
-    "kinematic/biovision/accad/male1_c05_walktorun.bvh",
-    "kinematic/biovision/accad/male1_a13_skipping.bvh",
-    "kinematic/biovision/accad/male1_b25_crouchtowalk.bvh",
-    "kinematic/biovision/accad/male1_a14_standtoskip.bvh",
-    "kinematic/biovision/accad/male1_a3_swingarms.bvh",
-    "kinematic/biovision/accad/male1_c21_runtopickupbox.bvh",
-    "kinematic/biovision/accad/male1_a15_skiptostand_take_001.bvh",
-    "kinematic/biovision/accad/male1_c24_quicksidestepleft.bvh",
-    "kinematic/biovision/accad/male1_b22_sidestepleft.bvh",
-    "kinematic/biovision/accad/male1_a11_crawlforward.bvh",
-    "kinematic/biovision/accad/male1_c15_runturnright45.bvh",
-    "kinematic/biovision/accad/male1_c10_runbackstoprunforward.bvh",
-    "kinematic/biovision/accad/male1_b16_walktrunchange.bvh",
-    "kinematic/biovision/accad/male1_b24_walktocrouch.bvh",
-    "kinematic/biovision/accad/male1_a4_lookaround.bvh",
-    "kinematic/biovision/accad/male1_b3_walk.bvh",
-    "kinematic/biovision/accad/male1_a2_sway.bvh",
-    "kinematic/biovision/accad/male1_c12_runturnleft45.bvh",
-    "kinematic/biovision/accad/male1_a12_crawlbackward.bvh",
-    "kinematic/biovision/accad/male1_a5_pickupbox.bvh",
-    "kinematic/biovision/accad/male1_c17_runturnaround.bvh",
-    "kinematic/biovision/accad/male1_b6_walkbackwards.bvh",
-    "kinematic/biovision/accad/male1_c20_run2jump2walk.bvh",
-    "kinematic/biovision/accad/male1_c14_runturnright90.bvh",
-    "kinematic/biovision/accad/male1_b4_standtowalkback.bvh",
-    "kinematic/biovision/accad/male1_b8_walkbacktoforward.bvh",
-    "kinematic/biovision/accad/male1_b12_walkturnright90.bvh",
-    "kinematic/biovision/accad/male1_c26_runtocrouch.bvh",
-    "kinematic/biovision/accad/male1_a6_liftbox.bvh",
-    "kinematic/biovision/accad/male1_c11_runturnleft90.bvh",
-    "kinematic/biovision/accad/male1_a1_stand.bvh",
-    "kinematic/biovision/accad/male1_a7_crouch.bvh",
-    "kinematic/biovision/accad/male1_c25_quicksidestepright.bvh",
-    "kinematic/biovision/accad/male1_b14_walkturnright135.bvh",
-    "kinematic/biovision/accad/male1_b5_walkbacktostand.bvh",
-    "kinematic/biovision/accad/male1_b10_walkturnleft45.bvh",
-    "kinematic/biovision/accad/male1_c13_runturnleft135.bvh",
-    "kinematic/biovision/accad/male1_b21_putdownboxtowalk.bvh",
-    "kinematic/biovision/accad/male1_c23_putdownboxtorun.bvh",
-    "kinematic/biovision/accad/male1_c06_standtorunback.bvh",
-    "kinematic/biovision/accad/male1_b20_walkwithbox.bvh",
-    "kinematic/biovision/accad/male1_b2_walktostand.bvh",
-    "kinematic/biovision/accad/male1_c08_runbacktostand.bvh",
-    "kinematic/biovision/accad/male1_c07_runback.bvh",
-    "kinematic/biovision/accad/male1_b27_skiptowalk.bvh",
-    "kinematic/biovision/accad/male1_c03_run.bvh",
-    "kinematic/biovision/accad/male1_b15_walkturnaround.bvh",
-    "kinematic/biovision/accad/male1_b13_walkturnright45.bvh",
-    "kinematic/biovision/accad/male1_a10_lietocrouch.bvh",
-    "kinematic/biovision/accad/male1_b9_walktoturnleft90.bvh",
-    "kinematic/biovision/accad/male1_c09_runbackturnrunforward.bvh",
-    "kinematic/biovision/accad/male1_b19_walktopickupbox_working.bvh",
-    "kinematic/biovision/accad/male1_c16_runturnright135.bvh",
-    "kinematic/biovision/ambient moves/ambient11.bvh",
-    "kinematic/biovision/ambient moves/party_w_cig.bvh",
-    "kinematic/biovision/ambient moves/ambient16.bvh",
-    "kinematic/biovision/ambient moves/ambient14.bvh",
-    "kinematic/biovision/ambient moves/ambient02.bvh",
-    "kinematic/biovision/ambient moves/ambient13.bvh",
-    "kinematic/biovision/ambient moves/ambient03.bvh",
-    "kinematic/biovision/ambient moves/subway2.bvh",
-    "kinematic/biovision/ambient moves/ambient06.bvh",
-    "kinematic/biovision/ambient moves/g_w_walkman.bvh",
-    "kinematic/biovision/ambient moves/ambient17.bvh",
-    "kinematic/biovision/ambient moves/jostling.bvh",
-    "kinematic/biovision/ambient moves/party.bvh",
-    "kinematic/biovision/ambient moves/impatient.bvh",
-    "kinematic/biovision/ambient moves/ambient19.bvh",
-    "kinematic/biovision/ambient moves/snd_open.bvh",
-    "kinematic/biovision/ambient moves/ambient09.bvh",
-    "kinematic/biovision/ambient moves/hopping.bvh",
-    "kinematic/biovision/ambient moves/ambient04.bvh",
-    "kinematic/biovision/ambient moves/ambient08.bvh",
-    "kinematic/biovision/ambient moves/ambient01.bvh",
-    "kinematic/biovision/ambient moves/window_shop.bvh",
-    "kinematic/biovision/ambient moves/stand_talk.bvh",
-    "kinematic/biovision/ambient moves/spectator.bvh",
-    "kinematic/biovision/ambient moves/ambient10.bvh",
-    "kinematic/biovision/ambient moves/stand_yoyo.bvh",
-    "kinematic/biovision/ambient moves/ambient15.bvh",
-    "kinematic/biovision/ambient moves/subway1.bvh",
-    "kinematic/biovision/ambient moves/ambient20.bvh",
-    "kinematic/biovision/ambient moves/ambient12.bvh",
-    "kinematic/biovision/ambient moves/ambient18.bvh",
-    "kinematic/biovision/ambient moves/b_w_walkman.bvh",
-    "kinematic/biovision/ambient moves/ambient05.bvh",
-    "kinematic/biovision/ambient moves/ambient07.bvh",
-    "kinematic/biovision/ambient moves/sit_open.bvh",
-    "kinematic/biovision/combat/mecombat012a.bvh",
-    "kinematic/biovision/combat/mecombat018a.bvh",
-    "kinematic/biovision/combat/mecombat017b.bvh",
-    "kinematic/biovision/combat/mecombat015b.bvh",
-    "kinematic/biovision/combat/mecombat023a.bvh",
-    "kinematic/biovision/combat/mecombat021b.bvh",
-    "kinematic/biovision/combat/mecombat022a.bvh",
-    "kinematic/biovision/combat/mecombat019b.bvh",
-    "kinematic/biovision/combat/mecombat011b.bvh",
-    "kinematic/biovision/combat/mecombat011a.bvh",
-    "kinematic/biovision/ucla/escape_shck.bvh",
-    "kinematic/biovision/ucla/escape3.bvh",
-    "kinematic/biovision/ucla/waddle1.bvh",
-    "kinematic/biovision/ucla/skip_fem.bvh",
-    "kinematic/biovision/ucla/walk4.bvh",
-    "kinematic/biovision/ucla/walk1.bvh",
-    "kinematic/biovision/ucla/strident2.bvh",
-    "kinematic/biovision/ucla/escape2.bvh",
-    "kinematic/biovision/ucla/escape5.bvh",
-    "kinematic/biovision/ucla/escape1.bvh",
-    "kinematic/biovision/ucla/f_waddle1.bvh",
-    "kinematic/biovision/ucla/escape4.bvh",
-    "kinematic/biovision/ucla/f_waddle2.bvh",
-    "kinematic/biovision/ucla/walk2.bvh",
-    "kinematic/biovision/ucla/strident1.bvh",
-    "kinematic/biovision/ucla/walk3.bvh",
-    "kinematic/biovision/houseofmoves/wlkmh1.bvh",
-    "kinematic/biovision/houseofmoves/repelci.bvh",
-    "kinematic/biovision/houseofmoves/mltpchh2.bvh",
-    "kinematic/biovision/houseofmoves/sptkckh2.bvh",
-    "kinematic/biovision/houseofmoves/supcmbh2.bvh",
-    "kinematic/biovision/houseofmoves/runmedh1.bvh",
-    "kinematic/biovision/houseofmoves/sneakh1.bvh",
-    "kinematic/biovision/houseofmoves/sexywlk.bvh",
-    "kinematic/biovision/character_walks/dainty1.bvh",
-    "kinematic/biovision/character_walks/drag_queen1.bvh",
-    "kinematic/biovision/character_walks/elderly1.bvh",
-    "kinematic/biovision/character_walks/drunk_walk2run.bvh",
-    "kinematic/biovision/character_walks/cowboy4.bvh",
-    "kinematic/biovision/character_walks/cripple1_run.bvh",
-    "kinematic/biovision/character_walks/dainty_old_walk2run.bvh",
-    "kinematic/biovision/character_walks/cripple1_walk2.bvh",
-    "kinematic/biovision/character_walks/cowboy3.bvh",
-    "kinematic/biovision/character_walks/dainty_old.bvh",
-    "kinematic/biovision/character_walks/cripple1_walk1.bvh",
-    "kinematic/biovision/character_walks/cripple2_walk.bvh",
-    "kinematic/biovision/character_walks/drunk.bvh",
-    "kinematic/biovision/character_walks/elderly2.bvh",
-    "kinematic/biovision/character_walks/cripple2_walk2run.bvh",
-    "kinematic/biovision/character_walks/cowboy2.bvh",
-    "kinematic/biovision/character_walks/dainty1_walk2run.bvh",
-    "kinematic/biovision/character_walks/drag_queen2.bvh",
-    "kinematic/biovision/character_walks/cool.bvh",
-    "kinematic/biovision/character_walks/cowboy1.bvh",
-    "kinematic/biovision/transitions/fastrun2fastwalk.bvh",
-    "kinematic/biovision/mensmotions/standlook.bvh",
-    "kinematic/biovision/mensmotions/shooting.bvh",
-    "kinematic/biovision/mensmotions/twohandlunge.bvh",
-    "kinematic/biovision/mensmotions/roundhouse.bvh",
-    "kinematic/biovision/mensmotions/throwfootball.bvh",
-    "kinematic/biovision/mensmotions/walkshake.bvh",
-    "kinematic/biovision/mensmotions/runfast.bvh",
-    "kinematic/biovision/mensmotions/walkslow.bvh",
-    "kinematic/biovision/mensmotions/pickupobject.bvh",
-    "kinematic/biovision/mensmotions/multipunch.bvh",
-    "kinematic/biovision/mensmotions/getslapped.bvh",
-    "kinematic/biovision/mensmotions/walkslip.bvh",
-    "kinematic/biovision/mensmotions/walkbump.bvh",
-    "kinematic/biovision/mensmotions/sneak.bvh",
-    "kinematic/biovision/mensmotions/walkfast.bvh",
-    "kinematic/biovision/mensmotions/drunk.bvh",
-    "kinematic/biovision/mensmotions/getshot.bvh",
-    "kinematic/biovision/mensmotions/drawgun.bvh",
-    "kinematic/biovision/mensmotions/runquit.bvh",
-    "kinematic/biovision/mensmotions/sidestep.bvh",
-    "kinematic/biovision/mensmotions/runstop.bvh",
-    "kinematic/biovision/mensmotions/walksit.bvh",
-    "kinematic/biovision/mensmotions/throwbaseball.bvh",
-    "kinematic/biovision/mensmotions/walkintoglass.bvh",
-    "kinematic/biovision/mensmotions/punchdouble.bvh",
-    "kinematic/biovision/character_sits/cripple_sw.bvh",
-    "kinematic/biovision/character_sits/dainty_sw.bvh",
-    "kinematic/biovision/character_sits/dragqueen_sw.bvh",
-    "kinematic/biovision/character_sits/dainty_ws.bvh",
-    "kinematic/biovision/character_sits/drunk_sw1.bvh",
-    "kinematic/biovision/character_sits/drunk_ws1.bvh",
-    "kinematic/biovision/character_sits/drunk_sw3.bvh",
-    "kinematic/biovision/character_sits/drunk_ws2.bvh",
-    "kinematic/biovision/character_sits/drunk_sw2.bvh",
-    "kinematic/biovision/character_sits/cripple_ws.bvh",
-    "kinematic/biovision/character_sits/drunk_ws3.bvh",
-    "kinematic/biovision/character_sits/dragqueen_ws.bvh",
-    "kinematic/biovision/dance/ballet23.bvh",
-    "kinematic/biovision/dance/ballet20.bvh",
-    "kinematic/biovision/dance/ballet_walk3.bvh",
-    "kinematic/biovision/dance/ballet14.bvh",
-    "kinematic/biovision/dance/ballet3.bvh",
-    "kinematic/biovision/dance/ballet18.bvh",
-    "kinematic/biovision/dance/ballet7.bvh",
-    "kinematic/biovision/dance/ballet_walk4.bvh",
-    "kinematic/biovision/dance/ballet4.bvh",
-    "kinematic/biovision/dance/ballet25.bvh",
-    "kinematic/biovision/dance/ballet16.bvh",
-    "kinematic/biovision/dance/ballet10.bvh",
-    "kinematic/biovision/dance/ballet_walk1.bvh",
-    "kinematic/biovision/dance/ballet22.bvh",
-    "kinematic/biovision/dance/ballet8.bvh",
-    "kinematic/biovision/dance/ballet15.bvh",
-    "kinematic/biovision/dance/ballet26.bvh",
-    "kinematic/biovision/dance/ballet19.bvh",
-    "kinematic/biovision/dance/ballet11.bvh",
-    "kinematic/biovision/dance/ballet12.bvh",
-    "kinematic/biovision/dance/ballet21.bvh",
-    "kinematic/biovision/dance/ballet9.bvh",
-    "kinematic/biovision/dance/ballet24.bvh",
-    "kinematic/biovision/dance/ballet17.bvh",
-    "kinematic/biovision/dance/ballet_walk2.bvh",
-    "kinematic/biovision/dance/ballet2.bvh",
-    "kinematic/biovision/dance/ballet5.bvh",
-    "kinematic/biovision/dance/ballet13.bvh",
-    "kinematic/biovision/dance/ballet6.bvh",
-    "kinematic/biovision/mit/run10_rslh_1.bvh",
-    "kinematic/biovision/mit/tired_sw2.bvh",
-    "kinematic/biovision/mit/sit14.bvh",
-    "kinematic/biovision/mit/sexy_sw1.bvh",
-    "kinematic/biovision/mit/elderly1.bvh",
-    "kinematic/biovision/mit/drunkfall1.bvh",
-    "kinematic/biovision/mit/ballet_walk3.bvh",
-    "kinematic/biovision/mit/fastrun2slowalk.bvh",
-    "kinematic/biovision/mit/fastwalk2jog.bvh",
-    "kinematic/biovision/mit/run10_rslh_2.bvh",
-    "kinematic/biovision/mit/cowboy3.bvh",
-    "kinematic/biovision/mit/sexy_ws1.bvh",
-    "kinematic/biovision/mit/elderly2.bvh",
-    "kinematic/biovision/mit/macho.bvh",
-    "kinematic/biovision/mit/ballet_walk1.bvh",
-    "kinematic/biovision/mit/fastrun2fastwalk.bvh",
-    "kinematic/biovision/mit/run11_rshl_1.bvh",
-    "kinematic/biovision/mit/cowboy2.bvh",
-    "kinematic/biovision/mit/sit13.bvh",
-    "kinematic/biovision/mit/fastwalk2run.bvh",
-    "kinematic/biovision/mit/shot_head1.bvh",
-    "kinematic/biovision/mit/sit12.bvh",
-    "kinematic/biovision/mit/tired_w2s.bvh",
-    "kinematic/biovision/mit/ballet_walk2.bvh",
-    "kinematic/biovision/mit/shot_head2.bvh",
-    "kinematic/biovision/mit/sexy_sw2.bvh",
-    "kinematic/biovision/mit/drunkfall2.bvh",
-    "kinematic/biovision/mit/cowboy1.bvh",
-    "kinematic/biovision/mit/dance02.bvh",
-    "kinematic/biovision/mit/dance01.bvh",
-    "kinematic/biovision/falls/drunkfall1.bvh",
-    "kinematic/biovision/falls/faint2.bvh",
-    "kinematic/biovision/falls/faint3.bvh",
-    "kinematic/biovision/falls/faint4.bvh",
-    "kinematic/biovision/falls/faint1.bvh",
-    "kinematic/biovision/falls/fall14.bvh",
-    "kinematic/biovision/falls/drunkfall2.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/walk_stop_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/open_shut_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/walk_right1_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/cross_step_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/run_slow_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/hop_over_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/gnome_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/push2_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/walk_trip_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/walk_right2_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/sneak2_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/walk_medium_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/sneak1_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/walk_fast_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/drunk_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/pull_object_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/shoot1_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/walk_wave_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton1/push1_skel1.bvh",
-    "kinematic/dual/mirai/biovision/skeleton2/kick_high_right_skel2.bvh",
-    "kinematic/dual/mirai/biovision/skeleton2/kick_punch_skel2.bvh",
-    "kinematic/dual/mirai/biovision/skeleton2/back_punch_left_skel2.bvh",
-    "kinematic/dual/megamocap/biovision/dancing6.bvh",
-    "kinematic/dual/megamocap/biovision/dancing5.bvh",
-    ""
-    };
+        for (directory_iterator it = directory_iterator(rootPath); it != directory_iterator(); it++) {
+            if (is_directory(*it)) {
+                v res = fill(it->string());
+                temp.insert(temp.end(), res.begin(), res.end());
+            } else if (is_regular_file(*it) && extension(*it) == ".bvh") {
+                temp.push_back(it->string());
+            }
+        }
+    } else {
+        LOGGER(Logger::Info, "Zla sciezka: " + rootPath);
+    }
+    return temp;
+}
+
+
+

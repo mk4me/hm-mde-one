@@ -71,6 +71,7 @@ find_package(FFmpeg)
 find_package(OSG)
 find_package(Stdint)
 find_package(log4cxx)
+find_package(TinyXML)
 find_package(Prerequisites)
 find_package(SDL)
 if (PROJECT_ENABLE_TESTS)
@@ -111,7 +112,7 @@ if ( CONFIG_VIDLIB_ENABLE_LOG4CXX )
 	list(APPEND VIDLIB_DEPENDENCIES "LOG4CXX")
 endif()
 ADD_PROJECT(vidlib "FFMPEG;STDINT;utils;${VIDLIB_DEPENDENCIES}")
-ADD_PROJECT(KinematicModelLibrary "BOOST;OSG")
+ADD_PROJECT(KinematicModelLibrary "BOOST;TINYXML;OSG;utils")
 
 #---------------------------------------------------
 # przyk³ady
