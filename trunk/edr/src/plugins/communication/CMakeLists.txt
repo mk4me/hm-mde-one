@@ -12,6 +12,8 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 set(PRIVATE_H
 	CommunicationPlugin.h
 	CommunicationWidget.h
+	ShallowCopy.h
+	MetaData.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 

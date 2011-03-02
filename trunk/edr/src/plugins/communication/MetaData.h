@@ -73,7 +73,7 @@ MetaData loadMetadata(const std::string& filename)
     TiXmlDocument document(filename);
     if(!document.LoadFile())
     {
-        LOG_ERROR(": !Blad wczytania pliku Metadata\n");
+        LOG_ERROR(": !Blad wczytania pliku Metadata");
         throw std::runtime_error("Blad wczytania pliku Metadata");
     }
     TiXmlHandle hDocument(&document);
@@ -83,7 +83,7 @@ MetaData loadMetadata(const std::string& filename)
     _element = hDocument.FirstChildElement().Element();
     if(!_element)
     {
-        LOG_ERROR(": !Blad czytania z pliku Metadata\n");
+        LOG_ERROR(": !Blad czytania z pliku Metadata");
         throw std::runtime_error("Blad czytania z pliku Metadata");
     }
     hParent = TiXmlHandle(_element);
@@ -179,7 +179,7 @@ MetaData loadMetadata(const std::string& filename)
             attribute_group_element = attribute_group_element->NextSiblingElement();
         }
     }
-    LOG_INFO("metadata parsed.");
+    LOG_DEBUG("metadata parsed.");
     return metaData;
 }
 

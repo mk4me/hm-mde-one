@@ -1,4 +1,4 @@
-#ifndef HEADER_GUARD_COMMUNICATION_SHALLOWCOPY_H__
+ogle.#ifndef HEADER_GUARD_COMMUNICATION_SHALLOWCOPY_H__
 #define HEADER_GUARD_COMMUNICATION_SHALLOWCOPY_H__
 
 #include <string>
@@ -83,7 +83,7 @@ ShallowCopy loadShallowCopy(const std::string& filename)
     TiXmlDocument document(filename);
     if(!document.LoadFile())
     {
-        LOG_ERROR(": !Blad wczytania pliku ShallowCopy\n");
+        LOG_ERROR(": !Blad wczytania pliku ShallowCopy");
         throw std::runtime_error("Blad wczytania pliku ShallowCopy");
     }
     TiXmlHandle hDocument(&document);
@@ -93,7 +93,7 @@ ShallowCopy loadShallowCopy(const std::string& filename)
     _element = hDocument.FirstChildElement().Element();
     if(!_element)
     {
-        LOG_ERROR(": !Blad czytania z pliku ShallowCopy\n");
+        LOG_ERROR(": !Blad czytania z pliku ShallowCopy");
         throw std::runtime_error("Blad wczytania z pliku ShallowCopy");
     }
     hParent = TiXmlHandle(_element);
@@ -238,7 +238,7 @@ ShallowCopy loadShallowCopy(const std::string& filename)
             performer_consf_element = performer_consf_element->NextSiblingElement();
         }
     }
-    LOG_INFO("shallow copy parsed.");
+    LOG_DEBUG("shallow copy parsed.");
     return shallowCopy;
 }
 
