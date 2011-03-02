@@ -1,6 +1,6 @@
 #include <KinematicModelLibrary/AmcParser.h>
 
-#include <KinematicModelLibrary\SkeletalParsers.h>
+#include <KinematicModelLibrary/SkeletalParsers.h>
 
 using namespace kinematic;
 using namespace boost;
