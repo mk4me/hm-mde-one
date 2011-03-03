@@ -49,7 +49,8 @@ void MiscTest::test1() {
     list<pair<string, string> > toTest;
     
     toTest = fill("kinematic");
-
+    //toTest.clear();
+    //toTest.push_back(std::make_pair("kinematic/acclaim/accad/eric.asf","kinematic/acclaim/accad/eric_quickwalk.amc"));
     list<pair<string, string> >::iterator it;
     for (it = toTest.begin(); it != toTest.end(); it++) {
         Logger::getInstance().log(Logger::Info, "Test : " + it->second);
@@ -89,6 +90,7 @@ bool MiscTest::substestAsfAmc( const std::string& asfFile, const std::string& am
     AsfParser asf1, asf2; 
     AmcParser amc1, amc2;
     asf1.setForceXYZRoot(false);
+    amc1.setForceRootXYZ(false);
 
     asf1.parse(model1, asfFile);
     amc1.parse(model1, amcFile);

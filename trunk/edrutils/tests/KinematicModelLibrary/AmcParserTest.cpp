@@ -14,7 +14,6 @@
 #include <boost/shared_ptr.hpp>
 #include <KinematicModelLibrary/SkeletalParsers.h>
 #include <list>
-#include <KinematicModelLibrary/SkeletalParsers.h>
 #include "AmcParserTest.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( AmcParserTest );

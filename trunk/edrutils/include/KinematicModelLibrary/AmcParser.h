@@ -20,6 +20,8 @@ namespace kinematic
         /// \param  model reprezentacja wewnetrzna animacji
         /// \param  filename nazwa pliku do ktorego zostana zapisane dane
         void save (const SkeletalModel::Ptr model, const std::string& filename);
+        bool isForceRootXYZ() { return forceRootXYZ; }
+        void setForceRootXYZ(bool value) { forceRootXYZ = value; }
 
     private:
         bool forceRootXYZ; //!< wymuszenie kolejnosci rotacji roota (zapewnia zgodnosc z niektorymi parserami)
