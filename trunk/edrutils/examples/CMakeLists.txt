@@ -6,3 +6,4 @@ if (CONFIG_VIDLIB_ENABLE_OSG)
 endif()
 
 ADD_PROJECT(videoPlayerSDL "vidlib;SDL")
+ADD_PROJECT(qtBasicSample "QT")
