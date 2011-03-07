@@ -1,0 +1,91 @@
+project(vdfmlib)
+# nazwa
+set(TARGET_TARGETNAME
+	vdfmlib
+)
+
+#------------------------------------------------------------------------------
+
+# nag³ówki prywatne
+set(PRIVATE_H
+)
+
+# source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
+
+# nag³ówki publiczne
+string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
+set(PUBLIC_H
+	${HEADER_PATH}/Borderized.h
+	${HEADER_PATH}/Buttonized.h
+	${HEADER_PATH}/macroHacks.h
+	${HEADER_PATH}/AspectRatioKeeper.h
+	${HEADER_PATH}/EmbeddedWindow.h
+	${HEADER_PATH}/ExtKeyboardHandler.h
+	${HEADER_PATH}/Grid.h
+	${HEADER_PATH}/KeyboardMapper.h
+	${HEADER_PATH}/MenuContext.h
+	${HEADER_PATH}/osgUI2DUtils.h
+	${HEADER_PATH}/osgVDFBaseModel.h
+	${HEADER_PATH}/osgVDFBaseNode.h
+	${HEADER_PATH}/osgVDFBasePin.h
+	${HEADER_PATH}/osgVDFModel.h
+	${HEADER_PATH}/osgVDFNode.h
+	${HEADER_PATH}/osgVDFNodeTypeDescriptor.h
+	${HEADER_PATH}/osgVDFPin.h
+	${HEADER_PATH}/StyleEx.h
+	${HEADER_PATH}/Toolbar.h
+	${HEADER_PATH}/TooltipHost.h
+	${HEADER_PATH}/Tooltip.h
+)
+source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
+set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
+
+#------------------------------------------------------------------------------
+
+# Ÿród³a
+set(TARGET_SRC
+	AspectRatioKeeper.cpp
+	EmbeddedWindow.cpp
+	ExtKeyboardHandler.cpp
+	Grid.cpp
+	KeyboardMapper.cpp
+	MenuContext.cpp
+	osgUI2DUtils.cpp
+	osgVDFBaseModel.cpp
+	osgVDFBaseNode.cpp
+	osgVDFBasePin.cpp
+	osgVDFModel.cpp
+	osgVDFNode.cpp
+	osgVDFNodeTypeDescriptor.cpp
+	StyleEx.cpp
+	Toolbar.cpp
+	Tooltip.cpp
+	TooltipHost.cpp
+)
+source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
+
+#------------------------------------------------------------------------------
+# prekompilowany nag³ówek
+set(PRECOMPILED_H StdAfx.h)
+set(PRECOMPILED_SRC StdAfx.cpp)
+SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
+set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
+
+#------------------------------------------------------------------------------
+
+# kompilacja do wspó³dzielonej biblioteki
+add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})
+# nag³ówki
+include_directories( ${DEFAULT_PROJECT_INCLUDES} )
+# biblioteki
+target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})	
+
+# ¿eby mo¿na by³o u¿yæ tej biblioteki w makrach
+ON_PROJECT_ADDED(${TARGET_TARGETNAME})
+
+#instalacja
+install(TARGETS ${TARGET_TARGETNAME} DESTINATION lib)
+install(FILES ${PUBLIC_H} DESTINATION include/${TARGET_TARGETNAME})

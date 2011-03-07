@@ -75,6 +75,7 @@ find_package(TinyXML)
 find_package(Prerequisites)
 find_package(SDL)
 find_package(Qt)
+
 if (PROJECT_ENABLE_TESTS)
 	find_package(CppUnit)
 endif()
@@ -115,6 +116,9 @@ endif()
 ADD_PROJECT(vidlib "FFMPEG;STDINT;utils;${VIDLIB_DEPENDENCIES}")
 ADD_PROJECT(KinematicModelLibrary "BOOST;TINYXML;OSG;utils")
 ADD_PROJECT(osgui "utils;OSG;QT;BOOST")
+ADD_PROJECT(dfmlib "BOOST")
+ADD_PROJECT(vdfmlib "dfmlib;BOOST;OSG")
+ADD_PROJECT(testnodefactory "dfmlib;BOOST")
 
 #---------------------------------------------------
 # przyk³ady

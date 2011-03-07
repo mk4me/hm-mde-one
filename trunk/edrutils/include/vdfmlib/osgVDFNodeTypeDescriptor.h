@@ -1,0 +1,31 @@
+#ifndef __HEADER_GUARD__VDFNODETYPEDESCRIPTOR_H__
+#define __HEADER_GUARD__VDFNODETYPEDESCRIPTOR_H__
+
+#include <osg/Image>
+#include <vdfmlib/osgVDFBaseNode.h>
+#include <dfmlib/DFLMTypes.h>
+
+////////////////////////////////////////////////////////////////////////////////
+namespace osgVDF{
+////////////////////////////////////////////////////////////////////////////////
+
+class osgVDFNodeTypeDescriptor
+{
+public:
+	~osgVDFNodeTypeDescriptor(void);
+
+	virtual osgVDFBaseNode::NODE_TYPE getNodeType() const = 0;
+	virtual osg::Image * getButtonImage() const = 0;
+	virtual const std::string & getButtonText() const = 0;
+	virtual osg::Image * getNodeDefaultImage() const = 0;
+	virtual dflm::NPtr createNode() const = 0;
+	virtual const std::string & getName() const = 0;
+
+protected:
+	osgVDFNodeTypeDescriptor(void);
+
+};
+
+}
+
+#endif

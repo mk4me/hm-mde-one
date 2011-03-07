@@ -1,0 +1,23 @@
+#include <osgWidget/Widget>
+#include <osgWidget/Window>
+#include <osgWidget/Label>
+#include <osgWidget/Box>
+#include <osgWidget/Table>
+#include <osgWidget/Canvas>
+#include <osg/LineWidth>
+#include <osgWidget/WindowManager>
+#include <osg/CopyOp>
+#include <osgGA/GUIEventAdapter>
+#include <osgGA/GUIEventHandler>
+#include <osg/Geometry>
+#include <osg/Shape>
+#include <osg/ShapeDrawable>
+#include <osgDB/ReadFile>
+#include <osgAnimation/Interpolator>
+#include <osg/Depth>
+#include <osg/BlendFunc>
+#include <osgText/Text>
+#include <osg/io_utils>
+#include <osgWidget/Util>
+
+#include <stdio.h>
