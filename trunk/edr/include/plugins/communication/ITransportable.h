@@ -77,6 +77,16 @@ namespace communication
 		Anuluje obecnie wykonywan¹ operacjê.
 		*/
 		virtual void abort() = 0;
+		/**
+		P³ytka kopia bazy danych.
+		@return œcie¿ka do pliku xml z kopi¹ db.
+		*/
+		virtual const std::string getShallowCopy() = 0;
+		/**
+		Metadane z bazy danych.
+		@return œcie¿ka do pliku xml z metadanymi.
+		*/
+		virtual const std::string getMetadata() = 0;
 	};
 }
 #endif

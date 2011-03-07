@@ -14,7 +14,6 @@ implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
 #include <plugins/communication/CommunicationManager.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
 #include <plugins/communication/QueryWSDL.h>
-#include <plugins/communication/TextParser.h>
 #include "CommunicationWidget.h"
 
 class CommunicationWidget;
@@ -22,8 +21,6 @@ class CommunicationWidget;
 class CommunicationService : public IService, public ICommunication
 {
     UNIQUE_ID('COMM','SRVC');
-public:
-    typedef core::shared_ptr<TextParser> TextParserPtr;
 private:
     /**
     Widok serwisu
@@ -52,10 +49,6 @@ private:
     {
         model->ping();
     };
-    /**
-    Testowy parser tekstu
-    */
-    TextParserPtr tp;
 public:
     /**
     Konstruktor
@@ -115,6 +108,14 @@ public:
     Metoda z interfejsu ICommunication. Pobieranie informacji o próbach pomiarowych z serwera.
     */
     virtual void updateSessionContents();
+	/**
+	Metoda z interfejsu ICommunication. P³ytka kopia bazy danych.
+	*/
+	virtual void updateShallowCopy();
+	/**
+	Metoda z interfejsu ICommunication. Metadane z bazy danych.
+	*/
+	virtual void updateMetadata();
     /**
     Metoda z interfejsu ICommunication. Pobieranie wszystkich plików próby pomiarowej.
     @param trialID id triala w bazie danych którego pliki maj¹ byæ pobrane

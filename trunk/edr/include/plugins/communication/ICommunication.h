@@ -22,6 +22,14 @@ public:
 	*/
 	virtual void updateSessionContents() = 0;
 	/**
+	P³ytka kopia bazy danych.
+	*/
+	virtual void updateShallowCopy() = 0;
+	/**
+	Metadane z bazy danych.
+	*/
+	virtual void updateMetadata() = 0;
+	/**
 	Pobieranie pojedynczego pliku.
 	@param fileID id pliku w bazie danych który ma byæ pobrany
 	*/

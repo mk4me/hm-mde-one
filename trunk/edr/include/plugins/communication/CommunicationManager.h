@@ -8,9 +8,6 @@ i web serwisy wsdl.
 #ifndef HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
 #define HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
 
-#include <tinyxml.h>
-#include <OpenThreads/Thread>
-#include <utils/ObserverPattern.h>
 #include <core/IDataManager.h>
 #include <core/IServiceManager.h>
 //#include <core/LocalTrial.h>
@@ -39,6 +36,8 @@ namespace communication
             DownloadingTrial, /** Trwa pobieranie plików próby pomiarowej */
             UpdatingServerTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
             UpdateTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
+            ShallowCopyDB, /** Trwa odnawianie informacji o encjach db*/
+            MetadataDB, /** Trwa odnawianie informacji o metadanych db*/
             PingServer, /** Pingowanie serwera */
             Error /** Wyst¹pi³ b³¹d */
         };
@@ -111,6 +110,14 @@ namespace communication
         Aktualizacja informacji o próbach pomiarowych z serwera.
         */
         void listSessionContents();
+        /**
+        P³ytka kopia bazy danych.
+        */
+        void updateShallowCopy();
+        /**
+        Metadane z bazy danych.
+        */
+        void updateMetadata();
         /**
         Pobieranie próby pomiarowej.
         @param trialID ID próby pomiarowej która ma byæ pobrana
@@ -251,6 +258,14 @@ namespace communication
         Komuniat ostaniego b³êdu
         */
         std::string errorMessage;
+        /**
+        P³ytka kopia db
+        */
+        ShallowCopy::ShallowCopy shallowCopy;
+        /**
+        Metadane db
+        */
+        MetaData::MetaData metaData;
         /**
         Lista lokalnych prób pomiarowych
         */

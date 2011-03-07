@@ -109,6 +109,16 @@ namespace communication
 		virtual int getProgress() const;
 
 		virtual void abort();
+		/**
+		P³ytka kopia bazy danych.
+		@return œcie¿ka do pliku xml z kopi¹ db.
+		*/
+		virtual const std::string getShallowCopy();
+		/**
+		Metadane z bazy danych.
+		@return œcie¿ka do pliku xml z metadanymi.
+		*/
+		virtual const std::string getMetadata();
 	};
 }
 #endif

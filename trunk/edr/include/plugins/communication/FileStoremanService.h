@@ -82,6 +82,16 @@ namespace communication
 		@param path œcie¿ka do katalogu z plikami do wgrania na serwer
 		*/
 		void storeTrialFiles(int trialID, const std::string& path);
+		/**
+		P³ytka kopia bazy danych.
+		@return œcie¿ka do pliku xml z kopi¹ db.
+		*/
+		const std::string& getShallowCopy();
+		/**
+		Metadane z bazy danych.
+		@return œcie¿ka do pliku xml z metadanymi.
+		*/
+		const std::string& getMetadata();
 	};
 }
 #endif
