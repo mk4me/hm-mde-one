@@ -133,10 +133,14 @@ void GRFService::setWidget(ChartWidget* widget){
 this->widget=widget;
 }
 
+
+
+
 AsyncResult GRFService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
     widget->clear();
-    auto channels = core::queryDataPtr<core::GRFChannelPtr>(dataManager);
+
+    std::vector<core::GRFChannelPtr> channels = queryDataPtr(dataManager);
     BOOST_FOREACH( auto channel, channels ) {
         widget->addChart(channel);
     }

@@ -80,60 +80,57 @@ public:
     virtual void loadLocalTrial(const Path& path) = 0;
 };
     
-    //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
-    //! dany interfejs).
-    template <class T>
-    UTILS_DEPRECATED(shared_ptr<T> queryParsers(core::IDataManager* manager, T* dummy = NULL))
-    {
-        std::vector<shared_ptr<T> > result;
-        queryParsers(manager, result);
-        if ( result.empty() ) {
-            return shared_ptr<T>();
-        } else {
-            UTILS_ASSERT(result.size()==1, "Multiple parsers found.");
-            return result[0];
-        }
-    }
-    
-    //! Metoda wyszukuj¹ca wszystkie parsery danego typu (np. implementuj¹ce
-    //! dany interfejs).
-    template <class T>
-    UTILS_DEPRECATED(void queryParsers(core::IDataManager* manager, std::vector<shared_ptr<T>>& target))
-    {
-        for ( int i = 0; i < manager->getNumParsers(); ++i ) {
-            IParserPtr parser = manager->getParser(i);
-            shared_ptr<T> casted = dynamic_pointer_cast<T>(parser);
-            if ( casted ) {
-                parser = manager->getInitializedParser(i);
-                casted = dynamic_pointer_cast<T>(parser);
-                if ( casted ) {
-                    target.push_back(casted);
-                }
-            }
-        }
-    }
-
     //! \param manager Data manager.
     //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
     //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
     //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
-    template <class Ptr>
-    inline void queryDataPtr(IDataManager* manager, std::vector<Ptr>& target, bool exact = false)
+    template <class SmartPtr>
+    inline void queryDataPtr(core::IDataManager* manager, std::vector<SmartPtr>& target, bool exact = false)
     {
-        __queryDataIsConvertible<typename Ptr::element_type, Ptr>(manager, target, exact, boost::true_type());
+        core::__queryDataIsConvertible<typename SmartPtr::element_type, SmartPtr>(manager, target, exact, boost::true_type());
     }
 
     //! \param manager Data manager.
-    //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
-    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
     //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
-    template <class Ptr>
-    inline std::vector<Ptr> queryDataPtr(IDataManager* manager, bool exact = false, Ptr* /*dummy*/ = nullptr)
+    //! \return Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
+    //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
+    template <class SmartPtr>
+    inline std::vector<SmartPtr> queryDataPtr(core::IDataManager* manager, bool exact = false, SmartPtr* /*dummy*/ = nullptr)
     {
-        std::vector<Ptr> target;
-        queryDataPtr<Ptr>(manager, target, exact);
+        std::vector<SmartPtr> target;
+        queryDataPtr<SmartPtr>(manager, target, exact);
         return target;
     }
+
+    //! Zastosowanie idiomu "Return Type Resolver" do unikania podwójnego okreœlania typu
+    //! elementu kolekcji
+    //! \see http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Return_Type_Resolver
+    struct queryDataPtr_t
+    {
+        core::IDataManager* manager;
+        bool exact;
+        //! \param manager
+        //! \param exact
+        inline queryDataPtr_t(core::IDataManager* manager, bool exact = false) :
+        manager(manager), exact(exact)
+        {}
+        //! \return Kolekcja wskaŸników.
+        template <class SmartPtr>
+        inline operator std::vector<SmartPtr>()
+        {
+            std::vector<SmartPtr> result;
+            queryDataPtr<SmartPtr>(manager, result, exact);
+            return result;
+        }
+    };
+
+    //! Wersja funkcji queryData oparta o idiom "Return Type Resolver". Nie trzeba
+    //! podawaæ jawnie typu elementu kolekcji jako parametru szablonu.
+    inline queryDataPtr_t queryDataPtr(core::IDataManager* manager, bool exact = false)
+    {
+        return queryDataPtr_t(manager, exact);
+    }
+
 
     //! \param manager Data manager.
     //! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
