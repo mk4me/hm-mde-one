@@ -114,7 +114,7 @@ if ( CONFIG_VIDLIB_ENABLE_LOG4CXX )
 endif()
 ADD_PROJECT(vidlib "FFMPEG;STDINT;utils;${VIDLIB_DEPENDENCIES}")
 ADD_PROJECT(KinematicModelLibrary "BOOST;TINYXML;OSG;utils")
-ADD_PROJECT(osgUI "utils;OSG;QT;BOOST")
+ADD_PROJECT(osgui "utils;OSG;QT;BOOST")
 
 #---------------------------------------------------
 # przyk³ady

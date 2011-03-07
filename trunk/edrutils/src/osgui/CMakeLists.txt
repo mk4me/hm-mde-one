@@ -1,7 +1,7 @@
-project(osgUI)
+project(osgui)
 # nazwa
 set(TARGET_TARGETNAME
-	osgUI
+	osgui
 )
 
 #------------------------------------------------------------------------------
