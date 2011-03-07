@@ -46,7 +46,7 @@ public:
     ~Parser()
     {
         if ( isParsed() ) {
-            LOG_DEBUG("Unloading parser for file: " << getPath() )
+            LOG_DEBUG("Unloading parser for file: " << getPath() );
         } else if ( isUsed() ) {
             LOG_DEBUG("Unloading invalid parser for file: " << getPath() );
         } else {

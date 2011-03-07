@@ -180,7 +180,7 @@ core::IParser* ShallowCopyParser::create()
 
 std::string ShallowCopyParser::getSupportedExtensions() const
 {
-    return "SC";
+    return "xml";
 }
 
 const ShallowCopy::ShallowCopy& ShallowCopyParser::getShallowCopy() const
@@ -188,7 +188,7 @@ const ShallowCopy::ShallowCopy& ShallowCopyParser::getShallowCopy() const
     return *object->get<ShallowCopy::ShallowCopy>();
 }
 
-core::ObjectWrapperPtr ShallowCopyParser::getObject()
+void ShallowCopyParser::getObjects(std::vector<core::ObjectWrapperPtr>& objects)
 {
-    return object;
+    objects.push_back(object);
 }

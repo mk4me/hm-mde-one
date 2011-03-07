@@ -22,7 +22,7 @@ public:
 
     const ShallowCopy::ShallowCopy& getShallowCopy() const;
 
-    virtual core::ObjectWrapperPtr getObject();
+    virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 
 private:
     boost::filesystem::path path;

@@ -131,7 +131,7 @@ core::IParser* MetadataParser::create()
 
 std::string MetadataParser::getSupportedExtensions() const
 {
-    return "MD";
+    return "xml";
 }
 
 const MetaData::MetaData& MetadataParser::getMetadata() const
@@ -139,7 +139,7 @@ const MetaData::MetaData& MetadataParser::getMetadata() const
     return *object->get<MetaData::MetaData>();
 }
 
-core::ObjectWrapperPtr MetadataParser::getObject()
+void MetadataParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 {
-    return object;
+    objects.push_back(object);
 }
