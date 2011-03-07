@@ -5,7 +5,6 @@ set(TARGET_TARGETNAME
 #------------------------------------------------------------------------------
 # nag³ówki
 set(TARGET_H
-	SampleWindow.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${TARGET_H})
 
@@ -13,37 +12,10 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${TARGET_H})
 # Ÿród³a
 set(TARGET_SRC 
 	QtSample.cpp
-	SampleWindow.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 #------------------------------------------------------------------------------
-# metadane generowane przez MOC
-set(TARGET_MOC_H
-    SampleWindow.h
-)
-QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
-source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
-
-#------------------------------------------------------------------------------
-# metadane generowane przez UI
-set(TARGET_UI
-	SampleWindow.ui
-)
-QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
-source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
-set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
-
-#------------------------------------------------------------------------------
-# RC
-#set(TARGET_RC
-#	ui/ConsoleWidget.qrc
-#)
-#QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
-#source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
-#set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
-
 # obsluga OpenGL
 set(QT_USE_QTOPENGL TRUE) 
 include(${QT_USE_FILE})
