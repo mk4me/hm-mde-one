@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <boost/foreach.hpp>
+
 #include <QtGui/QApplication>
 
 #include <osgViewer/ViewerEventHandlers>
@@ -19,10 +21,24 @@
 
 using namespace osgUI;
 
-bool callbackWindowResize(osgWidget::Event& ev) {
-    if(!ev.getWindow() || !ev.getWindowManager()->isRightMouseButtonDown()) return false;
+bool callbackWindowResize(osgWidget::Event& ev) 
+{
+    if(!ev.getWindow() || !ev.getWindowManager()->isRightMouseButtonDown()) {
+        return false;
+    }
     ev.getWindow()->resizeAdd(ev.x, ev.y);
     ev.getWindow()->update();
+    return true;
+}
+
+bool callbackWindowMove(osgWidget::Event& ev) 
+{
+    if(!ev.getWindow() || !ev.getWindowManager()->isLeftMouseButtonDown()) {
+        return false;
+    }
+    ev.getWindow()->addOrigin(ev.x, ev.y);
+    ev.getWindow()->update();
+    ev.getWindow()->resizeAdd();
     return true;
 }
 
@@ -34,12 +50,14 @@ void embeddSample(osgWidget::Widget* widget, osgWidget::WindowManager* wm, int x
 
     box->getBackground()->setColor(0.8,0.8,0.8,0.5);
     box->setOrigin(x, y);
-    box->attachMoveCallback();
-    box->addCallback(new Callback(&callbackWindowResize, EVENT_MOUSE_DRAG));
+    //box->attachMoveCallback();
+    box->addCallback(new Callback(&::callbackWindowResize, EVENT_MOUSE_DRAG));
+    box->addCallback(new Callback(&::callbackWindowMove, EVENT_MOUSE_DRAG));
 
     Label* title = new Label(std::string(widget->getName()) + "Title");
     title->setFontSize(14);
     title->setCanFill(false);
+    
     //title->setColor(0.8,0.8,0.8,1);
     title->setFontColor(0,0,0,1);
     title->setFont("fonts/arial.ttf");
@@ -66,6 +84,37 @@ void createExample(osgViewer::View& view, int w, int h)
     view.addEventHandler( new osgWidget::ResizeHandler(wm, view.getCamera()) );
     view.addEventHandler( new osgGA::StateSetManipulator( view.getCamera()->getOrCreateStateSet() ) );
     view.setSceneData(wm);
+
+    {
+        std::string lines[] = {
+            "lmb + drag - move window",
+            "rmb + drag - resize window"
+        };
+        Box* infoBox = new Box("infoBox", Box::VERTICAL);
+        infoBox->getBackground()->setColor(0, 0, 0, 0);
+
+        wm->addChild( infoBox );
+        osg::ref_ptr<Label> linePrototype = new Label("label", "label");
+        linePrototype->setFont("fonts/arial.ttf");
+        linePrototype->setFontSize(14);
+        linePrototype->setAlignHorizontal( Widget::HA_LEFT );
+        linePrototype->setPadLeft( 1 );
+        linePrototype->setPadRight( 1 );
+        linePrototype->setCanFill(true);
+        linePrototype->setLayer( Widget::LAYER_TOP );
+        linePrototype->setColor(0,0,0,0);
+        BOOST_REVERSE_FOREACH(std::string& line, lines) {
+            osgWidget::Label* label = osg::clone(linePrototype.get(), line, osg::CopyOp::DEEP_COPY_ALL);
+            label->setFont("fonts/arial.ttf");
+            label->setFontSize(14);
+            label->setLabel(line);
+            infoBox->addWidget(label);
+        }
+        EmbeddedWindow* widget = EmbeddedWindow::embed(infoBox, "Usage");
+        
+        embeddSample(widget, wm, 400, 400);
+    }
+
 
     {
         // borderized
