@@ -150,3 +150,33 @@ void FileStoremanService::storeTrialFiles(int trialID, const std::string& path) 
 		throw std::runtime_error(invoker.errors().c_str());
 	}
 }
+
+const std::string& FileStoremanService::getShallowCopy()
+{
+	this->setOperation("GetShallowCopy");
+	if(invoker.status()) {
+		if(!invoker.invoke()) {
+			throw std::runtime_error(invoker.errors().c_str());
+		}
+		Schema::Type type;
+		void *val = invoker.getValue("GetShallowCopyResult", type);
+		return *(std::string*)val;
+	} else {
+		throw std::runtime_error(invoker.errors().c_str());
+	}
+}
+
+const std::string& FileStoremanService::getMetadata()
+{
+	this->setOperation("GetMetadata");
+	if(invoker.status()) {
+		if(!invoker.invoke()) {
+			throw std::runtime_error(invoker.errors().c_str());
+		}
+		Schema::Type type;
+		void *val = invoker.getValue("GetMetadataResult", type);
+		return *(std::string*)val;
+	} else {
+		throw std::runtime_error(invoker.errors().c_str());
+	}
+}

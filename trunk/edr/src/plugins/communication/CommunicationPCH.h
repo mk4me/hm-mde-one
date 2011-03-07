@@ -3,6 +3,9 @@
 
 #ifndef DISABLE_PRECOMPILED_HEADERS
 
+#include <tinyxml.h>
+#include <OpenThreads/Thread>
+#include <utils/ObserverPattern.h>
 #include <vector>
 #include <map>
 #include <string>
@@ -16,6 +19,9 @@
 #include <curl/curl.h>
 #include <wsdlparser/WsdlInvoker.h>
 #include <core/Log.h>
+
+#include <plugins/communication/ShallowCopyParser.h>
+#include <plugins/communication/MetadataParser.h>
 
 #endif
 #endif

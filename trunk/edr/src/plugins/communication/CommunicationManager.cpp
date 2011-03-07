@@ -200,6 +200,18 @@ void CommunicationManager::listSessionContents()
     start();
 }
 
+void CommunicationManager::updateShallowCopy()
+{
+    setState(ShallowCopyDB);
+    start();
+}
+
+void CommunicationManager::updateMetadata()
+{
+    setState(MetadataDB);
+    start();
+}
+
 void CommunicationManager::downloadTrial(unsigned int trialID)
 {
     setState(DownloadingTrial);
@@ -313,6 +325,40 @@ void CommunicationManager::run()
             }
             break;
         }
+        case ShallowCopyDB:
+            {
+                try
+                {
+                    std::string path = transportManager->getShallowCopy();
+                    ShallowCopyParserPtr ptr = ShallowCopyParserPtr(new ShallowCopyParser());
+                    ptr->parseFile(path);
+                    shallowCopy = ptr->getShallowCopy();
+                    state = Ready;
+                }
+                catch(std::runtime_error& e)
+                {
+                    state = Error;
+                    errorMessage = e.what();
+                }
+                break;
+            }
+        case MetadataDB:
+            {
+                try
+                {
+                    std::string path = transportManager->getMetadata();
+                    MetadataParserPtr ptr = MetadataParserPtr(new MetadataParser());
+                    ptr->parseFile(path);
+                    metaData = ptr->getMetadata();
+                    state = Ready;
+                }
+                catch(std::runtime_error& e)
+                {
+                    state = Error;
+                    errorMessage = e.what();
+                }
+                break;
+            }
     case PingServer:
         {
             if(pingCurl)

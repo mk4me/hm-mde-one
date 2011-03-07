@@ -12,8 +12,6 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 set(PRIVATE_H
 	CommunicationPlugin.h
 	CommunicationWidget.h
-	ShallowCopy.h
-	MetaData.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -34,7 +32,10 @@ set(PUBLIC_H
 	${HEADER_PATH}/ISendable.h
 	${HEADER_PATH}/ITransportable.h
 	${HEADER_PATH}/QueryWSDL.h
-	${HEADER_PATH}/TextParser.h
+	${HEADER_PATH}/Metadata.h
+	${HEADER_PATH}/ShallowCopy.h
+	${HEADER_PATH}/MetadataParser.h
+	${HEADER_PATH}/ShallowCopyParser.h
 	${HEADER_PATH}/TransportWSDL_FTPS.h
 	${HEADER_PATH}/WSDL_Wsdlpull.h
 )
@@ -55,7 +56,8 @@ set(TARGET_SRC
 	FileStoremanService.cpp
 	FTPS_cURL.cpp
 	QueryWSDL.cpp
-	TextParser.cpp
+	MetadataParser.cpp
+	ShallowCopyParser.cpp
 	TransportWSDL_FTPS.cpp
 	WSDL_Wsdlpull.cpp
 )

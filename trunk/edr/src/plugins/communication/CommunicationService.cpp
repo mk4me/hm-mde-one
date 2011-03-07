@@ -72,6 +72,16 @@ void CommunicationService::updateSessionContents()
     model->listSessionContents();
 }
 
+void CommunicationService::updateShallowCopy()
+{
+    model->updateShallowCopy();
+}
+
+void CommunicationService::updateMetadata()
+{
+    model->updateMetadata();
+}
+
 void CommunicationService::downloadFile(unsigned int fileID)
 {
     model->downloadFile(fileID);
@@ -155,16 +165,6 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
 AsyncResult CommunicationService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
 {
     //model->setServiceManager(serviceManager);
-    TextParserPtr tp = core::queryParsers<TextParser>(dataManager);
-    if(tp)
-    {
-        LOG_INFO("There is initialized TextParser.");
-    }
-    else
-    {
-        LOG_INFO("Initialized TextParser wasn't found.");
-    }
-    model->setDataManager(dataManager);
 
     model->setDataManager(dataManager);
     ping();
