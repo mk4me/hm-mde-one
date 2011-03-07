@@ -1,0 +1,11 @@
+#ifndef __HEADER_GUARD_UTILS__CONFIG_H__
+#define __HEADER_GUARD_UTILS__CONFIG_H__
+
+//! Czy ma byc w³¹czony profiler?
+// #cmakedefine UTILS_ENABLE_PROFILER
+//! Czy leaki maj¹ byæ sprawdzane przy u¿yciu VLD (http://sites.google.com/site/dmoulding/vld)?
+#ifdef __WIN32__
+	#cmakedefine UTILS_ENABLE_LEAK_DETECTION_VLD
+#endif
+
+#endif // __HEADER_GUARD_UTILS__CONFIG_H__
