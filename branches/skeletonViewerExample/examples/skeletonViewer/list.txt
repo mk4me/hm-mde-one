@@ -1,0 +1,10 @@
+DisableableRenderer.cpp
+main.cpp
+mainwindow.cpp
+QOsgWidgets.cpp
+QOsgWidgetsDeprecated.cpp
+skeletonViewer.cpp
+DisableableRenderer.h
+mainwindow.h
+QOsgWidgets.h
+QOsgWidgetsDeprecated.h
