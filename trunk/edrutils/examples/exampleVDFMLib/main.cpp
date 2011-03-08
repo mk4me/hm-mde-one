@@ -46,8 +46,8 @@ std::string colorToStr(const osgWidget::Color & color){
 class TestSrcNodeDescriptor : public osgVDF::osgVDFNodeTypeDescriptor{
 public:
 	TestSrcNodeDescriptor() {
-		m_pImage = osgDB::readImageFile("C:/resources/testSourceNode.gif");
-		m_pButtonImage = osgDB::readImageFile("C:/resources/Source.png");
+		m_pImage = osgDB::readImageFile("resources/testSourceNode.gif");
+		m_pButtonImage = osgDB::readImageFile("resources/Source.png");
 		m_sText = "TestSourceNode";
 		m_sName = "TestA";
 	};
@@ -86,8 +86,8 @@ protected:
 class TestProcNodeDescriptor : public osgVDF::osgVDFNodeTypeDescriptor{
 public:
 	TestProcNodeDescriptor() {
-		m_pImage = osgDB::readImageFile("C:/resources/testProcessingNode.gif");
-		m_pButtonImage = osgDB::readImageFile("c:/resources/Processing.png");
+		m_pImage = osgDB::readImageFile("resources/testProcessingNode.gif");
+		m_pButtonImage = osgDB::readImageFile("resources/Processing.png");
 		m_sText = "TestProcessingNode";
 		m_sName = "TestB";
 	};
@@ -123,7 +123,7 @@ protected:
 	std::string m_sName;
 };
 
-const std::string& path = "C:/resources/";
+const std::string& path = "resources/";
 const std::string& graphExt = "png";
 
 StylesSet generateRequiredStyles();

@@ -57,6 +57,8 @@ add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})
 include_directories( ${DEFAULT_PROJECT_INCLUDES} )
 # biblioteki
 target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})	
+# nazwa
+set_target_properties(${TARGET_TARGETNAME} PROPERTIES PROJECT_LABEL "Library ${TARGET_TARGETNAME}")
 
 # ¿eby mo¿na by³o u¿yæ tej biblioteki w makrach
 ON_PROJECT_ADDED(${TARGET_TARGETNAME})

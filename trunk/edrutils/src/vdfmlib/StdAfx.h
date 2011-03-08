@@ -1,3 +1,8 @@
+#include <utils/Utils.h>
+#include <utils/Debug.h>
+#include <utils/Enum.h>
+
+UTILS_PUSH_WARNINGS
 #include <osgWidget/Widget>
 #include <osgWidget/Window>
 #include <osgWidget/Label>
@@ -19,5 +24,6 @@
 #include <osgText/Text>
 #include <osg/io_utils>
 #include <osgWidget/Util>
+UTILS_POP_WARNINGS
 
 #include <stdio.h>

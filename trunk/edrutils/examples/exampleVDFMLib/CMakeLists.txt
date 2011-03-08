@@ -17,4 +17,4 @@ include_directories( ${DEFAULT_PROJECT_INCLUDES} )
 # biblioteki
 target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})	
 # labelka
-set_target_properties(${TARGET_TARGETNAME} PROPERTIES PROJECT_LABEL "Examples ${TARGET_TARGETNAME}")
+set_target_properties(${TARGET_TARGETNAME} PROPERTIES PROJECT_LABEL "Example ${TARGET_TARGETNAME}")
