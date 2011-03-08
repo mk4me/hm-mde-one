@@ -92,27 +92,23 @@ void createExample(osgViewer::View& view, int w, int h)
         };
         Box* infoBox = new Box("infoBox", Box::VERTICAL);
         infoBox->getBackground()->setColor(0, 0, 0, 0);
+        
 
-        wm->addChild( infoBox );
-        osg::ref_ptr<Label> linePrototype = new Label("label", "label");
+        //wm->addChild( infoBox );
+        osg::ref_ptr<Label> linePrototype = new Label("label");
         linePrototype->setFont("fonts/arial.ttf");
         linePrototype->setFontSize(14);
         linePrototype->setAlignHorizontal( Widget::HA_LEFT );
-        linePrototype->setPadLeft( 1 );
-        linePrototype->setPadRight( 1 );
+        linePrototype->setPadLeft(1);
+        linePrototype->setPadRight(1);
         linePrototype->setCanFill(true);
-        linePrototype->setLayer( Widget::LAYER_TOP );
-        linePrototype->setColor(0,0,0,0);
         BOOST_REVERSE_FOREACH(std::string& line, lines) {
             osgWidget::Label* label = osg::clone(linePrototype.get(), line, osg::CopyOp::DEEP_COPY_ALL);
-            label->setFont("fonts/arial.ttf");
-            label->setFontSize(14);
             label->setLabel(line);
             infoBox->addWidget(label);
         }
-        EmbeddedWindow* widget = EmbeddedWindow::embed(infoBox, "Usage");
-        
-        embeddSample(widget, wm, 400, 400);
+
+        embeddSample(EmbeddedWindow::embed(infoBox, "Usage"), wm, 400, 400);
     }
 
 
