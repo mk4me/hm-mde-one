@@ -1,7 +1,6 @@
 #include "CorePCH.h"
 #include <osgWidget/ViewerEventHandlers>
 #include <core/MultiView.h>
-#include <core/Placeable.h>
 #include <core/AspectRatioKeeper.h>
 #include <core/LabeledView.h>
 #include <boost/foreach.hpp>

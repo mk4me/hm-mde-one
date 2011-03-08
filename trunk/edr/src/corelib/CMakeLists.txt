@@ -19,13 +19,9 @@ set(PRIVATE_H
 #string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(HEADER_PATH ${PROJECT_INCLUDE_ROOT}/core)
 set(PUBLIC_H
-	${HEADER_PATH}/GridModel.h
-	${HEADER_PATH}/OsgWidgetGridView.h
-	${HEADER_PATH}/OsgWidgetBorder.h
 	${HEADER_PATH}/Buttonized.h
 	${HEADER_PATH}/Borderized.h
 	${HEADER_PATH}/LabeledView.h
-	${HEADER_PATH}/Placeable.h
 	${HEADER_PATH}/Grid.h
 	${HEADER_PATH}/AspectRatioKeeper.h
 	${HEADER_PATH}/MultiView.h
@@ -63,9 +59,6 @@ source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/../cor
 set(TARGET_SRC
 	ASFAMCData.cpp
 	ASFAMCParser.cpp
-	GridModel.cpp
-	OsgWidgetGridView.cpp
-	OsgWidgetBorder.cpp
 	Window.cpp
 	Grid.cpp
 	AspectRatioKeeper.cpp
