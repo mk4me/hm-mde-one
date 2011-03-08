@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include <osgUI/EmbeddedWindow.h>
+#include <osgui/EmbeddedWindow.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {

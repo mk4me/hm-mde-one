@@ -1,13 +1,13 @@
-#include "StdAfx.h"
-#include <vdfmlib/ExtKeyboardHandler.h>
-#include <vdfmlib/KeyboardMapper.h>
+#include "PCH.h"
+#include <osgui/ExtKeyboardHandler.h>
+#include <osgui/KeyboardMapper.h>
 
 #include <algorithm>
 #include <vector>
 #include <iterator>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgWidget{
+namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 ExtKeyboardHandler::ExtKeyboardHandler(osgWidget::WindowManager* wm) : osgWidget::KeyboardHandler(wm)

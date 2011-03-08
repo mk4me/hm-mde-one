@@ -17,14 +17,21 @@ set(PUBLIC_H
 	${HEADER_PATH}/AspectRatioKeeper.h
 	${HEADER_PATH}/Borderized.h
 	${HEADER_PATH}/Buttonized.h
+	${HEADER_PATH}/ExtKeyboardHandler.h
 	${HEADER_PATH}/EmbeddedWindow.h
 	${HEADER_PATH}/Grid.h
+	${HEADER_PATH}/KeyboardMapper.h
+	${HEADER_PATH}/MenuContext.h
 	${HEADER_PATH}/LabeledView.h
 	${HEADER_PATH}/OsgWidgetUtils.h
 	${HEADER_PATH}/DisableableRenderer.h
 	${HEADER_PATH}/QOsgWidgets.h
 	${HEADER_PATH}/QOsgWidgetsDeprecated.h
-	
+	${HEADER_PATH}/StyleEx.h
+	${HEADER_PATH}/Toolbar.h
+	${HEADER_PATH}/Tooltip.h
+	${HEADER_PATH}/TooltipHost.h
+	${HEADER_PATH}/Utils2D.h	
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -34,11 +41,19 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	AspectRatioKeeper.cpp
 	DisableableRenderer.cpp
+	ExtKeyboardHandler.cpp
 	EmbeddedWindow.cpp
 	Grid.cpp
+	KeyboardMapper.cpp
+	MenuContext.cpp
 	OsgWidgetUtils.cpp
 	QOsgWidgets.cpp
 	QOsgWidgetsDeprecated.cpp
+	StyleEx.cpp
+	Toolbar.cpp
+	Tooltip.cpp
+	TooltipHost.cpp
+	Utils2D.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

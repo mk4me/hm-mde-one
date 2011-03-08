@@ -18,7 +18,7 @@
 #include <cmath>
 
 #include <dfmlib/DFModel.h>
-#include <vdfmlib/osgUI2DUtils.h>
+#include <osgui/Utils2D.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgVDF{

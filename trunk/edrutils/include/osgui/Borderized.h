@@ -15,6 +15,8 @@
 #include <osgWidget/Window>
 #include <osgWidget/WindowManager>
 #include <utils/Debug.h>
+#include <osgui/macroHacks.h>
+#include <osgui/StyleEx.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {
@@ -28,12 +30,13 @@ namespace osgUI {
  *  "do œrodka", podczas gdy LINE_STRIP po równo do œrodka i na zewn¹trz.
  */
 template <class Base, osg::PrimitiveSet::Mode Primitives = osg::PrimitiveSet::QUADS>
-class Borderized : public Base
+class Borderized : public Base, public osgUI::IBorderized
 {
     UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value), "Base class should inherit from osgWidget::Widget");
 
 public:
-    META_Object(osgUI, Borderized);
+    //META_Object(osgUI, Borderized);
+	META_Widget(osgUI, Borderized);
 
 private:
     //! Typ u¿ywany do wyró¿niania wariantów.
@@ -311,112 +314,112 @@ private:
     }
 };
 
-template <class Base>
-class BorderStylePolicy : public Base
-{
-private:
-    //! Kolor normalny.
-    osgWidget::Color borderNormalColor;
-    //! Kolor przy najechaniu.
-    osgWidget::Color borderHoverColor;
-    //! Kolor podczas klikniêcia.
-    osgWidget::Color borderPushedColor;
-    //! Kolor podczas klikniêcia.
-    osgWidget::Color borderToggleColor;
-public:    //! 
-    //! \param name
-    BorderStylePolicy() :
-        Base()
-    {}
-
-    //! 
-    //! \param borderized
-    //! \param copyop
-    BorderStylePolicy(const BorderStylePolicy& border, const osg::CopyOp& copyop) :
-        Base(border, copyop),
-        borderNormalColor(border.borderNormalColor),
-        borderHoverColor(border.borderHoverColor),
-        borderToggleColor(border.borderToggleColor),
-        borderPushedColor(border.borderPushedColor)
-    {}
-
-public:
-    //! \return
-    osgWidget::Color getBorderNormalColor() const
-    { 
-        return borderNormalColor;
-    }
-    //! \param borderNormalColor
-    void setBorderNormalColor(osgWidget::Color borderNormalColor) 
-    { 
-        this->borderNormalColor = borderNormalColor; 
-        onStyleChanged();
-    }
-    //! \return
-    osgWidget::Color getBorderHoverColor() const
-    { 
-        return borderHoverColor;
-    }
-    //! \param borderHooverColor
-    void setBorderHoverColor(osgWidget::Color borderHooverColor) 
-    { 
-        this->borderHoverColor = borderHooverColor;
-        onStyleChanged();
-    }
-    //! \return
-    osgWidget::Color getBorderPushedColor() const
-    { 
-        return borderPushedColor;
-    }
-    //! \param borderPushedColor
-    void setBorderPushedColor(osgWidget::Color borderPushedColor) 
-    { 
-        this->borderPushedColor = borderPushedColor; 
-        onStyleChanged();
-    }
-    //! \return
-    osgWidget::Color getBorderToggleColor() const
-    { 
-        return borderToggleColor;
-    }
-    //! \param borderToggleColor
-    void setBorderToggleColor(osgWidget::Color borderToggleColor) 
-    { 
-        this->borderToggleColor = borderToggleColor; 
-        onStyleChanged();
-    }
-    //!
-    void setBorderAllColors(osgWidget::Color color)
-    {
-        borderNormalColor = borderHoverColor = borderPushedColor = borderToggleColor = color;
-        onStyleChanged();
-    }
-
-protected:
-
-    //! 
-    //! \param widget
-    //! \param toggled
-    //! \param pushed
-    //! \param hoovered
-    template <class Borderized>
-    void applyStyle(Borderized* widget, bool toggled, bool pushed, bool hoovered)
-    {
-        Base::applyStyle(widget, toggled, pushed, hoovered);
-        if ( toggled ) {
-            widget->setBorderColor( borderToggleColor );
-        } else {
-            widget->setBorderColor( borderNormalColor );
-        }
-        if ( hoovered ) {
-            if ( pushed ) {
-                widget->setBorderColor( borderPushedColor );
-            } else {
-                widget->setBorderColor( borderHoverColor );
-            }
-        }
-    }
-};
+//template <class Base>
+//class BorderStylePolicy : public Base
+//{
+//private:
+//    //! Kolor normalny.
+//    osgWidget::Color borderNormalColor;
+//    //! Kolor przy najechaniu.
+//    osgWidget::Color borderHoverColor;
+//    //! Kolor podczas klikniêcia.
+//    osgWidget::Color borderPushedColor;
+//    //! Kolor podczas klikniêcia.
+//    osgWidget::Color borderToggleColor;
+//public:    //! 
+//    //! \param name
+//    BorderStylePolicy() :
+//        Base()
+//    {}
+//
+//    //! 
+//    //! \param borderized
+//    //! \param copyop
+//    BorderStylePolicy(const BorderStylePolicy& border, const osg::CopyOp& copyop) :
+//        Base(border, copyop),
+//        borderNormalColor(border.borderNormalColor),
+//        borderHoverColor(border.borderHoverColor),
+//        borderToggleColor(border.borderToggleColor),
+//        borderPushedColor(border.borderPushedColor)
+//    {}
+//
+//public:
+//    //! \return
+//    osgWidget::Color getBorderNormalColor() const
+//    { 
+//        return borderNormalColor;
+//    }
+//    //! \param borderNormalColor
+//    void setBorderNormalColor(osgWidget::Color borderNormalColor) 
+//    { 
+//        this->borderNormalColor = borderNormalColor; 
+//        onStyleChanged();
+//    }
+//    //! \return
+//    osgWidget::Color getBorderHoverColor() const
+//    { 
+//        return borderHoverColor;
+//    }
+//    //! \param borderHooverColor
+//    void setBorderHoverColor(osgWidget::Color borderHooverColor) 
+//    { 
+//        this->borderHoverColor = borderHooverColor;
+//        onStyleChanged();
+//    }
+//    //! \return
+//    osgWidget::Color getBorderPushedColor() const
+//    { 
+//        return borderPushedColor;
+//    }
+//    //! \param borderPushedColor
+//    void setBorderPushedColor(osgWidget::Color borderPushedColor) 
+//    { 
+//        this->borderPushedColor = borderPushedColor; 
+//        onStyleChanged();
+//    }
+//    //! \return
+//    osgWidget::Color getBorderToggleColor() const
+//    { 
+//        return borderToggleColor;
+//    }
+//    //! \param borderToggleColor
+//    void setBorderToggleColor(osgWidget::Color borderToggleColor) 
+//    { 
+//        this->borderToggleColor = borderToggleColor; 
+//        onStyleChanged();
+//    }
+//    //!
+//    void setBorderAllColors(osgWidget::Color color)
+//    {
+//        borderNormalColor = borderHoverColor = borderPushedColor = borderToggleColor = color;
+//        onStyleChanged();
+//    }
+//
+//protected:
+//
+//    //! 
+//    //! \param widget
+//    //! \param toggled
+//    //! \param pushed
+//    //! \param hoovered
+//    template <class Borderized>
+//    void applyStyle(Borderized* widget, bool toggled, bool pushed, bool hoovered)
+//    {
+//        Base::applyStyle(widget, toggled, pushed, hoovered);
+//        if ( toggled ) {
+//            widget->setBorderColor( borderToggleColor );
+//        } else {
+//            widget->setBorderColor( borderNormalColor );
+//        }
+//        if ( hoovered ) {
+//            if ( pushed ) {
+//                widget->setBorderColor( borderPushedColor );
+//            } else {
+//                widget->setBorderColor( borderHoverColor );
+//            }
+//        }
+//    }
+//};
 
 
 //

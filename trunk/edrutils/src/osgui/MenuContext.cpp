@@ -1,10 +1,10 @@
-#include "StdAfx.h"
-#include <vdfmlib/MenuContext.h>
-#include <vdfmlib/osgUI2DUtils.h>
-#include <vdfmlib/AspectRatioKeeper.h>
+#include "PCH.h"
+#include <osgui/MenuContext.h>
+#include <osgui/Utils2D.h>
+#include <osgui/AspectRatioKeeper.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI{
+namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 MenuContext::MenuContext(void) : parentMenu(0), rootMenu(0), activeSubMenu(0),	separators("/") {

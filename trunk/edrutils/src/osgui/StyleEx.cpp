@@ -1,9 +1,9 @@
-#include "StdAfx.h"
-#include <vdfmlib/StyleEx.h>
-#include <vdfmlib/Buttonized.h>
+#include "PCH.h"
+#include <osgui/StyleEx.h>
+#include <osgui/Buttonized.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgWidget{
+namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 bool StyleEx::applyStyle(osgWidget::Widget* w, osgWidget::Reader r) {
@@ -485,25 +485,25 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 
 			if(_match("border_hover_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
-				bord->setBorderHooverColor(vec4 / 255.0f);
+				bord->setBorderHoverColor(vec4 / 255.0f);
 			}
 
 			// Border color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("border_hover_color %i %i %i", r)) {
 				r.readSequence(vec3);
-				bord->setBorderHooverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
+				bord->setBorderHoverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
 			// Border color using 4x 0.0f-1.0f floats.
 			else if(_match("border_hover_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
-				bord->setBorderHooverColor(vec4);
+				bord->setBorderHoverColor(vec4);
 			}
 
 			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("border_hover_color %f %f %f", r)) {
 				r.readSequence(vec3);
-				bord->setBorderHooverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
+				bord->setBorderHoverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
 			else if(_match("border_toggle_color %i %i %i %i", r)) {

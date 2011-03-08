@@ -21,7 +21,7 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/TrackballManipulator>
 #include <osgDB/ReadFile>
-#include <osgUI/QOsgWidgets.h>
+#include <osgui/QOsgWidgets.h>
 
 #define USE_QT4 1
 

@@ -14,6 +14,7 @@
 #include <osg/CopyOp>
 #include <osgWidget/Window>
 #include <utils/Debug.h>
+#include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {
@@ -29,7 +30,8 @@ class EmbeddedWindow : public osgWidget::Window::EmbeddedWindow
 {
 public:
     typedef osgWidget::Window::EmbeddedWindow Base;
-    META_Object(osgUI, EmbeddedWindow);
+    //META_Object(osgUI, EmbeddedWindow);
+	META_Widget(osgUI, EmbeddedWindow);
 
     //! \param name
     //! \param w

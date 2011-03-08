@@ -1,8 +1,8 @@
-#include "StdAfx.h"
-#include <vdfmlib/TooltipHost.h>
+#include "PCH.h"
+#include <osgui/TooltipHost.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI{
+namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 TooltipHost::TooltipHost(void) : tooltip(new osgUI::Tooltip()), maxSignsPerLine(40), firstLevelSeparators(" \t\n.,!?\\/-=*-+")

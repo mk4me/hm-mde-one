@@ -11,6 +11,7 @@
 
 #include <osgWidget/Window>
 #include <osgWidget/Table>
+#include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {
@@ -30,7 +31,8 @@ private:
     bool dirtyMode;
 
 public:
-    META_Object(osgUI, Grid)
+    //META_Object(osgUI, Grid)
+	META_Window(osgUI, Grid)
     //! \param name
     //! \param width
     //! \param height

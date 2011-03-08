@@ -1,14 +1,14 @@
 #ifndef __HEADER_GUARD__TOOLBAR_H__
 #define __HEADER_GUARD__TOOLBAR_H__
 
-#include <vdfmlib/Grid.h>
-#include <vdfmlib/AspectRatioKeeper.h>
-#include <vdfmlib/EmbeddedWindow.h>
+#include <osgui/Grid.h>
+#include <osgui/AspectRatioKeeper.h>
+#include <osgui/EmbeddedWindow.h>
 #include <map>
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI{
+namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 class Toolbar :

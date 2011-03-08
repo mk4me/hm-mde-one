@@ -1,7 +1,12 @@
-#include <vdfmlib/osgUI2DUtils.h>
+#include "PCH.h"
+#include <osgui/Utils2D.h>
 #include <cmath>
 
-osgWidget::XYCoord osgUI2DUtils::findFreeSpaceInNearby(const osgWidget::XYCoord & pos,
+////////////////////////////////////////////////////////////////////////////////
+namespace osgUI {
+////////////////////////////////////////////////////////////////////////////////
+
+osgWidget::XYCoord Utils2D::findFreeSpaceInNearby(const osgWidget::XYCoord & pos,
 		osgWidget::point_type width, osgWidget::point_type height, const osgWidget::WindowManager * wm){
 
 	if(width == 0){
@@ -49,7 +54,7 @@ osgWidget::XYCoord osgUI2DUtils::findFreeSpaceInNearby(const osgWidget::XYCoord 
 	return ret;
 }
 
-bool osgUI2DUtils::collidesWithOthers(const osgWidget::Window * ww,
+bool Utils2D::collidesWithOthers(const osgWidget::Window * ww,
 	const osgWidget::WindowManager * wm,
 	const std::set<osgWidget::Window*> & exclude){
 
@@ -58,7 +63,7 @@ bool osgUI2DUtils::collidesWithOthers(const osgWidget::Window * ww,
 	return collidesWithOthers(generateBox(ww), wm, tmpExclude);
 }
 
-bool osgUI2DUtils::collidesWithOthers(const osg::BoundingBox & bb, const osgWidget::WindowManager * wm,
+bool Utils2D::collidesWithOthers(const osg::BoundingBox & bb, const osgWidget::WindowManager * wm,
 	const std::set<osgWidget::Window*> & exclude){
 
 	bool ret = false;
@@ -76,33 +81,33 @@ bool osgUI2DUtils::collidesWithOthers(const osg::BoundingBox & bb, const osgWidg
 	return ret;
 }
 
-bool osgUI2DUtils::checkWindowsCollision(const osgWidget::Window * w1, const osgWidget::Window * w2){
+bool Utils2D::checkWindowsCollision(const osgWidget::Window * w1, const osgWidget::Window * w2){
 	return generateBox(w1).intersects(generateBox(w2));
 }
 	
-osg::BoundingBox osgUI2DUtils::generateBox(const osgWidget::Window * ww){
+osg::BoundingBox Utils2D::generateBox(const osgWidget::Window * ww){
 	return generateBox(ww->getAbsoluteOrigin(), ww->getWidth(),
 		ww->getHeight());
 }
 
-osg::BoundingBox osgUI2DUtils::generateBox(const osgWidget::Widget * w){
+osg::BoundingBox Utils2D::generateBox(const osgWidget::Widget * w){
 	return w->getParent() == 0 ? generateBox(osgWidget::XYCoord(0,0), w->getWidth(), w->getHeight()) :
 		generateBox(w->getParent()->getAbsoluteOrigin() + w->getOrigin(), w->getWidth(),
 		w->getHeight());
 }
 
-osg::BoundingBox osgUI2DUtils::generateBox(const osgWidget::XYCoord & pos, osgWidget::point_type width,
+osg::BoundingBox Utils2D::generateBox(const osgWidget::XYCoord & pos, osgWidget::point_type width,
 	osgWidget::point_type height){
 	
 	return osg::BoundingBox(pos.x(), pos.y(),0,
 		pos.x()+width,pos.y()+height,0);
 }
 
-bool osgUI2DUtils::boxFullyEnclosedInBox(const osg::BoundingBox & bb1, const osg::BoundingBox & bb2){
+bool Utils2D::boxFullyEnclosedInBox(const osg::BoundingBox & bb1, const osg::BoundingBox & bb2){
 	return bb1.intersect(bb2).radius2() == bb1.radius2();
 }
 
-osg::BoundingBox osgUI2DUtils::translateBoundingBox(const osg::BoundingBox & bb,
+osg::BoundingBox Utils2D::translateBoundingBox(const osg::BoundingBox & bb,
 	const osgWidget::XYCoord & t){
 
 	osg::BoundingBox ret(bb);
@@ -113,7 +118,7 @@ osg::BoundingBox osgUI2DUtils::translateBoundingBox(const osg::BoundingBox & bb,
 	return ret;
 }
 
-osg::BoundingBox osgUI2DUtils::rotateBoundingBox(const osg::BoundingBox & bb,
+osg::BoundingBox Utils2D::rotateBoundingBox(const osg::BoundingBox & bb,
 	const osgWidget::XYCoord & rotCenter, float rotAngle){
 
 	//TODO
@@ -121,7 +126,7 @@ osg::BoundingBox osgUI2DUtils::rotateBoundingBox(const osg::BoundingBox & bb,
 	return bb;
 }
 
-osgWidget::point_type osgUI2DUtils::calcZ(const osgWidget::Window * window){
+osgWidget::point_type Utils2D::calcAbsZ(const osgWidget::Window * window){
 	if(window == 0){
 		return 0;
 	}
@@ -137,8 +142,10 @@ osgWidget::point_type osgUI2DUtils::calcZ(const osgWidget::Window * window){
 	return ret;
 }
 
-osgWidget::point_type osgUI2DUtils::calcZ(const osgWidget::Widget * widget){
+osgWidget::point_type Utils2D::calcAbsZ(const osgWidget::Widget * widget){
 	osgWidget::point_type ret = widget->getZ();
 
-	return ret + calcZ(widget->getParent());
+	return ret + calcAbsZ(widget->getParent());
+}
+
 }

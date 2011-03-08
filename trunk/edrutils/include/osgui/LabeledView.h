@@ -15,6 +15,7 @@
 #include <osgUI/Borderized.h>
 #include <osgUI/Buttonized.h>
 //#include <osgWidget/>
+#include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {
@@ -31,7 +32,8 @@ private:
 
 public:
 
-    META_Object(osgUI, LabeledView);
+    //META_Object(osgUI, LabeledView);
+	META_Window(osgUI, LabeledView);
 
     LabeledView(const std::string& name = "")  :
     osgWidget::Window(name)

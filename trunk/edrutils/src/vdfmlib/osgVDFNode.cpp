@@ -242,38 +242,38 @@ bool osgVDFNode::configureNode(osgWidget::Event& ev){
 void osgVDFNode::loggZCoordinates() const{
 	osgVDFBaseNode::loggZCoordinates();
 
-	std::cout << "m_pNodeNameLabel:\t" << osgUI2DUtils::calcZ(m_pNodeNameLabel) << std::endl;
-	std::cout << "m_pMainGrid:\t" << osgUI2DUtils::calcZ(m_pMainGrid) << std::endl;
-	std::cout << "m_pMainGridEmbedded:\t" << osgUI2DUtils::calcZ(m_pMainGridEmbedded) << std::endl;
-	std::cout << "m_pNodeLayoutGrid:\t" << osgUI2DUtils::calcZ(m_pNodeLayoutGrid) << std::endl;
-	std::cout << "m_pNodeLayoutGridEmbedded:\t" << osgUI2DUtils::calcZ(m_pNodeLayoutGridEmbedded) << std::endl;
-	std::cout << "m_pTopGrid:\t" << osgUI2DUtils::calcZ(m_pTopGrid) << std::endl;
-	std::cout << "m_pTopGridEmbedded:\t" << osgUI2DUtils::calcZ(m_pTopGridEmbedded) << std::endl;
-	std::cout << "m_pBottomGrid:\t" << osgUI2DUtils::calcZ(m_pBottomGrid) << std::endl;
-	std::cout << "m_pBottomGridEmbedded:\t" << osgUI2DUtils::calcZ(m_pBottomGridEmbedded) << std::endl;
-	std::cout << "m_pInPinsGrid:\t" << osgUI2DUtils::calcZ(m_pInPinsGrid) << std::endl;
-	std::cout << "m_pInPinsGridEmbedded:\t" << osgUI2DUtils::calcZ(m_pInPinsGridEmbedded) << std::endl;
-	std::cout << "m_pOutPinsGrid:\t" << osgUI2DUtils::calcZ(m_pOutPinsGrid) << std::endl;
-	std::cout << "m_pOutPinsGridEmbedded:\t" << osgUI2DUtils::calcZ(m_pOutPinsGridEmbedded) << std::endl;
-	std::cout << "m_pBodyLabel:\t" << osgUI2DUtils::calcZ(m_pBodyLabel) << std::endl;
-	std::cout << "m_pConfigure:\t" << osgUI2DUtils::calcZ(m_pConfigure) << std::endl;
-	std::cout << "m_pConfigureARKeeper:\t" << osgUI2DUtils::calcZ(m_pConfigureARKeeper) << std::endl;
-	std::cout << "m_pDelete:\t" << osgUI2DUtils::calcZ(m_pDelete) << std::endl;
-	std::cout << "m_pDeleteARKeeper:\t" << osgUI2DUtils::calcZ(m_pDeleteARKeeper) << std::endl;
-	std::cout << "m_pNodeNameLabel:\t" << osgUI2DUtils::calcZ(m_pNodeNameLabel) << std::endl;
+	std::cout << "m_pNodeNameLabel:\t" << osgUI::Utils2D::calcAbsZ(m_pNodeNameLabel) << std::endl;
+	std::cout << "m_pMainGrid:\t" << osgUI::Utils2D::calcAbsZ(m_pMainGrid) << std::endl;
+	std::cout << "m_pMainGridEmbedded:\t" << osgUI::Utils2D::calcAbsZ(m_pMainGridEmbedded) << std::endl;
+	std::cout << "m_pNodeLayoutGrid:\t" << osgUI::Utils2D::calcAbsZ(m_pNodeLayoutGrid) << std::endl;
+	std::cout << "m_pNodeLayoutGridEmbedded:\t" << osgUI::Utils2D::calcAbsZ(m_pNodeLayoutGridEmbedded) << std::endl;
+	std::cout << "m_pTopGrid:\t" << osgUI::Utils2D::calcAbsZ(m_pTopGrid) << std::endl;
+	std::cout << "m_pTopGridEmbedded:\t" << osgUI::Utils2D::calcAbsZ(m_pTopGridEmbedded) << std::endl;
+	std::cout << "m_pBottomGrid:\t" << osgUI::Utils2D::calcAbsZ(m_pBottomGrid) << std::endl;
+	std::cout << "m_pBottomGridEmbedded:\t" << osgUI::Utils2D::calcAbsZ(m_pBottomGridEmbedded) << std::endl;
+	std::cout << "m_pInPinsGrid:\t" << osgUI::Utils2D::calcAbsZ(m_pInPinsGrid) << std::endl;
+	std::cout << "m_pInPinsGridEmbedded:\t" << osgUI::Utils2D::calcAbsZ(m_pInPinsGridEmbedded) << std::endl;
+	std::cout << "m_pOutPinsGrid:\t" << osgUI::Utils2D::calcAbsZ(m_pOutPinsGrid) << std::endl;
+	std::cout << "m_pOutPinsGridEmbedded:\t" << osgUI::Utils2D::calcAbsZ(m_pOutPinsGridEmbedded) << std::endl;
+	std::cout << "m_pBodyLabel:\t" << osgUI::Utils2D::calcAbsZ(m_pBodyLabel) << std::endl;
+	std::cout << "m_pConfigure:\t" << osgUI::Utils2D::calcAbsZ(m_pConfigure) << std::endl;
+	std::cout << "m_pConfigureARKeeper:\t" << osgUI::Utils2D::calcAbsZ(m_pConfigureARKeeper) << std::endl;
+	std::cout << "m_pDelete:\t" << osgUI::Utils2D::calcAbsZ(m_pDelete) << std::endl;
+	std::cout << "m_pDeleteARKeeper:\t" << osgUI::Utils2D::calcAbsZ(m_pDeleteARKeeper) << std::endl;
+	std::cout << "m_pNodeNameLabel:\t" << osgUI::Utils2D::calcAbsZ(m_pNodeNameLabel) << std::endl;
 
 	std::cout << "IN PINS:" << std::endl;
 	for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = this->getInPins().begin(); it != this->getInPins().end();
 		it++){
 
-			std::cout << (*it)->getName() << ":\t" << osgUI2DUtils::calcZ(*it) << std::endl;
+			std::cout << (*it)->getName() << ":\t" << osgUI::Utils2D::calcAbsZ(*it) << std::endl;
 	}
 
 	std::cout << "OUT PINS:" << std::endl;
 	for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = this->getOutPins().begin(); it != this->getOutPins().end();
 		it++){
 
-			std::cout << (*it)->getName() << ":\t" << osgUI2DUtils::calcZ(*it) << std::endl;
+			std::cout << (*it)->getName() << ":\t" << osgUI::Utils2D::calcAbsZ(*it) << std::endl;
 	}
 }
 

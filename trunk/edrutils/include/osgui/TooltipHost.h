@@ -2,11 +2,11 @@
 #define __HEADER_GUARD__TOOLTIPHOST_H__
 
 #include <osgWidget/Widget>
-#include <vdfmlib/Tooltip.h>
+#include <osgui/Tooltip.h>
 #include <boost/tokenizer.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI{
+namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 class TooltipHost

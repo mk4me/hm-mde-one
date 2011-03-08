@@ -1,8 +1,8 @@
-#include "StdAfx.h"
-#include <vdfmlib/Tooltip.h>
+#include "PCH.h"
+#include <osgui/Tooltip.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI{
+namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 Tooltip::Tooltip(void) : osgWidget::Box("",osgWidget::Box::VERTICAL, true), tooltipLabel(new BLABEL())

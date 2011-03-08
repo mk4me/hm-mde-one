@@ -7,10 +7,10 @@
 #include <osgGA/GUIEventHandler>
 #include <boost/function.hpp>
 
-#include <vdfmlib/KeyboardMapper.h>
+#include <osgui/KeyboardMapper.h>
 
-#include <vdfmlib/Buttonized.h>
-#include <vdfmlib/Borderized.h>
+#include <osgui/Buttonized.h>
+#include <osgui/Borderized.h>
 
 #include <dfmlib/DFLMTypes.h>
 #include <dfmlib/Connection.h>
@@ -18,9 +18,9 @@
 
 #include <vdfmlib/osgVDFNodeTypeDescriptor.h>
 
-#include <vdfmlib/Toolbar.h>
-#include <vdfmlib/MenuContext.h>
-#include <vdfmlib/TooltipHost.h>
+#include <osgui/Toolbar.h>
+#include <osgui/MenuContext.h>
+#include <osgui/TooltipHost.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgVDF{
@@ -29,7 +29,7 @@ namespace osgVDF{
 class osgVDFBaseNode;
 class osgVDFBasePin;
 
-class osgVDFBaseModel : public osgWidget::WindowManager, public osgWidget::KeyboardMapper, public osgUI::TooltipHost{
+class osgVDFBaseModel : public osgWidget::WindowManager, public osgUI::KeyboardMapper, public osgUI::TooltipHost{
 public:
 	osgVDFBaseModel(osgViewer::View* view = 0, osgWidget::point_type width = 0.0f, osgWidget::point_type height = 0.0f,
 		unsigned int nodeMask = 0, unsigned int flags = 0);
@@ -82,8 +82,8 @@ public:
 	osgWidget::point_type getAreaRatioToSelect() const;
 	void setAreaRatioToSelect(osgWidget::point_type areaRatio);
 
-	const osgWidget::KeyboardMapper::KEYS_SET & getSelectionActionKeys() const;
-	void setSelectionActionKeys(const osgWidget::KeyboardMapper::KEYS_SET & keys);
+	const osgUI::KeyboardMapper::KEYS_SET & getSelectionActionKeys() const;
+	void setSelectionActionKeys(const osgUI::KeyboardMapper::KEYS_SET & keys);
 
 	osgWidget::point_type getMinDistToDelConnection() const;
 	void setMinDistToDelConnection(osgWidget::point_type dist);

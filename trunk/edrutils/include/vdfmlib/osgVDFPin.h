@@ -3,7 +3,7 @@
 
 #include <vdfmlib/osgVDFBasePin.h>
 #include <osgDB/ReadFile>
-#include <vdfmlib/macroHacks.h>
+#include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgVDF{

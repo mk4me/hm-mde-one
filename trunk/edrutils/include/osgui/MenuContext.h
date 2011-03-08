@@ -1,7 +1,7 @@
 #ifndef __HEADER_GUARD__MENUCONTEXT_H__
 #define __HEADER_GUARD__MENUCONTEXT_H__
 
-#include <vdfmlib/Grid.h>
+#include <osgui/Grid.h>
 #include <map>
 #include <vector>
 #include <boost/function.hpp>
@@ -9,7 +9,7 @@
 #include <boost/tokenizer.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI{
+namespace osgUI {
 ////////////////////////////////////////////////////////////////////////////////
 
 class MenuContext :

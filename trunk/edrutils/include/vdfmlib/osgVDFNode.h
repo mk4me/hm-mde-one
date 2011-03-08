@@ -8,12 +8,12 @@
 #include <stdio.h>
 
 #include <vdfmlib/osgVDFBaseNode.h>
-#include <vdfmlib/Grid.h>
-#include <vdfmlib/AspectRatioKeeper.h>
-#include <vdfmlib/EmbeddedWindow.h>
+#include <osgui/Grid.h>
+#include <osgui/AspectRatioKeeper.h>
+#include <osgui/EmbeddedWindow.h>
 #include <dfmlib/DFNode.h>
-#include <vdfmlib/Borderized.h>
-#include <vdfmlib/macroHacks.h>
+#include <osgui/Borderized.h>
+#include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgVDF{

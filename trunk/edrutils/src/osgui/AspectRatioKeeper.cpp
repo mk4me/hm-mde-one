@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include <osgUI/AspectRatioKeeper.h>
+#include <osgui/AspectRatioKeeper.h>
 
 #undef min
 #undef max
@@ -19,7 +19,8 @@ private:
     osg::observer_ptr<osgWidget::Widget> target;
 
 public:
-    META_Object(osgUI, AspectRatioKeeperWindow);
+    //META_Object(osgUI, AspectRatioKeeperWindow);
+	META_Window(osgUI, AspectRatioKeeperWindow);
     //!
     AspectRatioKeeperWindow(const std::string& name = "", osgWidget::Widget* target = NULL, osgWidget::point_type aspectRatio = 1);
     //!

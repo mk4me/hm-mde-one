@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include <osgViewer/Renderer>
-#include <osgUI/QOsgWidgets.h>
-#include <osgUI/DisableableRenderer.h>
+#include <osgui/QOsgWidgets.h>
+#include <osgui/DisableableRenderer.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {

@@ -15,16 +15,6 @@ set(PRIVATE_H
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
-	${HEADER_PATH}/Borderized.h
-	${HEADER_PATH}/Buttonized.h
-	${HEADER_PATH}/macroHacks.h
-	${HEADER_PATH}/AspectRatioKeeper.h
-	${HEADER_PATH}/EmbeddedWindow.h
-	${HEADER_PATH}/ExtKeyboardHandler.h
-	${HEADER_PATH}/Grid.h
-	${HEADER_PATH}/KeyboardMapper.h
-	${HEADER_PATH}/MenuContext.h
-	${HEADER_PATH}/osgUI2DUtils.h
 	${HEADER_PATH}/osgVDFBaseModel.h
 	${HEADER_PATH}/osgVDFBaseNode.h
 	${HEADER_PATH}/osgVDFBasePin.h
@@ -32,10 +22,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/osgVDFNode.h
 	${HEADER_PATH}/osgVDFNodeTypeDescriptor.h
 	${HEADER_PATH}/osgVDFPin.h
-	${HEADER_PATH}/StyleEx.h
-	${HEADER_PATH}/Toolbar.h
-	${HEADER_PATH}/TooltipHost.h
-	${HEADER_PATH}/Tooltip.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -44,23 +30,12 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-	AspectRatioKeeper.cpp
-	EmbeddedWindow.cpp
-	ExtKeyboardHandler.cpp
-	Grid.cpp
-	KeyboardMapper.cpp
-	MenuContext.cpp
-	osgUI2DUtils.cpp
 	osgVDFBaseModel.cpp
 	osgVDFBaseNode.cpp
 	osgVDFBasePin.cpp
 	osgVDFModel.cpp
 	osgVDFNode.cpp
 	osgVDFNodeTypeDescriptor.cpp
-	StyleEx.cpp
-	Toolbar.cpp
-	Tooltip.cpp
-	TooltipHost.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

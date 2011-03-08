@@ -10,6 +10,7 @@
 #define __HEADER_GUARD__ASPECTRATIOKEEPER_H__
 
 #include <osgWidget/Window>
+#include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {
@@ -18,7 +19,8 @@ namespace osgUI {
 class AspectRatioKeeper : public osgWidget::Window::EmbeddedWindow
 {
 public:
-    META_Object(osgUI, AspectRatioKeeper);
+    //META_Object(osgUI, AspectRatioKeeper);
+	META_Widget(osgUI, AspectRatioKeeper);
     //! \param widget
     //! \param aspectRatio
     AspectRatioKeeper(osgWidget::Widget* widget = NULL, osgWidget::point_type aspectRatio = 1);

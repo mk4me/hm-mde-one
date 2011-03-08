@@ -25,7 +25,7 @@
 #include <vdfmlib/osgVDFModel.h>
 #include <vdfmlib/osgVDFNode.h>
 #include <vdfmlib/osgVDFPin.h>
-#include <vdfmlib/StyleEx.h>
+#include <osgui/StyleEx.h>
 
 #include <testnodefactory/TestNodeFactory.h>
 
@@ -35,7 +35,7 @@
 
 const unsigned int MASK_2D = 0xF0000000;
 
-typedef std::set<osg::ref_ptr<osgWidget::StyleEx> > StylesSet;
+typedef std::set<osg::ref_ptr<osgUI::StyleEx> > StylesSet;
 
 std::string colorToStr(const osgWidget::Color & color){
 	std::stringstream str;
@@ -163,64 +163,64 @@ StylesSet generateRequiredStyles(){
 
 	//PIN STYLES
 	//general pin font
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.pin.text", "font_size 10\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.pin.text", "font_size 10\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
 
 	//out pins
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.out.ok", "rect_image \"" + path + "out_OK." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.out.active", "rect_image \"" +  path + "out_active." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.out.connected", "rect_image \"" +  path + "out_connected." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.out.ok", "rect_image \"" + path + "out_OK." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.out.active", "rect_image \"" +  path + "out_active." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.out.connected", "rect_image \"" +  path + "out_connected." + graphExt + "\""));
 	//styleSet.insert(new StyleEx("vdf.pin.out.incomplete", "rect_image \"" +  path + "out_incomplete." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.out.incomplete", "rect_image \"" +  path + "out_required." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.out.incompatible", "rect_image \"" +  path + "out_incompatible." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.out.required", "rect_image \"" +  path + "out_required." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.out.incomplete", "rect_image \"" +  path + "out_required." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.out.incompatible", "rect_image \"" +  path + "out_incompatible." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.out.required", "rect_image \"" +  path + "out_required." + graphExt + "\""));
 
 	//in pins
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.in.ok", "rect_image \"" +  path + "in_OK." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.in.active", "rect_image \"" +  path + "in_active." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.in.connected", "rect_image \"" +  path + "in_connected." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.in.ok", "rect_image \"" +  path + "in_OK." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.in.active", "rect_image \"" +  path + "in_active." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.in.connected", "rect_image \"" +  path + "in_connected." + graphExt + "\""));
 	//styleSet.insert(new StyleEx("vdf.pin.in.incomplete", "rect_image \"" +  path + "in_incomplete." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.in.incomplete", "rect_image \"" +  path + "in_required." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.in.incompatible", "rect_image \"" +  path + "in_incompatible." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.pin.in.required", "rect_image \"" +  path + "in_required." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.in.incomplete", "rect_image \"" +  path + "in_required." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.in.incompatible", "rect_image \"" +  path + "in_incompatible." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.pin.in.required", "rect_image \"" +  path + "in_required." + graphExt + "\""));
 
 	//NODE STYLES
 	//border - obwódka, cieñ
 	//normal
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.TL.normal", "rect_image \"" +  path + "normal_board_TL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.TM.normal", "rect_image \"" +  path + "normal_board_TM." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.TR.normal", "rect_image \"" +  path + "normal_board_TR." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.ML.normal", "rect_image \"" +  path + "normal_board_ML." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.MR.normal", "rect_image \"" +  path + "normal_board_MR." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.BL.normal", "rect_image \"" +  path + "normal_board_BL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.BM.normal", "rect_image \"" +  path + "normal_board_BM." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.BR.normal", "rect_image \"" +  path + "normal_board_BR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.TL.normal", "rect_image \"" +  path + "normal_board_TL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.TM.normal", "rect_image \"" +  path + "normal_board_TM." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.TR.normal", "rect_image \"" +  path + "normal_board_TR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.ML.normal", "rect_image \"" +  path + "normal_board_ML." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.MR.normal", "rect_image \"" +  path + "normal_board_MR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.BL.normal", "rect_image \"" +  path + "normal_board_BL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.BM.normal", "rect_image \"" +  path + "normal_board_BM." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.BR.normal", "rect_image \"" +  path + "normal_board_BR." + graphExt + "\""));
 
 	//kolizja
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.TL.collision", "rect_image \"" +  path + "collision_board_TL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.TM.collision", "rect_image \"" +  path + "collision_board_TM." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.TR.collision", "rect_image \"" +  path + "collision_board_TR." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.ML.collision", "rect_image \"" +  path + "collision_board_ML." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.MR.collision", "rect_image \"" +  path + "collision_board_MR." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.BL.collision", "rect_image \"" +  path + "collision_board_BL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.BM.collision", "rect_image \"" +  path + "collision_board_BM." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.BR.collision", "rect_image \"" +  path + "collision_board_BR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.TL.collision", "rect_image \"" +  path + "collision_board_TL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.TM.collision", "rect_image \"" +  path + "collision_board_TM." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.TR.collision", "rect_image \"" +  path + "collision_board_TR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.ML.collision", "rect_image \"" +  path + "collision_board_ML." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.MR.collision", "rect_image \"" +  path + "collision_board_MR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.BL.collision", "rect_image \"" +  path + "collision_board_BL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.BM.collision", "rect_image \"" +  path + "collision_board_BM." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.BR.collision", "rect_image \"" +  path + "collision_board_BR." + graphExt + "\""));
 
 	//select
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.TL.active", "rect_image \"" +  path + "selected_board_TL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.TM.active", "rect_image \"" +  path + "selected_board_TM." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.TR.active", "rect_image \"" +  path + "selected_board_TR." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.ML.active", "rect_image \"" +  path + "selected_board_ML." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.MR.active", "rect_image \"" +  path + "selected_board_MR." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.BL.active", "rect_image \"" +  path + "selected_board_BL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.BM.active", "rect_image \"" +  path + "selected_board_BM." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.border.BR.active", "rect_image \"" +  path + "selected_board_BR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.TL.active", "rect_image \"" +  path + "selected_board_TL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.TM.active", "rect_image \"" +  path + "selected_board_TM." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.TR.active", "rect_image \"" +  path + "selected_board_TR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.ML.active", "rect_image \"" +  path + "selected_board_ML." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.MR.active", "rect_image \"" +  path + "selected_board_MR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.BL.active", "rect_image \"" +  path + "selected_board_BL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.BM.active", "rect_image \"" +  path + "selected_board_BM." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.border.BR.active", "rect_image \"" +  path + "selected_board_BR." + graphExt + "\""));
 
 
 	//cia³o wêz³a
 	//normal
 	//top
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.TL.normal", "rect_image \"" +  path + "normal_body_TL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.TR.normal", "rect_image \"" +  path + "normal_body_TR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.TL.normal", "rect_image \"" +  path + "normal_body_TL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.TR.normal", "rect_image \"" +  path + "normal_body_TR." + graphExt + "\""));
 
 	//get color
 	osg::Image * imgA = osgDB::readImageFile(path + "normal_body_TL." + graphExt);
@@ -230,16 +230,16 @@ StylesSet generateRequiredStyles(){
 		col = (imgA->getColor(imgA->s()-1,0,imgA->r()-1) + imgB->getColor(0,0,imgB->r()-1)) / 2.0;
 	}
 
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.TNameLabel.normal", "color " + colorToStr(col) + "\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.TConfigBCG.normal", "color " + colorToStr(col)));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.TDeleteBCG.normal", "color " + colorToStr(col)));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.TNameLabel.normal", "color " + colorToStr(col) + "\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.TConfigBCG.normal", "color " + colorToStr(col)));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.TDeleteBCG.normal", "color " + colorToStr(col)));
 
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.config.normal", "rect_image \"" +  path + "normal_body_CFG." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.delete.normal", "rect_image \"" +  path + "normal_body_DEL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.config.normal", "rect_image \"" +  path + "normal_body_CFG." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.delete.normal", "rect_image \"" +  path + "normal_body_DEL." + graphExt + "\""));
 
 	//bottom
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.BL.normal", "rect_image \"" +  path + "normal_body_BL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.BR.normal", "rect_image \"" +  path + "normal_body_BR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.BL.normal", "rect_image \"" +  path + "normal_body_BL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.BR.normal", "rect_image \"" +  path + "normal_body_BR." + graphExt + "\""));
 
 	imgA = osgDB::readImageFile(path + "normal_body_BL." + graphExt);
 	imgB = osgDB::readImageFile(path + "normal_body_BR." + graphExt);
@@ -248,62 +248,62 @@ StylesSet generateRequiredStyles(){
 		col = (imgA->getColor(imgA->s()-1,imgA->t()-1,imgA->r()-1) + imgB->getColor(0,imgB->t()-1,imgB->r()-1)) / 2.0;
 	}
 
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.BM.normal", "color " + colorToStr(col)));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.BM.normal", "color " + colorToStr(col)));
 
 	//center
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.Center.normal", "color " + colorToStr(col)));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.Center.normal", "color " + colorToStr(col)));
 
 	//selection
 	//top
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.TL.active", "rect_image \"" +  path + "selected_body_TL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.TR.active", "rect_image \"" +  path + "selected_body_TR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.TL.active", "rect_image \"" +  path + "selected_body_TL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.TR.active", "rect_image \"" +  path + "selected_body_TR." + graphExt + "\""));
 
 	//bottom
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.BL.active", "rect_image \"" +  path + "selected_body_BL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.BR.active", "rect_image \"" +  path + "selected_body_BR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.BL.active", "rect_image \"" +  path + "selected_body_BL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.BR.active", "rect_image \"" +  path + "selected_body_BR." + graphExt + "\""));
 
 	//collision
 	//top
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.TL.collision", "rect_image \"" +  path + "collision_body_TL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.TR.collision", "rect_image \"" +  path + "collision_body_TR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.TL.collision", "rect_image \"" +  path + "collision_body_TL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.TR.collision", "rect_image \"" +  path + "collision_body_TR." + graphExt + "\""));
 
 	//bottom
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.BL.collision", "rect_image \"" +  path + "collision_body_BL." + graphExt + "\""));
-	styleSet.insert(new osgWidget::StyleEx("vdf.node.body.BR.collision", "rect_image \"" +  path + "collision_body_BR." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.BL.collision", "rect_image \"" +  path + "collision_body_BL." + graphExt + "\""));
+	styleSet.insert(new osgUI::StyleEx("vdf.node.body.BR.collision", "rect_image \"" +  path + "collision_body_BR." + graphExt + "\""));
 
 
 	//TOOLBAR STYLES
-	styleSet.insert(new osgWidget::StyleEx("osgUI.toolbar.tab.normal", "color " + colorToStr(osgWidget::Color(0.357f,0.357f,0.357f,1.0f)) + "\npadding 0\nvalign center\nhalign center\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));//border_color " + colorToStr(osgWidget::Color(0.0f,1.0f,1.0f,1.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osgUI.toolbar.tab.active", "color " + colorToStr(osgWidget::Color(0.537f,0.537f,0.537f,1.0f)) + "\npadding 0\nvalign center\nhalign center\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));//border_color " + colorToStr(osgWidget::Color(1.0f,0.0f,1.0f,1.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osgUI.toolbar.tab.disable", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,1.0f)) + "\npadding 0\nvalign center\nhalign center\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));//border_color " + colorToStr(osgWidget::Color(1.0f,1.0f,1.0f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgUI.toolbar.tab.normal", "color " + colorToStr(osgWidget::Color(0.357f,0.357f,0.357f,1.0f)) + "\npadding 0\nvalign center\nhalign center\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));//border_color " + colorToStr(osgWidget::Color(0.0f,1.0f,1.0f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgUI.toolbar.tab.active", "color " + colorToStr(osgWidget::Color(0.537f,0.537f,0.537f,1.0f)) + "\npadding 0\nvalign center\nhalign center\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));//border_color " + colorToStr(osgWidget::Color(1.0f,0.0f,1.0f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgUI.toolbar.tab.disable", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,1.0f)) + "\npadding 0\nvalign center\nhalign center\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));//border_color " + colorToStr(osgWidget::Color(1.0f,1.0f,1.0f,1.0f))));
 
-	styleSet.insert(new osgWidget::StyleEx("osgUI.toolbar.upperHalf", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,0.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osgUI.toolbar.lowerHalf", "color " + colorToStr(osgWidget::Color(0.537f,0.537f,0.537f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgUI.toolbar.upperHalf", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,0.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgUI.toolbar.lowerHalf", "color " + colorToStr(osgWidget::Color(0.537f,0.537f,0.537f,1.0f))));
 
 
 	//CONTEXT MENU STYLES
-	styleSet.insert(new osgWidget::StyleEx("osg.contextmenu.menu", "color " + colorToStr(osgWidget::Color(0.357f,0.357f,0.357f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osg.contextmenu.menu", "color " + colorToStr(osgWidget::Color(0.357f,0.357f,0.357f,1.0f))));
 	//styleSet.insert(new StyleEx("osg.contextmenu.submenuitem", "color " + colorToStr(osgWidget::Color(0.537f,0.537f,0.537f,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
-	styleSet.insert(new osgWidget::StyleEx("osg.contextmenu.submenuitem.normal", "color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
-	styleSet.insert(new osgWidget::StyleEx("osg.contextmenu.submenuitem.hoovered", "color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
-	styleSet.insert(new osgWidget::StyleEx("osg.contextmenu.item.normal", "color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
-	styleSet.insert(new osgWidget::StyleEx("osg.contextmenu.item.hoovered", "color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgUI::StyleEx("osg.contextmenu.submenuitem.normal", "color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgUI::StyleEx("osg.contextmenu.submenuitem.hoovered", "color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgUI::StyleEx("osg.contextmenu.item.normal", "color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgUI::StyleEx("osg.contextmenu.item.hoovered", "color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
 
-	styleSet.insert(new osgWidget::StyleEx("osg.contextmenu.checked.normal", "color " + colorToStr(osgWidget::Color(1.0f,1.0f,0.0f,1.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osg.contextmenu.checked.hoovered", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,1.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osg.contextmenu.unchecked.normal", "color " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osg.contextmenu.unchecked.hoovered", "color " + colorToStr(osgWidget::Color(1,1,1,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osg.contextmenu.checked.normal", "color " + colorToStr(osgWidget::Color(1.0f,1.0f,0.0f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osg.contextmenu.checked.hoovered", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osg.contextmenu.unchecked.normal", "color " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osg.contextmenu.unchecked.hoovered", "color " + colorToStr(osgWidget::Color(1,1,1,1.0f))));
 
 	//TOOLTIP STYLES
-	styleSet.insert(new osgWidget::StyleEx("osgUI.tooltip.base", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,0.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osgUI.tooltip.text", "color " + colorToStr(osgWidget::Color(0.94,0.94,0.96,1.0f)) + "\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nborder_color " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgUI.tooltip.base", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,0.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgUI.tooltip.text", "color " + colorToStr(osgWidget::Color(0.94,0.94,0.96,1.0f)) + "\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nborder_color " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
 
 
 	//TOOLBAR BUTTONS
-	styleSet.insert(new osgWidget::StyleEx("osgVDF.toolbar.button.normal", "border_color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,0.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osgVDF.toolbar.button.hover", "border_color " + colorToStr(osgWidget::Color(1.0f,1.0f,1.0f,1.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osgVDF.toolbar.button.toggle", "border_color " + colorToStr(osgWidget::Color(0.0f,1.0f,0.0f,1.0f))));
-	styleSet.insert(new osgWidget::StyleEx("osgVDF.toolbar.button.pushed", "border_color " + colorToStr(osgWidget::Color(1.0f,0.0f,0.0f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgVDF.toolbar.button.normal", "border_color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,0.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgVDF.toolbar.button.hover", "border_color " + colorToStr(osgWidget::Color(1.0f,1.0f,1.0f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgVDF.toolbar.button.toggle", "border_color " + colorToStr(osgWidget::Color(0.0f,1.0f,0.0f,1.0f))));
+	styleSet.insert(new osgUI::StyleEx("osgVDF.toolbar.button.pushed", "border_color " + colorToStr(osgWidget::Color(1.0f,0.0f,0.0f,1.0f))));
 
 	return styleSet;
 }

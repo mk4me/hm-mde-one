@@ -4,7 +4,7 @@
 #include <osgWidget/Widget>
 #include <dfmlib/DFPin.h>
 #include <map>
-#include <vdfmlib/osgUI2DUtils.h>
+#include <osgui/Utils2D.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgVDF{

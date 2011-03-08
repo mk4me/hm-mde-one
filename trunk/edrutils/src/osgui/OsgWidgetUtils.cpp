@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include <osgUI/OsgWidgetUtils.h>
+#include <osgui/OsgWidgetUtils.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgUI {
