@@ -11,11 +11,11 @@ using namespace communication;
 typedef std::vector<Trial> ServerTrials;
 typedef std::vector<core::IDataManager::LocalTrial> LocalTrials;
 
-CommunicationManager* CommunicationManager::instance = NULL;
+CommunicationManager* CommunicationManager::instance = nullptr;
 
 CommunicationManager* CommunicationManager::getInstance()
 {
-    if(instance == NULL) {
+    if(!instance) {
         instance = new CommunicationManager();
     }
     return instance;
@@ -23,22 +23,21 @@ CommunicationManager* CommunicationManager::getInstance()
 
 void CommunicationManager::destoryInstance()
 {
-    if(instance)
-    {
+    if(instance) {
         delete instance;
     }
-    instance = NULL;
+    instance = nullptr;
 }
 
-CommunicationManager::CommunicationManager() : trialsMutex()
+CommunicationManager::CommunicationManager()
+    : trialsMutex()
 {
-    this->transportManager = NULL;
-    this->queryManager = NULL;
+    this->transportManager = nullptr;
+    this->queryManager = nullptr;
     this->trialsDir = "data/trials/";
     this->setState(Ready);
     pingCurl = curl_easy_init();
-    if(pingCurl)
-    {
+    if(pingCurl) {
         curl_easy_setopt(pingCurl, CURLOPT_URL, "http://83.230.112.43/");
         curl_easy_setopt(pingCurl, CURLOPT_CONNECTTIMEOUT, 1);
         curl_easy_setopt(pingCurl, CURLOPT_WRITEFUNCTION, pingDataCallback);
@@ -48,12 +47,10 @@ CommunicationManager::CommunicationManager() : trialsMutex()
 
 CommunicationManager::~CommunicationManager()
 {
-    if(pingCurl)
-    {
+    if(pingCurl) {
         curl_easy_cleanup(pingCurl);
     }
-    if(isRunning())
-    {
+    if(isRunning()) {
         join();
     }
 }
@@ -67,26 +64,21 @@ void CommunicationManager::saveToXml(const std::string& filename)
     document.LinkEndChild(root);
 
     //zapis daty
-    if(isLastUpdate)
-    {
+    if(isLastUpdate) {
         root->SetAttribute("date", lastUpdate.toString());
-    }
-    else
-    {
+    } else {
         DateTime dt;
         root->SetAttribute("date", dt.toString());
     }
 
-    BOOST_FOREACH(Trial& trial, serverTrials)
-    {
+    BOOST_FOREACH(Trial& trial, serverTrials) {
         //<ServerTrial>
         TiXmlElement* strial_element = new TiXmlElement("ServerTrial");
         root->LinkEndChild(strial_element);
         strial_element->SetAttribute("id", trial.id);
         strial_element->SetAttribute("sessionID", trial.sessionID);
         strial_element->SetAttribute("trialDescription", trial.trialDescription);
-        BOOST_FOREACH(int id, trial.trialFiles)
-        {
+        BOOST_FOREACH(int id, trial.trialFiles) {
             //<File>
             TiXmlElement* file_element = new TiXmlElement("File");
             strial_element->LinkEndChild(file_element);
@@ -101,8 +93,7 @@ void CommunicationManager::saveToXml(const std::string& filename)
 void CommunicationManager::loadFromXml(const std::string& filename)
 {
     TiXmlDocument document(filename);
-    if(!document.LoadFile())
-    {
+    if(!document.LoadFile()) {
         LOG_ERROR(": !Blad wczytania pliku Communication\n");
         return;
     }
@@ -111,8 +102,7 @@ void CommunicationManager::loadFromXml(const std::string& filename)
     TiXmlHandle hParent(0);
 
     strial_element = hDocument.FirstChildElement().Element();
-    if(!strial_element)
-    {
+    if(!strial_element) {
         LOG_ERROR(": !Blad czytania z pliku Communication\n");
         return;
     }
@@ -122,14 +112,11 @@ void CommunicationManager::loadFromXml(const std::string& filename)
     std::string temp;
     hParent.ToElement()->QueryStringAttribute("date", &temp);
     isLastUpdate = false;
-    if(!temp.empty())
-    {
-        try
-        {
+    if(!temp.empty()) {
+        try {
             lastUpdate.setDate(temp);
             isLastUpdate = true;
-        }
-        catch(std::exception& e)
+        } catch(std::exception& e)
         {
             LOG_ERROR(e.what() << ": !Blad wczytania daty z pliku Communication\n");
         }
@@ -137,15 +124,13 @@ void CommunicationManager::loadFromXml(const std::string& filename)
     //wczytanie zrzutu danych pomiarowych z serwera
     this->serverTrials.clear();
     strial_element = hParent.FirstChild("ServerTrial").ToElement();
-    while(strial_element)
-    {
+    while(strial_element) {
         Trial serverTrial;
         strial_element->QueryIntAttribute("id", &serverTrial.id);
         strial_element->QueryIntAttribute("sessionID", &serverTrial.sessionID);
         strial_element->QueryStringAttribute("trialDescription", &serverTrial.trialDescription);
         TiXmlElement* file_element = strial_element->FirstChildElement("File");
-        while(file_element)
-        {
+        while(file_element) {
             int id;
             file_element->QueryIntAttribute("id", &id);
             serverTrial.trialFiles.push_back(id);
@@ -238,10 +223,8 @@ void CommunicationManager::loadLocalTrials()
     setState(Ready);
     localTrials.clear();
     dataManager->findLocalTrials();
-    if(dataManager && dataManager->getLocalTrialsCount() > 0)
-    {
-        for(int i = 0; i < dataManager->getLocalTrialsCount(); i++)
-        {
+    if(dataManager && dataManager->getLocalTrialsCount() > 0) {
+        for(int i = 0; i < dataManager->getLocalTrialsCount(); i++) {
             localTrials.push_back(dataManager->getLocalTrial(i));
         }
     }
@@ -256,8 +239,7 @@ void CommunicationManager::loadTrial(const core::IDataManager::LocalTrial& local
 
 void CommunicationManager::run()
 {
-    switch(getState())
-    {
+    switch(getState()) {
         //nie uzywamy na razie
         //case DownloadingFile:
         //    {
@@ -275,21 +257,16 @@ void CommunicationManager::run()
         //        }
         //        break;
         //    }
-    case DownloadingTrial:
-        {
+    case DownloadingTrial: {
             std::string pathToDownloadingTrial;
-            try
-            {
-                BOOST_FOREACH(Trial& trial, serverTrials)
-                {
-                    if(trial.id == entityID)
-                    {
+            try {
+                BOOST_FOREACH(Trial& trial, serverTrials) {
+                    if(trial.id == entityID) {
                         pathToDownloadingTrial = trialsDir;
                         pathToDownloadingTrial.append("/").append(trial.trialDescription);
                         filesToDownload = trial.trialFiles.size();
                         actualFile = 0;
-                        BOOST_FOREACH(int i, trial.trialFiles)
-                        {
+                        BOOST_FOREACH(int i, trial.trialFiles) {
                             actualFile++;
                             transportManager->downloadFile(i, trialsDir);
                         }
@@ -298,10 +275,8 @@ void CommunicationManager::run()
                 }
                 state = UpdateTrials;
             }
-            catch(std::runtime_error& e)
-            {
-                if(!pathToDownloadingTrial.empty())
-                {
+            catch(std::runtime_error& e) {
+                if(!pathToDownloadingTrial.empty()) {
                     core::Filesystem::deleteDirectory(pathToDownloadingTrial);
                 }
                 state = Error;
@@ -309,79 +284,59 @@ void CommunicationManager::run()
             }
             break;
         }
-    case UpdatingServerTrials:
-        {
-            try
-            {
+    case UpdatingServerTrials: {
+            try {
                 serverTrials.clear();
                 serverTrials = queryManager->listSessionContents();
                 lastUpdate = DateTime();
                 state = UpdateTrials;
-            }
-            catch(std::runtime_error& e)
-            {
+            } catch(std::runtime_error& e) {
                 state = Error;
                 errorMessage = e.what();
             }
             break;
         }
-        case ShallowCopyDB:
-            {
-                try
-                {
+        case ShallowCopyDB: {
+                try {
                     std::string path = transportManager->getShallowCopy();
                     ShallowCopyParserPtr ptr = ShallowCopyParserPtr(new ShallowCopyParser());
                     ptr->parseFile(path);
                     shallowCopy = ptr->getShallowCopy();
                     state = Ready;
-                }
-                catch(std::runtime_error& e)
-                {
+                } catch(std::runtime_error& e) {
                     state = Error;
                     errorMessage = e.what();
                 }
                 break;
             }
-        case MetadataDB:
-            {
-                try
-                {
+        case MetadataDB: {
+                try {
                     std::string path = transportManager->getMetadata();
                     MetadataParserPtr ptr = MetadataParserPtr(new MetadataParser());
                     ptr->parseFile(path);
                     metaData = ptr->getMetadata();
                     state = Ready;
-                }
-                catch(std::runtime_error& e)
-                {
+                } catch(std::runtime_error& e) {
                     state = Error;
                     errorMessage = e.what();
                 }
                 break;
             }
-    case PingServer:
-        {
-            if(pingCurl)
-            {
+    case PingServer: {
+            if(pingCurl) {
                 pingCurlResult = curl_easy_perform(pingCurl);
-                if(pingCurlResult)
-                {
+                if(pingCurlResult) {
                     serverResponse = false;
-                }
-                else
-                {
+                } else {
                     serverResponse = true;
                 }
-            }
-            else
-            {
+            } else {
                 serverResponse = false;
             }
             state = Ready;
             break;
         }
-    default:
-        {
+    default: {
             return;
         }
     }

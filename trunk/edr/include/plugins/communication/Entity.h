@@ -17,25 +17,16 @@
 
 namespace communication
 {
-
 	struct Entity
 	{
 		Entity() : id(0) {};
 		int id;
-		///**
-		//Czysto wirtualna metoda toString
-		//@return prezentuje obiekt w formie tekstowej
-		//**/
-		//virtual const std::string toString() const = 0;
-		///**
-		//Operator wyjscia dla Entity pod cout
-		//*/
-		//friend std::ostream& operator <<(std::ostream& out, const Entity& e) {return out << e.toString();}
 	};
 
 	struct File : public Entity
 	{
-		File() : Entity() {};
+		File()
+            : Entity() {};
 
 		std::string fileName;
 		std::string fileDescription;
@@ -45,7 +36,8 @@ namespace communication
 
 	struct Trial : public Entity
 	{
-		Trial() : Entity(), sessionID(0) {};
+		Trial()
+            : Entity(), sessionID(0) {};
 
 		int sessionID;
 		std::string trialDescription;
@@ -55,7 +47,8 @@ namespace communication
 
 	struct Session : public Entity
 	{
-		Session() : Entity(), userID(0), labID(0), sessionDate() {};
+		Session()
+            : Entity(), userID(0), labID(0), sessionDate() {};
 
 		int userID;
 		int labID;
@@ -68,22 +61,19 @@ namespace communication
 
 	struct SessionGroup : public Entity
 	{
-		SessionGroup() : Entity() {};
+		SessionGroup()
+            : Entity() {};
 
 		std::string sessionGroupName;
 	};
 
 	struct Performer : public Entity
 	{
-		Performer() : Entity() {};
+		Performer()
+            : Entity() {};
 
 		std::string performerFirstname;
 		std::string performerLastname;
 	};
-
-	//struct Measurement : public Entity
-	//{
-	//};
-
 }
 #endif

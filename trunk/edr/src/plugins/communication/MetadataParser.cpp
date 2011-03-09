@@ -15,8 +15,7 @@ void MetadataParser::parseFile(const boost::filesystem::path& path)
     this->path = path;
     
     TiXmlDocument document(path.string());
-    if(!document.LoadFile())
-    {
+    if(!document.LoadFile()) {
         UTILS_ASSERT(false, "Blad wczytania pliku Metadata");
     }
     TiXmlHandle hDocument(&document);
@@ -24,19 +23,16 @@ void MetadataParser::parseFile(const boost::filesystem::path& path)
     TiXmlHandle hParent(0);
 
     _element = hDocument.FirstChildElement().Element();
-    if(!_element)
-    {
+    if(!_element) {
         UTILS_ASSERT(false, "Blad wczytania z pliku Metadata");
     }
     hParent = TiXmlHandle(_element);
 
     //SessionGroups
     TiXmlElement* session_goups_element = hParent.FirstChild("SessionGroups").ToElement();
-    if(session_goups_element)
-    {
+    if(session_goups_element) {
         TiXmlElement* session_goup_element = session_goups_element->FirstChildElement("SessionGroup");
-        while(session_goup_element)
-        {
+        while(session_goup_element) {
             MetaData::SessionGroup sessionGroup;
             session_goup_element->QueryIntAttribute("SessionGroupID", &sessionGroup.sessionGroupID);
             session_goup_element->QueryStringAttribute("SessionGroupName", &sessionGroup.sessionGroupName);
@@ -47,11 +43,9 @@ void MetadataParser::parseFile(const boost::filesystem::path& path)
     }
     //MotionKinds
     TiXmlElement* motion_kinds_element = hParent.FirstChild("MotionKinds").ToElement();
-    if(motion_kinds_element)
-    {
+    if(motion_kinds_element) {
         TiXmlElement* motion_kind_element = motion_kinds_element->FirstChildElement("MotionKind");
-        while(motion_kind_element)
-        {
+        while(motion_kind_element) {
             MetaData::MotionKind motionKind;
             motion_kind_element->QueryStringAttribute("MotionKindName", &motionKind.motionKindName);
 
@@ -61,11 +55,9 @@ void MetadataParser::parseFile(const boost::filesystem::path& path)
     }
     //Labs
     TiXmlElement* labs_element = hParent.FirstChild("Labs").ToElement();
-    if(labs_element)
-    {
+    if(labs_element) {
         TiXmlElement* lab_element = labs_element->FirstChildElement("Lab");
-        while(lab_element)
-        {
+        while(lab_element) {
             MetaData::Lab lab;
             lab_element->QueryIntAttribute("LabID", &lab.labID);
             lab_element->QueryStringAttribute("LabName", &lab.labName);
@@ -76,11 +68,9 @@ void MetadataParser::parseFile(const boost::filesystem::path& path)
     }
     //AttributeGroups
     TiXmlElement* attribute_groups_element = hParent.FirstChild("AttributeGroups").ToElement();
-    if(attribute_groups_element)
-    {
+    if(attribute_groups_element) {
         TiXmlElement* attribute_group_element = attribute_groups_element->FirstChildElement("AttributeGroup");
-        while(attribute_group_element)
-        {
+        while(attribute_group_element) {
             MetaData::AttributeGroup attributeGroup;
             attribute_group_element->QueryIntAttribute("AttributeGroupID", &attributeGroup.attributeGroupID);
             attribute_group_element->QueryStringAttribute("AttributeGroupName", &attributeGroup.attributeGroupName);
@@ -89,22 +79,18 @@ void MetadataParser::parseFile(const boost::filesystem::path& path)
 
             //Attributes
             TiXmlElement* attrs_element = attribute_group_element->FirstChildElement("Attributes");
-            if(attrs_element)
-            {
+            if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("Attribute");
-                while(attr_element)
-                {
+                while(attr_element) {
                     MetaData::Attribute attribute;
                     attr_element->QueryStringAttribute("AttributeName", &attribute.attributeName);
                     attr_element->QueryStringAttribute("AttributeType", &attribute.attributeType);
 
                     //EnumValues
                     TiXmlElement* enum_values_element = attr_element->FirstChildElement("EnumValues");
-                    if(enum_values_element)
-                    {
+                    if(enum_values_element) {
                         TiXmlElement* enum_value_element = enum_values_element->FirstChildElement("Enumeration");
-                        while(enum_value_element)
-                        {
+                        while(enum_value_element) {
                             MetaData::Enumeration enumeration;
                             enum_value_element->QueryStringAttribute("EnumValue", &enumeration.enumValue);
 

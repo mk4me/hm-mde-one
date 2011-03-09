@@ -1,18 +1,18 @@
 /**
 @author Marek Daniluk
-@brief Klasa BasicUpdatesService dziedzicz¹ca po WSDL_Wsdlpull wykonuj¹ca operacje dokumentu BasicUpdatesService.wsdl.
+@brief Klasa BasicUpdatesService dziedzicz¹ca po WsdlConnection wykonuj¹ca operacje dokumentu BasicUpdatesService.wsdl.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_BASICUPDATESSERVICE_H__
 #define HEADER_GUARD_COMMUNICATION_BASICUPDATESSERVICE_H__
 
-#include "WSDL_Wsdlpull.h"
-#include "Entity.h"
+#include <plugins/communication/Entity.h>
+#include <plugins/communication/WsdlConnection.h>
 
 namespace communication
 {
 
-	class BasicUpdatesService : public WSDL_Wsdlpull
+	class BasicUpdatesService : public WsdlConnection
 	{
 	protected:
 	public:

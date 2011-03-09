@@ -6,9 +6,9 @@
 #ifndef HEADER_GUARD_COMMUNICATION_QUERYWSDL_H__
 #define HEADER_GUARD_COMMUNICATION_QUERYWSDL_H__
 
-#include "IQueryable.h"
-#include "BasicQueriesService.h"
-#include "BasicUpdatesService.h"
+#include <plugins/communication/BasicQueriesService.h>
+#include <plugins/communication/BasicUpdatesService.h>
+#include <plugins/communication/IQueryable.h>
 
 namespace communication
 {
@@ -20,12 +20,12 @@ namespace communication
 		Wskaünik na obiekt klasy BasicQueriesService pozwalajπcy na korzystanie z web serwisu
 		zdefiniowanego do komunikacji z bazπ danych generujπcego zapytania
 		*/
-		BasicQueriesService* bqs;
+		core::shared_ptr<BasicQueriesService> bqs;
 		/**
 		Wskaünik na obiekt klasy BasicUpdatesService pozwalajπcy na korzystanie z web serwisu
 		zdefiniowanego do komunikacji z bazπ danych pozwalajπcego tworzenie nowych encji
 		*/
-		BasicUpdatesService* bus;
+		core::shared_ptr<BasicUpdatesService> bus;
 	public:
 		/**
 		Konstruktor klasy QueryWSDL.

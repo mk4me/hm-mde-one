@@ -10,20 +10,12 @@ using namespace communication;
 
 TransportWSDL_FTPS::TransportWSDL_FTPS()
 {
-    ftp = new FTPS_cURL();
-    wsdl = new FileStoremanService();
+    ftp = core::shared_ptr<FtpsConnection>(new FtpsConnection());
+    wsdl = core::shared_ptr<FileStoremanService>(new FileStoremanService());
 }
 
 TransportWSDL_FTPS::~TransportWSDL_FTPS()
 {
-    if(ftp) {
-        delete ftp;
-        ftp = NULL;
-    }
-    if(wsdl) {
-        delete wsdl;
-        wsdl = NULL;
-    }
 }
 
 void TransportWSDL_FTPS::setWSCredentials(const std::string& uri, const std::string& usr, const std::string& pswd)
@@ -41,8 +33,7 @@ int TransportWSDL_FTPS::storeSessionFile(int sessionID, const std::string& path,
     int value;
     std::string local_path = path;
 
-    if(local_path.size() > 0 && local_path[local_path.size() - 1] != '/')
-    {
+    if(local_path.size() > 0 && local_path[local_path.size() - 1] != '/') {
         local_path.append("/");
     }
     ftp->put(local_path + filename);

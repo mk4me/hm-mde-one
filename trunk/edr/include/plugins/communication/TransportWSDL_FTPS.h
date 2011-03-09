@@ -7,9 +7,10 @@ Klasa implementuje interfejs ITransportable.
 #ifndef HEADER_GUARD_COMMUNICATION_TRANSPORTWSDL_FTPS_H__
 #define HEADER_GUARD_COMMUNICATION_TRANSPORTWSDL_FTPS_H__
 
-#include "FileStoremanService.h"
-#include "ITransportable.h"
-#include "FTPS_cURL.h"
+#include <plugins/communication/FileStoremanService.h>
+#include <plugins/communication/FtpsConnection.h>
+#include <plugins/communication/ITransportable.h>
+#include <plugins/communication/TransportWSDL_FTPS.h>
 
 namespace communication
 {
@@ -18,18 +19,13 @@ namespace communication
 	{
 	protected:
 		/**
-		Wskaznik typu FTPS_cURL pozwalajacy na korzystanie z uslug szyfrowanego polaczenia FTP.
+		Szyfrowane po³¹czenie FTP.
 		*/
-		IFTP* ftp;
+        core::shared_ptr<FtpsConnection> ftp;
 		/**
-		Wskaznik na obiekt klasy FileStoremanService pozwalajacy na korzystanie z web serwisu
-		zdefiniowanego do komunikacji z baza danych operujacego na plikach
+		Funkcjonalnoœæ web serwisu FileStoremanService.
 		*/
-		FileStoremanService* wsdl;
-		/**
-		Pole klasy przechowujace nazwe pliku do pobrania lub wyslania z/do serwera. Pole jest typu string.
-		*/
-		//std::string filename;
+		core::shared_ptr<FileStoremanService> wsdl;
 	public:
 		/**
 		Konstruktor klasy TransportWSDL_FTPS.

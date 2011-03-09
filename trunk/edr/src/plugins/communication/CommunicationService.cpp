@@ -1,7 +1,8 @@
 #include "CommunicationPCH.h"
 #include <plugins/communication/CommunicationService.h>
 
-CommunicationService::CommunicationService() : name("Communication")
+CommunicationService::CommunicationService()
+    : name("Communication")
 {
     this->transport = new communication::TransportWSDL_FTPS();
     this->query = new communication::QueryWSDL();
@@ -19,12 +20,9 @@ CommunicationService::CommunicationService() : name("Communication")
 
     this->widget = new CommunicationWidget(this);
     this->model->attach(this->widget);
-    try
-    {
+    try {
         this->load();
-    }
-    catch(std::runtime_error& e)
-    {
+    } catch(std::runtime_error& e) {
         LOG_ERROR(e.what());
     }
 }
@@ -111,14 +109,11 @@ AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, core
 AsyncResult CommunicationService::update(double time, double timeDelta)
 {
     //pinguj co pol minuty
-    if(static_cast<int>(time + 0.5f)%30 == 0 && model->getState() == communication::CommunicationManager::Ready)
-    {
+    if(static_cast<int>(time + 0.5f)%30 == 0 && model->getState() == communication::CommunicationManager::Ready) {
         ping();
     }
-    switch(model->getState())
-    {
-    case communication::CommunicationManager::UpdatingServerTrials:
-        {
+    switch(model->getState()) {
+    case communication::CommunicationManager::UpdatingServerTrials: {
             widget->setInfoLabel("Updating server trials");
             break;
         }
@@ -130,16 +125,14 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
     //        widget->setProgress(model->getProgress());
     //        break;
     //    }
-    case communication::CommunicationManager::DownloadingTrial:
-        {
+    case communication::CommunicationManager::DownloadingTrial: {
             std::ostringstream stream;
             stream << "Downloading file " << model->getActualDownloadFileNumber() << " from " << model->getFilesToDownloadCount();
             widget->setInfoLabel(stream.str());
             widget->setProgress(model->getProgress());
             break;
         }
-    case communication::CommunicationManager::Error:
-        {
+    case communication::CommunicationManager::Error: {
             //przekaz info
             widget->showErrorMessage(model->getErrorMessage());
             model->setState(communication::CommunicationManager::Ready);
@@ -147,13 +140,11 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
             load();
             break;
         }
-    case communication::CommunicationManager::UpdateTrials:
-        {
+    case communication::CommunicationManager::UpdateTrials: {
             model->loadLocalTrials();
             break;
         }
-    default:
-        {
+    default: {
             break;
         }
 

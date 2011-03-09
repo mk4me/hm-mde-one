@@ -10,11 +10,11 @@ implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
 #define HEADER_GUARD_COMMUNICATION_COMMUNICATIONSERVICE_H__
 
 #include <core/IService.h>
-#include <plugins/communication/ICommunication.h>
 #include <plugins/communication/CommunicationManager.h>
-#include <plugins/communication/TransportWSDL_FTPS.h>
+#include <plugins/communication/CommunicationWidget.h>
+#include <plugins/communication/ICommunication.h>
 #include <plugins/communication/QueryWSDL.h>
-#include "CommunicationWidget.h"
+#include <plugins/communication/TransportWSDL_FTPS.h>
 
 class CommunicationWidget;
 

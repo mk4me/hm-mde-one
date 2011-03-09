@@ -1,17 +1,14 @@
 /**
 @author Marek Daniluk
-@brief Klasa WSDL_Wsdlpull implementuje technologiê WSDL przy pomocy biblioteki wsdlpull.
+@brief Klasa WsdlConnection implementuje technologiê WSDL przy pomocy biblioteki wsdlpull.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_WSDL_WSDLPULL_H__
 #define HEADER_GUARD_COMMUNICATION_WSDL_WSDLPULL_H__
 
-#include "IAuthenticable.h"
-
 namespace communication 
 {
-
-    class WSDL_Wsdlpull : public IAuthenticable 
+    class WsdlConnection
     {
     protected:
         /**
@@ -36,20 +33,20 @@ namespace communication
         void initializeInvoker();
     public:
         /**
-        Konstruktor klasy WSDL_Wsdlpull.
+        Konstruktor klasy WsdlConnection.
         */
-        WSDL_Wsdlpull();
+        WsdlConnection();
         /**
-        Konstruktor klasy WSDL_Wsdlpull.
+        Konstruktor klasy WsdlConnection.
         @param uri URI do dokumentu definicji operacji sieciowych
         @param usr nazwa u¿ytkownika
         @param pswd has³o u¿ytkownika
         */
-        WSDL_Wsdlpull(const std::string& uri, const std::string& usr, const std::string& pswd);
+        WsdlConnection(const std::string& uri, const std::string& usr, const std::string& pswd);
         /**
-        Wirtualny destruktor klasy WSDL_Wsdlpull.
+        Wirtualny destruktor klasy WsdlConnection.
         */
-        virtual ~WSDL_Wsdlpull();
+        virtual ~WsdlConnection();
         /**
         Metoda setUri ustala URI do dokumentu definicji operacji sieciowych
         @param uri URI do definicji operacji sieciowych
@@ -119,8 +116,6 @@ namespace communication
             sstream << value;
             return sstream.str();
         }
-
-        //tymczasowe i pomocnicze
     };
 }
 #endif

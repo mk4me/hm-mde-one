@@ -1,18 +1,17 @@
 /**
 @author Marek Daniluk
-@brief Klasa BasicQueriesService dziedzicz¹ca po WSDL_Wsdlpull wykonuj¹ca operacje dokumentu BasicQueriesService.wsdl.
+@brief Klasa BasicQueriesService dziedzicz¹ca po WsdlConnection wykonuj¹ca operacje dokumentu BasicQueriesService.wsdl.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_BASICQUERIESSERVICE_H__
 #define HEADER_GUARD_COMMUNICATION_BASICQUERIESSERVICE_H__
 
-#include "WSDL_Wsdlpull.h"
-#include "Entity.h"
+#include <plugins/communication/WsdlConnection.h>
+#include <plugins/communication/Entity.h>
 
 namespace communication
 {
-
-	class BasicQueriesService : public WSDL_Wsdlpull
+	class BasicQueriesService : public WsdlConnection
 	{
 	public:
 		/**

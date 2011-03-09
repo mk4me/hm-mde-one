@@ -15,8 +15,7 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
     this->path = path;
 
     TiXmlDocument document(path.string());
-    if(!document.LoadFile())
-    {
+    if(!document.LoadFile()) {
         UTILS_ASSERT(false, "Blad wczytania pliku ShallowCopy");
     }
     TiXmlHandle hDocument(&document);
@@ -24,19 +23,16 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
     TiXmlHandle hParent(0);
 
     _element = hDocument.FirstChildElement().Element();
-    if(!_element)
-    {
+    if(!_element) {
         UTILS_ASSERT(false, "Blad wczytania z pliku ShallowCopy");
     }
     hParent = TiXmlHandle(_element);
 
     //Sessions
     TiXmlElement* sessions_element = hParent.FirstChild("Sessions").ToElement();
-    if(sessions_element)
-    {
+    if(sessions_element) {
         TiXmlElement* session_element = sessions_element->FirstChildElement("Session");
-        while(session_element)
-        {
+        while(session_element) {
             ShallowCopy::Session session;
             session_element->QueryIntAttribute("SessionID", &session.sessionID);
             session_element->QueryIntAttribute("UserID", &session.userID);
@@ -49,11 +45,9 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
 
             //Attrs
             TiXmlElement* attrs_element = session_element->FirstChildElement("Attrs");
-            if(attrs_element)
-            {
+            if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
-                while(attr_element)
-                {
+                while(attr_element) {
                     ShallowCopy::A attr;
                     attr_element->QueryStringAttribute("Name", &attr.name);
                     attr_element->QueryStringAttribute("Value", &attr.value);
@@ -67,11 +61,9 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
     }
     //GroupAssignments
     TiXmlElement* group_assignments_element = hParent.FirstChild("GroupAssignments").ToElement();
-    if(sessions_element)
-    {
+    if(sessions_element) {
         TiXmlElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
-        while(group_assignment_element)
-        {
+        while(group_assignment_element) {
             ShallowCopy::GroupAssigment group_assignment;
             group_assignment_element->QueryIntAttribute("SessionID", &group_assignment.sessionID);
             group_assignment_element->QueryIntAttribute("SessionGroupID", &group_assignment.sessionGroupID);
@@ -81,11 +73,9 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
     }
     //Trials
     TiXmlElement* trials_element = hParent.FirstChild("Trials").ToElement();
-    if(trials_element)
-    {
+    if(trials_element) {
         TiXmlElement* trial_element = trials_element->FirstChildElement("Trial");
-        while(trial_element)
-        {
+        while(trial_element) {
             ShallowCopy::Trial trial;
             trial_element->QueryIntAttribute("TrialID", &trial.trialID);
             trial_element->QueryIntAttribute("SessionID", &trial.sessionID);
@@ -94,11 +84,9 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
 
             //Attrs
             TiXmlElement* attrs_element = trial_element->FirstChildElement("Attrs");
-            if(attrs_element)
-            {
+            if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
-                while(attr_element)
-                {
+                while(attr_element) {
                     ShallowCopy::A attr;
                     attr_element->QueryStringAttribute("Name", &attr.name);
                     attr_element->QueryStringAttribute("Value", &attr.value);
@@ -112,11 +100,9 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
     }
     //Performers
     TiXmlElement* performers_element = hParent.FirstChild("Performers").ToElement();
-    if(performers_element)
-    {
+    if(performers_element) {
         TiXmlElement* performer_element = performers_element->FirstChildElement("Trial");
-        while(performer_element)
-        {
+        while(performer_element) {
             ShallowCopy::Performer performer;
             performer_element->QueryIntAttribute("PerformerID", &performer.performerID);
             performer_element->QueryStringAttribute("FirstName", &performer.firstName);
@@ -124,11 +110,9 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
 
             //Attrs
             TiXmlElement* attrs_element = performer_element->FirstChildElement("Attrs");
-            if(attrs_element)
-            {
+            if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
-                while(attr_element)
-                {
+                while(attr_element) {
                     ShallowCopy::A attr;
                     attr_element->QueryStringAttribute("Name", &attr.name);
                     attr_element->QueryStringAttribute("Value", &attr.value);
@@ -142,11 +126,9 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
     }
     //PerformerConfs
     TiXmlElement* performer_consfs_element = hParent.FirstChild("PerformerConfs").ToElement();
-    if(performer_consfs_element)
-    {
+    if(performer_consfs_element) {
         TiXmlElement* performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
-        while(performer_consf_element)
-        {
+        while(performer_consf_element) {
             ShallowCopy::PerformerConf performerConf;
             performer_consf_element->QueryIntAttribute("PerformerConfID", &performerConf.performerConfID);
             performer_consf_element->QueryIntAttribute("SessionID", &performerConf.sessionID);
@@ -154,11 +136,9 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
 
             //Attrs
             TiXmlElement* attrs_element = performer_consf_element->FirstChildElement("Attrs");
-            if(attrs_element)
-            {
+            if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
-                while(attr_element)
-                {
+                while(attr_element) {
                     ShallowCopy::A attr;
                     attr_element->QueryStringAttribute("Name", &attr.name);
                     attr_element->QueryStringAttribute("Value", &attr.value);

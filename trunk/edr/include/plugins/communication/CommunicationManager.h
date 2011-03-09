@@ -10,16 +10,14 @@ i web serwisy wsdl.
 
 #include <core/IDataManager.h>
 #include <core/IServiceManager.h>
-//#include <core/LocalTrial.h>
-#include "Entity.h"
-#include "TransportWSDL_FTPS.h"
-#include "QueryWSDL.h"
+#include <plugins/communication/Entity.h>
+#include <plugins/communication/QueryWSDL.h>
+#include <plugins/communication/TransportWSDL_FTPS.h>
 
 typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
 
 namespace communication
 {
-
     class CommunicationManager : public utils::Observable<CommunicationManager>, public OpenThreads::Thread
     {
     private:
@@ -310,7 +308,6 @@ namespace communication
         Informacja o stanie instancji curla.
         */
         CURLcode pingCurlResult;
-        //IServiceManager* serviceManager;
         /**
         WskaŸnik na instancjê zajmuj¹c¹ siê obs³ug¹ zasobów lokalnych
         */

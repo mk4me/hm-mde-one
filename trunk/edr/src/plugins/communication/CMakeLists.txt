@@ -24,12 +24,9 @@ set(PUBLIC_H
 	${HEADER_PATH}/CommunicationService.h
 	${HEADER_PATH}/Entity.h
 	${HEADER_PATH}/FileStoremanService.h
-	${HEADER_PATH}/FTPS_cURL.h
-	${HEADER_PATH}/IAuthenticable.h
+	${HEADER_PATH}/FtpsConnection.h
 	${HEADER_PATH}/ICommunication.h
-	${HEADER_PATH}/IFTP.h
 	${HEADER_PATH}/IQueryable.h
-	${HEADER_PATH}/ISendable.h
 	${HEADER_PATH}/ITransportable.h
 	${HEADER_PATH}/QueryWSDL.h
 	${HEADER_PATH}/Metadata.h
@@ -37,7 +34,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/MetadataParser.h
 	${HEADER_PATH}/ShallowCopyParser.h
 	${HEADER_PATH}/TransportWSDL_FTPS.h
-	${HEADER_PATH}/WSDL_Wsdlpull.h
+	${HEADER_PATH}/WsdlConnection.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -54,12 +51,12 @@ set(TARGET_SRC
 	CommunicationService.cpp
 	CommunicationWidget.cpp
 	FileStoremanService.cpp
-	FTPS_cURL.cpp
+	FtpsConnection.cpp
 	QueryWSDL.cpp
 	MetadataParser.cpp
 	ShallowCopyParser.cpp
 	TransportWSDL_FTPS.cpp
-	WSDL_Wsdlpull.cpp
+	WsdlConnection.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

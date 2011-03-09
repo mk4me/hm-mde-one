@@ -6,7 +6,8 @@
 
 using namespace communication;
 
-CommunicationWidget::CommunicationWidget(CommunicationService* service) : QWidget(), communicationService(service)
+CommunicationWidget::CommunicationWidget(CommunicationService* service)
+    : QWidget(), communicationService(service)
 {
     updateButton = new QPushButton(tr("Get trials"));
     downloadButton = new QPushButton(tr("Download"));
@@ -53,13 +54,10 @@ void CommunicationWidget::update(const CommunicationManager* subject)
     localTrials = subject->getLocalTrials();
     isOnline = subject->isServerResponse();
 
-    if(subject->isUpdated())
-    {
+    if(subject->isUpdated()) {
         infoText = "Last trial update:";
         infoText.append(subject->getLastUpdateTime().toString());
-    }
-    else
-    {
+    } else {
         infoText = "Cannot find date of last trial update";
     }
     refreshUI();
@@ -87,37 +85,29 @@ void CommunicationWidget::refreshUI()
         boost::cmatch matches;
         boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
         //sprawdzamy, czy zgadza sie nazwa folderu
-        if(trial.size() > 0 && boost::regex_match(trial[0].string().c_str(), matches, e))
-        {
+        if(trial.size() > 0 && boost::regex_match(trial[0].string().c_str(), matches, e)) {
             item->setText(core::toQString(matches[2]));
-        }
-        else
-        {
+        } else {
             item->setText(core::toQString("Unknown trial"));
         }
     }
     //serwerowe proby pomiarowe, sprawdzamy czy serwer jest online i jesli tak to czy sie nie powtarzaja z lokalnymi
-    if(isOnline)
-    {
+    if(isOnline) {
         serverStateLabel->setText("Online");
         serverStateLabel->setStyleSheet("QLabel {font: bold; color : green;}");
         bool isLocal;
-        BOOST_FOREACH(communication::Trial& trial, serverTrials)
-        {
+        BOOST_FOREACH(communication::Trial& trial, serverTrials) {
             isLocal = false;
-            BOOST_FOREACH(core::IDataManager::LocalTrial& local, localTrials)
-            {
+            BOOST_FOREACH(core::IDataManager::LocalTrial& local, localTrials) {
                 boost::cmatch matches;
                 boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
                 //sprawdzamy, czy zgadza sie nazwa folderu
-                if(local.size() > 0 && boost::regex_match(local[0].string().c_str(), matches, e) && trial.trialDescription.compare(matches[2]) == 0)
-                {
+                if(local.size() > 0 && boost::regex_match(local[0].string().c_str(), matches, e) && trial.trialDescription.compare(matches[2]) == 0) {
                     isLocal = true;
                     break;
                 }
             }
-            if(!isLocal)
-            {
+            if(!isLocal) {
                 EntityTrialItem* item = new EntityTrialItem();
                 trials->addItem(item);
                 item->setText(core::toQString(trial.trialDescription));
@@ -125,9 +115,7 @@ void CommunicationWidget::refreshUI()
                 item->id = trial.id;
             }
         }
-    }
-    else
-    {
+    } else {
         serverStateLabel->setText("Offline");
         serverStateLabel->setStyleSheet("QLabel {font: bold; color : red;}");
     }
@@ -140,25 +128,19 @@ void CommunicationWidget::showErrorMessage(const std::string& error)
 
 void CommunicationWidget::setProgress(int value)
 {
-    if(value > 99)
-    {
+    if(value > 99) {
         progressBar->reset();
-    }
-    else
-    {
+    } else {
         progressBar->setValue(value);
     }
 }
 
 void CommunicationWidget::itemDoubleClicked(QListWidgetItem* item)
 {
-    if(item && item->textColor() == QColor(0, 0, 255))
-    {
+    if(item && item->textColor() == QColor(0, 0, 255)) {
         LocalTrialItem* temp = reinterpret_cast<LocalTrialItem*>(trials->item(trials->currentRow()));
         loadTrial(temp->localTrial);
-    }
-    else
-    {
+    } else {
         download();
     }
 }
@@ -180,28 +162,23 @@ void CommunicationWidget::downloadButtonClicked()
 
 void CommunicationWidget::itemClicked(QListWidgetItem* item)
 {
-    if(trials->item(trials->currentRow())->textColor() == QColor(0, 0, 255))
-    {
+    if(trials->item(trials->currentRow())->textColor() == QColor(0, 0, 255)) {
         downloadButton->setText("Load");
-    }
-    else
-    {
+    } else {
         downloadButton->setText("Download");
     }
 }
 
 void CommunicationWidget::download()
 {
-    if(trials->item(trials->currentRow()))
-    {
+    if(trials->item(trials->currentRow())) {
         EntityTrialItem* temp = reinterpret_cast<EntityTrialItem*>(trials->item(trials->currentRow()));
         int trial = temp->id;
         downloadButton->setText("Load");
         abortButton->setDisabled(false);
         trials->clear();
         //lokalne proby pomiarowe
-        BOOST_FOREACH(core::IDataManager::LocalTrial& trial, localTrials)
-        {
+        BOOST_FOREACH(core::IDataManager::LocalTrial& trial, localTrials) {
             LocalTrialItem* item = new LocalTrialItem();
             trials->addItem(item);
 
@@ -210,12 +187,9 @@ void CommunicationWidget::download()
             boost::cmatch matches;
             boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
             //sprawdzamy, czy zgadza sie nazwa folderu
-            if(trial.size() > 0 && boost::regex_match(trial[0].string().c_str(), matches, e))
-            {
+            if(trial.size() > 0 && boost::regex_match(trial[0].string().c_str(), matches, e)) {
                 item->setText(core::toQString(matches[2]));
-            }
-            else
-            {
+            } else {
                 item->setText(core::toQString("Unknown trial"));
             }
         }
@@ -242,8 +216,7 @@ void CommunicationWidget::updateTrials()
     downloadButton->setText("Load");
     trials->clear();
     //lokalne proby pomiarowe
-    BOOST_FOREACH(core::IDataManager::LocalTrial& trial, localTrials)
-    {
+    BOOST_FOREACH(core::IDataManager::LocalTrial& trial, localTrials) {
         LocalTrialItem* item = new LocalTrialItem();
         trials->addItem(item);
 
@@ -252,12 +225,9 @@ void CommunicationWidget::updateTrials()
         boost::cmatch matches;
         boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
         //sprawdzamy, czy zgadza sie nazwa folderu
-        if(trial.size() > 0 && boost::regex_match(trial[0].string().c_str(), matches, e))
-        {
+        if(trial.size() > 0 && boost::regex_match(trial[0].string().c_str(), matches, e)) {
             item->setText(core::toQString(matches[2]));
-        }
-        else
-        {
+        } else {
             item->setText(core::toQString("Unknown trial"));
         }
     }

@@ -1,18 +1,17 @@
 /**
 @author Marek Daniluk
-@brief Klasa FileStoremanService dziedzicz¹ca po WSDL_Wsdlpull wykonuj¹ca operacje dokumentu FileStoremanService.wsdl.
+@brief Klasa FileStoremanService dziedzicz¹ca po WsdlConnection wykonuj¹ca operacje dokumentu FileStoremanService.wsdl.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__
 #define HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__
 
-#include "WSDL_Wsdlpull.h"
-#include "ITransportable.h"
+#include <plugins/communication/ITransportable.h>
+#include <plugins/communication/WsdlConnection.h>
 
 namespace communication
 {
-
-	class FileStoremanService : public WSDL_Wsdlpull
+	class FileStoremanService : public WsdlConnection
 	{
 	protected:
 	public:

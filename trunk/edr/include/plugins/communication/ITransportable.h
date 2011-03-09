@@ -8,7 +8,6 @@
 
 namespace communication
 {
-
 	class ITransportable
 	{
 	public:

@@ -11,7 +11,8 @@ FileStoremanService::FileStoremanService() { }
 
 FileStoremanService::~FileStoremanService() { }
 
-void FileStoremanService::downloadComplete(int fileID, const std::string& path) {
+void FileStoremanService::downloadComplete(int fileID, const std::string& path)
+{
 	this->setOperation("DownloadComplete");
 	if(invoker.status()) {
 		if(!invoker.setValue("fileID", toString<int>(fileID)) ||
@@ -26,7 +27,8 @@ void FileStoremanService::downloadComplete(int fileID, const std::string& path) 
 	}
 }
 
-const std::string& FileStoremanService::retrieveFile(int fileID) {
+const std::string& FileStoremanService::retrieveFile(int fileID)
+{
 	this->setOperation("RetrieveFile");
 	if(invoker.status()) {
 		if(!invoker.setValue("fileID", toString<int>(fileID))) {
@@ -46,7 +48,8 @@ const std::string& FileStoremanService::retrieveFile(int fileID) {
 	}
 }
 
-int FileStoremanService::storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename) {
+int FileStoremanService::storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename)
+{
 	this->setOperation("StoreSessionFile");
 	if(invoker.status()) {
 		if(!invoker.setValue("sessionId", toString<int>(sessionID)) ||
@@ -65,7 +68,8 @@ int FileStoremanService::storeSessionFile(int sessionID, const std::string& path
 	}
 }
 
-int FileStoremanService::storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename) {
+int FileStoremanService::storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename)
+{
 	this->setOperation("StorePerformerFile");
 	if(invoker.status()) {
 		if(!invoker.setValue("performerID", toString<int>(performerID)) ||
@@ -84,7 +88,8 @@ int FileStoremanService::storePerformerFile(int performerID, const std::string& 
 	}
 }
 
-int FileStoremanService::storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename) {
+int FileStoremanService::storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename)
+{
 	this->setOperation("StoreTrialFile");
 	if(invoker.status()) {
 		if(!invoker.setValue("trialID", toString<int>(trialID)) ||
@@ -103,7 +108,8 @@ int FileStoremanService::storeTrialFile(int trialID, const std::string& path, co
 	}
 }
 
-int FileStoremanService::storeSessionFiles(int sessionID, const std::string& path, const std::string& description) {
+int FileStoremanService::storeSessionFiles(int sessionID, const std::string& path, const std::string& description)
+{
 	this->setOperation("StoreSessionFiles");
 	if(invoker.status()) {
 		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
@@ -121,7 +127,8 @@ int FileStoremanService::storeSessionFiles(int sessionID, const std::string& pat
 	}
 }
 
-void FileStoremanService::storePerformerFiles(int performerID, const std::string& path) {
+void FileStoremanService::storePerformerFiles(int performerID, const std::string& path)
+{
 	this->setOperation("StorePerformerFiles");
 	if(invoker.status()) {
 		if(!invoker.setValue("performerID", toString<int>(performerID)) ||
@@ -136,7 +143,8 @@ void FileStoremanService::storePerformerFiles(int performerID, const std::string
 	}
 }
 
-void FileStoremanService::storeTrialFiles(int trialID, const std::string& path) {
+void FileStoremanService::storeTrialFiles(int trialID, const std::string& path)
+{
 	this->setOperation("StoreTrialFiles");
 	if(invoker.status()) {
 		if(!invoker.setValue("trialID", toString<int>(trialID)) ||
