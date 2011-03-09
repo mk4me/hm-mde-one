@@ -19,7 +19,7 @@
 #include <osgui/StyleEx.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 // template <class Base, bool Interactive = false, osg::PrimitiveSet::Mode Primitives = osg::PrimitiveSet::QUADS>
@@ -30,13 +30,13 @@ namespace osgUI {
  *  "do œrodka", podczas gdy LINE_STRIP po równo do œrodka i na zewn¹trz.
  */
 template <class Base, osg::PrimitiveSet::Mode Primitives = osg::PrimitiveSet::QUADS>
-class Borderized : public Base, public osgUI::IBorderized
+class Borderized : public Base, public osgui::IBorderized
 {
     UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value), "Base class should inherit from osgWidget::Widget");
 
 public:
-    //META_Object(osgUI, Borderized);
-	META_Widget(osgUI, Borderized);
+    //META_Object(osgui, Borderized);
+	META_Widget(osgui, Borderized);
 
 private:
     //! Typ u¿ywany do wyró¿niania wariantów.
@@ -432,7 +432,7 @@ private:
 //{
 //public:
 //    typedef Borderized<Base, true, Primitives> BorderizedSpecialization;
-//    META_Object(osgUI, BorderizedSpecialization);
+//    META_Object(osgui, BorderizedSpecialization);
 //private:
 //    //! Kolor normalny.
 //    osgWidget::Color borderNormalColor;
@@ -538,7 +538,7 @@ private:
 //
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace osgUI
+} // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif  // HEADER_GUARD__BORDERIZED_H__

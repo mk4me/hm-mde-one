@@ -4,39 +4,44 @@
 #include <osgui/AspectRatioKeeper.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 const ContextMenu::MenuItem ContextMenu::constEmptyMenuItem = ContextMenu::MenuItem();
 const ContextMenu::MenuSubmenu ContextMenu::constEmptyMenuSubmenu = ContextMenu::MenuSubmenu();
 ContextMenu::MenuItem ContextMenu::emptyMenuItem = constEmptyMenuItem;
 ContextMenu::MenuSubmenu ContextMenu::emptyMenuSubmenu = constEmptyMenuSubmenu;
+const std::string ContextMenu::defaultPathSeparators = std::string("/");
 
-ContextMenu::ContextMenu(void) : parentMenu(0), rootMenu(0), activeSubMenu(0),
-    separators(new std::string("/")) {
-	
-        rootMenu = this;
-	    closeMenuEventHandler = new CloseMenuContextEvent(this);
-	    hide();
-	    setStyle("osg.contextmenu.menu");
+
+ContextMenu::ContextMenu(void) : 
+pathSeparators(defaultPathSeparators)
+{	
+    rootMenu = this;
+	closeMenuEventHandler = new CloseMenuContextEvent(this);
+
+    // czy te obie instrukcje naprawdê s¹ potrzebne?
+	hide();
+	setStyle("osg.contextmenu.menu");
 }
 
-ContextMenu::ContextMenu(ContextMenu * parent) : parentMenu(parent), rootMenu(0),
-    activeSubMenu(0), separators(new std::string("/")){
-    
-        UTILS_ASSERT((parent != 0));
-        rootMenu = parentMenu->rootMenu;
-	    hide();
-	    setStyle("osg.contextmenu.menu");
-}
+ContextMenu::ContextMenu(ContextMenu * parent) :
+parentMenu(parent), pathSeparators(defaultPathSeparators)
+{    
+    UTILS_ASSERT(parent);
+    rootMenu = parent->rootMenu;
 
+    // czy te obie instrukcje naprawdê s¹ potrzebne?
+	hide();
+	setStyle("osg.contextmenu.menu");
+}
 
 ContextMenu::~ContextMenu(void)
 {
 }
 
 void ContextMenu::managed(osgWidget::WindowManager * wm){
-	osgUI::Grid::managed(wm);
+	osgui::Grid::managed(wm);
 	
 	if(wm != 0 && closeMenuEventHandler != 0){
 		wm->getView()->addEventHandler(closeMenuEventHandler);
@@ -44,7 +49,7 @@ void ContextMenu::managed(osgWidget::WindowManager * wm){
 }
 
 void ContextMenu::unmanaged(osgWidget::WindowManager * wm){
-	osgUI::Grid::unmanaged(wm);
+	osgui::Grid::unmanaged(wm);
 
 	if(wm != 0 && closeMenuEventHandler != 0){
 		wm->getView()->removeEventHandler(closeMenuEventHandler);
@@ -157,7 +162,7 @@ void ContextMenu::hideMenu(){
 std::vector<std::string> ContextMenu::parseNextMenuItems(const std::string & path) const{
 	std::vector<std::string> ret;
 
-	Tokenizer tokens(path, boost::char_separator<char>((*separators).c_str()));
+	Tokenizer tokens(path, boost::char_separator<char>(pathSeparators.c_str()));
 	for(Tokenizer::iterator it = tokens.begin(); it != tokens.end(); it++){
 		ret.push_back(*it);
 	}
@@ -390,7 +395,7 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 			}
 
 			currentMenu->addWidget(submenuItem.submenuItem, row, 1);
-			//osgUI::AspectRatioKeeper * ar = new osgUI::AspectRatioKeeper(submenuItem.emptyWidget,1.0);
+			//osgui::AspectRatioKeeper * ar = new osgui::AspectRatioKeeper(submenuItem.emptyWidget,1.0);
 			//ar->setCanFill(true);
 			//currentMenu->addWidget(ar, row, 0);
 			//ar->setSize(submenuItem.emptyWidget->getSize());
@@ -719,6 +724,21 @@ const ContextMenu::MenuSubmenu & ContextMenu::findMenu(Iter begin, Iter end) con
 	return it->second;
 }
 
+const std::string& ContextMenu::getPathSeparators() const
+{
+    return pathSeparators;
+}
+
+void ContextMenu::setPathSeparators( const std::string& separators )
+{
+    this->pathSeparators = separators;
+}
+
+const std::string& ContextMenu::getDefaultPathSeparators()
+{
+    return defaultPathSeparators;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace osgUI
+} // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////

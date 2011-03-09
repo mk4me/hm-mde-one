@@ -2,10 +2,10 @@
 #include <osgui/TooltipHost.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
-TooltipHost::TooltipHost(void) : tooltip(new osgUI::Tooltip()), maxSignsPerLine(40), firstLevelSeparators(" \t\n.,!?\\/-=*-+")
+TooltipHost::TooltipHost(void) : tooltip(new osgui::Tooltip()), maxSignsPerLine(40), firstLevelSeparators(" \t\n.,!?\\/-=*-+")
 {
 }
 
@@ -89,7 +89,7 @@ void TooltipHost::clearTooltip(){
 	tooltip->clear();
 }
 
-const osgUI::Tooltip * TooltipHost::getTooltip() const{
+const osgui::Tooltip * TooltipHost::getTooltip() const{
 	return tooltip;
 }
 

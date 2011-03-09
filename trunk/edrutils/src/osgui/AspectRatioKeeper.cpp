@@ -5,7 +5,7 @@
 #undef max
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 class AspectRatioKeeperWindow : public osgWidget::Window
@@ -19,8 +19,8 @@ private:
     osg::observer_ptr<osgWidget::Widget> target;
 
 public:
-    //META_Object(osgUI, AspectRatioKeeperWindow);
-	META_Window(osgUI, AspectRatioKeeperWindow);
+    //META_Object(osgui, AspectRatioKeeperWindow);
+	META_Window(osgui, AspectRatioKeeperWindow);
     //!
     AspectRatioKeeperWindow(const std::string& name = "", osgWidget::Widget* target = NULL, osgWidget::point_type aspectRatio = 1);
     //!
@@ -204,5 +204,5 @@ void AspectRatioKeeper::setAspectRatio( osgWidget::point_type aspectRatio )
 
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace osgUI
+} // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////

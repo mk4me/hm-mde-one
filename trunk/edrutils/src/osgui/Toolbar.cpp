@@ -2,20 +2,20 @@
 #include <osgui/Toolbar.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 const osgWidget::point_type defaultToolbarHeight = 28;
 
-Toolbar::Toolbar(const std::string & name) : osgUI::Grid(name,2,1), m_pActiveTab(0),
+Toolbar::Toolbar(const std::string & name) : osgui::Grid(name,2,1), m_pActiveTab(0),
 	m_pNullWidth(new osgWidget::Widget("nullWidth")) {
 
-	m_sTabNormalStyleDefault = m_sTabNormalStyle = "osgUI.toolbar.tab.normal";
-	m_sTabActiveStyleDefault = m_sTabActiveStyle = "osgUI.toolbar.tab.active";
-	m_sTabDisableStyleDefault = m_sTabDisableStyle = "osgUI.toolbar.tab.disable";
+	m_sTabNormalStyleDefault = m_sTabNormalStyle = "osgui.toolbar.tab.normal";
+	m_sTabActiveStyleDefault = m_sTabActiveStyle = "osgui.toolbar.tab.active";
+	m_sTabDisableStyleDefault = m_sTabDisableStyle = "osgui.toolbar.tab.disable";
 
-	m_sToolbarUpperHalfStyleDefault = m_sToolbarUpperHalfStyle = "osgUI.toolbar.upperHalf";
-	m_sToolbarLowerHalfStyleDefault = m_sToolbarLowerHalfStyle = "osgUI.toolbar.lowerHalf";
+	m_sToolbarUpperHalfStyleDefault = m_sToolbarUpperHalfStyle = "osgui.toolbar.upperHalf";
+	m_sToolbarLowerHalfStyleDefault = m_sToolbarLowerHalfStyle = "osgui.toolbar.lowerHalf";
 
 	m_pTabPushEvent = new osgWidget::Callback(&Toolbar::tabPush, this, osgWidget::EVENT_MOUSE_PUSH);
 
@@ -25,12 +25,12 @@ Toolbar::Toolbar(const std::string & name) : osgUI::Grid(name,2,1), m_pActiveTab
 	m_pNullWidth->setCanFill(false);
 	m_pNullWidth->setColor(0,0,0,0);
 
-	m_pTabsGrid.first = new osgUI::Grid(name + "\\tabsGrid",1,1);
+	m_pTabsGrid.first = new osgui::Grid(name + "\\tabsGrid",1,1);
 	m_pTabsGrid.first->setStyle(m_sToolbarUpperHalfStyle);
 	m_pTabsGrid.first->fillEmpty();
 	m_pTabsGrid.first->resetFillables();
 
-	m_pTabsGrid.second = new osgUI::Embedded<osgUI::Grid>(name + "\\tabsGridEmbedded", m_pTabsGrid.first);
+	m_pTabsGrid.second = new osgui::Embedded<osgui::Grid>(name + "\\tabsGridEmbedded", m_pTabsGrid.first);
 	m_pTabsGrid.second->setCanFill(true);
 	m_pTabsGrid.second->setColor(0,0,0,0);
 	m_pTabsGrid.second->setMinimumSize(0,defaultToolbarHeight/2);
@@ -42,7 +42,7 @@ Toolbar::~Toolbar(void){
 }
 
 void Toolbar::managed(osgWidget::WindowManager* wm){
-	osgUI::Grid::managed(wm);
+	osgui::Grid::managed(wm);
 
 	addWidget(m_pTabsGrid.second,1,0);
 
@@ -116,12 +116,12 @@ bool Toolbar::addTab(osgWidget::Widget * tab, int tabIndex, bool enable, bool vi
 	m_mRevTabs[tab] = tabIndex;
 
 	SUBTOOLBAR st;
-	st.first = new osgUI::Grid(tab->getName() + "\\subtoolbarGrid",1,1);
+	st.first = new osgui::Grid(tab->getName() + "\\subtoolbarGrid",1,1);
 	st.first->setStyle(m_sToolbarLowerHalfStyle);
 	st.first->fillEmpty();
 	st.first->resetFillables();
 
-	st.second =  new osgUI::Embedded<osgUI::Grid>(tab->getName() + "\\subtoolbarGridEmbedded", st.first);
+	st.second =  new osgui::Embedded<osgui::Grid>(tab->getName() + "\\subtoolbarGridEmbedded", st.first);
 	st.second->setColor(0,0,0,0);
 	st.second->setCanFill(true);
 	m_mSubToolbars[tab] = st;
@@ -459,7 +459,7 @@ bool Toolbar::addTabElement(int tabIndex, osgWidget::Widget * elem, int elemInde
 	int idx = tabDesc.second.tabElements.size();
 	tabDesc.second.tabElements.resize(idx + 1);
 
-	osgUI::Grid * grid = m_mSubToolbars[tabDesc.first].first;
+	osgui::Grid * grid = m_mSubToolbars[tabDesc.first].first;
 	grid->setNumColumns(tabDesc.second.tabElements.size() + 1);
 	
 	if(elemIndex > idx){
@@ -526,7 +526,7 @@ bool Toolbar::removeTabElement(int tabIndex, int elemIndex){
 		return false;
 	}
 
-	osgUI::Grid * grid = m_mSubToolbars[m_vTabs[tabIndex].first].first;
+	osgui::Grid * grid = m_mSubToolbars[m_vTabs[tabIndex].first].first;
 
 	if(idx == 1){
 		tabDesc.second.tabElements.swap(ELEMENTS());

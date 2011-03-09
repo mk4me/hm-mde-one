@@ -18,10 +18,10 @@ set(PUBLIC_H
 	${HEADER_PATH}/Borderized.h
 	${HEADER_PATH}/Buttonized.h
 	${HEADER_PATH}/ContextMenu.h
-	${HEADER_PATH}/ExtKeyboardHandler.h
 	${HEADER_PATH}/EmbeddedWindow.h
 	${HEADER_PATH}/Grid.h
 	${HEADER_PATH}/KeyboardMapper.h
+	${HEADER_PATH}/KeyboardMapperHandler.h
 	${HEADER_PATH}/LabeledView.h
 	${HEADER_PATH}/OsgWidgetUtils.h
 	${HEADER_PATH}/DisableableRenderer.h
@@ -42,10 +42,10 @@ set(TARGET_SRC
 	AspectRatioKeeper.cpp
 	ContextMenu.cpp
 	DisableableRenderer.cpp
-	ExtKeyboardHandler.cpp
 	EmbeddedWindow.cpp
 	Grid.cpp
 	KeyboardMapper.cpp
+	KeyboardMapperHandler.cpp
 	OsgWidgetUtils.cpp
 	QOsgWidgets.cpp
 	QOsgWidgetsDeprecated.cpp

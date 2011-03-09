@@ -12,13 +12,13 @@
 #include <osgWidget/Window>
 #include <osgWidget/Label>
 #include <osg/ref_ptr>
-#include <osgUI/Borderized.h>
-#include <osgUI/Buttonized.h>
+#include <osgui/Borderized.h>
+#include <osgui/Buttonized.h>
 //#include <osgWidget/>
 #include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 // TODO: zamieniæ na bez szablonu
@@ -32,15 +32,15 @@ private:
 
 public:
 
-    //META_Object(osgUI, LabeledView);
-	META_Window(osgUI, LabeledView);
+    //META_Object(osgui, LabeledView);
+	META_Window(osgui, LabeledView);
 
     LabeledView(const std::string& name = "")  :
     osgWidget::Window(name)
     {
         overlay = new Overlay("overlay");
         overlay->setBorderWidth(1);
-        overlay->setHooverColor( osgWidget::Color(1,1,1,0.5) );
+        overlay->setHoverColor( osgWidget::Color(1,1,1,0.5) );
         overlay->setBorderAllColors( osgWidget::Color(1,1,1,1) );
         overlay->setBorderToggleColor( osgWidget::Color(1,0,0,1) );
         overlay->setToggleEnabled(true);
@@ -147,7 +147,7 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace osgUI
+} // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////
 
 

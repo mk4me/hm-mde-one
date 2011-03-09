@@ -6,7 +6,7 @@
 #include <set>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 class osgWidget::Label;
@@ -47,8 +47,8 @@ private:
 
 protected:
 
-//typedef osgUI::Borderized<osgWidget::Label, osg::PrimitiveSet::LINE_STRIP> BLABEL;
-	typedef osgUI::Borderized<osgWidget::Label> BLABEL;
+//typedef osgui::Borderized<osgWidget::Label, osg::PrimitiveSet::LINE_STRIP> BLABEL;
+	typedef osgui::Borderized<osgWidget::Label> BLABEL;
 
 protected:
 

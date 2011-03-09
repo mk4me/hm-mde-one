@@ -13,14 +13,14 @@
 #include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 class AspectRatioKeeper : public osgWidget::Window::EmbeddedWindow
 {
 public:
-    //META_Object(osgUI, AspectRatioKeeper);
-	META_Widget(osgUI, AspectRatioKeeper);
+    //META_Object(osgui, AspectRatioKeeper);
+	META_Widget(osgui, AspectRatioKeeper);
     //! \param widget
     //! \param aspectRatio
     AspectRatioKeeper(osgWidget::Widget* widget = NULL, osgWidget::point_type aspectRatio = 1);
@@ -41,7 +41,7 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace osgUI
+} // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////
 
 

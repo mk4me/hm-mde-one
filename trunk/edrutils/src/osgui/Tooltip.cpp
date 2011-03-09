@@ -2,14 +2,14 @@
 #include <osgui/Tooltip.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 Tooltip::Tooltip(void) : osgWidget::Box("",osgWidget::Box::VERTICAL, true), tooltipLabel(new BLABEL())
 {
 	tooltipLabel->setBorderWidth(0);
-	setStyle("osgUI.tooltip.base");
-	tooltipLabel->setStyle("osgUI.tooltip.text");
+	setStyle("osgui.tooltip.base");
+	tooltipLabel->setStyle("osgui.tooltip.text");
 	setStrata(osgWidget::Window::STRATA_FOREGROUND);
 
 	onEnterWidgetCallback = new osgWidget::Callback(&Tooltip::onEnterWidget, this, osgWidget::EVENT_MOUSE_ENTER);
@@ -54,7 +54,7 @@ void Tooltip::clear(){
 void Tooltip::show(const osgWidget::XYCoord & pos){
 	setOrigin(pos);
 	//resize();
-	tooltipLabel->setStyle("osgUI.tooltip.text");
+	tooltipLabel->setStyle("osgui.tooltip.text");
 	if(getWindowManager() != 0 && getWindowManager()->getStyleManager() != 0){
 		getWindowManager()->getStyleManager()->applyStyles(this);
 		getWindowManager()->getStyleManager()->applyStyles(tooltipLabel);

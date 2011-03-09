@@ -6,7 +6,7 @@
 #include <boost/tokenizer.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 class TooltipHost
@@ -28,7 +28,7 @@ public:
 	void setMaxSignsPerLine(unsigned int signs = 40);
 	unsigned int getMaxSignsPerLine() const;
 
-	const osgUI::Tooltip * getTooltip() const;
+	const osgui::Tooltip * getTooltip() const;
 
 	bool isTooltipVisible() const;
 
@@ -43,7 +43,7 @@ private:
 	typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
 private:
-	osg::ref_ptr<osgUI::Tooltip> tooltip;
+	osg::ref_ptr<osgui::Tooltip> tooltip;
 	std::string tooltipOriginalText;
 	RESTORE toRestore;
 

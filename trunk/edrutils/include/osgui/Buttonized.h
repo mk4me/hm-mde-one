@@ -17,7 +17,7 @@
 #include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 template <class Base, class StylePolicy = DefaultStylePolicy>
@@ -26,8 +26,8 @@ class Buttonized : public Base, public StylePolicy
     UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value), "Base class should inherit from osgWidget::Widget");
 
 public:
-    //META_Object(osgUI, Buttonized);
-	META_Widget(osgUI, Buttonized);
+    //META_Object(osgui, Buttonized);
+	META_Widget(osgui, Buttonized);
 
 private:
     //! Czy jest wciśnięty?
@@ -667,7 +667,7 @@ typedef Buttonized< osgWidget::Widget > Button;
 //
 //
 //public:
-//  META_Object(osgUI, Button);
+//  META_Object(osgui, Button);
 //
 //  //! 
 //  //! \param name
@@ -807,7 +807,7 @@ typedef Buttonized< osgWidget::Widget > Button;
 //};
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace osgUI
+} // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif  // HEADER_GUARD__BUTTON_H__

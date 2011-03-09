@@ -1,9 +1,9 @@
 # nazwa
-set(TARGET_TARGETNAME osgUIShowcase)
+set(TARGET_TARGETNAME osguiShowcase)
 
 # Ÿród³a
 set(TARGET_SRC 
-	osgUIShowcase.cpp
+	osguiShowcase.cpp
 )
 
 # nag³ówki

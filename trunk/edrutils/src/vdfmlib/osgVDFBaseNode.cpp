@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include <vdfmlib/osgVDFBaseNode.h>
 #include <vdfmlib/osgVDFBaseModel.h>
-#include <osgUI/Utils2D.h>
+#include <osgui/Utils2D.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgVDF{
@@ -35,7 +35,7 @@ bool osgVDFBaseNode::deleteNode(){
 void osgVDFBaseNode::loggZCoordinates() const{
 	std::cout << "Logging node:\t" << this->getName() << std::endl;
 	std::cout << "Z coordinates of all elements:" << std::endl;
-	std::cout << "node (this window):\t" << osgUI::Utils2D::calcAbsZ(this) << std::endl;
+	std::cout << "node (this window):\t" << osgui::Utils2D::calcAbsZ(this) << std::endl;
 }
 	
 bool osgVDFBaseNode::addInPin(osgVDFBasePin * inPin, const std::string & pinName){

@@ -10,16 +10,27 @@
 #include <osgWidget/Label>
 #include <osgGA/StateSetManipulator>
 
-#include <osgUI/QOsgWidgets.h>
-#include <osgUI/QOsgWidgetsDeprecated.h>
-#include <osgUI/Grid.h>
-#include <osgUI/Borderized.h>
-#include <osgUI/Buttonized.h>
-#include <osgUI/AspectRatioKeeper.h>
-#include <osgUI/Grid.h>
-#include <osgUI/EmbeddedWindow.h>
+#include <osgui/QOsgWidgets.h>
+#include <osgui/QOsgWidgetsDeprecated.h>
+#include <osgui/Grid.h>
+#include <osgui/Borderized.h>
+#include <osgui/Buttonized.h>
+#include <osgui/AspectRatioKeeper.h>
+#include <osgui/Grid.h>
+#include <osgui/EmbeddedWindow.h>
+#include <osgui/KeyboardMapper.h>
+#include <osgui/KeyboardMapperHandler.h>
 
-using namespace osgUI;
+using namespace osgui;
+
+class SampleWindowManager : public osgWidget::WindowManager, public osgui::KeyboardMapper
+{
+public:
+    SampleWindowManager(osgViewer::View* view, osgWidget::point_type w = 0.0f, osgWidget::point_type h = 0.0f,
+        unsigned int mask = 0, unsigned int flags = 0) :
+    osgWidget::WindowManager(view, w, h, mask, flags)
+    {}
+};
 
 bool callbackWindowResize(osgWidget::Event& ev) 
 {
@@ -77,13 +88,16 @@ void createExample(osgViewer::View& view, int w, int h)
     using namespace osgWidget;
 
     // dodanie korzenia sceny
-    WindowManager* wm = new WindowManager(&view, static_cast<point_type>(w), static_cast<point_type>(h), 0xF0000000, WindowManager::WM_PICK_DEBUG);
+    WindowManager* wm = new SampleWindowManager(&view, static_cast<point_type>(w), static_cast<point_type>(h), 0xF0000000, WindowManager::WM_PICK_DEBUG);
+    view.addEventHandler( new KeyboardMapperHandler(wm) );
     view.addEventHandler( new osgViewer::StatsHandler());
     view.addEventHandler( new osgWidget::MouseHandler(wm) );
     view.addEventHandler( new osgWidget::KeyboardHandler(wm) );
     view.addEventHandler( new osgWidget::ResizeHandler(wm, view.getCamera()) );
     view.addEventHandler( new osgGA::StateSetManipulator( view.getCamera()->getOrCreateStateSet() ) );
     view.setSceneData(wm);
+
+    std::vector<Widget*> widgets;
 
     {
         std::string lines[] = {
@@ -108,7 +122,7 @@ void createExample(osgViewer::View& view, int w, int h)
             infoBox->addWidget(label);
         }
 
-        embeddSample(EmbeddedWindow::embed(infoBox, "Usage"), wm, 400, 400);
+        widgets.push_back(EmbeddedWindow::embed(infoBox, "Usage"));
     }
 
 
@@ -118,7 +132,7 @@ void createExample(osgViewer::View& view, int w, int h)
         borderized->setBorderWidth(5);
         borderized->setColor(1, 0, 0, 1);
         borderized->setBorderColor(1, 1, 1, 1);
-        embeddSample(borderized, wm, 0, 0);
+        widgets.push_back(borderized);
     }
 
     {
@@ -143,7 +157,38 @@ void createExample(osgViewer::View& view, int w, int h)
         buttonized->setBorderToggleColor(Color(1, 1, 1, 1));
         buttonized->setToggleEnabled(true);
         buttonized->setEventMask( EVENT_MASK_MOUSE_DRAG );
-        embeddSample(buttonized, wm, 100, 100);
+        widgets.push_back(buttonized);
+    }
+
+    {
+        // keyboard mapper listener
+        Label* label = new Label("KeyboardMapper pooling");
+        label->setFontSize(14);
+        label->setFont("fonts/arial.ttf");
+        label->setCanFill(true);
+
+        class KeyboardMapperUpdateCallback : public osg::Drawable::UpdateCallback
+        {
+        public:
+            virtual void update(osg::NodeVisitor* /*nv*/, osg::Drawable* drawable) 
+            {
+                Label& label = dynamic_cast<Label&>(*drawable);
+                KeyboardMapper& mapper = dynamic_cast<KeyboardMapper&>(*label.getWindowManager());
+                std::ostringstream buff;
+                buff << "Pressed keys codes: ";
+                if ( !mapper.getNumPressedKeys() ) {
+                    buff << "none";
+                } else {
+                    BOOST_FOREACH( osgGA::GUIEventAdapter::KeySymbol key, mapper ) {
+                        buff<<std::hex<<key<<"; ";
+                    }
+                }
+                label.setLabel(buff.str());
+                
+            }
+        };
+        label->setUpdateCallback(new KeyboardMapperUpdateCallback());
+        widgets.push_back(label);
     }
 
     {
@@ -153,7 +198,7 @@ void createExample(osgViewer::View& view, int w, int h)
         widget->setCanFill(false);
         AspectRatioKeeper* keeper = new AspectRatioKeeper(widget, 2);
         keeper->setSize(100, 100);
-        embeddSample(keeper, wm, 200, 200);
+        widgets.push_back(keeper);
     }
     
     {
@@ -192,14 +237,20 @@ void createExample(osgViewer::View& view, int w, int h)
         grid->setColumnWeight(1, 1);
         grid->setColumnWeight(2, 4);
 
-        embeddSample( EmbeddedWindow::embed(grid, "Grid 3x3") , wm, 300, 300);
+        widgets.push_back( EmbeddedWindow::embed(grid, "Grid 3x3") );
     }
 
+    float dw = 50;// float(w) / widgets.size();
+    float dh = 50;//float(h) / widgets.size();
+    for ( size_t i = 0; i < widgets.size(); ++i ) {
+        embeddSample( widgets[i], wm, dw * i, dh * i );
+    }
 }
 
 int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);
+    
 
     // use an ArgumentParser object to manage the program arguments.
     osg::ArgumentParser arguments(&argc,argv);

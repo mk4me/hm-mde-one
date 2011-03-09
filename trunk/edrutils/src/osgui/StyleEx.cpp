@@ -3,7 +3,7 @@
 #include <osgui/Buttonized.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 bool StyleEx::applyStyle(osgWidget::Widget* w, osgWidget::Reader r) {
@@ -268,8 +268,8 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 			//was not an extended window - continue
 		}
 		
-		if(ret == false && dynamic_cast<osgUI::DefaultStylePolicy*>(w) != 0){
-			osgUI::DefaultStylePolicy* def = dynamic_cast<osgUI::DefaultStylePolicy*>(w);
+		if(ret == false && dynamic_cast<osgui::DefaultStylePolicy*>(w) != 0){
+			osgui::DefaultStylePolicy* def = dynamic_cast<osgui::DefaultStylePolicy*>(w);
 			ret = true;
 
 			// Border color using 4x 0-255 integers.
@@ -375,8 +375,8 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 			
 		}
 		
-		if(ret == false && dynamic_cast<osgUI::LabelStylePolicy*>(w) != 0){
-			osgUI::LabelStylePolicy* lab = dynamic_cast<osgUI::LabelStylePolicy*>(w);
+		if(ret == false && dynamic_cast<osgui::LabelStylePolicy*>(w) != 0){
+			osgui::LabelStylePolicy* lab = dynamic_cast<osgui::LabelStylePolicy*>(w);
 
 			ret = true;
 
@@ -478,8 +478,8 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 			}
 		}
 
-		if(ret == false && dynamic_cast<osgUI::IBorderStylePolicy*>(w) != 0){
-			osgUI::IBorderStylePolicy* bord = dynamic_cast<osgUI::IBorderStylePolicy*>(w);
+		if(ret == false && dynamic_cast<osgui::IBorderStylePolicy*>(w) != 0){
+			osgui::IBorderStylePolicy* bord = dynamic_cast<osgui::IBorderStylePolicy*>(w);
 
 			ret = true;
 
@@ -581,8 +581,8 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 			}
 		}
 		
-		if(ret == false && dynamic_cast<osgUI::TextStylePolicy*>(w) != 0){
-			osgUI::TextStylePolicy* txt = dynamic_cast<osgUI::TextStylePolicy*>(w);
+		if(ret == false && dynamic_cast<osgui::TextStylePolicy*>(w) != 0){
+			osgui::TextStylePolicy* txt = dynamic_cast<osgui::TextStylePolicy*>(w);
 
 			ret = true;
 

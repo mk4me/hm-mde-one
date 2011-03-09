@@ -17,7 +17,7 @@
 #include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
@@ -30,8 +30,8 @@ class EmbeddedWindow : public osgWidget::Window::EmbeddedWindow
 {
 public:
     typedef osgWidget::Window::EmbeddedWindow Base;
-    //META_Object(osgUI, EmbeddedWindow);
-	META_Widget(osgUI, EmbeddedWindow);
+    //META_Object(osgui, EmbeddedWindow);
+	META_Widget(osgui, EmbeddedWindow);
 
     //! \param name
     //! \param w
@@ -65,7 +65,7 @@ class Embedded : public EmbeddedWindow
 {
 public:
     typedef EmbeddedWindow Base;
-    META_Object(osgUI, Embedded);
+    META_Object(osgui, Embedded);
 
     //! \param name
     //! \param w
@@ -135,7 +135,7 @@ static Embedded<T>* EmbeddedWindow::embed( T* window,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace osgUI
+} // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif  // HEADER_GUARD__EMBEDDEDWINDOW_H__

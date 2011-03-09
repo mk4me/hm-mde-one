@@ -8,11 +8,11 @@
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 class Toolbar :
-	public osgUI::Grid
+	public osgui::Grid
 {
 public:
 
@@ -33,7 +33,7 @@ protected:
 
 private:
 
-	typedef std::pair<osg::ref_ptr<osgUI::Grid>, osg::ref_ptr<osgUI::Embedded<osgUI::Grid> > > SUBTOOLBAR;
+	typedef std::pair<osg::ref_ptr<osgui::Grid>, osg::ref_ptr<osgui::Embedded<osgui::Grid> > > SUBTOOLBAR;
 	typedef std::map<osgWidget::Widget*, SUBTOOLBAR> SUBTOOLBARS;
 	typedef bool (Toolbar::*cond)(osgWidget::Widget * w) const;
 

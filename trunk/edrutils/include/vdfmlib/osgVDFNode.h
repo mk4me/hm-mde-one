@@ -39,7 +39,7 @@ public:
 	virtual std::string getName() const;
 
 protected:
-	typedef osgUI::Borderized<osgWidget::Label> BLabel;
+	typedef osgui::Borderized<osgWidget::Label> BLabel;
 
 protected:
 
@@ -74,45 +74,45 @@ protected:
 
 	//label in top part of node with node name
 	osg::ref_ptr<BLabel> m_pNodeNameLabel;
-	//osg::ref_ptr<osgUI::AspectRatioKeeper> m_pNodeNameLabelEmbedded;
+	//osg::ref_ptr<osgui::AspectRatioKeeper> m_pNodeNameLabelEmbedded;
 
 	//node itself
-	osg::ref_ptr<osgUI::Grid> m_pMainGrid;
-	osg::ref_ptr<osgUI::Embedded<osgUI::Grid> > m_pMainGridEmbedded;
+	osg::ref_ptr<osgui::Grid> m_pMainGrid;
+	osg::ref_ptr<osgui::Embedded<osgui::Grid> > m_pMainGridEmbedded;
 
 	//node with borders as bitmaps
-	osg::ref_ptr<osgUI::Grid> m_pNodeLayoutGrid;
-	osg::ref_ptr<osgUI::Embedded<osgUI::Grid> > m_pNodeLayoutGridEmbedded;
+	osg::ref_ptr<osgui::Grid> m_pNodeLayoutGrid;
+	osg::ref_ptr<osgui::Embedded<osgui::Grid> > m_pNodeLayoutGridEmbedded;
 
 	//top of node - name of node and controls: delete, configure, ...
-	osg::ref_ptr<osgUI::Grid> m_pTopGrid;
-	osg::ref_ptr<osgUI::Embedded<osgUI::Grid> > m_pTopGridEmbedded;
+	osg::ref_ptr<osgui::Grid> m_pTopGrid;
+	osg::ref_ptr<osgui::Embedded<osgui::Grid> > m_pTopGridEmbedded;
 
 	//top center of node - name of node and controls: delete, configure, ...
-	//osg::ref_ptr<osgUI::Grid> m_pTopCenterGrid;
-	//osg::ref_ptr<osgUI::Embedded<osgUI::Grid> > m_pTopCenterGridEmbedded;
+	//osg::ref_ptr<osgui::Grid> m_pTopCenterGrid;
+	//osg::ref_ptr<osgui::Embedded<osgui::Grid> > m_pTopCenterGridEmbedded;
 
 	//bottom of node - round corners as bitmaps, eventually resize control
-	osg::ref_ptr<osgUI::Grid> m_pBottomGrid;
-	osg::ref_ptr<osgUI::Embedded<osgUI::Grid> > m_pBottomGridEmbedded;
+	osg::ref_ptr<osgui::Grid> m_pBottomGrid;
+	osg::ref_ptr<osgui::Embedded<osgui::Grid> > m_pBottomGridEmbedded;
 
 	//grid for input pins
-	osg::ref_ptr<osgUI::Grid> m_pInPinsGrid;
-	osg::ref_ptr<osgUI::Embedded<osgUI::Grid> > m_pInPinsGridEmbedded;
+	osg::ref_ptr<osgui::Grid> m_pInPinsGrid;
+	osg::ref_ptr<osgui::Embedded<osgui::Grid> > m_pInPinsGridEmbedded;
 
 	//grid for output pins
-	osg::ref_ptr<osgUI::Grid> m_pOutPinsGrid;
-	osg::ref_ptr<osgUI::Embedded<osgUI::Grid> > m_pOutPinsGridEmbedded;
+	osg::ref_ptr<osgui::Grid> m_pOutPinsGrid;
+	osg::ref_ptr<osgui::Embedded<osgui::Grid> > m_pOutPinsGridEmbedded;
 
 	//label for image characteristic for node type
 	osg::ref_ptr<BLabel> m_pBodyLabel;
-	//osg::ref_ptr<osgUI::AspectRatioKeeper> m_pBodyLabelEmbedded;
+	//osg::ref_ptr<osgui::AspectRatioKeeper> m_pBodyLabelEmbedded;
 
 	osg::ref_ptr<osgWidget::Widget> m_pConfigure;
-	osg::ref_ptr<osgUI::AspectRatioKeeper> m_pConfigureARKeeper;
+	osg::ref_ptr<osgui::AspectRatioKeeper> m_pConfigureARKeeper;
 
 	osg::ref_ptr<osgWidget::Widget> m_pDelete;
-	osg::ref_ptr<osgUI::AspectRatioKeeper> m_pDeleteARKeeper;
+	osg::ref_ptr<osgui::AspectRatioKeeper> m_pDeleteARKeeper;
 
 	//empty widget
 	osg::ref_ptr<osgWidget::Widget> m_pEmptyWidgetProto;

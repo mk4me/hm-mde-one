@@ -29,7 +29,7 @@ namespace osgVDF{
 class osgVDFBaseNode;
 class osgVDFBasePin;
 
-class osgVDFBaseModel : public osgWidget::WindowManager, public osgUI::KeyboardMapper, public osgUI::TooltipHost{
+class osgVDFBaseModel : public osgWidget::WindowManager, public osgui::KeyboardMapper, public osgui::TooltipHost{
 public:
 	osgVDFBaseModel(osgViewer::View* view = 0, osgWidget::point_type width = 0.0f, osgWidget::point_type height = 0.0f,
 		unsigned int nodeMask = 0, unsigned int flags = 0);
@@ -82,8 +82,8 @@ public:
 	osgWidget::point_type getAreaRatioToSelect() const;
 	void setAreaRatioToSelect(osgWidget::point_type areaRatio);
 
-	const osgUI::KeyboardMapper::KEYS_SET & getSelectionActionKeys() const;
-	void setSelectionActionKeys(const osgUI::KeyboardMapper::KEYS_SET & keys);
+	const osgui::KeyboardMapper::Keys & getSelectionActionKeys() const;
+	void setSelectionActionKeys(const osgui::KeyboardMapper::Keys & keys);
 
 	osgWidget::point_type getMinDistToDelConnection() const;
 	void setMinDistToDelConnection(osgWidget::point_type dist);
@@ -113,8 +113,8 @@ private:
 	typedef boost::function<void(osg::Geode*, const osgWidget::XYCoord&)> connectionUpdate;
 
 	typedef std::map<osgVDFBasePin*, connectionUpdate> PINS_CONNECTIONS_UPDATE_MAP;
-	typedef osgUI::Buttonized<osgUI::Borderized<osgWidget::Label>, osgUI::TextStylePolicy> BUTTON;
-	//typedef osgUI::Buttonized<osgWidget::Label> BUTTON;
+	typedef osgui::Buttonized<osgui::Borderized<osgWidget::Label>, osgui::TextStylePolicy> BUTTON;
+	//typedef osgui::Buttonized<osgWidget::Label> BUTTON;
 
 private:
 
@@ -249,12 +249,12 @@ private:
 private:
 	bool onNodeDescriptorPush(osgWidget::Event& ev);
 
-	void fillToolbarWithGroups(osgUI::Toolbar * toolbar);
+	void fillToolbarWithGroups(osgui::Toolbar * toolbar);
 	bool graphAddNodeTypeToToolbar(osgVDFNodeTypeDescriptor* nodeTypeDescriptor);
 
 	void highlightConnection(osg::Geode * connection, const std::string & connectionName, bool highlight);
 	void removeConnection(dflm::ConnPtr connection, const std::string & connectionName, bool checked);
-	void closeContextMenu(osgUI::ContextMenu * menu);
+	void closeContextMenu(osgui::ContextMenu * menu);
 
 protected:
 
@@ -275,7 +275,7 @@ protected:
 	REV_CONNECTIONS_MAPPING connectionsGraphToLogical;
 
 	VNODES_SET selectedNodes;
-	KeyboardMapper::KEYS_SET selectionActionKeys;
+	KeyboardMapper::Keys selectionActionKeys;
 	osgWidget::point_type minIntersectRatioToSelect;
 
 	//connection events
@@ -327,15 +327,15 @@ private:
 
 	PINS_CONNECTIONS_UPDATE_MAP pinsConnectionsUpdate;
 
-	osg::ref_ptr<osgUI::ContextMenu> contextMenu;
+	osg::ref_ptr<osgui::ContextMenu> contextMenu;
 	osg::Geode * lastHighlightedConnection;
 	bool contextMenuOn;
 
-	std::set<osg::ref_ptr<osgUI::Tooltip> > tooltips;
-	osg::ref_ptr<osgUI::Tooltip> currentNodeTooltip;
-	osg::ref_ptr<osgUI::Tooltip> currentPinTooltip;
+	std::set<osg::ref_ptr<osgui::Tooltip> > tooltips;
+	osg::ref_ptr<osgui::Tooltip> currentNodeTooltip;
+	osg::ref_ptr<osgui::Tooltip> currentPinTooltip;
 
-	osg::ref_ptr<osgUI::Toolbar> toolbar;
+	osg::ref_ptr<osgui::Toolbar> toolbar;
 	bool toolbarVisible;
 	BUTTON * lastButton;
 };

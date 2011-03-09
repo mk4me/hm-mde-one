@@ -12,7 +12,7 @@
 #include <boost/tokenizer.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace osgUI {
+namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -22,31 +22,36 @@ namespace osgUI {
  *  ich na zewnatrz.
  */
 
-class ContextMenu :
-	public osgUI::Grid
+class ContextMenu :	public osgui::Grid
 {
 public:
-
-	//! string - path
-	//! bool - checked
+    //! Sygnatura callbacka wywo³ywana przy klikniêciu w opcjê menu.
+    //! Pierwszy parametr to pe³na œcie¿ka do opcji, druga to flaga logiczna okreœlaj¹ca,
+    //! jaki jest stan opcji (checked/unchecked)
 	typedef boost::function<void(const std::string&, bool)> OnClickCallback;
-
-    //! ContextMenu - menu kontekstowe ktore zamykamy
+    //! Sygnatura callbacka wywo³ywanego gdy menu zostaje zamkniête.
 	typedef boost::function<void(ContextMenu*)> OnCloseCallback;
-
-	//redefinicja, tu mamy œcie¿kê jak poprzednio oraz czy jesteœmy w (onEnter - true) czy poza (onLeave - false) elementem
+	//! Sygnatura callbacka wywo³ywana przy najechaniu na opcjê menu.
+    //! Pierwszy parametr to pe³na œcie¿ka do opcji, druga to flaga logiczna okreœlaj¹ca,
+    //! czy wjechano/zjechano z opcji.
 	typedef OnClickCallback OnHoverCallback;
 
 public:
 	ContextMenu(void);
 	~ContextMenu(void);
 
+// osgWidget::Window
+public:
 	virtual void managed(osgWidget::WindowManager * wm);
 	virtual void unmanaged(osgWidget::WindowManager * wm);
 
-    //! string - separatory dla kolejnych poziomów menu
-	void setPathSeparators(const std::string & separators);
-	const std::string & getPathSeparators() const;
+public:
+    //! \return
+    static const std::string& getDefaultPathSeparators();
+    //! \return
+    const std::string& getPathSeparators() const;
+    //! \param separators
+    void setPathSeparators(const std::string& separators);
 
     //! string - sciezka do elementu menu
     //! bool - checked, czy element jest zaznaczony (jak checkbox)
@@ -345,15 +350,15 @@ private:
 
 protected:
 
-    //! osg::observer_ptr<osgUI::ContextMenu> glowa hierarchi menu kontekstowego, menu najwyzszego poziomu
+    //! osg::observer_ptr<osgui::ContextMenu> glowa hierarchi menu kontekstowego, menu najwyzszego poziomu
     //! przez nie user ma dostep do calego menu
-	osg::observer_ptr<osgUI::ContextMenu> rootMenu;
+	osg::observer_ptr<osgui::ContextMenu> rootMenu;
     
-    //! osg::observer_ptr<osgUI::ContextMenu> rodzic aktualnego menu, dla ktorego jest to menu submenu
-	osg::observer_ptr<osgUI::ContextMenu> parentMenu;
+    //! osg::observer_ptr<osgui::ContextMenu> rodzic aktualnego menu, dla ktorego jest to menu submenu
+	osg::observer_ptr<osgui::ContextMenu> parentMenu;
 
-    //! osg::observer_ptr<osgUI::ContextMenu> aktualnie aktywne submenu
-	osg::observer_ptr<osgUI::ContextMenu> activeSubMenu;
+    //! osg::observer_ptr<osgui::ContextMenu> aktualnie aktywne submenu
+	osg::observer_ptr<osgui::ContextMenu> activeSubMenu;
 	
     //! elementy menu na danym poziomie
 	Items items;
@@ -361,8 +366,10 @@ protected:
     //! submenu na dnym poziomie
 	Submenus submenus;
 
-    //! boost::shared_ptr<std::string> lista znakow bedacych separatorami w podanej sciezce elementow menu
-	boost::shared_ptr<std::string> separators;
+    //! Znaki bêd¹ce separatorami.
+    std::string pathSeparators;
+
+
 
     //! OnCloseCallback akcja uzytkownika na zamkniecie danego menu
 	OnCloseCallback closeMenuCallback;
@@ -375,10 +382,12 @@ protected:
 	static const MenuSubmenu constEmptyMenuSubmenu;
 	static MenuItem emptyMenuItem;
 	static MenuSubmenu emptyMenuSubmenu;
+    static const std::string defaultPathSeparators;
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-} // namespace osgUI
+} // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif  // HEADER_GUARD__CONTEXTMENU_H__

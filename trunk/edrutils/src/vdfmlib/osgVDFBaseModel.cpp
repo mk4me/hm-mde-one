@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 
 #include <vdfmlib/osgVDFBaseModel.h>
+#include <osgui/KeyboardMapperHandler.h>
 #include <osgui/Borderized.h>
-#include <osgui/ExtKeyboardHandler.h>
 
 #include <dfmlib/Connection.h>
 #include <dfmlib/DFSourceNode.h>
@@ -36,7 +36,7 @@ osgVDFBaseModel::osgVDFBaseModel(osgViewer::View* view, osgWidget::point_type wi
 
 	//add event to create nodes
 	view->addEventHandler(new UserSpaceClick(this));
-	view->addEventHandler(new osgUI::ExtKeyboardHandler(this));
+	view->addEventHandler(new osgui::KeyboardMapperHandler(this));
 	view->addEventHandler(new VisualSelectionManager(this));
 	addEventCallback(new ModelResizeHandler(this));
 
@@ -263,7 +263,7 @@ dflm::Model::NODES_SET osgVDFBaseModel::getNodesInArea(const osg::BoundingBox & 
 	dflm::Model::NODES_SET ret;
 
 	for(NODES_MAPPING::const_iterator it = nodesLogicalToGraph.begin(); it != nodesLogicalToGraph.end(); it++){
-		osg::BoundingBox nodeBB(osgUI::Utils2D::generateBox(it->second));
+		osg::BoundingBox nodeBB(osgui::Utils2D::generateBox(it->second));
 		if(area.intersects(nodeBB) == true){
 			nodeBB = area.intersect(nodeBB);
 			osgWidget::point_type intersectArea = (nodeBB.xMax() - nodeBB.xMin()) * (nodeBB.yMax() - nodeBB.yMin());
@@ -283,7 +283,7 @@ osgWidget::XYCoord osgVDFBaseModel::getFreePlaceForNode(dflm::NPtr node, const o
 		return posToStart;
 	}
 	
-	return osgUI::Utils2D::findFreeSpaceInNearby(posToStart,vnode->getWidth(), vnode->getHeight(), this);
+	return osgui::Utils2D::findFreeSpaceInNearby(posToStart,vnode->getWidth(), vnode->getHeight(), this);
 }
 
 void osgVDFBaseModel::selectNode(dflm::NPtr node){
@@ -429,10 +429,10 @@ dflm::Model::NODES_SET osgVDFBaseModel::getSelectedNodes() const{
 osg::BoundingBox osgVDFBaseModel::getSelectedNodesBoundingBox() const{
 	if(selectedNodes.empty() == false){
 		VNODES_SET::iterator it = selectedNodes.begin();
-		osg::BoundingBox ret(osgUI::Utils2D::generateBox(*it));
+		osg::BoundingBox ret(osgui::Utils2D::generateBox(*it));
 		it++;
 		for( ; it != selectedNodes.end(); it++){
-			ret.expandBy(osgUI::Utils2D::generateBox(*it));
+			ret.expandBy(osgui::Utils2D::generateBox(*it));
 		}
 
 		return ret;
@@ -448,9 +448,9 @@ bool osgVDFBaseModel::isNodeInCollision(dflm::NPtr node) const{
 	}
 	
 	bool ret = false;
-	osg::BoundingBox vnodeBB(osgUI::Utils2D::generateBox(vnode));
+	osg::BoundingBox vnodeBB(osgui::Utils2D::generateBox(vnode));
 	for(NODES_MAPPING::const_iterator it = nodesLogicalToGraph.begin(); it != nodesLogicalToGraph.end(); it++){
-		if(node != it->first && vnodeBB.intersects(osgUI::Utils2D::generateBox(it->second)) == true){
+		if(node != it->first && vnodeBB.intersects(osgui::Utils2D::generateBox(it->second)) == true){
 			ret = true;
 			break;
 		}
@@ -465,12 +465,12 @@ bool osgVDFBaseModel::isNodeInVisibleArea(dflm::NPtr node) const{
 		return false;
 	}
 
-	return osg::BoundingBox(0,0,0,this->getWidth(), this->getHeight(), 0).intersects(osgUI::Utils2D::generateBox(vnode));
+	return osg::BoundingBox(0,0,0,this->getWidth(), this->getHeight(), 0).intersects(osgui::Utils2D::generateBox(vnode));
 }
 
 bool osgVDFBaseModel::isNodeFullyInVisibleArea(dflm::NPtr node) const{
 	if(isNodeInVisibleArea(node) == true){
-		osg::BoundingBox vnodeBB(osgUI::Utils2D::generateBox(getVisualNode(node)));
+		osg::BoundingBox vnodeBB(osgui::Utils2D::generateBox(getVisualNode(node)));
 		return osg::BoundingBox(0,0,0,this->getWidth(), this->getHeight(), 0).intersect(vnodeBB).radius2() == vnodeBB.radius2();
 	}
 
@@ -622,11 +622,11 @@ void osgVDFBaseModel::setMinDistToDelConnection(osgWidget::point_type dist) {
 	maxDistToDelConnection = dist;
 }
 
-const osgUI::KeyboardMapper::KEYS_SET & osgVDFBaseModel::getSelectionActionKeys() const{
+const osgui::KeyboardMapper::Keys & osgVDFBaseModel::getSelectionActionKeys() const{
 	return selectionActionKeys;
 }
 
-void osgVDFBaseModel::setSelectionActionKeys(const osgUI::KeyboardMapper::KEYS_SET & keys){
+void osgVDFBaseModel::setSelectionActionKeys(const osgui::KeyboardMapper::Keys & keys){
 	selectionActionKeys = keys;
 }
 
@@ -664,7 +664,7 @@ void osgVDFBaseModel::showDefaultToolbar(bool show){
 
 	if(toolbarVisible == true){
 		if(toolbar == 0){
-			toolbar = new osgUI::Toolbar();
+			toolbar = new osgui::Toolbar();
 			this->addChild(toolbar);
 			fillToolbarWithGroups(toolbar);
 			for(std::set<osgVDFNodeTypeDescriptor*>::iterator it = nodeTypesMissing.begin();
@@ -749,7 +749,7 @@ bool osgVDFBaseModel::graphAddNodeTypeToToolbar(osgVDFNodeTypeDescriptor* nodeTy
 		newLabel->setSize(nodeTypeDescriptor->getButtonImage()->s(), nodeTypeDescriptor->getButtonImage()->t());
 		newLabel->setImage(nodeTypeDescriptor->getButtonImage(),true, true);
 
-		osgUI::Tooltip * tooltip = new osgUI::Tooltip();
+		osgui::Tooltip * tooltip = new osgui::Tooltip();
 		tooltip->setText(nodeTypeDescriptor->getButtonText());
 		tooltip->registerItem(newLabel);
 		tooltips.insert(tooltip);
@@ -774,30 +774,30 @@ osgVDFBaseNode* osgVDFBaseModel::getVisualNode(dflm::NPtr node) const{
 	return 0;
 }
 
-void osgVDFBaseModel::fillToolbarWithGroups(osgUI::Toolbar * toolbar){
+void osgVDFBaseModel::fillToolbarWithGroups(osgui::Toolbar * toolbar){
 	if(toolbar == 0){
 		return;
 	}
 
-	osgWidget::Label * label = new osgUI::Borderized<osgWidget::Label>("","Source");
+	osgWidget::Label * label = new osgui::Borderized<osgWidget::Label>("","Source");
 	label->setSize(0,0);
 	label->setFontSize(13);
 
 	toolbar->addTab(label);
 
-	label = new osgUI::Borderized<osgWidget::Label>("","Analysis");
+	label = new osgui::Borderized<osgWidget::Label>("","Analysis");
 	label->setSize(0,0);
 	label->setFontSize(13);
 
 	toolbar->addTab(label);
 
-	label = new osgUI::Borderized<osgWidget::Label>("","Processing");
+	label = new osgui::Borderized<osgWidget::Label>("","Processing");
 	label->setSize(0,0);
 	label->setFontSize(13);
 
 	toolbar->addTab(label);
 
-	label = new osgUI::Borderized<osgWidget::Label>("","Visualize");
+	label = new osgui::Borderized<osgWidget::Label>("","Visualize");
 	label->setSize(0,0);
 	label->setFontSize(13);
 
@@ -809,10 +809,10 @@ osgWidget::point_type osgVDFBaseModel::getMinNodesZ(){
 
 	if(graphNodes.empty() == false){
 		VNODES_SET::iterator it = graphNodes.begin();
-		ret = osgUI::Utils2D::calcAbsZ(*it);
+		ret = osgui::Utils2D::calcAbsZ(*it);
 		it++;
 		for( ; it != graphNodes.end(); it++){
-			ret = std::min(ret,osgUI::Utils2D::calcAbsZ(*it));
+			ret = std::min(ret,osgui::Utils2D::calcAbsZ(*it));
 		}
 	}
 
@@ -825,10 +825,10 @@ osgWidget::point_type osgVDFBaseModel::getMaxNodesZ(){
 
 	if(graphNodes.empty() == false){
 		VNODES_SET::iterator it = graphNodes.begin();
-		ret = osgUI::Utils2D::calcAbsZ(*it);
+		ret = osgui::Utils2D::calcAbsZ(*it);
 		it++;
 		for( ; it != graphNodes.end(); it++){
-			ret = std::max(ret,osgUI::Utils2D::calcAbsZ(*it));
+			ret = std::max(ret,osgui::Utils2D::calcAbsZ(*it));
 		}
 	}
 
@@ -849,9 +849,9 @@ osgVDFBaseModel::VNODES_SET osgVDFBaseModel::getSelectedNodesCollisions(){
 	std::set_difference(graphNodes.begin(), graphNodes.end(), selectedNodes.begin(), selectedNodes.end(), diff.begin());
 
 	for(VNODES_SET::const_iterator it = selectedNodes.begin(); it != selectedNodes.end(); it++){
-		osg::BoundingBox selBB = osgUI::Utils2D::generateBox(*it);
+		osg::BoundingBox selBB = osgui::Utils2D::generateBox(*it);
 		for(std::vector<osgVDFBaseNode*>::iterator iT = diff.begin(); iT != diff.end(); iT++){
-			if(selBB.intersects(osgUI::Utils2D::generateBox(*iT)) == true){
+			if(selBB.intersects(osgui::Utils2D::generateBox(*iT)) == true){
 				ret.insert(*iT);
 			}
 		}
@@ -944,8 +944,8 @@ bool osgVDFBaseModel::onNodeDrag(osgWidget::Event& ev){
 	if(moveStarted == true){
 		osgWidget::XYCoord move(ev.x, ev.y);
 		osg::BoundingBox selBB(selectionBoundingBox);
-		selBB = osgUI::Utils2D::translateBoundingBox(selBB, move);
-		if(selBB.intersect(modelBoundingBox).radius2() == selBB.radius2() && (toolbarVisible == false || (toolbarVisible == true && osgUI::Utils2D::generateBox(toolbar).intersects(selBB) == false))){
+		selBB = osgui::Utils2D::translateBoundingBox(selBB, move);
+		if(selBB.intersect(modelBoundingBox).radius2() == selBB.radius2() && (toolbarVisible == false || (toolbarVisible == true && osgui::Utils2D::generateBox(toolbar).intersects(selBB) == false))){
 			moveSelectedNodes(move);
 			selectionBoundingBox = selBB;
 		}
@@ -1038,7 +1038,7 @@ bool osgVDFBaseModel::onPinDrag(osgWidget::Event& ev){
 			it != compatiblePins.end(); it++){
 
 				//onEnter
-				if(it->first != connectingStartPin && osgUI::Utils2D::generateBox(it->first).contains(pos3D) == true){
+				if(it->first != connectingStartPin && osgui::Utils2D::generateBox(it->first).contains(pos3D) == true){
 					isPin = true;
 					if(connectingCurrentPin != it->first){
 						if(connectingCurrentPin != 0){
@@ -1622,10 +1622,10 @@ Subject 1.02: How do I find the distance from a point to a line?
 }
 
 void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::CONNECTIONS_DELETE_MAP & toDelete, const osgWidget::XYCoord & pos){
-	contextMenu = new osgUI::ContextMenu();
+	contextMenu = new osgui::ContextMenu();
 	for(CONNECTIONS_DELETE_MAP::const_iterator it = toDelete.begin(); it != toDelete.end(); it++){
-		osgUI::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::removeConnection, this, connectionsGraphToLogical[it->second], _1, _2);
-		osgUI::ContextMenu::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::highlightConnection, this, it->second, _1, _2);
+		osgui::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::removeConnection, this, connectionsGraphToLogical[it->second], _1, _2);
+		osgui::ContextMenu::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::highlightConnection, this, it->second, _1, _2);
 		contextMenu->addMenuItem(it->first, false, cc, hc);
 	}
 
@@ -1662,7 +1662,7 @@ void osgVDFBaseModel::removeConnection(dflm::ConnPtr connection, const std::stri
 	
 }
 
-void osgVDFBaseModel::closeContextMenu(osgUI::ContextMenu * menu){
+void osgVDFBaseModel::closeContextMenu(osgui::ContextMenu * menu){
 	contextMenuOn = false;
 
 	for(VNODES_SET::iterator it = selectedNodes.begin(); it != selectedNodes.end(); it++){
