@@ -7,8 +7,8 @@ author:	  Piotr Gwiazdowski
 purpose:
 *********************************************************************/
 
-#ifndef __HEADER_GUARD_UTILS__MACROS_H__
-#define __HEADER_GUARD_UTILS__MACROS_H__
+#ifndef HEADER_GUARD_UTILS__MACROS_H__
+#define HEADER_GUARD_UTILS__MACROS_H__
 
 //------------------------------------------------------------------------------
 
@@ -152,4 +152,4 @@ purpose:
 
 //------------------------------------------------------------------------------
 
-#endif  // __HEADER_GUARD_UTILS__MACROS_H__
+#endif  // HEADER_GUARD_UTILS__MACROS_H__

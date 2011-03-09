@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD__DFNODE_H__
-#define __HEADER_GUARD__DFNODE_H__
+#ifndef HEADER_GUARD__DFNODE_H__
+#define HEADER_GUARD__DFNODE_H__
 
 #include <dfmlib/Node.h>
 #include <dfmlib/DFInterface.h>

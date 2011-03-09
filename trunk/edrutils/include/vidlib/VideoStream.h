@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__VIDEOSTREAM_H__
-#define __HEADER_GUARD_VIDLIB__VIDEOSTREAM_H__
+#ifndef HEADER_GUARD_VIDLIB__VIDEOSTREAM_H__
+#define HEADER_GUARD_VIDLIB__VIDEOSTREAM_H__
 
 #include <string>
 #include <vidlib/Export.h>
@@ -217,4 +217,4 @@ protected:
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD_VIDLIB__VIDEOSTREAM_H__
+#endif  // HEADER_GUARD_VIDLIB__VIDEOSTREAM_H__

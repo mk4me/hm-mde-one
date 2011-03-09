@@ -7,8 +7,8 @@
 	purpose:  Nag³ówek nale¿y za³¹czaæ tylko w g³ównym pliku projektu.
               Dodanie go wiêcej razy mo¿e spowodowaæ b³êdy linkera.
 *********************************************************************/
-#ifndef __HEADER_GUARD__CORE_LEAKDETECTION_H__
-#define __HEADER_GUARD__CORE_LEAKDETECTION_H__
+#ifndef HEADER_GUARD__CORE_LEAKDETECTION_H__
+#define HEADER_GUARD__CORE_LEAKDETECTION_H__
 
 #include <utils/Config.h>
 
@@ -51,4 +51,4 @@ public:
 
 #endif // __WIN32__
 
-#endif  // __HEADER_GUARD__CORE_PLUGIN_H__
+#endif  // HEADER_GUARD__CORE_PLUGIN_H__

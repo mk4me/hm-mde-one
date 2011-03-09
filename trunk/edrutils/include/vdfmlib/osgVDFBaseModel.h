@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD__VDFBASEMODEL_H__
-#define __HEADER_GUARD__VDFBASEMODEL_H__
+#ifndef HEADER_GUARD__VDFBASEMODEL_H__
+#define HEADER_GUARD__VDFBASEMODEL_H__
 
 #include <osgWidget/Widget>
 #include <osgWidget/WindowManager>
@@ -19,7 +19,7 @@
 #include <vdfmlib/osgVDFNodeTypeDescriptor.h>
 
 #include <osgui/Toolbar.h>
-#include <osgui/MenuContext.h>
+#include <osgui/ContextMenu.h>
 #include <osgui/TooltipHost.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -254,7 +254,7 @@ private:
 
 	void highlightConnection(osg::Geode * connection, const std::string & connectionName, bool highlight);
 	void removeConnection(dflm::ConnPtr connection, const std::string & connectionName, bool checked);
-	void closeContextMenu(osgUI::MenuContext * menu);
+	void closeContextMenu(osgUI::ContextMenu * menu);
 
 protected:
 
@@ -327,7 +327,7 @@ private:
 
 	PINS_CONNECTIONS_UPDATE_MAP pinsConnectionsUpdate;
 
-	osg::ref_ptr<osgUI::MenuContext> contextMenu;
+	osg::ref_ptr<osgUI::ContextMenu> contextMenu;
 	osg::Geode * lastHighlightedConnection;
 	bool contextMenuOn;
 

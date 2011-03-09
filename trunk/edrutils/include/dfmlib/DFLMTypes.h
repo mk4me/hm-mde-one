@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD__DFMTYPES_H__
-#define __HEADER_GUARD__DFMTYPES_H__
+#ifndef HEADER_GUARD__DFMTYPES_H__
+#define HEADER_GUARD__DFMTYPES_H__
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>

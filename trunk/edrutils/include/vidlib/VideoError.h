@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__VIDEOERROR_H__
-#define __HEADER_GUARD_VIDLIB__VIDEOERROR_H__
+#ifndef HEADER_GUARD_VIDLIB__VIDEOERROR_H__
+#define HEADER_GUARD_VIDLIB__VIDEOERROR_H__
 
 #include <stdexcept>
 #include <vidlib/Export.h>
@@ -51,4 +51,4 @@ protected:
 
 } // namespace vidlib
 
-#endif  // __HEADER_GUARD_VIDLIB__VIDEOERROR_H__
+#endif  // HEADER_GUARD_VIDLIB__VIDEOERROR_H__

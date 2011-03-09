@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD_ASFPARSERTEST_H__
-#define __HEADER_GUARD_ASFPARSERTEST_H__
+#ifndef HEADER_GUARD_ASFPARSERTEST_H__
+#define HEADER_GUARD_ASFPARSERTEST_H__
 
 #include <cppunit/extensions/HelperMacros.h>
 

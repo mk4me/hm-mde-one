@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD__CONNECTION_H__
-#define __HEADER_GUARD__CONNECTION_H__
+#ifndef HEADER_GUARD__CONNECTION_H__
+#define HEADER_GUARD__CONNECTION_H__
 
 #include <dfmlib/DFLMTypes.h>
 

@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD__VDFPIN_H__
-#define __HEADER_GUARD__VDFPIN_H__
+#ifndef HEADER_GUARD__VDFPIN_H__
+#define HEADER_GUARD__VDFPIN_H__
 
 #include <vdfmlib/osgVDFBasePin.h>
 #include <osgDB/ReadFile>

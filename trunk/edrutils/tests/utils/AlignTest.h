@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__ALIGNTEST_H__
-#define __HEADER_GUARD__ALIGNTEST_H__
+#ifndef HEADER_GUARD__ALIGNTEST_H__
+#define HEADER_GUARD__ALIGNTEST_H__
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -26,4 +26,4 @@ public:
 
 
 
-#endif  // __HEADER_GUARD__ALIGNTEST_H__
+#endif  // HEADER_GUARD__ALIGNTEST_H__

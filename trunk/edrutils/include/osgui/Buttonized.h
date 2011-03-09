@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__BUTTON_H__
-#define __HEADER_GUARD__BUTTON_H__
+#ifndef HEADER_GUARD__BUTTON_H__
+#define HEADER_GUARD__BUTTON_H__
 
 #include <osgWidget/Widget>
 #include <osgWidget/Label>
@@ -810,4 +810,4 @@ typedef Buttonized< osgWidget::Widget > Button;
 } // namespace osgUI
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD__BUTTON_H__
+#endif  // HEADER_GUARD__BUTTON_H__

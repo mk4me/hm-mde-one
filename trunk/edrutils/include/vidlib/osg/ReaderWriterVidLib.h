@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
-#define __HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
+#ifndef HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
+#define HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
 
 #include <vidlib/Export.h>
 #include <utils/Utils.h>
@@ -24,4 +24,4 @@ UTILS_POP_WARNINGS
 
 extern VIDLIB_EXPORT void osgdb_vidlib_init(void);
 
-#endif  // __HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__
+#endif  // HEADER_GUARD_VIDLIB__READERWRITERVIDLIB_H__

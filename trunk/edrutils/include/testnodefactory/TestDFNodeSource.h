@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD__DFM_TESTSOURCENODE_H__
-#define __HEADER_GUARD__DFM_TESTSOURCENODE_H__
+#ifndef HEADER_GUARD__DFM_TESTSOURCENODE_H__
+#define HEADER_GUARD__DFM_TESTSOURCENODE_H__
 
 #include <dfmlib/DFSourceNode.h>
 #include <testnodefactory/TestDFNodeProcessing.h>

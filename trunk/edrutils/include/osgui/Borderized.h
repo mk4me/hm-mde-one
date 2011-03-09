@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__BORDERIZED_H__
-#define __HEADER_GUARD__BORDERIZED_H__
+#ifndef HEADER_GUARD__BORDERIZED_H__
+#define HEADER_GUARD__BORDERIZED_H__
 
 #include <boost/type_traits.hpp>
 #include <osg/LineWidth>
@@ -541,4 +541,4 @@ private:
 } // namespace osgUI
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD__BORDERIZED_H__
+#endif  // HEADER_GUARD__BORDERIZED_H__

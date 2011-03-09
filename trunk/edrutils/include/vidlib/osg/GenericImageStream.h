@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__
-#define __HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__
+#ifndef HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__
+#define HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__
 
 
 
@@ -53,4 +53,4 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__
+#endif  // HEADER_GUARD_VIDLIB__GENERICIMAGESTREAM_H__

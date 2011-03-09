@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__QOSGCOMPONENTWIDGET_H__
-#define __HEADER_GUARD__QOSGCOMPONENTWIDGET_H__
+#ifndef HEADER_GUARD__QOSGCOMPONENTWIDGET_H__
+#define HEADER_GUARD__QOSGCOMPONENTWIDGET_H__
 
 #include <osgViewer/CompositeViewer>
 #include <osg/GraphicsContext>
@@ -170,4 +170,4 @@ typedef QOsgViewer QOsgDefaultWidget;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD__QOSGCOMPONENTWIDGET_H__
+#endif  // HEADER_GUARD__QOSGCOMPONENTWIDGET_H__

@@ -6,8 +6,8 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD__UTILS_H__
-#define __HEADER_GUARD__UTILS_H__
+#ifndef HEADER_GUARD__UTILS_H__
+#define HEADER_GUARD__UTILS_H__
 
 #include <utils/Config.h>
 #include <boost/lexical_cast.hpp>
@@ -146,4 +146,4 @@ inline std::string toString(const T& source)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif    // __HEADER_GUARD__UTILS_H__
+#endif    // HEADER_GUARD__UTILS_H__

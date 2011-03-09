@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD_UTILS__CONFIG_H__
-#define __HEADER_GUARD_UTILS__CONFIG_H__
+#ifndef HEADER_GUARD_UTILS__CONFIG_H__
+#define HEADER_GUARD_UTILS__CONFIG_H__
 
 //! Czy ma byc w³¹czony profiler?
 // #cmakedefine UTILS_ENABLE_PROFILER
@@ -8,4 +8,4 @@
 	#cmakedefine UTILS_ENABLE_LEAK_DETECTION_VLD
 #endif
 
-#endif // __HEADER_GUARD_UTILS__CONFIG_H__
+#endif // HEADER_GUARD_UTILS__CONFIG_H__

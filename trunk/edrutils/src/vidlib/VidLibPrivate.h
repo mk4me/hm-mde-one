@@ -10,8 +10,8 @@
             znajdowaæ siê wiêkszoœæ makr
 *********************************************************************/
 
-#ifndef __HEADER_GUARD_VIDLIB__VIDLIBPRIVATE_H__
-#define __HEADER_GUARD_VIDLIB__VIDLIBPRIVATE_H__
+#ifndef HEADER_GUARD_VIDLIB__VIDLIBPRIVATE_H__
+#define HEADER_GUARD_VIDLIB__VIDLIBPRIVATE_H__
 
 
 #include <utils/Profiler.h>
@@ -44,4 +44,4 @@
 //------------------------------------------------------------------------------
 
 
-#endif  // __HEADER_GUARD_VIDLIB__VIDLIBPRIVATE_H__
+#endif  // HEADER_GUARD_VIDLIB__VIDLIBPRIVATE_H__

@@ -6,8 +6,8 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD__UTILS_DEBUG_H__
-#define __HEADER_GUARD__UTILS_DEBUG_H__
+#ifndef HEADER_GUARD__UTILS_DEBUG_H__
+#define HEADER_GUARD__UTILS_DEBUG_H__
 
 #include <utils/Config.h>
 #include <utils/Macros.h>
@@ -100,4 +100,4 @@ UTILS_MULTISTATEMENT_END
 #endif
 
 
-#endif  // __HEADER_GUARD__UTILS_DEBUG_H__
+#endif  // HEADER_GUARD__UTILS_DEBUG_H__

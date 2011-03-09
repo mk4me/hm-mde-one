@@ -1,9 +1,8 @@
 #include "StdAfx.h"
 
-#include <osgui/Borderized.h>
 #include <vdfmlib/osgVDFBaseModel.h>
+#include <osgui/Borderized.h>
 #include <osgui/ExtKeyboardHandler.h>
-#include <osgui/MenuContext.h>
 
 #include <dfmlib/Connection.h>
 #include <dfmlib/DFSourceNode.h>
@@ -1623,10 +1622,10 @@ Subject 1.02: How do I find the distance from a point to a line?
 }
 
 void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::CONNECTIONS_DELETE_MAP & toDelete, const osgWidget::XYCoord & pos){
-	contextMenu = new osgUI::MenuContext();
+	contextMenu = new osgUI::ContextMenu();
 	for(CONNECTIONS_DELETE_MAP::const_iterator it = toDelete.begin(); it != toDelete.end(); it++){
-		osgUI::MenuContext::OnClickCallback cc = boost::bind(&osgVDFBaseModel::removeConnection, this, connectionsGraphToLogical[it->second], _1, _2);
-		osgUI::MenuContext::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::highlightConnection, this, it->second, _1, _2);
+		osgUI::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::removeConnection, this, connectionsGraphToLogical[it->second], _1, _2);
+		osgUI::ContextMenu::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::highlightConnection, this, it->second, _1, _2);
 		contextMenu->addMenuItem(it->first, false, cc, hc);
 	}
 
@@ -1663,7 +1662,7 @@ void osgVDFBaseModel::removeConnection(dflm::ConnPtr connection, const std::stri
 	
 }
 
-void osgVDFBaseModel::closeContextMenu(osgUI::MenuContext * menu){
+void osgVDFBaseModel::closeContextMenu(osgUI::ContextMenu * menu){
 	contextMenuOn = false;
 
 	for(VNODES_SET::iterator it = selectedNodes.begin(); it != selectedNodes.end(); it++){

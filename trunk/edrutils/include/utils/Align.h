@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__ALIGN_H__
-#define __HEADER_GUARD__ALIGN_H__
+#ifndef HEADER_GUARD__ALIGN_H__
+#define HEADER_GUARD__ALIGN_H__
 
 #include <utils/Config.h>
 #include <utils/Debug.h>
@@ -71,4 +71,4 @@ template <int Addr, class T> struct AlignToType {
 } // namespace util
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD__ALIGN_H__
+#endif  // HEADER_GUARD__ALIGN_H__

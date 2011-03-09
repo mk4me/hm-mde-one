@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__ENUMTEST_H__
-#define __HEADER_GUARD__ENUMTEST_H__
+#ifndef HEADER_GUARD__ENUMTEST_H__
+#define HEADER_GUARD__ENUMTEST_H__
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <stdexcept>
@@ -33,4 +33,4 @@ public:
 };
 
 
-#endif  // __HEADER_GUARD__ENUMTEST_H__
+#endif  // HEADER_GUARD__ENUMTEST_H__

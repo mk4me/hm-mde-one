@@ -6,8 +6,8 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD__SYSTEM_H__
-#define __HEADER_GUARD__SYSTEM_H__
+#ifndef HEADER_GUARD__SYSTEM_H__
+#define HEADER_GUARD__SYSTEM_H__
 
 #include <utils/Config.h>
 #if defined(__WIN32__)
@@ -158,4 +158,4 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif    // __HEADER_GUARD__SYSTEM_H__
+#endif    // HEADER_GUARD__SYSTEM_H__

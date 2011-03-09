@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__OSGWIDGETUTILS_H__
-#define __HEADER_GUARD__OSGWIDGETUTILS_H__
+#ifndef HEADER_GUARD__OSGWIDGETUTILS_H__
+#define HEADER_GUARD__OSGWIDGETUTILS_H__
 
 #include <osg/StateSet>
 #include <osg/Image>
@@ -47,4 +47,4 @@ void flipTexCoordsVertically(osgWidget::Widget* widget);
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD__OSGWIDGETUTILS_H__
+#endif  // HEADER_GUARD__OSGWIDGETUTILS_H__

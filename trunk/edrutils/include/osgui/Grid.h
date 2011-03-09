@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__GRID_H__
-#define __HEADER_GUARD__GRID_H__
+#ifndef HEADER_GUARD__GRID_H__
+#define HEADER_GUARD__GRID_H__
 
 #include <osgWidget/Window>
 #include <osgWidget/Table>
@@ -134,4 +134,4 @@ protected:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD__GRID_H__
+#endif  // HEADER_GUARD__GRID_H__

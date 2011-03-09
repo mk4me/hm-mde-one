@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__PICTURE_H__
-#define __HEADER_GUARD_VIDLIB__PICTURE_H__
+#ifndef HEADER_GUARD_VIDLIB__PICTURE_H__
+#define HEADER_GUARD_VIDLIB__PICTURE_H__
 
 #include <vidlib/Export.h>
 #include <vidlib/PixelFormat.h>
@@ -127,4 +127,4 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD_VIDLIB__PICTURE_H__
+#endif  // HEADER_GUARD_VIDLIB__PICTURE_H__

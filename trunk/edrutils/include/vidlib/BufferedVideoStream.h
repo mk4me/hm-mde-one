@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__BUFFEREDVIDEOSTREAM_H__
-#define __HEADER_GUARD_VIDLIB__BUFFEREDVIDEOSTREAM_H__
+#ifndef HEADER_GUARD_VIDLIB__BUFFEREDVIDEOSTREAM_H__
+#define HEADER_GUARD_VIDLIB__BUFFEREDVIDEOSTREAM_H__
 
 #include <vidlib/Export.h>
 #include <vidlib/VideoStream.h>
@@ -71,4 +71,4 @@ private:
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD_VIDLIB__BUFFEREDVIDEOSTREAM_H__
+#endif  // HEADER_GUARD_VIDLIB__BUFFEREDVIDEOSTREAM_H__

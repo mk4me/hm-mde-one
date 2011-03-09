@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
-#define __HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
+#ifndef HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
+#define HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
 
 #include <vidlib/VideoError.h>
 #include <vidlib/Export.h>
@@ -44,4 +44,4 @@ protected:
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD_VIDLIB__FFMPEGERROR_H__
+#endif  // HEADER_GUARD_VIDLIB__FFMPEGERROR_H__

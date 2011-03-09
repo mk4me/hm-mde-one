@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_UTILS__PTRPOLICYHELPER_H__
-#define __HEADER_GUARD_UTILS__PTRPOLICYHELPER_H__
+#ifndef HEADER_GUARD_UTILS__PTRPOLICYHELPER_H__
+#define HEADER_GUARD_UTILS__PTRPOLICYHELPER_H__
 
 #include <utils/Macros.h>
 
@@ -34,4 +34,4 @@ namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD_UTILS__PTRPOLICYHELPER_H__
+#endif  // HEADER_GUARD_UTILS__PTRPOLICYHELPER_H__

@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__DISABLEABLERENDERER_H__
-#define __HEADER_GUARD__DISABLEABLERENDERER_H__
+#ifndef HEADER_GUARD__DISABLEABLERENDERER_H__
+#define HEADER_GUARD__DISABLEABLERENDERER_H__
 
 #include <osgViewer/Renderer>
 
@@ -47,4 +47,4 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD__DISABLEABLERENDERER_H__
+#endif  // HEADER_GUARD__DISABLEABLERENDERER_H__

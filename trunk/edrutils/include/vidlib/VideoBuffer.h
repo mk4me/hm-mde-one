@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__VIDEOBUFFER_H__
-#define __HEADER_GUARD_VIDLIB__VIDEOBUFFER_H__
+#ifndef HEADER_GUARD_VIDLIB__VIDEOBUFFER_H__
+#define HEADER_GUARD_VIDLIB__VIDEOBUFFER_H__
 
 #include <list>
 #include <vector>
@@ -82,4 +82,4 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD_VIDLIB__VIDEOBUFFER_H__
+#endif  // HEADER_GUARD_VIDLIB__VIDEOBUFFER_H__

@@ -6,8 +6,8 @@
 	
 	purpose:    
 *********************************************************************/
-#ifndef __HEADER_GUARD__POOL_H__
-#define __HEADER_GUARD__POOL_H__
+#ifndef HEADER_GUARD__POOL_H__
+#define HEADER_GUARD__POOL_H__
 
 #include <utils/Config.h>
 #include <utils/Align.h>
@@ -230,4 +230,4 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif    // __HEADER_GUARD__POOL_H__
+#endif    // HEADER_GUARD__POOL_H__

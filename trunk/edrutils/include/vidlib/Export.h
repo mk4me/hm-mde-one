@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__EXPORT_H__
-#define __HEADER_GUARD_VIDLIB__EXPORT_H__
+#ifndef HEADER_GUARD_VIDLIB__EXPORT_H__
+#define HEADER_GUARD_VIDLIB__EXPORT_H__
 
 #include <vidlib/Config.h>
 
@@ -23,4 +23,4 @@
 #   define VIDLIB_EXPORT
 #endif
 
-#endif  // __HEADER_GUARD_VIDLIB__EXPORT_H__
+#endif  // HEADER_GUARD_VIDLIB__EXPORT_H__

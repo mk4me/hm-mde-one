@@ -6,8 +6,8 @@
 	
 	purpose:    
 *********************************************************************/
-#ifndef __HEADER_GUARD__UTILS_PTRWRAPPER_H__
-#define __HEADER_GUARD__UTILS_PTRWRAPPER_H__
+#ifndef HEADER_GUARD__UTILS_PTRWRAPPER_H__
+#define HEADER_GUARD__UTILS_PTRWRAPPER_H__
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -124,4 +124,4 @@ public:
 } // namespace utils
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif    // __HEADER_GUARD__UTILS_PTRWRAPPER_H__
+#endif    // HEADER_GUARD__UTILS_PTRWRAPPER_H__

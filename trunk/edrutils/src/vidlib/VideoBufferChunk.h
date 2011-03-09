@@ -6,8 +6,8 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__VIDEOBUFFERCHUNK_H__
-#define __HEADER_GUARD_VIDLIB__VIDEOBUFFERCHUNK_H__
+#ifndef HEADER_GUARD_VIDLIB__VIDEOBUFFERCHUNK_H__
+#define HEADER_GUARD_VIDLIB__VIDEOBUFFERCHUNK_H__
 
 #include <map>
 #include <vidlib/PixelFormat.h>
@@ -167,4 +167,4 @@ private:
 
 
 
-#endif  // __HEADER_GUARD_VIDLIB__VIDEOBUFFERCHUNK_H__
+#endif  // HEADER_GUARD_VIDLIB__VIDEOBUFFERCHUNK_H__

@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__FFMPEGIMAGESTREAM_H__
-#define __HEADER_GUARD_VIDLIB__FFMPEGIMAGESTREAM_H__
+#ifndef HEADER_GUARD_VIDLIB__FFMPEGIMAGESTREAM_H__
+#define HEADER_GUARD_VIDLIB__FFMPEGIMAGESTREAM_H__
 
 #include <vidlib/osg/GenericImageStream.h>
 #include <vidlib/FFmpegVideoStream.h>
@@ -43,4 +43,4 @@ public:
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD_VIDLIB__FFMPEGIMAGESTREAM_H__
+#endif  // HEADER_GUARD_VIDLIB__FFMPEGIMAGESTREAM_H__

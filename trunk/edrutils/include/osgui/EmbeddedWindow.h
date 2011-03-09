@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__EMBEDDEDWINDOW_H__
-#define __HEADER_GUARD__EMBEDDEDWINDOW_H__
+#ifndef HEADER_GUARD__EMBEDDEDWINDOW_H__
+#define HEADER_GUARD__EMBEDDEDWINDOW_H__
 
 #include <string>
 #include <boost/type_traits.hpp>
@@ -138,4 +138,4 @@ static Embedded<T>* EmbeddedWindow::embed( T* window,
 } // namespace osgUI
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD__EMBEDDEDWINDOW_H__
+#endif  // HEADER_GUARD__EMBEDDEDWINDOW_H__

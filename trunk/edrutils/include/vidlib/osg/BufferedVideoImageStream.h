@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_VIDLIB__BUFFEREDVIDEOIMAGESTREAM_H__
-#define __HEADER_GUARD_VIDLIB__BUFFEREDVIDEOIMAGESTREAM_H__
+#ifndef HEADER_GUARD_VIDLIB__BUFFEREDVIDEOIMAGESTREAM_H__
+#define HEADER_GUARD_VIDLIB__BUFFEREDVIDEOIMAGESTREAM_H__
 
 #include <utils/Utils.h>
 UTILS_PUSH_WARNINGS
@@ -83,4 +83,4 @@ UTILS_POP_WARNINGS
 } // namespace vidlib
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD_VIDLIB__BUFFEREDVIDEOIMAGESTREAM_H__
+#endif  // HEADER_GUARD_VIDLIB__BUFFEREDVIDEOIMAGESTREAM_H__

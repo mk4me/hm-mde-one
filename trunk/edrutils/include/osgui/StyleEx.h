@@ -1,5 +1,5 @@
-﻿#ifndef __HEADER_GUARD__EXTSTYLE_H__
-#define __HEADER_GUARD__EXTSTYLE_H__
+﻿#ifndef HEADER_GUARD__EXTSTYLE_H__
+#define HEADER_GUARD__EXTSTYLE_H__
 
 #include <osgWidget/StyleManager>
 #include <osgText/Text>

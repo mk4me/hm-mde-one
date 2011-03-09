@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD_MISCTEST_H__
-#define __HEADER_GUARD_MISCTEST_H__
+#ifndef HEADER_GUARD_MISCTEST_H__
+#define HEADER_GUARD_MISCTEST_H__
 
 #include <limits>
 #include <cppunit/extensions/HelperMacros.h>

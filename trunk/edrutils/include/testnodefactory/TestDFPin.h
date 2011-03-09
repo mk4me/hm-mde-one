@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD__DFM_TESTPIN_H__
-#define __HEADER_GUARD__DFM_TESTPIN_H__
+#ifndef HEADER_GUARD__DFM_TESTPIN_H__
+#define HEADER_GUARD__DFM_TESTPIN_H__
 
 #include <dfmlib/DFPin.h>
 

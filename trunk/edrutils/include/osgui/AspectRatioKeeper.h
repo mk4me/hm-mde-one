@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__ASPECTRATIOKEEPER_H__
-#define __HEADER_GUARD__ASPECTRATIOKEEPER_H__
+#ifndef HEADER_GUARD__ASPECTRATIOKEEPER_H__
+#define HEADER_GUARD__ASPECTRATIOKEEPER_H__
 
 #include <osgWidget/Window>
 #include <osgui/macroHacks.h>
@@ -45,4 +45,4 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#endif  // __HEADER_GUARD__ASPECTRATIOKEEPER_H__
+#endif  // HEADER_GUARD__ASPECTRATIOKEEPER_H__

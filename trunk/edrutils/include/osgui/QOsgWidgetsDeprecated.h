@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__QOSGWIDGET_H__
-#define __HEADER_GUARD__QOSGWIDGET_H__
+#ifndef HEADER_GUARD__QOSGWIDGET_H__
+#define HEADER_GUARD__QOSGWIDGET_H__
 
 #include <QtOpenGL/QGLWidget>
 #include <QtCore/QTimer>
@@ -94,4 +94,4 @@ protected:
 } // namespace osgUI
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // __HEADER_GUARD__QOSGWIDGET_H__
+#endif  // HEADER_GUARD__QOSGWIDGET_H__

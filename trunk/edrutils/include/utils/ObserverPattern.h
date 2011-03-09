@@ -6,8 +6,8 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD__OBSERVERPATTERN_H__
-#define __HEADER_GUARD__OBSERVERPATTERN_H__
+#ifndef HEADER_GUARD__OBSERVERPATTERN_H__
+#define HEADER_GUARD__OBSERVERPATTERN_H__
 
 #include <utils/Config.h>
 #include <stdexcept>
@@ -141,4 +141,4 @@ public:
 } // namespace utils
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif    // __HEADER_GUARD__OBSERVERPATTERN_H__
+#endif    // HEADER_GUARD__OBSERVERPATTERN_H__

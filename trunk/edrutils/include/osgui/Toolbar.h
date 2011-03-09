@@ -1,5 +1,5 @@
-#ifndef __HEADER_GUARD__TOOLBAR_H__
-#define __HEADER_GUARD__TOOLBAR_H__
+#ifndef HEADER_GUARD__TOOLBAR_H__
+#define HEADER_GUARD__TOOLBAR_H__
 
 #include <osgui/Grid.h>
 #include <osgui/AspectRatioKeeper.h>
