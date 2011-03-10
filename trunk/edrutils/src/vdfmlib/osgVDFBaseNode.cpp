@@ -10,6 +10,7 @@ namespace osgVDF{
 osgVDFBaseNode::osgVDFBaseNode(dflm::NPtr modelNode, const std::string & nodeName, osgVDFBaseModel * model)
 	: osgWidget::Window(nodeName), m_pNode(modelNode), m_pModel(model), m_eStatus(NODE_OK){
 
+        UTILS_ASSERT((modelNode != nullptr, "Nieprawidlowy wezel logiczny"));
 }
 
 osgVDFBaseNode::~osgVDFBaseNode(void){

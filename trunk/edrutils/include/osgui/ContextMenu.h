@@ -47,8 +47,6 @@ public:
 
 public:
     //! \return
-    static const std::string& getDefaultPathSeparators();
-    //! \return
     const std::string& getPathSeparators() const;
     //! \param separators
     void setPathSeparators(const std::string& separators);
@@ -113,6 +111,8 @@ protected:
 		CloseMenuContextEvent(ContextMenu * menu);
 		virtual ~CloseMenuContextEvent();
 
+        //! handler uzywany do obslugi zdarzen poza menu kontekstowym - zamyka menu (chowa)
+        //! tak naprawde chowa najwyzszy poziom, reszte usuwa z WMa
 		virtual bool handle(const osgGA::GUIEventAdapter& gea,
 			osgGA::GUIActionAdapter&      gaa,
 			osg::Object*                  obj,
@@ -121,7 +121,7 @@ protected:
 
 	protected:
         //! ContextMenu - menu ktore chcemy chowac, jego najwyzczy poziom
-		ContextMenu * contextMenu;
+		osg::observer_ptr<ContextMenu> contextMenu;
 	};
 
     //! definicja tokenizera opartego o boost
@@ -367,9 +367,7 @@ protected:
 	Submenus submenus;
 
     //! Znaki bêd¹ce separatorami.
-    std::string pathSeparators;
-
-
+    boost::shared_ptr<std::string> pathSeparators;
 
     //! OnCloseCallback akcja uzytkownika na zamkniecie danego menu
 	OnCloseCallback closeMenuCallback;
@@ -382,8 +380,6 @@ protected:
 	static const MenuSubmenu constEmptyMenuSubmenu;
 	static MenuItem emptyMenuItem;
 	static MenuSubmenu emptyMenuSubmenu;
-    static const std::string defaultPathSeparators;
-
 };
 
 ////////////////////////////////////////////////////////////////////////////////

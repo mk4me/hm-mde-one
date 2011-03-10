@@ -1,6 +1,7 @@
 #include "PCH.h"
 #include <osgui/StyleEx.h>
 #include <osgui/Buttonized.h>
+#include <utils/>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
@@ -30,41 +31,39 @@ bool StyleEx::applyStyle(osgWidget::Label* label, osgWidget::Reader r) {
 	float       f;
 	bool ret = true;
 
-	// Font color using 4x 0-255 integers.
+	//! Font color using 4x 0-255 integers.
 	if(_match("font_color %i %i %i %i", r)) {
 		r.readSequence(vec4);
 		label->setFontColor(vec4 / 255.0f);
 	}
 
-	// Font color using 3x 0-255 integers with a default alpha of 255.
+	//! Font color using 3x 0-255 integers with a default alpha of 255.
 	else if(_match("font_color %i %i %i", r)) {
 		r.readSequence(vec3);
 		label->setFontColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 	}
 
-	// Font color using 4x 0.0f-1.0f floats.
+	//! Font color using 4x 0.0f-1.0f floats.
 	else if(_match("font_color %f %f %f %f", r)) {
 		r.readSequence(vec4);
 		label->setFontColor(vec4);
 	}
 
-	// Font color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+	//! Font color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 	else if(_match("font_color %f %f %f", r)) {
 		r.readSequence(vec3);
 		label->setFontColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 	}
 
-	// Font size using int or float.
+	//! Font size using int or float.
 	else if(_match("font_size %i", r) || _match("font_size %f", r)) {
 		r.readSequence(f);
-		//label->setSize(0,0);
 		label->setFontSize(f);
 	}
 
-	// Font type using string.
+	//! Font type using string.
 	else if(_match("font_type %s", r)) {
 		r.readSequence(str);
-		//label->setSize(0,0);
 		label->setFont(str);
 	}
 
@@ -72,36 +71,35 @@ bool StyleEx::applyStyle(osgWidget::Label* label, osgWidget::Reader r) {
 	else if(_match("font_fit %w", r)) {
 		r.readSequence(str);
 		
-		LABEL_FONT_FIT_MODE ffmode = strToFontFit(str);
-
+		LabelFontFitMode ffmode = strToFontFit(str);
 		osgWidget::XYCoord textSize = label->getTextSize();
 
 		switch(ffmode){
-		case HORIZONTAL_FIT:
+		case HorizontalFit:
 			label->setHeight(textSize.y());
 			label->addOrigin(0,0);
-			if(label->getParent() != 0){
+			if(label->getParent() != nullptr){
 				label->getParent()->resize();
 			}
 			break;
-		case VERTICAL_FIT:
+		case VerticalFit:
 			label->setWidth(textSize.x());
 			label->addOrigin(0,0);
-			if(label->getParent() != 0){
+			if(label->getParent() != nullptr){
 				label->getParent()->resize();
 			}
 			break;
-		case ALL_FIT:
+		case AllFit:
 			label->setSize(textSize);
 			label->addOrigin(0,0);
-			if(label->getParent() != 0){
+			if(label->getParent() != nullptr){
 				label->getParent()->resize();
 			}
 			break;
 		}
 	}
 
-	//text alligment based on osgText::Text capabilities
+	//text alignment based on osgText::Text capabilities
 	else if(label->getText() != 0 && _match("font_align %w", r)) {
 		r.readSequence(str);
 
@@ -109,9 +107,13 @@ bool StyleEx::applyStyle(osgWidget::Label* label, osgWidget::Reader r) {
 		//label->getText()->setAlignment(strToFontAligment(str));
 		//label->setLabel(label->getLabel());
 		//label->setSize(label->getTextSize());
+
+        osgWidget::warn() << "Font alignment in Label not implemented" <<
+            "yet. Nothing has happened" << std::endl;
+
 	}
 
-	// Font handled - continue
+	//! Font handled - continue
 	else{
 		ret = false;
 	}
@@ -140,22 +142,22 @@ bool StyleEx::applyStyle(osgWidget::Window* window, osgWidget::Reader r){
 	return handleExWindows(window, r);
 }
 
-StyleEx::LABEL_FONT_FIT_MODE StyleEx::strToFontFit(const std::string & fontFit){
+StyleEx::LabelFontFitMode StyleEx::strToFontFit(const std::string & fontFit){
 	std::string ff = osgWidget::lowerCase(fontFit);
 
-	if(ff == "vertical") return VERTICAL_FIT;
+	if(ff == "vertical") return VerticalFit;
 
-	else if(ff == "horizontal") return HORIZONTAL_FIT;
+	else if(ff == "horizontal") return HorizontalFit;
 
-	else if(ff == "all") return ALL_FIT;
+	else if(ff == "all") return AllFit;
 
 	else {
 		osgWidget::warn()
-			<< "Unkown FontFit mode [" << ff
+			<< "Unknown FontFit mode [" << ff
 			<< "]; using none." << std::endl
 			;
 
-		return NONE_FIT;
+		return NoFit;
 	}
 }
 
@@ -196,7 +198,7 @@ osgText::Text::AlignmentType StyleEx::strToFontAligment(const std::string & font
 		return osgText::Text::BASE_LINE;
 	}else{
 		osgWidget::warn()
-			<< "Unkown font_align mode [" << fa
+			<< "Unknown font_align mode [" << fa
 			<< "]; using base_line." << std::endl
 			;
 
@@ -205,7 +207,8 @@ osgText::Text::AlignmentType StyleEx::strToFontAligment(const std::string & font
 }
 
 bool StyleEx::handleExWindows(osgWidget::Window* window, osgWidget::Reader r){
-	if(window->getBackground() != 0){
+	//! Allow window background styling as it is Widget
+    if(window->getBackground() != nullptr){
 		return applyStyle(window->getBackground(), r);
 	}
 
@@ -229,32 +232,31 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 
 		if(dynamic_cast<IBorderized*>(w) != 0){
 			IBorderized* borderized = dynamic_cast<IBorderized*>(w);
-			// Border color using 4x 0-255 integers.
+			//! Border color using 4x 0-255 integers.
 			if(_match("border_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				borderized->setBorderColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Border color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("border_color %i %i %i", r)) {
 				r.readSequence(vec3);
-
 				borderized->setBorderColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Border color using 4x 0.0f-1.0f floats.
 			else if(_match("border_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				borderized->setBorderColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("border_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				borderized->setBorderColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
-			// Border thickness using int or float
+			//! Border thickness using int or float
 			else if(_match("border_width %i", r) || _match("border_width %f", r)) {
 				r.readSequence(f);
 				borderized->setBorderWidth(f);
@@ -268,101 +270,104 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 			//was not an extended window - continue
 		}
 		
-		if(ret == false && dynamic_cast<osgui::DefaultStylePolicy*>(w) != 0){
+        //! check if style already recognized and applied
+        //! if not test if known interface implemented and try to apply style with this interface
+		if(ret == false && dynamic_cast<osgui::DefaultStylePolicy*>(w) != nullptr){
 			osgui::DefaultStylePolicy* def = dynamic_cast<osgui::DefaultStylePolicy*>(w);
 			ret = true;
 
-			// Border color using 4x 0-255 integers.
+			//! Hover color using 4x 0-255 integers.
 			if(_match("hover_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				def->setHoverColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Hover color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("hover_color %i %i %i", r)) {
 				r.readSequence(vec3);
 
 				def->setHoverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Hover color using 4x 0.0f-1.0f floats.
 			else if(_match("hover_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				def->setHoverColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Hover color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("hover_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				def->setHoverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
+            //! Toggle color using 4x 0-255 integers.
 			else if(_match("toggle_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				def->setToggleColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Toggle color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("toggle_color %i %i %i", r)) {
 				r.readSequence(vec3);
-
 				def->setToggleColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Toggle color using 4x 0.0f-1.0f floats.
 			else if(_match("toggle_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				def->setToggleColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Toggle color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("toggle_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				def->setToggleColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
+            //! Pushed color using 4x 0-255 integers.
 			else if(_match("pushed_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				def->setPushedColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Pushed color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("pushed_color %i %i %i", r)) {
 				r.readSequence(vec3);
-
 				def->setPushedColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Pushed color using 4x 0.0f-1.0f floats.
 			else if(_match("pushed_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				def->setPushedColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Pushed color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("pushed_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				def->setPushedColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
+            //! Normal color using 4x 0-255 integers.
 			else if(_match("normal_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				def->setNormalColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Normal color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("normal_color %i %i %i", r)) {
 				r.readSequence(vec3);
 				def->setNormalColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Normal color using 4x 0.0f-1.0f floats.
 			else if(_match("normal_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				def->setNormalColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Normal color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("normal_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				def->setNormalColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
@@ -375,98 +380,104 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 			
 		}
 		
-		if(ret == false && dynamic_cast<osgui::LabelStylePolicy*>(w) != 0){
+        //! check if style already recognized and applied
+        //! if not test if known interface implemented and try to apply style with this interface
+		if(ret == false && dynamic_cast<osgui::LabelStylePolicy*>(w) != nullptr){
 			osgui::LabelStylePolicy* lab = dynamic_cast<osgui::LabelStylePolicy*>(w);
 
 			ret = true;
 
+            //! Label text hover color using 4x 0-255 integers.
 			if(_match("label_hover_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				lab->setLabelHoverColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Label text hover color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("label_hover_color %i %i %i", r)) {
 				r.readSequence(vec3);
 				lab->setLabelHoverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Label text hover color using 4x 0.0f-1.0f floats.
 			else if(_match("label_hover_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				lab->setLabelHoverColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Label text hover color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("label_hover_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				lab->setLabelHoverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
+            //! Label text toggle color using 4x 0-255 integers.
 			else if(_match("label_toggle_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				lab->setLabelToggleColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Label text toggle color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("label_toggle_color %i %i %i", r)) {
 				r.readSequence(vec3);
 				lab->setLabelToggleColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Label text toggle color using 4x 0.0f-1.0f floats.
 			else if(_match("label_toggle_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				lab->setLabelToggleColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Label text toggle color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("label_toggle_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				lab->setLabelToggleColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
+            //! Label text push color using 4x 0-255 integers.
 			else if(_match("label_pushed_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				lab->setLabelPushedColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Label text push color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("label_pushed_color %i %i %i", r)) {
 				r.readSequence(vec3);
 				lab->setLabelPushedColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Label text push color using 4x 0.0f-1.0f floats.
 			else if(_match("label_pushed_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				lab->setLabelPushedColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Label text push color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("label_pushed_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				lab->setLabelPushedColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
+            //! Label text normal color using 4x 0-255 integers.
 			else if(_match("label_normal_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				lab->setLabelNormalColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Label text normal color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("label_normal_color %i %i %i", r)) {
 				r.readSequence(vec3);
 				lab->setLabelNormalColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Label text normal color using 4x 0.0f-1.0f floats.
 			else if(_match("label_normal_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				lab->setLabelNormalColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Label text normal color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("label_normal_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				lab->setLabelNormalColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
@@ -478,98 +489,104 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 			}
 		}
 
-		if(ret == false && dynamic_cast<osgui::IBorderStylePolicy*>(w) != 0){
+        //! check if style already recognized and applied
+        //! if not test if known interface implemented and try to apply style with this interface
+		if(ret == false && dynamic_cast<osgui::IBorderStylePolicy*>(w) != nullptr){
 			osgui::IBorderStylePolicy* bord = dynamic_cast<osgui::IBorderStylePolicy*>(w);
 
 			ret = true;
 
+            //! Borderized buttonized border hover color using 4x 0-255 integers.
 			if(_match("border_hover_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				bord->setBorderHoverColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Borderized buttonized border hover color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("border_hover_color %i %i %i", r)) {
 				r.readSequence(vec3);
 				bord->setBorderHoverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Borderized buttonized border hover color using 4x 0.0f-1.0f floats.
 			else if(_match("border_hover_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				bord->setBorderHoverColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Borderized buttonized border hover color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("border_hover_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				bord->setBorderHoverColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
+            //! Borderized buttonized border toggle color using 4x 0-255 integers.
 			else if(_match("border_toggle_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				bord->setBorderToggleColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Borderized buttonized border toggle color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("border_toggle_color %i %i %i", r)) {
 				r.readSequence(vec3);
 				bord->setBorderToggleColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Borderized buttonized border toggle color using 4x 0.0f-1.0f floats.
 			else if(_match("border_toggle_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				bord->setBorderToggleColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Borderized buttonized border toggle color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("border_toggle_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				bord->setBorderToggleColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
+            //! Borderized buttonized border push color using 4x 0-255 integers.
 			else if(_match("border_pushed_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				bord->setBorderPushedColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Borderized buttonized border push color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("border_pushed_color %i %i %i", r)) {
 				r.readSequence(vec3);
 				bord->setBorderPushedColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Borderized buttonized border push color using 4x 0.0f-1.0f floats.
 			else if(_match("border_pushed_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				bord->setBorderPushedColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Borderized buttonized border push color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("border_pushed_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				bord->setBorderPushedColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
 			}
 
+            //! Borderized buttonized border normal color using 4x 0-255 integers.
 			else if(_match("border_normal_color %i %i %i %i", r)) {
 				r.readSequence(vec4);
 				bord->setBorderNormalColor(vec4 / 255.0f);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Borderized buttonized border normal color using 3x 0-255 integers with a default alpha of 255.
 			else if(_match("border_normal_color %i %i %i", r)) {
 				r.readSequence(vec3);
 				bord->setBorderNormalColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 255.0f) / 255.0f);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Borderized buttonized border normal color using 4x 0.0f-1.0f floats.
 			else if(_match("border_normal_color %f %f %f %f", r)) {
 				r.readSequence(vec4);
 				bord->setBorderNormalColor(vec4);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Borderized buttonized border normal color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
 			else if(_match("border_normal_color %f %f %f", r)) {
 				r.readSequence(vec3);
 				bord->setBorderNormalColor(osg::Vec4(vec3[0], vec3[1], vec3[2], 1.0f));
@@ -581,29 +598,32 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 			}
 		}
 		
-		if(ret == false && dynamic_cast<osgui::TextStylePolicy*>(w) != 0){
+        //! check if style already recognized and applied
+        //! if not test if known interface implemented and try to apply style with this interface
+		if(ret == false && dynamic_cast<osgui::TextStylePolicy*>(w) != nullptr){
 			osgui::TextStylePolicy* txt = dynamic_cast<osgui::TextStylePolicy*>(w);
 
 			ret = true;
 
+            //! Buttonized on hover style name
 			if(_match("hover_style %s", r)) {
 				r.readSequence(str);
 				txt->setHoverStyle(str);
 			}
 
-			// Border color using 3x 0-255 integers with a default alpha of 255.
+			//! Buttonized on toggle style name
 			else if(_match("toggle_style %s", r)) {
 				r.readSequence(str);
 				txt->setToggleStyle(str);
 			}
 
-			// Border color using 4x 0.0f-1.0f floats.
+			//! Buttonized on push style name
 			else if(_match("pushed_style %s", r)) {
 				r.readSequence(str);
 				txt->setPushedStyle(str);
 			}
 
-			// Border color using 3x 0.0f-1.0f floats with a default alpha of 1.0f.
+			//! Buttonized normal style name
 			else if(_match("normal_style %s", r)) {
 				r.readSequence(str);
 				txt->setNormalStyle(str);
@@ -620,4 +640,6 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 	return ret;
 }
 
-}
+////////////////////////////////////////////////////////////////////////////////
+} // namespace osgui
+////////////////////////////////////////////////////////////////////////////////
