@@ -34,18 +34,18 @@ public:
 
 private:
 	bool addTooltipToWM();
-	void strataForegroundToNone();
-	void restoreStrataForeground();
+	//void strataForegroundToNone();
+	//void restoreStrataForeground();
 	std::string rebuildTooltipText(const std::string & text) const;
 
 private:
-	typedef std::set<osg::observer_ptr<osgWidget::Window> > RESTORE;
+	//typedef std::set<osg::observer_ptr<osgWidget::Window> > RESTORE;
 	typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
 private:
 	osg::ref_ptr<osgui::Tooltip> tooltip;
 	std::string tooltipOriginalText;
-	RESTORE toRestore;
+	//RESTORE toRestore;
 
 	std::string firstLevelSeparators;
 	std::string secondLevelSeparators;

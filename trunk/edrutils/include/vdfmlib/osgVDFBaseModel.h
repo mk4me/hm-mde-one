@@ -28,6 +28,7 @@ namespace osgVDF{
 
 class osgVDFBaseNode;
 class osgVDFBasePin;
+class osgVDFContextMenu;
 
 class osgVDFBaseModel : public osgWidget::WindowManager, public osgui::KeyboardMapper, public osgui::TooltipHost{
 public:
@@ -131,7 +132,7 @@ private:
 			);
 
 	protected:
-		osgVDFBaseModel * model;
+		osg::observer_ptr<osgVDFBaseModel> model;
 	};
 
 	friend class ModelResizeHandler;
@@ -150,7 +151,7 @@ private:
 			);
 
 	protected:
-		osgVDFBaseModel * model;
+		osg::observer_ptr<osgVDFBaseModel> model;
 		bool visualSelectionStarted;
 	};
 
@@ -174,12 +175,24 @@ private:
 				double &distanceLine);
 
 	protected:
-		osgVDFBaseModel * model;
+		osg::observer_ptr<osgVDFBaseModel> model;
 	};
+
+    class osgVDFContextMenu : public osgui::ContextMenu{
+    public:
+
+        osgVDFContextMenu();
+        ~osgVDFContextMenu();
+
+    protected:
+
+        virtual bool canShow() const;
+    };
 
 	friend class NodeDescriptorClick;
 	friend class osgVDFBaseNode;
 	friend class osgVDFBasePin;
+    friend class osgVDFContextMenu;
 
 protected:
 	osgWidget::point_type getMinNodesZ();
@@ -327,7 +340,7 @@ private:
 
 	PINS_CONNECTIONS_UPDATE_MAP pinsConnectionsUpdate;
 
-	osg::ref_ptr<osgui::ContextMenu> contextMenu;
+	osg::ref_ptr<osgVDFContextMenu> contextMenu;
 	osg::Geode * lastHighlightedConnection;
 	bool contextMenuOn;
 
@@ -339,6 +352,7 @@ private:
 	bool toolbarVisible;
 	BUTTON * lastButton;
 };
+
 
 }
 

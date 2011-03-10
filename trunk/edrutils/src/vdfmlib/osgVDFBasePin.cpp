@@ -9,7 +9,8 @@ namespace osgVDF{
 osgVDFBasePin::osgVDFBasePin (const std::string& name, dflm::PinPtr pin, osgVDFBaseModel * model) :
 	osgWidget::Widget("\\pin\\"+name), m_pPin(pin), m_bCenterChanged(false), m_pParentNode(0), m_pModel(model) {
 
-    UTILS_ASSERT((modelNode != nullptr, "Nieprawidlowy pin logiczny"));
+    UTILS_ASSERT((pin != nullptr, "Nieprawidlowy pin logiczny"));
+    UTILS_ASSERT((model != nullptr, "Nieprawidlowy model logiczny"));
 }
 
 osgVDFBasePin::osgVDFBasePin (const osgVDFBasePin& pin, const osg::CopyOp& co) : Widget(pin),

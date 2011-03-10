@@ -12,7 +12,6 @@
 #include <osgWidget/Widget>
 #include <osgWidget/Label>
 #include <boost/type_traits.hpp>
-#include <boost/assert.hpp>
 #include <utils/Debug.h>
 #include <osgui/macroHacks.h>
 
@@ -27,7 +26,8 @@ class Buttonized : public Base, public StylePolicy
 
 public:
     //META_Object(osgui, Buttonized);
-	META_Widget(osgui, Buttonized);
+	//META_Widget(osgui, Buttonized);
+    META_ObjectBase(osgui, Borderized);
 
 private:
     //! Czy jest wciśnięty?
@@ -388,7 +388,7 @@ protected:
 	{
 		DefaultStylePolicy::applyStyle(widget, toggled, pushed, hovered);
 		osgWidget::Label* label = dynamic_cast<osgWidget::Label*>(widget);
-		BOOST_ASSERT(label);
+		UTILS_ASSERT(label);
 		if ( toggled ) {
 			label->setFontColor(toggleColor);
 		} else {

@@ -44,8 +44,13 @@ public:
 public:
 	virtual void managed(osgWidget::WindowManager * wm);
 	virtual void unmanaged(osgWidget::WindowManager * wm);
+    virtual void update();
 
 public:
+    bool isEmpty() const;
+
+    static const std::string & getDefaultPathSeparator();
+
     //! \return
     const std::string& getPathSeparators() const;
     //! \param separators
@@ -54,9 +59,9 @@ public:
     //! string - sciezka do elementu menu
     //! bool - checked, czy element jest zaznaczony (jak checkbox)
     //! onClickCallback - akcja useraa na klikniecie elementu
-    //! onHooverCallback - akcja useraa na najechanie elementu menu, domyslnie pusta
+    //! onHoverCallback - akcja useraa na najechanie elementu menu, domyslnie pusta
 	bool addMenuItem(const std::string & path, bool checked, const OnClickCallback & onClickCallback,
-        const OnHoverCallback & onHooverCallback = OnHoverCallback());
+        const OnHoverCallback & onHoverCallback = OnHoverCallback());
 
     //! string - sciezka do elementu menu, ktory chcemy usunac
     bool removeMenuItem(const std::string & path);
@@ -71,7 +76,7 @@ public:
 
     //! string - sciezka do elementu menu, ktory chcemy modyfikowac
     //! OnHoverCallback - nowa akcja usera na najechanie elementu
-	bool setMenuItemOnHooverCallback(const std::string & path, const OnHoverCallback & callback);
+	bool setMenuItemOnHoverCallback(const std::string & path, const OnHoverCallback & callback);
 
     //! string - sciezka do submenu, ktory chcemy modyfikowac
     //! OnCloseCallback - nowa akcja usera po zamknieciu danego poziomu menu
@@ -81,13 +86,15 @@ public:
 	const OnClickCallback & getMenuItemOnClickCallback(const std::string & path) const;
 
     //! string - sciezka do elementu menu
-	const OnHoverCallback & getMenuItemOnHooverCallback(const std::string & path) const;
+	const OnHoverCallback & getMenuItemOnHoverCallback(const std::string & path) const;
 
     //! string - sciezka do submenu
 	const OnCloseCallback & getMenuOnCloseCallback(const std::string & path) const;
 
     //! string - sciezka do elementu menu
 	bool getMenuItemChecked(const std::string & path) const;
+
+    bool showMenu();
 
     //! osgWidget::XYCoord - nowa pozycja menu (lewego dolnego rogu)
 	bool showMenu(const osgWidget::XYCoord & pos);
@@ -99,20 +106,47 @@ public:
     //! chowa menu
 	void hideMenu();
 
+    //! czysci menu i chowa je
+    void clearMenu();
+
 protected:
 
+ //   /**
+ //    *	Klasa obslugujaca klikniecia poza menu, chowa menu
+ //    */
+	//class CloseMenuContextEvent : public osgGA::GUIEventHandler{
+
+	//public:
+ //       //! ContextMenu - menu ktore chcemy chowac, jego najwyzczy poziom
+	//	CloseMenuContextEvent(ContextMenu * menu);
+	//	virtual ~CloseMenuContextEvent();
+
+ //       //! handler uzywany do obslugi zdarzen poza menu kontekstowym - zamyka menu (chowa)
+ //       //! tak naprawde chowa najwyzszy poziom, reszte usuwa z WMa
+	//	virtual bool handle(const osgGA::GUIEventAdapter& gea,
+	//		osgGA::GUIActionAdapter&      gaa,
+	//		osg::Object*                  obj,
+	//		osg::NodeVisitor*             nv
+	//		);
+
+	//protected:
+ //       //! ContextMenu - menu ktore chcemy chowac, jego najwyzczy poziom
+	//	osg::observer_ptr<ContextMenu> contextMenu;
+	//};
+
     /**
-     *	Klasa obslugujaca klikniecia poza menu, chowa menu
+     *	Klasa obslugujaca PPM otwierajacy menu jesli nie byl klikniety zaden Window
      */
-	class CloseMenuContextEvent : public osgGA::GUIEventHandler{
+	class OpenCloseContextMenuEvent : public osgGA::GUIEventHandler{
 
 	public:
-        //! ContextMenu - menu ktore chcemy chowac, jego najwyzczy poziom
-		CloseMenuContextEvent(ContextMenu * menu);
-		virtual ~CloseMenuContextEvent();
+        //! ContextMenu - menu ktore chcemy pokazywac/chowac
+		OpenCloseContextMenuEvent(ContextMenu * menu);
+		virtual ~OpenCloseContextMenuEvent();
 
-        //! handler uzywany do obslugi zdarzen poza menu kontekstowym - zamyka menu (chowa)
+        //! handler uzywany do obslugi zdarzen menu kontekstowym - zamyka menu (chowa)
         //! tak naprawde chowa najwyzszy poziom, reszte usuwa z WMa
+        //! lub pokazuje
 		virtual bool handle(const osgGA::GUIEventAdapter& gea,
 			osgGA::GUIActionAdapter&      gaa,
 			osg::Object*                  obj,
@@ -120,7 +154,7 @@ protected:
 			);
 
 	protected:
-        //! ContextMenu - menu ktore chcemy chowac, jego najwyzczy poziom
+        //! ContextMenu - menu ktorym chcemy zarzadzac
 		osg::observer_ptr<ContextMenu> contextMenu;
 	};
 
@@ -145,7 +179,7 @@ protected:
 		OnClickCallback onClickCallback;
 
         //! akcja zadana przez uzytkownika na najechanie elementu
-		OnHoverCallback onHooverCallback;
+		OnHoverCallback onHoverCallback;
 
 	}MenuItem;
 
@@ -170,6 +204,8 @@ protected:
 	typedef std::map<std::string, MenuItem> Items;
 
 protected:
+
+    virtual bool canShow() const;
 
     //! ContextMenu - rodzic aktualnego menu, ukryty na potrzeby klasy
 	ContextMenu(ContextMenu * parent);
@@ -209,19 +245,19 @@ private:
     //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! bool - checked, czy element jest zaznaczony (jak checkbox)
     //! onClickCallback - akcja useraa na klikniecie elementu
-    //! onHooverCallback - akcja useraa na najechanie elementu menu, domyslnie pusta
+    //! onHoverCallback - akcja useraa na najechanie elementu menu, domyslnie pusta
 	template<class Collection>
 	bool addMenuItem(const Collection & path, bool checked, const OnClickCallback & onClickCallback,
-        const OnHoverCallback & onHooverCallback = OnHoverCallback());
+        const OnHoverCallback & onHoverCallback = OnHoverCallback());
 
     //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! bool - checked, czy element jest zaznaczony (jak checkbox)
     //! onClickCallback - akcja useraa na klikniecie elementu
-    //! onHooverCallback - akcja useraa na najechanie elementu menu, domyslnie pusta
+    //! onHoverCallback - akcja useraa na najechanie elementu menu, domyslnie pusta
 	template<class Iter>
 	bool addMenuItem(Iter begin, Iter end, bool checked, const OnClickCallback & onClickCallback,
-        const OnHoverCallback & onHooverCallback = OnHoverCallback());
+        const OnHoverCallback & onHoverCallback = OnHoverCallback());
 
     //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), ktory chemy usunac
 	template<class Collection>
@@ -257,13 +293,13 @@ private:
     //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu), ktory chemy usunac
     //! OnHoverCallback nowa akcja uzytkownika po najechaniu myszka danego elementu
 	template<class Collection>
-	bool setMenuItemOnHooverCallback(const Collection & path, const OnHoverCallback & callback);
+	bool setMenuItemOnHoverCallback(const Collection & path, const OnHoverCallback & callback);
 
     //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! OnHoverCallback nowa akcja uzytkownika po najechaniu myszka danego elementu
 	template<class Iter>
-	bool setMenuItemOnHooverCallback(Iter begin, Iter end, const OnHoverCallback & callback);
+	bool setMenuItemOnHoverCallback(Iter begin, Iter end, const OnHoverCallback & callback);
 
     //! Collection - kolekajca z kolejnymi poziomami submenu
     //! OnCloseCallback nowa akcja uzytkownika na zamkniecie danego submenu
@@ -287,12 +323,12 @@ private:
 
     //! Collection - kolekajca z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
 	template<class Collection>
-	const OnHoverCallback & getMenuItemOnHooverCallback(const Collection & path) const;
+	const OnHoverCallback & getMenuItemOnHoverCallback(const Collection & path) const;
 
     //! Iter begin - poczatek kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
     //! Iter end - koniec kolekcji z kolejnymi elementami menu (ostatni to element, inne po drodze to submenu)
 	template<class Iter>
-	const OnHoverCallback & getMenuItemOnHooverCallback(Iter begin, Iter end) const;
+	const OnHoverCallback & getMenuItemOnHoverCallback(Iter begin, Iter end) const;
 
     //! Collection - kolekajca z kolejnymi poziomami submenu
 	template<class Collection>
@@ -367,19 +403,24 @@ protected:
 	Submenus submenus;
 
     //! Znaki bêd¹ce separatorami.
-    boost::shared_ptr<std::string> pathSeparators;
+    boost::shared_ptr<std::string> pathSeparator;
 
     //! OnCloseCallback akcja uzytkownika na zamkniecie danego menu
 	OnCloseCallback closeMenuCallback;
 
     //! klasa obslugujaca kliknieca poza menu kontekstowym zamykajaca je (chowajaca)
-	osg::ref_ptr<CloseMenuContextEvent> closeMenuEventHandler;
+	//osg::ref_ptr<CloseMenuContextEvent> closeMenuEventHandler;
+
+    //! klasa obslugujaca kliknieca PPM poza innymi oknami w WM otwierajac zadane menu kontesktowe
+    osg::ref_ptr<OpenCloseContextMenuEvent> openCloseContextMenuEventHandler;
 
 
 	static const MenuItem constEmptyMenuItem;
 	static const MenuSubmenu constEmptyMenuSubmenu;
 	static MenuItem emptyMenuItem;
 	static MenuSubmenu emptyMenuSubmenu;
+
+    static const std::string defaultPathSeparator;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

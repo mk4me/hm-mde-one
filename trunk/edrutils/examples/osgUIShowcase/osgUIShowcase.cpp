@@ -20,8 +20,23 @@
 #include <osgui/EmbeddedWindow.h>
 #include <osgui/KeyboardMapper.h>
 #include <osgui/KeyboardMapperHandler.h>
+#include <osgui/ContextMenu.h>
+#include <osgui/StyleEx.h>
+
+#include <set>
+#include <sstream>
+#include <iomanip>
 
 using namespace osgui;
+
+typedef std::set<osg::ref_ptr<StyleEx> > StyleSet;
+
+std::string colorToStr(const osgWidget::Color & color)
+{
+    std::stringstream str;
+    str << std::fixed << std::setprecision(5) << color.r() << " " << color.g() << " " <<color.b() << " " << color.a();
+    return str.str();
+}
 
 class SampleWindowManager : public osgWidget::WindowManager, public osgui::KeyboardMapper
 {
@@ -29,7 +44,9 @@ public:
     SampleWindowManager(osgViewer::View* view, osgWidget::point_type w = 0.0f, osgWidget::point_type h = 0.0f,
         unsigned int mask = 0, unsigned int flags = 0) :
     osgWidget::WindowManager(view, w, h, mask, flags)
-    {}
+    {
+        
+    }
 };
 
 bool callbackWindowResize(osgWidget::Event& ev) 
@@ -96,6 +113,25 @@ void createExample(osgViewer::View& view, int w, int h)
     view.addEventHandler( new osgWidget::ResizeHandler(wm, view.getCamera()) );
     view.addEventHandler( new osgGA::StateSetManipulator( view.getCamera()->getOrCreateStateSet() ) );
     view.setSceneData(wm);
+
+    //dodanie styli
+    StyleSet styleSet;
+    styleSet.insert(new osgui::StyleEx("osg.contextmenu.menu", "color " + colorToStr(osgWidget::Color(0.357f,0.357f,0.357f,1.0f))));
+    //styleSet.insert(new StyleEx("osg.contextmenu.submenuitem", "color " + colorToStr(osgWidget::Color(0.537f,0.537f,0.537f,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+    styleSet.insert(new osgui::StyleEx("osg.contextmenu.submenuitem.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+    styleSet.insert(new osgui::StyleEx("osg.contextmenu.submenuitem.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(1,1,1,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+    styleSet.insert(new osgui::StyleEx("osg.contextmenu.item.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+    styleSet.insert(new osgui::StyleEx("osg.contextmenu.item.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(1,1,1,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+
+    styleSet.insert(new osgui::StyleEx("osg.contextmenu.checked.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(1.0f,1.0f,0.0f,1.0f))));
+    styleSet.insert(new osgui::StyleEx("osg.contextmenu.checked.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,1.0f))));
+    styleSet.insert(new osgui::StyleEx("osg.contextmenu.unchecked.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
+    styleSet.insert(new osgui::StyleEx("osg.contextmenu.unchecked.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(1,1,1,1.0f))));
+
+    for(StyleSet::iterator it = styleSet.begin(); it != styleSet.end(); it++)
+    {
+        wm->getStyleManager()->addStyle(*it);
+    }
 
     std::vector<Widget*> widgets;
 
@@ -238,6 +274,18 @@ void createExample(osgViewer::View& view, int w, int h)
         grid->setColumnWeight(2, 4);
 
         widgets.push_back( EmbeddedWindow::embed(grid, "Grid 3x3") );
+    }
+
+    {
+        //menu kontekstowe
+
+        ContextMenu* contextMenu = new ContextMenu();
+        contextMenu->addMenuItem(std::string("Plik/Otworz"), false, osgui::ContextMenu::OnClickCallback());
+        contextMenu->addMenuItem(std::string("Plik/Zapisz"), false, osgui::ContextMenu::OnClickCallback());
+        contextMenu->addMenuItem(std::string("Zakoñcz"), false, osgui::ContextMenu::OnClickCallback());
+
+        wm->addChild(contextMenu);
+        //! add styles to context menu
     }
 
     float dw = 50;// float(w) / widgets.size();

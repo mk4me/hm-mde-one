@@ -11,28 +11,23 @@ const ContextMenu::MenuItem ContextMenu::constEmptyMenuItem = ContextMenu::MenuI
 const ContextMenu::MenuSubmenu ContextMenu::constEmptyMenuSubmenu = ContextMenu::MenuSubmenu();
 ContextMenu::MenuItem ContextMenu::emptyMenuItem = constEmptyMenuItem;
 ContextMenu::MenuSubmenu ContextMenu::emptyMenuSubmenu = constEmptyMenuSubmenu;
-
+const std::string ContextMenu::defaultPathSeparator = "/";
 
 ContextMenu::ContextMenu(void) : 
-pathSeparators(new std::string("/"))
+pathSeparator(new std::string(defaultPathSeparator))
 {	
     rootMenu = this;
-	closeMenuEventHandler = new CloseMenuContextEvent(this);
-
-    // czy te obie instrukcje naprawdê s¹ potrzebne?
-	hide();
+	//closeMenuEventHandler = new CloseMenuContextEvent(this);
+    openCloseContextMenuEventHandler = new OpenCloseContextMenuEvent(this);
 	setStyle("osg.contextmenu.menu");
 }
 
 ContextMenu::ContextMenu(ContextMenu * parent) :
-parentMenu(parent), pathSeparators(new std::string("/"))
+parentMenu(parent), pathSeparator(parent->pathSeparator)
 {    
-    UTILS_ASSERT(parent);
+    UTILS_ASSERT((parent != nullptr));
     rootMenu = parent->rootMenu;
-
-    // czy te obie instrukcje naprawdê s¹ potrzebne?
-	hide();
-	setStyle("osg.contextmenu.menu");
+    setStyle("osg.contextmenu.menu");
 }
 
 ContextMenu::~ContextMenu(void)
@@ -40,23 +35,38 @@ ContextMenu::~ContextMenu(void)
 }
 
 void ContextMenu::managed(osgWidget::WindowManager * wm){
-	osgui::Grid::managed(wm);
-	
-	if(closeMenuEventHandler != nullptr){
-		wm->getView()->addEventHandler(closeMenuEventHandler);
-	}
+    osgui::Grid::managed(wm);
+    hide();
+    
+	//wm->getView()->addEventHandler(closeMenuEventHandler);
+    if(openCloseContextMenuEventHandler){
+        wm->getView()->addEventHandler(openCloseContextMenuEventHandler);
+    }
 }
 
 void ContextMenu::unmanaged(osgWidget::WindowManager * wm){
 	osgui::Grid::unmanaged(wm);
 
-	if(closeMenuEventHandler != nullptr){
-		wm->getView()->removeEventHandler(closeMenuEventHandler);
-	}
+	//wm->getView()->removeEventHandler(closeMenuEventHandler);
+    if(openCloseContextMenuEventHandler){
+        wm->getView()->removeEventHandler(openCloseContextMenuEventHandler);
+    }
 }
 
-bool ContextMenu::addMenuItem(const std::string & path, bool checked, const ContextMenu::OnClickCallback & onClickCallback, const ContextMenu::OnHoverCallback & onHooverCallback){
-	return addMenuItem(parseNextMenuItems(path), checked, onClickCallback, onHooverCallback);
+void ContextMenu::update(){
+    if(getWindowManager() != nullptr){
+        unsigned int i = getWindowManager()->getNumChildren() + 3;
+        float range = 1.0f / (float)i;
+
+        this->_z = -range;
+        this->_zRange = range / 2.0;
+    }
+
+    Grid::update();
+}
+
+bool ContextMenu::addMenuItem(const std::string & path, bool checked, const ContextMenu::OnClickCallback & onClickCallback, const ContextMenu::OnHoverCallback & onHoverCallback){
+	return addMenuItem(parseNextMenuItems(path), checked, onClickCallback, onHoverCallback);
 }
 
 bool ContextMenu::removeMenuItem(const std::string & path){
@@ -68,7 +78,7 @@ bool ContextMenu::setMenuItemChecked(const std::string & path, bool checked){
 }
 
 bool ContextMenu::isSubmenuDirectionRight() const{
-	if(parentMenu == 0 || getWindowManager() == nullptr ||
+	if(parentMenu == nullptr || getWindowManager() == nullptr ||
 		parentMenu->getAbsoluteOrigin().x() + parentMenu->getWidth() + getWidth() <= getWindowManager()->getWidth()){
 		return true;
 	}
@@ -85,34 +95,40 @@ bool ContextMenu::setMenuOnCloseCallback(const std::string & path, const Context
 	return setMenuOnCloseCallback(parseNextMenuItems(path), callback);
 }
 
+bool ContextMenu::showMenu(){
+    if(this->isVisible() == true){
+        return true;
+    }
+    
+    if(rootMenu == this){
+        show();
+        return true;
+    }
+
+    if(parentMenu->isVisible() == true){
+        if(parentMenu->activeSubMenu != nullptr){
+            parentMenu->activeSubMenu->hideMenu();
+        }
+        
+        parentMenu->activeSubMenu = this;
+
+        if(parentMenu->getWindowManager() != nullptr){
+            parentMenu->getWindowManager()->addChild(this);
+        }
+        //setOrigin(pos);
+        //resize();
+        show();
+        return true;
+    }
+
+    return false;
+}
+
 bool ContextMenu::showMenu(const osgWidget::XYCoord & pos){	
 	setOrigin(pos);
 	resize();
-	if(this->isVisible() == true){
-		return true;
-	}
-
-	if(rootMenu == this){
-		show();
-		return true;
-	}
-
-	if(parentMenu->isVisible() == true){
-		if(parentMenu->activeSubMenu != nullptr){
-			parentMenu->activeSubMenu->hideMenu();
-		}
-		parentMenu->activeSubMenu = this;
-
-		if(parentMenu->getWindowManager() != nullptr){
-			parentMenu->getWindowManager()->addChild(this);
-		}
-		setOrigin(pos);
-		resize();
-		show();
-		return true;
-	}
-
-	return false;
+	
+    return showMenu();
 }
 
 bool ContextMenu::showMenu(osgWidget::point_type x, osgWidget::point_type y){
@@ -158,10 +174,38 @@ void ContextMenu::hideMenu(){
 	}
 }
 
+bool ContextMenu::isEmpty() const{
+    if(items.empty() && submenus.empty()){
+        return true;
+    }
+
+    return false;
+}
+
+bool ContextMenu::canShow() const{
+    return true;
+}
+
+void ContextMenu::clearMenu(){
+    UTILS_FAIL("Nie zaimplementowano");
+    //chowaj menu, usun z WMa wszystko co niepotrzebne
+    hideMenu();
+
+    int rows = getNumRows();
+    for(int i = rows; i >= 0; i--){
+       // removeRow(i);
+    }
+
+    //usun elementy menu
+    items = Items();
+    submenus = Submenus();
+    activeSubMenu = nullptr;
+}
+
 std::vector<std::string> ContextMenu::parseNextMenuItems(const std::string & path) const{
 	std::vector<std::string> ret;
 
-	Tokenizer tokens(path, boost::char_separator<char>((*pathSeparators).c_str()));
+	Tokenizer tokens(path, boost::char_separator<char>((*pathSeparator).c_str()));
 	for(Tokenizer::iterator it = tokens.begin(); it != tokens.end(); it++){
 		ret.push_back(*it);
 	}
@@ -172,7 +216,7 @@ std::vector<std::string> ContextMenu::parseNextMenuItems(const std::string & pat
 bool ContextMenu::onItemPush(osgWidget::Event& ev){
 	//call callback function
 
-	if(getWindowManager() == 0 || getWindowManager()->isLeftMouseButtonDown() == false){
+	if(getWindowManager()->isLeftMouseButtonDown() == false){
 		return false;
 	}
 
@@ -194,7 +238,7 @@ bool ContextMenu::onItemEnter(osgWidget::Event& ev){
 	
 	MenuItem * menuItem = static_cast<MenuItem *>(ev.getData());
 
-	menuItem->menuItem->setStyle("osg.contextmenu.item.hoovered");
+	menuItem->menuItem->setStyle("osg.contextmenu.item.hovered");
 
 	if(getWindowManager()->getStyleManager() != nullptr){
 		getWindowManager()->getStyleManager()->applyStyles(menuItem->menuItem);
@@ -202,8 +246,8 @@ bool ContextMenu::onItemEnter(osgWidget::Event& ev){
 
 	refreshMenuItemCheckedStyle(*menuItem, true);
 
-	if(menuItem->onHooverCallback.empty() == false){
-		menuItem->onHooverCallback(menuItem->menuItem->getLabel(), true);
+	if(menuItem->onHoverCallback.empty() == false){
+		menuItem->onHoverCallback(menuItem->menuItem->getLabel(), true);
 	}
 
 	return false;
@@ -215,14 +259,14 @@ bool ContextMenu::onItemLeave(osgWidget::Event& ev){
 
 	menuItem->menuItem->setStyle("osg.contextmenu.item.normal");
 
-	if(getWindowManager()->getStyleManager() != nullptr){
+	if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
 		getWindowManager()->getStyleManager()->applyStyles(menuItem->menuItem);
 	}
 
 	refreshMenuItemCheckedStyle(*menuItem);
 
-	if(menuItem->onHooverCallback.empty() == false){
-		menuItem->onHooverCallback(menuItem->menuItem->getLabel(), false);
+	if(menuItem->onHoverCallback.empty() == false){
+		menuItem->onHoverCallback(menuItem->menuItem->getLabel(), false);
 	}
 
 	return false;
@@ -232,8 +276,8 @@ bool ContextMenu::onSubmenuEnter(osgWidget::Event& ev){
 
 	MenuSubmenu * submenuItem = static_cast<MenuSubmenu *>(ev.getData());
 
-	submenuItem->submenuItem->setStyle("osg.contextmenu.submenuitem.hoovered");
-	submenuItem->emptyWidget->setStyle("osg.contextmenu.submenuitem.hoovered");
+	submenuItem->submenuItem->setStyle("osg.contextmenu.submenuitem.hovered");
+	submenuItem->emptyWidget->setStyle("osg.contextmenu.submenuitem.hovered");
 	if(getWindowManager()->getStyleManager() != nullptr){
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->submenuItem);
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->emptyWidget);
@@ -265,7 +309,7 @@ bool ContextMenu::onSubmenuLeave(osgWidget::Event& ev){
 
 	submenuItem->submenuItem->setStyle("osg.contextmenu.submenuitem.normal");
     submenuItem->emptyWidget->setStyle("osg.contextmenu.submenuitem.normal");
-    if(getWindowManager()->getStyleManager() != nullptr){
+    if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->submenuItem);
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->emptyWidget);
 	}
@@ -273,50 +317,88 @@ bool ContextMenu::onSubmenuLeave(osgWidget::Event& ev){
 	return false;
 }
 
-void ContextMenu::refreshMenuItemCheckedStyle(const MenuItem & menuItem, bool hoovered){
+void ContextMenu::refreshMenuItemCheckedStyle(const MenuItem & menuItem, bool hovered){
 	if(menuItem.checkedWidget != nullptr){
 		if(menuItem.checked == true){
-			if(hoovered == true){
-				menuItem.checkedWidget->setStyle("osg.contextmenu.checked.hoovered");
+			if(hovered == true){
+				menuItem.checkedWidget->setStyle("osg.contextmenu.checked.hovered");
 			}else{
 				menuItem.checkedWidget->setStyle("osg.contextmenu.checked.normal");
 			}
 		}else{
-			if(hoovered == true){
-				menuItem.checkedWidget->setStyle("osg.contextmenu.unchecked.hoovered");
+			if(hovered == true){
+				menuItem.checkedWidget->setStyle("osg.contextmenu.unchecked.hovered");
 			}else{
 				menuItem.checkedWidget->setStyle("osg.contextmenu.unchecked.normal");
 			}
 		}
 
-		if(getWindowManager()->getStyleManager() != nullptr){
-			getWindowManager()->getStyleManager()->applyStyles(menuItem.checkedWidget);
-		}
+        if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
+            getWindowManager()->getStyleManager()->applyStyles(menuItem.checkedWidget);
+        }
 	}
 }
 
-ContextMenu::CloseMenuContextEvent::CloseMenuContextEvent(ContextMenu * menu) : contextMenu(menu){
+//ContextMenu::CloseMenuContextEvent::CloseMenuContextEvent(ContextMenu * menu) : contextMenu(menu){
+//
+//}
+//
+//ContextMenu::CloseMenuContextEvent::~CloseMenuContextEvent(){
+//
+//}
+//
+//bool ContextMenu::CloseMenuContextEvent::handle(const osgGA::GUIEventAdapter& gea,
+//	osgGA::GUIActionAdapter&      gaa,
+//	osg::Object*                  obj,
+//	osg::NodeVisitor*             nv
+//	){
+//
+//	if(contextMenu.valid() == true && contextMenu->isVisible() == true && gea.getEventType() == osgGA::GUIEventAdapter::PUSH &&
+//		gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+//
+//		contextMenu->hideMenu();
+//	}
+//
+//	return false;
+//}
+
+
+ContextMenu::OpenCloseContextMenuEvent::OpenCloseContextMenuEvent(ContextMenu * menu) : contextMenu(menu){
 
 }
 
-ContextMenu::CloseMenuContextEvent::~CloseMenuContextEvent(){
+ContextMenu::OpenCloseContextMenuEvent::~OpenCloseContextMenuEvent(){
 
 }
 
-bool ContextMenu::CloseMenuContextEvent::handle(const osgGA::GUIEventAdapter& gea,
-	osgGA::GUIActionAdapter&      gaa,
-	osg::Object*                  obj,
-	osg::NodeVisitor*             nv
-	){
+bool ContextMenu::OpenCloseContextMenuEvent::handle(const osgGA::GUIEventAdapter& gea,
+    osgGA::GUIActionAdapter&      gaa,
+    osg::Object*                  obj,
+    osg::NodeVisitor*             nv
+    ){
 
-	if(contextMenu.valid() == true && contextMenu->isVisible() == true && gea.getEventType() == osgGA::GUIEventAdapter::PUSH &&
-		gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        if(contextMenu.valid() == true && gea.getEventType() == osgGA::GUIEventAdapter::PUSH) {
+            if(gea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON){
 
-		contextMenu->hideMenu();
-	}
+                //! check if empty space in WM - no other windows
+                osgWidget::WidgetList widgetList;
 
-	return false;
+                if(contextMenu->getWindowManager()->pickAtXY(gea.getX(), gea.getY(), widgetList)) return false;
+                if(contextMenu->canShow() == true){
+                    if(contextMenu->isVisible() == true){
+                        contextMenu->hideMenu();
+                    }
+                    contextMenu->showMenu(gea.getX(), gea.getY());
+                }
+
+            }else if(gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && contextMenu->isVisible() == true){
+                contextMenu->hideMenu();
+            }
+        }
+
+        return false;
 }
+
 
 const ContextMenu::MenuSubmenu & ContextMenu::findMenu(const std::string & path) const{
 	return findMenu(parseNextMenuItems(path));
@@ -335,12 +417,12 @@ ContextMenu::MenuItem & ContextMenu::findMenuItem(const std::string & path){
 }
 
 template<class Collection>
-bool ContextMenu::addMenuItem(const Collection & path, bool checked, const OnClickCallback & onClickCallback, const OnHoverCallback & onHooverCallback){
-	return addMenuItem(path.begin(), path.end(), checked, onClickCallback, onHooverCallback);
+bool ContextMenu::addMenuItem(const Collection & path, bool checked, const OnClickCallback & onClickCallback, const OnHoverCallback & onHoverCallback){
+	return addMenuItem(path.begin(), path.end(), checked, onClickCallback, onHoverCallback);
 }
 
 template<class Iter>
-bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickCallback & onClickCallback, const OnHoverCallback & onHooverCallback){
+bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickCallback & onClickCallback, const OnHoverCallback & onHoverCallback){
 	if(begin == end){
 		return false;
 	}
@@ -356,17 +438,13 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 			submenuItem.submenu = new ContextMenu(currentMenu);
 
 			//create widget
-			submenuItem.submenuItem = new osgWidget::Label("", *begin);
+			submenuItem.submenuItem = new osgWidget::Label("submenu" + *begin);
 			//format widget
-			submenuItem.submenuItem->setSize(0,0);
-			submenuItem.submenuItem->setFontSize(10);
-			submenuItem.submenuItem->setCanFill(true);
 			submenuItem.submenuItem->setStyle("osg.contextmenu.submenuitem.normal");
 
 			submenuItem.emptyWidget = new osgWidget::Widget();
-			submenuItem.emptyWidget->setCanFill(true);
 			submenuItem.emptyWidget->setStyle("osg.contextmenu.submenuitem.normal");
-			submenuItem.emptyWidget->setSize(submenuItem.submenuItem->getHeight(),submenuItem.submenuItem->getHeight());
+			submenuItem.emptyWidget->setSize(0,0);
 
 			//add widget
 			it = currentMenu->submenus.insert(Submenus::value_type(*begin, submenuItem)).first;
@@ -394,13 +472,11 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 			}
 
 			currentMenu->addWidget(submenuItem.submenuItem, row, 1);
-			//osgui::AspectRatioKeeper * ar = new osgui::AspectRatioKeeper(submenuItem.emptyWidget,1.0);
-			//ar->setCanFill(true);
-			//currentMenu->addWidget(ar, row, 0);
-			//ar->setSize(submenuItem.emptyWidget->getSize());
 			currentMenu->addWidget(submenuItem.emptyWidget, row, 0);
 
-			//currentMenu->resize();
+            submenuItem.submenuItem->setLabel(*begin);
+            submenuItem.emptyWidget->setSize(submenuItem.submenuItem->getHeight(), submenuItem.submenuItem->getHeight());
+            currentMenu->resize();
 		}
 
 		currentMenu = it->second.submenu;
@@ -413,24 +489,21 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 
 		MenuItem item;
 
-		item.menuItem = new osgWidget::Label("", *prev);
+		item.menuItem = new osgWidget::Label("subitem" + *prev);
 
 		//format widget
-		item.menuItem->setSize(0,0);
-		item.menuItem->setFontSize(10);
-		item.menuItem->setCanFill(true);
 		item.menuItem->setStyle("osg.contextmenu.item.normal");
+
 		//configure widget events - onPush
 
 		item.checked = checked;
 
 		item.onClickCallback = onClickCallback;
-		item.onHooverCallback = onHooverCallback;
+		item.onHoverCallback = onHoverCallback;
 
 		//checked operation
 		item.checkedWidget = new osgWidget::Widget();
-		item.checkedWidget->setSize(item.menuItem->getHeight(),item.menuItem->getHeight());
-		item.checkedWidget->setCanFill(true);
+		item.checkedWidget->setSize(0,0);
 
 		//add widget
 		Items::iterator it = currentMenu->items.insert(Items::value_type(*prev, item)).first;
@@ -463,6 +536,10 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 
 		currentMenu->addWidget(item.menuItem, row, 1);
 		currentMenu->addWidget(item.checkedWidget, row, 0);
+
+        item.menuItem->setLabel(*prev);
+        item.checkedWidget->setSize(item.menuItem->getHeight(), item.menuItem->getHeight());
+        currentMenu->resize();
 		return true;
 	}
 
@@ -533,19 +610,19 @@ bool ContextMenu::setMenuItemOnClickCallback(Iter begin, Iter end, const OnClick
 }
 
 template<class Collection>
-bool ContextMenu::setMenuItemOnHooverCallback(const Collection & path, const OnHoverCallback & callback){
-	return setMenuItemOnHooverCallback(path.begin(), path.end(), callback);
+bool ContextMenu::setMenuItemOnHoverCallback(const Collection & path, const OnHoverCallback & callback){
+	return setMenuItemOnHoverCallback(path.begin(), path.end(), callback);
 }
 
 template<class Iter>
-bool ContextMenu::setMenuItemOnHooverCallback(Iter begin, Iter end, const OnHoverCallback & callback){
+bool ContextMenu::setMenuItemOnHoverCallback(Iter begin, Iter end, const OnHoverCallback & callback){
 	MenuItem & menuItem = findMenuItem(begin, end);
 
-	if(menuItem.menuItem == nullptr || menuItem.onHooverCallback == callback){
+	if(menuItem.menuItem == nullptr || menuItem.onHoverCallback == callback){
 		return false;
 	}
 
-	menuItem.onHooverCallback = callback;
+	menuItem.onHoverCallback = callback;
 
 	return true;
 }
@@ -584,13 +661,13 @@ const ContextMenu::OnClickCallback & ContextMenu::getMenuItemOnClickCallback(Ite
 }
 
 template<class Collection>
-const ContextMenu::OnHoverCallback & ContextMenu::getMenuItemOnHooverCallback(const Collection & path) const{
-	return getMenuItemOnHooverCallback(path.begin(), path.end(), callback);
+const ContextMenu::OnHoverCallback & ContextMenu::getMenuItemOnHoverCallback(const Collection & path) const{
+	return getMenuItemOnHoverCallback(path.begin(), path.end(), callback);
 }
 
 template<class Iter>
-const ContextMenu::OnHoverCallback & ContextMenu::getMenuItemOnHooverCallback(Iter begin, Iter end) const{
-	return findMenuItem(begin, end).onHooverCallback;
+const ContextMenu::OnHoverCallback & ContextMenu::getMenuItemOnHoverCallback(Iter begin, Iter end) const{
+	return findMenuItem(begin, end).onHoverCallback;
 }
 
 template<class Collection>
@@ -727,12 +804,16 @@ const ContextMenu::MenuSubmenu & ContextMenu::findMenu(Iter begin, Iter end) con
 
 const std::string& ContextMenu::getPathSeparators() const
 {
-    return *pathSeparators;
+    return *pathSeparator;
 }
 
 void ContextMenu::setPathSeparators( const std::string& separators )
 {
-    *(this->pathSeparators) = separators;
+    *(this->pathSeparator) = separators;
+}
+
+const std::string & ContextMenu::getDefaultPathSeparator(){
+    return defaultPathSeparator;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

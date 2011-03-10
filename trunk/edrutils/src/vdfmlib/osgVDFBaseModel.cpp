@@ -31,7 +31,8 @@ osgVDFBaseModel::osgVDFBaseModel(osgViewer::View* view, osgWidget::point_type wi
 	currentNodeDescriptor(0), logicalModel(new dflm::DFModel()),
 	modelBoundingBox(0,0,0, width, height, 0), connectingStarted(false), connectingCurrentPin(0), focusedNode(0),
 	minIntersectRatioToSelect(0.5), maxDistToDelConnection(50), toolbarVisible(false), visualConnectionNormalColor(osgWidget::Color(0,0,0,1)),
-	visualConnectionHighlightColor(osgWidget::Color(1,1,0,1)), lastHighlightedConnection(0), contextMenuOn(false), moveStarted(false), lastButton(0)
+	visualConnectionHighlightColor(osgWidget::Color(1,1,0,1)), lastHighlightedConnection(0), contextMenuOn(false), moveStarted(false),
+    lastButton(0)//, contextMenu(new osgVDFContextMenu())
 	{
 
 	//add event to create nodes
@@ -39,6 +40,8 @@ osgVDFBaseModel::osgVDFBaseModel(osgViewer::View* view, osgWidget::point_type wi
 	view->addEventHandler(new osgui::KeyboardMapperHandler(this));
 	view->addEventHandler(new VisualSelectionManager(this));
 	addEventCallback(new ModelResizeHandler(this));
+
+    //addChild(contextMenu);
 
 	nodePushEvent = new osgWidget::Callback(&osgVDFBaseModel::onNodeClick, this, osgWidget::EVENT_MOUSE_PUSH);
 	nodeDragEvent = new osgWidget::Callback(&osgVDFBaseModel::onNodeDrag, this, osgWidget::EVENT_MOUSE_DRAG);
@@ -148,7 +151,7 @@ bool osgVDFBaseModel::addNode(dflm::NPtr node, osg::ref_ptr<osg::Image> image,	c
 }
 
 void osgVDFBaseModel::configureVisualNode(osgVDFBaseNode * node){
-	node->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG | osgWidget::EVENT_MASK_FOCUS | osgWidget::EVENT_MASK_MOUSE_MOVE);
+	node->addEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG | osgWidget::EVENT_MASK_FOCUS | osgWidget::EVENT_MASK_MOUSE_MOVE);
 
 	node->addCallback(nodePushEvent);
 	node->addCallback(nodeDragEvent);
@@ -160,7 +163,7 @@ void osgVDFBaseModel::configureVisualNode(osgVDFBaseNode * node){
 }
 
 void osgVDFBaseModel::configureVisualPin(osgVDFBasePin * pin){
-	pin->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG | osgWidget::EVENT_MASK_MOUSE_MOVE);
+	pin->addEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG | osgWidget::EVENT_MASK_MOUSE_MOVE);
 	
 	pin->addCallback(pinPushEvent);
 	pin->addCallback(pinDragEvent);
@@ -740,8 +743,6 @@ bool osgVDFBaseModel::graphAddNodeTypeToToolbar(osgVDFNodeTypeDescriptor* nodeTy
 	newLabel->setEventMask(osgWidget::EVENT_MASK_MOUSE_CLICK);
 
 	newLabel->setCanFill(false);
-	//newLabel->setSize(0,0);
-	//newLabel->setFontSize(13);
 	controlsToNodeTypes[newLabel] = nodeTypeDescriptor;
 	nodeTypesToControls[nodeTypeDescriptor] = newLabel;
 	if(nodeTypeDescriptor->getButtonImage() != 0){
@@ -1204,7 +1205,7 @@ bool osgVDFBaseModel::onNodeEnter(osgWidget::Event& ev){
 		pos.x() += node->getWidth();
 		pos.y() += node->getHeight();
 		showTooltip(pos);
-		refreshFocused();
+		//refreshFocused();
 	}
 
 	return false;
@@ -1390,6 +1391,20 @@ bool osgVDFBaseModel::ModelResizeHandler::handle(const osgGA::GUIEventAdapter& g
 	return false;
 }
 
+
+osgVDFBaseModel::osgVDFContextMenu::osgVDFContextMenu() : osgui::ContextMenu() {
+
+}
+
+osgVDFBaseModel::osgVDFContextMenu::~osgVDFContextMenu(){
+
+}
+
+bool osgVDFBaseModel::osgVDFContextMenu::canShow() const{
+    return false;
+}
+
+
 osgVDFBaseModel::UserSpaceClick::UserSpaceClick(osgVDFBaseModel * m) : model(m){
 
 }
@@ -1479,11 +1494,12 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 		if(toDelete.empty() == false){
 			//show menu context
 
-			if(model->contextMenu != 0){
-				model->contextMenu->hideMenu();
-				model->removeChild(model->contextMenu);
-				model->contextMenu = 0;
-			}
+            //model->contextMenu->clearMenu();
+            if(model->contextMenu != nullptr){
+                model->contextMenu->hideMenu();
+                model->removeChild(model->contextMenu);
+                model->contextMenu = nullptr;
+            }
 
 			model->showConnectionsDeleteContextMenu(toDelete, osgWidget::XYCoord(gea.getX(), gea.getY()));
 			model->contextMenuOn = true;
@@ -1622,21 +1638,18 @@ Subject 1.02: How do I find the distance from a point to a line?
 }
 
 void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::CONNECTIONS_DELETE_MAP & toDelete, const osgWidget::XYCoord & pos){
-	contextMenu = new osgui::ContextMenu();
-	for(CONNECTIONS_DELETE_MAP::const_iterator it = toDelete.begin(); it != toDelete.end(); it++){
+	
+    contextMenu = new osgVDFContextMenu();
+    
+    for(CONNECTIONS_DELETE_MAP::const_iterator it = toDelete.begin(); it != toDelete.end(); it++){
 		osgui::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::removeConnection, this, connectionsGraphToLogical[it->second], _1, _2);
 		osgui::ContextMenu::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::highlightConnection, this, it->second, _1, _2);
 		contextMenu->addMenuItem(it->first, false, cc, hc);
 	}
 
-	for(VNODES_SET::iterator it = selectedNodes.begin(); it != selectedNodes.end(); it++){
-		(*it)->setStrata(osgWidget::Window::STRATA_NONE);
-	}
-
 	contextMenu->setMenuOnCloseCallback(std::string(), boost::bind(&osgVDFBaseModel::closeContextMenu, this, _1));
-	contextMenu->setStrata(osgWidget::Window::STRATA_FOREGROUND);
-	addChild(contextMenu);
-	refreshFocused(contextMenu);
+    addChild(contextMenu);
+    setFocused(contextMenu);
 	hideConnections();
 	contextMenu->showMenu(pos);
 }
@@ -1665,27 +1678,16 @@ void osgVDFBaseModel::removeConnection(dflm::ConnPtr connection, const std::stri
 void osgVDFBaseModel::closeContextMenu(osgui::ContextMenu * menu){
 	contextMenuOn = false;
 
-	for(VNODES_SET::iterator it = selectedNodes.begin(); it != selectedNodes.end(); it++){
-		(*it)->setStrata(osgWidget::Window::STRATA_FOREGROUND);
-	}
+    setFocused(0);
 
-	refreshFocused();
-
-	/*if(m_sSelectedNodes.empty() == false){
-		m_pFocusedNode = *(m_sSelectedNodes.begin());
-		setFocused(m_pFocusedNode);
-	}else{
-		m_pFocusedNode = 0;
-	}*/
-
-	if(lastHighlightedConnection != 0){
+	if(lastHighlightedConnection != nullptr){
 		setVisualConnectionColor(lastHighlightedConnection, visualConnectionNormalColor); 
-		lastHighlightedConnection = 0;
+		lastHighlightedConnection = nullptr;
 	}
 }
 
 void osgVDFBaseModel::refreshFocused(osgWidget::Window * toFocus){
-	if(focusedNode != 0){
+	if(focusedNode != nullptr){
 		focusedNode->setStrata(osgWidget::Window::STRATA_NONE);
 		setFocused(focusedNode);
 	}else if(selectedNodes.empty() == false){

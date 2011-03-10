@@ -19,6 +19,7 @@ public:
 	~Tooltip(void);
 
 	virtual void managed(osgWidget::WindowManager * wm);
+    virtual void update();
 
 	void setText(const std::string & text);
 	std::string getText() const;
@@ -27,8 +28,10 @@ public:
 
 	void clear();
 
+    void show();
 	void show(const osgWidget::XYCoord & pos);
 	void show(osgWidget::point_type x, osgWidget::point_type y);
+    void hide();
 
 	void registerItem(osgWidget::Widget * widget);
 	void registerItem(osgWidget::Window * window);

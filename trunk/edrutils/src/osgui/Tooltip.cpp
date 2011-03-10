@@ -7,10 +7,10 @@ namespace osgui {
 
 Tooltip::Tooltip(void) : osgWidget::Box("",osgWidget::Box::VERTICAL, true), tooltipLabel(new BLABEL())
 {
-	tooltipLabel->setBorderWidth(0);
+	//tooltipLabel->setBorderWidth(0);
 	setStyle("osgui.tooltip.base");
 	tooltipLabel->setStyle("osgui.tooltip.text");
-	setStrata(osgWidget::Window::STRATA_FOREGROUND);
+	//setStrata(osgWidget::Window::STRATA_FOREGROUND);
 
 	onEnterWidgetCallback = new osgWidget::Callback(&Tooltip::onEnterWidget, this, osgWidget::EVENT_MOUSE_ENTER);
 	onEnterWindowCallback = new osgWidget::Callback(&Tooltip::onEnterWindow, this, osgWidget::EVENT_MOUSE_ENTER);
@@ -35,6 +35,17 @@ void Tooltip::managed(osgWidget::WindowManager * wm){
 	hide();
 }
 
+void Tooltip::update(){
+    if(getWindowManager() != nullptr){
+        unsigned int i = getWindowManager()->getNumChildren() + 3;
+        float range = 1.0f / (float)i;
+
+        this->_z = -range;
+        this->_zRange = range / 2.0;
+    }
+    osgWidget::Box::update();
+}
+
 void Tooltip::setText(const std::string & text){
 	tooltipLabel->setLabel(text);
 }
@@ -51,20 +62,35 @@ void Tooltip::clear(){
 	tooltipLabel->setLabel("");
 }
 
+void Tooltip::show(){
+    tooltipLabel->setStyle("osgui.tooltip.text");
+    if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
+        getWindowManager()->getStyleManager()->applyStyles(this);
+        getWindowManager()->getStyleManager()->applyStyles(tooltipLabel);
+    }
+
+    osgWidget::Box::show();
+
+    if(getWindowManager() != nullptr){
+        getWindowManager()->setFocused(this);
+    }
+}
+
 void Tooltip::show(const osgWidget::XYCoord & pos){
 	setOrigin(pos);
 	//resize();
-	tooltipLabel->setStyle("osgui.tooltip.text");
-	if(getWindowManager() != 0 && getWindowManager()->getStyleManager() != 0){
-		getWindowManager()->getStyleManager()->applyStyles(this);
-		getWindowManager()->getStyleManager()->applyStyles(tooltipLabel);
-	}
-	osgWidget::Box::show();
-
+    show();	
 }
 
 void Tooltip::show(osgWidget::point_type x, osgWidget::point_type y){
 	show(osgWidget::XYCoord(x,y));
+}
+
+void Tooltip::hide(){
+    osgWidget::Box::hide();
+    if(getWindowManager() != nullptr){
+        getWindowManager()->setFocused(nullptr);
+    }
 }
 
 void Tooltip::registerItem(osgWidget::Widget * widget){
@@ -135,7 +161,7 @@ bool Tooltip::onLeaveWidget(osgWidget::Event& ev){
 	if(registeredWidgets.find(ev.getWidget()) != registeredWidgets.end()){
 		//hide tooltip
 		hide();
-		currentWidget = 0;
+		currentWidget = nullptr;
 	}
 
 	return false;
@@ -145,7 +171,7 @@ bool Tooltip::onLeaveWindow(osgWidget::Event& ev){
 	if(registeredWindows.find(ev.getWindow()) != registeredWindows.end()){
 		//hide tooltip
 		hide();
-		currentWindow = 0;
+		currentWindow = nullptr;
 	}
 
 	return false;

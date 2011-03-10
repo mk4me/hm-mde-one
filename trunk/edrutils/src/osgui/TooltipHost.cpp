@@ -95,34 +95,35 @@ const osgui::Tooltip * TooltipHost::getTooltip() const{
 
 void TooltipHost::showTooltip(){
 	if(addTooltipToWM() == true){
-		strataForegroundToNone();
+		//strataForegroundToNone();
 		tooltip->osgWidget::Box::show();
+        tooltip->getWindowManager()->setFocused(tooltip);
 	}
 }
 
 void TooltipHost::showTooltip(const osgWidget::XYCoord & pos){
 	if(addTooltipToWM() == true){
-		strataForegroundToNone();
+		//strataForegroundToNone();
 		tooltip->show(pos);
 	}
 }
 
 void TooltipHost::showTooltip(osgWidget::point_type x, osgWidget::point_type y){
 	if(addTooltipToWM() == true){
-		strataForegroundToNone();
+		//strataForegroundToNone();
 		tooltip->show(x,y);
 	}
 }
 
 void TooltipHost::hideTooltip(){
 	if(addTooltipToWM() == true){
-		restoreStrataForeground();
+		//restoreStrataForeground();
 		tooltip->hide();
 	}
 }
 
 bool TooltipHost::isTooltipVisible() const{
-	if(tooltip->getWindowManager() != 0 && tooltip->isVisible() == true){
+	if(tooltip->getWindowManager() != nullptr && tooltip->isVisible() == true){
 		return true;
 	}
 
@@ -131,7 +132,7 @@ bool TooltipHost::isTooltipVisible() const{
 
 bool TooltipHost::addTooltipToWM(){
 	
-	if(tooltip->getWindowManager() == 0){
+	if(tooltip->getWindowManager() == nullptr){
 		osgWidget::WindowManager& wm = dynamic_cast<osgWidget::WindowManager&>(*this);
 		return wm.addChild(tooltip);
 	}
@@ -139,39 +140,39 @@ bool TooltipHost::addTooltipToWM(){
 	return true;
 }
 
-void TooltipHost::strataForegroundToNone(){
-	osgWidget::WindowManager& wm = dynamic_cast<osgWidget::WindowManager&>(*this);
-	for(osgWidget::UIObjectParent<osgWidget::Window>::Iterator it = wm.begin(); it != wm.end(); it++){
-		if( it->valid() == true && it->get() != tooltip && it->get()->getStrata() == osgWidget::Window::STRATA_FOREGROUND){
-			toRestore.insert(*it);
-			it->get()->setStrata(osgWidget::Window::STRATA_NONE);
-		}
-	}
-
-	wm.setFocused(tooltip);
-}
-
-void TooltipHost::restoreStrataForeground(){
-	if(toRestore.empty() == false){
-		bool f = false;
-		osgWidget::Window * newFocused = 0;
-		for(RESTORE::iterator it = toRestore.begin(); it != toRestore.end(); it++){
-			if(it->valid() == true){
-				it->get()->setStrata(osgWidget::Window::STRATA_FOREGROUND);
-				if(f == false){
-					f = true;
-					newFocused = it->get();
-				}
-			}
-		}
-
-		if(f == true){
-			osgWidget::WindowManager& wm = dynamic_cast<osgWidget::WindowManager&>(*this);
-			wm.setFocused(newFocused);
-		}
-
-		toRestore.swap(RESTORE());
-	}
-}
+//void TooltipHost::strataForegroundToNone(){
+//	osgWidget::WindowManager& wm = dynamic_cast<osgWidget::WindowManager&>(*this);
+//	for(osgWidget::UIObjectParent<osgWidget::Window>::Iterator it = wm.begin(); it != wm.end(); it++){
+//		if( it->valid() == true && it->get() != tooltip && it->get()->getStrata() == osgWidget::Window::STRATA_FOREGROUND){
+//			toRestore.insert(*it);
+//			it->get()->setStrata(osgWidget::Window::STRATA_NONE);
+//		}
+//	}
+//
+//	wm.setFocused(tooltip);
+//}
+//
+//void TooltipHost::restoreStrataForeground(){
+//	if(toRestore.empty() == false){
+//		bool f = false;
+//		osgWidget::Window * newFocused = nullptr;
+//		for(RESTORE::iterator it = toRestore.begin(); it != toRestore.end(); it++){
+//			if(it->valid() == true){
+//				it->get()->setStrata(osgWidget::Window::STRATA_FOREGROUND);
+//				if(f == false){
+//					f = true;
+//					newFocused = it->get();
+//				}
+//			}
+//		}
+//
+//		if(f == true){
+//			osgWidget::WindowManager& wm = dynamic_cast<osgWidget::WindowManager&>(*this);
+//			wm.setFocused(newFocused);
+//		}
+//
+//		toRestore.swap(RESTORE());
+//	}
+//}
 
 }

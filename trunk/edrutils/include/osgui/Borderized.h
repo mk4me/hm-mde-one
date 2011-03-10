@@ -36,7 +36,7 @@ class Borderized : public Base, public osgui::IBorderized
 
 public:
     //META_Object(osgui, Borderized);
-	META_Widget(osgui, Borderized);
+    META_ObjectBase(osgui, Borderized);
 
 private:
     //! Typ u¿ywany do wyró¿niania wariantów.
@@ -92,24 +92,24 @@ public:
 
 
     //! \return Gruboœæ ramki.
-    float getBorderWidth() const
+    virtual float getBorderWidth() const
     { 
         return thickness;
     }
     //! \param thickness Gruboœæ ramki.
-    void setBorderWidth(float thickness) 
+    virtual void setBorderWidth(float thickness) 
     { 
         this->thickness = thickness; 
         positionBorder( Mode<Primitives>() );
     }
 
     //! \return Kolor ramki.
-    osgWidget::Color getBorderColor() const
+    virtual osgWidget::Color getBorderColor() const
     {
         return (*getBorderColorArray())[0];
     }
     //! \param color Kolor ramki.
-    void setBorderColor(osgWidget::Color color)
+    virtual  void setBorderColor(const osgWidget::Color & color)
     {
         (*getBorderColorArray())[0] = color;
         border->setColorArray(getBorderColorArray());

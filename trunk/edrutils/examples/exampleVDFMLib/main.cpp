@@ -284,15 +284,15 @@ StylesSet generateRequiredStyles(){
 	//CONTEXT MENU STYLES
 	styleSet.insert(new osgui::StyleEx("osg.contextmenu.menu", "color " + colorToStr(osgWidget::Color(0.357f,0.357f,0.357f,1.0f))));
 	//styleSet.insert(new StyleEx("osg.contextmenu.submenuitem", "color " + colorToStr(osgWidget::Color(0.537f,0.537f,0.537f,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
-	styleSet.insert(new osgui::StyleEx("osg.contextmenu.submenuitem.normal", "color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
-	styleSet.insert(new osgui::StyleEx("osg.contextmenu.submenuitem.hoovered", "color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
-	styleSet.insert(new osgui::StyleEx("osg.contextmenu.item.normal", "color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit vertical\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
-	styleSet.insert(new osgui::StyleEx("osg.contextmenu.item.hoovered", "color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgui::StyleEx("osg.contextmenu.submenuitem.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgui::StyleEx("osg.contextmenu.submenuitem.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(1,1,1,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgui::StyleEx("osg.contextmenu.item.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
+	styleSet.insert(new osgui::StyleEx("osg.contextmenu.item.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(1,1,1,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_fit all\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
 
-	styleSet.insert(new osgui::StyleEx("osg.contextmenu.checked.normal", "color " + colorToStr(osgWidget::Color(1.0f,1.0f,0.0f,1.0f))));
-	styleSet.insert(new osgui::StyleEx("osg.contextmenu.checked.hoovered", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,1.0f))));
-	styleSet.insert(new osgui::StyleEx("osg.contextmenu.unchecked.normal", "color " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
-	styleSet.insert(new osgui::StyleEx("osg.contextmenu.unchecked.hoovered", "color " + colorToStr(osgWidget::Color(1,1,1,1.0f))));
+	styleSet.insert(new osgui::StyleEx("osg.contextmenu.checked.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(1.0f,1.0f,0.0f,1.0f))));
+	styleSet.insert(new osgui::StyleEx("osg.contextmenu.checked.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,1.0f))));
+	styleSet.insert(new osgui::StyleEx("osg.contextmenu.unchecked.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
+	styleSet.insert(new osgui::StyleEx("osg.contextmenu.unchecked.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(1,1,1,1.0f))));
 
 	//TOOLTIP STYLES
 	styleSet.insert(new osgui::StyleEx("osgui.tooltip.base", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,0.0f))));

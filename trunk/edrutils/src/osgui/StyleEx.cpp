@@ -1,7 +1,6 @@
 #include "PCH.h"
 #include <osgui/StyleEx.h>
 #include <osgui/Buttonized.h>
-#include <utils/>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
@@ -18,10 +17,6 @@ bool StyleEx::applyStyle(osgWidget::Widget* w, osgWidget::Reader r) {
 
 bool StyleEx::applyStyle(osgWidget::Label* label, osgWidget::Reader r) {
 	if(Style::applyStyle(label,r) == true){
-		return true;
-	}
-
-	if(applyStyle((osgWidget::Widget*)label,r) == true){
 		return true;
 	}
 
@@ -73,28 +68,43 @@ bool StyleEx::applyStyle(osgWidget::Label* label, osgWidget::Reader r) {
 		
 		LabelFontFitMode ffmode = strToFontFit(str);
 		osgWidget::XYCoord textSize = label->getTextSize();
+        bool fillable = label->canFill();
 
 		switch(ffmode){
 		case HorizontalFit:
 			label->setHeight(textSize.y());
 			label->addOrigin(0,0);
+            /*textSize = label->getSize();
+            label->setCanFill(false);
 			if(label->getParent() != nullptr){
-				label->getParent()->resize();
-			}
+				label->getParent()->resize(label->getWidth(), label->getHeight());
+                label->setCanFill(fillable);
+                label->setSize(textSize);
+                label->getParent()->resize();
+			}*/
+
 			break;
 		case VerticalFit:
 			label->setWidth(textSize.x());
 			label->addOrigin(0,0);
-			if(label->getParent() != nullptr){
-				label->getParent()->resize();
-			}
+            /*textSize = label->getSize();
+            if(label->getParent() != nullptr){
+                label->getParent()->resize(label->getWidth(), label->getHeight());
+                label->setCanFill(fillable);
+                label->setSize(textSize);
+                label->getParent()->resize();
+            }*/
 			break;
 		case AllFit:
 			label->setSize(textSize);
 			label->addOrigin(0,0);
-			if(label->getParent() != nullptr){
-				label->getParent()->resize();
-			}
+            /*textSize = label->getSize();
+            if(label->getParent() != nullptr){
+                label->getParent()->resize(label->getWidth(), label->getHeight());
+                label->setCanFill(fillable);
+                label->setSize(textSize);
+                label->getParent()->resize();
+            }*/
 			break;
 		}
 	}
@@ -115,14 +125,16 @@ bool StyleEx::applyStyle(osgWidget::Label* label, osgWidget::Reader r) {
 
 	//! Font handled - continue
 	else{
-		ret = false;
+        ret = applyStyle((osgWidget::Widget*)label,r);
 	}
 
-	if(ret == false){
-		return handleExWidgets(label,r);
-	}else{
-		return true;
-	}
+    /*if(ret == false){
+    return handleExWidgets(label,r);
+    }else{
+    return true;
+    }*/
+
+    return ret;
 
 }
 
@@ -218,19 +230,21 @@ bool StyleEx::handleExWindows(osgWidget::Window* window, osgWidget::Reader r){
 
 bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 	std::string str;
-	bool ret = true;
+	bool ret = false;
 
 	//use optimized image setting method
 	if(_match("rect_image %s", r)) {
 		r.readSequence(str);
 		w->setImage(str, true, true);
+        ret = true;
 	}else{
 		osg::Vec2   vec2;
 		osg::Vec3   vec3;
 		osg::Vec4   vec4;
 		float       f;
 
-		if(dynamic_cast<IBorderized*>(w) != 0){
+		if(dynamic_cast<IBorderized*>(w) != nullptr){
+            ret = true;
 			IBorderized* borderized = dynamic_cast<IBorderized*>(w);
 			//! Border color using 4x 0-255 integers.
 			if(_match("border_color %i %i %i %i", r)) {
