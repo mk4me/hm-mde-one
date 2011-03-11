@@ -51,6 +51,7 @@ void Tooltip::setText(const std::string & text){
     labelText = text;
     if(tooltipLabel->getWindowManager() != nullptr){
 	    tooltipLabel->setLabel(labelText);
+        osgWidget::XYCoord s = tooltipLabel->getTextSize();
         tooltipLabel->setSize(tooltipLabel->getTextSize());
         resize();
     }

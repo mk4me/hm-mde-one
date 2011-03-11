@@ -116,6 +116,7 @@ void createExample(osgViewer::View& view, int w, int h)
 
     //dodanie styli
     StyleSet styleSet;
+    //ContextMenu
     styleSet.insert(new osgui::StyleEx("osg.contextmenu.menu", "color " + colorToStr(osgWidget::Color(0.357f,0.357f,0.357f,1.0f))));
     styleSet.insert(new osgui::StyleEx("osg.contextmenu.submenuitem.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(1,1,1,1.0f)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
     styleSet.insert(new osgui::StyleEx("osg.contextmenu.submenuitem.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(1,1,1,1.0)) + "\nfont_size 13\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0)) + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nfont_align center_center"));// + "\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
@@ -126,6 +127,10 @@ void createExample(osgViewer::View& view, int w, int h)
     styleSet.insert(new osgui::StyleEx("osg.contextmenu.checked.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,1.0f))));
     styleSet.insert(new osgui::StyleEx("osg.contextmenu.unchecked.normal", "fill true\ncolor " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
     styleSet.insert(new osgui::StyleEx("osg.contextmenu.unchecked.hovered", "fill true\ncolor " + colorToStr(osgWidget::Color(1,1,1,1.0f))));
+
+    //Tooltip
+    styleSet.insert(new osgui::StyleEx("osgui.tooltip.base", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,0.0f))));
+    styleSet.insert(new osgui::StyleEx("osgui.tooltip.text", "color " + colorToStr(osgWidget::Color(0.94,0.94,0.96,1.0f)) + "\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nborder_color " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
 
     for(StyleSet::iterator it = styleSet.begin(); it != styleSet.end(); it++)
     {

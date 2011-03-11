@@ -780,29 +780,23 @@ void osgVDFBaseModel::fillToolbarWithGroups(osgui::Toolbar * toolbar){
 		return;
 	}
 
-	osgWidget::Label * label = new osgui::Borderized<osgWidget::Label>("","Source");
-	label->setSize(0,0);
-	label->setFontSize(13);
-
+	osgWidget::Label * label = new osgui::Borderized<osgWidget::Label>("sourceTab");
 	toolbar->addTab(label);
+    label->setLabel("Source");
 
-	label = new osgui::Borderized<osgWidget::Label>("","Analysis");
-	label->setSize(0,0);
-	label->setFontSize(13);
-
+	label = new osgui::Borderized<osgWidget::Label>("analysisTab");
 	toolbar->addTab(label);
+    label->setLabel("Analysis");
 
-	label = new osgui::Borderized<osgWidget::Label>("","Processing");
-	label->setSize(0,0);
-	label->setFontSize(13);
-
+	label = new osgui::Borderized<osgWidget::Label>("processingTab");
 	toolbar->addTab(label);
+    label->setLabel("Processing");
 
-	label = new osgui::Borderized<osgWidget::Label>("","Visualize");
-	label->setSize(0,0);
-	label->setFontSize(13);
-
+	label = new osgui::Borderized<osgWidget::Label>("visualizeTab");
 	toolbar->addTab(label);
+    label->setLabel("Visualize");
+
+    toolbar->resize();
 }
 
 osgWidget::point_type osgVDFBaseModel::getMinNodesZ(){

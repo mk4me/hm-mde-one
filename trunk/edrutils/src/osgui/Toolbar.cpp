@@ -89,6 +89,13 @@ bool Toolbar::addTab(osgWidget::Widget * tab, int tabIndex, bool enable, bool vi
 	m_vTabs.resize(idx);
 	m_pTabsGrid.first->setNumColumns(m_vTabs.size() + 1);
 
+    ////set columns weights for resizing, only last one should change
+    //for(int i = 0; i < m_vTabs.size(); i++){
+    //    m_pTabsGrid.first->setColumnWeight(i, 0);
+    //}
+
+    //m_pTabsGrid.first->setColumnWeight(m_vTabs.size(), 1);
+
 	//shift right elements if necessary
 	idx--;
 	while(idx > tabIndex){
