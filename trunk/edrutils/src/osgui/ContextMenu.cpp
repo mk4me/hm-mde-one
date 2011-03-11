@@ -430,7 +430,7 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 	Iter prev = begin;
 	ContextMenu* currentMenu = this;
 	while(++begin != end){
-		Submenus::iterator it = currentMenu->submenus.find(*begin);
+		Submenus::iterator it = currentMenu->submenus.find(*prev);
 		if(it == currentMenu->submenus.end()){
 			//add new submenu
 			MenuSubmenu submenuItem;
@@ -438,7 +438,7 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 			submenuItem.submenu = new ContextMenu(currentMenu);
 
 			//create widget
-			submenuItem.submenuItem = new osgWidget::Label("submenu" + *begin);
+			submenuItem.submenuItem = new osgWidget::Label("submenu" + *prev);
 			//format widget
 			submenuItem.submenuItem->setStyle("osg.contextmenu.submenuitem.normal");
 
@@ -474,9 +474,10 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 			currentMenu->addWidget(submenuItem.submenuItem, row, 1);
 			currentMenu->addWidget(submenuItem.emptyWidget, row, 0);
 
-            submenuItem.submenuItem->setLabel(*begin);
+            submenuItem.submenuItem->setLabel(*prev);
             submenuItem.emptyWidget->setSize(submenuItem.submenuItem->getHeight(), submenuItem.submenuItem->getHeight());
             currentMenu->resize();
+            currentMenu->submenus[*prev] = submenuItem;
 		}
 
 		currentMenu = it->second.submenu;
@@ -540,6 +541,9 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
         item.menuItem->setLabel(*prev);
         item.checkedWidget->setSize(item.menuItem->getHeight(), item.menuItem->getHeight());
         currentMenu->resize();
+
+        currentMenu->items[*prev] = item;
+
 		return true;
 	}
 
