@@ -17,8 +17,6 @@ ContextMenu::ContextMenu(void) :
 pathSeparator(new std::string(defaultPathSeparator))
 {	
     rootMenu = this;
-	//closeMenuEventHandler = new CloseMenuContextEvent(this);
-    openCloseContextMenuEventHandler = new OpenCloseContextMenuEvent(this);
 	setStyle("osg.contextmenu.menu");
 }
 
@@ -37,20 +35,6 @@ ContextMenu::~ContextMenu(void)
 void ContextMenu::managed(osgWidget::WindowManager * wm){
     osgui::Grid::managed(wm);
     hide();
-    
-	//wm->getView()->addEventHandler(closeMenuEventHandler);
-    if(openCloseContextMenuEventHandler){
-        wm->getView()->addEventHandler(openCloseContextMenuEventHandler);
-    }
-}
-
-void ContextMenu::unmanaged(osgWidget::WindowManager * wm){
-	osgui::Grid::unmanaged(wm);
-
-	//wm->getView()->removeEventHandler(closeMenuEventHandler);
-    if(openCloseContextMenuEventHandler){
-        wm->getView()->removeEventHandler(openCloseContextMenuEventHandler);
-    }
 }
 
 void ContextMenu::update(){
@@ -115,8 +99,6 @@ bool ContextMenu::showMenu(){
         if(parentMenu->getWindowManager() != nullptr){
             parentMenu->getWindowManager()->addChild(this);
         }
-        //setOrigin(pos);
-        //resize();
         show();
         return true;
     }
@@ -180,10 +162,6 @@ bool ContextMenu::isEmpty() const{
     }
 
     return false;
-}
-
-bool ContextMenu::canShow() const{
-    return true;
 }
 
 void ContextMenu::clearMenu(){
@@ -337,66 +315,6 @@ void ContextMenu::refreshMenuItemCheckedStyle(const MenuItem & menuItem, bool ho
             getWindowManager()->getStyleManager()->applyStyles(menuItem.checkedWidget);
         }
 	}
-}
-
-//ContextMenu::CloseMenuContextEvent::CloseMenuContextEvent(ContextMenu * menu) : contextMenu(menu){
-//
-//}
-//
-//ContextMenu::CloseMenuContextEvent::~CloseMenuContextEvent(){
-//
-//}
-//
-//bool ContextMenu::CloseMenuContextEvent::handle(const osgGA::GUIEventAdapter& gea,
-//	osgGA::GUIActionAdapter&      gaa,
-//	osg::Object*                  obj,
-//	osg::NodeVisitor*             nv
-//	){
-//
-//	if(contextMenu.valid() == true && contextMenu->isVisible() == true && gea.getEventType() == osgGA::GUIEventAdapter::PUSH &&
-//		gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
-//
-//		contextMenu->hideMenu();
-//	}
-//
-//	return false;
-//}
-
-
-ContextMenu::OpenCloseContextMenuEvent::OpenCloseContextMenuEvent(ContextMenu * menu) : contextMenu(menu){
-
-}
-
-ContextMenu::OpenCloseContextMenuEvent::~OpenCloseContextMenuEvent(){
-
-}
-
-bool ContextMenu::OpenCloseContextMenuEvent::handle(const osgGA::GUIEventAdapter& gea,
-    osgGA::GUIActionAdapter&      gaa,
-    osg::Object*                  obj,
-    osg::NodeVisitor*             nv
-    ){
-
-        if(contextMenu.valid() == true && gea.getEventType() == osgGA::GUIEventAdapter::PUSH) {
-            if(gea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON){
-
-                //! check if empty space in WM - no other windows
-                osgWidget::WidgetList widgetList;
-
-                if(contextMenu->getWindowManager()->pickAtXY(gea.getX(), gea.getY(), widgetList)) return false;
-                if(contextMenu->canShow() == true){
-                    if(contextMenu->isVisible() == true){
-                        contextMenu->hideMenu();
-                    }
-                    contextMenu->showMenu(gea.getX(), gea.getY());
-                }
-
-            }else if(gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && contextMenu->isVisible() == true){
-                contextMenu->hideMenu();
-            }
-        }
-
-        return false;
 }
 
 
