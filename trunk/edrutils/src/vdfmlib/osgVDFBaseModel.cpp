@@ -745,16 +745,16 @@ bool osgVDFBaseModel::graphAddNodeTypeToToolbar(osgVDFNodeTypeDescriptor* nodeTy
 	newLabel->setCanFill(false);
 	controlsToNodeTypes[newLabel] = nodeTypeDescriptor;
 	nodeTypesToControls[nodeTypeDescriptor] = newLabel;
-	if(nodeTypeDescriptor->getButtonImage() != 0){
+	if(nodeTypeDescriptor->getButtonImage() != nullptr){
 		newLabel->setColor(osgWidget::Color(1,1,1,1));
 		newLabel->setSize(nodeTypeDescriptor->getButtonImage()->s(), nodeTypeDescriptor->getButtonImage()->t());
 		newLabel->setImage(nodeTypeDescriptor->getButtonImage(),true, true);
 
 		osgui::Tooltip * tooltip = new osgui::Tooltip();
+        addChild(tooltip);
 		tooltip->setText(nodeTypeDescriptor->getButtonText());
 		tooltip->registerItem(newLabel);
 		tooltips.insert(tooltip);
-		addChild(tooltip);
 	}else{
 		newLabel->setLabel(nodeTypeDescriptor->getButtonText());
 		newLabel->setSize(0,0);

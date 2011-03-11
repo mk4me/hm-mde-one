@@ -7,10 +7,9 @@ namespace osgui {
 
 Tooltip::Tooltip(void) : osgWidget::Box("",osgWidget::Box::VERTICAL, true), tooltipLabel(new BLABEL())
 {
-	//tooltipLabel->setBorderWidth(0);
 	setStyle("osgui.tooltip.base");
 	tooltipLabel->setStyle("osgui.tooltip.text");
-	//setStrata(osgWidget::Window::STRATA_FOREGROUND);
+    addWidget(tooltipLabel);
 
 	onEnterWidgetCallback = new osgWidget::Callback(&Tooltip::onEnterWidget, this, osgWidget::EVENT_MOUSE_ENTER);
 	onEnterWindowCallback = new osgWidget::Callback(&Tooltip::onEnterWindow, this, osgWidget::EVENT_MOUSE_ENTER);
@@ -28,9 +27,11 @@ Tooltip::~Tooltip(void)
 
 void Tooltip::managed(osgWidget::WindowManager * wm){
 	osgWidget::Box::managed(wm);
-	if(tooltipLabel->getParent() != this){
-		addWidget(tooltipLabel);
-	}
+	//if(tooltipLabel->getParent() != this){
+	//	addWidget(tooltipLabel);
+        tooltipLabel->setLabel(labelText);
+        resize();
+	//}
 
 	hide();
 }
@@ -47,11 +48,16 @@ void Tooltip::update(){
 }
 
 void Tooltip::setText(const std::string & text){
-	tooltipLabel->setLabel(text);
+    labelText = text;
+    if(tooltipLabel->getWindowManager() != nullptr){
+	    tooltipLabel->setLabel(labelText);
+        tooltipLabel->setSize(tooltipLabel->getTextSize());
+        resize();
+    }
 }
 
 std::string Tooltip::getText() const{
-	return tooltipLabel->getLabel();
+	return labelText;
 }
 
 bool Tooltip::isEmpty() const{
@@ -59,15 +65,15 @@ bool Tooltip::isEmpty() const{
 }
 
 void Tooltip::clear(){
-	tooltipLabel->setLabel("");
+	setText("");
 }
 
 void Tooltip::show(){
-    tooltipLabel->setStyle("osgui.tooltip.text");
+    /*tooltipLabel->setStyle("osgui.tooltip.text");
     if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
         getWindowManager()->getStyleManager()->applyStyles(this);
         getWindowManager()->getStyleManager()->applyStyles(tooltipLabel);
-    }
+    }*/
 
     osgWidget::Box::show();
 

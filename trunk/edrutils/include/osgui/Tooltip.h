@@ -71,6 +71,7 @@ private:
 	osgWidget::Window * currentWindow;
 
 	osg::ref_ptr<BLABEL> tooltipLabel;
+    std::string labelText;
 };
 
 }
