@@ -178,21 +178,10 @@ private:
 		osg::observer_ptr<osgVDFBaseModel> model;
 	};
 
-    class osgVDFContextMenu : public osgui::ContextMenu{
-    public:
-
-        osgVDFContextMenu();
-        ~osgVDFContextMenu();
-
-    protected:
-
-        virtual bool canShow() const;
-    };
 
 	friend class NodeDescriptorClick;
 	friend class osgVDFBaseNode;
 	friend class osgVDFBasePin;
-    friend class osgVDFContextMenu;
 
 protected:
 	osgWidget::point_type getMinNodesZ();
@@ -340,7 +329,7 @@ private:
 
 	PINS_CONNECTIONS_UPDATE_MAP pinsConnectionsUpdate;
 
-	osg::ref_ptr<osgVDFContextMenu> contextMenu;
+	osg::ref_ptr<osgui::ContextMenu> contextMenu;
 	osg::Geode * lastHighlightedConnection;
 	bool contextMenuOn;
 

@@ -1386,19 +1386,6 @@ bool osgVDFBaseModel::ModelResizeHandler::handle(const osgGA::GUIEventAdapter& g
 }
 
 
-osgVDFBaseModel::osgVDFContextMenu::osgVDFContextMenu() : osgui::ContextMenu() {
-
-}
-
-osgVDFBaseModel::osgVDFContextMenu::~osgVDFContextMenu(){
-
-}
-
-bool osgVDFBaseModel::osgVDFContextMenu::canShow() const{
-    return false;
-}
-
-
 osgVDFBaseModel::UserSpaceClick::UserSpaceClick(osgVDFBaseModel * m) : model(m){
 
 }
@@ -1412,6 +1399,10 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 	osg::Object*                  obj,
 	osg::NodeVisitor*             nv
 	){
+
+        if(model->contextMenuOn == true && gea.getEventType() == osgGA::GUIEventAdapter::PUSH && gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+            model->contextMenu->hideMenu();
+        }
 
 	//do this if the descriptor is set
 	//check if mouse was pushed - left button!!
@@ -1633,7 +1624,8 @@ Subject 1.02: How do I find the distance from a point to a line?
 
 void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::CONNECTIONS_DELETE_MAP & toDelete, const osgWidget::XYCoord & pos){
 	
-    contextMenu = new osgVDFContextMenu();
+    contextMenu = new osgui::ContextMenu();
+    contextMenu->setMenuOnCloseCallback(std::string(), boost::bind(&osgVDFBaseModel::closeContextMenu, this, _1));
     
     for(CONNECTIONS_DELETE_MAP::const_iterator it = toDelete.begin(); it != toDelete.end(); it++){
 		osgui::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::removeConnection, this, connectionsGraphToLogical[it->second], _1, _2);
@@ -1641,8 +1633,8 @@ void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::CO
 		contextMenu->addMenuItem(it->first, false, cc, hc);
 	}
 
-	contextMenu->setMenuOnCloseCallback(std::string(), boost::bind(&osgVDFBaseModel::closeContextMenu, this, _1));
     addChild(contextMenu);
+    
     setFocused(contextMenu);
 	hideConnections();
 	contextMenu->showMenu(pos);
