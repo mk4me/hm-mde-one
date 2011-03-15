@@ -243,4 +243,4 @@ namespace ShallowCopy
 //}
 
 }
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_SHALLOWCOPY_H__

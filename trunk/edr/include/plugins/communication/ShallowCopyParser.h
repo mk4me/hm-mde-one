@@ -33,4 +33,4 @@ typedef core::shared_ptr<ShallowCopyParser> ShallowCopyParserPtr;
 typedef core::shared_ptr<const ShallowCopyParser> ShallowCopyParserConstPtr;
 typedef core::weak_ptr<ShallowCopyParser> ShallowCopyParserWeakPtr;
 
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_SHALLOWCOPYPARSER_H__

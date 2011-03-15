@@ -39,36 +39,16 @@ namespace communication
             PingServer, /** Pingowanie serwera */
             Error /** Wyst¹pi³ b³¹d */
         };
-        /**
-        Ustala sposób w jaki ma odbywaæ siê transport danych.
-        @param transportManager wskaŸnik na instancjê odpowiedzialn¹ za transport danych
-        */
-        void setTransportManager(ITransportable* transportManager);
-        /**
-        Zwraca wskaŸnik na instancjê odpowiedzialn¹ za transport danych.
-        @return wskaŸnik na instancjê odpowiedzialn¹ za transport danych
-        */
-        ITransportable* getTransportManager();
-        /**
-        Ustala sposób w jaki ma odbywaæ siê odpytywanie bazy danych.
-        @param queryManager wskaŸnik na instancjê odpowiedzialn¹ za odpytywanie bazy danych
-        */
-        void setQueryManager(IQueryable* queryManager);
-        /**
-        Zwraca wskaŸnik na instancjê odpowiedzialn¹ za odpytywanie bazy danych.
-        @return wskaŸnik na instancjê odpowiedzialn¹ za odpytywanie bazy danych
-        */
-        IQueryable* getQueryManager();
-        /**
-        Zapis danych prób pomiarowych do pliku w formacie XML.
-        @param filename nazwa pliku do którego zapisaæ dane prób pomiarowych
-        */
-        void saveToXml(const std::string& filename);
-        /**
-        Odczyt danych prób pomiarowych z pliku w formacie XML.
-        @param filename nazwa pliku z którego odczytaæ dane prób pomiarowych
-        */
-        void loadFromXml(const std::string& filename);
+        ///**
+        //Zapis danych prób pomiarowych do pliku w formacie XML.
+        //@param filename nazwa pliku do którego zapisaæ dane prób pomiarowych
+        //*/
+        //void saveToXml(const std::string& filename);
+        ///**
+        //Odczyt danych prób pomiarowych z pliku w formacie XML.
+        //@param filename nazwa pliku z którego odczytaæ dane prób pomiarowych
+        //*/
+        //void loadFromXml(const std::string& filename);
         /**
         £adowanie lokalnych prób pomiarowych. Metoda wykorzystuje DataManagera.
         */
@@ -249,6 +229,14 @@ namespace communication
         */
         std::string trialsDir;
         /**
+        WskaŸnik na klasê TransportWSDL_FTPS odpowiedzialn¹ za transport danych
+        */
+        core::shared_ptr<communication::TransportWSDL_FTPS> transportManager;
+        /**
+        WskaŸnik na klasê QueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
+        */
+        core::shared_ptr<communication::QueryWSDL> queryManager;
+        /**
         Stan Communication Service
         */
         State state;
@@ -313,14 +301,6 @@ namespace communication
         */
         core::IDataManager* dataManager;
         /**
-        WskaŸnik na instancjê zajmuj¹c¹ siê transportem danych
-        */
-        ITransportable* transportManager;
-        /**
-        WskaŸnik na instancjê zajmuj¹c¹ siê odpytywaniem bazy danych
-        */
-        IQueryable* queryManager;
-        /**
         Muteks zabezpieczaj¹cy przed zakleszczeniami.
         */
         OpenThreads::Mutex trialsMutex;
@@ -343,4 +323,4 @@ namespace communication
         static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
     };
 }
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

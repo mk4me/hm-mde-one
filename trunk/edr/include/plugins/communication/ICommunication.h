@@ -53,4 +53,4 @@ public:
 	*/
 	virtual void cancelDownloading() = 0;
 };
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_ICOMMUNICATION_H__

@@ -31,14 +31,6 @@ private:
     */
     communication::CommunicationManager* model;
     /**
-    WskaŸnik na klasê TransportWSDL_FTPS odpowiedzialn¹ za transport danych
-    */
-    communication::TransportWSDL_FTPS* transport;
-    /**
-    WskaŸnik na klasê QueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
-    */
-    communication::QueryWSDL* query;
-    /**
     Nazwa serwisu
     */
     std::string name;
@@ -135,48 +127,5 @@ public:
     Metoda z interfejsu ICommunication. Przerwanie pobierania pliku lub triala.
     */
     virtual void cancelDownloading();
-    /**
-    Odczyt danych prób pomiarowych z dysku lokalnego.
-    */
-    void load();
-    /**
-    Zapis danych prób pomiarowych na dysk lokalny.
-    */
-    void save();
-    /**
-    Zwraca wskaŸnik na instancjê klasy TransportWSDL_FTPS.
-    @return wskaŸnik na instancjê odpowiedzialn¹ za transport danych
-    */
-    const communication::TransportWSDL_FTPS* getTransportManager() const;
-    /**
-    Zwraca wskaŸnik na instancjê klasy QueryWSDL.
-    @return wskaŸnik na instancjê odpowiedzialn¹ za odpytywanie bazy danych
-    */
-    const communication::QueryWSDL* getQueryManager() const;
-    /**
-    Ustala dane u¿ytkownika wykorzystywane do logowania takie jak host, nazwa i has³o u¿ytkownika.
-    Dane s³u¿¹ do autentykacji przy odpytywaniu bazy danych
-    @param user nazwa u¿ytkownika
-    @param password has³o u¿ytkownika
-    @param bqsUri adres URI dokumentu BasicQueriesService
-    @param busUri adres URI dokumentu BasicUpdatesService
-    */
-    void setQueryCredentials(const std::string& user, const std::string& password, const std::string& bqsUri, const std::string& busUri);
-    /**
-    Ustala dane u¿ytkownika wykorzystywane do logowania takie jak host, nazwa i has³o u¿ytkownika.
-    Dane s³u¿¹ do autentykacji ftp przy pobieraniu danych
-    @param user nazwa u¿ytkownika
-    @param password has³o u¿ytkownika
-    @param uri adres URI serwera ftp
-    */
-    void setTransportFTPCredentials(const std::string& user, const std::string& password, const std::string& uri);
-    /**
-    Ustala dane u¿ytkownika wykorzystywane do logowania takie jak host, nazwa i has³o u¿ytkownika.
-    Dane s³u¿¹ do autentykacji wsdlowej przy pobieraniu danych
-    @param user nazwa u¿ytkownika
-    @param password has³o u¿ytkownika
-    @param uri adres URI dokumentu FileStoremanService
-    */
-    void setTransportWSCredentials(const std::string& user, const std::string& password, const std::string& uri);
 };
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONSERVICE_H__

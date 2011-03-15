@@ -76,4 +76,4 @@ namespace communication
 		std::string performerLastname;
 	};
 }
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_ENTITY_H__

@@ -6,7 +6,6 @@
 #ifndef HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__
 #define HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__
 
-#include <plugins/communication/ITransportable.h>
 #include <plugins/communication/WsdlConnection.h>
 
 namespace communication
@@ -93,4 +92,4 @@ namespace communication
 		const std::string& getMetadata();
 	};
 }
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__

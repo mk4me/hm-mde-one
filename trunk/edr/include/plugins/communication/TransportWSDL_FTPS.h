@@ -9,13 +9,11 @@ Klasa implementuje interfejs ITransportable.
 
 #include <plugins/communication/FileStoremanService.h>
 #include <plugins/communication/FtpsConnection.h>
-#include <plugins/communication/ITransportable.h>
-#include <plugins/communication/TransportWSDL_FTPS.h>
 
 namespace communication
 {
 
-	class TransportWSDL_FTPS : public ITransportable
+	class TransportWSDL_FTPS
 	{
 	protected:
 		/**
@@ -117,4 +115,4 @@ namespace communication
 		virtual const std::string getMetadata();
 	};
 }
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_TRANSPORTWSDL_FTPS_H__

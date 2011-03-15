@@ -26,8 +26,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/FileStoremanService.h
 	${HEADER_PATH}/FtpsConnection.h
 	${HEADER_PATH}/ICommunication.h
-	${HEADER_PATH}/IQueryable.h
-	${HEADER_PATH}/ITransportable.h
 	${HEADER_PATH}/QueryWSDL.h
 	${HEADER_PATH}/Metadata.h
 	${HEADER_PATH}/ShallowCopy.h

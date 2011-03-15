@@ -8,12 +8,10 @@
 
 #include <plugins/communication/BasicQueriesService.h>
 #include <plugins/communication/BasicUpdatesService.h>
-#include <plugins/communication/IQueryable.h>
 
 namespace communication
 {
-
-	class QueryWSDL : public IQueryable
+	class QueryWSDL
 	{
 	protected:	
 		/**
@@ -160,4 +158,4 @@ namespace communication
 		//void performQuery(const std::string& query);
 	};
 }
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_QUERYWSDL_H__

@@ -32,10 +32,8 @@ void CommunicationManager::destoryInstance()
 CommunicationManager::CommunicationManager()
     : trialsMutex()
 {
-    this->transportManager = nullptr;
-    this->queryManager = nullptr;
-    this->trialsDir = "data/trials/";
-    this->setState(Ready);
+    trialsDir = "data/trials/";
+    setState(Ready);
     pingCurl = curl_easy_init();
     if(pingCurl) {
         curl_easy_setopt(pingCurl, CURLOPT_URL, "http://83.230.112.43/");
@@ -43,6 +41,14 @@ CommunicationManager::CommunicationManager()
         curl_easy_setopt(pingCurl, CURLOPT_WRITEFUNCTION, pingDataCallback);
         //curl_easy_setopt(pingCurl, CURLOPT_WRITEDATA, &pingResp);
     }
+    transportManager = core::shared_ptr<communication::TransportWSDL_FTPS>(new communication::TransportWSDL_FTPS());
+    queryManager = core::shared_ptr<communication::QueryWSDL>(new communication::QueryWSDL());
+    //TODO: dane wpisane na sztywno, dodac zapisywanie ustawien
+    transportManager->setFTPCredentials("ftps://83.230.112.43/", "testUser", "testUser");
+    transportManager->setWSCredentials("http://83.230.112.43/Motion/FileStoremanWS.svc?wsdl", "applet_user", "aplet4Motion");
+    queryManager->setWSCredentials("applet_user", "aplet4Motion");
+    queryManager->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
+    queryManager->setBasicUpdatesServiceUri("");
 }
 
 CommunicationManager::~CommunicationManager()
@@ -55,114 +61,92 @@ CommunicationManager::~CommunicationManager()
     }
 }
 
-void CommunicationManager::saveToXml(const std::string& filename)
-{
-    TiXmlDocument document;
-    TiXmlDeclaration* declaration = new TiXmlDeclaration("1.0", "", "");
-    TiXmlElement* root = new TiXmlElement("Communication");
-    document.LinkEndChild(declaration);
-    document.LinkEndChild(root);
-
-    //zapis daty
-    if(isLastUpdate) {
-        root->SetAttribute("date", lastUpdate.toString());
-    } else {
-        DateTime dt;
-        root->SetAttribute("date", dt.toString());
-    }
-
-    BOOST_FOREACH(Trial& trial, serverTrials) {
-        //<ServerTrial>
-        TiXmlElement* strial_element = new TiXmlElement("ServerTrial");
-        root->LinkEndChild(strial_element);
-        strial_element->SetAttribute("id", trial.id);
-        strial_element->SetAttribute("sessionID", trial.sessionID);
-        strial_element->SetAttribute("trialDescription", trial.trialDescription);
-        BOOST_FOREACH(int id, trial.trialFiles) {
-            //<File>
-            TiXmlElement* file_element = new TiXmlElement("File");
-            strial_element->LinkEndChild(file_element);
-            file_element->SetAttribute("id", id);
-            //</File>
-        }
-    }
-    document.SaveFile(filename);
-}
-
-//TODO: trzeba sprawdzic poprawnosc wczytywanych danych
-void CommunicationManager::loadFromXml(const std::string& filename)
-{
-    TiXmlDocument document(filename);
-    if(!document.LoadFile()) {
-        LOG_ERROR(": !Blad wczytania pliku Communication\n");
-        return;
-    }
-    TiXmlHandle hDocument(&document);
-    TiXmlElement* strial_element;
-    TiXmlHandle hParent(0);
-
-    strial_element = hDocument.FirstChildElement().Element();
-    if(!strial_element) {
-        LOG_ERROR(": !Blad czytania z pliku Communication\n");
-        return;
-    }
-    hParent = TiXmlHandle(strial_element);
-
-    //data ostatniej aktualizacji danych z serwera
-    std::string temp;
-    hParent.ToElement()->QueryStringAttribute("date", &temp);
-    isLastUpdate = false;
-    if(!temp.empty()) {
-        try {
-            lastUpdate.setDate(temp);
-            isLastUpdate = true;
-        } catch(std::exception& e)
-        {
-            LOG_ERROR(e.what() << ": !Blad wczytania daty z pliku Communication\n");
-        }
-    }
-    //wczytanie zrzutu danych pomiarowych z serwera
-    this->serverTrials.clear();
-    strial_element = hParent.FirstChild("ServerTrial").ToElement();
-    while(strial_element) {
-        Trial serverTrial;
-        strial_element->QueryIntAttribute("id", &serverTrial.id);
-        strial_element->QueryIntAttribute("sessionID", &serverTrial.sessionID);
-        strial_element->QueryStringAttribute("trialDescription", &serverTrial.trialDescription);
-        TiXmlElement* file_element = strial_element->FirstChildElement("File");
-        while(file_element) {
-            int id;
-            file_element->QueryIntAttribute("id", &id);
-            serverTrial.trialFiles.push_back(id);
-            file_element = file_element->NextSiblingElement();
-        }
-        serverTrials.push_back(serverTrial);
-        strial_element = strial_element->NextSiblingElement("ServerTrial");
-    }
-    notify();
-}
-
-void CommunicationManager::setTransportManager(ITransportable* transportManager)
-{
-    this->transportManager = transportManager;
-    notify();
-}
-
-void CommunicationManager::setQueryManager(IQueryable* queryManager)
-{
-    this->queryManager = queryManager;
-    notify();
-}
-
-ITransportable* CommunicationManager::getTransportManager()
-{
-    return this->transportManager;
-}
-
-IQueryable* CommunicationManager::getQueryManager()
-{
-    return this->queryManager;
-}
+//void CommunicationManager::saveToXml(const std::string& filename)
+//{
+//    TiXmlDocument document;
+//    TiXmlDeclaration* declaration = new TiXmlDeclaration("1.0", "", "");
+//    TiXmlElement* root = new TiXmlElement("Communication");
+//    document.LinkEndChild(declaration);
+//    document.LinkEndChild(root);
+//
+//    //zapis daty
+//    if(isLastUpdate) {
+//        root->SetAttribute("date", lastUpdate.toString());
+//    } else {
+//        DateTime dt;
+//        root->SetAttribute("date", dt.toString());
+//    }
+//
+//    BOOST_FOREACH(Trial& trial, serverTrials) {
+//        //<ServerTrial>
+//        TiXmlElement* strial_element = new TiXmlElement("ServerTrial");
+//        root->LinkEndChild(strial_element);
+//        strial_element->SetAttribute("id", trial.id);
+//        strial_element->SetAttribute("sessionID", trial.sessionID);
+//        strial_element->SetAttribute("trialDescription", trial.trialDescription);
+//        BOOST_FOREACH(int id, trial.trialFiles) {
+//            //<File>
+//            TiXmlElement* file_element = new TiXmlElement("File");
+//            strial_element->LinkEndChild(file_element);
+//            file_element->SetAttribute("id", id);
+//            //</File>
+//        }
+//    }
+//    document.SaveFile(filename);
+//}
+//
+////TODO: trzeba sprawdzic poprawnosc wczytywanych danych
+//void CommunicationManager::loadFromXml(const std::string& filename)
+//{
+//    TiXmlDocument document(filename);
+//    if(!document.LoadFile()) {
+//        LOG_ERROR(": !Blad wczytania pliku Communication\n");
+//        return;
+//    }
+//    TiXmlHandle hDocument(&document);
+//    TiXmlElement* strial_element;
+//    TiXmlHandle hParent(0);
+//
+//    strial_element = hDocument.FirstChildElement().Element();
+//    if(!strial_element) {
+//        LOG_ERROR(": !Blad czytania z pliku Communication\n");
+//        return;
+//    }
+//    hParent = TiXmlHandle(strial_element);
+//
+//    //data ostatniej aktualizacji danych z serwera
+//    std::string temp;
+//    hParent.ToElement()->QueryStringAttribute("date", &temp);
+//    isLastUpdate = false;
+//    if(!temp.empty()) {
+//        try {
+//            lastUpdate.setDate(temp);
+//            isLastUpdate = true;
+//        } catch(std::exception& e)
+//        {
+//            LOG_ERROR(e.what() << ": !Blad wczytania daty z pliku Communication\n");
+//        }
+//    }
+//    //wczytanie zrzutu danych pomiarowych z serwera
+//    this->serverTrials.clear();
+//    strial_element = hParent.FirstChild("ServerTrial").ToElement();
+//    while(strial_element) {
+//        Trial serverTrial;
+//        strial_element->QueryIntAttribute("id", &serverTrial.id);
+//        strial_element->QueryIntAttribute("sessionID", &serverTrial.sessionID);
+//        strial_element->QueryStringAttribute("trialDescription", &serverTrial.trialDescription);
+//        TiXmlElement* file_element = strial_element->FirstChildElement("File");
+//        while(file_element) {
+//            int id;
+//            file_element->QueryIntAttribute("id", &id);
+//            serverTrial.trialFiles.push_back(id);
+//            file_element = file_element->NextSiblingElement();
+//        }
+//        serverTrials.push_back(serverTrial);
+//        strial_element = strial_element->NextSiblingElement("ServerTrial");
+//    }
+//    notify();
+//}
 
 void CommunicationManager::setTrialsDir(const std::string& dir)
 {

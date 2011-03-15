@@ -33,4 +33,4 @@ typedef core::shared_ptr<MetadataParser> MetadataParserPtr;
 typedef core::shared_ptr<const MetadataParser> MetadataParserConstPtr;
 typedef core::weak_ptr<MetadataParser> MetadataParserWeakPtr;
 
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_METADATAPARSER_H__

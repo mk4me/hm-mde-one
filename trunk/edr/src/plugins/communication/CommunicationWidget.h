@@ -180,4 +180,4 @@ private:
     */
     QLabel* serverStateLabel;
 };
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGET_H__

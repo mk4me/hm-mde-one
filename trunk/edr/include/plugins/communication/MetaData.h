@@ -184,4 +184,4 @@ namespace MetaData
 //}
 
 }
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_METADATA_H__

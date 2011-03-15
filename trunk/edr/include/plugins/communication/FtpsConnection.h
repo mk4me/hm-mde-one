@@ -177,4 +177,4 @@ namespace communication
         virtual void abort();
     };
 }
-#endif
+#endif //HEADER_GUARD_COMMUNICATION_FTPSCONNECTION_H__
