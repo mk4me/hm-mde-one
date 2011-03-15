@@ -69,43 +69,59 @@ bool StyleEx::applyStyle(osgWidget::Label* label, osgWidget::Reader r) {
 		LabelFontFitMode ffmode = strToFontFit(str);
 		osgWidget::XYCoord textSize = label->getTextSize();
         bool fillable = label->canFill();
-
-		switch(ffmode){
+        label->setCanFill(false);
+		
+        switch(ffmode){
 		case HorizontalFit:
 			label->setHeight(textSize.y());
 			label->addOrigin(0,0);
-            /*textSize = label->getSize();
-            label->setCanFill(false);
-			if(label->getParent() != nullptr){
-				label->getParent()->resize(label->getWidth(), label->getHeight());
-                label->setCanFill(fillable);
-                label->setSize(textSize);
+            textSize = label->getSize();
+            if(label->getParent() != nullptr){
+                //label->getParent()->resize(label->getWidth(), label->getHeight());
                 label->getParent()->resize();
-			}*/
+                if(fillable == true){
+                    label->setCanFill(fillable);
+                    label->addOrigin(0,0);
+                    //label->setSize(textSize);
+                    label->getParent()->resize();
+                }
+            }
 
 			break;
 		case VerticalFit:
 			label->setWidth(textSize.x());
 			label->addOrigin(0,0);
-            /*textSize = label->getSize();
+            textSize = label->getSize();
             if(label->getParent() != nullptr){
-                label->getParent()->resize(label->getWidth(), label->getHeight());
-                label->setCanFill(fillable);
-                label->setSize(textSize);
+                //label->getParent()->resize(label->getWidth(), label->getHeight());
                 label->getParent()->resize();
-            }*/
+                if(fillable == true){
+                    label->setCanFill(fillable);
+                    label->addOrigin(0,0);
+                    //label->setSize(textSize);
+                    label->getParent()->resize();
+                }
+            }
 			break;
 		case AllFit:
 			label->setSize(textSize);
 			label->addOrigin(0,0);
-            /*textSize = label->getSize();
+            textSize = label->getSize();
             if(label->getParent() != nullptr){
-                label->getParent()->resize(label->getWidth(), label->getHeight());
-                label->setCanFill(fillable);
-                label->setSize(textSize);
+                //label->getParent()->resize(label->getWidth(), label->getHeight());
                 label->getParent()->resize();
-            }*/
+                if(fillable == true){
+                    label->setCanFill(fillable);
+                    label->addOrigin(0,0);
+                    //label->setSize(textSize);
+                    label->getParent()->resize();
+                }
+            }
 			break;
+
+        default:
+            label->setCanFill(fillable);
+            break;
 		}
 	}
 

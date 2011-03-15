@@ -41,8 +41,6 @@ osgVDFBaseModel::osgVDFBaseModel(osgViewer::View* view, osgWidget::point_type wi
 	view->addEventHandler(new VisualSelectionManager(this));
 	addEventCallback(new ModelResizeHandler(this));
 
-    //addChild(contextMenu);
-
 	nodePushEvent = new osgWidget::Callback(&osgVDFBaseModel::onNodeClick, this, osgWidget::EVENT_MOUSE_PUSH);
 	nodeDragEvent = new osgWidget::Callback(&osgVDFBaseModel::onNodeDrag, this, osgWidget::EVENT_MOUSE_DRAG);
 	nodeReleaseEvent = new osgWidget::Callback(&osgVDFBaseModel::onNodeRelease, this, osgWidget::EVENT_MOUSE_RELEASE);
@@ -1625,15 +1623,17 @@ Subject 1.02: How do I find the distance from a point to a line?
 void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::CONNECTIONS_DELETE_MAP & toDelete, const osgWidget::XYCoord & pos){
 	
     contextMenu = new osgui::ContextMenu();
-    contextMenu->setMenuOnCloseCallback(std::string(), boost::bind(&osgVDFBaseModel::closeContextMenu, this, _1));
+    contextMenu->setMenuOnCloseCallback(std::string(), boost::bind(&osgVDFBaseModel::onCloseContextMenu, this, _1));
     
+    addChild(contextMenu);
+
     for(CONNECTIONS_DELETE_MAP::const_iterator it = toDelete.begin(); it != toDelete.end(); it++){
 		osgui::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::removeConnection, this, connectionsGraphToLogical[it->second], _1, _2);
 		osgui::ContextMenu::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::highlightConnection, this, it->second, _1, _2);
 		contextMenu->addMenuItem(it->first, false, cc, hc);
 	}
 
-    addChild(contextMenu);
+    
     
     setFocused(contextMenu);
 	hideConnections();
@@ -1661,7 +1661,7 @@ void osgVDFBaseModel::removeConnection(dflm::ConnPtr connection, const std::stri
 	
 }
 
-void osgVDFBaseModel::closeContextMenu(osgui::ContextMenu * menu){
+void osgVDFBaseModel::onCloseContextMenu(osgui::ContextMenu * menu){
 	contextMenuOn = false;
 
     setFocused(0);

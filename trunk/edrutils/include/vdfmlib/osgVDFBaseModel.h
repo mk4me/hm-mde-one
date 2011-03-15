@@ -256,7 +256,7 @@ private:
 
 	void highlightConnection(osg::Geode * connection, const std::string & connectionName, bool highlight);
 	void removeConnection(dflm::ConnPtr connection, const std::string & connectionName, bool checked);
-	void closeContextMenu(osgui::ContextMenu * menu);
+	void onCloseContextMenu(osgui::ContextMenu * menu);
 
 protected:
 

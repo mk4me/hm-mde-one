@@ -43,7 +43,6 @@ public:
 // osgWidget::Window
 public:
 	virtual void managed(osgWidget::WindowManager * wm);
-	virtual void unmanaged(osgWidget::WindowManager * wm);
     virtual void update();
 
 public:
@@ -111,53 +110,6 @@ public:
 
 protected:
 
- //   /**
- //    *	Klasa obslugujaca klikniecia poza menu, chowa menu
- //    */
-	//class CloseMenuContextEvent : public osgGA::GUIEventHandler{
-
-	//public:
- //       //! ContextMenu - menu ktore chcemy chowac, jego najwyzczy poziom
-	//	CloseMenuContextEvent(ContextMenu * menu);
-	//	virtual ~CloseMenuContextEvent();
-
- //       //! handler uzywany do obslugi zdarzen poza menu kontekstowym - zamyka menu (chowa)
- //       //! tak naprawde chowa najwyzszy poziom, reszte usuwa z WMa
-	//	virtual bool handle(const osgGA::GUIEventAdapter& gea,
-	//		osgGA::GUIActionAdapter&      gaa,
-	//		osg::Object*                  obj,
-	//		osg::NodeVisitor*             nv
-	//		);
-
-	//protected:
- //       //! ContextMenu - menu ktore chcemy chowac, jego najwyzczy poziom
-	//	osg::observer_ptr<ContextMenu> contextMenu;
-	//};
-
-    /**
-     *	Klasa obslugujaca PPM otwierajacy menu jesli nie byl klikniety zaden Window
-     */
-	class OpenCloseContextMenuEvent : public osgGA::GUIEventHandler{
-
-	public:
-        //! ContextMenu - menu ktore chcemy pokazywac/chowac
-		OpenCloseContextMenuEvent(ContextMenu * menu);
-		virtual ~OpenCloseContextMenuEvent();
-
-        //! handler uzywany do obslugi zdarzen menu kontekstowym - zamyka menu (chowa)
-        //! tak naprawde chowa najwyzszy poziom, reszte usuwa z WMa
-        //! lub pokazuje
-		virtual bool handle(const osgGA::GUIEventAdapter& gea,
-			osgGA::GUIActionAdapter&      gaa,
-			osg::Object*                  obj,
-			osg::NodeVisitor*             nv
-			);
-
-	protected:
-        //! ContextMenu - menu ktorym chcemy zarzadzac
-		osg::observer_ptr<ContextMenu> contextMenu;
-	};
-
     //! definicja tokenizera opartego o boost
 	typedef boost::tokenizer<boost::char_separator<char> > Tokenizer;
 
@@ -204,8 +156,6 @@ protected:
 	typedef std::map<std::string, MenuItem> Items;
 
 protected:
-
-    virtual bool canShow() const;
 
     //! ContextMenu - rodzic aktualnego menu, ukryty na potrzeby klasy
 	ContextMenu(ContextMenu * parent);
@@ -407,13 +357,6 @@ protected:
 
     //! OnCloseCallback akcja uzytkownika na zamkniecie danego menu
 	OnCloseCallback closeMenuCallback;
-
-    //! klasa obslugujaca kliknieca poza menu kontekstowym zamykajaca je (chowajaca)
-	//osg::ref_ptr<CloseMenuContextEvent> closeMenuEventHandler;
-
-    //! klasa obslugujaca kliknieca PPM poza innymi oknami w WM otwierajac zadane menu kontesktowe
-    osg::ref_ptr<OpenCloseContextMenuEvent> openCloseContextMenuEventHandler;
-
 
 	static const MenuItem constEmptyMenuItem;
 	static const MenuSubmenu constEmptyMenuSubmenu;

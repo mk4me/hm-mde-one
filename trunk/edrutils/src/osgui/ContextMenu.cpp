@@ -218,9 +218,9 @@ bool ContextMenu::onItemEnter(osgWidget::Event& ev){
 
 	menuItem->menuItem->setStyle("osg.contextmenu.item.hovered");
 
-	if(getWindowManager()->getStyleManager() != nullptr){
+	//if(getWindowManager()->getStyleManager() != nullptr){
 		getWindowManager()->getStyleManager()->applyStyles(menuItem->menuItem);
-	}
+	//}
 
 	refreshMenuItemCheckedStyle(*menuItem, true);
 
@@ -237,9 +237,9 @@ bool ContextMenu::onItemLeave(osgWidget::Event& ev){
 
 	menuItem->menuItem->setStyle("osg.contextmenu.item.normal");
 
-	if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
+	//if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
 		getWindowManager()->getStyleManager()->applyStyles(menuItem->menuItem);
-	}
+	//}
 
 	refreshMenuItemCheckedStyle(*menuItem);
 
@@ -256,10 +256,10 @@ bool ContextMenu::onSubmenuEnter(osgWidget::Event& ev){
 
 	submenuItem->submenuItem->setStyle("osg.contextmenu.submenuitem.hovered");
 	submenuItem->emptyWidget->setStyle("osg.contextmenu.submenuitem.hovered");
-	if(getWindowManager()->getStyleManager() != nullptr){
+	//if(getWindowManager()->getStyleManager() != nullptr){
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->submenuItem);
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->emptyWidget);
-	}
+	//}
 
     osg::ref_ptr<ContextMenu> actSubmenu(activeSubMenu);
 	if(submenuItem->submenu == actSubmenu){
@@ -287,33 +287,27 @@ bool ContextMenu::onSubmenuLeave(osgWidget::Event& ev){
 
 	submenuItem->submenuItem->setStyle("osg.contextmenu.submenuitem.normal");
     submenuItem->emptyWidget->setStyle("osg.contextmenu.submenuitem.normal");
-    if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
+    //if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->submenuItem);
 		getWindowManager()->getStyleManager()->applyStyles(submenuItem->emptyWidget);
-	}
+	//}
 	
 	return false;
 }
 
 void ContextMenu::refreshMenuItemCheckedStyle(const MenuItem & menuItem, bool hovered){
-	if(menuItem.checkedWidget != nullptr){
-		if(menuItem.checked == true){
-			if(hovered == true){
-				menuItem.checkedWidget->setStyle("osg.contextmenu.checked.hovered");
-			}else{
-				menuItem.checkedWidget->setStyle("osg.contextmenu.checked.normal");
-			}
+	if(menuItem.checked == true){
+		if(hovered == true){
+			menuItem.checkedWidget->setStyle("osg.contextmenu.checked.hovered");
 		}else{
-			if(hovered == true){
-				menuItem.checkedWidget->setStyle("osg.contextmenu.unchecked.hovered");
-			}else{
-				menuItem.checkedWidget->setStyle("osg.contextmenu.unchecked.normal");
-			}
+			menuItem.checkedWidget->setStyle("osg.contextmenu.checked.normal");
 		}
-
-        if(getWindowManager() != nullptr && getWindowManager()->getStyleManager() != nullptr){
-            getWindowManager()->getStyleManager()->applyStyles(menuItem.checkedWidget);
-        }
+	}else{
+		if(hovered == true){
+			menuItem.checkedWidget->setStyle("osg.contextmenu.unchecked.hovered");
+		}else{
+			menuItem.checkedWidget->setStyle("osg.contextmenu.unchecked.normal");
+		}
 	}
 }
 
@@ -357,15 +351,20 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 
 			//create widget
 			submenuItem.submenuItem = new osgWidget::Label("submenu" + *prev);
-			//format widget
 			submenuItem.submenuItem->setStyle("osg.contextmenu.submenuitem.normal");
 
 			submenuItem.emptyWidget = new osgWidget::Widget();
 			submenuItem.emptyWidget->setStyle("osg.contextmenu.submenuitem.normal");
-			submenuItem.emptyWidget->setSize(0,0);
 
-			//add widget
-			it = currentMenu->submenus.insert(Submenus::value_type(*begin, submenuItem)).first;
+            if(getWindowManager() != nullptr){
+                getWindowManager()->getStyleManager()->applyStyles(submenuItem.submenuItem);
+                getWindowManager()->getStyleManager()->applyStyles(submenuItem.emptyWidget);
+            }else{
+                submenuItem.submenuItem->setFontSize(1);
+            }
+
+            submenuItem.submenuItem->setLabel(*prev);
+            submenuItem.emptyWidget->setSize(submenuItem.submenuItem->getHeight(), submenuItem.submenuItem->getHeight());
 
 			//configure widget events - onEnter, onLeave
 			osgWidget::Callback * mc = new osgWidget::Callback(&ContextMenu::onSubmenuEnter, currentMenu, osgWidget::EVENT_MOUSE_ENTER, &(it->second));
@@ -385,17 +384,15 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 
 			if(row == 0){
 				currentMenu->setNumColumns(2);
-				currentMenu->setColumnWeight(0,0);
-				currentMenu->setColumnWeight(1,1);
+				//currentMenu->setColumnWeight(0,0);
+				//currentMenu->setColumnWeight(1,1);
 			}
 
 			currentMenu->addWidget(submenuItem.submenuItem, row, 1);
-			currentMenu->addWidget(submenuItem.emptyWidget, row, 0);
+			currentMenu->addWidget(new osgui::AspectRatioKeeper(submenuItem.emptyWidget), row, 0);
 
-            submenuItem.submenuItem->setLabel(*prev);
-            submenuItem.emptyWidget->setSize(submenuItem.submenuItem->getHeight(), submenuItem.submenuItem->getHeight());
-            currentMenu->resize();
-            currentMenu->submenus[*prev] = submenuItem;
+            //add widget
+            it = currentMenu->submenus.insert(Submenus::value_type(*prev, submenuItem)).first;
 		}
 
 		currentMenu = it->second.submenu;
@@ -409,20 +406,27 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 		MenuItem item;
 
 		item.menuItem = new osgWidget::Label("subitem" + *prev);
-
-		//format widget
 		item.menuItem->setStyle("osg.contextmenu.item.normal");
 
 		//configure widget events - onPush
 
 		item.checked = checked;
-
 		item.onClickCallback = onClickCallback;
 		item.onHoverCallback = onHoverCallback;
 
 		//checked operation
 		item.checkedWidget = new osgWidget::Widget();
-		item.checkedWidget->setSize(0,0);
+        refreshMenuItemCheckedStyle(item);
+
+        if(getWindowManager() != nullptr){
+            getWindowManager()->getStyleManager()->applyStyles(item.menuItem);
+            getWindowManager()->getStyleManager()->applyStyles(item.checkedWidget);
+        }else{
+            item.menuItem->setFontSize(1);
+        }
+
+        item.menuItem->setLabel(*prev);
+        item.checkedWidget->setSize(item.menuItem->getHeight(), item.menuItem->getHeight());
 
 		//add widget
 		Items::iterator it = currentMenu->items.insert(Items::value_type(*prev, item)).first;
@@ -440,8 +444,6 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 		item.checkedWidget->addCallback(cc);
 		item.checkedWidget->addCallback(ec);
 		item.checkedWidget->addCallback(lc);
-
-		refreshMenuItemCheckedStyle(item);
 		
 		unsigned int row = currentMenu->getNumRows();
 
@@ -449,18 +451,12 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 
 		if(row == 0){
 			currentMenu->setNumColumns(2);
-			currentMenu->setColumnWeight(0,0);
-			currentMenu->setColumnWeight(1,1);
+			//currentMenu->setColumnWeight(0,0);
+			//currentMenu->setColumnWeight(1,1);
 		}
 
 		currentMenu->addWidget(item.menuItem, row, 1);
-		currentMenu->addWidget(item.checkedWidget, row, 0);
-
-        item.menuItem->setLabel(*prev);
-        item.checkedWidget->setSize(item.menuItem->getHeight(), item.menuItem->getHeight());
-        currentMenu->resize();
-
-        currentMenu->items[*prev] = item;
+		currentMenu->addWidget(new osgui::AspectRatioKeeper(item.checkedWidget), row, 0);
 
 		return true;
 	}
@@ -507,6 +503,11 @@ bool ContextMenu::setMenuItemChecked(Iter begin, Iter end, bool checked){
 		menuItem.checked = checked;
 		
 		refreshMenuItemCheckedStyle(menuItem);
+
+        if(getWindowManager() != nullptr){
+            getWindowManager()->getStyleManager()->applyStyles(menuItem.checkedWidget);
+        }
+
 		return true;
 	}
 
