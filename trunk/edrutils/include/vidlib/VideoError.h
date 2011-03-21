@@ -37,7 +37,7 @@ public:
     VideoError(const VideoError& error);
 
     //! Polimorficzny destruktor.
-    virtual ~VideoError();
+    virtual ~VideoError() throw();
 
     //! \return Klon obiektu.
     virtual VideoError * clone() const;

@@ -29,7 +29,7 @@ VideoError::VideoError(const VideoError& error)
     setMessage(error.what(), -1);
 }
 
-VideoError::~VideoError()
+VideoError::~VideoError() throw()
 {
     if ( msgCopy ) {
         free(msgCopy);
