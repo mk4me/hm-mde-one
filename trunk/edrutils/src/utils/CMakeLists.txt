@@ -23,6 +23,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/Align.h
 	${HEADER_PATH}/Pool.h
 	${HEADER_PATH}/Enum.h
+	${HEADER_PATH}/NamedTree.h
 	${HEADER_PATH}/PtrPolicyRaw.h
 	${HEADER_PATH}/PtrPolicyBoost.h
 	${HEADER_PATH}/PtrPolicyOSG.h
@@ -54,6 +55,7 @@ source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/Config
 set(TARGET_SRC 
 	Enum.cpp
 	Debug.cpp
+	NamedTree.cpp
 	Profiler.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
