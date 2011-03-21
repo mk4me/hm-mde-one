@@ -37,7 +37,7 @@ VideoError::~VideoError()
     }
 }
 
-const char* VideoError::what() const
+const char* VideoError::what() const throw()
 {
     return msgCopy ? msgCopy : "Unknown exception";
 }

@@ -42,7 +42,7 @@ public:
     //! \return Klon obiektu.
     virtual VideoError * clone() const;
     //! \return Komunikat b³êdu.
-    virtual const char* what() const;
+    virtual const char* what() const throw();
 
 protected:
     //! Kopiuje wiadomoœæ do wewnêtrznego bufora. Specjalnie niewirtualna.
