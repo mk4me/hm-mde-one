@@ -1,16 +1,18 @@
 #include "stdafx.h"
-#include <KinematicModelLibrary/DegreeOfFreedom.h>
-#include <KinematicModelLibrary/Joint.h>
-#include <KinematicModelLibrary/Skeleton.h>
-#include <KinematicModelLibrary/SkeletalModel.h>
+#include <kinematiclib/DegreeOfFreedom.h>
+#include <kinematiclib/Joint.h>
+#include <kinematiclib/Skeleton.h>
+#include <kinematiclib/SkeletalModel.h>
 
-void kinematic::SkeletalModel::RecreateMaps() {
+namespace kinematic {
+
+void SkeletalModel::RecreateMaps() {
     jointsMap.clear();
     jointsIds.clear();
     Recreate(getSkeleton().getRoot());
 }
 
-void kinematic::SkeletalModel::Recreate( JointPtr joint ) {
+void SkeletalModel::Recreate( JointPtr joint ) {
     static int id = 0;
     jointsMap[joint->name] = joint;
     jointsIds[id++] = joint;
@@ -19,3 +21,5 @@ void kinematic::SkeletalModel::Recreate( JointPtr joint ) {
         Recreate(joint->children[i]);
     }
 }
+
+} //kinematic

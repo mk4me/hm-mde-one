@@ -1,10 +1,9 @@
 #include "stdafx.h"
-#include <KinematicModelLibrary/SkeletalParsers.h>
-#include <KinematicModelLibrary/hmException.h>
-#include <KinematicModelLibrary/DegreeOfFreedom.h>
+#include <kinematiclib/SkeletalParsers.h>
+#include <kinematiclib/hmException.h>
+#include <kinematiclib/DegreeOfFreedom.h>
 
 using namespace kinematic;
-
 
 std::string Axis::getAxisOrderName( Axis::Order order ) {
     switch(order){
@@ -15,7 +14,7 @@ std::string Axis::getAxisOrderName( Axis::Order order ) {
         case ZXY : return "ZXY";
         case ZYX : return "ZYX";
         default:
-            throw AcclaimWrongFileException("Unknown axis order");
+            throw WrongFileException("Unknown axis order");
     }
 }
 

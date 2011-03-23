@@ -1,38 +1,40 @@
 #include "stdafx.h"
 #include <typeinfo>
-#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <kinematiclib/SkeletalParsers.h>
 
 //----------------------------------------------------------------------------------
-kinematic::HmException::HmException( const std::string& message ) {
-    //TODO: Czy takie konstrukcje sa bezpieczne ? 
-    this->message = message;
-    //Logger::getInstance().log(Logger::Warning, "Exception was thrown : " +  message);
+kinematic::Exception::Exception( const std::string& message ) :
+    basicMessage(message)
+{
     LOGGER(Logger::Warning, "Exception was thrown : " +  message);
 }
-kinematic::HmException::~HmException() {
-    
-}
 
-const char* kinematic::HmException::what() const {
-    std::string exc = typeid(*this).name();
-    exc += (": " + message);
-    return exc.c_str();
-}
-//----------------------------------------------------------------------------------
-kinematic::UnableToOpenFileException::UnableToOpenFileException( const std::string& message )
-:HmException(message)
+kinematic::Exception::~Exception()
 {
+}
 
+const char* kinematic::Exception::what() const
+{
+    exceptionMessage.clear();
+    exceptionMessage += typeid(*this).name();
+    exceptionMessage += (": " + basicMessage);
+    std::cout << exceptionMessage << std::endl;
+    return exceptionMessage.c_str();
+}
+
+kinematic::UnableToOpenFileException::UnableToOpenFileException(const std::string& message)
+:Exception(message)
+{
 }
 //----------------------------------------------------------------------------------
-kinematic::AcclaimWrongFileException::AcclaimWrongFileException( const std::string& message )
-:HmException(message)
+kinematic::WrongFileException::WrongFileException( const std::string& message )
+:Exception(message)
 {
 
 }
 //----------------------------------------------------------------------------------
 kinematic::AcclaimDataNotLoaded::AcclaimDataNotLoaded( const std::string& message )
-:HmException(message)
+:Exception(message)
 {
 
 }

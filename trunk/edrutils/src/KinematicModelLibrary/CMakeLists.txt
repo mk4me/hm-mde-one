@@ -1,6 +1,6 @@
-project(KinematicModelLibrary)
+project(kinematiclib)
 # nazwa
-set(TARGET_TARGETNAME KinematicModelLibrary)
+set(TARGET_TARGETNAME kinematiclib)
 
 # nag³ówki prywatne
 set(PRIVATE_H
@@ -14,6 +14,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/AmcParser.h
 	${HEADER_PATH}/AsfParser.h
 	${HEADER_PATH}/BvhParser.h
+	${HEADER_PATH}/VskParser.h
 	${HEADER_PATH}/DegreeOfFreedom.h
 	${HEADER_PATH}/hmException.h
 	${HEADER_PATH}/Joint.h
@@ -43,6 +44,7 @@ set(TARGET_SRC
 	AmcParser.cpp
 	AsfParser.cpp
 	BvhParser.cpp
+	VskParser.cpp
 	DegreeOfFreedom.cpp
 	hmException.cpp
 	Joint.cpp

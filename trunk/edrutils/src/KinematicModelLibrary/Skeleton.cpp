@@ -1,16 +1,19 @@
 #include "stdafx.h"
-#include <KinematicModelLibrary/DegreeOfFreedom.h>
-#include <KinematicModelLibrary/Joint.h>
-#include <KinematicModelLibrary/Skeleton.h>
-#include <KinematicModelLibrary/SkeletalModel.h>
+#include <kinematiclib/DegreeOfFreedom.h>
+#include <kinematiclib/Joint.h>
+#include <kinematiclib/Skeleton.h>
+#include <kinematiclib/SkeletalModel.h>
 
-using namespace kinematic;
 using namespace std;
 
-Skeleton::Skeleton(): 
-    position(0.0,0.0,0.0),
-    orientation(0.0,0.0,0.0),
+namespace kinematic {
+
+Skeleton::Skeleton():
+    position(0.0, 0.0, 0.0),
+    orientation(0.0, 0.0, 0.0),
     axisOrder(Axis::XYZ),
     rootName("root")
 {
 }
+
+} // kinematic

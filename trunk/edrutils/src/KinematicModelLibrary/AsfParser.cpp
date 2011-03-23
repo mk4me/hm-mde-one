@@ -1,21 +1,24 @@
 #include "stdafx.h"
+#include <kinematiclib/SkeletalParsers.h>
+#define PARSER_VERSION "0.11"
 
-#include <KinematicModelLibrary/SkeletalParsers.h>
-
-using namespace kinematic;
 using namespace std;
 
-AsfParser::AsfParser() : 
+namespace kinematic {
+
+AsfParser::AsfParser() :
     forceRootXYZ(true),
     idCounter(0)
 {
 }
 
-AsfParser::~AsfParser() {
+AsfParser::~AsfParser()
+{
 }
 
 // glowna metoda parsujaca
-void AsfParser::parse(SkeletalModel::Ptr model, const string& filename) {
+void AsfParser::parse(SkeletalModelPtr model, const string& filename)
+{
     // wskaznik trzymany, aby metody nie musialy go przekazywac
     this->model = model;
     ifstream in(filename.c_str(), ios_base::in);
@@ -24,7 +27,7 @@ void AsfParser::parse(SkeletalModel::Ptr model, const string& filename) {
        throw UnableToOpenFileException(filename);
     }
     // skopiowanie zawartosci pliku do pojedynczego stringa
-    string storage; 
+    string storage;
     // nie omijaj bialych znakow
     in.unsetf(ios::skipws); 
     copy(
@@ -43,15 +46,14 @@ void AsfParser::parse(SkeletalModel::Ptr model, const string& filename) {
         result &= parseBones(bonedata);
         result &= parseHierarchy(hierarchy, model->getSkeleton());
     }
-    if (!result)
-    {
-        throw AcclaimWrongFileException("Error in file");
+    if (!result) {
+        throw WrongFileException("Error in file");
     }
 }
 
 // Dzieli wejsciowy plik na poszczegolne sekcje
-bool AsfParser::splitAsf (const string& asf) {
-
+bool AsfParser::splitAsf (const string& asf) 
+{
     istringstream is(asf);
     string line;
     string token;
@@ -62,7 +64,6 @@ bool AsfParser::splitAsf (const string& asf) {
         linestream >> token;
         if (token[0] == ':') {
             section = getSectionContainter(token);
-            //linestream.unsetf(ios::skipws);
             while(linestream >> token) *section += token;
             *section += '\n';
             continue;
@@ -175,7 +176,7 @@ bool AsfParser::parseSingleBone(const string& singleBone, Joint& bone) {
         }
 
     } else {
-        throw AcclaimWrongFileException("dofs size != limits size");
+        throw WrongFileException("dofs size != limits size");
     }
     return true;
 }
@@ -189,7 +190,7 @@ bool AsfParser::parseBones(const string& bones) {
     string::size_type shift = strlen("begin");
     string::size_type begin = 0;
     string::size_type end = 0;
-    for(;;) {   
+    for(;;) {
         begin = bones.find("begin", end);
         end = bones.find("end", begin);
         begin += shift;
@@ -203,7 +204,7 @@ bool AsfParser::parseBones(const string& bones) {
                     bonesMap[singleBone->name] = singleBone;
                     bonesIds[singleBone->id] = singleBone;
                 } else {
-                    throw AcclaimWrongFileException("Bone : " + singleBone->name + " already added");
+                    throw WrongFileException("Bone : " + singleBone->name + " already added");
                 }
             }
         } else {
@@ -213,7 +214,7 @@ bool AsfParser::parseBones(const string& bones) {
     }
 
     if (bonesMap.size() == 0) {
-        throw AcclaimWrongFileException("No bones defined");
+        throw WrongFileException("No bones defined");
     }
 
     return true;
@@ -347,7 +348,7 @@ bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton
         }
     }
     if (root->children.size() == 0) {
-        throw AcclaimWrongFileException("root has no children");
+        throw WrongFileException("root has no children");
     }
     
     return true;
@@ -418,7 +419,7 @@ void kinematic::AsfParser::saveRoot( std::ostream& out ) {
     }
 
     osg::Vec3d position = skeleton.getPosition();
-    out << "   " << "position "  
+    out << "   " << "position "
         << position[0] << " "
         << position[1] << " "
         << position[2] << endl;
@@ -486,7 +487,7 @@ void kinematic::AsfParser::saveSingleBone( std::ostream& out, const Joint& bone)
             i != 0 ? out << "          " : out;
             out << "(";
             if (bone.dofs[i].minLimit == min) {
-                out << "-inf"; 
+                out << "-inf";
             } else {
                 out << bone.dofs[i].minLimit;
             }
@@ -536,8 +537,6 @@ void kinematic::AsfParser::saveHierarchy( std::ostream& out ) {
     out << "  end" << endl;
 }
 
-
-
 void kinematic::AsfParser::saveUnits( std::ostream& out )
 {
     out << ":units" << endl;
@@ -552,7 +551,7 @@ void kinematic::AsfParser::saveUnits( std::ostream& out )
     out << endl;
 }
 
-void AsfParser::save(const SkeletalModel::Ptr model, const std::string& filename ) {
+void AsfParser::save(const SkeletalModelPtr model, const std::string& filename ) {
     this->model = model;
     ofstream out;
     out.open(filename.c_str());
@@ -565,4 +564,6 @@ void AsfParser::save(const SkeletalModel::Ptr model, const std::string& filename
     saveBones(out);
     saveHierarchy(out);
     out.close();
+}
+
 }

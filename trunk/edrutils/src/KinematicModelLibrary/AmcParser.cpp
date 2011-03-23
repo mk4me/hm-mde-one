@@ -1,26 +1,29 @@
-#include <KinematicModelLibrary/AmcParser.h>
-
-#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <kinematiclib/AmcParser.h>
+#include <kinematiclib/SkeletalParsers.h>
 
 using namespace kinematic;
 using namespace boost;
-//----------------------------------------------------------------------------------
-AmcParser::AmcParser() : forceRootXYZ(true) {
+using namespace std;
+
+AmcParser::AmcParser() : 
+    forceRootXYZ(true)
+{
 }
-//----------------------------------------------------------------------------------
-void AmcParser::save (const SkeletalModel::Ptr model , const std::string& filename) {
+
+void AmcParser::save (const SkeletalModelPtr model, const std::string& filename)
+{
     std::ofstream out;
     out.open(filename.c_str());
 
     out << ":FULLY-SPECIFIED" << std::endl;
     out << ":DEGREES" << std::endl;
 
-    std::vector<SkeletalModel::singleFrame>& frames = model->getFrames();
+    std::vector<SkeletalModel::singleFramePtr>& frames = model->getFrames();
 
     int count = frames.size();
     for (int i = 0; i < count; ++i) {
-        out << frames[i].frameNo << std::endl;
-        std::vector<SkeletalModel::singleBoneState>& bones = frames[i].bonesData;
+        out << frames[i]->frameNo << std::endl;
+        std::vector<SkeletalModel::singleBoneState>& bones = frames[i]->bonesData;
         int bonesCount = bones.size();
         for (int j = 0; j < bonesCount; j++) {
             out << bones[j].name;
@@ -48,62 +51,61 @@ void AmcParser::save (const SkeletalModel::Ptr model , const std::string& filena
     }
     out.close();
 }
-//----------------------------------------------------------------------------------
-void AmcParser::parse(SkeletalModel::Ptr model, const std::string& filename ) {
+
+void AmcParser::parse(SkeletalModelPtr model, const std::string& filename )
+{
     std::vector<double> numbers;
     std::string name;
-
     std::string::size_type loc;
-    
+
     std::ifstream ifs( filename.c_str() );
 
     if (!ifs) {
         throw UnableToOpenFileException(filename);
     }
-
+    
     std::string line;
 
-    std::vector<SkeletalModel::singleFrame>& frames = model->getFrames();
+    std::vector<SkeletalModel::singleFramePtr>& frames = model->getFrames();
 
-    // HACK naglowki
-    while( getline( ifs, line ) ) 
-    {
+    // HACK: z braku dokladnej dokumentacji nie wiem jakie moga wystapic naglowki pliku *.bhv
+    // wszystkie do tej pory spotkane pliki konczyly naglowek linijka :DEGREES,
+    while (getline(ifs, line)) {
         loc = line.find(":DEGREES");
-        if( loc != std::string::npos )
-        {
+        if (loc != std::string::npos) {
             break;
-        }		
+        }
     }
- 
+
     SkeletalModel::singleBoneState bone;
     
-    SkeletalModel::singleFrame frame;
-    while( getline( ifs, line ) ) {
+    SkeletalModel::singleFramePtr frame(new SkeletalModel::singleFrame);
+    while (getline(ifs, line)) {
         std::istringstream iss(line);
         int frameNo = -1;
         if (iss >> frameNo){
-            if (frame.bonesData.size() > 0) {
+            if (frame->bonesData.size() > 0) {
                 frames.push_back(frame);
             }
-            frame.bonesData.clear();
-            frame.frameNo = frameNo;
+            
+            frame = SkeletalModel::singleFramePtr(new SkeletalModel::singleFrame);
+            frame->frameNo = frameNo;
         } else {
             iss.clear();
             iss >> bone.name;
             bone.channelValues.clear();
+            
             double val = 0.0;
             while (iss >> val) {
                 bone.channelValues.push_back(val);
             }
-            frame.bonesData.push_back(bone);
+            frame->bonesData.push_back(bone);
         }
-     }		
+     }
      frames.push_back(frame);
 
-     if (frames.size() == 0) {
-         throw AcclaimWrongFileException("No frames defined in " + filename + " file");
-     }
-
-     ifs.close();
+    ifs.close();
+    if (frames.size() == 0) {
+        throw WrongFileException("No frames defined in " + filename + " file");
+    }
 }
-

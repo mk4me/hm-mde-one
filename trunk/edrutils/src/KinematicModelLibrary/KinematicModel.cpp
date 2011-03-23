@@ -1,18 +1,23 @@
 #include "stdafx.h"
-#include <KinematicModelLibrary/SkeletalParsers.h>
-#include <osgAnimation/Bone>
-#include <osgAnimation/Skeleton>
-#include <KinematicModelLibrary/KinematicModel.h>
+#include <osg/Quat>
+#include <osg/Vec3>
+#include <kinematiclib/SkeletalParsers.h>
+#include <kinematiclib/KinematicModel.h>
 
-using namespace kinematic;
 using namespace std;
-//----------------------------------------------------------------------------------
-void KinematicModel::backJointAndBone(std::string newJointName, std::string newBoneName, hAnimJointPtr& parentJoint, hAnimBonePtr& parentBone) {
+
+namespace kinematic {
+
+void KinematicModel::backJointAndBone(std::string newJointName, std::string newBoneName,
+    hAnimJointPtr& parentJoint, hAnimBonePtr& parentBone)
+{
     parentJoint = joints[newJointName];
     parentBone = bones[newBoneName];
 }
-//----------------------------------------------------------------------------------
-void KinematicModel::createJointAndBone(std::string newJointName, std::string newBoneName, hAnimJointPtr& parentJoint, hAnimBonePtr& parentBone) {
+
+void KinematicModel::createJointAndBone(std::string newJointName, std::string newBoneName,
+    hAnimJointPtr& parentJoint, hAnimBonePtr& parentBone)
+{
     hAnimJointPtr joint(new hAnimJoint);
     hAnimBonePtr bone(new hAnimBone);
     if (parentBone) {
@@ -21,7 +26,7 @@ void KinematicModel::createJointAndBone(std::string newJointName, std::string ne
     joint->parentBone = parentBone;
     joint->setName(newJointName);
     joint->childrenBones.push_back(bone);
-    
+
     bone->parentJoint = joint;
     bone->name = newBoneName;
 
@@ -30,9 +35,39 @@ void KinematicModel::createJointAndBone(std::string newJointName, std::string ne
     parentJoint = joint;
     parentBone = bone;
 }
-//----------------------------------------------------------------------------------
-kinematic::KinematicModel::KinematicModel(void) {
+
+KinematicModel::KinematicModel(void) 
+{
     //TODO : zamiast takiego rozwiazania wymusic zaladowanie slownika
+    //jointMappingDictionary["Hips"] = "HumanoidRoot";
+
+    jointMappingDictionary["root0"] = "vl5";
+    jointMappingDictionary["root1"] = "l_hip";
+    jointMappingDictionary["root2"] = "r_hip";
+jointMappingDictionary["ToSpine"] = "vl4";
+jointMappingDictionary["Spine"] = "vt12";
+jointMappingDictionary["Spine1"] = "vt1";
+jointMappingDictionary["Spine10"] = "vc7";
+jointMappingDictionary["Spine11"] = "l_sternoclavicular";
+jointMappingDictionary["Spine12"] = "r_sternoclavicular";
+jointMappingDictionary["Neck"] = "vc1";
+jointMappingDictionary["Head"] = "skullbase";
+jointMappingDictionary["LeftShoulder"] = "l_shoulder";
+jointMappingDictionary["LeftArm"] = "l_elbow";
+jointMappingDictionary["LeftForeArm"] = "l_wrist";
+jointMappingDictionary["LeftHand"] = "l_middle0";
+jointMappingDictionary["RightShoulder"] = "r_shoulder";
+jointMappingDictionary["RightArm"] = "r_elbow";
+jointMappingDictionary["RightForeArm"] = "r_wrist";
+jointMappingDictionary["RightHand"] = "r_middle0";
+jointMappingDictionary["LeftUpLeg"] = "l_knee";
+jointMappingDictionary["LeftLeg"] = "l_ankle";
+jointMappingDictionary["LeftFoot"] = "l_subtalar";
+jointMappingDictionary["LeftToeBase"] = "l_metatarsal";
+jointMappingDictionary["RightUpLeg"] = "r_knee";
+jointMappingDictionary["RightLeg"] = "r_ankle";
+jointMappingDictionary["RightFoot"] = "r_subtalar";
+jointMappingDictionary["RightToeBase"] = "r_metatarsal";
     //loadMappingDictionary("dictionary.txt");
      jointMappingDictionary["root"] = "HumanoidRoot";
      jointMappingDictionary["lhipjoint"] = "l_hip";
@@ -66,16 +101,14 @@ kinematic::KinematicModel::KinematicModel(void) {
      jointMappingDictionary["rfingers"] = "r_middle1";
      jointMappingDictionary["rthumb"] = "r_thumb1";
 }
-//----------------------------------------------------------------------------------
-kinematic::KinematicModel::KinematicModel(const std::string& dictionaryFilename)
+
+KinematicModel::KinematicModel(const std::string& dictionaryFilename)
 {
-	loadMappingDictionary(dictionaryFilename);
+    loadMappingDictionary(dictionaryFilename);
 }
-//----------------------------------------------------------------------------------
-kinematic::KinematicModel::~KinematicModel(void) {
-}
-//----------------------------------------------------------------------------------
-hAnimSkeleton::Ptr KinematicModel::createHAnim(/*HAnimHelper::LevelOfArticulation loa*/) {
+
+hAnimSkeleton::Ptr KinematicModel::createHAnim()
+{
   hAnimJointPtr joint;
   hAnimBonePtr bone;
   hAnimJointPtr rootJoint;
@@ -133,7 +166,7 @@ hAnimSkeleton::Ptr KinematicModel::createHAnim(/*HAnimHelper::LevelOfArticulatio
                                                     backJointAndBone("skullbase", "skull", joint, bone);
                                                     createJointAndBone("r_eyebrow_joint", "r_eyebrow", joint, bone);
                                                     backJointAndBone("skullbase", "skull", joint, bone);
-                                                    createJointAndBone("temporomandibular", "jaw", joint, bone); 
+                                                    createJointAndBone("temporomandibular", "jaw", joint, bone);
                                        backJointAndBone("vt1", "t1", joint, bone);
                                   /*|*/createJointAndBone("l_sternoclavicular", "l_clavicle", joint, bone);
                                       createJointAndBone("l_acromioclavicular", "l_scapula", joint, bone);
@@ -193,14 +226,15 @@ hAnimSkeleton::Ptr KinematicModel::createHAnim(/*HAnimHelper::LevelOfArticulatio
                                                   createJointAndBone("r_pinky2", "r_pinky_middle", joint, bone);
                                                     createJointAndBone("r_pinky3", "r_pinky_distal", joint, bone);
 
-    hAnimSkeleton::Ptr skeleton(new kinematic::hAnimSkeleton);
+    hAnimSkeleton::Ptr skeleton(new hAnimSkeleton);
     skeleton->setRoot(rootJoint);
     return skeleton;
 }
-//----------------------------------------------------------------------------------
-std::string kinematic::KinematicModel::mapJointName(const std::string& given) {
+
+std::string KinematicModel::mapJointName(const std::string& given)
+{
     if (boneMappingDictionary.size() == 0 && jointMappingDictionary.size() == 0) {
-        throw kinematic::DictionaryNotLoadedException("dictionary with mapping scheme was not loaded");
+        throw &kinematic::DictionaryNotLoadedException("dictionary with mapping scheme was not loaded");
     }
     std::map<std::string, std::string>::iterator it = boneMappingDictionary.find(given);
     if (it != boneMappingDictionary.end()) {
@@ -215,71 +249,81 @@ std::string kinematic::KinematicModel::mapJointName(const std::string& given) {
         }
     }
 }
-//---------------------------------------------------------------------------------- 
-//void hmAnimation::KinematicModel::createHAnimSkeleton(hmAnimation::SkeletalModel::Ptr SkeletalModel) {
-//	JointPtr root = skeletalModel->getSkeleton().getRoot();
-//    root = Joint::clone(root);
-//}
-//----------------------------------------------------------------------------------
-void kinematic::KinematicModel::setSkeletalData(kinematic::SkeletalModel::Ptr skeletalModel) {
+
+void KinematicModel::setSkeletalData(SkeletalModelPtr skeletalModel)
+{
+    UTILS_ASSERT(!this->skeletalModel);
     //this->hAnimSkeleton = CreateHAnimSkeleton(skeletalModel);
     //double maxLength = getMaxBoneLength(
     this->skeletalModel = skeletalModel;
-
-    this->frames = skeletalModel->getFrames();
-
-   this->haSkeleton = createHAnim(/*hmAnimation::HAnimHelper::_3_Full_HAnim_Hierarchy*/);
+    
+    this->frames.clear();
+    
+    std::vector<SkeletalModel::singleFramePtr> frm = skeletalModel->getFrames();
+    this->frames.reserve(frm.size());
+    std::for_each(frm.begin(), frm.end(), 
+        [&](SkeletalModel::singleFramePtr framePtr) {
+            this->frames.push_back(*framePtr);
+    });
+    this->haSkeleton = createHAnim(/*hmAnimation::HAnimHelper::_3_Full_HAnim_Hierarchy*/);
    double maxLength = getMaxBoneLength(skeletalModel->getSkeleton());
    doSkeletonMapping(skeletalModel);
    lengthRatio = maxLength;
 
-   map<string, hAnimJointPtr>::iterator it;
-   for (it = joints.begin(); it != joints.end(); it++) {
-       (it->second)->length /= maxLength;
-   }
+   std::for_each(joints.begin(), joints.end(), [&](std::pair<string, hAnimJointPtr> p) 
+                {   
+                    hAnimJointPtr joint = p.second;
+                    joint->length /= maxLength;
+                    
+                    osg::Vec3 shift = joint->direction * joint->length;
+                    shift = vectorRotation(shift, 
+                        osg::DegreesToRadians(-joint->axis[0]),
+                        osg::DegreesToRadians(-joint->axis[1]),
+                        osg::DegreesToRadians(-joint->axis[2]));
+                    joint->setLocalShift(shift);
+
+                    osg::Quat pc;
+                    JointPtr parent = joint->parent.lock();
+                    if (parent) {
+                        pc = rotationParentChild(parent, joint);
+                    }
+                    joint->setChildParentRotation(pc);
+                    //joint->setLocalShift(
+                    /*double mul =  osg::DegreesToRadians(1.0);
+                    osg::Quat mX; mX.makeRotate(mul * (-joint->axis[0]), osg::Vec3(1,0,0));
+                    osg::Quat mY; mY.makeRotate(mul * (-joint->axis[1]), osg::Vec3(0,1,0));
+                    osg::Quat mZ; mZ.makeRotate(mul * (-joint->axis[2]), osg::Vec3(0,0,1));
+                    osg::Quat rot2 = mX * mY * mZ;
+                    joint->direction = mZ * joint->direction;
+                    joint->direction = mY * joint->direction;
+                    joint->direction = mX * joint->direction;*/
+                } 
+   );
+
+   createQuaternionRepresentation();
 }
-//----------------------------------------------------------------------------------
-void kinematic::KinematicModel::loadMappingDictionary(const std::string& filename) {
+
+void KinematicModel::loadMappingDictionary(const std::string& filename) {
     mappingSchemes = SkeletonMappingScheme::LoadFromXML(filename);
-    //ifstream stream(filename.c_str(), ios_base::in);
-
-    //if (!stream) {
-    //   throw UnableToOpenFileException(filename);
-    //}
-
-    //std::string l;
-    //while(std::getline(stream, l)) {
-    //    stringstream ss(l); 
-    //    vector<string> tokens;
-    //    string buffer;
-    //    while (ss >> buffer) {
-    //        tokens.push_back(buffer);
-    //    }
-
-    //    int count = tokens.size();
-    //    for (int i = 0; i < count; i++) {
-    //        // wpis [0] = [0] tez jest potrzebny (bo szkielet moze miec juz wlasciwe nazwy)
-    //        jointMappingDictionary[tokens[0] ] = tokens[i];
-    //    }
-    //}
 }
-//----------------------------------------------------------------------------------
-double kinematic::KinematicModel::getMaxBoneLength(const Skeleton& skeleton) const {
-	JointPtr root = skeleton.getRoot();
+
+double KinematicModel::getMaxBoneLength(const Skeleton& skeleton) const 
+{
+    JointPtr root = skeleton.getRoot();
     return getMaxLength(root, -1.0);
 }
-//----------------------------------------------------------------------------------
-double kinematic::KinematicModel::getMaxLength(JointPtr joint, double maxLength) const {
+
+double KinematicModel::getMaxLength(JointPtr joint, double maxLength) const
+{
     maxLength = std::max(maxLength, joint->length);
     for (int i = joint->children.size() - 1; i >= 0; --i) {
         maxLength = std::max(maxLength, getMaxLength(joint->children[i], maxLength));
     }
-	return(maxLength);
-}
+    return maxLength;
+ }
 
-
-//----------------------------------------------------------------------------------
-void kinematic::KinematicModel::doSkeletonMapping(SkeletalModel::Ptr skeletalModel) {
+void KinematicModel::doSkeletonMapping(SkeletalModelPtr skeletalModel)
+{
     SkeletalModel::JointMap& jointMap = skeletalModel->getJointMap();
     SkeletalModel::JointMap::iterator it;
     for (it = jointMap.begin(); it != jointMap.end(); it++) {
@@ -306,21 +350,22 @@ void kinematic::KinematicModel::doSkeletonMapping(SkeletalModel::Ptr skeletalMod
         }
     }
 }
-//----------------------------------------------------------------------------------
-std::vector<osg::Quat>& kinematic::KinematicModel::getQuaternionRotation(int frameNo) {
+
+std::map<std::string, osg::Quat>& KinematicModel::getQuaternionRotation(int frameNo) {
     return this->quaternionRepresentation[frameNo];
 }
-//----------------------------------------------------------------------------------
-std::vector<osg::Quat>& kinematic::KinematicModel::getQuaternionRotation(double time) {
-	//std::vector<SkeletalModel::singleFrame>& frames = this->skeletalModel->getFrames();
+
+std::map<std::string, osg::Quat>& KinematicModel::getQuaternionRotation(double time) 
+{
+    //std::vector<SkeletalModel::singleFrame>& frames = this->skeletalModel->getFrames();
     int framesNo = frames.size();
     // TODO : Slerp
-    time /= 100;
     int frame = std::min(std::max(0, static_cast<int>(framesNo * time)), framesNo - 1);
     return getQuaternionRotation(frame);
 }
-//----------------------------------------------------------------------------------
-void kinematic::KinematicModel::createQuaternionRepresentation(void) {
+
+void KinematicModel::createQuaternionRepresentation(void) 
+{
     //std::vector<SkeletalModel::singleFrame>& frames = this->skeletalModel->getFrames();
     int framesNo = frames.size();
     this->quaternionRepresentation.resize(framesNo);
@@ -328,16 +373,17 @@ void kinematic::KinematicModel::createQuaternionRepresentation(void) {
     //int jointsNo = jointsMap.size();
 
     for (int i = 0; i < framesNo; i++) {
-        //SkeletalModel::JointMap::iterator it;
         int jointStatesNo = frames[i].bonesData.size();
-        this->quaternionRepresentation[i].resize(jointStatesNo);
-        //for (it = jointsMap.begin(); it != jointsMap.end(); it++) {
+        //this->quaternionRepresentation[i].resize(jointStatesNo);
         for (int j = 0; j < jointStatesNo; j++) {
             double rx, ry, rz;
             int index;
             std::string name = frames[i].bonesData[j].name;
-            JointPtr joint = joints[name];//it->second;
-            
+            JointPtr joint = joints[name];
+            if (!joint) {
+                kinematic::WrongFileException("Joint " + name + " not found");
+            }
+            //joint->id = i;
             SkeletalModel::singleBoneState jointState = frames[i].bonesData[j];
             index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RZ, joint->dofs);
             rz = (index != -1 ? jointState.channelValues[index] : 0.0);
@@ -346,53 +392,55 @@ void kinematic::KinematicModel::createQuaternionRepresentation(void) {
             index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RY, joint->dofs);
             ry = (index != -1 ? jointState.channelValues[index] : 0.0);
             osg::Vec3d v; v[0] = rx; v[1] = ry; v[2] = rz;
-            osg::Matrix mat; 
+            osg::Matrix mat;
             double mul = skeletalModel->getAngle() == SkeletalModel::radians ? 1.0 : osg::DegreesToRadians(1.0);
-            osg::Quat mX; mX.makeRotate(mul * (joint->axis[0]), osg::Vec3(1,0,0));
-            osg::Quat mY; mY.makeRotate(mul * (joint->axis[1]), osg::Vec3(0,1,0));
-            osg::Quat mZ; mZ.makeRotate(mul * (joint->axis[2]), osg::Vec3(0,0,1));
-            quaternionRepresentation[i][j] = mX * mY * mZ;
+            
+            osg::Quat mX; mX.makeRotate(mul * (rx), osg::Vec3(1,0,0));
+            osg::Quat mY; mY.makeRotate(mul * (ry), osg::Vec3(0,1,0));
+            osg::Quat mZ; mZ.makeRotate(mul * (rz), osg::Vec3(0,0,1));
+            //#pragma message("kolejnosc ZYX")
+            quaternionRepresentation[i][name] = mX * mY * mZ;
         }
     }
 }
-//----------------------------------------------------------------------------------
+
 template <typename T>
-std::vector<T> kinematic::KinematicModel::getRotation(double time)
+std::vector<T> KinematicModel::getRotation(double time)
 {
-	throw kinematic::NotImplementedException();
+	throw NotImplementedException();
 }
-//----------------------------------------------------------------------------------
-template<> std::vector<osg::Quat> KinematicModel::getRotation(double time) {
-    return getQuaternionRotation(time);
-}
-//----------------------------------------------------------------------------------
-template<> std::vector<osg::Vec3d> KinematicModel::getRotation(double time) {
-    assert(false);
-    std::vector<osg::Vec3d> euler;
-    std::vector<osg::Quat>& q = getQuaternionRotation(time);
-    euler.resize(q.size());
-    for (int i = q.size() - 1; i >= 0; --i) {
-        // TODO : znalezc czy w osg mozliwa jest zmiana quat -> euler, jesli nie to zrobic to recznie
-        euler[i] = q[i].asVec3();
-    }
 
-    return euler;
-}
+//template<> std::vector<osg::Quat> KinematicModel::getRotation(double time) {
+//    return getQuaternionRotation(time);
+//}
+//
+//template<> std::vector<osg::Vec3d> KinematicModel::getRotation(double time) {
+//    UTILS_ASSERT(false, "Nie zaimplementowano");
+//    std::vector<osg::Vec3d> euler;
+//    std::vector<osg::Quat>& q = getQuaternionRotation(time);
+//    euler.resize(q.size());
+//    for (int i = q.size() - 1; i >= 0; --i) {
+//        // TODO : znalezc czy w osg mozliwa jest zmiana quat -> euler, jesli nie to zrobic to recznie
+//        euler[i] = q[i].asVec3();
+//    }
+//
+//    return euler;
+//}
 //----------------------------------------------------------------------------------
-template<> std::vector<osg::Matrixd> KinematicModel::getRotation(double time) {
-    std::vector<osg::Matrixd> mat;
-    std::vector<osg::Quat>& q = getQuaternionRotation(time);
-    mat.resize(q.size());
-    for (int i = q.size() - 1; i >= 0; --i) {
-        osg::Matrixd m(q[i]);
-        mat[i] = m;
-    }
+//template<> std::vector<osg::Matrixd> KinematicModel::getRotation(double time) {
+//    std::vector<osg::Matrixd> mat;
+//    std::vector<osg::Quat>& q = getQuaternionRotation(time);
+//    mat.resize(q.size());
+//    for (int i = q.size() - 1; i >= 0; --i) {
+//        osg::Matrixd m(q[i]);
+//        mat[i] = m;
+//    }
+//
+//    return mat;
+//}
 
-    return mat;
-}
-//----------------------------------------------------------------------------------
-
-hAnimJointPtr kinematic::KinematicModel::getJointByName(const std::string&name) {
+hAnimJointPtr KinematicModel::getJointByName(const std::string&name)
+{
     std::map<std::string, hAnimJointPtr>::iterator it = joints.find(name);
     if (it != joints.end()) {
         return it->second;
@@ -400,7 +448,8 @@ hAnimJointPtr kinematic::KinematicModel::getJointByName(const std::string&name) 
     throw NotHAnimJointException(name);
 }
 
-hAnimBonePtr kinematic::KinematicModel::getBoneByName(const std::string&name) {
+hAnimBonePtr KinematicModel::getBoneByName(const std::string&name)
+{
 	std::map<std::string, hAnimBonePtr>::iterator it = bones.find(name);
     if (it != bones.end()) {
         return it->second;
@@ -408,7 +457,8 @@ hAnimBonePtr kinematic::KinematicModel::getBoneByName(const std::string&name) {
     throw NotHAnimJointException("Bone " + name + " not found", name);
 }
 
-void kinematic::KinematicModel::activateJoint(hAnimJointPtr joint, bool active) {
+void KinematicModel::activateJoint(hAnimJointPtr joint, bool active)
+{
     if (joint->isActive() == active) {
         return;
     }
@@ -422,9 +472,9 @@ void kinematic::KinematicModel::activateJoint(hAnimJointPtr joint, bool active) 
         boneParent = parent->getParentBone().lock();
         parent = boneParent ? boneParent->parentJoint.lock() : null;
     }
-    
+
     if (!parent) {
-        throw kinematic::KinematicModelException("Unknown error");
+        throw KinematicModelException("Unknown error");
     }
 
     int childCount = parent->children.size();
@@ -433,7 +483,7 @@ void kinematic::KinematicModel::activateJoint(hAnimJointPtr joint, bool active) 
         int index = -1;
         for (int i = 0; i < childCount; i++) {
             if (checkLink(parent, joint, boost::shared_dynamic_cast<hAnimJoint>(parent->children[i]))) {
-                index = i; 
+                index = i;
                 break;
             }
         }
@@ -448,7 +498,7 @@ void kinematic::KinematicModel::activateJoint(hAnimJointPtr joint, bool active) 
                 joint->children.push_back(temp);
             }
         } else {
-            throw kinematic::NotYetImplemented("Setting active to false when children.size > 1");
+            throw NotYetImplemented("Setting active to false when children.size > 1");
         }
     } else {
         if (active) {
@@ -476,29 +526,34 @@ void kinematic::KinematicModel::activateJoint(hAnimJointPtr joint, bool active) 
     this->createQuaternionRepresentation();
 }
 
-void kinematic::KinematicModel::activateJoint( const std::string& jointName, bool active ) {
+void KinematicModel::activateJoint( const std::string& jointName, bool active )
+{
     hAnimJointPtr joint = getJointByName(jointName);
     activateJoint(joint, active);
 }
 
 
-kinematic::SkeletalModel::Ptr kinematic::KinematicModel::createSkeletalData() const {
-    SkeletalModel::Ptr model(new SkeletalModel);
+SkeletalModelPtr KinematicModel::createSkeletalData() const 
+{
+    SkeletalModelPtr model(new SkeletalModel);
     Skeleton& skeleton = model->getSkeleton();
     JointPtr newRoot = cloneRootWithActivated(this->haSkeleton->getRoot());
     skeleton.setRoot(newRoot);
 
     model->setName("HumanModel");
-    model->getFrames() = frames;
+    UTILS_ASSERT(false, "testowo zmienila sie struktura ramek w parserach!");
+    //model->getFrames() = frames;
     model->RecreateMaps();
     return model;
 }
 
-JointPtr kinematic::KinematicModel::cloneRootWithActivated(const JointPtr origin ) const {
+JointPtr KinematicModel::cloneRootWithActivated(const JointPtr origin ) const
+{
     return Joint::clone(origin);
 }
 
-void kinematic::KinematicModel::changeNameInFrames( const std::string& oldName, const std::string& newName ) {
+void KinematicModel::changeNameInFrames(const std::string& oldName, const std::string& newName)
+{
     int index = -1;
     for (int i = frames[0].bonesData.size() - 1; i >= 0; --i) {
         if (frames[0].bonesData[i].name == oldName) {
@@ -514,7 +569,7 @@ void kinematic::KinematicModel::changeNameInFrames( const std::string& oldName, 
     }
 }
 
-bool kinematic::KinematicModel::checkLink( hAnimJointPtr parent, hAnimJointPtr middle, hAnimJointPtr child )
+bool KinematicModel::checkLink(hAnimJointPtr parent, hAnimJointPtr middle, hAnimJointPtr child)
 {
     JointPtr tempParent = child->parent.lock();
     hAnimJointPtr cp = boost::shared_dynamic_cast<hAnimJoint>(tempParent);
@@ -529,20 +584,51 @@ bool kinematic::KinematicModel::checkLink( hAnimJointPtr parent, hAnimJointPtr m
     return false;
 }
 
-std::vector<SkeletonMappingScheme> kinematic::SkeletonMappingScheme::LoadFromXML( const std::string& filename ) {
+osg::Vec3 KinematicModel::vectorRotation( osg::Vec3 v,double rX, double rY, double rZ )
+{
+    osg::Quat rotz; rotz.makeRotate(rZ, 0,0,1);
+    osg::Quat roty; roty.makeRotate(rY, 0,1,0);
+    osg::Quat rotx; rotx.makeRotate(rX, 1,0,0);
+    v = rotz * v;
+    v = roty * v;
+    v = rotx * v;
+    return v;
+}
+
+osg::Quat KinematicModel::rotationParentChild(JointPtr parent, JointPtr child)
+{
+    double mul  = osg::DegreesToRadians(1.0);
+    osg::Matrix matParZ; matParZ.makeRotate(-parent->axis[2] * mul, 0.0, 0.0, 1.0);
+    osg::Matrix matParY; matParY.makeRotate(-parent->axis[1] * mul, 0.0, 1.0, 0.0);
+    osg::Matrix matParX; matParX.makeRotate(-parent->axis[0] * mul, 1.0, 0.0, 0.0);
+
+    osg::Matrix matPar = matParZ * matParY * matParX;
+    osg::Matrix matChiZ; matChiZ.makeRotate(child->axis[2] * mul, 0.0, 0.0, 1.0);
+    osg::Matrix matChiY; matChiY.makeRotate(child->axis[1] * mul, 0.0, 1.0, 0.0);
+    osg::Matrix matChiX; matChiX.makeRotate(child->axis[0] * mul, 1.0, 0.0, 0.0);
+
+    osg::Matrix matChi = matChiX * matChiY * matChiZ;
+    osg::Matrix resM = matChi * matPar ;
+    osg::Quat res; 
+    res.set(resM);
+    return res;
+}
+
+std::vector<SkeletonMappingScheme> SkeletonMappingScheme::LoadFromXML(const std::string& filename)
+{
     std::vector<SkeletonMappingScheme> result;
     TiXmlDocument doc(filename.c_str());
-  
     bool loadOkay = doc.LoadFile();
     if (loadOkay) {
         readNode(&doc, result);
     } else {
-        throw kinematic::UnableToOpenFileException(filename);
+        throw UnableToOpenFileException(filename);
     }
     return result;
 }
 
-void kinematic::SkeletonMappingScheme::readNode( TiXmlNode* node , vector<SkeletonMappingScheme>& result) {
+void SkeletonMappingScheme::readNode(TiXmlNode* node, vector<SkeletonMappingScheme>& result) 
+{
     if (!node) {
         return;
     }
@@ -554,7 +640,7 @@ void kinematic::SkeletonMappingScheme::readNode( TiXmlNode* node , vector<Skelet
     case TiXmlNode::TINYXML_DOCUMENT:
         break;
 
-    case TiXmlNode::TINYXML_ELEMENT: 
+    case TiXmlNode::TINYXML_ELEMENT:
         {
             TiXmlElement* element = node->ToElement();
             if (element && strcmp(element->Value(), "SkeletonScheme") == 0) {
@@ -585,10 +671,11 @@ void kinematic::SkeletonMappingScheme::readNode( TiXmlNode* node , vector<Skelet
     }
 }
 
-kinematic::SkeletonMappingScheme::mappingDict kinematic::SkeletonMappingScheme::readMappingNode( TiXmlNode* node ) {
+SkeletonMappingScheme::mappingDict SkeletonMappingScheme::readMappingNode(TiXmlNode* node)
+{
     mappingDict result;
     TiXmlNode* child;
-    for ( child = node->FirstChild(); child != 0; child = child->NextSibling()) {
+    for ( child = node->FirstChild(); child != nullptr; child = child->NextSibling()) {
         int t = node->Type();
         switch (t) {
         case TiXmlNode::TINYXML_ELEMENT:
@@ -620,3 +707,5 @@ kinematic::SkeletonMappingScheme::mappingDict kinematic::SkeletonMappingScheme::
     }
     return result;
 }
+
+} //kinematic
