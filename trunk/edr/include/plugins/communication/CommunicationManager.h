@@ -34,21 +34,24 @@ namespace communication
             DownloadingTrial, /** Trwa pobieranie plików próby pomiarowej */
             UpdatingServerTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
             UpdateTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
-            ShallowCopyDB, /** Trwa odnawianie informacji o encjach db*/
-            MetadataDB, /** Trwa odnawianie informacji o metadanych db*/
+            CopyDB, /** Trwa odnawianie informacji o encjach db*/
             PingServer, /** Pingowanie serwera */
             Error /** Wyst¹pi³ b³¹d */
         };
-        ///**
-        //Zapis danych prób pomiarowych do pliku w formacie XML.
-        //@param filename nazwa pliku do którego zapisaæ dane prób pomiarowych
-        //*/
-        //void saveToXml(const std::string& filename);
-        ///**
-        //Odczyt danych prób pomiarowych z pliku w formacie XML.
-        //@param filename nazwa pliku z którego odczytaæ dane prób pomiarowych
-        //*/
-        //void loadFromXml(const std::string& filename);
+        /**
+        @return p³ytka kopia DB
+        */
+        const ShallowCopy::ShallowCopy& getShalloCopy() const
+        {
+            return shallowCopy;
+        }
+        /**
+        @return metadane z DB
+        */
+        const MetaData::MetaData& getMetadata() const
+        {
+            return metaData;
+        }
         /**
         £adowanie lokalnych prób pomiarowych. Metoda wykorzystuje DataManagera.
         */
@@ -62,7 +65,7 @@ namespace communication
         Zwraca wartoœæ trialsDir wskazuj¹c¹ gdzie powinny znajdowaæ siê lokalne próby pomiarowe.
         @return wartoœæ trialsDir
         */
-        const std::string& getTrialsDir() const;
+        const boost::filesystem::path& getTrialsDir() const;
         /**
         Zwraca postêp w procentach aktualnie wykonywanego zadania.
         @return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
@@ -91,11 +94,7 @@ namespace communication
         /**
         P³ytka kopia bazy danych.
         */
-        void updateShallowCopy();
-        /**
-        Metadane z bazy danych.
-        */
-        void updateMetadata();
+        void copyDbData();
         /**
         Pobieranie próby pomiarowej.
         @param trialID ID próby pomiarowej która ma byæ pobrana
@@ -113,14 +112,14 @@ namespace communication
         {
             transportManager->abort();
         };
-        /**
-        Listuje próby pomiarowe znajduj¹ce siê na serwerze.
-        @return lista prób pomiarowych z serwera
-        */
-        const std::vector<Trial>& getServerTrials() const
-        {
-            return serverTrials;
-        };
+        ///**
+        //Listuje próby pomiarowe znajduj¹ce siê na serwerze.
+        //@return lista prób pomiarowych z serwera
+        //*/
+        //const std::vector<Trial>& getServerTrials() const
+        //{
+        //    return serverTrials;
+        //};
         /**
         Listuje próby pomiarowe znajduj¹ce siê na lokalnym dysku.
         @return lista prób pomiarowych z lokalnego dysku
@@ -130,28 +129,13 @@ namespace communication
             return localTrials;
         };
         /**
-        Czy robiono aktualizacjê informacji o próbach pomiarowych serwera?
-        @return true gdy robiono aktualizacjê, w przeciwnym przypadku zwraca false
-        */
-        bool isUpdated() const
-        {
-            return this->isLastUpdate;
-        };
-        /**
-        Zwraca datê ostatniej aktualizacji informacji o próbach. Nale¿y u¿ywaæ z metod¹ isUpdated().
-        @return data ostatniej aktualizacji informacji
-        */
-        const DateTime& getLastUpdateTime() const
-        {
-            return lastUpdate;
-        };
-        /**
         Ustala Data Managera. Potrzebne przy ³adowaniu prób pomiarowych z lokalnego dysku.
         @param dataManager wskaŸnik na instancjê Data Managera
         */
         void setDataManager(core::IDataManager* dataManager)
         {
-            this->dataManager = dataManager;loadLocalTrials();
+            this->dataManager = dataManager;
+            loadLocalTrials();
         };
         /**
         Zwraca wskaŸnik na instancjê Data Managera.
@@ -227,7 +211,7 @@ namespace communication
         /**
         Œcie¿ka do miejsca na lokalnym dysku gdzie powinny znajdowaæ siê próby pomiarowe.
         */
-        std::string trialsDir;
+        boost::filesystem::path trialsDir;
         /**
         WskaŸnik na klasê TransportWSDL_FTPS odpowiedzialn¹ za transport danych
         */
@@ -256,18 +240,10 @@ namespace communication
         Lista lokalnych prób pomiarowych
         */
         LocalTrialsList localTrials;
-        /**
-        Lista prób pomiarowych na serwerze
-        */
-        std::vector<Trial> serverTrials;
-        /**
-        Data ostatniej aktualizacji informacji o próbach pomiarowych na serwerze
-        */
-        DateTime lastUpdate;
-        /**
-        Czy aktualizaowano informacje o próbach pomiarowych na serwerze?
-        */
-        bool isLastUpdate;
+        ///**
+        //Lista prób pomiarowych na serwerze
+        //*/
+        //std::vector<Trial> serverTrials;
         /**
         id encji wykorzystywanej przy operacjach pobiarnia i aktualizacji informacji
         */
@@ -304,6 +280,10 @@ namespace communication
         Muteks zabezpieczaj¹cy przed zakleszczeniami.
         */
         OpenThreads::Mutex trialsMutex;
+        /**
+        Parsowanie plików xml p³ytkiej kopii bazy danych.
+        */
+        void readDbSchemas(const std::string& shallowCopyDir, const std::string& metaDataDir);
         /**
         Ukryty konstruktor
         */

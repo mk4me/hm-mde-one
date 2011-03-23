@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CommunicationWidget</class>
+ <widget class="QWidget" name="CommunicationWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>374</width>
+    <height>597</height>
+   </rect>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::CustomContextMenu</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
+   </property>
+   <item>
+    <widget class="QTreeWidget" name="dataWidget">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>300</height>
+      </size>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="progressBar">
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="textVisible">
+      <bool>true</bool>
+     </property>
+     <property name="textDirection">
+      <enum>QProgressBar::TopToBottom</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="infoLabel">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+  </layout>
+  <action name="actionUpdate">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Update</string>
+   </property>
+   <property name="toolTip">
+    <string>update data</string>
+   </property>
+  </action>
+  <action name="actionPerformer_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Performer View</string>
+   </property>
+   <property name="toolTip">
+    <string>change view</string>
+   </property>
+  </action>
+  <action name="actionSession_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Session View</string>
+   </property>
+   <property name="toolTip">
+    <string>change view</string>
+   </property>
+  </action>
+  <action name="actionTrial_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Trial View</string>
+   </property>
+   <property name="toolTip">
+    <string>change view</string>
+   </property>
+  </action>
+  <action name="actionDownload">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Download</string>
+   </property>
+   <property name="toolTip">
+    <string>download server trial</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionLoad_trial">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Load trial</string>
+   </property>
+   <property name="toolTip">
+    <string>load local trial</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionAbort_download">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Abort download</string>
+   </property>
+   <property name="toolTip">
+    <string>abort downloading server trial</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionAbort_download</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>abortPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDownload</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>downloadPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLoad_trial</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>loadPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPerformer_View</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>performerViewPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSession_View</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>sessionViewPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionTrial_View</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>trialViewPressed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionUpdate</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>updatePressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CommunicationWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>contextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dataWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>trialContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>performerViewPressed(bool)</slot>
+  <slot>sessionViewPressed(bool)</slot>
+  <slot>trialViewPressed(bool)</slot>
+  <slot>updatePressed()</slot>
+  <slot>downloadPressed()</slot>
+  <slot>abortPressed()</slot>
+  <slot>contextMenu(QPoint)</slot>
+  <slot>loadPressed()</slot>
+  <slot>trialContextMenu(QPoint)</slot>
+ </slots>
+</ui>

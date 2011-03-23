@@ -6,7 +6,7 @@ CommunicationService::CommunicationService()
 {
     this->model = communication::CommunicationManager::getInstance();
 
-    this->widget = new CommunicationWidget(this);
+    this->widget = new CommunicationWidgetEx(this);
     this->model->attach(this->widget);
 }
 
@@ -21,14 +21,9 @@ void CommunicationService::updateSessionContents()
     model->listSessionContents();
 }
 
-void CommunicationService::updateShallowCopy()
+void CommunicationService::copyDbData()
 {
-    model->updateShallowCopy();
-}
-
-void CommunicationService::updateMetadata()
-{
-    model->updateMetadata();
+    model->copyDbData();
 }
 
 void CommunicationService::downloadFile(unsigned int fileID)
@@ -54,8 +49,9 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
         ping();
     }
     switch(model->getState()) {
-    case communication::CommunicationManager::UpdatingServerTrials: {
+    case communication::CommunicationManager::CopyDB: {
             widget->setInfoLabel("Updating server trials");
+            widget->setDownloadingState(true);
             break;
         }
         //nie uzywamy na razie
@@ -71,20 +67,27 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
             stream << "Downloading file " << model->getActualDownloadFileNumber() << " from " << model->getFilesToDownloadCount();
             widget->setInfoLabel(stream.str());
             widget->setProgress(model->getProgress());
+            widget->setDownloadingState(true);
             break;
         }
     case communication::CommunicationManager::Error: {
             //przekaz info
-            widget->showErrorMessage(model->getErrorMessage());
+            widget->setInfoLabel(model->getErrorMessage());
             model->setState(communication::CommunicationManager::Ready);
             break;
         }
     case communication::CommunicationManager::UpdateTrials: {
             model->loadLocalTrials();
+            widget->setDownloadingState(true);
+            model->setState(communication::CommunicationManager::Ready);
             break;
         }
     default: {
-            break;
+        widget->setOnline(model->isServerResponse());
+        widget->setDownloadingState(false);
+        widget->setInfoLabel("");
+        widget->setProgress(100);
+        break;
         }
 
     }

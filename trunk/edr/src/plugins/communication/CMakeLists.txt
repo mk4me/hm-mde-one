@@ -12,6 +12,7 @@ add_definitions(-D__LIBRARY_DYNAMIC__)
 set(PRIVATE_H
 	CommunicationPlugin.h
 	CommunicationWidget.h
+	CommunicationWidgetEx.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -48,6 +49,7 @@ set(TARGET_SRC
 	CommunicationPlugin.cpp
 	CommunicationService.cpp
 	CommunicationWidget.cpp
+	CommunicationWidgetEx.cpp
 	FileStoremanService.cpp
 	FtpsConnection.cpp
 	QueryWSDL.cpp
@@ -61,6 +63,7 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
 	CommunicationWidget.h
+	CommunicationWidgetEx.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -70,6 +73,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 # UI
 set(TARGET_UI
 	ui/CommunicationWidget.ui
+	ui/CommunicationWidgetEx.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

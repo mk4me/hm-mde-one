@@ -12,11 +12,13 @@ implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
 #include <core/IService.h>
 #include <plugins/communication/CommunicationManager.h>
 #include <plugins/communication/CommunicationWidget.h>
+#include <plugins/communication/CommunicationWidgetEx.h>
 #include <plugins/communication/ICommunication.h>
 #include <plugins/communication/QueryWSDL.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
 
 class CommunicationWidget;
+class CommunicationWidgetEx;
 
 class CommunicationService : public IService, public ICommunication
 {
@@ -25,7 +27,7 @@ private:
     /**
     Widok serwisu
     */
-    CommunicationWidget* widget;
+    CommunicationWidgetEx* widget;
     /**
     Model serwisu
     */
@@ -103,11 +105,7 @@ public:
 	/**
 	Metoda z interfejsu ICommunication. P³ytka kopia bazy danych.
 	*/
-	virtual void updateShallowCopy();
-	/**
-	Metoda z interfejsu ICommunication. Metadane z bazy danych.
-	*/
-	virtual void updateMetadata();
+	virtual void copyDbData();
     /**
     Metoda z interfejsu ICommunication. Pobieranie wszystkich plików próby pomiarowej.
     @param trialID id triala w bazie danych którego pliki maj¹ byæ pobrane

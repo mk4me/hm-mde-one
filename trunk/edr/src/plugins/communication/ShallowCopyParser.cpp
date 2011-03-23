@@ -94,6 +94,23 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
+            
+
+            //Files
+            TiXmlElement* files_element = trial_element->FirstChildElement("Files");
+            if(files_element) {
+                TiXmlElement* file_element = files_element->FirstChildElement("File");
+                while(file_element) {
+                    ShallowCopy::File file;
+                    file_element->QueryIntAttribute("FileID", &file.fileID);
+                    file_element->QueryStringAttribute("FileName", &file.fileName);
+                    file_element->QueryStringAttribute("FileDescription", &file.fileDescription);
+                    file_element->QueryStringAttribute("SubdirPath", &file.subdirPath);
+                    trial.files.push_back(file);
+                    file_element = file_element->NextSiblingElement();
+                }
+            }
+
             object->get<ShallowCopy::ShallowCopy>()->trials.push_back(trial);
             trial_element = trial_element->NextSiblingElement();
         }
@@ -101,7 +118,7 @@ void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
     //Performers
     TiXmlElement* performers_element = hParent.FirstChild("Performers").ToElement();
     if(performers_element) {
-        TiXmlElement* performer_element = performers_element->FirstChildElement("Trial");
+        TiXmlElement* performer_element = performers_element->FirstChildElement("Performer");
         while(performer_element) {
             ShallowCopy::Performer performer;
             performer_element->QueryIntAttribute("PerformerID", &performer.performerID);

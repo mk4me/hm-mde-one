@@ -50,16 +50,16 @@ CommunicationWidget::~CommunicationWidget()
 
 void CommunicationWidget::update(const CommunicationManager* subject)
 {
-    serverTrials = subject->getServerTrials();
+    //serverTrials = subject->getServerTrials();
     localTrials = subject->getLocalTrials();
     isOnline = subject->isServerResponse();
 
-    if(subject->isUpdated()) {
-        infoText = "Last trial update:";
-        infoText.append(subject->getLastUpdateTime().toString());
-    } else {
-        infoText = "Cannot find date of last trial update";
-    }
+    //if(subject->isUpdated()) {
+    //    infoText = "Last trial update:";
+    //    infoText.append(subject->getLastUpdateTime().toString());
+    //} else {
+    //    infoText = "Cannot find date of last trial update";
+    //}
     refreshUI();
 }
 
