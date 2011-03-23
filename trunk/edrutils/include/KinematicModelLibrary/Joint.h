@@ -1,7 +1,11 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__JOINT_H__
 #define HEADER_GUARD_KINEMATICMODEL__JOINT_H__
 
-#include "DegreeOfFreedom.h"
+#include <vector>
+#include <osg/Vec3d>
+#include <boost/smart_ptr.hpp>
+#include <kinematiclib/DegreeOfFreedom.h>
+
 namespace kinematic
 {
 struct Joint;

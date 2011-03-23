@@ -1,9 +1,6 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__ASFPARSER_H__
 #define HEADER_GUARD_KINEMATICMODEL__ASFPARSER_H__
 
-#define PARSER_VERSION "0.11"
-//#define forceRootXYZ true
-
 namespace kinematic
 {
     class Skeleton;
@@ -24,10 +21,10 @@ namespace kinematic
     public:
         /*!  Wczytanie pliku
             \param filename Nazwa pliku do wczytania */
-        void parse(SkeletalModel::Ptr model, const std::string& filename);
+        void parse(SkeletalModelPtr model, const std::string& filename);
         /*! zapis wczytanego modelu
             \param filename Nazwa pliku do wczytania */
-        void save(const SkeletalModel::Ptr model, const std::string& filename);
+        void save(const SkeletalModelPtr model, const std::string& filename);
 
         //! Niektore parsery wymagaja, aby rotacje roota byly w kolejnosci XYZ
         //! Jesli flaga jest ustawiona, to taka kolejnosc bedzie wymuszona przy zapisie
@@ -80,7 +77,7 @@ namespace kinematic
         std::vector<DegreeOfFreedom::Channel> channels; //!< kanaly zapisane w sekcji root
 
     private:
-        SkeletalModel::Ptr               model;          //!< przechowuje model ze szkieletem
+        SkeletalModelPtr               model;          //!< przechowuje model ze szkieletem
         bool                             forceRootXYZ;   //!< wymuszenie kolejnosci rotacji roota (zapewnia zgodnosc z niektorymi parserami)
         int                              idCounter;      //!< wymusza tworzenie, identyfikatorow kosci od nowa
        

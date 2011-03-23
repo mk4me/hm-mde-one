@@ -1,60 +1,62 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__HMEXCEPTION_H__
 #define HEADER_GUARD_KINEMATICMODEL__HMEXCEPTION_H__
 
+#include <boost/utility.hpp>
+
 namespace kinematic
 {
     /// \brief  Ogolny wyjatek dla parserow. 
-    class HmException : public std::exception
+    class Exception : public std::exception
     {
     public:
-
         /// \brief  Konstruktor. 
         /// \param  Dodatkowa tresc komunikatu
-        HmException(const std::string& message);
-        virtual ~HmException();
+        Exception(const std::string& message);
+        virtual ~Exception();
     public:
         /// \brief Metoda zwraca tresc komunikatu.
         ///  Pochodzi z std::exception 
-        virtual const char* what() const;
+        virtual const char* what() const throw();
 
     protected:
-        std::string message; //!< Tresc komunikatu
+        std::string basicMessage; //!< Tresc 
+        mutable std::string exceptionMessage; //!< Zwrace przez metode what() z dodana informacja z RTTI
     };
 
     /// \brief  Wyjatek rzucany, gdy probuje sie wykonac operacje
     ///         na danych ktore powinny byc a nie zostaly wczytane
-    class AcclaimDataNotLoaded : public HmException
+    class AcclaimDataNotLoaded : public Exception
     {
     public:
         AcclaimDataNotLoaded(const std::string& message);
     };
 
     /// \brief  Wyjatek rzucany, gdy nie udalo sie otworzyc pliku
-    class UnableToOpenFileException : public HmException 
+    class UnableToOpenFileException : public Exception 
     {
     public:
         UnableToOpenFileException(const std::string& message);
     };
     
     /// \brief  Wyjatek rzucany, gdy plik zawiera niepoprawna tresc dla parsera
-    class AcclaimWrongFileException : public HmException
+    class WrongFileException : public Exception
     {
     public:
-        AcclaimWrongFileException(const std::string& message);
+        WrongFileException(const std::string& message);
     };
 
     /// \brief  Wyjatek rzucany, gdy probuje sie wykonac niezaimplementowana czesc kodu
-    class NotYetImplemented : public HmException
+    class NotYetImplemented : public Exception
     {
     public:
-        NotYetImplemented(const std::string& message) : HmException(message) { };
+        NotYetImplemented(const std::string& message) : Exception(message) { };
     };
 
 
-    class KinematicModelException : public HmException 
+    class KinematicModelException : public Exception 
     {
         public:
-        KinematicModelException(const std::string& message) : HmException(message) { };
+        KinematicModelException(const std::string& message) : Exception(message) { };
     };
 
     class UnableToMapJointException : public KinematicModelException

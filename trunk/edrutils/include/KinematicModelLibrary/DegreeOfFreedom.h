@@ -1,6 +1,8 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__DEGREEOFFREEDOM_H__
 #define HEADER_GUARD_KINEMATICMODEL__DEGREEOFFREEDOM_H__
 
+#include <vector>
+
 namespace kinematic
 {
      /*! 

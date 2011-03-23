@@ -2,12 +2,13 @@
 #define HEADER_GUARD_KINEMATICMODEL__LOGGER_H__
 
 #include <string>
+#include <iostream>
 namespace kinematic {
     
     /// \brief Makro, dzieki ktoremu nie wykona sie niepotrzebne skladanie wiadomosci (message)
-    #define LOGGER(severity, message) \
+    #define LOGGER(severity, basicMessage) \
                            if (Logger::getInstance().getLogCallback() && (severity) >= Logger::getInstance().getOutSeverity()) { \
-                               Logger::getInstance().log((severity), (message)); \
+                               Logger::getInstance().log((severity), (basicMessage)); \
                            }
 //! Klasa, która jest odpowiedzialna za logowanie informacji.
 class Logger

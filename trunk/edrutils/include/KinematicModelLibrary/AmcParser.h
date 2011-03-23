@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__AMCPARSER_H__
 #define HEADER_GUARD_KINEMATICMODEL__AMCPARSER_H__
 
-#include "SkeletalModel.h"
+#include <kinematiclib/SkeletalModel.h>
 namespace kinematic
 {
     /// \brief Klasa realizuje zapis i odczyt plikow *.amc
@@ -15,11 +15,12 @@ namespace kinematic
         /// \brief  Parsuje podany plik. 
         /// \param  model reprezentacja wewnetrzna animacji
         /// \param  filename  Nazwa pliku do parsowania. 
-        void parse(SkeletalModel::Ptr model, const std::string& filename);
+        void parse(SkeletalModelPtr model, const std::string& filename);
         /// \brief  Zapisuje dane z modelu do pliku *.amc
         /// \param  model reprezentacja wewnetrzna animacji
         /// \param  filename nazwa pliku do ktorego zostana zapisane dane
-        void save (const SkeletalModel::Ptr model, const std::string& filename);
+        void save (const SkeletalModelPtr model, const std::string& filename);
+
         bool isForceRootXYZ() { return forceRootXYZ; }
         void setForceRootXYZ(bool value) { forceRootXYZ = value; }
 
@@ -28,4 +29,4 @@ namespace kinematic
     };
 }
 
-#endif
+#endif // HEADER_GUARD_KINEMATICMODEL__AMCPARSER_H__

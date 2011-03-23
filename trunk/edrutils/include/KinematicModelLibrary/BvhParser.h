@@ -1,6 +1,9 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__BVHPARSER_H__
 #define HEADER_GUARD_KINEMATICMODEL__BVHPARSER_H__
 
+#include <list>
+#include <kinematiclib/Skeleton.h>
+
 namespace kinematic
 {
 
@@ -18,11 +21,11 @@ public:
     /// \brief  Zapisuje dane z modelu do pliku *.asf
     /// \param  model reprezentacja wewnetrzna animacji
     /// \param  filename nazwa pliku do ktorego zostana zapisane dane
-    virtual void save(const SkeletalModel::Ptr model, const std::string& filename );
+    virtual void save(const SkeletalModelPtr model, const std::string& filename );
     /// \brief  Parsuje podany plik. 
     /// \param  model reprezentacja wewnetrzna animacji
     /// \param  filename  Nazwa pliku do parsowania. 
-    virtual void parse(SkeletalModel::Ptr model, const std::string& filename );
+    virtual void parse(SkeletalModelPtr model, const std::string& filename );
 
 private:
     bool forceZXY; //!< jesli true to wymuszony zostaje format kanalow (3 RZ,RX,RY lub 6 TX,TY,TZ,RZ,RX,RY)
@@ -62,7 +65,6 @@ private:
     void setBones();
     /// \brief  Wywolywane z setBones. Bierze udzial w tworzeniu nowej hierarchi (kosci zamiast joinow)
     /// \param  newBone Nowo stworzona kosc w hierarchii. 
-    /// \param  oldBone The old bone. 
     void HandleBone(JointPtr newBone);
     /// \brief  Zwraca kolejnosc rotacji.
     /// \param  bone    Kosc, dla ktorej ma byc zwrocona kolejnosc. 
@@ -74,7 +76,7 @@ private:
     std::string spaceL(int lvl) const;
 
 private:
-    SkeletalModel::Ptr                      model;           //!< model dla ktorego nastapi zapis lub odczyta
+    SkeletalModelPtr                      model;           //!< model dla ktorego nastapi zapis lub odczyta
     int                             boneCounter;     //!< dzieki tej zmiennej mozna nadac unikatowe identyfikatory dla kosci 
     std::vector<std::string>        tempParentVector;//!< stos, umozliwia popranwe ustalenie zaleznosci rodzic - dziecko (w rekurencji)
     SkeletalModel::JointIdMap                tempBonesID;     //!< pomocne przy wczytywaniu i tworzeniu hierarchii
