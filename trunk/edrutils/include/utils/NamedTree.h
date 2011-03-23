@@ -96,11 +96,11 @@ public:
 
     //! \param idx Indeks dziecka
     //! \return Dziecko o zadanym indeksie
-    NamedTreeBasePtr & getChild(size_type idx);
+    const NamedTreeBasePtr & getChild(size_type idx);
 
     //! \param name Sciezka dziecka
     //! \return Dziecko o zadanej sciezce wzgledem aktualnego wezla
-    NamedTreeBasePtr & getChild(const std::string & path);
+    const NamedTreeBasePtr & getChild(const std::string & path);
 
     //! \param idx Indeks dziecka
     //! \return Dziecko o zadanym indeksie
@@ -143,12 +143,20 @@ public:
     NamedTreeBaseConstWPtr getRoot() const;
 
     //! \return Czy element jest lisciem
-    virtual bool isLeaf() const;
+    bool isLeaf() const;
 
     //! \return Czy element jest rootem
     bool isRoot() const;
 
-private:
+    //! \param name Nazwa dziecka do znalezienia na poziomie dzieci
+    //! \return Iterator znalezionego dziecka lub end()
+    const_iterator findChildByName(const std::string & name) const;
+
+    //! \param path Sciezka dziecka do znalezienia
+    //! \return znalezione dziecka lub nullptr - NamedTreeBasePtr()
+    NamedTreeBasePtr findChildByPath(const std::string & path) const;
+
+protected:
 
     //! Konstruktor na potrzeby tworzenia hierarchi, niedostepny dla uzytkownika
     //! \param parent Rodzic wezla - na wewnetrzne potrzeby hierarchi
@@ -164,14 +172,6 @@ private:
     //! \param name Nazwa dziecka do znalezienia
     //! \return Iterator znalezionego dziecka lub end()
     iterator findChildByName(const std::string & name);
-
-    //! \param name Nazwa dziecka do znalezienia
-    //! \return Iterator znalezionego dziecka lub end()
-    const_iterator findChildByName(const std::string & name) const;
-
-    //! \param path Sciezka dziecka do znalezienia
-    //! \return znalezione dziecka lub nullptr - NamedTreeBasePtr()
-    NamedTreeBasePtr findChildByPath(const std::string & path) const;
 
     //! \param path Sciezka dziecka do znalezienia
     //! \return znalezione dziecka lub nullptr - NamedTreeBasePtr()

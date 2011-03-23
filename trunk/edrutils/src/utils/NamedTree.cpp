@@ -104,12 +104,12 @@ NamedTreeBase::iterator NamedTreeBase::end()
     return children.end();
 }
 
-NamedTreeBasePtr & NamedTreeBase::getChild(NamedTreeBase::size_type idx)
+const NamedTreeBasePtr & NamedTreeBase::getChild(NamedTreeBase::size_type idx)
 {
     return children[idx];
 }
 
-NamedTreeBasePtr & NamedTreeBase::getChild(const std::string & path)
+const NamedTreeBasePtr & NamedTreeBase::getChild(const std::string & path)
 {
     NamedTreeBasePtr child = findChildByPath(path);
     if(child == nullptr) {
