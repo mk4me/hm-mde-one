@@ -1,5 +1,5 @@
 # nazwa
-set(TARGET_TARGETNAME KinematicModelLibrary_test)
+set(TARGET_TARGETNAME kinematiclib_test)
 
 # Ÿród³a
 set(TARGET_SRC 
@@ -27,4 +27,4 @@ include_directories( ${DEFAULT_PROJECT_INCLUDES} )
 # biblioteki
 target_link_libraries(${TARGET_TARGETNAME} ${DEFAULT_PROJECT_LIBS})	
 # labelka
-set_target_properties(${TARGET_TARGETNAME} PROPERTIES PROJECT_LABEL "Test of KinematicModelLibrary")	
+set_target_properties(${TARGET_TARGETNAME} PROPERTIES PROJECT_LABEL "Test of kinematiclib")	

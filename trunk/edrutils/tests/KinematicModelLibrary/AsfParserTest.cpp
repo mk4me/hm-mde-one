@@ -12,11 +12,11 @@
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <boost/shared_ptr.hpp>
-#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <kinematiclib/SkeletalParsers.h>
 #include <list>
 #include "AsfParserTest.h"
 
-CPPUNIT_TEST_SUITE_REGISTRATION( AsfParserTest );
+
 
 AsfParserTest::AsfParserTest(void)
 {
@@ -30,7 +30,7 @@ AsfParserTest::~AsfParserTest(void)
 void AsfParserTest::testLoad()
 {
     kinematic::AsfParser asf;
-    kinematic::SkeletalModel::Ptr model(new kinematic::SkeletalModel);
+    kinematic::SkeletalModelPtr model(new kinematic::SkeletalModel);
     
     asf.parse(model, "kinematic/acclaim/cmu/01/01.asf");
     asf.save(model, "asftest.asf");
@@ -38,6 +38,6 @@ void AsfParserTest::testLoad()
 
 void AsfParserTest::testLoadNotExisting() {
     kinematic::AsfParser asf;
-    kinematic::SkeletalModel::Ptr model(new kinematic::SkeletalModel);
+    kinematic::SkeletalModelPtr model(new kinematic::SkeletalModel);
     asf.parse(model, "NotExist.asf");
 }

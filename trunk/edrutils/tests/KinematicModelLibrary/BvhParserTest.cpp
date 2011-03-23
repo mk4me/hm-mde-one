@@ -12,13 +12,14 @@
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <boost/shared_ptr.hpp>
-#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <kinematiclib/SkeletalParsers.h>
 #include <list>
-#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <kinematiclib/SkeletalParsers.h>
 #include "MiscTest.h"
 #include "BvhParserTest.h"
 #include <boost/filesystem.hpp>
-CPPUNIT_TEST_SUITE_REGISTRATION( BvhParserTest );
+
+
 using namespace std;
 using namespace kinematic;
 using namespace boost::filesystem;
@@ -35,7 +36,7 @@ BvhParserTest::~BvhParserTest(void)
 void BvhParserTest::testLoad()
 {
     kinematic::BvhParser bvh;
-    kinematic::SkeletalModel::Ptr model(new kinematic::SkeletalModel);
+    kinematic::SkeletalModelPtr model(new kinematic::SkeletalModel);
     // TODO zmienic ktorys z plikow CMakeLists bo na razie ten test nie ma sensu
     bvh.parse(model, "kinematic/biovision/walks/backwards_walk.bvh");
 
@@ -46,8 +47,8 @@ void BvhParserTest::fullTest() {
     for (unsigned int i = 0; i < files.size(); i++) {
         string s = files[i];
         LOGGER(Logger::Info, "Test : " + s);
-        SkeletalModel::Ptr model1(new SkeletalModel);
-        SkeletalModel::Ptr model2(new SkeletalModel);
+        SkeletalModelPtr model1(new SkeletalModel);
+        SkeletalModelPtr model2(new SkeletalModel);
         BvhParser b1, b2;
         b1.parse(model1, s);
         b1.save(model1, "temp.bvh");

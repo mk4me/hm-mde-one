@@ -13,14 +13,11 @@
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <boost/shared_ptr.hpp>
-#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <kinematiclib/SkeletalParsers.h>
 #include <list>
-#include <KinematicModelLibrary/SkeletalParsers.h>
-#include <KinematicModelLibrary/KinematicModel.h>
+#include <kinematiclib/SkeletalParsers.h>
+#include <kinematiclib/KinematicModel.h>
 #include "KinematicModelTest.h"
-
-
-//CPPUNIT_TEST_SUITE_REGISTRATION( KinematicModelTest );
 
 using namespace kinematic;
 void KinematicModelTest::test1()
@@ -29,7 +26,7 @@ void KinematicModelTest::test1()
    kinematic.loadMappingDictionary("kinematic/dictionary.xml");
    AsfParser asf;
    AmcParser amc;
-   SkeletalModel::Ptr model(new SkeletalModel);
+   SkeletalModelPtr model(new SkeletalModel);
 
     Logger::getInstance().log(Logger::Info, "test kinematic model");
     asf.parse(model, "kinematic/acclaim/cmu/01/01.asf");

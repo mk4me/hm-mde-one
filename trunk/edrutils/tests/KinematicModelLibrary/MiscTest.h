@@ -3,14 +3,14 @@
 
 #include <limits>
 #include <cppunit/extensions/HelperMacros.h>
-#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <kinematiclib/SkeletalParsers.h>
 
 class MiscTest : public CPPUNIT_NS::TestCase
 {
     CPPUNIT_TEST_SUITE(MiscTest);
     CPPUNIT_TEST(testOK);
     CPPUNIT_TEST(test1);
-    //CPPUNIT_TEST(testFail);
+    CPPUNIT_TEST(testVSK);
     CPPUNIT_TEST_SUITE_END();
 public:
     MiscTest(void);
@@ -20,6 +20,7 @@ public:
     void testOK();
     void testFail();
     void test1();
+    void testVSK();
 
     bool substestAsfAmc(const std::string& asfFile, const std::string& amcFile);
 

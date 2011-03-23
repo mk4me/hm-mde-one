@@ -12,7 +12,8 @@
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <boost/shared_ptr.hpp>
-#include <KinematicModelLibrary/SkeletalParsers.h>
+#include <kinematiclib/SkeletalParsers.h>
+#include <kinematiclib/VskParser.h>
 #include <list>
 #include "MiscTest.h"
 #include <boost/filesystem.hpp>
@@ -21,7 +22,7 @@
 using namespace std;
 using namespace kinematic;
 using namespace boost::filesystem;
-CPPUNIT_TEST_SUITE_REGISTRATION( MiscTest );
+
 
 MiscTest::MiscTest(void)
 {
@@ -29,13 +30,12 @@ MiscTest::MiscTest(void)
 
 MiscTest::~MiscTest(void)
 {
-
 }
 
 void MiscTest::testOK() {
     Logger::getInstance().log(Logger::Info, "Test ktory powinien sie udac");
     AsfParser asf;
-    SkeletalModel::Ptr model(new SkeletalModel);
+    SkeletalModelPtr model(new SkeletalModel);
     asf.parse(model, "kinematic/acclaim/cmu/01/01.asf");
     asf.save(model, "test.asf");
     CPPUNIT_ASSERT(true);
@@ -86,7 +86,7 @@ bool MiscTest::testJointContentEquality( JointPtr joint1, JointPtr joint2, bool 
 
 bool MiscTest::substestAsfAmc( const std::string& asfFile, const std::string& amcFile )
 {
-    SkeletalModel::Ptr model1(new SkeletalModel), model2(new SkeletalModel);
+    SkeletalModelPtr model1(new SkeletalModel), model2(new SkeletalModel);
     AsfParser asf1, asf2; 
     AmcParser amc1, amc2;
     asf1.setForceXYZRoot(false);
@@ -113,13 +113,13 @@ bool MiscTest::substestAsfAmc( const std::string& asfFile, const std::string& am
         return false;
     }
 
-    std::vector<SkeletalModel::singleFrame>& frames1 = model1->getFrames();
-    std::vector<SkeletalModel::singleFrame>& frames2 = model2->getFrames();
+    std::vector<SkeletalModel::singleFramePtr>& frames1 = model1->getFrames();
+    std::vector<SkeletalModel::singleFramePtr>& frames2 = model2->getFrames();
 
     CPPUNIT_ASSERT(frames1.size() == frames2.size());
     for (int i = frames1.size() - 1; i >= 0 ; --i) {
-        SkeletalModel::singleFrame& f1 = frames1[i];
-        SkeletalModel::singleFrame& f2 = frames2[i];
+        SkeletalModel::singleFrame& f1 = *(frames1[i]);
+        SkeletalModel::singleFrame& f2 = *(frames2[i]);
         CPPUNIT_ASSERT(f1.frameNo == f2.frameNo);
         for (int j = f1.bonesData.size() - 1; j >= 0; --j) {
             vector<double>& val1 = f1.bonesData[j].channelValues;
@@ -167,6 +167,15 @@ MiscTest::pairs MiscTest::fill(const std::string& rootDir) {
         LOGGER(Logger::Info, "Wrong path : " + rootDir);
     }
     return temp;
+}
+
+void MiscTest::testVSK()
+{
+    VskParser vsk;
+    try {
+        vsk.parse("kinematic/MS39NEXUS.vsk");
+    } catch (kinematic::UnableToOpenFileException& e) {
+    }
 }
 
  //bool MiscTest::testSkeletonEquality( const hmAnimation::Skeleton& s1, const hmAnimation::Skeleton& s2 ) {

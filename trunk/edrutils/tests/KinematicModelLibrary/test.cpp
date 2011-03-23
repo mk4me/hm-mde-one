@@ -1,6 +1,20 @@
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
+#include <kinematiclib/SkeletalParsers.h>
+#include <kinematiclib/VskParser.h>
+#include "AsfParserTest.h"
+#include "AmcParserTest.h"
+#include "MiscTest.h"
+#include "BvhParserTest.h"
+#include "KinematicModelTest.h"
+
+
+CPPUNIT_TEST_SUITE_REGISTRATION( MiscTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( AmcParserTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( BvhParserTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( AsfParserTest );
+//CPPUNIT_TEST_SUITE_REGISTRATION( KinematicModelTest );
 
 int main(int argc, char* argv[])
 {
