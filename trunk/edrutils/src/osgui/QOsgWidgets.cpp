@@ -24,6 +24,9 @@ osgQt::GraphWidget( translateFormat( traits ? *traits : osg::GraphicsContext::Tr
     // wygl¹da dziwnie, ale w kontruktorze ustawiana jest zmienna _gw
     osgQt::GraphicsWindowQt* temp = new osgQt::GraphicsWindowQt(t);
     UTILS_ASSERT(temp == _gw);
+
+    // wy³¹czenie odrysowywanie t³a
+    setAttribute( Qt::WA_OpaquePaintEvent );
 }
 
 QOsgContextWidget::~QOsgContextWidget()
@@ -116,22 +119,23 @@ void QOsgViewer::init()
     _camera->setProjectionMatrixAsPerspective(45.0f, static_cast<double>(width)/height, 1.0f, 10000.0f );
 
     frameTimer.setInterval(defaultInterval);
-    connect(&frameTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+    //connect(&frameTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+    connect(&frameTimer, SIGNAL(timeout()), this, SLOT(update()));
     frameTimer.start();
 }
 
 void QOsgViewer::paintGL()
 {
-    // rysujemy tylko gdy event pochodzi z timera
-    if ( isTimerActive() ) {
-        if ( !skipFramesIfInvisible || ( isVisible() && !isHidden() )  ) {
-            frame();
-        }  else {
-            int debuggable = 0;
-        }
-    } else {
-        int debuggable = 0;
-    }
+//     // rysujemy tylko gdy event pochodzi z timera
+//     if ( isTimerActive() ) {
+//         if ( !skipFramesIfInvisible || (isVisible() && !isHidden()) ) {
+//             frame();
+//         }  else {
+//             int debuggable = 0;
+//         }
+//     } else {
+//         int debuggable = 0;
+//     }
 }
 
 //! \param camera
@@ -164,6 +168,33 @@ void QOsgViewer::setRenderingEnabled( bool renderingEnabled )
 QOsgViewer::~QOsgViewer()
 {
 }   
+
+void QOsgViewer::paintEvent( QPaintEvent* event )
+{
+    if ( !skipFramesIfInvisible || (isVisible() && !isHidden()) ) {
+        frame();
+    } 
+    // if ( isTimerActive() ) {
+    //     if ( !skipFramesIfInvisible || ( isVisible() && !isHidden() )  ) {
+    //         frame();
+    //     }  else {
+    //         int debuggable = 0;
+    //     }
+    // } else {
+    //     int debuggable = 0;
+    // }
+}
+
+void QOsgViewer::setTimerActive( bool active )
+{
+    if ( active != isTimerActive() ) {
+        if ( active ) {
+            frameTimer.start();
+        } else {
+            frameTimer.stop();
+        }
+    }
+}
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace osgui
 ////////////////////////////////////////////////////////////////////////////////

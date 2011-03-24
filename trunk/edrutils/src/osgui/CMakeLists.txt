@@ -32,6 +32,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/Tooltip.h
 	${HEADER_PATH}/TooltipHost.h
 	${HEADER_PATH}/Utils2D.h	
+	${HEADER_PATH}/EventCallback.h	
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})

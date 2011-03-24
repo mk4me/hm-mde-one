@@ -109,10 +109,7 @@ public:
     }
     //! \params active Czy timer jest aktywny? Je¿eli nie ramki nie bêd¹ aktualizowane i nale¿y dodaæ go do rodzica, czyli
     //! do osgViewer::CompositeViewer
-    inline void setTimerActive(bool active)
-    {
-        frameTimer.start();
-    }
+    void setTimerActive(bool active);
 
     //! Okres timera aktualizacyjnego.
     inline int getTimerInterval() const
@@ -152,6 +149,8 @@ public:
 protected:
     //! 
     virtual void paintGL();
+    //!
+    virtual void paintEvent( QPaintEvent* event );
 
     //! \param camera
     osg::GraphicsOperation* createRenderer(osg::Camera* camera);

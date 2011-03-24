@@ -27,7 +27,7 @@ class Buttonized : public Base, public StylePolicy
 public:
     //META_Object(osgui, Buttonized);
 	//META_Widget(osgui, Buttonized);
-    META_ObjectBase(osgui, Borderized);
+    META_ObjectBase(osgui, Buttonized);
 
 private:
     //! Czy jest wciśnięty?
