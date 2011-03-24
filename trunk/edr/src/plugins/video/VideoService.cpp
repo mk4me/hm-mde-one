@@ -29,7 +29,6 @@ VideoService::VideoService()
 
 
 
-    //int * dupa = new int[100000];
 
 //     std::vector<std::string> files;
 //     if ( files.size() == 0 ) {
