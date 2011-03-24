@@ -167,7 +167,7 @@ void configureView(bool vertically, bool horizontally,
 
     // dodanie dwóch takich handlerów powoduje b³êdy!
     viewer.addEventHandler( new osgWidget::MouseHandler(streamView) );
-    viewer.addEventHandler( new osgUI::StaticKeyboardHandler(streamView) );
+    viewer.addEventHandler( new osgui::StaticKeyboardHandler(streamView) );
     viewer.addEventHandler( new osgViewer::StatsHandler );
     viewer.addEventHandler( new osgGA::StateSetManipulator( viewer.getCamera()->getOrCreateStateSet() ) );
     viewer.addEventHandler( new osgViewer::WindowSizeHandler );

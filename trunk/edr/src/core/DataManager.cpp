@@ -13,6 +13,10 @@ using namespace core;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+DataManager* DataManager::instance = nullptr;
+
+////////////////////////////////////////////////////////////////////////////////
+
 //! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
 class DataManager::Parser
 {
@@ -158,6 +162,19 @@ DataManager::~DataManager()
 {
     this->clear();
 }
+
+void DataManager::createInstance()
+{
+    UTILS_ASSERT(!instance);
+    instance = new DataManager();
+}
+
+void DataManager::destroyInstance()
+{
+    delete instance;
+    instance = nullptr;
+}
+
 
 void DataManager::clear()
 {
@@ -520,3 +537,4 @@ void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& object
         }
     }
 }
+

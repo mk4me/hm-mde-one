@@ -231,7 +231,7 @@ void RenderService::Inicialize(osg::Node* sceneRoot, osgViewer::CompositeViewer*
 
     osgGA::OrbitManipulator *cameraManipulator = new osgGA::OrbitManipulator();
 
-    widget = new core::QOsgDefaultWidget();
+    widget = new osgui::QOsgDefaultWidget();
     widget->onInit(viewer);
     widget->addEventHandler(new osgViewer::StatsHandler);
     widget->setCameraManipulator(cameraManipulator);

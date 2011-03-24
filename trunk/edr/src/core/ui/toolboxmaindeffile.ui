@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ToolboxMain</class>
- <widget class="QMainWindow" name="ToolboxMain">
+ <class>EDRMain</class>
+ <widget class="QMainWindow" name="EDRMain">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ToolboxMain</string>
+   <string>EDR</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -21,19 +21,6 @@
     <property name="margin">
      <number>0</number>
     </property>
-    <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="currentIndex">
-       <number>-1</number>
-      </property>
-      <property name="documentMode">
-       <bool>true</bool>
-      </property>
-      <property name="movable">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -51,11 +38,9 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionAbout"/>
-   <addaction name="actionTabbedView"/>
-   <addaction name="actionDockableView"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QMenuBar" name="menuBar">
+  <widget class="QMenuBar" name="menu">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -76,25 +61,13 @@
     <property name="title">
      <string>View</string>
     </property>
-    <widget class="QMenu" name="menuModel">
+    <widget class="QMenu" name="menuCreateVisualizer">
      <property name="title">
-      <string>Model</string>
+      <string>Create visualizer...</string>
      </property>
-     <addaction name="actionPoints"/>
-     <addaction name="actionLines"/>
-     <addaction name="actionLine_strip"/>
-     <addaction name="actionLine_loop"/>
-     <addaction name="actionTriangle"/>
-     <addaction name="actionTriangle_strip"/>
-     <addaction name="actionTriangle_fun"/>
-     <addaction name="actionQuads"/>
-     <addaction name="actionQuad_strip"/>
-     <addaction name="actionPolygon"/>
+     <addaction name="separator"/>
     </widget>
-    <addaction name="actionWireframe"/>
-    <addaction name="actionBone"/>
-    <addaction name="actionMaterial"/>
-    <addaction name="menuModel"/>
+    <addaction name="menuCreateVisualizer"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -110,9 +83,9 @@
      <property name="title">
       <string>Load layout</string>
      </property>
-     <addaction name="actionLayout_open"/>
+     <addaction name="actionLayoutOpen"/>
     </widget>
-    <addaction name="actionSave_layout"/>
+    <addaction name="actionSaveLayout"/>
     <addaction name="menuLoad_layout"/>
     <addaction name="separator"/>
    </widget>
@@ -127,80 +100,6 @@
    <addaction name="menuWindow"/>
    <addaction name="menuHelp"/>
   </widget>
-  <action name="actionWireframe">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Wireframe</string>
-   </property>
-  </action>
-  <action name="actionBone">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Bone</string>
-   </property>
-  </action>
-  <action name="actionMaterial">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Material</string>
-   </property>
-  </action>
-  <action name="actionPoints">
-   <property name="text">
-    <string>Points</string>
-   </property>
-  </action>
-  <action name="actionLines">
-   <property name="text">
-    <string>Lines</string>
-   </property>
-  </action>
-  <action name="actionLine_strip">
-   <property name="text">
-    <string>Line strip</string>
-   </property>
-  </action>
-  <action name="actionLine_loop">
-   <property name="text">
-    <string>Line loop</string>
-   </property>
-  </action>
-  <action name="actionTriangle">
-   <property name="text">
-    <string>Triangle</string>
-   </property>
-  </action>
-  <action name="actionTriangle_strip">
-   <property name="text">
-    <string>Triangle strip</string>
-   </property>
-  </action>
-  <action name="actionTriangle_fun">
-   <property name="text">
-    <string>Triangle fun</string>
-   </property>
-  </action>
-  <action name="actionQuads">
-   <property name="text">
-    <string>Quads</string>
-   </property>
-  </action>
-  <action name="actionQuad_strip">
-   <property name="text">
-    <string>Quad strip</string>
-   </property>
-  </action>
-  <action name="actionPolygon">
-   <property name="text">
-    <string>Polygon</string>
-   </property>
-  </action>
   <action name="actionAbout">
    <property name="text">
     <string>About...</string>
@@ -224,34 +123,12 @@
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionTabbedView">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Tabbed view</string>
-   </property>
-   <property name="toolTip">
-    <string>Switch to tabbed view</string>
-   </property>
-  </action>
-  <action name="actionDockableView">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Dockable view</string>
-   </property>
-   <property name="toolTip">
-    <string>Switch to dock view</string>
-   </property>
-  </action>
-  <action name="actionSave_layout">
+  <action name="actionSaveLayout">
    <property name="text">
     <string>Save layout</string>
    </property>
   </action>
-  <action name="actionLayout_open">
+  <action name="actionLayoutOpen">
    <property name="text">
     <string>Open...</string>
    </property>
@@ -265,7 +142,7 @@
   <connection>
    <sender>actionOpen</sender>
    <signal>triggered()</signal>
-   <receiver>ToolboxMain</receiver>
+   <receiver>EDRMain</receiver>
    <slot>onOpen()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -281,7 +158,7 @@
   <connection>
    <sender>actionExit</sender>
    <signal>triggered()</signal>
-   <receiver>ToolboxMain</receiver>
+   <receiver>EDRMain</receiver>
    <slot>onExit()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -295,105 +172,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionMaterial</sender>
+   <sender>actionSaveLayout</sender>
    <signal>triggered()</signal>
-   <receiver>ToolboxMain</receiver>
-   <slot>onMaterial()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>309</x>
-     <y>240</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionBone</sender>
-   <signal>triggered()</signal>
-   <receiver>ToolboxMain</receiver>
-   <slot>onBones()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>309</x>
-     <y>240</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionWireframe</sender>
-   <signal>triggered()</signal>
-   <receiver>ToolboxMain</receiver>
-   <slot>onWireframe()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>309</x>
-     <y>240</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>tabWidget</sender>
-   <signal>currentChanged(int)</signal>
-   <receiver>ToolboxMain</receiver>
-   <slot>onPageChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>440</x>
-     <y>356</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>440</x>
-     <y>344</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionDockableView</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>ToolboxMain</receiver>
-   <slot>onDockableViewSelected(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>440</x>
-     <y>344</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionTabbedView</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>ToolboxMain</receiver>
-   <slot>onTabbedViewSelected(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>440</x>
-     <y>344</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionSave_layout</sender>
-   <signal>triggered()</signal>
-   <receiver>ToolboxMain</receiver>
+   <receiver>EDRMain</receiver>
    <slot>onSaveLayout()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -407,9 +188,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionLayout_open</sender>
+   <sender>actionLayoutOpen</sender>
    <signal>triggered()</signal>
-   <receiver>ToolboxMain</receiver>
+   <receiver>EDRMain</receiver>
    <slot>onOpenLayout()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -425,12 +206,44 @@
   <connection>
    <sender>menuLoad_layout</sender>
    <signal>aboutToShow()</signal>
-   <receiver>ToolboxMain</receiver>
+   <receiver>EDRMain</receiver>
    <slot>onShowSavedLayouts()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>67</x>
      <y>35</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuWindow</sender>
+   <signal>aboutToShow()</signal>
+   <receiver>EDRMain</receiver>
+   <slot>populateWindowMenu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>67</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuCreateVisualizer</sender>
+   <signal>aboutToShow()</signal>
+   <receiver>EDRMain</receiver>
+   <slot>populateVisualizersMenu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>67</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>227</x>
@@ -451,5 +264,7 @@
   <slot>onSaveLayout()</slot>
   <slot>onShowSavedLayouts()</slot>
   <slot>onOpenLayout()</slot>
+  <slot>populateWindowMenu()</slot>
+  <slot>populateVisualizersMenu()</slot>
  </slots>
 </ui>

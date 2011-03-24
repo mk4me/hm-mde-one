@@ -140,7 +140,10 @@ AsyncResult GRFService::loadData(IServiceManager* serviceManager, core::IDataMan
 {
     widget->clear();
 
+
     std::vector<core::GRFChannelPtr> channels = queryDataPtr(dataManager);
+
+
     BOOST_FOREACH( auto channel, channels ) {
         widget->addChart(channel);
     }

@@ -78,13 +78,14 @@ find_package(wsdlpull)
 find_package(log4cxx)
 find_package(VidLib)
 find_package(Utils)
+find_package(osgui)
 
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)
 set(OPENGL_LIBRARIES_PROXY ${OPENGL_LIBRARIES})
 set(OPENGL_LIBRARIES OPENGL_LIBRARIES_PROXY)
 
-find_package(Prerequisites)
+#find_package(Prerequisites)
 
 #---------------------------------------------------
 
@@ -111,9 +112,9 @@ endif()
 # ADD_PROJECTS(template)
 
 if (CONFIG_CORE_ENABLE_LOG4CXX)
-	ADD_PROJECT(corelib "LOG4CXX;BOOST;UTILS;OSG;QT;TINYXML;STDINT")
+	ADD_PROJECT(corelib "LOG4CXX;BOOST;UTILS;OSG;OSGUI;QT;TINYXML;STDINT")
 else()
-	ADD_PROJECT(corelib "BOOST;UTILS;OSG;QT;TINYXML;STDINT")
+	ADD_PROJECT(corelib "BOOST;UTILS;OSG;OSGUI;QT;TINYXML;STDINT")
 endif()
 ADD_PROJECT(core "UTILS;OSG;QT;TINYXML;corelib;OPENGL")
 ADD_PROJECTS(plugins)

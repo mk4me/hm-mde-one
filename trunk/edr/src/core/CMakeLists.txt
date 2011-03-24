@@ -36,6 +36,12 @@ set(PRIVATE_H
 	UserInterfaceService.h
 	#Quaternioncal.h
 	ComputeThread.h
+	VisualizerWidget.h
+	VisualizerManager.h
+	ObjectSource.h
+	Visualizer.h
+	VisualizerTitleBar.h
+	VisualizerTitleBarComboPick.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -84,6 +90,8 @@ set(PUBLIC_H
 	${HEADER_PATH}/Log.h
 	${HEADER_PATH}/LocalTrial.h
 	${HEADER_PATH}/ObjectWrapper.h
+	${HEADER_PATH}/IObjectSource.h
+	${HEADER_PATH}/IVisualizer.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -122,6 +130,12 @@ set(TARGET_SRC
 	#Quaternioncal.cpp
 	ComputeThread.cpp
 	Log.cpp
+	VisualizerWidget.cpp
+	VisualizerManager.cpp
+	ObjectSource.cpp
+	Visualizer.cpp
+	VisualizerTitleBar.cpp
+	VisualizerTitleBarComboPick.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -130,6 +144,9 @@ SET(TARGET_MOC_H
     ConsoleWidget.h
     ToolboxMain.h
 	SceneGraphWidget.h
+	VisualizerWidget.h
+	VisualizerTitleBar.h
+	VisualizerTitleBarComboPick.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -142,6 +159,10 @@ set(TARGET_UI
 	ui/SceneGraphWidget.ui
 	ui/OsgWidget.ui
 	ui/toolboxmaindeffile.ui
+	ui/VisualizerWidget.ui
+	ui/VisualizerTitleBar.ui
+	ui/VisualizerTitleBarComboPick.ui
+	ui/VisualizerTitleBarButtonPerSource.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

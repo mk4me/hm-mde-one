@@ -20,11 +20,11 @@
    <enum>Qt::CustomContextMenu</enum>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Video</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="core::QOsgDefaultWidget" name="viewer" native="true">
+    <widget class="osgui::QOsgDefaultWidget" name="viewer" native="true">
      <property name="minimumSize">
       <size>
        <width>449</width>
@@ -75,9 +75,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>core::QOsgDefaultWidget</class>
+   <class>osgui::QOsgDefaultWidget</class>
    <extends>QWidget</extends>
-   <header location="global">core/QOsgWidgets.h</header>
+   <header location="global">osgui/QOsgWidgets.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

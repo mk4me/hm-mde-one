@@ -4,7 +4,7 @@
     
 #include "ToolboxMain.h"
 #include "ui_toolboxmaindeffile.h"
-#include <core/QOsgWidgets.h>
+#include <osgui/QOsgWidgets.h>
 #include "SceneGraphWidget.h"
 
 #include <osg/Vec3d>
@@ -50,6 +50,19 @@
 #include <core/Log.h>
 #include <core/StringTools.h>
 #include <boost/foreach.hpp>
+#include "VisualizerWidget.h"
+
+#include <core/Visualizer.h>
+#include <core/C3DChannels.h>
+
+#include <core/Chart.h>
+#include <osgWidget/ViewerEventHandlers>
+
+#include <osgui/EventCallback.h>
+#include <osg/BlendFunc>
+#include <osg/LineWidth>
+
+#include <boost/random.hpp>
 
 DEFINE_DEFAULT_LOGGER("edr.core");
 
@@ -80,15 +93,285 @@ public:
     }
 };
 
-ToolboxMain::ToolboxMain(QWidget *parent)
-:   QMainWindow(parent),
-    ui(new Ui::ToolboxMain),
-    removeOnClick(false),
-    updateEnabled(true)
+using namespace core;
+
+class MultiViewChartItem : public MultiViewItem
 {
+private:
+    std::string name;
+    Chart* chart;
+    osg::Switch* multiViewSwitch;
+public:
+    MultiViewChartItem(Chart* chart,osg::Switch* multiViewSwitch);
+
+
+public:
+    //! \return Nazwa widgetu.
+    virtual const std::string& getName() const;
+    //! \return Wspó³czynnik proporcji.
+    virtual osgWidget::point_type getAspectRatio();
+    //! Dodaje b¹dŸ usuwa widget podgl¹du ze sceny.
+    virtual void setVisible(bool selected);
+    //! Umieszcza widget w zadanej lokalizacji.
+    virtual void setLocation(osgWidget::point_type x, osgWidget::point_type y,
+        osgWidget::point_type w, osgWidget::point_type h);
+};
+
+
+MultiViewChartItem::MultiViewChartItem(Chart* chart,osg::Switch* multiViewSwitch):
+chart(chart),
+    multiViewSwitch(multiViewSwitch)
+{
+    UTILS_ASSERT(chart);
+}
+const std::string& MultiViewChartItem::getName() const
+{
+    UTILS_ASSERT(chart != NULL);
+    return chart->getName();
+}
+
+osgWidget::point_type MultiViewChartItem::getAspectRatio()
+{
+    return 3;
+}
+
+void MultiViewChartItem::setVisible( bool selected )
+{
+    multiViewSwitch->setValue(multiViewSwitch->getChildIndex(chart),selected);
+
+}
+
+void MultiViewChartItem::setLocation( osgWidget::point_type x, osgWidget::point_type y, osgWidget::point_type w, osgWidget::point_type h )
+{
+
+
+    chart->setLocation( static_cast<int>(x+0.5f),  static_cast<int>(y+0.5f),  static_cast<int>(x+w+0.5f), static_cast<int>(y+h+0.5f));
+}
+
+class OrthoCameraResizeHandler : public osgGA::GUIEventHandler
+{
+private:
+    osg::observer_ptr<osg::Camera> camera;
+public:
+    OrthoCameraResizeHandler(osg::Camera* camera = nullptr) :
+    camera(camera)
+    {
+        UTILS_ASSERT(camera);
+    }
+
+    virtual bool handle(const osgGA::GUIEventAdapter& gea, osgGA::GUIActionAdapter& gaa, osg::Object* obj, osg::NodeVisitor* nv)
+    {
+        osgGA::GUIEventAdapter::EventType ev = gea.getEventType();
+        if ( ev != osgGA::GUIEventAdapter::RESIZE ) {
+            return false;
+        }
+        if (camera.valid()) {
+            camera->setProjectionMatrixAsOrtho2D(0.0, gea.getWindowWidth(), 0.0, gea.getWindowHeight());
+        }
+        // nie blokujemy
+        return false;
+    }
+};
+
+
+
+
+
+
+
+// class ChartSizeHandler : public osg::NodeCallback
+// {
+//     /** Callback method called by the NodeVisitor when visiting a node.*/
+//     virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+//     { 
+//         osgGA::EventVisitor* ev = dynamic_cast<osgGA::EventVisitor*>(nv);
+//         if ( ev ) {
+//             BOOST_FOREACH(auto event, ev->getEvents()) {
+//                 if ( event.getEventType() == osgGA::GUIEventAdapter::RESIZE ) {
+//                     
+//                 }
+//             }
+//         }
+//     }
+// };
+
+void resizeChart(osg::Node* node, double w, double h)
+{
+    dynamic_cast<Chart&>(*node).setLocation(50, 0, w-50, h);
+}
+
+class TestVisualizer : public core::IVisualizer
+{
+    UNIQUE_ID('TEST','VISU')
+private:
+
+    
+    //! Nazwa wizualizatora.
+    std::string name;
+    //! Viewer osg.
+    osg::ref_ptr<osgViewer::Viewer> viewer;
+
+    //! Kolory dla serii danych
+    std::vector< osg::Vec4 > seriesColors;
+
+public:
+    TestVisualizer() : name("TestVisualizer") {}
+    ~TestVisualizer()
+    {
+        viewer = nullptr;
+    }
+
+public:
+    virtual const std::string& getName() const
+    {
+        return name;
+    }
+
+    virtual core::IVisualizer* create() const
+    {
+        return new TestVisualizer();
+    }
+
+    virtual void getSlotInfo(int source, std::string& name, core::ObjectWrapper::Types& types)
+    {
+        name = std::string("serie ") + boost::lexical_cast<std::string>(source);
+        // wspierane nastêpuj¹ce typy serii danych
+        types.push_back( typeid(core::GRFChannel) );
+        types.push_back( typeid(core::ScalarChannel) );
+        types.push_back( typeid(core::EMGChannel) );
+    }
+
+    virtual void update(double deltaTime)
+    {
+        
+    }
+
+    virtual QWidget* createWidget()
+    {
+        osgui::QOsgDefaultWidget* widget = new osgui::QOsgDefaultWidget();
+        widget->setTimerActive(false);
+        //widget->setMinimumSize(300, 300);
+
+        viewer = widget;
+        viewer->addEventHandler( new osgViewer::StatsHandler() );
+        //viewer->addEventHandler( new osgGA::StateSetManipulator(viewer->getCamera()->getOrCreateStateSet()) );
+        
+        // pobranie cech kontekstu graficznego
+        const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
+
+        // konfiguracja kamery
+        osg::Camera* camera = viewer->getCamera();
+        camera->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF);
+        camera->setProjectionMatrix(osg::Matrix::ortho2D(0.0, double(traits->width), 0.0f, double(traits->height)));
+        camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+        camera->setViewMatrix(osg::Matrix::identity());
+        camera->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
+
+        // dodanie callbacak dostosowuj¹cego rozmiar kamery do rozmiaru okna
+        camera->setEventCallback( osgui::createEventCallback( 
+            osgGA::GUIEventAdapter::RESIZE,
+            [](osg::Node* node, const osgGA::GUIEventAdapter* event) { 
+                dynamic_cast<osg::Camera&>(*node).setProjectionMatrixAsOrtho2D(0, event->getWindowWidth(), 0, event->getWindowHeight()); 
+        } 
+        ));
+
+        chart = new Chart(0, 0, traits->width, traits->height);
+        chart->setLocation(0, 0, traits->width, traits->height);
+        
+        chart->setGridColor(osg::Vec4(0.5f, 0.5f, 0.5f, 1.0f));
+        chart->setShowGridX(true);
+        chart->setShowGridY(true);
+        chart->setGridDensity(5);
+        chart->setMargin(10);
+
+        chart->setZ(-0.5f);
+        chart->setZRange(0.5f);
+   
+   //chart->getOrCreateStateSet()->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+        //chart->getOrCreateStateSet()->setAttribute(new osg::LineWidth(10), osg::StateAttribute::ON);
+        //chart->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+        // dodanie callbacka dostosowuj¹cego rozmiar wykresu do rozmiaru okna
+        chart->setEventCallback( osgui::createEventCallback( 
+            osgGA::GUIEventAdapter::RESIZE,
+            [](osg::Node* node, const osgGA::GUIEventAdapter* event) {
+                dynamic_cast<Chart&>(*node).setLocation(0, 0, event->getWindowWidth(), event->getWindowHeight()); 
+        }
+        ));
+        
+
+        viewer->setSceneData(chart);
+
+
+        // przewidujemy kolory na 10 wykresów...
+        seriesColors.resize(10);
+        seriesColors[0] = osg::Vec4(1, 0, 0, 1);
+        seriesColors[1] = osg::Vec4(0, 1, 0, 1);
+        seriesColors[2] = osg::Vec4(0, 0, 1, 1);
+        seriesColors[3] = osg::Vec4(1, 1, 0, 1);
+        seriesColors[4] = osg::Vec4(0, 1, 1, 1);
+        seriesColors[5] = osg::Vec4(1, 0, 1, 1);
+        seriesColors[6] = osg::Vec4(1, 0.5, 0.5, 1);
+        seriesColors[7] = osg::Vec4(0.5, 1, 0.5, 1);
+        seriesColors[8] = osg::Vec4(0.5, 0.5, 1, 1);
+        seriesColors[9] = osg::Vec4(1, 1, 0.5, 1);
+
+        return widget;
+    }
+
+    //! Faktyczny wykres.
+    osg::ref_ptr<Chart> chart;
+
+    virtual void setUp(core::IObjectSource* source)
+    {
+        using namespace core;
+
+        core::ScalarChannelConstPtr channel;
+
+        chart->removeAllChannels();
+        for ( int i = 0; i < source->getNumObjects(); ++i ) {
+            if ( source->tryGetObject(channel, i) ) {
+                // okreœlenie koloru wykresu
+                osg::Vec4 color;
+                size_t numChannels = static_cast<size_t>(chart->getNumChannels());
+                if ( numChannels < static_cast<int>(seriesColors.size()) ) {
+                    // kolor 
+                    color = seriesColors[numChannels];
+                } else {
+                    // losowy kolor
+                    LOG_WARNING("No color defined for chart " << numChannels << ", using random one.");
+                    color.r() = (rand()%1000)/999.0f;
+                    color.g() = (rand()%1000)/999.0f;
+                    color.b() = (rand()%1000)/999.0f;
+                    color.a() = 1.0f;
+                }
+                chart->addChannel(channel, color);
+            }
+        }
+        
+        chart->refresh();
+    }
+};
+
+ToolboxMain::ToolboxMain(QWidget *parent) :
+QMainWindow(parent), updateEnabled(true)
+{
+    setupUi(this);
     setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 
-    pluginLoader = new core::PluginLoader();
+  
+
+    // SM
+    // TODO: singleton
+    serviceManager = new ServiceManager();
+
+    // DM
+    DataManager::createInstance();
+    dataManager = DataManager::getInstance();
+
+    // VM
+    VisualizerManager::createInstance();
+    visualizerManager = VisualizerManager::getInstance();
 
 
 //     LoggerPtr root = Logger::getRootLogger();
@@ -99,14 +382,14 @@ ToolboxMain::ToolboxMain(QWidget *parent)
 //     root->addAppender(appender);
 
 
-
-    ui->setupUi(this);
-
     registerCoreServices();
 
+    // plugin loader
+    pluginLoader = new core::PluginLoader();
 	pluginLoader->load();
     registerPluginsServices();
 	registerPluginsParsers();
+    registerPluginsVisualizers();
 
 
     sceneRoot = new osg::Group();
@@ -117,14 +400,13 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     dataManager->loadResources();
 
     // inicjalizacja us³ug
-    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        m_pServiceManager->getService(i)->init(m_pServiceManager, dataManager, sceneRoot.get(), this);
+    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
+        serviceManager->getService(i)->init(serviceManager, dataManager, sceneRoot.get(), this);
     }
 
 
     initializeConsole();          // Console Widget 
     InitializeControlWidget();          // Control Widget + TimeLine
-    LoadConfiguration();                // Wczytuje plik konfiguracyjny
 
     initializeUI();
 
@@ -132,56 +414,33 @@ ToolboxMain::ToolboxMain(QWidget *parent)
     readSettings(QSettings(), true);
 
 
+
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
     updateTimer.start(20);
 
-    computeThread = new ComputeThread(m_pServiceManager, 0.02);
+    computeThread = new ComputeThread(serviceManager, 0.02);
     computeThread->start();
 
 
     if ( getNumViews() ) {
-        connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
-        _timer.start( 20 );
+        connect( &viewerFrameTimer, SIGNAL(timeout()), this, SLOT(update()) );
+        viewerFrameTimer.start( 20 );
     }
 }
 
 ToolboxMain::~ToolboxMain()
 {
-    clear();
-
-}
-
-void ToolboxMain::clear()
-{
     delete computeThread;
 
-    delete ui;  // ui stuff
-    //std::streambuf *buf = std::cout.rdbuf(_streambuf);
-    //delete buf;
+    delete serviceManager;
 
-    //m_pRenderService.reset();
-    delete m_pServiceManager;
+    DataManager::destroyInstance();
+    dataManager = nullptr;
+
+    VisualizerManager::destroyInstance();
+    visualizerManager = nullptr;
+
     delete pluginLoader;
-    m_pUserInterfaceService = NULL;
-	if(dataManager)
-		delete dataManager;
-	dataManager = NULL;
-    
-
-    // remove all services
-    //m_pServiceManager = NULL;
-
-    
-}
-
-void ToolboxMain::LoadConfiguration()
-{
-    /*
-    QString path = qApp->applicationDirPath();
-    path.append("/"); 
-    path.append(configName); 
-    ConfigurationService *config = new ConfigurationService(); 
-    config->loadConfiguration( std::string(path.toUtf8()) ); /**/
 }
 
 void ToolboxMain::readSettings( const QSettings& settings, bool readGeometry )
@@ -194,7 +453,7 @@ void ToolboxMain::readSettings( const QSettings& settings, bool readGeometry )
     }
 }
 
-void ToolboxMain::WriteSettings()
+void ToolboxMain::writeSettings()
 {
     QSettings settings;
     settings.setValue("Geometry", saveGeometry());
@@ -203,7 +462,7 @@ void ToolboxMain::WriteSettings()
 
 void ToolboxMain::closeEvent(QCloseEvent* event)
 {
-    WriteSettings();
+    writeSettings();
     QMainWindow::closeEvent(event);
 }
 
@@ -219,47 +478,25 @@ void ToolboxMain::InitializeControlWidget()
     gDock->setObjectName(QString("GridWidget"));
     gDock->setAllowedAreas(Qt::LeftDockWidgetArea);
 
-    sceneGraphWidget = new SceneGraphWidget();    
+    widgetSceneGraph = new SceneGraphWidget();    
     addDockWidget(Qt::LeftDockWidgetArea, gDock);
-    gDock->setWidget((QWidget*)sceneGraphWidget);
-    sceneGraphWidget->addServices(m_pServiceManager);
+    gDock->setWidget((QWidget*)widgetSceneGraph);
+    widgetSceneGraph->addServices(serviceManager);
 }
 
-void ToolboxMain::populateWindowMenu(QMenu* target)
-{
-    QList<QDockWidget *> dockwidgets = qFindChildren<QDockWidget*>(this);
-    if (dockwidgets.size()) {
-        for (int i = 0; i < dockwidgets.size(); ++i) {
-            QDockWidget *dockWidget = dockwidgets.at(i);
-            if (dockWidget->parentWidget() == this) {
-                target->addAction(dockWidget->toggleViewAction());
-            }
-        }
-        target->addSeparator();
-    }
 
-    QList<QToolBar *> toolbars = qFindChildren<QToolBar *>(this);
-    if (toolbars.size()) {
-        for (int i = 0; i < toolbars.size(); ++i) {
-            QToolBar *toolBar = toolbars.at(i);
-            target->addAction(toolBar->toggleViewAction());
-        }
-    }
-}
 
 void ToolboxMain::initializeConsole()
 {
-   
-
     QDockWidget *dock; 
     dock = new QDockWidget(tr("Console"), this, Qt::WindowTitleHint);
     dock->setObjectName("Console");
     dock->setAllowedAreas(Qt::BottomDockWidgetArea);
-    _consoleWidget = new ConsoleWidget();    
+    widgetConsole = new ConsoleWidget();    
     addDockWidget(Qt::BottomDockWidgetArea, dock);
-    dock->setWidget((QWidget*)_consoleWidget); 
+    dock->setWidget((QWidget*)widgetConsole); 
     // Inicjalizacja konsoli
-//     ConsoleWidgetOutputBuffer *ob = new ConsoleWidgetOutputBuffer(_consoleWidget, 256);
+//     ConsoleWidgetOutputBuffer *ob = new ConsoleWidgetOutputBuffer(widgetConsole, 256);
 //     _streambuf = std::cout.rdbuf(ob);
 }
 
@@ -329,60 +566,56 @@ osg::ref_ptr<osg::Node> ToolboxMain::createGrid()
 
 void ToolboxMain::updateServices()
 {
-	if(dataManager->isLoadLocalTrialData())
-	{
+	if(dataManager->isLoadLocalTrialData())	{
 		loadData();
 	}
-    _consoleWidget->flushQueue();
+    widgetConsole->flushQueue();
     if ( updateEnabled ) {
-        m_pServiceManager->updatePass();
+        serviceManager->updatePass();
     }
-    _consoleWidget->flushQueue();
+    widgetConsole->flushQueue();
 }
 
 void ToolboxMain::registerCoreServices()
 {
-    //1. Service manafger
-    m_pUserInterfaceService = new UserInterfaceService();
-    m_pServiceManager = new ServiceManager();
-   // m_pRenderService = RenderServicePtr(new RenderService());
-
-	/*
-	tworzy managera zasobow. w konstruktorze szuka sciezek do zasobow stalych (shadery i tbs)
-	*/
-    dataManager = new DataManager();
-
-    //3. UserInterface Service
-    m_pServiceManager->registerService(IServicePtr(m_pUserInterfaceService));
-    m_pUserInterfaceService->setMainWindow(this);
-
-    //4. Render Service
-   // m_pServiceManager->registerService(IServicePtr(m_pRenderService));
+    // us³uga UI
+    UserInterfaceService* userInterfaceService = new UserInterfaceService();
+    userInterfaceService->setMainWindow(this);
+    serviceManager->registerService(IServicePtr(userInterfaceService));
 }
 
 void ToolboxMain::registerPluginsServices()
 {
-    for ( size_t i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
+    for ( int i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
         core::PluginPtr plugin = pluginLoader->getPlugin(i);
-        for ( size_t j = 0; j < plugin->getNumServices(); ++j ) {
-            m_pServiceManager->registerService(plugin->getService(j));
+        for ( int j = 0; j < plugin->getNumServices(); ++j ) {
+            serviceManager->registerService(plugin->getService(j));
         }
     }
 }
 
 void ToolboxMain::registerPluginsParsers()
 {
-    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i)
-    {
+    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         core::PluginPtr plugin = pluginLoader->getPlugin(i);
-        int z = static_cast<int>(plugin->getNumParsers());
-        for(size_t j = 0; j < z; ++j)
-        {
+        for(int j = 0; j < plugin->getNumParsers(); ++j) {
             dataManager->registerParser(plugin->getParser(j));
         }
     }
     core::IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
     dataManager->registerParser(c3dParser);
+}
+
+void ToolboxMain::registerPluginsVisualizers()
+{
+    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
+        core::PluginPtr plugin = pluginLoader->getPlugin(i);
+        for(int j = 0; j < plugin->getNumVisualizers(); ++j) {
+            visualizerManager->registerVisualizer(plugin->getVisualizer(j));
+        }
+    }
+    // rejestracja wbudowanych parserów
+    visualizerManager->registerVisualizer( core::IVisualizerPtr(new TestVisualizer()) );
 }
 
 void ToolboxMain::onOpen()
@@ -455,12 +688,14 @@ void ToolboxMain::initializeUI()
     //centralWidget()->widget
 
     setDockOptions( AllowNestedDocks | AllowTabbedDocks );
+    setTabPosition( Qt::RightDockWidgetArea, QTabWidget::North );
+    setCentralWidget( nullptr );
     setDocumentMode(true);
     //setCentralWidget(NULL);
 
     // pozosta³e widgety "p³ywaj¹ce"
-    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        IServicePtr service = m_pServiceManager->getService(i);
+    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
+        IServicePtr service = serviceManager->getService(i);
 
         // HACK
         QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget());
@@ -469,19 +704,20 @@ void ToolboxMain::initializeUI()
 
         if ( viewWidget/* && service != m_pRenderService*/ ) {
 
-//            this->ui->tabWidget->addTab(viewWidget, string_cast(service->getName()));
+//            this->tabWidget->addTab(viewWidget, string_cast(service->getName()));
 
 //              centralWidget()->layout()->addWidget(viewWidget);
-//             addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
-//                 viewWidget, 
-//                 core::toQString(service->getName()), 
-//                 style,
-//                 Qt::RightDockWidgetArea));
+            addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
+                viewWidget, 
+                core::toQString(service->getName()), 
+                style,
+                "",
+                Qt::RightDockWidgetArea));
 		}
         if ( controlWidget ) {
             addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
                 controlWidget, 
-                core::toQString(service->getName()), 
+                core::toQString(service->getName() + " control"), 
                 style,
                 "Control",
                 Qt::BottomDockWidgetArea));
@@ -489,26 +725,25 @@ void ToolboxMain::initializeUI()
         if ( settingsWidget ) {
             addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(
                 settingsWidget, 
-                core::toQString(service->getName()), 
+                core::toQString(service->getName() + " settings"), 
                 style,
                 "Settings",
                 Qt::LeftDockWidgetArea));
         }
 	}
 
-    // uzupe³nienie podmenu z mo¿liwymi oknami
-    populateWindowMenu(ui->menuWindow);
-
+#ifdef UTILS_DEBUG
     // testowe opcje
-    onTestItemClickedPtr.reset( new core::Window::ItemPressed(boost::bind(&ToolboxMain::onTestItemClicked, this, _1, _2 )));
+    removeOnClick = false;
+    onTestItemClickedPtr.reset(new core::Window::ItemPressed(boost::bind(&ToolboxMain::onTestItemClicked, this, _1, _2 )));
     onTestRemoveToggledPtr.reset(new core::Window::ItemPressed(boost::bind(&ToolboxMain::onTestRemoveToggled, this, _1, _2 )));
-    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Option", onTestItemClickedPtr);
-    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option", onTestItemClickedPtr);
-    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option2", onTestItemClickedPtr);
-    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested2/Option", onTestItemClickedPtr);
-    m_pUserInterfaceService->getMainWindow()->addMenuItem("Callback test/Remove on click?", onTestRemoveToggledPtr, true, removeOnClick);
-
-    ui->actionTabbedView->setChecked(true);
+    core::shared_ptr<IUserInterface> userInterfaceService = queryServices<IUserInterface>(serviceManager);
+    userInterfaceService->getMainWindow()->addMenuItem("Callback test/Option", onTestItemClickedPtr);
+    userInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option", onTestItemClickedPtr);
+    userInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option2", onTestItemClickedPtr);
+    userInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested2/Option", onTestItemClickedPtr);
+    userInterfaceService->getMainWindow()->addMenuItem("Callback test/Remove on click?", onTestRemoveToggledPtr, true, removeOnClick);
+#endif // UTILS_DEBUG
 }
 
 void ToolboxMain::onCustomAction()
@@ -549,17 +784,7 @@ void ToolboxMain::onRemoveMenuItem( const std::string& path )
     }*/
 }
 
-void ToolboxMain::onTestItemClicked(const std::string& sender, bool state)
-{
-    if (removeOnClick) {
-        m_pUserInterfaceService->getMainWindow()->removeMenuItem(sender);
-    }
-}
 
-void ToolboxMain::onTestRemoveToggled(const std::string& sender, bool state )
-{
-    removeOnClick = state;
-}
 
 void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool initialState )
 {
@@ -568,7 +793,7 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
     tokenizer::iterator next;
     tokenizer::iterator token = tokens.begin();
 
-    QWidget* currentMenu = menuBar();
+    QWidget* currentMenu = QMainWindow::menuBar();
     std::string pathPart;
 
     for (token = tokens.begin(); token != tokens.end(); token = next ) 
@@ -625,6 +850,7 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
     }
 }
 
+
 void ToolboxMain::openFile( const std::string& path )
 {
     LOG_INFO("Opening file: " << path);
@@ -634,41 +860,24 @@ void ToolboxMain::openFile( const std::string& path )
 void ToolboxMain::loadData()
 {
 	//m_pRenderService->GetFactory()->Clear();
-	m_pServiceManager->loadDataPass(dataManager);
+	serviceManager->loadDataPass(dataManager);
+    
 
 	// m_pRenderService->AddObjectToRender(createGrid());
+
+
 
 	// manage scene
 // 	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
 // 	osg::Node* sceneRoot = scene->getSceneData();
 	dataManager->setLoadLocalTrialData(false);
 }
-
-void ToolboxMain::onTabbedViewSelected(bool toggled)
-{
-    if ( toggled ) {
-        ui->actionDockableView->setChecked(false);
-        ui->actionDockableView->setEnabled(true);
-        ui->actionTabbedView->setEnabled(false);
-        reorganizeWidgets(WidgetsOrganizationTabbed);
-    }
-}
-
-void ToolboxMain::onDockableViewSelected(bool toggled)
-{
-    if ( toggled ) {
-        ui->actionTabbedView->setChecked(false);
-        ui->actionTabbedView->setEnabled(true);
-        ui->actionDockableView->setEnabled(false);
-        reorganizeWidgets(WidgetsOrganizationDocked);
-    }
-}
-
+/*
 void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 {
     // usuwamy stare œmieci
-    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        IServicePtr service = m_pServiceManager->getService(i);
+    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
+        IServicePtr service = serviceManager->getService(i);
         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
             // co musimy usun¹æ?
             if ( QDockWidget* dock = qobject_cast<QDockWidget*>(viewWidget->parent()) ) {
@@ -696,8 +905,8 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 
     // tworzymy listê dokowalnych widgetów
     std::vector< QDockWidget* > widgets;
-    for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-        IServicePtr service = m_pServiceManager->getService(i);
+    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
+        IServicePtr service = serviceManager->getService(i);
         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
             widgets.push_back(embeddWidget(
                 viewWidget, 
@@ -734,16 +943,24 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
         UTILS_ASSERT(false);
     }
 
+    {
+        VisualizerWidget* widget = new VisualizerWidget(this, Qt::WindowTitleHint);
+        widget->setAllowedAreas(Qt::LeftDockWidgetArea);
+        widget->setStyleSheet(style);
+        addDockWidget(Qt::LeftDockWidgetArea, widget);
+        //QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
+    }
+    
 
 
 
 //     // usuniêcie starych "œmieci"
-//     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-//         IServicePtr service = m_pServiceManager->getService(i);
+//     for (int i = 0; i < serviceManager->getNumServices(); ++i) {
+//         IServicePtr service = serviceManager->getService(i);
 //         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
 //             // co musimy usun¹æ?
 //             QDockWidget* dock = qobject_cast<QDockWidget*>(viewWidget->parent());
-//             int index = ui->tabWidget->indexOf(viewWidget);
+//             int index = tabWidget->indexOf(viewWidget);
 //             if ( dock ) {
 //                 viewWidget->setParent(NULL);
 //                 removeDockWidget(dock);
@@ -753,7 +970,7 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 // 
 //             }
 //             if ( index != -1 ) {
-//                 ui->tabWidget->removeTab(index);
+//                 tabWidget->removeTab(index);
 //             }
 //         }
 //     }
@@ -794,8 +1011,8 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 //     
 // 
 //     // pozosta³e widgety "p³ywaj¹ce"
-//     for (int i = 0; i < m_pServiceManager->getNumServices(); ++i) {
-//         IServicePtr service = m_pServiceManager->getService(i);
+//     for (int i = 0; i < serviceManager->getNumServices(); ++i) {
+//         IServicePtr service = serviceManager->getService(i);
 //         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
 //             if ( organization == WidgetsOrganizationDocked ) {
 //                 // dodanie dokowalnego widgetu
@@ -806,11 +1023,11 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 //                     Qt::RightDockWidgetArea));
 //             } else {
 //                 // dodanie strony do zak³adek
-//                 ui->tabWidget->addTab(viewWidget, core::toQString(service->getName()));
+//                 tabWidget->addTab(viewWidget, core::toQString(service->getName()));
 //             }
 //         }
 //     }
-}
+}*/
 
 void ToolboxMain::paintEvent( QPaintEvent* event )
 {
@@ -823,8 +1040,8 @@ void ToolboxMain::onDockWidgetVisiblityChanged( bool visible )
 {
     if ( QDockWidget* sender = qobject_cast<QDockWidget*>(QObject::sender()) ) {
         // wyszukanie us³ugi do której widget nale¿y
-        for ( int i = 0; i < m_pServiceManager->getNumServices(); ++i ) {
-            IServicePtr service = m_pServiceManager->getService(i);
+        for ( int i = 0; i < serviceManager->getNumServices(); ++i ) {
+            IServicePtr service = serviceManager->getService(i);
             if ( reinterpret_cast<QWidget*>(service->getWidget()) == sender->widget() ) {
                 service->visibilityChanged( service->getWidget(), visible );
             }
@@ -868,8 +1085,8 @@ void ToolboxMain::onOpenLayout()
 void ToolboxMain::onShowSavedLayouts()
 {
     // usuniêcie starych akcji
-    ui->menuLoad_layout->clear();
-    ui->menuLoad_layout->addAction(ui->actionLayout_open);
+    menuLoad_layout->clear();
+    menuLoad_layout->addAction(actionLayoutOpen);
 
     // layouty wbudowane
     addLayoutsToMenu(QDir(QDir::currentPath().append("/data/resources/layouts")));
@@ -891,17 +1108,75 @@ void ToolboxMain::addLayoutsToMenu( QDir &dir )
     if ( dir.exists() ) {     
         QStringList files = dir.entryList( QStringList("*.layout"), QDir::Files | QDir::Readable );
         if ( files.size() ) {
-            ui->menuLoad_layout->addSeparator();
+            menuLoad_layout->addSeparator();
             Q_FOREACH(const QString& file, files) {
-                QAction* action = new QAction(ui->menuLoad_layout);
+                QAction* action = new QAction(menuLoad_layout);
                 action->setText(file);
                 action->setData(QVariant(dir.absoluteFilePath(file)));
-                ui->menuLoad_layout->addAction(action);
+                menuLoad_layout->addAction(action);
                 QObject::connect(action, SIGNAL(triggered()), this, SLOT(onLayoutTriggered()));
             }
         }
     }
 }
+
+void ToolboxMain::populateWindowMenu()
+{
+    QList<QDockWidget *> dockwidgets = qFindChildren<QDockWidget*>(this);
+    if (dockwidgets.size()) {
+        for (int i = 0; i < dockwidgets.size(); ++i) {
+            QDockWidget *dockWidget = dockwidgets.at(i);
+            if (dockWidget->parentWidget() == this) {
+                menuWindow->addAction(dockWidget->toggleViewAction());
+            }
+        }
+        menuWindow->addSeparator();
+    }
+
+    QList<QToolBar *> toolbars = qFindChildren<QToolBar*>(this);
+    if (toolbars.size()) {
+        for (int i = 0; i < toolbars.size(); ++i) {
+            QToolBar *toolBar = toolbars.at(i);
+            menuWindow->addAction(toolBar->toggleViewAction());
+        }
+    }
+}
+
+void ToolboxMain::populateVisualizersMenu()
+{
+    menuCreateVisualizer->clear();
+    // dodajemy wizualizatory
+    BOOST_FOREACH(const IVisualizerConstPtr& vis, visualizerManager->enumPrototypes()) {
+        QAction* action = menuCreateVisualizer->addAction( toQString(vis->getName()) );
+        action->setData( qVariantFromValue(vis->getID()) );
+        action->connect( action, SIGNAL(triggered()), this, SLOT(actionCreateVisualizer()) );
+    }
+}
+
+void ToolboxMain::actionCreateVisualizer()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    VisualizerWidget* widget = new VisualizerWidget(action->data().value<UniqueID>(), this, Qt::WindowTitleHint);
+    widget->setAllowedAreas(Qt::RightDockWidgetArea);
+    widget->setStyleSheet(styleSheet());
+    addDockWidget(Qt::RightDockWidgetArea, widget);
+}
+
+#ifdef UTILS_DEBUG
+
+void ToolboxMain::onTestItemClicked(const std::string& sender, bool state)
+{
+    if (removeOnClick) {
+        removeMenuItem(sender);
+    }
+}
+
+void ToolboxMain::onTestRemoveToggled(const std::string& sender, bool state )
+{
+    removeOnClick = state;
+}
+
+#endif // UTILS_DEBUG
 
 // void ToolboxMain::SettingModel()
 // {
@@ -937,7 +1212,7 @@ void ToolboxMain::addLayoutsToMenu( QDir &dir )
 // TESTING CONFIGURATION_FILE_MANAGER
 //     ServiceManager::GetInstance()->registerService<ConfigurationFileService>(); 
 // 
-//     ConfigurationFileService* pCFService = m_pServiceManager->GetSystemServiceAs<ConfigurationFileService>();
+//     ConfigurationFileService* pCFService = serviceManager->GetSystemServiceAs<ConfigurationFileService>();
 //     
 //     pCFService->LoadConfig("Config.ini");
 //     std::list<ConfigurationGroup*> groupList = pCFService->GetConfigurationGroupList();

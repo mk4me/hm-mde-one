@@ -33,11 +33,11 @@ private:
   //! Kontroler.
   osg::ref_ptr<timeline::Controller> controller;
   //! Kursor nawigacyjny.
-  osg::ref_ptr<osgUI::HorizontalScrollBar> navigationBar;
+  osg::ref_ptr<osgui::HorizontalScrollBar> navigationBar;
   //!
-  osg::ref_ptr<osgUI::HorizontalScrollBar> timescaleBar;
+  osg::ref_ptr<osgui::HorizontalScrollBar> timescaleBar;
   //!
-  osg::ref_ptr<osgUI::Potentiometer> potentiometer;
+  osg::ref_ptr<osgui::Potentiometer> potentiometer;
   //!
   bool supressCallbacks;
 
@@ -68,7 +68,7 @@ private:
   osgWidget::Box* createLabelBox();
 
   //!
-  osgUI::HorizontalScrollBar * createSlider(const std::string& name);
+  osgui::HorizontalScrollBar * createSlider(const std::string& name);
   //!
   osgWidget::Widget * embed(osgWidget::Window * window, const std::string& name = "");
 
@@ -76,11 +76,11 @@ private:
   bool onButtonClicked(osgWidget::Event& event);
 
   //! Zmiana wartoœci potencjometru.
-  bool onPotentiometerChanged(osgUI::Event& event);
+  bool onPotentiometerChanged(osgui::Event& event);
   //! Zmiana wartoœci slidera.
-  bool onSliderValueChanged(osgUI::Event& event);
+  bool onSliderValueChanged(osgui::Event& event);
   //! Proœba o odœwie¿enie tooltipa.
-  bool onSliderUpdateTooltip(osgUI::Event& event);
+  bool onSliderUpdateTooltip(osgui::Event& event);
 
   //!
   std::string formatTime(double seconds);

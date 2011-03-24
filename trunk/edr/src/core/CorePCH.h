@@ -22,6 +22,8 @@
 #include <sstream>
 #include <stack>
 #include <iostream>
+#include <list>
+#include <typeinfo>
 
 #include <utils/Utils.h>
 #include <utils/Debug.h>
@@ -84,6 +86,9 @@ UTILS_POP_WARNINGS
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/any.hpp>
+#include <boost/range.hpp>
+#include <boost/iterator.hpp>
 
 #include <core/SmartPtr.h>
 

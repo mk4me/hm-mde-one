@@ -11,12 +11,13 @@
 
 #include <vector>
 #include <string>
-
+#include <boost/range.hpp>
 #include <core/Log.h>
 
 #include "SmartPtr.h"
 #include "IService.h"
 #include "IParser.h"
+#include "IVisualizer.h"
 #include "BaseDataTypes.h"
 #include "Export.h"
 #include "IIdentifiable.h"
@@ -47,8 +48,13 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME() \
     instance->addService( IServicePtr(new className) );
 
 //! Dodaje parser zadanego typu do pluginu.
-#define CORE_PLUGIN_ADD_PARSER(className)                              \
+#define CORE_PLUGIN_ADD_PARSER(className)                               \
     instance->addParser( core::IParserPtr(new className) );
+
+//! Dodaje wizualizator zadanego typu do pluginu.
+#define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
+    instance->addParser( core::IVisualizerPtr(new className) );
+
 
 /**
  *	Kontener na us³ugi.
@@ -60,20 +66,18 @@ public:
     typedef core::Plugin* (*CreateFunction)();
     //! Typ listy us³ug.
     typedef std::vector<IServicePtr> Services;
-    //!
-    typedef Services::iterator iterator;
-    //!
-    typedef Services::const_iterator const_iterator;
-
     //! Typ listy parserów.
     typedef std::vector<IParserPtr> Parsers;
+    //! Typ listy wizualizatorów.
+    typedef std::vector<IVisualizerPtr> Visualizers;
 
 private:
     //! Lista us³ug pluginu.
     Services services;
-
     //! Lista parserów pluginu.
 	Parsers parsers;
+    //! Lista wizualizatorów pluginu.
+    Visualizers visualizers;
 
     //! Nazwa pluginu.
     std::string name;
@@ -100,28 +104,6 @@ public:
     {
         return name;
     }
-    //! \service Us³uga do dodania do pluginu.
-    void addService(IServicePtr service)
-    {
-        services.push_back(service);
-    }
-    //! \return Liczba us³ug dostarczanych przez plugin.
-    size_t getNumServices() const
-    {
-        return services.size();
-    }
-    //! 
-    //! \param i
-    IServicePtr getService(size_t i)
-    {
-        return services[i];
-    }
-    //! 
-    //! \param i
-    IServiceConstPtr getService(size_t i) const
-    {
-        return services[i];
-    }
     //! \return
     const std::string& getPath() const
     { 
@@ -132,6 +114,22 @@ public:
     { 
         this->path = path; 
     }
+
+    //! \service Us³uga do dodania do pluginu.
+    void addService(IServicePtr service)
+    {
+        services.push_back(service);
+    }
+    //! \return Liczba us³ug dostarczanych przez plugin.
+    int getNumServices() const
+    {
+        return static_cast<int>(services.size());
+    }
+    //! \param i
+    IServicePtr getService(int i)
+    {
+        return services[i];
+    }
 	
     //! \parser Parser do dodania do pluginu.
 	void addParser(IParserPtr parser)
@@ -139,21 +137,30 @@ public:
         this->parsers.push_back(parser);
     }
     //! \return Liczba parserów dostarczanych przez plugin.
-    size_t getNumParsers() const
+    int getNumParsers() const
     {
-		return this->parsers.size();
+		return static_cast<int>(this->parsers.size());
     }
-    //! 
     //! \param i
-	IParserPtr getParser(size_t i)
+	IParserPtr getParser(int i)
     {
         return this->parsers[i];
     }
-    //! 
-    //! \param i
-	IParserConstPtr getParser(size_t i) const
+
+    //! \visualizer Visualizer do dodania do pluginu.
+    void addVisualizer(IVisualizerPtr visualizer)
     {
-        return this->parsers[i];
+        this->visualizers.push_back(visualizer);
+    }
+    //! \return Liczba visualizerów dostarczanych przez plugin.
+    int getNumVisualizers() const
+    {
+        return static_cast<int>(this->visualizers.size());
+    }
+    //! \param i
+    IVisualizerPtr getVisualizer(int i)
+    {
+        return this->visualizers[i];
     }
 };
 

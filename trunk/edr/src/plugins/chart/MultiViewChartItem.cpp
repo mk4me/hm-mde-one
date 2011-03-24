@@ -28,9 +28,7 @@ void MultiViewChartItem::setVisible( bool selected )
 
 void MultiViewChartItem::setLocation( osgWidget::point_type x, osgWidget::point_type y, osgWidget::point_type w, osgWidget::point_type h )
 {
-
-
-	chart->setLocation( static_cast<int>(x+0.5f),  static_cast<int>(y+0.5f),  static_cast<int>(x+w+0.5f), static_cast<int>(y+h+0.5f));
+	chart->setLocation(x, y, w, h);
 }
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

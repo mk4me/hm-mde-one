@@ -46,7 +46,7 @@ void logCallback(vidlib::FFmpegVideoStream::LogSeverity severity, const char* ms
     }
 }
 
-struct Initializer
+static struct Initializer
 {
     Initializer()
     {

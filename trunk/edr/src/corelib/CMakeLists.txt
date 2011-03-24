@@ -19,22 +19,12 @@ set(PRIVATE_H
 #string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(HEADER_PATH ${PROJECT_INCLUDE_ROOT}/core)
 set(PUBLIC_H
-	${HEADER_PATH}/Buttonized.h
-	${HEADER_PATH}/Borderized.h
-	${HEADER_PATH}/LabeledView.h
-	${HEADER_PATH}/Grid.h
-	${HEADER_PATH}/AspectRatioKeeper.h
 	${HEADER_PATH}/MultiView.h
 	${HEADER_PATH}/MultiViewWidgetItem.h
-	${HEADER_PATH}/EmbeddedWindow.h
 	${HEADER_PATH}/MultiViewFunctorWidgetAdapter.h
 	${HEADER_PATH}/MultiViewCameraItem.h
 	${HEADER_PATH}/MultiViewManipulatorItem.h
 	${HEADER_PATH}/OsgSceneDump.h
-	${HEADER_PATH}/OsgWidgetUtils.h
-	${HEADER_PATH}/QOsgWidgets.h
-	${HEADER_PATH}/QOsgWidgetsDeprecated.h
-	${HEADER_PATH}/DisableableRenderer.h
 	${HEADER_PATH}/DataChannel.h
 	${HEADER_PATH}/C3DChannels.h
 	${HEADER_PATH}/ChartSerie.h
@@ -60,8 +50,6 @@ set(TARGET_SRC
 	ASFAMCData.cpp
 	ASFAMCParser.cpp
 	Window.cpp
-	Grid.cpp
-	AspectRatioKeeper.cpp
 	MultiView.cpp
 	MultiViewWidgetItem.cpp
 	Chart.cpp
@@ -81,16 +69,11 @@ set(TARGET_SRC
 	Parameter.cpp
 	Parameters.cpp
 	ChartPointer.cpp
-	EmbeddedWindow.cpp
 	MultiViewFunctorWidgetAdapter.cpp
 	Quaternioncal.cpp
 	MultiViewCameraItem.cpp
 	MultiViewManipulatorItem.cpp
 	OsgSceneDump.cpp
-	OsgWidgetUtils.cpp
-	QOsgWidgets.cpp
-	QOsgWidgetsDeprecated.cpp
-	DisableableRenderer.cpp
 	GroupData.cpp
 	Header.cpp
 	Data.cpp

@@ -34,6 +34,8 @@ namespace core
         virtual const std::string& getName() const = 0;
 
         //! Tylko tutaj powinno nastêpowaæ tworzenie widgetu. Metoda wywo³ywana tylko jeden raz.
+        //! To wizualizator musi niszczyæ widget w destruktorze. Gdy widget jest równoczeœnie
+        //! widokiem OSG to wystarczy przypisaæ go do osg::ref_ptr.
         //! \return Widget bêd¹cy korzeniem wizualizacji. Musi mieæ slot setActiveSource(int).
         virtual QWidget* createWidget() = 0;
 

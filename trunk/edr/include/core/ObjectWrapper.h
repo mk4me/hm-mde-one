@@ -76,6 +76,8 @@ public:
             return typeinfo.before(obj.typeinfo) != 0;
         } 
     };
+    //! Lista typów.
+    typedef std::list<Type> Types;
 
 protected:
     //! Nazwa instancji.
@@ -84,6 +86,8 @@ protected:
     std::string className;
     //! Hash identyfikuj¹cy typ.
     std::size_t classID;
+    //! Opis Ÿród³a.
+    std::string source;
 
 public:
     //! \param object
@@ -121,7 +125,7 @@ public:
     //! \param dummy Pozostawiæ pusty.
     //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
     template <class T>
-    auto get(bool exact = false, T* dummy = nullptr) -> decltype( reinterpret_cast<ObjectWrapperT<T>*>(nullptr)->get() )
+    typename ObjectWrapperT<T>::Ptr get(bool exact = false, T* /*dummy*/ = nullptr)
     {   
         typedef ObjectWrapperT<T> Wrapper;
         Wrapper::Ptr result;
@@ -131,6 +135,22 @@ public:
             throw std::runtime_error("Invalid wrapped type.");
         }
     }
+
+    //! \param dummy Pozostawiæ pusty.
+    //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
+    template <class T>
+    typename ObjectWrapperT<typename boost::remove_const<T>::type>::ConstPtr get(bool exact = false, T* /*dummy*/ = nullptr) const
+    {   
+        typedef typename boost::remove_const<T>::type MutableT;
+        typedef ObjectWrapperT<MutableT> Wrapper;
+        Wrapper::ConstPtr result;
+        if ( tryGet<MutableT>(result) ) {
+            return result;
+        } else {
+            throw std::runtime_error("Invalid wrapped type.");
+        }
+    }
+
 
     //! \param dummy Pozostawiæ pusty.
     //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
@@ -152,6 +172,28 @@ public:
         }
         return false;
     }
+
+    //! \param dummy Pozostawiæ pusty.
+    //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
+    template <class T>
+    bool tryGet( typename ObjectWrapperT<T>::ConstPtr& target, bool exact = false ) const
+    {
+        typedef const ObjectWrapperT<T> Wrapper;
+        if ( exact ) {
+            if ( areTypesEqual(getTypeInfo(), typeid(T)) ) {
+                target = static_cast<Wrapper*>(this)->get();
+                return true;
+            }
+        } else {
+            Wrapper* wrapper = dynamic_cast<Wrapper*>(this);
+            if ( wrapper ) {
+                target = wrapper->get();
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     //! \param dummy Pozostawiæ pusty.
     //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
@@ -187,12 +229,28 @@ public:
     {
         this->name = name;
     }
+    //! \return
+    inline const std::string& getSource() const
+    { 
+        return source;
+    }
+    //! \param source
+    void setSource(const std::string& source) 
+    { 
+        this->source = source; 
+    }
 
     //! \param type Typ do porównania.
     //! \return Czy to te same typy?
     inline bool isTypeEqual(const std::type_info& type)
     {
         return areTypesEqual(getTypeInfo(), type);
+    }
+
+    //!
+    inline Type getType() const
+    {
+        return getTypeInfo();
     }
 
     //! \param type 
@@ -203,7 +261,7 @@ public:
     virtual const std::type_info& getTypeInfo() const = 0;
 
     //! \param supported Lista wspieranych rozszerzeñ.
-    virtual void getSupportedTypes(std::list<Type>& supported) const = 0;
+    virtual void getSupportedTypes(Types& supported) const = 0;
 
     //! \return Czy wrappowany obiekt jest wyzerowany?
     virtual bool isNull() const = 0;
@@ -237,6 +295,8 @@ public:
     typedef PtrPolicy Base;
     //! Wrappowany obiekt.
     typedef typename Base::Ptr<T>::Type Ptr;
+    //! Sta³y wrappowany obiekt
+    typedef typename Base::Ptr<const T>::Type ConstPtr;
 
 protected:
     //! Wrappowany obiekt.
@@ -257,9 +317,9 @@ protected:
 
 public:
     //! \return Wrappowany obiekt.
-    const Ptr& get() const
+    ConstPtr get() const
     {
-        return wrapped;
+        return ConstPtr(wrapped);
     }
     //! \return Wrappowany obiekt.
     Ptr get()
@@ -283,7 +343,7 @@ public:
         return ObjectWrapper::areTypesEqual(type, typeid(T));
     }
     //! \param supported
-    virtual void getSupportedTypes(std::list<ObjectWrapper::Type>& supported) const
+    virtual void getSupportedTypes(ObjectWrapper::Types& supported) const
     {
         supported.push_back(typeid(T));
     }
@@ -305,6 +365,8 @@ public:
     typedef typename Base::PtrPolicy PtrPolicy;
     //! U¿ywany wskaŸnik.
     typedef typename PtrPolicy::Ptr<T>::Type Ptr;
+    //! 
+    typedef typename PtrPolicy::Ptr<const T>::Type ConstPtr;
 public:
     //! \param wrapped
     __ObjectWrapperT(const char* className)
@@ -312,9 +374,9 @@ public:
     {}
 public:
     //! \return Wrappowany obiekt.
-    const Ptr& get() const
+    ConstPtr get() const
     {
-        return static_pointer_cast<T>(this->wrapped);
+        return ConstPtr(static_pointer_cast<T>(this->wrapped));
     }
     //! \return Wrappowany obiekt.
     Ptr get()
@@ -342,7 +404,7 @@ public:
         }
     }
     //! \param supported
-    virtual void getSupportedTypes(std::list<ObjectWrapper::Type>& supported) const
+    virtual void getSupportedTypes(ObjectWrapper::Types& supported) const
     {
         Base::getSupportedTypes(supported);
         supported.push_back(typeid(T));

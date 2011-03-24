@@ -13,8 +13,8 @@
 #include <osgWidget/Widget>
 #include <osgWidget/WindowManager>
 #include <osgGA/GUIEventHandler>
-#include <core/Grid.h>
-#include <core/AspectRatioKeeper.h>
+#include <osgui/Grid.h>
+#include <osgui/AspectRatioKeeper.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -105,7 +105,7 @@ private:
         //! Czy thumbnail jest zaznaczony?
         bool toggled;
         //! Okienko s³u¿¹ce do trzymania wspó³czynnika proporcji.
-        osg::ref_ptr<osgUI::AspectRatioKeeper> keeper;
+        osg::ref_ptr<osgui::AspectRatioKeeper> keeper;
     };
 
     //! W³aœciwa lista itemów.
@@ -114,7 +114,7 @@ private:
     //! Lista itemów.
     Items items;
     //! Grid z miniaturkami.
-    osg::ref_ptr<osgUI::Grid> thumbnails;
+    osg::ref_ptr<osgui::Grid> thumbnails;
     //! Okienko z guzikami.
     osg::ref_ptr<osgWidget::Box> buttons;
     //! Szerokoœæ (b¹dŸ wysokoœæ) panelu z miniaturkami.

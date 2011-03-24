@@ -13,8 +13,11 @@ data/resources, próby pomiarowe s¹ wyszukiwane i pobierane do data/trials.
 
 class DataManager: public core::IDataManager
 {
-public:
+private:
     DataManager(const std::string& resourcesPath = "data/resources/", const std::string& trialsPath = "data/trials/");
+    virtual ~DataManager();
+
+public:
 
     virtual void clear();
 
@@ -36,7 +39,7 @@ public:
         loadTrialData = load;
     };
     
-    virtual ~DataManager();
+    
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -77,6 +80,9 @@ private:
     typedef std::multimap< core::ObjectWrapper::Type, ObjectsMapEntry > ObjectsByType;
 
 private:
+    //! Instancja.
+    static DataManager* instance;
+
     //! S³owniki parserów niezainicjalizowanych.
     IParsersByID registeredParsers;
     //! S³ownik parserów przypisanych do rozszerzeñ.
@@ -94,7 +100,9 @@ private:
     std::vector<std::string> resourcesPaths;
     //! Lista skórek dla UI
     std::vector<std::string> applicationSkinsPaths;
+    //!
     Path resourcesPath;
+    //!
     Path trialsPath;
     bool loadTrialData;
 
@@ -112,6 +120,16 @@ protected:
 
 
 public:
+    //! \return Instancja DataManagera.
+    inline static DataManager* getInstance()
+    { 
+        return instance;
+    }
+    //! Tworzy instancjê DataManagera.
+    static void createInstance();
+    //! Niszczy instancjê DataManagera.
+    static void destroyInstance();
+
     //! Rejestruje zadany parser.
     //! \param newService
     void registerParser(core::IParserPtr parser);
@@ -123,6 +141,7 @@ public:
 
 // core::IDataManager
 public:
+    //! Tutaj nastêpuje leniwa inicjalizacja.
     //! \see core::IDataManager::getObjects
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact = false);
     //! \see core::IDataManager::isExtensionSupported
@@ -167,6 +186,12 @@ public:
     void clearParsers();
     //! Czyœci informacje o aktualnej próbie pomiarowej.
     void clearCurrentTrial();
+
+
+public:
+    //! Tutaj nastêpuje leniwa inicjalizacja.
+    //! \see core::IDataManager::getObjects
+    // void getObjects(std::vector<core::ObjectWrapperConstPtr>& objects, const std::type_info& type, bool exact = false) const;
 
 private:
     //! Mapuje obiekty 

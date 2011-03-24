@@ -32,10 +32,16 @@ void C3DParser::parseFile(const boost::filesystem::path& path)
     scoped_ptr<C3D_Data> data(parser.parseData(path.string()));
 
     for (int i = 0; i < 12; ++i) {
-        GRFChannels[i]->set<GRFChannel>(GRFChannelPtr(new GRFChannel(*data , i)));
+        GRFChannelPtr ptr(new GRFChannel(*data , i));
+        GRFChannels[i]->set<GRFChannel>(ptr);
+        GRFChannels[i]->setName(ptr->getName());
+        GRFChannels[i]->setSource(path.string());
     }
     for (int i = 12; i < 28; ++i) {
-        EMGChannels[i-12]->set<EMGChannel>(EMGChannelPtr(new EMGChannel(*data , i)));
+        EMGChannelPtr ptr(new EMGChannel(*data , i));
+        EMGChannels[i-12]->set<EMGChannel>(ptr);
+        EMGChannels[i-12]->setName(ptr->getName());
+        EMGChannels[i-12]->setSource(path.string());
     }
 
     //object = core::ObjectWrapper::createWrapper<C3D_Data>(parser.parseData(path.string()));

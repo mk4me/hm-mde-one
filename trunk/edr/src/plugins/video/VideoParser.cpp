@@ -9,6 +9,9 @@ using namespace vidlib;
 VideoParser::VideoParser()
 {
     stream = core::ObjectWrapper::createWrapper<vidlib::VideoImageStream>();
+
+    //core::ObjectWrapperConstPtr ptr(stream);
+    //osg::ref_ptr<const vidlib::VideoImageStream> obj = ptr->get<vidlib::VideoImageStream>();
 }
 
 VideoParser::~VideoParser()

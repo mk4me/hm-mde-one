@@ -18,7 +18,7 @@ ChartWidget::ChartWidget(IService* service)
 :   service(service)
 {
     setupUi(this);
-    viewer = new core::QOsgDefaultWidget(this);
+    viewer = new osgui::QOsgDefaultWidget(this);
     const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
 
 	
@@ -82,13 +82,11 @@ ChartWidget::~ChartWidget()
 
 
 
-void ChartWidget::addChart( const core::ScalarChannelPtr& channel )
+void ChartWidget::addChart( const core::ScalarChannelConstPtr& channel )
 {
     Chart* chart = new Chart(40, 40, 500, 250);
     item.push_back( chart );
     chart->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
-    chart->setShowLabel(false);
-    chart->setShowBorder(false);
     chart->setName(channel->getName());
     multiView->addChild(chart);
 
@@ -107,8 +105,8 @@ void ChartWidget::update(double targetTime){
 	itPItem=previewItem.begin();
 
 	for(; itItem < item.end(); itItem++,itPItem++){
-	  (*itItem)->updatePointer(targetTime);
-	  (*itPItem)->updatePointer(targetTime);
+// 	  (*itItem)->updatePointer(targetTime);
+// 	  (*itPItem)->updatePointer(targetTime);
 	}
 	}
 }

@@ -4,6 +4,7 @@
 #include <core/PluginLoader.h>
 #include <core/Log.h>
 #include <core/Config.h>
+#include "VisualizerTitleBar.h"
 
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
@@ -52,6 +53,7 @@ int main(int argc, char *argv[])
         {
             window.openFile(filePath);
         }
+
         result = application.exec();
         logger.setConsoleWidget(NULL);
     }

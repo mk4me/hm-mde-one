@@ -9,13 +9,15 @@
 #include <osg/PositionAttitudeTransform>
 #include <osg/Geometry>
 #include <osgViewer/CompositeViewer>
+#include <utils/Debug.h>
 
-#include <streambuf>
 #include <QtCore/QVector>
 
 #include <core/PluginLoader.h>
 #include <core/Window.h>
 #include <core/DataManager.h>
+
+#include "ui_toolboxmaindeffile.h"
 
 class UserInterfaceService;
 class ServiceManager;
@@ -23,38 +25,51 @@ class IAnimationService;
 class RenderService;
 class ComputeThread;
 class SceneGraphWidget;
-class ConsoleWidget; 
+class ConsoleWidget;
+class VisualizerManager;
 
-namespace Ui
-{
-	class ToolboxMain;
-}
 
-class ToolboxMain : public QMainWindow, public core::Window, public osgViewer::CompositeViewer
+class ToolboxMain : public QMainWindow, public core::Window, public osgViewer::CompositeViewer, private Ui::EDRMain
 {
     Q_OBJECT
 
-private:
-    enum WidgetsOrganization {
-        WidgetsOrganizationTabbed,
-        WidgetsOrganizationDocked,
-    };
-
+private:    
+    //! Manager us³ug.
+    ServiceManager* serviceManager;
+    //! Manager zasobów.
+    DataManager* dataManager;
+    //! Manager wizualizacji.
+    VisualizerManager* visualizerManager;
+    //! Widget ze scen¹ jakiegoœ grafu OSG.
+    SceneGraphWidget* widgetSceneGraph;
+    //! Widget konsoli.
+    ConsoleWidget* widgetConsole; 
+    //! W¹tek obliczeniowy.
+    ComputeThread* computeThread;
+    //! Czy update jest w³¹czony?
+    bool updateEnabled;
+    //! Timer wyznaczaj¹cy update'y.
+    QTimer updateTimer;
+    //! Korzeñ sceny.
+    osg::ref_ptr<osg::Node> sceneRoot;
+    //! Pluginy.
+    core::PluginLoader* pluginLoader;
+    //! Timer u¿ywany gdy wyœwietlamy w trybie composite.
+    QTimer viewerFrameTimer;
 
 
 public:
-    ToolboxMain(QWidget* parent = 0);
+    ToolboxMain(QWidget* parent = nullptr);
+    virtual ~ToolboxMain();
 
     void initializeUI();
     
-    ~ToolboxMain();
+    
 
     // TODO: Embedded widgets initializations - should be in plugins!!! 
     void InitializeOGSWidget();
     void initializeConsole();
     void InitializeControlWidget();
-
-    void clear();
 
 public:
     void openFile( const std::string& path );
@@ -64,7 +79,7 @@ public:
 
     ConsoleWidget* getConsole()
     {
-        return _consoleWidget;
+        return widgetConsole;
     }
 
 public slots:    
@@ -86,8 +101,6 @@ public slots:
     void onShowSavedLayouts();
 
     void addLayoutsToMenu( QDir &dir );
-    void onTabbedViewSelected(bool toggled);
-    void onDockableViewSelected(bool toggled);
     void onDockWidgetVisiblityChanged(bool visible);
     void onLayoutTriggered();
 
@@ -98,6 +111,14 @@ protected:
     //! Natywne usuniêcie opcji z menu.
     virtual void onRemoveMenuItem( const std::string& path );
 
+private slots:
+    //! Wype³nia podmenu akcjami dla dostêpnych okien.
+    //! \param target Menu do wype³nienia.
+    void populateWindowMenu();
+    //! Wype³nia podmenu akcjami tworz¹cymi wizualizatory.
+    void populateVisualizersMenu();
+    //!
+    void actionCreateVisualizer();
 
 private:
     //! Tworzy siatkê rozci¹gniêt¹ na p³aszczyŸnie.
@@ -109,10 +130,9 @@ private:
     void registerPluginsServices();
     //! Rejestruje parsery pochodz¹ce z pluginów.
     void registerPluginsParsers();
+    //!
+    void registerPluginsVisualizers();
 
-    //! Wype³nia podmenu akcjami dla dostêpnych okien.
-    //! \param target Menu do wype³nienia.
-    void populateWindowMenu(QMenu* target);
 
     //! Opakowuje zadany widget QDockWidgetem.
     //! \param widget
@@ -121,60 +141,35 @@ private:
     //! \param area
     QDockWidget* embeddWidget(QWidget* widget, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
-    void reorganizeWidgets(WidgetsOrganization organization);
-
-
-
+// QWidget
 protected:
-    void closeEvent(QCloseEvent* event);
+    //!
+    virtual void closeEvent(QCloseEvent* event);
+    //!
+    virtual void paintEvent( QPaintEvent* event );
 
 private: 
-    void LoadConfiguration();
-
+    //! Odczytuje ustawienia aplikacji.
+    //! \param settings
+    //! \param readGeometry
     void readSettings(const QSettings& settings, bool readGeometry);
-    void WriteSettings();
+    //! Zapisuje ustawienia aplikacji.
+    void writeSettings();
 
-private:    
-    ServiceManager* m_pServiceManager;
-	//zasoby (model, triale)
-    DataManager* dataManager;
-    UserInterfaceService* m_pUserInterfaceService;
 
-    core::shared_ptr<RenderService> m_pRenderService;
 
-    Ui::ToolboxMain* ui;
-
-    // TODO: Embedded widgets - should be in plugins !!
-    SceneGraphWidget* sceneGraphWidget;
-    ConsoleWidget* _consoleWidget; 
-
-    // Stary bufor cout
-    std::streambuf* _streambuf; 
-
-    //! W¹tek obliczaj¹cy.
-    ComputeThread* computeThread;
-
-    //!
-    bool updateEnabled;
-    //! Timer wyznaczaj¹cy update'y.
-    QTimer updateTimer;
-    //! Korzeñ sceny.
-    osg::ref_ptr<osg::Node> sceneRoot;
-    //! Pluginy.
-    core::PluginLoader* pluginLoader;
 
 
 // kod testowo-tymczasowy
+#ifdef UTILS_DEBUG
 private:
     void onTestItemClicked(const std::string& sender, bool state);
     void onTestRemoveToggled(const std::string& sender, bool state);
     core::Window::ItemPressedPtr onTestItemClickedPtr;
     core::Window::ItemPressedPtr onTestRemoveToggledPtr;
     bool removeOnClick;
+#endif // UTILS_DEBUG
 
-        QTimer _timer;
-
-        virtual void paintEvent( QPaintEvent* event );
 };
 
 #endif // TOOLBOXMAIN_H

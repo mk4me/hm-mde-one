@@ -16,7 +16,7 @@
 #include <osgViewer/Viewer>
 #include <osgWidget/Widget>
 #include <core/MultiView.h>
-#include <core/QOsgWidgets.h>
+#include <osgui/QOsgWidgets.h>
 #include <vidlib/PixelFormat.h>
 
 #include <vidlib/osg/VideoImageStreamSizeOptimizer.h>
@@ -77,7 +77,7 @@ public:
     }
 
     //! \return
-    core::QOsgDefaultWidget* getViewer() const
+    osgui::QOsgDefaultWidget* getViewer() const
     { 
         return viewer;
     }

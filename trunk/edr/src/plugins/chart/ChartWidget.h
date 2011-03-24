@@ -15,7 +15,7 @@
 #include "C3DChartData.h"
 #include <core/Chart.h>
 #include <core/MultiView.h>	
-#include <core/QOsgWidgets.h>
+#include <osgui/QOsgWidgets.h>
 #include "ui_ChartWidget.h"
 #include <core/C3DChannels.h>
 
@@ -28,7 +28,7 @@ private:
     //! Us³uga tworz¹ca widget.
 	IService* service;
     //! Widget z widokiem OSG.
-    core::QOsgDefaultWidget* viewer;
+    osgui::QOsgDefaultWidget* viewer;
     
 
 	std::string c3dFile;
@@ -50,13 +50,13 @@ public:
 
 	osg::Node* getSceneRoot();
 /*	void deprecated_addChart(C3DChartData* c3dData);*/
-    void addChart(const core::ScalarChannelPtr& channel);
+    void addChart(const core::ScalarChannelConstPtr& channel);
 	void update(double targetTime);
     double getLenght();
 	void clear();
 public:
     //! \return
-    core::QOsgDefaultWidget* getViewer() const
+    osgui::QOsgDefaultWidget* getViewer() const
     { 
         return viewer;
     }

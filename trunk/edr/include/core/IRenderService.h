@@ -7,7 +7,7 @@
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/View>
 
-#include <core/QOsgWidgets.h>
+#include <osgui/QOsgWidgets.h>
 #include <core/IService.h>
 
 

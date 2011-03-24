@@ -15,14 +15,14 @@
 #include <utils/Profiler.h>
 #include "VideoWidget.h"
 #include <core/MultiView.h>
-#include <core/AspectRatioKeeper.h>
+#include <osgui/AspectRatioKeeper.h>
 #include <core/MultiViewWidgetItem.h>
 #include <core/OsgSceneDump.h>
 #include <core/Log.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
-#include <core/OsgWidgetUtils.h>
+#include <osgui/OsgWidgetUtils.h>
 
 
 using namespace vidlib;
@@ -221,7 +221,7 @@ void VideoWidget::createScene()
         // faktyczne dodanie du¿ego okna
         osgWidget::Widget* streamWidgetClone = createStreamWidget( /*osg::clone*/(image), optimizer);
         osgWidget::Box* preview = new osgWidget::Box(std::string(streamWidgetClone->getName()) + "Preview");        
-        osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(streamWidgetClone, ratio);
+        osgui::AspectRatioKeeper* keeper = new osgui::AspectRatioKeeper(streamWidgetClone, ratio);
         keeper->setColor(0, 0, 0, 0);
         preview->getBackground()->setColor(0,0,0,0);
         preview->addWidget(keeper);
@@ -242,16 +242,16 @@ void VideoWidget::createScene()
 
     // obliczenie rozmiaru grida (jak najbardziej kwadratowy)
     avgRatio /= images.size();
-    osg::Vec2s dimensions = osgUI::Grid::getDimensionsAsSquare(images.size());
+    osg::Vec2s dimensions = osgui::Grid::getDimensionsAsSquare(images.size());
     unsigned rows = dimensions.y();
     unsigned columns = dimensions.x();
 
     // TODO: kopia
-//     osgUI::Grid* gridThumbs = new osgUI::Grid("allThumbnails", rows, columns);
+//     osgui::Grid* gridThumbs = new osgui::Grid("allThumbnails", rows, columns);
 //     gridThumbs->getBackground()->setColor(0,0,0,0);
-//     osgUI::Grid* grid = new osgUI::Grid("all", rows, columns);
+//     osgui::Grid* grid = new osgui::Grid("all", rows, columns);
 //     grid->getBackground()->setColor(0,0,0,0);
-//     //osgUI::Grid* grid = osg::clone(gridThumbs, osg::CopyOp::DEEP_COPY_ALL);
+//     //osgui::Grid* grid = osg::clone(gridThumbs, osg::CopyOp::DEEP_COPY_ALL);
 //     for (unsigned row = 0; row < rows; ++row) {
 //         for (unsigned col = 0; col < columns; ++col) {
 //             osg::Image* image = images[ row * columns + col ];
@@ -259,7 +259,7 @@ void VideoWidget::createScene()
 //             thumbnail->setCanFill(true);
 //             gridThumbs->addWidget(thumbnail, row, col);
 //             osgWidget::Widget* preview = createStreamWidget( /*osg::clone*/(image), optimizers[row*columns+col] );
-//             osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(preview, avgRatio);
+//             osgui::AspectRatioKeeper* keeper = new osgui::AspectRatioKeeper(preview, avgRatio);
 //             grid->addWidget(keeper, row, col);
 // 
 //             optimizers[ row * columns + col ]->getClients().push_back(new OsgWidgetWindowItem(gridThumbs, thumbnail));
@@ -318,10 +318,10 @@ osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Unif
     // ustawienie tekstury
     widget->setImage(image, true, useTextureRect);
     // czy trzeba zrobiæ flipa?
-    osgUI::correctTexCoords(widget, image);
+    osgui::correctTexCoords(widget, image);
     // poprawki
-    if ( !useTextureRect && osgUI::getTexture(widget) ) {
-        osgUI::getTexture(widget)->setResizeNonPowerOfTwoHint(false);
+    if ( !useTextureRect && osgui::getTexture(widget) ) {
+        osgui::getTexture(widget)->setResizeNonPowerOfTwoHint(false);
     }
 
     // ustawienie formatu

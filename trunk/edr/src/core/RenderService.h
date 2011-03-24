@@ -36,7 +36,7 @@
 
 #include <core/SimpleFunctors.h>
 #include <core/IRenderService.h>
-#include <core/QOsgWidgets.h>
+#include <osgui/QOsgWidgets.h>
 #include <core/IService.h>
 #include <core/IFactory.h>
 
@@ -115,7 +115,7 @@ private:
     osg::ref_ptr<osg::Geode> m_pMarkerGeode;
     osg::ref_ptr<osg::Geode> m_pMarkerLineGeode;
 
-    core::QOsgDefaultWidget* widget; 
+    osgui::QOsgDefaultWidget* widget; 
     osgGroupPtr SceneRoot;
     //! Nazwa.
     std::string name;

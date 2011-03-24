@@ -29,6 +29,9 @@
 #include <boost/foreach.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
+#include <boost/cast.hpp>
+#include <boost/lambda/lambda.hpp>
 
 #include <utils/Utils.h>
 UTILS_PUSH_WARNINGS

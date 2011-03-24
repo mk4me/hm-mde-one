@@ -3,6 +3,7 @@
 #include <core/ChartData.h>
 #include <core/ChartPointer.h>
 #include <core/Log.h>
+#include <osg/BlendFunc>
 #undef min
 #undef max
 
@@ -14,20 +15,16 @@ namespace core {
 LineChartSerie::LineChartSerie() :
 vertices(new osg::Vec3Array)
 {
-    lineChart = new osg::Geometry();
-    lineChart->setName("innerChart");
-    lineChart->setDataVariance( osg::Object::DYNAMIC );
+    setDataVariance( osg::Object::DYNAMIC );
 
     colors = new osg::Vec4Array(1);
     colors->at(0) = osg::Vec4(1,1,1,1);
 
-    lineChart->setColorArray(colors);
-    lineChart->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-    addDrawable(lineChart);
+    setColorArray(colors);
+    setColorBinding(osg::Geometry::BIND_OVERALL);
 }
 
-void LineChartSerie::setData( const core::ScalarChannelPtr& data )
+void LineChartSerie::setData( const core::ScalarChannelConstPtr& data )
 {
     this->data = data;
     tryRefresh();
@@ -46,8 +43,8 @@ void LineChartSerie::refresh()
     size_t maxVertices = std::min<size_t>( data->getNumPoints(), static_cast<size_t>(ceil(w * verticesPerUnit)) );
     
     // odrwacamy wykres (koordynaty OGL)
-    float w = this->w - x;
-    float h = this->h - y;
+    //float w = this->w - x;
+    //float h = this->h - y;
     time_type lenInv = 1 / data->getLength();
 
     osg::ref_ptr<osg::DrawArrays> primitiveSet;
@@ -200,13 +197,15 @@ void LineChartSerie::refresh()
 //     }
 
     colors->at(0) = color;
-    lineChart->setColorArray(colors);
-    lineChart->setVertexArray(vertices);
+    setColorArray(colors);
+    setVertexArray(vertices);
 
-    if ( lineChart->getNumPrimitiveSets() ) {
-        lineChart->setPrimitiveSet(0, primitiveSet);
+    //lineChart->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, false);
+
+    if ( getNumPrimitiveSets() ) {
+        setPrimitiveSet(0, primitiveSet);
     } else {
-        lineChart->addPrimitiveSet(primitiveSet);
+        addPrimitiveSet(primitiveSet);
     }
 }
 

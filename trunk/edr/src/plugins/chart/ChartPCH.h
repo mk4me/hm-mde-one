@@ -38,7 +38,7 @@ UTILS_PUSH_WARNINGS
 #include <osgText/Text>
 UTILS_POP_WARNINGS
 
-#include <core/QOsgWidgets.h>
+#include <osgui/QOsgWidgets.h>
 #include <core/IServiceManager.h>
 #include <plugins/timeline/ITimeline.h>
 #include <plugins/timeline/Stream.h>

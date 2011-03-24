@@ -1,14 +1,14 @@
 #include "CorePCH.h"
 #include <osgWidget/ViewerEventHandlers>
 #include <core/MultiView.h>
-#include <core/AspectRatioKeeper.h>
-#include <core/LabeledView.h>
+#include <osgui/AspectRatioKeeper.h>
+#include <osgui/LabeledView.h>
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
 #include <boost/cast.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <core/MultiViewFunctorWidgetAdapter.h>
-#include <core/EmbeddedWindow.h>
+#include <osgui/EmbeddedWindow.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -65,7 +65,7 @@ previewVisible(true)
     buttons->setStrata( osgWidget::Window::STRATA_FOREGROUND );
     buttons->addWidget( button );
 
-    thumbnails = new osgUI::Grid("thumbnails", 0, 0);
+    thumbnails = new osgui::Grid("thumbnails", 0, 0);
     thumbnails->getBackground()->setColor(0, 0, 0, 0);
     //thumbnails->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);    
     thumbnails->setStrata( osgWidget::Window::STRATA_NONE );
@@ -94,7 +94,7 @@ bool MultiView::addItem( Item* thumbnail, Item* preview /*= NULL*/ )
         ei->addCallback( new osgWidget::Callback( &MultiView::onItemClicked, this, osgWidget::EVENT_MOUSE_PUSH ) );
 
         // opakowanie miniaturki tak, aby wspó³czynnik proporcji by³ zachowany
-        osgUI::AspectRatioKeeper* keeper = new osgUI::AspectRatioKeeper(widget, thumbnail->getAspectRatio());
+        osgui::AspectRatioKeeper* keeper = new osgui::AspectRatioKeeper(widget, thumbnail->getAspectRatio());
         keeper->getWindow()->hide();
 
         // dodanie itema do listy
@@ -243,19 +243,19 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
 {
     if ( templ == TemplatesLabelBased ) {
         //! Typ overlay'a nad miniaturk¹.
-        typedef osgUI::Buttonized< osgUI::Borderized<osgWidget::Label>, osgUI::BorderStylePolicy<osgUI::LabelStylePolicy> > OverlayButton;
+        typedef osgui::Buttonized< osgui::Borderized<osgWidget::Label>, osgui::BorderStylePolicy<osgui::LabelStylePolicy> > OverlayButton;
         OverlayButton* button = new OverlayButton("TEMPLATE", "TEMPLATE");
         button->setEventMask(osgWidget::EVENT_MASK_MOUSE_DRAG);
         button->setBorderWidth(2);
         button->setBorderNormalColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
         button->setBorderPushedColor(osgWidget::Color(1.0f,0.0f,0.0f,1.0f));
         button->setBorderToggleColor(osgWidget::Color(1.0f,0.0f,0.0f,1.0f));
-        button->setBorderHooverColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
+        button->setBorderHoverColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
         button->setLabelNormalColor(osgWidget::Color(0.0f,0.0f,0.0f,0.0f));
         button->setLabelPushedColor(osgWidget::Color(1.0f,0.0f,0.0f,1.0f));
         button->setLabelToggleColor(osgWidget::Color(0.0f,0.0f,0.0f,0.0f));
-        button->setLabelHooverColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
-        button->setHooverColor(osgWidget::Color(1.0f,0.0f,0.0f,0.5f));
+        button->setLabelHoverColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
+        button->setHoverColor(osgWidget::Color(1.0f,0.0f,0.0f,0.5f));
         button->setToggleEnabled(false);
         button->setCanFill(false);
         button->setPadding(2);
@@ -273,9 +273,9 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
         thumbnailTemplate = button;
         adapterTemplate = adapter;
     } else if ( templ == TemplatesLabeledViewBased ) {
-        typedef osgUI::Buttonized< osgUI::Borderized<osgWidget::Widget>, osgUI::BorderStylePolicy<osgUI::DefaultStylePolicy> > OverlayButton;
-        typedef osgUI::LabeledView< OverlayButton > OverlayWindow;
-        typedef osgUI::Embedded< OverlayWindow > Overlay;
+        typedef osgui::Buttonized< osgui::Borderized<osgWidget::Widget>, osgui::BorderStylePolicy<osgui::DefaultStylePolicy> > OverlayButton;
+        typedef osgui::LabeledView< OverlayButton > OverlayWindow;
+        typedef osgui::Embedded< OverlayWindow > Overlay;
 
         OverlayWindow* window = new OverlayWindow("OverlayWindow");
         window->getBackground()->setColor(0,0,0,0);
@@ -287,8 +287,8 @@ void MultiView::setThumbnailBuitinTemplate(Templates templ)
         window->getOverlay()->setBorderNormalColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
         window->getOverlay()->setBorderPushedColor(osgWidget::Color(1.0f,0.0f,0.0f,1.0f));
         window->getOverlay()->setBorderToggleColor(osgWidget::Color(1.0f,0.0f,0.0f,1.0f));
-        window->getOverlay()->setBorderHooverColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
-        window->getOverlay()->setHooverColor(osgWidget::Color(1.0f,0.0f,0.0f,0.5f));
+        window->getOverlay()->setBorderHoverColor(osgWidget::Color(1.0f,1.0f,1.0f,1.0f));
+        window->getOverlay()->setHoverColor(osgWidget::Color(1.0f,0.0f,0.0f,0.5f));
         window->getOverlay()->setToggleEnabled(false);
 
         Overlay* embedded = new Overlay("TEMPLATE", window);

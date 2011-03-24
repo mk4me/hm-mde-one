@@ -76,7 +76,7 @@ namespace core {
         }
     };
     typedef shared_ptr<GRFChannel> GRFChannelPtr;
-
+    typedef shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

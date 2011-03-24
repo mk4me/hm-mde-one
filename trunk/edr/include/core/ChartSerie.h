@@ -11,14 +11,14 @@
 
 #include <string>
 #include <utility>
-#include <osg/Geode>
+#include <osg/Geometry>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Klasa bazowa dla serii danych wykresów.
-class ChartSerie : public osg::Geode
+class ChartSerie : public osg::Geometry
 {
 protected:
     float x;

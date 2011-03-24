@@ -25,10 +25,8 @@ private:
     osg::ref_ptr<osg::Vec4Array> colors;
     //! Tablica wierzcho³ków.
     osg::ref_ptr<osg::Vec3Array> vertices;
-    //! Faktyczny wykres.
-    osg::ref_ptr<osg::Geometry> lineChart;
     //! Dane wykresu.
-    ScalarChannelPtr data;
+    ScalarChannelConstPtr data;
 
 public:
     LineChartSerie();
@@ -40,7 +38,7 @@ public:
         return data;
     }
     //! \param data Dane wykresu.
-    void setData(const ScalarChannelPtr& data);
+    void setData(const ScalarChannelConstPtr& data);
 
 // core::ChartSerie
 public:
