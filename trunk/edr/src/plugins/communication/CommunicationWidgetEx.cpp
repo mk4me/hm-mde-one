@@ -8,51 +8,57 @@
 
 using namespace communication;
 
-PerformerTreeItem::PerformerTreeItem(int type)
-    : QTreeWidgetItem(type)
+PerformerTreeItem::PerformerTreeItem()
 {
     setToolTip(0, "");
     setToolTip(1, "Sessions");
     setToolTip(2, "Description");
     setToolTip(3, "Notes");
+    setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/subject.png")));
 }
 
 void PerformerTreeItem::setPerformer(const ShallowCopy::Performer& performer)
 {
+    this->performer = performer;
+
     QString name = QString::fromUtf8(performer.firstName.c_str());
     QString lastName = QString::fromUtf8(performer.lastName.c_str());
     setText(0, QString(name + " " + lastName));
 }
 
-SessionTreeItem::SessionTreeItem(int type)
-    : QTreeWidgetItem(type)
+SessionTreeItem::SessionTreeItem()
 {
     setToolTip(0, "");
     setToolTip(1, "Date");
     setToolTip(2, "Trials");
     setToolTip(3, "Description");
     setToolTip(4, "Notes");
+    setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/session.png")));
 }
 
 void SessionTreeItem::setSession(const ShallowCopy::Session& session)
 {
+    this->session = session;
+
     setText(0, QString::fromUtf8(session.sessionName.c_str()));
-    setText(1, QString::fromUtf8(session.sessionDate.c_str()));
+    setText(1, QString::fromUtf8(session.sessionDate.c_str()).left(10));
     setText(3, QString::fromUtf8(session.sessionDescription.c_str()));
     setText(4, QString::fromUtf8(session.tags.c_str()));
 }
 
-TrialTreeItem::TrialTreeItem(int type)
-    : QTreeWidgetItem(type)
+TrialTreeItem::TrialTreeItem()
 {
     setToolTip(0, "");
     setToolTip(1, "Files");
     setToolTip(2, "Description");
     setToolTip(3, "Notes");
+    setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/trial.png")));
 }
 
 void TrialTreeItem::setTrial(const ShallowCopy::Trial& trial, std::vector<core::IDataManager::LocalTrial>& localTrials)
 {
+    this->trial = trial;
+
     setText(0, QString::fromUtf8(trial.trialName.c_str()));
     setText(1, QString::number(localTrials.size()));
     setText(2, QString::fromUtf8(trial.trialDescription.c_str()));
@@ -68,6 +74,11 @@ void TrialTreeItem::setTrial(const ShallowCopy::Trial& trial, std::vector<core::
             }
         }
     }
+}
+
+const QString TrialTreeItem::getName() const
+{
+    return core::toQString(trial.trialName);
 }
 
 CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
@@ -114,12 +125,16 @@ void CommunicationWidgetEx::treeItemClicked(QTreeWidgetItem* item, int column)
 
 void CommunicationWidgetEx::trialContextMenu(QPoint p)
 {
+    QMenu* view = new QMenu;
+    view->setTitle("View");
+    view->addSeparator();
+    view->addAction(actionPerformer_View);
+    view->addAction(actionSession_View);
+    view->addAction(actionTrial_View);
+
     QMenu* menu = new QMenu;
-    menu->setTitle("View");
     menu->addSeparator();
-    menu->addAction(actionPerformer_View);
-    menu->addAction(actionSession_View);
-    menu->addAction(actionTrial_View);
+    menu->addMenu(view);
     menu->addSeparator();
     menu->addAction(actionUpdate);
 
@@ -154,13 +169,16 @@ void CommunicationWidgetEx::trialContextMenu(QPoint p)
 
 void CommunicationWidgetEx::contextMenu(QPoint p)
 {
+    QMenu* view = new QMenu;
+    view->setTitle("View");
+    view->addSeparator();
+    view->addAction(actionPerformer_View);
+    view->addAction(actionSession_View);
+    view->addAction(actionTrial_View);
+
     QMenu* menu = new QMenu;
-    menu->setTitle("View");
     menu->addSeparator();
-    menu->addAction(actionPerformer_View);
-    menu->addAction(actionSession_View);
-    menu->addAction(actionTrial_View);
-    menu->addSeparator();
+    menu->addMenu(view);
     menu->addAction(actionUpdate);
     menu->addSeparator();
     menu->addAction(actionAbort_download);
@@ -175,7 +193,7 @@ void CommunicationWidgetEx::performerViewPressed(bool tog)
     //listowanie performerow
     BOOST_FOREACH(ShallowCopy::Performer performer, shallowCopy.performers)
     {
-        PerformerTreeItem* item = new PerformerTreeItem(0);
+        PerformerTreeItem* item = new PerformerTreeItem();
         
         item->setPerformer(performer);
         dataWidget->addTopLevelItem(item);
@@ -185,14 +203,14 @@ void CommunicationWidgetEx::performerViewPressed(bool tog)
             BOOST_FOREACH(ShallowCopy::Session session, shallowCopy.sessions)
             {
                 if(performerC.performerID == performer.performerID && performerC.sessionID == session.sessionID) {
-                    SessionTreeItem* itemS = new SessionTreeItem(0);
+                    SessionTreeItem* itemS = new SessionTreeItem();
                     itemS->setSession(session);
                     item->addChild(itemS);
                     //kojarzenie sesji z trialami
                     BOOST_FOREACH(ShallowCopy::Trial trial, shallowCopy.trials)
                     {
                         if(trial.sessionID == session.sessionID) {
-                            TrialTreeItem* itemT = new TrialTreeItem(0);
+                            TrialTreeItem* itemT = new TrialTreeItem();
                             itemT->setTrial(trial, localTrials);
                             itemS->addChild(itemT);
                         }
@@ -212,14 +230,14 @@ void CommunicationWidgetEx::sessionViewPressed(bool tog)
     //listowanie sesji
     BOOST_FOREACH(ShallowCopy::Session session, shallowCopy.sessions)
     {
-        SessionTreeItem* item = new SessionTreeItem(0);
+        SessionTreeItem* item = new SessionTreeItem();
         item->setSession(session);
         dataWidget->addTopLevelItem(item);
         //kojarzenie sesji z trialami
         BOOST_FOREACH(ShallowCopy::Trial trial, shallowCopy.trials)
         {
             if(trial.sessionID == session.sessionID) {
-                TrialTreeItem* itemT = new TrialTreeItem(0);
+                TrialTreeItem* itemT = new TrialTreeItem();
                 itemT->setTrial(trial, localTrials);
                 item->addChild(itemT);
             }
@@ -235,7 +253,7 @@ void CommunicationWidgetEx::trialViewPressed(bool tog)
     //listowanie triali
     BOOST_FOREACH(ShallowCopy::Trial trial, shallowCopy.trials)
     {
-        TrialTreeItem* item = new TrialTreeItem(0);
+        TrialTreeItem* item = new TrialTreeItem();
         item->setTrial(trial, localTrials);
         dataWidget->addTopLevelItem(item);
 
@@ -250,7 +268,7 @@ void CommunicationWidgetEx::updatePressed()
 
 void CommunicationWidgetEx::downloadPressed()
 {
-    downloadTrial(dataWidget->currentItem()->text(1).toInt());
+    downloadTrial(reinterpret_cast<TrialTreeItem*>(dataWidget->currentItem())->getEntityID());
 }
 
 void CommunicationWidgetEx::loadPressed()
@@ -261,7 +279,7 @@ void CommunicationWidgetEx::loadPressed()
         boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
         //sprawdzamy, czy zgadza sie nazwa folderu
         if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e)) {
-            if(dataWidget->currentItem()->text(2) == core::toQString(matches[2])) {
+            if(reinterpret_cast<TrialTreeItem*>(dataWidget->currentItem())->getName() == core::toQString(matches[2])) {
                 loadTrial(lTrial);
                 return;
             }

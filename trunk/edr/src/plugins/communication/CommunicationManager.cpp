@@ -54,10 +54,13 @@ CommunicationManager::CommunicationManager()
     //na razie recznie wpisane sciezki
     boost::filesystem::path pathS = "data/db/schema/shallowcopy.xml";
     boost::filesystem::path pathM = "data/db/schema/metadata.xml";
+
+    //sorawdzenie przy uruchomieniu czy mamy pliki plytkiej kopii DB
     if(boost::filesystem::exists(pathS) && boost::filesystem::exists(pathM)) {
         readDbSchemas(pathS.string(), pathM.string());
     } else {
         LOG_WARNING("Missing DB data from XML files.");
+        copyDbData();
     }
     actualFile = 0;
     filesToDownload = 0;

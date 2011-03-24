@@ -9,35 +9,64 @@
 #include "ui_CommunicationWidgetEx.h"
 
 class CommunicationService;
+class CommunicationWidgetEx;
 
-class PerformerTreeItem : public QTreeWidgetItem
+class IEntityTreeItem : public QTreeWidgetItem
 {
 public:
-    PerformerTreeItem(int type);
+    virtual ~IEntityTreeItem() {};
+
+    virtual int getEntityID() = 0;
+};
+
+class PerformerTreeItem : public IEntityTreeItem
+{
+    ShallowCopy::Performer performer;
+public:
+    PerformerTreeItem();
 
     virtual ~PerformerTreeItem() {};
 
     void setPerformer(const ShallowCopy::Performer& performer);
+
+    virtual int getEntityID()
+    {
+        return performer.performerID;
+    };
 };
 
-class SessionTreeItem : public QTreeWidgetItem
+class SessionTreeItem : public IEntityTreeItem
 {
+    ShallowCopy::Session session;
 public:
-    SessionTreeItem(int type);
+    SessionTreeItem();
 
     virtual ~SessionTreeItem() {};
 
     void setSession(const ShallowCopy::Session& session);
+
+    virtual int getEntityID()
+    {
+        return session.sessionID;
+    };
 };
 
-class TrialTreeItem : public QTreeWidgetItem
+class TrialTreeItem : public IEntityTreeItem
 {
+    ShallowCopy::Trial trial;
 public:
-    TrialTreeItem(int type);
+    TrialTreeItem();
 
     virtual ~TrialTreeItem() {};
 
     void setTrial(const ShallowCopy::Trial& trial, std::vector<core::IDataManager::LocalTrial>& localTrials);
+
+    virtual int getEntityID()
+    {
+        return trial.trialID;
+    };
+
+    const QString getName() const;
 };
 
 /**
@@ -157,5 +186,6 @@ private:
     bool isServerTrialSelected;
 
     core::IDataManager::LocalTrial loadingTrial;
+    int downloadingTrialID;
 };
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGETEX_H__
