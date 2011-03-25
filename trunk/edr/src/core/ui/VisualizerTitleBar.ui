@@ -118,6 +118,20 @@
     </spacer>
    </item>
    <item>
+    <widget class="QToolButton" name="buttonSplitV">
+     <property name="text">
+      <string>split v</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="buttonSplitH">
+     <property name="text">
+      <string>split h</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QToolButton" name="buttonFloat">
      <property name="text">
       <string>o</string>
@@ -146,6 +160,16 @@
    </property>
    <property name="toolTip">
     <string>Close</string>
+   </property>
+  </action>
+  <action name="actionSplitVertically">
+   <property name="text">
+    <string>Split vertically</string>
+   </property>
+  </action>
+  <action name="actionSplitHorizontally">
+   <property name="text">
+    <string>Split horizontally</string>
    </property>
   </action>
  </widget>

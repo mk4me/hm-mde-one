@@ -47,7 +47,7 @@ private:
     QString getLabel( const core::ObjectWrapperConstPtr& object, bool noSource );
 
     //!
-    void fillSourcesMenu(QMenu* menu, QActionGroup* group, int slotNo);
+    void fillSourcesMenu(QMenu* menu, QActionGroup*& group, int slotNo);
 };
 
 

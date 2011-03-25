@@ -15,6 +15,8 @@ QWidget(parent), widgetCustomTitleBar(nullptr), widgetSources(nullptr)
     setupUi(this);
     buttonClose->setDefaultAction(actionClose);
     buttonFloat->setDefaultAction(actionFloat);
+    buttonSplitH->setDefaultAction(actionSplitHorizontally);
+    buttonSplitV->setDefaultAction(actionSplitVertically);
     comboType->clear();
 }
 

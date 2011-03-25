@@ -1,7 +1,5 @@
 #include "CorePCH.h"
-// Go to http://dmoulding.googlepages.com/vld 
-// for the Visual Leak Detector for VisualStudio
-    
+
 #include "ToolboxMain.h"
 #include "ui_toolboxmaindeffile.h"
 #include <osgui/QOsgWidgets.h>
@@ -215,7 +213,7 @@ private:
     std::vector< osg::Vec4 > seriesColors;
 
 public:
-    TestVisualizer() : name("TestVisualizer") {}
+    TestVisualizer() : name("Chart") {}
     ~TestVisualizer()
     {
         viewer = nullptr;
@@ -235,10 +233,13 @@ public:
     virtual void getSlotInfo(int source, std::string& name, core::ObjectWrapper::Types& types)
     {
         name = std::string("serie ") + boost::lexical_cast<std::string>(source);
-        // wspierane nastêpuj¹ce typy serii danych
-        types.push_back( typeid(core::GRFChannel) );
-        types.push_back( typeid(core::ScalarChannel) );
-        types.push_back( typeid(core::EMGChannel) );
+        if ( source == 0 ) {
+            types.push_back( typeid(core::GRFChannel) );
+        } else if ( source == 1 ) {
+            types.push_back( typeid(core::EMGChannel) );
+        } else if ( source == 2 ) {
+            types.push_back( typeid(core::ScalarChannel) );
+        }
     }
 
     virtual void update(double deltaTime)
@@ -353,6 +354,14 @@ public:
     }
 };
 
+struct SortActionsByNames 
+{
+    inline bool operator()(const QAction* a1, const QAction* a2)
+    {
+        return a1->text() < a2->text();
+    }
+};
+
 ToolboxMain::ToolboxMain(QWidget *parent) :
 QMainWindow(parent), updateEnabled(true)
 {
@@ -426,6 +435,8 @@ QMainWindow(parent), updateEnabled(true)
         connect( &viewerFrameTimer, SIGNAL(timeout()), this, SLOT(update()) );
         viewerFrameTimer.start( 20 );
     }
+
+    populateVisualizersMenu(menuCreateVisualizer);
 }
 
 ToolboxMain::~ToolboxMain()
@@ -1122,35 +1133,16 @@ void ToolboxMain::addLayoutsToMenu( QDir &dir )
 
 void ToolboxMain::populateWindowMenu()
 {
-    QList<QDockWidget *> dockwidgets = qFindChildren<QDockWidget*>(this);
-    if (dockwidgets.size()) {
-        for (int i = 0; i < dockwidgets.size(); ++i) {
-            QDockWidget *dockWidget = dockwidgets.at(i);
-            if (dockWidget->parentWidget() == this) {
-                menuWindow->addAction(dockWidget->toggleViewAction());
-            }
-        }
-        menuWindow->addSeparator();
-    }
-
-    QList<QToolBar *> toolbars = qFindChildren<QToolBar*>(this);
-    if (toolbars.size()) {
-        for (int i = 0; i < toolbars.size(); ++i) {
-            QToolBar *toolBar = toolbars.at(i);
-            menuWindow->addAction(toolBar->toggleViewAction());
-        }
-    }
+    // uwaga: nie musimy usuwaæ starych akcji, poniewa¿ QMenu pilnuje,
+    // aby nie by³ dodane dwie jednakowe instancje
+    populateWindowMenu(menuWindow);
 }
 
 void ToolboxMain::populateVisualizersMenu()
 {
+    // czyœcimy menu
     menuCreateVisualizer->clear();
-    // dodajemy wizualizatory
-    BOOST_FOREACH(const IVisualizerConstPtr& vis, visualizerManager->enumPrototypes()) {
-        QAction* action = menuCreateVisualizer->addAction( toQString(vis->getName()) );
-        action->setData( qVariantFromValue(vis->getID()) );
-        action->connect( action, SIGNAL(triggered()), this, SLOT(actionCreateVisualizer()) );
-    }
+    populateVisualizersMenu(menuCreateVisualizer);
 }
 
 void ToolboxMain::actionCreateVisualizer()
@@ -1161,6 +1153,55 @@ void ToolboxMain::actionCreateVisualizer()
     widget->setStyleSheet(styleSheet());
     addDockWidget(Qt::RightDockWidgetArea, widget);
 }
+
+void ToolboxMain::populateVisualizersMenu( QMenu* menu )
+{
+    std::vector<QAction*> sortedActions;
+    // dodajemy wizualizatory
+    BOOST_FOREACH(const IVisualizerConstPtr& vis, visualizerManager->enumPrototypes()) {
+        QAction* action = new QAction(toQString(vis->getName()), menu);
+        action->setData( qVariantFromValue(vis->getID()) );
+        action->connect( action, SIGNAL(triggered()), this, SLOT(actionCreateVisualizer()) );
+        sortedActions.push_back(action);
+    }
+    std::sort(sortedActions.begin(), sortedActions.end(), SortActionsByNames());
+    BOOST_FOREACH(QAction* action, sortedActions) {
+        menu->addAction(action);
+    }
+}
+
+void ToolboxMain::populateWindowMenu( QMenu* menu )
+{
+    std::vector<QAction*> sortedActions;
+
+    QList<QDockWidget*> dockwidgets = qFindChildren<QDockWidget*>(this);
+    if ( dockwidgets.size() ) {
+        // pobranie i posortowanie akcji wg nazw
+        sortedActions.reserve(dockwidgets.size());
+        BOOST_FOREACH(QDockWidget* dockWidget, dockwidgets) {
+            sortedActions.push_back(dockWidget->toggleViewAction());
+        }
+        std::sort(sortedActions.begin(), sortedActions.end(), SortActionsByNames());
+        BOOST_FOREACH(QAction* action, sortedActions) {
+            menu->addAction(action);
+        }
+        menu->addSeparator();
+        sortedActions.resize(0);
+    }
+
+    QList<QToolBar*> toolbars = qFindChildren<QToolBar*>(this);
+    if (toolbars.size()) {
+        sortedActions.reserve(toolbars.size());
+        BOOST_FOREACH(QToolBar* toolbar, toolbars) {
+            sortedActions.push_back(toolbar->toggleViewAction());
+        }
+        std::sort(sortedActions.begin(), sortedActions.end(), SortActionsByNames());
+        BOOST_FOREACH(QAction* action, sortedActions) {
+            menu->addAction(action);
+        }
+    }
+}
+
 
 #ifdef UTILS_DEBUG
 

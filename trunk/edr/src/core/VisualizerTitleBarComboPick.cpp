@@ -23,11 +23,11 @@ void VisualizerTitleBarComboPick::fillSourcesMenu()
     fillSourcesMenu(menuSource, groupSources, getCurrentSlot());
 }
 
-void VisualizerTitleBarComboPick::fillSourcesMenu( QMenu* menu, QActionGroup* group, int slotNo )
+void VisualizerTitleBarComboPick::fillSourcesMenu( QMenu* menu, QActionGroup*& group, int slotNo )
 {
     if ( visualizer ) {
-        delete groupSources;
-        groupSources = new QActionGroup(this);
+        delete group;
+        group = new QActionGroup(this);
         menuSource->clear();
 
         // wspierane obiekty w tym slocie
@@ -93,7 +93,7 @@ void VisualizerTitleBarComboPick::sourceSelected()
     ObjectWrapperConstPtr obj = action->data().value<ObjectWrapperConstPtr>();
 
     QString objName = getLabel(obj, true);
-    QString slotName = toQString(visualizer->getName(slotNo));
+    QString slotName = toQString(visualizer->getSlotName(slotNo));
 
     // ustawienie wygl¹du guzika
     buttonSource->setText(objName);
@@ -159,7 +159,7 @@ void VisualizerTitleBarComboPick::setCurrentVisualizer( const VisualizerPtr& vis
     for ( int i = 0; i < visualizer->getNumObjects(); ++i ) {
         // nazwy slotów
         comboSlot->addItem( QString("%0: %1")
-            .arg(core::toQString(visualizer->getName(i)))
+            .arg(core::toQString(visualizer->getSlotName(i)))
             .arg(getLabel(ObjectWrapperConstPtr(), true)) );
     }
 }

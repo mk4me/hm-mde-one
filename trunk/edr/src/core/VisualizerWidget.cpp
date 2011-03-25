@@ -93,6 +93,9 @@ void VisualizerWidget::setVisualizer( const VisualizerPtr& visualizer )
     if ( visualizer ) {
         QWidget* widget = visualizer->getOrCreateWidget();
         innerWidget->layoutContent->addWidget(widget);
+        innerWidget->setWindowTitle( toQString(visualizer->getName()) );
+        setWindowTitle( innerWidget->windowTitle() );
+        //setObjectName( );
     } else {
         // usuniêcie widgeta z layoutu, nie w ogóle!
         // dodanie widgata do layoutu powoduje, ¿e ramka staje siê jego rodzicem;

@@ -121,6 +121,12 @@ private slots:
     void actionCreateVisualizer();
 
 private:
+
+    //!
+    void populateWindowMenu( QMenu* menu );
+    //!
+    void populateVisualizersMenu( QMenu* menu );
+
     //! Tworzy siatkê rozci¹gniêt¹ na p³aszczyŸnie.
     osg::ref_ptr<osg::Node> createGrid(); 
 

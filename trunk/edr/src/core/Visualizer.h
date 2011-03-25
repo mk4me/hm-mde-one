@@ -51,9 +51,14 @@ public:
         return source.getTypes(idx);
     }
     //! \see IVisualizer::getSupportedTypes
-    inline const std::string& getName(int idx) const
+    inline const std::string& getSlotName(int idx) const
     {
         return source.getName(idx);
+    }
+    //! \return Nazwa wizualizatora.
+    inline const std::string& getName() const
+    {
+        return impl->getName();
     }
 
 
