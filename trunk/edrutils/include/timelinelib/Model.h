@@ -3,9 +3,9 @@
 
 #include <utils/NamedTree.h>
 #include <utils/PtrPolicyBoost.h>
-#include <timeline/Types.h>
-#include <timeline/State.h>
-#include <timeline/Channel.h>
+#include <timelinelib/Types.h>
+#include <timelinelib/State.h>
+#include <timelinelib/Channel.h>
 #include <utils/ObserverPattern.h>
 #include <boost/tokenizer.hpp>
 #include <map>

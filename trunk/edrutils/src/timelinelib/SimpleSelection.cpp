@@ -1,5 +1,5 @@
-#include <timeline/SimpleSelection.h>
-#include <timeline/Channel.h>
+#include <timelinelib/SimpleSelection.h>
+#include <timelinelib/Channel.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{

@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_TIMELINE__ICHANNEL_H__
 #define HEADER_GUARD_TIMELINE__ICHANNEL_H__
 
-#include <timeline/Types.h>
+#include <timelinelib/Types.h>
 
 namespace timeline
 {

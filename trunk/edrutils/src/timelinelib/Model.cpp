@@ -1,9 +1,9 @@
-#include <timeline/Model.h>
-#include <timeline/Channel.h>
-#include <timeline/Tag.h>
-#include <timeline/SimpleSelection.h>
-#include <timeline/TagSelection.h>
-#include <boost/foreach.hpp>
+#include <timelinelib/Model.h>
+#include <timelinelib/Channel.h>
+#include <timelinelib/Tag.h>
+#include <timelinelib/SimpleSelection.h>
+#include <timelinelib/TagSelection.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////

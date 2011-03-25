@@ -1,6 +1,6 @@
-#include <timeline/TagSelection.h>
+#include <timelinelib/TagSelection.h>
+#include <timelinelib/Tag.h>
 #include <utils/Debug.h>
-#include <timeline/Tag.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{

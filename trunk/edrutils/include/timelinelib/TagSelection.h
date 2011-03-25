@@ -1,8 +1,8 @@
 #ifndef HEADER_GUARD__TIMELINETAGSELECTION_H__
 #define HEADER_GUARD__TIMELINETAGSELECTION_H__
 
-#include <timeline/SelectionBase.h>
-#include <timeline/Types.h>
+#include <timelinelib/SelectionBase.h>
+#include <timelinelib/Types.h>
 #include <boost/enable_shared_from_this.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,1 +1,1 @@
-#include <timeline/IChannel.h>
+#include <timelinelib/IChannel.h>

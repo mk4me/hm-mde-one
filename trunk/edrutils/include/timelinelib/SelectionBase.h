@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD__TIMELINEISELECTION_H__
 #define HEADER_GUARD__TIMELINEISELECTION_H__
 
-#include <timeline/Types.h>
+#include <timelinelib/Types.h>
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////

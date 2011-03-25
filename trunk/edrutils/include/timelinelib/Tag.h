@@ -1,8 +1,8 @@
 #ifndef HEADER_GUARD__TIMELINETAG_H__
 #define HEADER_GUARD__TIMELINETAG_H__
 
-#include <timeline/Types.h>
-#include <timeline/TagSelection.h>
+#include <timelinelib/Types.h>
+#include <timelinelib/TagSelection.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{

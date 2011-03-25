@@ -1,8 +1,8 @@
 #ifndef HEADER_GUARD__TIMELINESTREAM_H__
 #define HEADER_GUARD__TIMELINESTREAM_H__
 
-#include <timeline/Types.h>
-#include <timeline/IChannel.h>
+#include <timelinelib/Types.h>
+#include <timelinelib/IChannel.h>
 #include <utils/NamedTree.h>
 
 namespace timeline {

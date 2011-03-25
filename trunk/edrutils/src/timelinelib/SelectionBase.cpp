@@ -1,5 +1,5 @@
-#include <timeline/SelectionBase.h>
-#include <timeline/Channel.h>
+#include <timelinelib/SelectionBase.h>
+#include <timelinelib/Channel.h>
 #include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////

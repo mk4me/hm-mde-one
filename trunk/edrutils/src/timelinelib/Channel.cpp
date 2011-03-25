@@ -1,9 +1,9 @@
-#include <timeline/Channel.h>
-#include <timeline/Tag.h>
-#include <timeline/SelectionBase.h>
-#include <timeline/TagSelection.h>
+#include <timelinelib/Channel.h>
+#include <timelinelib/Tag.h>
+#include <timelinelib/SelectionBase.h>
+#include <timelinelib/TagSelection.h>
+#include <timelinelib/IChannel.h>
 #include <utils/Debug.h>
-#include <timeline/IChannel.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{
