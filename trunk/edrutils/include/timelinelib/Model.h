@@ -1,86 +1,69 @@
 #ifndef HEADER_GUARD__TIMELINEMODEL_H__
 #define HEADER_GUARD__TIMELINEMODEL_H__
 
+#include <utils/NamedTree.h>
+#include <utils/PtrPolicyBoost.h>
 #include <timeline/Types.h>
-#include <utils/ObserverPattern.h>
-//#include <boost/bimap.hpp>
 #include <timeline/State.h>
+#include <timeline/Channel.h>
+#include <utils/ObserverPattern.h>
+#include <boost/tokenizer.hpp>
 #include <map>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
-class Model : public utils::Observable<Model>
+class Model : public Channel, public utils::Observable<Model>
 {
-public:
-    typedef Streams::iterator stream_iterator;
-    typedef Streams::const_iterator stream_const_iterator;
-    typedef Streams::size_type stream_size_type;
-
-    typedef Tags::iterator tag_iterator;
-    typedef Tags::const_iterator tag_const_iterator;
-    typedef Tags::size_type tag_size_type;
-
-    typedef Selections::iterator selection_iterator;
-    typedef Selections::const_iterator selection_const_iterator;
-    typedef Selections::size_type selection_size_type;
-
-private:
-    //! struktura opisujaca rzeczywisty strumien dostarczony przez uzytkownika
-    //! w sposob w jaki widzi i opisuje go timeline
-    typedef struct StreamDescriptor{
-        //! \param strumien timeline opakowujacy rzeczywisty strumien uzytkownika
-        StreamPtr stream;
-
-        //! \param stan strumienia podczas odtwarzania
-        bool active;
-    }StreamDescriptor;
-
 private:
 
-    //! \param zbior strumieni glownych w timeline
-    Streams rootStreams;
-
-    //! \param zbior wszystkich strumieni w timeline
-    Streams allStreams;
-
-    //! \param mapowanie rzeczywistych strumieni dostarczanych przez uzytkownika
-    //! do strumieni obudowanych na potrzeby timeline
-    //boost::bimap<IStreamPtr, StreamPtr> streamsMapping;
-
-    std::map<IStreamPtr, StreamDescriptor> streamsDescriptors;
-
-    //! \param tagi wystepujace w timeline
+    //! Wszystkie tagi wystepujace w timeline
     Tags allTags;
 
-    //! \param zbior zaznaczen w timeline
+    //! Wszystkie tagi wystepujace w timeline
+    ConstTags constAllTags;
+
+    //! Zbior wszystkich zaznaczen w timeline
     Selections allSelections;
 
-    //! \param stan timeline
+    //! Zbior wszystkich zaznaczen w timeline
+    ConstSelections constAllSelections;
+
+    //! Stan timeline
     State state;
 
 public:
 
     //! Konstruktor zerujacy
-    Model();
+    Model(const std::string & name = "DefaultModel");
 
     ~Model();
 
-    //! \return aktualny czas timeline
-    double getTime() const;
+    //! \param mask Maska czasu realizowana wewnetrznie przez timeline, 0 <= mask <= length
+    virtual void setMask(const Channel::Mask & mask);
 
-    //! \param aktualny czas strumienia uwzgledniajac skale
-    void setTime(double time);
+    //! \param maskBegin Poczatek maski - 0 <= maskBegin <= maskEnd
+    virtual void setMaskBegin(double maskBegin);
 
-    //! \return //! \param double sumaryczna dlugosc timeline, od najwczesniejszego strumienia do konca ostatniego 
-    double getLength() const;
+    //! \param maskEnd Koniec maski - maskBegin <= maskEnd <= length
+    virtual void setMaskEnd(double maskEnd);
 
-    //! \return zwrca skale czasu strumienia
-    double getScale() const;
+    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! sprawdza maske i offset
+    //! \param Aktualny czas timeline, 0 <= time <= length
+    virtual void setTime(double time);
 
-    //! \param double nowa skala strumienia
-    void setScale(double scale);
+    //! modyfikuje skale
+    //! \param Aktualna dlugosc timeline
+    virtual void setLength(double length);
+
+    //! modyfikuje length
+    //! \param Aktualna skala czasu timeline, timeScale <> 0
+    virtual void setLocalTimeScale(double timeScale);
+
+    //! \param active Czy strumien jest aktywny podczas operacji oczasowych i odtwarzania timeline
+    virtual void setActive(bool active); 
 
     //! \return czy timeline sie odtwarza
     bool isPlaying() const;
@@ -92,137 +75,174 @@ public:
     const State & getState() const;
 
     //! \param nowy stan timeline
-    void getState(const State & state);
+    void setState(const State & state);
+
+    //! \param channel Kanal ktoremu dodaje sie tag
+    //! \param time Czas wystapienia taga
+    //! \param name Nazwa taga unikala w obrebie kanalu
+    void addTag(const ChannelConstPtr & channel, double time = 0, const std::string & name = "UnnamedTag");
+
+    //! \param tag Tag do usuniecia
+    void removeTag(const TagConstPtr & tag);
+
+    //! \return Pierwszy tag wsrod wszystkich obecnych w timeline
+    tag_const_iterator beginAllTags() const;
+
+    //! \return Koniec tagow wsrod wszystkich obecnych w timeline
+    tag_const_iterator endAllTags() const;
+
+    //! \param idx Indeks tagu wsrod wqszystkich tagow w timeline
+    //! \return Tag o zadanym indeksie wsrod wszystkich obecnych w timeline
+    const TagConstPtr & getAllTags(tag_size_type idx) const;
+
+    //! \return Ilosc wszystkich tagow w timeline
+    tag_size_type sizeAllTags() const;
+
+    //! \param channel Kanal ktoremu dodaje sie zaznaczenie
+    //! \param begin Czas poczatku zaznaczenia kanalu - 0 <= begin <= end
+    //! \param end Czas konca zaznaczenia kanalu - begin <= end <= length
+    //! \param name Nazwa zaznaczenia unikala w obrebie kanalu
+    void addSelection(const ChannelConstPtr & channel, double begin, double end, const std::string & name = "UnnamedSelection");
+
+    //! \param Zaznaczenie do usunuiecia
+    void removeSelection(const SelectionConstPtr & selection);
+
+    //! \return Zwraca pierwsze zaznaczenie wsrod wszystkich zaznaczen w timeline
+    selection_const_iterator beginAllSelections() const;
+
+    //! \return Zwraca koniec wsrod wszystkich zaznaczen w timeline
+    selection_const_iterator endAllSelections() const;
+
+    //! \param idx Indeks zaznaczenia wsrod wszystkich zaznaczen w timeline
+    //! \return Zaznaczenie
+    const SelectionConstPtr & getAllSelection(selection_size_type idx) const;
+
+    //! \return Ilosc wszystkich zaznaczen w timeline
+    selection_size_type sizeAllSelections() const;
+
+    //! \param path sciezka nowego kanalu
+    //! \param channel fatyczny kanal dotarczony przez klienta
+    void addChannel(const std::string & path, const IChannelPtr & channel = IChannelPtr());
+
+    //! \param channel Kanal do usuniecia
+    void removeChannel(const ChannelConstPtr & channel);
+
+    //! \param path Sciezka kanalu do usuniecia
+    void removeChannel(const std::string & path);
+
+    //------------------- Operacje na kanalach -----------------------
+    // ich zmiany sa propagowane w calym timeline a obserwatorzy beda powiadomieni
+
+    //! \param channel Kanal do zmiany
+    //! \param offset Offset kanalu
+    void setChannelOffset(const ChannelConstPtr & channel, double offset);
+    
+    //! \param channel Kanal do zmiany
+    //! \param length Czas trwania kanalu
+    void setChannelLength(const ChannelConstPtr & channel, double length);
+
+    //! \param channel Kanal do zmiany
+    //! \param timeScale Skala czasu kanalu
+    void setChannelTimeScale(const ChannelConstPtr & channel, double timeScale);
+
+    //! \param channel Kanal do zmiany
+    //! \param name Nazwa kanalu uniklalna wzgledem jego rodzica
+    void setChannelName(const ChannelConstPtr & channel, const std::string & name);
+
+    //! \param channel Kanal do zmiany
+    //! \param mask Maska czasu dla kanalu, musi byc w zakresie 0 <= mask <= length
+    void setChannelMask(const ChannelConstPtr & channel, const Channel::Mask & mask);
+
+    //! \param channel Kanal do zmiany
+    //! \param maskBegin Poczatek maski czasu dla kanalu, musi byc w zakresie 0 <= maskBegin <= maskEnd
+    void setChannelMaskBegin(const ChannelConstPtr & channel, double maskBegin);
+
+    //! \param channel Kanal do zmiany
+    //! \param maskEnd Koniec maski czasu dla kanalu, musi byc w zakresie maskBegin <= maskEnd <= length
+    void setChannelMaskEnd(const ChannelConstPtr & channel, double maskEnd);
+
+    //! \param channel Kanal do zmiany
+    //! \param active Czy kanal jest aktywny podczas operacji czasowych (odtwarzanie timeline)
+    void setChannelActive(const ChannelConstPtr & channel, bool active);
+
+    //! \param channel Kanal do zmiany
+    void clearChannelTags(const ChannelConstPtr & channel);
+
+    //! \param channel Kanal do zmiany
+    void clearChannelSelections(const ChannelConstPtr & channel);
+
+    //! \param channel Kanal do podzialu
+    //! \param time Czas kanalu w ktorym dokona sie podzial kanalu - 0 < time < length
+    //! \param nameA Nazwa mlodszej czesci kanalu po podziale, musi byc unikalna wzgledem rodzica kanalu
+    //! \param nameB Nazwa starszej czesci kanalu po podziale, musi byc unikalna wzgledem rodzica kanalu
+    void splitChannel(const ChannelConstPtr & channel, double time, const std::string & nameA = "A", const std::string & nameB = "B");
+    
+    //! oba kanalu musza byc w obrebie jednego rodzica
+    //! \param channelA Pierwszy kanal do laczenia
+    //! \param channelB Drugi kanal do laczenia
+    //! \param name Nazwa kanalu po polaczeniu
+    void mergeChannels(const ChannelConstPtr & channelA, const ChannelConstPtr & channelB, const std::string & name = "Merged");
+
+    
+    //--------------------------- Zarzadzanie tagami ------------------------------------------------
+
+    //! \param tag Tag ktoremu zmieniamy nazwe
+    //! \param name Nazwa tagu
+    void setTagName(const TagConstPtr & tag, const std::string & name);
+
+    //! \param tag Tag ktoremu zmieniamy czas
+    //! \param time Czas wystapienia tagu w kanale - 0 <= time <= length
+    void setTagTime(const TagConstPtr & tag, double time);
 
 
-    //------- Obsluga strumieni root ---------------------
+    //--------------------------- Zarzadzanie zaznaczeniami ------------------------------------------------
 
-    //! \return pierwszy strumien root
-    stream_iterator beginRootStreams();
+    //! \param selection Zaznaczenie ktoremu zmieniamy nazwe
+    //! \param name Nazwa zaznaczenia
+    void setSelectionName(const SelectionConstPtr & selection, const std::string & name);
 
-    //! \return koniec strumieni root
-    stream_iterator endRootStreams();
+    //! \param selection Zaznaczenie ktoremu zmieniamy czas poczatku
+    //! \param beginTime Czas poczatku zaznaczenia - 0 <= beginTime <= endTime
+    void setSelectionBegin(const SelectionConstPtr & selection, double beginTime);
 
-    //! \return pierwszy strumien root
-    stream_const_iterator beginRootStreams() const;
+    //! \param selection Zaznaczenie ktoremu zmieniamy czas poczatku
+    //! \param endTime Czas konca zaznaczenia - beginTime <= endTime <= length
+    void setSelectionEnd(const SelectionConstPtr & selection, double endTime);
 
-    //! \return koniec strumieni root
-    stream_const_iterator endRootStreams() const;
+    //! \param selection Zaznaczenie ktore edytujemy
+    ////! \param dTime Przesuniecie zaznaczenia takie ze begin + dTime >= 0 && end + dTime <= length
+    void shiftSelection(const SelectionConstPtr & selection, double dTime);
 
-    //! \param idx indeks strumienia root
-    //! \return strumien root
-    IStreamPtr & getRootStream(stream_size_type idx);
+    //-------------------- Pomocnicze funkcje ----------------------------
 
-    //! \param idx indeks strumienia root
-    //! \return strumien root
-    const IStreamPtr & getRootStream(stream_size_type idx) const;
+    //! \param channel Reprezentacja wezla w postaci NamedTreeBase
+    //! \return Wskaznik na Channel
+    static ChannelConstPtr getChannel(const NamedTreeBaseConstPtr & channel);
 
-    //! \return zwraca ilosc strumieni root
-    stream_size_type getNumRootStreams() const;
+private:
 
+    //! \param path Sciezka do kanalu wzgledem roota
+    //! \return Kanal o zadanej sciezce
+    ChannelPtr getChannel(const std::string & path);
 
-    //------- Obsluga wszystkich strumieni ---------------------
+    //! sprawdza czy klient nie probuje modyfikowac kanalu z innego modelu
+    //! \param channel Kanal podany przez klienta do weryfikacji
+    bool verifyChannel(const ChannelConstPtr & channel) const;
 
-    //! \return pierwszy strumien
-    stream_iterator beginStreams();
+    //! Konwertuje stale kanaly podawane przez klienta na kanaly ktore mozna modyfikowac
+    //! sciaga modyfikatro const!!
+    //! \param channel Kanal do konwersji na wersje do zapisu
+    static ChannelPtr getWritableChannel(const ChannelConstPtr & channel);
 
-    //! \return koniec strumieni
-    stream_iterator endStreams();
+    //! Konwertuje stale tagi podawane przez klienta na tagi ktore mozna modyfikowac
+    //! sciaga modyfikatro const!!
+    //! \param tag Tag do konwersji na wersje do zapisu
+    static TagPtr getWritableTag(const TagConstPtr & tag);
 
-    //! \return pierwszy strumien
-    stream_const_iterator beginStreams() const;
-
-    //! \return koniec strumieni
-    stream_const_iterator endStreams() const;
-
-    //! \return zwraca ilosc strumieni
-    stream_size_type getNumStreams() const;
-
-
-    //------- Obsluga tagow ---------------------
-
-    //! \return pierwszy tag
-    tag_iterator beginTags();
-
-    //! \return koniec tagow
-    tag_iterator endTags();
-
-    //! \return pierwszy tag
-    tag_const_iterator beginTags() const;
-
-    //! \return koniec tagow
-    tag_const_iterator endTags() const;
-
-    //! \param idx indeks tagu
-    //! \return tag
-    TagPtr & getTag(tag_size_type idx);
-
-    //! \param idx indeks tagu
-    //! \return tag
-    const TagPtr & getTag(tag_size_type idx) const;
-
-    //! \return zwraca ilosc tagow danego strumienia
-    tag_size_type getNumTags() const;
-
-
-    //------- Obsluga zaznaczen ---------------------
-
-    //! \return pierwsze zaznaczenie
-    selection_iterator beginSelections();
-
-    //! \return koniec zaznaczen
-    selection_iterator endSelections();
-
-    //! \return pierwsze zaznaczenie
-    selection_const_iterator beginSelections() const;
-
-    //! \return koniec zaznaczen
-    selection_const_iterator endSelections() const;
-
-    //! \param idx indeks zaznaczenia
-    //! \return tag
-    SelectionPtr & getSelection(selection_size_type idx);
-
-    //! \param idx indeks zaznaczenia
-    //! \return tag
-    const SelectionPtr & getSelection(selection_size_type idx) const;
-
-    //! \return zwraca ilosc zaznaczen danego strumienia
-    selection_size_type getNumSelections() const;
-
-
-    //------- Zarzadzanie strumieniami ---------------------
-
-    //! \param strumien do dodania, zostanie wewnetrznie obudowany w klase Stream
-    void addStream(IStreamPtr stream);
-
-    //! \param strumien do usuniecia
-    void removeStream(IStreamPtr stream);
-
-    //! \return zwraca czy strumien jest aktyny podczas odtwarzania timeline
-    void isStreamActive(IStreamPtr stream) const;
-
-    //! \param ustawia czy strumien jest aktywny podczas odtwarzania timeline
-    bool setStreamActive(IStreamPtr stream, bool active);
-
-
-    //------- Zarzadzanie tagami ---------------------
-
-    //! \param tag do dodania, musi miec poprawnie ustawiony strumien
-    void addTag(TagPtr tag);
-
-    //! \param tag do usuniecia
-    void removeTag(TagPtr tag);
-
-
-    //------- Zarzadzanie zaznaczeniami ---------------------
-
-    //! \param zaznaczenie do dodania, musi miec poprawnie ustawiony strumien i wartosci
-    void addSelection(SelectionPtr selection);
-
-    //! \param zaznaczenie do usuniecia
-    void removeSelection(SelectionPtr selection);
-
+    //! Konwertuje stale zaznaczenia podawane przez klienta na zaznaczenia ktore mozna modyfikowac
+    //! sciaga modyfikatro const!!
+    //! \param selection Zaznaczenie do konwersji na wersje do zapisu
+    static SelectionPtr getWritableSelection(const SelectionConstPtr & selection);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

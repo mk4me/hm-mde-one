@@ -276,8 +276,6 @@ public:
 
     ~NamedTree()
     {
-        PtrPolicy::setPtr<Data>(data, nullptr);
-        PtrPolicy::setPtr<Data>(constData, nullptr);
     }
 
     //! \return dane
@@ -295,8 +293,8 @@ public:
     //! \param data Dane do przechowania w wezle
     void setData(const Ptr & data)
     {
-        PtrPolicy::setPtr(this->data, data);
-        PtrPolicy::setPtr(this->constData, data);
+        PtrPolicy::setPtr<Data>(this->data, data);
+        PtrPolicy::setPtr<const Data>(this->constData, data);
     }
 };
 

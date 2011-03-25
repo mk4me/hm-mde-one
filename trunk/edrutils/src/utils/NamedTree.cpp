@@ -80,7 +80,15 @@ const std::string & NamedTreeBase::getName() const
 
 void NamedTreeBase::setName(std::string name) 
 { 
-    this->name = name; 
+    if(this->name == name){
+        return;
+    }
+    
+    if(parent.lock() == nullptr || parent.lock()->findChildByName(name) == parent.lock()->end()){    
+        this->name = name; 
+    }else{
+        throw std::invalid_argument("Parent already has a child with given name!");
+    }
 }
 
 

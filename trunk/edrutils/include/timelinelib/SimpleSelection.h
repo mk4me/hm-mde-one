@@ -1,41 +1,48 @@
 #ifndef HEADER_GUARD__TIMELINESIMPLESELECTION_H__
 #define HEADER_GUARD__TIMELINESIMPLESELECTION_H__
 
+#include <timeline/SelectionBase.h>
+#include <timeline/Types.h>
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
-class SimpleSelection :
-    public timeline::ISelection
+//! Klasa obslugujaca zaznaczenie pomiedzy dwoma wybranymi punktami w czasie
+class SimpleSelection : public SelectionBase
 {
+
+    friend class Model;
 
 private:
 
-    //! \param double poczatek czasu zaznaczenia
+    //! Poczatek czasu zaznaczenia
     double begin;
 
-    //! \param double koniec czasu zaznaczenia
+    //! Koniec czasu zaznaczenia
     double end;
 
 public:
-    //! konstruktor
-    //! \param IStreamPtr strumien dla ktorego tworzy sie dane zaznaczenie
-    //! \paran string nazwa zaznaczenia
-    SimpleSelection(IStreamPtr stream, const std::string & name = std::string("UnnamedSelection"));
 
     ~SimpleSelection(void);
 
-    //! \return poczatek zaznaczenia - czas
+    //! \return Poczatek zaznaczenia - czas
     virtual double getBegin() const;
 
-    //! \return koniec zaznaczenia - czas
+    //! \return Koniec zaznaczenia - czas
     virtual double getEnd() const;
 
-    //! \param double poczatek zaznaczenia - czas
+    //! \param Poczatek zaznaczenia - czas
     virtual void setBegin(double begin);
 
-    //! \param double koniec zaznaczenia - czas
+    //! \param Koniec zaznaczenia - czas
     virtual void setEnd(double end);
+
+protected:
+
+    //! konstruktor
+    //! \param channel Kanal dla ktorego tworzy sie dane zaznaczenie
+    //! \paran name Nazwa zaznaczenia
+    SimpleSelection(const ChannelPtr & channel, double begin, double end, const std::string & name = std::string("UnnamedSelection"));
 
 };
 

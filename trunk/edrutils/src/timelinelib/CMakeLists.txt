@@ -1,7 +1,7 @@
-project(timeline)
+project(timelinelib)
 # nazwa
 set(TARGET_TARGETNAME
-	timeline
+	timelinelib
 )
 
 #------------------------------------------------------------------------------
@@ -15,13 +15,13 @@ set(PRIVATE_H
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
+	${HEADER_PATH}/Channel.h
 	${HEADER_PATH}/Controller.h
-	${HEADER_PATH}/ISelection.h
-	${HEADER_PATH}/IStream.h
+	${HEADER_PATH}/IChannel.h
 	${HEADER_PATH}/Model.h
+	${HEADER_PATH}/SelectionBase.h
 	${HEADER_PATH}/SimpleSelection.h
 	${HEADER_PATH}/State.h
-	${HEADER_PATH}/Stream.h
 	${HEADER_PATH}/Tag.h
 	${HEADER_PATH}/TagSelection.h
 	${HEADER_PATH}/TagType.h
@@ -36,13 +36,13 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	Channel.cpp
 	Controller.cpp
-	ISelection.cpp
-	IStream.cpp
+	IChannel.cpp
 	Model.cpp
+	SelectionBase.cpp
 	SimpleSelection.cpp
 	State.cpp
-	Stream.cpp
 	Tag.cpp
 	TagSelection.cpp
 	TagType.cpp

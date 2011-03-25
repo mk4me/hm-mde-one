@@ -1,44 +1,83 @@
 #ifndef HEADER_GUARD__TIMELINETAGSELECTION_H__
 #define HEADER_GUARD__TIMELINETAGSELECTION_H__
 
-#include <timeline/ISelection.h>
+#include <timeline/SelectionBase.h>
 #include <timeline/Types.h>
+#include <boost/enable_shared_from_this.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
-class TagSelection :
-    public timeline::ISelection, public utils::Observer<Tag>
+//! Klasa obslugujaca zaznaczenie pomiedzy dwoma zdefiniowanymi tagami
+class TagSelection : public SelectionBase, public boost::enable_shared_from_this<TagSelection>
 {
+
+    friend class Model;
+
 private:
 
-    //! \param double poczatek czasu zaznaczenia
+    //! Poczatek czasu zaznaczenia
     TagWPtr begin;
 
-    //! \param double koniec czasu zaznaczenia
+    //! Poczatek czasu zaznaczenia
+    TagConstWPtr constBegin;
+
+    //! Koniec czasu zaznaczenia
     TagWPtr end;
 
+    //! Koniec czasu zaznaczenia
+    TagConstWPtr constEnd;
+
 public:
-    //! konstruktor
-    //! \param IStreamPtr strumien dla ktorego tworzy sie dane zaznaczenie
-    //! \paran string nazwa zaznaczenia
-    TagSelection(const std::string & name = std::string("UnnamedSelection"),
-        TagPtr begin, TagPtr end);
 
     ~TagSelection(void);
 
-    //! \return poczatek zaznaczenia - czas
+    //! \return Poczatek zaznaczenia - czas
     virtual double getBegin() const;
 
-    //! \return koniec zaznaczenia - czas
+    //! \return Koniec zaznaczenia - czas
     virtual double getEnd() const;
 
-    //! \param double poczatek zaznaczenia - czas
+    //! \return Poczatkowy tag zaznaczenia
+    const TagConstWPtr & getBeginTag() const;
+
+    //! \return Koncowy Tag zaznaczenia
+    const TagConstWPtr & getEndTag() const;
+
+    //! \param Wskaznik na bazowa klase zaznaczen
+    //! \return Wskaznik do TagSelection lub pusty wskaznik jesli to nie ta klasa lub jej pochodna
+    static TagSelectionPtr getTagSelection(const SelectionPtr & selection);
+
+    //! \param Wskaznik na bazowa klase zaznaczen
+    //! \return Wskaznik do TagSelection lub pusty wskaznik jesli to nie ta klasa lub jej pochodna
+    static TagSelectionConstPtr getTagSelection(const SelectionConstPtr & selection);
+
+    //! \return Poczatkowy tag zaznaczenia
+    const TagWPtr & getBeginTag();
+
+    //! \return Koncowy Tag zaznaczenia
+    const TagWPtr & getEndTag();
+
+    //! \param Poczatek zaznaczenia - czas
     virtual void setBegin(double begin);
 
-    //! \param double koniec zaznaczenia - czas
+    //! \param Koniec zaznaczenia - czas
     virtual void setEnd(double end);
+
+    //! \return Poczatkowy tag zaznaczenia
+    void setBeginTag(const TagPtr & begin);
+
+    //! \return Koncowy tag zaznaczenia
+    void setEndTag(const TagPtr & end);
+
+protected:
+
+    //! konstruktor
+    //! \param begin Tag poczatkowy zaznaczenia
+    //! \paran end Tag koncowy zaznaczenia
+    //! \paran name Nazwa zaznaczenia
+    TagSelection(const TagPtr & begin, const TagPtr & end, const std::string & name = std::string("UnnamedSelection"));
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -119,7 +119,7 @@ ADD_PROJECT(osgui "utils;OSG;QT;BOOST")
 ADD_PROJECT(dfmlib "BOOST")
 ADD_PROJECT(vdfmlib "osgui;dfmlib;BOOST;OSG")
 ADD_PROJECT(testnodefactory "dfmlib;BOOST")
-ADD_PROJECT(timeline "utils;BOOST;QT")
+ADD_PROJECT(timelinelib "utils;BOOST;QT")
 
 #---------------------------------------------------
 # przyk³ady
