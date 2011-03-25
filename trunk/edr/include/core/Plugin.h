@@ -53,7 +53,7 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME() \
 
 //! Dodaje wizualizator zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
-    instance->addParser( core::IVisualizerPtr(new className) );
+    instance->addVisualizer( core::IVisualizerPtr(new className) );
 
 
 /**
