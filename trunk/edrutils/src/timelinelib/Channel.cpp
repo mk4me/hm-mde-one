@@ -9,16 +9,38 @@
 namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
-Channel::Channel(const std::string & name, const IChannelPtr & channel) : NamedTree<IChannel, PtrPolicyBoost>(name, channel),
-    length(0), mask(0,0), localOffset(0.0), globalOffset(0.0), localScale(1.0), globalScale(1.0), time(0.0), active(true)
+Channel::Channel(const IChannelPtr & channel) : length(0),
+    mask(0,0), localOffset(0.0), globalOffset(0.0), localScale(1.0), globalScale(1.0),
+    time(0.0), active(true), innerChannel(channel), constInnerChannel(channel)
 {
     if(channel != nullptr){
         length = mask.second = channel->getLength();
     }
 }
 
+Channel::Channel(const Channel & channel, bool deep)
+{
+    //TODO
+    //kopiowanie propertow kanalu
+}
+
 Channel::~Channel()
 {
+}
+
+void Channel::setInnerChannel(const IChannelPtr & channel)
+{
+    constInnerChannel = innerChannel = channel;
+}
+
+const IChannelConstPtr & Channel::getInnerChannel() const
+{
+    return constInnerChannel;
+}
+
+const IChannelPtr & Channel::getInnerChannel()
+{
+    return innerChannel;
 }
 
 const Channel::Mask & Channel::getMask() const
@@ -69,6 +91,11 @@ double Channel::getLength() const
     return length;
 }
 
+void Channel::setLength(double length)
+{
+    this->length = length;
+}
+
 double Channel::getTime() const
 {
     return time;
@@ -107,6 +134,11 @@ Channel::tag_const_iterator Channel::beginTags() const
 Channel::tag_const_iterator Channel::endTags() const
 {
     return constTags.end();
+}
+
+Channel::tag_const_iterator Channel::findTag(const std::string & name) const
+{
+    return std::find_if(constTags.begin(), constTags.end(), [&](TagConstPtr tag){ return tag->getName() == name; });
 }
 
 const TagPtr & Channel::getTag(tag_size_type idx)
@@ -165,6 +197,11 @@ Channel::selection_const_iterator Channel::endSelections() const
     return constSelections.end();
 }
 
+Channel::selection_const_iterator Channel::findSelection(const std::string & name) const
+{
+    return std::find_if(constSelections.begin(), constSelections.end(), [&](SelectionConstPtr sel){ return sel->getName() == name; });
+}
+
 const SelectionPtr & Channel::getSelection(selection_size_type idx)
 {
     return selections[idx];
@@ -202,179 +239,40 @@ Channel::selection_size_type Channel::getNumSelections() const
 
 void Channel::setLocalOffset(double offset)
 {
-    double d = this->localOffset - offset;
-    if(isRoot() == true){
-        this-> localOffset = this->globalOffset = offset;
-
-        //update globalne offsety dzieci
-        updateChildrenOffset(d);
-    }else{
-        if(offset < 0){
-            //aktualizuj offset rodzica - on powinien aktualizowac globalne offsety dzieci
-            getChannel(getParent().lock())->updateParentOffset(offset);
-
-            //ustaw lokalny offset
-            this->localOffset = 0;
-        
-        }else{
-            //aktualizuj globalne offsety dzieci
-            updateChildrenOffset(d);
-        }
-
-        //aktualizuj dlugosc rodzica
-        getChannel(getParent().lock())->updateParentLength(getChannel(shared_from_this()));
-    }
+    localOffset = offset;
 }
 
 void Channel::setGlobalOffset(double offset)
 {
-    setLocalOffset(this->globalOffset - offset);    
+    globalOffset = offset; 
 }
 
 void Channel::setTime(double time)
 {
-    UTILS_ASSERT((time <= getLength() && time >= 0), "Niepoprawny czas kanalu");
     //TODO
-    //propaguj czas strumienia lub podstrumieni
+    //set time
 }
 
 void Channel::setLocalTimeScale(double scale)
 {
     UTILS_ASSERT((scale != 0), "Nieprawidlowa skala czasu");
 
-    //ile zmianila sie skala
-    double scaleRatio = this->localScale / scale;
-
-    //aktualizuj lokalna skale
-    this->localScale = scale;
-
-    //aktualizuj dlugosc kanalu
-    this->length *= scaleRatio;
-
-    //aktualizuj globalna skale
-    if(isRoot() == true){
-        //root ma lokalna i globalna skale taka sama
-        this->globalScale = this->localScale;
-    }else{
-
-        this->globalScale *= scaleRatio;
-
-        //aktualizuj rodzica ze wzgledu na dlugosc
-        getChannel(getParent().lock())->updateParentLength(getChannel(shared_from_this()));
-    }
-
-    //Aktrualizuj pozycje Tagow i Selekcji!!
-    //Aktualizuj maske!!
-    updateForScaleRatio(scaleRatio);
-
-    //Aktualizuj skale dzieci
-    updateChildrenScale(scaleRatio);
-}
-
-void Channel::updateForScaleRatio(double ratio)
-{
-    //aktualizuj czas maski
-    mask.first *= ratio;
-    mask.second *= ratio;
-
-    //aktualizuj zaznaczenia - czesc automatycznie zaktualizuje tagi
-    //tutaj zapamierujemy te tagi by ich ponownie nie modyfikowac
-
-    std::vector<TagConstPtr> updatedTags;
-
-    for(auto it = beginSelections(); it != endSelections(); it++){
-        TagSelectionConstPtr tagSel(TagSelection::getTagSelection(*it));
-        if(tagSel != nullptr){
-            if(std::find(updatedTags.begin(), updatedTags.end(), tagSel->getBeginTag().lock()) == updatedTags.end()){
-                updatedTags.push_back(tagSel->getBeginTag().lock());
-            }
-
-            if(std::find(updatedTags.begin(), updatedTags.end(), tagSel->getEndTag().lock()) == updatedTags.end()){
-                updatedTags.push_back(tagSel->getEndTag().lock());
-            }
-        }
-
-        (*it)->setBegin((*it)->getBegin() * ratio);
-        (*it)->setEnd((*it)->getEnd() * ratio);
-    }
-}
-
-void Channel::updateChildrenScale(double ratio)
-{
-    for(auto it = begin(); it != end(); it++){
-        ChannelPtr channel(getChannel(*it));
-        channel->localScale *= ratio;
-        channel->globalScale *= ratio;
-        channel->length *= ratio;
-        channel->updateForScaleRatio(ratio);
-        channel->updateChildrenScale(ratio);
-    }
-}
-
-void Channel::updateParentLength(const ChannelPtr & child)
-{
-    bool goUp = false;
-    //czy dziecko dluzsze od rodzica
-    if(child->getLocalOffset() + child->getLength() > length){
-        //rozszerz rodzica, idz wyzej
-        length += child->getLocalOffset() + child->getLength() - length;
-        goUp = true;
-    }else{
-        double l = 0;
-        for(auto it = begin(); it != end(); it++){
-            ChannelPtr channel(getChannel(*it));
-            l = std::max(l, channel->getLocalOffset() + channel->getLength());
-        }
-
-        if(l < length){
-            length = l;
-            goUp = true;
-        }
-    }
-
-    if(goUp == true && isRoot() == false){
-        getChannel(getParent().lock())->updateParentLength(getChannel(shared_from_this()));
-    }
-}
-
-void Channel::updateChildrenOffset(double dOffset)
-{
-    for(auto it = begin(); it != end(); it++){
-        ChannelPtr channel(getChannel(*it));
-        channel->globalOffset += dOffset;
-        channel->updateChildrenOffset(dOffset);
-    }
-}
-
-void Channel::updateParentOffset(double offset)
-{
-    if(isRoot() == true || this->localOffset + offset >= 0){
-        this->localOffset += offset;
-        this->globalOffset += offset;
-        if(isRoot() == false){
-            updateParentLength(getChannel(shared_from_this()));
-        }
-
-        updateChildrenOffset(offset);
-    }else{
-        getChannel(getParent().lock())->updateParentOffset(this->localOffset + offset);
-    }
+    localScale = scale;
 }
 
 void Channel::setGlobalTimeScale(double scale)
 {
-    UTILS_ASSERT((scale != 0), "Nieprawidlowa skala czasu");
-
-    if(isRoot() == true){
-        setLocalTimeScale(scale);
-    }else{
-        setLocalTimeScale(scale / getChannel(getParent().lock())->getGlobalTimeScale());
-    }
+    globalScale = scale;
 }
 
 ChannelPtr Channel::getChannel(const NamedTreeBasePtr & node)
 {
     return boost::dynamic_pointer_cast<Channel>(node);
+}
+
+ChannelConstPtr Channel::getConstChannel(const NamedTreeBaseConstPtr & node)
+{
+    return boost::dynamic_pointer_cast<const Channel>(node);
 }
 
 void Channel::setActive(bool active)

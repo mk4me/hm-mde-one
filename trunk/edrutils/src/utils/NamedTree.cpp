@@ -38,24 +38,6 @@ NamedTreeBase::~NamedTreeBase(void)
 
 }
 
-//NamedTreeBasePtr NamedTreeBase::copy() const
-//{
-//    return NamedTreeBasePtr(new NamedTreeBase(this->getName()));
-//}
-//
-//NamedTreeBasePtr NamedTreeBase::clone() const
-//{
-//    NamedTreeBasePtr ret(copy());
-//
-//    auto it = begin();
-//    while(it != end()) {
-//        ret->addChild((*it)->clone());
-//        it++;
-//    }
-//
-//    return ret;
-//}
-
 NamedTreeBasePtr NamedTreeBase::findChildByPath(const std::string & path) const
 {
     UTILS_ASSERT((path.empty() == false), "Bledna sciezka do dziecka!");
@@ -187,39 +169,12 @@ void NamedTreeBase::addChild(const NamedTreeBasePtr & child)
 
 void NamedTreeBase::addChild(const std::string & path)
 {
-    addChild(path, -1);
+    addChild<NamedTreeBase>(path, -1);
 }
 
 void NamedTreeBase::addChild(const std::string & path, NamedTreeBase::size_type idx)
 {
-    UTILS_ASSERT((path.empty() == false), "Bledna sciezka do dziecka!");
-
-    Tokenizer tok(path, separator);
-
-    auto it = tok.begin();
-
-    NamedTreeBasePtr pos = findLastChildInPath(it, tok.end());
-    
-    if(it == tok.end()) {
-        throw std::runtime_error("Child with the given name already exist!");
-    }
-
-    ////wyznaczam ostatni poziom, bedacy nazwa dla mojego nowego wezla
-    auto itEnd = tok.begin();
-    auto itTmp = tok.begin();
-    while(++itTmp != tok.end()){
-        itEnd++;
-    }
-
-    //stworz drzewo do itEnd, a pod itEnd mamy juz nazwe naszego wezsla
-    while(it != itEnd){
-        NamedTreeBasePtr nodeChild(new NamedTreeBase(*it));
-        pos->addChild(nodeChild);
-        pos = nodeChild;
-        it++;
-    }
-
-    pos->addChild(NamedTreeBasePtr(new NamedTreeBase(*itEnd)), idx);
+    addChild<NamedTreeBase>(path, idx);
 }
 
 void NamedTreeBase::addChild(const NamedTreeBasePtr & child, NamedTreeBase::size_type idx)

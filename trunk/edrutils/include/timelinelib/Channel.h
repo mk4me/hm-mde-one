@@ -12,7 +12,7 @@ class Model;
 /** Klasa do obudowania kanalow, wykorzystywana wewnetrznie przez timeline, definiuje 
 * dodatkowe wlasciwosci kanalow na potrzeby timeline
 */
-class Channel : public NamedTree<IChannel, utils::PtrPolicyBoost>
+class Channel
 {
     friend class Model;
 
@@ -71,38 +71,59 @@ private:
     //! Zbior zaznaczen w timeline
     ConstSelections constSelections;
 
+    //! Kanal dostarczony przez klienta
+    IChannelPtr innerChannel;
+
+    //! Kanal dostarczony przez klienta
+    IChannelConstPtr constInnerChannel;
+
 public:
+
+    //! Konstruktor zerujacy uzywany w celu stworzenia virtualnych kanalow
+    //! tutaj tworzymy root
+    //! \name nazwa kanalu
+    //! \param channel Kanal do opakowania jako root
+    Channel(const IChannelPtr & channel = IChannelPtr());
+
+    Channel(const Channel & channel, bool deep = true);
 
     virtual ~Channel();
 
+
     // ------------ Obsluga dodatkowych cech strumienia danych-------------------------------------
 
+    //! \param channel Kanal zdefiniowany przez uzytkownika i opakowany przez nasza klase
+    virtual void setInnerChannel(const IChannelPtr & channel);
+
+    //! \return Kanal zdefinowany przez klienta
+    const IChannelConstPtr & getInnerChannel() const;
+
     //! \param mask Maska czasu realizowana wewnetrznie przez nasz kanal
-    virtual void setMask(const Mask & mask);
+    void setMask(const Mask & mask);
 
     //! \param maskBegin Poczatek maski - wiekszy lub rowny 0
-    virtual void setMaskBegin(double maskBegin);
+    void setMaskBegin(double maskBegin);
 
     //! \param maskEnd Koniec maski - mniejszy lub rowny length
-    virtual void setMaskEnd(double maskEnd);
+    void setMaskEnd(double maskEnd);
 
     //! \param offset Czas wzgledem poczatku czasu rodzica
-    virtual void setLocalOffset(double offset);
+    void setLocalOffset(double offset);
 
     //! \param offset Czas wzgledem 0
-    virtual void setGlobalOffset(double offset);
+    void setGlobalOffset(double offset);
 
     //! \param Aktualny czas kanalu uwzgledniajac skale rodzica
-    virtual void setTime(double time);
+    void setTime(double time);
 
     //! \param scale Skala kanalu, jest skladana ze skala rodzica
-    virtual void setLocalTimeScale(double scale);
+    void setLocalTimeScale(double scale);
 
     //! \param scale Skala kanalu, bezwzgledna wartosc skali
-    virtual void setGlobalTimeScale(double scale);
+    void setGlobalTimeScale(double scale);
 
     //! \param active Czy strumien jest aktywny podczas operacji oczasowych i odtwarzania timeline
-    virtual void setActive(bool active);    
+    void setActive(bool active);    
 
     //! \return Wewnetrzna maska czasu kanalu
     const Mask & getMask() const;
@@ -121,6 +142,9 @@ public:
 
     //! \return Dlugosc kanalu w milisekundach, uwzgledniajac skale
     double getLength() const;
+
+    //! \param Dlugosc kanalu
+    void setLength(double length);
 
     //! \return Aktualny czas kanalu
     double getTime() const;
@@ -182,11 +206,18 @@ public:
     //! \return Ilosc zaznaczen danego kanalu
     selection_size_type getNumSelections() const;
 
-protected:
-
     //! \param node Wezel NamedTreeBase do przekonwertowania na wlasciwy wskaznik Channel
     //! \return Wskaznik do Channel
     static ChannelPtr getChannel(const NamedTreeBasePtr & node);
+
+    //! \param node Wezel NamedTreeBase do przekonwertowania na wlasciwy wskaznik Channel
+    //! \return Wskaznik do Channel
+    static ChannelConstPtr getConstChannel(const NamedTreeBaseConstPtr & node);
+
+protected:
+
+    //! \return Kanal zdefinowany przez klienta
+    const IChannelPtr & getInnerChannel();
 
     //! czysci liste tagow zwiazana z tym kanalem
     virtual void clearTags();
@@ -242,12 +273,6 @@ protected:
     //! \return Koniec zaznaczen
     selection_iterator endSelections();
 
-    //! Konstruktor zerujacy uzywany w celu stworzenia virtualnych kanalow
-    //! tutaj tworzymy root
-    //! \name nazwa kanalu
-    //! \param channel Kanal do opakowania jako root
-    Channel(const std::string & name = "UnnamedChannel", const IChannelPtr & channel = IChannelPtr());
-
     //! \param begin Pierwszy iterator do przeszukiwanego zakresu
     //! \param end Koniec zakresu
     //! \param name Szukana nazwa elementu
@@ -264,21 +289,6 @@ protected:
 
         return begin;
     }
-
-    //! \param ratio Wzgledna zmiana skali do zastosowania na skalach dzieci
-    void updateChildrenScale(double ratio);
-
-    //! \param child Dziecko ktorego dlugosc ulegla zmianie
-    void updateParentLength(const ChannelPtr & child);
-
-    //! \param dOffset Przyrost offsetu globalnego dzieci
-    void updateChildrenOffset(double dOffset);
-
-    //! \param offset Zmiana lokalnego i globalnego offsetu rodzica, !!! WARUNEK offset < 0 !!!
-    void updateParentOffset(double offset);
-
-    //! \param ratio Zamiana skali wplywajaca na pozycje Tagow, zaznaczen i masek
-    void updateForScaleRatio(double ratio);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

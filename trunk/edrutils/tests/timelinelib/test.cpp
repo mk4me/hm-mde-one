@@ -2,6 +2,7 @@
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 #include <utils/Debug.h>
+
 int main(int argc, char* argv[])
 {
     // Get the top level suite from the registry

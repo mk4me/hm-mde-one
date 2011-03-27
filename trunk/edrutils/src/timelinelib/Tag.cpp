@@ -23,6 +23,11 @@ const ChannelConstWPtr & Tag::getChannel() const
     return constChannel;
 }
 
+const ChannelWPtr & Tag::getChannel()
+{
+    return channel;
+}
+
 double Tag::getTime() const
 {
     return time;
@@ -96,6 +101,12 @@ void Tag::removeSelection(const SelectionPtr & selection)
         throw new std::runtime_error("Selection is not dependent on this tag!");
     }
 };
+
+void Tag::resetChannel()
+{
+    channel = ChannelPtr();
+    constChannel = ChannelConstPtr();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace timeline

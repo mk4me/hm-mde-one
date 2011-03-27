@@ -16,6 +16,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/type_traits.hpp>
 #include <vector>
 
 //! forward declaration
@@ -121,11 +122,52 @@ public:
     void addChild(const NamedTreeBasePtr & child, size_type idx);
 
     //! \param path Sciezka do wstawienia dziecka
-    void addChild(const std::string & path);
+    virtual void addChild(const std::string & path);
 
     //! \param path Sciezka do wstawienia dziecka
     //! \param idx Pozycja dziecka do wstawienia
-    void addChild(const std::string & path, size_type idx);
+    virtual void addChild(const std::string & path, size_type idx);
+
+    //! \param path Sciezka do wstawienia dziecka
+    template<class Derrived>
+    void addChild(const std::string & path)
+    {
+        addChild<Derrived>(path, -1);
+    }
+
+    template<class Derrived>
+    void addChild(const std::string & path, size_type idx) {
+        UTILS_STATIC_ASSERT((boost::is_base_of<NamedTreeBase, Derrived>::value), "Base class should inherit from NamedTreeBase");
+
+        UTILS_ASSERT((path.empty() == false), "Bledna sciezka do dziecka!");
+
+        Tokenizer tok(path, separator);
+
+        auto it = tok.begin();
+
+        NamedTreeBasePtr pos = findLastChildInPath(it, tok.end());
+
+        if(it == tok.end()) {
+            throw std::runtime_error("Child with the given name already exist!");
+        }
+
+        ////wyznaczam ostatni poziom, bedacy nazwa dla mojego nowego wezla
+        auto itEnd = tok.begin();
+        auto itTmp = tok.begin();
+        while(++itTmp != tok.end()){
+            itEnd++;
+        }
+
+        //stworz drzewo do itEnd, a pod itEnd mamy juz nazwe naszego wezsla
+        while(it != itEnd){
+            NamedTreeBasePtr nodeChild(new Derrived(*it));
+            pos->addChild(nodeChild);
+            pos = nodeChild;
+            it++;
+        }
+
+        pos->addChild(NamedTreeBasePtr(new Derrived(*itEnd)), idx);
+    }
 
     //! \param child Dziecko do usuniecia
     void removeChild(const NamedTreeBasePtr & child);
@@ -237,6 +279,7 @@ public:
     //! Wskaznik do danych
     typedef typename Base::Ptr<Data>::Type Ptr;
     typedef typename Base::Ptr<const Data>::Type ConstPtr;
+    typedef NamedTree<Data, PtrPolicy> NamedTreeType;
 
 private:
     //! Dane
@@ -295,6 +338,16 @@ public:
     {
         PtrPolicy::setPtr<Data>(this->data, data);
         PtrPolicy::setPtr<const Data>(this->constData, data);
+    }
+
+    virtual void addChild(const std::string & path)
+    {
+        NamedTreeBase::addChild<NamedTreeType>(path, -1);
+    }
+
+    void addChild(const std::string & path, NamedTreeBase::size_type idx)
+    {
+        NamedTreeBase::addChild<NamedTreeType>(path, idx);
     }
 };
 

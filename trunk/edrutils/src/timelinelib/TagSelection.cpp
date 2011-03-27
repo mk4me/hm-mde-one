@@ -85,6 +85,16 @@ void TagSelection::setEndTag(const TagPtr & end)
     this->constEnd = end;
 }
 
+TagSelectionPtr TagSelection::getTagSelection(const SelectionPtr & selection)
+{
+    return boost::dynamic_pointer_cast<TagSelection>(selection);
+}
+
+TagSelectionConstPtr TagSelection::getTagSelection(const SelectionConstPtr & selection)
+{
+    return boost::dynamic_pointer_cast<const TagSelection>(selection);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace timeline
 ////////////////////////////////////////////////////////////////////////////////

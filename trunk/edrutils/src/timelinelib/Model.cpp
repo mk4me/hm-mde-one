@@ -9,9 +9,9 @@ namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Konstruktor zerujacy
-Model::Model(const std::string & name) : Channel(name)
+Model::Model(const std::string & name) : root(new TChannel(name)), constRoot(root)
 {
-
+    root->setData(ChannelPtr(new Channel()));
 }
 
 Model::~Model()
@@ -19,53 +19,119 @@ Model::~Model()
 
 }
 
+const Model::Mask & Model::getMask() const
+{
+    return root->getData()->getMask();
+}
+
+double Model::getMaskBegin() const
+{
+    return root->getData()->getMaskBegin();
+}
+
+double Model::getMaskEnd() const
+{
+    return root->getData()->getMaskEnd();
+}
+
+double Model::getLocalOffset() const
+{
+    return root->getData()->getLocalOffset();
+}
+
+double Model::getGlobalOffset() const
+{
+    return root->getData()->getGlobalOffset();
+}
+
+double Model::getLength() const
+{
+    return root->getData()->getLength();
+}
+
+double Model::getTime() const
+{
+    return root->getData()->getTime();
+}
+
+double Model::getLocalTimeScale() const
+{
+    return constRoot->getData()->getLocalTimeScale();
+}
+
+double Model::getGlobalTimeScale() const
+{
+    return root->getData()->getGlobalTimeScale();
+}
+
+bool Model::isActive() const
+{
+    return root->getData()->isActive();
+}
+
 void Model::setMask(const Channel::Mask & mask)
 {
-    setMask(mask);
+    root->getData()->setMask(mask);
 
     notify();
 }
 
 void Model::setMaskBegin(double maskBegin)
 {
-    setMaskBegin(maskBegin);
+    root->getData()->setMaskBegin(maskBegin);
 
     notify();
 }
 
 void Model::setMaskEnd(double maskEnd)
 {
-    setMaskEnd(maskEnd);
+    root->getData()->setMaskEnd(maskEnd);
 
     notify();
 }
 
 void Model::setTime(double time)
 {
-    setTime(time);
-
     //TODO
-    //update time
-
-    notify();
-}
-
-void Model::setLength(double length)
-{
-    setLength(length);
-
-    //TODO
-    //update children
+    //propaguj dalej
+    
+    root->getData()->setTime(time);
 
     notify();
 }
 
 void Model::setLocalTimeScale(double timeScale)
 {
-    setLocalTimeScale(timeScale);
+    setChannelLocalTimeScale(constRoot, timeScale);
 
-    //TODO
-    //update children
+    notify();
+}
+
+void Model::setGlobalTimeScale(double timeScale)
+{
+    setChannelGlobalTimeScale(constRoot, timeScale);
+
+    notify();
+}
+
+void Model::setLocalOffset(double offset)
+{
+    setChannelLocalOffset(constRoot, offset);
+
+    notify();
+}
+
+
+void Model::setGlobalOffset(double offset)
+{
+    setChannelGlobalOffset(constRoot, offset);
+
+    notify();
+}
+
+void Model::setActive(bool active)
+{
+    root->getData()->setActive(active);
 
     notify();
 }
@@ -95,13 +161,13 @@ void Model::setState(const State & state)
     notify();
 }
 
-void Model::addTag(const ChannelConstPtr & channel, double time, const std::string & name)
+void Model::addTag(const TChannelConstPtr & channel, double time, const std::string & name)
 {
     if(verifyChannel(channel) == false) {
         throw std::invalid_argument("Channel belongs to another model!");
     }
 
-    ChannelPtr wChannel = getWritableChannel(channel);
+    ChannelPtr wChannel(getWritableChannel(channel));
     TagPtr tag(new Tag(wChannel, time, name));
     
     wChannel->addTag(tag);
@@ -114,6 +180,10 @@ void Model::addTag(const ChannelConstPtr & channel, double time, const std::stri
 
 void Model::removeTag(const TagConstPtr & tag)
 {
+    if(verifyChannel(tag->getChannel().lock())){
+        throw std::invalid_argument("Tag belongs to another model!");
+    }
+    
     ChannelPtr wChannel(getWritableChannel(tag->getChannel().lock()));
 
     if(tag->begin() != tag->end()){
@@ -152,7 +222,7 @@ Model::tag_size_type Model::sizeAllTags() const
     return constAllTags.size();
 }
 
-void Model::addSelection(const ChannelConstPtr & channel, double begin, double end, const std::string & name)
+void Model::addSelection(const TChannelConstPtr & channel, double begin, double end, const std::string & name)
 {
     if(verifyChannel(channel) == false) {
         throw std::invalid_argument("Channel belongs to another model!");
@@ -220,13 +290,13 @@ Model::selection_size_type Model::sizeAllSelections() const
 
 void Model::addChannel(const std::string & path, const IChannelPtr & channel)
 {
-    addChild(path);
-    getChannel(path)->setData(channel);
+    root->addChild(path);
+    getWritableTChannel(root->getChild(path))->setData(ChannelPtr(new Channel(channel)));
 }
 
-void Model::removeChannel(const ChannelConstPtr & channel)
+void Model::removeChannel(const TChannelConstPtr & channel)
 {
-    if(shared_from_this() == channel){
+    if(root == channel){
         throw std::invalid_argument("Timeline can NOT delete itself!");
     }
 
@@ -241,37 +311,137 @@ void Model::removeChannel(const ChannelConstPtr & channel)
 
 void Model::removeChannel(const std::string & path)
 {
-    removeChannel(getChannel(path));
+    removeChannel(findChannel(path));
 }
 
-void Model::setChannelOffset(const ChannelConstPtr & channel, double offset)
+Model::channel_const_iterator Model::beginChannels() const
 {
-    //TODO
-    //update channel offset
-    //propagate it up
+    return constRoot->begin();
+}
+
+Model::channel_const_iterator Model::endChannels() const
+{
+    return constRoot->end();
+}
+
+Model::TChannelConstPtr Model::getChannel(channel_size_type idx) const
+{
+    return toChannel(constRoot->getChild(idx));
+}
+
+Model::channel_size_type Model::sizeChannels() const
+{
+    return constRoot->size();
+}
+
+Model::TChannelConstPtr Model::getChannel(const std::string & path) const
+{
+    return toChannel(constRoot->getChild(path));
+}
+
+void Model::setChannelLocalOffset(const Model::TChannelConstPtr & channel, double offset)
+{
+    if(verifyChannel(channel) ==  false){
+        throw std::invalid_argument("Channel not exist in this model!");
+    }
+
+    ChannelPtr wChannel(getWritableChannel(channel));
+
+    double d = offset - wChannel->getLocalOffset();
+
+    //aktualizuj globalne offsety dzieci
+    updateChildrenOffset(channel, d);
+
+    if(channel->isRoot() == true){
+        wChannel->setLocalOffset(offset);
+        wChannel->setGlobalOffset(offset);
+
+    }else{
+        TChannelConstPtr parent(toChannel(channel->getParent().lock()));
+        wChannel->setLocalOffset(offset);
+        if(offset < 0) {
+
+            updateParentOffset(parent, channel);
+
+        }else{
+            //aktualizuj moje ofsety
+            wChannel->setLocalOffset(offset);
+            wChannel->setGlobalOffset(wChannel->getGlobalOffset() + d);
+
+            //aktualizuj dlugosc rodzica
+            updateParentLength(parent, channel);
+        }
+    }
 
     notify();
 }
 
-void Model::setChannelLength(const ChannelConstPtr & channel, double length)
+void Model::setChannelGlobalOffset(const Model::TChannelConstPtr & channel, double offset)
 {
-    //TODO
-    //update channel length
-    //propagate it up
+    if(verifyChannel(channel) ==  false){
+        throw std::invalid_argument("Channel not exist in this model!");
+    }
+
+    if(channel->isRoot() == true){
+        setChannelLocalOffset(channel, offset);
+    }else{
+        setChannelLocalOffset(channel, offset - toChannel(channel->getParent().lock())->getData()->getGlobalOffset());
+    }
+}
+
+void Model::setChannelLocalTimeScale(const Model::TChannelConstPtr & channel, double scale)
+{
+    if(verifyChannel(channel) ==  false){
+        throw std::invalid_argument("Channel not exist in this model!");
+    }
+
+    ChannelPtr wChannel(getWritableChannel(channel));
+
+    //ile zmianila sie skala
+    double scaleRatio = scale / wChannel->getLocalTimeScale();
+
+    //aktualizuj lokalna skale
+    wChannel->setLocalTimeScale(scale);
+
+    //aktualizuj dlugosc kanalu
+    wChannel->setLength(wChannel->getLength() * scaleRatio);
+
+    //aktualizuj globalna skale
+    if(channel->isRoot() == true){
+        //root ma lokalna i globalna skale taka sama
+        wChannel->setGlobalTimeScale(wChannel->getLocalTimeScale());
+    }else{
+
+        wChannel->setGlobalTimeScale(wChannel->getGlobalTimeScale() * scaleRatio);
+
+        //aktualizuj rodzica ze wzgledu na dlugosc
+        updateParentLength(toChannel(channel->getParent().lock()), channel);
+    }
+
+    //Aktrualizuj pozycje Tagow i Selekcji!!
+    //Aktualizuj maske!!
+    updateForScaleRatio(wChannel, scaleRatio);
+
+    //Aktualizuj skale dzieci
+    updateChildrenScale(channel, scaleRatio);
 
     notify();
 }
 
-void Model::setChannelTimeScale(const ChannelConstPtr & channel, double timeScale)
+void Model::setChannelGlobalTimeScale(const Model::TChannelConstPtr & channel, double scale)
 {
-    //TODO
-    //update channel time scale
-    //propagate it up
+    if(verifyChannel(channel) ==  false){
+        throw std::invalid_argument("Channel not exist in this model!");
+    }
 
-    notify();
+    if(channel->isRoot() == true){
+        setChannelLocalTimeScale(channel, scale);
+    }else{
+        setChannelLocalTimeScale(channel, scale / toChannel(channel->getParent().lock())->getData()->getGlobalTimeScale());
+    }
 }
 
-void Model::setChannelName(const ChannelConstPtr & channel, const std::string & name)
+void Model::setChannelName(const TChannelConstPtr & channel, const std::string & name)
 {    
     if(verifyChannel(channel) ==  false){
         throw std::invalid_argument("Channel not exist in this model!");
@@ -281,18 +451,18 @@ void Model::setChannelName(const ChannelConstPtr & channel, const std::string & 
         return;
     }
 
-    getWritableChannel(channel)->setName(name);
+    getWritableTChannel(channel)->setName(name);
 
     notify();
 }
 
-void Model::setChannelMask(const ChannelConstPtr & channel, const Channel::Mask & mask)
+void Model::setChannelMask(const TChannelConstPtr & channel, const Channel::Mask & mask)
 {
     if(verifyChannel(channel) ==  false){
         throw std::invalid_argument("Channel not exist in this model!");
     }
 
-    if(channel->getMask() == mask){
+    if(channel->getData()->getMask() == mask){
         return;
     }
 
@@ -301,13 +471,13 @@ void Model::setChannelMask(const ChannelConstPtr & channel, const Channel::Mask 
     notify();
 }
 
-void Model::setChannelMaskBegin(const ChannelConstPtr & channel, double maskBegin)
+void Model::setChannelMaskBegin(const TChannelConstPtr & channel, double maskBegin)
 {
     if(verifyChannel(channel) ==  false){
         throw std::invalid_argument("Channel not exist in this model!");
     }
 
-    if(channel->getMaskBegin() == maskBegin){
+    if(channel->getData()->getMaskBegin() == maskBegin){
         return;
     }
 
@@ -316,13 +486,13 @@ void Model::setChannelMaskBegin(const ChannelConstPtr & channel, double maskBegi
     notify();
 }
 
-void Model::setChannelMaskEnd(const ChannelConstPtr & channel, double maskEnd)
+void Model::setChannelMaskEnd(const TChannelConstPtr & channel, double maskEnd)
 {
     if(verifyChannel(channel) ==  false){
         throw std::invalid_argument("Channel not exist in this model!");
     }
 
-    if(channel->getMaskEnd() == maskEnd){
+    if(channel->getData()->getMaskEnd() == maskEnd){
         return;
     }
 
@@ -331,13 +501,13 @@ void Model::setChannelMaskEnd(const ChannelConstPtr & channel, double maskEnd)
     notify();
 }
 
-void Model::setChannelActive(const ChannelConstPtr & channel, bool active)
+void Model::setChannelActive(const TChannelConstPtr & channel, bool active)
 {
     if(verifyChannel(channel) ==  false){
         throw std::invalid_argument("Channel not exist in this model!");
     }
 
-    if(channel->isActive() == active){
+    if(channel->getData()->isActive() == active){
         return;
     }
 
@@ -346,7 +516,7 @@ void Model::setChannelActive(const ChannelConstPtr & channel, bool active)
     notify();
 }
 
-void Model::clearChannelTags(const ChannelConstPtr & channel)
+void Model::clearChannelTags(const TChannelConstPtr & channel)
 {
     if(verifyChannel(channel) ==  false){
         throw std::invalid_argument("Channel not exist in this model!");
@@ -363,7 +533,7 @@ void Model::clearChannelTags(const ChannelConstPtr & channel)
     notify();
 }
 
-void Model::clearChannelSelections(const ChannelConstPtr & channel)
+void Model::clearChannelSelections(const TChannelConstPtr & channel)
 {
     if(verifyChannel(channel) ==  false){
         throw std::invalid_argument("Channel not exist in this model!");
@@ -383,13 +553,13 @@ void Model::clearChannelSelections(const ChannelConstPtr & channel)
     notify();
 }
 
-void Model::splitChannel(const ChannelConstPtr & channel, double time, const std::string & nameA, const std::string & nameB)
+void Model::splitChannel(const TChannelConstPtr & channel, double time, const std::string & nameA, const std::string & nameB)
 {
     //TODO
     UTILS_ASSERT((false), "Do implementacji!");
 }
 
-void Model::mergeChannels(const ChannelConstPtr & channelA, const ChannelConstPtr & channelB, const std::string & name)
+void Model::mergeChannels(const TChannelConstPtr & channelA, const TChannelConstPtr & channelB, const std::string & name)
 {
     //TODO
     UTILS_ASSERT((false), "Do implementacji!");
@@ -497,9 +667,179 @@ void Model::shiftSelection(const SelectionConstPtr & selection, double dTime)
     notify();
 }
 
-ChannelPtr Model::getChannel(const std::string & path)
+Model::TChannelConstPtr Model::toChannel(const NamedTreeBaseConstPtr & channel)
 {
-    return boost::const_pointer_cast<Channel>(getChannel(getChild(path)));
+    TChannelConstPtr ret(boost::dynamic_pointer_cast<const TChannel>(channel));
+    return ret;
+}
+
+Model::TChannelPtr Model::findChannel(const std::string & path)
+{
+    return boost::const_pointer_cast<TChannel>(toChannel(root->getChild(path)));
+}
+
+bool Model::verifyChannel(const TChannelConstPtr & channel) const
+{
+    return channel->getRoot().lock() == constRoot;
+}
+
+bool Model::verifyChannel(const ChannelConstPtr & channel) const
+{
+    TChannelConstPtr tChannel(getTChannelForChannel(channel));
+    if(tChannel == nullptr || tChannel->getRoot().lock() != root){
+        return false;
+    }
+
+    return true;
+}
+
+Model::TChannelConstPtr Model::getTChannelForChannel(const ChannelConstPtr & channel) const
+{
+    auto it = channelToTChannel.find(channel);
+    if(it != channelToTChannel.end()){
+        return it->second;
+    }
+
+    return TChannelConstPtr();
+}
+
+Model::TChannelPtr Model::getWritableTChannel(const Model::TChannelConstPtr & channel)
+{
+    return boost::const_pointer_cast<TChannel>(channel);
+}
+
+Model::TChannelPtr Model::getWritableTChannel(const NamedTreeBaseConstPtr & channel)
+{
+    return getWritableTChannel(toChannel(channel));
+}
+
+ChannelPtr Model::getWritableChannel(const Model::TChannelConstPtr & channel)
+{
+    return boost::const_pointer_cast<Channel>(channel->getData());
+}
+
+ChannelPtr Model::getWritableChannel(const ChannelConstPtr & channel)
+{
+    return boost::const_pointer_cast<Channel>(channel);
+}
+
+TagPtr Model::getWritableTag(const TagConstPtr & tag)
+{
+    return boost::const_pointer_cast<Tag>(tag);
+}
+
+SelectionPtr Model::getWritableSelection(const SelectionConstPtr & selection)
+{
+    return boost::const_pointer_cast<SelectionBase>(selection);
+}
+
+void Model::updateChildrenScale(const Model::TChannelConstPtr & child, double ratio)
+{
+    for(auto it = child->begin(); it != child->end(); it++){
+        ChannelPtr channel(getWritableChannel(toChannel(*it)));
+        //channel->setLocalTimeScale(channel->getLocalTimeScale() * ratio);
+        channel->setGlobalTimeScale(channel->getGlobalTimeScale() * ratio);
+        channel->setLength(channel->getLength() * ratio);
+        updateForScaleRatio(channel, ratio);
+        updateChildrenScale(toChannel(*it), ratio);
+    }
+}
+
+void Model::updateForScaleRatio(const ChannelPtr & channel, double ratio)
+{
+    //aktualizuj czas maski
+    channel->setMaskBegin(channel->getMaskBegin() * ratio);
+    channel->setMaskEnd(channel->getMaskEnd() * ratio);
+
+    //aktualizuj zaznaczenia - czesc automatycznie zaktualizuje tagi
+    //tutaj zapamierujemy te tagi by ich ponownie nie modyfikowac
+
+    std::vector<TagConstPtr> updatedTags;
+
+    for(auto it = channel->beginSelections(); it != channel->endSelections(); it++){
+        TagSelectionConstPtr tagSel(TagSelection::getTagSelection(*it));
+        if(tagSel != nullptr){
+            if(std::find(updatedTags.begin(), updatedTags.end(), tagSel->getBeginTag().lock()) == updatedTags.end()){
+                updatedTags.push_back(tagSel->getBeginTag().lock());
+            }
+
+            if(std::find(updatedTags.begin(), updatedTags.end(), tagSel->getEndTag().lock()) == updatedTags.end()){
+                updatedTags.push_back(tagSel->getEndTag().lock());
+            }
+        }
+
+        (*it)->setBegin((*it)->getBegin() * ratio);
+        (*it)->setEnd((*it)->getEnd() * ratio);
+    }
+
+    for(auto it = channel->beginTags(); it != channel->endTags(); it++){
+        if(std::find(updatedTags.begin(), updatedTags.end(), *it) == updatedTags.end()){
+            (*it)->setTime((*it)->getTime() * ratio);
+        }
+    }
+}
+
+void Model::updateParentLength(const Model::TChannelConstPtr & parent, const TChannelConstPtr & child)
+{
+    bool goUp = false;
+    //czy dziecko dluzsze od rodzica
+    if(child->getData()->getLocalOffset() + child->getData()->getLength() > parent->getData()->getLength()){
+        //rozszerz rodzica, idz wyzej
+        getWritableChannel(parent)->setLength(child->getData()->getLocalOffset() + child->getData()->getLength());
+        goUp = true;
+    }else{
+        double l = 0;
+        for(auto it = parent->begin(); it != parent->end(); it++){
+            TChannelConstPtr channel(toChannel(*it));
+            l = std::max(l, channel->getData()->getLocalOffset() + channel->getData()->getLength());
+        }
+
+        if(l < parent->getData()->getLength()){
+            getWritableChannel(parent)->setLength(l);
+            goUp = true;
+        }
+    }
+
+    if(goUp == true && parent->isRoot() == false){
+        updateParentLength(toChannel(parent->getParent().lock()), parent);
+    }
+}
+
+void Model::updateChildrenOffset(const Model::TChannelConstPtr & child, double dOffset)
+{
+    for(auto it = child->begin(); it != child->end(); it++){
+        TChannelConstPtr tChannel(toChannel(*it));
+        ChannelPtr channel(getWritableChannel(tChannel));
+        channel->setGlobalOffset(channel->getGlobalOffset() + dOffset);
+        updateChildrenOffset(tChannel, dOffset);
+    }
+}
+
+void Model::updateParentOffset(const Model::TChannelConstPtr & parent, const Model::TChannelConstPtr & child)
+{
+    ChannelPtr wChild(getWritableChannel(child));
+    ChannelPtr wParent(getWritableChannel(parent));
+
+    double offset = wChild->getLocalOffset();
+
+    //aktualizuj localne przesuniecia dzieci
+    for(auto it = parent->begin(); it != parent->end(); it++){
+        ChannelPtr wCh(getWritableChannel(toChannel(*it)));
+        wCh->setLocalOffset(wCh->getLocalOffset() - offset);
+    }
+
+    //rodzic
+    wParent->setLength(wParent->getLength() - offset);
+    wParent->setLocalOffset(wParent->getLocalOffset() + offset);
+    wParent->setGlobalOffset(wParent->getGlobalOffset() + offset);
+
+    //specjalny przypadek - dziecko ktore spowodowalo przesuniecie
+    //nie moze sie zaczynac wczesniej niz rodzic
+    wChild->setGlobalOffset(wParent->getGlobalOffset());
+
+    if(parent->isRoot() == false && wParent->getLocalOffset() < 0){
+        updateParentOffset(toChannel(parent->getParent().lock()), parent);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
