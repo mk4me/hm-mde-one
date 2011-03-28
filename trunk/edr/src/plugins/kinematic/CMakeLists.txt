@@ -14,6 +14,7 @@ set(PRIVATE_H
 	KinematicParser.h
 	KinematicService.h
 	ISchemeDrawer.h
+	LineSchemeDrawer.h
 	mainwindow.h
 	OsgSchemeDrawer.h
 	PointSchemeDrawer.h
