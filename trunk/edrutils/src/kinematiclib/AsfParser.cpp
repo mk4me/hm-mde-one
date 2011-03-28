@@ -166,7 +166,8 @@ bool AsfParser::parseSingleBone(const string& singleBone, Joint& bone) {
         }
     }
     unsigned int count = channels.size();
-    if (limitValues.size() == (2 * count)) {
+    unsigned int limitsCount = limitValues.size();
+    if (limitsCount == (2 * count)) {
         for (unsigned int i = 0; i < count; ++i) {
             DegreeOfFreedom dof;
             dof.channel = channels[i];
@@ -174,7 +175,17 @@ bool AsfParser::parseSingleBone(const string& singleBone, Joint& bone) {
             dof.maxLimit = limitValues[2 * i + 1];
             bone.dofs.push_back(dof);
         }
-
+    } else if (limitsCount == 0) {
+        LOGGER(Logger::Debug, "Bone " + bone.name + " has no limit values");
+        double minf = -numeric_limits<double>::infinity();
+        double pinf = numeric_limits<double>::infinity();
+        for (unsigned int i = 0; i < count; ++i) {
+            DegreeOfFreedom dof;
+            dof.channel = channels[i];
+            dof.minLimit = minf;
+            dof.maxLimit = pinf;
+            bone.dofs.push_back(dof);
+        }
     } else {
         throw WrongFileException("dofs size != limits size");
     }
@@ -286,7 +297,24 @@ bool AsfParser::parseRoot(const string& root, Skeleton& skeleton) {
         }
     }
     
-    skeleton.setAxisOrder(order);
+    string s;
+    int count = channels.size();
+    for (int i = 0; i < count; i++) {
+        if (channels[i] == DegreeOfFreedom::RX) {
+            s += "X";
+        } else if (channels[i] == DegreeOfFreedom::RY) {
+            s += "Y";
+        } else if (channels[i] == DegreeOfFreedom::RZ) {
+            s += "Z";
+        }
+    }
+    Axis::Order dataOrder = Axis::getAxisOrder(s);
+    if (dataOrder == Axis::UnknownAxisOrder) {
+        throw WrongFileException("Wrong root order");
+    }
+
+    skeleton.setAxis(order);
+    skeleton.setOrder(dataOrder);
     //skeleton.setChannels(channels);
     skeleton.setOrientation(orientation);
     skeleton.setPosition(position);
@@ -327,6 +355,8 @@ bool AsfParser::parseHierarchy(const string& hierarchyString, Skeleton& skeleton
     root->id = -1;
     root->name = "root";
     root->parent.reset();
+
+    root->order = skeleton.getOrder();
     int count = channels.size();
     for (int i = 0; i < count; i++) {
         DegreeOfFreedom dof;
@@ -413,7 +443,7 @@ void kinematic::AsfParser::saveRoot( std::ostream& out ) {
     out << endl;
 
     if (!forceRootXYZ) {
-        out << "   " << "axis "  << Axis::getAxisOrderName(skeleton.getAxisOrder()) <<  endl;
+        out << "   " << "axis "  << Axis::getAxisOrderName(skeleton.getAxis()) <<  endl;
     } else {
         out << "   " << "axis XYZ" <<  endl;
     }

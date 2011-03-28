@@ -31,15 +31,19 @@ namespace kinematic
         /// \brief  ustawia poczatkowa orientacje w globalnym ukladzie odniesienia
         void setOrientation(osg::Vec3d orientation) { this->orientation = orientation; }
         /// \brief  zwraca kolejnosc rotacji
-        Axis::Order getAxisOrder() { return this->axisOrder; }
+        Axis::Order getAxis() { return this->axisOrder; }
         /// \brief  ustawia kolejnosc rotacji
-        void setAxisOrder(Axis::Order order) {this->axisOrder = order; }
+        void setAxis(Axis::Order order) {this->axisOrder = order; }
+
+        Axis::Order getOrder() { return this->dataOrder; }
+        void setOrder(Axis::Order order) {this->dataOrder = order; }
 
     protected:
         JointPtr       root;          //!< korzen, czyli kosc od ktorej zaczyna sie hierarchia. 
         osg::Vec3d       position;      //!< poczatkowa pozycja w globalnym ukladzie odniesienia
         osg::Vec3d       orientation;   //!< poczatkowa orientacja w globalnym ukladzie odniesienia
-        Axis::Order      axisOrder;     //!< kolejnosc rotacji
+        Axis::Order      axisOrder;     //!< kolejnosc rotacji (sekcja axis)
+        Axis::Order      dataOrder;     //!< kolejnosc rotacji (sekcja order)
         std::string      rootName;      //!< nazwa korzenia (w bvh)
     };
 }

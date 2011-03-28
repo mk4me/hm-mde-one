@@ -519,7 +519,7 @@ void kinematic::BvhParser::setBones()
     HandleBone(newRoot);
     model->getSkeleton().setRoot(newRoot);
     Axis::Order order = getAxisOrder(newRoot);
-    model->getSkeleton().setAxisOrder(order);
+    model->getSkeleton().setAxis(order);
 }
 //----------------------------------------------------------------------------------
 Axis::Order kinematic::BvhParser::getAxisOrder( JointPtr bone ) const

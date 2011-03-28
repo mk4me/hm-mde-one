@@ -1,7 +1,6 @@
 #ifndef HEADER_GUARD_SKELETONVIEWERLOGIC_H
 #define HEADER_GUARD_SKELETONVIEWERLOGIC_H
 
-#include <boost/function.hpp>
 #include <QtGUi/QTreeWidgetItem>
 #include <kinematiclib/SkeletalParsers.h>
 #include <kinematiclib/KinematicModel.h>

@@ -121,9 +121,11 @@ void SkeletalVisualizationScheme::updateJointTransforms( double time )
 {
     UTILS_ASSERT(kinematicModel);
     counterHelper = 0;
-    std::map<std::string, osg::Quat>& frame = kinematicModel->getQuaternionRotation(time);
+    auto frame = kinematicModel->getQuaternionRotation(time);
     hAnimSkeleton::Ptr skeleton = kinematicModel->getHAnimSkeleton();
     osg::Quat q; Vec3 pos;
+   // q = frame["HumanoidRoot"]; //
+    pos = kinematicModel->getRootPosition(time);
     updateJointTransforms(frame, skeleton->getHAnimRoot(), q, pos);
 }
 

@@ -59,7 +59,7 @@ namespace kinematic
             mass(1.0),
             angle(degrees),
             //frameTime(0.033333333333)
-            frameTime(0.001)
+            frameTime(0.01)
         {
         }
 

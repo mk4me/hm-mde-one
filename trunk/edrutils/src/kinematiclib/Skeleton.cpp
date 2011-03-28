@@ -12,6 +12,7 @@ Skeleton::Skeleton():
     position(0.0, 0.0, 0.0),
     orientation(0.0, 0.0, 0.0),
     axisOrder(Axis::XYZ),
+    dataOrder(Axis::XYZ),
     rootName("root")
 {
 }

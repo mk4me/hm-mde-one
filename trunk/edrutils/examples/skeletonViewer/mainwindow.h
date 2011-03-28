@@ -51,7 +51,7 @@ private:
     void MessageBox(const QString& message, QMessageBox::Icon icon = QMessageBox::NoIcon);
 
     void refreshTime();
-    
+    GeodePtr MainWindow::createFloor();
 
 private:
     Ui::MainWindow *ui;

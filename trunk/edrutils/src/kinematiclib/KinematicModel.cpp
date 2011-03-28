@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <algorithm>
 #include <osg/Quat>
 #include <osg/Vec3>
 #include <kinematiclib/SkeletalParsers.h>
@@ -36,7 +37,8 @@ void KinematicModel::createJointAndBone(std::string newJointName, std::string ne
     parentBone = bone;
 }
 
-KinematicModel::KinematicModel(void) 
+KinematicModel::KinematicModel(void) :
+    lengthRatio(-1.0)
 {
     //TODO : zamiast takiego rozwiazania wymusic zaladowanie slownika
     //jointMappingDictionary["Hips"] = "HumanoidRoot";
@@ -44,62 +46,101 @@ KinematicModel::KinematicModel(void)
     jointMappingDictionary["root0"] = "vl5";
     jointMappingDictionary["root1"] = "l_hip";
     jointMappingDictionary["root2"] = "r_hip";
-jointMappingDictionary["ToSpine"] = "vl4";
-jointMappingDictionary["Spine"] = "vt12";
-jointMappingDictionary["Spine1"] = "vt1";
-jointMappingDictionary["Spine10"] = "vc7";
-jointMappingDictionary["Spine11"] = "l_sternoclavicular";
-jointMappingDictionary["Spine12"] = "r_sternoclavicular";
-jointMappingDictionary["Neck"] = "vc1";
-jointMappingDictionary["Head"] = "skullbase";
-jointMappingDictionary["LeftShoulder"] = "l_shoulder";
-jointMappingDictionary["LeftArm"] = "l_elbow";
-jointMappingDictionary["LeftForeArm"] = "l_wrist";
-jointMappingDictionary["LeftHand"] = "l_middle0";
-jointMappingDictionary["RightShoulder"] = "r_shoulder";
-jointMappingDictionary["RightArm"] = "r_elbow";
-jointMappingDictionary["RightForeArm"] = "r_wrist";
-jointMappingDictionary["RightHand"] = "r_middle0";
-jointMappingDictionary["LeftUpLeg"] = "l_knee";
-jointMappingDictionary["LeftLeg"] = "l_ankle";
-jointMappingDictionary["LeftFoot"] = "l_subtalar";
-jointMappingDictionary["LeftToeBase"] = "l_metatarsal";
-jointMappingDictionary["RightUpLeg"] = "r_knee";
-jointMappingDictionary["RightLeg"] = "r_ankle";
-jointMappingDictionary["RightFoot"] = "r_subtalar";
-jointMappingDictionary["RightToeBase"] = "r_metatarsal";
+    jointMappingDictionary["ToSpine"] = "vl4";
+    jointMappingDictionary["Spine"] = "vt12";
+    jointMappingDictionary["Spine1"] = "vt1";
+    jointMappingDictionary["Spine10"] = "vc7";
+    jointMappingDictionary["Spine11"] = "l_sternoclavicular";
+    jointMappingDictionary["Spine12"] = "r_sternoclavicular";
+    jointMappingDictionary["Neck"] = "vc1";
+    jointMappingDictionary["Head"] = "skullbase";
+    jointMappingDictionary["LeftShoulder"] = "l_shoulder";
+    jointMappingDictionary["LeftArm"] = "l_elbow";
+    jointMappingDictionary["LeftForeArm"] = "l_wrist";
+    jointMappingDictionary["LeftHand"] = "l_middle0";
+    jointMappingDictionary["RightShoulder"] = "r_shoulder";
+    jointMappingDictionary["RightArm"] = "r_elbow";
+    jointMappingDictionary["RightForeArm"] = "r_wrist";
+    jointMappingDictionary["RightHand"] = "r_middle0";
+    jointMappingDictionary["LeftUpLeg"] = "l_knee";
+    jointMappingDictionary["LeftLeg"] = "l_ankle";
+    jointMappingDictionary["LeftFoot"] = "l_subtalar";
+    jointMappingDictionary["LeftToeBase"] = "l_metatarsal";
+    jointMappingDictionary["RightUpLeg"] = "r_knee";
+    jointMappingDictionary["RightLeg"] = "r_ankle";
+    jointMappingDictionary["RightFoot"] = "r_subtalar";
+    jointMappingDictionary["RightToeBase"] = "r_metatarsal";
     //loadMappingDictionary("dictionary.txt");
-     jointMappingDictionary["root"] = "HumanoidRoot";
-     jointMappingDictionary["lhipjoint"] = "l_hip";
-     jointMappingDictionary["lfemur"] = "l_knee";
-     jointMappingDictionary["ltibia"] = "l_ankle";
-     jointMappingDictionary["lfoot"] = "l_subtalar";
-     jointMappingDictionary["ltoes"] = "l_metatarsal";
-     jointMappingDictionary["rhipjoint"] = "r_hip";
-     jointMappingDictionary["rfemur"] = "r_knee";
-     jointMappingDictionary["rtibia"] = "r_ankle";
-     jointMappingDictionary["rfoot"] = "r_subtalar";
-     jointMappingDictionary["rtoes"] = "r_metatarsal";
-     jointMappingDictionary["lowerback"] = "vl5";
-     jointMappingDictionary["upperback"] = "vt12";
-     jointMappingDictionary["thorax"] = "vt1";
-     jointMappingDictionary["lowerneck"] = "vc7";
-     jointMappingDictionary["upperneck"] = "vc1";
-     jointMappingDictionary["head"] = "skullbase";
-     jointMappingDictionary["lclavicle"] = "l_sternoclavicular";
-     jointMappingDictionary["lhumerus"] = "l_shoulder";
-     jointMappingDictionary["lradius"] = "l_elbow";
-     jointMappingDictionary["lwrist"] = "l_wrist";
-     jointMappingDictionary["lhand"] = "l_middle0";
-     jointMappingDictionary["lfingers"] = "l_middle1";
-     jointMappingDictionary["lthumb"] = "l_thumb1";
-     jointMappingDictionary["rclavicle"] = "r_sternoclavicular";
-     jointMappingDictionary["rhumerus"] = "r_shoulder";
-     jointMappingDictionary["rradius"] = "r_elbow";
-     jointMappingDictionary["rwrist"] = "r_wrist";
-     jointMappingDictionary["rhand"] = "r_middle0";
-     jointMappingDictionary["rfingers"] = "r_middle1";
-     jointMappingDictionary["rthumb"] = "r_thumb1";
+    jointMappingDictionary["root"] = "HumanoidRoot";
+    jointMappingDictionary["lhipjoint"] = "l_hip";
+    jointMappingDictionary["lfemur"] = "l_knee";
+    jointMappingDictionary["ltibia"] = "l_ankle";
+    jointMappingDictionary["lfoot"] = "l_subtalar";
+    jointMappingDictionary["ltoes"] = "l_metatarsal";
+    jointMappingDictionary["rhipjoint"] = "r_hip";
+    jointMappingDictionary["rfemur"] = "r_knee";
+    jointMappingDictionary["rtibia"] = "r_ankle";
+    jointMappingDictionary["rfoot"] = "r_subtalar";
+    jointMappingDictionary["rtoes"] = "r_metatarsal";
+    jointMappingDictionary["lowerback"] = "vl5";
+    jointMappingDictionary["upperback"] = "vt12";
+    jointMappingDictionary["thorax"] = "vt1";
+    jointMappingDictionary["lowerneck"] = "vc7";
+    jointMappingDictionary["upperneck"] = "vc1";
+    jointMappingDictionary["head"] = "skullbase";
+    jointMappingDictionary["lclavicle"] = "l_sternoclavicular";
+    jointMappingDictionary["lhumerus"] = "l_shoulder";
+    jointMappingDictionary["lradius"] = "l_elbow";
+    jointMappingDictionary["lwrist"] = "l_wrist";
+    jointMappingDictionary["lhand"] = "l_middle0";
+    jointMappingDictionary["lfingers"] = "l_middle1";
+    jointMappingDictionary["lthumb"] = "l_thumb1";
+    jointMappingDictionary["rclavicle"] = "r_sternoclavicular";
+    jointMappingDictionary["rhumerus"] = "r_shoulder";
+    jointMappingDictionary["rradius"] = "r_elbow";
+    jointMappingDictionary["rwrist"] = "r_wrist";
+    jointMappingDictionary["rhand"] = "r_middle0";
+    jointMappingDictionary["rfingers"] = "r_middle1";
+    jointMappingDictionary["rthumb"] = "r_thumb1";
+
+
+    jointMappingDictionary["root"] = "HumanoidRoot"; 
+    jointMappingDictionary["LeftUpLeg_dum"] = "l_hip"; 
+    jointMappingDictionary["RightUpLeg_dum"] = "r_hip"; 
+    jointMappingDictionary["Spine_dum"] = "vl5"; 
+    jointMappingDictionary["LeftUpLeg"] = "l_knee"; 
+    jointMappingDictionary["LeftLeg"] = "l_ankle"; 
+    jointMappingDictionary["LeftFoot"] = "l_subtalar";  
+    jointMappingDictionary["LeftToeBase"] = "l_metatarsal"; 
+    jointMappingDictionary["RightUpLeg"] = "r_knee"; 
+    jointMappingDictionary["RightLeg"] = "r_ankle"; 
+    jointMappingDictionary["RightFoot"] = "r_subtalar"; 
+    jointMappingDictionary["RightToeBase"] = "r_metatarsal"; 
+    jointMappingDictionary["Spine"] = "vt12"; 
+    jointMappingDictionary["Spine1"] = "vt1"; 
+    jointMappingDictionary["Spine1_dum1"] = "vc7";  
+    jointMappingDictionary["Spine1_dum2"] = "l_sternoclavicular";  
+    jointMappingDictionary["Spine1_dum3"] = "r_sternoclavicular"; 
+    jointMappingDictionary["Neck"] = "vc1";  
+    jointMappingDictionary["Head"] = "skullbase"; 
+    jointMappingDictionary["LeftShoulder"] = "l_acromioclavicular"; 
+    jointMappingDictionary["LeftArm"] = "l_shoulder"; 
+    jointMappingDictionary["LeftForeArm"] = "l_elbow"; 
+    jointMappingDictionary["LeftHand"] = "l_wrist"; 
+    jointMappingDictionary["LeftHand_dum2"] = "l_middle0"; 
+    jointMappingDictionary["LeftHand_dum1"] = "l_thumb1";  
+    jointMappingDictionary["LeftHandThumb"] = "l_thumb2"; 
+    jointMappingDictionary["RightShoulder"] = "r_acromioclavicular";  
+    jointMappingDictionary["RightArm"] = "r_shoulder"; 
+    jointMappingDictionary["RightForeArm"] = "r_elbow"; 
+    jointMappingDictionary["RightHand"] = "r_wrist"; 
+    jointMappingDictionary["RightHand_dum2"] = "r_middle0"; 
+    jointMappingDictionary["RightHand_dum1"] = "r_thumb1";  
+    jointMappingDictionary["RightHandThumb"] = "r_thumb2"; 
+    
+    jointMappingDictionary["lshoulderjoint"] = "l_sternoclavicular";
+    jointMappingDictionary["rshoulderjoint"] = "r_sternoclavicular";
+
 }
 
 KinematicModel::KinematicModel(const std::string& dictionaryFilename)
@@ -351,11 +392,12 @@ void KinematicModel::doSkeletonMapping(SkeletalModelPtr skeletalModel)
     }
 }
 
-std::map<std::string, osg::Quat>& KinematicModel::getQuaternionRotation(int frameNo) {
+const std::map<std::string, osg::Quat>& KinematicModel::getQuaternionRotation(int frameNo) const
+{
     return this->quaternionRepresentation[frameNo];
 }
 
-std::map<std::string, osg::Quat>& KinematicModel::getQuaternionRotation(double time) 
+const std::map<std::string, osg::Quat>& KinematicModel::getQuaternionRotation(double time) const
 {
     //std::vector<SkeletalModel::singleFrame>& frames = this->skeletalModel->getFrames();
     int framesNo = frames.size();
@@ -366,15 +408,35 @@ std::map<std::string, osg::Quat>& KinematicModel::getQuaternionRotation(double t
 
 void KinematicModel::createQuaternionRepresentation(void) 
 {
-    //std::vector<SkeletalModel::singleFrame>& frames = this->skeletalModel->getFrames();
+    UTILS_ASSERT(lengthRatio > 0.0);
     int framesNo = frames.size();
+    if (framesNo == 0) {
+        throw kinematic::KinematicModelException("No frames loaded");
+    }
+
+    this->rootPositions.resize(framesNo);
     this->quaternionRepresentation.resize(framesNo);
-    //SkeletalModel::JointMap& jointsMap = this->skeletalModel->getJointMap();
-    //int jointsNo = jointsMap.size();
+    
+    list<string> dummies;
+    for_each(joints.begin(), joints.end(), [&](const pair<string, hAnimJointPtr>& p) {
+        dummies.push_back(p.first);
+    });
+
+    vector<SkeletalModel::singleBoneState>& bdata = frames[0].bonesData;
+    int bdataSize = bdata.size();
 
     for (int i = 0; i < framesNo; i++) {
+        if (frames[i].bonesData.size() != bdataSize) {
+            throw(KinematicModelException("Wrong data format"));
+        }
+    }
+
+    for (int i = bdata.size() - 1; i >= 0; --i) {
+        dummies.remove(bdata[i].name);
+    }
+    
+    for (int i = 0; i < framesNo; i++) {
         int jointStatesNo = frames[i].bonesData.size();
-        //this->quaternionRepresentation[i].resize(jointStatesNo);
         for (int j = 0; j < jointStatesNo; j++) {
             double rx, ry, rz;
             int index;
@@ -383,7 +445,6 @@ void KinematicModel::createQuaternionRepresentation(void)
             if (!joint) {
                 kinematic::WrongFileException("Joint " + name + " not found");
             }
-            //joint->id = i;
             SkeletalModel::singleBoneState jointState = frames[i].bonesData[j];
             index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RZ, joint->dofs);
             rz = (index != -1 ? jointState.channelValues[index] : 0.0);
@@ -391,17 +452,38 @@ void KinematicModel::createQuaternionRepresentation(void)
             rx = (index != -1 ? jointState.channelValues[index] : 0.0);
             index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RY, joint->dofs);
             ry = (index != -1 ? jointState.channelValues[index] : 0.0);
-            osg::Vec3d v; v[0] = rx; v[1] = ry; v[2] = rz;
-            osg::Matrix mat;
+            /*osg::Vec3d v; v[0] = rx; v[1] = ry; v[2] = rz;
+            osg::Matrix mat;*/
             double mul = skeletalModel->getAngle() == SkeletalModel::radians ? 1.0 : osg::DegreesToRadians(1.0);
             
             osg::Quat mX; mX.makeRotate(mul * (rx), osg::Vec3(1,0,0));
             osg::Quat mY; mY.makeRotate(mul * (ry), osg::Vec3(0,1,0));
             osg::Quat mZ; mZ.makeRotate(mul * (rz), osg::Vec3(0,0,1));
-            //#pragma message("kolejnosc ZYX")
-            quaternionRepresentation[i][name] = mX * mY * mZ;
+            
+            if (name == "HumanoidRoot" || name == "root") {
+                //quaternionRepresentation[i][name] = mZ * mY * mX;
+
+                index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TX, joint->dofs);
+                rootPositions[i][0] = (index != -1 ? jointState.channelValues[index] : 0.0);
+                index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TY, joint->dofs);
+                rootPositions[i][1] = (index != -1 ? jointState.channelValues[index] : 0.0);
+                index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TZ, joint->dofs);
+                rootPositions[i][2] = (index != -1 ? jointState.channelValues[index] : 0.0);
+                rootPositions[i] /= lengthRatio;
+            } /*else {
+                quaternionRepresentation[i][name] = mX * mY * mZ;
+            }*/
+
+            quaternionRepresentation[i][name] = createRotation(mX, mY, mZ, joint->order);
         }
+
+        osg::Quat ident;
+        for_each(dummies.begin(), dummies.end(), [&](const string& name) {
+            quaternionRepresentation[i][name] = ident;
+        });
     }
+
+
 }
 
 template <typename T>
@@ -613,6 +695,37 @@ osg::Quat KinematicModel::rotationParentChild(JointPtr parent, JointPtr child)
     res.set(resM);
     return res;
 }
+
+osg::Vec3 KinematicModel::getRootPosition( int frame ) const
+{
+    return rootPositions[frame];
+}
+
+osg::Vec3 KinematicModel::getRootPosition( double time ) const
+{
+    int framesNo = frames.size();
+    // TODO : Lerp
+    int frame = std::min(std::max(0, static_cast<int>(framesNo * time)), framesNo - 1);
+    return getRootPosition(frame);
+}
+
+osg::Quat KinematicModel::createRotation( const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order )
+{
+    switch (order) 
+    {
+    case Axis::XYZ: return rX * rY * rZ;
+    case Axis::XZY: return rX * rZ * rY;
+    case Axis::YXZ: return rY * rX * rZ;
+    case Axis::YZX: return rY * rZ * rX;
+    case Axis::ZXY: return rZ * rX * rY;
+    case Axis::ZYX: return rZ * rY * rX;
+    default:
+        UTILS_ASSERT(false);
+        osg::Quat q;
+        return q;
+    }
+}
+
 
 std::vector<SkeletonMappingScheme> SkeletonMappingScheme::LoadFromXML(const std::string& filename)
 {

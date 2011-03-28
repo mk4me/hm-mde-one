@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+
 namespace kinematic {
     
     /// \brief Makro, dzieki ktoremu nie wykona sie niepotrzebne skladanie wiadomosci (message)

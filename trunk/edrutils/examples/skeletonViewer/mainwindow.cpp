@@ -48,18 +48,61 @@ MainWindow::~MainWindow() {
 }
 
 
+GeodePtr MainWindow::createFloor()
+{
+    GeodePtr geode = new Geode();
+    osg::ref_ptr<Geometry> linesGeom = new osg::Geometry();
+
+    ref_ptr<Vec3Array> vertices = new osg::Vec3Array(44);
+
+    for (int i = 0; i < 11; i++) {
+        
+        (*vertices)[2 * i] = Vec3(-5.0f + i, 0, -5.0f);
+        (*vertices)[2 * i + 1] = Vec3(-5.0f + i, 0, 5.0f);
+        (*vertices)[20 + 2 * i] = Vec3(-5.0f, 0, -5.0f + i);
+        (*vertices)[20 + 2 * i + 1] = Vec3(5.0f, 0, -5.0f + i);
+        /*(*vertices)[2 * i] = Vec3(-5.0f + i, -5.0f, 0);
+        (*vertices)[2 * i + 1] = Vec3(-5.0f + i, 5.0f, 0);
+        (*vertices)[20 + 2 * i] = Vec3(-5.0f, -5.0f + i, 0);
+        (*vertices)[20 + 2 * i + 1] = Vec3(5.0f, -5.0f + i, 0);*/
+
+    }
+
+    linesGeom->setVertexArray(vertices);
+
+    // todo color
+    ref_ptr<Vec4Array> colors = new osg::Vec4Array;
+    colors->push_back(osg::Vec4(1.0f, 1.0f, 0.0f, 1.0f));
+    linesGeom->setColorArray(colors);
+    linesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
+
+
+    osg::Vec3Array* normals = new osg::Vec3Array;
+    normals->push_back(osg::Vec3(1.0f, -0.0f, 0.0f));
+    linesGeom->setNormalArray(normals);
+    linesGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
+
+    linesGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 44));
+
+    geode->addDrawable(linesGeom);
+    return geode;
+}
+
 void MainWindow::initViewer() {
     viewer = new core::QOsgDefaultWidget(this);
     ui->vbox->addWidget(viewer);
     const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
     // tworzenie kamery
-    viewer->getCamera()->setClearColor(osg::Vec4(0.705f, 0.72f, 0.705f, 1));
+    viewer->getCamera()->setClearColor(osg::Vec4(0.705f, 0.92f, 0.705f, 1));
     viewer->getCamera()->setNearFarRatio(0.000000001);
-    Vec3 pos( 0.0f, 0.0f, 9.0f);
+    Vec3 pos( 0.0f, 3.0f, 10.0f);
+    //Vec3 pos (0.0f, 9.0f, 3.0f);
     Vec3 at;
     Vec3 up(0, 1, 0);
+    //Vec3 up(0,0,1);
     viewer->getCamera()->setViewMatrixAsLookAt(pos, at, up);
     rootNode = new osg::Group;
+    rootNode->addChild(createFloor());
     viewer->setSceneData(rootNode);
 }
 
@@ -74,7 +117,8 @@ void MainWindow::on_loadSkeletonButton_clicked()
     try {
         QString fileName = QFileDialog::getOpenFileName(
             this,tr("Open File"),
-            "D:\\MotionCapture\\tests\\kinematic\\acclaim\\cmu\\01",
+            "D:\\MotionCapture\\tests\\kinematic\\acclaim\\cmu\\10",
+            //"C:\\Programming\\Projects\\HDEdr\\bin\\bin\\Debug\\data\\trials\\2011-02-22-P02-S01",
             tr("Animation Files (*.bvh *.amc)")
             );
 
@@ -83,7 +127,8 @@ void MainWindow::on_loadSkeletonButton_clicked()
         if(extension(p) == ".amc") {
             QString asfName = QFileDialog::getOpenFileName(
                 this,tr("Open File"),
-                "D:\\MotionCapture\\tests\\kinematic\\acclaim\\cmu\\01",
+                "D:\\MotionCapture\\tests\\kinematic\\acclaim\\cmu\\10",
+                //"C:\\Programming\\Projects\\HDEdr\\bin\\bin\\Debug\\data\\trials\\2011-02-22-P02-S01",
                 tr("Animation Files (*.asf)")
                 );
             path pp(toStdString(asfName));

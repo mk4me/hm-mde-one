@@ -145,7 +145,7 @@ public:
     void setSkeletalData(kinematic::SkeletalModelPtr skeletalModel);
     //! \brief zwraca szkielet zgodny z h-anim
     kinematic::hAnimSkeleton::Ptr getHAnimSkeleton() const { return haSkeleton; }
-    std::map<std::string, kinematic::hAnimJointPtr>& getJoints() {return joints; }
+    const std::map<std::string, kinematic::hAnimJointPtr>& getJoints() const { return joints; }
     // akcesory do markerow
     // TODO : integraca z parserem c3d
     void* getMarkersData() { return markers;}
@@ -162,14 +162,18 @@ public:
     /// \brief  Zwraca dane o rotacji dla wszystkich jointow dla konkretnej ramki
     /// \param  time znormalizowany czas (0 - 1) , clampowanie dla wartosci spoza zakresu
     /// \return Tablica z kwaternionami opisujacymi rotacje jointow.
-    std::map<std::string, osg::Quat>& getQuaternionRotation(double time);
+    const std::map<std::string, osg::Quat>& getQuaternionRotation(double time) const;
 
     osg::Quat getQuaternionRotationByName(const std::string& name, double time) const;
 
     /// \brief  Zwraca dane o rotacji dla wszystkich jointow dla konkretnej ramki
     /// \param  frameNo numer klatki, dla ktorej maja byc zwrocone dane
     /// \return Tablica z kwaternionami opisujacymi rotacje jointow. 
-    std::map<std::string, osg::Quat>& getQuaternionRotation(int frameNo);
+    const std::map<std::string, osg::Quat>& getQuaternionRotation(int frameNo) const;
+
+    osg::Vec3 getRootPosition(int frame) const;
+    osg::Vec3 getRootPosition(double time) const;
+
 
     // reprezentacje dla innych typow
     template <typename T>
@@ -249,6 +253,7 @@ private:
 
     osg::Vec3 vectorRotation(osg::Vec3 v, double rX, double rY, double rZ);
     osg::Quat rotationParentChild(JointPtr parent, JointPtr child);
+    osg::Quat createRotation(const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order);
 
 private:
     void* markers;                                                      //!< dane z markerami
@@ -262,9 +267,11 @@ private:
     double lengthRatio;                                                 //!< dlugosc przez ktora nalezy pomnozyc aby uzyskac poczatkowe dlugosci kosci 
     std::vector<SkeletalModel::singleFrame> frames;                     //!< zbior wszystkich klatek animacji
     std::vector<SkeletonMappingScheme> mappingSchemes;                  //!< slowniki ze sposobem mapowania
+    std::vector<osg::Vec3> rootPositions;
 }; 
 
 typedef boost::shared_ptr<KinematicModel> KinematicModelPtr;
+typedef boost::shared_ptr<const kinematic::KinematicModel> KinematicModelConstPtr;
 }
 
 #endif
