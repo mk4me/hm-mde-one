@@ -51,7 +51,6 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
     switch(model->getState()) {
     case communication::CommunicationManager::CopyDB: {
             widget->setInfoLabel("Updating server trials");
-            widget->setDownloadingState(true);
             break;
         }
         //nie uzywamy na razie
@@ -67,7 +66,6 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
             stream << "Downloading file " << model->getActualDownloadFileNumber() << " from " << model->getFilesToDownloadCount();
             widget->setInfoLabel(stream.str());
             widget->setProgress(model->getProgress());
-            widget->setDownloadingState(true);
             break;
         }
     case communication::CommunicationManager::Error: {
@@ -78,13 +76,11 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
         }
     case communication::CommunicationManager::UpdateTrials: {
             model->loadLocalTrials();
-            widget->setDownloadingState(true);
             model->setState(communication::CommunicationManager::Ready);
             break;
         }
     default: {
         widget->setOnline(model->isServerResponse());
-        widget->setDownloadingState(false);
         widget->setInfoLabel("");
         widget->setProgress(100);
         break;

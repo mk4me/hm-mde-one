@@ -39,6 +39,25 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Workspace:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTreeWidget" name="workspace">
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
     <widget class="QProgressBar" name="progressBar">
      <property name="maximumSize">
       <size>
@@ -158,6 +177,70 @@
    </property>
    <property name="visible">
     <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionAdd">
+   <property name="text">
+    <string>Add all</string>
+   </property>
+   <property name="toolTip">
+    <string>Add all files to workspace</string>
+   </property>
+  </action>
+  <action name="actionRemove">
+   <property name="text">
+    <string>Remove all</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove all files from workspace</string>
+   </property>
+  </action>
+  <action name="actionAdd_c3d">
+   <property name="text">
+    <string>Add c3d</string>
+   </property>
+   <property name="toolTip">
+    <string>Add c3d file</string>
+   </property>
+  </action>
+  <action name="actionAdd_videos">
+   <property name="text">
+    <string>Add videos</string>
+   </property>
+   <property name="toolTip">
+    <string>Add video files</string>
+   </property>
+  </action>
+  <action name="actionAdd_amc">
+   <property name="text">
+    <string>Add amc</string>
+   </property>
+   <property name="toolTip">
+    <string>Add amc/asf files</string>
+   </property>
+  </action>
+  <action name="actionRemove_c3d">
+   <property name="text">
+    <string>Remove c3d</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove c3d file(s)</string>
+   </property>
+  </action>
+  <action name="actionRemove_videos">
+   <property name="text">
+    <string>Remove videos</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove video files</string>
+   </property>
+  </action>
+  <action name="actionRemove_amc">
+   <property name="text">
+    <string>Remove amc</string>
+   </property>
+   <property name="toolTip">
+    <string>Rmove amc file(s)</string>
    </property>
   </action>
  </widget>
@@ -307,6 +390,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionAdd</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>addToWorkspace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRemove</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>removeFromWorkspace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>workspace</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>contextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>437</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>performerViewPressed(bool)</slot>
@@ -318,5 +449,7 @@
   <slot>contextMenu(QPoint)</slot>
   <slot>loadPressed()</slot>
   <slot>trialContextMenu(QPoint)</slot>
+  <slot>addToWorkspace()</slot>
+  <slot>removeFromWorkspace()</slot>
  </slots>
 </ui>

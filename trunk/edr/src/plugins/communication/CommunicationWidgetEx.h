@@ -9,61 +9,281 @@
 #include "ui_CommunicationWidgetEx.h"
 
 class CommunicationService;
-class CommunicationWidgetEx;
 
+typedef std::pair<bool, ShallowCopy::Performer> PerformerMark;
+typedef std::vector<PerformerMark> PerformersMarks;
+
+typedef std::pair<bool, ShallowCopy::Session> SessionMark;
+typedef std::vector<SessionMark> SessionsMarks;
+
+typedef std::pair<bool, ShallowCopy::Trial> TrialMark;
+typedef std::vector<TrialMark> TrialsMarks;
+
+struct EntityRelations
+{
+    EntityRelations(bool markAll, bool markC3ds, bool markVideos, bool markAmcs)
+        : markAll(markAll), markC3ds(markC3ds), markVideos(markVideos), markAmcs(markAmcs) { };
+    bool markAll;
+    bool markC3ds;
+    bool markVideos;
+    bool markAmcs;
+};
+
+struct TrialRelation : public EntityRelations
+{
+    TrialRelation()
+        : EntityRelations(false, false, false, false) {};
+    ShallowCopy::Trial trial;
+};
+
+typedef core::shared_ptr<TrialRelation> TrialRelationPtr;
+typedef std::vector<TrialRelationPtr> TrialsRelations;
+
+struct SessionRelation : public EntityRelations
+{
+    SessionRelation()
+        : EntityRelations(false, false, false, false) {};
+    ShallowCopy::Session session;
+    TrialsRelations trials;
+};
+
+typedef core::shared_ptr<SessionRelation> SessionRelationPtr;
+typedef std::vector<SessionRelationPtr> SessionsRelations;
+
+struct PerformerRelation : public EntityRelations
+{
+    PerformerRelation()
+        : EntityRelations(false, false, false, false) {};
+    ShallowCopy::Performer performer;
+    SessionsRelations sessions;
+};
+
+typedef core::shared_ptr<PerformerRelation> PerformerRelationPtr;
+typedef std::vector<PerformerRelationPtr> PerformersRelations;
+
+/**
+@author Marek Daniluk
+@brief Klasa IEntityTreeItem dziedziczy po QTreeWidgetItem i rozszerza mo¿liwoœci elementów drzewa o menu
+kontekstowe i dynamiczn¹ zmianê liczby i nazw kolumn nag³ówka QTreeWidget. Poniewa¿ reprezentuje dane
+powi¹zane z p³ytk¹ kopi¹ baz¹ danych opieraj¹c¹ siê na wielu typach, klasa jest abstrakcyjna.
+*/
 class IEntityTreeItem : public QTreeWidgetItem
 {
+protected:
+    QMenu* menu;
+    QStringList headers;
 public:
     virtual ~IEntityTreeItem() {};
-
+    
     virtual int getEntityID() = 0;
+
+    virtual void setMarkedAll(bool mark) = 0;
+
+    virtual bool isMarkedAll() const = 0;
+
+    virtual void setMarkedC3ds(bool mark) = 0;
+
+    virtual bool isMarkedC3ds() const = 0;
+
+    virtual void setMarkedVideos(bool mark) = 0;
+
+    virtual bool isMarkedVideos() const = 0;
+
+    virtual void setMarkedAmcs(bool mark) = 0;
+
+    virtual bool isMarkedAmcs() const = 0;
+
+    void setMenu(QMenu* menu)
+    {
+        this->menu = menu;
+    };
+
+    QMenu* getMenu()
+    {
+        return menu;
+    };
+
+    const QStringList& getHeaders() const
+    {
+        return headers;
+    };
 };
 
 class PerformerTreeItem : public IEntityTreeItem
 {
-    ShallowCopy::Performer performer;
+    PerformerRelationPtr performer;
 public:
-    PerformerTreeItem();
+    PerformerTreeItem(PerformerRelationPtr performer);
 
     virtual ~PerformerTreeItem() {};
 
-    void setPerformer(const ShallowCopy::Performer& performer);
+    //void setPerformer(const PerformerMark& performer);
 
     virtual int getEntityID()
     {
-        return performer.performerID;
+        return performer->performer.performerID;
+    };
+
+    virtual void setMarkedAll(bool mark)
+    {
+        performer->markAll = mark;
+        performer->markC3ds = mark;
+        performer->markVideos = mark;
+        performer->markAmcs = mark;
+    };
+
+    virtual bool isMarkedAll() const
+    {
+        return performer->markAll;
+    };
+
+    virtual void setMarkedC3ds(bool mark)
+    {
+        performer->markC3ds = mark;
+    };
+
+    virtual bool isMarkedC3ds() const
+    {
+        return performer->markC3ds;
+    };
+
+    virtual void setMarkedVideos(bool mark)
+    {
+        performer->markVideos = mark;
+    };
+
+    virtual bool isMarkedVideos() const
+    {
+        return performer->markVideos;
+    };
+
+    virtual void setMarkedAmcs(bool mark)
+    {
+        performer->markAmcs = mark;
+    };
+
+    virtual bool isMarkedAmcs() const
+    {
+        return performer->markAmcs;
     };
 };
 
 class SessionTreeItem : public IEntityTreeItem
 {
-    ShallowCopy::Session session;
+    SessionRelationPtr session;
 public:
-    SessionTreeItem();
+    SessionTreeItem(SessionRelationPtr session);
 
     virtual ~SessionTreeItem() {};
 
-    void setSession(const ShallowCopy::Session& session);
+    //void setSession(const SessionMark& session);
 
     virtual int getEntityID()
     {
-        return session.sessionID;
+        return session->session.sessionID;
+    };
+
+    virtual void setMarkedAll(bool mark)
+    {
+        session->markAll = mark;
+        session->markC3ds = mark;
+        session->markVideos = mark;
+        session->markAmcs = mark;
+    };
+
+    virtual bool isMarkedAll() const
+    {
+        return session->markAll;
+    };
+
+    virtual void setMarkedC3ds(bool mark)
+    {
+        session->markC3ds = mark;
+    };
+
+    virtual bool isMarkedC3ds() const
+    {
+        return session->markC3ds;
+    };
+
+    virtual void setMarkedVideos(bool mark)
+    {
+        session->markVideos = mark;
+    };
+
+    virtual bool isMarkedVideos() const
+    {
+        return session->markVideos;
+    };
+
+    virtual void setMarkedAmcs(bool mark)
+    {
+        session->markAmcs = mark;
+    };
+
+    virtual bool isMarkedAmcs() const
+    {
+        return session->markAmcs;
     };
 };
 
 class TrialTreeItem : public IEntityTreeItem
 {
-    ShallowCopy::Trial trial;
+protected:
+    TrialRelationPtr trial;
 public:
-    TrialTreeItem();
+    TrialTreeItem(TrialRelationPtr trial);
 
     virtual ~TrialTreeItem() {};
 
-    void setTrial(const ShallowCopy::Trial& trial, std::vector<core::IDataManager::LocalTrial>& localTrials);
+    //void setTrial(const TrialMark& trial);//, std::vector<core::IDataManager::LocalTrial>& localTrials);
 
     virtual int getEntityID()
     {
-        return trial.trialID;
+        return trial->trial.trialID;
+    };
+
+    virtual void setMarkedAll(bool mark)
+    {
+        trial->markAll = mark;
+        trial->markC3ds = mark;
+        trial->markVideos = mark;
+        trial->markAmcs = mark;
+    };
+
+    virtual bool isMarkedAll() const
+    {
+        return trial->markAll;
+    };
+
+    virtual void setMarkedC3ds(bool mark)
+    {
+        trial->markC3ds = mark;
+    };
+
+    virtual bool isMarkedC3ds() const
+    {
+        return trial->markC3ds;
+    };
+
+    virtual void setMarkedVideos(bool mark)
+    {
+        trial->markVideos = mark;
+    };
+
+    virtual bool isMarkedVideos() const
+    {
+        return trial->markVideos;
+    };
+
+    virtual void setMarkedAmcs(bool mark)
+    {
+        trial->markAmcs = mark;
+    };
+
+    virtual bool isMarkedAmcs() const
+    {
+        return trial->markAmcs;
     };
 
     const QString getName() const;
@@ -76,7 +296,6 @@ Jest to druga wersja widoku, bazuj¹ca na widgecie QTreeWidget. Widok dostarcza t
 listowanie triali, wyszczegó³nienie lokalnych i serwerowych prób pomiarowych, ³adowanie lokalnych prób pomiarowych, pobieranie
 serwerowych triali. Dodatkow¹ funkcjonalnoœci¹ s¹ widoki wprowadzone wraz z nowym widokiem.
 */
-
 class CommunicationWidgetEx : public QWidget, public Ui::CommunicationWidget, public utils::Observer<communication::CommunicationManager>
 {
     Q_OBJECT
@@ -109,24 +328,14 @@ public:
     */
     void setOnline(bool isOnline)
     {
-        this->isOnline = isOnline;
-    }
-    /**
-    Ustawia widget w tryb pobierania, dodaje mo¿liwoœæ przerwania i blokuje pobieranie
-    wiêcej ni¿ jednego triala na raz.
-    @param isDownloading czy akcje pobierania powinny byæ zablokowane
-    */
-    void setDownloadingState(bool isDownloading)
-    {
-        if(isDownloading) {
-            actionAbort_download->setVisible(true);
-            actionDownload->setDisabled(true);
+        if(!isOnline) {
+            actionDownload->setVisible(false);
+            actionUpdate->setVisible(false);
         } else {
-            actionAbort_download->setVisible(false);
-            actionDownload->setDisabled(false);
+            actionDownload->setVisible(true);
+            actionUpdate->setVisible(true);
         }
     }
-
 public slots:
     //widok performera
     void performerViewPressed(bool tog);
@@ -146,8 +355,14 @@ public slots:
     void contextMenu(QPoint);
     //menu dla triala
     void trialContextMenu(QPoint);
-    //wybrany trial
+    //dodawanie galezi do workspace
+    void addToWorkspace();
+    //usuwanie galezi z workspace
+    void removeFromWorkspace();
+    //
     void treeItemClicked(QTreeWidgetItem* item, int column);
+    //
+    void workspaceItemClicked(QTreeWidgetItem* item, int column);
 private:
     /**
     WskaŸnik na kontroler serwisu
@@ -168,24 +383,50 @@ private:
     */
     void downloadTrial(int trialID);
     /**
-    Lokalna kopia danych zwi¹zana z problemem Qt i w¹tkami "z zewn¹trz".
+    Buduj widok performera
     */
-    ShallowCopy::ShallowCopy shallowCopy;
+    void buildPerformerView(QTreeWidget* tree, bool hideUnmarked);
+    /**
+    Buduj widok sesji
+    */
+    void buildSessionView(QTreeWidget* tree, bool hideUnmarked);
+    /**
+    Buduj widok próby pomiarowej
+    */
+    void buildTrialView(QTreeWidget* tree, bool hideUnmarked);
+    /**
+    Tworzy widok dla triala
+    */
+    TrialTreeItem* createTrialItem(TrialRelationPtr trial);
+    //
+    void markRecursive(bool mark, IEntityTreeItem* item);
+    /**
+    Dane z p³ytkiej kopii DB powi¹zane relacjami.
+    */
+    PerformersRelations performersWithRelations;
     /**
     Lokalna kopia danych zwi¹zana z problemem Qt i w¹tkami "z zewn¹trz".
     */
     MetaData::MetaData metaData;
-
-    bool isOnline;
     /**
     Kopia prób pomiarowych znajduj¹cych siê lokalnie.
     */
     std::vector<core::IDataManager::LocalTrial> localTrials;
-
-    bool isLocalTrialSelected;
-    bool isServerTrialSelected;
-
-    core::IDataManager::LocalTrial loadingTrial;
-    int downloadingTrialID;
+    /**
+    Menu kontekstowe dla triala lokalnego.
+    */
+    QMenu* menuTl;
+    /**
+    Menu kontekstowe dla triala serwerowego.
+    */
+    QMenu* menuTs;
+    /**
+    Menu kontekstowe dla sesji.
+    */
+    QMenu* menuS;
+    /**
+    Menu kontekstowe dla performera.
+    */
+    QMenu* menuP;
 };
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGETEX_H__
