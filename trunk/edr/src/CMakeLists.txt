@@ -79,6 +79,7 @@ find_package(log4cxx)
 find_package(VidLib)
 find_package(Utils)
 find_package(osgui)
+find_package(KinematicLib)
 
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)
