@@ -101,6 +101,15 @@ double Channel::getTime() const
     return time;
 }
 
+void Channel::setTime(double time){
+    if(active == true && time >= globalOffset + mask.first && time <= globalOffset + mask.second){
+        this->time = time;
+        if(innerChannel != nullptr){
+            innerChannel->setTime((this->time - globalOffset - mask.first) / globalScale);
+        }
+    }
+}
+
 double Channel::getLocalTimeScale() const
 {
     return localScale;
@@ -247,12 +256,6 @@ void Channel::setGlobalOffset(double offset)
     globalOffset = offset; 
 }
 
-void Channel::setTime(double time)
-{
-    //TODO
-    //set time
-}
-
 void Channel::setLocalTimeScale(double scale)
 {
     UTILS_ASSERT((scale != 0), "Nieprawidlowa skala czasu");
@@ -314,6 +317,9 @@ void Channel::addSelection(const SelectionPtr & selection)
 
 void Channel::removeSelection(const SelectionPtr & selection)
 {
+    //TODO
+    //sprawdz czy to nie TagSelection i wyrejestruj to zaznaczenie jesli to konieczne
+    
     Selections::iterator it = std::remove(selections.begin(), selections.end(), selection);
     if(it != selections.end()){
         selections.resize(std::distance(selections.begin(), it));
@@ -324,14 +330,32 @@ void Channel::removeSelection(const SelectionPtr & selection)
 
 void Channel::clearTags()
 {
+    //TODO
+    //poprawic
+
     tags.swap(Tags());
     constTags.swap(ConstTags());
 }
 
 void Channel::clearSelections()
 {
+    //TODO
+    //poprawic
+    
     selections.swap(Selections());
     constSelections.swap(ConstSelections());
+}
+
+void Channel::clearChannel()
+{
+    //TODO
+    //poprawic
+    
+    selections.swap(Selections());
+    constSelections.swap(ConstSelections());
+
+    tags.swap(Tags());
+    constTags.swap(ConstTags());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -65,6 +65,10 @@ protected:
     typedef Selections::iterator selection_iterator;
     typedef std::map<ChannelConstPtr, TChannelConstPtr> ChannelToTChannel;
 
+public:
+    // HACK
+    volatile bool timeDirty;
+
 private:
 
     //! Wszystkie tagi wystepujace w timeline
@@ -294,6 +298,9 @@ public:
     //! \param channel Kanal do zmiany
     void clearChannelSelections(const TChannelConstPtr & channel);
 
+    //! \param channel Kanal do wyczyszczenia - zaznaczenia - tagi
+    void clearChannel(const TChannelConstPtr & channel);
+
     //! \param channel Kanal do podzialu
     //! \param time Czas kanalu w ktorym dokona sie podzial kanalu - 0 < time < length
     //! \param nameA Nazwa mlodszej czesci kanalu po podziale, musi byc unikalna wzgledem rodzica kanalu
@@ -343,6 +350,10 @@ public:
     static TChannelConstPtr toChannel(const NamedTreeBaseConstPtr & channel);
 
 private:
+
+    //! \param child Dzicko od ktorego czas aktualizujemy io propagujemy na jego dzieci
+    //! \param time Czas ktory ustawiamy
+    static void propagateTime(const TChannelConstPtr & child, double time);
 
     //! \param path Sciezka do kanalu wzgledem roota
     //! \return Kanal o zadanej sciezce

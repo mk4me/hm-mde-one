@@ -49,8 +49,11 @@ private:
 
     static const Separator separator;
 
-    //! nazwa wezla
+    //! Nazwa wezla
     std::string name;
+
+    //! absolutna sciezka w hierarchi
+    std::string absolutePath;
 
     //! \return Rodzic wezla
     NamedTreeBaseWPtr parent;
@@ -58,10 +61,10 @@ private:
     //! \return Rodzic wezla
     NamedTreeBaseConstWPtr constParent;
 
-    //! dzieci
+    //! Dzieci
     Children children;
 
-    //! dzieci z modyfikatorem const
+    //! Dzieci z modyfikatorem const
     ConstChildren constChildren;
 
 public:
@@ -79,6 +82,10 @@ public:
 
     //! \return Nazwa wezla
     const std::string & getName() const;
+
+    //! root ma sciezke absolutna ./
+    //! \return Absolutna sciezka poczynajac od roota
+    const std::string & getAbsolutePath() const;
 
     //! \param name Nazwa wezla
     void setName(std::string name);
@@ -263,6 +270,9 @@ protected:
     {
         return std::find_if(begin, end, [&](NamedTreeBaseConstPtr child){ return child->getName() == name; });
     }
+
+    //! Aktualizuje absolutna sciezke wezla
+    void updateAbsolutePath();
 
 };
 

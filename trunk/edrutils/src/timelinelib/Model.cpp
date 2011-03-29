@@ -11,7 +11,7 @@ namespace timeline{
 //! Konstruktor zerujacy
 Model::Model(const std::string & name) : root(new TChannel(name)), constRoot(root)
 {
-    root->setData(ChannelPtr(new Channel()));
+
 }
 
 Model::~Model()
@@ -21,37 +21,37 @@ Model::~Model()
 
 const Model::Mask & Model::getMask() const
 {
-    return root->getData()->getMask();
+    return constRoot->getData()->getMask();
 }
 
 double Model::getMaskBegin() const
 {
-    return root->getData()->getMaskBegin();
+    return constRoot->getData()->getMaskBegin();
 }
 
 double Model::getMaskEnd() const
 {
-    return root->getData()->getMaskEnd();
+    return constRoot->getData()->getMaskEnd();
 }
 
 double Model::getLocalOffset() const
 {
-    return root->getData()->getLocalOffset();
+    return constRoot->getData()->getLocalOffset();
 }
 
 double Model::getGlobalOffset() const
 {
-    return root->getData()->getGlobalOffset();
+    return constRoot->getData()->getGlobalOffset();
 }
 
 double Model::getLength() const
 {
-    return root->getData()->getLength();
+    return constRoot->getData()->getLength();
 }
 
 double Model::getTime() const
 {
-    return root->getData()->getTime();
+    return constRoot->getData()->getTime();
 }
 
 double Model::getLocalTimeScale() const
@@ -61,12 +61,12 @@ double Model::getLocalTimeScale() const
 
 double Model::getGlobalTimeScale() const
 {
-    return root->getData()->getGlobalTimeScale();
+    return constRoot->getData()->getGlobalTimeScale();
 }
 
 bool Model::isActive() const
 {
-    return root->getData()->isActive();
+    return constRoot->getData()->isActive();
 }
 
 void Model::setMask(const Channel::Mask & mask)
@@ -92,12 +92,22 @@ void Model::setMaskEnd(double maskEnd)
 
 void Model::setTime(double time)
 {
-    //TODO
-    //propaguj dalej
-    
-    root->getData()->setTime(time);
+    double t = time + root->getData()->getGlobalOffset();
+
+    propagateTime(constRoot, t);
 
     notify();
+}
+
+void Model::propagateTime(const TChannelConstPtr & child, double time)
+{
+    getWritableChannel(child)->setTime(time);
+
+    if(child->getData()->getTime() == time){
+        for(auto it = child->begin(); it != child->end(); it++){
+            propagateTime(toChannel(*it), time);
+        }
+    }
 }
 
 void Model::setLocalTimeScale(double timeScale)
@@ -303,6 +313,12 @@ void Model::removeChannel(const TChannelConstPtr & channel)
     if(verifyChannel(channel) == false){
         throw std::invalid_argument("TChannel not exist in this model!");
     }
+
+    
+    for(auto it = channel->getData()->beginSelections(); it != channel->getData()->endSelections(); it++){
+
+    }
+    
 
     //TODO
     //zebrac wszystkie podkanaly, tagi, zaznaczenia i usunac je
@@ -523,6 +539,13 @@ void Model::clearChannelTags(const TChannelConstPtr & channel)
     }
 
     ChannelPtr wChannel(getWritableChannel(channel));
+
+    for(auto it = wChannel->beginTags(); it != wChannel->endTags(); it++) {
+        if((*it)->size() != 0){
+            throw std::runtime_error("Can not delete tags when some selections are based on them!");
+        }
+    }
+
     for(auto it = wChannel->beginTags(); it != wChannel->endTags(); it++) {
         allTags.resize(std::distance(allTags.begin(), std::remove(allTags.begin(), allTags.end(), *it)));
         constAllTags.resize(std::distance(constAllTags.begin(), std::remove(constAllTags.begin(), constAllTags.end(), *it)));
@@ -551,6 +574,23 @@ void Model::clearChannelSelections(const TChannelConstPtr & channel)
     wChannel->clearSelections();
 
     notify();
+}
+
+void Model::clearChannel(const TChannelConstPtr & channel)
+{
+    if(verifyChannel(channel) ==  false){
+        throw std::invalid_argument("Channel not exist in this model!");
+    }
+
+    ChannelPtr wChannel(getWritableChannel(channel));
+    for(auto it = wChannel->beginSelections(); it != wChannel->endSelections(); it++) {
+        allSelections.resize(std::distance(allSelections.begin(),
+            std::remove(allSelections.begin(), allSelections.end(), *it)));
+
+        constAllSelections.resize(std::distance(constAllSelections.begin(),
+            std::remove(constAllSelections.begin(), constAllSelections.end(), *it)));
+    }
+
 }
 
 void Model::splitChannel(const TChannelConstPtr & channel, double time, const std::string & nameA, const std::string & nameB)

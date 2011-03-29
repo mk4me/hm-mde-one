@@ -61,6 +61,9 @@ class Model;
 typedef boost::shared_ptr<Model> ModelPtr;
 typedef boost::weak_ptr<Model> ModelWPtr;
 
+typedef boost::shared_ptr<const Model> ModelConstPtr;
+typedef boost::weak_ptr<const Model> ModelConstWPtr;
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace timeline
 ////////////////////////////////////////////////////////////////////////////////

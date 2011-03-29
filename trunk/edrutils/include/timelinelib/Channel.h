@@ -93,7 +93,7 @@ public:
     // ------------ Obsluga dodatkowych cech strumienia danych-------------------------------------
 
     //! \param channel Kanal zdefiniowany przez uzytkownika i opakowany przez nasza klase
-    virtual void setInnerChannel(const IChannelPtr & channel);
+    void setInnerChannel(const IChannelPtr & channel);
 
     //! \return Kanal zdefinowany przez klienta
     const IChannelConstPtr & getInnerChannel() const;
@@ -219,23 +219,26 @@ protected:
     //! \return Kanal zdefinowany przez klienta
     const IChannelPtr & getInnerChannel();
 
-    //! czysci liste tagow zwiazana z tym kanalem
-    virtual void clearTags();
+    //! Czysci liste tagow zwiazana z tym kanalem
+    void clearTags();
 
-    //! czysci liste zaznaczen zwiazana z tym kanalem
-    virtual void clearSelections();
+    //! Czysci liste zaznaczen zwiazana z tym kanalem
+    void clearSelections();
+
+    //! Czysci kanal z tagow i zaznaczen
+    void clearChannel();
 
     //! \param tag Tag do wstawienia dla danego kanalu
-    virtual void addTag(const TagPtr & tag);
+    void addTag(const TagPtr & tag);
 
     //! \param selection Zaznaczenie do wstawienia dla danego kanalu
-    virtual void addSelection(const SelectionPtr & selection);
+    void addSelection(const SelectionPtr & selection);
 
     //! \param tag Tag do usuniecvia dla danego kanalu
-    virtual void removeTag(const TagPtr & tag);
+    void removeTag(const TagPtr & tag);
 
     //! \param selection Zaznaczenie do usuniecia dla danego kanalu
-    virtual void removeSelection(const SelectionPtr & selection);
+    void removeSelection(const SelectionPtr & selection);
 
     //! \param idx Indeks tagu
     //! \return Tag

@@ -31,6 +31,7 @@ NamedTreeBase::NamedTreeBase(const NamedTreeBasePtr & parent, const std::string 
     : parent(parent), name(name)
 {
     UTILS_ASSERT((parent != nullptr), "Nieprawidlowy rodzic aktualnego wezla");
+    updateAbsolutePath();
 }
 
 NamedTreeBase::~NamedTreeBase(void)
@@ -60,6 +61,24 @@ const std::string & NamedTreeBase::getName() const
     return name;
 }
 
+const std::string & NamedTreeBase::getAbsolutePath() const
+{
+    return absolutePath;
+}
+
+void NamedTreeBase::updateAbsolutePath()
+{
+    if(isRoot() == false){
+        absolutePath = parent.lock()->getAbsolutePath() + "/" + name;
+    }else{
+        absolutePath = "/";
+    }
+
+    for(auto it = begin(); it != end(); it++){
+        (*it)->updateAbsolutePath();
+    }
+}
+
 void NamedTreeBase::setName(std::string name) 
 { 
     if(this->name == name){
@@ -70,6 +89,10 @@ void NamedTreeBase::setName(std::string name)
         this->name = name; 
     }else{
         throw std::invalid_argument("Parent already has a child with given name!");
+    }
+
+    if(isRoot() == false){
+        updateAbsolutePath();
     }
 }
 
@@ -160,7 +183,6 @@ NamedTreeBase::const_iterator NamedTreeBase::findChildByName(const std::string &
 {
     return findChildByName(constChildren.begin(), constChildren.end(), name);
 }
-
 
 void NamedTreeBase::addChild(const NamedTreeBasePtr & child)
 {
@@ -287,6 +309,7 @@ void NamedTreeBase::setParent(const NamedTreeBasePtr & parent)
 { 
     this->parent = parent; 
     this->constParent = parent;
+    updateAbsolutePath();
 }
 
 void NamedTreeBase::resetParent()
