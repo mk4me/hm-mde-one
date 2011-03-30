@@ -11,7 +11,14 @@
 
 #include <core/ObjectWrapper.h>
 #include <vidlib/osg/VideoImageStream.h>
+#include <vidlib/osg/OsgAdapter.h>
+#include <vidlib/FFmpegVideoStream.h>
 
+typedef vidlib::OsgAdapter<vidlib::FFmpegVideoStream> VideoStream;
+typedef osg::ref_ptr<VideoStream> VideoStreamPtr;
+typedef osg::ref_ptr<const VideoStream> VideoStreamConstPtr;
+
+CORE_DEFINE_WRAPPER(VideoStream, utils::PtrPolicyOSG);
 CORE_DEFINE_WRAPPER(vidlib::VideoImageStream, utils::PtrPolicyOSG);
 
 #endif  // __HEADER_GUARD_VIDEO__WRAPPERS_H__

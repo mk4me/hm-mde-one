@@ -2,6 +2,7 @@
 #define __HEADER_GUARD_KINEMATIC__KINEMATICPARSER_H__
 
 #include <core/IParser.h>
+#include <core/IDataManager.h>
 
 class KinematicParser : public core::IParser
 {
@@ -14,7 +15,7 @@ public:
     virtual ~KinematicParser();
 // IParser
 public:
-    virtual void parseFile(const boost::filesystem::path& path);
+    virtual void parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path);
     virtual core::IParser* create();
     virtual std::string getSupportedExtensions() const;
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);

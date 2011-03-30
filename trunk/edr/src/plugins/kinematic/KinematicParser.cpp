@@ -5,6 +5,7 @@
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/SkeletalParsers.h>
 #include <kinematiclib/KinematicModel.h>
+#include <core/C3DChannels.h>
 
 using namespace kinematic;
 using namespace boost::filesystem;
@@ -18,7 +19,7 @@ KinematicParser::~KinematicParser()
 {
 }
 
-void KinematicParser::parseFile(const boost::filesystem::path& path)
+void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path)
 {
     SkeletalModelPtr modelPtr(new SkeletalModel);
 

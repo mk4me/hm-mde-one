@@ -6,9 +6,10 @@
 #include <core/SmartPtr.h>
 #include <core/ObjectWrapper.h>
 #include <boost/filesystem.hpp>
-
 namespace core
 {
+    class IDataManager;
+
     //! Parser danych. Parser stanowi pomost pomiêdzy plikiem a odwzorowaniem pliku
     //! w programie. Cykl na cyjl ¿ycia parsera sk³ada siê stworzenie (metod¹ clone),
     //! przypisanie do pliku (parse), odwo³ania do obiektu danych (getObject),
@@ -25,7 +26,7 @@ namespace core
         //! Przyporz¹dkowanie parsera do konkretnego pliku.
         //! Na ka¿dej instancji parsera ta metoda wywo³ywana jest maksymalnie jeden raz.
         //! \param path Œcie¿ka do pliku.
-        virtual void parseFile(const boost::filesystem::path& path) = 0;
+        virtual void parseFile(IDataManager* dataManager, const boost::filesystem::path& path) = 0;
         //! \retrun Lista rozszerzeñ, które parser obs³uguje. Musz¹ byæ oddzielone œrednikiem.
         //!         Obs³ugiwany format rozszerzenia: [ { *. | . } ]ext
         virtual std::string getSupportedExtensions() const = 0;

@@ -3,6 +3,7 @@
 
 #include <core/IParser.h>
 #include <core/c3dParser.h>
+#include <core/IDataManager.h>
 
 CORE_DEFINE_WRAPPER(C3D_Data, utils::PtrPolicyBoost);
 
@@ -21,7 +22,7 @@ public:
 
     virtual ~C3DParser();
     
-    virtual void parseFile(const boost::filesystem::path& path);
+    virtual void parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path);
 
     virtual core::IParser* create();
 

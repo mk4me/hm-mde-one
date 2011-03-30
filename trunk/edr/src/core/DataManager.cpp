@@ -86,21 +86,21 @@ public:
     }
 
     //! Mo¿e rzucaæ wyj¹tkami!
-    void parseFile()
+    void parseFile(DataManager* dataManager)
     {
         UTILS_ASSERT(!isUsed());
         UTILS_ASSERT(!filePath.empty());
         LOG_DEBUG("Parsing file: " << getPath() );
         used = true;
-        parser->parseFile(filePath);
+        parser->parseFile(dataManager, filePath);
         parsed = true;
     }
     //! Nie rzuca wyj¹tkami.
     //! \return Czy uda³o siê przeparsowaæ?
-    bool tryParse()
+    bool tryParse(DataManager* dataManager)
     {
         try {
-            parseFile();
+            parseFile(dataManager);
             return true;
         } catch (const std::exception& ex) {
             LOG_ERROR("Error during parsing file " << getPath() << ": " << ex.what());
@@ -289,7 +289,7 @@ IParserPtr DataManager::getInitializedParser( int idx )
     ParserPtr& parser = currentParsers[idx];
     if ( !parser->isUsed() ) {
         LOG_DEBUG("Loading parser for file: " << parser->getPath());
-        if ( parser->tryParse() ) {
+        if ( parser->tryParse(this) ) {
             return parser->getParser();
         }
     } else if ( parser->isParsed() ) {
@@ -503,7 +503,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
                     // mo¿e musimy przeparsowaæ?
                     if ( !parser->isUsed() ) {
                         LOG_DEBUG("Loading object of type \"" << object->getTypeInfo().name() << "\" when looking for \"" << type.name() << "\"");
-                        if ( parser->tryParse() ) {
+                        if ( parser->tryParse(this) ) {
                             if ( object->isNull() ) {
                                 // ci¹gle coœ jest nie tak, komunikat o b³êdzie
                                 LOG_ERROR("Error parsing file " << parser->getPath() << ": not all object loaded.");
@@ -515,6 +515,9 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
                         } else {
                             // TODO: dodaæ parser do listy do usuniêcia, usun¹æ
                         }
+                    } else {
+                        // 
+                        UTILS_FAIL("Ju¿ u¿yty :(");
                     }
                 } else {
                     // wszystko ok, dodajemy

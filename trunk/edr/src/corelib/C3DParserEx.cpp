@@ -22,7 +22,7 @@ C3DParser::~C3DParser()
 {
 }
 
-void C3DParser::parseFile(const boost::filesystem::path& path)
+void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::filesystem::path& path)
 {
 
     this->path = path;
