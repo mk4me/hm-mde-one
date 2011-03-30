@@ -174,9 +174,9 @@ set(TARGET_RC
 	ui/ConsoleWidget.qrc
 	ui/Icons.qrc
 )
-QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
-source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
+#QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
+#source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
+#set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
 
 #------------------------------------------------------------------------------
 # CONFIG
