@@ -404,6 +404,10 @@ private:
     //! \param child Dziecko ktorego dlugosc ulegla zmianie
     static void updateParentLength(const TChannelConstPtr & parent, const TChannelConstPtr & child);
 
+    //! \param channel Kanal ktoremu uaktualniamy dlugosc
+    //! \return Czy dlugosc kanalu ulegla zmianie
+    static bool refreshChannelLength(const TChannelConstPtr & channel);
+
     //! \param dOffset Przyrost offsetu globalnego dzieci
     static void updateChildrenOffset(const TChannelConstPtr & child, double dOffset);
 

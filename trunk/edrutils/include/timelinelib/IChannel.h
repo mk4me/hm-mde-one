@@ -16,7 +16,7 @@ namespace timeline
         virtual ~IChannel() {}
 
         //! \return Sklonowane dane w kanale
-        virtual IChannel* clone() const = 0;
+        virtual IChannelPtr clone() const = 0;
 
         //! \return Dlugosc kanalu w sekundach
         virtual double getLength() const = 0;

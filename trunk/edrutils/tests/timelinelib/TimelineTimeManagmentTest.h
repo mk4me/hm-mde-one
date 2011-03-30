@@ -12,6 +12,42 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <timelinelib/Model.h>
 
+class TestClientChannel : public timeline::IChannel
+{
+public:
+    TestClientChannel(double length) : timeline::IChannel(), length(length), time(0)
+    {
+
+    }
+
+    virtual timeline::IChannelPtr clone() const
+    {
+        return timeline::IChannelPtr(new TestClientChannel(*this));
+    }
+
+    virtual double getLength() const
+    {
+        return length;
+    }
+
+    virtual void setTime(double time)
+    {
+        UTILS_ASSERT(( time >= 0 && time <= length), "Zly czas kanalu - poza jego dlugoscia");
+        this->time = time;
+    }
+
+private:
+    TestClientChannel(const TestClientChannel & channel) : length(channel.length), time(channel.time)
+    {
+
+    }
+
+private:
+    double length;
+    double time;
+
+};
+
 class TimelineTimeManagmentTest : public CppUnit::TestFixture
 {
     CPPUNIT_TEST_SUITE(TimelineTimeManagmentTest);

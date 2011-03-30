@@ -6,7 +6,9 @@ const NamedTreeBase::Separator NamedTreeBase::separator("/");
 NamedTreeBase::NamedTreeBase(const std::string & name)
     : name(name)
 {
-
+    UTILS_ASSERT((name.empty() == false), "Nazwa wezla nie moze byc pusta");
+    UTILS_ASSERT((name.find("/") == std::string::npos), "Nazwa wezla nie moze zawierac separatora!");
+    UTILS_ASSERT((name != "." && name != ".."), "Nazwa wezla nie moze byc ciagiem zastrzezonym!!");
 }
 
 NamedTreeBase::NamedTreeBase(const NamedTreeBase & child, bool deep)
@@ -80,7 +82,11 @@ void NamedTreeBase::updateAbsolutePath()
 }
 
 void NamedTreeBase::setName(std::string name) 
-{ 
+{
+    UTILS_ASSERT((name.empty() == false), "Nazwa wezla nie moze byc pusta");
+    UTILS_ASSERT((name.find("/") == std::string::npos), "Nazwa wezla nie moze zawierac separatora!");
+    UTILS_ASSERT((name != "." && name != ".."), "Nazwa wezla nie moze byc ciagiem zastrzezonym!!");
+
     if(this->name == name){
         return;
     }

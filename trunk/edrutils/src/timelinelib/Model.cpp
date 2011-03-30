@@ -301,7 +301,11 @@ Model::selection_size_type Model::sizeAllSelections() const
 void Model::addChannel(const std::string & path, const IChannelPtr & channel)
 {
     root->addChild(path);
-    getWritableTChannel(root->getChild(path))->setData(ChannelPtr(new Channel(channel)));
+    TChannelPtr child(getWritableTChannel(root->getChild(path)));
+    child->setData(ChannelPtr(new Channel(channel)));
+    if(channel != nullptr && channel->getLength() != 0){
+        updateParentLength(toChannel(child->getParent().lock()), child);
+    }
 }
 
 void Model::removeChannel(const TChannelConstPtr & channel)
@@ -314,15 +318,17 @@ void Model::removeChannel(const TChannelConstPtr & channel)
         throw std::invalid_argument("TChannel not exist in this model!");
     }
 
-    
-    for(auto it = channel->getData()->beginSelections(); it != channel->getData()->endSelections(); it++){
-
-    }
-    
-
     //TODO
     //zebrac wszystkie podkanaly, tagi, zaznaczenia i usunac je
-    //potem usunac ten kanal z rodzica oraz z mapowania!!
+    for(auto it = channel->getData()->beginSelections(); it != channel->getData()->endSelections(); it++){
+
+    }    
+
+    //Usunac ten kanal z rodzica oraz z mapowania!!
+    TChannelPtr parent(getWritableTChannel(channel->getParent().lock()));
+    parent->removeChild(getWritableTChannel(channel));
+    channelToTChannel.erase(channel->getData());
+    updateParentLength(parent,channel);
 }
 
 void Model::removeChannel(const std::string & path)
@@ -828,21 +834,30 @@ void Model::updateParentLength(const Model::TChannelConstPtr & parent, const TCh
         getWritableChannel(parent)->setLength(child->getData()->getLocalOffset() + child->getData()->getLength());
         goUp = true;
     }else{
-        double l = 0;
-        for(auto it = parent->begin(); it != parent->end(); it++){
-            TChannelConstPtr channel(toChannel(*it));
-            l = std::max(l, channel->getData()->getLocalOffset() + channel->getData()->getLength());
-        }
-
-        if(l < parent->getData()->getLength()){
-            getWritableChannel(parent)->setLength(l);
-            goUp = true;
-        }
+        goUp = refreshChannelLength(parent);
     }
 
     if(goUp == true && parent->isRoot() == false){
         updateParentLength(toChannel(parent->getParent().lock()), parent);
     }
+}
+
+bool Model::refreshChannelLength(const Model::TChannelConstPtr & channel)
+{
+    bool ret = false;
+    
+    double l = 0;
+    for(auto it = channel->begin(); it != channel->end(); it++){
+        TChannelConstPtr child(toChannel(*it));
+        l = std::max(l, child->getData()->getLocalOffset() + child->getData()->getLength());
+    }
+
+    if(l != channel->getData()->getLength()){
+        getWritableChannel(channel)->setLength(l);
+        ret = true;
+    }
+
+    return ret;
 }
 
 void Model::updateChildrenOffset(const Model::TChannelConstPtr & child, double dOffset)
@@ -869,7 +884,8 @@ void Model::updateParentOffset(const Model::TChannelConstPtr & parent, const Mod
     }
 
     //rodzic
-    wParent->setLength(wParent->getLength() - offset);
+    //moglismy przesunac jego dziecko najdalsze, ale koniec oparl sie na kolejnym
+    refreshChannelLength(parent);
     wParent->setLocalOffset(wParent->getLocalOffset() + offset);
     wParent->setGlobalOffset(wParent->getGlobalOffset() + offset);
 
