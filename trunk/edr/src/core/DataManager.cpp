@@ -319,31 +319,6 @@ IParserPtr DataManager::getInitializedParser( const std::string& filter )
     throw std::runtime_error("Not supported.");
 }
 
-
-DataManager::ParserPtr DataManager::createParser( const Path& path, bool resource )
-{
-    // próbujemy pobraæ prototyp dla zadanego rozszerzenia
-    std::string extension = path.extension();
-    IParsersByExtensions::iterator it = registeredExtensions.find( extension );
-    if ( it != registeredExtensions.end() ) {
-        if(registeredExtensions.count(extension) > 1) {
-            // TODO: wybór parsera!
-            LOG_WARNING("Multiple parsers found for extension: " << extension);
-        }
-
-        // tworzymy parser
-        ParserPtr parser(new Parser(it->second->create(), path, resource));
-        std::vector<ObjectWrapperPtr> objects;
-        parser->getObjects(objects);
-
-        // mapujemy obiekty
-        mapObjectsToTypes(objects, parser);
-
-        return parser;
-    }
-    return ParserPtr();
-}
-
 void DataManager::findLocalTrials()
 {
     localTrialsList.clear();
@@ -423,12 +398,7 @@ void DataManager::loadTrial(const core::IDataManager::LocalTrial& trial)
     //proba zaladowania parsera plikow c3d jesli takowy plik i parser istnieje
     BOOST_FOREACH(boost::filesystem::path path, trial)
     {
-        ParserPtr parser = createParser(path, false);
-        if ( parser ) {
-            currentParsers.push_back(parser);
-        } else {
-            LOG_WARNING("No parser found for " << path);
-        }
+        createParsers(path, false);
     }
 }
 
@@ -438,12 +408,7 @@ void DataManager::loadResources()
         boost::filesystem::path path(resourcePath);
         //sciezka istnieje, jest plikiem i zgadza sie nazwa
         if (boost::filesystem::exists(path) && !boost::filesystem::is_directory(path)) {
-            ParserPtr parser = createParser(path, true);
-            if ( parser ) {
-                currentParsers.push_back(parser);
-            } else {
-                LOG_WARNING("No parser found for " << path);
-            }
+            createParsers(path, true);
         }
     }
 }
@@ -541,3 +506,54 @@ void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& object
     }
 }
 
+// DataManager::ParserPtr DataManager::createParser( const Path& path, bool resource )
+// {
+//     // próbujemy pobraæ prototyp dla zadanego rozszerzenia
+//     std::string extension = path.extension();
+//     IParsersByExtensions::iterator it = registeredExtensions.find( extension );
+//     if ( it != registeredExtensions.end() ) {
+//         if(registeredExtensions.count(extension) > 1) {
+//             // TODO: wybór parsera!
+//             LOG_WARNING("Multiple parsers found for extension: " << extension);
+//         }
+// 
+//         // tworzymy parser
+//         ParserPtr parser(new Parser(it->second->create(), path, resource));
+//         std::vector<ObjectWrapperPtr> objects;
+//         parser->getObjects(objects);
+// 
+//         // mapujemy obiekty
+//         mapObjectsToTypes(objects, parser);
+// 
+//         return parser;
+//     }
+//     return ParserPtr();
+// }
+
+
+void DataManager::createParsers( const Path& path, bool resource )
+{
+    // próbujemy pobraæ prototyp dla zadanego rozszerzenia
+    std::string extension = path.extension();
+    IParsersByExtensions::iterator found = registeredExtensions.find( extension );
+    if ( found != registeredExtensions.end() ) {
+        IParsersByExtensions::iterator last = registeredExtensions.upper_bound(extension);
+        if(std::distance(found, last) > 1) {
+            // TODO: wybór parsera!
+            LOG_WARNING("Multiple parsers found for extension: " << extension);
+        }
+        // to iterujemy po wszystkich jego wariantach
+        for ( ; found != last; ++found ) {
+            // tworzymy parser
+            ParserPtr parser(new Parser(found->second->create(), path, resource));
+            std::vector<ObjectWrapperPtr> objects;
+            parser->getObjects(objects);
+            // mapujemy obiekty
+            mapObjectsToTypes(objects, parser);
+            // dodajemy do bie¿¹cej listy
+            currentParsers.push_back(parser);
+        }
+    } else {
+        LOG_WARNING("No parser found for " << path);
+    }
+}

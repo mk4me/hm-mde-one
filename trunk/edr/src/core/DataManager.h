@@ -107,12 +107,13 @@ private:
     bool loadTrialData;
 
 protected:
-    //! Tworzy parser dla danego pliku. Plik jeszcze nie jest przeparsowany!
-    //! \param path Œcie¿ka.
-    //! \param resource Czy to jest zasób niezmienny?
-    ParserPtr createParser(const Path& path, bool resource);
-
-    
+//     //! Tworzy parser dla danego pliku. Plik jeszcze nie jest przeparsowany!
+//     //! \param path Œcie¿ka.
+//     //! \param resource Czy to jest zasób niezmienny?
+//     ParserPtr createParser(const Path& path, bool resource);
+    //! Pomocnicza metoda, tworzy parsery dla zadanego rozszerzenia. Wspiera dodawanie wielu parserów dla jednego pliku.
+    //! Uwaga: plik nie zostaje jeszcze przeparsowany!
+    void createParsers( const Path& path, bool resource );
     
     //! \param œcie¿ka do folderu z plikami próby pomiarowej
     //! \return Pojedyncza próba pomiarowa ze œcie¿kami do wszystkich jej plików.
@@ -168,6 +169,7 @@ public:
     //! ³adowanie zasobów, czyli inicjalizacja parserów
     virtual void loadResources();
 
+    
     virtual const LocalTrial& getLocalTrial(int i) const;
     virtual int getLocalTrialsCount() const;
 
@@ -196,8 +198,6 @@ public:
 private:
     //! Mapuje obiekty 
     void mapObjectsToTypes(const std::vector<core::ObjectWrapperPtr>& objects, ParserPtr parser );
-
-
 
     
 };
