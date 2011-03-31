@@ -3,46 +3,70 @@
 #include <boost/foreach.hpp>
 #include <osg/Geode>
 #include <core/IServiceManager.h>
+#include <core/C3DParserEx.h>
 #include <plugins/timeline/ITimeline.h>
 #include <core/IModel.h>
 #include <core/IDataManager.h>
 #include <core/IVisualizer.h>
+#include <core/C3DChannels.h>
+#include <plugins/timeline/Stream.h>
 #include "mainwindow.h"
-#include "KinematicService.h"
 #include <core/Log.h>
 #include <core/IService.h>
+#include <boost/foreach.hpp>
+#include <core/Log.h>
 #include <core/ObjectWrapper.h>
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
 #include <QtCore/QDir>
 #include <plugins/kinematic/Wrappers.h>
+#include <plugins/kinematic/skeletalVisualizationScheme.h>
+#include <osgGA/OrbitManipulator>
 #include "ISchemeDrawer.h"
 #include "OsgSchemeDrawer.h"
 #include "LineSchemeDrawer.h"
+#include "PointSchemeDrawer.h"
+#include "KinematicService.h"
 
 using namespace core;
+using namespace osg;
 
 
 KinematicService::KinematicService() :
-    name("KinematicService"),
-    logic(new SkeletonViewerLogic)
+    name("KinematicService")//,
+    //logic(new SkeletonViewerLogic)
 {
-   widget = new MainWindow();
-   // viz.createWidget();
-   SkeletalVisualizationSchemePtr visualization = SkeletalVisualizationScheme::create();
-   logic->setVisualization(visualization);
-   widget->setLogic(logic);
+   //widget = new MainWindow();
+   //// viz.createWidget();
+   //SkeletalVisualizationSchemePtr visualization = SkeletalVisualizationScheme::create();
+   //logic->setVisualization(visualization);
+   //widget->setLogic(logic);
 }
 
 AsyncResult KinematicService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
-    std::vector<kinematic::KinematicModelPtr> models = core::queryDataPtr(dataManager);
+    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
+    if ( timeline ) {
+        if (stream) {
+            timeline->removeStream(stream);
+        }
+        // todo co jak bedzie wiecej obiektow?
+        std::vector<SkeletalVisualizationSchemePtr> schemes = core::queryDataPtr(dataManager);
+        if (schemes.size() > 0) {
+            stream =  timeline::StreamPtr(new KinematicTimeline(schemes[0]));
+            timeline->addStream(stream);
+        }
+    } else {
+        OSG_WARN<<"ITimeline not found."<<std::endl;
+    }
+
+    /*std::vector<kinematic::KinematicModelPtr> models = core::queryDataPtr(dataManager);
     if (models.size() > 0 && models[0]) {
         logic->setKinematic(models[0]);
     } else {
         return AsyncResult_Failure;
-    }
+    }*/
     return AsyncResult_Complete;
 }
 
@@ -58,19 +82,46 @@ void KinematicVisualizer::update( double deltaTime )
 
 void KinematicVisualizer::setUp( IObjectSource* source )
 {
-    typedef boost::shared_ptr<const kinematic::KinematicModel> KinematicModelConstPtr;
-     KinematicModelConstPtr model = source->getObject(0);
-     if (model) {
-         scheme = SkeletalVisualizationScheme::create();
-         
-         scheme->setKinematicModel(model);
-         //scheme->setCurrentTime(0.1);
-         OsgSchemeDrawerPtr drawer(new LineSchemeDrawer);
-         scheme->setSchemeDrawer(drawer);
-         rootNode->addChild(drawer->getNode());
-         scheme->setCurrentTime(0.0);
-     }
-}
+    if (rootNode) {
+        for (int i = rootNode->getNumChildren() - 1; i >= 0; --i) {
+            rootNode->removeChild(i);
+        }
+    }
+
+    rootNode->addChild(createFloor());
+
+    SkeletalVisualizationSchemeConstPtr scheme = source->getObject(0);
+    
+    if (scheme) {
+        OsgSchemeDrawerPtr drawer(new PointSchemeDrawer);
+        OsgSchemeDrawerPtr drawer2(new LineSchemeDrawer);
+        drawers.push_back(drawer);
+        drawers.push_back(drawer2);
+
+        for (int i = 0; i < drawers.size(); i++) {
+            drawers[i]->init(scheme);
+            rootNode->addChild(drawers[i]->getNode());
+        }
+    }
+     //kinematic::KinematicModelConstPtr model = source->getObject(0);
+     //if (model) {
+     //    scheme = SkeletalVisualizationScheme::create();
+     //    scheme->setKinematicModel(model);
+     //    OsgSchemeDrawerPtr drawer(new LineSchemeDrawer);
+     //    scheme->setSchemeDrawer(drawer);
+     //    rootNode->addChild(drawer->getNode());
+     //    scheme->setNormalizedTime(0.0);
+     //} 
+
+     //MarkerSetConstPtr markers = source->getObject(1);
+     //if (markers && model) {
+     //    model->setMarkersData(markers);
+     //    scheme->setNormalizedTime(1.0);
+     //    OsgSchemeDrawerPtr drawer(new PointSchemeDrawer);
+     //    scheme->setSchemeDrawer(drawer);
+     //    rootNode->addChild(drawer->getNode());
+     //}
+ }
 
 IVisualizer* KinematicVisualizer::create() const
 {
@@ -79,11 +130,17 @@ IVisualizer* KinematicVisualizer::create() const
 
 void KinematicVisualizer::getSlotInfo( int source, std::string& name, ObjectWrapper::Types& types )
 {
-    if ( source == 0 ) 
-    {
-        name = "model"; 
-        types.push_back(typeid(kinematic::KinematicModel));
+    if (source == 0) {
+        name = "model";
+        types.push_back(typeid(SkeletalVisualizationScheme));
     }
+    //if ( source == 0 ) {
+    //    name = "model"; 
+    //    types.push_back(typeid(kinematic::KinematicModel));
+    //} else if ( source == 1 ) {
+    //    name = "marker";
+    //    types.push_back(typeid(MarkerSet));
+    //}
 }
 
 QWidget* KinematicVisualizer::createWidget()
@@ -92,12 +149,28 @@ QWidget* KinematicVisualizer::createWidget()
     widget = new osgui::QOsgDefaultWidget();
     const osg::GraphicsContext::Traits* traits = widget->getCamera()->getGraphicsContext()->getTraits();
     widget->setTimerActive(true);
-    
+    ref_ptr<osgViewer::StatsHandler> handler = new osgViewer::StatsHandler;
+    widget->addEventHandler(handler);
+    osgGA::OrbitManipulator *cameraManipulator = new osgGA::OrbitManipulator();
+    widget->setCameraManipulator(cameraManipulator);
+    //widget->setMinimumSize(100, 100);
+
+    // stworzenie i dodanie œwiat³a przyczepionego do kamery
+    ref_ptr<Light> light = new osg::Light;
+    light->setLightNum(1);
+    light->setPosition(osg::Vec4(0.0,0.0,0.0,1.0f));
+    light->setAmbient(osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    light->setDiffuse(osg::Vec4(1.0f,1.0f,1.0f,0.0f));
+    light->setConstantAttenuation(1.0f);
+    /*light->setLinearAttenuation(1.0f/MODEL_SIZE);
+    light->setQuadraticAttenuation(1.0f/osg::square(MODEL_SIZE));*/
+
+    widget->setLight(light);
     // tworzenie kamery
-    widget->getCamera()->setClearColor(osg::Vec4(0.705f, 0.72f, 0.705f, 1));
+    widget->getCamera()->setClearColor(osg::Vec4(0.0f, 0.1f, 0.0f, 1));
     widget->getCamera()->setNearFarRatio(0.000000001);
-    //osg::Vec3 pos( 0.0f, 0.0f, 9.0f);
-    //osg::Vec3 up(0, 1, 0);
+    /*osg::Vec3 pos( 0.0f, 0.0f, 9.0f);
+    osg::Vec3 up(0, 1, 0);*/
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
     osg::Vec3 up(0,0,1);
 
@@ -123,18 +196,21 @@ KinematicVisualizer::KinematicVisualizer() :
 
 void KinematicVisualizer::updateAnimation()
 {
-    if (scheme) {
-        double interval = widget->getTimerInterval() / 1000.0;
-        double duration = scheme->getDuration();
-        double time = scheme->getCurrentTime() * duration;
-        time += interval;
-        if (time >= duration) {
-            time = 0.0;
-        } else {
-            time = time / duration;
-        }
-        scheme->setCurrentTime(time);
+    for (int i = drawers.size() - 1; i >= 0; --i) {
+        drawers[i]->update();
     }
+    //if (scheme) {
+    //    double interval = widget->getTimerInterval() / 1000.0;
+    //    double duration = scheme->getDuration();
+    //    double time = scheme->getNormalizedTime() * duration;
+    //    time += interval;
+    //    if (time >= duration) {
+    //        time = 0.0;
+    //    } else {
+    //        time = time / duration;
+    //    }
+    //    scheme->setNormalizedTime(time);
+    //}
 }
 
 GeodePtr KinematicVisualizer::createFloor()
@@ -146,27 +222,28 @@ GeodePtr KinematicVisualizer::createFloor()
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array(44);
 
     for (int i = 0; i < 11; i++) {
+        /*(*vertices)[2 * i] = osg::Vec3(-5.0f + i, 0, -5.0f);
+        (*vertices)[2 * i + 1] = osg::Vec3(-5.0f + i, 0, 5.0f);
+        (*vertices)[20 + 2 * i] = osg::Vec3(-5.0f, 0, -5.0f + i);
+        (*vertices)[20 + 2 * i + 1] = osg::Vec3(5.0f, 0, -5.0f + i);*/
         (*vertices)[2 * i] = osg::Vec3(-5.0f + i, -5.0f, 0);
         (*vertices)[2 * i + 1] = osg::Vec3(-5.0f + i, 5.0f, 0);
-        (*vertices)[20 + 2 * i] = osg::Vec3(-5.0f, -5.0f + i, 0);
-        (*vertices)[20 + 2 * i + 1] = osg::Vec3(5.0f, -5.0f + i, 0);
+        (*vertices)[22 + 2 * i] = osg::Vec3(-5.0f, -5.0f + i, 0);
+        (*vertices)[22 + 2 * i + 1] = osg::Vec3(5.0f, -5.0f + i, 0);
 
     }
 
     linesGeom->setVertexArray(vertices);
 
-    // todo color
+    ref_ptr<StateSet> stateset = new osg::StateSet;
+    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    geode->setStateSet(stateset);
+    
     osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-    colors->push_back(osg::Vec4(1.0f, 1.0f, 0.0f, 1.0f));
+    colors->push_back(osg::Vec4(0.05f, 0.3f, 0.05f, 1.0f));
     linesGeom->setColorArray(colors);
     linesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-
-    osg::Vec3Array* normals = new osg::Vec3Array;
-    normals->push_back(osg::Vec3(1.0f, -0.0f, 0.0f));
-    linesGeom->setNormalArray(normals);
-    linesGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
+    
     linesGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 44));
 
     geode->addDrawable(linesGeom);

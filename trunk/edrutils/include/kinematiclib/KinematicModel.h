@@ -86,6 +86,25 @@ private:
     static mappingDict readMappingNode(TiXmlNode* node);
 };
 
+
+class IMarkerSet
+{
+public:
+    // hack
+    void setScale(double scale) const { this->scale = scale; } 
+    virtual int getMarkersCount() const = 0;
+    virtual osg::Vec3 getPosition(int markerNo, double normalizedTime) const = 0;
+
+protected:
+    double getScale() const { return scale; }
+private: 
+    mutable double scale;
+};
+
+typedef boost::shared_ptr<IMarkerSet> IMarkerSetPtr;
+typedef boost::shared_ptr<const IMarkerSet> IMarkerSetConstPtr;
+
+
 /// \brief  klasa reprezentuje szkielet h-anim
 class hAnimSkeleton : public Skeleton {
 public:
@@ -147,9 +166,8 @@ public:
     kinematic::hAnimSkeleton::Ptr getHAnimSkeleton() const { return haSkeleton; }
     const std::map<std::string, kinematic::hAnimJointPtr>& getJoints() const { return joints; }
     // akcesory do markerow
-    // TODO : integraca z parserem c3d
-    void* getMarkersData() { return markers;}
-    void setMarkersData(void* data) { markers = data; }
+    IMarkerSetConstPtr getMarkersData() const { return markers;}
+    void setMarkersData(IMarkerSetConstPtr data) const { markers = data; markers->setScale(lengthRatio); }
 
     double getFrameTime() const { 
         UTILS_ASSERT(skeletalModel); 
@@ -256,8 +274,9 @@ private:
     osg::Quat createRotation(const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order);
 
 private:
-    void* markers;                                                      //!< dane z markerami
-    kinematic::SkeletalModelPtr skeletalModel;                        //!< dane z parsera acclaim / biovision
+    // hack
+    mutable IMarkerSetConstPtr markers;                                 //!< dane z markerami
+    kinematic::SkeletalModelPtr skeletalModel;                          //!< dane z parsera acclaim / biovision
     kinematic::hAnimSkeleton::Ptr haSkeleton;                           //!< pelny szkielet h-anim
     std::vector< std::map<std::string, osg::Quat> > quaternionRepresentation;     //!< tablica z kwaternionami dla kazdego ze stawow
     std::map<std::string, hAnimJointPtr> joints;                        //!< mapa wszystkich jointow h-anim

@@ -18,7 +18,6 @@ set(PRIVATE_H
 	mainwindow.h
 	OsgSchemeDrawer.h
 	PointSchemeDrawer.h
-	skeletalVisualizationScheme.h
 	SkeletonViewerLogic.h
 	UniqueCollection.h
 )
@@ -28,6 +27,7 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/Wrappers.h
+	${HEADER_PATH}/skeletalVisualizationScheme.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})

@@ -1,5 +1,9 @@
 #include "PCH.h"
+#include <core/DataChannel.h>
 #include <core/Plugin.h>
+#include "OsgSchemeDrawer.h"
+#include "PointSchemeDrawer.h"
+#include "LineSchemeDrawer.h"
 #include "mainwindow.h"
 #include <plugins/kinematic/KinematicService.h>
 #include <plugins/kinematic/KinematicParser.h>
@@ -8,7 +12,7 @@
 CORE_PLUGIN_BEGIN("kinematic", UniqueID('KINE', 'PLUG'));
 CORE_PLUGIN_ADD_PARSER(KinematicParser);
 CORE_PLUGIN_ADD_VISUALIZER(KinematicVisualizer);
-//CORE_PLUGIN_ADD_SERVICE(KinematicService);
+CORE_PLUGIN_ADD_SERVICE(KinematicService);
 CORE_PLUGIN_END;
 
 using namespace kinematic;

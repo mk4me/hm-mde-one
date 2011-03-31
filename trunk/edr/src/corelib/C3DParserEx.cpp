@@ -1,8 +1,13 @@
 #include "CorePCH.h"
+#include <algorithm>
 #include <core/C3DParserEx.h>
 #include <core/C3DChannels.h>
+#include <core/IMarker.h>
+#include <core/Marker.h>
 
 using namespace core;
+
+static const int markersSlots = 39;
 
 C3DParser::C3DParser()
 {
@@ -15,6 +20,13 @@ C3DParser::C3DParser()
         EMGChannels.push_back(ObjectWrapper::createWrapper<EMGChannel>());
     }
 
+    MarkerChannels = ObjectWrapper::createWrapper<MarkerSet>();
+
+    //MarkerChannels.resize(markersSlots);
+    //for(int i = 0; i < markersSlots; i++){
+    //    MarkerChannels[i] = ObjectWrapper::createWrapper<MarkerChannel>();
+    //}
+
 
 }
 
@@ -24,9 +36,7 @@ C3DParser::~C3DParser()
 
 void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::filesystem::path& path)
 {
-
     this->path = path;
-
     // parsowanie pliku
     c3dParser parser;
     scoped_ptr<C3D_Data> data(parser.parseData(path.string()));
@@ -44,6 +54,20 @@ void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::file
         EMGChannels[i-12]->setSource(path.string());
     }
 
+    MarkerSetPtr markers(new MarkerSet);
+    int markersCount = data->getHeader()->getNumberOfC3DPoints();
+
+    markersCount = markersSlots < markersCount ? markersSlots : markersCount;
+    //MarkerChannels.resize(markersCount);
+    for (int i = 0; i < markersCount; ++i) {
+        MarkerChannelPtr ptr(new MarkerChannel(*data, i));
+        markers->addMarker(ptr);
+        //MarkerChannels[i] = ObjectWrapper::createWrapper<MarkerChannel>();
+        /*MarkerChannels[i]->set<MarkerChannel>(ptr);
+        MarkerChannels[i]->setName("Marker" + boost::lexical_cast<std::string>(i));
+        MarkerChannels[i]->setSource(path.string());*/
+    }
+    MarkerChannels->set<MarkerSet>(markers);
     //object = core::ObjectWrapper::createWrapper<C3D_Data>(parser.parseData(path.string()));
 }
 
@@ -66,4 +90,6 @@ void C3DParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 {
     objects.insert(objects.end(), GRFChannels.begin(), GRFChannels.end());
     objects.insert(objects.end(), EMGChannels.begin(), EMGChannels.end());
+    objects.push_back(MarkerChannels);
+
 }

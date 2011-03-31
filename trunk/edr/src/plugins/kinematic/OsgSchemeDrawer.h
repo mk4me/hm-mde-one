@@ -9,13 +9,13 @@ class OsgSchemeDrawer : public ISchemeDrawer
 public:
     //! metoda powinna zwracac wezel 
     virtual osg::ref_ptr<osg::Node> getNode() = 0;
-    virtual void init(SkeletalVisualizationSchemeWeak scheme) { visualizationScheme = scheme; }
+    virtual void init(SkeletalVisualizationSchemeConstPtr scheme) { visualizationScheme = scheme; }
 
 protected:
-    SkeletalVisualizationSchemeWeak getVisualiztionScheme() const { return visualizationScheme; }
+    SkeletalVisualizationSchemeConstPtr getVisualiztionScheme() const { return visualizationScheme; }
 
 private:
-    SkeletalVisualizationSchemeWeak visualizationScheme;
+    SkeletalVisualizationSchemeConstPtr visualizationScheme;
 };
 
 typedef boost::shared_ptr<OsgSchemeDrawer> OsgSchemeDrawerPtr;

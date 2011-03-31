@@ -6,10 +6,48 @@
 #include <plugins/timeline/Stream.h>
 #include <core/IVisualizer.h>
 #include <osg/Geode>
+#include <plugins/timeline/Stream.h>
 
 class IModel;
 class IWidget;
 
+/**
+ * 
+ */
+class KinematicTimeline : public timeline::Stream
+{
+private:
+    SkeletalVisualizationSchemePtr scheme;
+
+public:
+  KinematicTimeline(SkeletalVisualizationSchemePtr visualizationScheme) : 
+      scheme(visualizationScheme)
+  {}
+  //! \see Stream::setTime
+  virtual void setTime(double time)
+  {
+      if (scheme && scheme->getKinematicModel()) {
+        scheme->setTime(time);
+      }
+  }
+  //! \see Stream::getTime
+  virtual double getTime() const
+  {
+      if (scheme && scheme->getKinematicModel()) {
+        return scheme->getTime();
+      }
+      return 0.0;
+  }
+  //! \see Stream::getLength
+  virtual double getLength() const
+  {
+      if (scheme && scheme->getKinematicModel()) {
+            return scheme->getDuration();
+      }
+
+      return 0.0;
+  }
+};
 
 class KinematicVisualizer : public core::IVisualizer
 {
@@ -38,6 +76,7 @@ private:
     osg::ref_ptr<osg::Group> rootNode;
     //MainWindow* widget;
     osg::ref_ptr<osgui::QOsgDefaultWidget> widget;
+    std::vector<OsgSchemeDrawerPtr> drawers;
 };
 
 
@@ -73,7 +112,8 @@ public:
 
     virtual IWidget* getSettingsWidget()
     {
-        return reinterpret_cast<IWidget*>(widget); 
+        /*return reinterpret_cast<IWidget*>(widget); */
+        return reinterpret_cast<IWidget*>(nullptr);
     }
 
     virtual IWidget* getWidget() 
@@ -86,14 +126,15 @@ public:
     }
    
     virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
-
     virtual AsyncResult update(double time, double timeDelta);
 
 private:
     std::string name;
-    MainWindow* widget;
-    SkeletonViewerLogicPtr logic;
+    //MainWindow* widget;
+   // SkeletonViewerLogicPtr logic;
     //KinematicVisualizer viz;
+    
+    timeline::StreamPtr stream;
 };
 
 

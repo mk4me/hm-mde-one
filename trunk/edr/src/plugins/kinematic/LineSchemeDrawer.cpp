@@ -12,10 +12,10 @@ void LineSchemeDrawer::draw()
 
 }
 
-void LineSchemeDrawer::update( double time )
+void LineSchemeDrawer::update()
 {
-    auto connections = getVisualiztionScheme().lock()->getJointConnections();
-    auto joints = getVisualiztionScheme().lock()->getJointStates();
+    auto connections = getVisualiztionScheme()->getJointConnections();
+    auto joints = getVisualiztionScheme()->getJointStates();
     for (int i = connections.size() - 1; i >= 0; --i) {
         ref_ptr<Vec3Array> vertices = buffers[i];
         (*vertices)[0] = joints[connections[i].index1].position;
@@ -35,14 +35,14 @@ void LineSchemeDrawer::deinit()
 
 }
 
-void LineSchemeDrawer::init( SkeletalVisualizationSchemeWeak scheme )
+void LineSchemeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
 {
-    UTILS_ASSERT(scheme.lock());
+    UTILS_ASSERT(scheme);
     OsgSchemeDrawer::init(scheme);
 
     node = new osg::Group;
-    auto joints = scheme.lock()->getJointStates();
-    auto connections = scheme.lock()->getJointConnections();
+    auto joints = scheme->getJointStates();
+    auto connections = scheme->getJointConnections();
     buffers.reserve(connections.size());
     BOOST_FOREACH(Connection& connection, connections) {
         addLine(joints[connection.index1].position, 
@@ -68,19 +68,16 @@ void LineSchemeDrawer::addLine( const osg::Vec3& from, const osg::Vec3& to, osg:
 
     linesGeom->setVertexArray(vertices);
 
-    // todo color
     ref_ptr<Vec4Array> colors = new osg::Vec4Array;
     colors->push_back(osg::Vec4(1.0f, 1.0f, 0.0f, 1.0f));
     linesGeom->setColorArray(colors);
     linesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
 
-
-    osg::Vec3Array* normals = new osg::Vec3Array;
-    normals->push_back(osg::Vec3(1.0f, -0.0f, 0.0f));
-    linesGeom->setNormalArray(normals);
-    linesGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
     linesGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 2));
+
+    ref_ptr<StateSet> stateset = new osg::StateSet;
+    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    geode->setStateSet(stateset);
 
     geode->addDrawable(linesGeom);
     node->addChild(geode);

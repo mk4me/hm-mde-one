@@ -34,7 +34,7 @@ namespace core {
         }
         PointType interpolate(PointParamType p1, PointParamType p2, TimeType t) const
         {
-            return p1 + t * (p2 - p1);
+            return p1 + (p2 - p1) * t;
         }
     };
 
@@ -191,7 +191,7 @@ namespace core {
         time_type getMaxValueTime() const
         {
             if ( !getNumPoints() ) {
-                throw std::runtime_error("No data points yet.")
+                throw std::runtime_error("No data points yet.");
             }
             return maxValueTime;
         }
@@ -199,7 +199,7 @@ namespace core {
         time_type getMinValueTime() const
         {
             if ( !getNumPoints() ) {
-                throw std::runtime_error("No data points yet.")
+                throw std::runtime_error("No data points yet.");
             }
             return minValueTime;
         }

@@ -14,7 +14,7 @@ public:
 
     virtual ~MetadataParser();
     
-    virtual void parseFile(const boost::filesystem::path& path);
+    virtual void parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path);
 
     virtual IParser* create();
 

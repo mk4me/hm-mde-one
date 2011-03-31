@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <boost/shared_ptr.hpp>
 #include "uniqueCollection.h"
-#include "skeletalVisualizationScheme.h"
+#include <plugins/kinematic/skeletalVisualizationScheme.h>
 #include "skeletonViewerLogic.h"
 #include "mainwindow.h"
 #include "ISchemeDrawer.h"
@@ -203,7 +203,7 @@ void SkeletonViewerLogic::setModel( kinematic::SkeletalModelPtr skeletalModel )
 void SkeletonViewerLogic::setTime( double time )
 {
     this->time = time;
-    this->visualization->setCurrentTime(time);
+    this->visualization->setNormalizedTime(time);
 }
 
 void SkeletonViewerLogic::start()
@@ -278,9 +278,9 @@ void SkeletonViewerLogic::setMainWindow( MainWindow* val )
 void SkeletonViewerLogic::setKinematic( kinematic::KinematicModelPtr kinematic )
 {
     visualization->setKinematicModel(kinematic);
-    visualization->setCurrentTime(0.0);
+    visualization->setNormalizedTime(0.0);
     ISchemeDrawerPtr drawer(new LineSchemeDrawer);
-    visualization->setSchemeDrawer(drawer);
+    //visualization->setSchemeDrawer(drawer);
 
     QString rootName(kinematic->getHAnimSkeleton()->getRootName().c_str());
     mainWindow->getTreeRootItem()->setText(0, rootName);

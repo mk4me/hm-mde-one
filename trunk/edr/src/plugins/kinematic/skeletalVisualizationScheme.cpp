@@ -1,6 +1,6 @@
 #include "PCH.h"
+#include <plugins/kinematic/skeletalVisualizationScheme.h>
 #include "uniqueCollection.h"
-#include "skeletalVisualizationScheme.h"
 #include "ISchemeDrawer.h"
 
 using namespace std;
@@ -9,22 +9,22 @@ using namespace boost;
 using namespace kinematic;
 
 SkeletalVisualizationScheme::SkeletalVisualizationScheme() :
-    currentTime(0)
+    normalizedTime(0)
 {
 }
 
-void SkeletalVisualizationScheme::setCurrentTime( double val )
+void SkeletalVisualizationScheme::setNormalizedTime( double val )
 {
     UTILS_ASSERT(kinematicModel);
-    if (currentTime != val) {
-        currentTime = val;
+    if (normalizedTime != val) {
+        normalizedTime = val;
         if (val < 0.0 || val > 1.0) {
             LOGGER(Logger::Debug, "SkeletalVisualizationScheme : value out of <0,1>");
         }
 
         updateJointTransforms(val);
-
-        schemeDrawer->update(val);
+        updateMarkers(val);
+        //schemeDrawer->update(val);
     }
 }
 
@@ -127,7 +127,7 @@ void SkeletalVisualizationScheme::updateJointTransforms( double time )
     osg::Quat q; Vec3 pos;
     pos = kinematicModel->getRootPosition(time);
     updateJointTransforms(frame, skeleton->getHAnimRoot(), q, pos);
-}
+ }
 
 void SkeletalVisualizationScheme::updateWorldTransforms( osg::Vec3 worldPosition, osg::Quat worldRotation )
 {
@@ -139,15 +139,15 @@ void SkeletalVisualizationScheme::updateSkinnedTransforms()
     throw kinematic::NotYetImplemented("");
 }
 
-void SkeletalVisualizationScheme::setSchemeDrawer( ISchemeDrawerPtr drawer )
-{
-   if (this->schemeDrawer) {
-       this->schemeDrawer->deinit();
-   }
-
-   this->schemeDrawer = drawer;
-   this->schemeDrawer->init(weak);
-}
+//void SkeletalVisualizationScheme::setSchemeDrawer( ISchemeDrawerPtr drawer )
+//{
+//   if (this->schemeDrawer) {
+//       this->schemeDrawer->deinit();
+//   }
+//
+//   this->schemeDrawer = drawer;
+//   this->schemeDrawer->init(weak);
+//}
 
 boost::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::create()
 {
@@ -171,6 +171,17 @@ void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelCo
     }
     hAnimSkeleton::Ptr skeleton = kinematicModel->getHAnimSkeleton();
     createSkeletonConnections(skeleton->getRoot());
+
+    IMarkerSetConstPtr markers = kinematicModel->getMarkersData();
+    count =  markers->getMarkersCount();
+    if (count && markersStates.size() != count) {
+        markersStates.resize(count);
+    }
+    for (int i = 0; i < count; i++) {
+        markersStates[i].position = markers->getPosition(i, 0.0 );
+    }
+
+    updateJointTransforms(0.0);
 }
 
 
@@ -182,6 +193,17 @@ void SkeletalVisualizationScheme::createSkeletonConnections(JointPtr joint)
         c.index2 = visJoints[child];
         jointConnections.push_back(c);
         createSkeletonConnections(child);
+    }
+}
+
+void SkeletalVisualizationScheme::updateMarkers( double time )
+{
+    IMarkerSetConstPtr markers = kinematicModel->getMarkersData();
+    if (markers) {
+        int count =  markers->getMarkersCount();
+        for (int i = 0; i < count; i++) {
+            markersStates[i].position = markers->getPosition(i, time );
+        }
     }
 }
 

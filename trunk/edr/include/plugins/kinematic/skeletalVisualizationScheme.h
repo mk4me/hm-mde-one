@@ -16,7 +16,7 @@ UTILS_POP_WARNINGS
 #include <boost/function.hpp>
 #include <kinematiclib/KinematicModel.h>
 
-#include "uniqueCollection.h"
+//#include "uniqueCollection.h"
 
 class ISchemeDrawer;
 typedef boost::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
@@ -40,11 +40,7 @@ public:
         //! kolor po³¹czenia (RGBA <0,1>)
         osg::Vec4 color;
     };
-
-    
-    //! dzieki tej funkcji kontrolka graficzna bedzie wiedziala, ze sie ma odswiezyc
-    typedef void(*Refresh)(void);
-    
+            
 private:
     SkeletalVisualizationScheme();
 
@@ -53,8 +49,16 @@ public:
     static boost::shared_ptr<SkeletalVisualizationScheme> create();
 
 public: // akcesory
-    double getCurrentTime() const { return currentTime; }
-    void setCurrentTime(double val);
+    double getNormalizedTime() const { return normalizedTime; }
+    void setNormalizedTime(double val);
+
+    void setTime(double time) {
+        setNormalizedTime(time / getDuration());
+    }
+
+    double getTime() const {
+        return getNormalizedTime() * getDuration();
+    }
 
     int getNumFrames() const { 
         UTILS_ASSERT(kinematicModel);  
@@ -67,36 +71,23 @@ public: // akcesory
     double getDuration() const { return getNumFrames() * getFrameTime(); }
 
     //! akcesory do zwracanych danych
-    std::vector<JointState>  &getMarkersStates()  { return markersStates; }
-    std::vector<JointState>  &getJointStates() { return jointMarkersStates; }
-    std::vector<Connection>  &getJointConnections() { return jointConnections; }
+    const std::vector<JointState>  &getMarkersStates() const { return markersStates; }
+    const std::vector<JointState>  &getJointStates() const { return jointMarkersStates; }
+    const std::vector<Connection>  &getJointConnections() const  { return jointConnections; }
 
     //model kinematyczny
     kinematic::KinematicModelConstPtr getKinematicModel() const { return kinematicModel; }
     void setKinematicModel(kinematic::KinematicModelConstPtr val);
 
-    //! ustawia schemat odrysowywania modelu
-    void setSchemeDrawer(ISchemeDrawerPtr drawer);
-    ISchemeDrawerPtr getSchemeDrawer() const { return schemeDrawer; }
+    ////! ustawia schemat odrysowywania modelu
+    //void setSchemeDrawer(ISchemeDrawerPtr drawer);
+    //ISchemeDrawerPtr getSchemeDrawer() const { return schemeDrawer; }
         
-    //! zdarzenia
-public:
-    void addRefreshTreeListener        (Refresh val) { pushBackUnique(refreshTree, val); }
-    void addRefreshMarkersListener     (Refresh val) { pushBackUnique(refreshMarkers, val); }
-    void addRefreshSkeletonListener    (Refresh val) { pushBackUnique(refreshSkeleton, val); }
-    void addRefreshTimeListener        (Refresh val) { pushBackUnique(refreshTime, val); }
-
-    void removeRefreshTreeListener     (Refresh val) { removeFromVector(refreshTree, val); }
-    void removeRefreshMarkersListener  (Refresh val) { removeFromVector(refreshMarkers, val); }
-    void removeRefreshSkeletonListener (Refresh val) { removeFromVector(refreshSkeleton, val); }
-    void removeRefreshTimeListener     (Refresh val) { removeFromVector(refreshTime, val); }
-
 private:
-           
     //! odswiezenie informacji o jointach
     void updateJoints();
     //! odswiezenie informacji o markerach
-    void updateMarkers();
+    void updateMarkers(double time);
     //! obliczenie poczatkowych transformacji
     void computeBindPoses(kinematic::KinematicModelPtr model);
     //! obliczenie transformacji dla podanego czasu
@@ -111,7 +102,7 @@ private:
 
 private:
     //! aktualny czas
-    double currentTime; 
+    double normalizedTime; 
     //! pomocne przy zapelnianiu kolekcji jointow
     int counterHelper;
     //! stany markerow dla aktualnego czasu
@@ -122,21 +113,16 @@ private:
     std::map<kinematic::JointPtr, int> visJoints;
     //! zawiera informacje o polaczeniach miedzy stawami
     std::vector<Connection> jointConnections;
-    //! aktualny wizualizator schematu
-    ISchemeDrawerPtr schemeDrawer;
+    ////! aktualny wizualizator schematu
+    //ISchemeDrawerPtr schemeDrawer;
     //! model kinematyczny z danymi
     kinematic::KinematicModelConstPtr kinematicModel;
     //! slaby wskaznik do this
     boost::weak_ptr<SkeletalVisualizationScheme> weak;
-
-    //kolecje z callbackami
-    std::vector<Refresh> refreshTree;
-    std::vector<Refresh> refreshMarkers;
-    std::vector<Refresh> refreshSkeleton;
-    std::vector<Refresh> refreshTime;
 };
 
 typedef boost::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;
 typedef boost::weak_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemeWeak;
+typedef boost::shared_ptr<const SkeletalVisualizationScheme> SkeletalVisualizationSchemeConstPtr;
 
 #endif

@@ -14,7 +14,7 @@ UTILS_POP_WARNINGS
 #include <osgui/QOsgWidgets.h>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "skeletalVisualizationScheme.h"
+#include <plugins/kinematic/skeletalVisualizationScheme.h>
 #include "skeletonViewerLogic.h"
 
 using namespace std;

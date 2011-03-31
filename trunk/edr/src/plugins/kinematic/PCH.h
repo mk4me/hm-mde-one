@@ -39,6 +39,7 @@ UTILS_PUSH_WARNINGS
 #include <osg/ref_ptr>
 #include <osg/Referenced>
 #include <osg/ShapeDrawable>
+#include <osg/Shape>
 #include <osg/Timer>
 #include <osg/Vec3>
 #include <osg/Vec3d>

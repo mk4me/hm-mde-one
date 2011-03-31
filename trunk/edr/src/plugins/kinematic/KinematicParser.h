@@ -10,6 +10,8 @@ class KinematicParser : public core::IParser
 private:
     //! Obiekt wewnêtrzny.
     core::ObjectWrapperPtr model;
+    core::ObjectWrapperPtr scheme;
+
 public:
     KinematicParser();
     virtual ~KinematicParser();

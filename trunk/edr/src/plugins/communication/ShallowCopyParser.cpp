@@ -1,5 +1,6 @@
 #include "CommunicationPCH.h"
 #include <plugins/communication/ShallowCopyParser.h>
+#include <core/IDataManager.h>
 
 ShallowCopyParser::ShallowCopyParser()
 {
@@ -10,7 +11,7 @@ ShallowCopyParser::~ShallowCopyParser()
 {
 }
 
-void ShallowCopyParser::parseFile(const boost::filesystem::path& path)
+void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path)
 {
     this->path = path;
 

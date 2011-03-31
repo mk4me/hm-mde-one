@@ -7,7 +7,7 @@
 #include <osg/ref_ptr>
 #include <osgViewer/CompositeViewer>
 #include <kinematiclib/SkeletalParsers.h>
-#include "skeletalVisualizationScheme.h"
+#include <plugins/kinematic/skeletalVisualizationScheme.h>
 #include "skeletonViewerLogic.h"
 #include <QtGui/QMainWindow>
 #include <QtGUi/QTreeWidgetItem>

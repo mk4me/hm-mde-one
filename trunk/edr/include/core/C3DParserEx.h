@@ -5,7 +5,36 @@
 #include <core/c3dParser.h>
 #include <core/IDataManager.h>
 
+#include <core/C3DChannels.h>
+#include <kinematiclib/KinematicModel.h>
 CORE_DEFINE_WRAPPER(C3D_Data, utils::PtrPolicyBoost);
+
+class MarkerSet : public kinematic::IMarkerSet
+{
+public:
+    MarkerSet() {
+        markers.reserve(59);
+    }
+
+public:
+    void addMarker(core::MarkerChannelConstPtr marker) {
+        markers.push_back(marker);
+    }
+
+public:
+    virtual int getMarkersCount() const { return markers.size(); }
+    virtual osg::Vec3 getPosition(int markerNo, double normalizedTime) const {
+        float time = normalizedTime * markers[markerNo]->getLength();
+        return markers[markerNo]->getValue(time) * getScale();
+    }
+
+private:
+    std::vector<core::MarkerChannelConstPtr> markers;
+};
+typedef boost::shared_ptr<MarkerSet> MarkerSetPtr;
+typedef boost::shared_ptr<const MarkerSet> MarkerSetConstPtr;
+CORE_DEFINE_WRAPPER(MarkerSet, utils::PtrPolicyBoost);
+
 
 class C3DParser : public core::IParser
 {
@@ -15,6 +44,7 @@ private:
     boost::filesystem::path path;
     std::vector<core::ObjectWrapperPtr> GRFChannels;
     std::vector<core::ObjectWrapperPtr> EMGChannels;
+    core::ObjectWrapperPtr MarkerChannels;
 
 public:
 

@@ -2,6 +2,8 @@
 #include <boost/algorithm/string.hpp>
 #include <core/C3DChannels.h>
 
+static const double scale = 0.001;
+
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +47,50 @@ ScalarChannel( c3dData.getHeader()->getNumberOfAnalogSamplesPerFrame()* c3dData.
     setYUnit(analogGroup->getParameter("UNITS")->getDataAsStringsArray(channelNo));
     setXUnit("s");
     normalize();
+}
+
+
+
+MarkerChannel::MarkerChannel( C3D_Data& c3dData, int channelNo ) :
+VectorChannel( c3dData.getHeader()->getFrameRate())
+{
+    ::Data* data = c3dData.getData();
+    ::MarkerHeader* header = c3dData.getHeader();
+    
+    int framesNo = data->getNumberOfFrames();
+    int markersNo = data->getHeader()->getNumberOfC3DPoints();
+    int firstFrame = data->getHeader()->getFirstDataFrame();
+    int lastFrame = data->getHeader()->getLastDataFrame();
+
+    osg::Vec3 v;
+    float* table = data->getData();
+    for(int i=0; i < framesNo; i++) {
+        v[0] = table[i * markersNo * 4 + channelNo * 4 + 0] * scale;
+        v[1] = table[i * markersNo * 4 + channelNo * 4 + 1] * scale;
+        v[2] = table[i * markersNo * 4 + channelNo * 4 + 2] * scale;
+        addPoint(v);
+    }
+
+    // wczytanie próbek
+    // liczba wszystkich próbek... próbki dla kana³ów umieszczone s¹ obok siebie, a z nich komponowane s¹ ramki
+    //int numSamples = data->getNumberOfFrames() * header->getNumberOfAnalogSamplesPerFrame() * data->getAnalogChannelsNumber();
+    //const float* sample = data->getAnalog() + channelNo;
+    //const float* lastSample = data->getAnalog() + numSamples;
+    //int delta = data->getAnalogChannelsNumber();
+    //for ( ; sample < lastSample; sample += delta ) {
+    //    addPoint(*sample);
+    //}
+
+    //const ::GroupData* analogGroup = c3dData.getParameters()->getGroup("ANALOG");
+
+    ////setScale(analogGroup->getParameter("SCALE")->getDataAsFloatArray()[channelNo]);
+    ////setOffset(analogGroup->getParameter("OFFSET")->getDataAsFloatArray()[channelNo]);
+    ////setDescription(analogGroup->getParameter("DESCRIPTIONS")->getDataAsStringsArray(channelNo));
+
+    //setName(boost::trim_copy(analogGroup->getParameter("LABELS")->getDataAsStringsArray(channelNo)));
+    //setYUnit(analogGroup->getParameter("UNITS")->getDataAsStringsArray(channelNo));
+    //setXUnit("s");
+    //normalize();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

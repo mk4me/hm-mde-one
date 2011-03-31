@@ -9,9 +9,9 @@ class LineSchemeDrawer : public OsgSchemeDrawer
 {
 public:
     virtual void draw();
-    virtual void update(double time);
+    virtual void update();
     virtual void deinit();
-    virtual void init(SkeletalVisualizationSchemeWeak scheme);
+    virtual void init(SkeletalVisualizationSchemeConstPtr scheme);
     virtual osg::ref_ptr<osg::Node> getNode();
 
 private:

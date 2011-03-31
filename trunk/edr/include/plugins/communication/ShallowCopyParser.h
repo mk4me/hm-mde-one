@@ -3,6 +3,7 @@
 
 #include <core/IParser.h>
 #include <plugins/communication/ShallowCopy.h>
+#include <core/IDataManager.h>
 
 CORE_DEFINE_WRAPPER(ShallowCopy::ShallowCopy, utils::PtrPolicyBoost);
 
@@ -14,7 +15,7 @@ public:
 
     virtual ~ShallowCopyParser();
     
-    virtual void parseFile(const boost::filesystem::path& path);
+    virtual void parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path);
 
     virtual IParser* create();
 

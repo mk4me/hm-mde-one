@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_POINTSCHEMEDRAWER_H__
 #define HEADER_GUARD_POINTSCHEMEDRAWER_H__
 #include <osg/Geode>
-#include "skeletalVisualizationScheme.h"
+#include <plugins/kinematic/skeletalVisualizationScheme.h>
 #include "OsgSchemeDrawer.h"
 
 //! Schemat odrysowywujacy punkty
@@ -9,9 +9,9 @@ class PointSchemeDrawer : public OsgSchemeDrawer
 {
 public:
     virtual void draw();
-    virtual void update(double time);
+    virtual void update();
     virtual void deinit();
-    virtual void init(SkeletalVisualizationSchemeWeak scheme);
+    virtual void init(SkeletalVisualizationSchemeConstPtr scheme);
     virtual osg::ref_ptr<osg::Node> getNode() { return node; }
 
 private:

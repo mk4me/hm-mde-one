@@ -5,7 +5,10 @@
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/SkeletalParsers.h>
 #include <kinematiclib/KinematicModel.h>
+#include <core/C3DParserEx.h>
+#include <plugins/kinematic/Wrappers.h>
 #include <core/C3DChannels.h>
+
 
 using namespace kinematic;
 using namespace boost::filesystem;
@@ -13,6 +16,7 @@ using namespace boost::filesystem;
 KinematicParser::KinematicParser()
 {
     model = core::ObjectWrapper::createWrapper<kinematic::KinematicModel>();
+    scheme = core::ObjectWrapper::createWrapper<SkeletalVisualizationScheme>();
 }
 
 KinematicParser::~KinematicParser()
@@ -38,8 +42,20 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
 
     KinematicModelPtr kinematic(new KinematicModel);
     kinematic->setSkeletalData(modelPtr);
+
+    std::vector<MarkerSetPtr> markers = core::queryDataPtr(dataManager);
+    // todo : co jesli kolekcja != 1
+    if (markers.size() > 0) {
+        kinematic->setMarkersData(markers[0]);
+    }
+    
     model->set<kinematic::KinematicModel>(kinematic);
     model->setName(path.filename());
+
+    SkeletalVisualizationSchemePtr schemePtr = SkeletalVisualizationScheme::create();
+    schemePtr->setKinematicModel(kinematic);
+    scheme->set<SkeletalVisualizationScheme>(schemePtr);
+    scheme->setName(path.filename());
 }
 
 core::IParser* KinematicParser::create()
@@ -55,4 +71,5 @@ std::string KinematicParser::getSupportedExtensions() const
 void KinematicParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 {
     objects.push_back(model);
+    objects.push_back(scheme);
 }

@@ -238,10 +238,10 @@ size_t CommunicationManager::pingDataCallback(void *buffer, size_t size, size_t 
 void CommunicationManager::readDbSchemas(const std::string& shallowCopyDir, const std::string& metaDataDir)
 {
     ShallowCopyParserPtr ptrS = ShallowCopyParserPtr(new ShallowCopyParser());
-    ptrS->parseFile(shallowCopyDir);
+    ptrS->parseFile(nullptr, shallowCopyDir);
     shallowCopy = ptrS->getShallowCopy();
 
     MetadataParserPtr ptrM = MetadataParserPtr(new MetadataParser());
-    ptrM->parseFile(metaDataDir);
+    ptrM->parseFile(nullptr, metaDataDir);
     metaData = ptrM->getMetadata();
 }

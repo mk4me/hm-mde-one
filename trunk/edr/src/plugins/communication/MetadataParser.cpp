@@ -10,7 +10,7 @@ MetadataParser::~MetadataParser()
 {
 }
 
-void MetadataParser::parseFile(const boost::filesystem::path& path)
+void MetadataParser::parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path)
 {
     this->path = path;
     
