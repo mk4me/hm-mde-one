@@ -13,7 +13,7 @@ CommunicationWidgetEx::PerformerTreeItem::PerformerTreeItem(PerformerRelationPtr
     : performer(performer)
 {
     menu = nullptr;
-    headers << "" << "Sessions" << "Notes";
+    headers << "" << "Element";
     setToolTip(0, "Performer");
     setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/subject.png")));
 
@@ -27,21 +27,20 @@ CommunicationWidgetEx::SessionTreeItem::SessionTreeItem(SessionRelationPtr sessi
     : session(session)
 {
     menu = nullptr;
-    headers << "" << "Date" << "Trials" << "Notes";
+    headers << "" << "Element" << "Date" << "Performer";
     setToolTip(0, "Session");
     setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/session.png")));
 
     setText(0, QString::fromUtf8(session->session.sessionName.c_str()));
-    setText(1, QString::fromUtf8(session->session.sessionDate.c_str()).left(10));
-    setText(2, QString::number(session->trials.size()).append(" trial(s)"));
-    setText(3, QString::fromUtf8(session->session.tags.c_str()));
+    setText(1, QString::number(session->trials.size()).append(" trial(s)"));
+    setText(2, QString::fromUtf8(session->session.sessionDate.c_str()).left(10));
 }
 
 CommunicationWidgetEx::TrialTreeItem::TrialTreeItem(TrialRelationPtr trial)
     : trial(trial)
 {
     menu = nullptr;
-    headers << "" << "Files" << "Notes";
+    headers << "" << "Element" << "Date" << "Performer" << "Session";
     setToolTip(0, "Trial");
     setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/trial.png")));
     setText(0, QString::fromUtf8(trial->trial.trialName.c_str()).right(11));
@@ -496,6 +495,8 @@ void CommunicationWidgetEx::buildPerformerView(QTreeWidget* tree)
     BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
     {
         PerformerTreeItem* item = new PerformerTreeItem(performer);
+        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
+        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
         
         //item->setPerformer(performer);
         item->setMenu(menu);
@@ -505,10 +506,14 @@ void CommunicationWidgetEx::buildPerformerView(QTreeWidget* tree)
         {
             SessionTreeItem* itemS = new SessionTreeItem(session);
             itemS->setMenu(menu);
+            itemS->setText(3, QString(name + " " + lastName));
             item->addChild(itemS);
             BOOST_FOREACH(TrialRelationPtr trial, session->trials)
             {
                 TrialTreeItem* itemT = createTrialItem(trial);
+                itemT->setText(2, core::toQString(session->session.sessionDate).left(10));
+                itemT->setText(3, QString(name + " " + lastName));
+                itemT->setText(4, QString::fromUtf8(session->session.sessionName.c_str()));
                 itemS->addChild(itemT);
             }
         }
@@ -522,14 +527,20 @@ void CommunicationWidgetEx::buildSessionView(QTreeWidget* tree)
     //listowanie sesji
     BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
     {
+        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
+        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
         BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
         {
             SessionTreeItem* item = new SessionTreeItem(session);
             item->setMenu(menu);
             tree->addTopLevelItem(item);
+            item->setText(3, QString(name + " " + lastName));
             BOOST_FOREACH(TrialRelationPtr trial, session->trials)
             {
                 TrialTreeItem* itemT = createTrialItem(trial);
+                itemT->setText(2, core::toQString(session->session.sessionDate).left(10));
+                itemT->setText(3, QString(name + " " + lastName));
+                itemT->setText(4, QString::fromUtf8(session->session.sessionName.c_str()));
                 item->addChild(itemT);
             }
         }
@@ -543,11 +554,16 @@ void CommunicationWidgetEx::buildTrialView(QTreeWidget* tree)
     //listowanie triali
     BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
     {
+        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
+        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
         BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
         {
             BOOST_FOREACH(TrialRelationPtr trial, session->trials)
             {
                 TrialTreeItem* item = createTrialItem(trial);
+                item->setText(2, core::toQString(session->session.sessionDate).left(10));
+                item->setText(3, QString(name + " " + lastName));
+                item->setText(4, QString::fromUtf8(session->session.sessionName.c_str()));
                 tree->addTopLevelItem(item);
             }
         }
@@ -561,12 +577,17 @@ void CommunicationWidgetEx::buildLocalView(QTreeWidget* tree)
     //listowanie triali
     BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
     {
+        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
+        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
         BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
         {
             BOOST_FOREACH(TrialRelationPtr trial, session->trials)
             {
                 TrialTreeItem* item = createTrialItem(trial);
-                if(item->textColor(0) == QColor(0, 0, 255)) {
+                item->setText(2, core::toQString(session->session.sessionDate).left(10));
+                item->setText(3, QString(name + " " + lastName));
+                item->setText(4, QString::fromUtf8(session->session.sessionName.c_str()));
+                if(item->textColor(0) != QColor(128, 128, 128)) {
                     tree->addTopLevelItem(item);
                 }
             }
@@ -671,10 +692,11 @@ CommunicationWidgetEx::TrialTreeItem* CommunicationWidgetEx::createTrialItem(Tri
         boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
         //sprawdzamy, czy zgadza sie nazwa folderu
         if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
-            item->setTextColor(0, QColor(0, 0, 255));
+            item->setTextColor(0, QColor(0, 0, 0));
             item->setMenu(menuTl);
             break;
         } else {
+            item->setTextColor(0, QColor(128, 128, 128));
             item->setMenu(menuTs);
         }
     }
