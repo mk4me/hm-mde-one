@@ -122,12 +122,14 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
     menu->addSeparator();
     menu->addAction(actionAdd);
     menu->addAction(actionRemove);
-    menu->addAction(actionAdd_c3d);
+    menu->addAction(actionAdd_GRF);
+    menu->addAction(actionAdd_EMG);
+    menu->addAction(actionAdd_MOCAP);
     menu->addAction(actionAdd_videos);
-    menu->addAction(actionAdd_amc);
-    menu->addAction(actionRemove_c3d);
+    menu->addAction(actionRemove_GRF);
+    menu->addAction(actionRemove_EMG);
+    menu->addAction(actionRemove_MOCAP);
     menu->addAction(actionRemove_videos);
-    menu->addAction(actionRemove_amc);
 
     menuTl = new QMenu;
     menuTl->addSeparator();
@@ -161,47 +163,38 @@ void CommunicationWidgetEx::treeItemClicked(QTreeWidgetItem* item, int column)
             currentView->resizeColumnToContents(i);
         }
         if(current->isMarkedAll()) {
-            actionRemove->setDisabled(false);
             actionRemove->setVisible(true);
-            actionAdd->setDisabled(true);
             actionAdd->setVisible(false);
         } else {
-            actionRemove->setDisabled(true);
             actionRemove->setVisible(false);
-            actionAdd->setDisabled(false);
             actionAdd->setVisible(true);
         }
         if(current->isMarkedEmg()) {
-            actionRemove_amc->setDisabled(false);
-            actionRemove_amc->setVisible(true);
-            actionAdd_amc->setDisabled(true);
-            actionAdd_amc->setVisible(false);
+            actionRemove_EMG->setVisible(true);
+            actionAdd_EMG->setVisible(false);
         } else {
-            actionRemove_amc->setDisabled(true);
-            actionRemove_amc->setVisible(false);
-            actionAdd_amc->setDisabled(false);
-            actionAdd_amc->setVisible(true);
+            actionRemove_EMG->setVisible(false);
+            actionAdd_EMG->setVisible(true);
+        }
+        if(current->isMarkedGrf()) {
+            actionRemove_GRF->setVisible(true);
+            actionAdd_GRF->setVisible(false);
+        } else {
+            actionRemove_GRF->setVisible(false);
+            actionAdd_GRF->setVisible(true);
         }
         if(current->isMarkedMocap()) {
-            actionRemove_c3d->setDisabled(false);
-            actionRemove_c3d->setVisible(true);
-            actionAdd_c3d->setDisabled(true);
-            actionAdd_c3d->setVisible(false);
+            actionRemove_MOCAP->setVisible(true);
+            actionAdd_MOCAP->setVisible(false);
         } else {
-            actionRemove_c3d->setDisabled(true);
-            actionRemove_c3d->setVisible(false);
-            actionAdd_c3d->setDisabled(false);
-            actionAdd_c3d->setVisible(true);
+            actionRemove_MOCAP->setVisible(false);
+            actionAdd_MOCAP->setVisible(true);
         }
         if(current->isMarkedVideos()) {
-            actionRemove_videos->setDisabled(false);
             actionRemove_videos->setVisible(true);
-            actionAdd_videos->setDisabled(true);
             actionAdd_videos->setVisible(false);
         } else {
-            actionRemove_videos->setDisabled(true);
             actionRemove_videos->setVisible(false);
-            actionAdd_videos->setDisabled(false);
             actionAdd_videos->setVisible(true);
         }
     }
@@ -209,6 +202,9 @@ void CommunicationWidgetEx::treeItemClicked(QTreeWidgetItem* item, int column)
 
 void CommunicationWidgetEx::workspaceItemClicked(QTreeWidgetItem* item, int column)
 {
+    for(int i = 0; i < workspace->columnCount(); i++) {
+        workspace->resizeColumnToContents(i);
+    }
     //if(item) {
     //    IEntityTreeItem* current = reinterpret_cast<IEntityTreeItem*>(item);
     //    int columns = current->columnCount();
@@ -333,11 +329,6 @@ void CommunicationWidgetEx::downloadPressed()
 
 void CommunicationWidgetEx::loadPressed()
 {
-    actionDownload->setDisabled(true);
-    actionUpdate->setDisabled(true);
-    actionLoad_trial->setDisabled(false);
-    actionAbort_download->setDisabled(true);
-    actionAbort_download->setVisible(false);
     BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
     {
         boost::cmatch matches;
@@ -426,6 +417,7 @@ void CommunicationWidgetEx::refreshUI()
     buildSessionView(sessionView);
     buildTrialView(trialView);
     buildLocalView(localView);
+    buildWorkspace(workspace);
 
     //communicationView->setSortingEnabled(true);
     //communicationView->setDisabled(false);
@@ -480,12 +472,116 @@ void CommunicationWidgetEx::removeFromWorkspace()
     buildWorkspace(workspace);
 }
 
+void CommunicationWidgetEx::addEMG()
+{
+    if(currentView->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        markRecursiveEMG(true, item);
+    }
+    buildWorkspace(workspace);
+}
+
+void CommunicationWidgetEx::addGRF()
+{
+    if(currentView->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        markRecursiveGRF(true, item);
+    }
+    buildWorkspace(workspace);
+}
+
+void CommunicationWidgetEx::addMocap()
+{
+    if(currentView->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        markRecursiveMocap(true, item);
+    }
+    buildWorkspace(workspace);
+}
+
+void CommunicationWidgetEx::addVideo()
+{
+    if(currentView->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        markRecursiveVideo(true, item);
+    }
+    buildWorkspace(workspace);
+}
+
+void CommunicationWidgetEx::removeEMG()
+{
+    if(currentView->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        markRecursiveEMG(false, item);
+    }
+    buildWorkspace(workspace);
+}
+
+void CommunicationWidgetEx::removeGRF()
+{
+    if(currentView->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        markRecursiveGRF(false, item);
+    }
+    buildWorkspace(workspace);
+}
+
+void CommunicationWidgetEx::removeMocap()
+{
+    if(currentView->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        markRecursiveMocap(false, item);
+    }
+    buildWorkspace(workspace);
+}
+
+void CommunicationWidgetEx::removeVideo()
+{
+    if(currentView->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        markRecursiveVideo(false, item);
+    }
+    buildWorkspace(workspace);
+}
+
 void CommunicationWidgetEx::markRecursive(bool mark, IEntityTreeItem* item)
 {
     for(int i = 0; i < item->childCount(); i++) {
         markRecursive(mark, reinterpret_cast<IEntityTreeItem*>(item->child(i)));
     }
     item->setMarkedAll(mark);
+}
+
+void CommunicationWidgetEx::markRecursiveEMG(bool mark, IEntityTreeItem* item)
+{
+    for(int i = 0; i < item->childCount(); i++) {
+        markRecursiveEMG(mark, reinterpret_cast<IEntityTreeItem*>(item->child(i)));
+    }
+    item->setMarkedEmg(mark);
+}
+
+void CommunicationWidgetEx::markRecursiveGRF(bool mark, IEntityTreeItem* item)
+{
+    for(int i = 0; i < item->childCount(); i++) {
+        markRecursiveGRF(mark, reinterpret_cast<IEntityTreeItem*>(item->child(i)));
+    }
+    item->setMarkedGrf(mark);
+}
+
+void CommunicationWidgetEx::markRecursiveMocap(bool mark, IEntityTreeItem* item)
+{
+    for(int i = 0; i < item->childCount(); i++) {
+        markRecursiveMocap(mark, reinterpret_cast<IEntityTreeItem*>(item->child(i)));
+    }
+    item->setMarkedMocap(mark);
+}
+
+void CommunicationWidgetEx::markRecursiveVideo(bool mark, IEntityTreeItem* item)
+{
+    for(int i = 0; i < item->childCount(); i++) {
+        markRecursiveVideo(mark, reinterpret_cast<IEntityTreeItem*>(item->child(i)));
+    }
+    item->setMarkedVideos(mark);
 }
 
 void CommunicationWidgetEx::buildPerformerView(QTreeWidget* tree)
@@ -607,12 +703,16 @@ void CommunicationWidgetEx::buildWorkspace(QTreeWidget* tree)
     
     QTreeWidgetItem* mocap = new QTreeWidgetItem;
     mocap->setText(0, "MOCAP");
+    mocap->setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/mocap.png")));
     QTreeWidgetItem* emg = new QTreeWidgetItem;
     emg->setText(0, "EMG");
+    emg->setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/emg.png")));
     QTreeWidgetItem* grf = new QTreeWidgetItem;
     grf->setText(0, "GRF");
+    grf->setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/grf.png")));
     QTreeWidgetItem* video = new QTreeWidgetItem;
     video->setText(0, "VIDEO");
+    video->setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/video.png")));
     workspace->addChild(mocap);
     workspace->addChild(emg);
     workspace->addChild(grf);
@@ -621,6 +721,9 @@ void CommunicationWidgetEx::buildWorkspace(QTreeWidget* tree)
     //listowanie triali
     BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
     {
+        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
+        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
+
         BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
         {
             BOOST_FOREACH(TrialRelationPtr trial, session->trials)
@@ -639,36 +742,28 @@ void CommunicationWidgetEx::buildWorkspace(QTreeWidget* tree)
                     }
                 }
                 if(trial->markVideos && vid) {
-                    QString name = QString::fromUtf8(performer->performer.firstName.c_str());
-                    QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
-                    WorkspaceTreeItem* item = new WorkspaceTreeItem(trial);
+                    WorkspaceTreeItem* item = createWorkspaceTrialItem(trial);
                     item->setText(1, core::toQString(session->session.sessionDate).left(10));
                     item->setText(2, QString(name + " " + lastName));
                     item->setText(3, QString::fromUtf8(session->session.sessionName.c_str()));
                     video->addChild(item);
                 }
                 if(trial->markMocap && c3d && amc && asf) {
-                    QString name = QString::fromUtf8(performer->performer.firstName.c_str());
-                    QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
-                    WorkspaceTreeItem* item = new WorkspaceTreeItem(trial);
+                    WorkspaceTreeItem* item = createWorkspaceTrialItem(trial);
                     item->setText(1, core::toQString(session->session.sessionDate).left(10));
                     item->setText(2, QString(name + " " + lastName));
                     item->setText(3, QString::fromUtf8(session->session.sessionName.c_str()));
                     mocap->addChild(item);
                 }
                 if(trial->markEmg && c3d) {
-                    QString name = QString::fromUtf8(performer->performer.firstName.c_str());
-                    QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
-                    WorkspaceTreeItem* item = new WorkspaceTreeItem(trial);
+                    WorkspaceTreeItem* item = createWorkspaceTrialItem(trial);
                     item->setText(1, core::toQString(session->session.sessionDate).left(10));
                     item->setText(2, QString(name + " " + lastName));
                     item->setText(3, QString::fromUtf8(session->session.sessionName.c_str()));
                     emg->addChild(item);
                 }
                 if(trial->markGrf && c3d) {
-                    QString name = QString::fromUtf8(performer->performer.firstName.c_str());
-                    QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
-                    WorkspaceTreeItem* item = new WorkspaceTreeItem(trial);
+                    WorkspaceTreeItem* item = createWorkspaceTrialItem(trial);
                     item->setText(1, core::toQString(session->session.sessionDate).left(10));
                     item->setText(2, QString(name + " " + lastName));
                     item->setText(3, QString::fromUtf8(session->session.sessionName.c_str()));
@@ -685,6 +780,27 @@ void CommunicationWidgetEx::buildWorkspace(QTreeWidget* tree)
 CommunicationWidgetEx::TrialTreeItem* CommunicationWidgetEx::createTrialItem(TrialRelationPtr trial)
 {
     TrialTreeItem* item = new TrialTreeItem(trial);
+    //lokalny czy serwerowy?
+    BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+    {
+        boost::cmatch matches;
+        boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+        //sprawdzamy, czy zgadza sie nazwa folderu
+        if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
+            item->setTextColor(0, QColor(0, 0, 0));
+            item->setMenu(menuTl);
+            break;
+        } else {
+            item->setTextColor(0, QColor(128, 128, 128));
+            item->setMenu(menuTs);
+        }
+    }
+    return item;
+}
+
+CommunicationWidgetEx::WorkspaceTreeItem* CommunicationWidgetEx::createWorkspaceTrialItem(TrialRelationPtr trial)
+{
+    WorkspaceTreeItem* item = new WorkspaceTreeItem(trial);
     //lokalny czy serwerowy?
     BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
     {

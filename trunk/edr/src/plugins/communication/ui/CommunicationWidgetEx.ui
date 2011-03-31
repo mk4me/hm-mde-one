@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>374</width>
-    <height>1072</height>
+    <height>1359</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -55,6 +55,11 @@
      <property name="sortingEnabled">
       <bool>true</bool>
      </property>
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
     </widget>
    </item>
    <item>
@@ -71,6 +76,11 @@
      <property name="sortingEnabled">
       <bool>true</bool>
      </property>
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
     </widget>
    </item>
    <item>
@@ -87,6 +97,11 @@
      <property name="sortingEnabled">
       <bool>true</bool>
      </property>
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
     </widget>
    </item>
    <item>
@@ -242,12 +257,12 @@
     <string>Remove all files from workspace</string>
    </property>
   </action>
-  <action name="actionAdd_c3d">
+  <action name="actionAdd_GRF">
    <property name="text">
-    <string>Add c3d</string>
+    <string>Add GRF</string>
    </property>
    <property name="toolTip">
-    <string>Add c3d file</string>
+    <string>Add GRF</string>
    </property>
   </action>
   <action name="actionAdd_videos">
@@ -258,20 +273,20 @@
     <string>Add video files</string>
    </property>
   </action>
-  <action name="actionAdd_amc">
+  <action name="actionAdd_EMG">
    <property name="text">
-    <string>Add amc</string>
+    <string>Add EMG</string>
    </property>
    <property name="toolTip">
-    <string>Add amc/asf files</string>
+    <string>Add EMG</string>
    </property>
   </action>
-  <action name="actionRemove_c3d">
+  <action name="actionRemove_GRF">
    <property name="text">
-    <string>Remove c3d</string>
+    <string>Remove GRF</string>
    </property>
    <property name="toolTip">
-    <string>Remove c3d file(s)</string>
+    <string>Remove GRF</string>
    </property>
   </action>
   <action name="actionRemove_videos">
@@ -282,12 +297,12 @@
     <string>Remove video files</string>
    </property>
   </action>
-  <action name="actionRemove_amc">
+  <action name="actionRemove_EMG">
    <property name="text">
-    <string>Remove amc</string>
+    <string>Remove EMG</string>
    </property>
    <property name="toolTip">
-    <string>Rmove amc file(s)</string>
+    <string>Remove EMG</string>
    </property>
   </action>
   <action name="actionLocal_View">
@@ -299,6 +314,22 @@
    </property>
    <property name="toolTip">
     <string>change view</string>
+   </property>
+  </action>
+  <action name="actionAdd_MOCAP">
+   <property name="text">
+    <string>Add MOCAP</string>
+   </property>
+   <property name="toolTip">
+    <string>Add MOCAP</string>
+   </property>
+  </action>
+  <action name="actionRemove_MOCAP">
+   <property name="text">
+    <string>Remove MOCAP</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove MOCAP</string>
    </property>
   </action>
  </widget>
@@ -560,6 +591,134 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionAdd_EMG</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>addEMG()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAdd_GRF</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>addGRF()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAdd_MOCAP</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>addMocap()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAdd_videos</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>addVideo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRemove_EMG</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>removeEMG()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRemove_GRF</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>removeGRF()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRemove_MOCAP</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>removeMocap()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRemove_videos</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>removeVideo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>performerViewPressed(bool)</slot>
@@ -574,5 +733,13 @@
   <slot>addToWorkspace()</slot>
   <slot>removeFromWorkspace()</slot>
   <slot>localViewPressed(bool)</slot>
+  <slot>addEMG()</slot>
+  <slot>removeEMG()</slot>
+  <slot>addGRF()</slot>
+  <slot>removeGRF()</slot>
+  <slot>addVideo()</slot>
+  <slot>removeVideo()</slot>
+  <slot>addMocap()</slot>
+  <slot>removeMocap()</slot>
  </slots>
 </ui>

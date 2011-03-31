@@ -405,6 +405,15 @@ public slots:
     void treeItemClicked(QTreeWidgetItem* item, int column);
     //
     void workspaceItemClicked(QTreeWidgetItem* item, int column);
+    //
+    void addEMG();
+    void addGRF();
+    void addMocap();
+    void addVideo();
+    void removeEMG();
+    void removeGRF();
+    void removeMocap();
+    void removeVideo();
 private:
     /**
     Wskaünik na kontroler serwisu
@@ -445,11 +454,23 @@ private:
     */
     void buildWorkspace(QTreeWidget* tree);
     /**
-    Tworzy widok dla triala
+    Tworzy widok triala
     */
     TrialTreeItem* createTrialItem(TrialRelationPtr trial);
+    /**
+    Tworzy widok triala dla workspace
+    */
+    WorkspaceTreeItem* createWorkspaceTrialItem(TrialRelationPtr trial);
     //
     void markRecursive(bool mark, IEntityTreeItem* item);
+    //
+    void markRecursiveEMG(bool mark, IEntityTreeItem* item);
+    //
+    void markRecursiveGRF(bool mark, IEntityTreeItem* item);
+    //
+    void markRecursiveMocap(bool mark, IEntityTreeItem* item);
+    //
+    void markRecursiveVideo(bool mark, IEntityTreeItem* item);
     /**
     Odúwieø headery drzewa danych. Dzia≥a tylko gdy drzewo posiada same elementy IEntityTreeItem
     */
