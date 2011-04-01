@@ -168,8 +168,13 @@ public:
     virtual void loadTrial(const LocalTrial& trial);
     //! \param files lista do za³adowania, inicjalizacja parserów
     virtual void loadFiles(const std::vector<Path>& files);
+
+    
     //! ³adowanie zasobów, czyli inicjalizacja parserów
     virtual void loadResources();
+
+    virtual void addFiles(const std::vector<Path>& files);
+    virtual void removeFiles(const std::vector<Path>& files);
 
     
     virtual const LocalTrial& getLocalTrial(int i) const;
@@ -200,6 +205,9 @@ public:
 private:
     //! Mapuje obiekty 
     void mapObjectsToTypes(const std::vector<core::ObjectWrapperPtr>& objects, ParserPtr parser );
+    //! Usuwa obiekty kieruj¹c siê jakimiœ wyznacznikami.
+    template <class Predicate>
+    void removeObjects( Predicate pred );
 
     
 };

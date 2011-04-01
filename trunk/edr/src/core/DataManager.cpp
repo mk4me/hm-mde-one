@@ -404,12 +404,83 @@ void DataManager::loadTrial(const core::IDataManager::LocalTrial& trial)
 
 void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files)
 {
-    clearCurrentTrial();
     loadTrialData = true;
-    BOOST_FOREACH(boost::filesystem::path path, files)
+
+    // TODO: zamiast wektora powinien byæ set!
+    std::set<Path> allFiles(files.begin(), files.end());
+
+    // usuwamy zbêdne obiekty i parsery
     {
+        // szukamy parserów do usuniêcia
+        ParsersList::iterator last = std::remove_if( currentParsers.begin(), currentParsers.end(), 
+            [&](const ParserPtr& ptr) { return allFiles.find(ptr->getPath()) == allFiles.end(); } 
+        );
+        std::set<ParserPtr> parsersToRemove(last, currentParsers.end());
+        // usuwamy obiekty z ze zbêdnych parserów
+        removeObjects( [&](const ObjectsMapEntry& entry) { return parsersToRemove.find(entry.parser) != parsersToRemove.end(); } );
+        // fizycznie usuwamy zbêdne wektory
+        currentParsers.erase( last, currentParsers.end() );
+    }
+
+    // dodajemy nowe
+    {
+        // usuwamy z allFile te parsery, które ju¿ s¹
+        std::for_each( currentParsers.begin(), currentParsers.end(), [&](const ParserPtr& ptr) {
+            auto found = allFiles.find(ptr->getPath());
+            if ( found != allFiles.end() ) {
+                allFiles.erase(ptr->getPath());
+            }
+        });
+        BOOST_FOREACH(const Path& path, allFiles) {
+            createParsers(path, false);
+        }
+    }
+
+
+//     clearCurrentTrial();
+//     
+//     BOOST_FOREACH(boost::filesystem::path path, files)
+//     {
+//         createParsers(path, false);
+//     }
+}
+
+
+void DataManager::addFiles( const std::vector<Path>& files )
+{
+    loadTrialData = true;
+    BOOST_FOREACH(boost::filesystem::path path, files) {
         createParsers(path, false);
     }
+}
+
+void DataManager::removeFiles( const std::vector<Path>& files )
+{
+    loadTrialData = true;
+
+    // TODO: zamiast wektora powinien byæ set!
+    std::set<Path> filesToRemove(files.begin(), files.end());
+
+    // szukamy parserów dla zadanych plików
+    ParsersList::iterator last = std::remove_if( currentParsers.begin(), currentParsers.end(), 
+        [&](const ParserPtr& ptr) { return filesToRemove.find(ptr->getPath()) != filesToRemove.end(); } 
+    );
+    std::set<ParserPtr> parsersToRemove(last, currentParsers.end());
+
+    // usuwamy obiekty dla zadanych parserów
+    for ( ObjectsByType::iterator it = currentObjects.begin(); it != currentObjects.end(); ) {
+        ObjectsMapEntry& entry = it->second;
+        if ( parsersToRemove.find(entry.parser) != parsersToRemove.end() ) {
+            // usuwamy wpis
+            ObjectsByType::iterator toErase = it++;
+            currentObjects.erase(toErase);
+        } else {
+            ++it;
+        }
+    }
+
+    // fizycznie usuwamy zbêdne wektory
+    currentParsers.erase( last, currentParsers.end() );
 }
 
 void DataManager::loadResources()
@@ -584,5 +655,21 @@ void DataManager::createParsers( const Path& path, bool resource )
         }
     } else {
         LOG_WARNING("No parser found for " << path);
+    }
+}
+
+template <class Predicate>
+void DataManager::removeObjects( Predicate predicate )
+{
+    // usuwamy obiekty dla zadanych parserów
+    for ( ObjectsByType::iterator it = currentObjects.begin(); it != currentObjects.end(); ) {
+        ObjectsMapEntry& entry = it->second;
+        if ( predicate(entry) ) {
+            // usuwamy wpis
+            ObjectsByType::iterator toErase = it++;
+            currentObjects.erase(toErase);
+        } else {
+            ++it;
+        }
     }
 }

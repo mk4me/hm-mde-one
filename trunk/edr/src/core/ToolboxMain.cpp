@@ -594,6 +594,26 @@ void ToolboxMain::initializeUI()
         }
 	}
 
+    // widgety z wizualizacj¹
+
+    VisualizerWidget* first = nullptr;
+    BOOST_FOREACH(const IVisualizerConstPtr& vis, visualizerManager->enumPrototypes()) {
+        VisualizerWidget* widget = new VisualizerWidget(vis->getID(), this, Qt::WindowTitleHint);
+        widget->setAllowedAreas(Qt::RightDockWidgetArea);
+        widget->setStyleSheet(styleSheet());
+        widget->setObjectName( QString("buitin%1").arg(widget->windowTitle()) );
+        if ( !first ) {
+            first = widget;
+            addDockWidget(Qt::RightDockWidgetArea, widget);
+        } else {
+            tabifyDockWidget(first, widget);
+        }
+        
+    }
+
+
+
+
 #ifdef UTILS_DEBUG
     // testowe opcje
     removeOnClick = false;

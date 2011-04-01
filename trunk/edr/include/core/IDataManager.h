@@ -20,6 +20,9 @@ public:
     //! Wirtualny destruktor.
 	virtual ~IDataManager() {};
 
+    virtual void addFiles(const std::vector<Path>& files) = 0;
+    virtual void removeFiles(const std::vector<Path>& files) = 0;
+
     //! Wyszukiwanie zasobów na lokalnym dysku.
     virtual void findResources() = 0;
     //! Wyszukiwanie prób pomiarowych na lokalnym dysku.
