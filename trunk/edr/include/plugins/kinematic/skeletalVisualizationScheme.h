@@ -68,7 +68,16 @@ public: // akcesory
         UTILS_ASSERT(kinematicModel); 
         return kinematicModel->getFrameTime(); 
     }
-    double getDuration() const { return getNumFrames() * getFrameTime(); }
+    double getDuration() const { 
+        UTILS_ASSERT(kinematicModel);
+        if (kinematicModel->hasSkeleton()) {
+            return getNumFrames() * getFrameTime(); 
+        } else if (kinematicModel->hasMarkers()) {
+            return kinematicModel->getMarkersData()->getDuration();
+        }
+        UTILS_ASSERT(false);
+        return 0.0;
+    }
 
     //! akcesory do zwracanych danych
     const std::vector<JointState>  &getMarkersStates() const { return markersStates; }

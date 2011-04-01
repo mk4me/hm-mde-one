@@ -55,20 +55,26 @@ void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::file
     }
 
     MarkerSetPtr markers(new MarkerSet);
+    const ::GroupData* videoGroup = data->getParameters()->getGroup("POINT");
     int markersCount = data->getHeader()->getNumberOfC3DPoints();
+    /*std::vector<short> dimensions = videoGroup->getParameter("LABELS2")->getDimensions();
+    markersCount -= dimensions[1];
+    dimensions =  videoGroup->getParameter("FORCES")->getDimensions();
+    markersCount -= dimensions[1];
+    dimensions =  videoGroup->getParameter("MOMENTS")->getDimensions();
+    markersCount -= dimensions[1];
+    dimensions =  videoGroup->getParameter("ANGLES")->getDimensions();
+    markersCount -= dimensions[1];                  
+    dimensions =  videoGroup->getParameter("POWERS")->getDimensions();
+    markersCount -= dimensions[1];*/
 
     markersCount = markersSlots < markersCount ? markersSlots : markersCount;
     //MarkerChannels.resize(markersCount);
     for (int i = 0; i < markersCount; ++i) {
         MarkerChannelPtr ptr(new MarkerChannel(*data, i));
         markers->addMarker(ptr);
-        //MarkerChannels[i] = ObjectWrapper::createWrapper<MarkerChannel>();
-        /*MarkerChannels[i]->set<MarkerChannel>(ptr);
-        MarkerChannels[i]->setName("Marker" + boost::lexical_cast<std::string>(i));
-        MarkerChannels[i]->setSource(path.string());*/
     }
     MarkerChannels->set<MarkerSet>(markers);
-    //object = core::ObjectWrapper::createWrapper<C3D_Data>(parser.parseData(path.string()));
 }
 
 core::IParser* C3DParser::create()

@@ -31,7 +31,7 @@ public:
     
 	std::string getDataAsStringsArray(int i) const;
 	float* getDataAsFloatArray();
-	std::vector<short> getDimensions();
+	std::vector<short> getDimensions() const;
 	float* getData();
 
 	void setName(std::string name);

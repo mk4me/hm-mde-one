@@ -308,6 +308,8 @@ void KinematicModel::setSkeletalData(SkeletalModelPtr skeletalModel)
     });
     this->haSkeleton = createHAnim(/*hmAnimation::HAnimHelper::_3_Full_HAnim_Hierarchy*/);
    double maxLength = getMaxBoneLength(skeletalModel->getSkeleton());
+   // hack
+   maxLength = 1.0;
    doSkeletonMapping(skeletalModel);
    lengthRatio = maxLength;
 

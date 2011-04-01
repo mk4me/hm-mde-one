@@ -135,7 +135,7 @@ private:
    // SkeletonViewerLogicPtr logic;
     //KinematicVisualizer viz;
     
-    timeline::StreamPtr stream;
+    std::vector<timeline::StreamPtr> stream;
 };
 
 

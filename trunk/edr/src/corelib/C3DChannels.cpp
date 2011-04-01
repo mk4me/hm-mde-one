@@ -2,7 +2,7 @@
 #include <boost/algorithm/string.hpp>
 #include <core/C3DChannels.h>
 
-static const double scale = 0.001;
+static const double scale = 0.004;
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -70,7 +70,8 @@ VectorChannel( c3dData.getHeader()->getFrameRate())
         v[2] = table[i * markersNo * 4 + channelNo * 4 + 2] * scale;
         addPoint(v);
     }
-
+    const ::GroupData* videoGroup = c3dData.getParameters()->getGroup("POINT");
+    setName(boost::trim_copy(videoGroup->getParameter("LABELS")->getDataAsStringsArray(channelNo)));
     // wczytanie próbek
     // liczba wszystkich próbek... próbki dla kana³ów umieszczone s¹ obok siebie, a z nich komponowane s¹ ramki
     //int numSamples = data->getNumberOfFrames() * header->getNumberOfAnalogSamplesPerFrame() * data->getAnalogChannelsNumber();

@@ -22,8 +22,12 @@ void SkeletalVisualizationScheme::setNormalizedTime( double val )
             LOGGER(Logger::Debug, "SkeletalVisualizationScheme : value out of <0,1>");
         }
 
-        updateJointTransforms(val);
-        updateMarkers(val);
+        if (kinematicModel->hasSkeleton()) {
+            updateJointTransforms(val);
+        }
+        if (kinematicModel->hasMarkers()) {
+            updateMarkers(val);
+        }
         //schemeDrawer->update(val);
     }
 }
@@ -159,29 +163,34 @@ boost::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::crea
 void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelConstPtr val )
 {
     kinematicModel = val;
-    auto jointMap = kinematicModel->getJoints();
-    int count = jointMap.size();
-    jointMarkersStates.reserve(count + 5);
-    jointMarkersStates.resize(count);
-    auto it = jointMap.begin();
-    for (int index = 0; it != jointMap.end(); it++) {
-        if (it->second->isActive()) {
-            visJoints[it->second] = index++;
+
+    if (kinematicModel->getSkeletalData()) {
+        auto jointMap = kinematicModel->getJoints();
+        int count = jointMap.size();
+        jointMarkersStates.reserve(count + 5);
+        jointMarkersStates.resize(count);
+        auto it = jointMap.begin();
+        for (int index = 0; it != jointMap.end(); it++) {
+            if (it->second->isActive()) {
+                visJoints[it->second] = index++;
+            }
+        }
+        hAnimSkeleton::Ptr skeleton = kinematicModel->getHAnimSkeleton();
+        createSkeletonConnections(skeleton->getRoot());
+        updateJointTransforms(0.0);
+    }
+
+    if (kinematicModel->getMarkersData()) {
+        IMarkerSetConstPtr markers = kinematicModel->getMarkersData();
+        int count =  markers->getMarkersCount();
+        if (count && markersStates.size() != count) {
+            markersStates.resize(count);
+        }
+        for (int i = 0; i < count; i++) {
+            markersStates[i].position = markers->getPosition(i, 0.0 );
         }
     }
-    hAnimSkeleton::Ptr skeleton = kinematicModel->getHAnimSkeleton();
-    createSkeletonConnections(skeleton->getRoot());
-
-    IMarkerSetConstPtr markers = kinematicModel->getMarkersData();
-    count =  markers->getMarkersCount();
-    if (count && markersStates.size() != count) {
-        markersStates.resize(count);
-    }
-    for (int i = 0; i < count; i++) {
-        markersStates[i].position = markers->getPosition(i, 0.0 );
-    }
-
-    updateJointTransforms(0.0);
+    
 }
 
 

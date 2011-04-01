@@ -91,12 +91,20 @@ class IMarkerSet
 {
 public:
     // hack
-    void setScale(double scale) const { this->scale = scale; } 
+    IMarkerSet() : scale(1.0) {}
+    void setScale(double scale) const { 
+       UTILS_ASSERT(scale > 0.0);
+       this->scale = scale; 
+    } 
     virtual int getMarkersCount() const = 0;
     virtual osg::Vec3 getPosition(int markerNo, double normalizedTime) const = 0;
+    virtual std::string getMarkerName(int markerNo) const = 0;
+    virtual double getDuration() const = 0;
 
 protected:
-    double getScale() const { return scale; }
+    double getScale() const {
+        return scale; 
+    }
 private: 
     mutable double scale;
 };
@@ -152,7 +160,7 @@ public:
 
 public:
     /// \brief  Zwraca surowe dane z parsera
-    kinematic::SkeletalModelPtr getSkeletalData() { return skeletalModel; }
+    kinematic::SkeletalModelPtr getSkeletalData() const { return skeletalModel; }
     //! Tworzy dane zgodne z parserami na podstawie reprezentacji wewnetrznej
     kinematic::SkeletalModelPtr createSkeletalData() const;
     /// \brief  Wczytuje slownik z nazwami do mapowania. 
@@ -167,7 +175,20 @@ public:
     const std::map<std::string, kinematic::hAnimJointPtr>& getJoints() const { return joints; }
     // akcesory do markerow
     IMarkerSetConstPtr getMarkersData() const { return markers;}
-    void setMarkersData(IMarkerSetConstPtr data) const { markers = data; markers->setScale(lengthRatio); }
+    void setMarkersData(IMarkerSetConstPtr data) const { 
+        markers = data; 
+        if (lengthRatio > 0) {
+            markers->setScale(1.0 / lengthRatio); 
+        }
+    }
+
+    bool hasSkeleton() const {
+        return (skeletalModel && skeletalModel->getFrames().size());
+    }
+
+    bool hasMarkers() const {
+        return (markers) ? true: false;
+    }
 
     double getFrameTime() const { 
         UTILS_ASSERT(skeletalModel); 

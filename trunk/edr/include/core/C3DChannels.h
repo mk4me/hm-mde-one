@@ -32,13 +32,24 @@ namespace core {
         }
         osg::Vec3 interpolate(const osg::Vec3& p1, const osg::Vec3& p2, float t) const
         {
-            osg::Vec3 copy1 = p1;
-            osg::Vec3 copy2 = p2;
-            return copy1 + (copy2 - copy1) * t;
+            osg::Vec3 res;
+            res[0] = p2[0] - p1[0];
+            res[1] = p2[1] - p1[1];
+            res[2] = p2[2] - p1[2];
+            
+            res[0] *= t;
+            res[1] *= t;
+            res[2] *= t;
+
+            res[0] += p1[0];
+            res[1] += p1[1];
+            res[2] += p1[2];
+            
+            return res;
         }
     };
 
-    typedef DataChannel<osg::Vec3, float, DataOperatorsManipulator<osg::Vec3, float, const osg::Vec3&> > VectorChannel;
+    typedef DataChannel<osg::Vec3, float/*, DataOperatorsManipulator<osg::Vec3, float, osg::Vec3>*/ > VectorChannel;
     typedef shared_ptr<VectorChannel> VectorChannelPtr;
 
     typedef DataChannel<float, float> ScalarChannel;

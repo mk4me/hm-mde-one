@@ -32,7 +32,7 @@ std::string Parameter::getDescription(){
 
 }
 
-std::vector<short> Parameter::getDimensions(){
+std::vector<short> Parameter::getDimensions() const {
 
 	return this->dimensions;
 

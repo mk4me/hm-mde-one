@@ -49,7 +49,7 @@ PointSchemeDrawer::GeodePtr PointSchemeDrawer::createMarker(const osg::Vec4& col
 {
     PointSchemeDrawer::GeodePtr geode = new Geode();
 
-    ref_ptr<Sphere> sphere = new Sphere(Vec3(), 0.02f * scale);
+    ref_ptr<Sphere> sphere = new Sphere(Vec3(),  scale);
     ref_ptr<ShapeDrawable> drawable = new ShapeDrawable(sphere);
     
     drawable->setColor(color);
@@ -61,7 +61,7 @@ PointSchemeDrawer::TransformPtr PointSchemeDrawer::addPoint( const osg::Vec3& po
 {
     float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
     Vec4 color(rand, 1, rand, 1);
-    GeodePtr marker = createMarker(color, 1.5f);
+    GeodePtr marker = createMarker(color, 0.08f);
     TransformPtr transform = new PositionAttitudeTransform();
     transform->addChild(marker);
     transform->setPosition(point);

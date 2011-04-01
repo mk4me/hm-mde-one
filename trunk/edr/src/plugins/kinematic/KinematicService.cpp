@@ -48,25 +48,17 @@ AsyncResult KinematicService::loadData(IServiceManager* serviceManager, core::ID
 {
     ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
-        if (stream) {
-            timeline->removeStream(stream);
+        for (int i = stream.size() - 1; i >= 0; --i) {
+            timeline->removeStream(stream[i]);
         }
-        // todo co jak bedzie wiecej obiektow?
         std::vector<SkeletalVisualizationSchemePtr> schemes = core::queryDataPtr(dataManager);
-        if (schemes.size() > 0) {
-            stream =  timeline::StreamPtr(new KinematicTimeline(schemes[0]));
-            timeline->addStream(stream);
+        for (int i = schemes.size() - 1; i >= 0; --i) {
+            timeline->addStream(timeline::StreamPtr(new KinematicTimeline(schemes[i])));
         }
     } else {
         OSG_WARN<<"ITimeline not found."<<std::endl;
     }
 
-    /*std::vector<kinematic::KinematicModelPtr> models = core::queryDataPtr(dataManager);
-    if (models.size() > 0 && models[0]) {
-        logic->setKinematic(models[0]);
-    } else {
-        return AsyncResult_Failure;
-    }*/
     return AsyncResult_Complete;
 }
 
@@ -93,6 +85,7 @@ void KinematicVisualizer::setUp( IObjectSource* source )
     SkeletalVisualizationSchemeConstPtr scheme = source->getObject(0);
     
     if (scheme) {
+        drawers.clear();
         OsgSchemeDrawerPtr drawer(new PointSchemeDrawer);
         OsgSchemeDrawerPtr drawer2(new LineSchemeDrawer);
         drawers.push_back(drawer);
@@ -152,6 +145,8 @@ QWidget* KinematicVisualizer::createWidget()
     ref_ptr<osgViewer::StatsHandler> handler = new osgViewer::StatsHandler;
     widget->addEventHandler(handler);
     osgGA::OrbitManipulator *cameraManipulator = new osgGA::OrbitManipulator();
+    cameraManipulator->setElevation(30.0);
+    cameraManipulator->setHeading(10.0);
     widget->setCameraManipulator(cameraManipulator);
     //widget->setMinimumSize(100, 100);
 
@@ -168,7 +163,7 @@ QWidget* KinematicVisualizer::createWidget()
     widget->setLight(light);
     // tworzenie kamery
     widget->getCamera()->setClearColor(osg::Vec4(0.0f, 0.1f, 0.0f, 1));
-    widget->getCamera()->setNearFarRatio(0.000000001);
+    //widget->getCamera()->setNearFarRatio(0.000000001);
     /*osg::Vec3 pos( 0.0f, 0.0f, 9.0f);
     osg::Vec3 up(0, 1, 0);*/
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
@@ -220,16 +215,16 @@ GeodePtr KinematicVisualizer::createFloor()
     osg::ref_ptr<osg::Geometry> linesGeom = new osg::Geometry();
 
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array(44);
-
+    
     for (int i = 0; i < 11; i++) {
         /*(*vertices)[2 * i] = osg::Vec3(-5.0f + i, 0, -5.0f);
         (*vertices)[2 * i + 1] = osg::Vec3(-5.0f + i, 0, 5.0f);
         (*vertices)[20 + 2 * i] = osg::Vec3(-5.0f, 0, -5.0f + i);
         (*vertices)[20 + 2 * i + 1] = osg::Vec3(5.0f, 0, -5.0f + i);*/
-        (*vertices)[2 * i] = osg::Vec3(-5.0f + i, -5.0f, 0);
-        (*vertices)[2 * i + 1] = osg::Vec3(-5.0f + i, 5.0f, 0);
-        (*vertices)[22 + 2 * i] = osg::Vec3(-5.0f, -5.0f + i, 0);
-        (*vertices)[22 + 2 * i + 1] = osg::Vec3(5.0f, -5.0f + i, 0);
+        (*vertices)[2 * i] = osg::Vec3(-10.0f + 2*i, -10.0f, 0);
+        (*vertices)[2 * i + 1] = osg::Vec3(-10.0f + 2*i, 10.0f, 0);
+        (*vertices)[22 + 2 * i] = osg::Vec3(-10.0f, -10.0f + 2*i, 0);
+        (*vertices)[22 + 2 * i + 1] = osg::Vec3(10.0f, -10.0f + 2*i, 0);
 
     }
 

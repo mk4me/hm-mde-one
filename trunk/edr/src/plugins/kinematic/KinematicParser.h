@@ -8,9 +8,12 @@ class KinematicParser : public core::IParser
 {
     UNIQUE_ID('KINE','PARS');
 private:
-    //! Obiekt wewnêtrzny.
-    core::ObjectWrapperPtr model;
-    core::ObjectWrapperPtr scheme;
+    core::ObjectWrapperPtr kinematicMarkers;
+    core::ObjectWrapperPtr kinematicSkeleton;
+    core::ObjectWrapperPtr kinematicMarkersSkeleton;
+    core::ObjectWrapperPtr schemeMarkers;
+    core::ObjectWrapperPtr schemeSkeleton;
+    core::ObjectWrapperPtr schemeMarkersSkeleton;
 
 public:
     KinematicParser();

@@ -25,7 +25,23 @@ public:
     virtual int getMarkersCount() const { return markers.size(); }
     virtual osg::Vec3 getPosition(int markerNo, double normalizedTime) const {
         float time = normalizedTime * markers[markerNo]->getLength();
+
+        // hack, dla normalizedTime == 1 dostaje sie bzdury
+        int sps = markers[markerNo]->getSamplesPerSec();
+        int currentSample = time * sps;
+        int samples = sps * markers[markerNo]->getLength();
+
+        if (currentSample >= samples) {
+            time = static_cast<double>(samples - 1) /  sps;
+        }
+
         return markers[markerNo]->getValue(time) * getScale();
+    }
+    virtual std::string getMarkerName(int markerNo) const {
+        return markers[markerNo]->getName();
+    }
+    virtual double getDuration() const {
+        return markers[0]->getLength();
     }
 
 private:
