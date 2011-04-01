@@ -17,168 +17,123 @@
    <string>Communication</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="sizeConstraint">
-    <enum>QLayout::SetDefaultConstraint</enum>
-   </property>
    <item>
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout_18">
-      <item>
-       <widget class="QSplitter" name="splitter">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <widget class="QStackedWidget" name="csStackedWidget">
-         <property name="currentIndex">
-          <number>3</number>
+    <widget class="QStackedWidget" name="csStackedWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="trial_page">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QTreeWidget" name="trialView">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
-         <widget class="QWidget" name="trial_page">
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QTreeWidget" name="trialView">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="contextMenuPolicy">
-              <enum>Qt::CustomContextMenu</enum>
-             </property>
-             <property name="sortingEnabled">
-              <bool>true</bool>
-             </property>
-             <column>
-              <property name="text">
-               <string notr="true">1</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="session_page">
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QTreeWidget" name="sessionView">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="contextMenuPolicy">
-              <enum>Qt::CustomContextMenu</enum>
-             </property>
-             <property name="sortingEnabled">
-              <bool>true</bool>
-             </property>
-             <column>
-              <property name="text">
-               <string notr="true">1</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="local_page">
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <item>
-            <widget class="QTreeWidget" name="localView">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="contextMenuPolicy">
-              <enum>Qt::CustomContextMenu</enum>
-             </property>
-             <property name="sortingEnabled">
-              <bool>true</bool>
-             </property>
-             <column>
-              <property name="text">
-               <string notr="true">1</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="performer_page">
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="QTreeWidget" name="performerView">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="contextMenuPolicy">
-              <enum>Qt::CustomContextMenu</enum>
-             </property>
-             <property name="sortingEnabled">
-              <bool>true</bool>
-             </property>
-             <column>
-              <property name="text">
-               <string notr="true">1</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+         <property name="contextMenuPolicy">
+          <enum>Qt::CustomContextMenu</enum>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
         </widget>
-        <widget class="QStackedWidget" name="workspaceStackedWidget">
-         <widget class="QWidget" name="workspace_page">
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="QTreeWidget" name="workspace">
-             <property name="contextMenuPolicy">
-              <enum>Qt::CustomContextMenu</enum>
-             </property>
-             <property name="sortingEnabled">
-              <bool>true</bool>
-             </property>
-             <column>
-              <property name="text">
-               <string notr="true">1</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="workspace_trial_page">
-          <layout class="QVBoxLayout" name="verticalLayout_7">
-           <item>
-            <widget class="QTreeWidget" name="workspaceTrialView">
-             <property name="contextMenuPolicy">
-              <enum>Qt::CustomContextMenu</enum>
-             </property>
-             <property name="sortingEnabled">
-              <bool>true</bool>
-             </property>
-             <attribute name="headerShowSortIndicator" stdset="0">
-              <bool>true</bool>
-             </attribute>
-             <column>
-              <property name="text">
-               <string notr="true">1</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="session_page">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QTreeWidget" name="sessionView">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="contextMenuPolicy">
+          <enum>Qt::CustomContextMenu</enum>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
         </widget>
-       </widget>
-      </item>
-     </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="local_page">
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QTreeWidget" name="localView">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="contextMenuPolicy">
+          <enum>Qt::CustomContextMenu</enum>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="performer_page">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QTreeWidget" name="performerView">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="contextMenuPolicy">
+          <enum>Qt::CustomContextMenu</enum>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -303,114 +258,12 @@
     <bool>true</bool>
    </property>
   </action>
-  <action name="actionAdd">
-   <property name="text">
-    <string>Add all elements</string>
-   </property>
-   <property name="toolTip">
-    <string>Add all files to workspace</string>
-   </property>
-  </action>
-  <action name="actionRemove">
-   <property name="text">
-    <string>Remove all</string>
-   </property>
-   <property name="toolTip">
-    <string>Remove all files from workspace</string>
-   </property>
-  </action>
-  <action name="actionAdd_GRF">
-   <property name="text">
-    <string>Add GRF</string>
-   </property>
-   <property name="toolTip">
-    <string>Add GRF</string>
-   </property>
-  </action>
-  <action name="actionAdd_videos">
-   <property name="text">
-    <string>Add videos</string>
-   </property>
-   <property name="toolTip">
-    <string>Add video files</string>
-   </property>
-  </action>
-  <action name="actionAdd_EMG">
-   <property name="text">
-    <string>Add EMG</string>
-   </property>
-   <property name="toolTip">
-    <string>Add EMG</string>
-   </property>
-  </action>
-  <action name="actionRemove_GRF">
-   <property name="text">
-    <string>Remove GRF</string>
-   </property>
-   <property name="toolTip">
-    <string>Remove GRF</string>
-   </property>
-  </action>
-  <action name="actionRemove_videos">
-   <property name="text">
-    <string>Remove videos</string>
-   </property>
-   <property name="toolTip">
-    <string>Remove video files</string>
-   </property>
-  </action>
-  <action name="actionRemove_EMG">
-   <property name="text">
-    <string>Remove EMG</string>
-   </property>
-   <property name="toolTip">
-    <string>Remove EMG</string>
-   </property>
-  </action>
   <action name="actionLocal_View">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
     <string>Local</string>
-   </property>
-   <property name="toolTip">
-    <string>Change View</string>
-   </property>
-  </action>
-  <action name="actionAdd_MOCAP">
-   <property name="text">
-    <string>Add MOCAP</string>
-   </property>
-   <property name="toolTip">
-    <string>Add MOCAP</string>
-   </property>
-  </action>
-  <action name="actionRemove_MOCAP">
-   <property name="text">
-    <string>Remove MOCAP</string>
-   </property>
-   <property name="toolTip">
-    <string>Remove MOCAP</string>
-   </property>
-  </action>
-  <action name="actionWorkspace_View">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Workspace</string>
-   </property>
-   <property name="toolTip">
-    <string>Change View</string>
-   </property>
-  </action>
-  <action name="actionWorkspaceTrial_View">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Trial</string>
    </property>
    <property name="toolTip">
     <string>Change View</string>
@@ -446,14 +299,6 @@
    </property>
    <property name="toolTip">
     <string>Use MOCAP</string>
-   </property>
-  </action>
-  <action name="actionLoad_All">
-   <property name="text">
-    <string>Use all</string>
-   </property>
-   <property name="toolTip">
-    <string>Use all</string>
    </property>
   </action>
   <action name="actionLoad_Trial_videos">
@@ -620,54 +465,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionAdd</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>addToWorkspace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>298</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRemove</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>removeFromWorkspace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>298</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>workspace</sender>
-   <signal>customContextMenuRequested(QPoint)</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>workspaceContextMenu(QPoint)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>186</x>
-     <y>437</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>298</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionLocal_View</sender>
    <signal>toggled(bool)</signal>
    <receiver>CommunicationWidget</receiver>
@@ -680,198 +477,6 @@
     <hint type="destinationlabel">
      <x>186</x>
      <y>535</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionAdd_EMG</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>addEMG()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionAdd_GRF</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>addGRF()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionAdd_MOCAP</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>addMocap()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionAdd_videos</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>addVideo()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRemove_EMG</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>removeEMG()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRemove_GRF</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>removeGRF()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRemove_MOCAP</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>removeMocap()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRemove_videos</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>removeVideo()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>workspaceTrialView</sender>
-   <signal>customContextMenuRequested(QPoint)</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>workspaceContextMenu(QPoint)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>186</x>
-     <y>1268</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionWorkspace_View</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>workspaceViewPressed(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionWorkspaceTrial_View</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>workspaceTrialViewPressed(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionLoad_All</sender>
-   <signal>triggered()</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>useAllFromWorkspace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>679</y>
     </hint>
    </hints>
   </connection>

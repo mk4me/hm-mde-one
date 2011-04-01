@@ -336,83 +336,6 @@ public:
     const QString getName() const;
 };
 
-class WorkspaceTreeItem : public TrialTreeItem
-{
-public:
-    WorkspaceTreeItem(TrialRelationPtr trial);
-
-    virtual ~WorkspaceTreeItem() {};
-};
-
-class WorkspaceTopTreeItem : public IEntityTreeItem
-{
-protected:
-    bool markMocap;
-    bool markVideos;
-    bool markEmg;
-    bool markGrf;
-public:
-    WorkspaceTopTreeItem();
-    virtual ~WorkspaceTopTreeItem() {};
-    
-    virtual int getEntityID()
-    {
-        return -1;
-    };
-
-    virtual void setMarkedAll(bool mark)
-    {
-        markMocap = markVideos = markEmg = markGrf = mark;
-    };
-
-    virtual bool isMarkedAll() const
-    {
-        if(markMocap && markVideos && markEmg && markGrf)
-            return true;
-        return false;
-    };
-
-    virtual void setMarkedMocap(bool mark)
-    {
-        markMocap = mark;
-    };
-
-    virtual bool isMarkedMocap() const
-    {
-        return markMocap;
-    };
-
-    virtual void setMarkedVideos(bool mark)
-    {
-        markVideos = mark;
-    };
-
-    virtual bool isMarkedVideos() const
-    {
-        return markVideos;
-    };
-
-    virtual void setMarkedEmg(bool mark)
-    {
-        markEmg = mark;
-    };
-
-    virtual bool isMarkedEmg() const
-    {
-        return markEmg;
-    };
-
-    virtual void setMarkedGrf(bool mark)
-    {
-        markGrf = mark;
-    };
-
-    virtual bool isMarkedGrf() const
-    {
-        return markGrf;
-    };
-};
-
 public:
     /**
     Konstruktor CommunicationWidgetEx
@@ -459,10 +382,6 @@ public slots:
     void trialViewPressed(bool tog);
     //widok tylko lokalnych zasobów
     void localViewPressed(bool tog);
-    //widok workspace
-    void workspaceViewPressed(bool tog);
-    //widok triali w workspace
-    void workspaceTrialViewPressed(bool tog);
     //update triali
     void updatePressed();
     //ladowanie proby
@@ -473,29 +392,11 @@ public slots:
     void abortPressed();
     //menu ogólne dla widgetów
     void contextMenu(QPoint);
-    //menu dla workspace
-    void workspaceContextMenu(QPoint);
     //menu dla triala
     void trialContextMenu(QPoint);
-    //dodawanie galezi do workspace
-    void addToWorkspace();
-    //usuwanie galezi z workspace
-    void removeFromWorkspace();
     //
     void treeItemClicked(QTreeWidgetItem* item, int column);
-    //
-    void workspaceItemClicked(QTreeWidgetItem* item, int column);
-    //
-    void addEMG();
-    void addGRF();
-    void addMocap();
-    void addVideo();
-    void removeEMG();
-    void removeGRF();
-    void removeMocap();
-    void removeVideo();
-    //
-    void useAllFromWorkspace();
+
     void useVideos();
     void useMocap();
     void useGrf();
@@ -546,28 +447,9 @@ private:
     */
     void buildLocalView(QTreeWidget* tree);
     /**
-    Buduj widok workspace
-    */
-    void buildWorkspaceView(QTreeWidget* tree);
-    void buildWorkspaceTrialView(QTreeWidget* tree);
-    /**
     Tworzy widok triala
     */
     TrialTreeItem* createTrialItem(TrialRelationPtr trial);
-    /**
-    Tworzy widok triala dla workspace
-    */
-    WorkspaceTreeItem* createWorkspaceTrialItem(TrialRelationPtr trial);
-    //
-    void markRecursive(bool mark, IEntityTreeItem* item);
-    //
-    void markRecursiveEMG(bool mark, IEntityTreeItem* item);
-    //
-    void markRecursiveGRF(bool mark, IEntityTreeItem* item);
-    //
-    void markRecursiveMocap(bool mark, IEntityTreeItem* item);
-    //
-    void markRecursiveVideo(bool mark, IEntityTreeItem* item);
     /**
     Odœwie¿ headery drzewa danych. Dzia³a tylko gdy drzewo posiada same elementy IEntityTreeItem
     */
@@ -590,24 +472,13 @@ private:
     QMenu* menuTl;
     QMenu* menuTs;
     QMenu* menu;
-    /**
-    menu workspace
-    */
-    QMenu* menuWorkspace;
-    QMenu* menuWorkspaceMocap;
-    QMenu* menuWorkspaceEmg;
-    QMenu* menuWorkspaceGrf;
-    QMenu* menuWorkspaceVideos;
-    QMenu* menuTw;
+    QMenu* view;
     /**
     Obecnie widoczny view CS.
     */
     QTreeWidget* currentView;
     /**
-    Obecnie widoczny view workspace.
     */
-    QTreeWidget* currentWorkspaceView;
-    //flaga mówi¹ca o widgecie wywo³uj¹cym dodawanie/usuwanie elementów z workspace
-    bool currentViewRequest;
+    std::vector<core::IDataManager::Path> listTrialFiles(bool mocap, bool emg, bool grf, bool videos);
 };
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGETEX_H__
