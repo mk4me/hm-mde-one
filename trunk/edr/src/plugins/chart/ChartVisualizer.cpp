@@ -5,7 +5,7 @@
 
 
 ChartVisualizer::ChartVisualizer() : 
-name("Chart")
+name("Chart"), prevActiveSerie(-1), prevTime(0)
 {
 
 }
@@ -34,7 +34,20 @@ void ChartVisualizer::getSlotInfo( int source, std::string& name, core::ObjectWr
 
 void ChartVisualizer::update( double deltaTime )
 {
-
+    bool needsUpdate = false;
+    if ( chart->getActiveSerieIndex() != prevActiveSerie ) {
+        prevActiveSerie = chart->getActiveSerieIndex();
+        needsUpdate = true;   
+    }
+    if ( chart->getActiveSerie() && chart->getActiveSerie()->getTime() != prevTime ) {
+        prevTime = chart->getActiveSerie()->getTime();
+        needsUpdate = true;
+    }
+    
+    if ( needsUpdate ) {
+        chart->refreshLite();
+        viewer->frame();
+    }
 }
 
 QWidget* ChartVisualizer::createWidget()

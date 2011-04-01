@@ -49,6 +49,10 @@ public:
     virtual const std::string& getXUnit() const = 0;
     //! \return Jednostka dla osi Y.
     virtual const std::string& getYUnit() const = 0;
+    //!
+    virtual float getValue() const = 0;
+    //!
+    virtual float getTime() const = 0;
 
 public:
     //! \return D³ugoœæ zakresu dla X.

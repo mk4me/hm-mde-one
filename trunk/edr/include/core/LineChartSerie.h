@@ -53,6 +53,10 @@ public:
     virtual const std::string& getXUnit() const;
     //! \return Jednostka dla osi Y.
     virtual const std::string& getYUnit() const;
+    //!
+    virtual float getValue() const;
+    //!
+    virtual float getTime() const;
 };
 
 typedef osg::ref_ptr<LineChartSerie> LineChartSeriePtr;

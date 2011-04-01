@@ -242,6 +242,22 @@ const std::string& LineChartSerie::getYUnit() const
     return data->getYUnit();
 }
 
+float LineChartSerie::getValue() const
+{
+    if ( !data ) {
+        throw std::runtime_error("Data not set.");
+    }
+    return data->getCurrentValue();
+}
+
+float LineChartSerie::getTime() const
+{
+    if ( !data ) {
+        throw std::runtime_error("Data not set.");
+    }
+    return data->getTime();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////

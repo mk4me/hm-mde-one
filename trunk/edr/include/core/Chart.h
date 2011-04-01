@@ -24,6 +24,11 @@ namespace osg {
 } // namespace osg
 ////////////////////////////////////////////////////////////////////////////////
 
+namespace osgText 
+{
+    typedef osg::ref_ptr<Text> TextPtr;
+} // namespace osgText
+
 class Chart : public osg::Group
 {
 private:
@@ -44,6 +49,12 @@ private:
     osg::GeometryPtr axises;
     float dashWidth;
     
+    //! Labelki dla osi.
+    std::vector< osgText::TextPtr > labelsY;
+    //! Labelki dla osi x.
+    std::vector< osgText::TextPtr > labelsX;
+
+    osgText::TextPtr pointer;
 
     float margin;
 
@@ -64,16 +75,23 @@ private:
     //!
 	osg::Vec4 axisColor;
     //!
+    osg::Vec4 labelColor;
+
+    //!
 	int gridDensity;
+    //! Prototyp dla tekstów.
+    osg::ref_ptr<osgText::Text> textPrototype;
 
 public:
 	Chart(float x, float y, float width, float height);
 	~Chart();
 
     //! \return
-    int getActiveSerie() const;
+    int getActiveSerieIndex() const;
     //! \param currentSerie
     void setActiveSerie(int currentSerie);
+    //!
+    const core::ChartSerie* getActiveSerie() const;
 
     //! Dodaje kana³ do wykresu.
     void addChannel( const core::ScalarChannelConstPtr& channel, osg::Vec4 color );
@@ -115,6 +133,10 @@ public:
 	osg::Vec4 getAxisColor();
 	//! ustawia kolor wykresu w rgba
 	void setAxisColor(osg::Vec4 color);
+    //! \return
+    osg::Vec4 getLabelColor() const;
+    //! \param labelColor
+    void setLabelColor(osg::Vec4 labelColor);
 	//! ustawia lokacje wykresu
 	void setLocation(float x, float y, float width, float height);
 	//! pobiera lokacje wykresu
@@ -138,11 +160,19 @@ public:
 
     //! Odœwie¿a wykres.
     void refresh();
+    void refreshLite();
 
 private:
     void refreshAxis(float z);
     void refreshGrid(float z);
+    void refreshLabels(float z);
+    void refreshPointer(float z);
+
+    //! Pomocnicza metoda do odœwie¿ania labelek.
+    void refreshLabels(std::vector<osgText::TextPtr> &labels, const std::string& unit, bool condition, float min, float max, float x0, float x1, float y0, float y1, float z, osgText::Text::AlignmentType align );
     bool prepareGeometry(osg::GeometryPtr& geom, bool condition, const char* name);
+    bool prepareText(osgText::TextPtr& text, bool condition, const char* name);
+    osg::ref_ptr<osgText::Text> createText(const osg::Vec3& pos, float size, const std::string& label);
 };
 
 

@@ -4,9 +4,17 @@
 #include <core/ChartData.h>
 #include <core/ChartPointer.h>
 #include <osg/LineStipple>
+#include <math.h>
+#include <iomanip>
 
 #undef  min
 #undef  max
+
+inline float lerp(float a, float b, float t)
+{
+    return a + (b - a) * t;    
+}
+
 
 Chart::Chart(float x, float y, float width, float height) : 
 margin(0.0f),
@@ -17,9 +25,9 @@ showAxisY(true),
 z(0),
 zRange(0),
 x(0), y(0), width(0), height(0),
-gridDensity(10),
 dashWidth(5),
-activeSerie(-1)
+activeSerie(-1),
+labelColor(1,1,1,1)
 {
     background = new osg::Geode();
     background->setName("background");
@@ -27,6 +35,11 @@ activeSerie(-1)
     foreground->setName("foreground");
     addChild(background);
     addChild(foreground);
+
+    textPrototype = createText( osg::Vec3(0, 0, 0), 12, "prototype");
+    setGridDensity(10);
+
+
     refresh();
 }
 
@@ -55,6 +68,26 @@ bool Chart::prepareGeometry(osg::GeometryPtr& geom, bool condition, const char* 
             geom->addPrimitiveSet( new osg::DrawArrays(GL_LINES, 0, 0) );
             geom->setName(name);
             background->addDrawable(geom);
+        }
+        return true;
+    }
+}
+
+bool Chart::prepareText( osgText::TextPtr& text, bool condition, const char* name )
+{
+    // czy w ogóle jest coœ do pkazania?
+    if ( condition ) {
+        if ( text && background->getDrawableIndex(text) ) {
+            // trzeba usun¹æ!
+            background->removeDrawable(text);
+        }
+        text = nullptr;
+        return false;
+    } else {
+        // czy tworzymy od nowa?
+        if ( !text ) {
+            text = osg::clone( textPrototype.get(), name, osg::CopyOp::DEEP_COPY_ALL );
+            background->addDrawable(text);
         }
         return true;
     }
@@ -113,7 +146,6 @@ void Chart::refreshAxis(float z)
         float y = this->y + margin;
         float height = this->height - 2 * margin;
         float width = this->width - 2 * margin;
-        
 
         // wierzcho³ki
         Vec3Array* vertices = dynamic_cast<Vec3Array*>(axises->getVertexArray());
@@ -154,8 +186,90 @@ void Chart::refreshAxis(float z)
     }
 }
 
+void Chart::refreshLabels( float z )
+{
+    const float offset = 8;
+    float x = this->x + margin;
+    float y = this->y + margin;
+    float height = this->height - 2 * margin;
+    float width = this->width - 2 * margin;
+
+    core::ChartSeriePtr activeSerie = this->activeSerie < 0 ? nullptr : series[this->activeSerie];
+    if ( activeSerie ) {
+        auto xrange = activeSerie->getXRange();
+        refreshLabels(labelsX, activeSerie->getXUnit(), !showGridX, xrange.first, xrange.second, x , x + width, y + offset, y + offset, z, osgText::Text::CENTER_BOTTOM);
+        auto yrange = activeSerie->getYRange();
+        refreshLabels(labelsY, activeSerie->getYUnit(), !showGridY, yrange.first, yrange.second, x + offset, x + offset, y, y + height, z, osgText::Text::LEFT_CENTER);
+    } else {
+        BOOST_FOREACH(osgText::TextPtr& text, labelsX) {
+            prepareText(text, true, "");
+        }
+        BOOST_FOREACH(osgText::TextPtr& text, labelsY) {
+            prepareText(text, true, "");
+        }
+    }
+}
+
+void Chart::refreshPointer( float z )
+{
+    float x = this->x + margin;
+    float y = this->y + margin;
+    float height = this->height - 2 * margin;
+    float width = this->width - 2 * margin;
+    if ( prepareText(pointer, activeSerie < 0, "cursor") ) {
+        pointer->setPosition( osg::Vec3(x+width / 2, y+height/2, z) );
+        auto yrange = series[activeSerie]->getYRange();
+
+        int decimalsToShow = 2;
+        float diff = yrange.second - yrange.first;
+        int logdiff = static_cast<int>(floorf(log10f(diff)));
+        decimalsToShow = std::max( decimalsToShow - logdiff, 0 );
+        std::ostringstream buffer;
+        buffer << std::setiosflags(std::ios::fixed) << std::setprecision(decimalsToShow);
+        buffer << series[activeSerie]->getValue();
+        pointer->setText( buffer.str() );
+
+    }
+}
+
+void Chart::refreshLabels(std::vector<osgText::TextPtr> &labels, const std::string& unit, bool condition, float min, float max, float x0, float x1, float y0, float y1, float z, osgText::Text::AlignmentType align )
+{
+    UTILS_ASSERT(labels.size() > 1);
+
+    float t = 0;
+    float dt = 1.0f / (labels.size() - 1);
+
+    int decimalsToShow = 2;
+    if ( !condition ) {
+        float diff = max - min;
+        int logdiff = static_cast<int>(floorf(log10f(diff)));
+        decimalsToShow = std::max( decimalsToShow - logdiff, 0 );
+    }
+    std::ostringstream buffer;
+    buffer << std::setiosflags(std::ios::fixed) << std::setprecision(decimalsToShow);
+
+    for (size_t i = 0; i < labels.size(); ++i, t += dt) {
+        osgText::TextPtr& text = labels[i];
+        if ( prepareText(text, condition, "label")  ) {
+
+            // konwersja na str
+            float val = lerp(min, max, t);
+            buffer.str( val < 0 ? "" : " ");
+            buffer << val << unit;
+            text->setText( buffer.str() );
+
+            // ustawienie pozycji
+            text->setPosition( osg::Vec3(lerp(x0, x1, t), lerp(y0, y1, t) , z) );
+            text->setAlignment(align);
+        }
+    }
+}
 void Chart::addChannel( const core::ScalarChannelConstPtr& channel, osg::Vec4 color )
 {
+    if ( activeSerie < 0 ) {
+        activeSerie = 0;
+    }
+
     // tworzymy nowy wykres
     osg::ref_ptr<core::LineChartSerie> serie = new core::LineChartSerie();
 
@@ -363,6 +477,11 @@ void Chart::addChannel( const core::ScalarChannelConstPtr& channel, osg::Vec4 co
 // }
 
 
+void Chart::refreshLite()
+{
+    float zStep = zRange/float(2 + series.size());
+    refreshPointer(z + zRange - zStep);
+}
 
 void Chart::refresh()
 {
@@ -383,6 +502,8 @@ void Chart::refresh()
     }
 
     refreshAxis(currentZ);
+    refreshLabels(currentZ);
+    refreshPointer(currentZ);
 
 // 	if(showBorder){
 // 		if(border){
@@ -603,7 +724,11 @@ int Chart::getGridDensity()
 
 void Chart::setGridDensity(int gridDensity)
 {
+    UTILS_ASSERT(gridDensity > 0);
     this->gridDensity=gridDensity;
+    // +1 poniewa¿ dodawane na ekstremum
+    labelsY.resize( gridDensity + 1 );
+    labelsX.resize( gridDensity + 1 );
     refresh();
 }
 
@@ -651,14 +776,57 @@ void Chart::removeAllChannels()
 {
     foreground->removeDrawables(0, foreground->getNumDrawables());
     series.clear();
+    activeSerie = -1;
 }
 
-int Chart::getActiveSerie() const
+int Chart::getActiveSerieIndex() const
 {
     return activeSerie;
+}
+
+
+const core::ChartSerie* Chart::getActiveSerie() const
+{
+    if ( activeSerie < 0 ) {
+        return nullptr;
+    } else {
+        return series[activeSerie];
+    }
 }
 
 void Chart::setActiveSerie( int currentSerie )
 {
     this->activeSerie = currentSerie;
 }
+
+osg::ref_ptr<osgText::Text> Chart::createText( const osg::Vec3& pos, float size, const std::string& label )
+{
+    osg::ref_ptr<osgText::Font> font = osgText::readFontFile("fonts/arial.ttf");
+    osg::ref_ptr<osgText::Text> text = new osgText::Text();
+
+    text->setColor( labelColor );
+    text->setFontResolution(100,100);
+    text->setPosition(pos);
+    text->setFont(font);
+    text->setCharacterSize(size);
+    text->setAxisAlignment(osgText::Text::SCREEN); 
+    text->setAlignment(osgText::Text::CENTER_TOP);
+    text->setText(label);
+    text->setLayout(osgText::Text::LEFT_TO_RIGHT);
+    //text->setBoundingBoxMargin(0.25f);
+
+
+    return text;    
+}
+
+osg::Vec4 Chart::getLabelColor() const
+{
+    return labelColor;
+}
+
+void Chart::setLabelColor( osg::Vec4 labelColor )
+{
+    this->labelColor = labelColor;
+}
+
+

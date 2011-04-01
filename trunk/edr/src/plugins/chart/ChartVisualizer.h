@@ -26,6 +26,10 @@ private:
     std::vector<osg::Vec4> seriesColors;
     //! Faktyczny wykres.
     osg::ref_ptr<Chart> chart;
+    //!
+    int prevActiveSerie;
+    //!
+    float prevTime;
 
 public:
     //!
