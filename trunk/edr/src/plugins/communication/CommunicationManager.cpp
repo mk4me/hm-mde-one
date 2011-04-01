@@ -135,6 +135,11 @@ void CommunicationManager::loadLocalTrials()
     notify();
 }
 
+void CommunicationManager::loadFiles(const std::vector<core::IDataManager::Path> files)
+{
+    dataManager->loadFiles(files);
+}
+
 void CommunicationManager::loadTrial(const core::IDataManager::LocalTrial& localTrial)
 {
     dataManager->loadTrial(localTrial);

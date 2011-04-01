@@ -145,13 +145,16 @@ namespace communication
         {
             return dataManager;
         };
-        //void setServiceManager(IServiceManager* serviceManager) {this->serviceManager = serviceManager;};
-        //IServiceManager* getServiceManager() {return serviceManager;};
         /**
         Metoda ustala próbê pomiarow¹ jako aktualn¹ i ³aduje j¹ do edytora.
         @param localTrial lokalna próba pomiarowa do za³adowania
         */
         void loadTrial(const core::IDataManager::LocalTrial& localTrial);
+        /**
+        Metoda ³aduje do edytora listê plików.
+        @param files lista plików do za³adowania
+        */
+        void loadFiles(const std::vector<core::IDataManager::Path> files);
         /**
         Ustala stan w jakim znajduje siê Communication Service.
         @param state stan jaki ustaliæ jako aktualny dla CS

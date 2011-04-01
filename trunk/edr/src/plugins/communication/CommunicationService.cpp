@@ -103,6 +103,11 @@ void CommunicationService::loadTrial(const core::IDataManager::LocalTrial& local
     model->loadTrial(localTrial);
 }
 
+void CommunicationService::loadFiles(const std::vector<core::IDataManager::Path> files)
+{
+    model->loadFiles(files);
+}
+
 void CommunicationService::cancelDownloading()
 {
     model->cancelDownloading();

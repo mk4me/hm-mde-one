@@ -166,6 +166,8 @@ public:
     virtual void findResources();
     //! \param trial do za³adowania, czyli inicjalizacja parserów
     virtual void loadTrial(const LocalTrial& trial);
+    //! \param files lista do za³adowania, inicjalizacja parserów
+    virtual void loadFiles(const std::vector<Path>& files);
     //! ³adowanie zasobów, czyli inicjalizacja parserów
     virtual void loadResources();
 

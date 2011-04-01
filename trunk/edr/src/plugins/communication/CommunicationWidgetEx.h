@@ -339,6 +339,75 @@ public:
     virtual ~WorkspaceTreeItem() {};
 };
 
+class WorkspaceTopTreeItem : public IEntityTreeItem
+{
+protected:
+    bool markMocap;
+    bool markVideos;
+    bool markEmg;
+    bool markGrf;
+public:
+    WorkspaceTopTreeItem();
+    virtual ~WorkspaceTopTreeItem() {};
+    
+    virtual int getEntityID()
+    {
+        return -1;
+    };
+
+    virtual void setMarkedAll(bool mark)
+    {
+        markMocap = markVideos = markEmg = markGrf = mark;
+    };
+
+    virtual bool isMarkedAll() const
+    {
+        if(markMocap && markVideos && markEmg && markGrf)
+            return true;
+        return false;
+    };
+
+    virtual void setMarkedMocap(bool mark)
+    {
+        markMocap = mark;
+    };
+
+    virtual bool isMarkedMocap() const
+    {
+        return markMocap;
+    };
+
+    virtual void setMarkedVideos(bool mark)
+    {
+        markVideos = mark;
+    };
+
+    virtual bool isMarkedVideos() const
+    {
+        return markVideos;
+    };
+
+    virtual void setMarkedEmg(bool mark)
+    {
+        markEmg = mark;
+    };
+
+    virtual bool isMarkedEmg() const
+    {
+        return markEmg;
+    };
+
+    virtual void setMarkedGrf(bool mark)
+    {
+        markGrf = mark;
+    };
+
+    virtual bool isMarkedGrf() const
+    {
+        return markGrf;
+    };
+};
+
 public:
     /**
     Konstruktor CommunicationWidgetEx
@@ -385,6 +454,10 @@ public slots:
     void trialViewPressed(bool tog);
     //widok tylko lokalnych zasobów
     void localViewPressed(bool tog);
+    //widok workspace
+    void workspaceViewPressed(bool tog);
+    //widok triali w workspace
+    void workspaceTrialViewPressed(bool tog);
     //update triali
     void updatePressed();
     //ladowanie proby
@@ -393,8 +466,10 @@ public slots:
     void downloadPressed();
     //przerwanie pobierania proby
     void abortPressed();
-    //menu dla widgetu
+    //menu ogólne dla widgetów
     void contextMenu(QPoint);
+    //menu dla workspace
+    void workspaceContextMenu(QPoint);
     //menu dla triala
     void trialContextMenu(QPoint);
     //dodawanie galezi do workspace
@@ -414,6 +489,12 @@ public slots:
     void removeGRF();
     void removeMocap();
     void removeVideo();
+    //
+    void useAllFromWorkspace();
+    void useVideos();
+    void useMocap();
+    void useGrf();
+    void useEmg();
 private:
     /**
     WskaŸnik na kontroler serwisu
@@ -428,6 +509,11 @@ private:
     @param localTrial lista plików jednej próby pomiarowej do za³adowania.
     */
     void loadTrial(const core::IDataManager::LocalTrial& localTrial);
+    /**
+    Za³aduj pliki do aplikacji.
+    @param files lista plików do za³adowania po filtracji.
+    */
+    void loadFiles(const std::vector<core::IDataManager::Path>& files);
     /**
     Pobranie próby pomiarowej z serwera.
     @param trialID id encji trialowej do pobrania.
@@ -452,7 +538,8 @@ private:
     /**
     Buduj widok workspace
     */
-    void buildWorkspace(QTreeWidget* tree);
+    void buildWorkspaceView(QTreeWidget* tree);
+    void buildWorkspaceTrialView(QTreeWidget* tree);
     /**
     Tworzy widok triala
     */
@@ -494,8 +581,23 @@ private:
     QMenu* menuTs;
     QMenu* menu;
     /**
-    Obecnie widoczny view.
+    menu workspace
+    */
+    QMenu* menuWorkspace;
+    QMenu* menuWorkspaceMocap;
+    QMenu* menuWorkspaceEmg;
+    QMenu* menuWorkspaceGrf;
+    QMenu* menuWorkspaceVideos;
+    QMenu* menuTw;
+    /**
+    Obecnie widoczny view CS.
     */
     QTreeWidget* currentView;
+    /**
+    Obecnie widoczny view workspace.
+    */
+    QTreeWidget* currentWorkspaceView;
+    //flaga mówi¹ca o widgecie wywo³uj¹cym dodawanie/usuwanie elementów z workspace
+    bool currentViewRequest;
 };
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGETEX_H__

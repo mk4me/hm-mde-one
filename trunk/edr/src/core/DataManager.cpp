@@ -402,6 +402,16 @@ void DataManager::loadTrial(const core::IDataManager::LocalTrial& trial)
     }
 }
 
+void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files)
+{
+    clearCurrentTrial();
+    loadTrialData = true;
+    BOOST_FOREACH(boost::filesystem::path path, files)
+    {
+        createParsers(path, false);
+    }
+}
+
 void DataManager::loadResources()
 {
     BOOST_FOREACH(std::string resourcePath, resourcesPaths) {

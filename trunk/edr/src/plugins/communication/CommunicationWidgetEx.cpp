@@ -91,7 +91,12 @@ CommunicationWidgetEx::WorkspaceTreeItem::WorkspaceTreeItem(TrialRelationPtr tri
     setToolTip(0, "Trial");
     setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/trial.png")));
     setText(0, QString::fromUtf8(trial->trial.trialName.c_str()).right(11));
+}
 
+CommunicationWidgetEx::WorkspaceTopTreeItem::WorkspaceTopTreeItem()
+{
+    menu = nullptr;
+    headers << "" << "Date" << "Performer" << "Session";
 }
 
 CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
@@ -108,6 +113,11 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
     formatGroup->addAction(actionSession_View);
     formatGroup->addAction(actionTrial_View);
     formatGroup->addAction(actionLocal_View);
+
+    
+    QActionGroup* formatGroupWorkspace = new QActionGroup(this);
+    formatGroupWorkspace->addAction(actionWorkspace_View);
+    formatGroupWorkspace->addAction(actionWorkspaceTrial_View);
     
     actionAbort_download->setVisible(false);
     
@@ -115,8 +125,11 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
     sessionView->setVisible(false);
     trialView->setVisible(false);
     localView->setVisible(false);
+    workspace->setVisible(true);
+    workspaceTrialView->setVisible(false);
 
     currentView = performerView;
+    currentWorkspaceView = workspace;
 
     menu = new QMenu;
     menu->addSeparator();
@@ -139,16 +152,65 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
 
     menuTs = new QMenu;
     menuTs->addSeparator();
-    menuTs->addAction(actionDownload);
-    menuTs->addSeparator();
     menuTs->addActions(menu->actions());
-    
+    menuTs->addSeparator();
+    menuTs->addAction(actionDownload);
+
+    menuTw = new QMenu;
+    menuTw->addSeparator();
+    menuTw->addActions(menu->actions());
+    menuTw->addSeparator();
+    menuTw->addAction(actionLoad_trial);
+    menuTw->addAction(actionLoad_GRF);
+    menuTw->addAction(actionLoad_EMG);
+    menuTw->addAction(actionLoad_MOCAP);
+    menuTw->addAction(actionLoad_Videos);
+
+    menuWorkspace = new QMenu;
+    menuWorkspace->addSeparator();
+    menuWorkspace->addAction(actionRemove);
+    menuWorkspace->addAction(actionRemove_GRF);
+    menuWorkspace->addAction(actionRemove_EMG);
+    menuWorkspace->addAction(actionRemove_MOCAP);
+    menuWorkspace->addAction(actionRemove_videos);
+    menuWorkspace->addSeparator();
+    menuWorkspace->addAction(actionLoad_All);
+    menuWorkspace->addAction(actionLoad_GRF);
+    menuWorkspace->addAction(actionLoad_EMG);
+    menuWorkspace->addAction(actionLoad_MOCAP);
+    menuWorkspace->addAction(actionLoad_Videos);
+
+    menuWorkspaceMocap = new QMenu;
+    menuWorkspaceMocap->addSeparator();
+    menuWorkspaceMocap->addAction(actionRemove_MOCAP);
+    menuWorkspaceMocap->addSeparator();
+    menuWorkspaceMocap->addAction(actionLoad_MOCAP);
+
+    menuWorkspaceEmg = new QMenu;
+    menuWorkspaceEmg->addSeparator();
+    menuWorkspaceEmg->addAction(actionRemove_EMG);
+    menuWorkspaceEmg->addSeparator();
+    menuWorkspaceEmg->addAction(actionLoad_EMG);
+
+    menuWorkspaceGrf = new QMenu;
+    menuWorkspaceGrf->addSeparator();
+    menuWorkspaceGrf->addAction(actionRemove_GRF);
+    menuWorkspaceGrf->addSeparator();
+    menuWorkspaceGrf->addAction(actionLoad_GRF);
+
+    menuWorkspaceVideos = new QMenu;
+    menuWorkspaceVideos->addSeparator();
+    menuWorkspaceVideos->addAction(actionRemove_videos);
+    menuWorkspaceVideos->addSeparator();
+    menuWorkspaceVideos->addAction(actionLoad_Videos);
+
     connect(performerView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(treeItemClicked(QTreeWidgetItem*, int)));
     connect(sessionView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(treeItemClicked(QTreeWidgetItem*, int)));
     connect(trialView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(treeItemClicked(QTreeWidgetItem*, int)));
     connect(localView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(treeItemClicked(QTreeWidgetItem*, int)));
-
+    
     connect(workspace, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(workspaceItemClicked(QTreeWidgetItem*, int)));
+    connect(workspaceTrialView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(workspaceItemClicked(QTreeWidgetItem*, int)));
 }
 
 void CommunicationWidgetEx::treeItemClicked(QTreeWidgetItem* item, int column)
@@ -205,15 +267,45 @@ void CommunicationWidgetEx::workspaceItemClicked(QTreeWidgetItem* item, int colu
     for(int i = 0; i < workspace->columnCount(); i++) {
         workspace->resizeColumnToContents(i);
     }
-    //if(item) {
-    //    IEntityTreeItem* current = reinterpret_cast<IEntityTreeItem*>(item);
-    //    int columns = current->columnCount();
-    //    workspace->setColumnCount(columns);
-    //    workspace->setHeaderLabels(current->getHeaders());
-    //    for(int i = 0; i < columns; i++) {
-    //        workspace->resizeColumnToContents(i);
-    //    }
-    //}
+    if(item) {
+        IEntityTreeItem* current = reinterpret_cast<IEntityTreeItem*>(item);
+
+        if(current->isMarkedAll()) {
+            actionRemove->setVisible(true);
+            actionAdd->setVisible(false);
+        } else {
+            actionRemove->setVisible(false);
+            actionAdd->setVisible(true);
+        }
+        if(current->isMarkedEmg()) {
+            actionRemove_EMG->setVisible(true);
+            actionAdd_EMG->setVisible(false);
+        } else {
+            actionRemove_EMG->setVisible(false);
+            actionAdd_EMG->setVisible(true);
+        }
+        if(current->isMarkedGrf()) {
+            actionRemove_GRF->setVisible(true);
+            actionAdd_GRF->setVisible(false);
+        } else {
+            actionRemove_GRF->setVisible(false);
+            actionAdd_GRF->setVisible(true);
+        }
+        if(current->isMarkedMocap()) {
+            actionRemove_MOCAP->setVisible(true);
+            actionAdd_MOCAP->setVisible(false);
+        } else {
+            actionRemove_MOCAP->setVisible(false);
+            actionAdd_MOCAP->setVisible(true);
+        }
+        if(current->isMarkedVideos()) {
+            actionRemove_videos->setVisible(true);
+            actionAdd_videos->setVisible(false);
+        } else {
+            actionRemove_videos->setVisible(false);
+            actionAdd_videos->setVisible(true);
+        }
+    }
 }
 
 void CommunicationWidgetEx::trialContextMenu(QPoint p)
@@ -241,10 +333,39 @@ void CommunicationWidgetEx::trialContextMenu(QPoint p)
         IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
         if(item->getMenu())
             menu->addActions(item->getMenu()->actions());
-        menu->setToolTip(item->text(0));
     }
-
+    currentViewRequest = true;
     menu->exec(mapToGlobal(p));
+}
+
+void CommunicationWidgetEx::workspaceContextMenu(QPoint p)
+{
+    QMenu* view = new QMenu;
+    view->setTitle("View");
+    view->addSeparator();
+    view->addAction(actionWorkspace_View);
+    view->addAction(actionWorkspaceTrial_View);
+
+    QMenu* menu = new QMenu;
+    menu->addSeparator();
+    menu->addAction(actionUpdate);
+    menu->addAction(actionAbort_download);
+
+    menu->addSeparator();
+    menu->addMenu(view);
+    menu->addSeparator();
+
+    //currentItem() przy drugim kliknieciu automatycznie wybiera pierwszy element drzewa
+    //sprawdzamy czy cokolwiek jest wybrane sprawdzajac liste zaznaczonych itemow
+    if(currentWorkspaceView && currentWorkspaceView->currentItem() && currentWorkspaceView->selectedItems().size() > 0) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentWorkspaceView->currentItem());
+        if(item->getMenu())
+            menu->addActions(item->getMenu()->actions());
+    }
+    currentViewRequest = false;
+    QPoint point(mapToGlobal(p));
+    point.setY(point.y() + currentView->height());
+    menu->exec(mapToGlobal(point));
 }
 
 void CommunicationWidgetEx::contextMenu(QPoint p)
@@ -307,6 +428,22 @@ void CommunicationWidgetEx::localViewPressed(bool tog)
     localView->setVisible(true);
 }
 
+void CommunicationWidgetEx::workspaceViewPressed(bool tog)
+{
+    currentWorkspaceView = workspace;
+
+    workspace->setVisible(true);
+    workspaceTrialView->setVisible(false);
+}
+
+void CommunicationWidgetEx::workspaceTrialViewPressed(bool tog)
+{
+    currentWorkspaceView = workspaceTrialView;
+
+    workspace->setVisible(false);
+    workspaceTrialView->setVisible(true);
+}
+
 void CommunicationWidgetEx::updatePressed()
 {
     actionDownload->setDisabled(true);
@@ -319,23 +456,35 @@ void CommunicationWidgetEx::updatePressed()
 
 void CommunicationWidgetEx::downloadPressed()
 {
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
     actionDownload->setDisabled(true);
     actionUpdate->setDisabled(true);
     actionLoad_trial->setDisabled(false);
     actionAbort_download->setDisabled(false);
     actionAbort_download->setVisible(true);
-    downloadTrial(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getEntityID());
+    downloadTrial(reinterpret_cast<TrialTreeItem*>(widget->currentItem())->getEntityID());
 }
 
 void CommunicationWidgetEx::loadPressed()
 {
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
     BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
     {
         boost::cmatch matches;
         boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
         //sprawdzamy, czy zgadza sie nazwa folderu
         if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e)) {
-            if(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getName() == core::toQString(matches[2])) {
+            if(reinterpret_cast<TrialTreeItem*>(widget->currentItem())->getName() == core::toQString(matches[2])) {
                 loadTrial(lTrial);
                 return;
             }
@@ -356,6 +505,11 @@ void CommunicationWidgetEx::abortPressed()
 void CommunicationWidgetEx::loadTrial(const core::IDataManager::LocalTrial& localTrial)
 {
     communicationService->loadTrial(localTrial);
+}
+
+void CommunicationWidgetEx::loadFiles(const std::vector<core::IDataManager::Path>& files)
+{
+    communicationService->loadFiles(files);
 }
 
 void CommunicationWidgetEx::downloadTrial(int trialID)
@@ -417,15 +571,11 @@ void CommunicationWidgetEx::refreshUI()
     buildSessionView(sessionView);
     buildTrialView(trialView);
     buildLocalView(localView);
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 
-    //communicationView->setSortingEnabled(true);
-    //communicationView->setDisabled(false);
     progressBar->reset();
-    if(actionPerformer_View->isChecked()) {   
-        actionPerformer_View->setChecked(false);
-        actionPerformer_View->setChecked(true);
-    } else if(actionSession_View->isChecked()) {
+    if(actionSession_View->isChecked()) {
         actionSession_View->setChecked(false);
         actionSession_View->setChecked(true);
     } else if(actionTrial_View->isChecked()) {
@@ -437,6 +587,14 @@ void CommunicationWidgetEx::refreshUI()
     } else {
         actionPerformer_View->setChecked(false);
         actionPerformer_View->setChecked(true);
+    }
+
+    if(actionWorkspaceTrial_View->isChecked()) {   
+        actionWorkspaceTrial_View->setChecked(false);
+        actionWorkspaceTrial_View->setChecked(true);
+    } else {
+        actionWorkspace_View->setChecked(false);
+        actionWorkspace_View->setChecked(true);
     }
 }
 
@@ -456,92 +614,162 @@ void CommunicationWidgetEx::setProgress(int value)
 
 void CommunicationWidgetEx::addToWorkspace()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursive(true, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::removeFromWorkspace()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursive(false, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::addEMG()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursiveEMG(true, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::addGRF()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursiveGRF(true, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::addMocap()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursiveMocap(true, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::addVideo()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursiveVideo(true, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::removeEMG()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursiveEMG(false, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::removeGRF()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursiveGRF(false, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::removeMocap()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursiveMocap(false, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::removeVideo()
 {
-    if(currentView->currentItem()) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+    QTreeWidget* widget;
+    if(currentViewRequest) {
+        widget = currentView;
+    } else {
+        widget = currentWorkspaceView;
+    }
+    if(widget->currentItem()) {
+        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(widget->currentItem());
         markRecursiveVideo(false, item);
     }
-    buildWorkspace(workspace);
+    buildWorkspaceView(workspace);
+    buildWorkspaceTrialView(workspaceTrialView);
 }
 
 void CommunicationWidgetEx::markRecursive(bool mark, IEntityTreeItem* item)
@@ -582,6 +810,182 @@ void CommunicationWidgetEx::markRecursiveVideo(bool mark, IEntityTreeItem* item)
         markRecursiveVideo(mark, reinterpret_cast<IEntityTreeItem*>(item->child(i)));
     }
     item->setMarkedVideos(mark);
+}
+
+void CommunicationWidgetEx::useAllFromWorkspace()
+{
+    std::vector<core::IDataManager::Path> files;
+    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+    {
+        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
+        {
+            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
+            {
+                //lokalny czy serwerowy?
+                BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+                {
+                    boost::cmatch matches;
+                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                    //sprawdzamy, czy zgadza sie nazwa folderu
+                    if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
+                        if(trial->markMocap) {
+                            BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                            {
+                                boost::filesystem::path f("data/trials");
+                                f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
+                                if(!f.extension().compare(".c3d") || !f.extension().compare(".amc") || !f.extension().compare(".asf") || !f.extension().compare(".avi")) {
+                                    files.push_back(f);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+    }
+    loadFiles(files);
+}
+
+void CommunicationWidgetEx::useVideos()
+{
+    std::vector<core::IDataManager::Path> files;
+    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+    {
+        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
+        {
+            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
+            {
+                //lokalny czy serwerowy?
+                BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+                {
+                    boost::cmatch matches;
+                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                    //sprawdzamy, czy zgadza sie nazwa folderu
+                    if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
+                        if(trial->markVideos) {
+                            BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                            {
+                                boost::filesystem::path f("data/trials");
+                                f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
+                                if(!f.extension().compare(".avi")) {
+                                    files.push_back(f);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    loadFiles(files);
+}
+
+void CommunicationWidgetEx::useMocap()
+{
+    std::vector<core::IDataManager::Path> files;
+    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+    {
+        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
+        {
+            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
+            {
+                //lokalny czy serwerowy?
+                BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+                {
+                    boost::cmatch matches;
+                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                    //sprawdzamy, czy zgadza sie nazwa folderu
+                    if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
+                        if(trial->markMocap) {
+                            BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                            {
+                                boost::filesystem::path f("data/trials");
+                                f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
+                                if(!f.extension().compare(".c3d") || !f.extension().compare(".amc") || !f.extension().compare(".asf")) {
+                                    files.push_back(f);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    loadFiles(files);
+}
+
+void CommunicationWidgetEx::useGrf()
+{
+    std::vector<core::IDataManager::Path> files;
+    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+    {
+        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
+        {
+            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
+            {
+                //lokalny czy serwerowy?
+                BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+                {
+                    boost::cmatch matches;
+                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                    //sprawdzamy, czy zgadza sie nazwa folderu
+                    if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
+                        if(trial->markGrf) {
+                            BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                            {
+                                boost::filesystem::path f("data/trials");
+                                f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
+                                if(!f.extension().compare(".c3d")) {
+                                    files.push_back(f);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    loadFiles(files);
+}
+
+void CommunicationWidgetEx::useEmg()
+{
+    std::vector<core::IDataManager::Path> files;
+    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+    {
+        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
+        {
+            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
+            {
+                //lokalny czy serwerowy?
+                BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+                {
+                    boost::cmatch matches;
+                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                    //sprawdzamy, czy zgadza sie nazwa folderu
+                    if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
+                        if(trial->markEmg) {
+                            BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                            {
+                                boost::filesystem::path f("data/trials");
+                                f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
+                                if(!f.extension().compare(".c3d")) {
+                                    files.push_back(f);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    loadFiles(files);
 }
 
 void CommunicationWidgetEx::buildPerformerView(QTreeWidget* tree)
@@ -692,27 +1096,33 @@ void CommunicationWidgetEx::buildLocalView(QTreeWidget* tree)
     refreshHeader(tree);
 }
 
-void CommunicationWidgetEx::buildWorkspace(QTreeWidget* tree)
+void CommunicationWidgetEx::buildWorkspaceView(QTreeWidget* tree)
 {
     tree->clear();
     QStringList headers;
     headers << "" << "Date" << "Performer" << "Session";
     tree->setHeaderLabels(headers);
-    QTreeWidgetItem* workspace = new QTreeWidgetItem(tree);
+    WorkspaceTopTreeItem* workspace = new WorkspaceTopTreeItem;
+    tree->addTopLevelItem(workspace);
     workspace->setText(0, "workspace");
+    workspace->setMenu(menuWorkspace);
     
-    QTreeWidgetItem* mocap = new QTreeWidgetItem;
+    WorkspaceTopTreeItem* mocap = new WorkspaceTopTreeItem;
     mocap->setText(0, "MOCAP");
     mocap->setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/mocap.png")));
-    QTreeWidgetItem* emg = new QTreeWidgetItem;
+    mocap->setMenu(menuWorkspaceMocap);
+    WorkspaceTopTreeItem* emg = new WorkspaceTopTreeItem;
     emg->setText(0, "EMG");
     emg->setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/emg.png")));
-    QTreeWidgetItem* grf = new QTreeWidgetItem;
+    emg->setMenu(menuWorkspaceEmg);
+    WorkspaceTopTreeItem* grf = new WorkspaceTopTreeItem;
     grf->setText(0, "GRF");
     grf->setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/grf.png")));
-    QTreeWidgetItem* video = new QTreeWidgetItem;
+    grf->setMenu(menuWorkspaceGrf);
+    WorkspaceTopTreeItem* video = new WorkspaceTopTreeItem;
     video->setText(0, "VIDEO");
     video->setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/video.png")));
+    video->setMenu(menuWorkspaceVideos);
     workspace->addChild(mocap);
     workspace->addChild(emg);
     workspace->addChild(grf);
@@ -777,6 +1187,49 @@ void CommunicationWidgetEx::buildWorkspace(QTreeWidget* tree)
     }
 }
 
+void CommunicationWidgetEx::buildWorkspaceTrialView(QTreeWidget* tree)
+{
+    tree->clear();
+    QStringList headers;
+    headers << "" << "Date" << "Performer" << "Session";
+    tree->setHeaderLabels(headers);
+    //listowanie triali
+    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+    {
+        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
+        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
+        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
+        {
+            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
+            {
+                bool vid = false, c3d = false, amc = false, asf = false;
+                BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                {
+                    if(!boost::filesystem::path(file.fileName).extension().compare(".avi")) {
+                        vid = true;
+                    } else if(!boost::filesystem::path(file.fileName).extension().compare(".c3d")) {
+                        c3d = true;
+                    } else if(!boost::filesystem::path(file.fileName).extension().compare(".amc")) {
+                        amc = true;
+                    } else if(!boost::filesystem::path(file.fileName).extension().compare(".asf")) {
+                        asf = true;
+                    }
+                }
+                if((trial->markVideos && vid) || (trial->markMocap && c3d && amc && asf) || (trial->markEmg && c3d) || (trial->markGrf && c3d)) {
+                    WorkspaceTreeItem* item = createWorkspaceTrialItem(trial);
+                    item->setText(1, core::toQString(session->session.sessionDate).left(10));
+                    item->setText(2, QString(name + " " + lastName));
+                    item->setText(3, QString::fromUtf8(session->session.sessionName.c_str()));
+                    tree->addTopLevelItem(item);
+                }
+            }
+        }
+    }
+    for(int i = 0; i < tree->columnCount(); i++) {
+        tree->resizeColumnToContents(i);
+    }
+}
+
 CommunicationWidgetEx::TrialTreeItem* CommunicationWidgetEx::createTrialItem(TrialRelationPtr trial)
 {
     TrialTreeItem* item = new TrialTreeItem(trial);
@@ -809,7 +1262,7 @@ CommunicationWidgetEx::WorkspaceTreeItem* CommunicationWidgetEx::createWorkspace
         //sprawdzamy, czy zgadza sie nazwa folderu
         if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
             item->setTextColor(0, QColor(0, 0, 0));
-            item->setMenu(menuTl);
+            item->setMenu(menuTw);
             break;
         } else {
             item->setTextColor(0, QColor(128, 128, 128));

@@ -41,6 +41,11 @@ public:
 	*/
 	virtual void loadTrial(const core::IDataManager::LocalTrial& localTrial) = 0;
 	/**
+	£adowanie listy plików do edytora.
+    @param files lista plików do za³adowania
+	*/
+	virtual void loadFiles(const std::vector<core::IDataManager::Path> files) = 0;
+	/**
 	Pingowanie serwera.
 	*/
 	virtual void ping() = 0;

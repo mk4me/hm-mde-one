@@ -122,6 +122,11 @@ public:
     */
     virtual void loadTrial(const core::IDataManager::LocalTrial& localTrial);
     /**
+    Metoda z interfejsu ICommunication. £adowanie listy plików do edytora.
+    @param files lista plików do za³adowania
+    */
+    virtual void loadFiles(const std::vector<core::IDataManager::Path> files);
+    /**
     Metoda z interfejsu ICommunication. Przerwanie pobierania pliku lub triala.
     */
     virtual void cancelDownloading();
