@@ -14,6 +14,10 @@
      background: darkgray;
  }
 
+ QFrame {
+	background: transparent;
+ }
+
 /* dokowane widgety */
  QDockWidget::title {
      text-align: left;
@@ -75,19 +79,17 @@
  }
  
  /* przyciski */
-  QPushButton, QToolButton {
+ QPushButton, QToolButton {
      border: 2px solid #8f8f91;
      border-radius: 4px;
      background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 lightgray, stop:1 darkgray);
-     min-width: 80px;
-     min-height: 20px;
  }
 
-  QToolButton {
-     min-height: 10px;
-     min-width: 10px;
+ QPushButton {
+	min-width: 80px;
+	min-height: 20px;
  }
-
+ 
  QPushButton:hover, QToolButton:hover {
      background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 darkgray, stop:1 lightgray);
  }
@@ -100,6 +102,12 @@
      border-color: navy;
  }
  
+ /* przesuniêcie je¿eli jest strza³ka z prawej strony */
+ QToolButton[popupMode="2"] {
+	 background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 lightgray, stop:1 darkgray);
+     padding-right: 10px;
+ }
+
  /* zakladki */
  QTabBar::tab {
      border-radius: 4px;
