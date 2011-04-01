@@ -5,6 +5,7 @@ set(TARGET_TARGETNAME vidlib_test)
 set(TARGET_SRC 
 	test.cpp
 	FFmpegVideoStreamTest.cpp
+	OsgAdapterTest.cpp
 )
 
 # nag³ówki

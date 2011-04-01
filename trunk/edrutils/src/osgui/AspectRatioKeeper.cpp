@@ -82,9 +82,18 @@ const osgWidget::Widget* AspectRatioKeeperWindow::getTarget() const
 //! \param target
 void AspectRatioKeeperWindow::setTarget(osgWidget::Widget* target) 
 { 
-    this->target = target;
-    if ( target->getParent() != this ) {
-        addWidget(target);
+    osg::ref_ptr<osgWidget::Widget> strongTarget;
+    this->target.lock(strongTarget);
+    if ( strongTarget != target ) {
+        if ( strongTarget ) {
+            UTILS_ASSERT(strongTarget->getParent() == this);
+            removeWidget(strongTarget);
+        }
+        this->target = target;
+        if ( target ) {
+            UTILS_ASSERT(!target->getParent());
+            addWidget(target);
+        }
         resizeAdd();
     }
 }

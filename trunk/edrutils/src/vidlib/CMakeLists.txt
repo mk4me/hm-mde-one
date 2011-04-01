@@ -61,6 +61,8 @@ if (CONFIG_VIDLIB_ENABLE_OSG)
 		${HEADER_PATH}/osg/GenericImageStream.h
 		${HEADER_PATH}/osg/ReaderWriterVidLib.h
 		${HEADER_PATH}/osg/FFmpegImageStream.h
+		${HEADER_PATH}/osg/VideoImage.h
+		${HEADER_PATH}/osg/OsgAdapter.h
 	)
 	source_group("${SOURCEGROUP_PUBLIC_HEADERS}\\osg" FILES ${OSG_H})
 	set(TARGET_H ${TARGET_H} ${OSG_H})
@@ -71,6 +73,8 @@ if (CONFIG_VIDLIB_ENABLE_OSG)
 		osg/VideoImageStream.cpp
 		osg/VideoImageStreamSizeOptimizer.cpp
 		osg/FFmpegImageStream.cpp
+		osg/VideoImage.cpp
+		osg/OsgAdapter.cpp
 	)
 	source_group("${SOURCEGROUP_SOURCES}\\osg" FILES ${OSG_SRC})
 	set(TARGET_SRC ${TARGET_SRC} ${OSG_SRC})
