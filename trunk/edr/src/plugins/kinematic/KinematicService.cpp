@@ -249,3 +249,8 @@ GeodePtr KinematicVisualizer::createFloor()
     geode->addDrawable(linesGeom);
     return geode;
 }
+
+QIcon* KinematicVisualizer::createIcon()
+{
+    return new QIcon("data/resources/icons/3D.png");
+}

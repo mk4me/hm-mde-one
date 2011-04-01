@@ -18,6 +18,9 @@
 //! zadeklarowaæ ile Ÿróde³ i jakiego typu jest w stanie obs³u¿yæ oraz przyj¹æ Ÿród³a danych.
 class Visualizer
 {
+public:
+    typedef ObjectSource::SourcesTypes SourcesTypes;
+
 private:
     //! Faktyczna implementacja wizualizatora.
     core::scoped_ptr<core::IVisualizer> impl;
@@ -29,6 +32,8 @@ private:
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w³asnoœæ.
     Visualizer( core::IVisualizer* impl );
+    //! Konstuktor kopiuj¹cy - g³êboka kopia. Nie kopiuje widgeta.
+    Visualizer( const Visualizer& visualizer );
     //! Niepolimorficzny (!) destruktor 
     ~Visualizer();
 
@@ -60,7 +65,16 @@ public:
     {
         return impl->getName();
     }
+    //! \return
+    inline UniqueID getID() const
+    {
+        return impl->getID();
+    }
 
+    //!
+    const QIcon& getIcon() const;
+    //!
+    const SourcesTypes& getSourcesTypes() const;
 
     //! Dodaje niezmienny obiekt na wejœcie.
     //! \param slot

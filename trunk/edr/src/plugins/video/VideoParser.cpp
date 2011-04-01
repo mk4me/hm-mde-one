@@ -57,4 +57,5 @@ void VideoParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 {
     objects.push_back(__deprecated_stream);
     objects.push_back(stream);
+    objects.push_back(  core::ObjectWrapper::createWrapper<::VideoStream>() );
 }

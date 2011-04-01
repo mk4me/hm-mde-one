@@ -88,6 +88,8 @@ protected:
     std::size_t classID;
     //! Opis Ÿród³a.
     std::string source;
+    //! Czy obiekt uleg³ zmianie?
+    bool changed;
 
 public:
     //! \param object
@@ -114,7 +116,7 @@ protected:
     //! \param className
     //! \param classId
     ObjectWrapper(const char* className, const std::type_info& type) :
-    className(className), classID(type.hash_code())
+    className(className), classID(type.hash_code()), changed(false)
     {}
 
 public:
@@ -252,6 +254,18 @@ public:
     {
         return getTypeInfo();
     }
+
+    //! \return
+    bool isChanged() const
+    { 
+        return changed;
+    }
+    //! \param changed
+    void setChanged(bool changed) 
+    { 
+        this->changed = changed; 
+    }
+
 
     //! \param type 
     //! \return Czy obiekt wspira okreœlony typ?

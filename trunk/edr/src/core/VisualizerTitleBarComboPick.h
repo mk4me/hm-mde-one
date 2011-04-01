@@ -19,10 +19,16 @@ class VisualizerTitleBarComboPick : public QWidget, private Ui::VisualizerTitleB
 private:
     //! Menu do wyboru Ÿróde³.
     QMenu* menuSource;
+    //!
+    QMenu* menuPin;
+    //!
+    QActionGroup* groupMenuPin;
     //! Grupa akcji dla wyobru Ÿróde³.
     QActionGroup* groupSources;
     //! Wizualizator.
     VisualizerPtr visualizer;
+    //!
+    int currentSlot;
 
 public:
     //! \param parent
@@ -42,8 +48,11 @@ private slots:
     void fillSourcesMenu();
     //!
     void sourceSelected();
+    //!
+    void pinSelected();
 
 private:
+    
     QString getLabel( const core::ObjectWrapperConstPtr& object, bool noSource );
 
     //!

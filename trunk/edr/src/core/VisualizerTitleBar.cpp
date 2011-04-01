@@ -20,6 +20,11 @@ QWidget(parent), widgetCustomTitleBar(nullptr), widgetSources(nullptr)
     comboType->clear();
 }
 
+VisualizerTitleBar::~VisualizerTitleBar()
+{
+
+}
+
 void VisualizerTitleBar::addVisualizer( const QString& label, UniqueID id )
 {
     comboType->addItem( label, qVariantFromValue(id) );
@@ -43,7 +48,9 @@ void VisualizerTitleBar::clear()
 
 void VisualizerTitleBar::setCurrentVisualizer( UniqueID id )
 {
-    setCurrentVisualizer( VisualizerManager::getInstance()->createVisualizer(id) );
+    if ( !visualizer || visualizer->getID() != id ) {
+        setCurrentVisualizer( VisualizerManager::getInstance()->createVisualizer(id) );
+    }
 }
 
 void VisualizerTitleBar::setCurrentVisualizer( const VisualizerPtr& visualizer )
@@ -51,10 +58,24 @@ void VisualizerTitleBar::setCurrentVisualizer( const VisualizerPtr& visualizer )
     if ( this->visualizer != visualizer ) {
         // wyczyszczenie
         clear();
+
         // pobranie nowego wizualizatora
         this->visualizer = visualizer;
         // dodanie g³ównego widgetu
         if ( visualizer ) {
+
+            // czy indeks siê zgadza?
+            // tradycyjne wyszukiwanie nie dzia³a przy copy by value
+            int idx = -1;
+            UniqueID id = visualizer->getID();
+            for ( int i = 0; i < comboType->count() && idx < 0; ++i ) {
+                if ( id == comboType->itemData(i).value<UniqueID>() ) {
+                    idx = i;
+                }
+            }
+            UTILS_ASSERT(idx >= 0);
+            comboType->setCurrentIndex(idx);
+
             // TODO: dodanie widgetu tytu³owego
             // TODO: kto zarz¹dza customWidgettem?
             // dodanie widgetu z wyborem Ÿród³a
@@ -89,7 +110,7 @@ void VisualizerTitleBar::setWidgetSources( QWidget* widgetSources )
 {
     if ( this->widgetSources ) {
         // widget sam powinien zostaæ usuniêty...
-        layoutSources->removeWidget(this->widgetSources);
+        delete this->widgetSources;
     }
     this->widgetSources = widgetSources;
     if (widgetSources) {

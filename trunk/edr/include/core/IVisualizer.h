@@ -15,6 +15,7 @@
 #include <core/ObjectWrapper.h>
 
 class QWidget;
+class QIcon;
 
 namespace core 
 {
@@ -38,6 +39,10 @@ namespace core
         //! widokiem OSG to wystarczy przypisaæ go do osg::ref_ptr.
         //! \return Widget bêd¹cy korzeniem wizualizacji. Musi mieæ slot setActiveSource(int).
         virtual QWidget* createWidget() = 0;
+
+        //! Tworzy ikonê dla zadanego wizualizatora. Mo¿e zwracaæ nullptr, chocia¿ to niewskazane.
+        //! W odgró¿nieniu od createWidget ikona przejmowana jest na w³asnoœæ.
+        virtual QIcon* createIcon() = 0;
 
         //! \return Lista wspieranych typów dla danego slotu. Pusta lista oznacza, ¿e ten slot i kolejne nie s¹ obs³ugiwane.
         virtual void getSlotInfo(int source, std::string& name, ObjectWrapper::Types& types) = 0;

@@ -204,3 +204,65 @@ void EMGService::visibilityChanged( IWidget* widget, bool visible )
         this->widget->getViewer()->setRenderingEnabled(visible);
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+class ScalarChannelStream : public timeline::Stream
+{
+private:
+    //! Strumieñ wewnêtrzny.
+    core::C3DAnalogChannelPtr channel;
+
+public:
+    //! \param stream Strumieñ wewnêtrzny.
+    ScalarChannelStream(const core::C3DAnalogChannelPtr& channel) : channel(channel)
+    {}
+    //! \see Stream::setTime
+    virtual void setTime(double time)
+    {
+        channel->setTime(time);
+    }
+    //! \see Stream::getTime
+    virtual double getTime() const
+    {
+        return channel->getTime();
+    }
+    virtual double getLength() const
+    {
+        return channel->getLength();
+    }
+};
+
+ChartService::ChartService() : name("ChartService")
+{
+
+}
+
+AsyncResult ChartService::loadData( IServiceManager* serviceManager, core::IDataManager* dataManager )
+{
+    ITimelinePtr timelinesrv = core::queryServices<ITimeline>(serviceManager);
+    if ( timelinesrv ) {
+        // usuniêcie starych strumieni
+        BOOST_FOREACH(timeline::StreamPtr stream, streams) {
+            timelinesrv->removeStream(stream);
+        }
+        streams.clear();
+        // dodanie nowych
+        std::vector<core::C3DAnalogChannelPtr> videoStreams = core::queryDataPtr(dataManager);
+        BOOST_FOREACH(const core::C3DAnalogChannelPtr& stream, videoStreams) {
+            streams.push_back( timeline::StreamPtr(new ScalarChannelStream(stream)) );
+            timelinesrv->addStream( streams.back() );
+        }
+    }
+    return AsyncResult_Complete;
+}
+
+IWidget* ChartService::getWidget()
+{
+    return nullptr;
+}
+
+const std::string& ChartService::getName() const
+{
+    return name;
+}

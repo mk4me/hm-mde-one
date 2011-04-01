@@ -44,19 +44,19 @@ public:
     void load();
 
     //! \return
-    size_t getNumPlugins() const
+    int getNumPlugins() const
     {
-        return plugins.size();
+        return static_cast<int>(plugins.size());
     }
     //! 
     //! \param idx
-    PluginPtr getPlugin(size_t idx)
+    PluginPtr getPlugin(int idx)
     {
         return plugins[idx];
     }
     //! 
     //! \param idx
-    const PluginPtr getPlugin(size_t idx) const
+    const PluginPtr getPlugin(int idx) const
     {
         return plugins[idx];
     }

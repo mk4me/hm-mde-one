@@ -463,6 +463,9 @@ bool DataManager::isExtensionSupported( const std::string& extension ) const
 
 void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact /*= false*/ )
 {
+    // obiekty które bêdziemy usuwaæ
+    std::set<ObjectWrapperPtr> invalid;
+
     // je¿eli znaleŸliœmy dany typ...
     ObjectsByType::iterator found = currentObjects.find( type );
     if ( found != currentObjects.end() ) {
@@ -471,7 +474,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
             // to, czy sprawdzamy czy to dok³adnie ten typ kontroluje prametr exact
             ObjectWrapperPtr object = found->second.object;
             ParserPtr parser = found->second.parser;
-            UTILS_ASSERT(!object->isNull() || !parser->isUsed(), "Obiekt nie powinien byæ sparsowany...");
+            //UTILS_ASSERT(!object->isNull() || !parser->isUsed(), "Obiekt nie powinien byæ sparsowany...");
             if ( !exact || object->isTypeEqual(type) ) {
                 // czy obiekt ju¿ jest?
                 if ( object->isNull() ) {
@@ -481,7 +484,8 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
                         if ( parser->tryParse(this) ) {
                             if ( object->isNull() ) {
                                 // ci¹gle coœ jest nie tak, komunikat o b³êdzie
-                                LOG_ERROR("Error parsing file " << parser->getPath() << ": not all object loaded.");
+                                LOG_DEBUG("Object is null and parser for " << parser->getPath() << " is already used.");
+                                invalid.insert(object);
                             } else {
                                 // uda³o siê, hurra
                                 // pozosta³e obiekty z tego parsera te¿ powinny byæ za³adowane
@@ -489,15 +493,30 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
                             }
                         } else {
                             // TODO: dodaæ parser do listy do usuniêcia, usun¹æ
+                            invalid.insert(object);
                         }
                     } else {
                         // 
-                        UTILS_FAIL("Ju¿ u¿yty :(");
+                        LOG_DEBUG("Object is null and parser for " << parser->getPath() << " is already used.");
+                        invalid.insert(object);
                     }
                 } else {
                     // wszystko ok, dodajemy
                     objects.push_back(object);
                 }
+            }
+        }
+    }
+
+    // usuniêcie niew³aœciwych wpisów
+    if ( !invalid.empty() ) {
+        LOG_DEBUG("Removing " << invalid.size() << " null objects after looking for " << type.name());
+        for ( ObjectsByType::iterator it = currentObjects.begin(), last = currentObjects.end(); it != last && !invalid.empty(); ) {
+            if ( invalid.erase(it->second.object) ) {
+                ObjectsByType::iterator toErase = it++;
+                currentObjects.erase(toErase);
+            } else {
+                ++it;
             }
         }
     }

@@ -61,12 +61,14 @@ public:
     virtual IWidget* getWidget()
     { 
         // HACK: ca³y ten system jest shackowany!
-        return reinterpret_cast<IWidget*>(widget);
+        //return reinterpret_cast<IWidget*>(widget);
+        return nullptr;
     }
 
     virtual IWidget* getSettingsWidget()
     {
-        return reinterpret_cast<IWidget*>(optionsWidget);
+        // return reinterpret_cast<IWidget*>(optionsWidget);
+        return nullptr;
     }
 
     virtual const std::string& getName() const

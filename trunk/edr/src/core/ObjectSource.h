@@ -30,13 +30,16 @@ private:
     //! Lista Ÿróde³ danych.
     Sources sources;
     //! Lista typów danych dla Ÿróde³.
-    SourcesTypes sourcesTypes;
+    //! Wczeœniej by³a lokalna kopia, teraz to tylko referencja - w³aœciwe dane trzyma VisualizerManager.
+    const SourcesTypes& sourcesTypes;
 
 public:
     //! \param numSources Liczba Ÿróde³.
-    ObjectSource(const SourcesTypes& types);
+    // ObjectSource(const SourcesTypes& types);
     //! \param visualizer Wizualizator z którego mozna pobraæ informacje o wejœciach.
     ObjectSource(core::IVisualizer* visualizer);
+    //! Konstruktor kopiuj¹cy.
+    ObjectSource(const ObjectSource& source);
 
 public:
     //! Czy dany obiekt mo¿na przypisaæ danemu Ÿród³u?
@@ -53,7 +56,6 @@ public:
     const core::ObjectWrapper::Types& getTypes(int sourceNo) const;
     //! \return Nazwa danego slotu.
     const std::string& getName(int sourceNo) const;
-
 
 // IObjectSource
 public:

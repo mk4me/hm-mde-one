@@ -85,6 +85,8 @@ public:
 public slots:    
     //! Aktualizacja us³ug.
     void updateServices();
+    //! Aktualizacja wizualizatorow.
+    void updateVisualizers();
 
     void onOpen();
 

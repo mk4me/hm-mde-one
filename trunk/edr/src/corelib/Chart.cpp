@@ -18,7 +18,8 @@ z(0),
 zRange(0),
 x(0), y(0), width(0), height(0),
 gridDensity(10),
-dashWidth(5)
+dashWidth(5),
+activeSerie(-1)
 {
     background = new osg::Geode();
     background->setName("background");
@@ -650,4 +651,14 @@ void Chart::removeAllChannels()
 {
     foreground->removeDrawables(0, foreground->getNumDrawables());
     series.clear();
+}
+
+int Chart::getActiveSerie() const
+{
+    return activeSerie;
+}
+
+void Chart::setActiveSerie( int currentSerie )
+{
+    this->activeSerie = currentSerie;
 }

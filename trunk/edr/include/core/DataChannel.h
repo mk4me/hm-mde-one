@@ -89,12 +89,15 @@ namespace core {
         std::string yUnit;
         //! Nazwa 
         std::string name;
+        //! Bie¿¹cy czas.
+        time_type time;
 
     public:
         //! \param samplesPerSec Liczba próbek na sekundê.
         explicit DataChannel(int samplesPerSec) :
         samplesPerSec(samplesPerSec),
-        samplesPerSecInv( time_type(1.0) / time_type(samplesPerSec) )
+        samplesPerSecInv( time_type(1.0) / time_type(samplesPerSec) ),
+        time(0), length(0)
         {
             if ( samplesPerSec <= 0 ) {
                 throw std::runtime_error( static_cast<std::ostringstream&>(std::ostringstream() 
@@ -107,7 +110,8 @@ namespace core {
         DataChannel(const DataChannel& channel) :
         samplesPerSec(channel.samplesPerSec),
         samplesPerSecInv(channel.samplesPerSecInv),
-        data(channel.data)
+        data(channel.data),
+        time(channel.time), length(channel.length)
         {
             if ( samplesPerSec <= 0 ) {
                 throw std::runtime_error( static_cast<std::ostringstream&>(std::ostringstream() 
@@ -125,6 +129,18 @@ namespace core {
         {
             return new DataChannel(*this);
         }
+
+        //! \return Bie¿¹cy czas.
+        time_type getTime() const
+        { 
+            return time;
+        }
+        //! \param time Bie¿¹cy czas.
+        void setTime(time_type time) 
+        { 
+            this->time = time; 
+        }
+
 
         //! \return
         const std::string& getXUnit() const
@@ -240,6 +256,7 @@ namespace core {
         {
             data.clear();
             length = 0;
+            time = 0;
         }
 
         //! Zapisuje znormalizowane dane do pól normalizedValue.
@@ -275,6 +292,18 @@ namespace core {
             } else {
                 return Manipulator::normalize( getValue(time), minValue, maxValue );
             }
+        }
+
+        //! \return Bie¿¹ca wartoœæ.
+        point_type getCurrentValue() const
+        {
+            return getValue(time);
+        }
+
+        //! \return Bie¿¹ca znomalizowana wartoœæ.
+        point_type getCurrentNormalizedValue(bool renormalize = false) const
+        {
+            return getCurrentValue(time);
         }
 
         //! \param size Miejsce na ile elementów zarezerwowaæ?

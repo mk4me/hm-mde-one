@@ -61,6 +61,7 @@ public:
     virtual core::IVisualizer* create() const;
     virtual void getSlotInfo( int source, std::string& name, core::ObjectWrapper::Types& types );
     virtual QWidget* createWidget();
+    virtual QIcon* createIcon();
     virtual const std::string& getName() const;
 
 public:

@@ -52,6 +52,7 @@ namespace core {
         C3DAnalogChannel(const C3DAnalogChannel& channel);
         C3DAnalogChannel(const C3D_Data& data, int channelNo);
     };
+    typedef shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
 
     class EMGChannel : public C3DAnalogChannel
     {
@@ -125,8 +126,9 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
 CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost);
-CORE_DEFINE_WRAPPER(EMGChannel, ScalarChannel);
-CORE_DEFINE_WRAPPER(GRFChannel, ScalarChannel);
+CORE_DEFINE_WRAPPER(C3DAnalogChannel, ScalarChannel);
+CORE_DEFINE_WRAPPER(EMGChannel, C3DAnalogChannel);
+CORE_DEFINE_WRAPPER(GRFChannel, C3DAnalogChannel);
 CORE_DEFINE_WRAPPER(MarkerChannel, utils::PtrPolicyBoost);
 
 

@@ -31,21 +31,34 @@ public:
     typedef boost::iterator_range<IVisualizers::const_iterator> IVisualizersConstRange;
     //!
     typedef std::list<VisualizerWeakPtr> WeakVisualizers;
-
+    //! Lista typów kolejnych Ÿróde³.
+    typedef Visualizer::SourcesTypes SourcesTypes; 
 
 private:
+    //! Niezmienne dane pobrane z wizualizatorów.
+    struct IVisualizerPersistantData
+    {
+        //! Ikona.
+        QIcon icon;
+        //! Lista typów kolejnych Ÿróde³.
+        SourcesTypes sourcesTypes;
+    };
+
+
     //! Instancja wizualizatora.
     static VisualizerManager* instance;
     //! Prototypy wizualizatorów.
     IVisualizers prototypes;
     //! Lista œledz¹ca wizualizatory.
     WeakVisualizers visualizersTrace;
+    //! Sta³e dane wizualizatorów.
+    std::vector< IVisualizerPersistantData* > visualizersData;
 
 private:
     //! Tworzenie i niszczenie tylko przez metody singletonu.
     VisualizerManager() {}
     //! Tworzenie i niszczenie tylko przez metody singletonu.
-    ~VisualizerManager() {}
+    ~VisualizerManager();
 
 public:
     //! \return Instancja DataManagera.
@@ -64,6 +77,11 @@ public:
 
     //! Aktualizacja wizualizatorów.
     void update();
+
+    //! \return Ikona dla danego wizualizatora.
+    const QIcon& getIcon(UniqueID id) const;
+    //! \return Informacje o wejœciu dla danego wizualizatora.
+    const SourcesTypes& getSourcesTypes(UniqueID id) const;
 
     //! \return Wyliczenie prototypów.
     inline IVisualizersConstRange enumPrototypes() const
@@ -93,6 +111,12 @@ public:
     //! \param id id wizualizatora.
     //! \return Instancja wizualizatora.
     VisualizerPtr createVisualizer(const core::IVisualizerConstPtr& prototype);
+    //! 
+    VisualizerPtr createVisualizer(const Visualizer& prototype);
+
+private:
+    //! \return Indeks prototypu.
+    int getPrototypeIdx(UniqueID id) const;
 };
 
 

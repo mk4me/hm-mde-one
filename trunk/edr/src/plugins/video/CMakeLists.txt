@@ -17,6 +17,7 @@ set(PRIVATE_H
 	TimelineImageStreamWrapper.h
 	VideoParser.h
 	VideoService.h
+	VideoVisualizer.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -39,6 +40,7 @@ set(TARGET_SRC
 	VideoWidget.cpp
 	VideoWidgetOptions.cpp
 	VideoParser.cpp
+	VideoVisualizer.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

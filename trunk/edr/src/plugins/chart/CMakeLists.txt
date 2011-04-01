@@ -32,6 +32,7 @@ set(PRIVATE_H
 	ChartDataSeries.h
 	C3DChartData.h
 	MultiViewChartItem.h
+	ChartVisualizer.h
 
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -52,6 +53,7 @@ set(TARGET_SRC
 	MIPSreader.cpp
 	C3DChartData.cpp
 	MultiViewChartItem.cpp
+	ChartVisualizer.cpp
 
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})

@@ -11,9 +11,24 @@
 
 #include <core/IService.h>
 #include <plugins/chart/IChart.h>
+#include <plugins/timeline/Stream.h>
+#include <plugins/timeline/ITimeline.h>
 
 class ChartWidget;
 
+class ChartService : public IService
+{
+    UNIQUE_ID('CHRT', 'SRVC');
+private:
+    std::vector<timeline::StreamPtr> streams;
+    std::string name;
+
+public:
+    ChartService();
+    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
+    virtual IWidget* getWidget();
+    virtual const std::string& getName() const;
+};
 
 class EMGService : public IChart, public IService
 {

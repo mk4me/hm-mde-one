@@ -9,12 +9,15 @@ using namespace core;
 Q_DECLARE_METATYPE(ObjectWrapperConstPtr);
 
 VisualizerTitleBarComboPick::VisualizerTitleBarComboPick( QWidget* parent /*= nullptr */ ) :
-QWidget(parent), groupSources(new QActionGroup(this)), menuSource(new QMenu(this))
+QWidget(parent), groupSources(new QActionGroup(this)), menuSource(new QMenu(this)),
+groupMenuPin(new QActionGroup(this)), menuPin(new QMenu(this)),
+currentSlot(-1)
 {
     setupUi(this);
     /*setAttribute(Qt::WA_NoSystemBackground, true);*/
     connect(menuSource, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
     buttonSource->setMenu(menuSource);
+    buttonPin->setMenu(menuPin);
 }
 
 
@@ -97,7 +100,9 @@ void VisualizerTitleBarComboPick::sourceSelected()
 
     // ustawienie wygl¹du guzika
     buttonSource->setText(objName);
-    comboSlot->setItemText(slotNo, QString("%0: %1").arg(slotName).arg(objName));
+    //comboSlot->setItemText(slotNo, QString("%0: %1").arg(slotName).arg(objName));
+
+    menuPin->actions()[slotNo]->setText( QString("%0 (%1)").arg(slotName).arg(objName) );
 
     // ustawienie wizualizatora
     visualizer->setObject(slotNo, obj);
@@ -106,35 +111,47 @@ void VisualizerTitleBarComboPick::sourceSelected()
 
 int VisualizerTitleBarComboPick::getCurrentSlot() const
 {
-    return comboSlot->currentIndex();
+    //return comboSlot->currentIndex();
+    return currentSlot;
 }
 
 void VisualizerTitleBarComboPick::clear()
 {
     // usuniêcie informacji o slotach
-    comboSlot->clear();
+    // comboSlot->clear();
     // poukrywanie elementów UI
-    comboSlot->hide();
+    // comboSlot->hide();
+    buttonPin->hide();
     buttonSource->hide();
 }
 
 void VisualizerTitleBarComboPick::setCurrentSlot( int idx )
 {
-    if ( sender() != comboSlot ) {
-        if ( comboSlot->currentIndex() != idx ) {
-            // przekierowanie slotu
-            comboSlot->setCurrentIndex(idx);
-        }
+//     if ( sender() != comboSlot ) {
+//         if ( comboSlot->currentIndex() != idx ) {
+//             // przekierowanie slotu
+//             comboSlot->setCurrentIndex(idx);
+//         }
+//     } else {
+    currentSlot = idx;
+    if ( idx < 0 ) {
+        buttonSource->hide();
     } else {
-        if ( idx < 0 ) {
-            buttonSource->hide();
-        } else {
-            UTILS_ASSERT(visualizer);
-            ObjectWrapperConstPtr ptr = visualizer->getObject(idx);
-            buttonSource->setText( getLabel(ptr, true) );
-            buttonSource->show();
-        }
+        UTILS_ASSERT(visualizer);
+        ObjectWrapperConstPtr ptr = visualizer->getObject(idx);
+        buttonPin->setText(toQString(visualizer->getSlotName(idx)));
+        buttonSource->setText( getLabel(ptr, true) );
+        buttonSource->show();
+        buttonPin->show();
     }
+/*    }*/
+}
+
+void VisualizerTitleBarComboPick::pinSelected()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    int idx = action->data().value<int>();
+    setCurrentSlot(idx);
 }
 
 QString VisualizerTitleBarComboPick::getLabel( const core::ObjectWrapperConstPtr& object, bool noSource )
@@ -155,11 +172,35 @@ void VisualizerTitleBarComboPick::setCurrentVisualizer( const VisualizerPtr& vis
 {
     this->visualizer = visualizer;
     // odœwie¿enie listy obiektów wejœciowych
-    comboSlot->clear();
+    // comboSlot->clear();
+
+    // czyœcimy menu i grupê
+    menuPin->clear();
+    delete groupMenuPin;
+    groupMenuPin = new QActionGroup(this);
     for ( int i = 0; i < visualizer->getNumObjects(); ++i ) {
-        // nazwy slotów
-        comboSlot->addItem( QString("%0: %1")
+//         // nazwy slotów
+//         comboSlot->addItem( QString("%0: %1")
+//             .arg(core::toQString(visualizer->getSlotName(i)))
+//             .arg(getLabel(visualizer->getObject(i), true)) );
+
+        QAction* action = menuPin->addAction( QString("%0 (%1)")
             .arg(core::toQString(visualizer->getSlotName(i)))
-            .arg(getLabel(ObjectWrapperConstPtr(), true)) );
+            .arg(getLabel(visualizer->getObject(i), true)), this, SLOT(pinSelected()) );
+        action->setData(qVariantFromValue(i));
+        action->setCheckable(true);
+        if ( i == 0 ) {
+            //buttonPin->setText(core::toQString(visualizer->getSlotName(i)));
+            action->setChecked(true);
+        }
+        groupMenuPin->addAction(action);
     }
+
+    if ( visualizer->getNumObjects() ) {
+        setCurrentSlot(0);
+    } else {
+        setCurrentSlot(-1);
+    }
+
 }
+

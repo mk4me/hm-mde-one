@@ -29,6 +29,8 @@ class Chart : public osg::Group
 private:
     //! Serie danych wykresu.
     std::vector<core::ChartSeriePtr> series;
+    //! Bie¿¹ca seria.
+    int activeSerie;
 
     osg::GeodePtr background;
     osg::GeodePtr foreground;
@@ -67,6 +69,11 @@ private:
 public:
 	Chart(float x, float y, float width, float height);
 	~Chart();
+
+    //! \return
+    int getActiveSerie() const;
+    //! \param currentSerie
+    void setActiveSerie(int currentSerie);
 
     //! Dodaje kana³ do wykresu.
     void addChannel( const core::ScalarChannelConstPtr& channel, osg::Vec4 color );

@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include "ObjectSource.h"
+#include "VisualizerManager.h"
 
 using namespace core;
 
@@ -10,30 +11,36 @@ auto get() -> decltype( boost::make_iterator_range(sdsdsd) )
     return boost::make_iterator_range(sdsdsd);
 }
 
-ObjectSource::ObjectSource( const SourcesTypes& types ) :
-sourcesTypes(types), sources(types.size())
-{
-    boost::make_iterator_range(sourcesTypes);
-}
+// ObjectSource::ObjectSource( const SourcesTypes& types ) :
+// sourcesTypes(types), sources(types.size())
+// {
+// }
 
-ObjectSource::ObjectSource( IVisualizer* visualizer )
+ObjectSource::ObjectSource( IVisualizer* visualizer ) :
+sourcesTypes( VisualizerManager::getInstance()->getSourcesTypes(visualizer->getID()) )
 {
-    UTILS_ASSERT(visualizer);
-    // pobranie listy wspieranych typów
-    SourcesTypes::value_type info;
-    for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
-        info.first.clear();
-        info.second.clear();
-        visualizer->getSlotInfo(i, info.first, info.second);
-        if ( info.second.empty() ) {
-            break;
-        } else {
-            // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...
-            // sourcesTypes.push_back(info);
-            sourcesTypes.insert(sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
-        }
-    }
     sources.resize(sourcesTypes.size());
+//     UTILS_ASSERT(visualizer);
+//     // pobranie listy wspieranych typów
+//     SourcesTypes::value_type info;
+//     for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
+//         info.first.clear();
+//         info.second.clear();
+//         visualizer->getSlotInfo(i, info.first, info.second);
+//         if ( info.second.empty() ) {
+//             break;
+//         } else {
+//             // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...
+//             // sourcesTypes.push_back(info);
+//             sourcesTypes.insert(sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
+//         }
+//     }
+//     sources.resize(sourcesTypes.size());
+}
+// 
+ObjectSource::ObjectSource( const ObjectSource& source ) :
+sources(source.sources), sourcesTypes(source.sourcesTypes)
+{
 }
 
 int ObjectSource::getNumObjects() const

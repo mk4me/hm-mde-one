@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include <core/ObjectWrapper.h>
 #include <core/Visualizer.h>
+#include "VisualizerManager.h"
 
 using namespace core;
 
@@ -8,6 +9,12 @@ Visualizer::Visualizer( IVisualizer* impl ) :
 impl(impl), widget(nullptr), source(impl)
 {
     LOG_DEBUG("Visualizer " << impl->getName() << " created");
+}
+
+Visualizer::Visualizer( const Visualizer& visualizer ) :
+impl(visualizer.impl->create()),
+source(visualizer.source), widget(nullptr)
+{
 }
 
 Visualizer::~Visualizer()
@@ -20,6 +27,7 @@ QWidget* Visualizer::getOrCreateWidget()
     if (!widget) {
         LOG_DEBUG("Visualizer " << impl->getName() << " widget created");
         widget = impl->createWidget();
+        trySetUp();
         UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");
     }
     return widget;
@@ -39,4 +47,14 @@ bool Visualizer::trySetUp()
         LOG_ERROR("Error during setting up visualizer: " << ex.what());
         return false;
     }
+}
+
+const QIcon& Visualizer::getIcon() const
+{
+    return VisualizerManager::getInstance()->getIcon(getID());
+}
+
+const Visualizer::SourcesTypes& Visualizer::getSourcesTypes() const
+{
+    return VisualizerManager::getInstance()->getSourcesTypes(getID());
 }

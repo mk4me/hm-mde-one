@@ -34,6 +34,7 @@ private:
 public:
     //! \param parent
     VisualizerTitleBar(QWidget* parent = nullptr);
+    virtual ~VisualizerTitleBar();
 
 public:
 // 

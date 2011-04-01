@@ -33,6 +33,10 @@ public:
     VisualizerWidget(QWidget* parent = nullptr, Qt::WindowFlags flags = 0);
     //!
     VisualizerWidget(UniqueID visualizerID, QWidget* parent = nullptr, Qt::WindowFlags flags = 0);
+    //!
+    VisualizerWidget(const VisualizerPtr& source, QWidget* parent = nullptr, Qt::WindowFlags flags = 0);
+
+    
     //! Zapewnia mo¿liwoœæ kasowanie widgeta wizualizatora przez jego implementacjê.
     ~VisualizerWidget();
 
@@ -60,6 +64,12 @@ public slots:
     void setReplaceTitleBar(bool replace);
     //! \param Czy zamieniæ pasek tytu³owy na systemowy?
     void queueReplaceTitleBar(bool replace);
+    //!
+    void splitHorizontally();
+    //!
+    void splitVertically();
+    //!
+    void split(Qt::Orientation orientation);
 
 private slots:
     //! \param Nowy wizualizator.
@@ -68,6 +78,8 @@ private slots:
 private:
     //! Inicjalizacja wizualizatora.
     void init();
+    //!
+    void addVisualizerToTitlebar( const core::IVisualizerConstPtr& vis );
 };
 
 
