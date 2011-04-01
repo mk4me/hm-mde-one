@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>374</width>
-    <height>1359</height>
+    <height>695</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -21,120 +21,164 @@
     <enum>QLayout::SetDefaultConstraint</enum>
    </property>
    <item>
-    <widget class="QTreeWidget" name="sessionView">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>300</height>
-      </size>
-     </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTreeWidget" name="trialView">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>300</height>
-      </size>
-     </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTreeWidget" name="performerView">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>300</height>
-      </size>
-     </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTreeWidget" name="localView">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>300</height>
-      </size>
-     </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTreeWidget" name="workspace">
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTreeWidget" name="workspaceTrialView">
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <attribute name="headerShowSortIndicator" stdset="0">
-      <bool>true</bool>
-     </attribute>
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_18">
+      <item>
+       <widget class="QSplitter" name="splitter">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <widget class="QStackedWidget" name="csStackedWidget">
+         <property name="currentIndex">
+          <number>3</number>
+         </property>
+         <widget class="QWidget" name="trial_page">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QTreeWidget" name="trialView">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="session_page">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QTreeWidget" name="sessionView">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="local_page">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QTreeWidget" name="localView">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="performer_page">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QTreeWidget" name="performerView">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+        <widget class="QStackedWidget" name="workspaceStackedWidget">
+         <widget class="QWidget" name="workspace_page">
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QTreeWidget" name="workspace">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="workspace_trial_page">
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QTreeWidget" name="workspaceTrialView">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <attribute name="headerShowSortIndicator" stdset="0">
+              <bool>true</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -624,70 +668,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>sessionView</sender>
-   <signal>customContextMenuRequested(QPoint)</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>trialContextMenu(QPoint)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>186</x>
-     <y>380</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>298</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>trialView</sender>
-   <signal>customContextMenuRequested(QPoint)</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>trialContextMenu(QPoint)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>186</x>
-     <y>789</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>535</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>performerView</sender>
-   <signal>customContextMenuRequested(QPoint)</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>trialContextMenu(QPoint)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>186</x>
-     <y>861</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>535</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>localView</sender>
-   <signal>customContextMenuRequested(QPoint)</signal>
-   <receiver>CommunicationWidget</receiver>
-   <slot>trialContextMenu(QPoint)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>186</x>
-     <y>861</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>535</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionLocal_View</sender>
    <signal>toggled(bool)</signal>
    <receiver>CommunicationWidget</receiver>
@@ -1020,6 +1000,70 @@
     <hint type="destinationlabel">
      <x>186</x>
      <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sessionView</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>trialContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>380</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>trialView</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>trialContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>789</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>535</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>performerView</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>trialContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>861</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>535</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>localView</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>trialContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>861</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>535</y>
     </hint>
    </hints>
   </connection>

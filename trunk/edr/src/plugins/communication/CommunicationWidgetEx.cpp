@@ -120,13 +120,6 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
     formatGroupWorkspace->addAction(actionWorkspaceTrial_View);
     
     actionAbort_download->setVisible(false);
-    
-    performerView->setVisible(true);
-    sessionView->setVisible(false);
-    trialView->setVisible(false);
-    localView->setVisible(false);
-    workspace->setVisible(true);
-    workspaceTrialView->setVisible(false);
 
     currentView = performerView;
     currentWorkspaceView = workspace;
@@ -391,57 +384,37 @@ void CommunicationWidgetEx::contextMenu(QPoint p)
 void CommunicationWidgetEx::performerViewPressed(bool tog)
 {
     currentView = performerView;
-
-    performerView->setVisible(true);
-    sessionView->setVisible(false);
-    trialView->setVisible(false);
-    localView->setVisible(false);
+    csStackedWidget->setCurrentWidget(performer_page);
 }
 
 void CommunicationWidgetEx::sessionViewPressed(bool tog)
 {
     currentView = sessionView;
-
-    performerView->setVisible(false);
-    sessionView->setVisible(true);
-    trialView->setVisible(false);
-    localView->setVisible(false);
+    csStackedWidget->setCurrentWidget(session_page);
 }
 
 void CommunicationWidgetEx::trialViewPressed(bool tog)
 {
     currentView = trialView;
-
-    performerView->setVisible(false);
-    sessionView->setVisible(false);
-    trialView->setVisible(true);
-    localView->setVisible(false);
+    csStackedWidget->setCurrentWidget(trial_page);
 }
 
 void CommunicationWidgetEx::localViewPressed(bool tog)
 {
     currentView = localView;
-
-    performerView->setVisible(false);
-    sessionView->setVisible(false);
-    trialView->setVisible(false);
-    localView->setVisible(true);
+    csStackedWidget->setCurrentWidget(local_page);
 }
 
 void CommunicationWidgetEx::workspaceViewPressed(bool tog)
 {
     currentWorkspaceView = workspace;
-
-    workspace->setVisible(true);
-    workspaceTrialView->setVisible(false);
+    workspaceStackedWidget->setCurrentWidget(workspace_page);
 }
 
 void CommunicationWidgetEx::workspaceTrialViewPressed(bool tog)
 {
     currentWorkspaceView = workspaceTrialView;
-
-    workspace->setVisible(false);
-    workspaceTrialView->setVisible(true);
+    workspaceStackedWidget->setCurrentWidget(workspace_trial_page);
 }
 
 void CommunicationWidgetEx::updatePressed()
