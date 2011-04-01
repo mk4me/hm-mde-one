@@ -273,6 +273,11 @@ public:
         return trial->trial.trialID;
     };
 
+    TrialRelationPtr getTrial()
+    {
+        return trial;
+    };
+
     virtual void setMarkedAll(bool mark)
     {
         trial->markMocap = mark;
@@ -495,6 +500,11 @@ public slots:
     void useMocap();
     void useGrf();
     void useEmg();
+    //
+    void useTrialVideos();
+    void useTrialMocap();
+    void useTrialGrf();
+    void useTrialEmg();
 private:
     /**
     Wskaünik na kontroler serwisu

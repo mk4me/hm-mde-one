@@ -412,6 +412,38 @@
     <string>Use all</string>
    </property>
   </action>
+  <action name="actionLoad_Trial_videos">
+   <property name="text">
+    <string>Use Trial videos</string>
+   </property>
+   <property name="toolTip">
+    <string>Use Trial Videos</string>
+   </property>
+  </action>
+  <action name="actionLoad_Trial_GRF">
+   <property name="text">
+    <string>Use Trial GRF</string>
+   </property>
+   <property name="toolTip">
+    <string>Use Trial GRF</string>
+   </property>
+  </action>
+  <action name="actionLoad_Trial_EMG">
+   <property name="text">
+    <string>Use Trial EMG</string>
+   </property>
+   <property name="toolTip">
+    <string>Use Trial EMG</string>
+   </property>
+  </action>
+  <action name="actionLoad_Trial_MOCAP">
+   <property name="text">
+    <string>Use Trial MOCAP</string>
+   </property>
+   <property name="toolTip">
+    <string>Use Trial MOCAP</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -927,6 +959,70 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionLoad_Trial_EMG</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>useTrialEmg()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLoad_Trial_GRF</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>useTrialGrf()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLoad_Trial_MOCAP</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>useTrialMocap()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLoad_Trial_videos</sender>
+   <signal>triggered()</signal>
+   <receiver>CommunicationWidget</receiver>
+   <slot>useTrialVideos()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>performerViewPressed(bool)</slot>
@@ -957,5 +1053,9 @@
   <slot>useEmg()</slot>
   <slot>useGrf()</slot>
   <slot>useMocap()</slot>
+  <slot>useTrialVideos()</slot>
+  <slot>useTrialEmg()</slot>
+  <slot>useTrialGrf()</slot>
+  <slot>useTrialMocap()</slot>
  </slots>
 </ui>

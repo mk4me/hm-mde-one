@@ -161,10 +161,10 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
     menuTw->addActions(menu->actions());
     menuTw->addSeparator();
     menuTw->addAction(actionLoad_trial);
-    menuTw->addAction(actionLoad_GRF);
-    menuTw->addAction(actionLoad_EMG);
-    menuTw->addAction(actionLoad_MOCAP);
-    menuTw->addAction(actionLoad_Videos);
+    menuTw->addAction(actionLoad_Trial_GRF);
+    menuTw->addAction(actionLoad_Trial_EMG);
+    menuTw->addAction(actionLoad_Trial_MOCAP);
+    menuTw->addAction(actionLoad_Trial_videos);
 
     menuWorkspace = new QMenu;
     menuWorkspace->addSeparator();
@@ -981,6 +981,130 @@ void CommunicationWidgetEx::useEmg()
                         }
                         break;
                     }
+                }
+            }
+        }
+    }
+    loadFiles(files);
+}
+
+void CommunicationWidgetEx::useTrialVideos()
+{
+    std::vector<core::IDataManager::Path> files;
+    if(currentWorkspaceView->currentItem()) {
+        WorkspaceTreeItem* item = reinterpret_cast<WorkspaceTreeItem*>(currentWorkspaceView->currentItem());
+        if(item->isMarkedVideos()) {
+            //lokalny czy serwerowy?
+            BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+            {
+                boost::cmatch matches;
+                boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                //sprawdzamy, czy zgadza sie nazwa folderu
+                if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
+                    if(item->getTrial()->markVideos) {
+                        BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+                        {
+                            boost::filesystem::path f("data/trials");
+                            f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
+                            if(!f.extension().compare(".avi")) {
+                                files.push_back(f);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    loadFiles(files);
+}
+
+void CommunicationWidgetEx::useTrialMocap()
+{
+    std::vector<core::IDataManager::Path> files;
+    if(currentWorkspaceView->currentItem()) {
+        WorkspaceTreeItem* item = reinterpret_cast<WorkspaceTreeItem*>(currentWorkspaceView->currentItem());
+        if(item->isMarkedVideos()) {
+            //lokalny czy serwerowy?
+            BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+            {
+                boost::cmatch matches;
+                boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                //sprawdzamy, czy zgadza sie nazwa folderu
+                if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
+                    if(item->getTrial()->markMocap) {
+                        BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+                        {
+                            boost::filesystem::path f("data/trials");
+                            f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
+                                if(!f.extension().compare(".c3d") || !f.extension().compare(".amc") || !f.extension().compare(".asf")) {
+                                files.push_back(f);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    loadFiles(files);
+}
+
+void CommunicationWidgetEx::useTrialGrf()
+{
+    std::vector<core::IDataManager::Path> files;
+    if(currentWorkspaceView->currentItem()) {
+        WorkspaceTreeItem* item = reinterpret_cast<WorkspaceTreeItem*>(currentWorkspaceView->currentItem());
+        if(item->isMarkedVideos()) {
+            //lokalny czy serwerowy?
+            BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+            {
+                boost::cmatch matches;
+                boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                //sprawdzamy, czy zgadza sie nazwa folderu
+                if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
+                    if(item->getTrial()->markGrf) {
+                        BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+                        {
+                            boost::filesystem::path f("data/trials");
+                            f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
+                            if(!f.extension().compare(".c3d")) {
+                                files.push_back(f);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    loadFiles(files);
+}
+
+void CommunicationWidgetEx::useTrialEmg()
+{
+    std::vector<core::IDataManager::Path> files;
+    if(currentWorkspaceView->currentItem()) {
+        WorkspaceTreeItem* item = reinterpret_cast<WorkspaceTreeItem*>(currentWorkspaceView->currentItem());
+        if(item->isMarkedVideos()) {
+            //lokalny czy serwerowy?
+            BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+            {
+                boost::cmatch matches;
+                boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                //sprawdzamy, czy zgadza sie nazwa folderu
+                if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
+                    if(item->getTrial()->markEmg) {
+                        BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+                        {
+                            boost::filesystem::path f("data/trials");
+                            f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
+                            if(!f.extension().compare(".c3d")) {
+                                files.push_back(f);
+                            }
+                        }
+                    }
+                    break;
                 }
             }
         }
