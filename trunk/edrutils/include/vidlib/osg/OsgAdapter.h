@@ -16,6 +16,8 @@
 UTILS_PUSH_WARNINGS
 #include <osg/ref_ptr>
 #include <osg/Referenced>
+#include <osg/Texture2D>
+#include <osg/TextureRectangle>
 UTILS_POP_WARNINGS
 
 #include <vidlib/Export.h>

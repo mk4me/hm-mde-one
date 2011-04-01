@@ -141,7 +141,7 @@ namespace vidlib
 
         // resize obrazka
         if ( currentPicture.width != width ) {
-            OSG_INFO<<"Resizing from "<<currentPicture.width<<" to "<<width<<std::endl;
+            OSG_NOTICE<<"VideoImage: Resizing from "<<currentPicture.width<<" to "<<width<<std::endl;
             PixelFormat format = currentPicture.format;
             currentPicture.free();
             currentPicture = Picture::create(width, height, format);
