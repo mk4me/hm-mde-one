@@ -2,7 +2,6 @@
 #define HEADER_GUARD__TIMELINETAG_H__
 
 #include <timelinelib/Types.h>
-#include <timelinelib/TagSelection.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{

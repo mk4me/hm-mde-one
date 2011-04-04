@@ -19,11 +19,8 @@ set(PUBLIC_H
 	${HEADER_PATH}/Controller.h
 	${HEADER_PATH}/IChannel.h
 	${HEADER_PATH}/Model.h
-	${HEADER_PATH}/SelectionBase.h
-	${HEADER_PATH}/SimpleSelection.h
 	${HEADER_PATH}/State.h
 	${HEADER_PATH}/Tag.h
-	${HEADER_PATH}/TagSelection.h
 	${HEADER_PATH}/TagType.h
 	${HEADER_PATH}/Types.h
 	${HEADER_PATH}/View.h
@@ -40,11 +37,8 @@ set(TARGET_SRC
 	Controller.cpp
 	IChannel.cpp
 	Model.cpp
-	SelectionBase.cpp
-	SimpleSelection.cpp
 	State.cpp
 	Tag.cpp
-	TagSelection.cpp
 	TagType.cpp
 	View.cpp
 )
