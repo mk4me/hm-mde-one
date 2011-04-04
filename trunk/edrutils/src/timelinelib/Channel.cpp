@@ -1,7 +1,7 @@
 #include <timelinelib/Channel.h>
 #include <timelinelib/Tag.h>
-#include <timelinelib/SelectionBase.h>
-#include <timelinelib/TagSelection.h>
+//#include <timelinelib/SelectionBase.h>
+//#include <timelinelib/TagSelection.h>
 #include <timelinelib/IChannel.h>
 #include <utils/Debug.h>
 
@@ -31,6 +31,11 @@ Channel::~Channel()
 void Channel::setInnerChannel(const IChannelPtr & channel)
 {
     constInnerChannel = innerChannel = channel;
+    if(globalScale * channel->getLength() > length){
+        length = globalScale * channel->getLength();
+    }
+
+    setTime(time);
 }
 
 const IChannelConstPtr & Channel::getInnerChannel() const
@@ -166,7 +171,7 @@ const TagPtr & Channel::getTag(const std::string & tagName)
     if(it != tags.end()){
         return *it;
     }else{
-        throw new std::runtime_error("Tag not exist");
+        throw std::runtime_error("Tag not exist");
     }
 }
 
@@ -176,74 +181,13 @@ const TagConstPtr & Channel::getTag(const std::string & tagName) const
     if(it != constTags.end()){
         return *it;
     }else{
-        throw new std::runtime_error("Tag not exist");
+        throw std::runtime_error("Tag not exist");
     }
 }
 
 Channel::tag_size_type Channel::getNumTags() const
 {
     return constTags.size();
-}
-
-
-Channel::selection_iterator Channel::beginSelections()
-{
-    return selections.begin();
-}
-
-Channel::selection_iterator Channel::endSelections()
-{
-    return selections.end();
-}
-
-Channel::selection_const_iterator Channel::beginSelections() const
-{
-    return constSelections.begin();
-}
-
-Channel::selection_const_iterator Channel::endSelections() const
-{
-    return constSelections.end();
-}
-
-Channel::selection_const_iterator Channel::findSelection(const std::string & name) const
-{
-    return std::find_if(constSelections.begin(), constSelections.end(), [&](SelectionConstPtr sel){ return sel->getName() == name; });
-}
-
-const SelectionPtr & Channel::getSelection(selection_size_type idx)
-{
-    return selections[idx];
-}
-
-const SelectionConstPtr & Channel::getSelection(selection_size_type idx) const
-{
-    return constSelections[idx];
-}
-
-const SelectionPtr & Channel::getSelection(const std::string & selName)
-{
-    auto it = findByName(selections.begin(), selections.end(), selName);
-    if(it != selections.end()){
-        return *it;
-    }else{
-        throw new std::runtime_error("Selection not exist");
-    }
-}
-
-const SelectionConstPtr & Channel::getSelection(const std::string & selName) const
-{
-    auto it = findByName(constSelections.begin(), constSelections.end(), selName);
-    if(it != constSelections.end()){
-        return *it;
-    }else{
-        throw new std::runtime_error("Selection not exist");
-    }
-}
-
-Channel::selection_size_type Channel::getNumSelections() const
-{
-    return constSelections.size();
 }
 
 void Channel::setLocalOffset(double offset)
@@ -285,12 +229,12 @@ void Channel::setActive(bool active)
 
 void Channel::addTag(const TagPtr & tag)
 {
-    UTILS_ASSERT((tag->getTime() <= getLength()));
+    UTILS_ASSERT((tag->getBeginTime() >= 0 && tag->getBeginTime() <= getLength()));
     if(std::find(tags.begin(), tags.end(), tag) == tags.end()){
         tags.push_back(tag);
         constTags.push_back(tag);
     }else{
-        throw new std::runtime_error("Tag already exist");
+        throw std::runtime_error("Tag already exist");
     }
 }
 
@@ -301,59 +245,12 @@ void Channel::removeTag(const TagPtr & tag)
         tags.resize(std::distance(tags.begin(), it));
         constTags.resize(std::distance(constTags.begin(), std::remove(constTags.begin(), constTags.end(), tag)));
     }else{
-        throw new std::runtime_error("Tag not exist");
-    }
-}
-
-void Channel::addSelection(const SelectionPtr & selection)
-{
-    UTILS_ASSERT((selection->getBegin() >= 0.0 && selection->getEnd() <= getLength()));
-    if(std::find(selections.begin(), selections.end(), selection) == selections.end()){
-        selections.push_back(selection);
-    }else{
-        throw new std::runtime_error("Selection already exist");
-    }
-}
-
-void Channel::removeSelection(const SelectionPtr & selection)
-{
-    //TODO
-    //sprawdz czy to nie TagSelection i wyrejestruj to zaznaczenie jesli to konieczne
-    
-    Selections::iterator it = std::remove(selections.begin(), selections.end(), selection);
-    if(it != selections.end()){
-        selections.resize(std::distance(selections.begin(), it));
-    }else{
-        throw new std::runtime_error("Selection not exist");
+        throw std::runtime_error("Tag not exist");
     }
 }
 
 void Channel::clearTags()
-{
-    //TODO
-    //poprawic
-
-    tags.swap(Tags());
-    constTags.swap(ConstTags());
-}
-
-void Channel::clearSelections()
-{
-    //TODO
-    //poprawic
-    
-    selections.swap(Selections());
-    constSelections.swap(ConstSelections());
-}
-
-void Channel::clearChannel()
-{
-    //TODO
-    //poprawic
-    
-    selections.swap(Selections());
-    constSelections.swap(ConstSelections());
-
+{    
     tags.swap(Tags());
     constTags.swap(ConstTags());
 }

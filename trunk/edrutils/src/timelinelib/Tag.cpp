@@ -6,11 +6,11 @@
 namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
-Tag::Tag(const ChannelPtr & channel, double time, const std::string & name)
-    : name(name), channel(channel), constChannel(channel), time(time)
+Tag::Tag(const ChannelPtr & channel, const std::string & name, double begin, double length)
+    : name(name), channel(channel), constChannel(channel), begin(begin), length(length)
 {
     UTILS_ASSERT((channel != nullptr), "Niepoprawny kanal taga");
-    UTILS_ASSERT((time >= 0 && time <= channel->getLength()), "Niepoprawny czas wsytapienia taga w kanale");
+    UTILS_ASSERT((begin >= 0 && length >= 0 && begin + length <= channel->getLength()), "Niepoprawna konfiguracja czasowa taga");
 }
 
 const std::string & Tag::getName() const
@@ -23,39 +23,19 @@ const ChannelConstWPtr & Tag::getChannel() const
     return constChannel;
 }
 
+double Tag::getLength() const
+{
+    return length;
+}
+
 const ChannelWPtr & Tag::getChannel()
 {
     return channel;
 }
 
-double Tag::getTime() const
+double Tag::getBeginTime() const
 {
-    return time;
-}
-
-Tag::iterator Tag::begin()
-{
-    return selections.begin();
-}
-
-Tag::iterator Tag::end()
-{
-    return selections.end();
-}
-
-Tag::size_type Tag::size() const
-{
-    return selections.size();
-}
-
-Tag::const_iterator Tag::begin() const
-{
-    return constSelections.begin();
-}
-
-Tag::const_iterator Tag::end() const
-{
-    return constSelections.end();
+    return begin;
 }
 
 void Tag::setName(const std::string & name)
@@ -71,36 +51,32 @@ void Tag::setName(const std::string & name)
     }
 }
 
-void Tag::setTime(double time)
+void Tag::setBeginTime(double begin)
 {
-    if(time < 0 || time > channel.lock()->getLength()) {
-        throw std::invalid_argument("Wrong tag time in channel!");
+    if(begin < 0 || begin + length > channel.lock()->getLength()) {
+        throw std::invalid_argument("Wrong tag begin in channel!");
     }
 
-    this->time = time;
+    this->begin = begin;
 }
 
-void Tag::addSelection(const SelectionPtr & selection)
+void Tag::setLength(double length)
 {
-    if(std::find(selections.begin(), selections.end(), selection) == selections.end()){
-        selections.push_back(selection);
-        constSelections.push_back(selection);
-    }else{
-        throw new std::runtime_error("Selection is already dependent on this tag!");
+    if(length < 0 || begin + length > channel.lock()->getLength()) {
+        throw std::invalid_argument("Wrong tag length in channel!");
     }
-};
 
-void Tag::removeSelection(const SelectionPtr & selection)
+    this->length = length;
+}
+
+void Tag::shiftTag(double dTime)
 {
-    Selections::iterator it = std::remove(selections.begin(), selections.end(), selection);
-    if(it != selections.end()){
-        selections.resize(std::distance(selections.begin(), it));
-        constSelections.resize(std::distance(constSelections.begin(),
-            std::remove(constSelections.begin(), constSelections.end(), selection)));
-    }else{
-        throw new std::runtime_error("Selection is not dependent on this tag!");
+    if(begin + dTime < 0 || begin + dTime + length > channel.lock()->getLength()) {
+        throw std::invalid_argument("Wrong tag time shift value!");
     }
-};
+
+    this->begin += dTime;
+}
 
 void Tag::resetChannel()
 {

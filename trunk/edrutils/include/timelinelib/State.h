@@ -10,20 +10,11 @@ class State
 {
 public:
 
-    //! czy model jest odtwarzany
+    //! Czy model jest odtwarzany
     bool isPlaying;
 
-    //! sumaryczna dlugosc timeline, od najwczesniejszego strumienia do konca ostatniego
-    double length;
-
-    //! aktualny czas timeline
+    //! Aktualny czas timeline
     double time;
-
-    //! znormalizowany czas timeline
-    double normalizedTime;
-
-    //! skala czasu calego timeline
-    double timeScale;
 
 public:
     //! konstruktor zerujacy

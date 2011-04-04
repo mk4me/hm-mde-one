@@ -13,38 +13,25 @@ class Model;
 //! Klasa zaznaczajaca na osi czasu pewne zdarzenia/sytuacje dla strumieni.
 class Tag
 {
-
+    friend class Channel;
     friend class Model;
-    friend class TagSelection;
-
-public:
-
-    typedef ConstSelections::const_iterator const_iterator;
-    typedef ConstSelections::size_type size_type;
 
 private:
 
-    typedef Selections::iterator iterator;
-
-private:
-
-    //! nazwa tagu
+    //! Nazwa tagu
     std::string name;
 
-    //! pozycja w czasie tagu wzgledem jego strumienia
-    double time;
+    //! Pozycja pocz¹tku w czasie tagu wzgledem jego strumienia
+    double begin;
 
-    //! strumien ktorego dotyczy tag i jego czas wystapienia
+    //! Czas trwania taga - dlugosc
+    double length;
+
+    //! Strumien ktorego dotyczy tag i jego czas wystapienia
     ChannelWPtr channel;
 
-    //! strumien ktorego dotyczy tag i jego czas wystapienia
+    //! Strumien ktorego dotyczy tag i jego czas wystapienia
     ChannelConstWPtr constChannel;
-
-    //! zaznaczenia w kotrych wystepue ten tag
-    Selections selections;
-
-    //! zaznaczenia w kotrych wystepue ten tag
-    ConstSelections constSelections;
 
 public:
 
@@ -55,20 +42,10 @@ public:
     const ChannelConstWPtr & getChannel() const;
 
     //! \return Czas wystapienia tagu
-    double getTime() const;
+    double getBeginTime() const;
 
-    //! \param idx Indeks zaznaczenia
-    //! \return Zaznaczenie
-    const SelectionConstPtr & getSelection(size_type idx) const;
-
-    //! \return Ilosc zaznaczen w ktorych bierze udzial dany tag
-    size_type size() const;
-
-    //! \return Pierwsze zaznaczenie w ktorym wystepuje tag
-    const_iterator begin() const;
-
-    //! \return Koniec zaznaczen
-    const_iterator end() const;
+    //! \return Czas trwania taga
+    double getLength() const;
 
 protected:
 
@@ -76,31 +53,25 @@ protected:
     //! \param channel Kanal dla ktorego tworzy sie dany tag
     //! \param time Czas wystapienia taga w kanale
     //! \param name Nazwa taga
-    Tag(const ChannelPtr & channel, double time = 0, const std::string & name = std::string("UnnamedTag"));
+    Tag(const ChannelPtr & channel, const std::string & name = std::string("UnnamedTag"), double begin = 0, double length = 0);
 
     //! \return Channel ktory jest tagowany
     const ChannelWPtr & getChannel();
 
+    //! \param dTime Przesuniesie taga wzgledem jego obecnej pozycji tak aby po zastosowaniu begin >= 0 && begin + length <= channel->length
+    void shiftTag(double dTime);
+
     //! resetuje kanal podczass usuwania go
     void resetChannel();
-
-    //! \return Pierwsze zaznaczenie w ktorym wystepuje tag
-    iterator begin();
-
-    //! \return Koniec zaznaczen
-    iterator end();
 
     //! \param name Nazwa tagu
     void setName(const std::string & name);
 
     //! \param time Czas wytapienia tagu
-    void setTime(double time);
+    void setBeginTime(double time);
 
-    //! \param selection Zaznaczenie ktore bazuje na tym tagu
-    void addSelection(const SelectionPtr & selection);
-
-    //! \param selection Zaznaczenie ktore bazuje na tym tagu
-    void removeSelection(const SelectionPtr & selection);
+    //! \param Czas trwenia taga
+    void setLength(double length);
 
 };
 

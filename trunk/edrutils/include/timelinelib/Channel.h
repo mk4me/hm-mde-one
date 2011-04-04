@@ -21,15 +21,11 @@ public:
     typedef ConstTags::const_iterator tag_const_iterator;
     typedef ConstTags::size_type tag_size_type;
 
-    typedef ConstSelections::const_iterator selection_const_iterator;
-    typedef ConstSelections::size_type selection_size_type;
-
     typedef std::pair<double, double> Mask;
 
 protected:
 
     typedef Tags::iterator tag_iterator;
-    typedef Selections::iterator selection_iterator;
 
 private:
 
@@ -64,12 +60,6 @@ private:
 
     //! Tagi wystepujace w timeline
     ConstTags constTags;
-    
-    //! Zbior zaznaczen w timeline
-    Selections selections;
-
-    //! Zbior zaznaczen w timeline
-    ConstSelections constSelections;
 
     //! Kanal dostarczony przez klienta
     IChannelPtr innerChannel;
@@ -182,30 +172,6 @@ public:
     //! \return Ilosc tagow danego kanalu
     tag_size_type getNumTags() const;
 
-
-    //------- Obsluga zaznaczen ---------------------
-
-    //! \return Pierwsze zaznaczenie
-    selection_const_iterator beginSelections() const;
-
-    //! \return Koniec zaznaczen
-    selection_const_iterator endSelections() const;
-
-    //! \param name Nazwa szukanego zaznaczenia
-    //! \return Iterator znalezionego zaznaczenia lub selectionsEnd() jesli nie znaleziono
-    selection_const_iterator findSelection(const std::string & name) const;
-
-    //! \param idx Indeks zaznaczenia
-    //! \return zaznaczenie
-    const SelectionConstPtr & getSelection(selection_size_type idx) const;
-
-    //! \param name Nazwa zaznaczenia
-    //! \return Zaznaczenie
-    const SelectionConstPtr & getSelection(const std::string & name) const;
-
-    //! \return Ilosc zaznaczen danego kanalu
-    selection_size_type getNumSelections() const;
-
     //! \param node Wezel NamedTreeBase do przekonwertowania na wlasciwy wskaznik Channel
     //! \return Wskaznik do Channel
     static ChannelPtr getChannel(const NamedTreeBasePtr & node);
@@ -222,23 +188,11 @@ protected:
     //! Czysci liste tagow zwiazana z tym kanalem
     void clearTags();
 
-    //! Czysci liste zaznaczen zwiazana z tym kanalem
-    void clearSelections();
-
-    //! Czysci kanal z tagow i zaznaczen
-    void clearChannel();
-
     //! \param tag Tag do wstawienia dla danego kanalu
     void addTag(const TagPtr & tag);
 
-    //! \param selection Zaznaczenie do wstawienia dla danego kanalu
-    void addSelection(const SelectionPtr & selection);
-
     //! \param tag Tag do usuniecvia dla danego kanalu
     void removeTag(const TagPtr & tag);
-
-    //! \param selection Zaznaczenie do usuniecia dla danego kanalu
-    void removeSelection(const SelectionPtr & selection);
 
     //! \param idx Indeks tagu
     //! \return Tag
@@ -252,29 +206,11 @@ protected:
     //! \return Iterator znalezionego taga lub selectionsEnd() jesli nie znaleziono
     tag_iterator findTag(const std::string & name);
 
-    //! \param idx Indeks zaznaczenia
-    //! \return Zaznaczenie
-    const SelectionPtr & getSelection(selection_size_type idx);
-
-    //! \param name Nazwa zaznaczenia
-    //! \return Zaznaczenie
-    const SelectionPtr & getSelection(const std::string & name);
-
-    //! \param name Nazwa szukanego zaznaczenia
-    //! \return Iterator znalezionego zaznaczenia lub selectionsEnd() jesli nie znaleziono
-    selection_iterator findSelection(const std::string & name);
-
     //! \return Pierwszy tag
     tag_iterator beginTags();
 
     //! \return Koniec tagow
     tag_iterator endTags();
-
-    //! \return Pierwsze zaznaczenie
-    selection_iterator beginSelections();
-
-    //! \return Koniec zaznaczen
-    selection_iterator endSelections();
 
     //! \param begin Pierwszy iterator do przeszukiwanego zakresu
     //! \param end Koniec zakresu
