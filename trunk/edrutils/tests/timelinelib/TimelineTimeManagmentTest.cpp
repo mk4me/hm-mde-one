@@ -11,32 +11,32 @@ void TimelineTimeManagmentTest::setUp()
 void TimelineTimeManagmentTest::testRootScale()
 {
     double scale = 2;
-    model->setLocalTimeScale(scale);
+    model->setTimeScale(scale);
 
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == scale);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == model->getGlobalTimeScale());
+    CPPUNIT_ASSERT(model->getTimeScale() == scale);
+    CPPUNIT_ASSERT(model->getTimeScale() == model->getTimeScale());
 
     scale = 0.5;
 
-    model->setGlobalTimeScale(scale);
+    model->setTimeScale(scale);
 
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == scale);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == model->getGlobalTimeScale());
+    CPPUNIT_ASSERT(model->getTimeScale() == scale);
+    CPPUNIT_ASSERT(model->getTimeScale() == model->getTimeScale());
 }
 
 void TimelineTimeManagmentTest::testRootOffset()
 {
     double offset = 2;
-    model->setLocalOffset(offset);
+    model->setOffset(offset);
 
-    CPPUNIT_ASSERT(model->getLocalOffset() == offset);
-    CPPUNIT_ASSERT(model->getLocalOffset() == model->getGlobalOffset());
+    CPPUNIT_ASSERT(model->getOffset() == offset);
+    CPPUNIT_ASSERT(model->getOffset() == model->getOffset());
 
     offset = -4;
-    model->setLocalOffset(offset);
+    model->setOffset(offset);
 
-    CPPUNIT_ASSERT(model->getLocalOffset() == offset);
-    CPPUNIT_ASSERT(model->getLocalOffset() == model->getGlobalOffset());
+    CPPUNIT_ASSERT(model->getOffset() == offset);
+    CPPUNIT_ASSERT(model->getOffset() == model->getOffset());
 }
 
 void TimelineTimeManagmentTest::testOneLevelScale()
@@ -52,66 +52,66 @@ void TimelineTimeManagmentTest::testOneLevelScale()
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 2.0);
 
-    model->setChannelLocalTimeScale(tChA,2);
+    model->setChannelLocalTimeScale(channelA,2);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 2.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 2.0);
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.0);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
     CPPUNIT_ASSERT(chA->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 4.0);
 
-    model->setChannelGlobalTimeScale(tChA,3);
+    model->setChannelGlobalTimeScale(channelA,3);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 3.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 3.0);
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.0);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
     CPPUNIT_ASSERT(chA->getLength() == 6.0);
     CPPUNIT_ASSERT(model->getLength() == 6.0);
 
-    model->setLocalTimeScale(2);
+    model->setTimeScale(2);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 6.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 3.0);
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 2.0);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 2.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 2.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 2.0);
     CPPUNIT_ASSERT(chA->getLength() == 12.0);
     CPPUNIT_ASSERT(model->getLength() == 12.0);
 
-    model->setLocalTimeScale(3);
+    model->setTimeScale(3);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 9.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 3.0);
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 3.0);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 3.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 3.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 3.0);
     CPPUNIT_ASSERT(chA->getLength() == 18.0);
     CPPUNIT_ASSERT(model->getLength() == 18.0);
 
-    model->setLocalTimeScale(1.5);
+    model->setTimeScale(1.5);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 4.5);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 3.0);
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
     CPPUNIT_ASSERT(chA->getLength() == 9.0);
     CPPUNIT_ASSERT(model->getLength() == 9.0);
 
-    model->setChannelLocalTimeScale(tChA,1);
+    model->setChannelLocalTimeScale(channelA,1);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 1.5);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 1.0);
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
     CPPUNIT_ASSERT(chA->getLength() == 3.0);
     CPPUNIT_ASSERT(model->getLength() == 3.0);
 
-    model->setChannelGlobalTimeScale(tChA,1);
+    model->setChannelGlobalTimeScale(channelA,1);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 1.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 1.0 / 1.5);
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 2.0);
 }
@@ -129,66 +129,66 @@ void TimelineTimeManagmentTest::testOneLevelOffset()
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 2.0);
 
-    model->setChannelLocalOffset(tChA,2);
+    model->setChannelLocalOffset(channelA,2);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 2.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 2.0);
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 0.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 0.0);
+    CPPUNIT_ASSERT(model->getOffset() == 0.0);
+    CPPUNIT_ASSERT(model->getOffset() == 0.0);
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 4.0);
 
-    model->setChannelGlobalOffset(tChA,-3);
+    model->setChannelGlobalOffset(channelA,-3);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == -3.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 0.0);
-    CPPUNIT_ASSERT(model->getGlobalOffset() == -3.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == -3.0);
+    CPPUNIT_ASSERT(model->getOffset() == -3.0);
+    CPPUNIT_ASSERT(model->getOffset() == -3.0);
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 2.0);
 
-    model->setLocalOffset(2);
+    model->setOffset(2);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 2.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 0.0);
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 2.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 2.0);
+    CPPUNIT_ASSERT(model->getOffset() == 2.0);
+    CPPUNIT_ASSERT(model->getOffset() == 2.0);
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 2.0);
 
-    model->setLocalOffset(3);
+    model->setOffset(3);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 3.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 0.0);
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 3.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 3.0);
+    CPPUNIT_ASSERT(model->getOffset() == 3.0);
+    CPPUNIT_ASSERT(model->getOffset() == 3.0);
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 2.0);
 
-    model->setLocalOffset(1.5);
+    model->setOffset(1.5);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 1.5);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 0.0);
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 1.5);
+    CPPUNIT_ASSERT(model->getOffset() == 1.5);
+    CPPUNIT_ASSERT(model->getOffset() == 1.5);
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 2.0);
 
-    model->setChannelLocalOffset(tChA,1);
+    model->setChannelLocalOffset(channelA,1);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 2.5);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 1.0);
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 1.5);
+    CPPUNIT_ASSERT(model->getOffset() == 1.5);
+    CPPUNIT_ASSERT(model->getOffset() == 1.5);
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 3.0);
 
-    model->setGlobalOffset(-1);
+    model->setOffset(-1);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 1.0);
-    CPPUNIT_ASSERT(model->getGlobalOffset() == -1);
-    CPPUNIT_ASSERT(model->getLocalOffset() == -1);
+    CPPUNIT_ASSERT(model->getOffset() == -1);
+    CPPUNIT_ASSERT(model->getOffset() == -1);
     CPPUNIT_ASSERT(chA->getLength() == 2.0);
     CPPUNIT_ASSERT(model->getLength() == 3.0);
 }
@@ -228,8 +228,8 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     timeline::ChannelConstPtr chBB = tChBB->getData();
 
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.0);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 1.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 1.0);
@@ -257,10 +257,10 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 6.0);
 
-    model->setChannelLocalTimeScale(tChA,2);
+    model->setChannelLocalTimeScale(channelA,2);
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.0);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 2.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 2.0);
@@ -288,10 +288,10 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 12.0);
 
-    model->setChannelGlobalTimeScale(tChA,3);
+    model->setChannelGlobalTimeScale(channelA,3);
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.0);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.0);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 3.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 3.0);
@@ -319,10 +319,10 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 18.0);
 
-    model->setLocalTimeScale(2);
+    model->setTimeScale(2);
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 2.0);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 2.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 2.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 2.0);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 6.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 3.0);
@@ -350,10 +350,10 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     CPPUNIT_ASSERT(chBB->getLength() == 8.0);
     CPPUNIT_ASSERT(model->getLength() == 36.0);
 
-    model->setLocalTimeScale(3);
+    model->setTimeScale(3);
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 3.0);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 3.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 3.0);
+    CPPUNIT_ASSERT(model->getTimeScale() == 3.0);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 9.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 3.0);
@@ -381,10 +381,10 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     CPPUNIT_ASSERT(chBB->getLength() == 12.0);
     CPPUNIT_ASSERT(model->getLength() == 54.0);
 
-    model->setLocalTimeScale(1.5);
+    model->setTimeScale(1.5);
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 4.5);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 3.0);
@@ -412,10 +412,10 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     CPPUNIT_ASSERT(chBB->getLength() == 6.0);
     CPPUNIT_ASSERT(model->getLength() == 27.0);
 
-    model->setChannelLocalTimeScale(tChA,1);
+    model->setChannelLocalTimeScale(channelA,1);
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 1.5);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 1.0);
@@ -443,10 +443,10 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     CPPUNIT_ASSERT(chBB->getLength() == 6.0);
     CPPUNIT_ASSERT(model->getLength() == 9.0);
 
-    model->setChannelGlobalTimeScale(tChA,1);
+    model->setChannelGlobalTimeScale(channelA,1);
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 1.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 1.0 / 1.5);
@@ -474,10 +474,10 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     CPPUNIT_ASSERT(chBB->getLength() == 6.0);
     CPPUNIT_ASSERT(model->getLength() == 6.0);
 
-    model->setChannelGlobalTimeScale(tChAA,2);
+    model->setChannelGlobalTimeScale(channelAA,2);
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 1.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 1.0 / 1.5);
@@ -505,10 +505,10 @@ void TimelineTimeManagmentTest::testMultilevelLevelScale()
     CPPUNIT_ASSERT(chBB->getLength() == 6.0);
     CPPUNIT_ASSERT(model->getLength() == 6.0);
 
-    model->setChannelLocalTimeScale(tChAA,3);
+    model->setChannelLocalTimeScale(channelAA,3);
 
-    CPPUNIT_ASSERT(model->getGlobalTimeScale() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
+    CPPUNIT_ASSERT(model->getTimeScale() == 1.5);
 
     CPPUNIT_ASSERT(chA->getGlobalTimeScale() == 1.0);
     CPPUNIT_ASSERT(chA->getLocalTimeScale() == 1.0 / 1.5);
@@ -572,8 +572,8 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     timeline::ChannelConstPtr chBB = tChBB->getData();
 
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 0.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 0.0);
+    CPPUNIT_ASSERT(model->getOffset() == 0.0);
+    CPPUNIT_ASSERT(model->getOffset() == 0.0);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 0.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 0.0);
@@ -601,10 +601,10 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 6.0);
 
-    model->setChannelLocalOffset(tChA,2);
+    model->setChannelLocalOffset(channelA,2);
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 0.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 0.0);
+    CPPUNIT_ASSERT(model->getOffset() == 0.0);
+    CPPUNIT_ASSERT(model->getOffset() == 0.0);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 2.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 2.0);
@@ -632,10 +632,10 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 8.0);
 
-    model->setChannelGlobalOffset(tChA,3);
+    model->setChannelGlobalOffset(channelA,3);
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 0.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 0.0);
+    CPPUNIT_ASSERT(model->getOffset() == 0.0);
+    CPPUNIT_ASSERT(model->getOffset() == 0.0);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 3.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 3.0);
@@ -663,10 +663,10 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 9.0);
 
-    model->setLocalOffset(2);
+    model->setOffset(2);
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 2.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 2.0);
+    CPPUNIT_ASSERT(model->getOffset() == 2.0);
+    CPPUNIT_ASSERT(model->getOffset() == 2.0);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 5.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 3.0);
@@ -694,10 +694,10 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 9.0);
 
-    model->setLocalOffset(3);
+    model->setOffset(3);
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 3.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 3.0);
+    CPPUNIT_ASSERT(model->getOffset() == 3.0);
+    CPPUNIT_ASSERT(model->getOffset() == 3.0);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 6.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 3.0);
@@ -725,10 +725,10 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 9.0);
 
-    model->setLocalOffset(1.5);
+    model->setOffset(1.5);
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 1.5);
+    CPPUNIT_ASSERT(model->getOffset() == 1.5);
+    CPPUNIT_ASSERT(model->getOffset() == 1.5);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 4.5);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 3.0);
@@ -756,10 +756,10 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 9.0);
 
-    model->setChannelLocalOffset(tChA,1);
+    model->setChannelLocalOffset(channelA,1);
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 1.5);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 1.5);
+    CPPUNIT_ASSERT(model->getOffset() == 1.5);
+    CPPUNIT_ASSERT(model->getOffset() == 1.5);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 2.5);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 1.0);
@@ -787,10 +787,10 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 7.0);
 
-    model->setChannelGlobalOffset(tChA,1);
+    model->setChannelGlobalOffset(channelA,1);
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 1.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 1.0);
+    CPPUNIT_ASSERT(model->getOffset() == 1.0);
+    CPPUNIT_ASSERT(model->getOffset() == 1.0);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 1.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 0.0);
@@ -818,10 +818,10 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 6.0);
 
-    model->setChannelGlobalOffset(tChAA,2);
+    model->setChannelGlobalOffset(channelAA,2);
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 1.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 1.0);
+    CPPUNIT_ASSERT(model->getOffset() == 1.0);
+    CPPUNIT_ASSERT(model->getOffset() == 1.0);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 1.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 0.0);
@@ -849,10 +849,10 @@ void TimelineTimeManagmentTest::testMultiLevelOffset()
     CPPUNIT_ASSERT(chBB->getLength() == 4.0);
     CPPUNIT_ASSERT(model->getLength() == 6.0);
 
-    model->setChannelLocalOffset(tChAA,3);
+    model->setChannelLocalOffset(channelAA,3);
 
-    CPPUNIT_ASSERT(model->getGlobalOffset() == 1.0);
-    CPPUNIT_ASSERT(model->getLocalOffset() == 1.0);
+    CPPUNIT_ASSERT(model->getOffset() == 1.0);
+    CPPUNIT_ASSERT(model->getOffset() == 1.0);
 
     CPPUNIT_ASSERT(chA->getGlobalOffset() == 1.0);
     CPPUNIT_ASSERT(chA->getLocalOffset() == 0.0);
