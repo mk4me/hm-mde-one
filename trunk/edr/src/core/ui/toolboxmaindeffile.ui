@@ -223,6 +223,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>menuWindow</sender>
+   <signal>aboutToShow()</signal>
+   <receiver>EDRMain</receiver>
+   <slot>populateWindowMenu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>73</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onOpen()</slot>
