@@ -14,18 +14,15 @@ void LineSchemeDrawer::draw()
 
 void LineSchemeDrawer::update()
 {
-    auto connections = getVisualiztionScheme()->getJointConnections();
-    auto joints = getVisualiztionScheme()->getJointStates();
+    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
+    auto joints = getVisualiztionScheme()->getStates(dataToDraw);
+        
     for (int i = connections.size() - 1; i >= 0; --i) {
         ref_ptr<Vec3Array> vertices = buffers[i];
         (*vertices)[0] = joints[connections[i].index1].position;
         (*vertices)[1] = joints[connections[i].index2].position;
         osg::Drawable* d = lines[i]->getDrawable(0);
         osg::Geometry* g = dynamic_cast<osg::Geometry*>(d);
-
-        //std::cout << "from : (" << (*vertices)[0][0] << ", " << (*vertices)[0][1] << ", "  << (*vertices)[0][2] << ") ";
-        //std::cout << "to : (" << (*vertices)[1][0] << ", " << (*vertices)[1][1] << ", "  << (*vertices)[1][2] << ") " << endl;
-
         g->setVertexArray(vertices);
     }
 }
@@ -39,12 +36,12 @@ void LineSchemeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
 {
     UTILS_ASSERT(scheme);
     OsgSchemeDrawer::init(scheme);
-
     node = new osg::Group;
-    auto joints = scheme->getJointStates();
-    auto connections = scheme->getJointConnections();
+    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
+    auto joints = getVisualiztionScheme()->getStates(dataToDraw);
+
     buffers.reserve(connections.size());
-    BOOST_FOREACH(Connection& connection, connections) {
+    BOOST_FOREACH(const Connection& connection, connections) {
         addLine(joints[connection.index1].position, 
             joints[connection.index2].position, connection.color);
     }
@@ -55,7 +52,7 @@ osg::ref_ptr<osg::Node> LineSchemeDrawer::getNode()
     return node;
 }
 
-void LineSchemeDrawer::addLine( const osg::Vec3& from, const osg::Vec3& to, osg::Vec4& color)
+void LineSchemeDrawer::addLine( const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color)
 {
     GeodePtr geode = new Geode();
     lines.push_back(geode);
@@ -81,4 +78,92 @@ void LineSchemeDrawer::addLine( const osg::Vec3& from, const osg::Vec3& to, osg:
 
     geode->addDrawable(linesGeom);
     node->addChild(geode);
+}
+
+void ConeDrawer::draw()
+{
+
+}
+
+void ConeDrawer::update()
+{
+    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
+    auto states = getVisualiztionScheme()->getStates(dataToDraw);
+
+    for (int i = connections.size() - 1;  i >= 0; --i) {
+        SkeletalVisualizationScheme::JointState state1 = states[connections[i].index1];
+        SkeletalVisualizationScheme::JointState state2 = states[connections[i].index2];
+
+        Vec3 from = state1.position;
+        Vec3 to = state2.position;
+        TransformPtr t = cones[i];
+        Vec3 dir = to - from;
+        Vec3 zero;
+        Vec3 up(0.0f, 1.0f, 0.0f);
+        float length = dir.normalize();
+        osg::Matrix mat;
+        mat.makeLookAt(zero, -dir, up);
+
+        osg::Quat rotation;
+        rotation.set(Matrix::inverse(mat));
+
+        t->setPosition(from);
+        t->setAttitude(rotation);
+    }
+}
+
+void ConeDrawer::deinit()
+{
+
+}
+
+void ConeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
+{
+    node = new osg::Group;
+    OsgSchemeDrawer::init(scheme);
+    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
+    auto states = getVisualiztionScheme()->getStates(dataToDraw);
+    
+    for (int i = 0;  i < connections.size(); ++i) {
+        SkeletalVisualizationScheme::JointState state1 = states[connections[i].index1];
+        SkeletalVisualizationScheme::JointState state2 = states[connections[i].index2];
+        TransformPtr t = addTransform(state1.position, state2.position, connections[i].color);
+        node->addChild(t);
+        cones.push_back(t);
+    }
+}
+
+osg::ref_ptr<osg::Node> ConeDrawer::getNode()
+{
+    return node;
+}
+
+ConeDrawer::TransformPtr ConeDrawer::addTransform(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color)
+{
+    float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+    
+    //Vec4 color(1, 1, 1, 0.5f);
+    ConeDrawer::GeodePtr geode = new Geode();
+    Vec3 dir = to - from;
+    Vec3 zero;
+    Vec3 up(0.0f, 1.0f, 0.0f);
+    float length = dir.normalize();
+    ref_ptr<Cylinder> cone = new Cylinder(Vec3(0, 0, length * 0.5f ), dataToDraw == DrawSkeleton ? 0.05f : 0.02f, length);
+    ref_ptr<ShapeDrawable> drawable = new ShapeDrawable(cone);
+    osg::Matrix mat;
+    mat.makeLookAt(zero, -dir, up);
+    
+    osg::Quat rotation;
+    rotation.set(Matrix::inverse(mat));
+    drawable->setColor(color);
+    geode->addDrawable(drawable);
+    osg::ref_ptr<osg::StateSet> set = new osg::StateSet();
+    set->setMode(GL_BLEND,osg::StateAttribute::ON);
+    geode->setStateSet(set);
+
+    TransformPtr transform = new PositionAttitudeTransform();
+    transform->addChild(geode);
+    transform->setPosition(from);
+    transform->setAttitude(rotation);
+    return transform;
 }

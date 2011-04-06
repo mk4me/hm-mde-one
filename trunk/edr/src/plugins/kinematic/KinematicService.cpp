@@ -86,34 +86,21 @@ void KinematicVisualizer::setUp( IObjectSource* source )
     
     if (scheme) {
         drawers.clear();
-        OsgSchemeDrawerPtr drawer(new PointSchemeDrawer);
-        OsgSchemeDrawerPtr drawer2(new LineSchemeDrawer);
-        drawers.push_back(drawer);
+        OsgSchemeDrawerPtr drawer1(new PointSchemeDrawer(DrawSkeleton));
+        OsgSchemeDrawerPtr drawer2(new PointSchemeDrawer(DrawMarkers));
+        OsgSchemeDrawerPtr drawer3(new LineSchemeDrawer(DrawSkeleton));
+        OsgSchemeDrawerPtr drawer4(new ConeDrawer(DrawMarkers));
+        OsgSchemeDrawerPtr drawer5(new ConeDrawer(DrawSkeleton));
+        drawers.push_back(drawer1);
         drawers.push_back(drawer2);
-
-        for (int i = 0; i < drawers.size(); i++) {
+        drawers.push_back(drawer3);
+        drawers.push_back(drawer4);
+        drawers.push_back(drawer5);
+        for (unsigned int i = 0; i < drawers.size(); i++) {
             drawers[i]->init(scheme);
             rootNode->addChild(drawers[i]->getNode());
         }
     }
-     //kinematic::KinematicModelConstPtr model = source->getObject(0);
-     //if (model) {
-     //    scheme = SkeletalVisualizationScheme::create();
-     //    scheme->setKinematicModel(model);
-     //    OsgSchemeDrawerPtr drawer(new LineSchemeDrawer);
-     //    scheme->setSchemeDrawer(drawer);
-     //    rootNode->addChild(drawer->getNode());
-     //    scheme->setNormalizedTime(0.0);
-     //} 
-
-     //MarkerSetConstPtr markers = source->getObject(1);
-     //if (markers && model) {
-     //    model->setMarkersData(markers);
-     //    scheme->setNormalizedTime(1.0);
-     //    OsgSchemeDrawerPtr drawer(new PointSchemeDrawer);
-     //    scheme->setSchemeDrawer(drawer);
-     //    rootNode->addChild(drawer->getNode());
-     //}
  }
 
 IVisualizer* KinematicVisualizer::create() const
@@ -127,13 +114,6 @@ void KinematicVisualizer::getSlotInfo( int source, std::string& name, ObjectWrap
         name = "model";
         types.push_back(typeid(SkeletalVisualizationScheme));
     }
-    //if ( source == 0 ) {
-    //    name = "model"; 
-    //    types.push_back(typeid(kinematic::KinematicModel));
-    //} else if ( source == 1 ) {
-    //    name = "marker";
-    //    types.push_back(typeid(MarkerSet));
-    //}
 }
 
 QWidget* KinematicVisualizer::createWidget()

@@ -8,6 +8,10 @@
 class PointSchemeDrawer : public OsgSchemeDrawer
 {
 public:
+    PointSchemeDrawer(DataToDraw toDraw) :
+      dataToDraw(toDraw) 
+      {}
+public:
     virtual void draw();
     virtual void update();
     virtual void deinit();
@@ -22,11 +26,12 @@ private:
 private:
     void createMarkersCrowd(const std::vector<MarkerState>& markers);
     GeodePtr createMarker(const osg::Vec4& color, float scale = 1.0f) const;
-    TransformPtr addPoint(const osg::Vec3& point);
+    TransformPtr addPoint(const osg::Vec3& point, const osg::Vec4& color);
 
 private:
     std::vector<TransformPtr> points;
     osg::ref_ptr<osg::Group> node;
+    DataToDraw dataToDraw;
 };
 
 #endif //HEADER_GUARD_POINTSCHEMEDRAWER_H__

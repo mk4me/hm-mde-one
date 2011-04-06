@@ -279,7 +279,7 @@ void SkeletonViewerLogic::setKinematic( kinematic::KinematicModelPtr kinematic )
 {
     visualization->setKinematicModel(kinematic);
     visualization->setNormalizedTime(0.0);
-    ISchemeDrawerPtr drawer(new LineSchemeDrawer);
+    ISchemeDrawerPtr drawer(new LineSchemeDrawer(DrawSkeleton));
     //visualization->setSchemeDrawer(drawer);
 
     QString rootName(kinematic->getHAnimSkeleton()->getRootName().c_str());

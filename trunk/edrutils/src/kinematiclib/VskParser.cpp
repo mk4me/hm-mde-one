@@ -8,7 +8,8 @@ using namespace std;
 
 namespace kinematic 
 {
-    VskParser::VskParser() 
+    VskParser::VskParser() :
+        loaded(false)
     {
     }
 
@@ -55,7 +56,11 @@ namespace kinematic
             if (sticks.size() == 0 || markers.size() == 0) {
                 throw kinematic::WrongFileException(filename + " has no sticks or markers");
             }
-        } 
+        } else {
+            WrongFileException(filename + " does not have root element");
+        }
+
+        loaded = true;
     }
 
     void VskParser::readSticks( TiXmlElement* sticksElement )
@@ -119,6 +124,18 @@ namespace kinematic
                }
            }
        }
+    }
+
+    VskParser::stickIterators VskParser::getSticks() const
+    {
+        UTILS_ASSERT(loaded, "file not loaded!");
+        return std::make_pair(sticks.cbegin(), sticks.cend());
+    }
+
+    VskParser::markerIterators VskParser::getMarkers() const
+    {
+        UTILS_ASSERT(loaded, "file not loaded!");
+        return std::make_pair(markers.cbegin(), markers.cend());
     }
 
 }

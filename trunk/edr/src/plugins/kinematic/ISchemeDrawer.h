@@ -4,7 +4,11 @@
 #include <boost/utility.hpp>
 #include <plugins/kinematic/skeletalVisualizationScheme.h>
 
-//! Interfejs realizujacy 'strategie' dla schematu wizualizacji
+enum DataToDraw {
+    DrawMarkers,
+    DrawSkeleton
+};
+
 class ISchemeDrawer : boost::noncopyable
 {
 public:

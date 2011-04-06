@@ -77,7 +77,5 @@ public:
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 
     UTILS_DEPRECATED(C3D_Data* getC3dData());
-
-
 };
 #endif

@@ -12,7 +12,7 @@ void PointSchemeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
     OsgSchemeDrawer::init(scheme);
 
     node = new osg::Group;
-    auto markers = scheme->getMarkersStates();
+    auto markers = scheme->getStates(dataToDraw);
     createMarkersCrowd(markers);
 }
 
@@ -23,7 +23,7 @@ void PointSchemeDrawer::deinit()
 
 void PointSchemeDrawer::update()
 {
-    auto markers = getVisualiztionScheme()->getMarkersStates();
+    auto markers = getVisualiztionScheme()->getStates(dataToDraw);
     for (int i = markers.size() - 1; i >= 0; --i) {
         points[i]->setPosition(markers[i].position);
     }
@@ -39,8 +39,7 @@ void PointSchemeDrawer::createMarkersCrowd(const std::vector<MarkerState>& marke
     int count = markers.size();
     points.resize(count);
     for (int i = 0; i < count; ++i) {
-        Vec3 position = markers[i].position;
-        points[i] = addPoint(position);
+        points[i] = addPoint(markers[i].position, markers[i].color);
         node->addChild(points[i]);
     }
 }
@@ -57,10 +56,9 @@ PointSchemeDrawer::GeodePtr PointSchemeDrawer::createMarker(const osg::Vec4& col
     return geode;
 }
 
-PointSchemeDrawer::TransformPtr PointSchemeDrawer::addPoint( const osg::Vec3& point )
+PointSchemeDrawer::TransformPtr PointSchemeDrawer::addPoint( const osg::Vec3& point, const osg::Vec4& color )
 {
-    float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-    Vec4 color(rand, 1, rand, 1);
+    //Vec4 color(1,1,0,1);
     GeodePtr marker = createMarker(color, 0.08f);
     TransformPtr transform = new PositionAttitudeTransform();
     transform->addChild(marker);

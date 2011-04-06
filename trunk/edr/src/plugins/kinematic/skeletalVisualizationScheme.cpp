@@ -169,6 +169,10 @@ void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelCo
         int count = jointMap.size();
         jointMarkersStates.reserve(count + 5);
         jointMarkersStates.resize(count);
+        osg::Vec4 gold(1,1,0,1);
+        for (int i = 0; i < count; i++) {
+            jointMarkersStates[i].color = gold;
+        }
         auto it = jointMap.begin();
         for (int index = 0; it != jointMap.end(); it++) {
             if (it->second->isActive()) {
@@ -186,8 +190,10 @@ void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelCo
         if (count && markersStates.size() != count) {
             markersStates.resize(count);
         }
+        osg::Vec4 blue(0,0,1,1);
         for (int i = 0; i < count; i++) {
             markersStates[i].position = markers->getPosition(i, 0.0 );
+            markersStates[i].color = blue;
         }
     }
     
@@ -195,11 +201,13 @@ void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelCo
 
 
 void SkeletalVisualizationScheme::createSkeletonConnections(JointPtr joint)
-{
+{ 
+    Vec4 color(1, 1, 1, 0.5f);
     BOOST_FOREACH(JointPtr child, joint->children) {
         Connection c;
         c.index1 = visJoints[joint];
         c.index2 = visJoints[child];
+        c.color = color;
         jointConnections.push_back(c);
         createSkeletonConnections(child);
     }
@@ -214,6 +222,62 @@ void SkeletalVisualizationScheme::updateMarkers( double time )
             markersStates[i].position = markers->getPosition(i, time );
         }
     }
+}
+
+void SkeletalVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserConstPtr vsk )
+{
+    UTILS_ASSERT(kinematicModel && kinematicModel->hasMarkers(), "There are no markers in kinematic model");
+
+    std::map<std::string, int> markersIndices;
+    kinematic::IMarkerSetConstPtr markers = kinematicModel->getMarkersData();
+    for (int i = markers->getMarkersCount() - 1; i >= 0; --i) {
+        markersIndices[markers->getMarkerName(i)] = i;
+    }
+   
+    auto vskMarkers = vsk->getMarkers();
+    for (auto it = vskMarkers.first; it != vskMarkers.second; it++) {
+        std::map<std::string, int>::iterator found = markersIndices.find(it->name);
+        if (found != markersIndices.end()) {
+            markersStates[found->second].color = it->color;
+        }
+    }
+    auto sticks = vsk->getSticks();
+    markerConnections.reserve(std::distance(sticks.first, sticks.second));
+    for (auto it = sticks.first; it != sticks.second; it++) {
+        Connection c;
+        auto it1 = markersIndices.find(it->name1);
+        auto it2 = markersIndices.find(it->name2);
+        if (it1 != markersIndices.end() && it2 != markersIndices.end()) {
+            c.index1 = markersIndices[it->name1];
+            c.index2 = markersIndices[it->name2];
+            c.color = it->color;
+            markerConnections.push_back(c);
+        }
+    }
+}
+
+const std::vector<SkeletalVisualizationScheme::JointState> & SkeletalVisualizationScheme::getStates( DataToDraw toDraw ) const
+{
+    if (toDraw == DrawSkeleton) {
+        return getJointStates();
+    } else if (toDraw == DrawMarkers) {
+        return getMarkersStates();
+    }
+
+    UTILS_ASSERT(false);
+    return getJointStates();
+}
+
+const std::vector<SkeletalVisualizationScheme::Connection> & SkeletalVisualizationScheme::getConnections(DataToDraw toDraw ) const
+{
+    if (toDraw == DrawSkeleton) {
+        return getJointConnections();
+    } else if (toDraw == DrawMarkers) {
+        return getMarkerConnections();
+    }
+
+    UTILS_ASSERT(false);
+    return getJointConnections();
 }
 
 //void PointSchemeDrawer::init( SkeletalVisualizationSchemeWeak scheme )

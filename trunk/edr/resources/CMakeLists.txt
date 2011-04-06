@@ -47,6 +47,8 @@ set(TRIAL
 	trial/walkMoCapVideo.amc
 	trial/walkMoCapVideo.asf
 	trial/walkMoCapVideo.c3d
+	trial/M39.vsk
+	trial/M53.vsk
 )
 source_group("trial" FILES ${TRIAL})
 set(ALL_RESURCES ${ALL_RESURCES} ${TRIAL})

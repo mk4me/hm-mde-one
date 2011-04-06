@@ -14,11 +14,13 @@ UTILS_POP_WARNINGS
 #include <boost/utility.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/function.hpp>
+#include <kinematiclib/VskParser.h>
 #include <kinematiclib/KinematicModel.h>
 
 //#include "uniqueCollection.h"
 
 class ISchemeDrawer;
+enum DataToDraw;
 typedef boost::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
 //! klasa stanowi polaczenie miedzy reprezentacja wewnetrzna, a kontrolka odrysowywujaca szkielet
 class SkeletalVisualizationScheme
@@ -80,13 +82,19 @@ public: // akcesory
     }
 
     //! akcesory do zwracanych danych
-    const std::vector<JointState>  &getMarkersStates() const { return markersStates; }
-    const std::vector<JointState>  &getJointStates() const { return jointMarkersStates; }
-    const std::vector<Connection>  &getJointConnections() const  { return jointConnections; }
+    const std::vector<JointState> &getMarkersStates() const { return markersStates; }
+    const std::vector<JointState> &getJointStates() const { return jointMarkersStates; }
+    const std::vector<Connection> &getJointConnections() const { return jointConnections; }
+    const std::vector<Connection> &getMarkerConnections() const { return markerConnections; }
+
+    const std::vector<JointState> &getStates(DataToDraw toDraw) const;
+    const std::vector<Connection> &getConnections(DataToDraw toDraw) const;
 
     //model kinematyczny
     kinematic::KinematicModelConstPtr getKinematicModel() const { return kinematicModel; }
     void setKinematicModel(kinematic::KinematicModelConstPtr val);
+
+    void setMarkersDataFromVsk(kinematic::VskParserConstPtr vsk);
 
     ////! ustawia schemat odrysowywania modelu
     //void setSchemeDrawer(ISchemeDrawerPtr drawer);
@@ -122,6 +130,8 @@ private:
     std::map<kinematic::JointPtr, int> visJoints;
     //! zawiera informacje o polaczeniach miedzy stawami
     std::vector<Connection> jointConnections;
+
+    std::vector<Connection> markerConnections;
     ////! aktualny wizualizator schematu
     //ISchemeDrawerPtr schemeDrawer;
     //! model kinematyczny z danymi
