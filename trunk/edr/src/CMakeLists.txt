@@ -118,6 +118,7 @@ else()
 	ADD_PROJECT(corelib "BOOST;UTILS;OSG;OSGUI;QT;TINYXML;STDINT")
 endif()
 ADD_PROJECT(core "UTILS;OSG;QT;TINYXML;corelib;OPENGL")
+ADD_PROJECT(experiments "UTILS;OSG;corelib")
 ADD_PROJECTS(plugins)
 
 #---------------------------------------------------
