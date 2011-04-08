@@ -380,14 +380,15 @@ namespace core {
             if ( time > getLength() ) {
                 throw std::runtime_error("Time overflow.");
             }
+
+            // wyznaczenie indeksów
             int idx = static_cast<int>(time * samplesPerSec);
-            UTILS_ASSERT( idx <= getNumPoints() );
-            if ( idx == getNumPoints()-1 ) {
-                const_reference p = operator[](getNumPoints()-1);
-                return std::make_pair(p, p);
-            } else {
-                return std::make_pair( operator[](idx), operator[](idx+1) );
-            }
+            UTILS_ASSERT( idx < getNumPoints() );
+            
+            // pobranie punktów
+            const_reference p1 = operator[](idx);
+            const_reference p2 = (idx == getNumPoints()-1) ? p1 : operator[](idx+1);
+            return std::pair<const_reference, const_reference>(p1, p2);
         }
 
     };
