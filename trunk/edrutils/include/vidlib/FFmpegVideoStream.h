@@ -112,6 +112,8 @@ private:
     int64_t frameSpan;
     //! Timestamp nastêpnej ramki.
     int64_t nextFrameTimestamp;
+    //! Indeks wybranego strumienia.
+    int wantedStream;
 
     //! Czas w Ÿródle widziany na zewn¹trz klasy. Mo¿e byæ >= frameTimestamp,
     //! ale tylko jeœli wci¹¿ dotyczy tej samej klatki.
@@ -137,7 +139,8 @@ public:
 
 //------------------------------------------------------------------------------
 public:
-    
+    //!
+    virtual VideoStream* clone() const;
 
     //!
     virtual bool readNext();

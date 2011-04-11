@@ -1,4 +1,5 @@
 #include "../PCH.h"
+#include "../VidLibPrivate.h"
 #include <vidlib/osg/OsgAdapter.h>
 #include <boost/foreach.hpp>
 
@@ -91,5 +92,52 @@ namespace vidlib
         }
         return stream;
     }
+
+
+    OsgStream::OsgStream( VideoStream* innerStream ) : innerStream(innerStream)
+    {
+        if ( !innerStream ) {
+            VIDLIB_ERROR_NORETURN(VideoError("innerStream==null"));
+        }
+        onAfterInit(innerStream->getSource(), innerStream->getFramerate(), 
+            innerStream->getDuration(), innerStream->getPixelFormat(), 
+            innerStream->getWidth(), innerStream->getHeight(), 
+            innerStream->getAspectRatio());
+    }
+
+    OsgStream::~OsgStream()
+    {
+        utils::deletePtr(innerStream);
+    }
+
+
+    VideoStream* OsgStream::clone() const
+    {
+        std::auto_ptr<VideoStream> innerClone(innerStream->clone());
+        UTILS_ASSERT(innerStream);
+        osg::ref_ptr<OsgStream> cloned = new OsgStream(innerClone.release());
+        return cloned.release();
+    }
+
+    bool OsgStream::setTime( double time )
+    {
+        double prevTimestamp = getFrameTimestamp();
+        bool result = innerStream->setTime(time);
+        if ( prevTimestamp != getFrameTimestamp() ) {
+            refreshImages();
+        }
+        return result;
+    }
+
+    bool OsgStream::getData( Picture& dst )
+    {
+        return innerStream->getData(dst);
+    }
+
+    bool OsgStream::getData( PictureLayered& dst )
+    {
+        return innerStream->getData(dst);
+    }
+
 
 } // namespace vidlib

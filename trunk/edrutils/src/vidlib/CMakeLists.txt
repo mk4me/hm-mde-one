@@ -30,6 +30,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/FFmpegError.h
 	${HEADER_PATH}/FFmpegVideoStream.h
 	${HEADER_PATH}/Export.h
+	${HEADER_PATH}/FileSequenceVideoStream.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -47,6 +48,7 @@ set(TARGET_SRC
 	VideoBufferChunk.cpp
 	VideoStream.cpp
 	VideoError.cpp
+	FileSequenceVideoStream.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

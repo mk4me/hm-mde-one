@@ -5,15 +5,73 @@
 #include <time.h>
 #include <vidlib/FFmpegVideoStream.h>
 #include <utils/LeakDetection.h>
+#include <vidlib/BufferedVideoStream.h>
+#include <vidlib/FileSequenceVideoStream.h>
+#include <vidlib/Config.h>
+#include <boost/filesystem.hpp>
+#include <vidlib/osg/OsgAdapter.h>
+
+
+#ifdef VIDLIB_ENABLE_OSG
+UTILS_PUSH_WARNINGS
+#include <osgDB/ReadFile>
+UTILS_POP_WARNINGS
+
+class OsgLoader : public vidlib::FileSequenceVideoStream::ILoader
+{
+    osg::ref_ptr<osg::Image> img;
+    osg::ref_ptr<osgDB::Options> options;
+
+public:
+    OsgLoader(osgDB::Options* options) 
+    : options(options)
+    {
+    }
+
+    bool readImage(const std::string& path, vidlib::Picture& picture)
+    {
+        img = osgDB::readImageFile(path, options.get());
+        if ( img ) {
+            if (img->getOrigin() == osg::Image::BOTTOM_LEFT) {
+                img->flipVertical();
+                img->setOrigin(osg::Image::TOP_LEFT);
+            }
+            if ( img->getPixelFormat() == GL_RGB ) {
+                picture.format = vidlib::PixelFormatRGB24;
+                picture.width = img->s();
+                picture.height = img->t();
+                picture.dataHeight = picture.height;
+                picture.dataWidth = 3 * picture.width;
+                picture.data = (unsigned char*)(img->getDataPointer());
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        
+    }
+
+
+    ILoader* clone() const
+    {
+        return new OsgLoader(options);
+    }
+};
+
+#endif // VIDLIB_ENABLE_OSG
 
 #ifdef WIN32
 #undef main /* We don't want SDL to override our main() */
 #endif
 
+
 int main(int argc, char **argv)
 {
     using namespace vidlib;
     using namespace std;
+    namespace fs = boost::filesystem;
 
     // czy mamy parametr?
     if ( argc == 1 ) {
@@ -27,7 +85,31 @@ int main(int argc, char **argv)
     SDL_Surface * bmp = NULL;
 
     try {
-        input = new FFmpegVideoStream( argv[1] );
+
+        fs::path path = argv[1];
+        if (fs::is_directory(path)) {
+            // wczytanie listy plików
+            std::vector<std::string> files;
+            for ( fs::directory_iterator it(path), last; it != last; ++it ) {
+                files.push_back(it->string());
+            }
+
+#ifdef VIDLIB_ENABLE_OSG
+            //osgDB::Options* options = new osgDB::Options();
+            //options->setObjectCacheHint( osgDB::Options::CACHE_IMAGES );
+            //osgDB::Registry::instance()->setOptions(options);
+            osgDB::Options* options = new osgDB::Options();
+            options->setObjectCacheHint( osgDB::Options::CACHE_NONE );
+
+            input = new FileSequenceVideoStream(path.string(), 25, files, new OsgLoader(new osgDB::Options()));
+#else
+            throw runtime_error("To enable reading files sequence vidlib must have OSG enabled.");
+#endif
+
+        } else {
+            // strumieñ dla pliku
+            input = new FFmpegVideoStream( path.string() );
+        }
 
         // inicjalizacja SDL'a
         SDL_Init( SDL_INIT_VIDEO );
@@ -132,6 +214,8 @@ int main(int argc, char **argv)
             begin = clock();
         }
     } catch ( VideoError & error ) {
+        cerr << "Video ERROR: " << error.what() << endl;
+    } catch ( exception& error ) {
         cerr << "ERROR: " << error.what() << endl;
     }
 

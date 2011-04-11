@@ -25,8 +25,10 @@
 
 #ifdef  VIDLIB_ENABLE_EXCEPTIONS
 #define VIDLIB_ERROR(x) { throw (x); }
+#define VIDLIB_ERROR_NORETURN VIDLIB_ERROR
 #else   // VIDLIB_ENABLE_EXCEPTIONS
 #define VIDLIB_ERROR(x) { return notifyError((x)); }
+#define VIDLIB_ERROR_NORETURN(x) notifyError((x));
 #endif  // VIDLIB_ENABLE_EXCEPTIONS
 
 //------------------------------------------------------------------------------

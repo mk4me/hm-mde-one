@@ -19,7 +19,7 @@ namespace vidlib {
 #define FACTOR 4
 
 BufferedVideoStream::BufferedVideoStream( VideoStream * innerStream, int maxBufferSize /*= INT_MAX*/ ) :
-VideoStream(std::string("Buffered: ") + innerStream->getSource()), 
+VideoStream(), 
 innerStream(innerStream), maxBufferSize(maxBufferSize),
 wantedTime(0.0)
 {
@@ -29,7 +29,7 @@ wantedTime(0.0)
  // int height = innerStream->getHeight();
 
     // inicjalizacja
-    onAfterInit( getSource(), 
+    onAfterInit( std::string("Buffered: ") + innerStream->getSource(), 
         innerStream->getFramerate(),
         innerStream->getDuration(),
         innerStream->getPixelFormat(),
@@ -225,6 +225,7 @@ Picture* BufferedVideoStream::popBuffer( double time )
     }
     return frame;
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////

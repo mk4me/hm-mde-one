@@ -20,6 +20,7 @@ UTILS_PUSH_WARNINGS
 #include <osg/TextureRectangle>
 UTILS_POP_WARNINGS
 
+#include <vidlib/VideoStream.h>
 #include <vidlib/Export.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/osg/VideoImage.h>
@@ -77,6 +78,64 @@ namespace vidlib
         VideoStream* asStream() const;
     };
     UTILS_POP_WARNINGS
+
+    //! Metody z premedytacj¹ nie s¹ wirtualne tak, aby odwo³ania do nich (znaj¹c typ OsgStream)
+    //! mog³y byæ wydajniejsze. Oczywiœcie NIE powinno siê dziedziczyæ po tym typie.
+    class VIDLIB_EXPORT OsgStream : public VideoStream, public __OsgAdapter
+    {
+    private:
+        //! Wewnêtrzny strumieñ.
+        VideoStream* innerStream;
+
+    public:
+        //! \param innerStream Strumieñ przejmowany na w³asnoœæ.
+        OsgStream(VideoStream* innerStream);
+        //!
+        virtual ~OsgStream();
+
+    public:
+        //! \return Wewnêtrzny strumieñ.
+        inline const VideoStream* getInnerStream() const
+        {
+            return innerStream;
+        }
+
+    // VideoStream
+    public:
+
+        //!
+        virtual VideoStream* clone() const;
+
+        //! \param time Pozycja w Ÿródle
+        bool setTime(double time);
+        //! Odczytuje nastêpn¹ klatkê.
+        inline bool readNext()
+        {
+            return innerStream->readNext();
+        }
+        //! \retrun Pozycja w strumieniu.
+        inline double getTime() const
+        {
+            return innerStream->getTime();
+        }
+        //! \return Prawdziwy timestamp ramki.
+        inline double getFrameTimestamp() const
+        {
+            return innerStream->getFrameTimestamp();
+        }
+        //! \return Prawdziwy timestamp kolejnej ramki.
+        inline double getNextFrameTimestamp() const
+        {
+            return innerStream->getNextFrameTimestamp();
+        }
+
+    // VideoStream
+    protected:
+        //!
+        bool getData(Picture& dst);
+        //!
+        bool getData(PictureLayered& dst);
+    };
 
     //! Adapter strumienia z vidliba dla potrzeb OSG.
     template <class Stream>

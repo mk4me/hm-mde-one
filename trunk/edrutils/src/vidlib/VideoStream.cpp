@@ -21,11 +21,10 @@ public:
     std::string path;
 };
 
-VideoStream::VideoStream( const std::string& source )
+VideoStream::VideoStream()
 {
     VIDLIB_FUNCTION_PROLOG;
     impl = new VideoStreamImpl;
-    impl->path = source;
     lastError = NULL;
     frameRate = 0.0;
     frameDuration = 0.0;
@@ -61,9 +60,13 @@ bool VideoStream::notifyError( const VideoError& error )
 }
 
 
-bool VideoStream::onAfterInit( const std::string& /*source*/, double frameRate, double duration, PixelFormat format, int width, int height, double aspectRatio )
+bool VideoStream::onAfterInit( const std::string& source, double frameRate, double duration, PixelFormat format, int width, int height, double aspectRatio )
 {
     VIDLIB_FUNCTION_PROLOG;
+    if ( frameRate <= 0.0 ) {
+        VIDLIB_ERROR("frameRate <= 0.0");
+    }
+    this->impl->path = source;
     this->frameRate = frameRate;
     this->frameDuration = 1.0 / frameRate;
     this->duration = duration;

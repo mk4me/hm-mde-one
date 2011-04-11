@@ -214,7 +214,6 @@ FFmpegVideoStream::Initializer::~Initializer()
     av_lockmgr_register( NULL );
 }
 
-
 //------------------------------------------------------------------------------
 
 void FFmpegVideoStream::setLockManager( LockManager manager )
@@ -232,9 +231,21 @@ void FFmpegVideoStream::setLogCallback( LogCallback callback )
 
 //------------------------------------------------------------------------------
 
+VideoStream* FFmpegVideoStream::clone() const
+{
+    std::auto_ptr<FFmpegVideoStream> cloned(new FFmpegVideoStream( getSource(), wantedStream ));
+    if ( getTime() != INVALID_TIMESTAMP ) {
+        cloned->setTime( getTime() );
+        UTILS_ASSERT(getTime() == cloned->getTime());
+        UTILS_ASSERT(getFrameTimestamp() == cloned->getFrameTimestamp());
+    }
+    return cloned.release();
+}
+
+//------------------------------------------------------------------------------
 
 FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideoStream /*= -1*/ )
-: VideoStream(source)
+: VideoStream(), wantedStream(wantedVideoStream)
 {
     VIDLIB_FUNCTION_PROLOG;
     static Initializer initializer;

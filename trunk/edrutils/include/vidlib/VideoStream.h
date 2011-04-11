@@ -76,14 +76,21 @@ private:
     class VideoStreamImpl* impl;
 
 protected:
-    //! \param source ród³o obrazu.
-    VideoStream(const std::string& source);
+    //! Konstruktor zeruj¹cy.
+    VideoStream();
+
+private:
+    //! Brak konstruktora kopiuj¹cego.
+    VideoStream(const VideoStream&);
 
 public:
     //! Destruktor wirtualny.
     virtual ~VideoStream();
 
 public:
+    //! \return Klon bie¿¹cej instancji.
+    virtual VideoStream* clone() const = 0;
+
     //! Odczytuje nastêpn¹ klatkê.
     /** Przesuwa siê w strumieniu na nastêpn¹ ramkê. Modyfikacji ulega
       * czas oraz timestamp (nadane im s¹ te same wartoœci
@@ -99,14 +106,30 @@ public:
     //! \return Prawdziwy timestamp kolejnej ramki.
     virtual double getNextFrameTimestamp() const = 0;
 
+    //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci spakowanej
+    //! powinien prze³adowaæ tê metodê.
+    //! \param dst
+    virtual bool getData(Picture & /*dst*/) 
+    { 
+        return false; 
+    }
+
+    //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci zdjêcia
+    //! powinien prze³adowaæ tê metodê.
+    //! \param dst
+    virtual bool getData(PictureLayered & /*dst*/) 
+    { 
+        return false; 
+    }
+
     //! Konwertuje bie¿¹c¹ ramkê do zadanego formatu. Docelowa ramka
     //! musi byæ zaalokowana.
     //! \param dst
-    virtual bool getFrame(Picture & dst);
+    bool getFrame(Picture & dst);
     //! Konwertuje bie¿¹c¹ ramkê do zadanego formatu. Docelowa ramka
     //! musi byæ zaalokowana.
     //! \param dst
-    virtual bool getFrame(PictureLayered & dst);
+    bool getFrame(PictureLayered & dst);
 
     //! \return ród³o.
     const std::string& getSource() const;
@@ -195,22 +218,6 @@ protected:
 
     //!
     void onFrameRead();
-
-    //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci spakowanej
-    //! powinien prze³adowaæ tê metodê.
-    //! \param dst
-    virtual bool getData(Picture & /*dst*/) 
-    { 
-        return false; 
-    }
-
-    //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci zdjêcia
-    //! powinien prze³adowaæ tê metodê.
-    //! \param dst
-    virtual bool getData(PictureLayered & /*dst*/) 
-    { 
-        return false; 
-    }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
