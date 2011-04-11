@@ -24,6 +24,7 @@ class FFmpegVideoStreamTest : public CppUnit::TestFixture
     CPPUNIT_TEST(testConvert);
     CPPUNIT_TEST(testClose);
     CPPUNIT_TEST(testBoundaries);
+    CPPUNIT_TEST(testClone);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -33,6 +34,7 @@ public:
     void testClose();
     void testDecode();
     void testConvert();
+    void testClone();
 
     void testOpenFail();
     void testNegativeTimeFail();

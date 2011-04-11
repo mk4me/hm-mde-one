@@ -36,7 +36,6 @@ namespace vidlib {
  */
 class VIDLIB_EXPORT FFmpegVideoStream : public VideoStream
 {
-//------------------------------------------------------------------------------
 public:
     //! Operacje na muteksach.
     enum LockOp {
@@ -73,7 +72,6 @@ public:
     //! Typ callbacka otrzymuj¹cego komunikaty z ffmpeg.
     typedef void (*LogCallback)(LogSeverity severity, const char* msg, FFmpegClass* item, FFmpegClass* parent);
 
-//------------------------------------------------------------------------------
 private:
     //! Pomocnicza klasa do inicjalizacji ffmpega.
     class Initializer
@@ -96,7 +94,6 @@ private:
         int64_t maxSpan;
     };
 
-//------------------------------------------------------------------------------
 private:
     //! 
     AVFormatContext * formatContext;
@@ -130,14 +127,12 @@ private:
     //! Prawdziwy u¿ywany w momencie, gdy Ÿród³owy nie ma wyalignowanych danych.
     AVPacket * alignedPacket;
 
-//------------------------------------------------------------------------------
 public:
     //! \param source ród³o.
     FFmpegVideoStream(const std::string& source, int wantedVideoStream = -1);
     //!
     virtual ~FFmpegVideoStream();
 
-//------------------------------------------------------------------------------
 public:
     //!
     virtual VideoStream* clone() const;
@@ -158,15 +153,12 @@ public:
     //! 
     //! \param callback
     static void setLogCallback(LogCallback callback);
-
-//------------------------------------------------------------------------------
-protected:
     //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci zdjêcia
     //! powinien prze³adowaæ tê metodê.
     //! \param dst
     virtual bool getData(PictureLayered & dst);
 
-//------------------------------------------------------------------------------
+
 private:
     //! Pomija ramki a¿ dotrze do zadanego czasu.
     //! Jeœli po wywo³aniu tej funkcji warunek frameTimestamp >= targetTimestamp nie jest spe³niony

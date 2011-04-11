@@ -75,3 +75,39 @@ void FFmpegVideoStreamTest::testBoundaries()
     stream->setTime(0);
     stream->setTime(stream->getDuration());
 }
+
+void FFmpegVideoStreamTest::testClone()
+{
+    {
+        StreamPtr stream(new FFmpegVideoStream(FILE_PATH));
+        StreamPtr clone((FFmpegVideoStream*)stream->clone());
+        CPPUNIT_ASSERT(stream->getFrameTimestamp() == clone->getFrameTimestamp());
+    }
+    {
+        StreamPtr stream(new FFmpegVideoStream(FILE_PATH));
+        stream->setTime(1);
+        StreamPtr clone((FFmpegVideoStream*)stream->clone());
+        CPPUNIT_ASSERT(stream->getFrameTimestamp() == clone->getFrameTimestamp());
+        CPPUNIT_ASSERT(clone->getTime() == 1);
+
+        PictureLayered p1, p2;
+        if ( stream->getData(p1) ) {
+            if ( clone->getData(p2) ) {
+                for ( int i = 0; i < 4; ++i ) {
+                    if ( p1.data[i] ) {
+                        CPPUNIT_ASSERT(p1.data[i] && p2.data[i]);
+                        CPPUNIT_ASSERT(p1.dataWidth[i] == p2.dataWidth[i]);
+                        CPPUNIT_ASSERT(p1.dataHeight[i] == p2.dataHeight[i]);
+                        CPPUNIT_ASSERT(memcmp(p1.data[i], p2.data[i], p1.dataWidth[i] * p1.dataHeight[i]) == 0);
+                    }
+                }
+            } else {
+                CPPUNIT_FAIL("!clone->getData(p2)");
+            }
+        } else {
+            CPPUNIT_FAIL("!stream->getData(p1)");
+        }
+
+    }
+
+}
