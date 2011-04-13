@@ -20,7 +20,6 @@
 
 #include "C3DModel.h"
 #include "ConsoleWidget.h"
-#include "Logger.h"
 
 #include "ServiceManager.h"
 #include <core/IAnimationService.h>
@@ -214,6 +213,13 @@ QMainWindow(parent), updateEnabled(true)
     setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 
   
+    core::shared_ptr<int> p1(new int(10));
+    core::shared_ptr<const int> p2(new int(20));
+    core::shared_ptr<int> p3(new int(20));
+
+    bool b1 = (typeid(p1) == typeid(p2));
+    bool b2 = (typeid(p1) == typeid(p3));
+
 
     // SM
     // TODO: singleton

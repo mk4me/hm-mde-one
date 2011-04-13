@@ -39,7 +39,6 @@ C3DParser::~C3DParser()
 
 void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::filesystem::path& path)
 {
-    this->path = path;
     // parsowanie pliku
     c3dParser parser;
     scoped_ptr<C3D_Data> data(parser.parseData(path.string()));

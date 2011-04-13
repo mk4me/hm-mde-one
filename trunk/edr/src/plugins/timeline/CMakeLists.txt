@@ -1,5 +1,5 @@
 project(timeline)
-set(TARGET_TARGETNAME timeline)
+set(TARGET_TARGETNAME plugin_timeline)
 
 # obs³uga QT
 set(QT_USE_QTOPENGL TRUE)

@@ -26,7 +26,7 @@ QWidget* Visualizer::getOrCreateWidget()
 {
     if (!widget) {
         LOG_DEBUG("Visualizer " << impl->getName() << " widget created");
-        widget = impl->createWidget();
+        widget = impl->createWidget(genericActions);
         trySetUp();
         UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");
     }
@@ -57,4 +57,17 @@ const QIcon& Visualizer::getIcon() const
 const Visualizer::SourcesTypes& Visualizer::getSourcesTypes() const
 {
     return VisualizerManager::getInstance()->getSourcesTypes(getID());
+}
+
+const std::vector<QObject*>& Visualizer::getGenericActions() const
+{
+    return genericActions;
+}
+
+const std::vector<QObject*>& Visualizer::getOrCreateGenericActions()
+{
+    if ( !widget ) {
+        getOrCreateWidget();
+    }
+    return genericActions;
 }

@@ -11,60 +11,24 @@
 
 // tymczasowe rozwi¹zanie: u¿ywamy strumieni OSG
 #include <core/Config.h>
-#include <osg/Notify>
-#include <utils/Enum.h>
-#include <utils/Utils.h>
 
-class ConsoleWidget;
-
-////////////////////////////////////////////////////////////////////////////////
-namespace core {
-////////////////////////////////////////////////////////////////////////////////
-
-//! Obiekt logu. Powinien byæ tworzony w g³ównej binarce na samym pocz¹tku maina.
-class LogInitializer 
+namespace core 
 {
-public:
-    //! \param configPath Œcie¿ka do pliku konfiguracyjnego.
-    LogInitializer(const char* configPath);
-    //!
-    ~LogInitializer();
+    //! Poziom wa¿noœci wiadomoœci.
+    enum LogSeverity {
+        LogSeverityError,
+        LogSeverityWarning,
+        LogSeverityInfo,
+        LogSeverityDebug
+    };
 
-public:
-    //! \param console Widget konsoli.
-    void setConsoleWidget(ConsoleWidget* widget);
-
-private:
-    /**
-     *	Prze³adowania operatorów new-delete. Prywatne, aby niemo¿liwe by³o
-     *  tworzenie instancji typu na stercie.
-     */     
-    void *operator new(size_t bytes);
-    //! \see LogInitializer::operator new
-    void *operator new[](size_t bytes);
-    //! \see LogInitializer::operator new
-    void operator delete(void* p);
-    //! \see LogInitializer::operator new
-    void operator delete[](void* p);
-};
-
-//! Poziom wa¿noœci wiadomoœci.
-enum LogSeverity {
-    LogSeverityError,
-    LogSeverityWarning,
-    LogSeverityInfo,
-    LogSeverityDebug
-};
-
-
-////////////////////////////////////////////////////////////////////////////////
 } // namespace core
-////////////////////////////////////////////////////////////////////////////////
 
+#ifndef CORE_DISABLE_LOGGING
+//------------------------------------------------------------------------------
 #ifdef CORE_ENABLE_LOG4CXX
 
 #include <log4cxx/logger.h>
-#include <utils/Utils.h>
 
 //! Tutaj dzieje siê magia. Binarka kliencka za³¹czaj¹c corelib (bibliotekê statyczn¹)
 //! musi gdzieœ stworzyæ tê zmienn¹, bo inaczej bêd¹ b³êdy linkera.
@@ -92,13 +56,15 @@ extern log4cxx::LoggerPtr __logger;
 #define LOG_INFO_STATIC_NAMED(path, msg)    __LOG_STATIC_HELPER(LOG4CXX_INFO, path, msg)
 #define LOG_WARNING_STATIC_NAMED(path, msg) __LOG_STATIC_HELPER(LOG4CXX_WARN, path, msg)
 
-#define __LOG_STATIC_HELPER(operation, path, msg) UTILS_MULTISTATEMENT_BEGIN        \
+#define __LOG_STATIC_HELPER(operation, path, msg) do {                              \
     static log4cxx::LoggerPtr __staticLogger = log4cxx::Logger::getLogger(path);    \
     operation(__staticLogger, msg);                                                 \
-    UTILS_MULTISTATEMENT_END
+    } while (0)
+
 
 #else // CORE_ENABLE_LOG4CXX
 
+#include <osg/Notify>
 #include <string>
 
 //! Prefiks logowania w binarce.
@@ -124,8 +90,26 @@ extern std::string __loggerPath;
 #define LOG_INFO_STATIC_NAMED(path, msg)    LOG_INFO_NAMED(path, msg)
 #define LOG_WARNING_STATIC_NAMED(path, msg) LOG_WARNING_NAMED(path, msg)
 
-#endif  // CORE_ENABLE_LOG4CXX
+#endif // CORE_ENABLE_LOG4CXX
+//------------------------------------------------------------------------------
+#else  // CORE_DISABLE_LOGGING
 
+#define DEFINE_DEFAULT_LOGGER(path)
 
+#define LOG_DEBUG(msg)    
+#define LOG_ERROR(msg)    
+#define LOG_INFO(msg)     
+#define LOG_WARNING(msg)  
+#define LOG_DEBUG_NAMED(path, msg)   
+#define LOG_ERROR_NAMED(path, msg)   
+#define LOG_INFO_NAMED(path, msg)    
+#define LOG_WARNING_NAMED(path, msg) 
+#define LOG_DEBUG_STATIC_NAMED(path, msg)  
+#define LOG_ERROR_STATIC_NAMED(path, msg)  
+#define LOG_INFO_STATIC_NAMED(path, msg)   
+#define LOG_WARNING_STATIC_NAMED(path, msg)
+
+#endif  // CORE_DISABLE_LOGGING
+//------------------------------------------------------------------------------
 
 #endif  // __HEADER_GUARD__CORE_LOG_H__

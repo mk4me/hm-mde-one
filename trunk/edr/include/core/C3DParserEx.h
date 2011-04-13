@@ -57,7 +57,6 @@ class C3DParser : public core::IParser
     UNIQUE_ID('C3DP','PARS');
 
 private:
-    boost::filesystem::path path;
     std::vector<core::ObjectWrapperPtr> GRFChannels;
     std::vector<core::ObjectWrapperPtr> EMGChannels;
     core::ObjectWrapperPtr MarkerChannels;

@@ -1,7 +1,7 @@
 project(video)
 # nazwa
 set(TARGET_TARGETNAME
-	video
+	plugin_video
 )
 
 add_definitions(-D__LIBRARY_DYNAMIC__)

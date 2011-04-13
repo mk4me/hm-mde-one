@@ -14,11 +14,9 @@
 #include <typeinfo>
 #include <boost/any.hpp>
 #include <boost/type_traits.hpp>
-#include <utils/PtrPolicyBoost.h>
-#include <utils/PtrPolicyRaw.h>
-#include <utils/PtrPolicyOSG.h>
 #include <utils/Debug.h>
 #include <core/SmartPtr.h>
+#include <utils/PtrPolicyBoost.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -268,7 +266,7 @@ public:
 
 
     //! \param type 
-    //! \return Czy obiekt wspira okreœlony typ?
+    //! \return Czy obiekt wspiera okreœlony typ?
     virtual bool isSupported(const std::type_info& type) const = 0;
 
     //! \return Informacje o typie.

@@ -57,7 +57,7 @@ EMGService::EMGService()
   
   length(0.0)
 {
-    widget = new ChartWidget(this);
+    widget = new deprecated__ChartWidget(this);
 
 	length=widget->getLenght() ;
 	
@@ -129,7 +129,7 @@ void EMGService::setLength( double length )
     this->length = length;
 }
 
-void EMGService::setWidget(ChartWidget* widget){
+void EMGService::setWidget(deprecated__ChartWidget* widget){
 this->widget=widget;
 }
 

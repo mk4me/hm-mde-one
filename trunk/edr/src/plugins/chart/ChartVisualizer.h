@@ -9,14 +9,17 @@
 #ifndef HEADER_GUARD_CHART__CHARTVISUALIZER_H__
 #define HEADER_GUARD_CHART__CHARTVISUALIZER_H__
 
+#include <QtCore/QObject>
 #include <osgViewer/Viewer>
 #include <core/Chart.h>
 #include <core/IVisualizer.h>
+#include <core/LineChartSerie.h>
 
 //! Wizualizator wykresów.
-class ChartVisualizer : public core::IVisualizer
+class ChartVisualizer : public QObject, public core::IVisualizer
 {
-    UNIQUE_ID('CHRT','VISU')
+    Q_OBJECT;
+    UNIQUE_ID('CHRT','VISU');
 private:
     //! Nazwa wizualizatora.
     std::string name;
@@ -30,6 +33,12 @@ private:
     int prevActiveSerie;
     //!
     float prevTime;
+
+    //!
+    QAction* actionNormalized;
+
+    //! Serie danych przyporz¹dkowane indeksom wejœæ.
+    std::vector<core::LineChartSeriePtr> series;
 
 public:
     //!
@@ -48,11 +57,19 @@ public:
     //! \see IVisualizer::update
     virtual void update(double deltaTime);
     //! \see IVisualizer::createWidget
-    virtual QWidget* createWidget();
+    virtual QWidget* createWidget(std::vector<QObject*>& actions);
     //!
     virtual QIcon* createIcon();
     //! \see IVisualizer::setUp
     virtual void setUp(core::IObjectSource* source);
+
+private slots:
+    void setNormalized(bool normalized);
+    void setActiveSerie(int idx);
+
+signals:
+    void activeSeriePicked(int idx);
+
 };
 
 

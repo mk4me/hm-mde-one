@@ -96,17 +96,15 @@ void PluginLoader::load()
     HANDLE file;
     WIN32_FIND_DATA dataFind;
     bool moreFiles;
-    const char* fileMask = "*.dll";
+    const char* fileMask = "plugin_*.dll";
 
-    for(Paths::const_iterator itr = paths.begin(); itr!=paths.end(); ++itr) 
-    {
-        // bie¿¹cy katalog
-        ::SetCurrentDirectory(itr->c_str());
+    for(Paths::const_iterator itr = paths.begin(); itr!=paths.end(); ++itr) {
+        std::string pattern = combinePath(*itr, fileMask);
         moreFiles = true;
         // listowanie plików
-        file = ::FindFirstFile(fileMask, &dataFind);
-        while (file != INVALID_HANDLE_VALUE && moreFiles) 
-        {
+        utils::zero(dataFind);
+        file = ::FindFirstFile(pattern.c_str(), &dataFind);
+        while (file != INVALID_HANDLE_VALUE && moreFiles) {
             // dodanie plugina
             addPlugIn(combinePath(*itr, dataFind.cFileName));
             // czy dalej? (dziwna postaæ ¿eby pozbyæ siê warninga)
@@ -139,8 +137,7 @@ bool PluginLoader::addPlugIn( const std::string& path )
 {
 #if defined(__WIN32__)
     HMODULE library = ::LoadLibrary( path.c_str() );
-    if ( library ) 
-    {
+    if ( library ) {
         FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
         if ( proc ) {
             bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
@@ -151,11 +148,21 @@ bool PluginLoader::addPlugIn( const std::string& path )
         } else {
             LOG_DEBUG(path<<" is a .dll, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
         }
-    }
-    else
-    {
-        DWORD err = GetLastError();
-        err = err;
+    } else  {
+        DWORD err = ::GetLastError();
+        LPSTR errStr;
+        if (::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, err, 0, reinterpret_cast<LPSTR>(&errStr), 0, nullptr)) {
+            // usuwanie CRLF
+            LPSTR p = strchr(errStr, '\r');
+            if ( p ) {
+                *p = '\0';
+            }
+            LOG_ERROR("Error \"" << errStr << "\" (" << err << ") during loading " << path << ".")
+            ::LocalFree(errStr);
+        } else {
+            LOG_ERROR("Unknown error (" << err << ") during loading " << path << ".")
+        }
+        
     }
     FreeLibrary(library);
     return false;
@@ -203,25 +210,21 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
 {
     Plugin* plugin = NULL;
 
+    LOG_INFO("Loading plugin " << path);
+
     // próba za³adowania
-    try 
-    {
+    try {
         plugin = createFunction();
-    } 
-    catch ( std::exception& ex ) 
-    {
+    } catch ( std::exception& ex ) {
         LOG_ERROR("Error loading plugin "<<path<<": "<<ex.what());
         return false;
-    } 
-    catch ( ... ) 
-    {
+    } catch ( ... ) {
         LOG_ERROR("Error loading plugin "<<path<<": Unknown");
         return false;
     }
 
     // czy uda³o siê wczytaæ?
-    if ( !plugin ) 
-    {
+    if ( !plugin ) {
         LOG_ERROR("Error loading plugin "<<path<<": Plugin not created");
         return false;
     }
@@ -229,6 +232,9 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
     plugin->setPath(path);
     plugins.push_back( PluginPtr(plugin) );
     libraries.push_back(library);
+
+    LOG_INFO("Successfully loaded plugin " << path);
+
     //LOG_INFO("Plugin " << plugin->getName() << " loaded from " << path);
     return true;
 }

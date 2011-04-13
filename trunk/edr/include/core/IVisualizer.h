@@ -1,4 +1,4 @@
-/********************************************************************
+/*******************************************************************
     created:  2011/03/14
     created:  14:3:2011   16:49
     filename: IVisualizer.h
@@ -9,11 +9,13 @@
 #ifndef HEADER_GUARD_CORE__IVISUALIZER_H__
 #define HEADER_GUARD_CORE__IVISUALIZER_H__
 
+#include <vector>
 #include <list>
 #include <core/IIdentifiable.h>
 #include <core/IObjectSource.h>
 #include <core/ObjectWrapper.h>
 
+class QObject;
 class QWidget;
 class QIcon;
 
@@ -37,14 +39,19 @@ namespace core
         //! Tylko tutaj powinno nastêpowaæ tworzenie widgetu. Metoda wywo³ywana tylko jeden raz.
         //! To wizualizator musi niszczyæ widget w destruktorze. Gdy widget jest równoczeœnie
         //! widokiem OSG to wystarczy przypisaæ go do osg::ref_ptr.
+        //! \param action Akcje które nale¿y dodaæ do paska tytu³owego. Ka¿dym elementem mo¿e byæ
+        //! albo QAction, QMenu z zagnied¿onymi akcjami, albo ca³y QWidget. Rodzice tych elementów nie s¹ zmieniani!
         //! \return Widget bêd¹cy korzeniem wizualizacji. Musi mieæ slot setActiveSource(int).
-        virtual QWidget* createWidget() = 0;
+        virtual QWidget* createWidget(std::vector<QObject*>& actions) = 0;
 
         //! Tworzy ikonê dla zadanego wizualizatora. Mo¿e zwracaæ nullptr, chocia¿ to niewskazane.
         //! W odgró¿nieniu od createWidget ikona przejmowana jest na w³asnoœæ.
         virtual QIcon* createIcon() = 0;
 
-        //! \return Lista wspieranych typów dla danego slotu. Pusta lista oznacza, ¿e ten slot i kolejne nie s¹ obs³ugiwane.
+        //! Wype³nia listê wspieranych typów dla danego slotu. Pusta lista oznacza, ¿e ten slot i kolejne nie s¹ obs³ugiwane.
+        //! \param source Numer slotu.
+        //! \param name Wynikowa Nazwa slotu.
+        //! \param types Wynikowa lista wspieranych typów.
         virtual void getSlotInfo(int source, std::string& name, ObjectWrapper::Types& types) = 0;
 
         //! Metoda wywo³ywana po przypisaniu danych wejœciowych wizualizatorowi. Powinna uwzglêdniæ czyszczenie widgetu

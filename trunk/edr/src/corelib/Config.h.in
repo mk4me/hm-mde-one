@@ -5,5 +5,7 @@
 #cmakedefine CORE_ENABLE_LEAK_DETECTION
 //! Czy ma byæ w³¹czone logowanie z u¿yciem log4cxx?
 #cmakedefine CORE_ENABLE_LOG4CXX
+//! Czy ma byæ w³¹czone logowanie w ogóle?
+#cmakedefine CORE_DISABLE_LOGGING
 
 #endif // __CORELIB_CONFIG_H__

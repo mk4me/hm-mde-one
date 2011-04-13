@@ -1,6 +1,7 @@
 #include "CommunicationPCH.h"
 #include "CommunicationWidget.h"
 #include <core/StringTools.h>
+#include <boost/regex.hpp>
 //http://hmdb.pjwstk.edu.pl/Motion/FileStoremanWS.svc?wsdl
 //http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl
 

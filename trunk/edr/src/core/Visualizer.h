@@ -28,6 +28,8 @@ private:
     QWidget* widget;
     //! èrÛd≥o danych dla wizualizatora.
     ObjectSource source;
+    //! Akcje wizualizatora.
+    std::vector<QObject*> genericActions;
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w≥asnoúÊ.
@@ -38,6 +40,11 @@ public:
     ~Visualizer();
 
 public:
+    //! \return Lista akcji ogÛlnych wizualizatora.
+    const std::vector<QObject*>& getGenericActions() const;
+    //! \return Lista akcji ogÛlnych wizualizatora.
+    const std::vector<QObject*>& getOrCreateGenericActions();
+
     //! \return Widget wizualizatora.
     QWidget* getOrCreateWidget();
     //! \return Widget wizualizatora. Moøe byÊ nullptr, jeøeli jeszcze nie jest stworzony.
@@ -45,6 +52,7 @@ public:
     {
         return widget;
     }
+
     //! IVisualizer::update
     inline void update(double deltaTime)
     {
@@ -99,14 +107,6 @@ public:
     core::ObjectWrapperConstPtr getObject(int slot)
     {
         return source.getObject(slot, boost::true_type());
-    }
-
-
-
-    //! \return
-    inline QWidget* createWidget()
-    {
-        return impl->createWidget();
     }
 
     //! 

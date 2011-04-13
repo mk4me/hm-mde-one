@@ -17,8 +17,8 @@ class VideoParser : public core::IParser
     UNIQUE_ID('VIDE','PARS');
 private:
     //! Obiekt wewnêtrzny.
-    core::ObjectWrapperPtr __deprecated_stream;
-    core::ObjectWrapperPtr stream;
+    core::ObjectWrapperPtr adapter;
+    
 public:
     VideoParser();
     virtual ~VideoParser();

@@ -116,7 +116,7 @@ void KinematicVisualizer::getSlotInfo( int source, std::string& name, ObjectWrap
     }
 }
 
-QWidget* KinematicVisualizer::createWidget()
+QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
 {
     
     widget = new osgui::QOsgDefaultWidget();

@@ -17,6 +17,35 @@ DataManager* DataManager::instance = nullptr;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ *	U¿ytkowa klasa, u¿ywana tam, gdzie mêcz¹ca jest zmiana wartoœci jakiejœ zmiennej
+ *  a nastêpnie rêczne jej przywracanie; jest to uci¹¿liwe zw³aszcza gdy funkcja ma
+ *  wiele punktów wyjœcia.
+ */
+template <class T>
+class Push
+{
+private:
+    //! Poprzednia wartoœæ.
+    T oldValue;
+    //! Zmienna.
+    T& variable;
+public:
+    //! \param variable
+    //! \param newValue
+    Push(T& variable, const T& newValue) : oldValue(variable), variable(variable)
+    {
+        variable = newValue;
+    }
+    //! 
+    ~Push()
+    {
+        variable = oldValue;
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
 //! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
 class DataManager::Parser
 {
@@ -34,6 +63,8 @@ private:
     bool parsed;
     //! Czy u¿yto parsera do przeparsowania?
     bool used;
+    //! Czy w³aœnie parsujemy?
+    bool parsing;
 
 
 public:
@@ -41,7 +72,7 @@ public:
     //!     czas ¿ycia.
     //! \param resource Czy parser jest zwi¹zany z zasobami sta³ymi?
     Parser(IParser* parser, const Path& path, bool resource = false) :
-    parser(parser), parsed(false), used(false), resource(resource), filePath(path)
+    parser(parser), parsed(false), used(false), resource(resource), filePath(path), parsing(false)
     {
         UTILS_ASSERT(parser);
         UTILS_ASSERT(!filePath.empty());
@@ -74,6 +105,11 @@ public:
     {
         return parsed;
     }
+    //!
+    inline bool isParsing() const
+    {
+        return parsing;
+    }
     //! \return Œcie¿ka do pliku.
     inline const Path& getPath() const
     {
@@ -92,7 +128,8 @@ public:
         UTILS_ASSERT(!filePath.empty());
         LOG_DEBUG("Parsing file: " << getPath() );
         used = true;
-        parser->parseFile(dataManager, filePath);
+        Push<bool> parsingPushed(parsing, true);
+        parser->parseFile(dataManager, filePath.string());
         parsed = true;
     }
     //! Nie rzuca wyj¹tkami.
@@ -383,6 +420,7 @@ IDataManager::LocalTrial DataManager::findLocalTrialsPaths(const core::IDataMana
     masks.push_back(".amc");
     masks.push_back(".asf");
     masks.push_back(".avi");
+    masks.push_back(".imgsequence");
     std::vector<std::string> filesPath = Filesystem::listFiles(path.string(), true, masks);
     BOOST_FOREACH(std::string path, filesPath)
     {
@@ -549,6 +587,9 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
             if ( !exact || object->isTypeEqual(type) ) {
                 // czy obiekt ju¿ jest?
                 if ( object->isNull() ) {
+                    if ( parser->isParsing() ) {
+                        throw std::runtime_error("Parsers recursion detected!");
+                    }
                     // mo¿e musimy przeparsowaæ?
                     if ( !parser->isUsed() ) {
                         LOG_DEBUG("Loading object of type \"" << object->getTypeInfo().name() << "\" when looking for \"" << type.name() << "\"");
@@ -597,11 +638,16 @@ void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& object
 {
     // pobieramy obiekty i dodajemy je do s³ownika obiektów
     BOOST_FOREACH(ObjectWrapperPtr object, objects) {
-        ObjectsMapEntry entry = { object, parser };
-        std::list<ObjectWrapper::Type> supportedTypes;
-        object->getSupportedTypes(supportedTypes);
-        BOOST_FOREACH( ObjectWrapper::Type type, supportedTypes ) {
-            currentObjects.insert( std::make_pair(type, entry) );
+        if ( !object ) {
+            LOG_ERROR("Unitialized object from " << parser->getPath() << " (id: " << parser->getParser()->getID() << ")");
+
+        } else {
+            ObjectsMapEntry entry = { object, parser };
+            std::list<ObjectWrapper::Type> supportedTypes;
+            object->getSupportedTypes(supportedTypes);
+            BOOST_FOREACH( ObjectWrapper::Type type, supportedTypes ) {
+                currentObjects.insert( std::make_pair(type, entry) );
+            }
         }
     }
 }

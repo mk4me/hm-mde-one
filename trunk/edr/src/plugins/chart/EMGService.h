@@ -14,7 +14,7 @@
 #include <plugins/timeline/Stream.h>
 #include <plugins/timeline/ITimeline.h>
 
-class ChartWidget;
+class deprecated__ChartWidget;
 
 class ChartService : public IService
 {
@@ -35,7 +35,7 @@ class EMGService : public IChart, public IService
     UNIQUE_ID('EMG','SRVC');
 private:
  //! Widget.
-    ChartWidget* widget;
+    deprecated__ChartWidget* widget;
 
     //!
     std::string name;
@@ -48,7 +48,7 @@ public:
 	double getTargetTime();
     double getLength() const;
     void setLength(double length);
-	void setWidget(ChartWidget* widget);
+	void setWidget(deprecated__ChartWidget* widget);
 
 // IService
 public:

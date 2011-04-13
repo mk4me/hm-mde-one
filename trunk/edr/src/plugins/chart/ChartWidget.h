@@ -1,7 +1,7 @@
 /********************************************************************
 	created:  2010/10/27
 	created:  27:10:2010   17:12
-	filename: ChartWidget.h
+	filename: deprecated__ChartWidget.h
 	author:	  Micha³ Szafarski
 	
 	purpose:  
@@ -20,7 +20,7 @@
 #include <core/C3DChannels.h>
 
 class ChartViewer;
-class ChartWidget : public QWidget, public Ui::ChartWidget
+class deprecated__ChartWidget : public QWidget, public Ui::ChartWidget
 {
     Q_OBJECT
 
@@ -44,9 +44,9 @@ public:
 	
 
     //! 
-	ChartWidget(IService* service);
+	deprecated__ChartWidget(IService* service);
     //! 
-    virtual ~ChartWidget();
+    virtual ~deprecated__ChartWidget();
 
 	osg::Node* getSceneRoot();
 /*	void deprecated_addChart(C3DChartData* c3dData);*/

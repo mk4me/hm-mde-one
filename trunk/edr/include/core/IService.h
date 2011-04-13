@@ -3,11 +3,22 @@
 
 #include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
-#include <core/WidgetInterface.h>
 #include <core/SmartPtr.h>
-#include <osg/Node>
-#include <osgViewer/CompositeViewer>
-#include <core/IDataManager.h>
+
+namespace osg 
+{
+    class Node;
+} // namespace osg
+
+namespace osgViewer 
+{
+    class CompositeViewer;
+} // namespace osgViewer
+
+namespace core 
+{
+    class IDataManager;
+} // namespace core
 
 enum AsyncResult
 {
@@ -17,6 +28,7 @@ enum AsyncResult
 };
 
 class IServiceManager;
+class IWidget;
 
 class IService : public IIdentifiable
 {

@@ -3,6 +3,7 @@
 #include <core/StringTools.h>
 #include <core/StringTools.h>
 #include <QtGui/QPainter>
+#include <boost/regex.hpp>
 
 //http://hmdb.pjwstk.edu.pl/Motion/FileStoremanWS.svc?wsdl
 //http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl

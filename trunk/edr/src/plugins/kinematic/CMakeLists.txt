@@ -1,7 +1,7 @@
 project(kinematic)
 # nazwa
 set(TARGET_TARGETNAME
-	kinematic
+	plugin_kinematic
 )
 
 add_definitions(-D__LIBRARY_DYNAMIC__)

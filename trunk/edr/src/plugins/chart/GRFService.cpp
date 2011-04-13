@@ -57,7 +57,7 @@ GRFService::GRFService()
   
   length(0.0)
 {
-    widget = new ChartWidget(this);
+    widget = new deprecated__ChartWidget(this);
 	
 	length=widget->getLenght() ;
 	
@@ -129,7 +129,7 @@ void GRFService::setLength( double length )
     this->length = length;
 }
 
-void GRFService::setWidget(ChartWidget* widget){
+void GRFService::setWidget(deprecated__ChartWidget* widget){
 this->widget=widget;
 }
 

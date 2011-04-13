@@ -2,6 +2,9 @@
 #define BASE_DATA_TYPES_H
 
 #include <stdint.h>
+#include <string>
+#include <ostream>
+#include <algorithm>
 
 typedef long ClassID; 
 #define NULL 0
@@ -63,6 +66,13 @@ struct UniqueID
     return quad < rhs.quad;
   }
 };
+
+inline std::ostream& operator<<(std::ostream& stream, UniqueID id)
+{
+    std::string s(id.data, id.data+8);
+    std::reverse(s.begin(), s.end());
+    return (stream << s);
+}
 
 template <int32_t Major, int32_t Minor>
 struct UniqueIdSpec : public UniqueID

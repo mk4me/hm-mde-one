@@ -13,6 +13,8 @@ i web serwisy wsdl.
 #include <plugins/communication/Entity.h>
 #include <plugins/communication/QueryWSDL.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
+#include <OpenThreads/ScopedLock>
+#include <OpenThreads/Mutex>
 
 typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
 

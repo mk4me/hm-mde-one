@@ -11,13 +11,12 @@
 
 #include <vector>
 #include <string>
-#include <boost/range.hpp>
-#include <core/Log.h>
 
 #include "SmartPtr.h"
 #include "IService.h"
 #include "IParser.h"
 #include "IVisualizer.h"
+
 #include "BaseDataTypes.h"
 #include "Export.h"
 #include "IIdentifiable.h"
@@ -55,6 +54,25 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME() \
 #define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
     instance->addVisualizer( core::IVisualizerPtr(new className) );
 
+
+class IPlugin : IIdentifiable
+{
+public:
+    //! Pusty polimorficzny destruktor.
+    virtual ~IPlugin() {}
+    //! \return Liczba us³ug.
+    virtual int getNumServices() const = 0;
+    //! \return Us³uga.
+    virtual IService* getService(int idx) = 0;
+    //! \return Liczba parserów.
+    virtual int getNumParsers() const = 0;
+    //! \return Parser.
+    virtual IParser* getParser(int idx) = 0;
+    //! \return Liczba wizualizatorów.
+    virtual int getNumVisualizers() const = 0;
+    //! \return Wizualizator.
+    virtual IVisualizer* getVisualizer(int idx) = 0;
+};
 
 /**
  *	Kontener na us³ugi.
@@ -166,7 +184,7 @@ public:
 
 //! Definicja wskaŸnika.
 typedef shared_ptr<Plugin> PluginPtr;
-typedef core::shared_ptr<const Plugin> PluginConstPtr;
+typedef shared_ptr<const Plugin> PluginConstPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

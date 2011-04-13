@@ -42,8 +42,17 @@ void VisualizerTitleBar::clear()
     // usuniêcie wizualizatora
     visualizer.reset();
 
+    // czysczenie fragmentu z customowymi akcjami
+    QLayoutItem* item;
+    while ((item = layoutCustom->takeAt(0)) != nullptr) {
+        QWidget* widget = item->widget();
+        delete item;
+        delete widget;
+    }
+
     //layoutCustom->removeWidget(widgetCustomTitleBar);
     utils::deletePtr(widgetCustomTitleBar);
+
 }
 
 void VisualizerTitleBar::setCurrentVisualizer( UniqueID id )
@@ -82,6 +91,29 @@ void VisualizerTitleBar::setCurrentVisualizer( const VisualizerPtr& visualizer )
             // TODO: wybór na podstawie wizualizatora
             QWidget* sources = new VisualizerTitleBarComboPick();
             setWidgetSources(sources);
+
+            // dodajemy akcje ogólne widgetu
+            BOOST_FOREACH(QObject* obj, visualizer->getOrCreateGenericActions()) {
+                QAction* action = qobject_cast<QAction*>(obj);
+                if ( action ) {
+                    // dodajemy guzik z akcj¹
+                    QToolButton* button = new QToolButton(this);
+                    button->setDefaultAction(action);
+                    layoutCustom->addWidget(button);
+                } else {
+                    QMenu* menu = qobject_cast<QMenu*>(obj);
+                    if ( menu ) {
+                        // dodajemy ca³e menu
+                        QToolButton* button = new QToolButton(this);
+                        button->setPopupMode(QToolButton::InstantPopup);
+                        button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+                        button->setMenu(menu);
+                        layoutCustom->addWidget(button);
+                    } else {
+                        UTILS_FAIL("what?");
+                    }
+                }
+            }
         }
 
         // wysy³amy sygna³

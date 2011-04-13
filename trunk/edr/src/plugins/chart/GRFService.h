@@ -12,7 +12,7 @@
 #include <core/IService.h>
 #include <plugins/chart/IChart.h>
 
-class ChartWidget;
+class deprecated__ChartWidget;
 
 
 class GRFService : public IChart, public IService
@@ -20,7 +20,7 @@ class GRFService : public IChart, public IService
     UNIQUE_ID('GRF','SRVC');
 private:
  //! Widget.
-    ChartWidget* widget;
+    deprecated__ChartWidget* widget;
 
     //!
     std::string name;
@@ -33,7 +33,7 @@ public:
 	double getTargetTime();
     double getLength() const;
     void setLength(double length);
-	void setWidget(ChartWidget* widget);
+	void setWidget(deprecated__ChartWidget* widget);
 
 // IService
 public:

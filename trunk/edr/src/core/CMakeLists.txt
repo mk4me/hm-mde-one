@@ -25,7 +25,7 @@ set(PRIVATE_H
 	FModel.h
 	SceneGraphWidget.h
 	Intersection.h
-	Logger.h
+	LogInitializer.h
 	Marker.h
 	Mesh.h
 	Model.h
@@ -110,7 +110,7 @@ set(TARGET_SRC
 	FileReader2Motion.cpp
 	FileUtil.cpp
 	SceneGraphWidget.cpp
-	Logger.cpp
+	LogInitializer.cpp
 	main.cpp
 	PluginLoader.cpp
 	RenderService.cpp
@@ -129,7 +129,6 @@ set(TARGET_SRC
 	SkeletonNode.cpp	
 	#Quaternioncal.cpp
 	ComputeThread.cpp
-	Log.cpp
 	VisualizerWidget.cpp
 	VisualizerManager.cpp
 	ObjectSource.cpp
@@ -217,8 +216,14 @@ set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
 set(QT_USE_QTOPENGL TRUE) 
 include(${QT_USE_FILE})
 
-# kompilacja do wspó³dzielonej biblioteki
-add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
+# kompilacja do exe
+option(EDR_WIN32_ENABLE_CONSOLE "Enable console on Win32?" OFF)
+if (EDR_WIN32_ENABLE_CONSOLE)
+	add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
+else()
+	add_executable(${TARGET_TARGETNAME} WIN32 ${TARGET_SRC} ${TARGET_H})
+endif()
+
 #instalacja
 install(TARGETS ${TARGET_TARGETNAME} DESTINATION bin COMPONENT core)
 # nag³ówki

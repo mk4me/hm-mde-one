@@ -1,5 +1,5 @@
 project(chart)
-set(TARGET_TARGETNAME chart)
+set(TARGET_TARGETNAME plugin_chart)
 
 # obs³uga QT
 set(QT_USE_QTOPENGL TRUE)
@@ -33,6 +33,7 @@ set(PRIVATE_H
 	C3DChartData.h
 	MultiViewChartItem.h
 	ChartVisualizer.h
+	ChartVisualizerTitleBar.h
 
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -54,12 +55,15 @@ set(TARGET_SRC
 	C3DChartData.cpp
 	MultiViewChartItem.cpp
 	ChartVisualizer.cpp
+	ChartVisualizerTitleBar.cpp
 
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 SET(TARGET_MOC_H
 ChartWidget.h
+ChartVisualizerTitleBar.h
+ChartVisualizer.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -70,6 +74,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 # UI
 SET(TARGET_UI
 	ui/ChartWidget.ui
+	ui/ChartVisualizerTitleBar.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

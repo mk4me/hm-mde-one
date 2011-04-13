@@ -14,7 +14,7 @@
 #define WM_FLAGS 0
 #endif
 
-ChartWidget::ChartWidget(IService* service)
+deprecated__ChartWidget::deprecated__ChartWidget(IService* service)
 :   service(service)
 {
     setupUi(this);
@@ -54,7 +54,7 @@ ChartWidget::ChartWidget(IService* service)
 	
 }
 
-ChartWidget::~ChartWidget() 
+deprecated__ChartWidget::~deprecated__ChartWidget() 
 {
 
 }
@@ -62,7 +62,7 @@ ChartWidget::~ChartWidget()
 
 
 
-// void ChartWidget::deprecated_addChart(C3DChartData* c3dData){
+// void deprecated__ChartWidget::deprecated_addChart(C3DChartData* c3dData){
 // 
 // 	
 // 	if(c3dData->getRNumber()>0){
@@ -82,15 +82,15 @@ ChartWidget::~ChartWidget()
 
 
 
-void ChartWidget::addChart( const core::ScalarChannelConstPtr& channel )
+void deprecated__ChartWidget::addChart( const core::ScalarChannelConstPtr& channel )
 {
-    Chart* chart = new Chart(40, 40, 500, 250);
+    Chart* chart = new Chart();
     item.push_back( chart );
     chart->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
     chart->setName(channel->getName());
     multiView->addChild(chart);
 
-    Chart* preview = new Chart(40, 40, 500, 250);
+    Chart* preview = new Chart();
     previewItem.push_back(preview);
     preview->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
     preview->setName(channel->getName());
@@ -99,7 +99,7 @@ void ChartWidget::addChart( const core::ScalarChannelConstPtr& channel )
     multiView->addItem(new core::MultiViewChartItem(chart, multiView), new core::MultiViewChartItem(preview, multiView));
 }
 
-void ChartWidget::update(double targetTime){
+void deprecated__ChartWidget::update(double targetTime){
 	if(item.size()>0){
 	itItem=item.begin();
 	itPItem=previewItem.begin();
@@ -111,19 +111,20 @@ void ChartWidget::update(double targetTime){
 	}
 }
 
-double ChartWidget::getLenght(){
+double deprecated__ChartWidget::getLenght(){
 // 	if(item.size()>0){
 // 	itItem=item.begin();
 // 	return (double)(*itItem)->deprecated_getFrameNumber()/(double)(*itItem)->deprecated_getFPS();}
 // 	else
 // 		return 0;
     if ( item.size() ) {
-        return item.front()->getLength();
+        //return item.front()->getLength();
+        throw std::runtime_error("not implemented");
     } else {
         return 0;
     }
 }
-void ChartWidget::clear(){
+void deprecated__ChartWidget::clear(){
 	multiView->removeAllItems();
 	itItem=item.begin();
 	itPItem=previewItem.begin();

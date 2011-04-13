@@ -143,7 +143,7 @@ void VideoVisualizer::update( double deltaTime )
     }
 }
 
-QWidget* VideoVisualizer::createWidget()
+QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
 {
     using namespace osg;
     using namespace osgWidget;

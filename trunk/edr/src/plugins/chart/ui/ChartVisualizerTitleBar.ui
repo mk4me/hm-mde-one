@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ChartWidget</class>
+ <widget class="QWidget" name="ChartWidget">
+  <property name="windowTitle">
+   <string>ChartWidget</string>
+  </property>
+  <action name="actionShowNormalized">
+   <property name="text">
+    <string>showNormalized</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionShowNormalized</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>ChartWidget</receiver>
+   <slot>setShowNormalized(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>247</x>
+     <y>173</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>setShowNormalized(bool)</slot>
+ </slots>
+</ui>

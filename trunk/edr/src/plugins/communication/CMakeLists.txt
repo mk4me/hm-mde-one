@@ -1,7 +1,7 @@
 project(communication)
 # nazwa
 set(TARGET_TARGETNAME
-	communication
+	plugin_communication
 )
 
 add_definitions(-D__LIBRARY_DYNAMIC__)

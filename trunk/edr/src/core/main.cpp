@@ -5,6 +5,7 @@
 #include <core/Log.h>
 #include <core/Config.h>
 #include "VisualizerTitleBar.h"
+#include "LogInitializer.h"
 
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
@@ -12,9 +13,12 @@
 
 using namespace core;
 
+
+
+
 int main(int argc, char *argv[])
 {
-    core::LogInitializer logger("data/resources/settings/log.ini");
+    LogInitializer logger("data/resources/settings/log.ini");
 
     osg::ArgumentParser arguments(&argc,argv);
     arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
