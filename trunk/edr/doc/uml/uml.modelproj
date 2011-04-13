@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{980058a7-19e3-49b4-af06-483c4016f4be}</ProjectGuid>
+    <ArchitectureToolsVersion>1.0.0.0</ArchitectureToolsVersion>
+    <Name>uml</Name>
+    <RootNamespace>uml</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\ArchitectureTools\Microsoft.VisualStudio.TeamArchitect.ModelingProject.targets" />
+  <ItemGroup>
+    <Content Include="C3D.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="C3D.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>C3D.classdiagram</DependentUpon>
+    </Content>
+    <Content Include="DMLoadTrial.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="DMLoadTrial.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>DMLoadTrial.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="DMQueryData.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="DMQueryData.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>DMQueryData.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="ModelDefinition\Package_1206.uml">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="DMRegisterParser.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="DMRegisterParser.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>DMRegisterParser.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="UMLClassDiagram1.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="UMLClassDiagram1.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>UMLClassDiagram1.classdiagram</DependentUpon>
+    </Content>
+    <Content Include="VDF.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="VDF.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>VDF.sequencediagram</DependentUpon>
+    </Content>
+    <Folder Include="ModelDefinition\" />
+    <Content Include="EDR.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="EDR.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>EDR.classdiagram</DependentUpon>
+    </Content>
+    <Content Include="ModelDefinition\uml.uml">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
+</Project>
