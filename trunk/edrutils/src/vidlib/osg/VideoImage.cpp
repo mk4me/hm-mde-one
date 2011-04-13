@@ -5,10 +5,9 @@
 namespace vidlib 
 {
     VideoImage::VideoImage( VideoStream* stream, PixelFormat format ) :
-    stream(stream), streamRef(dynamic_cast<osg::Referenced*>(stream)), minWidth(2), timestamp(-1)
+    stream(stream), minWidth(2), timestamp(-1)
     {
         UTILS_ASSERT(stream);
-        UTILS_ASSERT(streamRef);
 
         setOrigin(osg::Image::TOP_LEFT);
 

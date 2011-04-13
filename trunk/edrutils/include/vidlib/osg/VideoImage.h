@@ -37,8 +37,6 @@ namespace vidlib
         //! Minimalna szerokoœæ.
         int minWidth;
         //! Strumieñ video.
-        const osg::ref_ptr<osg::Referenced> streamRef;
-        //! Strumieñ video.
         VideoStream* stream;
         //! Obrazek.
         Picture currentPicture;
@@ -100,6 +98,26 @@ namespace vidlib
         void reloadImage(Picture & picture);
         //!
         bool applyMaxWidth( int maxWidth );
+    };
+    
+    //! Uzupe³nienie poprzedniego 
+    template <class T, class PtrPolicy>
+    class VideoImageSafe : public VideoImage, public PtrPolicy
+    {
+    public:
+        typedef typename PtrPolicy::Ptr<T>::Type Ptr;
+
+    private:
+        Ptr referenceHolder;
+        
+    public:
+        VideoImageSafe(const Ptr& ptr, PixelFormat format) : 
+        VideoImage( &*ptr, format ), referenceHolder(ptr)
+        {}
+
+        virtual ~VideoImageSafe() 
+        {}
+
     };
 
     UTILS_POP_WARNINGS

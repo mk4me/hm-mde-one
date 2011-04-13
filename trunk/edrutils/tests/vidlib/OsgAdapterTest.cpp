@@ -19,7 +19,7 @@ class OsgAdapterTest : public CppUnit::TestFixture
     CPPUNIT_TEST(testSetMaxWidth);
     CPPUNIT_TEST_SUITE_END();
 
-    typedef OsgAdapter<FFmpegVideoStream> Stream;
+    typedef OsgStream Stream;
     typedef osg::ref_ptr<Stream> StreamPtr;
     typedef osg::ref_ptr<const Stream> StreamConstPtr;
     typedef osg::ref_ptr<VideoImage> VideoImagePtr;
@@ -28,7 +28,7 @@ class OsgAdapterTest : public CppUnit::TestFixture
 public:
     void testInstances()
     {
-        StreamPtr stream(new Stream(FILE_PATH));
+        StreamPtr stream(new Stream(new FFmpegVideoStream(FILE_PATH)));
         stream->setTime(0);
         VideoImagePtr img0 = stream->getImage(PixelFormatRGB24);
         VideoImagePtr img1 = stream->getImage(PixelFormatRGB24);
@@ -44,7 +44,7 @@ public:
 
     void testSetMaxWidth()
     {
-        StreamPtr stream(new Stream(FILE_PATH));
+        StreamPtr stream(new Stream(new FFmpegVideoStream(FILE_PATH)));
         stream->setTime(0);
         VideoImagePtr img = stream->getImage(PixelFormatRGB24);
         CPPUNIT_ASSERT(img->getMaxWidth() == stream->getWidth());

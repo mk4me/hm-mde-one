@@ -107,7 +107,7 @@ const VideoError * VideoStream::getLastError() const
 //   }
 // }
 
-bool VideoStream::getFrame( Picture & dst )
+bool VideoStream::getFrame( Picture & dst ) const
 {
     VIDLIB_FUNCTION_PROLOG;
     if ( getTime() < 0.0 || getTime() > getDuration() ) {
@@ -124,7 +124,7 @@ bool VideoStream::getFrame( Picture & dst )
     }
 }
 
-bool VideoStream::getFrame( PictureLayered & dst )
+bool VideoStream::getFrame( PictureLayered & dst ) const
 {
     VIDLIB_FUNCTION_PROLOG;
     if ( getTime() < 0.0 || getTime() > getDuration() ) {

@@ -24,14 +24,18 @@ UTILS_POP_WARNINGS
 #include <vidlib/Export.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/osg/VideoImage.h>
+#include <vidlib/VideoStreamAdapter.h>
 
 namespace vidlib 
 {
+    class OsgStream;
+
     UTILS_PUSH_WARNINGS
     UTILS_DISABLE_DLL_INTERFACE_WARNING
     //! Adapter strumienia z vidliba dla potrzeb OSG. Potrafi optymalizowaæ dostêp do obrazków.
-    class VIDLIB_EXPORT __OsgAdapter : public osg::Referenced
+    class VIDLIB_EXPORT __OsgAdapter
     {
+        friend class OsgStream;
     private:
         //! Informacje dotycz¹ce u¿ycia strumienia.
         struct Entry
@@ -69,6 +73,8 @@ namespace vidlib
         //! Odœwie¿a obrazki korzystaj¹ce z danego strumienia.
         void refreshImages();
 
+        virtual osg::ref_ptr<VideoImage> createImage(PixelFormat format) const;
+
     private:
         //!
         Entry& getEntry(PixelFormat format) const;
@@ -79,13 +85,14 @@ namespace vidlib
     };
     UTILS_POP_WARNINGS
 
+    UTILS_PUSH_WARNINGS
+    UTILS_DISABLE_DLL_INTERFACE_WARNING
     //! Metody z premedytacj¹ nie s¹ wirtualne tak, aby odwo³ania do nich (znaj¹c typ OsgStream)
     //! mog³y byæ wydajniejsze. Oczywiœcie NIE powinno siê dziedziczyæ po tym typie.
-    class VIDLIB_EXPORT OsgStream : public VideoStream, public __OsgAdapter
+    class VIDLIB_EXPORT OsgStream : public VideoStreamAdapter, public __OsgAdapter, public osg::Referenced
     {
     private:
-        //! Wewnêtrzny strumieñ.
-        VideoStream* innerStream;
+        double currentTimestamp;
 
     public:
         //! \param innerStream Strumieñ przejmowany na w³asnoœæ.
@@ -93,48 +100,19 @@ namespace vidlib
         //!
         virtual ~OsgStream();
 
-    public:
-        //! \return Wewnêtrzny strumieñ.
-        inline const VideoStream* getInnerStream() const
-        {
-            return innerStream;
-        }
-
-    // VideoStream
-    public:
-
-        //!
-        virtual VideoStream* clone() const;
-
-        //! \param time Pozycja w Ÿródle
-        bool setTime(double time);
-        //! Odczytuje nastêpn¹ klatkê.
-        inline bool readNext()
-        {
-            return innerStream->readNext();
-        }
-        //! \retrun Pozycja w strumieniu.
-        inline double getTime() const
-        {
-            return innerStream->getTime();
-        }
-        //! \return Prawdziwy timestamp ramki.
-        inline double getFrameTimestamp() const
-        {
-            return innerStream->getFrameTimestamp();
-        }
-        //! \return Prawdziwy timestamp kolejnej ramki.
-        inline double getNextFrameTimestamp() const
-        {
-            return innerStream->getNextFrameTimestamp();
-        }
-
-    // VideoStream
     protected:
         //!
-        bool getData(Picture& dst);
+        OsgStream(const OsgStream& stream);
+
+    // VideoStream
+    public:
         //!
-        bool getData(PictureLayered& dst);
+        virtual VideoStream* clone() const;
+        //! \param time Pozycja w Ÿródle
+        bool setTime(double time);
+
+    protected:
+        virtual osg::ref_ptr<VideoImage> createImage(PixelFormat format) const;
     };
 
     //! Adapter strumienia z vidliba dla potrzeb OSG.
@@ -160,7 +138,9 @@ namespace vidlib
             }
             return result;
         }
+
     };
+    UTILS_POP_WARNINGS
 
 } // namespace vidlib
 

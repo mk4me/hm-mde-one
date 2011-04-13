@@ -801,7 +801,7 @@ void FFmpegVideoStream::onGotFrame(AVFrame * frame, int64_t timestamp)
 
 //------------------------------------------------------------------------------
 
-bool FFmpegVideoStream::getData( PictureLayered & dst )
+bool FFmpegVideoStream::getData( PictureLayered & dst ) const
 {
     VIDLIB_FUNCTION_PROLOG;
     utils::zero(dst);

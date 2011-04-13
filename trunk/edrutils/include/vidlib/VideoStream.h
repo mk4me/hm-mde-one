@@ -50,7 +50,7 @@ public:
 
 protected:
     //!
-    Converter * converter;
+    mutable Converter * converter;
 
 
 private:
@@ -109,7 +109,7 @@ public:
     //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci spakowanej
     //! powinien prze³adowaæ tê metodê.
     //! \param dst
-    virtual bool getData(Picture & /*dst*/) 
+    virtual bool getData(Picture & /*dst*/) const
     { 
         return false; 
     }
@@ -117,7 +117,7 @@ public:
     //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci zdjêcia
     //! powinien prze³adowaæ tê metodê.
     //! \param dst
-    virtual bool getData(PictureLayered & /*dst*/) 
+    virtual bool getData(PictureLayered & /*dst*/) const
     { 
         return false; 
     }
@@ -125,11 +125,11 @@ public:
     //! Konwertuje bie¿¹c¹ ramkê do zadanego formatu. Docelowa ramka
     //! musi byæ zaalokowana.
     //! \param dst
-    bool getFrame(Picture & dst);
+    bool getFrame(Picture & dst) const;
     //! Konwertuje bie¿¹c¹ ramkê do zadanego formatu. Docelowa ramka
     //! musi byæ zaalokowana.
     //! \param dst
-    bool getFrame(PictureLayered & dst);
+    bool getFrame(PictureLayered & dst) const;
 
     //! \return ród³o.
     const std::string& getSource() const;

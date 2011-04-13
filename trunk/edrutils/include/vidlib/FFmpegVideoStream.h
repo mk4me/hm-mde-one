@@ -156,7 +156,7 @@ public:
     //! Je¿eli strumieñ jest w stanie zaprezentowaæ ramkê w postaci zdjêcia
     //! powinien prze³adowaæ tê metodê.
     //! \param dst
-    virtual bool getData(PictureLayered & dst);
+    virtual bool getData(PictureLayered & dst) const;
 
 
 private:

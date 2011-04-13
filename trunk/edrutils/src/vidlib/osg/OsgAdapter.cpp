@@ -2,6 +2,7 @@
 #include "../VidLibPrivate.h"
 #include <vidlib/osg/OsgAdapter.h>
 #include <boost/foreach.hpp>
+#include <utils/PtrPolicyOSG.h>
 
 namespace vidlib 
 {
@@ -78,7 +79,7 @@ namespace vidlib
         if ( entry.image.lock(image) ) {
             return image;
         } else {
-            image = new VideoImage(asStream(), format);
+            image = createImage(format);
             entry.image = image;
             return image;
         }
@@ -93,51 +94,47 @@ namespace vidlib
         return stream;
     }
 
-
-    OsgStream::OsgStream( VideoStream* innerStream ) : innerStream(innerStream)
+    osg::ref_ptr<VideoImage> __OsgAdapter::createImage( PixelFormat format ) const
     {
-        if ( !innerStream ) {
-            VIDLIB_ERROR_NORETURN(VideoError("innerStream==null"));
-        }
-        onAfterInit(innerStream->getSource(), innerStream->getFramerate(), 
-            innerStream->getDuration(), innerStream->getPixelFormat(), 
-            innerStream->getWidth(), innerStream->getHeight(), 
-            innerStream->getAspectRatio());
+        return new VideoImage(asStream(), format);
+    }
+
+    OsgStream::OsgStream( VideoStream* innerStream ) :
+    VideoStreamAdapter(innerStream), currentTimestamp(INVALID_TIMESTAMP)
+    {
+    }
+
+    OsgStream::OsgStream( const OsgStream& stream ) : 
+    VideoStreamAdapter(stream), currentTimestamp(stream.currentTimestamp)
+    {
     }
 
     OsgStream::~OsgStream()
     {
-        utils::deletePtr(innerStream);
     }
-
 
     VideoStream* OsgStream::clone() const
     {
-        std::auto_ptr<VideoStream> innerClone(innerStream->clone());
-        UTILS_ASSERT(innerStream);
-        osg::ref_ptr<OsgStream> cloned = new OsgStream(innerClone.release());
-        return cloned.release();
+        return new OsgStream(*this);
     }
 
     bool OsgStream::setTime( double time )
     {
-        double prevTimestamp = getFrameTimestamp();
-        bool result = innerStream->setTime(time);
-        if ( prevTimestamp != getFrameTimestamp() ) {
-            refreshImages();
+        if ( VideoStreamAdapter::setTime(time) ) {
+            double timestamp = getFrameTimestamp();
+            if (timestamp != currentTimestamp) {
+                currentTimestamp = timestamp;
+                refreshImages();
+            }
+            return true;
+        } else {
+            VIDLIB_ERROR(VideoError("Error setting inner stream time."));
         }
-        return result;
     }
 
-    bool OsgStream::getData( Picture& dst )
+    osg::ref_ptr<VideoImage> OsgStream::createImage( PixelFormat format ) const
     {
-        return innerStream->getData(dst);
+        osg::ref_ptr<OsgStream> ptr(const_cast<OsgStream*>(this));
+        return new VideoImageSafe<OsgStream, utils::PtrPolicyOSG>(ptr, format);
     }
-
-    bool OsgStream::getData( PictureLayered& dst )
-    {
-        return innerStream->getData(dst);
-    }
-
-
 } // namespace vidlib
