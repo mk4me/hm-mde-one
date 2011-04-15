@@ -77,7 +77,7 @@ private:
     //! Sekwencja parserów.
     typedef std::vector<ParserPtr> ParsersList;
     //! Typ mapy obiektów.
-    typedef std::multimap< core::ObjectWrapper::Type, ObjectsMapEntry > ObjectsByType;
+    typedef std::multimap< core::TypeInfo, ObjectsMapEntry > ObjectsByType;
 
 private:
     //! Instancja.

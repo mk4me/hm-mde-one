@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <boost/shared_ptr.hpp>
 
 namespace ShallowCopy
 {
@@ -87,5 +88,10 @@ namespace ShallowCopy
         Performers performers;
         PerformerConfs performerConfs;
     };
+
+    typedef boost::shared_ptr<ShallowCopy> ShallowCopyPtr;
+    typedef boost::shared_ptr<const ShallowCopy> ShallowCopyConstPtr;
+    typedef boost::weak_ptr<ShallowCopy> ShallowCopyWPtr;
+    typedef boost::weak_ptr<const ShallowCopy> ShallowCopyWConstPtr;
 }
 #endif //HEADER_GUARD_COMMUNICATION_SHALLOWCOPY_H__

@@ -11,9 +11,8 @@
 
 #include <list>
 #include <string>
-#include <typeinfo>
-#include <boost/any.hpp>
 #include <boost/type_traits.hpp>
+#include <core/TypeInfo.h>
 #include <utils/Debug.h>
 #include <core/SmartPtr.h>
 #include <utils/PtrPolicyBoost.h>
@@ -46,36 +45,9 @@ public:
 class ObjectWrapper
 {
 public:
-    //! Struktura reprezentuj¹ca typ obiektu.
-    struct Type
-    {
-        //! Wewnêtrzna informacja o typie.
-        const std::type_info& typeinfo;
-
-        //! \param typeinfo
-        Type(const std::type_info& typeinfo) :
-        typeinfo(typeinfo)
-        {}
-
-        //! \param type
-        Type(const Type& type) :
-        typeinfo(type.typeinfo)
-        {}
-
-        //! Jawny operator rzutowania na type_info.
-        operator const std::type_info&() const
-        {
-            return typeinfo;
-        }
-
-        //! \param obj
-        bool operator<(const Type& obj) const
-        {
-            return typeinfo.before(obj.typeinfo) != 0;
-        } 
-    };
+    
     //! Lista typów.
-    typedef std::list<Type> Types;
+    typedef std::list<TypeInfo> Types;
 
 protected:
     //! Nazwa instancji.
@@ -94,12 +66,11 @@ public:
     //! \param name
     //! \return Wrapper obiektu.
     template <class T>
-    static shared_ptr<ObjectWrapper> createWrapper( T* object = nullptr, const std::string& name = "")
+    static shared_ptr<ObjectWrapper> create(T* dummy = nullptr)
     {
+        UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
         typedef ObjectWrapperT<T> Wrapper;
         Wrapper * wrapper = new Wrapper();
-        wrapper->set(Wrapper::Ptr(object));
-        wrapper->setName(name);
         return shared_ptr<ObjectWrapper>(wrapper);
     }
 
@@ -113,7 +84,7 @@ public:
 protected:
     //! \param className
     //! \param classId
-    ObjectWrapper(const char* className, const std::type_info& type) :
+    ObjectWrapper(const char* className, const TypeInfo& type) :
     className(className), classID(type.hash_code()), changed(false)
     {}
 
@@ -153,13 +124,13 @@ public:
 
 
     //! \param dummy Pozostawiæ pusty.
-    //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
+    //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu lub nie mozna wykonacz rzutowania dynamicznego zwracany jest false.
     template <class T>
     bool tryGet( typename ObjectWrapperT<T>::Ptr& target, bool exact = false )
     {
         typedef ObjectWrapperT<T> Wrapper;
         if ( exact ) {
-            if ( areTypesEqual(getTypeInfo(), typeid(T)) ) {
+            if ( getTypeInfo() == typeid(T) ) {
                 target = static_cast<Wrapper*>(this)->get();
                 return true;
             }
@@ -174,13 +145,13 @@ public:
     }
 
     //! \param dummy Pozostawiæ pusty.
-    //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
+    //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu lub nie mozna wykonacz rzutowania dynamicznego zwracany jest false.
     template <class T>
     bool tryGet( typename ObjectWrapperT<T>::ConstPtr& target, bool exact = false ) const
     {
         typedef const ObjectWrapperT<T> Wrapper;
         if ( exact ) {
-            if ( areTypesEqual(getTypeInfo(), typeid(T)) ) {
+            if ( getTypeInfo() == typeid(T) ) {
                 target = static_cast<Wrapper*>(this)->get();
                 return true;
             }
@@ -195,18 +166,12 @@ public:
     }
 
 
-    //! \param dummy Pozostawiæ pusty.
-    //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
-    template <class T>
-    void set( const typename ObjectWrapperT<T>::Ptr& object )
-    {   
-        typedef ObjectWrapperT<T> Wrapper;
-        Wrapper* wrapper = dynamic_cast<Wrapper*>(this);
-        if ( !wrapper ) {
-            throw std::runtime_error("Invalid wrapped type.");
-        } else {
-            return wrapper->set(object);
-        }
+    //! \param object Powinien to byæ smart_ptr do obiektu domenowego, inaczej statyczna asercja  podczas kompilacji
+    //! Tylko smart_ptr mo¿na przekazaæ gdy¿ przy surowym wskaŸniku powstan¹ nam 2 liczniki referencji i jeden mo¿e zwolniæ obiek nie informuj¹c drugiego.    
+    template <class TPtr>
+    void set( const TPtr& object )
+    {
+        set(object, boost::is_pointer<TPtr>());
     }
 
     //! \return ID typu.
@@ -242,13 +207,13 @@ public:
 
     //! \param type Typ do porównania.
     //! \return Czy to te same typy?
-    inline bool isTypeEqual(const std::type_info& type)
+    inline bool isTypeEqual(const TypeInfo& type)
     {
-        return areTypesEqual(getTypeInfo(), type);
+        return getTypeInfo() == type;
     }
 
     //!
-    inline Type getType() const
+    inline TypeInfo getType() const
     {
         return getTypeInfo();
     }
@@ -267,10 +232,10 @@ public:
 
     //! \param type 
     //! \return Czy obiekt wspiera okreœlony typ?
-    virtual bool isSupported(const std::type_info& type) const = 0;
+    virtual bool isSupported(const TypeInfo& type) const = 0;
 
     //! \return Informacje o typie.
-    virtual const std::type_info& getTypeInfo() const = 0;
+    virtual TypeInfo getTypeInfo() const = 0;
 
     //! \param supported Lista wspieranych rozszerzeñ.
     virtual void getSupportedTypes(Types& supported) const = 0;
@@ -278,15 +243,25 @@ public:
     //! \return Czy wrappowany obiekt jest wyzerowany?
     virtual bool isNull() const = 0;
 
-protected:
-    static inline bool areTypesEqual(const std::type_info& t1, const std::type_info& t2)
+private:
+
+    template <class TPtr>
+    void set( const TPtr& object, boost::true_type )
     {
-        // tutaj u¿ywamy sta³ej z boost/any - pozwala okreœliæ, czy lepiej porównywaæ po nazwie, czy po adresie
-#ifdef BOOST_AUX_ANY_TYPE_ID_NAME
-        return std::strcmp(t1.name(), t2.name()) == 0;
-#else
-        return t1 == t2;
-#endif
+        UTILS_STATIC_ASSERT( false, "Nie moze byæ surowy wskaznik!" );
+    }
+
+    template <class TPtr>
+    void set( const TPtr& object, boost::false_type )
+    {
+        typedef TPtr::element_type T;
+        typedef ObjectWrapperT<T> Wrapper;
+        Wrapper* wrapper = dynamic_cast<Wrapper*>(this);
+        if ( !wrapper ) {
+            throw std::runtime_error("Invalid wrapped type.");
+        } else {
+            return wrapper->set(object);
+        }
     }
 };
 
@@ -344,15 +319,15 @@ public:
         PtrPolicy::setPtr(this->wrapped, wrapped);
     }
     //! \return Informacja o typie.
-    virtual const std::type_info& getTypeInfo() const
+    virtual TypeInfo getTypeInfo() const
     {
         return typeid(T);
     }
     //! \param type 
-    //! \return Czy obiekt wspira okreœlony typ?
-    virtual bool isSupported(const std::type_info& type) const
+    //! \return Czy obiekt wspiera okreœlony typ?
+    virtual bool isSupported(const TypeInfo& type) const
     {
-        return ObjectWrapper::areTypesEqual(type, typeid(T));
+        return type == typeid(T);
     }
     //! \param supported
     virtual void getSupportedTypes(ObjectWrapper::Types& supported) const
@@ -401,15 +376,15 @@ public:
         Base::set(static_pointer_cast<B>(wrapped));
     }
     //! \return Informacja o typie.
-    virtual const std::type_info& getTypeInfo() const
+    virtual TypeInfo getTypeInfo() const
     {
         return typeid(T);
     }
     //! \param type 
     //! \return Czy obiekt wspira okreœlony typ?
-    virtual bool isSupported(const std::type_info& type) const
+    virtual bool isSupported(const TypeInfo& type) const
     {
-        if ( ObjectWrapper::areTypesEqual(type, typeid(T)) ) {
+        if ( type == typeid(T) ) {
             return true;
         } else {
             return Base::isSupported(type);

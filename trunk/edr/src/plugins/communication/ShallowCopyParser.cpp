@@ -4,7 +4,8 @@
 
 ShallowCopyParser::ShallowCopyParser()
 {
-    object = core::ObjectWrapper::createWrapper(new ShallowCopy::ShallowCopy());
+    object = core::ObjectWrapper::create<ShallowCopy::ShallowCopy>();
+    object->set(ShallowCopy::ShallowCopyPtr(new ShallowCopy::ShallowCopy()));
 }
 
 ShallowCopyParser::~ShallowCopyParser()

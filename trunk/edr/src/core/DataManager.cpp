@@ -643,9 +643,9 @@ void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& object
 
         } else {
             ObjectsMapEntry entry = { object, parser };
-            std::list<ObjectWrapper::Type> supportedTypes;
+            std::list<TypeInfo> supportedTypes;
             object->getSupportedTypes(supportedTypes);
-            BOOST_FOREACH( ObjectWrapper::Type type, supportedTypes ) {
+            BOOST_FOREACH( TypeInfo type, supportedTypes ) {
                 currentObjects.insert( std::make_pair(type, entry) );
             }
         }

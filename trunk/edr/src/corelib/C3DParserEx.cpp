@@ -14,20 +14,20 @@ static const int markersSlots = 39;
 
 C3DParser::C3DParser()
 {
-    //object = core::ObjectWrapper::createWrapper<C3D_Data>();
+    //object = core::ObjectWrapper::create<C3D_Data>();
     // dodanie kana³ów
     for(int i=0; i<12; i++){
-        GRFChannels.push_back(ObjectWrapper::createWrapper<GRFChannel>());
+        GRFChannels.push_back(ObjectWrapper::create<GRFChannel>());
     }
     for(int i=12;i<28;i++){
-        EMGChannels.push_back(ObjectWrapper::createWrapper<EMGChannel>());
+        EMGChannels.push_back(ObjectWrapper::create<EMGChannel>());
     }
 
-    MarkerChannels = ObjectWrapper::createWrapper<MarkerSet>();
+    MarkerChannels = ObjectWrapper::create<MarkerSet>();
 
     //MarkerChannels.resize(markersSlots);
     //for(int i = 0; i < markersSlots; i++){
-    //    MarkerChannels[i] = ObjectWrapper::createWrapper<MarkerChannel>();
+    //    MarkerChannels[i] = ObjectWrapper::create<MarkerChannel>();
     //}
 
 
@@ -45,13 +45,15 @@ void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::file
 
     for (int i = 0; i < 12; ++i) {
         GRFChannelPtr ptr(new GRFChannel(*data , i));
-        GRFChannels[i]->set<GRFChannel>(ptr);
+        //GRFChannels[i]->set<GRFChannel>(ptr);
+        GRFChannels[i]->set(ptr);
         GRFChannels[i]->setName(ptr->getName());
         GRFChannels[i]->setSource(path.string());
     }
     for (int i = 12; i < 28; ++i) {
         EMGChannelPtr ptr(new EMGChannel(*data , i));
-        EMGChannels[i-12]->set<EMGChannel>(ptr);
+        //EMGChannels[i-12]->set<EMGChannel>(ptr);
+        EMGChannels[i-12]->set(ptr);
         EMGChannels[i-12]->setName(ptr->getName());
         EMGChannels[i-12]->setSource(path.string());
     }
@@ -70,9 +72,24 @@ void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::file
     }
 
     const char* labels39[] = {
-        "LFHD", "RFHD", "LBHD", "RBHD", "C7",   "T10",  "CLAV", "STRN", "RBAK",         "LSHO", "LUPA", "LELB", "LFRM", "LWRA", "LWRB", "LFIN", "RSHO", "LPSI",        "RUPA", "RELB", "RFRM", "RWRA", "RWRB", "RFIN", "LASI", "RASI", "RPSI",         "LTHI", "LKNE", "LTIB", "LANK", "LHEE", "LTOE", "RTHI", "RKNE", "RTIB",         "RANK", "RHEE", "RTOE"};    const int labels39Count =  sizeof(labels39) / sizeof(char*);    std::set<std::string> set39(labels39, labels39 + labels39Count);    std::set_difference(markersSet.begin(), markersSet.end(), 
+        "LFHD", "RFHD", "LBHD", "RBHD", "C7",   "T10",  "CLAV", "STRN", "RBAK", 
+        "LSHO", "LUPA", "LELB", "LFRM", "LWRA", "LWRB", "LFIN", "RSHO", "LPSI",
+        "RUPA", "RELB", "RFRM", "RWRA", "RWRB", "RFIN", "LASI", "RASI", "RPSI", 
+        "LTHI", "LKNE", "LTIB", "LANK", "LHEE", "LTOE", "RTHI", "RKNE", "RTIB", 
+        "RANK", "RHEE", "RTOE"};
+    const int labels39Count =  sizeof(labels39) / sizeof(char*);
+    std::set<std::string> set39(labels39, labels39 + labels39Count);
+
+    std::set_difference(markersSet.begin(), markersSet.end(), 
         set39.begin(), set39.end(),
-        std::inserter(markers3D, markers3D.end()));    if (markersSet.size() - markers3D.size() == labels39Count) {        markers3D = set39;    } else {        markers3D.clear();        const char* labels53[] = {            "ARIEL", "LFHD", "LBHD", "RFHD", "RBHD", "C7",   "T10",  "CLAV", "STRN" 
+        std::inserter(markers3D, markers3D.end()));
+
+    if (markersSet.size() - markers3D.size() == labels39Count) {
+        markers3D = set39;
+    } else {
+        markers3D.clear();
+        const char* labels53[] = {
+            "ARIEL", "LFHD", "LBHD", "RFHD", "RBHD", "C7",   "T10",  "CLAV", "STRN" 
             "LFSH" , "LBSH", "LUPA", "LELB", "LIEL", "LOWR", "LIWR", "LWRE", "LIHAND",
             "LOHAND","RFSH", "RBSH", "RUPA", "RELB", "RIEL", "ROWR", "RIWR", "RWRE", 
             "RIHAND","ROHAND","LFWT","LMWT", "LBWT", "RFWT", "RMWT", "RBWT", "LHIP", 
@@ -83,7 +100,10 @@ void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::file
 
         std::set_difference(markersSet.begin(), markersSet.end(), 
             set53.begin(), set53.end(),
-            std::inserter(markers3D, markers3D.end()));        if (markersSet.size() - markers3D.size() == labels53Count) {            markers3D = set53;
+            std::inserter(markers3D, markers3D.end()));
+
+        if (markersSet.size() - markers3D.size() == labels53Count) {
+            markers3D = set53;
         } else {
             const int dropCount = 4;
             std::vector<const ::Parameter*> parameters(dropCount);
@@ -138,7 +158,8 @@ void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::file
     //    MarkerChannelPtr ptr(new MarkerChannel(*data, i));
     //    markers->addMarker(ptr);
     //}
-    MarkerChannels->set<MarkerSet>(markers);
+    //MarkerChannels->set<MarkerSet>(markers);
+    MarkerChannels->set(markers);
 }
 
 core::IParser* C3DParser::create()

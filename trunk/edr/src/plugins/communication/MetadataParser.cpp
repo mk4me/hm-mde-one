@@ -3,7 +3,8 @@
 
 MetadataParser::MetadataParser()
 {
-    object = core::ObjectWrapper::createWrapper(new MetaData::MetaData());
+    object = core::ObjectWrapper::create<MetaData::MetaData>();
+    object->set(MetaData::MetaDataPtr(new MetaData::MetaData()));
 }
 
 MetadataParser::~MetadataParser()

@@ -34,7 +34,7 @@ void VisualizerTitleBarComboPick::fillSourcesMenu( QMenu* menu, QActionGroup*& g
         menuSource->clear();
 
         // wspierane obiekty w tym slocie
-        std::list<ObjectWrapper::Type> supportedTypes = visualizer->getSupportedTypes(slotNo);
+        std::list<TypeInfo> supportedTypes = visualizer->getSupportedTypes(slotNo);
         UTILS_ASSERT(!supportedTypes.empty());
 
         // pobranie obiektu w tym slocie
@@ -51,15 +51,15 @@ void VisualizerTitleBarComboPick::fillSourcesMenu( QMenu* menu, QActionGroup*& g
         bool nested = true;// (++supportedTypes.begin() != supportedTypes.end());
 
         // dodanie submenu z akcjami wybieraj¹cymi konkretne obiekty
-        BOOST_FOREACH(ObjectWrapper::Type type, supportedTypes) {
+        BOOST_FOREACH(TypeInfo type, supportedTypes) {
             // pobranie obiektów z dataManagera
             // TODO: bardziej generyczne pobranie obiektów
-            LOG_DEBUG("Type " << type.typeinfo.name() << " at slot " << slotNo);
+            LOG_DEBUG("TypeInfo " << type.name() << " at slot " << slotNo);
             std::vector<ObjectWrapperPtr> objects;
             DataManager::getInstance()->getObjects(objects, type);
 
             std::ostringstream str;
-            str << type.typeinfo.name() << " [" << objects.size() << "]";
+            str << type.name() << " [" << objects.size() << "]";
 
             if ( objects.empty() ) {
                 QAction* action = menu->addAction(toQString(str.str()));

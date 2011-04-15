@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <exception>
+#include <boost/shared_ptr.hpp>
 
 namespace MetaData
 {
@@ -65,6 +66,11 @@ namespace MetaData
         Labs labs;
         AttributeGroups attributeGroups;
     };
+
+    typedef boost::shared_ptr<MetaData> MetaDataPtr;
+    typedef boost::shared_ptr<const MetaData> MetaDataConstPtr;
+    typedef boost::weak_ptr<MetaData> MetaDataWPtr;
+    typedef boost::weak_ptr<const MetaData> MetaDataWConstPtr;
 
     
 //MetaData loadMetadata(const std::string& filename)

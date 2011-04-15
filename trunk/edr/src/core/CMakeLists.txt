@@ -42,6 +42,7 @@ set(PRIVATE_H
 	Visualizer.h
 	VisualizerTitleBar.h
 	VisualizerTitleBarComboPick.h
+	TypeInfo.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 

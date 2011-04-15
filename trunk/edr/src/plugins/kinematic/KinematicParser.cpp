@@ -15,12 +15,12 @@ using namespace boost::filesystem;
 
 KinematicParser::KinematicParser()
 {
-    kinematicMarkers = core::ObjectWrapper::createWrapper<KinematicModel>();
-    kinematicSkeleton = core::ObjectWrapper::createWrapper<KinematicModel>();
-    kinematicMarkersSkeleton = core::ObjectWrapper::createWrapper<KinematicModel>();
-    schemeMarkers = core::ObjectWrapper::createWrapper<SkeletalVisualizationScheme>(); 
-    schemeSkeleton = core::ObjectWrapper::createWrapper<SkeletalVisualizationScheme>();
-    schemeMarkersSkeleton = core::ObjectWrapper::createWrapper<SkeletalVisualizationScheme>();
+    kinematicMarkers = core::ObjectWrapper::create<KinematicModel>();
+    kinematicSkeleton = core::ObjectWrapper::create<KinematicModel>();
+    kinematicMarkersSkeleton = core::ObjectWrapper::create<KinematicModel>();
+    schemeMarkers = core::ObjectWrapper::create<SkeletalVisualizationScheme>(); 
+    schemeSkeleton = core::ObjectWrapper::create<SkeletalVisualizationScheme>();
+    schemeMarkersSkeleton = core::ObjectWrapper::create<SkeletalVisualizationScheme>();
 }
 
 KinematicParser::~KinematicParser()
@@ -70,23 +70,23 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
         // hack , co jak dostaniemy wiecej markerow?
         kin->setMarkersData(markers[0]);
         
-        kinematicMarkers->set<KinematicModel>(kin);
+        kinematicMarkers->set(kin);
         SkeletalVisualizationSchemePtr scheme = SkeletalVisualizationScheme::create();
         scheme->setKinematicModel(kin);
         if (vsk) {
             scheme->setMarkersDataFromVsk(vsk);
         }
-        schemeMarkers->set<SkeletalVisualizationScheme>(scheme);
+        schemeMarkers->set(scheme);
         schemeMarkers->setName(path.filename() + " - markers");
     }
 
     if (modelPtr && modelPtr->getFrames().size() > 0) {
         KinematicModelPtr kin(new KinematicModel);
         kin->setSkeletalData(modelPtr);
-        kinematicSkeleton->set<KinematicModel>(kin);
+        kinematicSkeleton->set(kin);
         SkeletalVisualizationSchemePtr scheme = SkeletalVisualizationScheme::create();
         scheme->setKinematicModel(kin);
-        schemeSkeleton->set<SkeletalVisualizationScheme>(scheme);
+        schemeSkeleton->set(scheme);
         schemeSkeleton->setName(path.filename() + " - skeleton");
     }
 
@@ -94,13 +94,13 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
         KinematicModelPtr kin(new KinematicModel);
         kin->setSkeletalData(modelPtr);
         kin->setMarkersData(markers[0]);
-        kinematicMarkersSkeleton->set<KinematicModel>(kin);
+        kinematicMarkersSkeleton->set(kin);
         SkeletalVisualizationSchemePtr scheme = SkeletalVisualizationScheme::create();
         scheme->setKinematicModel(kin);
         if (vsk) {
             scheme->setMarkersDataFromVsk(vsk);
         }
-        schemeMarkersSkeleton->set<SkeletalVisualizationScheme>(scheme);
+        schemeMarkersSkeleton->set(scheme);
         schemeMarkersSkeleton->setName(path.filename() + " - skeleton + markers");
     }
 }

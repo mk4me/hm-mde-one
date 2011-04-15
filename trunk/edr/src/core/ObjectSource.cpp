@@ -93,7 +93,7 @@ bool ObjectSource::isAssignable( int sourceNo, const core::ObjectWrapper* object
     }
 
     const ObjectWrapper::Types& types = sourcesTypes[sourceNo].second;
-    auto found = std::find_if(types.begin(), types.end(), [&](const ObjectWrapper::Type& type) { 
+    auto found = std::find_if(types.begin(), types.end(), [&](const TypeInfo& type) { 
         return object->isSupported(type); 
     });
     return found != types.end();

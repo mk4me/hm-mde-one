@@ -59,7 +59,7 @@ public:
 
 VideoParser::VideoParser()
 {
-    adapter = core::ObjectWrapper::createWrapper<::VideoStream>();
+    adapter = core::ObjectWrapper::create<::VideoStream>();
 
     //core::ObjectWrapperConstPtr ptr(__deprecated_stream);
     //osg::ref_ptr<const vidlib::VideoImageStream> obj = ptr->get<vidlib::VideoImageStream>();
@@ -122,7 +122,7 @@ void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const boost::fi
             VideoStreamPtr realStream(new ::VideoStream(innerStream.release()));
 
             realStream->setTime(0);
-            adapter->set<::VideoStream>(realStream);
+            adapter->set(realStream);
             adapter->setName(realStream->getSource());
             adapter->setSource(directory);
         }
@@ -137,7 +137,7 @@ void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const boost::fi
             realStream->setTime(0);
 
 
-            adapter->set<::VideoStream>(realStream);
+            adapter->set(realStream);
             adapter->setName(path.filename());
             adapter->setSource(path.string());
         }
