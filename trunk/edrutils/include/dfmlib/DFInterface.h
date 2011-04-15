@@ -8,19 +8,19 @@ namespace dflm{
 class DFInterface
 {
 public:
-	DFInterface(void);
+	DFInterface(bool enable = true);
 	virtual ~DFInterface(void);
 
-	virtual bool setEnable(bool enable) = 0;
+	bool setEnable(bool enable);
 	bool isEnable() const;
 	virtual void reset();
 	void notify();
 
 protected:
-
+    virtual void onEnableChange();
 	virtual void process() = 0;
 
-protected:
+private:
 	bool objectEnable;
 };
 

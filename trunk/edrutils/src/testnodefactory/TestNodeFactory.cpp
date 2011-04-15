@@ -26,13 +26,13 @@ dflm::DFNPtr TestNodeFactory::createProcessingNode(const std::string & name, uns
 	for(; i < inPins && i < requiredInPins; i++){
 		std::stringstream name;
 		name << i;
-		node->addInPin(dflm::PinPtr(new TestDFPin(dflm::WDFNPtr(node), "Input pin " + name.str() + " [REQUIRED]", true)));
+		node->addInPin(dflm::PinPtr(new TestDFPin("Input pin " + name.str() + " [REQUIRED]", true)));
 	}
 
 	for(; i < inPins; i++){
 		std::stringstream name;
 		name << i;
-		node->addInPin(dflm::PinPtr(new TestDFPin(dflm::WDFNPtr(node), "Input pin " + name.str())));
+		node->addInPin(dflm::PinPtr(new TestDFPin("Input pin " + name.str())));
 	}
 
 	for(unsigned int i = 0; i < outPins; i++){
@@ -48,7 +48,7 @@ dflm::DFNPtr TestNodeFactory::createProcessingNode(const std::string & name, uns
 				requiredPins.insert(dflm::WPinPtr(pins[i]));
 			}
 		}
-		node->addOutPin(dflm::PinPtr(new TestDFPin(dflm::WDFNPtr(node), "Output pin " + name.str(), false, requiredPins)));
+		node->addOutPin(dflm::PinPtr(new TestDFPin("Output pin " + name.str(), false, requiredPins)));
 	}
 
 	return node;
@@ -65,7 +65,7 @@ dflm::DFNPtr TestNodeFactory::createSourceNode(const std::string & name, unsigne
 	for(unsigned int i = 0; i < outPins; i++){
 		std::stringstream name;
 		name << i;
-		node->addOutPin(dflm::PinPtr(new TestDFPin(dflm::WDFNPtr(node), "Output pin " + name.str())));
+		node->addOutPin(dflm::PinPtr(new TestDFPin("Output pin " + name.str())));
 	}
 
 	return node;

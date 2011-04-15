@@ -8,7 +8,7 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-DFModel::DFModel(void) : Model(), DFInterface(), pendingDisable(false), finishedLeafes(0)
+DFModel::DFModel(void) : Model(), DFInterface(false), pendingDisable(false), finishedLeafes(0)
 {
 }
 
@@ -17,26 +17,17 @@ DFModel::~DFModel(void)
 {
 }
 
-bool DFModel::setEnable(bool enable){
-	if(objectEnable == enable){
-		return true;
-	}
-	
-	if(enable == true){
-		//chack if model correct
-		if(validateModel() == true && sourcesHaveMoreData() == true){
-			objectEnable = true;
-			resetPinStates();
-			resetNodeStates();
-			notifySources();
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	pendingDisable = true;
-	return false;
+void DFModel::onEnableChange()
+{
+	if(isEnable() == true){
+        if(validateModel() == true && sourcesHaveMoreData() == true){
+		    resetPinStates();
+		    resetNodeStates();
+		    notifySources();
+        }
+    }else{
+        pendingDisable = true;
+    }
 }
 
 bool DFModel::addNode(NPtr node){
@@ -343,7 +334,7 @@ bool DFModel::validateNodeType(NPtr node){
 	return true;
 }
 
-DFModel::FakePin::FakePin(WDFNPtr node, WDFMPtr model) : DFPin(node), model(model) {
+DFModel::FakePin::FakePin(WDFMPtr model) : DFPin(), model(model) {
 }
 
 bool DFModel::FakePin::onUpdate(){
@@ -364,14 +355,14 @@ void DFModel::leafHasProcessedData(){
 	if(++finishedLeafes == leafFakePins.size()){
 		if(pendingDisable == true){
 			pendingDisable = false;
-			objectEnable = false;
+			setEnable(false);
 		}else{
 			finishedLeafes = 0;
 			if(sourcesHaveMoreData() == true){
 				resetPinStates();
 				notifySources();
 			}else{
-				objectEnable = false;
+				setEnable(false);
 			}
 		}
 	}
@@ -419,8 +410,7 @@ void DFModel::addLeaf(NPtr node){
 
 	//check if node is not a leafe already
 	if(leafFakePins.find(node) == leafFakePins.end()){
-		PinPtr pin(new FakePin(WDFNPtr(boost::dynamic_pointer_cast<DFNode>(node)),
-			WDFMPtr(boost::dynamic_pointer_cast<DFModel>(shared_from_this()))));
+		PinPtr pin(new FakePin(WDFMPtr(boost::dynamic_pointer_cast<DFModel>(shared_from_this()))));
 		node->addOutPin(pin);
 		leafFakePins[node] = pin;
 		leafNodes.insert(node);

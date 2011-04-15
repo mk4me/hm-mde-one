@@ -6,9 +6,9 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-DFPin::DFPin(WDFNPtr parentNode, const std::string & nodeName, bool required,
+DFPin::DFPin(const std::string & nodeName, bool required,
 	const Pin::REQ_PINS_SET & requiredPins,	const Pin::CONNECTIONS_SET & connections)
-	: Pin(parentNode, nodeName, required, requiredPins, connections),
+	: Pin(nodeName, required, requiredPins, connections),
 		updated(false) {
 }
 

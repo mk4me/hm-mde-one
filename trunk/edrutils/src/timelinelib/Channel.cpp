@@ -28,6 +28,15 @@ Channel::~Channel()
 {
 }
 
+bool Channel::timeInChannel(double time) const
+{
+    if(time >= globalOffset + mask.first && time <= globalOffset + mask.second){
+        return true;
+    }
+
+    return false;
+}
+
 void Channel::setInnerChannel(const IChannelPtr & channel)
 {
     constInnerChannel = innerChannel = channel;
@@ -55,7 +64,7 @@ const Channel::Mask & Channel::getMask() const
 
 void Channel::setMask(const Channel::Mask & mask) 
 { 
-    UTILS_ASSERT((mask.first >= 0 && mask.second <= getLength() && mask.first<= mask.second), "Nieprawidlowa maska dla kanalu");
+    UTILS_ASSERT((mask.first >= 0 && mask.second >= 0 && mask.first + mask.second <= getLength()), "Nieprawidlowa maska dla kanalu");
     this->mask = mask; 
 }    
 
@@ -66,19 +75,24 @@ double Channel::getMaskBegin() const
 
 void Channel::setMaskBegin(double maskBegin) 
 { 
-    UTILS_ASSERT((maskBegin >= 0 && maskBegin <= mask.second), "Poczatek maski dla kanalu musi byc w przedziale 0-maskEnd");
+    UTILS_ASSERT((maskBegin >= 0 && maskBegin + mask.second <= getLength()), "Poczatek maski sprawi ze maska wyjdzie poza kanal");
     this->mask.first = maskBegin; 
+}
+
+double Channel::getMaskLength() const
+{
+    return mask.second;
 }
 
 double Channel::getMaskEnd() const
 { 
-    return mask.second;
+    return mask.first + mask.second;
 }
 
 void Channel::setMaskEnd(double maskEnd) 
 { 
     UTILS_ASSERT((maskEnd <= getLength() && maskEnd >= mask.first), "Koniec maski dla kanalu musi byc w przedziale maskBegin-length");
-    this->mask.second = maskEnd; 
+    this->mask.second = maskEnd - mask.first; 
 }
 
 double Channel::getLocalOffset() const
@@ -107,11 +121,9 @@ double Channel::getTime() const
 }
 
 void Channel::setTime(double time){
-    if(active == true && time >= globalOffset + mask.first && time <= globalOffset + mask.second){
-        this->time = time;
-        if(innerChannel != nullptr){
-            innerChannel->setTime((this->time - globalOffset - mask.first) / globalScale);
-        }
+    this->time = time;
+    if(active == true && innerChannel != nullptr && time >= globalOffset + mask.first && time <= globalOffset + mask.second){
+        innerChannel->setTime((this->time - globalOffset - mask.first) / globalScale);
     }
 }
 

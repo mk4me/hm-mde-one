@@ -22,10 +22,9 @@ DFNPtr DFNode::getDFNode(NPtr node){
 	return boost::dynamic_pointer_cast<DFNode>(node);
 }
 
-bool DFNode::setEnable(bool enable){
-	objectEnable = enable;
-	notify();
-	return true;
+void DFNode::onEnableChange()
+{
+    notify();
 }
 
 void DFNode::configureNode() {
@@ -89,9 +88,6 @@ void DFNode::updateOutputPins(){
 	}
 }
 
-void DFNode::getInputData(){
-}
-
 void DFNode::setOutputData(){
 }
 
@@ -100,7 +96,6 @@ void DFNode::processData(){
 
 void DFNode::process(){
 	if(checkInputPins() == true){
-		getInputData();
 
 		if(processingAllowed == true){
 			processData();

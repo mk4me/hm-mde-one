@@ -24,7 +24,7 @@ public:
 	friend class Model;
 
 public:
-	Pin(WNPtr parentNode, const std::string & pinName = std::string(),
+	Pin(const std::string & pinName = std::string(),
 		bool required = false, const REQ_PINS_SET & requiredPins = REQ_PINS_SET(),
 		const CONNECTIONS_SET & connections = CONNECTIONS_SET());
 	

@@ -21,7 +21,7 @@ public:
 
 protected:
 
-	DFPin(WDFNPtr parentNode, const std::string & nodeName = std::string(),
+	DFPin(const std::string & nodeName = std::string(),
 		bool required = false, const REQ_PINS_SET & requiredPins = REQ_PINS_SET(),
 		const CONNECTIONS_SET & connections = CONNECTIONS_SET());
 

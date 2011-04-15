@@ -22,8 +22,6 @@ public:
 	DFModel(void);
 	virtual ~DFModel(void);
 
-	bool setEnable(bool enable);
-
 	virtual bool addNode(NPtr node);
 	virtual bool removeNode(NPtr node);
 	virtual void clearNodes();
@@ -40,6 +38,7 @@ public:
 	const REQUIRING_CONNECTION & DFModel::getRequiringConnections() const;
 
 protected:
+    virtual void onEnableChange();
 
 	virtual bool validateModel() const;
 	void resetNodeStates();
@@ -73,7 +72,7 @@ private:
 	class FakePin : public virtual DFPin{
 
 	public:
-		FakePin(WDFNPtr node, WDFMPtr model);
+		FakePin(WDFMPtr model);
 		bool isCompatible(PinPtr pin) const;
 	protected:
 		bool onUpdate();

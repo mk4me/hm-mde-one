@@ -3,7 +3,7 @@
 #include <timelinelib/Tag.h>
 //#include <timelinelib/SimpleSelection.h>
 //#include <timelinelib/TagSelection.h>
-#include <queue>
+#include <stack>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -11,7 +11,7 @@ namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Konstruktor zerujacy
-Model::Model(const std::string & name) : root(new TChannel(name)), constRoot(root)
+Model::Model(const std::string & name) : root(new TChannel(name)), constRoot(root), lockHolder(0)
 {
 
 }
@@ -21,18 +21,39 @@ Model::~Model()
 
 }
 
-void Model::lockModel() volatile
+void Model::lockModel(void * lockHolder) volatile
 {
+    if(lockHolder == 0){
+        throw std::invalid_argument("Model lock holder address can not be equal to 0");
+    }
+
     Model * wThis(const_cast<Model*>(this));
 
     wThis->modelTimeMutex.lock();
+    wThis->lockHolder = lockHolder;
 }
 
-void Model::unlockModel() volatile
+void Model::unlockModel(void * lockHolder) volatile
+{
+    if(lockHolder == 0){
+        throw std::invalid_argument("Model lock holder address can not be equal to 0");
+    }
+
+    if(this->lockHolder == lockHolder){
+        Model * wThis(const_cast<Model*>(this));
+        boost::interprocess::scoped_lock<boost::mutex> lock(wThis->lockCheckMutex);
+        wThis->lockHolder = 0;
+        wThis->modelTimeMutex.unlock();
+    }else{
+        throw std::invalid_argument("Given lock holder did not locked the model");
+    }
+}
+
+bool Model::isLocked() const
 {
     Model * wThis(const_cast<Model*>(this));
-
-    wThis->modelTimeMutex.unlock();
+    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->lockCheckMutex);
+    return lockHolder != 0;
 }
 
 const Model::Mask & Model::getMask() const
@@ -96,48 +117,79 @@ void Model::setMaskEnd(double maskEnd)
     notify();
 }
 
-void Model::setTime(double time)
+void Model::breakTimeUpdate(void * lockHolder) volatile
 {
-    timeDirty = false;
-    double t = time + root->getData()->getGlobalOffset();
+    if(this->lockHolder != 0 && this->lockHolder != lockHolder){
+        throw std::invalid_argument("Given lock holder did not locked the model");
+    }
 
-    std::queue<TChannelConstPtr> path;
-    std::queue<NamedTreeBase::size_type> pathPos;
+    Model * wThis(const_cast<Model*>(this));
+
+    wThis->stopTimeUpdate = true;
+}
+
+void Model::setTime(double time, void * lockHolder) volatile
+{
+    if(this->lockHolder != 0 && this->lockHolder != lockHolder){
+        throw std::invalid_argument("Given lock holder did not locked the model");
+    }
+
+    Model * wThis(const_cast<Model*>(this));
+
+    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->timeUpdateMutex);
+
+    wThis->stopTimeUpdate = false;
+    double t = time + wThis->constRoot->getData()->getGlobalOffset();
+
+    //zapewnia ze root zawsdze ma ostatni czas dla ktorego aktualizowano model, dzieci niekoniecznie sa z nim zgodne
+    getWritableChannel(wThis->constRoot)->setTime(t);
     
-    path.push(constRoot);
+    std::stack<TChannelConstPtr> path;
+    std::stack<NamedTreeBase::size_type> pathPos;
+    
+    path.push(wThis->constRoot);
+    while(stopTimeUpdate == false && path.empty() == false) {
+        if(path.top()->getData()->isActive() == true && path.top()->getData()->timeInChannel(t) == true){
+            getWritableChannel(path.top())->setTime(t);
+            if(path.top()->size() == 0){
+                path.pop();
 
-    while(timeDirty == false && path.empty() == false) {
-        getWritableChannel(path.front())->setTime(t);
-        if(path.front()->size() == 0){
+                while((path.empty() == false) && (pathPos.empty() == false) && (path.top()->size() == ++pathPos.top())){
+                    pathPos.pop();
+                    path.pop();
+                }
+            }else{
+                pathPos.push(0);
+            }
+        }else{
             path.pop();
 
-            while((path.empty() == false) && (pathPos.empty() == false) && (path.front()->size() == ++pathPos.front())){
+            while((path.empty() == false) && (pathPos.empty() == false) && (path.top()->size() == ++pathPos.top())){
                 pathPos.pop();
                 path.pop();
             }
-        }else{
-            pathPos.push(0);
         }
 
         if(path.empty() == false){
-            path.push(toChannel(path.front()->getChild(pathPos.front())));
+            path.push(toChannel(path.top()->getChild(pathPos.top())));
         }
     }
 
-    //propagateTime(constRoot, t);
-
-    notify();
+    wThis->notify();
 }
 
-void Model::propagateTime(const TChannelConstPtr & child, double time)
+void Model::setNormalizedTime(double normTime, void * lockHolder) volatile
 {
-    getWritableChannel(child)->setTime(time);
+    UTILS_ASSERT((normTime >= 0.0 && normTime <= 1.0), "Czas powinien byc znormalizowany");
+    
+    Model * wThis(const_cast<Model*>(this));
+    setTime(normTime * wThis->getLength(), lockHolder);
+}
 
-    if(child->getData()->getTime() == time){
-        for(auto it = child->begin(); it != child->end(); it++){
-            propagateTime(toChannel(*it), time);
-        }
-    }
+double Model::getNormalizedTime() const
+{
+    double length = getLength();
+    return length == 0 ? 0 : getTime() - getOffset() / length;
 }
 
 void Model::setTimeScale(double timeScale) volatile
@@ -167,34 +219,6 @@ void Model::setActive(bool active)
     root->getData()->setActive(active);
 
     notify();
-}
-
-bool Model::isPlaying() const
-{
-    return state.isPlaying;
-}
-
-void Model::setPlaying(bool play) volatile
-{
-    Model * wThis(const_cast<Model*>(this));
-
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->modelTimeMutex);
-
-    state.isPlaying = play;
-
-    wThis->notify();
-}
-
-const State & Model::getState() const
-{
-    return state;
-}
-
-void Model::setState(const State & state)
-{
-    this->state = state;
-
-    setTime(state.time);
 }
 
 void Model::addTag(const std::string & path, double begin, double length)

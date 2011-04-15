@@ -21,6 +21,7 @@ public:
     typedef ConstTags::const_iterator tag_const_iterator;
     typedef ConstTags::size_type tag_size_type;
 
+    //! poczatek maski i jej dlugosc
     typedef std::pair<double, double> Mask;
 
 protected:
@@ -82,6 +83,10 @@ public:
 
     // ------------ Obsluga dodatkowych cech strumienia danych-------------------------------------
 
+    //! \return Czy globalny czas jest w zakresie obslugiwanym przez ten kanal
+    //! \param time GLobalny czas
+    bool timeInChannel(double time) const;
+
     //! \param channel Kanal zdefiniowany przez uzytkownika i opakowany przez nasza klase
     void setInnerChannel(const IChannelPtr & channel);
 
@@ -93,6 +98,9 @@ public:
 
     //! \param maskBegin Poczatek maski - wiekszy lub rowny 0
     void setMaskBegin(double maskBegin);
+
+    //! \param maskLength Dlugosc maski - 0 <= maskLength <= channel length
+    void setMaskLength(double maskLength);
 
     //! \param maskEnd Koniec maski - mniejszy lub rowny length
     void setMaskEnd(double maskEnd);
@@ -120,6 +128,9 @@ public:
     
     //! \return Poczatek maski
     double getMaskBegin() const;
+
+    //! \return Dlugosc maski
+    double getMaskLength() const;
 
     //! \return Koniec maski
     double getMaskEnd() const;

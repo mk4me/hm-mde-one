@@ -15,8 +15,6 @@ public:
 
 	virtual ~DFNode(void);
 
-	bool setEnable(bool enable);
-
 	bool addInPin(PinPtr newPin);
 	bool addOutPin(PinPtr newPin);
 
@@ -35,14 +33,15 @@ protected:
 	DFNode(const std::string & nodeName = std::string(), bool processingAllowed = true,
 		bool propagatingAllowed = true);
 
+    virtual void onEnableChange();
+
 	void process();
 
 	virtual bool checkInputPins() const;
 	virtual void updateOutputPins();
 
-	virtual void getInputData();
-	virtual void setOutputData();
-	virtual void processData();
+    virtual void setOutputData();
+    virtual void processData();
 
 protected:
 

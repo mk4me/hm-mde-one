@@ -14,14 +14,13 @@ TestDFNodeProcessing::~TestDFNodeProcessing(void)
 
 void TestDFNodeProcessing::process(){
 
-	std::cout << getNodeName().c_str() << " active - DATA PROCESSING procedure" << std::endl;
+    std::cout << getNodeName().c_str() << " active - DATA PROCESSING procedure" << std::endl;
 
-	if(checkInputPins() == true){
-		std::cout << "inpute pins verified correctly - data on all connections avaiable" << std::endl;
-		std::cout << "getting input data" << std::endl;
-		getInputData();
+    if(checkInputPins() == true){
+        std::cout << "inpute pins verified correctly - data on all connections avaiable" << std::endl;
+        std::cout << "getting input data" << std::endl;
 
-		if(processingAllowed == true){
+        if(processingAllowed == true){
 			std::cout << "data processing allowed" << std::endl;
 			std::cout << "processing data" << std::endl;
 			processData();

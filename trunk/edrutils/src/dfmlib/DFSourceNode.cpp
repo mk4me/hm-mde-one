@@ -4,8 +4,8 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-	DFSourceNode::DFSourceNode(const std::string & nodeName, bool processingAllowed,
-		bool propagatingAllowed) : DFNode(nodeName,processingAllowed,propagatingAllowed)
+DFSourceNode::DFSourceNode(const std::string & nodeName, bool processingAllowed,
+	bool propagatingAllowed) : DFNode(nodeName,processingAllowed,propagatingAllowed)
 {
 }
 

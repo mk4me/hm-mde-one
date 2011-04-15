@@ -12,8 +12,8 @@ Controller::Controller() : //utils::Observable<State>(&dirtyState),
         timeDirty(false),
         busy(false),
         dirty(false),
-        model(new Model()),
-        dirtyState(model->getState())
+        model(new Model())//,
+        //dirtyState(model->getState())
 {
 
 }
@@ -23,7 +23,7 @@ Controller::~Controller(void)
     // konczymy
     if ( isRunning() ) {
         // zmiana stanu
-        model->setPlaying(false);
+//        model->setPlaying(false);
         join();
     }
 }
@@ -31,7 +31,7 @@ Controller::~Controller(void)
 void Controller::play()
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-    model->lockModel();
+    model->lockModel(this);
 
     State state = getState();
     state.isPlaying = true;
@@ -63,6 +63,7 @@ void Controller::setTime(double time)
     State state = getState();
     state.time = time;
     timeDirty = true;
+    model->breakTimeUpdate();
     setState(state);
 
     //// wyzerowanie licznika
@@ -132,7 +133,6 @@ bool Controller::compute()
         // zaakceptowano stan
         appliedState = dirtyState;
         timeDirty = dirty = false;
-        model->timeDirty = false;
         busy = true;
     }
 

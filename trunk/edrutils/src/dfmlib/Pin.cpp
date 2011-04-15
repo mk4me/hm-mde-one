@@ -9,13 +9,11 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-Pin::Pin(WNPtr parentNode, const std::string & pinName, bool required,
+Pin::Pin(const std::string & pinName, bool required,
 	const Pin::REQ_PINS_SET & requiredPins, const Pin::CONNECTIONS_SET & connections)
-	: boost::enable_shared_from_this<Pin>(), parentNode(parentNode),
-	pinType(PIN_UNKNOWN), pinRequired(required),	requiredPinsDependency(requiredPins),
-	connections(connections), pinName(pinName){
+	: boost::enable_shared_from_this<Pin>(), pinType(PIN_UNKNOWN), pinRequired(required),
+    requiredPinsDependency(requiredPins), connections(connections), pinName(pinName){
 
-	BOOST_ASSERT((parentNode.expired() == false && parentNode.lock() != 0));
 }
 
 Pin::~Pin(void){

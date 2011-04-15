@@ -16,7 +16,6 @@ set(PRIVATE_H
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/Channel.h
-	${HEADER_PATH}/Controller.h
 	${HEADER_PATH}/IChannel.h
 	${HEADER_PATH}/Model.h
 	${HEADER_PATH}/State.h
@@ -34,7 +33,6 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Ÿród³a
 set(TARGET_SRC
 	Channel.cpp
-	Controller.cpp
 	IChannel.cpp
 	Model.cpp
 	State.cpp

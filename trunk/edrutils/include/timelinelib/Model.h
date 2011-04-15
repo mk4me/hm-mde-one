@@ -10,6 +10,7 @@
 #include <boost/tokenizer.hpp>
 #include <map>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{
@@ -30,7 +31,7 @@ public:
     class TChannel : public NamedTree<Channel, utils::PtrPolicyBoost>
     {
         public:
-            TChannel(const std::string & name = "UnnamedNode") : NamedTree<Channel, utils::PtrPolicyBoost>(name, Ptr(new Channel()))
+            TChannel(const std::string & name = "UnnamedChannel") : NamedTree<Channel, utils::PtrPolicyBoost>(name, Ptr(new Channel()))
             {
 
             }
@@ -55,6 +56,8 @@ public:
 
     typedef Channel::Mask Mask;
 
+    typedef enum {TIME_UPDATE_IMMEDIATE, TIME_UPDATE_LAZY} TIME_UPDATE_MODE;
+
 protected:
 
     typedef Tags::iterator tag_iterator;
@@ -63,10 +66,6 @@ protected:
     typedef std::vector<ChannelConstPtr> ConstChannels;
 
     typedef std::pair<std::string, std::string> ExtPath;
-
-public:
-    // HACK
-    volatile bool timeDirty;
 
 private:
 
@@ -82,14 +81,23 @@ private:
     //! Root dla timeline
     TChannelConstPtr constRoot;
 
-    //! Stan timeline
-    State state;
-
     //! Mapowanie kanalow logicznych do kanalow w hierarchii
     ChannelToTChannel channelToTChannel;
 
-    //! Mutex do serializacji operacji mog¹cych zmieniæ czas modelu
+    //! Mutex do serializacji operacji mog¹cych zmieniæ model czasu kanalow
     boost::mutex modelTimeMutex;
+
+    //! Mutex do serializacji ustawiania czasu
+    boost::mutex timeUpdateMutex;
+
+    //! Mutex do aktualizacji lock holdera i sprawdzania czy model jest zablokowany
+    boost::mutex lockCheckMutex;
+
+    //! Obiekt blokujacy timeline na wylacznosc
+    void * lockHolder;
+
+    //! HACK do przerywania ustawiania czasu w podkanalach
+    volatile bool stopTimeUpdate;
 
 public:
 
@@ -99,10 +107,15 @@ public:
     ~Model();
 
     //! Blokuje modyfikacje modelu
-    void lockModel() volatile;
+    //! \param lockHolder Obiekt blokujacy model do edycji jego struktury czasowej
+    void lockModel(void * lockHolder) volatile;
 
     //! Zezwala na modyfikacje modelu
-    void unlockModel() volatile;
+    //! \param lockHolder Obiekt blokujacy model do edycji jego struktury czasowej
+    void unlockModel(void * lockHolder) volatile;
+
+    //! \return Czy model jest tylko do odczytu dla operacji modyfikujacych strukture czasowa kanalow
+    bool isLocked() const;
 
     //! \return Wewnetrzna maska czasu kanalu
     const Mask & getMask() const;
@@ -116,11 +129,14 @@ public:
     //! \return Offset czasu - przesuniecie wzgledem 0
     double getOffset() const;
 
-    //! \return Dlugosc kanalu w milisekundach, uwzgledniajac skale
+    //! \return Dlugosc kanalu w sekundach, uwzgledniajac skale
     double getLength() const;
 
     //! \return Aktualny czas kanalu
     double getTime() const;
+
+    //! \return Znormalizowany czas timeline
+    double getNormalizedTime() const;
 
     //! \return Skala czasu kanalu
     double getTimeScale() const;
@@ -140,8 +156,18 @@ public:
 
     //! propaguje zmiane na wszystkie aktywne podkanaly
     //! sprawdza maske i offset
-    //! \param Aktualny czas timeline, 0 <= time <= length
-    void setTime(double time);
+    //! \param time Aktualny czas timeline, 0 <= time <= length
+    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    void setTime(double time, void * lockHolder = 0) volatile;
+
+    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! sprawdza maske i offset
+    //! \param normTime Aktualny czas timeline, 0 <= time <= length
+    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    void setNormalizedTime(double normTime, void * lockHolder = 0) volatile;
+
+    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    void breakTimeUpdate(void * lockHolder = 0) volatile;
 
     //! modyfikuje skale
     //! \param Aktualna dlugosc timeline
@@ -156,12 +182,6 @@ public:
     //! \param active Czy strumien jest aktywny podczas operacji oczasowych i odtwarzania timeline
     void setActive(bool active); 
 
-    //! \return czy timeline sie odtwarza
-    bool isPlaying() const;
-
-    //! \param czy odtwarzac timeline
-    void setPlaying(bool play) volatile;
-
     //! Czysci wszystkie tagi w timeline
     void clearAllTags();
 
@@ -173,12 +193,6 @@ public:
 
     //! Resetuje wszystkie offsety (0) i skale (1) w timeline
     void resetAllOffsetsAndScales() volatile;
-
-    //! \return zwraca stan timeline
-    const State & getState() const;
-
-    //! \param nowy stan timeline
-    void setState(const State & state);
 
     //! \param path Sciezka do taga w postaci sciezka do kanalu sciezki / nazwa taga
     //! \param time Czas wystapienia taga
@@ -382,14 +396,9 @@ private:
     //! \param name Nazwa kanalu po polaczeniu
     void innerMergeChannels(const TChannelConstPtr & channelA, const TChannelConstPtr & channelB, const std::string & name = "Merged");
 
-    
     //! \param path Sciezka rozszerzona, gdzie ostatni element sciezki to nazwa, prawdziwa sciezka do kanalu znajduje sie wczesniej
     //! \return Podzielona sciezka na nazwe i sciezke
     static ExtPath getExtPath(const std::string & path);
-
-    //! \param child Dzicko od ktorego czas aktualizujemy io propagujemy na jego dzieci
-    //! \param time Czas ktory ustawiamy
-    static void propagateTime(const TChannelConstPtr & child, double time);
 
     //! Konwertuje stale kanaly podawane przez klienta na kanaly ktore mozna modyfikowac
     //! sciaga modyfikatro const!!
@@ -410,7 +419,6 @@ private:
     //! sciaga modyfikatro const!!
     //! \param channel Kanal do konwersji na wersje do zapisu
     static ChannelPtr getWritableChannel(const TChannelConstPtr & channel);
-
 
     //! Konwertuje stale tagi podawane przez klienta na tagi ktore mozna modyfikowac
     //! sciaga modyfikatro const!!

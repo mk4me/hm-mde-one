@@ -5,9 +5,9 @@
 #include <iostream>
 #include <string>
 
-TestDFPin::TestDFPin(dflm::WDFNPtr parentNode, const std::string & pinName, bool required,
+TestDFPin::TestDFPin(const std::string & pinName, bool required,
 		const std::set<dflm::WPinPtr> & requiredPins, const std::set<dflm::ConnPtr> & connections)
-		: DFPin(parentNode, pinName, required, requiredPins, connections){
+		: DFPin(pinName, required, requiredPins, connections){
 }
 
 TestDFPin::~TestDFPin(void)

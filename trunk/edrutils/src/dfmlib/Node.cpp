@@ -1,5 +1,6 @@
 #include <dfmlib/Node.h>
 #include <dfmlib/Pin.h>
+#include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
@@ -23,23 +24,23 @@ void Node::setNodeName(const std::string & nodeName){
 }
 
 bool Node::addInPin(PinPtr newPin){
-	if(newPin->getParent() == shared_from_this() && pinExists(outPins,newPin) == false ){
-		inPins.insert(newPin);
-		newPin->setType(Pin::PIN_IN);
-		return true;
-	}
-
-	return false;
+    UTILS_ASSERT((newPin != nullptr), "Nieprawidlowy pin");
+    UTILS_ASSERT((newPin->parentNode.lock() == nullptr), "Pin ma juz rodzica");
+	
+    newPin->parentNode = shared_from_this();
+    inPins.insert(newPin);
+	newPin->setType(Pin::PIN_IN);
+	return true;
 }
 
 bool Node::addOutPin(PinPtr newPin){
-	if(newPin->getParent() == shared_from_this() && pinExists(inPins,newPin) == false ){
-		outPins.insert(newPin);
-		newPin->setType(Pin::PIN_OUT);
-		return true;
-	}
-
-	return false;
+    UTILS_ASSERT((newPin != nullptr), "Nieprawidlowy pin");
+    UTILS_ASSERT((newPin->parentNode.lock() == nullptr), "Pin ma juz rodzica");
+	
+    newPin->parentNode = shared_from_this();
+    outPins.insert(newPin);
+	newPin->setType(Pin::PIN_OUT);
+	return true;
 }
 
 const Node::PINS_SET & Node::getInPins() const{

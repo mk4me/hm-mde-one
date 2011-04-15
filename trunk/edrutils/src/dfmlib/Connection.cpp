@@ -38,7 +38,7 @@ PinPtr Connection::getOther(CWPinPtr pin) const{
 
 	PinPtr ret = getSrc();
 
-	if(pin.lock() != ret){
+	if(pin.lock() == ret){
 		ret = getDest();
 	}
 
