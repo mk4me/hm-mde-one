@@ -3,8 +3,8 @@
 
 MetadataParser::MetadataParser()
 {
-    object = core::ObjectWrapper::create<MetaData::MetaData>();
-    object->set(MetaData::MetaDataPtr(new MetaData::MetaData()));
+    object = core::ObjectWrapper::create<communication::MetaData::MetaData>();
+    object->set(core::shared_ptr<communication::MetaData::MetaData>(new communication::MetaData::MetaData()));
 }
 
 MetadataParser::~MetadataParser()
@@ -34,11 +34,11 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const boost::fil
     if(session_goups_element) {
         TiXmlElement* session_goup_element = session_goups_element->FirstChildElement("SessionGroup");
         while(session_goup_element) {
-            MetaData::SessionGroup sessionGroup;
+            communication::MetaData::SessionGroup sessionGroup;
             session_goup_element->QueryIntAttribute("SessionGroupID", &sessionGroup.sessionGroupID);
             session_goup_element->QueryStringAttribute("SessionGroupName", &sessionGroup.sessionGroupName);
 
-            object->get<MetaData::MetaData>()->sessionGroups.push_back(sessionGroup);
+            object->get<communication::MetaData::MetaData>()->sessionGroups.push_back(sessionGroup);
             session_goup_element = session_goup_element->NextSiblingElement();
         }
     }
@@ -47,10 +47,10 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const boost::fil
     if(motion_kinds_element) {
         TiXmlElement* motion_kind_element = motion_kinds_element->FirstChildElement("MotionKind");
         while(motion_kind_element) {
-            MetaData::MotionKind motionKind;
+            communication::MetaData::MotionKind motionKind;
             motion_kind_element->QueryStringAttribute("MotionKindName", &motionKind.motionKindName);
 
-            object->get<MetaData::MetaData>()->motionKinds.push_back(motionKind);
+            object->get<communication::MetaData::MetaData>()->motionKinds.push_back(motionKind);
             motion_kind_element = motion_kind_element->NextSiblingElement();
         }
     }
@@ -59,11 +59,11 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const boost::fil
     if(labs_element) {
         TiXmlElement* lab_element = labs_element->FirstChildElement("Lab");
         while(lab_element) {
-            MetaData::Lab lab;
+            communication::MetaData::Lab lab;
             lab_element->QueryIntAttribute("LabID", &lab.labID);
             lab_element->QueryStringAttribute("LabName", &lab.labName);
 
-            object->get<MetaData::MetaData>()->labs.push_back(lab);
+            object->get<communication::MetaData::MetaData>()->labs.push_back(lab);
             lab_element = lab_element->NextSiblingElement();
         }
     }
@@ -72,7 +72,7 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const boost::fil
     if(attribute_groups_element) {
         TiXmlElement* attribute_group_element = attribute_groups_element->FirstChildElement("AttributeGroup");
         while(attribute_group_element) {
-            MetaData::AttributeGroup attributeGroup;
+            communication::MetaData::AttributeGroup attributeGroup;
             attribute_group_element->QueryIntAttribute("AttributeGroupID", &attributeGroup.attributeGroupID);
             attribute_group_element->QueryStringAttribute("AttributeGroupName", &attributeGroup.attributeGroupName);
             attribute_group_element->QueryStringAttribute("DescribedEntity", &attributeGroup.describedEntity);
@@ -83,7 +83,7 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const boost::fil
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("Attribute");
                 while(attr_element) {
-                    MetaData::Attribute attribute;
+                    communication::MetaData::Attribute attribute;
                     attr_element->QueryStringAttribute("AttributeName", &attribute.attributeName);
                     attr_element->QueryStringAttribute("AttributeType", &attribute.attributeType);
 
@@ -92,7 +92,7 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const boost::fil
                     if(enum_values_element) {
                         TiXmlElement* enum_value_element = enum_values_element->FirstChildElement("Enumeration");
                         while(enum_value_element) {
-                            MetaData::Enumeration enumeration;
+                            communication::MetaData::Enumeration enumeration;
                             enum_value_element->QueryStringAttribute("EnumValue", &enumeration.enumValue);
 
                             attribute.enumValues.push_back(enumeration);
@@ -104,7 +104,7 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const boost::fil
                 }
             }
 
-            object->get<MetaData::MetaData>()->attributeGroups.push_back(attributeGroup);
+            object->get<communication::MetaData::MetaData>()->attributeGroups.push_back(attributeGroup);
             attribute_group_element = attribute_group_element->NextSiblingElement();
         }
     }
@@ -121,9 +121,9 @@ std::string MetadataParser::getSupportedExtensions() const
     return "xml";
 }
 
-const MetaData::MetaData& MetadataParser::getMetadata() const
+const communication::MetaData::MetaData& MetadataParser::getMetadata() const
 {
-    return *object->get<MetaData::MetaData>();
+    return *object->get<communication::MetaData::MetaData>();
 }
 
 void MetadataParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )

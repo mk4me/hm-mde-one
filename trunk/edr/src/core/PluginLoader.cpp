@@ -157,10 +157,10 @@ bool PluginLoader::addPlugIn( const std::string& path )
             if ( p ) {
                 *p = '\0';
             }
-            LOG_ERROR("Error \"" << errStr << "\" (" << err << ") during loading " << path << ".")
+            LOG_ERROR("Error \"" << errStr << "\" (" << err << ") during loading " << path << ".");
             ::LocalFree(errStr);
         } else {
-            LOG_ERROR("Unknown error (" << err << ") during loading " << path << ".")
+            LOG_ERROR("Unknown error (" << err << ") during loading " << path << ".");
         }
         
     }

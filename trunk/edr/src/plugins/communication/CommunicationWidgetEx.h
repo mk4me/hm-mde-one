@@ -37,7 +37,7 @@ struct TrialRelation : public EntityRelations
     TrialRelation()
         : EntityRelations(false, false, false, false)
     {};
-    ShallowCopy::Trial trial;
+    communication::ShallowCopy::Trial trial;
 };
 
 typedef core::shared_ptr<TrialRelation> TrialRelationPtr;
@@ -48,7 +48,7 @@ struct SessionRelation : public EntityRelations
     SessionRelation()
         : EntityRelations(false, false, false, false)
     {};
-    ShallowCopy::Session session;
+    communication::ShallowCopy::Session session;
     TrialsRelations trials;
 };
 
@@ -60,7 +60,7 @@ struct PerformerRelation : public EntityRelations
     PerformerRelation()
         : EntityRelations(false, false, false, false)
     {};
-    ShallowCopy::Performer performer;
+    communication::ShallowCopy::Performer performer;
     SessionsRelations sessions;
 };
 
@@ -373,6 +373,10 @@ public:
             actionUpdate->setVisible(true);
         }
     }
+    /**
+    W³aœciwa metoda aktualizuj¹ca widok. powinna wykonywaæ siê w g³ównym w¹tku.
+    */
+    void refreshUI();
 public slots:
     //widok performera
     void performerViewPressed(bool tog);
@@ -411,10 +415,6 @@ private:
     WskaŸnik na kontroler serwisu
     */
     CommunicationService* communicationService;
-    /**
-    W³aœciwa metoda aktualizuj¹ca widok. powinna wykonywaæ siê w g³ównym w¹tku.
-    */
-    void refreshUI();
     /**
     Za³aduj trial do aplikacji.
     @param localTrial lista plików jednej próby pomiarowej do za³adowania.
@@ -461,7 +461,7 @@ private:
     /**
     Lokalna kopia danych zwi¹zana z problemem Qt i w¹tkami "z zewn¹trz".
     */
-    MetaData::MetaData metaData;
+    communication::MetaData::MetaData metaData;
     /**
     Kopia prób pomiarowych znajduj¹cych siê lokalnie.
     */

@@ -35,22 +35,22 @@ void QueryWSDL::setBasicUpdatesServiceUri(const std::string& uri)
     bus->setUri(uri);
 }
 
-std::vector<Trial> QueryWSDL::listSessionContents()
+std::vector<wsdl::Trial> QueryWSDL::listSessionContents()
 {
     return bqs->listSessionContents();
 }
 
-std::map<int, Trial> QueryWSDL::listSessionTrials(int sessionID)
+std::vector<wsdl::Trial> QueryWSDL::listSessionTrials(int sessionID)
 {
     return bqs->listSessionTrials(sessionID);
 }
 
-std::map<int, Session> QueryWSDL::listLabSessionsWithAttributes(int labID)
+std::vector<wsdl::Session> QueryWSDL::listLabSessionsWithAttributes(int labID)
 {
     return bqs->listLabSessionsWithAttributes(labID);
 }
 
-std::map<int, File> QueryWSDL::listFiles(int ID, const std::string& subjectType)
+std::vector<wsdl::File> QueryWSDL::listFiles(int ID, const std::string& subjectType)
 {
     return bqs->listFiles(ID, subjectType);
 }

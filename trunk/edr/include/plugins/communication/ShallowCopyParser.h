@@ -2,10 +2,10 @@
 #define HEADER_GUARD_COMMUNICATION_SHALLOWCOPYPARSER_H__
 
 #include <core/IParser.h>
-#include <plugins/communication/ShallowCopy.h>
+#include <plugins/communication/Entity.h>
 #include <core/IDataManager.h>
 
-CORE_DEFINE_WRAPPER(ShallowCopy::ShallowCopy, utils::PtrPolicyBoost);
+CORE_DEFINE_WRAPPER(communication::ShallowCopy::ShallowCopy, utils::PtrPolicyBoost);
 
 class ShallowCopyParser : public core::IParser
 {
@@ -21,7 +21,7 @@ public:
 
     virtual std::string getSupportedExtensions() const;
 
-    const ShallowCopy::ShallowCopy& getShallowCopy() const;
+    const communication::ShallowCopy::ShallowCopy& getShallowCopy() const;
 
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 

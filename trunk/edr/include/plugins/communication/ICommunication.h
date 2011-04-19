@@ -18,10 +18,6 @@ public:
 	*/
     virtual ~ICommunication() {}
 	/**
-	Pobieranie informacji o próbach pomiarowych z serwera.
-	*/
-	virtual void updateSessionContents() = 0;
-	/**
 	P³ytka kopia bazy danych.
 	*/
 	virtual void copyDbData() = 0;
@@ -45,6 +41,11 @@ public:
     @param files lista plików do za³adowania
 	*/
 	virtual void loadFiles(const std::vector<core::IDataManager::Path> files) = 0;
+    /**
+    Usuwanie listy plików z edytora.
+    @param files lista plików do usuniêcia
+    */
+    virtual void removeFiles(const std::vector<core::IDataManager::Path> files) = 0;
 	/**
 	Pingowanie serwera.
 	*/

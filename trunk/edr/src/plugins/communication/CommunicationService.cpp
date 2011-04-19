@@ -16,11 +16,6 @@ CommunicationService::~CommunicationService()
     this->model = NULL;
 }
 
-void CommunicationService::updateSessionContents()
-{
-    model->listSessionContents();
-}
-
 void CommunicationService::copyDbData()
 {
     model->copyDbData();
@@ -52,14 +47,6 @@ void CommunicationService::update(double time, double timeDelta)
             widget->setInfoLabel("Updating server trials");
             break;
         }
-        //nie uzywamy na razie
-    //case communication::CommunicationManager::DownloadingFile:
-    //    {
-    //        widget->setBusy(true);
-    //        widget->setInfoLabel("Downloading file");
-    //        widget->setProgress(model->getProgress());
-    //        break;
-    //    }
     case communication::CommunicationManager::DownloadingTrial: {
             std::ostringstream stream;
             stream << "Downloading file " << model->getActualDownloadFileNumber() << " from " << model->getFilesToDownloadCount();
@@ -69,7 +56,8 @@ void CommunicationService::update(double time, double timeDelta)
         }
     case communication::CommunicationManager::Error: {
             //przekaz info
-            widget->setInfoLabel(model->getErrorMessage());
+            LOG_ERROR(model->getErrorMessage());
+            widget->refreshUI();
             model->setState(communication::CommunicationManager::Ready);
             break;
         }
@@ -102,6 +90,11 @@ void CommunicationService::loadTrial(const core::IDataManager::LocalTrial& local
 void CommunicationService::loadFiles(const std::vector<core::IDataManager::Path> files)
 {
     model->loadFiles(files);
+}
+
+void CommunicationService::removeFiles(const std::vector<core::IDataManager::Path> files)
+{
+    model->removeFiles(files);
 }
 
 void CommunicationService::cancelDownloading()

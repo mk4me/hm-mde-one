@@ -2,9 +2,9 @@
 #define HEADER_GUARD_COMMUNICATION_METADATAPARSER_H__
 
 #include <core/IParser.h>
-#include <plugins/communication/MetaData.h>
+#include <plugins/communication/Entity.h>
 
-CORE_DEFINE_WRAPPER(MetaData::MetaData, utils::PtrPolicyBoost);
+CORE_DEFINE_WRAPPER(communication::MetaData::MetaData, utils::PtrPolicyBoost);
 
 class MetadataParser : public core::IParser
 {
@@ -20,7 +20,7 @@ public:
 
     virtual std::string getSupportedExtensions() const;
 
-    const MetaData::MetaData& getMetadata() const;
+    const communication::MetaData::MetaData& getMetadata() const;
 
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 

@@ -4,8 +4,8 @@
 
 ShallowCopyParser::ShallowCopyParser()
 {
-    object = core::ObjectWrapper::create<ShallowCopy::ShallowCopy>();
-    object->set(ShallowCopy::ShallowCopyPtr(new ShallowCopy::ShallowCopy()));
+    object = core::ObjectWrapper::create<communication::ShallowCopy::ShallowCopy>();
+    object->set(core::shared_ptr<communication::ShallowCopy::ShallowCopy>(new communication::ShallowCopy::ShallowCopy()));
 }
 
 ShallowCopyParser::~ShallowCopyParser()
@@ -35,7 +35,7 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
     if(sessions_element) {
         TiXmlElement* session_element = sessions_element->FirstChildElement("Session");
         while(session_element) {
-            ShallowCopy::Session session;
+            communication::ShallowCopy::Session session;
             session_element->QueryIntAttribute("SessionID", &session.sessionID);
             session_element->QueryIntAttribute("UserID", &session.userID);
             session_element->QueryIntAttribute("LabID", &session.labID);
@@ -50,14 +50,14 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    ShallowCopy::A attr;
+                    communication::ShallowCopy::A attr;
                     attr_element->QueryStringAttribute("Name", &attr.name);
                     attr_element->QueryStringAttribute("Value", &attr.value);
                     session.attrs.push_back(attr);
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
-            object->get<ShallowCopy::ShallowCopy>()->sessions.push_back(session);
+            object->get<communication::ShallowCopy::ShallowCopy>()->sessions.push_back(session);
             session_element = session_element->NextSiblingElement();
         }
     }
@@ -66,10 +66,10 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
     if(sessions_element) {
         TiXmlElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
         while(group_assignment_element) {
-            ShallowCopy::GroupAssigment group_assignment;
+            communication::ShallowCopy::GroupAssigment group_assignment;
             group_assignment_element->QueryIntAttribute("SessionID", &group_assignment.sessionID);
             group_assignment_element->QueryIntAttribute("SessionGroupID", &group_assignment.sessionGroupID);
-            object->get<ShallowCopy::ShallowCopy>()->groupAssigments.push_back(group_assignment);
+            object->get<communication::ShallowCopy::ShallowCopy>()->groupAssigments.push_back(group_assignment);
             group_assignment_element = group_assignment_element->NextSiblingElement();
         }
     }
@@ -78,7 +78,7 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
     if(trials_element) {
         TiXmlElement* trial_element = trials_element->FirstChildElement("Trial");
         while(trial_element) {
-            ShallowCopy::Trial trial;
+            communication::ShallowCopy::Trial trial;
             trial_element->QueryIntAttribute("TrialID", &trial.trialID);
             trial_element->QueryIntAttribute("SessionID", &trial.sessionID);
             trial_element->QueryStringAttribute("TrialName", &trial.trialName);
@@ -89,7 +89,7 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    ShallowCopy::A attr;
+                    communication::ShallowCopy::A attr;
                     attr_element->QueryStringAttribute("Name", &attr.name);
                     attr_element->QueryStringAttribute("Value", &attr.value);
                     trial.attrs.push_back(attr);
@@ -103,7 +103,7 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
             if(files_element) {
                 TiXmlElement* file_element = files_element->FirstChildElement("File");
                 while(file_element) {
-                    ShallowCopy::File file;
+                    communication::ShallowCopy::File file;
                     file_element->QueryIntAttribute("FileID", &file.fileID);
                     file_element->QueryStringAttribute("FileName", &file.fileName);
                     file_element->QueryStringAttribute("FileDescription", &file.fileDescription);
@@ -113,7 +113,7 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
                 }
             }
 
-            object->get<ShallowCopy::ShallowCopy>()->trials.push_back(trial);
+            object->get<communication::ShallowCopy::ShallowCopy>()->trials.push_back(trial);
             trial_element = trial_element->NextSiblingElement();
         }
     }
@@ -122,7 +122,7 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
     if(performers_element) {
         TiXmlElement* performer_element = performers_element->FirstChildElement("Performer");
         while(performer_element) {
-            ShallowCopy::Performer performer;
+            communication::ShallowCopy::Performer performer;
             performer_element->QueryIntAttribute("PerformerID", &performer.performerID);
             performer_element->QueryStringAttribute("FirstName", &performer.firstName);
             performer_element->QueryStringAttribute("LastName", &performer.lastName);
@@ -132,14 +132,14 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    ShallowCopy::A attr;
+                    communication::ShallowCopy::A attr;
                     attr_element->QueryStringAttribute("Name", &attr.name);
                     attr_element->QueryStringAttribute("Value", &attr.value);
                     performer.attrs.push_back(attr);
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
-            object->get<ShallowCopy::ShallowCopy>()->performers.push_back(performer);
+            object->get<communication::ShallowCopy::ShallowCopy>()->performers.push_back(performer);
             performer_element = performer_element->NextSiblingElement();
         }
     }
@@ -148,7 +148,7 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
     if(performer_consfs_element) {
         TiXmlElement* performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
         while(performer_consf_element) {
-            ShallowCopy::PerformerConf performerConf;
+            communication::ShallowCopy::PerformerConf performerConf;
             performer_consf_element->QueryIntAttribute("PerformerConfID", &performerConf.performerConfID);
             performer_consf_element->QueryIntAttribute("SessionID", &performerConf.sessionID);
             performer_consf_element->QueryIntAttribute("PerformerID", &performerConf.performerID);
@@ -158,14 +158,14 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    ShallowCopy::A attr;
+                    communication::ShallowCopy::A attr;
                     attr_element->QueryStringAttribute("Name", &attr.name);
                     attr_element->QueryStringAttribute("Value", &attr.value);
                     performerConf.attrs.push_back(attr);
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
-            object->get<ShallowCopy::ShallowCopy>()->performerConfs.push_back(performerConf);
+            object->get<communication::ShallowCopy::ShallowCopy>()->performerConfs.push_back(performerConf);
             performer_consf_element = performer_consf_element->NextSiblingElement();
         }
     }
@@ -182,9 +182,9 @@ std::string ShallowCopyParser::getSupportedExtensions() const
     return "xml";
 }
 
-const ShallowCopy::ShallowCopy& ShallowCopyParser::getShallowCopy() const
+const communication::ShallowCopy::ShallowCopy& ShallowCopyParser::getShallowCopy() const
 {
-    return *object->get<ShallowCopy::ShallowCopy>();
+    return *object->get<communication::ShallowCopy::ShallowCopy>();
 }
 
 void ShallowCopyParser::getObjects(std::vector<core::ObjectWrapperPtr>& objects)

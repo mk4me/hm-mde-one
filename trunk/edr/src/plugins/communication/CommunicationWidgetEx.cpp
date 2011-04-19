@@ -48,7 +48,7 @@ CommunicationWidgetEx::TrialTreeItem::TrialTreeItem(TrialRelationPtr trial)
 
     QString files;
     bool video = false, c3d = false, amc = false, asf = false;
-    BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+    BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
     {
         if(!boost::filesystem::path(file.fileName).extension().compare(".avi")) {
             video = true;
@@ -264,25 +264,25 @@ void CommunicationWidgetEx::downloadTrial(int trialID)
 void CommunicationWidgetEx::update(const CommunicationManager* subject)
 {
     //budujemy relacje miedzy encjami bazodanowymi
-    ShallowCopy::ShallowCopy shallowCopy = subject->getShalloCopy();
+    communication::ShallowCopy::ShallowCopy shallowCopy = subject->getShalloCopy();
     performersWithRelations.clear();
 
-    BOOST_FOREACH(ShallowCopy::Performer performer, shallowCopy.performers)
+    BOOST_FOREACH(communication::ShallowCopy::Performer performer, shallowCopy.performers)
     {
         PerformerRelationPtr p = PerformerRelationPtr(new PerformerRelation);
         p->performer = performer;
         performersWithRelations.push_back(p);
         //sesje polaczone z performerami
-        BOOST_FOREACH(ShallowCopy::PerformerConf performerC, shallowCopy.performerConfs)
+        BOOST_FOREACH(communication::ShallowCopy::PerformerConf performerC, shallowCopy.performerConfs)
         {
-            BOOST_FOREACH(ShallowCopy::Session session, shallowCopy.sessions)
+            BOOST_FOREACH(communication::ShallowCopy::Session session, shallowCopy.sessions)
             {
                 if(performerC.performerID == p->performer.performerID && performerC.sessionID == session.sessionID) {
                     SessionRelationPtr s = SessionRelationPtr(new SessionRelation);
                     s->session = session;
                     p->sessions.push_back(s);
                     //kojarzenie sesji z trialami
-                    BOOST_FOREACH(ShallowCopy::Trial trial, shallowCopy.trials)
+                    BOOST_FOREACH(communication::ShallowCopy::Trial trial, shallowCopy.trials)
                     {
                         if(trial.sessionID == s->session.sessionID) {
                             TrialRelationPtr t = TrialRelationPtr(new TrialRelation);
@@ -363,7 +363,7 @@ void CommunicationWidgetEx::useVideos()
                     //sprawdzamy, czy zgadza sie nazwa folderu
                     if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
                         if(trial->markVideos) {
-                            BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                            BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
                             {
                                 boost::filesystem::path f("data/trials");
                                 f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -398,7 +398,7 @@ void CommunicationWidgetEx::useMocap()
                     //sprawdzamy, czy zgadza sie nazwa folderu
                     if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
                         if(trial->markMocap) {
-                            BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                            BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
                             {
                                 boost::filesystem::path f("data/trials");
                                 f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -433,7 +433,7 @@ void CommunicationWidgetEx::useGrf()
                     //sprawdzamy, czy zgadza sie nazwa folderu
                     if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
                         if(trial->markGrf) {
-                            BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                            BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
                             {
                                 boost::filesystem::path f("data/trials");
                                 f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -468,7 +468,7 @@ void CommunicationWidgetEx::useEmg()
                     //sprawdzamy, czy zgadza sie nazwa folderu
                     if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
                         if(trial->markEmg) {
-                            BOOST_FOREACH(ShallowCopy::File file, trial->trial.files)
+                            BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
                             {
                                 boost::filesystem::path f("data/trials");
                                 f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -500,7 +500,7 @@ void CommunicationWidgetEx::useTrialVideos()
     //            //sprawdzamy, czy zgadza sie nazwa folderu
     //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
     //                if(item->getTrial()->markVideos) {
-    //                    BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+    //                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
     //                    {
     //                        boost::filesystem::path f("data/trials");
     //                        f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -531,7 +531,7 @@ void CommunicationWidgetEx::useTrialMocap()
     //            //sprawdzamy, czy zgadza sie nazwa folderu
     //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
     //                if(item->getTrial()->markMocap) {
-    //                    BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+    //                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
     //                    {
     //                        boost::filesystem::path f("data/trials");
     //                        f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -563,7 +563,7 @@ void CommunicationWidgetEx::useTrialGrf()
     //            //sprawdzamy, czy zgadza sie nazwa folderu
     //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
     //                if(item->getTrial()->markGrf) {
-    //                    BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+    //                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
     //                    {
     //                        boost::filesystem::path f("data/trials");
     //                        f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -595,7 +595,7 @@ void CommunicationWidgetEx::useTrialEmg()
     //            //sprawdzamy, czy zgadza sie nazwa folderu
     //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
     //                if(item->getTrial()->markEmg) {
-    //                    BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+    //                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
     //                    {
     //                        boost::filesystem::path f("data/trials");
     //                        f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -770,7 +770,7 @@ std::vector<core::IDataManager::Path> CommunicationWidgetEx::listTrialFiles(bool
             //sprawdzamy, czy zgadza sie nazwa folderu
             if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
                 if(videos) {
-                    BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
                     {
                         boost::filesystem::path f("data/trials");
                         f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -780,7 +780,7 @@ std::vector<core::IDataManager::Path> CommunicationWidgetEx::listTrialFiles(bool
                     }
                 }
                 if(mocap) {
-                    BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
                     {
                         boost::filesystem::path f("data/trials");
                         f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -790,7 +790,7 @@ std::vector<core::IDataManager::Path> CommunicationWidgetEx::listTrialFiles(bool
                     }
                 }
                 if(grf) {
-                    BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
                     {
                         boost::filesystem::path f("data/trials");
                         f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
@@ -800,7 +800,7 @@ std::vector<core::IDataManager::Path> CommunicationWidgetEx::listTrialFiles(bool
                     }
                 }
                 if(emg) {
-                    BOOST_FOREACH(ShallowCopy::File file, item->getTrial()->trial.files)
+                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
                     {
                         boost::filesystem::path f("data/trials");
                         f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);

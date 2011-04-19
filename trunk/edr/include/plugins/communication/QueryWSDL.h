@@ -54,26 +54,26 @@ namespace communication
 		@param sessionID id sesji której próby pomiarowe maj¹ zostaæ wylistowane
 		@return zbiór prób pomiarowych dla wybranej sesji
 		*/
-		virtual std::map<int, Trial> listSessionTrials(int sessionID);
+		virtual std::vector<wsdl::Trial> listSessionTrials(int sessionID);
 		/**
 		Listuje sesje dla danego laboratorium.
 		@param labID id labu którego sesje maj¹ zostaæ wylistowane
 		@return zbiór sesji dla wybranego labu
 		*/
-		virtual std::map<int, Session> listLabSessionsWithAttributes(int labID);
+		virtual std::vector<wsdl::Session> listLabSessionsWithAttributes(int labID);
 		/**
 		Listuje pliki dla encji typu subjectType i id ID.
 		@param ID id encji dla której maj¹ zostaæ wylistowane pliki
 		@param subjectType typ encji dla której maj¹ zostaæ wylistowane pliki
 		@return zbiór plików dla wybranej encji
 		*/
-		virtual std::map<int, File> listFiles(int ID, const std::string& subjectType);
+		virtual std::vector<wsdl::File> listFiles(int ID, const std::string& subjectType);
 		/**
 		TODO: Listuje encje bazodanowe, sesje, podleg³e sesjom próby pomiarowe i
 		informacje o plikach poszczególnych sesji i prób pomiarowych.
 		@return lista prób pomiarowych, w przysz³oœci powinno znaleŸæ siê drzewko zale¿noœci miêdzy encjami
 		*/
-		virtual std::vector<Trial> listSessionContents();
+		virtual std::vector<wsdl::Trial> listSessionContents();
 
 		///**
 		//*/

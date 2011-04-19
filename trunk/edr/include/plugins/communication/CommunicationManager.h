@@ -34,7 +34,6 @@ namespace communication
             Ready, /** Gotowy do wszelkich dzia³añ */
             DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
             DownloadingTrial, /** Trwa pobieranie plików próby pomiarowej */
-            UpdatingServerTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
             UpdateTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
             CopyDB, /** Trwa odnawianie informacji o encjach db*/
             PingServer, /** Pingowanie serwera */
@@ -43,14 +42,14 @@ namespace communication
         /**
         @return p³ytka kopia DB
         */
-        const ShallowCopy::ShallowCopy& getShalloCopy() const
+        const communication::ShallowCopy::ShallowCopy& getShalloCopy() const
         {
             return shallowCopy;
         }
         /**
         @return metadane z DB
         */
-        const MetaData::MetaData& getMetadata() const
+        const communication::MetaData::MetaData& getMetadata() const
         {
             return metaData;
         }
@@ -90,10 +89,6 @@ namespace communication
             return actualFile;
         };
         /**
-        Aktualizacja informacji o próbach pomiarowych z serwera.
-        */
-        void listSessionContents();
-        /**
         P³ytka kopia bazy danych.
         */
         void copyDbData();
@@ -114,14 +109,6 @@ namespace communication
         {
             transportManager->abort();
         };
-        ///**
-        //Listuje próby pomiarowe znajduj¹ce siê na serwerze.
-        //@return lista prób pomiarowych z serwera
-        //*/
-        //const std::vector<Trial>& getServerTrials() const
-        //{
-        //    return serverTrials;
-        //};
         /**
         Listuje próby pomiarowe znajduj¹ce siê na lokalnym dysku.
         @return lista prób pomiarowych z lokalnego dysku
@@ -157,6 +144,11 @@ namespace communication
         @param files lista plików do za³adowania
         */
         void loadFiles(const std::vector<core::IDataManager::Path> files);
+        /**
+        Usuwanie listy plików z edytora.
+        @param files lista plików do usuniêcia
+        */
+        void removeFiles(const std::vector<core::IDataManager::Path> files);
         /**
         Ustala stan w jakim znajduje siê Communication Service.
         @param state stan jaki ustaliæ jako aktualny dla CS
@@ -236,11 +228,15 @@ namespace communication
         /**
         P³ytka kopia db
         */
-        ShallowCopy::ShallowCopy shallowCopy;
+        communication::ShallowCopy::ShallowCopy shallowCopy;
         /**
         Metadane db
         */
-        MetaData::MetaData metaData;
+        communication::MetaData::MetaData metaData;
+        /**
+        Drzewo performer-subject-trial
+        */
+        std::vector<communication::PerformerPtr> performers;
         /**
         Lista lokalnych prób pomiarowych
         */

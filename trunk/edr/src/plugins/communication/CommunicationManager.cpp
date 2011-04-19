@@ -8,8 +8,6 @@
 
 using namespace communication;
 
-typedef std::vector<core::IDataManager::LocalTrial> LocalTrials;
-
 CommunicationManager* CommunicationManager::instance = nullptr;
 
 CommunicationManager* CommunicationManager::getInstance()
@@ -91,12 +89,6 @@ int CommunicationManager::getProgress() const
     return transportManager->getProgress();
 }
 
-void CommunicationManager::listSessionContents()
-{
-    setState(UpdatingServerTrials);
-    start();
-}
-
 void CommunicationManager::copyDbData()
 {
     setState(CopyDB);
@@ -140,6 +132,11 @@ void CommunicationManager::loadFiles(const std::vector<core::IDataManager::Path>
     dataManager->loadFiles(files);
 }
 
+void CommunicationManager::removeFiles(const std::vector<core::IDataManager::Path> files)
+{
+    dataManager->removeFiles(files);
+}
+
 void CommunicationManager::loadTrial(const core::IDataManager::LocalTrial& localTrial)
 {
     dataManager->loadTrial(localTrial);
@@ -148,28 +145,11 @@ void CommunicationManager::loadTrial(const core::IDataManager::LocalTrial& local
 void CommunicationManager::run()
 {
     switch(getState()) {
-        //nie uzywamy na razie
-        //case DownloadingFile:
-        //    {
-        //        try
-        //        {
-        //            filesToDownload = 1;
-        //            actualFile = 1;
-        //            this->transportManager->downloadFile(entityID, this->trialsDir);
-        //            state = Ready;
-        //        }
-        //        catch(std::runtime_error& e)
-        //        {
-        //            state = Error;
-        //            errorMessage = e.what();
-        //        }
-        //        break;
-        //    }
     case DownloadingTrial: {
             std::string pathToDownloadingTrial;
             try {
-                std::vector<Trial> serverTrials = queryManager->listSessionContents();
-                BOOST_FOREACH(Trial& trial, serverTrials) {
+                std::vector<wsdl::Trial> serverTrials = queryManager->listSessionContents();
+                BOOST_FOREACH(wsdl::Trial& trial, serverTrials) {
                     if(trial.id == entityID) {
                         pathToDownloadingTrial = trialsDir.string();
                         pathToDownloadingTrial.append("/").append(trial.trialDescription);
@@ -192,22 +172,9 @@ void CommunicationManager::run()
             }
             break;
         }
-    //case UpdatingServerTrials: {
-    //        try {
-    //            serverTrials.clear();
-    //            serverTrials = queryManager->listSessionContents();
-    //            state = UpdateTrials;
-    //        } catch(std::runtime_error& e) {
-    //            state = Error;
-    //            errorMessage = e.what();
-    //        }
-    //        break;
-    //    }
         case CopyDB: {
                 try {
-                    std::string pathS = transportManager->getShallowCopy();
-                    std::string pathM = transportManager->getMetadata();
-                    readDbSchemas(pathS, pathM);
+                    readDbSchemas(transportManager->getShallowCopy(), transportManager->getMetadata());
                     state = UpdateTrials;
                 } catch(std::runtime_error& e) {
                     state = Error;
@@ -249,4 +216,37 @@ void CommunicationManager::readDbSchemas(const std::string& shallowCopyDir, cons
     MetadataParserPtr ptrM = MetadataParserPtr(new MetadataParser());
     ptrM->parseFile(nullptr, metaDataDir);
     metaData = ptrM->getMetadata();
+
+    
+    //budujemy relacje miedzy encjami bazodanowymi od nowa
+    performers.clear();
+
+    BOOST_FOREACH(communication::ShallowCopy::Performer performer, ptrS->getShallowCopy().performers)
+    {
+        communication::PerformerPtr p = PerformerPtr(new communication::Performer(performer));
+        performers.push_back(p);
+        std::vector<communication::SessionPtr> sessions;
+        //sesje polaczone z performerami
+        BOOST_FOREACH(communication::ShallowCopy::PerformerConf performerC, ptrS->getShallowCopy().performerConfs)
+        {
+            BOOST_FOREACH(communication::ShallowCopy::Session session, ptrS->getShallowCopy().sessions)
+            {
+                if(performerC.performerID == performer.performerID && performerC.sessionID == session.sessionID) {
+                    communication::SessionPtr s = communication::SessionPtr(new communication::Session(session));
+                    std::vector<communication::TrialPtr> trials;
+                    //kojarzenie sesji z trialami
+                    BOOST_FOREACH(communication::ShallowCopy::Trial trial, shallowCopy.trials)
+                    {
+                        if(trial.sessionID == session.sessionID) {
+                            communication::TrialPtr t = communication::TrialPtr(new communication::Trial(trial));
+                            trials.push_back(t);
+                        }
+                    }
+                    s->setTrials(trials);
+                    sessions.push_back(s);
+                }
+            }
+        }
+        p->setSessions(sessions);
+    }
 }

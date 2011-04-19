@@ -28,9 +28,9 @@ namespace communication
 		Manualne utworzenie encji performera w oparciu o dane z aplikacji klienckiej
 		@param name imiê performera
 		@param surname nazwisko performera
-		@return wskaŸnik na obiekt klasy Performer
+		@return utworzony Performer
 		*/
-		Performer* createPerformer(const std::string& name = "", const std::string& surname = "");
+		wsdl::Performer createPerformer(const std::string& name = "", const std::string& surname = "");
 		/**
 		Manualne utworzenie encji sesji przez u¿ytkownika (oznaczone TODO)
 		@param userID identyfikator u¿ytkownika

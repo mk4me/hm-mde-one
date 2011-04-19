@@ -11,13 +11,11 @@ implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
 
 #include <core/IService.h>
 #include <plugins/communication/CommunicationManager.h>
-#include <plugins/communication/CommunicationWidget.h>
 #include <plugins/communication/CommunicationWidgetEx.h>
 #include <plugins/communication/ICommunication.h>
 #include <plugins/communication/QueryWSDL.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
 
-class CommunicationWidget;
 class CommunicationWidgetEx;
 
 class CommunicationService : public core::IService, public ICommunication
@@ -98,10 +96,6 @@ public:
         return name;
     }
     //ICommunication
-    /**
-    Metoda z interfejsu ICommunication. Pobieranie informacji o próbach pomiarowych z serwera.
-    */
-    virtual void updateSessionContents();
 	/**
 	Metoda z interfejsu ICommunication. P³ytka kopia bazy danych.
 	*/
@@ -126,6 +120,11 @@ public:
     @param files lista plików do za³adowania
     */
     virtual void loadFiles(const std::vector<core::IDataManager::Path> files);
+    /**
+    Metoda z interfejsu ICommunication. Usuwanie listy plików z edytora.
+    @param files lista plików do usuniêcia
+    */
+    virtual void removeFiles(const std::vector<core::IDataManager::Path> files);
     /**
     Metoda z interfejsu ICommunication. Przerwanie pobierania pliku lub triala.
     */

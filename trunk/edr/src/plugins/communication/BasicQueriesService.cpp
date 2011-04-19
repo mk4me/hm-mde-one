@@ -15,10 +15,10 @@ BasicQueriesService::~BasicQueriesService()
 {
 }
 
-std::map<int, Trial> BasicQueriesService::listSessionTrials(int sessionID)
+std::vector<wsdl::Trial> BasicQueriesService::listSessionTrials(int sessionID)
 {
 	this->setOperation("ListSessionTrialsXML");
-	std::map<int, Trial> trials;
+	std::vector<wsdl::Trial> trials;
 	if(invoker.status()) {
 		if(!invoker.setValue("sessionID", WsdlConnection::toString<int>(sessionID))) {
 			throw std::runtime_error(invoker.errors().c_str());
@@ -38,7 +38,7 @@ std::map<int, Trial> BasicQueriesService::listSessionTrials(int sessionID)
 		TypeContainer* SessionTrialList = tc->getChildContainer("SessionTrialList");
 		TypeContainer* TrialDetails = SessionTrialList->getChildContainer("TrialDetails");
 		while(TrialDetails) {
-			Trial trial;
+			wsdl::Trial trial;
 			TypeContainer* temp;
 			temp = TrialDetails->getAttributeContainer("TrialID");
 			if(temp) {
@@ -50,7 +50,7 @@ std::map<int, Trial> BasicQueriesService::listSessionTrials(int sessionID)
 			}
 			temp = TrialDetails->getAttributeContainer("SessionID");
 			if(temp) {
-				trial.sessionID = *((int*)temp->getValue());
+				trial.sessionId = *((int*)temp->getValue());
 			}
 			else
 			{
@@ -65,7 +65,7 @@ std::map<int, Trial> BasicQueriesService::listSessionTrials(int sessionID)
 				throw std::runtime_error("Bad document structure format.");
 			}
 			TrialDetails = SessionTrialList->getChildContainer("TrialDetails");
-			trials[trial.id] = trial;
+            trials.push_back(trial);
 		}
 	} else {
 		throw std::runtime_error(invoker.errors().c_str());
@@ -73,13 +73,13 @@ std::map<int, Trial> BasicQueriesService::listSessionTrials(int sessionID)
 	return trials;
 }
 
-std::map<int, Session> BasicQueriesService::listLabSessionsWithAttributes(int labID)
+std::vector<wsdl::Session> BasicQueriesService::listLabSessionsWithAttributes(int labID)
 {
 	this->setOperation("ListLabSessionsWithAttributesXML");
 	this->setValue("labID", WsdlConnection::toString<int>(labID));
 	this->invokeOperation();
 
-	std::map<int, Session> sessions;
+	std::vector<wsdl::Session> sessions;
 	Schema::TypeContainer* tc = NULL;
 	tc = invoker.getOutput("ListLabSessionsWithAttributesXMLResponse");
 	if(!tc) {
@@ -87,7 +87,7 @@ std::map<int, Session> BasicQueriesService::listLabSessionsWithAttributes(int la
 	}
 	TypeContainer* sessionDetails = tc->getChildContainer("SessionDetailsWithAttributes");
 	while(sessionDetails) {
-		Session session;
+		wsdl::Session session;
 		void* temp;
 		Schema::Type type;
 		temp = sessionDetails->getValue("SessionID", type);
@@ -98,13 +98,13 @@ std::map<int, Session> BasicQueriesService::listLabSessionsWithAttributes(int la
 		}
 		temp = sessionDetails->getValue("UserID", type);
 		if(temp) {
-			session.userID = *((int*)temp);
+			session.userId = *((int*)temp);
 		} else {
 			throw std::runtime_error("Bad document structure format: user ID.");
 		}
 		temp = sessionDetails->getValue("LabID", type);
 		if(temp) {
-			session.labID = *((int*)temp);
+			session.labId = *((int*)temp);
 		} else {
 			throw std::runtime_error("Bad document structure format: lab ID.");
 		}
@@ -127,19 +127,19 @@ std::map<int, Session> BasicQueriesService::listLabSessionsWithAttributes(int la
 			throw std::runtime_error("Bad document structure format: session description.");
 		}
 		sessionDetails = tc->getChildContainer("SessionDetailsWithAttributes");
-		sessions[session.id] = session;
+        sessions.push_back(session);
 	}
 	return sessions;
 }
 
-std::map<int, File> BasicQueriesService::listFiles(int ID, const std::string& subjectType)
+std::vector<wsdl::File> BasicQueriesService::listFiles(int ID, const std::string& subjectType)
 {
 	this->setOperation("ListFilesWithAttributesXML");
 	this->setValue("subjectID", WsdlConnection::toString<int>(ID));
 	this->setValue("subjectType", subjectType);
 	this->invokeOperation();
 
-	std::map<int, File> files;
+	std::vector<wsdl::File> files;
 	Schema::TypeContainer* tc = NULL;
 	tc = invoker.getOutput("ListFilesWithAttributesXMLResponse");
 	if(!tc) {
@@ -147,7 +147,7 @@ std::map<int, File> BasicQueriesService::listFiles(int ID, const std::string& su
 	}
 	TypeContainer* fileDetails = tc->getChildContainer("FileDetailsWithAttributes");
 	while(fileDetails) {
-		File file;
+		wsdl::File file;
 		TypeContainer* temp;
 		temp = fileDetails->getAttributeContainer("FileID");
 		if(temp) {
@@ -168,12 +168,12 @@ std::map<int, File> BasicQueriesService::listFiles(int ID, const std::string& su
 			throw std::runtime_error("Bad document structure format.");
 		}
 		fileDetails = tc->getChildContainer("FileDetailsWithAttributes");
-		files[file.id] = file;
+        files.push_back(file);
 	}
 	return files;
 }
 
-std::vector<Trial> BasicQueriesService::listSessionContents()
+std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 {
 	int id = 1;
 	this->setOperation("ListSessionContents");
@@ -181,7 +181,7 @@ std::vector<Trial> BasicQueriesService::listSessionContents()
 	this->setValue("pageNo", WsdlConnection::toString<int>(id));
 	this->invokeOperation();
 
-	std::vector<Trial> trials;
+	std::vector<wsdl::Trial> trials;
 	Schema::TypeContainer* tc = NULL;
 	tc = invoker.getOutput("ListSessionContentsResponse");
 	if(!tc) {
@@ -197,8 +197,8 @@ std::vector<Trial> BasicQueriesService::listSessionContents()
 		}
 		TypeContainer* TrialContent = SessionContent->getChildContainer("TrialContent");
 		while(TrialContent) {
-			Trial trial;
-			trial.sessionID = sessionId;
+			wsdl::Trial trial;
+			trial.sessionId = sessionId;
 
 			temp = TrialContent->getChildContainer("TrialID");
 			if(temp) {
