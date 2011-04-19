@@ -30,14 +30,14 @@ public:
     virtual void setResourcesPath(const IDataManager::Path& resources);
     virtual void setTrialsPath(const IDataManager::Path& trials);
 
-    virtual bool isLoadLocalTrialData() const
+    UTILS_DEPRECATED(virtual bool isLoadLocalTrialData() const
     {
         return loadTrialData;
-    };
-    virtual void setLoadLocalTrialData(bool load)
+    });
+    UTILS_DEPRECATED(virtual void setLoadLocalTrialData(bool load)
     {
         loadTrialData = load;
-    };
+    });
     
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,11 +161,11 @@ public:
 
 
     //! Szuka na dysku lokalnych prób pomiarowych.
-    virtual void findLocalTrials();
+    UTILS_DEPRECATED(virtual void findLocalTrials());
     //! Szuka na dysku zasobów.
     virtual void findResources();
     //! \param trial do za³adowania, czyli inicjalizacja parserów
-    virtual void loadTrial(const LocalTrial& trial);
+    UTILS_DEPRECATED(virtual void loadTrial(const LocalTrial& trial));
     //! \param files lista do za³adowania, inicjalizacja parserów
     virtual void loadFiles(const std::vector<Path>& files);
 
@@ -177,24 +177,24 @@ public:
     virtual void removeFiles(const std::vector<Path>& files);
 
     
-    virtual const LocalTrial& getLocalTrial(int i) const;
-    virtual int getLocalTrialsCount() const;
+    UTILS_DEPRECATED(virtual const LocalTrial& getLocalTrial(int i) const);
+    UTILS_DEPRECATED(virtual int getLocalTrialsCount() const);
 
 
 
 
 
     //! \param Za³aduj i-t¹ próbê pomiarow¹ z listy triali.
-    virtual void loadLocalTrial(int i);
+    UTILS_DEPRECATED(virtual void loadLocalTrial(int i));
     //! \param path Za³aduj próbê pomiarow¹ z podanej œcie¿ki.
-    virtual void loadLocalTrial(const Path& path);
+    UTILS_DEPRECATED(virtual void loadLocalTrial(const Path& path));
 
     //! Czyœci informacje o lokalnych próbach pomiarowych.
-    void clearLocalTrials();
+    UTILS_DEPRECATED(void clearLocalTrials());
     //! Czyszczenie po parserach.
     void clearParsers();
     //! Czyœci informacje o aktualnej próbie pomiarowej.
-    void clearCurrentTrial();
+    UTILS_DEPRECATED(void clearCurrentTrial());
 
 
 public:

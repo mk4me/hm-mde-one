@@ -117,14 +117,15 @@ void CommunicationManager::ping()
 
 void CommunicationManager::loadLocalTrials()
 {
-    localTrials.clear();
-    dataManager->findLocalTrials();
-    if(dataManager && dataManager->getLocalTrialsCount() > 0) {
-        for(int i = 0; i < dataManager->getLocalTrialsCount(); i++) {
-            localTrials.push_back(dataManager->getLocalTrial(i));
-        }
-    }
-    notify();
+    //TODO: skanowanie folderow z trialami powinno odbywac sie bezposrednio w CM
+    //localTrials.clear();
+    //dataManager->findLocalTrials();
+    //if(dataManager && dataManager->getLocalTrialsCount() > 0) {
+    //    for(int i = 0; i < dataManager->getLocalTrialsCount(); i++) {
+    //        localTrials.push_back(dataManager->getLocalTrial(i));
+    //    }
+    //}
+    //notify();
 }
 
 void CommunicationManager::loadFiles(const std::vector<core::IDataManager::Path> files)

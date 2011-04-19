@@ -26,18 +26,18 @@ public:
     //! Wyszukiwanie zasobów na lokalnym dysku.
     virtual void findResources() = 0;
     //! Wyszukiwanie prób pomiarowych na lokalnym dysku.
-    virtual void findLocalTrials() = 0;
+    UTILS_DEPRECATED(virtual void findLocalTrials() = 0);
     //! £adowanie zasobów znalezionych na dysku.
  	virtual void loadResources() = 0;
     //! £adowanie próby pomiarowej z lokalnego dysku.
     //! \param trial próba pomiarowa do za³adowania.
-    virtual void loadTrial(const LocalTrial& trial) = 0;
+    UTILS_DEPRECATED(virtual void loadTrial(const LocalTrial& trial) = 0);
     //! \param files lista do za³adowania, inicjalizacja parserów
     virtual void loadFiles(const std::vector<Path>& files) = 0;
     //! Zwraca i-t¹ próbê pomiarow¹ z listy kolalnych prób pomiarowych.
     //! \param i indeks.
     //! \return i-ta próba pomiarowa.
-	virtual const LocalTrial& getLocalTrial(int i) const = 0;
+	UTILS_DEPRECATED(virtual const LocalTrial& getLocalTrial(int i) const = 0);
     //! Czyœci zasoby i próby pomiarowe.
 	virtual void clear() = 0;
     //! Zwraca i-t¹ œcie¿kê do skórki UI aplikacji.
@@ -47,9 +47,9 @@ public:
     //! \return iloœæ skórek aplikacji.
     virtual int getApplicationSkinsFilePathCount() = 0;
     //! \return czy za³adowano próbê pomiarow¹.
-	virtual bool isLoadLocalTrialData() const = 0;
+	UTILS_DEPRECATED(virtual bool isLoadLocalTrialData() const = 0);
     //! \param load ustaw flagê ³adowania lokalnej próby pomiarowej.
-	virtual void setLoadLocalTrialData(bool load) = 0;
+	UTILS_DEPRECATED(virtual void setLoadLocalTrialData(bool load) = 0);
     //! \return œcie¿ka do katalogu z zasobami
 	virtual const Path& getResourcesPath() const = 0;
     //! \return œcie¿ka do katalogu z próbami pomiarowymi
@@ -78,11 +78,11 @@ public:
     virtual bool isExtensionSupported(const std::string& extension) const = 0;
     
     //! Liczba prób pomiarowych w zasobach
-	virtual int getLocalTrialsCount() const = 0;
+	UTILS_DEPRECATED(virtual int getLocalTrialsCount() const = 0);
     //! \param i za³aduj i-t¹ próbê pomiarow¹ z zasobów
-    virtual void loadLocalTrial(int i) = 0;
+    UTILS_DEPRECATED(virtual void loadLocalTrial(int i) = 0);
     //! \param path Za³aduj próbê pomiarow¹ z podanej œcie¿ki.
-    virtual void loadLocalTrial(const Path& path) = 0;
+    UTILS_DEPRECATED(virtual void loadLocalTrial(const Path& path) = 0);
 };
     
     //! \param manager Data manager.
