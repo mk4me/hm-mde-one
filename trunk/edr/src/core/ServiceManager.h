@@ -10,13 +10,13 @@
 class IModel;
 class core::IDataManager;
 
-class ServiceManager: public IServiceManager
+class ServiceManager: public core::IServiceManager
 {
 public:
     //! S³ownik us³ug.
-    typedef std::map<UniqueID, IServicePtr> ServicesMap;
+    typedef std::map<UniqueID, core::IServicePtr> ServicesMap;
     //! Sekwencja us³ug.
-    typedef std::vector<IServicePtr> ServicesList;
+    typedef std::vector<core::IServicePtr> ServicesList;
 
 private:
     //! S³ownik us³ug.
@@ -43,8 +43,6 @@ public:
     void loadDataPass(core::IDataManager* dataManager);
     //! Przebieg update/lateUpdate.
     void updatePass(); 
-    //! Przebieg compute.
-    void computePass();
     //! Zeruje czas widziany przez us³ugi.
     void resetTime();
     //! \return Czas dzia³ania.
@@ -56,15 +54,15 @@ public:
 public:
     //! Rejestruje us³ugê. Us³ugi musz¹ mieæ unikatowe ID!
     //! \param service Us³guga do rejestracji.
-    virtual void registerService(IServicePtr service);
+    virtual void registerService(core::IServicePtr service);
     //! \return Liczba us³ug.
     virtual int getNumServices() const;
     //! \param idx Indeks us³ugi.
     //! \return Us³uga o zadanym indeksie.
-    virtual IServicePtr getService(int idx);
+    virtual core::IServicePtr getService(int idx);
     //! \param id ID us³ugi do wyszukania.
     //! \return Odnaleziona us³uga b¹dŸ NULL.
-    virtual IServicePtr getService(UniqueID id);
+    virtual core::IServicePtr getService(UniqueID id);
 
 
 private: 

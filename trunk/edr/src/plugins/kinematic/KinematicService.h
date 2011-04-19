@@ -104,30 +104,28 @@ public:
 
 
 
-class KinematicService : public IService
+class KinematicService : public core::IService
 {
     UNIQUE_ID('KINE','SRVC');
 
 public:
     KinematicService();
 
-    virtual IWidget* getSettingsWidget()
+    virtual QWidget* getSettingsWidget()
     {
-        /*return reinterpret_cast<IWidget*>(widget); */
-        return reinterpret_cast<IWidget*>(nullptr);
+        return nullptr;
     }
 
-    virtual IWidget* getWidget() 
+    virtual QWidget* getWidget() 
     { 
-        return reinterpret_cast<IWidget*>(nullptr);        
+        return nullptr;        
     }
     virtual const std::string& getName() const
     {
         return name;
     }
    
-    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
-    virtual AsyncResult update(double time, double timeDelta);
+    virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
 
 private:
     std::string name;

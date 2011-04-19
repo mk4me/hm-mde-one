@@ -16,10 +16,10 @@ public:
 
     //! Dodaje us³ugi do listy us³ug.
     //! \param manager
-    void addServices(IServiceManager* manager);
+    void addServices(core::IServiceManager* manager);
     //! Dodaje us³ugê do listy us³ug.
     //! \param service
-    void addService(IServicePtr service);
+    void addService(core::IServicePtr service);
     //! Wype³nia drzewo sceny na podstawie zadanego korzenia.
     //! \param root
     void setSceneGraph(osg::Node* root); 

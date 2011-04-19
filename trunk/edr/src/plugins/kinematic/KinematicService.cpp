@@ -44,7 +44,7 @@ KinematicService::KinematicService() :
    //widget->setLogic(logic);
 }
 
-AsyncResult KinematicService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
+void KinematicService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
     ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
@@ -58,18 +58,6 @@ AsyncResult KinematicService::loadData(IServiceManager* serviceManager, core::ID
     } else {
         OSG_WARN<<"ITimeline not found."<<std::endl;
     }
-
-    return AsyncResult_Complete;
-}
-
-AsyncResult KinematicService::update( double time, double timeDelta )
-{
-    return AsyncResult_Complete;
-}
-
-
-void KinematicVisualizer::update( double deltaTime )
-{
 }
 
 void KinematicVisualizer::setUp( IObjectSource* source )
@@ -118,7 +106,6 @@ void KinematicVisualizer::getSlotInfo( int source, std::string& name, ObjectWrap
 
 QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
 {
-    
     widget = new osgui::QOsgDefaultWidget();
     const osg::GraphicsContext::Traits* traits = widget->getCamera()->getGraphicsContext()->getTraits();
     widget->setTimerActive(true);
@@ -165,6 +152,11 @@ const std::string& KinematicVisualizer::getName() const
 
 KinematicVisualizer::KinematicVisualizer() :
     name("KinematicVisualizer")
+{
+
+}
+
+void KinematicVisualizer::update( double deltaTime )
 {
 
 }

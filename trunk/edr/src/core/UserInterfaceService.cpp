@@ -24,36 +24,9 @@ UserInterfaceService::~UserInterfaceService()
 //     m_pMainWindow = MainWindowFactory::CreateMainWindow(typeName, object);
 // }
 
-
-
-AsyncResult UserInterfaceService::init( IServiceManager* serviceManager, osg::Node* sceneRoot )
+QWidget* UserInterfaceService::getWidget()
 {
-    return AsyncResult_Complete;
-}
-
-AsyncResult UserInterfaceService::loadData( IServiceManager* serviceManager, core::IDataManager* dataManager )
-{
-    return AsyncResult_Complete;
-}
-
-AsyncResult UserInterfaceService::update( double time, double timeDelta )
-{
-    return AsyncResult_Complete;
-}
-
-AsyncResult UserInterfaceService::lateUpdate( double time, double timeDelta )
-{
-    return AsyncResult_Complete;
-}
-
-AsyncResult UserInterfaceService::compute()
-{
-    return AsyncResult_Complete;
-}
-
-IWidget* UserInterfaceService::getWidget()
-{
-    return NULL;
+    return nullptr;
 }
 
 const std::string& UserInterfaceService::getName() const

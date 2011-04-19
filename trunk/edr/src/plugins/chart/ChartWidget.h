@@ -26,7 +26,7 @@ class deprecated__ChartWidget : public QWidget, public Ui::ChartWidget
 
 private:
     //! Us³uga tworz¹ca widget.
-	IService* service;
+	core::IService* service;
     //! Widget z widokiem OSG.
     osgui::QOsgDefaultWidget* viewer;
     
@@ -44,7 +44,7 @@ public:
 	
 
     //! 
-	deprecated__ChartWidget(IService* service);
+	deprecated__ChartWidget(core::IService* service);
     //! 
     virtual ~deprecated__ChartWidget();
 

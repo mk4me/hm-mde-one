@@ -1,117 +1,109 @@
-#ifndef BASE_SERVICE_H
-#define BASE_SERVICE_H
+/********************************************************************
+    created:  2011/04/19
+    created:  19:4:2011   11:39
+    filename: IService.h
+    author:   Mateusz Janiak
+    
+    purpose:  
+*********************************************************************/
+#ifndef HEADER_GUARD___ISERVICE_H__
+#define HEADER_GUARD___ISERVICE_H__
 
+#include <utils/Debug.h>
 #include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
 
-namespace osg 
-{
-    class Node;
-} // namespace osg
+class QWidget;
 
-namespace osgViewer 
-{
-    class CompositeViewer;
-} // namespace osgViewer
+namespace osg{
+
+    //! Deklaracja wyprzedzaj¹ca
+    class Node;
+
+}
 
 namespace core 
 {
     class IDataManager;
-} // namespace core
-
-enum AsyncResult
-{
-    AsyncResult_Failure,
-    AsyncResult_Pending,
-    AsyncResult_Complete,
-};
-
-class IServiceManager;
-class IWidget;
-
-class IService : public IIdentifiable
-{
-public:
-	virtual ~IService() {}
 
 
-    //------------------------------------------------------------------------------
-    // NOWY INTERFEJS US£UGI
+    class IServiceManager;
+
+
+    class IService : public IIdentifiable
+    {
+    public:
+	    virtual ~IService() {}
+
+
+        //------------------------------------------------------------------------------
+        // NOWY INTERFEJS US£UGI
  
-    //! Inicjalizacja us³ugi. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
-    //! (nie zainicjalizowaniu!) wszystkich us³ug. Mo¿na wiêc pobieraæ wskaŸniki.
-    //! \param serviceManager Manager us³ug.
-    //! \param root Korzeñ wspólnej sceny 3D.
-	//! \param dataManager Manager zasobów.
-    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
-    {
-        return AsyncResult_Complete;
-    }
+        //! Inicjalizacja us³ugi. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
+        //! (nie zainicjalizowaniu!) wszystkich us³ug. Mo¿na wiêc pobieraæ wskaŸniki.
+        //! \param serviceManager Manager us³ug.
+        //! \param root Korzeñ wspólnej sceny 3D.
+	    //! \param dataManager Manager zasobów.
+        virtual void init(IServiceManager* serviceManager, core::IDataManager* dataManager)
+        {
 
-    //! £aduje 
-    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
-    {
-        return AsyncResult_Complete;
-    }
+        }
 
-    //! Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
-    //! \param serviceManager 
-    virtual AsyncResult update(double time, double timeDelta) 
-    { 
-        return AsyncResult_Complete; 
-    }
+        //! £aduje 
+        UTILS_DEPRECATED(virtual void loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
+        {
 
-    //! Drugi przebieg aktualizacji logiki; us³ugi jako takie nie maj¹ wp³ywu na kolejnoœæ, z jak¹
-    //! wywo³ywana jest metoda Update. Gdy jakaœ us³uga bazuje na pozosta³ych nale¿y wówczas
-    //! u¿yæ metody LateUpdate, która jest wywo³ywana po cyklu Update wszystkich us³ug.
-    //! Ten sam w¹tek co UI.
-    //! \param serviceManager
-    virtual AsyncResult lateUpdate(double time, double timeDelta) 
-    { 
-        return AsyncResult_Complete; 
-    }
+        })
 
-    //! Miejsce na bardziej skomplikowane obliczenia. W¹tek inny ni¿ dla UI, niekoniecznie taki
-    //! sam dla wszystkich us³ug.
-    virtual AsyncResult compute()
-    {
-        return AsyncResult_Complete;
-    }
+        //! Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
+        //! \param serviceManager 
+        UTILS_DEPRECATED(virtual void update(double time, double timeDelta) 
+        { 
 
+        })
 
-    //! Callback wywo³ywany gdy widget zniknie (np. bêdzie schowany w tabach
-    //! albo z jakiegoœ innego powodu nie bêdzie widoczny). Docelowo powinna to
-    //! byæ metoda IWidget, ale poniewa¿ u nas mo¿na by ten typ zast¹piæ void*,
-    //! metoda CZASOWO dodana do IService.
-    //! W tej metodzie mo¿na kontrolowaæ w³¹czanie/wy³¹czanie pewnych czêœci
-    //! us³ug, np. rendering OSG.
-    //! \param widget
-    //! \param visible
-    virtual void visibilityChanged(IWidget* widget, bool visible)
-    {
-    }
+        //! Drugi przebieg aktualizacji logiki; us³ugi jako takie nie maj¹ wp³ywu na kolejnoœæ, z jak¹
+        //! wywo³ywana jest metoda Update. Gdy jakaœ us³uga bazuje na pozosta³ych nale¿y wówczas
+        //! u¿yæ metody LateUpdate, która jest wywo³ywana po cyklu Update wszystkich us³ug.
+        //! Ten sam w¹tek co UI.
+        //! \param serviceManager
+        UTILS_DEPRECATED(virtual void lateUpdate(double time, double timeDelta) 
+        { 
 
-    //! Us³uga nie musi mieæ wizualnej reprezentacji.
-    //! \return Widget tworzony przez us³ugê b¹dŸ NULL.
-    virtual IWidget* getWidget() = 0;
-    //! \return Widget kontroluj¹cy zachowanie us³ugi/us³ug zale¿nych.
-    virtual IWidget* getControlWidget() { return NULL; }
-    //! \return Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
-    virtual IWidget* getSettingsWidget() { return NULL; }
-    //! \return Nazwa us³ugi.
-    virtual const std::string& getName() const = 0;
+        })
 
-    //! \return Korzeñ lokalnej sceny osg.
-    virtual osg::Node* debugGetLocalSceneRoot()
-    {
-        return NULL;
-    }
+        //! Us³uga nie musi mieæ wizualnej reprezentacji.
+        //! \return Widget tworzony przez us³ugê b¹dŸ NULL.
+        virtual QWidget* getWidget() = 0;
+        
+        //! \return Widget kontroluj¹cy zachowanie us³ugi/us³ug zale¿nych.
+        virtual QWidget* getControlWidget()
+        {
+            return nullptr;
+        }
 
-};
+        //! \return Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
+        virtual QWidget* getSettingsWidget()
+        {
+            return nullptr;
+        }
 
-typedef core::shared_ptr<IService> IServicePtr;
-typedef core::shared_ptr<const IService> IServiceConstPtr;
-typedef core::weak_ptr<IService> IServiceWeakPtr;
+        //! \return Nazwa us³ugi.
+        virtual const std::string& getName() const = 0;
 
-#endif //BASE_SERVICE_H
+        //! \return Korzeñ lokalnej sceny osg.
+        virtual osg::Node* debugGetLocalSceneRoot()
+        {
+            return nullptr;
+        }
+
+    };
+
+    typedef shared_ptr<IService> IServicePtr;
+    typedef shared_ptr<const IService> IServiceConstPtr;
+    typedef weak_ptr<IService> IServiceWeakPtr;
+
+}
+
+#endif //HEADER_GUARD___ISERVICE_H__

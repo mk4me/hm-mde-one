@@ -20,7 +20,7 @@ implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
 class CommunicationWidget;
 class CommunicationWidgetEx;
 
-class CommunicationService : public IService, public ICommunication
+class CommunicationService : public core::IService, public ICommunication
 {
     UNIQUE_ID('COMM','SRVC');
 private:
@@ -60,34 +60,34 @@ public:
     @param root Korzeñ wspólnej sceny 3D.
     @param dataManager Manager zasobów.
     */
-    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
+    virtual void init(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
     /**
     Metoda z interfejsu IService. £aduje.
     @param serviceManager Manager us³ug.
     @param dataManager Manager zasobów.
     */
-    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
+    virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
     /**
     Metoda z interfejsu IService. Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
     */
-    virtual AsyncResult update(double time, double timeDelta);
+    virtual void update(double time, double timeDelta);
     /**
     Metoda z interfejsu IService. Us³uga nie musi mieæ wizualnej reprezentacji.
     @return Widget tworzony przez us³ugê b¹dŸ NULL.
     */
-    virtual IWidget* getWidget()
+    virtual QWidget* getWidget()
     { 
         // HACK: ca³y ten system jest shackowany!
         //return reinterpret_cast<IWidget*>(widget);
-        return NULL;
+        return nullptr;
     }
     /**
     Metoda z interfejsu IService. Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
     @return Widget tworzony przez us³ugê b¹dŸ NULL.
     */
-    virtual IWidget* getSettingsWidget()
+    virtual QWidget* getSettingsWidget()
     {
-        return reinterpret_cast<IWidget*>(widget);
+        return (QWidget*)widget;
     }
     /**
     Metoda z interfejsu IService. Nazwa us³ugi.

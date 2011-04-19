@@ -17,7 +17,7 @@
 
 class TimelineWidget;
 
-class TimelineService : public ITimeline, public IService
+class TimelineService : public ITimeline, public core::IService
 {
     UNIQUE_ID('TIML','SRVC');
 private:
@@ -37,17 +37,13 @@ public:
 // IService
 public:
     //!
-    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
+    virtual QWidget* getWidget();
     //!
-    virtual IWidget* getWidget();
+    virtual QWidget* getControlWidget();
     //!
-    virtual IWidget* getControlWidget();
+    virtual void lateUpdate(double time, double timeDelta);
     //!
-    virtual AsyncResult compute();
-    //!
-    virtual AsyncResult lateUpdate(double time, double timeDelta);
-    //!
-    virtual AsyncResult update(double time, double timeDelta);
+    virtual void update(double time, double timeDelta);
     //!
     virtual const std::string& getName() const;
 

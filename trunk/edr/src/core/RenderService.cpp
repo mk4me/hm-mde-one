@@ -154,7 +154,7 @@ void RenderService::Clear()
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager )
+void RenderService::loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
     //nowy SetScene
 	std::string meshpath = "";
@@ -209,30 +209,26 @@ AsyncResult RenderService::loadData(IServiceManager* serviceManager, core::IData
         DisableMarker();
         RenderC3D(m_pC3DModel);
     }
-
-    return AsyncResult_Complete;
 }
 
 //--------------------------------------------------------------------------------------------------
-AsyncResult RenderService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+void RenderService::init(core::IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
     m_pFactory = new Factor();
     m_pModel = NULL;
     m_pC3DModel = NULL;
-    Inicialize(sceneRoot, viewer);
-    return AsyncResult_Complete; 
+    Inicialize();
 }
 
 //--------------------------------------------------------------------------------------------------
-void RenderService::Inicialize(osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+void RenderService::Inicialize()
 {
-    SceneRoot = dynamic_cast<osg::Group*>(sceneRoot);
-    UTILS_ASSERT(SceneRoot != NULL);
+    SceneRoot = new osg::Group();
 
     osgGA::OrbitManipulator *cameraManipulator = new osgGA::OrbitManipulator();
 
     widget = new osgui::QOsgDefaultWidget();
-    widget->onInit(viewer);
+    //widget->onInit(viewer);
     widget->addEventHandler(new osgViewer::StatsHandler);
     widget->setCameraManipulator(cameraManipulator);
     widget->setMinimumSize(100, 100);
@@ -442,9 +438,9 @@ void RenderService::SetC3DMarkerToRender(IC3DModel *c3dmodel)
 }
 
 //--------------------------------------------------------------------------------------------------
-IWidget* RenderService::getWidget()
+QWidget* RenderService::getWidget()
 {
-    return reinterpret_cast<IWidget*>(widget);
+    return widget;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -583,11 +579,4 @@ void RenderService::CreatingAndRenderMarkerPath(IC3DModel* c3dModel, std::vector
     m_pMarkerLineGeode->setName("Line");
 
     AddObjectToRender(m_pMarkerLineGeode);
-}
-
-void RenderService::visibilityChanged( IWidget* widget, bool visible )
-{
-    if ( widget == reinterpret_cast<IWidget*>(this->widget) ) {
-        this->widget->setRenderingEnabled(visible);
-    }
 }

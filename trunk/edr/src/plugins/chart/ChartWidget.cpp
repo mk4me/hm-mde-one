@@ -14,7 +14,7 @@
 #define WM_FLAGS 0
 #endif
 
-deprecated__ChartWidget::deprecated__ChartWidget(IService* service)
+deprecated__ChartWidget::deprecated__ChartWidget(core::IService* service)
 :   service(service)
 {
     setupUi(this);

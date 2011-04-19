@@ -14,11 +14,11 @@
 #include <plugins/timeline/Stream.h>
 
 class IModel;
-class IWidget;
+class QWidget;
 class VideoWidget;
 class VideoWidgetOptions;
 
-class VideoService : public IService
+class VideoService : public core::IService
 {
     UNIQUE_ID('VIDE','SRVC');
 
@@ -56,18 +56,13 @@ public:
 public:
     VideoService();
 
-
-
-    virtual IWidget* getWidget()
+    virtual QWidget* getWidget()
     { 
-        // HACK: ca³y ten system jest shackowany!
-        //return reinterpret_cast<IWidget*>(widget);
         return nullptr;
     }
 
-    virtual IWidget* getSettingsWidget()
+    virtual QWidget* getSettingsWidget()
     {
-        // return reinterpret_cast<IWidget*>(optionsWidget);
         return nullptr;
     }
 
@@ -76,14 +71,7 @@ public:
         return name;
     }
 
-    virtual void visibilityChanged(IWidget* widget, bool visible);
-
-    //!
-    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
-
-    virtual AsyncResult update(double time, double timeDelta);
-
-    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
+    virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
 
     //!
     virtual osg::Node* debugGetLocalSceneRoot();

@@ -21,34 +21,22 @@ TimelineService::~TimelineService()
     delete controller;
 }
 
-IWidget* TimelineService::getWidget()
+QWidget* TimelineService::getWidget()
 {
-    return NULL;
+    return nullptr;
 }
 
-IWidget* TimelineService::getControlWidget()
+QWidget* TimelineService::getControlWidget()
 {
-    return reinterpret_cast<IWidget*>(widget);
+    return widget;
 }
 
-AsyncResult TimelineService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
-{
-    return AsyncResult_Complete;
-}
-
-AsyncResult TimelineService::compute()
-{
-    controller->compute();
-    return AsyncResult_Complete;
-}
-
-AsyncResult TimelineService::update( double time, double timeDelta )
+void TimelineService::update( double time, double timeDelta )
 {
     widget->setBusy(controller->isBusy() || controller->isTimeDirty());
-    return AsyncResult_Complete;
 }
 
-AsyncResult TimelineService::lateUpdate( double time, double timeDelta)
+void TimelineService::lateUpdate( double time, double timeDelta)
 {
     if ( controller->isPlaying() ) {
         if ( isSeekRequested() ) {
@@ -57,7 +45,6 @@ AsyncResult TimelineService::lateUpdate( double time, double timeDelta)
             controller->setTime( controller->getTime() + timeDelta * controller->getTimeScale() );
         }
     }
-    return AsyncResult_Complete;
 }
 
 void TimelineService::setSeekRequested( bool seekRequested )

@@ -81,6 +81,8 @@ find_package(VidLib)
 find_package(Utils)
 find_package(osgui)
 find_package(KinematicLib)
+find_package(dfmlib)
+find_package(vdfmlib)
 
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)

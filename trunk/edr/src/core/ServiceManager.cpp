@@ -7,7 +7,7 @@
 
 
 ServiceManager::ServiceManager(void)
-: updateMarker(NULL)
+: updateMarker(nullptr)
 {
     resetTime();
 }
@@ -21,7 +21,7 @@ ServiceManager::~ServiceManager(void)
     // }
 }
 
-void ServiceManager::registerService(IServicePtr service)
+void ServiceManager::registerService(core::IServicePtr service)
 {
     if (servicesMap.find(service->getID()) == servicesMap.end()) {
         servicesMap.insert( std::make_pair(service->getID(), service)); 
@@ -51,16 +51,16 @@ void ServiceManager::updatePass()
     }
 
     // ustawienia markera update'a
-    updateMarker = NULL;
+    updateMarker = nullptr;
 }
 
-void ServiceManager::computePass()
-{
-    // aktualizacja us³ug
-    for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
-        (*it)->compute();
-    }
-}
+//void ServiceManager::computePass()
+//{
+//    // aktualizacja us³ug
+//    for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
+//        (*it)->compute();
+//    }
+//}
 
 void ServiceManager::loadDataPass(core::IDataManager* dataManager)
 {
@@ -82,22 +82,22 @@ int ServiceManager::getNumServices() const
     return static_cast<int>(servicesList.size());
 }
 
-IServicePtr ServiceManager::getService( int idx )
+core::IServicePtr ServiceManager::getService( int idx )
 {
     if ( idx < static_cast<int>(servicesList.size()) ) {
         return servicesList[idx];
     } else {
-        return IServicePtr();
+        return core::IServicePtr();
     }
 }
 
-IServicePtr ServiceManager::getService( UniqueID id )
+core::IServicePtr ServiceManager::getService( UniqueID id )
 {
     ServicesMap::iterator it = servicesMap.find(id);
     if (it != servicesMap.end()) {
         return it->second; 
     } else {
-        return IServicePtr();
+        return core::IServicePtr();
     }
 }
 

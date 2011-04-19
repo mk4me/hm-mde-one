@@ -42,7 +42,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
-#include "ComputeThread.h"
+//#include "ComputeThread.h"
 
 #include <core/Log.h>
 #include <core/StringTools.h>
@@ -261,7 +261,7 @@ QMainWindow(parent), updateEnabled(true)
 
     // inicjalizacja us³ug
     for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-        serviceManager->getService(i)->init(serviceManager, dataManager, sceneRoot.get(), this);
+        serviceManager->getService(i)->init(serviceManager, dataManager);
     }
 
 
@@ -279,8 +279,8 @@ QMainWindow(parent), updateEnabled(true)
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
     updateTimer.start(20);
 
-    computeThread = new ComputeThread(serviceManager, 0.02);
-    computeThread->start();
+    //computeThread = new ComputeThread(serviceManager, 0.02);
+    //computeThread->start();
 
 
     if ( getNumViews() ) {
@@ -293,7 +293,7 @@ QMainWindow(parent), updateEnabled(true)
 
 ToolboxMain::~ToolboxMain()
 {
-    delete computeThread;
+    //delete computeThread;
 
     delete serviceManager;
 
@@ -926,15 +926,15 @@ void ToolboxMain::paintEvent( QPaintEvent* event )
 
 void ToolboxMain::onDockWidgetVisiblityChanged( bool visible )
 {
-    if ( QDockWidget* sender = qobject_cast<QDockWidget*>(QObject::sender()) ) {
-        // wyszukanie us³ugi do której widget nale¿y
-        for ( int i = 0; i < serviceManager->getNumServices(); ++i ) {
-            IServicePtr service = serviceManager->getService(i);
-            if ( reinterpret_cast<QWidget*>(service->getWidget()) == sender->widget() ) {
-                service->visibilityChanged( service->getWidget(), visible );
-            }
-        }
-    }
+    //if ( QDockWidget* sender = qobject_cast<QDockWidget*>(QObject::sender()) ) {
+    //    // wyszukanie us³ugi do której widget nale¿y
+    //    for ( int i = 0; i < serviceManager->getNumServices(); ++i ) {
+    //        IServicePtr service = serviceManager->getService(i);
+    //        if ( reinterpret_cast<QWidget*>(service->getWidget()) == sender->widget() ) {
+    //            service->visibilityChanged( service->getWidget(), visible );
+    //        }
+    //    }
+    //}
 
 }
 

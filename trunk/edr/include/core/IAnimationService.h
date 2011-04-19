@@ -41,7 +41,7 @@ class IServiceManager;
 //--------------------------------------------------------------------------------------------------
 // Animation Service
 //--------------------------------------------------------------------------------------------------
-class IAnimationService: public IService
+class IAnimationService: public core::IService
 {
 public:
     virtual ~IAnimationService() {};

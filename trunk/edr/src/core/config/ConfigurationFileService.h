@@ -12,7 +12,7 @@
 //--------------------------------------------------------------------------------------------------
 // ConfigurationFile Service
 //--------------------------------------------------------------------------------------------------
-class ConfigurationFileService: public IService, public IConfigManager
+class ConfigurationFileService: public core::IService, public IConfigManager
 {
 public:
 
@@ -21,8 +21,8 @@ public:
     /// Virtual destructor that destroys the Configuration Service and releases all references to
     /// any messages and targets that may still exist.
     virtual ~ConfigurationFileService();
-    virtual AsyncResult OnTick(double delta); 
-    virtual AsyncResult OnAdded(IServiceManager* serviceManager); 
+    virtual void OnTick(double delta); 
+    virtual void OnAdded(core::IServiceManager* serviceManager); 
 
     virtual bool IsTrue(const std::string& strName, bool defaultValue = false) const;
     virtual bool IsFalse(const std::string& strName, bool defaultValue = true) const;

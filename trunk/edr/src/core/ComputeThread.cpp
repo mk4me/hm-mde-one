@@ -36,9 +36,6 @@ void ComputeThread::run()
             // zerujemy czas ramki
             frameLength.setStartTick();
 
-            //!
-            serviceManager->computePass();
-
             // jak dlugo to trwa³o?
             double waitTime = refreshRate - frameLength.time_s();
             if ( waitTime > 0.0 ) {

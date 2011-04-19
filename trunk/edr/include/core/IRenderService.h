@@ -23,7 +23,7 @@ class IFactor;
 
 typedef osg::ref_ptr<osg::Group> osgGroupPtr;
 
-class IRenderService: public IService
+class IRenderService: public core::IService
 {
 public:
     virtual ~IRenderService() {};

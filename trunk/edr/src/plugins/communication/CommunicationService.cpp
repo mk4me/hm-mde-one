@@ -36,13 +36,12 @@ void CommunicationService::downloadTrial(unsigned int trialID)
     model->downloadTrial(trialID);
 }
 
-AsyncResult CommunicationService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
+void CommunicationService::loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
     this->model->setTrialsDir(dataManager->getTrialsPath().string());
-    return AsyncResult_Complete;
 }
 
-AsyncResult CommunicationService::update(double time, double timeDelta)
+void CommunicationService::update(double time, double timeDelta)
 {
     //pinguj co pol minuty
     if(static_cast<int>(time + 0.5f)%30 == 0 && model->getState() == communication::CommunicationManager::Ready) {
@@ -87,15 +86,12 @@ AsyncResult CommunicationService::update(double time, double timeDelta)
         }
 
     }
-
-    return AsyncResult_Complete;
 }
 
-AsyncResult CommunicationService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+void CommunicationService::init(core::IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
     model->setDataManager(dataManager);
     ping();
-    return AsyncResult_Complete;
 }
 
 void CommunicationService::loadTrial(const core::IDataManager::LocalTrial& localTrial)

@@ -33,17 +33,23 @@ Controller::Controller() :
 {
   model = new Model();
   dirtyState = model->getState();
+  // pauzuj watek kontrolera
+  pauseMutex.lock();
+
+  // uruchom watek kontrolera
+  start();
 }
 
 Controller::~Controller()
 {
-  // quit
-  if ( isRunning() ) {
-    // zmieniamy stan...
-    model->setPlaying(false);
-    join();
-  }
-  delete model;
+    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    killThread = true;
+    if(isPlaying() == false){
+        model->setPlaying(false);
+        pauseMutex.unlock();        
+        join();
+    }
+    delete model;
 }
 
 void Controller::pause()
@@ -51,7 +57,14 @@ void Controller::pause()
 //   OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
 //   model->setPlaying(false);
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+
     State state = getState();
+    
+    if(state.isPlaying == false){
+        return;
+    }
+
+    pauseMutex.lock();    
     state.isPlaying = false;
     setState(state);
 }
@@ -61,12 +74,15 @@ void Controller::play()
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
 
     State state = getState();
+
+    if(state.isPlaying == true){
+        return;
+    }
+
     state.isPlaying = true;
     setState(state);
 
-    if ( !isRunning() ) {
-        //start();
-    }
+    pauseMutex.unlock();
 }
 
 // void Controller::setUITime( double time )
@@ -142,10 +158,10 @@ void Controller::setTime( double time )
     model->timeDirty = true;
     
 
-    // wyzerowanie licznika
-    if ( !isRunning() && asynchronous ) {
-        //start();
-    }
+    //// wyzerowanie licznika
+    //if ( !isRunning() && asynchronous ) {
+    //    start();
+    //}
 }
 
 double Controller::getTimeScale() const
@@ -173,12 +189,16 @@ void Controller::run()
     {
         osg::Timer frameLength;
         while (true) {
+            {
+                OpenThreads::ScopedLock<OpenThreads::Mutex> lock(pauseMutex);
+                if(killThread == true){
+                    return;
+                }
+            }
             // zerujemy czas ramki
             frameLength.setStartTick();
 
-            if (!compute()) {
-                return;
-            }
+            compute();
 
             // jak d³ugo to wszystko trwa³o?
             double waitTime = 0.02 - frameLength.time_s();
@@ -265,7 +285,9 @@ bool Controller::compute()
         // czy jest sens dalej trzymaæ w¹tek?
         if ( !isDirty() && !isPlaying() ) {
             //OSG_NOTICE<<"Finished Controller::run()"<<std::endl;
-            return false;
+            //return false;
+            pauseMutex.lock();
+            return true;
         }
         // zaakceptowano stan
         appliedState = dirtyState;

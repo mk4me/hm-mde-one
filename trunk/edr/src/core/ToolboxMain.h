@@ -23,7 +23,7 @@ class UserInterfaceService;
 class ServiceManager;
 class IAnimationService;
 class RenderService;
-class ComputeThread;
+//class ComputeThread;
 class SceneGraphWidget;
 class ConsoleWidget;
 class VisualizerManager;
@@ -45,7 +45,7 @@ private:
     //! Widget konsoli.
     ConsoleWidget* widgetConsole; 
     //! W¹tek obliczeniowy.
-    ComputeThread* computeThread;
+    //ComputeThread* computeThread;
     //! Czy update jest w³¹czony?
     bool updateEnabled;
     //! Timer wyznaczaj¹cy update'y.

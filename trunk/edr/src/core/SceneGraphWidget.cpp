@@ -5,7 +5,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Q_DECLARE_METATYPE(IServiceWeakPtr);
+Q_DECLARE_METATYPE(core::IServiceWeakPtr);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -50,21 +50,21 @@ void SceneGraphWidget::clearTreeWidget()
 }
 
 
-void SceneGraphWidget::addServices( IServiceManager* manager )
+void SceneGraphWidget::addServices( core::IServiceManager* manager )
 {
     for ( int i = 0; i < manager->getNumServices(); ++i ) {
         addService( manager->getService(i) );
     }
 }
 
-void SceneGraphWidget::addService( IServicePtr service )
+void SceneGraphWidget::addService( core::IServicePtr service )
 {
     // lokalna zmienna bo IntelliSense siê gubi...
     QComboBox* currentServiceCombo = this->currentServiceCombo;
 
     // ustalenie parametrów...
     QString name = core::toQString(service->getName());
-    QVariant userData = qVariantFromValue(IServiceWeakPtr(service));
+    QVariant userData = qVariantFromValue(core::IServiceWeakPtr(service));
 
     // dodanie do komba
     currentServiceCombo->addItem(name, userData);
@@ -73,8 +73,8 @@ void SceneGraphWidget::addService( IServicePtr service )
 void SceneGraphWidget::setCurrentService( int index )
 {
     QComboBox* currentServiceCombo = this->currentServiceCombo;
-    IServiceWeakPtr serviceWeak = currentServiceCombo->itemData(index).value<IServiceWeakPtr>();
-    if (IServicePtr service = serviceWeak.lock()) {
+    core::IServiceWeakPtr serviceWeak = currentServiceCombo->itemData(index).value<core::IServiceWeakPtr>();
+    if (core::IServicePtr service = serviceWeak.lock()) {
         setSceneGraph( service->debugGetLocalSceneRoot() );
     } else {
         clearTreeWidget();

@@ -68,55 +68,40 @@ GRFService::~GRFService()
 {
 }
 
-IWidget* GRFService::getWidget()
+QWidget* GRFService::getWidget()
 {
-	//TODO klasa widgetu
-    return reinterpret_cast<IWidget*>(widget);
+    return widget;
 }
 
-AsyncResult GRFService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+void GRFService::init(core::IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
-    widget->getViewer()->onInit(viewer);
+    //widget->getViewer()->onInit(viewer);
  ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
         timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
     } else {
         OSG_WARN<<"ITimeline not found."<<std::endl;
     }
-    return AsyncResult_Complete;
 }
 
-AsyncResult GRFService::compute()
+void GRFService::update( double time, double timeDelta )
 {
-  
-    return AsyncResult_Complete;
-}
-
-AsyncResult GRFService::update( double time, double timeDelta )
-{
-
 	widget->update(targetTime);
-    return AsyncResult_Complete;
 }
-
-AsyncResult GRFService::lateUpdate( double time, double timeDelta)
-{
-   
-    return AsyncResult_Complete;
-}
-
-
 
 const std::string& GRFService::getName() const
 {
     return name;
 }
-void GRFService::setTargetTime(double time){
-targetTime=time;
 
+void GRFService::setTargetTime(double time)
+{
+    targetTime=time;
 }
-double GRFService::getTargetTime(){
-return targetTime;
+
+double GRFService::getTargetTime()
+{
+    return targetTime;
 }
 double GRFService::getLength() const
 {
@@ -125,18 +110,18 @@ double GRFService::getLength() const
 
 void GRFService::setLength( double length )
 {
-
     this->length = length;
 }
 
-void GRFService::setWidget(deprecated__ChartWidget* widget){
-this->widget=widget;
+void GRFService::setWidget(deprecated__ChartWidget* widget)
+{
+    this->widget=widget;
 }
 
 
 
 
-AsyncResult GRFService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager )
+void GRFService::loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
     widget->clear();
 
@@ -173,18 +158,9 @@ AsyncResult GRFService::loadData(IServiceManager* serviceManager, core::IDataMan
 //	}
 //	length=widget->getLenght() ;
 //}
-
-return AsyncResult_Complete;
 }
 
 osg::Node* GRFService::debugGetLocalSceneRoot()
 {
     return widget->getViewer()->getSceneData();
-}
-
-void GRFService::visibilityChanged( IWidget* widget, bool visible )
-{
-    if ( widget == reinterpret_cast<IWidget*>(this->widget) ) {
-        this->widget->getViewer()->setRenderingEnabled(visible);
-    }
 }

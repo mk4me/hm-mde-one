@@ -6,7 +6,7 @@
 #include <core/IService.h>
 #include <core/IUserInterface.h>
 
-class UserInterfaceService: public IService, public IUserInterface
+class UserInterfaceService: public core::IService, public IUserInterface
 {
     UNIQUE_ID('UI','SRVC');
 public:
@@ -19,12 +19,7 @@ public:
 
 // IService
 public:
-    virtual AsyncResult init(IServiceManager* serviceManager, osg::Node* sceneRoot);
-    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
-    virtual AsyncResult update(double time, double timeDelta);
-    virtual AsyncResult lateUpdate(double time, double timeDelta);
-    virtual AsyncResult compute();
-    virtual IWidget* getWidget();
+    virtual QWidget* getWidget();
     virtual const std::string& getName() const;
 
 // IUserInterface

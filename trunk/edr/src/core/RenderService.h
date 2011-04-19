@@ -62,9 +62,9 @@ class RenderService: public IRenderService
 public:
     RenderService();
     virtual ~RenderService();
-    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer); 
+    virtual void init(core::IServiceManager* serviceManager, core::IDataManager* dataManager); 
 
-    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
+    virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
 
     void TestScreenForNewModel(IModel* model);
     void AddObjectToRender(osg::Node* node);
@@ -84,8 +84,7 @@ public:
         return name;
     }
 
-    virtual IWidget* getWidget();
-    virtual void visibilityChanged(IWidget* widget, bool visible);
+    virtual QWidget* getWidget();
 
     virtual void EnableMesh();
     virtual void DisableMesh();
@@ -106,7 +105,7 @@ public:
 private: 
     void DisablemarkerPath();
 
-    void Inicialize(osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
+    void Inicialize();
     void InicizlizeModelMesh(Model* model);
     void AddShaders(osg::Group* group);
 

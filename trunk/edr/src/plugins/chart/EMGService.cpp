@@ -63,61 +63,45 @@ EMGService::EMGService()
 	
 }
 
-
 EMGService::~EMGService()
 {
 }
 
-IWidget* EMGService::getWidget()
+QWidget* EMGService::getWidget()
 {
-	//TODO klasa widgetu
-    return reinterpret_cast<IWidget*>(widget);
+    return widget;
 }
 
-AsyncResult EMGService::init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer)
+void EMGService::init(core::IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
-    widget->getViewer()->onInit(viewer);
+    //widget->getViewer()->onInit(viewer);
     ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
         timeline->addStream( timeline::StreamPtr(timeline::Stream::encapsulate(this)) );
     } else {
         OSG_WARN<<"ITimeline not found."<<std::endl;
     }
-    return AsyncResult_Complete;
 }
 
-AsyncResult EMGService::compute()
+void EMGService::update( double time, double timeDelta )
 {
-  
-    return AsyncResult_Complete;
+    widget->update(targetTime);
 }
-
-AsyncResult EMGService::update( double time, double timeDelta )
-{
-
-widget->update(targetTime);
-return AsyncResult_Complete;
-}
-
-AsyncResult EMGService::lateUpdate( double time, double timeDelta)
-{
-   
-    return AsyncResult_Complete;
-}
-
-
 
 const std::string& EMGService::getName() const
 {
     return name;
 }
-void EMGService::setTargetTime(double time){
-targetTime=time;
+void EMGService::setTargetTime(double time)
+{
+    targetTime=time;
+}
 
+double EMGService::getTargetTime()
+{
+    return targetTime;
 }
-double EMGService::getTargetTime(){
-return targetTime;
-}
+
 double EMGService::getLength() const
 {
     return length;
@@ -129,11 +113,12 @@ void EMGService::setLength( double length )
     this->length = length;
 }
 
-void EMGService::setWidget(deprecated__ChartWidget* widget){
-this->widget=widget;
+void EMGService::setWidget(deprecated__ChartWidget* widget)
+{
+    this->widget=widget;
 }
 
-AsyncResult EMGService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager )
+void EMGService::loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
     widget->clear();
     auto channels = core::queryDataPtr<core::EMGChannelPtr>(dataManager);
@@ -190,19 +175,11 @@ AsyncResult EMGService::loadData(IServiceManager* serviceManager, core::IDataMan
 //	length=widget->getLenght() ;
 //}
 
-return AsyncResult_Complete;
 }
 
 osg::Node* EMGService::debugGetLocalSceneRoot()
 {
     return widget->getViewer()->getSceneData();
-}
-
-void EMGService::visibilityChanged( IWidget* widget, bool visible )
-{
-    if ( widget == reinterpret_cast<IWidget*>(this->widget) ) {
-        this->widget->getViewer()->setRenderingEnabled(visible);
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +215,7 @@ ChartService::ChartService() : name("ChartService")
 
 }
 
-AsyncResult ChartService::loadData( IServiceManager* serviceManager, core::IDataManager* dataManager )
+void ChartService::loadData( core::IServiceManager* serviceManager, core::IDataManager* dataManager )
 {
     ITimelinePtr timelinesrv = core::queryServices<ITimeline>(serviceManager);
     if ( timelinesrv ) {
@@ -254,10 +231,9 @@ AsyncResult ChartService::loadData( IServiceManager* serviceManager, core::IData
             timelinesrv->addStream( streams.back() );
         }
     }
-    return AsyncResult_Complete;
 }
 
-IWidget* ChartService::getWidget()
+QWidget* ChartService::getWidget()
 {
     return nullptr;
 }

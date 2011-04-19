@@ -44,7 +44,7 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME() \
 
 //! Dodaje us³ugê zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_SERVICE(className)                              \
-    instance->addService( IServicePtr(new className) );
+    instance->addService( core::IServicePtr(new className) );
 
 //! Dodaje parser zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_PARSER(className)                               \

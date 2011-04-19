@@ -45,6 +45,11 @@ private:
     OpenThreads::Mutex modelMutex;
     //! Muteks blokuj¹cy modyfikacjê stanu.
     OpenThreads::Mutex stateMutex;
+    //! Muteks pauzujacy kontroler
+    OpenThreads::Mutex pauseMutex;
+
+    //! Czy niszczymy kontroler i konczymy watek?
+    bool killThread;
 
 public:
     //!

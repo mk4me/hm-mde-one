@@ -95,7 +95,7 @@ VideoService::VideoService()
 //     widget->actionFormatYUV->setChecked(true);
 }
 
-AsyncResult VideoService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
+void VideoService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
 // 
 // 
@@ -177,7 +177,6 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, core::IDataM
 	} else {
 		OSG_WARN<<"ITimeline not found."<<std::endl;
 	}
-    return AsyncResult_Complete;
 // 
 // 
 //     for ( size_t i = 0; i < widget->getImages().size(); ++i ) {
@@ -189,12 +188,6 @@ AsyncResult VideoService::loadData(IServiceManager* serviceManager, core::IDataM
 //     }
 
     //widget->init()
-}
-
-AsyncResult VideoService::update( double time, double timeDelta )
-{
-    //VideoWidgetOptions* optionsWidget = reinterpret_cast<VideoWidgetOptions*>(this->optionsWidget);
-    return AsyncResult_Complete;
 }
 
 vidlib::PixelFormat VideoService::getOutputFormat()
@@ -248,20 +241,6 @@ osg::Node* VideoService::debugGetLocalSceneRoot()
 {
     //return widget->getViewer()->getSceneData();
     return nullptr;
-}
-
-AsyncResult VideoService::init( IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer )
-{
-    //widget->getViewer()->onInit(viewer);
-    //widget->getViewer()->init();
-    return AsyncResult_Complete;
-}
-
-void VideoService::visibilityChanged( IWidget* widget, bool visible )
-{
-//     if ( widget == reinterpret_cast<IWidget*>(this->widget) ) {
-//         this->widget->getViewer()->setRenderingEnabled(visible);
-//     }
 }
 
 // timeline::Streams VideoService::getStreams()

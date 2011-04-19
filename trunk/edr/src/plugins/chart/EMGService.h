@@ -16,7 +16,7 @@
 
 class deprecated__ChartWidget;
 
-class ChartService : public IService
+class ChartService : public core::IService
 {
     UNIQUE_ID('CHRT', 'SRVC');
 private:
@@ -25,12 +25,12 @@ private:
 
 public:
     ChartService();
-    virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
-    virtual IWidget* getWidget();
+    virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
+    virtual QWidget* getWidget();
     virtual const std::string& getName() const;
 };
 
-class EMGService : public IChart, public IService
+class EMGService : public IChart, public core::IService
 {
     UNIQUE_ID('EMG','SRVC');
 private:
@@ -53,24 +53,18 @@ public:
 // IService
 public:
     //!
-    virtual AsyncResult init(IServiceManager* serviceManager, core::IDataManager* dataManager, osg::Node* sceneRoot, osgViewer::CompositeViewer* viewer);
+    virtual void init(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
     //!
-    virtual IWidget* getWidget();
+    virtual QWidget* getWidget();
     //!
-    virtual AsyncResult compute();
-    //!
-    virtual AsyncResult lateUpdate(double time, double timeDelta);
-    //!
-    virtual AsyncResult update(double time, double timeDelta);
+    virtual void update(double time, double timeDelta);
     //!
     virtual const std::string& getName() const;
 	
-	virtual AsyncResult loadData(IServiceManager* serviceManager, core::IDataManager* dataManager);
+	virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
 
     //!
     virtual osg::Node* debugGetLocalSceneRoot();
-
-    virtual void visibilityChanged(IWidget* widget, bool visible);
 
 // IChart
 public:
