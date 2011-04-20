@@ -724,20 +724,25 @@ void CommunicationWidgetEx::buildLocalView(QTreeWidget* tree)
 CommunicationWidgetEx::TrialTreeItem* CommunicationWidgetEx::createTrialItem(TrialRelationPtr trial)
 {
     TrialTreeItem* item = new TrialTreeItem(trial);
-    //lokalny czy serwerowy?
-    BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-    {
-        boost::cmatch matches;
-        boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
-        //sprawdzamy, czy zgadza sie nazwa folderu
-        if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
-            item->setTextColor(0, QColor(0, 0, 0));
-            item->setMenu(menuTl);
-            break;
-        } else {
-            item->setTextColor(0, QColor(128, 128, 128));
-            item->setMenu(menuTs);
+    //lokalny czy serwerowy? jeœli nie ma w ogole lokalnych prob to zaznaczamy od razu jako serwerowy
+    if(localTrials.size() != 0) {
+        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
+        {
+            boost::cmatch matches;
+            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+            //sprawdzamy, czy zgadza sie nazwa folderu
+            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
+                item->setTextColor(0, QColor(0, 0, 0));
+                item->setMenu(menuTl);
+                break;
+            } else {
+                item->setTextColor(0, QColor(128, 128, 128));
+                item->setMenu(menuTs);
+            }
         }
+    } else {
+        item->setTextColor(0, QColor(128, 128, 128));
+        item->setMenu(menuTs);
     }
     return item;
 }
