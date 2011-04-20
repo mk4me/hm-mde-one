@@ -118,14 +118,14 @@ void CommunicationManager::ping()
 void CommunicationManager::loadLocalTrials()
 {
     //TODO: skanowanie folderow z trialami powinno odbywac sie bezposrednio w CM
-    //localTrials.clear();
-    //dataManager->findLocalTrials();
-    //if(dataManager && dataManager->getLocalTrialsCount() > 0) {
-    //    for(int i = 0; i < dataManager->getLocalTrialsCount(); i++) {
-    //        localTrials.push_back(dataManager->getLocalTrial(i));
-    //    }
-    //}
-    //notify();
+    localTrials.clear();
+    dataManager->findLocalTrials();
+    if(dataManager && dataManager->getLocalTrialsCount() > 0) {
+        for(int i = 0; i < dataManager->getLocalTrialsCount(); i++) {
+            localTrials.push_back(dataManager->getLocalTrial(i));
+        }
+    }
+    notify();
 }
 
 void CommunicationManager::loadFiles(const std::vector<core::IDataManager::Path> files)
@@ -218,36 +218,36 @@ void CommunicationManager::readDbSchemas(const std::string& shallowCopyDir, cons
     ptrM->parseFile(nullptr, metaDataDir);
     metaData = ptrM->getMetadata();
 
-    
-    //budujemy relacje miedzy encjami bazodanowymi od nowa
-    performers.clear();
+    //
+    ////budujemy relacje miedzy encjami bazodanowymi od nowa
+    //performers.clear();
 
-    BOOST_FOREACH(communication::ShallowCopy::Performer performer, ptrS->getShallowCopy().performers)
-    {
-        communication::PerformerPtr p = PerformerPtr(new communication::Performer(performer));
-        performers.push_back(p);
-        std::vector<communication::SessionPtr> sessions;
-        //sesje polaczone z performerami
-        BOOST_FOREACH(communication::ShallowCopy::PerformerConf performerC, ptrS->getShallowCopy().performerConfs)
-        {
-            BOOST_FOREACH(communication::ShallowCopy::Session session, ptrS->getShallowCopy().sessions)
-            {
-                if(performerC.performerID == performer.performerID && performerC.sessionID == session.sessionID) {
-                    communication::SessionPtr s = communication::SessionPtr(new communication::Session(session));
-                    std::vector<communication::TrialPtr> trials;
-                    //kojarzenie sesji z trialami
-                    BOOST_FOREACH(communication::ShallowCopy::Trial trial, shallowCopy.trials)
-                    {
-                        if(trial.sessionID == session.sessionID) {
-                            communication::TrialPtr t = communication::TrialPtr(new communication::Trial(trial));
-                            trials.push_back(t);
-                        }
-                    }
-                    s->setTrials(trials);
-                    sessions.push_back(s);
-                }
-            }
-        }
-        p->setSessions(sessions);
-    }
+    //BOOST_FOREACH(communication::ShallowCopy::Performer performer, ptrS->getShallowCopy().performers)
+    //{
+    //    communication::PerformerPtr p = PerformerPtr(new communication::Performer(performer));
+    //    performers.push_back(p);
+    //    std::vector<communication::SessionPtr> sessions;
+    //    //sesje polaczone z performerami
+    //    BOOST_FOREACH(communication::ShallowCopy::PerformerConf performerC, ptrS->getShallowCopy().performerConfs)
+    //    {
+    //        BOOST_FOREACH(communication::ShallowCopy::Session session, ptrS->getShallowCopy().sessions)
+    //        {
+    //            if(performerC.performerID == performer.performerID && performerC.sessionID == session.sessionID) {
+    //                communication::SessionPtr s = communication::SessionPtr(new communication::Session(session));
+    //                std::vector<communication::TrialPtr> trials;
+    //                //kojarzenie sesji z trialami
+    //                BOOST_FOREACH(communication::ShallowCopy::Trial trial, shallowCopy.trials)
+    //                {
+    //                    if(trial.sessionID == session.sessionID) {
+    //                        communication::TrialPtr t = communication::TrialPtr(new communication::Trial(trial));
+    //                        trials.push_back(t);
+    //                    }
+    //                }
+    //                s->setTrials(trials);
+    //                sessions.push_back(s);
+    //            }
+    //        }
+    //    }
+    //    p->setSessions(sessions);
+    //}
 }
