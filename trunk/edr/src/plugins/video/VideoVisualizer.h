@@ -22,7 +22,7 @@ class VideoVisualizer : public core::IVisualizer
     struct Refresher;
     struct WidgetUpdater;
 
-    UNIQUE_ID('VIDE','VISU')
+    UNIQUE_ID("{82978BE1-6A5F-4CE8-9CCE-302F82256A20}", "Video Visualizer");
 private:
     //! Nazwa wizualizatora.
     std::string name;

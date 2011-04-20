@@ -239,8 +239,21 @@ int DataManager::getApplicationSkinsFilePathCount()
     return applicationSkinsPaths.size();
 }
 
+const boost::filesystem::path& DataManager::getApplicationDataPath() const
+{
+    UTILS_ASSERT(!applicationDataPath.empty(), "Path should be initialized first");
+    return applicationDataPath;
+}
+
+const boost::filesystem::path& DataManager::getUserDataPath() const
+{
+    UTILS_ASSERT(!userDataPath.empty(), "Path should be initialized first");
+    return userDataPath;
+}
+
 const boost::filesystem::path& DataManager::getResourcesPath() const
 {
+    UTILS_ASSERT(!resourcesPath.empty(), "Path should be initialized first");
     return resourcesPath;
 }
 
@@ -249,9 +262,28 @@ const boost::filesystem::path& DataManager::getTrialsPath() const
     return trialsPath;
 }
 
-void DataManager::setResourcesPath(const IDataManager::Path& resources)
+void DataManager::setUserDataPath( const Path& path )
 {
-    resourcesPath = resources;
+    UTILS_ASSERT(!path.empty(), "Path should not be empty");
+    //UTILS_ASSERT(!path.is_relative(), "Path should not be relative");
+    //UTILS_ASSERT(!path.has_filename(), "Path should not point to file");
+    userDataPath = path;
+}
+
+void DataManager::setApplicationDataPath( const Path& path )
+{
+    UTILS_ASSERT(!path.empty(), "Path should not be empty");
+    //UTILS_ASSERT(!path.is_relative(), "Path should not be relative");
+    //UTILS_ASSERT(!path.has_filename(), "Path should not point to file");
+    applicationDataPath = path;
+}
+
+void DataManager::setResourcesPath(const Path& path)
+{
+    UTILS_ASSERT(!path.empty(), "Path should not be empty");
+    //UTILS_ASSERT(!path.is_relative(), "Path should not be relative");
+    //UTILS_ASSERT(!path.has_filename(), "Path should not point to file");
+    resourcesPath = path;
 }
 
 void DataManager::setTrialsPath(const IDataManager::Path& trials)
@@ -719,3 +751,7 @@ void DataManager::removeObjects( Predicate predicate )
         }
     }
 }
+
+
+
+

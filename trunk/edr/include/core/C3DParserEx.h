@@ -13,35 +13,40 @@ class MarkerSet : public kinematic::IMarkerSet
 {
 public:
     MarkerSet() {
-        markers.reserve(59);
+        markers.reserve(53);
     }
 
 public:
     void addMarker(core::MarkerChannelConstPtr marker) {
+        //core::tripleFloat v = marker->getValue(0.0);
+        //std::cout << "Marker " << marker->getName() << " : " << v.x << ", " << v.y << ", " << v.z << std::endl;
         markers.push_back(marker);
     }
 
 public:
     virtual int getMarkersCount() const { return markers.size(); }
     virtual osg::Vec3 getPosition(int markerNo, double normalizedTime) const {
-        float time = normalizedTime * markers[markerNo]->getLength();
+        double time = normalizedTime * markers[markerNo]->getLength();
 
-        // hack, dla normalizedTime == 1 dostaje sie bzdury
-        int sps = markers[markerNo]->getSamplesPerSec();
-        int currentSample = time * sps;
-        int samples = sps * markers[markerNo]->getLength();
+        //// hack, dla normalizedTime == 1 dostaje sie bzdury
+        //int sps = markers[markerNo]->getSamplesPerSec();
+        //int currentSample = time * sps;
+        //int samples = sps * markers[markerNo]->getLength();
 
-        if (currentSample >= samples) {
-            time = static_cast<double>(samples - 1) /  sps;
-        }
+        //if (currentSample >= samples) {
+        //    time = static_cast<double>(samples - 1) /  sps;
+        //}
 
-        return markers[markerNo]->getValue(time) * getScale();
+       
+        osg::Vec3 res = markers[markerNo]->getValue(osg::minimum(time, markers[markerNo]->getLength()));
+        return res * getScale();
     }
     virtual std::string getMarkerName(int markerNo) const {
         return markers[markerNo]->getName();
     }
     virtual double getDuration() const {
-        return markers[0]->getLength();
+        double duration = markers[0]->getLength();
+        return duration;
     }
 
 private:
@@ -54,7 +59,7 @@ CORE_DEFINE_WRAPPER(MarkerSet, utils::PtrPolicyBoost);
 
 class C3DParser : public core::IParser
 {
-    UNIQUE_ID('C3DP','PARS');
+    UNIQUE_ID("{B65BED74-122E-445F-A455-5B426192A6CA}","C3d parser");
 
 private:
     std::vector<core::ObjectWrapperPtr> GRFChannels;

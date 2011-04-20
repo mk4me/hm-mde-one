@@ -117,6 +117,13 @@ public:
     {
         return id;
     }     
+
+    //! \return nazwa pluginu
+    virtual std::string getDescription() const
+    {
+        return name;
+    }
+
     //! \return Nazwa pluginu.
     const std::string& getName() const
     {

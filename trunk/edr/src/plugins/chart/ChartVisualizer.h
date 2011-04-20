@@ -19,7 +19,7 @@
 class ChartVisualizer : public QObject, public core::IVisualizer
 {
     Q_OBJECT;
-    UNIQUE_ID('CHRT','VISU');
+    UNIQUE_ID("{68C4E6D6-5EC8-4641-8845-F3FF3766B709}", "Chart Visualizer");
 private:
     //! Nazwa wizualizatora.
     std::string name;

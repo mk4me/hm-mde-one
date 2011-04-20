@@ -9,7 +9,13 @@
 #ifndef __HEADER_GUARD__IIDENTIFIABLE_H__
 #define __HEADER_GUARD__IIDENTIFIABLE_H__
 
+#include <boost/shared_ptr.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/string_generator.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <core/BaseDataTypes.h>
+
 
 //! Interfejs reprezentuj¹cy obiekt mo¿liwy do identyfikacji.
 class IIdentifiable
@@ -17,23 +23,27 @@ class IIdentifiable
 public:
     virtual ~IIdentifiable() {}
     virtual UniqueID getID() const = 0;
+    virtual std::string getDescription() const = 0;
 };
 
-//! Makro s³u¿¹ce do nadania identyfikatora obiektowi implementuj¹cemu
-//! interfejs IIdentifiable.
-//! Przyk³ad u¿ycia: UNIQUE_ID('MAJR','T001')
-#define UNIQUE_ID(major, minor)            \
-private:                                \
-    UniqueIdSpec<major, minor> __id;    \
-public:                                 \
-    virtual UniqueID getID() const      \
-    {                                   \
-        return __id;                    \
-    }                                   \
-    static UniqueID getClassID()        \
-    {                                   \
-        return UniqueID(major, minor);  \
-    }        
-
+#define UNIQUE_ID(uuidStr, shortDescription)                            \
+ public:                                                                \
+    static boost::uuids::uuid getClassID()                              \
+    {                                                                   \
+        std::string s(uuidStr);                                         \
+        boost::uuids::string_generator gen;                             \
+        return gen(s);                                                  \
+    }                                                                   \
+                                                                        \
+    virtual boost::uuids::uuid getID() const                            \
+    {                                                                   \
+        return getClassID();                                            \
+    }                                                                   \
+                                                                        \
+    virtual std::string getDescription() const                          \
+    {                                                                   \
+        return shortDescription;                                        \
+    }                                                                   \
+private:
 
 #endif  // __HEADER_GUARD__IIDENTIFIABLE_H__

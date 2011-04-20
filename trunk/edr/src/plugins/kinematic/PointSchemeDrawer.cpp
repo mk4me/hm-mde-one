@@ -23,9 +23,12 @@ void PointSchemeDrawer::deinit()
 
 void PointSchemeDrawer::update()
 {
+    //std::cout << "-----------------------------------------------" << std::endl;
     auto markers = getVisualiztionScheme()->getStates(dataToDraw);
     for (int i = markers.size() - 1; i >= 0; --i) {
         points[i]->setPosition(markers[i].position);
+        //std::cout << "M" << i << "Pos: (" << markers[i].position[0] << ", " 
+        //          << markers[i].position[1] << ", " << markers[i].position[2] << ")" << std::endl;
     }
 }
 

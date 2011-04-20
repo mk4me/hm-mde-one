@@ -19,7 +19,7 @@ class TimelineWidget;
 
 class TimelineService : public ITimeline, public core::IService
 {
-    UNIQUE_ID('TIML','SRVC');
+    UNIQUE_ID("{0157346E-D0F3-4A4F-854F-37C87FA3E5F9}", "Timeline Service");
 private:
     //! Widget.
     TimelineWidget* widget;

@@ -8,7 +8,7 @@ CORE_DEFINE_WRAPPER(communication::MetaData::MetaData, utils::PtrPolicyBoost);
 
 class MetadataParser : public core::IParser
 {
-    UNIQUE_ID('MDDB','PARS');
+    UNIQUE_ID("{9D535CB5-40B9-46B0-8F58-12999E993B32}", "Metadata Parser");
 public:
     MetadataParser();
 

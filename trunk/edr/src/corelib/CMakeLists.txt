@@ -29,6 +29,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/C3DChannels.h
 	${HEADER_PATH}/ChartSerie.h
 	${HEADER_PATH}/LineChartSerie.h
+	#${HEADER_PATH}/FoldersInfo.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -79,6 +80,7 @@ set(TARGET_SRC
 	Data.cpp
 	ChartSerie.cpp
 	C3DChannels.cpp
+	#FoldersInfo.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

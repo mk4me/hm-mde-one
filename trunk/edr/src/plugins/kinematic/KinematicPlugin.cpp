@@ -9,10 +9,10 @@
 #include <plugins/kinematic/KinematicParser.h>
 #include <core/Log.h>
 
-CORE_PLUGIN_BEGIN("kinematic", UniqueID('KINE', 'PLUG'));
-CORE_PLUGIN_ADD_PARSER(KinematicParser);
-CORE_PLUGIN_ADD_VISUALIZER(KinematicVisualizer);
-CORE_PLUGIN_ADD_SERVICE(KinematicService);
+CORE_PLUGIN_BEGIN("kinematic", UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-A5FE-52AA182E1279}"));
+    CORE_PLUGIN_ADD_PARSER(KinematicParser);
+    CORE_PLUGIN_ADD_VISUALIZER(KinematicVisualizer);
+    CORE_PLUGIN_ADD_SERVICE(KinematicService);
 CORE_PLUGIN_END;
 
 using namespace kinematic;

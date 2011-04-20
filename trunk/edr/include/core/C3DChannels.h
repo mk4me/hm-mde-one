@@ -18,38 +18,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
-    template <>
-    struct DataOperatorsManipulator<osg::Vec3, float, osg::Vec3>
-    {
-        bool isLower(const osg::Vec3& p1, const osg::Vec3& p2)
-        {
-            return p1 < p2;
-        }
-        osg::Vec3 normalize(const osg::Vec3& p, const osg::Vec3& min, const osg::Vec3& max) const
-        {
-            UTILS_ASSERT(false);
-            return p;
-        }
-        osg::Vec3 interpolate(const osg::Vec3& p1, const osg::Vec3& p2, float t) const
-        {
-            osg::Vec3 res;
-            res[0] = p2[0] - p1[0];
-            res[1] = p2[1] - p1[1];
-            res[2] = p2[2] - p1[2];
-            
-            res[0] *= t;
-            res[1] *= t;
-            res[2] *= t;
-
-            res[0] += p1[0];
-            res[1] += p1[1];
-            res[2] += p1[2];
-            
-            return res;
-        }
-    };
-
-    typedef DataChannel<osg::Vec3, float/*, DataOperatorsManipulator<osg::Vec3, float, osg::Vec3>*/ > VectorChannel;
+    typedef DataChannel<osg::Vec3, float> VectorChannel;
     typedef shared_ptr<VectorChannel> VectorChannelPtr;
 
     typedef DataChannel<float, float> ScalarChannel;
@@ -111,14 +80,14 @@ namespace core {
     typedef shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
 
-    class MarkerChannel : public VectorChannel 
+    class MarkerChannel : public DataChannel<osg::Vec3>//public VectorChannel 
     {
-    private:
-        MarkerChannel(int samplesPerSec);
+    public: // hack do testow
+        MarkerChannel(int samplesPerSec) : DataChannel(samplesPerSec) {}
         
     public:        
         MarkerChannel(const MarkerChannel& channel) :
-            VectorChannel(channel)
+            DataChannel(channel)
             { }
         MarkerChannel(C3D_Data& c3dData, int channelNo);
     public:

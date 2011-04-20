@@ -14,7 +14,7 @@
 
 class VideoParser : public core::IParser
 {
-    UNIQUE_ID('VIDE','PARS');
+    UNIQUE_ID("{E81ED99E-6682-4FE7-9E52-0BBCABC8BCBC}","Video Parser");
 private:
     //! Obiekt wewnêtrzny.
     core::ObjectWrapperPtr adapter;

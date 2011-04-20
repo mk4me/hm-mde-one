@@ -52,7 +52,7 @@ ScalarChannel( c3dData.getHeader()->getNumberOfAnalogSamplesPerFrame()* c3dData.
 
 
 MarkerChannel::MarkerChannel( C3D_Data& c3dData, int channelNo ) :
-VectorChannel( c3dData.getHeader()->getFrameRate())
+DataChannel( c3dData.getHeader()->getFrameRate())
 {
     ::Data* data = c3dData.getData();
     ::MarkerHeader* header = c3dData.getHeader();

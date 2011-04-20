@@ -17,7 +17,7 @@ class deprecated__ChartWidget;
 
 class GRFService : public IChart, public core::IService
 {
-    UNIQUE_ID('GRF','SRVC');
+    UNIQUE_ID("{92A59449-78EC-40C9-9DE4-57FCAEA93E68}", "GRF Service");
 private:
  //! Widget.
     deprecated__ChartWidget* widget;

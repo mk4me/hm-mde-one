@@ -9,7 +9,7 @@ CORE_DEFINE_WRAPPER(communication::ShallowCopy::ShallowCopy, utils::PtrPolicyBoo
 
 class ShallowCopyParser : public core::IParser
 {
-    UNIQUE_ID('SCDB','PARS');
+    UNIQUE_ID("{C11AD1FE-B44F-4F6B-80EE-B51DCE1758E8}", "Shallow Copy Parser");
 public:
     ShallowCopyParser();
 

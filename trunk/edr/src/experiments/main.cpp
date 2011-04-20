@@ -1,5 +1,4 @@
 #include <iostream>
-#include <osg/Vec3>
 #include <core/C3DChannels.h>
 #include <core/C3DParserEx.h>
 using namespace std;

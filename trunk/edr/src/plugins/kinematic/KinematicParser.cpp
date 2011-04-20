@@ -15,12 +15,10 @@ using namespace boost::filesystem;
 
 KinematicParser::KinematicParser()
 {
-    kinematicMarkers = core::ObjectWrapper::create<KinematicModel>();
-    kinematicSkeleton = core::ObjectWrapper::create<KinematicModel>();
     kinematicMarkersSkeleton = core::ObjectWrapper::create<KinematicModel>();
-    schemeMarkers = core::ObjectWrapper::create<SkeletalVisualizationScheme>(); 
-    schemeSkeleton = core::ObjectWrapper::create<SkeletalVisualizationScheme>();
     schemeMarkersSkeleton = core::ObjectWrapper::create<SkeletalVisualizationScheme>();
+    kinematicMarkers = core::ObjectWrapper::create<KinematicModel>();
+    schemeMarkers = core::ObjectWrapper::create<SkeletalVisualizationScheme>();
 }
 
 KinematicParser::~KinematicParser()
@@ -46,6 +44,24 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
         bvh.parse(modelPtr, path.string());
     } else if (extension(path) == ".c3d") {
         fromC3D = true;
+
+        // hack - trzeba to jakos sprytniej rozwiazac! o_O
+        boost::filesystem::path p = path.parent_path();
+        if (is_directory(p)) {
+            bool hasSkeletonFile = false;
+            for (auto it = directory_iterator(p); it != directory_iterator(); it++) {
+
+                std::string ext = extension(*it);
+                if (ext == ".amc" || ext == ".asf" || ext == ".bvh") {
+                    hasSkeletonFile = true;
+                    break;
+                }
+            }
+
+            if (hasSkeletonFile) {
+                return;
+            }
+        }
     }
 
     std::vector<MarkerSetPtr> markers = core::queryDataPtr(dataManager);
@@ -54,7 +70,7 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
     if (markers.size() > 0) {
         MarkerSetConstPtr ms = markers[0];
         switch(ms->getMarkersCount()) {
-        case 39:
+       case 39:
             vsk->parse("data/resources/trial/M39.vsk");
             break;
         case 53:
@@ -69,7 +85,7 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
         KinematicModelPtr kin(new KinematicModel);
         // hack , co jak dostaniemy wiecej markerow?
         kin->setMarkersData(markers[0]);
-        
+
         kinematicMarkers->set(kin);
         SkeletalVisualizationSchemePtr scheme = SkeletalVisualizationScheme::create();
         scheme->setKinematicModel(kin);
@@ -78,16 +94,6 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
         }
         schemeMarkers->set(scheme);
         schemeMarkers->setName(path.filename() + " - markers");
-    }
-
-    if (modelPtr && modelPtr->getFrames().size() > 0) {
-        KinematicModelPtr kin(new KinematicModel);
-        kin->setSkeletalData(modelPtr);
-        kinematicSkeleton->set(kin);
-        SkeletalVisualizationSchemePtr scheme = SkeletalVisualizationScheme::create();
-        scheme->setKinematicModel(kin);
-        schemeSkeleton->set(scheme);
-        schemeSkeleton->setName(path.filename() + " - skeleton");
     }
 
     if (markers.size() > 0 && modelPtr && modelPtr->getFrames().size() > 0) {
@@ -101,7 +107,7 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
             scheme->setMarkersDataFromVsk(vsk);
         }
         schemeMarkersSkeleton->set(scheme);
-        schemeMarkersSkeleton->setName(path.filename() + " - skeleton + markers");
+        schemeMarkersSkeleton->setName(path.filename());
     }
 }
 
@@ -118,9 +124,7 @@ std::string KinematicParser::getSupportedExtensions() const
 void KinematicParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 {
     objects.push_back(kinematicMarkers);
-    objects.push_back(kinematicSkeleton);
+    objects.push_back(schemeMarkers);
     objects.push_back(kinematicMarkersSkeleton);
-    objects.push_back(schemeMarkers); 
-    objects.push_back(schemeSkeleton);
     objects.push_back(schemeMarkersSkeleton);
 }

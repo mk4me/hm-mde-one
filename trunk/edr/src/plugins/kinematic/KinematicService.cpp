@@ -14,8 +14,11 @@
 #include <core/Log.h>
 #include <core/IService.h>
 #include <boost/foreach.hpp>
-#include <core/Log.h>
 #include <core/ObjectWrapper.h>
+#include <core/FoldersInfo.h>
+#include <boost/filesystem.hpp>
+#include <QtCore/QObject>
+#include <core/Log.h>
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
@@ -23,11 +26,9 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <plugins/kinematic/skeletalVisualizationScheme.h>
 #include <osgGA/OrbitManipulator>
-#include "ISchemeDrawer.h"
-#include "OsgSchemeDrawer.h"
-#include "LineSchemeDrawer.h"
-#include "PointSchemeDrawer.h"
+#include "SchemeDrawerContainer.h"
 #include "KinematicService.h"
+
 
 using namespace core;
 using namespace osg;
@@ -62,32 +63,49 @@ void KinematicService::loadData(IServiceManager* serviceManager, core::IDataMana
 
 void KinematicVisualizer::setUp( IObjectSource* source )
 {
-    if (rootNode) {
-        for (int i = rootNode->getNumChildren() - 1; i >= 0; --i) {
-            rootNode->removeChild(i);
-        }
-    }
-
-    rootNode->addChild(createFloor());
-
+    resetScene();
+    refillDrawersMaps();
     SkeletalVisualizationSchemeConstPtr scheme = source->getObject(0);
     
-    if (scheme) {
-        drawers.clear();
-        OsgSchemeDrawerPtr drawer1(new PointSchemeDrawer(DrawSkeleton));
-        OsgSchemeDrawerPtr drawer2(new PointSchemeDrawer(DrawMarkers));
-        OsgSchemeDrawerPtr drawer3(new LineSchemeDrawer(DrawSkeleton));
-        OsgSchemeDrawerPtr drawer4(new ConeDrawer(DrawMarkers));
-        OsgSchemeDrawerPtr drawer5(new ConeDrawer(DrawSkeleton));
-        drawers.push_back(drawer1);
-        drawers.push_back(drawer2);
-        drawers.push_back(drawer3);
-        drawers.push_back(drawer4);
-        drawers.push_back(drawer5);
-        for (unsigned int i = 0; i < drawers.size(); i++) {
-            drawers[i]->init(scheme);
-            rootNode->addChild(drawers[i]->getNode());
+    if (scheme) {        
+        if (scheme->getKinematicModel()->hasSkeleton()) {
+            SchemeDrawerContainerPtr skeleton = drawersByName["Skeleton"];
+            skeleton->addDrawer(OsgSchemeDrawerPtr(new LineSchemeDrawer(DrawSkeleton)));
+            skeleton->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 10, 0.05f)));
+            skeleton->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawSkeleton, 2, 0.08f)));
+
+            SchemeDrawerContainerPtr rectangular = drawersByName["Rectangular"];
+            rectangular->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 4, 0.45f, osg::Vec4(0, 1, 0, 1))));
+        } else {
+            actionByName["Skeleton"]->setVisible(false);
+            actionByName["Rectangular"]->setVisible(false);
         }
+
+        if (scheme->getKinematicModel()->hasMarkers()) {
+            SchemeDrawerContainerPtr markers = drawersByName["Markers"];
+            markers->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.08f)));
+            markers->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.02f)));
+            currentDrawer = markers;
+        } else {
+            actionByName["Markers"]->setVisible(false);
+        }
+
+        if (scheme->getKinematicModel()->hasMarkers() && scheme->getKinematicModel()->hasSkeleton()) {
+            SchemeDrawerContainerPtr both = drawersByName["Both"];
+            both->addDrawer(OsgSchemeDrawerPtr(new LineSchemeDrawer(DrawSkeleton)));
+            both->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 10, 0.05f)));
+            both->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawSkeleton, 2, 0.08f)));
+            both->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.08f)));
+            both->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.02f)));
+            currentDrawer = both;
+        } else {
+            actionByName["Both"]->setVisible(false);
+        }
+               
+        for (auto it = drawersByName.begin(); it != drawersByName.end(); it++) {
+            (it->second)->init(scheme);
+        }
+        transformNode->addChild(currentDrawer->getNode());
     }
  }
 
@@ -115,13 +133,13 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     widget->addEventHandler(new osgGA::StateSetManipulator(
         widget->getCamera()->getOrCreateStateSet()
         ));
-
-    osgGA::OrbitManipulator *cameraManipulator = new osgGA::OrbitManipulator();
+    
+    ref_ptr<osgGA::OrbitManipulator> cameraManipulator = new osgGA::OrbitManipulator();
     cameraManipulator->setElevation(30.0);
     cameraManipulator->setHeading(10.0);
-    widget->setCameraManipulator(cameraManipulator);
-    //widget->setMinimumSize(100, 100);
 
+    widget->setCameraManipulator(cameraManipulator);
+    
     // stworzenie i dodanie œwiat³a przyczepionego do kamery
     ref_ptr<Light> light = new osg::Light;
     light->setLightNum(1);
@@ -129,15 +147,28 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     light->setAmbient(osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
     light->setDiffuse(osg::Vec4(1.0f,1.0f,1.0f,0.0f));
     light->setConstantAttenuation(1.0f);
-    /*light->setLinearAttenuation(1.0f/MODEL_SIZE);
-    light->setQuadraticAttenuation(1.0f/osg::square(MODEL_SIZE));*/
-
+    
     widget->setLight(light);
     // tworzenie kamery
     widget->getCamera()->setClearColor(osg::Vec4(0.0f, 0.1f, 0.0f, 1));
-    //widget->getCamera()->setNearFarRatio(0.000000001);
-    /*osg::Vec3 pos( 0.0f, 0.0f, 9.0f);
-    osg::Vec3 up(0, 1, 0);*/
+
+    actionSwitchAxes = new QAction("Switch Axes", widget);
+    actionSwitchAxes->setCheckable(true);
+    actionSwitchAxes->setChecked(false );
+    connect(actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
+    actions.push_back(actionSwitchAxes);
+
+    QMenu* testMenu = new QMenu("testMenu", widget);
+    QActionGroup* group = new QActionGroup(widget);
+    connect(group, SIGNAL(triggered(QAction *)), this, SLOT(actionTriggered(QAction*)));
+
+    addAction(actions, "Markers", testMenu, group);
+    addAction(actions, "Skeleton", testMenu, group);
+    addAction(actions, "Both", testMenu, group);
+    addAction(actions, "Rectangular", testMenu, group);
+    actions.push_back(testMenu);
+
+
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
     osg::Vec3 up(0,0,1);
 
@@ -168,21 +199,9 @@ void KinematicVisualizer::update( double deltaTime )
 
 void KinematicVisualizer::updateAnimation()
 {
-    for (int i = drawers.size() - 1; i >= 0; --i) {
-        drawers[i]->update();
+    if (currentDrawer) {
+        currentDrawer->update();
     }
-    //if (scheme) {
-    //    double interval = widget->getTimerInterval() / 1000.0;
-    //    double duration = scheme->getDuration();
-    //    double time = scheme->getNormalizedTime() * duration;
-    //    time += interval;
-    //    if (time >= duration) {
-    //        time = 0.0;
-    //    } else {
-    //        time = time / duration;
-    //    }
-    //    scheme->setNormalizedTime(time);
-    //}
 }
 
 GeodePtr KinematicVisualizer::createFloor()
@@ -192,16 +211,16 @@ GeodePtr KinematicVisualizer::createFloor()
     osg::ref_ptr<osg::Geometry> linesGeom = new osg::Geometry();
 
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array(44);
-    
+    osg::Vec3 v;
     for (int i = 0; i < 11; i++) {
-        /*(*vertices)[2 * i] = osg::Vec3(-5.0f + i, 0, -5.0f);
-        (*vertices)[2 * i + 1] = osg::Vec3(-5.0f + i, 0, 5.0f);
-        (*vertices)[20 + 2 * i] = osg::Vec3(-5.0f, 0, -5.0f + i);
-        (*vertices)[20 + 2 * i + 1] = osg::Vec3(5.0f, 0, -5.0f + i);*/
-        (*vertices)[2 * i] = osg::Vec3(-10.0f + 2*i, -10.0f, 0);
-        (*vertices)[2 * i + 1] = osg::Vec3(-10.0f + 2*i, 10.0f, 0);
-        (*vertices)[22 + 2 * i] = osg::Vec3(-10.0f, -10.0f + 2*i, 0);
-        (*vertices)[22 + 2 * i + 1] = osg::Vec3(10.0f, -10.0f + 2*i, 0);
+        v.set(-10.0f + 2*i, -10.0f, 0);
+        (*vertices)[2 * i] = v;      
+        v.set(-10.0f + 2*i, 10.0f, 0);
+        (*vertices)[2 * i + 1] = v;   
+        v.set(-10.0f, -10.0f + 2*i, 0);
+        (*vertices)[22 + 2 * i] = v;   
+        v.set(10.0f, -10.0f + 2*i, 0);
+        (*vertices)[22 + 2 * i + 1] = v;
 
     }
 
@@ -224,5 +243,59 @@ GeodePtr KinematicVisualizer::createFloor()
 
 QIcon* KinematicVisualizer::createIcon()
 {
-    return new QIcon("data/resources/icons/3D.png");
+    boost::filesystem::path p = core::FoldersInfo::getPath(core::FoldersInfo::Resources);
+    p /= "3D.png";
+
+    return new QIcon(p.string().c_str());
+}
+
+void KinematicVisualizer::setAxis( bool xyz )
+{
+    if (xyz) {
+        osg::Quat q(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f));
+        transformNode->setAttitude(q);
+    } else {
+        osg::Quat q;
+        transformNode->setAttitude(q);
+    }
+}
+
+void KinematicVisualizer::actionTriggered( QAction* action )
+{
+    resetScene();
+    currentDrawer = drawersByAction[action];
+    transformNode->addChild(currentDrawer->getNode());
+}
+
+void KinematicVisualizer::resetScene()
+{
+    if (rootNode) {
+        for (int i = rootNode->getNumChildren() - 1; i >= 0; --i) {
+            rootNode->removeChild(i);
+        }
+    }
+
+    transformNode = new osg::PositionAttitudeTransform();
+    rootNode->addChild(createFloor());
+    rootNode->addChild(transformNode);
+}
+
+void KinematicVisualizer::addAction(std::vector<QObject*>& actions, const std::string& name, QMenu* menu, QActionGroup* group )
+{
+    QAction* act = menu->addAction(name.c_str());
+    
+    actionByName[name] = act;
+    act->setCheckable(true);
+    group->addAction(act); 
+}
+
+void KinematicVisualizer::refillDrawersMaps()
+{
+    drawersByAction.clear();
+    drawersByName.clear();
+    for (std::map<std::string, QAction*>::iterator it = actionByName.begin(); it != actionByName.end(); it++) {
+        SchemeDrawerContainerPtr drawer(new SchemeDrawerContainer());
+        drawersByAction[it->second] = drawer;
+        drawersByName[it->first] = drawer;
+    }
 }

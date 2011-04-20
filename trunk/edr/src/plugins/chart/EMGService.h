@@ -18,7 +18,7 @@ class deprecated__ChartWidget;
 
 class ChartService : public core::IService
 {
-    UNIQUE_ID('CHRT', 'SRVC');
+    UNIQUE_ID("{CDE9EC79-7AFE-4E1D-ABEC-DF76138C3BAE}", "Chart description");
 private:
     std::vector<timeline::StreamPtr> streams;
     std::string name;
@@ -32,7 +32,7 @@ public:
 
 class EMGService : public IChart, public core::IService
 {
-    UNIQUE_ID('EMG','SRVC');
+    UNIQUE_ID("{CDE9EC79-7AFE-4E1D-ABEC-DF76138C3BAE}", "EMG Service");
 private:
  //! Widget.
     deprecated__ChartWidget* widget;

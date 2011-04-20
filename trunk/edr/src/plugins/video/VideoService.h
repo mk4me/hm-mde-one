@@ -20,7 +20,7 @@ class VideoWidgetOptions;
 
 class VideoService : public core::IService
 {
-    UNIQUE_ID('VIDE','SRVC');
+    UNIQUE_ID("{B9564CD1-EA98-4D4C-A41D-9339B6F37673}", "Video Service");
 
 private:
     // TODO

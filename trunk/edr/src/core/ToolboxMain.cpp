@@ -229,6 +229,24 @@ QMainWindow(parent), updateEnabled(true)
     DataManager::createInstance();
     dataManager = DataManager::getInstance();
 
+    boost::filesystem::path userPath(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString());
+    userPath /= "EDR";
+    dataManager->setUserDataPath(userPath);
+
+    boost::filesystem::path appDataPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).toStdString());
+    appDataPath /= "EDR";
+    dataManager->setApplicationDataPath(appDataPath);
+
+    boost::filesystem::path resourcesPath = boost::filesystem::initial_path();
+    // TODO : usunac folder data
+    resourcesPath /= "data";
+    resourcesPath /= "resources";
+    dataManager->setResourcesPath(resourcesPath);
+
+    const core::IDataManager::Path& testPathNo1 = dataManager->getResourcesPath();
+    const core::IDataManager::Path& testPathNo2 = dataManager->getUserDataPath();
+    const core::IDataManager::Path& testPathNo3 = dataManager->getApplicationDataPath();
+    
     // VM
     VisualizerManager::createInstance();
     visualizerManager = VisualizerManager::getInstance();

@@ -50,8 +50,14 @@ public:
 	UTILS_DEPRECATED(virtual bool isLoadLocalTrialData() const = 0);
     //! \param load ustaw flagê ³adowania lokalnej próby pomiarowej.
 	UTILS_DEPRECATED(virtual void setLoadLocalTrialData(bool load) = 0);
-    //! \return œcie¿ka do katalogu z zasobami
-	virtual const Path& getResourcesPath() const = 0;
+    
+    
+    //! zwraca pelna sciezke do folderu "MyDocuments\EDR"
+    virtual const Path& getUserDataPath() const = 0;
+    //! zwraca pelna sciezke do folderu "ApplicationData\EDR"
+    virtual const Path& getApplicationDataPath() const = 0;
+    //! zwraca pelna sciezke do folderu z zasobami aplikacji
+    virtual const Path& getResourcesPath() const = 0;
     //! \return œcie¿ka do katalogu z próbami pomiarowymi
 	virtual const Path& getTrialsPath() const = 0;
 

@@ -18,8 +18,11 @@ set(PRIVATE_H
 	mainwindow.h
 	OsgSchemeDrawer.h
 	PointSchemeDrawer.h
+	GLPointSchemeDrawer.h
+	GLLineSchemeDrawer.h
 	SkeletonViewerLogic.h
 	UniqueCollection.h
+	SchemeDrawerContainer.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -43,13 +46,17 @@ set(TARGET_SRC
 	LineSchemeDrawer.cpp
 	mainwindow.cpp
 	PointSchemeDrawer.cpp
+	GLPointSchemeDrawer.cpp
+	GLLineSchemeDrawer.cpp
 	SkeletonViewerLogic.cpp
+	SchemeDrawerContainer.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
 	mainwindow.h
+	KinematicService.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})

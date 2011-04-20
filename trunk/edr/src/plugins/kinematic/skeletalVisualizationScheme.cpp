@@ -167,18 +167,21 @@ void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelCo
     if (kinematicModel->getSkeletalData()) {
         auto jointMap = kinematicModel->getJoints();
         int count = jointMap.size();
-        jointMarkersStates.reserve(count + 5);
-        jointMarkersStates.resize(count);
-        osg::Vec4 gold(1,1,0,1);
-        for (int i = 0; i < count; i++) {
-            jointMarkersStates[i].color = gold;
-        }
+        //jointMarkersStates.reserve(count + 5);
+        
         auto it = jointMap.begin();
         for (int index = 0; it != jointMap.end(); it++) {
             if (it->second->isActive()) {
                 visJoints[it->second] = index++;
             }
         }
+
+        jointMarkersStates.resize(visJoints.size());
+        osg::Vec4 gold(1,1,0,1);
+        for (int i = 0; i < visJoints.size(); i++) {
+            jointMarkersStates[i].color = gold;
+        }
+
         hAnimSkeleton::Ptr skeleton = kinematicModel->getHAnimSkeleton();
         createSkeletonConnections(skeleton->getRoot());
         updateJointTransforms(0.0);

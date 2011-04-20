@@ -8,7 +8,7 @@
 
 class UserInterfaceService: public core::IService, public IUserInterface
 {
-    UNIQUE_ID('UI','SRVC');
+    UNIQUE_ID("{DACF9F0D-0B78-438C-B369-5F8EE087BF8C}", "User Interface Service");
 public:
     UserInterfaceService();
     virtual ~UserInterfaceService();

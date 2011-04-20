@@ -6,7 +6,7 @@
 #include <vidlib/osg/FFmpegImageStream.h>
 #include "VideoVisualizer.h"
 
-CORE_PLUGIN_BEGIN("video", UniqueID('VIDE', 'PLUG'));
+CORE_PLUGIN_BEGIN("video", UID::GenerateUniqueID("{4F39348A-3364-4B2F-B748-B1CF578C0628}"));
 CORE_PLUGIN_ADD_SERVICE(VideoService);
 CORE_PLUGIN_ADD_PARSER(VideoParser);
 CORE_PLUGIN_ADD_VISUALIZER(VideoVisualizer);

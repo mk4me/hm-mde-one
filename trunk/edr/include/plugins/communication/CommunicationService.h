@@ -20,7 +20,7 @@ class CommunicationWidgetEx;
 
 class CommunicationService : public core::IService, public ICommunication
 {
-    UNIQUE_ID('COMM','SRVC');
+    UNIQUE_ID("{441D9894-1019-4382-97EE-F18B511A49CB}","Communication Service");
 private:
     /**
     Widok serwisu

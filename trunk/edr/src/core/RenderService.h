@@ -58,7 +58,7 @@ typedef osg::ref_ptr<osg::Group> osgGroupPtr;
 
 class RenderService: public IRenderService
 {
-    UNIQUE_ID('REND','SRVC');
+    UNIQUE_ID("{A31152B5-B900-4C69-983A-8B2B1F8FF6DB}", "Render Service");
 public:
     RenderService();
     virtual ~RenderService();

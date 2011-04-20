@@ -6,7 +6,8 @@ data/resources, próby pomiarowe s¹ wyszukiwane i pobierane do data/trials.
 */
 #ifndef HEADER_GUARD_CORE_DATAMANAGER_H__
 #define HEADER_GUARD_CORE_DATAMANAGER_H__
-
+#include <boost/filesystem.hpp>
+#include <boost/type_traits.hpp>
 #include <core/IDataManager.h>
 #include <core/IParser.h>
 #include <utils/Utils.h>
@@ -24,12 +25,23 @@ public:
     virtual const std::string& getApplicationSkinsFilePath(int i);
     virtual int getApplicationSkinsFilePathCount();
 
-    virtual const IDataManager::Path& getResourcesPath() const;
-    virtual const IDataManager::Path& getTrialsPath() const;
-
-    virtual void setResourcesPath(const IDataManager::Path& resources);
+    //! ustawia pelna sciezke do folderu "MyDocuments\EDR"
+    void setUserDataPath(const IDataManager::Path& path);
+    //! ustawia pelna sciezke do folderu "ApplicationData\EDR"
+    void setResourcesPath(const IDataManager::Path& path);
+    //! ustawia pelna sciezke do folderu z zasobami aplikacji
+    void setApplicationDataPath(const IDataManager::Path& path);
     virtual void setTrialsPath(const IDataManager::Path& trials);
 
+    //! zwraca pelna sciezke do folderu "MyDocuments\EDR"
+    virtual const IDataManager::Path& getUserDataPath() const;
+    //! zwraca pelna sciezke do folderu "ApplicationData\EDR"
+    virtual const IDataManager::Path& getApplicationDataPath() const;
+    //! zwraca pelna sciezke do folderu z zasobami aplikacji
+    virtual const IDataManager::Path& getResourcesPath() const;
+    //! 
+    virtual const IDataManager::Path& getTrialsPath() const;
+    
     UTILS_DEPRECATED(virtual bool isLoadLocalTrialData() const
     {
         return loadTrialData;
@@ -100,8 +112,13 @@ private:
     std::vector<std::string> resourcesPaths;
     //! Lista skórek dla UI
     std::vector<std::string> applicationSkinsPaths;
-    //!
+
+    //! sciezka do folderu z zasobami aplikacji
     Path resourcesPath;
+    //! sciezka do folderu "ApplicationData\EDR"
+    Path applicationDataPath;
+    //! sciezka do folderu "MyDocuments\EDR"
+    Path userDataPath;
     //!
     Path trialsPath;
     bool loadTrialData;
@@ -172,7 +189,7 @@ public:
     
     //! ³adowanie zasobów, czyli inicjalizacja parserów
     virtual void loadResources();
-
+    
     virtual void addFiles(const std::vector<Path>& files);
     virtual void removeFiles(const std::vector<Path>& files);
 
