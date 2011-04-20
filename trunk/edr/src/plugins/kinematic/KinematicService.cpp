@@ -111,6 +111,11 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     widget->setTimerActive(true);
     ref_ptr<osgViewer::StatsHandler> handler = new osgViewer::StatsHandler;
     widget->addEventHandler(handler);
+
+    widget->addEventHandler(new osgGA::StateSetManipulator(
+        widget->getCamera()->getOrCreateStateSet()
+        ));
+
     osgGA::OrbitManipulator *cameraManipulator = new osgGA::OrbitManipulator();
     cameraManipulator->setElevation(30.0);
     cameraManipulator->setHeading(10.0);
