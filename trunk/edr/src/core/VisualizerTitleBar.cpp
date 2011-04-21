@@ -105,6 +105,7 @@ void VisualizerTitleBar::setCurrentVisualizer( const VisualizerPtr& visualizer )
                     if ( menu ) {
                         // dodajemy ca³e menu
                         QToolButton* button = new QToolButton(this);
+                        button->setText(menu->title());
                         button->setPopupMode(QToolButton::InstantPopup);
                         button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
                         button->setMenu(menu);
