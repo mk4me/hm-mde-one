@@ -41,14 +41,14 @@ struct PtrPolicyOSG
     //! Inicjalizacja wartoúci.
     //! \param ptr
     template <class T>
-    void initPtr( T & ptr )
+    void initPtr( T & ptr ) const
     {}
 
     //! Implemetnacja resetowania wskaünika dla osg::ref_ptr.
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(osg::ref_ptr<T> & ptr, T * data)
+    void setPtr(osg::ref_ptr<T> & ptr, T * data) const
     {
         ptr = data;
     }
@@ -57,7 +57,7 @@ struct PtrPolicyOSG
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(osg::ref_ptr<T> & ptr, const osg::ref_ptr<T> & data)
+    void setPtr(osg::ref_ptr<T> & ptr, const osg::ref_ptr<T> & data) const
     {
         ptr = data;
     }

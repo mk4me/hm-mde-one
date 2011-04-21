@@ -41,14 +41,14 @@ struct PtrPolicyBoost
     //! Zerowanie wskaünika.
     //! \param ptr
     template <class T>
-    void initPtr( T & ptr )
+    void initPtr( T & ptr ) const
     {}
 
     //! Ustawienie wartoúci wskaünika surowymi danymi.
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(boost::shared_ptr<T> & ptr, T * data)
+    void setPtr(boost::shared_ptr<T> & ptr, T * data) const
     {
         ptr.reset(data);
     }
@@ -57,7 +57,7 @@ struct PtrPolicyBoost
     //! \param ptr
     //! \param data
     template<class T>
-    void setPtr(boost::shared_ptr<T> & ptr, const boost::shared_ptr<T> & data)
+    void setPtr(boost::shared_ptr<T> & ptr, const boost::shared_ptr<T> & data) const
     {
         ptr = data;
     }
