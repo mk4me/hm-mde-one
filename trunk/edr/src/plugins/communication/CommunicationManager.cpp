@@ -127,7 +127,7 @@ void CommunicationManager::loadLocalTrials()
             core::IDataManager::LocalTrial trial = findLocalTrialsPaths(path);
             localTrials.push_back(trial);
         } catch(std::exception& e) {
-            LOG_INFO("Loading trial exception: ") << e.what();
+            LOG_INFO("Loading trial exception: " << e.what());
         }
     }
     notify();

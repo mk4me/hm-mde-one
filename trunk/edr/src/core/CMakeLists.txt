@@ -96,6 +96,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/IVisualizer.h
 	${HEADER_PATH}/IDataProcessor.h
 	${HEADER_PATH}/IObjectOutput.h
+	${HEADER_PATH}/PluginCommon.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
