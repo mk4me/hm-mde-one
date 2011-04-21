@@ -111,10 +111,10 @@ public:
     */
     virtual void downloadFile(unsigned int fileID);
     /**
-    Metoda z interfejsu ICommunication. £adowanie lokalnej próby pomiarowej do edytora.
-    @param localTrial lokalna próba pomiarowa do za³adowania
-    */
-    virtual void loadTrial(const core::IDataManager::LocalTrial& localTrial);
+    //Metoda z interfejsu ICommunication. £adowanie lokalnej próby pomiarowej do edytora.
+    //@param localTrial lokalna próba pomiarowa do za³adowania
+    //*/
+    //virtual void loadTrial(const core::IDataManager::LocalTrial& localTrial);
     /**
     Metoda z interfejsu ICommunication. £adowanie listy plików do edytora.
     @param files lista plików do za³adowania

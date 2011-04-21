@@ -31,11 +31,11 @@ public:
 	@param trialID id triala w bazie danych którego pliki maj¹ byæ pobrane
 	*/
 	virtual void downloadTrial(unsigned int trialID) = 0;
-	/**
-	£adowanie lokalnej próby pomiarowej do edytora.
-	@param localTrial lokalna próba pomiarowa do za³adowania
-	*/
-	virtual void loadTrial(const core::IDataManager::LocalTrial& localTrial) = 0;
+	///**
+	//£adowanie lokalnej próby pomiarowej do edytora.
+	//@param localTrial lokalna próba pomiarowa do za³adowania
+	//*/
+	//virtual void loadTrial(const core::IDataManager::LocalTrial& localTrial) = 0;
 	/**
 	£adowanie listy plików do edytora.
     @param files lista plików do za³adowania

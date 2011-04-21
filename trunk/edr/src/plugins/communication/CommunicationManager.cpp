@@ -117,12 +117,17 @@ void CommunicationManager::ping()
 
 void CommunicationManager::loadLocalTrials()
 {
-    //TODO: skanowanie folderow z trialami powinno odbywac sie bezposrednio w CM
+    //TODO: uproszczenie wyszukiwania lokalnych triali
     localTrials.clear();
-    dataManager->findLocalTrials();
-    if(dataManager && dataManager->getLocalTrialsCount() > 0) {
-        for(int i = 0; i < dataManager->getLocalTrialsCount(); i++) {
-            localTrials.push_back(dataManager->getLocalTrial(i));
+    //przeszukujemy liste prob pomiarowych, nie plikow
+    std::vector<std::string> tempPaths = core::Filesystem::listSubdirectories(dataManager->getTrialsPath().string());
+    BOOST_FOREACH(std::string path, tempPaths)
+    {
+        try {
+            core::IDataManager::LocalTrial trial = findLocalTrialsPaths(path);
+            localTrials.push_back(trial);
+        } catch(std::exception& e) {
+            LOG_INFO("Loading trial exception: ") << e.what();
         }
     }
     notify();
@@ -136,11 +141,6 @@ void CommunicationManager::loadFiles(const std::vector<core::IDataManager::Path>
 void CommunicationManager::removeFiles(const std::vector<core::IDataManager::Path> files)
 {
     dataManager->removeFiles(files);
-}
-
-void CommunicationManager::loadTrial(const core::IDataManager::LocalTrial& localTrial)
-{
-    dataManager->loadTrial(localTrial);
 }
 
 void CommunicationManager::run()
@@ -164,7 +164,7 @@ void CommunicationManager::run()
                     }
                 }
                 state = UpdateTrials;
-            } catch(std::runtime_error& e) {
+            } catch(std::exception& e) {
                 if(!pathToDownloadingTrial.empty()) {
                     core::Filesystem::deleteDirectory(pathToDownloadingTrial);
                 }
@@ -177,7 +177,7 @@ void CommunicationManager::run()
                 try {
                     readDbSchemas(transportManager->getShallowCopy(), transportManager->getMetadata());
                     state = UpdateTrials;
-                } catch(std::runtime_error& e) {
+                } catch(std::exception& e) {
                     state = Error;
                     errorMessage = e.what();
                 }
@@ -250,4 +250,23 @@ void CommunicationManager::readDbSchemas(const std::string& shallowCopyDir, cons
     //    }
     //    p->setSessions(sessions);
     //}
+}
+
+core::IDataManager::LocalTrial CommunicationManager::findLocalTrialsPaths(const core::IDataManager::Path& path)
+{
+    core::IDataManager::LocalTrial trial;
+
+    //przeszukujemy katalog w poszukiwaniu plikow:
+    std::vector<std::string> masks;
+    masks.push_back(".c3d");
+    masks.push_back(".amc");
+    masks.push_back(".asf");
+    masks.push_back(".avi");
+    masks.push_back(".imgsequence");
+    std::vector<std::string> filesPath = core::Filesystem::listFiles(path.string(), true, masks);
+    BOOST_FOREACH(std::string path, filesPath)
+    {
+        trial.push_back(path);
+    }
+    return trial;
 }

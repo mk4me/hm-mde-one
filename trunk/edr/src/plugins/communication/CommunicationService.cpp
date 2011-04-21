@@ -82,10 +82,10 @@ void CommunicationService::init(core::IServiceManager* serviceManager, core::IDa
     ping();
 }
 
-void CommunicationService::loadTrial(const core::IDataManager::LocalTrial& localTrial)
-{
-    model->loadTrial(localTrial);
-}
+//void CommunicationService::loadTrial(const core::IDataManager::LocalTrial& localTrial)
+//{
+//    model->loadTrial(localTrial);
+//}
 
 void CommunicationService::loadFiles(const std::vector<core::IDataManager::Path> files)
 {

@@ -415,11 +415,11 @@ private:
     WskaŸnik na kontroler serwisu
     */
     CommunicationService* communicationService;
-    /**
-    Za³aduj trial do aplikacji.
-    @param localTrial lista plików jednej próby pomiarowej do za³adowania.
-    */
-    void loadTrial(const core::IDataManager::LocalTrial& localTrial);
+    ///**
+    //Za³aduj trial do aplikacji.
+    //@param localTrial lista plików jednej próby pomiarowej do za³adowania.
+    //*/
+    //void loadTrial(const core::IDataManager::LocalTrial& localTrial);
     /**
     Za³aduj pliki do aplikacji.
     @param files lista plików do za³adowania po filtracji.

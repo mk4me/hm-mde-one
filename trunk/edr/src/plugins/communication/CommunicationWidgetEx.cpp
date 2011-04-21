@@ -229,7 +229,7 @@ void CommunicationWidgetEx::loadPressed()
         //sprawdzamy, czy zgadza sie nazwa folderu
         if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e)) {
             if(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getName() == core::toQString(matches[2])) {
-                loadTrial(lTrial);
+                loadFiles(lTrial);
                 return;
             }
         }
@@ -246,10 +246,10 @@ void CommunicationWidgetEx::abortPressed()
     communicationService->cancelDownloading();
 }
 
-void CommunicationWidgetEx::loadTrial(const core::IDataManager::LocalTrial& localTrial)
-{
-    communicationService->loadTrial(localTrial);
-}
+//void CommunicationWidgetEx::loadTrial(const core::IDataManager::LocalTrial& localTrial)
+//{
+//    communicationService->loadFiles(localTrial);
+//}
 
 void CommunicationWidgetEx::loadFiles(const std::vector<core::IDataManager::Path>& files)
 {

@@ -135,11 +135,6 @@ namespace communication
             return dataManager;
         };
         /**
-        Metoda ustala próbê pomiarow¹ jako aktualn¹ i ³aduje j¹ do edytora.
-        @param localTrial lokalna próba pomiarowa do za³adowania
-        */
-        void loadTrial(const core::IDataManager::LocalTrial& localTrial);
-        /**
         Metoda ³aduje do edytora listê plików.
         @param files lista plików do za³adowania
         */
@@ -302,6 +297,8 @@ namespace communication
         @return iloœæ bajtów przetworzonych przez funkcjê
         */
         static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
+
+        core::IDataManager::LocalTrial findLocalTrialsPaths(const core::IDataManager::Path& path);
     };
 }
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__
