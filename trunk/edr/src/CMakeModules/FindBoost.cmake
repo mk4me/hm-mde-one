@@ -2,9 +2,9 @@
 FIND_INIT(BOOST boost)
 
 # szukanie
-FIND_STATIC_EXT(BOOST_REGEX "libboost_regex<-mt,>" "libboost_regex<-mt,><-gd,-d>")
-FIND_STATIC_EXT(BOOST_SYSTEM "libboost_system<-mt,>" "libboost_system<-mt,><-gd,-d>")
-FIND_STATIC_EXT(BOOST_FILESYSTEM "libboost_filesystem<-mt,>" "libboost_filesystem<-mt,><-gd,-d>")
+FIND_STATIC_EXT(BOOST_REGEX "boost_regex<-mt,>" "boost_regex<-mt,><-gd,-d>")
+FIND_STATIC_EXT(BOOST_SYSTEM "boost_system<-mt,>" "boost_system<-mt,><-gd,-d>")
+FIND_STATIC_EXT(BOOST_FILESYSTEM "boost_filesystem<-mt,>" "boost_filesystem<-mt,><-gd,-d>")
 # koniec
 FIND_FINISH(BOOST)
 
