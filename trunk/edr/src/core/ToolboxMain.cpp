@@ -62,6 +62,7 @@
 #include <boost/random.hpp>
 
 DEFINE_DEFAULT_LOGGER("edr.core");
+CORE_DEFINE_MANAGERS_ACCESORS;
 
 /**
  *	U¿ytkowa klasa, u¿ywana tam, gdzie mêcz¹ca jest zmiana wartoœci jakiejœ zmiennej
@@ -229,11 +230,11 @@ QMainWindow(parent), updateEnabled(true)
     DataManager::createInstance();
     dataManager = DataManager::getInstance();
 
-    boost::filesystem::path userPath(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString());
+    boost::filesystem::path userPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
     userPath /= "EDR";
     dataManager->setUserDataPath(userPath);
 
-    boost::filesystem::path appDataPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).toStdString());
+    boost::filesystem::path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
     appDataPath /= "EDR";
     dataManager->setApplicationDataPath(appDataPath);
 
@@ -251,6 +252,8 @@ QMainWindow(parent), updateEnabled(true)
     VisualizerManager::createInstance();
     visualizerManager = VisualizerManager::getInstance();
 
+    __managersData.dataManager = dataManager;
+
 
 //     LoggerPtr root = Logger::getRootLogger();
 //     static const LogString TTCC_CONVERSION_PATTERN(LOG4CXX_STR("%r [%t] %p %c %x - %m%n"));
@@ -265,6 +268,7 @@ QMainWindow(parent), updateEnabled(true)
     // plugin loader
     pluginLoader = new core::PluginLoader();
 	pluginLoader->load();
+
     registerPluginsServices();
 	registerPluginsParsers();
     registerPluginsVisualizers();

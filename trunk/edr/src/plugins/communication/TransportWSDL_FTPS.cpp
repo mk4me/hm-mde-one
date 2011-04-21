@@ -111,7 +111,7 @@ const std::string TransportWSDL_FTPS::getShallowCopy()
     core::Filesystem::createDirectory("data/db/schema");
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
-    core::Filesystem::move(filename.filename(), schema.string());
+    core::Filesystem::move(filename.filename().string(), schema.string());
     return schema.string();
 }
 
@@ -126,6 +126,6 @@ const std::string TransportWSDL_FTPS::getMetadata()
     core::Filesystem::createDirectory("data/db/schema");
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
-    core::Filesystem::move(filename.filename(), schema.string());
+    core::Filesystem::move(filename.filename().string(), schema.string());
     return schema.string();
 }

@@ -5,16 +5,11 @@ set(TARGET_TARGETNAME plugin_chart)
 set(QT_USE_QTOPENGL TRUE)
 include(${QT_USE_FILE})
 
-add_definitions(-D__LIBRARY_DYNAMIC__)
-
 #------------------------------------------------------------------------------
 
 # nag³ówki
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
-
-
-		
 		INTELreader.h
 		MIPSreader.h
 		ProcessorReader.h

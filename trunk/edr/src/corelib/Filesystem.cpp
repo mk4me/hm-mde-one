@@ -87,7 +87,7 @@ std::vector<std::string> Filesystem::listFiles(const std::string& path, bool rec
 		filesystem::directory_iterator end;
 		for(filesystem::directory_iterator iter(dirPath) ; iter != end ; ++iter)
 		{
-			if(!filesystem::is_directory(iter->status()) && iter->path().extension().compare(mask) == 0)
+			if(!filesystem::is_directory(iter->status()) && filesystem::extension(iter->path()).compare(mask) == 0)
 			{
 				files.push_back(iter->path().string());
 			}
@@ -120,7 +120,7 @@ std::vector<std::string> Filesystem::listFiles(const std::string& path, bool rec
 		{
 			BOOST_FOREACH(std::string mask, masks)
 			{
-				if(!filesystem::is_directory(iter->status()) && iter->path().extension().compare(mask) == 0)
+				if(!filesystem::is_directory(iter->status()) && filesystem::extension(iter->path()).compare(mask) == 0)
 				{
 					files.push_back(iter->path().string());
 				}

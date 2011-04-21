@@ -31,6 +31,11 @@ namespace osgText
 
 class Chart : public osg::Group
 {
+public:
+    typedef std::vector<core::ChartSeriePtr> Series;
+    typedef Series::iterator iterator;
+    typedef Series::const_iterator const_iterator;
+
 private:
     //! Serie danych wykresu.
     std::vector<core::ChartSeriePtr> series;
@@ -108,9 +113,29 @@ public:
 	virtual ~Chart();
 
 public:
-    //! Dodaje kana³ do wykresu.
-    void addChannel( const core::ScalarChannelConstPtr& channel, osg::Vec4 color );
-    //! Dodaje kana³ do wykresu.
+    //!
+    iterator begin()
+    {
+        return series.begin();
+    }
+    //!
+    iterator end()
+    {
+        return series.end();
+    }
+    //!
+    const_iterator begin() const
+    {
+        return series.begin();
+    }
+    //!
+    const_iterator end() const
+    {
+        return series.end();
+    }
+
+
+    //! Dodaje kana³ do wykres.ug
     bool addChannel( const core::ChartSeriePtr& channel );
     //! Usuwa wszystkie wykresy.
     void removeAllChannels();

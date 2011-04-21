@@ -6,6 +6,8 @@
 #include <core/SmartPtr.h>
 #include <core/ObjectWrapper.h>
 #include <boost/filesystem.hpp>
+#include <core/PluginCommon.h>
+
 namespace core
 {
     class IDataManager;

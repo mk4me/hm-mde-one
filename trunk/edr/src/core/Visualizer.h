@@ -19,7 +19,7 @@
 class Visualizer
 {
 public:
-    typedef ObjectSource::SourcesTypes SourcesTypes;
+    typedef ObjectSource::SlotsInfo SlotsInfo;
 
 private:
     //! Faktyczna implementacja wizualizatora.
@@ -58,15 +58,15 @@ public:
     {
         impl->update(deltaTime);
     }
-    //! \see IVisualizer::getSupportedTypes
-    inline const core::ObjectWrapper::Types& getSupportedTypes(int idx) const
+    //! \see IVisualizer::getInputTypes
+    inline const core::Types& getInputTypes(int idx) const
     {
-        return source.getTypes(idx);
+        return source.getSlotTypes(idx);
     }
-    //! \see IVisualizer::getSupportedTypes
-    inline const std::string& getSlotName(int idx) const
+    //! \see IVisualizer::getInputTypes
+    inline const std::string& getInputName(int idx) const
     {
-        return source.getName(idx);
+        return source.getSlotName(idx);
     }
     //! \return Nazwa wizualizatora.
     inline const std::string& getName() const
@@ -82,7 +82,7 @@ public:
     //!
     const QIcon& getIcon() const;
     //!
-    const SourcesTypes& getSourcesTypes() const;
+    const SlotsInfo& getSourcesTypes() const;
 
     //! Dodaje niezmienny obiekt na wejœcie.
     //! \param slot

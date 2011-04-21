@@ -13,6 +13,7 @@
 #include <core/PluginLoader.h>
 #include <core/Plugin.h>
 #include <core/Log.h>
+#include <core/PluginCommon.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -138,15 +139,26 @@ bool PluginLoader::addPlugIn( const std::string& path )
 #if defined(__WIN32__)
     HMODULE library = ::LoadLibrary( path.c_str() );
     if ( library ) {
-        FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
-        if ( proc ) {
-            bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
-                reinterpret_cast<Plugin::CreateFunction>(proc));
-            if ( success ) {
-                return true;
+        FARPROC versionProc = ::GetProcAddress(library, STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME));
+        if ( versionProc ) {
+            int version = reinterpret_cast<Plugin::GetVersionFunction>(versionProc)();
+            if ( version != CORE_PLUGIN_INTERFACE_VERSION ) {
+                LOG_ERROR(path<<" has obsolete interface version; should be "<<CORE_PLUGIN_INTERFACE_VERSION<<", is "<<version);
+                return false;
+            } else {
+                FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
+                if ( proc ) {
+                    bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
+                        reinterpret_cast<Plugin::CreateFunction>(proc));
+                    if ( success ) {
+                        return true;
+                    }
+                } else {
+                    LOG_DEBUG(path<<" is a .dll, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
+                }
             }
         } else {
-            LOG_DEBUG(path<<" is a .dll, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
+            LOG_DEBUG(path<<" is a .dll, but finding "<<STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
         }
     } else  {
         DWORD err = ::GetLastError();
@@ -214,7 +226,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
 
     // próba za³adowania
     try {
-        plugin = createFunction();
+        plugin = createFunction(&__managersData);
     } catch ( std::exception& ex ) {
         LOG_ERROR("Error loading plugin "<<path<<": "<<ex.what());
         return false;

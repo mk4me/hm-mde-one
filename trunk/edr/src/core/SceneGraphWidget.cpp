@@ -75,7 +75,7 @@ void SceneGraphWidget::setCurrentService( int index )
     QComboBox* currentServiceCombo = this->currentServiceCombo;
     core::IServiceWeakPtr serviceWeak = currentServiceCombo->itemData(index).value<core::IServiceWeakPtr>();
     if (core::IServicePtr service = serviceWeak.lock()) {
-        setSceneGraph( service->debugGetLocalSceneRoot() );
+        //setSceneGraph( service->debugGetLocalSceneRoot() );
     } else {
         clearTreeWidget();
         new QTreeWidgetItem(sceneGraphTree, QStringList()<<""<<"Service pointer is outdated"<<"");

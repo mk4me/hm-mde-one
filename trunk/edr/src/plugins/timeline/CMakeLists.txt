@@ -5,8 +5,6 @@ set(TARGET_TARGETNAME plugin_timeline)
 set(QT_USE_QTOPENGL TRUE)
 include(${QT_USE_FILE})
 
-add_definitions(-D__LIBRARY_DYNAMIC__)
-
 #------------------------------------------------------------------------------
 
 # nag³ówki

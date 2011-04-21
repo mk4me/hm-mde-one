@@ -107,7 +107,7 @@ void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const boost::fi
             // wylistowanie plików
             std::vector<std::string> files;
             for ( fs::directory_iterator it(dirPath), last; it != last; ++it ) {
-                files.push_back(it->string());
+                files.push_back(it->path().string());
             }
 
 
@@ -130,6 +130,7 @@ void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const boost::fi
         {
             // tworzymy strumieñ ffmpeg
             std::auto_ptr<FFmpegVideoStream> innerStream(new FFmpegVideoStream(path.string()));
+            FFmpegVideoStream* stream = dynamic_cast<FFmpegVideoStream*>(innerStream->clone());
             // UTILS_ASSERT(!innerStream->getLastError());
 
             // podpinay go pod adapter strumienia
@@ -138,7 +139,7 @@ void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const boost::fi
 
 
             adapter->set(realStream);
-            adapter->setName(path.filename());
+            adapter->setName(path.filename().string());
             adapter->setSource(path.string());
         }
     }

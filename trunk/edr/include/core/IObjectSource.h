@@ -9,7 +9,6 @@
 #ifndef HEADER_GUARD_CORE__IOBJECTSOURCE_H__
 #define HEADER_GUARD_CORE__IOBJECTSOURCE_H__
 
-#include <list>
 #include <stdexcept>
 #include <boost/type_traits.hpp>
 #include <utils/Debug.h>
@@ -28,6 +27,9 @@ namespace core
 
         //! \return Liczba Ÿróde³ danych.
         virtual int getNumObjects() const = 0;
+
+        //! \return true je¿eli obiekt o indeksie idx uleg³ zmianie lub zosta³ wyzerowany/ustawiony.
+        virtual bool isChanged(int idx) const = 0;
 
         //! Wy³uskanie wskaŸnika na obiekt domenowy ze Ÿród³a przy za³o¿eniu jego zmiennoœci.
         virtual ObjectWrapperPtr getObject(int idx, boost::false_type) = 0;
@@ -118,7 +120,7 @@ namespace core
             auto wrapper = getObject(idx, boost::is_const<Type>());
             if ( wrapper && !wrapper->isNull() ) {
                 // z niego pobieramy obiekt w³aœciwy
-                return wrapper->get<Type>();
+                return wrapper->get();
             } else {
                 throw std::runtime_error("Source not available.");
             }
@@ -127,6 +129,8 @@ namespace core
 
     typedef shared_ptr<IObjectSource> IObjectSourcePtr;
 
+
+    
 } // namespace core
 
 

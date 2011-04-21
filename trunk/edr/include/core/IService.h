@@ -13,6 +13,7 @@
 #include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
+#include <core/PluginCommon.h>
 
 class QWidget;
 
@@ -50,7 +51,7 @@ namespace core
 
         }
 
-        //! £aduje 
+        // TODO: zostaje tylko do momentu wprowadzenia nowego timeline'a
         UTILS_DEPRECATED(virtual void loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
         {
 
@@ -58,6 +59,7 @@ namespace core
 
         //! Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
         //! \param serviceManager 
+        // TODO: zostaje tylko do momentu wprowadzenia nowego timeline'a
         UTILS_DEPRECATED(virtual void update(double time, double timeDelta) 
         { 
 
@@ -68,6 +70,7 @@ namespace core
         //! u¿yæ metody LateUpdate, która jest wywo³ywana po cyklu Update wszystkich us³ug.
         //! Ten sam w¹tek co UI.
         //! \param serviceManager
+        // TODO: zostaje tylko do momentu wprowadzenia nowego timeline'a
         UTILS_DEPRECATED(virtual void lateUpdate(double time, double timeDelta) 
         { 
 
@@ -91,12 +94,6 @@ namespace core
 
         //! \return Nazwa us³ugi.
         virtual const std::string& getName() const = 0;
-
-        //! \return Korzeñ lokalnej sceny osg.
-        virtual osg::Node* debugGetLocalSceneRoot()
-        {
-            return nullptr;
-        }
 
     };
 

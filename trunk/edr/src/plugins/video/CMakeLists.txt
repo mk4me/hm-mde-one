@@ -4,8 +4,6 @@ set(TARGET_TARGETNAME
 	plugin_video
 )
 
-add_definitions(-D__LIBRARY_DYNAMIC__)
-
 #------------------------------------------------------------------------------
 
 # nag³ówki prywatne

@@ -3,108 +3,146 @@
 #include "VisualizerManager.h"
 
 using namespace core;
-
-std::vector<int> sdsdsd;
-
-auto get() -> decltype( boost::make_iterator_range(sdsdsd) )
-{
-    return boost::make_iterator_range(sdsdsd);
-}
-
-// ObjectSource::ObjectSource( const SourcesTypes& types ) :
-// sourcesTypes(types), sources(types.size())
+// 
+// // auto get() -> decltype( boost::make_iterator_range(sdsdsd) )
+// // {
+// //     return boost::make_iterator_range(sdsdsd);
+// // }
+// 
+// // ObjectSource::ObjectSource( const SourcesTypes& types ) :
+// // sourcesTypes(types), sources(types.size())
+// // {
+// // }
+// 
+// ObjectSource_old::ObjectSource_old( IVisualizer* visualizer ) :
+// sourcesTypes( VisualizerManager::getInstance()->getSourcesTypes(visualizer->getID()) )
+// {
+//     sources.resize(sourcesTypes.size());
+// //     UTILS_ASSERT(visualizer);
+// //     // pobranie listy wspieranych typów
+// //     SourcesTypes::value_type info;
+// //     for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
+// //         info.first.clear();
+// //         info.second.clear();
+// //         visualizer->getSlotInfo(i, info.first, info.second);
+// //         if ( info.second.empty() ) {
+// //             break;
+// //         } else {
+// //             // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...
+// //             // sourcesTypes.push_back(info);
+// //             sourcesTypes.insert(sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
+// //         }
+// //     }
+// //     sources.resize(sourcesTypes.size());
+// }
+// // 
+// ObjectSource_old::ObjectSource_old( const ObjectSource_old& source ) :
+// sources(source.sources), sourcesTypes(source.sourcesTypes)
 // {
 // }
-
-ObjectSource::ObjectSource( IVisualizer* visualizer ) :
-sourcesTypes( VisualizerManager::getInstance()->getSourcesTypes(visualizer->getID()) )
-{
-    sources.resize(sourcesTypes.size());
-//     UTILS_ASSERT(visualizer);
-//     // pobranie listy wspieranych typów
-//     SourcesTypes::value_type info;
-//     for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
-//         info.first.clear();
-//         info.second.clear();
-//         visualizer->getSlotInfo(i, info.first, info.second);
-//         if ( info.second.empty() ) {
-//             break;
-//         } else {
-//             // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...
-//             // sourcesTypes.push_back(info);
-//             sourcesTypes.insert(sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
-//         }
-//     }
-//     sources.resize(sourcesTypes.size());
-}
 // 
-ObjectSource::ObjectSource( const ObjectSource& source ) :
-sources(source.sources), sourcesTypes(source.sourcesTypes)
-{
-}
+// int ObjectSource_old::getNumObjects() const
+// {
+//     return static_cast<int>(sources.size());
+// }
+// 
+// void ObjectSource_old::setObject( int sourceNo, const core::ObjectWrapperPtr& object )
+// {
+//     UTILS_ASSERT(isAssignable(sourceNo, object));
+//     sources[sourceNo] = std::make_pair(object, core::ObjectWrapperConstPtr(object));
+// }
+// 
+// void ObjectSource_old::setObject( int sourceNo, const core::ObjectWrapperConstPtr& object )
+// {
+//     UTILS_ASSERT(isAssignable(sourceNo, object));
+//     sources[sourceNo] = std::make_pair(core::ObjectWrapperPtr(), object);
+// }
+// 
+// ObjectWrapperPtr ObjectSource_old::getObject( int idx, boost::false_type )
+// {
+//     Source& source = sources[idx];
+//     if ( !source.first ) {
+//         // hmmm nie ma zmiennego, trzeba wiêc sklonowaæ niezmienny obiekt
+//         throw std::runtime_error("Cloning not implemented yet.");
+//     }
+//     return source.first;
+// }
+// 
+// ObjectWrapperConstPtr ObjectSource_old::getObject( int idx, boost::true_type )
+// {
+//     Source& source = sources[idx];
+//     return source.second;
+// }
+// 
+// bool ObjectSource_old::isAssignable( int sourceNo, const core::ObjectWrapperPtr& object ) const
+// {
+//     return isAssignable( sourceNo, object.get() );
+// }
+// 
+// bool ObjectSource_old::isAssignable( int sourceNo, const core::ObjectWrapperConstPtr& object ) const
+// {
+//     return isAssignable( sourceNo, object.get() );
+// }
+// 
+// bool ObjectSource_old::isAssignable( int sourceNo, const core::ObjectWrapper* object ) const
+// {
+//     if ( !object ) {
+//         return true;
+//     }
+// 
+//     const ObjectWrapper::Types& types = sourcesTypes[sourceNo].second;
+//     auto found = std::find_if(types.begin(), types.end(), [&](const ObjectWrapper::Type& type) { 
+//         return object->isSupported(type); 
+//     });
+//     return found != types.end();
+// }
 
-int ObjectSource::getNumObjects() const
-{
-    return static_cast<int>(sources.size());
-}
+// const ObjectWrapper::Types& ObjectSource_old::getTypes( int sourceNo ) const
+// {
+//     return sourcesTypes[sourceNo].second;
+// }
+// 
+// const std::string& ObjectSource_old::getName( int sourceNo ) const
+// {
+//     return sourcesTypes[sourceNo].first;
+// }
+// 
+// bool ObjectSource_old::isChanged( int inputNo ) const
+// {
+//     return true;
+// }
 
-void ObjectSource::setObject( int sourceNo, const core::ObjectWrapperPtr& object )
-{
-    UTILS_ASSERT(isAssignable(sourceNo, object));
-    sources[sourceNo] = std::make_pair(object, core::ObjectWrapperConstPtr(object));
-}
-
-void ObjectSource::setObject( int sourceNo, const core::ObjectWrapperConstPtr& object )
-{
-    UTILS_ASSERT(isAssignable(sourceNo, object));
-    sources[sourceNo] = std::make_pair(core::ObjectWrapperPtr(), object);
-}
-
-ObjectWrapperPtr ObjectSource::getObject( int idx, boost::false_type )
-{
-    Source& source = sources[idx];
-    if ( !source.first ) {
-        // hmmm nie ma zmiennego, trzeba wiêc sklonowaæ niezmienny obiekt
-        throw std::runtime_error("Cloning not implemented yet.");
-    }
-    return source.first;
-}
-
-ObjectWrapperConstPtr ObjectSource::getObject( int idx, boost::true_type )
-{
-    Source& source = sources[idx];
-    return source.second;
-}
-
-bool ObjectSource::isAssignable( int sourceNo, const core::ObjectWrapperPtr& object ) const
-{
-    return isAssignable( sourceNo, object.get() );
-}
-
-bool ObjectSource::isAssignable( int sourceNo, const core::ObjectWrapperConstPtr& object ) const
-{
-    return isAssignable( sourceNo, object.get() );
-}
-
-bool ObjectSource::isAssignable( int sourceNo, const core::ObjectWrapper* object ) const
+bool ObjectSlots::isAssignable( int slotNo, const core::ObjectWrapper* object ) const
 {
     if ( !object ) {
+        // nulla zawsze mo¿na przypisaæ
         return true;
+    } else {
+        // sprawdzenie obiekt wspiera któryœ z typów
+        const core::Types& types = info[slotNo].types;
+        auto found = std::find_if(types.begin(), types.end(), [&](const Type& type) { 
+            return object->isSupported(type); 
+        });
+        return found != types.end();
     }
-
-    const ObjectWrapper::Types& types = sourcesTypes[sourceNo].second;
-    auto found = std::find_if(types.begin(), types.end(), [&](const TypeInfo& type) { 
-        return object->isSupported(type); 
-    });
-    return found != types.end();
 }
 
-const ObjectWrapper::Types& ObjectSource::getTypes( int sourceNo ) const
+void ObjectSlots::setObject( int slotNo, const core::ObjectWrapperPtr& object )
 {
-    return sourcesTypes[sourceNo].second;
+    if ( !isAssignable(slotNo, object.get()) ) {
+        throw std::runtime_error("Assign error");
+    }
+    Slot& slot = objects[slotNo];
+    slot.object = object;
+    slot.constObject = core::ObjectWrapperConstPtr(object);
 }
 
-const std::string& ObjectSource::getName( int sourceNo ) const
+void ObjectSlots::setObject( int slotNo, const core::ObjectWrapperConstPtr& object )
 {
-    return sourcesTypes[sourceNo].first;
+    if ( !isAssignable(slotNo, object.get()) ) {
+        throw std::runtime_error("Assign error");
+    }
+    Slot& slot = objects[slotNo];
+    slot.object.reset();
+    slot.constObject = object;
 }

@@ -84,19 +84,19 @@ deprecated__ChartWidget::~deprecated__ChartWidget()
 
 void deprecated__ChartWidget::addChart( const core::ScalarChannelConstPtr& channel )
 {
-    Chart* chart = new Chart();
-    item.push_back( chart );
-    chart->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
-    chart->setName(channel->getName());
-    multiView->addChild(chart);
-
-    Chart* preview = new Chart();
-    previewItem.push_back(preview);
-    preview->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
-    preview->setName(channel->getName());
-    multiView->addChild(preview);
-
-    multiView->addItem(new core::MultiViewChartItem(chart, multiView), new core::MultiViewChartItem(preview, multiView));
+//     Chart* chart = new Chart();
+//     item.push_back( chart );
+//     chart->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+//     chart->setName(channel->getName());
+//     multiView->addChild(chart);
+// 
+//     Chart* preview = new Chart();
+//     previewItem.push_back(preview);
+//     preview->addChannel(channel, osg::Vec4(0.0f,1.0f,0.0f,1.0f));
+//     preview->setName(channel->getName());
+//     multiView->addChild(preview);
+// 
+//     multiView->addItem(new core::MultiViewChartItem(chart, multiView), new core::MultiViewChartItem(preview, multiView));
 }
 
 void deprecated__ChartWidget::update(double targetTime){

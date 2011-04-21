@@ -55,6 +55,13 @@
       <SubType>Content</SubType>
       <DependentUpon>UMLClassDiagram1.classdiagram</DependentUpon>
     </Content>
+    <Content Include="IVisualizer.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="IVisualizer.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>IVisualizer.sequencediagram</DependentUpon>
+    </Content>
     <Content Include="VDF.sequencediagram">
       <SubType>Content</SubType>
     </Content>

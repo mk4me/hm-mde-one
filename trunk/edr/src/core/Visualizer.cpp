@@ -6,7 +6,7 @@
 using namespace core;
 
 Visualizer::Visualizer( IVisualizer* impl ) :
-impl(impl), widget(nullptr), source(impl)
+impl(impl), widget(nullptr), source(VisualizerManager::getInstance()->getSourcesTypes(impl->getID()))
 {
     LOG_DEBUG("Visualizer " << impl->getName() << " created");
 }
@@ -54,7 +54,7 @@ const QIcon& Visualizer::getIcon() const
     return VisualizerManager::getInstance()->getIcon(getID());
 }
 
-const Visualizer::SourcesTypes& Visualizer::getSourcesTypes() const
+const Visualizer::SlotsInfo& Visualizer::getSourcesTypes() const
 {
     return VisualizerManager::getInstance()->getSourcesTypes(getID());
 }

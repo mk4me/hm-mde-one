@@ -164,7 +164,7 @@ struct DataManager::FindByFilenamePredicate {
     bool operator()( const DataManager::ParserPtr& ptr ) const
     {
         // TODO: powinno byæ porównanie regexowe
-        const std::string filename = ptr->getPath().filename();
+        const std::string filename = ptr->getPath().filename().string();
         return filter == filename;
     }
 };
@@ -181,7 +181,7 @@ struct DataManager::FindByRelativePathPredicate {
     bool operator()( const DataManager::ParserPtr& ptr ) const
     {
         // TODO: powinno byæ porównanie regexowe
-        const std::string filename = ptr->getPath().relative_path().file_string();
+        const std::string filename = ptr->getPath().relative_path().string();
         return filter == filename;
     }
 };
@@ -712,7 +712,7 @@ void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& object
 void DataManager::createParsers( const Path& path, bool resource )
 {
     // próbujemy pobraæ prototyp dla zadanego rozszerzenia
-    std::string extension = path.extension();
+    std::string extension = path.extension().string();
     IParsersByExtensions::iterator found = registeredExtensions.find( extension );
     if ( found != registeredExtensions.end() ) {
         IParsersByExtensions::iterator last = registeredExtensions.upper_bound(extension);

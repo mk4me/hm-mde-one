@@ -8,6 +8,8 @@ using namespace core;
 
 Q_DECLARE_METATYPE(ObjectWrapperConstPtr);
 
+
+
 VisualizerTitleBarComboPick::VisualizerTitleBarComboPick( QWidget* parent /*= nullptr */ ) :
 QWidget(parent), groupSources(new QActionGroup(this)), menuSource(new QMenu(this)),
 groupMenuPin(new QActionGroup(this)), menuPin(new QMenu(this)),
@@ -34,7 +36,7 @@ void VisualizerTitleBarComboPick::fillSourcesMenu( QMenu* menu, QActionGroup*& g
         menuSource->clear();
 
         // wspierane obiekty w tym slocie
-        std::list<TypeInfo> supportedTypes = visualizer->getSupportedTypes(slotNo);
+        std::list<TypeInfo> supportedTypes = visualizer->getInputTypes(slotNo);
         UTILS_ASSERT(!supportedTypes.empty());
 
         // pobranie obiektu w tym slocie
@@ -96,7 +98,7 @@ void VisualizerTitleBarComboPick::sourceSelected()
     ObjectWrapperConstPtr obj = action->data().value<ObjectWrapperConstPtr>();
 
     QString objName = getLabel(obj, true);
-    QString slotName = toQString(visualizer->getSlotName(slotNo));
+    QString slotName = toQString(visualizer->getInputName(slotNo));
 
     // ustawienie wygl¹du guzika
     buttonSource->setText(objName);
@@ -139,7 +141,7 @@ void VisualizerTitleBarComboPick::setCurrentSlot( int idx )
     } else {
         UTILS_ASSERT(visualizer);
         ObjectWrapperConstPtr ptr = visualizer->getObject(idx);
-        buttonPin->setText(toQString(visualizer->getSlotName(idx)));
+        buttonPin->setText(toQString(visualizer->getInputName(idx)));
         buttonSource->setText( getLabel(ptr, true) );
         buttonSource->show();
         buttonPin->show();
@@ -181,16 +183,16 @@ void VisualizerTitleBarComboPick::setCurrentVisualizer( const VisualizerPtr& vis
     for ( int i = 0; i < visualizer->getNumObjects(); ++i ) {
 //         // nazwy slotów
 //         comboSlot->addItem( QString("%0: %1")
-//             .arg(core::toQString(visualizer->getSlotName(i)))
+//             .arg(core::toQString(visualizer->getInputName(i)))
 //             .arg(getLabel(visualizer->getObject(i), true)) );
 
         QAction* action = menuPin->addAction( QString("%0 (%1)")
-            .arg(core::toQString(visualizer->getSlotName(i)))
+            .arg(core::toQString(visualizer->getInputName(i)))
             .arg(getLabel(visualizer->getObject(i), true)), this, SLOT(pinSelected()) );
         action->setData(qVariantFromValue(i));
         action->setCheckable(true);
         if ( i == 0 ) {
-            //buttonPin->setText(core::toQString(visualizer->getSlotName(i)));
+            //buttonPin->setText(core::toQString(visualizer->getInputName(i)));
             action->setChecked(true);
         }
         groupMenuPin->addAction(action);

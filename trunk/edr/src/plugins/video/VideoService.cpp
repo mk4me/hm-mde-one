@@ -55,6 +55,8 @@ public:
 VideoService::VideoService()
 :   name("Video")
 {
+
+
 //     widget = new VideoWidget();
 //     optionsWidget = new VideoWidgetOptions(this);
 // 

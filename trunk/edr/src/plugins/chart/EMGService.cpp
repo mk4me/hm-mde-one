@@ -212,7 +212,32 @@ public:
 
 ChartService::ChartService() : name("ChartService")
 {
+    using namespace core;
+//     ObjectWrapperPtr wrapp = ObjectWrapper::create<EMGChannel>();
+//     wrapp->set( EMGChannelPtr(new EMGChannel(10)) );
+// 
+//     EMGChannelPtr ptr;
+//     EMGChannelConstPtr constPtr;
+//     wrapp->tryGet2(ptr);
+//     wrapp->tryGet2(constPtr);
+// 
+// 
+//     ScalarChannelPtr ptr2;
+//     ScalarChannelConstPtr constPtr2;
+//     wrapp->tryGet2(ptr2);
+//     wrapp->tryGet2(constPtr2);
+// 
+//     ptr2.reset();
+//     constPtr2.reset();
+//     wrapp->tryGet2(ptr2, true);
+//     wrapp->tryGet2(constPtr2, true);
+// 
+//     GRFChannelPtr ptr3;
+//     GRFChannelConstPtr constPtr3;
+//     wrapp->tryGet2(ptr3);
+//     wrapp->tryGet2(constPtr3);
 
+    int brrr = 0;
 }
 
 void ChartService::loadData( core::IServiceManager* serviceManager, core::IDataManager* dataManager )

@@ -20,11 +20,16 @@
 #include "BaseDataTypes.h"
 #include "Export.h"
 #include "IIdentifiable.h"
+#include "PluginCommon.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
+#define CORE_PLUGIN_INTERFACE_VERSION 1
+
+//! Nazwa funkcji pobieraj¹cej numer wersji pluginu.
+#define CORE_GET_PLUGIN_VERSION_FUNCTION_NAME CoreGetPluginInterfaceVersion
 //! Nazwa funkcji tworz¹cej plugin.
 #define CORE_CREATE_PLUGIN_FUNCTION_NAME CoreCreatePluginInstance
 
@@ -32,10 +37,16 @@ namespace core {
 //! \param name Nazwa pluginu.
 //! \param id ID pluginu.
 #define CORE_PLUGIN_BEGIN(name, id)                                     \
+CORE_DEFINE_MANAGERS_ACCESORS                                           \
 DEFINE_DEFAULT_LOGGER("edr." name)                                      \
-extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME() \
+extern "C" CORE_EXPORT unsigned CORE_GET_PLUGIN_VERSION_FUNCTION_NAME() \
 {                                                                       \
-    core::Plugin* instance = new core::Plugin((name), (id));    
+    return CORE_PLUGIN_INTERFACE_VERSION;                               \
+}                                                                       \
+extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::__ManagersData* data) \
+{                                                                       \
+    core::__managersData = *data;                                       \
+    core::Plugin* instance = new core::Plugin((name), (id));            
 
 //! Koñczy rejestracjê pluginu.
 #define CORE_PLUGIN_END                                                 \
@@ -81,7 +92,9 @@ class Plugin : IIdentifiable
 {
 public:
     //! Typ funkcji tworz¹cej plugin.
-    typedef core::Plugin* (*CreateFunction)();
+    typedef core::Plugin* (*CreateFunction)(__ManagersData* data);
+    //! Typ funkcji pobierajacej wersjê pluginu.
+    typedef int (*GetVersionFunction)();
     //! Typ listy us³ug.
     typedef std::vector<IServicePtr> Services;
     //! Typ listy parserów.

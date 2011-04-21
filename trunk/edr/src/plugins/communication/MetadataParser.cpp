@@ -38,7 +38,7 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const boost::fil
             session_goup_element->QueryIntAttribute("SessionGroupID", &sessionGroup.sessionGroupID);
             session_goup_element->QueryStringAttribute("SessionGroupName", &sessionGroup.sessionGroupName);
 
-            object->get<communication::MetaData::MetaData>()->sessionGroups.push_back(sessionGroup);
+            static_cast< core::shared_ptr<communication::MetaData::MetaData> >(object->get())->sessionGroups.push_back(sessionGroup);
             session_goup_element = session_goup_element->NextSiblingElement();
         }
     }

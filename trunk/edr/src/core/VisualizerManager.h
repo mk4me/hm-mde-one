@@ -32,7 +32,7 @@ public:
     //!
     typedef std::list<VisualizerWeakPtr> WeakVisualizers;
     //! Lista typów kolejnych Ÿróde³.
-    typedef Visualizer::SourcesTypes SourcesTypes; 
+    typedef Visualizer::SlotsInfo SourcesTypes; 
 
 private:
     //! Niezmienne dane pobrane z wizualizatorów.

@@ -42,6 +42,7 @@ set(PRIVATE_H
 	Visualizer.h
 	VisualizerTitleBar.h
 	VisualizerTitleBarComboPick.h
+	SampleProcessor.h
 	TypeInfo.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -93,6 +94,8 @@ set(PUBLIC_H
 	${HEADER_PATH}/ObjectWrapper.h
 	${HEADER_PATH}/IObjectSource.h
 	${HEADER_PATH}/IVisualizer.h
+	${HEADER_PATH}/IDataProcessor.h
+	${HEADER_PATH}/IObjectOutput.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -163,6 +166,7 @@ set(TARGET_UI
 	ui/VisualizerTitleBar.ui
 	ui/VisualizerTitleBarComboPick.ui
 	ui/VisualizerTitleBarButtonPerSource.ui
+	ui/DataProcessorWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

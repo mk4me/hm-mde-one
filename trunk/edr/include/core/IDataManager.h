@@ -40,12 +40,6 @@ public:
 	UTILS_DEPRECATED(virtual const LocalTrial& getLocalTrial(int i) const = 0);
     //! Czyœci zasoby i próby pomiarowe.
 	virtual void clear() = 0;
-    //! Zwraca i-t¹ œcie¿kê do skórki UI aplikacji.
-    //! \param i indeks.
-    //! \return œcie¿ka do srórki aplikacji.
-    virtual const std::string& getApplicationSkinsFilePath(int i) = 0;
-    //! \return iloœæ skórek aplikacji.
-    virtual int getApplicationSkinsFilePathCount() = 0;
     //! \return czy za³adowano próbê pomiarow¹.
 	UTILS_DEPRECATED(virtual bool isLoadLocalTrialData() const = 0);
     //! \param load ustaw flagê ³adowania lokalnej próby pomiarowej.
@@ -58,22 +52,24 @@ public:
     virtual const Path& getApplicationDataPath() const = 0;
     //! zwraca pelna sciezke do folderu z zasobami aplikacji
     virtual const Path& getResourcesPath() const = 0;
+
+
     //! \return œcie¿ka do katalogu z próbami pomiarowymi
-	virtual const Path& getTrialsPath() const = 0;
+	UTILS_DEPRECATED(virtual const Path& getTrialsPath() const = 0);
 
     //! \return Liczba parserów.
     UTILS_DEPRECATED(virtual int getNumParsers() const = 0);
     //! \param idx Indeks parsera.
     //! \return Parser o zadanym indeksie. Zainicjowany b¹dŸ nie.
-	UTILS_DEPRECATED(virtual core::IParserPtr getParser(int idx) = 0);
+	UTILS_DEPRECATED(virtual IParserPtr getParser(int idx) = 0);
     //! \return Zainicjowany parser o indeksie idx.
-    UTILS_DEPRECATED(virtual core::IParserPtr getInitializedParser(int idx) = 0);
+    UTILS_DEPRECATED(virtual IParserPtr getInitializedParser(int idx) = 0);
     //! \param filename nazwa pliku parsera. 
     //! \return Odnaleziony parser (zainicjowany b¹dŸ nie) b¹dŸ NULL.
-    UTILS_DEPRECATED(virtual core::IParserPtr getParser(const std::string& filename) = 0);
+    UTILS_DEPRECATED(virtual IParserPtr getParser(const std::string& filename) = 0);
     //! \param filename nazwa pliku parsera. 
     //! \return Odnaleziony parser (zainicjowany b¹dŸ nie) b¹dŸ NULL.
-    UTILS_DEPRECATED(virtual core::IParserPtr getInitializedParser(const std::string& filename) = 0);
+    UTILS_DEPRECATED(virtual IParserPtr getInitializedParser(const std::string& filename) = 0);
 
     //! \param type Typ obiektu który chcemy wyszukaæ.
     //! \param exact Czy wyszukiwaæ te¿ typy pochodne?
@@ -174,7 +170,7 @@ public:
         manager->getObjects(objects, typeid(T), exact);
         // wyci¹gamy obiekty z wrapperów
         for ( auto it = objects.begin(), last = objects.end(); it != last; ++it ) {
-            target.push_back( (*it)->get<T>() );
+            target.push_back( static_cast<Ptr>((*it)->get(exact)) );
         }
     }
 

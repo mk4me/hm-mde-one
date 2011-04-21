@@ -9,7 +9,7 @@
 #include <osgWidget/Box>
 #include <osgui/AspectRatioKeeper.h>
 #include <osgui/OsgWidgetUtils.h>
-
+#include <core/IDataManager.h>
 
 struct VideoVisualizer::Refresher
 {
@@ -62,11 +62,12 @@ core::IVisualizer* VideoVisualizer::create() const
     return new VideoVisualizer();
 }
 
-void VideoVisualizer::getSlotInfo( int source, std::string& name, core::ObjectWrapper::Types& types )
+void VideoVisualizer::getInputInfo( int source, std::string& name, core::ObjectWrapper::Types& types )
 {
     if ( source == 0 ) {
         name = "video";
         types.push_back(typeid(VideoStream));
+        types.push_back(typeid(vidlib::Picture));
     }
 }
 
@@ -235,5 +236,5 @@ void VideoVisualizer::setUp( core::IObjectSource* source )
 
 QIcon* VideoVisualizer::createIcon()
 {
-    return new QIcon("data/resources/icons/video.png");
+    return new QIcon( (core::getDataManager()->getResourcesPath() / "icons/video.png").string().c_str() );
 }

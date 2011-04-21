@@ -15,7 +15,6 @@
 #include <core/IService.h>
 #include <boost/foreach.hpp>
 #include <core/ObjectWrapper.h>
-#include <core/FoldersInfo.h>
 #include <boost/filesystem.hpp>
 #include <QtCore/QObject>
 #include <core/Log.h>
@@ -114,7 +113,7 @@ IVisualizer* KinematicVisualizer::create() const
     return new KinematicVisualizer();
 }
 
-void KinematicVisualizer::getSlotInfo( int source, std::string& name, ObjectWrapper::Types& types )
+void KinematicVisualizer::getInputInfo( int source, std::string& name, ObjectWrapper::Types& types )
 {
     if (source == 0) {
         name = "model";

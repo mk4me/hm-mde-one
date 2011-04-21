@@ -14,10 +14,18 @@
 #include <core/IIdentifiable.h>
 #include <core/IObjectSource.h>
 #include <core/ObjectWrapper.h>
+#include <core/PluginCommon.h>
 
 class QObject;
 class QWidget;
 class QIcon;
+
+#ifdef DEBUG
+namespace osg 
+{
+    class Node;
+} // namespace osg
+#endif
 
 namespace core 
 {
@@ -49,10 +57,10 @@ namespace core
         virtual QIcon* createIcon() = 0;
 
         //! Wype³nia listê wspieranych typów dla danego slotu. Pusta lista oznacza, ¿e ten slot i kolejne nie s¹ obs³ugiwane.
-        //! \param source Numer slotu.
+        //! \param inputNo Numer slotu.
         //! \param name Wynikowa Nazwa slotu.
         //! \param types Wynikowa lista wspieranych typów.
-        virtual void getSlotInfo(int source, std::string& name, ObjectWrapper::Types& types) = 0;
+        virtual void getInputInfo(int inputNo, std::string& name, ObjectWrapper::Types& types) = 0;
 
         //! Metoda wywo³ywana po przypisaniu danych wejœciowych wizualizatorowi. Powinna uwzglêdniæ czyszczenie widgetu
         //! po poprzednim setUp'ie.
@@ -61,6 +69,14 @@ namespace core
 
         //! Aktualizacja wyœwietlania. NIE aktualizacja stanu wyœwietlanych danych.
         virtual void update(double deltaTime) = 0;
+
+#ifdef DEBUG
+        //! \return Korzeñ lokalnej sceny osg.
+        virtual osg::Node* debugGetLocalSceneRoot()
+        {
+            return nullptr;
+        }
+#endif
     };
 
     typedef shared_ptr<IVisualizer> IVisualizerPtr;

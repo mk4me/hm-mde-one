@@ -44,18 +44,6 @@ Chart::~Chart()
     
 }
 
-void Chart::addChannel( const core::ScalarChannelConstPtr& channel, osg::Vec4 color )
-{
-    // tworzymy nowy wykres
-    osg::ref_ptr<core::LineChartSerie> serie = new core::LineChartSerie();
-
-    serie->setData(channel);
-    serie->setColor(color);
-    serie->setName(channel->getName());
-
-    addChannel(serie);
-}
-
 bool Chart::addChannel( const core::ChartSeriePtr& channel )
 {
     if ( geode->containsDrawable(channel) ) {

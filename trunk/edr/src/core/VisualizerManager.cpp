@@ -97,10 +97,10 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
         // lista wejœæ
         SourcesTypes::value_type info;
         for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
-            info.first.clear();
-            info.second.clear();
-            visualizer->getSlotInfo(i, info.first, info.second);
-            if ( info.second.empty() ) {
+            info.name.clear();
+            info.types.clear();
+            visualizer->getInputInfo(i, info.name, info.types);
+            if ( info.types.empty() ) {
                 break;
             } else {
                 // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...

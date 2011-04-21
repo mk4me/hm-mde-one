@@ -21,6 +21,7 @@ class ChartVisualizer : public QObject, public core::IVisualizer
     Q_OBJECT;
     UNIQUE_ID("{68C4E6D6-5EC8-4641-8845-F3FF3766B709}", "Chart Visualizer");
 private:
+
     //! Nazwa wizualizatora.
     std::string name;
     //! Viewer osg.
@@ -40,6 +41,8 @@ private:
     //! Serie danych przyporz¹dkowane indeksom wejœæ.
     std::vector<core::LineChartSeriePtr> series;
 
+    volatile bool needsRefresh;
+
 public:
     //!
     ChartVisualizer();
@@ -52,7 +55,7 @@ public:
     //! \see IVisualizer::create
     virtual core::IVisualizer* create() const;
     //! \see IVisualizer::getSlotInfo
-    virtual void getSlotInfo(int source, std::string& name, core::ObjectWrapper::Types& types);
+    virtual void getInputInfo(int inputNo, std::string& name, core::ObjectWrapper::Types& types);
     //! Nic nie robi.
     //! \see IVisualizer::update
     virtual void update(double deltaTime);
@@ -62,6 +65,8 @@ public:
     virtual QIcon* createIcon();
     //! \see IVisualizer::setUp
     virtual void setUp(core::IObjectSource* source);
+
+    virtual void process(core::IObjectSource* source);
 
 private slots:
     void setNormalized(bool normalized);

@@ -11,8 +11,7 @@
     </comment>
     <comment Id="62feca91-d051-4fa6-896b-3891bc58ba43">
       <elementDefinition Id="f11350ff-763c-4159-811f-2e46deaa6c60" />
-      <body>Wizualizatory to byty, które potrafią przedstawić pewien zbiór danych wejściowych. Liczbę oraz rodzaje parametrów określa rezultat metody getDataIDs, która zwraca listę ID typów tworzących zestaw danych (może to być jedno ID).
-Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizatory powinny móc wyświetlać wiele zestawów jednocześnie.</body>
+      <body>Wizualizatory to byty, które potrafią przedstawić pewien zbiór danych wejściowych. Liczbę oraz rodzaje parametrów określa rezultat metody getInputInfo. Metoda setUp otrzymuje parametr IObjectSource*, z którego to można pobrać obiekty domenowe dla każdego z wejść.</body>
     </comment>
     <comment Id="ec782e73-20f1-4281-b1a8-1eb2f28564ee">
       <elementDefinition Id="f329ba3a-d715-4ecc-bf52-f8012b47d41c" />
@@ -21,6 +20,14 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
     <comment Id="43e4c60c-faa3-41ee-9090-9372cb556ff7">
       <elementDefinition Id="f0df031c-58fb-46ed-946b-820a5ccead38" />
       <body>Dwa przykładowe wizualizatory pochodzące z plugina video. Pierwszy będzie mógł wyświetlać wiele strumieni video jednocześnie (tak jak to ma miejsce teraz), drugi będzie przeprowadzał fuzję sceny 3d oraz strumienia video oraz oczywiście będzie mógł wyświetlić wiele takich fuzji jednocześnie (specyfika wizualizatorów)</body>
+    </comment>
+    <comment Id="0a98b60e-eda6-4a3d-90b9-d2935c9c0566">
+      <elementDefinition Id="8d6a661c-2c51-4a0a-b2bd-12cea0fb9486" />
+      <body>Typ ten jest wrapperem na zainicjowane instancje parserów; upraszcza odwoływanie są do istniejących metod interfejsu</body>
+    </comment>
+    <comment Id="3cbb241c-0522-4b6c-97ce-7e6eb0538753">
+      <elementDefinition Id="5dba6991-ad23-4eda-b018-1892acc59f02" />
+      <body>DataManager przechowuje kolekcje IParserów, które dzięki funkcji create() służą jako fabryki. Dodatkowo trzymana jest kolekcja wewnętrznego typu Parser, który reprezentuje parser przypisany już do konkretnego pliku</body>
     </comment>
   </ownedCommentsInternal>
   <packagedElements>
@@ -81,7 +88,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
             <elementDefinition Id="73515315-db48-4530-8ae7-a217307c60fa" />
           </association>
           <association Id="13af4107-d9b1-42b9-bcb1-e8db7adfc23d" isDerived="false" sourceEndRoleName="core::Plugin" targetEndRoleName="core::IVisualizer" isLeaf="false" isAbstract="false">
-            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::Visualizer" />
+            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::IVisualizer" />
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
                 <memberEnd Id="d4dfedf7-2e55-40ea-928e-39d3fd552beb" name="core::Plugin" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
@@ -129,7 +136,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                 <parameter Id="6025cfca-e299-454c-998a-e0218c38415e" direction="Return">
                   <elementDefinition Id="3d3d406e-d4f0-4105-8462-a32bdea58c63" />
                   <type_NamedElement>
-                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QWidget" />
+                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QDockWidget" />
                   </type_NamedElement>
                 </parameter>
               </operationHasOwnedParameters>
@@ -142,7 +149,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                 <parameter Id="2b31787c-c6c8-40ac-8ca5-a02170076ec3" direction="Return">
                   <elementDefinition Id="7be86813-e498-4694-acc6-1e4a9df4aec8" />
                   <type_NamedElement>
-                    <referencedTypeMoniker Id="70906967-6a02-46d8-b4fd-8e5fd3fa4dd1" LastKnownName="QWidget" />
+                    <referencedTypeMoniker Id="70906967-6a02-46d8-b4fd-8e5fd3fa4dd1" LastKnownName="QDockWidget" />
                   </type_NamedElement>
                 </parameter>
               </operationHasOwnedParameters>
@@ -155,7 +162,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                 <parameter Id="4d8b6856-c1da-4f9e-9c98-bcea7dd78e42" direction="Return">
                   <elementDefinition Id="c938646a-3618-4b74-80cc-7a185fb51b68" />
                   <type_NamedElement>
-                    <referencedTypeMoniker Id="827579af-e108-4239-b11a-6058f6eaa1db" LastKnownName="QWidget" />
+                    <referencedTypeMoniker Id="827579af-e108-4239-b11a-6058f6eaa1db" LastKnownName="QDockWidget" />
                   </type_NamedElement>
                 </parameter>
               </operationHasOwnedParameters>
@@ -168,7 +175,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
       <Interface Id="dd8e9cdb-3917-42cd-8d0b-e0f7fb4ded34" name="core::IParser" isAbstract="false" isLeaf="false">
         <elementDefinition Id="10a4cb90-ba91-4b0f-b1c7-f360e07d128a" />
         <ownedOperations>
-          <operation Id="3b539fbf-60df-497a-9db4-6562fbc5f0ea" name="clone" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
+          <operation Id="3b539fbf-60df-497a-9db4-6562fbc5f0ea" name="create" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="ff3d2bb8-4aca-41c1-9e15-e02541a18bc5" />
           </operation>
           <operation Id="e1c5e16e-49d1-4796-9be1-e5019c990ddd" name="parse" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
@@ -221,34 +228,44 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
       </Interface>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
-      <Interface Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" name="core::Visualizer" isAbstract="false" isLeaf="false">
+      <Interface Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" name="core::IVisualizer" isAbstract="false" isLeaf="false">
         <elementDefinition Id="688f7e17-7c15-467c-8ac6-cb303557a68c" />
         <ownedOperations>
-          <operation Id="e929cdd3-0b62-44b2-8aee-c4dc512a1261" name="init" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
+          <operation Id="e929cdd3-0b62-44b2-8aee-c4dc512a1261" name="createWidget" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="4353c9cc-7db9-4e59-89b5-d89d88d33ed5" />
           </operation>
-          <operation Id="dcd81ae6-3872-457b-95f1-f805e76e356c" name="addData" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
+          <operation Id="dcd81ae6-3872-457b-95f1-f805e76e356c" name="getInputInfo" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="662e1278-3c2d-4f49-8001-3d0315f3167f" />
             <ownedParameters>
               <operationHasOwnedParameters>
-                <parameter Id="35311cb4-b99c-4556-ab37-80874926d305" name="std::vector&lt;core::ObjectWrapper&gt;&amp;" direction="In" isUnique="false">
-                  <elementDefinition Id="f40163da-f10a-4aaa-b3af-0820806dab9a" />
+                <parameter Id="3bf2f1a9-21b2-45cd-a2a7-2017dabacaf3" name="int" direction="In" isUnique="false">
+                  <elementDefinition Id="6e0a5cd5-0f4a-4b70-bf9d-1be8ee235702" />
+                </parameter>
+              </operationHasOwnedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="10ce84ca-421f-4ff4-8b04-5edcd08162fd" name="std::string" direction="In" isUnique="false">
+                  <elementDefinition Id="dd7fb5c1-e0fa-44f3-ae3e-7f47cfa0f710" />
+                </parameter>
+              </operationHasOwnedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="39c89bcd-7920-404e-abf9-af84d9861eca" name="std::vector&lt;core::ObjectWrapper::Type&gt;&amp;" direction="In" isUnique="false">
+                  <elementDefinition Id="f6cefb77-1237-4f38-802f-9f4c75903cb6" />
                 </parameter>
               </operationHasOwnedParameters>
             </ownedParameters>
           </operation>
-          <operation Id="6b1d39d3-d1c6-40f8-87f4-9f8957a9a39c" name="getDataIDs" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
+          <operation Id="6b1d39d3-d1c6-40f8-87f4-9f8957a9a39c" name="setUp" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="fb32dd65-17e3-4b9c-97eb-8c13581401a7" />
             <ownedParameters>
               <operationHasOwnedParameters>
-                <parameter Id="2e94aac0-7c34-4b47-b715-adfe664ef5ad" direction="Return">
-                  <elementDefinition Id="f2800a75-a204-408d-9626-3451869c0d0d" />
-                  <type_NamedElement>
-                    <referencedTypeMoniker Id="686eb0a6-3aae-4433-a8d9-dd95e0839832" LastKnownName="std::vector&lt;core::UniqueID&gt;" />
-                  </type_NamedElement>
+                <parameter Id="ea1f2574-34cf-44bc-b139-5ba87f6cc10b" name="IObjectSource*" direction="In" isUnique="false">
+                  <elementDefinition Id="4c36e144-dcfa-4729-bf9f-21e22abeb773" />
                 </parameter>
               </operationHasOwnedParameters>
             </ownedParameters>
+          </operation>
+          <operation Id="f9bc6e94-94e2-43ab-a09a-b6d64fa90a67" name="create" isLeaf="false" isStatic="false" isAbstract="true" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="469a0d88-7c1c-4d95-8137-45b03899931c" />
           </operation>
         </ownedOperations>
       </Interface>
@@ -287,7 +304,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
       </class>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
-      <class Id="fe2c689d-c936-4646-b29f-67b507e3ce7b" name="core::DataManager" isAbstract="false" isLeaf="false" isActiveClass="false">
+      <class Id="fe2c689d-c936-4646-b29f-67b507e3ce7b" name="DataManager" isAbstract="false" isLeaf="false" isActiveClass="false">
         <elementDefinition Id="2cc88aad-cefb-44e3-bbee-91b2ee3c94fc" />
         <targetEnds>
           <association Id="704df40a-78a1-498a-83a5-d47d35a4057e" isDerived="false" sourceEndRoleName="core::DataManager" targetEndRoleName="core::IParser" isLeaf="false" isAbstract="false">
@@ -316,6 +333,22 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
             </relationshipOwnedElementsInternal>
             <elementDefinition Id="2256e997-a7a2-48f4-8ab9-faa829109270" />
           </association>
+          <association Id="cee1b336-8430-4e13-a40d-7d6019efb1d4" isDerived="false" sourceEndRoleName="DataManager" targetEndRoleName="DataManager::Parser" isLeaf="false" isAbstract="false">
+            <classMoniker Id="4cb7eabb-8433-4a02-a53f-dffdc04406f3" LastKnownName="DataManager::Parser" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="50de83e9-f139-44e7-a269-1ed55c777957" name="DataManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Shared" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="331a5177-ab4e-4c39-be01-5077756c589e" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="ef3d3d8e-6c09-4e05-9059-f5d542ba4398" name="DataManager::Parser" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="57e516e3-8516-4743-88c8-df8044c5dfe1" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="5db0ae63-f993-4e17-8df6-2033c4b10c68" />
+          </association>
         </targetEnds>
         <ownedOperationsInternal>
           <operation Id="ebe10852-ff6a-4f08-b7ea-79fbdfd21003" name="getData" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
@@ -325,11 +358,11 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
       </class>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
-      <class Id="56915e64-2e09-4db1-a1d5-30fb13611152" name="core::ViewManager" isAbstract="false" isLeaf="false" isActiveClass="false">
+      <class Id="56915e64-2e09-4db1-a1d5-30fb13611152" name="VisualizerManager" isAbstract="false" isLeaf="false" isActiveClass="false">
         <elementDefinition Id="8b05ab5f-f9b4-4afd-a429-ffcdbdb633f9" />
         <targetEnds>
           <association Id="4e10bb3e-936e-4248-9cbf-fe0e39c9d815" isDerived="false" sourceEndRoleName="core::ViewManager" targetEndRoleName="core::IOsgVisualizer" isLeaf="false" isAbstract="false">
-            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::Visualizer" />
+            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::IVisualizer" />
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
                 <memberEnd Id="7c81eae3-3da2-411e-b834-5ad8469f1b6e" name="core::ViewManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Shared" isComposite="false" isNavigableOwned="false">
@@ -354,7 +387,28 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
             </relationshipOwnedElementsInternal>
             <elementDefinition Id="c247d48e-bd16-4ebd-a3b7-7b48f028e991" />
           </association>
+          <association Id="6b4d8138-da66-4cec-b241-8edc4097c29b" isDerived="false" sourceEndRoleName="VisualizerManager" targetEndRoleName="Visualizer" isLeaf="false" isAbstract="false">
+            <classMoniker Id="0fbb8277-e11c-4357-b101-2e674e67c78c" LastKnownName="Visualizer" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="78171dff-1d18-4e8f-adc1-d22f4015b068" name="VisualizerManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Shared" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="4db7cc9e-f9e2-495b-92fa-90e463d0bf81" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="a43dc14b-b437-4361-814b-c09c93bc20cb" name="Visualizer" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="a9d8c36d-2ffd-4355-9c2a-5b0041288dc6" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="87392be3-683e-44fc-b0ad-424481c2a235" />
+          </association>
         </targetEnds>
+        <ownedOperationsInternal>
+          <operation Id="de685c14-c06f-4c77-a028-92145acbd2f8" name="createVisualizer" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="98fc9264-e36f-42a3-8feb-ab2d15a47101" />
+          </operation>
+        </ownedOperationsInternal>
       </class>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
@@ -367,7 +421,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
           </interfaceRealization>
         </suppliersInternal>
         <ownedOperationsInternal>
-          <operation Id="87d0b18a-7f72-4a58-81ab-8906c3827aff" name="clone" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="87d0b18a-7f72-4a58-81ab-8906c3827aff" name="create" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="6f5d5327-97a7-4f5d-9f40-9c2ea67a30b5" />
           </operation>
           <operation Id="61015a7d-466c-4d5f-aecb-ce848be1aa82" name="parse" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
@@ -419,7 +473,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
           </interfaceRealization>
         </suppliersInternal>
         <ownedOperationsInternal>
-          <operation Id="fca2b083-6254-4bb1-9bff-6018504472b2" name="clone" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="fca2b083-6254-4bb1-9bff-6018504472b2" name="create" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="ed76a47a-0a8c-4e6e-a4c6-426aa668173d" />
           </operation>
           <operation Id="b7d06036-c544-4054-80d1-1a10200910c7" name="parse" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
@@ -487,7 +541,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                 <parameter Id="3f09e46b-a8b3-4113-b9fb-2153b96ed5ca" direction="Return">
                   <elementDefinition Id="c379b32e-6bc8-44cf-916f-caca587190e1" />
                   <type_NamedElement>
-                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QWidget" />
+                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QDockWidget" />
                   </type_NamedElement>
                 </parameter>
               </operationHasOwnedParameters>
@@ -500,7 +554,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                 <parameter Id="4d9967b3-c5f9-4170-bcc8-37f56a4b7886" direction="Return">
                   <elementDefinition Id="ef2ef822-741c-4ebe-b546-b672dd680e4c" />
                   <type_NamedElement>
-                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QWidget" />
+                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QDockWidget" />
                   </type_NamedElement>
                 </parameter>
               </operationHasOwnedParameters>
@@ -513,7 +567,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                 <parameter Id="2753d00b-085e-4c07-a642-db94ad0d934d" direction="Return">
                   <elementDefinition Id="dd7ad694-66df-45aa-94a8-e325ab983060" />
                   <type_NamedElement>
-                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QWidget" />
+                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QDockWidget" />
                   </type_NamedElement>
                 </parameter>
               </operationHasOwnedParameters>
@@ -548,7 +602,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                 <parameter Id="4fce7785-964d-4aa8-ba24-c8a28222738f" direction="Return">
                   <elementDefinition Id="05cd3fc1-8298-42df-bb70-d70086bd0d9b" />
                   <type_NamedElement>
-                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QWidget" />
+                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QDockWidget" />
                   </type_NamedElement>
                 </parameter>
               </operationHasOwnedParameters>
@@ -561,7 +615,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                 <parameter Id="60210a36-8fe1-41d5-92f9-893c55e5fc31" direction="Return">
                   <elementDefinition Id="97211723-a3ce-4f18-8762-b681283c4927" />
                   <type_NamedElement>
-                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QWidget" />
+                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QDockWidget" />
                   </type_NamedElement>
                 </parameter>
               </operationHasOwnedParameters>
@@ -574,7 +628,7 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                 <parameter Id="9ebe8f9d-0281-4102-8d60-f57c1177f97f" direction="Return">
                   <elementDefinition Id="ab4ee8fc-a9ef-47b1-8944-236d650c834f" />
                   <type_NamedElement>
-                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QWidget" />
+                    <referencedTypeMoniker Id="4887bbae-7037-4f39-a71a-fdad31eb0281" LastKnownName="QDockWidget" />
                   </type_NamedElement>
                 </parameter>
               </operationHasOwnedParameters>
@@ -584,51 +638,83 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
       </class>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
-      <class Id="1c07cd94-d1cc-4fbe-86a4-e886b69769cd" name="core::VisualizerWidget" isAbstract="false" isLeaf="false" isActiveClass="false">
+      <class Id="1c07cd94-d1cc-4fbe-86a4-e886b69769cd" name="VisualizerWidget" isAbstract="false" isLeaf="false" isActiveClass="false">
         <elementDefinition Id="e6e034ff-fe99-463f-85bf-d453d7d754a2" />
         <generalsInternal>
           <generalization Id="75d2ed04-9333-4019-afb1-2ae333d27d59" isSubstitutable="false">
-            <classMoniker Id="3395d175-2732-440e-adc0-926c31e8a600" LastKnownName="QWidget" />
+            <classMoniker Id="3395d175-2732-440e-adc0-926c31e8a600" LastKnownName="QDockWidget" />
             <elementDefinition Id="2bb48e43-5897-48c6-a0c0-c718677c5db8" />
           </generalization>
         </generalsInternal>
         <targetEnds>
-          <association Id="f38657d2-8b0c-4bc4-85da-e8cbb06a1375" isDerived="false" sourceEndRoleName="core::VisualizerWidget" targetEndRoleName="core::IVisualizer" isLeaf="false" isAbstract="false">
-            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::Visualizer" />
+          <association Id="9dd5f845-f1bd-4781-9a37-6a674689e7ff" isDerived="false" sourceEndRoleName="VisualizerWidget" targetEndRoleName="VisualizerTitleBar" isLeaf="false" isAbstract="false">
+            <classMoniker Id="ccea4346-d7a0-4006-aa02-2c4188d995d7" LastKnownName="VisualizerTitleBar" />
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
-                <memberEnd Id="11619114-9342-47ea-9225-20062920e015" name="core::VisualizerWidget" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
-                  <elementDefinition Id="2a050f2e-de38-4bdc-b789-688f992295af" />
+                <memberEnd Id="374090de-9d66-4cee-89ed-b4c080fe20d8" name="VisualizerWidget" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="b3c8cbc6-dfb5-4564-996d-7202c68e728c" />
                 </memberEnd>
               </associationHasOwnedEnds>
               <associationHasOwnedEnds>
-                <memberEnd Id="1ebdd059-88c3-4ad9-9d96-b289d0c7f00f" name="core::IVisualizer" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
-                  <elementDefinition Id="ef1f6e54-f6e6-4f94-9b0b-126edfac367e" />
+                <memberEnd Id="2996a523-e223-44dd-bceb-bdf11f45cc67" name="VisualizerTitleBar" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="de6d0b4d-abad-4982-9dc5-521bdcd44564" />
                 </memberEnd>
               </associationHasOwnedEnds>
             </relationshipOwnedElementsInternal>
-            <elementDefinition Id="86553f05-ab1d-4e33-aafb-26b7ec3326c3" />
+            <elementDefinition Id="bf6eb9a7-606f-4b62-8567-67ff6b1cb882" />
+          </association>
+          <association Id="93f7280f-0f97-4a0f-b397-2b6182760a32" isDerived="false" sourceEndRoleName="VisualizerWidget" targetEndRoleName="Visualizer" isLeaf="false" isAbstract="false">
+            <classMoniker Id="0fbb8277-e11c-4357-b101-2e674e67c78c" LastKnownName="Visualizer" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="b1a2989f-fbf0-43aa-8a1d-1cfbc35714f4" name="VisualizerWidget" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="34e61943-9491-44c0-a603-acb62be03b8c" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="94e0c2a8-00ef-42e7-9b27-3fec9ab974a9" name="Visualizer" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="6f184c67-568a-4c81-a6e1-cfc9ef4a2e17" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="991d5c22-aade-4369-9ab7-2f7613541f03" />
+          </association>
+          <association Id="bd693357-0886-420b-8606-8fb4030a40ea" isDerived="false" sourceEndRoleName="VisualizerWidget" targetEndRoleName="QWidget" isLeaf="false" isAbstract="false">
+            <classMoniker Id="8a1ccb50-719e-42f1-b9ee-37dd819956e6" LastKnownName="QWidget" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="afb3ac0b-dfee-4104-bac7-8677490cefb1" name="VisualizerWidget" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="29c09a85-056d-498a-8ee7-b4c8feef07a7" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="0655a7ae-163e-4ffa-b3c6-e92bbb230ad0" name="QWidget" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="7c39dbf8-5999-49e0-bff2-e22c6d7253fe" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="18aa5922-0717-4276-a49c-4ca3508a3893" />
           </association>
         </targetEnds>
       </class>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
-      <class Id="3395d175-2732-440e-adc0-926c31e8a600" name="QWidget" isAbstract="false" isLeaf="false" isActiveClass="false">
+      <class Id="3395d175-2732-440e-adc0-926c31e8a600" name="QDockWidget" isAbstract="false" isLeaf="false" isActiveClass="false">
         <elementDefinition Id="55420b04-f57c-43e8-a151-6015a4d517e5" />
       </class>
     </logicalClassDesignerModelHasTypes>
     <packageHasNamedElement>
-      <referencedType Id="4887bbae-7037-4f39-a71a-fdad31eb0281" name="QWidget" isAbstract="false" isLeaf="false" cachedFullName="uml::QWidget">
+      <referencedType Id="4887bbae-7037-4f39-a71a-fdad31eb0281" name="QDockWidget" isAbstract="false" isLeaf="false" cachedFullName="uml::QDockWidget">
         <elementDefinition Id="55420b04-f57c-43e8-a151-6015a4d517e5" />
       </referencedType>
     </packageHasNamedElement>
     <packageHasNamedElement>
-      <referencedType Id="70906967-6a02-46d8-b4fd-8e5fd3fa4dd1" name="QWidget" isAbstract="false" isLeaf="false" cachedFullName="uml::QWidget">
+      <referencedType Id="70906967-6a02-46d8-b4fd-8e5fd3fa4dd1" name="QDockWidget" isAbstract="false" isLeaf="false" cachedFullName="uml::QDockWidget">
         <elementDefinition Id="55420b04-f57c-43e8-a151-6015a4d517e5" />
       </referencedType>
     </packageHasNamedElement>
     <packageHasNamedElement>
-      <referencedType Id="827579af-e108-4239-b11a-6058f6eaa1db" name="QWidget" isAbstract="false" isLeaf="false" cachedFullName="uml::QWidget">
+      <referencedType Id="827579af-e108-4239-b11a-6058f6eaa1db" name="QDockWidget" isAbstract="false" isLeaf="false" cachedFullName="uml::QDockWidget">
         <elementDefinition Id="55420b04-f57c-43e8-a151-6015a4d517e5" />
       </referencedType>
     </packageHasNamedElement>
@@ -742,15 +828,15 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
         <elementDefinition Id="ab20e323-6563-44db-b295-671ca82368f3" />
         <suppliersInternal>
           <interfaceRealization Id="f62a9cc7-9755-4c60-aab5-f0afae79630c">
-            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::Visualizer" />
+            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::IVisualizer" />
             <elementDefinition Id="12c4e53c-6a2a-4e53-818b-fde0621951c5" />
           </interfaceRealization>
         </suppliersInternal>
         <ownedOperationsInternal>
-          <operation Id="fda5c7f1-b808-4873-b405-75e7c22da139" name="init" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="fda5c7f1-b808-4873-b405-75e7c22da139" name="createWidget" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="d1d7e47d-3470-4339-ba8b-72f55d4f6201" />
           </operation>
-          <operation Id="02f0db6c-3649-4ea5-8c2b-7c943d4ba007" name="addData" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="02f0db6c-3649-4ea5-8c2b-7c943d4ba007" name="getInputInfo" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="325f31e8-2b2d-4db9-8037-c940e8b9b4e3" />
             <ownedParameters>
               <operationHasOwnedParameters>
@@ -758,17 +844,24 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                   <elementDefinition Id="c24983c0-a6c1-4ad2-a816-7bba1a74a6c0" />
                 </parameter>
               </operationHasOwnedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="a4ff06dc-25e6-4ed7-96fa-7be8b8be4d25" name="std::string" direction="In" isUnique="false">
+                  <elementDefinition Id="43948cd5-4810-4401-8c76-efc2a63a62c8" />
+                </parameter>
+              </operationHasOwnedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="eeabb2ec-16d3-4473-82b5-181f68a96d1d" name="std::vector&lt;core::ObjectWrapper::Type&gt;&amp;" direction="In" isUnique="false">
+                  <elementDefinition Id="e8563401-d982-44ca-8660-d6b92489851f" />
+                </parameter>
+              </operationHasOwnedParameters>
             </ownedParameters>
           </operation>
-          <operation Id="ef7e99cd-b928-431b-aa3d-431b3043c380" name="getDataIDs" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="ef7e99cd-b928-431b-aa3d-431b3043c380" name="setUp" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="bc397377-1cda-45b3-af26-b60236d88355" />
             <ownedParameters>
               <operationHasOwnedParameters>
-                <parameter Id="95874846-96c7-4e76-9471-54dde79510ef" direction="Return">
-                  <elementDefinition Id="abab1afb-f03f-4c2b-b9b1-a138c1330407" />
-                  <type_NamedElement>
-                    <referencedTypeMoniker Id="686eb0a6-3aae-4433-a8d9-dd95e0839832" LastKnownName="std::vector&lt;core::UniqueID&gt;" />
-                  </type_NamedElement>
+                <parameter Id="7fd86385-b42b-4b39-934a-a77677009e17" name="IObjectSource*" direction="In" isUnique="false">
+                  <elementDefinition Id="6a09af86-bc98-4082-810e-688139338e3c" />
                 </parameter>
               </operationHasOwnedParameters>
             </ownedParameters>
@@ -783,23 +876,26 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
               </operationHasOwnedParameters>
             </ownedParameters>
           </operation>
+          <operation Id="64b5cab1-ba8d-4660-9d27-11421d1a7cbc" name="create" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="015a43e4-910b-40e7-8f88-b20597373825" />
+          </operation>
         </ownedOperationsInternal>
       </class>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
-      <class Id="fe23221f-bd63-474d-bc8e-1452230e1b95" name="video::VideoMeshMerger" isAbstract="false" isLeaf="false" isActiveClass="false">
+      <class Id="fe23221f-bd63-474d-bc8e-1452230e1b95" name="kinematic::KinematicVisualizer" isAbstract="false" isLeaf="false" isActiveClass="false">
         <elementDefinition Id="eb0eaf85-928e-49c6-8773-a40c9bdf5051" />
         <suppliersInternal>
           <interfaceRealization Id="2f23d76f-8196-4ac4-986b-e6ccb99567d7">
-            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::Visualizer" />
+            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::IVisualizer" />
             <elementDefinition Id="835e44e2-0f9e-4791-bc1b-5d7600504460" />
           </interfaceRealization>
         </suppliersInternal>
         <ownedOperationsInternal>
-          <operation Id="047d430b-cc25-48a8-a6e4-b95fc89c4581" name="init" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="047d430b-cc25-48a8-a6e4-b95fc89c4581" name="createWidget" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="f08f173a-ea07-4280-9565-465c6c186f9f" />
           </operation>
-          <operation Id="34adf3e1-0e24-4075-9a87-c22e76b50b65" name="addData" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="34adf3e1-0e24-4075-9a87-c22e76b50b65" name="getInputInfo" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="a8d05e7a-f108-47c7-8fd6-476cf3117253" />
             <ownedParameters>
               <operationHasOwnedParameters>
@@ -807,35 +903,30 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                   <elementDefinition Id="2f989133-edda-4ffb-9e04-d71ec40509f7" />
                 </parameter>
               </operationHasOwnedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="e356eade-1a51-44e9-abdb-4f7eac7ce72e" name="std::string" direction="In" isUnique="false">
+                  <elementDefinition Id="a8ca7897-ba70-4222-9b36-acd24ce5fab5" />
+                </parameter>
+              </operationHasOwnedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="b0ee329e-0d34-4d71-b89a-23156f19ac14" name="std::vector&lt;core::ObjectWrapper::Type&gt;&amp;" direction="In" isUnique="false">
+                  <elementDefinition Id="a22857ac-a138-4ba8-a1da-ab57447a435e" />
+                </parameter>
+              </operationHasOwnedParameters>
             </ownedParameters>
           </operation>
-          <operation Id="065a6ab2-bdf5-4f68-a075-1f8f92e586ce" name="getDataIDs" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="065a6ab2-bdf5-4f68-a075-1f8f92e586ce" name="setUp" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="589fa0a2-3de4-407d-98f5-8b09fac72d79" />
             <ownedParameters>
               <operationHasOwnedParameters>
-                <parameter Id="a661015e-5e69-45e0-9a60-b67ff98de43b" direction="Return">
-                  <elementDefinition Id="a19083e6-b5fb-4cd8-bc7b-e8a81c0c4a4f" />
-                  <type_NamedElement>
-                    <referencedTypeMoniker Id="686eb0a6-3aae-4433-a8d9-dd95e0839832" LastKnownName="std::vector&lt;core::UniqueID&gt;" />
-                  </type_NamedElement>
+                <parameter Id="9fc3ac11-d082-4f00-b7c6-878e1479b2e6" name="IObjectSource*" direction="In" isUnique="false">
+                  <elementDefinition Id="c408f7c5-3ece-4d75-b709-50e4eaffd963" />
                 </parameter>
               </operationHasOwnedParameters>
             </ownedParameters>
           </operation>
-          <operation Id="4b257073-deaa-4fbe-b2f1-6559a8d47885" name="addData" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
-            <elementDefinition Id="112cf3ab-e8cf-439c-99b1-c59202d198cf" />
-            <ownedParameters>
-              <operationHasOwnedParameters>
-                <parameter Id="880c71a6-9dee-47ef-ae10-3428c4b5bfca" name="vidlib::VideoImageStream*" direction="In" isUnique="false">
-                  <elementDefinition Id="ff780a83-c8fa-4d35-a5e7-26e658b7a195" />
-                </parameter>
-              </operationHasOwnedParameters>
-              <operationHasOwnedParameters>
-                <parameter Id="569b7fc7-7669-494f-8805-32c785b783cb" name="MocapData*" direction="In" isUnique="false">
-                  <elementDefinition Id="587ca7e9-59d7-4c05-b76c-7e5b02c7d98e" />
-                </parameter>
-              </operationHasOwnedParameters>
-            </ownedParameters>
+          <operation Id="d07be850-cffa-4707-9b13-5852f3fe5874" name="create" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="78f690cc-385a-4e79-94e8-49d5124be453" />
           </operation>
         </ownedOperationsInternal>
       </class>
@@ -845,11 +936,6 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
         <elementDefinition Id="bee3c78b-209d-4751-8497-145cfdceb00a" />
       </class>
     </logicalClassDesignerModelHasTypes>
-    <packageHasNamedElement>
-      <referencedType Id="686eb0a6-3aae-4433-a8d9-dd95e0839832" name="std::vector&lt;core::UniqueID&gt;" isAbstract="false" isLeaf="false" cachedFullName="std::vector&lt;core::UniqueID&gt;">
-        <elementDefinition Id="901c9e61-adf4-4b8f-9818-a052f8ae219e" />
-      </referencedType>
-    </packageHasNamedElement>
     <packageHasNamedElement>
       <referencedType Id="22fcf31b-f7d7-4319-9efc-88b9fed99f21" name="core::ObjectWrapper" isAbstract="false" isLeaf="false" cachedFullName="uml::core::ObjectWrapper">
         <elementDefinition Id="34f96ab1-6ae7-4127-8e81-9f0a687a786a" />
@@ -866,19 +952,19 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
       </referencedType>
     </packageHasNamedElement>
     <logicalClassDesignerModelHasTypes>
-      <class Id="e4adb2e9-ab36-4d12-9b8b-10049fdde2b6" name="core::MeshVisualizer" isAbstract="false" isLeaf="false" isActiveClass="false">
+      <class Id="e4adb2e9-ab36-4d12-9b8b-10049fdde2b6" name="chart::ChartVisualizer" isAbstract="false" isLeaf="false" isActiveClass="false">
         <elementDefinition Id="8093e980-2c85-4d46-8c6d-cfb6816faf56" />
         <suppliersInternal>
           <interfaceRealization Id="54f98e3e-08ea-4752-abee-8f34ae4d70ea">
-            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::Visualizer" />
+            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::IVisualizer" />
             <elementDefinition Id="8312dfe7-9f5d-46bd-88e0-758b1741c086" />
           </interfaceRealization>
         </suppliersInternal>
         <ownedOperationsInternal>
-          <operation Id="2a74846f-86c5-4e64-851a-eee7aa41b6ad" name="init" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="2a74846f-86c5-4e64-851a-eee7aa41b6ad" name="createWidget" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="e0ffba18-0849-4129-ac7e-bcb8fb2a2e3f" />
           </operation>
-          <operation Id="ccd15186-6248-422a-bc1d-c57eeaca70c5" name="addData" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+          <operation Id="ccd15186-6248-422a-bc1d-c57eeaca70c5" name="getInputInfo" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
             <elementDefinition Id="ad832534-6e22-4b93-a253-25d0a5600ef6" />
             <ownedParameters>
               <operationHasOwnedParameters>
@@ -886,20 +972,30 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
                   <elementDefinition Id="360de616-bb8f-455c-83b9-34a1cb5862c7" />
                 </parameter>
               </operationHasOwnedParameters>
-            </ownedParameters>
-          </operation>
-          <operation Id="43eb75c6-b920-4cc8-a1ff-b1bb2214497c" name="getDataIDs" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
-            <elementDefinition Id="31d88e92-f599-4d46-8805-95e9650c2926" />
-            <ownedParameters>
               <operationHasOwnedParameters>
-                <parameter Id="fd64f2b2-8e27-4b43-9cfe-160df72462c3" direction="Return">
-                  <elementDefinition Id="d293af2c-a293-4ff1-93c3-16567c4edf02" />
-                  <type_NamedElement>
-                    <referencedTypeMoniker Id="686eb0a6-3aae-4433-a8d9-dd95e0839832" LastKnownName="std::vector&lt;core::UniqueID&gt;" />
-                  </type_NamedElement>
+                <parameter Id="2f28ba6c-3558-475f-bed2-a1dd12a4da05" name="std::string" direction="In" isUnique="false">
+                  <elementDefinition Id="b6699ec5-cae3-46bc-bb03-7345db1a810d" />
+                </parameter>
+              </operationHasOwnedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="62b6bf59-423c-434e-bfcd-0d91794b569d" name="std::vector&lt;core::ObjectWrapper::Type&gt;&amp;" direction="In" isUnique="false">
+                  <elementDefinition Id="2a9137ae-0bdb-48b7-a5a5-7c70c420e34f" />
                 </parameter>
               </operationHasOwnedParameters>
             </ownedParameters>
+          </operation>
+          <operation Id="43eb75c6-b920-4cc8-a1ff-b1bb2214497c" name="setUp" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="31d88e92-f599-4d46-8805-95e9650c2926" />
+            <ownedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="c613d257-4f33-4561-a5b1-5840a482b843" name="IObjectSource*" direction="In" isUnique="false">
+                  <elementDefinition Id="f20e7e41-3fe8-4f6f-afb5-7752118d37e0" />
+                </parameter>
+              </operationHasOwnedParameters>
+            </ownedParameters>
+          </operation>
+          <operation Id="62818182-5285-4ab4-add2-3cc21a32042b" name="create" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="73bba1eb-42a5-4f85-8cbd-b80102f20c6d" />
           </operation>
         </ownedOperationsInternal>
       </class>
@@ -909,6 +1005,114 @@ Metoda addData dodaje encję zestawu danych do wyświetlania, więc wizualizator
         <elementDefinition Id="34f96ab1-6ae7-4127-8e81-9f0a687a786a" />
       </referencedType>
     </packageHasNamedElement>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="ccea4346-d7a0-4006-aa02-2c4188d995d7" name="VisualizerTitleBar" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="874e3481-2b61-4088-a0dd-64ac2a122d8c" />
+        <generalsInternal>
+          <generalization Id="53244576-5de3-4a11-8650-73bc15e554f8" isSubstitutable="false">
+            <classMoniker Id="8a1ccb50-719e-42f1-b9ee-37dd819956e6" LastKnownName="QWidget" />
+            <elementDefinition Id="584984ff-5077-47e1-9e84-7662685d0703" />
+          </generalization>
+        </generalsInternal>
+        <targetEnds>
+          <association Id="c8517404-19bd-4993-9455-1251984b4e8d" isDerived="false" sourceEndRoleName="VisualizerTitleBar" targetEndRoleName="Class2" isLeaf="false" isAbstract="false">
+            <classMoniker Id="8a1ccb50-719e-42f1-b9ee-37dd819956e6" LastKnownName="QWidget" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="c12c9385-0d83-4f8c-9a94-99b54b0dc7e9" name="VisualizerTitleBar" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="14e5b90d-5e3a-47b1-961b-a4f69165dd29" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="86def0b2-4aa4-4e17-b67f-f2005baf9c6f" name="Class2" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="6b2024c4-5956-4d4f-8002-dd92f9190d5e" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="e3c607d3-045d-4843-96ed-db087c0f22ac" />
+          </association>
+        </targetEnds>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="8a1ccb50-719e-42f1-b9ee-37dd819956e6" name="QWidget" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="05387f15-8025-4403-af50-32a1cfd6cbc2" />
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="4cb7eabb-8433-4a02-a53f-dffdc04406f3" name="DataManager::Parser" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="7cad40ec-d6e8-421b-a1e9-838be2d7d0c9" />
+        <targetEnds>
+          <association Id="e99118c8-6c45-4b58-b858-f1fafde5393c" isDerived="false" sourceEndRoleName="DataManager::Parser" targetEndRoleName="core::IParser" isLeaf="false" isAbstract="false">
+            <interfaceMoniker Id="dd8e9cdb-3917-42cd-8d0b-e0f7fb4ded34" LastKnownName="core::IParser" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="4ca5f642-6fe8-4878-94aa-fa984b4436b3" name="DataManager::Parser" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="db6ba805-cb58-4a3e-8c1c-c4cc83ed8ef0" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="4244a4f9-038e-4463-87b4-da8419cd54ee" name="core::IParser" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="8f78512a-517c-46ee-a261-aa348019c563" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="909890fc-2b4f-4f9a-a006-9e6676d6dd23" />
+          </association>
+        </targetEnds>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="0fbb8277-e11c-4357-b101-2e674e67c78c" name="Visualizer" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="a78de929-4455-4f2d-9772-b802f1f560dc" />
+        <targetEnds>
+          <association Id="c2e6219c-304f-4ea3-a9f8-3e75c3508203" isDerived="false" sourceEndRoleName="Visualizer" targetEndRoleName="core::IVisualizer" isLeaf="false" isAbstract="false">
+            <interfaceMoniker Id="0d802840-bcf9-4d8f-b1a6-257c0dda435e" LastKnownName="core::IVisualizer" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="96e9b59f-6794-4080-ac02-2e2e2917bfaa" name="Visualizer" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="493244a7-e32f-4831-9618-ba4d6149c43e" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="7f91a755-fb22-49fe-9fc3-1c24e390c2d9" name="core::IVisualizer" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="53bbc7ce-fa3a-4e6f-98b2-077d4a301a24" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="9ad30944-8751-49fc-97aa-f5db3a65fe28" />
+          </association>
+        </targetEnds>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="c6b17d26-c39d-4b4f-a091-0e33a28aff0e" name="core::IObjectSource" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="2fbc7bec-3ebd-4bd1-aa86-aaf0c615cc0a" />
+        <ownedOperationsInternal>
+          <operation Id="b6a06dce-94e1-4ae6-a249-661a65225ab8" name="getObject" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="55f91582-a400-4280-ad88-f8567f4ca005" />
+            <ownedParameters>
+              <operationHasOwnedParameters>
+                <parameter Id="afc134d4-2662-4829-8bbf-038288adbce1" name="int" direction="In" isUnique="false">
+                  <elementDefinition Id="3d413eac-60e5-4ae0-a1d8-7ef7ac23d36b" />
+                </parameter>
+              </operationHasOwnedParameters>
+            </ownedParameters>
+          </operation>
+        </ownedOperationsInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="5dbd669f-d27d-486c-8fd3-e7f502e2e2b6" name="ObjectSource" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="b6f0e200-bcb7-4a4e-a6af-4308bb6ea13f" />
+        <generalsInternal>
+          <generalization Id="47588a8d-e1c2-42bc-82e1-823f12bea9aa" isSubstitutable="false">
+            <classMoniker Id="c6b17d26-c39d-4b4f-a091-0e33a28aff0e" LastKnownName="core::IObjectSource" />
+            <elementDefinition Id="29ba9225-eceb-4cf3-aec2-033ef5a00a11" />
+          </generalization>
+        </generalsInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
   </packagedElements>
   <package Id="bf4bcaa3-ef6f-4044-ac9b-2361b100a54f" name="uml">
     <elementDefinition Id="c2d1360b-ea8b-406c-b331-dd1f2f8fbe08" />

@@ -54,6 +54,7 @@ namespace core {
         }
     };
     typedef shared_ptr<EMGChannel> EMGChannelPtr;
+    typedef shared_ptr<const EMGChannel> EMGChannelConstPtr;
 
 
 

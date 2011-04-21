@@ -93,7 +93,7 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
             scheme->setMarkersDataFromVsk(vsk);
         }
         schemeMarkers->set(scheme);
-        schemeMarkers->setName(path.filename() + " - markers");
+        schemeMarkers->setName(path.filename().string() + " - markers");
     }
 
     if (markers.size() > 0 && modelPtr && modelPtr->getFrames().size() > 0) {
@@ -107,7 +107,7 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
             scheme->setMarkersDataFromVsk(vsk);
         }
         schemeMarkersSkeleton->set(scheme);
-        schemeMarkersSkeleton->setName(path.filename());
+        schemeMarkersSkeleton->setName(path.filename().string());
     }
 }
 

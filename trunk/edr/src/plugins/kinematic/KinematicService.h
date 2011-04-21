@@ -81,7 +81,7 @@ public:
     void resetScene();
     
     virtual core::IVisualizer* create() const;
-    virtual void getSlotInfo( int source, std::string& name, core::ObjectWrapper::Types& types );
+    virtual void getInputInfo( int source, std::string& name, core::ObjectWrapper::Types& types );
     virtual QWidget* createWidget(std::vector<QObject*>& actions);
     virtual QIcon* createIcon();
     virtual const std::string& getName() const;

@@ -29,9 +29,9 @@ core::IVisualizer* ChartVisualizer::create() const
     return new ChartVisualizer();
 }
 
-void ChartVisualizer::getSlotInfo( int source, std::string& name, core::ObjectWrapper::Types& types )
+void ChartVisualizer::getInputInfo( int inputNo, std::string& name, core::ObjectWrapper::Types& types )
 {
-    name = std::string("serie ") + boost::lexical_cast<std::string>(source);
+    name = std::string("serie ") + boost::lexical_cast<std::string>(inputNo);
     types.push_back( typeid(core::EMGChannel) );
     types.push_back( typeid(core::GRFChannel) );
 }
@@ -136,6 +136,19 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
     connect(actionNormalized, SIGNAL(triggered(bool)), this, SLOT(setNormalized(bool)));
     actions.push_back(actionNormalized);
 
+    QMenu* testMenu = new QMenu("testMenu", widget);
+    QActionGroup* group = new QActionGroup(widget);
+
+    QAction* act = testMenu->addAction("action");
+    act->setCheckable(true);
+    group->addAction(act);
+
+    act = testMenu->addAction("action2");
+    act->setCheckable(true);
+    group->addAction(act);
+
+    actions.push_back(testMenu);
+
     
 
     return widget;
@@ -198,4 +211,14 @@ void ChartVisualizer::setNormalized( bool normalized )
 void ChartVisualizer::setActiveSerie( int idx )
 {
 
+}
+
+void ChartVisualizer::process( core::IObjectSource* source )
+{
+    for ( int i = 0; i < source->getNumObjects(); ++i ) {
+        if ( source->isChanged(i) ) {
+            needsRefresh = true;
+            break;
+        }
+    }
 }
