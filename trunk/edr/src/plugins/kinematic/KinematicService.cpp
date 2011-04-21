@@ -75,6 +75,8 @@ void KinematicVisualizer::setUp( IObjectSource* source )
 
             SchemeDrawerContainerPtr rectangular = drawersByName["Rectangular"];
             rectangular->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 4, 0.45f, osg::Vec4(0, 1, 0, 1))));
+            actionByName["Skeleton"]->setVisible(true);
+            actionByName["Rectangular"]->setVisible(true);
         } else {
             actionByName["Skeleton"]->setVisible(false);
             actionByName["Rectangular"]->setVisible(false);
@@ -85,6 +87,7 @@ void KinematicVisualizer::setUp( IObjectSource* source )
             markers->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.08f)));
             markers->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.02f)));
             currentDrawer = markers;
+            actionByName["Markers"]->setVisible(true);
         } else {
             actionByName["Markers"]->setVisible(false);
         }
@@ -97,6 +100,7 @@ void KinematicVisualizer::setUp( IObjectSource* source )
             both->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.08f)));
             both->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.02f)));
             currentDrawer = both;
+            actionByName["Both"]->setVisible(true);
         } else {
             actionByName["Both"]->setVisible(false);
         }
@@ -242,9 +246,7 @@ GeodePtr KinematicVisualizer::createFloor()
 
 QIcon* KinematicVisualizer::createIcon()
 {
-    boost::filesystem::path p = core::FoldersInfo::getPath(core::FoldersInfo::Resources);
-    p /= "3D.png";
-
+    boost::filesystem::path p = core::getDataManager()->getResourcesPath() / "icons/3D.png";
     return new QIcon(p.string().c_str());
 }
 
