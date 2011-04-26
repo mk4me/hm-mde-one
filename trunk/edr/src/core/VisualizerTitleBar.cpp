@@ -58,7 +58,7 @@ void VisualizerTitleBar::clear()
 void VisualizerTitleBar::setCurrentVisualizer( UniqueID id )
 {
     if ( !visualizer || visualizer->getID() != id ) {
-        setCurrentVisualizer( VisualizerManager::getInstance()->createVisualizer(id) );
+        setCurrentVisualizer( static_cast<VisualizerManager*>(getVisualizerManager())->createVisualizer(id) );
     }
 }
 

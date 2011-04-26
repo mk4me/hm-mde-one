@@ -4,6 +4,7 @@
 #include "VisualizerWidget.h"
 #include "DataManager.h"
 #include "ui_VisualizerWidget.h"
+#include "ToolboxMain.h"
 
 using namespace core;
 
@@ -105,23 +106,25 @@ void VisualizerWidget::queueReplaceTitleBar( bool replace )
 
 void VisualizerWidget::setVisualizer( const VisualizerPtr& visualizer )
 {
-    if ( visualizer ) {
-        QWidget* widget = visualizer->getOrCreateWidget();
-        innerWidget->layoutContent->addWidget(widget);
-        innerWidget->setWindowTitle( toQString(visualizer->getName()) );
-        setWindowTitle( innerWidget->windowTitle() );
-        //setObjectName( );
-    } else {
-        // usuniêcie widgeta z layoutu, nie w ogóle!
-        // dodanie widgata do layoutu powoduje, ¿e ramka staje siê jego rodzicem;
-        // dlatego przed usuniêciem itema trzeba zmieniæ rodzica widgetowi
-        UTILS_ASSERT(innerWidget->layoutContent->count() <= 1);
+    // usuniêcie widgeta z layoutu, nie w ogóle!
+    // dodanie widgata do layoutu powoduje, ¿e ramka staje siê jego rodzicem;
+    // dlatego przed usuniêciem itema trzeba zmieniæ rodzica widgetowi
+    UTILS_ASSERT(innerWidget->layoutContent->count() <= 1);
+    if ( innerWidget->layoutContent->count() > 0 ) {
         QLayoutItem* item = innerWidget->layoutContent->takeAt(0);
         if ( item ) {
             QWidget* widget = item->widget();
             widget->setParent(nullptr);
             delete item;
         }
+    }
+
+    if ( visualizer ) {
+        QWidget* widget = visualizer->getOrCreateWidget();
+        innerWidget->layoutContent->addWidget(widget);
+        innerWidget->setWindowTitle( toQString(visualizer->getName()) );
+        setWindowTitle( innerWidget->windowTitle() );
+        //setObjectName( );
     }
 
 //     widgetCustomInner = visualizer->createWidget();
@@ -151,7 +154,7 @@ void VisualizerWidget::init()
     QObject::connect( this, SIGNAL(topLevelChanged(bool)), titleBar->buttonSplitV, SLOT(setHidden(bool)));
 
     // niszczymy przy zamykaniu, nie chowamy!
-    setAttribute(Qt::WA_DeleteOnClose,true);
+    setAttribute(Qt::WA_DeleteOnClose, true);
 
     setTitleBarWidget(titleBar);
 }
@@ -188,6 +191,16 @@ void VisualizerWidget::split( Qt::Orientation orientation )
 inline void VisualizerWidget::addVisualizerToTitlebar( const core::IVisualizerConstPtr& vis )
 {
     titleBar->addVisualizer( VisualizerManager::getInstance()->getIcon(vis->getID()),  toQString(vis->getName()), vis->getID() );
+}
+
+void VisualizerWidget::closeEvent( QCloseEvent *event )
+{
+    ToolboxMain* mainwnd = qobject_cast<ToolboxMain*>(this->parentWidget());
+    UTILS_ASSERT(mainwnd);
+    if ( mainwnd ) {
+        mainwnd->visualizerWidgetClosed(this);
+    }
+    QDockWidget::closeEvent(event);
 }
 // void VisualizerWidget::clearLayout( QLayout* layout )
 // {

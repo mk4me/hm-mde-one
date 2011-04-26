@@ -30,6 +30,8 @@ private:
     ObjectSource source;
     //! Akcje wizualizatora.
     std::vector<QObject*> genericActions;
+    //! Przyrostek nazwy.
+    std::string nameSuffix;
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w³asnoœæ.

@@ -12,15 +12,13 @@
 #include <vector>
 #include <string>
 
-#include "SmartPtr.h"
-#include "IService.h"
-#include "IParser.h"
-#include "IVisualizer.h"
+#include <core/PluginCommon.h>
+#include <core/SmartPtr.h>
+#include <core/IService.h>
+#include <core/IParser.h>
+#include <core/IVisualizer.h>
+#include <core/Export.h>
 
-#include "BaseDataTypes.h"
-#include "Export.h"
-#include "IIdentifiable.h"
-#include "PluginCommon.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -37,15 +35,15 @@ namespace core {
 //! \param name Nazwa pluginu.
 //! \param id ID pluginu.
 #define CORE_PLUGIN_BEGIN(name, id)                                     \
-CORE_DEFINE_MANAGERS_ACCESORS                                           \
+CORE_DEFINE_INSTANCE_INFO                                               \
 DEFINE_DEFAULT_LOGGER("edr." name)                                      \
 extern "C" CORE_EXPORT unsigned CORE_GET_PLUGIN_VERSION_FUNCTION_NAME() \
 {                                                                       \
     return CORE_PLUGIN_INTERFACE_VERSION;                               \
 }                                                                       \
-extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::__ManagersData* data) \
+extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::InstanceInfo* data) \
 {                                                                       \
-    core::__managersData = *data;                                       \
+    core::__instanceInfo = *data;                                       \
     core::Plugin* instance = new core::Plugin((name), (id));            
 
 //! Koñczy rejestracjê pluginu.
@@ -92,7 +90,7 @@ class Plugin : IIdentifiable
 {
 public:
     //! Typ funkcji tworz¹cej plugin.
-    typedef core::Plugin* (*CreateFunction)(__ManagersData* data);
+    typedef Plugin* (*CreateFunction)(InstanceInfo* data);
     //! Typ funkcji pobierajacej wersjê pluginu.
     typedef int (*GetVersionFunction)();
     //! Typ listy us³ug.

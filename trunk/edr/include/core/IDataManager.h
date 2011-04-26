@@ -1,11 +1,11 @@
 #ifndef HEADER_GUARD_CORE_IDATAMANAGER_H__
 #define HEADER_GUARD_CORE_IDATAMANAGER_H__
 
-#include <core/IParser.h>
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <boost/type_traits.hpp>
 #include <utils/Utils.h>
+#include <core/ObjectWrapper.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -56,20 +56,6 @@ public:
 
     //! \return œcie¿ka do katalogu z próbami pomiarowymi
 	UTILS_DEPRECATED(virtual const Path& getTrialsPath() const = 0);
-
-    //! \return Liczba parserów.
-    UTILS_DEPRECATED(virtual int getNumParsers() const = 0);
-    //! \param idx Indeks parsera.
-    //! \return Parser o zadanym indeksie. Zainicjowany b¹dŸ nie.
-	UTILS_DEPRECATED(virtual IParserPtr getParser(int idx) = 0);
-    //! \return Zainicjowany parser o indeksie idx.
-    UTILS_DEPRECATED(virtual IParserPtr getInitializedParser(int idx) = 0);
-    //! \param filename nazwa pliku parsera. 
-    //! \return Odnaleziony parser (zainicjowany b¹dŸ nie) b¹dŸ NULL.
-    UTILS_DEPRECATED(virtual IParserPtr getParser(const std::string& filename) = 0);
-    //! \param filename nazwa pliku parsera. 
-    //! \return Odnaleziony parser (zainicjowany b¹dŸ nie) b¹dŸ NULL.
-    UTILS_DEPRECATED(virtual IParserPtr getInitializedParser(const std::string& filename) = 0);
 
     //! \param type Typ obiektu który chcemy wyszukaæ.
     //! \param exact Czy wyszukiwaæ te¿ typy pochodne?

@@ -9,28 +9,81 @@
 #ifndef HEADER_GUARD_CORE__PLUGINCOMMON_H__
 #define HEADER_GUARD_CORE__PLUGINCOMMON_H__
 
+#include <core/IDataManager.h>
+#include <core/IVisualizerManager.h>
+#include <core/IServiceManager.h>
+#include <core/StringTools.h>
+
 namespace core 
 {
-    class IDataManager;
-
     //! Struktura przechowuj¹ca informacje o managerach. Tylko do wewnêtrznego u¿ytku.
-    struct __ManagersData
+    struct InstanceInfo
     {
         IDataManager* dataManager;
+        IVisualizerManager* visualizerManager;
+        IServiceManager* serviceManager;
     };
 
     //! Zmienna defininowana przez makro tworz¹ce pluginy. Tylko do u¿ytku wewnêtrznego.
-    extern __ManagersData __managersData;
+    extern InstanceInfo __instanceInfo;
 
     //! Makro definiuj¹ce zmienn¹ przechowuj¹c¹ managery. Automatycznie u¿ywane w pluginach.
-    #define CORE_DEFINE_MANAGERS_ACCESORS namespace core { __ManagersData __managersData = { nullptr }; }
+    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr }; }
 
     //! \return Bie¿¹ca instancja data managera. Rozwi¹zanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala
     //! na rozwijanie, wiêc jest potencjalnie szybsze.
     inline IDataManager* getDataManager()
     {
-        return __managersData.dataManager;
+        return __instanceInfo.dataManager;
+    }
+
+    //!
+    inline IVisualizerManager* getVisualizerManager()
+    {
+        return __instanceInfo.visualizerManager;
+    }
+
+    //!
+    inline IServiceManager* getServiceManager()
+    {
+        return __instanceInfo.serviceManager;
+    }
+
+    //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
+    inline const IDataManager::Path& getResourcesPath()
+    {
+        return getDataManager()->getResourcesPath();
+    }
+
+    //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
+    inline const IDataManager::Path& getApplicationDataPath()
+    {
+        return getDataManager()->getApplicationDataPath();
+    }
+
+    //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
+    inline const IDataManager::Path& getUserDataPath()
+    {
+        return getDataManager()->getUserDataPath();
+    }
+
+    //! \return Pomocnicza metoda do pobierania œcie¿ek.
+    inline toString_t getResourceString(const std::string& str)
+    {
+        return toString_t(toStdString(getResourcesPath()/str));
+    }
+
+    //! \return Pomocnicza metoda do pobierania œcie¿ek.
+    inline toString_t getApplicationDataString(const std::string& str)
+    {
+        return toString_t(toStdString(getApplicationDataPath()/str));
+    }
+
+    //! \return Pomocnicza metoda do pobierania œcie¿ek.
+    inline toString_t getUserDataString(const std::string& str)
+    {
+        return toString_t(toStdString(getUserDataPath()/str));
     }
 
 } // namespace core

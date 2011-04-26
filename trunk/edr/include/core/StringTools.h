@@ -11,10 +11,16 @@
 
 #include <QtCore/QString>
 #include <string>
+#include <boost/filesystem/path.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
+
+    inline QString toQString(const boost::filesystem::path& path)
+    {
+        return toQString(path.string());
+    }
 
     inline QString toQString(const char* ascii, int size=-1)
     {
@@ -39,6 +45,55 @@ namespace core {
     {
         const QByteArray asc = str.toAscii(); 
         return toStdString(asc.constData(), asc.length()); 
+    }
+
+    inline std::string toStdString(const boost::filesystem::path& path)
+    {
+        return path.string();
+    }
+
+
+
+    //! Przechowywanie instancji tego typu spowoduje b³êdy przy wy³uskiwaniu wartoœci.
+    struct toString_t
+    {
+        //! Forma poœrednia, potrzebna gdy korzystamy z l-wartoœci.
+        std::string strval;
+        //! Gdy korzystamy z r-wartoœci.
+        const std::string& strref;
+
+        //! Konstruktor dla r-wartoœci
+        toString_t(const std::string& str) : strval(), strref(str)
+        {}
+        //! Konstruktor dla l-wartoœci.
+        toString_t(std::string && str) : strval(str), strref(strval)
+        {}
+
+        operator const std::string&()
+        {
+            return strref;
+        }
+        operator QString()
+        {
+            return toQString(strref);
+        }
+        operator boost::filesystem::path()
+        {
+            return boost::filesystem::path(strref);
+        }
+    };
+
+    inline toString_t toString(const QString& str)
+    {
+        return toString_t(toStdString(str));
+    }
+    inline toString_t toString(const std::string& str)
+    {
+        return toString_t(str);
+    }
+    inline toString_t toString(const boost::filesystem::path& path)
+    {
+        return toString_t(toStdString(path));
     }
 
 

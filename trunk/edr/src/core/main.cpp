@@ -7,12 +7,18 @@
 #include "VisualizerTitleBar.h"
 #include "LogInitializer.h"
 
+#include "ServiceManager.h"
+#include "DataManager.h"
+#include "VisualizerManager.h"
+#include <utils/Push.h>
+
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
 #endif
 
 using namespace core;
 
+CORE_DEFINE_INSTANCE_INFO;
 
 
 
@@ -45,24 +51,41 @@ int main(int argc, char *argv[])
 
     int result = 0;
     {
+        // ustawienia aplikacji
         QApplication application(argc, argv);
         application.setApplicationName("EDR");
         application.setOrganizationName("PJWSTK");
         QSettings::setDefaultFormat(QSettings::IniFormat);
 
-        ToolboxMain window;
-        logger.setConsoleWidget( window.getConsole() );
-        window.show();
-        if (!filePath.empty()) 
+        PluginLoader pluginLoader;
         {
-            window.openFile(filePath);
+            DataManager dataManager;
+            ServiceManager serviceManager;
+            VisualizerManager visualizerManager;
+
+            // tworzenie managerów
+            // tworzenie/niszczenie manageró w ToolboxMain jest niebezpieczne
+            // z punktu widzenia destruktora - widgety mog¹ w jakimœ stopniu
+            // zale¿eæ od managerów, a wówczas wskaŸniki wskazywa³yby œmieci
+            // podobnie ¿ywotnoœæ do³adowanych bibliotek musi przekraczaæ zakoñczenie
+            // siê destruktora
+            utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
+            utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
+            utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
+
+            {
+                ToolboxMain window(&pluginLoader);
+                logger.setConsoleWidget( window.getConsole() );
+                window.show();
+                if (!filePath.empty()) 
+                {
+                    window.openFile(filePath);
+                }
+
+                result = application.exec();
+                logger.setConsoleWidget(NULL);
+            }
         }
-
-        result = application.exec();
-        logger.setConsoleWidget(NULL);
     }
-
-    // zwolnienie bibliotek
-    core::PluginLoader::freeLibraries();
     return result;
 }

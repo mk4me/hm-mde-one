@@ -23,7 +23,7 @@ public:
 
 private:
     //! Uchwyty do bibliotek dynamicznie ³adowanych.
-    static Handles libraries;
+    Handles libraries;
     //! Za³adowane pluginy.
     Plugins plugins;
     //! Œcie¿ki wyszukiwania.
@@ -34,8 +34,6 @@ public:
     virtual ~PluginLoader();
 
 public:
-    //! Zwalnia biblioteki. Mo¿na to wywo³aæ dopiero po zniszczeniu g³ównego okna.
-    static void freeLibraries();
     //! 
     void clear();
     //! 
@@ -92,6 +90,9 @@ private:
     //! 
     //! \param fileName
     std::string getFileName(const std::string& fileName);
+
+    //! Zwalnia biblioteki. Mo¿na to wywo³aæ dopiero po zniszczeniu g³ównego okna.
+    void freeLibraries();
 };
 
 typedef shared_ptr<PluginLoader> PluginLoaderPtr;

@@ -18,12 +18,16 @@
 #include <core/ObjectWrapper.h>
 #include "Visualizer.h"
 #include <QtCore/QMetaType>
+#include <core/IVisualizerManager.h>
 
 Q_DECLARE_METATYPE(UniqueID);
 
+class SceneGraphWidget;
 class DataManager;
-class VisualizerManager
+
+class VisualizerManager : public core::IVisualizerManager
 {
+    friend class Visualizer;
 public:
     //! Lista wizualizatorów.
     typedef std::vector<core::IVisualizerPtr> IVisualizers;
@@ -44,34 +48,38 @@ private:
         SourcesTypes sourcesTypes;
     };
 
-
-    //! Instancja wizualizatora.
-    static VisualizerManager* instance;
     //! Prototypy wizualizatorów.
     IVisualizers prototypes;
     //! Lista œledz¹ca wizualizatory.
     WeakVisualizers visualizersTrace;
     //! Sta³e dane wizualizatorów.
     std::vector< IVisualizerPersistantData* > visualizersData;
+    //! Widget do wizualizacji struktury sceny 3D. Do debuggowania.
+    SceneGraphWidget* debugWidget;
 
-private:
+public:
     //! Tworzenie i niszczenie tylko przez metody singletonu.
-    VisualizerManager() {}
+    VisualizerManager();
     //! Tworzenie i niszczenie tylko przez metody singletonu.
     ~VisualizerManager();
 
 public:
-    //! \return Instancja DataManagera.
-    inline static VisualizerManager* getInstance()
-    { 
-        return instance;
+    static VisualizerManager* getInstance()
+    {
+        return static_cast<VisualizerManager*>(core::getVisualizerManager());
     }
-    //! Tworzy instancjê DataManagera.
-    static void createInstance();
-    //! Niszczy instancjê DataManagera.
-    static void destroyInstance();
 
-public:
+    //! \return
+    SceneGraphWidget* getDebugWidget() const
+    { 
+        return debugWidget;
+    }
+    //! \param debugWidget
+    void setDebugWidget(SceneGraphWidget* debugWidget) 
+    { 
+        this->debugWidget = debugWidget; 
+    }
+
     //! \param visualizer
     void registerVisualizer(core::IVisualizerPtr visualizer);
 
@@ -117,6 +125,9 @@ public:
 private:
     //! \return Indeks prototypu.
     int getPrototypeIdx(UniqueID id) const;
+
+    void notifyCreated(Visualizer* visualizer);
+    void notifyDestroyed(Visualizer* visualizer);
 };
 
 

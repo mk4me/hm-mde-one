@@ -1,11 +1,18 @@
 #include "CorePCH.h"
 #include "VisualizerManager.h"
 #include "DataManager.h"
+#include "SceneGraphWidget.h"
 #include <boost/foreach.hpp>
 
 using namespace core;
 
-VisualizerManager* VisualizerManager::instance = nullptr;
+
+
+VisualizerManager::VisualizerManager() :
+debugWidget(nullptr)
+{
+
+}
 
 VisualizerManager::~VisualizerManager()
 {
@@ -13,18 +20,6 @@ VisualizerManager::~VisualizerManager()
         delete data;
     }
     visualizersData.clear();
-}
-
-void VisualizerManager::createInstance()
-{
-    UTILS_ASSERT(!instance);
-    instance = new VisualizerManager();
-}
-
-void VisualizerManager::destroyInstance()
-{
-    delete instance;
-    instance = nullptr;
 }
 
 IVisualizerConstPtr VisualizerManager::getPrototype( UniqueID id ) const
@@ -141,3 +136,18 @@ int VisualizerManager::getPrototypeIdx( UniqueID id ) const
     }
 }
 
+void VisualizerManager::notifyCreated( Visualizer* visualizer )
+{
+    LOG_DEBUG("Visualizer " << visualizer->getName() << " created");
+    if ( debugWidget ) {
+        debugWidget->addVisualizer(visualizer);
+    }
+}
+
+void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
+{
+    LOG_DEBUG("Visualizer " << visualizer->getName() << " destroyed.");
+    if ( debugWidget ) {
+        debugWidget->removeVisualizer(visualizer);
+    }
+}

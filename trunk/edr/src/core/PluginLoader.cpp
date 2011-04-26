@@ -19,8 +19,6 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-PluginLoader::Handles PluginLoader::libraries;
-
 PluginLoader::PluginLoader()
 {
     // dodaje domyœlne œcie¿ki
@@ -30,6 +28,7 @@ PluginLoader::PluginLoader()
 PluginLoader::~PluginLoader()
 {
     clear();
+    freeLibraries();
 }
 
 void PluginLoader::clear()
@@ -226,7 +225,7 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
 
     // próba za³adowania
     try {
-        plugin = createFunction(&__managersData);
+        plugin = createFunction(&__instanceInfo);
     } catch ( std::exception& ex ) {
         LOG_ERROR("Error loading plugin "<<path<<": "<<ex.what());
         return false;

@@ -27,6 +27,7 @@ class RenderService;
 class SceneGraphWidget;
 class ConsoleWidget;
 class VisualizerManager;
+class VisualizerWidget;
 
 
 class ToolboxMain : public QMainWindow, public core::Window, public osgViewer::CompositeViewer, private Ui::EDRMain
@@ -34,12 +35,6 @@ class ToolboxMain : public QMainWindow, public core::Window, public osgViewer::C
     Q_OBJECT
 
 private:    
-    //! Manager us³ug.
-    ServiceManager* serviceManager;
-    //! Manager zasobów.
-    DataManager* dataManager;
-    //! Manager wizualizacji.
-    VisualizerManager* visualizerManager;
     //! Widget ze scen¹ jakiegoœ grafu OSG.
     SceneGraphWidget* widgetSceneGraph;
     //! Widget konsoli.
@@ -59,7 +54,7 @@ private:
 
 
 public:
-    ToolboxMain(QWidget* parent = nullptr);
+    ToolboxMain(core::PluginLoader* pluginLoader);
     virtual ~ToolboxMain();
 
     void initializeUI();
@@ -83,6 +78,7 @@ public:
     }
 
 public slots:    
+    void visualizerWidgetClosed(VisualizerWidget* widget);
     //! Aktualizacja us³ug.
     void updateServices();
     //! Aktualizacja wizualizatorow.

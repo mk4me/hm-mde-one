@@ -40,4 +40,5 @@ namespace core
     typedef shared_ptr<const IParser> IParserConstPtr;
     typedef weak_ptr<IParser> IParserWeakPtr;
 }
+
 #endif

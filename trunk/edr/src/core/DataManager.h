@@ -14,7 +14,7 @@ data/resources, próby pomiarowe s¹ wyszukiwane i pobierane do data/trials.
 
 class DataManager: public core::IDataManager
 {
-private:
+public:
     DataManager(const std::string& resourcesPath = "data/resources/", const std::string& trialsPath = "data/trials/");
     virtual ~DataManager();
 
@@ -92,9 +92,6 @@ private:
     typedef std::multimap< core::TypeInfo, ObjectsMapEntry > ObjectsByType;
 
 private:
-    //! Instancja.
-    static DataManager* instance;
-
     //! S³owniki parserów niezainicjalizowanych.
     IParsersByID registeredParsers;
     //! S³ownik parserów przypisanych do rozszerzeñ.
@@ -138,15 +135,10 @@ protected:
 
 
 public:
-    //! \return Instancja DataManagera.
-    inline static DataManager* getInstance()
-    { 
-        return instance;
+    static DataManager* getInstance()
+    {
+        return static_cast<DataManager*>(core::getDataManager());
     }
-    //! Tworzy instancjê DataManagera.
-    static void createInstance();
-    //! Niszczy instancjê DataManagera.
-    static void destroyInstance();
 
     //! Rejestruje zadany parser.
     //! \param newService

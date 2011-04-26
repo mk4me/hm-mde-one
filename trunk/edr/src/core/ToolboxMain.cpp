@@ -61,142 +61,9 @@
 
 #include <boost/random.hpp>
 
+#include <utils/Push.h>
+
 DEFINE_DEFAULT_LOGGER("edr.core");
-CORE_DEFINE_MANAGERS_ACCESORS;
-
-/**
- *	U¿ytkowa klasa, u¿ywana tam, gdzie mêcz¹ca jest zmiana wartoœci jakiejœ zmiennej
- *  a nastêpnie rêczne jej przywracanie; jest to uci¹¿liwe zw³aszcza gdy funkcja ma
- *  wiele punktów wyjœcia.
- */
-template <class T>
-class Push
-{
-private:
-    //! Poprzednia wartoœæ.
-    T oldValue;
-    //! Zmienna.
-    T& variable;
-public:
-    //! \param variable
-    //! \param newValue
-    Push(T& variable, const T& newValue) : oldValue(variable), variable(variable)
-    {
-        variable = newValue;
-    }
-    //! 
-    ~Push()
-    {
-        variable = oldValue;
-    }
-};
-
-using namespace core;
-
-class MultiViewChartItem : public MultiViewItem
-{
-private:
-    std::string name;
-    Chart* chart;
-    osg::Switch* multiViewSwitch;
-public:
-    MultiViewChartItem(Chart* chart,osg::Switch* multiViewSwitch);
-
-
-public:
-    //! \return Nazwa widgetu.
-    virtual const std::string& getName() const;
-    //! \return Wspó³czynnik proporcji.
-    virtual osgWidget::point_type getAspectRatio();
-    //! Dodaje b¹dŸ usuwa widget podgl¹du ze sceny.
-    virtual void setVisible(bool selected);
-    //! Umieszcza widget w zadanej lokalizacji.
-    virtual void setLocation(osgWidget::point_type x, osgWidget::point_type y,
-        osgWidget::point_type w, osgWidget::point_type h);
-};
-
-
-MultiViewChartItem::MultiViewChartItem(Chart* chart,osg::Switch* multiViewSwitch):
-chart(chart),
-    multiViewSwitch(multiViewSwitch)
-{
-    UTILS_ASSERT(chart);
-}
-const std::string& MultiViewChartItem::getName() const
-{
-    UTILS_ASSERT(chart != NULL);
-    return chart->getName();
-}
-
-osgWidget::point_type MultiViewChartItem::getAspectRatio()
-{
-    return 3;
-}
-
-void MultiViewChartItem::setVisible( bool selected )
-{
-    multiViewSwitch->setValue(multiViewSwitch->getChildIndex(chart),selected);
-
-}
-
-void MultiViewChartItem::setLocation( osgWidget::point_type x, osgWidget::point_type y, osgWidget::point_type w, osgWidget::point_type h )
-{
-
-
-    chart->setLocation( static_cast<int>(x+0.5f),  static_cast<int>(y+0.5f),  static_cast<int>(x+w+0.5f), static_cast<int>(y+h+0.5f));
-}
-
-class OrthoCameraResizeHandler : public osgGA::GUIEventHandler
-{
-private:
-    osg::observer_ptr<osg::Camera> camera;
-public:
-    OrthoCameraResizeHandler(osg::Camera* camera = nullptr) :
-    camera(camera)
-    {
-        UTILS_ASSERT(camera);
-    }
-
-    virtual bool handle(const osgGA::GUIEventAdapter& gea, osgGA::GUIActionAdapter& gaa, osg::Object* obj, osg::NodeVisitor* nv)
-    {
-        osgGA::GUIEventAdapter::EventType ev = gea.getEventType();
-        if ( ev != osgGA::GUIEventAdapter::RESIZE ) {
-            return false;
-        }
-        if (camera.valid()) {
-            camera->setProjectionMatrixAsOrtho2D(0.0, gea.getWindowWidth(), 0.0, gea.getWindowHeight());
-        }
-        // nie blokujemy
-        return false;
-    }
-};
-
-
-
-
-
-
-
-// class ChartSizeHandler : public osg::NodeCallback
-// {
-//     /** Callback method called by the NodeVisitor when visiting a node.*/
-//     virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
-//     { 
-//         osgGA::EventVisitor* ev = dynamic_cast<osgGA::EventVisitor*>(nv);
-//         if ( ev ) {
-//             BOOST_FOREACH(auto event, ev->getEvents()) {
-//                 if ( event.getEventType() == osgGA::GUIEventAdapter::RESIZE ) {
-//                     
-//                 }
-//             }
-//         }
-//     }
-// };
-
-void resizeChart(osg::Node* node, double w, double h)
-{
-    dynamic_cast<Chart&>(*node).setLocation(50, 0, w-50, h);
-}
 
 
 struct SortActionsByNames 
@@ -207,30 +74,19 @@ struct SortActionsByNames
     }
 };
 
-ToolboxMain::ToolboxMain(QWidget *parent) :
-QMainWindow(parent), updateEnabled(true)
+using namespace core;
+
+ToolboxMain::ToolboxMain(core::PluginLoader* pluginLoader) :
+QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
 {
     setupUi(this);
     setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 
-  
-    core::shared_ptr<int> p1(new int(10));
-    core::shared_ptr<const int> p2(new int(20));
-    core::shared_ptr<int> p3(new int(20));
+    DataManager* dataManager = DataManager::getInstance();
+    ServiceManager* serviceManager = ServiceManager::getInstance();
+    VisualizerManager* visualizerManager = VisualizerManager::getInstance();
 
-    bool b1 = (typeid(p1) == typeid(p2));
-    bool b2 = (typeid(p1) == typeid(p3));
-
-
-    // SM
-    // TODO: singleton
-    serviceManager = new ServiceManager();
-
-    // DM
-    DataManager::createInstance();
-    dataManager = DataManager::getInstance();
-
-    boost::filesystem::path userPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
+    boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
     userPath /= "EDR";
     dataManager->setUserDataPath(userPath);
 
@@ -247,12 +103,7 @@ QMainWindow(parent), updateEnabled(true)
     const core::IDataManager::Path& testPathNo1 = dataManager->getResourcesPath();
     const core::IDataManager::Path& testPathNo2 = dataManager->getUserDataPath();
     const core::IDataManager::Path& testPathNo3 = dataManager->getApplicationDataPath();
-    
-    // VM
-    VisualizerManager::createInstance();
-    visualizerManager = VisualizerManager::getInstance();
 
-    __managersData.dataManager = dataManager;
 
 
 //     LoggerPtr root = Logger::getRootLogger();
@@ -265,9 +116,7 @@ QMainWindow(parent), updateEnabled(true)
 
     registerCoreServices();
 
-    // plugin loader
-    pluginLoader = new core::PluginLoader();
-	pluginLoader->load();
+    pluginLoader->load();
 
     registerPluginsServices();
 	registerPluginsParsers();
@@ -289,6 +138,7 @@ QMainWindow(parent), updateEnabled(true)
 
     initializeConsole();          // Console Widget 
     InitializeControlWidget();          // Control Widget + TimeLine
+    visualizerManager->setDebugWidget(widgetSceneGraph);
 
     initializeUI();
 
@@ -315,17 +165,7 @@ QMainWindow(parent), updateEnabled(true)
 
 ToolboxMain::~ToolboxMain()
 {
-    //delete computeThread;
-
-    delete serviceManager;
-
-    DataManager::destroyInstance();
-    dataManager = nullptr;
-
-    VisualizerManager::destroyInstance();
-    visualizerManager = nullptr;
-
-    delete pluginLoader;
+    VisualizerManager::getInstance()->setDebugWidget(nullptr);
 }
 
 void ToolboxMain::readSettings( const QSettings& settings, bool readGeometry )
@@ -366,7 +206,7 @@ void ToolboxMain::InitializeControlWidget()
     widgetSceneGraph = new SceneGraphWidget();    
     addDockWidget(Qt::LeftDockWidgetArea, gDock);
     gDock->setWidget((QWidget*)widgetSceneGraph);
-    widgetSceneGraph->addServices(serviceManager);
+//    widgetSceneGraph->addServices(ServiceManager::getInstance());
 }
 
 
@@ -451,12 +291,12 @@ osg::ref_ptr<osg::Node> ToolboxMain::createGrid()
 
 void ToolboxMain::updateServices()
 {
-	if(dataManager->isLoadLocalTrialData())	{
+	if(DataManager::getInstance()->isLoadLocalTrialData())	{
 		loadData();
 	}
     widgetConsole->flushQueue();
     if ( updateEnabled ) {
-        serviceManager->updatePass();
+        ServiceManager::getInstance()->updatePass();
     }
     widgetConsole->flushQueue();
 }
@@ -464,7 +304,7 @@ void ToolboxMain::updateServices()
 void ToolboxMain::updateVisualizers()
 {
     if ( updateEnabled ) {
-        visualizerManager->update();
+        VisualizerManager::getInstance()->update();
     }
 }
 
@@ -473,7 +313,7 @@ void ToolboxMain::registerCoreServices()
     // us³uga UI
     UserInterfaceService* userInterfaceService = new UserInterfaceService();
     userInterfaceService->setMainWindow(this);
-    serviceManager->registerService(IServicePtr(userInterfaceService));
+    ServiceManager::getInstance()->registerService(IServicePtr(userInterfaceService));
 }
 
 void ToolboxMain::registerPluginsServices()
@@ -481,7 +321,7 @@ void ToolboxMain::registerPluginsServices()
     for ( int i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
         core::PluginPtr plugin = pluginLoader->getPlugin(i);
         for ( int j = 0; j < plugin->getNumServices(); ++j ) {
-            serviceManager->registerService(plugin->getService(j));
+            ServiceManager::getInstance()->registerService(plugin->getService(j));
         }
     }
 }
@@ -491,11 +331,11 @@ void ToolboxMain::registerPluginsParsers()
     for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         core::PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumParsers(); ++j) {
-            dataManager->registerParser(plugin->getParser(j));
+            DataManager::getInstance()->registerParser(plugin->getParser(j));
         }
     }
     core::IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
-    dataManager->registerParser(c3dParser);
+    DataManager::getInstance()->registerParser(c3dParser);
 }
 
 void ToolboxMain::registerPluginsVisualizers()
@@ -503,14 +343,14 @@ void ToolboxMain::registerPluginsVisualizers()
     for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         core::PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumVisualizers(); ++j) {
-            visualizerManager->registerVisualizer(plugin->getVisualizer(j));
+            VisualizerManager::getInstance()->registerVisualizer(plugin->getVisualizer(j));
         }
     }
 }
 
 void ToolboxMain::onOpen()
 {
-    Push<bool> pushed(updateEnabled, false);
+    utils::Push<bool> pushed(updateEnabled, false);
     const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/data/trials"));
     if (!fileName.isEmpty()) 
     {
@@ -561,10 +401,10 @@ void ToolboxMain::initializeUI()
 {
 	//ladowanie styli qt
 	QString style;
-	if(dataManager->getApplicationSkinsFilePathCount() > 0)
+	if(DataManager::getInstance()->getApplicationSkinsFilePathCount() > 0)
 	{
 		//style qt
-		QFile file(QString::fromAscii(dataManager->getApplicationSkinsFilePath(0).c_str(), dataManager->getApplicationSkinsFilePath(0).size()));
+		QFile file(QString::fromAscii(DataManager::getInstance()->getApplicationSkinsFilePath(0).c_str(), DataManager::getInstance()->getApplicationSkinsFilePath(0).size()));
 		if(file.open(QIODevice::ReadOnly | QIODevice::Text))
 		{
 			style = file.readAll();
@@ -584,8 +424,8 @@ void ToolboxMain::initializeUI()
     //setCentralWidget(NULL);
 
     // pozosta³e widgety "p³ywaj¹ce"
-    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-        IServicePtr service = serviceManager->getService(i);
+    for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
+        IServicePtr service = ServiceManager::getInstance()->getService(i);
 
         // HACK
         QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget());
@@ -625,7 +465,7 @@ void ToolboxMain::initializeUI()
     // widgety z wizualizacj¹
 
     VisualizerWidget* first = nullptr;
-    BOOST_FOREACH(const IVisualizerConstPtr& vis, visualizerManager->enumPrototypes()) {
+    BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
         VisualizerWidget* widget = new VisualizerWidget(vis->getID(), this, Qt::WindowTitleHint);
         widget->setAllowedAreas(Qt::RightDockWidgetArea);
         widget->setStyleSheet(styleSheet());
@@ -647,7 +487,7 @@ void ToolboxMain::initializeUI()
     removeOnClick = false;
     onTestItemClickedPtr.reset(new core::Window::ItemPressed(boost::bind(&ToolboxMain::onTestItemClicked, this, _1, _2 )));
     onTestRemoveToggledPtr.reset(new core::Window::ItemPressed(boost::bind(&ToolboxMain::onTestRemoveToggled, this, _1, _2 )));
-    core::shared_ptr<IUserInterface> userInterfaceService = queryServices<IUserInterface>(serviceManager);
+    core::shared_ptr<IUserInterface> userInterfaceService = queryServices<IUserInterface>(ServiceManager::getInstance());
     userInterfaceService->getMainWindow()->addMenuItem("Callback test/Option", onTestItemClickedPtr);
     userInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option", onTestItemClickedPtr);
     userInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option2", onTestItemClickedPtr);
@@ -764,13 +604,13 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
 void ToolboxMain::openFile( const std::string& path )
 {
     LOG_INFO("Opening file: " << path);
-	dataManager->loadLocalTrial(path);
+	DataManager::getInstance()->loadLocalTrial(path);
 }
 
 void ToolboxMain::loadData()
 {
 	//m_pRenderService->GetFactory()->Clear();
-	serviceManager->loadDataPass(dataManager);
+	ServiceManager::getInstance()->loadDataPass(DataManager::getInstance());
     
 
 	// m_pRenderService->AddObjectToRender(createGrid());
@@ -780,14 +620,14 @@ void ToolboxMain::loadData()
 	// manage scene
 // 	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
 // 	osg::Node* sceneRoot = scene->getSceneData();
-	dataManager->setLoadLocalTrialData(false);
+	DataManager::getInstance()->setLoadLocalTrialData(false);
 }
 /*
 void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 {
     // usuwamy stare œmieci
-    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-        IServicePtr service = serviceManager->getService(i);
+    for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
+        IServicePtr service = ServiceManager::getInstance()->getService(i);
         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
             // co musimy usun¹æ?
             if ( QDockWidget* dock = qobject_cast<QDockWidget*>(viewWidget->parent()) ) {
@@ -800,8 +640,8 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 
     // za³adowanie styli
     QString style;
-    if(dataManager->getApplicationSkinsFilePathCount() > 0) {
-        QFile file(core::toQString(dataManager->getApplicationSkinsFilePath(0)));
+    if(DataManager::getInstance()->getApplicationSkinsFilePathCount() > 0) {
+        QFile file(core::toQString(DataManager::getInstance()->getApplicationSkinsFilePath(0)));
         if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             style = file.readAll();
             file.close();
@@ -815,8 +655,8 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 
     // tworzymy listê dokowalnych widgetów
     std::vector< QDockWidget* > widgets;
-    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-        IServicePtr service = serviceManager->getService(i);
+    for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
+        IServicePtr service = ServiceManager::getInstance()->getService(i);
         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
             widgets.push_back(embeddWidget(
                 viewWidget, 
@@ -865,8 +705,8 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 
 
 //     // usuniêcie starych "œmieci"
-//     for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-//         IServicePtr service = serviceManager->getService(i);
+//     for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
+//         IServicePtr service = ServiceManager::getInstance()->getService(i);
 //         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
 //             // co musimy usun¹æ?
 //             QDockWidget* dock = qobject_cast<QDockWidget*>(viewWidget->parent());
@@ -896,8 +736,8 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 // 
 //     // za³adowanie styli
 //     QString style;
-//     if(dataManager->getApplicationSkinsFilePathCount() > 0) {
-//         QFile file(core::toQString(dataManager->getApplicationSkinsFilePath(0)));
+//     if(DataManager::getInstance()->getApplicationSkinsFilePathCount() > 0) {
+//         QFile file(core::toQString(DataManager::getInstance()->getApplicationSkinsFilePath(0)));
 //         if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
 //             style = file.readAll();
 //             file.close();
@@ -921,8 +761,8 @@ void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
 //     
 // 
 //     // pozosta³e widgety "p³ywaj¹ce"
-//     for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-//         IServicePtr service = serviceManager->getService(i);
+//     for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
+//         IServicePtr service = ServiceManager::getInstance()->getService(i);
 //         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
 //             if ( organization == WidgetsOrganizationDocked ) {
 //                 // dodanie dokowalnego widgetu
@@ -950,8 +790,8 @@ void ToolboxMain::onDockWidgetVisiblityChanged( bool visible )
 {
     //if ( QDockWidget* sender = qobject_cast<QDockWidget*>(QObject::sender()) ) {
     //    // wyszukanie us³ugi do której widget nale¿y
-    //    for ( int i = 0; i < serviceManager->getNumServices(); ++i ) {
-    //        IServicePtr service = serviceManager->getService(i);
+    //    for ( int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i ) {
+    //        IServicePtr service = ServiceManager::getInstance()->getService(i);
     //        if ( reinterpret_cast<QWidget*>(service->getWidget()) == sender->widget() ) {
     //            service->visibilityChanged( service->getWidget(), visible );
     //        }
@@ -985,7 +825,7 @@ void ToolboxMain::onOpenLayout()
 {
     // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
     QString dir = QDir::currentPath().append("/data/layouts");        
-    Push<bool> pushed(updateEnabled, false);
+    utils::Push<bool> pushed(updateEnabled, false);
     const QString fileName = QFileDialog::getOpenFileName(this, 0, dir, "*.layout");
     if ( !fileName.isEmpty() ) {
         openLayout(fileName);
@@ -1051,16 +891,24 @@ void ToolboxMain::actionCreateVisualizer()
     widget->setAllowedAreas(Qt::RightDockWidgetArea);
     widget->setStyleSheet(styleSheet());
     addDockWidget(Qt::RightDockWidgetArea, widget);
+
+//    widgetSceneGraph->addVisualizer( widget->getTitleBar()->getCurrentVisualizer() );
 }
+
+void ToolboxMain::visualizerWidgetClosed( VisualizerWidget* widget )
+{
+ //   widgetSceneGraph->removeVisualizer( widget->getTitleBar()->getCurrentVisualizer() );
+}
+
 
 void ToolboxMain::populateVisualizersMenu( QMenu* menu )
 {
     std::vector<QAction*> sortedActions;
     // dodajemy wizualizatory
-    BOOST_FOREACH(const IVisualizerConstPtr& vis, visualizerManager->enumPrototypes()) {
+    BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
         QAction* action = new QAction(toQString(vis->getName()), menu);
         action->setData( qVariantFromValue(vis->getID()) );
-        action->setIcon( visualizerManager->getIcon(vis->getID()) );
+        action->setIcon( VisualizerManager::getInstance()->getIcon(vis->getID()) );
         action->connect( action, SIGNAL(triggered()), this, SLOT(actionCreateVisualizer()) );
         sortedActions.push_back(action);
     }
@@ -1117,7 +965,6 @@ void ToolboxMain::onTestRemoveToggled(const std::string& sender, bool state )
     removeOnClick = state;
 }
 
-
 #endif // UTILS_DEBUG
 
 // void ToolboxMain::SettingModel()
@@ -1154,7 +1001,7 @@ void ToolboxMain::onTestRemoveToggled(const std::string& sender, bool state )
 // TESTING CONFIGURATION_FILE_MANAGER
 //     ServiceManager::GetInstance()->registerService<ConfigurationFileService>(); 
 // 
-//     ConfigurationFileService* pCFService = serviceManager->GetSystemServiceAs<ConfigurationFileService>();
+//     ConfigurationFileService* pCFService = ServiceManager::getInstance()->GetSystemServiceAs<ConfigurationFileService>();
 //     
 //     pCFService->LoadConfig("Config.ini");
 //     std::list<ConfigurationGroup*> groupList = pCFService->GetConfigurationGroupList();

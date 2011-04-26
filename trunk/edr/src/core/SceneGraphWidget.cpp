@@ -5,9 +5,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Q_DECLARE_METATYPE(core::IServiceWeakPtr);
-
-////////////////////////////////////////////////////////////////////////////////
+Q_DECLARE_METATYPE(Visualizer*);
 
 SceneGraphWidget::SceneGraphWidget(void):
 Ui::SceneGraphWidget(), 
@@ -16,17 +14,12 @@ QWidget()
     setupUi(this); 
 }
 
-void SceneGraphWidget::serviceSelectionChanged(int index)
-{
-    // lokalna zmienna bo IntelliSense siê gubi...
-    setCurrentService(index);
-}
 
 void SceneGraphWidget::refreshButtonClicked()
 {
-    QComboBox* currentServiceCombo = this->currentServiceCombo;
-    if ( currentServiceCombo->count() ) {
-        setCurrentService(currentServiceCombo->currentIndex());
+    QComboBox* comboVisualizer = this->comboVisualizer;
+    if ( comboVisualizer->count() ) {
+        setCurrentVisualizer(comboVisualizer->currentIndex());
     }
 }
 
@@ -34,50 +27,76 @@ void SceneGraphWidget::setSceneGraph(osg::Node* root)
 {
     clearTreeWidget();
     if ( root ) {
-        sceneGraphTree->setEnabled(true);
-        core::OsgSceneDumpQtTree populator(sceneGraphTree);
+        treeSceneGraph->setEnabled(true);
+        core::OsgSceneDumpQtTree populator(treeSceneGraph);
         populator.setTraversalMode( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
         root->accept(populator);
     } else {
-        sceneGraphTree->setEnabled(false);
-        new QTreeWidgetItem(sceneGraphTree, QStringList()<<""<<"Scene is empty"<<"");
+        treeSceneGraph->setEnabled(false);
+        new QTreeWidgetItem(treeSceneGraph, QStringList()<<""<<"Scene is empty"<<"");
     }
 }
 
 void SceneGraphWidget::clearTreeWidget()
 {
-    sceneGraphTree->clear();
+    treeSceneGraph->clear();
 }
 
 
-void SceneGraphWidget::addServices( core::IServiceManager* manager )
+// void SceneGraphWidget::addServices( core::IServiceManager* manager )
+// {
+//     for ( int i = 0; i < manager->getNumServices(); ++i ) {
+//         addService( manager->getService(i) );
+//     }
+// }
+// 
+// void SceneGraphWidget::addService( core::IServicePtr service )
+// {
+//     // lokalna zmienna bo IntelliSense siê gubi...
+//     QComboBox* currentServiceCombo = this->currentServiceCombo;
+// 
+//     // ustalenie parametrów...
+//     QString name = core::toQString(service->getName());
+//     QVariant userData = qVariantFromValue(core::IServiceWeakPtr(service));
+// 
+//     // dodanie do komba
+//     currentServiceCombo->addItem(name, userData);
+// }
+
+void SceneGraphWidget::setCurrentVisualizer( int index )
 {
-    for ( int i = 0; i < manager->getNumServices(); ++i ) {
-        addService( manager->getService(i) );
+    if ( index >= 0 ) {
+        Visualizer* visualizer = comboVisualizer->itemData(index).value<Visualizer*>();
+        QWidget* widget = visualizer->getWidget();
+        auto view = dynamic_cast<osgViewer::View*>(widget);
+        if ( view ) {
+            setSceneGraph(view->getSceneData());
+        } else {
+            setSceneGraph(nullptr);
+        }
+    } else {
+        setSceneGraph(nullptr);
     }
 }
 
-void SceneGraphWidget::addService( core::IServicePtr service )
+void SceneGraphWidget::addVisualizer( Visualizer* visualizer )
 {
-    // lokalna zmienna bo IntelliSense siê gubi...
-    QComboBox* currentServiceCombo = this->currentServiceCombo;
-
     // ustalenie parametrów...
-    QString name = core::toQString(service->getName());
-    QVariant userData = qVariantFromValue(core::IServiceWeakPtr(service));
+    QString name = core::toQString(visualizer->getName());
+    QVariant userData = qVariantFromValue(visualizer);
 
     // dodanie do komba
-    currentServiceCombo->addItem(name, userData);
+    comboVisualizer->addItem(name, userData);
 }
 
-void SceneGraphWidget::setCurrentService( int index )
+void SceneGraphWidget::removeVisualizer( Visualizer* visualizer )
 {
-    QComboBox* currentServiceCombo = this->currentServiceCombo;
-    core::IServiceWeakPtr serviceWeak = currentServiceCombo->itemData(index).value<core::IServiceWeakPtr>();
-    if (core::IServicePtr service = serviceWeak.lock()) {
-        //setSceneGraph( service->debugGetLocalSceneRoot() );
-    } else {
-        clearTreeWidget();
-        new QTreeWidgetItem(sceneGraphTree, QStringList()<<""<<"Service pointer is outdated"<<"");
+    for ( int i = 0; i < comboVisualizer->count(); ++i ) {
+        Visualizer* weak = comboVisualizer->itemData(i).value<Visualizer*>();
+        if ( weak == visualizer ) {
+            comboVisualizer->removeItem(i);
+            return;
+        }
     }
+    UTILS_FAIL("Nie powinien tutaj wejœc.");
 }

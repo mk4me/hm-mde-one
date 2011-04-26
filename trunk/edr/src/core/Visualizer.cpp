@@ -8,18 +8,19 @@ using namespace core;
 Visualizer::Visualizer( IVisualizer* impl ) :
 impl(impl), widget(nullptr), source(VisualizerManager::getInstance()->getSourcesTypes(impl->getID()))
 {
-    LOG_DEBUG("Visualizer " << impl->getName() << " created");
+    VisualizerManager::getInstance()->notifyCreated(this);
 }
 
 Visualizer::Visualizer( const Visualizer& visualizer ) :
 impl(visualizer.impl->create()),
 source(visualizer.source), widget(nullptr)
 {
+    VisualizerManager::getInstance()->notifyCreated(this);
 }
 
 Visualizer::~Visualizer()
 {
-    LOG_DEBUG("Visualizer " << impl->getName() << " destroyed.");
+    VisualizerManager::getInstance()->notifyDestroyed(this);
 }
 
 QWidget* Visualizer::getOrCreateWidget()

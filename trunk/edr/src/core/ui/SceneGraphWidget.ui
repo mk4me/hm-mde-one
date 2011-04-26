@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="currentServiceLabel">
+      <widget class="QLabel" name="labelVisualizer">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -36,10 +36,10 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="currentServiceCombo"/>
+      <widget class="QComboBox" name="comboVisualizer"/>
      </item>
      <item>
-      <widget class="QPushButton" name="refreshButton">
+      <widget class="QPushButton" name="buttonRefresh">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -54,7 +54,7 @@
     </layout>
    </item>
    <item row="2" column="0">
-    <widget class="QTreeWidget" name="sceneGraphTree">
+    <widget class="QTreeWidget" name="treeSceneGraph">
      <property name="showDropIndicator" stdset="0">
       <bool>true</bool>
      </property>
@@ -83,10 +83,10 @@
  <resources/>
  <connections>
   <connection>
-   <sender>currentServiceCombo</sender>
+   <sender>comboVisualizer</sender>
    <signal>currentIndexChanged(int)</signal>
    <receiver>SceneGraphWidget</receiver>
-   <slot>serviceSelectionChanged(int)</slot>
+   <slot>setCurrentVisualizer(int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>182</x>
@@ -99,7 +99,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>refreshButton</sender>
+   <sender>buttonRefresh</sender>
    <signal>clicked()</signal>
    <receiver>SceneGraphWidget</receiver>
    <slot>refreshButtonClicked()</slot>
@@ -116,7 +116,7 @@
   </connection>
  </connections>
  <slots>
-  <slot>serviceSelectionChanged(int)</slot>
+  <slot>setCurrentVisualizer(int)</slot>
   <slot>refreshButtonClicked()</slot>
  </slots>
 </ui>

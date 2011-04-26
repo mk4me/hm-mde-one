@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include <osg/Timer>
+#include <core/PluginCommon.h>
 
 class IModel;
 class core::IDataManager;
@@ -37,6 +38,12 @@ private:
 public:
     ServiceManager(void);
 	virtual ~ServiceManager(void);
+
+public:
+    static ServiceManager* getInstance()
+    {
+        return static_cast<ServiceManager*>(core::getServiceManager());
+    }
 
     //! Ustawia dane dla wszystkich us³ug.
     //! \param dataManager

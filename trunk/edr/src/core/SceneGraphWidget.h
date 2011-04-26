@@ -6,6 +6,7 @@
 #include <core/IService.h>
 #include <core/IServiceManager.h>
 #include "ui_SceneGraphWidget.h"
+#include "Visualizer.h"
 
 class SceneGraphWidget: public QWidget, Ui::SceneGraphWidget
 {
@@ -14,23 +15,22 @@ public:
     //!
     SceneGraphWidget();
 
-    //! Dodaje us³ugi do listy us³ug.
-    //! \param manager
-    void addServices(core::IServiceManager* manager);
-    //! Dodaje us³ugê do listy us³ug.
-    //! \param service
-    void addService(core::IServicePtr service);
+    //! Dodaje wizualizator do listy.
+    void addVisualizer(Visualizer* visualizer);
+    //! Usuwa wizualizator z listy.
+    void removeVisualizer(Visualizer* visualizer);
+
     //! Wype³nia drzewo sceny na podstawie zadanego korzenia.
     //! \param root
     void setSceneGraph(osg::Node* root); 
     
 public slots: 
-    void serviceSelectionChanged(int index);
+    void setCurrentVisualizer(int index);
     void refreshButtonClicked();
 
 private:
-    //! Ustawia drzewo sceny na podstawie wybranej us³ugi.
-    void setCurrentService( int index );
+//     //! Ustawia drzewo sceny na podstawie wybranej us³ugi.
+//     void setCurrentService( int index );
     //! Czyœci zawartoœæ drzewa sceny.
     void clearTreeWidget(); 
 };

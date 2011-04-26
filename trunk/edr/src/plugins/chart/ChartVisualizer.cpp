@@ -195,7 +195,7 @@ void ChartVisualizer::setUp( core::IObjectSource* source )
 
 QIcon* ChartVisualizer::createIcon()
 {
-    return new QIcon("data/resources/icons/charts.png");
+    return new QIcon( core::getResourceString("icons/charts.png") );
 }
 
 void ChartVisualizer::setNormalized( bool normalized )

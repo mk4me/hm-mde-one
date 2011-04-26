@@ -8,43 +8,9 @@
 #include <boost/algorithm/string.hpp>
 #include <list>
 #include <boost/regex.hpp>
+#include <utils/Push.h>
 
 using namespace core;
-
-////////////////////////////////////////////////////////////////////////////////
-
-DataManager* DataManager::instance = nullptr;
-
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- *	U¿ytkowa klasa, u¿ywana tam, gdzie mêcz¹ca jest zmiana wartoœci jakiejœ zmiennej
- *  a nastêpnie rêczne jej przywracanie; jest to uci¹¿liwe zw³aszcza gdy funkcja ma
- *  wiele punktów wyjœcia.
- */
-template <class T>
-class Push
-{
-private:
-    //! Poprzednia wartoœæ.
-    T oldValue;
-    //! Zmienna.
-    T& variable;
-public:
-    //! \param variable
-    //! \param newValue
-    Push(T& variable, const T& newValue) : oldValue(variable), variable(variable)
-    {
-        variable = newValue;
-    }
-    //! 
-    ~Push()
-    {
-        variable = oldValue;
-    }
-};
-
-////////////////////////////////////////////////////////////////////////////////
 
 //! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
 class DataManager::Parser
@@ -128,7 +94,7 @@ public:
         UTILS_ASSERT(!filePath.empty());
         LOG_DEBUG("Parsing file: " << getPath() );
         used = true;
-        Push<bool> parsingPushed(parsing, true);
+        utils::Push<bool> parsingPushed(parsing, true);
         parser->parseFile(dataManager, filePath.string());
         parsed = true;
     }
@@ -199,19 +165,6 @@ DataManager::~DataManager()
 {
     this->clear();
 }
-
-void DataManager::createInstance()
-{
-    UTILS_ASSERT(!instance);
-    instance = new DataManager();
-}
-
-void DataManager::destroyInstance()
-{
-    delete instance;
-    instance = nullptr;
-}
-
 
 void DataManager::clear()
 {

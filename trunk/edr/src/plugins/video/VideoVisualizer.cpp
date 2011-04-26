@@ -9,7 +9,9 @@
 #include <osgWidget/Box>
 #include <osgui/AspectRatioKeeper.h>
 #include <osgui/OsgWidgetUtils.h>
-#include <core/IDataManager.h>
+#include <core/StringTools.h>
+
+using namespace core;
 
 struct VideoVisualizer::Refresher
 {
@@ -177,7 +179,7 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
 
     // dodanie obszaru roboczego
     workspace = new osgWidget::Box();
-    workspace->getBackground()->setImage("data/resources/images/transparent_background.png", false, false);
+    workspace->getBackground()->setImage(getResourceString("images/transparent_background.png"), false, false);
     osg::Texture* texture = osgui::getTexture(workspace->getBackground());
     texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
     texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
@@ -236,5 +238,5 @@ void VideoVisualizer::setUp( core::IObjectSource* source )
 
 QIcon* VideoVisualizer::createIcon()
 {
-    return new QIcon( (core::getDataManager()->getResourcesPath() / "icons/video.png").string().c_str() );
+    return new QIcon(getResourceString("icons/video.png"));
 }

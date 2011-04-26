@@ -13,7 +13,6 @@
 #include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
-#include <core/PluginCommon.h>
 
 class QWidget;
 

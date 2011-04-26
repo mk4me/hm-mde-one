@@ -13,6 +13,7 @@
 #include "Visualizer.h"
 #include "VisualizerManager.h"
 #include "VisualizerTitleBar.h"
+#include <core/PluginCommon.h>
 
 //! Widget wizualizacyjny.
 class VisualizerWidget : public QDockWidget
@@ -80,6 +81,9 @@ private:
     void init();
     //!
     void addVisualizerToTitlebar( const core::IVisualizerConstPtr& vis );
+
+protected:
+    void closeEvent (QCloseEvent *event);
 };
 
 
