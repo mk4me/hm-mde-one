@@ -6,8 +6,8 @@
 #include <string>
 
 TestDFPin::TestDFPin(const std::string & pinName, bool required,
-		const std::set<dflm::WPinPtr> & requiredPins, const std::set<dflm::ConnPtr> & connections)
-		: DFPin(pinName, required, requiredPins, connections){
+		const std::set<dflm::WPinPtr> & requiredPins)
+		: DFPin(pinName, required, requiredPins){
 }
 
 TestDFPin::~TestDFPin(void)
@@ -17,7 +17,7 @@ TestDFPin::~TestDFPin(void)
 std::string TestDFPin::getPinFullName() const{
 	std::string fullName;
 
-	boost::shared_ptr<TestDFNodeProcessing> parent(boost::dynamic_pointer_cast<TestDFNodeProcessing>(parentNode.lock()));
+	boost::shared_ptr<TestDFNodeProcessing> parent(boost::dynamic_pointer_cast<TestDFNodeProcessing>(getParent()));
 	if(parent != 0){
 		fullName.append(parent->getNodeName());
 	}else{
@@ -25,7 +25,7 @@ std::string TestDFPin::getPinFullName() const{
 	}
 
 	fullName.append(":");
-	fullName.append(pinName);
+	fullName.append(getPinName());
 
 	return fullName;
 }

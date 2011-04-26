@@ -71,10 +71,10 @@ std::vector<std::string> BvhParserTest::fill( const std::string& rootPath ) {
 
         for (directory_iterator it = directory_iterator(rootPath); it != directory_iterator(); it++) {
             if (is_directory(*it)) {
-                v res = fill(it->string());
+                v res = fill(it->path().string());
                 temp.insert(temp.end(), res.begin(), res.end());
             } else if (is_regular_file(*it) && extension(*it) == ".bvh") {
-                temp.push_back(it->string());
+                temp.push_back(it->path().string());
             }
         }
     } else {

@@ -11,6 +11,7 @@
 
 #include <vidlib/Export.h>
 #include <vidlib/PixelFormat.h>
+#include <utils/Utils.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {
@@ -97,6 +98,20 @@ struct VIDLIB_EXPORT Picture : public PictureCommon
   void copyTo(Picture & dst) const;
 };
 
+struct VIDLIB_EXPORT PictureRGB : public Picture
+{
+    //! Tworzy instancjê obrazka.
+    //! \param width Szerokoœæ.
+    //! \param height Wysokoœæ.
+    //! \param format Format.
+    static PictureRGB create(int width, int height);
+    //! 
+    //! \param width
+    //! \param height
+    //! \param format
+    static int getAllocSize(int width, int height);
+};
+
 //! Obrazek z destruktorem; nadaje siê tam, gdzie kod ma wiele punktów wyjœcia
 //! i rêczne zwalnianie mo¿e byæ problemem.
 struct VIDLIB_EXPORT ScopedPicture : public Picture
@@ -120,6 +135,29 @@ private:
     ScopedPicture(const ScopedPicture& picture);
     //! Uniemo¿liwione kopiowanie.
     ScopedPicture& operator=(const ScopedPicture& picture);
+};
+
+//! Obrazek z destruktorem; nadaje siê tam, gdzie kod ma wiele punktów wyjœcia
+//! i rêczne zwalnianie mo¿e byæ problemem.
+struct VIDLIB_EXPORT ScopedPictureRGB : public PictureRGB
+{
+public:
+    ScopedPictureRGB()
+    {
+        utils::zero(*this);
+        format = PixelFormatRGB24;
+    }
+    //! 
+    ~ScopedPictureRGB()
+    {
+        free();
+    }
+
+private:
+    //! Uniemo¿liwone kopiowanie.
+    ScopedPictureRGB(const ScopedPictureRGB& picture);
+    //! Uniemo¿liwione kopiowanie.
+    ScopedPictureRGB& operator=(const ScopedPictureRGB& picture);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

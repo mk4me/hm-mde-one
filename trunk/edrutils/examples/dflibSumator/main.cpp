@@ -22,9 +22,8 @@ private:
 
 public:
     SmartPin(const std::string & pinName = std::string(),
-        bool required = false, const dflm::Pin::REQ_PINS_SET & requiredPins = dflm::Pin::REQ_PINS_SET(),
-        const dflm::Pin::CONNECTIONS_SET & connections = dflm::Pin::CONNECTIONS_SET()) : DFPin(pinName,
-        required, requiredPins, connections)
+        bool required = false, const dflm::Pin::REQ_PINS_SET & requiredPins = dflm::Pin::REQ_PINS_SET())
+        : DFPin(pinName, required, requiredPins)
     {
 
     }

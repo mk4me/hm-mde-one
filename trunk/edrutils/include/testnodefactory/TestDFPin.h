@@ -8,8 +8,7 @@ class TestDFPin :
 {
 public:
 	TestDFPin(const std::string & pinName = std::string(),
-		bool required = false, const std::set<dflm::WPinPtr> & requiredPins = std::set<dflm::WPinPtr>(),
-		const std::set<dflm::ConnPtr> & connections = std::set<dflm::ConnPtr>());
+		bool required = false, const std::set<dflm::WPinPtr> & requiredPins = std::set<dflm::WPinPtr>());
 	virtual ~TestDFPin(void);
 
 	std::string getPinFullName() const;

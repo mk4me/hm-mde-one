@@ -10,9 +10,9 @@ namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
 Pin::Pin(const std::string & pinName, bool required,
-	const Pin::REQ_PINS_SET & requiredPins, const Pin::CONNECTIONS_SET & connections)
+	const Pin::REQ_PINS_SET & requiredPins)
 	: boost::enable_shared_from_this<Pin>(), pinType(PIN_UNKNOWN), pinRequired(required),
-    requiredPinsDependency(requiredPins), connections(connections), pinName(pinName){
+    requiredPinsDependency(requiredPins), pinName(pinName){
 
 }
 

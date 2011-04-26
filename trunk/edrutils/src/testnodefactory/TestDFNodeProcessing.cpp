@@ -20,13 +20,13 @@ void TestDFNodeProcessing::process(){
         std::cout << "inpute pins verified correctly - data on all connections avaiable" << std::endl;
         std::cout << "getting input data" << std::endl;
 
-        if(processingAllowed == true){
+        if(isProcessingAllowed() == true){
 			std::cout << "data processing allowed" << std::endl;
 			std::cout << "processing data" << std::endl;
 			processData();
 		}
 
-		if(propagatingAllowed == true){
+		if(isPropagatingAllowed() == true){
 			std::cout << "data propagation allowed" << std::endl;
 			std::cout << "propagating data" << std::endl;
 			std::cout << "setting output pins data" << std::endl;

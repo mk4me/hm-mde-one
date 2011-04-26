@@ -15,7 +15,7 @@ Model::~Model(void)
 }
 
 bool Model::addNode(NPtr node){
-	if(node->anyPinConnected() == true){
+	if(Node::anyPinConnected(node) == true){
 		return false;
 	}
 
@@ -64,22 +64,22 @@ ConnPtr Model::connect(PinPtr src, PinPtr dest){
 	return ret;
 }
 
-bool Model::disconnect(PinPtr src, PinPtr dest){
-	//find correcponding connection
+//bool Model::removeConnection(PinPtr src, PinPtr dest){
+//	//find correcponding connection
+//
+//	ConnPtr connection = findConnection(src, dest);
+//
+//	if(connection != 0){
+//		quickRemoveConnection(connection);
+//		return true;
+//	}
+//	
+//	return false;
+//}
 
-	ConnPtr connection = findConnection(src, dest);
-
-	if(connection != 0){
-		quickDisconnect(connection);
-		return true;
-	}
-	
-	return false;
-}
-
-bool Model::disconnect(ConnPtr connection){
+bool Model::removeConnection(ConnPtr connection){
 	if(connections.find(connection) != connections.end()){
-		quickDisconnect(connection);
+		quickRemoveConnection(connection);
 		return true;
 	}
 
@@ -140,7 +140,7 @@ Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
 	CYCLE connInPath;
 
 	NPtr destNode = dest->getParent();
-	if(destNode->anyOutPinConnected() == false){
+	if(Node::anyOutPinConnected(destNode) == false){
 		return connInPath;
 	}
 
@@ -173,7 +173,7 @@ Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
 			break;
 		}
 
-		if(nextNode->anyOutPinConnected() == false){
+		if(Node::anyOutPinConnected(nextNode) == false){
 			checkedNodes.insert(nextNode);
 			connInPath.pop_back();
 		}
@@ -210,7 +210,7 @@ Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
 	return connInPath;
 }
 
-bool Model::quickDisconnect(ConnPtr connection){
+bool Model::quickRemoveConnection(ConnPtr connection){
 	connection->getSrc()->removeConnection(connection);
 	connection->getDest()->removeConnection(connection);
 	return connections.erase(connection) > 0 ? true : false;
@@ -218,7 +218,7 @@ bool Model::quickDisconnect(ConnPtr connection){
 
 void Model::clearConnections(){
 	while(connections.empty() == false){
-		quickDisconnect(*connections.begin());
+		quickRemoveConnection(*connections.begin());
 	}
 }
 
@@ -247,7 +247,7 @@ bool Model::disconnectNode(NPtr node){
 
 	//remove all node connections
 	while(allNodeConnections.empty() == false){
-		disconnect(*allNodeConnections.begin());
+		removeConnection(*allNodeConnections.begin());
 		allNodeConnections.erase(allNodeConnections.begin());
 	}
 

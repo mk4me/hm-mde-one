@@ -111,7 +111,7 @@ bool DFModel::removeNode(NPtr node){
 		//check src`s if have became leafs - no out connections
 		//and add to lafs if required
 		for(NODES_SET::const_iterator it = inputNodes.begin(); it != inputNodes.end(); it++){
-			if((*it)->anyOutPinConnected() == false){
+			if(Node::anyOutPinConnected(*it) == false){
 				addLeaf(*it);
 			}
 		}
@@ -120,7 +120,7 @@ bool DFModel::removeNode(NPtr node){
 		//automatically update nodes
 		for(Node::PINS_SET::const_iterator it = outputPins.begin(); it != outputPins.end(); it++){
 			bool isNodeRequired = false;
-			if((*it)->getParent()->anyInPinConnected() == false){
+			if( Node::anyInPinConnected((*it)->getParent()) == false){
 				bool refresh = false;
 				REQUIRING_CONNECTION::iterator iT = pinsRequiringConnections.find((*it)->getParent());
 				if(iT == pinsRequiringConnections.end()){
@@ -169,7 +169,7 @@ ConnPtr DFModel::quickConnect(PinPtr src, PinPtr dest){
 	ConnPtr ret(Model::quickConnect(src,dest));
 	//check if dest parent has other connections
 	//add it to leafes if no
-	if(dest->getParent()->anyOutPinConnected() == false){
+	if(Node::anyOutPinConnected(dest->getParent()) == false){
 		addLeaf(dest->getParent());
 	}
 	updateRequireConnections(dest);
@@ -203,7 +203,7 @@ void DFModel::updateRequireConnections(PinPtr pin){
 bool DFModel::validateModel() const{
 
 	//minimum 2 elements - 1 source and one processing, no nodes requiring extra connections
-	if(nodes.empty() == true || sourceNodes.empty() == true || pinsRequiringConnections.empty() == false){
+	if(getNodes().empty() == true || sourceNodes.empty() == true || pinsRequiringConnections.empty() == false){
 		return false;
 	}	
 
@@ -254,37 +254,37 @@ bool DFModel::canDisconnect(ConnPtr connection){
 	return true;
 }
 
-bool DFModel::disconnect(PinPtr src, PinPtr dest){
-	if(validateOperation() == false){
+//bool DFModel::removeConnection(PinPtr src, PinPtr dest){
+//	if(validateOperation() == false){
+//		return false;
+//	}
+//
+//	ConnPtr connection = findConnection(src,dest);
+//
+//	if(connection == 0){
+//		return false;
+//	}
+//
+//	return quickRemoveConnection(connection);
+//}
+
+bool DFModel::removeConnection(ConnPtr connection){
+	if(validateOperation() == false || getConnections().find(connection) == getConnections().end()){
 		return false;
 	}
 
-	ConnPtr connection = findConnection(src,dest);
-
-	if(connection == 0){
-		return false;
-	}
-
-	return quickDisconnect(connection);
+	return quickRemoveConnection(connection);
 }
 
-bool DFModel::disconnect(ConnPtr connection){
-	if(validateOperation() == false || connections.find(connection) == connections.end()){
-		return false;
-	}
-
-	return quickDisconnect(connection);
-}
-
-bool DFModel::quickDisconnect(ConnPtr connection){
+bool DFModel::quickRemoveConnection(ConnPtr connection){
 	/*if(canDisconnect(connection) == false){
 		return false;
 	}*/
 
-	if(Model::quickDisconnect(connection) == true){
+	if(Model::quickRemoveConnection(connection) == true){
 
 		//either required pin disconnected or no input connections at all!!
-		if(connection->getDest()->getParent()->anyInPinConnected() == false){
+		if(Node::anyInPinConnected(connection->getDest()->getParent()) == false){
 			pinsRequiringConnections[connection->getDest()->getParent()];
 		}
 
@@ -301,7 +301,8 @@ bool DFModel::quickDisconnect(ConnPtr connection){
 }
 
 void DFModel::clearConnections(){
-	if(validateOperation() == false || nodes.size() == sourceNodes.size()){
+	const NODES_SET & nodes = getNodes();
+    if(validateOperation() == false || nodes.size() == sourceNodes.size()){
 		return;
 	}
 
@@ -373,6 +374,7 @@ void DFModel::process() {
 
 void DFModel::resetPinStates(){
 	DFNPtr node;
+    const NODES_SET & nodes = getNodes();
 	for(NODES_SET::const_iterator it = nodes.begin(); it != nodes.end(); it++){
 		node = boost::dynamic_pointer_cast<DFNode>(*it);
 		if(node != 0){
@@ -398,6 +400,7 @@ void DFModel::resetPinState(PinPtr pin){
 void DFModel::resetNodeStates(){
 	
 	DFNPtr node;
+    const NODES_SET & nodes = getNodes();
 	for(NODES_SET::const_iterator it = nodes.begin(); it != nodes.end(); it++){
 		node = boost::dynamic_pointer_cast<DFNode>(*it);
 		if(node != 0){

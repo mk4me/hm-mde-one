@@ -61,14 +61,16 @@ bool Node::pinExists(const std::set<PinPtr> & pins, PinPtr pin){
 	return ret;
 }
 
-bool Node::pinExists(PinPtr pin) const {
-	return pinExists(inPins,pin) || pinExists(outPins,pin);
+bool Node::pinExists(const CNPtr & node, PinPtr pin) {
+	return pinExists(node->getInPins(),pin) || pinExists(node->getOutPins(),pin);
 }
 
-bool Node::validInPinsConnection() const{
+bool Node::validInPinsConnection(const CNPtr & node) {
 	bool ret = true;
 	bool empty = true;
 	bool required = false;
+
+    const PINS_SET & inPins = node->getInPins();
 
 	for(PINS_SET::const_iterator it = inPins.begin(); it != inPins.end(); it++){
 		if((*it)->isRequired() == true){
@@ -89,8 +91,10 @@ bool Node::validInPinsConnection() const{
 	return ret;
 }
 
-bool Node::validOutPinsConnection() const{
+bool Node::validOutPinsConnection(const CNPtr & node) {
 	bool ret = true;
+
+    const PINS_SET & outPins = node->getOutPins();
 
 	for(PINS_SET::const_iterator it = outPins.begin(); it != outPins.end(); it++){
 		if((*it)->isComplete() == false){
@@ -102,16 +106,16 @@ bool Node::validOutPinsConnection() const{
 	return ret;
 }
 
-bool Node::validConnection() const{
-	return validInPinsConnection() && validOutPinsConnection();
+bool Node::validConnection(const CNPtr & node){
+	return validInPinsConnection(node) && validOutPinsConnection(node);
 }
 
-bool Node::anyInPinConnected() const{
-	return anyPinConnected(inPins);
+bool Node::anyInPinConnected(const CNPtr & node){
+	return anyPinConnected(node->getInPins());
 }
 
-bool Node::anyOutPinConnected() const{
-	return anyPinConnected(outPins);
+bool Node::anyOutPinConnected(const CNPtr & node){
+	return anyPinConnected(node->getOutPins());
 }
 
 bool Node::anyPinConnected(const PINS_SET & pins){
@@ -127,7 +131,7 @@ bool Node::anyPinConnected(const PINS_SET & pins){
 	return ret;
 }
 
-bool Node::anyPinConnected() const{
-	return anyInPinConnected() && anyOutPinConnected();
+bool Node::anyPinConnected(const CNPtr & node){
+	return anyInPinConnected(node) && anyOutPinConnected(node);
 }
 }

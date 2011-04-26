@@ -584,7 +584,7 @@ dflm::ConnPtr osgVDFBaseModel::connect(dflm::PinPtr src, dflm::PinPtr dest){
 }
 
 bool osgVDFBaseModel::disconnect(dflm::ConnPtr connection){	
-	if(logicalModel->disconnect(connection) == false){
+	if(logicalModel->removeConnection(connection) == false){
 		return false;
 	}
 
@@ -1241,7 +1241,7 @@ std::vector<std::string> osgVDFBaseModel::getNodeErrors(dflm::NPtr node){
 	//if(dynamic_cast<chart::DFSourceNode*>(node.get()) == 0){
 	if(boost::dynamic_pointer_cast<dflm::DFSourceNode>(node) == 0){
 		if(node->getInPins().empty() == false){
-			if(node->anyInPinConnected() == false){
+			if(dflm::Node::anyInPinConnected(node) == false){
 				ret.push_back("Wezel musi miec podlaczony minimum jeden pin wejsciowy");
 			}
 

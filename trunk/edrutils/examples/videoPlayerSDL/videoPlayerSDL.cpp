@@ -91,7 +91,7 @@ int main(int argc, char **argv)
             // wczytanie listy plików
             std::vector<std::string> files;
             for ( fs::directory_iterator it(path), last; it != last; ++it ) {
-                files.push_back(it->string());
+                files.push_back(it->path().string());
             }
 
 #ifdef VIDLIB_ENABLE_OSG

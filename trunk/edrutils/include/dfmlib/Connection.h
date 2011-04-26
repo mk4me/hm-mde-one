@@ -7,29 +7,52 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
+
+//! Klasa opisuj¹ca po³¹czenie dwóch pinów. Mo¿na z niej pobraæ piny w uporz¹dkowanej kolejnoœci - pin wyjœciowy (Ÿród³o) - pin wejœciowy (odbiorca).
 class Connection
 {
 
 public:
 
-	friend class DFModel;
+    //! Klasa zaprzyjaŸniona - model ma pe³n¹ kontrolê nad po³¹czeniami - sam je tworzy i nimi zarz¹dza, u¿ytkownik tylko z nich korzysta
+	friend class Model;
 
 public:
-	Connection(PinPtr src, PinPtr dest);
+
+    //! Wirtualny destruktor
 	virtual ~Connection(void);
 
+    //! \return Weze³ Ÿród³owy
 	PinPtr getSrc() const;
+
+    //! \return Weze³ docelowy
 	PinPtr getDest() const;
 
+    //! \return drugi wêze³ bior¹cy udzia³ w po³¹czeniu lub wyj¹tek jesli wêze³ nie bierze udzia³u w tym po³¹czeniu
 	PinPtr getOther(CWPinPtr pin) const;
+
+    //! \return Nazwa po³aczenia
 	std::string getConnectionName() const;
 
 private:
+    //! \param src Wêze³ Ÿród³owy(wyjœciowy)
 	void setSrc(PinPtr src);
+
+    //! \param dest Wêze³ docelowy(wejœciowy)
 	void setDest(PinPtr dest);
 
 protected:
+
+    //! Konstruktor chroniony, pozwala dziedziczyæ ale nie pozwala klientowi samemu tworzyæ po³¹czenia
+    //! \param src Wêze³ Ÿród³owy
+    //! \param dest Wêze³ docelowy
+    Connection(PinPtr src, PinPtr dest);
+
+private:
+    //! Wêze³ Ÿród³owy po³¹czenia
 	WPinPtr srcPin;
+
+    //! Wêze³ docelowy po³aczenia
 	WPinPtr destPin;
 };
 

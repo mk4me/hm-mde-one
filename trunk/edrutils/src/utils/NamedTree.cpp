@@ -4,7 +4,7 @@
 const NamedTreeBase::Separator NamedTreeBase::separator("/");
 
 NamedTreeBase::NamedTreeBase(const std::string & name)
-    : name(name), absolutePath(".")
+    : name(name)
 {
     UTILS_ASSERT((name.empty() == false), "Nazwa wezla nie moze byc pusta");
     UTILS_ASSERT((name.find("/") == std::string::npos), "Nazwa wezla nie moze zawierac separatora!");
@@ -12,7 +12,7 @@ NamedTreeBase::NamedTreeBase(const std::string & name)
 }
 
 NamedTreeBase::NamedTreeBase(const NamedTreeBase & child, bool deep)
-    : name(child.name), absolutePath(".")
+    : name(child.name)
 {
     //zawsze po kopii mamy roota
     if(deep == false){

@@ -7,8 +7,8 @@ namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
 DFPin::DFPin(const std::string & nodeName, bool required,
-	const Pin::REQ_PINS_SET & requiredPins,	const Pin::CONNECTIONS_SET & connections)
-	: Pin(nodeName, required, requiredPins, connections),
+	const Pin::REQ_PINS_SET & requiredPins)
+	: Pin(nodeName, required, requiredPins),
 		updated(false) {
 }
 
@@ -38,13 +38,14 @@ void DFPin::reset(){
 
 bool DFPin::update(){
 	updated = true;
-
+    PIN_TYPE pinType = getType();
 	if(pinType == PIN_IN){
 		DFNPtr node(boost::dynamic_pointer_cast<DFNode>(getParent()));
 		if(node != 0){
 			node->notify();
 		}
 	}else if(pinType == PIN_OUT){
+        const CONNECTIONS_SET & connections = getConnections();
 		for(CONNECTIONS_SET::const_iterator it = connections.begin(); it != connections.end(); it++){
 			DFPinPtr pin(boost::dynamic_pointer_cast<DFPin>((*it)->getDest()));
 			if(pin != 0){
