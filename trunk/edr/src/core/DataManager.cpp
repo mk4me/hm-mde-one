@@ -425,7 +425,7 @@ void DataManager::loadTrial(const core::IDataManager::LocalTrial& trial)
     }
 }
 
-void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files)
+void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, const core::ObjectWrapper::Types& types)
 {
     loadTrialData = true;
 

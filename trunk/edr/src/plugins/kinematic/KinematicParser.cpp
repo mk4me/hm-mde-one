@@ -71,10 +71,11 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
         MarkerSetConstPtr ms = markers[0];
         switch(ms->getMarkersCount()) {
        case 39:
-            vsk->parse("data/resources/trial/M39.vsk");
+            
+            vsk->parse(core::getResourceString("trial/M39.vsk"));
             break;
         case 53:
-            vsk->parse("data/resources/trial/M53.vsk");
+            vsk->parse(core::getResourceString("trial/M53.vsk"));
         default:
             VskParserPtr nullVsk;
             vsk = nullVsk;

@@ -6,7 +6,7 @@
 #include <kinematiclib/KinematicModel.h>
 #include <plugins/kinematic/skeletalVisualizationScheme.h>
 
-CORE_DEFINE_WRAPPER(kinematic::KinematicModel, utils::PtrPolicyBoost);
-CORE_DEFINE_WRAPPER(SkeletalVisualizationScheme, utils::PtrPolicyBoost);
+CORE_DEFINE_WRAPPER(kinematic::KinematicModel, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+CORE_DEFINE_WRAPPER(SkeletalVisualizationScheme, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 #endif  // __HEADER_GUARD_KINEMATIC__WRAPPERS_H__

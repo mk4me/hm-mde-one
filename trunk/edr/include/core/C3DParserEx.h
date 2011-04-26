@@ -5,9 +5,10 @@
 #include <core/c3dParser.h>
 #include <core/IDataManager.h>
 
+
 #include <core/C3DChannels.h>
 #include <kinematiclib/KinematicModel.h>
-CORE_DEFINE_WRAPPER(C3D_Data, utils::PtrPolicyBoost);
+CORE_DEFINE_WRAPPER(C3D_Data, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
 
 class MarkerSet : public kinematic::IMarkerSet
 {
@@ -18,8 +19,6 @@ public:
 
 public:
     void addMarker(core::MarkerChannelConstPtr marker) {
-        //core::tripleFloat v = marker->getValue(0.0);
-        //std::cout << "Marker " << marker->getName() << " : " << v.x << ", " << v.y << ", " << v.z << std::endl;
         markers.push_back(marker);
     }
 
@@ -27,19 +26,9 @@ public:
     virtual int getMarkersCount() const { return markers.size(); }
     virtual osg::Vec3 getPosition(int markerNo, double normalizedTime) const {
         double time = normalizedTime * markers[markerNo]->getLength();
-
-        //// hack, dla normalizedTime == 1 dostaje sie bzdury
-        //int sps = markers[markerNo]->getSamplesPerSec();
-        //int currentSample = time * sps;
-        //int samples = sps * markers[markerNo]->getLength();
-
-        //if (currentSample >= samples) {
-        //    time = static_cast<double>(samples - 1) /  sps;
-        //}
-
        
         osg::Vec3 res = markers[markerNo]->getValue(osg::minimum(time, markers[markerNo]->getLength()));
-        return res * getScale();
+        return res * static_cast<float>(getScale());
     }
     virtual std::string getMarkerName(int markerNo) const {
         return markers[markerNo]->getName();
@@ -54,7 +43,7 @@ private:
 };
 typedef boost::shared_ptr<MarkerSet> MarkerSetPtr;
 typedef boost::shared_ptr<const MarkerSet> MarkerSetConstPtr;
-CORE_DEFINE_WRAPPER(MarkerSet, utils::PtrPolicyBoost);
+CORE_DEFINE_WRAPPER(MarkerSet, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
 
 class C3DParser : public core::IParser

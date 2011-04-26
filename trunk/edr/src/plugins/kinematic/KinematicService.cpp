@@ -161,7 +161,7 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     connect(actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
     actions.push_back(actionSwitchAxes);
 
-    QMenu* testMenu = new QMenu("testMenu", widget);
+    QMenu* testMenu = new QMenu("Visualization", widget);
     QActionGroup* group = new QActionGroup(widget);
     connect(group, SIGNAL(triggered(QAction *)), this, SLOT(actionTriggered(QAction*)));
 
@@ -246,8 +246,7 @@ GeodePtr KinematicVisualizer::createFloor()
 
 QIcon* KinematicVisualizer::createIcon()
 {
-    boost::filesystem::path p = core::getDataManager()->getResourcesPath() / "icons/3D.png";
-    return new QIcon(p.string().c_str());
+    return new QIcon(core::getResourceString("icons/3D.png"));
 }
 
 void KinematicVisualizer::setAxis( bool xyz )

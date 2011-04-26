@@ -13,7 +13,7 @@
 #include <core/DataChannel.h>
 #include <core/ObjectWrapper.h>
 #include <core/C3D_Data.h>
-#include <kinematiclib/KinematicModel.h>
+#include <osg/Vec3>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -83,7 +83,7 @@ namespace core {
 
     class MarkerChannel : public DataChannel<osg::Vec3>//public VectorChannel 
     {
-    public: // hack do testow
+    private:
         MarkerChannel(int samplesPerSec) : DataChannel(samplesPerSec) {}
         
     public:        
@@ -106,11 +106,11 @@ namespace core {
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////
 
-CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost);
-CORE_DEFINE_WRAPPER(C3DAnalogChannel, ScalarChannel);
-CORE_DEFINE_WRAPPER(EMGChannel, C3DAnalogChannel);
-CORE_DEFINE_WRAPPER(GRFChannel, C3DAnalogChannel);
-CORE_DEFINE_WRAPPER(MarkerChannel, utils::PtrPolicyBoost);
+CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
+CORE_DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
+CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, C3DAnalogChannel);
+CORE_DEFINE_WRAPPER(MarkerChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 
 
 #endif  // __HEADER_GUARD_CORE__C3DCHANNELS_H__

@@ -176,8 +176,14 @@ public:
     //! \param trial do za³adowania, czyli inicjalizacja parserów
     UTILS_DEPRECATED(virtual void loadTrial(const LocalTrial& trial));
     //! \param files lista do za³adowania, inicjalizacja parserów
-    virtual void loadFiles(const std::vector<Path>& files);
-
+    
+    virtual void loadFiles(const std::vector<Path>& files) {
+        core::ObjectWrapper::Types t;
+        loadFiles(files, t);
+    }
+    //! \param files lista do za³adowania, inicjalizacja parserów
+    virtual void loadFiles(const std::vector<Path>& files, const core::ObjectWrapper::Types& types);
+    
     
     //! ³adowanie zasobów, czyli inicjalizacja parserów
     virtual void loadResources();

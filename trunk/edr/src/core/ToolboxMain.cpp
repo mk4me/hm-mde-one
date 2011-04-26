@@ -91,7 +91,6 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     dataManager->setUserDataPath(userPath);
 
     boost::filesystem::path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
-    appDataPath /= "EDR";
     dataManager->setApplicationDataPath(appDataPath);
 
     boost::filesystem::path resourcesPath = boost::filesystem::initial_path();
@@ -100,9 +99,10 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     resourcesPath /= "resources";
     dataManager->setResourcesPath(resourcesPath);
 
-    const core::IDataManager::Path& testPathNo1 = dataManager->getResourcesPath();
-    const core::IDataManager::Path& testPathNo2 = dataManager->getUserDataPath();
-    const core::IDataManager::Path& testPathNo3 = dataManager->getApplicationDataPath();
+    //// testowanie sciezek...
+    //const core::IDataManager::Path& testPathNo1 = dataManager->getResourcesPath();
+    //const core::IDataManager::Path& testPathNo2 = dataManager->getUserDataPath();
+    //const core::IDataManager::Path& testPathNo3 = dataManager->getApplicationDataPath();
 
 
 

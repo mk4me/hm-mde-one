@@ -5,7 +5,7 @@
 #include <plugins/communication/Entity.h>
 #include <core/IDataManager.h>
 
-CORE_DEFINE_WRAPPER(communication::ShallowCopy::ShallowCopy, utils::PtrPolicyBoost);
+CORE_DEFINE_WRAPPER(communication::ShallowCopy::ShallowCopy, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 class ShallowCopyParser : public core::IParser
 {

@@ -34,6 +34,9 @@ public:
     UTILS_DEPRECATED(virtual void loadTrial(const LocalTrial& trial) = 0);
     //! \param files lista do za³adowania, inicjalizacja parserów
     virtual void loadFiles(const std::vector<Path>& files) = 0;
+    //! \param files lista do za³adowania, inicjalizacja parserów
+    //! \param types lista typow, ktore powinny zostac zaladowane
+    virtual void loadFiles(const std::vector<Path>& files, const core::ObjectWrapper::Types& types) = 0;
     //! Zwraca i-t¹ próbê pomiarow¹ z listy kolalnych prób pomiarowych.
     //! \param i indeks.
     //! \return i-ta próba pomiarowa.

@@ -19,8 +19,8 @@ typedef vidlib::OsgStream VideoStream;
 typedef osg::ref_ptr<VideoStream> VideoStreamPtr;
 typedef osg::ref_ptr<const VideoStream> VideoStreamConstPtr;
 
-CORE_DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyBoost);
-CORE_DEFINE_WRAPPER(VideoStream, utils::PtrPolicyOSG);
+CORE_DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+CORE_DEFINE_WRAPPER(VideoStream, utils::PtrPolicyOSG, utils::ClonePolicyNotImplemented);
 //CORE_DEFINE_WRAPPER(vidlib::VideoStream, utils::PtrPolicyBoost);
 
 #endif  // __HEADER_GUARD_VIDEO__WRAPPERS_H__

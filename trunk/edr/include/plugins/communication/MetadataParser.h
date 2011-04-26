@@ -4,7 +4,7 @@
 #include <core/IParser.h>
 #include <plugins/communication/Entity.h>
 
-CORE_DEFINE_WRAPPER(communication::MetaData::MetaData, utils::PtrPolicyBoost);
+CORE_DEFINE_WRAPPER(communication::MetaData::MetaData, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 class MetadataParser : public core::IParser
 {
