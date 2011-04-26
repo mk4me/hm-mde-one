@@ -36,6 +36,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/Profiler.h
 	${HEADER_PATH}/System.h
 	${HEADER_PATH}/LeakDetection.h
+	${HEADER_PATH}/Push.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
