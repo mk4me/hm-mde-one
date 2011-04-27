@@ -107,6 +107,13 @@ namespace core {
             return ObjectWrapperT<T>::className();
         }
 
+        //! \param type Typ do porównania.
+        //! \return Czy to te same typy?
+        inline bool isTypeEqual(const TypeInfo& type)
+        {
+            return getTypeInfo() == type;
+        }
+
     protected:
         //! \param className
         //! \param classId
