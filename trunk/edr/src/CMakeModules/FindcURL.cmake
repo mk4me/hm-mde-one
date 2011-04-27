@@ -3,7 +3,7 @@ FIND_INIT(CURL curl)
 
 
 # szukanie
-FIND_SHARED(CURL_LIBCURL "curllib" "curllib")
+FIND_SHARED(CURL_LIBCURL "libcurl" "libcurl")
 if (CMAKE_HOST_WIN32)
 	FIND_MODULE(CURL_LIBEAY32 FALSE "libeay32")
 	FIND_MODULE(CURL_SSLEAY32 FALSE "libsasl")
