@@ -43,7 +43,6 @@ set(PRIVATE_H
 	VisualizerTitleBar.h
 	VisualizerTitleBarComboPick.h
 	SampleProcessor.h
-	TypeInfo.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -97,6 +96,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/IDataProcessor.h
 	${HEADER_PATH}/IObjectOutput.h
 	${HEADER_PATH}/PluginCommon.h
+	${HEADER_PATH}/TypeInfo.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
