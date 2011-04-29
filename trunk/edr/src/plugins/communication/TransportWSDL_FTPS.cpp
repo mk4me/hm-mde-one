@@ -85,8 +85,18 @@ const std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string
     //utworz foldery do odpowiedniej sciezki i przerzuc tam plik
     std::string filePath = path;
     filePath.append(filename.substr(0, filename.find(".")));
-    core::Filesystem::createDirectory(filePath);
-    core::Filesystem::move(filename, filePath.append("/").append(filename));
+    try {
+        core::Filesystem::createDirectory(filePath);
+        core::Filesystem::move(filename, filePath.append("/").append(filename));
+    } catch(std::exception& e) {
+        if(!filePath.empty()) {
+            core::Filesystem::deleteDirectory(filePath);
+        }
+        if(!filename.empty()) {
+            core::Filesystem::deleteFile(filename);
+        }
+        throw std::runtime_error(e.what());
+    }
     return filename;
 }
 

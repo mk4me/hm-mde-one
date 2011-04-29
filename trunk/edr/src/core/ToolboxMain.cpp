@@ -133,7 +133,7 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     sceneRoot->setName("root");
 
 	dataManager->findResources();
-    dataManager->findLocalTrials();
+    //dataManager->findLocalTrials();
     dataManager->loadResources();
 
     // inicjalizacja us³ug

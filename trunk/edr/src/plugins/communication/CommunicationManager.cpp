@@ -165,9 +165,6 @@ void CommunicationManager::run()
                 }
                 state = UpdateTrials;
             } catch(std::exception& e) {
-                if(!pathToDownloadingTrial.empty()) {
-                    core::Filesystem::deleteDirectory(pathToDownloadingTrial);
-                }
                 state = Error;
                 errorMessage = e.what();
             }

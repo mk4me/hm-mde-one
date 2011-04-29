@@ -347,16 +347,20 @@ IParserPtr DataManager::getInitializedParser( const std::string& filter )
 void DataManager::findLocalTrials()
 {
     localTrialsList.clear();
-    //przeszukujemy liste prob pomiarowych, nie plikow
-    std::vector<std::string> tempPaths = Filesystem::listSubdirectories(trialsPath.string());
-    BOOST_FOREACH(std::string path, tempPaths)
-    {
-        try
+    try {
+        //przeszukujemy liste prob pomiarowych, nie plikow
+        std::vector<std::string> tempPaths = Filesystem::listSubdirectories(trialsPath.string());
+        BOOST_FOREACH(std::string path, tempPaths)
         {
-            LocalTrial trial = findLocalTrialsPaths(path);
-            localTrialsList.push_back(std::make_pair<IDataManager::Path, IDataManager::LocalTrial>(IDataManager::Path(path), trial));
+            try
+            {
+                LocalTrial trial = findLocalTrialsPaths(path);
+                localTrialsList.push_back(std::make_pair<IDataManager::Path, IDataManager::LocalTrial>(IDataManager::Path(path), trial));
+            }
+            catch(std::exception& e) { }
         }
-        catch(std::runtime_error& e) { }
+    } catch(std::exception& e) {
+        LOG_INFO("Finding local trials exception: " << e.what());
     }
 }
 
@@ -368,14 +372,18 @@ void DataManager::findResources()
     ext.push_back(".frag");
     ext.push_back(".vert");
     //ext.push_back(".avi");
-    std::vector<std::string> temp = Filesystem::listFiles(this->resourcesPath.string(), true, ext);
-    resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
-    //szukaj mesh
-    temp = Filesystem::listFiles(this->resourcesPath.string(), true, ".fmesh");
-    resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
-    //szukaj styli qt
-    temp = Filesystem::listFiles(this->resourcesPath.string(), true, ".qss");
-    applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
+    try {
+        std::vector<std::string> temp = Filesystem::listFiles(this->resourcesPath.string(), true, ext);
+        resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
+        //szukaj mesh
+        temp = Filesystem::listFiles(this->resourcesPath.string(), true, ".fmesh");
+        resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
+        //szukaj styli qt
+        temp = Filesystem::listFiles(this->resourcesPath.string(), true, ".qss");
+        applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
+    } catch(std::exception& e) {
+        LOG_INFO("Finding resources exception: " << e.what());
+    }
 }
 
 void DataManager::loadLocalTrial(int i)
