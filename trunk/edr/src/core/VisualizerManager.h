@@ -34,7 +34,8 @@ public:
     //! 
     typedef boost::iterator_range<IVisualizers::const_iterator> IVisualizersConstRange;
     //!
-    typedef std::list<VisualizerWeakPtr> WeakVisualizers;
+    //! typedef std::list<VisualizerWeakPtr> WeakVisualizers;
+    typedef std::list<Visualizer*> Visualizers;
     //! Lista typów kolejnych Ÿróde³.
     typedef Visualizer::SlotsInfo SourcesTypes; 
 
@@ -51,7 +52,8 @@ private:
     //! Prototypy wizualizatorów.
     IVisualizers prototypes;
     //! Lista œledz¹ca wizualizatory.
-    WeakVisualizers visualizersTrace;
+    // WeakVisualizers visualizersTrace;
+    Visualizers visualizers;
     //! Sta³e dane wizualizatorów.
     std::vector< IVisualizerPersistantData* > visualizersData;
     //! Widget do wizualizacji struktury sceny 3D. Do debuggowania.
@@ -115,6 +117,11 @@ public:
     //! \param id id wizualizatora.
     //! \return Instancja wizualizatora.
     VisualizerPtr createVisualizer(UniqueID id);
+
+    //! \return Liczba instancji wizualizatorów danego typu.
+    int getNumInstances(UniqueID id);
+
+private:
     //! Tworzy instancjê wizualizatora.
     //! \param id id wizualizatora.
     //! \return Instancja wizualizatora.

@@ -122,10 +122,36 @@ void VisualizerWidget::setVisualizer( const VisualizerPtr& visualizer )
     if ( visualizer ) {
         QWidget* widget = visualizer->getOrCreateWidget();
         innerWidget->layoutContent->addWidget(widget);
-        innerWidget->setWindowTitle( toQString(visualizer->getName()) );
+        innerWidget->setWindowTitle( visualizer->getUIName() );
         setWindowTitle( innerWidget->windowTitle() );
-        //setObjectName( );
+
+
+
+
+//         // ustalenie nazwy widgetu
+//         int numVisualizers = VisualizerManager::getInstance()->getNumInsances(visualizer->getID());
+//         if ( numVisualizers == 1 ) {
+//             setWindowTitle( innerWidget->windowTitle() );
+//         } else {
+//             // jest wiêcej wizualizatorów, trzeba wszystkim widgetom nadaæ odpowiednie nazwy
+//             QList<VisualizerWidget*> widgets = qFindChildren<VisualizerWidget*>(parent());
+//             int currVisualizer = 0;
+//             BOOST_FOREACH(VisualizerWidget* widget, widgets) {
+//                 if ( widget->getTitleBar()->getCurrentVisualizer()->getID() == visualizer->getID() ) {
+//                     widget->setWindowTitle( QString("{0} ({1})").arg( core::toString(visualizer->getName())).arg(currVisualizer++));
+//                 }
+//             }
+//         }
+//         //setObjectName( );
+    } else {
+        setWindowTitle( "Empty visualizer");
     }
+// 
+//     ToolboxMain* mainwnd = qobject_cast<ToolboxMain*>(this->parentWidget());
+//     UTILS_ASSERT(mainwnd);
+//     if ( mainwnd ) {
+//         mainwnd->refreshVisualizerWidgetsNames();
+//     }
 
 //     widgetCustomInner = visualizer->createWidget();
 // 
@@ -180,7 +206,7 @@ void VisualizerWidget::split( Qt::Orientation orientation )
     UTILS_ASSERT(mainWindow);
 
     if ( visualizer ) {
-        dockWidget = new VisualizerWidget(VisualizerManager::getInstance()->createVisualizer(*visualizer), mainWindow);
+        dockWidget = new VisualizerWidget(VisualizerManager::getInstance()->createVisualizer(visualizer->getID()), mainWindow);
     } else {
         dockWidget = new VisualizerWidget(mainWindow);
     }

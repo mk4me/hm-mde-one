@@ -12,24 +12,36 @@
 #include <vector>
 #include <string>
 
+#include <boost/version.hpp>
+#include <QtCore/QtGlobal>
+#include <utils/Macros.h>
+
 #include <core/PluginCommon.h>
 #include <core/SmartPtr.h>
 #include <core/IService.h>
 #include <core/IParser.h>
 #include <core/IVisualizer.h>
 #include <core/Export.h>
-
+#include <core/ObjectWrapperFactory.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-#define CORE_PLUGIN_INTERFACE_VERSION 1
+#define CORE_PLUGIN_INTERFACE_VERSION 3
+
+#ifdef _CPPLIB_VER
+#define CORE_CPPLIB_VER _CPPLIB_VER
+#else
+#define CORE_CPPLIB_VER -1
+#endif
 
 //! Nazwa funkcji pobieraj¹cej numer wersji pluginu.
 #define CORE_GET_PLUGIN_VERSION_FUNCTION_NAME CoreGetPluginInterfaceVersion
 //! Nazwa funkcji tworz¹cej plugin.
 #define CORE_CREATE_PLUGIN_FUNCTION_NAME CoreCreatePluginInstance
+//! 
+#define CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME CoreGetLibrariesVersions
 
 //! Rozpoczyna rejestracjê pluginu.
 //! \param name Nazwa pluginu.
@@ -40,6 +52,13 @@ DEFINE_DEFAULT_LOGGER("edr." name)                                      \
 extern "C" CORE_EXPORT unsigned CORE_GET_PLUGIN_VERSION_FUNCTION_NAME() \
 {                                                                       \
     return CORE_PLUGIN_INTERFACE_VERSION;                               \
+}                                                                       \
+extern "C" CORE_EXPORT void CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME(  \
+    int* boostVersion, int* qtVersion, int* stlVersion)                 \
+{                                                                       \
+    *boostVersion = BOOST_VERSION;                                      \
+    *qtVersion = QT_VERSION;                                            \
+    *stlVersion = CORE_CPPLIB_VER;                                      \
 }                                                                       \
 extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::InstanceInfo* data) \
 {                                                                       \
@@ -62,6 +81,9 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
 //! Dodaje wizualizator zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
     instance->addVisualizer( core::IVisualizerPtr(new className) );
+
+#define CORE_PLUGIN_ADD_OBJECT_WRAPPER(className)               \
+    instance->addObjectWrapperFactory( core::IObjectWrapperFactoryPtr(new core::ObjectWrapperFactory<className>()) ); 
 
 
 class IPlugin : IIdentifiable
@@ -93,12 +115,16 @@ public:
     typedef Plugin* (*CreateFunction)(InstanceInfo* data);
     //! Typ funkcji pobierajacej wersjê pluginu.
     typedef int (*GetVersionFunction)();
+    //!
+    typedef int (*GetLibrariesVersionFunction)(int* boostVersion, int* qtVersion, int* stlVersion);
     //! Typ listy us³ug.
     typedef std::vector<IServicePtr> Services;
     //! Typ listy parserów.
     typedef std::vector<IParserPtr> Parsers;
     //! Typ listy wizualizatorów.
     typedef std::vector<IVisualizerPtr> Visualizers;
+    //! Typ listy wrapperów.
+    typedef std::vector<IObjectWrapperFactoryPtr> ObjectWrapperFactories;
 
 private:
     //! Lista us³ug pluginu.
@@ -107,6 +133,8 @@ private:
 	Parsers parsers;
     //! Lista wizualizatorów pluginu.
     Visualizers visualizers;
+    //! Lista fabryk wrapperów.
+    ObjectWrapperFactories factories;
 
     //! Nazwa pluginu.
     std::string name;
@@ -197,6 +225,22 @@ public:
     IVisualizerPtr getVisualizer(int i)
     {
         return this->visualizers[i];
+    }
+
+    //! \param factory
+    void addObjectWrapperFactory(IObjectWrapperFactoryPtr factory)
+    {
+        this->factories.push_back(factory);
+    }
+    //! \return
+    int getNumWrapperFactories() const
+    {
+        return static_cast<int>(this->factories.size());
+    }
+    //! \param i
+    IObjectWrapperFactoryPtr getWrapperFactory(int i)
+    {
+        return this->factories[i];
     }
 };
 

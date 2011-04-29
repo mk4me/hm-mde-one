@@ -77,6 +77,8 @@ public:
     UTILS_DEPRECATED(virtual void loadLocalTrial(int i) = 0);
     //! \param path Za³aduj próbê pomiarow¹ z podanej œcie¿ki.
     UTILS_DEPRECATED(virtual void loadLocalTrial(const Path& path) = 0);
+
+    virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo& type) = 0;
 };
     
     //! \param manager Data manager.
@@ -138,6 +140,7 @@ public:
     template <class T, class Ptr>
     inline void queryData(IDataManager* manager, std::vector<Ptr>& target, bool exact = false)
     {
+        UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
         __queryDataIsConvertible<T, Ptr>(manager, target, exact, boost::is_convertible<Ptr, typename ObjectWrapperT<T>::Ptr>());
     }
 
@@ -148,6 +151,7 @@ public:
     template <class T>
     inline std::vector<typename ObjectWrapperT<T>::Ptr> queryData(IDataManager* manager, bool exact = false, T* /*dummy*/ = nullptr)
     {
+        UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
         std::vector<typename ObjectWrapperT<T>::Ptr> target;
         queryData<T>(manager, target, exact);
         return target;

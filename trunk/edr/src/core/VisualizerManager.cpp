@@ -16,6 +16,7 @@ debugWidget(nullptr)
 
 VisualizerManager::~VisualizerManager()
 {
+    UTILS_ASSERT(visualizers.empty(), "Wszystkie wizualizatory powinny byæ zniszczone.");
     BOOST_FOREACH( IVisualizerPersistantData* data, visualizersData ) {
         delete data;
     }
@@ -44,35 +45,48 @@ VisualizerPtr VisualizerManager::createVisualizer( UniqueID id )
     }
 }
 
+int VisualizerManager::getNumInstances( UniqueID id )
+{
+    return std::count_if( visualizers.begin(), visualizers.end(), [=](Visualizer* ptr) {
+        return ptr->getID() == id;
+    });
+}
+
 VisualizerPtr VisualizerManager::createVisualizer( const IVisualizerConstPtr& prototype )
 {
     VisualizerPtr result(new Visualizer(prototype->create()));
-    visualizersTrace.push_back(result);
+    //visualizersTrace.push_back(result);
     return result;
 }
 
 VisualizerPtr VisualizerManager::createVisualizer( const Visualizer& prototype )
 {
     VisualizerPtr result(new Visualizer(prototype));
-    visualizersTrace.push_back(result);
+    //visualizersTrace.push_back(result);
     return result;
 }
 
 void VisualizerManager::update()
 {
-    WeakVisualizers::iterator it = visualizersTrace.begin();
-    WeakVisualizers::iterator last = visualizersTrace.end();
+    Visualizers::iterator it = visualizers.begin();
+    Visualizers::iterator last = visualizers.end();
     while ( it != last ) {
-        VisualizerPtr strong = it->lock();
-        if ( strong ) {
-            strong->update(0);
-            ++it;
-        } else {
-            LOG_DEBUG("Removing weak visualizer reference");
-            WeakVisualizers::iterator toErase = it++;
-            visualizersTrace.erase(toErase);
-        }
+        (*it)->update(0);
+        ++it;
     }
+//     WeakVisualizers::iterator it = visualizersTrace.begin();
+//     WeakVisualizers::iterator last = visualizersTrace.end();
+//     while ( it != last ) {
+//         VisualizerPtr strong = it->lock();
+//         if ( strong ) {
+//             strong->update(0);
+//             ++it;
+//         } else {
+//             LOG_DEBUG("Removing weak visualizer reference");
+//             WeakVisualizers::iterator toErase = it++;
+//             visualizersTrace.erase(toErase);
+//         }
+//     }
 }
 
 void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
@@ -139,6 +153,7 @@ int VisualizerManager::getPrototypeIdx( UniqueID id ) const
 void VisualizerManager::notifyCreated( Visualizer* visualizer )
 {
     LOG_DEBUG("Visualizer " << visualizer->getName() << " created");
+    visualizers.push_back(visualizer);
     if ( debugWidget ) {
         debugWidget->addVisualizer(visualizer);
     }
@@ -147,7 +162,9 @@ void VisualizerManager::notifyCreated( Visualizer* visualizer )
 void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
 {
     LOG_DEBUG("Visualizer " << visualizer->getName() << " destroyed.");
+    visualizers.remove(visualizer);
     if ( debugWidget ) {
         debugWidget->removeVisualizer(visualizer);
     }
 }
+

@@ -138,27 +138,18 @@ bool PluginLoader::addPlugIn( const std::string& path )
 #if defined(__WIN32__)
     HMODULE library = ::LoadLibrary( path.c_str() );
     if ( library ) {
-        FARPROC versionProc = ::GetProcAddress(library, STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME));
-        if ( versionProc ) {
-            int version = reinterpret_cast<Plugin::GetVersionFunction>(versionProc)();
-            if ( version != CORE_PLUGIN_INTERFACE_VERSION ) {
-                LOG_ERROR(path<<" has obsolete interface version; should be "<<CORE_PLUGIN_INTERFACE_VERSION<<", is "<<version);
-                return false;
-            } else {
-                FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
-                if ( proc ) {
-                    bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
-                        reinterpret_cast<Plugin::CreateFunction>(proc));
-                    if ( success ) {
-                        return true;
-                    }
-                } else {
-                    LOG_DEBUG(path<<" is a .dll, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
+        if ( checkPluginVersion(library, path) && checkLibrariesVersions(library, path) ) {
+            FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
+            if ( proc ) {
+                bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
+                    reinterpret_cast<Plugin::CreateFunction>(proc));
+                if ( success ) {
+                    return true;
                 }
+            } else {
+                LOG_DEBUG(path<<" is a plugin, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed.");
             }
-        } else {
-            LOG_DEBUG(path<<" is a .dll, but finding "<<STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
-        }
+        }   
     } else  {
         DWORD err = ::GetLastError();
         LPSTR errStr;
@@ -314,6 +305,59 @@ void PluginLoader::freeLibraries()
 #endif
     }
     libraries.clear();
+}
+
+bool PluginLoader::checkLibrariesVersions( HMODULE library, const std::string& path )
+{
+    // pobranie wersji bibliotek
+    auto libsVerProc = reinterpret_cast<Plugin::GetLibrariesVersionFunction>(
+        ::GetProcAddress(library, STRINGIZE(CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME)));
+    if ( libsVerProc ) {
+        int boostVer, qtVer, stlVer;
+        libsVerProc(&boostVer, &qtVer, &stlVer);
+        LOG_DEBUG(path << " boost: " << boostVer << "; Qt: " << std::hex << qtVer << "; STL: " << std::dec << stlVer);
+        bool success = true;
+        // boost/version.hpp - sprawdzenie major i minor
+        if ( boostVer / 100 != BOOST_VERSION / 100 ) {
+            LOG_ERROR(path << " has incompatible boost version: " << boostVer);
+            success = false;
+        }
+        // QtCore/QGlobal.h - sprawdzenie tylko wersji Major
+        if ( (qtVer >> 16) != (QT_VERSION >> 16) ) {
+            LOG_ERROR(path << " has incompatible Qt version: " << qtVer);
+            success = false;
+        }
+        //
+        if ( stlVer != CORE_CPPLIB_VER ) {
+            if ( stlVer == -1 ) {
+                LOG_ERROR(path << " has incompatible STL version: " << "unknown");
+            } else {
+                LOG_ERROR(path << " has incompatible STL version: " << stlVer);
+            }
+            success = false;
+        }
+        return success;
+    } else {
+        LOG_ERROR(path << " is a plugin, but finding " << STRINGIZE(CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME) << " failed");
+        return false;
+    }
+}
+
+bool PluginLoader::checkPluginVersion( HMODULE library, const std::string& path )
+{
+    FARPROC versionProc = ::GetProcAddress(library, STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME));
+    if ( versionProc ) {
+        int version = reinterpret_cast<Plugin::GetVersionFunction>(versionProc)();
+        if ( version != CORE_PLUGIN_INTERFACE_VERSION ) {
+            LOG_ERROR(path<<" has obsolete interface version; should be "<<CORE_PLUGIN_INTERFACE_VERSION<<", is "<<version);
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        LOG_ERROR(path<<" is a .dll, but finding "<<STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
+        return false;
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

@@ -115,5 +115,14 @@ public:
     }
 };
 
+void test()
+{
+    IDataProcessor* processor;
+
+    ObjectSource source;
+    ObjectOutput output;
+
+
+}
 
 #endif  // HEADER_GUARD_CORE__SAMPLEPROCESSOR_H__

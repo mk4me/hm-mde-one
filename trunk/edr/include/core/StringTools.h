@@ -91,6 +91,10 @@ namespace core {
     {
         return toString_t(str);
     }
+    inline toString_t toString(std::string&& str)
+    {
+        return toString_t(str);
+    }
     inline toString_t toString(const boost::filesystem::path& path)
     {
         return toString_t(toStdString(path));

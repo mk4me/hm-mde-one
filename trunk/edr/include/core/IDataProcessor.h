@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__IDATAPROCESSOR_H__
 
 #include <core/ObjectWrapper.h>
-#include <core/IObjectOutput.h>
+#include <core/IObjectSource.h>
 #include <core/IObjectOutput.h>
 #include <list>
 
@@ -20,13 +20,14 @@ namespace core
     class IDataProcessor
     {
     public:
+        static const int maxNumSources = 16;
         //! Struktura opisuj¹ca dane wejœciowe.
         struct InputInfo
         {
             //! Nazwa wejœcia.
             std::string name;
             //! Typy wspierane przez wejœcie.
-            ObjectWrapper::Types types;
+            std::list<core::TypeInfo> types;
         };
         //! Struktura opisuj¹ca dane wyjœciowe.
         struct OutputInfo
@@ -34,7 +35,11 @@ namespace core
             //! Nazwa wyjœcia.
             std::string name;
             //! Typ wyjœcia.
-            ObjectWrapper::Type type;
+            core::TypeInfo type;
+            //!
+            OutputInfo(const std::string& str, const core::TypeInfo& type) :
+            name(name), type(type)
+            {}
         };
 
     public:
@@ -53,7 +58,7 @@ namespace core
         virtual void getOutputInfo( std::vector<OutputInfo>& info ) = 0;
 
         //! Przetwarza informacje.
-        virtual void process(IObjectSource* input, IObjectSource* output) = 0;
+        virtual void process(IObjectSource* input, IObjectOutput* output) = 0;
     };
 
     typedef shared_ptr<IDataProcessor> IDataProcessorPtr;

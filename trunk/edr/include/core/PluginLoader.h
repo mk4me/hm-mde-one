@@ -74,6 +74,15 @@ private:
     //! 
     //! \param path
     bool addPlugIn(const std::string& path);
+
+    //! 
+    //! \param library
+    //! \param path
+    bool checkPluginVersion( HMODULE library, const std::string& path );
+    //! 
+    //! \param library
+    //! \param path
+    bool checkLibrariesVersions( HMODULE library, const std::string& path );
     //! 
     //! \param path
     //! \param library

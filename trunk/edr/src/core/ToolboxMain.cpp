@@ -62,6 +62,7 @@
 #include <boost/random.hpp>
 
 #include <utils/Push.h>
+#include "DataProcessor.h"
 
 DEFINE_DEFAULT_LOGGER("edr.core");
 
@@ -75,6 +76,11 @@ struct SortActionsByNames
 };
 
 using namespace core;
+
+
+CORE_DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+CORE_DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+
 
 ToolboxMain::ToolboxMain(core::PluginLoader* pluginLoader) :
 QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
@@ -161,6 +167,8 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     }
 
     populateVisualizersMenu(menuCreateVisualizer);
+
+    DataProcessor::test();
 }
 
 ToolboxMain::~ToolboxMain()
@@ -336,6 +344,12 @@ void ToolboxMain::registerPluginsParsers()
     }
     core::IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
     DataManager::getInstance()->registerParser(c3dParser);
+
+    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<int>()) );
+    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<double>()) );
+    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<EMGChannel>()) );
+    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<GRFChannel>()) );
+    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerChannel>()) );
 }
 
 void ToolboxMain::registerPluginsVisualizers()
@@ -950,6 +964,10 @@ void ToolboxMain::populateWindowMenu( QMenu* menu )
     }
 }
 
+void ToolboxMain::refreshVisualizerWidgetsNames()
+{
+}
+
 
 #ifdef UTILS_DEBUG
 
@@ -964,6 +982,7 @@ void ToolboxMain::onTestRemoveToggled(const std::string& sender, bool state )
 {
     removeOnClick = state;
 }
+
 
 #endif // UTILS_DEBUG
 

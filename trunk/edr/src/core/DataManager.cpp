@@ -729,7 +729,24 @@ void DataManager::removeObjects( Predicate predicate )
     }
 }
 
+void DataManager::registerObjectFactory( core::IObjectWrapperFactoryPtr factory )
+{
+    core::TypeInfo type = factory->getType();
+    if ( !objectFactories.insert(std::make_pair(type, factory)).second ) {
+        LOG_ERROR("Factory for " << type.name() << " already exists.");
+    }
+}
 
+core::ObjectWrapperPtr DataManager::createWrapper( const core::TypeInfo& type )
+{
+    auto found = objectFactories.find(type);
+    if ( found != objectFactories.end() ) {
+        return ObjectWrapperPtr(found->second->createWrapper());
+    } else {
+        // TODO: elaborate
+        throw std::runtime_error("Type not supported.");
+    }
+}
 
 void DataManager::addObjects(DataManager::DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects) 
 {

@@ -10,20 +10,8 @@
 #define HEADER_GUARD_CORE__DATAPROCESSOR_H__
 
 #include <core/IDataProcessor.h>
+#include <core/ObjectWrapper.h>
 #include "ObjectSource.h"
-
-class ObjectOutput : public core::IObjectOutput
-{
-public:
-    virtual int getNumObjects()
-    {
-        return 0;
-    }
-    virtual core::ObjectWrapperPtr getWrapper(int idx)
-    {
-        return core::ObjectWrapperPtr(nullptr);
-    }
-};
 
 class DataProcessor
 {
@@ -34,56 +22,70 @@ private:
     //! Faktyczna implementacja elementu przetwarzaj¹cego.
     core::scoped_ptr<core::IDataProcessor> impl;
     //! Dane wejœciowe.
-    ObjectSource source;
+    core::scoped_ptr<ObjectSource> source;
     //! Dane wyjœciowe.
-    ObjectOutput output;
+    core::scoped_ptr<ObjectOutput> output;
 
 public:
     //! \param impl Obiekt przejmowany na w³asnoœæ.
-    DataProcessor(core::IDataProcessor* impl) : 
-    impl(impl), 
-    source( DataProcessorManager::getInstance()->getInputInfo(impl->getID()) ),
-    output( DataProcessorManager::getInstance()->getOutputInfo(impl->getID()) )
-    {}
+    DataProcessor(core::IDataProcessor* impl);
 
 public:
+
+    //! \return
+    ObjectSource& getSource()
+    { 
+        return *source;
+    }
+    //! \return
+    ObjectOutput& getOutput() 
+    { 
+        return *output;
+    }
 
     //! \return Liczba wejœæ.
     int getNumInput() const
     {
-        return source.getNumObjects();
+        return source->getNumObjects();
     }
 
     //! \return Liczba wyjœæ.
     int getNumOutput() const
     {
-        return output.getNumObjects();
+        return output->getNumObjects();
     }
 
     //! \return Informacja o i-tym wejœciu.
     const InputInfo& getInputInfo(int i) const
     {
-        return source.getSlotInfo(i);
+        return source->getSlotInfo(i);
     }
 
     //! \return Informacja o i-tym wyjœciu.
     const OutputInfo& getOutputInfo(int i) const
     {
-        return output.getSlotInfo(i);
+        return output->getSlotInfo(i);
     }
 
     //! \param outputNo Numer wyjœcia.
     //! \return Obiekt na wyjœciu.
-    const ObjectWrapperPtr& getOutputObject(int outputNo)
+    core::ObjectWrapperPtr getOutputObject(int outputNo)
     {
-        return output.getWrapper(outputNo);
+        return output->getWrapper(outputNo);
     }
     //! Gdy wyjœcie/wejœcie s¹ niedopasowane zostanie rzucony wyj¹tek.
     //! \param inputNo Numer wejœcia.
     //! \param object Obiekt na wejœciu.
-    void setInputObject(int inputNo, const ObjectWrapperPtr& object)
+    void setInputObject(int inputNo, const core::ObjectWrapperPtr& object)
     {
-        source.setObject(inputNo, object);
+        source->setObject(inputNo, object);
+    }
+    //! Gdy wyjœcie/wejœcie s¹ niedopasowane zostanie rzucony wyj¹tek.
+    //! \param inputNo Numer wejœcia.
+    //! \param object Obiekt na wejœciu.
+    void setInputObject(int inputNo, const core::ObjectWrapperConstPtr& object)
+    {
+        source->setObject(inputNo, object);
     }
 
     //! \return WskaŸnik do implementacji.
@@ -95,20 +97,22 @@ public:
     //! Przetwarza wejœcia i ustawia wyjœcia. Mo¿e rzucaæ wyj¹tkami.
     void process()
     {
-        impl->process();
+        impl->process(source.get(), output.get());
     }
 
     //! \return false je¿eli przetwarzanie zakoñczy³o siê b³êdem (wyj¹tkiem)
     bool tryProcess()
     {
         try {
-            impl->process(&source, &output);
+            impl->process(source.get(), output.get());
             return true;
         } catch (const std::exception& ex) {
             LOG_ERROR("Error during processing: " << ex.what());
             return false;
         }
     }
+
+    static void test();
 
 };
 

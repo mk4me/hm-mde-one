@@ -8,14 +8,20 @@ using namespace core;
 Visualizer::Visualizer( IVisualizer* impl ) :
 impl(impl), widget(nullptr), source(VisualizerManager::getInstance()->getSourcesTypes(impl->getID()))
 {
+    //int numVisualizers = VisualizerManager::getInstance()->getNumInstances(impl->getID());
+    //uiName = QString("%0 (%1)").arg(toString(getName())).arg(numVisualizers);
     VisualizerManager::getInstance()->notifyCreated(this);
+    uiName = toString(getName());
 }
 
 Visualizer::Visualizer( const Visualizer& visualizer ) :
 impl(visualizer.impl->create()),
 source(visualizer.source), widget(nullptr)
 {
+    //int numVisualizers = VisualizerManager::getInstance()->getNumInstances(impl->getID());
+    //uiName = QString("%0 (%1)").arg(toString(getName())).arg(numVisualizers);
     VisualizerManager::getInstance()->notifyCreated(this);
+    uiName = toString(getName());
 }
 
 Visualizer::~Visualizer()
@@ -71,4 +77,14 @@ const std::vector<QObject*>& Visualizer::getOrCreateGenericActions()
         getOrCreateWidget();
     }
     return genericActions;
+}
+
+void Visualizer::setUIName( const QString& uiName )
+{
+    this->uiName = uiName;
+}
+
+const QString& Visualizer::getUIName() const
+{
+    return uiName;
 }

@@ -30,8 +30,8 @@ private:
     ObjectSource source;
     //! Akcje wizualizatora.
     std::vector<QObject*> genericActions;
-    //! Przyrostek nazwy.
-    std::string nameSuffix;
+    //! Nazwa uzupe³niona o przyrostek.
+    QString uiName;
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w³asnoœæ.
@@ -61,7 +61,7 @@ public:
         impl->update(deltaTime);
     }
     //! \see IVisualizer::getInputTypes
-    inline const core::Types& getInputTypes(int idx) const
+    inline const core::TypeInfoList& getInputTypes(int idx) const
     {
         return source.getSlotTypes(idx);
     }
@@ -70,15 +70,22 @@ public:
     {
         return source.getSlotName(idx);
     }
-    //! \return Nazwa wizualizatora.
-    inline const std::string& getName() const
-    {
-        return impl->getName();
-    }
     //! \return
     inline UniqueID getID() const
     {
         return impl->getID();
+    }
+
+    //! \return Nazwa wizualizatora. U¿ywana w UI.
+    const QString& getUIName() const;
+
+    //! \param uiName Nazwa wizualizatora u¿ywana w UI. Nie powoduje automatycznego odœwie¿enia UI.
+    void setUIName(const QString& uiName);
+
+    //! \return Nazwa wizualizatora.
+    const std::string& getName() const
+    {
+        return impl->getName();
     }
 
     //!

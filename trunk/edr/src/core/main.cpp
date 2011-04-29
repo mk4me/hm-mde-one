@@ -24,7 +24,7 @@ CORE_DEFINE_INSTANCE_INFO;
 
 int main(int argc, char *argv[])
 {
-    LogInitializer logger("data/resources/settings/log.ini");
+    
 
     osg::ArgumentParser arguments(&argc,argv);
     arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
@@ -57,6 +57,8 @@ int main(int argc, char *argv[])
         application.setOrganizationName("PJWSTK");
         QSettings::setDefaultFormat(QSettings::IniFormat);
 
+        LogInitializer logger("data/resources/settings/log.ini");
+
         PluginLoader pluginLoader;
         {
             DataManager dataManager;
@@ -72,7 +74,6 @@ int main(int argc, char *argv[])
             utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
             utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
             utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
-
             {
                 ToolboxMain window(&pluginLoader);
                 logger.setConsoleWidget( window.getConsole() );

@@ -78,6 +78,7 @@ public:
     }
 
 public slots:    
+    void refreshVisualizerWidgetsNames();
     void visualizerWidgetClosed(VisualizerWidget* widget);
     //! Aktualizacja us³ug.
     void updateServices();

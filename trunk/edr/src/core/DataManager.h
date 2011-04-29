@@ -10,6 +10,7 @@ data/resources, próby pomiarowe s¹ wyszukiwane i pobierane do data/trials.
 #include <boost/type_traits.hpp>
 #include <core/IDataManager.h>
 #include <core/IParser.h>
+#include <core/ObjectWrapperFactory.h>
 #include <utils/Utils.h>
 
 class DataManager: public core::IDataManager
@@ -90,9 +91,13 @@ private:
     typedef std::vector<ParserPtr> ParsersList;
     //! Typ mapy obiektów.
     typedef std::multimap< core::TypeInfo, ObjectsMapEntry > ObjectsByType;
+    //! Mapa fabryk obiektów.
+    typedef std::map<core::TypeInfo, core::IObjectWrapperFactoryPtr> ObjectFactories;
     typedef std::multimap< core::TypeInfo, std::pair<DataProcessorPtr, core::ObjectWrapperWeakPtr> > ObjectFromProcessors;
 
 private:
+    //! S³ownik fabryk typów.
+    ObjectFactories objectFactories;
     //! S³owniki parserów niezainicjalizowanych.
     IParsersByID registeredParsers;
     //! S³ownik parserów przypisanych do rozszerzeñ.
@@ -144,6 +149,10 @@ public:
         return static_cast<DataManager*>(core::getDataManager());
     }
 
+    void registerObjectFactory(core::IObjectWrapperFactoryPtr factory);
+
+    virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo& type);
+
     //! Rejestruje zadany parser.
     //! \param newService
     void registerParser(core::IParserPtr parser);
@@ -152,6 +161,7 @@ public:
     //! \param idx Indeks parsera.
     //! \return Parser o zadanym indeksie. Parser zawsze bêdzie niezainicjowany.
     core::IParserConstPtr getRegisteredParser(int idx) const;
+
 
 // core::IDataManager
 public:

@@ -14,120 +14,43 @@
 #include <core/IObjectOutput.h>
 #include <core/ObjectWrapper.h>
 #include <core/IVisualizer.h>
-
-namespace core 
-{
-    typedef TypeInfo Type;
-    typedef ObjectWrapper::Types Types;
-} // namespace core
-
-class ObjectSlots
-{
-public:
-    //!
-    struct SlotInfo
-    {
-        //! Nazwa slotu.
-        std::string name;
-        //! Typy wspierane w slocie.
-        core::Types types;
-
-        void swap(SlotInfo& slotInfo)
-        {
-            if ( &slotInfo != this ) {
-                name.swap(slotInfo.name);
-                types.swap(slotInfo.types);
-            }
-        }
-    };
-    //! Informacje o slotach.
-    typedef std::vector<SlotInfo> SlotsInfo;
-
-    //!
-    struct Slot
-    {
-        //! Obiekt w wariancie zmiennym.
-        core::ObjectWrapperPtr object;
-        //! Obiekt w wariancie niezmiennym.
-        core::ObjectWrapperConstPtr constObject;
-    };
-
-private:
-    //! Informacje o slotach.
-    //! TODO: referencja albo wskaŸnik, jedna instancja danych.
-    SlotsInfo info;
-    //! Sloty.
-    std::vector<Slot> objects;
-
-public:
-    //! \param info Informacje o slotach.
-    ObjectSlots( const std::vector<SlotInfo>& info ) :
-    info(info), objects(info.size())
-    {}
-    //! Konstruktor kopiuj¹cy.
-    ObjectSlots( const ObjectSlots& objectSlots ) : 
-    info(objectSlots.info), objects(objectSlots.objects)
-    {}
-
-public:
-    //! \return Liczba slotów.
-    int getNumSlots() const
-    {
-        return info.size();
-    }
-    //! \return Nazwa slotu.
-    const std::string& getSlotName(int i) const
-    {
-        return info[i].name;
-    }
-    //! \return Typy wspierane przez slot.
-    const core::Types& getSlotTypes(int i) const
-    {
-        return info[i].types;
-    }
-    //! \return Informacje o slocie.
-    const SlotInfo& getSlotInfo(int i) const
-    {
-        return info[i];
-    }
-
-    //! Czy dany obiekt mo¿na przypisaæ danemu Ÿród³u?
-    bool isAssignable(int slotNo, const core::ObjectWrapper* object) const;
-
-    //! Dodaje zmienny obiekt.
-    void setObject(int slotNo, const core::ObjectWrapperPtr& object);
-
-    //! Dodanie niezmiennego obiektu.
-    void setObject(int slotNo, const core::ObjectWrapperConstPtr& object);
-
-    //! \return Obiekt w zmiennym wariancie.
-    const core::ObjectWrapperPtr& getObject(int slotNo)
-    {
-        return objects[slotNo].object;
-    }
-    //! \return Obiekt w sta³ym wariancie.
-    const core::ObjectWrapperConstPtr& getConstObject(int slotNo) const
-    {
-        return objects[slotNo].constObject;
-    }
-    
-};
+#include "ObjectSlots.h"
 
 class ObjectSource : public ObjectSlots, public core::IObjectSource
 {
+private:
+    std::vector<bool> passDirectly;
+
+
 public:
     //! \param info Informacje o slotach.
-    ObjectSource( const std::vector<SlotInfo>& info ) :
-    ObjectSlots(info)
+    ObjectSource( std::vector<SlotInfo>&& info ) :
+    ObjectSlots(info), passDirectly(info.size())
     {}
-    //! Konstruktor kopiuj¹cy.
-    ObjectSource( const ObjectSource& objectSlots ) : 
-    ObjectSlots(objectSlots)
+    //! \param info Informacje o slotach.
+    ObjectSource( const std::vector<SlotInfo>& info ) :
+    ObjectSlots(info), passDirectly(info.size())
     {}
 
 public:
+
+    //! Czy przekazywaæ obiekt bezpoœrednio czy te¿ zawsze konieczne jest
+    //! klonowanie?
+    //! \param idx
+    //! \param passDirectly
+    void setPassDirectly(int idx, bool passDirectly)
+    {
+        this->passDirectly[idx] = passDirectly;
+    }
+    //! \return Czy obiekt w danym slocie mo¿na przekazaæ bezpoœrednio, bez klonowania?
+    bool isPassedDirectly(int idx) const
+    {
+        return passDirectly[idx];
+    }
+
     virtual bool isChanged(int inputNo) const
     {
+        throw std::runtime_error("not supported");
         return false;
     }
     virtual int getNumObjects() const
@@ -136,12 +59,20 @@ public:
     }
     virtual core::ObjectWrapperPtr getObject(int idx, boost::false_type)
     {
-        core::ObjectWrapperPtr result = ObjectSlots::getObject(idx);
-        if ( !result ) {
-            // hmmm nie ma zmiennego, trzeba wiêc sklonowaæ niezmienny obiekt
-            throw std::runtime_error("Cloning not implemented yet.");
+        // najpierw sprawdzamy, czy mo¿emy przekazaæ bez klonowania
+        if ( isPassedDirectly(idx) ) {
+            core::ObjectWrapperPtr result = ObjectSlots::getObject(idx);
+            if ( result ) {
+                return result;
+            }
         }
-        return result;
+        // klonujemy obiekt z jego sta³ego wariantu
+        core::ObjectWrapperConstPtr constResult = ObjectSlots::getConstObject(idx);
+        if ( constResult ) {
+            return constResult->clone();
+        } else {
+            return core::ObjectWrapperPtr();
+        }
     }
     virtual core::ObjectWrapperConstPtr getObject(int idx, boost::true_type)
     {
@@ -149,28 +80,24 @@ public:
     }
 };
 
+// TODO: przenieœæ do osobnego pliku
 class ObjectOutput : public ObjectSlots, public core::IObjectOutput
 {
 public:
     //! \param info Informacje o slotach.
-    ObjectOutput( const std::vector<SlotInfo>& info ) :
+    ObjectOutput( std::vector<SlotInfo>&& info ) :
     ObjectSlots(info)
     {}
-    //! Konstruktor kopiuj¹cy.
-    ObjectOutput( const ObjectOutput& objectSlots ) : 
-    ObjectSlots(objectSlots)
+    //! \param info Informacje o slotach.
+    ObjectOutput( const std::vector<SlotInfo>& info ) :
+    ObjectSlots(info)
     {}
 
 // core::IObjectOutput
 public:
-    virtual core::ObjectWrapperPtr getWrapper(int idx, const core::Type& type)
+    virtual core::ObjectWrapperPtr getWrapper(int idx)
     {
-        const core::ObjectWrapperPtr& object = ObjectSlots::getObject(idx);
-        UTILS_ASSERT(object);
-        if ( !object->isSupported(type) ) {
-            throw std::runtime_error("Type mismatch.");
-        }
-        return object;
+        return ObjectSlots::getObject(idx);
     }
 
     //! \return Liczba slotów wyjœciowych.

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<modelStoreModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner" xmlns:dm9="http://schemas.microsoft.com/dsltools/LogicalClassDesigner"
+<modelStoreModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/LogicalClassDesigner"
   dslVersion="1.0.0.0"
   Id="c2d1360b-ea8b-406c-b331-dd1f2f8fbe08"
   name="uml" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
@@ -59,6 +59,22 @@
     <comment
       Id="5dba6991-ad23-4eda-b018-1892acc59f02">
       <body>DataManager przechowuje kolekcje IParserów, które dzięki funkcji create() służą jako fabryki. Dodatkowo trzymana jest kolekcja wewnętrznego typu Parser, który reprezentuje parser przypisany już do konkretnego pliku</body>
+    </comment>
+    <comment
+      Id="8fa7adf3-bb1b-4efe-b3dd-e92742c855bf">
+      <body>W nim osadzany jest właściwy widget; zapewnia ramkę itp</body>
+    </comment>
+    <comment
+      Id="5dc8f74a-b642-4425-9ff3-68e2447e6835">
+      <body>combo wyboru wizualizatora + guziki + pozwala na dodawanie akcji z wizualizatorów w postaci guzików</body>
+    </comment>
+    <comment
+      Id="126acdf0-9f9b-4831-8bbf-9c81158355ba">
+      <body>wybór źródła</body>
+    </comment>
+    <comment
+      Id="c2354d0e-1c0d-4ffc-8f5c-1a5fdfacdde8">
+      <body>guziki close/undock + możliwość osadzania akcji/menu/widgetów</body>
     </comment>
   </ownedCommentsInternal>
   <profileInstances>
@@ -14037,6 +14053,620 @@
             <classMoniker
               Id="2fbc7bec-3ebd-4bd1-aa86-aaf0c615cc0a"
               LastKnownName="core::IObjectSource"
+              LastKnownLocation="uml.uml" />
+          </generalization>
+        </generalsInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="6293babb-855f-4fdf-b4cc-abf424ab47d2"
+        name="QDockWidget"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="5699e14f-9f93-4904-8c28-9ca51de2c859"
+        name="VisualizerWidget"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <generalsInternal>
+          <generalization
+            Id="db1e96c1-79ed-4cf9-8dbe-182a91c787e0"
+            isSubstitutable="false">
+            <classMoniker
+              Id="6293babb-855f-4fdf-b4cc-abf424ab47d2"
+              LastKnownName="QDockWidget"
+              LastKnownLocation="uml.uml" />
+          </generalization>
+        </generalsInternal>
+        <targetEnds>
+          <association
+            Id="b35e4ff3-9977-48cb-8fe8-cba994dd242b"
+            isDerived="false"
+            sourceEndRoleName="VisualizerWidget"
+            targetEndRoleName="VisualizerTitleBar"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="595d1bd7-a75b-4b7e-b396-e3b4414a22aa"
+              LastKnownName="VisualizerTitleBar"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="b21321e0-e07d-4e9c-8057-5b41d429e923"
+                  name="VisualizerWidget"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="5e9a7839-2e65-4cd8-be79-3d32e8ba763e"
+                  name="VisualizerTitleBar"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+          <association
+            Id="1a1a48d7-8ebd-45b1-8e53-3fbbb60016c7"
+            isDerived="false"
+            sourceEndRoleName="VisualizerWidget"
+            targetEndRoleName="InnerWidget"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="7b5539d0-c11c-4613-b59a-96bb28cd5dcd"
+              LastKnownName="InnerWidget"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="c6352a86-7c82-4a9e-9a2d-a499f823b24a"
+                  name="VisualizerWidget"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="76ba2394-ffba-4dbb-9256-3a0c596c2ede"
+                  name="InnerWidget"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="595d1bd7-a75b-4b7e-b396-e3b4414a22aa"
+        name="VisualizerTitleBar"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="b58f2ed0-277e-4f19-bb5a-825ec4fce615"
+            isDerived="false"
+            sourceEndRoleName="VisualizerTitleBar"
+            targetEndRoleName="VisualizerTitleBarComboPick"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="cf59fb02-10a3-4f68-83f7-62b682f5046b"
+              LastKnownName="VisualizerTitleBarComboPick"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="8695dec9-426f-4af3-88df-c7c459fc4be2"
+                  name="VisualizerTitleBar"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="bec40128-ce3e-4117-a3db-76aa366da18d"
+                  name="VisualizerTitleBarComboPick"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="cf59fb02-10a3-4f68-83f7-62b682f5046b"
+        name="VisualizerTitleBarComboPick"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="7b5539d0-c11c-4613-b59a-96bb28cd5dcd"
+        name="InnerWidget"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="9ade21f3-f9ab-4195-843d-8ab757b581b2"
+        name="QDockWidget"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="c9cdd05d-9bfa-4c34-afc0-5aca27dfe24d"
+        name="VisualizerWidget1"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <generalsInternal>
+          <generalization
+            Id="7fcd9fcf-2b82-47dc-8733-4b27bd9ccdda"
+            isSubstitutable="false">
+            <classMoniker
+              Id="9ade21f3-f9ab-4195-843d-8ab757b581b2"
+              LastKnownName="QDockWidget"
+              LastKnownLocation="uml.uml" />
+          </generalization>
+        </generalsInternal>
+        <targetEnds>
+          <association
+            Id="5f3333d7-be0c-482f-8245-e80271b289af"
+            isDerived="false"
+            sourceEndRoleName="VisualizerWidget"
+            targetEndRoleName="VisualizerTitleBar"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="672bd1f8-94ff-4270-83af-555d4bfeb30a"
+              LastKnownName="VisualizerTitleBar1"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="1701a847-d1ba-4314-a1c0-d111a06fd3ad"
+                  name="VisualizerWidget"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="d744c286-367d-4921-8f3c-84434c813cc0"
+                  name="VisualizerTitleBar"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+          <association
+            Id="bba1e6f7-acf4-4ed7-a8f4-950471b89cbf"
+            isDerived="false"
+            sourceEndRoleName="VisualizerWidget"
+            targetEndRoleName="InnerWidget"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="908f26b2-22b6-4ac5-b685-994fe170d723"
+              LastKnownName="InnerWidget1"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="634936ae-6d8d-4c34-83ec-14f6da3fec8b"
+                  name="VisualizerWidget"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="f394ae51-85fb-4b92-9b23-60522091e73d"
+                  name="InnerWidget"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="672bd1f8-94ff-4270-83af-555d4bfeb30a"
+        name="VisualizerTitleBar1"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="15d83aaa-07b7-477f-b1fd-b633ad6b269b"
+            isDerived="false"
+            sourceEndRoleName="VisualizerTitleBar"
+            targetEndRoleName="VisualizerTitleBarComboPick"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="fddc1d9c-3829-4e66-b70a-184fd074afef"
+              LastKnownName="VisualizerTitleBarComboPick1"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="b5ba31e9-9138-44a7-be15-9de4eb2fd742"
+                  name="VisualizerTitleBar"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="ee9fd194-0f7e-40e8-8636-c32770885c6d"
+                  name="VisualizerTitleBarComboPick"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="fddc1d9c-3829-4e66-b70a-184fd074afef"
+        name="VisualizerTitleBarComboPick1"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="908f26b2-22b6-4ac5-b685-994fe170d723"
+        name="InnerWidget1"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="57d0d64c-cee4-48c0-b29c-6e68055bd190"
+        name="QDockWidget"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="c43c4912-ad1d-4ef3-a850-389f2485b966"
+        name="VisualizerWidget2"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <generalsInternal>
+          <generalization
+            Id="062e51bb-a4bd-4601-af8a-a8e15d2c4705"
+            isSubstitutable="false">
+            <classMoniker
+              Id="96573247-61ed-4007-a293-54287fc4a4ca"
+              LastKnownName="EDRDockWidget"
+              LastKnownLocation="uml.uml" />
+          </generalization>
+        </generalsInternal>
+        <targetEnds>
+          <association
+            Id="9c65d5cd-0870-4cf1-8659-b64147cdcc94"
+            isDerived="false"
+            sourceEndRoleName="VisualizerWidget"
+            targetEndRoleName="VisualizerTitleBar"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="b01ad295-cc8f-49dc-8ab7-cd6d8cd969b2"
+              LastKnownName="VisualizerTitleBar2"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="d3fb6c8f-3ed0-4cfd-9846-3dec4fa3a475"
+                  name="VisualizerWidget"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="640358e3-25f5-4c0a-b243-dd7526ba9a0c"
+                  name="VisualizerTitleBar"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="b01ad295-cc8f-49dc-8ab7-cd6d8cd969b2"
+        name="VisualizerTitleBar2"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="a3100641-a33a-487f-9fd8-3ded9b6b5eb7"
+            isDerived="false"
+            sourceEndRoleName="VisualizerTitleBar"
+            targetEndRoleName="VisualizerTitleBarComboPick"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="23bf77a0-3650-410a-8b5f-361527a432a9"
+              LastKnownName="VisualizerTitleBarComboPick2"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="e0b020c0-e408-4221-abfa-9cb83a97d332"
+                  name="VisualizerTitleBar"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="9179fab3-0781-4aa3-8b3b-9ad9c7036719"
+                  name="VisualizerTitleBarComboPick"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="23bf77a0-3650-410a-8b5f-361527a432a9"
+        name="VisualizerTitleBarComboPick2"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="f9c1b5e1-49df-4922-8933-49be69c30db2"
+        name="EDRInnerWidget"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="96573247-61ed-4007-a293-54287fc4a4ca"
+        name="EDRDockWidget"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <generalsInternal>
+          <generalization
+            Id="29305db7-0205-40db-893a-b2a513db6b6f"
+            isSubstitutable="false">
+            <classMoniker
+              Id="57d0d64c-cee4-48c0-b29c-6e68055bd190"
+              LastKnownName="QDockWidget"
+              LastKnownLocation="uml.uml" />
+          </generalization>
+        </generalsInternal>
+        <targetEnds>
+          <association
+            Id="3c8a6b1b-26c6-4c22-85e6-aa3486462164"
+            isDerived="false"
+            sourceEndRoleName="EDRDockWidget"
+            targetEndRoleName="EDRTitleBar"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="dd45718a-76eb-4a43-97f6-8ec18e20ecee"
+              LastKnownName="EDRTitleBar"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="086fd4c5-a8b0-4559-8586-3fe44f7f004a"
+                  name="EDRDockWidget"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="24f0deba-9bc3-482a-bd15-e8f7a4159f52"
+                  name="EDRTitleBar"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+          <association
+            Id="2e9a80ec-3ecb-4be0-b500-02d86e4d6fb6"
+            isDerived="false"
+            sourceEndRoleName="EDRDockWidget"
+            targetEndRoleName="InnerWidget2"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="f9c1b5e1-49df-4922-8933-49be69c30db2"
+              LastKnownName="EDRInnerWidget"
+              LastKnownLocation="uml.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="f42d6697-31c5-48a2-8f49-9324fab1d15f"
+                  name="EDRDockWidget"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="af050cb0-b01d-445d-9b92-5c00e61e0429"
+                  name="InnerWidget2"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="dd45718a-76eb-4a43-97f6-8ec18e20ecee"
+        name="EDRTitleBar"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="a6b765cd-f9d0-4573-bc17-edd1e98e1174"
+        name="Class2"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="4a889626-3881-4ee6-9f51-dc56ffe3b15e"
+        name="VisualizerWidget"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <generalsInternal>
+          <generalization
+            Id="4223d624-1b9b-4188-905d-2b13264cd9af"
+            isSubstitutable="false">
+            <classMoniker
+              Id="96573247-61ed-4007-a293-54287fc4a4ca"
+              LastKnownName="EDRDockWidget"
               LastKnownLocation="uml.uml" />
           </generalization>
         </generalsInternal>

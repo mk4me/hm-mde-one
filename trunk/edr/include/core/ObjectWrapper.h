@@ -40,6 +40,12 @@ namespace core {
         }
     };
 
+    template <class T>
+    struct ObjectWrapperTraits
+    {
+        static const bool isDefinitionVisible = false;
+    };
+
     //! Baza dla typu wrapuj¹cego jakiœ obiekt. Poza trzymaniem metadanych klasy pochodne
     //! trzymaj¹ referencje do obiektów.
     class ObjectWrapper
@@ -289,12 +295,15 @@ namespace core {
         //! \return Czy wrappowany obiekt jest wyzerowany?
         virtual bool isNull() const = 0;
 
+        //! \return Klon bie¿¹cego obiektu. Wewnêtrzny wskaŸnik równie¿ jest kopiowany.
+        virtual shared_ptr<ObjectWrapper> clone() const = 0;
+
     private:
 
         //! \return Czy uda³o siê ustawiæ m¹dry wskaŸnik?
         virtual bool getSmartPtr(void* ptr, const TypeInfo& type) const = 0;
 
-        virtual bool setSmartPtr(void* ptr, const TypeInfo& type) = 0;
+        virtual bool setSmartPtr(const void* ptr, const TypeInfo& type) = 0;
     };
 
     typedef shared_ptr<ObjectWrapper> ObjectWrapperPtr;
@@ -390,10 +399,10 @@ namespace core {
             return false;
         }
 
-        virtual bool setSmartPtr(void* ptr, const TypeInfo& type)
+        virtual bool setSmartPtr(const void* ptr, const TypeInfo& type)
         {
             if ( type == typeid(Ptr) ) {
-                PtrPolicy::setPtr(wrapped, *reinterpret_cast<Ptr*>(ptr));
+                PtrPolicy::setPtr(wrapped, *reinterpret_cast<const Ptr*>(ptr));
                 return true;
             } else {
                 return false;
@@ -461,15 +470,15 @@ namespace core {
             return Base::getSmartPtr(ptr, type);
         }
 
-        virtual bool setSmartPtr(void* ptr, const TypeInfo& type)
+        virtual bool setSmartPtr(const void* ptr, const TypeInfo& type)
         {
             if ( type == typeid(Ptr) ) {
                 Ptr temp;
-                PtrPolicy::setPtr(temp, *reinterpret_cast<Ptr*>(ptr));
+                PtrPolicy::setPtr(temp, *reinterpret_cast<const Ptr*>(ptr));
                 this->wrapped = static_pointer_cast<T>(temp);
                 return true;
             } else {
-                return Base::getSmartPtr(ptr, type);
+                return Base::setSmartPtr(ptr, type);
             }
         }
 
@@ -483,6 +492,12 @@ namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////
+
+#define __CORE_WRAPPER_DEFINE_META(type)                                                          \
+template <> struct ObjectWrapperTraits<type>                                                      \
+{                                                                                                 \
+    static const bool isDefinitionVisible = true;                                                 \
+};     
 
 // Makro tworz¹ce specjalizacjê ObjectWrapperT. Musi wystêpowaæ w globalnym
 // namespace. Drugim parametrem mo¿e byæ dowolny typ maj¹cy cechy ptrPolicy,
@@ -499,21 +514,24 @@ public:                                                                         
     __ObjectWrapperT<type,ptrPolicy, clonePolicy >(className)                                     \
       {}                                                                                          \
 };                                                                                                \
+__CORE_WRAPPER_DEFINE_META(type)                                                                  \
 }
 
 
-#define CORE_DEFINE_WRAPPER_INHERITANCE(type, baseType)                                          \
-namespace core {                                                                                 \
-    template <>                                                                                  \
-class ObjectWrapperT<type> : public __ObjectWrapperTInherited<type,  baseType>                   \
-{                                                                                                \
-public:                                                                                          \
-    static const char* className() { return #type; }                                             \
-public:                                                                                          \
-    ObjectWrapperT(const char* className = #type) :                                              \
-    __ObjectWrapperTInherited<type,baseType>(className)                                          \
-      {}                                                                                         \
-};                                                                                               \
+#define CORE_DEFINE_WRAPPER_INHERITANCE(type, baseType)                                            \
+namespace core {                                                                                   \
+    template <>                                                                                    \
+class ObjectWrapperT<type> : public __ObjectWrapperTInherited<type,  baseType>                     \
+{                                                                                                  \
+public:                                                                                            \
+    static const char* className() { return #type; }                                               \
+public:                                                                                            \
+    ObjectWrapperT(const char* className = #type) :                                                \
+    __ObjectWrapperTInherited<type,baseType>(className)                                            \
+      {}                                                                                           \
+};                                                                                                 \
+__CORE_WRAPPER_DEFINE_META(type)                                                                   \
 }
+
 
 #endif  // __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
