@@ -16,12 +16,15 @@ class IDataManager
 public:
     typedef boost::filesystem::path Path;
     typedef std::vector<Path> LocalTrial;
+    typedef int DataProcessorPtr;
 
     //! Wirtualny destruktor.
 	virtual ~IDataManager() {};
 
     virtual void addFiles(const std::vector<Path>& files) = 0;
     virtual void removeFiles(const std::vector<Path>& files) = 0;
+
+    virtual void addObjects(DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects) = 0;
 
     //! Wyszukiwanie zasobów na lokalnym dysku.
     virtual void findResources() = 0;

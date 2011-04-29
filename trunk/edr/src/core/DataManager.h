@@ -90,6 +90,7 @@ private:
     typedef std::vector<ParserPtr> ParsersList;
     //! Typ mapy obiektów.
     typedef std::multimap< core::TypeInfo, ObjectsMapEntry > ObjectsByType;
+    typedef std::multimap< core::TypeInfo, std::pair<DataProcessorPtr, core::ObjectWrapperWeakPtr> > ObjectFromProcessors;
 
 private:
     //! S³owniki parserów niezainicjalizowanych.
@@ -99,6 +100,9 @@ private:
 
     //! Obiekty pochodz¹ce z parserów.
     ObjectsByType currentObjects;
+        
+    ObjectFromProcessors objectsFromDataProcessors;
+
     //! Lista parserów przypisanych do plików.
     ParsersList currentParsers;
     
@@ -154,8 +158,11 @@ public:
     //! Tutaj nastêpuje leniwa inicjalizacja.
     //! \see core::IDataManager::getObjects
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact = false);
+    virtual void getObjectsFromParsers(std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact = false);
     //! \see core::IDataManager::isExtensionSupported
     virtual bool isExtensionSupported(const std::string& extension) const;
+
+    virtual void addObjects( DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects);
 
     //! \see core::IDataManager::getParser
     UTILS_DEPRECATED(virtual core::IParserPtr getParser(int idx));
@@ -224,7 +231,7 @@ private:
     template <class Predicate>
     void removeObjects( Predicate pred );
 
-    
+    void dropRemovedWrappers(ObjectFromProcessors& objectsToCheck);
 };
 
 #endif // DATA_MANAGER_H

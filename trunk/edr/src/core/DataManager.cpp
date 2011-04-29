@@ -6,11 +6,14 @@
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
+#include <algorithm>
 #include <list>
 #include <boost/regex.hpp>
 #include <utils/Push.h>
+#include <qt/qapplication.h>
 
 using namespace core;
+using namespace std;
 
 //! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
 class DataManager::Parser
@@ -557,6 +560,26 @@ bool DataManager::isExtensionSupported( const std::string& extension ) const
 
 void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact /*= false*/ )
 {
+    // pobranie obiektow z parserow
+    getObjectsFromParsers(objects, type, exact);
+
+    // pobranie obiektow z procesorow danych
+    dropRemovedWrappers(objectsFromDataProcessors);
+    ObjectFromProcessors::iterator found = objectsFromDataProcessors.find( type );
+    if ( found != objectsFromDataProcessors.end() ) {
+        for ( ObjectFromProcessors::iterator last = objectsFromDataProcessors.upper_bound( type ); found != last; ++found ) {
+            ObjectWrapperPtr object = found->second.second.lock();
+            if ( !exact || object->isTypeEqual(type) ) {
+                UTILS_ASSERT(!object->isNull());
+                // wszystko ok, dodajemy
+                objects.push_back(object);
+            }
+        }
+    }
+ }
+
+void DataManager::getObjectsFromParsers( std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact /*= false*/ )
+{
     // obiekty które bêdziemy usuwaæ
     std::set<ObjectWrapperPtr> invalid;
 
@@ -565,6 +588,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
     if ( found != currentObjects.end() ) {
         // to iterujemy po wszystkich jego wariantach
         for ( ObjectsByType::iterator last = currentObjects.upper_bound( type ); found != last; ++found ) {
+        
             // to, czy sprawdzamy czy to dok³adnie ten typ kontroluje prametr exact
             ObjectWrapperPtr object = found->second.object;
             ParserPtr parser = found->second.parser;
@@ -706,5 +730,30 @@ void DataManager::removeObjects( Predicate predicate )
 }
 
 
+
+void DataManager::addObjects(DataManager::DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects) 
+{
+    for ( int i = objects.size() - 1; i >= 0; --i) { 
+        ObjectWrapper::Types types;
+        objects[i]->getSupportedTypes(types);
+        for (ObjectWrapper::Types::iterator it = types.begin(); it != types.end(); it++) {
+            std::pair<DataProcessorPtr, ObjectWrapperWeakPtr> p = std::make_pair(dataProcessor, ObjectWrapperWeakPtr(objects[i]));
+            objectsFromDataProcessors.insert(std::make_pair(*it, p));
+        }
+    }
+ 
+}
+
+void DataManager::dropRemovedWrappers(ObjectFromProcessors& objectsToCheck)
+{
+    for (ObjectFromProcessors::iterator it = objectsToCheck.begin(); it != objectsToCheck.end(); ) {
+        if (!it->second.second.lock()) {
+            ObjectFromProcessors::iterator toDelete = it++;
+            objectsToCheck.erase(toDelete);
+        } else {
+            it++;
+        }
+    }
+}
 
 
