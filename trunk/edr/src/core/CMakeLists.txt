@@ -44,6 +44,10 @@ set(PRIVATE_H
 	VisualizerTitleBarComboPick.h
 	SampleProcessor.h
 	ObjectSlots.h
+	EDRTitleBar.h
+	EDRDockWidget.h
+	EDRInnerWidget.h
+	TestEDRWidget.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -99,6 +103,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/PluginCommon.h
 	${HEADER_PATH}/ObjectWrapperFactory.h
 	${HEADER_PATH}/TypeInfo.h
+	${HEADER_PATH}/IEDRTitleBar.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -144,6 +149,10 @@ set(TARGET_SRC
 	VisualizerTitleBarComboPick.cpp
 	ObjectSlots.cpp
 	DataProcessor.cpp
+	EDRTitleBar.cpp
+	EDRDockWidget.cpp
+	EDRInnerWidget.cpp	
+	TestEDRWidget.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -155,6 +164,10 @@ SET(TARGET_MOC_H
 	VisualizerWidget.h
 	VisualizerTitleBar.h
 	VisualizerTitleBarComboPick.h
+	EDRTitleBar.h
+	EDRDockWidget.h
+	EDRInnerWidget.h
+	TestEDRWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -172,6 +185,9 @@ set(TARGET_UI
 	ui/VisualizerTitleBarComboPick.ui
 	ui/VisualizerTitleBarButtonPerSource.ui
 	ui/DataProcessorWidget.ui
+	ui/EDRTitleBar.ui
+	ui/EDRInnerWidget.ui
+	ui/TestEDRWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

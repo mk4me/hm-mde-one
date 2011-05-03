@@ -29,7 +29,8 @@ Controller::Controller() :
     asynchronous(false),
     timeDirty(false),
     busy(false),
-    dirty(false)
+    dirty(false),
+    paused(true)
 {
   model = new Model();
   dirtyState = model->getState();
@@ -44,7 +45,7 @@ Controller::~Controller()
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
     killThread = true;
-    if(isPlaying() == false){
+    if(isPlaying() == true){
         model->setPlaying(false);
         pauseMutex.unlock();        
         join();
@@ -63,7 +64,7 @@ void Controller::pause()
     if(state.isPlaying == false){
         return;
     }
-
+    paused = true;
     pauseMutex.lock();    
     state.isPlaying = false;
     setState(state);
@@ -79,6 +80,7 @@ void Controller::play()
         return;
     }
 
+    paused = false;
     state.isPlaying = true;
     setState(state);
 
@@ -126,7 +128,7 @@ double Controller::getNormalizedTime() const
 
 void Controller::setNormalizedTime( double time )
 {
-    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
+    //OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
     setTime( time * getLength() );
 }
 
@@ -155,7 +157,7 @@ void Controller::setTime( double time )
     state.normalizedTime = time  / getLength();
     setState(state);
     timeDirty = true;
-    model->timeDirty = true;
+    //model->timeDirty = true;
     
 
     //// wyzerowanie licznika
@@ -241,10 +243,11 @@ void Controller::setState( const State& state )
 
 bool Controller::isWriteEnabled() const
 {
-    if ( OpenThreads::Thread::CurrentThread() == this ) {
+    if ( OpenThreads::Thread::CurrentThread() == this || paused == true ) {
         return true;
-    } else if ( const_cast<Controller*>(this)->isRunning() ) {
-        return false;
+    //} else if ( const_cast<Controller*>(this)->isRunning() ) {
+    //} else if ( paused == false ) {
+    //    return false;
     } else {
         return !asynchronous;
     }
@@ -292,7 +295,7 @@ bool Controller::compute()
         // zaakceptowano stan
         appliedState = dirtyState;
         timeDirty = dirty = false;
-        model->timeDirty = false;
+        //model->timeDirty = false;
         busy = true;
     }
 

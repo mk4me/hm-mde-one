@@ -45,7 +45,7 @@ private:
 
 public:
     // HACK
-    volatile bool timeDirty;
+    //volatile bool timeDirty;
 
 public:
     //! Konstruktor zeruj¹cy.

@@ -110,6 +110,7 @@ namespace core {
         template <class T>
         static const char* getClassName(T* dummy = nullptr)
         {
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
             return ObjectWrapperT<T>::className();
         }
 
@@ -189,6 +190,7 @@ namespace core {
         template <class T>
         typename ObjectWrapperT<T>::Ptr get(T* /*dummy*/ = nullptr)
         {   
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
             typedef ObjectWrapperT<T> Wrapper;
             return static_cast<Wrapper::Ptr>(get());
         }

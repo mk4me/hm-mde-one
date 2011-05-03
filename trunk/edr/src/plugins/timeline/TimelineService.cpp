@@ -5,13 +5,11 @@
 
 
 TimelineService::TimelineService()
-:   seekRequested(false),
-    name("Timeline")
+:   seekRequested(false), name("Timeline"),
+    controller(new timeline::Controller())
 {
-    widget = new TimelineWidget(this);
-    controller = new timeline::Controller();
     controller->setAsynchronous(true);
-    controller->attach(widget);
+    widget = new TimelineWidget(this, controller);
 }
 
 

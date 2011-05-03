@@ -24,7 +24,7 @@ Model::~Model()
 void Model::setTime( double time )
 {
     state.time = time;
-    for ( iterator it = begin(); it != end() && !timeDirty; ++it ) {
+    for ( iterator it = begin(); it != end() /*&& !timeDirty*/; ++it ) {
         StreamPtr& stream = *it;
         double realTime = time - stream->getStartOffset();
         double clamped = utils::clamp(realTime, 0.0, stream->getLength());

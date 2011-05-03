@@ -64,6 +64,8 @@
 #include <utils/Push.h>
 #include "DataProcessor.h"
 
+#include <core/EDRDockWidget.h>
+
 DEFINE_DEFAULT_LOGGER("edr.core");
 
 
@@ -402,11 +404,13 @@ void ToolboxMain::onWireframe()
 QDockWidget* ToolboxMain::embeddWidget( QWidget* widget, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/ )
 {
     // dodajemy widget dokowalny
-    QDockWidget* dock = new QDockWidget( name, this, Qt::WindowTitleHint);        
+    //QDockWidget* dock = new QDockWidget( name, this, Qt::WindowTitleHint);        
+    EDRDockWidget* dock = new EDRDockWidget( name, this, Qt::WindowTitleHint);        
     dock->setAllowedAreas(area);
     dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
     dock->setStyleSheet(style);
-    dock->setWidget(widget);
+    //dock->setWidget(widget);
+    dock->getInnerWidget()->layoutContent->addWidget(widget);
     QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
     return dock;
 }

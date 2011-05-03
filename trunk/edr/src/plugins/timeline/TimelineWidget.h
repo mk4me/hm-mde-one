@@ -10,6 +10,7 @@
 #define __HEADER_GUARD__TIMELINEWIDGET_H__
 
 #include <QtGui/QWidget>
+#include <plugins/timeline/Controller.h>
 #include <plugins/timeline/TimelineService.h>
 #include <plugins/timeline/View.h>
 #include "ui_TimelineWidget.h"
@@ -24,7 +25,7 @@ private:
 
 public:
     //! 
-    TimelineWidget(TimelineService* service);
+    TimelineWidget(TimelineService* service, timeline::Controller * controller);
     //! 
     virtual ~TimelineWidget();
 
@@ -48,6 +49,9 @@ private:
     void setSliderValue(double value, QSlider* slider);
 
     int getSliderValue(QSlider* slider, double normalizedValue);
+
+private:
+    timeline::Controller * controller;
 };
 
 #endif  // __HEADER_GUARD__TIMELINEWIDGET_H__

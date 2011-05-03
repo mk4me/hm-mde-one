@@ -1,19 +1,20 @@
 #include "TimelinePCH.h"
 #include "TimelineWidget.h"
-
+#include <plugins//timeline/State.h>
 // TODO
 // - slider QSlider nie wspiera przeskakiwania do miejsca klikniêcia,
 //   zamiast tego przeskakuje o "page value"
 
-TimelineWidget::TimelineWidget(TimelineService* service)
-:   service(service)
+TimelineWidget::TimelineWidget(TimelineService* service, timeline::Controller * controller)
+:   service(service), controller(controller)
 {
     setupUi(this);
+    controller->attach(this);
 }
 
 TimelineWidget::~TimelineWidget()
 {
-
+    dynamic_cast<utils::Observable<timeline::State>*>(controller)->detach(this);
 }
 
 void TimelineWidget::timeSliderChanged(int value)

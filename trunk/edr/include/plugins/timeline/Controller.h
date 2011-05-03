@@ -48,6 +48,9 @@ private:
     //! Muteks pauzujacy kontroler
     OpenThreads::Mutex pauseMutex;
 
+    //! Pauza
+    bool paused;
+
     //! Czy niszczymy kontroler i konczymy watek?
     bool killThread;
 
