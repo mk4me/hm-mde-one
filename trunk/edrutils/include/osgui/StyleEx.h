@@ -3,6 +3,7 @@
 
 #include <osgWidget/StyleManager>
 #include <osgText/Text>
+#include <osgDB/ReadFile>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
@@ -28,12 +29,45 @@ public:
 //! Klasa rozszerzajaca mozliwosci styli w OSG o wlasne komponenty i interfejsy GUI
 class StyleEx : public osgWidget::Style
 {
+
+protected:
+
+    //! typ wyliczeniowy opisujacy sposob dopasowania wielkosci Labelki do tekstu
+    //! domyslnie po zmianach w tekscie Labelka ulega tylko rozszerzeniu, tutaj mozna ja zmniejszac
+    typedef enum {VerticalFit, HorizontalFit, AllFit, NoFit} LabelFontFitMode;
+
+private:
+    class CustomStyleOptions : public osgDB::Options
+    {
+    public:
+        CustomStyleOptions() : osgDB::Options() {}
+
+        CustomStyleOptions(const std::string& str)
+            : osgDB::Options(str) {}
+
+        CustomStyleOptions(const osgDB::Options& options,const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY)
+            : osgDB::Options(options, copyop) {}
+
+
+        META_Object(osgui,CustomStyleOptions);
+
+        ~CustomStyleOptions() {}
+    };
+
 public:
 	META_Object(osgWidget, StyleEx);
 
 	//! std::string - nazwa stylu, powinna byc unikalna w StyleManager
     //! std::string - definicja stylu w ooparciu o mozliwosci klasyStyle i rozszerzen klasy StyleEx
-	StyleEx (const std::string& styleName = "", const std::string& styleDef = "") : osgWidget::Style(styleName, styleDef) {};
+	StyleEx (const std::string& styleName = "", const std::string& styleDef = "") : osgWidget::Style(styleName, styleDef) {
+        static bool initialized = false;
+        if(initialized == false){
+            initialized = true;
+            //customStyleOptions = new CustomStyleOptions(*osgDB::Registry::instance()->getOptions());
+            customStyleOptions->setObjectCacheHint(osgDB::Options::CACHE_IMAGES);
+        }
+
+    };
 
 	StyleEx (const Style& style, const osg::CopyOp& co) : osgWidget::Style(style, co){};
 
@@ -41,12 +75,6 @@ public:
 	virtual bool applyStyle(osgWidget::Label* label, osgWidget::Reader r);
 	virtual bool applyStyle(osgWidget::Input* input, osgWidget::Reader r);
 	virtual bool applyStyle (osgWidget::Window* window, osgWidget::Reader r);
-
-protected:
-
-    //! typ wyliczeniowy opisujacy sposob dopasowania wielkosci Labelki do tekstu
-    //! domyslnie po zmianach w tekscie Labelka ulega tylko rozszerzeniu, tutaj mozna ja zmniejszac
-	typedef enum {VerticalFit, HorizontalFit, AllFit, NoFit} LabelFontFitMode;
 
 protected:
 
@@ -61,6 +89,10 @@ protected:
 
     //! funkcja obslugujaca nowe elementy styli i nowe interfejsy GUI w OSG dla Windows
 	virtual bool handleExWindows(osgWidget::Window* window, osgWidget::Reader r);
+
+private:
+
+    static osg::ref_ptr<CustomStyleOptions> customStyleOptions;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

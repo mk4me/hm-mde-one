@@ -34,19 +34,19 @@ public:
     //! \return Nazwa po³aczenia
 	std::string getConnectionName() const;
 
+protected:
+
+    //! Konstruktor chroniony, pozwala dziedziczyæ ale nie pozwala klientowi samemu tworzyæ po³¹czenia i ich modyfikowaæ
+    //! \param src Wêze³ Ÿród³owy
+    //! \param dest Wêze³ docelowy
+    Connection(PinPtr src, PinPtr dest);
+
 private:
     //! \param src Wêze³ Ÿród³owy(wyjœciowy)
 	void setSrc(PinPtr src);
 
     //! \param dest Wêze³ docelowy(wejœciowy)
 	void setDest(PinPtr dest);
-
-protected:
-
-    //! Konstruktor chroniony, pozwala dziedziczyæ ale nie pozwala klientowi samemu tworzyæ po³¹czenia
-    //! \param src Wêze³ Ÿród³owy
-    //! \param dest Wêze³ docelowy
-    Connection(PinPtr src, PinPtr dest);
 
 private:
     //! Wêze³ Ÿród³owy po³¹czenia

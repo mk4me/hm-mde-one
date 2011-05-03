@@ -75,77 +75,72 @@ bool osgVDFBaseModel::isEmptyArea(const osgWidget::XYCoord & posToStart){
 	return false;
 }
 
-bool osgVDFBaseModel::addNode(dflm::NPtr node, osg::ref_ptr<osg::Image> image,	const std::string &  name){
-	if(logicalModel->addNode(node) == true){
+void osgVDFBaseModel::addNode(dflm::NPtr node, osg::ref_ptr<osg::Image> image,	const std::string &  name){
+	logicalModel->addNode(node);
 
-		//create visual node representation
-		osg::ref_ptr<osgVDFBaseNode> vnode(createVisualNode(node, image, name));
+	//create visual node representation
+	osg::ref_ptr<osgVDFBaseNode> vnode(createVisualNode(node, image, name));
 		
-		//create logical node -> visual node assosiation
-		nodesLogicalToGraph[node] = vnode;
-		graphNodes.insert(vnode);
+	//create logical node -> visual node assosiation
+	nodesLogicalToGraph[node] = vnode;
+	graphNodes.insert(vnode);
 		
 		
-		//create logical pins -> visual pins assosiations
-		//configure pins
-		//build pins compatybility map
-		osgVDFBaseNode::VISUAL_PIN_SET nodePins(vnode->getOutPins());
-		nodePins.insert(vnode->getInPins().begin(), vnode->getInPins().end());
+	//create logical pins -> visual pins assosiations
+	//configure pins
+	//build pins compatybility map
+	osgVDFBaseNode::VISUAL_PIN_SET nodePins(vnode->getOutPins());
+	nodePins.insert(vnode->getInPins().begin(), vnode->getInPins().end());
 
-		PINS_COMPATIBILITY_MAP tmpPinsCompatibility;
+	PINS_COMPATIBILITY_MAP tmpPinsCompatibility;
 
-		for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = nodePins.begin(); it != nodePins.end(); it++){
-			(*it)->setPinVisualStatus((*it)->getStaticPinVisualStatus());
+	for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = nodePins.begin(); it != nodePins.end(); it++){
+		(*it)->setPinVisualStatus((*it)->getStaticPinVisualStatus());
 			
-			pinsLogicalToGraph[(*it)->getModelPin()] = *it;
-			configureVisualPin(*it);
+		pinsLogicalToGraph[(*it)->getModelPin()] = *it;
+		configureVisualPin(*it);
 			
-			dflm::Pin::PIN_TYPE pinType = (*it)->getModelPin()->getType();
+		dflm::Pin::PIN_TYPE pinType = (*it)->getModelPin()->getType();
 
-			if(pinType == dflm::Pin::PIN_IN){
-				pinsConnectionsUpdate[*it] = connectionEndUpdate;
-			}else if(pinType == dflm::Pin::PIN_OUT){
-				pinsConnectionsUpdate[*it] = connectionStartUpdate;
-			}
-
-			osgVDFBaseNode::VISUAL_PIN_SET compatible;
-
-			for(PINS_COMPATIBILITY_MAP::iterator iT = compatiblePins.begin(); iT != compatiblePins.end(); iT++){
-
-				if(pinType == dflm::Pin::PIN_IN){
-					if(iT->first->getModelPin()->getType() == dflm::Pin::PIN_OUT
-						&& (*it)->getModelPin()->isCompatible(iT->first->getModelPin())){
-							compatible.insert(iT->first);
-							iT->second.insert(*it);
-					}
-				}else if(pinType == dflm::Pin::PIN_OUT){
-					if(iT->first->getModelPin()->getType() == dflm::Pin::PIN_IN
-						&& iT->first->getModelPin()->isCompatible((*it)->getModelPin())){
-							compatible.insert(iT->first);
-							iT->second.insert(*it);
-					}
-				}
-			}
-
-			tmpPinsCompatibility[*it] = compatible;
-
+		if(pinType == dflm::Pin::PIN_IN){
+			pinsConnectionsUpdate[*it] = connectionEndUpdate;
+		}else if(pinType == dflm::Pin::PIN_OUT){
+			pinsConnectionsUpdate[*it] = connectionStartUpdate;
 		}
 
-		compatiblePins.insert(tmpPinsCompatibility.begin(), tmpPinsCompatibility.end());
+		osgVDFBaseNode::VISUAL_PIN_SET compatible;
 
-		//configure node - mouse events
-		configureVisualNode(vnode);
+		for(PINS_COMPATIBILITY_MAP::iterator iT = compatiblePins.begin(); iT != compatiblePins.end(); iT++){
 
-		//add this representation to WM
-		addChild(vnode);
+			if(pinType == dflm::Pin::PIN_IN){
+				if(iT->first->getModelPin()->getType() == dflm::Pin::PIN_OUT
+					&& (*it)->getModelPin()->isCompatible(iT->first->getModelPin())){
+						compatible.insert(iT->first);
+						iT->second.insert(*it);
+				}
+			}else if(pinType == dflm::Pin::PIN_OUT){
+				if(iT->first->getModelPin()->getType() == dflm::Pin::PIN_IN
+					&& iT->first->getModelPin()->isCompatible((*it)->getModelPin())){
+						compatible.insert(iT->first);
+						iT->second.insert(*it);
+				}
+			}
+		}
 
-		//hide connections
-		hideConnections();
+		tmpPinsCompatibility[*it] = compatible;
 
-		return true;
 	}
 
-	return false;
+	compatiblePins.insert(tmpPinsCompatibility.begin(), tmpPinsCompatibility.end());
+
+	//configure node - mouse events
+	configureVisualNode(vnode);
+
+	//add this representation to WM
+	addChild(vnode);
+
+	//hide connections
+	hideConnections();
 }
 
 void osgVDFBaseModel::configureVisualNode(osgVDFBaseNode * node){
@@ -172,11 +167,11 @@ void osgVDFBaseModel::configureVisualPin(osgVDFBasePin * pin){
 	pin->setPinVisualStatus(pin->getStaticPinVisualStatus());
 }
 
-bool osgVDFBaseModel::deleteNode(dflm::NPtr node){
-	return deleteNode(node, false);
+void osgVDFBaseModel::deleteNode(dflm::NPtr node){
+	deleteNode(node, false);
 }
 
-bool osgVDFBaseModel::deleteNode(dflm::NPtr node, bool clearEvent){
+void osgVDFBaseModel::deleteNode(dflm::NPtr node, bool clearEvent){
 	dflm::Model::NODES_SET inputNodes;
 
 	for(dflm::Node::PINS_SET::iterator it = node->getOutPins().begin(); it != node->getOutPins().end(); it++){
@@ -185,79 +180,75 @@ bool osgVDFBaseModel::deleteNode(dflm::NPtr node, bool clearEvent){
 		}
 	}
 
-	if(logicalModel->removeNode(node) == true){
-		//remove visual node representation
-		deselectNode(node);
-		osgVDFBaseNode * vnode = getVisualNode(node);
+	logicalModel->removeNode(node);
+	//remove visual node representation
+	deselectNode(node);
+	osgVDFBaseNode * vnode = getVisualNode(node);
 
-		//get pins to delete
-		osgVDFBaseNode::VISUAL_PIN_SET pinsToRemove(vnode->getInPins());
-		pinsToRemove.insert(vnode->getOutPins().begin(),
-			vnode->getOutPins().end());
+	//get pins to delete
+	osgVDFBaseNode::VISUAL_PIN_SET pinsToRemove(vnode->getInPins());
+	pinsToRemove.insert(vnode->getOutPins().begin(),
+		vnode->getOutPins().end());
 
-		//get connections to delete
-		//get pins to update
-		osgVDFBasePin::CONNECTIONS_MAP connectionsToRemove;
-		for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = pinsToRemove.begin();
-			it != pinsToRemove.end(); it++){
+	//get connections to delete
+	//get pins to update
+	osgVDFBasePin::CONNECTIONS_MAP connectionsToRemove;
+	for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = pinsToRemove.begin();
+		it != pinsToRemove.end(); it++){
 
-				connectionsToRemove.insert((*it)->getConnections().begin(),
-					(*it)->getConnections().end());
-		}
-
-		//delete all connections
-		//delete connections mappings
-		//refresh required pins
-		for(osgVDFBasePin::CONNECTIONS_MAP::const_iterator it = connectionsToRemove.begin();
-			it != connectionsToRemove.end(); it++){
-				it->second->removeConnection(it->first);
-				it->second->setPinVisualStatus(it->second->getStaticPinVisualStatus());
-				
-				//remove connection from connection map
-				REV_CONNECTIONS_MAPPING::iterator iT = connectionsGraphToLogical.find(it->first);
-				connectionsLogicalToGraph.erase(iT->second);
-				connectionsGraphToLogical.erase(iT);
-
-				//remove visual connection from WM
-				removeChild(it->first);
-		}
-
-		//delete pins mappings
-		//delete pins compatibility
-		for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = pinsToRemove.begin();
-			it != pinsToRemove.end(); it++){
-
-			pinsLogicalToGraph.erase((*it)->getModelPin());
-			compatiblePins.erase(*it);
-			pinsConnectionsUpdate.erase(*it);
-
-			for(PINS_COMPATIBILITY_MAP::iterator iT = compatiblePins.begin(); iT != compatiblePins.end(); iT++){
-				iT->second.erase(*it);
-			}
-		}
-
-		//delete nodes mappings
-		nodesLogicalToGraph.erase(node);
-		graphNodes.erase(vnode);
-
-		//refresh output pins of affected nodes
-		for(dflm::Model::NODES_SET::iterator it = inputNodes.begin(); it != inputNodes.end(); it++){
-			refreshOutputPins(nodesLogicalToGraph[*it]);
-		}
-
-		if(clearEvent){
-			// wyczyszczenie _lastEvent oraz flag przycisków
-			pointerMove(-FLT_MAX, -FLT_MAX);
-			// wyczyszczenie _lastPush
-			mouseReleasedLeft(0, 0);
-		}
-
-		removeChild(vnode);
-		hideConnections();
-		return true;
+			connectionsToRemove.insert((*it)->getConnections().begin(),
+				(*it)->getConnections().end());
 	}
 
-	return false;
+	//delete all connections
+	//delete connections mappings
+	//refresh required pins
+	for(osgVDFBasePin::CONNECTIONS_MAP::const_iterator it = connectionsToRemove.begin();
+		it != connectionsToRemove.end(); it++){
+			it->second->removeConnection(it->first);
+			it->second->setPinVisualStatus(it->second->getStaticPinVisualStatus());
+				
+			//remove connection from connection map
+			REV_CONNECTIONS_MAPPING::iterator iT = connectionsGraphToLogical.find(it->first);
+			connectionsLogicalToGraph.erase(iT->second);
+			connectionsGraphToLogical.erase(iT);
+
+			//remove visual connection from WM
+			removeChild(it->first);
+	}
+
+	//delete pins mappings
+	//delete pins compatibility
+	for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = pinsToRemove.begin();
+		it != pinsToRemove.end(); it++){
+
+		pinsLogicalToGraph.erase((*it)->getModelPin());
+		compatiblePins.erase(*it);
+		pinsConnectionsUpdate.erase(*it);
+
+		for(PINS_COMPATIBILITY_MAP::iterator iT = compatiblePins.begin(); iT != compatiblePins.end(); iT++){
+			iT->second.erase(*it);
+		}
+	}
+
+	//delete nodes mappings
+	nodesLogicalToGraph.erase(node);
+	graphNodes.erase(vnode);
+
+	//refresh output pins of affected nodes
+	for(dflm::Model::NODES_SET::iterator it = inputNodes.begin(); it != inputNodes.end(); it++){
+		refreshOutputPins(nodesLogicalToGraph[*it]);
+	}
+
+	if(clearEvent){
+		// wyczyszczenie _lastEvent oraz flag przycisków
+		pointerMove(-FLT_MAX, -FLT_MAX);
+		// wyczyszczenie _lastPush
+		mouseReleasedLeft(0, 0);
+	}
+
+	removeChild(vnode);
+	hideConnections();
 }
 
 dflm::Model::NODES_SET osgVDFBaseModel::getNodesInArea(const osg::BoundingBox & area){
@@ -583,10 +574,8 @@ dflm::ConnPtr osgVDFBaseModel::connect(dflm::PinPtr src, dflm::PinPtr dest){
 	return ret;
 }
 
-bool osgVDFBaseModel::disconnect(dflm::ConnPtr connection){	
-	if(logicalModel->removeConnection(connection) == false){
-		return false;
-	}
+void osgVDFBaseModel::disconnect(dflm::ConnPtr connection){	
+	logicalModel->removeConnection(connection);
 
 	osg::Geode * vconnection = connectionsLogicalToGraph[connection];
 
@@ -603,8 +592,9 @@ bool osgVDFBaseModel::disconnect(dflm::ConnPtr connection){
 	connectionsLogicalToGraph.erase(connection);
 	connectionsGraphToLogical.erase(vconnection);
 	removeChild(vconnection);
-
-	return true;
+    if(lastHighlightedConnection == vconnection){
+        lastHighlightedConnection = nullptr;
+    }
 }
 
 osgWidget::point_type osgVDFBaseModel::getAreaRatioToSelect() const{
@@ -631,8 +621,8 @@ void osgVDFBaseModel::setSelectionActionKeys(const osgui::KeyboardMapper::Keys &
 	selectionActionKeys = keys;
 }
 
-bool osgVDFBaseModel::deleteNodeSelf(osgVDFBaseNode * node){
-	return deleteNode(node->getModelNode(), true);
+void osgVDFBaseModel::deleteNodeSelf(osgVDFBaseNode * node){
+	deleteNode(node->getModelNode(), true);
 }
 
 void osgVDFBaseModel::refreshPinVisualState(osgVDFBasePin * pin){
@@ -690,23 +680,23 @@ void osgVDFBaseModel::showDefaultToolbar(bool show){
 	}
 }
 
-bool osgVDFBaseModel::registerNodeType(osgVDFNodeTypeDescriptor * descriptor){
+void osgVDFBaseModel::registerNodeType( osgVDFNodeTypeDescriptor * descriptor )
+{
 	if(nodeTypesToControls.find(descriptor) != nodeTypesToControls.end()){
-		return true;
+		throw std::runtime_error("Node type already registered!");
 	}
 
 	bool ret = true;
 	if(toolbar != 0){
-		ret = graphAddNodeTypeToToolbar(descriptor);
+		graphAddNodeTypeToToolbar(descriptor);
 	}else{
 		nodeTypesToControls[descriptor] = 0;
 		nodeTypesMissing.insert(descriptor);
 	}
-
-	return ret;
 }
 
-bool osgVDFBaseModel::graphAddNodeTypeToToolbar(osgVDFNodeTypeDescriptor* nodeTypeDescriptor){
+void osgVDFBaseModel::graphAddNodeTypeToToolbar( osgVDFNodeTypeDescriptor* nodeTypeDescriptor )
+{
 	int tab = -1;
 	switch(nodeTypeDescriptor->getNodeType()){
 	case osgVDFBaseNode::NODE_ANALYZE:
@@ -724,7 +714,7 @@ bool osgVDFBaseModel::graphAddNodeTypeToToolbar(osgVDFNodeTypeDescriptor* nodeTy
 	}
 
 	if(tab == -1){
-		return false;
+		return;
 	}
 
 	BUTTON * newLabel = new BUTTON(nodeTypeDescriptor->getButtonText(),"");
@@ -760,8 +750,6 @@ bool osgVDFBaseModel::graphAddNodeTypeToToolbar(osgVDFNodeTypeDescriptor* nodeTy
 	}
 
 	toolbar->addTabElement(tab, newLabel);
-
-	return true;
 }
 
 osgVDFBaseNode* osgVDFBaseModel::getVisualNode(dflm::NPtr node) const{
@@ -1429,8 +1417,8 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 	}else if(model->contextMenuOn == false && gea.getEventType() == osgGA::GUIEventAdapter::PUSH && gea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON){
 		//collect connections in nearby to delete
 		osgWidget::XYCoord pos(gea.getX(), gea.getY());
-		//go through all points in all connections and identify the clossest one to delete
-		CONNECTIONS_DELETE_MAP toDelete;
+		//go through all points in all connections and identify the closest one to delete
+		CONNECTIONS_ACTIONS_MAP toDelete;
 		
 		for(osgVDFBaseModel::REV_CONNECTIONS_MAPPING::iterator it = model->connectionsGraphToLogical.begin();
 			it != model->connectionsGraphToLogical.end(); it++){
@@ -1444,7 +1432,8 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 				float distLoc = std::pow(pos.x() - (*vertexData)[i][0],2) + std::pow(pos.y() - (*vertexData)[i][1],2);
 				if(distLoc <= model->maxDistToDelConnection){
 					//add to delete map
-					toDelete[it->second->getConnectionName()] = it->first;
+					//toDelete[it->second->getConnectionName()] = it->first;
+                    toDelete[it->second->getConnectionName()] = std::make_pair(boost::bind(&osgVDFBaseModel::highlightConnection, model.get(), it->first.get()), boost::bind(&osgVDFBaseModel::disconnect, model.get(), it->second));
 					inserted = true;
 					break;
 				}else if(distLoc < minDist){
@@ -1469,7 +1458,8 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 				}
 
 				if(segDist <= model->maxDistToDelConnection){
-					toDelete[it->second->getConnectionName()] = it->first;
+					//toDelete[it->second->getConnectionName()] = it->first;
+                    toDelete[it->second->getConnectionName()] = std::make_pair(boost::bind(&osgVDFBaseModel::highlightConnection, model.get(), it->first.get()), boost::bind(&osgVDFBaseModel::disconnect, model.get(), it->second));
 				}
 			}
 		}
@@ -1484,8 +1474,7 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
                 model->contextMenu = nullptr;
             }
 
-			model->showConnectionsDeleteContextMenu(toDelete, osgWidget::XYCoord(gea.getX(), gea.getY()));
-			model->contextMenuOn = true;
+			model->showConnectionsDeleteContextMenu(toDelete, boost::bind(&osgVDFBaseModel::clearHighlightedConnection, model.get()), osgWidget::XYCoord(gea.getX(), gea.getY()));
 		}
 	}
 
@@ -1620,16 +1609,37 @@ Subject 1.02: How do I find the distance from a point to a line?
 	return;
 }
 
-void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::CONNECTIONS_DELETE_MAP & toDelete, const osgWidget::XYCoord & pos){
+void osgVDFBaseModel::contextMenuActionWrapper(const CONNECTION_ACTION & action, const std::string& name, bool state)
+{
+    action();
+}
+
+bool osgVDFBaseModel::onLeaveContextMenu(osgWidget::Event& ev)
+{
+    (*((CONNECTION_ACTION*)ev.getData()))();
+    return true;
+}
+
+void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::CONNECTIONS_ACTIONS_MAP & toDelete,
+    const CONNECTION_ACTION & leaveContextMenu, const osgWidget::XYCoord & pos){
 	
     contextMenu = new osgui::ContextMenu();
+
+    contextMenu->addEventMask(osgWidget::EVENT_MASK_MOUSE_MOVE);
+    contextMenu->addCallback(new osgWidget::Callback(&osgVDFBaseModel::onLeaveContextMenu, this, osgWidget::EVENT_MOUSE_LEAVE, (void*)&leaveContextMenu));
+
     contextMenu->setMenuOnCloseCallback(std::string(), boost::bind(&osgVDFBaseModel::onCloseContextMenu, this, _1));
     
     addChild(contextMenu);
 
-    for(CONNECTIONS_DELETE_MAP::const_iterator it = toDelete.begin(); it != toDelete.end(); it++){
-		osgui::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::removeConnection, this, connectionsGraphToLogical[it->second], _1, _2);
-		osgui::ContextMenu::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::highlightConnection, this, it->second, _1, _2);
+    
+
+    for(CONNECTIONS_ACTIONS_MAP::const_iterator it = toDelete.begin(); it != toDelete.end(); it++){
+		//osgui::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::removeConnection, this, connectionsGraphToLogical[it->second], _1, _2);
+		//osgui::ContextMenu::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::highlightConnection, this, it->second, _1, _2);
+        osgui::ContextMenu::OnClickCallback cc = boost::bind(&osgVDFBaseModel::contextMenuActionWrapper, it->second.second, _1, _2);
+        osgui::ContextMenu::OnHoverCallback hc = boost::bind(&osgVDFBaseModel::contextMenuActionWrapper, it->second.first, _1, _2);
+
 		contextMenu->addMenuItem(it->first, false, cc, hc);
 	}
 
@@ -1638,18 +1648,33 @@ void osgVDFBaseModel::showConnectionsDeleteContextMenu(const osgVDFBaseModel::CO
     setFocused(contextMenu);
 	hideConnections();
 	contextMenu->showMenu(pos);
+    contextMenuOn = true;
 }
 
-void osgVDFBaseModel::highlightConnection(osg::Geode * connection, const std::string & connectionName, bool highlight){
-	
-	if(highlight == true){
-		setVisualConnectionColor(connection, visualConnectionHighlightColor);
-		lastHighlightedConnection = connection;
-	}else if(lastHighlightedConnection != 0){
-		setVisualConnectionColor(connection, visualConnectionNormalColor);
-		lastHighlightedConnection = 0;
-	}
+//void osgVDFBaseModel::highlightConnection(osg::Geode * connection, const std::string & connectionName, bool highlight){
+//	
+//	if(highlight == true){
+//		setVisualConnectionColor(connection, visualConnectionHighlightColor);
+//		lastHighlightedConnection = connection;
+//	}else if(lastHighlightedConnection != 0){
+//		setVisualConnectionColor(connection, visualConnectionNormalColor);
+//		lastHighlightedConnection = 0;
+//	}
+//}
 
+void osgVDFBaseModel::highlightConnection(osg::Geode * connection)
+{
+    clearHighlightedConnection();
+    setVisualConnectionColor(connection, visualConnectionHighlightColor);
+    lastHighlightedConnection = connection;
+}
+
+void osgVDFBaseModel::clearHighlightedConnection()
+{
+    if(lastHighlightedConnection != nullptr){
+        setVisualConnectionColor(lastHighlightedConnection, visualConnectionNormalColor);
+        lastHighlightedConnection = nullptr;
+    }
 }
 
 void osgVDFBaseModel::removeConnection(dflm::ConnPtr connection, const std::string & connectionName, bool checked){

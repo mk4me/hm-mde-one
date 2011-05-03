@@ -10,8 +10,8 @@ TestDFNodeSource::~TestDFNodeSource(void)
 {
 }
 
-bool TestDFNodeSource::addInPin(dflm::PinPtr inPin){
-	return DFSourceNode::addInPin(inPin);
+void TestDFNodeSource::addInPin(dflm::PinPtr inPin){
+	DFSourceNode::addInPin(inPin);
 }
 
 bool TestDFNodeSource::checkInputPins() const{

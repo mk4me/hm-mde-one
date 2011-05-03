@@ -1,10 +1,13 @@
 #include "PCH.h"
 #include <osgui/StyleEx.h>
 #include <osgui/Buttonized.h>
+#include <osg/Image>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
+
+osg::ref_ptr<StyleEx::CustomStyleOptions> StyleEx::customStyleOptions = new CustomStyleOptions();
 
 bool StyleEx::applyStyle(osgWidget::Widget* w, osgWidget::Reader r) {
 
@@ -248,6 +251,26 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 	std::string str;
 	bool ret = false;
 
+    //use caching
+    if(_match("image_cache %s", r)){
+        r.readSequence(str);
+        osg::Image * img = dynamic_cast<osg::Image*>(osgDB::Registry::instance()->getFromObjectCache(str));
+        if(img == nullptr){
+            img = osgDB::readImageFile(str, customStyleOptions);
+        }
+
+        w->setImage(img);
+        ret = true;
+    }else if(_match("rect_image_cache %s", r)){
+        r.readSequence(str);
+        osg::Image * img = dynamic_cast<osg::Image*>(osgDB::Registry::instance()->getFromObjectCache(str));
+        if(img == nullptr){
+            img = osgDB::readImageFile(str, customStyleOptions);
+        }
+
+        w->setImage(img,true, true);
+        ret = true;
+    }else
 	//use optimized image setting method
 	if(_match("rect_image %s", r)) {
 		r.readSequence(str);

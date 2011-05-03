@@ -25,12 +25,13 @@ osgVDFBaseModel * osgVDFBaseNode::getModel() const{
 	return m_pModel;
 }
 
-bool osgVDFBaseNode::deleteNode(){
-	if(m_pModel != 0){
-		return m_pModel->deleteNodeSelf(this);
+void osgVDFBaseNode::deleteNode()
+{
+	if(m_pModel == 0){
+		throw std::runtime_error("Visual node tries to delete itself without visual model!");
 	}
 
-	return false;
+	m_pModel->deleteNodeSelf(this);
 }
 
 void osgVDFBaseNode::loggZCoordinates() const{
@@ -39,24 +40,28 @@ void osgVDFBaseNode::loggZCoordinates() const{
 	std::cout << "node (this window):\t" << osgui::Utils2D::calcAbsZ(this) << std::endl;
 }
 	
-bool osgVDFBaseNode::addInPin(osgVDFBasePin * inPin, const std::string & pinName){
-	if(inPin->m_pParentNode == 0 && inPins.insert(inPin).second == true){
-		inPin->m_pParentNode = this;
-		graphAddInPin(inPin,pinName);
-		return true;
-	}
+void osgVDFBaseNode::addInPin(osgVDFBasePin * inPin, const std::string & pinName){
+	UTILS_ASSERT((inPin != nullptr), "Bledny vizualny pin!");
+    
+    if(inPin->m_pParentNode != nullptr){
+        throw std::runtime_error("Visual input pin already assigned to a node");
+    }
 
-	return false;
+	inPin->m_pParentNode = this;
+    inPins.insert(inPin);
+	graphAddInPin(inPin,pinName);
 }
 
-bool osgVDFBaseNode::addOutPin(osgVDFBasePin * outPin, const std::string & pinName){
-	if(outPin->m_pParentNode == 0 && outPins.insert(outPin).second == true){
-		outPin->m_pParentNode = this;
-		graphAddOutPin(outPin,pinName);
-		return true;
-	}
+void osgVDFBaseNode::addOutPin(osgVDFBasePin * outPin, const std::string & pinName){
+    UTILS_ASSERT((outPin != nullptr), "Bledny vizualny pin!");
 
-	return false;
+    if(outPin->m_pParentNode != nullptr){
+        throw std::runtime_error("Visual output pin already assigned to a node");
+    }
+
+    outPin->m_pParentNode = this;
+    outPins.insert(outPin);
+	graphAddOutPin(outPin,pinName);
 }
 
 const osgVDFBaseNode::VISUAL_PIN_SET & osgVDFBaseNode::getInPins() const {

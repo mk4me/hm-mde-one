@@ -34,10 +34,10 @@ public:
     //---------------------- Model interface ----------------------------
 
     //! \param node Wêze³ do dodania
-	virtual bool addNode(NPtr node);
+	virtual void addNode(NPtr node);
 
     //! \param node Wêze³ do usuniecia
-	virtual bool removeNode(NPtr node);
+	virtual void removeNode(NPtr node);
 
     //! Usuwa wszystkie wezly z modelu
 	virtual void clearNodes();
@@ -57,7 +57,7 @@ public:
 	//virtual bool removeConnection(PinPtr src, PinPtr dest);
 
     //! \param connection Po³¹czenie do usuniêcia
-	virtual bool removeConnection(ConnPtr connection);
+	virtual void removeConnection(ConnPtr connection);
 
     //! Czyœci wszystkie po³¹czenia miêdzy wêz³ami
 	virtual void clearConnections();
@@ -123,13 +123,17 @@ protected:
 
     //! \param connection Po³¹czenie do usuniêcia
     //! \return czy usuniêto po³¹czenie
-	bool quickRemoveConnection(ConnPtr connection);
+	virtual void quickRemoveConnection(ConnPtr connection);
 	
     //! \return Prawda jeœli Ÿród³a maj¹ wiêcej danych do zasilenia modelu
 	bool sourcesHaveMoreData() const;
 
     //! \param pin Pin analizowany pod k¹tem poprawnoœci po³¹czenia modelu
 	void updateRequireConnections(PinPtr pin);
+
+    //! \param nodes Lista wêz³ów uznana za sprawdzone - tutaj mog¹ siê podpinaæ klasy pochodne z szersz¹ wiedz¹ na temat wêz³ów
+    //! W ten sposób mog¹ przyspieszyæ wykrywanie cykli
+    virtual void initCheckedNodes(NODES_SET & nodes) const;
 
 private:
 
@@ -149,7 +153,7 @@ private:
 	protected:
 
         //! \return
-		bool onUpdate();
+		void onUpdate();
 	private:
 
         //! Model informowany o zakoñczeniu przetwarzania danych przez wêze³ liœæ

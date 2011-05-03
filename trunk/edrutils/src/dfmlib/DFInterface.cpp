@@ -6,37 +6,43 @@ namespace dflm{
 
 DFInterface::DFInterface(bool enable) : objectEnable(enable)
 {
+
 }
 
 
 DFInterface::~DFInterface(void)
 {
+
 }
 
-bool DFInterface::setEnable(bool enable){
+void DFInterface::setEnable(bool enable)
+{
     if(objectEnable == enable){
-        return false;
+        return;
     }
 
     objectEnable = enable;
 
-    onEnableChange();
-
-    return true;
+    notify();
 }
 
-bool DFInterface::isEnable() const{
+bool DFInterface::isEnable() const
+{
 	return objectEnable;
 }
 
-void DFInterface::reset(){
-}
-
-void DFInterface::onEnableChange(){
+void DFInterface::reset()
+{
 
 }
 
-void DFInterface::notify(){
+//void DFInterface::onEnableChange()
+//{
+//
+//}
+
+void DFInterface::notify()
+{
 	if(objectEnable == true){
 		process();
 	}

@@ -103,10 +103,10 @@ public:
 private:
 
     //! \param connection Po³¹czenie dodawane do pinu
-	bool addConnection(ConnPtr connection);
+    void addConnection(ConnPtr connection);
 
     //! \param connection Po³¹czenie usuwane z pinu
-	bool removeConnection(ConnPtr connection);
+    void removeConnection(ConnPtr connection);
 
     //! Usuwa wszystkie po³¹czenia pinu
 	void clearConnections();

@@ -23,14 +23,17 @@ public:
 
 public:
 
+    //! \param nodeName nazwa wêz³a
+    Node(const std::string & nodeName = std::string());
+
     //! Wirtualny destruktor
 	virtual ~Node(void);
 
     //! \param newPin Pin do dodania do pinów wejsciowych
-	virtual bool addInPin(PinPtr newPin);
+    virtual void addInPin(PinPtr newPin);
 
     //! \param newPin Pin do dodania do pinów wyjsciowych
-	virtual bool addOutPin(PinPtr newPin);
+    virtual void addOutPin(PinPtr newPin);
 
     //! \return Zbiór pinów wejœciowych
 	const PINS_SET & getInPins() const;
@@ -72,12 +75,6 @@ public:
 
     //! \param nodeName Nazwa wêz³a
 	void setNodeName(const std::string & nodeName);
-
-protected:
-
-    //! Chroniony konstruktor
-    //! \param nodeName nazwa wêz³a
-	Node(const std::string & nodeName = std::string());
 
 private:
 

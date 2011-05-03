@@ -19,7 +19,7 @@ public:
 
     //! \param enable Czy obiekt moze przetwarzac dane w momencie notyfikacji
     //! false blokuje przetwarzanie danych
-	bool setEnable(bool enable);
+    void setEnable(bool enable);
 
     //! \return Czy obiekt moze przetwarzac informacje
 	bool isEnable() const;
@@ -31,9 +31,6 @@ public:
 	void notify();
 
 protected:
-
-    //! Metoda wirtualna wywolywana kiedy zmieni siê stan przetwarzania obiektu - isEnable
-    virtual void onEnableChange();
 
     //! Metoda czysto wirtualna - tutaj obiekt implementuje przetwarzanie danych
 	virtual void process() = 0;

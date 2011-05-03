@@ -13,6 +13,12 @@ class DFSourceNode :
 {
 public:
 
+    //! \param nodeName Nazwa wêz³a
+    //! \param processingAllowed Czy przetwarzanie danych jest dozwolone
+    //! \param propagatingAllowed Czy propagowanie danych jest dozwolone
+    DFSourceNode(const std::string & nodeName = std::string(), bool processingAllowed = true,
+        bool propagatingAllowed = true);
+
     //! Wirtualny destruktor
 	virtual ~DFSourceNode(void);
 
@@ -22,16 +28,9 @@ public:
 
     //! Wywolanie tej metody zrzuca wyj¹tek - nie jest dozwolone dodawanie pinów wejœciowych do Ÿróde³
     //! \param newPin Pin wejsciowy do dodania
-	virtual bool addInPin(PinPtr newPin);
+	virtual void addInPin(PinPtr newPin);
 
 protected:
-
-    //! Chroniony kontruktor
-    //! \param nodeName Nazwa wêz³a
-    //! \param processingAllowed Czy przetwarzanie danych jest dozwolone
-    //! \param propagatingAllowed Czy propagowanie danych jest dozwolone
-	DFSourceNode(const std::string & nodeName = std::string(), bool processingAllowed = true,
-		bool propagatingAllowed = true);
 
     //! \return Zawsze true
 	virtual bool checkInputPins() const;

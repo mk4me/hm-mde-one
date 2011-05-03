@@ -37,13 +37,13 @@ public:
 
 	~osgVDFBaseModel(void);
 
-	bool registerNodeType(osgVDFNodeTypeDescriptor * descriptor);
+    void registerNodeType(osgVDFNodeTypeDescriptor * descriptor);
 
 	bool isEmptyArea(const osgWidget::XYCoord & posToStart);
 
-	bool addNode(dflm::NPtr node, osg::ref_ptr<osg::Image> image = osg::ref_ptr<osg::Image>(),
+	void addNode(dflm::NPtr node, osg::ref_ptr<osg::Image> image = osg::ref_ptr<osg::Image>(),
 		const std::string &  name = std::string());
-	bool deleteNode(dflm::NPtr node);
+	void deleteNode(dflm::NPtr node);
 
 	dflm::Model::NODES_SET getNodesInArea(const osg::BoundingBox & area);
 	virtual osgWidget::XYCoord getFreePlaceForNode(dflm::NPtr node, const osgWidget::XYCoord & posToStart);
@@ -76,7 +76,7 @@ public:
 	void setSelectedNodesPosition(const osgWidget::XYCoord & nodesPos);
 
 	dflm::ConnPtr connect(dflm::PinPtr src, dflm::PinPtr dest);
-	bool disconnect(dflm::ConnPtr connection);	
+	void disconnect(dflm::ConnPtr connection);	
 
 	void showDefaultToolbar(bool show);
 
@@ -107,7 +107,10 @@ protected:
 	typedef std::map<osgVDFBasePin*, osgVDFBasePin::PIN_VISUAL_STATUS> PIN_PREV_STATUS;
 	typedef std::map<osgVDFBasePin*, osgVDFBaseNode::VISUAL_PIN_SET> PINS_COMPATIBILITY_MAP;
 
-	typedef std::map<std::string, osg::Geode*> CONNECTIONS_DELETE_MAP;
+    typedef boost::function<void(void)> CONNECTION_ACTION;
+    typedef std::pair<CONNECTION_ACTION, CONNECTION_ACTION> CONNECTION_ACTIONS;
+
+	typedef std::map<std::string, CONNECTION_ACTIONS> CONNECTIONS_ACTIONS_MAP;
 
 private:
 	//typedef void (osgVDFBaseModel::*connUpdate)(osg::Geode*, const osgWidget::XYCoord &);
@@ -195,7 +198,7 @@ protected:
 
 	virtual void configureVisualNode(osgVDFBaseNode * node);
 	virtual void configureVisualPin(osgVDFBasePin * pin);
-	virtual void showConnectionsDeleteContextMenu(const CONNECTIONS_DELETE_MAP & toDelete, const osgWidget::XYCoord & pos);
+	virtual void showConnectionsDeleteContextMenu(const CONNECTIONS_ACTIONS_MAP & toDelete, const CONNECTION_ACTION & leaveContextMenu, const osgWidget::XYCoord & pos);
 
 	static void refreshOutputPins(osgVDFBaseNode * node);
 
@@ -206,8 +209,8 @@ protected:
 private:
 	void updatePinsConnections(osgVDFBasePin * pin);
 
-	bool osgVDFBaseModel::deleteNode(dflm::NPtr node, bool clearEvent);
-	bool deleteNodeSelf(osgVDFBaseNode * node);
+	void deleteNode(dflm::NPtr node, bool clearEvent);
+	void deleteNodeSelf(osgVDFBaseNode * node);
 
 	virtual osg::ref_ptr<osgVDFBaseNode> createVisualNode(dflm::NPtr node, osg::ref_ptr<osg::Image> image = osg::ref_ptr<osg::Image>(),
 		const std::string &  name = std::string()) = 0;
@@ -252,9 +255,17 @@ private:
 	bool onNodeDescriptorPush(osgWidget::Event& ev);
 
 	void fillToolbarWithGroups(osgui::Toolbar * toolbar);
-	bool graphAddNodeTypeToToolbar(osgVDFNodeTypeDescriptor* nodeTypeDescriptor);
+    void graphAddNodeTypeToToolbar(osgVDFNodeTypeDescriptor* nodeTypeDescriptor);
 
-	void highlightConnection(osg::Geode * connection, const std::string & connectionName, bool highlight);
+	//void highlightConnection(osg::Geode * connection, const std::string & connectionName, bool highlight);
+    void highlightConnection(osg::Geode * connection);
+
+    void clearHighlightedConnection();
+
+    bool onLeaveContextMenu(osgWidget::Event& ev);
+
+    static void contextMenuActionWrapper(const CONNECTION_ACTION & action, const std::string& name, bool state);
+
 	void removeConnection(dflm::ConnPtr connection, const std::string & connectionName, bool checked);
 	void onCloseContextMenu(osgui::ContextMenu * menu);
 

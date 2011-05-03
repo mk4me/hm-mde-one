@@ -1,6 +1,7 @@
 #include <dfmlib/Model.h>
 #include <dfmlib/Pin.h>
 #include <dfmlib/Connection.h>
+#include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
@@ -14,33 +15,38 @@ Model::~Model(void)
 {
 }
 
-bool Model::addNode(NPtr node){
-	if(Node::anyPinConnected(node) == true){
-		return false;
-	}
+void Model::addNode( NPtr node )
+{
+	UTILS_ASSERT((node != nullptr), "Bledny wezel");
+    
+    if(nodes.find(node) != nodes.end()){
+        throw std::runtime_error("Node already added to model!");
+    }
 
-	return nodes.insert(node).second;
+    nodes.insert(node);
 }
 
-bool Model::removeNode(NPtr node){
-	if(nodes.erase(node) == 1){
-		disconnectNode(node);
-		return true;
+void Model::removeNode( NPtr node )
+{
+    UTILS_ASSERT((node != nullptr), "Bledny wezel");
+	if(nodes.erase(node) == 0){
+		throw std::runtime_error("Node does not exist in model!");
 	}
-	
-	return false;
+
+    disconnectNode(node);
 }
 
 void Model::clearNodes(){
-	connections.clear();
-	nodes.clear();
+    clearConnections();
+	connections.swap(CONNECTIONS_SET());
+	nodes.swap(NODES_SET());
 }
 
 bool Model::canConnect(CPinPtr src, CPinPtr dest) const {
 	bool ret = true;
 
 	if(src->getType() != Pin::PIN_OUT || dest->getType() != Pin::PIN_IN || dest->isCompatible(src) == false
-		|| findConnection(src, dest) != 0){
+		|| findConnection(src, dest) != nullptr){
 			ret = false;
 	}
 
@@ -64,33 +70,20 @@ ConnPtr Model::connect(PinPtr src, PinPtr dest){
 	return ret;
 }
 
-//bool Model::removeConnection(PinPtr src, PinPtr dest){
-//	//find correcponding connection
-//
-//	ConnPtr connection = findConnection(src, dest);
-//
-//	if(connection != 0){
-//		quickRemoveConnection(connection);
-//		return true;
-//	}
-//	
-//	return false;
-//}
-
-bool Model::removeConnection(ConnPtr connection){
-	if(connections.find(connection) != connections.end()){
-		quickRemoveConnection(connection);
-		return true;
+void Model::removeConnection( ConnPtr connection )
+{
+	if(connections.find(connection) == connections.end()){
+		throw std::runtime_error("Connection dos not exist in model!");
 	}
 
-	return false;
+    quickRemoveConnection(connection);
 }
 
 Model::PATH_ENTRY Model::getFirstNodeOutputConnection(NPtr node){
 	PATH_ENTRY pathElement;
 
-	for(Node::PINS_SET::const_iterator it = node->getOutPins().begin(); it != node->getOutPins().end(); it++){
-		for(CONNECTIONS_SET::const_iterator iT = (*it)->getConnections().begin(); iT != (*it)->getConnections().end(); iT++){
+	for(auto it = node->getOutPins().begin(); it != node->getOutPins().end(); it++){
+		for(auto iT = (*it)->getConnections().begin(); iT != (*it)->getConnections().end(); iT++){
 			pathElement.node = node;
 			pathElement.pinIT = it;
 			pathElement.connIT = iT;
@@ -132,6 +125,11 @@ bool Model::createCycle(CPinPtr src, CPinPtr dest) const{
 	return !getCycle(src, dest).empty();
 }
 
+void Model::initCheckedNodes(Model::NODES_SET & nodes) const
+{
+
+}
+
 Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
 	//if source is connected no loops possible
 	//also if leaf node is connected
@@ -148,6 +146,8 @@ Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
 
 	//stores node compleately checked - up to leafs
 	NODES_SET checkedNodes;
+
+    initCheckedNodes(checkedNodes);
 
 	//nodes in path
 	NODES_SET nodesInPath;
@@ -180,7 +180,7 @@ Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
 
 		//check if node fully verified
 		if(checkedNodes.find(nextNode) != checkedNodes.end()){
-			//if yes we can skip it, move back and continiue procedure
+			//if yes we can skip it, move back and continue procedure
 			while(path.empty() == false && (pe = getNextNodeOutputConnection(path.back())) == path.back()){
 				//move back
 				checkedNodes.insert(path.back().node);
@@ -210,10 +210,11 @@ Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
 	return connInPath;
 }
 
-bool Model::quickRemoveConnection(ConnPtr connection){
+void Model::quickRemoveConnection( ConnPtr connection )
+{
 	connection->getSrc()->removeConnection(connection);
 	connection->getDest()->removeConnection(connection);
-	return connections.erase(connection) > 0 ? true : false;
+	connections.erase(connection);
 }
 
 void Model::clearConnections(){
@@ -230,17 +231,17 @@ const Model::CONNECTIONS_SET & Model::getConnections() const{
 	return connections;
 }
 
-bool Model::disconnectNode(NPtr node){
-
-	//get all node connnections from all pins and remove them
+void Model::disconnectNode( NPtr node )
+{
+	//get all node connections from all pins and remove them
 	CONNECTIONS_SET allNodeConnections;
 
-	for(Node::PINS_SET::const_iterator it = node->getInPins().begin(); it != node->getInPins().end(); it++){
+	for(auto it = node->getInPins().begin(); it != node->getInPins().end(); it++){
 		const CONNECTIONS_SET & connections = (*it)->getConnections();
 		allNodeConnections.insert(connections.begin(), connections.end());
 	}
 
-	for(Node::PINS_SET::const_iterator it = node->getOutPins().begin(); it != node->getOutPins().end(); it++){
+	for(auto it = node->getOutPins().begin(); it != node->getOutPins().end(); it++){
 		const CONNECTIONS_SET & connections = (*it)->getConnections();
 		allNodeConnections.insert(connections.begin(), connections.end());
 	}
@@ -250,31 +251,27 @@ bool Model::disconnectNode(NPtr node){
 		removeConnection(*allNodeConnections.begin());
 		allNodeConnections.erase(allNodeConnections.begin());
 	}
-
-	return true;
 }
 
-ConnPtr Model::findConnection(CPinPtr src, CPinPtr dest) const{
-
-	if(nodes.find(src->getParent()) == nodes.end() || nodes.find(dest->getParent()) == nodes.end()){
-		return ConnPtr();
+ConnPtr Model::findConnection(CPinPtr src, CPinPtr dest) const
+{
+	ConnPtr ret;
+    if(nodes.find(src->getParent()) == nodes.end() || nodes.find(dest->getParent()) == nodes.end()){
+		return ret;
 	}
 
-	ConnPtr ret;
-
-	CONNECTIONS_SET tmp;
-	CONNECTIONS_SET & connections = tmp;
+	const CONNECTIONS_SET * connections = nullptr;
 
 	if(src->getConnections().size() > dest->getConnections().size()){
-		connections = dest->getConnections();
+		connections = &(dest->getConnections());
 		src.swap(dest);
 	}else{
-		connections = src->getConnections();
+		connections = &(src->getConnections());
 	}
 
-	for(CONNECTIONS_SET::const_iterator it = connections.begin(); it != connections.end(); it++){
+	for(auto it = connections->begin(); it != connections->end(); it++){
 		//connection exist and is registered by the model
-		if((*it)->getOther(src) == dest && connections.find(*it) != connections.end() && connections.find(*it) != connections.end()){
+		if((*it)->getOther(src) == dest && connections->find(*it) != connections->end() && connections->find(*it) != connections->end()){
 			ret = *it;
 			break;
 		}

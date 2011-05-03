@@ -366,10 +366,11 @@ void osgVDFNode::graphSetNodeStatus(osgVDFBaseNode::NODE_VISUAL_STATUS nodeVisua
 bool osgVDFNode::deleteNode(osgWidget::Event& ev){
 	if(ev.getWindowManager()->isLeftMouseButtonDown() == true){
 		loggZCoordinates();
-		return osgVDFBaseNode::deleteNode();
+		osgVDFBaseNode::deleteNode();
+        return true;
 	}
 
-	return false;
+    return false;
 }
 
 osgWidget::point_type osgVDFNode::getBodyHeight(){

@@ -11,6 +11,12 @@ namespace dflm{
 class DFPin : public Pin {
 public:
 
+    //! \param pinName nazwa pinu
+    //! \param required Czy pin jest wymagany? (dotyczy tylko pinów wejœciowych)
+    //! \param requiredPins Zbiór pinów od których jest uzale¿nione wystêpowanie informacji na danym pinie (dotyczy pinów wyjœciowych)
+    DFPin(const std::string & pinName = std::string(), bool required = false,
+        const REQ_PINS_SET & requiredPins = REQ_PINS_SET());
+
     //! Wirtualny destruktor
 	virtual ~DFPin(void);
 
@@ -21,27 +27,24 @@ public:
 	void reset();
 
     //! \return Czy dane w pinie s¹ gotowe do odczytu
-	bool update();
+	void update();
 
     //! \param pin Pin do sprawdzenia czy jest typu DFPin
     //! \return Prawda jesli pin jest typu DFPin, inaczej false
-	static bool isDFPin(PinPtr pin);
+	static bool isDFPin(CPinPtr pin);
 
     //! \param pin Pin do konwertowania do typu DFPin
     //! \return WskaŸnik do pinu typu DFPin lub nullptr (pusty wskaŸnik)
 	static DFPinPtr getDFPin(PinPtr pin);
 
+    //! \param pin Pin do konwertowania do typu DFPin
+    //! \return WskaŸnik do pinu typu const DFPin lub nullptr (pusty wskaŸnik)
+    static CDFPinPtr getDFPin(CPinPtr pin);
+
 protected:
 
-    //! Chroniony kontrusktor
-    //! \param pinName nazwa pinu
-    //! \param required Czy pin jest wymagany? (dotyczy tylko pinów wejœciowych)
-    //! \param requiredPins Zbiór pinów od których jest uzale¿nione wystêpowanie informacji na danym pinie (dotyczy pinów wyjœciowych)
-	DFPin(const std::string & pinName = std::string(), bool required = false,
-        const REQ_PINS_SET & requiredPins = REQ_PINS_SET());
-
     //! Metoda odpalana przy ka¿dym wywo³aniu update()
-	virtual bool onUpdate();
+	virtual void onUpdate();
 
     //! Metoda pozwalaj¹ca kopiowaæ dane pomiêdzy wêz³ami - kopiowanie inicjuje wêze³ wyjsciowy i wywo³uje t¹ metodê na wêŸle wejœciowym
     //! Mechanizm ten przenosi odpowiedzialnoœæ kopiowania danych na wêze³ wejœciowy który mo¿e miesz szersz¹ funkcjonalnoœæ (kompatybilnoœæ typów) ni¿ wêze³ wyjœciowy

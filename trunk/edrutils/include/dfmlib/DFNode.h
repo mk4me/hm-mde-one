@@ -14,14 +14,14 @@ class DFNode :
 {
 public:
 
+    //! \param nodeName Nazwa wêz³a
+    //! \param processingAllowed Czy przetwarzanie danych aktywne
+    //! \param propagatingAllowed Czy propagowanie danych aktywne
+    DFNode(const std::string & nodeName = std::string(), bool processingAllowed = true,
+        bool propagatingAllowed = true);
+
     //! Wirtualny destruktor
 	virtual ~DFNode(void);
-
-    //! \param newPin Pin wejœciowy do dodania
-	bool addInPin(PinPtr newPin);
-
-    //! \param newPin Pin wyjœciowy do dodania
-	bool addOutPin(PinPtr newPin);
 
     //! \param allow Zezwala/wylancza przetwarzanie danych
 	void allowProcessing(bool allow);
@@ -40,22 +40,13 @@ public:
 
     //! \param node Wêze³ podstawowy do "podniesienia" na DFNode
     //! \return DFNode dla danego wêz³a jeœli jest jego pochodn¹ lub nullptr jeœli konwersja niemo¿liwa
-	static DFNPtr getDFNode(NPtr node);
+	static DFNPtr getDFNode(const NPtr & node);
 
 protected:
 
-    //! Chroniony konstruktor
-    //! \param nodeName Nazwa wêz³a
-    //! \param processingAllowed Czy przetwarzanie danych aktywne
-    //! \param propagatingAllowed Czy propagowanie danych aktywne
-	DFNode(const std::string & nodeName = std::string(), bool processingAllowed = true,
-		bool propagatingAllowed = true);
-
     //! ---------------- Interfejs DFInterface ---------------------------
 
-    virtual void onEnableChange();
-
-	void process();
+	virtual void process();
 
     //! ---------------- DFNode -------------------------------------------
 
@@ -72,7 +63,6 @@ protected:
     virtual void processData();
 
 private:
-
 
     //! Czy przetwarzanie danych aktywne
 	bool processingAllowed;

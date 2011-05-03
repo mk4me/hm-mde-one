@@ -11,8 +11,10 @@ namespace dflm{
 
 Pin::Pin(const std::string & pinName, bool required,
 	const Pin::REQ_PINS_SET & requiredPins)
-	: boost::enable_shared_from_this<Pin>(), pinType(PIN_UNKNOWN), pinRequired(required),
-    requiredPinsDependency(requiredPins), pinName(pinName){
+	: boost::enable_shared_from_this<Pin>(), pinType(PIN_UNKNOWN),
+    pinRequired(required),requiredPinsDependency(requiredPins),
+    pinName(pinName)
+{
 
 }
 
@@ -21,7 +23,11 @@ Pin::~Pin(void){
 }
 
 NPtr Pin::getParent() const{
-	return parentNode.lock();
+	if(parentNode.expired() == true){
+        throw std::runtime_error("Pin referring to expired Node!");
+    }
+    
+    return parentNode.lock();
 }
 const Pin::CONNECTIONS_SET & Pin::getConnections() const{
 	return connections;
@@ -43,18 +49,18 @@ bool Pin::isCompatible(CPinPtr pin) const{
 	return typeid(*this) == typeid(*pin);
 }
 
-bool Pin::addConnection(ConnPtr cn){
-	connections.insert(cn);
-	return true;
+void Pin::addConnection(ConnPtr connection)
+{
+	connections.insert(connection);
 }
 
-bool Pin::removeConnection(ConnPtr cn){
-	connections.erase(cn);
-	return true;
+void Pin::removeConnection(ConnPtr connection)
+{
+	connections.erase(connection);
 }
 
 void Pin::clearConnections(){
-	connections.clear();
+	connections.swap(CONNECTIONS_SET());
 }
 
 const std::string & Pin::getPinName() const{
@@ -79,7 +85,7 @@ bool Pin::isRequired() const{
 
 bool Pin::isComplete() const{
 	bool ret = true;
-	for(REQ_PINS_SET::const_iterator it = requiredPinsDependency.begin(); it != requiredPinsDependency.end(); it++){
+	for(auto it = requiredPinsDependency.begin(); it != requiredPinsDependency.end(); it++){
 		if((*it).lock()->getConnections().empty() == true){
 			ret = false;
 			break;

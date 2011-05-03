@@ -27,8 +27,8 @@ public:
 	dflm::NPtr getModelNode() const;
 	osgVDFBaseModel * getModel() const;
 	
-	bool addInPin(osgVDFBasePin * inPin, const std::string & pinName = std::string());
-	bool addOutPin(osgVDFBasePin * outPin, const std::string & pinName = std::string());
+	void addInPin(osgVDFBasePin * inPin, const std::string & pinName = std::string());
+	void addOutPin(osgVDFBasePin * outPin, const std::string & pinName = std::string());
 
 	const VISUAL_PIN_SET & getInPins() const;
 	const VISUAL_PIN_SET & getOutPins() const;
@@ -48,7 +48,7 @@ protected:
 	virtual void graphAddOutPin(osgVDFBasePin * outPin, const std::string & pinName) = 0;
 	virtual void graphSetNodeStatus(NODE_VISUAL_STATUS nodeVisualStatus) = 0;
 
-	bool deleteNode();
+	void deleteNode();
 
 protected:
 

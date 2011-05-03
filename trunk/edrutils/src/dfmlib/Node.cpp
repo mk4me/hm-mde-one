@@ -23,24 +23,28 @@ void Node::setNodeName(const std::string & nodeName){
 	this->nodeName = nodeName;
 }
 
-bool Node::addInPin(PinPtr newPin){
+void Node::addInPin( PinPtr newPin )
+{
     UTILS_ASSERT((newPin != nullptr), "Nieprawidlowy pin");
-    UTILS_ASSERT((newPin->parentNode.lock() == nullptr), "Pin ma juz rodzica");
+    if(newPin->parentNode.lock() != nullptr){
+        throw std::runtime_error("Pin is already connected with node!");
+    }
 	
     newPin->parentNode = shared_from_this();
     inPins.insert(newPin);
 	newPin->setType(Pin::PIN_IN);
-	return true;
 }
 
-bool Node::addOutPin(PinPtr newPin){
+void Node::addOutPin( PinPtr newPin )
+{
     UTILS_ASSERT((newPin != nullptr), "Nieprawidlowy pin");
-    UTILS_ASSERT((newPin->parentNode.lock() == nullptr), "Pin ma juz rodzica");
+    if(newPin->parentNode.lock() != nullptr){
+        throw std::runtime_error("Pin is already connected with node!");
+    }
 	
     newPin->parentNode = shared_from_this();
     outPins.insert(newPin);
 	newPin->setType(Pin::PIN_OUT);
-	return true;
 }
 
 const Node::PINS_SET & Node::getInPins() const{
@@ -72,7 +76,7 @@ bool Node::validInPinsConnection(const CNPtr & node) {
 
     const PINS_SET & inPins = node->getInPins();
 
-	for(PINS_SET::const_iterator it = inPins.begin(); it != inPins.end(); it++){
+	for(auto it = inPins.begin(); it != inPins.end(); it++){
 		if((*it)->isRequired() == true){
 			required = true;
 			if((*it)->getConnections().empty()){
@@ -96,7 +100,7 @@ bool Node::validOutPinsConnection(const CNPtr & node) {
 
     const PINS_SET & outPins = node->getOutPins();
 
-	for(PINS_SET::const_iterator it = outPins.begin(); it != outPins.end(); it++){
+	for(auto it = outPins.begin(); it != outPins.end(); it++){
 		if((*it)->isComplete() == false){
 			ret = false;
 			break;
@@ -121,7 +125,7 @@ bool Node::anyOutPinConnected(const CNPtr & node){
 bool Node::anyPinConnected(const PINS_SET & pins){
 	bool ret = false;
 
-	for(PINS_SET::const_iterator it = pins.begin(); it != pins.end(); it++){
+	for(auto it = pins.begin(); it != pins.end(); it++){
 		if((*it)->getConnections().empty() == false){
 			ret = true;
 			break;

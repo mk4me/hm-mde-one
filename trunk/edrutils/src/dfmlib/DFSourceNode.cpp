@@ -16,9 +16,9 @@ DFSourceNode::~DFSourceNode(void)
 
 }
 
-bool DFSourceNode::addInPin(PinPtr pin)
+void DFSourceNode::addInPin(PinPtr pin)
 {
-	return false;
+	throw std::runtime_error("Can not add input pin to source node!");
 }
 
 bool DFSourceNode::checkInputPins() const

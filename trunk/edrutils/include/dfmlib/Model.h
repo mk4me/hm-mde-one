@@ -25,6 +25,22 @@ public:
     //! Typ opisuj¹cy zbiór po³¹czeñ
 	typedef Pin::CONNECTIONS_SET CONNECTIONS_SET;
 
+private:
+
+    //! Struktura pomocnicza przy analizie pêtli (cyklów) w modelu
+    typedef struct MY_PATH_ENTRY{
+        //! Aktualny wêze³
+        NPtr node;
+        //! Aktualny pin
+        Node::PINS_SET::const_iterator pinIT;
+
+        //! Aktualne po³¹czenie
+        CONNECTIONS_SET::const_iterator connIT;
+
+        //! Operator porównania
+        bool operator==(const MY_PATH_ENTRY & pe) const;
+    }PATH_ENTRY;
+
 public:
 
     //! Konstruktor zeruj¹cy
@@ -34,10 +50,10 @@ public:
 	virtual ~Model(void);
 
     //! \param node Wêze³ do dodania
-	virtual bool addNode(NPtr node);
+    virtual void addNode(NPtr node);
 
     //! \param node Wêze³ do usuniêcia
-	virtual bool removeNode(NPtr node);
+    virtual void removeNode(NPtr node);
 
     //! Usuwa wszystkie wêz³y i po³¹czenia z modelu
 	virtual void clearNodes();
@@ -62,13 +78,8 @@ public:
     //! \return Po³¹czenie utworzone pomiêdzy zadanymi pinami
 	virtual ConnPtr connect(PinPtr src, PinPtr dest);
 
-    //! Usuwa po³¹czenie pomiêdzy pinami
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
-	//virtual bool removeConnection(PinPtr src, PinPtr dest);
-
     //! \param connection Po³¹czenie do usuniêcia
-	virtual bool removeConnection(ConnPtr connection);
+    virtual void removeConnection(ConnPtr connection);
 
     //! Usuwa wszystkie po³¹czenia w modelu
 	virtual void clearConnections();
@@ -78,51 +89,39 @@ public:
 
     //! \return Wszystkie po³¹czenia w modelu
 	const CONNECTIONS_SET & getConnections() const;
-
-private:
-
-    //! Struktura pomocnicza przy analizie pêtli (cyklów) w modelu
-	typedef struct MY_PATH_ENTRY{
-        //! Aktualny wêze³
-		NPtr node;
-        //! Aktualny pin
-		Node::PINS_SET::const_iterator pinIT;
-
-        //! Aktualne po³¹czenie
-		CONNECTIONS_SET::const_iterator connIT;
-
-        //! Operator porównania
-		bool operator==(const MY_PATH_ENTRY & pe) const;
-	}PATH_ENTRY;
-
-private:
-    //! \param node Weze³ dla którego tworzymy strukture opisujaca kolejnosc analizowania polaczen dla sprawdzania cykli
-    //! \return Aktualny stan analizowanych polaczen
-	static PATH_ENTRY getFirstNodeOutputConnection(NPtr node);
-
-    //! \param pathElement Element opisujacy kolejnosc przegladania po³¹czeñ w wêŸle - jej aktualny stan
-    //! \return Kolejny stan analizowanych polaczen
-	static PATH_ENTRY getNextNodeOutputConnection(const PATH_ENTRY & pathElement);
-	
-    //! \param src Pin Ÿród³owy (wyjœciowy)
-    //! \param src Pin docelowy (wejœciowy)
-    //! \return Po³¹czenie pomiêdzy danymi pinami lub nullptr w przypadku braku po³¹czenia
-	ConnPtr findConnection(CPinPtr src, CPinPtr dest) const;
 	
  protected:
 
      static void unregisterPin(PinPtr pin);
     
      //! \param Weze³ do rozlaczenia - wszystke jego po³aczenia zostaj¹ usuniete
-    virtual bool disconnectNode(NPtr node);
+     virtual void disconnectNode(NPtr node);
     
     //! \param connection Po³aczenie do usuniecia z modelu
-	virtual bool quickRemoveConnection(ConnPtr connection);
+     virtual void quickRemoveConnection(ConnPtr connection);
 
     //! \param src Pin Ÿród³owy (wyjœciowy)
     //! \param src Pin docelowy (wejœciowy)
     //! \return Po³aczenie miedzy pinami
 	virtual ConnPtr quickConnect(PinPtr src, PinPtr dest);
+
+    //! \param nodes Lista wêz³ów uznana za sprawdzone - tutaj mog¹ siê podpinaæ klasy pochodne z szersz¹ wiedz¹ na temat wêz³ów
+    //! W ten sposób mog¹ przyspieszyæ wykrywanie cykli
+    virtual void initCheckedNodes(NODES_SET & nodes) const;
+
+private:
+    //! \param node Weze³ dla którego tworzymy strukture opisujaca kolejnosc analizowania polaczen dla sprawdzania cykli
+    //! \return Aktualny stan analizowanych polaczen
+    static PATH_ENTRY getFirstNodeOutputConnection(NPtr node);
+
+    //! \param pathElement Element opisujacy kolejnosc przegladania po³¹czeñ w wêŸle - jej aktualny stan
+    //! \return Kolejny stan analizowanych polaczen
+    static PATH_ENTRY getNextNodeOutputConnection(const PATH_ENTRY & pathElement);
+
+    //! \param src Pin Ÿród³owy (wyjœciowy)
+    //! \param src Pin docelowy (wejœciowy)
+    //! \return Po³¹czenie pomiêdzy danymi pinami lub nullptr w przypadku braku po³¹czenia
+    ConnPtr findConnection(CPinPtr src, CPinPtr dest) const;
 
 private:
     //! Zbiór wszystkich wezlow modelu

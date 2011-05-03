@@ -14,7 +14,7 @@ public:
 	virtual ~TestDFNodeSource(void);
 	virtual bool hasMoreData() const;
 
-	virtual bool addInPin(dflm::PinPtr inPin);
+	virtual void addInPin(dflm::PinPtr inPin);
 
 protected:
 	TestDFNodeSource(const std::string & nodeName);

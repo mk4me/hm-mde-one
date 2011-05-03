@@ -166,61 +166,61 @@ StylesSet generateRequiredStyles(){
 	styleSet.insert(new osgui::StyleEx("vdf.node.pin.text", "font_size 10\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\""));
 
 	//out pins
-	styleSet.insert(new osgui::StyleEx("vdf.pin.out.ok", "rect_image \"" + path + "out_OK." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.out.active", "rect_image \"" +  path + "out_active." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.out.connected", "rect_image \"" +  path + "out_connected." + graphExt + "\""));
-	//styleSet.insert(new StyleEx("vdf.pin.out.incomplete", "rect_image \"" +  path + "out_incomplete." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.out.incomplete", "rect_image \"" +  path + "out_required." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.out.incompatible", "rect_image \"" +  path + "out_incompatible." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.out.required", "rect_image \"" +  path + "out_required." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.out.ok", "rect_image_cache \"" + path + "out_OK." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.out.active", "rect_image_cache \"" +  path + "out_active." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.out.connected", "rect_image_cache \"" +  path + "out_connected." + graphExt + "\""));
+	//styleSet.insert(new StyleEx("vdf.pin.out.incomplete", "rect_image_cache \"" +  path + "out_incomplete." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.out.incomplete", "rect_image_cache \"" +  path + "out_required." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.out.incompatible", "rect_image_cache \"" +  path + "out_incompatible." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.out.required", "rect_image_cache \"" +  path + "out_required." + graphExt + "\""));
 
 	//in pins
-	styleSet.insert(new osgui::StyleEx("vdf.pin.in.ok", "rect_image \"" +  path + "in_OK." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.in.active", "rect_image \"" +  path + "in_active." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.in.connected", "rect_image \"" +  path + "in_connected." + graphExt + "\""));
-	//styleSet.insert(new StyleEx("vdf.pin.in.incomplete", "rect_image \"" +  path + "in_incomplete." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.in.incomplete", "rect_image \"" +  path + "in_required." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.in.incompatible", "rect_image \"" +  path + "in_incompatible." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.pin.in.required", "rect_image \"" +  path + "in_required." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.in.ok", "rect_image_cache \"" +  path + "in_OK." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.in.active", "rect_image_cache \"" +  path + "in_active." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.in.connected", "rect_image_cache \"" +  path + "in_connected." + graphExt + "\""));
+	//styleSet.insert(new StyleEx("vdf.pin.in.incomplete", "rect_image_cache \"" +  path + "in_incomplete." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.in.incomplete", "rect_image_cache \"" +  path + "in_required." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.in.incompatible", "rect_image_cache \"" +  path + "in_incompatible." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.pin.in.required", "rect_image_cache \"" +  path + "in_required." + graphExt + "\""));
 
 	//NODE STYLES
 	//border - obwódka, cieñ
 	//normal
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.normal", "rect_image \"" +  path + "normal_board_TL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.normal", "rect_image \"" +  path + "normal_board_TM." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.TR.normal", "rect_image \"" +  path + "normal_board_TR." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.ML.normal", "rect_image \"" +  path + "normal_board_ML." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.MR.normal", "rect_image \"" +  path + "normal_board_MR." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.BL.normal", "rect_image \"" +  path + "normal_board_BL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.BM.normal", "rect_image \"" +  path + "normal_board_BM." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.normal", "rect_image \"" +  path + "normal_board_BR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.normal", "rect_image_cache \"" +  path + "normal_board_TL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.normal", "rect_image_cache \"" +  path + "normal_board_TM." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.TR.normal", "rect_image_cache \"" +  path + "normal_board_TR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.ML.normal", "rect_image_cache \"" +  path + "normal_board_ML." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.MR.normal", "rect_image_cache \"" +  path + "normal_board_MR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.BL.normal", "rect_image_cache \"" +  path + "normal_board_BL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.BM.normal", "rect_image_cache \"" +  path + "normal_board_BM." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.normal", "rect_image_cache \"" +  path + "normal_board_BR." + graphExt + "\""));
 
 	//kolizja
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.collision", "rect_image \"" +  path + "collision_board_TL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.collision", "rect_image \"" +  path + "collision_board_TM." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.TR.collision", "rect_image \"" +  path + "collision_board_TR." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.ML.collision", "rect_image \"" +  path + "collision_board_ML." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.MR.collision", "rect_image \"" +  path + "collision_board_MR." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.BL.collision", "rect_image \"" +  path + "collision_board_BL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.BM.collision", "rect_image \"" +  path + "collision_board_BM." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.collision", "rect_image \"" +  path + "collision_board_BR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.collision", "rect_image_cache \"" +  path + "collision_board_TL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.collision", "rect_image_cache \"" +  path + "collision_board_TM." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.TR.collision", "rect_image_cache \"" +  path + "collision_board_TR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.ML.collision", "rect_image_cache \"" +  path + "collision_board_ML." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.MR.collision", "rect_image_cache \"" +  path + "collision_board_MR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.BL.collision", "rect_image_cache \"" +  path + "collision_board_BL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.BM.collision", "rect_image_cache \"" +  path + "collision_board_BM." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.collision", "rect_image_cache \"" +  path + "collision_board_BR." + graphExt + "\""));
 
 	//select
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.active", "rect_image \"" +  path + "selected_board_TL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.active", "rect_image \"" +  path + "selected_board_TM." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.TR.active", "rect_image \"" +  path + "selected_board_TR." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.ML.active", "rect_image \"" +  path + "selected_board_ML." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.MR.active", "rect_image \"" +  path + "selected_board_MR." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.BL.active", "rect_image \"" +  path + "selected_board_BL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.BM.active", "rect_image \"" +  path + "selected_board_BM." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.active", "rect_image \"" +  path + "selected_board_BR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.TL.active", "rect_image_cache \"" +  path + "selected_board_TL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.TM.active", "rect_image_cache \"" +  path + "selected_board_TM." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.TR.active", "rect_image_cache \"" +  path + "selected_board_TR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.ML.active", "rect_image_cache \"" +  path + "selected_board_ML." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.MR.active", "rect_image_cache \"" +  path + "selected_board_MR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.BL.active", "rect_image_cache \"" +  path + "selected_board_BL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.BM.active", "rect_image_cache \"" +  path + "selected_board_BM." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.border.BR.active", "rect_image_cache \"" +  path + "selected_board_BR." + graphExt + "\""));
 
 
 	//cia³o wêz³a
 	//normal
 	//top
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.normal", "rect_image \"" +  path + "normal_body_TL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.TR.normal", "rect_image \"" +  path + "normal_body_TR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.normal", "rect_image_cache \"" +  path + "normal_body_TL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.TR.normal", "rect_image_cache \"" +  path + "normal_body_TR." + graphExt + "\""));
 
 	//get color
 	osg::Image * imgA = osgDB::readImageFile(path + "normal_body_TL." + graphExt);
@@ -234,12 +234,12 @@ StylesSet generateRequiredStyles(){
 	styleSet.insert(new osgui::StyleEx("vdf.node.body.TConfigBCG.normal", "color " + colorToStr(col)));
 	styleSet.insert(new osgui::StyleEx("vdf.node.body.TDeleteBCG.normal", "color " + colorToStr(col)));
 
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.config.normal", "rect_image \"" +  path + "normal_body_CFG." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.delete.normal", "rect_image \"" +  path + "normal_body_DEL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.config.normal", "rect_image_cache \"" +  path + "normal_body_CFG." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.delete.normal", "rect_image_cache \"" +  path + "normal_body_DEL." + graphExt + "\""));
 
 	//bottom
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.BL.normal", "rect_image \"" +  path + "normal_body_BL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.BR.normal", "rect_image \"" +  path + "normal_body_BR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.BL.normal", "rect_image_cache \"" +  path + "normal_body_BL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.BR.normal", "rect_image_cache \"" +  path + "normal_body_BR." + graphExt + "\""));
 
 	imgA = osgDB::readImageFile(path + "normal_body_BL." + graphExt);
 	imgB = osgDB::readImageFile(path + "normal_body_BR." + graphExt);
@@ -255,21 +255,21 @@ StylesSet generateRequiredStyles(){
 
 	//selection
 	//top
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.active", "rect_image \"" +  path + "selected_body_TL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.TR.active", "rect_image \"" +  path + "selected_body_TR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.active", "rect_image_cache \"" +  path + "selected_body_TL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.TR.active", "rect_image_cache \"" +  path + "selected_body_TR." + graphExt + "\""));
 
 	//bottom
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.BL.active", "rect_image \"" +  path + "selected_body_BL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.BR.active", "rect_image \"" +  path + "selected_body_BR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.BL.active", "rect_image_cache \"" +  path + "selected_body_BL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.BR.active", "rect_image_cache \"" +  path + "selected_body_BR." + graphExt + "\""));
 
 	//collision
 	//top
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.collision", "rect_image \"" +  path + "collision_body_TL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.TR.collision", "rect_image \"" +  path + "collision_body_TR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.TL.collision", "rect_image_cache \"" +  path + "collision_body_TL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.TR.collision", "rect_image_cache \"" +  path + "collision_body_TR." + graphExt + "\""));
 
 	//bottom
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.BL.collision", "rect_image \"" +  path + "collision_body_BL." + graphExt + "\""));
-	styleSet.insert(new osgui::StyleEx("vdf.node.body.BR.collision", "rect_image \"" +  path + "collision_body_BR." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.BL.collision", "rect_image_cache \"" +  path + "collision_body_BL." + graphExt + "\""));
+	styleSet.insert(new osgui::StyleEx("vdf.node.body.BR.collision", "rect_image_cache \"" +  path + "collision_body_BR." + graphExt + "\""));
 
 
 	//TOOLBAR STYLES

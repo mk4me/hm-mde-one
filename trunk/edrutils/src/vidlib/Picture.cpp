@@ -194,6 +194,19 @@ void Picture::zero()
   ::memset(data, 0, dataWidth * dataHeight);
 }
 
+vidlib::PictureRGB PictureRGB::create( int width, int height )
+{
+    PictureRGB result;
+    Picture& resultRef = result;
+    resultRef = Picture::create(width, height, PixelFormatRGB24);
+    return result;
+}
+
+int PictureRGB::getAllocSize( int width, int height )
+{
+    return Picture::getAllocSize(width, height, PixelFormatRGB24);
+}
+
 //------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
