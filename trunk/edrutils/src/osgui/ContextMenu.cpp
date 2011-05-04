@@ -433,17 +433,17 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 
 		osgWidget::Callback * cc = new osgWidget::Callback(&ContextMenu::onItemPush, currentMenu, osgWidget::EVENT_MOUSE_PUSH, &(it->second));
 		osgWidget::Callback * ec = new osgWidget::Callback(&ContextMenu::onItemEnter, currentMenu, osgWidget::EVENT_MOUSE_ENTER, &(it->second));
-		osgWidget::Callback * lc = new osgWidget::Callback(&ContextMenu::onItemLeave, currentMenu, osgWidget::EVENT_MOUSE_LEAVE, &(it->second));
+		//osgWidget::Callback * lc = new osgWidget::Callback(&ContextMenu::onItemLeave, currentMenu, osgWidget::EVENT_MOUSE_LEAVE, &(it->second));
 
 		item.menuItem->setEventMask(osgWidget::EVENT_MASK_MOUSE_MOVE | osgWidget::EVENT_MASK_MOUSE_CLICK);
 		item.menuItem->addCallback(cc);
 		item.menuItem->addCallback(ec);
-		item.menuItem->addCallback(lc);
+		//item.menuItem->addCallback(lc);
 
 		item.checkedWidget->setEventMask(osgWidget::EVENT_MASK_MOUSE_MOVE | osgWidget::EVENT_MASK_MOUSE_CLICK);
 		item.checkedWidget->addCallback(cc);
 		item.checkedWidget->addCallback(ec);
-		item.checkedWidget->addCallback(lc);
+		//item.checkedWidget->addCallback(lc);
 		
 		unsigned int row = currentMenu->getNumRows();
 

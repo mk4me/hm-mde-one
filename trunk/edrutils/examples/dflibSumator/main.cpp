@@ -42,10 +42,9 @@ public:
 
 protected:
 
-    virtual bool onUpdate()
+    virtual void onUpdate()
     {
         std::cout << getParent()->getNodeName() + "->" + getPinName() << "\tPo update." << std::endl;
-        return true;
     }
 
     virtual void copyDataFromPin(dflm::DFPinPtr pin)

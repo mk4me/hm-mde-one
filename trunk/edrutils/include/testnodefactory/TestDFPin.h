@@ -14,8 +14,8 @@ public:
 	std::string getPinFullName() const;
 
 protected:
-	bool onUpdate();
-	void copyDataToPin(dflm::DFPinPtr pin);
+	virtual void onUpdate();
+	virtual void copyDataToPin(dflm::DFPinPtr pin);
 };
 
 

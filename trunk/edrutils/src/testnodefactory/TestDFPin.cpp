@@ -30,9 +30,8 @@ std::string TestDFPin::getPinFullName() const{
 	return fullName;
 }
 
-bool TestDFPin::onUpdate(){
+void TestDFPin::onUpdate(){
 	std::cout << "UPDATE " << getPinFullName().c_str() << std::endl;
-	return true;
 }
 
 void TestDFPin::copyDataToPin(dflm::DFPinPtr pin){
