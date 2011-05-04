@@ -188,7 +188,7 @@ namespace core {
         //! \param dummy Pozostawiæ pusty.
         //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
         template <class T>
-        typename ObjectWrapperT<T>::Ptr get(T* /*dummy*/ = nullptr)
+        typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
         {   
             UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
             typedef ObjectWrapperT<T> Wrapper;
