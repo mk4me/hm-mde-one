@@ -19,7 +19,8 @@
 #include <QtCore/QDir>
 
 #include "C3DModel.h"
-#include "ConsoleWidget.h"
+//#include "ConsoleWidget.h"
+#include "EDRConsoleWidget.h"
 
 #include "ServiceManager.h"
 #include <core/IAnimationService.h>
@@ -223,13 +224,17 @@ void ToolboxMain::InitializeControlWidget()
 
 void ToolboxMain::initializeConsole()
 {
-    QDockWidget *dock; 
+    /*QDockWidget *dock; 
     dock = new QDockWidget(tr("Console"), this, Qt::WindowTitleHint);
     dock->setObjectName("Console");
-    dock->setAllowedAreas(Qt::BottomDockWidgetArea);
-    widgetConsole = new ConsoleWidget();    
-    addDockWidget(Qt::BottomDockWidgetArea, dock);
-    dock->setWidget((QWidget*)widgetConsole); 
+    dock->setAllowedAreas(Qt::BottomDockWidgetArea);*/
+    //widgetConsole = new ConsoleWidget();    
+    widgetConsole = new EDRConsoleWidget(tr("Console"), this, Qt::WindowTitleHint);    
+    widgetConsole->setObjectName("Console");
+    widgetConsole->setAllowedAreas(Qt::BottomDockWidgetArea);
+    addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
+    //addDockWidget(Qt::BottomDockWidgetArea, dock);
+    //dock->setWidget((QWidget*)widgetConsole); 
     // Inicjalizacja konsoli
 //     ConsoleWidgetOutputBuffer *ob = new ConsoleWidgetOutputBuffer(widgetConsole, 256);
 //     _streambuf = std::cout.rdbuf(ob);

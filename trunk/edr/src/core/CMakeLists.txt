@@ -15,6 +15,8 @@ set(PRIVATE_H
 #	ASFAMCParser.h
 	C3DModel.h
 	ConsoleWidget.h
+	EDRConsoleWidget.h
+	EDRConsoleInnerWidget.h
 	DataManager.h
 	DataTransfer.h
 	Factory.h
@@ -46,7 +48,7 @@ set(PRIVATE_H
 	ObjectSlots.h
 	EDRTitleBar.h
 	EDRDockWidget.h
-	EDRInnerWidget.h
+	EDRDockInnerWidget.h
 	TestEDRWidget.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -116,6 +118,8 @@ set(TARGET_SRC
 #	ASFAMCParser.cpp
 	C3DModel.cpp
 	ConsoleWidget.cpp
+	EDRConsoleWidget.cpp
+	EDRConsoleInnerWidget.cpp
 	DataManager.cpp
 	Factory.cpp
 	FileChunkReader.cpp
@@ -151,7 +155,7 @@ set(TARGET_SRC
 	DataProcessor.cpp
 	EDRTitleBar.cpp
 	EDRDockWidget.cpp
-	EDRInnerWidget.cpp	
+	EDRDockInnerWidget.cpp	
 	TestEDRWidget.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
@@ -159,6 +163,8 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
     ConsoleWidget.h
+	EDRConsoleWidget.h
+	EDRConsoleInnerWidget.h
     ToolboxMain.h
 	SceneGraphWidget.h
 	VisualizerWidget.h
@@ -166,7 +172,7 @@ SET(TARGET_MOC_H
 	VisualizerTitleBarComboPick.h
 	EDRTitleBar.h
 	EDRDockWidget.h
-	EDRInnerWidget.h
+	EDRDockInnerWidget.h
 	TestEDRWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
@@ -186,7 +192,8 @@ set(TARGET_UI
 	ui/VisualizerTitleBarButtonPerSource.ui
 	ui/DataProcessorWidget.ui
 	ui/EDRTitleBar.ui
-	ui/EDRInnerWidget.ui
+	ui/EDRDockInnerWidget.ui
+	ui/EDRConsoleInnerWidget.ui
 	ui/TestEDRWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})

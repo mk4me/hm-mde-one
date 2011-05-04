@@ -8,7 +8,8 @@
 #include <osg/Notify>
 #include <boost/algorithm/string.hpp>
 #include <utils/Debug.h>
-#include "ConsoleWidget.h"
+//#include "ConsoleWidget.h"
+#include "EDRConsoleWidget.h"
 #include <core/StringTools.h>
 
 using namespace core;
@@ -91,10 +92,12 @@ class ConsoleWidgetAppender : public AppenderSkeleton
 {
 private:
     //! Konsola w³aœciwa.
-    ConsoleWidget* console;
+    //ConsoleWidget* console;
+    EDRConsoleWidget* console;
     //! Kolejka wiadomoœci dla konsoli. U¿ywana, gdy pojawiaj¹ siê zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
-    std::queue<ConsoleWidgetEntryPtr> queuedEntries;
+    //std::queue<ConsoleWidgetEntryPtr> queuedEntries;
+    std::queue<EDRConsoleWidgetEntryPtr> queuedEntries;
 
 public:
     DECLARE_LOG4CXX_OBJECT(ConsoleWidgetAppender)
@@ -116,7 +119,8 @@ public:
 
 public:
     //! \param console Widget konsoli.
-    void setConsole(ConsoleWidget* console)
+    //void setConsole(ConsoleWidget* console)
+    void setConsole(EDRConsoleWidget* console)
     {
         // korzytamy z muteksa z klasy bazowej !
         helpers::synchronized sync(mutex);
@@ -146,7 +150,8 @@ protected:
         LogString buf;
         layout->format(buf, event, p);
 
-        ConsoleWidgetEntryPtr entry(new ConsoleWidgetEntry());
+        //ConsoleWidgetEntryPtr entry(new ConsoleWidgetEntry());
+        EDRConsoleWidgetEntryPtr entry(new EDRConsoleWidgetEntry());
         //entry.message = QString::fromWCharArray( event->getMessage().c_str() );
         int level = event->getLevel()->toInt();
         if ( level <= Level::DEBUG_INT ) {
@@ -194,7 +199,8 @@ LogInitializer::~LogInitializer()
 }
 
 
-void LogInitializer::setConsoleWidget( ConsoleWidget* widget )
+//void LogInitializer::setConsoleWidget( ConsoleWidget* widget )
+void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
 {
     // pobranie wszystkich appenderów dla konsoli
     LoggerList loggers;
@@ -246,7 +252,8 @@ public:
     }
 
     //! \param console
-    void setConsole(ConsoleWidget* console) 
+    //void setConsole(ConsoleWidget* console) 
+    void setConsole(EDRConsoleWidget* console) 
     { 
         this->console = console;
         // opró¿niamy kolejkê komunikatów

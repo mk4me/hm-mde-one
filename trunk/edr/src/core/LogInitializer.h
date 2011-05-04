@@ -11,7 +11,8 @@
 
 #include <core/Log.h>
 
-class ConsoleWidget;
+//class ConsoleWidget;
+class EDRConsoleWidget;
 
 //! Obiekt logu. Powinien byæ tworzony w g³ównej binarce na samym pocz¹tku maina.
 class LogInitializer 
@@ -24,7 +25,8 @@ public:
 
 public:
     //! \param console Widget konsoli.
-    void setConsoleWidget(ConsoleWidget* widget);
+    //void setConsoleWidget(ConsoleWidget* widget);
+    void setConsoleWidget(EDRConsoleWidget* widget);
 
 private:
     /**

@@ -332,7 +332,7 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
             } else {
                 setCurrentSlot(-1);
             }
-            EDRInnerWidget * innerWidget = getInnerWidget();
+            EDRDockInnerWidget * innerWidget = getInnerWidget();
             visualizerWidget = visualizer->getOrCreateWidget();
             if(visualizerWidget != nullptr){
                 innerWidget->layoutContent->addWidget(visualizerWidget);

@@ -2,13 +2,13 @@
 #include "EDRDockWidget.h"
 
 EDRDockWidget::EDRDockWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)
-    : QDockWidget(title, parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRInnerWidget())
+    : QDockWidget(title, parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRDockInnerWidget())
 {
     init();
 }
 
 EDRDockWidget::EDRDockWidget(QWidget * parent, Qt::WindowFlags flags)
-    : QDockWidget(parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRInnerWidget())
+    : QDockWidget(parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRDockInnerWidget())
 {
     init();
     setWindowTitle("Default EDRDockWidget");
@@ -29,12 +29,12 @@ void EDRDockWidget::init()
     setWidget(innerWidget);
 }
 
-EDRInnerWidget * EDRDockWidget::getInnerWidget()
+EDRDockInnerWidget * EDRDockWidget::getInnerWidget()
 {
     return innerWidget;
 }
 
-const EDRInnerWidget * EDRDockWidget::getInnerWidget() const
+const EDRDockInnerWidget * EDRDockWidget::getInnerWidget() const
 {
     return innerWidget;
 }

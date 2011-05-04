@@ -1,7 +1,7 @@
 /********************************************************************
     created:  2011/04/28
     created:  28:4:2011   16:31
-    filename: EDRInnerWidget.h
+    filename: EDRDockInnerWidget.h
     author:   Mateusz Janiak
     
     purpose:  
@@ -9,16 +9,16 @@
 #ifndef HEADER_GUARD_CORE__EDRINNERWIDGET_H__
 #define HEADER_GUARD_CORE__EDRINNERWIDGET_H__
 
-#include "ui_EDRInnerWidget.h"
+#include "ui_EDRDockInnerWidget.h"
 #include <QtGui/QWidget>
 
-class EDRInnerWidget : public QWidget, public Ui::EDRInnerWidget
+class EDRDockInnerWidget : public QWidget, public Ui::EDRDockInnerWidget
 {
     Q_OBJECT
 
 public:
-    EDRInnerWidget(QWidget * parent = nullptr);
-    ~EDRInnerWidget();
+    EDRDockInnerWidget(QWidget * parent = nullptr);
+    ~EDRDockInnerWidget();
 
 };
 

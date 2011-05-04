@@ -25,7 +25,8 @@ class IAnimationService;
 class RenderService;
 //class ComputeThread;
 class SceneGraphWidget;
-class ConsoleWidget;
+//class ConsoleWidget;
+class EDRConsoleWidget;
 class VisualizerManager;
 class VisualizerWidget;
 
@@ -38,7 +39,8 @@ private:
     //! Widget ze scen¹ jakiegoœ grafu OSG.
     SceneGraphWidget* widgetSceneGraph;
     //! Widget konsoli.
-    ConsoleWidget* widgetConsole; 
+    //ConsoleWidget* widgetConsole; 
+    EDRConsoleWidget* widgetConsole; 
     //! W¹tek obliczeniowy.
     //ComputeThread* computeThread;
     //! Czy update jest w³¹czony?
@@ -72,7 +74,8 @@ public:
 
 	void loadData();
 
-    ConsoleWidget* getConsole()
+    //ConsoleWidget* getConsole()
+    EDRConsoleWidget* getConsole()
     {
         return widgetConsole;
     }

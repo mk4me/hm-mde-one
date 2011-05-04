@@ -11,7 +11,7 @@
 
 #include <QtGui/QDockWidget>
 #include "EDRTitleBar.h"
-#include "EDRInnerWidget.h"
+#include "EDRDockInnerWidget.h"
 
 class EDRDockWidget : public QDockWidget
 {
@@ -29,8 +29,8 @@ public slots:
     //! \param floating Czy widget ma byæ oddokowany?
     void setFloating(bool floating);
 
-    EDRInnerWidget * getInnerWidget();
-    const EDRInnerWidget * getInnerWidget() const;
+    EDRDockInnerWidget * getInnerWidget();
+    const EDRDockInnerWidget * getInnerWidget() const;
 
     EDRTitleBar * getTitleBar();
     const EDRTitleBar * getTitleBar() const;
@@ -40,7 +40,7 @@ private:
 
 private:
     EDRTitleBar * titleBar;
-    EDRInnerWidget * innerWidget;
+    EDRDockInnerWidget * innerWidget;
 };
 
 #endif  //  HEADER_GUARD_CORE__EDRDOCKWIDGET_H__

@@ -12,6 +12,10 @@
 #include "VisualizerManager.h"
 #include <utils/Push.h>
 
+//FOR TESTS ONLY
+#include "EDRDockWidget.h"
+#include "TestEDRWidget.h"
+
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
 #endif
@@ -76,6 +80,16 @@ int main(int argc, char *argv[])
             utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
             {
                 ToolboxMain window(&pluginLoader);
+
+                //FOR TESTS ONLY
+                EDRDockWidget * widget = new EDRDockWidget();
+                //widget->setWidget(test);
+
+                window.addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, widget);
+
+                TestEDRWidget * test = new TestEDRWidget(qobject_cast<EDRTitleBar*>(widget->titleBarWidget()));
+                widget->getInnerWidget()->layoutContent->addWidget(test);
+
                 logger.setConsoleWidget( window.getConsole() );
                 window.show();
                 if (!filePath.empty()) 
