@@ -22,13 +22,12 @@ void SkeletalVisualizationScheme::setNormalizedTime( double val )
             LOGGER(Logger::Debug, "SkeletalVisualizationScheme : value out of <0,1>");
         }
 
-        if (kinematicModel->hasSkeleton()) {
+        if (kinematicModel->getSkeleton()) {
             updateJointTransforms(val);
         }
-        if (kinematicModel->hasMarkers()) {
+        if (kinematicModel->getMarkers()) {
             updateMarkers(val);
         }
-        //schemeDrawer->update(val);
     }
 }
 
@@ -124,12 +123,12 @@ void SkeletalVisualizationScheme::updateJointTransforms(const map<string, Quat>&
 
 void SkeletalVisualizationScheme::updateJointTransforms( double time )
 {
-    UTILS_ASSERT(kinematicModel);
+    UTILS_ASSERT(kinematicModel->getSkeleton());
     counterHelper = 0;
-    const std::map<std::string, osg::Quat>& frame = kinematicModel->getQuaternionRotation(time);
-    hAnimSkeleton::Ptr skeleton = kinematicModel->getHAnimSkeleton();
+    const std::map<std::string, osg::Quat>& frame = kinematicModel->getSkeleton()->getQuaternionRotation(time);
+    hAnimSkeleton::Ptr skeleton = kinematicModel->getSkeleton()->getHAnimSkeleton();
     osg::Quat q; Vec3 pos;
-    pos = kinematicModel->getRootPosition(time);
+    pos = kinematicModel->getSkeleton()->getRootPosition(time);
     updateJointTransforms(frame, skeleton->getHAnimRoot(), q, pos);
  }
 
@@ -160,12 +159,12 @@ boost::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::crea
     return scheme;
 }
 
-void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelConstPtr val )
+void SkeletalVisualizationScheme::setKinematicModel( KinematicModelConstPtr val )
 {
     kinematicModel = val;
 
-    if (kinematicModel->getSkeletalData()) {
-        auto jointMap = kinematicModel->getJoints();
+    if (kinematicModel->getSkeleton() && kinematicModel->getSkeleton()->getSkeletalData()) {
+        auto jointMap = kinematicModel->getSkeleton()->getJoints();
         int count = jointMap.size();
         //jointMarkersStates.reserve(count + 5);
         
@@ -182,13 +181,13 @@ void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelCo
             jointMarkersStates[i].color = gold;
         }
 
-        hAnimSkeleton::Ptr skeleton = kinematicModel->getHAnimSkeleton();
+        hAnimSkeleton::Ptr skeleton = kinematicModel->getSkeleton()->getHAnimSkeleton();
         createSkeletonConnections(skeleton->getRoot());
         updateJointTransforms(0.0);
     }
 
-    if (kinematicModel->getMarkersData()) {
-        IMarkerSetConstPtr markers = kinematicModel->getMarkersData();
+    if (kinematicModel->getMarkers()) {
+        IMarkerSetConstPtr markers = kinematicModel->getMarkers();
         int count =  markers->getMarkersCount();
         if (count && markersStates.size() != count) {
             markersStates.resize(count);
@@ -218,7 +217,7 @@ void SkeletalVisualizationScheme::createSkeletonConnections(JointPtr joint)
 
 void SkeletalVisualizationScheme::updateMarkers( double time )
 {
-    IMarkerSetConstPtr markers = kinematicModel->getMarkersData();
+    IMarkerSetConstPtr markers = kinematicModel->getMarkers();
     if (markers) {
         int count =  markers->getMarkersCount();
         for (int i = 0; i < count; i++) {
@@ -229,10 +228,10 @@ void SkeletalVisualizationScheme::updateMarkers( double time )
 
 void SkeletalVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserConstPtr vsk )
 {
-    UTILS_ASSERT(kinematicModel && kinematicModel->hasMarkers(), "There are no markers in kinematic model");
+    UTILS_ASSERT(kinematicModel && kinematicModel->getMarkers(), "There are no markers in kinematic model");
 
     std::map<std::string, int> markersIndices;
-    kinematic::IMarkerSetConstPtr markers = kinematicModel->getMarkersData();
+    kinematic::IMarkerSetConstPtr markers = kinematicModel->getMarkers();
     for (int i = markers->getMarkersCount() - 1; i >= 0; --i) {
         markersIndices[markers->getMarkerName(i)] = i;
     }

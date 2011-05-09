@@ -16,6 +16,7 @@ UTILS_POP_WARNINGS
 #include <boost/function.hpp>
 #include <kinematiclib/VskParser.h>
 #include <kinematiclib/KinematicModel.h>
+#include <plugins/kinematic/KinematicModel.h>
 
 //#include "uniqueCollection.h"
 
@@ -63,19 +64,19 @@ public: // akcesory
     }
 
     int getNumFrames() const { 
-        UTILS_ASSERT(kinematicModel);  
-        return kinematicModel->getNumFrames(); 
+        UTILS_ASSERT(kinematicModel->getSkeleton());  
+        return kinematicModel->getSkeleton()->getNumFrames(); 
     }
     double getFrameTime() const { 
-        UTILS_ASSERT(kinematicModel); 
-        return kinematicModel->getFrameTime(); 
+        UTILS_ASSERT(kinematicModel->getSkeleton()); 
+        return kinematicModel->getSkeleton()->getFrameTime(); 
     }
     double getDuration() const { 
         UTILS_ASSERT(kinematicModel);
-        if (kinematicModel->hasSkeleton()) {
+        if (kinematicModel->getSkeleton()) {
             return getNumFrames() * getFrameTime(); 
-        } else if (kinematicModel->hasMarkers()) {
-            return kinematicModel->getMarkersData()->getDuration();
+        } else if (kinematicModel->getMarkers()) {
+            return kinematicModel->getMarkers()->getDuration();
         }
         UTILS_ASSERT(false);
         return 0.0;
@@ -91,14 +92,11 @@ public: // akcesory
     const std::vector<Connection> &getConnections(DataToDraw toDraw) const;
 
     //model kinematyczny
-    kinematic::KinematicModelConstPtr getKinematicModel() const { return kinematicModel; }
-    void setKinematicModel(kinematic::KinematicModelConstPtr val);
+   KinematicModelConstPtr getKinematicModel() const { return kinematicModel; }
+    void setKinematicModel(KinematicModelConstPtr val);
 
     void setMarkersDataFromVsk(kinematic::VskParserConstPtr vsk);
 
-    ////! ustawia schemat odrysowywania modelu
-    //void setSchemeDrawer(ISchemeDrawerPtr drawer);
-    //ISchemeDrawerPtr getSchemeDrawer() const { return schemeDrawer; }
         
 private:
     //! odswiezenie informacji o jointach
@@ -106,7 +104,7 @@ private:
     //! odswiezenie informacji o markerach
     void updateMarkers(double time);
     //! obliczenie poczatkowych transformacji
-    void computeBindPoses(kinematic::KinematicModelPtr model);
+    void computeBindPoses(KinematicModelPtr model);
     //! obliczenie transformacji dla podanego czasu
     void updateJointTransforms(double time);
     //! obliczenie transformacji dla podanego czasu
@@ -135,7 +133,7 @@ private:
     ////! aktualny wizualizator schematu
     //ISchemeDrawerPtr schemeDrawer;
     //! model kinematyczny z danymi
-    kinematic::KinematicModelConstPtr kinematicModel;
+    KinematicModelConstPtr kinematicModel;
     //! slaby wskaznik do this
     boost::weak_ptr<SkeletalVisualizationScheme> weak;
 };

@@ -11,6 +11,7 @@ class KinematicParser : public core::IParser
 private:
     core::ObjectWrapperPtr kinematicMarkersSkeleton;
     core::ObjectWrapperPtr schemeMarkersSkeleton;
+    core::ObjectWrapperPtr skeleton;
     core::ObjectWrapperPtr kinematicMarkers;
     core::ObjectWrapperPtr schemeMarkers;
 

@@ -65,16 +65,16 @@ void KinematicVisualizer::setUp( IObjectSource* source )
     resetScene();
     refillDrawersMaps();
     SkeletalVisualizationSchemeConstPtr scheme = source->getObject(0);
-    
+        
     if (scheme) {        
-        if (scheme->getKinematicModel()->hasSkeleton()) {
+        if (scheme->getKinematicModel()->getSkeleton()) {
             SchemeDrawerContainerPtr skeleton = drawersByName["Skeleton"];
-            skeleton->addDrawer(OsgSchemeDrawerPtr(new LineSchemeDrawer(DrawSkeleton)));
+            skeleton->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 3, 0.015f, osg::Vec4(1.0f, 1.0f, 0.0f, 1.0f))));
             skeleton->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 10, 0.05f)));
             skeleton->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawSkeleton, 2, 0.08f)));
 
             SchemeDrawerContainerPtr rectangular = drawersByName["Rectangular"];
-            rectangular->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 4, 0.45f, osg::Vec4(0, 1, 0, 1))));
+            rectangular->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 4, 0.25f, osg::Vec4(0, 1, 0, 0.3f))));
             actionByName["Skeleton"]->setVisible(true);
             actionByName["Rectangular"]->setVisible(true);
         } else {
@@ -82,7 +82,7 @@ void KinematicVisualizer::setUp( IObjectSource* source )
             actionByName["Rectangular"]->setVisible(false);
         }
 
-        if (scheme->getKinematicModel()->hasMarkers()) {
+        if (scheme->getKinematicModel()->getMarkers()) {
             SchemeDrawerContainerPtr markers = drawersByName["Markers"];
             markers->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.08f)));
             markers->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.02f)));
@@ -92,9 +92,9 @@ void KinematicVisualizer::setUp( IObjectSource* source )
             actionByName["Markers"]->setVisible(false);
         }
 
-        if (scheme->getKinematicModel()->hasMarkers() && scheme->getKinematicModel()->hasSkeleton()) {
+        if (scheme->getKinematicModel()->getMarkers() && scheme->getKinematicModel()->getSkeleton()) {
             SchemeDrawerContainerPtr both = drawersByName["Both"];
-            both->addDrawer(OsgSchemeDrawerPtr(new LineSchemeDrawer(DrawSkeleton)));
+            both->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 3, 0.015f, osg::Vec4(1.0f, 1.0f, 0.0f, 1.0f))));
             both->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 10, 0.05f)));
             both->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawSkeleton, 2, 0.08f)));
             both->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.08f)));
@@ -153,7 +153,7 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     
     widget->setLight(light);
     // tworzenie kamery
-    widget->getCamera()->setClearColor(osg::Vec4(0.0f, 0.1f, 0.0f, 1));
+    widget->getCamera()->setClearColor(osg::Vec4(0.0f, 0.0f, 0.1f, 1));
 
     actionSwitchAxes = new QAction("Switch Axes", widget);
     actionSwitchAxes->setCheckable(true);
@@ -161,15 +161,15 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     connect(actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
     actions.push_back(actionSwitchAxes);
 
-    QMenu* testMenu = new QMenu("Visualization", widget);
+    QMenu* visualizationMenu = new QMenu("Visualization", widget);
     QActionGroup* group = new QActionGroup(widget);
     connect(group, SIGNAL(triggered(QAction *)), this, SLOT(actionTriggered(QAction*)));
 
-    addAction(actions, "Markers", testMenu, group);
-    addAction(actions, "Skeleton", testMenu, group);
-    addAction(actions, "Both", testMenu, group);
-    addAction(actions, "Rectangular", testMenu, group);
-    actions.push_back(testMenu);
+    addAction(actions, "Markers", visualizationMenu, group);
+    addAction(actions, "Skeleton", visualizationMenu, group);
+    addAction(actions, "Both", visualizationMenu, group);
+    addAction(actions, "Rectangular", visualizationMenu, group);
+    actions.push_back(visualizationMenu);
 
 
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
@@ -207,7 +207,7 @@ void KinematicVisualizer::updateAnimation()
     }
 }
 
-GeodePtr KinematicVisualizer::createFloor()
+KinematicVisualizer::GeodePtr KinematicVisualizer::createFloor()
 {
     GeodePtr geode = new osg::Geode();
     // todo sparametryzowac
@@ -234,7 +234,7 @@ GeodePtr KinematicVisualizer::createFloor()
     geode->setStateSet(stateset);
     
     osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-    colors->push_back(osg::Vec4(0.05f, 0.3f, 0.05f, 1.0f));
+    colors->push_back(osg::Vec4(0.05f, 0.05f, 0.3f, 1.0f));
     linesGeom->setColorArray(colors);
     linesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
     

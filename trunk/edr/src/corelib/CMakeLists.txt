@@ -25,7 +25,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/MultiViewCameraItem.h
 	${HEADER_PATH}/MultiViewManipulatorItem.h
 	${HEADER_PATH}/OsgSceneDump.h
-	${HEADER_PATH}/DataChannel.h
 	${HEADER_PATH}/C3DChannels.h
 	${HEADER_PATH}/ChartSerie.h
 	${HEADER_PATH}/LineChartSerie.h

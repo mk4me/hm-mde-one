@@ -24,7 +24,16 @@ public:
     virtual void addFiles(const std::vector<Path>& files) = 0;
     virtual void removeFiles(const std::vector<Path>& files) = 0;
 
+
+    //! Dodawanie obiektow domenowych z innych zrodel niz parsery
+    //! \param dataProcessor zrodlo danych
+    //! \param objects wektor ze stworzonymi obiektami domenowymi (zrodlo powinno dalej je przechowywac!)
     virtual void addObjects(DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects) = 0;
+
+    //! Dodawanie obiektu domenowego z innego zrodla niz parser
+    //! \param dataProcessor zrodlo obiektu
+    //! \param object dodawany obiekt (zrodlo powinno dalej go przechowywac)
+    virtual void addObject(DataProcessorPtr dataProcessor, core::ObjectWrapperPtr object) = 0;
 
     //! Wyszukiwanie zasobów na lokalnym dysku.
     virtual void findResources() = 0;

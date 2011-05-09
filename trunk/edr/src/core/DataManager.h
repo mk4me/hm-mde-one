@@ -172,7 +172,15 @@ public:
     //! \see core::IDataManager::isExtensionSupported
     virtual bool isExtensionSupported(const std::string& extension) const;
 
-    virtual void addObjects( DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects);
+    //! Dodawanie obiektow domenowych z innych zrodel niz parsery
+    //! \param dataProcessor zrodlo danych
+    //! \param objects wektor ze stworzonymi obiektami domenowymi (zrodlo powinno dalej je przechowywac!)
+    virtual void addObjects(DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects);
+
+    //! Dodawanie obiektu domenowego z innego zrodla niz parser
+    //! \param dataProcessor zrodlo obiektu
+    //! \param object dodawany obiekt (zrodlo powinno dalej go przechowywac)
+    virtual void addObject(DataProcessorPtr dataProcessor, core::ObjectWrapperPtr object);
 
     //! \see core::IDataManager::getParser
     UTILS_DEPRECATED(virtual core::IParserPtr getParser(int idx));

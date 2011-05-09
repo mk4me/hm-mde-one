@@ -30,7 +30,7 @@ typedef boost::weak_ptr<hAnimBone> hAnimBoneWeak;
 
 /// \brief Klasa reprezentuje staw standardu h-anim
 class hAnimJoint : public Joint {
-    friend class KinematicModel;
+    friend class KinematicSkeleton;
 public:
     //typedef boost::shared_ptr<hAnimJoint> Ptr;
     //typedef boost::weak_ptr<hAnimJoint> Weak;
@@ -142,16 +142,16 @@ public:
 
 /// \brief  Klasa dostarcza reprezentacje wewnetrzna szkieletu.
 /// \details Zawiera znormalizowane dane : rotacje jako kwaterniony, dlugosc kosci z zakresu <0,1>, nazewnictwo h-anim
-class KinematicModel
+class KinematicSkeleton
 {
 public:
 
-    /// \brief  Domyslny konstruktor, stara sie wczytac plik 'dictionary.txt' (slownik z roznymi nazwami kosci i ich mapowaniem do h-anim)
-    KinematicModel(void);
+    /// \brief  Domyslny konstruktor, stara sie wczytac plik 
+    KinematicSkeleton(void);
 
     /// \brief  Konstruktor, ktoremu trzeba wskazaz plik ze slownikiem 
     /// \param  dictionaryFile plik ze slownikiem z roznymi nazwami kosci i ich mapowaniem do h-anim
-    KinematicModel(const std::string& dictionaryFilename);
+    KinematicSkeleton(const std::string& dictionaryFilename);
 
 public:
     /// \brief  macierz MxN z kwaternionami 
@@ -173,22 +173,23 @@ public:
     //! \brief zwraca szkielet zgodny z h-anim
     kinematic::hAnimSkeleton::Ptr getHAnimSkeleton() const { return haSkeleton; }
     const std::map<std::string, kinematic::hAnimJointPtr>& getJoints() const { return joints; }
-    // akcesory do markerow
-    IMarkerSetConstPtr getMarkersData() const { return markers;}
-    void setMarkersData(IMarkerSetConstPtr data) const { 
-        markers = data; 
-        if (lengthRatio > 0) {
-            markers->setScale(1.0 / lengthRatio); 
-        }
-    }
+
+    //// akcesory do markerow
+    //IMarkerSetConstPtr getMarkersData() const { return markers;}
+    //void setMarkersData(IMarkerSetConstPtr data) const { 
+    //    markers = data; 
+    //    if (lengthRatio > 0) {
+    //        markers->setScale(1.0 / lengthRatio); 
+    //    }
+    //}
 
     bool hasSkeleton() const {
         return (skeletalModel && skeletalModel->getFrames().size());
     }
 
-    bool hasMarkers() const {
+    /*bool hasMarkers() const {
         return (markers) ? true: false;
-    }
+    }*/
 
     double getFrameTime() const { 
         UTILS_ASSERT(skeletalModel); 
@@ -296,7 +297,7 @@ private:
 
 private:
     // hack
-    mutable IMarkerSetConstPtr markers;                                 //!< dane z markerami
+    //mutable IMarkerSetConstPtr markers;                                 //!< dane z markerami
     kinematic::SkeletalModelPtr skeletalModel;                          //!< dane z parsera acclaim / biovision
     kinematic::hAnimSkeleton::Ptr haSkeleton;                           //!< pelny szkielet h-anim
     std::vector< std::map<std::string, osg::Quat> > quaternionRepresentation;     //!< tablica z kwaternionami dla kazdego ze stawow
@@ -310,8 +311,8 @@ private:
     std::vector<osg::Vec3> rootPositions;
 }; 
 
-typedef boost::shared_ptr<KinematicModel> KinematicModelPtr;
-typedef boost::shared_ptr<const kinematic::KinematicModel> KinematicModelConstPtr;
+typedef boost::shared_ptr<KinematicSkeleton> KinematicSkeletonPtr;
+typedef boost::shared_ptr<const kinematic::KinematicSkeleton> KinematicSkeletonConstPtr;
 }
 
 #endif

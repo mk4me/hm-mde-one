@@ -19,6 +19,7 @@ KinematicParser::KinematicParser()
     schemeMarkersSkeleton = core::ObjectWrapper::create<SkeletalVisualizationScheme>();
     kinematicMarkers = core::ObjectWrapper::create<KinematicModel>();
     schemeMarkers = core::ObjectWrapper::create<SkeletalVisualizationScheme>();
+    skeleton = core::ObjectWrapper::create<kinematic::KinematicSkeleton>();
 }
 
 KinematicParser::~KinematicParser()
@@ -28,7 +29,6 @@ KinematicParser::~KinematicParser()
 void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path)
 {
     SkeletalModelPtr modelPtr(new SkeletalModel);
-
     bool fromC3D = false;
     
     if(extension(path) == ".amc") {
@@ -85,9 +85,9 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
     if (markers.size() > 0 && fromC3D) {
         KinematicModelPtr kin(new KinematicModel);
         // hack , co jak dostaniemy wiecej markerow?
-        kin->setMarkersData(markers[0]);
+        kin->setMarkers(markers[0]);
 
-        kinematicMarkers->set(kin);
+        //kinematicMarkers->set(kin);
         SkeletalVisualizationSchemePtr scheme = SkeletalVisualizationScheme::create();
         scheme->setKinematicModel(kin);
         if (vsk) {
@@ -99,8 +99,11 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
 
     if (markers.size() > 0 && modelPtr && modelPtr->getFrames().size() > 0) {
         KinematicModelPtr kin(new KinematicModel);
-        kin->setSkeletalData(modelPtr);
-        kin->setMarkersData(markers[0]);
+        KinematicSkeletonPtr kinematicSkeleton(new KinematicSkeleton);
+        kinematicSkeleton->setSkeletalData(modelPtr);
+        skeleton->set(kinematicSkeleton);
+        kin->setSkeleton(kinematicSkeleton);
+        kin->setMarkers(markers[0]);
         kinematicMarkersSkeleton->set(kin);
         SkeletalVisualizationSchemePtr scheme = SkeletalVisualizationScheme::create();
         scheme->setKinematicModel(kin);

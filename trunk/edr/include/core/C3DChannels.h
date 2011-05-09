@@ -10,7 +10,7 @@
 #define __HEADER_GUARD_CORE__C3DCHANNELS_H__
 
 #include <core/SmartPtr.h>
-#include <core/DataChannel.h>
+#include <utils/DataChannel.h>
 #include <core/ObjectWrapper.h>
 #include <core/C3D_Data.h>
 #include <osg/Vec3>
@@ -18,10 +18,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
-    typedef DataChannel<osg::Vec3, float> VectorChannel;
+    typedef utils::DataChannel<osg::Vec3, float> VectorChannel;
     typedef shared_ptr<VectorChannel> VectorChannelPtr;
 
-    typedef DataChannel<float, float> ScalarChannel;
+    typedef utils::DataChannel<float, float> ScalarChannel;
     typedef shared_ptr<ScalarChannel> ScalarChannelPtr;
     typedef shared_ptr<const ScalarChannel> ScalarChannelConstPtr;
 
@@ -81,7 +81,7 @@ namespace core {
     typedef shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
 
-    class MarkerChannel : public DataChannel<osg::Vec3>//public VectorChannel 
+    class MarkerChannel : public utils::DataChannel<osg::Vec3>//public VectorChannel 
     {
     private:
         MarkerChannel(int samplesPerSec) : DataChannel(samplesPerSec) {}

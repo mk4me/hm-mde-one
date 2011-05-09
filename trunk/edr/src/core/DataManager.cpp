@@ -781,4 +781,11 @@ void DataManager::dropRemovedWrappers(ObjectFromProcessors& objectsToCheck)
     }
 }
 
+void DataManager::addObject( DataProcessorPtr dataProcessor,  core::ObjectWrapperPtr object )
+{
+     std::vector<core::ObjectWrapperPtr> objects;
+     objects.push_back(object);
+     addObjects(dataProcessor, objects);
+}
+
 
