@@ -29,7 +29,7 @@ void CommunicationManager::destoryInstance()
 CommunicationManager::CommunicationManager()
     : trialsMutex()
 {
-    trialsDir = "data/trials/";
+    //trialsDir = core::getUserDataString("trial");
     setState(Ready);
     //ping serwera
     pingCurl = curl_easy_init();
@@ -50,8 +50,8 @@ CommunicationManager::CommunicationManager()
     queryManager->setBasicUpdatesServiceUri("");
 
     //na razie recznie wpisane sciezki
-    boost::filesystem::path pathS = "data/db/schema/shallowcopy.xml";
-    boost::filesystem::path pathM = "data/db/schema/metadata.xml";
+    boost::filesystem::path pathS = core::getApplicationDataString("db/schema/shallowcopy.xml");
+    boost::filesystem::path pathM = core::getApplicationDataString("db/schema/metadata.xml");
 
     //sorawdzenie przy uruchomieniu czy mamy pliki plytkiej kopii DB
     if(boost::filesystem::exists(pathS) && boost::filesystem::exists(pathM)) {
@@ -72,16 +72,6 @@ CommunicationManager::~CommunicationManager()
     if(isRunning()) {
         join();
     }
-}
-
-void CommunicationManager::setTrialsDir(const std::string& dir)
-{
-    this->trialsDir = dir;
-}
-
-const boost::filesystem::path& CommunicationManager::getTrialsDir() const
-{
-    return this->trialsDir;
 }
 
 int CommunicationManager::getProgress() const
@@ -120,7 +110,7 @@ void CommunicationManager::loadLocalTrials()
     //TODO: uproszczenie wyszukiwania lokalnych triali
     localTrials.clear();
     //przeszukujemy liste prob pomiarowych, nie plikow
-    std::vector<std::string> tempPaths = core::Filesystem::listSubdirectories(dataManager->getTrialsPath().string());
+    std::vector<std::string> tempPaths = core::Filesystem::listSubdirectories(core::getUserDataString("trial"));
     BOOST_FOREACH(std::string path, tempPaths)
     {
         try {
@@ -147,18 +137,15 @@ void CommunicationManager::run()
 {
     switch(getState()) {
     case DownloadingTrial: {
-            std::string pathToDownloadingTrial;
             try {
                 std::vector<wsdl::Trial> serverTrials = queryManager->listSessionContents();
                 BOOST_FOREACH(wsdl::Trial& trial, serverTrials) {
                     if(trial.id == entityID) {
-                        pathToDownloadingTrial = trialsDir.string();
-                        pathToDownloadingTrial.append("/").append(trial.trialDescription);
                         filesToDownload = trial.trialFiles.size();
                         actualFile = 0;
                         BOOST_FOREACH(int i, trial.trialFiles) {
                             actualFile++;
-                            transportManager->downloadFile(i, trialsDir.string());
+                            transportManager->downloadFile(i, core::getUserDataString("trial"));
                         }
                         break;
                     }

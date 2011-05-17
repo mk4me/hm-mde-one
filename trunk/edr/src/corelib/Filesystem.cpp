@@ -62,7 +62,8 @@ void Filesystem::move(const std::string& pathOld, const std::string& pathNew)
 	filesystem::path oldPath(pathOld);
 	filesystem::path newPath(pathNew);
 
-	rename(oldPath, newPath);
+	filesystem::copy_file(oldPath, newPath);
+    filesystem::remove(oldPath);
 }
 
 std::vector<std::string> Filesystem::listFiles(const std::string& path, bool recursive, const std::string& mask)

@@ -83,14 +83,15 @@ const std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string
     filename = filename.substr(filename.rfind("/") + 1, filename.npos);
 
     //utworz foldery do odpowiedniej sciezki i przerzuc tam plik
-    std::string filePath = path;
-    filePath.append(filename.substr(0, filename.find(".")));
+    boost::filesystem::path filePath(path);
+    filePath /= filename.substr(0, filename.find("."));
+    //filePath.append(filename.substr(0, filename.find(".")));
     try {
-        core::Filesystem::createDirectory(filePath);
-        core::Filesystem::move(filename, filePath.append("/").append(filename));
+        core::Filesystem::createDirectory(filePath.string());
+        core::Filesystem::move(filename, (filePath / filename).string());
     } catch(std::exception& e) {
         if(!filePath.empty()) {
-            core::Filesystem::deleteDirectory(filePath);
+            core::Filesystem::deleteDirectory(filePath.string());
         }
         if(!filename.empty()) {
             core::Filesystem::deleteFile(filename);
@@ -112,13 +113,13 @@ void TransportWSDL_FTPS::abort()
 
 const std::string TransportWSDL_FTPS::getShallowCopy()
 {
-    boost::filesystem::path filename, schema = "data/db/schema/shallowcopy.xml";
+    boost::filesystem::path filename, schema = core::getApplicationDataString("db/schema/shallowcopy.xml");
 
     //sciagnij plik
     filename = wsdl->getShallowCopy();
     ftp->get(filename.string());
     wsdl->downloadComplete(0, filename.string());
-    core::Filesystem::createDirectory("data/db/schema");
+    core::Filesystem::createDirectory(core::getApplicationDataString("db/schema"));
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
     core::Filesystem::move(filename.filename().string(), schema.string());
@@ -127,13 +128,13 @@ const std::string TransportWSDL_FTPS::getShallowCopy()
 
 const std::string TransportWSDL_FTPS::getMetadata()
 {
-    boost::filesystem::path filename, schema = "data/db/schema/metadata.xml";
+    boost::filesystem::path filename, schema = core::getApplicationDataString("db/schema/metadata.xml");
 
     //sciagnij plik
     filename = wsdl->getMetadata();
     ftp->get(filename.string());
     wsdl->downloadComplete(0, filename.string());
-    core::Filesystem::createDirectory("data/db/schema");
+    core::Filesystem::createDirectory(core::getApplicationDataString("db/schema"));
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
     core::Filesystem::move(filename.filename().string(), schema.string());

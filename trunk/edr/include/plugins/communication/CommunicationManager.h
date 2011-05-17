@@ -58,16 +58,6 @@ namespace communication
         */
         void loadLocalTrials();
         /**
-        Ustala wartoœæ trialsDir wskazuj¹c¹ gdzie powinny znajdowaæ siê lokalne próby pomiarowe.
-        @param dir miejsce gdzie sk³adowane s¹ lokalne próby pomiarowe
-        */
-        void setTrialsDir(const std::string& dir);
-        /**
-        Zwraca wartoœæ trialsDir wskazuj¹c¹ gdzie powinny znajdowaæ siê lokalne próby pomiarowe.
-        @return wartoœæ trialsDir
-        */
-        const boost::filesystem::path& getTrialsDir() const;
-        /**
         Zwraca postêp w procentach aktualnie wykonywanego zadania.
         @return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
         */
@@ -200,10 +190,6 @@ namespace communication
         Jedyna instancja klasy CommunicationManager.
         */
         static CommunicationManager* instance;
-        /**
-        Œcie¿ka do miejsca na lokalnym dysku gdzie powinny znajdowaæ siê próby pomiarowe.
-        */
-        boost::filesystem::path trialsDir;
         /**
         WskaŸnik na klasê TransportWSDL_FTPS odpowiedzialn¹ za transport danych
         */

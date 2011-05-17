@@ -31,11 +31,6 @@ void CommunicationService::downloadTrial(unsigned int trialID)
     model->downloadTrial(trialID);
 }
 
-void CommunicationService::loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager)
-{
-    this->model->setTrialsDir(dataManager->getTrialsPath().string());
-}
-
 void CommunicationService::update(double time, double timeDelta)
 {
     //pinguj co pol minuty
@@ -81,11 +76,6 @@ void CommunicationService::init(core::IServiceManager* serviceManager, core::IDa
     model->setDataManager(dataManager);
     ping();
 }
-
-//void CommunicationService::loadTrial(const core::IDataManager::LocalTrial& localTrial)
-//{
-//    model->loadTrial(localTrial);
-//}
 
 void CommunicationService::loadFiles(const std::vector<core::IDataManager::Path> files)
 {

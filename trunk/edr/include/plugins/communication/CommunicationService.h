@@ -60,12 +60,6 @@ public:
     */
     virtual void init(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
     /**
-    Metoda z interfejsu IService. £aduje.
-    @param serviceManager Manager us³ug.
-    @param dataManager Manager zasobów.
-    */
-    virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
-    /**
     Metoda z interfejsu IService. Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
     */
     virtual void update(double time, double timeDelta);
