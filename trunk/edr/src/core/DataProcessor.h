@@ -11,18 +11,17 @@
 
 #include <core/IDataProcessor.h>
 #include <core/ObjectWrapper.h>
+#include "WorkflowItemEncapsulator.h"
 #include "ObjectSource.h"
 
-class DataProcessor
+class DataProcessor : public core::WorkflowItemEncapsulator<core::IDataProcessor>
 {
 public:
     typedef ObjectSlots::SlotInfo InputInfo;
     typedef ObjectSlots::SlotInfo OutputInfo;
 private:
-    //! Faktyczna implementacja elementu przetwarzaj¹cego.
-    core::scoped_ptr<core::IDataProcessor> impl;
     //! Dane wejœciowe.
-    core::scoped_ptr<ObjectSource> source;
+    core::shared_ptr<ObjectSource> source;
     //! Dane wyjœciowe.
     core::scoped_ptr<ObjectOutput> output;
 
@@ -88,28 +87,35 @@ public:
         source->setObject(inputNo, object);
     }
 
-    //! \return WskaŸnik do implementacji.
-    const core::IDataProcessor* getProcessor() const
-    {
-        return impl.get();
-    }
+    ////! \return WskaŸnik do implementacji.
+    //const core::IDataProcessor* getProcessor()
+    //{
+    //    return getImplementation()->;
+    //}
+
+    
 
     //! Przetwarza wejœcia i ustawia wyjœcia. Mo¿e rzucaæ wyj¹tkami.
     void process()
     {
-        impl->process(source.get(), output.get());
+        getImplementation()->process(source.get(), output.get());
     }
 
     //! \return false je¿eli przetwarzanie zakoñczy³o siê b³êdem (wyj¹tkiem)
     bool tryProcess()
     {
         try {
-            impl->process(source.get(), output.get());
+            getImplementation()->process(source.get(), output.get());
             return true;
         } catch (const std::exception& ex) {
             LOG_ERROR("Error during processing: " << ex.what());
             return false;
         }
+    }
+
+    virtual void run() 
+    {
+        process();
     }
 
     static void test();

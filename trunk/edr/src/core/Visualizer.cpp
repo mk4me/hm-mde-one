@@ -5,8 +5,8 @@
 
 using namespace core;
 
-Visualizer::Visualizer( IVisualizer* impl ) :
-impl(impl), widget(nullptr), source(VisualizerManager::getInstance()->getSourcesTypes(impl->getID()))
+Visualizer::Visualizer( IVisualizer* impl ) : core::WorkflowItemEncapsulator<IVisualizer>(impl),
+    widget(nullptr), source(VisualizerManager::getInstance()->getSourcesTypes(impl->getID()))
 {
     //int numVisualizers = VisualizerManager::getInstance()->getNumInstances(impl->getID());
     //uiName = QString("%0 (%1)").arg(toString(getName())).arg(numVisualizers);
@@ -15,7 +15,7 @@ impl(impl), widget(nullptr), source(VisualizerManager::getInstance()->getSources
 }
 
 Visualizer::Visualizer( const Visualizer& visualizer ) :
-impl(visualizer.impl->create()),
+core::WorkflowItemEncapsulator<core::IVisualizer>(visualizer.getImplementation()->create()),
 source(visualizer.source), widget(nullptr)
 {
     //int numVisualizers = VisualizerManager::getInstance()->getNumInstances(impl->getID());
@@ -26,14 +26,17 @@ source(visualizer.source), widget(nullptr)
 
 Visualizer::~Visualizer()
 {
+    { std::cout << "Visualizer destr.. " << std::endl; }
+
     VisualizerManager::getInstance()->notifyDestroyed(this);
+    //this->core::WorkflowItemEncapsulator<core::IVisualizer>::~WorkflowItemEncapsulator<IVisualizer>();
 }
 
 QWidget* Visualizer::getOrCreateWidget()
 {
     if (!widget) {
-        LOG_DEBUG("Visualizer " << impl->getName() << " widget created");
-        widget = impl->createWidget(genericActions);
+        LOG_DEBUG("Visualizer " << getImplementation()->getName() << " widget created");
+        widget = getImplementation()->createWidget(genericActions);
         trySetUp();
         UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");
     }
@@ -43,15 +46,15 @@ QWidget* Visualizer::getOrCreateWidget()
 bool Visualizer::trySetUp()
 {
     try {
-        LOG_DEBUG("Visualizer " << impl->getName() << " setup");
-        impl->setUp(&source);
+        LOG_DEBUG("Visualizer " << getImplementation()->getName() << " setup");
+        getImplementation()->setUp(&source);
 
         // aktualizacja widgetu
         UTILS_ASSERT(widget);
         widget->update();
         return true;
     } catch (const std::exception& ex) {
-        LOG_ERROR("Error during setting up visualizer: " << ex.what());
+        LOG_WARNING("Error during setting up visualizer: " << ex.what());
         return false;
     }
 }

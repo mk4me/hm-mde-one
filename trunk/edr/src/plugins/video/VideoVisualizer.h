@@ -67,7 +67,7 @@ public:
     //! \see IVisualizer::create
     virtual core::IVisualizer* create() const;
     //! \see IVisualizer::getSlotInfo
-    virtual void getInputInfo(int source, std::string& name, core::ObjectWrapper::Types& types);
+    virtual void getInputInfo(int source, core::IInputDescription::InputInfo& info);
     //! Nic nie robi.
     //! \see IVisualizer::update
     virtual void update(double deltaTime);

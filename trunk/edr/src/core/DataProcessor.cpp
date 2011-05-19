@@ -1,13 +1,15 @@
 #include "CorePCH.h"
+#include <core/IDataProcessor.h>
 #include "DataProcessor.h"
 #include "DataManager.h"
+
 
 using namespace core;
 
 
 
 DataProcessor::DataProcessor( core::IDataProcessor* impl ) : 
-impl(impl)
+ core::WorkflowItemEncapsulator<core::IDataProcessor>(impl)
 {
     // TODO: informacje o wyjœciu/wejœciu mog¹ byæ liczone raz podczas rejestracji
     // i potem kopiowane jako wskaŸniki/referencje
@@ -64,6 +66,9 @@ void DataProcessor::test()
     class IncrementerMutable : public core::IDataProcessor
     {
     public:
+        virtual UniqueID getID() const { return UniqueID(); }
+        virtual std::string getDescription() const { return ""; }
+        virtual QWidget* configure() { return nullptr; }
         virtual void getInputInfo(int inputNo, InputInfo& info)
         {
             if ( inputNo == 0 ) {
@@ -93,6 +98,10 @@ void DataProcessor::test()
     public:
         IntPtr result;
         IncrementerImmutable() : result(new int(0)) {}
+
+        virtual UniqueID getID() const { return UniqueID(); }
+        virtual std::string getDescription() const { return ""; }
+        virtual QWidget* configure() { return nullptr; }
 
         virtual void getInputInfo(int inputNo, InputInfo& info)
         {

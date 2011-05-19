@@ -95,18 +95,18 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     ServiceManager* serviceManager = ServiceManager::getInstance();
     VisualizerManager* visualizerManager = VisualizerManager::getInstance();
 
-    boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
-    userPath /= "EDR";
-    dataManager->setUserDataPath(userPath);
+    //boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
+    //userPath /= "EDR";
+    //dataManager->setUserDataPath(userPath);
 
-    boost::filesystem::path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
-    dataManager->setApplicationDataPath(appDataPath);
+    //boost::filesystem::path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
+    //dataManager->setApplicationDataPath(appDataPath);
 
-    boost::filesystem::path resourcesPath = boost::filesystem::initial_path();
-    // TODO : usunac folder data
-    resourcesPath /= "data";
-    resourcesPath /= "resources";
-    dataManager->setResourcesPath(resourcesPath);
+    //boost::filesystem::path resourcesPath = boost::filesystem::initial_path();
+    //// TODO : usunac folder data
+    //resourcesPath /= "data";
+    //resourcesPath /= "resources";
+    //dataManager->setResourcesPath(resourcesPath);
 
     //// testowanie sciezek...
     //const core::IDataManager::Path& testPathNo1 = dataManager->getResourcesPath();

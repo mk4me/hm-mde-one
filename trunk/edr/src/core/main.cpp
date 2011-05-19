@@ -66,6 +66,16 @@ int main(int argc, char *argv[])
         PluginLoader pluginLoader;
         {
             DataManager dataManager;
+            boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
+            userPath /= "EDR";
+            dataManager.setUserDataPath(userPath);
+
+            boost::filesystem::path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
+            dataManager.setApplicationDataPath(appDataPath);
+
+            boost::filesystem::path resourcesPath = boost::filesystem::initial_path();
+            resourcesPath /= "resources";
+            dataManager.setResourcesPath(resourcesPath);
             ServiceManager serviceManager;
             VisualizerManager visualizerManager;
 
@@ -78,6 +88,8 @@ int main(int argc, char *argv[])
             utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
             utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
             utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
+
+            
             {
                 ToolboxMain window(&pluginLoader);
 

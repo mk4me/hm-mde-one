@@ -117,11 +117,11 @@ IVisualizer* KinematicVisualizer::create() const
     return new KinematicVisualizer();
 }
 
-void KinematicVisualizer::getInputInfo( int source, std::string& name, ObjectWrapper::Types& types )
+void KinematicVisualizer::getInputInfo( int source, core::IInputDescription::InputInfo& info)
 {
     if (source == 0) {
-        name = "model";
-        types.push_back(typeid(SkeletalVisualizationScheme));
+        info.name = "model";
+        info.types.push_back(typeid(SkeletalVisualizationScheme));
     }
 }
 
@@ -298,4 +298,9 @@ void KinematicVisualizer::refillDrawersMaps()
         drawersByAction[it->second] = drawer;
         drawersByName[it->first] = drawer;
     }
+}
+
+osg::Node* KinematicVisualizer::debugGetLocalSceneRoot()
+{
+    return rootNode;
 }

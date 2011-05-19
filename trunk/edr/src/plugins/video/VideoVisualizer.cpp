@@ -64,12 +64,12 @@ core::IVisualizer* VideoVisualizer::create() const
     return new VideoVisualizer();
 }
 
-void VideoVisualizer::getInputInfo( int source, std::string& name, core::ObjectWrapper::Types& types )
+void VideoVisualizer::getInputInfo( int source, core::IInputDescription::InputInfo& info )
 {
     if ( source == 0 ) {
-        name = "video";
-        types.push_back(typeid(VideoStream));
-        types.push_back(typeid(vidlib::Picture));
+        info.name = "video";
+        info.types.push_back(typeid(VideoStream));
+        info.types.push_back(typeid(vidlib::Picture));
     }
 }
 

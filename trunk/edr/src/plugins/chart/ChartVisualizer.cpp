@@ -29,11 +29,12 @@ core::IVisualizer* ChartVisualizer::create() const
     return new ChartVisualizer();
 }
 
-void ChartVisualizer::getInputInfo( int inputNo, std::string& name, core::ObjectWrapper::Types& types )
+//void ChartVisualizer::getInputInfo( int inputNo, std::string& name, core::ObjectWrapper::Types& types )
+void ChartVisualizer::getInputInfo(int inputNo, core::IInputDescription::InputInfo& info)
 {
-    name = std::string("serie ") + boost::lexical_cast<std::string>(inputNo);
-    types.push_back( typeid(core::EMGChannel) );
-    types.push_back( typeid(core::GRFChannel) );
+    info.name = std::string("serie ") + boost::lexical_cast<std::string>(inputNo);
+    info.types.push_back( typeid(core::EMGChannel) );
+    info.types.push_back( typeid(core::GRFChannel) );
 }
 
 void ChartVisualizer::update( double deltaTime )

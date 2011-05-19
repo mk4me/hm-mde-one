@@ -15,6 +15,7 @@
 #include <core/IObjectSource.h>
 #include <core/ObjectWrapper.h>
 #include <core/PluginCommon.h>
+#include <core/IInputProcessItem.h>
 
 class QObject;
 class QWidget;
@@ -29,14 +30,17 @@ namespace osg
 
 namespace core 
 {
-    class IVisualizer : public IIdentifiable
+    class IVisualizer :  public IInputProcessItem
     {
     public:
         //! Maksymalna liczba Ÿróde³.
-        static const int maxNumSources = 16;
+        //static const int maxNumSources = 16;
 
         //! Pusty polimorficzny destruktor.
-        virtual ~IVisualizer() {}
+        virtual ~IVisualizer() 
+        {
+            std::cout << "IVisualizer destr... " << std::endl;
+        }
 
         //! Nowa instancja tego typu.
         virtual IVisualizer* create() const = 0;
@@ -60,13 +64,8 @@ namespace core
         //! \param inputNo Numer slotu.
         //! \param name Wynikowa Nazwa slotu.
         //! \param types Wynikowa lista wspieranych typów.
-        virtual void getInputInfo(int inputNo, std::string& name, ObjectWrapper::Types& types) = 0;
-
-        //! Metoda wywo³ywana po przypisaniu danych wejœciowych wizualizatorowi. Powinna uwzglêdniæ czyszczenie widgetu
-        //! po poprzednim setUp'ie.
-        //! \param source ród³o danych.
-        virtual void setUp(IObjectSource* source) = 0;
-
+        //virtual void getInputInfo(int inputNo, std::string& name, ObjectWrapper::Types& types) = 0;
+                
         //! Aktualizacja wyœwietlania. NIE aktualizacja stanu wyœwietlanych danych.
         virtual void update(double deltaTime) = 0;
 

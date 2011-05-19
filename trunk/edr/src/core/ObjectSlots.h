@@ -11,7 +11,7 @@
 
 #include <vector>
 #include <core/ObjectWrapper.h>
-
+#include <core/IInputDescription.h>
 /**
  *	Reprezentuje pewn¹ kolekcjê obiektów domenowych. Odwo³ania do nich
  *  wystêpuj¹ pod postaci¹ zmiennych i/lub niezmiennych wskaŸników. 
@@ -21,24 +21,26 @@
 class ObjectSlots
 {
 public:
-    //! Typ opisu slotu.
-    struct SlotInfo
-    {
-        //! Nazwa slotu.
-        std::string name;
-        //! Typy wspierane w slocie.
-        core::TypeInfoList types;
-        //! Pomocnicza metoda, optymalizuj¹ca podmianê.
-        void swap(SlotInfo& slotInfo)
-        {
-            if ( &slotInfo != this ) {
-                name.swap(slotInfo.name);
-                types.swap(slotInfo.types);
-            }
-        }
-    };
+    ////! Typ opisu slotu.
+    //struct SlotInfo
+    //{
+    //    //! Nazwa slotu.
+    //    std::string name;
+    //    //! Typy wspierane w slocie.
+    //    core::TypeInfoList types;
+    //    //! Pomocnicza metoda, optymalizuj¹ca podmianê.
+    //    void swap(SlotInfo& slotInfo)
+    //    {
+    //        if ( &slotInfo != this ) {
+    //            name.swap(slotInfo.name);
+    //            types.swap(slotInfo.types);
+    //        }
+    //    }
+    //};
     //! Informacje o slotach.
-    typedef std::vector<SlotInfo> SlotsInfo;
+    //typedef std::vector<SlotInfo> SlotsInfo;
+    typedef core::IInputDescription::InputInfo SlotInfo;
+    typedef std::vector<core::IInputDescription::InputInfo> SlotsInfo;
 
 private:
     //! W³aœciwy slot.

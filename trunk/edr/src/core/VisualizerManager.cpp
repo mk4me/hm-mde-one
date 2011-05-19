@@ -17,6 +17,9 @@ debugWidget(nullptr)
 VisualizerManager::~VisualizerManager()
 {
     UTILS_ASSERT(visualizers.empty(), "Wszystkie wizualizatory powinny byæ zniszczone.");
+    while (prototypes.size()) {
+        prototypes.pop_back();
+    }
     BOOST_FOREACH( IVisualizerPersistantData* data, visualizersData ) {
         delete data;
     }
@@ -104,17 +107,18 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
         data->icon = *icon;
 
         // lista wejœæ
-        SourcesTypes::value_type info;
+        //SourcesTypes::value_type info;
+        IInputDescription::InputInfo info;
         for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
             info.name.clear();
             info.types.clear();
-            visualizer->getInputInfo(i, info.name, info.types);
+            visualizer->getInputInfo(i, info);
             if ( info.types.empty() ) {
                 break;
             } else {
                 // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...
-                // data->sourcesTypes.push_back(info);
-                data->sourcesTypes.insert(data->sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
+                data->sourcesTypes.push_back(info);
+                //data->sourcesTypes.insert(data->sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
             }
         }
         visualizersData.push_back(data);

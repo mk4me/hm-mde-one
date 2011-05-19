@@ -21,7 +21,9 @@
 class IIdentifiable
 {
 public:
-    virtual ~IIdentifiable() {}
+    virtual ~IIdentifiable() 
+    { 
+    }
     virtual UniqueID getID() const = 0;
     virtual std::string getDescription() const = 0;
 };

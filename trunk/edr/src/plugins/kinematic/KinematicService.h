@@ -81,7 +81,7 @@ public:
     void resetScene();
     
     virtual core::IVisualizer* create() const;
-    virtual void getInputInfo( int source, std::string& name, core::ObjectWrapper::Types& types );
+    virtual void getInputInfo( int source, core::IInputDescription::InputInfo& info );
     virtual QWidget* createWidget(std::vector<QObject*>& actions);
     virtual QIcon* createIcon();
     virtual const std::string& getName() const;
@@ -102,7 +102,11 @@ private:
 private slots:
     void setAxis(bool xyz);
     void actionTriggered(QAction* action);
-    
+
+public:
+    virtual osg::Node* debugGetLocalSceneRoot();
+
+
 private:
     SkeletalVisualizationSchemePtr scheme;
     QTimer updateTimer;

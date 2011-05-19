@@ -50,6 +50,12 @@ set(PRIVATE_H
 	EDRDockWidget.h
 	EDRDockInnerWidget.h
 	TestEDRWidget.h
+	WorkflowItemEncapsulator.h
+	InputItem.h
+	InputDescription.h
+	OutputDescription.h
+	OutputItem.h
+	InputOutputItem.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -106,6 +112,15 @@ set(PUBLIC_H
 	${HEADER_PATH}/ObjectWrapperFactory.h
 	${HEADER_PATH}/TypeInfo.h
 	${HEADER_PATH}/IEDRTitleBar.h
+	${HEADER_PATH}/IInputDescription.h
+	${HEADER_PATH}/IOutputDescription.h
+	${HEADER_PATH}/IInputProcessItem.h
+	${HEADER_PATH}/IOutputProcessItem.h
+	${HEADER_PATH}/IInputOutputProcessItem.h
+	${HEADER_PATH}/IConfigurable.h
+	${HEADER_PATH}/IWorkflowItemBase.h
+	${HEADER_PATH}/IClonable.h
+	${HEADER_PATH}/ISerializable.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -157,6 +172,12 @@ set(TARGET_SRC
 	EDRDockWidget.cpp
 	EDRDockInnerWidget.cpp	
 	TestEDRWidget.cpp
+	WorkflowItemEncapsulator.cpp
+	InputItem.cpp
+	InputDescription.cpp
+	OutputDescription.cpp
+	OutputItem.cpp
+	InputOutputItem.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

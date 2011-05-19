@@ -87,6 +87,11 @@ void PluginLoader::addDefaultPaths()
     dir = string("plugins/.");
     paths.push_back(dir);
 #endif
+
+    // dodanie sciezki dla customowych pluginow
+    /*IDataManager* manager = core::getDataManager();
+    boost::filesystem::path p = manager->getApplicationDataPath() / "plugins";
+    paths.push_back(p.string());*/
 }
 
 

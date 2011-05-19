@@ -12,18 +12,17 @@
 #include <core/SmartPtr.h>
 #include <core/IVisualizer.h>
 #include <boost/range.hpp>
+#include <core/WorkflowItemEncapsulator.h>
 #include "ObjectSource.h"
 
 //! Wizualizator. Jego zadaniem jest stworzyÊ widget (gdzie on bÍdzie osadzony - nie jego sprawa),
 //! zadeklarowaÊ ile ürÛde≥ i jakiego typu jest w stanie obs≥uøyÊ oraz przyjπÊ ürÛd≥a danych.
-class Visualizer
+class Visualizer : public core::WorkflowItemEncapsulator<core::IVisualizer>
 {
 public:
     typedef ObjectSource::SlotsInfo SlotsInfo;
 
 private:
-    //! Faktyczna implementacja wizualizatora.
-    core::scoped_ptr<core::IVisualizer> impl;
     //! Faktyczny widget.
     QWidget* widget;
     //! èrÛd≥o danych dla wizualizatora.
@@ -32,6 +31,7 @@ private:
     std::vector<QObject*> genericActions;
     //! Nazwa uzupe≥niona o przyrostek.
     QString uiName;
+
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w≥asnoúÊ.
@@ -55,11 +55,12 @@ public:
         return widget;
     }
 
-    //! IVisualizer::update
-    inline void update(double deltaTime)
+    virtual void run() 
     {
-        impl->update(deltaTime);
+         getImplementation()->setUp(&source);
     }
+
+    
     //! \see IVisualizer::getInputTypes
     inline const core::TypeInfoList& getInputTypes(int idx) const
     {
@@ -70,10 +71,10 @@ public:
     {
         return source.getSlotName(idx);
     }
-    //! \return
-    inline UniqueID getID() const
+    
+    inline void update(double deltaTime)
     {
-        return impl->getID();
+        getImplementation()->update(deltaTime);
     }
 
     //! \return Nazwa wizualizatora. Uøywana w UI.
@@ -85,7 +86,7 @@ public:
     //! \return Nazwa wizualizatora.
     const std::string& getName() const
     {
-        return impl->getName();
+        return getImplementation()->getName();
     }
 
     //!
