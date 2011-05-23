@@ -53,7 +53,7 @@ public:
     //! \see IVisualizer::getName
     virtual const std::string& getName() const;
     //! \see IVisualizer::create
-    virtual core::IVisualizer* create() const;
+    virtual core::IVisualizer* createClone() const;
     //! \see IVisualizer::getSlotInfo
     //virtual void getInputInfo(int inputNo, std::string& name, core::ObjectWrapper::Types& types);
     virtual void getInputInfo(int inputNo, core::IInputDescription::InputInfo& info);

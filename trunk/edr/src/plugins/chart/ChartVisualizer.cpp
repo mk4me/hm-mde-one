@@ -24,7 +24,7 @@ const std::string& ChartVisualizer::getName() const
     return name;
 }
 
-core::IVisualizer* ChartVisualizer::create() const
+core::IVisualizer* ChartVisualizer::createClone() const
 {
     return new ChartVisualizer();
 }

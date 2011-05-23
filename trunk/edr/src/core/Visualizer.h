@@ -12,21 +12,20 @@
 #include <core/SmartPtr.h>
 #include <core/IVisualizer.h>
 #include <boost/range.hpp>
-#include <core/WorkflowItemEncapsulator.h>
+#include "InputItem.h"
 #include "ObjectSource.h"
 
 //! Wizualizator. Jego zadaniem jest stworzyÊ widget (gdzie on bÍdzie osadzony - nie jego sprawa),
 //! zadeklarowaÊ ile ürÛde≥ i jakiego typu jest w stanie obs≥uøyÊ oraz przyjπÊ ürÛd≥a danych.
-class Visualizer : public core::WorkflowItemEncapsulator<core::IVisualizer>
+class Visualizer : public InputItem<core::IVisualizer>
 {
-public:
-    typedef ObjectSource::SlotsInfo SlotsInfo;
-
 private:
     //! Faktyczny widget.
     QWidget* widget;
+
     //! èrÛd≥o danych dla wizualizatora.
-    ObjectSource source;
+    //ObjectSource source;
+
     //! Akcje wizualizatora.
     std::vector<QObject*> genericActions;
     //! Nazwa uzupe≥niona o przyrostek.
@@ -55,23 +54,11 @@ public:
         return widget;
     }
 
-    virtual void run() 
+   /* virtual void run() 
     {
          getImplementation()->setUp(&source);
-    }
+    }*/
 
-    
-    //! \see IVisualizer::getInputTypes
-    inline const core::TypeInfoList& getInputTypes(int idx) const
-    {
-        return source.getSlotTypes(idx);
-    }
-    //! \see IVisualizer::getInputTypes
-    inline const std::string& getInputName(int idx) const
-    {
-        return source.getSlotName(idx);
-    }
-    
     inline void update(double deltaTime)
     {
         getImplementation()->update(deltaTime);
@@ -91,33 +78,7 @@ public:
 
     //!
     const QIcon& getIcon() const;
-    //!
-    const SlotsInfo& getSourcesTypes() const;
-
-    //! Dodaje niezmienny obiekt na wejúcie.
-    //! \param slot
-    //! \param object
-    void setObject(int slot, const core::ObjectWrapperConstPtr& object)
-    {
-        source.setObject(slot, object);
-    }
-    //! Dodaje zmienny obiekt na wejúcie.
-    //! \param slot
-    //! \param object
-    void setObject(int slot, const core::ObjectWrapperPtr& object)
-    {
-        source.setObject(slot, object);
-    }
-    //! \return Liczba obiektÛw.
-    int getNumObjects() const
-    {
-        return source.getNumObjects();
-    }
-    //!
-    core::ObjectWrapperConstPtr getObject(int slot)
-    {
-        return source.getObject(slot, boost::true_type());
-    }
+    
 
     //! 
     void setUp();

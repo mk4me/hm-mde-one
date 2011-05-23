@@ -11,13 +11,31 @@
 
 #include <core/WorkflowItemEncapsulator.h>
 
-namespace core {
-
-class OutputItem : public WorkflowItemEncapsulator
+template<class T>
+class OutputItem : public WorkflowItemEncapsulator<T> , public OutputDescription
 {
+    UTILS_STATIC_ASSERT((boost::is_base_of<IOutputProcessItem, T>::value), "Template class should inherit from IOutputProcessItem");
+public:
+    OutputItem(T* implementation, const ObjectOutput& output) : 
+      WorkflowItemEncapsulator<T>(implementation),
+          OutputDescription(output)
+      {}
 
+      OutputItem(const Output& item) : 
+      WorkflowItemEncapsulator<T>(item),
+          OutputDescription(createOutput()) 
+      {}
+
+      OutputItem( T* implementation ) : 
+      WorkflowItemEncapsulator<T>(implementation),
+          OutputDescription(createOutput())
+      {}
+public:
+    virtual void run()
+    {
+        getImplementation()->generate(getOutput());
+    }
 };
 
-}
 
 #endif

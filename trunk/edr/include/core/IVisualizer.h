@@ -39,14 +39,14 @@ namespace core
         //! Pusty polimorficzny destruktor.
         virtual ~IVisualizer() 
         {
-            std::cout << "IVisualizer destr... " << std::endl;
+
         }
 
-        //! Nowa instancja tego typu.
-        virtual IVisualizer* create() const = 0;
+        ////! Nowa instancja tego typu.
+        //virtual IVisualizer* create() const = 0;
 
-        //! \return Nazwa wizualizatora.
-        virtual const std::string& getName() const = 0;
+        ////! \return Nazwa wizualizatora.
+        //virtual const std::string& getName() const = 0;
 
         //! Tylko tutaj powinno nastêpowaæ tworzenie widgetu. Metoda wywo³ywana tylko jeden raz.
         //! To wizualizator musi niszczyæ widget w destruktorze. Gdy widget jest równoczeœnie

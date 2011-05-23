@@ -9,16 +9,36 @@
 #ifndef HEADER_GUARD_CORE__INPUTOUTPUTITEM_H__
 #define HEADER_GUARD_CORE__INPUTOUTPUTITEM_H__
 
-#include <core/WorkflowItemEncapsulator.h>
-#include <core/IDataProcessor.h>
-#include "DataProcessor.h"
+#include <core/IInputOutputProcessItem.h>
+#include "WorkflowItemEncapsulator.h"
+#include "InputDescription.h"
+#include "OutputDescription.h"
 
-namespace core {
 
-typedef DataProcessor InputOutputItem;
-typedef boost::shared_ptr<InputOutputItem> InputOutputItemPtr;
-typedef boost::shared_ptr<const InputOutputItem> InputOutputItemConstPtr;
+template<class T>
+class InputOutputItem : public WorkflowItemEncapsulator<T>, 
+    public InputDescription, public OutputDescription
+{
+        UTILS_STATIC_ASSERT((boost::is_base_of<core::IInputOutputProcessItem, T>::value), "Template class should inherit from IInputOutputProcessItem");
 
-}
+public:
+      InputOutputItem(const InputOutputItem& item) : 
+      WorkflowItemEncapsulator<T>(item),
+          InputDescription(item),
+          OutputDescription(output)
+      {}
+
+      InputOutputItem( T* implementation ) : 
+      WorkflowItemEncapsulator<T>(implementation),
+          InputDescription(createSource()),
+          OutputDescription(createOutput())
+      {}
+
+public:
+    virtual void run()
+    {
+        getImplementation()->process(getSource(), getOutput());
+    }
+};
 
 #endif

@@ -13,14 +13,28 @@
 #include <core/WorkflowItemEncapsulator.h>
 #include <core/IInputProcessItem.h>
 #include <core/SmartPtr.h>
-#include "Visualizer.h"
+#include "InputDescription.h"
 
-namespace core {
 
-typedef Visualizer InputItem;
-typedef boost::shared_ptr<InputItem> InputItemPtr;
-typedef boost::shared_ptr<const InputItem> InputItemConstPtr;
+template<class T>
+class InputItem : public WorkflowItemEncapsulator<T> , public InputDescription
+{
+    UTILS_STATIC_ASSERT((boost::is_base_of<core::IInputProcessItem, T>::value), "Template class should inherit from IInputProcessItem");
+public:
+    InputItem(T* implementation, const ObjectSource& source) : 
+      WorkflowItemEncapsulator<T>(implementation),
+      InputDescription(source)
+      {}
+    InputItem(const InputItem& item) : 
+      WorkflowItemEncapsulator<T>(item),
+      InputDescription(item) 
+    {}
+public:
+    virtual void run()
+    {
+        getImplementation()->setUp(getSource());
+    }
+};
 
-}
 
 #endif

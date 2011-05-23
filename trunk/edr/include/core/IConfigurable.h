@@ -19,7 +19,7 @@ public:
     virtual ~IConfigurable() 
     {
     }
-    virtual QWidget* configure() = 0;
+    virtual QWidget* getConfigurationWidget() = 0;
 };
 
 }

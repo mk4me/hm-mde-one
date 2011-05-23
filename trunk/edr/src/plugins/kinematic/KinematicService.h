@@ -80,7 +80,7 @@ public:
 
     void resetScene();
     
-    virtual core::IVisualizer* create() const;
+    virtual core::IVisualizer* createClone() const;
     virtual void getInputInfo( int source, core::IInputDescription::InputInfo& info );
     virtual QWidget* createWidget(std::vector<QObject*>& actions);
     virtual QIcon* createIcon();

@@ -11,10 +11,12 @@
 
 namespace core {
 
+template<class T>
 class IClonable
 {
 public:
-    virtual void* createClone() = 0;
+    virtual T* createClone() const = 0;
+
     virtual ~IClonable() 
     {
     }

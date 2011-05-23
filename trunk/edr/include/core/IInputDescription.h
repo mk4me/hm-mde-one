@@ -9,6 +9,8 @@
 #ifndef HEADER_GUARD_CORE__IINPUTDESCRIPTION_H__
 #define HEADER_GUARD_CORE__IINPUTDESCRIPTION_H__
 
+#include <core/TypeInfo.h>
+
 namespace core {
 
 class IInputDescription
@@ -24,7 +26,11 @@ public:
         //! Nazwa wejœcia.
         std::string name;
         //! Typy wspierane przez wejœcie.
-        std::list<core::TypeInfo> types;
+        core::TypeInfoList types;
+        //! Czy wejœciew wymagane
+        bool required;
+        //! Czy dane na wejsciu bêdza modyfikowane
+        bool modify;
     };
 
 public:

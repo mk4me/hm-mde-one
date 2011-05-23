@@ -57,7 +57,7 @@ int VisualizerManager::getNumInstances( UniqueID id )
 
 VisualizerPtr VisualizerManager::createVisualizer( const IVisualizerConstPtr& prototype )
 {
-    VisualizerPtr result(new Visualizer(prototype->create()));
+    VisualizerPtr result(new Visualizer(dynamic_cast<IVisualizer*>(prototype->createClone())));
     //visualizersTrace.push_back(result);
     return result;
 }

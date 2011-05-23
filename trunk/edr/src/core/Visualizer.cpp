@@ -5,8 +5,9 @@
 
 using namespace core;
 
-Visualizer::Visualizer( IVisualizer* impl ) : core::WorkflowItemEncapsulator<IVisualizer>(impl),
-    widget(nullptr), source(VisualizerManager::getInstance()->getSourcesTypes(impl->getID()))
+Visualizer::Visualizer( IVisualizer* impl ) : 
+    InputItem<IVisualizer>(impl, VisualizerManager::getInstance()->getSourcesTypes(impl->getID())),
+    widget(nullptr)
 {
     //int numVisualizers = VisualizerManager::getInstance()->getNumInstances(impl->getID());
     //uiName = QString("%0 (%1)").arg(toString(getName())).arg(numVisualizers);
@@ -15,8 +16,10 @@ Visualizer::Visualizer( IVisualizer* impl ) : core::WorkflowItemEncapsulator<IVi
 }
 
 Visualizer::Visualizer( const Visualizer& visualizer ) :
-core::WorkflowItemEncapsulator<core::IVisualizer>(visualizer.getImplementation()->create()),
-source(visualizer.source), widget(nullptr)
+ InputItem<core::IVisualizer>(
+     dynamic_cast<IVisualizer*> (visualizer.getImplementation()->createClone()),
+     VisualizerManager::getInstance()->getSourcesTypes(getImplementation()->getID())),
+ widget(nullptr)
 {
     //int numVisualizers = VisualizerManager::getInstance()->getNumInstances(impl->getID());
     //uiName = QString("%0 (%1)").arg(toString(getName())).arg(numVisualizers);
@@ -26,10 +29,7 @@ source(visualizer.source), widget(nullptr)
 
 Visualizer::~Visualizer()
 {
-    { std::cout << "Visualizer destr.. " << std::endl; }
-
     VisualizerManager::getInstance()->notifyDestroyed(this);
-    //this->core::WorkflowItemEncapsulator<core::IVisualizer>::~WorkflowItemEncapsulator<IVisualizer>();
 }
 
 QWidget* Visualizer::getOrCreateWidget()
@@ -47,7 +47,7 @@ bool Visualizer::trySetUp()
 {
     try {
         LOG_DEBUG("Visualizer " << getImplementation()->getName() << " setup");
-        getImplementation()->setUp(&source);
+        getImplementation()->setUp(getSource());
 
         // aktualizacja widgetu
         UTILS_ASSERT(widget);
@@ -64,10 +64,7 @@ const QIcon& Visualizer::getIcon() const
     return VisualizerManager::getInstance()->getIcon(getID());
 }
 
-const Visualizer::SlotsInfo& Visualizer::getSourcesTypes() const
-{
-    return VisualizerManager::getInstance()->getSourcesTypes(getID());
-}
+
 
 const std::vector<QObject*>& Visualizer::getGenericActions() const
 {

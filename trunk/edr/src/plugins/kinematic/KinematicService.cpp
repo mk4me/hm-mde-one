@@ -112,7 +112,7 @@ void KinematicVisualizer::setUp( IObjectSource* source )
     }
  }
 
-IVisualizer* KinematicVisualizer::create() const
+IVisualizer* KinematicVisualizer::createClone() const
 {
     return new KinematicVisualizer();
 }

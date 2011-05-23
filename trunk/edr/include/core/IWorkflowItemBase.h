@@ -18,19 +18,21 @@
 namespace core {
 
 class IWorkflowItemBase : 
-    public IClonable, public ISerializable, public IIdentifiable, public IConfigurable
+    public IClonable<IWorkflowItemBase>, public ISerializable, public IIdentifiable, public IConfigurable
 {
 public:
     virtual ~IWorkflowItemBase() 
     {
     }
+
+
 public:
-    virtual QWidget* configure() { return nullptr; }
+    virtual const std::string & getName() const = 0;
 
     virtual void serialize( std::ostream& output ) { }
     virtual void deserialize( std::istream& istream ) { }
+    virtual QWidget* getConfigurationWidget(void) { return nullptr; }
 
-    virtual void* createClone() { return nullptr; }
 };
 
 typedef boost::shared_ptr<IWorkflowItemBase> IWorkflowItemBasePtr;
