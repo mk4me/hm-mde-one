@@ -79,7 +79,7 @@ void VisualizerWidget::init()
     //labelka jako ikona z okiem
     label = new QLabel(titleBar);
     label->setObjectName(QString::fromUtf8("label"));
-    label->setPixmap(QPixmap(QString::fromUtf8(":/data/resources/icons/wizualizacja2.png")));
+    label->setPixmap(QPixmap(QString::fromUtf8(":/resources/icons/wizualizacja2.png")));
 
     //combo do przechowywania typów wizualizatorów
     comboType = new QComboBox(titleBar);
@@ -107,7 +107,7 @@ void VisualizerWidget::init()
     buttonPin = new QToolButton(titleBar);
     buttonPin->setObjectName(QString::fromUtf8("buttonPin"));
     QIcon icon1;
-    icon1.addFile(QString::fromUtf8(":/data/resources/icons/wejscie2.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon1.addFile(QString::fromUtf8(":/resources/icons/wejscie2.png"), QSize(), QIcon::Normal, QIcon::Off);
     buttonPin->setIcon(icon1);
     buttonPin->setPopupMode(QToolButton::InstantPopup);
     buttonPin->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -122,7 +122,7 @@ void VisualizerWidget::init()
     buttonSource->setMaximumSize(QSize(80, 22));
     buttonSource->setStyleSheet(QString::fromUtf8(""));
     QIcon icon2;
-    icon2.addFile(QString::fromUtf8(":/data/resources/icons/dane.wejsciowe.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon2.addFile(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png"), QSize(), QIcon::Normal, QIcon::Off);
     buttonSource->setIcon(icon2);
     buttonSource->setPopupMode(QToolButton::InstantPopup);
     buttonSource->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -142,13 +142,13 @@ void VisualizerWidget::init()
     actionSplitVertically = new QAction(titleBar);
     actionSplitVertically->setObjectName(QString::fromUtf8("actionSplitVertically"));
     QIcon icon3;
-    icon3.addFile(QString::fromUtf8(":/data/resources/icons/vertical.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon3.addFile(QString::fromUtf8(":/resources/icons/vertical.png"), QSize(), QIcon::Normal, QIcon::Off);
     actionSplitVertically->setIcon(icon3);
     
     actionSplitHorizontally = new QAction(titleBar);
     actionSplitHorizontally->setObjectName(QString::fromUtf8("actionSplitHorizontally"));
     QIcon icon4;
-    icon4.addFile(QString::fromUtf8(":/data/resources/icons/horizontal.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon4.addFile(QString::fromUtf8(":/resources/icons/horizontal.png"), QSize(), QIcon::Normal, QIcon::Off);
     actionSplitHorizontally->setIcon(icon4);
         
     //ustawienie przyciskow odpowiedzialnych za akcje dizelenia wizualizatora

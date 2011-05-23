@@ -62,7 +62,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="Icons.qrc">:/data/resources/icons/wizualizacja2.png</pixmap>
+      <pixmap resource="Icons.qrc">:/resources/icons/wizualizacja2.png</pixmap>
      </property>
     </widget>
    </item>
@@ -163,8 +163,8 @@
    </property>
    <property name="icon">
     <iconset resource="Icons.qrc">
-     <normaloff>:/data/resources/icons/oddokowywanie.png</normaloff>
-     <normalon>:/data/resources/icons/dokowanie.png</normalon>:/data/resources/icons/oddokowywanie.png</iconset>
+     <normaloff>:/resources/icons/oddokowywanie.png</normaloff>
+     <normalon>:/resources/icons/dokowanie.png</normalon>:/resources/icons/oddokowywanie.png</iconset>
    </property>
    <property name="text">
     <string>Float</string>
@@ -173,7 +173,7 @@
   <action name="actionClose">
    <property name="icon">
     <iconset resource="Icons.qrc">
-     <normaloff>:/data/resources/icons/x.png</normaloff>:/data/resources/icons/x.png</iconset>
+     <normaloff>:/resources/icons/x.png</normaloff>:/resources/icons/x.png</iconset>
    </property>
    <property name="text">
     <string>Close</string>
@@ -185,7 +185,7 @@
   <action name="actionSplitVertically">
    <property name="icon">
     <iconset resource="Icons.qrc">
-     <normaloff>:/data/resources/icons/vertical.png</normaloff>:/data/resources/icons/vertical.png</iconset>
+     <normaloff>:/resources/icons/vertical.png</normaloff>:/resources/icons/vertical.png</iconset>
    </property>
    <property name="text">
     <string>Split vertically</string>
@@ -194,7 +194,7 @@
   <action name="actionSplitHorizontally">
    <property name="icon">
     <iconset resource="Icons.qrc">
-     <normaloff>:/data/resources/icons/horizontal.png</normaloff>:/data/resources/icons/horizontal.png</iconset>
+     <normaloff>:/resources/icons/horizontal.png</normaloff>:/resources/icons/horizontal.png</iconset>
    </property>
    <property name="text">
     <string>Split horizontally</string>

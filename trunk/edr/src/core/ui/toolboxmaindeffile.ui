@@ -67,7 +67,7 @@
      </property>
      <property name="icon">
       <iconset resource="Icons.qrc">
-       <normaloff>:/data/resources/icons/wizualizacja2.png</normaloff>:/data/resources/icons/wizualizacja2.png</iconset>
+       <normaloff>:/resources/icons/wizualizacja2.png</normaloff>:/resources/icons/wizualizacja2.png</iconset>
      </property>
      <addaction name="separator"/>
     </widget>
@@ -89,7 +89,7 @@
      </property>
      <property name="icon">
       <iconset resource="Icons.qrc">
-       <normaloff>:/data/resources/icons/load.png</normaloff>:/data/resources/icons/load.png</iconset>
+       <normaloff>:/resources/icons/load.png</normaloff>:/resources/icons/load.png</iconset>
      </property>
      <addaction name="actionLayoutOpen"/>
     </widget>
@@ -111,7 +111,7 @@
   <action name="actionAbout">
    <property name="icon">
     <iconset resource="Icons.qrc">
-     <normaloff>:/data/resources/icons/about.png</normaloff>:/data/resources/icons/about.png</iconset>
+     <normaloff>:/resources/icons/about.png</normaloff>:/resources/icons/about.png</iconset>
    </property>
    <property name="text">
     <string>About...</string>
@@ -120,7 +120,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="Icons.qrc">
-     <normaloff>:/data/resources/icons/open.png</normaloff>:/data/resources/icons/open.png</iconset>
+     <normaloff>:/resources/icons/open.png</normaloff>:/resources/icons/open.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -142,7 +142,7 @@
   <action name="actionSaveLayout">
    <property name="icon">
     <iconset resource="Icons.qrc">
-     <normaloff>:/data/resources/icons/save.png</normaloff>:/data/resources/icons/save.png</iconset>
+     <normaloff>:/resources/icons/save.png</normaloff>:/resources/icons/save.png</iconset>
    </property>
    <property name="text">
     <string>Save layout</string>

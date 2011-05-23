@@ -184,8 +184,8 @@ QToolButton::menu-arrow:open {
    </property>
    <property name="icon">
     <iconset resource="Icons.qrc">
-     <normaloff>:/data/resources/icons/oddokowywanie.png</normaloff>
-     <normalon>:/data/resources/icons/dokowanie.png</normalon>:/data/resources/icons/oddokowywanie.png</iconset>
+     <normaloff>:/resources/icons/oddokowywanie.png</normaloff>
+     <normalon>:/resources/icons/dokowanie.png</normalon>:/resources/icons/oddokowywanie.png</iconset>
    </property>
    <property name="text">
     <string>Float</string>
@@ -197,7 +197,7 @@ QToolButton::menu-arrow:open {
   <action name="actionClose">
    <property name="icon">
     <iconset resource="Icons.qrc">
-     <normaloff>:/data/resources/icons/x.png</normaloff>:/data/resources/icons/x.png</iconset>
+     <normaloff>:/resources/icons/x.png</normaloff>:/resources/icons/x.png</iconset>
    </property>
    <property name="text">
     <string>Close</string>

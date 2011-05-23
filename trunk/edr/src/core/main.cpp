@@ -61,11 +61,12 @@ int main(int argc, char *argv[])
         application.setOrganizationName("PJWSTK");
         QSettings::setDefaultFormat(QSettings::IniFormat);
 
-        LogInitializer logger("data/resources/settings/log.ini");
+        LogInitializer logger("resources/settings/log.ini");
 
         PluginLoader pluginLoader;
         {
             DataManager dataManager;
+
             boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
             userPath /= "EDR";
             dataManager.setUserDataPath(userPath);
@@ -73,9 +74,10 @@ int main(int argc, char *argv[])
             boost::filesystem::path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
             dataManager.setApplicationDataPath(appDataPath);
 
-            boost::filesystem::path resourcesPath = boost::filesystem::initial_path();
+///            boost::filesystem::path resourcesPath = boost::filesystem::initial_path();
+            boost::filesystem::path resourcesPath(core::toStdString(QDir::currentPath())); 
             resourcesPath /= "resources";
-            dataManager.setResourcesPath(resourcesPath);
+			dataManager.setResourcesPath(resourcesPath);
             ServiceManager serviceManager;
             VisualizerManager visualizerManager;
 

@@ -2,7 +2,7 @@
 @author Marek Daniluk
 @brief Klasa DataManager implementuje interfejs core::IDataManager. S³u¿y do zarz¹dzania zasobami edytora, które dziel¹ siê na dane
 konfiguracyjne i próby pomiarowe. Zasoby ³adowane s¹ z odpowiednich œcie¿ek, domyœlnie zasoby sta³e powinny znajdowaæ siê w
-data/resources, próby pomiarowe s¹ wyszukiwane i pobierane do data/trials.
+resources, próby pomiarowe s¹ wyszukiwane i pobierane do trials.
 */
 #ifndef HEADER_GUARD_CORE_DATAMANAGER_H__
 #define HEADER_GUARD_CORE_DATAMANAGER_H__
@@ -16,7 +16,7 @@ data/resources, próby pomiarowe s¹ wyszukiwane i pobierane do data/trials.
 class DataManager: public core::IDataManager
 {
 public:
-    DataManager(const std::string& resourcesPath = "data/resources/", const std::string& trialsPath = "data/trials/");
+    DataManager(const std::string& resourcesPath = "resources/", const std::string& trialsPath = "trials/");
     virtual ~DataManager();
 
 public:

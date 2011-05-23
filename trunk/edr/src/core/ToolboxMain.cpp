@@ -372,7 +372,7 @@ void ToolboxMain::registerPluginsVisualizers()
 void ToolboxMain::onOpen()
 {
     utils::Push<bool> pushed(updateEnabled, false);
-    const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/data/trials"));
+    const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/trials"));
     if (!fileName.isEmpty()) 
     {
         std::string pathVal = core::toStdString(fileName);
@@ -862,7 +862,7 @@ void ToolboxMain::onShowSavedLayouts()
     menuLoad_layout->addAction(actionLayoutOpen);
 
     // layouty wbudowane
-    addLayoutsToMenu(QDir(QDir::currentPath().append("/data/resources/layouts")));
+    addLayoutsToMenu(QDir(QDir::currentPath().append("/resources/layouts")));
     // layouty zdefiniowane przez u¿ytkownika
     addLayoutsToMenu(QDir(QDir::currentPath().append("/data/layouts")));
 }

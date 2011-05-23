@@ -124,7 +124,7 @@ void VideoService::loadData(IServiceManager* serviceManager, core::IDataManager*
 // //     //}
 // //     widget->init(files);
 // 
-//     widget->loadShaders("data/resources/shaders/textureRect_yuv_to_rgb.frag", "data/resources/shaders/texture2D_yuv_to_rgb.frag");
+//     widget->loadShaders("resources/shaders/textureRect_yuv_to_rgb.frag", "resources/shaders/texture2D_yuv_to_rgb.frag");
 //     widget->setYuvImageSizeName("texture_size");
 //     widget->setYuvSamplerName("movie_texture");
 // 

@@ -45,7 +45,7 @@
         </property>
         <property name="icon">
          <iconset resource="ConsoleWidget.qrc">
-          <normaloff>data/resources/icons/clear_console_16x16.png</normaloff>data/resources/icons/clear_console_16x16.png</iconset>
+          <normaloff>resources/icons/clear_console_16x16.png</normaloff>resources/icons/clear_console_16x16.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -62,7 +62,7 @@
         </property>
         <property name="icon">
          <iconset resource="ConsoleWidget.qrc">
-          <normaloff>data/resources/icons/word_wrap_16x16.png</normaloff>data/resources/icons/word_wrap_16x16.png</iconset>
+          <normaloff>resources/icons/word_wrap_16x16.png</normaloff>resources/icons/word_wrap_16x16.png</iconset>
         </property>
         <property name="checkable">
          <bool>true</bool>

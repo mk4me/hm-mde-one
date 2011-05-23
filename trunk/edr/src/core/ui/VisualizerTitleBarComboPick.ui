@@ -79,7 +79,7 @@ QToolButton::menu-arrow {
      </property>
      <property name="icon">
       <iconset resource="Icons.qrc">
-       <normaloff>:/data/resources/icons/wejscie2.png</normaloff>:/data/resources/icons/wejscie2.png</iconset>
+       <normaloff>:/resources/icons/wejscie2.png</normaloff>:/resources/icons/wejscie2.png</iconset>
      </property>
      <property name="popupMode">
       <enum>QToolButton::InstantPopup</enum>
@@ -111,7 +111,7 @@ QToolButton::menu-arrow {
      </property>
      <property name="icon">
       <iconset resource="Icons.qrc">
-       <normaloff>:/data/resources/icons/dane.wejsciowe.png</normaloff>:/data/resources/icons/dane.wejsciowe.png</iconset>
+       <normaloff>:/resources/icons/dane.wejsciowe.png</normaloff>:/resources/icons/dane.wejsciowe.png</iconset>
      </property>
      <property name="popupMode">
       <enum>QToolButton::InstantPopup</enum>

@@ -38,14 +38,14 @@ void EDRConsoleWidget::init()
     clearButton = new QToolButton(titleBar);
     clearButton->setObjectName(QString::fromUtf8("clearButton"));
     QIcon icon;
-    icon.addFile(QString::fromUtf8("data/resources/icons/clear_console_16x16.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon.addFile(QString::fromUtf8("resources/icons/clear_console_16x16.png"), QSize(), QIcon::Normal, QIcon::Off);
     clearButton->setIcon(icon);
     clearButton->setIconSize(QSize(16, 16));
 
     toggleWordWrapButton = new QToolButton(titleBar);
     toggleWordWrapButton->setObjectName(QString::fromUtf8("toggleWordWrapButton"));
     QIcon icon1;
-    icon1.addFile(QString::fromUtf8("data/resources/icons/word_wrap_16x16.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon1.addFile(QString::fromUtf8("resources/icons/word_wrap_16x16.png"), QSize(), QIcon::Normal, QIcon::Off);
     toggleWordWrapButton->setIcon(icon1);
     toggleWordWrapButton->setCheckable(true);
 

@@ -17,7 +17,7 @@ CommunicationWidgetEx::PerformerTreeItem::PerformerTreeItem(PerformerRelationPtr
     menu = nullptr;
     headers << "" << "Element";
     setToolTip(0, "Performer");
-    setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/subject.png")));
+    setIcon(0, QIcon(QString::fromUtf8("resources/icons/subject.png")));
 
     QString name = QString::fromUtf8(performer->performer.firstName.c_str());
     QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
@@ -31,7 +31,7 @@ CommunicationWidgetEx::SessionTreeItem::SessionTreeItem(SessionRelationPtr sessi
     menu = nullptr;
     headers << "" << "Element" << "Date" << "Performer";
     setToolTip(0, "Session");
-    setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/session.png")));
+    setIcon(0, QIcon(QString::fromUtf8("resources/icons/session.png")));
 
     setText(0, QString::fromUtf8(session->session.sessionName.c_str()));
     setText(1, QString::number(session->trials.size()).append(" trial(s)"));
@@ -46,7 +46,7 @@ CommunicationWidgetEx::TrialTreeItem::TrialTreeItem(TrialRelationPtr trial)
     menu = nullptr;
     headers << "" << "Element" << "Date" << "Performer" << "Session";
     setToolTip(0, "Trial");
-    setIcon(0, QIcon(QString::fromUtf8("data/resources/icons/trial.png")));
+    setIcon(0, QIcon(QString::fromUtf8("resources/icons/trial.png")));
     setText(0, QString::fromUtf8(trial->trial.trialName.c_str()).right(11));
 
     QString files;
@@ -368,7 +368,7 @@ void CommunicationWidgetEx::useVideos()
                         if(trial->markVideos) {
                             BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
                             {
-                                boost::filesystem::path f("data/trials");
+                                boost::filesystem::path f("trials");
                                 f /= fs::path(trial->trial.trialName) /= fs::path(file.fileName);
                                 if(!fs::extension(f).compare(".avi")) {
                                     files.push_back(f);
@@ -403,7 +403,7 @@ void CommunicationWidgetEx::useMocap()
                         if(trial->markMocap) {
                             BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
                             {
-                                boost::filesystem::path f("data/trials");
+                                boost::filesystem::path f("trials");
                                 f /= fs::path(trial->trial.trialName) /= fs::path(file.fileName);
                                 if(!fs::extension(f).compare(".c3d") || !fs::extension(f).compare(".amc") || !fs::extension(f).compare(".asf")) {
                                     files.push_back(f);
@@ -438,7 +438,7 @@ void CommunicationWidgetEx::useGrf()
                         if(trial->markGrf) {
                             BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
                             {
-                                boost::filesystem::path f("data/trials");
+                                boost::filesystem::path f("trials");
                                 f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
                                 if(!fs::extension(f).compare(".c3d")) {
                                     files.push_back(f);
@@ -473,7 +473,7 @@ void CommunicationWidgetEx::useEmg()
                         if(trial->markEmg) {
                             BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
                             {
-                                boost::filesystem::path f("data/trials");
+                                boost::filesystem::path f("trials");
                                 f /= boost::filesystem::path(trial->trial.trialName) /= boost::filesystem::path(file.fileName);
                                 if(!fs::extension(f).compare(".c3d")) {
                                     files.push_back(f);
@@ -780,7 +780,7 @@ std::vector<core::IDataManager::Path> CommunicationWidgetEx::listTrialFiles(bool
                 if(videos) {
                     BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
                     {
-                        boost::filesystem::path f("data/trials");
+                        boost::filesystem::path f("trials");
                         f /= boost::filesystem::path(item->getTrial()->trial.trialName) / boost::filesystem::path(file.fileName);
                         if(!fs::extension(f).compare(".avi")) {
                             files.push_back(f);
@@ -790,7 +790,7 @@ std::vector<core::IDataManager::Path> CommunicationWidgetEx::listTrialFiles(bool
                 if(mocap) {
                     BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
                     {
-                        boost::filesystem::path f("data/trials");
+                        boost::filesystem::path f("trials");
                         f /= boost::filesystem::path(item->getTrial()->trial.trialName) / boost::filesystem::path(file.fileName);
                         if(!fs::extension(f).compare(".c3d") || fs::extension(f).compare(".asf") || fs::extension(f).compare(".amc")) {
                             files.push_back(f);
@@ -800,7 +800,7 @@ std::vector<core::IDataManager::Path> CommunicationWidgetEx::listTrialFiles(bool
                 if(grf) {
                     BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
                     {
-                        boost::filesystem::path f("data/trials");
+                        boost::filesystem::path f("trials");
                         f /= boost::filesystem::path(item->getTrial()->trial.trialName) / boost::filesystem::path(file.fileName);
                         if(!fs::extension(f).compare(".c3d")) {
                             files.push_back(f);
@@ -810,7 +810,7 @@ std::vector<core::IDataManager::Path> CommunicationWidgetEx::listTrialFiles(bool
                 if(emg) {
                     BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
                     {
-                        boost::filesystem::path f("data/trials");
+                        boost::filesystem::path f("trials");
                         f /= boost::filesystem::path(item->getTrial()->trial.trialName) /= boost::filesystem::path(file.fileName);
                         if(!fs::extension(f).compare(".c3d")) {
                             files.push_back(f);
