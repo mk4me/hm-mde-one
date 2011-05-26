@@ -13,27 +13,27 @@ set(TARGET_TARGETNAME
 set(PRIVATE_H
 #	ASFAMCData.h
 #	ASFAMCParser.h
-	C3DModel.h
+#	C3DModel.h
 	ConsoleWidget.h
 	EDRConsoleWidget.h
 	EDRConsoleInnerWidget.h
 	DataManager.h
-	DataTransfer.h
-	Factory.h
-	FAnimation.h
-	FileChunkReader.h
-	FileReader2Motion.h
-	FileUtil.h
-	FModel.h
+	#DataTransfer.h
+	#Factory.h
+	#FAnimation.h
+	#FileChunkReader.h
+	#FileReader2Motion.h
+	#FileUtil.h
+	#FModel.h
 	SceneGraphWidget.h
-	Intersection.h
+	#Intersection.h
 	LogInitializer.h
-	Marker.h
-	Mesh.h
-	Model.h
-	RenderService.h
+	#Marker.h
+	#Mesh.h
+	#Model.h
+	#RenderService.h
 	ServiceManager.h
-	SkeletonNode.h
+	#SkeletonNode.h
 	ToolboxMain.h
 	UserInterfaceService.h
 	#Quaternioncal.h
@@ -42,8 +42,8 @@ set(PRIVATE_H
 	VisualizerManager.h
 	ObjectSource.h
 	Visualizer.h
-	VisualizerTitleBar.h
-	VisualizerTitleBarComboPick.h
+	#VisualizerTitleBar.h
+	#VisualizerTitleBarComboPick.h
 	SampleProcessor.h
 	ObjectSlots.h
 	EDRTitleBar.h
@@ -63,28 +63,28 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/BaseDataTypes.h
-	${HEADER_PATH}/Bone.h	
+	#${HEADER_PATH}/Bone.h	
 	${HEADER_PATH}/DateTime.h
-	${HEADER_PATH}/Enumerators.h
+	#${HEADER_PATH}/Enumerators.h
 	${HEADER_PATH}/Filesystem.h
-	${HEADER_PATH}/Frame.h
-	${HEADER_PATH}/IAnimationGroup.h
-	${HEADER_PATH}/IAnimationNode.h
+	#${HEADER_PATH}/Frame.h
+	#${HEADER_PATH}/IAnimationGroup.h
+	#${HEADER_PATH}/IAnimationNode.h
 	${HEADER_PATH}/IService.h
 	${HEADER_PATH}/IIdentifiable.h
 	${HEADER_PATH}/IDataManager.h
-	${HEADER_PATH}/IMesh.h
-	${HEADER_PATH}/IModel.h
+	#${HEADER_PATH}/IMesh.h
+	#{HEADER_PATH}/IModel.h
 	${HEADER_PATH}/IParser.h
 	${HEADER_PATH}/IServiceManager.h
-	${HEADER_PATH}/ISkeletonNode.h
+	#${HEADER_PATH}/ISkeletonNode.h
 	${HEADER_PATH}/Window.h
-	${HEADER_PATH}/ModelData.h
+	#${HEADER_PATH}/ModelData.h
 	${HEADER_PATH}/QtWidgetInterface.h
 	${HEADER_PATH}/SimpleFunctors.h
-	${HEADER_PATH}/Skeleton.h
+	#${HEADER_PATH}/Skeleton.h
 	${HEADER_PATH}/IUserInterface.h
-	${HEADER_PATH}/Vec3.h
+	#${HEADER_PATH}/Vec3.h
 	${HEADER_PATH}/WidgetInterface.h
 	${HEADER_PATH}/Plugin.h
 	${HEADER_PATH}/PluginLoader.h
@@ -104,6 +104,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/Log.h
 	${HEADER_PATH}/LocalTrial.h
 	${HEADER_PATH}/ObjectWrapper.h
+	${HEADER_PATH}/ObjectWrapperCollection.h
 	${HEADER_PATH}/IObjectSource.h
 	${HEADER_PATH}/IVisualizer.h
 	${HEADER_PATH}/IDataProcessor.h
@@ -112,7 +113,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/ObjectWrapperFactory.h
 	${HEADER_PATH}/TypeInfo.h
 	${HEADER_PATH}/IEDRTitleBar.h
-	${HEADER_PATH}/IInputDescription.h
+	${HEADER_PATH}/IInputDescription.h 
 	${HEADER_PATH}/IOutputDescription.h
 	${HEADER_PATH}/IInputProcessItem.h
 	${HEADER_PATH}/IOutputProcessItem.h
@@ -131,41 +132,41 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 #	ASFAMCData.cpp
 #	ASFAMCParser.cpp
-	C3DModel.cpp
+#	C3DModel.cpp
 	ConsoleWidget.cpp
 	EDRConsoleWidget.cpp
 	EDRConsoleInnerWidget.cpp
 	DataManager.cpp
-	Factory.cpp
-	FileChunkReader.cpp
-	FileReader2Motion.cpp
-	FileUtil.cpp
+	#Factory.cpp
+	#FileChunkReader.cpp
+	#FileReader2Motion.cpp
+	#FileUtil.cpp
 	SceneGraphWidget.cpp
 	LogInitializer.cpp
 	main.cpp
 	PluginLoader.cpp
-	RenderService.cpp
+	#RenderService.cpp
 	ServiceManager.cpp
 	ToolboxMain.cpp
 	UserInterfaceService.cpp
 	
-	AnimationGroup.cpp
-	AnimationNode.cpp
+	#AnimationGroup.cpp
+	#AnimationNode.cpp
 #	CustomGroup.cpp
-	FModel.cpp
-	Intersection.cpp
-	Marker.cpp
-	Mesh.cpp
-	Model.cpp
-	SkeletonNode.cpp	
+	#FModel.cpp
+	#Intersection.cpp
+	#Marker.cpp
+	#Mesh.cpp
+	#Model.cpp
+	#SkeletonNode.cpp	
 	#Quaternioncal.cpp
 	ComputeThread.cpp
 	VisualizerWidget.cpp
 	VisualizerManager.cpp
 	ObjectSource.cpp
 	Visualizer.cpp
-	VisualizerTitleBar.cpp
-	VisualizerTitleBarComboPick.cpp
+	#VisualizerTitleBar.cpp
+	#VisualizerTitleBarComboPick.cpp
 	ObjectSlots.cpp
 	DataProcessor.cpp
 	EDRTitleBar.cpp
@@ -189,8 +190,8 @@ SET(TARGET_MOC_H
     ToolboxMain.h
 	SceneGraphWidget.h
 	VisualizerWidget.h
-	VisualizerTitleBar.h
-	VisualizerTitleBarComboPick.h
+	#VisualizerTitleBar.h
+	#VisualizerTitleBarComboPick.h
 	EDRTitleBar.h
 	EDRDockWidget.h
 	EDRDockInnerWidget.h
@@ -208,9 +209,9 @@ set(TARGET_UI
 	ui/OsgWidget.ui
 	ui/toolboxmaindeffile.ui
 	ui/VisualizerWidget.ui
-	ui/VisualizerTitleBar.ui
-	ui/VisualizerTitleBarComboPick.ui
-	ui/VisualizerTitleBarButtonPerSource.ui
+	#ui/VisualizerTitleBar.ui
+	#ui/VisualizerTitleBarComboPick.ui
+	#ui/VisualizerTitleBarButtonPerSource.ui
 	ui/DataProcessorWidget.ui
 	ui/EDRTitleBar.ui
 	ui/EDRDockInnerWidget.ui

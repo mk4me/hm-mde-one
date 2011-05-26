@@ -18,23 +18,23 @@
 
 #include <QtCore/QDir>
 
-#include "C3DModel.h"
+//#include "C3DModel.h"
 //#include "ConsoleWidget.h"
 #include "EDRConsoleWidget.h"
 
 #include "ServiceManager.h"
-#include <core/IAnimationService.h>
+//#include <core/IAnimationService.h>
 #include <core/C3DParserEx.h>
 #include "UserInterfaceService.h"
-#include "RenderService.h"
+//#include "RenderService.h"
 #include "config/ConfigurationFileService.h"
 
 #include <iostream>
 
-#include "Model.h"
-#include "Mesh.h"
+//#include "Model.h"
+//#include "Mesh.h"
 
-#include "FileReader2Motion.h"
+//#include "FileReader2Motion.h"
 #include <utils/Debug.h>
 
 #include <boost/tokenizer.hpp>

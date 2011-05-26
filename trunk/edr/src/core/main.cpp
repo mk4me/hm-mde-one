@@ -4,8 +4,9 @@
 #include <core/PluginLoader.h>
 #include <core/Log.h>
 #include <core/Config.h>
-#include "VisualizerTitleBar.h"
+//#include "VisualizerTitleBar.h"
 #include "LogInitializer.h"
+#include <core/ObjectWrapperCollection.h>
 
 #include "ServiceManager.h"
 #include "DataManager.h"
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
             VisualizerManager visualizerManager;
 
             // tworzenie managerów
-            // tworzenie/niszczenie manageró w ToolboxMain jest niebezpieczne
+            // tworzenie/niszczenie managerów w ToolboxMain jest niebezpieczne
             // z punktu widzenia destruktora - widgety mog¹ w jakimœ stopniu
             // zale¿eæ od managerów, a wówczas wskaŸniki wskazywa³yby œmieci
             // podobnie ¿ywotnoœæ do³adowanych bibliotek musi przekraczaæ zakoñczenie
@@ -118,3 +119,4 @@ int main(int argc, char *argv[])
     }
     return result;
 }
+

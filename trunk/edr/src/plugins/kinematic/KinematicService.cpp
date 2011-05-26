@@ -5,7 +5,7 @@
 #include <core/IServiceManager.h>
 #include <core/C3DParserEx.h>
 #include <plugins/timeline/ITimeline.h>
-#include <core/IModel.h>
+//#include <core/IModel.h>
 #include <core/IDataManager.h>
 #include <core/IVisualizer.h>
 #include <core/C3DChannels.h>

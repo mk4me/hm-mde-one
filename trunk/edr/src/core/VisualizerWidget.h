@@ -12,7 +12,7 @@
 #include <QtGui/QDockWidget>
 #include "Visualizer.h"
 #include "VisualizerManager.h"
-#include "VisualizerTitleBar.h"
+//#include "VisualizerTitleBar.h"
 #include <core/PluginCommon.h>
 #include "EDRDockWidget.h"
 

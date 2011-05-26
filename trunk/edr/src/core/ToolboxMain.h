@@ -22,7 +22,7 @@
 class UserInterfaceService;
 class ServiceManager;
 class IAnimationService;
-class RenderService;
+//class RenderService;
 //class ComputeThread;
 class SceneGraphWidget;
 //class ConsoleWidget;

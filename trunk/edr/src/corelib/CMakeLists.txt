@@ -48,8 +48,8 @@ source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/../cor
 
 # Ÿród³a
 set(TARGET_SRC
-	ASFAMCData.cpp
-	ASFAMCParser.cpp
+	#ASFAMCData.cpp
+	#ASFAMCParser.cpp
 	Window.cpp
 	MultiView.cpp
 	MultiViewWidgetItem.cpp

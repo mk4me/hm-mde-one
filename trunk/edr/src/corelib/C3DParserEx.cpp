@@ -4,8 +4,8 @@
 #include <iterator>
 #include <core/C3DParserEx.h>
 #include <core/C3DChannels.h>
-#include <core/IMarker.h>
-#include <core/Marker.h>
+//#include <core/IMarker.h>
+//#include <core/Marker.h>
 #include <boost/algorithm/string.hpp>
 
 using namespace core;
