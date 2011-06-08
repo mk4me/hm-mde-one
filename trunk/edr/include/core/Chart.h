@@ -137,6 +137,10 @@ public:
 
     //! Dodaje kana³ do wykres.ug
     bool addChannel( const core::ChartSeriePtr& channel );
+
+    //! Usuniêcie kana³ z wykres.ug
+    bool removeChannel( const core::ChartSeriePtr& channel );
+
     //! Usuwa wszystkie wykresy.
     void removeAllChannels();
     //! \return Liczba kana³ów.

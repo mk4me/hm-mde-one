@@ -67,7 +67,7 @@ EMGService::~EMGService()
 {
 }
 
-QWidget* EMGService::getWidget()
+QWidget* EMGService::getWidget(std::vector<QObject*>& actions)
 {
     return widget;
 }
@@ -258,7 +258,7 @@ void ChartService::loadData( core::IServiceManager* serviceManager, core::IDataM
     }
 }
 
-QWidget* ChartService::getWidget()
+QWidget* ChartService::getWidget(std::vector<QObject*>& actions)
 {
     return nullptr;
 }

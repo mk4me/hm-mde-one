@@ -11,6 +11,9 @@
 
 #include <core/IOutputDescription.h>
 #include <core/IWorkflowItemBase.h>
+#include <core/IObjectOutput.h>
+
+class QDialog;
 
 namespace core {
 

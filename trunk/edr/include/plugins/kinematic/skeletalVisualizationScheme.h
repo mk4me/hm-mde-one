@@ -11,8 +11,8 @@ UTILS_PUSH_WARNINGS
 #include <osg/Node>
 UTILS_POP_WARNINGS
 
+#include <core/SmartPtr.h>
 #include <boost/utility.hpp>
-#include <boost/smart_ptr.hpp>
 #include <boost/function.hpp>
 #include <kinematiclib/VskParser.h>
 #include <kinematiclib/KinematicModel.h>
@@ -22,7 +22,7 @@ UTILS_POP_WARNINGS
 
 class ISchemeDrawer;
 enum DataToDraw;
-typedef boost::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
+typedef core::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
 //! klasa stanowi polaczenie miedzy reprezentacja wewnetrzna, a kontrolka odrysowywujaca szkielet
 class SkeletalVisualizationScheme
 {
@@ -49,7 +49,7 @@ private:
 
 public:
     //! Metoda tworzy schemat wizualizacji, zachowujac przy okazji slaby wskaznik do niego
-    static boost::shared_ptr<SkeletalVisualizationScheme> create();
+    static core::shared_ptr<SkeletalVisualizationScheme> create();
 
 public: // akcesory
     double getNormalizedTime() const { return normalizedTime; }
@@ -138,8 +138,8 @@ private:
     boost::weak_ptr<SkeletalVisualizationScheme> weak;
 };
 
-typedef boost::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;
-typedef boost::weak_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemeWeak;
-typedef boost::shared_ptr<const SkeletalVisualizationScheme> SkeletalVisualizationSchemeConstPtr;
+typedef core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;
+typedef core::weak_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemeWeak;
+typedef core::shared_ptr<const SkeletalVisualizationScheme> SkeletalVisualizationSchemeConstPtr;
 
 #endif

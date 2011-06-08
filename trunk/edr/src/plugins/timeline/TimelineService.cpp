@@ -19,12 +19,12 @@ TimelineService::~TimelineService()
     delete controller;
 }
 
-QWidget* TimelineService::getWidget()
+QWidget* TimelineService::getWidget(std::vector<QObject*>& actions)
 {
     return nullptr;
 }
 
-QWidget* TimelineService::getControlWidget()
+QWidget* TimelineService::getControlWidget(std::vector<QObject*>& actions)
 {
     return widget;
 }

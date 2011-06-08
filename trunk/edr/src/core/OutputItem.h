@@ -9,19 +9,20 @@
 #ifndef HEADER_GUARD_CORE__OUTPUTITEM_H__
 #define HEADER_GUARD_CORE__OUTPUTITEM_H__
 
-#include <core/WorkflowItemEncapsulator.h>
+#include "WorkflowItemEncapsulator.h"
+#include "OutputDescription.h"
 
 template<class T>
 class OutputItem : public WorkflowItemEncapsulator<T> , public OutputDescription
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<IOutputProcessItem, T>::value), "Template class should inherit from IOutputProcessItem");
+    UTILS_STATIC_ASSERT((boost::is_base_of<core::IOutputProcessItem, T>::value), "Template class should inherit from core::IOutputProcessItem");
 public:
     OutputItem(T* implementation, const ObjectOutput& output) : 
       WorkflowItemEncapsulator<T>(implementation),
           OutputDescription(output)
       {}
 
-      OutputItem(const Output& item) : 
+      OutputItem(const OutputItem& item) : 
       WorkflowItemEncapsulator<T>(item),
           OutputDescription(createOutput()) 
       {}

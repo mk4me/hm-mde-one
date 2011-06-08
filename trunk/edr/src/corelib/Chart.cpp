@@ -61,6 +61,35 @@ bool Chart::addChannel( const core::ChartSeriePtr& channel )
     }
 }
 
+
+bool Chart::removeChannel( const core::ChartSeriePtr& channel )
+{
+    auto it = std::find(series.begin(), series.end(), channel);
+
+    bool ret = false;
+
+    if(it != series.end()){
+        ret = true;
+
+        if(activeSerieIndex >= 0 && series[activeSerieIndex] == channel){
+            if(series.size() > 1){
+                if(activeSerieIndex-1 >=0){
+                    setActiveSerie(activeSerieIndex-1);
+                }else{
+                    setActiveSerie(0);
+                }
+            }else{
+                setActiveSerie(-1);
+            }
+        }
+
+        geode->removeDrawable(channel);
+        setDirty();
+    }
+
+    return ret;
+}
+
 void Chart::removeAllChannels()
 {
     BOOST_FOREACH(core::ChartSeriePtr chart, series) {

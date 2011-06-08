@@ -16,7 +16,7 @@ VdfService::~VdfService()
 
 }
 
-QWidget* VdfService::getWidget()
+QWidget* VdfService::getWidget(std::vector<QObject*>& actions)
 {
     return widget;
 }

@@ -18,23 +18,17 @@
 
 #include <QtCore/QDir>
 
-//#include "C3DModel.h"
-//#include "ConsoleWidget.h"
 #include "EDRConsoleWidget.h"
 
 #include "ServiceManager.h"
-//#include <core/IAnimationService.h>
+#include "DataProcessorManager.h"
+#include "DataSourceManager.h"
 #include <core/C3DParserEx.h>
 #include "UserInterfaceService.h"
-//#include "RenderService.h"
 #include "config/ConfigurationFileService.h"
 
 #include <iostream>
 
-//#include "Model.h"
-//#include "Mesh.h"
-
-//#include "FileReader2Motion.h"
 #include <utils/Debug.h>
 
 #include <boost/tokenizer.hpp>
@@ -67,8 +61,11 @@
 
 #include <core/EDRDockWidget.h>
 
-DEFINE_DEFAULT_LOGGER("edr.core");
+#include "WorkflowService.h"
+#include "WorkflowWidget.h"
+#include "LocalDataSource.h"
 
+DEFINE_DEFAULT_LOGGER("edr.core");
 
 struct SortActionsByNames 
 {
@@ -79,7 +76,6 @@ struct SortActionsByNames
 };
 
 using namespace core;
-
 
 CORE_DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 CORE_DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
@@ -94,6 +90,7 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     DataManager* dataManager = DataManager::getInstance();
     ServiceManager* serviceManager = ServiceManager::getInstance();
     VisualizerManager* visualizerManager = VisualizerManager::getInstance();
+    DataProcessorManager* dataProcesorManager = DataProcessorManager::getInstance();
 
     //boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
     //userPath /= "EDR";
@@ -125,11 +122,17 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
 
     registerCoreServices();
 
+    registerCoreDataSources();
+
     pluginLoader->load();
+
+    registerPluginsWrapperFactories();
 
     registerPluginsServices();
 	registerPluginsParsers();
     registerPluginsVisualizers();
+    registerPluginsDataProcessors();
+    registerPluginsDataSources();
 
 
     sceneRoot = new osg::Group();
@@ -155,7 +158,7 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     readSettings(QSettings(), true);
 
 
-
+    connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
     updateTimer.start(20);
@@ -331,6 +334,11 @@ void ToolboxMain::registerCoreServices()
     ServiceManager::getInstance()->registerService(IServicePtr(userInterfaceService));
 }
 
+void ToolboxMain::registerCoreDataSources()
+{
+    DataSourceManager::getInstance()->registerDataSource(IDataSourcePtr(new LocalDataSource()));
+}
+
 void ToolboxMain::registerPluginsServices()
 {
     for ( int i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
@@ -344,27 +352,60 @@ void ToolboxMain::registerPluginsServices()
 void ToolboxMain::registerPluginsParsers()
 {
     for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
-        core::PluginPtr plugin = pluginLoader->getPlugin(i);
+        PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumParsers(); ++j) {
             DataManager::getInstance()->registerParser(plugin->getParser(j));
         }
     }
-    core::IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
+    IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
     DataManager::getInstance()->registerParser(c3dParser);
 
-    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<int>()) );
-    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<double>()) );
-    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<EMGChannel>()) );
-    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<GRFChannel>()) );
-    DataManager::getInstance()->registerObjectFactory( core::IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerChannel>()) );
+    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<int>()) );
+    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<double>()) );
+    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<ScalarChannel>()) );
+    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<C3DAnalogChannel>()) );
+    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<EMGChannel>()) );
+    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<GRFChannel>()) );
+    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerChannel>()) );
+    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerSet>()) );
+}
+
+void ToolboxMain::registerPluginsWrapperFactories()
+{
+    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
+        PluginPtr plugin = pluginLoader->getPlugin(i);
+        for(int j = 0; j < plugin->getNumWrapperFactories(); ++j) {
+            DataManager::getInstance()->registerObjectFactory(plugin->getWrapperFactory(j));
+        }
+    }
 }
 
 void ToolboxMain::registerPluginsVisualizers()
 {
     for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
-        core::PluginPtr plugin = pluginLoader->getPlugin(i);
+        PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumVisualizers(); ++j) {
             VisualizerManager::getInstance()->registerVisualizer(plugin->getVisualizer(j));
+        }
+    }
+}
+
+void ToolboxMain::registerPluginsDataProcessors()
+{
+    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
+        PluginPtr plugin = pluginLoader->getPlugin(i);
+        for(int j = 0; j < plugin->getNumDataProcessors(); ++j) {
+            DataProcessorManager::getInstance()->registerDataProcessor(plugin->getDataProcessor(j));
+        }
+    }
+}
+
+void ToolboxMain::registerPluginsDataSources()
+{
+    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
+        PluginPtr plugin = pluginLoader->getPlugin(i);
+        for(int j = 0; j < plugin->getNumDataSources(); ++j) {
+            DataSourceManager::getInstance()->registerDataSource(plugin->getDataSource(j));
         }
     }
 }
@@ -375,13 +416,10 @@ void ToolboxMain::onOpen()
     const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/trials"));
     if (!fileName.isEmpty()) 
     {
-        std::string pathVal = core::toStdString(fileName);
+        std::string pathVal = toStdString(fileName);
         const std::string& path = pathVal;
 
-
         openFile(path);
-
-        return;
     }
 }
 
@@ -405,8 +443,20 @@ void ToolboxMain::onWireframe()
 
 }
 
+void ToolboxMain::createWorkflow()
+{
+    EDRWorkflowWidget* widget = new EDRWorkflowWidget();
+    widget->setAllowedAreas(Qt::AllDockWidgetAreas);
 
-QDockWidget* ToolboxMain::embeddWidget( QWidget* widget, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/ )
+    QObject::connect( widget, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
+
+
+    addDockWidget(Qt::LeftDockWidgetArea, widget);
+}
+
+
+QDockWidget* ToolboxMain::embeddWidget( QWidget* widget, std::vector<QObject*>& widgetActions, const QString& name, const QString& style, const QString& sufix,
+    Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)
 {
     // dodajemy widget dokowalny
     //QDockWidget* dock = new QDockWidget( name, this, Qt::WindowTitleHint);        
@@ -417,6 +467,11 @@ QDockWidget* ToolboxMain::embeddWidget( QWidget* widget, const QString& name, co
     //dock->setWidget(widget);
     dock->getInnerWidget()->layoutContent->addWidget(widget);
     QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
+
+    for(auto it = widgetActions.begin(); it!= widgetActions.end(); it++){
+        dock->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
+    }
+
     return dock;
 }
 
@@ -451,9 +506,14 @@ void ToolboxMain::initializeUI()
         IServicePtr service = ServiceManager::getInstance()->getService(i);
 
         // HACK
-        QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget());
-        QWidget* controlWidget = reinterpret_cast<QWidget*>(service->getControlWidget());
-        QWidget* settingsWidget = reinterpret_cast<QWidget*>(service->getSettingsWidget());
+        std::vector<QObject*> mainWidgetActions;
+        QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget(mainWidgetActions));
+
+        std::vector<QObject*> controlWidgetActions;
+        QWidget* controlWidget = reinterpret_cast<QWidget*>(service->getControlWidget(controlWidgetActions));
+
+        std::vector<QObject*> settingsWidgetActions;
+        QWidget* settingsWidget = reinterpret_cast<QWidget*>(service->getSettingsWidget(settingsWidgetActions));
 
         if ( viewWidget/* && service != m_pRenderService*/ ) {
 
@@ -462,7 +522,8 @@ void ToolboxMain::initializeUI()
 //              centralWidget()->layout()->addWidget(viewWidget);
             addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
                 viewWidget, 
-                core::toQString(service->getName()), 
+                mainWidgetActions,
+                toQString(service->getName()), 
                 style,
                 "",
                 Qt::RightDockWidgetArea));
@@ -470,7 +531,8 @@ void ToolboxMain::initializeUI()
         if ( controlWidget ) {
             addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
                 controlWidget, 
-                core::toQString(service->getName() + " control"), 
+                controlWidgetActions,
+                toQString(service->getName() + " control"), 
                 style,
                 "Control",
                 Qt::BottomDockWidgetArea));
@@ -478,7 +540,8 @@ void ToolboxMain::initializeUI()
         if ( settingsWidget ) {
             addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(
                 settingsWidget, 
-                core::toQString(service->getName() + " settings"), 
+                settingsWidgetActions,
+                toQString(service->getName() + " settings"), 
                 style,
                 "Settings",
                 Qt::LeftDockWidgetArea));
@@ -487,29 +550,33 @@ void ToolboxMain::initializeUI()
 
     // widgety z wizualizacj¹
 
-    VisualizerWidget* first = nullptr;
+    /*VisualizerWidget* first = nullptr;
     BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
-        VisualizerWidget* widget = new VisualizerWidget(vis->getID(), this, Qt::WindowTitleHint);
-        widget->setAllowedAreas(Qt::RightDockWidgetArea);
-        widget->setStyleSheet(styleSheet());
-        widget->setObjectName( QString("buitin%1").arg(widget->windowTitle()) );
-        if ( !first ) {
-            first = widget;
-            addDockWidget(Qt::RightDockWidgetArea, widget);
-        } else {
-            tabifyDockWidget(first, widget);
+        try{
+            VisualizerWidget* widget = new VisualizerWidget(vis->getID(), this, Qt::WindowTitleHint);
+            widget->setAllowedAreas(Qt::RightDockWidgetArea);
+            widget->setStyleSheet(styleSheet());
+            widget->setObjectName( QString("buitin%1").arg(widget->windowTitle()) );
+            if ( !first ) {
+                first = widget;
+                addDockWidget(Qt::RightDockWidgetArea, widget);
+            } else {
+                tabifyDockWidget(first, widget);
+            }
+        }catch (const std::exception& ex) {
+            LOG_ERROR("Visualizer prototype ID: " + boost::lexical_cast<std::string>(vis->getID()) + " Name: " + vis->getName() + " widget creation error: " + ex.what());
+        } catch (const std::string& ex) {
+            LOG_ERROR("Visualizer prototype ID: " + boost::lexical_cast<std::string>(vis->getID()) + " Name: " + vis->getName() + " widget creation error: " + ex);
+        } catch (...) {
+            LOG_ERROR("Visualizer prototype ID: " + boost::lexical_cast<std::string>(vis->getID()) + " Name: " + vis->getName() + " widget creation unrecognized error");
         }
-        
-    }
-
-
-
+    }*/
 
 #ifdef UTILS_DEBUG
     // testowe opcje
     removeOnClick = false;
-    onTestItemClickedPtr.reset(new core::Window::ItemPressed(boost::bind(&ToolboxMain::onTestItemClicked, this, _1, _2 )));
-    onTestRemoveToggledPtr.reset(new core::Window::ItemPressed(boost::bind(&ToolboxMain::onTestRemoveToggled, this, _1, _2 )));
+    onTestItemClickedPtr.reset(new Window::ItemPressed(boost::bind(&ToolboxMain::onTestItemClicked, this, _1, _2 )));
+    onTestRemoveToggledPtr.reset(new Window::ItemPressed(boost::bind(&ToolboxMain::onTestRemoveToggled, this, _1, _2 )));
     core::shared_ptr<IUserInterface> userInterfaceService = queryServices<IUserInterface>(ServiceManager::getInstance());
     userInterfaceService->getMainWindow()->addMenuItem("Callback test/Option", onTestItemClickedPtr);
     userInterfaceService->getMainWindow()->addMenuItem("Callback test/Nested/Option", onTestItemClickedPtr);
@@ -522,21 +589,21 @@ void ToolboxMain::initializeUI()
 void ToolboxMain::onCustomAction()
 {
     QObject* obj = QObject::sender();
-    std::string path = core::toStdString(obj->objectName());
+    std::string path = toStdString(obj->objectName());
     this->triggerMenuItem(path, false);
 }
 
 void ToolboxMain::onCustomAction( bool triggered )
 {
     QObject* obj = QObject::sender();
-    std::string path = core::toStdString(obj->objectName());
+    std::string path = toStdString(obj->objectName());
     this->triggerMenuItem(path, triggered);
 }
 
 void ToolboxMain::onRemoveMenuItem( const std::string& path )
 {
     // TODO: rekurencyjne usuwanie niepotrzebnych podmenu
-    QAction* action = findChild<QAction*>(core::toQString(path));
+    QAction* action = findChild<QAction*>(toQString(path));
     if ( action ) 
     {
         delete action;
@@ -583,13 +650,13 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
         pathPart += *token;
 
         // wyszukanie dziecka
-        QString itemName = core::toQString(pathPart);
+        QString itemName = toQString(pathPart);
 
         if ( next == tokens.end() ) 
         {
             // liœæ
             QAction* action = new QAction(this);
-            action->setObjectName( core::toQString(pathPart) );
+            action->setObjectName( toQString(pathPart) );
             action->setText(QApplication::translate("ToolboxMain", token->c_str(), 0, QApplication::UnicodeUTF8));
             currentMenu->addAction(action);
             if ( checkable ) 
@@ -826,7 +893,7 @@ void ToolboxMain::onDockWidgetVisiblityChanged( bool visible )
 void ToolboxMain::onSaveLayout()
 {
     // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
-    QString dir = QDir::currentPath().append("/data/layouts");
+    QString dir = QDir::currentPath().append("/layouts");
     if ( QDir(dir).exists() || QDir().mkdir(dir) ) {        
         const QString fileName = QFileDialog::getSaveFileName(this, 0, dir, "*.layout");
         if ( !fileName.isEmpty() ) {
@@ -835,7 +902,7 @@ void ToolboxMain::onSaveLayout()
             settings.setValue("WindowState", saveState());
         }
     } else {
-        LOG_ERROR("Could not create directory: "<<core::toStdString(dir));
+        LOG_ERROR("Could not create directory: "<<toStdString(dir));
     }
 }
 
@@ -847,7 +914,7 @@ void ToolboxMain::openLayout( const QString& path )
 void ToolboxMain::onOpenLayout()
 {
     // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
-    QString dir = QDir::currentPath().append("/data/layouts");        
+    QString dir = QDir::currentPath().append("/layouts");        
     utils::Push<bool> pushed(updateEnabled, false);
     const QString fileName = QFileDialog::getOpenFileName(this, 0, dir, "*.layout");
     if ( !fileName.isEmpty() ) {
@@ -864,7 +931,7 @@ void ToolboxMain::onShowSavedLayouts()
     // layouty wbudowane
     addLayoutsToMenu(QDir(QDir::currentPath().append("/resources/layouts")));
     // layouty zdefiniowane przez u¿ytkownika
-    addLayoutsToMenu(QDir(QDir::currentPath().append("/data/layouts")));
+    addLayoutsToMenu(QDir(QDir::currentPath().append("/layouts")));
 }
 
 

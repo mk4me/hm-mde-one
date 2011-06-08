@@ -9,13 +9,14 @@
 #ifndef HEADER_GUARD_CORE__OUTPUTDESCRIPTION_H__
 #define HEADER_GUARD_CORE__OUTPUTDESCRIPTION_H__
 
-#include "ObjectSource.h"
+#include "ObjectOutput.h"
 
 class OutputDescription
 {
 
 public:
-    typedef ObjectSource::SlotsInfo SlotsInfo;
+    typedef ObjectOutput::SlotsInfo SlotsInfo;
+    typedef ObjectSlots::DependentSlots RequiredInputs;
 
 private:
     boost::scoped_ptr<ObjectOutput> output;
@@ -34,35 +35,40 @@ public:
     const ObjectOutput* getOutput() const { return output.get(); }
     ObjectOutput* getOutput() { return output.get(); }
 
-    inline const core::TypeInfoList& getOutputTypes(int idx) const
+    inline const core::TypeInfo& getOutputTypes(int outputNo) const
     {
-        return output->getSlotTypes(idx);
+        return output->getSlotType(outputNo);
     }
 
-    inline const std::string& getOutputName(int idx) const
+    inline const std::string& getOutputName(int outputNo) const
     {
-        return output->getSlotName(idx);
+        return output->getSlotName(outputNo);
     }
 
-    //!
-    const SlotsInfo& getOutputsTypes() const;
+    ////!
+    //const SlotsInfo& getOutputsTypes() const;
 
     //! \return Liczba obiektów.
-    int getNumObjects() const
+    int getNumOutputs() const
     {
-        return output->getNumObjects();
+        return output->getNumOutputs();
     }
-    //!
-    core::ObjectWrapperConstPtr getObject(int slot)
-    {
-        return output->getObject(slot);
-    }
+    ////!
+    //core::ObjectWrapperCollectionConstPtr getObjects(int slot)
+    //{
+    //    return output->getObjects(slot);
+    //}
 
     //! \param outputNo Numer wyjœcia.
     //! \return Obiekt na wyjœciu.
-    core::ObjectWrapperPtr getOutputObject(int outputNo)
+    core::ObjectWrapperCollectionPtr getOutputObjects(int outputNo)
     {
-        return output->getWrapper(outputNo);
+        return output->getObjects(outputNo);
+    }
+
+    const RequiredInputs & getRequiredInputs(int outputNo) const
+    {
+        return output->getSlotInfo(outputNo).dependentSlots;
     }
 };
 

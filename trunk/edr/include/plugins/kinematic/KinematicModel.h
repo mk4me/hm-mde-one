@@ -22,7 +22,7 @@ public:
     void setMarkers(MarkerSetPtr val) { markers = val; }
 };
 
-typedef boost::shared_ptr<KinematicModel> KinematicModelPtr;
-typedef boost::shared_ptr<const KinematicModel> KinematicModelConstPtr;
+typedef core::shared_ptr<KinematicModel> KinematicModelPtr;
+typedef core::shared_ptr<const KinematicModel> KinematicModelConstPtr;
 
 #endif  // __HEADER_GUARD_KINEMATIC__KINEMATICMODEL_H__

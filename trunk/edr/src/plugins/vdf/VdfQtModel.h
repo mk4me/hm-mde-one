@@ -27,6 +27,26 @@ public:
     VdfQtModel(osgViewer::View* view = 0, osgWidget::point_type width = 0.0f, osgWidget::point_type height = 0.0f,
         unsigned int nodeMask = 0, unsigned int flags = 0);
 
+    virtual dflm::ConnPtr connect(dflm::PinPtr src, dflm::PinPtr dest)
+    {
+        dflm::ConnPtr ret(osgVDFBaseModel::connect(src,dest));
+
+        if(ret != nullptr){
+
+        }
+
+        //do true connection here
+
+
+        return ret;
+    }
+
+    virtual void disconnect(dflm::ConnPtr connection)
+    {
+        osgVDFBaseModel::disconnect(connection);
+
+    }
+
 public slots:
     void contextMenuRequestPosition(const QPoint & pos);
 

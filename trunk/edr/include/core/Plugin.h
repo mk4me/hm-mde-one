@@ -21,6 +21,7 @@
 #include <core/IService.h>
 #include <core/IParser.h>
 #include <core/IVisualizer.h>
+#include <core/IDataProcessor.h>
 #include <core/Export.h>
 #include <core/ObjectWrapperFactory.h>
 
@@ -82,6 +83,14 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
 #define CORE_PLUGIN_ADD_VISUALIZER(className)                           \
     instance->addVisualizer( core::IVisualizerPtr(new className) );
 
+//! Dodaje elementu przetwarzajπcego zadanego typu do pluginu.
+#define CORE_PLUGIN_ADD_DATA_PROCESSOR(className)                           \
+    instance->addDataProcessor( core::IDataProcessorPtr(new className) );
+
+//! Dodaje ürÛd≥o zadanego typu do pluginu.
+#define CORE_PLUGIN_ADD_DATA_SOURCE(className)                           \
+    instance->addDataSource( core::IDataSourcePtr(new className) );
+
 #define CORE_PLUGIN_ADD_OBJECT_WRAPPER(className)               \
     instance->addObjectWrapperFactory( core::IObjectWrapperFactoryPtr(new core::ObjectWrapperFactory<className>()) ); 
 
@@ -103,6 +112,15 @@ public:
     virtual int getNumVisualizers() const = 0;
     //! \return Wizualizator.
     virtual IVisualizer* getVisualizer(int idx) = 0;
+    //! \return Liczba elementÛw przetwarzajπcych.
+    virtual int getNumDataProcesors() const = 0;
+    //! \return Element przetwarzajπcy.
+    virtual IDataProcessor* getDataProcessor(int idx) = 0;
+    //! \return Liczba ürÛde≥ danych.
+    virtual int getNumDataSources() const = 0;
+    //! \return èrÛd≥o danych.
+    virtual IDataSource* getDataSource(int idx) = 0;
+
 };
 
 /**
@@ -123,6 +141,10 @@ public:
     typedef std::vector<IParserPtr> Parsers;
     //! Typ listy wizualizatorÛw.
     typedef std::vector<IVisualizerPtr> Visualizers;
+    //! Typ listy elementÛw przetwarzajπcych.
+    typedef std::vector<IDataProcessorPtr> DataProcessors;
+    //! Typ listy ürÛde≥ danych.
+    typedef std::vector<IDataSourcePtr> DataSources;
     //! Typ listy wrapperÛw.
     typedef std::vector<IObjectWrapperFactoryPtr> ObjectWrapperFactories;
 
@@ -133,6 +155,10 @@ private:
 	Parsers parsers;
     //! Lista wizualizatorÛw pluginu.
     Visualizers visualizers;
+    //! Lista elementÛw przetwarzajπcych pluginu.
+    DataProcessors dataProcessors;
+    //! Lista ürÛde≥ danych pluginu.
+    DataSources dataSources;
     //! Lista fabryk wrapperÛw.
     ObjectWrapperFactories factories;
 
@@ -225,6 +251,37 @@ public:
     IVisualizerPtr getVisualizer(int i)
     {
         return this->visualizers[i];
+    }
+    //! \param dataProcessor IDataProcessor do dodania do pluginu.
+    void addDataProcessor(IDataProcessorPtr dataProcessor)
+    {
+        this->dataProcessors.push_back(dataProcessor);
+    }
+    //! \return Liczba elementÛw przetwarzajπcych dostarczanych przez plugin.
+    int getNumDataProcessors() const
+    {
+        return static_cast<int>(this->dataProcessors.size());
+    }
+    //! \param i
+    IDataProcessorPtr getDataProcessor(int i)
+    {
+        return this->dataProcessors[i];
+    }
+
+    //! \param dataSource èrÛd≥o danych do dodania do pluginu.
+    void addDataSource(IDataSourcePtr dataSource)
+    {
+        this->dataSources.push_back(dataSource);
+    }
+    //! \return Liczba ürÛde≥ danych dostarczanych przez plugin.
+    int getNumDataSources() const
+    {
+        return static_cast<int>(this->dataSources.size());
+    }
+    //! \param i
+    IDataSourcePtr getDataSource(int i)
+    {
+        return this->dataSources[i];
     }
 
     //! \param factory

@@ -80,8 +80,6 @@ UTILS_POP_WARNINGS
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>

@@ -136,9 +136,9 @@
       <class Id="f8cdeb00-5531-4b52-8ab2-4d66b43ebc93" name="DataFlow" isAbstract="false" isLeaf="false" isActiveClass="false">
         <elementDefinition Id="56e100eb-e115-4cdd-ac8e-1937670ee418" />
         <generalsInternal>
-          <generalization Id="8227f41b-e1ae-450b-80c5-d5a665997a71" isSubstitutable="false">
-            <classMoniker Id="80563878-2ffc-4af1-af41-459259c0424b" LastKnownName="Observable" />
-            <elementDefinition Id="5b8b71cc-2381-4a45-967e-ed1d05d98d18" />
+          <generalization Id="5df3d84c-1f79-4544-8272-778bcec7531e" isSubstitutable="false">
+            <classMoniker Id="c3cfaa49-17d0-4f2e-b8a9-a0777c5d550d" LastKnownName="Lockable" />
+            <elementDefinition Id="55c35745-5684-460f-995d-d37917bdf105" />
           </generalization>
         </generalsInternal>
       </class>
@@ -215,11 +215,6 @@
       </class>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
-      <class Id="80563878-2ffc-4af1-af41-459259c0424b" name="Observable" isAbstract="false" isLeaf="false" isActiveClass="false">
-        <elementDefinition Id="149dffa6-daf9-464f-9aa2-61075cf9b89e" />
-      </class>
-    </logicalClassDesignerModelHasTypes>
-    <logicalClassDesignerModelHasTypes>
       <Interface Id="71aa6d37-6227-487b-83a5-4745b4132e16" name="IWorkflowManager" isAbstract="false" isLeaf="false">
         <elementDefinition Id="48867f57-69b4-4d52-ab80-3a74367baefb" />
       </Interface>
@@ -244,6 +239,16 @@
       <Interface Id="9880adae-82b0-432a-8323-2f004e68e0b7" name="ISerializable" isAbstract="false" isLeaf="false">
         <elementDefinition Id="dfda2169-c6d4-4d99-bda2-35315048abdf" />
       </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="f19804f2-5b4d-4aa4-8dee-6ad97a1c0a2a" name="EDRVisualDataFlow" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="a692ce2a-ae74-415f-a39d-219c626cf144" />
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="c3cfaa49-17d0-4f2e-b8a9-a0777c5d550d" name="Lockable" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="791466e4-ae45-459a-abca-e9635e8dc7a6" />
+      </class>
     </logicalClassDesignerModelHasTypes>
   </packagedElements>
   <package Id="a04caf79-85b0-46fd-810c-a5750c34378c" name="uml">

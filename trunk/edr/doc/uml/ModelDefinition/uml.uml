@@ -1926,22 +1926,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="0dd7b8ff-e264-44b5-9888-b0902b93add4"
-            name="MessageOccurrenceSpecification11">
-            <covered>
-              <lifelineMoniker
-                Id="7349f9f3-0e98-476b-be91-53a87be91cc0"
-                LastKnownName="user"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="d17a57ac-75d5-401d-b08d-0ef1ee761c40"
             name="MessageOccurrenceSpecification12">
             <covered>
               <lifelineMoniker
                 Id="f7485f2a-f1f0-4e18-93e5-6a45ed19ab62"
                 LastKnownName="VDF"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0dd7b8ff-e264-44b5-9888-b0902b93add4"
+            name="MessageOccurrenceSpecification11">
+            <covered>
+              <lifelineMoniker
+                Id="7349f9f3-0e98-476b-be91-53a87be91cc0"
+                LastKnownName="user"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -2244,16 +2244,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="41644707-2be8-44a4-ad04-f27f80b6e1b7"
-            name="MessageOccurrenceSpecification15">
-            <covered>
-              <lifelineMoniker
-                Id="f7485f2a-f1f0-4e18-93e5-6a45ed19ab62"
-                LastKnownName="VDF"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="ff5f4e39-878d-4700-abf1-f5b82ac730a3"
             name="MessageOccurrenceSpecification16">
             <covered>
@@ -2264,8 +2254,8 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="6c667932-abed-40d1-aef9-92eedc3b476a"
-            name="MessageOccurrenceSpecification18">
+            Id="41644707-2be8-44a4-ad04-f27f80b6e1b7"
+            name="MessageOccurrenceSpecification15">
             <covered>
               <lifelineMoniker
                 Id="f7485f2a-f1f0-4e18-93e5-6a45ed19ab62"
@@ -2280,6 +2270,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="b9734192-2471-4318-97d7-6af075638cf4"
                 LastKnownName="osgUtil::ContextMenu"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="6c667932-abed-40d1-aef9-92eedc3b476a"
+            name="MessageOccurrenceSpecification18">
+            <covered>
+              <lifelineMoniker
+                Id="f7485f2a-f1f0-4e18-93e5-6a45ed19ab62"
+                LastKnownName="VDF"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -2338,22 +2338,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="e91866ca-8007-430a-8712-f1001bdb3d6a"
-            name="MessageOccurrenceSpecification14">
-            <covered>
-              <lifelineMoniker
-                Id="7349f9f3-0e98-476b-be91-53a87be91cc0"
-                LastKnownName="user"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="1e4bb254-c340-4f15-9490-8867889a2cb9"
             name="MessageOccurrenceSpecification13">
             <covered>
               <lifelineMoniker
                 Id="f7485f2a-f1f0-4e18-93e5-6a45ed19ab62"
                 LastKnownName="VDF"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="e91866ca-8007-430a-8712-f1001bdb3d6a"
+            name="MessageOccurrenceSpecification14">
+            <covered>
+              <lifelineMoniker
+                Id="7349f9f3-0e98-476b-be91-53a87be91cc0"
+                LastKnownName="user"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -2442,22 +2442,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="31b24419-b51d-4648-9e71-4315835520ef"
-            name="MessageOccurrenceSpecification19">
-            <covered>
-              <lifelineMoniker
-                Id="7349f9f3-0e98-476b-be91-53a87be91cc0"
-                LastKnownName="user"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="e7c42569-2bf2-488c-9c97-22b89bdf3c8a"
             name="MessageOccurrenceSpecification20">
             <covered>
               <lifelineMoniker
                 Id="b9734192-2471-4318-97d7-6af075638cf4"
                 LastKnownName="osgUtil::ContextMenu"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="31b24419-b51d-4648-9e71-4315835520ef"
+            name="MessageOccurrenceSpecification19">
+            <covered>
+              <lifelineMoniker
+                Id="7349f9f3-0e98-476b-be91-53a87be91cc0"
+                LastKnownName="user"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -2512,16 +2512,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="78d5db7a-71e8-46e9-a287-56572e420e90"
-            name="MessageOccurrenceSpecification23">
-            <covered>
-              <lifelineMoniker
-                Id="b9734192-2471-4318-97d7-6af075638cf4"
-                LastKnownName="osgUtil::ContextMenu"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="f06f32bb-e637-4737-8143-546325533ccb"
             name="MessageOccurrenceSpecification24">
             <covered>
@@ -2532,8 +2522,8 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </messageOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="5016e953-33aa-4ab5-8f18-7ac8c0339e38"
-            name="MessageOccurrenceSpecification26">
+            Id="78d5db7a-71e8-46e9-a287-56572e420e90"
+            name="MessageOccurrenceSpecification23">
             <covered>
               <lifelineMoniker
                 Id="b9734192-2471-4318-97d7-6af075638cf4"
@@ -2548,6 +2538,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
               <lifelineMoniker
                 Id="d58ab6fa-3845-4d19-a540-66d416dee8be"
                 LastKnownName="API"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="5016e953-33aa-4ab5-8f18-7ac8c0339e38"
+            name="MessageOccurrenceSpecification26">
+            <covered>
+              <lifelineMoniker
+                Id="b9734192-2471-4318-97d7-6af075638cf4"
+                LastKnownName="osgUtil::ContextMenu"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -2632,22 +2632,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="29bd7664-868d-4e4b-8f16-bc49f3c08503"
-            name="MessageOccurrenceSpecification27">
-            <covered>
-              <lifelineMoniker
-                Id="b9734192-2471-4318-97d7-6af075638cf4"
-                LastKnownName="osgUtil::ContextMenu"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="21b3d2e8-cc47-4e69-9929-3ecfe027dd4f"
             name="MessageOccurrenceSpecification28">
             <covered>
               <lifelineMoniker
                 Id="f7485f2a-f1f0-4e18-93e5-6a45ed19ab62"
                 LastKnownName="VDF"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="29bd7664-868d-4e4b-8f16-bc49f3c08503"
+            name="MessageOccurrenceSpecification27">
+            <covered>
+              <lifelineMoniker
+                Id="b9734192-2471-4318-97d7-6af075638cf4"
+                LastKnownName="osgUtil::ContextMenu"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -2736,22 +2736,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="0889e0ac-ed6b-484a-b527-3ce213f65cc6"
-            name="MessageOccurrenceSpecification30">
-            <covered>
-              <lifelineMoniker
-                Id="b9734192-2471-4318-97d7-6af075638cf4"
-                LastKnownName="osgUtil::ContextMenu"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="e1b379b1-ed28-4361-8625-102292a5f142"
             name="MessageOccurrenceSpecification29">
             <covered>
               <lifelineMoniker
                 Id="f7485f2a-f1f0-4e18-93e5-6a45ed19ab62"
                 LastKnownName="VDF"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0889e0ac-ed6b-484a-b527-3ce213f65cc6"
+            name="MessageOccurrenceSpecification30">
+            <covered>
+              <lifelineMoniker
+                Id="b9734192-2471-4318-97d7-6af075638cf4"
+                LastKnownName="osgUtil::ContextMenu"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -2774,22 +2774,22 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             </covered>
           </executionOccurrenceSpecification>
           <messageOccurrenceSpecification
-            Id="cc6523e6-ade0-4535-b611-0abc4d176ae4"
-            name="MessageOccurrenceSpecification22">
-            <covered>
-              <lifelineMoniker
-                Id="7349f9f3-0e98-476b-be91-53a87be91cc0"
-                LastKnownName="user"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
             Id="fe318ac9-556c-4279-b49a-60df38962a46"
             name="MessageOccurrenceSpecification21">
             <covered>
               <lifelineMoniker
                 Id="b9734192-2471-4318-97d7-6af075638cf4"
                 LastKnownName="osgUtil::ContextMenu"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="cc6523e6-ade0-4535-b611-0abc4d176ae4"
+            name="MessageOccurrenceSpecification22">
+            <covered>
+              <lifelineMoniker
+                Id="7349f9f3-0e98-476b-be91-53a87be91cc0"
+                LastKnownName="user"
                 LastKnownLocation="uml.uml" />
             </covered>
           </messageOccurrenceSpecification>
@@ -4100,146 +4100,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
         isLeaf="false"
         isReentrant="false">
         <fragments>
-          <messageOccurrenceSpecification
-            Id="0baa87e9-7283-4915-8e61-24c6ba237b45"
-            name="MessageOccurrenceSpecification11">
-            <covered>
-              <lifelineMoniker
-                Id="48283846-9b2e-4f7a-9001-e704883db29d"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="d6245f6d-9f06-48b9-b65c-f50fa4c33116"
-            name="MessageOccurrenceSpecification9">
-            <covered>
-              <lifelineMoniker
-                Id="48283846-9b2e-4f7a-9001-e704883db29d"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="b0c5ebb8-880a-49ab-9b84-b8ef743a1a87"
-            name="MessageOccurrenceSpecification13">
-            <covered>
-              <lifelineMoniker
-                Id="48283846-9b2e-4f7a-9001-e704883db29d"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="481a39e9-f9bb-4c12-b8b9-3299f604d49c"
-            name="MessageOccurrenceSpecification8">
-            <covered>
-              <lifelineMoniker
-                Id="48283846-9b2e-4f7a-9001-e704883db29d"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="9e3c016d-d848-4f33-a05d-1a7dbcff25f9"
-            name="MessageOccurrenceSpecification10">
-            <covered>
-              <lifelineMoniker
-                Id="076e307f-f4c4-484a-9027-d5714cbb57e4"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="1f47dd63-b22b-4405-bd9b-5b3328d24fbc"
-            name="MessageOccurrenceSpecification15">
-            <covered>
-              <lifelineMoniker
-                Id="2443402c-b860-40d2-8caf-62e507533511"
-                LastKnownName="core::IParser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="ca049606-102d-45b1-ab59-b0b66fd06c9c"
-            name="MessageOccurrenceSpecification14">
-            <covered>
-              <lifelineMoniker
-                Id="2443402c-b860-40d2-8caf-62e507533511"
-                LastKnownName="core::IParser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="0e87e43e-0148-4919-a077-11476cfeb897"
-            name="MessageOccurrenceSpecification12">
-            <covered>
-              <lifelineMoniker
-                Id="48283846-9b2e-4f7a-9001-e704883db29d"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="841c096a-fe87-4283-a5e6-b3824453a2cb"
-            name="MessageOccurrenceSpecification16">
-            <covered>
-              <lifelineMoniker
-                Id="48283846-9b2e-4f7a-9001-e704883db29d"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="112af723-847b-4f7f-a85a-0fc933b25028"
-            name="MessageOccurrenceSpecification20">
-            <covered>
-              <lifelineMoniker
-                Id="076e307f-f4c4-484a-9027-d5714cbb57e4"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="471e4477-2b04-4eb4-aa6a-6c5d0560fd90"
-            name="MessageOccurrenceSpecification18">
-            <covered>
-              <lifelineMoniker
-                Id="e65dda0e-e937-4c20-81e3-810fa76cdf08"
-                LastKnownName="core::Plugin"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="6fa97dbe-4ea6-47c6-9a92-4b77d81b0fcf"
-            name="MessageOccurrenceSpecification17">
-            <covered>
-              <lifelineMoniker
-                Id="076e307f-f4c4-484a-9027-d5714cbb57e4"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="3d04b5c6-dd37-4f3e-95ff-6246f29b0261"
-            name="MessageOccurrenceSpecification19">
-            <covered>
-              <lifelineMoniker
-                Id="e65dda0e-e937-4c20-81e3-810fa76cdf08"
-                LastKnownName="core::Plugin"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="2a8ecbea-bb63-4e15-8f08-b6c4610e000a"
-            name="MessageOccurrenceSpecification7">
-            <covered>
-              <lifelineMoniker
-                Id="076e307f-f4c4-484a-9027-d5714cbb57e4"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="76d15780-d581-48c8-9037-53ba32ddf8c4"
             name="BehaviorExecutionSpecification6">
@@ -4290,6 +4150,46 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="6fa97dbe-4ea6-47c6-9a92-4b77d81b0fcf"
+            name="MessageOccurrenceSpecification17">
+            <covered>
+              <lifelineMoniker
+                Id="076e307f-f4c4-484a-9027-d5714cbb57e4"
+                LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="471e4477-2b04-4eb4-aa6a-6c5d0560fd90"
+            name="MessageOccurrenceSpecification18">
+            <covered>
+              <lifelineMoniker
+                Id="e65dda0e-e937-4c20-81e3-810fa76cdf08"
+                LastKnownName="core::Plugin"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="112af723-847b-4f7f-a85a-0fc933b25028"
+            name="MessageOccurrenceSpecification20">
+            <covered>
+              <lifelineMoniker
+                Id="076e307f-f4c4-484a-9027-d5714cbb57e4"
+                LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="3d04b5c6-dd37-4f3e-95ff-6246f29b0261"
+            name="MessageOccurrenceSpecification19">
+            <covered>
+              <lifelineMoniker
+                Id="e65dda0e-e937-4c20-81e3-810fa76cdf08"
+                LastKnownName="core::Plugin"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="7e9f84da-9f88-43bf-bd64-a1a99cb62d2d"
             name="ExecutionOccurrenceSpecification12">
@@ -4370,6 +4270,36 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="2a8ecbea-bb63-4e15-8f08-b6c4610e000a"
+            name="MessageOccurrenceSpecification7">
+            <covered>
+              <lifelineMoniker
+                Id="076e307f-f4c4-484a-9027-d5714cbb57e4"
+                LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="481a39e9-f9bb-4c12-b8b9-3299f604d49c"
+            name="MessageOccurrenceSpecification8">
+            <covered>
+              <lifelineMoniker
+                Id="48283846-9b2e-4f7a-9001-e704883db29d"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0baa87e9-7283-4915-8e61-24c6ba237b45"
+            name="MessageOccurrenceSpecification11">
+            <covered>
+              <lifelineMoniker
+                Id="48283846-9b2e-4f7a-9001-e704883db29d"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="b6919629-c0dc-42d1-97ef-6302545e7b63"
             name="BehaviorExecutionSpecification4">
@@ -4424,6 +4354,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0e87e43e-0148-4919-a077-11476cfeb897"
+            name="MessageOccurrenceSpecification12">
+            <covered>
+              <lifelineMoniker
+                Id="48283846-9b2e-4f7a-9001-e704883db29d"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="ef012cee-8639-4516-995f-b19224a30946"
             name="BehaviorExecutionSpecification5">
@@ -4474,6 +4414,46 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="b0c5ebb8-880a-49ab-9b84-b8ef743a1a87"
+            name="MessageOccurrenceSpecification13">
+            <covered>
+              <lifelineMoniker
+                Id="48283846-9b2e-4f7a-9001-e704883db29d"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="ca049606-102d-45b1-ab59-b0b66fd06c9c"
+            name="MessageOccurrenceSpecification14">
+            <covered>
+              <lifelineMoniker
+                Id="2443402c-b860-40d2-8caf-62e507533511"
+                LastKnownName="core::IParser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="841c096a-fe87-4283-a5e6-b3824453a2cb"
+            name="MessageOccurrenceSpecification16">
+            <covered>
+              <lifelineMoniker
+                Id="48283846-9b2e-4f7a-9001-e704883db29d"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="1f47dd63-b22b-4405-bd9b-5b3328d24fbc"
+            name="MessageOccurrenceSpecification15">
+            <covered>
+              <lifelineMoniker
+                Id="2443402c-b860-40d2-8caf-62e507533511"
+                LastKnownName="core::IParser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="4b59cf58-0562-41bb-8efc-1c0e9280f4e6"
             name="ExecutionOccurrenceSpecification10">
@@ -4510,6 +4490,26 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="9e3c016d-d848-4f33-a05d-1a7dbcff25f9"
+            name="MessageOccurrenceSpecification10">
+            <covered>
+              <lifelineMoniker
+                Id="076e307f-f4c4-484a-9027-d5714cbb57e4"
+                LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="d6245f6d-9f06-48b9-b65c-f50fa4c33116"
+            name="MessageOccurrenceSpecification9">
+            <covered>
+              <lifelineMoniker
+                Id="48283846-9b2e-4f7a-9001-e704883db29d"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="a03f33aa-0027-488d-bb0b-12b71b6b8e87"
             name="ExecutionOccurrenceSpecification6">
@@ -4893,366 +4893,6 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
           </comment>
         </ownedCommentsInternal>
         <fragments>
-          <messageOccurrenceSpecification
-            Id="6dcce1d8-0150-413c-b2c2-d56e03592341"
-            name="MessageOccurrenceSpecification25">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="8e2368c0-b8ad-48eb-8de5-4f61352e4e9c"
-            name="MessageOccurrenceSpecification26">
-            <covered>
-              <lifelineMoniker
-                Id="84c095dc-315c-41af-8996-3d544ced9ca0"
-                LastKnownName="core::IParser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="1e8a3d80-2f9c-4b1c-a133-e9cedd6d05de"
-            name="MessageOccurrenceSpecification27">
-            <covered>
-              <lifelineMoniker
-                Id="84c095dc-315c-41af-8996-3d544ced9ca0"
-                LastKnownName="core::IParser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="dc0e38ea-6ee4-4ad6-abcb-65bc5ceffeb0"
-            name="MessageOccurrenceSpecification28">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="bc22b5b8-8f01-467b-b181-5fe0eb975ce5"
-            name="MessageOccurrenceSpecification29">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="57870bf7-2ee9-447d-b864-1031fe8863e5"
-            name="MessageOccurrenceSpecification14">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="41ef8bd3-58e8-49f9-8f0d-7f5ada0374ba"
-            name="MessageOccurrenceSpecification32">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="c68437f2-99d0-4a38-9087-7d30f7e98b95"
-            name="MessageOccurrenceSpecification30">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="adc73d81-d5a7-41ad-a3f9-83313dc2a567"
-            name="MessageOccurrenceSpecification13">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="2c9c2e90-88be-4e83-83bd-e3d0514aa489"
-            name="MessageOccurrenceSpecification17">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="3f032a6e-2909-4ff1-913b-864284361ced"
-            name="MessageOccurrenceSpecification24">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="0f31683d-6e04-404a-8d5f-159193b7309e"
-            name="MessageOccurrenceSpecification21">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="ac3f9ab0-4cd7-494b-9781-88dddf4863a5"
-            name="MessageOccurrenceSpecification22">
-            <covered>
-              <lifelineMoniker
-                Id="84c095dc-315c-41af-8996-3d544ced9ca0"
-                LastKnownName="core::IParser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="6f734bff-02c4-40d7-ae40-e25b64310503"
-            name="MessageOccurrenceSpecification23">
-            <covered>
-              <lifelineMoniker
-                Id="84c095dc-315c-41af-8996-3d544ced9ca0"
-                LastKnownName="core::IParser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="08ce98c2-fad1-4e0c-a108-056fea2f316d"
-            name="MessageOccurrenceSpecification16">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="5bb955cf-f738-4f95-9c0f-3249671b6a0b"
-            name="MessageOccurrenceSpecification20">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="9f340463-f48e-4bf0-9699-b37f96a25ef5"
-            name="MessageOccurrenceSpecification19">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="db4fc5b9-c3e1-4b20-ac23-1c2f746b5b27"
-            name="MessageOccurrenceSpecification15">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="3307a273-fdda-4aec-8e04-2b98e773974f"
-            name="MessageOccurrenceSpecification38">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="102825f7-7a68-4840-8e79-e43c4ca92857"
-            name="MessageOccurrenceSpecification9">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="ae4e032e-d700-44c9-b135-c2f1dcb8a9dd"
-            name="MessageOccurrenceSpecification41">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="d1cfa343-8d56-4df3-8c16-62e7acb9ae6d"
-            name="MessageOccurrenceSpecification12">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="b236f995-8ea5-4b91-8478-492eb68e7844"
-            name="MessageOccurrenceSpecification11">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="7fa4307f-da0d-42e6-ae99-c5ed1ff8d1ac"
-            name="MessageOccurrenceSpecification10">
-            <covered>
-              <lifelineMoniker
-                Id="1231224f-db37-48bc-aff5-c93d760e40cb"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="5d43d2f1-78a8-4b85-99e1-2c95f2ca1953"
-            name="MessageOccurrenceSpecification18">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="cd1c6e41-2721-48d7-bafa-af7e2b04b202"
-            name="MessageOccurrenceSpecification8">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="7b6444dc-96eb-4179-9033-1495025aee33"
-            name="MessageOccurrenceSpecification7">
-            <covered>
-              <lifelineMoniker
-                Id="1231224f-db37-48bc-aff5-c93d760e40cb"
-                LastKnownName="EDR"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="15d28825-27c5-42c6-b752-11d8fb846644"
-            name="MessageOccurrenceSpecification48">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="09bb1eec-1970-421e-96ee-211139ce28b0"
-            name="MessageOccurrenceSpecification34">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="f6ca588d-8dad-4e53-97bc-40ca4ae6f8cc"
-            name="MessageOccurrenceSpecification31">
-            <covered>
-              <lifelineMoniker
-                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
-                LastKnownName="core::DataManager::Parser"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="e95acf8d-6149-454f-bcf7-984faeef5d72"
-            name="MessageOccurrenceSpecification33">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="d84589a0-7976-41a1-91f4-80de79fd1329"
-            name="MessageOccurrenceSpecification36">
-            <covered>
-              <lifelineMoniker
-                Id="8e8a927f-cf16-41d7-bf8e-5bf357e708cd"
-                LastKnownName="core::ObjectWrapper"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="859db46a-e325-4b19-b923-4c6d4a5f2d24"
-            name="MessageOccurrenceSpecification35">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="9689141c-42c7-4d8d-8cd0-822cdd000d1e"
-            name="MessageOccurrenceSpecification37">
-            <covered>
-              <lifelineMoniker
-                Id="8e8a927f-cf16-41d7-bf8e-5bf357e708cd"
-                LastKnownName="core::ObjectWrapper"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="9408eb13-511f-44c0-a23a-5f6cd4f243d7"
-            name="MessageOccurrenceSpecification47">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
-          <messageOccurrenceSpecification
-            Id="149d7525-c91d-4279-af4e-8c8a5d024167"
-            name="MessageOccurrenceSpecification42">
-            <covered>
-              <lifelineMoniker
-                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
-                LastKnownName="DataManager"
-                LastKnownLocation="uml.uml" />
-            </covered>
-          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="b1cbb6f6-06c7-498f-9c5f-038961a70696"
             name="BehaviorExecutionSpecification3">
@@ -5315,6 +4955,36 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="7b6444dc-96eb-4179-9033-1495025aee33"
+            name="MessageOccurrenceSpecification7">
+            <covered>
+              <lifelineMoniker
+                Id="1231224f-db37-48bc-aff5-c93d760e40cb"
+                LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="cd1c6e41-2721-48d7-bafa-af7e2b04b202"
+            name="MessageOccurrenceSpecification8">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="b236f995-8ea5-4b91-8478-492eb68e7844"
+            name="MessageOccurrenceSpecification11">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="510666a4-f1a5-435d-b09d-96ec674d56be"
             name="BehaviorExecutionSpecification4">
@@ -5373,6 +5043,26 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="d1cfa343-8d56-4df3-8c16-62e7acb9ae6d"
+            name="MessageOccurrenceSpecification12">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="ae4e032e-d700-44c9-b135-c2f1dcb8a9dd"
+            name="MessageOccurrenceSpecification41">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="88f4cc9b-eda7-47fc-86ee-1ec42455ce26"
             name="BehaviorExecutionSpecification13">
@@ -5467,6 +5157,26 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="149d7525-c91d-4279-af4e-8c8a5d024167"
+            name="MessageOccurrenceSpecification42">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="9408eb13-511f-44c0-a23a-5f6cd4f243d7"
+            name="MessageOccurrenceSpecification47">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="86afd2ca-625c-4a2c-ad5c-4ea3a80cd01b"
             name="BehaviorExecutionSpecification15">
@@ -5513,6 +5223,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="15d28825-27c5-42c6-b752-11d8fb846644"
+            name="MessageOccurrenceSpecification48">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="09dba8d6-c14b-492e-baf8-bf674123bab0"
             name="ExecutionOccurrenceSpecification30">
@@ -5589,6 +5309,26 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="57870bf7-2ee9-447d-b864-1031fe8863e5"
+            name="MessageOccurrenceSpecification14">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="adc73d81-d5a7-41ad-a3f9-83313dc2a567"
+            name="MessageOccurrenceSpecification13">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="1d7ac7f4-aa71-412b-a5a6-90a6c338d5e9"
             name="BehaviorExecutionSpecification8">
@@ -5639,6 +5379,46 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="6dcce1d8-0150-413c-b2c2-d56e03592341"
+            name="MessageOccurrenceSpecification25">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="8e2368c0-b8ad-48eb-8de5-4f61352e4e9c"
+            name="MessageOccurrenceSpecification26">
+            <covered>
+              <lifelineMoniker
+                Id="84c095dc-315c-41af-8996-3d544ced9ca0"
+                LastKnownName="core::IParser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="dc0e38ea-6ee4-4ad6-abcb-65bc5ceffeb0"
+            name="MessageOccurrenceSpecification28">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="1e8a3d80-2f9c-4b1c-a133-e9cedd6d05de"
+            name="MessageOccurrenceSpecification27">
+            <covered>
+              <lifelineMoniker
+                Id="84c095dc-315c-41af-8996-3d544ced9ca0"
+                LastKnownName="core::IParser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="5af5aacf-91d6-419f-8d63-a797b19e3fff"
             name="ExecutionOccurrenceSpecification16">
@@ -5657,6 +5437,26 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="08ce98c2-fad1-4e0c-a108-056fea2f316d"
+            name="MessageOccurrenceSpecification16">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="db4fc5b9-c3e1-4b20-ac23-1c2f746b5b27"
+            name="MessageOccurrenceSpecification15">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="aeae102a-51cf-4b04-9af6-e40917a2e700"
             name="ExecutionOccurrenceSpecification10">
@@ -5733,6 +5533,26 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="5d43d2f1-78a8-4b85-99e1-2c95f2ca1953"
+            name="MessageOccurrenceSpecification18">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="2c9c2e90-88be-4e83-83bd-e3d0514aa489"
+            name="MessageOccurrenceSpecification17">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="c9c66d73-9b14-43c2-b749-b70b8404fcd3"
             name="BehaviorExecutionSpecification7">
@@ -5783,6 +5603,46 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="0f31683d-6e04-404a-8d5f-159193b7309e"
+            name="MessageOccurrenceSpecification21">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="ac3f9ab0-4cd7-494b-9781-88dddf4863a5"
+            name="MessageOccurrenceSpecification22">
+            <covered>
+              <lifelineMoniker
+                Id="84c095dc-315c-41af-8996-3d544ced9ca0"
+                LastKnownName="core::IParser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="3f032a6e-2909-4ff1-913b-864284361ced"
+            name="MessageOccurrenceSpecification24">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="6f734bff-02c4-40d7-ae40-e25b64310503"
+            name="MessageOccurrenceSpecification23">
+            <covered>
+              <lifelineMoniker
+                Id="84c095dc-315c-41af-8996-3d544ced9ca0"
+                LastKnownName="core::IParser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="a68f2649-d842-453b-9d96-fcdf16500b8c"
             name="ExecutionOccurrenceSpecification14">
@@ -5801,6 +5661,26 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="9f340463-f48e-4bf0-9699-b37f96a25ef5"
+            name="MessageOccurrenceSpecification19">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="5bb955cf-f738-4f95-9c0f-3249671b6a0b"
+            name="MessageOccurrenceSpecification20">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="be47d389-1809-45e4-ac21-755a784fc8d9"
             name="ExecutionOccurrenceSpecification12">
@@ -5869,6 +5749,46 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="c68437f2-99d0-4a38-9087-7d30f7e98b95"
+            name="MessageOccurrenceSpecification30">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="bc22b5b8-8f01-467b-b181-5fe0eb975ce5"
+            name="MessageOccurrenceSpecification29">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="f6ca588d-8dad-4e53-97bc-40ca4ae6f8cc"
+            name="MessageOccurrenceSpecification31">
+            <covered>
+              <lifelineMoniker
+                Id="9bf63cb2-ed2e-4fd7-a47b-23b5b10f5afd"
+                LastKnownName="core::DataManager::Parser"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="41ef8bd3-58e8-49f9-8f0d-7f5ada0374ba"
+            name="MessageOccurrenceSpecification32">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="6e08488b-81dc-4789-b5ca-5091de2d9466"
             name="ExecutionOccurrenceSpecification18">
@@ -5887,6 +5807,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="e95acf8d-6149-454f-bcf7-984faeef5d72"
+            name="MessageOccurrenceSpecification33">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="c050a1e9-5abc-47c0-ac07-d70103f924f9"
             name="BehaviorExecutionSpecification10">
@@ -5941,6 +5871,16 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="09bb1eec-1970-421e-96ee-211139ce28b0"
+            name="MessageOccurrenceSpecification34">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <behaviorExecutionSpecification
             Id="699126d4-ee48-4948-82db-5c391c348558"
             name="BehaviorExecutionSpecification11">
@@ -5991,6 +5931,46 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="d84589a0-7976-41a1-91f4-80de79fd1329"
+            name="MessageOccurrenceSpecification36">
+            <covered>
+              <lifelineMoniker
+                Id="8e8a927f-cf16-41d7-bf8e-5bf357e708cd"
+                LastKnownName="core::ObjectWrapper"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="859db46a-e325-4b19-b923-4c6d4a5f2d24"
+            name="MessageOccurrenceSpecification35">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="9689141c-42c7-4d8d-8cd0-822cdd000d1e"
+            name="MessageOccurrenceSpecification37">
+            <covered>
+              <lifelineMoniker
+                Id="8e8a927f-cf16-41d7-bf8e-5bf357e708cd"
+                LastKnownName="core::ObjectWrapper"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="3307a273-fdda-4aec-8e04-2b98e773974f"
+            name="MessageOccurrenceSpecification38">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="97c61cb5-9bbc-4693-bc89-d50e25410a9b"
             name="ExecutionOccurrenceSpecification22">
@@ -6063,6 +6043,26 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
                 LastKnownLocation="uml.uml" />
             </covered>
           </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="102825f7-7a68-4840-8e79-e43c4ca92857"
+            name="MessageOccurrenceSpecification9">
+            <covered>
+              <lifelineMoniker
+                Id="35f7f3cb-4c0b-45d9-960e-5b93b155ccfe"
+                LastKnownName="DataManager"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification
+            Id="7fa4307f-da0d-42e6-ae99-c5ed1ff8d1ac"
+            name="MessageOccurrenceSpecification10">
+            <covered>
+              <lifelineMoniker
+                Id="1231224f-db37-48bc-aff5-c93d760e40cb"
+                LastKnownName="EDR"
+                LastKnownLocation="uml.uml" />
+            </covered>
+          </messageOccurrenceSpecification>
           <executionOccurrenceSpecification
             Id="780416e2-da9b-4c1c-bd8b-ea2fe04fff25"
             name="ExecutionOccurrenceSpecification6">
@@ -15040,7 +15040,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <class
         Id="b8c71cb2-6e14-4313-94a2-bd28592a34c4"
-        name="ObjectOutput"
+        name="ObjectSource"
         isAbstract="false"
         isLeaf="false"
         isActiveClass="false">
@@ -15059,7 +15059,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <class
         Id="416af829-830d-43d1-b07a-018d62dde4bf"
-        name="ObjectSource"
+        name="ObjectOutput"
         isAbstract="false"
         isLeaf="false"
         isActiveClass="false">
@@ -15092,7 +15092,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             isAbstract="false">
             <classMoniker
               Id="b8c71cb2-6e14-4313-94a2-bd28592a34c4"
-              LastKnownName="ObjectOutput"
+              LastKnownName="ObjectSource"
               LastKnownLocation="uml.uml" />
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
@@ -15142,7 +15142,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             isAbstract="false">
             <classMoniker
               Id="416af829-830d-43d1-b07a-018d62dde4bf"
-              LastKnownName="ObjectSource"
+              LastKnownName="ObjectOutput"
               LastKnownLocation="uml.uml" />
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
@@ -15716,21 +15716,21 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <Interface
         Id="6eedc4d9-d378-424b-8beb-cbcdb19387bb"
-        name="IInputDescriptionInterface"
+        name="IInputDescription"
         isAbstract="false"
         isLeaf="false" />
     </packageHasNamedElement>
     <packageHasNamedElement>
       <Interface
         Id="8eec5efe-ff3c-46b2-a6ae-0fe7a4c43993"
-        name="IOutputDescriptionInterface"
+        name="IOutputDescription"
         isAbstract="false"
         isLeaf="false" />
     </packageHasNamedElement>
     <packageHasNamedElement>
       <Interface
         Id="58d5625d-8c8c-41eb-9274-2a948d872439"
-        name="IInputItem"
+        name="IInputIProcessItem"
         isAbstract="false"
         isLeaf="false">
         <generalsInternal>
@@ -15739,7 +15739,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             isSubstitutable="false">
             <interfaceMoniker
               Id="6eedc4d9-d378-424b-8beb-cbcdb19387bb"
-              LastKnownName="IInputDescriptionInterface"
+              LastKnownName="IInputDescription"
               LastKnownLocation="uml.uml" />
           </generalization>
           <generalization
@@ -15756,7 +15756,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <Interface
         Id="205a9346-c24f-4355-a45e-3e0f19673b83"
-        name="IOutputItem"
+        name="IOutputProcessItem"
         isAbstract="false"
         isLeaf="false">
         <generalsInternal>
@@ -15765,7 +15765,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             isSubstitutable="false">
             <interfaceMoniker
               Id="8eec5efe-ff3c-46b2-a6ae-0fe7a4c43993"
-              LastKnownName="IOutputDescriptionInterface"
+              LastKnownName="IOutputDescription"
               LastKnownLocation="uml.uml" />
           </generalization>
           <generalization
@@ -15782,7 +15782,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <Interface
         Id="547d808e-8ae3-4d3d-930d-c0bf054d1cd4"
-        name="IInputOutputItem"
+        name="IInputOutputProcessItem"
         isAbstract="false"
         isLeaf="false">
         <generalsInternal>
@@ -15791,7 +15791,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             isSubstitutable="false">
             <interfaceMoniker
               Id="8eec5efe-ff3c-46b2-a6ae-0fe7a4c43993"
-              LastKnownName="IOutputDescriptionInterface"
+              LastKnownName="IOutputDescription"
               LastKnownLocation="uml.uml" />
           </generalization>
           <generalization
@@ -15799,7 +15799,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             isSubstitutable="false">
             <interfaceMoniker
               Id="6eedc4d9-d378-424b-8beb-cbcdb19387bb"
-              LastKnownName="IInputDescriptionInterface"
+              LastKnownName="IInputDescription"
               LastKnownLocation="uml.uml" />
           </generalization>
           <generalization
@@ -15902,7 +15902,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <class
         Id="aee232a1-9877-4190-8387-63223fedf4b7"
-        name="InputItem"
+        name="InputProcessItem"
         isAbstract="false"
         isLeaf="false"
         isActiveClass="false">
@@ -15920,7 +15920,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             isSubstitutable="false">
             <classMoniker
               Id="f221e248-f8c9-410a-8952-802ae71f30be"
-              LastKnownName="WorkflowItemEncapsulator"
+              LastKnownName="WorkflowProcessItemEncapsulator"
               LastKnownLocation="uml.uml" />
           </generalization>
         </generalsInternal>
@@ -15949,7 +15949,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <class
         Id="d6b25aa4-6f2e-4527-b02b-1b16f71d451c"
-        name="OutputItem"
+        name="OutputProcessItem"
         isAbstract="false"
         isLeaf="false"
         isActiveClass="false">
@@ -15959,7 +15959,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             isSubstitutable="false">
             <classMoniker
               Id="f221e248-f8c9-410a-8952-802ae71f30be"
-              LastKnownName="WorkflowItemEncapsulator"
+              LastKnownName="WorkflowProcessItemEncapsulator"
               LastKnownLocation="uml.uml" />
           </generalization>
           <generalization
@@ -15996,7 +15996,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <class
         Id="67388a3e-ac42-4a43-ab3b-6cb539bb8b70"
-        name="InputOutputItem"
+        name="InputOutputProcessItem"
         isAbstract="false"
         isLeaf="false"
         isActiveClass="false">
@@ -16006,7 +16006,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             isSubstitutable="false">
             <classMoniker
               Id="f221e248-f8c9-410a-8952-802ae71f30be"
-              LastKnownName="WorkflowItemEncapsulator"
+              LastKnownName="WorkflowProcessItemEncapsulator"
               LastKnownLocation="uml.uml" />
           </generalization>
           <generalization
@@ -16051,7 +16051,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <class
         Id="f221e248-f8c9-410a-8952-802ae71f30be"
-        name="WorkflowItemEncapsulator"
+        name="WorkflowProcessItemEncapsulator"
         isAbstract="false"
         isLeaf="false"
         isActiveClass="false">
@@ -16060,7 +16060,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
             Id="cc9dea38-047a-4959-8ce2-203e928170e0">
             <interfaceMoniker
               Id="988191b9-799c-40c4-a66a-84bd7423eeb3"
-              LastKnownName="WorkflowItemBaseInterface"
+              LastKnownName="IWorkflowProcessItem"
               LastKnownLocation="uml.uml" />
           </interfaceRealization>
         </suppliersInternal>
@@ -16089,7 +16089,7 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
     <packageHasNamedElement>
       <Interface
         Id="988191b9-799c-40c4-a66a-84bd7423eeb3"
-        name="WorkflowItemBaseInterface"
+        name="IWorkflowProcessItem"
         isAbstract="false"
         isLeaf="false" />
     </packageHasNamedElement>
@@ -16345,11 +16345,11 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
         isActiveClass="false">
         <generalsInternal>
           <generalization
-            Id="5b8b71cc-2381-4a45-967e-ed1d05d98d18"
+            Id="55c35745-5684-460f-995d-d37917bdf105"
             isSubstitutable="false">
             <classMoniker
-              Id="149dffa6-daf9-464f-9aa2-61075cf9b89e"
-              LastKnownName="Observable"
+              Id="791466e4-ae45-459a-abca-e9635e8dc7a6"
+              LastKnownName="Lockable"
               LastKnownLocation="uml.uml" />
           </generalization>
         </generalsInternal>
@@ -16527,6 +16527,62 @@ Rozszerza możliwości klas klienta o informację o zmianie stanu slotu, sposobi
         name="ISerializable"
         isAbstract="false"
         isLeaf="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="a692ce2a-ae74-415f-a39d-219c626cf144"
+        name="EDRVisualDataFlow"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="791466e4-ae45-459a-abca-e9635e8dc7a6"
+        name="Lockable"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="4521938a-3239-4cd3-839b-77d548c88bb9"
+        name="Plugins"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <packageMoniker
+        Id="ad43f5cc-e3c7-438a-9bd6-dff81e82cab3"
+        LastKnownName="Data"
+        LastKnownLocation="Package_1556.uml" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <packageMoniker
+        Id="82be7e8c-36c8-44d8-83f8-8538e481f8a4"
+        LastKnownName="LoadingData"
+        LastKnownLocation="Package_1557.uml" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <packageMoniker
+        Id="7f11cf0a-e84e-41ca-bd74-8a155a509d16"
+        LastKnownName="DataOperations"
+        LastKnownLocation="Package_1558.uml" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="baef85b2-1d9b-4df1-aed4-a492c5fd3b68"
+        name="Class3"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <packageMoniker
+        Id="c348366f-99c6-43bd-84ed-e545cf703432"
+        LastKnownName="Application Features"
+        LastKnownLocation="Package_1601.uml" />
     </packageHasNamedElement>
   </packagedElements>
   <primitiveType

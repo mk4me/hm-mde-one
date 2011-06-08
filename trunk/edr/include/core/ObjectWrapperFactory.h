@@ -10,6 +10,7 @@
 #define HEADER_GUARD_CORE__OBJECTWRAPPERFACTORY_H__
 
 #include <core/ObjectWrapper.h>
+#include <core/ObjectWrapperCollection.h>
 
 namespace core 
 {
@@ -22,7 +23,9 @@ namespace core
         //! 
         virtual ObjectWrapper* createWrapper() = 0;
         //!
-        virtual core::TypeInfo getType() = 0;
+        virtual ObjectWrapperCollection* createWrapperCollection() = 0;
+        //!
+        virtual const core::TypeInfo & getType() const = 0;
     };
 
     typedef shared_ptr<IObjectWrapperFactory> IObjectWrapperFactoryPtr;
@@ -33,15 +36,27 @@ namespace core
     class ObjectWrapperFactory : public IObjectWrapperFactory
     {
     public:
+        ObjectWrapperFactory() : typeInfo(typeid(T)) {}
+
         virtual ObjectWrapper* createWrapper()
         {
             UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
             return new ObjectWrapperT<T>();
         }
-        virtual core::TypeInfo getType()
+
+        virtual ObjectWrapperCollection* createWrapperCollection()
         {
-            return typeid(T);
-        }        
+            UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+            return new ObjectWrapperCollectionT<T>();
+        }
+
+        virtual const core::TypeInfo & getType() const
+        {
+            return typeInfo;
+        }  
+
+    private:
+        core::TypeInfo typeInfo;
     };
 
 } // namespace core

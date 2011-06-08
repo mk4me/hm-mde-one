@@ -71,7 +71,7 @@ GRFService::~GRFService()
 {
 }
 
-QWidget* GRFService::getWidget()
+QWidget* GRFService::getWidget(std::vector<QObject*>& actions)
 {
     return widget;
 }

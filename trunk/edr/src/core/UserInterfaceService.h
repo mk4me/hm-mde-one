@@ -19,7 +19,7 @@ public:
 
 // IService
 public:
-    virtual QWidget* getWidget();
+    virtual QWidget* getWidget(std::vector<QObject*>& actions);
     virtual const std::string& getName() const;
 
 // IUserInterface

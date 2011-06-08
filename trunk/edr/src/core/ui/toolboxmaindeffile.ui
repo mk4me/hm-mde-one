@@ -72,6 +72,7 @@
      <addaction name="separator"/>
     </widget>
     <addaction name="menuCreateVisualizer"/>
+    <addaction name="actionCreate_workflow"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -153,6 +154,11 @@
     <string>Open...</string>
    </property>
   </action>
+  <action name="actionCreate_workflow">
+   <property name="text">
+    <string>Create workflow</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
@@ -224,14 +230,30 @@
    </hints>
   </connection>
   <connection>
-   <sender>menuWindow</sender>
-   <signal>aboutToShow()</signal>
+   <sender>actionWindow</sender>
+   <signal>triggered()</signal>
    <receiver>EDRMain</receiver>
    <slot>populateWindowMenu()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>73</x>
-     <y>51</y>
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCreate_workflow</sender>
+   <signal>triggered()</signal>
+   <receiver>EDRMain</receiver>
+   <slot>createWorkflow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>344</y>
     </hint>
     <hint type="destinationlabel">
      <x>227</x>
@@ -254,5 +276,6 @@
   <slot>onOpenLayout()</slot>
   <slot>populateWindowMenu()</slot>
   <slot>populateVisualizersMenu()</slot>
+  <slot>createWorkflow()</slot>
  </slots>
 </ui>

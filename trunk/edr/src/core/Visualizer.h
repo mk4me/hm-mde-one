@@ -31,6 +31,8 @@ private:
     //! Nazwa uzupe³niona o przyrostek.
     QString uiName;
 
+    std::set<core::shared_ptr<core::IVisualizer::SerieBase> > dataSeries;
+
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w³asnoœæ.
@@ -54,11 +56,6 @@ public:
         return widget;
     }
 
-   /* virtual void run() 
-    {
-         getImplementation()->setUp(&source);
-    }*/
-
     inline void update(double deltaTime)
     {
         getImplementation()->update(deltaTime);
@@ -70,20 +67,26 @@ public:
     //! \param uiName Nazwa wizualizatora u¿ywana w UI. Nie powoduje automatycznego odœwie¿enia UI.
     void setUIName(const QString& uiName);
 
-    //! \return Nazwa wizualizatora.
-    const std::string& getName() const
-    {
-        return getImplementation()->getName();
-    }
-
     //!
     const QIcon& getIcon() const;
-    
 
-    //! 
-    void setUp();
-    //! \param source ród³o danych.
-    bool trySetUp();
+    int getMaxSeries() const
+    {
+        return getImplementation()->getMaxDataSeries();
+    }
+
+    const core::VisualizerSeriePtr & createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
+    {
+        core::VisualizerSeriePtr serie(getImplementation()->createSerie(data, name));
+        dataSeries.insert(serie);
+        return *(dataSeries.find(serie));
+    }
+
+    void removeSerie(const core::VisualizerSeriePtr & serie)
+    {
+        getImplementation()->removeSerie(serie.get());
+        dataSeries.erase(serie);
+    }
 };
 
 typedef core::shared_ptr<Visualizer> VisualizerPtr;

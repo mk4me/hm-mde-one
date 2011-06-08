@@ -44,8 +44,8 @@
          <string>clear</string>
         </property>
         <property name="icon">
-         <iconset resource="ConsoleWidget.qrc">
-          <normaloff>resources/icons/clear_console_16x16.png</normaloff>resources/icons/clear_console_16x16.png</iconset>
+         <iconset resource="Icons.qrc">
+          <normaloff>:/resources/icons/clear_console.png</normaloff>:/resources/icons/clear_console.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -61,8 +61,8 @@
          <string>toggle word wrap</string>
         </property>
         <property name="icon">
-         <iconset resource="ConsoleWidget.qrc">
-          <normaloff>resources/icons/word_wrap_16x16.png</normaloff>resources/icons/word_wrap_16x16.png</iconset>
+         <iconset resource="Icons.qrc">
+          <normaloff>:/resources/icons/word_wrap_16x16.png</normaloff>:/resources/icons/word_wrap_16x16.png</iconset>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -112,6 +112,7 @@ p, li { white-space: pre-wrap; }
  </widget>
  <resources>
   <include location="ConsoleWidget.qrc"/>
+  <include location="Icons.qrc"/>
  </resources>
  <connections>
   <connection>

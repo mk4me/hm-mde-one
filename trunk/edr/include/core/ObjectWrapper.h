@@ -46,13 +46,19 @@ namespace core {
         static const bool isDefinitionVisible = false;
     };
 
+    class ObjectWrapper;
+    typedef shared_ptr<ObjectWrapper> ObjectWrapperPtr;
+    typedef shared_ptr<const ObjectWrapper> ObjectWrapperConstPtr;
+    typedef weak_ptr<ObjectWrapper> ObjectWrapperWeakPtr;
+    typedef weak_ptr<const ObjectWrapper> ObjectWrapperConstWeakPtr;
+
     //! Baza dla typu wrapuj¹cego jakiœ obiekt. Poza trzymaniem metadanych klasy pochodne
     //! trzymaj¹ referencje do obiektów.
     class ObjectWrapper
     {
     public:
         //! Lista typów.
-        typedef std::list<TypeInfo> Types;
+        typedef TypeInfoList Types;
     protected:
         //! Nazwa instancji.
         std::string name;
@@ -98,12 +104,12 @@ namespace core {
         //! \param name
         //! \return Wrapper obiektu.
         template <class T>
-        static shared_ptr<ObjectWrapper> create(T* dummy = nullptr)
+        static ObjectWrapperPtr create(T* dummy = nullptr)
         {
             UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
             typedef ObjectWrapperT<T> Wrapper;
             Wrapper * wrapper = new Wrapper();
-            return shared_ptr<ObjectWrapper>(wrapper);
+            return ObjectWrapperPtr(wrapper);
         }
 
         //! \return Nazwa dla zadanego typu.
@@ -116,7 +122,7 @@ namespace core {
 
         //! \param type Typ do porównania.
         //! \return Czy to te same typy?
-        inline bool isTypeEqual(const TypeInfo& type)
+        inline bool isTypeEqual(const TypeInfo& type) const
         {
             return getTypeInfo() == type;
         }
@@ -259,13 +265,6 @@ namespace core {
             this->source = source; 
         }
 
-
-        //!
-        inline TypeInfo getType() const
-        {
-            return getTypeInfo();
-        }
-
         //! \return
         bool isChanged() const
         { 
@@ -276,7 +275,6 @@ namespace core {
         { 
             this->changed = changed; 
         }
-
 
         //! \param type 
         //! \return Czy obiekt wspiera okreœlony typ?
@@ -298,7 +296,7 @@ namespace core {
         virtual bool isNull() const = 0;
 
         //! \return Klon bie¿¹cego obiektu. Wewnêtrzny wskaŸnik równie¿ jest kopiowany.
-        virtual shared_ptr<ObjectWrapper> clone() const = 0;
+        virtual ObjectWrapperPtr clone() const = 0;
 
     private:
 
@@ -307,10 +305,6 @@ namespace core {
 
         virtual bool setSmartPtr(const void* ptr, const TypeInfo& type) = 0;
     };
-
-    typedef shared_ptr<ObjectWrapper> ObjectWrapperPtr;
-    typedef shared_ptr<const ObjectWrapper> ObjectWrapperConstPtr;
-    typedef weak_ptr<ObjectWrapper> ObjectWrapperWeakPtr;
 
     //! Pomocniczy typ bazowy, zarz¹dzaj¹cy obiektem za pomoc¹ parametru
     //! PtrPolicy. Tego typu nigdy nie u¿ywa siê wprost.

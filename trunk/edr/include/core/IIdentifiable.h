@@ -9,13 +9,13 @@
 #ifndef __HEADER_GUARD__IIDENTIFIABLE_H__
 #define __HEADER_GUARD__IIDENTIFIABLE_H__
 
-#include <boost/shared_ptr.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <core/BaseDataTypes.h>
 
+namespace core {
 
 //! Interfejs reprezentuj¹cy obiekt mo¿liwy do identyfikacji.
 class IIdentifiable
@@ -28,12 +28,14 @@ public:
     virtual std::string getDescription() const = 0;
 };
 
+}
+
 #define UNIQUE_ID(uuidStr, shortDescription)                            \
  public:                                                                \
     static boost::uuids::uuid getClassID()                              \
     {                                                                   \
-        std::string s(uuidStr);                                         \
-        boost::uuids::string_generator gen;                             \
+        static std::string s(uuidStr);                                  \
+        static boost::uuids::string_generator gen;                      \
         return gen(s);                                                  \
     }                                                                   \
                                                                         \

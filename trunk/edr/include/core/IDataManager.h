@@ -6,6 +6,7 @@
 #include <boost/type_traits.hpp>
 #include <utils/Utils.h>
 #include <core/ObjectWrapper.h>
+#include <core/ObjectWrapperCollection.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -28,12 +29,12 @@ public:
     //! Dodawanie obiektow domenowych z innych zrodel niz parsery
     //! \param dataProcessor zrodlo danych
     //! \param objects wektor ze stworzonymi obiektami domenowymi (zrodlo powinno dalej je przechowywac!)
-    virtual void addObjects(DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects) = 0;
+    virtual void addObjects(DataProcessorPtr dataProcessor, const std::vector<ObjectWrapperPtr>& objects) = 0;
 
     //! Dodawanie obiektu domenowego z innego zrodla niz parser
     //! \param dataProcessor zrodlo obiektu
     //! \param object dodawany obiekt (zrodlo powinno dalej go przechowywac)
-    virtual void addObject(DataProcessorPtr dataProcessor, core::ObjectWrapperPtr object) = 0;
+    virtual void addObject(DataProcessorPtr dataProcessor, ObjectWrapperPtr object) = 0;
 
     //! Wyszukiwanie zasobów na lokalnym dysku.
     virtual void findResources() = 0;
@@ -48,7 +49,7 @@ public:
     virtual void loadFiles(const std::vector<Path>& files) = 0;
     //! \param files lista do za³adowania, inicjalizacja parserów
     //! \param types lista typow, ktore powinny zostac zaladowane
-    virtual void loadFiles(const std::vector<Path>& files, const core::ObjectWrapper::Types& types) = 0;
+    virtual void loadFiles(const std::vector<Path>& files, const ObjectWrapper::Types& types) = 0;
     //! Zwraca i-t¹ próbê pomiarow¹ z listy kolalnych prób pomiarowych.
     //! \param i indeks.
     //! \return i-ta próba pomiarowa.
@@ -75,7 +76,7 @@ public:
     //! \param type Typ obiektu który chcemy wyszukaæ.
     //! \param exact Czy wyszukiwaæ te¿ typy pochodne?
     //! \return Lista obiektów wype³niaj¹cych zadane kryterium.
-    virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact = false) = 0;
+    virtual void getObjects(std::vector<ObjectWrapperPtr>& objects, const TypeInfo& type, bool exact = false) = 0;
 
     //! \return Czy zadane rozszerzenie jest wspierane?
     virtual bool isExtensionSupported(const std::string& extension) const = 0;
@@ -87,7 +88,8 @@ public:
     //! \param path Za³aduj próbê pomiarow¹ z podanej œcie¿ki.
     UTILS_DEPRECATED(virtual void loadLocalTrial(const Path& path) = 0);
 
-    virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo& type) = 0;
+    virtual ObjectWrapperPtr createWrapper(const TypeInfo& type) = 0;
+    virtual ObjectWrapperCollectionPtr createWrapperCollection(const TypeInfo& type) = 0;
 };
     
     //! \param manager Data manager.
@@ -95,9 +97,9 @@ public:
     //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
     //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
     template <class SmartPtr>
-    inline void queryDataPtr(core::IDataManager* manager, std::vector<SmartPtr>& target, bool exact = false)
+    inline void queryDataPtr(IDataManager* manager, std::vector<SmartPtr>& target, bool exact = false)
     {
-        core::__queryDataIsConvertible<typename SmartPtr::element_type, SmartPtr>(manager, target, exact, boost::true_type());
+        __queryDataIsConvertible<typename SmartPtr::element_type, SmartPtr>(manager, target, exact, boost::true_type());
     }
 
     //! \param manager Data manager.
@@ -105,7 +107,7 @@ public:
     //! \return Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
     //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
     template <class SmartPtr>
-    inline std::vector<SmartPtr> queryDataPtr(core::IDataManager* manager, bool exact = false, SmartPtr* /*dummy*/ = nullptr)
+    inline std::vector<SmartPtr> queryDataPtr(IDataManager* manager, bool exact = false, SmartPtr* /*dummy*/ = nullptr)
     {
         std::vector<SmartPtr> target;
         queryDataPtr<SmartPtr>(manager, target, exact);
@@ -117,11 +119,11 @@ public:
     //! \see http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Return_Type_Resolver
     struct queryDataPtr_t
     {
-        core::IDataManager* manager;
+        IDataManager* manager;
         bool exact;
         //! \param manager
         //! \param exact
-        inline queryDataPtr_t(core::IDataManager* manager, bool exact = false) :
+        inline queryDataPtr_t(IDataManager* manager, bool exact = false) :
         manager(manager), exact(exact)
         {}
         //! \return Kolekcja wskaŸników.
@@ -136,7 +138,7 @@ public:
 
     //! Wersja funkcji queryData oparta o idiom "Return Type Resolver". Nie trzeba
     //! podawaæ jawnie typu elementu kolekcji jako parametru szablonu.
-    inline queryDataPtr_t queryDataPtr(core::IDataManager* manager, bool exact = false)
+    inline queryDataPtr_t queryDataPtr(IDataManager* manager, bool exact = false)
     {
         return queryDataPtr_t(manager, exact);
     }

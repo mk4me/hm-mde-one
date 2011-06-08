@@ -9,6 +9,7 @@
 #ifndef HEADER_GUARD_CORE__VISUALIZERWIDGET_H__
 #define HEADER_GUARD_CORE__VISUALIZERWIDGET_H__
 
+#include <map>
 #include <QtGui/QDockWidget>
 #include "Visualizer.h"
 #include "VisualizerManager.h"
@@ -26,6 +27,7 @@ private:
     //-------------------------- Old VisualizerTitleBar fields -------------------------------------------
     QAction *actionSplitVertically;
     QAction *actionSplitHorizontally;
+    QAction *actionNone;
     QLabel *label;
     QComboBox *comboType;
 
@@ -38,21 +40,17 @@ private:
     std::vector<QObject*> visualizerCustomElements;
 
     //-------------------------- Old VisualizerTitleBarComboPick fields -------------------------------------------
-    QToolButton *buttonPin;
     QToolButton *buttonSource;
 
     //! Menu do wyboru Ÿróde³.
     QMenu* menuSource;
-    //!
-    QMenu* menuPin;
-    //!
-    QActionGroup* groupMenuPin;
-    //! Grupa akcji dla wyobru Ÿróde³.
-    QActionGroup* groupSources;
-    //!
-    int currentSlot;
 
     QWidget * visualizerWidget;
+
+    std::map<core::ObjectWrapperConstPtr, core::VisualizerSeriePtr > currentSeriesData;
+    std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> > groupedSeriesData;
+
+    std::pair<QAction*, core::ObjectWrapperConstPtr> lastSerie;
 
 public:
     //! Zeruj¹cy konstruktor.
@@ -90,10 +88,16 @@ public:
         return visualizer;
     }
 
+    void setActiveVisualizersSwitch(bool active);
+    bool getActiveVisualizersSwitch() const;
+
 protected:
     virtual void closeEvent (QCloseEvent *event);
         
 private slots:
+
+    void removeAllSeries();
+
     //! \param Czy zamieniæ pasek tytu³owy na systemowy?
     //void setReplaceTitleBar(bool replace);
     //! \param Czy zamieniæ pasek tytu³owy na systemowy?
@@ -113,12 +117,6 @@ private slots:
     //! \param idx Indeks bie¿¹cego wizualizatora.
     void setCurrentVisualizer(int idx);
 
-    //-------------------------- Old VisualizerTitleBarComboPick slots -------------------------------------------
-    void setCurrentSlot( int idx );
-    //void setCurrentSlot(const core::TypeInfo & slot);
-
-    void setCurrentSource( int idx );
-
 private slots:
 
     //-------------------------- Old VisualizerTitleBarComboPick slots -------------------------------------------
@@ -126,32 +124,25 @@ private slots:
     void fillSourcesMenu();
     //!
     void sourceSelected();
-    //!
-    void pinSelected();
         
 private:
 
+    void innerRemoveAllSeries();
+
+    void clearDataSeries();
+
     //-------------------------- Old VisualizerTitleBarComboPick methods -------------------------------------------
-    int getCurrentSlot() const;
-    void clearVisualizerSources();
-
     void retranslateUi(QWidget * visualizerWidget);
-
     //! Inicjalizacja wizualizatora.
     void init();
-
     //-------------------------- Old VisualizerTitleBarComboPick methods -------------------------------------------
-    QString getLabel( const core::ObjectWrapperConstPtr& object, bool noSource );
+    std::string getLabel( const core::ObjectWrapperConstPtr& object, bool noSource );
 
     void clearSources();
-
-    void clearSlots();
 
     void clearCurrentVisualizerWidget();
 
     void addSourceDefaultAction();
-
-    void addSlotDefaultAction();
 };
 
 

@@ -15,6 +15,7 @@ CORE_PLUGIN_BEGIN("kinematic", UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-A5FE-5
     CORE_PLUGIN_ADD_VISUALIZER(KinematicVisualizer);
     CORE_PLUGIN_ADD_SERVICE(KinematicService);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::KinematicSkeleton);
+    CORE_PLUGIN_ADD_OBJECT_WRAPPER(KinematicModel);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(SkeletalVisualizationScheme);
 CORE_PLUGIN_END;
 

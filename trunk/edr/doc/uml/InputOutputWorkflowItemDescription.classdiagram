@@ -126,7 +126,7 @@
       </class>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
-      <class Id="b3b2d62b-6531-41db-8e90-403959543115" name="ObjectOutput" isAbstract="false" isLeaf="false" isActiveClass="false">
+      <class Id="b3b2d62b-6531-41db-8e90-403959543115" name="ObjectSource" isAbstract="false" isLeaf="false" isActiveClass="false">
         <elementDefinition Id="b8c71cb2-6e14-4313-94a2-bd28592a34c4" />
         <generalsInternal>
           <generalization Id="eab1da8e-59f4-43da-ae32-7651bf5769e9" isSubstitutable="false">
@@ -137,7 +137,7 @@
       </class>
     </logicalClassDesignerModelHasTypes>
     <logicalClassDesignerModelHasTypes>
-      <class Id="b520e90c-0481-43b5-8cb8-d61673c45f68" name="ObjectSource" isAbstract="false" isLeaf="false" isActiveClass="false">
+      <class Id="b520e90c-0481-43b5-8cb8-d61673c45f68" name="ObjectOutput" isAbstract="false" isLeaf="false" isActiveClass="false">
         <elementDefinition Id="416af829-830d-43d1-b07a-018d62dde4bf" />
         <generalsInternal>
           <generalization Id="99c1d765-aeb5-4f86-af96-12d3e3a19770" isSubstitutable="false">
@@ -152,7 +152,7 @@
         <elementDefinition Id="eb314779-91b2-4684-909b-c8905214b834" />
         <targetEnds>
           <association Id="8dd44ad9-30c3-4eee-951b-1bfde7764de7" isDerived="false" sourceEndRoleName="InputDesription" targetEndRoleName="ObjectOutput" isLeaf="false" isAbstract="false">
-            <classMoniker Id="b3b2d62b-6531-41db-8e90-403959543115" LastKnownName="ObjectOutput" />
+            <classMoniker Id="b3b2d62b-6531-41db-8e90-403959543115" LastKnownName="ObjectSource" />
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
                 <memberEnd Id="6f6cbeb4-9787-4167-9749-83b5c61d0d85" name="InputDesription" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
@@ -175,7 +175,7 @@
         <elementDefinition Id="0f2b2188-3efe-4513-8c2d-79e22e2128c6" />
         <targetEnds>
           <association Id="cd3d750f-e783-49bd-a0f8-f5e7df8c306d" isDerived="false" sourceEndRoleName="OutputDescription" targetEndRoleName="ObjectSource" isLeaf="false" isAbstract="false">
-            <classMoniker Id="b520e90c-0481-43b5-8cb8-d61673c45f68" LastKnownName="ObjectSource" />
+            <classMoniker Id="b520e90c-0481-43b5-8cb8-d61673c45f68" LastKnownName="ObjectOutput" />
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
                 <memberEnd Id="9cdd3b42-6ac7-42fd-8864-9313e6d6b307" name="OutputDescription" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">

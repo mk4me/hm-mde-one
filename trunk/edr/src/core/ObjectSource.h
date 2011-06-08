@@ -11,25 +11,24 @@
 
 #include <vector>
 #include <core/IObjectSource.h>
-#include <core/IObjectOutput.h>
-#include <core/ObjectWrapper.h>
-#include <core/IVisualizer.h>
+#include <core/ObjectWrapperCollection.h>
 #include "ObjectSlots.h"
+#include "DataManager.h"
 
 class ObjectSource : public ObjectSlots, public core::IObjectSource
 {
-private:
-    std::vector<bool> passDirectly;
+//private:
+//    std::vector<bool> passDirectly;
 
 
 public:
     //! \param info Informacje o slotach.
-    ObjectSource( std::vector<SlotInfo>&& info ) :
-    ObjectSlots(info), passDirectly(info.size())
+    ObjectSource( SlotsInfo&& info ) :
+    ObjectSlots(info)//, passDirectly(info.size())
     {}
     //! \param info Informacje o slotach.
-    ObjectSource( const std::vector<SlotInfo>& info ) :
-    ObjectSlots(info), passDirectly(info.size())
+    ObjectSource( const SlotsInfo& info ) :
+    ObjectSlots(info)//, passDirectly(info.size())
     {}
 
 public:
@@ -38,74 +37,55 @@ public:
     //! klonowanie?
     //! \param idx
     //! \param passDirectly
-    void setPassDirectly(int idx, bool passDirectly)
+    /*void setPassDirectly(int idx, bool passDirectly)
     {
+        UTILS_ASSERT((idx >= 0 && idx < getNumSources()), "Bledny indeks wejscia");
         this->passDirectly[idx] = passDirectly;
-    }
+    }*/
     //! \return Czy obiekt w danym slocie mo¿na przekazaæ bezpoœrednio, bez klonowania?
-    bool isPassedDirectly(int idx) const
+    bool isPassedDirectly(int inputNo) const
     {
-        return passDirectly[idx];
+        UTILS_ASSERT((inputNo >= 0 && inputNo < getNumSources()), "Bledny indeks wejscia");
+        //return passDirectly[idx];
+        return ObjectSlots::getSlotInfo(inputNo).modify == false;
     }
 
     virtual bool isChanged(int inputNo) const
     {
+        UTILS_ASSERT((inputNo >= 0 && inputNo < getNumSources()), "Bledny indeks wejscia");
         throw std::runtime_error("not supported");
         return false;
     }
-    virtual int getNumObjects() const
+
+    virtual int getNumSources() const
     {
         return ObjectSlots::getNumSlots();
     }
-    virtual core::ObjectWrapperPtr getObject(int idx, boost::false_type)
+    virtual core::ObjectWrapperCollectionPtr getObjects(int inputNo, boost::false_type)
     {
+        UTILS_ASSERT((inputNo >= 0 && inputNo < getNumSources()), "Bledny indeks wejscia");
+
         // najpierw sprawdzamy, czy mo¿emy przekazaæ bez klonowania
-        if ( isPassedDirectly(idx) ) {
-            core::ObjectWrapperPtr result = ObjectSlots::getObject(idx);
+        if ( isPassedDirectly(inputNo) ) {
+            core::ObjectWrapperCollectionPtr result = ObjectSlots::getObjects(inputNo);
             if ( result ) {
                 return result;
             }
         }
         // klonujemy obiekt z jego sta³ego wariantu
-        core::ObjectWrapperConstPtr constResult = ObjectSlots::getConstObject(idx);
+        core::ObjectWrapperCollectionConstPtr constResult = ObjectSlots::getConstObjects(inputNo);
         if ( constResult ) {
             return constResult->clone();
         } else {
-            return core::ObjectWrapperPtr();
+            //return core::ObjectWrapperCollectionPtr();
+            return DataManager::getInstance()->createWrapperCollection(ObjectSlots::getSlotType(inputNo));
         }
     }
-    virtual core::ObjectWrapperConstPtr getObject(int idx, boost::true_type)
+    virtual core::ObjectWrapperCollectionConstPtr getObjects(int inputNo, boost::true_type)
     {
-        return ObjectSlots::getConstObject(idx);
+        UTILS_ASSERT((inputNo >= 0 && inputNo < getNumSources()), "Bledny indeks wejscia");
+        return ObjectSlots::getConstObjects(inputNo);
     }
-};
-
-// TODO: przenieœæ do osobnego pliku
-class ObjectOutput : public ObjectSlots, public core::IObjectOutput
-{
-public:
-    //! \param info Informacje o slotach.
-    ObjectOutput( std::vector<SlotInfo>&& info ) :
-    ObjectSlots(info)
-    {}
-    //! \param info Informacje o slotach.
-    ObjectOutput( const std::vector<SlotInfo>& info ) :
-    ObjectSlots(info)
-    {}
-
-// core::IObjectOutput
-public:
-    virtual core::ObjectWrapperPtr getWrapper(int idx)
-    {
-        return ObjectSlots::getObject(idx);
-    }
-
-    //! \return Liczba slotów wyjœciowych.
-    virtual int getNumObjects() const
-    {
-        return ObjectSlots::getNumSlots();
-    }
-
 };
 
 // 

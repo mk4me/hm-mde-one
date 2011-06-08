@@ -11,7 +11,7 @@
 
 #include <vector>
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <core/SmartPtr.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline {
@@ -75,7 +75,7 @@ public:
 };
 
 //! WskaŸnik na strumieñ.
-typedef boost::shared_ptr<Stream> StreamPtr;
+typedef core::shared_ptr<Stream> StreamPtr;
 //! Zbiór strumieni.
 typedef std::vector<StreamPtr> Streams;
 

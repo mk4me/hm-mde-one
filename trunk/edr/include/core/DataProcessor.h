@@ -12,8 +12,9 @@
 #include <core/IDataProcessor.h>
 #include <core/ObjectWrapper.h>
 #include "ObjectSource.h"
+#include "ObjectOutput.h"
 
-class DataProcessor
+class DataProcessor : public InputOutputProcesItem<IDataProcessor>
 {
 public:
     typedef ObjectSlots::SlotInfo InputInfo;

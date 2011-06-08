@@ -35,7 +35,7 @@ void EDRTitleBar::addObject(QObject * object, SideType side)
             button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
             
             if(side == Right){
-                button->setLayoutDirection(Qt::LayoutDirection::LeftToRight);
+                button->setLayoutDirection(Qt::LeftToRight);
             }
 
             button->setMenu(menu);

@@ -9,9 +9,12 @@
 #ifndef HEADER_GUARD_CORE__PLUGINCOMMON_H__
 #define HEADER_GUARD_CORE__PLUGINCOMMON_H__
 
+#include <core/IWorkflowManager.h>
 #include <core/IDataManager.h>
 #include <core/IVisualizerManager.h>
 #include <core/IServiceManager.h>
+#include <core/IDataProcessorManager.h>
+#include <core/IDataSourceManager.h>
 #include <core/StringTools.h>
 
 namespace core 
@@ -22,13 +25,16 @@ namespace core
         IDataManager* dataManager;
         IVisualizerManager* visualizerManager;
         IServiceManager* serviceManager;
+        IDataProcessorManager* dataProcessorManager;
+        IDataSourceManager* dataSourceManager;
+        IWorkflowManager* workflowManager;
     };
 
     //! Zmienna defininowana przez makro tworz¹ce pluginy. Tylko do u¿ytku wewnêtrznego.
     extern InstanceInfo __instanceInfo;
 
     //! Makro definiuj¹ce zmienn¹ przechowuj¹c¹ managery. Automatycznie u¿ywane w pluginach.
-    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr }; }
+    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr }; }
 
     //! \return Bie¿¹ca instancja data managera. Rozwi¹zanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala
@@ -48,6 +54,24 @@ namespace core
     inline IServiceManager* getServiceManager()
     {
         return __instanceInfo.serviceManager;
+    }
+
+    //!
+    inline IDataProcessorManager* getDataProcessorManager()
+    {
+        return __instanceInfo.dataProcessorManager;
+    }
+
+    //!
+    inline IDataSourceManager* getDataSourceManager()
+    {
+        return __instanceInfo.dataSourceManager;
+    }
+
+    //!
+    inline IWorkflowManager* getWorkflowManager()
+    {
+        return __instanceInfo.workflowManager;
     }
 
     //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.

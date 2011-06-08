@@ -18,12 +18,19 @@ namespace core{
     //! Struktura reprezentuj¹ca typ obiektu.
     class TypeInfo
     {
+    private:
         //! Wewnêtrzna informacja o typie.
-        const std::type_info& typeinfo;
+         const std::type_info* typeinfo;
 
     public:
         //! \param typeinfo
-        TypeInfo(const std::type_info& typeinfo) : typeinfo(typeinfo)
+        TypeInfo() : typeinfo(&typeid(TypeInfo))
+        {
+
+        }
+
+        //! \param typeinfo
+        TypeInfo(const std::type_info& typeinfo) : typeinfo(&typeinfo)
         {
 
         }
@@ -35,27 +42,34 @@ namespace core{
         }
 
         //! Jawny operator rzutowania na type_info.
+        inline TypeInfo& operator =(const TypeInfo & other)
+        {
+            typeinfo = other.typeinfo;
+            return *this;
+        }
+
+        //! Jawny operator rzutowania na type_info.
         inline operator const std::type_info&() const
         {
-            return typeinfo;
+            return *typeinfo;
         }
 
         //! \param obj
         inline bool operator<(const TypeInfo& obj) const
         {
-            return typeinfo.before(obj.typeinfo) != 0;
+            return (*typeinfo).before(*(obj.typeinfo)) != 0;
         } 
 
         //! \param obj
         inline bool operator==(const TypeInfo& obj) const
         {
-            return areTypesEqual(typeinfo, obj.typeinfo);
+            return areTypesEqual(*typeinfo, *(obj.typeinfo));
         }
 
         //! \param rhs
         inline bool operator==(const std::type_info& rhs) const
         {
-            return areTypesEqual(typeinfo, rhs);
+            return areTypesEqual(*typeinfo, rhs);
         }
 
         //! \param rhs
@@ -73,31 +87,31 @@ namespace core{
         //! \param rhs
         inline bool before(const std::type_info& rhs) const
         {
-            return typeinfo.before(rhs);
+            return (*typeinfo).before(rhs);
         }
 
         //! \param obj
         inline bool before(const TypeInfo& obj) const
         {
-            return before(obj.typeinfo);
+            return before(*(obj.typeinfo));
         }
 
         //! \return
         inline const char* name() const
         {
-            return typeinfo.name();
+            return (*typeinfo).name();
         }
 
         //! \return
         inline size_t hash_code() const
         {
-            return typeinfo.hash_code();
+            return (*typeinfo).hash_code();
         }
 
         //! \return
         inline const char * raw_name() const
         {
-            return typeinfo.raw_name();
+            return (*typeinfo).raw_name();
         }
 
     protected:

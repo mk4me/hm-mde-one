@@ -26,7 +26,7 @@ private:
 public:
     ChartService();
     virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
-    virtual QWidget* getWidget();
+    virtual QWidget* getWidget(std::vector<QObject*>& actions);
     virtual const std::string& getName() const;
 };
 
@@ -55,7 +55,7 @@ public:
     //!
     virtual void init(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
     //!
-    virtual QWidget* getWidget();
+    virtual QWidget* getWidget(std::vector<QObject*>& actions);
     //!
     virtual void update(double time, double timeDelta);
     //!

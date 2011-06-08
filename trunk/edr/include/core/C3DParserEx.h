@@ -41,8 +41,8 @@ public:
 private:
     std::vector<core::MarkerChannelConstPtr> markers;
 };
-typedef boost::shared_ptr<MarkerSet> MarkerSetPtr;
-typedef boost::shared_ptr<const MarkerSet> MarkerSetConstPtr;
+typedef core::shared_ptr<MarkerSet> MarkerSetPtr;
+typedef core::shared_ptr<const MarkerSet> MarkerSetConstPtr;
 CORE_DEFINE_WRAPPER(MarkerSet, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
 

@@ -40,10 +40,10 @@ namespace core{
         virtual IServicePtr getService(UniqueID id) = 0;
     };
 
-    typedef core::shared_ptr<IServiceManager> IServiceManagerPtr;
-    typedef core::shared_ptr<const IServiceManager> IServiceManagerConstPtr;
-    typedef core::weak_ptr<IServiceManager> IServiceManagerWeakPtr;
-    typedef core::weak_ptr<const IServiceManager> IServiceManagerWeakConstPtr;
+    typedef shared_ptr<IServiceManager> IServiceManagerPtr;
+    typedef shared_ptr<const IServiceManager> IServiceManagerConstPtr;
+    typedef weak_ptr<IServiceManager> IServiceManagerWeakPtr;
+    typedef weak_ptr<const IServiceManager> IServiceManagerWeakConstPtr;
 
     //! Metoda wyszukuj¹ca wszystkie us³ugi danego typu (np. implementuj¹ce
     //! dany interfejs).

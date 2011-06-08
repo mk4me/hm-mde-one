@@ -9,7 +9,6 @@
 #include <stack>
 #include <iostream>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/foreach.hpp>
@@ -64,6 +63,6 @@ UTILS_POP_WARNINGS
 #include <QtOpenGL/QtOpenGL>
 
 #include <kinematiclib/SkeletalParsers.h>
-//#include <kinematiclib/KinematicModel.h>
+#include <core/SmartPtr.h>
 
 #endif //HEADER_GUARD_SKELETON_VIEWER__PCH_H__

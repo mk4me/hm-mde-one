@@ -9,7 +9,6 @@
 #ifndef HEADER_GUARD_CORE__INPUTITEM_H__
 #define HEADER_GUARD_CORE__INPUTITEM_H__
 
-#include <boost/shared_ptr.hpp>
 #include <core/WorkflowItemEncapsulator.h>
 #include <core/IInputProcessItem.h>
 #include <core/SmartPtr.h>
@@ -19,7 +18,7 @@
 template<class T>
 class InputItem : public WorkflowItemEncapsulator<T> , public InputDescription
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<core::IInputProcessItem, T>::value), "Template class should inherit from IInputProcessItem");
+    UTILS_STATIC_ASSERT((boost::is_base_of<core::IInputProcessItem, T>::value), "Template class should inherit from core::IInputProcessItem");
 public:
     InputItem(T* implementation, const ObjectSource& source) : 
       WorkflowItemEncapsulator<T>(implementation),

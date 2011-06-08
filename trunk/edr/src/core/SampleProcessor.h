@@ -42,7 +42,7 @@ private:
     {
         if ( inputNo == 0 ) {
             info.name = "stream";
-            info.types.push_back(typeid(::VideoStream));
+            info.type.push_back(typeid(::VideoStream));
         }
     }
     virtual void getOutputInfo(ObjectWrapper::Types& outputInfo)
@@ -81,7 +81,7 @@ public:
     {
         if ( inputNo == 0 ) {
             info.name = "picture";
-            info.types.push_back(typeid(vidlib::ScopedPictureRGB));
+            info.type.push_back(typeid(vidlib::ScopedPictureRGB));
         }
     }
 

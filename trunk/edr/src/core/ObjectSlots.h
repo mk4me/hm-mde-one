@@ -10,7 +10,8 @@
 #define HEADER_GUARD_CORE__OBJECTSLOTS_H__
 
 #include <vector>
-#include <core/ObjectWrapper.h>
+#include <set>
+#include <core/ObjectWrapperCollection.h>
 #include <core/IInputDescription.h>
 /**
  *	Reprezentuje pewn¹ kolekcjê obiektów domenowych. Odwo³ania do nich
@@ -21,35 +22,48 @@
 class ObjectSlots
 {
 public:
-    ////! Typ opisu slotu.
-    //struct SlotInfo
-    //{
-    //    //! Nazwa slotu.
-    //    std::string name;
-    //    //! Typy wspierane w slocie.
-    //    core::TypeInfoList types;
-    //    //! Pomocnicza metoda, optymalizuj¹ca podmianê.
-    //    void swap(SlotInfo& slotInfo)
-    //    {
-    //        if ( &slotInfo != this ) {
-    //            name.swap(slotInfo.name);
-    //            types.swap(slotInfo.types);
-    //        }
-    //    }
-    //};
+    //! Typ opisu slotu.
+    struct SlotInfo
+    {
+        //! Typ kolekcji slotow zaleznych (ich indeksow)
+        typedef std::set<int> DependentSlots;
+
+        //! Nazwa slotu.
+        std::string name;
+        //! Typy wspierane w slocie.
+        core::TypeInfo type;
+        //! Czy dane z wejœcia bêda modyfikowane
+        bool modify;
+        //! Czy slot musi byæ pod³¹czony
+        bool required;
+        //! Zbiór slotów wymaganych
+        DependentSlots dependentSlots;
+        //! Pomocnicza metoda, optymalizuj¹ca podmianê.
+        void swap(SlotInfo& slotInfo)
+        {
+            if ( &slotInfo != this ) {
+                name.swap(slotInfo.name);
+                std::swap(type,slotInfo.type);
+                std::swap(required, slotInfo.required);
+                dependentSlots.swap(slotInfo.dependentSlots);
+            }
+        }
+    };
     //! Informacje o slotach.
     //typedef std::vector<SlotInfo> SlotsInfo;
-    typedef core::IInputDescription::InputInfo SlotInfo;
-    typedef std::vector<core::IInputDescription::InputInfo> SlotsInfo;
+    //typedef core::IInputDescription::InputInfo SlotInfo;
+    typedef std::vector<SlotInfo> SlotsInfo;
+
+    typedef SlotInfo::DependentSlots DependentSlots;
 
 private:
     //! W³aœciwy slot.
     struct Slot
     {
         //! Obiekt w wariancie zmiennym.
-        core::ObjectWrapperPtr object;
+        core::ObjectWrapperCollectionPtr objects;
         //! Obiekt w wariancie niezmiennym.
-        core::ObjectWrapperConstPtr constObject;
+        core::ObjectWrapperCollectionConstPtr constObjects;
     };
     //! Sloty.
     std::vector<Slot> objects;
@@ -60,9 +74,9 @@ private:
 
 public:
     //! \param info Informacje o slotach.
-    ObjectSlots( const std::vector<SlotInfo>& info );
+    ObjectSlots( const SlotsInfo& info );
     //! \param info Informacje o slotach.
-    ObjectSlots( std::vector<SlotInfo>&& info );
+    ObjectSlots( SlotsInfo&& info );
     //! Konstruktor kopiuj¹cy.
     ObjectSlots( const ObjectSlots& objectSlots );
 
@@ -73,39 +87,39 @@ public:
         return info.size();
     }
     //! \return Nazwa slotu.
-    const std::string& getSlotName(int i) const
+    const std::string& getSlotName(int slotNo) const
     {
-        return info[i].name;
+        return info[slotNo].name;
     }
     //! \return Typy wspierane przez slot.
-    const core::TypeInfoList& getSlotTypes(int i) const
+    const core::TypeInfo& getSlotType(int slotNo) const
     {
-        return info[i].types;
+        return info[slotNo].type;
     }
     //! \return Informacje o slocie.
-    const SlotInfo& getSlotInfo(int i) const
+    const SlotInfo& getSlotInfo(int slotNo) const
     {
-        return info[i];
+        return info[slotNo];
     }
 
     //! Czy dany obiekt mo¿na przypisaæ danemu Ÿród³u?
-    bool isAssignable(int slotNo, const core::ObjectWrapper* object) const;
+    bool isAssignable(int slotNo, const core::TypeInfo & type) const;
 
     //! Dodaje zmienny obiekt. Ustawia równie¿ wskaŸnik z niezmiennego obiektu.
-    void setObject(int slotNo, const core::ObjectWrapperPtr& object);
+    void setObjects(int slotNo, const core::ObjectWrapperCollectionPtr& objects);
 
     //! Dodanie niezmiennego obiektu. Zeruje wskaŸnik zmiennego obiektu.
-    void setObject(int slotNo, const core::ObjectWrapperConstPtr& object);
+    void setObjects(int slotNo, const core::ObjectWrapperCollectionConstPtr& objects);
 
     //! \return Obiekt w zmiennym wariancie.
-    const core::ObjectWrapperPtr& getObject(int slotNo)
+    const core::ObjectWrapperCollectionPtr& getObjects(int slotNo)
     {
-        return objects[slotNo].object;
+        return objects[slotNo].objects;
     }
     //! \return Obiekt w sta³ym wariancie.
-    const core::ObjectWrapperConstPtr& getConstObject(int slotNo) const
+    const core::ObjectWrapperCollectionConstPtr& getConstObjects(int slotNo) const
     {
-        return objects[slotNo].constObject;
+        return objects[slotNo].constObjects;
     }
 };
 

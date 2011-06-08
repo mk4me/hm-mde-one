@@ -30,4 +30,16 @@ namespace core {
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////
 
+#define DEFINE_SMART_POINTERS(className)                                  \
+    typedef core::shared_ptr<className> className ## Ptr;                 \
+    typedef core::shared_ptr<const className> className ## ConstPtr;      \
+    typedef core::weak_ptr<className> className ## WeakPtr;               \
+    typedef core::weak_ptr<const className> className ## ConstWeakPtr;
+
+#define DEFINE_SCOPED_SMART_POINTERS(className, targetNamespace)                                    \
+    typedef core::shared_ptr<className> targetNamespace ## :: ## className ## Ptr;                  \
+    typedef core::shared_ptr<const className> targetNamespace ## :: ## className ## ConstPtr;       \
+    typedef core::weak_ptr<className> targetNamespace ## :: ## className ## WeakPtr;                \
+    typedef core::weak_ptr<const className> targetNamespace ## :: ## className ## ConstWeakPtr;
+
 #endif  // __HEADER_GUARD_CORE__SMARTPTR_H__

@@ -9,11 +9,13 @@
 #ifndef HEADER_GUARD___ISERVICE_H__
 #define HEADER_GUARD___ISERVICE_H__
 
+#include <vector>
 #include <utils/Debug.h>
 #include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
 
+class QObject;
 class QWidget;
 
 namespace osg{
@@ -77,16 +79,16 @@ namespace core
 
         //! Us³uga nie musi mieæ wizualnej reprezentacji.
         //! \return Widget tworzony przez us³ugê b¹dŸ NULL.
-        virtual QWidget* getWidget() = 0;
+        virtual QWidget* getWidget(std::vector<QObject*>& actions) = 0;
         
         //! \return Widget kontroluj¹cy zachowanie us³ugi/us³ug zale¿nych.
-        virtual QWidget* getControlWidget()
+        virtual QWidget* getControlWidget(std::vector<QObject*>& actions)
         {
             return nullptr;
         }
 
         //! \return Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
-        virtual QWidget* getSettingsWidget()
+        virtual QWidget* getSettingsWidget(std::vector<QObject*>& actions)
         {
             return nullptr;
         }

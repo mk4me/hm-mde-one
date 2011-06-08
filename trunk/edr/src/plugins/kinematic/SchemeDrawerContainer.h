@@ -26,6 +26,6 @@ private:
     bool wasInit;
 };
 
-typedef boost::shared_ptr<SchemeDrawerContainer> SchemeDrawerContainerPtr;
+typedef core::shared_ptr<SchemeDrawerContainer> SchemeDrawerContainerPtr;
 
 #endif

@@ -15,6 +15,7 @@
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
 #include <vector>
+#include <utils/ObserverPattern.h>
 #include <core/ObjectWrapper.h>
 #include "Visualizer.h"
 #include <QtCore/QMetaType>
@@ -25,7 +26,7 @@ Q_DECLARE_METATYPE(UniqueID);
 class SceneGraphWidget;
 class DataManager;
 
-class VisualizerManager : public core::IVisualizerManager
+class VisualizerManager : public core::IVisualizerManager, public utils::Observable<VisualizerManager>
 {
     friend class Visualizer;
 public:
@@ -37,7 +38,7 @@ public:
     //! typedef std::list<VisualizerWeakPtr> WeakVisualizers;
     typedef std::list<Visualizer*> Visualizers;
     //! Lista typów kolejnych Ÿróde³.
-    typedef Visualizer::SlotsInfo SourcesTypes; 
+    typedef ObjectSlots::SlotsInfo SourcesTypes; 
 
 private:
     //! Niezmienne dane pobrane z wizualizatorów.

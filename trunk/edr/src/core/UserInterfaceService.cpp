@@ -24,7 +24,7 @@ UserInterfaceService::~UserInterfaceService()
 //     m_pMainWindow = MainWindowFactory::CreateMainWindow(typeName, object);
 // }
 
-QWidget* UserInterfaceService::getWidget()
+QWidget* UserInterfaceService::getWidget(std::vector<QObject*>& actions)
 {
     return nullptr;
 }

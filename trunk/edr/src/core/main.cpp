@@ -11,6 +11,8 @@
 #include "ServiceManager.h"
 #include "DataManager.h"
 #include "VisualizerManager.h"
+#include "DataProcessorManager.h"
+#include "DataSourceManager.h"
 #include <utils/Push.h>
 
 //FOR TESTS ONLY
@@ -79,8 +81,13 @@ int main(int argc, char *argv[])
             boost::filesystem::path resourcesPath(core::toStdString(QDir::currentPath())); 
             resourcesPath /= "resources";
 			dataManager.setResourcesPath(resourcesPath);
-            ServiceManager serviceManager;
+
             VisualizerManager visualizerManager;
+            DataProcessorManager dataProcessorManager;
+            DataSourceManager dataSourceManager;
+
+            ServiceManager serviceManager;
+            
 
             // tworzenie managerów
             // tworzenie/niszczenie managerów w ToolboxMain jest niebezpieczne
@@ -90,20 +97,22 @@ int main(int argc, char *argv[])
             // siê destruktora
             utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
             utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
+            utils::Push<IDataProcessorManager*> pushedDPM(__instanceInfo.dataProcessorManager, &dataProcessorManager);
+            utils::Push<IDataSourceManager*> pushedDSM(__instanceInfo.dataSourceManager, &dataSourceManager);
             utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
-
+            
             
             {
                 ToolboxMain window(&pluginLoader);
 
                 //FOR TESTS ONLY
-                EDRDockWidget * widget = new EDRDockWidget();
-                //widget->setWidget(test);
+                //EDRDockWidget * widget = new EDRDockWidget();
+                ////widget->setWidget(test);
 
-                window.addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, widget);
+                //window.addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, widget);
 
-                TestEDRWidget * test = new TestEDRWidget(qobject_cast<EDRTitleBar*>(widget->titleBarWidget()));
-                widget->getInnerWidget()->layoutContent->addWidget(test);
+                //TestEDRWidget * test = new TestEDRWidget(qobject_cast<EDRTitleBar*>(widget->titleBarWidget()));
+                //widget->getInnerWidget()->layoutContent->addWidget(test);
 
                 logger.setConsoleWidget( window.getConsole() );
                 window.show();

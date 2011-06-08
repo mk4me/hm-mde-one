@@ -67,7 +67,7 @@ public:
     Metoda z interfejsu IService. Us³uga nie musi mieæ wizualnej reprezentacji.
     @return Widget tworzony przez us³ugê b¹dŸ NULL.
     */
-    virtual QWidget* getWidget()
+    virtual QWidget* getWidget(std::vector<QObject*>& actions)
     { 
         // HACK: ca³y ten system jest shackowany!
         //return reinterpret_cast<IWidget*>(widget);
@@ -77,7 +77,7 @@ public:
     Metoda z interfejsu IService. Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
     @return Widget tworzony przez us³ugê b¹dŸ NULL.
     */
-    virtual QWidget* getSettingsWidget()
+    virtual QWidget* getSettingsWidget(std::vector<QObject*>& actions)
     {
         return (QWidget*)widget;
     }

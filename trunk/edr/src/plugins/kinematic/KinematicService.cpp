@@ -64,7 +64,7 @@ void KinematicVisualizer::setUp( IObjectSource* source )
 {
     resetScene();
     refillDrawersMaps();
-    SkeletalVisualizationSchemeConstPtr scheme = source->getObject(0);
+    /*SkeletalVisualizationSchemeConstPtr scheme = source->getObject(0);
         
     if (scheme) {        
         if (scheme->getKinematicModel()->getSkeleton()) {
@@ -109,7 +109,7 @@ void KinematicVisualizer::setUp( IObjectSource* source )
             (it->second)->init(scheme);
         }
         transformNode->addChild(currentDrawer->getNode());
-    }
+    }*/
  }
 
 IVisualizer* KinematicVisualizer::createClone() const
@@ -117,12 +117,36 @@ IVisualizer* KinematicVisualizer::createClone() const
     return new KinematicVisualizer();
 }
 
-void KinematicVisualizer::getInputInfo( int source, core::IInputDescription::InputInfo& info)
+void KinematicVisualizer::getInputInfo( std::vector<core::IInputDescription::InputInfo>& info)
 {
-    if (source == 0) {
-        info.name = "model";
-        info.types.push_back(typeid(SkeletalVisualizationScheme));
-    }
+    core::IInputDescription::InputInfo input;
+
+    input.name = "model";
+    input.type = typeid(SkeletalVisualizationScheme);
+    input.required = true;
+    input.modify = false;
+
+    info.push_back(input);
+}
+
+int KinematicVisualizer::getMaxDataSeries() const
+{
+    return 1;
+}
+
+core::IVisualizer::SerieBase *KinematicVisualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
+{
+    core::IVisualizer::SerieBase * ret = new KinematicVisualizerSerie(this);
+    ret->setName(name);
+    ret->setData(data);
+
+    return ret;
+}
+
+void KinematicVisualizer::removeSerie(core::IVisualizer::SerieBase *serie)
+{
+    resetScene();
+    refillDrawersMaps();
 }
 
 QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)

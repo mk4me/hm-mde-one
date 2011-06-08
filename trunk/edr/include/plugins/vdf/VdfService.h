@@ -29,7 +29,7 @@ public:
     // IService
 public:
     //!
-    virtual QWidget* getWidget();
+    virtual QWidget* getWidget(std::vector<QObject*>& actions);
     
     //!
     void init(core::IServiceManager* serviceManager, core::IDataManager* dataManager);

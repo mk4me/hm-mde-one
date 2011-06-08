@@ -55,8 +55,6 @@ Controller::~Controller()
 
 void Controller::pause()
 {
-//   OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-//   model->setPlaying(false);
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
 
     State state = getState();

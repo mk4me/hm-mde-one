@@ -33,20 +33,56 @@ namespace core
     class IVisualizer :  public IInputProcessItem
     {
     public:
-        //! Maksymalna liczba Ÿróde³.
-        //static const int maxNumSources = 16;
+
+        class SerieBase
+        {
+        public:
+
+            virtual ~SerieBase() {}
+
+            void setName(const std::string & name)
+            {
+                if(this->name != name){
+                    this->name = name;
+                    setSerieName(name);
+                }
+            }
+
+            const std::string & getName() const
+            {
+                return name;
+            }
+
+            void setData(const ObjectWrapperConstPtr & data)
+            {
+                if(this->data != data){
+                    this->data = data;
+                    setSerieData(data);
+                }
+            }
+
+            const ObjectWrapperConstPtr & getData() const
+            {
+                return data;
+            }
+
+        protected:
+
+            virtual void setSerieName(const std::string & name) = 0;
+            virtual void setSerieData(const ObjectWrapperConstPtr & data) = 0;
+
+        private:
+            std::string name;
+            ObjectWrapperConstPtr data;
+        };
+
+    public:
 
         //! Pusty polimorficzny destruktor.
         virtual ~IVisualizer() 
         {
 
         }
-
-        ////! Nowa instancja tego typu.
-        //virtual IVisualizer* create() const = 0;
-
-        ////! \return Nazwa wizualizatora.
-        //virtual const std::string& getName() const = 0;
 
         //! Tylko tutaj powinno nastêpowaæ tworzenie widgetu. Metoda wywo³ywana tylko jeden raz.
         //! To wizualizator musi niszczyæ widget w destruktorze. Gdy widget jest równoczeœnie
@@ -60,14 +96,21 @@ namespace core
         //! W odgró¿nieniu od createWidget ikona przejmowana jest na w³asnoœæ.
         virtual QIcon* createIcon() = 0;
 
-        //! Wype³nia listê wspieranych typów dla danego slotu. Pusta lista oznacza, ¿e ten slot i kolejne nie s¹ obs³ugiwane.
-        //! \param inputNo Numer slotu.
-        //! \param name Wynikowa Nazwa slotu.
-        //! \param types Wynikowa lista wspieranych typów.
-        //virtual void getInputInfo(int inputNo, std::string& name, ObjectWrapper::Types& types) = 0;
-                
         //! Aktualizacja wyœwietlania. NIE aktualizacja stanu wyœwietlanych danych.
         virtual void update(double deltaTime) = 0;
+
+        //----------------- Obs³uga serii danych ---------------------
+        //! Wizualizator musi zapewnic ze da sie stworzyc MAX serii za pomoca metody createSerie. Ilos cserii jest dynamicznie zarzadzana z zewwnatrz poprzez create i remove serie.
+        //! SerieBase to klasa delegata, ktora implementuje specyficzne dla danego wizualizatora operacje ustawiania nazwy serii i jej danych. Kazdy wizualizator moze inaczej ustawiac te informacje i prezentowac je.
+
+        //! \return Maksymalna ilosc serii danych jaka moze obsluzyc wizualizator, wartosc 0 i mniej oznacza maksumalny zakres dla INT, inna wartosc stanowi gorna granice
+        virtual int getMaxDataSeries() const = 0;
+
+        //! \return Seria danych ktora mozna ustawiac - nazwa i dane, nie zarzadza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
+        virtual SerieBase* createSerie(const ObjectWrapperConstPtr & data, const std::string & name = std::string()) = 0;
+
+        //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
+        virtual void removeSerie(SerieBase* serie) = 0;
 
 #ifdef DEBUG
         //! \return Korzeñ lokalnej sceny osg.
@@ -82,6 +125,9 @@ namespace core
     typedef shared_ptr<const IVisualizer> IVisualizerConstPtr;
     typedef weak_ptr<IVisualizer> IVisualizerWeakPtr;
     typedef weak_ptr<const IVisualizer> IVisualizerConstWeakPtr;
+
+    typedef shared_ptr<IVisualizer::SerieBase> VisualizerSeriePtr;
+    typedef shared_ptr<const IVisualizer::SerieBase> VisualizerSerieConstPtr;
 
 } // namespace core
 

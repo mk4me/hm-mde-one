@@ -94,34 +94,56 @@ void VisualizerManager::update()
 
 void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
 {
-    if (!getPrototype(visualizer->getID())) {
-        prototypes.push_back(visualizer);
-        IVisualizerPersistantData* data = new IVisualizerPersistantData();
-
-        // zapisujemy dane niezmienne
-        // ikona
-        QIcon* icon = visualizer->createIcon();
-        if ( !icon ) {
-            icon = new QIcon();
-        } 
-        data->icon = *icon;
+    if (!getPrototype(visualizer->getID())) {    
 
         // lista wejœæ
         //SourcesTypes::value_type info;
-        IInputDescription::InputInfo info;
-        for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
-            info.name.clear();
-            info.types.clear();
-            visualizer->getInputInfo(i, info);
-            if ( info.types.empty() ) {
-                break;
-            } else {
-                // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...
-                data->sourcesTypes.push_back(info);
-                //data->sourcesTypes.insert(data->sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
-            }
+        //IInputDescription::InputInfo info;
+        //for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
+        //    info.name.clear();
+        //    info.type.clear();
+        //    visualizer->getInputInfo(i, info);
+        //    if ( info.type.empty() ) {
+        //        break;
+        //    } else {
+
+        //        ObjectSlots::SlotInfo slotInfo;
+        //        slotInfo.name = info.name;
+        //        slotInfo.required = info.required;
+        //        slotInfo.modify = info.modify;
+        //        slotInfo.type = info.type;
+        //        // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...
+        //        data->sourcesTypes.push_back(slotInfo);
+        //        //data->sourcesTypes.insert(data->sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
+        //    }
+        //}
+
+        std::vector<IInputDescription::InputInfo> visualizerInputInfo;
+
+        visualizer->getInputInfo(visualizerInputInfo);
+
+        if(visualizerInputInfo.empty() == true){
+            std::string error;
+            error += "Visualizer: ID = " + boost::lexical_cast<std::string>(visualizer->getID()) + " Name: " + visualizer->getName() + " does not support minimum one data type!";
+            LOG_ERROR(error.c_str());
+        }else{
+
+            prototypes.push_back(visualizer);
+            IVisualizerPersistantData* data = new IVisualizerPersistantData();
+
+            // zapisujemy dane niezmienne
+            // ikona
+            QIcon* icon = visualizer->createIcon();
+            if ( !icon ) {
+                icon = new QIcon();
+            } 
+            data->icon = *icon;
+
+            data->sourcesTypes = Visualizer::getSlotsInfoFromInputInfo(visualizerInputInfo);
+
+            visualizersData.push_back(data);
+            notify();
         }
-        visualizersData.push_back(data);
 
     } else {
         throw std::runtime_error("Visualizer with this ID already registered.");

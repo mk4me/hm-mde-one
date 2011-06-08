@@ -152,9 +152,9 @@ void SkeletalVisualizationScheme::updateSkinnedTransforms()
 //   this->schemeDrawer->init(weak);
 //}
 
-boost::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::create()
+core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::create()
 {
-    boost::shared_ptr<SkeletalVisualizationScheme> scheme(new SkeletalVisualizationScheme());
+    core::shared_ptr<SkeletalVisualizationScheme> scheme(new SkeletalVisualizationScheme());
     scheme->weak = scheme;
     return scheme;
 }

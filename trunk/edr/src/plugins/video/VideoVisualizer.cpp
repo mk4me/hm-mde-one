@@ -8,7 +8,6 @@
 #include <osgWidget/ViewerEventHandlers>
 #include <osgWidget/Box>
 #include <osgui/AspectRatioKeeper.h>
-#include <osgui/OsgWidgetUtils.h>
 #include <core/StringTools.h>
 
 using namespace core;
@@ -59,18 +58,26 @@ const std::string& VideoVisualizer::getName() const
     return name;
 }
 
-core::IVisualizer* VideoVisualizer::create() const
+core::IVisualizer* VideoVisualizer::createClone() const
 {
     return new VideoVisualizer();
 }
 
-void VideoVisualizer::getInputInfo( int source, core::IInputDescription::InputInfo& info )
+void VideoVisualizer::getInputInfo( std::vector<core::IInputDescription::InputInfo>& info )
 {
-    if ( source == 0 ) {
-        info.name = "video";
-        info.types.push_back(typeid(VideoStream));
-        info.types.push_back(typeid(vidlib::Picture));
-    }
+    core::IInputDescription::InputInfo input;
+
+    input.name = "videoStream";
+    input.type = typeid(VideoStream);
+    input.modify = false;
+    input.required = false;
+
+    info.push_back(input);
+
+    input.name = "picture";
+    input.type = typeid(vidlib::Picture);
+
+    info.push_back(input);    
 }
 
 void VideoVisualizer::refresh( float width, float height )
@@ -207,20 +214,8 @@ void VideoVisualizer::setUp( core::IObjectSource* source )
 {
     streamImage = nullptr;
     
-
-    // usuniêcie widgetu z rodzica
-    //workspace->removeWidget(ratioKeeper);
-
-    // pobranie obrazkaa
-    if ( source->tryGetObject(stream, 0) ) {
-        ratioKeeper->setTarget(widget);
-        streamImage = stream->getImage(vidlib::PixelFormatRGB24);
-        widget->setTexture( stream->getTexture(streamImage->getFormat(), useTextureRect), true, useTextureRect );
-        osgui::correctTexCoords(widget, streamImage);
-    } else {
-        ratioKeeper->setTarget(nullptr);
-    }
-
+    ratioKeeper->setTarget(nullptr);
+    
     refresh(viewer->width(), viewer->height());
 
 
@@ -239,4 +234,28 @@ void VideoVisualizer::setUp( core::IObjectSource* source )
 QIcon* VideoVisualizer::createIcon()
 {
     return new QIcon(getResourceString("icons/video.png"));
+}
+
+int VideoVisualizer::getMaxDataSeries() const
+{
+    return 1;
+}
+
+core::IVisualizer::SerieBase* VideoVisualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
+{
+    core::IVisualizer::SerieBase* ret = new VideoSerie(this);
+
+    ret->setName(name);
+    ret->setData(data);
+
+    return ret;
+}
+
+void VideoVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)
+{
+    streamImage = nullptr;
+
+    ratioKeeper->setTarget(nullptr);
+
+    refresh(viewer->width(), viewer->height());
 }

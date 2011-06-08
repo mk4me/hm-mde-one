@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__ICONFIGURABLE_H__
 #define HEADER_GUARD_CORE__ICONFIGURABLE_H__
 
-#include <QtGui/qwidget.h>
+class QWidget;
 
 namespace core {
 

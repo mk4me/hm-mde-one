@@ -34,14 +34,10 @@ PluginLoader::~PluginLoader()
 void PluginLoader::clear()
 {
     // wyczyszczenie œcie¿ek
-    paths.clear();
+    paths.swap(Paths());
 
-    // kasowanie pluginów
-    //for (size_t i = 0; i < plugins.size(); ++i) 
-    //{
-    //    delete plugins[i];
-    //}
-    plugins.clear();
+    //wyczyszczenie pluginów
+    plugins.swap(Plugins());
 }
 
 void PluginLoader::addDefaultPaths()

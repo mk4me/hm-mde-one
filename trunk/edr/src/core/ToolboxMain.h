@@ -28,6 +28,7 @@ class SceneGraphWidget;
 //class ConsoleWidget;
 class EDRConsoleWidget;
 class VisualizerManager;
+class DataProcessorManager;
 class VisualizerWidget;
 
 
@@ -122,6 +123,8 @@ private slots:
     //!
     void actionCreateVisualizer();
 
+    void createWorkflow();
+
 private:
 
     //!
@@ -133,13 +136,22 @@ private:
     osg::ref_ptr<osg::Node> createGrid(); 
 
     //! Rejestruje wbudowane us³ugi.
-    void registerCoreServices(); 
+    void registerCoreServices();
+    //! Rejestruje wbudowane Ÿród³a danych.
+    void registerCoreDataSources();
+
     //! Rejestruje us³ugi pochodz¹ce z pluginów.
     void registerPluginsServices();
     //! Rejestruje parsery pochodz¹ce z pluginów.
     void registerPluginsParsers();
     //!
     void registerPluginsVisualizers();
+    //!
+    void registerPluginsDataProcessors();
+
+    void registerPluginsDataSources();
+
+    void registerPluginsWrapperFactories();
 
 
     //! Opakowuje zadany widget QDockWidgetem.
@@ -147,7 +159,7 @@ private:
     //! \param name
     //! \param style
     //! \param area
-    QDockWidget* embeddWidget(QWidget* widget, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
+    QDockWidget* embeddWidget(QWidget* widget, std::vector<QObject*>& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
 // QWidget
 protected:

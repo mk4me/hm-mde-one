@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_LINESCHEMEDRAWER_H__
 #define HEADER_GUARD_LINESCHEMEDRAWER_H__
 
-#include <boost/shared_ptr.hpp>
+#include <core/SmartPtr.h>
 #include <osg/PositionAttitudeTransform>
 #include "OsgSchemeDrawer.h"
 

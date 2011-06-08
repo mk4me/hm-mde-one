@@ -10,6 +10,7 @@
 #define HEADER_GUARD_CORE__IINPUTDESCRIPTION_H__
 
 #include <core/TypeInfo.h>
+#include <vector>
 
 namespace core {
 
@@ -19,14 +20,14 @@ public:
     virtual ~IInputDescription() 
     {
     }
-    static const int maxNumSources = 16;
-    //! Struktura opisuj¹ca dane wejœciowe.
+
+    //! Struktura opisuj¹ca typy danych wejœciowe.
     struct InputInfo
     {
         //! Nazwa wejœcia.
         std::string name;
         //! Typy wspierane przez wejœcie.
-        core::TypeInfoList types;
+        TypeInfo type;
         //! Czy wejœciew wymagane
         bool required;
         //! Czy dane na wejsciu bêdza modyfikowane
@@ -38,8 +39,8 @@ public:
     //! byæ pusta.
     //! \param inputNo Numer wejœcia. 
     //! \param name Nazwa wejœcia.
-    //! \param types Typy wspierane na danym wejœciu.
-    virtual void getInputInfo(int inputNo, InputInfo& info) = 0;
+    //! \param type Typy wspierane na danym wejœciu.
+    virtual void getInputInfo(std::vector<InputInfo>& info) = 0;
 };
 
 }

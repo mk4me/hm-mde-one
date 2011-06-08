@@ -37,9 +37,9 @@ public:
 // IService
 public:
     //!
-    virtual QWidget* getWidget();
+    virtual QWidget* getWidget(std::vector<QObject*>& actions);
     //!
-    virtual QWidget* getControlWidget();
+    virtual QWidget* getControlWidget(std::vector<QObject*>& actions);
     //!
     virtual void lateUpdate(double time, double timeDelta);
     //!

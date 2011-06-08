@@ -37,27 +37,27 @@ QWidget* Visualizer::getOrCreateWidget()
     if (!widget) {
         LOG_DEBUG("Visualizer " << getImplementation()->getName() << " widget created");
         widget = getImplementation()->createWidget(genericActions);
-        trySetUp();
+        tryRun();
         UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");
     }
     return widget;
 }
 
-bool Visualizer::trySetUp()
-{
-    try {
-        LOG_DEBUG("Visualizer " << getImplementation()->getName() << " setup");
-        getImplementation()->setUp(getSource());
-
-        // aktualizacja widgetu
-        UTILS_ASSERT(widget);
-        widget->update();
-        return true;
-    } catch (const std::exception& ex) {
-        LOG_WARNING("Error during setting up visualizer: " << ex.what());
-        return false;
-    }
-}
+//bool Visualizer::trySetUp()
+//{
+//    try {
+//        LOG_DEBUG("Visualizer " << getImplementation()->getName() << " setup");
+//        getImplementation()->setUp(getSource());
+//
+//        // aktualizacja widgetu
+//        UTILS_ASSERT(widget);
+//        widget->update();
+//        return true;
+//    } catch (const std::exception& ex) {
+//        LOG_WARNING("Error during setting up visualizer: " << ex.what());
+//        return false;
+//    }
+//}
 
 const QIcon& Visualizer::getIcon() const
 {

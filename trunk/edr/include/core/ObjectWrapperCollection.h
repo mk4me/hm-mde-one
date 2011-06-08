@@ -15,131 +15,169 @@
 
 namespace core {
 
+class ObjectWrapperCollection;
+typedef shared_ptr<ObjectWrapperCollection> ObjectWrapperCollectionPtr;
+typedef shared_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstPtr;
+typedef weak_ptr<ObjectWrapperCollection> ObjectWrapperCollectionWeakPtr;
+typedef weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeakPtr;
+
 //! Klasa sluzy do agregowania obiektow domenowych tego samego typu
 class ObjectWrapperCollection
 {
-protected:
-    //! Return type resolver
-    struct get_t
-    {
-        ObjectWrapper* wrapper;
-        const ObjectWrapper* constWrapper;
+public:
+    typedef std::vector<ObjectWrapperConstPtr>::const_iterator iterator;
+    typedef std::vector<ObjectWrapperConstPtr>::size_type size_type;
 
-        //! operator zwraca wskaznik do modyfikowalnego obiektu,
-        //! obiekt domenowy jest kopiowany, jesli zachodzi taka potrzeba.
-        template <class Ptr>
-        operator Ptr()
-        {
-            Ptr result;
-            if (wrapper && wrapper->tryGet(result, exact)) {
-                return result;
-            } else if (constWrapper){
-                return constWrapper->clone();
-            } else {
-                throw std::bad_cast("Invalid cast");
-            }
-        }
-
-        //! Operator zwraca staly wskaznik do obiektu domenowego
-        template <class Ptr>
-        operator Ptr() const
-        {
-            Ptr result;
-            if (constWrapper && constWrapper->tryGet(result, exact)) {
-                return result;
-            } else if (wrapper) {
-                const ObjectWrapper* ptr = wrapper;
-                ptr->tryGet(result, exact);
-                return result;
-            } else {
-                throw std::bad_cast("Invalid cast");
-            }
-        }
-    };
 private:
-    //! przechowuje modyfikowalne obiekty
-    std::vector<ObjectWrapperPtr> objects;
+    typedef std::vector<ObjectWrapperConstPtr> ConstObjects;
+
+private:
     //! przechowuje stale, niemodyfikowalne obiekty
-    std::vector<ObjectWrapperConstPtr> constObjects;
+    ConstObjects constObjects;
     //! typ przechowywanych obiektow
-    core::TypeInfo typeInfo;
+    TypeInfo typeInfo;
+    //! Czy kolekcja przechowyje elementy wylacznie danego typu czy rowniez pochodne mu
+    bool exact;
 
 protected:
+
+    ObjectWrapperCollection(const ObjectWrapperCollection & owc) : typeInfo(owc.typeInfo),
+        constObjects(owc.constObjects), exact(owc.exact) {}
+public:
+
     //! Chroniony konstruktor, klasa pochodna powinna zdeklarowac przechowywany typ
     //! \param info typ przechowywanych obiektow
-    ObjectWrapperCollection(TypeInfo info) :
-         typeInfo(info) {}
-public:
+    ObjectWrapperCollection(TypeInfo info, bool exact = true) :
+      typeInfo(info) {}
+
     virtual ~ObjectWrapperCollection() {}
 
 public:
+
+    const TypeInfo & getTypeInfo() const
+    {
+        return typeInfo;
+    }
+
+
+    bool exactTypes() const
+    {
+        return exact;
+    }
+
+    void setExactTypes(bool exact, bool clear = false)
+    {
+        this->exact = exact;
+
+        if(exact == true && clear == true){
+            removeDerivedTypes();
+        }
+    }
+
+    void removeDerivedTypes()
+    {
+        //iteruj po kolekcji i usun te typy ktore nie sa dokladnie typu kolekcji
+        auto it = constObjects.begin();
+        while( it != constObjects.end() ) {
+            if((*it)->getTypeInfo() != typeInfo){
+                it = constObjects.erase(it);
+            }else{
+                it++;
+            }
+        }
+    }
+
+    iterator begin() const
+    {
+        return constObjects.begin();
+    }
+
+    iterator end() const
+    {
+        return constObjects.end();
+    }
+
+    bool empty() const
+    {
+            return constObjects.empty();
+    }
+
+    size_type size() const
+    {
+        return constObjects.size();
+    }
+
     //! Metoda udostepnia obiekt domenowy z agregatu
     //! \param index indesk pobieranego elementu
-    //! \return Return type resolver decyduje o zwracanym typie
-    get_t getObject(int index) 
+    //! \return Niemodyfikowalny obiekt domenowy
+    ObjectWrapperConstPtr getObject(int index) const
     {
         // wyjatek zamiast asercji (na wypadek trybu release)
-        if (!(index < getNumObjects() && index >= 0)) {
+        if (!(index < size() && index >= 0)) {
             throw std::runtime_error("ObjectWrapperCollection::getObject - wrong index");
         }
 
-        get_t c;
-        // dobor kolecji w zaleznosci od indeksu
-        int treshold = objects.size();
-        if (index < treshold) {
-            // najpierw zwykle obiekty
-            c.wrapper = objects[index].get();
-            c.constWrapper = nullptr;
-        } else {
-            // pozniej stale obiekty
-            c.constWrapper = constObjects[index - treshold].get();
-            c.wrapper = nullptr;
-        }
-
-        return c;
+        return constObjects[index];
     }
    
-    //! Dodanie obiektu do agregatu
-    //! \param object Wskaznik do modyfikowalnego obiektu domenowego
-    void addObject(ObjectWrapperPtr object) 
-    {
-        insert(object, objects);
-    }
-
     //! Dodanie obiektu do agregatu
     //! \param object Wskaznik do niemodyfikowalnego obiektu domenowego
     void addObject(ObjectWrapperConstPtr object) 
     {
-        insert(object, constObjects);
+        // sprawdzenie poprawnosci typu
+        if (exact == true){
+            if(object->isTypeEqual(typeInfo) == true) {
+                constObjects.push_back(object);
+            } else {
+                throw std::bad_cast("Type of object not equal to type of collection");
+            }
+        }else if(object->isSupported(typeInfo) == true){
+            constObjects.push_back(object);
+        } else {
+            throw std::bad_cast("Type of object not not supported by collection");
+        }
+    }
+
+   /* ObjectWrapperPtr replaceObject(const ObjectWrapperConstPtr & object)
+    {
+        auto it = std::find(constObjects.begin(), constObjects.end(), object);
+
+        if(it == constObjects.end()){
+            throw std::runtime_error("Object does not belong to this collection");
+        }
+
+        ObjectWrapperPtr clone = (*it)->clone();
+
+        *it = clone;
+        
+        return clone;
+    }*/
+
+    ObjectWrapperPtr replaceObject(int index)
+    {
+        // wyjatek zamiast asercji (na wypadek trybu release)
+        if (!(index < size() && index >= 0)) {
+            throw std::runtime_error("ObjectWrapperCollection::getObject - wrong index");
+        }
+
+        ObjectWrapperConstPtr obj = constObjects[index];
+        ObjectWrapperPtr clone = obj->clone();
+        constObjects[index] = clone;
+        return clone;
     }
 
     //! wyczyszczenie kolekcji
     void clear() 
     {
-        objects.clear();
-        constObjects.clear();
+        constObjects.swap(ConstObjects());
     }
 
-    //! \return liczba obiektow zarejstrowanych w agregacie
-    int getNumObjects()
+    //! \return kopia calej kolekcji
+    virtual ObjectWrapperCollectionPtr clone() const
     {
-        return objects.size() + constObjects.size();
+        return ObjectWrapperCollectionPtr(new ObjectWrapperCollection(*this));
     }
 
-private:
-    //! Pomocnicza metoda dodajaca elementy do kolekcji
-    //! \param object dodawany obiekt
-    //! \param collection kolekcja do ktorej dodajemy
-    template <typename C>
-    void insert( C object , std::vector<C>& collection) 
-    {
-        // sprawdzenie poprawnosci typu
-        if (object->getType() == typeInfo) {
-            collection.push_back(object);
-        } else {
-            throw std::bad_cast("Type of object not equal to type of collection");
-        }
-    }
 };
 
 //! \brief Klasa dostarcza typu, ktorego elementy beda przechowywane
@@ -147,8 +185,8 @@ template <class T>
 class ObjectWrapperCollectionT : public ObjectWrapperCollection
 {
 public:
-    ObjectWrapperCollectionT<T>() :
-      ObjectWrapperCollection(type_of(T))
+    ObjectWrapperCollectionT() :
+      ObjectWrapperCollection(typeid(T))
       {}
 };
 

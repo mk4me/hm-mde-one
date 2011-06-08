@@ -2,7 +2,7 @@
 #include <boost/foreach.hpp>
 #include <core/IServiceManager.h>
 #include <plugins/timeline/ITimeline.h>
-#include <core/IModel.h>
+//#include <core/IModel.h>
 #include <core/IDataManager.h>
 #include "VideoService.h"
 #include "VideoWidget.h"

@@ -25,6 +25,6 @@ private:
     bool initialized;
 };
 
-typedef boost::shared_ptr<OsgSchemeDrawer> OsgSchemeDrawerPtr;
+typedef core::shared_ptr<OsgSchemeDrawer> OsgSchemeDrawerPtr;
 
 #endif //HEADER_GUARD_OSGSCHEMEDRAWER_H__

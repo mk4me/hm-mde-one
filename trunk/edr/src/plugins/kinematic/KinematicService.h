@@ -1,6 +1,7 @@
 #ifndef __HEADER_GUARD__KINEMATICSERVICE_H__
 #define __HEADER_GUARD__KINEMATICSERVICE_H__
 
+#include <core/LineChartSerie.h>
 #include <QtCore/QTimer>
 #include <QtCore/QObject>
 #include <core/IService.h>
@@ -71,6 +72,82 @@ class KinematicVisualizer :  public QObject, public core::IVisualizer
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     Q_OBJECT;
     UNIQUE_ID("{E8B5DEB2-5C57-4323-937D-1FFD288B65B9}", "Kinematic visualizer");
+
+public:
+    class KinematicVisualizerSerie : public SerieBase
+    {
+    public:
+        KinematicVisualizerSerie(KinematicVisualizer * visualizer)
+            : visualizer(visualizer)
+        {
+
+        }
+
+    protected:
+        virtual void setSerieName(const std::string & name)
+        {
+            //TODO
+            //obecnie nazwy serii nie sa obslugiwane ale musimy pomyslec o tym i ewentualnie dodac!!
+        }
+
+        virtual void setSerieData(const core::ObjectWrapperConstPtr & data)
+        {
+            visualizer->resetScene();
+            visualizer->refillDrawersMaps();
+
+            SkeletalVisualizationSchemeConstPtr scheme = data->get();
+
+            if (scheme) {        
+                if (scheme->getKinematicModel()->getSkeleton()) {
+                    SchemeDrawerContainerPtr skeleton = visualizer->drawersByName["Skeleton"];
+                    skeleton->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 3, 0.015f, osg::Vec4(1.0f, 1.0f, 0.0f, 1.0f))));
+                    skeleton->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 10, 0.05f)));
+                    skeleton->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawSkeleton, 2, 0.08f)));
+
+                    SchemeDrawerContainerPtr rectangular = visualizer->drawersByName["Rectangular"];
+                    rectangular->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 4, 0.25f, osg::Vec4(0, 1, 0, 0.3f))));
+                    visualizer->actionByName["Skeleton"]->setVisible(true);
+                    visualizer->actionByName["Rectangular"]->setVisible(true);
+                } else {
+                    visualizer->actionByName["Skeleton"]->setVisible(false);
+                    visualizer->actionByName["Rectangular"]->setVisible(false);
+                }
+
+                if (scheme->getKinematicModel()->getMarkers()) {
+                    SchemeDrawerContainerPtr markers = visualizer->drawersByName["Markers"];
+                    markers->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.08f)));
+                    markers->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.02f)));
+                    visualizer->currentDrawer = markers;
+                    visualizer->actionByName["Markers"]->setVisible(true);
+                } else {
+                    visualizer->actionByName["Markers"]->setVisible(false);
+                }
+
+                if (scheme->getKinematicModel()->getMarkers() && scheme->getKinematicModel()->getSkeleton()) {
+                    SchemeDrawerContainerPtr both = visualizer->drawersByName["Both"];
+                    both->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 3, 0.015f, osg::Vec4(1.0f, 1.0f, 0.0f, 1.0f))));
+                    both->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 10, 0.05f)));
+                    both->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawSkeleton, 2, 0.08f)));
+                    both->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.08f)));
+                    both->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.02f)));
+                    visualizer->currentDrawer = both;
+                    visualizer->actionByName["Both"]->setVisible(true);
+                } else {
+                    visualizer->actionByName["Both"]->setVisible(false);
+                }
+
+                for (auto it = visualizer->drawersByName.begin(); it != visualizer->drawersByName.end(); it++) {
+                    (it->second)->init(scheme);
+                }
+                visualizer->transformNode->addChild(visualizer->currentDrawer->getNode());
+            }
+        }
+
+    private:
+        KinematicVisualizer * visualizer;
+        
+    };
+
 public:
     KinematicVisualizer();
 
@@ -79,9 +156,13 @@ public:
     virtual void setUp( core::IObjectSource* source );
 
     void resetScene();
+
+    virtual int getMaxDataSeries() const;
+    virtual core::IVisualizer::SerieBase *createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+    virtual void removeSerie(core::IVisualizer::SerieBase *serie);
     
     virtual core::IVisualizer* createClone() const;
-    virtual void getInputInfo( int source, core::IInputDescription::InputInfo& info );
+    virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info );
     virtual QWidget* createWidget(std::vector<QObject*>& actions);
     virtual QIcon* createIcon();
     virtual const std::string& getName() const;
@@ -154,12 +235,12 @@ class KinematicService : public core::IService
 public:
     KinematicService();
 
-    virtual QWidget* getSettingsWidget()
+    virtual QWidget* getSettingsWidget(std::vector<QObject*>& actions)
     {
         return nullptr;
     }
 
-    virtual QWidget* getWidget() 
+    virtual QWidget* getWidget(std::vector<QObject*>& actions) 
     { 
         return nullptr;        
     }

@@ -272,6 +272,38 @@ void DataManager::registerParser(core::IParserPtr parser)
             }
             // rejestrujemy
             registeredExtensions.insert(std::make_pair(extension, parser));
+            //rejestrujemy opis rozszerzenia
+            std::string extensionDescription(parser->getExtensionDescription(extension));
+            auto it = extensionDescriptions.find(extension);
+
+            if(extensionDescription.empty() == false){    
+                if(it != extensionDescriptions.end()){
+                    if(it->second.description.empty() == false){
+                        it->second.description.append(" | " + extensionDescription);
+                    }else{
+                        it->second.description = extensionDescription;
+                    }
+                }else{
+                    ExtensionDescription extDescription;
+                    extDescription.description = extensionDescription;                    
+                    it = extensionDescriptions.insert(std::make_pair(extension, extDescription)).first;
+                }
+            }else{
+                if(it == extensionDescriptions.end()){
+                    it = extensionDescriptions.insert(std::make_pair(extension, ExtensionDescription())).first;
+                }
+            }
+
+            //rejestruj typy dla danego rozszerzenia ktorych moze dostarczyc parser!!
+            std::vector<core::ObjectWrapperPtr> objects;
+            parser->getExtensionObjects(extension, objects);
+
+            UTILS_ASSERT((objects.empty() == false), "Dla danego rozszerzenia parser nie generuje zadnych obiektow!!");
+
+            for(auto iT = objects.begin(); iT != objects.end(); iT++){
+                it->second.possibleTypes.insert(std::make_pair((*iT)->getTypeInfo(), (*iT)->getClassName()));
+            }
+            
             LOG_INFO("Parser for " << extension << " files registered.");
         }
         // uzupe³nienie pozosta³ych kolekcji
@@ -436,7 +468,42 @@ void DataManager::loadTrial(const core::IDataManager::LocalTrial& trial)
     }
 }
 
-void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, const core::ObjectWrapper::Types& types)
+std::vector<core::ObjectWrapperPtr> DataManager::getAvaiableObjectsForFiles(const std::vector<Path> & paths)
+{
+    //znajdz typy dla danego rozszerzenia
+    std::set<core::ObjectWrapperPtr> ret;
+
+    //ladujemy pliki, inicjujemy parsery
+    loadFiles(paths);
+
+    for(auto it = paths.begin(); it != paths.end(); it++){
+        std::string ext((*it).extension().string());
+        if(isExtensionSupported(ext) == true){
+            for(auto iT = extensionDescriptions[ext].possibleTypes.begin(); iT != extensionDescriptions[ext].possibleTypes.end(); iT++){
+                std::vector<core::ObjectWrapperPtr> objects;
+                //pobierz dane konkretnego typu
+                getObjectsFromParsers(objects, iT->first, true);
+                //dodaj je do zbioru wyjciowego
+                ret.insert(objects.begin(), objects.end());
+            }
+        }
+    }
+
+
+    //filtrujemy dane do poprawnie zainicjowanych i pochodz¹cych z wybranych plików
+    auto it = ret.begin();
+    while( it != ret.end()){
+        if( (*it)->isNull() == true || std::find(paths.begin(), paths.end(), (*it)->getSource()) == paths.end() ){
+            it = ret.erase(it);
+        }else{
+            it++;
+        }
+    }
+
+    return std::vector<core::ObjectWrapperPtr>(ret.begin(), ret.end());
+}
+
+void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, const core::ObjectWrapper::Types& types, std::vector<core::ObjectWrapperPtr> & objects)
 {
     loadTrialData = true;
 
@@ -466,7 +533,8 @@ void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, 
             }
         });
         BOOST_FOREACH(const Path& path, allFiles) {
-            createParsers(path, false);
+            std::vector<core::ObjectWrapperPtr> loc(createParsers(path, false));
+            objects.insert(objects.end(), loc.begin(), loc.end());
         }
     }
 
@@ -566,7 +634,7 @@ bool DataManager::isExtensionSupported( const std::string& extension ) const
     return registeredExtensions.find(extension) != registeredExtensions.end();
 }
 
-void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact /*= false*/ )
+void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact /*= false*/ )
 {
     // pobranie obiektow z parserow
     getObjectsFromParsers(objects, type, exact);
@@ -586,7 +654,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
     }
  }
 
-void DataManager::getObjectsFromParsers( std::vector<core::ObjectWrapperPtr>& objects, const std::type_info& type, bool exact /*= false*/ )
+void DataManager::getObjectsFromParsers( std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo & type, bool exact /*= false*/ )
 {
     // obiekty które bêdziemy usuwaæ
     std::set<ObjectWrapperPtr> invalid;
@@ -660,7 +728,7 @@ void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& object
 
         } else {
             ObjectsMapEntry entry = { object, parser };
-            std::list<TypeInfo> supportedTypes;
+            core::TypeInfoList supportedTypes;
             object->getSupportedTypes(supportedTypes);
             BOOST_FOREACH( TypeInfo type, supportedTypes ) {
                 currentObjects.insert( std::make_pair(type, entry) );
@@ -694,8 +762,9 @@ void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& object
 // }
 
 
-void DataManager::createParsers( const Path& path, bool resource )
+std::vector<ObjectWrapperPtr> DataManager::createParsers( const Path& path, bool resource )
 {
+    std::vector<core::ObjectWrapperPtr> ret;
     // próbujemy pobraæ prototyp dla zadanego rozszerzenia
     std::string extension = path.extension().string();
     IParsersByExtensions::iterator found = registeredExtensions.find( extension );
@@ -711,6 +780,7 @@ void DataManager::createParsers( const Path& path, bool resource )
             ParserPtr parser(new Parser(found->second->create(), path, resource));
             std::vector<ObjectWrapperPtr> objects;
             parser->getObjects(objects);
+            ret.insert(ret.end(), objects.begin(), objects.end());
             // mapujemy obiekty
             mapObjectsToTypes(objects, parser);
             // dodajemy do bie¿¹cej listy
@@ -719,6 +789,8 @@ void DataManager::createParsers( const Path& path, bool resource )
     } else {
         LOG_WARNING("No parser found for " << path);
     }
+
+    return ret;
 }
 
 template <class Predicate>
@@ -742,6 +814,12 @@ void DataManager::registerObjectFactory( core::IObjectWrapperFactoryPtr factory 
     core::TypeInfo type = factory->getType();
     if ( !objectFactories.insert(std::make_pair(type, factory)).second ) {
         LOG_ERROR("Factory for " << type.name() << " already exists.");
+    }else{
+        //tworzymy prototyp by miec dostep do informacji o wspieranych typach
+        core::ObjectWrapperConstPtr proto(factory->createWrapper());
+
+        //rejestrujemy typ i jego prototyp
+        registeredTypesPrototypes.insert(std::make_pair(type, proto));
     }
 }
 
@@ -754,6 +832,27 @@ core::ObjectWrapperPtr DataManager::createWrapper( const core::TypeInfo& type )
         // TODO: elaborate
         throw std::runtime_error("Type not supported.");
     }
+}
+
+core::ObjectWrapperCollectionPtr DataManager::createWrapperCollection(const core::TypeInfo& typeInfo)
+{
+    auto found = objectFactories.find(typeInfo);
+    if ( found != objectFactories.end() ) {
+        return ObjectWrapperCollectionPtr(found->second->createWrapperCollection());
+    } else {
+        // TODO: elaborate
+        throw std::runtime_error("Type not supported.");
+    }
+}
+
+const core::ObjectWrapperConstPtr & DataManager::getTypePrototype(const core::TypeInfo & typeInfo) const
+{
+    auto it = registeredTypesPrototypes.find(typeInfo);
+    if(it == registeredTypesPrototypes.end()){
+        throw std::runtime_error("Given type is not supported! It was not registered in application.");
+    }
+
+    return it->second;
 }
 
 void DataManager::addObjects(DataManager::DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects) 

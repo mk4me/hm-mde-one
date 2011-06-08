@@ -13,6 +13,7 @@
 #include <core/ObjectWrapper.h>
 #include "WorkflowItemEncapsulator.h"
 #include "InputOutputItem.h"
+#include "ObjectOutput.h"
 
 class DataProcessor : public InputOutputItem<core::IDataProcessor>
 {
@@ -28,6 +29,7 @@ class DataProcessor : public InputOutputItem<core::IDataProcessor>
 public:
     //! \param impl Obiekt przejmowany na w³asnoœæ.
     DataProcessor(core::IDataProcessor* impl);
+    ~DataProcessor();
 
 public:
 
@@ -115,6 +117,9 @@ public:
     static void test();
 
 };
+
+typedef boost::shared_ptr<DataProcessor> DataProcessorPtr;
+typedef boost::shared_ptr<const DataProcessor> DataProcessorConstPtr;
 
 
 #endif  // HEADER_GUARD_CORE__DATAPROCESSOR_H__

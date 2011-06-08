@@ -56,12 +56,12 @@ public:
 public:
     VideoService();
 
-    virtual QWidget* getWidget()
+    virtual QWidget* getWidget(std::vector<QObject*>& actions)
     { 
         return nullptr;
     }
 
-    virtual QWidget* getSettingsWidget()
+    virtual QWidget* getSettingsWidget(std::vector<QObject*>& actions)
     {
         return nullptr;
     }

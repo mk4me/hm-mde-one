@@ -19,13 +19,13 @@ template<class T>
 class InputOutputItem : public WorkflowItemEncapsulator<T>, 
     public InputDescription, public OutputDescription
 {
-        UTILS_STATIC_ASSERT((boost::is_base_of<core::IInputOutputProcessItem, T>::value), "Template class should inherit from IInputOutputProcessItem");
+        UTILS_STATIC_ASSERT((boost::is_base_of<core::IInputOutputProcessItem, T>::value), "Template class should inherit from core::IInputOutputProcessItem");
 
 public:
       InputOutputItem(const InputOutputItem& item) : 
       WorkflowItemEncapsulator<T>(item),
           InputDescription(item),
-          OutputDescription(output)
+          OutputDescription(item)
       {}
 
       InputOutputItem( T* implementation ) : 

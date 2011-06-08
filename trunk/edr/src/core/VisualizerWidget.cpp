@@ -74,6 +74,8 @@ void VisualizerWidget::clearCurrentVisualizerWidget()
 
 void VisualizerWidget::init()
 {
+    lastSerie.first = nullptr;    
+
     EDRTitleBar * titleBar = getTitleBar();
 
     //labelka jako ikona z okiem
@@ -93,24 +95,7 @@ void VisualizerWidget::init()
     comboType->setCurrentIndex(-1);
 
     //ustawienie menu odpowiedzialnego za wybor Ÿród³a danych
-    groupSources = new QActionGroup(titleBar);
     menuSource = new QMenu(titleBar);
-
-    //ustawienie menu odpowiedzialnego za wybór kana³u Ÿród³a danych
-    groupMenuPin = new QActionGroup(titleBar);
-    menuPin = new QMenu(titleBar);
-    
-    //ustawienie domyslnego kana³u Ÿród³a danych
-    currentSlot = -1;
-
-    //ustawienie przyciskow obslugujacych menu wyboru Ÿróde³
-    buttonPin = new QToolButton(titleBar);
-    buttonPin->setObjectName(QString::fromUtf8("buttonPin"));
-    QIcon icon1;
-    icon1.addFile(QString::fromUtf8(":/resources/icons/wejscie2.png"), QSize(), QIcon::Normal, QIcon::Off);
-    buttonPin->setIcon(icon1);
-    buttonPin->setPopupMode(QToolButton::InstantPopup);
-    buttonPin->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
     buttonSource = new QToolButton(titleBar);
     buttonSource->setObjectName(QString::fromUtf8("buttonSource"));
@@ -127,13 +112,13 @@ void VisualizerWidget::init()
     buttonSource->setPopupMode(QToolButton::InstantPopup);
     buttonSource->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     buttonSource->setArrowType(Qt::NoArrow);
+    buttonSource->setText(QString::fromUtf8("Sources"));
 
     //dynamiczne ³adowanie menu Ÿróde³ na ich rozwiniêcie
     connect(menuSource, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
 
     //³¹czenie menu z przyciskami
     buttonSource->setMenu(menuSource);
-    buttonPin->setMenu(menuPin);
 
     //wyczyszczenie wizualizatorow, inicjalizacja wszystkich kontrolek z tym zwiazanych
     clearCurrentVisualizer();
@@ -164,7 +149,6 @@ void VisualizerWidget::init()
     //dodanie stworzonych elementow do titleBara
     titleBar->addObject(label, IEDRTitleBar::SideType::Left);
     titleBar->addObject(comboType, IEDRTitleBar::SideType::Left);
-    titleBar->addObject(buttonPin, IEDRTitleBar::SideType::Left);
     titleBar->addObject(buttonSource, IEDRTitleBar::SideType::Left);
 
     titleBar->addObject(buttonSplitH, IEDRTitleBar::SideType::Right);
@@ -188,6 +172,16 @@ void VisualizerWidget::init()
     retranslateUi(this);
 
     QMetaObject::connectSlotsByName(this);
+}
+
+void VisualizerWidget::setActiveVisualizersSwitch(bool active)
+{
+    comboType->setEnabled(active);
+}
+
+bool VisualizerWidget::getActiveVisualizersSwitch() const
+{
+    return comboType->isEnabled();
 }
 
 void VisualizerWidget::splitHorizontally()
@@ -236,8 +230,8 @@ void VisualizerWidget::retranslateUi(QWidget *visualizerWidget)
     label->setText(QString());
     buttonSplitV->setText(QApplication::translate("VisualizerWidget", "split v", 0, QApplication::UnicodeUTF8));
     buttonSplitH->setText(QApplication::translate("VisualizerWidget", "split h", 0, QApplication::UnicodeUTF8));
-    buttonPin->setText(QApplication::translate("VisualizerWidget", "pin", 0, QApplication::UnicodeUTF8));
-    buttonSource->setText(QApplication::translate("VisualizerWidget", "source", 0, QApplication::UnicodeUTF8));
+//    buttonPin->setText(QApplication::translate("VisualizerWidget", "pin", 0, QApplication::UnicodeUTF8));
+    buttonSource->setText(QApplication::translate("VisualizerWidget", "Source", 0, QApplication::UnicodeUTF8));
 } // retranslateUi
 
 void VisualizerWidget::addVisualizer( const QString& label, UniqueID id )
@@ -257,7 +251,11 @@ void VisualizerWidget::clearCurrentVisualizer()
     }
     
     //wyczyœæ menu wyboru Ÿróde³ i kana³ów
-    clearVisualizerSources();
+    clearSources();
+
+
+    //usun wszystkie serie danych wizualizatora
+    innerRemoveAllSeries();
 
     // usuniêcie wizualizatora
     visualizer.reset();
@@ -272,6 +270,12 @@ void VisualizerWidget::clearCurrentVisualizer()
 
     //usuñ wizualizator widget z innerWidget!!
     clearCurrentVisualizerWidget();
+}
+
+void VisualizerWidget::clearDataSeries()
+{
+    currentSeriesData.swap(std::map<core::ObjectWrapperConstPtr, core::VisualizerSeriePtr >());
+    groupedSeriesData.swap(std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> >());
 }
 
 void VisualizerWidget::setCurrentVisualizer( UniqueID id )
@@ -292,6 +296,20 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
         this->visualizer = visualizer;
         // dodanie g³ównego widgetu
         if ( visualizer ) {
+
+            //ustaw dane
+            for(int i = 0; i < visualizer->getNumInputs(); i++){
+                //stworz nowy, odswiezajacy dane z DM ObjectWrapperCollection
+                core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), false));
+                std::vector<core::ObjectWrapperPtr> dmData;
+                DataManager::getInstance()->getObjects(dmData, collection->getTypeInfo());
+
+                for(auto it = dmData.begin(); it != dmData.end(); it++){
+                    collection->addObject(*it);
+                }
+
+                visualizer->setObjects(i, collection);
+            }
 
             // czy indeks siê zgadza?
             // tradycyjne wyszukiwanie nie dzia³a przy copy by value
@@ -315,23 +333,6 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
                 titleBar->addObject(obj, IEDRTitleBar::SideType::Left);
             }
 
-            for ( int i = 0; i < visualizer->getNumObjects(); ++i ) {
-                QAction* action = menuPin->addAction( QString("%0 (%1)")
-                    .arg(core::toQString(visualizer->getInputName(i)))
-                    .arg(getLabel(visualizer->getObject(i), true)), this, SLOT(pinSelected()) );
-                action->setData(qVariantFromValue(i));
-                action->setCheckable(true);
-                if ( i == 0 ) {
-                    action->setChecked(true);
-                }
-                groupMenuPin->addAction(action);
-            }
-
-            if ( visualizer->getNumObjects() ) {
-                setCurrentSlot(0);
-            } else {
-                setCurrentSlot(-1);
-            }
             EDRDockInnerWidget * innerWidget = getInnerWidget();
             visualizerWidget = visualizer->getOrCreateWidget();
             if(visualizerWidget != nullptr){
@@ -384,59 +385,134 @@ void VisualizerWidget::fillSourcesMenu()
 
     clearSources();
 
-    int slotNo = getCurrentSlot();
-
-    // wspierane obiekty w tym slocie
-    std::list<TypeInfo> supportedTypes = visualizer->getInputTypes(slotNo);
-    UTILS_ASSERT(!supportedTypes.empty());
-
-    // pobranie obiektu w tym slocie
-    const core::ObjectWrapperConstPtr& object = visualizer->getObject(slotNo);
-
-    // akcja zeruj¹ca obiekt
-    QAction* actionNone = menuSource->addAction("none");
-    connect(actionNone, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
+    //odbuduj menu Ÿróde³ danych
+    // akcja zeruj¹ca obiekt - czyœci wszystkie serie danych
+    actionNone = menuSource->addAction("none");
     actionNone->setCheckable(true);
-    actionNone->setData(qVariantFromValue(ObjectWrapperConstPtr()));
-    actionNone->setChecked(!object);
-    groupSources->addAction(actionNone);
+    actionNone->setChecked(currentSeriesData.empty() == true ? true : false);
+    if(actionNone->isChecked() == true){
+        actionNone->setEnabled(false);
+    }
 
-    bool nested = true;// (++supportedTypes.begin() != supportedTypes.end());
+    connect(actionNone, SIGNAL(triggered()), this, SLOT(removeAllSeries()) );
 
-    // dodanie submenu z akcjami wybieraj¹cymi konkretne obiekty
-    BOOST_FOREACH(TypeInfo type, supportedTypes) {
-        // pobranie obiektów z dataManagera
-        // TODO: bardziej generyczne pobranie obiektów
-        LOG_DEBUG("TypeInfo " << type.name() << " at slot " << slotNo);
-        std::vector<ObjectWrapperPtr> objects;
-        DataManager::getInstance()->getObjects(objects, type);
+    menuSource->addAction(actionNone);   
 
-        std::ostringstream str;
-        str << type.name() << " [" << objects.size() << "]";
+    std::map<core::TypeInfo, QMenu*> dataTypeMenus;
 
-        if ( objects.empty() ) {
-            QAction* action = menuSource->addAction(toQString(str.str()));
-            action->setEnabled(false);
-        } else {
-            QMenu* nestedMenu = nested ? menuSource->addMenu(toQString(str.str())) : menuSource;
-            BOOST_FOREACH(ObjectWrapperPtr ptr, objects) {
-                //titleBar->comboData->addItem( toQString(ptr->getName()) );
+    for(int i = 0; i < visualizer->getNumInputs(); i++){
+        ObjectWrapperCollectionConstPtr objects = visualizer->getObjects(i);
+        if(objects != nullptr){
+            std::ostringstream str;
+        
+            int aditional = 0;
+            auto it = groupedSeriesData.find(objects->getTypeInfo());
+            if(it != groupedSeriesData.end()){
+                aditional = it->second.size();
+            }
+
+            int total = objects->size() + aditional;
+            str << objects->getTypeInfo().name() << " [" << total;
+
+            if(aditional > 0){
+                str << "(" << aditional << ")";
+            }
+
+            str << "]";
+
+            QMenu* nestedMenu = menuSource->addMenu(toQString(str.str()));
+            nestedMenu->setEnabled(total > 0 ? true : false);
+            dataTypeMenus[objects->getTypeInfo()] = nestedMenu;
+        }
+    }
+
+    //uzupelnij brakujace typy z serii danych aktualnie wybranych
+    for(auto it = groupedSeriesData.begin(); it != groupedSeriesData.end(); it++){
+        if(dataTypeMenus.find(it->first) == dataTypeMenus.end()){
+            std::ostringstream str;
+            str << it->first.name() << " [" << it->second.size() << "]";
+
+            QMenu* nestedMenu = menuSource->addMenu(toQString(str.str()));
+            nestedMenu->setEnabled(true);
+            dataTypeMenus[it->first] = nestedMenu;
+        }
+    }
+
+    std::set<core::ObjectWrapperConstPtr> currentData;
+
+    //uzupelniaj menu danymi
+    //najpierw dane podpiete na wejsciu
+    for(int i = 0; i < visualizer->getNumInputs(); i++){
+        ObjectWrapperCollectionConstPtr objects = visualizer->getObjects(i);
+        if(objects != nullptr && objects->empty() == false){            
+            QMenu* nestedMenu = dataTypeMenus.find(objects->getTypeInfo())->second;             
+
+            for(int j = 0; j < objects->size(); j++){
+                ObjectWrapperConstPtr object = objects->getObject(j);
+
+                currentData.insert(object);
+
                 std::ostringstream str;
-                str << ptr->getName() << " (from " << ptr->getSource() << ")";
+                str << object->getName() << " (from " << object->getSource() << ")";
                 QAction* action = nestedMenu->addAction(toQString(str.str()));
                 connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
-                //connect(action, SIGNAL(triggered()), mapper, SLOT(map()));
                 action->setCheckable(true);
-                action->setData(qVariantFromValue(ObjectWrapperConstPtr(ptr)));
-                action->setChecked( ptr == object );
-                groupSources->addAction(action);
+                action->setData(qVariantFromValue(object));
+
+                bool checked = currentSeriesData.find(object) == currentSeriesData.end() ? false : true;
+
+                action->setChecked( checked );
+                nestedMenu->addAction(action);
             }
+        }
+    }
+
+    //teraz dane z serii danych, których nie ma w danych wejsciowych ale s¹ trzymane przez serie danych
+    for(auto it = groupedSeriesData.begin(); it != groupedSeriesData.end(); it++){
+        QMenu* nestedMenu = dataTypeMenus.find(it->first)->second;
+        
+        if(nestedMenu->actions().empty() == false){
+            nestedMenu->addSeparator()->setText("Expired data");
+        }
+        
+        for(auto iT = it->second.begin(); iT != it->second.end(); iT++){
+            std::ostringstream str;
+            str << (*iT)->getName() << " (from " << (*iT)->getSource() << ")";
+            QAction* action = nestedMenu->addAction(toQString(str.str()));
+            connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
+            action->setCheckable(true);
+            action->setData(qVariantFromValue(*iT));
+            action->setChecked( true );
+            nestedMenu->addAction(action);
         }
     }
 
     if(buttonSource->isVisible() == false){
         buttonSource->show();
     }
+}
+
+void VisualizerWidget::removeAllSeries()
+{
+    if(actionNone->isChecked() == false){
+        actionNone->blockSignals(true);
+        actionNone->setChecked(true);
+        actionNone->blockSignals(false);
+    }else{
+        innerRemoveAllSeries();
+        actionNone->setEnabled(false);
+    }
+}
+
+void VisualizerWidget::innerRemoveAllSeries()
+{
+    if(visualizer != nullptr){
+        for(auto it = currentSeriesData.begin(); it != currentSeriesData.end(); it++){
+            visualizer->removeSerie(it->second);
+        }
+    }
+
+    clearDataSeries();
 }
 
 void VisualizerWidget::sourceSelected()
@@ -446,112 +522,81 @@ void VisualizerWidget::sourceSelected()
     QAction* action = qobject_cast<QAction*>(sender());
     UTILS_ASSERT(action);
 
-    int slotNo = getCurrentSlot();
-    UTILS_ASSERT(slotNo >= 0);
-    ObjectWrapperConstPtr obj = action->data().value<ObjectWrapperConstPtr>();
+    if(action->isChecked() == true){
 
-    QString objName = getLabel(obj, true);
-    QString slotName = toQString(visualizer->getInputName(slotNo));
+        actionNone->setEnabled(true);
+        actionNone->blockSignals(true);
+        actionNone->setChecked(false);
+        actionNone->blockSignals(false);
 
-    // ustawienie wygl¹du guzika
-    buttonSource->setText(objName);
+        //czy mozna jeszcze utworzyc serie?
+        if(visualizer->getMaxSeries() < 0 || visualizer->getMaxSeries() != currentSeriesData.size()){
+            //aktualizujemy ostatnia serie danych
+            lastSerie.first = action;
+            lastSerie.second = action->data().value<ObjectWrapperConstPtr>();
 
-    menuPin->actions()[slotNo]->setText( QString("%0 (%1)").arg(slotName).arg(objName) );
+            //dodaj nowa seriê
+            VisualizerSeriePtr serie(visualizer->createSerie(lastSerie.second, getLabel(lastSerie.second, true)));
 
-    // ustawienie wizualizatora
-    visualizer->setObject(slotNo, obj);
-    visualizer->trySetUp();
-}
+            currentSeriesData[lastSerie.second] = serie;
+            groupedSeriesData[lastSerie.second->getTypeInfo()].insert(lastSerie.second);
+        }else{
+            //nie moge utworzyc serii - przelacz ostatnia serie
+            lastSerie.first->blockSignals(true);
+            lastSerie.first->setChecked(false);
+            lastSerie.first->blockSignals(false);
 
-int VisualizerWidget::getCurrentSlot() const
-{
-    return currentSlot;
-}
+            auto it = currentSeriesData.find(lastSerie.second);
+            VisualizerSeriePtr serie = it->second;
+            groupedSeriesData[lastSerie.second->getTypeInfo()].erase(lastSerie.second);
+            currentSeriesData.erase(it);
 
-void VisualizerWidget::clearSources()
-{
-    delete groupSources;
-    menuSource->clear();
-    groupSources = new QActionGroup(this);
+            //aktualizujemy ostatnia serie danych
+            lastSerie.first = action;
+            lastSerie.second = action->data().value<ObjectWrapperConstPtr>();
 
-    setCurrentSource(-1);
-}
+            serie->setData(lastSerie.second);
+            serie->setName(getLabel(lastSerie.second, true));
 
-void VisualizerWidget::clearSlots()
-{
-    delete groupMenuPin;
-    menuPin->clear();
-    groupMenuPin = new QActionGroup(this);
+            currentSeriesData[lastSerie.second] = serie;
+            groupedSeriesData[lastSerie.second->getTypeInfo()].insert(lastSerie.second);
+        }
+    }else{
+        //usuñ seriê
+        auto it = currentSeriesData.find(action->data().value<ObjectWrapperConstPtr>());
 
-    setCurrentSlot(-1);
-}
+        groupedSeriesData[it->first->getTypeInfo()].erase(it->first);
+        if(groupedSeriesData[it->first->getTypeInfo()].empty() == true){
+            groupedSeriesData.erase(it->first->getTypeInfo());
+        }
 
-void VisualizerWidget::clearVisualizerSources()
-{
-    //usun i wyczysc poprzednie elementy ze Ÿróde³
-    clearSources();
+        visualizer->removeSerie(it->second);
+        currentSeriesData.erase(it);
 
-    //usun i wyczysc poprzednie elementy ze slotów
-    clearSlots();
-
-}
-
-void VisualizerWidget::setCurrentSource( int idx )
-{
-    if ( idx < 0 ) {
-        buttonSource->hide();
-    } else {
-
-        UTILS_ASSERT(visualizer);
-
-        QAction* action = qobject_cast<QAction*>(sender());
-        UTILS_ASSERT(action);
-
-        ObjectWrapperConstPtr obj = action->data().value<ObjectWrapperConstPtr>();
-
-        QString objName = getLabel(obj, true);
-
-        // ustawienie wygl¹du guzika
-        buttonSource->setText(objName);
-
-        if(buttonSource->isVisible() == false){
-            buttonSource->show();
+        if(currentSeriesData.empty() == true){
+            actionNone->setEnabled(false);
+            actionNone->blockSignals(true);
+            actionNone->setChecked(true);
+            actionNone->blockSignals(false);
         }
     }
 }
 
-void VisualizerWidget::setCurrentSlot( int idx )
+void VisualizerWidget::clearSources()
 {
-    currentSlot = idx;
-    if ( idx < 0 ) {
-        buttonSource->hide();
-    } else {
-        UTILS_ASSERT(visualizer);
-        ObjectWrapperConstPtr ptr = visualizer->getObject(idx);
-        buttonPin->setText(toQString(visualizer->getInputName(idx)));
-        buttonSource->setText( getLabel(ptr, true) );
-        buttonSource->show();
-        buttonPin->show();
-    }
+    menuSource->clear();
 }
 
-void VisualizerWidget::pinSelected()
-{
-    QAction* action = qobject_cast<QAction*>(sender());
-    int idx = action->data().value<int>();
-    setCurrentSlot(idx);
-}
-
-QString VisualizerWidget::getLabel( const core::ObjectWrapperConstPtr& object, bool noSource )
+std::string VisualizerWidget::getLabel( const ObjectWrapperConstPtr& object, bool noSource )
 {
     if ( !object ) {
-        return QString("none");
+        return std::string("none");
     } else {
         if ( noSource ) {
-            return toQString(object->getName());
+            return object->getName();
         } else {
             // TODO: uzupe³niæ
-            return toQString(object->getName());
+            return object->getName();
         }
     }
 }

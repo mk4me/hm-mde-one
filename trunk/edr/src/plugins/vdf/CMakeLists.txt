@@ -20,6 +20,10 @@ set(PRIVATE_H
 	VdfQtModel.h
 	DeleteConnectionContextMenu.h
 	VdfCustomQOsgWidget.h
+	EDRPin.h
+	EDRSourceNode.h
+	EDRProcessingNode.h
+	EDRNodesFactory.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -34,6 +38,10 @@ set(TARGET_SRC
 	VdfQtModel.cpp
 	DeleteConnectionContextMenu.cpp
 	VdfCustomQOsgWidget.cpp
+	EDRPin.cpp
+	EDRSourceNode.cpp
+	EDRProcessingNode.cpp
+	EDRNodesFactory.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

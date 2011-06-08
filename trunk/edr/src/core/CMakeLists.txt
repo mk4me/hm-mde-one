@@ -40,6 +40,7 @@ set(PRIVATE_H
 	ComputeThread.h
 	VisualizerWidget.h
 	VisualizerManager.h
+	ObjectOutput.h
 	ObjectSource.h
 	Visualizer.h
 	#VisualizerTitleBar.h
@@ -56,6 +57,21 @@ set(PRIVATE_H
 	OutputDescription.h
 	OutputItem.h
 	InputOutputItem.h
+	EDRDFNode.h
+	EDRDFSourceNode.h
+	EDRDFPin.h
+	EDRDataFlow.h
+	Workflow.h
+	WorkflowManager.h
+	DataProcessorManager.h
+	WorkflowService.h
+	WorkflowWidget.h
+	WorkflowVDFModel.h
+	WorkflowVDFConnDelContextMenu.h
+	LocalDataSource.h
+	LocalDataSourceWidget.h
+	DataSource.h
+	DataSourceManager.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -122,6 +138,11 @@ set(PUBLIC_H
 	${HEADER_PATH}/IWorkflowItemBase.h
 	${HEADER_PATH}/IClonable.h
 	${HEADER_PATH}/ISerializable.h
+	${HEADER_PATH}/IWorkflow.h
+	${HEADER_PATH}/IWorkflowManager.h
+	${HEADER_PATH}/IDataProcessorManager.h
+	${HEADER_PATH}/IDataSource.h
+	${HEADER_PATH}/IDataSourceManager.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -163,7 +184,6 @@ set(TARGET_SRC
 	ComputeThread.cpp
 	VisualizerWidget.cpp
 	VisualizerManager.cpp
-	ObjectSource.cpp
 	Visualizer.cpp
 	#VisualizerTitleBar.cpp
 	#VisualizerTitleBarComboPick.cpp
@@ -179,6 +199,21 @@ set(TARGET_SRC
 	OutputDescription.cpp
 	OutputItem.cpp
 	InputOutputItem.cpp
+	EDRDFNode.cpp
+	EDRDFSourceNode.cpp
+	EDRDFPin.cpp
+	EDRDataFlow.cpp
+	DataProcessorManager.cpp
+	Workflow.cpp
+	WorkflowWidget.cpp
+	WorkflowManager.cpp
+	WorkflowService.cpp
+	WorkflowVDFModel.cpp
+	WorkflowVDFConnDelContextMenu.cpp
+	LocalDataSource.cpp
+	LocalDataSourceWidget.cpp
+	DataSource.cpp
+	DataSourceManager.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -196,6 +231,10 @@ SET(TARGET_MOC_H
 	EDRDockWidget.h
 	EDRDockInnerWidget.h
 	TestEDRWidget.h
+	WorkflowWidget.h
+	WorkflowVDFModel.h
+	WorkflowVDFConnDelContextMenu.h
+	LocalDataSourceWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -217,6 +256,8 @@ set(TARGET_UI
 	ui/EDRDockInnerWidget.ui
 	ui/EDRConsoleInnerWidget.ui
 	ui/TestEDRWidget.ui
+	ui/WorkflowWidget.ui
+	ui/LocalDataSourceWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

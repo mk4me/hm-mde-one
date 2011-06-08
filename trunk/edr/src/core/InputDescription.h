@@ -31,46 +31,54 @@ public:
     virtual ~InputDescription() {}
     
 public:
+
     const ObjectSource* getSource() const { return source.get(); }
     ObjectSource* getSource() { return source.get(); }
 
-    //! \see IVisualizer::getInputTypes
-    inline const core::TypeInfoList& getInputTypes(int idx) const
+    //! \see IVisualizer::getInputType
+    inline const core::TypeInfo& getInputType(int idx) const
     {
-        return source->getSlotTypes(idx);
+        return source->getSlotType(idx);
     }
-    //! \see IVisualizer::getInputTypes
+    //! \see IVisualizer::getInputType
     inline const std::string& getInputName(int idx) const
     {
         return source->getSlotName(idx);
     }
 
-    //!
-    const SlotsInfo& getSourcesTypes() const;
-
     //! Dodaje niezmienny obiekt na wejœcie.
     //! \param slot
     //! \param object
-    void setObject(int slot, const core::ObjectWrapperConstPtr& object)
+    void setObjects(int slot, const core::ObjectWrapperCollectionConstPtr& objects)
     {
-        source->setObject(slot, object);
+        source->setObjects(slot, objects);
     }
     //! Dodaje zmienny obiekt na wejœcie.
     //! \param slot
     //! \param object
-    void setObject(int slot, const core::ObjectWrapperPtr& object)
+    void setObjects(int slot, const core::ObjectWrapperCollectionPtr& objects)
     {
-        source->setObject(slot, object);
+        source->setObjects(slot, objects);
     }
     //! \return Liczba obiektów.
-    int getNumObjects() const
+    int getNumInputs() const
     {
-        return source->getNumObjects();
+        return source->getNumSources();
     }
     //!
-    core::ObjectWrapperConstPtr getObject(int slot)
+    core::ObjectWrapperCollectionPtr getObjects(int slot)
     {
-        return source->getObject(slot, boost::true_type());
+        return source->getObjects(slot, boost::false_type());
+    }
+
+    core::ObjectWrapperCollectionConstPtr getObjects(int slot) const
+    {
+        return source->getObjects(slot, boost::true_type());
+    }
+
+    bool isRequired(int slot)
+    {
+        return source->getSlotInfo(slot).required;
     }
 
 };

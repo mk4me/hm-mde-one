@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD__TIMELINEVIEW_H__
 #define __HEADER_GUARD__TIMELINEVIEW_H__
 
-#include <boost/shared_ptr.hpp>
+#include <core/SmartPtr.h>
 #include <utils/ObserverPattern.h>
 #include "Controller.h"
 
@@ -24,7 +24,7 @@ class View : public utils::Observer<State>
 {
 public:
     //! Typ wskaünika na kontroler.
-    typedef boost::shared_ptr<Controller> ControllerPtr;
+    typedef core::shared_ptr<Controller> ControllerPtr;
 
 protected:
     //! Kontroler timeline.

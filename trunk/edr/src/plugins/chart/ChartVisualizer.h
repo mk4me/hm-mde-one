@@ -18,6 +18,38 @@
 //! Wizualizator wykresów.
 class ChartVisualizer : public QObject, public core::IVisualizer
 {
+private:
+
+    class ChartVisualizerSerie : public SerieBase
+    {
+    public:
+        ChartVisualizerSerie(const core::LineChartSeriePtr & serie)
+            : serie(serie)
+        {
+       
+        }
+
+        const core::LineChartSeriePtr & getSerie() const
+        {
+            return serie;
+        }
+
+    protected:
+        virtual void setSerieName(const std::string & name)
+        {
+            //TODO
+            //obecnie nazwy serii nie sa obslugiwane ale musimy pomyslec o tym i ewentualnie dodac!!
+        }
+
+        virtual void setSerieData(const core::ObjectWrapperConstPtr & data)
+        {
+            serie->setData(data->get());
+        }
+
+    private:
+        core::LineChartSeriePtr serie;
+    };
+
     Q_OBJECT;
     UNIQUE_ID("{68C4E6D6-5EC8-4641-8845-F3FF3766B709}", "Chart Visualizer");
 private:
@@ -25,7 +57,8 @@ private:
     //! Nazwa wizualizatora.
     std::string name;
     //! Viewer osg.
-    osg::ref_ptr<osgViewer::Viewer> viewer;
+    //osg::ref_ptr<osgViewer::Viewer> viewer;
+    osg::ref_ptr<osgui::QOsgDefaultWidget> viewer;
     //! Kolory dla serii danych
     std::vector<osg::Vec4> seriesColors;
     //! Faktyczny wykres.
@@ -35,11 +68,13 @@ private:
     //!
     float prevTime;
 
+    std::set<ChartVisualizerSerie*> series;
+
     //!
     QAction* actionNormalized;
 
     //! Serie danych przyporz¹dkowane indeksom wejœæ.
-    std::vector<core::LineChartSeriePtr> series;
+    //std::vector<core::LineChartSeriePtr> series;
 
     volatile bool needsRefresh;
 
@@ -56,7 +91,7 @@ public:
     virtual core::IVisualizer* createClone() const;
     //! \see IVisualizer::getSlotInfo
     //virtual void getInputInfo(int inputNo, std::string& name, core::ObjectWrapper::Types& types);
-    virtual void getInputInfo(int inputNo, core::IInputDescription::InputInfo& info);
+    virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info);
     //! Nic nie robi.
     //! \see IVisualizer::update
     virtual void update(double deltaTime);
@@ -67,7 +102,16 @@ public:
     //! \see IVisualizer::setUp
     virtual void setUp(core::IObjectSource* source);
 
-    virtual void process(core::IObjectSource* source);
+    //! \return Maksymalna ilosc serii danych jaka moze obsluzyc wizualizator, wartosc 0 i mniej oznacza maksumalny zakres dla INT, inna wartosc stanowi gorna granice
+    virtual int getMaxDataSeries() const;
+
+    //! \return Seria danych ktora mozna ustawiac - nazwa i dane, nie zarzadza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
+    virtual core::IVisualizer::SerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+
+    //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
+    virtual void removeSerie(core::IVisualizer::SerieBase* serie);
+
+    //virtual void process(core::IObjectSource* source);
 
 private slots:
     void setNormalized(bool normalized);

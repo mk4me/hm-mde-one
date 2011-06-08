@@ -32,8 +32,23 @@ namespace core
         //! \retrun Lista rozszerzeñ, które parser obs³uguje. Musz¹ byæ oddzielone œrednikiem.
         //!         Obs³ugiwany format rozszerzenia: [ { *. | . } ]ext
         virtual std::string getSupportedExtensions() const = 0;
+        //! \param extension Rozszerzenie dla ktorego chemy pobrac opis formatu pliku
+        //! \return Opis formatu danego rozszerzenia
+        virtual std::string getExtensionDescription(const std::string & extension) const
+        {
+            return std::string();
+        }
+
         //! \return Obiekt danych parsera.
         virtual void getObjects(std::vector<ObjectWrapperPtr>& objects) = 0;
+
+        //! \return Obiekt danych parsera dla konretnego rozszerzenia.
+        virtual void getExtensionObjects(const std::string & extension, std::vector<ObjectWrapperPtr>& objects)
+        {
+            //TODO
+            //wprowadzic taki opis!! Aktualnie dla kazdego rozszerzenia zwraca te same obiekty!!
+            getObjects(objects);
+        }
     };
 
     typedef shared_ptr<IParser> IParserPtr;
