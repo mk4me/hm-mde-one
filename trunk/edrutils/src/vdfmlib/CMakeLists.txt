@@ -22,6 +22,9 @@ set(PUBLIC_H
 	${HEADER_PATH}/osgVDFNode.h
 	${HEADER_PATH}/osgVDFNodeTypeDescriptor.h
 	${HEADER_PATH}/osgVDFPin.h
+	${HEADER_PATH}/osgVDFRectangleSelectionFactory.h
+	${HEADER_PATH}/osgVDFLinearConnectionFactory.h
+	${HEADER_PATH}/osgVDFBezieerConnectionFactory.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -35,7 +38,11 @@ set(TARGET_SRC
 	osgVDFBasePin.cpp
 	osgVDFModel.cpp
 	osgVDFNode.cpp
+	osgVDFPin.cpp
 	osgVDFNodeTypeDescriptor.cpp
+	osgVDFRectangleSelectionFactory.cpp
+	osgVDFLinearConnectionFactory.cpp
+	osgVDFBezieerConnectionFactory.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

@@ -4,18 +4,19 @@
 #include <dfmlib/Pin.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace dflm{
+namespace dflm {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Klasa pinów œwiadomych istnienia danych i wymiany tych danych. Dzia³aj¹ z wêz³ami œwiadomymi danych - DFNode
-class DFPin : public Pin {
+class DFPin : public Pin
+{
 public:
 
     //! \param pinName nazwa pinu
     //! \param required Czy pin jest wymagany? (dotyczy tylko pinów wejœciowych)
     //! \param requiredPins Zbiór pinów od których jest uzale¿nione wystêpowanie informacji na danym pinie (dotyczy pinów wyjœciowych)
     DFPin(const std::string & pinName = std::string(), bool required = false,
-        const REQ_PINS_SET & requiredPins = REQ_PINS_SET());
+        const ReqPinsSet & requiredPins = ReqPinsSet());
 
     //! Wirtualny destruktor
 	virtual ~DFPin(void);
@@ -31,15 +32,15 @@ public:
 
     //! \param pin Pin do sprawdzenia czy jest typu DFPin
     //! \return Prawda jesli pin jest typu DFPin, inaczej false
-	static bool isDFPin(CPinPtr pin);
+	static bool isDFPin(const CPinPtr & pin);
 
     //! \param pin Pin do konwertowania do typu DFPin
     //! \return WskaŸnik do pinu typu DFPin lub nullptr (pusty wskaŸnik)
-	static DFPinPtr getDFPin(PinPtr pin);
+	static DFPinPtr getDFPin(const PinPtr & pin);
 
     //! \param pin Pin do konwertowania do typu DFPin
     //! \return WskaŸnik do pinu typu const DFPin lub nullptr (pusty wskaŸnik)
-    static CDFPinPtr getDFPin(CPinPtr pin);
+    static CDFPinPtr getDFPin(const CPinPtr & pin);
 
 protected:
 
@@ -49,7 +50,7 @@ protected:
     //! Metoda pozwalaj¹ca kopiowaæ dane pomiêdzy wêz³ami - kopiowanie inicjuje wêze³ wyjsciowy i wywo³uje t¹ metodê na wêŸle wejœciowym
     //! Mechanizm ten przenosi odpowiedzialnoœæ kopiowania danych na wêze³ wejœciowy który mo¿e miesz szersz¹ funkcjonalnoœæ (kompatybilnoœæ typów) ni¿ wêze³ wyjœciowy
     //! \param pin Pin z którego wêze³ wejsciowy powinien skopiowaæ dane
-	virtual void copyDataFromPin(DFPinPtr pin);
+	virtual void copyDataFromPin(const DFPinPtr & pin);
 
 private:
 

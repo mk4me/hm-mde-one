@@ -13,11 +13,11 @@ class DFSourceNode :
 {
 public:
 
-    //! \param nodeName Nazwa wêz³a
+    //! \param name Nazwa wêz³a
     //! \param processingAllowed Czy przetwarzanie danych jest dozwolone
     //! \param propagatingAllowed Czy propagowanie danych jest dozwolone
-    DFSourceNode(const std::string & nodeName = std::string(), bool processingAllowed = true,
-        bool propagatingAllowed = true);
+    DFSourceNode(const std::string & name = std::string()/*, bool processingAllowed = true,
+        bool propagatingAllowed = true*/);
 
     //! Wirtualny destruktor
 	virtual ~DFSourceNode(void);
@@ -26,10 +26,6 @@ public:
     //! \return Czy wêze³ mo¿e zaoferowaæ kolejn¹ porcjê danych
 	virtual bool hasMoreData() const = 0;
 
-    //! Wywolanie tej metody zrzuca wyj¹tek - nie jest dozwolone dodawanie pinów wejœciowych do Ÿróde³
-    //! \param newPin Pin wejsciowy do dodania
-	virtual void addInPin(PinPtr newPin);
-
 protected:
 
     //! \return Zawsze true
@@ -37,6 +33,12 @@ protected:
 
     //! Nie robi nic
 	virtual void resetInputPins();
+
+private:
+
+    //! Wywolanie tej metody zrzuca wyj¹tek - nie jest dozwolone dodawanie pinów wejœciowych do Ÿróde³
+    //! \param newPin Pin wejsciowy do dodania
+    virtual void addInPin(const PinPtr & pin);
 };
 
 }

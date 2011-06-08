@@ -7,9 +7,9 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-DFNode::DFNode(const std::string & nodeName, bool processingAllowed, bool propagatingAllowed)
-	: Node(nodeName), processingAllowed(processingAllowed),
-	propagatingAllowed(propagatingAllowed)
+DFNode::DFNode(const std::string & nodeName)/*, bool processingAllowed, bool propagatingAllowed)
+	*/: Node(nodeName), processingAllowed(true),
+	propagatingAllowed(true)
 {
 
 }
@@ -23,11 +23,6 @@ DFNode::~DFNode(void)
 DFNPtr DFNode::getDFNode(const NPtr & node)
 {
 	return boost::dynamic_pointer_cast<DFNode>(node);
-}
-
-void DFNode::configureNode()
-{
-
 }
 
 void DFNode::allowProcessing(bool allow)
@@ -64,9 +59,8 @@ bool DFNode::isPropagatingAllowed() const
 
 bool DFNode::checkInputPins() const
 {
-	for(PINS_SET::const_iterator it = inPins.begin(); it != inPins.end(); it++){
-		const Pin::CONNECTIONS_SET & connections = (*it)->getConnections();
-		for(Pin::CONNECTIONS_SET::const_iterator iT = connections.begin(); iT != connections.end(); iT++){
+	for(auto it = beginIn(); it != endIn(); it++){
+		for(auto iT = (*it)->begin(); iT != (*it)->end(); iT++){
 			DFPinPtr ptr(DFPin::getDFPin((*iT)->getOther(*it)));
 			if( ptr != nullptr && ptr->isUpdated() == false){
 				return false;
@@ -79,15 +73,16 @@ bool DFNode::checkInputPins() const
 
 void DFNode::updateOutputPins()
 {
-	for(PINS_SET::iterator it = outPins.begin(); it != outPins.end(); it++){
+	for(auto it = beginOut(); it != endOut(); it++){
 		DFPinPtr pin(DFPin::getDFPin(*it));
 		
 		if(pin != nullptr){
 			pin->update();		
-			const Pin::CONNECTIONS_SET & connections = (*it)->getConnections();
+			//auto connections = (*it)->getConnections();
 			//inform input pins on the following nodes
-			for(Pin::CONNECTIONS_SET::const_iterator iT = connections.begin(); iT != connections.end(); iT++){
-				pin = boost::dynamic_pointer_cast<DFPin>((*iT)->getOther(*it));
+			//for(auto iT = connections.begin(); iT != connections.end(); iT++){
+            for(auto iT = (*it)->begin(); iT != (*it)->end(); iT++){
+				pin = DFPin::getDFPin((*iT)->getOther(*it));
 				if(pin != nullptr){
 					pin->update();
 				}
@@ -118,6 +113,10 @@ void DFNode::process()
 			setOutputData();
 			updateOutputPins();
 		}
+
+        if(onLeafProcessedCallback.empty() == false){
+            onLeafProcessedCallback();
+        }
 	}
 }
 

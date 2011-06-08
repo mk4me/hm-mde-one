@@ -19,13 +19,13 @@ std::string TestDFPin::getPinFullName() const{
 
 	boost::shared_ptr<TestDFNodeProcessing> parent(boost::dynamic_pointer_cast<TestDFNodeProcessing>(getParent()));
 	if(parent != 0){
-		fullName.append(parent->getNodeName());
+		fullName.append(parent->getName());
 	}else{
 		fullName.append("UNKNOWN PARENT");
 	}
 
 	fullName.append(":");
-	fullName.append(getPinName());
+	fullName.append(getName());
 
 	return fullName;
 }

@@ -22,7 +22,7 @@ private:
 
 public:
     SmartPin(const std::string & pinName = std::string(),
-        bool required = false, const dflm::Pin::REQ_PINS_SET & requiredPins = dflm::Pin::REQ_PINS_SET())
+        bool required = false, const dflm::Pin::ReqPinsSet & requiredPins = dflm::Pin::ReqPinsSet())
         : DFPin(pinName, required, requiredPins)
     {
 
@@ -44,7 +44,7 @@ protected:
 
     virtual void onUpdate()
     {
-        std::cout << getParent()->getNodeName() + "->" + getPinName() << "\tPo update." << std::endl;
+        std::cout << getParent()->getName() + "->" + getName() << "\tPo update." << std::endl;
     }
 
     virtual void copyDataFromPin(dflm::DFPinPtr pin)
@@ -52,13 +52,13 @@ protected:
         boost::shared_ptr<MyType> smartPin(boost::dynamic_pointer_cast<MyType>(pin));
 
         if(smartPin == nullptr) {
-            std::cout << getParent()->getNodeName() + "->" + getPinName() << "\tDane od nieobslugiwanego pinu" << std::endl;
+            std::cout << getParent()->getName() + "->" + getName() << "\tDane od nieobslugiwanego pinu" << std::endl;
             return;
         }
 
         val = smartPin->val;
 
-        std::cout << getParent()->getNodeName() + "->" + getPinName() << "\tSkopiowane dane:\t" << *val << std::endl;
+        std::cout << getParent()->getName() + "->" + getName() << "\tSkopiowane dane:\t" << *val << std::endl;
     }
 
 private:
@@ -75,16 +75,24 @@ private:
 
 public:
     SummarryNode(const std::string & nodeName = std::string(), bool processingAllowed = true,
-        bool propagatingAllowed = true) : DFNode(nodeName, processingAllowed, propagatingAllowed), val(0)
+        bool propagatingAllowed = true) : DFNode(nodeName/*, processingAllowed, propagatingAllowed*/), val(0)
     {
 
     }
 
 protected:
 
+    //! Inicjalizacja do implementacji przez klienta
+    virtual void doInitialization(const PinsAdderPtr & pinsAdder)
+    {
+        pinsAdder->addInPin(IntSMartPinPtr(new IntSmartPin("In Pin A", true)));
+        pinsAdder->addInPin(IntSMartPinPtr(new IntSmartPin("In Pin B", true)));
+        pinsAdder->addOutPin(IntSMartPinPtr(new IntSmartPin("Out Pin A - sum", true)));
+    }
+
     virtual void setOutputData()
     {
-        for(auto it = getOutPins().begin(); it != getOutPins().end(); it++){
+        for(auto it = beginOut(); it != endOut(); it++){
             MySmartPinPtr myPin = boost::dynamic_pointer_cast<MySmartPin>(*it);
             if(myPin != nullptr){
                 myPin->setValue(val);
@@ -95,14 +103,14 @@ protected:
     virtual void processData()
     {
         val = 0;
-        for(auto it = getInPins().begin(); it != getInPins().end(); it++){
+        for(auto it = beginIn(); it != endIn(); it++){
             MySmartPinPtr myPin = boost::dynamic_pointer_cast<MySmartPin>(*it);
             if(myPin != nullptr){
                 val += myPin->getValue();
             }
         }
 
-        std::cout << getNodeName() << "\tWezel sumujacy wyliczyl wartosc:\t" << val << std::endl;
+        std::cout << getName() << "\tWezel sumujacy wyliczyl wartosc:\t" << val << std::endl;
     }
 
 private:
@@ -119,7 +127,7 @@ private:
 
 public:
     SourceNode(Value v, const std::string & nodeName = std::string(), bool processingAllowed = true,
-        bool propagatingAllowed = true) : DFNode(nodeName), DFSourceNode(nodeName, processingAllowed, propagatingAllowed), val(v), count(1)
+        bool propagatingAllowed = true) : DFNode(nodeName), DFSourceNode(nodeName/*, processingAllowed, propagatingAllowed*/), val(v), count(1)
     {
         
     }
@@ -131,9 +139,15 @@ public:
 
 protected:
 
+    //! Inicjalizacja do implementacji przez klienta
+    virtual void doInitialization(const PinsAdderPtr & pinsAdder)
+    {
+        pinsAdder->addOutPin(IntSMartPinPtr(new IntSmartPin("Out Pin A", true)));
+    }
+
     virtual void setOutputData()
     {
-        for(auto it = getOutPins().begin(); it != getOutPins().end(); it++){
+        for(auto it = beginOut(); it != endOut(); it++){
             MySmartPinPtr myPin = boost::dynamic_pointer_cast<MySmartPin>(*it);
             if(myPin != nullptr){
                 myPin->setValue(val);
@@ -182,31 +196,36 @@ int main(int argc, char** argv) {
     model->addNode(summerC);
     model->addNode(summerD);
 
-    model->connect(*(sourceA->getOutPins().begin()), *(summerA->getInPins().begin()));
-    model->connect(*(sourceB->getOutPins().begin()), *(++(summerA->getInPins().begin())));
+    model->connect(*(sourceA->beginOut()), *(summerA->beginIn()));
+    model->connect(*(sourceB->beginOut()), *(++(summerA->beginIn())));
 
-    model->connect(*(sourceB->getOutPins().begin()), *(summerC->getInPins().begin()));
-    model->connect(*(sourceC->getOutPins().begin()), *(++(summerC->getInPins().begin())));
+    model->connect(*(sourceB->beginOut()), *(summerC->beginIn()));
+    model->connect(*(sourceC->beginOut()), *(++(summerC->beginIn())));
 
-    model->connect(*(sourceC->getOutPins().begin()), *(summerB->getInPins().begin()));
-    model->connect(*(sourceD->getOutPins().begin()), *(++(summerB->getInPins().begin())));
+    model->connect(*(sourceC->beginOut()), *(summerB->beginIn()));
+    model->connect(*(sourceD->beginOut()), *(++(summerB->beginIn())));
 
-    model->connect(*(summerA->getOutPins().begin()), *(summerD->getInPins().begin()));
-    model->connect(*(summerC->getOutPins().begin()), *(++(summerD->getInPins().begin())));
+    model->connect(*(summerA->beginOut()), *(summerD->beginIn()));
+    model->connect(*(summerC->beginOut()), *(++(summerD->beginIn())));
 
-    model->setEnable(true);
+    model->lock();
 
+    model->run();
+
+
+
+    while(model->isFinished() == false){
+        OpenThreads::Thread::microSleep(1000);
+    }
 
 	return 0;
 }
-
-
 
 dflm::NPtr buildSimpleSource(const std::string & name, int emitVal)
 {
     dflm::NPtr ret(new IntSourceNode(emitVal, name));
     
-    ret->addOutPin(IntSMartPinPtr(new IntSmartPin("Out Pin A", true)));
+    //ret->addOutPin(IntSMartPinPtr(new IntSmartPin("Out Pin A", true)));
 
     return ret;
 }
@@ -215,9 +234,9 @@ dflm::NPtr buildSummer(const std::string & name)
 {
     dflm::NPtr ret(new IntSummaryNode(name));
 
-    ret->addInPin(IntSMartPinPtr(new IntSmartPin("In Pin A", true)));
-    ret->addInPin(IntSMartPinPtr(new IntSmartPin("In Pin B", true)));
-    ret->addOutPin(IntSMartPinPtr(new IntSmartPin("Out Pin A - sum", true)));
+    //ret->addInPin(IntSMartPinPtr(new IntSmartPin("In Pin A", true)));
+    //ret->addInPin(IntSMartPinPtr(new IntSmartPin("In Pin B", true)));
+    //ret->addOutPin(IntSMartPinPtr(new IntSmartPin("Out Pin A - sum", true)));
 
     return ret;
 }

@@ -7,7 +7,7 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-Connection::Connection(PinPtr src, PinPtr dest) : srcPin(src), destPin(dest)
+Connection::Connection(const PinPtr & src, const PinPtr & dest) : srcPin(src), destPin(dest)
 {
     UTILS_ASSERT((src != nullptr), "Bledny pin zrodlowy");
     UTILS_ASSERT((dest != nullptr), "Bledny pin docelowy");
@@ -36,7 +36,7 @@ PinPtr Connection::getDest() const
 	return destPin.lock();
 }
 
-PinPtr Connection::getOther(CWPinPtr pin) const
+PinPtr Connection::getOther(const CWPinPtr & pin) const
 {
 	PinPtr ret = getSrc();
 
@@ -51,25 +51,25 @@ std::string Connection::getConnectionName() const{
 	std::string ret("Empty Connection");
 
 	if(srcPin.lock() != 0 && destPin.lock() != 0){
-		ret = srcPin.lock()->getParent()->getNodeName();
+		ret = srcPin.lock()->getParent()->getName();
 		ret.append(":");
-		ret.append(srcPin.lock()->getPinName());
+		ret.append(srcPin.lock()->getName());
 		ret.append(" - ");
-		ret.append(destPin.lock()->getParent()->getNodeName());
+		ret.append(destPin.lock()->getParent()->getName());
 		ret.append(":");
-		ret.append(destPin.lock()->getPinName());
+		ret.append(destPin.lock()->getName());
 	}
 
 	return ret;
 }
 
-void Connection::setSrc(PinPtr src){
-    UTILS_ASSERT((src != nullptr), "Bledny pin zrodlowy");
+void Connection::setSrc(const PinPtr & src){
+    //UTILS_ASSERT((src != nullptr), "Bledny pin zrodlowy");
 	srcPin = src;
 }
 
-void Connection::setDest(PinPtr dest){
-    UTILS_ASSERT((dest != nullptr), "Bledny pin docelowy");
+void Connection::setDest(const PinPtr & dest){
+    //UTILS_ASSERT((dest != nullptr), "Bledny pin docelowy");
 	destPin = dest;
 }
 

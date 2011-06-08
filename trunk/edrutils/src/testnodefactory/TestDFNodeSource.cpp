@@ -1,7 +1,7 @@
 #include <testnodefactory/TestDFNodeSource.h>
 
 
-TestDFNodeSource::TestDFNodeSource(const std::string & nodeName) : DFNode(nodeName), DFSourceNode(nodeName), TestDFNodeProcessing(nodeName), availableData(0)
+TestDFNodeSource::TestDFNodeSource(const std::string & nodeName, int outPins) : DFNode(nodeName), DFSourceNode(nodeName), TestDFNodeProcessing(nodeName, 0, 0, outPins, false), availableData(0)
 {
 }
 
@@ -10,9 +10,9 @@ TestDFNodeSource::~TestDFNodeSource(void)
 {
 }
 
-void TestDFNodeSource::addInPin(dflm::PinPtr inPin){
-	DFSourceNode::addInPin(inPin);
-}
+//void TestDFNodeSource::addInPin(const dflm::PinPtr & inPin){
+//	DFSourceNode::addInPin(inPin);
+//}
 
 bool TestDFNodeSource::checkInputPins() const{
 	return true;
@@ -24,6 +24,11 @@ bool TestDFNodeSource::hasMoreData() const{
 	}
 
 	return false;
+}
+
+void TestDFNodeSource::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder)
+{
+    TestDFNodeProcessing::doInitialization(pinsAdder);
 }
 
 void TestDFNodeSource::process(){

@@ -34,11 +34,11 @@ private:
 	dflm::DFNPtr ProcNodeG;
 	dflm::DFNPtr ProcNodeH;
 
-	dflm::DFNPtr SrcNodeA;
-	dflm::DFNPtr SrcNodeB;
-	dflm::DFNPtr SrcNodeC;
-	dflm::DFNPtr SrcNodeD;
-	dflm::DFNPtr SrcNodeE;
+	dflm::DFSNPtr SrcNodeA;
+	dflm::DFSNPtr SrcNodeB;
+	dflm::DFSNPtr SrcNodeC;
+	dflm::DFSNPtr SrcNodeD;
+	dflm::DFSNPtr SrcNodeE;
 };
 
 #endif

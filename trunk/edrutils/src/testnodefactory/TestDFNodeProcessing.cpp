@@ -2,8 +2,12 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 
-TestDFNodeProcessing::TestDFNodeProcessing(const std::string & nodeName) : DFNode(nodeName) 
+#include <testnodefactory/TestDFPin.h>
+
+TestDFNodeProcessing::TestDFNodeProcessing(const std::string & nodeName, int inPins, int inRequired, int outPins, bool dependant)
+    : DFNode(nodeName), inPins(inPins), inRequired(inRequired), outPins(outPins), dependant(dependant)
 {
 }
 
@@ -14,7 +18,7 @@ TestDFNodeProcessing::~TestDFNodeProcessing(void)
 
 void TestDFNodeProcessing::process(){
 
-    std::cout << getNodeName().c_str() << " active - DATA PROCESSING procedure" << std::endl;
+    std::cout << getName().c_str() << " active - DATA PROCESSING procedure" << std::endl;
 
     if(checkInputPins() == true){
         std::cout << "inpute pins verified correctly - data on all connections avaiable" << std::endl;
@@ -35,4 +39,36 @@ void TestDFNodeProcessing::process(){
 			updateOutputPins();
 		}
 	}
+}
+
+void TestDFNodeProcessing::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder)
+{
+    unsigned int i = 0;
+    for(; i < inPins && i < inRequired; i++){
+        std::stringstream name;
+        name << i;
+        pinsAdder->addInPin(dflm::PinPtr(new TestDFPin("Input pin " + name.str() + " [REQUIRED]", true)));
+    }
+
+    for(; i < inPins; i++){
+        std::stringstream name;
+        name << i;
+        pinsAdder->addInPin(dflm::PinPtr(new TestDFPin("Input pin " + name.str())));
+    }
+
+    for(unsigned int i = 0; i < outPins; i++){
+        std::stringstream name;
+        name << i;
+        std::set<dflm::WPinPtr> requiredPins;
+        if(dependant == true){
+            //generate random dependency
+            dflm::Node::Pins pins(beginIn(), endIn());
+            std::random_shuffle(pins.begin(), pins.end());
+            unsigned int count = rand() % pins.size();
+            for(unsigned int i = 0; i < count; i++){
+                requiredPins.insert(dflm::WPinPtr(pins[i]));
+            }
+        }
+        pinsAdder->addOutPin(dflm::PinPtr(new TestDFPin("Output pin " + name.str(), false, requiredPins)));
+    }
 }

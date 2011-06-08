@@ -6,6 +6,7 @@
 #include <dfmlib/Model.h>
 #include <dfmlib/DFInterface.h>
 #include <map>
+#include <OpenThreads/Thread>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
@@ -13,15 +14,32 @@ namespace dflm{
 
 //! Klasa modelu obs³uguj¹cego przep³yw danych. Model te¿ jest czêœci¹ tego przep³ywu - zbiera informacjê o przetworzeniu danych przez wêz³y liœcie.
 //! Na bazie tej informacji kontroluje moment wprowadzenia nowych danych do modelu (wyzwolenie Ÿróde³).
-class DFModel : public Model, public DFInterface
+class DFModel : public Model
 {
 public:
 
-    //! Typ przechowuj¹cy lokalne niezgodnoœci modelu logicznego z wytyczonymi zasadami jego tworzenia
-	typedef std::map<NPtr, Node::PINS_SET > REQUIRING_CONNECTION;
-
     //! Typ przechowuj¹cy zestaw Ÿróde³ na potrzeby wstrzykiwania kolejnej porcji danych do data flow
-	typedef std::set<DFSNPtr> SOURCE_NODES_SET;
+	typedef std::set<DFSNPtr> SourceNodes;
+
+    //typedef std::set<DFNPtr> Nodes;
+
+private:
+
+    class ModelRunner : public OpenThreads::Thread
+    {
+    public:
+        ModelRunner(DFModel * model);
+        ~ModelRunner();
+
+        virtual void run();
+        void finishProcessing();
+
+    private:
+        DFModel * model;
+        bool finish;
+    };
+
+    friend class ModelRunner;
 
 public:
 
@@ -32,57 +50,60 @@ public:
 	virtual ~DFModel(void);
 
     //---------------------- Model interface ----------------------------
-
-    //! \param node Wêze³ do dodania
-	virtual void addNode(NPtr node);
-
-    //! \param node Wêze³ do usuniecia
-	virtual void removeNode(NPtr node);
-
-    //! Usuwa wszystkie wezly z modelu
-	virtual void clearNodes();
-
-    //! \param src Pin Ÿród³owy (wyjsciowy)
-    //! \param dest Pin docelowy (wejsciowy)
-    //! \return Czy mo¿na polaczyæ piny razem
-	virtual bool canConnect(CPinPtr src, CPinPtr dest) const;
-
-    //! \param src Pin Ÿród³owy (wyjsciowy)
-    //! \param dest Pin docelowy (wejsciowy)
-    //! \return Po³¹czenie pomiêdzy pinami
-	virtual ConnPtr connect(PinPtr src, PinPtr dest);
-
-    //! \param src Pin Ÿród³owy (wyjsciowy)
-    //! \param dest Pin docelowy (wejsciowy)
-	//virtual bool removeConnection(PinPtr src, PinPtr dest);
-
-    //! \param connection Po³¹czenie do usuniêcia
-	virtual void removeConnection(ConnPtr connection);
-
-    //! Czyœci wszystkie po³¹czenia miêdzy wêz³ami
-	virtual void clearConnections();
+    
+    //! \param node Wêze³ którego kompatybilnoœæ z modelem sprawdzamy
+    //! \return Czy wêze³ jest wspierany przez model
+    virtual bool isNodeSupported(const NPtr & node) const;
 
     //---------------------- DFModel -------------------------------------
 
     //! \return Zwraca zbiór wêz³ów Ÿród³owych
-	const SOURCE_NODES_SET & getSourceNodes() const;
+	const SourceNodes & getSourceNodes() const;
 
-    //! \return Zwraca zbiór wêz³ów liœci (nie maj¹cych pod³¹czonych pinów wyjœciowych)
-	const NODES_SET & getLeafNodes() const;
+    //! Wyzwala Ÿród³a, rozpoczyna przep³yw informacji w modelu
+    void run();
 
-    //! \return Zwraca wêz³y wymagaj¹ce interwencji by model by³ poprawny
-	const REQUIRING_CONNECTION & DFModel::getRequiringConnections() const;
+    //! \return Czy model jest uruchomiony (mo¿e byæ spauzpowany)
+    bool isRunning() const;
+
+    //! \return Czy wszystkie dane zosta³y przetworzone
+    bool isFinished() const;
+
+    //! Wstrzymuje wyzpolenie Ÿróde³ po zakoñczeniu aktualnie trwaj¹cego cyklu danych
+    void pause();
+
+    //! \return Czy model jest wstrzymany (rownoznatrzne ¿e isRunning daje true jeœli isPaused równie¿ true)
+    bool isPaused() const;
+
+    //! Zatrzymuje model, resetuje wszystkie wêz³y i piny do ich stanu pocvz¹tkowego
+    void stop();
 
 protected:
 
-    //---------------- Interfejs DFInterface --------------------
+    //---------------- Interfejs Model --------------------
 
-    virtual void onEnableChange();
+    //! \return true jeœli mo¿na dokonaæ zmiany modelu, inaczej false lub wyj¹tek
+    virtual bool isModelChangeAllowed() const;
 
-    virtual void process();
+    //! \param src Pin Ÿród³owy (wyjœciowy)
+    //! \param src Pin docelowy (wejœciowy)
+    //! \return Czy mozna po³¹czyæ piny
+    virtual bool additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) const;
 
-    //! \return Czy model jest poprawnie zbudowany
-	virtual bool validateModel() const;
+    //! \return true jeœli model jest poprawny
+    virtual bool additionalModelValidation() const;
+
+    //! \param node Wêze³ do dodania
+    virtual void afterNodeAdd(const NPtr & node);
+
+    //! \param node Wêze³ do usuniêcia
+    virtual void beforeNodeRemove(const NPtr & node);
+
+    //! \param node Wêze³ który sta³ siê w³aœnie liœciem
+    virtual void afterLeafAdd(const NPtr & node);
+
+    //! \param node Wêze³ który przestaje byæ liœciem
+    virtual void beforeLeafRemove(const NPtr & node);
 
     //! Resetuje stany wez³ów
 	void resetNodeStates();
@@ -91,84 +112,15 @@ protected:
 	void resetPinStates();
 
     //! \param pin Pin którego stan resetujemy
-	void resetPinState(PinPtr pin);
+	void resetPinState(const PinPtr & pin);
 
     //! Powiadamia Ÿród³a o koniecznoœci zasilenia model w nowe dane
 	void notifySources();
-
-    //! \param src Pin Ÿród³owy (wyjsciowy)
-    //! \param dest Pin docelowy (wejsciowy)
-    //! \return Po³¹czenie pomiêdzy pinami
-	virtual ConnPtr quickConnect(PinPtr src, PinPtr dest);
-    	
-    //! \param node Wêze³ do sprawdzenia, czy wszystko ok z jego po³¹czeniami i stanem
-	void updateRequiredConnections(NPtr node);
-
-    //TODO
-    //zmiana na obslugê wyj¹tków i wielow¹tkowoœci
-    //! \return Prawda jeœli mo¿na wykonaæ operacjê modyfikacji modelu
-	bool validateOperation() const;
-
-    //! \param node Wêze³ do sprawdzenia czy jest pochodn¹ DFNode
-    //! \return Czy mo¿na usun¹æ wêze³
-	static bool validateNodeType(NPtr node);
-
-    //! \param connection Po³¹czenie do sprawdzenia pod k¹tem jego usuniêcia
-    //! \return Prawda jesli po³¹czneie mo¿e zostac usuniête
-	static bool canDisconnect(ConnPtr connection);
-
-    //! \param node Wêze³ do sprawdzenia pod k¹tem jego usuniêcia
-    //! \return Prawda jesli wêze³ mo¿e zostac usuniêty
-	static bool canRemoveNode(NPtr node);
-
-    //! \param connection Po³¹czenie do usuniêcia
-    //! \return czy usuniêto po³¹czenie
-	virtual void quickRemoveConnection(ConnPtr connection);
 	
     //! \return Prawda jeœli Ÿród³a maj¹ wiêcej danych do zasilenia modelu
 	bool sourcesHaveMoreData() const;
 
-    //! \param pin Pin analizowany pod k¹tem poprawnoœci po³¹czenia modelu
-	void updateRequireConnections(PinPtr pin);
-
-    //! \param nodes Lista wêz³ów uznana za sprawdzone - tutaj mog¹ siê podpinaæ klasy pochodne z szersz¹ wiedz¹ na temat wêz³ów
-    //! W ten sposób mog¹ przyspieszyæ wykrywanie cykli
-    virtual void initCheckedNodes(NODES_SET & nodes) const;
-
 private:
-
-    //! Prywatny typ opisuj¹cy aktualn¹ pozycjê podczas iterowania po po³¹czeniach wêz³ów przy przechodzeniu przez model
-	typedef std::pair<Node::PINS_SET::const_iterator,
-		CONNECTIONS_SET::const_iterator> OUTPUT_POSITION;
-
-    //! Prywatna klasa pinu dodawanego do wêz³ów liœci w celu notyfikacji modelu o dotarciu danych do liœci
-	class FakePin : public virtual DFPin{
-
-	public:
-        //! \param model DFModel który FakePin poinformuje o przetworzeniu danych przez wêze³ liœæ
-		FakePin(WDFMPtr model);
-
-        //! \param pin Pin do sprawdzenia kompatybilnoœci z FakePin
-		bool isCompatible(PinPtr pin) const;
-	protected:
-
-        //! \return
-		void onUpdate();
-	private:
-
-        //! Model informowany o zakoñczeniu przetwarzania danych przez wêze³ liœæ
-		WDFMPtr model;
-	};
-
-	friend class FakePin;
-
-private:
-
-    //! \param node Wêze³ liœæ do zapamiêtania
-	void addLeaf(NPtr node);
-
-    //! \param node Wêze³ liœæ przestaj¹cy byæ liœciem
-	void removeLeaf(NPtr node);
 
     //! Informuje ¿e liœæ przetworzy³ dane
 	void leafHasProcessedData();
@@ -176,23 +128,31 @@ private:
 private:
 
     //! Zbiór wêz³ów Ÿród³owych
-	SOURCE_NODES_SET sourceNodes;
+	SourceNodes sourceNodes;
 
-    //! Zbiór wêz³ów liœci
-	NODES_SET leafNodes;
+    //! Czy model jest uruchomiony
+    bool running;
 
-    //! Mapa wêz³ów liœci i ich FakePinów
-	//Node -> FakePin
-	std::map<NPtr, PinPtr> leafFakePins;
+    //! Czy wszystkie dane przetworzone
+    bool finished;
 
-    //! Mapa wêz³ów wymagaj¹cych interwencji aby model by³ poprawnie zbudowany
-	REQUIRING_CONNECTION pinsRequiringConnections;
-
-    //! Oczekiwanie na przerwanie procesu przetwarzania danych
-	bool pendingDisable;
+    //! Czy model jest spauzowany
+    bool paused;
 
     //! Licznik iloœci wêz³ów liœci które przetworzy³y dane
 	unsigned int finishedLeafes;
+
+    //! mutex do kontroli w¹tku notyfikujacego Ÿród³a
+    OpenThreads::Mutex pauseMutex;
+
+    //! mutex do synchronizacji aktualizacji iloœci liœci które przetworzy³y dane
+    OpenThreads::Mutex leavesMutex;
+
+    //! mutex do synchronizacji operacji uruchamiania/zatrzymywania/pauzowania dataflow
+    OpenThreads::Mutex runningMutex;
+
+    //! w¹tek obs³uguj¹cy wyzwalanie Ÿróde³
+    boost::shared_ptr<ModelRunner> modelRunner;
 };
 
 }

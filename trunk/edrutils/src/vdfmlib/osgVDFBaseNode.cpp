@@ -7,79 +7,137 @@
 namespace osgVDF{
 ////////////////////////////////////////////////////////////////////////////////
 
-osgVDFBaseNode::osgVDFBaseNode(dflm::NPtr modelNode, const std::string & nodeName, osgVDFBaseModel * model)
-	: osgWidget::Window(nodeName), m_pNode(modelNode), m_pModel(model), m_eStatus(NODE_OK){
-
-        UTILS_ASSERT((modelNode != nullptr, "Nieprawidlowy wezel logiczny"));
+osgVDFBaseNode::osgVDFBaseNode(const std::string & nodeName) : osgWidget::Window(nodeName),
+    visualModel(nullptr), visualStatus(OK), area(0)
+{
+    /*UTILS_ASSERT((modelNode != nullptr, "Nieprawidlowy wezel logiczny"));
+    UTILS_ASSERT((model != nullptr, "Nieprawidlowy model wizualny"));*/
 }
 
-osgVDFBaseNode::~osgVDFBaseNode(void){
+osgVDFBaseNode::~osgVDFBaseNode(void)
+{
 
 }
 
-dflm::NPtr osgVDFBaseNode::getModelNode() const{
-	return m_pNode;
+osgWidget::point_type osgVDFBaseNode::getArea() const
+{
+    return area;
 }
 
-osgVDFBaseModel * osgVDFBaseNode::getModel() const{
-	return m_pModel;
+void osgVDFBaseNode::setArea(float area)
+{
+    UTILS_ASSERT((area > 0), "Nieprawidlowa powierzchnia wezla");
+    this->area = area;
+}
+
+const dflm::NPtr & osgVDFBaseNode::getModelNode() const
+{
+	return modelNode;
+}
+
+osgVDFBaseModel * osgVDFBaseNode::getVisualModel() const
+{
+	return visualModel;
 }
 
 void osgVDFBaseNode::deleteNode()
 {
-	if(m_pModel == 0){
+	if(visualModel == nullptr){
 		throw std::runtime_error("Visual node tries to delete itself without visual model!");
 	}
 
-	m_pModel->deleteNodeSelf(this);
+	visualModel->deleteNodeSelf(this);
 }
 
-void osgVDFBaseNode::loggZCoordinates() const{
+void osgVDFBaseNode::loggZCoordinates() const
+{
 	std::cout << "Logging node:\t" << this->getName() << std::endl;
 	std::cout << "Z coordinates of all elements:" << std::endl;
 	std::cout << "node (this window):\t" << osgui::Utils2D::calcAbsZ(this) << std::endl;
 }
 	
-void osgVDFBaseNode::addInPin(osgVDFBasePin * inPin, const std::string & pinName){
+void osgVDFBaseNode::addInPin(osgVDFBasePin * inPin, const std::string & pinName)
+{
 	UTILS_ASSERT((inPin != nullptr), "Bledny vizualny pin!");
     
-    if(inPin->m_pParentNode != nullptr){
+    if(inPin->visualParentNode != nullptr){
         throw std::runtime_error("Visual input pin already assigned to a node");
     }
 
-	inPin->m_pParentNode = this;
+	inPin->visualParentNode = this;
     inPins.insert(inPin);
 	graphAddInPin(inPin,pinName);
 }
 
-void osgVDFBaseNode::addOutPin(osgVDFBasePin * outPin, const std::string & pinName){
+void osgVDFBaseNode::addOutPin(osgVDFBasePin * outPin, const std::string & pinName)
+{
     UTILS_ASSERT((outPin != nullptr), "Bledny vizualny pin!");
 
-    if(outPin->m_pParentNode != nullptr){
+    if(outPin->visualParentNode != nullptr){
         throw std::runtime_error("Visual output pin already assigned to a node");
     }
 
-    outPin->m_pParentNode = this;
+    outPin->visualParentNode = this;
     outPins.insert(outPin);
 	graphAddOutPin(outPin,pinName);
 }
 
-const osgVDFBaseNode::VISUAL_PIN_SET & osgVDFBaseNode::getInPins() const {
+const osgVDFBaseNode::Pins & osgVDFBaseNode::getInPins() const
+{
 	return inPins;
 }
-const osgVDFBaseNode::VISUAL_PIN_SET & osgVDFBaseNode::getOutPins() const {
+const osgVDFBaseNode::Pins & osgVDFBaseNode::getOutPins() const
+{
 	return outPins;
 }
 
-void osgVDFBaseNode::setNodeVisualStatus(osgVDFBaseNode::NODE_VISUAL_STATUS nodeVisualStatus){
-	if(nodeVisualStatus != m_eStatus){
-		m_eStatus = nodeVisualStatus;
-		graphSetNodeStatus(m_eStatus);
+void osgVDFBaseNode::setVisualStatus(osgVDFBaseNode::VisualStatus nodeVisualStatus)
+{
+	if(nodeVisualStatus != visualStatus){
+		visualStatus = nodeVisualStatus;
+		graphSetStatus(visualStatus);
 	}
 }
 
-osgVDFBaseNode::NODE_VISUAL_STATUS osgVDFBaseNode::getNodeVisualStatus() const{
-	return m_eStatus;
+osgVDFBaseNode::VisualStatus osgVDFBaseNode::getVisualStatus() const
+{
+	return visualStatus;
+}
+
+void osgVDFBaseNode::setCollisionNodes(const VNodes & vnodes)
+{
+    if(collisionNodes.empty() == true){
+        collisionNodes = vnodes;
+        for(auto it = collisionNodes.begin(); it != collisionNodes.end(); it++){
+            (*it)->collisionNodes.insert(this);
+        }
+    }else if(vnodes.empty() == true){
+        for(auto it = collisionNodes.begin(); it != collisionNodes.end(); it++){
+            (*it)->collisionNodes.erase(this);
+        }
+
+        collisionNodes.swap(VNodes());
+    }else{
+        VNodesDifference difference(std::max(collisionNodes.size(), vnodes.size()));
+        auto it = std::set_difference(collisionNodes.begin(), collisionNodes.end(), vnodes.begin(), vnodes.end(), difference.begin());
+
+        for(auto iT = difference.begin(); iT != it; iT++){
+            (*iT)->collisionNodes.erase(this);
+        }
+
+        it = std::set_difference(vnodes.begin(), vnodes.end(), collisionNodes.begin(), collisionNodes.end(), difference.begin());
+
+        for(auto iT = difference.begin(); iT != it; iT++){
+            (*iT)->collisionNodes.insert(this);
+        }
+
+        collisionNodes = vnodes;
+    }
+}
+
+const osgVDFBaseNode::VNodes & osgVDFBaseNode::getCollisionNodes() const
+{
+    return collisionNodes;
 }
 
 }

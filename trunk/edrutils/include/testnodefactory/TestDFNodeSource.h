@@ -14,13 +14,19 @@ public:
 	virtual ~TestDFNodeSource(void);
 	virtual bool hasMoreData() const;
 
-	virtual void addInPin(dflm::PinPtr inPin);
+	//virtual void addInPin(dflm::PinPtr inPin);
 
 protected:
-	TestDFNodeSource(const std::string & nodeName);
+	TestDFNodeSource(const std::string & nodeName, int outPins);
 
 	virtual bool checkInputPins() const;
 	virtual void process();
+
+    virtual void doInitialization(const PinsAdderPtr & pinsAdder);
+
+private:
+
+    /*virtual void addInPin(const PinPtr & pin);*/
 
 protected:
 	unsigned int availableData;

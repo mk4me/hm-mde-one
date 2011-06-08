@@ -19,6 +19,11 @@ public:
 
 public:
 
+    //! Konstruktor chroniony, pozwala dziedziczyæ ale nie pozwala klientowi samemu tworzyæ po³¹czenia i ich modyfikowaæ
+    //! \param src Wêze³ Ÿród³owy
+    //! \param dest Wêze³ docelowy
+    Connection(const PinPtr & src, const PinPtr & dest);
+
     //! Wirtualny destruktor
 	virtual ~Connection(void);
 
@@ -29,24 +34,17 @@ public:
 	PinPtr getDest() const;
 
     //! \return drugi wêze³ bior¹cy udzia³ w po³¹czeniu lub wyj¹tek jesli wêze³ nie bierze udzia³u w tym po³¹czeniu
-	PinPtr getOther(CWPinPtr pin) const;
+	PinPtr getOther(const CWPinPtr & pin) const;
 
     //! \return Nazwa po³aczenia
 	std::string getConnectionName() const;
 
-protected:
-
-    //! Konstruktor chroniony, pozwala dziedziczyæ ale nie pozwala klientowi samemu tworzyæ po³¹czenia i ich modyfikowaæ
-    //! \param src Wêze³ Ÿród³owy
-    //! \param dest Wêze³ docelowy
-    Connection(PinPtr src, PinPtr dest);
-
 private:
     //! \param src Wêze³ Ÿród³owy(wyjœciowy)
-	void setSrc(PinPtr src);
+	void setSrc(const PinPtr & src);
 
     //! \param dest Wêze³ docelowy(wejœciowy)
-	void setDest(PinPtr dest);
+	void setDest(const PinPtr & dest);
 
 private:
     //! Wêze³ Ÿród³owy po³¹czenia

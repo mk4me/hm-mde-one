@@ -3,22 +3,32 @@
 
 #include <dfmlib/Node.h>
 #include <dfmlib/DFInterface.h>
+#include <boost/function.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
+class DFModel;
+
 //! Klasa reprezentuj¹ca wêze³ z mo¿liwoœcia przetwarzania i przekazywania danych na bazie DFPinów w DFModel
 class DFNode :
 	public Node, public DFInterface
 {
+
+    friend class DFModel;
+
+private:
+
+    typedef boost::function<void(void)> OnLeafProcessedCallback;
+
 public:
 
     //! \param nodeName Nazwa wêz³a
     //! \param processingAllowed Czy przetwarzanie danych aktywne
     //! \param propagatingAllowed Czy propagowanie danych aktywne
-    DFNode(const std::string & nodeName = std::string(), bool processingAllowed = true,
-        bool propagatingAllowed = true);
+    DFNode(const std::string & nodeName = std::string()/*, bool processingAllowed = true,
+        bool propagatingAllowed = true*/);
 
     //! Wirtualny destruktor
 	virtual ~DFNode(void);
@@ -34,9 +44,6 @@ public:
 
     //! \return Czy propagowanie danych dalej jest dozwolone
 	bool isPropagatingAllowed() const;
-
-    //! Funkcja pozwalaj¹ca podpi¹æ metody konfiguracji wêz³a
-	virtual void configureNode();
 
     //! \param node Wêze³ podstawowy do "podniesienia" na DFNode
     //! \return DFNode dla danego wêz³a jeœli jest jego pochodn¹ lub nullptr jeœli konwersja niemo¿liwa
@@ -69,6 +76,9 @@ private:
 
     //! Czy Propagowanie danych aktywne
 	bool propagatingAllowed;
+
+    //! Akcja wywo³ywana na rzecz modelu przez wêze³ liœæ
+    OnLeafProcessedCallback onLeafProcessedCallback;
 };
 
 }

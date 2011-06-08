@@ -10,7 +10,7 @@ public:
 	~TestNodeFactory(void);
 
 	static dflm::DFNPtr createProcessingNode(const std::string & name, unsigned int inPins, unsigned int outPins, unsigned int requiredInPins = 0, bool addRandomOutputDependecies = false);
-	static dflm::DFNPtr createSourceNode(const std::string & name, unsigned int outPins);
+	static dflm::DFSNPtr createSourceNode(const std::string & name, unsigned int outPins);
 
 private:
 	TestNodeFactory(void);

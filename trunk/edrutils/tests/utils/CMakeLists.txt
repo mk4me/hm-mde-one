@@ -10,6 +10,7 @@ set(TARGET_SRC
 	EnumTest.cpp
 	ObserverPatternTest.cpp
 	NamedTreeBaseTest.cpp
+	SynchronizedTest.cpp
 )
 
 # nag³ówki
@@ -20,6 +21,7 @@ set(TARGET_H
 	EnumTest.h
 	ObserverPatternTest.h
 	NamedTreeBaseTest.h
+	SynchronizedTest.h
 )
 
 # kompilacja do wspó³dzielonej biblioteki

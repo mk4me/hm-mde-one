@@ -15,9 +15,17 @@ public:
 	~TestDFNodeProcessing(void);
 
 protected:
-	TestDFNodeProcessing(const std::string & nodeName);
+	TestDFNodeProcessing(const std::string & nodeName, int inPins, int inRequired, int outPins, bool dependant);
 
 	virtual void process();
+
+    virtual void doInitialization(const PinsAdderPtr & pinsAdder);
+
+private:
+    int inPins;
+    int inRequired;
+    int outPins;
+    bool dependant;
 };
 
 #endif

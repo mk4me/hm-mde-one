@@ -1,10 +1,25 @@
 #include "NodeCreationTest.h"
 #include <testnodefactory/TestNodeFactory.h>
+#include <dfmlib/DFPin.h>
 
-CPPUNIT_TEST_SUITE_REGISTRATION( NodeCreationTest );
+//TODO
+//testy dla fabryki do poprawki - wêze³ jest inicjalizowany dopiero po pod³¹czneiu go do modelu!!
+//CPPUNIT_TEST_SUITE_REGISTRATION( NodeCreationTest );
 
 NodeCreationTest::NodeCreationTest(void) : TestFixture()
 {
+}
+
+int getNodeRequiredInputPins(const dflm::DFNPtr node){
+    int ret = 0;
+
+    for(auto it = node->beginIn(); it != node->endIn(); it++){
+        if((*it)->isRequired() == true){
+            ret++;
+        }
+    }
+
+    return ret;
 }
 
 
@@ -29,51 +44,50 @@ void NodeCreationTest::setUp(){
 }
 
 void NodeCreationTest::testProcessingNodeCreation(){
-	CPPUNIT_ASSERT( ProcNodeA == 0 );
-	CPPUNIT_ASSERT( ProcNodeB != 0 );
-	CPPUNIT_ASSERT( ProcNodeB->getInPins().size() == 1 );
-	CPPUNIT_ASSERT( ProcNodeB->getOutPins().size() == 2 );
-	//TODO
-	//test for required pins
-	CPPUNIT_ASSERT( ProcNodeC != 0 );
-	CPPUNIT_ASSERT( ProcNodeC->getInPins().size() == 1 );
-	CPPUNIT_ASSERT( ProcNodeC->getOutPins().size() == 2 );
-	//TODO
-	//test for required pins
-	CPPUNIT_ASSERT( ProcNodeD != 0 );
-	CPPUNIT_ASSERT( ProcNodeD->getInPins().size() == 2 );
-	CPPUNIT_ASSERT( ProcNodeD->getOutPins().size() == 1 );
-	//TODO
-	//test for required pins
-	CPPUNIT_ASSERT( ProcNodeE != 0 );
-	CPPUNIT_ASSERT( ProcNodeE->getInPins().size() == 2 );
-	CPPUNIT_ASSERT( ProcNodeE->getOutPins().size() == 1 );
-	//TODO
-	//test for required pins
-	CPPUNIT_ASSERT( ProcNodeF != 0 );
-	CPPUNIT_ASSERT( ProcNodeF->getInPins().size() == 100 );
-	CPPUNIT_ASSERT( ProcNodeF->getOutPins().size() == 500 );
-	//TODO
-	//test for required pins
-	CPPUNIT_ASSERT( ProcNodeG != 0 );
-	CPPUNIT_ASSERT( ProcNodeG->getInPins().size() == 1000 );
-	CPPUNIT_ASSERT( ProcNodeG->getOutPins().size() == 500 );
-	//TODO
-	//test for required pins
+	CPPUNIT_ASSERT( ProcNodeA == nullptr );
+	CPPUNIT_ASSERT( ProcNodeB != nullptr );
+	CPPUNIT_ASSERT( ProcNodeB->sizeIn() == 1 );
+	CPPUNIT_ASSERT( ProcNodeB->sizeOut() == 2 );
+    CPPUNIT_ASSERT( getNodeRequiredInputPins(ProcNodeB) ==  0);
+	
+	CPPUNIT_ASSERT( ProcNodeC != nullptr );
+	CPPUNIT_ASSERT( ProcNodeC->sizeIn() == 1 );
+	CPPUNIT_ASSERT( ProcNodeC->sizeOut() == 2 );
+    CPPUNIT_ASSERT( getNodeRequiredInputPins(ProcNodeC) ==  1);
+
+	CPPUNIT_ASSERT( ProcNodeD != nullptr );
+	CPPUNIT_ASSERT( ProcNodeD->sizeIn() == 2 );
+	CPPUNIT_ASSERT( ProcNodeD->sizeOut() == 1 );
+	CPPUNIT_ASSERT( getNodeRequiredInputPins(ProcNodeD) ==  0);
+
+	CPPUNIT_ASSERT( ProcNodeE != nullptr );
+	CPPUNIT_ASSERT( ProcNodeE->sizeIn() == 2 );
+	CPPUNIT_ASSERT( ProcNodeE->sizeOut() == 1 );
+    CPPUNIT_ASSERT( getNodeRequiredInputPins(ProcNodeE) ==  2);
+
+	CPPUNIT_ASSERT( ProcNodeF != nullptr );
+	CPPUNIT_ASSERT( ProcNodeF->sizeIn() == 100 );
+	CPPUNIT_ASSERT( ProcNodeF->sizeOut() == 500 );
+	CPPUNIT_ASSERT( getNodeRequiredInputPins(ProcNodeF) ==  50);
+
+	CPPUNIT_ASSERT( ProcNodeG != nullptr );
+	CPPUNIT_ASSERT( ProcNodeG->sizeIn() == 1000 );
+	CPPUNIT_ASSERT( ProcNodeG->sizeOut() == 500 );
+	CPPUNIT_ASSERT( getNodeRequiredInputPins(ProcNodeG) ==  2000);
 }
 
 void NodeCreationTest::testSourceNodeCreation(){
-	CPPUNIT_ASSERT( SrcNodeA == 0 );
-	CPPUNIT_ASSERT( SrcNodeB != 0 );
-	CPPUNIT_ASSERT( SrcNodeB->getInPins().size() == 0 );
-	CPPUNIT_ASSERT( SrcNodeB->getOutPins().size() == 1 );
-	CPPUNIT_ASSERT( SrcNodeC != 0 );
-	CPPUNIT_ASSERT( SrcNodeC->getInPins().size() == 0 );
-	CPPUNIT_ASSERT( SrcNodeC->getOutPins().size() == 2 );
-	CPPUNIT_ASSERT( SrcNodeD != 0 );
-	CPPUNIT_ASSERT( SrcNodeD->getInPins().size() == 0 );
-	CPPUNIT_ASSERT( SrcNodeD->getOutPins().size() == 100 );
-	CPPUNIT_ASSERT( SrcNodeE != 0 );
-	CPPUNIT_ASSERT( SrcNodeE->getInPins().size() == 0 );
-	CPPUNIT_ASSERT( SrcNodeE->getOutPins().size() == 1000 );
+	CPPUNIT_ASSERT( SrcNodeA == nullptr );
+	CPPUNIT_ASSERT( SrcNodeB != nullptr );
+	CPPUNIT_ASSERT( SrcNodeB->sizeIn() == 0 );
+	CPPUNIT_ASSERT( SrcNodeB->sizeOut() == 1 );
+	CPPUNIT_ASSERT( SrcNodeC != nullptr );
+	CPPUNIT_ASSERT( SrcNodeC->sizeIn() == 0 );
+	CPPUNIT_ASSERT( SrcNodeC->sizeOut() == 2 );
+	CPPUNIT_ASSERT( SrcNodeD != nullptr );
+	CPPUNIT_ASSERT( SrcNodeD->sizeIn() == 0 );
+	CPPUNIT_ASSERT( SrcNodeD->sizeOut() == 100 );
+	CPPUNIT_ASSERT( SrcNodeE != nullptr );
+	CPPUNIT_ASSERT( SrcNodeE->sizeIn() == 0 );
+	CPPUNIT_ASSERT( SrcNodeE->sizeOut() == 1000 );
 }

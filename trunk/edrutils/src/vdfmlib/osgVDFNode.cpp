@@ -33,9 +33,8 @@ const unsigned int maxNodeDescSigns = 5;
 const unsigned int pinFontSize = 10;
 const unsigned int nodeFontSize = 13;
 
-osgVDFNode::osgVDFNode(const std::string& name, dflm::NPtr node, osgVDFBaseModel * model,
-	osg::ref_ptr<osg::Image> img) 
-	: osgVDFBaseNode(node, name, model), m_pBodyLabelImage(img),
+osgVDFNode::osgVDFNode(const std::string& name,	osg::ref_ptr<osg::Image> img) 
+	: osgVDFBaseNode(name), m_pBodyLabelImage(img),
 	m_pNodeLayoutGrid(new osgui::Grid("layoutGrid",3,3)),
 	m_pNodeLayoutGridEmbedded(new osgui::Embedded<osgui::Grid>("layoutEmbedded",m_pNodeLayoutGrid)),
 	m_pMainGrid(new osgui::Grid("mainGrid",3,1)),
@@ -217,26 +216,35 @@ osgVDFNode::osgVDFNode(const std::string& name, dflm::NPtr node, osgVDFBaseModel
 	m_pOutPinsGridEmbedded->setEventMask(0);
 }
 
-//template<class NodeStyler>
-//osgVDFNode::osgVDFNode(const osgVDFNode& node, const osg::CopyOp& co) : osgui::Grid(node,co),
-//	m_pNode(node.m_pNode){
-//		//TODO
-//		//initialize pointers to inPins, outPins and BodyLabel
-//}
-
 osgVDFNode::~osgVDFNode(void)
 {
 }
 
 bool osgVDFNode::configureNode(osgWidget::Event& ev){
 	if(ev.getWindowManager()->isLeftMouseButtonDown() == true){
-		dflm::DFNPtr modelNode(boost::dynamic_pointer_cast<dflm::DFNode>(this->getModelNode()));
-		if(modelNode != 0){
-			modelNode->configureNode();
-		}
+		getModelNode()->configure();
 	}
 
 	return false;
+}
+
+void osgVDFNode::lockForEditing(bool lock)
+{
+    if(lock == true){
+        m_pConfigure->setEventMask(osgWidget::EVENT_NONE);
+        m_pDelete->setEventMask(osgWidget::EVENT_NONE);
+
+        //TODO
+        //load new textures!!
+        //albo podepnij inne eventy z info ¿e to teraz nie dzia³a
+    }else{
+        m_pConfigure->setEventMask(osgWidget::EVENT_MOUSE_PUSH);
+        m_pDelete->setEventMask(osgWidget::EVENT_MOUSE_PUSH);
+
+        //TODO
+        //load new textures!!
+        //ewentualnie podepnij w³aœciwe eventy
+    }
 }
 
 void osgVDFNode::loggZCoordinates() const{
@@ -263,32 +271,32 @@ void osgVDFNode::loggZCoordinates() const{
 	std::cout << "m_pNodeNameLabel:\t" << osgui::Utils2D::calcAbsZ(m_pNodeNameLabel) << std::endl;
 
 	std::cout << "IN PINS:" << std::endl;
-	for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = this->getInPins().begin(); it != this->getInPins().end();
+	for(osgVDFBaseNode::Pins::const_iterator it = this->getInPins().begin(); it != this->getInPins().end();
 		it++){
 
 			std::cout << (*it)->getName() << ":\t" << osgui::Utils2D::calcAbsZ(*it) << std::endl;
 	}
 
 	std::cout << "OUT PINS:" << std::endl;
-	for(osgVDFBaseNode::VISUAL_PIN_SET::const_iterator it = this->getOutPins().begin(); it != this->getOutPins().end();
+	for(osgVDFBaseNode::Pins::const_iterator it = this->getOutPins().begin(); it != this->getOutPins().end();
 		it++){
 
 			std::cout << (*it)->getName() << ":\t" << osgui::Utils2D::calcAbsZ(*it) << std::endl;
 	}
 }
 
-void osgVDFNode::graphSetNodeStatus(osgVDFBaseNode::NODE_VISUAL_STATUS nodeVisualStatus) {
+void osgVDFNode::graphSetStatus(osgVDFBaseNode::VisualStatus nodeVisualStatus) {
 		
 	std::string status;
 
 	switch(nodeVisualStatus){
-	case osgVDFBaseNode::NODE_ACTIVE:
+	case osgVDFBaseNode::ACTIVE:
 		status = "active";
 		break;
-	case osgVDFBaseNode::NODE_OK:
+	case osgVDFBaseNode::OK:
 		status = "normal";
 		break;
-	case osgVDFBaseNode::NODE_COLLISION:
+	case osgVDFBaseNode::COLLISION:
 		status = "collision";
 		break;
 	}
@@ -348,16 +356,13 @@ void osgVDFNode::graphSetNodeStatus(osgVDFBaseNode::NODE_VISUAL_STATUS nodeVisua
 			sm->applyStyles(m_pBottomGrid->getByRowCol(0,1));
 			sm->applyStyles(m_pBottomGrid->getByRowCol(0,2));
 
-			if(outPins.empty() == false){
-				for(int i = 0; i < m_pOutPinsGrid->getNumRows(); i++){
-					sm->applyStyles(m_pOutPinsGrid->getByRowCol(i,0));
-				}
+			
+			for(int i = 0; i < m_pOutPinsGrid->getNumRows(); i++){
+				sm->applyStyles(m_pOutPinsGrid->getByRowCol(i,0));
 			}
 
-			if(inPins.empty() == false){
-				for(int i = 0; i < m_pInPinsGrid->getNumRows(); i++){
-					sm->applyStyles(m_pInPinsGrid->getByRowCol(i,1));
-				}
+			for(int i = 0; i < m_pInPinsGrid->getNumRows(); i++){
+				sm->applyStyles(m_pInPinsGrid->getByRowCol(i,1));
 			}
 		}
 	}
@@ -407,7 +412,7 @@ void osgVDFNode::managed(osgWidget::WindowManager* wm){
 	
 	repositionOutPins();
 
-	graphSetNodeStatus(getNodeVisualStatus());
+	graphSetStatus(getVisualStatus());
 	//set grids configurations
 	//layout
 }
@@ -454,8 +459,7 @@ void osgVDFNode::graphAddInPin(osgVDFBasePin * inPin, const std::string & pinNam
 	osgWidget::point_type pinsTotalHeight = getTotalPinsHeight();
 	osgWidget::point_type heigth = getBodyHeight();
 	if(pinsTotalHeight > heigth){
-		this->_height.current += pinsTotalHeight - heigth;
-		this->_height.minimum += pinsTotalHeight - heigth;
+		this->_height.current = this->_height.minimum += pinsTotalHeight - heigth;
 
 		m_pNodeLayoutGridEmbedded->setMinimumSize(this->_width.minimum, this->_height.minimum);
 		m_pNodeLayoutGridEmbedded->setSize(this->_width.current < this->_width.minimum ? this->_width.minimum : this->_width.current,
@@ -473,15 +477,15 @@ void osgVDFNode::graphAddInPin(osgVDFBasePin * inPin, const std::string & pinNam
 osgWidget::point_type osgVDFNode::getTotalPinsHeight(){
 	osgWidget::point_type ret = 0;
 
-	if(inPins.empty() == false){
+	if(getInPins().empty() == false){
 		ret += pinsToTopOffset + m_pInPinsGridEmbedded->getSize().y();
 	}
 
-	if(outPins.empty() == false){
+	if(getOutPins().empty() == false){
 		ret += pinsToBottomOffset - m_pBottomGridEmbedded->getHeight() + m_pOutPinsGridEmbedded->getSize().y();
 	}
 
-	if(inPins.empty() == false && outPins.empty() == false){
+	if(getInPins().empty() == false && getOutPins().empty() == false){
 		ret += pinsToPinsOffset;
 	}
 
@@ -556,8 +560,7 @@ void osgVDFNode::graphAddOutPin(osgVDFBasePin * outPin, const std::string & pinN
 	osgWidget::point_type pinsTotalHeight = getTotalPinsHeight();
 	osgWidget::point_type heigth = getBodyHeight();
 	if(pinsTotalHeight > heigth){
-		this->_height.current += pinsTotalHeight - heigth;
-		this->_height.minimum += pinsTotalHeight - heigth;
+		this->_height.current = this->_height.minimum += pinsTotalHeight - heigth;
 
 		m_pNodeLayoutGridEmbedded->setMinimumSize(this->_width.minimum, this->_height.minimum);
 		m_pNodeLayoutGridEmbedded->setSize(this->_width.current < this->_width.minimum ? this->_width.minimum : this->_width.current,
@@ -602,7 +605,7 @@ void osgVDFNode::_resizeImplementation(osgWidget::point_type diffWidth, osgWidge
 			repositionOutPins();
 		}
 
-		graphSetNodeStatus(this->getNodeVisualStatus());
+		graphSetStatus(this->getVisualStatus());
 	}
 }
 

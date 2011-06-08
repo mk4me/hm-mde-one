@@ -2,6 +2,7 @@
 #include <dfmlib/Connection.h>
 #include <dfmlib/Node.h>
 #include <dfmlib/Model.h>
+#include <utils/Debug.h>
 #include <typeinfo>
 #include <boost/assert.hpp>
 
@@ -10,16 +11,21 @@ namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
 Pin::Pin(const std::string & pinName, bool required,
-	const Pin::REQ_PINS_SET & requiredPins)
-	: boost::enable_shared_from_this<Pin>(), pinType(PIN_UNKNOWN),
+	const Pin::ReqPinsSet & requiredPins)
+	: boost::enable_shared_from_this<Pin>(), pinType(UNSET),
     pinRequired(required),requiredPinsDependency(requiredPins),
-    pinName(pinName)
+    name(pinName)
 {
 
 }
 
 Pin::~Pin(void){
 
+}
+
+void Pin::setName(const std::string & name)
+{
+    this->name = name;
 }
 
 NPtr Pin::getParent() const{
@@ -29,49 +35,102 @@ NPtr Pin::getParent() const{
     
     return parentNode.lock();
 }
-const Pin::CONNECTIONS_SET & Pin::getConnections() const{
-	return connections;
+//const Pin::Connections & Pin::getConnections() const{
+//	return connections;
+//}
+
+Pin::iterator Pin::begin() const{
+    return connections.begin();
 }
 
-const Pin::REQ_PINS_SET & Pin::getDependantPins() const{
+Pin::iterator Pin::end() const{
+    return connections.end();
+}
+
+int Pin::getIndexOfConnection(const ConnPtr & connection) const
+{
+    int ret = -1;
+    auto it = std::find(begin(), end(), connection);
+    if(it != end()){
+        ret = std::distance(begin(), it);
+    }
+
+    return ret;
+}
+
+const ConnPtr & Pin::getConnection(int idx) const
+{
+    UTILS_ASSERT((idx >= 0 && idx < connections.size()), "B³êdny indeks po³¹czenia");
+    return connections[idx];
+}
+
+bool Pin::empty() const
+{
+    return connections.empty();
+}
+
+Pin::size_type Pin::size() const
+{
+    return connections.size();
+}
+
+const Pin::ReqPinsSet & Pin::getDependantPins() const{
 	return requiredPinsDependency;
 }
 
-Pin::PIN_TYPE Pin::getType() const {
+Pin::PinType Pin::getType() const {
 	return pinType;
 }
 
-void Pin::setType(PIN_TYPE type){
+void Pin::setType(PinType type){
 	pinType = type;
 }
 
-bool Pin::isCompatible(CPinPtr pin) const{
+bool Pin::isCompatible(const CPinPtr & pin) const{
 	return typeid(*this) == typeid(*pin);
 }
 
-void Pin::addConnection(ConnPtr connection)
+void Pin::addConnection(const ConnPtr & connection)
 {
-	connections.insert(connection);
+	if(std::find(begin(), end(), connection) != end()){
+        throw std::runtime_error("Connection already added to pin!");
+    }
+
+    connections.push_back(connection);
 }
 
-void Pin::removeConnection(ConnPtr connection)
+void Pin::removeConnection(const ConnPtr & connection)
 {
-	connections.erase(connection);
+    auto it = std::find(begin(), end(), connection);
+    if(it == end()){
+        throw std::runtime_error("Connection not found in pin!");
+    }
+
+    connections.erase(it);
 }
 
 void Pin::clearConnections(){
-	connections.swap(CONNECTIONS_SET());
+	connections.swap(Connections());
 }
 
-const std::string & Pin::getPinName() const{
-	return pinName;
+const std::string & Pin::getName() const{
+	return name;
 }
 
-void Pin::setPinName(const std::string & pinName){
-	this->pinName = pinName;
+int Pin::getPinIndex() const
+{
+    if(parentNode.expired() == true){
+        return -1;
+    }
+
+    return pinIndexFunc(boost::const_pointer_cast<Pin>(shared_from_this()));
 }
 
-bool Pin::dependsOnPin(PinPtr pin) const{
+//void Pin::setPinName(const std::string & pinName){
+//	this->name = pinName;
+//}
+
+bool Pin::dependsOnPin(const PinPtr & pin) const{
 	if(requiredPinsDependency.find(pin) != requiredPinsDependency.end()){
 		return true;
 	}
@@ -86,7 +145,7 @@ bool Pin::isRequired() const{
 bool Pin::isComplete() const{
 	bool ret = true;
 	for(auto it = requiredPinsDependency.begin(); it != requiredPinsDependency.end(); it++){
-		if((*it).lock()->getConnections().empty() == true){
+        if((*it).lock()->empty() == true){
 			ret = false;
 			break;
 		}
@@ -95,24 +154,24 @@ bool Pin::isComplete() const{
 	return ret;
 }
 
-Pin::PIN_STATIC_STATUS Pin::getStaticStatus() const{
-	PIN_STATIC_STATUS ret = PIN_OK;
+Pin::StaticStatus Pin::getStaticStatus() const{
+	StaticStatus ret = OK;
 
 	switch(pinType){
 
-		case PIN_IN:
-			if(connections.empty() == false){
-				ret = PIN_CONNECTED;
+		case IN:
+			if(empty() == false){
+				ret = CONNECTED;
 			}else if(pinRequired == true){
-				ret = PIN_REQUIRED;
+				ret = REQUIRED;
 			}
 			break;
 
-		case PIN_OUT:
+		case OUT:
 			if(isComplete() == false){
-				ret = PIN_INCOMPLETE;
-			}else if(connections.empty() == false){
-				ret = PIN_CONNECTED;
+				ret = INCOMPLETE;
+			}else if(empty() == false){
+				ret = CONNECTED;
 			}
 			break;
 	}
@@ -120,16 +179,16 @@ Pin::PIN_STATIC_STATUS Pin::getStaticStatus() const{
 	return ret;
 }
 
-Pin::PIN_DYNAMIC_STATUS Pin::getDynamicStatus(PinPtr refPin, MPtr model) const{
-	PIN_DYNAMIC_STATUS ret = PIN_COMPATIBLE;
+Pin::DynamicStatus Pin::getDynamicStatus(const PinPtr & refPin, const MPtr & model) const{
+	DynamicStatus ret = COMPATIBLE;
 
-	if(pinType == refPin->pinType || (pinType == PIN_IN && isCompatible(refPin) == false) ||
-		(pinType == PIN_OUT && refPin->isCompatible(shared_from_this()) == false)){
-		ret = PIN_INCOMPATIBLE;
-	}else if(pinType == PIN_IN && model->createCycle(refPin, shared_from_this()) == true){
-		ret = PIN_COMPATIBLE_CYCLE;
-	}else if(pinType == PIN_OUT && model->createCycle(shared_from_this(), refPin) == true){
-		ret = PIN_COMPATIBLE_CYCLE;
+	if(pinType == refPin->pinType || (pinType == IN && isCompatible(refPin) == false) ||
+		(pinType == OUT && refPin->isCompatible(shared_from_this()) == false)){
+		ret = INCOMPATIBLE;
+	}else if(pinType == IN && model->createCycle(refPin, shared_from_this()) == true){
+		ret = COMPATIBLE_CYCLE;
+	}else if(pinType == OUT && model->createCycle(shared_from_this(), refPin) == true){
+		ret = COMPATIBLE_CYCLE;
 	}
 
 	return ret;

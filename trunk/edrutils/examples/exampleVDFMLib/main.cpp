@@ -52,8 +52,8 @@ public:
 		m_sName = "TestA";
 	};
 
-	osgVDF::osgVDFBaseNode::NODE_TYPE getNodeType() const{
-		return osgVDF::osgVDFBaseNode::NODE_SOURCE;
+	osgVDF::osgVDFBaseNode::NodeType getNodeType() const{
+		return osgVDF::osgVDFBaseNode::SOURCE;
 	}
 
 	osg::Image * getButtonImage() const{
@@ -92,8 +92,8 @@ public:
 		m_sName = "TestB";
 	};
 
-	osgVDF::osgVDFBaseNode::NODE_TYPE getNodeType() const{
-		return osgVDF::osgVDFBaseNode::NODE_PROCESS;
+	osgVDF::osgVDFBaseNode::NodeType getNodeType() const{
+		return osgVDF::osgVDFBaseNode::PROCESS;
 	}
 
 	osg::Image * getButtonImage() const{
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
 	osg::setNotifyLevel(osg::NOTICE);
 
 	//osgVDF::osgVDFModel<osgVDF::osgVDFNode, osgVDF::osgVDFPin<osgVDF::BezierConnectionFactory> > * wm = new osgVDF::osgVDFModel<osgVDF::osgVDFNode, osgVDF::osgVDFPin<osgVDF::BezierConnectionFactory> >(
-	osgVDF::osgVDFBaseModel * wm = new osgVDF::osgVDFModel<osgVDF::osgVDFNode, osgVDF::osgVDFPin<osgVDF::BezierConnectionFactory> >(
+	osgVDF::osgVDFBaseModel * wm = new osgVDF::osgVDFModel<osgVDF::osgVDFNode, osgVDF::osgVDFPin>(
         &viewer,
         1920.0f,
         1080.0f,

@@ -1,12 +1,14 @@
 #include <dfmlib/Node.h>
 #include <dfmlib/Pin.h>
 #include <utils/Debug.h>
+#include <iterator>
+#include <boost/bind.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-Node::Node(const std::string & nodeName) : nodeName(nodeName)
+Node::Node(const std::string & name) : name(name), initialized(false)
 {
 }
 
@@ -15,58 +17,168 @@ Node::~Node(void)
 {
 }
 
-const std::string & Node::getNodeName() const{
-	return nodeName;
-}
-
-void Node::setNodeName(const std::string & nodeName){
-	this->nodeName = nodeName;
-}
-
-void Node::addInPin( PinPtr newPin )
+void Node::configure()
 {
-    UTILS_ASSERT((newPin != nullptr), "Nieprawidlowy pin");
-    if(newPin->parentNode.lock() != nullptr){
+
+}
+
+void Node::setName(const std::string & name)
+{
+    this->name = name;
+}
+
+const std::string & Node::getName() const{
+	return name;
+}
+
+bool Node::isInitialized() const
+{
+    return initialized;
+}
+
+void Node::initialize()
+{
+    if(initialized == true){
+        throw std::runtime_error("Node already initialized!");
+    }
+
+    pinsAdder.reset(new PinsAdder(this));
+
+    doInitialization(pinsAdder);
+
+    initialized = true;
+}
+
+void Node::doInitialization(const Node::PinsAdderPtr & pinsAdder)
+{
+
+}
+
+MPtr Node::getModel() const
+{
+    /*if(model.expired() == true){
+        throw std::runtime_error("Model of this node not exist any more!");
+    }*/
+
+    return model.lock();
+}
+
+//void Node::setNodeName(const std::string & nodeName){
+//	this->name = nodeName;
+//}
+
+void Node::addInPin(const PinPtr & pin )
+{
+    UTILS_ASSERT((pin != nullptr), "Nieprawidlowy pin");
+    if(pin->parentNode.lock() != nullptr){
         throw std::runtime_error("Pin is already connected with node!");
     }
 	
-    newPin->parentNode = shared_from_this();
-    inPins.insert(newPin);
-	newPin->setType(Pin::PIN_IN);
+    pin->parentNode = shared_from_this();
+    pin->pinIndexFunc = boost::bind(&Node::indexOfInPin, this, _1);
+    inPins.push_back(pin);
+	pin->setType(Pin::IN);
 }
 
-void Node::addOutPin( PinPtr newPin )
+void Node::addOutPin(const PinPtr & pin )
 {
-    UTILS_ASSERT((newPin != nullptr), "Nieprawidlowy pin");
-    if(newPin->parentNode.lock() != nullptr){
+    UTILS_ASSERT((pin != nullptr), "Nieprawidlowy pin");
+    if(pin->parentNode.lock() != nullptr){
         throw std::runtime_error("Pin is already connected with node!");
     }
 	
-    newPin->parentNode = shared_from_this();
-    outPins.insert(newPin);
-	newPin->setType(Pin::PIN_OUT);
+    pin->parentNode = shared_from_this();
+    pin->pinIndexFunc = boost::bind(&Node::indexOfOutPin, this, _1);
+    outPins.push_back(pin);
+	pin->setType(Pin::OUT);
 }
 
-const Node::PINS_SET & Node::getInPins() const{
-	return inPins;
+//const Node::Pins & Node::getInPins() const{
+//	return inPins;
+//}
+//
+//const Node::Pins & Node::getOutPins() const{
+//	return outPins;
+//}
+//
+//bool Node::pinExists(const Pins & pins, const PinPtr & pin){
+//	bool ret = false;
+//
+//	if(pins.find(pin) != pins.end()){
+//		ret = true;
+//	}
+//
+//	return ret;
+//}
+
+//bool Node::pinExists(const CNPtr & node, const PinPtr & pin) {
+//	return pinExists(node->getInPins(),pin) || pinExists(node->getOutPins(),pin);
+//}
+
+
+
+Node::iterator Node::beginIn() const
+{
+    return inPins.begin();
 }
 
-const Node::PINS_SET & Node::getOutPins() const{
-	return outPins;
+Node::iterator Node::endIn() const
+{
+    return inPins.end();
 }
 
-bool Node::pinExists(const std::set<PinPtr> & pins, PinPtr pin){
-	bool ret = false;
-
-	if(pins.find(pin) != pins.end()){
-		ret = true;
-	}
-
-	return ret;
+const PinPtr & Node::getInPin(int idx) const
+{
+    UTILS_ASSERT((idx >=0 && idx < inPins.size()), "B³êdny indeks pinu wejœciowego");
+    return inPins[idx];
 }
 
-bool Node::pinExists(const CNPtr & node, PinPtr pin) {
-	return pinExists(node->getInPins(),pin) || pinExists(node->getOutPins(),pin);
+int Node::indexOfInPin(const PinPtr & pin) const
+{
+    int ret = -1;
+    auto it = std::find(inPins.begin(), inPins.end(), pin);
+    if(it != inPins.end()){
+        ret = std::distance(inPins.begin(), it);
+    }
+
+    return ret;
+}
+
+Node::size_type Node::sizeIn() const
+{
+    return inPins.size();
+}
+
+Node::iterator Node::beginOut() const
+{
+    return outPins.begin();
+}
+
+Node::iterator Node::endOut() const
+{
+    return outPins.end();
+}
+
+const PinPtr & Node::getOutPin(int idx) const
+{
+    UTILS_ASSERT((idx >=0 && idx < outPins.size()), "B³êdny indeks pinu wyjœciowego");
+    return outPins[idx];
+}
+
+int Node::indexOfOutPin(const PinPtr & pin) const
+{
+    int ret = -1;
+    auto it = std::find(outPins.begin(), outPins.end(), pin);
+    if(it != outPins.end()){
+        ret = std::distance(outPins.begin(), it);
+    }
+
+    return ret;
+}
+
+Node::size_type Node::sizeOut() const
+{
+    return outPins.size();
 }
 
 bool Node::validInPinsConnection(const CNPtr & node) {
@@ -74,17 +186,15 @@ bool Node::validInPinsConnection(const CNPtr & node) {
 	bool empty = true;
 	bool required = false;
 
-    const PINS_SET & inPins = node->getInPins();
-
-	for(auto it = inPins.begin(); it != inPins.end(); it++){
+	for(auto it = node->beginIn(); it != node->endIn(); it++){
 		if((*it)->isRequired() == true){
 			required = true;
-			if((*it)->getConnections().empty()){
+			if((*it)->empty()){
 				ret = false;
 				break;
 			}
 		}else{
-			empty &= (*it)->getConnections().empty();
+			empty &= (*it)->empty();
 		}
 	}
 
@@ -98,9 +208,7 @@ bool Node::validInPinsConnection(const CNPtr & node) {
 bool Node::validOutPinsConnection(const CNPtr & node) {
 	bool ret = true;
 
-    const PINS_SET & outPins = node->getOutPins();
-
-	for(auto it = outPins.begin(); it != outPins.end(); it++){
+	for(auto it = node->beginOut(); it != node->endOut(); it++){
 		if((*it)->isComplete() == false){
 			ret = false;
 			break;
@@ -115,18 +223,18 @@ bool Node::validConnection(const CNPtr & node){
 }
 
 bool Node::anyInPinConnected(const CNPtr & node){
-	return anyPinConnected(node->getInPins());
+	return anyPinConnected(node->inPins);
 }
 
 bool Node::anyOutPinConnected(const CNPtr & node){
-	return anyPinConnected(node->getOutPins());
+	return anyPinConnected(node->outPins);
 }
 
-bool Node::anyPinConnected(const PINS_SET & pins){
+bool Node::anyPinConnected(const Pins & pins){
 	bool ret = false;
 
 	for(auto it = pins.begin(); it != pins.end(); it++){
-		if((*it)->getConnections().empty() == false){
+		if((*it)->empty() == false){
 			ret = true;
 			break;
 		}

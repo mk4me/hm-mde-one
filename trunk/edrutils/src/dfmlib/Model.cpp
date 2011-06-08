@@ -2,12 +2,15 @@
 #include <dfmlib/Pin.h>
 #include <dfmlib/Connection.h>
 #include <utils/Debug.h>
+#include <OpenThreads/Thread>
+
+#define NO_LOCK_THREADID -1
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-Model::Model(void)
+Model::Model(void) : lockingThreradId(NO_LOCK_THREADID)
 {
 }
 
@@ -15,153 +18,556 @@ Model::~Model(void)
 {
 }
 
-void Model::addNode( NPtr node )
+bool Model::isModelChangeAllowed() const
+{
+    return true;
+}
+
+//int Model::getCurrentThreadId()
+//{
+//    if(OpenThreads::Thread::CurrentThread() == nullptr){
+//        return 0;
+//    }
+//
+//    return OpenThreads::Thread::CurrentThread()->getThreadId();
+//}
+//
+//int Model::lock()
+//{
+//    {
+//        ScopedLock lock(const_cast<Model*>(this)->lockMutex);
+//
+//        int currentThreadId = getCurrentThreadId();
+//
+//        if(isLockedNonBlocking() == false){
+//            lockingThreradId = currentThreadId;
+//        }else if(lockingThreradId == currentThreadId){
+//            return 0;
+//        }
+//    }
+//
+//    return OpenThreads::Mutex::lock();
+//}
+//
+//int Model::unlock()
+//{
+//    ScopedLock lock(const_cast<Model*>(this)->lockMutex);
+//
+//    if(isLockedNonBlocking() == false){
+//        return 0;
+//    }
+//
+//    if(lockingThreradId != getCurrentThreadId()){
+//        throw std::runtime_error("Current thread is not the owner of unlocking object!");
+//    }
+//
+//    return OpenThreads::Mutex::unlock();
+//}
+//
+//int Model::tryLock()
+//{
+//    ScopedLock lock(const_cast<Model*>(this)->lockMutex);
+//
+//    int ret = 0;
+//    int currentThreadId = getCurrentThreadId();
+//
+//    if(isLockedNonBlocking() == false){
+//        lockingThreradId = currentThreadId;
+//        ret = OpenThreads::Mutex::lock();
+//    }else if(lockingThreradId != currentThreadId){
+//        ret = -1;
+//    }
+//
+//    return ret;
+//}
+//
+//int Model::getLockingThreadId() const
+//{
+//    ScopedLock lock(const_cast<Model*>(this)->lockMutex);
+//
+//    return lockingThreradId;
+//}
+//
+//bool Model::isLockedNonBlocking() const
+//{
+//    return lockingThreradId != NO_LOCK_THREADID;
+//}
+//
+//bool Model::isLocked() const
+//{
+//    ScopedLock lock(const_cast<Model*>(this)->lockMutex);
+//
+//    return isLockedNonBlocking();
+//}
+
+void Model::setNodeName(const NPtr & node, const std::string & name)
+{
+    UTILS_ASSERT((node != nullptr), "B³êdny wêze³ do edycji!");
+
+    //ScopedLock lock(const_cast<Model*>(this));
+    ScopedLock lock(editMutex);
+
+    if(node->model.lock() != shared_from_this()){
+        throw std::runtime_error("Node belongs to other model!");
+    }
+
+    node->setName(name);
+
+    notify();
+}
+
+//! \param pin Pin któremu nazwê zmieniamy
+//! \param name Nowa nazwa pinu
+void Model::setPinName(const PinPtr & pin, const std::string & name)
+{
+    UTILS_ASSERT((pin != nullptr), "B³êdny pin do edycji!");
+
+    //ScopedLock lock(const_cast<Model*>(this));
+    ScopedLock lock(editMutex);
+
+    if(pin->getParent()->model.lock().get() != this){
+        throw std::runtime_error("Pin belongs to different model!");
+    }
+
+    pin->setName(name);
+
+    notify();
+}
+
+const Model::Nodes & Model::getNodes() const
+{
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    return nodes;
+}
+
+const Model::Connections & Model::getConnections() const
+{
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    return connections;
+}
+
+const Model::RequiringConnection & Model::getRequiringConnections() const
+{
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    return pinsRequiringConnections;
+}
+
+const Model::Nodes & Model::getLeafNodes() const
+{
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    return leafNodes;
+}
+
+bool Model::isNodeSupported(const NPtr & node) const
+{
+    return true;
+}
+
+bool Model::additionalModelValidation() const
+{
+    return true;
+}
+
+bool Model::isModelValid() const
+{
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    return getRequiringConnections().empty() == true && additionalModelValidation() == true;
+}
+
+void Model::addNode(const NPtr & node)
 {
 	UTILS_ASSERT((node != nullptr), "Bledny wezel");
+
+    //ScopedLock lock(const_cast<Model*>(this));
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+
+    if(isModelChangeAllowed() == false){
+        throw std::runtime_error("Model modification not allowed!");
+    }
+
+    if(node->model.lock() != nullptr){
+        throw std::runtime_error("Node belongs to other model!");
+    }
+
+    if(isNodeSupported(node) == false){
+        throw std::runtime_error("Node type not supported by model!");
+    }
     
     if(nodes.find(node) != nodes.end()){
         throw std::runtime_error("Node already added to model!");
     }
 
+    if(node->isInitialized() == false){
+        node->initialize();
+    }
+
+    node->model = shared_from_this();
     nodes.insert(node);
+
+    afterNodeAdd(node);
+
+    if(node->beginIn() != node->endIn()){
+        //dodaj do listy wymaganych pod³¹czenia
+        
+        PinsSet requiredPins;
+        //auto pins = node->getInPins();
+        for(auto it = node->beginIn(); it != node->endIn(); it++){
+            if((*it)->isRequired() == true){
+                requiredPins.insert(*it);
+            }
+        }
+
+        if(requiredPins.empty() == false){
+            //zainicjuj brakuj¹ce piny
+            pinsRequiringConnections[node].insert(requiredPins.begin(), requiredPins.end());
+        }else{
+            //oznacz wêze³ jako niepod³aczony, bo ¿adne wejscie nie ma po³¹czenia
+            pinsRequiringConnections[node];
+        }
+
+        //oznacz jako liœæ
+        addLeaf(node);
+    }
+
+    notify();
 }
 
-void Model::removeNode( NPtr node )
+void Model::afterNodeAdd(const NPtr & node)
+{
+
+}
+
+void Model::disconnectNode(const NPtr & node)
+{
+    UTILS_ASSERT((node != nullptr), "B³êdny wêze³");
+
+    //ScopedLock lock(const_cast<Model*>(this));
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+
+    if(isModelChangeAllowed() == false){
+        throw std::runtime_error("Model modification not allowed!");
+    }
+
+    if(node->model.lock() == nullptr){
+        throw std::runtime_error("Node is not assigned to any model!");
+    }
+
+    if(node->model.lock().get() != this){
+        throw std::runtime_error("Node belongs to other model!");
+    }
+
+    quickDisconnectNode(node);
+
+    notify();
+}
+
+void Model::quickDisconnectNode(const NPtr & node)
+{
+    //get all node connections from all pins and remove them
+    Connections allNodeConnections;
+
+    for(auto it = node->beginIn(); it != node->endIn(); it++){
+        //const Connections & connections = (*it)->getConnections();
+        allNodeConnections.insert((*it)->begin(),(*it)->end());
+    }
+
+    for(auto it = node->beginOut(); it != node->endOut(); it++){
+        //const Connections & connections = (*it)->getConnections();
+        allNodeConnections.insert((*it)->begin(),(*it)->end());
+    }
+
+    //remove all node connections
+    for(auto it = allNodeConnections.begin(); it != allNodeConnections.end(); it++){
+        quickRemoveConnection(connections.find(*it));
+    }
+}
+
+void Model::removeNode(const NPtr & node)
 {
     UTILS_ASSERT((node != nullptr), "Bledny wezel");
-	if(nodes.erase(node) == 0){
-		throw std::runtime_error("Node does not exist in model!");
-	}
 
-    disconnectNode(node);
+    //ScopedLock lock(const_cast<Model*>(this));
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+
+    if(isModelChangeAllowed() == false){
+        throw std::runtime_error("Model modification not allowed!");
+    }
+
+    if(node->model.lock() == nullptr){
+        throw std::runtime_error("Node is not assigned to any model!");
+    }
+
+    if(node->model.lock().get() != this){
+        throw std::runtime_error("Node belongs to other model!");
+    }
+
+    quickRemoveNode(nodes.find(node));
+
+    notify();
 }
 
-void Model::clearNodes(){
-    clearConnections();
-	connections.swap(CONNECTIONS_SET());
-	nodes.swap(NODES_SET());
+void Model::quickRemoveNode(const Nodes::iterator & nodeIt)
+{
+    NPtr node(*nodeIt);
+
+    removeLeaf(node);
+    beforeNodeRemove(node);
+
+    quickDisconnectNode(node);
+    node->model.reset();
+    nodes.erase(nodeIt);
+    pinsRequiringConnections.erase(node);
 }
 
-bool Model::canConnect(CPinPtr src, CPinPtr dest) const {
+void Model::beforeNodeRemove(const NPtr & node)
+{
+    
+}
+
+void Model::clearNodes()
+{
+    //ScopedLock lock(const_cast<Model*>(this));
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+
+    if(isModelChangeAllowed() == false){
+        throw std::runtime_error("Model modification not allowed!");
+    }
+
+    while(nodes.begin() != nodes.end()) {
+        quickRemoveNode(nodes.begin());
+    }
+
+    UTILS_ASSERT((connections.size() == 0), "Nie wszystkie po³¹czenia zosta³y usuniête jak siê spodziewano przy usuwaniu wszystkich wêz³ów");
+
+    nodes.swap(Nodes());
+    connections.swap(Connections());
+    pinsRequiringConnections.swap(RequiringConnection());
+
+    notify();
+}
+
+bool Model::additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) const 
+{
+    return true;
+}
+
+bool Model::canConnect(const CPinPtr & src, const CPinPtr & dest) const
+{
+    //ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+
 	bool ret = true;
 
-	if(src->getType() != Pin::PIN_OUT || dest->getType() != Pin::PIN_IN || dest->isCompatible(src) == false
-		|| findConnection(src, dest) != nullptr){
+	if(src->getType() != Pin::OUT || dest->getType() != Pin::IN || src->getParent() == nullptr || dest->getParent() == nullptr ||
+        src->getParent()->model.lock().get() != this || dest->getParent()->model.lock().get() != this ||
+        dest->isCompatible(src) == false || findConnection(src, dest) != nullptr){
 			ret = false;
 	}
 
+    if(ret == true && additionalConnectRules(src, dest) == false){
+        ret = false;
+    }
+
 	return ret;
 }
 
-ConnPtr Model::quickConnect(PinPtr src, PinPtr dest){
-	ConnPtr ret(new Connection(src, dest));
-	connections.insert(ret);
-	src->addConnection(ret);
-	dest->addConnection(ret);
-	return ret;
-}
+ConnPtr Model::connect(const PinPtr & src, const PinPtr & dest)
+{
+    //ScopedLock lock(const_cast<Model*>(this));
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
 
-ConnPtr Model::connect(PinPtr src, PinPtr dest){
-	ConnPtr ret;
-	if(canConnect(src, dest) == true){
-		ret = quickConnect(src,dest);
+    if(isModelChangeAllowed() == false){
+        throw std::runtime_error("Model modification not allowed!");
+    }
+
+	if(canConnect(src, dest) != true){
+		throw std::runtime_error("Connection can not be created - breaks basic connectivity rules!");
 	}
 
-	return ret;
+    ConnPtr ret(new Connection(src, dest));
+    connections.insert(ret);
+    src->addConnection(ret);
+    dest->addConnection(ret);
+
+    //jeœli Ÿród³o jest zale¿ne od jakichœ pinów wejœciowych w obrêbie ich wêz³a i s¹ one niepod³¹czone, to trzeba je dodaæ jako wymagane
+    PinsSet requiredPins;
+    for(auto it = src->getDependantPins().begin(); it != src->getDependantPins().end(); it++){
+        if((*it).lock()->empty() == true){
+            requiredPins.insert(*it);
+        }
+    }
+
+    if(requiredPins.empty() == false){
+        pinsRequiringConnections[src->getParent()].insert(requiredPins.begin(), requiredPins.end());
+    }
+
+
+    //jeœli cel jest na liœcie wymagaj¹cych podpiêcia usuñ go
+    auto it = pinsRequiringConnections.find(dest->getParent());
+    if(it != pinsRequiringConnections.end()){
+        it->second.erase(dest);
+
+        //sprawdŸ czy wêze³ poprawnie pod³¹czony
+        if(it->second.empty() == true){
+            pinsRequiringConnections.erase(it);
+        }
+    }
+
+    afterConnect(ret);
+
+    if(leafNodes.find(src->getParent()) != leafNodes.end()){
+        removeLeaf(src->getParent());
+    }
+
+    notify();
+
+    return ret;
 }
 
-void Model::removeConnection( ConnPtr connection )
+void Model::afterConnect(const ConnPtr & connection)
 {
-	if(connections.find(connection) == connections.end()){
+
+}
+
+void Model::removeConnection(const ConnPtr & connection)
+{
+    //ScopedLock lock(const_cast<Model*>(this));
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+
+    if(isModelChangeAllowed() == false){
+        throw std::runtime_error("Model modification not allowed!");
+    }
+
+    auto it = connections.find(connection);
+	if(it == connections.end()){
 		throw std::runtime_error("Connection dos not exist in model!");
 	}
 
-    quickRemoveConnection(connection);
+    quickRemoveConnection(it);
+
+    notify();
 }
 
-Model::PATH_ENTRY Model::getFirstNodeOutputConnection(NPtr node){
-	PATH_ENTRY pathElement;
+void Model::clearConnections()
+{
+    //ScopedLock lock(const_cast<Model*>(this));
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
 
-	for(auto it = node->getOutPins().begin(); it != node->getOutPins().end(); it++){
-		for(auto iT = (*it)->getConnections().begin(); iT != (*it)->getConnections().end(); iT++){
-			pathElement.node = node;
-			pathElement.pinIT = it;
-			pathElement.connIT = iT;
-			return pathElement;
-		}
-	}
+    if(isModelChangeAllowed() == false){
+        throw std::runtime_error("Model modification not allowed!");
+    }
+    
+    while(connections.begin() != connections.end()){
+        quickRemoveConnection(connections.begin());
+    }
 
-	return pathElement;
+    connections.swap(Connections());
+
+    notify();
 }
 
-Model::PATH_ENTRY Model::getNextNodeOutputConnection(const PATH_ENTRY & pathElement){
-	PATH_ENTRY pe = pathElement;
-	
-	if(++pe.connIT != (*pe.pinIT)->getConnections().end()){
-		return pe;
-	}
+void Model::quickRemoveConnection(const Connections::iterator & connIt)
+{
+    ConnPtr connection(*connIt);
 
-	++pe.pinIT;
+    beforeRemoveConnection(connection);
 
-	for( ; pe.pinIT != pe.node->getOutPins().end(); pe.pinIT++){
-		if((*pe.pinIT)->getConnections().empty() == false){
-			pe.connIT = (*pe.pinIT)->getConnections().begin();
-			return pe;
-		}
-	}
+    //policz ile po³¹czeñ dochodzi do wêz³a docelowego usuwanego po³¹czenia (wystarczy ¿e bêdzie ich wiêcej ni¿ 1)
+    //sprawdŸ czy docelowy pin nie jest wymagany dla jakiegoœ po³¹czonego piny wyjœciowego wêz³a
+    PinPtr destPin(connection->getDest());
+    NPtr destNode(destPin->getParent());
+    NPtr srcNode(connection->getSrc()->getParent());
+    unsigned int countIn = 0;
+    bool otherDepends = false;
+    for(auto it = destNode->beginIn(); it != destNode->endIn(); it++){
+        if((*it)->empty() == false){
+            if( otherDepends == false &&
+                (*it)->getDependantPins().find(destPin) != (*it)->getDependantPins().end()){
+                    otherDepends = true;
+            }
+            countIn += (*it)->size();
+            if(countIn > 1){
+                break;
+            }
+        }
+    }
 
-	return pathElement;
+    if(countIn == 1){
+        //to ostatnie po³¹czenie, wiêc zostanie niepod³¹czony
+        pinsRequiringConnections[destNode];
+    }
+
+    if(otherDepends == true || destPin->isRequired() == true){
+        //ten pin by³ albo wymagany albo zale¿¹ od niego inne piny wyjœciowe wêz³a
+        pinsRequiringConnections[destNode].insert(destPin);
+    }
+
+    connection->getSrc()->removeConnection(connection);
+    connection->getDest()->removeConnection(connection);
+    connection->setDest(PinPtr());
+    connection->setSrc(PinPtr());
+    connections.erase(connIt);
+
+    //sprawdŸ czy nie powsta³ nowy liœæ
+    if(srcNode->beginIn() != srcNode->endIn()){
+        bool leaf = true;
+        for(auto it = srcNode->beginOut(); it != srcNode->endOut(); it++){
+            if((*it)->empty() == false){
+                leaf = false;
+                break;
+            }
+        }
+
+        if(leaf == true){
+            addLeaf(srcNode);
+        }
+    }
 }
 
-bool Model::PATH_ENTRY::operator==(const MY_PATH_ENTRY & pe) const{
-	if(this->node == pe.node && this->pinIT == pe.pinIT && this->connIT == pe.connIT){
-		return true;	
-	}
-
-	return false;
-}
-
-bool Model::createCycle(CPinPtr src, CPinPtr dest) const{
-	return !getCycle(src, dest).empty();
-}
-
-void Model::initCheckedNodes(Model::NODES_SET & nodes) const
+void Model::beforeRemoveConnection(const ConnPtr & connection)
 {
 
 }
 
-Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
+bool Model::createCycle(const CPinPtr & src, const CPinPtr & dest) const
+{
+    return !getCycle(src, dest).empty();
+}
+
+Model::CyclePath Model::getCycle(const CPinPtr & src, const CPinPtr & dest) const
+{
+    ScopedLock lock(const_cast<Model*>(this)->editMutex);
 	//if source is connected no loops possible
 	//also if leaf node is connected
 
 	//connections in path
-	CYCLE connInPath;
+	CyclePath connInPath;
 
 	NPtr destNode = dest->getParent();
 	if(Node::anyOutPinConnected(destNode) == false){
 		return connInPath;
 	}
 
-	PATH_ENTRY pe = getFirstNodeOutputConnection(destNode);
+	PathEntry pe = getFirstNodeOutputConnection(destNode);
 
 	//stores node compleately checked - up to leafs
-	NODES_SET checkedNodes;
+	Nodes checkedNodes;
 
-    initCheckedNodes(checkedNodes);
+    initCycleCheckedNodes(checkedNodes);
 
 	//nodes in path
-	NODES_SET nodesInPath;
+	Nodes nodesInPath;
 
 	nodesInPath.insert(src->getParent());
 	nodesInPath.insert(destNode);
 
 	//structure for traversing
-	std::vector<PATH_ENTRY> path;
+	std::vector<PathEntry> path;
 	
 	//find first output connection
 	path.push_back(pe);
 	//add it co connections
-	connInPath.push_back(*path.back().connIT);
+	connInPath.push_back(pe.node->getOutPin(pe.pinIndex)->getConnection(pe.connectionIndex));
 
 	//check cycles in structure starting from this connection
 	while(path.empty() == false){
@@ -193,7 +599,7 @@ Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
 
 			if(path.empty() == false){
 				path.back() = pe;
-				connInPath.push_back(*pe.connIT);
+				connInPath.push_back(pe.node->getOutPin(pe.pinIndex)->getConnection(pe.connectionIndex));
 			}
 
 			continue;
@@ -204,74 +610,78 @@ Model::CYCLE Model::getCycle(CPinPtr src, CPinPtr dest) const{
 		nodesInPath.insert(nextNode);
 
 		path.push_back(getFirstNodeOutputConnection(nextNode));
-		connInPath.push_back(*path.back().connIT);
+		connInPath.push_back(path.back().node->getOutPin(path.back().pinIndex)->getConnection(path.back().connectionIndex));
 	}
 
 	return connInPath;
 }
 
-void Model::quickRemoveConnection( ConnPtr connection )
+Model::PathEntry Model::getFirstNodeOutputConnection(const NPtr & node){
+    PathEntry pathElement;
+
+    for(int i = 0; i <= node->sizeOut(); i++){
+        for(int j = 0; j < node->getOutPin(i)->size(); j++){
+            pathElement.node = node;
+            pathElement.pinIndex = i;
+            pathElement.connectionIndex = j;
+            //pathElement.pinIT = it;
+            //pathElement.connIT = iT;
+            return pathElement;
+        }
+    }
+
+    return pathElement;
+}
+
+Model::PathEntry Model::getNextNodeOutputConnection(const PathEntry & pathElement){
+    PathEntry pe = pathElement;
+
+    //if(++pe.connIT != (*pe.pinIT)->getConnections().end()){
+    if(++pe.connectionIndex < pathElement.node->getOutPin(pathElement.pinIndex)->size()){
+        return pe;
+    }
+
+    //++pe.pinIT;
+    pe.pinIndex++;
+
+    //for( ; pe.pinIT != pe.node->getOutPins().end(); pe.pinIT++){
+    for( ; pe.pinIndex < pe.node->sizeOut(); pe.pinIndex++){
+        //if((*pe.pinIT)->getConnections().empty() == false){
+        if(pe.node->getOutPin(pe.pinIndex)->empty() == false){
+            //pe.connIT = (*pe.pinIT)->getConnections().begin();
+            pe.connectionIndex = 0;
+            return pe;
+        }
+    }
+
+    return pathElement;
+}
+
+bool Model::PathEntry::operator==(const PathEntry & pe) const{
+    //if(this->node == pe.node && this->pinIT == pe.pinIT && this->connIT == pe.connIT){
+    if(this->node == pe.node && this->pinIndex == pe.pinIndex && this->connectionIndex == pe.connectionIndex){
+        return true;	
+    }
+
+    return false;
+}
+
+void Model::initCycleCheckedNodes(Model::Nodes & nodes) const
 {
-	connection->getSrc()->removeConnection(connection);
-	connection->getDest()->removeConnection(connection);
-	connections.erase(connection);
-}
-
-void Model::clearConnections(){
-	while(connections.empty() == false){
-		quickRemoveConnection(*connections.begin());
-	}
-}
-
-const Model::NODES_SET & Model::getNodes() const{
-	return nodes;
-}
-
-const Model::CONNECTIONS_SET & Model::getConnections() const{
-	return connections;
-}
-
-void Model::disconnectNode( NPtr node )
-{
-	//get all node connections from all pins and remove them
-	CONNECTIONS_SET allNodeConnections;
-
-	for(auto it = node->getInPins().begin(); it != node->getInPins().end(); it++){
-		const CONNECTIONS_SET & connections = (*it)->getConnections();
-		allNodeConnections.insert(connections.begin(), connections.end());
-	}
-
-	for(auto it = node->getOutPins().begin(); it != node->getOutPins().end(); it++){
-		const CONNECTIONS_SET & connections = (*it)->getConnections();
-		allNodeConnections.insert(connections.begin(), connections.end());
-	}
-
-	//remove all node connections
-	while(allNodeConnections.empty() == false){
-		removeConnection(*allNodeConnections.begin());
-		allNodeConnections.erase(allNodeConnections.begin());
-	}
+    nodes.insert(leafNodes.begin(), leafNodes.end());
 }
 
 ConnPtr Model::findConnection(CPinPtr src, CPinPtr dest) const
 {
 	ConnPtr ret;
-    if(nodes.find(src->getParent()) == nodes.end() || nodes.find(dest->getParent()) == nodes.end()){
-		return ret;
-	}
 
-	const CONNECTIONS_SET * connections = nullptr;
-
-	if(src->getConnections().size() > dest->getConnections().size()){
-		connections = &(dest->getConnections());
+	if(src->size() > dest->size()){
 		src.swap(dest);
-	}else{
-		connections = &(src->getConnections());
 	}
 
-	for(auto it = connections->begin(); it != connections->end(); it++){
+	for(auto it = src->begin(); it != src->end(); it++){
 		//connection exist and is registered by the model
-		if((*it)->getOther(src) == dest && connections->find(*it) != connections->end() && connections->find(*it) != connections->end()){
+		if((*it)->getOther(src) == dest && std::find(connections.begin(), connections.end(), *it) != connections.end()){
 			ret = *it;
 			break;
 		}
@@ -280,13 +690,33 @@ ConnPtr Model::findConnection(CPinPtr src, CPinPtr dest) const
 	return ret;
 }
 
-void Model::unregisterPin(PinPtr pin){
-	NPtr parent = pin->getParent();
-	if(pin->getType() == Pin::PIN_IN){
-		parent->inPins.erase(parent->inPins.find(pin));
-	}else if(pin->getType() == Pin::PIN_OUT){
-		parent->outPins.erase(parent->outPins.find(pin));
-	}
+void Model::addLeaf(const NPtr & node)
+{
+    //check if node is not a leafe already
+    if(leafNodes.find(node) == leafNodes.end()){
+        leafNodes.insert(node);
+        afterLeafAdd(node);
+    }
+}
+
+void Model::removeLeaf(const NPtr & node)
+{
+    auto it = leafNodes.find(node);
+    if(it != leafNodes.end()){
+        beforeLeafRemove(node);
+        //DFNode::getDFNode(node)->onLeafProcessedCallback.clear();
+        leafNodes.erase(node);
+    }
+}
+
+void Model::afterLeafAdd(const NPtr & node)
+{
+
+}
+
+void Model::beforeLeafRemove(const NPtr & node)
+{
+
 }
 
 }

@@ -24,8 +24,7 @@ class osgVDFNode : public osgVDFBaseNode
 public:
 	META_Window(osgWidget::Window, osgVDFNode);
 
-	osgVDFNode(const std::string& nodeName = "", dflm::NPtr node = dflm::NPtr(), osgVDFBaseModel * model = 0,
-		osg::ref_ptr<osg::Image> img = osg::ref_ptr<osg::Image>());
+	osgVDFNode(const std::string& nodeName = "", osg::ref_ptr<osg::Image> img = osg::ref_ptr<osg::Image>());
 	osgVDFNode(const osgVDFNode& node, const osg::CopyOp& co) {};
 	
 	~osgVDFNode(void);
@@ -61,7 +60,9 @@ protected:
 	osgWidget::point_type getTotalPinsHeight();
 	osgWidget::point_type getBodyHeight();
 	
-	virtual void graphSetNodeStatus(NODE_VISUAL_STATUS nodeVisualStatus);
+	virtual void graphSetStatus(VisualStatus nodeVisualStatus);
+
+    virtual void lockForEditing(bool lock);
 
 	bool deleteNode(osgWidget::Event& ev);
 

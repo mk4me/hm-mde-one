@@ -14,7 +14,7 @@ class osgVDFNodeTypeDescriptor
 public:
 	~osgVDFNodeTypeDescriptor(void);
 
-	virtual osgVDFBaseNode::NODE_TYPE getNodeType() const = 0;
+	virtual osgVDFBaseNode::NodeType getNodeType() const = 0;
 	virtual osg::Image * getButtonImage() const = 0;
 	virtual const std::string & getButtonText() const = 0;
 	virtual osg::Image * getNodeDefaultImage() const = 0;

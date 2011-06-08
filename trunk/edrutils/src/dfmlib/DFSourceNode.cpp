@@ -4,8 +4,8 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-DFSourceNode::DFSourceNode(const std::string & nodeName, bool processingAllowed,
-	bool propagatingAllowed) : DFNode(nodeName,processingAllowed,propagatingAllowed)
+DFSourceNode::DFSourceNode(const std::string & nodeName/*, bool processingAllowed,
+	bool propagatingAllowed*/) : DFNode(nodeName/*,processingAllowed,propagatingAllowed*/)
 {
 
 }
@@ -16,7 +16,7 @@ DFSourceNode::~DFSourceNode(void)
 
 }
 
-void DFSourceNode::addInPin(PinPtr pin)
+void DFSourceNode::addInPin(const PinPtr & pin)
 {
 	throw std::runtime_error("Can not add input pin to source node!");
 }

@@ -1,5 +1,13 @@
-#ifndef HEADER_GUARD__VDFPIN_H__
-#define HEADER_GUARD__VDFPIN_H__
+/********************************************************************
+    created:  2011/05/18
+    created:  18:5:2011   12:25
+    filename: osgVDFPin.h
+    author:   Mateusz Janiak
+    
+    purpose:  
+*********************************************************************/
+#ifndef HEADER_GUARD_VDF__OSGVDFPIN_H__
+#define HEADER_GUARD_VDF__OSGVDFPIN_H__
 
 #include <vdfmlib/osgVDFBasePin.h>
 #include <osgDB/ReadFile>
@@ -9,92 +17,22 @@
 namespace osgVDF{
 ////////////////////////////////////////////////////////////////////////////////
 
-template<class ConnectionFactory>
+//! Klasa wizualnie preprezentuj¹ca pin. Przechowuje referencjê do pinu który reprezentuje oraz do wizualnego modelu w kontekœcie którego wystêpuje
+
 class osgVDFPin : public osgVDFBasePin
 {
 public:
 	META_Widget(osgWidget::Widget, osgVDFPin);
 
-	osgVDFPin (const std::string& name = "", dflm::PinPtr pin = dflm::PinPtr(), osgVDFBaseModel * model = 0);
+	osgVDFPin (const std::string& name = "");
     osgVDFPin (const osgVDFPin& pin, const osg::CopyOp& co);
 
 	~osgVDFPin(void);
 
 protected:
-	virtual void graphSetPinStatus(PIN_VISUAL_STATUS pinVisualStatus);
+	virtual void graphSetStatus(VisualStatus pinVisualStatus);
 };
 
-template<class ConnectionFactory>
-osgVDFPin<ConnectionFactory>::osgVDFPin(const std::string& name, dflm::PinPtr pin, osgVDFBaseModel * model)
-	: osgVDFBasePin(name, pin, model){
-
-	setMinimumSize(13.0f, 12.0f);
-	setSize(13.0f, 12.0f);
 }
 
-template<class ConnectionFactory>  
-osgVDFPin<ConnectionFactory>::osgVDFPin (const osgVDFPin& pin, const osg::CopyOp& co)
-	: osgVDFBasePin(pin, co){
-
-}
-
-template<class ConnectionFactory>  
-osgVDFPin<ConnectionFactory>::~osgVDFPin(void){
-
-}
-
-template<class ConnectionFactory>
-void osgVDFPin<ConnectionFactory>::graphSetPinStatus(osgVDFBasePin::PIN_VISUAL_STATUS pinVisualStatus){
-	std::string status;
-	std::string pinType;
-
-	switch(this->getModelPin()->getType()){
-	case dflm::Pin::PIN_IN:
-		pinType = "in";
-		break;
-
-	case dflm::Pin::PIN_OUT:
-		pinType = "out";
-		break;
-	}
-
-	switch(pinVisualStatus){
-	case osgVDFBasePin::PIN_ACTIVE:
-		status = "active";
-		break;
-
-	case osgVDFBasePin::PIN_CONNECTED:
-		status = "connected";
-		break;
-
-	case osgVDFBasePin::PIN_INCOMPATIBLE:
-		status = "incompatible";
-		break;
-
-	case osgVDFBasePin::PIN_INCOMPLETE:
-		status = "incomplete";
-		break;
-
-	case osgVDFBasePin::PIN_OK:
-		status = "ok";
-		break;
-
-	case osgVDFBasePin::PIN_REQUIRED:
-		status = "required";
-		break;
-	}
-
-	this->setStyle("vdf.pin." + pinType + "." + status);
-
-	osgWidget::WindowManager* wm = this->getWindowManager();
-	if(wm != 0){
-		osgWidget::StyleManager* sm = wm->getStyleManager();
-		if(sm != 0){
-			sm->applyStyles(this);
-		}
-	}
-}
-
-}
-
-#endif
+#endif  //  HEADER_GUARD_VDF__OSGVDFPIN_H__

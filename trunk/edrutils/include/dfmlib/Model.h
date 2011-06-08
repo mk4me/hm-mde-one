@@ -1,45 +1,62 @@
 #ifndef HEADER_GUARD__MODEL_H__
 #define HEADER_GUARD__MODEL_H__
 
+#include <utils/Synchronized.h>
+#include <utils/ObserverPattern.h>
 #include <dfmlib/DFLMTypes.h>
 #include <dfmlib/Node.h>
 #include <dfmlib/Pin.h>
 #include <boost/enable_shared_from_this.hpp>
+#include <OpenThreads/Mutex>
+#include <OpenThreads/ScopedLock>
 #include <set>
 #include <vector>
+#include <map>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Klasa opisujaca model logiczny data flow. Pozwala na jego edycjê - dodawanie, usuwanie wêz³ów oraz ³¹czenie/roz³anczanie pinów wg œciœle okreœlonych zasad.
-class Model : public boost::enable_shared_from_this<Model>
+class Model : public boost::enable_shared_from_this<Model>, public utils::Observable<Model>
 {
 public:
     //! Typ opisuj¹cy pêtle/cykle w po³aczeniach
-	typedef std::vector<ConnPtr> CYCLE;
+	typedef std::vector<ConnPtr> CyclePath;
 
     //! Typreprezentuj¹cy zbiór wêz³ów
-	typedef std::set<NPtr> NODES_SET;
+	typedef std::set<NPtr> Nodes;
 
     //! Typ opisuj¹cy zbiór po³¹czeñ
-	typedef Pin::CONNECTIONS_SET CONNECTIONS_SET;
+	typedef std::set<ConnPtr> Connections;
+
+    //! Typ opisuj¹cy zbiór pinów
+    typedef std::set<PinPtr> PinsSet;
+
+    //! Typ przechowuj¹cy lokalne niezgodnoœci modelu logicznego z wytyczonymi zasadami jego tworzenia
+	typedef std::map<NPtr, PinsSet > RequiringConnection;
+
+protected:
+
+    typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
 
 private:
 
     //! Struktura pomocnicza przy analizie pêtli (cyklów) w modelu
-    typedef struct MY_PATH_ENTRY{
+    typedef struct PathEntry{
         //! Aktualny wêze³
         NPtr node;
         //! Aktualny pin
-        Node::PINS_SET::const_iterator pinIT;
+        //Node::Pins::const_iterator pinIT;
+        int pinIndex;
 
         //! Aktualne po³¹czenie
-        CONNECTIONS_SET::const_iterator connIT;
+        //Connections::const_iterator connIT;
+        int connectionIndex;
 
         //! Operator porównania
-        bool operator==(const MY_PATH_ENTRY & pe) const;
-    }PATH_ENTRY;
+        bool operator==(const PathEntry & pe) const;
+    }PathEntry;
 
 public:
 
@@ -49,86 +66,180 @@ public:
     //! Wirtualny destruktor
 	virtual ~Model(void);
 
+    ////! Blokuje obiekt dla zadanego w¹tku, jeœli obiekt ju¿ jest zablokowany zawiesza tutaj w¹tek ktry to wywo³a³
+    //virtual int lock();
+
+    ////! Odblokowuje obiekt do edycji - mo¿e byæ wywo³ana jedynie przez w¹tek który za³o¿y³ locka lub jesli nie ma blokady
+    //virtual int unlock();
+
+    ////! \return Czy uda³o siê zablokowaæ obiekt, zwraca false natychmiast, jeœli nie uda³o siê go zablokowaæ, lub true kiedy blokowanie siê powiod³o
+    //virtual int tryLock();
+
+    ////! \return ID aktualnie wywo³ywanego w¹tku
+    //static int getCurrentThreadId();
+
+    ////! \return ID w¹tku który trzyma blokadê do tego obiektu
+    //int getLockingThreadId() const;
+
+    ////! \return Czy obiekt jest aktualnie blokowany przez jakiœ w¹tek
+    //bool isLocked() const;
+
+    //! \param node Wêze³ którego kompatybilnoœæ z modelem sprawdzamy
+    //! \return Czy wêze³ jest wspierany przez model
+    virtual bool isNodeSupported(const NPtr & node) const;
+
+    //! \return Czy model poprawnie skonfigurowany - pod k¹tem po³¹czeñ i wêz³ów
+    bool isModelValid() const;
+
     //! \param node Wêze³ do dodania
-    virtual void addNode(NPtr node);
+    void addNode(const NPtr & node);
 
     //! \param node Wêze³ do usuniêcia
-    virtual void removeNode(NPtr node);
+    void removeNode(const NPtr & node);
 
     //! Usuwa wszystkie wêz³y i po³¹czenia z modelu
-	virtual void clearNodes();
+	void clearNodes();
 
     //! \param src Pin Ÿród³owy (wyjœciowy)
     //! \param src Pin docelowy (wejœciowy)
     //! \return Czy mo¿na po³aczyæ piny ze wzglêdu na obowi¹zuj¹ce regu³y
-	virtual bool canConnect(CPinPtr src, CPinPtr dest) const;
+	bool canConnect(const CPinPtr & src, const CPinPtr & dest) const;
 
     //! \param src Pin Ÿród³owy (wyjœciowy)
     //! \param src Pin docelowy (wejœciowy)
     //! \return Czy po³¹czenie tych pinów wprowadzi cykl (pêtle) w modelu
-	bool createCycle(CPinPtr src, CPinPtr dest) const;
+	bool createCycle(const CPinPtr & src, const CPinPtr & dest) const;
 
     //! \param src Pin Ÿród³owy (wyjœciowy)
     //! \param src Pin docelowy (wejœciowy)
     //! \return Opis cyklu (œciezki) jaki powstanie przez po³¹czenie tych dwóch pinów
-	virtual CYCLE getCycle(CPinPtr src, CPinPtr dest) const;
+	CyclePath getCycle(const CPinPtr & src, const CPinPtr & dest) const;
 
     //! \param src Pin Ÿród³owy (wyjœciowy)
     //! \param src Pin docelowy (wejœciowy)
     //! \return Po³¹czenie utworzone pomiêdzy zadanymi pinami
-	virtual ConnPtr connect(PinPtr src, PinPtr dest);
+	ConnPtr connect(const PinPtr & src, const PinPtr & dest);
 
     //! \param connection Po³¹czenie do usuniêcia
-    virtual void removeConnection(ConnPtr connection);
+    void removeConnection(const ConnPtr & connection);
+
+    //! \param Weze³ do rozlaczenia - wszystke jego po³aczenia zostaj¹ usuniete
+    void disconnectNode(const NPtr & node);
 
     //! Usuwa wszystkie po³¹czenia w modelu
-	virtual void clearConnections();
+	void clearConnections();
 
     //! \return Wszystkie wêz³y modelu
-	const NODES_SET & getNodes() const;
+	const Nodes & getNodes() const;
 
     //! \return Wszystkie po³¹czenia w modelu
-	const CONNECTIONS_SET & getConnections() const;
+	const Connections & getConnections() const;
+
+    //! \return Zwraca wêz³y wymagaj¹ce interwencji by model by³ poprawny
+	const RequiringConnection & getRequiringConnections() const;
+
+    //! \return Zwraca kolekcjê liœci - elementów które posiadaj¹ wejscia ale nie posiadaj¹ wyjœæ lub maj¹ wyjœcia niepod³¹czone
+    const Nodes & getLeafNodes() const;
+
+    //! \param node Wêze³ któremu nazwê zmieniamy
+    //! \param name Nowa nazwa wêz³a
+    void setNodeName(const NPtr & node, const std::string & name);
+
+    //! \param pin Pin któremu nazwê zmieniamy
+    //! \param name Nowa nazwa pinu
+    void setPinName(const PinPtr & pin, const std::string & name);
 	
  protected:
+    
+     //! \return true jeœli mo¿na dokonaæ zmiany modelu, inaczej false lub wyj¹tek
+     virtual bool isModelChangeAllowed() const;
 
-     static void unregisterPin(PinPtr pin);
-    
-     //! \param Weze³ do rozlaczenia - wszystke jego po³aczenia zostaj¹ usuniete
-     virtual void disconnectNode(NPtr node);
-    
+     //! \param src Pin Ÿród³owy (wyjœciowy)
+     //! \param src Pin docelowy (wejœciowy)
+     //! \return Czy mozna po³¹czyæ piny
+     virtual bool additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) const;
+
+     //! \return true jeœli model jest poprawny
+     virtual bool additionalModelValidation() const;
+
+    //! \param node Wêze³ do dodania
+    virtual void afterNodeAdd(const NPtr & node);
+
+    //! \param node Wêze³ do usuniêcia
+    virtual void beforeNodeRemove(const NPtr & node);
+
     //! \param connection Po³aczenie do usuniecia z modelu
-     virtual void quickRemoveConnection(ConnPtr connection);
+    virtual void beforeRemoveConnection(const ConnPtr & connection);
 
     //! \param src Pin Ÿród³owy (wyjœciowy)
     //! \param src Pin docelowy (wejœciowy)
-    //! \return Po³aczenie miedzy pinami
-	virtual ConnPtr quickConnect(PinPtr src, PinPtr dest);
+    virtual void afterConnect(const ConnPtr & connection);
 
     //! \param nodes Lista wêz³ów uznana za sprawdzone - tutaj mog¹ siê podpinaæ klasy pochodne z szersz¹ wiedz¹ na temat wêz³ów
     //! W ten sposób mog¹ przyspieszyæ wykrywanie cykli
-    virtual void initCheckedNodes(NODES_SET & nodes) const;
+    virtual void initCycleCheckedNodes(Nodes & nodes) const;
+
+    //! \param node Wêze³ który sta³ siê w³aœnie liœciem
+    virtual void afterLeafAdd(const NPtr & node);
+
+    //! \param node Wêze³ który przestaje byæ liœciem
+    virtual void beforeLeafRemove(const NPtr & node);
 
 private:
+
+    bool isLockedNonBlocking() const;
+
+    //! \param node Wêze³ który roz³anczamy
+    void quickDisconnectNode(const NPtr & node);
+
+    //! \param connection Po³¹czenie które usuwamy
+    void quickRemoveConnection(const Connections::iterator & connection);
+
+    //! \param nodeIt Iterator wêz³a który usuwamy
+    void quickRemoveNode(const Nodes::iterator & nodeIt);
+
     //! \param node Weze³ dla którego tworzymy strukture opisujaca kolejnosc analizowania polaczen dla sprawdzania cykli
     //! \return Aktualny stan analizowanych polaczen
-    static PATH_ENTRY getFirstNodeOutputConnection(NPtr node);
+    static PathEntry getFirstNodeOutputConnection(const NPtr & node);
 
-    //! \param pathElement Element opisujacy kolejnosc przegladania po³¹czeñ w wêŸle - jej aktualny stan
+    //! \param pathEntry Element opisujacy kolejnosc przegladania po³¹czeñ w wêŸle - jej aktualny stan
     //! \return Kolejny stan analizowanych polaczen
-    static PATH_ENTRY getNextNodeOutputConnection(const PATH_ENTRY & pathElement);
+    static PathEntry getNextNodeOutputConnection(const PathEntry & pathEntry);
 
     //! \param src Pin Ÿród³owy (wyjœciowy)
     //! \param src Pin docelowy (wejœciowy)
     //! \return Po³¹czenie pomiêdzy danymi pinami lub nullptr w przypadku braku po³¹czenia
     ConnPtr findConnection(CPinPtr src, CPinPtr dest) const;
 
+    //! \param node Wêze³ który staje siê liœciem
+    void addLeaf(const NPtr & node);
+
+    //! \param node Wêze³ który przestaje byæ liœciem
+    void removeLeaf(const NPtr & node);
+
+protected:
+    //! mutex dla zmiany stanu modelu
+    OpenThreads::Mutex editMutex;
+
 private:
+
     //! Zbiór wszystkich wezlow modelu
-	NODES_SET nodes;
+	Nodes nodes;
 
     //! Zbiór wszystkich po³¹czeñ modelu
-	CONNECTIONS_SET connections;
+	Connections connections;
+
+    //! Mapa wêz³ów wymagaj¹cych interwencji aby model by³ poprawnie zbudowany
+	RequiringConnection pinsRequiringConnections;
+
+    //! Zbiór wêz³ów liœci
+    Nodes leafNodes;
+
+    //! ID w¹tku który zablokowa³ ten obiekt
+    int lockingThreradId;
+
+    //! mutex dla zmiany stanu modelu
+    OpenThreads::Mutex lockMutex;
 };
 
 }

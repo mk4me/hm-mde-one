@@ -3,11 +3,11 @@
 #include <dfmlib/Connection.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace dflm{
+namespace dflm {
 ////////////////////////////////////////////////////////////////////////////////
 
 DFPin::DFPin(const std::string & nodeName, bool required,
-	const Pin::REQ_PINS_SET & requiredPins)
+	const Pin::ReqPinsSet & requiredPins)
 	: Pin(nodeName, required, requiredPins),
 		updated(false)
 {
@@ -19,7 +19,7 @@ DFPin::~DFPin(void)
 
 }
 
-bool DFPin::isDFPin(CPinPtr pin)
+bool DFPin::isDFPin(const CPinPtr & pin)
 {
 	if(getDFPin(pin) != nullptr){
 		return true;
@@ -28,12 +28,12 @@ bool DFPin::isDFPin(CPinPtr pin)
 	return false;
 }
 
-DFPinPtr DFPin::getDFPin(PinPtr pin)
+DFPinPtr DFPin::getDFPin(const PinPtr & pin)
 {
 	return boost::dynamic_pointer_cast<DFPin>(pin);
 }
 
-CDFPinPtr DFPin::getDFPin(CPinPtr pin)
+CDFPinPtr DFPin::getDFPin(const CPinPtr & pin)
 {
     return boost::dynamic_pointer_cast<const DFPin>(pin);
 }
@@ -51,15 +51,14 @@ void DFPin::reset()
 void DFPin::update()
 {
 	updated = true;
-    PIN_TYPE pinType = getType();
-	if(pinType == PIN_IN){
+    PinType pinType = getType();
+	if(pinType == IN){
 		DFNPtr node(DFNode::getDFNode(getParent()));
 		if(node != nullptr){
 			node->notify();
 		}
-	}else if(pinType == PIN_OUT){
-        const CONNECTIONS_SET & connections = getConnections();
-		for(CONNECTIONS_SET::const_iterator it = connections.begin(); it != connections.end(); it++){
+	}else if(pinType == OUT){
+		for(auto it = begin(); it != end(); it++){
 			DFPinPtr pin(boost::dynamic_pointer_cast<DFPin>((*it)->getDest()));
 			if(pin != nullptr){
 				pin->copyDataFromPin(boost::dynamic_pointer_cast<DFPin>(shared_from_this()));
@@ -70,7 +69,7 @@ void DFPin::update()
 	onUpdate();
 }
 
-void DFPin::copyDataFromPin(DFPinPtr pin)
+void DFPin::copyDataFromPin(const DFPinPtr & pin)
 {
 
 }
