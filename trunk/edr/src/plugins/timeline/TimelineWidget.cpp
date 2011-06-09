@@ -1,6 +1,6 @@
 #include "TimelinePCH.h"
 #include "TimelineWidget.h"
-#include <plugins//timeline/State.h>
+#include <plugins/timeline/State.h>
 // TODO
 // - slider QSlider nie wspiera przeskakiwania do miejsca klikniêcia,
 //   zamiast tego przeskakuje o "page value"

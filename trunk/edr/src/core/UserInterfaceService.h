@@ -22,6 +22,8 @@ public:
     virtual QWidget* getWidget(std::vector<QObject*>& actions);
     virtual const std::string& getName() const;
 
+    virtual void finalize() {};
+
 // IUserInterface
 public:
     //! \return Wskaünik na g≥Ûwne okno.

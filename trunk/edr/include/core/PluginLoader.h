@@ -69,6 +69,8 @@ public:
         this->paths = paths; 
     }
 
+    void unloadPlugins();
+
 
 private:
     //! 

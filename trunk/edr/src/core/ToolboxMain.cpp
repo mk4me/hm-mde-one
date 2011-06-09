@@ -37,8 +37,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
-//#include "ComputeThread.h"
-
 #include <core/Log.h>
 #include <core/StringTools.h>
 #include <boost/foreach.hpp>
@@ -134,6 +132,7 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     registerPluginsDataProcessors();
     registerPluginsDataSources();
 
+    //
 
     sceneRoot = new osg::Group();
     sceneRoot->setName("root");
@@ -202,6 +201,7 @@ void ToolboxMain::writeSettings()
 void ToolboxMain::closeEvent(QCloseEvent* event)
 {
     writeSettings();
+    ServiceManager::getInstance()->finalizeServices();
     QMainWindow::closeEvent(event);
 }
 

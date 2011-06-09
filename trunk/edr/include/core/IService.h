@@ -77,6 +77,11 @@ namespace core
 
         })
 
+        //! Metoda powinna w bezpieczny sposob zwalniac zasoby, majac na uwadze ¿e niekoniecznie wszystkie uslugi i zasoby pobrane z zewnatrz sa jeszcze dostepne.
+        //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomi³ serwis, moze tez zwalniac pamieæ przydzielon¹ dynamicznie
+        //! Generalnie to taki bezpieczny destruktor uniezalezniajacy dana usluge od pozostalych uslug i przygotowujacy ja na usuniecie
+        virtual void finalize() = 0;
+
         //! Us³uga nie musi mieæ wizualnej reprezentacji.
         //! \return Widget tworzony przez us³ugê b¹dŸ NULL.
         virtual QWidget* getWidget(std::vector<QObject*>& actions) = 0;

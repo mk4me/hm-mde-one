@@ -57,6 +57,8 @@ public:
     //! \return Delta od ostatniej ramki.
     double getDeltaTime();
 
+    void finalizeServices();
+
 // IServiceManager
 public:
     //! Rejestruje us³ugê. Us³ugi musz¹ mieæ unikatowe ID!

@@ -235,6 +235,8 @@ class KinematicService : public core::IService
 public:
     KinematicService();
 
+    virtual void finalize() {};
+
     virtual QWidget* getSettingsWidget(std::vector<QObject*>& actions)
     {
         return nullptr;

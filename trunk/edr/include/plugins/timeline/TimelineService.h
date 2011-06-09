@@ -36,6 +36,8 @@ public:
 
 // IService
 public:
+
+    virtual void finalize();
     //!
     virtual QWidget* getWidget(std::vector<QObject*>& actions);
     //!

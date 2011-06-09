@@ -19,6 +19,29 @@ ServiceManager::~ServiceManager(void)
     // for (ServicesMap::iterator i = servicesMap.begin(); i != servicesMap.end(); ++i) {
     //     delete i->second;
     // }
+    //finalizeServices();
+}
+
+void ServiceManager::finalizeServices()
+{
+    for(auto it = servicesList.begin(); it != servicesList.end(); it++){
+        try{
+            (*it)->finalize();
+            LOG_DEBUG(std::string("ServiceManager: finalized correctly ") + (*it)->getName() + std::string(" service"));
+        }
+        catch(std::runtime_error e){
+            LOG_ERROR(std::string("ServiceManager: Error finalizing ") + (*it)->getName() + std::string(" service with error ") + e.what());
+        }
+        catch(std::invalid_argument e){
+            LOG_ERROR(std::string("ServiceManager: Error finalizing ") + (*it)->getName() + std::string(" service with error ") + e.what());
+        }
+        catch(std::exception e){
+            LOG_ERROR(std::string("ServiceManager: Error finalizing ") + (*it)->getName() + std::string(" service with error ") + e.what());
+        }
+        catch(...){
+            LOG_ERROR(std::string("ServiceManager: Unknown error"));
+        }
+    }
 }
 
 void ServiceManager::registerService(core::IServicePtr service)

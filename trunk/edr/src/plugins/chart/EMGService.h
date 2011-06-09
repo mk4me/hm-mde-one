@@ -25,6 +25,8 @@ private:
 
 public:
     ChartService();
+
+    virtual void finalize() {};
     virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
     virtual QWidget* getWidget(std::vector<QObject*>& actions);
     virtual const std::string& getName() const;
@@ -52,6 +54,8 @@ public:
 
 // IService
 public:
+
+    virtual void finalize() {};
     //!
     virtual void init(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
     //!

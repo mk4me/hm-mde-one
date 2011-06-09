@@ -56,6 +56,8 @@ public:
 public:
     VideoService();
 
+    virtual void finalize() {};
+
     virtual QWidget* getWidget(std::vector<QObject*>& actions)
     { 
         return nullptr;

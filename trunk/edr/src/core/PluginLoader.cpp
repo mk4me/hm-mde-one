@@ -27,8 +27,7 @@ PluginLoader::PluginLoader()
 
 PluginLoader::~PluginLoader()
 {
-    clear();
-    freeLibraries();
+    unloadPlugins();
 }
 
 void PluginLoader::clear()
@@ -38,6 +37,26 @@ void PluginLoader::clear()
 
     //wyczyszczenie pluginów
     plugins.swap(Plugins());
+}
+
+void PluginLoader::unloadPlugins()
+{
+    try{
+        clear();
+        freeLibraries();
+    }
+    catch(std::runtime_error e){
+        LOG_ERROR(std::string("PluginLoader: Error unloading plugins ") + e.what());
+    }
+    catch(std::invalid_argument e){
+        LOG_ERROR(std::string("PluginLoader: Error unloading plugins ") + e.what());
+    }
+    catch(std::exception e){
+        LOG_ERROR(std::string("PluginLoader: Error unloading plugins ") + e.what());
+    }
+    catch(...){
+        LOG_ERROR(std::string("PluginLoader: Error unloading plugins "));
+    }
 }
 
 void PluginLoader::addDefaultPaths()
