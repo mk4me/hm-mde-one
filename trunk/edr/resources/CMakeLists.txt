@@ -10,12 +10,12 @@ source_group("settings" FILES ${SETTINGS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SETTINGS})
 
 # modele
-set(MESHES 
-	meshes/fixed_biped.fmesh
-	meshes/Alien.tbs
-)
-source_group("meshes" FILES ${MESHES})
-set(ALL_RESURCES ${ALL_RESURCES} ${MESHES})
+#set(MESHES 
+#	meshes/fixed_biped.fmesh
+#	meshes/Alien.tbs
+#)
+#source_group("meshes" FILES ${MESHES})
+#set(ALL_RESURCES ${ALL_RESURCES} ${MESHES})
 
 
 # pliki shaderów
@@ -42,11 +42,6 @@ source_group("schemas" FILES ${SCHEMAS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SCHEMAS})
 
 set(TRIAL
-	trial/walkMoCap2.amc
-	trial/walkMoCap2.c3d
-	trial/walkMoCapVideo.amc
-	trial/walkMoCapVideo.asf
-	trial/walkMoCapVideo.c3d
 	trial/M39.vsk
 	trial/M53.vsk
 )
@@ -65,6 +60,12 @@ file(GLOB ICONS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_D
 source_group("icons" FILES ${ICONS})
 set(ALL_RESURCES ${ALL_RESURCES} ${ICONS})
 
+# ikony vdf
+file(GLOB ICONSVDF RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/icons/vdf/*.png")
+source_group("iconsvdf" FILES ${ICONSVDF})
+set(ALL_RESURCES ${ALL_RESURCES} ${ICONSVDF})
+#MESSAGE( STATUS "CMAKE_CURRENT_SOURCE_DIR: " ${ICONSVDF} )
+
 # obrazki
 file(GLOB IMAGES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/images/*.png")
 source_group("images" FILES ${IMAGES})
@@ -74,7 +75,7 @@ set(ALL_RESURCES ${ALL_RESURCES} ${IMAGES})
 option(PROJECT_ENABLE_SVN_RESOURCES_COPYING "Enable copying resources?" ON)
 if(PROJECT_ENABLE_SVN_RESOURCES_COPYING)
 
-	# stworzenie domyœlnej listy katalogó
+	# stworzenie domyœlnej listy katalogów
 	if ( WIN32 )
 		set(_DEFAULT_RESOURCES_LOC)
 		foreach (buildType ${CMAKE_CONFIGURATION_TYPES})
