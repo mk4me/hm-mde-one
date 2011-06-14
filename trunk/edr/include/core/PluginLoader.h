@@ -41,6 +41,11 @@ public:
     //! £aduje pluginy.
     void load();
 
+	void addPath(const std::string& path)
+	{
+		this->paths.push_back(path);
+	}
+
     //! \return
     int getNumPlugins() const
     {

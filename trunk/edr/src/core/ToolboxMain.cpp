@@ -26,6 +26,7 @@
 #include <core/C3DParserEx.h>
 #include "UserInterfaceService.h"
 #include "config/ConfigurationFileService.h"
+#include "EDRConfig.h"
 
 #include <iostream>
 
@@ -88,6 +89,7 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     DataManager* dataManager = DataManager::getInstance();
     ServiceManager* serviceManager = ServiceManager::getInstance();
     VisualizerManager* visualizerManager = VisualizerManager::getInstance();
+	EDRConfig* directoriesInfo = EDRConfig::getInstance();
     DataProcessorManager* dataProcesorManager = DataProcessorManager::getInstance();
 
     //boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
@@ -122,6 +124,16 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
 
     registerCoreDataSources();
 
+	using namespace boost::filesystem;
+	path pluginPath = core::getApplicationDataPath() / "plugins";
+	
+	if(exists(pluginPath)) {
+		for_each(directory_iterator(pluginPath), directory_iterator(), [=](path p) {
+			if (is_directory(p)) {
+				pluginLoader->addPath(p.string());
+			}
+		});
+	}
     pluginLoader->load();
 
     registerPluginsWrapperFactories();
@@ -137,7 +149,7 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     sceneRoot = new osg::Group();
     sceneRoot->setName("root");
 
-	dataManager->findResources();
+	dataManager->findResources(directoriesInfo->getResourcesPath().string());
     //dataManager->findLocalTrials();
     dataManager->loadResources();
 

@@ -16,6 +16,7 @@
 #include <core/IDataProcessorManager.h>
 #include <core/IDataSourceManager.h>
 #include <core/StringTools.h>
+#include <core/IPath.h>
 
 namespace core 
 {
@@ -25,6 +26,7 @@ namespace core
         IDataManager* dataManager;
         IVisualizerManager* visualizerManager;
         IServiceManager* serviceManager;
+		IPath* pathInterface;
         IDataProcessorManager* dataProcessorManager;
         IDataSourceManager* dataSourceManager;
         IWorkflowManager* workflowManager;
@@ -43,6 +45,11 @@ namespace core
     {
         return __instanceInfo.dataManager;
     }
+
+	inline IPath* getPathInterface()
+	{
+		return __instanceInfo.pathInterface;
+	}
 
     //!
     inline IVisualizerManager* getVisualizerManager()
@@ -77,19 +84,19 @@ namespace core
     //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
     inline const IDataManager::Path& getResourcesPath()
     {
-        return getDataManager()->getResourcesPath();
+        return getPathInterface()->getResourcesPath();
     }
 
     //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
     inline const IDataManager::Path& getApplicationDataPath()
     {
-        return getDataManager()->getApplicationDataPath();
+        return getPathInterface()->getApplicationDataPath();
     }
 
     //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
     inline const IDataManager::Path& getUserDataPath()
     {
-        return getDataManager()->getUserDataPath();
+        return getPathInterface()->getUserDataPath();
     }
 
     //! \return Pomocnicza metoda do pobierania œcie¿ek.

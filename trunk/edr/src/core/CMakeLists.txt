@@ -57,6 +57,7 @@ set(PRIVATE_H
 	OutputDescription.h
 	OutputItem.h
 	InputOutputItem.h
+	EDRConfig.h
 	EDRDFNode.h
 	EDRDFSourceNode.h
 	EDRDFPin.h
@@ -138,6 +139,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/IWorkflowItemBase.h
 	${HEADER_PATH}/IClonable.h
 	${HEADER_PATH}/ISerializable.h
+	${HEADER_PATH}/IPath.h
 	${HEADER_PATH}/IWorkflow.h
 	${HEADER_PATH}/IWorkflowManager.h
 	${HEADER_PATH}/IDataProcessorManager.h
@@ -199,6 +201,7 @@ set(TARGET_SRC
 	OutputDescription.cpp
 	OutputItem.cpp
 	InputOutputItem.cpp
+	EDRConfig.cpp
 	EDRDFNode.cpp
 	EDRDFSourceNode.cpp
 	EDRDFPin.cpp

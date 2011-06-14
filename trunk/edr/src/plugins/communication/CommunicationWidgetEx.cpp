@@ -17,7 +17,7 @@ CommunicationWidgetEx::PerformerTreeItem::PerformerTreeItem(PerformerRelationPtr
     menu = nullptr;
     headers << "" << "Element";
     setToolTip(0, "Performer");
-    setIcon(0, QIcon(QString::fromUtf8("resources/icons/subject.png")));
+    setIcon(0, QIcon(core::getResourceString("icons/subject.png")));
 
     QString name = QString::fromUtf8(performer->performer.firstName.c_str());
     QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
@@ -31,7 +31,7 @@ CommunicationWidgetEx::SessionTreeItem::SessionTreeItem(SessionRelationPtr sessi
     menu = nullptr;
     headers << "" << "Element" << "Date" << "Performer";
     setToolTip(0, "Session");
-    setIcon(0, QIcon(QString::fromUtf8("resources/icons/session.png")));
+    setIcon(0, QIcon(core::getResourceString("icons/session.png")));
 
     setText(0, QString::fromUtf8(session->session.sessionName.c_str()));
     setText(1, QString::number(session->trials.size()).append(" trial(s)"));
@@ -46,7 +46,7 @@ CommunicationWidgetEx::TrialTreeItem::TrialTreeItem(TrialRelationPtr trial)
     menu = nullptr;
     headers << "" << "Element" << "Date" << "Performer" << "Session";
     setToolTip(0, "Trial");
-    setIcon(0, QIcon(QString::fromUtf8("resources/icons/trial.png")));
+    setIcon(0, QIcon(core::getResourceString("icons/trial.png")));
     setText(0, QString::fromUtf8(trial->trial.trialName.c_str()).right(11));
 
     QString files;

@@ -11,6 +11,7 @@
 #include "ServiceManager.h"
 #include "DataManager.h"
 #include "VisualizerManager.h"
+#include "EDRConfig.h"
 #include "DataProcessorManager.h"
 #include "DataSourceManager.h"
 #include <utils/Push.h>
@@ -64,23 +65,19 @@ int main(int argc, char *argv[])
         application.setOrganizationName("PJWSTK");
         QSettings::setDefaultFormat(QSettings::IniFormat);
 
-        LogInitializer logger("resources/settings/log.ini");
+		EDRConfig edrConfig;
+	    EDRConfig::setPaths(edrConfig);
+		boost::filesystem::path p = edrConfig.getResourcesPath() / "settings" / "log.ini";
+        LogInitializer logger( p.string().c_str());
+
+		
+
 
         PluginLoader pluginLoader;
         {
             DataManager dataManager;
 
-            boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
-            userPath /= "EDR";
-            dataManager.setUserDataPath(userPath);
-
-            boost::filesystem::path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
-            dataManager.setApplicationDataPath(appDataPath);
-
-///            boost::filesystem::path resourcesPath = boost::filesystem::initial_path();
-            boost::filesystem::path resourcesPath(core::toStdString(QDir::currentPath())); 
-            resourcesPath /= "resources";
-			dataManager.setResourcesPath(resourcesPath);
+            
 
             VisualizerManager visualizerManager;
             DataProcessorManager dataProcessorManager;
@@ -95,12 +92,12 @@ int main(int argc, char *argv[])
             // zale¿eæ od managerów, a wówczas wskaŸniki wskazywa³yby œmieci
             // podobnie ¿ywotnoœæ do³adowanych bibliotek musi przekraczaæ zakoñczenie
             // siê destruktora
+			utils::Push<IPath*> pushedDI(__instanceInfo.pathInterface, &edrConfig);
             utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
             utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
             utils::Push<IDataProcessorManager*> pushedDPM(__instanceInfo.dataProcessorManager, &dataProcessorManager);
             utils::Push<IDataSourceManager*> pushedDSM(__instanceInfo.dataSourceManager, &dataSourceManager);
             utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
-            
             
             {
                 ToolboxMain window(&pluginLoader);
