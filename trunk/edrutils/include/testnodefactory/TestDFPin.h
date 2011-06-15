@@ -15,7 +15,7 @@ public:
 
 protected:
 	virtual void onUpdate();
-	virtual void copyDataToPin(dflm::DFPinPtr pin);
+	virtual void copyDataToPin(const dflm::DFPinPtr & pin);
 };
 
 

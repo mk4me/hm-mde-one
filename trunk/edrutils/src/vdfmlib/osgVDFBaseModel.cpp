@@ -74,6 +74,30 @@ void osgVDFBaseModel::setModel(const dflm::MPtr & model, const NodesPositions & 
     //}
 }
 
+//! \param lock Czy zablokowac do edycji logiki i w³aœciwoœci modelu - tylko wizualna zmiana layoutu mo¿liwa
+void osgVDFBaseModel::lockForModelEdition(bool lock)
+{
+
+}
+
+//! \return Czy zablokowano do edycji logiki
+bool osgVDFBaseModel::isLockedForModelEdition() const
+{
+    return false;
+}
+
+//! \param lock Czy zablokowac do jakiejkolwiek edycji
+void osgVDFBaseModel::lockForVisualEdition(bool lock)
+{
+
+}
+
+//! \return Czy zablokowano do jakiejkolwiek edycji
+bool osgVDFBaseModel::isLockedForVisualEdition() const
+{
+    return false;
+}
+
 void osgVDFBaseModel::clearVisualConnections()
 {
     throw std::runtime_error("To implement!");
@@ -93,7 +117,9 @@ const dflm::MPtr & osgVDFBaseModel::getModel() const
 void osgVDFBaseModel::init( osgViewer::View* view ) 
 {
     //add event to create nodes
+#ifdef _DEBUG
     view->addEventHandler(new osgViewer::StatsHandler());
+#endif
 
     view->addEventHandler(new UserSpaceClick(this));
     view->addEventHandler(new osgui::KeyboardMapperHandler(this));
@@ -975,15 +1001,16 @@ dflm::ConnPtr osgVDFBaseModel::connect(const dflm::PinPtr & src, const dflm::Pin
 void osgVDFBaseModel::disconnect(const dflm::ConnPtr & connection)
 {	
     ScopeLock lock(const_cast<osgVDFBaseModel*>(this)->stateMutex);
-
+    dflm::PinPtr src = connection->getSrc();
+    dflm::PinPtr dest = connection->getDest();
 	logicModel->removeConnection(connection);
 
 	osg::Geode * vconnection = connectionsLogicalToGraph[connection];
 
 	//update connection pins
-	osgVDFBasePin* vpin = pinsLogicalToGraph[connection->getSrc()];
+	osgVDFBasePin* vpin = pinsLogicalToGraph[src];
 	removeConnectionFromPin(vpin,vconnection);
-	vpin = pinsLogicalToGraph[connection->getDest()];
+	vpin = pinsLogicalToGraph[dest];
 	removeConnectionFromPin(vpin,vconnection);
 
 	//update output pins of destination node
@@ -1589,6 +1616,8 @@ bool osgVDFBaseModel::onPinRelease(osgWidget::Event& ev)
 		    restorePinsStatus();
 
 		    if(connectingCurrentPin != nullptr){
+
+                connectionContinue(visualConnection, connectingCurrentPin->getCenterPosition());
 
                 if(connectingStartPin->getModelPin()->getType() == dflm::Pin::IN){
                     std::swap(connectingStartPin, connectingCurrentPin);

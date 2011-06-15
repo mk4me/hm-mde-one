@@ -179,11 +179,17 @@ public:
     //! \param dewscriptor Klasa opisuj¹ca typ wêz³a dodawanego do defualtowego toolbara
     void registerNodeType(osgVDFNodeTypeDescriptor * descriptor);
 
-    //! \param lock Czy zablokowac do wizualnej edycji logiki i w³aœciwoœci modelu - tylko wizualna zmiana layoutu mo¿liwa
-    void lockForEdition(bool lock);
+    //! \param lock Czy zablokowac do edycji logiki i w³aœciwoœci modelu - tylko wizualna zmiana layoutu mo¿liwa
+    void lockForModelEdition(bool lock);
 
-    //! \return Czy zablokowano do edycji wizualnej
-    bool isLockedForEdition() const;
+    //! \return Czy zablokowano do edycji logiki
+    bool isLockedForModelEdition() const;
+
+    //! \param lock Czy zablokowac do jakiejkolwiek edycji
+    void lockForVisualEdition(bool lock);
+
+    //! \return Czy zablokowano do jakiejkolwiek edycji
+    bool isLockedForVisualEdition() const;
 
     //-------------------------- NODES LAYOUT MANAGMENT ------------------------------------
 

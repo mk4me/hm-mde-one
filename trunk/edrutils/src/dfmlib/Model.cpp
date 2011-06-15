@@ -10,7 +10,7 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-Model::Model(void) : lockingThreradId(NO_LOCK_THREADID)
+Model::Model(void)
 {
 }
 
@@ -23,88 +23,10 @@ bool Model::isModelChangeAllowed() const
     return true;
 }
 
-//int Model::getCurrentThreadId()
-//{
-//    if(OpenThreads::Thread::CurrentThread() == nullptr){
-//        return 0;
-//    }
-//
-//    return OpenThreads::Thread::CurrentThread()->getThreadId();
-//}
-//
-//int Model::lock()
-//{
-//    {
-//        ScopedLock lock(const_cast<Model*>(this)->lockMutex);
-//
-//        int currentThreadId = getCurrentThreadId();
-//
-//        if(isLockedNonBlocking() == false){
-//            lockingThreradId = currentThreadId;
-//        }else if(lockingThreradId == currentThreadId){
-//            return 0;
-//        }
-//    }
-//
-//    return OpenThreads::Mutex::lock();
-//}
-//
-//int Model::unlock()
-//{
-//    ScopedLock lock(const_cast<Model*>(this)->lockMutex);
-//
-//    if(isLockedNonBlocking() == false){
-//        return 0;
-//    }
-//
-//    if(lockingThreradId != getCurrentThreadId()){
-//        throw std::runtime_error("Current thread is not the owner of unlocking object!");
-//    }
-//
-//    return OpenThreads::Mutex::unlock();
-//}
-//
-//int Model::tryLock()
-//{
-//    ScopedLock lock(const_cast<Model*>(this)->lockMutex);
-//
-//    int ret = 0;
-//    int currentThreadId = getCurrentThreadId();
-//
-//    if(isLockedNonBlocking() == false){
-//        lockingThreradId = currentThreadId;
-//        ret = OpenThreads::Mutex::lock();
-//    }else if(lockingThreradId != currentThreadId){
-//        ret = -1;
-//    }
-//
-//    return ret;
-//}
-//
-//int Model::getLockingThreadId() const
-//{
-//    ScopedLock lock(const_cast<Model*>(this)->lockMutex);
-//
-//    return lockingThreradId;
-//}
-//
-//bool Model::isLockedNonBlocking() const
-//{
-//    return lockingThreradId != NO_LOCK_THREADID;
-//}
-//
-//bool Model::isLocked() const
-//{
-//    ScopedLock lock(const_cast<Model*>(this)->lockMutex);
-//
-//    return isLockedNonBlocking();
-//}
-
 void Model::setNodeName(const NPtr & node, const std::string & name)
 {
     UTILS_ASSERT((node != nullptr), "B³êdny wêze³ do edycji!");
 
-    //ScopedLock lock(const_cast<Model*>(this));
     ScopedLock lock(editMutex);
 
     if(node->model.lock() != shared_from_this()){
@@ -122,7 +44,6 @@ void Model::setPinName(const PinPtr & pin, const std::string & name)
 {
     UTILS_ASSERT((pin != nullptr), "B³êdny pin do edycji!");
 
-    //ScopedLock lock(const_cast<Model*>(this));
     ScopedLock lock(editMutex);
 
     if(pin->getParent()->model.lock().get() != this){
@@ -136,25 +57,25 @@ void Model::setPinName(const PinPtr & pin, const std::string & name)
 
 const Model::Nodes & Model::getNodes() const
 {
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
     return nodes;
 }
 
 const Model::Connections & Model::getConnections() const
 {
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
     return connections;
 }
 
 const Model::RequiringConnection & Model::getRequiringConnections() const
 {
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
     return pinsRequiringConnections;
 }
 
 const Model::Nodes & Model::getLeafNodes() const
 {
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
     return leafNodes;
 }
 
@@ -170,7 +91,7 @@ bool Model::additionalModelValidation() const
 
 bool Model::isModelValid() const
 {
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
     return getRequiringConnections().empty() == true && additionalModelValidation() == true;
 }
 
@@ -178,8 +99,7 @@ void Model::addNode(const NPtr & node)
 {
 	UTILS_ASSERT((node != nullptr), "Bledny wezel");
 
-    //ScopedLock lock(const_cast<Model*>(this));
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
 
     if(isModelChangeAllowed() == false){
         throw std::runtime_error("Model modification not allowed!");
@@ -241,8 +161,7 @@ void Model::disconnectNode(const NPtr & node)
 {
     UTILS_ASSERT((node != nullptr), "B³êdny wêze³");
 
-    //ScopedLock lock(const_cast<Model*>(this));
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
 
     if(isModelChangeAllowed() == false){
         throw std::runtime_error("Model modification not allowed!");
@@ -286,8 +205,7 @@ void Model::removeNode(const NPtr & node)
 {
     UTILS_ASSERT((node != nullptr), "Bledny wezel");
 
-    //ScopedLock lock(const_cast<Model*>(this));
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
 
     if(isModelChangeAllowed() == false){
         throw std::runtime_error("Model modification not allowed!");
@@ -326,8 +244,7 @@ void Model::beforeNodeRemove(const NPtr & node)
 
 void Model::clearNodes()
 {
-    //ScopedLock lock(const_cast<Model*>(this));
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
 
     if(isModelChangeAllowed() == false){
         throw std::runtime_error("Model modification not allowed!");
@@ -353,8 +270,7 @@ bool Model::additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) co
 
 bool Model::canConnect(const CPinPtr & src, const CPinPtr & dest) const
 {
-    //ScopedLock lock(const_cast<Model*>(this)->editMutex);
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
 
 	bool ret = true;
 
@@ -373,8 +289,7 @@ bool Model::canConnect(const CPinPtr & src, const CPinPtr & dest) const
 
 ConnPtr Model::connect(const PinPtr & src, const PinPtr & dest)
 {
-    //ScopedLock lock(const_cast<Model*>(this));
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
 
     if(isModelChangeAllowed() == false){
         throw std::runtime_error("Model modification not allowed!");
@@ -431,8 +346,7 @@ void Model::afterConnect(const ConnPtr & connection)
 
 void Model::removeConnection(const ConnPtr & connection)
 {
-    //ScopedLock lock(const_cast<Model*>(this));
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
 
     if(isModelChangeAllowed() == false){
         throw std::runtime_error("Model modification not allowed!");
@@ -450,8 +364,7 @@ void Model::removeConnection(const ConnPtr & connection)
 
 void Model::clearConnections()
 {
-    //ScopedLock lock(const_cast<Model*>(this));
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
 
     if(isModelChangeAllowed() == false){
         throw std::runtime_error("Model modification not allowed!");
@@ -536,7 +449,7 @@ bool Model::createCycle(const CPinPtr & src, const CPinPtr & dest) const
 
 Model::CyclePath Model::getCycle(const CPinPtr & src, const CPinPtr & dest) const
 {
-    ScopedLock lock(const_cast<Model*>(this)->editMutex);
+    ScopedLock lock(editMutex);
 	//if source is connected no loops possible
 	//also if leaf node is connected
 
@@ -616,7 +529,8 @@ Model::CyclePath Model::getCycle(const CPinPtr & src, const CPinPtr & dest) cons
 	return connInPath;
 }
 
-Model::PathEntry Model::getFirstNodeOutputConnection(const NPtr & node){
+Model::PathEntry Model::getFirstNodeOutputConnection(const NPtr & node)
+{
     PathEntry pathElement;
 
     for(int i = 0; i <= node->sizeOut(); i++){
@@ -633,22 +547,18 @@ Model::PathEntry Model::getFirstNodeOutputConnection(const NPtr & node){
     return pathElement;
 }
 
-Model::PathEntry Model::getNextNodeOutputConnection(const PathEntry & pathElement){
+Model::PathEntry Model::getNextNodeOutputConnection(const PathEntry & pathElement)
+{
     PathEntry pe = pathElement;
 
-    //if(++pe.connIT != (*pe.pinIT)->getConnections().end()){
     if(++pe.connectionIndex < pathElement.node->getOutPin(pathElement.pinIndex)->size()){
         return pe;
     }
 
-    //++pe.pinIT;
     pe.pinIndex++;
 
-    //for( ; pe.pinIT != pe.node->getOutPins().end(); pe.pinIT++){
     for( ; pe.pinIndex < pe.node->sizeOut(); pe.pinIndex++){
-        //if((*pe.pinIT)->getConnections().empty() == false){
         if(pe.node->getOutPin(pe.pinIndex)->empty() == false){
-            //pe.connIT = (*pe.pinIT)->getConnections().begin();
             pe.connectionIndex = 0;
             return pe;
         }
@@ -657,8 +567,8 @@ Model::PathEntry Model::getNextNodeOutputConnection(const PathEntry & pathElemen
     return pathElement;
 }
 
-bool Model::PathEntry::operator==(const PathEntry & pe) const{
-    //if(this->node == pe.node && this->pinIT == pe.pinIT && this->connIT == pe.connIT){
+bool Model::PathEntry::operator==(const PathEntry & pe) const
+{
     if(this->node == pe.node && this->pinIndex == pe.pinIndex && this->connectionIndex == pe.connectionIndex){
         return true;	
     }

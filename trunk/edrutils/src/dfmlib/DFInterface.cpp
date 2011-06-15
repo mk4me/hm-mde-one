@@ -36,11 +36,6 @@ void DFInterface::reset()
 
 }
 
-//void DFInterface::onEnableChange()
-//{
-//
-//}
-
 void DFInterface::notify()
 {
 	if(objectEnable == true){

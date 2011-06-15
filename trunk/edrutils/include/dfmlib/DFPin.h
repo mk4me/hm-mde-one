@@ -47,6 +47,8 @@ protected:
     //! Metoda odpalana przy ka¿dym wywo³aniu update()
 	virtual void onUpdate();
 
+    virtual void onReset();
+
     //! Metoda pozwalaj¹ca kopiowaæ dane pomiêdzy wêz³ami - kopiowanie inicjuje wêze³ wyjsciowy i wywo³uje t¹ metodê na wêŸle wejœciowym
     //! Mechanizm ten przenosi odpowiedzialnoœæ kopiowania danych na wêze³ wejœciowy który mo¿e miesz szersz¹ funkcjonalnoœæ (kompatybilnoœæ typów) ni¿ wêze³ wyjœciowy
     //! \param pin Pin z którego wêze³ wejsciowy powinien skopiowaæ dane

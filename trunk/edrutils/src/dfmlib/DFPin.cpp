@@ -46,6 +46,12 @@ bool DFPin::isUpdated() const
 void DFPin::reset()
 {
 	updated = false;
+    onReset();
+}
+
+void DFPin::onReset()
+{
+    
 }
 
 void DFPin::update()

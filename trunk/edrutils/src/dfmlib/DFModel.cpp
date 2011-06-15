@@ -9,22 +9,22 @@
 namespace dflm{
 ////////////////////////////////////////////////////////////////////////////////
 
-DFModel::DFModel(void) : Model(), running(false), paused(false),
-    finishedLeafes(0), finished(true)
+DFModel::DFModel(void) : Model(), running(false), paused(false), stopPending(false),
+    pausePending(false), finishedLeafes(0), finished(false)
 {
-    pauseMutex.lock();
-    modelRunner.reset(new ModelRunner(this));
+    //pauseMutex.lock();
+    //modelRunner.reset(new ModelRunner(this));
 }
 
 
 DFModel::~DFModel(void)
 {
-    ScopedLock lock(const_cast<DFModel*>(this)->runningMutex);
+    /*ScopedLock lock(runningMutex);
     if(modelRunner->isRunning() == true){
         modelRunner->finishProcessing();
         pauseMutex.unlock();
         modelRunner->join();
-    }
+    }*/
 }
 
 bool DFModel::isModelChangeAllowed() const
@@ -34,33 +34,40 @@ bool DFModel::isModelChangeAllowed() const
 
 bool DFModel::isFinished() const
 {
-    ScopedLock lock(const_cast<DFModel*>(this)->runningMutex);
+    ScopedLock lock(runningMutex);
     
     return finished;
 }
 
 bool DFModel::isRunning() const
 {
-    ScopedLock lock(const_cast<DFModel*>(this)->runningMutex);
+    ScopedLock lock(runningMutex);
 
     return running;
 }
 
 bool DFModel::isPaused() const
 {
-    ScopedLock lock(const_cast<DFModel*>(this)->runningMutex);
+    ScopedLock lock(runningMutex);
 
     return paused;
 }
 
 void DFModel::run()
 {
-    //ScopedLock lock(const_cast<DFModel*>(this));
-    ScopedLock lock(const_cast<DFModel*>(this)->runningMutex);
+    ScopedLock lock(runningMutex);
     editMutex.lock();
 
-    if(running == true){
+    //wznow odtwarzanie po pause
+    if(paused == true){
+        paused = false;
+        notifySources();
+        notify();
         return;
+    }
+    
+    if(running == true){
+        throw std::runtime_error("Model already running!");
     }
 
     if(isModelValid() == false){
@@ -68,42 +75,62 @@ void DFModel::run()
     }
 
     running = true;
-    paused = false;
-    finished = false;
 
-    pauseMutex.unlock();
-
-    if(modelRunner->isRunning() == false){
-        modelRunner->start();
-    }
-
-    notify();
+    if(sourcesHaveMoreData() == true){
+        notifySources();
+        
+        if(finished == false){
+            notify();
+        }
+    }else{
+        finished = true;
+        notify();
+    }    
 }
 
 void DFModel::pause()
 {
-    //ScopedLock lock(const_cast<DFModel*>(this));
-    ScopedLock lock(const_cast<DFModel*>(this)->editMutex);
+    ScopedLock lock(runningMutex);
 
-    if(running == false || paused == true){
-        return;
+    if(running == false){
+        throw std::runtime_error("Can not pause - Model is not running!");
     }
 
-    paused = true;
+    pausePending = true;
 }
 
 void DFModel::stop()
 {
-    //ScopedLock lock(const_cast<DFModel*>(this));
-    ScopedLock lock(const_cast<DFModel*>(this)->editMutex);
+    ScopedLock lock(runningMutex);
 
     if(running == false){
-        return;
+        throw std::runtime_error("Can not stop model - model is not running!");
     }
+
+    stopPending = true;
+}
+
+void DFModel::reset()
+{
+    ScopedLock lock(runningMutex);
+
+    if(finished == false){
+        throw std::runtime_error("Can not reset model that has not finished!");
+    }
+
+    resetPinStates();
+    resetNodeStates();
 
     running = false;
     paused = false;
     finished = false;
+
+    pausePending = false;
+    stopPending = false;
+
+    editMutex.unlock();
+
+    notify();
 }
 
 bool DFModel::sourcesHaveMoreData() const
@@ -150,29 +177,27 @@ bool DFModel::isNodeSupported(const NPtr & node) const
 void DFModel::leafHasProcessedData()
 {
     {
-        ScopedLock lock(leavesMutex);
-        ++finishedLeafes %= getLeafNodes().size();
+        //ScopedLock lock(leavesMutex);
+        ++finishedLeafes %= innerGetLeafNodes().size();
     }
     
     //sprawdü czy wszystkie liúcie przetworzy≥y dane
 	if( finishedLeafes == 0 ){
-        ScopedLock _lock(const_cast<DFModel*>(this)->editMutex);
-        if(running == false){
-            resetPinStates();
-            resetNodeStates();
+        ScopedLock _lock(runningMutex);
+        if(stopPending == true){
             finished = true;
-            editMutex.unlock();
             notify();
-        }else if(paused == false){
+        }else if(pausePending == false){
             if(sourcesHaveMoreData() == true){
-                pauseMutex.unlock();
+                resetPinStates();
+                //resetNodeStates();
+                notifySources();
             }else{
                 finished = true;
-                running = false;
-                paused = false;
-                editMutex.unlock();
                 notify();
             }
+        }else{
+            paused = true;
         }
 	}
 }
@@ -214,7 +239,7 @@ void DFModel::resetNodeStates()
 
 bool DFModel::additionalModelValidation() const
 {
-    if(getNodes().empty() == true || sourceNodes.empty() == true){
+    if(getNodes().empty() == true || sourceNodes.empty() == true || (getNodes().size() - sourceNodes.size()) == 0 ){
         return false;
     }	
 
@@ -256,35 +281,35 @@ void DFModel::beforeLeafRemove(const NPtr & node)
     DFNode::getDFNode(node)->onLeafProcessedCallback = DFNode::OnLeafProcessedCallback();
 }
 
-DFModel::ModelRunner::ModelRunner(DFModel * model) : model(model), finish(false)
-{
-
-}
-
-DFModel::ModelRunner::~ModelRunner()
-{
-
-}
-
-void DFModel::ModelRunner::run()
-{
-    while(true){
-        {
-            ScopedLock lock(model->pauseMutex);
-            if(finish == true){
-                return;
-            }
-
-            model->notifySources();
-        }        
-        
-        model->pauseMutex.lock();
-    }
-}
-
-void DFModel::ModelRunner::finishProcessing()
-{
-    finish = true;
-}
+//DFModel::ModelRunner::ModelRunner(DFModel * model) : model(model), finish(false)
+//{
+//
+//}
+//
+//DFModel::ModelRunner::~ModelRunner()
+//{
+//
+//}
+//
+//void DFModel::ModelRunner::run()
+//{
+//    while(true){
+//        {
+//            ScopedLock lock(model->pauseMutex);
+//            if(finish == true){
+//                return;
+//            }
+//        }
+//
+//        model->pauseMutex.lock();
+//
+//        model->notifySources();        
+//    }
+//}
+//
+//void DFModel::ModelRunner::finishProcessing()
+//{
+//    finish = true;
+//}
 
 }

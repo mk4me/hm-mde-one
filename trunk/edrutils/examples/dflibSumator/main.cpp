@@ -47,7 +47,7 @@ protected:
         std::cout << getParent()->getName() + "->" + getName() << "\tPo update." << std::endl;
     }
 
-    virtual void copyDataFromPin(dflm::DFPinPtr pin)
+    virtual void copyDataFromPin(const dflm::DFPinPtr & pin)
     {
         boost::shared_ptr<MyType> smartPin(boost::dynamic_pointer_cast<MyType>(pin));
 
@@ -207,8 +207,6 @@ int main(int argc, char** argv) {
 
     model->connect(*(summerA->beginOut()), *(summerD->beginIn()));
     model->connect(*(summerC->beginOut()), *(++(summerD->beginIn())));
-
-    model->lock();
 
     model->run();
 

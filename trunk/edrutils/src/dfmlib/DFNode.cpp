@@ -78,9 +78,6 @@ void DFNode::updateOutputPins()
 		
 		if(pin != nullptr){
 			pin->update();		
-			//auto connections = (*it)->getConnections();
-			//inform input pins on the following nodes
-			//for(auto iT = connections.begin(); iT != connections.end(); iT++){
             for(auto iT = (*it)->begin(); iT != (*it)->end(); iT++){
 				pin = DFPin::getDFPin((*iT)->getOther(*it));
 				if(pin != nullptr){

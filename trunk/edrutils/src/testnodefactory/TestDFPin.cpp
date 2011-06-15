@@ -34,6 +34,6 @@ void TestDFPin::onUpdate(){
 	std::cout << "UPDATE " << getPinFullName().c_str() << std::endl;
 }
 
-void TestDFPin::copyDataToPin(dflm::DFPinPtr pin){
+void TestDFPin::copyDataToPin(const dflm::DFPinPtr & pin){
 	std::cout << getPinFullName().c_str() << " copies data to " << boost::dynamic_pointer_cast<TestDFPin>(pin)->getPinFullName().c_str() << std::endl;
 }

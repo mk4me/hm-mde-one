@@ -23,23 +23,25 @@ public:
 
     //typedef std::set<DFNPtr> Nodes;
 
-private:
+    //typedef std::set<DFNPtr> Nodes;
 
-    class ModelRunner : public OpenThreads::Thread
-    {
-    public:
-        ModelRunner(DFModel * model);
-        ~ModelRunner();
-
-        virtual void run();
-        void finishProcessing();
-
-    private:
-        DFModel * model;
-        bool finish;
-    };
-
-    friend class ModelRunner;
+//private:
+//
+//    class ModelRunner : public OpenThreads::Thread
+//    {
+//    public:
+//        ModelRunner(DFModel * model);
+//        ~ModelRunner();
+//
+//        virtual void run();
+//        void finishProcessing();
+//
+//    private:
+//        DFModel * model;
+//        bool finish;
+//    };
+//
+//    friend class ModelRunner;
 
 public:
 
@@ -77,6 +79,8 @@ public:
 
     //! Zatrzymuje model, resetuje wszystkie wêz³y i piny do ich stanu pocvz¹tkowego
     void stop();
+
+    void reset();
 
 protected:
 
@@ -139,20 +143,24 @@ private:
     //! Czy model jest spauzowany
     bool paused;
 
+    bool stopPending;
+
+    bool pausePending;
+
     //! Licznik iloœci wêz³ów liœci które przetworzy³y dane
 	unsigned int finishedLeafes;
 
     //! mutex do kontroli w¹tku notyfikujacego Ÿród³a
-    OpenThreads::Mutex pauseMutex;
+    //OpenThreads::Mutex pauseMutex;
 
     //! mutex do synchronizacji aktualizacji iloœci liœci które przetworzy³y dane
-    OpenThreads::Mutex leavesMutex;
+    //OpenThreads::Mutex leavesMutex;
 
     //! mutex do synchronizacji operacji uruchamiania/zatrzymywania/pauzowania dataflow
-    OpenThreads::Mutex runningMutex;
+    mutable OpenThreads::Mutex runningMutex;
 
     //! w¹tek obs³uguj¹cy wyzwalanie Ÿróde³
-    boost::shared_ptr<ModelRunner> modelRunner;
+    //boost::shared_ptr<ModelRunner> modelRunner;
 };
 
 }

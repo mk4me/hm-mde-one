@@ -66,24 +66,6 @@ public:
     //! Wirtualny destruktor
 	virtual ~Model(void);
 
-    ////! Blokuje obiekt dla zadanego w¹tku, jeœli obiekt ju¿ jest zablokowany zawiesza tutaj w¹tek ktry to wywo³a³
-    //virtual int lock();
-
-    ////! Odblokowuje obiekt do edycji - mo¿e byæ wywo³ana jedynie przez w¹tek który za³o¿y³ locka lub jesli nie ma blokady
-    //virtual int unlock();
-
-    ////! \return Czy uda³o siê zablokowaæ obiekt, zwraca false natychmiast, jeœli nie uda³o siê go zablokowaæ, lub true kiedy blokowanie siê powiod³o
-    //virtual int tryLock();
-
-    ////! \return ID aktualnie wywo³ywanego w¹tku
-    //static int getCurrentThreadId();
-
-    ////! \return ID w¹tku który trzyma blokadê do tego obiektu
-    //int getLockingThreadId() const;
-
-    ////! \return Czy obiekt jest aktualnie blokowany przez jakiœ w¹tek
-    //bool isLocked() const;
-
     //! \param node Wêze³ którego kompatybilnoœæ z modelem sprawdzamy
     //! \return Czy wêze³ jest wspierany przez model
     virtual bool isNodeSupported(const NPtr & node) const;
@@ -219,7 +201,14 @@ private:
 
 protected:
     //! mutex dla zmiany stanu modelu
-    OpenThreads::Mutex editMutex;
+    mutable OpenThreads::Mutex editMutex;
+
+    const Nodes & innerGetNodes() const { return nodes; }
+    const Nodes & innerGetLeafNodes() const { return leafNodes; }
+
+    const Connections & innerGetConnections() const { return connections; }
+
+    const RequiringConnection & innerGetRequiringConnections() const { return pinsRequiringConnections; }
 
 private:
 
@@ -235,11 +224,8 @@ private:
     //! Zbiór wêz³ów liœci
     Nodes leafNodes;
 
-    //! ID w¹tku który zablokowa³ ten obiekt
-    int lockingThreradId;
-
     //! mutex dla zmiany stanu modelu
-    OpenThreads::Mutex lockMutex;
+    //mutable OpenThreads::Mutex lockMutex;
 };
 
 }

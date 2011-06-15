@@ -11,7 +11,7 @@
 
 #include <utils/Config.h>
 #include <stdexcept>
-#include <vector>
+#include <set>
 #include <algorithm>
 #include <utils/PtrPolicyRaw.h>
 #include <utils/Debug.h>
@@ -19,6 +19,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
+
+template <class T>
+class Observable;
 
 //------------------------------------------------------------------------------
 
@@ -29,18 +32,32 @@ namespace utils {
 template <class T>
 class Observer
 {
+    friend class Observable<T>;
+
 public:
     //!
     typedef T ObservedType;
     //!
-    typedef Observer<T> Type;
+    typedef Observer<T> ObserverType;
+
+    typedef Observable<T> ObservableType;
+
+    typedef ObservableType* ObservablePtr;
 
 public:
     //! Polimorficzny destruktor.
-    virtual ~Observer() {}
+    virtual ~Observer()
+    {
+        for(auto it = observedObjects.begin(); it != observedObjects.end(); it++){
+            (*it)->observers.erase(this);
+        }
+    }
     //! Aktualizacja obserwatora.
     //! \param subject Obiekt podany obserwacji.
     virtual void update(const T * subject) = 0;
+
+private:
+    std::set<ObservablePtr> observedObjects;
 };
 
 //------------------------------------------------------------------------------
@@ -52,6 +69,8 @@ public:
 template <class T>
 class Observable
 {
+    friend class Observer<T>;
+
 public:
     //! Bie¿¹cy typ.
     typedef Observer<T> ObserverType;
@@ -61,7 +80,7 @@ public:
 
 private:
     //! Obserwatorzy.
-    std::vector<ObserverPtr> observers;
+    std::set<ObserverPtr> observers;
     //! Obserwowany obiekt.
     const T * self;
     //!
@@ -75,26 +94,32 @@ protected:
 
 public:
     //!
-    virtual ~Observable() {}
+    virtual ~Observable()
+    {
+        detachAll();
+    }
 
     //! \param observer Obserwator do dodania.
     void attach(ObserverPtr observer)
     {
-        if ( std::find(observers.begin(), observers.end(), observer) == observers.end() ) {
-            observers.push_back(observer);
+        auto it = observers.find( observer);
+        if ( it == observers.end() ) {
+            observer->observedObjects.insert(this);
+            observers.insert(observer);
         } else {
-            throw std::invalid_argument("Visitor already attached.");
+            throw std::invalid_argument("Observer already attached.");
         }
     }
 
     //! \param observer Obserwator do usuniêcia.
     void detach(ObserverPtr observer)
     {
-        typename std::vector<ObserverPtr>::iterator last = std::remove( observers.begin(), observers.end(), observer );
-        if ( last != observers.end() ) {
-            observers.resize( std::distance(observers.begin(), last) );
+        auto it = observers.find(observer);
+        if ( it != observers.end() ) {
+            observer->observedObjects.erase(this);
+            observers.erase(it);
         } else {
-            throw std::invalid_argument("Visitor not attached.");
+            throw std::invalid_argument("Observer not attached.");
         }
     }
 
@@ -103,13 +128,17 @@ public:
     //! \return
     bool isAttached(ObserverPtr observer)
     {
-        return ( std::find(observers.begin(), observers.end(), observer) != observers.end() );
+        return ( observers.find(observer) != observers.end() );
     }
 
     //! Usuwa wszystkich podpiêtych obserwatorów.
     void detachAll()
     {
-        observers.clear();
+        for(auto it = observers.begin(); it != observers.end(); it++){
+            (*it)->observedObjects.erase(this);
+        }
+
+        observers.swap(std::set<ObserverPtr>());
     }
 
     //! Aktualizuje wszystkie wyniki.
@@ -128,7 +157,7 @@ public:
         }
 
         isUpdating = true;
-        for ( typename std::vector<ObserverPtr>::iterator it = observers.begin(); it != observers.end(); ++ it) {
+        for ( auto it = observers.begin(); it != observers.end(); ++ it) {
             (*it)->update(self);
         }
         isUpdating = false;
