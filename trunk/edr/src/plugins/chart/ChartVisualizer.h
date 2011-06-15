@@ -111,7 +111,7 @@ public:
     //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
     virtual void removeSerie(core::IVisualizer::SerieBase* serie);
 
-    //virtual void process(core::IObjectSource* source);
+    virtual void reset();
 
 private slots:
     void setNormalized(bool normalized);

@@ -14,7 +14,7 @@ TimelineWidget::TimelineWidget(TimelineService* service, timeline::Controller * 
 
 TimelineWidget::~TimelineWidget()
 {
-    dynamic_cast<utils::Observable<timeline::State>*>(controller)->detach(this);
+    //dynamic_cast<utils::Observable<timeline::State>*>(controller)->detach(this);
 }
 
 void TimelineWidget::timeSliderChanged(int value)

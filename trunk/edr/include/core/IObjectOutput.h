@@ -28,11 +28,11 @@ namespace core
         virtual int getNumOutputs() const = 0;
 
         //! Zwraca OW dla zadanego wejœcia.
-        virtual ObjectWrapperCollectionPtr getObjects(int idx) = 0;
+        virtual const ObjectWrapperCollectionPtr & getObjects(int idx) = 0;
 
-        virtual void setObjects(int idx, const ObjectWrapperCollectionPtr & objects) = 0;
+        /*virtual void setObjects(int idx, const ObjectWrapperCollectionPtr & objects) = 0;
 
-        virtual void setObjects(int idx, const ObjectWrapperCollectionConstPtr & objects) = 0;
+        virtual void setObjects(int idx, const ObjectWrapperCollectionConstPtr & objects) = 0;*/
 
     //public:
     //    //! Wy³uskanie wskaŸnika na obiekt domenowy ze Ÿród³a przy za³o¿eniu jego zmiennoœci.

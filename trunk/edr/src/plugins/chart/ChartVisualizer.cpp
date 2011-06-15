@@ -172,14 +172,14 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
 
 void ChartVisualizer::setUp( core::IObjectSource* source )
 {
-    using namespace core;
+    //using namespace core;
 
-    core::ScalarChannelConstPtr channel;
+    //core::ScalarChannelConstPtr channel;
 
-    series.clear();
+    //series.clear();
     //series.resize(source->getNumSources());
 
-    chart->removeAllChannels();
+    //chart->removeAllChannels();
     //for ( int i = 0; i < source->getNumSources(); ++i ) {
     //    if ( source->tryGetObject(channel, i) ) {
     //        // okreœlenie koloru wykresu
@@ -207,6 +207,11 @@ void ChartVisualizer::setUp( core::IObjectSource* source )
     //}
 
     //chart->refreshAll();
+}
+
+void ChartVisualizer::reset()
+{
+
 }
 
 QIcon* ChartVisualizer::createIcon()

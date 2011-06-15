@@ -12,7 +12,7 @@
 #include "EDRDFNode.h"
 #include <dfmlib/DFSourceNode.h>
 
-class EDRDFSourceNode : public virtual EDRDFNode, public dflm::DFSourceNode
+class EDRDFSourceNode : public virtual EDRDFNode, public virtual dflm::DFSourceNode
 {
 public:
     EDRDFSourceNode(const WorkflowItemPtr & workflowItem, const std::string & name = std::string());
@@ -24,9 +24,11 @@ protected:
     virtual void doInitialization(const dflm::Node::PinsAdderPtr & pinsAdder);
     virtual bool hasMoreData() const;
 
+    virtual void processData();
+
 private:
 
-    int dataCount;
+    const core::IDataSource* source;
 
 };
 

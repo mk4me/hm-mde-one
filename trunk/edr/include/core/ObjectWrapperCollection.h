@@ -16,8 +16,12 @@
 namespace core {
 
 class ObjectWrapperCollection;
+
 typedef shared_ptr<ObjectWrapperCollection> ObjectWrapperCollectionPtr;
 typedef shared_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstPtr;
+
+typedef const shared_ptr<const ObjectWrapperCollection> ConstObjectWrapperCollectionConstPtr;
+
 typedef weak_ptr<ObjectWrapperCollection> ObjectWrapperCollectionWeakPtr;
 typedef weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeakPtr;
 
@@ -25,13 +29,15 @@ typedef weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeak
 class ObjectWrapperCollection
 {
 public:
-    typedef std::vector<ObjectWrapperConstPtr>::const_iterator iterator;
     typedef std::vector<ObjectWrapperConstPtr>::size_type size_type;
+    typedef std::vector<ObjectWrapperConstPtr>::const_iterator const_iterator;
+    typedef std::vector<ObjectWrapperConstPtr>::iterator iterator;
 
 private:
     typedef std::vector<ObjectWrapperConstPtr> ConstObjects;
 
 private:
+
     //! przechowuje stale, niemodyfikowalne obiekty
     ConstObjects constObjects;
     //! typ przechowywanych obiektow
@@ -77,22 +83,32 @@ public:
     void removeDerivedTypes()
     {
         //iteruj po kolekcji i usun te typy ktore nie sa dokladnie typu kolekcji
-        auto it = constObjects.begin();
-        while( it != constObjects.end() ) {
-            if((*it)->getTypeInfo() != typeInfo){
-                it = constObjects.erase(it);
+        auto cIT = constObjects.begin();
+        while( cIT != constObjects.end() ) {
+            if((*cIT)->getTypeInfo() != typeInfo){
+                cIT = constObjects.erase(cIT);
             }else{
-                it++;
+                cIT++;
             }
         }
     }
 
-    iterator begin() const
+    iterator begin()
     {
         return constObjects.begin();
     }
 
-    iterator end() const
+    iterator end()
+    {
+        return constObjects.end();
+    }
+
+    const_iterator begin() const
+    {
+        return constObjects.begin();
+    }
+
+    const_iterator end() const
     {
         return constObjects.end();
     }
@@ -107,10 +123,15 @@ public:
         return constObjects.size();
     }
 
+    void clear()
+    {
+        constObjects.swap(ConstObjects());
+    }
+
     //! Metoda udostepnia obiekt domenowy z agregatu
     //! \param index indesk pobieranego elementu
     //! \return Niemodyfikowalny obiekt domenowy
-    ObjectWrapperConstPtr getObject(int index) const
+    const ObjectWrapperConstPtr & getObject(int index) const
     {
         // wyjatek zamiast asercji (na wypadek trybu release)
         if (!(index < size() && index >= 0)) {
@@ -119,11 +140,28 @@ public:
 
         return constObjects[index];
     }
+
+    template<class T>
+    const T & getObject(int index) const
+    {
+        return getObject(int)->get(exact);
+    }
+
+    void removeObject(int idx)
+    {
+        auto cIT = constObjects.begin();
+        std::advance(cIT, idx);
+        constObjects.erase(cIT);
+    }
    
     //! Dodanie obiektu do agregatu
     //! \param object Wskaznik do niemodyfikowalnego obiektu domenowego
-    void addObject(ObjectWrapperConstPtr object) 
+    void addObject(const ObjectWrapperConstPtr & object) 
     {
+        if(std::find(constObjects.begin(), constObjects.end(), object) != constObjects.end()){
+            throw std::runtime_error("Object already in collection");
+        }
+
         // sprawdzenie poprawnosci typu
         if (exact == true){
             if(object->isTypeEqual(typeInfo) == true) {
@@ -134,50 +172,9 @@ public:
         }else if(object->isSupported(typeInfo) == true){
             constObjects.push_back(object);
         } else {
-            throw std::bad_cast("Type of object not not supported by collection");
+            throw std::bad_cast("Type of object not supported by collection");
         }
     }
-
-   /* ObjectWrapperPtr replaceObject(const ObjectWrapperConstPtr & object)
-    {
-        auto it = std::find(constObjects.begin(), constObjects.end(), object);
-
-        if(it == constObjects.end()){
-            throw std::runtime_error("Object does not belong to this collection");
-        }
-
-        ObjectWrapperPtr clone = (*it)->clone();
-
-        *it = clone;
-        
-        return clone;
-    }*/
-
-    ObjectWrapperPtr replaceObject(int index)
-    {
-        // wyjatek zamiast asercji (na wypadek trybu release)
-        if (!(index < size() && index >= 0)) {
-            throw std::runtime_error("ObjectWrapperCollection::getObject - wrong index");
-        }
-
-        ObjectWrapperConstPtr obj = constObjects[index];
-        ObjectWrapperPtr clone = obj->clone();
-        constObjects[index] = clone;
-        return clone;
-    }
-
-    //! wyczyszczenie kolekcji
-    void clear() 
-    {
-        constObjects.swap(ConstObjects());
-    }
-
-    //! \return kopia calej kolekcji
-    virtual ObjectWrapperCollectionPtr clone() const
-    {
-        return ObjectWrapperCollectionPtr(new ObjectWrapperCollection(*this));
-    }
-
 };
 
 //! \brief Klasa dostarcza typu, ktorego elementy beda przechowywane

@@ -46,6 +46,8 @@ public:
     virtual bool empty() const;
     virtual QIcon* getIcon() const;
 
+    virtual void reset();
+
 private:
     static std::string name;
     std::string trialPath;
@@ -53,6 +55,8 @@ private:
     OutputDescription outputDescription;
 
     Data data;
+
+    mutable bool hasMoreData;
 };
 
 

@@ -15,29 +15,50 @@
 #include "ObjectSource.h"
 #include "ObjectOutput.h"
 
-class WorkflowItem 
+class WorkflowItem : public core::IWorkflowItemBase
 {
 public:
     virtual ~WorkflowItem() 
     { 
     }
 public:
-    virtual const std::string & getName() const = 0;
-    virtual QWidget* getConfigurationWidget() = 0;
+
+    virtual const core::IWorkflowItemBase* getImplementation() const = 0;
+    virtual core::IWorkflowItemBase* getImplementation() = 0;
+
     virtual void run() = 0;
+
     bool tryRun() 
     {
         try {
             run();
         }
         catch (const std::runtime_error& e) {
-            LOG_ERROR(std::string("Error during execution of module main functionality: ") + e.what());
+            LOG_ERROR(std::string("Error during execution of module main functionality: ") + getName() + e.what());
             return false;
         } catch (const std::exception& e) {
-            LOG_ERROR(std::string("Error during execution of module main functionality: ") + e.what());
+            LOG_ERROR(std::string("Error during execution of module main functionality: ") + getName() + e.what());
         	return false;
         } catch (...) {
-            LOG_ERROR("Unrecognised error during execution of module main functionality!");
+            LOG_ERROR(std::string("Unrecognised error during execution of module main functionality: ") + getName());
+            return false;
+        }
+        return true;
+    }
+
+    bool tryReset() 
+    {
+        try {
+            reset();
+        }
+        catch (const std::runtime_error& e) {
+            LOG_ERROR(std::string("Error during module reset: ") + getName() + e.what());
+            return false;
+        } catch (const std::exception& e) {
+            LOG_ERROR(std::string("Error during module reset: ") + getName() + e.what());
+            return false;
+        } catch (...) {
+            LOG_ERROR(std::string("Unrecognized error during module reset: ") + getName());
             return false;
         }
         return true;
@@ -60,8 +81,8 @@ private:
     boost::scoped_ptr<T> impl;
 protected:
 
-    const T* getImplementation() const { return impl.get(); }
-    T* getImplementation() { return impl.get(); }
+    virtual const T* getImplementation() const { return impl.get(); }
+    virtual T* getImplementation() { return impl.get(); }
 
     ObjectOutput createOutput()
     {
@@ -87,11 +108,11 @@ protected:
 
         ObjectSource source(inputInfos);
 
-        // stworzenie instancji ObjectWrapperów dla ka¿dego z wejœæ
-        for (int i = 0; i < source.getNumSlots(); ++i) {
-            core::ObjectWrapperCollectionPtr wrp = DataManager::getInstance()->createWrapperCollection( source.getSlotType(i) );
-            source.ObjectSlots::setObjects(i, wrp);
-        }
+        //// stworzenie instancji ObjectWrapperów dla ka¿dego z wejœæ
+        //for (int i = 0; i < source.getNumSlots(); ++i) {
+        //    core::ObjectWrapperCollectionPtr wrp = DataManager::getInstance()->createWrapperCollection( source.getSlotType(i) );
+        //    source.ObjectSlots::setObjects(i, wrp);
+        //}
 
         return source;
     }
@@ -106,9 +127,11 @@ public:
 
 public:
     virtual UniqueID getID() const { return impl->getID(); }
-    virtual std::string getDescription() const { return impl->getDescription(); }
+    virtual const std::string & getDescription() const { return impl->getDescription(); }
     virtual QWidget* getConfigurationWidget() { return impl->getConfigurationWidget(); }
     virtual const std::string & getName() const { return impl->getName(); }
+    virtual void reset() { impl->reset(); }
+    virtual WorkflowItem* createClone() const { throw std::runtime_error("Feature not implemented! Should not be used at all!"); return nullptr; }
 
 public:
 

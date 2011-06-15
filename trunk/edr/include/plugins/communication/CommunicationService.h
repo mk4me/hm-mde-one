@@ -60,7 +60,7 @@ public:
     */
     virtual void init(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
 
-    virtual void finalize() {};
+    virtual void finalize();
     /**
     Metoda z interfejsu IService. Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
     */

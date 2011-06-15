@@ -19,6 +19,9 @@
 //! zadeklarowaæ ile Ÿróde³ i jakiego typu jest w stanie obs³u¿yæ oraz przyj¹æ Ÿród³a danych.
 class Visualizer : public InputItem<core::IVisualizer>
 {
+public:
+    typedef std::set<core::shared_ptr<core::IVisualizer::SerieBase> > DataSeries;
+
 private:
     //! Faktyczny widget.
     QWidget* widget;
@@ -31,8 +34,7 @@ private:
     //! Nazwa uzupe³niona o przyrostek.
     QString uiName;
 
-    std::set<core::shared_ptr<core::IVisualizer::SerieBase> > dataSeries;
-
+    DataSeries dataSeries;
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w³asnoœæ.
@@ -51,15 +53,9 @@ public:
     //! \return Widget wizualizatora.
     QWidget* getOrCreateWidget();
     //! \return Widget wizualizatora. Mo¿e byæ nullptr, je¿eli jeszcze nie jest stworzony.
-    inline QWidget* getWidget()
-    {
-        return widget;
-    }
+    QWidget* getWidget();
 
-    inline void update(double deltaTime)
-    {
-        getImplementation()->update(deltaTime);
-    }
+    void update(double deltaTime);
 
     //! \return Nazwa wizualizatora. U¿ywana w UI.
     const QString& getUIName() const;
@@ -70,23 +66,17 @@ public:
     //!
     const QIcon& getIcon() const;
 
-    int getMaxSeries() const
-    {
-        return getImplementation()->getMaxDataSeries();
-    }
+    int getMaxSeries() const;
 
-    const core::VisualizerSeriePtr & createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
-    {
-        core::VisualizerSeriePtr serie(getImplementation()->createSerie(data, name));
-        dataSeries.insert(serie);
-        return *(dataSeries.find(serie));
-    }
+    const DataSeries & getDataSeries() const;
 
-    void removeSerie(const core::VisualizerSeriePtr & serie)
-    {
-        getImplementation()->removeSerie(serie.get());
-        dataSeries.erase(serie);
-    }
+    const core::VisualizerSeriePtr & createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name);
+
+    void removeSerie(const core::VisualizerSeriePtr & serie);
+
+    void clearAllSeries();
+
+    virtual void reset();
 };
 
 typedef core::shared_ptr<Visualizer> VisualizerPtr;

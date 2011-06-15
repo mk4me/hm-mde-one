@@ -50,8 +50,6 @@ public:
         }
     };
     //! Informacje o slotach.
-    //typedef std::vector<SlotInfo> SlotsInfo;
-    //typedef core::IInputDescription::InputInfo SlotInfo;
     typedef std::vector<SlotInfo> SlotsInfo;
 
     typedef SlotInfo::DependentSlots DependentSlots;

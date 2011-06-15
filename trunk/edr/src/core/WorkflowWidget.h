@@ -103,7 +103,6 @@ private:
 
 private:
     QVBoxLayout* layout;
-    WorkflowWidget* workflowWidget;
     QTabWidget * toolbar;
 
     QAction *actionStart;

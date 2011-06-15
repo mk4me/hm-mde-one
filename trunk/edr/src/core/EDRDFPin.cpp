@@ -26,23 +26,10 @@ bool EDRDFPin::isCompatible(const dflm::CPinPtr & pin) const
         return true;
     }
 
-    /*for(auto it = objectSlots->getSlotInfo(slotNo).type.begin(); it != objectSlots->getSlotInfo(slotNo).type.end(); it++){
-        for(auto iT = edrpin->objectSlots->getSlotInfo(edrpin->slotNo).type.begin(); iT != edrpin->objectSlots->getSlotInfo(edrpin->slotNo).type.end(); iT++){
-            if(*it == *iT){
-                return true;
-            }
-        }
-    }*/
-
     return false;
 }
 
 const core::ObjectWrapperCollectionPtr & EDRDFPin::getSlotData()
-{
-    return objectSlots->getObjects(slotNo);
-}
-
-const core::ObjectWrapperCollectionConstPtr & EDRDFPin::getSlotData() const
 {
     return objectSlots->getObjects(slotNo);
 }
@@ -52,7 +39,12 @@ void EDRDFPin::setSlotData(const core::ObjectWrapperCollectionPtr & data)
     objectSlots->setObjects(slotNo, data);
 }
 
-void EDRDFPin::setSlotData(const core::ObjectWrapperCollectionConstPtr & data)
+void EDRDFPin::onReset()
 {
-    objectSlots->setObjects(slotNo, data);
+    if(this->getType() == dflm::Pin::OUT){
+        const auto& objects = getSlotData();
+        if(objects != nullptr){
+            objects->clear();
+        }
+    }
 }

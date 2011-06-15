@@ -12,8 +12,14 @@ CommunicationService::CommunicationService()
 
 CommunicationService::~CommunicationService()
 {
+    //dynamic_cast<utils::Observable<communication::CommunicationManager>*>(this->model)->detach(this->widget);
     communication::CommunicationManager::destoryInstance();
     this->model = NULL;
+}
+
+void CommunicationService::finalize()
+{
+
 }
 
 void CommunicationService::copyDbData()

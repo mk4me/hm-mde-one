@@ -62,3 +62,8 @@ void EDRDFNode::processData()
 {
     workflowItem->tryRun();
 }
+
+void EDRDFNode::reset()
+{
+    workflowItem->tryReset();
+}

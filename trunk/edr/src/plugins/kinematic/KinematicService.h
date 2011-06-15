@@ -166,6 +166,7 @@ public:
     virtual QWidget* createWidget(std::vector<QObject*>& actions);
     virtual QIcon* createIcon();
     virtual const std::string& getName() const;
+    virtual void reset();
 
 public:
     void updateAnimation();

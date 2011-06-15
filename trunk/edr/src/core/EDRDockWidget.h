@@ -35,12 +35,17 @@ public slots:
     EDRTitleBar * getTitleBar();
     const EDRTitleBar * getTitleBar() const;
 
+private slots:
+    void onTopLevelChange(bool topLevel);
+
 private:
     void init();
 
 private:
     EDRTitleBar * titleBar;
     EDRDockInnerWidget * innerWidget;
+
+    QWidget * undockWidget;
 };
 
 #endif  //  HEADER_GUARD_CORE__EDRDOCKWIDGET_H__

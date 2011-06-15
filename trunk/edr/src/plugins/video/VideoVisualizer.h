@@ -67,9 +67,7 @@ public:
 
         virtual void setSerieData(const core::ObjectWrapperConstPtr & data)
         {
-            visualizer->streamImage = nullptr;
-
-            visualizer->ratioKeeper->setTarget(nullptr);
+            visualizer->reset();
 
             bool success = data->tryGet(visualizer->stream);
 
@@ -126,6 +124,8 @@ public:
 
     //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
     virtual void removeSerie(core::IVisualizer::SerieBase* serie);
+
+    virtual void reset();
 };
 
 

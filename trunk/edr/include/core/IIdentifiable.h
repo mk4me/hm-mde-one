@@ -25,7 +25,7 @@ public:
     { 
     }
     virtual UniqueID getID() const = 0;
-    virtual std::string getDescription() const = 0;
+    virtual const std::string & getDescription() const = 0;
 };
 
 }
@@ -44,9 +44,10 @@ public:
         return getClassID();                                            \
     }                                                                   \
                                                                         \
-    virtual std::string getDescription() const                          \
+    virtual const std::string & getDescription() const                  \
     {                                                                   \
-        return shortDescription;                                        \
+        static const std::string description(shortDescription);         \
+        return description;                                             \
     }                                                                   \
 private:
 

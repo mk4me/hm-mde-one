@@ -21,8 +21,9 @@ EDRDockWidget::~EDRDockWidget()
 
 void EDRDockWidget::init()
 {
-    QObject::connect( titleBar->actionClose, SIGNAL(triggered()), this, SLOT(close()) );
-    QObject::connect( titleBar->actionFloat, SIGNAL(triggered(bool)), this, SLOT(setFloating(bool)) );
+    connect( this, SIGNAL(topLevelChanged(bool)), this, SLOT(onTopLevelChange(bool)) );
+    connect( titleBar->actionClose, SIGNAL(triggered()), this, SLOT(close()) );
+    connect( titleBar->actionFloat, SIGNAL(triggered(bool)), this, SLOT(setFloating(bool)) );
 
     setTitleBarWidget(titleBar);
 
@@ -57,4 +58,15 @@ void EDRDockWidget::toggleFloating()
 void EDRDockWidget::setFloating( bool floating )
 {
     QDockWidget::setFloating( floating );
+}
+
+void EDRDockWidget::onTopLevelChange(bool topLevel)
+{
+    if(topLevel == true){
+        Qt::WindowFlags flags = this->windowFlags();
+        if( (flags & Qt::FramelessWindowHint) == Qt::FramelessWindowHint){
+            this->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint);
+            this->show();
+        }
+    }
 }

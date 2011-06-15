@@ -135,7 +135,8 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
 void CommunicationWidgetEx::treeItemClicked(QTreeWidgetItem* item, int column)
 {
     if(item) {
-        IEntityTreeItem* current = reinterpret_cast<IEntityTreeItem*>(item);
+        //IEntityTreeItem* current = reinterpret_cast<IEntityTreeItem*>(item);
+        IEntityTreeItem* current = dynamic_cast<IEntityTreeItem*>(item);
 
         int columns = current->columnCount();
         currentView->setColumnCount(columns);
@@ -160,7 +161,8 @@ void CommunicationWidgetEx::trialContextMenu(QPoint p)
     //currentItem() przy drugim kliknieciu automatycznie wybiera pierwszy element drzewa
     //sprawdzamy czy cokolwiek jest wybrane sprawdzajac liste zaznaczonych itemow
     if(currentView && currentView->currentItem() && currentView->selectedItems().size() > 0) {
-        IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        //IEntityTreeItem* item = reinterpret_cast<IEntityTreeItem*>(currentView->currentItem());
+        IEntityTreeItem* item = dynamic_cast<IEntityTreeItem*>(currentView->currentItem());
         if(item->getMenu())
             menu->addActions(item->getMenu()->actions());
     }
@@ -220,7 +222,8 @@ void CommunicationWidgetEx::downloadPressed()
     actionLoad_trial->setDisabled(false);
     actionAbort_download->setDisabled(false);
     actionAbort_download->setVisible(true);
-    downloadTrial(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getEntityID());
+    //downloadTrial(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getEntityID());
+    downloadTrial(dynamic_cast<TrialTreeItem*>(currentView->currentItem())->getEntityID());
 }
 
 void CommunicationWidgetEx::loadPressed()
@@ -231,7 +234,8 @@ void CommunicationWidgetEx::loadPressed()
         boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
         //sprawdzamy, czy zgadza sie nazwa folderu
         if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e)) {
-            if(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getName() == core::toQString(matches[2])) {
+            //if(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getName() == core::toQString(matches[2])) {
+            if(dynamic_cast<TrialTreeItem*>(currentView->currentItem())->getName() == core::toQString(matches[2])) {
                 loadFiles(lTrial);
                 return;
             }
@@ -754,7 +758,8 @@ void CommunicationWidgetEx::refreshHeader(QTreeWidget* tree)
 {
     //headery
     if(tree->topLevelItem(0)) {
-        IEntityTreeItem* current = reinterpret_cast<IEntityTreeItem*>(tree->topLevelItem(0));
+        //IEntityTreeItem* current = reinterpret_cast<IEntityTreeItem*>(tree->topLevelItem(0));
+        IEntityTreeItem* current = dynamic_cast<IEntityTreeItem*>(tree->topLevelItem(0));
 
         int columns = current->columnCount();
         tree->setColumnCount(columns);
@@ -769,7 +774,8 @@ std::vector<core::IDataManager::Path> CommunicationWidgetEx::listTrialFiles(bool
 {
     std::vector<core::IDataManager::Path> files;
     if(currentView->currentItem()) {
-        TrialTreeItem* item = reinterpret_cast<TrialTreeItem*>(currentView->currentItem());
+        //TrialTreeItem* item = reinterpret_cast<TrialTreeItem*>(currentView->currentItem());
+        TrialTreeItem* item = dynamic_cast<TrialTreeItem*>(currentView->currentItem());
         //lokalny czy serwerowy?
         BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
         {

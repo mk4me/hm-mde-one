@@ -121,6 +121,8 @@ int main(int argc, char *argv[])
                 result = application.exec();
                 logger.setConsoleWidget(NULL);
             }
+
+            serviceManager.finalizeServices();
         }
     }
     return result;

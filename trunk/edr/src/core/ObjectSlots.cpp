@@ -60,7 +60,7 @@ bool ObjectSlots::isAssignable( int slotNo, const core::TypeInfo & type ) const
 
 void ObjectSlots::setObjects( int slotNo, const core::ObjectWrapperCollectionPtr& objects )
 {
-    if ( !isAssignable(slotNo, objects->getTypeInfo())) {
+    if (objects != nullptr && !isAssignable(slotNo, objects->getTypeInfo())) {
         throw std::runtime_error("Assign error");
     }
     Slot& slot = this->objects[slotNo];

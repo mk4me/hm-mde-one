@@ -31,7 +31,8 @@ public:
     virtual const std::string & getName() const = 0;
     virtual void serialize( std::ostream& output ) { }
     virtual void deserialize( std::istream& istream ) { }
-    virtual QWidget* getConfigurationWidget(void) { return nullptr; }
+    virtual QWidget* getConfigurationWidget() { return nullptr; }
+    virtual void reset() = 0;
 
 };
 

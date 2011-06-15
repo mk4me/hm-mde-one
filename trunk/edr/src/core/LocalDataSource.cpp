@@ -5,7 +5,7 @@
 
 std::string LocalDataSource::name = "LocalDataSource";
 
-LocalDataSource::LocalDataSource()
+LocalDataSource::LocalDataSource() : hasMoreData(true)
 {
 
 }
@@ -52,7 +52,18 @@ QDialog * LocalDataSource::getOutputConfigurationDialog()
 
 void LocalDataSource::generate(core::IObjectOutput* output)
 {
+    for(int i = 0; i < outputDescription.size(); i++){
+        const auto& out = output->getObjects(i);
+        const auto& in = data[outputDescription[i].type];
+        
+        for(auto it = in->begin(); it != in->end(); it++){
+            try{
+                out->addObject(*it);
+            }catch(...){
 
+            }
+        }
+    }
 }
 
 const std::string & LocalDataSource::getName() const
@@ -62,10 +73,19 @@ const std::string & LocalDataSource::getName() const
 
 bool LocalDataSource::empty() const
 {
-    return false;
+    if(hasMoreData == true){
+        hasMoreData = false;
+        return false;
+    }
+    return true;
 }
 
 QIcon* LocalDataSource::getIcon() const
 {
     return nullptr;
+}
+
+void LocalDataSource::reset()
+{
+    hasMoreData = true;
 }

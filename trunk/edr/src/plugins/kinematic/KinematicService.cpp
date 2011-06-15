@@ -62,8 +62,9 @@ void KinematicService::loadData(IServiceManager* serviceManager, core::IDataMana
 
 void KinematicVisualizer::setUp( IObjectSource* source )
 {
-    resetScene();
-    refillDrawersMaps();
+    reset();
+    //resetScene();
+    //refillDrawersMaps();
     /*SkeletalVisualizationSchemeConstPtr scheme = source->getObject(0);
         
     if (scheme) {        
@@ -112,6 +113,12 @@ void KinematicVisualizer::setUp( IObjectSource* source )
     }*/
  }
 
+void KinematicVisualizer::reset()
+{
+    resetScene();
+    refillDrawersMaps();
+}
+
 IVisualizer* KinematicVisualizer::createClone() const
 {
     return new KinematicVisualizer();
@@ -145,8 +152,7 @@ core::IVisualizer::SerieBase *KinematicVisualizer::createSerie(const ObjectWrapp
 
 void KinematicVisualizer::removeSerie(core::IVisualizer::SerieBase *serie)
 {
-    resetScene();
-    refillDrawersMaps();
+    reset();
 }
 
 QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)

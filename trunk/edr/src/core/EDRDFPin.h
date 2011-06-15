@@ -33,10 +33,11 @@ public:
     virtual bool isCompatible(const dflm::CPinPtr & pin) const;
 
     const core::ObjectWrapperCollectionPtr & getSlotData();
-    const core::ObjectWrapperCollectionConstPtr & getSlotData() const;
 
     void setSlotData(const core::ObjectWrapperCollectionPtr & data);
-    void setSlotData(const core::ObjectWrapperCollectionConstPtr & data);
+
+protected:
+    virtual void onReset();
 
 private:
     int slotNo;

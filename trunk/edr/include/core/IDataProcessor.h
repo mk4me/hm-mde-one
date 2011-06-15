@@ -18,13 +18,6 @@
 namespace core 
 {
     typedef IInputOutputProcessItem IDataProcessor;
-    ////! Interfejs elementu przetwarzaj¹cego dane.
-    //class IDataProcessor : public IInputOutputProcessItem
-    //{
-    //public:
-    //    //! Pusty polimorficzny destruktor.
-    //    virtual ~IDataProcessor() {}
-    //};
 
     typedef shared_ptr<IDataProcessor> IDataProcessorPtr;
     typedef shared_ptr<const IDataProcessor> IDataProcessorConstPtr;

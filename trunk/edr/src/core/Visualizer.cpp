@@ -43,28 +43,10 @@ QWidget* Visualizer::getOrCreateWidget()
     return widget;
 }
 
-//bool Visualizer::trySetUp()
-//{
-//    try {
-//        LOG_DEBUG("Visualizer " << getImplementation()->getName() << " setup");
-//        getImplementation()->setUp(getSource());
-//
-//        // aktualizacja widgetu
-//        UTILS_ASSERT(widget);
-//        widget->update();
-//        return true;
-//    } catch (const std::exception& ex) {
-//        LOG_WARNING("Error during setting up visualizer: " << ex.what());
-//        return false;
-//    }
-//}
-
 const QIcon& Visualizer::getIcon() const
 {
     return VisualizerManager::getInstance()->getIcon(getID());
 }
-
-
 
 const std::vector<QObject*>& Visualizer::getGenericActions() const
 {
@@ -87,4 +69,52 @@ void Visualizer::setUIName( const QString& uiName )
 const QString& Visualizer::getUIName() const
 {
     return uiName;
+}
+
+QWidget* Visualizer::getWidget()
+{
+    return widget;
+}
+
+void Visualizer::update(double deltaTime)
+{
+    getImplementation()->update(deltaTime);
+}
+
+int Visualizer::getMaxSeries() const
+{
+    return getImplementation()->getMaxDataSeries();
+}
+
+const core::VisualizerSeriePtr & Visualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
+{
+    core::VisualizerSeriePtr serie(getImplementation()->createSerie(data, name));
+    dataSeries.insert(serie);
+    return *(dataSeries.find(serie));
+}
+
+void Visualizer::removeSerie(const core::VisualizerSeriePtr & serie)
+{
+    getImplementation()->removeSerie(serie.get());
+    dataSeries.erase(serie);
+}
+
+void Visualizer::clearAllSeries()
+{
+    while(dataSeries.empty() == false){
+        getImplementation()->removeSerie((*dataSeries.begin()).get());
+        dataSeries.erase(dataSeries.begin());
+    }
+
+    dataSeries.swap(DataSeries());
+}
+
+const Visualizer::DataSeries & Visualizer::getDataSeries() const
+{
+    return dataSeries;
+}
+
+void Visualizer::reset()
+{
+    clearAllSeries();
 }

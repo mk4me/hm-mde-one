@@ -12,7 +12,7 @@
 #include <dfmlib/DFNode.h>
 #include "WorkflowItemEncapsulator.h"
 
-class EDRDFNode : public dflm::DFNode
+class EDRDFNode : public virtual dflm::DFNode
 {
 public:
     EDRDFNode(const WorkflowItemPtr & workflowItem, const std::string & nodeName = std::string());
@@ -23,6 +23,8 @@ public:
 
     //! Metoda pozwalaj¹ca podpi¹æ metody konfiguracji wêz³a
     virtual void configure();
+
+    virtual void reset();
 
 protected:
 

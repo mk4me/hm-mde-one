@@ -4,7 +4,8 @@
 #include "OutputDescription.h"
 
 EDRDFSourceNode::EDRDFSourceNode(const WorkflowItemPtr & workflowItem, const std::string & name)
-    : dflm::DFNode(name), dflm::DFSourceNode(name), EDRDFNode(workflowItem, name), dataCount(1)
+    : dflm::DFNode(name), dflm::DFSourceNode(name),
+    EDRDFNode(workflowItem, name), source(dynamic_cast<const core::IDataSource*>(workflowItem->getImplementation()))
 {
 
 }
@@ -28,13 +29,10 @@ void EDRDFSourceNode::doInitialization(const dflm::Node::PinsAdderPtr & pinsAdde
 
 bool EDRDFSourceNode::hasMoreData() const
 {
-    //TODO
-    //specyfikacja Ÿróde³, okreœlania kiedy jeszcze maj¹ dane
-    static bool ok = true;
-    if(ok == true){
-        ok = false;
-        return true;
-    }
+    return !(source->empty());
+}
 
-    return false;
+void EDRDFSourceNode::processData()
+{
+    EDRDFNode::processData();
 }

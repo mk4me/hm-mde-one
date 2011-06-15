@@ -184,7 +184,7 @@ public:
     }     
 
     //! \return nazwa pluginu
-    virtual std::string getDescription() const
+    virtual const std::string & getDescription() const
     {
         return name;
     }
@@ -206,7 +206,7 @@ public:
     }
 
     //! \service Us³uga do dodania do pluginu.
-    void addService(IServicePtr service)
+    void addService(const IServicePtr & service)
     {
         services.push_back(service);
     }
@@ -216,13 +216,13 @@ public:
         return static_cast<int>(services.size());
     }
     //! \param i
-    IServicePtr getService(int i)
+    const IServicePtr & getService(int i)
     {
         return services[i];
     }
 	
     //! \parser Parser do dodania do pluginu.
-	void addParser(IParserPtr parser)
+	void addParser(const IParserPtr & parser)
     {
         this->parsers.push_back(parser);
     }
@@ -232,13 +232,13 @@ public:
 		return static_cast<int>(this->parsers.size());
     }
     //! \param i
-	IParserPtr getParser(int i)
+	const IParserPtr & getParser(int i)
     {
         return this->parsers[i];
     }
 
     //! \visualizer Visualizer do dodania do pluginu.
-    void addVisualizer(IVisualizerPtr visualizer)
+    void addVisualizer(const IVisualizerPtr & visualizer)
     {
         this->visualizers.push_back(visualizer);
     }
@@ -248,12 +248,12 @@ public:
         return static_cast<int>(this->visualizers.size());
     }
     //! \param i
-    IVisualizerPtr getVisualizer(int i)
+    const IVisualizerPtr & getVisualizer(int i)
     {
         return this->visualizers[i];
     }
     //! \param dataProcessor IDataProcessor do dodania do pluginu.
-    void addDataProcessor(IDataProcessorPtr dataProcessor)
+    void addDataProcessor(const IDataProcessorPtr & dataProcessor)
     {
         this->dataProcessors.push_back(dataProcessor);
     }
@@ -263,13 +263,13 @@ public:
         return static_cast<int>(this->dataProcessors.size());
     }
     //! \param i
-    IDataProcessorPtr getDataProcessor(int i)
+    const IDataProcessorPtr & getDataProcessor(int i)
     {
         return this->dataProcessors[i];
     }
 
     //! \param dataSource ród³o danych do dodania do pluginu.
-    void addDataSource(IDataSourcePtr dataSource)
+    void addDataSource(const IDataSourcePtr & dataSource)
     {
         this->dataSources.push_back(dataSource);
     }
@@ -279,13 +279,13 @@ public:
         return static_cast<int>(this->dataSources.size());
     }
     //! \param i
-    IDataSourcePtr getDataSource(int i)
+    const IDataSourcePtr & getDataSource(int i)
     {
         return this->dataSources[i];
     }
 
     //! \param factory
-    void addObjectWrapperFactory(IObjectWrapperFactoryPtr factory)
+    void addObjectWrapperFactory(const IObjectWrapperFactoryPtr & factory)
     {
         this->factories.push_back(factory);
     }
@@ -295,7 +295,7 @@ public:
         return static_cast<int>(this->factories.size());
     }
     //! \param i
-    IObjectWrapperFactoryPtr getWrapperFactory(int i)
+    const IObjectWrapperFactoryPtr & getWrapperFactory(int i)
     {
         return this->factories[i];
     }

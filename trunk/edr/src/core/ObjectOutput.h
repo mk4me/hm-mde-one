@@ -26,12 +26,12 @@ public:
 
       // core::IObjectOutput
 public:
-    virtual core::ObjectWrapperCollectionPtr getObjects(int idx)
+    virtual const core::ObjectWrapperCollectionPtr & getObjects(int idx)
     {
         return ObjectSlots::getObjects(idx);
     }
 
-    virtual void setObjects(int idx, const core::ObjectWrapperCollectionPtr & objects)
+    /*virtual void setObjects(int idx, const core::ObjectWrapperCollectionPtr & objects)
     {
         return ObjectSlots::setObjects(idx, objects);
     }
@@ -39,7 +39,7 @@ public:
     virtual void setObjects(int idx, const core::ObjectWrapperCollectionConstPtr & objects)
     {
         return ObjectSlots::setObjects(idx, objects);
-    }
+    }*/
 
     //! \return Liczba slotów wyjœciowych.
     virtual int getNumOutputs() const

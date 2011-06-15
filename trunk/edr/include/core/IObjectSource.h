@@ -33,55 +33,55 @@ namespace core
         virtual bool isChanged(int idx) const = 0;
 
         //! Wy≥uskanie wskaünika na obiekt domenowy ze ürÛd≥a przy za≥oøeniu jego zmiennoúci.
-        virtual ObjectWrapperCollectionPtr getObjects(int idx, boost::false_type) = 0;
+        //virtual ObjectWrapperCollectionPtr getObjects(int idx, boost::false_type) = 0;
 
         //! Wy≥uskanie wskaünika na obiekt domenowy ze ürÛd≥a przy za≥oøeniu jego niezmiennoúci.
-        virtual ObjectWrapperCollectionConstPtr getObjects(int idx, boost::true_type) = 0;
+        virtual ConstObjectWrapperCollectionConstPtr getObjects(int idx/*, boost::true_type*/) const = 0;
 
-    //// pomocnicze metody inline bπdü szablony
+    // pomocnicze metody inline bπdü szablony
     //public:
     //    //! Zastosowanie idiomu "Return Type Resolver" do unikania podwÛjnego okreúlania typu
     //    //! elementu kolekcji
     //    //! \see http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Return_Type_Resolver
-    //    struct getObject_t
+    //    struct getObjects_t
     //    {
     //        //! èrÛd≥o danych.
     //        IObjectSource* source;
     //        //! Indeks ürÛd≥a.
     //        int idx;
     //        //! \param source èrÛd≥o danych.
-    //        inline getObject_t(IObjectSource* source, int idx) :
+    //        inline getObjects_t(IObjectSource* source, int idx) :
     //        source(source), idx(idx)
     //        {}
     //        //! \return Kolekcja wskaünikÛw.
     //        template <class SmartPtr>
     //        inline operator SmartPtr()
     //        {
-    //            return source->getObject<SmartPtr>(idx);
+    //            return source->getObjects<SmartPtr>(idx);
     //        }
     //    };
 
     //    //! \return Dane pod zadanym indeksem.
-    //    inline getObject_t getObject(int index)
+    //    inline getObjects_t getObjects(int index)
     //    {
-    //        return getObject_t(this, index);
+    //        return getObjects_t(this, index);
     //    }
 
     //    //! \param idx Indeks ürÛd≥a danych.
     //    //! \return Dane pod zadanym indeksem.
     //    template <class SmartPtr>
-    //    inline SmartPtr getObject(int idx, SmartPtr* /*dummy*/ = nullptr)
+    //    inline SmartPtr getObjects(int idx, SmartPtr* /*dummy*/ = nullptr)
     //    {
-    //        UTILS_ASSERT(idx < getNumObjects());
-    //        return __getObjectPtrResolver<SmartPtr>(idx, boost::is_pointer<SmartPtr>());
+    //        UTILS_ASSERT(idx < getNumSources());
+    //        return __getObjectsPtrResolver<SmartPtr>(idx, boost::is_pointer<SmartPtr>());
     //    }
 
     //    //! \param idx Indeks ürÛd≥a danych.
     //    //! \return Dane pod zadanym indeksem.
     //    template <class SmartPtr>
-    //    inline void getObject(SmartPtr& result, int idx)
+    //    inline void getObjects(SmartPtr& result, int idx)
     //    {
-    //        result = getObject<SmartPtr>(idx);
+    //        result = getObjects<SmartPtr>(idx);
     //    }
 
 
@@ -89,11 +89,11 @@ namespace core
     //    //! \param result Dane pod zadanym indeksem.
     //    //! \return Czy uda≥o siÍ pobraÊ zadany typ?
     //    template <class SmartPtr>
-    //    bool tryGetObject(SmartPtr& result, int idx)
+    //    bool tryGetObjects(SmartPtr& result, int idx)
     //    {
     //        // TODO: zrobiÊ wersjÍ, ktÛra nie bÍdzie bazowa≥a na wyjπtkach
     //        try {
-    //            result = getObject<SmartPtr>(idx);
+    //            result = getObjects<SmartPtr>(idx);
     //            return true;
     //        } catch (std::runtime_error& ex) {
     //            LOG_DEBUG("Source " << idx << " error: " << ex.what());
@@ -105,7 +105,7 @@ namespace core
     //    //! \param idx Indeks ürÛd≥a danych.
     //    //! \return Dane pod zadanym indeksem.
     //    template <class RawPtr>
-    //    RawPtr __getObjectPtrResolver(int idx, boost::true_type, RawPtr* /*dummy*/ = nullptr)
+    //    RawPtr __getObjectsPtrResolver(int idx, boost::true_type, RawPtr* /*dummy*/ = nullptr)
     //    {
     //        UTILS_STATIC_ASSERT(false, "Do obiektow domenowych nalezy uzywac inteligentnych wskaznikow.");
     //        return nullptr;
@@ -114,17 +114,18 @@ namespace core
     //    //! \param idx Indeks ürÛd≥a danych.
     //    //! \return Dane pod zadanym indeksem.
     //    template <class SmartPtr>
-    //    SmartPtr __getObjectPtrResolver(int idx, boost::false_type, SmartPtr* /*dummy*/ = nullptr)
+    //    SmartPtr __getObjectsPtrResolver(int idx, boost::false_type, SmartPtr* /*dummy*/ = nullptr)
     //    {
     //        typedef typename SmartPtr::element_type Type;
     //        // pobieramy wskaünik na wrapper const albo mutable
-    //        auto wrapper = getObject(idx, boost::is_const<Type>());
-    //        if ( wrapper && !wrapper->isNull() ) {
-    //            // z niego pobieramy obiekt w≥aúciwy
-    //            return wrapper->get();
-    //        } else {
-    //            throw std::runtime_error("Source not available.");
-    //        }
+    //        auto collection = getObjects(idx, boost::is_const<Type>());
+    //        return collection;
+    //        //if ( collection && !wrapper->isNull() ) {
+    //        //    // z niego pobieramy obiekt w≥aúciwy
+    //        //    return wrapper->get();
+    //        //} else {
+    //        //    throw std::runtime_error("Source not available.");
+    //        //}
     //    }
     };
 

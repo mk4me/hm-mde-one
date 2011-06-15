@@ -61,30 +61,30 @@ public:
     {
         return ObjectSlots::getNumSlots();
     }
-    virtual core::ObjectWrapperCollectionPtr getObjects(int inputNo, boost::false_type)
-    {
-        UTILS_ASSERT((inputNo >= 0 && inputNo < getNumSources()), "Bledny indeks wejscia");
+    //virtual core::ObjectWrapperCollectionPtr getObjects(int inputNo, boost::false_type)
+    //{
+    //    UTILS_ASSERT((inputNo >= 0 && inputNo < getNumSources()), "Bledny indeks wejscia");
 
-        // najpierw sprawdzamy, czy mo¿emy przekazaæ bez klonowania
-        if ( isPassedDirectly(inputNo) ) {
-            core::ObjectWrapperCollectionPtr result = ObjectSlots::getObjects(inputNo);
-            if ( result ) {
-                return result;
-            }
-        }
-        // klonujemy obiekt z jego sta³ego wariantu
-        core::ObjectWrapperCollectionConstPtr constResult = ObjectSlots::getConstObjects(inputNo);
-        if ( constResult ) {
-            return constResult->clone();
-        } else {
-            //return core::ObjectWrapperCollectionPtr();
-            return DataManager::getInstance()->createWrapperCollection(ObjectSlots::getSlotType(inputNo));
-        }
-    }
-    virtual core::ObjectWrapperCollectionConstPtr getObjects(int inputNo, boost::true_type)
+    //    // najpierw sprawdzamy, czy mo¿emy przekazaæ bez klonowania
+    //    if ( isPassedDirectly(inputNo) ) {
+    //        core::ObjectWrapperCollectionPtr result = ObjectSlots::getObjects(inputNo);
+    //        if ( result ) {
+    //            return result;
+    //        }
+    //    }
+    //    // klonujemy obiekt z jego sta³ego wariantu
+    //    core::ObjectWrapperCollectionConstPtr constResult = ObjectSlots::getConstObjects(inputNo);
+    //    if ( constResult ) {
+    //        return constResult->clone();
+    //    } else {
+    //        //return core::ObjectWrapperCollectionPtr();
+    //        return DataManager::getInstance()->createWrapperCollection(ObjectSlots::getSlotType(inputNo));
+    //    }
+    //}
+    virtual core::ConstObjectWrapperCollectionConstPtr getObjects(int inputNo/*, boost::true_type*/) const
     {
         UTILS_ASSERT((inputNo >= 0 && inputNo < getNumSources()), "Bledny indeks wejscia");
-        return ObjectSlots::getConstObjects(inputNo);
+        return core::ConstObjectWrapperCollectionConstPtr(ObjectSlots::getConstObjects(inputNo));
     }
 };
 

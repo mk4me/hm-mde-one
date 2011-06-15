@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include <iterator>
 #include <core/StringTools.h>
 #include <boost/foreach.hpp>
 #include "VisualizerWidget.h"
@@ -8,7 +9,9 @@
 
 using namespace core;
 
-Q_DECLARE_METATYPE(ObjectWrapperConstPtr);
+typedef std::pair<core::TypeInfo, core::ObjectWrapperConstPtr> TypeData;
+
+Q_DECLARE_METATYPE(TypeData);
 
 VisualizerWidget::VisualizerWidget(QWidget* parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/) : EDRDockWidget(parent, flags)
 {
@@ -386,32 +389,65 @@ void VisualizerWidget::fillSourcesMenu()
     clearSources();
 
     //odbuduj menu Ÿróde³ danych
+    //dostepne dane
+    QMenu * avaiableDataMenu = menuSource->addMenu("Available data");
+    //aktywne dane w seriach
+    QMenu * activeDataMenu = menuSource->addMenu("Active data");
+    //activeDataMenu->setEnabled(currentSeriesData.empty() == false);
+    activeDataMenu->setEnabled(visualizer->getDataSeries().empty() == false);
+
     // akcja zeruj¹ca obiekt - czyœci wszystkie serie danych
     actionNone = menuSource->addAction("none");
     actionNone->setCheckable(true);
-    actionNone->setChecked(currentSeriesData.empty() == true ? true : false);
+    actionNone->setChecked(visualizer->getDataSeries().empty() == true ? true : false);
     if(actionNone->isChecked() == true){
+        clearDataSeries();
         actionNone->setEnabled(false);
     }
 
     connect(actionNone, SIGNAL(triggered()), this, SLOT(removeAllSeries()) );
 
-    menuSource->addAction(actionNone);   
+    std::set<core::ObjectWrapperConstPtr> currentData;
+    std::map<core::TypeInfo, QMenu*> typeMenus;
 
-    std::map<core::TypeInfo, QMenu*> dataTypeMenus;
+    bool allNotInitialized = true;
 
     for(int i = 0; i < visualizer->getNumInputs(); i++){
         ObjectWrapperCollectionConstPtr objects = visualizer->getObjects(i);
         if(objects != nullptr){
-            std::ostringstream str;
-        
+            int total = 0;
             int aditional = 0;
-            auto it = groupedSeriesData.find(objects->getTypeInfo());
-            if(it != groupedSeriesData.end()){
-                aditional = it->second.size();
+
+            QMenu * activeMenu = nullptr;
+        
+            auto iT = groupedSeriesData.find(objects->getTypeInfo());
+            if(iT != groupedSeriesData.end()){
+                aditional = iT->second.size();
+
+                if(aditional > 0){
+                    std::ostringstream str;
+                    str << objects->getTypeInfo().name() << " [" << aditional << "]";
+                    activeMenu = activeDataMenu->addMenu(str.str().c_str());
+                }
             }
 
-            int total = objects->size() + aditional;
+            std::ostringstream str;
+
+
+            if(aditional > 0){
+                std::set<core::ObjectWrapperConstPtr> current(objects->begin(), objects->end());
+                std::vector<core::ObjectWrapperConstPtr> result(max(objects->size(), aditional));
+                //result.reserve(std::max(objects->size(), aditional));
+
+                auto stopIT = std::set_difference(iT->second.begin(), iT->second.end(), current.begin(), current.end(), result.begin());
+                total = current.size();
+                aditional = std::distance(result.begin(), stopIT);
+            }
+
+            //znajdŸ wspólne elementy
+            //znajdŸ ró¿nicê
+
+            total = objects->size() + aditional;
             str << objects->getTypeInfo().name() << " [" << total;
 
             if(aditional > 0){
@@ -420,72 +456,68 @@ void VisualizerWidget::fillSourcesMenu()
 
             str << "]";
 
-            QMenu* nestedMenu = menuSource->addMenu(toQString(str.str()));
+            if(total > 0){
+                allNotInitialized = false;
+            }
+
+            QMenu* nestedMenu = avaiableDataMenu->addMenu(toQString(str.str()));
             nestedMenu->setEnabled(total > 0 ? true : false);
-            dataTypeMenus[objects->getTypeInfo()] = nestedMenu;
-        }
-    }
 
-    //uzupelnij brakujace typy z serii danych aktualnie wybranych
-    for(auto it = groupedSeriesData.begin(); it != groupedSeriesData.end(); it++){
-        if(dataTypeMenus.find(it->first) == dataTypeMenus.end()){
-            std::ostringstream str;
-            str << it->first.name() << " [" << it->second.size() << "]";
+            typeMenus[objects->getTypeInfo()] = nestedMenu;
 
-            QMenu* nestedMenu = menuSource->addMenu(toQString(str.str()));
-            nestedMenu->setEnabled(true);
-            dataTypeMenus[it->first] = nestedMenu;
-        }
-    }
+            for(auto it = objects->begin(); it != objects->end(); it++){
+                if(currentData.insert(*it).second == true){
 
-    std::set<core::ObjectWrapperConstPtr> currentData;
+                    std::ostringstream str;
+                    str << (*it)->getName() << " (from " << (*it)->getSource() << ")";
+                    QAction* action = nestedMenu->addAction(toQString(str.str()));
+                    connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
+                    action->setCheckable(true);
+                    action->setData(qVariantFromValue(TypeData(objects->getTypeInfo(),*it)));
 
-    //uzupelniaj menu danymi
-    //najpierw dane podpiete na wejsciu
-    for(int i = 0; i < visualizer->getNumInputs(); i++){
-        ObjectWrapperCollectionConstPtr objects = visualizer->getObjects(i);
-        if(objects != nullptr && objects->empty() == false){            
-            QMenu* nestedMenu = dataTypeMenus.find(objects->getTypeInfo())->second;             
+                    bool checked = currentSeriesData.find((*it)) == currentSeriesData.end() ? false : true;
 
-            for(int j = 0; j < objects->size(); j++){
-                ObjectWrapperConstPtr object = objects->getObject(j);
+                    action->setChecked( checked );
+                    nestedMenu->addAction(action);
+                }
+            }
 
-                currentData.insert(object);
+            if(iT != groupedSeriesData.end()){
 
-                std::ostringstream str;
-                str << object->getName() << " (from " << object->getSource() << ")";
-                QAction* action = nestedMenu->addAction(toQString(str.str()));
-                connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
-                action->setCheckable(true);
-                action->setData(qVariantFromValue(object));
+                bool separator = false;
 
-                bool checked = currentSeriesData.find(object) == currentSeriesData.end() ? false : true;
+                for(auto it = iT->second.begin(); it != iT->second.end(); it++){
 
-                action->setChecked( checked );
-                nestedMenu->addAction(action);
+                    std::ostringstream str;
+                    str << (*it)->getName() << " (from " << (*it)->getSource() << ")";
+
+                    if(currentData.find(*it) == currentData.end()){
+                        if(separator == false){
+                            separator = true;
+                            if(objects->empty() == false){
+                                nestedMenu->addSeparator();
+                            }
+                        }
+
+                        
+                        QAction* action = nestedMenu->addAction(toQString(str.str()));
+                        connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
+                        action->setCheckable(true);
+                        action->setData(qVariantFromValue(TypeData(objects->getTypeInfo(),*it)));
+                        action->setChecked( true );
+                    }
+
+                    QAction* action = activeMenu->addAction(toQString(str.str()));
+                    connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
+                    action->setCheckable(true);
+                    action->setData(qVariantFromValue(TypeData(objects->getTypeInfo(),*it)));
+                    action->setChecked( true );
+                }
             }
         }
     }
 
-    //teraz dane z serii danych, których nie ma w danych wejsciowych ale s¹ trzymane przez serie danych
-    for(auto it = groupedSeriesData.begin(); it != groupedSeriesData.end(); it++){
-        QMenu* nestedMenu = dataTypeMenus.find(it->first)->second;
-        
-        if(nestedMenu->actions().empty() == false){
-            nestedMenu->addSeparator()->setText("Expired data");
-        }
-        
-        for(auto iT = it->second.begin(); iT != it->second.end(); iT++){
-            std::ostringstream str;
-            str << (*iT)->getName() << " (from " << (*iT)->getSource() << ")";
-            QAction* action = nestedMenu->addAction(toQString(str.str()));
-            connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
-            action->setCheckable(true);
-            action->setData(qVariantFromValue(*iT));
-            action->setChecked( true );
-            nestedMenu->addAction(action);
-        }
-    }
+    avaiableDataMenu->setEnabled( !(allNotInitialized == true && visualizer->getDataSeries().empty() == true) );
 
     if(buttonSource->isVisible() == false){
         buttonSource->show();
@@ -507,9 +539,7 @@ void VisualizerWidget::removeAllSeries()
 void VisualizerWidget::innerRemoveAllSeries()
 {
     if(visualizer != nullptr){
-        for(auto it = currentSeriesData.begin(); it != currentSeriesData.end(); it++){
-            visualizer->removeSerie(it->second);
-        }
+        visualizer->clearAllSeries();
     }
 
     clearDataSeries();
@@ -522,6 +552,8 @@ void VisualizerWidget::sourceSelected()
     QAction* action = qobject_cast<QAction*>(sender());
     UTILS_ASSERT(action);
 
+    TypeData td = action->data().value<TypeData>();
+
     if(action->isChecked() == true){
 
         actionNone->setEnabled(true);
@@ -532,14 +564,15 @@ void VisualizerWidget::sourceSelected()
         //czy mozna jeszcze utworzyc serie?
         if(visualizer->getMaxSeries() < 0 || visualizer->getMaxSeries() != currentSeriesData.size()){
             //aktualizujemy ostatnia serie danych
+
             lastSerie.first = action;
-            lastSerie.second = action->data().value<ObjectWrapperConstPtr>();
+            lastSerie.second = td.second;
 
             //dodaj nowa seriê
             VisualizerSeriePtr serie(visualizer->createSerie(lastSerie.second, getLabel(lastSerie.second, true)));
 
             currentSeriesData[lastSerie.second] = serie;
-            groupedSeriesData[lastSerie.second->getTypeInfo()].insert(lastSerie.second);
+            groupedSeriesData[td.first].insert(lastSerie.second);
         }else{
             //nie moge utworzyc serii - przelacz ostatnia serie
             lastSerie.first->blockSignals(true);
@@ -548,26 +581,28 @@ void VisualizerWidget::sourceSelected()
 
             auto it = currentSeriesData.find(lastSerie.second);
             VisualizerSeriePtr serie = it->second;
-            groupedSeriesData[lastSerie.second->getTypeInfo()].erase(lastSerie.second);
+            groupedSeriesData[lastSerie.first->data().value<TypeData>().first].erase(lastSerie.second);
             currentSeriesData.erase(it);
 
             //aktualizujemy ostatnia serie danych
             lastSerie.first = action;
-            lastSerie.second = action->data().value<ObjectWrapperConstPtr>();
+            lastSerie.second = td.second;
 
             serie->setData(lastSerie.second);
             serie->setName(getLabel(lastSerie.second, true));
 
             currentSeriesData[lastSerie.second] = serie;
-            groupedSeriesData[lastSerie.second->getTypeInfo()].insert(lastSerie.second);
+            groupedSeriesData[td.first].insert(lastSerie.second);
+
         }
     }else{
         //usuñ seriê
-        auto it = currentSeriesData.find(action->data().value<ObjectWrapperConstPtr>());
 
-        groupedSeriesData[it->first->getTypeInfo()].erase(it->first);
-        if(groupedSeriesData[it->first->getTypeInfo()].empty() == true){
-            groupedSeriesData.erase(it->first->getTypeInfo());
+        auto it = currentSeriesData.find(td.second);
+
+        groupedSeriesData[td.first].erase(it->first);
+        if(groupedSeriesData[td.first].empty() == true){
+            groupedSeriesData.erase(td.first);
         }
 
         visualizer->removeSerie(it->second);
@@ -580,6 +615,8 @@ void VisualizerWidget::sourceSelected()
             actionNone->blockSignals(false);
         }
     }
+
+    visualizerWidget->update();
 }
 
 void VisualizerWidget::clearSources()

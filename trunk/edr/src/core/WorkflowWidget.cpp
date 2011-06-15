@@ -451,7 +451,6 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
     EDRTitleBar * titleBar = getTitleBar();
 
-    //workflowWidget = new WorkflowWidget(nullptr);
 
     actionStart = new QAction(titleBar);
     //actionStart->setCheckable(true);
@@ -474,27 +473,26 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
 EDRWorkflowWidget::~EDRWorkflowWidget()
 {
-    model->detach(this);
+    //model->detach(this);
 }
 
 void EDRWorkflowWidget::update(const dflm::Model* model)
 {
-    if(model->isModelValid() == true && actionStart->isEnabled() == false){
-        actionStart->setEnabled(true);
-    }else if(model->isModelValid() == false && actionStart->isEnabled() == true){
-        actionStart->setEnabled(false);
-    }else if(actionStart->isChecked() == true && this->model->isFinished() == true){
-        actionStop->blockSignals(true);
-        actionStop->setChecked(true);
-        actionStop->blockSignals(false);
-
-        actionStart->blockSignals(true);
-        actionStart->setChecked(false);
-        actionStart->blockSignals(false);
-
+    if(this->model->isFinished() == true){
         QMessageBox msgBox;
         msgBox.setText("Workflow has finished");
         msgBox.exec();
+
+        //obsluga zakonczenia przetwarzania
+        actionStop->setEnabled(true);
+        actionStart->setEnabled(false);
+
+    }else{
+        if(model->isModelValid() == true && actionStart->isEnabled() == false){
+            actionStart->setEnabled(true);
+        }else if(model->isModelValid() == false && actionStart->isEnabled() == true){
+            actionStart->setEnabled(false);
+        }
     }
 }
 
@@ -521,18 +519,23 @@ void EDRWorkflowWidget::tollbarButoonChanged(bool change)
 
 void EDRWorkflowWidget::start()
 {
-    if(dynamic_cast<EDRDataFlow*>(workflowWidget->workflowVDFModel->getModel().get())->isRunning() == true){
-        return;
-    }
     try{
         //TODO
         //zablokuj do edycji!!
         //schowaj X przy wêz³ach, zablokuj context menu do usuwania po³¹czeñ, zablokuj konfiguracjê, w pozosta³ych przypadkach wyj¹tki!!
-        dynamic_cast<EDRDataFlow*>(workflowWidget->workflowVDFModel->getModel().get())->run();
+
+        workflowVDFWidget->setEnabled(false);
+
         actionStart->setEnabled(false);
         actionStop->setEnabled(true);
+
+        dynamic_cast<EDRDataFlow*>(workflowVDFModel->getModel().get())->run();
+        
     }catch(std::runtime_error e){
         LOG_WARNING(e.what());
+        actionStart->setEnabled(true);
+        actionStop->setEnabled(false);
+        workflowVDFWidget->setEnabled(true);
     }
 }
 
@@ -546,13 +549,11 @@ void EDRWorkflowWidget::start(bool s)
 
 void EDRWorkflowWidget::stop()
 {
-    if(dynamic_cast<EDRDataFlow*>(workflowWidget->workflowVDFModel->getModel().get())->isRunning() == false){
-        return;
-    }
     try{
-        dynamic_cast<EDRDataFlow*>(workflowWidget->workflowVDFModel->getModel().get())->stop();
+        dynamic_cast<EDRDataFlow*>(workflowVDFModel->getModel().get())->reset();
         actionStop->setEnabled(false);
         actionStart->setEnabled(true);
+        workflowVDFWidget->setEnabled(true);
     }catch(std::runtime_error e){
         LOG_WARNING(e.what());
     }

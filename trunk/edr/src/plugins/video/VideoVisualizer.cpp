@@ -207,16 +207,14 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
 
     refresh(float(viewer->width()), float(viewer->height()));
 
+    //ratioKeeper->setTarget(nullptr);
+
     return viewer;
 }
 
 void VideoVisualizer::setUp( core::IObjectSource* source )
 {
-    streamImage = nullptr;
-    
-    ratioKeeper->setTarget(nullptr);
-    
-    refresh(viewer->width(), viewer->height());
+    reset();
 
 
  /*   osg::ref_ptr<const vidlib::VideoImageStream> stream = source->getObject(0);
@@ -252,6 +250,15 @@ core::IVisualizer::SerieBase* VideoVisualizer::createSerie(const ObjectWrapperCo
 }
 
 void VideoVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)
+{
+    streamImage = nullptr;
+
+    ratioKeeper->setTarget(nullptr);
+
+    refresh(viewer->width(), viewer->height());
+}
+
+void VideoVisualizer::reset()
 {
     streamImage = nullptr;
 

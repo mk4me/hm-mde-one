@@ -213,7 +213,6 @@ void ToolboxMain::writeSettings()
 void ToolboxMain::closeEvent(QCloseEvent* event)
 {
     writeSettings();
-    ServiceManager::getInstance()->finalizeServices();
     QMainWindow::closeEvent(event);
 }
 
@@ -519,13 +518,16 @@ void ToolboxMain::initializeUI()
 
         // HACK
         std::vector<QObject*> mainWidgetActions;
-        QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget(mainWidgetActions));
+        //QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget(mainWidgetActions));
+        QWidget* viewWidget = service->getWidget(mainWidgetActions);
 
         std::vector<QObject*> controlWidgetActions;
-        QWidget* controlWidget = reinterpret_cast<QWidget*>(service->getControlWidget(controlWidgetActions));
+        //QWidget* controlWidget = reinterpret_cast<QWidget*>(service->getControlWidget(controlWidgetActions));
+        QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
 
         std::vector<QObject*> settingsWidgetActions;
-        QWidget* settingsWidget = reinterpret_cast<QWidget*>(service->getSettingsWidget(settingsWidgetActions));
+        //QWidget* settingsWidget = reinterpret_cast<QWidget*>(service->getSettingsWidget(settingsWidgetActions));
+        QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
 
         if ( viewWidget/* && service != m_pRenderService*/ ) {
 

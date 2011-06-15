@@ -66,14 +66,9 @@ public:
         return source->getNumSources();
     }
     //!
-    core::ObjectWrapperCollectionPtr getObjects(int slot)
+    core::ConstObjectWrapperCollectionConstPtr getObjects(int slot) const
     {
-        return source->getObjects(slot, boost::false_type());
-    }
-
-    core::ObjectWrapperCollectionConstPtr getObjects(int slot) const
-    {
-        return source->getObjects(slot, boost::true_type());
+        return source->getObjects(slot);
     }
 
     bool isRequired(int slot)
