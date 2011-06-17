@@ -10,8 +10,8 @@ set(CMAKE_USE_RELATIVE_PATHS TRUE)
 #---------------------------------------------------
 # blok definicji dla CMake'a
 
-set(PROJECT_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../../lib" CACHE PATH "Location of libraries.")
-set(PROJECT_LIBRARIES_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../../include" CACHE PATH "Location of includes.")
+set(PROJECT_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../../../lib" CACHE PATH "Location of libraries.")
+set(PROJECT_LIBRARIES_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../../../include" CACHE PATH "Location of includes.")
 set(PROJECT_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../include" CACHE PATH "Location of includes.")
 set(PROJECT_ROOT "${PROJECT_SOURCE_DIR}")
 set(PROJECT_BUILD_ROOT "${PROJECT_BINARY_DIR}")
@@ -95,14 +95,14 @@ set(OPENGL_LIBRARIES OPENGL_LIBRARIES_PROXY)
 #---------------------------------------------------
 
 # obs³uga modu³ów (.dll/.so)
-option(PROJECT_COPY_MODULES "Copy runtime modules into bin folder?" OFF)
+option(PROJECT_COPY_MODULES "Copy runtime modules into bin folder?" ON)
 if(PROJECT_COPY_MODULES)
 	message("Copying modules")
 	FIND_HANDLE_MODULES(PROJECT_COPY_MODULES)
 	message("Copying finished. You should turn off option PROJECT_COPY_MODULES.")
 endif()
 
-set(PROJECT_REBUILD_DEPENDENCIES_DST "${PROJECT_SOURCE_DIR}/../../" CACHE PATH "Location of rebuilt dependencies structure")
+set(PROJECT_REBUILD_DEPENDENCIES_DST "${PROJECT_SOURCE_DIR}/../../../" CACHE PATH "Location of rebuilt dependencies structure")
 option(PROJECT_REBUILD_DEPENDENCIES "Rebuild dependencies?" OFF)
 if(PROJECT_REBUILD_DEPENDENCIES)
 	message("Rebuiling dependencies structure in ${PROJECT_REBUILD_DEPENDENCIES_DST}")

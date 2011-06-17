@@ -1,6 +1,6 @@
 # przygotowanie do szukania
-FIND_INIT(VIDLIB vidlib)
-FIND_INCLUDE_PLATFORM_HEADERS(VIDLIB vidlib)
+FIND_INIT2(VIDLIB vidlib "${PROJECT_INCLUDE_ROOT}/../../edrutils/include" "../../../_out/edrutils/bin/Debug" "../../../_out/edrutils/bin/Release")
+FIND_INCLUDE_PLATFORM_HEADERS2(VIDLIB vidlib "${PROJECT_INCLUDE_ROOT}/../../../_out/edrutils")
 
 # szukanie
 FIND_SHARED(VIDLIB_LIB "vidlib" "vidlib")

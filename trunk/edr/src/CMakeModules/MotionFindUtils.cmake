@@ -1,6 +1,6 @@
 ###############################################################################
 # Inicjuje proces wyszukiwania biblioteki.
-macro(FIND_INIT variable dirName)
+macro(_FIND_INIT variable dirName)
 
 	# g³ówne œcie¿ki
 	if (NOT FIND_DISABLE_INCLUDES)
@@ -29,17 +29,69 @@ macro(FIND_INIT variable dirName)
 	set(${variable}_DIR_NAME ${dirName})	
 	list(APPEND FIND_ALL_RESULT ${variable})
 
+endmacro(_FIND_INIT)
+
+
+###############################################################################
+# Inicjuje proces wyszukiwania biblioteki.
+macro(FIND_INIT2 variable dirName includeDir libraryDirDebug libraryDirRelease)
+
+	# g³ówne œcie¿ki
+	if (NOT FIND_DISABLE_INCLUDES)
+		set(${variable}_INCLUDE_DIR "${includeDir}" CACHE PATH "Location of ${variable} headers.")
+	endif()
+	set(${variable}_LIBRARY_DIR_DEBUG "${libraryDirDebug}" CACHE PATH "Location of ${variable} debug libraries.")
+	set(${variable}_LIBRARY_DIR_RELEASE "${libraryDirRelease}" CACHE PATH "Location of ${variable} libraries.")
+	# lokalizacja bibliotek dla trybu debug
+	set (FIND_DIR_DEBUG ${${variable}_LIBRARY_DIR_DEBUG})
+	# lokalizacja bibliotek
+	set (FIND_DIR_RELEASE ${${variable}_LIBRARY_DIR_RELEASE})
+	# zerujemy listê wyszukanych bibliotek
+	set (FIND_RESULTS)
+	# mo¿liwy przyrostek dla bibliotek w wersji debug
+	set (FIND_DEBUG_SUFFIXES "d")
+	
+	# wyzerowanie zmiennych logicznych
+	set (FIND_RESULTS_LOGICAL_OR 0)
+	set (FIND_RESULTS_LOGICAL_AND 1)
+	
+	FIND_NOTIFY(${variable} "FIND_INIT: include: ${${variable}_INCLUDE_DIR}; debug: ${${variable}_LIBRARY_DIR_DEBUG}; release: ${${variable}_LIBRARY_DIR_RELEASE}")
+	
+	# wyzerowanie listy plików
+	set(FIND_ALL_DEBUG_FILES)
+	set(FIND_ALL_RELEASE_FILES)
+	set(${variable}_DIR_NAME ${dirName})	
+	list(APPEND FIND_ALL_RESULT ${variable})
+
+endmacro(FIND_INIT2)
+
+###############################################################################
+# Inicjuje proces wyszukiwania biblioteki.
+macro(FIND_INIT variable dirName)
+	FIND_INIT2(${variable} ${dirName} "${FIND_LIBRARIES_INCLUDE_ROOT}/${dirName}" "${FIND_LIBRARIES_ROOT_DEBUG}/${dirName}" "${FIND_LIBRARIES_ROOT_RELEASE}/${dirName}")
 endmacro(FIND_INIT)
 
 ###############################################################################
 
-macro(FIND_INCLUDE_PLATFORM_HEADERS variable dirName)
+
+macro(_FIND_INCLUDE_PLATFORM_HEADERS variable dirName)
 	# okreœlamy œcie¿kê do katalogu z nag³ówkami konfiguracyjnymi
 	set(${variable}_INCLUDE_CONFIG_DIR "${${variable}_INCLUDE_DIR}/../${FIND_PLATFORM}/${dirName}" 
 		CACHE PATH "Location of config headers")
 	FIND_NOTIFY(${variable} "FIND_INIT: platform headers: ${${variable}_INCLUDE_CONFIG_DIR}")
-endmacro(FIND_INCLUDE_PLATFORM_HEADERS)
+endmacro(_FIND_INCLUDE_PLATFORM_HEADERS)
+###############################################################################
 
+macro(FIND_INCLUDE_PLATFORM_HEADERS2 variable dirName configDir)
+	# okreœlamy œcie¿kê do katalogu z nag³ówkami konfiguracyjnymi
+	set(${variable}_INCLUDE_CONFIG_DIR ${configDir} CACHE PATH "Location of config headers")
+	FIND_NOTIFY(${variable} "FIND_INIT: platform headers: ${${variable}_INCLUDE_CONFIG_DIR}")
+endmacro(FIND_INCLUDE_PLATFORM_HEADERS2)
+###############################################################################
+
+macro(FIND_INCLUDE_PLATFORM_HEADERS variable dirName)
+	FIND_INCLUDE_PLATFORM_HEADERS2(${variable} ${dirName} "${${variable}_INCLUDE_DIR}/../${FIND_PLATFORM}/${dirName}")
+endmacro(FIND_INCLUDE_PLATFORM_HEADERS)
 ###############################################################################
 
 # Koñczy proces wyszukiwania biblioteki.
