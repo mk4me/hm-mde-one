@@ -141,8 +141,8 @@ public:
         return constObjects[index];
     }
 
-    template<class T>
-    const T & getObject(int index) const
+    template<class SmartPtr>
+    SmartPtr getObject(int index) const
     {
         return getObject(int)->get(exact);
     }

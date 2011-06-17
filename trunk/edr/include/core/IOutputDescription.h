@@ -30,6 +30,9 @@ public:
         DependentInput dependentInput;
 
         //!
+        OutputInfo() {}
+
+        //!
         OutputInfo(const std::string& name, const TypeInfo& type, const DependentInput & dependentInput = DependentInput()) :
         name(name), type(type), dependentInput(dependentInput)
         {}
