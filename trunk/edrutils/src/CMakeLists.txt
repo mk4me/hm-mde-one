@@ -9,8 +9,8 @@ include(MotionTargetUtils)
 #---------------------------------------------------
 # blok definicji dla CMake'a
 
-set(PROJECT_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../../lib" CACHE PATH "Location of libraries.")
-set(PROJECT_LIBRARIES_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../../include" CACHE PATH "Location of includes.")
+set(PROJECT_LIBRARIES_ROOT "${PROJECT_SOURCE_DIR}/../../../lib" CACHE PATH "Location of libraries.")
+set(PROJECT_LIBRARIES_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../../../include" CACHE PATH "Location of includes.")
 set(PROJECT_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../include" CACHE PATH "Location of includes.")
 set(PROJECT_ROOT "${PROJECT_SOURCE_DIR}")
 set(PROJECT_BUILD_ROOT "${PROJECT_BINARY_DIR}")
@@ -75,6 +75,8 @@ find_package(TinyXML)
 find_package(Prerequisites)
 find_package(SDL)
 find_package(Qt)
+#find_package(BTKIO)
+#find_package(BTKCOMMON)
 
 if (PROJECT_ENABLE_TESTS)
 	find_package(CppUnit)
@@ -120,6 +122,7 @@ ADD_PROJECT(dfmlib "BOOST;OSG;utils")
 ADD_PROJECT(vdfmlib "osgui;dfmlib;BOOST;OSG;utils")
 ADD_PROJECT(testnodefactory "dfmlib;BOOST;utils")
 ADD_PROJECT(timelinelib "OSG;utils;BOOST;QT")
+#ADD_PROJECT(c3dlib "STDINT;BTKIO;BTKCOMMON;BOOST")
 #ADD_PROJECT(asfamctoquatcsv "kinematiclib;OSG;BOOST;TINYXML;utils")
 
 #---------------------------------------------------
