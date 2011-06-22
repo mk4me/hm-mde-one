@@ -1,5 +1,5 @@
 #include "CorePCH.h"
-#include <core/Log.h>
+#include "Log.h"
 #include "ServiceManager.h"
 #include "ComputeThread.h"
 

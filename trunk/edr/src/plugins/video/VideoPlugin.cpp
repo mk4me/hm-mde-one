@@ -2,7 +2,7 @@
 #include <core/Plugin.h>
 #include <plugins/video/VideoService.h>
 #include "VideoParser.h"
-#include <core/Log.h>
+#include <core/ILog.h>
 #include <vidlib/osg/FFmpegImageStream.h>
 #include "VideoVisualizer.h"
 

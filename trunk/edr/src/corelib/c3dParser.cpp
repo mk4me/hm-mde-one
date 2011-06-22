@@ -101,7 +101,7 @@ C3D_Data* c3dParser::parseData(std::string filePath) {
 
 	file.seekg (0, std::ios::end);
 	size = file.tellg();
-    this->memContent = new char [size];
+    this->memContent = new char [static_cast<unsigned int>(size)];
 	file.seekg (0, std::ios::beg);
     file.read (this->memContent, size);
 
@@ -148,17 +148,17 @@ C3D_Data* c3dParser::parseData(std::string filePath) {
 
 	case 1: { 
 		//std::cout << "1- INTEL\n"; 
-		proc = new INTELreader(this->memContent, size); 
+		proc = new INTELreader(this->memContent, static_cast<unsigned int>(size)); 
 		break;
 			}
 	case 2: { 
 		//std::cout << "2- DEC\n"; 
-		proc = new DECreader(this->memContent, size); 
+		proc = new DECreader(this->memContent, static_cast<unsigned int>(size)); 
 		break;
 			}
 	case 3: { 
 		//std::cout << "3- MIPS\n"; 
-		proc = new MIPSreader(this->memContent, size); 
+		proc = new MIPSreader(this->memContent, static_cast<unsigned int>(size)); 
 		break;
 			}
 

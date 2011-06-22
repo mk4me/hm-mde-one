@@ -93,7 +93,7 @@ std::string formatNumber( float number )
 }
 void ChartPointer::update(double targetTime){
 	
-	int frame=targetTime*data->getFPS();
+	int frame = static_cast<int>(targetTime * data->getFPS());
 	//if(frame<data->getRNumber()-1){
 	trans->setMatrix(osg::Matrix::translate(data->getNormalizedXValue(frame) * (endPoint.x()-startPoint.x()),0.0f,0.0f));
 	if(labelVisable){

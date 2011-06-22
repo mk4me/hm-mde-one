@@ -2,7 +2,7 @@
 #include <QtGui/QApplication>
 #include "ToolboxMain.h"
 #include <core/PluginLoader.h>
-#include <core/Log.h>
+#include "Log.h"
 #include <core/Config.h>
 //#include "VisualizerTitleBar.h"
 #include "LogInitializer.h"
@@ -68,7 +68,8 @@ int main(int argc, char *argv[])
 		EDRConfig edrConfig;
 	    EDRConfig::setPaths(edrConfig);
 		boost::filesystem::path p = edrConfig.getResourcesPath() / "settings" / "log.ini";
-        LogInitializer logger( p.string().c_str());
+		EDRLog logger(p.string());
+        //LogInitializer logger( p.string().c_str());
 
 		
 
@@ -98,6 +99,7 @@ int main(int argc, char *argv[])
             utils::Push<IDataProcessorManager*> pushedDPM(__instanceInfo.dataProcessorManager, &dataProcessorManager);
             utils::Push<IDataSourceManager*> pushedDSM(__instanceInfo.dataSourceManager, &dataSourceManager);
             utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
+			utils::Push<ILog*> pushedIL(__instanceInfo.logInterface, &logger);
             
             {
                 ToolboxMain window(&pluginLoader);

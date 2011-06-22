@@ -87,7 +87,7 @@ namespace core{
         //! \param rhs
         inline bool before(const std::type_info& rhs) const
         {
-            return (*typeinfo).before(rhs);
+            return static_cast<bool>((*typeinfo).before(rhs));
         }
 
         //! \param obj

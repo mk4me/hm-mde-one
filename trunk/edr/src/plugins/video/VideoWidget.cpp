@@ -18,7 +18,7 @@
 #include <osgui/AspectRatioKeeper.h>
 #include <core/MultiViewWidgetItem.h>
 #include <core/OsgSceneDump.h>
-#include <core/Log.h>
+#include <core/ILog.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>

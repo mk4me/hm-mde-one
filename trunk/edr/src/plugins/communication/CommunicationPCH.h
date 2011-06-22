@@ -18,7 +18,7 @@
 #include <boost/foreach.hpp>
 #include <curl/curl.h>
 #include <wsdlparser/WsdlInvoker.h>
-#include <core/Log.h>
+#include <core/ILog.h>
 
 #include <plugins/communication/ShallowCopyParser.h>
 #include <plugins/communication/MetadataParser.h>

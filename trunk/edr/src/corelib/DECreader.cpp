@@ -24,7 +24,7 @@ delete[] this->memContent;
 void DECreader::seek(int offset)
 {
 
-	if(offset < -1 || offset >= maxPos-1){}
+	if(offset < -1 || offset >= static_cast<int>(maxPos)-1){}
 	else
 	{
 		curPos = offset-1;

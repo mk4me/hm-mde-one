@@ -6,7 +6,6 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 include(MotionFindUtils)
 include(MotionTargetUtils)
 set(CMAKE_USE_RELATIVE_PATHS TRUE)
-
 #---------------------------------------------------
 # blok definicji dla CMake'a
 
@@ -81,6 +80,7 @@ find_package(VidLib)
 find_package(Utils)
 find_package(osgui)
 find_package(KinematicLib)
+#find_package(c3dlib)
 find_package(dfmlib)
 find_package(vdfmlib)
 find_package(TESTNODEFACTORY)

@@ -1,7 +1,7 @@
 #include "CorePCH.h"
 #include "DataManager.h"
 
-#include <core/Log.h>
+#include "Log.h"
 #include <core/Filesystem.h>
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>

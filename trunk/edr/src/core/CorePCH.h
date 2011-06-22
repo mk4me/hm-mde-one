@@ -89,7 +89,8 @@ UTILS_POP_WARNINGS
 #include <boost/iterator.hpp>
 
 #include <core/SmartPtr.h>
-
+#include <core/ILog.h>
+#include "Log.h"
 // przywrócenie warningów wy³¹czonych przez OSG
 #if defined(_MSC_VER)
 #   pragma warning( default : 4244 )

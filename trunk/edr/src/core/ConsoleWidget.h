@@ -2,7 +2,7 @@
 #define CONSOLE_WIDGET_H
 
 #include <QtGui/QWidget>
-#include <core/Log.h>
+#include "Log.h"
 #include <core/SmartPtr.h>
 #include <queue>
 

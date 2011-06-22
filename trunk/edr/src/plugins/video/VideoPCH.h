@@ -54,6 +54,8 @@ UTILS_POP_WARNINGS
 #include <utils/Debug.h>
 #include <utils/Enum.h>
 
+#include <core/ILog.h>
+
 // przywrócenie warningów wy³¹czonych przez OSG
 #if defined(_MSC_VER)
 #   pragma warning( default : 4244 )

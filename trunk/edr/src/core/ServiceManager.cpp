@@ -1,7 +1,8 @@
 #include "CorePCH.h"
+#include <core/ILog.h>
+#include "Log.h"
 #include "ServiceManager.h"
 
-#include <core/Log.h>
 //#include <core/IModel.h>
 #include <core/IDataManager.h>
 

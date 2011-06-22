@@ -9,6 +9,7 @@ ADD_PROJECT(communication "QT;CURL;WSDLPULL;TINYXML;corelib")
 ADD_PROJECT(kinematic "QT;BOOST;corelib;KINEMATICLIB;OSG")
 ADD_PROJECT(chart "BOOST;OSG;QT;corelib")
 #ADD_PROJECT(vdf "BOOST;QT;corelib;OSG;VDFMLIB;DFMLIB;TESTNODEFACTORY")
+#ADD_PROJECT(c3d "BOOST;corelib;C3DLIB")
 # plugin
 # ADD_PROJECT(OSGPlugin "OSG;vm_core")
 

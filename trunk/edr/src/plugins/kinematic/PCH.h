@@ -62,7 +62,10 @@ UTILS_POP_WARNINGS
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
 
+#include <core/ILog.h>
 #include <kinematiclib/SkeletalParsers.h>
 #include <core/SmartPtr.h>
+
+//#include <core/Log.h>
 
 #endif //HEADER_GUARD_SKELETON_VIEWER__PCH_H__

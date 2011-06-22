@@ -118,7 +118,8 @@ set(PUBLIC_H
 	${HEADER_PATH}/GroupData.h
 	${HEADER_PATH}/Header.h
 	${HEADER_PATH}/Data.h
-	${HEADER_PATH}/Log.h
+	#${HEADER_PATH}/Log.h
+	${HEADER_PATH}/ILog.h
 	${HEADER_PATH}/LocalTrial.h
 	${HEADER_PATH}/ObjectWrapper.h
 	${HEADER_PATH}/ObjectWrapperCollection.h
@@ -228,6 +229,7 @@ SET(TARGET_MOC_H
     ToolboxMain.h
 	SceneGraphWidget.h
 	VisualizerWidget.h
+	Log.h
 	#VisualizerTitleBar.h
 	#VisualizerTitleBarComboPick.h
 	EDRTitleBar.h

@@ -81,7 +81,7 @@ namespace core {
     typedef shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
 
-    class MarkerChannel : public utils::DataChannel<osg::Vec3>//public VectorChannel 
+    class MarkerChannel : public utils::DataChannel<osg::Vec3f>//public VectorChannel 
     {
     private:
         MarkerChannel(int samplesPerSec) : DataChannel(samplesPerSec) {}

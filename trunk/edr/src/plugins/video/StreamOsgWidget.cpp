@@ -1,7 +1,7 @@
 #include "VideoPCH.h"
 #include "StreamOsgWidget.h"
 #include <vidlib/osg/VideoImageStream.h>
-#include <core/Log.h>
+#include <core/ILog.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -12,7 +12,7 @@
 #include "EDRConsoleInnerWidget.h"
 #include "EDRDockWidget.h"
 
-#include <core/Log.h>
+#include "Log.h"
 #include <core/SmartPtr.h>
 #include <queue>
 

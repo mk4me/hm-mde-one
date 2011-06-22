@@ -7,7 +7,7 @@
 #include "mainwindow.h"
 #include <plugins/kinematic/KinematicService.h>
 #include <plugins/kinematic/KinematicParser.h>
-#include <core/Log.h>
+#include <core/ILog.h>
 #include <plugins/kinematic/Wrappers.h>
 
 CORE_PLUGIN_BEGIN("kinematic", UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-A5FE-52AA182E1279}"));

@@ -8,6 +8,7 @@
 #include <bitset>
 #include <limits>
 
+class ProcessorReader;
 /*
 
 Class responsible for holding data from the header section of c3d file. 

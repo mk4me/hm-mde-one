@@ -1,5 +1,5 @@
 #include "CorePCH.h"
-#include <core/Log.h>
+#include "Log.h"
 #include "UserInterfaceService.h"
 #include <iostream>
 

@@ -11,13 +11,12 @@
 #include <core/C3DChannels.h>
 #include <plugins/timeline/Stream.h>
 #include "mainwindow.h"
-#include <core/Log.h>
+#include <core/ILog.h>
 #include <core/IService.h>
 #include <boost/foreach.hpp>
 #include <core/ObjectWrapper.h>
 #include <boost/filesystem.hpp>
 #include <QtCore/QObject>
-#include <core/Log.h>
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>

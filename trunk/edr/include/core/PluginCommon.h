@@ -17,6 +17,7 @@
 #include <core/IDataSourceManager.h>
 #include <core/StringTools.h>
 #include <core/IPath.h>
+#include <core/ILog.h>
 
 namespace core 
 {
@@ -27,6 +28,7 @@ namespace core
         IVisualizerManager* visualizerManager;
         IServiceManager* serviceManager;
 		IPath* pathInterface;
+		ILog* logInterface;
         IDataProcessorManager* dataProcessorManager;
         IDataSourceManager* dataSourceManager;
         IWorkflowManager* workflowManager;
@@ -36,7 +38,7 @@ namespace core
     extern InstanceInfo __instanceInfo;
 
     //! Makro definiuj¹ce zmienn¹ przechowuj¹c¹ managery. Automatycznie u¿ywane w pluginach.
-    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }; }
+    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }; }
 
     //! \return Bie¿¹ca instancja data managera. Rozwi¹zanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala
@@ -49,6 +51,11 @@ namespace core
 	inline IPath* getPathInterface()
 	{
 		return __instanceInfo.pathInterface;
+	}
+
+	inline ILog* getLogInterface()
+	{
+		return __instanceInfo.logInterface;
 	}
 
     //!

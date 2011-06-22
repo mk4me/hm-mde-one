@@ -10,7 +10,7 @@
 #include "TimelineImageStreamWrapper.h"
 #include <vidlib/osg/VideoImageStream.h>
 #include <boost/foreach.hpp>
-#include <core/Log.h>
+#include <core/ILog.h>
 
 #include <core/C3D_Data.h>
 #include <core/C3DParserEx.h>

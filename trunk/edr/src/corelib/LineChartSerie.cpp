@@ -2,7 +2,7 @@
 #include <core/LineChartSerie.h>
 #include <core/ChartData.h>
 #include <core/ChartPointer.h>
-#include <core/Log.h>
+#include <core/ILog.h>
 #include <osg/BlendFunc>
 #undef min
 #undef max

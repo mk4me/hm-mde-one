@@ -2,7 +2,7 @@
 #include "LogInitializer.h"
 
 #include "CorePCH.h"
-#include <core/Log.h>
+#include "Log.h"
 
 #include <boost/foreach.hpp>
 #include <osg/Notify>
@@ -13,6 +13,7 @@
 #include <core/StringTools.h>
 
 using namespace core;
+
 
 void QtMessageHandler(QtMsgType type, const char *msg)
 {

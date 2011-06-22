@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+
 #include <iterator>
 #include <core/StringTools.h>
 #include <boost/foreach.hpp>

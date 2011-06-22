@@ -24,7 +24,7 @@ delete[] this->memContent;
 void MIPSreader::seek(int offset)
 {
 
-	if(offset < 0 || offset > maxPos){}
+	if(offset < 0 || offset > static_cast<int>(maxPos)){}
 	else
 	{
 		curPos = offset;

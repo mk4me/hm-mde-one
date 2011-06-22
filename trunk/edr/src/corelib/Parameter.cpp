@@ -101,7 +101,7 @@ int Parameter::saveParam(std::ofstream& out, ProcessorReader* proc, char id) {
 	const char* ptr = 0;
 	ptr = name.data();
 
-	for(int i=0; i < name.length() ; i++) 
+	for(unsigned int i=0; i < name.length() ; i++) 
 	{
 
 		proc->writeByte( ptr[i], out);
@@ -263,7 +263,7 @@ int Parameter::saveParam(std::ofstream& out, ProcessorReader* proc, char id) {
 
 	ptr = description.data();
 
-	for(int i=0; i < description.length() ; i++) 
+	for(unsigned int i=0; i < description.length() ; i++) 
 	{
 
 		proc->writeByte( ptr[i], out);

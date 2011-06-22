@@ -38,7 +38,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
-#include <core/Log.h>
+#include "Log.h"
 #include <core/StringTools.h>
 #include <boost/foreach.hpp>
 #include "VisualizerWidget.h"

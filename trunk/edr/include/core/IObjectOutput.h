@@ -14,7 +14,7 @@
 #include <utils/Debug.h>
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
-#include <core/Log.h>
+#include <core/ILog.h>
 
 namespace core 
 {

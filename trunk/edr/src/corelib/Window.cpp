@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include <core/Window.h>
-#include <core/Log.h>
+#include <core/PluginCommon.h>
+#include <core/ILog.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {

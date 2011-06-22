@@ -12,7 +12,7 @@
 
 #include <core/PluginLoader.h>
 #include <core/Plugin.h>
-#include <core/Log.h>
+#include "Log.h"
 #include <core/PluginCommon.h>
 
 ////////////////////////////////////////////////////////////////////////////////
