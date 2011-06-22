@@ -91,13 +91,15 @@ namespace utils {
         std::string name;
         //! Bie¿¹cy czas.
         time_type time;
+        //! Czy dane znormalizowane
+        bool normalized;
 
     public:
         //! \param samplesPerSec Liczba próbek na sekundê.
         explicit DataChannel(int samplesPerSec) :
         samplesPerSec(samplesPerSec),
         samplesPerSecInv( time_type(1.0) / time_type(samplesPerSec) ),
-        time(0), length(0)
+        time(0), length(0), normalized(true)
         {
             if ( samplesPerSec <= 0 ) {
                 throw std::runtime_error( static_cast<std::ostringstream&>(std::ostringstream() 
@@ -111,7 +113,12 @@ namespace utils {
         samplesPerSec(channel.samplesPerSec),
         samplesPerSecInv(channel.samplesPerSecInv),
         data(channel.data),
-        time(channel.time), length(channel.length)
+        time(channel.time), length(channel.length),
+        maxValue(channel.maxValue), minValue(channel.minValue),
+        maxValueTime(channel.maxValueTime),
+        minValueTime(channel.minValueTime),
+        xUnit(channel.xUnit), yUnit(channel.yUnit),
+        name(channel.name), normalized(channel.normalized)
         {
             if ( samplesPerSec <= 0 ) {
                 throw std::runtime_error( static_cast<std::ostringstream&>(std::ostringstream() 
@@ -125,7 +132,7 @@ namespace utils {
 
     public:
         //! Klonuje kana³.
-        virtual DataChannel* clone()
+        virtual DataChannel* clone() const
         {
             return new DataChannel(*this);
         }
@@ -233,13 +240,16 @@ namespace utils {
                 value_type added = { length, point, point_type() };
                 if ( Manipulator::isLower(maxValue, added.value) ) {
                     maxValue = added.value;
-                    minValueTime = added.time;
+                    //minValueTime = added.time;
+                    maxValueTime = added.time;
                 } else if ( Manipulator::isLower(added.value, minValue) ) {
                     minValue = added.value;
                     minValueTime = added.time;
                 }
                 data.push_back( added );
             }
+
+            normalized = false;
         }
 
         //! \param first
@@ -254,9 +264,15 @@ namespace utils {
         //! Usuwa wszystkie punkty pomiarowe.
         void removePoints()
         {
-            data.clear();
+            data.swap(Data());
             length = 0;
-            time = 0;
+            maxValueTime = minValueTime = time = 0;
+            normalized = true;
+        }
+
+        bool isNormalized() const
+        {
+            return normalized;
         }
 
         //! Zapisuje znormalizowane dane do pól normalizedValue.
@@ -265,12 +281,15 @@ namespace utils {
             if ( !getNumPoints() ) {
                 throw std::runtime_error("No data points yet.");
             }
+
             // w ten sposób istnieje szansa, ¿e bêdzie zrobione z u¿yciem instrukcji
             // wektorowych...
             iterator last = end();
             for (iterator it = begin(); it != last; ++it) {
                 it->normalizedValue = Manipulator::normalize(it->value, minValue, maxValue);
             }
+
+            normalized = true;
         }
         
         //! \param time

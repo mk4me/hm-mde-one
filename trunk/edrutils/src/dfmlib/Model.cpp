@@ -99,6 +99,10 @@ void Model::addNode(const NPtr & node)
 {
 	UTILS_ASSERT((node != nullptr), "Bledny wezel");
 
+    if(node == nullptr){
+        throw std::runtime_error("Invalid node!");
+    }
+
     ScopedLock lock(editMutex);
 
     if(isModelChangeAllowed() == false){
