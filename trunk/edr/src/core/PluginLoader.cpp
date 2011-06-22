@@ -251,14 +251,39 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
         return false;
     }
 
-    plugin->setPath(path);
-    plugins.push_back( PluginPtr(plugin) );
-    libraries.push_back(library);
 
-    LOG_INFO("Successfully loaded plugin " << path);
+    bool pluginIDFound = false;
+    core::PluginPtr collidingPlugin;
+    //szukamy pluginu o podanym ID - jesli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
+    for(auto it = plugins.begin(); it != plugins.end(); it++){
+        if( (*it).first->getID() == plugin->getID()){
+            pluginIDFound = true;
+            collidingPlugin = (*it).first;
+            break;
+        }
+    }
 
-    //LOG_INFO("Plugin " << plugin->getName() << " loaded from " << path);
-    return true;
+    if(pluginIDFound == false){
+
+        plugin->setPath(path);
+
+        // musi tak byc, inaczej dwa smart pointery do jendego obiektu!!
+        PluginPair p;
+        p.first.reset(plugin);
+        p.second = p.first;
+
+        plugins.push_back( p );
+        libraries.push_back(library);
+
+        LOG_INFO("Successfully loaded plugin " << path);
+
+        //LOG_INFO("Plugin " << plugin->getName() << " loaded from " << path);
+
+    }else{
+        LOG_WARNING("Plugin with given ID " << plugin->getID() << " already exist. Plugin " << path << " NOT loaded to application! Collision with plugin loaded from: " << collidingPlugin->getPath() );
+    }
+
+    return !pluginIDFound;
 }
 
 void PluginLoader::convertStringPathIntoFileDirList(const std::string& paths, Paths& filepath)

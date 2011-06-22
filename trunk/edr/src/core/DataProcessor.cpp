@@ -6,6 +6,8 @@
 
 using namespace core;
 
+CORE_DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+
 DataProcessor::DataProcessor( core::IDataProcessor* impl ) : 
   InputOutputItem<core::IDataProcessor>(impl)
 {
@@ -53,20 +55,29 @@ void DataProcessor::test()
         virtual void process(IObjectSource* input, IObjectOutput* output)
         {
             // pobranie obiektu mo¿e, ale nie musi, go sklonowaæ
-            core::ConstObjectWrapperCollectionConstPtr objects = input->getObjects(0);
+            auto objects = input->getObjects(0);
 
-            if(objects == nullptr){
+            if(objects.empty() == true){
                 return;
             }
 
-            for(auto it = objects->begin(); it != objects->end(); it++){
+            for(int i = 0; i < objects.size(); i++){
+                IntConstPtr val = objects.getObject(i);
+                IntPtr in(new int(*val));
+                LOG_DEBUG("Input: " << *in << " Output:" << *in + 1);
+                *in+=1;
+
+                output->getObjects(0).addObject(in);
+            }
+
+            /*for(auto it = objects->begin(); it != objects->end(); it++){
                 ObjectWrapperPtr result = (*it)->clone();
                 IntPtr in = result->get();
                 LOG_DEBUG("Input: " << *in << " Output:" << *in + 1);
                 *in+=1;
 
-                output->getObjects(0)->addObject(result);
-            }
+                output->getObjects(0).addObject(result);
+            }*/
 
             
             // je¿eli zale¿y nam, ¿eby nigdy nie nast¹pi³a modyfikacja przez nastêpników,
@@ -105,20 +116,38 @@ void DataProcessor::test()
         {
             // takie pobranie nigdy nie spowoduje sklonowania,
             // ale rezultatu nie mo¿na modyfikowaæ
-            const auto objects = input->getObjects(0);
+            auto objects = input->getObjects(0);
 
-            if(objects == nullptr){
+            if(objects.empty() == true){
                 return;
             }
 
-            for(auto it = objects->begin(); it != objects->end(); it++){
+            for(int i = 0; i < objects.size(); i++){
+                IntConstPtr val = objects.getObject(i);
+                IntPtr in(new int(*val));
+                LOG_DEBUG("Input: " << *in << " Output:" << *in + 1);
+                *in+=1;
+
+                output->getObjects(0).addObject(in);
+            }
+
+            /*for(auto it = objects->begin(); it != objects->end(); it++){
                 ObjectWrapperPtr result = (*it)->clone();
                 IntPtr in = result->get();
                 LOG_DEBUG("Input: " << *in << " Output:" << *in + 1);
                 *in+=1;
 
                 output->getObjects(0)->addObject(result);
-            }
+            }*/
+
+            /*for(auto it = objects->begin(); it != objects->end(); it++){
+                ObjectWrapperPtr result = (*it)->clone();
+                IntPtr in = result->get();
+                LOG_DEBUG("Input: " << *in << " Output:" << *in + 1);
+                *in+=1;
+
+                output->getObjects(0)->addObject(result);
+            }*/
         }
     };
 
@@ -143,47 +172,47 @@ void DataProcessor::test()
     // na pobranie tylko obiektu w zmiennym wariancie (nale¿a³oby to uzupe³niæ, ¿eby nie tworzyæ
     // potworków jak ni¿ej
     DataProcessor processor2(new IncrementerMutable());
-    if ( processor.getOutput()->getObjects(0) ) {
-        // chocia¿ podajemy zmienny obiekt to i tak przy próbie dostêpu do zmiennego zostanie
-        // sklonowany, bo nie ustawiliœmy flagi passDirectly; ta flaga powinna byæ ustawiana
-        // na podstawie liczby nastêpników elementu przetwarzaj¹cego (1 - mo¿na przekazaæ bez klonowania,
-        // > 1 - nie mo¿na)
-        processor2.getSource()->setObjects(0, processor.getOutput()->getObjects(0));
-    } else {
-        // przekazujemy sta³y obiekt skoro nie ma zmiennego; je¿eli element przetwarzaj¹cy bêdzie
-        // chcia³ to sobie sklonuje automatycznie
-        processor2.getSource()->setObjects(0, processor.getOutput()->getConstObjects(0));
-    }
+    //if ( processor.getOutput()->getObjects(0) ) {
+    //    // chocia¿ podajemy zmienny obiekt to i tak przy próbie dostêpu do zmiennego zostanie
+    //    // sklonowany, bo nie ustawiliœmy flagi passDirectly; ta flaga powinna byæ ustawiana
+    //    // na podstawie liczby nastêpników elementu przetwarzaj¹cego (1 - mo¿na przekazaæ bez klonowania,
+    //    // > 1 - nie mo¿na)
+    //    processor2.getSource()->setObjects(0, processor.getOutput()->getObjects(0));
+    //} else {
+    //    // przekazujemy sta³y obiekt skoro nie ma zmiennego; je¿eli element przetwarzaj¹cy bêdzie
+    //    // chcia³ to sobie sklonuje automatycznie
+    //    processor2.getSource()->setObjects(0, processor.getOutput()->getConstObjects(0));
+    //}
 
-    DataProcessor processor3(new IncrementerMutable());
-    // tutaj pozwalamy na przekazanie bezpoœrednie; normalnie powinno to byæ ustawiane na podstawie
-    // liczby nastêpników processor
-    //processor3.getSource()->setPassDirectly(0, true);
-    if ( processor3.getOutput()->getObjects(0) ) {
-        // je¿eli tu wejdziemy to obiekt z processor zostanie zmodyfikowany!
-        processor3.getSource()->setObjects(0, processor.getOutput()->getObjects(0));
-    } else {
-        processor3.getSource()->setObjects(0, processor.getOutput()->getConstObjects(0));
-    }
+    //DataProcessor processor3(new IncrementerMutable());
+    //// tutaj pozwalamy na przekazanie bezpoœrednie; normalnie powinno to byæ ustawiane na podstawie
+    //// liczby nastêpników processor
+    ////processor3.getSource()->setPassDirectly(0, true);
+    //if ( processor3.getOutput()->getObjects(0) ) {
+    //    // je¿eli tu wejdziemy to obiekt z processor zostanie zmodyfikowany!
+    //    processor3.getSource()->setObjects(0, processor.getOutput()->getObjects(0));
+    //} else {
+    //    processor3.getSource()->setObjects(0, processor.getOutput()->getConstObjects(0));
+    //}
 
-    DataProcessor processor4(new IncrementerImmutable());
-    // tutaj ta opcja nic nie zmieni, gdy¿ implementacja i tak pobiera sta³y wskaŸnik
-    //processor4.getSource()->setPassDirectly(0, true);
-    if ( processor4.getOutput()->getObjects(0) ) {
-        processor4.getSource()->setObjects(0, processor.getOutput()->getObjects(0));
-    } else {
-        processor4.getSource()->setObjects(0, processor.getOutput()->getConstObjects(0));
-    }
+    //DataProcessor processor4(new IncrementerImmutable());
+    //// tutaj ta opcja nic nie zmieni, gdy¿ implementacja i tak pobiera sta³y wskaŸnik
+    ////processor4.getSource()->setPassDirectly(0, true);
+    //if ( processor4.getOutput()->getObjects(0) ) {
+    //    processor4.getSource()->setObjects(0, processor.getOutput()->getObjects(0));
+    //} else {
+    //    processor4.getSource()->setObjects(0, processor.getOutput()->getConstObjects(0));
+    //}
 
-    processor.tryRun();
-    processor2.tryRun();
-    processor3.tryRun();
-    // na wejœciu bêdzie mia³ 668, przez processor3, który ma ustawione przekazywanie bezpoœrednie
-    processor4.tryRun();
+    //processor.tryRun();
+    //processor2.tryRun();
+    //processor3.tryRun();
+    //// na wejœciu bêdzie mia³ 668, przez processor3, który ma ustawione przekazywanie bezpoœrednie
+    //processor4.tryRun();
 
-    // mo¿na sobie podejrzeæ, co znajduje siê na outputach
-    auto out1 = processor.getOutputObjects(0);
-    auto out2 = processor2.getOutputObjects(0);
-    auto out3 = processor3.getOutputObjects(0);
-    auto out4 = processor4.getOutputObjects(0);
+    //// mo¿na sobie podejrzeæ, co znajduje siê na outputach
+    //auto out1 = processor.getOutputObjects(0);
+    //auto out2 = processor2.getOutputObjects(0);
+    //auto out3 = processor3.getOutputObjects(0);
+    //auto out4 = processor4.getOutputObjects(0);
 }

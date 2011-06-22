@@ -61,9 +61,9 @@ public:
 
     //! \param outputNo Numer wyjœcia.
     //! \return Obiekt na wyjœciu.
-    core::ObjectWrapperCollectionPtr getOutputObjects(int outputNo)
+    const core::ObjectWrapperCollectionPtr & getOutputObjects(int outputNo)
     {
-        return output->getObjects(outputNo);
+        return output->ObjectSlots::getObjects(outputNo);
     }
 
     const RequiredInputs & getRequiredInputs(int outputNo) const

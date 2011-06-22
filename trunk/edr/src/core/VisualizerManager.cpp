@@ -123,9 +123,7 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
         visualizer->getInputInfo(visualizerInputInfo);
 
         if(visualizerInputInfo.empty() == true){
-            std::string error;
-            error += "Visualizer: ID = " + boost::lexical_cast<std::string>(visualizer->getID()) + " Name: " + visualizer->getName() + " does not support minimum one data type!";
-            LOG_ERROR(error.c_str());
+            LOG_WARNING("Visualizer " << visualizer->getName() << " ID = " << visualizer->getID() << " does not support minimum one data type! NOT registered in application");
         }else{
 
             prototypes.push_back(visualizer);

@@ -161,6 +161,14 @@ private:
     //! \param area
     QDockWidget* embeddWidget(QWidget* widget, std::vector<QObject*>& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
+    void safeRegisterPlugin(const core::PluginPtr & plugin);
+    void safeRegisterService(const core::IServicePtr & service);
+    void safeRegisterParser(const core::IParserPtr & parser);
+    void safeRegisterObjectFactory(const core::IObjectWrapperFactoryPtr & factory);
+    void safeRegisterVisualizer(const core::IVisualizerPtr & visualizer);
+    void safeRegisterDataProcessor(const core::IDataProcessorPtr & dataProcessor);
+    void safeRegisterDataSource(const core::IDataSourcePtr & dataSource);
+
 // QWidget
 protected:
     //!

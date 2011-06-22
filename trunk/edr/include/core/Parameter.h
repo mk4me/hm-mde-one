@@ -3,7 +3,9 @@
 
 #include <string>
 #include <vector>
-#include <plugins/chart/ProcessorReader.h>
+//#include <plugins/chart/ProcessorReader.h>
+
+class ProcessorReader;
 
 /*
 

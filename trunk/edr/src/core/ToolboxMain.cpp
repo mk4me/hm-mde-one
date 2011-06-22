@@ -337,12 +337,136 @@ void ToolboxMain::updateVisualizers()
     }
 }
 
+void ToolboxMain::safeRegisterPlugin(const core::PluginPtr & plugin)
+{
+
+}
+
+void ToolboxMain::safeRegisterService(const core::IServicePtr & service)
+{
+    try{
+
+        ServiceManager::getInstance()->registerService(service);
+
+    }catch(std::runtime_error e){
+        LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
+            " has caused an error during registration: " << e.what() << ". Service NOT registered in application!" );
+    }
+    catch(std::invalid_argument e){
+        LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
+            " has caused an error during registration: " << e.what() << ". Service NOT registered in application!" );
+    }
+    catch(...){
+        LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
+            " has caused an UNKNOWN error during registration. Service NOT registered in application!" );
+    }
+}
+
+void ToolboxMain::safeRegisterParser(const core::IParserPtr & parser)
+{
+    try{
+
+        DataManager::getInstance()->registerParser(parser);
+
+    }catch(std::runtime_error e){ 
+        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() << " supporting extensions " << parser->getSupportedExtensions() <<
+            " has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
+    }
+    catch(std::invalid_argument e){
+        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() << " supporting extensions " << parser->getSupportedExtensions() <<
+            " has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
+    }
+    catch(...){
+        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() << " supporting extensions " << parser->getSupportedExtensions() <<
+            " has caused an UNKNOWN error during registration. Parser NOT registered in application!" );
+    }
+}
+
+void ToolboxMain::safeRegisterObjectFactory(const core::IObjectWrapperFactoryPtr & factory)
+{
+    try{
+
+        DataManager::getInstance()->registerObjectFactory(factory);
+
+    }catch(std::runtime_error e){ 
+        LOG_WARNING("Object factory for type " << factory->getType().name() << " has caused an error during registration: "
+            << e.what() << ". Object type NOT registered in application!" );
+    }
+    catch(std::invalid_argument e){
+        LOG_WARNING("Object factory for type " << factory->getType().name() << " has caused an error during registration: "
+            << e.what() << ". Object type NOT registered in application!" );
+    }
+    catch(...){
+        LOG_WARNING("Object factory for type " << factory->getType().name() << " has caused an UNKNOWN error during registration. Object type NOT registered in application!" );
+    }
+}
+
+void ToolboxMain::safeRegisterVisualizer(const core::IVisualizerPtr & visualizer)
+{
+    try{
+
+        VisualizerManager::getInstance()->registerVisualizer(visualizer);
+
+    }catch(std::runtime_error e){ 
+        LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
+            << " has caused an error during registration: " << e.what() << ". Visualizer NOT registered in application!" );
+    }
+    catch(std::invalid_argument e){
+        LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
+            << " has caused an error during registration: " << e.what() << ". Visualizer NOT registered in application!" );
+    }
+    catch(...){
+        LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
+            << " has caused an UNKNOWN error during registration. Visualizer NOT registered in application!" );
+    }
+}
+
+void ToolboxMain::safeRegisterDataProcessor(const core::IDataProcessorPtr & dataProcessor)
+{
+    try{
+
+        DataProcessorManager::getInstance()->registerDataProcessor(dataProcessor);
+
+    }catch(std::runtime_error e){ 
+        LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
+            << " has caused an error during registration: " << e.what() << ". DataProcessor NOT registered in application!" );
+    }
+    catch(std::invalid_argument e){
+        LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
+            << " has caused an error during registration: " << e.what() << ". DataProcessor NOT registered in application!" );
+    }
+    catch(...){
+        LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
+            << " has caused an UNKNOWN error during registration. DataProcessor NOT registered in application!" );
+    }
+}
+
+void ToolboxMain::safeRegisterDataSource(const core::IDataSourcePtr & dataSource)
+{
+    try{
+
+        DataSourceManager::getInstance()->registerDataSource(dataSource);
+
+    }catch(std::runtime_error e){ 
+        LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
+            << " has caused an error during registration: " << e.what() << ". DataSource NOT registered in application!" );
+    }
+    catch(std::invalid_argument e){
+        LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
+            << " has caused an error during registration: " << e.what() << ". DataSource NOT registered in application!" );
+    }
+    catch(...){
+        LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
+            << " has caused an UNKNOWN error during registration. DataSource NOT registered in application!" );
+    }
+}
+
 void ToolboxMain::registerCoreServices()
 {
     // us³uga UI
     UserInterfaceService* userInterfaceService = new UserInterfaceService();
     userInterfaceService->setMainWindow(this);
-    ServiceManager::getInstance()->registerService(IServicePtr(userInterfaceService));
+    safeRegisterService(IServicePtr(userInterfaceService));
 }
 
 void ToolboxMain::registerCoreDataSources()
@@ -355,7 +479,7 @@ void ToolboxMain::registerPluginsServices()
     for ( int i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
         core::PluginPtr plugin = pluginLoader->getPlugin(i);
         for ( int j = 0; j < plugin->getNumServices(); ++j ) {
-            ServiceManager::getInstance()->registerService(plugin->getService(j));
+            safeRegisterService(plugin->getService(j));
         }
     }
 }
@@ -365,20 +489,22 @@ void ToolboxMain::registerPluginsParsers()
     for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumParsers(); ++j) {
-            DataManager::getInstance()->registerParser(plugin->getParser(j));
+            safeRegisterParser(plugin->getParser(j));
         }
     }
-    IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
-    DataManager::getInstance()->registerParser(c3dParser);
 
-    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<int>()) );
-    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<double>()) );
-    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<ScalarChannel>()) );
-    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<C3DAnalogChannel>()) );
-    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<EMGChannel>()) );
-    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<GRFChannel>()) );
-    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerChannel>()) );
-    DataManager::getInstance()->registerObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerSet>()) );
+    IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
+
+    safeRegisterParser(c3dParser);
+
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<int>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<double>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<ScalarChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<C3DAnalogChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<EMGChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<GRFChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerSet>()) );
 }
 
 void ToolboxMain::registerPluginsWrapperFactories()
@@ -386,7 +512,7 @@ void ToolboxMain::registerPluginsWrapperFactories()
     for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumWrapperFactories(); ++j) {
-            DataManager::getInstance()->registerObjectFactory(plugin->getWrapperFactory(j));
+            safeRegisterObjectFactory(plugin->getWrapperFactory(j));
         }
     }
 }
@@ -396,7 +522,7 @@ void ToolboxMain::registerPluginsVisualizers()
     for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumVisualizers(); ++j) {
-            VisualizerManager::getInstance()->registerVisualizer(plugin->getVisualizer(j));
+            safeRegisterVisualizer(plugin->getVisualizer(j));
         }
     }
 }
@@ -406,7 +532,7 @@ void ToolboxMain::registerPluginsDataProcessors()
     for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumDataProcessors(); ++j) {
-            DataProcessorManager::getInstance()->registerDataProcessor(plugin->getDataProcessor(j));
+            safeRegisterDataProcessor(plugin->getDataProcessor(j));
         }
     }
 }
@@ -416,7 +542,7 @@ void ToolboxMain::registerPluginsDataSources()
     for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumDataSources(); ++j) {
-            DataSourceManager::getInstance()->registerDataSource(plugin->getDataSource(j));
+            safeRegisterDataSource(plugin->getDataSource(j));
         }
     }
 }

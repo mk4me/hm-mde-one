@@ -26,9 +26,10 @@ public:
 
       // core::IObjectOutput
 public:
-    virtual const core::ObjectWrapperCollectionPtr & getObjects(int idx)
+    virtual core::IObjectOutput::OutputObjectsCollection getObjects(int idx)
     {
-        return ObjectSlots::getObjects(idx);
+        //return ObjectSlots::getObjects(idx);
+        return core::IObjectOutput::OutputObjectsCollection(ObjectSlots::getObjects(idx));
     }
 
     /*virtual void setObjects(int idx, const core::ObjectWrapperCollectionPtr & objects)

@@ -141,12 +141,6 @@ public:
         return constObjects[index];
     }
 
-    template<class SmartPtr>
-    SmartPtr getObject(int index) const
-    {
-        return getObject(int)->get(exact);
-    }
-
     void removeObject(int idx)
     {
         auto cIT = constObjects.begin();
@@ -158,10 +152,6 @@ public:
     //! \param object Wskaznik do niemodyfikowalnego obiektu domenowego
     void addObject(const ObjectWrapperConstPtr & object) 
     {
-        if(std::find(constObjects.begin(), constObjects.end(), object) != constObjects.end()){
-            throw std::runtime_error("Object already in collection");
-        }
-
         // sprawdzenie poprawnosci typu
         if (exact == true){
             if(object->isTypeEqual(typeInfo) == true) {

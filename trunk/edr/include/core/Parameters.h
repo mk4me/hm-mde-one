@@ -2,12 +2,13 @@
 #define _PARAMETERS_DEF_
 
 #include <iostream>
-#include <plugins/chart/ProcessorReader.h>
+//#include <plugins/chart/ProcessorReader.h>
 #include <core/Header.h>
 #include <string>
 #include <map>
 #include <core/GroupData.h>
 
+class ProcessorReader;
 /*
 
 Class responsible for holding data from parameters section.

@@ -1,4 +1,5 @@
 #include <core/Data.h>
+#include <plugins/chart/ProcessorReader.h>
 
 Data::Data(MarkerHeader* pam, ProcessorReader* proc){
 

@@ -96,26 +96,51 @@ void WorkflowCustomQOSGWidget::mousePressEvent(QMouseEvent * event)
     if(event->button() == Qt::LeftButton){
         //probuj dodac element
         if(workflowWidget->currentAction != nullptr){
-            WorkflowItemPtr item(workflowWidget->actionsItemBuilders[workflowWidget->currentAction]());
 
-            dflm::DFNPtr node;
-            //obuduj wezel
-            if(dynamic_cast<InputDescription*>(item.get()) == nullptr){
-                node.reset((EDRDFNode*)(new EDRDFSourceNode(item, item->getName())));
-            }else{
-                node.reset(new EDRDFNode(item, item->getName()));
-            }            
-            
-            workflowWidget->workflowVDFModel->addNode(node, osg::ref_ptr<osg::Image>(), node->getName(), osgWidget::XYCoord(event->pos().x(), event->pos().y()));
+            try{
+                WorkflowItemPtr item(workflowWidget->actionsItemBuilders[workflowWidget->currentAction]());
 
-            //QPoint pos = workflowWidget->workflowVDFWidget->mapToGlobal(event->pos());
+                dflm::DFNPtr node;
+                //obuduj wezel
+                if(dynamic_cast<InputDescription*>(item.get()) == nullptr){
+                    //sprawdz czy wezel poprawnie zbudowany!!
+                    node.reset((EDRDFNode*)(new EDRDFSourceNode(item, item->getName())));
+                }else{
+                    node.reset(new EDRDFNode(item, item->getName()));
+                }              
 
-            //workflowWidget->workflowVDFModel->setNodeAbsolutePosition(node, osgWidget::XYCoord(pos.x(), pos.y()));
+                QPoint pos = mapToGlobal(event->pos());
 
-            workflowWidget->currentAction->blockSignals(true);
-            workflowWidget->currentAction->setChecked(false);
-            workflowWidget->currentAction->blockSignals(false);
-            workflowWidget->currentAction = nullptr;
+                workflowWidget->workflowVDFModel->addNode(node, osg::ref_ptr<osg::Image>(), node->getName(), osgWidget::XYCoord(pos.x(), pos.y()));                
+
+                //workflowWidget->workflowVDFModel->setNodeAbsolutePosition(node, osgWidget::XYCoord(pos.x(), pos.y()));
+
+                workflowWidget->currentAction->blockSignals(true);
+                workflowWidget->currentAction->setChecked(false);
+                workflowWidget->currentAction->blockSignals(false);
+                workflowWidget->currentAction = nullptr;
+
+            }catch(std::runtime_error e){
+                LOG_ERROR("Error during node addition to workflow: " << e.what());
+                std::string info("Could not add requested node to workflow: ");
+                info += e.what();
+                QMessageBox msgBox;
+                msgBox.setText(info.c_str());
+                msgBox.exec();
+            }catch(std::invalid_argument e){
+                LOG_ERROR("Error during node addition to workflow: " << e.what());
+                std::string info("Could not add requested node to workflow: ");
+                info += e.what();
+                QMessageBox msgBox;
+                msgBox.setText(info.c_str());
+                msgBox.exec();
+            }catch(...){
+                LOG_ERROR("UNKNOWN error during node addition to workflow");
+                QMessageBox msgBox;
+                msgBox.setText("Could not add requested node to workflow. Unknown error");
+                msgBox.exec();
+            }
+
             return;
         }
     }else{

@@ -14,12 +14,16 @@ namespace core {
 class PluginLoader
 {
 public:
-    //! Za³adowane pluginy.
-    typedef std::vector<PluginPtr> Plugins;
-    //! Uchwyty do bibliotek dynamicznie ³adowanych.
-    typedef std::vector<uint32_t> Handles;
     //! Œcie¿ki wyszukiwania.
     typedef std::deque<std::string> Paths;
+
+private:
+
+    typedef std::pair<PluginPtr, PluginConstPtr> PluginPair;
+    //! Za³adowane pluginy.
+    typedef std::vector<PluginPair> Plugins;
+    //! Uchwyty do bibliotek dynamicznie ³adowanych.
+    typedef std::vector<uint32_t> Handles;
 
 private:
     //! Uchwyty do bibliotek dynamicznie ³adowanych.
@@ -53,15 +57,15 @@ public:
     }
     //! 
     //! \param idx
-    PluginPtr getPlugin(int idx)
+    const PluginPtr & getPlugin(int idx)
     {
-        return plugins[idx];
+        return plugins[idx].first;
     }
     //! 
     //! \param idx
-    const PluginPtr getPlugin(int idx) const
+    const PluginConstPtr & getPlugin(int idx) const
     {
-        return plugins[idx];
+        return plugins[idx].second;
     }
     //! \return
     const Paths& getPaths() const

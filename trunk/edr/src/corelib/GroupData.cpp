@@ -1,4 +1,5 @@
 #include <core/GroupData.h>
+#include <plugins/chart/ProcessorReader.h>
 
 	GroupData::GroupData() {
 

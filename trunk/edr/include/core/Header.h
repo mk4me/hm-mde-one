@@ -2,7 +2,7 @@
 #define _MARKERHEADER_DEF_
 
 #include <string>
-#include <plugins/chart/ProcessorReader.h>
+//#include <plugins/chart/ProcessorReader.h>
 #include <iostream>
 #include <fstream>
 #include <bitset>
@@ -14,6 +14,8 @@ Class responsible for holding data from the header section of c3d file.
 It contains mirrored values from the most important values from the parameters section.
 
 */
+class ProcessorReader;
+
 class MarkerHeader {
 
 private:

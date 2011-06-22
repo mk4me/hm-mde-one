@@ -48,7 +48,7 @@ namespace core {
         {}
         
     public:
-        virtual ScalarChannel* clone()
+        virtual ScalarChannel* clone() const
         {
             return new EMGChannel(*this);
         }
@@ -72,7 +72,7 @@ namespace core {
         {}
 
     public:
-        virtual ScalarChannel* clone()
+        virtual ScalarChannel* clone() const
         {
             return new GRFChannel(*this);
         }
@@ -92,7 +92,7 @@ namespace core {
             { }
         MarkerChannel(C3D_Data& c3dData, int channelNo);
     public:
-        virtual MarkerChannel* clone()
+        virtual MarkerChannel* clone() const
         {
             return new MarkerChannel(*this);
         }

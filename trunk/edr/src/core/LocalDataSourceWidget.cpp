@@ -106,6 +106,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
 
                                 //inicjalizuje pierwsze dane
                                 localDataSource->data.insert(std::make_pair(it->first, it->second));
+                                localDataSource->outputDescription.push_back(core::IOutputDescription::OutputInfo(it->second->getObject(0)->getClassName(), it->first));
                             }else{
                                 chkBox->setChecked(false);
                             }

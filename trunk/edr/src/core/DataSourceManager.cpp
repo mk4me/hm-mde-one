@@ -54,6 +54,14 @@ DataSourcePtr DataSourceManager::createDataSource( const IDataSourceConstPtr& pr
         dialog->exec();
     }
 
+    //test czy jakieœ dane wyjsciowe dostepne
+    std::vector<core::IOutputDescription::OutputInfo> output;
+    src->getOutputInfo(output);
+
+    if(output.empty() == true){
+        throw std::runtime_error(std::string("Source: ") + src->getName() + std::string(" ID: ") + boost::lexical_cast<std::string>(src->getID()) + std::string(" created without any outputs!"));
+    }
+    
     DataSourcePtr result(new DataSource(src));
     return result;
 }

@@ -21,6 +21,98 @@ namespace core
     //! èrÛd≥o obiektÛw.
     class IObjectSource
     {
+    public:
+
+        class InputObjectsCollection;
+        typedef core::shared_ptr<InputObjectsCollection> InputObjectsCollectionPtr;
+        typedef core::shared_ptr<const InputObjectsCollection> InputObjectsCollectionConstPtr;
+        typedef core::weak_ptr<InputObjectsCollection> InputObjectsCollectionWeakPtr;
+        typedef core::weak_ptr<const InputObjectsCollection> InputObjectsCollectionConstWeakPtr;
+
+        //! Klasa proxy przykrywajπca moøliwoúÊ przechowywania ObjecWrapperÛw przez ObjecWrapperCollection. Umoøliwia jedynie pobieranie niemodyfikowalnych danych z kolekcji.
+        //! Dane pobierane sπ w rozpakowanej juø formie do rzeczywistych typÛw (wyciπgniÍte z ObjectWrapperÛw). Sπ to smart pointery na const obiekty.
+        class InputObjectsCollection
+        {
+        public:
+            //! Return type resolver - poprzez operator konwersji pozwala kompilatorowi rtozpoznaÊ typ zwracany i wykonaÊ dla niego konwersjÍ
+            struct get_t
+            {
+            public:
+                //! const ObjectWrapperPtr ktÛy bÍdziemy ropzakowywaÊ
+                const ObjectWrapperConstPtr & constObjectWrapperPtr;
+                //! Czy typ musi byÊ dok≥adnie taki sam jaki przechowuje ObjectWraper czy moøe to byÊ jakiú typ niøej w hierarchi dziedziczenia
+                bool exact;
+
+                //! Konstruktor inicjujπcy RtR
+                get_t(const ObjectWrapperConstPtr & constObjectWrapperPtr, bool exact)
+                    : constObjectWrapperPtr(constObjectWrapperPtr), exact(exact) {}
+
+                //! Operator konwersji w formie wzorca robiπcy ca≥a magiÍ
+                template<class SmartConstPtr>
+                inline operator SmartConstPtr() const
+                {
+                    SmartConstPtr ret;
+                    constObjectWrapperPtr->tryGet(ret, exact);
+                    return ret;
+                }
+            };
+
+        public:
+
+            //! Konstruktor inicjujπcy proxy kolekcjπ object wrapperÛw
+            InputObjectsCollection(const ObjectWrapperCollectionConstPtr & collection)
+                : collection(collection)
+            {
+
+            }
+
+            //! Destruktor
+            ~InputObjectsCollection()
+            {
+
+            }
+
+            //! Zwraca dane w zadanej formie - RtR
+            //! \param idx Indeks danych
+            //! \return Return Type Resolver
+            const get_t getObject(int idx) const
+            {
+                UTILS_ASSERT((collection != nullptr), "Bledna kolekcja w proxy dla wejscia");
+
+                if(collection == nullptr){
+                    throw std::runtime_error("Call beyond collection range or to nullptr");
+                }
+
+                const get_t ret(collection->getObject(idx), false);
+                return ret;
+            }
+
+            //! \return Czy kolekcja pusta (lub niezainicjowana - tak teø siÍ moøe zdaøyÊ dla wejscia
+            bool empty() const
+            {
+                if(collection == nullptr){
+                    return true;
+                }
+
+                return collection->empty();
+            }
+
+            //! \return Rozmiar kolekcji danych - 0 jeúli pusta lub niezainicjowana
+            int size() const
+            {
+                if(empty() == true){
+                    return 0;
+                }
+
+                return collection->size();
+            }
+
+
+        private:
+            //! Kolekcja danych ktÛrπ przykrywamy tym proxy
+            ObjectWrapperCollectionConstPtr collection;
+        };
+
     // interfejs
     public:
         //! Pusty polimorficzny destruktor.
@@ -32,11 +124,8 @@ namespace core
         //! \return true jeøeli obiekt o indeksie idx uleg≥ zmianie lub zosta≥ wyzerowany/ustawiony.
         virtual bool isChanged(int idx) const = 0;
 
-        //! Wy≥uskanie wskaünika na obiekt domenowy ze ürÛd≥a przy za≥oøeniu jego zmiennoúci.
-        //virtual ObjectWrapperCollectionPtr getObjects(int idx, boost::false_type) = 0;
-
         //! Wy≥uskanie wskaünika na obiekt domenowy ze ürÛd≥a przy za≥oøeniu jego niezmiennoúci.
-        virtual ConstObjectWrapperCollectionConstPtr getObjects(int idx/*, boost::true_type*/) const = 0;
+        virtual InputObjectsCollection getObjects(int idx) const = 0;
 
     // pomocnicze metody inline bπdü szablony
     //public:

@@ -172,7 +172,7 @@ private:
 public:
     //! \param name Nazwa pluginu.
     Plugin(const std::string& name, UniqueID id) 
-        : name(name), path("UNKNOWN")
+        : name(name), path("UNKNOWN"), id(id)
     {
     }
 
