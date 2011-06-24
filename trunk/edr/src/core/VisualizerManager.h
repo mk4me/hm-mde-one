@@ -10,7 +10,6 @@
 #define HEADER_GUARD_CORE__VISUALIZERMANAGER_H__
 
 #include <list>
-#include <typeinfo>
 #include <boost/any.hpp>
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
@@ -34,8 +33,7 @@ public:
     typedef std::vector<core::IVisualizerPtr> IVisualizers;
     //! 
     typedef boost::iterator_range<IVisualizers::const_iterator> IVisualizersConstRange;
-    //!
-    //! typedef std::list<VisualizerWeakPtr> WeakVisualizers;
+
     typedef std::list<Visualizer*> Visualizers;
     //! Lista typów kolejnych Ÿróde³.
     typedef ObjectSlots::SlotsInfo SourcesTypes; 
@@ -52,8 +50,7 @@ private:
 
     //! Prototypy wizualizatorów.
     IVisualizers prototypes;
-    //! Lista œledz¹ca wizualizatory.
-    // WeakVisualizers visualizersTrace;
+
     Visualizers visualizers;
     //! Sta³e dane wizualizatorów.
     std::vector< IVisualizerPersistantData* > visualizersData;

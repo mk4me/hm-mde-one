@@ -28,7 +28,7 @@ private:
 
     //! Prototypy Ÿróde³ danych.
     IDataSources prototypes;
-    //! Lista œledz¹ca wizualizatory.
+    //! Lista œledz¹ca Ÿród³a danych.
     DataSources dataSources;
 
 public:
@@ -43,11 +43,8 @@ public:
         return static_cast<DataSourceManager*>(core::getDataSourceManager());
     }
 
-    //! \param visualizer
+    //! \param dataSource
     virtual void registerDataSource(const core::IDataSourcePtr & dataSource);
-
-    //! Aktualizacja Ÿróde³.
-    void update();
 
     //! \return Wyliczenie prototypów.
     inline IDataSourcesConstRange enumPrototypes() const

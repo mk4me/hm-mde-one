@@ -17,7 +17,7 @@ resources, próby pomiarowe s¹ wyszukiwane i pobierane do trials.
 class DataManager: public core::IDataManager
 {
 public:
-	DataManager();//(const std::string& resourcesPath = "resources/", const std::string& trialsPath = "trials/");
+	DataManager();
 	virtual ~DataManager();
 
 public:
@@ -108,7 +108,7 @@ private:
 	//! Mapa fabryk obiektów.
 	typedef std::map<core::TypeInfo, core::IObjectWrapperFactoryPtr> ObjectFactories;
 	typedef std::multimap< core::TypeInfo, std::pair<DataProcessorPtr, core::ObjectWrapperWeakPtr> > ObjectFromProcessors;
-
+    //! Mapa typów i prototypów ich ObjectWrapperów
 	typedef std::map<core::TypeInfo, core::ObjectWrapperConstPtr> RegisteredTypesPrototypes;
 
 private:
@@ -123,7 +123,7 @@ private:
 
 	//! Obiekty pochodz¹ce z parserów.
 	ObjectsByType currentObjects;
-
+    //! Dane z DataProcesorów
 	ObjectFromProcessors objectsFromDataProcessors;
 
 	//! Lista parserów przypisanych do plików.
@@ -137,24 +137,14 @@ private:
 	//! Lista skórek dla UI
 	std::vector<std::string> applicationSkinsPaths;
 
-	////! sciezka do folderu z zasobami aplikacji
-	//Path resourcesPath;
-	////! sciezka do folderu "ApplicationData\EDR"
-	//Path applicationDataPath;
-	////! sciezka do folderu "MyDocuments\EDR"
-	//Path userDataPath;
 	//!
 	Path trialsPath;
 	bool loadTrialData;
 
+    //! Prototypy ObjecWrapperów zarejestrowanych typów danych
 	RegisteredTypesPrototypes registeredTypesPrototypes;
 
 protected:
-	//! Tworzy parser dla danego pliku. Plik jeszcze nie jest przeparsowany!
-	//! \param path Œcie¿ka.
-	//! \param resource Czy to jest zasób niezmienny?
-
-	//ParserPtr createParser(const Path& path, bool resource);
 	//! Pomocnicza metoda, tworzy parsery dla zadanego rozszerzenia. Wspiera dodawanie wielu parserów dla jednego pliku.
 	//! Uwaga: plik nie zostaje jeszcze przeparsowany!
 	//! Zwraca obiekty domenowe ktore moga powstac w wyniku parsowania danego pliku!! jeszcze nie sa zainicjowane
@@ -171,11 +161,19 @@ public:
 		return static_cast<DataManager*>(core::getDataManager());
 	}
 
-	void registerObjectFactory(core::IObjectWrapperFactoryPtr factory);
+    //! \param factory Fabryka ObjectWrapperów zadanego typu dostarczana wraz z nowym typem rejestorwanym w aplikacji
+	void registerObjectFactory(const core::IObjectWrapperFactoryPtr & factory);
 
+    //! \param type Typ dla którego chcemy utworzyæ ObjectWrapper
+    //! \return ObjectWrapper dla zadanego typu
 	virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo& type);
+
+    //! \param type Typ dla którego chcemy utworzyæ ObjectWrapperCollection
+    //! \return ObjectWrapperCollection dla zadanego typu
 	virtual core::ObjectWrapperCollectionPtr createWrapperCollection(const core::TypeInfo& typeInfo);
 
+    //! \param type Typ dla którego chcemy dostaæ prototyp ObjectWrappera
+    //! \return prototyp ObjectWrapper dla zadanego typu
 	const core::ObjectWrapperConstPtr & getTypePrototype(const core::TypeInfo & typeInfo) const;
 
 	//! \param sourceTypeInfo Typ z ktorego chcemy pobrac dane
@@ -204,7 +202,7 @@ public:
 
 	//! Rejestruje zadany parser.
 	//! \param newService
-	void registerParser(core::IParserPtr parser);
+	void registerParser(const core::IParserPtr & parser);
 	//! \return Liczba niezainicjalizowanych parserów.
 	int getNumRegisteredParsers() const;
 	//! \param idx Indeks parsera.
@@ -228,12 +226,12 @@ public:
 	//! Dodawanie obiektow domenowych z innych zrodel niz parsery
 	//! \param dataProcessor zrodlo danych
 	//! \param objects wektor ze stworzonymi obiektami domenowymi (zrodlo powinno dalej je przechowywac!)
-	virtual void addObjects(DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects);
+	virtual void addObjects(const DataProcessorPtr & dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects);
 
 	//! Dodawanie obiektu domenowego z innego zrodla niz parser
 	//! \param dataProcessor zrodlo obiektu
 	//! \param object dodawany obiekt (zrodlo powinno dalej go przechowywac)
-	virtual void addObject(DataProcessorPtr dataProcessor, core::ObjectWrapperPtr object);
+	virtual void addObject(const DataProcessorPtr & dataProcessor, const core::ObjectWrapperPtr & object);
 
 	//! \see core::IDataManager::getParser
 	UTILS_DEPRECATED(virtual core::IParserPtr getParser(int idx));
@@ -294,15 +292,9 @@ public:
 	//! Czyœci informacje o aktualnej próbie pomiarowej.
 	UTILS_DEPRECATED(void clearCurrentTrial());
 
-
-public:
-	//! Tutaj nastêpuje leniwa inicjalizacja.
-	//! \see core::IDataManager::getObjects
-	// void getObjects(std::vector<core::ObjectWrapperConstPtr>& objects, const std::type_info& type, bool exact = false) const;
-
 private:
 	//! Mapuje obiekty 
-	void mapObjectsToTypes(const std::vector<core::ObjectWrapperPtr>& objects, ParserPtr parser );
+	void mapObjectsToTypes(const std::vector<core::ObjectWrapperPtr>& objects, const ParserPtr & parser );
 	//! Usuwa obiekty kieruj¹c siê jakimiœ wyznacznikami.
 	template <class Predicate>
 	void removeObjects( Predicate pred );

@@ -57,12 +57,9 @@ public:
 
 
 
-VideoParser::VideoParser()
+VideoParser::VideoParser() : adapter(core::ObjectWrapper::create<::VideoStream>())
 {
-    adapter = core::ObjectWrapper::create<::VideoStream>();
 
-    //core::ObjectWrapperConstPtr ptr(__deprecated_stream);
-    //osg::ref_ptr<const vidlib::VideoImageStream> obj = ptr->get<vidlib::VideoImageStream>();
 }
 
 VideoParser::~VideoParser()

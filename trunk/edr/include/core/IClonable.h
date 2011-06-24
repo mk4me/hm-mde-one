@@ -11,10 +11,14 @@
 
 namespace core {
 
+//! Wzorzec interfejsu zapewniaj¹cego klonowanie obiektu.
+//! W³aœnoœæ metod virtualnych pozwala klasom pochodnym od klasy dziedzicz¹cej ten interfejs zwracaæ wskaŸniki na w³asny typ
+
 template<class T>
 class IClonable
 {
 public:
+    //! \return Klon obiektu
     virtual T* createClone() const = 0;
 
     virtual ~IClonable() 

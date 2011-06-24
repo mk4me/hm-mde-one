@@ -11,7 +11,6 @@
 
 #include <core/WorkflowItemEncapsulator.h>
 #include <core/IInputProcessItem.h>
-#include <core/SmartPtr.h>
 #include "InputDescription.h"
 
 

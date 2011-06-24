@@ -14,7 +14,7 @@ TimelineWidget::TimelineWidget(TimelineService* service, timeline::Controller * 
 
 TimelineWidget::~TimelineWidget()
 {
-    //dynamic_cast<utils::Observable<timeline::State>*>(controller)->detach(this);
+
 }
 
 void TimelineWidget::timeSliderChanged(int value)
@@ -25,12 +25,12 @@ void TimelineWidget::timeSliderChanged(int value)
 
 void TimelineWidget::timeSliderPressed()
 {
-    //service->setSeekRequested(true);
+
 }
 
 void TimelineWidget::timeSliderReleased()
 {
-    //service->setSeekRequested(false);
+
 }
 
 void TimelineWidget::update( const timeline::State * subject )
@@ -48,16 +48,6 @@ void TimelineWidget::update( const timeline::State * subject )
     currentTimeSpinBox->setMaximum( subject->length );
     currentTimeSpinBox->setValue( subject->time );
     currentTimeSpinBox->blockSignals(false);
-
-//     blockSignals(true);
-//     if (subject->getPlaying()) {
-//         playButton->setChecked(true);
-//         pauseButton->setChecked(false);
-//     } else {
-//         playButton->setChecked(false);
-//         pauseButton->setChecked( normalizedUITime == 0.0 );
-//     }
-//     blockSignals(false);
 }
 
 double TimelineWidget::getSliderValue(QSlider* slider) const

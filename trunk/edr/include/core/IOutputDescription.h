@@ -15,18 +15,20 @@
 
 namespace core {
 
+//! Interfejs s≥uøπcy do opisu typÛw danych wyjúciowcyh oferowanych przez element przetwarzajacy.
 class IOutputDescription
 {
 public:
     //! Struktura opisujπca typy danych wyjúciowe.
     struct OutputInfo
     {
+        //! Typ opisujπcy zaleøne elementy wejúciowe, ktÛre sπ wymagane do generowana danego typu wyjúciowego
         typedef std::set<int> DependentInput;
         //! Nazwa wyjúcia.
         std::string name;
         //! Typ wyjúcia.
         TypeInfo type;
-        //!
+        //! Zaleøne wejúcia
         DependentInput dependentInput;
 
         //!
@@ -48,7 +50,7 @@ public:
 
 public:
     //! Pobiera informacje o typach wyjúÊ. KolejnoúÊ obowiπzuje potem w metodzie process.
-    //! \param source èrÛd≥o danych. Wejúcia mogπ zawieraÊ obiekty bπdü byÊ wyzerowane.
+    //! \param output Obiekt umozliwiajπcy zapis danych wyjsciowych - zapis zawsze jest moøliwy!!
     virtual void getOutputInfo( std::vector<OutputInfo> & output ) = 0;
 
     virtual ~IOutputDescription() {}

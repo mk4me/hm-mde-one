@@ -26,9 +26,6 @@ private:
     //! Faktyczny widget.
     QWidget* widget;
 
-    //! èrÛd≥o danych dla wizualizatora.
-    //ObjectSource source;
-
     //! Akcje wizualizatora.
     std::vector<QObject*> genericActions;
     //! Nazwa uzupe≥niona o przyrostek.

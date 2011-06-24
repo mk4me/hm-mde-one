@@ -62,8 +62,6 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
     workflowVDFWidget->addEventHandler( new osgViewer::StatsHandler );
     workflowVDFWidget->addEventHandler( new osgGA::StateSetManipulator( workflowVDFWidget->getCamera()->getOrCreateStateSet() ) );
 
-    //workflowVDFWidget->getCamera()->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
-
     // dodanie do widgeta
     verticalLayout->addWidget( workflowVDFWidget );
 
@@ -111,9 +109,7 @@ void WorkflowCustomQOSGWidget::mousePressEvent(QMouseEvent * event)
 
                 QPoint pos = mapToGlobal(event->pos());
 
-                workflowWidget->workflowVDFModel->addNode(node, osg::ref_ptr<osg::Image>(), node->getName(), osgWidget::XYCoord(pos.x(), pos.y()));                
-
-                //workflowWidget->workflowVDFModel->setNodeAbsolutePosition(node, osgWidget::XYCoord(pos.x(), pos.y()));
+                workflowWidget->workflowVDFModel->addNode(node, osg::ref_ptr<osg::Image>(), node->getName(), osgWidget::XYCoord(pos.x(), pos.y()));
 
                 workflowWidget->currentAction->blockSignals(true);
                 workflowWidget->currentAction->setChecked(false);
@@ -399,10 +395,6 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
         tmpWidget->layout()->addWidget(button);
 
         connect(action, SIGNAL(toggled(bool)), this, SLOT(tollbarButoonChanged(bool)));
-
-        //dodaj odpowiadaj¹cy element do toolbara
-
-        //dodaj odpowiadaj¹cy element do toolbara
     }
 
     toolbar->addTab(tmpWidget, "Visualizers");
@@ -478,7 +470,6 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
 
     actionStart = new QAction(titleBar);
-    //actionStart->setCheckable(true);
     actionStart->setText(QString::fromUtf8("Start"));
     actionStart->setObjectName(QString::fromUtf8("actionStart"));
     actionStart->setEnabled(false);
@@ -488,7 +479,6 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
     actionStop->setText(QString::fromUtf8("Stop"));
     actionStop->setObjectName(QString::fromUtf8("actionStop"));
 
-    //connect(actionStart, SIGNAL(toggled(bool), this, SLOT(start(bool))));
     connect(actionStart, SIGNAL(triggered()), this, SLOT(start()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(stop()));
 
@@ -498,7 +488,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
 EDRWorkflowWidget::~EDRWorkflowWidget()
 {
-    //model->detach(this);
+
 }
 
 void EDRWorkflowWidget::update(const dflm::Model* model)
@@ -545,10 +535,6 @@ void EDRWorkflowWidget::tollbarButoonChanged(bool change)
 void EDRWorkflowWidget::start()
 {
     try{
-        //TODO
-        //zablokuj do edycji!!
-        //schowaj X przy wêz³ach, zablokuj context menu do usuwania po³¹czeñ, zablokuj konfiguracjê, w pozosta³ych przypadkach wyj¹tki!!
-
         workflowVDFWidget->setEnabled(false);
 
         actionStart->setEnabled(false);

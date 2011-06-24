@@ -1,9 +1,7 @@
 #include "CorePCH.h"
-#include "Log.h"
 #include "UserInterfaceService.h"
 #include <iostream>
 
-//#include <core/IModel.h>
 #include <core/IDataManager.h>
 
 
@@ -17,12 +15,6 @@ UserInterfaceService::UserInterfaceService()
 UserInterfaceService::~UserInterfaceService()
 {
 }
-
-// void UserInterfaceService::InicializeServices( std::string typeName, void *object )
-// {
-//     m_pMainObject = object;
-//     m_pMainWindow = MainWindowFactory::CreateMainWindow(typeName, object);
-// }
 
 QWidget* UserInterfaceService::getWidget(std::vector<QObject*>& actions)
 {

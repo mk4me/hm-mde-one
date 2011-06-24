@@ -9,8 +9,6 @@ Visualizer::Visualizer( IVisualizer* impl ) :
     InputItem<IVisualizer>(impl, VisualizerManager::getInstance()->getSourcesTypes(impl->getID())),
     widget(nullptr)
 {
-    //int numVisualizers = VisualizerManager::getInstance()->getNumInstances(impl->getID());
-    //uiName = QString("%0 (%1)").arg(toString(getName())).arg(numVisualizers);
     VisualizerManager::getInstance()->notifyCreated(this);
     uiName = toString(getName());
 }
@@ -21,8 +19,6 @@ Visualizer::Visualizer( const Visualizer& visualizer ) :
      VisualizerManager::getInstance()->getSourcesTypes(getImplementation()->getID())),
  widget(nullptr)
 {
-    //int numVisualizers = VisualizerManager::getInstance()->getNumInstances(impl->getID());
-    //uiName = QString("%0 (%1)").arg(toString(getName())).arg(numVisualizers);
     VisualizerManager::getInstance()->notifyCreated(this);
     uiName = toString(getName());
 }

@@ -24,12 +24,16 @@ public:
     virtual ~IIdentifiable() 
     { 
     }
+
+    //! \return Unikalny identyfikator obiektu
     virtual UniqueID getID() const = 0;
+    //! \return Opis obiektu
     virtual const std::string & getDescription() const = 0;
 };
 
 }
 
+//! Makro u³atwiaj¹ce "wstrzykiwanie" metod interfejsu IIdentifable do klas implementuj¹cych go
 #define UNIQUE_ID(uuidStr, shortDescription)                            \
  public:                                                                \
     static boost::uuids::uuid getClassID()                              \

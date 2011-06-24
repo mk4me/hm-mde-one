@@ -22,10 +22,7 @@
 class UserInterfaceService;
 class ServiceManager;
 class IAnimationService;
-//class RenderService;
-//class ComputeThread;
 class SceneGraphWidget;
-//class ConsoleWidget;
 class EDRConsoleWidget;
 class VisualizerManager;
 class DataProcessorManager;
@@ -40,10 +37,7 @@ private:
     //! Widget ze scen¹ jakiegoœ grafu OSG.
     SceneGraphWidget* widgetSceneGraph;
     //! Widget konsoli.
-    //ConsoleWidget* widgetConsole; 
     EDRConsoleWidget* widgetConsole; 
-    //! W¹tek obliczeniowy.
-    //ComputeThread* computeThread;
     //! Czy update jest w³¹czony?
     bool updateEnabled;
     //! Timer wyznaczaj¹cy update'y.
@@ -75,7 +69,6 @@ public:
 
 	void loadData();
 
-    //ConsoleWidget* getConsole()
     EDRConsoleWidget* getConsole()
     {
         return widgetConsole;

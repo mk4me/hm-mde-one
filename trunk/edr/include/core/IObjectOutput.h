@@ -18,6 +18,7 @@
 
 namespace core 
 {
+    //! Interfejs zapewniaj¹cy dostêp do zapisu danych wyjœciowych z elementów przetwarzajacych, które bêd¹ przekazane nastepnikom
     class IObjectOutput
     {
     public:
@@ -49,11 +50,6 @@ namespace core
             void addObject(const ObjectWrapperPtr & object)
             {
                 UTILS_ASSERT((collection != nullptr), "Bledna kolekcja w proxy dla wejscia");
-
-                if(collection == nullptr){
-                    throw std::runtime_error("Call beyond collection range or to nullptr");
-                }
-
                 return collection->addObject(object);
             }
 
@@ -61,11 +57,6 @@ namespace core
             void addObject(const ObjectWrapperConstPtr & object)
             {
                 UTILS_ASSERT((collection != nullptr), "Bledna kolekcja w proxy dla wejscia");
-
-                if(collection == nullptr){
-                    throw std::runtime_error("Call beyond collection range or to nullptr");
-                }
-
                 return collection->addObject(object);
             }
 
@@ -74,10 +65,6 @@ namespace core
             void addObject(const T & object)
             {
                 UTILS_ASSERT((collection != nullptr), "Bledna kolekcja w proxy dla wejscia");
-
-                if(collection == nullptr){
-                    throw std::runtime_error("Call beyond collection range or to nullptr");
-                }
 
                 ObjectWrapperPtr obj = __setObjectPointerResolver(object, boost::is_pointer<T>());
 
@@ -119,7 +106,7 @@ namespace core
 
         private:
             //! Kolekcja danych któr¹ wype³niamy przez to proxy
-            ObjectWrapperCollectionPtr collection;
+            const ObjectWrapperCollectionPtr & collection;
         };
 
     public:
@@ -129,46 +116,8 @@ namespace core
         //! \return Liczba slotów wyjœciowych.
         virtual int getNumOutputs() const = 0;
 
-        //! Zwraca OW dla zadanego wejœcia.
+        //! Zwraca ObjectWrapper dla zadanego wejœcia.
         virtual OutputObjectsCollection getObjects(int idx) = 0;
-
-    //public:
-    //    //! Wy³uskanie wskaŸnika na obiekt domenowy ze Ÿród³a przy za³o¿eniu jego zmiennoœci.
-    //    template <class T>
-    //    void setObject(int outputNo, const T& object)
-    //    {
-    //        __setObjectPointerResolver(outputNo, object, boost::is_pointer<T>());
-    //    }
-
-    //private:
-
-    //    template <class T>
-    //    void __setObjectPointerResolver(int outputNo, const T& object, boost::true_type)
-    //    {
-    //        UTILS_STATIC_ASSERT(false, "Do obiektow domenowych nalezy uzywac inteligentnych wskaznikow.");
-    //    }
-
-    //    template <class T>
-    //    void __setObjectPointerResolver(int outputNo, const T& object, boost::false_type)
-    //    {
-    //        __setObjectPODResolver(outputNo, object, boost::is_pod<T>());
-    //    }
-
-    //    template <class T>
-    //    void __setObjectPODResolver(int outputNo, const T& object, boost::true_type)
-    //    {
-    //        UTILS_STATIC_ASSERT(false, "Niezaimplementowane");
-    //    }
-
-    //    template <class SmartPtr>
-    //    void __setObjectPODResolver(int outputNo, const SmartPtr& object, boost::false_type)
-    //    {
-    //        // je¿eli tutaj jest b³¹d oznacza to, ¿e przekazany typ nie jest ani POD, ani inteligentnym wskaŸnikiem.
-    //        typedef typename SmartPtr::element_type Type;
-    //        auto wrapper = getWrapper(outputNo);
-    //        wrapper->set(object);
-    //    }
-
     };
 
     typedef shared_ptr<IObjectOutput> IObjectOutputPtr;

@@ -22,18 +22,6 @@ info(objectSlots.info), objects(objectSlots.objects)
 
 bool ObjectSlots::isAssignable( int slotNo, const core::TypeInfo & type ) const
 {
-    //if ( !object ) {
-    //    // nulla zawsze mo¿na przypisaæ
-    //    return true;
-    //} else {
-    //    // sprawdzenie obiekt wspiera któryœ z typów
-    //    const core::TypeInfo& types = info[slotNo].type;
-    //    auto found = std::find_if(types.begin(), types.end(), [&](const core::TypeInfo& type) { 
-    //        return object->isSupported(type); 
-    //    });
-    //    return found != types.end();
-    //}
-
     try{
         core::ObjectWrapper::Types supportedTypes;
         DataManager::getInstance()->getTypePrototype(type)->getSupportedTypes(supportedTypes);

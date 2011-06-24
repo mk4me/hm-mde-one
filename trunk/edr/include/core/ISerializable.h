@@ -14,14 +14,17 @@
 
 namespace core {
 
+//! Interfejs s³u¿¹cy do serializacji i deserializacji.
 class ISerializable
 {
 public:
     virtual ~ISerializable() 
     {
     }
+    //! \param output Strumieñ wyjœciowy do którego robimy zrzut zserializowanego obiektu
     virtual void serialize(std::ostream& output) = 0;
-    virtual void deserialize(std::istream& istream) = 0;
+    //! \param input Strumieñ z którego dokonujemy deserializacji obiektu
+    virtual void deserialize(std::istream& input) = 0;
 };
 
 }

@@ -234,7 +234,6 @@ void VisualizerWidget::retranslateUi(QWidget *visualizerWidget)
     label->setText(QString());
     buttonSplitV->setText(QApplication::translate("VisualizerWidget", "split v", 0, QApplication::UnicodeUTF8));
     buttonSplitH->setText(QApplication::translate("VisualizerWidget", "split h", 0, QApplication::UnicodeUTF8));
-//    buttonPin->setText(QApplication::translate("VisualizerWidget", "pin", 0, QApplication::UnicodeUTF8));
     buttonSource->setText(QApplication::translate("VisualizerWidget", "Source", 0, QApplication::UnicodeUTF8));
 } // retranslateUi
 
@@ -438,7 +437,6 @@ void VisualizerWidget::fillSourcesMenu()
             if(aditional > 0){
                 std::set<core::ObjectWrapperConstPtr> current(objects->begin(), objects->end());
                 std::vector<core::ObjectWrapperConstPtr> result(max(objects->size(), aditional));
-                //result.reserve(std::max(objects->size(), aditional));
 
                 auto stopIT = std::set_difference(iT->second.begin(), iT->second.end(), current.begin(), current.end(), result.begin());
                 total = current.size();

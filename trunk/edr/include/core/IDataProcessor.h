@@ -9,14 +9,12 @@
 #ifndef HEADER_GUARD_CORE__IDATAPROCESSOR_H__
 #define HEADER_GUARD_CORE__IDATAPROCESSOR_H__
 
-#include <core/ObjectWrapper.h>
-#include <core/IObjectSource.h>
-#include <core/IObjectOutput.h>
+#include <core/SmartPtr.h>
 #include <core/IInputOutputProcessItem.h>
-#include <list>
 
 namespace core 
 {
+    //! Definicja typu elementu przetwarzaj¹cego
     typedef IInputOutputProcessItem IDataProcessor;
 
     typedef shared_ptr<IDataProcessor> IDataProcessorPtr;

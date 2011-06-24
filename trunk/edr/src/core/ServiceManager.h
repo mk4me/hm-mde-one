@@ -56,7 +56,7 @@ public:
     double getTime();
     //! \return Delta od ostatniej ramki.
     double getDeltaTime();
-
+    //! Metoda finalizujaca wszystkie serwisy  wywolywana przed niszczeniem managera
     void finalizeServices();
 
 // IServiceManager

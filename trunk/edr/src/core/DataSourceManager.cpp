@@ -72,11 +72,6 @@ DataSourcePtr DataSourceManager::createDataSource( const DataSource& prototype )
     return result;
 }
 
-void DataSourceManager::update()
-{
-    
-}
-
 void DataSourceManager::registerDataSource(const IDataSourcePtr & dataProcesor )
 {
     if (!getPrototype(dataProcesor->getID())) {

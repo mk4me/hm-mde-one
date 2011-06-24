@@ -11,7 +11,6 @@
 
 #include"Log.h"
 
-//class ConsoleWidget;
 class EDRConsoleWidget;
 
 //! Obiekt logu. Powinien byæ tworzony w g³ównej binarce na samym pocz¹tku maina.

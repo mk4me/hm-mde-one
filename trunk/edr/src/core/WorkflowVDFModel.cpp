@@ -17,7 +17,6 @@ WorkflowVDFModel::~WorkflowVDFModel()
 
 void WorkflowVDFModel::contextMenuRequestPosition(const QPoint & pos)
 {
-    //contextMenuPosition = ((QWidget*)sender())->mapToGlobal(pos);
     const_cast<QPoint&>(contextMenuPosition) = ((QWidget*)sender())->mapToGlobal(pos);
 }
 

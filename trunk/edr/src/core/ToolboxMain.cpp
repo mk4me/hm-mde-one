@@ -92,34 +92,6 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
 	EDRConfig* directoriesInfo = EDRConfig::getInstance();
     DataProcessorManager* dataProcesorManager = DataProcessorManager::getInstance();
 
-    //boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
-    //userPath /= "EDR";
-    //dataManager->setUserDataPath(userPath);
-
-    //boost::filesystem::path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
-    //dataManager->setApplicationDataPath(appDataPath);
-
-    //boost::filesystem::path resourcesPath = boost::filesystem::initial_path();
-    //// TODO : usunac folder data
-    //resourcesPath /= "data";
-    //resourcesPath /= "resources";
-    //dataManager->setResourcesPath(resourcesPath);
-
-    //// testowanie sciezek...
-    //const core::IDataManager::Path& testPathNo1 = dataManager->getResourcesPath();
-    //const core::IDataManager::Path& testPathNo2 = dataManager->getUserDataPath();
-    //const core::IDataManager::Path& testPathNo3 = dataManager->getApplicationDataPath();
-
-
-
-//     LoggerPtr root = Logger::getRootLogger();
-//     static const LogString TTCC_CONVERSION_PATTERN(LOG4CXX_STR("%r [%t] %p %c %x - %m%n"));
-//     //LayoutPtr layout(new PatternLayout(TTCC_CONVERSION_PATTERN));
-//     AppenderPtr appender(new OutputDebugStringAppender(/*layout*/));
-//     appender->setLayout(new PatternLayout(LOG4CXX_STR("%F(%L): %m\n")));
-//     root->addAppender(appender);
-
-
     registerCoreServices();
 
     registerCoreDataSources();
@@ -144,13 +116,10 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     registerPluginsDataProcessors();
     registerPluginsDataSources();
 
-    //
-
     sceneRoot = new osg::Group();
     sceneRoot->setName("root");
 
 	dataManager->findResources(directoriesInfo->getResourcesPath().string());
-    //dataManager->findLocalTrials();
     dataManager->loadResources();
 
     // inicjalizacja us³ug
@@ -173,10 +142,6 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
     updateTimer.start(20);
-
-    //computeThread = new ComputeThread(serviceManager, 0.02);
-    //computeThread->start();
-
 
     if ( getNumViews() ) {
         connect( &viewerFrameTimer, SIGNAL(timeout()), this, SLOT(update()) );
@@ -220,9 +185,6 @@ void ToolboxMain::InitializeControlWidget()
 {
     InitializeOGSWidget();  // MainWidget 
 
-//     osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
-//     osg::Node* sceneRoot = scene->getSceneData();
-
     // inicjalizacja GridWidget
     QDockWidget *gDock = new QDockWidget(tr("Service scene graph"), this, Qt::WindowTitleHint);
     gDock->setObjectName(QString("GridWidget"));
@@ -231,37 +193,23 @@ void ToolboxMain::InitializeControlWidget()
     widgetSceneGraph = new SceneGraphWidget();    
     addDockWidget(Qt::LeftDockWidgetArea, gDock);
     gDock->setWidget((QWidget*)widgetSceneGraph);
-//    widgetSceneGraph->addServices(ServiceManager::getInstance());
 }
 
 
 
 void ToolboxMain::initializeConsole()
 {
-    /*QDockWidget *dock; 
-    dock = new QDockWidget(tr("Console"), this, Qt::WindowTitleHint);
-    dock->setObjectName("Console");
-    dock->setAllowedAreas(Qt::BottomDockWidgetArea);*/
-    //widgetConsole = new ConsoleWidget();    
     widgetConsole = new EDRConsoleWidget(tr("Console"), this, Qt::WindowTitleHint);    
     widgetConsole->setObjectName("Console");
     widgetConsole->setAllowedAreas(Qt::BottomDockWidgetArea);
     addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
-    //addDockWidget(Qt::BottomDockWidgetArea, dock);
-    //dock->setWidget((QWidget*)widgetConsole); 
-    // Inicjalizacja konsoli
-//     ConsoleWidgetOutputBuffer *ob = new ConsoleWidgetOutputBuffer(widgetConsole, 256);
-//     _streambuf = std::cout.rdbuf(ob);
 }
 
 void ToolboxMain::InitializeOGSWidget()
 {
-//  setCentralWidget(_osgView); 
     osg::ref_ptr<osg::Group> root = new osg::Group();
     root->setName("root");
     root->addChild(createGrid());
-
-    //m_pRenderService->SetScene(root);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -595,8 +543,7 @@ void ToolboxMain::createWorkflow()
 QDockWidget* ToolboxMain::embeddWidget( QWidget* widget, std::vector<QObject*>& widgetActions, const QString& name, const QString& style, const QString& sufix,
     Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)
 {
-    // dodajemy widget dokowalny
-    //QDockWidget* dock = new QDockWidget( name, this, Qt::WindowTitleHint);        
+    // dodajemy widget dokowalny     
     EDRDockWidget* dock = new EDRDockWidget( name, this, Qt::WindowTitleHint);        
     dock->setAllowedAreas(area);
     dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
@@ -628,15 +575,10 @@ void ToolboxMain::initializeUI()
 	}
 	setStyleSheet(style);
 
-	// widget rendeer service - centralny
-    // setCentralWidget(reinterpret_cast<QWidget*>(m_pRenderService->getWidget()));
-    //centralWidget()->widget
-
     setDockOptions( AllowNestedDocks | AllowTabbedDocks );
     setTabPosition( Qt::RightDockWidgetArea, QTabWidget::North );
     setCentralWidget( nullptr );
     setDocumentMode(true);
-    //setCentralWidget(NULL);
 
     // pozosta³e widgety "p³ywaj¹ce"
     for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
@@ -644,22 +586,16 @@ void ToolboxMain::initializeUI()
 
         // HACK
         std::vector<QObject*> mainWidgetActions;
-        //QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget(mainWidgetActions));
         QWidget* viewWidget = service->getWidget(mainWidgetActions);
 
         std::vector<QObject*> controlWidgetActions;
-        //QWidget* controlWidget = reinterpret_cast<QWidget*>(service->getControlWidget(controlWidgetActions));
         QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
 
         std::vector<QObject*> settingsWidgetActions;
-        //QWidget* settingsWidget = reinterpret_cast<QWidget*>(service->getSettingsWidget(settingsWidgetActions));
         QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
 
-        if ( viewWidget/* && service != m_pRenderService*/ ) {
+        if ( viewWidget ) {
 
-//            this->tabWidget->addTab(viewWidget, string_cast(service->getName()));
-
-//              centralWidget()->layout()->addWidget(viewWidget);
             addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
                 viewWidget, 
                 mainWidgetActions,
@@ -687,30 +623,6 @@ void ToolboxMain::initializeUI()
                 Qt::LeftDockWidgetArea));
         }
 	}
-
-    // widgety z wizualizacj¹
-
-    /*VisualizerWidget* first = nullptr;
-    BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
-        try{
-            VisualizerWidget* widget = new VisualizerWidget(vis->getID(), this, Qt::WindowTitleHint);
-            widget->setAllowedAreas(Qt::RightDockWidgetArea);
-            widget->setStyleSheet(styleSheet());
-            widget->setObjectName( QString("buitin%1").arg(widget->windowTitle()) );
-            if ( !first ) {
-                first = widget;
-                addDockWidget(Qt::RightDockWidgetArea, widget);
-            } else {
-                tabifyDockWidget(first, widget);
-            }
-        }catch (const std::exception& ex) {
-            LOG_ERROR("Visualizer prototype ID: " + boost::lexical_cast<std::string>(vis->getID()) + " Name: " + vis->getName() + " widget creation error: " + ex.what());
-        } catch (const std::string& ex) {
-            LOG_ERROR("Visualizer prototype ID: " + boost::lexical_cast<std::string>(vis->getID()) + " Name: " + vis->getName() + " widget creation error: " + ex);
-        } catch (...) {
-            LOG_ERROR("Visualizer prototype ID: " + boost::lexical_cast<std::string>(vis->getID()) + " Name: " + vis->getName() + " widget creation unrecognized error");
-        }
-    }*/
 
 #ifdef UTILS_DEBUG
     // testowe opcje
@@ -748,20 +660,6 @@ void ToolboxMain::onRemoveMenuItem( const std::string& path )
     {
         delete action;
     }
-    
-    /*
-    // "prawie dziala", ale przerwaca siê na zagnie¿d¿onych menu
-    if ( object ) 
-    {
-        QObject* last;
-        do 
-        {
-            QObject* parent = object->parent();
-            delete object;
-            object = parent;
-        } 
-        while ( object && object->children().size() <= 2 );
-    }*/
 }
 
 
@@ -839,175 +737,11 @@ void ToolboxMain::openFile( const std::string& path )
 
 void ToolboxMain::loadData()
 {
-	//m_pRenderService->GetFactory()->Clear();
 	ServiceManager::getInstance()->loadDataPass(DataManager::getInstance());
-    
-
-	// m_pRenderService->AddObjectToRender(createGrid());
-
-
 
 	// manage scene
-// 	osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene(); 
-// 	osg::Node* sceneRoot = scene->getSceneData();
 	DataManager::getInstance()->setLoadLocalTrialData(false);
 }
-/*
-void ToolboxMain::reorganizeWidgets( WidgetsOrganization organization )
-{
-    // usuwamy stare œmieci
-    for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
-        IServicePtr service = ServiceManager::getInstance()->getService(i);
-        if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
-            // co musimy usun¹æ?
-            if ( QDockWidget* dock = qobject_cast<QDockWidget*>(viewWidget->parent()) ) {
-                viewWidget->setParent(NULL);
-                removeDockWidget(dock);
-                delete dock;
-            }
-        }   
-    }
-
-    // za³adowanie styli
-    QString style;
-    if(DataManager::getInstance()->getApplicationSkinsFilePathCount() > 0) {
-        QFile file(core::toQString(DataManager::getInstance()->getApplicationSkinsFilePath(0)));
-        if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            style = file.readAll();
-            file.close();
-        }
-    }
-    setStyleSheet(style);
-
-    setDockOptions( AllowNestedDocks | AllowTabbedDocks );
-    setTabPosition( Qt::RightDockWidgetArea, QTabWidget::North );
-    setCentralWidget(NULL);
-
-    // tworzymy listê dokowalnych widgetów
-    std::vector< QDockWidget* > widgets;
-    for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
-        IServicePtr service = ServiceManager::getInstance()->getService(i);
-        if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
-            widgets.push_back(embeddWidget(
-                viewWidget, 
-                core::toQString(service->getName()), 
-                style,
-                "",
-                Qt::RightDockWidgetArea)
-            );
-        }
-    }
-    
-    if ( organization == WidgetsOrganizationDocked ) {
-        // dodajemy pierwszy...
-        std::vector< QDockWidget* >::iterator iter = widgets.begin();
-        if ( iter != widgets.end() ) {
-            addDockWidget( Qt::RightDockWidgetArea, *iter );
-            // kolejne tabujemy
-            while ( ++iter != widgets.end() ) {
-                splitDockWidget( widgets.front(), *iter, Qt::Horizontal );
-            }
-        }
-    } else if ( organization == WidgetsOrganizationTabbed ) {
-        // dodajemy pierwszy...
-        std::vector< QDockWidget* >::iterator iter = widgets.begin();
-        if ( iter != widgets.end() ) {
-            addDockWidget( Qt::RightDockWidgetArea, *iter );
-            // kolejne tabujemy
-            while ( ++iter != widgets.end() ) {
-                tabifyDockWidget( widgets.front(), *iter );
-            }
-        }
-
-    } else {
-        UTILS_ASSERT(false);
-    }
-
-    {
-        VisualizerWidget* widget = new VisualizerWidget(this, Qt::WindowTitleHint);
-        widget->setAllowedAreas(Qt::LeftDockWidgetArea);
-        widget->setStyleSheet(style);
-        addDockWidget(Qt::LeftDockWidgetArea, widget);
-        //QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
-    }
-    
-
-
-
-//     // usuniêcie starych "œmieci"
-//     for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
-//         IServicePtr service = ServiceManager::getInstance()->getService(i);
-//         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
-//             // co musimy usun¹æ?
-//             QDockWidget* dock = qobject_cast<QDockWidget*>(viewWidget->parent());
-//             int index = tabWidget->indexOf(viewWidget);
-//             if ( dock ) {
-//                 viewWidget->setParent(NULL);
-//                 removeDockWidget(dock);
-//                 delete dock;
-//                 
-//                 
-// 
-//             }
-//             if ( index != -1 ) {
-//                 tabWidget->removeTab(index);
-//             }
-//         }
-//     }
-// 
-//     // usniêcie starych "œmieci"
-//     if ( organization == WidgetsOrganizationDocked ) {
-//         centralWidget()->hide();
-//     } else {
-//         //
-//         centralWidget()->show();
-//     }
-// 
-// 
-//     // za³adowanie styli
-//     QString style;
-//     if(DataManager::getInstance()->getApplicationSkinsFilePathCount() > 0) {
-//         QFile file(core::toQString(DataManager::getInstance()->getApplicationSkinsFilePath(0)));
-//         if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-//             style = file.readAll();
-//             file.close();
-//         }
-//     }
-//     setStyleSheet(style);
-// 
-// 
-//     // widget rendeer service - centralny
-//     // setCentralWidget(reinterpret_cast<QWidget*>(m_pRenderService->getWidget()));
-//     //centralWidget()->widget
-// 
-//     QDockWidget *dock = new QDockWidget("test");
-//     addDockWidget(Qt:TopDockWidgetArea, dock);
-//     
-// 
-// 
-// 
-//     setDockOptions( AllowNestedDocks | AllowTabbedDocks );
-//     setTabPosition( Qt::RightDockWidgetArea, QTabWidget::North );
-//     
-// 
-//     // pozosta³e widgety "p³ywaj¹ce"
-//     for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
-//         IServicePtr service = ServiceManager::getInstance()->getService(i);
-//         if ( QWidget* viewWidget = reinterpret_cast<QWidget*>(service->getWidget()) ) {
-//             if ( organization == WidgetsOrganizationDocked ) {
-//                 // dodanie dokowalnego widgetu
-//                 addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
-//                     viewWidget, 
-//                     core::toQString(service->getName()), 
-//                     style,
-//                     Qt::RightDockWidgetArea));
-//             } else {
-//                 // dodanie strony do zak³adek
-//                 tabWidget->addTab(viewWidget, core::toQString(service->getName()));
-//             }
-//         }
-//     }
-}*/
 
 void ToolboxMain::paintEvent( QPaintEvent* event )
 {
@@ -1018,15 +752,6 @@ void ToolboxMain::paintEvent( QPaintEvent* event )
 
 void ToolboxMain::onDockWidgetVisiblityChanged( bool visible )
 {
-    //if ( QDockWidget* sender = qobject_cast<QDockWidget*>(QObject::sender()) ) {
-    //    // wyszukanie us³ugi do której widget nale¿y
-    //    for ( int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i ) {
-    //        IServicePtr service = ServiceManager::getInstance()->getService(i);
-    //        if ( reinterpret_cast<QWidget*>(service->getWidget()) == sender->widget() ) {
-    //            service->visibilityChanged( service->getWidget(), visible );
-    //        }
-    //    }
-    //}
 
 }
 
@@ -1121,13 +846,11 @@ void ToolboxMain::actionCreateVisualizer()
     widget->setAllowedAreas(Qt::RightDockWidgetArea);
     widget->setStyleSheet(styleSheet());
     addDockWidget(Qt::RightDockWidgetArea, widget);
-
-//    widgetSceneGraph->addVisualizer( widget->getTitleBar()->getCurrentVisualizer() );
 }
 
 void ToolboxMain::visualizerWidgetClosed( VisualizerWidget* widget )
 {
- //   widgetSceneGraph->removeVisualizer( widget->getTitleBar()->getCurrentVisualizer() );
+
 }
 
 
@@ -1201,58 +924,3 @@ void ToolboxMain::onTestRemoveToggled(const std::string& sender, bool state )
 
 
 #endif // UTILS_DEBUG
-
-// void ToolboxMain::SettingModel()
-// {
-//      ObjectService* object = ServiceManager::GetInstance()->GetSystemServiceAs<ObjectService>(); 
-//      if(m_model)
-//      {
-//          object->AddModel(m_model);
-//          osg::ref_ptr<osg::Group> group = m_model->GetRoot();
-//          // create group being root of scene
-//          osg::ref_ptr<osg::Group> root = new osg::Group();
-//          root->setName("root");
-//          // create grid
-//          root->addChild(createGrid());
-//          // add model
-//          root->addChild(group);	
-//          // add to control
-//          m_pRenderService->SetScene(root);
-//  
-//          // manage scene
-//          osgViewer::Scene* scene = m_pRenderService->GetMainWindowScene();
-//          _osgControlWidget->SetScene(scene); 
-//          sceneGraphWidget->SetScene(scene);
-//          _timeLine->SetScene(scene); 
-//          m_model->UpdateMesh();
-//          m_model = (Model*)m_model;
-//      }
-//      m_model = object->GetModel();
-
-//     m_pRenderService->CreateNewWindow("TEST");
-//     m_pRenderService->CreateNewWindow("TEST1");
-//     m_pRenderService->CreateNewWindow("TEST2");
-
-// TESTING CONFIGURATION_FILE_MANAGER
-//     ServiceManager::GetInstance()->registerService<ConfigurationFileService>(); 
-// 
-//     ConfigurationFileService* pCFService = ServiceManager::getInstance()->GetSystemServiceAs<ConfigurationFileService>();
-//     
-//     pCFService->LoadConfig("Config.ini");
-//     std::list<ConfigurationGroup*> groupList = pCFService->GetConfigurationGroupList();
-//     int zmienna = pCFService->GetIntParameter("MemMaxValue");
-//     float f = pCFService->GetIntParameter("TimingMaxValue");
-//     ConfigurationGroup* group = pCFService->GetConfigurationGroup("VisualTracker");
-//     group->SetParametrVal("PerfMaxValue ", "200");
-//     pCFService->SetParameter("VisualTracker","PerfMaxValue", "300");
-//     pCFService->SetParameter("PerfMaxValue", "450");
-//     ConfigurationGroup* dp = new ConfigurationGroup("_TEST");
-//     dp->AddNewParametr("vval", "1000");
-//     Parameter* par = new Parameter("cl","ak");
-//     Parameter* par2 = new Parameter("standardowo-onClicked","d_d_d");
-//     dp->AddNewParamter(*par);
-//     dp->AddNewParamter(*par2);
-//     pCFService->AddNewConfigurationGroup(*dp);
-//     pCFService->Save();
-// 
-// }

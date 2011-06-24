@@ -14,20 +14,21 @@
 
 namespace core {
 
-
+//! Interfejs dostarczający informacji o strukturze plików obsługiwanej przez aplikację.
 class IPath
 {
-public: 
+public:
+    //! Typ reprezentacji ścieżek
 	typedef boost::filesystem::path Path;
 public:
 	virtual ~IPath() {}
 
 public:
-	//! zwraca pelna sciezke do folderu "MyDocuments\EDR"
+	//! \return Zwraca pelna sciezke do folderu "MyDocuments\EDR"
 	virtual const Path& getUserDataPath() const = 0;
-	//! zwraca pelna sciezke do folderu "ApplicationData\EDR"
+	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"
 	virtual const Path& getApplicationDataPath() const = 0;
-	//! zwraca pelna sciezke do folderu z zasobami aplikacji
+	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Path& getResourcesPath() const = 0;
 };
 

@@ -158,7 +158,7 @@ struct DataManager::FindByRelativePathPredicate {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-DataManager::DataManager()//const std::string& resourcesPath, const std::string& trialsPath) : resourcesPath(resourcesPath), trialsPath(trialsPath)
+DataManager::DataManager()
 {
 	clear();
 	loadTrialData = false;
@@ -195,52 +195,10 @@ int DataManager::getApplicationSkinsFilePathCount()
 	return applicationSkinsPaths.size();
 }
 
-//const boost::filesystem::path& DataManager::getApplicationDataPath() const
-//{
-//    UTILS_ASSERT(!applicationDataPath.empty(), "Path should be initialized first");
-//    return applicationDataPath;
-//}
-//
-//const boost::filesystem::path& DataManager::getUserDataPath() const
-//{
-//    UTILS_ASSERT(!userDataPath.empty(), "Path should be initialized first");
-//    return userDataPath;
-//}
-//
-//const boost::filesystem::path& DataManager::getResourcesPath() const
-//{
-//    UTILS_ASSERT(!resourcesPath.empty(), "Path should be initialized first");
-//    return resourcesPath;
-//}
-
 const boost::filesystem::path& DataManager::getTrialsPath() const
 {
 	return trialsPath;
 }
-
-//void DataManager::setUserDataPath( const Path& path )
-//{
-//    UTILS_ASSERT(!path.empty(), "Path should not be empty");
-//    //UTILS_ASSERT(!path.is_relative(), "Path should not be relative");
-//    //UTILS_ASSERT(!path.has_filename(), "Path should not point to file");
-//    userDataPath = path;
-//}
-//
-//void DataManager::setApplicationDataPath( const Path& path )
-//{
-//    UTILS_ASSERT(!path.empty(), "Path should not be empty");
-//    //UTILS_ASSERT(!path.is_relative(), "Path should not be relative");
-//    //UTILS_ASSERT(!path.has_filename(), "Path should not point to file");
-//    applicationDataPath = path;
-//}
-//
-//void DataManager::setResourcesPath(const Path& path)
-//{
-//    UTILS_ASSERT(!path.empty(), "Path should not be empty");
-//    //UTILS_ASSERT(!path.is_relative(), "Path should not be relative");
-//    //UTILS_ASSERT(!path.has_filename(), "Path should not point to file");
-//    resourcesPath = path;
-//}
 
 void DataManager::setTrialsPath(const IDataManager::Path& trials)
 {
@@ -249,7 +207,7 @@ void DataManager::setTrialsPath(const IDataManager::Path& trials)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void DataManager::registerParser(core::IParserPtr parser)
+void DataManager::registerParser(const core::IParserPtr & parser)
 {
 	//unikalne ID parsera
 	if(registeredParsers.find(parser->getID()) == registeredParsers.end()) {
@@ -507,7 +465,6 @@ void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, 
 {
 	loadTrialData = true;
 
-	// TODO: zamiast wektora powinien byæ set!
 	std::set<Path> allFiles(files.begin(), files.end());
 
 	// usuwamy zbêdne obiekty i parsery
@@ -537,14 +494,6 @@ void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, 
 			objects.insert(objects.end(), loc.begin(), loc.end());
 		}
 	}
-
-
-	//     clearCurrentTrial();
-	//     
-	//     BOOST_FOREACH(boost::filesystem::path path, files)
-	//     {
-	//         createParsers(path, false);
-	//     }
 }
 
 
@@ -560,7 +509,6 @@ void DataManager::removeFiles( const std::vector<Path>& files )
 {
 	loadTrialData = true;
 
-	// TODO: zamiast wektora powinien byæ set!
 	std::set<Path> filesToRemove(files.begin(), files.end());
 
 	// szukamy parserów dla zadanych plików
@@ -668,7 +616,7 @@ void DataManager::getObjectsFromParsers( std::vector<core::ObjectWrapperPtr>& ob
 			// to, czy sprawdzamy czy to dok³adnie ten typ kontroluje prametr exact
 			ObjectWrapperPtr object = found->second.object;
 			ParserPtr parser = found->second.parser;
-			//UTILS_ASSERT(!object->isNull() || !parser->isUsed(), "Obiekt nie powinien byæ sparsowany...");
+
 			if ( !exact || object->isTypeEqual(type) ) {
 				// czy obiekt ju¿ jest?
 				if ( object->isNull() ) {
@@ -689,7 +637,7 @@ void DataManager::getObjectsFromParsers( std::vector<core::ObjectWrapperPtr>& ob
 								objects.push_back(object);
 							}
 						} else {
-							// TODO: dodaæ parser do listy do usuniêcia, usun¹æ
+							// dodaæ parser do listy do usuniêcia
 							invalid.insert(object);
 						}
 					} else {
@@ -719,7 +667,7 @@ void DataManager::getObjectsFromParsers( std::vector<core::ObjectWrapperPtr>& ob
 	}
 }
 
-void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& objects, ParserPtr parser )
+void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& objects, const ParserPtr & parser )
 {
 	// pobieramy obiekty i dodajemy je do s³ownika obiektów
 	BOOST_FOREACH(ObjectWrapperPtr object, objects) {
@@ -736,31 +684,6 @@ void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& object
 		}
 	}
 }
-
-// DataManager::ParserPtr DataManager::createParser( const Path& path, bool resource )
-// {
-//     // próbujemy pobraæ prototyp dla zadanego rozszerzenia
-//     std::string extension = path.extension();
-//     IParsersByExtensions::iterator it = registeredExtensions.find( extension );
-//     if ( it != registeredExtensions.end() ) {
-//         if(registeredExtensions.count(extension) > 1) {
-//             // TODO: wybór parsera!
-//             LOG_WARNING("Multiple parsers found for extension: " << extension);
-//         }
-// 
-//         // tworzymy parser
-//         ParserPtr parser(new Parser(it->second->create(), path, resource));
-//         std::vector<ObjectWrapperPtr> objects;
-//         parser->getObjects(objects);
-// 
-//         // mapujemy obiekty
-//         mapObjectsToTypes(objects, parser);
-// 
-//         return parser;
-//     }
-//     return ParserPtr();
-// }
-
 
 std::vector<ObjectWrapperPtr> DataManager::createParsers( const Path& path, bool resource )
 {
@@ -809,7 +732,7 @@ void DataManager::removeObjects( Predicate predicate )
 	}
 }
 
-void DataManager::registerObjectFactory( core::IObjectWrapperFactoryPtr factory )
+void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & factory )
 {
 	core::TypeInfo type = factory->getType();
 	if ( !objectFactories.insert(std::make_pair(type, factory)).second ) {
@@ -855,7 +778,7 @@ const core::ObjectWrapperConstPtr & DataManager::getTypePrototype(const core::Ty
 	return it->second;
 }
 
-void DataManager::addObjects(DataManager::DataProcessorPtr dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects) 
+void DataManager::addObjects(const DataManager::DataProcessorPtr & dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects) 
 {
 	for ( int i = objects.size() - 1; i >= 0; --i) { 
 		ObjectWrapper::Types types;
@@ -865,7 +788,6 @@ void DataManager::addObjects(DataManager::DataProcessorPtr dataProcessor, const 
 			objectsFromDataProcessors.insert(std::make_pair(*it, p));
 		}
 	}
-
 }
 
 void DataManager::dropRemovedWrappers(ObjectFromProcessors& objectsToCheck)
@@ -880,7 +802,7 @@ void DataManager::dropRemovedWrappers(ObjectFromProcessors& objectsToCheck)
 	}
 }
 
-void DataManager::addObject( DataProcessorPtr dataProcessor,  core::ObjectWrapperPtr object )
+void DataManager::addObject( const DataProcessorPtr & dataProcessor,  const core::ObjectWrapperPtr & object )
 {
 	std::vector<core::ObjectWrapperPtr> objects;
 	objects.push_back(object);

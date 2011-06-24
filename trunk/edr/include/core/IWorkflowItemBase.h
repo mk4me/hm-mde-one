@@ -18,6 +18,7 @@
 
 namespace core {
 
+//! Interfejs podstawowych elementów logicznych aplikacji maj¹cych operowaæ na danych b¹dŸ dostarczaæ danych
 class IWorkflowItemBase : 
     public IClonable<IWorkflowItemBase>, public ISerializable, public IIdentifiable, public IConfigurable
 {
@@ -28,10 +29,17 @@ public:
 
 
 public:
+    //! \return Nazwa elementu logicznego
     virtual const std::string & getName() const = 0;
+    //! Defaultowo serializacja nic nie robi, kiedyœ to wytniemy i bêdzie trzeba doimplementowaæ!!
     virtual void serialize( std::ostream& output ) { }
+    //! Defaultowo deserializacja nic nie robi, kiedyœ to wytniemy i bêdzie trzeba doimplementowaæ!!
     virtual void deserialize( std::istream& istream ) { }
+    //! Defaultowo nie mamy widgeta konfiguracyjnego, kiedyœ to wytniemy i bêdzie trzeba doimplementowaæ!!
     virtual QWidget* getConfigurationWidget() { return nullptr; }
+    //! Metoda resetuj¹ca stan elementu po stycznoœci z jedn¹ porcj¹ danych
+    //TODO
+    //przejrzec ta metode - inne zachowanie dla Ÿróde³ i inne dla wizualizatorów
     virtual void reset() = 0;
 
 };

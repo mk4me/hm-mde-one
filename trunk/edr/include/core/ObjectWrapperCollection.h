@@ -25,7 +25,7 @@ typedef const shared_ptr<const ObjectWrapperCollection> ConstObjectWrapperCollec
 typedef weak_ptr<ObjectWrapperCollection> ObjectWrapperCollectionWeakPtr;
 typedef weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeakPtr;
 
-//! Klasa sluzy do agregowania obiektow domenowych tego samego typu
+//! Klasa sluzy do agregowania obiektow domenowych tego samego typu lub pocohdnych od tego samego typu
 class ObjectWrapperCollection
 {
 public:
@@ -60,17 +60,20 @@ public:
 
 public:
 
+    //! \return Najni¿szy typ w hierarchi dziedziczenia który kolekcja mo¿e przechowaæ
     const TypeInfo & getTypeInfo() const
     {
         return typeInfo;
     }
 
-
+    //! \return Czy dane musza byæ dok³¹dnie tego samego typu dla którego utworzono kolekcjê czy mog¹ te¿ byæ pochodne od niego
     bool exactTypes() const
     {
         return exact;
     }
 
+    //! \param exact Czy dane maj¹ byæ dok³adnie tego typu dla którego utworzono kolekcjê
+    //! \param clear Czy czyœciæ dane niezgodne z typem kolekcji - pochodne mu
     void setExactTypes(bool exact, bool clear = false)
     {
         this->exact = exact;
@@ -80,6 +83,7 @@ public:
         }
     }
 
+    //! Czyœci dane innego typu ni¿ ten dla którego utworozno kolekcjê
     void removeDerivedTypes()
     {
         //iteruj po kolekcji i usun te typy ktore nie sa dokladnie typu kolekcji
@@ -93,36 +97,43 @@ public:
         }
     }
 
+    //! return Iterator pocz¹tku kolekcji
     iterator begin()
     {
         return constObjects.begin();
     }
 
+    //! return Iterator koñca kolekcji
     iterator end()
     {
         return constObjects.end();
     }
 
+    //! return Const iterator pocz¹tku kolekcji
     const_iterator begin() const
     {
         return constObjects.begin();
     }
 
+    //! return Const iterator koñca kolekcji
     const_iterator end() const
     {
         return constObjects.end();
     }
 
+    //! \return Czy kolekcja jest pusta
     bool empty() const
     {
             return constObjects.empty();
     }
 
+    //! \return Iloœæ elementów w kolekcji
     size_type size() const
     {
         return constObjects.size();
     }
 
+    //! Czyœci wszystkie elementy kolekcji
     void clear()
     {
         constObjects.swap(ConstObjects());
@@ -141,6 +152,7 @@ public:
         return constObjects[index];
     }
 
+    //! \param idx Indeks który usuwamy z kolekcji
     void removeObject(int idx)
     {
         auto cIT = constObjects.begin();

@@ -2,7 +2,6 @@
 #include <boost/foreach.hpp>
 #include <core/IServiceManager.h>
 #include <plugins/timeline/ITimeline.h>
-//#include <core/IModel.h>
 #include <core/IDataManager.h>
 #include "VideoService.h"
 #include "VideoWidget.h"
@@ -15,8 +14,6 @@
 #include <core/C3D_Data.h>
 #include <core/C3DParserEx.h>
 #include <plugins/video/Wrappers.h>
-
-//M_DECLARED_CLASS(VideoService, )
 
 using namespace core;
 

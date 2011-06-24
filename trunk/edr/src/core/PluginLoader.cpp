@@ -103,10 +103,6 @@ void PluginLoader::addDefaultPaths()
     paths.push_back(dir);
 #endif
 
-    // dodanie sciezki dla customowych pluginow
-    /*IDataManager* manager = core::getDataManager();
-    boost::filesystem::path p = manager->getApplicationDataPath() / "plugins";
-    paths.push_back(p.string());*/
 }
 
 
@@ -276,8 +272,6 @@ bool PluginLoader::onAddPlugin( const std::string& path, uint32_t library, Plugi
         libraries.push_back(library);
 
         LOG_INFO("Successfully loaded plugin " << path);
-
-        //LOG_INFO("Plugin " << plugin->getName() << " loaded from " << path);
 
     }else{
         LOG_WARNING("Plugin with given ID " << plugin->getID() << " already exist. Plugin " << path << " NOT loaded to application! Collision with plugin loaded from: " << collidingPlugin->getPath() );

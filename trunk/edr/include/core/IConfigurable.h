@@ -9,16 +9,19 @@
 #ifndef HEADER_GUARD_CORE__ICONFIGURABLE_H__
 #define HEADER_GUARD_CORE__ICONFIGURABLE_H__
 
+//! Forward declaration
 class QWidget;
 
 namespace core {
 
+//! Klasa zapewniaj¹ca widget konfiguracyjny
 class IConfigurable
 {
 public:
     virtual ~IConfigurable() 
     {
     }
+    //! \return Widget konfiguruj¹cy dany obiekt
     virtual QWidget* getConfigurationWidget() = 0;
 };
 

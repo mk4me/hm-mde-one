@@ -161,10 +161,8 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
 
     viewer = new QOsgDefaultWidget();
     viewer->setTimerActive(false);
-    //widget->setMinimumSize(300, 300);
 
     viewer->addEventHandler( new osgViewer::StatsHandler() );
-    //viewer->addEventHandler( new osgGA::StateSetManipulator(viewer->getCamera()->getOrCreateStateSet()) );
 
     // pobranie cech kontekstu graficznego
     const GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
@@ -181,7 +179,6 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
     WindowManager* manager = new WindowManager(viewer, float(traits->width), float(traits->height), 0xFF/*, WindowManager::WM_PICK_DEBUG*/);
     viewer->setSceneData(manager);
     viewer->addEventHandler( new osgWidget::MouseHandler(manager) );
-    // viewer->addEventHandler( new osgWidget::KeyboardHandler(manager) );
     viewer->addEventHandler( new osgWidget::ResizeHandler(manager, camera) );
 
     // dodanie obszaru roboczego
@@ -207,26 +204,12 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
 
     refresh(float(viewer->width()), float(viewer->height()));
 
-    //ratioKeeper->setTarget(nullptr);
-
     return viewer;
 }
 
 void VideoVisualizer::setUp( core::IObjectSource* source )
 {
     reset();
-
-
- /*   osg::ref_ptr<const vidlib::VideoImageStream> stream = source->getObject(0);
-
-    widgetKeeper->setAspectRatio(stream->getPixelAspectRatio() * stream->s() / stream->t());
-
-    osgWidget::Widget* widget = widgetKeeper->getTarget();
-
-    widget->setImage( const_cast<vidlib::VideoImageStream*>(&*stream), true, true );
-    // czy trzeba zrobiæ flipa?
-    osgui::correctTexCoords(widget, const_cast<vidlib::VideoImageStream*>(&*stream));
-    */
 }
 
 QIcon* VideoVisualizer::createIcon()

@@ -121,17 +121,6 @@ format(PixelFormatBGRA)
 
     // ustawienie sceny
     viewer->setSceneData(multiViewCamera);
-    
-
-  // bufory
-
-//   std::vector<std::string> files;
-//   files.push_back("s1.avi");
-//   files.push_back("s1.avi");
-//   files.push_back("s1.avi");
-//   files.push_back("s1.avi");
-// 
-//   init(files);
 }
 
 void VideoWidget::init( std::vector<std::string> &files )
@@ -151,15 +140,6 @@ void VideoWidget::init( std::vector<std::string> &files )
    
     createScene();
 }
-
-// void VideoWidget::init( std::vector<IVideoParserPtr> &parsers )
-// {
-//     images.clear();
-//     BOOST_FOREACH(IVideoParserPtr parser, parsers) {
-//         images.push_back( parser->getOsgStream() );
-//     }
-//     createScene();
-// }
 
 void VideoWidget::init( std::vector<osg::ref_ptr<vidlib::VideoImageStream> > &streams )
 {
@@ -195,10 +175,6 @@ void VideoWidget::createScene()
 
     // na wszelki wypadek czyœcimy scenê
     clearScene();
-    
-
-    
-    
 
     // stworzenie widgetów i dodanie ich do multi widoku
     float avgRatio = 0;
@@ -209,7 +185,6 @@ void VideoWidget::createScene()
 
         VideoImageStreamSizeOptimizer* optimizer = new VideoImageStreamSizeOptimizer(new osg::Uniform(yuvImageSizeName.c_str(), osg::Vec2(0, 0)));
         
-
         // faktyczne dodanie miniaturki do grida
         osgWidget::Widget* streamWidget = createStreamWidget( image, optimizer );
         osgWidget::Box* thumbnail = new osgWidget::Box(streamWidget->getName());
@@ -245,34 +220,6 @@ void VideoWidget::createScene()
     osg::Vec2s dimensions = osgui::Grid::getDimensionsAsSquare(images.size());
     unsigned rows = dimensions.y();
     unsigned columns = dimensions.x();
-
-    // TODO: kopia
-//     osgui::Grid* gridThumbs = new osgui::Grid("allThumbnails", rows, columns);
-//     gridThumbs->getBackground()->setColor(0,0,0,0);
-//     osgui::Grid* grid = new osgui::Grid("all", rows, columns);
-//     grid->getBackground()->setColor(0,0,0,0);
-//     //osgui::Grid* grid = osg::clone(gridThumbs, osg::CopyOp::DEEP_COPY_ALL);
-//     for (unsigned row = 0; row < rows; ++row) {
-//         for (unsigned col = 0; col < columns; ++col) {
-//             osg::Image* image = images[ row * columns + col ];
-//             osgWidget::Widget* thumbnail = createStreamWidget( /*osg::clone*/(image), optimizers[row*columns+col] );
-//             thumbnail->setCanFill(true);
-//             gridThumbs->addWidget(thumbnail, row, col);
-//             osgWidget::Widget* preview = createStreamWidget( /*osg::clone*/(image), optimizers[row*columns+col] );
-//             osgui::AspectRatioKeeper* keeper = new osgui::AspectRatioKeeper(preview, avgRatio);
-//             grid->addWidget(keeper, row, col);
-// 
-//             optimizers[ row * columns + col ]->getClients().push_back(new OsgWidgetWindowItem(gridThumbs, thumbnail));
-//             optimizers[ row * columns + col ]->getClients().push_back(new OsgWidgetWindowItem(grid, preview));
-//             
-// 
-//         }
-//     }
-//     gridThumbs->setStrata( osgWidget::Window::STRATA_BACKGROUND );
-//     grid->setStrata( osgWidget::Window::STRATA_BACKGROUND );
-//     multiView->addChild(gridThumbs);
-//     multiView->addChild(grid);
-//     multiView->addItem(new core::MultiViewWidgetItem(gridThumbs, avgRatio), new core::MultiViewWidgetItem(grid, avgRatio));
 
     if ( doSelect ) {
         multiView->setSelectedByIndex(sel);

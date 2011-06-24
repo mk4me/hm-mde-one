@@ -4,7 +4,6 @@
 #include <core/PluginLoader.h>
 #include "Log.h"
 #include <core/Config.h>
-//#include "VisualizerTitleBar.h"
 #include "LogInitializer.h"
 #include <core/ObjectWrapperCollection.h>
 

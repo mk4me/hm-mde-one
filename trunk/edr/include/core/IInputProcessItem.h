@@ -15,15 +15,13 @@
 
 namespace core {
 
+//! Interfejs dla elementÛw terminalnych dla danych - nie majπcych wyjúcia jedynie wejscie.
+//! Zawiera opis wejúc i podstawowe informacje i w≥aúciwoúci elementÛw logicznych aplikacji operujπcych na danych
 class IInputProcessItem : public IWorkflowItemBase, public IInputDescription
 {
 public:
-    virtual ~IInputProcessItem() 
-    {
-    }
-    //! Metoda wywo≥ywana po przypisaniu danych wejúciowych wizualizatorowi. Powinna uwzglÍdniÊ czyszczenie widgetu
-    //! po poprzednim setUp'ie.
-    //! \param source èrÛd≥o danych.
+    //! Metoda wywo≥ywana w momencie dostarczenia nowych danych do przetwarzania
+    //! \param source èrÛd≥o danych. NIE MA GWARANCJI ØE MAMY JAKIEKOLWIEK DANE, naleøy to zawsze sprawdzaÊ przy kazdym wywo≥aniu
     virtual void setUp(IObjectSource* source) = 0;
 };
 

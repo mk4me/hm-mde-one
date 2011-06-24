@@ -11,15 +11,20 @@
 
 #include <core/IOutputProcessItem.h>
 
+//! Forward declaration
 class QIcon;
 
 namespace core {
 
+//! Interfejs do implemntacji Ÿróde³ danych
 class IDataSource : public core::IOutputProcessItem
 {
 public:
+    //! \return Dialog konfiguruj¹cy opis wyjœcia Ÿród³a danych
     virtual QDialog * getOutputConfigurationDialog() = 0;
+    //! \return Czy Ÿród³o mo¿e jeszcze generowac kolejne dane
     virtual bool empty() const = 0;
+    //! \return Ikona Ÿród³a
     virtual QIcon* getIcon() const = 0;
 };
 

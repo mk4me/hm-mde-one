@@ -35,12 +35,11 @@ public:
     const ObjectSource* getSource() const { return source.get(); }
     ObjectSource* getSource() { return source.get(); }
 
-    //! \see IVisualizer::getInputType
     inline const core::TypeInfo& getInputType(int idx) const
     {
         return source->getSlotType(idx);
     }
-    //! \see IVisualizer::getInputType
+
     inline const std::string& getInputName(int idx) const
     {
         return source->getSlotName(idx);

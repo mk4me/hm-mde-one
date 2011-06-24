@@ -8,7 +8,6 @@
 #include <osg/Notify>
 #include <boost/algorithm/string.hpp>
 #include <utils/Debug.h>
-//#include "ConsoleWidget.h"
 #include "EDRConsoleWidget.h"
 #include <core/StringTools.h>
 

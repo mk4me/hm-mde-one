@@ -85,28 +85,12 @@ void Controller::play()
     pauseMutex.unlock();
 }
 
-// void Controller::setUITime( double time )
-// {
-//   // ustawiamy czas
-//   model->setUITime(time);
-//   // jeœli w¹tek nie dzia³a, uruchamiamy go
-//   if ( !isRunning() ) {
-//     // dla bezpieczeñstwa sprawdzamy jeszcze raz...
-//     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-//     if (time != model->getTime() && !isRunning()) {
-//       // ok, uruchamiamy w¹tek który bêdzie odœwie¿a³ obraz
-//       start();
-//     }
-//   }
-// }
-
 void Controller::addStream( StreamPtr stream )
 {
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
     OpenThreads::ScopedLock<OpenThreads::Mutex> lock2(modelMutex);
     model->addStream(stream);
     dirtyState.length = model->getLength();
-    //dirty = true;
 }
 
 void Controller::removeStream( StreamPtr stream )
@@ -126,7 +110,6 @@ double Controller::getNormalizedTime() const
 
 void Controller::setNormalizedTime( double time )
 {
-    //OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
     setTime( time * getLength() );
 }
 
@@ -155,13 +138,6 @@ void Controller::setTime( double time )
     state.normalizedTime = time  / getLength();
     setState(state);
     timeDirty = true;
-    //model->timeDirty = true;
-    
-
-    //// wyzerowanie licznika
-    //if ( !isRunning() && asynchronous ) {
-    //    start();
-    //}
 }
 
 double Controller::getTimeScale() const
@@ -243,9 +219,6 @@ bool Controller::isWriteEnabled() const
 {
     if ( OpenThreads::Thread::CurrentThread() == this || paused == true ) {
         return true;
-    //} else if ( const_cast<Controller*>(this)->isRunning() ) {
-    //} else if ( paused == false ) {
-    //    return false;
     } else {
         return !asynchronous;
     }
@@ -285,15 +258,12 @@ bool Controller::compute()
         OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
         // czy jest sens dalej trzymaæ w¹tek?
         if ( !isDirty() && !isPlaying() ) {
-            //OSG_NOTICE<<"Finished Controller::run()"<<std::endl;
-            //return false;
             pauseMutex.lock();
             return true;
         }
         // zaakceptowano stan
         appliedState = dirtyState;
         timeDirty = dirty = false;
-        //model->timeDirty = false;
         busy = true;
     }
 
@@ -314,81 +284,3 @@ bool Controller::compute()
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace timeline
 ////////////////////////////////////////////////////////////////////////////////
-
-#pragma region LEGACY
-#if 0
-void Controller::run()
-{
-    //UTILS_PROFILER_THREAD_SCOPE;
-    try
-    {
-        osg::Timer frameLength;
-        while (true) {
-            // zerujemy czas ramki
-            frameLength.setStartTick();
-
-            // ustalenie i modyfikacja bie¿¹cego stanu
-            bool resetTimer = false;
-            State appliedState;
-            {
-                OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-                // czy jest sens dalej trzymaæ w¹tek?
-                if ( !isDirty() && !isPlaying() ) {
-                    OSG_NOTICE<<"Finished Controller::run()"<<std::endl;
-                    return;
-                }
-
-                // obliczenie delty
-                osg::Timer_t tick = timer.tick();
-                double delta = timer.delta_s(timer.getStartTick(), tick);
-                timer.setStartTick(tick);
-
-                // je¿eli podano inny czas to znaczy, ¿e nie mo¿na siê automatycznie przesun¹æ dalej
-                double time = dirtyState.time;
-                if ( timeRequested ) {
-                    // czas podany rêcznie, nie modyfikujemy go
-                    resetTimer = true;
-                    timeRequested = false;
-                } else if ( dirtyState.isPlaying ) {
-                    // automatyczna inkrementacja
-                    //time += delta * dirtyState.timeScale;
-                    //time = utils::clamp(time, 0.0, model->calculateLength());
-                }
-                dirtyState.time = time;
-
-                // zaakceptowano stan
-                appliedState = dirtyState;
-                dirty = false;
-                //notify();
-            }
-
-            // nadanie bie¿¹cego stanu
-            double waitTime;
-            {
-                // blokada modyfikacji czasu
-                OpenThreads::ScopedLock<OpenThreads::Mutex> lock(modelMutex);
-                busy = true;
-                // nadanie stanu modelowi - miejsce wykonania w³aœciwej logiki
-                model->setState(appliedState);
-                // ile trzeba bêdzie czekaæ?
-                waitTime = appliedState.refreshPeriod - frameLength.time_s();
-                busy = false;
-            }
-
-            // je¿eli czas podano rêcznie - wyzerowanie timera
-            if ( resetTimer ) {
-                timer.setStartTick();
-            }
-            // jak d³ugo to wszystko trwa³o?
-            if ( waitTime > 0.0 ) {
-                OpenThreads::Thread::microSleep( waitTime * 1000000 );
-            }
-        } 
-    } catch (const std::exception & error) {
-        OSG_WARN<< "Controller::run : " << error.what() << std::endl;
-    } catch (...) {
-        OSG_WARN<< "Controller::run : unhandled exception" << std::endl;
-    }
-}
-#endif
-#pragma endregion LEGACY

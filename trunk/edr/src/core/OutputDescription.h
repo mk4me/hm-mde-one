@@ -45,19 +45,11 @@ public:
         return output->getSlotName(outputNo);
     }
 
-    ////!
-    //const SlotsInfo& getOutputsTypes() const;
-
     //! \return Liczba obiektów.
     int getNumOutputs() const
     {
         return output->getNumOutputs();
     }
-    ////!
-    //core::ObjectWrapperCollectionConstPtr getObjects(int slot)
-    //{
-    //    return output->getObjects(slot);
-    //}
 
     //! \param outputNo Numer wyjœcia.
     //! \return Obiekt na wyjœciu.

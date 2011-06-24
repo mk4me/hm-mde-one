@@ -3,7 +3,6 @@
 #include "Log.h"
 #include "ServiceManager.h"
 
-//#include <core/IModel.h>
 #include <core/IDataManager.h>
 
 
@@ -16,11 +15,7 @@ ServiceManager::ServiceManager(void)
 
 ServiceManager::~ServiceManager(void)
 {
-	// free allocated memory
-    // for (ServicesMap::iterator i = servicesMap.begin(); i != servicesMap.end(); ++i) {
-    //     delete i->second;
-    // }
-    //finalizeServices();
+	
 }
 
 void ServiceManager::finalizeServices()
@@ -51,7 +46,6 @@ void ServiceManager::registerService(core::IServicePtr service)
         servicesMap.insert( std::make_pair(service->getID(), service)); 
         servicesList.push_back(service);
         LOG_INFO("Service "<<service->getName()<<" registered.");
-        //service->init(this); 
     } else {
         throw std::runtime_error("Service with this ID already registered.");
     }
@@ -77,14 +71,6 @@ void ServiceManager::updatePass()
     // ustawienia markera update'a
     updateMarker = nullptr;
 }
-
-//void ServiceManager::computePass()
-//{
-//    // aktualizacja us³ug
-//    for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
-//        (*it)->compute();
-//    }
-//}
 
 void ServiceManager::loadDataPass(core::IDataManager* dataManager)
 {

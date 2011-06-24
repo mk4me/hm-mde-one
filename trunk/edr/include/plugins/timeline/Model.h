@@ -156,8 +156,6 @@ public:
     //! \param state
     void setState(const State& state);
 
-    //virtual void notify();
-
 private:
 
     //! \return D³ugoœæ najd³u¿szego ze strumieni z uwzglêdnieniem offsetów.

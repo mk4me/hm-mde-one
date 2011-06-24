@@ -48,11 +48,13 @@ namespace core
         return __instanceInfo.dataManager;
     }
 
+    //! \return Interfejs dostêpu do œcie¿ek aplikacji
 	inline IPath* getPathInterface()
 	{
 		return __instanceInfo.pathInterface;
 	}
 
+    //! \return Interfejs logowania informacji
 	inline ILog* getLogInterface()
 	{
 		return __instanceInfo.logInterface;

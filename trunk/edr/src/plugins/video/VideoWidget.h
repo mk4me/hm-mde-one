@@ -125,8 +125,6 @@ public slots:
 
 private:
 
-
-
     //! Tworzy widget ze strumieniem.
     //! \param image
     osgWidget::Widget* createStreamWidget(osg::Image* image);

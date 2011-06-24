@@ -29,12 +29,12 @@ namespace core {
 		//! Dodawanie obiektow domenowych z innych zrodel niz parsery
 		//! \param dataProcessor zrodlo danych
 		//! \param objects wektor ze stworzonymi obiektami domenowymi (zrodlo powinno dalej je przechowywac!)
-		virtual void addObjects(DataProcessorPtr dataProcessor, const std::vector<ObjectWrapperPtr>& objects) = 0;
+		virtual void addObjects(const DataProcessorPtr & dataProcessor, const std::vector<ObjectWrapperPtr>& objects) = 0;
 
 		//! Dodawanie obiektu domenowego z innego zrodla niz parser
 		//! \param dataProcessor zrodlo obiektu
 		//! \param object dodawany obiekt (zrodlo powinno dalej go przechowywac)
-		virtual void addObject(DataProcessorPtr dataProcessor, ObjectWrapperPtr object) = 0;
+		virtual void addObject(const DataProcessorPtr & dataProcessor, const ObjectWrapperPtr & object) = 0;
 
 		//! Wyszukiwanie zasobów na lokalnym dysku.
 		virtual void findResources(const std::string& resourcesPath) = 0;

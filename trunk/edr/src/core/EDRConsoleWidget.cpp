@@ -32,9 +32,6 @@ void EDRConsoleWidget::init()
     QToolButton *clearButton;
     QToolButton *toggleWordWrapButton;
 
-    //label = new QLabel(tr("Console"));
-    //label->setStyleSheet("QLabel { background-color : black; color : white; }");
-
     clearButton = new QToolButton(titleBar);
     clearButton->setObjectName(QString::fromUtf8("clearButton"));
     QIcon icon;
@@ -59,7 +56,6 @@ void EDRConsoleWidget::init()
 
     toggleWordWrapButton->setChecked( consoleWidget->textEdit->lineWrapMode() != QTextOption::NoWrap );
 
-    //titleBar->addObject(label, IEDRTitleBar::SideType::Left);
     titleBar->addObject(clearButton, IEDRTitleBar::SideType::Left);
     titleBar->addObject(toggleWordWrapButton, IEDRTitleBar::SideType::Left);
 }
@@ -100,7 +96,6 @@ void EDRConsoleWidget::queueEntry( EDRConsoleWidgetEntryPtr entry )
 {
     QMutexLocker locker(&queueMutex);
     queuedEntries.push(entry);
-    // QMetaObject::invokeMethod( console, "logEntry", Q_ARG(ConsoleWidgetEntryPtr, entry) );
 }
 
 void EDRConsoleWidget::logOrQueueEntry( EDRConsoleWidgetEntryPtr entry )

@@ -108,12 +108,6 @@ protected:
 
         ObjectSource source(inputInfos);
 
-        //// stworzenie instancji ObjectWrapperów dla ka¿dego z wejœæ
-        //for (int i = 0; i < source.getNumSlots(); ++i) {
-        //    core::ObjectWrapperCollectionPtr wrp = DataManager::getInstance()->createWrapperCollection( source.getSlotType(i) );
-        //    source.ObjectSlots::setObjects(i, wrp);
-        //}
-
         return source;
     }
 

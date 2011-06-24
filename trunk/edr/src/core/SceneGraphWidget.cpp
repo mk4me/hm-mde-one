@@ -42,27 +42,6 @@ void SceneGraphWidget::clearTreeWidget()
     treeSceneGraph->clear();
 }
 
-
-// void SceneGraphWidget::addServices( core::IServiceManager* manager )
-// {
-//     for ( int i = 0; i < manager->getNumServices(); ++i ) {
-//         addService( manager->getService(i) );
-//     }
-// }
-// 
-// void SceneGraphWidget::addService( core::IServicePtr service )
-// {
-//     // lokalna zmienna bo IntelliSense siê gubi...
-//     QComboBox* currentServiceCombo = this->currentServiceCombo;
-// 
-//     // ustalenie parametrów...
-//     QString name = core::toQString(service->getName());
-//     QVariant userData = qVariantFromValue(core::IServiceWeakPtr(service));
-// 
-//     // dodanie do komba
-//     currentServiceCombo->addItem(name, userData);
-// }
-
 void SceneGraphWidget::setCurrentVisualizer( int index )
 {
     if ( index >= 0 ) {

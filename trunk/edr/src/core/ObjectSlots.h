@@ -12,7 +12,6 @@
 #include <vector>
 #include <set>
 #include <core/ObjectWrapperCollection.h>
-#include <core/IInputDescription.h>
 /**
  *	Reprezentuje pewn¹ kolekcjê obiektów domenowych. Odwo³ania do nich
  *  wystêpuj¹ pod postaci¹ zmiennych i/lub niezmiennych wskaŸników. 

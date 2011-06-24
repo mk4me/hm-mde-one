@@ -29,6 +29,11 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
+//! Deklaracja wersji nag³ówka w Pluginie
+//! NIEZWYKLE ISTOTNE - przy ka¿dej zmianie w Pluginach wersja ta bêdzie siê zmieniaæ, pluginy nieprzebudowane z nowym nag³owiekm
+//! nie bêd¹ ³adowane do aplikacji!!
+
+//! Sami musimy modyfikowaæ ta wersjê!!
 #define CORE_PLUGIN_INTERFACE_VERSION 3
 
 #ifdef _CPPLIB_VER
@@ -91,10 +96,12 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
 #define CORE_PLUGIN_ADD_DATA_SOURCE(className)                           \
     instance->addDataSource( core::IDataSourcePtr(new className) );
 
+//! Dodanie nowego typu domenowego poprzez utworzenie dla niego ObjectWrapperFactory
 #define CORE_PLUGIN_ADD_OBJECT_WRAPPER(className)               \
     instance->addObjectWrapperFactory( core::IObjectWrapperFactoryPtr(new core::ObjectWrapperFactory<className>()) ); 
 
 
+//! Interfejs pluginu przez który dostarczane sa us³ugi (serwisy) i prototypy elementów przetwarzaj¹cych dane
 class IPlugin : IIdentifiable
 {
 public:

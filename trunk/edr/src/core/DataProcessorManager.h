@@ -17,30 +17,18 @@ class DataProcessorManager : public core::IDataProcessorManager, public utils::O
 {
     friend class DataProcessor;
 public:
-    //! Lista wizualizatorów.
+    //! Lista elementów przetwarzaj¹cych.
     typedef std::vector<core::IDataProcessorPtr> IDataProcessors;
     //! 
     typedef boost::iterator_range<IDataProcessors::const_iterator> IDataProcessorsConstRange;
     //!
-    //! typedef std::list<VisualizerWeakPtr> WeakVisualizers;
     typedef std::list<DataProcessor*> DataProcessors;
-    //! Lista typów kolejnych Ÿróde³.
-    //typedef Visualizer::SlotsInfo SourcesTypes; 
 
 private:
-    ////! Niezmienne dane pobrane z wizualizatorów.
-    //struct IVisualizerPersistantData
-    //{
-    //    //! Ikona.
-    //    QIcon icon;
-    //    //! Lista typów kolejnych Ÿróde³.
-    //    SourcesTypes sourcesTypes;
-    //};
 
-    //! Prototypy wizualizatorów.
+    //! Prototypy elementów przetwarzaj¹cych.
     IDataProcessors prototypes;
-    //! Lista œledz¹ca wizualizatory.
-    // WeakVisualizers visualizersTrace;
+    //! Lista œledz¹ca elementy przwtwarzaj¹ce.
     DataProcessors dataProcessors;
 
 public:
@@ -55,16 +43,8 @@ public:
         return static_cast<DataProcessorManager*>(core::getDataProcessorManager());
     }
 
-    //! \param visualizer
+    //! \param dataProcessor
     virtual void registerDataProcessor(const core::IDataProcessorPtr & dataProcessor);
-
-    //! Aktualizacja wizualizatorów.
-    void update();
-
-    //! \return Ikona dla danego wizualizatora.
-    //const QIcon& getIcon(UniqueID id) const;
-    //! \return Informacje o wejœciu dla danego wizualizatora.
-    //const SourcesTypes& getSourcesTypes(UniqueID id) const;
 
     //! \return Wyliczenie prototypów.
     inline IDataProcessorsConstRange enumPrototypes() const
@@ -76,28 +56,28 @@ public:
     {
         return static_cast<int>(prototypes.size());
     }
-    //! \param i Indeks wizualizatora.
+    //! \param i Indeks elementu przetwarzajacego.
     inline core::IDataProcessorConstPtr getPrototype(int i) const
     {
         UTILS_ASSERT(i < getNumPrototypes());
         return prototypes[i];
     }
 
-    //! \param id ID wizualizatora.
+    //! \param id ID elementu przetwarzajacego.
     core::IDataProcessorConstPtr getPrototype(UniqueID id) const;
 
-    //! Tworzy instancjê wizualizatora.
-    //! \param id id wizualizatora.
-    //! \return Instancja wizualizatora.
+    //! Tworzy instancjê elementu przetwarzajacego.
+    //! \param id id elementu przetwarzajacego.
+    //! \return Instancja elementu przetwarzajacego.
     DataProcessorPtr createDataProcessor(UniqueID id);
 
-    //! \return Liczba instancji wizualizatorów danego typu.
+    //! \return Liczba instancji elementow przetwarzajacych danego typu.
     int getNumInstances(UniqueID id);
 
 private:
-    //! Tworzy instancjê wizualizatora.
-    //! \param id id wizualizatora.
-    //! \return Instancja wizualizatora.
+    //! Tworzy instancjê elementu przetwarzajacego.
+    //! \param id id elementu przetwarzajacego.
+    //! \return Instancja elementu przetwarzajacego.
     DataProcessorPtr createDataProcessor(const core::IDataProcessorConstPtr& prototype);
     //! 
     DataProcessorPtr createDataProcessor(const DataProcessor& prototype);

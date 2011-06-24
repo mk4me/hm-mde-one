@@ -20,13 +20,11 @@ class WorkflowManager : public core::IWorkflowManager
 {
     friend class Workflow;
 public:
-    //! typedef std::list<VisualizerWeakPtr> WeakVisualizers;
     typedef std::list<Workflow*> Workflows;
 
 private:
 
     //! Lista œledz¹ca wizualizatory.
-    // WeakVisualizers visualizersTrace;
     Workflows workflows;
 
 public:

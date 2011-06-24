@@ -58,14 +58,12 @@ int VisualizerManager::getNumInstances( UniqueID id )
 VisualizerPtr VisualizerManager::createVisualizer( const IVisualizerConstPtr& prototype )
 {
     VisualizerPtr result(new Visualizer(dynamic_cast<IVisualizer*>(prototype->createClone())));
-    //visualizersTrace.push_back(result);
     return result;
 }
 
 VisualizerPtr VisualizerManager::createVisualizer( const Visualizer& prototype )
 {
     VisualizerPtr result(new Visualizer(prototype));
-    //visualizersTrace.push_back(result);
     return result;
 }
 
@@ -77,46 +75,11 @@ void VisualizerManager::update()
         (*it)->update(0);
         ++it;
     }
-//     WeakVisualizers::iterator it = visualizersTrace.begin();
-//     WeakVisualizers::iterator last = visualizersTrace.end();
-//     while ( it != last ) {
-//         VisualizerPtr strong = it->lock();
-//         if ( strong ) {
-//             strong->update(0);
-//             ++it;
-//         } else {
-//             LOG_DEBUG("Removing weak visualizer reference");
-//             WeakVisualizers::iterator toErase = it++;
-//             visualizersTrace.erase(toErase);
-//         }
-//     }
 }
 
 void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
 {
-    if (!getPrototype(visualizer->getID())) {    
-
-        // lista wejœæ
-        //SourcesTypes::value_type info;
-        //IInputDescription::InputInfo info;
-        //for (int i = 0; i < IVisualizer::maxNumSources; ++i) {
-        //    info.name.clear();
-        //    info.type.clear();
-        //    visualizer->getInputInfo(i, info);
-        //    if ( info.type.empty() ) {
-        //        break;
-        //    } else {
-
-        //        ObjectSlots::SlotInfo slotInfo;
-        //        slotInfo.name = info.name;
-        //        slotInfo.required = info.required;
-        //        slotInfo.modify = info.modify;
-        //        slotInfo.type = info.type;
-        //        // zamiast push_backa mo¿na zrobiæ bardziej optymalnie i nie kopiowaæ wektora...
-        //        data->sourcesTypes.push_back(slotInfo);
-        //        //data->sourcesTypes.insert(data->sourcesTypes.end(), SourcesTypes::value_type())->swap(info);
-        //    }
-        //}
+    if (!getPrototype(visualizer->getID())) {
 
         std::vector<IInputDescription::InputInfo> visualizerInputInfo;
 

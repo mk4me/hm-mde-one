@@ -72,8 +72,6 @@ private:
     //! Us³uga tworz¹ca widget.
     WorkflowService* service;
 
-    //QWidget* actualWidget;
-
     //! Widget z widokiem OSG.
     WorkflowCustomQOSGWidget* workflowVDFWidget;
     osg::ref_ptr<osgVDF::osgVDFBaseModel> workflowVDFModel;

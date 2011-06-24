@@ -18,7 +18,7 @@
 
 namespace core 
 {
-    //! èrÛd≥o obiektÛw.
+    //! Interfejs dajπcy dostÍp do danych wejsciowych. Nie ma gwarancji øe dane sπ dostÍpne i zainicjalizowane - naleøe to kaødorazowo sprawdzaÊ.
     class IObjectSource
     {
     public:
@@ -34,7 +34,7 @@ namespace core
         class InputObjectsCollection
         {
         public:
-            //! Return type resolver - poprzez operator konwersji pozwala kompilatorowi rtozpoznaÊ typ zwracany i wykonaÊ dla niego konwersjÍ
+            //! Return type resolver - poprzez operator konwersji pozwala kompilatorowi rozpoznaÊ typ zwracany i wykonaÊ dla niego konwersjÍ
             struct get_t
             {
             public:
@@ -120,9 +120,6 @@ namespace core
 
         //! \return Liczba ürÛde≥ danych.
         virtual int getNumSources() const = 0;
-
-        //! \return true jeøeli obiekt o indeksie idx uleg≥ zmianie lub zosta≥ wyzerowany/ustawiony.
-        virtual bool isChanged(int idx) const = 0;
 
         //! Wy≥uskanie wskaünika na obiekt domenowy ze ürÛd≥a przy za≥oøeniu jego niezmiennoúci.
         virtual InputObjectsCollection getObjects(int idx) const = 0;

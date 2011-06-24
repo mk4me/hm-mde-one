@@ -69,20 +69,6 @@ void DataProcessor::test()
 
                 output->getObjects(0).addObject(in);
             }
-
-            /*for(auto it = objects->begin(); it != objects->end(); it++){
-                ObjectWrapperPtr result = (*it)->clone();
-                IntPtr in = result->get();
-                LOG_DEBUG("Input: " << *in << " Output:" << *in + 1);
-                *in+=1;
-
-                output->getObjects(0).addObject(result);
-            }*/
-
-            
-            // je¿eli zale¿y nam, ¿eby nigdy nie nast¹pi³a modyfikacja przez nastêpników,
-            // mo¿na zapakowaæ obiekt do wskaŸnika na sta³y obiekt
-            // output->setObject(0, IntConstPtr(in));
         }
     };
 
@@ -130,24 +116,6 @@ void DataProcessor::test()
 
                 output->getObjects(0).addObject(in);
             }
-
-            /*for(auto it = objects->begin(); it != objects->end(); it++){
-                ObjectWrapperPtr result = (*it)->clone();
-                IntPtr in = result->get();
-                LOG_DEBUG("Input: " << *in << " Output:" << *in + 1);
-                *in+=1;
-
-                output->getObjects(0)->addObject(result);
-            }*/
-
-            /*for(auto it = objects->begin(); it != objects->end(); it++){
-                ObjectWrapperPtr result = (*it)->clone();
-                IntPtr in = result->get();
-                LOG_DEBUG("Input: " << *in << " Output:" << *in + 1);
-                *in+=1;
-
-                output->getObjects(0)->addObject(result);
-            }*/
         }
     };
 

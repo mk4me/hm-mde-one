@@ -30,16 +30,19 @@ namespace osg
 
 namespace core 
 {
+    //! Interfejs wizualizatorów dla typów danych zarejestrowanych w aplikacji
     class IVisualizer :  public IInputProcessItem
     {
     public:
 
+        //! Klasa bazowa do tworzenia i zarz¹dzania seriami danych
         class SerieBase
         {
         public:
 
             virtual ~SerieBase() {}
 
+            //! \param name Nazwa serii danych do ustawienia
             void setName(const std::string & name)
             {
                 if(this->name != name){
@@ -48,11 +51,14 @@ namespace core
                 }
             }
 
+            //! \return Nazwa serii danych
             const std::string & getName() const
             {
                 return name;
             }
 
+            //! \param data Dane do ustawienia w serii danych. ObjecWrappery pozwalaj¹ nam unikn¹æ potrzeby generowania wielu metod dla ró¿nych argumentów.
+            //! Znacz¹co uprasza interfejs, w przeciwnym wypadku musielibyœmy skorzystaæ z template
             void setData(const ObjectWrapperConstPtr & data)
             {
                 if(this->data != data){
@@ -61,18 +67,22 @@ namespace core
                 }
             }
 
+            //! \return Dane serii
             const ObjectWrapperConstPtr & getData() const
             {
                 return data;
             }
 
         protected:
-
+            //! \name nazwa serri danych
             virtual void setSerieName(const std::string & name) = 0;
+            //! \param data Dane serii
             virtual void setSerieData(const ObjectWrapperConstPtr & data) = 0;
 
         private:
+            //! Nazwa serii danych
             std::string name;
+            //! Dane serii
             ObjectWrapperConstPtr data;
         };
 
