@@ -12,7 +12,7 @@
 #include <QtGui/QWidget>
 #include <core/IService.h>
 
-#include "C3DChartData.h"
+//#include "C3DChartData.h"
 #include <core/Chart.h>
 #include <core/MultiView.h>	
 #include <osgui/QOsgWidgets.h>

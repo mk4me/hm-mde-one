@@ -1,8 +1,6 @@
 #ifndef CONFIGURATIONFILE_SERVICE_H
 #define CONFIGURATIONFILE_SERVICE_H
 
-#include <core/SimpleFunctors.h>
-
 #include "IConfigManager.h"
 #include "ConfigBuffer.h"
 #include "ConfigurationGroup.h"

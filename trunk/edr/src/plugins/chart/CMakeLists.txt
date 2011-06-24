@@ -25,7 +25,7 @@ set(PRIVATE_H
 	ChartWidget.h
 	IChart.h
 	ChartDataSeries.h
-	C3DChartData.h
+	#C3DChartData.h
 	MultiViewChartItem.h
 	ChartVisualizer.h
 	ChartVisualizerTitleBar.h
@@ -47,7 +47,7 @@ set(TARGET_SRC
 	DECreader.cpp
 	INTELreader.cpp
 	MIPSreader.cpp
-	C3DChartData.cpp
+	#C3DChartData.cpp
 	MultiViewChartItem.cpp
 	ChartVisualizer.cpp
 	ChartVisualizerTitleBar.cpp

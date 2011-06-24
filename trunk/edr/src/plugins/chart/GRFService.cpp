@@ -6,7 +6,7 @@
 #include "ChartWidget.h"
 #include "ChartViewer.h"
 #include <core/Chart.h>
-#include "C3DChartData.h"
+//#include "C3DChartData.h"
 #include <boost/foreach.hpp>
 using namespace std;
 using namespace osg;

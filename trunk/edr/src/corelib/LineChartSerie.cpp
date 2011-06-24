@@ -1,7 +1,7 @@
 #include "CorePCH.h"
 #include <core/LineChartSerie.h>
-#include <core/ChartData.h>
-#include <core/ChartPointer.h>
+//#include <core/ChartData.h>
+//#include <core/ChartPointer.h>
 #include <core/ILog.h>
 #include <osg/BlendFunc>
 #undef min

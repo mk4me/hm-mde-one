@@ -11,7 +11,7 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
-	#Subject.h
+	#private headers
 )
 #source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -29,7 +29,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/C3DChannels.h
 	${HEADER_PATH}/ChartSerie.h
 	${HEADER_PATH}/LineChartSerie.h
-	#${HEADER_PATH}/ISubject.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -48,8 +47,6 @@ source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES "${PROJECT_BINARY_DIR}/../cor
 
 # Ÿród³a
 set(TARGET_SRC
-	#ASFAMCData.cpp
-	#ASFAMCParser.cpp
 	Window.cpp
 	MultiView.cpp
 	MultiViewWidgetItem.cpp
@@ -58,7 +55,6 @@ set(TARGET_SRC
 	c3dParserEx.cpp
 	C3D_Data.cpp
 	ChartData.cpp
-	Data.cpp
 	DateTime.cpp
 	DECreader.cpp
 	Filesystem.cpp
@@ -71,7 +67,6 @@ set(TARGET_SRC
 	Parameters.cpp
 	ChartPointer.cpp
 	MultiViewFunctorWidgetAdapter.cpp
-	Quaternioncal.cpp
 	MultiViewCameraItem.cpp
 	MultiViewManipulatorItem.cpp
 	OsgSceneDump.cpp
@@ -80,7 +75,6 @@ set(TARGET_SRC
 	Data.cpp
 	ChartSerie.cpp
 	C3DChannels.cpp
-	#Subject.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
