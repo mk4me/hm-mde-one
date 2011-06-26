@@ -38,40 +38,18 @@ namespace core {
 
 		//! Wyszukiwanie zasobów na lokalnym dysku.
 		virtual void findResources(const std::string& resourcesPath) = 0;
-		//! Wyszukiwanie prób pomiarowych na lokalnym dysku.
-		UTILS_DEPRECATED(virtual void findLocalTrials() = 0);
+
 		//! £adowanie zasobów znalezionych na dysku.
 		virtual void loadResources() = 0;
-		//! £adowanie próby pomiarowej z lokalnego dysku.
-		//! \param trial próba pomiarowa do za³adowania.
-		UTILS_DEPRECATED(virtual void loadTrial(const LocalTrial& trial) = 0);
+
 		//! \param files lista do za³adowania, inicjalizacja parserów
 		virtual void loadFiles(const std::vector<Path>& files) = 0;
 		//! \param files lista do za³adowania, inicjalizacja parserów
 		//! \param types lista typow, ktore powinny zostac zaladowane
 		virtual void loadFiles(const std::vector<Path>& files, const ObjectWrapper::Types& types) = 0;
-		//! Zwraca i-t¹ próbê pomiarow¹ z listy kolalnych prób pomiarowych.
-		//! \param i indeks.
-		//! \return i-ta próba pomiarowa.
-		UTILS_DEPRECATED(virtual const LocalTrial& getLocalTrial(int i) const = 0);
+
 		//! Czyœci zasoby i próby pomiarowe.
 		virtual void clear() = 0;
-		//! \return czy za³adowano próbê pomiarow¹.
-		UTILS_DEPRECATED(virtual bool isLoadLocalTrialData() const = 0);
-		//! \param load ustaw flagê ³adowania lokalnej próby pomiarowej.
-		UTILS_DEPRECATED(virtual void setLoadLocalTrialData(bool load) = 0);
-
-
-		////! zwraca pelna sciezke do folderu "MyDocuments\EDR"
-		//virtual const Path& getUserDataPath() const = 0;
-		////! zwraca pelna sciezke do folderu "ApplicationData\EDR"
-		//virtual const Path& getApplicationDataPath() const = 0;
-		////! zwraca pelna sciezke do folderu z zasobami aplikacji
-		//virtual const Path& getResourcesPath() const = 0;
-
-
-		//! \return œcie¿ka do katalogu z próbami pomiarowymi
-		UTILS_DEPRECATED(virtual const Path& getTrialsPath() const = 0);
 
 		//! \param type Typ obiektu który chcemy wyszukaæ.
 		//! \param exact Czy wyszukiwaæ te¿ typy pochodne?
@@ -80,13 +58,6 @@ namespace core {
 
 		//! \return Czy zadane rozszerzenie jest wspierane?
 		virtual bool isExtensionSupported(const std::string& extension) const = 0;
-
-		//! Liczba prób pomiarowych w zasobach
-		UTILS_DEPRECATED(virtual int getLocalTrialsCount() const = 0);
-		//! \param i za³aduj i-t¹ próbê pomiarow¹ z zasobów
-		UTILS_DEPRECATED(virtual void loadLocalTrial(int i) = 0);
-		//! \param path Za³aduj próbê pomiarow¹ z podanej œcie¿ki.
-		UTILS_DEPRECATED(virtual void loadLocalTrial(const Path& path) = 0);
 
 		virtual ObjectWrapperPtr createWrapper(const TypeInfo& type) = 0;
 		virtual ObjectWrapperCollectionPtr createWrapperCollection(const TypeInfo& type) = 0;

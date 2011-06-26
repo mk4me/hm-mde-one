@@ -53,6 +53,7 @@ set(PRIVATE_H
 	DataSource.h
 	DataSourceManager.h
 	Log.h
+	PluginLoader.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -70,7 +71,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/Window.h
 	${HEADER_PATH}/IUserInterface.h
 	${HEADER_PATH}/Plugin.h
-	${HEADER_PATH}/PluginLoader.h
 	${HEADER_PATH}/Export.h
 	${HEADER_PATH}/SmartPtr.h
 	${HEADER_PATH}/Chart.h

@@ -27,33 +27,6 @@ public:
 	virtual const std::string& getApplicationSkinsFilePath(int i);
 	virtual int getApplicationSkinsFilePathCount();
 
-	////! ustawia pelna sciezke do folderu "MyDocuments\EDR"
-	//void setUserDataPath(const IDataManager::Path& path);
-	////! ustawia pelna sciezke do folderu "ApplicationData\EDR"
-	//void setResourcesPath(const IDataManager::Path& path);
-	////! ustawia pelna sciezke do folderu z zasobami aplikacji
-	//void setApplicationDataPath(const IDataManager::Path& path);
-	virtual void setTrialsPath(const IDataManager::Path& trials);
-
-	////! zwraca pelna sciezke do folderu "MyDocuments\EDR"
-	//virtual const IDataManager::Path& getUsedrDataPath() const;
-	////! zwraca pelna sciezke do folderu "ApplicationData\EDR"
-	//virtual const IDataManager::Path& getApplicationDataPath() const;
-	////! zwraca pelna sciezke do folderu z zasobami aplikacji
-	//virtual const IDataManager::Path& getResourcesPath() const;
-	//! 
-	virtual const IDataManager::Path& getTrialsPath() const;
-
-	UTILS_DEPRECATED(virtual bool isLoadLocalTrialData() const
-	{
-		return loadTrialData;
-	});
-	UTILS_DEPRECATED(virtual void setLoadLocalTrialData(bool load)
-	{
-		loadTrialData = load;
-	});
-
-
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -136,10 +109,6 @@ private:
 	std::vector<std::string> resourcesPaths;
 	//! Lista skórek dla UI
 	std::vector<std::string> applicationSkinsPaths;
-
-	//!
-	Path trialsPath;
-	bool loadTrialData;
 
     //! Prototypy ObjecWrapperów zarejestrowanych typów danych
 	RegisteredTypesPrototypes registeredTypesPrototypes;
@@ -233,26 +202,9 @@ public:
 	//! \param object dodawany obiekt (zrodlo powinno dalej go przechowywac)
 	virtual void addObject(const DataProcessorPtr & dataProcessor, const core::ObjectWrapperPtr & object);
 
-	//! \see core::IDataManager::getParser
-	UTILS_DEPRECATED(virtual core::IParserPtr getParser(int idx));
-	//! \see core::IDataManager::getParser
-	UTILS_DEPRECATED(virtual core::IParserPtr getParser(const std::string& filter));
-	//! \see core::IDataManager::getInitializedParser
-	UTILS_DEPRECATED(virtual core::IParserPtr getInitializedParser(int idx));
-	//! \see core::IDataManager::getInitializedParser
-	UTILS_DEPRECATED(virtual core::IParserPtr getInitializedParser(const std::string& filter));
-	//! \return Liczba parserów aktualnie za³adowanej próby pomiarowej.
-	UTILS_DEPRECATED(virtual int getNumParsers() const);
-
-
-	//! Szuka na dysku lokalnych prób pomiarowych.
-	UTILS_DEPRECATED(virtual void findLocalTrials());
 	//! Szuka na dysku zasobów.
 	virtual void findResources(const std::string& resourcesPath);
-	//! \param trial do za³adowania, czyli inicjalizacja parserów
-	UTILS_DEPRECATED(virtual void loadTrial(const LocalTrial& trial));
 	//! \param files lista do za³adowania, inicjalizacja parserów
-
 	virtual void loadFiles(const std::vector<Path>& files) {
 		core::ObjectWrapper::Types t;
 		loadFiles(files, t);
@@ -277,20 +229,8 @@ public:
 	virtual void addFiles(const std::vector<Path>& files);
 	virtual void removeFiles(const std::vector<Path>& files);
 
-	UTILS_DEPRECATED(virtual const LocalTrial& getLocalTrial(int i) const);
-	UTILS_DEPRECATED(virtual int getLocalTrialsCount() const);
-
-	//! \param Za³aduj i-t¹ próbê pomiarow¹ z listy triali.
-	UTILS_DEPRECATED(virtual void loadLocalTrial(int i));
-	//! \param path Za³aduj próbê pomiarow¹ z podanej œcie¿ki.
-	UTILS_DEPRECATED(virtual void loadLocalTrial(const Path& path));
-
-	//! Czyœci informacje o lokalnych próbach pomiarowych.
-	UTILS_DEPRECATED(void clearLocalTrials());
 	//! Czyszczenie po parserach.
 	void clearParsers();
-	//! Czyœci informacje o aktualnej próbie pomiarowej.
-	UTILS_DEPRECATED(void clearCurrentTrial());
 
 private:
 	//! Mapuje obiekty 

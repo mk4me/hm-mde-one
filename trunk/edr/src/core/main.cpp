@@ -15,10 +15,6 @@
 #include "DataSourceManager.h"
 #include <utils/Push.h>
 
-//FOR TESTS ONLY
-#include "EDRDockWidget.h"
-#include "TestEDRWidget.h"
-
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
 #endif
@@ -27,12 +23,8 @@ using namespace core;
 
 CORE_DEFINE_INSTANCE_INFO;
 
-
-
 int main(int argc, char *argv[])
 {
-    
-
     osg::ArgumentParser arguments(&argc,argv);
     arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
     arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" example usage of EDR.");
@@ -68,21 +60,21 @@ int main(int argc, char *argv[])
 	    EDRConfig::setPaths(edrConfig);
 		boost::filesystem::path p = edrConfig.getResourcesPath() / "settings" / "log.ini";
 		EDRLog logger(p.string());
-        //LogInitializer logger( p.string().c_str());
-
-		
-
 
         PluginLoader pluginLoader;
+
+        // UWAGA - obiekty udostepniane klientom poprzez interfejsy musz¹ mieæ przywracane (zerowane) wartoœci na tym samym
+        // poziomie na którym zosta³y stworzone. Dlatego tutaj mamy Push dla logera i konfiguracji.
+        // Dodatkowo trzeba pamiêtaæ o kolejnoœci niszczenia obiektów po zakoñczeniu obszaru ich ¿ycia - jest to odwrotna kolejnoœæ
+        // w stosunku do tej w jakiej zosta³y zdeklarowane w kodzie.
+        utils::Push<IPath*> pushedDI(__instanceInfo.pathInterface, &edrConfig);
+        utils::Push<ILog*> pushedIL(__instanceInfo.logInterface, &logger);
+
         {
             DataManager dataManager;
-
-            
-
             VisualizerManager visualizerManager;
             DataProcessorManager dataProcessorManager;
             DataSourceManager dataSourceManager;
-
             ServiceManager serviceManager;
             
 
@@ -92,25 +84,14 @@ int main(int argc, char *argv[])
             // zale¿eæ od managerów, a wówczas wskaŸniki wskazywa³yby œmieci
             // podobnie ¿ywotnoœæ do³adowanych bibliotek musi przekraczaæ zakoñczenie
             // siê destruktora
-			utils::Push<IPath*> pushedDI(__instanceInfo.pathInterface, &edrConfig);
             utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
             utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
             utils::Push<IDataProcessorManager*> pushedDPM(__instanceInfo.dataProcessorManager, &dataProcessorManager);
             utils::Push<IDataSourceManager*> pushedDSM(__instanceInfo.dataSourceManager, &dataSourceManager);
             utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
-			utils::Push<ILog*> pushedIL(__instanceInfo.logInterface, &logger);
             
             {
                 ToolboxMain window(&pluginLoader);
-
-                //FOR TESTS ONLY
-                //EDRDockWidget * widget = new EDRDockWidget();
-                ////widget->setWidget(test);
-
-                //window.addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, widget);
-
-                //TestEDRWidget * test = new TestEDRWidget(qobject_cast<EDRTitleBar*>(widget->titleBarWidget()));
-                //widget->getInnerWidget()->layoutContent->addWidget(test);
 
                 logger.setConsoleWidget( window.getConsole() );
                 window.show();
@@ -122,8 +103,6 @@ int main(int argc, char *argv[])
                 result = application.exec();
                 logger.setConsoleWidget(NULL);
             }
-
-            serviceManager.finalizeServices();
         }
     }
     return result;

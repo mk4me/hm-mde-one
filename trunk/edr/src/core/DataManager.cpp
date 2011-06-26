@@ -10,7 +10,6 @@
 #include <list>
 #include <boost/regex.hpp>
 #include <utils/Push.h>
-#include <qt/qapplication.h>
 
 using namespace core;
 using namespace std;
@@ -161,7 +160,6 @@ struct DataManager::FindByRelativePathPredicate {
 DataManager::DataManager()
 {
 	clear();
-	loadTrialData = false;
 }
 
 DataManager::~DataManager()
@@ -171,18 +169,7 @@ DataManager::~DataManager()
 
 void DataManager::clear()
 {
-	clearLocalTrials();
 	clearParsers();
-}
-
-const core::IDataManager::LocalTrial& DataManager::getLocalTrial(int i) const
-{
-	return localTrialsList[i].second;
-}
-
-int DataManager::getLocalTrialsCount() const
-{
-	return localTrialsList.size();
 }
 
 const std::string& DataManager::getApplicationSkinsFilePath(int i)
@@ -193,16 +180,6 @@ const std::string& DataManager::getApplicationSkinsFilePath(int i)
 int DataManager::getApplicationSkinsFilePathCount()
 {
 	return applicationSkinsPaths.size();
-}
-
-const boost::filesystem::path& DataManager::getTrialsPath() const
-{
-	return trialsPath;
-}
-
-void DataManager::setTrialsPath(const IDataManager::Path& trials)
-{
-	trialsPath = trials;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -284,76 +261,6 @@ core::IParserConstPtr DataManager::getRegisteredParser( int idx ) const
 	return const_pointer_cast<const IParser>(it->second);
 }
 
-
-int DataManager::getNumParsers() const
-{
-	return static_cast<int>(currentParsers.size());
-}
-
-
-IParserPtr DataManager::getParser(int idx)
-{
-	UTILS_ASSERT(idx < getNumParsers());
-	ParserPtr& parser = currentParsers[idx];
-	return parser->getParser();
-}
-
-IParserPtr DataManager::getInitializedParser( int idx )
-{
-	UTILS_ASSERT(idx < getNumParsers());
-	ParserPtr& parser = currentParsers[idx];
-	if ( !parser->isUsed() ) {
-		LOG_DEBUG("Loading parser for file: " << parser->getPath());
-		if ( parser->tryParse(this) ) {
-			return parser->getParser();
-		}
-	} else if ( parser->isParsed() ) {
-		return parser->getParser();
-	}
-	// musia³ byæ b³¹d
-	return IParserPtr();
-}
-
-// TODO: powinno byæ zwracanie listy
-IParserPtr DataManager::getParser(const std::string& filter)
-{
-	throw std::runtime_error("Not supported.");
-
-	FindByFilenamePredicate predicate(filter);
-	ParsersList::iterator it = std::find_if( currentParsers.begin(), currentParsers.end(), predicate );
-	ParsersList::iterator last = currentParsers.end();
-	while ( it != currentParsers.end() ) {
-		return (*it)->getParser();
-		//it = std::find_if( it+1, currentParsers.end(), predicate );
-	}
-	return IParserPtr();
-}
-
-IParserPtr DataManager::getInitializedParser( const std::string& filter )
-{
-	throw std::runtime_error("Not supported.");
-}
-
-void DataManager::findLocalTrials()
-{
-	localTrialsList.clear();
-	try {
-		//przeszukujemy liste prob pomiarowych, nie plikow
-		std::vector<std::string> tempPaths = Filesystem::listSubdirectories(trialsPath.string());
-		BOOST_FOREACH(std::string path, tempPaths)
-		{
-			try
-			{
-				LocalTrial trial = findLocalTrialsPaths(path);
-				localTrialsList.push_back(std::make_pair<IDataManager::Path, IDataManager::LocalTrial>(IDataManager::Path(path), trial));
-			}
-			catch(std::exception& e) { }
-		}
-	} catch(std::exception& e) {
-		LOG_INFO("Finding local trials exception: " << e.what());
-	}
-}
-
 void DataManager::findResources(const std::string& resourcesPath)
 {
 	resourcesPaths.clear();
@@ -376,26 +283,6 @@ void DataManager::findResources(const std::string& resourcesPath)
 	}
 }
 
-void DataManager::loadLocalTrial(int i)
-{
-	//ladowanie parserow dla i-tego triala z listy
-	loadTrial(localTrialsList[i].second);
-}
-
-void DataManager::loadLocalTrial(const core::IDataManager::Path& path)
-{
-	for(LocalTrialsList::iterator it = localTrialsList.begin(); it != localTrialsList.end(); ++it)
-	{
-		if(it->first == path)
-		{
-			loadTrial(it->second);
-			return;
-		}
-	}
-	LOG_WARNING("No such trial in local resources.\n");
-	loadTrial(findLocalTrialsPaths(path));
-}
-
 IDataManager::LocalTrial DataManager::findLocalTrialsPaths(const core::IDataManager::Path& path)
 {
 	core::IDataManager::LocalTrial trial;
@@ -413,17 +300,6 @@ IDataManager::LocalTrial DataManager::findLocalTrialsPaths(const core::IDataMana
 		trial.push_back(path);
 	}
 	return trial;
-}
-
-void DataManager::loadTrial(const core::IDataManager::LocalTrial& trial)
-{
-	clearCurrentTrial();
-	loadTrialData = true;
-	//proba zaladowania parsera plikow c3d jesli takowy plik i parser istnieje
-	BOOST_FOREACH(boost::filesystem::path path, trial)
-	{
-		createParsers(path, false);
-	}
 }
 
 std::vector<core::ObjectWrapperPtr> DataManager::getAvaiableObjectsForFiles(const std::vector<Path> & paths)
@@ -463,8 +339,6 @@ std::vector<core::ObjectWrapperPtr> DataManager::getAvaiableObjectsForFiles(cons
 
 void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, const core::ObjectWrapper::Types& types, std::vector<core::ObjectWrapperPtr> & objects)
 {
-	loadTrialData = true;
-
 	std::set<Path> allFiles(files.begin(), files.end());
 
 	// usuwamy zbêdne obiekty i parsery
@@ -499,7 +373,6 @@ void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, 
 
 void DataManager::addFiles( const std::vector<Path>& files )
 {
-	loadTrialData = true;
 	BOOST_FOREACH(boost::filesystem::path path, files) {
 		createParsers(path, false);
 	}
@@ -507,8 +380,6 @@ void DataManager::addFiles( const std::vector<Path>& files )
 
 void DataManager::removeFiles( const std::vector<Path>& files )
 {
-	loadTrialData = true;
-
 	std::set<Path> filesToRemove(files.begin(), files.end());
 
 	// szukamy parserów dla zadanych plików
@@ -544,37 +415,10 @@ void DataManager::loadResources()
 	}
 }
 
-void DataManager::clearLocalTrials()
-{
-	localTrialsList.clear();
-	clearCurrentTrial();
-}
-
 void DataManager::clearParsers()
 {
 	currentParsers.clear();
 	currentObjects.clear();
-}
-
-void DataManager::clearCurrentTrial()
-{
-	// najpierw usuwamy te obiekty, które pochodz¹ z parserów, które nie s¹ przypisane do zasobów
-	for ( ObjectsByType::iterator it = currentObjects.begin(); it != currentObjects.end(); ) {
-		ObjectsMapEntry& entry = it->second;
-		if ( !entry.parser->isResource() ) {
-			// usuwamy wpis
-			ObjectsByType::iterator toErase = it++;
-			currentObjects.erase(toErase);
-		} else {
-			++it;
-		}
-	}
-
-	// teraz usuwamy same parsery
-	ParsersList::iterator last = std::remove_if( currentParsers.begin(), currentParsers.end(), 
-		[](const ParserPtr& ptr) { return !ptr->isResource(); } 
-	);
-	currentParsers.erase( last, currentParsers.end() );
 }
 
 bool DataManager::isExtensionSupported( const std::string& extension ) const

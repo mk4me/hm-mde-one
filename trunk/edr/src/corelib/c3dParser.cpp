@@ -4,7 +4,7 @@
 #include <plugins/chart/MIPSreader.h>
 #include <stdio.h>
 #include <iostream>
-
+#include <plugins/chart/ProcessorReader.h>
 ////////////////////////
 
 c3dParser::c3dParser(){

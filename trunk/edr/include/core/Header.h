@@ -2,7 +2,6 @@
 #define _MARKERHEADER_DEF_
 
 #include <string>
-//#include <plugins/chart/ProcessorReader.h>
 #include <iostream>
 #include <fstream>
 #include <bitset>

@@ -15,13 +15,12 @@ TimelineService::TimelineService()
 
 TimelineService::~TimelineService()
 {
-    controller->pause();
     delete controller;
 }
 
 void TimelineService::finalize()
 {
-    
+    controller->pause();
 }
 
 QWidget* TimelineService::getWidget(std::vector<QObject*>& actions)

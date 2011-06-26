@@ -12,7 +12,7 @@
 //! Typ unikalnego identyfikatora
 typedef boost::uuids::uuid UniqueID;
 
-//! Klasa generuj¹ca unilane identyfikatory dla zadanych ci¹gów znaków
+//! Klasa generuj¹ca unikalne identyfikatory dla zadanych ci¹gów znaków
 //! zapewnia jednoznaczne przyporz¹dkowanie ci¹g znaków <-> id,
 //! dla tego samego ci¹gu znaków zwraca ten sam id. Wymagane jest wiêc dostarczanie z zewn¹trz
 //! unikalnych ci¹gów znaków - polecamy jakiœ GUID generator (np. z Visual Studio)

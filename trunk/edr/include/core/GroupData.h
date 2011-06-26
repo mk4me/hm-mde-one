@@ -2,7 +2,6 @@
 #include <iostream>
 #include <map>
 #include <core/Parameter.h>
-//#include <plugins/chart/ProcessorReader.h>
 
 class ProcessorReader;
 

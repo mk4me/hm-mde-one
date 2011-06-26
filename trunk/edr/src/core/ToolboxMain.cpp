@@ -177,6 +177,8 @@ void ToolboxMain::writeSettings()
 
 void ToolboxMain::closeEvent(QCloseEvent* event)
 {
+    //¿¹danie od³¹czenia siê serwisów od widgetów i elementów UI oraz innych serwisów czy zasobów aplikacji
+    ServiceManager::getInstance()->finalizeServices();
     writeSettings();
     QMainWindow::closeEvent(event);
 }
@@ -268,9 +270,9 @@ osg::ref_ptr<osg::Node> ToolboxMain::createGrid()
 
 void ToolboxMain::updateServices()
 {
-	if(DataManager::getInstance()->isLoadLocalTrialData())	{
+	//if(DataManager::getInstance()->isLoadLocalTrialData())	{
 		loadData();
-	}
+	//}
     widgetConsole->flushQueue();
     if ( updateEnabled ) {
         ServiceManager::getInstance()->updatePass();
@@ -732,7 +734,10 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
 void ToolboxMain::openFile( const std::string& path )
 {
     LOG_INFO("Opening file: " << path);
-	DataManager::getInstance()->loadLocalTrial(path);
+	//DataManager::getInstance()->loadLocalTrial(path);
+    std::vector<core::IDataManager::Path> paths;
+    paths.push_back(path);
+    DataManager::getInstance()->loadFiles(paths);
 }
 
 void ToolboxMain::loadData()
@@ -740,7 +745,7 @@ void ToolboxMain::loadData()
 	ServiceManager::getInstance()->loadDataPass(DataManager::getInstance());
 
 	// manage scene
-	DataManager::getInstance()->setLoadLocalTrialData(false);
+	//DataManager::getInstance()->setLoadLocalTrialData(false);
 }
 
 void ToolboxMain::paintEvent( QPaintEvent* event )

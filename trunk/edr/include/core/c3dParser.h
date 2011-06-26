@@ -4,7 +4,6 @@
 #include <core/Header.h>
 #include <core/Parameters.h>
 #include <core/Data.h>
-#include <plugins/chart/ProcessorReader.h>
 #include <core/C3D_Data.h>
 
 #include <string>
@@ -12,6 +11,8 @@
 #include <iostream>
 
 ///////////////////////////////////////////
+
+class ProcessorReader;
 
 /*
 
