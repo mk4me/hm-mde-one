@@ -8,7 +8,7 @@ namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 QOsgContextWidget::QOsgContextWidget( QWidget * parent, const osg::GraphicsContext::Traits* traits /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :
-osgQt::GraphWidget( translateFormat( traits ? *traits : osg::GraphicsContext::Traits(osg::DisplaySettings::instance()) ), parent, NULL, f )
+osgQt::GLWidget( translateFormat( traits ? *traits : osg::GraphicsContext::Traits(osg::DisplaySettings::instance()) ), parent, NULL, f )
 {
     osg::GraphicsContext::Traits* t = new osg::GraphicsContext::Traits;
     *t = traits ? *traits : osg::GraphicsContext::Traits(osg::DisplaySettings::instance());
