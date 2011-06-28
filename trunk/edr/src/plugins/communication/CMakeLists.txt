@@ -16,6 +16,7 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
+	${HEADER_PATH}/DateTime.h
 	${HEADER_PATH}/BasicQueriesService.h
 	${HEADER_PATH}/BasicUpdatesService.h
 	${HEADER_PATH}/CommunicationManager.h
@@ -37,7 +38,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-#	main.cpp
+	DateTime.cpp
 	BasicQueriesService.cpp
 	BasicUpdatesService.cpp
 	CommunicationManager.cpp

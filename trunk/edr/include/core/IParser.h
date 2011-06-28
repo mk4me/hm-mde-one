@@ -5,7 +5,7 @@
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
 #include <core/ObjectWrapper.h>
-#include <boost/filesystem.hpp>
+#include <core/IPath.h>
 #include <core/PluginCommon.h>
 
 namespace core
@@ -28,7 +28,7 @@ namespace core
         //! Przyporz¹dkowanie parsera do konkretnego pliku.
         //! Na ka¿dej instancji parsera ta metoda wywo³ywana jest maksymalnie jeden raz.
         //! \param path Œcie¿ka do pliku.
-        virtual void parseFile(IDataManager* dataManager, const boost::filesystem::path& path) = 0;
+        virtual void parseFile(IDataManager* dataManager, const Filesystem::Path& path) = 0;
         //! \retrun Lista rozszerzeñ, które parser obs³uguje. Musz¹ byæ oddzielone œrednikiem.
         //!         Obs³ugiwany format rozszerzenia: [ { *. | . } ]ext
         virtual std::string getSupportedExtensions() const = 0;

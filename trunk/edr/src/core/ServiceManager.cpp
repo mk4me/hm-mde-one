@@ -85,6 +85,8 @@ void ServiceManager::loadDataPass(core::IDataManager* dataManager)
         }
         it++;
     }
+
+    dataChanged = false;
 }
 
 int ServiceManager::getNumServices() const

@@ -8,28 +8,30 @@
 // adres podawany do oczytu klucza powinien byc automatycznie konwertowany.
 #define KEY_PATH TEXT("Software\\PJWSTK\\EDR")
 #endif
+
+
 namespace core 
 {
 
-const IPath::Path& EDRConfig::getApplicationDataPath() const
+const Filesystem::Path& EDRConfig::getApplicationDataPath() const
 {
 	UTILS_ASSERT(!applicationDataPath.empty(), "Path should be initialized first");
 	return applicationDataPath;
 }
 
-const IPath::Path& EDRConfig::getUserDataPath() const
+const Filesystem::Path& EDRConfig::getUserDataPath() const
 {
 	UTILS_ASSERT(!userDataPath.empty(), "Path should be initialized first");
 	return userDataPath;
 }
 
-const IPath::Path& EDRConfig::getResourcesPath() const
+const Filesystem::Path& EDRConfig::getResourcesPath() const
 {
 	UTILS_ASSERT(!resourcesPath.empty(), "Path should be initialized first");
 	return resourcesPath;
 }
 
-void EDRConfig::setUserDataPath( const IPath::Path& path )
+void EDRConfig::setUserDataPath( const Filesystem::Path& path )
 {
 	UTILS_ASSERT(!path.empty(), "Path should not be empty");
 	//UTILS_ASSERT(!path.is_relative(), "Path should not be relative");
@@ -37,13 +39,13 @@ void EDRConfig::setUserDataPath( const IPath::Path& path )
 	userDataPath = path;
 }
 
-void EDRConfig::setApplicationDataPath( const IPath::Path& path )
+void EDRConfig::setApplicationDataPath( const Filesystem::Path& path )
 {
 	UTILS_ASSERT(!path.empty(), "Path should not be empty");
 	applicationDataPath = path;
 }
 
-void EDRConfig::setResourcesPath(const IPath::Path& path)
+void EDRConfig::setResourcesPath(const Filesystem::Path& path)
 {
 	UTILS_ASSERT(!path.empty(), "Path should not be empty");
 	resourcesPath = path;
@@ -69,7 +71,7 @@ bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 	LPTSTR lpValueName = "ProgramFilesPath";
 	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
 	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		core::IPath::Path p(buffer);
+		core::Filesystem::Path p(buffer);
 		p /= "bin";
 		p /= "resources";
 		directoriesInfo.setResourcesPath(p);
@@ -82,7 +84,7 @@ bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 	dwSize = sizeof(buffer);
 	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
 	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		directoriesInfo.setApplicationDataPath(core::IPath::Path(buffer));
+		directoriesInfo.setApplicationDataPath(core::Filesystem::Path(buffer));
 		RegCloseKey(hKey);
 	} else {
 		return false;
@@ -92,7 +94,7 @@ bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 	dwSize = sizeof(buffer);
 	lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
 	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		directoriesInfo.setUserDataPath(core::IPath::Path(buffer));
+		directoriesInfo.setUserDataPath(core::Filesystem::Path(buffer));
 		RegCloseKey(hKey);
 	} 
 
@@ -104,20 +106,20 @@ bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 
 bool EDRConfig::trySetDefaultPaths( EDRConfig& directoriesInfo )
 {
-	boost::filesystem::path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
+	core::Filesystem::Path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
 	userPath /= "EDR";
 	directoriesInfo.setUserDataPath(userPath);
 
-	boost::filesystem::path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
+	core::Filesystem::Path appDataPath(core::toStdString(QDesktopServices::storageLocation(QDesktopServices::DataLocation)));
 	directoriesInfo.setApplicationDataPath(appDataPath);
 
-	boost::filesystem::path resourcesPath(core::toStdString(QDir::currentPath())); 
+	core::Filesystem::Path resourcesPath(core::toStdString(QDir::currentPath())); 
 	resourcesPath /= "resources";
 	directoriesInfo.setResourcesPath(resourcesPath);
 
-	boost::filesystem::path test2 = boost::filesystem::initial_path();
+	/*core::Filesystem::Path test2 = boost::filesystem::initial_path();
 
-	boost::filesystem::path testPath(toString(QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation)));
+	core::Filesystem::Path testPath(toString(QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation)));*/
 	return true;
 }
 

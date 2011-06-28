@@ -188,11 +188,11 @@ class ScalarChannelStream : public timeline::Stream
 {
 private:
     //! Strumieñ wewnêtrzny.
-    core::C3DAnalogChannelPtr channel;
+    core::ScalarChannelPtr channel;
 
 public:
     //! \param stream Strumieñ wewnêtrzny.
-    ScalarChannelStream(const core::C3DAnalogChannelPtr& channel) : channel(channel)
+    ScalarChannelStream(const core::ScalarChannelPtr& channel) : channel(channel)
     {}
     //! \see Stream::setTime
     virtual void setTime(double time)
@@ -250,8 +250,8 @@ void ChartService::loadData( core::IServiceManager* serviceManager, core::IDataM
         }
         streams.clear();
         // dodanie nowych
-        std::vector<core::C3DAnalogChannelPtr> videoStreams = core::queryDataPtr(dataManager);
-        BOOST_FOREACH(const core::C3DAnalogChannelPtr& stream, videoStreams) {
+        std::vector<core::ScalarChannelPtr> videoStreams = core::queryDataPtr(dataManager);
+        BOOST_FOREACH(const core::ScalarChannelPtr& stream, videoStreams) {
             streams.push_back( timeline::StreamPtr(new ScalarChannelStream(stream)) );
             timelinesrv->addStream( streams.back() );
         }

@@ -83,7 +83,7 @@ const std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string
     filename = filename.substr(filename.rfind("/") + 1, filename.npos);
 
     //utworz foldery do odpowiedniej sciezki i przerzuc tam plik
-    boost::filesystem::path filePath(path);
+    core::Filesystem::Path filePath(path);
     filePath /= filename.substr(0, filename.find("."));
     //filePath.append(filename.substr(0, filename.find(".")));
     try {
@@ -113,13 +113,13 @@ void TransportWSDL_FTPS::abort()
 
 const std::string TransportWSDL_FTPS::getShallowCopy()
 {
-    boost::filesystem::path filename, schema = core::getApplicationDataString("db/schema/shallowcopy.xml");
+    core::Filesystem::Path filename, schema = core::getApplicationDataString("db/schema/shallowcopy.xml");
 
     //sciagnij plik
     filename = wsdl->getShallowCopy();
     ftp->get(filename.string());
     wsdl->downloadComplete(0, filename.string());
-    core::Filesystem::createDirectory(core::getApplicationDataString("db/schema"));
+    core::Filesystem::createDirectory(std::string(core::getApplicationDataString("db/schema")));
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
     core::Filesystem::move(filename.filename().string(), schema.string());
@@ -128,13 +128,13 @@ const std::string TransportWSDL_FTPS::getShallowCopy()
 
 const std::string TransportWSDL_FTPS::getMetadata()
 {
-    boost::filesystem::path filename, schema = core::getApplicationDataString("db/schema/metadata.xml");
+    core::Filesystem::Path filename, schema = core::getApplicationDataString("db/schema/metadata.xml");
 
     //sciagnij plik
     filename = wsdl->getMetadata();
     ftp->get(filename.string());
     wsdl->downloadComplete(0, filename.string());
-    core::Filesystem::createDirectory(core::getApplicationDataString("db/schema"));
+    core::Filesystem::createDirectory(std::string(core::getApplicationDataString("db/schema")));
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
     core::Filesystem::move(filename.filename().string(), schema.string());

@@ -91,19 +91,19 @@ namespace core
     }
 
     //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
-    inline const IDataManager::Path& getResourcesPath()
+    inline const Filesystem::Path& getResourcesPath()
     {
         return getPathInterface()->getResourcesPath();
     }
 
     //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
-    inline const IDataManager::Path& getApplicationDataPath()
+    inline const Filesystem::Path& getApplicationDataPath()
     {
         return getPathInterface()->getApplicationDataPath();
     }
 
     //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
-    inline const IDataManager::Path& getUserDataPath()
+    inline const Filesystem::Path& getUserDataPath()
     {
         return getPathInterface()->getUserDataPath();
     }

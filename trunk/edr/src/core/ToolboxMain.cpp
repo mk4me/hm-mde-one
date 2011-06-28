@@ -16,8 +16,6 @@
 #include <iostream>
 #include <osgGA/TerrainManipulator>
 
-#include <QtCore/QDir>
-
 #include "EDRConsoleWidget.h"
 
 #include "ServiceManager.h"
@@ -35,7 +33,6 @@
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
 #include <functional>
-#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
 #include "Log.h"
@@ -79,8 +76,10 @@ using namespace core;
 CORE_DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 CORE_DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
+Q_DECLARE_METATYPE ( Filesystem::Path );
 
-ToolboxMain::ToolboxMain(core::PluginLoader* pluginLoader) :
+
+ToolboxMain::ToolboxMain(PluginLoader* pluginLoader) :
 QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
 {
     setupUi(this);
@@ -96,12 +95,12 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
 
     registerCoreDataSources();
 
-	using namespace boost::filesystem;
-	path pluginPath = core::getApplicationDataPath() / "plugins";
+	Filesystem::Path pluginPath = getApplicationDataPath() / "plugins";
 	
-	if(exists(pluginPath)) {
-		for_each(directory_iterator(pluginPath), directory_iterator(), [=](path p) {
-			if (is_directory(p)) {
+	if(Filesystem::pathExists(pluginPath) == true) {
+        Filesystem::Iterator endIT;
+		for_each(Filesystem::Iterator(pluginPath), endIT, [=](Filesystem::Path p) {
+			if (Filesystem::isDirectory(p)) {
 				pluginLoader->addPath(p.string());
 			}
 		});
@@ -271,8 +270,9 @@ osg::ref_ptr<osg::Node> ToolboxMain::createGrid()
 void ToolboxMain::updateServices()
 {
 	//if(DataManager::getInstance()->isLoadLocalTrialData())	{
+    if(ServiceManager::getInstance()->dataPassRequired() == true)	{
 		loadData();
-	//}
+	}
     widgetConsole->flushQueue();
     if ( updateEnabled ) {
         ServiceManager::getInstance()->updatePass();
@@ -287,12 +287,12 @@ void ToolboxMain::updateVisualizers()
     }
 }
 
-void ToolboxMain::safeRegisterPlugin(const core::PluginPtr & plugin)
+void ToolboxMain::safeRegisterPlugin(const PluginPtr & plugin)
 {
 
 }
 
-void ToolboxMain::safeRegisterService(const core::IServicePtr & service)
+void ToolboxMain::safeRegisterService(const IServicePtr & service)
 {
     try{
 
@@ -312,7 +312,7 @@ void ToolboxMain::safeRegisterService(const core::IServicePtr & service)
     }
 }
 
-void ToolboxMain::safeRegisterParser(const core::IParserPtr & parser)
+void ToolboxMain::safeRegisterParser(const IParserPtr & parser)
 {
     try{
 
@@ -332,7 +332,7 @@ void ToolboxMain::safeRegisterParser(const core::IParserPtr & parser)
     }
 }
 
-void ToolboxMain::safeRegisterObjectFactory(const core::IObjectWrapperFactoryPtr & factory)
+void ToolboxMain::safeRegisterObjectFactory(const IObjectWrapperFactoryPtr & factory)
 {
     try{
 
@@ -351,7 +351,7 @@ void ToolboxMain::safeRegisterObjectFactory(const core::IObjectWrapperFactoryPtr
     }
 }
 
-void ToolboxMain::safeRegisterVisualizer(const core::IVisualizerPtr & visualizer)
+void ToolboxMain::safeRegisterVisualizer(const IVisualizerPtr & visualizer)
 {
     try{
 
@@ -371,7 +371,7 @@ void ToolboxMain::safeRegisterVisualizer(const core::IVisualizerPtr & visualizer
     }
 }
 
-void ToolboxMain::safeRegisterDataProcessor(const core::IDataProcessorPtr & dataProcessor)
+void ToolboxMain::safeRegisterDataProcessor(const IDataProcessorPtr & dataProcessor)
 {
     try{
 
@@ -391,7 +391,7 @@ void ToolboxMain::safeRegisterDataProcessor(const core::IDataProcessorPtr & data
     }
 }
 
-void ToolboxMain::safeRegisterDataSource(const core::IDataSourcePtr & dataSource)
+void ToolboxMain::safeRegisterDataSource(const IDataSourcePtr & dataSource)
 {
     try{
 
@@ -427,7 +427,7 @@ void ToolboxMain::registerCoreDataSources()
 void ToolboxMain::registerPluginsServices()
 {
     for ( int i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
-        core::PluginPtr plugin = pluginLoader->getPlugin(i);
+        PluginPtr plugin = pluginLoader->getPlugin(i);
         for ( int j = 0; j < plugin->getNumServices(); ++j ) {
             safeRegisterService(plugin->getService(j));
         }
@@ -500,13 +500,18 @@ void ToolboxMain::registerPluginsDataSources()
 void ToolboxMain::onOpen()
 {
     utils::Push<bool> pushed(updateEnabled, false);
-    const QString fileName = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/trials"));
-    if (!fileName.isEmpty()) 
+    Filesystem::Path initPath = getUserDataPath() / "trial";
+    const QString directory = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
+    if (!directory.isEmpty()) 
     {
-        std::string pathVal = toStdString(fileName);
-        const std::string& path = pathVal;
+        Filesystem::Path dirPath(directory.toStdString());
+        Filesystem::Iterator itEnd;
 
-        openFile(path);
+        for( Filesystem::Iterator it(dirPath); it != itEnd; it++){
+            if(Filesystem::isRegularFile(*it) == true){
+                openFile((*it).path().string());
+            }
+        }        
     }
 }
 
@@ -536,7 +541,6 @@ void ToolboxMain::createWorkflow()
     widget->setAllowedAreas(Qt::AllDockWidgetAreas);
 
     QObject::connect( widget, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
-
 
     addDockWidget(Qt::LeftDockWidgetArea, widget);
 }
@@ -734,8 +738,7 @@ void ToolboxMain::onAddMenuItem( const std::string& path, bool checkable, bool i
 void ToolboxMain::openFile( const std::string& path )
 {
     LOG_INFO("Opening file: " << path);
-	//DataManager::getInstance()->loadLocalTrial(path);
-    std::vector<core::IDataManager::Path> paths;
+    std::vector<Filesystem::Path> paths;
     paths.push_back(path);
     DataManager::getInstance()->loadFiles(paths);
 }
@@ -743,9 +746,6 @@ void ToolboxMain::openFile( const std::string& path )
 void ToolboxMain::loadData()
 {
 	ServiceManager::getInstance()->loadDataPass(DataManager::getInstance());
-
-	// manage scene
-	//DataManager::getInstance()->setLoadLocalTrialData(false);
 }
 
 void ToolboxMain::paintEvent( QPaintEvent* event )
@@ -763,9 +763,15 @@ void ToolboxMain::onDockWidgetVisiblityChanged( bool visible )
 void ToolboxMain::onSaveLayout()
 {
     // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
-    QString dir = QDir::currentPath().append("/layouts");
-    if ( QDir(dir).exists() || QDir().mkdir(dir) ) {        
-        const QString fileName = QFileDialog::getSaveFileName(this, 0, dir, "*.layout");
+    Filesystem::Path dir = getPathInterface()->getUserDataPath() / "layouts";
+
+    //jesli nie istnieje spróbuj utworzyæ
+    if(Filesystem::pathExists(dir) == false) {
+        Filesystem::createDirectory(dir);
+    }
+
+    if(Filesystem::pathExists(dir) == true) {        
+        const QString fileName = QFileDialog::getSaveFileName(this, 0, dir.string().c_str(), "*.layout");
         if ( !fileName.isEmpty() ) {
             QSettings settings(fileName, QSettings::IniFormat);
             settings.setValue("Geometry", saveGeometry());
@@ -784,9 +790,9 @@ void ToolboxMain::openLayout( const QString& path )
 void ToolboxMain::onOpenLayout()
 {
     // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
-    QString dir = QDir::currentPath().append("/layouts");        
+    Filesystem::Path dir = getPathInterface()->getUserDataPath() / "layouts";
     utils::Push<bool> pushed(updateEnabled, false);
-    const QString fileName = QFileDialog::getOpenFileName(this, 0, dir, "*.layout");
+    const QString fileName = QFileDialog::getOpenFileName(this, 0, dir.string().c_str(), "*.layout");
     if ( !fileName.isEmpty() ) {
         openLayout(fileName);
     }
@@ -799,9 +805,11 @@ void ToolboxMain::onShowSavedLayouts()
     menuLoad_layout->addAction(actionLayoutOpen);
 
     // layouty wbudowane
-    addLayoutsToMenu(QDir(QDir::currentPath().append("/resources/layouts")));
+    Filesystem::Path dir = getPathInterface()->getResourcesPath() / "layouts";
+    addLayoutsToMenu(dir);
     // layouty zdefiniowane przez u¿ytkownika
-    addLayoutsToMenu(QDir(QDir::currentPath().append("/layouts")));
+    dir = getPathInterface()->getUserDataPath() / "layouts";
+    addLayoutsToMenu(dir);
 }
 
 
@@ -809,20 +817,22 @@ void ToolboxMain::onShowSavedLayouts()
 void ToolboxMain::onLayoutTriggered()
 {
     if ( QAction* action = qobject_cast<QAction*>(QObject::sender()) ) {
-        openLayout( action->data().toString() );
+        openLayout( action->data().value<Filesystem::Path>().string().c_str() );
     }
 }
 
-void ToolboxMain::addLayoutsToMenu( QDir &dir )
+void ToolboxMain::addLayoutsToMenu( const Filesystem::Path &dir )
 {
-    if ( dir.exists() ) {     
-        QStringList files = dir.entryList( QStringList("*.layout"), QDir::Files | QDir::Readable );
-        if ( files.size() ) {
+    if ( Filesystem::pathExists(dir) == true ) {     
+        std::vector<std::string> files = Filesystem::listFiles(dir, false, ".layout");
+        if ( files.empty() == false ) {
             menuLoad_layout->addSeparator();
-            Q_FOREACH(const QString& file, files) {
+            BOOST_FOREACH(const std::string& file, files) {
                 QAction* action = new QAction(menuLoad_layout);
-                action->setText(file);
-                action->setData(QVariant(dir.absoluteFilePath(file)));
+                action->setText(file.c_str());
+                QVariant v;
+                v.setValue(dir / file);
+                action->setData(v);
                 menuLoad_layout->addAction(action);
                 QObject::connect(action, SIGNAL(triggered()), this, SLOT(onLayoutTriggered()));
             }

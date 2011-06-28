@@ -260,7 +260,7 @@ osgWidget::Widget* VideoWidget::createStreamWidget( osg::Image* image, osg::Unif
 {
     UTILS_ASSERT(image);
     // tworzymy kontrolkê
-    StreamOsgWidget* widget = new StreamOsgWidget( boost::filesystem::path(image->getFileName()).filename().string() );
+    StreamOsgWidget* widget = new StreamOsgWidget( core::Filesystem::Path(image->getFileName()).filename().string() );
 
     // ustawienie tekstury
     widget->setImage(image, true, useTextureRect);

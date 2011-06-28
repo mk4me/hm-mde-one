@@ -18,6 +18,7 @@
 #include <core/DataManager.h>
 
 #include "ui_toolboxmaindeffile.h"
+#include <core/Filesystem.h>
 
 class UserInterfaceService;
 class ServiceManager;
@@ -96,7 +97,7 @@ public slots:
     void onOpenLayout();
     void onShowSavedLayouts();
 
-    void addLayoutsToMenu( QDir &dir );
+    void addLayoutsToMenu( const core::Filesystem::Path &dir );
     void onDockWidgetVisiblityChanged(bool visible);
     void onLayoutTriggered();
 

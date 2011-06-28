@@ -61,7 +61,6 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/BaseDataTypes.h
-	${HEADER_PATH}/DateTime.h
 	${HEADER_PATH}/Filesystem.h
 	${HEADER_PATH}/IService.h
 	${HEADER_PATH}/IIdentifiable.h
@@ -85,7 +84,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/Header.h
 	${HEADER_PATH}/Data.h
 	${HEADER_PATH}/ILog.h
-	${HEADER_PATH}/LocalTrial.h
 	${HEADER_PATH}/ObjectWrapper.h
 	${HEADER_PATH}/ObjectWrapperCollection.h
 	${HEADER_PATH}/IObjectSource.h

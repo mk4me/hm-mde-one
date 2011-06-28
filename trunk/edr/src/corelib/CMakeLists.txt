@@ -55,7 +55,6 @@ set(TARGET_SRC
 	c3dParserEx.cpp
 	C3D_Data.cpp
 	ChartData.cpp
-	DateTime.cpp
 	DECreader.cpp
 	Filesystem.cpp
 	GroupData.cpp

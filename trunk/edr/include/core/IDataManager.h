@@ -2,45 +2,33 @@
 #define HEADER_GUARD_CORE_IDATAMANAGER_H__
 
 #include <vector>
-#include <boost/filesystem.hpp>
-#include <boost/type_traits.hpp>
 #include <utils/Utils.h>
+#include <core/Filesystem.h>
+#include <core/IPath.h>
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
-	////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
+    //! Interfejs dostepu do danych i ³adowania danych w aplikacji
 	class IDataManager
 	{
 	public:
-		typedef boost::filesystem::path Path;
+        typedef Filesystem::Path Path;
 		typedef std::vector<Path> LocalTrial;
 		typedef int DataProcessorPtr;
 
 		//! Wirtualny destruktor.
 		virtual ~IDataManager() {};
 
+        //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
+        //! bêda dostepne poprzez DataMangera
 		virtual void addFiles(const std::vector<Path>& files) = 0;
+
+        //! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
 		virtual void removeFiles(const std::vector<Path>& files) = 0;
-
-
-		//! Dodawanie obiektow domenowych z innych zrodel niz parsery
-		//! \param dataProcessor zrodlo danych
-		//! \param objects wektor ze stworzonymi obiektami domenowymi (zrodlo powinno dalej je przechowywac!)
-		virtual void addObjects(const DataProcessorPtr & dataProcessor, const std::vector<ObjectWrapperPtr>& objects) = 0;
-
-		//! Dodawanie obiektu domenowego z innego zrodla niz parser
-		//! \param dataProcessor zrodlo obiektu
-		//! \param object dodawany obiekt (zrodlo powinno dalej go przechowywac)
-		virtual void addObject(const DataProcessorPtr & dataProcessor, const ObjectWrapperPtr & object) = 0;
-
-		//! Wyszukiwanie zasobów na lokalnym dysku.
-		virtual void findResources(const std::string& resourcesPath) = 0;
-
-		//! £adowanie zasobów znalezionych na dysku.
-		virtual void loadResources() = 0;
 
 		//! \param files lista do za³adowania, inicjalizacja parserów
 		virtual void loadFiles(const std::vector<Path>& files) = 0;
@@ -48,20 +36,31 @@ namespace core {
 		//! \param types lista typow, ktore powinny zostac zaladowane
 		virtual void loadFiles(const std::vector<Path>& files, const ObjectWrapper::Types& types) = 0;
 
-		//! Czyœci zasoby i próby pomiarowe.
-		virtual void clear() = 0;
-
-		//! \param type Typ obiektu który chcemy wyszukaæ.
-		//! \param exact Czy wyszukiwaæ te¿ typy pochodne?
-		//! \return Lista obiektów wype³niaj¹cych zadane kryterium.
-		virtual void getObjects(std::vector<ObjectWrapperPtr>& objects, const TypeInfo& type, bool exact = false) = 0;
-
 		//! \return Czy zadane rozszerzenie jest wspierane?
 		virtual bool isExtensionSupported(const std::string& extension) const = 0;
+        
+        // ------------------------- EXPERIMENTAL, DO NO USE -------------------------------
+    
+        //! \param objects Kolekcja obiektów spe³niaj¹cych zadane kryterium. Poprzez ten parametr zwracane s¹ wartoœci.
+		//! \param type Typ obiektu który chcemy wyszukaæ.
+		//! \param exact Czy wyszukiwaæ te¿ typy pochodne?
+		virtual void getObjects(std::vector<ObjectWrapperPtr>& objects, const TypeInfo& type, bool exact = false) = 0;
 
-		virtual ObjectWrapperPtr createWrapper(const TypeInfo& type) = 0;
-		virtual ObjectWrapperCollectionPtr createWrapperCollection(const TypeInfo& type) = 0;
+        //! \param rawPtr Surowy wskaŸnik do obiektu domenowego
+        //! \return ObjectWrapper skojarzony z tym obiektem domenowym, pusty OW jeœli obiekt nie zarejestrowany w DataManager
+        virtual ObjectWrapperPtr getWrapper(void * rawPtr) const = 0;
+    
+        //! \param object ObjectWrapperPtr z nowymi danymi domenowymi wytworzonymi w czasie dzia³ania programu
+        virtual void addExternalData(const ObjectWrapperPtr & object) = 0;
+        
+        //! \param object ObjectWrapperPtr do usuniecia wraz z danymi domenowymi, DataManager juz wiecej tych danych nie zwroci przy zapytaniu pasujacemu ich typowi
+        virtual void removeExternalData(const ObjectWrapperPtr & object) = 0;
 	};
+
+////////////////////////////////////////////////////////////////////////////////
+//              DO NOT USE CODE BELOWE - MIGHT BE CHANGED
+////////////////////////////////////////////////////////////////////////////////
+
 
 	//! \param manager Data manager.
 	//! \param target Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
@@ -159,7 +158,7 @@ namespace core {
 		UTILS_STATIC_ASSERT( false, "Niewlasciwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////
 

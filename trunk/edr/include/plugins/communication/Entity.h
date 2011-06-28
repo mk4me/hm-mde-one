@@ -6,7 +6,7 @@
 #ifndef HEADER_GUARD_COMMUNICATION_ENTITY_H__
 #define HEADER_GUARD_COMMUNICATION_ENTITY_H__
 
-#include <core/DateTime.h>
+#include <plugins/communication/DateTime.h>
 
 namespace communication
 {
@@ -208,7 +208,7 @@ namespace communication
     {
     private:
         communication::ShallowCopy::File file;
-        boost::filesystem::path localPath;
+        core::Filesystem::Path localPath;
         bool isLocal;
     public:
         File() {};
@@ -220,7 +220,7 @@ namespace communication
         {
             this->file = file;
         };
-        void setLocalPath(const boost::filesystem::path& localPath)
+        void setLocalPath(const core::Filesystem::Path& localPath)
         {
             this->localPath = localPath;
         }
@@ -232,7 +232,7 @@ namespace communication
         {
             return file;
         };
-        const boost::filesystem::path& getLocalPath() const
+        const core::Filesystem::Path& getLocalPath() const
         {
             return localPath;
         };

@@ -6,8 +6,6 @@ resources, próby pomiarowe s¹ wyszukiwane i pobierane do trials.
 */
 #ifndef HEADER_GUARD_CORE_DATAMANAGER_H__
 #define HEADER_GUARD_CORE_DATAMANAGER_H__
-#include <boost/filesystem.hpp>
-#include <boost/type_traits.hpp>
 #include <core/IDataManager.h>
 #include <core/IParser.h>
 #include <core/ObjectWrapperFactory.h>
@@ -42,10 +40,10 @@ public:
 		std::map<core::TypeInfo, std::string> possibleTypes;
 	};
 
-	//! Sekwencja lokalnych prób pomiarowych.
-	typedef std::vector<std::pair<IDataManager::Path, LocalTrial> > LocalTrialsList;
 	//! S³ownik rozszerzeñ i ich opisów.
 	typedef std::map<std::string, ExtensionDescription> ExtensionDescriptions;
+
+    typedef core::Filesystem::Path Path;
 
 private:
 	//! Deklaracja wewnêtrznej reprezentacji parsera, obudowauj¹cej core::IParser
@@ -80,9 +78,16 @@ private:
 	typedef std::multimap< core::TypeInfo, ObjectsMapEntry > ObjectsByType;
 	//! Mapa fabryk obiektów.
 	typedef std::map<core::TypeInfo, core::IObjectWrapperFactoryPtr> ObjectFactories;
+    //! Multimapa obiektów z elementów przetwarzaj¹cych
 	typedef std::multimap< core::TypeInfo, std::pair<DataProcessorPtr, core::ObjectWrapperWeakPtr> > ObjectFromProcessors;
     //! Mapa typów i prototypów ich ObjectWrapperów
 	typedef std::map<core::TypeInfo, core::ObjectWrapperConstPtr> RegisteredTypesPrototypes;
+    //! Mapa surowych wskaŸników i odpowiadaj¹cych im ObjectWrapperów
+    typedef std::map<void *, core::ObjectWrapperPtr> RawObjectWrapperMapping;
+    //! Typ opisuj¹cy kolekcjê dancyh wprowadzanych do DataManagera z zewn¹trz
+    typedef std::set<core::ObjectWrapperPtr> ObjectWrapperSet;
+
+    typedef std::map<core::TypeInfo, ObjectWrapperSet> TypedExternalData;
 
 private:
 	//! S³ownik fabryk typów.
@@ -102,9 +107,6 @@ private:
 	//! Lista parserów przypisanych do plików.
 	ParsersList currentParsers;
 
-	//! Sekwencja lokalnych prób pomiarowych.
-	LocalTrialsList localTrialsList;
-
 	//! Lista zasobów.
 	std::vector<std::string> resourcesPaths;
 	//! Lista skórek dla UI
@@ -112,6 +114,13 @@ private:
 
     //! Prototypy ObjecWrapperów zarejestrowanych typów danych
 	RegisteredTypesPrototypes registeredTypesPrototypes;
+
+    //! Mapowanie surowcyh wskaŸników do ObjectWrapperów - u¿ywane przy obs³udze wymiany danych w Workflow
+    RawObjectWrapperMapping rawPointerToObjectWrapper;
+    //! Dane wprowadzane z zewn¹trz do DataManagera (nie przez Parsery)
+    ObjectWrapperSet externalData;
+    //! Dane wprowadzone z zewn¹trz pogrupowane wg typów
+    TypedExternalData groupedExternalData;
 
 protected:
 	//! Pomocnicza metoda, tworzy parsery dla zadanego rozszerzenia. Wspiera dodawanie wielu parserów dla jednego pliku.
@@ -178,17 +187,21 @@ public:
 	//! \return Parser o zadanym indeksie. Parser zawsze bêdzie niezainicjowany.
 	core::IParserConstPtr getRegisteredParser(int idx) const;
 
-	//! PARSUJE PLIK I SPRAWDZA KTORE OBIEKTY/ NIE SA PUSTE!!
-	//! \param extension Rozszerzenie dla ktorego chcemy pobrac mozliwe typy w nim wystepujace
-	//! \return Obiekty domenowe zainicjalizowane przez parser -> ró¿ne od nullptr!!
-	std::vector<core::ObjectWrapperPtr> getAvaiableObjectsForFiles(const std::vector<Path> & paths);
-
 	// core::IDataManager
 public:
+    virtual core::ObjectWrapperPtr getWrapper(void * rawPtr) const;
+
+    //! \param object ObjectWrapperPtr z nowymi danymi domenowymi wytworzonymi w czasie dzia³ania programu
+    virtual void addExternalData(const core::ObjectWrapperPtr & object);
+
+    //! \param object ObjectWrapperPtr do usuniecia wraz z danymi domenowymi, DataManager juz wiecej tych danych nie zwroci przy zapytaniu pasujacemu ich typowi
+    virtual void removeExternalData(const core::ObjectWrapperPtr & object);
+
 	//! Tutaj nastêpuje leniwa inicjalizacja.
 	//! \see core::IDataManager::getObjects
 	virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact = false);
 	virtual void getObjectsFromParsers(std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact = false);
+    virtual void getExternalData(std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact = false);
 	//! \see core::IDataManager::isExtensionSupported
 	virtual bool isExtensionSupported(const std::string& extension) const;
 

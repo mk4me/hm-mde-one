@@ -83,12 +83,12 @@ void CommunicationService::init(core::IServiceManager* serviceManager, core::IDa
     ping();
 }
 
-void CommunicationService::loadFiles(const std::vector<core::IDataManager::Path> files)
+void CommunicationService::loadFiles(const std::vector<core::Filesystem::Path> files)
 {
     model->loadFiles(files);
 }
 
-void CommunicationService::removeFiles(const std::vector<core::IDataManager::Path> files)
+void CommunicationService::removeFiles(const std::vector<core::Filesystem::Path> files)
 {
     model->removeFiles(files);
 }

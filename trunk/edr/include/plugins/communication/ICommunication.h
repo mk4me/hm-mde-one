@@ -40,12 +40,12 @@ public:
 	£adowanie listy plików do edytora.
     @param files lista plików do za³adowania
 	*/
-	virtual void loadFiles(const std::vector<core::IDataManager::Path> files) = 0;
+	virtual void loadFiles(const std::vector<core::Filesystem::Path> files) = 0;
     /**
     Usuwanie listy plików z edytora.
     @param files lista plików do usuniêcia
     */
-    virtual void removeFiles(const std::vector<core::IDataManager::Path> files) = 0;
+    virtual void removeFiles(const std::vector<core::Filesystem::Path> files) = 0;
 	/**
 	Pingowanie serwera.
 	*/

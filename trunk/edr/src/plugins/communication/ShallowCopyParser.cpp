@@ -12,7 +12,7 @@ ShallowCopyParser::~ShallowCopyParser()
 {
 }
 
-void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path)
+void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path)
 {
     this->path = path;
 

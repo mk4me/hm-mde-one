@@ -61,7 +61,7 @@ public:
 
     virtual ~C3DParser();
     
-    virtual void parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path);
+    virtual void parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path);
 
     virtual core::IParser* create();
 

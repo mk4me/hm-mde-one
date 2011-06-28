@@ -34,6 +34,8 @@ private:
     osg::Timer_t serviceUpdateTime;
     //! Pomocniczy wskaŸnik
     void* updateMarker;
+    //! Chwilowy fix dla timeline - informacja czy pojawi³y siê nowe dane
+    bool dataChanged;
 
 public:
     ServiceManager(void);
@@ -43,6 +45,18 @@ public:
     static ServiceManager* getInstance()
     {
         return static_cast<ServiceManager*>(core::getServiceManager());
+    }
+
+    //! Chwilowy fix dla timeline - informacja czy pojawi³y siê nowe dane
+    bool dataPassRequired() const
+    {
+        return dataChanged;
+    }
+
+    //! Chwilowy fix dla timeline - informacja czy pojawi³y siê nowe dane
+    void setDataPassRequired(bool required)
+    {
+        dataChanged = required;
     }
 
     //! Ustawia dane dla wszystkich us³ug.

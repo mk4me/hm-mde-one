@@ -21,7 +21,8 @@ LocalDataSourceWidget::~LocalDataSourceWidget()
 
 void LocalDataSourceWidget::onOpen()
 {
-    QString path = QFileDialog::getExistingDirectory(this, 0, QDir::currentPath().append("/trials"));
+    core::Filesystem::Path initPath = core::getUserDataPath() / "trial";
+    QString path = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
     if (!path.isEmpty()) 
     {
         lineEdit->setText(path);
@@ -41,16 +42,17 @@ void LocalDataSourceWidget::onEdit(const QString & text)
         data.swap(LocalDataSource::Data());
         checkBoxToTypeMapping.swap(std::map<QCheckBox*, core::TypeInfo>());
 
-        boost::filesystem::path p(text.toStdString());
-        if(boost::filesystem::exists(p) == true){
-            if(boost::filesystem::is_directory(p) == true){
-                std::vector<boost::filesystem::path> files;
-                boost::filesystem::directory_iterator it(p);
-                
+        core::Filesystem::Path p(text.toStdString());
+        if(core::Filesystem::pathExists(p) == true){
+            if(core::Filesystem::isDirectory(p) == true){
+                std::vector<core::Filesystem::Path> files;
+                core::Filesystem::Iterator it(p);
+                core::Filesystem::Iterator endIT;
+
                 DataManager* dataManager = DataManager::getInstance();
 
-                for( ; it != boost::filesystem::directory_iterator(); it++){
-                    if(boost::filesystem::is_regular_file((*it).path()) == true && dataManager->isExtensionSupported((*it).path().extension().string()) == true){
+                for( ; it != endIT; it++){
+                    if(core::Filesystem::isRegularFile((*it).path()) == true && dataManager->isExtensionSupported((*it).path().extension().string()) == true){
                         files.push_back((*it).path());
                     }
                 }

@@ -115,12 +115,12 @@ public:
     Metoda z interfejsu ICommunication. £adowanie listy plików do edytora.
     @param files lista plików do za³adowania
     */
-    virtual void loadFiles(const std::vector<core::IDataManager::Path> files);
+    virtual void loadFiles(const std::vector<core::Filesystem::Path> files);
     /**
     Metoda z interfejsu ICommunication. Usuwanie listy plików z edytora.
     @param files lista plików do usuniêcia
     */
-    virtual void removeFiles(const std::vector<core::IDataManager::Path> files);
+    virtual void removeFiles(const std::vector<core::Filesystem::Path> files);
     /**
     Metoda z interfejsu ICommunication. Przerwanie pobierania pliku lub triala.
     */

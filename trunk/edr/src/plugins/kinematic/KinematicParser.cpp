@@ -1,6 +1,6 @@
 #include "PCH.h"
+#include <core/Filesystem.h>
 #include "KinematicParser.h"
-#include <boost/filesystem.hpp>
 #include <plugins/kinematic/Wrappers.h>
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/SkeletalParsers.h>
@@ -11,7 +11,6 @@
 #include "ISchemeDrawer.h"
 
 using namespace kinematic;
-using namespace boost::filesystem;
 
 KinematicParser::KinematicParser()
 {
@@ -26,12 +25,12 @@ KinematicParser::~KinematicParser()
 {
 }
 
-void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path)
+void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path)
 {
     SkeletalModelPtr modelPtr(new SkeletalModel);
     bool fromC3D = false;
     
-    if(extension(path) == ".amc") {
+    if(core::Filesystem::fileExtension(path).compare(".amc") == 0) {
         AmcParser amc;
         AsfParser asf;
         std::string amcFilename = path.string();
@@ -39,19 +38,20 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const boost::fi
         asfFilename += "asf";
         asf.parse(modelPtr, asfFilename);
         amc.parse(modelPtr, amcFilename);
-    } else if (extension(path) == ".bvh")  {
+    } else if (core::Filesystem::fileExtension(path).compare(".bvh") == 0)  {
         BvhParser bvh;
         bvh.parse(modelPtr, path.string());
-    } else if (extension(path) == ".c3d") {
+    } else if (core::Filesystem::fileExtension(path).compare(".c3d") == 0) {
         fromC3D = true;
 
         // hack - trzeba to jakos sprytniej rozwiazac! o_O
-        boost::filesystem::path p = path.parent_path();
-        if (is_directory(p)) {
+        core::Filesystem::Path p = path.parent_path();
+        if (core::Filesystem::isDirectory(p) == true) {
             bool hasSkeletonFile = false;
-            for (auto it = directory_iterator(p); it != directory_iterator(); it++) {
 
-                std::string ext = extension(*it);
+            for (auto it = core::Filesystem::Iterator(p); it != core::Filesystem::Iterator(); it++) {
+
+                std::string ext = core::Filesystem::fileExtension(*it);
                 if (ext == ".amc" || ext == ".asf" || ext == ".bvh") {
                     hasSkeletonFile = true;
                     break;

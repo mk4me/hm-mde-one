@@ -37,7 +37,7 @@ C3DParser::~C3DParser()
 {
 }
 
-void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const boost::filesystem::path& path)
+void C3DParser::parseFile(core::IDataManager* /*dataManager*/, const core::Filesystem::Path& path)
 {
     // parsowanie pliku
     c3dParser parser;

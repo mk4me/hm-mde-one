@@ -50,14 +50,14 @@ namespace core
             void addObject(const ObjectWrapperPtr & object)
             {
                 UTILS_ASSERT((collection != nullptr), "Bledna kolekcja w proxy dla wejscia");
-                return collection->addObject(object);
+                collection->addObject(object);
             }
 
             //! \param object ObjectWrapperPtr z obiektem domenowym dodawany do kolekcji
             void addObject(const ObjectWrapperConstPtr & object)
             {
                 UTILS_ASSERT((collection != nullptr), "Bledna kolekcja w proxy dla wejscia");
-                return collection->addObject(object);
+                collection->addObject(object);
             }
 
             //! Wzorzec metody addObject akceptuj¹cy smart pointery do typów domenowych. Wewnêtrznie opakowuje dane w odpowiedni ObjectWrapperPtr i dodaje do kolekcji
@@ -68,7 +68,7 @@ namespace core
 
                 ObjectWrapperPtr obj = __setObjectPointerResolver(object, boost::is_pointer<T>());
 
-                return collection->addObject(obj);
+                collection->addObject(obj);
             }
 
         private:
@@ -98,10 +98,22 @@ namespace core
             {
                 // je¿eli tutaj jest b³¹d oznacza to, ¿e przekazany typ nie jest ani POD, ani inteligentnym wskaŸnikiem.
                 typedef typename SmartPtr::element_type Type;
-                //auto wrapper = ObjectWrapper::create<Type>();
-                auto wrapper = ObjectWrapper::create<SmartPtr::element_type>();
-                wrapper->set(object);
-                return wrapper;
+                
+                //mechanizm ograniczaj¹cy tworzenie wielu niezale¿nych ObjectWrapperów dla tych samych danych
+                core::ObjectWrapperPtr objectWrapper = core::getDataManager()->getWrapper(&*object);
+
+                if(objectWrapper == nullptr){
+                    //skoro nie znaleziono to znaczy ¿e jest to nowy obiekt i mo¿na go opakowaæ ca³kowicie nowym ObjectWrapperem
+                    objectWrapper = ObjectWrapper::create<Type>();
+                    objectWrapper->set(object);
+
+                    //TODO
+                    //na potrzeby aktualnego timelina!! Potem do zmiany
+                    //dodajemy dane do DataManagera!!
+                    core::getDataManager()->addExternalData(objectWrapper);
+                }
+                
+                return objectWrapper;
             }
 
         private:

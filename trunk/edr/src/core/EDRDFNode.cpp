@@ -24,7 +24,14 @@ void EDRDFNode::configure()
 {
     QWidget* confWidget = workflowItem->getConfigurationWidget();
     if(confWidget != nullptr){
-        //TODO
+        QDialog dialog;
+        dialog.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        QVBoxLayout * layout = new QVBoxLayout();
+        layout->addWidget(confWidget);
+        dialog.setLayout(layout);
+        dialog.exec();
+        layout->removeWidget(confWidget);
+        delete confWidget;
     }
 }
 

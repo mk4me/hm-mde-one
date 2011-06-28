@@ -15,7 +15,7 @@ public:
 
     virtual ~ShallowCopyParser();
     
-    virtual void parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path);
+    virtual void parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path);
 
     virtual IParser* create();
 
@@ -26,7 +26,7 @@ public:
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 
 private:
-    boost::filesystem::path path;
+    core::Filesystem::Path path;
     core::ObjectWrapperPtr object;
 };
 

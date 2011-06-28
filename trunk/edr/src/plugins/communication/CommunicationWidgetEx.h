@@ -424,7 +424,7 @@ private:
     Za³aduj pliki do aplikacji.
     @param files lista plików do za³adowania po filtracji.
     */
-    void loadFiles(const std::vector<core::IDataManager::Path>& files);
+    void loadFiles(const std::vector<core::Filesystem::Path>& files);
     /**
     Pobranie próby pomiarowej z serwera.
     @param trialID id encji trialowej do pobrania.
@@ -479,6 +479,6 @@ private:
     QTreeWidget* currentView;
     /**
     */
-    std::vector<core::IDataManager::Path> listTrialFiles(bool mocap, bool emg, bool grf, bool videos);
+    std::vector<core::Filesystem::Path> listTrialFiles(bool mocap, bool emg, bool grf, bool videos);
 };
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGETEX_H__

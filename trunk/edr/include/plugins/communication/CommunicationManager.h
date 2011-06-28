@@ -128,12 +128,12 @@ namespace communication
         Metoda ³aduje do edytora listê plików.
         @param files lista plików do za³adowania
         */
-        void loadFiles(const std::vector<core::IDataManager::Path> files);
+        void loadFiles(const std::vector<core::Filesystem::Path> files);
         /**
         Usuwanie listy plików z edytora.
         @param files lista plików do usuniêcia
         */
-        void removeFiles(const std::vector<core::IDataManager::Path> files);
+        void removeFiles(const std::vector<core::Filesystem::Path> files);
         /**
         Ustala stan w jakim znajduje siê Communication Service.
         @param state stan jaki ustaliæ jako aktualny dla CS
@@ -284,7 +284,7 @@ namespace communication
         */
         static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
 
-        core::IDataManager::LocalTrial findLocalTrialsPaths(const core::IDataManager::Path& path);
+        core::IDataManager::LocalTrial findLocalTrialsPaths(const core::Filesystem::Path& path);
     };
 }
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

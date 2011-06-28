@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_CORE__IDIRECTORIESINFO_H__
 #define HEADER_GUARD_CORE__IDIRECTORIESINFO_H__
 
-#include <boost/filesystem.hpp>
+#include <core/Filesystem.h>
 
 namespace core {
 
@@ -18,18 +18,15 @@ namespace core {
 class IPath
 {
 public:
-    //! Typ reprezentacji ścieżek
-	typedef boost::filesystem::path Path;
-public:
 	virtual ~IPath() {}
 
 public:
 	//! \return Zwraca pelna sciezke do folderu "MyDocuments\EDR"
-	virtual const Path& getUserDataPath() const = 0;
+	virtual const Filesystem::Path& getUserDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu "ApplicationData\EDR"
-	virtual const Path& getApplicationDataPath() const = 0;
+	virtual const Filesystem::Path& getApplicationDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
-	virtual const Path& getResourcesPath() const = 0;
+	virtual const Filesystem::Path& getResourcesPath() const = 0;
 };
 
 }

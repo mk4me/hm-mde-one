@@ -50,11 +50,11 @@ CommunicationManager::CommunicationManager()
     queryManager->setBasicUpdatesServiceUri("");
 
     //na razie recznie wpisane sciezki
-    boost::filesystem::path pathS = core::getApplicationDataString("db/schema/shallowcopy.xml");
-    boost::filesystem::path pathM = core::getApplicationDataString("db/schema/metadata.xml");
+    core::Filesystem::Path pathS = core::getApplicationDataString("db/schema/shallowcopy.xml");
+    core::Filesystem::Path pathM = core::getApplicationDataString("db/schema/metadata.xml");
 
     //sorawdzenie przy uruchomieniu czy mamy pliki plytkiej kopii DB
-    if(boost::filesystem::exists(pathS) && boost::filesystem::exists(pathM)) {
+    if(core::Filesystem::pathExists(pathS) == true && core::Filesystem::pathExists(pathM) == true) {
         readDbSchemas(pathS.string(), pathM.string());
     } else {
         LOG_WARNING("Missing DB data from XML files.");
@@ -110,7 +110,7 @@ void CommunicationManager::loadLocalTrials()
     //TODO: uproszczenie wyszukiwania lokalnych triali
     localTrials.clear();
     //przeszukujemy liste prob pomiarowych, nie plikow
-    std::vector<std::string> tempPaths = core::Filesystem::listSubdirectories(core::getUserDataString("trial"));
+    std::vector<std::string> tempPaths = core::Filesystem::listSubdirectories(std::string(core::getUserDataString("trial")));
     BOOST_FOREACH(std::string path, tempPaths)
     {
         try {
@@ -123,12 +123,12 @@ void CommunicationManager::loadLocalTrials()
     notify();
 }
 
-void CommunicationManager::loadFiles(const std::vector<core::IDataManager::Path> files)
+void CommunicationManager::loadFiles(const std::vector<core::Filesystem::Path> files)
 {
     dataManager->loadFiles(files);
 }
 
-void CommunicationManager::removeFiles(const std::vector<core::IDataManager::Path> files)
+void CommunicationManager::removeFiles(const std::vector<core::Filesystem::Path> files)
 {
     dataManager->removeFiles(files);
 }
@@ -236,7 +236,7 @@ void CommunicationManager::readDbSchemas(const std::string& shallowCopyDir, cons
     //}
 }
 
-core::IDataManager::LocalTrial CommunicationManager::findLocalTrialsPaths(const core::IDataManager::Path& path)
+core::IDataManager::LocalTrial CommunicationManager::findLocalTrialsPaths(const core::Filesystem::Path& path)
 {
     core::IDataManager::LocalTrial trial;
 

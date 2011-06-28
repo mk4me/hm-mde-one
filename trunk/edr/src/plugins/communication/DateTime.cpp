@@ -2,7 +2,7 @@
 @author Marek Daniluk
 */
 
-#include <core/DateTime.h>
+#include <plugins/communication/DateTime.h>
 
 using namespace communication;
 

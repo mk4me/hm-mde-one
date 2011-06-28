@@ -256,7 +256,6 @@ void VisualizerWidget::clearCurrentVisualizer()
     //wyczyœæ menu wyboru Ÿróde³ i kana³ów
     clearSources();
 
-
     //usun wszystkie serie danych wizualizatora
     innerRemoveAllSeries();
 
@@ -302,10 +301,13 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 
             //ustaw dane
             for(int i = 0; i < visualizer->getNumInputs(); i++){
-                //stworz nowy, odswiezajacy dane z DM ObjectWrapperCollection
-                core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), false));
+                bool exact = false;
+                //pobieram dane
                 std::vector<core::ObjectWrapperPtr> dmData;
-                DataManager::getInstance()->getObjects(dmData, collection->getTypeInfo());
+                DataManager::getInstance()->getObjects(dmData, visualizer->getInputType(i), exact);
+
+                //stworz nowy OWC, odswiezajacy dane z DM ObjectWrapperCollection
+                core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), exact));
 
                 for(auto it = dmData.begin(); it != dmData.end(); it++){
                     collection->addObject(*it);
@@ -413,7 +415,7 @@ void VisualizerWidget::fillSourcesMenu()
     bool allNotInitialized = true;
 
     for(int i = 0; i < visualizer->getNumInputs(); i++){
-        ObjectWrapperCollectionConstPtr objects = visualizer->getObjects(i);
+        auto objects = visualizer->getObjects(i);
         if(objects != nullptr){
             int total = 0;
             int aditional = 0;

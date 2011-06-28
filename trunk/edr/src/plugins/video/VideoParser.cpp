@@ -12,7 +12,6 @@
 
 using namespace vidlib;
 
-
 class OsgImageLoader : public FileSequenceVideoStream::ILoader
 {
     osg::ref_ptr<osg::Image> img;
@@ -66,10 +65,9 @@ VideoParser::~VideoParser()
 {
 }
 
-void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const boost::filesystem::path& path)
+void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const core::Filesystem::Path& path)
 {
-    namespace fs = boost::filesystem;
-    if ( path.extension() == ".imgsequence" ) {
+    if ( core::Filesystem::fileExtension(path).compare(".imgsequence") == 0 ) {
         
         std::ostringstream errbuff;
         TiXmlDocument document(path.string());
@@ -97,16 +95,12 @@ void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const boost::fi
 
             
             // ustawienie œcie¿ki do katalogu
-            fs::path dirPath = directory;
+            core::Filesystem::Path dirPath = directory;
             if ( !dirPath.is_complete() ) {
                 dirPath = path.branch_path() / directory;
             }
             // wylistowanie plików
-            std::vector<std::string> files;
-            for ( fs::directory_iterator it(dirPath), last; it != last; ++it ) {
-                files.push_back(it->path().string());
-            }
-
+            std::vector<std::string> files = core::Filesystem::listFiles(dirPath);
 
             // tworzymy strumieñ z sekwencji plików
             osg::ref_ptr<osgDB::Options> options = new osgDB::Options();

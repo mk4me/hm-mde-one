@@ -20,7 +20,7 @@ public:
     virtual ~KinematicParser();
 // IParser
 public:
-    virtual void parseFile(core::IDataManager* dataManager, const boost::filesystem::path& path);
+    virtual void parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path);
     virtual core::IParser* create();
     virtual std::string getSupportedExtensions() const;
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);

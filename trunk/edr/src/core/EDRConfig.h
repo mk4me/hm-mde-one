@@ -12,25 +12,26 @@
 
 #include <core/IPath.h>
 #include <core/PluginCommon.h>
+
 namespace core {
 
 class EDRConfig : public IPath
 {
 public:
 	//! ustawia pelna sciezke do folderu "MyDocuments\EDR"
-	void setUserDataPath(const IPath::Path& path);
+	void setUserDataPath(const Filesystem::Path& path);
 	//! ustawia pelna sciezke do folderu "ApplicationData\EDR"
-	void setResourcesPath(const IPath::Path& path);
+	void setResourcesPath(const Filesystem::Path& path);
 	//! ustawia pelna sciezke do folderu z zasobami aplikacji
-	void setApplicationDataPath(const IPath::Path& path);
+	void setApplicationDataPath(const Filesystem::Path& path);
 
 public:
 	//! zwraca pelna sciezke do folderu "MyDocuments\EDR"
-	virtual const IPath::Path& getUserDataPath() const;
+	virtual const Filesystem::Path& getUserDataPath() const;
 	//! zwraca pelna sciezke do folderu "ApplicationData\EDR"
-	virtual const IPath::Path& getApplicationDataPath() const;
+	virtual const Filesystem::Path& getApplicationDataPath() const;
 	//! zwraca pelna sciezke do folderu z zasobami aplikacji
-	virtual const IPath::Path& getResourcesPath() const;
+	virtual const Filesystem::Path& getResourcesPath() const;
 
 public:
 	static void setPaths(EDRConfig& directoriesInfo);
@@ -45,11 +46,11 @@ protected:
 
 private:
 	//! sciezka do folderu z zasobami aplikacji
-	Path resourcesPath;
+	Filesystem::Path resourcesPath;
 	//! sciezka do folderu "ApplicationData\EDR"
-	Path applicationDataPath;
+	Filesystem::Path applicationDataPath;
 	//! sciezka do folderu "MyDocuments\EDR"
-	Path userDataPath;
+	Filesystem::Path userDataPath;
 };
 
 }

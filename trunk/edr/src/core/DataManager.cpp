@@ -10,6 +10,7 @@
 #include <list>
 #include <boost/regex.hpp>
 #include <utils/Push.h>
+#include <core/ServiceManager.h>
 
 using namespace core;
 using namespace std;
@@ -17,9 +18,6 @@ using namespace std;
 //! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
 class DataManager::Parser
 {
-public:
-	typedef IDataManager::Path Path;
-
 private:
 	//! Prawdziwy wewnêtrzny parser.
 	const IParserPtr parser;
@@ -283,7 +281,7 @@ void DataManager::findResources(const std::string& resourcesPath)
 	}
 }
 
-IDataManager::LocalTrial DataManager::findLocalTrialsPaths(const core::IDataManager::Path& path)
+IDataManager::LocalTrial DataManager::findLocalTrialsPaths(const core::Filesystem::Path& path)
 {
 	core::IDataManager::LocalTrial trial;
 
@@ -302,42 +300,70 @@ IDataManager::LocalTrial DataManager::findLocalTrialsPaths(const core::IDataMana
 	return trial;
 }
 
-std::vector<core::ObjectWrapperPtr> DataManager::getAvaiableObjectsForFiles(const std::vector<Path> & paths)
+core::ObjectWrapperPtr DataManager::getWrapper(void * rawPtr) const
 {
-	//znajdz typy dla danego rozszerzenia
-	std::set<core::ObjectWrapperPtr> ret;
+    auto it = rawPointerToObjectWrapper.find(rawPtr);
+    if(it != rawPointerToObjectWrapper.end()){
+        return it->second;
+    }
 
-	//ladujemy pliki, inicjujemy parsery
-	loadFiles(paths);
-
-	for(auto it = paths.begin(); it != paths.end(); it++){
-		std::string ext((*it).extension().string());
-		if(isExtensionSupported(ext) == true){
-			for(auto iT = extensionDescriptions[ext].possibleTypes.begin(); iT != extensionDescriptions[ext].possibleTypes.end(); iT++){
-				std::vector<core::ObjectWrapperPtr> objects;
-				//pobierz dane konkretnego typu
-				getObjectsFromParsers(objects, iT->first, true);
-				//dodaj je do zbioru wyjciowego
-				ret.insert(objects.begin(), objects.end());
-			}
-		}
-	}
-
-
-	//filtrujemy dane do poprawnie zainicjowanych i pochodz¹cych z wybranych plików
-	auto it = ret.begin();
-	while( it != ret.end()){
-		if( (*it)->isNull() == true || std::find(paths.begin(), paths.end(), (*it)->getSource()) == paths.end() ){
-			it = ret.erase(it);
-		}else{
-			it++;
-		}
-	}
-
-	return std::vector<core::ObjectWrapperPtr>(ret.begin(), ret.end());
+    return ObjectWrapperPtr();
 }
 
-void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, const core::ObjectWrapper::Types& types, std::vector<core::ObjectWrapperPtr> & objects)
+void DataManager::addExternalData(const core::ObjectWrapperPtr & object)
+{
+    if(object == nullptr){
+        LOG_ERROR("Trying to store not initialized ObjectWrapper pointer");
+        return;
+    }
+
+    auto insData = externalData.insert(object);
+    if(insData.second == false){
+        LOG_WARNING("Given object already added to external data: " << object->getClassName());
+    }else{
+
+        core::ObjectWrapper::Types supportedTypes;
+        object->getSupportedTypes(supportedTypes);
+
+        UTILS_ASSERT((supportedTypes.empty() == false), "Obiekt nie wspiera ¿adnych typów - b³¹d!");
+
+        //uzupe³niamy dane wg typów
+        for(auto it = supportedTypes.begin(); it != supportedTypes.end(); it++){
+            groupedExternalData[*it].insert(object);
+        }
+
+        //odœwie¿amy dane w serwisach
+        ServiceManager::getInstance()->setDataPassRequired(true);
+    }
+}
+
+void DataManager::removeExternalData(const core::ObjectWrapperPtr & object)
+{
+    if(object == nullptr){
+        LOG_ERROR("Trying to remove not initialized ObjectWrapper pointer");
+        return;
+    }
+
+    auto eData = externalData.erase(object);
+    if(eData == 0){
+        LOG_WARNING("Given object not exist in external data: " << object->getClassName());
+    }else{
+
+        core::ObjectWrapper::Types supportedTypes;
+        object->getSupportedTypes(supportedTypes);
+
+        UTILS_ASSERT((supportedTypes.empty() == false), "Obiekt nie wspiera ¿adnych typów - b³¹d!");
+
+        //uzupe³niamy dane wg typów
+        for(auto it = supportedTypes.begin(); it != supportedTypes.end(); it++){
+            groupedExternalData[*it].erase(object);
+        }
+
+        ServiceManager::getInstance()->setDataPassRequired(true);
+    }
+}
+
+void DataManager::loadFiles(const std::vector<core::Filesystem::Path>& files, const core::ObjectWrapper::Types& types, std::vector<core::ObjectWrapperPtr> & objects)
 {
 	std::set<Path> allFiles(files.begin(), files.end());
 
@@ -368,14 +394,18 @@ void DataManager::loadFiles(const std::vector<core::IDataManager::Path>& files, 
 			objects.insert(objects.end(), loc.begin(), loc.end());
 		}
 	}
+
+    ServiceManager::getInstance()->setDataPassRequired(true);
 }
 
 
 void DataManager::addFiles( const std::vector<Path>& files )
 {
-	BOOST_FOREACH(boost::filesystem::path path, files) {
+	BOOST_FOREACH(core::Filesystem::Path path, files) {
 		createParsers(path, false);
 	}
+
+    ServiceManager::getInstance()->setDataPassRequired(true);
 }
 
 void DataManager::removeFiles( const std::vector<Path>& files )
@@ -402,14 +432,16 @@ void DataManager::removeFiles( const std::vector<Path>& files )
 
 	// fizycznie usuwamy zbêdne wektory
 	currentParsers.erase( last, currentParsers.end() );
+
+    ServiceManager::getInstance()->setDataPassRequired(true);
 }
 
 void DataManager::loadResources()
 {
 	BOOST_FOREACH(std::string resourcePath, resourcesPaths) {
-		boost::filesystem::path path(resourcePath);
+		core::Filesystem::Path path(resourcePath);
 		//sciezka istnieje, jest plikiem i zgadza sie nazwa
-		if (boost::filesystem::exists(path) && !boost::filesystem::is_directory(path)) {
+		if (core::Filesystem::pathExists(path) && core::Filesystem::isDirectory(path) == false) {
 			createParsers(path, true);
 		}
 	}
@@ -428,6 +460,9 @@ bool DataManager::isExtensionSupported( const std::string& extension ) const
 
 void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact /*= false*/ )
 {
+    //pobranie danych dostarczonych do DataManagera z zewn¹trz
+    getExternalData(objects, type, exact);
+
 	// pobranie obiektow z parserow
 	getObjectsFromParsers(objects, type, exact);
 
@@ -444,6 +479,19 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, cons
 			}
 		}
 	}
+}
+
+void DataManager::getExternalData(std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact)
+{
+    auto it = groupedExternalData.find(type);
+    if(it != groupedExternalData.end()){
+        for(auto iT = it->second.begin(); iT != it->second.end(); iT++){
+            core::ObjectWrapperPtr object(*iT);
+            if ( !exact || object->isTypeEqual(type) ) {
+                objects.push_back(object);
+            }
+        }
+    }
 }
 
 void DataManager::getObjectsFromParsers( std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo & type, bool exact /*= false*/ )

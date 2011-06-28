@@ -58,10 +58,8 @@ int main(int argc, char *argv[])
 
 		EDRConfig edrConfig;
 	    EDRConfig::setPaths(edrConfig);
-		boost::filesystem::path p = edrConfig.getResourcesPath() / "settings" / "log.ini";
+		core::Filesystem::Path p = edrConfig.getResourcesPath() / "settings" / "log.ini";
 		EDRLog logger(p.string());
-
-        PluginLoader pluginLoader;
 
         // UWAGA - obiekty udostepniane klientom poprzez interfejsy musz¹ mieæ przywracane (zerowane) wartoœci na tym samym
         // poziomie na którym zosta³y stworzone. Dlatego tutaj mamy Push dla logera i konfiguracji.
@@ -70,6 +68,7 @@ int main(int argc, char *argv[])
         utils::Push<IPath*> pushedDI(__instanceInfo.pathInterface, &edrConfig);
         utils::Push<ILog*> pushedIL(__instanceInfo.logInterface, &logger);
 
+        PluginLoader pluginLoader;
         {
             DataManager dataManager;
             VisualizerManager visualizerManager;
