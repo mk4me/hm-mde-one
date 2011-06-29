@@ -110,7 +110,7 @@ void CommunicationManager::loadLocalTrials()
     //TODO: uproszczenie wyszukiwania lokalnych triali
     localTrials.clear();
     //przeszukujemy liste prob pomiarowych, nie plikow
-    std::vector<std::string> tempPaths = core::Filesystem::listSubdirectories(std::string(core::getUserDataString("trial")));
+    std::vector<std::string> tempPaths = core::Filesystem::listSubdirectories(std::string(core::getUserDataString("data/trials")));
     BOOST_FOREACH(std::string path, tempPaths)
     {
         try {
@@ -145,7 +145,7 @@ void CommunicationManager::run()
                         actualFile = 0;
                         BOOST_FOREACH(int i, trial.trialFiles) {
                             actualFile++;
-                            transportManager->downloadFile(i, core::getUserDataString("trial"));
+                            transportManager->downloadFile(i, core::getUserDataString("data/trials"));
                         }
                         break;
                     }
