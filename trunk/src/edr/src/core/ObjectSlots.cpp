@@ -31,16 +31,16 @@ bool ObjectSlots::isAssignable( int slotNo, const core::TypeInfo & type ) const
         }
     }
     catch(std::runtime_error e){
-        LOG_ERROR(std::string("ObjectSlot: Request for unsupported type: ") + std::string(type.name()) + e.what());
+        LOG_ERROR("ObjectSlot: Request for unsupported type: " << type.name() << " " << e.what());
     }
     catch(std::invalid_argument e){
-        LOG_ERROR(std::string("ObjectSlot: Request for unsupported type: ") + std::string(type.name()) + e.what());
+        LOG_ERROR("ObjectSlot: Request for unsupported type: " << type.name() << " " << e.what());
     }
     catch(std::exception e){
-        LOG_ERROR(std::string("ObjectSlot: Request for unsupported type: ") + std::string(type.name()) + e.what());
+        LOG_ERROR("ObjectSlot: Request for unsupported type: " << type.name() << " " << e.what());
     }
     catch(...){
-        LOG_ERROR(std::string("ObjectSlot: Unknown error"));
+        LOG_ERROR("ObjectSlot: Unknown error");
     }
 
     return false;

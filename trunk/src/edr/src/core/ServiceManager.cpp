@@ -23,19 +23,19 @@ void ServiceManager::finalizeServices()
     for(auto it = servicesList.begin(); it != servicesList.end(); it++){
         try{
             (*it)->finalize();
-            LOG_DEBUG(std::string("ServiceManager: finalized correctly ") + (*it)->getName() + std::string(" service"));
+            LOG_DEBUG("ServiceManager: finalized correctly " << (*it)->getName() << " service");
         }
         catch(std::runtime_error e){
-            LOG_ERROR(std::string("ServiceManager: Error finalizing ") + (*it)->getName() + std::string(" service with error ") + e.what());
+            LOG_ERROR("ServiceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
         }
         catch(std::invalid_argument e){
-            LOG_ERROR(std::string("ServiceManager: Error finalizing ") + (*it)->getName() + std::string(" service with error ") + e.what());
+            LOG_ERROR("ServiceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
         }
         catch(std::exception e){
-            LOG_ERROR(std::string("ServiceManager: Error finalizing ") + (*it)->getName() + std::string(" service with error ") + e.what());
+            LOG_ERROR("ServiceManager: Error finalizing " << (*it)->getName() << " service with error " << e.what());
         }
         catch(...){
-            LOG_ERROR(std::string("ServiceManager: Unknown error"));
+            LOG_ERROR("ServiceManager: Unknown error");
         }
     }
 }
@@ -45,7 +45,7 @@ void ServiceManager::registerService(core::IServicePtr service)
     if (servicesMap.find(service->getID()) == servicesMap.end()) {
         servicesMap.insert( std::make_pair(service->getID(), service)); 
         servicesList.push_back(service);
-        LOG_INFO("Service "<<service->getName()<<" registered.");
+        LOG_INFO("Service " << service->getName() << " registered.");
     } else {
         throw std::runtime_error("Service with this ID already registered.");
     }

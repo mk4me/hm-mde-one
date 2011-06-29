@@ -17,7 +17,7 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-class QOsgContextWidget : public osgQt::GraphWidget
+class QOsgContextWidget : public osgQt::GLWidget
 {
 public:
     //! T³umaczy format osg do formatu qt

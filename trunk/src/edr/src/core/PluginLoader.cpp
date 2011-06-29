@@ -12,7 +12,6 @@
 
 #include <core/PluginLoader.h>
 #include <core/Plugin.h>
-#include "Log.h"
 #include <core/PluginCommon.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,16 +45,16 @@ void PluginLoader::unloadPlugins()
         freeLibraries();
     }
     catch(std::runtime_error e){
-        LOG_ERROR(std::string("PluginLoader: Error unloading plugins ") + e.what());
+        LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
     catch(std::invalid_argument e){
-        LOG_ERROR(std::string("PluginLoader: Error unloading plugins ") + e.what());
+        LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
     catch(std::exception e){
-        LOG_ERROR(std::string("PluginLoader: Error unloading plugins ") + e.what());
+        LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
     catch(...){
-        LOG_ERROR(std::string("PluginLoader: Error unloading plugins "));
+        LOG_ERROR("PluginLoader: Error unloading plugins ");
     }
 }
 
@@ -154,18 +153,24 @@ bool PluginLoader::addPlugIn( const std::string& path )
 #if defined(__WIN32__)
     HMODULE library = ::LoadLibrary( path.c_str() );
     if ( library ) {
-        if ( checkPluginVersion(library, path) && checkLibrariesVersions(library, path) ) {
-            FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
-            if ( proc ) {
-                bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
-                    reinterpret_cast<Plugin::CreateFunction>(proc));
-                if ( success ) {
-                    return true;
+        try{
+            if ( checkPluginVersion(library, path) && checkLibrariesVersions(library, path) ) {
+                FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
+                if ( proc ) {
+                    bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
+                        reinterpret_cast<Plugin::CreateFunction>(proc));
+                    if ( success ) {
+                        return true;
+                    }
+                } else {
+                    LOG_DEBUG(path<<" is a plugin, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed.");
                 }
-            } else {
-                LOG_DEBUG(path<<" is a plugin, but finding "<<STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME)<<" failed.");
             }
-        }   
+        }catch(std::exception e){
+            LOG_DEBUG(path << " is a plugin, but trying to check version or libraries failed with error: " << e.what());
+        }catch(...){
+            LOG_DEBUG(path << " is a plugin, but trying to check version or libraries failed with UNKNOWN error");
+        }
     } else  {
         DWORD err = ::GetLastError();
         LPSTR errStr;

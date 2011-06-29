@@ -34,13 +34,13 @@ public:
             run();
         }
         catch (const std::runtime_error& e) {
-            LOG_ERROR(std::string("Error during execution of module main functionality: ") + getName() + e.what());
+            LOG_ERROR("Error during execution of module main functionality: " << getName() << " " << e.what());
             return false;
         } catch (const std::exception& e) {
-            LOG_ERROR(std::string("Error during execution of module main functionality: ") + getName() + e.what());
+            LOG_ERROR("Error during execution of module main functionality: " << getName() << " " << e.what());
         	return false;
         } catch (...) {
-            LOG_ERROR(std::string("Unrecognised error during execution of module main functionality: ") + getName());
+            LOG_ERROR("Unrecognised error during execution of module main functionality: " << getName());
             return false;
         }
         return true;
@@ -52,13 +52,13 @@ public:
             reset();
         }
         catch (const std::runtime_error& e) {
-            LOG_ERROR(std::string("Error during module reset: ") + getName() + e.what());
+            LOG_ERROR("Error during module reset: " << getName() << " " << e.what());
             return false;
         } catch (const std::exception& e) {
-            LOG_ERROR(std::string("Error during module reset: ") + getName() + e.what());
+            LOG_ERROR("Error during module reset: " << getName() << " " << e.what());
             return false;
         } catch (...) {
-            LOG_ERROR(std::string("Unrecognized error during module reset: ") + getName());
+            LOG_ERROR("Unrecognized error during module reset: " << getName());
             return false;
         }
         return true;

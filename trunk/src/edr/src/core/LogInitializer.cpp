@@ -11,6 +11,8 @@
 #include "EDRConsoleWidget.h"
 #include <core/StringTools.h>
 
+#include <core/IPath.h>
+
 using namespace core;
 
 
@@ -36,6 +38,8 @@ void QtMessageHandler(QtMsgType type, const char *msg)
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/appenderskeleton.h>
 #include <log4cxx/helpers/synchronized.h>
+#include <log4cxx/rollingfileappender.h>
+#include <log4cxx/helpers/transcoder.h>
 #include <queue>
 
 using namespace log4cxx;
@@ -190,6 +194,21 @@ LogInitializer::LogInitializer( const char* configPath )
     PropertyConfigurator::configure(configPath);
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(Logger::getLogger( "osg" ) ));
     qInstallMsgHandler(QtMessageHandler);
+
+    log4cxx::helpers::Pool p;  // buffer pool that for activateOptions()
+    LOG4CXX_DECODE_CHAR(loggerName, "file"); 
+    log4cxx::RollingFileAppenderPtr rfa = log4cxx::Logger::getRootLogger()->getAppender(loggerName);
+    if (rfa == 0)
+    {
+        // If there is no appender, then this is a serious error.
+        // Logging will not work at all.
+        return;
+    }
+
+    // Configures the output log file name.
+    LOG4CXX_DECODE_CHAR(fileName, (core::getPathInterface()->getUserDataPath() / "log.xml").string());
+    rfa->setFile(fileName);
+    rfa->activateOptions(p);
 }
 
 LogInitializer::~LogInitializer()
