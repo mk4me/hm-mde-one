@@ -117,9 +117,9 @@ const dflm::MPtr & osgVDFBaseModel::getModel() const
 void osgVDFBaseModel::init( osgViewer::View* view ) 
 {
     //add event to create nodes
-#ifdef _DEBUG
-    view->addEventHandler(new osgViewer::StatsHandler());
-#endif
+//#ifdef _DEBUG
+//    view->addEventHandler(new osgViewer::StatsHandler());
+//#endif
 
     view->addEventHandler(new UserSpaceClick(this));
     view->addEventHandler(new osgui::KeyboardMapperHandler(this));
