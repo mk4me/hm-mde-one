@@ -1,13 +1,16 @@
 #include "CommunicationPCH.h"
 #include <plugins/communication/CommunicationService.h>
+#include <core/IPath.h>
 
 CommunicationService::CommunicationService()
     : name("Communication")
 {
+    WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();   
     this->model = communication::CommunicationManager::getInstance();
 
     this->widget = new CommunicationWidgetEx(this);
     this->model->attach(this->widget);
+    //WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string(); 
 }
 
 CommunicationService::~CommunicationService()
