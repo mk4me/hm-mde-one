@@ -75,6 +75,7 @@ find_package(TinyXML)
 find_package(Prerequisites)
 find_package(SDL)
 find_package(Qt)
+find_package(BTK)
 #find_package(BTKIO)
 #find_package(BTKCOMMON)
 
@@ -122,7 +123,7 @@ ADD_PROJECT(dfmlib "BOOST;OSG;utils")
 ADD_PROJECT(vdfmlib "osgui;dfmlib;BOOST;OSG;utils")
 ADD_PROJECT(testnodefactory "dfmlib;BOOST;utils")
 ADD_PROJECT(timelinelib "OSG;utils;BOOST;QT")
-#ADD_PROJECT(c3dlib "STDINT;BTKIO;BTKCOMMON;BOOST")
+ADD_PROJECT(c3dlib "STDINT;BTK;BOOST;OSG")
 #ADD_PROJECT(asfamctoquatcsv "kinematiclib;OSG;BOOST;TINYXML;utils")
 
 #---------------------------------------------------
