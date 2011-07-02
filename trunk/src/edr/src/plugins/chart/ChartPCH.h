@@ -42,9 +42,9 @@ UTILS_POP_WARNINGS
 #include <core/IServiceManager.h>
 #include <plugins/timeline/ITimeline.h>
 #include <plugins/timeline/Stream.h>
-
-#include <core/C3DParserEx.h>
-#include <core/C3D_Data.h>
+//
+//#include <core/C3DParserEx.h>
+//#include <core/C3D_Data.h>
 
 #endif  // DISABLE_PRECOMPILED_HEADERS
 #endif  // __HEADER_GUARD__VIDEOPCH_H__

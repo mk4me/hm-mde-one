@@ -6,7 +6,7 @@
 #include <core/MultiViewWidgetItem.h>
 #include <core/OsgSceneDump.h>
 
-#include <core/Chart.h>
+#include "Chart.h"
 #include "MultiViewChartItem.h"
 #ifdef _DEBUG
 #define WM_FLAGS osgWidget::WindowManager::WM_PICK_DEBUG
@@ -82,7 +82,7 @@ deprecated__ChartWidget::~deprecated__ChartWidget()
 
 
 
-void deprecated__ChartWidget::addChart( const core::ScalarChannelConstPtr& channel )
+void deprecated__ChartWidget::addChart( const ScalarChannelConstPtr& channel )
 {
 //     Chart* chart = new Chart();
 //     item.push_back( chart );

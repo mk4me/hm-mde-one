@@ -1,7 +1,6 @@
 #ifndef __HEADER_GUARD__KINEMATICSERVICE_H__
 #define __HEADER_GUARD__KINEMATICSERVICE_H__
 
-#include <core/LineChartSerie.h>
 #include <QtCore/QTimer>
 #include <QtCore/QObject>
 #include <core/IService.h>

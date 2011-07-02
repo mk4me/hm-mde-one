@@ -34,7 +34,7 @@ void ChartVisualizer::getInputInfo(std::vector<core::IInputDescription::InputInf
 {
     core::IInputDescription::InputInfo input;
 
-    input.type = typeid(core::ScalarChannel);
+    input.type = typeid(ScalarChannel);
     input.name = input.type.name();
     input.modify = false;
     input.required = false;
@@ -233,8 +233,8 @@ core::IVisualizer::SerieBase* ChartVisualizer::createSerie(const core::ObjectWra
     color.b() = (rand()%1000)/999.0f;
     color.a() = 1.0f;    
 
-    core::LineChartSeriePtr lineChart = new core::LineChartSerie();
-    core::ScalarChannelConstPtr d = data->get();
+    LineChartSeriePtr lineChart = new LineChartSerie();
+    ScalarChannelConstPtr d = data->get();
     lineChart->setData(d);
     lineChart->setColor(color);
     chart->addChannel(lineChart);

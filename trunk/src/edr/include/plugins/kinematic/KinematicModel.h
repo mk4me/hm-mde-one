@@ -3,7 +3,8 @@
 
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/KinematicModel.h>
-#include <core/C3DParserEx.h>
+//#include <core/C3DParserEx.h>
+#include <plugins/c3d/C3DChannels.h>
 
 class KinematicModel
 {

@@ -18,6 +18,7 @@
 #include <core/StringTools.h>
 #include <core/IPath.h>
 #include <core/ILog.h>
+#include <core/Filesystem.h>
 
 namespace core 
 {

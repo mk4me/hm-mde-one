@@ -13,8 +13,8 @@
 #include <osgViewer/Scene>
 #include <core/PluginsInterfaces.h>
 #include <core/IService.h>
-#include "EMGService.h"
-#include "GRFService.h"
+//#include "EMGService.h"
+//#include "GRFService.h"
 
 class ChartPlugin : public ISystemPlugin
 {

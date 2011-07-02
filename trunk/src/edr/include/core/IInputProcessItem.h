@@ -11,10 +11,11 @@
 
 #include <core/IWorkflowItemBase.h>
 #include <core/IInputDescription.h>
-#include <core/IObjectSource.h>
+//#include <core/IObjectSource.h>
+
 
 namespace core {
-
+	class IObjectSource;
 //! Interfejs dla elementów terminalnych dla danych - nie maj¹cych wyjœcia jedynie wejscie.
 //! Zawiera opis wejœc i podstawowe informacje i w³aœciwoœci elementów logicznych aplikacji operuj¹cych na danych
 class IInputProcessItem : public IWorkflowItemBase, public IInputDescription

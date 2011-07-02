@@ -13,11 +13,11 @@
 #include <core/IService.h>
 
 //#include "C3DChartData.h"
-#include <core/Chart.h>
+#include "Chart.h"
 #include <core/MultiView.h>	
 #include <osgui/QOsgWidgets.h>
 #include "ui_ChartWidget.h"
-#include <core/C3DChannels.h>
+#include <plugins/c3d/C3DChannels.h>
 
 class ChartViewer;
 class deprecated__ChartWidget : public QWidget, public Ui::ChartWidget
@@ -50,7 +50,7 @@ public:
 
 	osg::Node* getSceneRoot();
 /*	void deprecated_addChart(C3DChartData* c3dData);*/
-    void addChart(const core::ScalarChannelConstPtr& channel);
+    void addChart(const ScalarChannelConstPtr& channel);
 	void update(double targetTime);
     double getLenght();
 	void clear();

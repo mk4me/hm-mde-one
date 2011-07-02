@@ -3,12 +3,12 @@
 #include <boost/foreach.hpp>
 #include <osg/Geode>
 #include <core/IServiceManager.h>
-#include <core/C3DParserEx.h>
 #include <plugins/timeline/ITimeline.h>
 //#include <core/IModel.h>
 #include <core/IDataManager.h>
 #include <core/IVisualizer.h>
-#include <core/C3DChannels.h>
+#include <plugins/c3d/C3DChannels.h>
+//#include <core/C3DChannels.h>
 #include <plugins/timeline/Stream.h>
 #include "mainwindow.h"
 #include <core/ILog.h>

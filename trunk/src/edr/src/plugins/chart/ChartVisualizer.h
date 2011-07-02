@@ -9,11 +9,12 @@
 #ifndef HEADER_GUARD_CHART__CHARTVISUALIZER_H__
 #define HEADER_GUARD_CHART__CHARTVISUALIZER_H__
 
+#include <core/IObjectSource.h>
 #include <QtCore/QObject>
 #include <osgViewer/Viewer>
-#include <core/Chart.h>
 #include <core/IVisualizer.h>
-#include <core/LineChartSerie.h>
+#include "Chart.h"
+#include "LineChartSerie.h"
 
 //! Wizualizator wykresów.
 class ChartVisualizer : public QObject, public core::IVisualizer
@@ -23,13 +24,13 @@ private:
     class ChartVisualizerSerie : public SerieBase
     {
     public:
-        ChartVisualizerSerie(const core::LineChartSeriePtr & serie)
+        ChartVisualizerSerie(const LineChartSeriePtr & serie)
             : serie(serie)
         {
        
         }
 
-        const core::LineChartSeriePtr & getSerie() const
+        const LineChartSeriePtr & getSerie() const
         {
             return serie;
         }
@@ -47,7 +48,7 @@ private:
         }
 
     private:
-        core::LineChartSeriePtr serie;
+        LineChartSeriePtr serie;
     };
 
     Q_OBJECT;
@@ -74,7 +75,7 @@ private:
     QAction* actionNormalized;
 
     //! Serie danych przyporz¹dkowane indeksom wejœæ.
-    //std::vector<core::LineChartSeriePtr> series;
+    //std::vector<LineChartSeriePtr> series;
 
     volatile bool needsRefresh;
 

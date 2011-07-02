@@ -3,13 +3,14 @@ set(PROJECTS_NAME plugins)
 
 # animation
 # ADD_PROJECT(animation "OSG;QT;corelib")
+ADD_PROJECT(c3d "BOOST;corelib;C3DLIB")
 ADD_PROJECT(video "OSG;QT;VIDLIB;FFMPEG;corelib")
 ADD_PROJECT(timeline "BOOST;QT;corelib")
 ADD_PROJECT(communication "QT;CURL;WSDLPULL;TINYXML;corelib")
-ADD_PROJECT(kinematic "QT;BOOST;corelib;KINEMATICLIB;OSG")
-ADD_PROJECT(chart "BOOST;OSG;QT;corelib")
+ADD_PROJECT(kinematic "QT;BOOST;corelib;KINEMATICLIB;OSG;plugin_c3d")
+ADD_PROJECT(chart "BOOST;OSG;QT;corelib;plugin_c3d")
 #ADD_PROJECT(vdf "BOOST;QT;corelib;OSG;VDFMLIB;DFMLIB;TESTNODEFACTORY")
-#ADD_PROJECT(c3d "BOOST;corelib;C3DLIB")
+
 # plugin
 # ADD_PROJECT(OSGPlugin "OSG;vm_core")
 

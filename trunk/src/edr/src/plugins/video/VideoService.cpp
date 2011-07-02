@@ -11,8 +11,8 @@
 #include <boost/foreach.hpp>
 #include <core/ILog.h>
 
-#include <core/C3D_Data.h>
-#include <core/C3DParserEx.h>
+//#include <core/C3D_Data.h>
+//#include <core/C3DParserEx.h>
 #include <plugins/video/Wrappers.h>
 
 using namespace core;

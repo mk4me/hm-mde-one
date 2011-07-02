@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CHART__CHARTVISUALIZERTITLEBAR_H__
 
 #include <osgui/QOsgWidgets.h>
-#include <core/Chart.h>
+#include "Chart.h"
 #include "ui_ChartVisualizerTitleBar.h"
 
 class ChartWidget : public osgui::QOsgDefaultWidget, private Ui::ChartWidget

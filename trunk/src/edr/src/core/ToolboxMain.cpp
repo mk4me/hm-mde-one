@@ -21,7 +21,7 @@
 #include "ServiceManager.h"
 #include "DataProcessorManager.h"
 #include "DataSourceManager.h"
-#include <core/C3DParserEx.h>
+//#include <core/C3DParserEx.h>
 #include "UserInterfaceService.h"
 #include "config/ConfigurationFileService.h"
 #include "EDRConfig.h"
@@ -41,9 +41,9 @@
 #include "VisualizerWidget.h"
 
 #include <core/Visualizer.h>
-#include <core/C3DChannels.h>
+//#include <core/C3DChannels.h>
 
-#include <core/Chart.h>
+//#include <core/Chart.h>
 #include <osgWidget/ViewerEventHandlers>
 
 #include <osgui/EventCallback.h>
@@ -56,6 +56,8 @@
 #include "DataProcessor.h"
 
 #include <core/EDRDockWidget.h>
+
+//#include <plugins/c3d/C3DChannels.h>
 
 #include "WorkflowService.h"
 #include "WorkflowWidget.h"
@@ -443,18 +445,18 @@ void ToolboxMain::registerPluginsParsers()
         }
     }
 
-    IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
+    //IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
 
-    safeRegisterParser(c3dParser);
+    //safeRegisterParser(c3dParser);
 
     safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<int>()) );
     safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<double>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<ScalarChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<C3DAnalogChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<EMGChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<GRFChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<MarkerSet>()) );
+    /*safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__ScalarChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__C3DAnalogChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__EMGChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__GRFChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__MarkerChannel>()) );
+    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__MarkerSet>()) );*/
 }
 
 void ToolboxMain::registerPluginsWrapperFactories()

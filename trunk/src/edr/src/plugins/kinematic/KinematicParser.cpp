@@ -5,9 +5,8 @@
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/SkeletalParsers.h>
 #include <kinematiclib/KinematicModel.h>
-#include <core/C3DParserEx.h>
+#include <plugins/c3d/C3DChannels.h>
 #include <plugins/kinematic/Wrappers.h>
-#include <core/C3DChannels.h>
 #include "ISchemeDrawer.h"
 
 using namespace kinematic;
@@ -71,7 +70,6 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Fil
         MarkerSetConstPtr ms = markers[0];
         switch(ms->getMarkersCount()) {
        case 39:
-            
             vsk->parse(core::getResourceString("trial/M39.vsk"));
             break;
         case 53:

@@ -1,22 +1,22 @@
-/********************************************************************
-created:  2010/09/21
-filename: LineChartSerie.h
-author:	  Michal Szafarski
-
-purpose:  Klasa ta sluzy do tworzenia wykresu liniowego
-*********************************************************************/
+///********************************************************************
+//created:  2010/09/21
+//filename: LineChartSerie.h
+//author:	  Michal Szafarski
+//
+//purpose:  Klasa ta sluzy do tworzenia wykresu liniowego
+//*********************************************************************/
 #ifndef __HEADER_GUARD__LINECHART_H__
 #define __HEADER_GUARD__LINECHART_H__
 
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <plugins/chart/ChartDataSeries.h>
-#include <core/C3DChannels.h>
-#include <core/ChartSerie.h>
+//#include <core/C3DChannels.h>
+//#include <plugins/c3d/C3DChannels.h>
+#include "ChartSerie.h"
 
-////////////////////////////////////////////////////////////////////////////////
-namespace core {
-////////////////////////////////////////////////////////////////////////////////
+
+#include <plugins/c3d/C3DChannels.h>
 
 class LineChartSerie : public ChartSerie
 {
@@ -40,7 +40,7 @@ public:
     //! \param data Dane wykresu.
     void setData(const ScalarChannelConstPtr& data);
 
-// core::ChartSerie
+// ChartSerie
 public:
     //! Odœwie¿a wykres. Rêczne wywowy³awanie nie jest potrzebne, je¿eli
     //! flaga autoRefresh jest zapalona.
@@ -61,9 +61,6 @@ public:
 
 typedef osg::ref_ptr<LineChartSerie> LineChartSeriePtr;
 
-////////////////////////////////////////////////////////////////////////////////
-} // namespace core
-////////////////////////////////////////////////////////////////////////////////
 
 
 #endif

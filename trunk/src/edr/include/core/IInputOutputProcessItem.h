@@ -12,11 +12,12 @@
 #include <core/IWorkflowItemBase.h>
 #include <core/IInputDescription.h>
 #include <core/IOutputDescription.h>
-#include <core/IObjectSource.h>
+//#include <core/IObjectSource.h>
 #include <core/IObjectOutput.h>
 
 namespace core {
 
+	class  IObjestSource;
 //! Interfejs dla elementów przetwarzaj¹cych.
 //! Zawiera opis wejœc i wyjœæ, podstawowe informacje i w³aœciwoœci elementów logicznych aplikacji operuj¹cych na danych
 class IInputOutputProcessItem : public IWorkflowItemBase, public IInputDescription, public IOutputDescription

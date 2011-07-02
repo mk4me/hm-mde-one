@@ -1,11 +1,12 @@
-#include "CorePCH.h"
-#include <core/Chart.h>
-#include <core/LineChartSerie.h>
-#include <core/ChartData.h>
-#include <core/ChartPointer.h>
+#include "ChartPCH.h"
 #include <osg/LineStipple>
+#include <boost/foreach.hpp>
 #include <math.h>
 #include <iomanip>
+#include "Chart.h"
+#include "LineChartSerie.h"
+#include "ChartPointer.h"
+#include "ChartSerie.h"
 
 #undef  min
 #undef  max
@@ -44,7 +45,7 @@ Chart::~Chart()
     
 }
 
-bool Chart::addChannel( const core::ChartSeriePtr& channel )
+bool Chart::addChannel( const ChartSeriePtr& channel )
 {
     if ( geode->containsDrawable(channel) ) {
         UTILS_FAIL("Kana³ ju¿ jest dodany.");
@@ -62,7 +63,7 @@ bool Chart::addChannel( const core::ChartSeriePtr& channel )
 }
 
 
-bool Chart::removeChannel( const core::ChartSeriePtr& channel )
+bool Chart::removeChannel( const ChartSeriePtr& channel )
 {
     auto it = std::find(series.begin(), series.end(), channel);
 
@@ -92,7 +93,7 @@ bool Chart::removeChannel( const core::ChartSeriePtr& channel )
 
 void Chart::removeAllChannels()
 {
-    BOOST_FOREACH(core::ChartSeriePtr chart, series) {
+    BOOST_FOREACH(ChartSeriePtr chart, series) {
         geode->removeDrawable(chart);
     }
     series.clear();
@@ -116,7 +117,7 @@ void Chart::setActiveSerie( int currentSerie )
     setDirty();
 }
 
-const core::ChartSerie* Chart::getActiveSerie() const
+const ChartSerie* Chart::getActiveSerie() const
 {
     if ( activeSerieIndex < 0 ) {
         return nullptr;
@@ -530,7 +531,7 @@ void Chart::refreshAll()
     currentZ += zStep;
 
     if ( normalized ) {
-        BOOST_FOREACH( const core::ChartSeriePtr& serie, series ) {
+        BOOST_FOREACH( const ChartSeriePtr& serie, series ) {
             serie->setLocation( x, y, w, h );
             serie->setZ(currentZ);
             serie->refresh();
@@ -647,7 +648,7 @@ void Chart::refreshAll()
             
             // teraz mo¿emy pozycjonowaæ
             for ( auto it = first; it != last; ++it ) {
-                const core::ChartSeriePtr& serie = it->second;
+                const ChartSeriePtr& serie = it->second;
                 std::pair<float, float> xRange = serie->getXRange();
                 std::pair<float, float> yRange = serie->getYRange();
 
@@ -970,7 +971,7 @@ void Chart::refreshLabels( float z )
 {
     const float offset = 8;
 
-    core::ChartSeriePtr activeSerie = this->activeSerieIndex < 0 ? nullptr : series[this->activeSerieIndex];
+    ChartSeriePtr activeSerie = this->activeSerieIndex < 0 ? nullptr : series[this->activeSerieIndex];
     if ( activeSerie ) {
 
         float x, y, w, h;
@@ -1012,7 +1013,7 @@ void Chart::refreshCursor( float z )
     // tekst...
     if ( prepareText(cursorText, activeSerieIndex < 0, "cursorText") && prepareGeometry(cursor, activeSerieIndex < 0, "cursor")) {
         // okreœlamy miejsce gdzie bêdziemy rysowaæ tekst
-        core::ChartSeriePtr serie = series[activeSerieIndex];
+        ChartSeriePtr serie = series[activeSerieIndex];
         float x = serie->getPosition().x();
         float y = serie->getPosition().y();
         float w = serie->getSize().x();

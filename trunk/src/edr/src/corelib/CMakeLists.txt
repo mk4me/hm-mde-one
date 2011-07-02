@@ -26,9 +26,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/MultiViewCameraItem.h
 	${HEADER_PATH}/MultiViewManipulatorItem.h
 	${HEADER_PATH}/OsgSceneDump.h
-	${HEADER_PATH}/C3DChannels.h
-	${HEADER_PATH}/ChartSerie.h
-	${HEADER_PATH}/LineChartSerie.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -50,30 +47,21 @@ set(TARGET_SRC
 	Window.cpp
 	MultiView.cpp
 	MultiViewWidgetItem.cpp
-	Chart.cpp
-	c3dParser.cpp
-	c3dParserEx.cpp
-	C3D_Data.cpp
-	ChartData.cpp
-	DECreader.cpp
+	#DECreader.cpp
 	Filesystem.cpp
-	GroupData.cpp
-	Header.cpp
-	INTELreader.cpp
-	LineChartSerie.cpp
-	MIPSreader.cpp
-	Parameter.cpp
-	Parameters.cpp
-	ChartPointer.cpp
+	#GroupData.cpp
+	#Header.cpp
+	#INTELreader.cpp
+	#MIPSreader.cpp
+	#Parameter.cpp
+	#Parameters.cpp
 	MultiViewFunctorWidgetAdapter.cpp
 	MultiViewCameraItem.cpp
 	MultiViewManipulatorItem.cpp
 	OsgSceneDump.cpp
-	GroupData.cpp
-	Header.cpp
-	Data.cpp
-	ChartSerie.cpp
-	C3DChannels.cpp
+	#GroupData.cpp
+	#Header.cpp
+	#Data.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

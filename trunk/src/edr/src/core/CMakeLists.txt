@@ -72,17 +72,11 @@ set(PUBLIC_H
 	${HEADER_PATH}/Plugin.h
 	${HEADER_PATH}/Export.h
 	${HEADER_PATH}/SmartPtr.h
-	${HEADER_PATH}/Chart.h
-	${HEADER_PATH}/c3dParser.h
-	${HEADER_PATH}/c3dParserEx.h
-	${HEADER_PATH}/C3D_Data.h
-	${HEADER_PATH}/ChartData.h
-	${HEADER_PATH}/ChartPointer.h
-	${HEADER_PATH}/Parameter.h
-	${HEADER_PATH}/Parameters.h
-	${HEADER_PATH}/GroupData.h
-	${HEADER_PATH}/Header.h
-	${HEADER_PATH}/Data.h
+	# ${HEADER_PATH}/Parameter.h
+	# ${HEADER_PATH}/Parameters.h
+	# ${HEADER_PATH}/GroupData.h
+	# ${HEADER_PATH}/Header.h
+	# ${HEADER_PATH}/Data.h
 	${HEADER_PATH}/ILog.h
 	${HEADER_PATH}/ObjectWrapper.h
 	${HEADER_PATH}/ObjectWrapperCollection.h

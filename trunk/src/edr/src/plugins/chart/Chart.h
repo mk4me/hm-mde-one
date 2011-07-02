@@ -10,8 +10,8 @@ purpose:  Klasa ta zarzadza calym wykresem
 
 #include <osg/Geode>
 #include <osg/Geometry>
-#include <core/C3DChannels.h>
-#include <core/ChartSerie.h>
+#include <plugins/c3d/C3DChannels.h>
+#include "ChartSerie.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osg {
@@ -32,13 +32,13 @@ namespace osgText
 class Chart : public osg::Group
 {
 public:
-    typedef std::vector<core::ChartSeriePtr> Series;
+    typedef std::vector<ChartSeriePtr> Series;
     typedef Series::iterator iterator;
     typedef Series::const_iterator const_iterator;
 
 private:
     //! Serie danych wykresu.
-    std::vector<core::ChartSeriePtr> series;
+    std::vector<ChartSeriePtr> series;
     //! Bie¿¹ca seria.
     int activeSerieIndex;
 
@@ -136,10 +136,10 @@ public:
 
 
     //! Dodaje kana³ do wykres.ug
-    bool addChannel( const core::ChartSeriePtr& channel );
+    bool addChannel( const ChartSeriePtr& channel );
 
     //! Usuniêcie kana³ z wykres.ug
-    bool removeChannel( const core::ChartSeriePtr& channel );
+    bool removeChannel( const ChartSeriePtr& channel );
 
     //! Usuwa wszystkie wykresy.
     void removeAllChannels();
@@ -151,7 +151,7 @@ public:
     //! \param currentSerie Indeks aktywnego kana³u.
     void setActiveSerie(int currentSerie);
     //! \return Aktywny kana³ b¹dŸ nullptr.
-    const core::ChartSerie* getActiveSerie() const;
+    const ChartSerie* getActiveSerie() const;
 
 
     //! \return Czy wykres wymaga odœwie¿enia?
