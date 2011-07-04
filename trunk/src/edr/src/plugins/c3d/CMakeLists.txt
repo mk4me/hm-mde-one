@@ -68,7 +68,7 @@ set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
 # kompilacja do wspó³dzielonej biblioteki
 add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
 #instalacja
-install(TARGETS ${TARGET_TARGETNAME} DESTINATION bin COMPONENT c3d)
+install(TARGETS ${TARGET_TARGETNAME} RUNTIME DESTINATION bin COMPONENT c3d)
 #add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
 # nag³ówki
 include_directories( ${DEFAULT_PROJECT_INCLUDES} )

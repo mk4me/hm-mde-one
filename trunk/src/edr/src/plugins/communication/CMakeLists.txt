@@ -96,7 +96,7 @@ set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
 # kompilacja do wspó³dzielonej biblioteki
 add_library(${TARGET_TARGETNAME} SHARED ${TARGET_SRC} ${TARGET_H})
 #instalacja
-install(TARGETS ${TARGET_TARGETNAME} DESTINATION bin COMPONENT communication)
+install(TARGETS ${TARGET_TARGETNAME} RUNTIME DESTINATION bin COMPONENT communication)
 # nag³ówki
 include_directories( ${DEFAULT_PROJECT_INCLUDES} )
 # biblioteki

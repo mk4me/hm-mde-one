@@ -3,7 +3,7 @@ FIND_INIT(WSDLPULL wsdlpull)
 
 
 # szukanie
-FIND_STATIC(WSDLPULL_LIB "wsdlpull")
+FIND_SHARED(WSDLPULL_LIB "wsdlpull" "wsdlpull")
 
 # skopiowanie
 FIND_FINISH(WSDLPULL)

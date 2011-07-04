@@ -84,7 +84,7 @@ find_package(c3dlib)
 find_package(dfmlib)
 find_package(vdfmlib)
 find_package(TESTNODEFACTORY)
-
+find_package(prerequisites)
 # Biblioteczne wyszukanie OGL;
 find_package(OpenGL)
 set(OPENGL_LIBRARIES_PROXY ${OPENGL_LIBRARIES})
@@ -131,7 +131,7 @@ option(PROJECT_ENABLE_SVN_RESOURCES "Enable svn resources?" ON)
 if(PROJECT_ENABLE_SVN_RESOURCES)
 	set(PROJECT_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/../resources/" CACHE PATH "Location of resources being part of repository.")
 	add_subdirectory(${PROJECT_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
-	install(DIRECTORY ${PROJECT_SVN_RESOURCES_ROOT} DESTINATION bin/data/ COMPONENT core
+	install(DIRECTORY ${PROJECT_SVN_RESOURCES_ROOT} DESTINATION bin/ COMPONENT core
 		PATTERN ".svn" EXCLUDE
 		PATTERN "CMakeLists.txt" EXCLUDE )
 endif()
