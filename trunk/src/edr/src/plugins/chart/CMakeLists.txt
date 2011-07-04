@@ -15,20 +15,14 @@ source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
 	Chart.h
 	ChartPointer.h
-	#ChartData.h
 	LineChartSerie.h
 	ChartPlugin.h
-	# EMGService.h
-	# GRFService.h
 	ChartWidget.h
 	IChart.h
 	ChartDataSeries.h
-	#C3DChartData.h
-	MultiViewChartItem.h
 	ChartVisualizer.h
 	ChartVisualizerTitleBar.h
 	ChartSerie.h
-
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -39,18 +33,10 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	Chart.cpp
 	ChartPointer.cpp
-	#sChartData.cpp
 	LineChartSerie.cpp
 	ChartPlugin.cpp
 	ChartWidget.cpp	
-	#EMGService.cpp
-	#GRFService.cpp	
 	ChartDataSeries.cpp
-	# DECreader.cpp
-	# INTELreader.cpp
-	# MIPSreader.cpp
-	#C3DChartData.cpp
-	MultiViewChartItem.cpp
 	ChartVisualizer.cpp
 	ChartVisualizerTitleBar.cpp
 	ChartSerie.cpp
