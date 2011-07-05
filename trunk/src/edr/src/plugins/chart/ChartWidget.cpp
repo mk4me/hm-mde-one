@@ -7,7 +7,7 @@
 #include <core/OsgSceneDump.h>
 
 #include "Chart.h"
-#include "MultiViewChartItem.h"
+//#include "MultiViewChartItem.h"
 #ifdef _DEBUG
 #define WM_FLAGS osgWidget::WindowManager::WM_PICK_DEBUG
 #else
