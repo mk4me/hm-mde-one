@@ -18,8 +18,6 @@ UTILS_POP_WARNINGS
 #include <kinematiclib/KinematicModel.h>
 #include <plugins/kinematic/KinematicModel.h>
 
-//#include "uniqueCollection.h"
-
 class ISchemeDrawer;
 enum DataToDraw;
 typedef core::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
