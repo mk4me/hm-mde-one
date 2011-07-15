@@ -13,7 +13,6 @@
 #include <vidlib/PixelFormat.h>
 #include <plugins/timeline/Stream.h>
 
-class IModel;
 class QWidget;
 class VideoWidget;
 class VideoWidgetOptions;

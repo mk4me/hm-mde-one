@@ -10,12 +10,10 @@ CommunicationService::CommunicationService()
 
     this->widget = new CommunicationWidgetEx(this);
     this->model->attach(this->widget);
-    //WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string(); 
 }
 
 CommunicationService::~CommunicationService()
 {
-    //dynamic_cast<utils::Observable<communication::CommunicationManager>*>(this->model)->detach(this->widget);
     communication::CommunicationManager::destoryInstance();
     this->model = NULL;
 }
