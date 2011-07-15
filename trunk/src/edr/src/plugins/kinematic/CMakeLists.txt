@@ -8,17 +8,15 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
-	KinematicPlugin.h
 	KinematicParser.h
 	KinematicService.h
+	KinematicVisualizer.h
 	ISchemeDrawer.h
 	LineSchemeDrawer.h
-	mainwindow.h
 	OsgSchemeDrawer.h
 	PointSchemeDrawer.h
 	GLPointSchemeDrawer.h
 	GLLineSchemeDrawer.h
-	SkeletonViewerLogic.h
 	UniqueCollection.h
 	SchemeDrawerContainer.h
 )
@@ -42,20 +40,18 @@ set(TARGET_SRC
 	KinematicPlugin.cpp
 	KinematicParser.cpp
 	KinematicService.cpp
+	KinematicVisualizer.cpp
 	LineSchemeDrawer.cpp
-	mainwindow.cpp
 	PointSchemeDrawer.cpp
 	GLPointSchemeDrawer.cpp
 	GLLineSchemeDrawer.cpp
-	SkeletonViewerLogic.cpp
 	SchemeDrawerContainer.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
-	mainwindow.h
-	KinematicService.h
+	KinematicVisualizer.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -63,9 +59,8 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 
 #------------------------------------------------------------------------------
 # UI
-set(TARGET_UI
-	mainwindow.ui
-)
+# set(TARGET_UI
+# )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
 set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})

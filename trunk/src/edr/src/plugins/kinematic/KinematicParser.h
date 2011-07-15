@@ -4,7 +4,6 @@
 #include <core/IParser.h>
 #include <core/IDataManager.h>
 
-
 class KinematicParser : public core::IParser
 {
     UNIQUE_ID("{AE673002-AE76-4E79-983E-ABDB15713E74}", "Kinematic parser");

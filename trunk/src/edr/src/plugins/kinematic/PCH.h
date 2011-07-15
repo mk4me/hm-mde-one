@@ -13,12 +13,20 @@
 #include <boost/function.hpp>
 #include <boost/foreach.hpp>
 #include <boost/type_traits.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+
+#include <core/ILog.h>
+#include <kinematiclib/SkeletalParsers.h>
+#include <core/SmartPtr.h>
 
 #include <utils/Utils.h>
 #include <utils/Debug.h>
 #include <utils/Enum.h>
+
+#include <QtCore/QObject>
+#include <QtCore/QtCore>
+#include <QtGui/QtGui>
+#include <QtOpenGL/QtOpenGL>
 
 UTILS_PUSH_WARNINGS
 #include <osg/Node>
@@ -52,20 +60,11 @@ UTILS_PUSH_WARNINGS
 #include <osgGA/FlightManipulator>
 #include <osgGA/DriveManipulator>
 #include <osgGA/KeySwitchMatrixManipulator>
+#include <osgGA/OrbitManipulator>
 #include <osgGA/StateSetManipulator>
 #include <osgGA/AnimationPathManipulator>
 #include <osgGA/TerrainManipulator>
 #include <osgDB/ReadFile>
 UTILS_POP_WARNINGS
-
-#include <QtCore/QtCore>
-#include <QtGui/QtGui>
-#include <QtOpenGL/QtOpenGL>
-
-#include <core/ILog.h>
-#include <kinematiclib/SkeletalParsers.h>
-#include <core/SmartPtr.h>
-
-//#include <core/Log.h>
 
 #endif //HEADER_GUARD_SKELETON_VIEWER__PCH_H__
