@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <kinematiclib/AmcParser.h>
 #include <kinematiclib/SkeletalParsers.h>
 
@@ -10,7 +11,7 @@ AmcParser::AmcParser() :
 {
 }
 
-void AmcParser::save (const SkeletalModelPtr model, const std::string& filename)
+void AmcParser::save (const SkeletalModelConstPtr model, const SkeletalDataConstPtr data, const std::string& filename)
 {
     std::ofstream out;
     out.open(filename.c_str());
@@ -18,32 +19,32 @@ void AmcParser::save (const SkeletalModelPtr model, const std::string& filename)
     out << ":FULLY-SPECIFIED" << std::endl;
     out << ":DEGREES" << std::endl;
 
-    std::vector<SkeletalModel::singleFramePtr>& frames = model->getFrames();
+    const std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
 
     int count = frames.size();
     for (int i = 0; i < count; ++i) {
         out << frames[i]->frameNo << std::endl;
-        std::vector<SkeletalModel::singleBoneState>& bones = frames[i]->bonesData;
-        int bonesCount = bones.size();
+        std::vector<SkeletalData::singleJointStatePtr>& joints = frames[i]->jointsData;
+        int bonesCount = joints.size();
         for (int j = 0; j < bonesCount; j++) {
-            out << bones[j].name;
-             if (bones[j].name == "root" && forceRootXYZ) {
-                 std::vector<DegreeOfFreedom>& dofs = model->getSkeleton().getRoot()->dofs;
+            out << joints[j]->name;
+             if (joints[j]->name == "root" && forceRootXYZ) {
+                 const std::vector<DegreeOfFreedom>& dofs = model->getSkeleton().getRoot()->dofs;
                  int index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TX, dofs);
-                 out << " " << bones[j].channelValues[index];
+                 out << " " << joints[j]->channelValues[index];
                  index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TY, dofs);
-                 out << " " << bones[j].channelValues[index];
+                 out << " " << joints[j]->channelValues[index];
                  index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TZ, dofs);
-                 out << " " << bones[j].channelValues[index];
+                 out << " " << joints[j]->channelValues[index];
                  index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RX, dofs);
-                 out << " " << bones[j].channelValues[index];
+                 out << " " << joints[j]->channelValues[index];
                  index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RY, dofs);
-                 out << " " << bones[j].channelValues[index];
+                 out << " " << joints[j]->channelValues[index];
                  index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RZ, dofs);
-                 out << " " << bones[j].channelValues[index];
+                 out << " " << joints[j]->channelValues[index];
              } else {
-            for (unsigned int k = 0; k < bones[j].channelValues.size(); k++) {
-                out << " " << bones[j].channelValues[k];
+            for (unsigned int k = 0; k < joints[j]->channelValues.size(); k++) {
+                out << " " << joints[j]->channelValues[k];
             }}
 
             out << std::endl;
@@ -52,7 +53,7 @@ void AmcParser::save (const SkeletalModelPtr model, const std::string& filename)
     out.close();
 }
 
-void AmcParser::parse(SkeletalModelPtr model, const std::string& filename )
+void AmcParser::parse(SkeletalDataPtr data, const std::string& filename )
 {
     std::vector<double> numbers;
     std::string name;
@@ -66,10 +67,11 @@ void AmcParser::parse(SkeletalModelPtr model, const std::string& filename )
     
     std::string line;
 
-    std::vector<SkeletalModel::singleFramePtr>& frames = model->getFrames();
+    std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
 
-    // HACK: z braku dokladnej dokumentacji nie wiem jakie moga wystapic naglowki pliku *.bhv
+    // HACK: z braku dokladnej dokumentacji nie wiem jakie moga wystapic naglowki pliku *.amc
     // wszystkie do tej pory spotkane pliki konczyly naglowek linijka :DEGREES,
+	// rozwiazanie stosowane jest w innych parserach
     while (getline(ifs, line)) {
         loc = line.find(":DEGREES");
         if (loc != std::string::npos) {
@@ -77,29 +79,30 @@ void AmcParser::parse(SkeletalModelPtr model, const std::string& filename )
         }
     }
 
-    SkeletalModel::singleBoneState bone;
     
-    SkeletalModel::singleFramePtr frame(new SkeletalModel::singleFrame);
+    
+    SkeletalData::singleFramePtr frame(new SkeletalData::singleFrame);
     while (getline(ifs, line)) {
         std::istringstream iss(line);
         int frameNo = -1;
         if (iss >> frameNo){
-            if (frame->bonesData.size() > 0) {
+            if (frame->jointsData.size() > 0) {
                 frames.push_back(frame);
             }
             
-            frame = SkeletalModel::singleFramePtr(new SkeletalModel::singleFrame);
+            frame = SkeletalData::singleFramePtr(new SkeletalData::singleFrame);
             frame->frameNo = frameNo;
         } else {
             iss.clear();
-            iss >> bone.name;
-            bone.channelValues.clear();
+			SkeletalData::singleJointStatePtr jointState(new SkeletalData::singleJointState);
+            iss >> jointState->name;
+            jointState->channelValues.clear();
             
             double val = 0.0;
             while (iss >> val) {
-                bone.channelValues.push_back(val);
+                jointState->channelValues.push_back(val);
             }
-            frame->bonesData.push_back(bone);
+            frame->jointsData.push_back(jointState);
         }
      }
      frames.push_back(frame);

@@ -3,10 +3,11 @@
 
 #include <core/ObjectWrapper.h>
 #include <kinematiclib/SkeletalModel.h>
-#include <kinematiclib/KinematicModel.h>
+#include <kinematiclib/JointAnglesCollection.h>
+#include <plugins/kinematic/KinematicModel.h>
 #include <plugins/kinematic/skeletalVisualizationScheme.h>
 
-CORE_DEFINE_WRAPPER(kinematic::KinematicSkeleton, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+CORE_DEFINE_WRAPPER(kinematic::JointAnglesCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(KinematicModel, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 CORE_DEFINE_WRAPPER(std::string, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 CORE_DEFINE_WRAPPER(SkeletalVisualizationScheme, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);

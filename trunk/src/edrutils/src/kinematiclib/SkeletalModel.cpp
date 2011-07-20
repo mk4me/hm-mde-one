@@ -1,25 +1,43 @@
 #include "stdafx.h"
-#include <kinematiclib/DegreeOfFreedom.h>
-#include <kinematiclib/Joint.h>
-#include <kinematiclib/Skeleton.h>
 #include <kinematiclib/SkeletalModel.h>
 
 namespace kinematic {
+SkeletalModel* SkeletalModel::clone() const
+{
+	SkeletalModel* clone = new SkeletalModel();
+	clone->version = this->version;        
+	clone->name = this->name;           
+	clone->documentation = this->documentation;  
+	clone->length = this->length;         
+	clone->mass = this->mass;           
+	clone->angle = this->angle;
+	clone->skeleton = SkeletonPtr(this->skeleton->clone());
 
-void SkeletalModel::RecreateMaps() {
-    jointsMap.clear();
-    jointsIds.clear();
-    Recreate(getSkeleton().getRoot());
+	SkeletalModel::createMaps(clone->skeleton->getRoot(), clone->jointsMap, clone->jointsIds);
+	return clone;
 }
 
-void SkeletalModel::Recreate( JointPtr joint ) {
-    static int id = 0;
-    jointsMap[joint->name] = joint;
-    jointsIds[id++] = joint;
-    joint->id = id;
-    for (int i = joint->children.size() - 1; i >= 0; --i) {
-        Recreate(joint->children[i]);
-    }
+JointPtr SkeletalModel::getJointByName( const std::string& name )
+{
+	JointMap::iterator it = jointsMap.find(name);
+	JointPtr nullJoint;
+	return it != jointsMap.end() ? it->second : nullJoint;
 }
 
-} //kinematic
+JointConstPtr SkeletalModel::getJointByName( const std::string& name ) const
+{
+	JointMap::const_iterator it = jointsMap.find(name);
+	JointPtr nullJoint;
+	return it != jointsMap.end() ? it->second : nullJoint;
+}
+
+void SkeletalModel::createMaps( JointPtr root, JointMap& jointMap, JointIdMap& jointIDMap )
+{
+	jointMap[root->name] = root;
+	jointIDMap[root->id] = root;
+	for (auto it = root->children.begin(); it != root->children.end(); it++) {
+		createMaps(*it, jointMap, jointIDMap);
+	}
+}
+
+}

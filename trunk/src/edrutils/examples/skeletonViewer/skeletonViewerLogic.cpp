@@ -40,15 +40,32 @@ void SkeletonViewerLogic::loadAsfAmc( const std::string& asfFile, const std::str
     setModel(model);
 }
 
-void SkeletonViewerLogic::createTree( JointPtr parentJoint, QTreeWidgetItem* parentItem ) {
-    int count = parentJoint->children.size();
+void SkeletonViewerLogic::createTree( hAnimJointPtr parentJoint, QTreeWidgetItem* parentItem ) {
+
+	int count = parentJoint->GetChildrenBones().size();
+	for (int i = 0; i < count; i++) {
+		QTreeWidgetItem* item = new QTreeWidgetItem(parentItem);
+		hAnimBonePtr bone = parentJoint->GetChildrenBones()[i];
+		QString name(bone->name.c_str());
+		item->setText(0, name);
+
+		for (int j = 0; j < bone->childrenJoints.size(); j++) {
+			QTreeWidgetItem* item2 = new QTreeWidgetItem(item);
+			hAnimJointPtr child = bone->childrenJoints[j];
+			QString name(child->getName().c_str());
+			item2->setText(0, name);
+			createTree(child, item2);
+		}
+		
+	}
+    /*int count = parentJoint->children.size();
     for (int i = 0; i < count; i++) {
         QTreeWidgetItem* item = new QTreeWidgetItem(parentItem);
         JointPtr child = parentJoint->children[i];
         QString name(child->name.c_str());
         item->setText(0, name);
         createTree(child, item);
-    }
+    }*/
 }
 
 void SkeletonViewerLogic::createMarkersCrowd( kinematic::JointPtr joint, const Vec3& position)
@@ -194,7 +211,7 @@ void SkeletonViewerLogic::setModel( kinematic::SkeletalModelPtr skeletalModel )
     UTILS_ASSERT(mainWindow);
     JointPtr root = skeletalModel->getSkeleton().getRoot();
 
-    KinematicModelPtr kinematic(new KinematicModel);
+    JointAnglesCollectionPtr kinematic(new JointAnglesCollection);
     kinematic->setSkeletalData(skeletalModel);
 
     visualization->setKinematicModel(kinematic);
@@ -205,7 +222,7 @@ void SkeletonViewerLogic::setModel( kinematic::SkeletalModelPtr skeletalModel )
     QString rootName(skeletalModel->getSkeleton().getRootName().c_str());
     mainWindow->getTreeRootItem()->setText(0, rootName);
 
-    createTree(kinematic->getHAnimSkeleton()->getRoot(), mainWindow->getTreeRootItem());
+    createTree(boost::dynamic_pointer_cast<hAnimJoint>(kinematic->getHAnimSkeleton()->getRoot()), mainWindow->getTreeRootItem());
     //createMarkersCrowd(root);
 
     boost::shared_ptr<OsgSchemeDrawer> osgDrawer = boost::dynamic_pointer_cast<OsgSchemeDrawer>(drawer);

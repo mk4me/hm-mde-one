@@ -8,8 +8,8 @@
 #include <core/IDataManager.h>
 #include <core/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
-
-
+//#include <core/C3DChannels.h>
+#include <plugins/timeline/Stream.h>
 #include <core/ILog.h>
 #include <core/IService.h>
 #include <boost/foreach.hpp>

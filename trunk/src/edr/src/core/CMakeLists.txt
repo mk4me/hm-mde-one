@@ -54,6 +54,8 @@ set(PRIVATE_H
 	DataSourceManager.h
 	Log.h
 	PluginLoader.h
+	#
+	
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -103,6 +105,15 @@ set(PUBLIC_H
 	${HEADER_PATH}/IDataProcessorManager.h
 	${HEADER_PATH}/IDataSource.h
 	${HEADER_PATH}/IDataSourceManager.h
+	#${HEADER_PATH}/IntegumentarySystem.h
+	#${HEADER_PATH}/ISubjectSystem.h
+	#${HEADER_PATH}/Motion.h
+	#${HEADER_PATH}/MuscularSystem.h
+	#${HEADER_PATH}/Session.h
+	#${HEADER_PATH}/SkeletalSystem.h
+	#${HEADER_PATH}/SolidSystem.h
+	#${HEADER_PATH}/Subject.h
+	#${HEADER_PATH}/SubjectSystemConfiguration.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -148,6 +159,7 @@ set(TARGET_SRC
 	LocalDataSourceWidget.cpp
 	DataSource.cpp
 	DataSourceManager.cpp
+	#Subject.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -200,26 +212,26 @@ QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
 
-#------------------------------------------------------------------------------
-# CONFIG
-set(CONFIG_H
-	config/ConfigBuffer.h
-	config/ConfigurationGroup.h
-	config/FileReader.h
-	config/IConfigManager.h
-	config/ConfigParameter.h
-)
-source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\config" FILES ${CONFIG_H})
-set(TARGET_H ${TARGET_H} ${CONFIG_H})
+# #------------------------------------------------------------------------------
+# # CONFIG
+# set(CONFIG_H
+	# config/ConfigBuffer.h
+	# config/ConfigurationGroup.h
+	# config/FileReader.h
+	# config/IConfigManager.h
+	# config/ConfigParameter.h
+# )
+# source_group("${SOURCEGROUP_PRIVATE_HEADERS}\\config" FILES ${CONFIG_H})
+# set(TARGET_H ${TARGET_H} ${CONFIG_H})
 
-set(CONFIG_SRC
-	config/ConfigBuffer.cpp
-	config/ConfigurationGroup.cpp
-	config/FileReader.cpp
-	config/ConfigParameter.cpp
-)
-source_group("${SOURCEGROUP_SOURCES}\\config" FILES ${CONFIG_SRC})
-set(TARGET_SRC ${TARGET_SRC} ${CONFIG_SRC})
+# set(CONFIG_SRC
+	# config/ConfigBuffer.cpp
+	# config/ConfigurationGroup.cpp
+	# config/FileReader.cpp
+	# config/ConfigParameter.cpp
+# )
+# source_group("${SOURCEGROUP_SOURCES}\\config" FILES ${CONFIG_SRC})
+# set(TARGET_SRC ${TARGET_SRC} ${CONFIG_SRC})
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek

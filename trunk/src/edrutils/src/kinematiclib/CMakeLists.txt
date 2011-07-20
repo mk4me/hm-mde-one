@@ -18,8 +18,14 @@ set(PUBLIC_H
 	${HEADER_PATH}/DegreeOfFreedom.h
 	${HEADER_PATH}/hmException.h
 	${HEADER_PATH}/Joint.h
-	${HEADER_PATH}/KinematicModel.h
+	${HEADER_PATH}/hAnimJoint.h
+	${HEADER_PATH}/hAnimBone.h
+	${HEADER_PATH}/hAnimSkeleton.h
+	${HEADER_PATH}/SkeletalMappingScheme.h
+	${HEADER_PATH}/QuaternionManipulators.h
+	${HEADER_PATH}/JointAnglesCollection.h
 	${HEADER_PATH}/SkeletalModel.h
+	${HEADER_PATH}/SkeletalData.h
 	${HEADER_PATH}/SkeletalParsers.h
 	${HEADER_PATH}/Skeleton.h
 	${HEADER_PATH}/Logger.h
@@ -48,10 +54,12 @@ set(TARGET_SRC
 	DegreeOfFreedom.cpp
 	hmException.cpp
 	Joint.cpp
-	KinematicModel.cpp
+	hAnimJoint.cpp
+	hAnimSkeleton.cpp
+	SkeletalMappingScheme.cpp
+	JointAnglesCollection.cpp
 	SkeletalModel.cpp
 	Skeleton.cpp
-	#stdafx.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 #set(TARGET_SRC ${TARGET_SRC})

@@ -4,7 +4,7 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/SkeletalParsers.h>
-#include <kinematiclib/KinematicModel.h>
+#include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/kinematic/Wrappers.h>
 #include "ISchemeDrawer.h"
@@ -17,7 +17,7 @@ KinematicParser::KinematicParser()
     schemeMarkersSkeleton = core::ObjectWrapper::create<SkeletalVisualizationScheme>();
     kinematicMarkers = core::ObjectWrapper::create<KinematicModel>();
     schemeMarkers = core::ObjectWrapper::create<SkeletalVisualizationScheme>();
-    skeleton = core::ObjectWrapper::create<kinematic::KinematicSkeleton>();
+    skeleton = core::ObjectWrapper::create<kinematic::JointAnglesCollection>();
 }
 
 KinematicParser::~KinematicParser()
@@ -27,6 +27,7 @@ KinematicParser::~KinematicParser()
 void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path)
 {
     SkeletalModelPtr modelPtr(new SkeletalModel);
+	SkeletalDataPtr dataPtr(new SkeletalData());
     bool fromC3D = false;
     
     if(core::Filesystem::fileExtension(path).compare(".amc") == 0) {
@@ -36,10 +37,10 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Fil
         std::string asfFilename = amcFilename.substr(0, amcFilename.size() - 3);
         asfFilename += "asf";
         asf.parse(modelPtr, asfFilename);
-        amc.parse(modelPtr, amcFilename);
+        amc.parse(dataPtr, amcFilename);
     } else if (core::Filesystem::fileExtension(path).compare(".bvh") == 0)  {
         BvhParser bvh;
-        bvh.parse(modelPtr, path.string());
+        bvh.parse(modelPtr, dataPtr, path.string());
     } else if (core::Filesystem::fileExtension(path).compare(".c3d") == 0) {
         fromC3D = true;
 
@@ -63,12 +64,12 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Fil
         }
     }
 
-    std::vector<MarkerSetPtr> markers = core::queryDataPtr(dataManager);
+    std::vector<MarkerCollectionPtr> markers = core::queryDataPtr(dataManager);
     VskParserPtr vsk(new VskParser);
 
     if (markers.size() > 0) {
-        MarkerSetConstPtr ms = markers[0];
-        switch(ms->getMarkersCount()) {
+        MarkerCollectionConstPtr ms = markers[0];
+        switch(ms->getNumChannels()) {
        case 39:
             vsk->parse(core::getResourceString("trial/M39.vsk"));
             break;
@@ -95,10 +96,10 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Fil
         schemeMarkers->setName(path.filename().string() + " - markers");
     }
 
-    if (markers.size() > 0 && modelPtr && modelPtr->getFrames().size() > 0) {
+    if (markers.size() > 0 && modelPtr && dataPtr && dataPtr->getFrames().size() > 0) {
         KinematicModelPtr kin(new KinematicModel);
-        KinematicSkeletonPtr kinematicSkeleton(new KinematicSkeleton);
-        kinematicSkeleton->setSkeletalData(modelPtr);
+        JointAnglesCollectionPtr kinematicSkeleton(new JointAnglesCollection);
+        kinematicSkeleton->setSkeletal(modelPtr, dataPtr);
         skeleton->set(kinematicSkeleton);
         kin->setSkeleton(kinematicSkeleton);
         kin->setMarkers(markers[0]);

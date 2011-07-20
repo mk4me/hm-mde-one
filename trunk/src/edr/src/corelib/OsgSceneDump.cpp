@@ -1,6 +1,6 @@
 #include "CorePCH.h"
 #include <fstream>
-#include <Qt/qtreewidget.h>
+//#include <Qt/qtreewidget.h>
 #include <core/OsgSceneDump.h>
 #include <core/StringTools.h>
 

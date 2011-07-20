@@ -31,7 +31,6 @@
 
 UTILS_PUSH_WARNINGS
 #include <osg/Node>
-#include <osg/AnimationPath>
 #include <osg/Config>
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -50,30 +49,12 @@ UTILS_PUSH_WARNINGS
 #include <osg/ShapeDrawable>
 #include <osg/Timer>
 #include <osg/Vec3>
-#include <osg/Vec3d>
-
 #include <osgViewer/Viewer>
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/ViewerEventHandlers>
-
-#include <osgGA/TrackballManipulator>
-#include <osgGA/FlightManipulator>
-#include <osgGA/DriveManipulator>
-#include <osgGA/KeySwitchMatrixManipulator>
 #include <osgGA/StateSetManipulator>
-#include <osgGA/AnimationPathManipulator>
-#include <osgGA/TerrainManipulator>
-
-#include <osgWidget/Widget>
-#include <osgWidget/Window>
-#include <osgWidget/Label>
-#include <osgWidget/Box>
-#include <osgWidget/Canvas>
-#include <osgWidget/Table>
-
-#include <osgDB/ReadFile>
 UTILS_POP_WARNINGS
 
 #include <QtCore/QtCore>

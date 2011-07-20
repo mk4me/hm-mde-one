@@ -2,24 +2,24 @@
 #define __HEADER_GUARD_KINEMATIC__KINEMATICMODEL_H__
 
 #include <kinematiclib/SkeletalModel.h>
-#include <kinematiclib/KinematicModel.h>
+#include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/c3d/C3DChannels.h>
 
 class KinematicModel
 {
 private:
-    kinematic::KinematicSkeletonPtr skeleton;
-    MarkerSetPtr markers;
+    kinematic::JointAnglesCollectionPtr skeleton;
+    MarkerCollectionPtr markers;
     
 public:
     KinematicModel() {}
 
     // todo wprowadzic const
 public:
-    kinematic::KinematicSkeletonPtr getSkeleton() const { return skeleton; }
-    void setSkeleton(kinematic::KinematicSkeletonPtr val) { skeleton = val; }
-    MarkerSetPtr getMarkers() const { return markers; }
-    void setMarkers(MarkerSetPtr val) { markers = val; }
+    kinematic::JointAnglesCollectionPtr getSkeleton() const { return skeleton; }
+    void setSkeleton(kinematic::JointAnglesCollectionPtr val) { skeleton = val; }
+    MarkerCollectionPtr getMarkers() const { return markers; }
+    void setMarkers(MarkerCollectionPtr val) { markers = val; }
 };
 
 typedef core::shared_ptr<KinematicModel> KinematicModelPtr;

@@ -33,13 +33,14 @@ BvhParserTest::~BvhParserTest(void)
 
 }
 
+
 void BvhParserTest::testLoad()
 {
     kinematic::BvhParser bvh;
     kinematic::SkeletalModelPtr model(new kinematic::SkeletalModel);
+	kinematic::SkeletalDataPtr data(new kinematic::SkeletalData);
     // TODO zmienic ktorys z plikow CMakeLists bo na razie ten test nie ma sensu
-    bvh.parse(model, "kinematic/biovision/walks/backwards_walk.bvh");
-
+    bvh.parse(model, data, "kinematic/biovision/walks/backwards_walk.bvh");
 }
 
 void BvhParserTest::fullTest() {
@@ -49,10 +50,12 @@ void BvhParserTest::fullTest() {
         LOGGER(Logger::Info, "Test : " + s);
         SkeletalModelPtr model1(new SkeletalModel);
         SkeletalModelPtr model2(new SkeletalModel);
+		SkeletalDataPtr data1(new SkeletalData);
+		SkeletalDataPtr data2(new SkeletalData);
         BvhParser b1, b2;
-        b1.parse(model1, s);
-        b1.save(model1, "temp.bvh");
-        b2.parse(model2, "temp.bvh");
+        b1.parse(model1, data1, s);
+        b1.save(model1, data1, "temp.bvh");
+        b2.parse(model2, data2, "temp.bvh");
         
         SkeletalModel::JointMap::iterator it1, it2;
         SkeletalModel::JointMap map1 = model1->getJointMap();

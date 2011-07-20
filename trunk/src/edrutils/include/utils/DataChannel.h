@@ -6,8 +6,8 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_CORE__DATACHANNEL_H__
-#define __HEADER_GUARD_CORE__DATACHANNEL_H__
+#ifndef __HEADER_GUARD_UTILS__DATACHANNEL_H__
+#define __HEADER_GUARD_UTILS__DATACHANNEL_H__
 
 #include <vector>
 #include <utility>
@@ -185,12 +185,12 @@ namespace utils {
             return samplesPerSec;
         }
         //! \return D³ugoœæ kana³u w sekundach.
-        time_type getLength() const
+        virtual time_type getLength() const
         {
             return length;
         }
         //! \return Liczba punktów pomiarowych.
-        int getNumPoints() const
+        virtual int getNumPoints() const
         {
             return static_cast<int>(data.size());
         }
@@ -227,7 +227,7 @@ namespace utils {
             return minValueTime;
         }
         //! \param point Punkt pomiarowy do dodania.
-        void addPoint(point_type point)
+        virtual void addPoint(point_type point)
         {
             if ( data.size() == 0 ) {
                 length = 0;
@@ -294,7 +294,7 @@ namespace utils {
         
         //! \param time
         //! \return Zinterpolowana wartoœæ dla zadanego czasu.
-        point_type getValue(time_type time) const
+        virtual point_type getValue(time_type time) const
         {
             auto points = getValueHelper(time);
             return Manipulator::interpolate(points.first.value, points.second.value, (time - points.first.time) * samplesPerSec );
@@ -314,7 +314,7 @@ namespace utils {
         }
 
         //! \return Bie¿¹ca wartoœæ.
-        point_type getCurrentValue() const
+        virtual point_type getCurrentValue() const
         {
             return getValue(time);
         }

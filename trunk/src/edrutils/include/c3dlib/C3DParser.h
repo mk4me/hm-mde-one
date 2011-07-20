@@ -69,8 +69,7 @@ public:
         virtual std::string getContext() const = 0;
         virtual std::string getSubject() const = 0;
         virtual double getTime() const = 0;
-        virtual int getFrame() const = 0;
-        virtual int getIconId() const = 0;
+		virtual boost::shared_ptr<IEvent> clone() const = 0;
     };
 	typedef boost::shared_ptr<IEvent> IEventPtr;
 	typedef boost::shared_ptr<const IEvent> IEventConstPtr;
@@ -113,6 +112,9 @@ public:
 	int getNumPointFrames() const;
 	//! \return czestotliwosc zapisu danych dla punktow
     double getPointFrequency() const;
+
+	int getNumEvents() const;
+	IEventPtr getEvent(int index) const;
 
 private:
     //! realizacja idiomu "Cashire cat"

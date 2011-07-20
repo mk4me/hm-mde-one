@@ -18,17 +18,14 @@
 #include <list>
 #include <btkMergeAcquisitionFilter.h>
 #include <utils/Debug.h>
-
+#include <utils/DataChannelCollection.h>
 
 namespace c3dlib {
 
 // Kanal analogowy
 class Analog : public C3DParser::IAnalog
 {
-public:
-	typedef enum {Unknown = 0, PlusMinus10 = 1, PlusMinus5 = 2, PlusMinus2Dot5 = 3, PlusMinus1Dot25 = 4, PlusMinus1 = 5} Gain;
 private:
-	Gain gain;
 	int offset;
 	double scale;
 	btk::Analog::ConstPointer analog;
@@ -88,6 +85,51 @@ public:
 typedef boost::shared_ptr<Point> PointPtr;
 typedef boost::shared_ptr<const Point> PointConstPtr;
 
+
+class Event : public C3DParser::IEvent
+{
+private:
+	btk::Event::ConstPointer eventPtr;
+
+public:
+	virtual std::string getContext() const 
+	{
+		return eventPtr->GetContext();
+	}
+	virtual std::string getSubject() const
+	{
+		return eventPtr->GetSubject();
+	}
+	virtual double getTime() const
+	{
+		return eventPtr->GetTime();
+	}
+	virtual int getFrame() const
+	{
+		return eventPtr->GetFrame();
+	}
+	virtual const std::string& getLabel() const
+	{
+		return eventPtr->GetLabel();
+	}
+	virtual const std::string& getDescription() const
+	{
+		return eventPtr->GetDescription();
+	}
+
+	virtual boost::shared_ptr<IEvent> clone() const 
+	{
+		boost::shared_ptr<Event> newEvent(new Event());
+		newEvent->setEventPtr(eventPtr->Clone());
+		return newEvent;
+	}
+public:
+	btk::Event::ConstPointer getEventPtr() const { return eventPtr; }
+	void setEventPtr(btk::Event::ConstPointer val) { eventPtr = val; }
+};
+typedef boost::shared_ptr<Event> EventPtr;
+typedef boost::shared_ptr<const Event> EventConstPtr;
+
 //! Pola tej klasy agreguja te dane wykorzystywane wewnatrz klasy C3DParser,
 //! ktore nie moga byc widoczne w naglowku
 class C3DParser::__data 
@@ -126,6 +168,14 @@ C3DParser::~C3DParser()
     delete data;
 }
 
+
+void C3DParser::save( const std::string& filename )
+{
+	UTILS_ASSERT(data->aquisitionPointer);
+	btk::AcquisitionFileWriter::Pointer writer = btk::AcquisitionFileWriter::New();
+	writer->SetFilename(filename);
+	writer->SetInput(data->aquisitionPointer);
+}
 
 void C3DParser::load(const std::string& filename)
 {
@@ -239,8 +289,7 @@ void C3DParser::loadAcquisition()
     // Virtual markers (CoM, CoG, ...)
 	
     points = this->data->virtualMarkersSeparator->GetOutput(2);
-    for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it)
-    {
+    for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
         PointPtr p(new Point());
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
@@ -249,8 +298,7 @@ void C3DParser::loadAcquisition()
     }
     // Virtual markers used to define frames
     points = this->data->virtualMarkersSeparator->GetOutput(1);
-    for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it)
-    {
+    for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
         PointPtr p(new Point());
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
@@ -260,8 +308,7 @@ void C3DParser::loadAcquisition()
     // Other points
     points = this->data->virtualMarkersSeparator->GetOutput(3);
 	
-    for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it)
-    {
+    for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
         PointPtr p(new Point());
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
@@ -277,29 +324,18 @@ void C3DParser::loadAcquisition()
     }
 
 	
-    for (btk::Acquisition::AnalogIterator it = this->data->aquisitionPointer->BeginAnalog() ; it != this->data->aquisitionPointer->EndAnalog() ; ++it)
-    {
+    for (btk::Acquisition::AnalogIterator it = this->data->aquisitionPointer->BeginAnalog() ; it != this->data->aquisitionPointer->EndAnalog() ; ++it) {
         AnalogPtr a(new Analog());
 		a->setAnalog(*it);
 		this->analogs.push_back(a);
     }
 
-    //// Event
-    //inc = -1;
-    //for (btk::Acquisition::EventIterator it = this->data->aquisitionPointer->BeginEvent() ; it != this->data->aquisitionPointer->EndEvent() ; ++it)
-    //{
-    //    ++inc;
-    //    Event* e = new Event();
-    //    e->label = (*it)->GetLabel();
-    //    e->description = (*it)->GetDescription();
-    //    e->context = (*it)->GetContext();
-    //    e->subject = (*it)->GetSubject();
-    //    e->time = (*it)->GetTime();
-    //    e->frame = (*it)->GetFrame();
-    //    e->iconId = (*it)->GetId();
-    //    this->events.push_back(e);
-    //}
-    //this->lastEventId = inc;
+    // Event
+    for (btk::Acquisition::EventIterator it = this->data->aquisitionPointer->BeginEvent() ; it != this->data->aquisitionPointer->EndEvent() ; ++it) {
+        EventPtr e(new Event());
+        e->setEventPtr(*it);
+        this->events.push_back(e);
+    }
 }
 
 double C3DParser::getAnalogFrequency() const
@@ -356,4 +392,14 @@ int C3DParser::getNumPointFrames() const
 	return tmp;
 }
 
+int C3DParser::getNumEvents() const
+{
+	return events.size();
+}
+
+C3DParser::IEventPtr C3DParser::getEvent( int index ) const
+{
+	UTILS_ASSERT(index >= 0 && index < getNumEvents());
+	return events[index];
+}
 }

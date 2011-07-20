@@ -6,6 +6,7 @@
 #include <deque>
 #include <core/Plugin.h>
 #include <core/SmartPtr.h>
+#include <QtOpenGL/QtOpenGL>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {

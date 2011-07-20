@@ -14,7 +14,7 @@ UTILS_POP_WARNINGS
 #include <boost/utility.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/function.hpp>
-#include <kinematiclib/KinematicModel.h>
+#include <kinematiclib/JointAnglesCollection.h>
 
 #include "uniqueCollection.h"
 
@@ -58,11 +58,11 @@ public: // akcesory
 
     int getNumFrames() const { 
         UTILS_ASSERT(kinematicModel);  
-        return kinematicModel->getNumFrames(); 
+        return kinematicModel->getNumPointsPerChannel(); 
     }
     double getFrameTime() const { 
         UTILS_ASSERT(kinematicModel); 
-        return kinematicModel->getFrameTime(); 
+        return 1.0 / kinematicModel->getFrequency(); 
     }
     double getDuration() const { return getNumFrames() * getFrameTime(); }
 
@@ -72,8 +72,8 @@ public: // akcesory
     std::vector<Connection>  &getJointConnections() { return jointConnections; }
 
     //model kinematyczny
-    kinematic::KinematicModelPtr getKinematicModel() const { return kinematicModel; }
-    void setKinematicModel(kinematic::KinematicModelPtr val);
+    kinematic::JointAnglesCollectionPtr getKinematicModel() const { return kinematicModel; }
+    void setKinematicModel(kinematic::JointAnglesCollectionPtr val);
 
     //! ustawia schemat odrysowywania modelu
     void setSchemeDrawer(ISchemeDrawerPtr drawer);
@@ -98,12 +98,11 @@ private:
     //! odswiezenie informacji o markerach
     void updateMarkers();
     //! obliczenie poczatkowych transformacji
-    void computeBindPoses(kinematic::KinematicModelPtr model);
+    void computeBindPoses(kinematic::JointAnglesCollection model);
     //! obliczenie transformacji dla podanego czasu
     void updateJointTransforms(double time);
     //! obliczenie transformacji dla podanego czasu
-    void updateJointTransforms(std::map<std::string, osg::Quat>& rotations, kinematic::hAnimJointPtr joint, 
-        osg::Quat parentRot, osg::Vec3 parentPos);
+    void updateJointTransforms(const std::vector<osg::Quat>& rotations, kinematic::hAnimJointPtr joint, osg::Quat parentRot, osg::Vec3 parentPos);
     void updateWorldTransforms(osg::Vec3 worldPosition, osg::Quat worldRotation);
     void updateSkinnedTransforms();
 
@@ -119,13 +118,13 @@ private:
     //! stany stawow dla aktualnego czasu
     std::vector<JointState> jointMarkersStates;
     //! ulatwia ineksowanie jointow
-    std::map<kinematic::JointPtr, int> visJoints;
+    std::map<kinematic::hAnimJointPtr, int> visJoints;
     //! zawiera informacje o polaczeniach miedzy stawami
     std::vector<Connection> jointConnections;
     //! aktualny wizualizator schematu
     ISchemeDrawerPtr schemeDrawer;
     //! model kinematyczny z danymi
-    kinematic::KinematicModelPtr kinematicModel;
+    kinematic::JointAnglesCollectionPtr kinematicModel;
     //! slaby wskaznik do this
     boost::weak_ptr<SkeletalVisualizationScheme> weak;
 

@@ -25,7 +25,7 @@ protected:
     virtual bool hasMoreData() const;
 
     virtual void processData();
-
+	
 private:
 
     const core::IDataSource* source;

@@ -151,12 +151,12 @@ void VisualizerWidget::init()
     buttonSplitV->setDefaultAction(actionSplitVertically);    
 
     //dodanie stworzonych elementow do titleBara
-    titleBar->addObject(label, IEDRTitleBar::SideType::Left);
-    titleBar->addObject(comboType, IEDRTitleBar::SideType::Left);
-    titleBar->addObject(buttonSource, IEDRTitleBar::SideType::Left);
+    titleBar->addObject(label, IEDRTitleBar::Left);
+    titleBar->addObject(comboType, IEDRTitleBar::Left);
+    titleBar->addObject(buttonSource, IEDRTitleBar::Left);
 
-    titleBar->addObject(buttonSplitH, IEDRTitleBar::SideType::Right);
-    titleBar->addObject(buttonSplitV, IEDRTitleBar::SideType::Right);
+    titleBar->addObject(buttonSplitH, IEDRTitleBar::Right);
+    titleBar->addObject(buttonSplitV, IEDRTitleBar::Right);
 
 
     //inicjalizacja pozostalych sygnalow i slotow
@@ -335,7 +335,7 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 
             // dodajemy akcje ogólne widgetu
             BOOST_FOREACH(QObject* obj, visualizerCustomElements) {
-                titleBar->addObject(obj, IEDRTitleBar::SideType::Left);
+                titleBar->addObject(obj, IEDRTitleBar::Left);
             }
 
             EDRDockInnerWidget * innerWidget = getInnerWidget();
@@ -438,7 +438,7 @@ void VisualizerWidget::fillSourcesMenu()
 
             if(aditional > 0){
                 std::set<core::ObjectWrapperConstPtr> current(objects->begin(), objects->end());
-                std::vector<core::ObjectWrapperConstPtr> result(max(objects->size(), aditional));
+                std::vector<core::ObjectWrapperConstPtr> result(max(static_cast<int>(objects->size()), aditional));
 
                 auto stopIT = std::set_difference(iT->second.begin(), iT->second.end(), current.begin(), current.end(), result.begin());
                 total = current.size();

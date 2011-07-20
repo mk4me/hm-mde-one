@@ -124,7 +124,7 @@ void ConeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
     auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
     auto states = getVisualiztionScheme()->getStates(dataToDraw);
     
-    for (int i = 0;  i < connections.size(); ++i) {
+    for (unsigned int i = 0;  i < connections.size(); ++i) {
         SkeletalVisualizationScheme::JointState state1 = states[connections[i].index1];
         SkeletalVisualizationScheme::JointState state2 = states[connections[i].index2];
         TransformPtr t = addTransform(state1.position, state2.position, connections[i].color);

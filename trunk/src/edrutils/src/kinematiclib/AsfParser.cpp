@@ -43,7 +43,7 @@ void AsfParser::parse(SkeletalModelPtr model, const string& filename)
     if (result) {
         result &= parseUnits(units);
         result &= parseRoot(root, model->getSkeleton());
-        result &= parseBones(bonedata);
+        result &= parseJoints(bonedata);
         result &= parseHierarchy(hierarchy, model->getSkeleton());
     }
     if (!result) {
@@ -116,7 +116,7 @@ void AsfParser::parseLimit(const string& token, vector<double>& limitValues) {
     }
 }
 
-bool AsfParser::parseSingleBone(const string& singleBone, Joint& bone) {
+bool AsfParser::parseSingleJoint(const string& singleBone, Joint& bone) {
     istringstream is(singleBone);
 
     vector<string> rawBones;
@@ -192,7 +192,7 @@ bool AsfParser::parseSingleBone(const string& singleBone, Joint& bone) {
     return true;
 }
 
-bool AsfParser::parseBones(const string& bones) {
+bool AsfParser::parseJoints(const string& bones) {
     istringstream is (bones);
     string bone;
     SkeletalModel::JointIdMap& bonesIds = model->getJointIDMap();
@@ -207,15 +207,15 @@ bool AsfParser::parseBones(const string& bones) {
         begin += shift;
         if (begin != string::npos && end != string::npos && end > begin) {
             bone = bones.substr(begin, end - begin);
-            JointPtr singleBone(new Joint());
-            bool boneParse = parseSingleBone(bone, *singleBone);
+            JointPtr singleJoint(new Joint());
+            bool jointParse = parseSingleJoint(bone, *singleJoint);
 
-            if (boneParse) {
-                if (bonesIds.find(singleBone->id) == bonesIds.end()) {
-                    bonesMap[singleBone->name] = singleBone;
-                    bonesIds[singleBone->id] = singleBone;
+            if (jointParse) {
+                if (bonesIds.find(singleJoint->id) == bonesIds.end()) {
+                    bonesMap[singleJoint->name] = singleJoint;
+                    bonesIds[singleJoint->id] = singleJoint;
                 } else {
-                    throw WrongFileException("Bone : " + singleBone->name + " already added");
+                    throw WrongFileException("Bone : " + singleJoint->name + " already added");
                 }
             }
         } else {
@@ -425,7 +425,7 @@ string* kinematic::AsfParser::getSectionContainter( const string& token ) {
     return &this->unknown;
 }
 
-void kinematic::AsfParser::saveRoot( std::ostream& out ) {
+void kinematic::AsfParser::saveRoot( std::ostream& out ) const {
     out << ":root" << endl;
     out << "   " << "order";
     
@@ -461,7 +461,8 @@ void kinematic::AsfParser::saveRoot( std::ostream& out ) {
         << orientation[2] << endl;
 }
 
-void kinematic::AsfParser::saveBones( std::ostream& out ) {
+void kinematic::AsfParser::saveBones( std::ostream& out ) const
+{
     out << ":bonedata" << endl;
     
     SkeletalModel::JointIdMap bonesIds = model->getJointIDMap();
@@ -478,7 +479,8 @@ void kinematic::AsfParser::saveBones( std::ostream& out ) {
     }
 }
 
-void kinematic::AsfParser::saveSingleBone( std::ostream& out, const Joint& bone) {
+void kinematic::AsfParser::saveSingleBone( std::ostream& out, const Joint& bone) const
+{
     out << "  begin" << endl;
     out << "     " << "id " << bone.id << endl;
     out << "     " << "name " << bone.name << endl;
@@ -533,17 +535,17 @@ void kinematic::AsfParser::saveSingleBone( std::ostream& out, const Joint& bone)
     out << "  end" << endl;
 }
 
-void saveBoneInHierarchy(std::ostream& out,const kinematic::JointPtr& bone) {
-
+void kinematic::AsfParser::saveBoneInHierarchy(std::ostream& out, kinematic::JointConstPtr joint) const
+{
     typedef std::vector<kinematic::JointPtr> BoneTable;
     BoneTable toInsert;
-    BoneTable& children = bone->children;
-    for (int i = children.size() - 1; i >= 0; --i) {
+    
+    //for (int i = children.size() - 1; i >= 0; --i) {
+    for (BoneTable::const_iterator it = joint->children.cbegin(); it != joint->children.cend(); it++) {   
         
-        JointPtr child = children[i];
-        out << " " << child->name;
-        if (child->children.size() > 0) {
-           toInsert.push_back(child);
+        out << " " << (*it)->name;
+        if ((*it)->children.size() > 0) {
+           toInsert.push_back(*it);
         }
     }
     out << endl;
@@ -558,7 +560,8 @@ void saveBoneInHierarchy(std::ostream& out,const kinematic::JointPtr& bone) {
     
 }
 
-void kinematic::AsfParser::saveHierarchy( std::ostream& out ) {
+void kinematic::AsfParser::saveHierarchy( std::ostream& out ) const 
+{
     out << ":hierarchy" << endl;
     out << "  begin" << endl;
     out << "    " << "root";
@@ -567,7 +570,7 @@ void kinematic::AsfParser::saveHierarchy( std::ostream& out ) {
     out << "  end" << endl;
 }
 
-void kinematic::AsfParser::saveUnits( std::ostream& out )
+void kinematic::AsfParser::saveUnits( std::ostream& out ) const
 {
     out << ":units" << endl;
     out << "  length " << model->getLength() << endl;

@@ -145,7 +145,7 @@ public:
     const ObjectWrapperConstPtr & getObject(int index) const
     {
         // wyjatek zamiast asercji (na wypadek trybu release)
-        if (!(index < size() && index >= 0)) {
+        if (!(index < static_cast<int>(size()) && index >= 0)) {
             throw std::runtime_error("ObjectWrapperCollection::getObject - wrong index");
         }
 

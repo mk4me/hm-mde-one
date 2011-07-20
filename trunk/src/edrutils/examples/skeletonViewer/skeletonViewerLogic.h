@@ -30,7 +30,7 @@ public:
     void update(bool updateSlider = true);
 
 public:
-    void createTree(kinematic::JointPtr parentJoint, QTreeWidgetItem* parentItem);
+    void createTree(kinematic::hAnimJointPtr parentJoint, QTreeWidgetItem* parentItem);
     void createMarkersCrowd(kinematic::JointPtr joint, const osg::Vec3& position = osg::Vec3());
     void loadBVH(const std::string& bvhFileName);
     void loadAsfAmc(const std::string& asfFile, const std::string& amcFile);

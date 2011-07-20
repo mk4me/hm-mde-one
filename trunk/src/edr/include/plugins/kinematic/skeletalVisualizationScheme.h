@@ -15,7 +15,7 @@ UTILS_POP_WARNINGS
 #include <boost/utility.hpp>
 #include <boost/function.hpp>
 #include <kinematiclib/VskParser.h>
-#include <kinematiclib/KinematicModel.h>
+#include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/kinematic/KinematicModel.h>
 
 class ISchemeDrawer;
@@ -63,18 +63,19 @@ public: // akcesory
 
     int getNumFrames() const { 
         UTILS_ASSERT(kinematicModel->getSkeleton());  
-        return kinematicModel->getSkeleton()->getNumFrames(); 
+        return kinematicModel->getSkeleton()->getNumPointsPerChannel(); 
     }
     double getFrameTime() const { 
         UTILS_ASSERT(kinematicModel->getSkeleton()); 
-        return kinematicModel->getSkeleton()->getFrameTime(); 
+		kinematic::JointAnglesCollectionPtr j = kinematicModel->getSkeleton();
+        return static_cast<double>(j->getLength()) / j->getNumPointsPerChannel(); 
     }
     double getDuration() const { 
         UTILS_ASSERT(kinematicModel);
         if (kinematicModel->getSkeleton()) {
-            return getNumFrames() * getFrameTime(); 
+            return static_cast<double>(kinematicModel->getSkeleton()->getLength()); 
         } else if (kinematicModel->getMarkers()) {
-            return kinematicModel->getMarkers()->getDuration();
+            return kinematicModel->getMarkers()->getLength();
         }
         UTILS_ASSERT(false);
         return 0.0;
@@ -106,12 +107,12 @@ private:
     //! obliczenie transformacji dla podanego czasu
     void updateJointTransforms(double time);
     //! obliczenie transformacji dla podanego czasu
-    void updateJointTransforms(const std::map<std::string, osg::Quat>& rotations, kinematic::hAnimJointPtr joint, 
+    void updateJointTransforms(const std::vector<osg::Quat>& rotations, kinematic::hAnimJointPtr joint, 
         osg::Quat parentRot, osg::Vec3 parentPos);
     void updateWorldTransforms(osg::Vec3 worldPosition, osg::Quat worldRotation);
     void updateSkinnedTransforms();
 
-    void createSkeletonConnections(kinematic::JointPtr joint);
+    void createSkeletonConnections(kinematic::hAnimJointPtr joint);
 
 private:
     //! aktualny czas
@@ -123,7 +124,7 @@ private:
     //! stany stawow dla aktualnego czasu
     std::vector<JointState> jointMarkersStates;
     //! ulatwia ineksowanie jointow
-    std::map<kinematic::JointPtr, int> visJoints;
+    std::map<kinematic::hAnimJointPtr, int> visJoints;
     //! zawiera informacje o polaczeniach miedzy stawami
     std::vector<Connection> jointConnections;
 

@@ -63,6 +63,6 @@ UTILS_POP_WARNINGS
 #include <QtOpenGL/QtOpenGL>
 
 #include <kinematiclib/SkeletalParsers.h>
-#include <kinematiclib/KinematicModel.h>
+#include <kinematiclib/JointAnglesCollection.h>
 
 #endif //HEADER_GUARD_SKELETON_VIEWER__PCH_H__

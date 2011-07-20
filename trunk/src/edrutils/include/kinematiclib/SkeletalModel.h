@@ -3,52 +3,26 @@
 
 #include <map>
 #include <vector>
+#include <boost/utility.hpp>
 #include <kinematiclib/Joint.h>
 #include <kinematiclib/Skeleton.h>
+#include <kinematiclib/SkeletalData.h>
 
 namespace kinematic 
 {
-    struct Bone;
-    class Skeleton;
-
     /// \brief  Klasa zawiera wspolna reprezentacje animacji dla parserow acclaim i biovision. 
-    class SkeletalModel 
+    class SkeletalModel : boost::noncopyable
     {
     public:
         enum Angle {
             degrees,
             radians
         };
-
-        /// \brief  inteligentny wskaznik do klasy
-        //typedef boost::shared_ptr<SkeletalModel> Ptr;
         /// \brief  mapa nazwa kosci -> kosc
         typedef std::map<std::string, JointPtr> JointMap;
         /// \brief  mapa identyfikator kosci -> kosc
         typedef std::map<int, JointPtr> JointIdMap;
-
-        /// \brief  Struktura zawiera wartosci kanalow dla
-        /// 	    konkretnej kosci i konkretnego kanalu
-        struct singleBoneState
-        {
-            std::string name; //!< nazwa kosci 
-            /// \brief  wartosci kanalow dla tej kosci (ich liczba powinna byc rowna stopniom swobody kosci)
-            std::vector<double> channelValues; 
-            //! konstruktor ustawia domyslny rozmiar dla kolekcji (6 stopni swobody)
-            singleBoneState()
-            {
-                channelValues.reserve(6);
-            }
-        };
-
-        /// \brief  struktura przechowuje wartosci kanalow dla wszystkich kosci w pojedynczej klatce animacji
-        struct singleFrame
-        {
-            int frameNo; //!< numer klatki animacji
-            std::vector<singleBoneState> bonesData; //!< wartosci kanalow
-        };
-        typedef boost::shared_ptr<singleFrame> singleFramePtr;
-
+		
     public:
         /// \brief  konstruktor wraz z domyslnymi parametrami
         SkeletalModel() :
@@ -58,22 +32,23 @@ namespace kinematic
             length(1.0),
             mass(1.0),
             angle(degrees),
-            //frameTime(0.033333333333)
-            frameTime(0.01)
+			skeleton(new Skeleton)
         {
         }
 
     public:
+
+		virtual SkeletalModel* clone() const;
+
         /** Zwraca kosc na podstawie nazwy */
-        JointPtr getJointByName(const std::string& name) {
-            JointMap::iterator it = jointsMap.find(name);
-            JointPtr nullJoint;
-            return it != jointsMap.end() ? it->second : nullJoint;
-        }
+        JointPtr getJointByName(const std::string& name);
+		/** Zwraca kosc na podstawie nazwy */
+		JointConstPtr getJointByName(const std::string& name) const;
         /** Zwraca kosc na podstawie identyfikatora */
         JointPtr getJointByID(int id) { return jointsIds[id]; }
         /** Zwraca szkielet modelu */
-        Skeleton& getSkeleton() { return skeleton; }
+        Skeleton& getSkeleton() { return *skeleton; }
+		const Skeleton& getSkeleton() const { return *skeleton; }
         /** Zwraca referencje do mapy : nazwa kosci -> kosc*/
         JointMap& getJointMap() { return jointsMap; }
         /** Zwraca referencje do mapy : identyfikator kosci -> kosc*/
@@ -91,38 +66,31 @@ namespace kinematic
         void setName(const std::string& val) { name = val; }
         std::string getDocumentation() const { return documentation; }
         void setDocumentation(const std::string& val) { documentation = val; }
-        std::vector<singleFramePtr>& getFrames() { return frames; }
-        void setFrameTime(double frameTime) { this->frameTime = frameTime; }
-        double getFrameTime() {
-            return frameTime; 
-        }
-        void RecreateMaps();
 
-    protected:
-        void Recreate(JointPtr joint);
+	private:
+		static void createMaps(JointPtr skeleton, JointMap& jointMap, JointIdMap& jointIDMap);
 
-    protected:
-        std::string                  version;        //!< wersja wg ktorej zostal zapisany plik
-        std::string                  name;           //!< nazwa zapisana w pliku
-        std::string                  documentation;  //!< komentarz do modelu
-        double                       length;         //!< globalny modyfikator dlugosci kosci
-        double                       mass;           //!< globalny modyfikator masy
-        Angle                        angle;          //!< okresla, czy dane sa w stopniach czy radianach
-        JointMap                     jointsMap;       //!< mapa nazwa kosci -> kosc
-        JointIdMap                   jointsIds;       //!< mapa identyfikator kosci -> kosc
-        Skeleton                     skeleton;       //!< szkielet z koscmi
-        std::vector<singleFramePtr>  frames;         //!< kolejka z wszystkimi ramkami
-        double                       frameTime;      //!< czas pomiedzy klatkami
+    protected:										 
+		//! wersja wg ktorej zostal zapisany plik
+        std::string version;        
+		//! nazwa zapisana w pliku
+        std::string name;           
+		//! komentarz do modelu
+        std::string documentation;  
+		//! globalny modyfikator dlugosci kosci
+        double length;         
+		//! globalny modyfikator masy
+        double mass;           
+		//! okresla, czy dane sa w stopniach czy radianach
+        Angle angle;          
+		//! mapa nazwa stawu -> staw
+        JointMap jointsMap;      
+		//! mapa identyfikator stawu -> staw
+        JointIdMap jointsIds;      
+		//! szkielet ze stawami
+        SkeletonPtr skeleton;     
     };
-
-    typedef boost::shared_ptr<SkeletalModel> SkeletalModelPtr;
-
-    ///// \brief  Wydzielony interfejs dla parserow
-    //class IParser
-    //{
-    //public:
-    //    virtual void parse(SkeletalModelPtr model, const std::string& filename) = 0;
-    //    virtual void save(const SkeletalModelPtr model, const std::string& filename) = 0;
-    //};
+	typedef boost::shared_ptr<SkeletalModel> SkeletalModelPtr;
+	typedef boost::shared_ptr<const SkeletalModel> SkeletalModelConstPtr;
 }
 #endif

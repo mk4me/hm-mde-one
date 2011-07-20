@@ -1,4 +1,5 @@
 #include "PCH.h"
+#include <kinematiclib/KinematicModel.h>
 #include "uniqueCollection.h"
 #include "skeletalVisualizationScheme.h"
 #include "ISchemeDrawer.h"
@@ -82,51 +83,73 @@ osg::Vec3 vectorRotation(Vec3 v, double a, double b , double c)
     v = rx * v;
     return v;
 }
-
-void SkeletalVisualizationScheme::updateJointTransforms(map<string, Quat>& rotations, hAnimJointPtr joint, Quat parentRot, Vec3 parentPos)
+void SkeletalVisualizationScheme::updateJointTransforms(const std::vector<osg::Quat>& rotations, hAnimJointPtr joint, Quat parentRot, Vec3 parentPos)
 {
-    // zapewnienie zgodnosci indeksow (miedzy tablicami connections i jointStates)
-    int i = visJoints[joint];
-    Quat ident;
-    double mul = osg::DegreesToRadians(1.0);
-    /*Vec3 shift = joint->direction * joint->length;
-    shift = vectorRotation(shift, -joint->axis[0] * mul, -joint->axis[1] * mul, -joint->axis[2] * mul);
-    */
-    Vec3 shift = joint->getLocalShift();
-       
-    /*Quat pc;
-    JointPtr parent = joint->parent.lock();
-    if (parent) {
-       pc = rotationParentChild(parent, joint);
-    }*/
-    Quat pc = joint->getChildParentRotation();
-    Quat rotation = rotations[joint->name]* pc  * parentRot ;
+	//rewizja - chyba i tak nie bedzie potrzebny ten viewer
+	//// zapewnienie zgodnosci indeksow (miedzy tablicami connections i jointStates)
+	//int i = visJoints[joint];
+	//Quat ident;
+	//double mul = osg::DegreesToRadians(1.0);
+	//Vec3 shift = joint->getLocalShift();
 
-    //Quat rotation =  parentRot * pc;
-    shift = rotation * shift;
-    //shift = rotation  * shift;
-    //n = shift / shift.length();
-    //printN(joint->name, n[0], n[1], n[2]); 
+	//Quat pc = joint->getChildParentRotation();
+	//int index = kinematicModel->getIndex(joint->name);
+	////auto it = rotations.find(joint->name);
+	//Quat rotation = rotations[index] * pc  * parentRot;
 
-    jointMarkersStates[i].position = (parentPos + shift);
-    //jointStates[i].from = parentPos;
-    //jointStates[i].to = parentPos + shift;
-    BOOST_FOREACH(JointPtr child, joint->children) {
-        counterHelper++;
-        updateJointTransforms(rotations, boost::dynamic_pointer_cast<hAnimJoint>(child), rotation , parentPos + shift);
-    }
+	//shift = rotation * shift;
+
+	//jointMarkersStates[i].position = (parentPos + shift);
+
+	//BOOST_FOREACH(JointPtr child, joint->children) {
+	//	counterHelper++;
+	//	updateJointTransforms(rotations, boost::dynamic_pointer_cast<hAnimJoint>(child), rotation , parentPos + shift);
+	//}
 }
+
+//void SkeletalVisualizationScheme::updateJointTransforms(map<string, Quat>& rotations, hAnimJointPtr joint, Quat parentRot, Vec3 parentPos)
+//{
+//    // zapewnienie zgodnosci indeksow (miedzy tablicami connections i jointStates)
+//    int i = visJoints[joint];
+//    Quat ident;
+//    double mul = osg::DegreesToRadians(1.0);
+//    /*Vec3 shift = joint->direction * joint->length;
+//    shift = vectorRotation(shift, -joint->axis[0] * mul, -joint->axis[1] * mul, -joint->axis[2] * mul);
+//    */
+//    Vec3 shift = joint->getLocalShift();
+//       
+//    /*Quat pc;
+//    JointPtr parent = joint->parent.lock();
+//    if (parent) {
+//       pc = rotationParentChild(parent, joint);
+//    }*/
+//    Quat pc = joint->getChildParentRotation();
+//    Quat rotation = rotations[joint->name]* pc  * parentRot ;
+//
+//    //Quat rotation =  parentRot * pc;
+//    shift = rotation * shift;
+//    //shift = rotation  * shift;
+//    //n = shift / shift.length();
+//    //printN(joint->name, n[0], n[1], n[2]); 
+//
+//    jointMarkersStates[i].position = (parentPos + shift);
+//    //jointStates[i].from = parentPos;
+//    //jointStates[i].to = parentPos + shift;
+//    BOOST_FOREACH(JointPtr child, joint->children) {
+//        counterHelper++;
+//        updateJointTransforms(rotations, boost::dynamic_pointer_cast<hAnimJoint>(child), rotation , parentPos + shift);
+//    }
+//}
 
 void SkeletalVisualizationScheme::updateJointTransforms( double time )
 {
     UTILS_ASSERT(kinematicModel);
     counterHelper = 0;
-    auto frame = kinematicModel->getQuaternionRotation(time);
-    hAnimSkeleton::Ptr skeleton = kinematicModel->getHAnimSkeleton();
+    auto frame = kinematicModel->getValues(time);
+    hAnimSkeletonPtr skeleton = kinematicModel->getHAnimSkeleton();
     osg::Quat q; Vec3 pos;
-   // q = frame["HumanoidRoot"]; //
     pos = kinematicModel->getRootPosition(time);
-    updateJointTransforms(frame, skeleton->getHAnimRoot(), q, pos);
+    updateJointTransforms(frame, skeleton->getRoot(), q, pos);
 }
 
 void SkeletalVisualizationScheme::updateWorldTransforms( osg::Vec3 worldPosition, osg::Quat worldRotation )
@@ -156,7 +179,7 @@ boost::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::crea
     return scheme;
 }
 
-void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelPtr val )
+void SkeletalVisualizationScheme::setKinematicModel( kinematic::JointAnglesCollectionPtr val )
 {
     kinematicModel = val;
     auto jointMap = kinematicModel->getJoints();
@@ -170,21 +193,22 @@ void SkeletalVisualizationScheme::setKinematicModel( kinematic::KinematicModelPt
             visJoints[it->second] = index++;
         }
     }
-    hAnimSkeleton::Ptr skeleton = kinematicModel->getHAnimSkeleton();
-    createSkeletonConnections(skeleton->getRoot());
+    hAnimSkeletonPtr skeleton = kinematicModel->getHAnimSkeleton();
+	//rewizja
+    //createSkeletonConnections(skeleton->getRoot());
 }
 
-
-void SkeletalVisualizationScheme::createSkeletonConnections(JointPtr joint)
-{
-    BOOST_FOREACH(JointPtr child, joint->children) {
-        Connection c;
-        c.index1 = visJoints[joint];
-        c.index2 = visJoints[child];
-        jointConnections.push_back(c);
-        createSkeletonConnections(child);
-    }
-}
+//rewizja
+//void SkeletalVisualizationScheme::createSkeletonConnections(JointPtr joint)
+//{
+//    BOOST_FOREACH(JointPtr child, joint->children) {
+//        Connection c;
+//        c.index1 = visJoints[joint];
+//        c.index2 = visJoints[child];
+//        jointConnections.push_back(c);
+//        createSkeletonConnections(child);
+//    }
+//}
 
 //void PointSchemeDrawer::init( SkeletalVisualizationSchemeWeak scheme )
 //{

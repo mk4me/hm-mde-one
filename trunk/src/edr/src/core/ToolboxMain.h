@@ -1,14 +1,14 @@
 #ifndef TOOLBOXMAIN_H
 #define TOOLBOXMAIN_H
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QtGui>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
-#include <osg/Node>
-#include <osg/PositionAttitudeTransform>
-#include <osg/Geometry>
-#include <osgViewer/CompositeViewer>
+//#include <QtGui/QMainWindow>
+//#include <QtGui/QtGui>
+//#include <QtGui/QMenu>
+//#include <QtGui/QAction>
+//#include <osg/Node>
+//#include <osg/PositionAttitudeTransform>
+//#include <osg/Geometry>
+//#include <osgViewer/CompositeViewer>
 #include <utils/Debug.h>
 
 #include <QtCore/QVector>
@@ -22,7 +22,6 @@
 
 class UserInterfaceService;
 class ServiceManager;
-class IAnimationService;
 class SceneGraphWidget;
 class EDRConsoleWidget;
 class VisualizerManager;

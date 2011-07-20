@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
-    <height>383</height>
+    <width>806</width>
+    <height>671</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,10 +15,10 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" colspan="8">
+    <item row="0" column="0" colspan="3">
      <layout class="QVBoxLayout" name="vbox"/>
     </item>
-    <item row="0" column="8" colspan="2">
+    <item row="0" column="3" colspan="7">
      <widget class="QTreeWidget" name="treeWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -165,7 +165,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>669</width>
+     <width>806</width>
      <height>21</height>
     </rect>
    </property>

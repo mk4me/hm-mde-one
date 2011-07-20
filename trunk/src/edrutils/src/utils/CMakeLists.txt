@@ -23,6 +23,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/Align.h
 	${HEADER_PATH}/ClonePolicies.h
 	${HEADER_PATH}/DataChannel.h
+	${HEADER_PATH}/DataChannelCollection.h
 	${HEADER_PATH}/Pool.h
 	${HEADER_PATH}/Enum.h
 	${HEADER_PATH}/NamedTree.h

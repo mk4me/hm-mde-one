@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include <kinematiclib/SkeletalParsers.h>
+#include <kinematiclib/KinematicModel.h>
 #include <QtGUI/QTreeWidgetItem>
 #include <QtGUI/QFileDialog>
 #include <boost/filesystem.hpp>
@@ -128,7 +129,6 @@ void MainWindow::on_loadSkeletonButton_clicked()
             QString asfName = QFileDialog::getOpenFileName(
                 this,tr("Open File"),
                 "D:\\MotionCapture\\tests\\kinematic\\acclaim\\cmu\\10",
-                //"C:\\Programming\\Projects\\HDEdr\\bin\\bin\\Debug\\data\\trials\\2011-02-22-P02-S01",
                 tr("Animation Files (*.asf)")
                 );
             path pp(toStdString(asfName));

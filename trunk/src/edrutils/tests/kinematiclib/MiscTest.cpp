@@ -87,19 +87,24 @@ bool MiscTest::testJointContentEquality( JointPtr joint1, JointPtr joint2, bool 
 bool MiscTest::substestAsfAmc( const std::string& asfFile, const std::string& amcFile )
 {
     SkeletalModelPtr model1(new SkeletalModel), model2(new SkeletalModel);
+	SkeletalDataPtr data1(new SkeletalData), data2(new SkeletalData);
     AsfParser asf1, asf2; 
     AmcParser amc1, amc2;
     asf1.setForceXYZRoot(false);
     amc1.setForceRootXYZ(false);
 
     asf1.parse(model1, asfFile);
-    amc1.parse(model1, amcFile);
+    amc1.parse(data1, amcFile);
+
+	//model1->setSkeletalData(data1);
 
     asf1.save(model1, "temp.asf");
-    amc1.save(model1, "temp.amc");
+    amc1.save(model1, data1, "temp.amc");
 
     asf2.parse(model2, "temp.asf");
-    amc2.parse(model2, "temp.amc");
+    amc2.parse(data2, "temp.amc");
+
+	//model2->setSkeletalData(data2);
 
     SkeletalModel::JointMap::const_iterator it1, it2;
     const SkeletalModel::JointMap& map1 = model1->getJointMap();
@@ -113,17 +118,17 @@ bool MiscTest::substestAsfAmc( const std::string& asfFile, const std::string& am
         return false;
     }
 
-    std::vector<SkeletalModel::singleFramePtr>& frames1 = model1->getFrames();
-    std::vector<SkeletalModel::singleFramePtr>& frames2 = model2->getFrames();
+    std::vector<SkeletalData::singleFramePtr>& frames1 = data1->getFrames();
+    std::vector<SkeletalData::singleFramePtr>& frames2 = data2->getFrames();
 
     CPPUNIT_ASSERT(frames1.size() == frames2.size());
     for (int i = frames1.size() - 1; i >= 0 ; --i) {
-        SkeletalModel::singleFrame& f1 = *(frames1[i]);
-        SkeletalModel::singleFrame& f2 = *(frames2[i]);
+        SkeletalData::singleFrame& f1 = *(frames1[i]);
+        SkeletalData::singleFrame& f2 = *(frames2[i]);
         CPPUNIT_ASSERT(f1.frameNo == f2.frameNo);
-        for (int j = f1.bonesData.size() - 1; j >= 0; --j) {
-            vector<double>& val1 = f1.bonesData[j].channelValues;
-            vector<double>& val2 = f2.bonesData[j].channelValues;
+        for (int j = f1.jointsData.size() - 1; j >= 0; --j) {
+            vector<double>& val1 = f1.jointsData[j]->channelValues;
+            vector<double>& val2 = f2.jointsData[j]->channelValues;
             CPPUNIT_ASSERT(val1.size() == val2.size());
             for (int k = val1.size() - 1; k >= 0; --k) {
                 CPPUNIT_ASSERT_DOUBLES_EQUAL(val1[k], val2[k], 0.0001);

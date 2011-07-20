@@ -11,11 +11,14 @@ set(TARGET_TARGETNAME plugin_c3d)
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/C3DChannels.h
+	${HEADER_PATH}/Subject.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
 	C3DPlugin.h
 	C3DParser.h
+	EventVisualizer.h
+	SubjectParser.h
 	
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
@@ -28,6 +31,8 @@ set(TARGET_SRC
 	C3DPlugin.cpp
 	C3DParser.cpp
 	C3DChannels.cpp
+	EventVisualizer.cpp
+	Subject.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

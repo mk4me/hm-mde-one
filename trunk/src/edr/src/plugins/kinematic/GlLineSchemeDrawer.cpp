@@ -10,10 +10,10 @@ void GlLineSchemeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
     UTILS_ASSERT(scheme);
     node = new osg::Group;
     OsgSchemeDrawer::init(scheme);
-    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
-    auto states = getVisualiztionScheme()->getStates(dataToDraw);
+    const auto& connections = getVisualiztionScheme()->getConnections(dataToDraw);
+    const auto& states = getVisualiztionScheme()->getStates(dataToDraw);
 
-    for (int i = 0;  i < connections.size(); ++i) {
+    for (unsigned int i = 0;  i < connections.size(); ++i) {
         SkeletalVisualizationScheme::JointState state1 = states[connections[i].index1];
         SkeletalVisualizationScheme::JointState state2 = states[connections[i].index2];
         TransformPtr t = addTransform(state1.position, state2.position, 
@@ -30,12 +30,12 @@ void GlLineSchemeDrawer::deinit()
 
 void GlLineSchemeDrawer::update()
 {
-    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
-    auto states = getVisualiztionScheme()->getStates(dataToDraw);
+    const auto& connections = getVisualiztionScheme()->getConnections(dataToDraw);
+    const auto& states = getVisualiztionScheme()->getStates(dataToDraw);
 
     for (int i = connections.size() - 1;  i >= 0; --i) {
-        SkeletalVisualizationScheme::JointState state1 = states[connections[i].index1];
-        SkeletalVisualizationScheme::JointState state2 = states[connections[i].index2];
+        const SkeletalVisualizationScheme::JointState& state1 = states[connections[i].index1];
+        const SkeletalVisualizationScheme::JointState& state2 = states[connections[i].index2];
 
         Vec3 from = state1.position;
         Vec3 to = state2.position;
@@ -45,11 +45,9 @@ void GlLineSchemeDrawer::update()
         Vec3 up(0.0f, 1.0f, 0.0f);
         float length = dir.normalize();
         osg::Matrix mat;
-        mat.makeLookAt(zero, -dir, up);
-
-        osg::Quat rotation;
-        rotation.set(Matrix::inverse(mat));
-
+		osg::Quat rotation;
+		mat.makeLookAt(zero, -dir, up);
+		rotation.set(Matrix::inverse(mat));
         t->setPosition(from);
         t->setAttitude(rotation);
     }

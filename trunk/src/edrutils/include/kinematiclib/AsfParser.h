@@ -37,10 +37,10 @@ namespace kinematic
         bool splitAsf(const std::string& asf);
         /** Parsuje sekcje z jednostkami */
         bool parseUnits(const std::string& units);
-        /** Parsuje sekcje z wszystkimi koscmi */
-        bool parseBones(const std::string& bones);
-        /** Parsuje pojedyncza kosc */
-        bool parseSingleBone(const std::string& singleBone, Joint& bone);
+        /** Parsuje sekcje z wszystkimi stawami */
+        bool parseJoints(const std::string& bones);
+        /** Parsuje pojedynczy staw */
+        bool parseSingleJoint(const std::string& singleBone, Joint& bone);
         /** Parsuje glowna kosc*/
         bool parseRoot(const std::string& root, Skeleton& skeleton);
         /** Tworzy hierarchie kosci */
@@ -48,21 +48,22 @@ namespace kinematic
         /** Usuwa komentarze z calego pliku asf. */
         std::string removeComments(const std::string& txt);
         /** Zapisuje sekcje root do pliku asf*/
-        void saveRoot(std::ostream& out);
+        void saveRoot(std::ostream& out) const;
         /** Zapisuje sekcje units do pliku asf*/
-        void saveUnits(std::ostream& out);
+        void saveUnits(std::ostream& out) const;
         /** Zapisuje wszystkie kosci do pliku asf*/
-        void saveBones(std::ostream& out);
+        void saveBones(std::ostream& out) const;
         /** Zapisuje pojedyncza kosc*/
-        void saveSingleBone(std::ostream& out, const Joint& bone);
+        void saveSingleBone(std::ostream& out, const Joint& bone) const;
         /** Zapisuje hierarchie do pliku asf*/
-        void saveHierarchy(std::ostream& out);
+        void saveHierarchy(std::ostream& out) const;
         /** Zwraca odpowiednia sekcje, na podstawie tokenu.
             Sekcje sa tworzone w pierwszym etapie parsowania.*/
         std::string* getSectionContainter(const std::string& token);
         /** Parsuje linijke z limitami dla stopnia swobody. 
             Dopisuje wynik do wektora limitValues*/
         void parseLimit(const std::string& token, std::vector<double>& limitValues ); 
+		void saveBoneInHierarchy(std::ostream& out, kinematic::JointConstPtr joint) const;
         
 
     protected:

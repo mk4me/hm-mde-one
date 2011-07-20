@@ -46,23 +46,23 @@ string kinematic::BvhParser::spaceL(int lvl) const {
     }
 }
 //----------------------------------------------------------------------------------
-SkeletalModel::singleBoneState kinematic::BvhParser::getSingleBoneState( int frameNo, std::string boneName ) const
+SkeletalData::singleJointStatePtr kinematic::BvhParser::getSingleJointState( SkeletalDataConstPtr data,int frameNo, std::string boneName ) const
 {
     // jesli dane z konkretnej klatki zawieraja wpis o zadanej kosci
     // to zostaje ona odnaleziona i zwrocona
-    vector<SkeletalModel::singleFramePtr>& frames = model->getFrames();
-    for (int i = frames[frameNo]->bonesData.size() - 1; i >= 0; --i) {
-        if (frames[frameNo]->bonesData[i].name == boneName) {
-            return frames[frameNo]->bonesData[i];
+    const vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
+    for (int i = frames[frameNo]->jointsData.size() - 1; i >= 0; --i) {
+        if (frames[frameNo]->jointsData[i]->name == boneName) {
+            return frames[frameNo]->jointsData[i];
         }
     }
     // w przeciwnym razie zwracany jest pusty stan, jest to przydatne jesli wymusza sie
     // aby kazda kosc miala dane z 3 lub 6 kanalow
-    SkeletalModel::singleBoneState state;
-    state.name = boneName;
-    state.channelValues.push_back(0);
-    state.channelValues.push_back(0);
-    state.channelValues.push_back(0);
+    SkeletalData::singleJointStatePtr state(new SkeletalData::singleJointState);
+    state->name = boneName;
+    state->channelValues.push_back(0);
+    state->channelValues.push_back(0);
+    state->channelValues.push_back(0);
     return state;
 }
 //----------------------------------------------------------------------------------
@@ -80,58 +80,54 @@ bool kinematic::BvhParser::hasTranslation(const std::vector<DegreeOfFreedom>& do
     return false;
 }
 //----------------------------------------------------------------------------------
-void kinematic::BvhParser::saveChannelsInHierarchy( std::ostream& out, JointPtr bone, int lvl) const
+void kinematic::BvhParser::saveChannelsInHierarchy( std::ostream& out, JointConstPtr joint, int lvl) const
 {
     if (forceZXY) {
         out << spaceL(lvl) << "CHANNELS 3 Zrotation Xrotation Yrotation" << endl;
     } else {
-        int count = bone->dofs.size();
+        int count = joint->dofs.size();
         if (count > 0) {
             out << spaceL(lvl) << "CHANNELS " << count;
             for (int i = 0; i < count; i++) {
-                out << " " << getChannelName((bone->dofs[i]).channel);
+                out << " " << getChannelName((joint->dofs[i]).channel);
             }
             out << endl;
         }
     }
 }
 //----------------------------------------------------------------------------------
-void kinematic::BvhParser::saveBone (
-    std::ostream& out,
-    JointPtr bone,
-    JointPtr parent,
-    int lvl,
-    std::list<std::string>& jointList)
-    const {
-    if (parent && parent->length == 0.0 && bone->children.size() == 1) {
+void kinematic::BvhParser::saveJoint (SkeletalModelConstPtr model, std::ostream& out, JointConstPtr joint, 
+		JointConstPtr parent,  int lvl, std::list<std::string>& jointList) const 
+{
+    if (parent && parent->length == 0.0 && joint->children.size() == 1) {
         // jesli przetwarzana kosc to 'dummy bone' to zostanie ona zignorowana przy zapisie do bvh
         JointPtr null;
-        saveBone(out, bone->children[0], null, lvl, jointList);
+        saveJoint(model, out, joint->children[0], null, lvl, jointList);
     } else {
         // dodanie kosci do listy z kolejnoscia wystapienia (wazne przy zapisie danych z kanalow)
-        jointList.push_back(bone->name);
-        int childrenCount = bone->children.size();
-        out << spaceL(lvl) << "JOINT " << bone->name << endl;
+        jointList.push_back(joint->name);
+        int childrenCount = joint->children.size();
+        out << spaceL(lvl) << "JOINT " << joint->name << endl;
         out << spaceL(lvl) << "{" << endl;
         lvl++; // zwiekszenie wciecia
         out << spaceL(lvl) << "OFFSET ";
         // kosc rodzica jest potrzebna aby obliczyc dlugosc,
         // dlaczego parent nie jest brany z argumentu funkcji? poniewaz argument moze byc nullem
         // (sztuczka robiona w przypadku gdy parent to dummy bone)
-        JointPtr parent = bone->parent.lock();
+        JointConstPtr parent = boost::const_pointer_cast<const Joint>(joint->parent.lock());
         osg::Vec3d offset = parent->direction * parent->length * model->getLength();
         out << offset[0] << " " << offset[1] << " " << offset[2] << endl;
-        saveChannelsInHierarchy(out, bone, lvl);
+        saveChannelsInHierarchy(out, joint, lvl);
         // rekurencja
         for (int i = 0; i < childrenCount; i++) {
-            saveBone(out, bone->children[i], bone, lvl, jointList);
+            saveJoint(model, out, joint->children[i], joint, lvl, jointList);
         }
         // lisc jest traktowany inaczej
         if (childrenCount == 0) {
             out << spaceL(lvl) << "End Site" << endl;
             out << spaceL(lvl) << "{" << endl;
             out << spaceL(lvl + 1) << "OFFSET ";
-            osg::Vec3d offset = bone->direction * bone->length;
+            osg::Vec3d offset = joint->direction * joint->length;
             out << offset[0] << " " << offset[1] << " " << offset[2] << endl;
             out << spaceL(lvl) << "}" << endl;
         }
@@ -141,13 +137,11 @@ void kinematic::BvhParser::saveBone (
     }
 }
 //----------------------------------------------------------------------------------
-void BvhParser::save(const SkeletalModelPtr model, const std::string& filename ) {
-    // do this->model moga odwolac sie metody pomocnicze
-    this->model = model;
+void BvhParser::save(SkeletalModelConstPtr model, SkeletalDataConstPtr data, const std::string& filename ) {
     std::ofstream out;
     // tutaj trafiaja jointy zgodnie z kolejnoscia w ktorej sa zapisywane
     std::list<std::string> jointList;
-    Skeleton& skeleton = model->getSkeleton();
+    const Skeleton& skeleton = model->getSkeleton();
     out.open(filename.c_str());
     int lvl = 0;
     out << "HIERARCHY" << endl;
@@ -166,20 +160,20 @@ void BvhParser::save(const SkeletalModelPtr model, const std::string& filename )
         out << " " << getChannelName(channels[i]);
     }*/
     out << endl;
-    JointPtr root = skeleton.getRoot();
+    JointConstPtr root = skeleton.getRoot();
     jointList.push_back(root->name);
     int count = root->children.size();
     // rekurencja
     for (int i = 0; i < count; i++) {
-        saveBone(out, root->children[i], root, lvl, jointList);
+        saveJoint(model, out, root->children[i], root, lvl, jointList);
     }
     out << "}" << endl;
 
     // zapis danych animacji
-    vector<SkeletalModel::singleFramePtr>& frames = model->getFrames();
+    const vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
     out << "MOTION" << endl;
     out << "Frames:\t" << frames.size() << endl;
-    out << "Frame Time:\t" << model->getFrameTime() << endl;
+    out << "Frame Time:\t" << data->getFrameTime() << endl;
 
     int framesCount = frames.size();
     // dla wszystkich klatek...
@@ -187,9 +181,8 @@ void BvhParser::save(const SkeletalModelPtr model, const std::string& filename )
         std::list<std::string>::iterator it;
         // zgodnie z kolejnoscia zapisu jointow w pliku...
         for (it = jointList.begin(); it != jointList.end(); it++) {
-
-            SkeletalModel::singleBoneState boneState = getSingleBoneState(i, *it);
-            JointPtr bone = model->getJointByName(boneState.name);
+            SkeletalData::singleJointStatePtr jointState = getSingleJointState(data, i, *it);
+            JointConstPtr bone = model->getJointByName(jointState->name);
 
             if (DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::L, bone->dofs) != -1) {
                 LOGGER(Logger::Warning, "Acclaim 'L' degree of freedom is not supported");
@@ -199,19 +192,19 @@ void BvhParser::save(const SkeletalModelPtr model, const std::string& filename )
                 int index = 0;
                 if (hasTranslation(bone->dofs)) {
                     index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TX, bone->dofs);
-                    out << " " << (index != -1 ? boneState.channelValues[index] : 0.0);
+                    out << " " << (index != -1 ? jointState->channelValues[index] : 0.0);
                     index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TY, bone->dofs);
-                    out << " " << (index != -1 ? boneState.channelValues[index] : 0.0);
+                    out << " " << (index != -1 ? jointState->channelValues[index] : 0.0);
                     index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TZ, bone->dofs);
-                    out << " " << (index != -1 ? boneState.channelValues[index] : 0.0);
+                    out << " " << (index != -1 ? jointState->channelValues[index] : 0.0);
                 }
                 double rx, ry, rz;
                 index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RZ, bone->dofs);
-                rz = (index != -1 ? boneState.channelValues[index] : 0.0);
+                rz = (index != -1 ? jointState->channelValues[index] : 0.0);
                 index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RX, bone->dofs);
-                rx = (index != -1 ? boneState.channelValues[index] : 0.0);
+                rx = (index != -1 ? jointState->channelValues[index] : 0.0);
                 index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RY, bone->dofs);
-                ry = (index != -1 ? boneState.channelValues[index] : 0.0);
+                ry = (index != -1 ? jointState->channelValues[index] : 0.0);
                 osg::Vec3d v; v[0] = rx; v[1] = ry; v[2] = rz;
                 osg::Matrix mat;
                 double mul = model->getAngle() == SkeletalModel::radians ? 1.0 : osg::DegreesToRadians(1.0);
@@ -237,12 +230,10 @@ void BvhParser::save(const SkeletalModelPtr model, const std::string& filename )
     out.close();
 }
 //----------------------------------------------------------------------------------
-void BvhParser::parse(SkeletalModelPtr model, const std::string& filename ) {
+void BvhParser::parse(SkeletalModelPtr model, SkeletalDataPtr data, const std::string& filename ) {
     // tutaj trafiaja jointy w kolejnosci wystapienia w pliku
     std::list<std::string> jointList;
-    // metody pomocnicze korzystac moga z this->model
-    this->model = model;
-    
+
     ifstream in(filename.c_str(), ios_base::in);
     
     if (in == false) {
@@ -254,33 +245,33 @@ void BvhParser::parse(SkeletalModelPtr model, const std::string& filename ) {
     {
         if (line == "HIERARCHY") {
             // rekurencyjne przejscie przez cala hierarchie w pliku
-            readSingleJoint(in, jointList);
+            readSingleJoint(model, in, jointList);
         } else if (line == "MOTION") {
             // odczyt danych animacji
             int noOfFrames = -1;
             in >> line >> noOfFrames;
             double frameTime = 0.0;
             in >> line >> line >> frameTime;
-            model->setFrameTime(frameTime);
-            std::vector<SkeletalModel::singleFramePtr>& frames = model->getFrames();
+            data->setFrameTime(frameTime);
+            std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
             // wartosci dla kolejnych klatek
             for (int m=0; m < noOfFrames; m++) {
                 std::getline(in, line);
-                SkeletalModel::singleFramePtr frame(new SkeletalModel::singleFrame);
+                SkeletalData::singleFramePtr frame(new SkeletalData::singleFrame);
                 frame->frameNo = m + 1;
                 std::list<std::string>::iterator it;
                 // zgodnie z kolejnoscia wystapienia jointow w pliku
                 for (it = jointList.begin(); it != jointList.end(); it++) {
                     JointPtr bone = this->tempBonesMap[(*it)];
-                    SkeletalModel::singleBoneState state;
-                    state.name = bone->name;
+                    SkeletalData::singleJointStatePtr state;
+                    state->name = bone->name;
                     int channelsCount = bone->dofs.size();
                     double number;
                     for (int k = 0; k < channelsCount; k++ ) {
                         in >> number;
-                        state.channelValues.push_back(number);
+                        state->channelValues.push_back(number);
                     }
-                    frame->bonesData.push_back(state);
+                    frame->jointsData.push_back(state);
                 }
 
                 frames.push_back(frame);
@@ -294,7 +285,7 @@ void BvhParser::parse(SkeletalModelPtr model, const std::string& filename ) {
     root->name = "root";
     root->id = -1;
     // utworzenie 'dummy bones' jesli jest taka potrzeba
-    setBones();
+    setBones(model);
     in.close();
 }
 //----------------------------------------------------------------------------------
@@ -311,7 +302,7 @@ kinematic::BvhParser::~BvhParser()
 
 }
 //----------------------------------------------------------------------------------
-void kinematic::BvhParser::readSingleJoint( std::istream& in, std::list<std::string>& jointList ) {
+void kinematic::BvhParser::readSingleJoint(SkeletalModelPtr model, std::istream& in, std::list<std::string>& jointList ) {
     // dane o kosciach na razie trafiaja do tymczasowych struktur (trafia do wlasciwych po utworzeniu dummy bones)
     SkeletalModel::JointIdMap& bonesIds = tempBonesID;
     SkeletalModel::JointMap& bonesMap = tempBonesMap;
@@ -416,7 +407,7 @@ void kinematic::BvhParser::readSingleJoint( std::istream& in, std::list<std::str
         }
     }
     // rekurencja
-    readSingleJoint (in, jointList);
+    readSingleJoint (model, in, jointList);
 
     in >> token;
 
@@ -442,11 +433,11 @@ void kinematic::BvhParser::readSingleJoint( std::istream& in, std::list<std::str
         return;
     } else {
         // przetworzenie kolejnego jointa.
-        readSingleJoint (in, jointList);
+        readSingleJoint (model, in, jointList);
     }
 }
 //----------------------------------------------------------------------------------
-void kinematic::BvhParser::HandleBone(JointPtr newBone)
+void kinematic::BvhParser::HandleBone(SkeletalModelPtr model, JointPtr newBone)
 {
 
     JointPtr nullBone;
@@ -478,11 +469,12 @@ void kinematic::BvhParser::HandleBone(JointPtr newBone)
             newBone->children.push_back(child);
             
             JointPtr child2(new Joint);
-            (*child2) = *(children[i]);
+            //(*child2) = *(children[i]);
+			Joint::copyContent(*(children[i]), *child2);
             child2->parent = child;
             child2->children.clear();
             child->children.push_back(child2);
-            HandleBone(child2);
+            HandleBone(model, child2);
         }
     } else if (size == 1) {
         // zwykle skopiowanie kosci w nowej hierarchii.
@@ -490,12 +482,13 @@ void kinematic::BvhParser::HandleBone(JointPtr newBone)
         newBone->length = bone->children[0]->length;
         if (bone->children[0]->children.size() != 0) {
             JointPtr child(new Joint);
-            *child = *(bone->children[0]);
+            //*child = *(bone->children[0]);
+			Joint::copyContent(*(bone->children[0]), *child);
             child->parent = newBone;
             child->children.clear();
             child->name = bone->children[0]->name;
             newBone->children.push_back(child);
-            HandleBone(child);
+            HandleBone(model, child);
         }
     }
     else
@@ -507,16 +500,17 @@ void kinematic::BvhParser::HandleBone(JointPtr newBone)
     }
 }
 //----------------------------------------------------------------------------------
-void kinematic::BvhParser::setBones()
+void kinematic::BvhParser::setBones( SkeletalModelPtr model )
 {
     boneCounter = -1;
     JointPtr root = tempBonesMap["root"];
     //model->getSkeleton().setRoot(root);
     JointPtr newRoot(new Joint);
-    (*newRoot) = *root;
+    //(*newRoot) = *root;
+	Joint::copyContent(*root, *newRoot);
     newRoot->children.clear();
     // do nowego korzenia trafia kosci razem z utworzonymi dummies
-    HandleBone(newRoot);
+    HandleBone(model, newRoot);
     model->getSkeleton().setRoot(newRoot);
     Axis::Order order = getAxisOrder(newRoot);
     model->getSkeleton().setAxis(order);

@@ -28,7 +28,7 @@ void EDRConsoleWidget::init()
 
     EDRTitleBar * titleBar = getTitleBar();
 
-    QLabel * label;
+    //QLabel * label;
     QToolButton *clearButton;
     QToolButton *toggleWordWrapButton;
 
@@ -56,8 +56,8 @@ void EDRConsoleWidget::init()
 
     toggleWordWrapButton->setChecked( consoleWidget->textEdit->lineWrapMode() != QTextOption::NoWrap );
 
-    titleBar->addObject(clearButton, IEDRTitleBar::SideType::Left);
-    titleBar->addObject(toggleWordWrapButton, IEDRTitleBar::SideType::Left);
+    titleBar->addObject(clearButton, IEDRTitleBar::Left);
+    titleBar->addObject(toggleWordWrapButton, IEDRTitleBar::Left);
 }
 
 void EDRConsoleWidget::logEntry( const EDRConsoleWidgetEntry& entry )

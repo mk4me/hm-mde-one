@@ -35,7 +35,7 @@
 #include <utils/Utils.h>
 UTILS_PUSH_WARNINGS
 #include <osg/Node>
-#include <osg/AnimationPath>
+//#include <osg/AnimationPath>
 #include <osg/Config>
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -63,7 +63,7 @@ UTILS_PUSH_WARNINGS
 
 #include <osgGA/TrackballManipulator>
 #include <osgGA/FlightManipulator>
-#include <osgGA/DriveManipulator>
+//#include <osgGA/DriveManipulator>
 #include <osgGA/KeySwitchMatrixManipulator>
 #include <osgGA/StateSetManipulator>
 #include <osgGA/AnimationPathManipulator>

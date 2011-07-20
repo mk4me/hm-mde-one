@@ -4,37 +4,41 @@
 #include <vector>
 #include <osg/Vec3d>
 #include <boost/smart_ptr.hpp>
+#include <boost/utility.hpp>
 #include <kinematiclib/DegreeOfFreedom.h>
 
 namespace kinematic
 {
 struct Joint;
 typedef boost::shared_ptr<Joint> JointPtr;
-typedef boost::weak_ptr<Joint> WeakPtr;
-/*! 
- * \brief Struktura przechowuje informacje o stawie
- */
-struct Joint {
-   /*!
-   * Inteligentny wskaznik do stawu
-   */
-   //typedef boost::shared_ptr<Joint> Ptr;
-   /*!
-   * Wskaznik do parenta (slaby zeby nie bylo zapetlen)
-   */
-   //typedef boost::weak_ptr<Joint> WeakPtr;
+typedef boost::shared_ptr<const Joint> JointConstPtr;
+typedef boost::weak_ptr<Joint> JointWeakPtr;
 
-   int id;                              //!< unikalny identyfikator stawu
-   std::string name;                    //!< nazwa stawu
-   osg::Vec3d direction;                //!< kierunek kosci w globalnym ukladzie odniesienia
-   double length;                       //!< dlugosc kosci
-   osg::Vec3d axis;                     //!< okresla poczatkowa orientacje dla kosci
-   Axis::Order order;                   //!< okresla kolejnosc rotacji
-   WeakPtr parent;                      //!< wskaznik do rodzica
-   std::vector<JointPtr> children;     //!< wskazniki do wszyskich dzieci w hierarchi
-   std::vector<DegreeOfFreedom> dofs;   //!< stopnie swobody dla kosci (razem z limitami)
-   double bodymass;                     //!< masa ciala zwiazana z ta koscia
-   double cofmass;                      //!< pozycja srodka ciezkosci wzgledem kosci
+//! Struktura przechowuje informacje o stawie
+struct Joint : boost::noncopyable 
+{
+	//! unikalny identyfikator stawu
+   int id;                              
+   //! nazwa stawu
+   std::string name;                    
+   //! kierunek kosci w globalnym ukladzie odniesienia
+   osg::Vec3d direction;                
+   //! dlugosc kosci
+   double length;                       
+   //! okresla poczatkowa orientacje dla kosci
+   osg::Vec3d axis;                     
+   //! okresla kolejnosc rotacji
+   Axis::Order order;                   
+   //! wskaznik do rodzica
+   JointWeakPtr parent;                      
+   //! wskazniki do wszyskich dzieci w hierarchi
+   std::vector<JointPtr> children;      
+   //! stopnie swobody dla kosci (razem z limitami)
+   std::vector<DegreeOfFreedom> dofs;   
+   //! masa ciala zwiazana z ta koscia
+   double bodymass;                     
+   //! pozycja srodka ciezkosci wzgledem kosci
+   double cofmass;                      
 
    Joint() :
     axis(0.0, 0.0, 0.0),
@@ -47,20 +51,18 @@ struct Joint {
     cofmass(std::numeric_limits<double>::infinity())
    {}
 
-    virtual ~Joint() {}
-    
-    /// \brief  Kopiuje zawartosc kosci bez kopiowania informacji o rodzicu i dzieciach
-    /// \param  source      Kosc, z ktorej kopiujemy
-    /// \param  destination Kosc, do ktorej trafiaja informacje. 
-    static void copyContent(JointPtr source, JointPtr destination);
-
-    /// \brief  Tworzy gleboka kopie hierarchii. 
-    /// \param  bone    The bone. 
-    /// \return A copy of this object. 
-    static JointPtr clone(JointPtr bone);
-
-private:
-    static JointPtr clone(JointPtr bone, JointPtr clonedParent);
+	static void copyContent(const Joint& source, Joint& destination) 
+	{
+		destination.id = source.id;                              
+		destination.name = source.name;                    
+		destination.direction = source.direction;                
+		destination.length = source.length;                       
+		destination.axis = source.axis;                     
+		destination.order = source.order;     
+		destination.dofs = source.dofs;   
+		destination.bodymass = source.bodymass;                     
+		destination.cofmass = source.cofmass;  
+	}
 };
 
 }

@@ -13,10 +13,8 @@ purpose:  Klasa ta sluzy do tworzenia wykresu
 
 
 
-class ChartDataSeries : public osg::Group{
-
-
-
+class ChartDataSeries : public osg::Group
+{
 private:
 	//! kolor wykresu
 	osg::ref_ptr<osg::Vec4Array> colors ;

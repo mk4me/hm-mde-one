@@ -30,7 +30,7 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
     workflowVDFWidget->setMouseTracking(true);
 
     //dla lapania pozycji kursora na menu kontekstowe poniewa¿ z poziomu OSG tracê czêœciowo t¹ informacjê
-    workflowVDFWidget->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+    workflowVDFWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     const osg::GraphicsContext::Traits* traits = workflowVDFWidget->getCamera()->getGraphicsContext()->getTraits();
 
@@ -417,7 +417,7 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
     workflowVDFWidget->setMouseTracking(true);
 
     //dla lapania pozycji kursora na menu kontekstowe poniewa¿ z poziomu OSG tracê czêœciowo t¹ informacjê
-    workflowVDFWidget->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+    workflowVDFWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     const osg::GraphicsContext::Traits* traits = workflowVDFWidget->getCamera()->getGraphicsContext()->getTraits();
 
@@ -482,8 +482,8 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
     connect(actionStart, SIGNAL(triggered()), this, SLOT(start()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(stop()));
 
-    titleBar->addObject(actionStart, IEDRTitleBar::SideType::Left);
-    titleBar->addObject(actionStop, IEDRTitleBar::SideType::Left);
+    titleBar->addObject(actionStart, IEDRTitleBar::Left);
+    titleBar->addObject(actionStop, IEDRTitleBar::Left);
 }
 
 EDRWorkflowWidget::~EDRWorkflowWidget()

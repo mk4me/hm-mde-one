@@ -23,7 +23,7 @@
 #include "DataSourceManager.h"
 //#include <core/C3DParserEx.h>
 #include "UserInterfaceService.h"
-#include "config/ConfigurationFileService.h"
+//#include "config/ConfigurationFileService.h"
 #include "EDRConfig.h"
 
 #include <iostream>
@@ -101,7 +101,7 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(pluginLoader)
 	
 	if(Filesystem::pathExists(pluginPath) == true) {
         Filesystem::Iterator endIT;
-		for_each(Filesystem::Iterator(pluginPath), endIT, [=](Filesystem::Path p) {
+		std::for_each(Filesystem::Iterator(pluginPath), endIT, [=](Filesystem::Path p) {
 			if (Filesystem::isDirectory(p)) {
 				pluginLoader->addPath(p.string());
 			}
@@ -438,7 +438,7 @@ void ToolboxMain::registerPluginsServices()
 
 void ToolboxMain::registerPluginsParsers()
 {
-    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
+    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumParsers(); ++j) {
             safeRegisterParser(plugin->getParser(j));
@@ -461,7 +461,7 @@ void ToolboxMain::registerPluginsParsers()
 
 void ToolboxMain::registerPluginsWrapperFactories()
 {
-    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
+    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumWrapperFactories(); ++j) {
             safeRegisterObjectFactory(plugin->getWrapperFactory(j));
@@ -471,7 +471,7 @@ void ToolboxMain::registerPluginsWrapperFactories()
 
 void ToolboxMain::registerPluginsVisualizers()
 {
-    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
+    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumVisualizers(); ++j) {
             safeRegisterVisualizer(plugin->getVisualizer(j));
@@ -481,7 +481,7 @@ void ToolboxMain::registerPluginsVisualizers()
 
 void ToolboxMain::registerPluginsDataProcessors()
 {
-    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
+    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumDataProcessors(); ++j) {
             safeRegisterDataProcessor(plugin->getDataProcessor(j));
@@ -491,7 +491,7 @@ void ToolboxMain::registerPluginsDataProcessors()
 
 void ToolboxMain::registerPluginsDataSources()
 {
-    for (size_t i = 0; i < pluginLoader->getNumPlugins(); ++i) {
+    for (int i = 0; i < pluginLoader->getNumPlugins(); ++i) {
         PluginPtr plugin = pluginLoader->getPlugin(i);
         for(int j = 0; j < plugin->getNumDataSources(); ++j) {
             safeRegisterDataSource(plugin->getDataSource(j));
@@ -506,14 +506,18 @@ void ToolboxMain::onOpen()
     const QString directory = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
     if (!directory.isEmpty()) 
     {
+		std::vector<Filesystem::Path> paths;
         Filesystem::Path dirPath(directory.toStdString());
         Filesystem::Iterator itEnd;
 
         for( Filesystem::Iterator it(dirPath); it != itEnd; it++){
             if(Filesystem::isRegularFile(*it) == true){
-                openFile((*it).path().string());
+                //openFile((*it).path().string());
+				paths.push_back(it->path());
             }
         }        
+
+		DataManager::getInstance()->loadFiles(paths);
     }
 }
 
