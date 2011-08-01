@@ -26,6 +26,7 @@
 #include "GlPointSchemeDrawer.h"
 #include "GlLineSchemeDrawer.h"
 #include "SchemeDrawerContainer.h"
+#include <timelinelib/IChannel.h>
 
 class KinematicVisualizer :  public QObject, public core::IVisualizer
 {
@@ -33,8 +34,9 @@ class KinematicVisualizer :  public QObject, public core::IVisualizer
     Q_OBJECT;
     UNIQUE_ID("{E8B5DEB2-5C57-4323-937D-1FFD288B65B9}", "Kinematic visualizer");
 
-public:
-    class KinematicVisualizerSerie : public core::IVisualizer::SerieBase
+private:
+
+    class KinematicVisualizerSerie : public core::IVisualizer::SerieBase, public timeline::IChannel
     {
     public:
         KinematicVisualizerSerie(KinematicVisualizer * visualizer)
@@ -101,6 +103,29 @@ public:
                 }
                 visualizer->transformNode->addChild(visualizer->currentDrawer->getNode());
             }
+        }
+
+        //! \return Sklonowane dane w kanale
+        virtual timeline::IChannelPtr clone() const
+        {
+            //! NIE WSPIERAMY TUTAJ KLONOWANIA!!
+            return timeline::IChannelPtr();
+        }
+
+        //! \return Dlugosc kanalu w sekundach
+        virtual double getLength() const
+        {
+            SkeletalVisualizationSchemeConstPtr scheme = getData()->get();
+
+            return scheme->getDuration();
+        }
+
+        //! Czas zawiera siê miêdzy 0 a getLength()
+        //! \param time Aktualny, lokalny czas kanalu w sekundach
+        virtual void setTime(double time)
+        {
+            SkeletalVisualizationSchemeConstPtr scheme = getData()->get();
+            core::const_pointer_cast<SkeletalVisualizationScheme>(scheme)->setTime(time);
         }
 
     private:
