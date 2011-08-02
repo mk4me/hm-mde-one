@@ -16,7 +16,7 @@ JointAnglesCollection::JointAnglesCollection(void) :
 {
 }
 
-void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelPtr skeletalModel, kinematic::SkeletalDataPtr skeletalData )
+void JointAnglesCollection::setSkeletal( const kinematic::SkeletalModelPtr & skeletalModel, const kinematic::SkeletalDataPtr & skeletalData )
 {
     UTILS_ASSERT(!this->skeletalModel && !this->skeletalData);
     this->skeletalModel = skeletalModel;
@@ -64,7 +64,7 @@ double JointAnglesCollection::getMaxBoneLength(const Skeleton& skeleton) const
     return getMaxLength(root, -1.0);
 }
 
-double JointAnglesCollection::getMaxLength(JointConstPtr joint, double maxLength) const
+double JointAnglesCollection::getMaxLength(const JointConstPtr & joint, double maxLength) const
 {
     maxLength = std::max(maxLength, joint->length);
     for (int i = joint->children.size() - 1; i >= 0; --i) {
@@ -73,7 +73,7 @@ double JointAnglesCollection::getMaxLength(JointConstPtr joint, double maxLength
     return maxLength;
  }
 
-void JointAnglesCollection::createQuaternionRepresentation( kinematic::SkeletalDataPtr data )
+void JointAnglesCollection::createQuaternionRepresentation( const kinematic::SkeletalDataPtr & data )
 {
     UTILS_ASSERT(lengthRatio > 0.0);
 	std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
@@ -188,7 +188,7 @@ void JointAnglesCollection::createQuaternionRepresentation( kinematic::SkeletalD
 //}
 
 
-osg::Vec3 JointAnglesCollection::vectorRotation( osg::Vec3 v,double rX, double rY, double rZ )
+osg::Vec3 JointAnglesCollection::vectorRotation( osg::Vec3 v, double rX, double rY, double rZ )
 {
     osg::Quat rotz; rotz.makeRotate(rZ, 0,0,1);
     osg::Quat roty; roty.makeRotate(rY, 0,1,0);

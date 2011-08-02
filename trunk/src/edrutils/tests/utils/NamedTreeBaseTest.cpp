@@ -12,8 +12,8 @@ void NamedTreeBaseTest::setUp()
 
 void NamedTreeBaseTest::testRootStructure()
 {
-    CPPUNIT_ASSERT(rootA->getParent().lock() == nullptr);
-    CPPUNIT_ASSERT(rootA->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(rootA->getParent() == nullptr);
+    CPPUNIT_ASSERT(rootA->getRoot() == rootA);
     CPPUNIT_ASSERT(rootA->isRoot() == true);
     CPPUNIT_ASSERT(rootA->isLeaf() == true);
 }
@@ -23,8 +23,8 @@ void NamedTreeBaseTest::testAddChild()
     NamedTreeBasePtr node(new NamedTreeBase("A"));
 
     //mamy nowego roota
-    CPPUNIT_ASSERT(node->getParent().lock() == nullptr);
-    CPPUNIT_ASSERT(node->getRoot().lock() == node);
+    CPPUNIT_ASSERT(node->getParent() == nullptr);
+    CPPUNIT_ASSERT(node->getRoot() == node);
     CPPUNIT_ASSERT(node->size() == 0);
     CPPUNIT_ASSERT(node->isLeaf() == true);
     CPPUNIT_ASSERT(node->isRoot() == true);
@@ -33,8 +33,8 @@ void NamedTreeBaseTest::testAddChild()
 
     rootA->addChild(node);
 
-    CPPUNIT_ASSERT(node->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(node->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(node->getParent() == rootA);
+    CPPUNIT_ASSERT(node->getRoot() == rootA);
     CPPUNIT_ASSERT(rootA->size() == size + 1);
 
     CPPUNIT_ASSERT(rootA->getChild("A") == node);
@@ -51,8 +51,8 @@ void NamedTreeBaseTest::testAddChildPose()
 
     rootA->addChild(node);
 
-    CPPUNIT_ASSERT(node->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(node->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(node->getParent() == rootA);
+    CPPUNIT_ASSERT(node->getRoot() == rootA);
     CPPUNIT_ASSERT(rootA->size() == size + 1);
 
     CPPUNIT_ASSERT(rootA->getChild("B") == rootA->getChild(size));
@@ -64,8 +64,8 @@ void NamedTreeBaseTest::testAddChildPose()
     //nadpisz
     rootA->addChild(node,size);
 
-    CPPUNIT_ASSERT(node->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(node->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(node->getParent() == rootA);
+    CPPUNIT_ASSERT(node->getRoot() == rootA);
     CPPUNIT_ASSERT(rootA->size() == size + 1);
 
     CPPUNIT_ASSERT(rootA->getChild("C") == rootA->getChild(size));
@@ -98,8 +98,8 @@ void NamedTreeBaseTest::testAddChildName()
 
     CPPUNIT_ASSERT(rootA->size() == size + 1);
     CPPUNIT_ASSERT(rootA->getChild(size) == rootA->getChild("F"));
-    CPPUNIT_ASSERT(rootA->getChild("F")->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(rootA->getChild("F")->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("F")->getParent() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("F")->getRoot() == rootA);
     CPPUNIT_ASSERT(rootA->getChild("F")->isLeaf() == true);
     CPPUNIT_ASSERT(rootA->getChild("F")->isRoot() == false);
 }
@@ -112,8 +112,8 @@ void NamedTreeBaseTest::testAddChildNamePose()
 
     CPPUNIT_ASSERT(rootA->size() == size + 1);
     CPPUNIT_ASSERT(rootA->getChild(size) == rootA->getChild("G"));
-    CPPUNIT_ASSERT(rootA->getChild("G")->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(rootA->getChild("G")->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("G")->getParent() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("G")->getRoot() == rootA);
     CPPUNIT_ASSERT(rootA->getChild("G")->isLeaf() == true);
     CPPUNIT_ASSERT(rootA->getChild("G")->isRoot() == false);
 
@@ -123,8 +123,8 @@ void NamedTreeBaseTest::testAddChildNamePose()
     //rozmiar nie powinien sie zwiekszyc
     CPPUNIT_ASSERT(rootA->size() == size + 1);
     CPPUNIT_ASSERT(rootA->getChild(size) == rootA->getChild("H"));
-    CPPUNIT_ASSERT(rootA->getChild("H")->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(rootA->getChild("H")->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("H")->getParent() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("H")->getRoot() == rootA);
     CPPUNIT_ASSERT(rootA->getChild("H")->isLeaf() == true);
     CPPUNIT_ASSERT(rootA->getChild("H")->isRoot() == false);
 }
@@ -156,13 +156,13 @@ void NamedTreeBaseTest::testAddChildPath()
     CPPUNIT_ASSERT(rootA->getChild("E/F")->isRoot() == false);
     CPPUNIT_ASSERT(rootA->getChild("E/F/G")->isRoot() == false);
 
-    CPPUNIT_ASSERT(rootA->getChild("E")->getRoot().lock() == rootA);
-    CPPUNIT_ASSERT(rootA->getChild("E/F")->getRoot().lock() == rootA);
-    CPPUNIT_ASSERT(rootA->getChild("E/F/G")->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("E")->getRoot() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("E/F")->getRoot() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("E/F/G")->getRoot() == rootA);
 
-    CPPUNIT_ASSERT(rootA->getChild("E")->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(rootA->getChild("E/F")->getParent().lock() == rootA->getChild("E"));
-    CPPUNIT_ASSERT(rootA->getChild("E/F/G")->getParent().lock() == rootA->getChild("E/F"));
+    CPPUNIT_ASSERT(rootA->getChild("E")->getParent() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("E/F")->getParent() == rootA->getChild("E"));
+    CPPUNIT_ASSERT(rootA->getChild("E/F/G")->getParent() == rootA->getChild("E/F"));
 }
 
 void NamedTreeBaseTest::testAddChildPathPose()
@@ -177,8 +177,8 @@ void NamedTreeBaseTest::testAddChildPathPose()
 
     CPPUNIT_ASSERT(rootA->getChild("E/F")->size() == 1);
     CPPUNIT_ASSERT(rootA->getChild("E/F")->getChild(size) == rootA->getChild("E/F/H"));
-    CPPUNIT_ASSERT(rootA->getChild("E/F")->getChild("H")->getParent().lock() == rootA->getChild("E/F"));
-    CPPUNIT_ASSERT(rootA->getChild("E/F")->getChild("H")->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("E/F")->getChild("H")->getParent() == rootA->getChild("E/F"));
+    CPPUNIT_ASSERT(rootA->getChild("E/F")->getChild("H")->getRoot() == rootA);
 }
 
 void NamedTreeBaseTest::testAddChildPathExist()
@@ -200,8 +200,8 @@ void NamedTreeBaseTest::testRemoveChild()
     NamedTreeBasePtr node = rootA->getChild(0);
 
     //mamy nowego roota
-    CPPUNIT_ASSERT(node->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(node->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(node->getParent() == rootA);
+    CPPUNIT_ASSERT(node->getRoot() == rootA);
     CPPUNIT_ASSERT(node->size() == 0);
     CPPUNIT_ASSERT(node->isLeaf() == true);
     CPPUNIT_ASSERT(node->isRoot() == false);
@@ -212,8 +212,8 @@ void NamedTreeBaseTest::testRemoveChild()
 
     CPPUNIT_ASSERT(rootA->size() == size - 1);
 
-    CPPUNIT_ASSERT(node->getParent().lock() == nullptr);
-    CPPUNIT_ASSERT(node->getRoot().lock() == node);
+    CPPUNIT_ASSERT(node->getParent() == nullptr);
+    CPPUNIT_ASSERT(node->getRoot() == node);
     CPPUNIT_ASSERT(node->size() == 0);
     CPPUNIT_ASSERT(node->isLeaf() == true);
     CPPUNIT_ASSERT(node->isRoot() == true);
@@ -225,8 +225,8 @@ void NamedTreeBaseTest::testRemoveChildPose()
     NamedTreeBase::size_type size = rootA->size();
     NamedTreeBasePtr node = rootA->getChild(0);
 
-    CPPUNIT_ASSERT(node->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(node->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(node->getParent() == rootA);
+    CPPUNIT_ASSERT(node->getRoot() == rootA);
     CPPUNIT_ASSERT(node->size() == 0);
     CPPUNIT_ASSERT(node->isLeaf() == true);
     CPPUNIT_ASSERT(node->isRoot() == false);
@@ -234,8 +234,8 @@ void NamedTreeBaseTest::testRemoveChildPose()
     rootA->removeChild(0);
 
     CPPUNIT_ASSERT(rootA->size() == size - 1);
-    CPPUNIT_ASSERT(node->getParent().lock() == nullptr);
-    CPPUNIT_ASSERT(node->getRoot().lock() == node);
+    CPPUNIT_ASSERT(node->getParent() == nullptr);
+    CPPUNIT_ASSERT(node->getRoot() == node);
     CPPUNIT_ASSERT(node->size() == 0);
     CPPUNIT_ASSERT(node->isLeaf() == true);
     CPPUNIT_ASSERT(node->isRoot() == true);
@@ -254,8 +254,8 @@ void NamedTreeBaseTest::testRemoveChildName()
     NamedTreeBasePtr node = rootA->getChild("A");
     NamedTreeBase::size_type size = rootA->size();
 
-    CPPUNIT_ASSERT(node->getParent().lock() == rootA);
-    CPPUNIT_ASSERT(node->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(node->getParent() == rootA);
+    CPPUNIT_ASSERT(node->getRoot() == rootA);
     CPPUNIT_ASSERT(node->size() == 0);
     CPPUNIT_ASSERT(node->isLeaf() == true);
     CPPUNIT_ASSERT(node->isRoot() == false);
@@ -263,8 +263,8 @@ void NamedTreeBaseTest::testRemoveChildName()
     rootA->removeChild("A");
 
     CPPUNIT_ASSERT(rootA->size() == size - 1);
-    CPPUNIT_ASSERT(node->getParent().lock() == nullptr);
-    CPPUNIT_ASSERT(node->getRoot().lock() == node);
+    CPPUNIT_ASSERT(node->getParent() == nullptr);
+    CPPUNIT_ASSERT(node->getRoot() == node);
     CPPUNIT_ASSERT(node->size() == 0);
     CPPUNIT_ASSERT(node->isLeaf() == true);
     CPPUNIT_ASSERT(node->isRoot() == true);
@@ -283,22 +283,22 @@ void NamedTreeBaseTest::testRemoveChildPath()
     NamedTreeBasePtr node = rootA->getChild("E/F");
     NamedTreeBase::size_type size = rootA->getChild("E")->size();
 
-    CPPUNIT_ASSERT(node->getParent().lock() == rootA->getChild("E"));
-    CPPUNIT_ASSERT(node->getRoot().lock() == rootA);
+    CPPUNIT_ASSERT(node->getParent() == rootA->getChild("E"));
+    CPPUNIT_ASSERT(node->getRoot() == rootA);
     CPPUNIT_ASSERT(rootA->getChild("E")->isLeaf() == false);
     CPPUNIT_ASSERT(rootA->getChild("E")->isRoot() == false);
-    CPPUNIT_ASSERT(rootA->getChild("E")->getRoot().lock() == rootA);
-    CPPUNIT_ASSERT(rootA->getChild("E")->getParent().lock() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("E")->getRoot() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("E")->getParent() == rootA);
 
     rootA->removeChild("E/F");
 
     CPPUNIT_ASSERT(rootA->getChild("E")->size() == size - 1);
-    CPPUNIT_ASSERT(node->getParent().lock() == nullptr);
-    CPPUNIT_ASSERT(node->getRoot().lock() == node);
+    CPPUNIT_ASSERT(node->getParent() == nullptr);
+    CPPUNIT_ASSERT(node->getRoot() == node);
     CPPUNIT_ASSERT(rootA->getChild("E")->isLeaf() == true);
     CPPUNIT_ASSERT(rootA->getChild("E")->isRoot() == false);
-    CPPUNIT_ASSERT(rootA->getChild("E")->getRoot().lock() == rootA);
-    CPPUNIT_ASSERT(rootA->getChild("E")->getParent().lock() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("E")->getRoot() == rootA);
+    CPPUNIT_ASSERT(rootA->getChild("E")->getParent() == rootA);
 }
 
 void NamedTreeBaseTest::testGetChildPathNotExist()

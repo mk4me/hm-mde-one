@@ -18,11 +18,11 @@ set(PUBLIC_H
 	${HEADER_PATH}/Channel.h
 	${HEADER_PATH}/IChannel.h
 	${HEADER_PATH}/Model.h
-	${HEADER_PATH}/State.h
 	${HEADER_PATH}/Tag.h
-	${HEADER_PATH}/TagType.h
 	${HEADER_PATH}/Types.h
+	${HEADER_PATH}/Controller.h
 	${HEADER_PATH}/View.h
+	${HEADER_PATH}/State.h
 )
 
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
@@ -33,11 +33,9 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Ÿród³a
 set(TARGET_SRC
 	Channel.cpp
-	IChannel.cpp
 	Model.cpp
-	State.cpp
 	Tag.cpp
-	TagType.cpp
+	Controller.cpp
 	View.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})

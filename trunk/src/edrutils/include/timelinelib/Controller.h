@@ -1,125 +1,361 @@
-#ifndef HEADER_GUARD__TIMELINECONTROLLER_H__
-#define HEADER_GUARD__TIMELINECONTROLLER_H__
-
-#include <timelinelib/Types.h>
-#include <timelinelib/Model.h>
-#include <timelinelib/State.h>
-#include <utils/ObserverPattern.h>
+/********************************************************************
+    created:  2011/07/19
+    created:  19:7:2011   14:17
+    filename: Controller.h
+    author:   Mateusz Janiak
+    
+    purpose:  
+*********************************************************************/
+#ifndef HEADER_GUARD_TIMELINE__CONTROLLER_H__
+#define HEADER_GUARD_TIMELINE__CONTROLLER_H__
 
 #include <OpenThreads/Thread>
 #include <OpenThreads/Mutex>
+#include <OpenThreads/ScopedLock>
 
-////////////////////////////////////////////////////////////////////////////////
+#include <timelinelib/Types.h>
+#include <timelinelib/View.h>
+#include <timelinelib/Model.h>
+
+#include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+
+#include <utils/ObserverPattern.h>
+
 namespace timeline{
-////////////////////////////////////////////////////////////////////////////////
 
-/** Klasa kontrolera odpowiedzialnego za zarzadzanie modelem danych.
-* Wzorzec projektowy MVC - Model - View - Controller, gdzie widok, operacje wejscia i dane sa rozdzielone.
-*/
-class Controller : public OpenThreads::Thread //,
-    //public utils::Observable<State>
+class IController : public utils::Observable<State>
 {
-private:
-
-    //! Model ktorym zarzadzamy
-    ModelPtr model;
-
-    //! Model ktorym zarzadzamy
-    ModelConstPtr constModel;
-
-    //! Kopia stanu modelu
-    State dirtyState;
-
-    //! Stan zajetosci kontrolera
-    volatile bool busy;
-
-    //! Czy stan sie zmienil ale nie zostal zaakceptoany
-    bool dirty;
-
-    //! Opis stanu czasu
-    bool timeDirty;
-
-    //! Czy kontroler dziala w trybie asynchronicznym
-    bool asynchronous;
-
-    //! Muteks blokujace modyfikacje stanu modelu
-    OpenThreads::Mutex modelMutex;
-
-    //! Muteks blokujace modyfikacje stanu
-    OpenThreads::Mutex stateMutex;
-
 public:
-    //! Konstruktor zerujacy
-    Controller();
 
-    ~Controller(void);
+    //! Sposób aktualizacji czasu
+    enum TimeUpdateMode {
+        AsynchTimeUpdate, //! Asynchroniczna aktualizacja czasu - przyjscie nowego czasu przerywa poprzedni¹ aktualizacjê jeœli taka by³a i rozpoczyna aktualizacjê od nowa
+        SynchTimeUpdate     //! Czeka a¿ skoñczy siê poprzenia aktualizacja czasu, ustawia nowy czas do kolejnej aktualizacji
+    };
 
-    //------- Zarzadzanie kontrolerem ---------------------
+    //! Kierunek odtwarzania timeline
+    enum PlaybackDirection {
+        PlayForward     = 1,    // odtwarzanie do przodu
+        PlayBackward    = -1    // odtwarzanie do ty³u
+    };
 
-    //! Rozpoczyna odtwarzanie
-    void play();
+    IController(State * state) : utils::Observable<State>(state) {}
 
-    //! Wstrzymuje odtwarzanie
-    void pause();
+    //! \return Aktualny model kontrolera
+    virtual const ModelConstPtr & getModel() const = 0;
 
-    //! Zwraca czas odtwarzania
-    double getTime() const;
+    //! \param view Widok kontrolera
+    virtual void setView(const ViewPtr & view) = 0;
+    //! \return Aktualny widok kontrolera
+    virtual const ViewPtr & getView() = 0;
+    //! \return Aktualny widok kontrolera
+    virtual const ViewConstPtr & getView() const = 0;
 
-    //! \param time Czas dla kanalow
-    void setTime(double time);
+    //------------------------------- Konfiguracja aktualizacji czasu -----------------------
 
-    //! \return Aktualny czas timeline w formacie znormalizowanym [0;1]
-    double getNormalizedTime() const;
+    //! \param timeUpdateMode Sposób aktualizacji czasu
+    virtual void setTimeUpdateMode(TimeUpdateMode timeUpdateMode) = 0;
 
-    //! \param normalizedTime Czas timeline w formacie znormalizowanym
-    void setNormalizedTime(double normalizedTime);
+    //! \return Sposób aktualizacji czasu
+    virtual TimeUpdateMode getTimeUpdateMode() const = 0;
 
-    //! \return Model danych zwiazany z tym kontrolerem
-    const ModelPtr & getModel();
+    //! \param playbackDirection Kierunek aktualizacji czasu w timeline
+    virtual void setPlaybackDirection(PlaybackDirection playbackDirection) = 0;
 
-    //! \return Model danych zwiazany z tym kontrolerem
-    const ModelConstPtr & getModel() const;
+    //! \return Kierunek aktualizacji czasu w timeline
+    virtual PlaybackDirection getPlaybackDirection() const = 0;
 
+//------------------------------- Zarzadzanie odtwarzaniem ------------------------------
 
-    //------- Stan kontrolera ---------------------
+    //! Uruchamia timeline - odtwarzanie
+    virtual void play() = 0;
 
-    //! \return Czy kontroler jest zajety
-    bool isBusy() const;
-
-    //! \return Czy stan jest "brudny" - zmieniony ale nie zatwierdzony/zaakceptowany
-    bool isDirty() const;
+    //! Wstrzymuje odtwarzanie timeline
+    virtual void pause() = 0;
 
     //! \return Czy timeline jest odtwarzany
-    bool isPlaying() const;
+    virtual bool isPlaying() const = 0;
 
-    //! \return Czy czas sie zmienil ale nie zostal zatwierdzony/zaakceptowany
-    bool isTimeDirty() const;
+    //! \return Czy stan timeline jest "brudny"
+    virtual bool isDirty() const = 0;
 
-    //! \return Czy timeline dziala asynchronicznie
-    bool isAsynchronous() const;
+    //! \return Czy czas timeline jest "brudny"
+    virtual bool isTimeDirty() const = 0;
 
+    //! \return Czy kontroler jest zajêty?
+    virtual bool isBusy() const = 0;
 
-    //------- Akcje kontrolera ---------------------
+    //------------------------------- Operacje na timeline -----------------------------------
 
-    bool compute();
+    //! \return Dlugosc kanalu w sekundach, uwzgledniajac skale
+    virtual double getLength() const = 0;
+
+    //! \return Aktualny czas kanalu
+    virtual double getTime() const = 0;
+
+    //! \return Znormalizowany czas timeline
+    virtual double getNormalizedTime() const = 0;
+
+    //! \return Skala czasu kanalu
+    virtual double getTimeScale() const = 0;
+
+    //! \param timeScale Nowa skala czasowa
+    virtual void setTimeScale(double timeScale) = 0;
+
+    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! sprawdza maske i offset
+    //! \param time Aktualny czas timeline, 0 <= time <= length
+    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    virtual void setTime(double time) = 0;
+
+    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! sprawdza maske i offset
+    //! \param normTime Aktualny czas timeline, 0 <= time <= length
+    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    virtual void setNormalizedTime(double normTime) = 0;
+
+    //! \param path Sciezka nowego kanalu
+    //! \param channel fatyczny kanal dotarczony przez klienta
+    virtual void addChannel(const std::string & path, const IChannelPtr & channel = IChannelPtr()) = 0;
+
+    //! \param path Sciezka kanalu do usuniecia
+    virtual void removeChannel(const std::string & path) = 0;
+};    
+
+class Controller : public IController
+{
+protected:
+
+    //! Typ lokalnego lockowania mutexa
+    typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
 
 private:
 
-    //! Watek odtwarzajacy timeline
-    virtual void run();
+    typedef boost::function<double (Controller *, unsigned long int)> TimeGenerator;
 
-    //! \return Czy mozna wykonac czysty zapis stanu
-    bool isWriteEnable() const;
+    class Timer : public OpenThreads::Thread
+    {
+    public:
+        Timer(unsigned long int delay)
+            : delay(delay)
+        {
+            UTILS_ASSERT((delay != 0), "Z³y czas pomiêdzy tikami tegara");
+        }
 
-    //! \return Aktualny stan modelu lub jego brudna kopie
-    const State & getState() const;
+        virtual void run()
+        {
+            if(controller == nullptr){
+                std::runtime_error("Wrong controller to update");
+            }
 
-    //! \param state Nowy stan modelu
-    void setState(const State & state);
+            while(true){
+                {
+                    // czy nie ma pauzy
+                    ScopedLock (controller->pauseMutex);
+                }
+                
+                //aktualizujemy czas
+                controller->setNextTime(delay);
+                    
+                //zasypiamy
+                OpenThreads::Thread::microSleep(delay);
+            }
+        }
+
+    void setController(Controller * controller)
+    {
+        UTILS_ASSERT((controller != nullptr), "B³êdny kontroler do aktualizacji");
+        this->controller = controller;
+    }
+
+    void setDelay(unsigned long int delay)
+    {
+        UTILS_ASSERT((delay > 0), "Blêdne opóŸnienie zegara");
+        this->delay = delay;
+    }
+
+    unsigned long int getDelay() const
+    {
+        return delay;
+    }
+
+    private:
+        Controller * controller;
+        unsigned long int delay;
+    };
+
+    friend class Timer;
+
+    typedef boost::shared_ptr<Timer> TimerPtr;
+
+private:
+    //! Model logiczny timeline
+    ModelPtr model;
+    //! Model logiczny timeline w wersji const
+    ModelConstPtr constModel;
+
+    //! Widok timeline
+    ViewPtr view;
+    //! Widok timeline w wersji const
+    ViewConstPtr constView;
+
+    //! Wewnêtrzny timer
+    TimerPtr timer;
+
+    //! Sposób aktualizacji czasu
+    TimeUpdateMode timeUpdateMode;
+
+    //! Kierunek aktualizacji czasu
+    PlaybackDirection playbackDirection;
+
+    //! Mutex do synchronizacji edycji modelu (struktura kana³ów)
+    OpenThreads::Mutex modelMutex;
+    
+    //! Mutex do edycji odtwarzania timeline
+    mutable OpenThreads::Mutex stateMutex;
+
+    //! Mutex do zarzadzania odtwarzaniem timeline - wstrzymywania go
+    OpenThreads::Mutex pauseMutex;
+
+    //! Czy kontroler jest zajêty?
+    volatile bool busy;
+
+    //! Czy czas modelu i timeline s¹ ró¿ne
+    bool dirty;
+
+    //! "Brudny" stan timeline
+    State dirtyState;
+
+    //! Czy czas kontrolera i modelu s¹ rózne
+    bool timeDirty;
+
+    //! Generator nowego czasu dla timera
+    TimeGenerator timeGenerator;
+
+public:
+
+    Controller(const ViewPtr & view);
+    virtual ~Controller();
+
+    //------------------------------- Konfiguracja kontrolera ------------------------------
+
+    //! \param model Model do ustawienia w kontrolerze
+    virtual void setModel(const timeline::ModelPtr & model);
+    //! \return Aktualny model kontrolera
+    virtual const ModelPtr & getModel();
+    //! \return Aktualny model kontrolera
+    virtual const ModelConstPtr & getModel() const;
+
+    //! \param view Widok kontrolera
+    virtual void setView(const ViewPtr & view);
+    //! \return Aktualny widok kontrolera
+    virtual const ViewPtr & getView();
+    //! \return Aktualny widok kontrolera
+    virtual const ViewConstPtr & getView() const;
+
+    //------------------------------- Konfiguracja aktualizacji czasu -----------------------
+
+    //! \param timeUpdateMode Sposób aktualizacji czasu
+    virtual void setTimeUpdateMode(TimeUpdateMode timeUpdateMode);
+
+    //! \return Sposób aktualizacji czasu
+    virtual TimeUpdateMode getTimeUpdateMode() const;
+
+    //! \param playbackDirection Kierunek aktualizacji czasu w timeline
+    virtual void setPlaybackDirection(PlaybackDirection playbackDirection);
+
+    //! \return Kierunek aktualizacji czasu w timeline
+    virtual PlaybackDirection getPlaybackDirection() const;
+
+    //------------------------------- Zarzadzanie odtwarzaniem ------------------------------
+
+    //! Uruchamia timeline - odtwarzanie
+    virtual void play();
+
+    //! Wstrzymuje odtwarzanie timeline
+    virtual void pause();
+
+    //! \return Czy timeline jest odtwarzany
+    virtual bool isPlaying() const;
+
+    //! \return Czy stan timeline jest "brudny"
+    virtual bool isDirty() const;
+
+    //! \return Czy czas timeline jest "brudny"
+    virtual bool isTimeDirty() const;
+
+    //! \return Czy kontroler jest zajêty?
+    bool isBusy() const;
+
+    //------------------------------- Operacje na timeline -----------------------------------
+
+    //! \return Dlugosc kanalu w sekundach, uwzgledniajac skale
+    virtual double getLength() const;
+
+    //! \return Aktualny czas kanalu
+    virtual double getTime() const;
+
+    //! \return Znormalizowany czas timeline
+    virtual double getNormalizedTime() const;
+
+    //! \return Skala czasu kanalu
+    virtual double getTimeScale() const;
+
+    //! \param timeScale Nowa skala czasowa
+    virtual void setTimeScale(double timeScale);
+
+    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! sprawdza maske i offset
+    //! \param time Aktualny czas timeline, 0 <= time <= length
+    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    virtual void setTime(double time);
+
+    //! propaguje zmiane na wszystkie aktywne podkanaly
+    //! sprawdza maske i offset
+    //! \param normTime Aktualny czas timeline, 0 <= time <= length
+    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
+    virtual void setNormalizedTime(double normTime);
+
+    //! \param path Sciezka nowego kanalu
+    //! \param channel fatyczny kanal dotarczony przez klienta
+    virtual void addChannel(const std::string & path, const IChannelPtr & channel = IChannelPtr());
+
+    //! \param path Sciezka kanalu do usuniecia
+    virtual void removeChannel(const std::string & path);
+
+private:
+
+    //! \return Czy mo¿liwy jest "czysty" zapis?
+    bool isWriteEnabled() const;
+
+    //! \return Bie¿¹cy stan. W zale¿noœci od rezultatu isWriteEnabled
+    //! zwracany jest albo faktyczny stan modelu, albo jego "brudna" kopia.
+    State getState() const;
+
+    //! Ustawia bie¿¹cy stan. Zmienna dirtyState zawsze jest ustawiana,
+    //! ewentualnie jeszcze (na podstawie rezultatu isWriteEnabled) 
+    //! ustawiana jest flaga dirty.
+    //! \param state Bie¿¹cy stan.
+    void setState(const State& state);
+
+    //! \param controller Kontroler, którego czas aktualizujemy do przodu
+    //! \param realTimeDelta Rzeczywisty krok czasu w milisekundach
+    //! \return nowy czas do ustawienia
+    static double forwardTimeUpdate(Controller * controller, unsigned long int realTimeDelta);
+
+    //! \param controller Kontroler, którego czas aktualizujemy do ty³u
+    //! \param realTimeDelta Rzeczywisty krok czasu w milisekundach
+    //! \return nowy czas do ustawienia
+    static double backwardTimeUpdate(Controller * controller, unsigned long int realTimeDelta);
+
+    //! \param realTimeDelta Rzeczywisty krok czasu w milisekundach    
+    //! \return Czy osiagniêto kraniec czasu
+    bool setNextTime(unsigned long int realTimeDelta);
 };
 
-////////////////////////////////////////////////////////////////////////////////
-} // namespace timeline
-////////////////////////////////////////////////////////////////////////////////
+}
 
-#endif  // HEADER_GUARD__TIMELINECONTROLLER_H__
+#endif  //  HEADER_GUARD_TIMELINE__CONTROLLER_H__
+

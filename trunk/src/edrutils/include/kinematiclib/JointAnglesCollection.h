@@ -21,13 +21,13 @@ namespace kinematic
 {
 	
 //! Klasa reprezentuje kanal dla pojedynczego stawu, przechowuje rotacje wzgledne w postaci kwaternionow
-typedef utils::DataChannel<osg::Quat, float, QuaternionManipulatorSlerp> JointAngleChannel;
+typedef utils::BaseChannel<osg::Quat, float, QuaternionManipulatorSlerp> JointAngleChannel;
 typedef boost::shared_ptr<JointAngleChannel> JointAngleChannelPtr;
 typedef boost::shared_ptr<const JointAngleChannel> JointAngleChannelConstPtr;
 
 /// \brief  Klasa dostarcza reprezentacje wewnetrzna szkieletu.
 /// \details Zawiera znormalizowane dane : rotacje jako kwaterniony, dlugosc kosci z zakresu <0,1>, nazewnictwo h-anim
-class JointAnglesCollection : public utils::DataChannelCollection<osg::Quat, float, QuaternionManipulatorSlerp>
+class JointAnglesCollection : public utils::DataChannelCollection<JointAngleChannel>
 {
 public:
     JointAnglesCollection(void);
@@ -38,15 +38,15 @@ public:
 	
 public:
     /// \brief  Zwraca surowe dane z parsera
-    kinematic::SkeletalModelPtr getSkeletalData() const { return skeletalModel; }
+    const kinematic::SkeletalModelPtr & getSkeletalData() const { return skeletalModel; }
 	//! Tworzy dane zgodne z parserami na podstawie reprezentacji wewnetrznej
 	//kinematic::SkeletalModelPtr createSkeletalData() const;
     /// \brief  Ustawia dane z parsera
     /// \details W tym miejscu tworzony jest pe³ny szkielet h-anim, robiona jest normalizacja danych
     /// \param  skeletalModel   The skeletal model. 
-    void setSkeletal(kinematic::SkeletalModelPtr skeletalModel, kinematic::SkeletalDataPtr skeletalData);
+    void setSkeletal(const kinematic::SkeletalModelPtr & skeletalModel, const kinematic::SkeletalDataPtr & skeletalData);
     //! \brief zwraca szkielet zgodny z h-anim
-    kinematic::hAnimSkeletonPtr getHAnimSkeleton() const { return haSkeleton; }
+    const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }
 	
     bool hasSkeleton() const {
         return (skeletalModel);
@@ -60,7 +60,7 @@ public:
 
 private:
     /// \brief  Na podstawie danych z parsera tworzy tablice z kwaternionami
-    void createQuaternionRepresentation(SkeletalDataPtr skeletalData);
+    void createQuaternionRepresentation(const SkeletalDataPtr & skeletalData);
     /// \brief  Wyszukuje i zwraca dlugosc najdluzszej z kosci w szkielecie
     /// \param  skeleton  Przeszukiwany szkielet
     /// \return Dlugosc najdluzszej z kosci. 
@@ -69,9 +69,9 @@ private:
     /// \param  joint       The joint. 
     /// \param  maxLength   Length of the maximum. 
     /// \return The maximum length. 
-    double getMaxLength(JointConstPtr joint, double maxLength) const;
+    double getMaxLength(const JointConstPtr & joint, double maxLength) const;
 
-    osg::Vec3 vectorRotation(osg::Vec3 v, double rX, double rY, double rZ);
+    osg::Vec3 vectorRotation( osg::Vec3 v, double rX, double rY, double rZ);
     osg::Quat rotationParentChild(hAnimJointPtr parent, hAnimJointPtr child);
     osg::Quat createRotation(const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order);
 	

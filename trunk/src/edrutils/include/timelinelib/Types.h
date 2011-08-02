@@ -64,6 +64,19 @@ typedef boost::weak_ptr<Model> ModelWPtr;
 typedef boost::shared_ptr<const Model> ModelConstPtr;
 typedef boost::weak_ptr<const Model> ModelConstWPtr;
 
+class View;
+typedef boost::shared_ptr<View> ViewPtr;
+typedef boost::weak_ptr<View> ViewWPtr;
+
+typedef boost::shared_ptr<const View> ViewConstPtr;
+typedef boost::weak_ptr<const View> ViewConstWPtr;
+
+class Controller;
+typedef boost::shared_ptr<Controller> ControllerPtr;
+typedef boost::shared_ptr<const Controller> ControllerConstPtr;
+typedef boost::weak_ptr<Controller> ControllerWPtr;
+typedef boost::weak_ptr<const Controller> ControllerConstWPtr;
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace timeline
 ////////////////////////////////////////////////////////////////////////////////

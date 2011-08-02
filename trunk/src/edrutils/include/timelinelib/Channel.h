@@ -4,6 +4,8 @@
 #include <timelinelib/Types.h>
 #include <timelinelib/IChannel.h>
 #include <utils/NamedTree.h>
+#include <utils/DataChannel.h>
+#include <utils/ObserverPattern.h>
 
 namespace timeline {
 
@@ -21,7 +23,7 @@ public:
     typedef ConstTags::const_iterator tag_const_iterator;
     typedef ConstTags::size_type tag_size_type;
 
-    //! poczatek maski i jej dlugosc
+    //! Poczatek maski i jej dlugosc
     typedef std::pair<double, double> Mask;
 
 protected:
@@ -84,7 +86,7 @@ public:
     // ------------ Obsluga dodatkowych cech strumienia danych-------------------------------------
 
     //! \return Czy globalny czas jest w zakresie obslugiwanym przez ten kanal
-    //! \param time GLobalny czas
+    //! \param time Globalny czas
     bool timeInChannel(double time) const;
 
     //! \param channel Kanal zdefiniowany przez uzytkownika i opakowany przez nasza klase
@@ -182,14 +184,6 @@ public:
 
     //! \return Ilosc tagow danego kanalu
     tag_size_type getNumTags() const;
-
-    //! \param node Wezel NamedTreeBase do przekonwertowania na wlasciwy wskaznik Channel
-    //! \return Wskaznik do Channel
-    static ChannelPtr getChannel(const NamedTreeBasePtr & node);
-
-    //! \param node Wezel NamedTreeBase do przekonwertowania na wlasciwy wskaznik Channel
-    //! \return Wskaznik do Channel
-    static ChannelConstPtr getConstChannel(const NamedTreeBaseConstPtr & node);
 
 protected:
 

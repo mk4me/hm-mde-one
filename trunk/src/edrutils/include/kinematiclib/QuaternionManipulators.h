@@ -24,43 +24,29 @@ namespace kinematic {
 			UTILS_ASSERT("Unable to normalize quaternion");
 			throw std::runtime_error("Unable to normalize quaternion");
 		}
-		virtual osg::Quat interpolate(const osg::Quat& q1, const osg::Quat& q2, float t) const = 0;
+		virtual void interpolate(osg::Quat& ret, const osg::Quat& q1, const osg::Quat& q2, float t) const = 0;
 	};
 
 	class QuaternionManipulatorSlerp : public QuaternionManipulator
 	{
 	public:
-		virtual osg::Quat interpolate( const osg::Quat& q1, const osg::Quat& q2, float t ) const
+		virtual void interpolate(osg::Quat& ret, const osg::Quat& q1, const osg::Quat& q2, float t ) const
 		{
-			osg::Quat q;
-			q.slerp(t, q1, q2);
-			return q;
+            ret.slerp(t, q1, q2);
 		}
 	};
 
 	class QuaternionManipulatorLerp : public QuaternionManipulator
 	{
 	public:
-		virtual osg::Quat interpolate( const osg::Quat& q1, const osg::Quat& q2, float t ) const
+		virtual void interpolate(osg::Quat& ret, const osg::Quat& q1, const osg::Quat& q2, float t ) const
 		{
-			osg::Quat q;
-			q._v[0] = q1._v[0] * (1.0f - t)  + q2._v[0] * t;
-			q._v[1] = q1._v[1] * (1.0f - t)  + q2._v[1] * t;
-			q._v[2] = q1._v[2] * (1.0f - t)  + q2._v[2] * t;
-			q._v[3] = q1._v[3] * (1.0f - t)  + q2._v[3] * t;
-			return q;
+			ret._v[0] = q1._v[0] * (1.0f - t)  + q2._v[0] * t;
+			ret._v[1] = q1._v[1] * (1.0f - t)  + q2._v[1] * t;
+			ret._v[2] = q1._v[2] * (1.0f - t)  + q2._v[2] * t;
+			ret._v[3] = q1._v[3] * (1.0f - t)  + q2._v[3] * t;
 		}
 	};
-
-	class QuaternionManipulatorNoInterpolation : public QuaternionManipulator
-	{
-	public:
-		virtual osg::Quat interpolate( const osg::Quat& q1, const osg::Quat& q2, float t  ) const
-		{
-			return q1;
-		}
-	};
-
 }
 
 #endif

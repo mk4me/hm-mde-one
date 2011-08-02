@@ -44,6 +44,8 @@ public:
 
     typedef ObservableType* ObservablePtr;
 
+    typedef std::set<ObservablePtr> ObservedObjects;
+
 public:
     //! Polimorficzny destruktor.
     virtual ~Observer()
@@ -56,8 +58,14 @@ public:
     //! \param subject Obiekt podany obserwacji.
     virtual void update(const T * subject) = 0;
 
+    //! \return Lista obserwowanych obiektów
+    const ObservedObjects & getObservedObjects() const
+    {
+        return observedObjects
+    }
+
 private:
-    std::set<ObservablePtr> observedObjects;
+    ObservedObjects observedObjects;
 };
 
 //------------------------------------------------------------------------------
@@ -76,11 +84,14 @@ public:
     typedef Observer<T> ObserverType;
     //! Typ wskaŸnika.
     typedef ObserverType * ObserverPtr;
-    //typedef typename PtrPolicy::template Ptr<ObserverType>::Type ObserverPtr;
+
+private:
+    //! Kolekcja elementów obserwuj¹cych
+    typedef std::set<ObserverPtr> Observers;
 
 private:
     //! Obserwatorzy.
-    std::set<ObserverPtr> observers;
+    Observers observers;
     //! Obserwowany obiekt.
     const T * self;
     //!
@@ -138,7 +149,7 @@ public:
             (*it)->observedObjects.erase(this);
         }
 
-        observers.swap(std::set<ObserverPtr>());
+        observers.swap(Observers());
     }
 
     //! Aktualizuje wszystkie wyniki.

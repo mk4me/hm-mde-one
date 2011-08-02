@@ -103,14 +103,14 @@ void NamedTreeBase::setName(std::string name)
 }
 
 
-const NamedTreeBaseWPtr & NamedTreeBase::getParent()
+NamedTreeBasePtr NamedTreeBase::getParent()
 { 
-    return this->parent;
+    return this->parent.lock();
 }
 
-const NamedTreeBaseConstWPtr & NamedTreeBase::getParent() const
+NamedTreeBaseConstPtr NamedTreeBase::getParent() const
 { 
-    return this->constParent;
+    return this->constParent.lock();
 }
 
 NamedTreeBase::iterator NamedTreeBase::begin()
@@ -139,7 +139,7 @@ const NamedTreeBasePtr & NamedTreeBase::getChild(const std::string & path)
         throw std::runtime_error("Root reference must be hold by client!");
     }
 
-    NamedTreeBasePtr parent(child->getParent().lock());
+    NamedTreeBasePtr parent(child->getParent());
 
     return *(parent->findChildByName(child->getName()));
 }
@@ -207,7 +207,7 @@ void NamedTreeBase::addChild(const std::string & path, NamedTreeBase::size_type 
 
 void NamedTreeBase::addChild(const NamedTreeBasePtr & child, NamedTreeBase::size_type idx)
 {
-    if(child->isRoot() == false && child->getParent().lock() != nullptr) {
+    if(child->isRoot() == false && child->getParent() != nullptr) {
         throw std::runtime_error("Child has already a parent!");
     }
 
@@ -275,26 +275,26 @@ void NamedTreeBase::removeChild(const std::string & path)
         throw std::runtime_error("Can not delete root - clinet code must do this explicitly!");
     }
 
-    pos->getParent().lock()->removeChild(pos);
+    pos->getParent()->removeChild(pos);
 }
 
-NamedTreeBaseWPtr NamedTreeBase::getRoot()
+NamedTreeBasePtr NamedTreeBase::getRoot()
 {    
-    NamedTreeBaseWPtr ret(shared_from_this());
+    NamedTreeBasePtr ret(shared_from_this());
 
-    while(ret.lock() != nullptr && ret.lock()->isRoot() == false){
-        ret = ret.lock()->getParent().lock();
+    while(ret != nullptr && ret->isRoot() == false){
+        ret = ret->getParent();
     }
 
     return ret;
 }
 
-NamedTreeBaseConstWPtr NamedTreeBase::getRoot() const
+NamedTreeBaseConstPtr NamedTreeBase::getRoot() const
 {    
-    NamedTreeBaseConstWPtr ret(shared_from_this());
+    NamedTreeBaseConstPtr ret(shared_from_this());
 
-    while(ret.lock() != nullptr && ret.lock()->isRoot() == false){
-        ret = ret.lock()->getParent().lock();
+    while(ret != nullptr && ret->isRoot() == false){
+        ret = ret->getParent();
     }
 
     return ret;
@@ -307,7 +307,7 @@ bool NamedTreeBase::isLeaf() const
 
 bool NamedTreeBase::isRoot() const
 {
-    return getParent().lock() == nullptr;
+    return getParent() == nullptr;
 }
 
 

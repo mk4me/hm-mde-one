@@ -1,91 +1,19 @@
 #include <timelinelib/Controller.h>
-#include <OpenThreads/ScopedLock>
-#include <osg/Timer>
-#include <osg/Notify>
 
 namespace timeline {
 
-Controller::Controller() : //utils::Observable<State>(&dirtyState),
-        modelMutex(), 
-        stateMutex(), 
-        asynchronous(false),
-        timeDirty(false),
-        busy(false),
-        dirty(false),
-        model(new Model())//,
-        //dirtyState(model->getState())
+Controller::Controller(const ViewPtr & view) : IController(&dirtyState),
+    model(new Model()), constModel(model), view(view), constView(view),
+    playbackDirection(PlayForward), timer(new Timer(40)),
+    timeGenerator(&Controller::forwardTimeUpdate)
 {
-
+    UTILS_ASSERT((view != nullptr), "B³êdny vidok dla timeline");
+    timer->setController(this);
 }
 
-Controller::~Controller(void)
+Controller::~Controller()
 {
-    // konczymy
-    if ( isRunning() ) {
-        // zmiana stanu
-//        model->setPlaying(false);
-        join();
-    }
-}
 
-void Controller::play()
-{
-    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-    model->lockModel(this);
-
-    State state = getState();
-    state.isPlaying = true;
-    setState(state);
-
-    //if ( !isRunning() ) {
-    //    //start();
-    //}
-}
-
-void Controller::pause()
-{
-    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-    State state = getState();
-    state.isPlaying = false;
-    setState(state);
-}
-
-double Controller::getTime() const
-{
-    return getState().time;
-}
-
-void Controller::setTime(double time)
-{
-    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-
-    // nowy stan
-    State state = getState();
-    state.time = time;
-    timeDirty = true;
-    model->breakTimeUpdate();
-    setState(state);
-
-    //// wyzerowanie licznika
-    //if ( !isRunning() && asynchronous ) {
-    //    //start();
-    //}
-}
-
-double Controller::getNormalizedTime() const
-{
-    return getTime() / model->getLength();
-}
-
-void Controller::setNormalizedTime(double normalizedTime)
-{
-    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-    setTime( normalizedTime * model->getLength() );
-}
-
-const ModelPtr & Controller::getModel()
-{
-    return model;
 }
 
 const ModelConstPtr & Controller::getModel() const
@@ -93,14 +21,83 @@ const ModelConstPtr & Controller::getModel() const
     return constModel;
 }
 
-bool Controller::isBusy() const
+void Controller::setView(const ViewPtr & view)
 {
-    return busy;
+    ScopedLock lock(stateMutex);
+
+    if(this->view != nullptr){
+        this->view->setController(nullptr);
+    }
+
+    this->view = view;
+    view->setController(this);
+    view->refreshAll();
 }
 
-bool Controller::isDirty() const
+const ViewPtr & Controller::getView()
 {
-    return dirty;
+    return view;
+}
+
+const ViewConstPtr & Controller::getView() const
+{
+    return constView;
+}
+
+void Controller::setTimeUpdateMode(TimeUpdateMode timeUpdateMode)
+{
+    ScopedLock lock(stateMutex);
+    this->timeUpdateMode = timeUpdateMode;
+}
+
+Controller::TimeUpdateMode Controller::getTimeUpdateMode() const
+{
+    ScopedLock lock(stateMutex);
+    return timeUpdateMode;
+}
+
+void Controller::setPlaybackDirection(PlaybackDirection playbackDirection)
+{
+    ScopedLock lock(stateMutex);
+    this->playbackDirection = playbackDirection;
+    timeGenerator = (playbackDirection == PlayForward) ? &forwardTimeUpdate : &backwardTimeUpdate;
+}
+
+Controller::PlaybackDirection Controller::getPlaybackDirection() const
+{
+    ScopedLock lock(stateMutex);
+    return playbackDirection;
+}
+
+void Controller::play()
+{
+    ScopedLock lock(stateMutex);
+
+    State state = getState();
+
+    if(state.isPlaying == true){
+        return;
+    }
+
+    state.isPlaying = true;
+    setState(state);
+
+    pauseMutex.unlock();
+}
+
+void Controller::pause()
+{
+    ScopedLock lock(stateMutex);
+
+    State state = getState();
+
+    if(state.isPlaying == false){
+        return;
+    }
+
+    pauseMutex.lock();
+    state.isPlaying = false;
+    setState(state);
 }
 
 bool Controller::isPlaying() const
@@ -108,95 +105,65 @@ bool Controller::isPlaying() const
     return getState().isPlaying;
 }
 
-bool Controller::isTimeDirty() const
+double Controller::getLength() const
 {
-    return timeDirty;
+    return getState().length;
 }
 
-bool Controller::isAsynchronous() const
+double Controller::getTime() const
 {
-    return asynchronous;
+    return getState().time;
 }
 
-bool Controller::compute()
+double Controller::getNormalizedTime() const
 {
-    // ustalenie i modyfikacja bie¿¹cego stanu
-    bool resetTimer = false;
-    State appliedState;
-    {
-        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(stateMutex);
-        // czy jest sens dalej trzymaæ w¹tek?
-        if ( !isDirty() && !isPlaying() ) {
-            //OSG_NOTICE<<"Finished Controller::run()"<<std::endl;
-            return false;
-        }
-        // zaakceptowano stan
-        appliedState = dirtyState;
-        timeDirty = dirty = false;
-        busy = true;
-    }
-
-    // nadanie bie¿¹cego stanu
-    {
-        // blokada modyfikacji czasu
-        OpenThreads::ScopedLock<OpenThreads::Mutex> lock(modelMutex);
-        // nadanie stanu modelowi - miejsce wykonania w³aœciwej logiki
-        model->setState(appliedState);
-        // ile trzeba bêdzie czekaæ?
-        busy = false;
-    }
-    return true;
+    return getState().normalizedTime;
 }
 
-void Controller::run()
+double Controller::getTimeScale() const
 {
-    try
-    {
-        osg::Timer frameLength;
-        while (true) {
-            // zerujemy czas ramki
-            frameLength.setStartTick();
-
-            if (!compute()) {
-                return;
-            }
-
-            // jak d³ugo to wszystko trwa³o?
-            double waitTime = 0.02 - frameLength.time_s();
-            if ( waitTime > 0.0 ) {
-                OpenThreads::Thread::microSleep( waitTime * 1000000 );
-            }
-        } 
-    } catch (const std::exception & error) {
-        OSG_WARN<< "Controller::run : " << error.what() << std::endl;
-    } catch (...) {
-        OSG_WARN<< "Controller::run : unhandled exception" << std::endl;
-    }
+    return getState().timeScaleFactor;
 }
 
-bool Controller::isWriteEnable() const
+void Controller::setTimeScale(double timeScale)
 {
-    if ( OpenThreads::Thread::CurrentThread() == this ) {
-        return true;
-    } else if ( const_cast<Controller*>(this)->isRunning() ) {
-        return false;
-    } else {
-        return !asynchronous;
-    }
+    ScopedLock lock(stateMutex);
+
+    // nowy stan
+    State state = getState();
+    state.timeScaleFactor = timeScale;
+    setState(state);
 }
 
-const State & Controller::getState() const
+void Controller::setTime(double time)
 {
-    if ( isWriteEnable() ) {
+    ScopedLock lock(stateMutex);
+
+    // nowy stan
+    State state = getState();
+    state.time = time;
+    state.normalizedTime = time  / getLength();
+    setState(state);
+    timeDirty = true;
+}
+
+void Controller::setNormalizedTime(double normTime)
+{
+    setTime( normTime * getLength() );
+}
+
+State Controller::getState() const
+{
+    if ( isWriteEnabled() ) {
         return model->getState();
     } else {
         return dirtyState;
     }
 }
 
-void Controller::setState(const State & state)
+void Controller::setState( const State& state )
 {
-    if ( isWriteEnable() ) {
+    if ( isWriteEnabled() ) {
         OpenThreads::ScopedLock<OpenThreads::Mutex> lock(modelMutex);
         busy = true;
         model->setState(state);
@@ -206,7 +173,89 @@ void Controller::setState(const State & state)
         dirty = true;
     }
     dirtyState = state;
-    //notify();
+    notify();
+}
+
+bool Controller::isWriteEnabled() const
+{
+    bool ret = false;
+
+    if ( OpenThreads::Thread::CurrentThread() == timer.get() || model->getState().isPlaying == false || timeUpdateMode == SynchTimeUpdate ) {
+        ret = true;
+    }
+
+    return ret;
+}
+
+bool Controller::isBusy() const
+{
+    ScopedLock lock(stateMutex);
+    return busy;
+}
+
+bool Controller::isDirty() const
+{
+    ScopedLock lock(stateMutex);
+    return dirty;
+}
+
+bool Controller::isTimeDirty() const
+{
+    ScopedLock lock(stateMutex);
+    return timeDirty;
+}
+
+void Controller::addChannel(const std::string & path, const IChannelPtr & channel)
+{
+    ScopedLock lock(stateMutex);
+    ScopedLock lock2(modelMutex);
+    model->addChannel(path, channel);
+    double newLength = model->getLength();
+    if(dirtyState.length != newLength){
+        dirtyState.length = newLength;
+        setState(dirtyState);
+    }
+
+    view->updateViewChannelsStructure();
+}
+
+void Controller::removeChannel(const std::string & path)
+{
+    ScopedLock lock(stateMutex);
+    ScopedLock lock2(modelMutex);
+    model->removeChannel(path);
+    double newLength = model->getLength();
+    if(dirtyState.length != newLength){
+        dirtyState.length = newLength;
+        setState(dirtyState);
+    }
+
+    view->updateViewChannelsStructure();
+}
+
+
+double Controller::forwardTimeUpdate(Controller * controller, unsigned long int realTimeDeltaMS)
+{
+    return std::min(controller->getLength(), controller->getTime() + (double)realTimeDeltaMS * controller->getTimeScale() / 1000.0);
+}
+
+double Controller::backwardTimeUpdate(Controller * controller, unsigned long int realTimeDeltaMS)
+{
+    return std::max(0.0, controller->getTime() - (double)realTimeDeltaMS * controller->getTimeScale() / 1000.0);
+}
+
+bool Controller::setNextTime(unsigned long int realTimeDeltaMS)
+{
+    setTime(timeGenerator(this, realTimeDeltaMS));
+    double time = getTime();
+    double length = getLength();
+    if( (time == 0.0 && playbackDirection == PlayBackward) ||
+        (time == length && playbackDirection == PlayForward)){
+
+        return true;
+    }
+
+    return false;
 }
 
 }

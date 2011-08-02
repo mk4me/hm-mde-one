@@ -1,17 +1,14 @@
 #include <timelinelib/Model.h>
 #include <timelinelib/Channel.h>
 #include <timelinelib/Tag.h>
-//#include <timelinelib/SimpleSelection.h>
-//#include <timelinelib/TagSelection.h>
 #include <stack>
-#include <boost/interprocess/sync/scoped_lock.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Konstruktor zerujacy
-Model::Model(const std::string & name) : root(new TChannel(name)), constRoot(root), lockHolder(0)
+Model::Model(const std::string & name) : root(new TChannel(name)), constRoot(root)
 {
 
 }
@@ -21,39 +18,15 @@ Model::~Model()
 
 }
 
-void Model::lockModel(void * lockHolder) volatile
+const State & Model::getState() const
 {
-    if(lockHolder == 0){
-        throw std::invalid_argument("Model lock holder address can not be equal to 0");
-    }
-
-    Model * wThis(const_cast<Model*>(this));
-
-    wThis->modelTimeMutex.lock();
-    wThis->lockHolder = lockHolder;
+    return state;
 }
 
-void Model::unlockModel(void * lockHolder) volatile
+void Model::setState(const State & state)
 {
-    if(lockHolder == 0){
-        throw std::invalid_argument("Model lock holder address can not be equal to 0");
-    }
-
-    if(this->lockHolder == lockHolder){
-        Model * wThis(const_cast<Model*>(this));
-        boost::interprocess::scoped_lock<boost::mutex> lock(wThis->lockCheckMutex);
-        wThis->lockHolder = 0;
-        wThis->modelTimeMutex.unlock();
-    }else{
-        throw std::invalid_argument("Given lock holder did not locked the model");
-    }
-}
-
-bool Model::isLocked() const
-{
-    Model * wThis(const_cast<Model*>(this));
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->lockCheckMutex);
-    return lockHolder != 0;
+    this->state = state;
+    setTime(state.time);
 }
 
 const Model::Mask & Model::getMask() const
@@ -117,38 +90,18 @@ void Model::setMaskEnd(double maskEnd)
     notify();
 }
 
-void Model::breakTimeUpdate(void * lockHolder) volatile
+void Model::setTime(double time)
 {
-    if(this->lockHolder != 0 && this->lockHolder != lockHolder){
-        throw std::invalid_argument("Given lock holder did not locked the model");
-    }
+    double t = time + constRoot->getData()->getGlobalOffset();
 
-    Model * wThis(const_cast<Model*>(this));
+    //zapewnia ze root zawsze ma ostatni czas dla ktorego aktualizowano model, dzieci niekoniecznie sa z nim zgodne
+    getWritableChannel(constRoot)->setTime(t);
 
-    wThis->stopTimeUpdate = true;
-}
-
-void Model::setTime(double time, void * lockHolder) volatile
-{
-    if(this->lockHolder != 0 && this->lockHolder != lockHolder){
-        throw std::invalid_argument("Given lock holder did not locked the model");
-    }
-
-    Model * wThis(const_cast<Model*>(this));
-
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->timeUpdateMutex);
-
-    wThis->stopTimeUpdate = false;
-    double t = time + wThis->constRoot->getData()->getGlobalOffset();
-
-    //zapewnia ze root zawsdze ma ostatni czas dla ktorego aktualizowano model, dzieci niekoniecznie sa z nim zgodne
-    getWritableChannel(wThis->constRoot)->setTime(t);
-    
     std::stack<TChannelConstPtr> path;
     std::stack<NamedTreeBase::size_type> pathPos;
     
-    path.push(wThis->constRoot);
-    while(stopTimeUpdate == false && path.empty() == false) {
+    path.push(constRoot);
+    while(path.empty() == false) {
         if(path.top()->getData()->isActive() == true && path.top()->getData()->timeInChannel(t) == true){
             getWritableChannel(path.top())->setTime(t);
             if(path.top()->size() == 0){
@@ -171,19 +124,21 @@ void Model::setTime(double time, void * lockHolder) volatile
         }
 
         if(path.empty() == false){
-            path.push(toChannel(path.top()->getChild(pathPos.top())));
+            path.push(toTChannel(path.top()->getChild(pathPos.top())));
         }
     }
 
-    wThis->notify();
+    state.time = time;
+    state.normalizedTime = getNormalizedTime();
+
+    notify();
 }
 
-void Model::setNormalizedTime(double normTime, void * lockHolder) volatile
+void Model::setNormalizedTime(double normTime)
 {
     UTILS_ASSERT((normTime >= 0.0 && normTime <= 1.0), "Czas powinien byc znormalizowany");
-    
-    Model * wThis(const_cast<Model*>(this));
-    setTime(normTime * wThis->getLength(), lockHolder);
+
+    setTime(normTime * getLength());
 }
 
 double Model::getNormalizedTime() const
@@ -192,26 +147,20 @@ double Model::getNormalizedTime() const
     return length == 0 ? 0 : getTime() - getOffset() / length;
 }
 
-void Model::setTimeScale(double timeScale) volatile
+void Model::setTimeScale(double timeScale)
 {
-    Model * wThis(const_cast<Model*>(this));
+    innerSetChannelLocalTimeScale(constRoot, timeScale);
 
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->modelTimeMutex);
+    state.timeScaleFactor = timeScale;
 
-    wThis->innerSetChannelLocalTimeScale(wThis->constRoot, timeScale);
-
-    wThis->notify();
+    notify();
 }
 
-void Model::setOffset(double offset) volatile
+void Model::setOffset(double offset)
 {
-    Model * wThis(const_cast<Model*>(this));
+    innerSetChannelLocalOffset(constRoot, offset);
 
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->modelTimeMutex);
-
-    wThis->innerSetChannelLocalOffset(wThis->constRoot, offset);
-
-    wThis->notify();
+    notify();
 }
 
 void Model::setActive(bool active)
@@ -279,32 +228,30 @@ Model::tag_size_type Model::sizeAllTags() const
     return constAllTags.size();
 }
 
-void Model::addChannel(const std::string & path, const IChannelPtr & channel) volatile
-{
-    Model * wThis(const_cast<Model*>(this));
+void Model::addChannel(const std::string & path, const IChannelPtr & channel)
+{ 
+    UTILS_ASSERT((channel != nullptr && channel->getLength() >= 0), "Nieprawidlowy kanal");
 
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->modelTimeMutex);
- 
-    wThis->root->addChild(path);
-    TChannelConstPtr tChild(wThis->getChannel(path));
+    root->addChild(path);
+    TChannelConstPtr tChild(getChannel(path));
     ChannelPtr child(getWritableChannel(tChild));
     child->setInnerChannel(channel);
-    if(channel != nullptr && channel->getLength() != 0){
-        updateParentLength(toChannel(tChild->getParent().lock()), tChild);
+    if(channel->getLength() > 0){
+        updateParentLength(toTChannel(tChild->getParent()), tChild);
     }
 
-    wThis->notify();
+    state.length = getLength();
+
+    notify();
 }
 
-void Model::removeChannel(const std::string & path) volatile
+void Model::removeChannel(const std::string & path)
 {
-    Model * wThis(const_cast<Model*>(this));
+    innerRemoveChannel(getChannel(path));
 
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->modelTimeMutex);
+    state.length = getLength();
 
-    wThis->innerRemoveChannel(wThis->getChannel(path));
-
-    wThis->notify();
+    notify();
 }
 
 Model::channel_const_iterator Model::beginChannels() const
@@ -319,7 +266,7 @@ Model::channel_const_iterator Model::endChannels() const
 
 Model::TChannelConstPtr Model::getChannel(channel_size_type idx) const
 {
-    return toChannel(constRoot->getChild(idx));
+    return toTChannel(constRoot->getChild(idx));
 }
 
 Model::channel_size_type Model::sizeChannels() const
@@ -329,7 +276,7 @@ Model::channel_size_type Model::sizeChannels() const
 
 Model::TChannelConstPtr Model::getChannel(const std::string & path) const
 {
-    return toChannel(constRoot->getChild(path));
+    return toTChannel(constRoot->getChild(path));
 }
 
 Model::TChannelConstPtr Model::findChannel(const std::string & path) const
@@ -340,69 +287,55 @@ Model::TChannelConstPtr Model::findChannel(const std::string & path) const
         return TChannelConstPtr();
     }
 
-    return toChannel(channel);
+    return toTChannel(channel);
 }
 
-void Model::setChannelLocalOffset(const std::string & path, double offset) volatile
-{
-    Model * wThis(const_cast<Model*>(this));
-
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->modelTimeMutex);
-    
-    if(wThis->findChannel(path) == wThis->root){
-        wThis->innerSetChannelLocalOffset(wThis->constRoot, offset);
+void Model::setChannelLocalOffset(const std::string & path, double offset)
+{    
+    if(findChannel(path) == root){
+        innerSetChannelLocalOffset(constRoot, offset);
     }else{
-        wThis->innerSetChannelLocalOffset(wThis->getChannel(path), offset);
+        innerSetChannelLocalOffset(getChannel(path), offset);
     }
 
-    wThis->notify();
+    notify();
 }
  
-void Model::setChannelGlobalOffset(const std::string & path, double offset) volatile
+void Model::setChannelGlobalOffset(const std::string & path, double offset)
 {
-    Model * wThis(const_cast<Model*>(this));
-
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->modelTimeMutex);
-
-    if(wThis->findChannel(path) == wThis->root){
-        wThis->innerSetChannelLocalOffset(wThis->constRoot, offset);
+    if(findChannel(path) == root){
+        innerSetChannelLocalOffset(constRoot, offset);
     }else{
-        TChannelConstPtr channel(wThis->getChannel(path));
-        wThis->innerSetChannelLocalOffset(channel, offset - toChannel(channel->getParent().lock())->getData()->getGlobalOffset());
+        TChannelConstPtr channel(getChannel(path));
+        innerSetChannelLocalOffset(channel, offset - toTChannel(channel->getParent())->getData()->getGlobalOffset());
     }
 
-    wThis->notify();
+    notify();
 }
 
-void Model::setChannelLocalTimeScale(const std::string & path, double scale) volatile
-{
-    Model * wThis(const_cast<Model*>(this));
-
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->modelTimeMutex);
-    
-    if(wThis->findChannel(path) == wThis->root){
-        wThis->innerSetChannelLocalTimeScale(wThis->constRoot, scale);
+void Model::setChannelLocalTimeScale(const std::string & path, double scale)
+{    
+    if(findChannel(path) == root){
+        innerSetChannelLocalTimeScale(constRoot, scale);
     }else{
-        wThis->innerSetChannelLocalTimeScale(wThis->getChannel(path), scale);
+        innerSetChannelLocalTimeScale(getChannel(path), scale);
     }
 
-    wThis->notify();
+    notify();
 }
 
-void Model::setChannelGlobalTimeScale(const std::string & path, double scale) volatile
+void Model::setChannelGlobalTimeScale(const std::string & path, double scale)
 {
-    Model * wThis(const_cast<Model*>(this));
-
-    boost::interprocess::scoped_lock<boost::mutex> lock(wThis->modelTimeMutex);
-
-    if(wThis->findChannel(path) == wThis->root){
-        wThis->innerSetChannelLocalTimeScale(wThis->constRoot, scale);
+    if(findChannel(path) == root){
+        innerSetChannelLocalTimeScale(constRoot, scale);
     }else{
-        TChannelConstPtr channel(wThis->getChannel(path));
-        wThis->innerSetChannelLocalTimeScale(channel, scale / toChannel(channel->getParent().lock())->getData()->getGlobalTimeScale());
+        TChannelConstPtr channel(getChannel(path));
+        innerSetChannelLocalTimeScale(channel, scale / toTChannel(channel->getParent())->getData()->getGlobalTimeScale());
     }
 
-    wThis->notify();
+    state.length = getLength();
+
+    notify();
 }
 
 void Model::setChannelName(const std::string & path, const std::string & name)
@@ -553,7 +486,7 @@ void Model::shiftTag(const std::string & path, double dTime)
     notify();
 }
 
-Model::TChannelConstPtr Model::toChannel(const NamedTreeBaseConstPtr & channel)
+Model::TChannelConstPtr Model::toTChannel(const NamedTreeBaseConstPtr & channel)
 {
     return boost::dynamic_pointer_cast<const TChannel>(channel);
 }
@@ -575,7 +508,7 @@ Model::TChannelPtr Model::getWritableTChannel(const Model::TChannelConstPtr & ch
 
 Model::TChannelPtr Model::getWritableTChannel(const NamedTreeBaseConstPtr & channel)
 {
-    return getWritableTChannel(toChannel(channel));
+    return getWritableTChannel(toTChannel(channel));
 }
 
 ChannelPtr Model::getWritableChannel(const Model::TChannelConstPtr & channel)
@@ -596,11 +529,11 @@ TagPtr Model::getWritableTag(const TagConstPtr & tag)
 void Model::updateChildrenScale(const Model::TChannelConstPtr & child, double ratio)
 {
     for(auto it = child->begin(); it != child->end(); it++){
-        ChannelPtr channel(getWritableChannel(toChannel(*it)));
+        ChannelPtr channel(getWritableChannel(toTChannel(*it)));
         channel->setGlobalTimeScale(channel->getGlobalTimeScale() * ratio);
         channel->setLength(channel->getLength() * ratio);
         updateForScaleRatio(channel, ratio);
-        updateChildrenScale(toChannel(*it), ratio);
+        updateChildrenScale(toTChannel(*it), ratio);
     }
 }
 
@@ -636,7 +569,7 @@ void Model::updateParentLength(const Model::TChannelConstPtr & parent, const TCh
     }
 
     if(goUp == true && parent->isRoot() == false){
-        updateParentLength(toChannel(parent->getParent().lock()), parent);
+        updateParentLength(toTChannel(parent->getParent()), parent);
     }
 }
 
@@ -646,7 +579,7 @@ bool Model::refreshChannelLength(const Model::TChannelConstPtr & channel)
     
     double l = 0;
     for(auto it = channel->begin(); it != channel->end(); it++){
-        TChannelConstPtr child(toChannel(*it));
+        TChannelConstPtr child(toTChannel(*it));
         l = std::max(l, child->getData()->getLocalOffset() + child->getData()->getLength());
     }
 
@@ -661,7 +594,7 @@ bool Model::refreshChannelLength(const Model::TChannelConstPtr & channel)
 void Model::updateChildrenOffset(const Model::TChannelConstPtr & child, double dOffset)
 {
     for(auto it = child->begin(); it != child->end(); it++){
-        TChannelConstPtr tChannel(toChannel(*it));
+        TChannelConstPtr tChannel(toTChannel(*it));
         ChannelPtr channel(getWritableChannel(tChannel));
         channel->setGlobalOffset(channel->getGlobalOffset() + dOffset);
         updateChildrenOffset(tChannel, dOffset);
@@ -677,7 +610,7 @@ void Model::updateParentOffset(const Model::TChannelConstPtr & parent, const Mod
 
     //aktualizuj localne przesuniecia dzieci
     for(auto it = parent->begin(); it != parent->end(); it++){
-        ChannelPtr wCh(getWritableChannel(toChannel(*it)));
+        ChannelPtr wCh(getWritableChannel(toTChannel(*it)));
         wCh->setLocalOffset(wCh->getLocalOffset() - offset);
     }
 
@@ -692,7 +625,7 @@ void Model::updateParentOffset(const Model::TChannelConstPtr & parent, const Mod
     wChild->setGlobalOffset(wParent->getGlobalOffset());
 
     if(parent->isRoot() == false && wParent->getLocalOffset() < 0){
-        updateParentOffset(toChannel(parent->getParent().lock()), parent);
+        updateParentOffset(toTChannel(parent->getParent()), parent);
     }
 }
 
@@ -726,7 +659,7 @@ void Model::innerSetChannelLocalOffset(const TChannelConstPtr & channel, double 
         wChannel->setGlobalOffset(offset);
 
     }else{
-        TChannelConstPtr parent(toChannel(channel->getParent().lock()));
+        TChannelConstPtr parent(toTChannel(channel->getParent()));
         wChannel->setLocalOffset(offset);
         if(offset < 0) {
 
@@ -739,6 +672,8 @@ void Model::innerSetChannelLocalOffset(const TChannelConstPtr & channel, double 
 
             //aktualizuj dlugosc rodzica
             updateParentLength(parent, channel);
+
+            state.length = getLength();
         }
     }
 }
@@ -746,7 +681,7 @@ void Model::innerSetChannelLocalOffset(const TChannelConstPtr & channel, double 
 void Model::innerSetChannelGlobalOffset(const TChannelConstPtr & channel, double offset)
 {
     if(channel->isRoot() == false){
-        offset -= toChannel(channel->getParent().lock())->getData()->getGlobalOffset();
+        offset -= toTChannel(channel->getParent())->getData()->getGlobalOffset();
     }
 
     innerSetChannelLocalOffset(channel, offset);
@@ -774,7 +709,7 @@ void Model::innerSetChannelLocalTimeScale(const TChannelConstPtr & channel, doub
         wChannel->setGlobalTimeScale(wChannel->getGlobalTimeScale() * scaleRatio);
 
         //aktualizuj rodzica ze wzgledu na dlugosc
-        updateParentLength(toChannel(channel->getParent().lock()), channel);
+        updateParentLength(toTChannel(channel->getParent()), channel);
     }
 
     //Aktrualizuj pozycje Tagow i Selekcji!!
@@ -783,22 +718,23 @@ void Model::innerSetChannelLocalTimeScale(const TChannelConstPtr & channel, doub
 
     //Aktualizuj skale dzieci
     updateChildrenScale(channel, scaleRatio);
+
+    state.length = getLength();
 }
 
 void Model::innerRemoveChannel(const TChannelConstPtr & channel)
 {
     //Usunac ten kanal z rodzica oraz z mapowania!!
-    TChannelPtr parent(getWritableTChannel(channel->getParent().lock()));
+    TChannelPtr parent(getWritableTChannel(channel->getParent()));
     parent->removeChild(getWritableTChannel(channel));
     updateParentLength(parent,channel);
     
     ConstTags tags;
-//    ConstSelections selections;
     ConstChannels channels;
 
     //Zebrac dzieci, tagi i zaznaczenia kanalu i jego dzieci
     //usunac je z list wszystkich tagow, zaznaczen i mapowania kanalow
-    getAllChildrenData(channel, tags, /*selections,*/ channels);
+    getAllChildrenData(channel, tags, channels);
 
     for(auto it = tags.begin(); it != tags.end(); it++) {
         allTags.resize(std::distance(allTags.begin(), std::remove(allTags.begin(), allTags.end(), *it)));
@@ -815,14 +751,14 @@ void Model::getAllChildrenData(const Model::TChannelConstPtr & channel, ConstTag
     channels.push_back(channel->getData());
     tags.insert(tags.end(), channel->getData()->beginTags(), channel->getData()->endTags());
     for(auto it = channel->begin(); it != channel->end(); it++){
-        getAllChildrenData(toChannel(*it), tags, channels);
+        getAllChildrenData(toTChannel(*it), tags, channels);
     }
 }
 
 void Model::innerSetChannelGlobalTimeScale(const TChannelConstPtr & channel, double scale)
 {
     if(channel->isRoot() == false){
-        scale /= toChannel(channel->getParent().lock())->getData()->getGlobalTimeScale();
+        scale /= toTChannel(channel->getParent())->getData()->getGlobalTimeScale();
     }
 
     innerSetChannelLocalTimeScale(channel, scale);
@@ -887,7 +823,7 @@ void Model::innerClearChannelTags(const TChannelConstPtr & channel, bool deeper)
 
     if(deeper == true){
         for(auto it = channel->begin(); it != channel->end(); it++){
-            innerClearChannelTags(toChannel(*it), true);
+            innerClearChannelTags(toTChannel(*it), true);
         }
     }
 }

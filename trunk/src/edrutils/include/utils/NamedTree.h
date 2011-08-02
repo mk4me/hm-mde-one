@@ -52,7 +52,7 @@ private:
     //! Nazwa wezla
     std::string name;
 
-    //! absolutna sciezka w hierarchi
+    //! Absolutna sciezka w hierarchi
     std::string absolutePath;
 
     //! \return Rodzic wezla
@@ -97,10 +97,10 @@ public:
     const_iterator end() const;
 
     //! return Rodzic aktualnego wezla
-    const NamedTreeBaseConstWPtr & getParent() const;
+    NamedTreeBaseConstPtr getParent() const;
 
     //! return Rodzic aktualnego wezla
-    const NamedTreeBaseWPtr & getParent();
+    NamedTreeBasePtr getParent();
 
     //! \param idx Indeks dziecka
     //! \return Dziecko o zadanym indeksie
@@ -186,10 +186,10 @@ public:
     void removeChild(const std::string & path);
 
     //! \return Root aktualnej struktury
-    NamedTreeBaseWPtr getRoot();
+    NamedTreeBasePtr getRoot();
 
     //! \return Root aktualnej struktury
-    NamedTreeBaseConstWPtr getRoot() const;
+    NamedTreeBaseConstPtr getRoot() const;
 
     //! \return Czy element jest lisciem
     bool isLeaf() const;
@@ -240,8 +240,7 @@ protected:
                     }
 
                     //do rodzica
-                    ret = ret->getParent().lock();
-                    //ret.reset(ret->getParent().lock());
+                    ret = ret->getParent();
                 //aktualny poziom - ignoruj
                 }else if(*begin != ".") {
                     //szukaj dziecka na danym poziomie

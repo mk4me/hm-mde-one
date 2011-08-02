@@ -4,13 +4,11 @@
 #include <utils/NamedTree.h>
 #include <utils/PtrPolicyBoost.h>
 #include <timelinelib/Types.h>
-#include <timelinelib/State.h>
 #include <timelinelib/Channel.h>
 #include <utils/ObserverPattern.h>
 #include <boost/tokenizer.hpp>
+#include <timelinelib/State.h>
 #include <map>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{
@@ -20,6 +18,7 @@ class Model : public utils::Observable<Model>
 {
 public:
 
+    //! Forward declartation
     class TChannel;
     typedef boost::shared_ptr<TChannel> TChannelPtr;
     typedef boost::shared_ptr<const TChannel> TChannelConstPtr;
@@ -27,7 +26,7 @@ public:
     typedef boost::weak_ptr<TChannel> TChannelWPtr;
     typedef boost::weak_ptr<const TChannel> TChannelConstWPtr;
 
-
+    //! Klasa wprowadzaj¹ca hierarchiê kana³ów, kolejnoœæ, obs³ugê œcie¿ek
     class TChannel : public NamedTree<Channel, utils::PtrPolicyBoost>
     {
         public:
@@ -56,15 +55,16 @@ public:
 
     typedef Channel::Mask Mask;
 
-    typedef enum {TIME_UPDATE_IMMEDIATE, TIME_UPDATE_LAZY} TIME_UPDATE_MODE;
-
-protected:
+private:
 
     typedef Tags::iterator tag_iterator;
+    
+    //! Mapowanie Kana³ów do kana³ów z obs³uga œcie¿ek i hierarchi¹
     typedef std::map<ChannelConstPtr, TChannelConstPtr> ChannelToTChannel;
 
     typedef std::vector<ChannelConstPtr> ConstChannels;
 
+    //! Typ œcie¿ki w formacie œcie¿ka/liœæ
     typedef std::pair<std::string, std::string> ExtPath;
 
 private:
@@ -84,20 +84,8 @@ private:
     //! Mapowanie kanalow logicznych do kanalow w hierarchii
     ChannelToTChannel channelToTChannel;
 
-    //! Mutex do serializacji operacji mog¹cych zmieniæ model czasu kanalow
-    boost::mutex modelTimeMutex;
-
-    //! Mutex do serializacji ustawiania czasu
-    boost::mutex timeUpdateMutex;
-
-    //! Mutex do aktualizacji lock holdera i sprawdzania czy model jest zablokowany
-    boost::mutex lockCheckMutex;
-
-    //! Obiekt blokujacy timeline na wylacznosc
-    void * lockHolder;
-
-    //! HACK do przerywania ustawiania czasu w podkanalach
-    volatile bool stopTimeUpdate;
+    //! Aktualny stan modelu
+    State state;
 
 public:
 
@@ -106,16 +94,11 @@ public:
 
     ~Model();
 
-    //! Blokuje modyfikacje modelu
-    //! \param lockHolder Obiekt blokujacy model do edycji jego struktury czasowej
-    void lockModel(void * lockHolder) volatile;
+    //! \return Stan modelu
+    const State & getState() const;
 
-    //! Zezwala na modyfikacje modelu
-    //! \param lockHolder Obiekt blokujacy model do edycji jego struktury czasowej
-    void unlockModel(void * lockHolder) volatile;
-
-    //! \return Czy model jest tylko do odczytu dla operacji modyfikujacych strukture czasowa kanalow
-    bool isLocked() const;
+    //! \param state Stan modelu
+    void setState(const State & state);
 
     //! \return Wewnetrzna maska czasu kanalu
     const Mask & getMask() const;
@@ -146,7 +129,7 @@ public:
     bool isActive() const;
 
     //! \param mask Maska czasu realizowana wewnetrznie przez timeline, 0 <= mask <= length
-    void setMask(const Channel::Mask & mask);
+    void setMask(const Mask & mask);
 
     //! \param maskBegin Poczatek maski - 0 <= maskBegin <= maskEnd
     void setMaskBegin(double maskBegin);
@@ -158,26 +141,23 @@ public:
     //! sprawdza maske i offset
     //! \param time Aktualny czas timeline, 0 <= time <= length
     //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
-    void setTime(double time, void * lockHolder = 0) volatile;
+    void setTime(double time);
 
     //! propaguje zmiane na wszystkie aktywne podkanaly
     //! sprawdza maske i offset
     //! \param normTime Aktualny czas timeline, 0 <= time <= length
     //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
-    void setNormalizedTime(double normTime, void * lockHolder = 0) volatile;
-
-    //! \param lockHolder Obiekt chcacy aktualizowac czas, trzymajacy blokade
-    void breakTimeUpdate(void * lockHolder = 0) volatile;
+    void setNormalizedTime(double normTime);
 
     //! modyfikuje skale
     //! \param Aktualna dlugosc timeline
     //virtual void setLength(double length);
 
     //! \param offset Czas wzgledem 0
-    void setOffset(double offset) volatile;
+    void setOffset(double offset);
 
     //! \param scale Skala kanalu, bezwzgledna wartosc skali
-    void setTimeScale(double scale) volatile;
+    void setTimeScale(double scale);
 
     //! \param active Czy strumien jest aktywny podczas operacji oczasowych i odtwarzania timeline
     void setActive(bool active); 
@@ -186,13 +166,13 @@ public:
     void clearAllTags();
 
     //! Resetuje skale czasu dla wszystkich kanalow do ich globalnej wartosci rownej 1
-    void resetAllScales() volatile;
+    void resetAllScales();
 
     //! Resetuje offsety dla wszystkich kanalow do ich globalnej wartosci rownej 0
-    void resetAllOffsets() volatile;
+    void resetAllOffsets();
 
     //! Resetuje wszystkie offsety (0) i skale (1) w timeline
-    void resetAllOffsetsAndScales() volatile;
+    void resetAllOffsetsAndScales();
 
     //! \param path Sciezka do taga w postaci sciezka do kanalu sciezki / nazwa taga
     //! \param time Czas wystapienia taga
@@ -220,10 +200,10 @@ public:
 
     //! \param path Sciezka nowego kanalu
     //! \param channel fatyczny kanal dotarczony przez klienta
-    void addChannel(const std::string & path, const IChannelPtr & channel = IChannelPtr()) volatile;
+    void addChannel(const std::string & path, const IChannelPtr & channel = IChannelPtr());
 
     //! \param path Sciezka kanalu do usuniecia
-    void removeChannel(const std::string & path) volatile;
+    void removeChannel(const std::string & path);
 
     //! \return pierwszy kanal timeline
     channel_const_iterator beginChannels() const;
@@ -247,19 +227,19 @@ public:
 
     //! \param path Sciezka do kanalu
     //! \param offset Offset kanalu wzgledem rodzica
-    void setChannelLocalOffset(const std::string & path, double offset) volatile;
+    void setChannelLocalOffset(const std::string & path, double offset);
 
     //! \param path Sciezka do kanalu
     //! \param offset Offset kanalu wzgledem 0
-    void setChannelGlobalOffset(const std::string & path, double offset) volatile;
+    void setChannelGlobalOffset(const std::string & path, double offset);
    
     //! \param path Sciezka do kanalu
     //! \param timeScale Skala czasu kanalu, lokalna wzgledem rodzica
-    void setChannelLocalTimeScale(const std::string & path, double timeScale) volatile;
+    void setChannelLocalTimeScale(const std::string & path, double timeScale);
 
     //! \param path Sciezka do kanalu
     //! \param timeScale Skala czasu kanalu, globalna
-    void setChannelGlobalTimeScale(const std::string & path, double timeScale) volatile;
+    void setChannelGlobalTimeScale(const std::string & path, double timeScale);
 
     //! \param path Sciezka do kanalu
     //! \param name Nazwa kanalu uniklalna wzgledem jego rodzica
@@ -328,7 +308,7 @@ public:
 
     //! \param channel Reprezentacja wezla w postaci NamedTreeBase
     //! \return Wskaznik na Channel
-    static TChannelConstPtr toChannel(const NamedTreeBaseConstPtr & channel);
+    static TChannelConstPtr toTChannel(const NamedTreeBaseConstPtr & channel);
 
     //! \param channel Kanal wynikajacy z elementow jak tag czy selection
     //! \return Kanal timeline opakowujacy zadany kanal logiczny
@@ -340,7 +320,7 @@ public:
 
 private:
 
-    static void getAllChildrenData(const TChannelConstPtr & channel, ConstTags & tags, /*ConstSelections & selections,*/ ConstChannels & channels);
+    static void getAllChildrenData(const TChannelConstPtr & channel, ConstTags & tags, ConstChannels & channels);
 
     //! \param channel Kanal danych
     //! \param offset Offset kanalu wzgledem rodzica

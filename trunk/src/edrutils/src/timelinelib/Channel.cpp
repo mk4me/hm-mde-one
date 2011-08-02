@@ -1,7 +1,5 @@
 #include <timelinelib/Channel.h>
 #include <timelinelib/Tag.h>
-//#include <timelinelib/SelectionBase.h>
-//#include <timelinelib/TagSelection.h>
 #include <timelinelib/IChannel.h>
 #include <utils/Debug.h>
 
@@ -30,7 +28,7 @@ Channel::~Channel()
 
 bool Channel::timeInChannel(double time) const
 {
-    if(time >= globalOffset + mask.first && time <= globalOffset + mask.second){
+    if(time >= globalOffset + mask.first && time <= globalOffset + mask.first + mask.second){
         return true;
     }
 
@@ -84,6 +82,12 @@ double Channel::getMaskLength() const
     return mask.second;
 }
 
+void Channel::setMaskLength(double maskLength)
+{
+    UTILS_ASSERT((maskLength >= 0 && maskLength <= getLength() && mask.first + maskLength <= getLength()), "Dlugosc maski sprawi ze maska wyjdzie poza kanal");
+    this->mask.second = maskLength;
+}
+
 double Channel::getMaskEnd() const
 { 
     return mask.first + mask.second;
@@ -123,7 +127,7 @@ double Channel::getTime() const
 void Channel::setTime(double time){
     this->time = time;
     if(active == true && innerChannel != nullptr && time >= globalOffset + mask.first && time <= globalOffset + mask.second){
-        innerChannel->setTime((this->time - globalOffset - mask.first) / globalScale);
+        innerChannel->setTime((time - globalOffset - mask.first) / globalScale);
     }
 }
 
@@ -224,16 +228,6 @@ void Channel::setGlobalTimeScale(double scale)
     globalScale = scale;
 }
 
-ChannelPtr Channel::getChannel(const NamedTreeBasePtr & node)
-{
-    return boost::dynamic_pointer_cast<Channel>(node);
-}
-
-ChannelConstPtr Channel::getConstChannel(const NamedTreeBaseConstPtr & node)
-{
-    return boost::dynamic_pointer_cast<const Channel>(node);
-}
-
 void Channel::setActive(bool active)
 {
     this->active = active;
@@ -241,12 +235,12 @@ void Channel::setActive(bool active)
 
 void Channel::addTag(const TagPtr & tag)
 {
-    UTILS_ASSERT((tag->getBeginTime() >= 0 && tag->getBeginTime() <= getLength()));
+    UTILS_ASSERT((tag->getBeginTime() >= 0 && tag->getBeginTime() + tag->getLength() <= getLength()), "Tag nie miesci sie w kanale");
     if(std::find(tags.begin(), tags.end(), tag) == tags.end()){
         tags.push_back(tag);
         constTags.push_back(tag);
     }else{
-        throw std::runtime_error("Tag already exist");
+        throw std::runtime_error("Tag already exists");
     }
 }
 
@@ -262,7 +256,11 @@ void Channel::removeTag(const TagPtr & tag)
 }
 
 void Channel::clearTags()
-{    
+{
+    for(auto it = tags.begin(); it != tags.end(); it++){
+        (*it)->resetChannel();
+    }
+
     tags.swap(Tags());
     constTags.swap(ConstTags());
 }

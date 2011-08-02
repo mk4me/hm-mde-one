@@ -21,12 +21,13 @@ namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Klasa agreguje klasy DataChannel, wszystkie dodawane kanaly powinny miec tyle samo wpisow
-template <typename PointType, typename TimeType = double, 
-	typename Manipulator = DataOperatorsManipulator<PointType, TimeType> >
+template <class Channel>
 class DataChannelCollection
 {
 public:
-	typedef DataChannel<PointType, TimeType, Manipulator> ChannelType;
+	typedef Channel ChannelType;
+    typedef typename Channel::time_type TimeType;
+    typedef typename Channel::point_type PointType;
 	typedef boost::shared_ptr<ChannelType> ChannelPtr;
 	typedef boost::shared_ptr<const ChannelType> ChannelConstPtr;
 	typedef std::vector<ChannelPtr> Collection;
@@ -41,7 +42,7 @@ public:
 public:
 	virtual DataChannelCollection* clone()
 	{
-		DataChannelCollection<PointType, TimeType, Manipulator>* obj = new DataChannelCollection<PointType, TimeType, Manipulator>();
+		DataChannelCollection* obj = new DataChannelCollection();
 		int count = static_cast<int>(channels.size());
 		obj->channels.resize(count);
 		for (int i = 0; i < count; i++) {
@@ -50,13 +51,13 @@ public:
 		return obj;
 	}
 public:
-	void addChannel(ChannelPtr ptr) 
+	void addChannel(const ChannelPtr & ptr) 
 	{
-		UTILS_ASSERT(channels.size() == 0 || ptr->getNumPoints() == channels[0]->getNumPoints());
+		UTILS_ASSERT(channels.size() == 0 || ptr->size() == channels[0]->size());
 		channels.push_back(ptr);
 	}
 
-	ChannelPtr getChannel(int index) 
+	const ChannelPtr & getChannel(int index) 
 	{
 		UTILS_ASSERT(index >= 0 && index < channels.size());
 		return channels[index];
@@ -71,7 +72,7 @@ public:
 	int getNumPointsPerChannel() const
 	{
 		UTILS_ASSERT(channels.size());
-		return channels[0]->getNumPoints();
+		return channels[0]->size();
 	}
 
 	int getNumChannels() const

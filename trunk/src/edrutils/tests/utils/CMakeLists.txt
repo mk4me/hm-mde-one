@@ -11,6 +11,7 @@ set(TARGET_SRC
 	ObserverPatternTest.cpp
 	NamedTreeBaseTest.cpp
 	SynchronizedTest.cpp
+	DataChannelTest.cpp
 )
 
 # nag³ówki
@@ -22,6 +23,7 @@ set(TARGET_H
 	ObserverPatternTest.h
 	NamedTreeBaseTest.h
 	SynchronizedTest.h
+	DataChannelTest.h
 )
 
 # kompilacja do wspó³dzielonej biblioteki
