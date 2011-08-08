@@ -8,7 +8,7 @@
 *********************************************************************/
 #ifndef __HEADER_GUARD_C3D__C3DCHANNELS_H__
 #define __HEADER_GUARD_C3D__C3DCHANNELS_H__
-#include <boost/smart_ptr.hpp>
+
 #include <core/SmartPtr.h>
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
@@ -18,13 +18,58 @@
 #include <c3dlib/C3DParser.h>
 #include <kinematiclib/JointAnglesCollection.h>
 
-typedef utils::DataChannel<osg::Vec3, float> VectorChannel;
-typedef boost::shared_ptr<VectorChannel> VectorChannelPtr;
+typedef utils::BaseChannel<osg::Vec3f> VectorChannel;
+typedef core::shared_ptr<VectorChannel> VectorChannelPtr;
 
-typedef utils::DataChannel<float, float> ScalarChannel;
-typedef boost::shared_ptr<ScalarChannel> ScalarChannelPtr;
-typedef boost::shared_ptr<const ScalarChannel> ScalarChannelConstPtr;
+typedef utils::BaseChannel<float> ScalarChannel;
+typedef core::shared_ptr<ScalarChannel> ScalarChannelPtr;
+typedef core::shared_ptr<const ScalarChannel> ScalarChannelConstPtr;
 
+typedef utils::ChannelStats<ScalarChannel::point_type, ScalarChannel::time_type> ScalarChannelStats;
+typedef core::shared_ptr<ScalarChannelStats> ScalarChannelStatsPtr;
+typedef core::shared_ptr<const ScalarChannelStats> ScalarChannelStatsConstPtr;
+
+class ScalarChannelNormalizer
+{
+public:
+
+    void operator()(utils::AutoModifier::ChannelModifierInterface<ScalarChannel> & modifierInterface,
+        const ScalarChannel & myChannel,
+        const ScalarChannel & observedChannel)
+    {
+        //uzupe³nij brakujace prboki
+        if(myChannel.size() < observedChannel.size()){
+            for(auto idx = myChannel.size(); idx < observedChannel.size(); idx++){
+                modifierInterface.addPoint(observedChannel[idx].first, observedChannel[idx].second);
+            }
+        }
+
+        auto it = observedChannel.begin();
+
+        //min i max
+        ScalarChannel::point_type minVal = it->second;
+        ScalarChannel::point_type maxVal = it->second;
+
+        it++;
+
+        for( ; it != observedChannel.end(); it++){
+            if(it->second < minVal){
+                minVal = it->second;
+            }else if(it->second > maxVal){
+                maxVal = it->second;
+            }
+        }
+
+        ScalarChannel::point_type diff = maxVal - minVal;
+
+        if(diff != 0){
+            //aktualizacja próbek
+            for(ScalarChannel::size_type idx = 0; idx < myChannel.size(); idx++){
+                modifierInterface.setIndexValue(idx, (observedChannel[idx].second - minVal) / diff);
+            }
+        }
+    }
+};
 
 //! Prosta kolekcja przechowujaca wszystkie zdarzenia z pliku c3d
 class EventsCollection
@@ -121,7 +166,7 @@ public:
     {}
         
 public:
-    virtual ScalarChannel* clone() const
+    virtual EMGChannel* clone() const
     {
         return new EMGChannel(*this);
     }
@@ -129,10 +174,7 @@ public:
 typedef boost::shared_ptr<EMGChannel> EMGChannelPtr;
 typedef boost::shared_ptr<const EMGChannel> EMGChannelConstPtr;
 
-class EMGCollection : public utils::DataChannelCollection<float, float>
-{
-
-};
+typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
 typedef boost::shared_ptr<EMGCollection> EMGCollectionPtr;
 typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
@@ -152,7 +194,7 @@ public:
     {}
 
 public:
-    virtual ScalarChannel* clone() const
+    virtual GRFChannel* clone() const
     {
         return new GRFChannel(*this);
     }
@@ -160,22 +202,19 @@ public:
 typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
 typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
-class GRFCollection : public utils::DataChannelCollection<float, float>
-{
-
-};
+typedef utils::DataChannelCollection<GRFChannel> GRFCollection;
 typedef boost::shared_ptr<GRFCollection> GRFCollectionPtr;
 typedef boost::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
 
 //! Kanal zawiera dane o jednym markerze
-class MarkerChannel : public utils::DataChannel<osg::Vec3f, float>
+class MarkerChannel : public VectorChannel
 {
 private:
-    MarkerChannel(int samplesPerSec) : DataChannel(samplesPerSec) {}
+    MarkerChannel(int samplesPerSec) : VectorChannel(samplesPerSec) {}
         
 public:        
     MarkerChannel(const MarkerChannel& channel) :
-        DataChannel(channel)
+        VectorChannel(channel)
         { }
     MarkerChannel(const c3dlib::C3DParser& data, int channelNo);
 public:
@@ -188,7 +227,7 @@ typedef boost::shared_ptr<MarkerChannel> MarkerChannelPtr;
 typedef boost::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 
 //! Kontener wszystkich markerow modelu
-class MarkerCollection : public utils::DataChannelCollection<osg::Vec3f, float>
+class MarkerCollection : public utils::DataChannelCollection<MarkerChannel>
 {
 public:
 	virtual std::string getMarkerName(int markerNo) const {
