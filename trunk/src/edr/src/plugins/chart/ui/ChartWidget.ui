@@ -2,26 +2,35 @@
 <ui version="4.0">
  <class>ChartWidget</class>
  <widget class="QWidget" name="ChartWidget">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>641</width>
-    <height>437</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>Chart</string>
+   <string>ChartWidget</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
-   <item>
-    <layout class="QVBoxLayout" name="mainChart"/>
-   </item>
-  </layout>
+  <action name="actionShowNormalized">
+   <property name="text">
+    <string>showNormalized</string>
+   </property>
+  </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionShowNormalized</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>ChartWidget</receiver>
+   <slot>setShowNormalized(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>247</x>
+     <y>173</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
-  <slot>comboBoxChanged(int)</slot>
+  <slot>setShowNormalized(bool)</slot>
  </slots>
 </ui>

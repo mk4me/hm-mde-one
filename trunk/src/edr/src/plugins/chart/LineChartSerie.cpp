@@ -3,8 +3,6 @@
 #include <osg/BlendFunc>
 #include "LineChartSerie.h"
 #include <boost/foreach.hpp>
-//#include <core/ChartData.h>
-//#include <core/ChartPointer.h>
 
 #undef min
 #undef max
@@ -22,15 +20,21 @@ vertices(new osg::Vec3Array)
     setColorBinding(osg::Geometry::BIND_OVERALL);
 }
 
-void LineChartSerie::setData( const ScalarChannelConstPtr& data )
+void LineChartSerie::setData( const ScalarChannelConstPtr& channel )
 {
-    this->data = data;
+    this->channel = channel;
+
+    ScalarChannelPtr nonConstChannel(core::const_pointer_cast<ScalarChannel>(channel));
+
+    this->normalizedChannel.reset(utils::AutoModifier::createAutoModChannel(*nonConstChannel, ScalarChannelNormalizer()));
+    timer = nonConstChannel->createTimer();
+    stats.reset(new ScalarChannelStats(nonConstChannel));
     tryRefresh();
 }
 
 void LineChartSerie::refresh()
 {
-    UTILS_ASSERT(data, "No data set!");
+    UTILS_ASSERT(normalizedChannel, "No data set!");
     UTILS_ASSERT(w > 0 && h >= 0, "Wrong size set!");
 
     typedef ScalarChannel::point_type point_type;
@@ -38,24 +42,22 @@ void LineChartSerie::refresh()
 
     // dodajemy wierzcho³ki tylko tak, aby ich gêstoœæ wynosi³a maksymalnie verticesPerUnit per piksel
     // okreœlenie maksymalnej liczby wierzcho³ków
-    size_t maxVertices = std::min<size_t>( data->getNumPoints(), static_cast<size_t>(ceil(w * verticesPerUnit)) );
+    size_t maxVertices = std::min<size_t>( normalizedChannel->size(), static_cast<size_t>(ceil(w * verticesPerUnit)) );
     
     // odrwacamy wykres (koordynaty OGL)
-    //float w = this->w - x;
-    //float h = this->h - y;
-    time_type lenInv = 1 / data->getLength();
+    time_type lenInv = 1 / normalizedChannel->getLength();
 
     osg::ref_ptr<osg::DrawArrays> primitiveSet;
 
-    if ( maxVertices == data->getNumPoints() ) {
+    if ( maxVertices == normalizedChannel->size() ) {
         // rezerwujemy odpowiedni¹ iloœæ miejsca; niekonieczne, ale powinno zmniejszyæ liczbê alokacji
         vertices->reserve( maxVertices );
         vertices->resize(0);
         // nie ma co interpolowaæ, po prostu dodajemy
-        BOOST_FOREACH( const ScalarChannel::Entry& entry, *data ) {
+        for(auto it = normalizedChannel->begin(); it != normalizedChannel->end(); it++) {
             vertices->push_back(osg::Vec3(
-                entry.time * lenInv * w + x,
-                entry.normalizedValue * h + y,
+                it->first * lenInv * w + x,
+                it->second * h + y,
                 z
                 ));
         }
@@ -66,13 +68,13 @@ void LineChartSerie::refresh()
         vertices->resize(0);
 
         // o ile bêdziemy siê przesuwaæ
-        const time_type delta = data->getLength() / maxVertices;
+        const time_type delta = normalizedChannel->getLength() / maxVertices;
         // przedzia³ czasu w ramach którego siê przesuwamy
         time_type timeStart = 0;
         time_type timeEnd = delta;
         // interatory
-        ScalarChannel::const_iterator it = data->begin();
-        const ScalarChannel::const_iterator last = data->end();
+        ScalarChannel::const_iterator it = normalizedChannel->begin();
+        const ScalarChannel::const_iterator last = normalizedChannel->end();
         // pocz¹tkowe maksimum i minimum w bie¿¹cym przedziale
         point_type nextMaxValue = 0;
         point_type nextMinValue = 1;
@@ -86,14 +88,14 @@ void LineChartSerie::refresh()
             point_type minValue = nextMinValue;
             point_type maxValue = nextMaxValue;
             // wyznaczenie maksimum i minimum z punktów le¿¹cych w ca³oœci w danym przedziale
-            while ( it != last && it->time < timeEnd ) {
-                maxValue = std::max(maxValue, it->normalizedValue);
-                minValue = std::min(minValue, it->normalizedValue);
+            while ( it != last && (*it).first < timeEnd ) {
+                maxValue = std::max(maxValue, (*it).second);
+                minValue = std::min(minValue, (*it).second);
                 ++it;
             }
             // mo¿e prawa skrajna wartoœæ jest wiêksza?
             if ( it != last ) {
-                point_type interpolated = data->getNormalizedValue( std::min(data->getLength(), timeEnd) );
+                point_type interpolated = normalizedChannel->getValue( std::min(normalizedChannel->getLength(), timeEnd) );
                 maxValue = std::max(maxValue, interpolated);
                 minValue = std::min(minValue, interpolated);
                 // uwaga: NIE zerujemy max/min, ¿eby kolejny przedzia³ równie¿ zaczynaæ od zinterpolowanych
@@ -118,87 +120,11 @@ void LineChartSerie::refresh()
         }
 
         primitiveSet = new osg::DrawArrays(GL_LINE_STRIP, 0, vertices->size());
-
-
-//         // rezerwujemy odpowiedni¹ iloœæ miejsca; niekonieczne, ale powinno zmniejszyæ liczbê alokacji
-//         vertices->reserve( maxVertices );
-//         vertices->resize(0);
-// 
-//         
-//         time_type timeStart = 0;
-//         time_type timeEnd = delta;
-//         point_type pointSum = 0;
-//         size_t pointCount = 0;
-// 
-//         float lerpLeft = 0;
-//         point_type borderLeft = 0;
-//         ScalarChannel::const_iterator it = data->begin();
-//         ScalarChannel::const_iterator last = data->end();
-//         while (it != last) {
-//             time_type t = it->time;
-//             // liczmy œredni¹ z punktów w przedziale
-//             while ( it != last && it->time < timeEnd ) {
-//                 ++pointCount;
-//                 pointSum += it->normalizedValue;
-//                 ++it;
-//             }
-//             timeEnd += delta;
-//             vertices->push_back(osg::Vec3(
-//                 t * lenInv * w + x,
-//                 (pointSum / pointCount) * h + y,
-//                 -0.1f
-//                 ));
-//             pointCount = 0;
-//             pointSum = 0;
-//         }
-
-//         for ( auto it = data->begin(), last = data->end(); it != last; ++it ) {
-//             if ( it->time < timeEnd ) {
-//                 ++pointCount;
-//                 pointSum += it->normalizedValue;
-//             } else {
-//                 // jesteœmy na granicy
-//                 auto next = it + 1;
-//                 point_type interpolated = pointSum / pointCount;
-//                 interpolated += it->normalizedValue + (timeEnd - it->time) * data->getSamplesPerSec() * (next->normalizedValue - it->normalizedValue);
-//             }
-//         }
-// 
-//         BOOST_FOREACH( const ScalarChannel::Entry& entry, *data ) {
-//             if ( entry.time < timeEnd ) {
-//                 ++pointCount;
-//                 pointSum += entry.value;
-//             } else {
-// 
-//             }
-//         }
     }
-    
-
-    
-
-    
-
-
-    
-
-
-//     if ( data->getNumPoints() <= vertices->capacity() ) {
-//         // o ile sekund bêdziemy siê przesuwaæ?
-//         time_type delta = data->getLength() / vertices->capacity();
-//         //
-//         for ( time_type t = 0, len = data->getLength(), ; t < len; t += delta ) {
-// 
-//         }
-//     } else {
-// 
-//     }
 
     colors->at(0) = color;
     setColorArray(colors);
     setVertexArray(vertices);
-
-    //lineChart->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, false);
 
     if ( getNumPrimitiveSets() ) {
         setPrimitiveSet(0, primitiveSet);
@@ -209,49 +135,49 @@ void LineChartSerie::refresh()
 
 std::pair<float, float> LineChartSerie::getXRange() const
 {
-    if ( !data ) {
+    if ( !normalizedChannel ) {
         throw std::runtime_error("Data not set.");
     }
     // TODO: dodaæ offsetowanie!
-    return std::make_pair<float, float>( 0, data->getLength() );
+    return std::make_pair<float, float>( 0, normalizedChannel->getLength() );
 }
 
 std::pair<float, float> LineChartSerie::getYRange() const
 {
-    if ( !data ) {
+    if ( !normalizedChannel ) {
         throw std::runtime_error("Data not set.");
     }
-    return std::make_pair<float, float>( data->getMinValue(), data->getMaxValue() );
+    return std::make_pair<float, float>( stats->minValue(), stats->maxValue() );
 }
 
 const std::string& LineChartSerie::getXUnit() const
 {
-    if ( !data ) {
+    if ( !channel ) {
         throw std::runtime_error("Data not set.");
     }
-    return data->getXUnit();
+    return channel->getTimeBaseUnit();
 }
 
 const std::string& LineChartSerie::getYUnit() const
 {
-    if ( !data ) {
+    if ( !channel ) {
         throw std::runtime_error("Data not set.");
     }
-    return data->getYUnit();
+    return channel->getValueBaseUnit();
 }
 
 float LineChartSerie::getValue() const
 {
-    if ( !data ) {
+    if ( !channel ) {
         throw std::runtime_error("Data not set.");
     }
-    return data->getCurrentValue();
+    return timer->getCurrentValue();
 }
 
 float LineChartSerie::getTime() const
 {
-    if ( !data ) {
+    if ( !channel ) {
         throw std::runtime_error("Data not set.");
     }
-    return data->getTime();
+    return timer->getTime();
 }

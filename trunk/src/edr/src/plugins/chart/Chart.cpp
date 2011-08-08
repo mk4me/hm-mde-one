@@ -5,7 +5,7 @@
 #include <iomanip>
 #include "Chart.h"
 #include "LineChartSerie.h"
-#include "ChartPointer.h"
+//#include "ChartPointer.h"
 #include "ChartSerie.h"
 
 #undef  min
@@ -45,9 +45,9 @@ Chart::~Chart()
     
 }
 
-bool Chart::addChannel( const ChartSeriePtr& channel )
+bool Chart::addSerie( const ChartSeriePtr& serie )
 {
-    if ( geode->containsDrawable(channel) ) {
+    if ( geode->containsDrawable(serie) ) {
         UTILS_FAIL("Kana³ ju¿ jest dodany.");
         return false;
     } else {
@@ -55,24 +55,24 @@ bool Chart::addChannel( const ChartSeriePtr& channel )
             activeSerieIndex = 0;
         }
         // dodajemy do listy i do dzieci
-        series.push_back(channel);
-        geode->addDrawable(channel);
+        series.push_back(serie);
+        geode->addDrawable(serie);
         setDirty();
         return true;
     }
 }
 
 
-bool Chart::removeChannel( const ChartSeriePtr& channel )
+bool Chart::removeSerie( const ChartSeriePtr& serie )
 {
-    auto it = std::find(series.begin(), series.end(), channel);
+    auto it = std::find(series.begin(), series.end(), serie);
 
     bool ret = false;
 
     if(it != series.end()){
         ret = true;
 
-        if(activeSerieIndex >= 0 && series[activeSerieIndex] == channel){
+        if(activeSerieIndex >= 0 && series[activeSerieIndex] == serie){
             if(series.size() > 1){
                 if(activeSerieIndex-1 >=0){
                     setActiveSerie(activeSerieIndex-1);
@@ -84,14 +84,14 @@ bool Chart::removeChannel( const ChartSeriePtr& channel )
             }
         }
 
-        geode->removeDrawable(channel);
+        geode->removeDrawable(serie);
         setDirty();
     }
 
     return ret;
 }
 
-void Chart::removeAllChannels()
+void Chart::removeAllSeries()
 {
     BOOST_FOREACH(ChartSeriePtr chart, series) {
         geode->removeDrawable(chart);
@@ -101,7 +101,7 @@ void Chart::removeAllChannels()
     setDirty();
 }
 
-int Chart::getNumChannels() const
+int Chart::getNumSeries() const
 {
     return static_cast<int>(series.size());
 }
@@ -316,200 +316,6 @@ void Chart::setLabelPrototype( osgText::Text* prototype )
     }
 }
 
-// osg::Geode* Chart::createAxis(const osg::Vec3& s, const osg::Vec3& e, int numReps,float scale,std::string unit)
-// {
-// 	
-// 
-// 	osg::Geode* geode = new osg::Geode;
-// 	osg::StateSet* stateset = geode->getOrCreateStateSet();
-// 	stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-// 	osg::Vec3 dv = e-s;
-// 	dv /= float(numReps-1);
-// 	scale /= float(numReps-1);
-// 	float actualScale=0.0f;
-// 	osg::Vec3 pos = s;
-// 	osg::Vec3 posX = osg::Vec3(0,30,0);
-// 	osg::Vec3 posY = osg::Vec3(5,0,0);
-// 	osg::Vec3Array* vertices = new osg::Vec3Array;
-// 	vertices->push_back(s);
-// 	vertices->push_back(e);
-// 	for(int i=0;i<numReps;++i)
-// 	{
-// 	
-// 
-// 		if(e.x()>s.x()){
-// 			if(showLabel){
-// 				osgText::Text* text=createLabel(pos-posX,fontSize, (formatNumber(actualScale))+unit);
-// 				text->setAlignment(osgText::Text::RIGHT_CENTER);
-// 				geode->addDrawable(text);}
-// 			if(i!=0){
-// 				vertices->push_back(osg::Vec3(pos.x(),pos.y()-5,1));
-// 				vertices->push_back(osg::Vec3(pos.x(),pos.y()+5,1));
-// 			}
-// 				//geode->addDrawable(createLine(pos.x(),pos.y()-5,}
-// 				//pos.x(),pos.y()+5,0,
-// 				//osg::Vec4(0.0f,0.0f,0.0f, 1.0f)));
-// 		}
-// 		else{
-// 			if(showLabel){
-// 				osgText::Text* text=createLabel(pos ,fontSize,(formatNumber(actualScale))+unit);
-// 				text->setAlignment(osgText::Text::RIGHT_CENTER);
-// 					geode->addDrawable(text);}
-// 				if(i!=0){
-// 				vertices->push_back(osg::Vec3(pos.x()-5,pos.y(),1));
-// 				vertices->push_back(osg::Vec3(pos.x()+5,pos.y(),1));
-// 			}
-// 		}
-// 		
-// 		pos += dv;
-// 		actualScale += scale;
-// 
-// 	}
-// 
-// 
-// 
-// 	osg::Geometry* geom = new osg::Geometry;
-// 	osg::Vec4Array* colors=new osg::Vec4Array();
-// 	colors->push_back(axisColor);
-// 
-//  
-// 	geom->setColorArray(colors);
-// 	geom->setColorBinding(osg::Geometry::BIND_OVERALL);
-// 	geom->setVertexArray(vertices);
-// 
-//  geom->addPrimitiveSet(new osg::DrawArrays(GL_LINES,0,vertices->getNumElements())); 
-// 
-// 	
-// 	geode->addDrawable(geom);
-// 	geode->setName("axis");
-// 
-// 
-// 	return geode;
-// }
-// osgText::Text* Chart::createLabel(const osg::Vec3& pos, float size, const std::string& label)
-// {
-// 
-// 	osgText::Font* font = osgText::readFontFile("fonts/arial.ttf");
-// 
-// 	
-// 		osgText::Text* text = new  osgText::Text;
-// 
-// 		text->setAxisColor(axisColor);
-// 		text->setFontResolution(100,100);
-// 		text->setPosition(pos);
-// 		text->setFont(font);
-// 		text->setCharacterSize(size);
-// 		text->setAxisAlignment(osgText::Text::SCREEN); 
-// 		text->setAlignment(osgText::Text::LEFT_CENTER);
-// 		text->setText(label);
-// 		text->setLayout(osgText::Text::LEFT_TO_RIGHT);
-// 		text->setBoundingBoxMargin(0.25f);
-// 		
-// 
-// 	
-// 
-// 	return text;    
-// }
-
-
-// 
-// void Chart::deprecated_addChartSeries(deprecated_ChartData* chartData,osg::Vec4 axisColor){
-// 	xNumReps=2;
-// 	yNumReps=2;
-// 	borderSize=5;
-// 	showLabel=false;
-// 	showBorder=false;
-// 	float yMaxScale=0;
-// 	if(chartData->getRNumber()>0){
-// 	deprecated_data.push_back(chartData);
-// 	std::vector<deprecated_ChartData*>::iterator itData= deprecated_data.end()-1;
-// 	deprecated_dataSeries.push_back(new deprecated_LineChart((*itData),x+borderSize,y+borderSize,w-borderSize,h-borderSize,axisColor));
-// 	std::vector<deprecated_LineChart*>::iterator itDataSeries = deprecated_dataSeries.end()-1;
-// 	(*itDataSeries)->setShowLabel(showLabel);
-// 	this->addChild(*itDataSeries);
-// 	
-// 	if(deprecated_data.size()>1){
-// 		 itData=deprecated_data.begin();
-// 		 for(; itData < deprecated_data.end(); itData++){
-// 			 if(yMaxScale<(*itData)->getScaleY()){
-// 				 yMaxScale=(*itData)->getScaleY();
-// 			 }
-// 
-// 		 }
-// 		 itData=deprecated_data.begin();
-// 		 for(; itData < deprecated_data.end(); itData++){
-// 			 (*itData)->setScaleY(yMaxScale);
-// 			 (*itData)->normalize();
-// 		 }
-// 		repaint(); 
-// 	}else{
-// 
-// 	xAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(w-borderSize*2,y+borderSize,0),xNumReps,(*deprecated_data.begin())->getScaleX()/(*deprecated_data.begin())->getFPS(),"s");
-// 	yAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,h-borderSize,0),yNumReps,(*deprecated_data.begin())->getScaleY(),(*deprecated_data.begin())->getUnit());
-// 	this->addChild(xAxis);
-// 	this->addChild(yAxis);
-// 	}
-// 	
-// 	mainLabel.push_back(createMainLabel((*itDataSeries)->getAxisColor(),(*itData)->getName()));
-// 	std::vector<osg::Geode*>::iterator itLabel= mainLabel.end()-1;
-// 	this->addChild(*itLabel);
-// 	labelOffset+=100;
-// 	}
-// 
-// }
-// 
-// void Chart::deprecated_addChartPreviewSeries(deprecated_ChartData* chartData,osg::Vec4 axisColor){
-// 	float yMaxScale=0;
-// 	if(chartData->getRNumber()>0){
-// 	deprecated_data.push_back(chartData);
-// 	std::vector<deprecated_ChartData*>::iterator itData= deprecated_data.end()-1;
-// 	deprecated_dataSeries.push_back(new deprecated_LineChart((*itData),x+borderSize*2,y+borderSize,w-borderSize*2,h-borderSize,axisColor));
-// 	std::vector<deprecated_LineChart*>::iterator itDataSeries = deprecated_dataSeries.end()-1;
-// 	this->addChild(*itDataSeries);
-// 	
-// 	if(deprecated_data.size()>1){
-// 		 itData=deprecated_data.begin();
-// 		 for(; itData < deprecated_data.end(); itData++){
-// 			 if(yMaxScale<(*itData)->getScaleY()){
-// 				 yMaxScale=(*itData)->getScaleY();
-// 			 }
-// 
-// 		 }
-// 		 itData=deprecated_data.begin();
-// 		 for(; itData < deprecated_data.end(); itData++){
-// 			 (*itData)->setScaleY(yMaxScale);
-// 			 (*itData)->normalize();
-// 		 }
-// 		repaint(); 
-// 	}else{
-// 
-// 	xAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(w-borderSize*2,y+borderSize,0),xNumReps,(*deprecated_data.begin())->getScaleX()/(*deprecated_data.begin())->getFPS(),"s");
-// 	yAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,h-borderSize,0),yNumReps,(*deprecated_data.begin())->getScaleY(),(*deprecated_data.begin())->getUnit());
-// 	this->addChild(xAxis);
-// 	this->addChild(yAxis);
-// 	}
-// 	
-// 	mainLabel.push_back(createMainLabel((*itDataSeries)->getAxisColor(),(*itData)->getName()));
-// 	std::vector<osg::Geode*>::iterator itLabel= mainLabel.end()-1;
-// 	this->addChild(*itLabel);
-// 	labelOffset+=100;
-// 	}
-// 
-// }
-// int Chart::deprecated_getFPS(){
-// 	if(deprecated_data.size()>0)
-// return (*deprecated_data.begin())->getFPS();
-// 	else 
-// 		return 0;
-// }
-// int Chart::deprecated_getFrameNumber(){
-// 	if(deprecated_data.size()>0)
-// return (*deprecated_data.begin())->getRNumber();
-// 	else
-// 		return 0;
-// }
-
-
 void Chart::refreshCursor()
 {
     float zStep = zRange/float(2 + series.size());
@@ -526,7 +332,6 @@ void Chart::refreshAll()
     float zStep = zRange/float(2 + series.size());
     float currentZ = z;
 
-    //getOrCreateStateSet()->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON );
     refreshGrid(currentZ);
     currentZ += zStep;
 
@@ -550,7 +355,7 @@ void Chart::refreshAll()
             // pobranie informacji o osi OY
             std::pair<float, float> yRange = serie->getYRange();
             UTILS_ASSERT( yRange.first <= yRange.second );
-            const std::string yUnit = serie->getYUnit();
+            const std::string & yUnit = serie->getYUnit();
             // uzupe³nienie min/max zakresu danej jednostki
             auto found = unitInfo.find(yUnit);
             if ( found == unitInfo.end() ) {
@@ -671,125 +476,7 @@ void Chart::refreshAll()
     refreshCursor(currentZ);
 
     dirty = false;
-
-// 	if(showBorder){
-// 		if(border){
-// 	osg::Geode* newBorder=createBorder();
-// 	this->replaceChild(border,newBorder);
-// 	border=newBorder;}else{
-// 		border=createBorder();
-// 		this->addChild(border);}
-// 	}else
-// 		this->removeChild(this->getChildIndex(border));
-// 
-// 
-//     auto front = series.front();
-// 
-// 	osg::Geode* newGrid=createGrid();
-// 	osg::Geode* newXAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(w-borderSize*2,y+borderSize,0),xNumReps,
-//         front->getXLength(), front->getXUnit());
-// 	osg::Geode* newYAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,h-borderSize,0),yNumReps,
-//         front->getYLength(), front->getYUnit());
-// 
-// 	this->replaceChild(grid,newGrid);
-// 	this->replaceChild(xAxis,newXAxis);
-// 	this->replaceChild(yAxis,newYAxis);
-// 
-// 	
-// 	grid=newGrid;
-// 	xAxis=newXAxis;
-// 	yAxis=newYAxis;
-// 	auto itPos = series.begin();
-// 	std::vector<osg::Geode*>::iterator itLabel= mainLabel.begin();
-// 	std::vector<osg::Geode*> newMainLabel;
-// 	for(; itPos < series.end(); itPos++, itLabel++){
-//         (*itPos)->setLocation( x+borderSize*2,y+borderSize,w-borderSize*2,h-borderSize );
-// 	    (*itPos)->refreshAll();
-// 	    newMainLabel.push_back(createMainLabel((*itPos)->getAxisColor(), (*itPos)->getName()));
-// 	    std::vector<osg::Geode*>::iterator itNewLabel= newMainLabel.end()-1;
-// 	    this->replaceChild((*itLabel),  (*itNewLabel)  ); 
-// 	}
-// 	mainLabel=newMainLabel;
-
-
-
-// 	if(showBorder){
-// 		if(border){
-// 	osg::Geode* newBorder=createBorder();
-// 	this->replaceChild(border,newBorder);
-// 	border=newBorder;}else{
-// 		border=createBorder();
-// 		this->addChild(border);}
-// 	}else
-// 		this->removeChild(this->getChildIndex(border));
-// 	osg::Geode* newGrid=createGrid();
-// 	osg::Geode* newXAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(w-borderSize*2,y+borderSize,0),xNumReps,(*deprecated_data.begin())->getScaleX()/(*deprecated_data.begin())->getFPS(),"s");
-// 	osg::Geode* newYAxis=createAxis(osg::Vec3(x+borderSize*2,y+borderSize,0),osg::Vec3(x+borderSize*2,h-borderSize,0),yNumReps,(*deprecated_data.begin())->getScaleY(),(*deprecated_data.begin())->getUnit());
-// 
-// 
-// 	
-// 	this->replaceChild(grid,newGrid);
-// 	this->replaceChild(xAxis,newXAxis);
-// 	this->replaceChild(yAxis,newYAxis);
-// 
-// 	
-// 	grid=newGrid;
-// 	xAxis=newXAxis;
-// 	yAxis=newYAxis;
-// 	std::vector<deprecated_LineChart*>::iterator itPos = deprecated_dataSeries.begin();
-// 	std::vector<deprecated_ChartData*>::iterator dataPos = deprecated_data.begin();
-// 	std::vector<osg::Geode*>::iterator itLabel= mainLabel.begin();
-// 	std::vector<osg::Geode*> newMainLabel;
-// 	for(; itPos < deprecated_dataSeries.end(); itPos++,dataPos++,itLabel++){
-// 	  (*itPos)->repaint((*dataPos),x+borderSize*2,y+borderSize,w-borderSize*2,h-borderSize);
-// 	  newMainLabel.push_back(createMainLabel((*itPos)->getAxisColor(),(*dataPos)->getName()));
-// 	  std::vector<osg::Geode*>::iterator itNewLabel= newMainLabel.end()-1;
-// 	  this->replaceChild((*itLabel),  (*itNewLabel)  ); 
-// 	}
-// 	mainLabel=newMainLabel;
 }
-
-
-// osg::Geode* Chart::createMainLabel(osg::Vec4 axisColor, std::string name){
-// 		osg::Geode* geode = new osg::Geode;
-// 		this->setName(name);
-// 			geode->setName("label");
-// 	if(showLabel){
-// 	osg::StateSet* ss = geode->getOrCreateStateSet();
-// 
-// 
-// 	ss->setMode(GL_BLEND, osg::StateAttribute::ON);
-// 
-// 	ss->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-// 	geode->addDrawable(createLabel(osg::Vec3(x+30+labelOffset,h-10,0),12,name));
-// 	
-// 	osg::Vec3Array* vertices = new osg::Vec3Array;
-// 	vertices->push_back(osg::Vec3(x+10+labelOffset,h-20+5,0));
-// 	vertices->push_back(osg::Vec3(x+20+labelOffset,h-20+5,0));
-// 	vertices->push_back(osg::Vec3(x+20+labelOffset,h-20+15,0));
-// 	vertices->push_back(osg::Vec3(x+10+labelOffset,h-20+15,0));
-// 	vertices->push_back(osg::Vec3(x+10+labelOffset,h-20+5,0));
-// 
-// 	
-// 	osg::Geometry* geom = new osg::Geometry;
-// 	osg::Vec4Array* colors=new osg::Vec4Array();
-// 	colors->push_back(axisColor);
-// 
-// 
-// 	geom->setColorArray(colors);
-// 	geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);
-// 	geom->setVertexArray(vertices);
-// 
-// 	geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,vertices->size()));
-// 
-// 
-// 	geode->addDrawable(geom);
-// 
-// 	
-// 
-// }
-// return geode;
-// }
 
 osg::ref_ptr<osgText::Text> Chart::createText( const osg::Vec3& pos, float size, const std::string& label )
 {
@@ -805,8 +492,6 @@ osg::ref_ptr<osgText::Text> Chart::createText( const osg::Vec3& pos, float size,
     text->setAlignment(osgText::Text::CENTER_TOP);
     text->setText(label);
     text->setLayout(osgText::Text::LEFT_TO_RIGHT);
-    //text->setBoundingBoxMargin(0.25f);
-
 
     return text;    
 }
@@ -893,12 +578,10 @@ void Chart::refreshGrid(float z)
         // wierzcho³ki
         osg::Vec3Array* vertices = dynamic_cast<osg::Vec3Array*>(grid->getVertexArray());
         vertices->resize(0);
-        //for (int i = gridDensity; showGridY && i < h; i += gridDensity) {
         for ( float dy = 0.0f, step = h / gridDensity; showGridY && dy < h; dy += step  ) {
             vertices->push_back(osg::Vec3(x,        y+dy,    z));
             vertices->push_back(osg::Vec3(x+w,  y+dy,    z));
         }
-        //for (int i = gridDensity; showGridX && i < w; i += gridDensity) {
         for ( float dx = 0.0f, step = w / gridDensity; showGridY && dx < w; dx += step ) {
             vertices->push_back(osg::Vec3(x+dx,      y,          z));
             vertices->push_back(osg::Vec3(x+dx,      y+h,   z));
@@ -981,7 +664,6 @@ void Chart::refreshLabels( float z )
 
         refreshLabels(labelsX, activeSerie->getXUnit(), !showGridX, xrange.first, xrange.second, x , x + w, y + offset, y + offset, z, osgText::Text::CENTER_BOTTOM);
 
-
         osg::Vec2 pos = activeSerie->getPosition();
         osg::Vec2 size = activeSerie->getSize();
         auto yrange = activeSerie->getYRange();
@@ -1047,14 +729,7 @@ void Chart::refreshCursor( float z )
 
         auto loc = getClientLocation();
         vertices->push_back( Vec3(cursorX, loc.y(), z) );
-        //vertices->push_back( Vec3(cursorX, cursorY, z) );
         vertices->push_back( Vec3(cursorX, loc.y() + loc.w(), z) );
-        //         vertices->push_back(Vec3(cursorX, cursorY + 3, z));
-        //         vertices->push_back(Vec3(cursorX+3, cursorY, z));
-        //         vertices->push_back(Vec3(cursorX, cursorY - 3, z));
-        //         vertices->push_back(Vec3(cursorX-3, cursorY, z));
-        //         vertices->push_back(Vec3(cursorX, cursorY + 3, z));
-
 
         // kolory
         osg::Vec4Array* colors = dynamic_cast<osg::Vec4Array*>(cursor->getColorArray());

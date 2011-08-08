@@ -94,8 +94,6 @@ private:
     //! Czy wykres sam siê odœwie¿a?
     bool autoRefresh;
 
-
-
     //!
     bool normalized;
 
@@ -103,8 +101,6 @@ private:
 	int gridDensity;
     //! Prototyp dla tekstów.
     osg::ref_ptr<osgText::Text> textPrototype;
-
-
 
 public:
     //! Konstruktor zeruj¹cy.
@@ -134,17 +130,16 @@ public:
         return series.end();
     }
 
-
     //! Dodaje kana³ do wykres.ug
-    bool addChannel( const ChartSeriePtr& channel );
+    bool addSerie( const ChartSeriePtr& serie );
 
     //! Usuniêcie kana³ z wykres.ug
-    bool removeChannel( const ChartSeriePtr& channel );
+    bool removeSerie( const ChartSeriePtr& serie );
 
     //! Usuwa wszystkie wykresy.
-    void removeAllChannels();
+    void removeAllSeries();
     //! \return Liczba kana³ów.
-    int getNumChannels() const;
+    int getNumSeries() const;
 
     //! \return Indeks aktywnego kana³u b¹dŸ -1.
     int getActiveSerieIndex() const;
@@ -152,7 +147,6 @@ public:
     void setActiveSerie(int currentSerie);
     //! \return Aktywny kana³ b¹dŸ nullptr.
     const ChartSerie* getActiveSerie() const;
-
 
     //! \return Czy wykres wymaga odœwie¿enia?
     inline bool isDirty() const
@@ -247,15 +241,9 @@ public:
     //! \param normalized
     void setNormalized(bool normalized);
 
-
-
     //! Odœwie¿a wykres.
     void refreshAll();
     void refreshCursor();
-
-
-
-
 
 private:
     void setDirty(bool dirty = true);
@@ -269,9 +257,6 @@ private:
     void refreshLabels(std::vector<osgText::TextPtr> &labels, const std::string& unit, bool condition, float min, float max, float x0, float x1, float y0, float y1, float z, osgText::Text::AlignmentType align );
     bool prepareGeometry(osg::GeometryPtr& geom, bool condition, const char* name);
     bool prepareText(osgText::TextPtr& text, bool condition, const char* name);
-
-
-    
 
 private:
     //! \param pos Pozycja.
@@ -287,6 +272,5 @@ private:
     //! \param min
     void formatStream(std::ostringstream& stream, float min, float max, int decimalsToShow = 2 );
 };
-
 
 #endif

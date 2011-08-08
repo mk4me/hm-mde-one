@@ -2,10 +2,11 @@
 #include "ChartSerie.h"
 
 ChartSerie::ChartSerie() : 
-x(0), y(0), w(0), h(0), z(0),
-autoRefresh(false),
-verticesPerUnit(1)
+    x(0), y(0), w(0), h(0), z(0),
+    autoRefresh(false),
+    verticesPerUnit(1)
 {
+
 }
 
 void ChartSerie::setVerticesPerUnit( float verticesPerUnit )

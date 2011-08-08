@@ -15,17 +15,18 @@
 #include <core/IVisualizer.h>
 #include "Chart.h"
 #include "LineChartSerie.h"
+#include <timelinelib/IChannel.h>
 
 //! Wizualizator wykresów.
 class ChartVisualizer : public QObject, public core::IVisualizer
 {
 private:
 
-    class ChartVisualizerSerie : public SerieBase
+    class ChartVisualizerSerie : public SerieBase, public timeline::IChannel
     {
     public:
-        ChartVisualizerSerie(const LineChartSeriePtr & serie)
-            : serie(serie)
+        ChartVisualizerSerie(const LineChartSeriePtr & serie, ChartVisualizer * visualizer)
+            : serie(serie), visualizer(visualizer)
         {
        
         }
@@ -33,6 +34,26 @@ private:
         const LineChartSeriePtr & getSerie() const
         {
             return serie;
+        }
+
+        //! \return Sklonowane dane w kanale
+        virtual timeline::IChannelPtr clone() const
+        {
+            //! NIE WSPIERAMY TUTAJ KLONOWANIA!!
+            return timeline::IChannelPtr();
+        }
+
+        //! \return Dlugosc kanalu w sekundach
+        virtual double getLength() const
+        {
+            return (double)serie->getData()->getLength();
+        }
+
+        //! Czas zawiera siê miêdzy 0 a getLength()
+        //! \param time Aktualny, lokalny czas kanalu w sekundach
+        virtual void setTime(double time)
+        {
+            serie->getTimer()->setTime(time);
         }
 
     protected:
@@ -49,7 +70,10 @@ private:
 
     private:
         LineChartSeriePtr serie;
+        ChartVisualizer * visualizer;
     };
+
+    friend class ChartVisualizerSerie;
 
     Q_OBJECT;
     UNIQUE_ID("{68C4E6D6-5EC8-4641-8845-F3FF3766B709}", "Chart Visualizer");
@@ -58,7 +82,6 @@ private:
     //! Nazwa wizualizatora.
     std::string name;
     //! Viewer osg.
-    //osg::ref_ptr<osgViewer::Viewer> viewer;
     osg::ref_ptr<osgui::QOsgDefaultWidget> viewer;
     //! Kolory dla serii danych
     std::vector<osg::Vec4> seriesColors;
@@ -68,16 +91,11 @@ private:
     int prevActiveSerie;
     //!
     float prevTime;
-
+    //! Seriwe danych
     std::set<ChartVisualizerSerie*> series;
 
     //!
     QAction* actionNormalized;
-
-    //! Serie danych przyporz¹dkowane indeksom wejœæ.
-    //std::vector<LineChartSeriePtr> series;
-
-    volatile bool needsRefresh;
 
 public:
     //!
@@ -86,12 +104,12 @@ public:
     virtual ~ChartVisualizer();
 
 public:
+
     //! \see IVisualizer::getName
     virtual const std::string& getName() const;
     //! \see IVisualizer::create
     virtual core::IVisualizer* createClone() const;
     //! \see IVisualizer::getSlotInfo
-    //virtual void getInputInfo(int inputNo, std::string& name, core::ObjectWrapper::Types& types);
     virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info);
     //! Nic nie robi.
     //! \see IVisualizer::update

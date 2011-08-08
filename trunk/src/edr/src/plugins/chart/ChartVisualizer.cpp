@@ -1,15 +1,9 @@
 #include "ChartPCH.h"
-#include <osgui/EventCallback.h>
 #include "ChartVisualizer.h"
-#include <QtGui/QIcon>
-#include <QtGui/QMenu>
-#include <osg/LineWidth>
-#include <osg/BlendFunc>
-#include "ui_ChartVisualizerTitleBar.h"
-
 
 ChartVisualizer::ChartVisualizer() : 
-name("Chart"), prevActiveSerie(-1), prevTime(0)
+    name("Chart"), prevActiveSerie(-1),
+    prevTime(0)
 {
 
 }
@@ -29,7 +23,6 @@ core::IVisualizer* ChartVisualizer::createClone() const
     return new ChartVisualizer();
 }
 
-//void ChartVisualizer::getInputInfo( int inputNo, std::string& name, core::ObjectWrapper::Types& type )
 void ChartVisualizer::getInputInfo(std::vector<core::IInputDescription::InputInfo>& info)
 {
     core::IInputDescription::InputInfo input;
@@ -40,10 +33,6 @@ void ChartVisualizer::getInputInfo(std::vector<core::IInputDescription::InputInf
     input.required = false;
 
     info.push_back(input);
-
-    //info.name = std::string("serie ") + boost::lexical_cast<std::string>(inputNo);
-    //info.type.push_back( typeid(core::EMGChannel) );
-    //info.type.push_back( typeid(core::GRFChannel) );
 }
 
 void ChartVisualizer::update( double deltaTime )
@@ -60,23 +49,16 @@ void ChartVisualizer::update( double deltaTime )
         needsUpdate = true;
     }
     
-    if ( needsUpdate ) {
-        //dynamic_cast<QWidget*>(viewer.get())->update();
+    if (needsUpdate ) {
         viewer->update();
     }
 }
 
 QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
 {
-    //osgui::QOsgDefaultWidget* widget = new osgui::QOsgDefaultWidget();
     viewer = new osgui::QOsgDefaultWidget();
-    //widget->setTimerActive(false);
     viewer->setTimerActive(false);
-    //widget->setMinimumSize(300, 300);
-
-    //viewer = widget;
     viewer->addEventHandler( new osgViewer::StatsHandler() );
-    //viewer->addEventHandler( new osgGA::StateSetManipulator(viewer->getCamera()->getOrCreateStateSet()) );
 
     // pobranie cech kontekstu graficznego
     const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
@@ -111,9 +93,6 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
     chart->setZ(-0.5f);
     chart->setZRange(0.5f);
 
-
-    //chart->getOrCreateStateSet()->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-    //chart->getOrCreateStateSet()->setAttribute(new osg::LineWidth(10), osg::StateAttribute::ON);
     chart->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
 
     // dodanie callbacka dostosowuj¹cego rozmiar wykresu do rozmiaru okna
@@ -126,7 +105,6 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
 
     chart->setAutoRefresh(true);
     viewer->setSceneData(chart);
-
 
     // przewidujemy kolory na 10 wykresów...
     seriesColors.resize(10);
@@ -143,28 +121,11 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
 
 
     // dodajemy akcje
-    //actionNormalized = new QAction("normalize", widget);
     actionNormalized = new QAction("normalize", viewer);
     actionNormalized->setCheckable(true);
     actionNormalized->setChecked( chart->isNormalized() );
     connect(actionNormalized, SIGNAL(triggered(bool)), this, SLOT(setNormalized(bool)));
     actions.push_back(actionNormalized);
-
-    /*QMenu* testMenu = new QMenu("testMenu", widget);
-    QActionGroup* group = new QActionGroup(widget);*/
-
-    /*QMenu* testMenu = new QMenu("testMenu", viewer);
-    QActionGroup* group = new QActionGroup(viewer);
-
-    QAction* act = testMenu->addAction("action");
-    act->setCheckable(true);
-    group->addAction(act);
-
-    act = testMenu->addAction("action2");
-    act->setCheckable(true);
-    group->addAction(act);
-
-    actions.push_back(testMenu);*/
 
     //return widget;
     return viewer;
@@ -172,41 +133,7 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
 
 void ChartVisualizer::setUp( core::IObjectSource* source )
 {
-    //using namespace core;
 
-    //core::ScalarChannelConstPtr channel;
-
-    //series.clear();
-    //series.resize(source->getNumSources());
-
-    //chart->removeAllChannels();
-    //for ( int i = 0; i < source->getNumSources(); ++i ) {
-    //    if ( source->tryGetObject(channel, i) ) {
-    //        // okreœlenie koloru wykresu
-    //        osg::Vec4 color;
-    //        if ( i < static_cast<int>(seriesColors.size()) ) {
-    //            // kolor 
-    //            color = seriesColors[i];
-    //        } else {
-    //            // losowy kolor
-    //            LOG_WARNING("No color defined for chart " << i << ", using random one.");
-    //            color.r() = (rand()%1000)/999.0f;
-    //            color.g() = (rand()%1000)/999.0f;
-    //            color.b() = (rand()%1000)/999.0f;
-    //            color.a() = 1.0f;
-    //        }
-
-    //        LineChartSeriePtr lineChart = new LineChartSerie();
-    //        lineChart->setData(channel);
-    //        lineChart->setColor(color);
-    //        lineChart->setName(channel->getName());
-    //        series[i] = lineChart;
-
-    //        chart->addChannel(lineChart);
-    //    }
-    //}
-
-    //chart->refreshAll();
 }
 
 void ChartVisualizer::reset()
@@ -235,11 +162,12 @@ core::IVisualizer::SerieBase* ChartVisualizer::createSerie(const core::ObjectWra
 
     LineChartSeriePtr lineChart = new LineChartSerie();
     ScalarChannelConstPtr d = data->get();
+
     lineChart->setData(d);
     lineChart->setColor(color);
-    chart->addChannel(lineChart);
+    chart->addSerie(lineChart);
 
-    ChartVisualizerSerie* serie = new ChartVisualizerSerie(lineChart);
+    ChartVisualizerSerie* serie = new ChartVisualizerSerie(lineChart, this);
     series.insert(serie);
     return serie;
 }
@@ -257,7 +185,7 @@ void ChartVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)
         throw std::runtime_error("Given serie dos not belong to this visualizer!");
     }
 
-    chart->removeChannel(chSerie->getSerie());
+    chart->removeSerie(chSerie->getSerie());
 
     series.erase(it);
 }
@@ -268,7 +196,6 @@ void ChartVisualizer::setNormalized( bool normalized )
         actionNormalized->setChecked(normalized);
     } else {
         chart->setNormalized(normalized);
-        //dynamic_cast<QWidget*>(viewer.get())->update();
         viewer->update();
     }
 }
@@ -277,13 +204,3 @@ void ChartVisualizer::setActiveSerie( int idx )
 {
 
 }
-
-//void ChartVisualizer::process( core::IObjectSource* source )
-//{
-//    for ( int i = 0; i < source->getNumObjects(); ++i ) {
-//        if ( source->isChanged(i) ) {
-//            needsRefresh = true;
-//            break;
-//        }
-//    }
-//}

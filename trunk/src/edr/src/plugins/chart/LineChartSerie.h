@@ -10,13 +10,10 @@
 
 #include <osg/Geode>
 #include <osg/Geometry>
-#include <plugins/chart/ChartDataSeries.h>
-//#include <core/C3DChannels.h>
-//#include <plugins/c3d/C3DChannels.h>
 #include "ChartSerie.h"
-
-
+#include <plugins/chart/ChartDataSeries.h>
 #include <plugins/c3d/C3DChannels.h>
+#include "Chart.h"
 
 class LineChartSerie : public ChartSerie
 {
@@ -25,20 +22,32 @@ private:
     osg::ref_ptr<osg::Vec4Array> colors;
     //! Tablica wierzcho³ków.
     osg::ref_ptr<osg::Vec3Array> vertices;
-    //! Dane wykresu.
-    ScalarChannelConstPtr data;
+    //! Obs³uga czasu serii danych
+    ScalarChannelConstPtr channel;
+    //! Obs³uga czasu kana³u
+    ScalarChannel::TimerPtr timer;
+    //! Obs³uga statystyk kana³u
+    ScalarChannelStatsPtr stats;
+    //! Znormalizowany kana³
+    ScalarChannelPtr normalizedChannel;
 
 public:
     LineChartSerie();
 
 public:
     //! \return Dane wykresu.
-    inline ScalarChannelConstPtr getData() const
+    inline const ScalarChannelConstPtr & getData() const
     { 
-        return data;
+        return channel;
     }
+
+    inline const ScalarChannel::TimerPtr & getTimer() const
+    {
+        return timer;
+    }
+
     //! \param data Dane wykresu.
-    void setData(const ScalarChannelConstPtr& data);
+    void setData(const ScalarChannelConstPtr& channel);
 
 // ChartSerie
 public:
@@ -60,7 +69,6 @@ public:
 };
 
 typedef osg::ref_ptr<LineChartSerie> LineChartSeriePtr;
-
 
 
 #endif
