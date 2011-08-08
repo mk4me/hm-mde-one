@@ -5,7 +5,6 @@
 #include <iomanip>
 #include "Chart.h"
 #include "LineChartSerie.h"
-//#include "ChartPointer.h"
 #include "ChartSerie.h"
 
 #undef  min

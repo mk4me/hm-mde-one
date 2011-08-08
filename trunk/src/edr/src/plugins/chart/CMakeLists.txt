@@ -15,7 +15,6 @@ source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
 	Chart.h
 	LineChartSerie.h
-	ChartWidget.h
 	ChartDataSeries.h
 	ChartVisualizer.h
 	ChartSerie.h
@@ -29,8 +28,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 set(TARGET_SRC
 	Chart.cpp
 	LineChartSerie.cpp
-	ChartPlugin.cpp
-	ChartWidget.cpp	
+	ChartPlugin.cpp	
 	ChartDataSeries.cpp
 	ChartVisualizer.cpp
 	ChartSerie.cpp
@@ -38,7 +36,6 @@ set(TARGET_SRC
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 SET(TARGET_MOC_H
-ChartWidget.h
 ChartVisualizer.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
@@ -49,7 +46,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 SET(TARGET_UI
-	ui/ChartWidget.ui
+#pusto
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

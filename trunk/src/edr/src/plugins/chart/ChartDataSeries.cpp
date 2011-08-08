@@ -1,3 +1,4 @@
+#include "ChartPCH.h"
 #include "ChartDataSeries.h"
 
 
