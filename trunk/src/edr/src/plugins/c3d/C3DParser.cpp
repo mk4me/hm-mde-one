@@ -3,7 +3,7 @@
 #include "c3dParser.h"
 #include <string>
 #include <vector>
-#include <boost/program_options.hpp>
+//#include <boost/program_options.hpp>
 #include <c3dlib/c3dparser.h>
 #include <plugins/c3d/C3DChannels.h>
 
@@ -26,7 +26,7 @@ C3DParser::~C3DParser()
 {
 }
 
-void C3DParser::parseFile( core::IDataManager* dataManager, const boost::filesystem::path& path )
+void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesystem::Path& path )
 {
 	ParserPtr parser(new c3dlib::C3DParser());
 	parserPtr = parser;
@@ -95,7 +95,7 @@ void C3DParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 	objects.push_back(GRFs);
 }
 
-void C3DParser::saveFile( const boost::filesystem::path& path )
+void C3DParser::saveFile( const core::Filesystem::Path& path )
 {
 	if (parserPtr) {
 		parserPtr->save(path.string());

@@ -1,5 +1,4 @@
-#include "C3DPCH.h"
-#include <boost/algorithm/string.hpp>
+//#include "C3DPCH.h"
 #include <plugins/c3d/C3DChannels.h>
 
 C3DAnalogChannel::C3DAnalogChannel( int samplesPerSec ) :
@@ -25,15 +24,13 @@ ScalarChannel( static_cast<int>(c3dData.getNumberAnalogSamplePerFrame() * c3dDat
 	}
 		
     setName(analog->getLabel());
-    setYUnit(analog->getUnit());
-    setXUnit("s");
-    normalize();
+    setValueBaseUnit(analog->getUnit());
 }
 
 
 
 MarkerChannel::MarkerChannel(const c3dlib::C3DParser& data, int channelNo ) :
-DataChannel( data.getPointFrequency())
+VectorChannel( data.getPointFrequency())
 {
 	c3dlib::C3DParser::IPointConstPtr point = data.getPoint(channelNo);
 
