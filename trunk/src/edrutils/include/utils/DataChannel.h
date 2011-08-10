@@ -419,7 +419,7 @@ namespace utils {
         }
 
         //! \return Czas trwania kana³u
-        inline time_type getLength() const
+        virtual time_type getLength() const
         {
             if(empty() == true){
                 return 0;
@@ -431,13 +431,13 @@ namespace utils {
     public:
 
         //! \return Iloœæ próbek w kanale
-        inline size_type size() const
+        virtual size_type size() const
         {
             return indexedData.size();
         }
 
         //! \return Czy kana³ nie zawiera danych
-        inline bool empty() const
+        virtual bool empty() const
         {
             return indexedData.empty();
         }

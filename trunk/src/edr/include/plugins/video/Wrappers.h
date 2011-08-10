@@ -32,26 +32,26 @@ public:
 		UTILS_ASSERT("Unable to normalize VideoImage");
 		throw std::runtime_error("Unable to normalize VideoImage");
 	}
-	virtual VideoImageOsgPtr interpolate(const VideoImageOsgPtr& q1, const VideoImageOsgPtr& q2, float t) const
+	virtual void interpolate(VideoImageOsgPtr & ret, const VideoImageOsgPtr& q1, const VideoImageOsgPtr& q2, float t) const
 	{
-		return q1;
+		ret = q1;
 	}
 };
 
-class VideoChannel : utils::DataChannel<VideoImageOsgPtr, float, VideoManipulator>
+class VideoChannel : public utils::BaseChannel<VideoImageOsgPtr, float, VideoManipulator>
 {
 private:
 	mutable VideoStreamPtr videoStream;
 public:
 	VideoChannel(int samplesPerSecond, VideoStreamPtr video) :
-	DataChannel(samplesPerSecond) ,
+	BaseChannel(samplesPerSecond) ,
 	videoStream(video)
 	{}
 
 	virtual VideoChannel* clone() const
 	{
 		VideoStreamPtr v(new VideoStream(videoStream)); //videoStream->clone();
-		return new VideoChannel(this->getSamplesPerSec(), v);
+		return new VideoChannel(this->getSamplesPerSecond(), v);
 	}
 
 	virtual time_type getLength() const
@@ -59,20 +59,28 @@ public:
 		return videoStream->getDuration();
 	}
 	//! \return Liczba punktów pomiarowych.
-	virtual int getNumPoints() const
+	virtual size_type size() const
 	{
 		return videoStream->getFrameCount();
 	}
+
+    //! \return Czy kana³ nie zawiera danych
+    virtual bool empty() const
+    {
+        return videoStream->getFrameCount() == 0;
+    }
+
+protected:
 	
 	//! \param time
 	//! \return Zinterpolowana wartoœæ dla zadanego czasu.
-	virtual point_type getValue(time_type time) const
+	virtual point_type innerGetValue(time_type time) const
 	{
 		videoStream->setTime(time);
 		videoStream->getImage(vidlib::PixelFormatARGB);
 	}
 
-	virtual void addPoint(point_type point) 
+	virtual void innerAddPoint(time_type time, point_type_const_reference point) 
 	{
 		UTILS_ASSERT(false);
 	}
