@@ -31,7 +31,11 @@ private:
     //! Nazwa uzupe³niona o przyrostek.
     QString uiName;
 
+    //! Serie danych utrworzone przez u¿ytkownika
     DataSeries dataSeries;
+
+    //! Serie danych o charakterze czasowym wystêpuj¹ce w timeline
+    DataSeries timelineDataSeries;
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w³asnoœæ.
@@ -66,6 +70,8 @@ public:
     int getMaxSeries() const;
 
     const DataSeries & getDataSeries() const;
+
+    const DataSeries & getTimelineDataSeries() const;
 
     const core::VisualizerSeriePtr & createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name);
 

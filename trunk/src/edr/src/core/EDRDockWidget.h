@@ -35,6 +35,9 @@ public slots:
     EDRTitleBar * getTitleBar();
     const EDRTitleBar * getTitleBar() const;
 
+    bool isPermanent() const;
+    void setPermanent(bool permanent);
+
 private slots:
     void onTopLevelChange(bool topLevel);
 

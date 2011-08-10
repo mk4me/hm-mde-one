@@ -169,7 +169,7 @@ void VisualizerWidget::init()
     connect( this, SIGNAL(topLevelChanged(bool)), buttonSplitV, SLOT(setHidden(bool)));
 
     // niszczymy przy zamykaniu, nie chowamy!
-    setAttribute(Qt::WA_DeleteOnClose, true);
+    setPermanent(false);
 
     //ALL old visualizer elements
 
@@ -544,6 +544,8 @@ void VisualizerWidget::innerRemoveAllSeries()
     }
 
     clearDataSeries();
+
+    setPermanent(false);
 }
 
 void VisualizerWidget::sourceSelected()
@@ -594,11 +596,9 @@ void VisualizerWidget::sourceSelected()
 
             currentSeriesData[lastSerie.second] = serie;
             groupedSeriesData[td.first].insert(lastSerie.second);
-
         }
     }else{
         //usuñ seriê
-
         auto it = currentSeriesData.find(td.second);
 
         groupedSeriesData[td.first].erase(it->first);
@@ -616,6 +616,8 @@ void VisualizerWidget::sourceSelected()
             actionNone->blockSignals(false);
         }
     }
+
+    //setPermanent(visualizer->getTimelineDataSeries().empty() == false);
 
     visualizerWidget->update();
 }

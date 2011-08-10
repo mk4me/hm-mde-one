@@ -83,6 +83,7 @@ find_package(KinematicLib)
 find_package(c3dlib)
 find_package(dfmlib)
 find_package(vdfmlib)
+find_package(TimelineLib)
 find_package(TESTNODEFACTORY)
 find_package(prerequisites)
 # Biblioteczne wyszukanie OGL;

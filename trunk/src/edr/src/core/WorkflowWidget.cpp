@@ -98,6 +98,10 @@ void WorkflowCustomQOSGWidget::mousePressEvent(QMouseEvent * event)
             try{
                 WorkflowItemPtr item(workflowWidget->actionsItemBuilders[workflowWidget->currentAction]());
 
+                if(item == nullptr){
+                    return;
+                }
+
                 dflm::DFNPtr node;
                 //obuduj wezel
                 if(dynamic_cast<InputDescription*>(item.get()) == nullptr){

@@ -14,7 +14,6 @@
 #include <core/IIdentifiable.h>
 #include <core/IObjectSource.h>
 #include <core/ObjectWrapper.h>
-#include <core/PluginCommon.h>
 #include <core/IInputProcessItem.h>
 
 class QObject;

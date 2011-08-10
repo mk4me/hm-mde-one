@@ -9,46 +9,41 @@
 #ifndef HEADER_GUARD_TIMELINE__VIEW_H__
 #define HEADER_GUARD_TIMELINE__VIEW_H__
 
+#include <timelinelib/Types.h>
+#include <timelinelib/State.h>
+#include <utils/ObserverPattern.h>
 #include <utils/Debug.h>
 
 namespace timeline{
 
-class IController;
-
-class View
+class View : public utils::Observer<State>
 {
 public:
-    //! Aktualizuje w widoku wizualn¹ reprezentacjê stryktury kana³ów ( po dodaniu, usuniêciu kana³u )
-    virtual void updateViewChannelsStructure() = 0;
-
-    //! Aktualizuje w widoku wizualn¹ reprezentacjê tagów ( po dodaniu, usuniêciu, edycji czasu )
-    virtual void updateViewTagsStructure() = 0;
-
-    //! Odœwie¿a ca³y widok
-    virtual void refreshAll() = 0;
 
     //! \return Kontroler z którym wspó³pracuje widok
-    IController * getController()
+    const ControllerPtr & getController()
     {
         return controller;
     }
 
     //! \return Kontroler z którym wspó³pracuje widok
-    const IController * getController() const
+    const ControllerConstPtr & getController() const
     {
-        return controller;
+        return constController;
     }
 
     //! \param controller Kontroler z którym wspó³pracuje widok
-    void setController(IController * controller)
+    void setController(const ControllerPtr & controller)
     {
         UTILS_ASSERT((controller != nullptr), "B³êdny kontroler");
-        this->controller = controller;
+        this->constController = this->controller = controller;
     }
 
 private:
     //! Kontroler z któym wspó³pracuje widok
-    IController * controller;
+    ControllerPtr controller;
+    //! Kontroler z któym wspó³pracuje widok
+    ControllerConstPtr constController;
 };
 
 }

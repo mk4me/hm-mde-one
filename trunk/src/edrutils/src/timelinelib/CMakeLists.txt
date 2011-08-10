@@ -36,7 +36,6 @@ set(TARGET_SRC
 	Model.cpp
 	Tag.cpp
 	Controller.cpp
-	View.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

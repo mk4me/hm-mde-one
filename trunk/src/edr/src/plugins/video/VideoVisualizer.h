@@ -16,6 +16,7 @@
 #include <plugins/video/Wrappers.h>
 #include <osgui/QOsgWidgets.h>
 #include <osgui/OsgWidgetUtils.h>
+#include <timelinelib/IChannel.h>
 
 //! Wizualizator wykresów.
 class VideoVisualizer : public core::IVisualizer
@@ -47,9 +48,9 @@ private:
     //! Bie¿¹cy obrazek.
     osg::ref_ptr<vidlib::VideoImage> streamImage;
 
-public:
+private:
 
-    class VideoSerie : public core::IVisualizer::SerieBase
+    class VideoSerie : public core::IVisualizer::SerieBase, public timeline::IChannel
     {
     public:
         VideoSerie(VideoVisualizer * visualizer)
@@ -82,9 +83,35 @@ public:
             visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
         }
 
+        //! \return Sklonowane dane w kanale
+        virtual timeline::IChannelPtr clone() const
+        {
+            //! NIE WSPIERAMY TUTAJ KLONOWANIA!!
+            return timeline::IChannelPtr();
+        }
+
+        //! \return Dlugosc kanalu w sekundach
+        virtual double getLength() const
+        {
+            return visualizer->stream->getDuration();
+        }
+
+        //! Czas zawiera siê miêdzy 0 a getLength()
+        //! \param time Aktualny, lokalny czas kanalu w sekundach
+        virtual void setTime(double time)
+        {
+            osg::const_pointer_cast<VideoStream>(visualizer->stream)->setTime(time);
+            visualizer->streamImage = visualizer->stream->getImage(vidlib::PixelFormatRGB24);
+            visualizer->widget->setTexture( visualizer->stream->getTexture(visualizer->streamImage->getFormat(), visualizer->useTextureRect), true, visualizer->useTextureRect );
+            osgui::correctTexCoords(visualizer->widget, visualizer->streamImage);
+            visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
+        }
+
     private:
         VideoVisualizer * visualizer;
     };
+
+    friend class VideoSerie;
 
 public:
     //!

@@ -11,6 +11,7 @@
 
 #include <OpenThreads/Thread>
 #include <OpenThreads/Mutex>
+#include <OpenThreads/ReentrantMutex>
 #include <OpenThreads/ScopedLock>
 
 #include <timelinelib/Types.h>
@@ -46,13 +47,6 @@ public:
     //! \return Aktualny model kontrolera
     virtual const ModelConstPtr & getModel() const = 0;
 
-    //! \param view Widok kontrolera
-    virtual void setView(const ViewPtr & view) = 0;
-    //! \return Aktualny widok kontrolera
-    virtual const ViewPtr & getView() = 0;
-    //! \return Aktualny widok kontrolera
-    virtual const ViewConstPtr & getView() const = 0;
-
     //------------------------------- Konfiguracja aktualizacji czasu -----------------------
 
     //! \param timeUpdateMode Sposób aktualizacji czasu
@@ -74,6 +68,9 @@ public:
 
     //! Wstrzymuje odtwarzanie timeline
     virtual void pause() = 0;
+
+    //! Zatrzymuje odtwarzanie, wraca do "pocz¹tku" - w zale¿noœci od kierunku odtwarzania
+    //virtual void stop() = 0;
 
     //! \return Czy timeline jest odtwarzany
     virtual bool isPlaying() const = 0;
@@ -118,13 +115,21 @@ public:
 
     //! \param path Sciezka nowego kanalu
     //! \param channel fatyczny kanal dotarczony przez klienta
-    virtual void addChannel(const std::string & path, const IChannelPtr & channel = IChannelPtr()) = 0;
+    virtual void addChannel(const std::string & path, const IChannelPtr & channel) = 0;
+
+    //! \param channels Kana³y do dodawnia w formie œciezka -> kana³, kana³ nie powiniem byæ nullptr
+    virtual void addChannels(const std::map<std::string, IChannelPtr> & channels) = 0;
 
     //! \param path Sciezka kanalu do usuniecia
     virtual void removeChannel(const std::string & path) = 0;
+
+    virtual void removeChannels(const std::set<std::string> & paths) = 0;
+
+    virtual void setChannelActive(const std::string & path, bool active) = 0;
+
 };    
 
-class Controller : public IController
+class Controller : public IController, public OpenThreads::ReentrantMutex
 {
 protected:
 
@@ -153,11 +158,13 @@ private:
             while(true){
                 {
                     // czy nie ma pauzy
-                    ScopedLock (controller->pauseMutex);
+                    ScopedLock(controller->pauseMutex);
                 }
                 
                 //aktualizujemy czas
-                controller->setNextTime(delay);
+                if(controller->setNextTime(delay) == true){
+                    return;
+                }
                     
                 //zasypiamy
                 OpenThreads::Thread::microSleep(delay);
@@ -196,11 +203,6 @@ private:
     //! Model logiczny timeline w wersji const
     ModelConstPtr constModel;
 
-    //! Widok timeline
-    ViewPtr view;
-    //! Widok timeline w wersji const
-    ViewConstPtr constView;
-
     //! Wewnêtrzny timer
     TimerPtr timer;
 
@@ -211,10 +213,10 @@ private:
     PlaybackDirection playbackDirection;
 
     //! Mutex do synchronizacji edycji modelu (struktura kana³ów)
-    OpenThreads::Mutex modelMutex;
+    OpenThreads::ReentrantMutex modelMutex;
     
     //! Mutex do edycji odtwarzania timeline
-    mutable OpenThreads::Mutex stateMutex;
+    mutable OpenThreads::ReentrantMutex stateMutex;
 
     //! Mutex do zarzadzania odtwarzaniem timeline - wstrzymywania go
     OpenThreads::Mutex pauseMutex;
@@ -234,26 +236,21 @@ private:
     //! Generator nowego czasu dla timera
     TimeGenerator timeGenerator;
 
+    //! Informacja czy jawnie zapauzowano odtwarzanie czy osi¹gniêto limit czasu (true - pauza, false - limit czasu)
+    bool paused;
+
 public:
 
-    Controller(const ViewPtr & view);
+    Controller();
     virtual ~Controller();
 
     //------------------------------- Konfiguracja kontrolera ------------------------------
 
     //! \param model Model do ustawienia w kontrolerze
-    virtual void setModel(const timeline::ModelPtr & model);
-    //! \return Aktualny model kontrolera
-    virtual const ModelPtr & getModel();
+    //virtual void setModel(const timeline::ModelPtr & model);
+
     //! \return Aktualny model kontrolera
     virtual const ModelConstPtr & getModel() const;
-
-    //! \param view Widok kontrolera
-    virtual void setView(const ViewPtr & view);
-    //! \return Aktualny widok kontrolera
-    virtual const ViewPtr & getView();
-    //! \return Aktualny widok kontrolera
-    virtual const ViewConstPtr & getView() const;
 
     //------------------------------- Konfiguracja aktualizacji czasu -----------------------
 
@@ -276,6 +273,8 @@ public:
 
     //! Wstrzymuje odtwarzanie timeline
     virtual void pause();
+
+    //virtual void stop();
 
     //! \return Czy timeline jest odtwarzany
     virtual bool isPlaying() const;
@@ -320,10 +319,20 @@ public:
 
     //! \param path Sciezka nowego kanalu
     //! \param channel fatyczny kanal dotarczony przez klienta
-    virtual void addChannel(const std::string & path, const IChannelPtr & channel = IChannelPtr());
+    virtual void addChannel(const std::string & path, const IChannelPtr & channel);
+
+    //! \param channels Kana³y do dodawnia w formie œciezka -> kana³, kana³ nie powiniem byæ nullptr
+    virtual void addChannels(const std::map<std::string, IChannelPtr> & channels);
 
     //! \param path Sciezka kanalu do usuniecia
     virtual void removeChannel(const std::string & path);
+
+    virtual void removeChannels(const std::set<std::string> & paths);
+
+    //! \param path Sciezka do kanalu
+    //! \param active Czy kanal jest aktywny podczas operacji czasowych (odtwarzanie timeline)
+    virtual void setChannelActive(const std::string & path, bool active);
+
 
 private:
 
@@ -351,7 +360,7 @@ private:
     static double backwardTimeUpdate(Controller * controller, unsigned long int realTimeDelta);
 
     //! \param realTimeDelta Rzeczywisty krok czasu w milisekundach    
-    //! \return Czy osiagniêto kraniec czasu
+    //! \return Informacja czy osi¹gniêto/przekroczono limit czasu timeline
     bool setNextTime(unsigned long int realTimeDelta);
 };
 

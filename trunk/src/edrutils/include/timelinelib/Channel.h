@@ -101,7 +101,7 @@ public:
     //! \param maskBegin Poczatek maski - wiekszy lub rowny 0
     void setMaskBegin(double maskBegin);
 
-    //! \param maskLength Dlugosc maski - 0 <= maskLength <= channel length
+    //! \param maskLength Dlugosc maski - maskBegin + maskLength <= channel length
     void setMaskLength(double maskLength);
 
     //! \param maskEnd Koniec maski - mniejszy lub rowny length

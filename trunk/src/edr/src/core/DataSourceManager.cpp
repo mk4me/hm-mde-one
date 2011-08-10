@@ -51,7 +51,10 @@ DataSourcePtr DataSourceManager::createDataSource( const IDataSourceConstPtr& pr
     IDataSource* src = dynamic_cast<IDataSource*>(prototype->createClone());
     QDialog * dialog = src->getOutputConfigurationDialog();
     if(dialog != nullptr){
-        dialog->exec();
+        QMessageBox::StandardButton ret = (QMessageBox::StandardButton)dialog->exec();
+        if(ret == QMessageBox::Cancel){
+            DataSourcePtr();
+        }
     }
 
     //test czy jakieœ dane wyjsciowe dostepne
@@ -59,7 +62,8 @@ DataSourcePtr DataSourceManager::createDataSource( const IDataSourceConstPtr& pr
     src->getOutputInfo(output);
 
     if(output.empty() == true){
-        throw std::runtime_error(std::string("Source: ") + src->getName() + std::string(" ID: ") + boost::lexical_cast<std::string>(src->getID()) + std::string(" created without any outputs!"));
+        //throw std::runtime_error(std::string("Source: ") + src->getName() + std::string(" ID: ") + boost::lexical_cast<std::string>(src->getID()) + std::string(" created without any outputs!"));
+        return DataSourcePtr();
     }
     
     DataSourcePtr result(new DataSource(src));

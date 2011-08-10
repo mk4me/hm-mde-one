@@ -8,7 +8,6 @@
 #include <osg/Timer>
 #include <core/PluginCommon.h>
 
-class IModel;
 class core::IDataManager;
 
 class ServiceManager: public core::IServiceManager

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TimelineWidget</class>
+ <widget class="QWidget" name="TimelineWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>635</width>
+    <height>220</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Timeline</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTreeWidget" name="channelsWidget">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::SelectedClicked</set>
+     </property>
+     <property name="showDropIndicator" stdset="0">
+      <bool>false</bool>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::MultiSelection</enum>
+     </property>
+     <attribute name="headerDefaultSectionSize">
+      <number>70</number>
+     </attribute>
+     <attribute name="headerMinimumSectionSize">
+      <number>30</number>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Active</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Channel</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Timeline</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="visualTimeSlider">
+     <property name="maximum">
+      <number>10000</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TicksBelow</enum>
+     </property>
+     <property name="tickInterval">
+      <number>100</number>
+     </property>
+    </widget>
+   </item>
+  </layout>
+  <action name="actionRemoveChannels">
+   <property name="text">
+    <string>Remove channels</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../../../core/ui/Icons.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionRemoveChannels</sender>
+   <signal>triggered()</signal>
+   <receiver>TimelineWidget</receiver>
+   <slot>removeSelectedChannels()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>317</x>
+     <y>109</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>channelsWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>TimelineWidget</receiver>
+   <slot>showChannelsTreeContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>317</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>317</x>
+     <y>109</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>visualTimeSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TimelineWidget</receiver>
+   <slot>timeSliderChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>317</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>317</x>
+     <y>109</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <signal>offsetChanged(double)</signal>
+  <signal>timeChanged(double)</signal>
+  <signal>lengthChanged(double)</signal>
+  <slot>timeSliderChanged(int)</slot>
+  <slot>removeSelectedChannels()</slot>
+  <slot>setTime(double)</slot>
+  <slot>showChannelsTreeContextMenu(QPoint)</slot>
+  <slot>timeChanged(QTime)</slot>
+  <slot>scaleChanged(double)</slot>
+  <slot>playbackDirectionChanged(int)</slot>
+  <slot>toBegin()</slot>
+  <slot>toEnd()</slot>
+  <slot>play(bool)</slot>
+  <slot>stop()</slot>
+ </slots>
+</ui>

@@ -8,7 +8,7 @@ namespace timeline{
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Konstruktor zerujacy
-Model::Model(const std::string & name) : root(new TChannel(name)), constRoot(root)
+Model::Model(const std::string & name) : root(new TChannel(name)), constRoot(root) //, latestChange(NoChange)
 {
 
 }
@@ -26,6 +26,7 @@ const State & Model::getState() const
 void Model::setState(const State & state)
 {
     this->state = state;
+    setTimeScale(state.timeScaleFactor);
     setTime(state.time);
 }
 
@@ -54,9 +55,19 @@ double Model::getLength() const
     return constRoot->getData()->getLength();
 }
 
+double Model::getBeginTime() const
+{
+    return getOffset();
+}
+
+double Model::getEndTime() const
+{
+    return getOffset() + getLength();
+}
+
 double Model::getTime() const
 {
-    return constRoot->getData()->getTime();
+    return constRoot->getData()->getTime() - getOffset();
 }
 
 double Model::getTimeScale() const
@@ -92,10 +103,10 @@ void Model::setMaskEnd(double maskEnd)
 
 void Model::setTime(double time)
 {
-    double t = time + constRoot->getData()->getGlobalOffset();
+    double t = time;// + getOffset();
 
     //zapewnia ze root zawsze ma ostatni czas dla ktorego aktualizowano model, dzieci niekoniecznie sa z nim zgodne
-    getWritableChannel(constRoot)->setTime(t);
+    //root->getData()->setTime(t);
 
     std::stack<TChannelConstPtr> path;
     std::stack<NamedTreeBase::size_type> pathPos;
@@ -144,7 +155,7 @@ void Model::setNormalizedTime(double normTime)
 double Model::getNormalizedTime() const
 {
     double length = getLength();
-    return length == 0 ? 0 : getTime() - getOffset() / length;
+    return length == 0 ? 0 : getTime() / length;
 }
 
 void Model::setTimeScale(double timeScale)
@@ -232,17 +243,48 @@ void Model::addChannel(const std::string & path, const IChannelPtr & channel)
 { 
     UTILS_ASSERT((channel != nullptr && channel->getLength() >= 0), "Nieprawidlowy kanal");
 
+    //TODO
+    //aktualizacja czasu w dó³ œciezki a¿ do dodawanego kana³u
+
     root->addChild(path);
     TChannelConstPtr tChild(getChannel(path));
     ChannelPtr child(getWritableChannel(tChild));
     child->setInnerChannel(channel);
+
     if(channel->getLength() > 0){
+        child->setMaskLength(child->getLength());
         updateParentLength(toTChannel(tChild->getParent()), tChild);
     }
 
     state.length = getLength();
 
     notify();
+}
+
+
+void Model::addChannels(const std::map<std::string, IChannelPtr> & channels)
+{
+    if(channels.empty() == false){
+        for(auto it = channels.begin(); it != channels.end(); it++){
+            if(it->second == nullptr || findChannel(it->first) != nullptr || iChannels.find(it->second) != iChannels.end()){
+                throw std::runtime_error("Channel path exist, channel already added or nullptr to channel");
+            }
+        }
+
+        for(auto it = channels.begin(); it != channels.end(); it++){
+            root->addChild(it->first);
+            TChannelConstPtr tChild(getChannel(it->first));
+            ChannelPtr child(getWritableChannel(tChild));
+            child->setInnerChannel(it->second);
+            if(it->second->getLength() > 0){
+                updateParentLength(toTChannel(tChild->getParent()), tChild);
+            }
+        }
+
+        state.length = getLength();
+
+        notify();
+    }
 }
 
 void Model::removeChannel(const std::string & path)
@@ -252,6 +294,35 @@ void Model::removeChannel(const std::string & path)
     state.length = getLength();
 
     notify();
+}
+
+void Model::removeChannels(const std::set<std::string> & paths)
+{
+    if(paths.empty() == false){
+        for(auto it = paths.begin(); it != paths.end(); it++){
+            if(findChannel(*it) == nullptr){
+                throw std::runtime_error("Not present in model");
+            }
+        }
+
+        auto it = paths.begin();
+        std::string lastChannel = *it;
+        innerRemoveChannel(getChannel(lastChannel));
+
+        it++;
+
+        for(; it != paths.end(); it++){
+            //mamy hierarchiê kana³ów - nie ma sensu usuwaæ kana³ów z ni¿szych warstw jeœli usuwamy te z wy¿szych
+            if((*it).find(lastChannel) != 0){
+                lastChannel = *it;
+                innerRemoveChannel(getChannel(lastChannel));
+            }
+        }
+
+        state.length = getLength();
+
+        notify();
+    }
 }
 
 Model::channel_const_iterator Model::beginChannels() const
@@ -562,7 +633,15 @@ void Model::updateParentLength(const Model::TChannelConstPtr & parent, const TCh
     //czy dziecko dluzsze od rodzica
     if(child->getData()->getLocalOffset() + child->getData()->getLength() > parent->getData()->getLength()){
         //rozszerz rodzica, idz wyzej
+        bool maskUpdate = false;
+        if(parent->getData()->getLength() == parent->getData()->getMaskEnd()){
+            maskUpdate = true;
+        }
+
         getWritableChannel(parent)->setLength(child->getData()->getLocalOffset() + child->getData()->getLength());
+        if(maskUpdate == true || parent->getData()->getMaskLength() == 0){
+            getWritableChannel(parent)->setMaskEnd(parent->getData()->getLength());
+        }
         goUp = true;
     }else{
         goUp = refreshChannelLength(parent);
@@ -584,7 +663,14 @@ bool Model::refreshChannelLength(const Model::TChannelConstPtr & channel)
     }
 
     if(l != channel->getData()->getLength()){
+        bool maskUpdate = false;
+        if(channel->getData()->getLength() == channel->getData()->getMaskEnd()){
+            maskUpdate = true;
+        }
         getWritableChannel(channel)->setLength(l);
+        if(maskUpdate == true ||channel->getData()->getMaskLength() == 0){
+            getWritableChannel(channel)->setMaskEnd(l);
+        }
         ret = true;
     }
 

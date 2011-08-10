@@ -18,6 +18,27 @@ class Model : public utils::Observable<Model>
 {
 public:
 
+    //enum ModifificationType {
+    //    NoCHange            = 0x00000000,   //! Nic nie zmianiono w modelu od ostatniego powiadomienia
+    //    ChannelAdd          = 0x00000001,   //! Dodano kana³/y do modelu
+    //    ChannelRemove       = 0x00000002,   //! Usuniêto kana³y z modelu
+    //    ChannelSplit        = 0x00000004,   //! Rozdzielono kana³ (usuniêto jeden kana³ i dodano 2 nowe)
+    //    ChannelMerge        = 0x00000008,   //! Po³¹czono kana³y (usuniêto dwa kana³y dodano jeden nowy)
+    //    ActiveChange        = 0x00000010,   //! Kana³ zmieni³ stan aktywnoœci
+    //    MaskChange          = 0x00000020,   //! Maska kana³u siê zmieni³a
+    //    CurrentTimeChange   = 0x00000040,   //! Zmieni³ siê aktualny czas
+    //    OffsetChange        = 0x00000080,   //! Zmieni³ siê offset kana³u
+    //    ScaleChange         = 0x00000100,   //! Zmieni³a siê skala kana³u
+    //    TagAdd              = 0x00000200,   //! Dodano tag
+    //    TagRemove           = 0x00000400,   //! Usuniêto tag
+    //    TagChange           = 0x00000800    //! Zmianiono tag (przesuniêto go, zmianiono czas jego trwania)
+    //};
+
+    //! Zbiór wszystkich kana³ów w modelu
+    //typedef std::set<IChannelConstPtr> Channels;
+
+    //typedef Channels::const_iterator channels_
+
     //! Forward declartation
     class TChannel;
     typedef boost::shared_ptr<TChannel> TChannelPtr;
@@ -67,6 +88,8 @@ private:
     //! Typ œcie¿ki w formacie œcie¿ka/liœæ
     typedef std::pair<std::string, std::string> ExtPath;
 
+    typedef std::set<IChannelPtr> IChannels;
+
 private:
 
     //! Wszystkie tagi wystepujace w timeline
@@ -87,12 +110,23 @@ private:
     //! Aktualny stan modelu
     State state;
 
+    ////! Ostatnie zmiany w modelu dla których wywo³ano notify - wa¿ne tylko podczas notify, potem s¹ resetowane!!
+    //int latestChanges;
+
+    IChannels iChannels;
+
 public:
 
     //! Konstruktor zerujacy
     Model(const std::string & name = "DefaultModel");
 
     ~Model();
+
+    ////! Powiadamianie z kasowaniem ostatnich zmian
+    //virtual void notify();
+
+    ////! \return Ostatnie zmiany w modelu
+    //int getLatestChanges() const;
 
     //! \return Stan modelu
     const State & getState() const;
@@ -114,6 +148,12 @@ public:
 
     //! \return Dlugosc kanalu w sekundach, uwzgledniajac skale
     double getLength() const;
+
+    //! \return Czas poczatku w timeline
+    double getBeginTime() const;
+
+    //! \return Czas koñca w timeline
+    double getEndTime() const;
 
     //! \return Aktualny czas kanalu
     double getTime() const;
@@ -200,15 +240,21 @@ public:
 
     //! \param path Sciezka nowego kanalu
     //! \param channel fatyczny kanal dotarczony przez klienta
-    void addChannel(const std::string & path, const IChannelPtr & channel = IChannelPtr());
+    void addChannel(const std::string & path, const IChannelPtr & channel);
+
+    //! \param channels Kana³y do dodawnia w formie œciezka -> kana³, kana³ nie powiniem byæ nullptr
+    void addChannels(const std::map<std::string, IChannelPtr> & channels);
 
     //! \param path Sciezka kanalu do usuniecia
     void removeChannel(const std::string & path);
 
-    //! \return pierwszy kanal timeline
+    //! \param paths Sciezki kanalów do usuniecia
+    void removeChannels(const std::set<std::string> & paths);
+
+    //! \return Pierwszy kanal timeline
     channel_const_iterator beginChannels() const;
     
-    //! \return koniec kanalow timeline
+    //! \return Koniec kanalow timeline
     channel_const_iterator endChannels() const;
 
     //! \param idx Indeks kanalu w timeline

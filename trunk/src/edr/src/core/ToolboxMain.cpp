@@ -21,7 +21,6 @@
 #include "ServiceManager.h"
 #include "DataProcessorManager.h"
 #include "DataSourceManager.h"
-//#include <core/C3DParserEx.h>
 #include "UserInterfaceService.h"
 //#include "config/ConfigurationFileService.h"
 #include "EDRConfig.h"
@@ -41,9 +40,7 @@
 #include "VisualizerWidget.h"
 
 #include <core/Visualizer.h>
-//#include <core/C3DChannels.h>
 
-//#include <core/Chart.h>
 #include <osgWidget/ViewerEventHandlers>
 
 #include <osgui/EventCallback.h>
@@ -56,8 +53,6 @@
 #include "DataProcessor.h"
 
 #include <core/EDRDockWidget.h>
-
-//#include <plugins/c3d/C3DChannels.h>
 
 #include "WorkflowService.h"
 #include "WorkflowWidget.h"

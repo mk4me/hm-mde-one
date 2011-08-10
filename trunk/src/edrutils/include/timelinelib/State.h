@@ -27,6 +27,8 @@ public:
     double timeScaleFactor;
     //! Czy timeline jest odtwarzany
     bool isPlaying;
+    //! Offset timeline
+    double offset;
 };
 
 #endif  //  HEADER_GUARD_TIMELINE__STATE_H__

@@ -1,32 +1,28 @@
 /********************************************************************
-	created:  2010/10/07
-	created:  7:10:2010   12:06
-	filename: TimelineService.h
-	author:	  Piotr Gwiazdowski
-	
-	purpose:  
+    created:  2011/08/08
+    created:  8:8:2011   8:05
+    filename: TimelineService.h
+    author:   Mateusz Janiak
+    
+    purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD__TIMELINESERVICE_H__
-#define __HEADER_GUARD__TIMELINESERVICE_H__
+#ifndef HEADER_GUARD_TIMELINE__TIMELINESERVICE_H__
+#define HEADER_GUARD_TIMELINE__TIMELINESERVICE_H__
 
 #include <core/IService.h>
-#include <plugins/timeline/Stream.h>
-#include <plugins/timeline/Controller.h>
-#include <plugins/timeline/ITimelineClient.h>
-#include <plugins/timeline/ITimeline.h>
+#include <timelinelib/IChannel.h>
+#include <timelinelib/Controller.h>
 
 class TimelineWidget;
 
-class TimelineService : public ITimeline, public core::IService
+class TimelineService : public core::IService
 {
-    UNIQUE_ID("{0157346E-D0F3-4A4F-854F-37C87FA3E5F9}", "Timeline Service");
+    UNIQUE_ID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}", "newTimeline Service");
 private:
-    //! Model timeline'a.
-    timeline::Controller* controller;
     //! Widget.
     TimelineWidget* widget;
-    //! Czy wykonuje siê seeka?
-    bool seekRequested;
+    //! Model timeline'a.
+    timeline::ControllerPtr controller;
     //!
     std::string name;
 
@@ -43,18 +39,11 @@ public:
     //!
     virtual QWidget* getControlWidget(std::vector<QObject*>& actions);
     //!
-    virtual void lateUpdate(double time, double timeDelta);
-    //!
-    virtual void update(double time, double timeDelta);
-    //!
     virtual const std::string& getName() const;
 
-// ITimeline
 public:
     //! \param stream Strumieñ do dodania.
-    virtual void addStream(timeline::StreamPtr stream);
-    //! \param stream Strumieñ do usuniêcia.
-    virtual void removeStream(timeline::StreamPtr stream);
+    virtual void addChannel(const std::string & path, const timeline::IChannelPtr & channel);
     //! \return true je¿eli timeline sam siê odtwarza.
     virtual bool isPlaying() const;
     //!
@@ -71,28 +60,24 @@ public:
 public:
 
     //! \return Kontroler.
-    inline timeline::Controller* getController()
+    inline timeline::IController* getController()
     {
-        return controller;
+        return controller.get();
     }
     //! \return Kontroler.
-    inline const timeline::Controller* getController() const
+    inline const timeline::IController* getController() const
     {
-        return controller;
+        return controller.get();
     }
 
-    //! \return true je¿eli za¿yczono sobie seeka, ale jeszcze nie uda³o siê go wykonaæ.
-    inline bool isSeekRequested() const
-    { 
-        return seekRequested;
-    }
     //! Metodê tê nale¿y wywo³aæ z parametrem true je¿eli nadaje siê nowy czas timeline'a, a nie chce
     //! siê, aby nastêpowa³a automatyczna inkremetnacja czasu zanim dekodery osi¹gn¹ zadany punkt czasowy.
     //! \param seekRequested true je¿eli za¿yczono sobie seeka, ale jeszcze nie uda³o siê go wykonaæ.
-    void setSeekRequested(bool seekRequested);
-
+    //void setSeekRequested(bool seekRequested);
 
 };
+
+typedef core::shared_ptr<TimelineService> TimelinePtr;
 
 
 #endif  // __HEADER_GUARD__TIMELINESERVICE_H__

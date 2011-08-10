@@ -32,22 +32,6 @@ typedef boost::shared_ptr<const Channel> ChannelConstPtr;
 typedef boost::weak_ptr<const Channel> ChannelConstWPtr;
 typedef std::vector<ChannelConstPtr> ConstChannels;
 
-//class SelectionBase;
-//typedef boost::shared_ptr<SelectionBase> SelectionPtr;
-//typedef boost::weak_ptr<SelectionBase> SelectionWPtr;
-//typedef std::vector<SelectionPtr> Selections;
-//
-//class TagSelection;
-//typedef boost::shared_ptr<TagSelection> TagSelectionPtr;
-//typedef boost::weak_ptr<TagSelection> TagSelectionWPtr;
-//
-//typedef boost::shared_ptr<const TagSelection> TagSelectionConstPtr;
-//typedef boost::weak_ptr<const TagSelection> TagSelectionConstWPtr;
-//
-//typedef boost::shared_ptr<const SelectionBase> SelectionConstPtr;
-//typedef boost::weak_ptr<const SelectionBase> SelectionConstWPtr;
-//typedef std::vector<SelectionConstPtr> ConstSelections;
-
 class Tag;
 typedef boost::shared_ptr<Tag> TagPtr;
 typedef boost::weak_ptr<Tag> TagWPtr;
@@ -71,11 +55,11 @@ typedef boost::weak_ptr<View> ViewWPtr;
 typedef boost::shared_ptr<const View> ViewConstPtr;
 typedef boost::weak_ptr<const View> ViewConstWPtr;
 
-class Controller;
-typedef boost::shared_ptr<Controller> ControllerPtr;
-typedef boost::shared_ptr<const Controller> ControllerConstPtr;
-typedef boost::weak_ptr<Controller> ControllerWPtr;
-typedef boost::weak_ptr<const Controller> ControllerConstWPtr;
+class IController;
+typedef boost::shared_ptr<IController> ControllerPtr;
+typedef boost::shared_ptr<const IController> ControllerConstPtr;
+typedef boost::weak_ptr<IController> ControllerWPtr;
+typedef boost::weak_ptr<const IController> ControllerConstWPtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace timeline

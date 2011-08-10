@@ -14,7 +14,7 @@
 #define HEADER_GUARD_UTILS__SYNCHRONIZED_H__
 
 #include <boost/type_traits/is_scalar.hpp>
-#include <boost/thread/mutex.hpp>
+#include <utils/SynchronizationPolicies.h>
 
 namespace utils 
 {
@@ -26,7 +26,7 @@ namespace utils
         SynchronizedImpl(const T &x) : T(x) { }
     };
 
-    template<typename T>
+    template<class T>
     class SynchronizedImpl<T, true>
     {
     public:
@@ -40,16 +40,16 @@ namespace utils
         T x_;
     };
 
-    template<typename T>
+    template<class T, class SynchPolicy>
     class Synchronized :
-        public SynchronizedImpl<T, boost::is_scalar<T>::value>, public boost::mutex
+        public SynchronizedImpl<T, boost::is_scalar<T>::value>, public SynchPolicy
     {
     private:
         typedef SynchronizedImpl<T, boost::is_scalar<T>::value> base;
 
     public:
-        Synchronized() : base(), boost::mutex() { }
-        explicit Synchronized(const T &x) : base(x), boost::mutex() { }
+        Synchronized() : base() { }
+        explicit Synchronized(const T &x) : base(x) { }
 
         Synchronized &operator= (const T &rhs)
         {
@@ -59,15 +59,16 @@ namespace utils
         }
     };
 
+    template<class T>
     class _Locker {
     public:
-        _Locker(boost::mutex& m) : m_(m) { m_.lock(); run_ = true; }
-        _Locker(boost::mutex& m, int) : m_(m) { run_ = m_.try_lock(); }
+        _Locker(T& m) : m_(m) { m_.lock(); run_ = true; }
+        _Locker(T& m, int) : m_(m) { run_ = m_.try_lock(); }
         ~_Locker() { m_.unlock(); }
         bool _run() { return run_; }
         void _stop() { run_ = false; }
     private:
-        boost::mutex&   m_;
+        T&   m_;
         bool            run_;
     };
 

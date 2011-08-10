@@ -21,6 +21,7 @@
 #include <boost/function.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 
@@ -341,19 +342,19 @@ namespace utils {
         //! Typ aktualnego interfejsu
         typedef IBaseChannel<point_type, time_type> _MyChannelInterface;
 
+        //! Typ danych o charakterze czasowym - czas -> próbka
+        typedef std::pair<time_type, point_type> value_type;
         //! Typ przechowuj¹cy dane indeksowane po czasie
-        typedef std::map<time_type, point_type> TimeMappedData;
+        typedef std::vector<value_type> TimeData;
 
         //! Const iterator dla danych indeksowanych czasem
-        typedef typename TimeMappedData::const_iterator const_iterator;
+        typedef typename TimeData::const_iterator const_iterator;
         //! Const reverse iterator dla danych indeksowanych czasem
-        typedef typename TimeMappedData::const_reverse_iterator const_reverse_iterator;
-        //! Typ danych o charakterze czasowym - czas -> próbka
-        typedef typename TimeMappedData::value_type value_type;
+        typedef typename TimeData::const_reverse_iterator const_reverse_iterator;
         //! Const referencja do danych o charakterze czasowym
-        typedef typename TimeMappedData::const_reference const_reference;
+        typedef typename TimeData::const_reference const_reference;
         //! Typ iloœci elementów w kanale
-        typedef typename TimeMappedData::size_type size_type;
+        typedef typename TimeData::size_type size_type;
 
         //! Typ obserwatora dla kana³u o podanym interfejsie ( typach danych)
         typedef Observer<_MyChannelInterface> _MyObserverType;
@@ -363,18 +364,10 @@ namespace utils {
         typedef ChannelTimer<point_type, time_type> Timer;
         //! Inteligetny wskaŸnik na Timer
         typedef boost::shared_ptr<Timer> TimerPtr;
-    private:
-        //! Typ wpisu dla danych indexowanych (nie czasem a numerem próbki o charakterze czsaowym)
-        typedef const value_type* const_value_type_ptr;
-        //! Typ wpisu.
-        typedef std::vector<const_value_type_ptr> IndexedData;
 
     private:
         //! W³aœciwe dane indeksowane czasem
-        TimeMappedData dataMap;
-
-        //! Dane poindeksowane (referencje) wg hronologii
-        IndexedData data;
+        TimeData indexedData;
 
     public:
         //! Domyslny konstruktor na potrzeby klas pochodnych
@@ -386,11 +379,9 @@ namespace utils {
         //! Konstruktor kopiuj¹cy
         //! \param channel
         IBaseChannel(const IBaseChannel& channel) :
-        dataMap(channel.begin(), channel.end())
+        indexedData(channel.indexedData)
         {
-            for(auto it = dataMap.begin(); it != dataMap.end(); it++){
-                data.push_back(&*it);
-            }
+
         }
 
     public:
@@ -428,7 +419,7 @@ namespace utils {
         }
 
         //! \return Czas trwania kana³u
-        time_type getLength() const
+        inline time_type getLength() const
         {
             if(empty() == true){
                 return 0;
@@ -440,15 +431,15 @@ namespace utils {
     public:
 
         //! \return Iloœæ próbek w kanale
-        size_type size() const
+        inline size_type size() const
         {
-            return dataMap.size();
+            return indexedData.size();
         }
 
         //! \return Czy kana³ nie zawiera danych
-        bool empty() const
+        inline bool empty() const
         {
-            return dataMap.empty();
+            return indexedData.empty();
         }
 
         //! \return Czas punktu.
@@ -460,63 +451,35 @@ namespace utils {
 
         //! \return Indeks punktu.
         //! \return Wartoœæ na podstawie indeksu punktu czasowego.
-        const_reference operator[](size_type idx) const
+        inline const_reference operator[](size_type idx) const
         {
-            return *(data[idx]);
-        }
-
-        //! \param time Czas dla ktorego poszukujemy probki
-        //! \return Iterator do probki o zadanym indeksie czasowym lub iterator konca kanalu jesli nie ma takiej probki
-        const_iterator find(time_type time) const
-        {
-            return dataMap.find(time);
-        }
-
-        //! \param time
-        //! \return
-        const_iterator lower_bound(time_type time) const
-        {
-            return dataMap.lower_bound(time);
-        }
-
-        //! \param time
-        //! \return
-        const_iterator upper_bound(time_type time) const
-        {
-            return dataMap.upper_bound(time);
+            return indexedData[idx];
         }
 
         //! \return
-        const_iterator begin() const
+        inline const_iterator begin() const
         {
-            return dataMap.begin();
+            return indexedData.begin();
         }
         //! \return
-        const_iterator end() const
+        inline const_iterator end() const
         {
-            return dataMap.end();
+            return indexedData.end();
         }
         //! \return
-        const_reverse_iterator rbegin() const
+        inline const_reverse_iterator rbegin() const
         {
-            return dataMap.rbegin();
+            return indexedData.rbegin();
         }
         //! \return
-        const_reverse_iterator rend() const
+        inline const_reverse_iterator rend() const
         {
-            return dataMap.rend();
-        }
-        //! \param
-        //! \param
-        void setTimeValue(time_type time, point_type_const_reference point)
-        {
-            __innerSetTimeValue(time, point);
-            notify();
+            return indexedData.rend();
         }
 
         //! \param
         //! \param
-        void setIndexValue(size_type idx, point_type_const_reference point)
+        inline void setIndexValue(size_type idx, point_type_const_reference point)
         {
             __innerSetIndexValue(idx, point);
             notify();
@@ -530,77 +493,46 @@ namespace utils {
             notify();
         }
 
-    protected:        
-
-        //! \param
-        //! \param
-        virtual bool customAddPointVerification(time_type time, point_type_const_reference point)
-        {
-            return true;
-        }
+    protected:
 
         virtual point_type innerGetValue(time_type time) const
         {
-            auto it = lower_bound(time);
-
-            if( (time != it->first) && (it != begin()) ){
-                it--;
+            for(auto it = begin(); it != end(); it++){
+                if( (*it).first == time){
+                    return (*it).second;
+                }
             }
 
-            return it->second;
+            throw std::runtime_error("Time sample not found in channel");
         }
 
     private:
 
         //! \param
         //! \param
-        void __innerSetTimeValue(time_type time, point_type_const_reference point)
-        {
-            auto it = find(time);
-            if(it == end()){
-                throw std::runtime_error("No sample with given time index");
-            }
-
-            const_cast<value_type*>(&*it)->second = point;
-        }
-
-        //! \param
-        //! \param
-        void __innerSetIndexValue(size_type idx, point_type_const_reference point)
+        inline void __innerSetIndexValue(size_type idx, point_type_const_reference point)
         {
             if(idx >= size() || idx < 0){
                 throw std::runtime_error("No sample with given chronological index");
             }
 
-            const_cast<value_type*>(data[idx])->second = point;            
+            indexedData[idx].second = point;            
         }
 
+    protected:
         //! \param
         //! \param
-        void __innerAddPoint(time_type time, point_type_const_reference point)
+        virtual void __innerAddPoint(time_type time, point_type_const_reference point)
         {
-            if(time < 0){
-                throw std::runtime_error("Time negative value not allowed");
+            if(empty() == true){
+                if(time != 0){
+                    throw std::runtime_error("First sample in channel must be for time 0");
+                }
+            }else if(time <= getLength()){
+                throw std::runtime_error("TimeData not in chronological order");
             }
 
-            if(dataMap.empty() == true && time != 0){
-                throw std::runtime_error("First sample in channel must be for time 0");
-            }
-
-            if(time < getLength()){
-                throw std::runtime_error("Data not in chronological order");
-            }
-
-            if(dataMap.find(time) != dataMap.end()){
-                throw std::runtime_error("Value for specified time already exists");
-            }
-
-            if(customAddPointVerification(time, point) == false){
-                throw std::runtime_error("Sample insertion breaks custom channel rules");
-            }
-
-            auto ins = dataMap.insert(value_type(time, point));
-            data.push_back(&*ins.first);
+            indexedData.push_back(value_type(time, point));
         }
     };
 
@@ -613,8 +545,6 @@ namespace utils {
             class ChannelModifierInterface
             {
             public:
-                virtual void setTimeValue(typename Channel::time_type time, typename Channel::point_type_const_reference point) = 0;
-
                 virtual void setIndexValue(typename Channel::size_type idx, typename Channel::point_type_const_reference point) = 0;
 
                 virtual void addPoint(typename Channel::time_type time, typename Channel::point_type_const_reference point) = 0;
@@ -646,12 +576,6 @@ namespace utils {
                 ChannelModifierImplementation() : updated(false) {}
 
                 ~ChannelModifierImplementation() {}
-
-                virtual void setTimeValue(typename Channel::time_type time, typename Channel::point_type_const_reference point)
-                {
-                    MakePublicOperations::setTimeValue(*channel, time, point);
-                    updated = true;
-                }
 
                 virtual void setIndexValue(typename Channel::size_type idx, typename Channel::point_type_const_reference point)
                 {
@@ -747,13 +671,6 @@ namespace utils {
                 }
             };
 
-            //! Pozwala modyfikowaæ dane indeksowane czasem
-        template<class Channel>
-        static void setTimeValue(Channel & channel, typename Channel::time_type time, typename Channel::point_type_const_reference point)
-        {
-            channel.__innerSetTimeValue(time, point);
-        }
-
         //! Pozwala modyfikowaæ dane indeksowane kolejnoœci¹ próbek
         template<class Channel>
         static void setIndexValue(Channel & channel, typename Channel::size_type idx, typename Channel::point_type_const_reference point)
@@ -765,18 +682,12 @@ namespace utils {
         template<class Channel>
         static void addPoint(Channel & channel, typename Channel::time_type time, typename Channel::point_type_const_reference point)
         {
-            channel.__innerAddPoint(time, point);
+            ((Channel::_MyChannelInterface*)(&channel))->__innerAddPoint(time, point);
         }
 
         class MakePublicOperations
         {
         public:
-            //! Pozwala modyfikowaæ dane indeksowane czasem
-            template<class Channel>
-            static void setTimeValue(Channel & channel, typename Channel::time_type time, typename Channel::point_type_const_reference point)
-            {
-                AutoModifier::setTimeValue(channel, time, point);
-            }
 
             //! Pozwala modyfikowaæ dane indeksowane kolejnoœci¹ próbek
             template<class Channel>
@@ -929,35 +840,46 @@ namespace utils {
                     pointSet = true;
                 }
             }else{
-                auto it = find(time);
+                auto it = begin();
+                auto lowerBound = it;
+                bool wasLower = false;
+                for( ; it != end(); it++){
+                    if((*it).first == time){
+                        break;
+                    }else if(wasLower == false && (*it).first > time){
+                        wasLower = true;
+                        lowerBound = it;
+                    }
+                }
+
                 if(it == end()){
-                    it = lower_bound(time);
+
                     // Czy wartoœæ mniejsza od pierwszej próbki
-                    if(it == begin()){
-                        if(it->first - epsilon <= time){
+                    if(lowerBound == begin()){
+                        if((*lowerBound).first - epsilon <= time){
                             pointSet = true;
-                            ret = it->second;
+                            ret = (*lowerBound).second;
                         }
                         // Wartoœæ gdzieœ wewn¹trz kana³u - istnieje próbka poprzednia
                     }else{
                         //probka poprzednia, mniejszy czas
-                        auto iT = it;
+                        auto iT = lowerBound;
                         iT--;
 
                         auto closerIt = iT;
 
-                        if( (it->first - time) < (time - iT->first) || ( (it->first - time) == (time - iT->first) && smallerIfEqual == false) ){
-                            closerIt = it;
+                        if( ((*lowerBound).first - time) < (time - (*iT).first) || ( ((*lowerBound).first - time) == (time - (*iT).first) && smallerIfEqual == false) ){
+                            closerIt = lowerBound;
                         }
 
-                        if(std::fabs(closerIt->first - time) <= epsilon){
+                        if(std::fabs((*closerIt).first - time) <= epsilon){
                             pointSet = true;
-                            ret = closerIt->second;
+                            ret = (*closerIt).second;
                         }
                     }
                 }else{
                     pointSet = true;
-                    ret = it->second;
+                    ret = (*it).second;
                 }
             }
 
@@ -1042,12 +964,23 @@ namespace utils {
 
         //! \return Para punktów pomiarowych pomiêdzy którymi nale¿y wykonaæ interpolacjê.
         virtual std::pair<const_reference, const_reference> getValueHelper(time_type time) const
-        {            
-            auto it = find(time);
+        {   
+            auto it = begin();
+            auto lowerBound = it;
+            bool wasLower = false;
+            for( ; it != end(); it++){
+                if((*it).first == time){
+                    break;
+                }else if(wasLower == false && (*it).first > time){
+                    wasLower = true;
+                    lowerBound = it;
+                }
+            }
+
             auto iT = it;
 
             if(it == end()){
-                it = lower_bound(time);
+                it = lowerBound;
                 iT = it;
                 it--;
             }
@@ -1134,19 +1067,10 @@ namespace utils {
                 t += samplesPerSecondInv;
             }
 
-            Channel::addPoint(t, point);
+            Channel::__innerAddPoint(t, point);
         }
 
     protected:
-        virtual bool customAddPointVerification(time_type time, point_type_const_reference point)
-        {
-            time_type nextTime = getLength() + samplesPerSecondInv;
-            if( (time != 0) && (time != nextTime)){
-                throw std::runtime_error("Time breaks channel resolution");
-            }
-
-            return true;
-        }
 
         //! \return Para punktów pomiarowych pomiêdzy którymi nale¿y wykonaæ interpolacjê.
         virtual std::pair<const_reference, const_reference> getValueHelper(time_type time) const
@@ -1159,6 +1083,16 @@ namespace utils {
             const_reference p1 = operator[](idx);
             const_reference p2 = (idx == size()-1) ? p1 : operator[](idx+1);
             return std::pair<const_reference, const_reference>(p1, p2);
+        }
+
+        virtual void __innerAddPoint(time_type time, point_type_const_reference point)
+        {
+            time_type nextTime = getLength() + samplesPerSecondInv;
+            if( (time != 0) && (time != nextTime)){
+                throw std::runtime_error("Time breaks channel resolution");
+            }
+
+            Channel::__innerAddPoint(time, point);
         }
     };
 

@@ -50,6 +50,16 @@ const EDRTitleBar * EDRDockWidget::getTitleBar() const
     return titleBar;
 }
 
+bool EDRDockWidget::isPermanent() const
+{
+    return testAttribute(Qt::WA_DeleteOnClose) == false;
+}
+
+void EDRDockWidget::setPermanent(bool permanent)
+{
+    setAttribute(Qt::WA_DeleteOnClose, permanent);
+}
+
 void EDRDockWidget::toggleFloating()
 {
     QDockWidget::setFloating( !isFloating() );

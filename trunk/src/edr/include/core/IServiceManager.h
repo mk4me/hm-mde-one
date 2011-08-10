@@ -14,8 +14,6 @@
 #include <vector>
 #include <utils/Debug.h>
 
-class IModel;
-
 namespace core{
 
     class IDataManager;

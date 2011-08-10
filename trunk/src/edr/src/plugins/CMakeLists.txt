@@ -6,6 +6,7 @@ set(PROJECTS_NAME plugins)
 ADD_PROJECT(c3d "BOOST;corelib;C3DLIB")
 ADD_PROJECT(video "OSG;QT;VIDLIB;FFMPEG;corelib")
 ADD_PROJECT(timeline "BOOST;QT;corelib")
+ADD_PROJECT(newTimeline "BOOST;QT;corelib;TIMELINELIB;OSG")	# OSG na potrzeby OpenThreads!!
 ADD_PROJECT(communication "QT;CURL;WSDLPULL;TINYXML;corelib")
 ADD_PROJECT(kinematic "QT;BOOST;corelib;KINEMATICLIB;OSG;plugin_c3d")
 ADD_PROJECT(chart "BOOST;OSG;QT;corelib;plugin_c3d")
