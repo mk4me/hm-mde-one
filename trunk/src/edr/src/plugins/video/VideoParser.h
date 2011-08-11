@@ -18,6 +18,7 @@ class VideoParser : public core::IParser
 private:
     //! Obiekt wewnêtrzny.
     core::ObjectWrapperPtr adapter;
+	core::ObjectWrapperPtr channelWrapper;
     
 public:
     VideoParser();

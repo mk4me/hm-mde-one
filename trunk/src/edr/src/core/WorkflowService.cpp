@@ -8,16 +8,13 @@
 
 std::string WorkflowService::name = "Workflow Service";
 
-WorkflowService::WorkflowService()
+WorkflowService::WorkflowService() //:
+	/*visualizerObserver(this),
+	dataObserver(this)*/
 {
     workflowWidget = new WorkflowWidget(this);
-    
-    
-    
     DataProcessorManager::getInstance()->attach(this);
     VisualizerManager::getInstance()->attach(this);
-
-
 }
 
 WorkflowService::~WorkflowService()
@@ -49,3 +46,4 @@ void WorkflowService::update(const DataProcessorManager * subject)
 {
     LOG_INFO("New data processor catched by Workflow service");
 }
+

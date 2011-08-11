@@ -6,6 +6,8 @@
 #ifndef HEADER_GUARD_COMMUNICATION_WSDL_WSDLPULL_H__
 #define HEADER_GUARD_COMMUNICATION_WSDL_WSDLPULL_H__
 
+#include <wsdlparser/WsdlInvoker.h>
+
 namespace communication 
 {
     class WsdlConnection

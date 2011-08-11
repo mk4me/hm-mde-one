@@ -6,7 +6,7 @@
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
 #include <boost/cast.hpp>
-#include <boost/lambda/lambda.hpp>
+//#include <boost/lambda/lambda.hpp>
 #include <core/MultiViewFunctorWidgetAdapter.h>
 #include <osgui/EmbeddedWindow.h>
 

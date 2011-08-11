@@ -48,6 +48,9 @@ private:
         SourcesTypes sourcesTypes;
     };
 
+	//! pomocnicza mapa (typ obiektu domenowego) -> (identyfikator wizualizatora)
+	std::map<core::TypeInfo, UniqueID> mapType2ID;
+
     //! Prototypy wizualizatorów.
     IVisualizers prototypes;
 
@@ -126,6 +129,13 @@ private:
     VisualizerPtr createVisualizer(const core::IVisualizerConstPtr& prototype);
     //! 
     VisualizerPtr createVisualizer(const Visualizer& prototype);
+
+// TODO: create publiczne bez friend Visualizer czy prywatne + jakis inny mechanizm dostepu?
+public:
+	//! Tworzy instancjê wizualizatora.
+	//! \param typeInfo typ, ktory bedzie wyswietlany w wizualizatorze.
+	//! \return Instancja wizualizatora.
+	VisualizerPtr createVisualizer(const core::TypeInfo& typeInfo); 
 
 private:
     //! \return Indeks prototypu.

@@ -91,7 +91,9 @@ const core::VisualizerSeriePtr & Visualizer::createSerie(const core::ObjectWrapp
 
     TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
     if(timeline != nullptr && dynamic_cast<timeline::IChannel*>(serie.get()) != nullptr) {
-        timeline->addChannel(data->getName(), core::dynamic_pointer_cast<timeline::IChannel>(serie));
+		const std::string& name = data->getName();
+		timeline::IChannelPtr channel = core::dynamic_pointer_cast<timeline::IChannel>(serie);
+        timeline->addChannel(name, channel);
         timelineDataSeries.insert(serie);
     }
 

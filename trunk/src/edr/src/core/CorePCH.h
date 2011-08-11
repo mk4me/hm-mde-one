@@ -69,6 +69,7 @@ UTILS_POP_WARNINGS
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
 
+#include <core/TypeInfo.h>
 #include <core/SmartPtr.h>
 #include <core/ILog.h>
 #include "Log.h"

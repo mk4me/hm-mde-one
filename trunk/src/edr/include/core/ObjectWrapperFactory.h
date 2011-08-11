@@ -9,6 +9,7 @@
 #ifndef HEADER_GUARD_CORE__OBJECTWRAPPERFACTORY_H__
 #define HEADER_GUARD_CORE__OBJECTWRAPPERFACTORY_H__
 
+#include <core/TypeInfo.h>
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
 
@@ -25,7 +26,7 @@ namespace core
         //!
         virtual ObjectWrapperCollection* createWrapperCollection() = 0;
         //!
-        virtual const core::TypeInfo & getType() const = 0;
+        virtual const TypeInfo & getType() const = 0;
     };
 
     typedef shared_ptr<IObjectWrapperFactory> IObjectWrapperFactoryPtr;

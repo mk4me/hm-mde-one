@@ -6,11 +6,15 @@ resources, próby pomiarowe s¹ wyszukiwane i pobierane do trials.
 */
 #ifndef HEADER_GUARD_CORE_DATAMANAGER_H__
 #define HEADER_GUARD_CORE_DATAMANAGER_H__
-#include <core/IDataManager.h>
+#include <core/TypeInfo.h>
 #include <core/IParser.h>
 #include <core/ObjectWrapperFactory.h>
-#include <core/IPath.h>
-#include <utils/Utils.h>
+#include <core/IDataManager.h>
+
+//#include <core/IPath.h>
+//#include <utils/Utils.h>
+#include <utils/signalslib.hpp>
+
 
 class DataManager: public core::IDataManager
 {
@@ -121,6 +125,9 @@ private:
     ObjectWrapperSet externalData;
     //! Dane wprowadzone z zewn¹trz pogrupowane wg typów
     TypedExternalData groupedExternalData;
+
+	boost::signal<void (const core::Filesystem::Path&, bool)> fileLoadedSignal;
+	boost::signal<void (const std::vector<core::ObjectWrapperPtr>&, bool)> wrappersAddedSignal;
 
 protected:
 	//! Pomocnicza metoda, tworzy parsery dla zadanego rozszerzenia. Wspiera dodawanie wielu parserów dla jednego pliku.
@@ -244,6 +251,13 @@ public:
 
 	//! Czyszczenie po parserach.
 	void clearParsers();
+
+	virtual void addFileCallback(boost::function<void (const core::Filesystem::Path&, bool)> function);
+	virtual void removeFileCallback(boost::function<void (const core::Filesystem::Path&, bool)> function);
+	virtual void addWrappersCallback(boost::function<void (const std::vector<core::ObjectWrapperPtr>&, bool)> function);
+	virtual void removeWrappersCallback(boost::function<void (const std::vector<core::ObjectWrapperPtr>&, bool)> function);
+	//! przeparsowanie konkretnego wrappera
+	virtual bool tryParseWrapper(core::ObjectWrapperPtr wrapper);
 
 private:
 	//! Mapuje obiekty 

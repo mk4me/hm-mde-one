@@ -69,6 +69,7 @@ void VideoVisualizer::getInputInfo( std::vector<core::IInputDescription::InputIn
 
     input.name = "videoStream";
     input.type = typeid(VideoStream);
+	//input.type = typeid(VideoChannel);
     input.modify = false;
     input.required = false;
 

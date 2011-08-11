@@ -6,7 +6,7 @@
 #include "VisualizerWidget.h"
 #include "DataManager.h"
 #include "ui_VisualizerWidget.h"
-#include "ToolboxMain.h"
+#include "MainWindow.h"
 
 using namespace core;
 
@@ -219,10 +219,11 @@ void VisualizerWidget::split( Qt::Orientation orientation )
 
 void VisualizerWidget::closeEvent( QCloseEvent *event )
 {
-    ToolboxMain* mainwnd = qobject_cast<ToolboxMain*>(this->parentWidget());
+    MainWindow* mainwnd = qobject_cast<MainWindow*>(this->parentWidget());
     UTILS_ASSERT(mainwnd);
     if ( mainwnd ) {
-        mainwnd->visualizerWidgetClosed(this);
+		// rewizja
+        //mainwnd->visualizerWidgetClosed(this);
     }
     QDockWidget::closeEvent(event);
 }

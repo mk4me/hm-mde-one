@@ -56,7 +56,9 @@ public:
 
 
 
-VideoParser::VideoParser() : adapter(core::ObjectWrapper::create<::VideoStream>())
+VideoParser::VideoParser() : 
+	adapter(core::ObjectWrapper::create<::VideoStream>()),
+	channelWrapper(core::ObjectWrapper::create<VideoChannel>())
 {
 
 }
@@ -132,6 +134,9 @@ void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const core::Fil
             adapter->set(realStream);
             adapter->setName(path.filename().string());
             adapter->setSource(path.string());
+
+			/*VideoChannelPtr channel(new VideoChannel(realStream->getFramerate(), realStream));
+			channelWrapper->set(channel);*/
         }
     }
 }
@@ -149,4 +154,5 @@ std::string VideoParser::getSupportedExtensions() const
 void VideoParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 {
     objects.push_back(adapter);
+	//objects.push_back(channelWrapper);
 }

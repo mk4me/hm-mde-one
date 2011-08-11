@@ -18,7 +18,7 @@ C3DParser::C3DParser()
 	GRFs = core::ObjectWrapper::create<GRFCollection>();
 	EMGs = core::ObjectWrapper::create<EMGCollection>();
 	MarkerChannels = core::ObjectWrapper::create<MarkerCollection>();
-	events = core::ObjectWrapper::create<EventsCollection>();
+	events = core::ObjectWrapper::create<C3DEventsCollection>();
 }
 
 C3DParser::~C3DParser()
@@ -56,7 +56,7 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 	EMGs->set(e);
 
 	int count = parser->getNumEvents();
-	EventsCollectionPtr events(new EventsCollection());
+	EventsCollectionPtr events(new C3DEventsCollection());
 	for (int i = 0; i < count; i++) {
 		events->addEvent(parser->getEvent(i));
 	}

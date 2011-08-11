@@ -67,6 +67,17 @@ VisualizerPtr VisualizerManager::createVisualizer( const Visualizer& prototype )
     return result;
 }
 
+VisualizerPtr VisualizerManager::createVisualizer( const core::TypeInfo& typeInfo )
+{
+	DataManager* dataManager = DataManager::getInstance();
+	for (auto it = mapType2ID.begin(); it != mapType2ID.end(); it++) {
+		if (dataManager->isTypeCompatible(typeInfo, it->first)) {
+			return createVisualizer(it->second);
+		}
+	}
+	throw std::runtime_error("Visualizer not registered.");
+}
+
 void VisualizerManager::update()
 {
     Visualizers::iterator it = visualizers.begin();
@@ -88,6 +99,11 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
         if(visualizerInputInfo.empty() == true){
             LOG_WARNING("Visualizer " << visualizer->getName() << " ID = " << visualizer->getID() << " does not support minimum one data type! NOT registered in application");
         }else{
+			// wypelniamy mape, dzieki ktorej mozemy latwo stworzyc wizualizator na postawie typu
+			for (auto it = visualizerInputInfo.begin(); it != visualizerInputInfo.end(); it++) {
+				// TODO : co w przypadku, gdy mamy wiele wizualizatorow obslugujacych ten sam typ
+				mapType2ID[it->type] = visualizer->getID();
+			}
 
             prototypes.push_back(visualizer);
             IVisualizerPersistantData* data = new IVisualizerPersistantData();

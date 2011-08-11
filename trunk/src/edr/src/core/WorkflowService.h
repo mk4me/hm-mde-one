@@ -16,8 +16,21 @@
 class VisualizerManager;
 class DataProcessorManager;
 
-class WorkflowService : public core::IService, utils::Observer<VisualizerManager>, utils::Observer<DataProcessorManager>
+class WorkflowService : public core::IService, public utils::Observer<VisualizerManager>, public utils::Observer<DataProcessorManager>
 {
+private:
+	/*struct VisualizerObserver : 
+	{
+		WorkflowService* self;
+		VisualizerObserver(WorkflowService* self) : self(self) {}
+		void update(const VisualizerManager* manager) { self->update(manager); }
+	};
+	struct DataProcessorObserver : 
+	{
+		WorkflowService* self;
+		DataProcessorObserver(WorkflowService* self) : self(self) {}
+		void update(const DataProcessorManager* manager) { self->update(manager); }
+	};*/
 public:
     WorkflowService();
     ~WorkflowService();
@@ -38,6 +51,8 @@ private:
     WorkflowWidget * workflowWidget;
     std::set<WorkflowWidget*> workflowWidgets;
     std::vector<QObject*> actions;
+	/*VisualizerObserver visualizerObserver;
+	DataProcessorObserver dataObserver;*/
 };
 
 

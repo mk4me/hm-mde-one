@@ -100,7 +100,9 @@ void EDRConsoleWidget::queueEntry( EDRConsoleWidgetEntryPtr entry )
 
 void EDRConsoleWidget::logOrQueueEntry( EDRConsoleWidgetEntryPtr entry )
 {
-    if ( QThread::currentThread() == this->thread() ) {
+	QThread* widgetThread = this->thread();
+	QThread* currentThred = QThread::currentThread();
+    if ( currentThred == widgetThread ) {
         logEntry(*entry);
     } else {
         queueEntry(entry);

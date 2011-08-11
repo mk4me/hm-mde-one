@@ -72,7 +72,7 @@ public:
 };
 
 //! Prosta kolekcja przechowujaca wszystkie zdarzenia z pliku c3d
-class EventsCollection
+class C3DEventsCollection
 {
 public: 
 	// pomocnicze typy
@@ -88,11 +88,11 @@ private:
 
 public:
 	//! Konstruktor
-	EventsCollection()
+	C3DEventsCollection()
 	{}
 	//! Konstruktor kopiujacy
 	//! 
-	EventsCollection(const EventsCollection& es)
+	C3DEventsCollection(const C3DEventsCollection& es)
 	{
 		int count = static_cast<int>(es.events.size());
 		events.resize(count);
@@ -138,8 +138,8 @@ public:
 		});
 	}
 };
-typedef boost::shared_ptr<EventsCollection> EventsCollectionPtr;
-typedef boost::shared_ptr<const EventsCollection> EventsCollectionConstPtr;
+typedef boost::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
+typedef boost::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
 
 //! Podstawa dla kanalu analogowego zapisanego w pliku c3d
 class C3DAnalogChannel : public ScalarChannel
@@ -247,5 +247,5 @@ CORE_DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, C3DAnalogChannel);
 CORE_DEFINE_WRAPPER(GRFCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER(EventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+CORE_DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 #endif  // __HEADER_GUARD_CORE__C3DCHANNELS_H__

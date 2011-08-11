@@ -11,13 +11,15 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	AppInitializer.h
+	MainWindow.h
 	EDRConsoleWidget.h
 	EDRConsoleInnerWidget.h
 	DataManager.h
 	SceneGraphWidget.h
 	LogInitializer.h
 	ServiceManager.h
-	ToolboxMain.h
+	#ToolboxMain.h
 	UserInterfaceService.h
 	VisualizerWidget.h
 	VisualizerManager.h
@@ -122,15 +124,17 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	AppInitializer.cpp
+	MainWindow.cpp
 	EDRConsoleWidget.cpp
 	EDRConsoleInnerWidget.cpp
 	DataManager.cpp
 	SceneGraphWidget.cpp
 	LogInitializer.cpp
-	main.cpp
+	#main.cpp
 	PluginLoader.cpp
 	ServiceManager.cpp
-	ToolboxMain.cpp
+	#ToolboxMain.cpp
 	UserInterfaceService.cpp
 	VisualizerWidget.cpp
 	VisualizerManager.cpp
@@ -159,7 +163,8 @@ set(TARGET_SRC
 	LocalDataSourceWidget.cpp
 	DataSource.cpp
 	DataSourceManager.cpp
-	#Subject.cpp
+	# Subject.cpp
+	# Motion.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -167,7 +172,7 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 SET(TARGET_MOC_H
 	EDRConsoleWidget.h
 	EDRConsoleInnerWidget.h
-    ToolboxMain.h
+    MainWindow.h
 	SceneGraphWidget.h
 	VisualizerWidget.h
 	EDRTitleBar.h
@@ -188,7 +193,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 set(TARGET_UI
 	ui/SceneGraphWidget.ui
 	ui/OsgWidget.ui
-	ui/toolboxmaindeffile.ui
+	#ui/toolboxmaindeffile.ui
 	ui/VisualizerWidget.ui
 	ui/DataProcessorWidget.ui
 	ui/EDRTitleBar.ui
@@ -253,14 +258,16 @@ include(${QT_USE_FILE})
 
 # kompilacja do exe
 option(EDR_WIN32_ENABLE_CONSOLE "Enable console on Win32?" OFF)
-if (EDR_WIN32_ENABLE_CONSOLE)
-	add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
-else()
-	add_executable(${TARGET_TARGETNAME} WIN32 ${TARGET_SRC} ${TARGET_H})
-endif()
+# if (EDR_WIN32_ENABLE_CONSOLE)
+	# add_executable(${TARGET_TARGETNAME} ${TARGET_SRC} ${TARGET_H})
+# else()
+	# add_executable(${TARGET_TARGETNAME} WIN32 ${TARGET_SRC} ${TARGET_H})
+# endif()
+
+add_library(${TARGET_TARGETNAME} STATIC ${TARGET_SRC} ${TARGET_H})
 
 #instalacja
-install(TARGETS ${TARGET_TARGETNAME} DESTINATION bin COMPONENT core)
+#install(TARGETS ${TARGET_TARGETNAME} DESTINATION bin COMPONENT core)
 # nag³ówki
 include_directories(${DEFAULT_PROJECT_INCLUDES})
 # biblioteki

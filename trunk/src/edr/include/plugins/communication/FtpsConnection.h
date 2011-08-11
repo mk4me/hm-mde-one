@@ -8,6 +8,8 @@ interfejs ISendable.
 #ifndef HEADER_GUARD_COMMUNICATION_FTPSCONNECTION_H__
 #define HEADER_GUARD_COMMUNICATION_FTPSCONNECTION_H__
 
+#include <curl/curl.h>
+
 namespace communication
 {
     class FtpsConnection

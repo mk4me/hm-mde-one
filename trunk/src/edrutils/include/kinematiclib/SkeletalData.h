@@ -4,7 +4,7 @@
 #include <boost/utility.hpp>
 #include <kinematiclib/Joint.h>
 #include <kinematiclib/Skeleton.h>
-
+#include <utils/Debug.h>
 namespace kinematic 
 {
 
@@ -15,8 +15,8 @@ namespace kinematic
 		/// 	    konkretnej kosci i konkretnego kanalu
 		struct singleJointState : boost::noncopyable
 		{
-			std::string name; //!< nazwa kosci 
-			/// \brief  wartosci kanalow dla tej kosci (ich liczba powinna byc rowna stopniom swobody kosci)
+			std::string name; //!< nazwa stawu 
+			/// \brief  wartosci kanalow dla tej stawu (ich liczba powinna byc rowna stopniom swobody stawu)
 			std::vector<double> channelValues; 
 			//! konstruktor ustawia domyslny rozmiar dla kolekcji (6 stopni swobody)
 			singleJointState()
@@ -67,7 +67,7 @@ namespace kinematic
 		std::vector<singleFramePtr>& getFrames() { return frames; }
 		void setFrames(std::vector<singleFramePtr> val) { frames = val; }
 		double getFrameTime() const { return frameTime; }
-		void setFrameTime(double val) { frameTime = val; }
+		void setFrameTime(double val) { UTILS_ASSERT(val > 0.0); frameTime = val; }
 
 	public:
 		virtual SkeletalData* clone() const 

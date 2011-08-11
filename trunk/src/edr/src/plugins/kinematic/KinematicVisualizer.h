@@ -46,6 +46,8 @@ private:
         }
 
     protected:
+		SkeletalVisualizationSchemePtr scheme;
+
         virtual void setSerieName(const std::string & name)
         {
             //TODO
@@ -56,9 +58,17 @@ private:
         {
             visualizer->resetScene();
             visualizer->refillDrawersMaps();
-
-            SkeletalVisualizationSchemeConstPtr scheme = data->get();
-
+			
+			if (data->getTypeInfo() == typeid(MarkerCollection)) {
+				MarkerCollectionPtr c = data->get();
+				KinematicModelPtr kinematic(new KinematicModel());
+				kinematic->setMarkers(c);
+				scheme = SkeletalVisualizationScheme::create();
+				scheme->setKinematicModel(kinematic);
+			} else {
+                scheme = data->get();
+			}
+			
             if (scheme) {        
                 if (scheme->getKinematicModel()->getSkeleton()) {
                     SchemeDrawerContainerPtr skeleton = visualizer->drawersByName["Skeleton"];
@@ -115,17 +125,16 @@ private:
         //! \return Dlugosc kanalu w sekundach
         virtual double getLength() const
         {
-            SkeletalVisualizationSchemeConstPtr scheme = getData()->get();
-
-            return scheme->getDuration();
+			UTILS_ASSERT(scheme);
+			return scheme->getDuration();
         }
 
         //! Czas zawiera siê miêdzy 0 a getLength()
         //! \param time Aktualny, lokalny czas kanalu w sekundach
         virtual void setTime(double time)
         {
-            SkeletalVisualizationSchemeConstPtr scheme = getData()->get();
-            core::const_pointer_cast<SkeletalVisualizationScheme>(scheme)->setTime(time);
+			UTILS_ASSERT(scheme);
+			scheme->setTime(time);
         }
 
     private:
@@ -172,7 +181,6 @@ private:
 
 public:
     virtual osg::Node* debugGetLocalSceneRoot();
-
 
 private:
     SkeletalVisualizationSchemePtr scheme;

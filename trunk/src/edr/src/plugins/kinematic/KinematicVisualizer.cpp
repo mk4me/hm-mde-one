@@ -23,8 +23,13 @@ void KinematicVisualizer::getInputInfo( std::vector<core::IInputDescription::Inp
 
     input.name = "model";
     input.type = typeid(SkeletalVisualizationScheme);
-    input.required = true;
+    input.required = false;
     input.modify = false;
+
+	input.name = "markers";
+	input.type = typeid(MarkerCollection);
+	input.required = false;
+	input.modify = false;
 
     info.push_back(input);
 }

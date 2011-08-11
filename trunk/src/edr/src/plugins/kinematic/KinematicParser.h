@@ -24,4 +24,21 @@ public:
     virtual std::string getSupportedExtensions() const;
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 };
+
+class AsfParser : public core::IParser
+{
+	UNIQUE_ID("{0E3B8309-AA5B-4ECD-B941-8FA64F8C9625}", "Asf parser");
+private:
+	core::ObjectWrapperPtr skeletalModel;
+
+public:
+	AsfParser();
+	virtual ~AsfParser();
+	// IParser
+public:
+	virtual void parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path);
+	virtual core::IParser* create();
+	virtual std::string getSupportedExtensions() const;
+	virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
+};
 #endif  // __HEADER_GUARD_KINEMATIC__KINEMATICPARSER_H__

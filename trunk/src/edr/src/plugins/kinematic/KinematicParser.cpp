@@ -9,7 +9,6 @@
 #include <plugins/kinematic/Wrappers.h>
 #include "ISchemeDrawer.h"
 
-using namespace kinematic;
 
 KinematicParser::KinematicParser()
 {
@@ -26,6 +25,8 @@ KinematicParser::~KinematicParser()
 
 void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path)
 {
+	using namespace kinematic;
+	using kinematic::AsfParser;
     SkeletalModelPtr modelPtr(new SkeletalModel);
 	SkeletalDataPtr dataPtr(new SkeletalData());
     bool fromC3D = false;
@@ -130,4 +131,37 @@ void KinematicParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
     objects.push_back(schemeMarkers);
     objects.push_back(kinematicMarkersSkeleton);
     objects.push_back(schemeMarkersSkeleton);
+}
+
+void AsfParser::parseFile( core::IDataManager* dataManager, const core::Filesystem::Path& path )
+{
+	kinematic::SkeletalModelPtr modelPtr(new kinematic::SkeletalModel);
+	kinematic::AsfParser asf;
+	asf.parse(modelPtr, path.string());
+	skeletalModel->set(modelPtr);
+}
+
+core::IParser* AsfParser::create()
+{
+	return new AsfParser();
+}
+
+std::string AsfParser::getSupportedExtensions() const
+{
+	return ".asf";
+}
+
+void AsfParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
+{
+	objects.push_back(this->skeletalModel);
+}
+
+AsfParser::AsfParser()
+{
+	this->skeletalModel = core::ObjectWrapper::create<kinematic::SkeletalModel>();
+}
+
+AsfParser::~AsfParser()
+{
+
 }

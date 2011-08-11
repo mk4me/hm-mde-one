@@ -54,38 +54,21 @@ public:
 
 		  virtual void setSerieData(const core::ObjectWrapperConstPtr & data)
 		  {
-			  std::stringstream txt;
+			    std::stringstream txt;
 
-			  if (data->getTypeInfo() == typeid(EventsCollection)) {
-				  EventsCollectionConstPtr events = data->get();
-				  txt << "<ul>";
-				  for (auto it = events->cbegin(); it != events->cend(); it++) {
-					  txt << "<li><b>" << (*it)->getLabel() << "</b></li>";
-					  txt << "<ul>";
-					  txt << "<li><i> Subject: </i>"     << (*it)->getSubject()     << "</li>";
-					  txt << "<li><i> Context: </i>"     << (*it)->getContext()     << "</li>";
-					  txt << "<li><i> Time:    </i>"     << (*it)->getTime()        << "</li>";
-					  txt << "<li><i> Description: </i>" << (*it)->getDescription() << "</li>";
-					  txt << "</ul>";
-				  }
-				  txt << "</ul>";
-			  } else if (data->getTypeInfo() == typeid(Subject)) {
-				  SubjectConstPtr subject = data->get();
-				  //txt << "<p><b> Name: </b>"    << subject->name    << "</p>";
-					txt << "<b> date:</b>"			<<	 subject->date			<< "<br>";
-					txt << "<b> description1:</b>"	<<	 subject->description1	<< "<br>";
-					txt << "<b> notes:</b>"			<<	 subject->notes			<< "<br>";
-					txt << "<b> sex:</b>"			<<	 subject->sex			<< "<br>";
-					txt << "<b> birthdate:</b>"		<<	 subject->birthdate		<< "<br>";
-					txt << "<b> isIll:</b>"			<<	 subject->isIll			<< "<br>";
-					txt << "<b> isDiabetes:</b>"	<<	 subject->isDiabetes	<< "<br>";
-					txt << "<b> ilnesses:</b>"		<<	 subject->ilnesses		<< "<br>";
-					txt << "<b> description2:</b>"	<<	 subject->description2	<< "<br>";
-					txt << "<b> name:</b>"			<<	 subject->name			<< "<br>";
-					txt << "<b> surname:</b>"		<<	 subject->surname		<< "<br>";
-					txt << "<b> status:</b>"		<<	 subject->status		<< "<br>";
-			  }
-			  visualizer->widget->setText(QString(txt.str().c_str()));
+				EventsCollectionConstPtr events = data->get();
+				txt << "<ul>";
+				for (auto it = events->cbegin(); it != events->cend(); it++) {
+					txt << "<li><b>" << (*it)->getLabel() << "</b></li>";
+					txt << "<ul>";
+					txt << "<li><i> Subject: </i>"     << (*it)->getSubject()     << "</li>";
+					txt << "<li><i> Context: </i>"     << (*it)->getContext()     << "</li>";
+					txt << "<li><i> Time:    </i>"     << (*it)->getTime()        << "</li>";
+					txt << "<li><i> Description: </i>" << (*it)->getDescription() << "</li>";
+					txt << "</ul>";
+				}
+				txt << "</ul>";
+			    visualizer->widget->setText(QString(txt.str().c_str()));
 		  }
 
 	  private:
@@ -139,16 +122,10 @@ public:
 		  core::IInputDescription::InputInfo input;
 
 		  input.name = "event";
-		  input.type = typeid(EventsCollection);
+		  input.type = typeid(C3DEventsCollection);
 		  input.required = true;
 		  input.modify = false;
 
-		  info.push_back(input);
-
-		  input.name = "subject";
-		  input.type = typeid(Subject);
-		  input.required = false;
-		  input.modify = false;
 		  info.push_back(input);
 	  }
 

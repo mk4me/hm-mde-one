@@ -126,4 +126,8 @@ public:
     */
     virtual void cancelDownloading();
 };
+
+typedef boost::shared_ptr<CommunicationService> CommunicationServicePtr;
+typedef boost::shared_ptr<const CommunicationService> CommunicationServiceConstPtr;
+
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONSERVICE_H__

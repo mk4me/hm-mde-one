@@ -14,6 +14,7 @@
 #include <vidlib/osg/OsgAdapter.h>
 #include <vidlib/FFmpegVideoStream.h>
 #include <utils/DataChannel.h>
+#include <utils/DataChannelCollection.h>
 
 typedef osg::ref_ptr<vidlib::VideoImage> VideoImageOsgPtr;
 typedef vidlib::OsgStream VideoStream;
@@ -85,7 +86,14 @@ protected:
 		UTILS_ASSERT(false);
 	}
 };
+typedef boost::shared_ptr<VideoChannel> VideoChannelPtr;
+typedef boost::shared_ptr<const VideoChannel> VideoChannelConstPtr;
 
+class VideoCollection : public utils::DataChannelCollection<VideoChannel>
+{
+};
+typedef boost::shared_ptr<VideoCollection> VideoCollectionPtr;
+typedef boost::shared_ptr<const VideoCollection> VideoCollectionConstPtr;
 
 CORE_DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);

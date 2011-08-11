@@ -392,6 +392,8 @@ void DataManager::loadFiles(const std::vector<core::Filesystem::Path>& files, co
 		BOOST_FOREACH(const Path& path, allFiles) {
 			std::vector<core::ObjectWrapperPtr> loc(createParsers(path, false));
 			objects.insert(objects.end(), loc.begin(), loc.end());
+			fileLoadedSignal(path, true);
+			wrappersAddedSignal(loc, true);
 		}
 	}
 
@@ -699,6 +701,63 @@ void DataManager::addObject( const DataProcessorPtr & dataProcessor,  const core
 	std::vector<core::ObjectWrapperPtr> objects;
 	objects.push_back(object);
 	addObjects(dataProcessor, objects);
+}
+
+void DataManager::addFileCallback( boost::function<void (const core::Filesystem::Path&, bool)> function )
+{
+	this->fileLoadedSignal.connect(function);
+}
+
+void DataManager::removeFileCallback( boost::function<void (const core::Filesystem::Path&, bool)> function )
+{						
+	//this->fileLoadedSignal.disconnect(function);					
+}		
+
+void DataManager::addWrappersCallback( boost::function<void (const std::vector<core::ObjectWrapperPtr>&, bool)> function )
+{
+	this->wrappersAddedSignal.connect(function);
+}
+
+void DataManager::removeWrappersCallback( boost::function<void (const std::vector<core::ObjectWrapperPtr>&, bool)> function )
+{
+	//this->wrappersAddedSignal.disconnect(function);
+}
+
+bool DataManager::tryParseWrapper( core::ObjectWrapperPtr wrapper )
+{
+	// je¿eli znaleŸliœmy dany typ...
+	TypeInfo type = wrapper->getTypeInfo();
+	ObjectsByType::iterator found = currentObjects.find( type );
+	if ( found != currentObjects.end() ) {
+		// to iterujemy po wszystkich jego wariantach
+		for ( ObjectsByType::iterator last = currentObjects.upper_bound( type ); found != last; ++found ) {
+
+			// to, czy sprawdzamy czy to dok³adnie ten typ kontroluje prametr exact
+			ObjectWrapperPtr object = found->second.object;
+
+			if (object == wrapper) {
+				ParserPtr parser = found->second.parser;
+				if ( object->isNull() ) {
+					if ( parser->isParsing() ) {
+						return false;
+					}
+					// mo¿e musimy przeparsowaæ?
+					if ( !parser->isUsed() ) {
+						LOG_DEBUG("Loading object of type \"" << object->getTypeInfo().name() << "\" when looking for \"" << type.name() << "\"");
+						parser->tryParse(this);
+						if (object->isNull()) {
+							return false;
+						}
+						return true;
+					} 
+				} else {
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 

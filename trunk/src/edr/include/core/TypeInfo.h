@@ -13,7 +13,7 @@
 #include <boost/any.hpp>
 #include <list>
 
-namespace core{
+namespace core {
 
     //! Struktura reprezentuj¹ca typ obiektu.
     class TypeInfo
