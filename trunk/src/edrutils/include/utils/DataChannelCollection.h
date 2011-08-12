@@ -83,7 +83,7 @@ public:
 	double getFrequency()
 	{
 		UTILS_ASSERT(channels.size());
-		return channels[0]->getNumPoints();
+		return channels[0]->size();
 	}
 
 

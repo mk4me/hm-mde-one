@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>635</width>
-    <height>220</height>
+    <height>152</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,35 +36,19 @@
      </attribute>
      <column>
       <property name="text">
-       <string>Active</string>
+       <string/>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Channel</string>
+       <string/>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Timeline</string>
+       <string/>
       </property>
      </column>
-    </widget>
-   </item>
-   <item>
-    <widget class="QSlider" name="visualTimeSlider">
-     <property name="maximum">
-      <number>10000</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="tickPosition">
-      <enum>QSlider::TicksBelow</enum>
-     </property>
-     <property name="tickInterval">
-      <number>100</number>
-     </property>
     </widget>
    </item>
   </layout>
@@ -103,22 +87,6 @@
     <hint type="sourcelabel">
      <x>317</x>
      <y>97</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>317</x>
-     <y>109</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>visualTimeSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>TimelineWidget</receiver>
-   <slot>timeSliderChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>317</x>
-     <y>201</y>
     </hint>
     <hint type="destinationlabel">
      <x>317</x>

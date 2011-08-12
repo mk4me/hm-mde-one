@@ -3,7 +3,7 @@
 namespace timeline {
 
 Controller::Controller() : IController(&dirtyState),
-    model(new Model()), constModel(model),
+    model(new Model()), constModel(model), timeUpdateMode(AsynchTimeUpdate),
     playbackDirection(PlayForward), timer(new Timer(40000)),
     timeGenerator(&Controller::forwardTimeUpdate), paused(false)
 {

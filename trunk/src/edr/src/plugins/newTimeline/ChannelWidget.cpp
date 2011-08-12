@@ -125,6 +125,15 @@ void ChannelWidget::paintEvent(QPaintEvent * pEvent)
     painter.fillRect(rect,backgroundColor);
 
     QRectF channelRect = rect;
+
+    qreal top = channelRect.top() + 2;
+    qreal bottom = channelRect.bottom() - 2;
+
+    if(top < bottom){
+        channelRect.setTop(top);
+        channelRect.setBottom(bottom);
+    }
+    
     //wype³aniamy kana³
     channelRect.setLeft(this->size().width() * begin);
     channelRect.setRight(this->size().width() * end);
@@ -132,11 +141,13 @@ void ChannelWidget::paintEvent(QPaintEvent * pEvent)
 
     //rysujemy marker aktualnego czasu
     QRectF channelCurrentTime = rect;
-    channelCurrentTime.setLeft(std::max((currentTime-currentTimeHalfWidth) * this->size().width(), 0.0));
-    channelCurrentTime.setRight(std::min((currentTime+currentTimeHalfWidth) * this->size().width(), (qreal)this->size().width()));
+    //channelCurrentTime.setLeft(std::max((currentTime-currentTimeHalfWidth) * this->size().width(), 0.0));
+    //channelCurrentTime.setRight(std::min((currentTime+currentTimeHalfWidth) * this->size().width(), (qreal)this->size().width()));
+    channelCurrentTime.setLeft(std::max(currentTime * this->size().width() - 1, 0.0));
+    channelCurrentTime.setRight(std::min(currentTime * this->size().width() + 1, (qreal)this->size().width()));
 
     painter.fillRect(channelCurrentTime,markerColor);
 
     //ramka widgeta!!
-    QFrame::paintEvent(pEvent);
+    //QFrame::paintEvent(pEvent);
 }

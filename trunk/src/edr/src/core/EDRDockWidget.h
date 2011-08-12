@@ -23,6 +23,10 @@ public:
 
     ~EDRDockWidget();
 
+signals:
+
+    void focuseGained();
+
 public slots:
     //! Zmienia stan dokowania.
     void toggleFloating();
@@ -38,6 +42,13 @@ public slots:
     bool isPermanent() const;
     void setPermanent(bool permanent);
 
+    void setTitleBarVisible(bool visible);
+    bool isTitlebarVisible() const;
+
+protected:
+
+    virtual void focusInEvent(QFocusEvent * event);
+
 private slots:
     void onTopLevelChange(bool topLevel);
 
@@ -45,6 +56,7 @@ private:
     void init();
 
 private:
+    QWidget * emptyTitleBar;
     EDRTitleBar * titleBar;
     EDRDockInnerWidget * innerWidget;
 

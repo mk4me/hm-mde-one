@@ -219,12 +219,12 @@ void VisualizerWidget::split( Qt::Orientation orientation )
 
 void VisualizerWidget::closeEvent( QCloseEvent *event )
 {
-    MainWindow* mainwnd = qobject_cast<MainWindow*>(this->parentWidget());
-    UTILS_ASSERT(mainwnd);
-    if ( mainwnd ) {
-		// rewizja
-        //mainwnd->visualizerWidgetClosed(this);
-    }
+  //  MainWindow* mainwnd = qobject_cast<MainWindow*>(this->parentWidget());
+  //  UTILS_ASSERT(mainwnd);
+  //  if ( mainwnd ) {
+		//// rewizja
+  //      //mainwnd->visualizerWidgetClosed(this);
+  //  }
     QDockWidget::closeEvent(event);
 }
 

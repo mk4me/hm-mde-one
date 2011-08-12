@@ -2,13 +2,15 @@
 #include "EDRDockWidget.h"
 
 EDRDockWidget::EDRDockWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)
-    : QDockWidget(title, parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRDockInnerWidget())
+    : QDockWidget(title, parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRDockInnerWidget()),
+    emptyTitleBar( new QWidget())
 {
     init();
 }
 
 EDRDockWidget::EDRDockWidget(QWidget * parent, Qt::WindowFlags flags)
-    : QDockWidget(parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRDockInnerWidget())
+    : QDockWidget(parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRDockInnerWidget()),
+    emptyTitleBar( new QWidget())
 {
     init();
     setWindowTitle("Default EDRDockWidget");
@@ -21,6 +23,9 @@ EDRDockWidget::~EDRDockWidget()
 
 void EDRDockWidget::init()
 {
+    //mo¿na focusowaæ widget
+    setFocusPolicy(Qt::StrongFocus);
+
     connect( this, SIGNAL(topLevelChanged(bool)), this, SLOT(onTopLevelChange(bool)) );
     connect( titleBar->actionClose, SIGNAL(triggered()), this, SLOT(close()) );
     connect( titleBar->actionFloat, SIGNAL(triggered(bool)), this, SLOT(setFloating(bool)) );
@@ -28,6 +33,22 @@ void EDRDockWidget::init()
     setTitleBarWidget(titleBar);
 
     setWidget(innerWidget);
+}
+
+void EDRDockWidget::setTitleBarVisible(bool visible)
+{
+    if(visible == true){
+        if(titleBarWidget() == emptyTitleBar){
+            setTitleBarWidget(titleBar);
+        }
+    }else if(titleBarWidget() != emptyTitleBar){
+        setTitleBarWidget(emptyTitleBar);
+    }
+}
+
+bool EDRDockWidget::isTitlebarVisible() const
+{
+    return titleBarWidget() != nullptr;
 }
 
 EDRDockInnerWidget * EDRDockWidget::getInnerWidget()
@@ -79,4 +100,10 @@ void EDRDockWidget::onTopLevelChange(bool topLevel)
             this->show();
         }
     }
+}
+
+void EDRDockWidget::focusInEvent(QFocusEvent * event)
+{
+    QDockWidget::focusInEvent(event);
+    emit focuseGained();
 }

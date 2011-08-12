@@ -12,6 +12,7 @@
 #include <QtGui/QWidget>
 #include <QtGui/QMenu>
 #include <QtGui/QDoubleSpinBox>
+#include <QtGui/QSlider>
 #include <QtGui/QComboBox>
 #include <QtGui/QTimeEdit>
 #include <QtGui/QLabel>
@@ -54,7 +55,7 @@ signals:
 private slots:
 
     //! \param pnt Pozycja zapytania o menu kotnekstowe dla drzewa kana³ów
-    void showContextMenu(const QPoint& pnt);
+    void showChannelsTreeContextMenu(const QPoint& pnt);
     //! \param value Nowa wartoœæ slidera kontroluj¹cego czas w wersji znormalizowanej
     void timeSliderChanged(int value);
     //! \brief Usuwa zaznacznoe w drzewie kana³y
@@ -63,8 +64,8 @@ private slots:
     void timeChanged(const QTime & time);
     //! \param scale Nowa skala dla timeline
     void scaleChanged(double scale);
-    //! \param idx Indeks aktualnego kierunku odtwarzania - 0 przód, 1 ty³
-    void playbackDirectionChanged(int idx);
+    //! \param backward Czy mamy odtwarzac timeline do ty³u
+    void playbackDirectionChanged(bool backward);
     //! \param pauseTimeline Czy wstrzymujemy timeline
     void pause(bool pauseTimeline);
     //! \brief Cofa czas do poczatku
@@ -110,12 +111,14 @@ private:
     QDoubleSpinBox * scaleSpinBox;
     //! Labelka opisuj¹ca kontrolkê zmiany kierunku odtwarzania
     QLabel * directionLabel;
-    //! Kontrolka do zmiany kierunku odtwarzania
-    QComboBox * directionComboBox;
     //! Labelka opisuj¹ca kontrolkê zmiany czasu w formie tekstowej i spinnera
     QLabel * timeLabel;
     //! Kontrolka do zmiany czasu w formie tekstowej i spinnera
     QTimeEdit * timeEditBox;
+    //! Slider u¿ywany do zarz¹dzania aktualnym czasem w timeline - g³ówny timeline!!
+    QSlider * visualTimeSlider;
+    //! Akcja do zmiany kierunku odtwarzania
+    QAction * playbackDirectionAction;
     //! Akcja ustawiaj¹ca czas na pocz¹tek timeline
     QAction * timeToBeginAction;
     //! Akcja ustawiaj¹ca czas na koniec timeline

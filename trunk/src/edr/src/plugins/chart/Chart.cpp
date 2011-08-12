@@ -6,6 +6,7 @@
 #include "Chart.h"
 #include "LineChartSerie.h"
 #include "ChartSerie.h"
+#include <iterator>
 
 #undef  min
 #undef  max
@@ -50,9 +51,10 @@ bool Chart::addSerie( const ChartSeriePtr& serie )
         UTILS_FAIL("Kana³ ju¿ jest dodany.");
         return false;
     } else {
-        if ( activeSerieIndex < 0 ) {
+        /*if ( activeSerieIndex < 0 ) {
             activeSerieIndex = 0;
-        }
+        }*/
+        activeSerieIndex++;
         // dodajemy do listy i do dzieci
         series.push_back(serie);
         geode->addDrawable(serie);
@@ -71,19 +73,27 @@ bool Chart::removeSerie( const ChartSeriePtr& serie )
     if(it != series.end()){
         ret = true;
 
-        if(activeSerieIndex >= 0 && series[activeSerieIndex] == serie){
-            if(series.size() > 1){
-                if(activeSerieIndex-1 >=0){
-                    setActiveSerie(activeSerieIndex-1);
+        if(activeSerieIndex >= 0){
+            if(series[activeSerieIndex] == serie){
+                if(series.size() > 1){
+                    if(activeSerieIndex - 1 >= 0){
+                        activeSerieIndex--;
+                    }else{
+                        activeSerieIndex = 0;
+                    }
                 }else{
-                    setActiveSerie(0);
+                    activeSerieIndex = -1;
                 }
             }else{
-                setActiveSerie(-1);
+                int idx = std::distance(series.begin(), it);
+                if(idx < activeSerieIndex){
+                    activeSerieIndex--;
+                }
             }
         }
 
         geode->removeDrawable(serie);
+        series.erase(it);
         setDirty();
     }
 

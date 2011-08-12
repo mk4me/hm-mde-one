@@ -86,13 +86,15 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 	QHBoxLayout *hlayout = new QHBoxLayout;
 	hlayout->addWidget(treeWidget);
 
-	pane = new QWidget(this);
-	pane->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	QGridLayout* gridLayout = new QGridLayout();
-	pane->setLayout(gridLayout);
+	//pane = new QWidget(this);
+    pane = new QMainWindow(nullptr);
+	//pane->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	//QGridLayout* gridLayout = new QGridLayout();
+	//pane->setLayout(gridLayout);
 	//VisualizerWidget* visualizerWidget = new VisualizerWidget();
 
 	hlayout->addWidget(pane);
+    int i = hlayout->children().size();
 	Analizy->setLayout(hlayout);
 
 	for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
@@ -128,7 +130,22 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 	getUpdateTimer().start(20);
 }
 
+void HmmMainWindow::visualizerGainedFocus()
+{
+    VisualizerWidget * widget = qobject_cast<VisualizerWidget *>(sender());
 
+    if(widget == nullptr){
+        return;
+    }
+
+    if(currentVisualizer != widget){
+        widget->setTitleBarVisible(true);
+        if(currentVisualizer != nullptr){
+            currentVisualizer->setTitleBarVisible(false);
+        }
+        currentVisualizer = widget;
+    }
+}
 
 void HmmMainWindow::onOpen()
 {

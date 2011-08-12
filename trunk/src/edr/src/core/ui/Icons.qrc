@@ -22,6 +22,10 @@
     <file alias="wejscie2.png">../../../resources/icons/wejscie2.png</file>
     <file alias="wizualizacja2.png">../../../resources/icons/wizualizacja2.png</file>
     <file alias="word_wrap_16x16.png">../../../resources/icons/word_wrap_16x16.png</file>
+	<file alias="toBegin.png">../../../resources/icons/toBegin.png</file>
+	<file alias="toEnd.png">../../../resources/icons/toEnd.png</file>
+	<file alias="playbackForward.png">../../../resources/icons/playbackForward.png</file>
+	<file alias="playbackBackward.png">../../../resources/icons/playbackBackward.png</file>
     <file alias="x.png">../../../resources/icons/x.png</file>
   </qresource>
 </RCC>

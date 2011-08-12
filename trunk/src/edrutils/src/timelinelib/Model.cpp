@@ -113,7 +113,7 @@ void Model::setTime(double time)
     
     path.push(constRoot);
     while(path.empty() == false) {
-        if(path.top()->getData()->isActive() == true && path.top()->getData()->timeInChannel(t) == true){
+        if(path.top()->getData()->isActive() == true){
             getWritableChannel(path.top())->setTime(t);
             if(path.top()->size() == 0){
                 path.pop();

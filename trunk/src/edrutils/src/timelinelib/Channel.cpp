@@ -35,6 +35,17 @@ bool Channel::timeInChannel(double time) const
     return false;
 }
 
+double Channel::makeTimeInChannel(double time) const
+{
+    if(time < globalOffset + mask.first){
+        time = globalOffset + mask.first;
+    }else if(time > globalOffset + mask.first + mask.second){
+        time = globalOffset + mask.first + mask.second;
+    }
+
+    return time;
+}
+
 void Channel::setInnerChannel(const IChannelPtr & channel)
 {
     constInnerChannel = innerChannel = channel;
@@ -126,10 +137,14 @@ double Channel::getTime() const
     return time;
 }
 
-void Channel::setTime(double time){
-    this->time = time;
-    if(active == true && innerChannel != nullptr && timeInChannel(time)){
-        innerChannel->setTime((time - globalOffset - mask.first) / globalScale);
+void Channel::setTime(double time)
+{
+    time = makeTimeInChannel(time);
+    if(time != this->time && active == true){
+        this->time = time;
+        if(innerChannel != nullptr){
+            innerChannel->setTime((time - globalOffset - mask.first) / globalScale);
+        }
     }
 }
 

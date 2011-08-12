@@ -89,6 +89,10 @@ public:
     //! \param time Globalny czas
     bool timeInChannel(double time) const;
 
+    //! \param time Czas który chcemy ustawiæ w kanale
+    //! \return Poprawny czas w kanale - ograniczony do zakresu kana³u wraz z maska
+    double makeTimeInChannel(double time) const;
+
     //! \param channel Kanal zdefiniowany przez uzytkownika i opakowany przez nasza klase
     void setInnerChannel(const IChannelPtr & channel);
 

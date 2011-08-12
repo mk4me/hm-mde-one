@@ -25,6 +25,7 @@ private slots:
 	void setTop(int size);
 	void setBottom(int size);
 	void onTreeItemClicked(QTreeWidgetItem *item, int column);
+    void visualizerGainedFocus();
 
 private:
 	template <class T, class Ptr >
@@ -44,24 +45,32 @@ private:
 			wrapper->setSource(prefix + "Sciezka testowa");
 			vis->getOrCreateWidget();
 			VisualizerWidget* visu = new VisualizerWidget(vis);
+            visu->setAllowedAreas(Qt::RightDockWidgetArea);
+            visu->setStyleSheet(styleSheet());
+
+            visu->setTitleBarVisible(false);
+
 			vis->createSerie(wrapper, prefix + "seria testowa");
 
+            connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
 			
-			pane->setUpdatesEnabled(false);
+			/*pane->setUpdatesEnabled(false);
 			if (currentVisualizer) {
 				pane->layout()->removeWidget(currentVisualizer);
 				delete currentVisualizer;
-			}
-			currentVisualizer = visu;
-			pane->layout()->addWidget(visu);
-			pane->setUpdatesEnabled(true);
+			}*/
+			//currentVisualizer = visu;
+			//pane->layout()->addWidget(visu);
+            pane->addDockWidget(Qt::RightDockWidgetArea, visu);
+			//pane->setUpdatesEnabled(true);
 		}
 	}
 private:
 	std::map<QTreeWidgetItem*, ScalarChannelConstPtr> item2ScalarMap;
 	std::map<QTreeWidgetItem*, MarkerCollectionConstPtr> item2Markers;
 	VisualizerWidget* currentVisualizer;
-	QWidget* pane;
+	//QWidget* pane;
+    QMainWindow* pane;
 	QTreeWidget* treeWidget;
 };
 
