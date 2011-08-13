@@ -20,6 +20,7 @@
 
 typedef utils::BaseChannel<osg::Vec3f> VectorChannel;
 typedef core::shared_ptr<VectorChannel> VectorChannelPtr;
+typedef core::shared_ptr<const VectorChannel> VectorChannelConstPtr;
 
 typedef utils::BaseChannel<float> ScalarChannel;
 typedef core::shared_ptr<ScalarChannel> ScalarChannelPtr;
@@ -239,7 +240,55 @@ typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 
 
 
-CORE_DEFINE_WRAPPER(MarkerChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+#define DEFINE_CHANNEL(name)																	 \
+	class name##Channel : public VectorChannel 													 \
+	{																							 \
+	private:																					 \
+		name##Channel(int samplesPerSec) : VectorChannel(samplesPerSec) {}						 \
+																								 \
+	public:        																				 \
+		name##Channel(const name##Channel& channel) :											 \
+		  VectorChannel(channel)																 \
+		  { }																					 \
+																								 \
+		  name##Channel(const c3dlib::C3DParser& data, int channelNo ) :						 \
+		  VectorChannel( data.getPointFrequency())												 \
+		  {																						 \
+			  c3dlib::C3DParser::IPointConstPtr point = data.getPoint(channelNo);				 \
+																								 \
+			  int numSamples = data.getNumPointFrames();										 \
+																								 \
+			  for (int i = 0; i < numSamples; i++) {											 \
+				  addPoint(point->getValue(i));													 \
+			  }																					 \
+			  setName(point->getLabel());														 \
+		  }																						 \
+																								 \
+	public:																						 \
+		virtual name##Channel* clone() const {  return new name##Channel(*this); }				 \
+	};												 											 \
+	class name##Collection : public utils::DataChannelCollection<name##Channel> {};				 \
+	typedef core::shared_ptr<name##Channel> name##ChannelPtr;									 \
+	typedef core::shared_ptr<const name##Channel> name##ChannelConstPtr;						 \
+	typedef core::shared_ptr<name##Collection> name##CollectionPtr;								 \
+	typedef core::shared_ptr<const name##Collection> name##CollectionConstPtr;	  
+
+DEFINE_CHANNEL(Force);
+DEFINE_CHANNEL(Moment);
+DEFINE_CHANNEL(Angle);
+DEFINE_CHANNEL(Power);
+
+CORE_DEFINE_WRAPPER(VectorChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER_INHERITANCE(MarkerChannel,VectorChannel);
+CORE_DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);
+CORE_DEFINE_WRAPPER_INHERITANCE(MomentChannel,VectorChannel);
+CORE_DEFINE_WRAPPER_INHERITANCE(AngleChannel, VectorChannel);
+CORE_DEFINE_WRAPPER_INHERITANCE(PowerChannel, VectorChannel);
+CORE_DEFINE_WRAPPER(ForceCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER(AngleCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER(PowerCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER(MomentCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+
 CORE_DEFINE_WRAPPER(MarkerCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);

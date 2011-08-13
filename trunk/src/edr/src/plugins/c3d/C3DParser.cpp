@@ -17,7 +17,12 @@ C3DParser::C3DParser()
 
 	GRFs = core::ObjectWrapper::create<GRFCollection>();
 	EMGs = core::ObjectWrapper::create<EMGCollection>();
-	MarkerChannels = core::ObjectWrapper::create<MarkerCollection>();
+	markerChannels = core::ObjectWrapper::create<MarkerCollection>();
+	forceChannels  = core::ObjectWrapper::create<ForceCollection>();
+	angleChannels  = core::ObjectWrapper::create<AngleCollection>();
+	momentChannels = core::ObjectWrapper::create<MomentCollection>();
+	powerChannels  = core::ObjectWrapper::create<PowerCollection>();
+	
 	events = core::ObjectWrapper::create<C3DEventsCollection>();
 }
 
@@ -63,15 +68,34 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 	this->events->set(events);
 
 	MarkerCollectionPtr markers(new MarkerCollection); 
+	ForceCollectionPtr forces(new ForceCollection);
+	AngleCollectionPtr angles(new AngleCollection);
+	MomentCollectionPtr moments(new MomentCollection);
+	PowerCollectionPtr powers(new PowerCollection);
+
+#define CHANNEL_CASE(name, collection)						  	 \
+	case c3dlib::C3DParser::IPoint::##name:					  	 \
+		{														 \
+			name##ChannelPtr ptr(new name##Channel(*parser, i)); \
+			collection->addChannel(ptr);						 \
+		}														 \
+		break;
+
 	int markersCount = parser->getNumPoints();
 	for (int i = 0; i < markersCount; i++) {
-		if (parser->getPoint(i)->getType() == c3dlib::C3DParser::IPoint::Marker) 
-		{
-			MarkerChannelPtr ptr(new MarkerChannel(*parser, i));
-			markers->addChannel(ptr);
+		switch (parser->getPoint(i)->getType()) {
+			CHANNEL_CASE(Angle, angles);
+			CHANNEL_CASE(Marker, markers);
+			CHANNEL_CASE(Force, forces);
+			CHANNEL_CASE(Moment, moments);
+			CHANNEL_CASE(Power, powers);
 		}
 	}
-	MarkerChannels->set(markers);
+	markerChannels->set(markers);
+	forceChannels->set(forces);
+	angleChannels->set(angles);
+	momentChannels->set(moments);
+	powerChannels->set(powers);
 }
 
 core::IParser* C3DParser::create()
@@ -88,10 +112,14 @@ void C3DParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 {
 	objects.insert(objects.end(), GRFChannels.begin(), GRFChannels.end());
 	objects.insert(objects.end(), EMGChannels.begin(), EMGChannels.end());
-	objects.push_back(MarkerChannels);
+	objects.push_back(markerChannels);
 	objects.push_back(events);
 	objects.push_back(EMGs);
 	objects.push_back(GRFs);
+	objects.push_back(forceChannels );
+	objects.push_back(angleChannels );
+	objects.push_back(momentChannels);
+	objects.push_back(powerChannels );
 }
 
 void C3DParser::saveFile( const core::Filesystem::Path& path )

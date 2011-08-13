@@ -99,6 +99,18 @@ void SubjectService::onWrappersAdded( const std::vector<core::ObjectWrapperPtr>&
 			} else if((*it)->isPtrSupported(typeid(kinematic::JointAnglesCollectionPtr)) ) {
 				manager->tryParseWrapper(*it);
 				currentMotion->setJoints((*it)->get());
+			} else if((*it)->isPtrSupported(typeid(AngleCollectionPtr)) ) {
+				manager->tryParseWrapper(*it);
+				currentMotion->setAngles((*it)->get());
+			} else if((*it)->isPtrSupported(typeid(ForceCollectionPtr)) ) {
+				manager->tryParseWrapper(*it);
+				currentMotion->setForces((*it)->get());
+			} else if((*it)->isPtrSupported(typeid(MomentCollectionPtr)) ) {
+				manager->tryParseWrapper(*it);
+				currentMotion->setMoments((*it)->get());
+			} else if((*it)->isPtrSupported(typeid(PowerCollectionPtr)) ) {
+				manager->tryParseWrapper(*it);
+				currentMotion->setPowers((*it)->get());
 			}
 		}
 	} else {

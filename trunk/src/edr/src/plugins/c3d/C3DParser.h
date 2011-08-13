@@ -25,7 +25,11 @@ private:
 	std::vector<core::ObjectWrapperPtr> EMGChannels;
 	core::ObjectWrapperPtr GRFs;
 	core::ObjectWrapperPtr EMGs;
-	core::ObjectWrapperPtr MarkerChannels;
+	core::ObjectWrapperPtr markerChannels;
+	core::ObjectWrapperPtr forceChannels;
+	core::ObjectWrapperPtr angleChannels;
+	core::ObjectWrapperPtr momentChannels;
+	core::ObjectWrapperPtr powerChannels;
 	core::ObjectWrapperPtr events;
 	ParserPtr parserPtr;
 	

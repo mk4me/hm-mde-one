@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>919</width>
+    <width>914</width>
     <height>647</height>
    </rect>
   </property>
@@ -181,6 +181,29 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="maximumSize">
+            <size>
+             <width>223</width>
+             <height>49</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="Icons.qrc">
+             <normaloff>:/resources/icons/logo2.png</normaloff>:/resources/icons/logo2.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>223</width>
+             <height>49</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="topButton">
@@ -366,14 +389,56 @@
              <pointsize>14</pointsize>
             </font>
            </property>
+           <property name="styleSheet">
+            <string notr="true">/* QTabWidget::pane { 
+     border-top: 2px solid #C2C7CB;
+     position: absolute;
+     top: -0.5em;
+ }*/
+
+/* QTabWidget::tab-bar {
+     alignment: center;
+ }*/
+
+ /* Style the tab using the tab sub-control. Note that
+     it reads QTabBar _not_ QTabWidget */
+ QTabBar::tab {
+   color: white; 
+     background: #87AFFF; /*qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                 stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                                 stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);*/
+     border: 1px solid #C4C4C3;
+     border-bottom-color: #C2C7CB; /* same as the pane color */
+     border-top-left-radius: 4px;
+     border-top-right-radius: 0px;
+     border-bottom-left-radius: 4px;
+     border-bottom-right-radius: 0px;
+     min-width: 8ex;
+     padding: 2px;
+ }
+
+
+ /*QTabBar::tab:selected, QTabBar::tab:hover {
+     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                 stop: 0 #fafafa, stop: 0.4 #f4f4f4,
+                                 stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);
+ }*/
+
+ QTabBar::tab:selected {
+    background: white;
+     border-color: #9B9B9B;
+     border-bottom-color: #C2C7CB; /* same as pane color */
+	 color: rgb(135, 173, 255);
+ }</string>
+           </property>
            <property name="tabPosition">
             <enum>QTabWidget::West</enum>
            </property>
            <property name="tabShape">
-            <enum>QTabWidget::Triangular</enum>
+            <enum>QTabWidget::Rounded</enum>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="iconSize">
             <size>
@@ -599,6 +664,189 @@
             <attribute name="title">
              <string>Badania</string>
             </attribute>
+            <widget class="QTreeWidget" name="treeWidget">
+             <property name="geometry">
+              <rect>
+               <x>150</x>
+               <y>130</y>
+               <width>251</width>
+               <height>221</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QScrollBar:horizontal {						
+		border: 1px ridge grey;						
+		background: #FFFFFF;							
+		height: 15px;									
+		margin: 0px 0px 0px 0px;						
+			}		
+
+ QScrollBar::handle:horizontal,  QScrollBar::handle:pressed {				
+		background: rgb(135, 173, 255);								
+			  min-width: 2px;		
+			 max-width: 5px;
+			  height:5px;				    
+		       border: 0px solid grey;					
+			}
+									
+			QScrollBar::handle:horizontal {				
+		background: rgb(175, 213, 255);
+			selection-background-color: rgb(135, 173, 255);						
+			  min-width: 2px;		
+			 max-width: 5px;
+			  height:5px;				    
+		       border: 0px solid grey;					
+			}
+		/* QScrollBar::handle:horizontal,  QScrollBar::handle:pressed {				
+		background: rgb(135, 173, 255);								
+			  min-width: 2px;		
+			 max-width: 5px;
+			  height:5px;				    
+		       border: 0px solid grey;					
+			}*/
+											
+		QScrollBar::add-line:horizontal {			
+		border: 0px solid grey;						
+		background: #FFFFFF;							
+		width: 0px;									
+				subcontrol-position: right;				
+				subcontrol-origin: margin;				
+			}											
+														
+			QScrollBar::sub-line:horizontal {			
+		border: 0px solid grey;						
+		background: #FFFFFF;							
+		width: 0px;									
+				subcontrol-position: left;				
+				subcontrol-origin: margin;				
+			}
+
+QScrollBar:vertical {
+      border: 1px ridge grey;
+      background: #FFFFFF;
+      width: 15px;
+      margin: 2px 0 2px 0;
+  }
+
+ QScrollBar::handle:vertical,  QScrollBar::handle:pressed {
+      background: rgb(135, 173, 255);
+	  border: 0px outset grey;
+      min-height: 20px;
+  }
+
+  QScrollBar::handle:vertical {
+      background: rgb(175, 213, 255);
+	  selection-background-color: rgb(135, 173, 255);
+	  border: 0px outset grey;
+      min-height: 20px;
+  }
+</string>
+             </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOn</enum>
+             </property>
+             <property name="horizontalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOn</enum>
+             </property>
+             <property name="autoScroll">
+              <bool>true</bool>
+             </property>
+             <column>
+              <property name="text">
+               <string/>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Nowa kolumna</string>
+              </property>
+             </column>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Nowa kolumnaNowa kolumnaNowa kolumnaNowa kolumnaNowa kolumna</string>
+              </property>
+             </item>
+            </widget>
            </widget>
            <widget class="QWidget" name="Analizy">
             <property name="palette">
@@ -1061,30 +1309,65 @@
          </item>
          <item>
           <widget class="QPushButton" name="openButton">
-           <property name="text">
+           <property name="minimumSize">
+            <size>
+             <width>44</width>
+             <height>44</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>44</width>
+             <height>44</height>
+            </size>
+           </property>
+           <property name="toolTip">
             <string>Open</string>
            </property>
-           <property name="icon">
-            <iconset resource="Icons.qrc">
-             <normaloff>:/resources/icons/open.png</normaloff>:/resources/icons/open.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_3">
            <property name="text">
-            <string>Search</string>
+            <string/>
            </property>
            <property name="icon">
             <iconset resource="Icons.qrc">
-             <normaloff>:/resources/icons/wizualizacja2.png</normaloff>:/resources/icons/wizualizacja2.png</iconset>
+             <normaloff>:/resources/icons/openSession.png</normaloff>:/resources/icons/openSession.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>39</width>
+             <height>39</height>
+            </size>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="closeButton">
+           <property name="minimumSize">
+            <size>
+             <width>44</width>
+             <height>44</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>44</width>
+             <height>44</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Close</string>
+           </property>
            <property name="text">
-            <string>CloseButton</string>
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="Icons.qrc">
+             <normaloff>:/resources/icons/close.png</normaloff>:/resources/icons/close.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>39</width>
+             <height>39</height>
+            </size>
            </property>
           </widget>
          </item>

@@ -65,6 +65,11 @@ private:
 				kinematic->setMarkers(c);
 				scheme = SkeletalVisualizationScheme::create();
 				scheme->setKinematicModel(kinematic);
+				int markersCount = c->getNumChannels();
+				try {
+					scheme->setMarkersDataFromVsk(
+						Vsk::get(static_cast<Vsk::MarkersCount>(markersCount)));
+				} catch (...) {}
 			} else {
                 scheme = data->get();
 			}

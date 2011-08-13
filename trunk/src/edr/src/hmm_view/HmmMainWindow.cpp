@@ -11,35 +11,10 @@
 #include "LoadingDialog.h"
 #include "VisualizerWidget.h"
 #include "WorkflowWidget.h"
+#include "EDRConsoleInnerWidget.h"
+#include "EDRConsoleWidget.h"
 
 using namespace core;
-
-#define FILL_TREE_WITH_SCALAR(data)												\
-	do {																        \
-		if (session->has##data()) {										        \
-			QTreeWidgetItem* markersItem = new QTreeWidgetItem();			        \
-			markersItem->setText(0, tr(#data));								        \
-			item->addChild(markersItem);									        \
-			BOOST_FOREACH(MotionPtr motion, session->getMotions()) {	        \
-				auto channelCollection = motion->get##data();					\
-				if (channelCollection) {								        \
-					QTreeWidgetItem* motionItem = new QTreeWidgetItem();        \
-					motionItem->setText(0, motion->getName().c_str());	        \
-					markersItem->addChild(motionItem);						        \
-					int count = channelCollection->getNumChannels();			\
-					for (int i = 0; i < count; i++) {							\
-						QTreeWidgetItem* channelItem = new QTreeWidgetItem();	\
-						auto c = channelCollection->getChannel(i);				\
-						channelItem->setText(0, c->getName().c_str());			\
-						motionItem->addChild(channelItem);						\
-						item2ScalarMap[channelItem] = 							\
-								boost::dynamic_pointer_cast<const ScalarChannel>(c);  \
-					}															\
-				}														        \
-			}															        \
-		}																        \
-	}																	        \
-	while(false);
 
 
 HmmMainWindow::HmmMainWindow() :
@@ -59,10 +34,10 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 
 	topButton->setFixedWidth(0);
 	bottomButton->setFixedWidth(0);
-	QString s = tabWidget->styleSheet();
-	tabWidget->setStyleSheet(
+	//QString s = tabWidget->styleSheet();
+	/*tabWidget->setStyleSheet(
 		"QTabBar::tab:selected { color: rgb(135, 173, 255); }" 
-		"QTabBar::tab {  color: white; } ");    //height: 100px; width: 100px; 
+		"QTabBar::tab {  color: white; } "); */   //height: 100px; width: 100px; 
 	/*Badania_2->setStyleSheet(
 		"QTabBar::tab { background: gray; color: white; padding: 10px; } "
 		"QTabBar::tab:selected { background: lightgray; } "
@@ -83,6 +58,70 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 	QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
 	treeWidget->setMaximumWidth(250);
 	treeWidget->setHeaderHidden(true);
+
+	// TODO : przeniesc do designera
+	QString style = 
+		"QScrollBar:horizontal {											   "
+		"border: 1px ridge grey;											   "
+		"background: #FFFFFF;												   "
+		"height: 15px;														   "
+		"margin: 0px 0px 0px 0px;											   "
+		"}																	   "
+		"																	   "
+		"QScrollBar::handle:horizontal,  QScrollBar::handle:pressed {			"	
+		"background: rgb(135, 173, 255);									   "
+		"min-width: 2px;													   "
+		"max-width: 5px;													   "
+		"height:5px;				    									   "
+		"border: 0px solid grey;											   "
+		"}																	   "
+		"																	   "
+		"QScrollBar::handle:horizontal {									   "
+		"background: rgb(175, 213, 255);									   "
+		"selection-background-color: rgb(135, 173, 255);						"
+		"min-width: 2px;													   "
+		"max-width: 5px;													   "
+		"height:5px;				    									   "
+		"border: 0px solid grey;											   "
+		"}																	   "
+		"																	   "
+		"QScrollBar::add-line:horizontal {									   "
+		"border: 0px solid grey;											   "
+		"background: #FFFFFF;												   "
+		"width: 0px;														   "
+		"subcontrol-position: right;										   "
+		"subcontrol-origin: margin;											   "
+		"}																	   "
+		"																	   "
+		"QScrollBar::sub-line:horizontal {									   "
+		"border: 0px solid grey;											   "
+		"background: #FFFFFF;												   "
+		"width: 0px;														   "
+		"subcontrol-position: left;											   "
+		"subcontrol-origin: margin;											   "
+		"}																	   "
+		"																	   "
+		"QScrollBar:vertical {												   "
+		"border: 1px ridge grey;											   "
+		"background: #FFFFFF;												   "
+		"width: 15px;														   "
+		"margin: 2px 0 2px 0;												   "
+		"}																	   "
+		"																	   "
+		"QScrollBar::handle:vertical,  QScrollBar::handle:pressed {			   "
+		"background: rgb(135, 173, 255);									   "
+		"border: 0px outset grey;											   "
+		"min-height: 20px;													   "
+		"}																	   "
+		"																	   "
+		"QScrollBar::handle:vertical {										   "
+		"background: rgb(175, 213, 255);									   "
+		"selection-background-color: rgb(135, 173, 255);					   "
+		"border: 0px outset grey;											   "
+		"min-height: 20px;													   "
+		"}																	   ";
+
+	treeWidget->setStyleSheet(style);
 	QHBoxLayout *hlayout = new QHBoxLayout;
 	hlayout->addWidget(treeWidget);
 
@@ -90,6 +129,15 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
     pane = new QMainWindow(nullptr);
 	//pane->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	//QGridLayout* gridLayout = new QGridLayout();
+	//pane->setLayout(gridLayout);
+	hlayout->setSpacing(0);
+	hlayout->setMargin(0);
+	/*pane = new QFrame(this);
+	pane->setFrameShape(QFrame::Box);
+	pane->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);*/
+	/*QGridLayout* gridLayout = new QGridLayout();
+	gridLayout->setMargin(0);
+	gridLayout->setSpacing(0);*/
 	//pane->setLayout(gridLayout);
 	//VisualizerWidget* visualizerWidget = new VisualizerWidget();
 
@@ -124,8 +172,10 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 	}
 
 	EDRWorkflowWidget* widget = new EDRWorkflowWidget();
-	QHBoxLayout* layout = new QHBoxLayout();
+	QVBoxLayout* layout = new QVBoxLayout();
 	layout->addWidget(widget);
+	layout->addWidget(widgetConsole);
+
 	Operations->setLayout(layout);
 	getUpdateTimer().start(20);
 }
@@ -161,23 +211,6 @@ void HmmMainWindow::onOpen()
 
 	std::vector<SessionPtr> sessions = core::queryDataPtr(DataManager::getInstance());
 
-	//treeWidget = new QTreeWidget();
-	//QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
-	//treeWidget->setMaximumWidth(250);
-	//treeWidget->setHeaderHidden(true);
-	//QHBoxLayout *layout = new QHBoxLayout;
-	//layout->addWidget(treeWidget);
-
-	//pane = new QWidget(this);
-	//pane->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	//QGridLayout* gridLayout = new QGridLayout();
-	//pane->setLayout(gridLayout);
-	////VisualizerWidget* visualizerWidget = new VisualizerWidget();
-
-	//layout->addWidget(pane);
-	//Analizy->setLayout(layout);
-	//layout->addStretch();
-
 	for (int i = sessions.size() - 1; i >= 0; --i) {
 		SessionPtr session = sessions[i];
 		QTreeWidgetItem* item = new QTreeWidgetItem();
@@ -186,24 +219,65 @@ void HmmMainWindow::onOpen()
 		treeWidget->addTopLevelItem(item);
 		treeWidget->setColumnCount(2);
 		treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
-		FILL_TREE_WITH_SCALAR(Emg);
-		FILL_TREE_WITH_SCALAR(Grf);
 		
-		if (session->hasMarkers()) {							
-			QTreeWidgetItem* markersItem = new QTreeWidgetItem();		
-			markersItem->setText(0, tr("Markers"));							
-			item->addChild(markersItem);								
-			BOOST_FOREACH(MotionPtr motion, session->getMotions()) {
-				const auto channelCollection = motion->getMarkers();			
-				if (channelCollection) {								
-					QTreeWidgetItem* motionItem = new QTreeWidgetItem();    
-					motionItem->setText(0, motion->getName().c_str());	    
-					markersItem->addChild(motionItem);		
-					item2Markers[motionItem] = channelCollection;
-				}															
-			}		
-		}
+		QIcon icon(core::getResourceString("icons/charts.png"));
+		QIcon icon3D(core::getResourceString("icons/3d.png"));
+										
+		BOOST_FOREACH(MotionPtr motion, session->getMotions()) {	
+			QTreeWidgetItem* motionItem = new QTreeWidgetItem();  
+			motionItem->setText(0, motion->getName().c_str());	        
+			item->addChild(motionItem);
+			auto channelCollection = motion->getEmg();
 
+			if (channelCollection) {	
+				QTreeWidgetItem* emgItem = new QTreeWidgetItem();
+				motionItem->addChild(emgItem);
+				emgItem->setText(0, "EMG");
+				int count = channelCollection->getNumChannels();			
+				for (int i = 0; i < count; i++) {							
+					QTreeWidgetItem* channelItem = new QTreeWidgetItem();
+					channelItem->setIcon(0, icon);							
+					auto c = channelCollection->getChannel(i);				
+					channelItem->setText(0, c->getName().c_str());			
+					emgItem->addChild(channelItem);						
+					item2ScalarMap[channelItem] = 							
+						boost::dynamic_pointer_cast<const ScalarChannel>(c);
+				}														
+			}	
+
+			auto grfCollection = motion->getGrf();
+			if (grfCollection) {	
+				QTreeWidgetItem* grfItem = new QTreeWidgetItem();
+				grfItem->setText(0, "GRF");
+				motionItem->addChild(grfItem);
+				int count = channelCollection->getNumChannels();			
+				for (int i = 0; i < count; i++) {							
+					QTreeWidgetItem* channelItem = new QTreeWidgetItem();	
+						
+					channelItem->setIcon(0, icon);							
+					auto c = channelCollection->getChannel(i);				
+					channelItem->setText(0, c->getName().c_str());			
+					grfItem->addChild(channelItem);						
+					item2ScalarMap[channelItem] = 							
+						boost::dynamic_pointer_cast<const ScalarChannel>(c);
+				}														
+			}	
+
+			tryAddVectorToTree(motion->getForces(), "Forces", &icon3D, motionItem);
+			tryAddVectorToTree(motion->getMoments(), "Moments", &icon3D, motionItem);
+			tryAddVectorToTree(motion->getAngles(), "Angles", &icon3D, motionItem);
+			tryAddVectorToTree(motion->getPowers(), "Powers", &icon3D, motionItem);
+
+			const auto markerCollection = motion->getMarkers();			
+			if (markerCollection) {
+				QTreeWidgetItem* markersItem = new QTreeWidgetItem();
+				markersItem->setIcon(0, icon3D);
+				markersItem->setText(0, tr("Markers"));							
+				motionItem->addChild(markersItem);		
+				item2Markers[markersItem] = markerCollection;
+			}
+		}
+		
 		//FILL_TREE_WITH_SCALAR(Joints);
 		//FILL_TREE_WITH_SCALAR(Video);
 	}
@@ -233,6 +307,14 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
 	onClicked<ScalarChannel, ScalarChannelConstPtr>(item, item2ScalarMap);
 	onClicked<MarkerCollection>(item, item2Markers);
+
+	auto it = item2Vector.find(item);
+	if (it != item2Vector.end()) {
+		QDockWidget* dock = new QDockWidget();
+		QLabel* label = new QLabel("<font color = \"red\" size = 5> Tutaj trzeba dodac wizualizator VectorChannel :) </font> <br /> pozdrawiam, WK");
+		dock->setWidget(label);
+		pane->addDockWidget(Qt::LeftDockWidgetArea, dock);
+	}
 }
 
 

@@ -66,19 +66,16 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Fil
     }
 
     std::vector<MarkerCollectionPtr> markers = core::queryDataPtr(dataManager);
-    VskParserPtr vsk(new VskParser);
+    VskParserConstPtr vsk;
 
     if (markers.size() > 0) {
         MarkerCollectionConstPtr ms = markers[0];
         switch(ms->getNumChannels()) {
        case 39:
-            vsk->parse(core::getResourceString("trial/M39.vsk"));
+            vsk = Vsk::get(Vsk::MarkersCount39);
             break;
         case 53:
-            vsk->parse(core::getResourceString("trial/M53.vsk"));
-        default:
-            VskParserPtr nullVsk;
-            vsk = nullVsk;
+            vsk = Vsk::get(Vsk::MarkersCount53);
         }
     }
 

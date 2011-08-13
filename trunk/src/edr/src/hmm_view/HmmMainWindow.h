@@ -2,6 +2,7 @@
 #define HMM_TOOLBOXMAIN_H
 
 #include <plugins/c3d/C3DChannels.h>
+#include <QtGui/QFrame>
 #include "MainWindow.h"
 #include "ui_toolboxmaindeffile.h"
 
@@ -44,15 +45,16 @@ private:
 			wrapper->setName(prefix + "nazwa testowa");
 			wrapper->setSource(prefix + "Sciezka testowa");
 			vis->getOrCreateWidget();
-			VisualizerWidget* visu = new VisualizerWidget(vis);
-            visu->setAllowedAreas(Qt::RightDockWidgetArea);
-            visu->setStyleSheet(styleSheet());
+			VisualizerWidget* visualizerWidget = new VisualizerWidget(vis);
+            visualizerWidget->setAllowedAreas(Qt::RightDockWidgetArea);
+            visualizerWidget->setStyleSheet(styleSheet());
+            visualizerWidget->setTitleBarVisible(false);
 
-            visu->setTitleBarVisible(false);
+			vis->getWidget()->setFocusProxy(visualizerWidget);
 
 			vis->createSerie(wrapper, prefix + "seria testowa");
 
-            connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+            connect(visualizerWidget, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
 			
 			/*pane->setUpdatesEnabled(false);
 			if (currentVisualizer) {
@@ -61,13 +63,37 @@ private:
 			}*/
 			//currentVisualizer = visu;
 			//pane->layout()->addWidget(visu);
-            pane->addDockWidget(Qt::RightDockWidgetArea, visu);
+            pane->addDockWidget(Qt::RightDockWidgetArea, visualizerWidget);
 			//pane->setUpdatesEnabled(true);
 		}
 	}
+
+	template <class Collection>
+	void tryAddVectorToTree( Collection collection, const std::string& name, QIcon* childIcon, QTreeWidgetItem* parentItem ) 
+	{
+		if (collection) {
+			QTreeWidgetItem* collectionItem = new QTreeWidgetItem();
+			collectionItem->setText(0, tr(name.c_str()));	
+			parentItem->addChild(collectionItem);
+			int count = collection->getNumChannels();
+			for (int i = 0; i < count; i++) {							
+				QTreeWidgetItem* channelItem = new QTreeWidgetItem();
+				if (childIcon) {
+					channelItem->setIcon(0, *childIcon);							
+				}
+				auto c = collection->getChannel(i);				
+				channelItem->setText(0, c->getName().c_str());			
+				collectionItem->addChild(channelItem);						
+				item2Vector[channelItem] = 							
+					boost::dynamic_pointer_cast<const VectorChannel>(c);
+			}	
+		}
+	}
+
 private:
 	std::map<QTreeWidgetItem*, ScalarChannelConstPtr> item2ScalarMap;
 	std::map<QTreeWidgetItem*, MarkerCollectionConstPtr> item2Markers;
+	std::map<QTreeWidgetItem*, VectorChannelConstPtr> item2Vector;
 	VisualizerWidget* currentVisualizer;
 	//QWidget* pane;
     QMainWindow* pane;

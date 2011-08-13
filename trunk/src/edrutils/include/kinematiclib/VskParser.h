@@ -41,6 +41,8 @@ public:
     stickIterators getSticks() const;
     markerIterators getMarkers() const;
 
+	bool isLoaded() const { return loaded; }
+
 
 private:
     //! Wczytanie polaczen miedzy markerami

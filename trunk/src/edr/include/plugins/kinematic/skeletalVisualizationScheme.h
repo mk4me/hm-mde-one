@@ -18,6 +18,46 @@ UTILS_POP_WARNINGS
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/kinematic/KinematicModel.h>
 
+
+//! Pomocnicza klasa do obslugi plikow vsk. Likwiduje koniecznosc ich wielokrotnego parsowania
+class Vsk
+{
+public:
+	enum MarkersCount
+	{
+		MarkersCount39 = 39,
+		MarkersCount53 = 53
+	};
+
+public:
+	static kinematic::VskParserConstPtr get(MarkersCount count) 
+	{
+		switch(count) 
+		{
+		case MarkersCount39:										
+			if (!Count39->isLoaded()) {	
+				Count39->parse(core::getResourceString("trial/M39.vsk"));		
+			} 																
+			return Count39;
+
+		case MarkersCount53:										
+			if (!Count53->isLoaded()) {											
+				Count53->parse(core::getResourceString("trial/M53.vsk"));		
+			} 																
+			return Count53;
+
+		default:
+			throw std::runtime_error("Wrong VSK scheme was requested");
+		}
+	}
+
+private:
+	static kinematic::VskParserPtr Count39;
+	static kinematic::VskParserPtr Count53;
+};
+
+
+
 class ISchemeDrawer;
 enum DataToDraw;
 typedef core::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;

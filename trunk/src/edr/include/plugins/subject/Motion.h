@@ -39,11 +39,29 @@ public:
 	std::string getName() const { return name; }
 	void setName(std::string val) { name = val; }
 
+	ForceCollectionConstPtr getForces() const { return forces; }
+	void setForces(ForceCollectionConstPtr val) { forces = val; }
+
+	AngleCollectionConstPtr getAngles() const { return angles; }
+	void setAngles(AngleCollectionConstPtr val) { angles = val; }
+
+	PowerCollectionConstPtr getPowers() const { return powers; }
+	void setPowers(PowerCollectionConstPtr val) { powers = val; }
+
+	MomentCollectionConstPtr getMoments() const { return moments; }
+	void setMoments(MomentCollectionConstPtr val) { moments = val; }
+
+
 private:
 	GRFCollectionConstPtr grf;
 	EMGCollectionConstPtr emg;
 	kinematic::JointAnglesCollectionConstPtr joints;
 	MarkerCollectionConstPtr markers;
+	ForceCollectionConstPtr forces;
+	AngleCollectionConstPtr angles;
+	PowerCollectionConstPtr powers;
+	MomentCollectionConstPtr moments;
+
 	VideoCollectionConstPtr videos;
 	std::string name;
 };
