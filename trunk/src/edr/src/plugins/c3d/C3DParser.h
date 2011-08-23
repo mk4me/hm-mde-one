@@ -30,7 +30,8 @@ private:
 	core::ObjectWrapperPtr angleChannels;
 	core::ObjectWrapperPtr momentChannels;
 	core::ObjectWrapperPtr powerChannels;
-	core::ObjectWrapperPtr events;
+	core::ObjectWrapperPtr leftEvents;
+	core::ObjectWrapperPtr rightEvents;
 	ParserPtr parserPtr;
 	
 public:

@@ -177,7 +177,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 	layout->addWidget(widgetConsole);
 
 	Operations->setLayout(layout);
-	getUpdateTimer().start(20);
+	//getUpdateTimer().start(20);
 }
 
 void HmmMainWindow::visualizerGainedFocus()
@@ -213,10 +213,10 @@ void HmmMainWindow::onOpen()
 
 	for (int i = sessions.size() - 1; i >= 0; --i) {
 		SessionPtr session = sessions[i];
-		QTreeWidgetItem* item = new QTreeWidgetItem();
-		QString tmp(session->getName().c_str());
-		item->setText(0, tmp);
-		treeWidget->addTopLevelItem(item);
+		//QTreeWidgetItem* item = new QTreeWidgetItem();
+		//QString tmp(session->getName().c_str());
+		//item->setText(0, tmp);
+		//treeWidget->addTopLevelItem(item);
 		treeWidget->setColumnCount(2);
 		treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
 		
@@ -225,8 +225,9 @@ void HmmMainWindow::onOpen()
 										
 		BOOST_FOREACH(MotionPtr motion, session->getMotions()) {	
 			QTreeWidgetItem* motionItem = new QTreeWidgetItem();  
-			motionItem->setText(0, motion->getName().c_str());	        
-			item->addChild(motionItem);
+			motionItem->setText(0, motion->getName().c_str());	 
+			treeWidget->addTopLevelItem(motionItem);
+			//item->addChild(motionItem);
 			auto channelCollection = motion->getEmg();
 
 			if (channelCollection) {	
@@ -250,12 +251,12 @@ void HmmMainWindow::onOpen()
 				QTreeWidgetItem* grfItem = new QTreeWidgetItem();
 				grfItem->setText(0, "GRF");
 				motionItem->addChild(grfItem);
-				int count = channelCollection->getNumChannels();			
+				int count = grfCollection->getNumChannels();			
 				for (int i = 0; i < count; i++) {							
 					QTreeWidgetItem* channelItem = new QTreeWidgetItem();	
 						
 					channelItem->setIcon(0, icon);							
-					auto c = channelCollection->getChannel(i);				
+					auto c = grfCollection->getChannel(i);				
 					channelItem->setText(0, c->getName().c_str());			
 					grfItem->addChild(channelItem);						
 					item2ScalarMap[channelItem] = 							

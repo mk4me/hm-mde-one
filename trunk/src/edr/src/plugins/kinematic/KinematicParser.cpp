@@ -92,6 +92,7 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Fil
         }
         schemeMarkers->set(scheme);
         schemeMarkers->setName(path.filename().string() + " - markers");
+		schemeMarkers->setSource(path.string());
     }
 
     if (markers.size() > 0 && modelPtr && dataPtr && dataPtr->getFrames().size() > 0) {
@@ -102,6 +103,8 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Fil
         kin->setSkeleton(kinematicSkeleton);
         kin->setMarkers(markers[0]);
         kinematicMarkersSkeleton->set(kin);
+		kinematicMarkersSkeleton->setName(path.filename().string());
+		kinematicMarkersSkeleton->setSource(path.filename().string());
         SkeletalVisualizationSchemePtr scheme = SkeletalVisualizationScheme::create();
         scheme->setKinematicModel(kin);
         if (vsk) {
@@ -109,6 +112,7 @@ void KinematicParser::parseFile(core::IDataManager* dataManager, const core::Fil
         }
         schemeMarkersSkeleton->set(scheme);
         schemeMarkersSkeleton->setName(path.filename().string());
+		schemeMarkersSkeleton->setSource(path.string());
     }
 }
 

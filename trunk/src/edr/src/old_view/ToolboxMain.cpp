@@ -82,10 +82,10 @@ void ToolboxMain::init( core::PluginLoader* pluginLoader )
 	initializeUI();
 	setupUi(this);
 	connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
-	connect(&getUpdateTimer(), SIGNAL(timeout()), this, SLOT(updateServices()));
+	/*connect(&getUpdateTimer(), SIGNAL(timeout()), this, SLOT(updateServices()));
 	connect(&getUpdateTimer(), SIGNAL(timeout()), this, SLOT(updateVisualizers()));
 
-	getUpdateTimer().start(20);
+	getUpdateTimer().start(20);*/
 
 	if ( getNumViews() ) {
 		connect( &viewerFrameTimer, SIGNAL(timeout()), this, SLOT(update()) );

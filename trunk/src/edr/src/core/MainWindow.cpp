@@ -145,10 +145,11 @@ void MainWindow::init(PluginLoader* pluginLoader)
     readSettings(QSettings(), true);
 
 
-    /*connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
-    connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
-    connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));*/
-    /*updateTimer.start(20);
+    //connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
+    bool test1 = connect(&serviceTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
+    bool test2 = connect(&visualizerTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
+    serviceTimer.start(20);
+	visualizerTimer.start(20);
 
     if ( getNumViews() ) {
         connect( &viewerFrameTimer, SIGNAL(timeout()), this, SLOT(update()) );
@@ -156,7 +157,7 @@ void MainWindow::init(PluginLoader* pluginLoader)
     }
 
 
-    populateVisualizersMenu(menuCreateVisualizer);*/
+   // populateVisualizersMenu(menuCreateVisualizer);
 
    // DataProcessor::test();
 }

@@ -213,12 +213,24 @@ namespace core {
         //! Ustawia obiekt wrappera. W razie b³êdu rzuca bad_castem.
         //! \param object Obiekt.
         template <class Ptr>
-        void set(Ptr& object)
+        void set(Ptr& object, const std::string& name, const std::string& source)
         {
-            if ( !trySet(object) ) {
+            if ( !trySet(object, name, source) ) {
                 throw std::bad_cast("Invalid cast");
             }
         }
+
+		//! Ustawia obiekt wrappera, jego nazwe i zrodlo
+		//! \param object Obiekt
+		//! \param name Nazwa obiektu, ktora ma byc wyswietlona
+		//! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
+		template <class Ptr>
+		void set(Ptr& object)
+		{
+			if ( !trySet(object)) {
+				throw std::bad_cast("Invalid cast");
+			}
+		}
 
         //! Ustawia obiekt wrappera.
         //! \param object Obiekt.
@@ -233,6 +245,21 @@ namespace core {
                 return false;
             }
         }
+
+		//! Ustawia obiekt wrappera, jego nazwe i zrodlo
+		//! \param object Obiekt
+		//! \param name Nazwa obiektu, ktora ma byc wyswietlona
+		//! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
+		template <class Ptr>
+		bool trySet(Ptr& object, const std::string& name, const std::string& source)
+		{
+			if (trySet(object)) {
+				setName(name);
+				setSource(source);
+				return true;
+			}
+			return false;
+		}
 
         //! \return ID typu.
         inline std::size_t getClassID() const

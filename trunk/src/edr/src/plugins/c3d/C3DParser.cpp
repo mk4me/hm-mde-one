@@ -23,7 +23,8 @@ C3DParser::C3DParser()
 	momentChannels = core::ObjectWrapper::create<MomentCollection>();
 	powerChannels  = core::ObjectWrapper::create<PowerCollection>();
 	
-	events = core::ObjectWrapper::create<C3DEventsCollection>();
+	leftEvents = core::ObjectWrapper::create<C3DEventsCollection>();
+	rightEvents = core::ObjectWrapper::create<C3DEventsCollection>();
 }
 
 C3DParser::~C3DParser()
@@ -48,7 +49,7 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 		GRFChannels[i]->setSource(path.string());
 		g->addChannel(ptr);
 	}
-	GRFs->set(g);
+	GRFs->set(g, path.filename().string(), path.string());
 
 	EMGCollectionPtr e(new EMGCollection());
 	for (int i = 12; i < 28; ++i) {
@@ -58,14 +59,23 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 		EMGChannels[i-12]->setSource(path.string());
 		e->addChannel(ptr);
 	}
-	EMGs->set(e);
+	EMGs->set(e, path.filename().string(), path.string());
 
 	int count = parser->getNumEvents();
-	EventsCollectionPtr events(new C3DEventsCollection());
+	EventsCollectionPtr leftEventsCollection(new C3DEventsCollection());
+	EventsCollectionPtr rightEventsCollection(new C3DEventsCollection());
 	for (int i = 0; i < count; i++) {
-		events->addEvent(parser->getEvent(i));
+		c3dlib::C3DParser::IEventPtr event = parser->getEvent(i);
+		if (event->getContext() == "Left") {
+			leftEventsCollection->addEvent(parser->getEvent(i));
+		} else if (event->getContext() == "Right") {
+			rightEventsCollection->addEvent(parser->getEvent(i));
+		} else {
+			LOG_WARNING("Unknown event context - skipping event");
+		}
 	}
-	this->events->set(events);
+	this->leftEvents->set(leftEventsCollection, path.filename().string(), path.string());
+	this->rightEvents->set(rightEventsCollection, path.filename().string(), path.string());
 
 	MarkerCollectionPtr markers(new MarkerCollection); 
 	ForceCollectionPtr forces(new ForceCollection);
@@ -91,11 +101,11 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 			CHANNEL_CASE(Power, powers);
 		}
 	}
-	markerChannels->set(markers);
-	forceChannels->set(forces);
-	angleChannels->set(angles);
-	momentChannels->set(moments);
-	powerChannels->set(powers);
+	markerChannels->set(markers, path.filename().string(), path.string());
+	forceChannels->set(forces, path.filename().string(), path.string());
+	angleChannels->set(angles, path.filename().string(), path.string());
+	momentChannels->set(moments, path.filename().string(), path.string());
+	powerChannels->set(powers, path.filename().string(), path.string());
 }
 
 core::IParser* C3DParser::create()
@@ -113,7 +123,8 @@ void C3DParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 	objects.insert(objects.end(), GRFChannels.begin(), GRFChannels.end());
 	objects.insert(objects.end(), EMGChannels.begin(), EMGChannels.end());
 	objects.push_back(markerChannels);
-	objects.push_back(events);
+	objects.push_back(leftEvents);
+	objects.push_back(rightEvents);
 	objects.push_back(EMGs);
 	objects.push_back(GRFs);
 	objects.push_back(forceChannels );

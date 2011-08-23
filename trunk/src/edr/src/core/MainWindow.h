@@ -43,7 +43,8 @@ namespace core {
 		//! Czy update jest w³¹czony?
 		bool updateEnabled;
 		//! Timer wyznaczaj¹cy update'y.
-		QTimer updateTimer;
+		QTimer visualizerTimer;
+		QTimer serviceTimer;
 		//! Korzeñ sceny.
 		osg::ref_ptr<osg::Node> sceneRoot;
 		//! Pluginy.
@@ -52,9 +53,11 @@ namespace core {
 		QTimer viewerFrameTimer;
 
 	protected:
-		const QTimer& getUpdateTimer() const { return updateTimer; }
-		QTimer& getUpdateTimer() { return updateTimer; }
+		const QTimer& getVisualizerTimer() const { return visualizerTimer; }
+		QTimer& getVisualizerTimer() { return visualizerTimer; }
 
+		const QTimer& getServiceTimer() const { return serviceTimer; }
+		QTimer& getServiceTimer() { return serviceTimer; }
 
 	public:
 		MainWindow();
@@ -63,13 +66,13 @@ namespace core {
 		virtual void init( core::PluginLoader* pluginLoader );
 
 		
-
+	public slots:
 		//! Aktualizacja us³ug.
 		void updateServices();
 		//! Aktualizacja wizualizatorow.
 		void updateVisualizers();
 
-
+	public:
 		// TODO: Embedded widgets initializations - should be in plugins!!! 
 		void InitializeOGSWidget();
 		void initializeConsole();
