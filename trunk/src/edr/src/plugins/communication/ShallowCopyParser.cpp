@@ -63,7 +63,7 @@ void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const core::F
     }
     //GroupAssignments
     TiXmlElement* group_assignments_element = hParent.FirstChild("GroupAssignments").ToElement();
-    if(sessions_element) {
+    if(group_assignments_element) {
         TiXmlElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
         while(group_assignment_element) {
             communication::ShallowCopy::GroupAssigment group_assignment;

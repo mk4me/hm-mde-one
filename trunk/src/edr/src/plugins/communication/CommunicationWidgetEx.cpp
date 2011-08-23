@@ -230,7 +230,7 @@ void CommunicationWidgetEx::loadPressed()
     BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
     {
         boost::cmatch matches;
-        boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+        boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
         //sprawdzamy, czy zgadza sie nazwa folderu
         if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e)) {
             //if(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getName() == core::toQString(matches[2])) {
@@ -365,7 +365,7 @@ void CommunicationWidgetEx::useVideos()
                 BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
                 {
                     boost::cmatch matches;
-                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
                     //sprawdzamy, czy zgadza sie nazwa folderu
                     if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
                         if(trial->markVideos) {
@@ -400,7 +400,7 @@ void CommunicationWidgetEx::useMocap()
                 BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
                 {
                     boost::cmatch matches;
-                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
                     //sprawdzamy, czy zgadza sie nazwa folderu
                     if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
                         if(trial->markMocap) {
@@ -435,7 +435,7 @@ void CommunicationWidgetEx::useGrf()
                 BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
                 {
                     boost::cmatch matches;
-                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
                     //sprawdzamy, czy zgadza sie nazwa folderu
                     if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
                         if(trial->markGrf) {
@@ -470,7 +470,7 @@ void CommunicationWidgetEx::useEmg()
                 BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
                 {
                     boost::cmatch matches;
-                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
                     //sprawdzamy, czy zgadza sie nazwa folderu
                     if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
                         if(trial->markEmg) {
@@ -502,7 +502,7 @@ void CommunicationWidgetEx::useTrialVideos()
     //        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
     //        {
     //            boost::cmatch matches;
-    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
     //            //sprawdzamy, czy zgadza sie nazwa folderu
     //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
     //                if(item->getTrial()->markVideos) {
@@ -533,7 +533,7 @@ void CommunicationWidgetEx::useTrialMocap()
     //        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
     //        {
     //            boost::cmatch matches;
-    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
     //            //sprawdzamy, czy zgadza sie nazwa folderu
     //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
     //                if(item->getTrial()->markMocap) {
@@ -565,7 +565,7 @@ void CommunicationWidgetEx::useTrialGrf()
     //        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
     //        {
     //            boost::cmatch matches;
-    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
     //            //sprawdzamy, czy zgadza sie nazwa folderu
     //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
     //                if(item->getTrial()->markGrf) {
@@ -597,7 +597,7 @@ void CommunicationWidgetEx::useTrialEmg()
     //        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
     //        {
     //            boost::cmatch matches;
-    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
     //            //sprawdzamy, czy zgadza sie nazwa folderu
     //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
     //                if(item->getTrial()->markEmg) {
@@ -735,7 +735,7 @@ CommunicationWidgetEx::TrialTreeItem* CommunicationWidgetEx::createTrialItem(Tri
         BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
         {
             boost::cmatch matches;
-            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
             //sprawdzamy, czy zgadza sie nazwa folderu
             if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
                 item->setTextColor(0, QColor(0, 0, 0));
@@ -779,7 +779,7 @@ std::vector<core::Filesystem::Path> CommunicationWidgetEx::listTrialFiles(bool m
         BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
         {
             boost::cmatch matches;
-            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-P\\d{2,}-S\\d{2,}-T\\d{2,})(.*)");
+            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
             //sprawdzamy, czy zgadza sie nazwa folderu
             if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
                 if(videos) {
