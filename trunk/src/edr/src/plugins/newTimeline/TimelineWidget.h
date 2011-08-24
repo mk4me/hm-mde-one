@@ -23,6 +23,10 @@
 #include <timelinelib/View.h>
 #include <timelinelib/Model.h>
 
+#include <plugins/newTimeline/TimeSliderWidget.h>
+#include <plugins/newTimeline/TimelineControlsWidget.h>
+
+
 class TimelineWidget : public QWidget, public Ui::TimelineWidget, public timeline::View
 {
     Q_OBJECT;
@@ -33,9 +37,6 @@ public:
     ~TimelineWidget();
 
     virtual void update(const State * state);
-
-    static QTime convertToQTime(double timeInSeconds);
-    static double convertToTime(const QTime & time);
 
     void loadToolbarElements(std::vector<QObject*> & elements) const;
 
@@ -58,6 +59,8 @@ private slots:
     void showChannelsTreeContextMenu(const QPoint& pnt);
     //! \param value Nowa wartoœæ slidera kontroluj¹cego czas w wersji znormalizowanej
     void timeSliderChanged(int value);
+    //! \param time Nowa wartoœæ czasu
+    void timeSliderChanged(double time);
     //! \brief Usuwa zaznacznoe w drzewie kana³y
     void removeSelectedChannels();
     //! \param Nowy czas dla timeline
@@ -83,12 +86,8 @@ private:
 
     //! \brief Po dodaniu/usuniêciu kana³u odœwie¿a chierarchiê kana³ów w drzewie timeline
     void refreshChannelsHierarchy();
-    //! \brief Odœwie¿a marker czasu w kana³ach po wiêkszoœci zmian
-    void refreshTimeInChannels();
-    //! \brief Odœwie¿a oœ czasu po zmianie offsetu lub skali (czasu trwania) roota (ca³ego timeline)
-    void refreshTimeAxis();
-    //! \brief Po zmianie offsetu lub skali odœwie¿a strukturê czasow¹ kana³ów
-    void refreshChannelsTimeStructure();
+    //! \brief Odœwie¿a kana³, tagi, marker aktualnego czasu
+    void refreshChannels();
     //! \brief Odœwie¿a ustawienia odtwarzacza timeline - skalê, kierunek, aktualny czas
     void refreshPlayerStatus();
 
@@ -97,12 +96,14 @@ private:
 
     void recursiveHierarchyRefresh(QTreeWidgetItem* uiNode);
 
-    void resursiveChannelsTimeStructureRefresh(QTreeWidgetItem* uiNode, double globalOffset, double globalLenght);
+    void recursiveRefreshChannels(QTreeWidgetItem* uiNode);
 
-    void resursiveTimeInChannelsRefresh(QTreeWidgetItem* uiNode, double globalOffset, double globalLenght);
+    static QWidget * createTreeItemWidget(QWidget * widget);
 
 private:
 
+    //! Wpis w drzewie bêd¹cy jego najwy¿szym poziomem - zawiera slider z osi¹ czasu
+    QTreeWidgetItem * rootItem;
     //! Menu kontekstowe do usuwania zaznaczonych kana³ów
     QMenu * removeChannelsMenu;
     //! Labelka opisuj¹ca kontrolkê zmiany skali
@@ -127,6 +128,11 @@ private:
     QAction * playPauseAction;
     //! Akcja zatrzymuj¹ca timeline
     QAction * stopAction;
+
+    //! Nowy slider z osi¹ czasu
+    TimeSliderWidget * slider;
+
+    TimelineControlsWidget * controls;
 };
 
 #endif  //  HEADER_GUARD___TIMELINEWIDGET_H__

@@ -111,7 +111,10 @@ void SubjectService::onWrappersAdded( const std::vector<core::ObjectWrapperPtr>&
 			} else if((*it)->isPtrSupported(typeid(PowerCollectionPtr)) ) {
 				manager->tryParseWrapper(*it);
 				currentMotion->setPowers((*it)->get());
-			}
+            } else if((*it)->isPtrSupported(typeid(EventsCollectionPtr)) ) {
+                manager->tryParseWrapper(*it);
+                currentMotion->setEvents((*it)->get());
+            }
 		}
 	} else {
 		// to tez moze byc poprawny przebieg programu, po prostu wczytano plik, 

@@ -36,6 +36,12 @@ public:
     virtual void clearSide(SideType side);
     virtual void clear();
 
+    bool isCloseButtonVisible() const;
+    void setCloseButtonVisible(bool visible);
+
+    bool isFloatButtonVisible() const;
+    void setFloatButtonVisible(bool visible);
+
 protected:
     virtual void paintEvent(QPaintEvent *paintEvent);
 

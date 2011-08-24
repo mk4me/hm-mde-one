@@ -29,15 +29,7 @@ public:
     //! \return Kana³ timeline skojarzony z tym wpisem
     const timeline::Model::TChannelConstPtr & getChannel() const;
 
-    //! \brief Odœwie¿a wizualn¹ reprezentacjê kana³u
-    //! \param globalOffset Offset ca³ego timeline
-    //! \param globalLength D³ugoœæ ca³ego timeline
-    void refreshVisualChannelStructure(double globalOffset, double globalLength);
-
-    //! \brief Odœwie¿a wizualn¹ reprezentacjê kana³u
-    //! \param globalOffset Offset ca³ego timeline
-    //! \param globalLength D³ugoœæ ca³ego timeline
-    void refreshVisualChannelTime(double globalOffset, double globalLength);
+    void refreschVisualChannel();
 };
 
 #endif  //  HEADER_GUARD_TIMELINE__CHANNELSTREEITEM_H__

@@ -111,6 +111,21 @@ public:
         return prototypes[i];
     }
 
+    //! Sprawdzenie czy dla danego typu danych istnieje wizualizator
+    //! \param type Typ danych dla którego chcemy uzyskaæ wizualizator
+    //! \return Instancja wizualizatora lub wyj¹tek jeœli nie mo¿na utworzyæ (bo nie istnieje + inne b³êdy)
+    inline bool existVisualizerForType(const core::TypeInfo & type) const
+    {
+        DataManager* dataManager = DataManager::getInstance();
+        for (auto it = mapType2ID.begin(); it != mapType2ID.end(); it++) {
+            if (dataManager->isTypeCompatible(type, it->first)) {
+                return true;
+            }
+        }
+
+        return mapType2ID.find(type) != mapType2ID.end();
+    }
+
     //! \param id ID wizualizatora.
     core::IVisualizerConstPtr getPrototype(UniqueID id) const;
 

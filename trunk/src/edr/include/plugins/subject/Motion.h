@@ -51,6 +51,11 @@ public:
 	MomentCollectionConstPtr getMoments() const { return moments; }
 	void setMoments(MomentCollectionConstPtr val) { moments = val; }
 
+    EventsCollectionConstPtr getEvents() const { return events; }
+    void setEvents(EventsCollectionConstPtr val) { events = val; }
+
+
+
 
 private:
 	GRFCollectionConstPtr grf;
@@ -61,6 +66,7 @@ private:
 	AngleCollectionConstPtr angles;
 	PowerCollectionConstPtr powers;
 	MomentCollectionConstPtr moments;
+    EventsCollectionConstPtr events;
 
 	VideoCollectionConstPtr videos;
 	std::string name;

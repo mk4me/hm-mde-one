@@ -20,6 +20,68 @@ const ModelConstPtr & Controller::getModel() const
     return constModel;
 }
 
+double Controller::getNormalizedTime(double time) const
+{
+    double ret = 0;
+    if(model->getLength() > 0){
+        ret = std::max(0.0, std::min(1.0, (time - model->getBeginTime()) / model->getLength()));
+    }
+
+    return ret;
+}
+
+double Controller::getNormalizedLength(double length) const
+{
+    double ret = 0;
+    if(model->getLength() > 0){
+        ret = std::max(0.0, std::min(1.0, length / model->getLength()));
+    }
+
+    return ret;
+}
+
+std::pair<double, double> Controller::getNormalizedRange(double begin, double length) const
+{
+    std::pair<double, double> ret(0,0);
+    if(model->getLength() > 0){
+        ret.first = getNormalizedTime(begin);
+        ret.second = getNormalizedLength(length);
+        if(ret.first + ret.second > 1.0){
+            ret.second = 1.0;
+        }
+    }
+
+    return ret;
+}
+
+double Controller::getAbsoluteTime(double normalizedTime) const
+{
+    UTILS_ASSERT((normalizedTime >= 0.0 && normalizedTime <= 1.0), "B³êdny czas - poza zakresem 0-1");
+    return normalizedTime * model->getLength() + model->getBeginTime();
+}
+
+double Controller::getAbsoluteLength(double normalizedLength) const
+{
+    UTILS_ASSERT((normalizedLength >= 0.0 && normalizedLength <= 1.0), "B³êdny czas - poza zakresem 0-1");
+    return normalizedLength * model->getLength();
+}
+
+std::pair<double, double> Controller::getAbsoluteRange(double begin, double length) const
+{
+    UTILS_ASSERT((begin >= 0.0 && begin <= 1.0), "B³êdny czas poczatku - poza zakresem 0-1");
+    UTILS_ASSERT((length >= 0.0 && length <= 1.0), "B³êdna dlugoœæ - poza zakresem 0-1");
+    
+    std::pair<double, double> ret(0,0);
+        
+    ret.first = getAbsoluteTime(begin);
+    ret.second = getAbsoluteLength(length);
+    if(ret.first + ret.second > model->getLength()){
+        ret.second = model->getLength() - ret.first;
+    }
+
+    return ret;
+}
+
 void Controller::setTimeUpdateMode(TimeUpdateMode timeUpdateMode)
 {
     ScopedLock lock(stateMutex);

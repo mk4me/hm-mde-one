@@ -11,20 +11,22 @@
 #include "ChannelWidget.h"
 #include <timelinelib/Controller.h>
 
-TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidget * parent, Qt::WindowFlags f)
+
+TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controlsler, QWidget * parent, Qt::WindowFlags f)
     : QWidget(parent, f), removeChannelsMenu(new QMenu()), scaleSpinBox(new QDoubleSpinBox()),
     playbackDirectionAction(new QAction(QString("Playback direction"), nullptr)), timeEditBox(new QTimeEdit()), timeToBeginAction(new QAction(QString("Begin"), nullptr)),
     timeToEndAction(new QAction(QString("End"), nullptr)), playPauseAction(new QAction(QString("Play"), nullptr)), visualTimeSlider(new QSlider(nullptr)),
     stopAction(new QAction(QString("Stop"), nullptr)), scaleLabel(new QLabel(QString("<font color=\"white\"><b>Scale:</b></font>"))),
-    timeLabel(new QLabel(QString("<font color=\"white\"><b>Time:</b></font>")))
+    timeLabel(new QLabel(QString("<font color=\"white\"><b>Time:</b></font>"))), rootItem(new QTreeWidgetItem()),
+    slider(new TimeSliderWidget()), controls(new TimelineControlsWidget())
 {
     //ustawienie kontrolera
-    setController(controller);
+    setController(controlsler);
 
     //inicjalizujemy widok drzewa
 
     //rejestracja obserwacji kontrolera
-    controller->attach(this);
+    controlsler->attach(this);
 
     //unicjalizacja UI
 
@@ -33,50 +35,66 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     //ustaw akcje odtwarzania
 
     // toBegin action
-    QIcon icon;
+    connect(controls->toBeginButton, SIGNAL(pressed()), this, SLOT(toBegin()));
+    /*QIcon icon;
     icon.addFile(QString::fromUtf8(":/resources/icons/toBegin.png"), QSize(), QIcon::Normal, QIcon::Off);
     timeToBeginAction->setIcon(icon);
 
-    connect(timeToBeginAction, SIGNAL(triggered()), this, SLOT(toBegin()));
+    connect(timeToBeginAction, SIGNAL(triggered()), this, SLOT(toBegin()));*/
+
 
     // toEnd action
-    QIcon icon1;
+    connect(controls->toEndButton, SIGNAL(pressed()), this, SLOT(toEnd()));
+    /*QIcon icon1;
     icon1.addFile(QString::fromUtf8(":/resources/icons/toEnd.png"), QSize(), QIcon::Normal, QIcon::Off);
     timeToEndAction->setIcon(icon1);
 
-    connect(timeToEndAction, SIGNAL(triggered()), this, SLOT(toEnd()));
+    connect(timeToEndAction, SIGNAL(triggered()), this, SLOT(toEnd()));*/
 
     //play | pause action
-    playPauseAction->setCheckable(true);
+    controls->playPauseButton->setCheckable(true);
+    connect(controls->playPauseButton, SIGNAL(toggled(bool)), this, SLOT(pause(bool)));
+    controls->playPauseButton->setEnabled(false);
+    /*playPauseAction->setCheckable(true);
     QIcon icon2;
     icon2.addFile(QString::fromUtf8(":/resources/icons/play.png"), QSize(), QIcon::Normal, QIcon::Off);
     icon2.addFile(QString::fromUtf8(":/resources/icons/pause.png"), QSize(), QIcon::Normal, QIcon::On);
 
     playPauseAction->setIcon(icon2);
 
-    connect(playPauseAction, SIGNAL(toggled(bool)), this, SLOT(pause(bool)));
+    connect(playPauseAction, SIGNAL(toggled(bool)), this, SLOT(pause(bool)));*/
 
     //Deaktywujemy, bo nie ma ¿adnych kana³ów
-    playPauseAction->setEnabled(false);
+    //playPauseAction->setEnabled(false);
 
     // stop action
-    QIcon icon3;
+    connect(controls->stopButton, SIGNAL(pressed()), this, SLOT(stop()));
+    controls->stopButton->setEnabled(false);
+    /*QIcon icon3;
     icon3.addFile(QString::fromUtf8(":/resources/icons/stop.png"), QSize(), QIcon::Normal, QIcon::Off);
     stopAction->setIcon(icon3);
 
-    connect(stopAction, SIGNAL(triggered()), this, SLOT(stop()));
+    connect(stopAction, SIGNAL(triggered()), this, SLOT(stop()));*/
 
     //Deaktywujemy, bo nie ma ¿adnych kana³ów
-    stopAction->setEnabled(false);
+    //stopAction->setEnabled(false);
 
     // edycja tekstowa czasu
-    timeEditBox->setDisplayFormat(QString("mm:ss:zzz"));
-    timeEditBox->setTime(QTime(0,0));
-    timeEditBox->setMinimumTime(QTime(0,0));
-    timeEditBox->setMaximumTime(QTime(0,0));
+    controls->timeEditBox->setDisplayFormat(QString("mm:ss:zz"));
+    controls->timeEditBox->setTime(QTime(0,0));
+    controls->timeEditBox->setMinimumTime(QTime(0,0));
+    controls->timeEditBox->setMaximumTime(QTime(0,0));
 
-    //po³¹czenie sygna³ów i slotów
-    connect(timeEditBox, SIGNAL(timeChanged(QTime)), this, SLOT(timeChanged(QTime)));
+    connect(controls->timeEditBox, SIGNAL(timeChanged(QTime)), this, SLOT(timeChanged(QTime)));
+
+
+    //timeEditBox->setDisplayFormat(QString("mm:ss:zzz"));
+    //timeEditBox->setTime(QTime(0,0));
+    //timeEditBox->setMinimumTime(QTime(0,0));
+    //timeEditBox->setMaximumTime(QTime(0,0));
+
+    ////po³¹czenie sygna³ów i slotów
+    //connect(timeEditBox, SIGNAL(timeChanged(QTime)), this, SLOT(timeChanged(QTime)));
 
 
     //skala
@@ -91,31 +109,64 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
 
     //akcja kierunku odtwarzania
-    playbackDirectionAction->setCheckable(true);
+    controls->playbackDirectionButton->setCheckable(true);
 
-    QIcon icon4;
-    icon4.addFile(QString::fromUtf8(":/resources/icons/playbackForward.png"), QSize(), QIcon::Normal, QIcon::Off);
-    icon4.addFile(QString::fromUtf8(":/resources/icons/playbackBackward.png"), QSize(), QIcon::Normal, QIcon::On);
-    playbackDirectionAction->setIcon(icon4);
+    //playbackDirectionAction->setCheckable(true);
 
-    //po³¹czenie sygna³ów i slotów
-    connect(playbackDirectionAction, SIGNAL(toggled(bool)), this, SLOT(playbackDirectionChanged(bool)));
+    //QIcon icon4;
+    //icon4.addFile(QString::fromUtf8(":/resources/icons/playbackForward.png"), QSize(), QIcon::Normal, QIcon::Off);
+    //icon4.addFile(QString::fromUtf8(":/resources/icons/playbackBackward.png"), QSize(), QIcon::Normal, QIcon::On);
+    //playbackDirectionAction->setIcon(icon4);
 
+    ////po³¹czenie sygna³ów i slotów
+    //connect(playbackDirectionAction, SIGNAL(toggled(bool)), this, SLOT(playbackDirectionChanged(bool)));
+    connect(controls->playbackDirectionButton, SIGNAL(toggled(bool)), this, SLOT(playbackDirectionChanged(bool)));
 
     //elementy widgeta
 
     setupUi(this);
 
-    channelsWidget->setColumnCount(3);
+    QStringList headers;
+    headers << "Channel" << "Active" << "Time";
+    channelsWidget->setHeaderLabels(headers);
+    //channelsWidget->header()->close();
+    
+
+
+    //rootItem->setText(0, QString("Timeline"));
+    rootItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
 
     //slider
-    visualTimeSlider->setObjectName(QString::fromUtf8("visualTimeSlider"));
+    /*visualTimeSlider->setObjectName(QString::fromUtf8("visualTimeSlider"));
     visualTimeSlider->setMaximum(10000);
     visualTimeSlider->setOrientation(Qt::Horizontal);
     visualTimeSlider->setTickInterval(100);
-    visualTimeSlider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    visualTimeSlider->setTickPosition(QSlider::TicksBelow);
+    visualTimeSlider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);*/
 
-    channelsWidget->setItemWidget(channelsWidget->headerItem(), 2, visualTimeSlider);
+    //connect(visualTimeSlider, SIGNAL(valueChanged(int)), this, SLOT(timeSliderChanged(int)));
+
+    channelsWidget->addTopLevelItem(rootItem);
+    //channelsWidget->setItemWidget(rootItem, 2, visualTimeSlider);
+
+    //nowy slider
+    slider->setScalePosition(QwtSlider::TopScale);
+    slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    slider->setHandleSize(40,10);
+
+    connect(slider, SIGNAL(valueChanged(double)), this, SLOT(timeSliderChanged(double)));
+
+    channelsWidget->setItemWidget(rootItem, 2, slider);
+    slider->setFixedHeight(slider->height() + 6);
+
+    channelsWidget->setItemWidget(rootItem, 0, controls);
+    
+
+    channelsWidget->header()->setMinimumSectionSize(14);
+    channelsWidget->header()->resizeSection(1, 14);
+    channelsWidget->header()->setResizeMode(1, QHeaderView::Fixed);
+    channelsWidget->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+    channelsWidget->header()->hide();
 
     // menu kontekstowe dla drzewa kana³ów z akcj¹ usuwaj¹c¹ zaznaczone kana³y
     removeChannelsMenu->addAction(actionRemoveChannels);
@@ -123,38 +174,20 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
 void TimelineWidget::loadToolbarElements(std::vector<QObject*> & elements) const
 {
-    elements.push_back(timeToBeginAction);
-    elements.push_back(playPauseAction);
-    elements.push_back(stopAction);
-    elements.push_back(timeToEndAction);
-    //elements.push_back(scaleLabel);
-    //elements.push_back(scaleSpinBox);
-    elements.push_back(timeLabel);
-    elements.push_back(timeEditBox);
-    elements.push_back(playbackDirectionAction);
+    //elements.push_back(timeToBeginAction);
+    //elements.push_back(playPauseAction);
+    //elements.push_back(stopAction);
+    //elements.push_back(timeToEndAction);
+    ////elements.push_back(scaleLabel);
+    ////elements.push_back(scaleSpinBox);
+    //elements.push_back(timeLabel);
+    //elements.push_back(timeEditBox);
+    //elements.push_back(playbackDirectionAction);
 }
 
 TimelineWidget::~TimelineWidget()
 {
 
-}
-
-QTime TimelineWidget::convertToQTime(double timeInSeconds)
-{
-    int seconds = 0;
-
-    if(time >= 0){
-        seconds = floor(timeInSeconds);
-    }else{
-        seconds = ceil(timeInSeconds);
-    }
-
-    return QTime(0,0, seconds, (timeInSeconds - seconds) * 1000.0);
-}
-
-double TimelineWidget::convertToTime(const QTime & time)
-{
-    return (double)(time.hour() * 3600 + time.minute() * 60 + time.second()) + time.msec() / 1000.0;
 }
 
 void TimelineWidget::update(const State * state)
@@ -165,26 +198,26 @@ void TimelineWidget::update(const State * state)
 void TimelineWidget::update()
 {
     //blokujemy sygna³y modyfikowanych komponenrów
-    visualTimeSlider->blockSignals(true);
-    timeEditBox->blockSignals(true);
+    //visualTimeSlider->blockSignals(true);
+    controls->timeEditBox->blockSignals(true);
     scaleSpinBox->blockSignals(true);
-    playbackDirectionAction->blockSignals(true);
-    playPauseAction->blockSignals(true);
-    stopAction->blockSignals(true);
+    controls->playbackDirectionButton->blockSignals(true);
+    controls->playPauseButton->blockSignals(true);
+    controls->stopButton->blockSignals(true);
+    slider->blockSignals(true);
 
     refreshChannelsHierarchy();
-    refreshChannelsTimeStructure();
-    refreshTimeInChannels();
-    //refreshTimeAxis();
+    refreshChannels();
     refreshPlayerStatus();
     
     //odblokuj komponenty
-    visualTimeSlider->blockSignals(false);
-    timeEditBox->blockSignals(false);
+    slider->blockSignals(false);
+    //visualTimeSlider->blockSignals(false);
+    controls->timeEditBox->blockSignals(false);
     scaleSpinBox->blockSignals(false);
-    playbackDirectionAction->blockSignals(false);
-    playPauseAction->blockSignals(false);
-    stopAction->blockSignals(false);
+    controls->playbackDirectionButton->blockSignals(false);
+    controls->playPauseButton->blockSignals(false);
+    controls->stopButton->blockSignals(false);
 }
 
 void TimelineWidget::showChannelsTreeContextMenu(const QPoint& pnt)
@@ -230,14 +263,7 @@ void TimelineWidget::removeSelectedChannels()
 
     //w³aœciwe usuniêcie z drzewa UI
     for(auto it = orderedPathsToDelete.begin(); it != orderedPathsToDelete.end(); it++){
-        int idx = channelsWidget->indexOfTopLevelItem(it->second);
-
-        if(idx < 0){
-            it->second->parent()->removeChild(it->second);
-        }else{
-            channelsWidget->takeTopLevelItem(idx);
-        }
-
+        it->second->parent()->removeChild(it->second);
         delete it->second;
     }
 
@@ -248,6 +274,11 @@ void TimelineWidget::removeSelectedChannels()
 void TimelineWidget::timeSliderChanged(int value)
 {
     getController()->setNormalizedTime((double)value / (double)visualTimeSlider->maximum());
+}
+
+void TimelineWidget::timeSliderChanged(double time)
+{
+    getController()->setTime(time);
 }
 
 
@@ -287,8 +318,8 @@ void TimelineWidget::toEnd()
 
 void TimelineWidget::stop()
 {
-    playPauseAction->setEnabled(true);
-    playPauseAction->setChecked(false);
+    controls->playPauseButton->setEnabled(true);
+    controls->playPauseButton->setChecked(false);
     getController()->getPlaybackDirection() == timeline::IController::PlayForward ? toBegin() : toEnd();
 }
 
@@ -301,8 +332,8 @@ void TimelineWidget::refreshChannelsHierarchy()
     std::set<QTreeWidgetItem*> uiNodes;
     std::set<timeline::Model::TChannelConstPtr> modelNodes;
 
-    for(int i = 0; i < channelsWidget->topLevelItemCount(); i++){    
-        uiNodes.insert(channelsWidget->topLevelItem(i));
+    for(int i = 0; i < rootItem->childCount(); i++){    
+        uiNodes.insert(rootItem->child(i));
     }
 
     //modelNodes.insert(getController()->getModel()->beginChannels(), getController()->getModel()->endChannels());
@@ -313,18 +344,17 @@ void TimelineWidget::refreshChannelsHierarchy()
     compareNodes(uiNodes, modelNodes, toDeleteItems, missingItems);
 
     for(auto it = toDeleteItems.begin(); it != toDeleteItems.end(); it++){
-        channelsWidget->takeTopLevelItem(channelsWidget->indexOfTopLevelItem(*(it)));
+        rootItem->removeChild(*it);
         delete *it;
     }
 
-    for(int i = 0; i < channelsWidget->topLevelItemCount(); i++){    
-        recursiveHierarchyRefresh(channelsWidget->topLevelItem(i));
-    }
-
     for(auto it = missingItems.begin(); it != missingItems.end(); it++){
-        ChannelWidget * channelWidget = new ChannelWidget();
+        ChannelWidget * channelWidget = new ChannelWidget(getController(), *it, nullptr, 0, slider->getLeftMargin(), slider->getRightMargin());
         QTreeWidgetItem * item = new ChannelsTreeItem(*it, channelWidget);
-        channelsWidget->addTopLevelItem(item);
+        
+        rootItem->addChild(item);
+
+        connect(slider, SIGNAL(marginsChanged(double,double)), channelWidget, SLOT(setMargins(double,double)));
 
         channelsWidget->setItemWidget(item, 2, channelWidget);
 
@@ -334,82 +364,71 @@ void TimelineWidget::refreshChannelsHierarchy()
 
         connect(checkBox, SIGNAL(stateChanged(int)), this, SLOT(channelsActivityChanged(int)));
 
-        channelsWidget->setItemWidget(item, 0, checkBox);
+        channelsWidget->setItemWidget(item, 1, checkBox);
+    }
+
+    for(int i = 0; i < rootItem->childCount(); i++){    
+        recursiveHierarchyRefresh(rootItem->child(i));
     }
 }
 
-void TimelineWidget::refreshTimeInChannels()
+void TimelineWidget::refreshChannels()
 {
-    if(getController()->getLength() > 0){
-        for(int i = 0; i < channelsWidget->topLevelItemCount(); i++){    
-            resursiveTimeInChannelsRefresh(channelsWidget->topLevelItem(i),
-                getController()->getModel()->getOffset(), getController()->getLength());
-        }
+    for(int i = 0; i < rootItem->childCount(); i++){    
+        recursiveRefreshChannels(rootItem->child(i));
     }
 }
 
-void TimelineWidget::resursiveTimeInChannelsRefresh(QTreeWidgetItem* uiNode, double globalOffset, double globalLenght)
+void TimelineWidget::recursiveRefreshChannels(QTreeWidgetItem* uiNode)
 {
-    reinterpret_cast<ChannelsTreeItem*>(uiNode)->refreshVisualChannelTime(globalOffset,globalLenght);
-    for(int i = 0; i < uiNode->childCount(); i++){
-        resursiveTimeInChannelsRefresh(uiNode->child(i), globalOffset, globalLenght);
-    }
-}
+    reinterpret_cast<ChannelsTreeItem*>(uiNode)->refreschVisualChannel();
 
-void TimelineWidget::refreshTimeAxis()
-{
-
-}
-
-void TimelineWidget::refreshChannelsTimeStructure()
-{
-    if(getController()->getLength() > 0){
-        for(int i = 0; i < channelsWidget->topLevelItemCount(); i++){    
-            resursiveChannelsTimeStructureRefresh(channelsWidget->topLevelItem(i),
-                getController()->getModel()->getOffset(), getController()->getLength());
-        }
-    }
-}
-
-void TimelineWidget::resursiveChannelsTimeStructureRefresh(QTreeWidgetItem* uiNode, double globalOffset, double globalLenght)
-{
-    reinterpret_cast<ChannelsTreeItem*>(uiNode)->refreshVisualChannelStructure(globalOffset, globalLenght);
-
-    for(int i = 0; i < uiNode->childCount(); i++){
-        resursiveChannelsTimeStructureRefresh(uiNode->child(i), globalOffset, globalLenght);
+    for(int i = 0; i < uiNode->childCount(); i++){    
+        recursiveRefreshChannels(uiNode->child(i));
     }
 }
 
 void TimelineWidget::refreshPlayerStatus()
 {
+    //jeœli nie mamy pustego timeline (sa kana³y) to umo¿liwiamy odtwarzanie i zatrzymywanie
     if(getController()->getModel()->sizeChannels() > 0){
-        playPauseAction->setEnabled(true);
-        stopAction->setEnabled(true);
+        controls->playPauseButton->setEnabled(true);
+        controls->stopButton->setEnabled(true);
     }else{
-        playPauseAction->setEnabled(false);
-        stopAction->setEnabled(false);
+        controls->playPauseButton->setEnabled(false);
+        controls->stopButton->setEnabled(false);
     }
 
-    if(getController()->isPlaying() == false && playPauseAction->isChecked() == true){
-        playPauseAction->setChecked(false);
-        playPauseAction->setEnabled(false);
+    if(getController()->isPlaying() == false){
+        if(controls->playPauseButton->isChecked() == true){
+            controls->playPauseButton->setChecked(false);
+            controls->playPauseButton->setEnabled(false);
+        }else if((getController()->getPlaybackDirection() == timeline::IController::PlayForward && getController()->getTime() < getController()->getModel()->getEndTime()) ||
+            (getController()->getPlaybackDirection() == timeline::IController::PlayBackward && getController()->getTime() > getController()->getModel()->getBeginTime())) {
+                controls->playPauseButton->setEnabled(true);
+        }
     }
 
     //ustawiamy slider z czasem
-    visualTimeSlider->setValue(getController()->getNormalizedTime() * (double)visualTimeSlider->maximum());
+    //visualTimeSlider->setValue(getController()->getNormalizedTime() * (double)visualTimeSlider->maximum());
+
+    if(getController()->getLength() > 0){
+        slider->setRange(getController()->getModel()->getBeginTime(), getController()->getModel()->getEndTime());
+        slider->setValue(getController()->getTime());
+    }
 
     //ustawiamy czas w oknie edycji textowej
-    timeEditBox->setTime(convertToQTime(getController()->getTime()));
+    controls->timeEditBox->setTime(convertToQTime(getController()->getTime()));
     //ustaw czas minimalny
-    timeEditBox->setMinimumTime(convertToQTime(getController()->getModel()->getBeginTime()));
+    controls->timeEditBox->setMinimumTime(convertToQTime(getController()->getModel()->getBeginTime()));
     //ustaw czas maxymalny
-    timeEditBox->setMaximumTime(convertToQTime(getController()->getModel()->getEndTime()));
+    controls->timeEditBox->setMaximumTime(convertToQTime(getController()->getModel()->getEndTime()));
 
     //ustaw skalê czasu
     scaleSpinBox->setValue(getController()->getTimeScale());
 
     //kierunek odtwarzania
-    playbackDirectionAction->setChecked(getController()->getPlaybackDirection() == timeline::IController::PlayBackward ? true : false);
+    controls->playbackDirectionButton->setChecked(getController()->getPlaybackDirection() == timeline::IController::PlayBackward ? true : false);
 }
 
 void TimelineWidget::compareNodes(const std::set<QTreeWidgetItem*> & uiNodes, const std::set<timeline::Model::TChannelConstPtr> & modelNodes,
@@ -463,17 +482,15 @@ void TimelineWidget::recursiveHierarchyRefresh(QTreeWidgetItem* uiNode)
         delete *it;
     }
 
-    for(int i = 0; i < uiNode->childCount(); i++){
-        recursiveHierarchyRefresh(uiNode->child(i));
-    }
-
     for(auto it = missingItems.begin(); it != missingItems.end(); it++){
-        ChannelWidget * channelWidget = new ChannelWidget();
+        ChannelWidget * channelWidget = new ChannelWidget(getController(), *it, nullptr, 0, slider->getLeftMargin(), slider->getRightMargin());
         QTreeWidgetItem * item = new ChannelsTreeItem(*it, channelWidget);
 
         uiNode->addChild(item);
 
-        channelsWidget->setItemWidget(item, 2, channelsWidget);
+        connect(slider, SIGNAL(marginsChanged(double,double)), channelWidget, SLOT(setMargins(double,double)));
+
+        channelsWidget->setItemWidget(item, 2, channelWidget);
 
         ChannelCheckBox * checkBox = new ChannelCheckBox(*it);
 
@@ -481,7 +498,11 @@ void TimelineWidget::recursiveHierarchyRefresh(QTreeWidgetItem* uiNode)
 
         connect(checkBox, SIGNAL(stateChanged(int)), this, SLOT(channelsActivityChanged(int)));
 
-        channelsWidget->setItemWidget(item, 0, checkBox);
+        channelsWidget->setItemWidget(item, 1, checkBox);
+    }
+
+    for(int i = 0; i < uiNode->childCount(); i++){
+        recursiveHierarchyRefresh(uiNode->child(i));
     }
 }
 
@@ -491,4 +512,21 @@ void TimelineWidget::channelsActivityChanged(int status)
     if(checkBox != nullptr){
         getController()->setChannelActive(checkBox->getChannel()->getAbsolutePath(), status == Qt::Checked ? true : false);
     }
+}
+
+QWidget * TimelineWidget::createTreeItemWidget(QWidget * widget)
+{
+    QWidget * ret = new QWidget();
+    QHBoxLayout * layout = new QHBoxLayout(ret);
+    ret->setLayout(layout);
+
+    //layout->addSpacing(5);
+    layout->addWidget(widget);
+
+    //layout->addSpacing(5);
+    ret->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    //ret->setStyleSheet(QString("QWidget { background-color: red; }"));
+    widget->setVisible(true);
+    ret->setVisible(true);
+    return ret;
 }

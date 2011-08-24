@@ -49,6 +49,7 @@ double Channel::makeTimeInChannel(double time) const
 void Channel::setInnerChannel(const IChannelPtr & channel)
 {
     constInnerChannel = innerChannel = channel;
+
     if(globalScale * channel->getLength() > length){
         length = globalScale * channel->getLength();
         setMaskBegin(0);
@@ -76,7 +77,10 @@ const Channel::Mask & Channel::getMask() const
 void Channel::setMask(const Channel::Mask & mask) 
 { 
     UTILS_ASSERT((mask.first >= 0 && mask.second >= 0 && mask.first + mask.second <= getLength()), "Nieprawidlowa maska dla kanalu");
-    this->mask = mask; 
+    this->mask = mask;
+    if(innerChannel != nullptr){
+        innerChannel->maskChanged(mask.first, mask.second);
+    }
 }    
 
 double Channel::getMaskBegin() const
@@ -87,7 +91,9 @@ double Channel::getMaskBegin() const
 void Channel::setMaskBegin(double maskBegin) 
 { 
     UTILS_ASSERT((maskBegin >= 0 && maskBegin + mask.second <= getLength()), "Poczatek maski sprawi ze maska wyjdzie poza kanal");
-    this->mask.first = maskBegin; 
+    Mask mask = getMask();
+    mask.first = maskBegin;
+    setMask(mask);
 }
 
 double Channel::getMaskLength() const
@@ -98,7 +104,9 @@ double Channel::getMaskLength() const
 void Channel::setMaskLength(double maskLength)
 {
     UTILS_ASSERT((maskLength >= 0 && maskLength <= getLength() && mask.first + maskLength <= getLength()), "Dlugosc maski sprawi ze maska wyjdzie poza kanal");
-    this->mask.second = maskLength;
+    Mask mask = getMask();
+    mask.second = maskLength;
+    setMask(mask);
 }
 
 double Channel::getMaskEnd() const
@@ -109,7 +117,7 @@ double Channel::getMaskEnd() const
 void Channel::setMaskEnd(double maskEnd) 
 { 
     UTILS_ASSERT((maskEnd <= getLength() && maskEnd >= mask.first), "Koniec maski dla kanalu musi byc w przedziale maskBegin-length");
-    this->mask.second = maskEnd - mask.first; 
+    setMaskLength(maskEnd - mask.first); 
 }
 
 double Channel::getLocalOffset() const
@@ -230,7 +238,10 @@ void Channel::setLocalOffset(double offset)
 
 void Channel::setGlobalOffset(double offset)
 {
-    globalOffset = offset; 
+    globalOffset = offset;
+    if(innerChannel != nullptr){
+        innerChannel->offsetChanged(offset);
+    }
 }
 
 void Channel::setLocalTimeScale(double scale)
@@ -243,11 +254,17 @@ void Channel::setLocalTimeScale(double scale)
 void Channel::setGlobalTimeScale(double scale)
 {
     globalScale = scale;
+    if(innerChannel != nullptr){
+        innerChannel->scaleChanged(scale);
+    }
 }
 
 void Channel::setActive(bool active)
 {
     this->active = active;
+    if(innerChannel != nullptr){
+        innerChannel->activityChanged(active);
+    }
 }
 
 void Channel::addTag(const TagPtr & tag)

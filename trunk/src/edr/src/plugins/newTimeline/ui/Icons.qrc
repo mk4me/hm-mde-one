@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="resources/icons">
+	<file alias="toBegin.png">../../../../resources/icons/toBegin.png</file>
+	<file alias="toEnd.png">../../../../resources/icons/toEnd.png</file>
+	<file alias="playbackForward.png">../../../../resources/icons/playbackForward.png</file>
+	<file alias="playbackBackward.png">../../../../resources/icons/playbackBackward.png</file>
+  </qresource>
+</RCC>

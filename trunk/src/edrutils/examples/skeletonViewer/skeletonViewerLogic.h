@@ -3,7 +3,6 @@
 
 #include <QtGUi/QTreeWidgetItem>
 #include <kinematiclib/SkeletalParsers.h>
-#include <kinematiclib/KinematicModel.h>
 
 typedef osg::ref_ptr<osg::Geode> GeodePtr;
 class MainWindow;

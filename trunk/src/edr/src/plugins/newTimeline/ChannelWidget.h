@@ -12,6 +12,7 @@
 #include <utils/Debug.h>
 #include <QtGui/QWidget>
 #include <QtGui/QFrame>
+#include <timelinelib/Model.h>
 
 //! Klasa reprezentujaca pojedynczy kanal w czasie - rysuje jego zakres na osi ze wzgledu na parametry begin i end,
 //! które stanowia znormalizowane wartosci. Root zajmuje zawsze caly dostepny kanal, jego dlugosc jest punktem 
@@ -23,15 +24,6 @@ class ChannelWidget : //public QWidget
     Q_OBJECT;
 
 private:
-
-    //! Znormalizowany poczatek kanalu w czasie
-    double begin;
-
-    //! Znormalizowany koniec kanalu w czasie
-    double end;
-
-    //! Znormalizowany aktualny czas kanalu
-    double currentTime;
 
     //! Znormalizowana polowa szerokosci dla aktualnego czasu
     double currentTimeHalfWidth;
@@ -45,18 +37,21 @@ private:
     //! Kolor markera czasu
     QColor markerColor;
 
+    //! Left margin
+    double leftMargin;
+
+    //! Right margin
+    double rightMargin;
+
+    timeline::ControllerConstPtr controller;
+    timeline::Model::TChannelConstPtr channel;
+
 public:
 
-    ChannelWidget(QWidget* parent = 0, Qt::WindowFlags f = 0, double begin = 0, double end = 0, double currentTimeHalfWidth = 0.03, double currentTime = 0);
+    ChannelWidget(const timeline::ControllerConstPtr & controller, const timeline::Model::TChannelConstPtr & channel,
+        QWidget* parent = 0, Qt::WindowFlags f = 0, double leftMargin = 0, double rightMargin = 0,
+        double currentTimeHalfWidth = 0.03);
 
-    //! Zwraca znormalizowany poczatek kanalu 
-    double getBegin() const;
-
-    //! \return Znormalizowany koniec kanalu
-    double getEnd() const;
-
-    //! \return Aktualny znormalizowany czas w kanale
-    double getCurrentTime() const;
 
     //! \return Kolor wype³nienia kana³u
     const QColor & getFillColor() const;
@@ -67,20 +62,20 @@ public:
     //! \return Kolor znacznika czasu
     const QColor & getMarkerColor() const;
 
+    //! \return Margines z lewej
+    double getLeftMargin() const;
+
+    //! \return Margines z prawej
+    double getRightMargin() const;
+
 public slots:
-    //! \param begin Znormalizowany poczatek kanalu - musi byc mniejszy lub rowny koncowi
-    void setBegin(double begin);
 
-    //! \param end Znormalizowany koniec kanalu - musi byc wiekszy lub rowny poczatkowi
-    void setEnd(double end);
+    //! \param leftMargin Lewy margines
+    //! \param rightMargin Prawy margines
+    void setMargins(double leftMargin, double rightMargin);
 
-    //! \param current Znormalizowany aktualny czas w kanale
-    void setCurrentTime(double current);
-
-    //! \param begin begin Znormalizowany poczatek kanalu - musi byc mniejszy lub rowny koncowi
-    //! \param end Znormalizowany koniec kanalu - musi byc wiekszy lub rowny poczatkowi
-    //! \brief Obie wartoœci z przedzia³u [0;1], druga wiêksza lub równa pierwszej
-    void setRange(double begin, double end);
+    //! \param margin Margines z lewej i prawej strony
+    void setMargins(double margin);
 
     //! \param fillColor Kolor wype³niaj¹cy kana³
     void setFillColor(const QColor & fillColor);
@@ -94,6 +89,9 @@ public slots:
 protected:
     //! Reimplementacja metody rysuj¹cej z QWidget
     virtual void paintEvent(QPaintEvent * pEvent);
+
+    virtual void drawSingleTag(QPainter & painter, const QRectF & rect, double normBegin, double normLength);
+
 };
 
 #endif  //  HEADER_GUARD_TIMELINE__CHANNELWIDGET_H__

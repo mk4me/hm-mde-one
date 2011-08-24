@@ -112,6 +112,26 @@ void EDRTitleBar::clear()
     widgetObjects.swap(WIDGET_OBJECTS());
 }
 
+bool EDRTitleBar::isCloseButtonVisible() const
+{
+    return buttonClose->isVisible();
+}
+
+void EDRTitleBar::setCloseButtonVisible(bool visible)
+{
+    buttonClose->setVisible(visible);
+}
+
+bool EDRTitleBar::isFloatButtonVisible() const
+{
+    return buttonFloat->isVisible();
+}
+
+void EDRTitleBar::setFloatButtonVisible(bool visible)
+{
+    buttonFloat->setVisible(visible);
+}
+
 void EDRTitleBar::paintEvent( QPaintEvent *paintEvent )
 {
     QStyleOption opt;

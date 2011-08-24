@@ -14,6 +14,18 @@
    <string>Timeline</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QTreeWidget" name="channelsWidget">
      <property name="contextMenuPolicy">
@@ -28,11 +40,20 @@
      <property name="selectionMode">
       <enum>QAbstractItemView::MultiSelection</enum>
      </property>
+     <property name="animated">
+      <bool>true</bool>
+     </property>
+     <property name="headerHidden">
+      <bool>false</bool>
+     </property>
+     <attribute name="headerCascadingSectionResizes">
+      <bool>true</bool>
+     </attribute>
      <attribute name="headerDefaultSectionSize">
       <number>70</number>
      </attribute>
      <attribute name="headerMinimumSectionSize">
-      <number>30</number>
+      <number>20</number>
      </attribute>
      <column>
       <property name="text">

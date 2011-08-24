@@ -52,7 +52,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 	this->showFullScreen();
 	/*connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
 	connect(&getUpdateTimer(), SIGNAL(timeout()), this, SLOT(updateServices()));
-	connect(&getUpdateTimer(), SIGNAL(timeout()), this, SLOT(updateVisualizers()));*/
+	connect(&getUpdateTimer(), SIGNAL(timeout()), this, SLOT(updateVisualizers()));
+    getUpdateTimer().start(20);
+    */
 
 	treeWidget = new QTreeWidget();
 	QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
@@ -168,7 +170,30 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 			layout->addWidget(settingsWidget);
 			//layout->addStretch();
 			this->Badania_2->setLayout(layout);
-		}
+        }else if (name == "newTimeline") {
+            std::vector<QObject*> mainWidgetActions;
+            QWidget* viewWidget = service->getWidget(mainWidgetActions);
+
+            std::vector<QObject*> controlWidgetActions;
+            QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
+
+            std::vector<QObject*> settingsWidgetActions;
+            QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
+
+            EDRDockWidget * widget = new EDRDockWidget();
+            widget->getInnerWidget()->layout()->addWidget(controlWidget);
+            widget->setAllowedAreas(Qt::BottomDockWidgetArea);
+            for(auto it = controlWidgetActions.begin(); it!= controlWidgetActions.end(); it++){
+                widget->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
+            }
+
+            widget->getTitleBar()->setFloatButtonVisible(false);
+            widget->getTitleBar()->setCloseButtonVisible(false);
+
+            widget->setTitleBarVisible(false);
+
+            pane->addDockWidget(Qt::BottomDockWidgetArea, widget);
+        }
 	}
 
 	EDRWorkflowWidget* widget = new EDRWorkflowWidget();
@@ -262,7 +287,15 @@ void HmmMainWindow::onOpen()
 					item2ScalarMap[channelItem] = 							
 						boost::dynamic_pointer_cast<const ScalarChannel>(c);
 				}														
-			}	
+			}
+
+            auto eventsCollection = motion->getEvents();
+            if(eventsCollection){
+                QTreeWidgetItem* eventItem = new QTreeWidgetItem();
+                eventItem->setText(0, "Events");
+                motionItem->addChild(eventItem);
+                item2Events[eventItem] = eventsCollection;
+            }
 
 			tryAddVectorToTree(motion->getForces(), "Forces", &icon3D, motionItem);
 			tryAddVectorToTree(motion->getMoments(), "Moments", &icon3D, motionItem);

@@ -77,7 +77,7 @@ ChannelsTreeItem * ChannelsTree::createTreeItemFormChannel(timeline::Model::TCha
     ChannelsTreeItem * ret = new ChannelsTreeItem(channel);
 
     for(auto i = 0; i < channel->size(); i++){
-        ret->addChild(createTreeItemFormChannel(timeline::Model::toChannel(channel->getChild(i))));
+        ret->addChild(createTreeItemFormChannel(timeline::Model::toTChannel(channel->getChild(i))));
     }
 
     return ret;

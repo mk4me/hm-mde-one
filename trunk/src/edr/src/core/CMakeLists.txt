@@ -86,6 +86,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/ObjectWrapperCollection.h
 	${HEADER_PATH}/IObjectSource.h
 	${HEADER_PATH}/IVisualizer.h
+	${HEADER_PATH}/IVisualizerManager.h
 	${HEADER_PATH}/IDataProcessor.h
 	${HEADER_PATH}/IObjectOutput.h
 	${HEADER_PATH}/PluginCommon.h

@@ -5,6 +5,7 @@
 #include <QtGui/QFrame>
 #include "MainWindow.h"
 #include "ui_toolboxmaindeffile.h"
+#include <stack>
 
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain
 {
@@ -35,36 +36,69 @@ private:
 		// sprawdzanie, czy pod item jest podpiety jakis obiekt
 		auto it = item2Channel.find(item);
 		if (it != item2Channel.end()) {
-			VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(*(it->second).get()));
-			ObjectWrapperPtr wrapper = ObjectWrapper::create<T>();
-			//Ptr ()
-			wrapper->set(boost::dynamic_pointer_cast<T>(boost::const_pointer_cast<T>(it->second)));
-			static std::string prefix = typeid(T).name();
-			// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
-			prefix += "_";
-			wrapper->setName(prefix + "nazwa testowa");
-			wrapper->setSource(prefix + "Sciezka testowa");
-			vis->getOrCreateWidget();
-			VisualizerWidget* visualizerWidget = new VisualizerWidget(vis);
-            visualizerWidget->setAllowedAreas(Qt::RightDockWidgetArea);
-            visualizerWidget->setStyleSheet(styleSheet());
-            visualizerWidget->setTitleBarVisible(false);
+            std::stack<QString> pathStack;
 
-			vis->getWidget()->setFocusProxy(visualizerWidget);
+            QTreeWidgetItem * pomItem = item;
 
-			vis->createSerie(wrapper, prefix + "seria testowa");
+            while(pomItem != nullptr){
+                pathStack.push(pomItem->text(0));
+                pomItem = pomItem->parent();
+            }
 
-            connect(visualizerWidget, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+            QString path;
+
+            path += pathStack.top();
+            pathStack.pop();
+
+            while(pathStack.empty() == false){
+                path += "/";
+                path += pathStack.top();
+                pathStack.pop();
+            }
+
+            if(VisualizerManager::getInstance()->existVisualizerForType(typeid(*(it->second).get())) == true){
+			    VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(*(it->second).get()));
+			    ObjectWrapperPtr wrapper = ObjectWrapper::create<T>();
+			    //Ptr ()
+			    wrapper->set(boost::dynamic_pointer_cast<T>(boost::const_pointer_cast<T>(it->second)));
+			    static std::string prefix = typeid(T).name();
+			    // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+			    prefix += "_";
+			    wrapper->setName(prefix + "nazwa testowa");
+			    wrapper->setSource(prefix + "Sciezka testowa");
+			    vis->getOrCreateWidget();
+			    VisualizerWidget* visu = new VisualizerWidget(vis);
+                visu->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+                visu->setStyleSheet(styleSheet());
+
+                visu->setTitleBarVisible(false);
+
+			    //vis->createSerie(wrapper, prefix + "seria testowa");
+                vis->createSerie(wrapper, path.toStdString());
+
+                vis->getWidget()->setFocusProxy(visu);
+
+                connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+
 			
-			/*pane->setUpdatesEnabled(false);
-			if (currentVisualizer) {
-				pane->layout()->removeWidget(currentVisualizer);
-				delete currentVisualizer;
-			}*/
-			//currentVisualizer = visu;
-			//pane->layout()->addWidget(visu);
-            pane->addDockWidget(Qt::RightDockWidgetArea, visualizerWidget);
-			//pane->setUpdatesEnabled(true);
+			    /*pane->setUpdatesEnabled(false);
+			    if (currentVisualizer) {
+				    pane->layout()->removeWidget(currentVisualizer);
+				    delete currentVisualizer;
+			    }*/
+			    //currentVisualizer = visu;
+			    //pane->layout()->addWidget(visu);            
+                pane->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
+			    //pane->setUpdatesEnabled(true);
+            }else{
+
+                /*TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
+                if(timeline != nullptr && dynamic_cast<timeline::IChannel*>(serie.get()) != nullptr) {
+                    timeline::IChannelPtr channel = core::dynamic_pointer_cast<timeline::IChannel>(serie);
+                    timeline->addChannel(name, channel);
+                    timelineDataSeries.insert(serie);
+                }*/
+            }
 		}
 	}
 
@@ -93,6 +127,7 @@ private:
 private:
 	std::map<QTreeWidgetItem*, ScalarChannelConstPtr> item2ScalarMap;
 	std::map<QTreeWidgetItem*, MarkerCollectionConstPtr> item2Markers;
+    std::map<QTreeWidgetItem*, EventsCollectionConstPtr> item2Events;
 	std::map<QTreeWidgetItem*, VectorChannelConstPtr> item2Vector;
 	VisualizerWidget* currentVisualizer;
 	//QWidget* pane;

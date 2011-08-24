@@ -11,7 +11,9 @@ include(${QT_USE_FILE})
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/TimelineService.h
-)
+	${HEADER_PATH}/TimeSliderWidget.h
+	${HEADER_PATH}/TimelineControlsWidget.h
+	)
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
 	TimelineWidget.h
@@ -32,6 +34,8 @@ set(TARGET_SRC
 	ChannelCheckbox.cpp
 	TimelineService.cpp
 	TimelinePlugin.cpp
+	TimeSliderWidget.cpp
+	TimelineControlsWidget.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -39,6 +43,8 @@ SET(TARGET_MOC_H
 	TimelineWidget.h
 	ChannelWidget.h
 	ChannelCheckbox.h
+	${HEADER_PATH}/TimeSliderWidget.h
+	${HEADER_PATH}/TimelineControlsWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -48,11 +54,20 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 # UI
 SET(TARGET_UI
 	ui/TimelineWidget.ui
+	ui/TimelineControlsWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
 set(TARGET_H ${TARGET_H} ${TARGET_UI} ${TARGET_UI_H})
 
+#------------------------------------------------------------------------------
+# RC
+set(TARGET_RC
+	ui/Icons.qrc
+)
+QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
+source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek

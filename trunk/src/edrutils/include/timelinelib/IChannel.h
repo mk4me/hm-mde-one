@@ -7,7 +7,8 @@ namespace timeline
 {
 
     /** Klasa bazowa dla kanalow obslugiwanych przez timeline, definiuje ich podstawowe
-    * wlasciwosi i operacje
+    * wlasciwosi i operacje. Klient nie powinien modyfikowaæ wartoœci swojego kana³u po zmianie skali lub offsetu.
+    * Zmiany te maj¹ jedynie charakter informacyjny - wszystkim zarz¹dza sam timeline i kana³y w które obudowuje timeline kana³y dostarczane przez klienta.
     */
     class IChannel
     {
@@ -25,6 +26,31 @@ namespace timeline
         //! \param time Aktualny, lokalny czas kanalu w sekundach
         virtual void setTime(double time) = 0;
 
+
+        //! \param newOffset Nowy offset ustawiony kana³owi
+        virtual void offsetChanged(double newOffset)
+        {
+
+        }
+
+        //! \param newScale Nowa skala ustawiona kana³owi
+        virtual void scaleChanged(double newScale)
+        {
+
+        }
+
+        //! \param beginMask Czas pocz¹tku maski
+        //! \param endMask Czas trwania maski
+        virtual void maskChanged(double beginMask, double lengthMask)
+        {
+
+        }
+
+        //! \param active Czy kana³ jest aktywny
+        virtual void activityChanged(bool active)
+        {
+
+        }
     };
 
 } // namespace timeline

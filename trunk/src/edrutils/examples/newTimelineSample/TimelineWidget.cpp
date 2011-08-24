@@ -144,7 +144,7 @@ void TimelineWidget::setTime(int time)
     double normalizedTime = time;
     normalizedTime /= manualTime->maximum() - manualTime->minimum();
 
-    model->setTime(normalizedTime * model->getLength(), this);
+    model->setTime(normalizedTime * model->getLength());
 }
 
 void TimelineWidget::refreshTime()
@@ -212,7 +212,7 @@ ChannelsTreeItem * TimelineWidget::createTreeItemFormChannel(timeline::Model::TC
     ret->setFont(1, font);
 
     for(auto i = 0; i < channel->size(); i++){
-        ChannelsTreeItem * item = createTreeItemFormChannel(timeline::Model::toChannel(channel->getChild(i)));
+        ChannelsTreeItem * item = createTreeItemFormChannel(timeline::Model::toTChannel(channel->getChild(i)));
         
         ret->addChild(item);
 

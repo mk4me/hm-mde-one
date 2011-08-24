@@ -47,6 +47,14 @@ public:
     //! \return Aktualny model kontrolera
     virtual const ModelConstPtr & getModel() const = 0;
 
+    virtual double getNormalizedTime(double time) const = 0;
+    virtual double getNormalizedLength(double length) const = 0;
+    virtual std::pair<double, double> getNormalizedRange(double begin, double length) const = 0;
+
+    virtual double getAbsoluteTime(double normalizedTime) const = 0;
+    virtual double getAbsoluteLength(double normalizedLength) const = 0;
+    virtual std::pair<double, double> getAbsoluteRange(double begin, double length) const = 0;
+
     //------------------------------- Konfiguracja aktualizacji czasu -----------------------
 
     //! \param timeUpdateMode Sposób aktualizacji czasu
@@ -251,6 +259,14 @@ public:
 
     //! \return Aktualny model kontrolera
     virtual const ModelConstPtr & getModel() const;
+
+    virtual double getNormalizedTime(double time) const;
+    virtual double getNormalizedLength(double length) const;
+    virtual std::pair<double, double> getNormalizedRange(double begin, double length) const;
+
+    virtual double getAbsoluteTime(double normalizedTime) const;
+    virtual double getAbsoluteLength(double normalizedLength) const;
+    virtual std::pair<double, double> getAbsoluteRange(double begin, double length) const;
 
     //------------------------------- Konfiguracja aktualizacji czasu -----------------------
 
