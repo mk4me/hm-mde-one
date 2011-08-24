@@ -9,6 +9,7 @@
 #ifndef HEADER_GUARD_TIMELINE__CHANNELSTREEITEM_H__
 #define HEADER_GUARD_TIMELINE__CHANNELSTREEITEM_H__
 
+#include <plugins/newTimeline/TimelineService.h>
 #include <QtGui/QTreeWidgetItem>
 #include <timelinelib/Model.h>
 #include "ChannelWidget.h"

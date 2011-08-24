@@ -3,7 +3,7 @@
 #include <core/Visualizer.h>
 #include "VisualizerManager.h"
 
-#include <plugins/newTimeline/TimelineService.h>
+#include <plugins/newTimeline/ITimelineService.h>
 
 using namespace core;
 
@@ -89,7 +89,7 @@ const core::VisualizerSeriePtr & Visualizer::createSerie(const core::ObjectWrapp
     core::VisualizerSeriePtr serie(getImplementation()->createSerie(data, name));
     auto it = dataSeries.insert(serie).first;
 
-    TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
+    TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
     if(timeline != nullptr && dynamic_cast<timeline::IChannel*>(serie.get()) != nullptr) {
 		timeline::IChannelPtr channel = core::dynamic_pointer_cast<timeline::IChannel>(serie);
         timeline->addChannel(name, channel);
@@ -105,7 +105,7 @@ void Visualizer::removeSerie(const core::VisualizerSeriePtr & serie)
     auto it = timelineDataSeries.find(serie);
     if(it != timelineDataSeries.end()){
         //usun z timeline
-        TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
+        TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
         //timeline->removeChannel(serie->getName());
         timelineDataSeries.erase(it);
     }

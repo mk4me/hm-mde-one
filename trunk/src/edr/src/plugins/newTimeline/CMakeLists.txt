@@ -10,12 +10,13 @@ include(${QT_USE_FILE})
 # nag³ówki
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
-	${HEADER_PATH}/TimelineService.h
+	${HEADER_PATH}/ITimelineService.h
 	${HEADER_PATH}/TimeSliderWidget.h
 	${HEADER_PATH}/TimelineControlsWidget.h
 	)
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
+	TimelineService.h
 	TimelineWidget.h
 	ChannelWidget.h
 	ChannelsTreeItem.h

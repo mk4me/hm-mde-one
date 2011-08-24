@@ -2,10 +2,13 @@
 #define HMM_TOOLBOXMAIN_H
 
 #include <plugins/c3d/C3DChannels.h>
+#include <plugins/newTimeline/ITimelineService.h>
 #include <QtGui/QFrame>
 #include "MainWindow.h"
+#include "VisualizerWidget.h"
 #include "ui_toolboxmaindeffile.h"
 #include <stack>
+#include <timelinelib/IChannel.h>
 
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain
 {
@@ -30,6 +33,31 @@ private slots:
     void visualizerGainedFocus();
 
 private:
+
+    class ItemDoubleClick
+    {
+    public:
+
+        ItemDoubleClick() : window(0) {}
+
+        void operator()(const timeline::IChannelConstPtr & channel){
+            auto it = window->channelToVisualizer.find(channel);
+            if(it != window->channelToVisualizer.end()){
+                it->second->setVisible(!it->second->isVisible());
+            }
+        }
+
+        void setMainWindow(HmmMainWindow * window)
+        {
+            this->window = window;
+        }
+
+    private:
+        HmmMainWindow * window;
+    };
+
+    friend class ItemDoubleClick;
+
 	template <class T, class Ptr >
 	void onClicked( QTreeWidgetItem * item, const std::map<QTreeWidgetItem*, Ptr>& item2Channel )
 	{
@@ -69,12 +97,25 @@ private:
 			    vis->getOrCreateWidget();
 			    VisualizerWidget* visu = new VisualizerWidget(vis);
                 visu->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-                visu->setStyleSheet(styleSheet());
+                //visu->setStyleSheet(styleSheet());
+                visu->setVisualizerIconVisible(false);
+                visu->setSplitHVisible(false);
+                visu->setSplitVVisible(false);
+                visu->setActiveVisualizerSwitch(false);
+                visu->setSourceVisible(false);
 
                 visu->setTitleBarVisible(false);
+                auto serie = vis->createSerie(wrapper, path.toStdString());
 
-			    //vis->createSerie(wrapper, prefix + "seria testowa");
-                vis->createSerie(wrapper, path.toStdString());
+                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+                if(timeline != nullptr) {
+                    timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
+                    timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serie));
+                    if(channel != nullptr){
+                        channelToVisualizer[channel] = visu;
+                        timeline->setOnChannelDblClick(itemClickAction);
+                    }
+                }
 
                 vis->getWidget()->setFocusProxy(visu);
 
@@ -133,6 +174,10 @@ private:
 	//QWidget* pane;
     QMainWindow* pane;
 	QTreeWidget* treeWidget;
+
+    std::map<timeline::IChannelConstPtr, VisualizerWidget*> channelToVisualizer;
+
+    ItemDoubleClick itemClickAction;
 };
 
 #endif // TOOLBOXMAIN_H

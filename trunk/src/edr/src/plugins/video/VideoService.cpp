@@ -151,31 +151,31 @@ void VideoService::loadData(IServiceManager* serviceManager, core::IDataManager*
 
 	//widget->init(files);
 
-	ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
-	if ( timeline ) {
-        // usuniêcie starych strumieni
-        BOOST_FOREACH(timeline::StreamPtr stream, streams) {
-            timeline->removeStream(stream);
-        }
-        streams.clear();
-
-//         // dodanie nowych strumieni
-//         BOOST_FOREACH(osg::Image* img, widget->getImages()) {
-//             if ( osg::ImageStream* stream = dynamic_cast<osg::ImageStream*>(img) ) {
-//                 streams.push_back( timeline::StreamPtr(timeline::Stream::encapsulate(stream)) );
-//                 timeline->addStream( streams.back() );
-//             }
-//         }
-
-        std::vector<VideoStreamPtr> videoStreams = core::queryDataPtr(dataManager);
-        BOOST_FOREACH(const VideoStreamPtr& stream, videoStreams) {
-            streams.push_back( timeline::StreamPtr(new TimelineVideoStream(stream)) );
-            timeline->addStream( streams.back() );
-        }
-
-	} else {
-		OSG_WARN<<"ITimeline not found."<<std::endl;
-	}
+//	ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
+//	if ( timeline ) {
+//        // usuniêcie starych strumieni
+//        BOOST_FOREACH(timeline::StreamPtr stream, streams) {
+//            timeline->removeStream(stream);
+//        }
+//        streams.clear();
+//
+////         // dodanie nowych strumieni
+////         BOOST_FOREACH(osg::Image* img, widget->getImages()) {
+////             if ( osg::ImageStream* stream = dynamic_cast<osg::ImageStream*>(img) ) {
+////                 streams.push_back( timeline::StreamPtr(timeline::Stream::encapsulate(stream)) );
+////                 timeline->addStream( streams.back() );
+////             }
+////         }
+//
+//        std::vector<VideoStreamPtr> videoStreams = core::queryDataPtr(dataManager);
+//        BOOST_FOREACH(const VideoStreamPtr& stream, videoStreams) {
+//            streams.push_back( timeline::StreamPtr(new TimelineVideoStream(stream)) );
+//            timeline->addStream( streams.back() );
+//        }
+//
+//	} else {
+//		OSG_WARN<<"ITimeline not found."<<std::endl;
+//	}
 // 
 // 
 //     for ( size_t i = 0; i < widget->getImages().size(); ++i ) {

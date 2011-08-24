@@ -24,6 +24,7 @@ HmmMainWindow::HmmMainWindow() :
 	treeWidget(nullptr)
 {
 	this->setWindowFlags(Qt::FramelessWindowHint);
+    itemClickAction.setMainWindow(this);
 }
 
 

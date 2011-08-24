@@ -43,8 +43,6 @@ set(PRIVATE_H
 	EDRDFSourceNode.h
 	EDRDFPin.h
 	EDRDataFlow.h
-	Workflow.h
-	WorkflowManager.h
 	DataProcessorManager.h
 	WorkflowService.h
 	WorkflowWidget.h
@@ -103,8 +101,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/IClonable.h
 	${HEADER_PATH}/ISerializable.h
 	${HEADER_PATH}/IPath.h
-	${HEADER_PATH}/IWorkflow.h
-	${HEADER_PATH}/IWorkflowManager.h
 	${HEADER_PATH}/IDataProcessorManager.h
 	${HEADER_PATH}/IDataSource.h
 	${HEADER_PATH}/IDataSourceManager.h
@@ -154,9 +150,7 @@ set(TARGET_SRC
 	EDRDFPin.cpp
 	EDRDataFlow.cpp
 	DataProcessorManager.cpp
-	Workflow.cpp
 	WorkflowWidget.cpp
-	WorkflowManager.cpp
 	WorkflowService.cpp
 	WorkflowVDFModel.cpp
 	WorkflowVDFConnDelContextMenu.cpp

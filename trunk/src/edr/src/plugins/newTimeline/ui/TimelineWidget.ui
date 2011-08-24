@@ -115,6 +115,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>channelsWidget</sender>
+   <signal>itemClicked(QTreeWidgetItem*,int)</signal>
+   <receiver>TimelineWidget</receiver>
+   <slot>onItemClicked(QTreeWidgetItem*,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>321</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>317</x>
+     <y>75</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>channelsWidget</sender>
+   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
+   <receiver>TimelineWidget</receiver>
+   <slot>onItemDblClicked(QTreeWidgetItem*,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>321</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>317</x>
+     <y>75</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <signal>offsetChanged(double)</signal>
@@ -131,5 +163,7 @@
   <slot>toEnd()</slot>
   <slot>play(bool)</slot>
   <slot>stop()</slot>
+  <slot>onItemClicked(QTreeWidgetItem*,int)</slot>
+  <slot>onItemDblClicked(QTreeWidgetItem*,int)</slot>
  </slots>
 </ui>

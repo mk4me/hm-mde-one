@@ -87,8 +87,20 @@ public:
         return visualizer;
     }
 
-    void setActiveVisualizersSwitch(bool active);
-    bool getActiveVisualizersSwitch() const;
+    void setSourceVisible(bool visible);
+    bool isSourceVisible() const;
+
+    void setSplitHVisible(bool visible);
+    bool isSplitHVisible() const;
+
+    void setSplitVVisible(bool visible);
+    bool isSplitVVisible() const;
+
+    void setVisualizerIconVisible(bool visible);
+    bool isVisualizerIconVisible() const;
+
+    void setActiveVisualizerSwitch(bool lock);
+    bool isActiveVisualizerSwich() const;
 
 protected:
     virtual void closeEvent (QCloseEvent *event);

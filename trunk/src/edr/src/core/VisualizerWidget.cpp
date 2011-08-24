@@ -178,12 +178,52 @@ void VisualizerWidget::init()
     QMetaObject::connectSlotsByName(this);
 }
 
-void VisualizerWidget::setActiveVisualizersSwitch(bool active)
+void VisualizerWidget::setSourceVisible(bool visible)
+{
+    buttonSource->setVisible(visible);
+}
+
+bool VisualizerWidget::isSourceVisible() const
+{
+    return buttonSource->isVisible();
+}
+
+void VisualizerWidget::setSplitHVisible(bool visible)
+{
+    buttonSplitH->setVisible(visible);
+}
+
+bool VisualizerWidget::isSplitHVisible() const
+{
+    return buttonSplitH->isVisible();
+}
+
+void VisualizerWidget::setSplitVVisible(bool visible)
+{
+    buttonSplitV->setVisible(visible);
+}
+
+bool VisualizerWidget::isSplitVVisible() const
+{
+    return buttonSplitV->isVisible();
+}
+
+void VisualizerWidget::setVisualizerIconVisible(bool visible)
+{
+    label->setVisible(visible);
+}
+
+bool VisualizerWidget::isVisualizerIconVisible() const
+{
+    return label->isVisible();
+}
+
+void VisualizerWidget::setActiveVisualizerSwitch(bool active)
 {
     comboType->setEnabled(active);
 }
 
-bool VisualizerWidget::getActiveVisualizersSwitch() const
+bool VisualizerWidget::isActiveVisualizerSwich() const
 {
     return comboType->isEnabled();
 }

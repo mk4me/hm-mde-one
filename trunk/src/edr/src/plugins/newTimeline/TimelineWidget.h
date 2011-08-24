@@ -23,8 +23,10 @@
 #include <timelinelib/View.h>
 #include <timelinelib/Model.h>
 
+#include <plugins/newTimeline/TimelineService.h>
 #include <plugins/newTimeline/TimeSliderWidget.h>
 #include <plugins/newTimeline/TimelineControlsWidget.h>
+#include "ChannelsTreeItem.h"
 
 
 class TimelineWidget : public QWidget, public Ui::TimelineWidget, public timeline::View
@@ -40,6 +42,18 @@ public:
 
     void loadToolbarElements(std::vector<QObject*> & elements) const;
 
+    void setChannelTooltip(const std::string & path, const std::string & tooltip);
+    std::string getChannelTooltip(const std::string & path) const;
+
+    //!
+    void setOnChannelClick(const TimelineService::UIChannelAction & action);
+    //!
+    const TimelineService::UIChannelAction & getOnChannelClick() const;
+    //!
+    void setOnChannelDblClick(const TimelineService::UIChannelAction & action);
+    //!
+    const TimelineService::UIChannelAction & getOnChannelDblClick() const;
+
 public slots:
     //! \param time Nowy czas dla timeline podany przez u¿ytkownika w sekundach
     //void setTime(double time);
@@ -54,6 +68,8 @@ signals:
     void offsetChanged(double offset);
 
 private slots:
+    void onItemClicked(QTreeWidgetItem * item, int column);
+    void onItemDblClicked(QTreeWidgetItem * item, int column);
 
     //! \param pnt Pozycja zapytania o menu kotnekstowe dla drzewa kana³ów
     void showChannelsTreeContextMenu(const QPoint& pnt);
@@ -80,7 +96,7 @@ private slots:
     //! \param state Stan checkboxa zwi¹zanego z danym kana³em
     void channelsActivityChanged(int state);
     //! \brief W³aœciwa metoda update
-    void update();
+    void refresh();
 
 private:
 
@@ -133,6 +149,11 @@ private:
     TimeSliderWidget * slider;
 
     TimelineControlsWidget * controls;
+
+    std::map<timeline::Model::TChannelConstPtr, ChannelsTreeItem*> modelToUIChannels;
+
+    TimelineService::UIChannelAction onItemClickAction;
+    TimelineService::UIChannelAction onItemDblClickAction;
 };
 
 #endif  //  HEADER_GUARD___TIMELINEWIDGET_H__

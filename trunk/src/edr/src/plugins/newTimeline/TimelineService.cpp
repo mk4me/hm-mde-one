@@ -1,5 +1,7 @@
 #include "TimelinePCH.h"
 
+
+#include <core/PluginCommon.h>
 #include <plugins/newTimeline/TimelineService.h>
 #include "TimelineWidget.h"
 
@@ -19,6 +21,36 @@ TimelineService::~TimelineService()
  {
      setPlaying(false);
  }
+
+void TimelineService::setChannelTooltip(const std::string & path, const std::string & tooltip)
+{
+    widget->setChannelTooltip(path, tooltip);
+}
+
+std::string TimelineService::getChannelTooltip(const std::string & path) const
+{
+    return widget->getChannelTooltip(path);
+}
+
+void TimelineService::setOnChannelClick(const UIChannelAction & action)
+{
+    widget->setOnChannelClick(action);
+}
+
+const TimelineService::UIChannelAction & TimelineService::getOnChannelClick() const
+{
+    return widget->getOnChannelClick();
+}
+
+void TimelineService::setOnChannelDblClick(const UIChannelAction & action)
+{
+    widget->setOnChannelDblClick(action);
+}
+
+const TimelineService::UIChannelAction & TimelineService::getOnChannelDblClick() const
+{
+    return widget->getOnChannelDblClick();
+}
   
  QWidget* TimelineService::getWidget(std::vector<QObject*>& actions)
  {

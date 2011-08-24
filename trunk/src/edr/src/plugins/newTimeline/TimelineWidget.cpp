@@ -7,7 +7,6 @@
 
 #include "TimelineWidget.h"
 #include "ChannelCheckbox.h"
-#include "ChannelsTreeItem.h"
 #include "ChannelWidget.h"
 #include <timelinelib/Controller.h>
 
@@ -172,6 +171,48 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controlsler, QWid
     removeChannelsMenu->addAction(actionRemoveChannels);
 }
 
+void TimelineWidget::setChannelTooltip(const std::string & path, const std::string & tooltip)
+{
+    auto channel = getController()->findChannel(path);
+
+    if(channel == nullptr){
+        throw std::runtime_error("Could not set channel tooltip - channel with given path not exist");
+    }
+
+    modelToUIChannels[channel]->setToolTip(0, QString(tooltip.c_str()));
+}
+
+std::string TimelineWidget::getChannelTooltip(const std::string & path) const
+{
+    auto channel = getController()->findChannel(path);
+
+    if(channel == nullptr){
+        throw std::runtime_error("Could not get channel tooltip - channel with given path not exist");
+    }
+
+    return modelToUIChannels.find(channel)->second->toolTip(0).toStdString();
+}
+
+void TimelineWidget::setOnChannelClick(const TimelineService::UIChannelAction & action)
+{
+    onItemClickAction = action;
+}
+
+const TimelineService::UIChannelAction & TimelineWidget::getOnChannelClick() const
+{
+    return onItemClickAction;
+}
+
+void TimelineWidget::setOnChannelDblClick(const TimelineService::UIChannelAction & action)
+{
+   onItemDblClickAction = action;
+}
+
+const TimelineService::UIChannelAction & TimelineWidget::getOnChannelDblClick() const
+{
+    return onItemDblClickAction;
+}
+
 void TimelineWidget::loadToolbarElements(std::vector<QObject*> & elements) const
 {
     //elements.push_back(timeToBeginAction);
@@ -192,10 +233,10 @@ TimelineWidget::~TimelineWidget()
 
 void TimelineWidget::update(const State * state)
 {
-    QMetaObject::invokeMethod(this, "update");
+    QMetaObject::invokeMethod(this, "refresh");
 }
 
-void TimelineWidget::update()
+void TimelineWidget::refresh()
 {
     //blokujemy sygna³y modyfikowanych komponenrów
     //visualTimeSlider->blockSignals(true);
@@ -345,13 +386,16 @@ void TimelineWidget::refreshChannelsHierarchy()
 
     for(auto it = toDeleteItems.begin(); it != toDeleteItems.end(); it++){
         rootItem->removeChild(*it);
+        modelToUIChannels.erase(reinterpret_cast<ChannelsTreeItem*>(*it)->getChannel());
         delete *it;
     }
 
     for(auto it = missingItems.begin(); it != missingItems.end(); it++){
         ChannelWidget * channelWidget = new ChannelWidget(getController(), *it, nullptr, 0, slider->getLeftMargin(), slider->getRightMargin());
-        QTreeWidgetItem * item = new ChannelsTreeItem(*it, channelWidget);
+        ChannelsTreeItem * item = new ChannelsTreeItem(*it, channelWidget);
         
+        modelToUIChannels[*it] = item;
+
         rootItem->addChild(item);
 
         connect(slider, SIGNAL(marginsChanged(double,double)), channelWidget, SLOT(setMargins(double,double)));
@@ -370,6 +414,8 @@ void TimelineWidget::refreshChannelsHierarchy()
     for(int i = 0; i < rootItem->childCount(); i++){    
         recursiveHierarchyRefresh(rootItem->child(i));
     }
+
+    channelsWidget->update();
 }
 
 void TimelineWidget::refreshChannels()
@@ -479,12 +525,15 @@ void TimelineWidget::recursiveHierarchyRefresh(QTreeWidgetItem* uiNode)
 
     for(auto it = toDeleteItems.begin(); it != toDeleteItems.end(); it++){
         uiNode->removeChild(*it);
+        modelToUIChannels.erase(reinterpret_cast<ChannelsTreeItem*>(*it)->getChannel());
         delete *it;
     }
 
     for(auto it = missingItems.begin(); it != missingItems.end(); it++){
         ChannelWidget * channelWidget = new ChannelWidget(getController(), *it, nullptr, 0, slider->getLeftMargin(), slider->getRightMargin());
-        QTreeWidgetItem * item = new ChannelsTreeItem(*it, channelWidget);
+        ChannelsTreeItem * item = new ChannelsTreeItem(*it, channelWidget);
+
+        modelToUIChannels[*it] = item;
 
         uiNode->addChild(item);
 
@@ -529,4 +578,19 @@ QWidget * TimelineWidget::createTreeItemWidget(QWidget * widget)
     widget->setVisible(true);
     ret->setVisible(true);
     return ret;
+}
+
+void TimelineWidget::onItemClicked(QTreeWidgetItem * item, int column)
+{
+    if(onItemClickAction.empty() == false && column == 0 && item != rootItem){
+        onItemClickAction(reinterpret_cast<ChannelsTreeItem*>(item)->getChannel()->getData()->getInnerChannel());
+    }
+}
+
+void TimelineWidget::onItemDblClicked(QTreeWidgetItem * item, int column)
+{
+    bool empty = onItemDblClickAction.empty();
+    if(empty == false && column == 0 && item != rootItem){
+        onItemDblClickAction(reinterpret_cast<ChannelsTreeItem*>(item)->getChannel()->getData()->getInnerChannel());
+    }
 }
