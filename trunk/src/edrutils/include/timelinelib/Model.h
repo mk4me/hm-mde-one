@@ -18,27 +18,6 @@ class Model : public utils::Observable<Model>
 {
 public:
 
-    //enum ModifificationType {
-    //    NoCHange            = 0x00000000,   //! Nic nie zmianiono w modelu od ostatniego powiadomienia
-    //    ChannelAdd          = 0x00000001,   //! Dodano kana³/y do modelu
-    //    ChannelRemove       = 0x00000002,   //! Usuniêto kana³y z modelu
-    //    ChannelSplit        = 0x00000004,   //! Rozdzielono kana³ (usuniêto jeden kana³ i dodano 2 nowe)
-    //    ChannelMerge        = 0x00000008,   //! Po³¹czono kana³y (usuniêto dwa kana³y dodano jeden nowy)
-    //    ActiveChange        = 0x00000010,   //! Kana³ zmieni³ stan aktywnoœci
-    //    MaskChange          = 0x00000020,   //! Maska kana³u siê zmieni³a
-    //    CurrentTimeChange   = 0x00000040,   //! Zmieni³ siê aktualny czas
-    //    OffsetChange        = 0x00000080,   //! Zmieni³ siê offset kana³u
-    //    ScaleChange         = 0x00000100,   //! Zmieni³a siê skala kana³u
-    //    TagAdd              = 0x00000200,   //! Dodano tag
-    //    TagRemove           = 0x00000400,   //! Usuniêto tag
-    //    TagChange           = 0x00000800    //! Zmianiono tag (przesuniêto go, zmianiono czas jego trwania)
-    //};
-
-    //! Zbiór wszystkich kana³ów w modelu
-    //typedef std::set<IChannelConstPtr> Channels;
-
-    //typedef Channels::const_iterator channels_
-
     //! Forward declartation
     class TChannel;
     typedef boost::shared_ptr<TChannel> TChannelPtr;

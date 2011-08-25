@@ -262,11 +262,13 @@ void Controller::addChannel(const std::string & path, const IChannelPtr & channe
     ScopedLock lock(stateMutex);
     ScopedLock lock2(modelMutex);
     model->addChannel(path, channel);
+    State state = getState();
     double newLength = model->getLength();
-    if(dirtyState.length != newLength){
-        dirtyState.length = newLength;
-        setState(dirtyState);
+    if(state.length != newLength){
+        state.length = newLength;
     }
+
+    setState(state);
 }
 
 void Controller::addChannels(const std::map<std::string, IChannelPtr> & channels)
@@ -274,11 +276,13 @@ void Controller::addChannels(const std::map<std::string, IChannelPtr> & channels
     ScopedLock lock(stateMutex);
     ScopedLock lock2(modelMutex);
     model->addChannels(channels);
+    State state = getState();
     double newLength = model->getLength();
-    if(dirtyState.length != newLength){
-        dirtyState.length = newLength;
-        setState(dirtyState);
+    if(state.length != newLength){
+        state.length = newLength;
     }
+
+    setState(state);
 }
 
 
@@ -287,11 +291,13 @@ void Controller::removeChannel(const std::string & path)
     ScopedLock lock(stateMutex);
     ScopedLock lock2(modelMutex);
     model->removeChannel(path);
+    State state = getState();
     double newLength = model->getLength();
-    if(dirtyState.length != newLength){
-        dirtyState.length = newLength;
-        setState(dirtyState);
+    if(state.length != newLength){
+        state.length = newLength;
     }
+
+    setState(state);
 }
 
 void Controller::removeChannels(const std::set<std::string> & paths)
@@ -299,11 +305,13 @@ void Controller::removeChannels(const std::set<std::string> & paths)
     ScopedLock lock(stateMutex);
     ScopedLock lock2(modelMutex);
     model->removeChannels(paths);
+    State state = getState();
     double newLength = model->getLength();
-    if(dirtyState.length != newLength){
-        dirtyState.length = newLength;
-        setState(dirtyState);
+    if(state.length != newLength){
+        state.length = newLength;
     }
+
+    setState(state);
 }
 
 
@@ -351,6 +359,12 @@ void Controller::setChannelActive(const std::string & path, bool active)
 {
     ScopedLock lock(stateMutex);
     model->setChannelActive(path, active);
+}
+
+Model::TChannelConstPtr Controller::findChannel(const std::string & path) const
+{
+    ScopedLock lock(stateMutex);
+    return model->findChannel(path);
 }
 
 }

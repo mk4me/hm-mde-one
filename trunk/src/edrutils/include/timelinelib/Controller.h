@@ -135,6 +135,10 @@ public:
 
     virtual void setChannelActive(const std::string & path, bool active) = 0;
 
+    //! \param path Sciezka do szukanego kanalu
+    //! \return Wskaznik do szukanego kanalu lub pusty wskaznik jesli nie znaleziono
+    virtual Model::TChannelConstPtr findChannel(const std::string & path) const = 0;
+
 };    
 
 class Controller : public IController, public OpenThreads::ReentrantMutex
@@ -349,6 +353,9 @@ public:
     //! \param active Czy kanal jest aktywny podczas operacji czasowych (odtwarzanie timeline)
     virtual void setChannelActive(const std::string & path, bool active);
 
+    //! \param path Sciezka do szukanego kanalu
+    //! \return Wskaznik do szukanego kanalu lub pusty wskaznik jesli nie znaleziono
+    virtual Model::TChannelConstPtr findChannel(const std::string & path) const;
 
 private:
 
