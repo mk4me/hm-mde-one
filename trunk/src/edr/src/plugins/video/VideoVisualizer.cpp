@@ -186,8 +186,10 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
     workspace = new osgWidget::Box();
     workspace->getBackground()->setImage(getResourceString("images/transparent_background.png"), false, false);
     osg::Texture* texture = osgui::getTexture(workspace->getBackground());
-    texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
-    texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
+	if (texture) {
+		texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
+		texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
+	}
     manager->addChild(workspace);
 
     // dodanie widgetu

@@ -70,9 +70,14 @@ private:
 
 		}
 
+		bool hasSessionDesc() const
+		{
+			return year && month && day && body.size() && session.size();
+		}
+
 		bool hasMotionDesc() const
 		{
-			return year && month && day && body.size() && session.size() && motion.size();
+			return hasSessionDesc() && motion.size();
 		}
 
 		std::string getMotionDesc() const

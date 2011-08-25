@@ -51,76 +51,81 @@ SubjectService::~SubjectService()
 void SubjectService::onFileLoaded( const core::Filesystem::Path& path, bool loaded)
 {
 	if (loaded) {
-		getFileDescriptor(path.filename().string(), lastFileDescriptor);
+		try {
+			getFileDescriptor(path.filename().string(), lastFileDescriptor);
+		} catch (...) {
+			LOG_WARNING("File : " << path.filename().string() << " has wrong name.");
+		}
 	}
 }
 
 void SubjectService::onWrappersAdded( const std::vector<core::ObjectWrapperPtr>& wrappers, bool loaded)
 {
-	std::string sessionName = lastFileDescriptor.getSessionDesc();
+	if (lastFileDescriptor.hasSessionDesc()) {
+		std::string sessionName = lastFileDescriptor.getSessionDesc();
 	
-	SessionPtr currentSession;
-	auto it = sessions.find(sessionName);
-	if (it != sessions.end()){
-		currentSession = it->second;
-	} else 	{
-		currentSession = SessionPtr(new Session);
-		currentSession->setName(sessionName);
-		sessions[sessionName] = currentSession;
-		core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<Session>();
-		wrapper->set(currentSession);
-		core::getDataManager()->addExternalData(wrapper);
-	}
-	
-	if (lastFileDescriptor.hasMotionDesc() && currentSession) {
-		std::string motionName = lastFileDescriptor.getMotionDesc();
-		MotionPtr currentMotion;
-		auto it = motions.find(motionName);
-		if (it == motions.end()) {
-			currentMotion = MotionPtr(new Motion);
-			currentMotion->setName(motionName);
-			currentSession->addMotion(currentMotion);
-			motions[motionName] = currentMotion;
-		} else {
-			currentMotion = it->second;
+		SessionPtr currentSession;
+		auto it = sessions.find(sessionName);
+		if (it != sessions.end()){
+			currentSession = it->second;
+		} else 	{
+			currentSession = SessionPtr(new Session);
+			currentSession->setName(sessionName);
+			sessions[sessionName] = currentSession;
+			core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<Session>();
+			wrapper->set(currentSession);
+			core::getDataManager()->addExternalData(wrapper);
 		}
+	
+		if (lastFileDescriptor.hasMotionDesc() && currentSession) {
+			std::string motionName = lastFileDescriptor.getMotionDesc();
+			MotionPtr currentMotion;
+			auto it = motions.find(motionName);
+			if (it == motions.end()) {
+				currentMotion = MotionPtr(new Motion);
+				currentMotion->setName(motionName);
+				currentSession->addMotion(currentMotion);
+				motions[motionName] = currentMotion;
+			} else {
+				currentMotion = it->second;
+			}
 
-		core::IDataManager* manager = core::getDataManager();
-		for (std::vector<core::ObjectWrapperPtr>::const_iterator it = wrappers.cbegin(); it != wrappers.cend(); it++) {
-			if ((*it)->isPtrSupported(typeid(EMGCollectionPtr))) {
-				manager->tryParseWrapper(*it);
-				currentMotion->setEmg((*it)->get());
-			} else if ((*it)->isPtrSupported(typeid(GRFCollectionPtr)) ) {
-				manager->tryParseWrapper(*it);
-				currentMotion->setGrf((*it)->get());
-			} else if ((*it)->isPtrSupported(typeid(MarkerCollectionPtr))) {
-				manager->tryParseWrapper(*it);
-				currentMotion->setMarkers((*it)->get());
-			} else if((*it)->isPtrSupported(typeid(kinematic::JointAnglesCollectionPtr)) ) {
-				manager->tryParseWrapper(*it);
-				currentMotion->setJoints((*it)->get());
-			} else if((*it)->isPtrSupported(typeid(AngleCollectionPtr)) ) {
-				manager->tryParseWrapper(*it);
-				currentMotion->setAngles((*it)->get());
-			} else if((*it)->isPtrSupported(typeid(ForceCollectionPtr)) ) {
-				manager->tryParseWrapper(*it);
-				currentMotion->setForces((*it)->get());
-			} else if((*it)->isPtrSupported(typeid(MomentCollectionPtr)) ) {
-				manager->tryParseWrapper(*it);
-				currentMotion->setMoments((*it)->get());
-			} else if((*it)->isPtrSupported(typeid(PowerCollectionPtr)) ) {
-				manager->tryParseWrapper(*it);
-				currentMotion->setPowers((*it)->get());
-            } else if((*it)->isPtrSupported(typeid(EventsCollectionPtr)) ) {
-                manager->tryParseWrapper(*it);
-                currentMotion->setEvents((*it)->get());
-            }
+			core::IDataManager* manager = core::getDataManager();
+			for (std::vector<core::ObjectWrapperPtr>::const_iterator it = wrappers.cbegin(); it != wrappers.cend(); it++) {
+				if ((*it)->isPtrSupported(typeid(EMGCollectionPtr))) {
+					manager->tryParseWrapper(*it);
+					currentMotion->setEmg((*it)->get());
+				} else if ((*it)->isPtrSupported(typeid(GRFCollectionPtr)) ) {
+					manager->tryParseWrapper(*it);
+					currentMotion->setGrf((*it)->get());
+				} else if ((*it)->isPtrSupported(typeid(MarkerCollectionPtr))) {
+					manager->tryParseWrapper(*it);
+					currentMotion->setMarkers((*it)->get());
+				} else if((*it)->isPtrSupported(typeid(kinematic::JointAnglesCollectionPtr)) ) {
+					manager->tryParseWrapper(*it);
+					currentMotion->setJoints((*it)->get());
+				} else if((*it)->isPtrSupported(typeid(AngleCollectionPtr)) ) {
+					manager->tryParseWrapper(*it);
+					currentMotion->setAngles((*it)->get());
+				} else if((*it)->isPtrSupported(typeid(ForceCollectionPtr)) ) {
+					manager->tryParseWrapper(*it);
+					currentMotion->setForces((*it)->get());
+				} else if((*it)->isPtrSupported(typeid(MomentCollectionPtr)) ) {
+					manager->tryParseWrapper(*it);
+					currentMotion->setMoments((*it)->get());
+				} else if((*it)->isPtrSupported(typeid(PowerCollectionPtr)) ) {
+					manager->tryParseWrapper(*it);
+					currentMotion->setPowers((*it)->get());
+				} else if((*it)->isPtrSupported(typeid(EventsCollectionPtr)) ) {
+					manager->tryParseWrapper(*it);
+					currentMotion->setEvents((*it)->get());
+				}
+			}
+		} else {
+			// to tez moze byc poprawny przebieg programu, po prostu wczytano plik, 
+			// ktory jest zwiazany z sesja a nie z motion, np. asf
 		}
-	} else {
-		// to tez moze byc poprawny przebieg programu, po prostu wczytano plik, 
-		// ktory jest zwiazany z sesja a nie z motion, np. asf
 	}
-	
 }
 
 void SubjectService::getFileDescriptor(const std::string& filename, fileDescriptor& descriptor)

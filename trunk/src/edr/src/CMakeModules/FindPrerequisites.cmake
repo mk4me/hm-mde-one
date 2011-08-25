@@ -6,7 +6,7 @@ unset(PREREQUISITES_INCLUDE_DIR CACHE)
 if (CMAKE_HOST_WIN32)
 	# szukamy biblioteki
 	FIND_MODULE(PREREQUISITES_LIBPNG FALSE "libpng<?,15>" )
-	FIND_MODULE(PREREQUISITES_ZLIB FALSE "zlib<?,1>" )
+	FIND_MODULE(PREREQUISITES_ZLIB FALSE "zlib<?,d><?,1>" )
 else()
 	# uzywamy wbudowanego modułu wyszukiwania
 	FIND_MODULE(PREREQUISITES_LIBPNG TRUE "libpng<?,15>" )
