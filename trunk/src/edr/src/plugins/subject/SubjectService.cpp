@@ -119,6 +119,9 @@ void SubjectService::onWrappersAdded( const std::vector<core::ObjectWrapperPtr>&
 				} else if((*it)->isPtrSupported(typeid(EventsCollectionPtr)) ) {
 					manager->tryParseWrapper(*it);
 					currentMotion->setEvents((*it)->get());
+				} else if ((*it)->isPtrSupported(typeid(VideoChannelPtr))) {
+					manager->tryParseWrapper(*it);
+					currentMotion->addVideo((*it)->get());
 				}
 			}
 		} else {

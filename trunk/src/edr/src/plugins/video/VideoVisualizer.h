@@ -69,8 +69,16 @@ private:
         virtual void setSerieData(const core::ObjectWrapperConstPtr & data)
         {
             visualizer->reset();
-
-            bool success = data->tryGet(visualizer->stream);
+            bool success = false;
+			if (data->isSupported(typeid(VideoStreamPtr))) {
+				success = data->tryGet(visualizer->stream);
+			} else if (data->isSupported(typeid(VideoChannel))) {
+				VideoChannelConstPtr channel = data->get();
+				if (channel) {
+					visualizer->stream = channel->getVideoStream();
+					success = visualizer->stream != nullptr;
+				}
+			}
 
             // pobranie obrazkaa
             if ( success  == true && visualizer->stream != nullptr ) {

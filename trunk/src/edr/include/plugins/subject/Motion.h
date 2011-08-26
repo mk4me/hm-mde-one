@@ -18,6 +18,9 @@
 class Motion
 {
 public:
+	Motion()
+	{
+	}
 	virtual ~Motion() {}
 
 public:
@@ -33,8 +36,11 @@ public:
 	MarkerCollectionConstPtr getMarkers() const { return markers; }
 	void setMarkers(MarkerCollectionConstPtr val) { markers = val; }
 
-	VideoCollectionConstPtr getVideo() const { return videos; }
-	void setVideo(VideoCollectionConstPtr val) { videos = val; }
+	const std::vector<VideoChannelConstPtr>& getVideos() const { return videos; }
+	void addVideo(VideoChannelConstPtr val) 
+	{ 
+		videos.push_back(val); 
+	}
 
 	std::string getName() const { return name; }
 	void setName(std::string val) { name = val; }
@@ -68,7 +74,7 @@ private:
 	MomentCollectionConstPtr moments;
     EventsCollectionConstPtr events;
 
-	VideoCollectionConstPtr videos;
+	std::vector<VideoChannelConstPtr> videos;
 	std::string name;
 };
 typedef core::shared_ptr<Motion> MotionPtr;

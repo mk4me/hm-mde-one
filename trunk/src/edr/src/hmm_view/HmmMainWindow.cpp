@@ -248,6 +248,7 @@ void HmmMainWindow::onOpen()
 		
 		QIcon icon(core::getResourceString("icons/charts.png"));
 		QIcon icon3D(core::getResourceString("icons/3d.png"));
+		QIcon iconVideo(core::getResourceString("icons/video.png"));
 										
 		BOOST_FOREACH(MotionPtr motion, session->getMotions()) {	
 			QTreeWidgetItem* motionItem = new QTreeWidgetItem();  
@@ -311,6 +312,23 @@ void HmmMainWindow::onOpen()
 				motionItem->addChild(markersItem);		
 				item2Markers[markersItem] = markerCollection;
 			}
+
+			const std::vector<VideoChannelConstPtr>& videoCollection = motion->getVideos();
+			int count = videoCollection.size();
+			if (count) {
+				QTreeWidgetItem* videoItem = new QTreeWidgetItem();
+				videoItem->setText(0, "Video");
+				motionItem->addChild(videoItem);			
+				for (int i = 0; i < count; i++) {							
+					QTreeWidgetItem* channelItem = new QTreeWidgetItem();
+					channelItem->setIcon(0, iconVideo);							
+					VideoChannelConstPtr c = videoCollection[i];				
+					channelItem->setText(0, c->getName().c_str());			
+					videoItem->addChild(channelItem);						
+					item2Video[channelItem] = 							
+						boost::dynamic_pointer_cast<const VideoChannel>(c);
+				}		
+			}
 		}
 		
 		//FILL_TREE_WITH_SCALAR(Joints);
@@ -342,6 +360,7 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
 	onClicked<ScalarChannel, ScalarChannelConstPtr>(item, item2ScalarMap);
 	onClicked<MarkerCollection>(item, item2Markers);
+	onClicked<VideoChannel>(item, item2Video);
 
 	auto it = item2Vector.find(item);
 	if (it != item2Vector.end()) {

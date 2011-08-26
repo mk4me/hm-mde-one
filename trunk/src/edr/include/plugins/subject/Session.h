@@ -98,7 +98,7 @@ public:
 
 	bool hasVideo() const {
 		BOOST_FOREACH(const MotionPtr& motion, getMotions()) {
-			if (motion->getVideo()) {
+			if (motion->getVideos().size()) {
 				return true;
 			}
 		}

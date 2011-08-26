@@ -3,6 +3,7 @@
 
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newTimeline/ITimelineService.h>
+#include <plugins/video/Wrappers.h>
 #include <QtGui/QFrame>
 #include "MainWindow.h"
 #include "VisualizerWidget.h"
@@ -84,7 +85,9 @@ private:
                 pathStack.pop();
             }
 
-            if(VisualizerManager::getInstance()->existVisualizerForType(typeid(*(it->second).get())) == true){
+			VisualizerManager* visualizerManager = VisualizerManager::getInstance();
+			const T* channel = (it->second).get();
+            if(visualizerManager->existVisualizerForType(typeid(*channel)) == true){
 			    VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(*(it->second).get()));
 			    ObjectWrapperPtr wrapper = ObjectWrapper::create<T>();
 			    //Ptr ()
@@ -170,6 +173,7 @@ private:
 	std::map<QTreeWidgetItem*, MarkerCollectionConstPtr> item2Markers;
     std::map<QTreeWidgetItem*, EventsCollectionConstPtr> item2Events;
 	std::map<QTreeWidgetItem*, VectorChannelConstPtr> item2Vector;
+	std::map<QTreeWidgetItem*, VideoChannelConstPtr> item2Video;
 	VisualizerWidget* currentVisualizer;
 	//QWidget* pane;
     QMainWindow* pane;

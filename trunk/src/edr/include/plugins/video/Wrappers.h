@@ -71,14 +71,17 @@ public:
         return videoStream->getFrameCount() == 0;
     }
 
+	VideoStreamConstPtr getVideoStream() const {
+		return videoStream;
+	}
+
 protected:
-	
 	//! \param time
 	//! \return Zinterpolowana wartoœæ dla zadanego czasu.
 	virtual point_type innerGetValue(time_type time) const
 	{
 		videoStream->setTime(time);
-		videoStream->getImage(vidlib::PixelFormatARGB);
+		return videoStream->getImage(vidlib::PixelFormatARGB);
 	}
 
 	virtual void innerAddPoint(time_type time, point_type_const_reference point) 
