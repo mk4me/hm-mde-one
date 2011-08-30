@@ -30,6 +30,8 @@ public:
 public:
     //! \param stream Strumieñ do dodania.
     virtual void addChannel(const std::string & path, const timeline::IChannelPtr & channel) = 0;
+
+    virtual void removeChannel(const std::string & path) = 0;
     //! \return true je¿eli timeline sam siê odtwarza.
     virtual bool isPlaying() const = 0;
     //!
@@ -55,6 +57,10 @@ public:
     virtual void setOnChannelDblClick(const UIChannelAction & action) = 0;
     //!
     virtual const UIChannelAction & getOnChannelDblClick() const = 0;
+
+    virtual void setOnChannelRemove(const UIChannelAction & action) = 0;
+
+    virtual const UIChannelAction & getOnChannelRemove() const = 0;
 
 public:
 

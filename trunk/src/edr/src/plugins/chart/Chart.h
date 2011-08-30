@@ -10,6 +10,7 @@ purpose:  Klasa ta zarzadza calym wykresem
 
 #include <osg/Geode>
 #include <osg/Geometry>
+#include <osgText/Text>
 #include <plugins/c3d/C3DChannels.h>
 #include "ChartSerie.h"
 
@@ -27,10 +28,21 @@ namespace osg {
 namespace osgText 
 {
     typedef osg::ref_ptr<Text> TextPtr;
+    float textWidth(const Text & text);
+    float textHeight(const Text & text);
 } // namespace osgText
 
 class Chart : public osg::Group
 {
+public:
+
+    enum TitlePosition {
+        TOP_GRID_CENTER,    //nad gridem wyœrodkowany
+        TOP_CHART_CENTER,   //nad ca³ym wykresem wyœrodkowany
+        BOTTOM_GRID_CENTER,
+        BOTTOM_CHART_CENTER
+    };
+
 public:
     typedef std::vector<ChartSeriePtr> Series;
     typedef Series::iterator iterator;
@@ -44,6 +56,15 @@ private:
 
     //! Geode.
     osg::GeodePtr geode;
+
+    //! Ramka
+    osg::GeometryPtr frame;
+    //! Szerokoœæ kreski ramki
+    float frameWidth;
+    //! Czy pokazywaæ ramkê
+    bool showFrame;
+    //! Kolor ramki
+    osg::Vec4 frameColor;
 
     //! Grid.
     osg::GeometryPtr grid;
@@ -60,19 +81,54 @@ private:
     osg::GeometryPtr axises;
     //! Czy pokazywaæ oœ X?
     bool showAxisX;
+    //! Czy oœ X ma byæ do œrodka czy na zewn¹trz?
+    bool axisXInside;
     //! Czy pokazywaæ oœ Y?
     bool showAxisY;
-    //! Kolor osi.
-    osg::Vec4 axisColor;
+    //! Czy oœ Y ma byæ do œrodka czy na zewn¹trz?
+    bool axisYInside;
+
+    //! Kolor osi
+    osg::Vec4 axisesColor;
 
     //! Labelki dla osi.
     std::vector< osgText::TextPtr > labelsY;
     //! Labelki dla osi x.
     std::vector< osgText::TextPtr > labelsX;
+    //! Offset pomiêdzy labelkami i osiami
+    float labelsToAxisesOffset;
     //! WskaŸnik bie¿¹cego czasu.
     osgText::TextPtr cursorText;
+    //! Kolor kursora
+    osg::Vec4 cursorColor;
     //! WskaŸnik bie¿¹cego czasu.
     osg::GeometryPtr cursor;
+
+    //! Jednostki osi X
+    osgText::TextPtr xAxisUnitsLabel;
+    //! Czy jednostki osobno i jest opis osi (czy text dodana do sceny)
+    bool xUnitLabelVisible;
+    //! Pokazuj jednostki osi X
+    bool showXUnits;
+    //! Jednostki osi Y
+    osgText::TextPtr yAxisUnitsLabel;
+    //! Czy jednostki osobno i jest opis osi (czy text dodana do sceny)
+    bool yUnitLabelVisible;
+    //! Pokazuj jednostki osi Y
+    bool showYUnits;
+    //! Czy jednostki osobno od wartoœci
+    bool xUnitsSeparated;
+    //! Czy jednostki osobno od wartoœci
+    bool yUnitsSeparated;
+    //! Tytu³ wykresu
+    osgText::TextPtr titleLabel;
+    //! Czy pokazywac tytu³
+    bool showTitle;
+    //! Czy tutu³ widoczny - klient chcia³ go zobaczyæ i ustawi³ mu jakiœ tekst (czy text dodany do sceny)
+    bool titleVisible;
+    //! Pozycja tytu³u
+    TitlePosition titlePosition;
+
 
     //! Wspó³rzêdna bazowa wykresu.
     float z;
@@ -88,6 +144,9 @@ private:
     float h;
     //! Margines.
     float margin;
+
+    //! Pozycja grida dla wykresów (x, y, w, h)
+    osg::Vec4 gridPosition;
 
     //! Czy wykres wymaga ponownego odrysowania?
     bool dirty;
@@ -193,6 +252,10 @@ public:
 	void setMargin(float margin);
 
     //! \return
+    bool isShowingFrame() const;
+    //! \param showFrame
+    void setShowFrame(bool showFrame);
+    //! \return
     bool isShowingGridX() const;
     //! \param showGridX
     void setShowGridX(bool showGridX);
@@ -201,13 +264,21 @@ public:
     //! \param showGridY
     void setShowGridY(bool showGridY);
     //! pobiera gestosc siatki. Ile pixeli szerokosci ma jedna kratka
-    int getGridDensity();
+    int getGridDensity() const;
     //! ustawia gestosc siatki. Ile pixeli szerokosci ma jedna kratka
     void setGridDensity(int gridDensity);
+    //! \return
+    osg::Vec4 getFrameColor() const;
+    //! \param frameColor
+    void setFrameColor(osg::Vec4 frameColor);
     //! pobiera kolor siatki w rgba
-    osg::Vec4 getGridColor();
+    osg::Vec4 getGridColor() const;
     //! ustawia kolor siatki w rgba
     void setGridColor(osg::Vec4 gridColor);
+    //! \return
+    float getFrameWidth() const;
+    //! \param frameWidth
+    void setFrameWidth(float frameWidth);
     //! \return
     float getGridDashWidth() const;
     //! \param dashWidth
@@ -218,13 +289,56 @@ public:
     //! \param showAxisX
     void setShowAxisX(bool showAxisX);
     //! \return
+    bool isAxisXInside() const;
+    //! \param axisXInside
+    void setAxisXInside(bool axisXInside);
+    //! \return
     bool isShowingAxisY() const;
     //! \param showAxisY
     void setShowAxisY(bool showAxisY);
-	//! pobiera kolor wykresu w rgba
-	osg::Vec4 getAxisColor();
-	//! ustawia kolor wykresu w rgba
-	void setAxisColor(osg::Vec4 color);
+    //! \return
+    bool isAxisYInside() const;
+    //! \param axisXInside
+    void setAxisYInside(bool axisYInside);
+
+    //! Pobiera kolor wykresu w rgba
+    osg::Vec4 getAxisesColor() const;
+    //! Ustawia kolor wykresu w rgba
+    void setAxisesColor(osg::Vec4 color);
+
+    //! Pobiera kolor kursora w rgba
+    osg::Vec4 getCursorColor() const;
+    //! Ustawia kolor kursora w rgba
+    void setCursorColor(osg::Vec4 color);
+
+    //! \return Czy pokazywaæ tytu³
+    bool isShowingTitle() const;
+    //! \param, showTitle Czy pokazywaæ tytu³
+    void setShowTitle(bool showTitle);
+
+    //! \return Tytu³ wykresu
+    std::string getTitleText() const;
+    //! \param titleText Tytu³ wykresu
+    void setTitleText(const std::string & titleText);
+
+    int getTitleTextSize() const;
+    void setTitleTextSize(int titleTextSize);
+
+    TitlePosition getTitlePosition() const;
+    void setTitlePosition(TitlePosition position);
+
+    bool isShowingXUnitsSeparately() const;
+    void setShowingXUnitsSeparately(bool unitsSeparate);
+
+    bool isShowingYUnitsSeparately() const;
+    void setShowingYUnitsSeparately(bool unitsSeparate);
+
+    bool isShowingXUnits() const;
+    void setShowingXUnits(bool showUnits);
+
+    bool isShowingYUnits() const;
+    void setShowingYUnits(bool showUnits);
+
 
     //! \return Prototyp labelek.
     const osgText::Text* getLabelPrototype() const
@@ -245,13 +359,35 @@ public:
     void refreshAll();
     void refreshCursor();
 
+    static float maxLabelsWidth(const std::vector< osgText::TextPtr > & labels);
+
 private:
+
+    void refreshAllLabelsText();
+    void repositionAll();
+
+    void rebuildLabelsText(std::vector<osgText::TextPtr> &labels, const std::string& unit, bool condition, float min, float max);
+
+    void refreshLabelsPositions(float currentZ);
+    void refreshLabelsPositions(std::vector<osgText::TextPtr> &labels, float x0, float x1, float y0, float y1, float z, osgText::TextBase::AlignmentType alignment);
+
+
+    void getGridLocation(float& x, float& y, float& w, float& h) const;
+    osg::Vec4 getGridLocation() const;
+
+    float getXAxisHeight() const;
+    float getYAxisWidth() const;
+    float getTextPrototypeHeight() const;
+
     void setDirty(bool dirty = true);
 
+    void refreshFrame(float z);
     void refreshAxis(float z);
     void refreshGrid(float z);
     void refreshLabels(float z);
     void refreshCursor(float z);
+    void refreshTitle(float z);
+    void refreshSeries(float & currentZ, float zStep);
 
     //! Pomocnicza metoda do odœwie¿ania labelek.
     void refreshLabels(std::vector<osgText::TextPtr> &labels, const std::string& unit, bool condition, float min, float max, float x0, float x1, float y0, float y1, float z, osgText::Text::AlignmentType align );

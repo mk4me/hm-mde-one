@@ -51,6 +51,16 @@ const TimelineService::UIChannelAction & TimelineService::getOnChannelDblClick()
 {
     return widget->getOnChannelDblClick();
 }
+
+void TimelineService::setOnChannelRemove(const TimelineService::UIChannelAction & action)
+{
+    widget->setOnChannelRemove(action);
+}
+
+const TimelineService::UIChannelAction & TimelineService::getOnChannelRemove() const
+{
+    return widget->getOnChannelRemove();
+}
   
  QWidget* TimelineService::getWidget(std::vector<QObject*>& actions)
  {
@@ -71,6 +81,11 @@ const std::string& TimelineService::getName() const
 void TimelineService::addChannel(const std::string & path, const timeline::IChannelPtr & channel)
 {
     controller->addChannel(path, channel);
+}
+
+void TimelineService::removeChannel(const std::string & path)
+{
+    controller->removeChannel(path);
 }
 
 bool TimelineService::isPlaying() const

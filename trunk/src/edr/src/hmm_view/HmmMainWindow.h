@@ -4,6 +4,7 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
+#include "plugins/chart/ChartVisualizer.h"
 #include <QtGui/QFrame>
 #include "MainWindow.h"
 #include "VisualizerWidget.h"
@@ -59,8 +60,137 @@ private:
 
     friend class ItemDoubleClick;
 
-	template <class T, class Ptr >
-	void onClicked( QTreeWidgetItem * item, const std::map<QTreeWidgetItem*, Ptr>& item2Channel )
+    template <class T, class Ptr >
+    void onClickedScalar( QTreeWidgetItem * item, const std::map<QTreeWidgetItem*, Ptr>& item2Channel)
+    {
+        // sprawdzanie, czy pod item jest podpiety jakis obiekt
+		auto it = item2Channel.find(item);
+		if (it != item2Channel.end()) {
+            std::stack<QString> pathStack;
+
+            QTreeWidgetItem * pomItem = item;
+
+            while(pomItem != nullptr){
+                pathStack.push(pomItem->text(0));
+                pomItem = pomItem->parent();
+            }
+
+            QString path;
+
+            path += pathStack.top();
+            pathStack.pop();
+
+            while(pathStack.empty() == false){
+                path += "/";
+                path += pathStack.top();
+                pathStack.pop();
+            }
+
+            if(VisualizerManager::getInstance()->existVisualizerForType(typeid(*(it->second).get())) == true){
+			    VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(*(it->second).get()));
+                ObjectWrapperPtr wrapper = ObjectWrapper::create<T>();
+                //Ptr ()
+                wrapper->set(boost::dynamic_pointer_cast<T>(boost::const_pointer_cast<T>(it->second)));
+                static std::string prefix = typeid(T).name();
+                // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+                prefix += "_";
+                wrapper->setName(prefix + "nazwa testowa");
+                wrapper->setSource(prefix + "Sciezka testowa");
+                vis->getOrCreateWidget();
+			   
+			    VisualizerWidget* visu = new VisualizerWidget(vis);
+                visu->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+                //visu->setStyleSheet(styleSheet());
+                visu->setVisualizerIconVisible(false);
+                visu->setSplitHVisible(false);
+                visu->setSplitVVisible(false);
+                visu->setActiveVisualizerSwitch(false);
+                visu->setSourceVisible(false);
+
+                visu->setTitleBarVisible(false);
+
+                auto serie = vis->createSerie(wrapper, path.toStdString());
+
+                ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(vis->getImplementation());
+
+                
+                chart->setAutoRefresh(false);
+
+                chart->setLabelPrototype(chartTextPrototype);
+
+                chart->setBackgroundColor(osg::Vec4(1,1,1,1));
+                chart->setCursorColor(osg::Vec4(0,0,0,1));
+                chart->setAxisesColor(osg::Vec4(0,0,0,1));
+                chart->setFrameColor(osg::Vec4(0,0,0,1));
+                chart->setShowFrame(true);
+
+                chart->setGridColor(osg::Vec4(0.2,0.2,0.2,1));
+
+                chart->setShowGridX(true);
+                chart->setShowGridY(true);
+
+                chart->setAxisXInside(false);
+                chart->setAxisYInside(false);
+
+                chart->setShowAxisX(true);
+                chart->setShowAxisY(true);
+
+                chart->setShowingXUnits(true);
+                chart->setShowingYUnits(false);
+
+                chart->setShowingXUnitsSeparately(true);
+                chart->setShowingYUnitsSeparately(true);
+
+                chart->setShowTitle(true);
+
+                std::string title;
+                title += item->text(0).toStdString();
+                title += " [";
+                title += it->second->getValueBaseUnit();
+                title += "]";
+                chart->setTitleText(title);
+                chart->setTitleTextSize(chartTextPrototype->getCharacterHeight());
+                chart->setTitlePosition(Chart::TOP_GRID_CENTER);
+
+                chart->setAutoRefresh(true);
+
+                ChartVisualizer::ChartVisualizerSerie* chartSerie = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serie.get());
+
+                if(item->text(0).at(0) == 'L' || item->text(0).at(0) == 'l'){
+                    chartSerie->setColor(osg::Vec4(1,0,0,1));
+                }else{
+                    chartSerie->setColor(osg::Vec4(0,1,0,1));
+                }
+
+                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+                if(timeline != nullptr) {
+                    timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
+                    timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serie));
+                    if(channel != nullptr){
+                        channelToVisualizer[channel] = visu;
+                        timeline->setOnChannelDblClick(itemClickAction);
+                    }
+                }
+
+                vis->getWidget()->setFocusProxy(visu);
+
+                connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+    
+                pane->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
+            }else{
+
+                /*TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
+                if(timeline != nullptr && dynamic_cast<timeline::IChannel*>(serie.get()) != nullptr) {
+                    timeline::IChannelPtr channel = core::dynamic_pointer_cast<timeline::IChannel>(serie);
+                    timeline->addChannel(name, channel);
+                    timelineDataSeries.insert(serie);
+                }*/
+            }
+		}
+    }
+
+    template <class T, class Ptr >
+    void onClickedOther( QTreeWidgetItem * item, const std::map<QTreeWidgetItem*, Ptr>& item2Channel)
 	{
 		// sprawdzanie, czy pod item jest podpiety jakis obiekt
 		auto it = item2Channel.find(item);
@@ -89,15 +219,16 @@ private:
 			const T* channel = (it->second).get();
             if(visualizerManager->existVisualizerForType(typeid(*channel)) == true){
 			    VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(*(it->second).get()));
-			    ObjectWrapperPtr wrapper = ObjectWrapper::create<T>();
-			    //Ptr ()
-			    wrapper->set(boost::dynamic_pointer_cast<T>(boost::const_pointer_cast<T>(it->second)));
-			    static std::string prefix = typeid(T).name();
-			    // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
-			    prefix += "_";
-			    wrapper->setName(prefix + "nazwa testowa");
-			    wrapper->setSource(prefix + "Sciezka testowa");
-			    vis->getOrCreateWidget();
+                ObjectWrapperPtr wrapper = ObjectWrapper::create<T>();
+                //Ptr ()
+                wrapper->set(boost::dynamic_pointer_cast<T>(boost::const_pointer_cast<T>(it->second)));
+                static std::string prefix = typeid(T).name();
+                // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+                prefix += "_";
+                wrapper->setName(prefix + "nazwa testowa");
+                wrapper->setSource(prefix + "Sciezka testowa");
+                vis->getOrCreateWidget();
+			   
 			    VisualizerWidget* visu = new VisualizerWidget(vis);
                 visu->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
                 //visu->setStyleSheet(styleSheet());
@@ -108,6 +239,7 @@ private:
                 visu->setSourceVisible(false);
 
                 visu->setTitleBarVisible(false);
+
                 auto serie = vis->createSerie(wrapper, path.toStdString());
 
                 TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
@@ -182,6 +314,8 @@ private:
     std::map<timeline::IChannelConstPtr, VisualizerWidget*> channelToVisualizer;
 
     ItemDoubleClick itemClickAction;
+
+    osg::ref_ptr<osgText::Text> chartTextPrototype;
 };
 
 #endif // TOOLBOXMAIN_H

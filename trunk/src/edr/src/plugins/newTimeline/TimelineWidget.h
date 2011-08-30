@@ -54,6 +54,10 @@ public:
     //!
     const TimelineService::UIChannelAction & getOnChannelDblClick() const;
 
+    void setOnChannelRemove(const TimelineService::UIChannelAction & action);
+    //!
+    const TimelineService::UIChannelAction & getOnChannelRemove() const;
+
 public slots:
     //! \param time Nowy czas dla timeline podany przez u¿ytkownika w sekundach
     //void setTime(double time);
@@ -154,6 +158,7 @@ private:
 
     TimelineService::UIChannelAction onItemClickAction;
     TimelineService::UIChannelAction onItemDblClickAction;
+    TimelineService::UIChannelAction onItemRemoveAction;
 };
 
 #endif  //  HEADER_GUARD___TIMELINEWIDGET_H__

@@ -88,11 +88,23 @@ macro(ADD_PROJECT name dependencies)
 				endif()
 				list(APPEND DEFAULT_PROJECT_LIBS ${${value2}})
 			endforeach()
+			
+			#foreach (value3 ${${value}_INCLUDE_DIR})
+			#list(APPEND DEFAULT_PROJECT_INCLUDES ${${value3}})
 			list(APPEND DEFAULT_PROJECT_INCLUDES ${${value}_INCLUDE_DIR})
+			#endforeach()
+			
 			# czy zdefiniowano katalog konfiguracyjny?
 			if ( ${value}_INCLUDE_CONFIG_DIR )
 				list(APPEND DEFAULT_PROJECT_INCLUDES ${${value}_INCLUDE_CONFIG_DIR})
 			endif()
+			
+			if ( ${value}_CUSTOM_COMPILER_DEFINITIONS )
+				#foreach (value4 ${value}_CUSTOM_COMPILER_DEFINITIONS})
+					add_definitions(${${value}_CUSTOM_COMPILER_DEFINITIONS})
+				#endforeach()
+			endif()
+			
 		endforeach()
 
 		add_subdirectory(${name})

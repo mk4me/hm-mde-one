@@ -213,6 +213,16 @@ const TimelineService::UIChannelAction & TimelineWidget::getOnChannelDblClick() 
     return onItemDblClickAction;
 }
 
+void TimelineWidget::setOnChannelRemove(const TimelineService::UIChannelAction & action)
+{
+    onItemRemoveAction = action;
+}
+
+const TimelineService::UIChannelAction & TimelineWidget::getOnChannelRemove() const
+{
+    return onItemRemoveAction;
+}
+
 void TimelineWidget::loadToolbarElements(std::vector<QObject*> & elements) const
 {
     //elements.push_back(timeToBeginAction);

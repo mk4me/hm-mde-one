@@ -204,6 +204,17 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 
 	Operations->setLayout(layout);
 	//getUpdateTimer().start(20);
+
+    chartTextPrototype = new osgText::Text();
+
+    chartTextPrototype->setColor(osg::Vec4(0, 0, 0, 1));
+    chartTextPrototype->setFontResolution(200,200);
+    chartTextPrototype->setFont(osgText::readFontFile("fonts/arial.ttf"));
+    chartTextPrototype->setCharacterSize(12);
+    chartTextPrototype->setAxisAlignment(osgText::Text::SCREEN); 
+    chartTextPrototype->setAlignment(osgText::Text::CENTER_CENTER);
+    chartTextPrototype->setText("");
+    chartTextPrototype->setLayout(osgText::Text::LEFT_TO_RIGHT);
 }
 
 void HmmMainWindow::visualizerGainedFocus()
@@ -358,9 +369,9 @@ void HmmMainWindow::setBottom( int size )
 
 void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
-	onClicked<ScalarChannel, ScalarChannelConstPtr>(item, item2ScalarMap);
-	onClicked<MarkerCollection>(item, item2Markers);
-	onClicked<VideoChannel>(item, item2Video);
+	onClickedScalar<ScalarChannel, ScalarChannelConstPtr>(item, item2ScalarMap);
+	onClickedOther<MarkerCollection>(item, item2Markers);
+	onClickedOther<VideoChannel>(item, item2Video);
 
 	auto it = item2Vector.find(item);
 	if (it != item2Vector.end()) {

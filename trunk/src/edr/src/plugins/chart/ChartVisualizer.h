@@ -16,11 +16,12 @@
 #include "Chart.h"
 #include "LineChartSerie.h"
 #include <timelinelib/IChannel.h>
+#include <osgui/QOsgWidgets.h>
 
 //! Wizualizator wykresów.
 class ChartVisualizer : public QObject, public core::IVisualizer
 {
-private:
+public:
 
     class ChartVisualizerSerie : public SerieBase, public timeline::IChannel
     {
@@ -54,6 +55,16 @@ private:
         virtual void setTime(double time)
         {
             serie->getTimer()->setTime(time);
+        }
+
+        virtual void setColor(osg::Vec4 color)
+        {
+            serie->setColor(color);
+        }
+
+        virtual osg::Vec4 getColor() const
+        {
+            return serie->getColor();
         }
 
     protected:
@@ -92,7 +103,7 @@ private:
     //!
     float prevTime;
     //! Seriwe danych
-    std::set<ChartVisualizerSerie*> series;
+    std::vector<ChartVisualizerSerie*> series;
 
     //!
     QAction* actionNormalized;
@@ -131,6 +142,115 @@ public:
     virtual void removeSerie(core::IVisualizer::SerieBase* serie);
 
     virtual void reset();
+
+    //! \return Czy wykres sam siê odœwie¿a przy zmianie?
+    virtual bool getAutoRefresh() const;
+    //! \param autoRefresh
+    virtual void setAutoRefresh(bool autoRefresh);
+
+    //! zwraca odstep ramki od wykresu
+    virtual float getMargin() const;
+    //! ustawia odstep ramki od wykres
+    virtual void setMargin(float margin);
+
+    //! \return
+    virtual bool isShowingFrame() const;
+    //! \param showFrame
+    virtual void setShowFrame(bool showFrame);
+    //! \return
+    virtual bool isShowingGridX() const;
+    //! \param showGridX
+    virtual void setShowGridX(bool showGridX);
+    //! \return
+    virtual bool isShowingGridY() const;
+    //! \param showGridY
+    virtual void setShowGridY(bool showGridY);
+    //! pobiera gestosc siatki. Ile pixeli szerokosci ma jedna kratka
+    virtual int getGridDensity() const;
+    //! ustawia gestosc siatki. Ile pixeli szerokosci ma jedna kratka
+    virtual void setGridDensity(int gridDensity);
+    //! \return
+    virtual osg::Vec4 getFrameColor() const;
+    //! \param frameColor
+    virtual void setFrameColor(osg::Vec4 frameColor);
+    //! pobiera kolor siatki w rgba
+    virtual osg::Vec4 getGridColor() const;
+    //! ustawia kolor siatki w rgba
+    virtual void setGridColor(osg::Vec4 gridColor);
+    //! \return
+    virtual float getFrameWidth() const;
+    //! \param frameWidth
+    virtual void setFrameWidth(float frameWidth);
+    //! \return
+    virtual float getGridDashWidth() const;
+    //! \param dashWidth
+    virtual void setGridDashWidth(float dashWidth);
+
+    //! \return
+    virtual bool isShowingAxisX() const;
+    //! \param showAxisX
+    virtual void setShowAxisX(bool showAxisX);
+    //! \return
+    virtual bool isAxisXInside() const;
+    //! \param axisXInside
+    virtual void setAxisXInside(bool axisXInside);
+    //! \return
+    virtual bool isShowingAxisY() const;
+    //! \param showAxisY
+    virtual void setShowAxisY(bool showAxisY);
+    //! \return
+    virtual bool isAxisYInside() const;
+    //! \param axisXInside
+    virtual void setAxisYInside(bool axisXInside);
+
+    //! Pobiera kolor wykresu w rgba
+    virtual osg::Vec4 getAxisesColor() const;
+    //! Ustawia kolor wykresu w rgba
+    virtual void setAxisesColor(osg::Vec4 color);
+
+    //! Pobiera kolor kursora w rgba
+    virtual osg::Vec4 getCursorColor() const;
+    //! Ustawia kolor kursora w rgba
+    virtual void setCursorColor(osg::Vec4 color);
+
+    //! \return Czy pokazywaæ tytu³
+    virtual bool isShowingTitle() const;
+    //! \param, showTitle Czy pokazywaæ tytu³
+    virtual void setShowTitle(bool showTitle);
+
+    //! \return Tytu³ wykresu
+    virtual std::string getTitleText() const;
+    //! \param titleText Tytu³ wykresu
+    virtual void setTitleText(const std::string & titleText);
+
+    virtual int getTitleTextSize() const;
+    virtual void setTitleTextSize(int titleTextSize);
+
+    virtual Chart::TitlePosition getTitlePosition() const;
+    virtual void setTitlePosition(Chart::TitlePosition position);
+
+    virtual bool isShowingXUnitsSeparately() const;
+    virtual void setShowingXUnitsSeparately(bool unitsSeparate);
+
+    virtual bool isShowingYUnitsSeparately() const;
+    virtual void setShowingYUnitsSeparately(bool unitsSeparate);
+
+    virtual bool isShowingXUnits() const;
+    virtual void setShowingXUnits(bool showUnits);
+
+    virtual bool isShowingYUnits() const;
+    virtual void setShowingYUnits(bool showUnits);
+
+    //! \return Prototyp labelek.
+    virtual const osgText::Text* getLabelPrototype() const;
+    //! \param prototype Prototyp labelek. Obiekt nie jest kopiowany. Gdy wprowadza siê zmiany w labelce trzeba
+    //! koniecznie wywo³aæ jeszcze raz setLabelPrototype, bo inaczej nie bêd¹ odœwie¿one. Mo¿na równie¿ sklonowaæ
+    //! tekst w parametrze.
+    virtual void setLabelPrototype(osgText::Text* prototype);
+    
+    virtual void setBackgroundColor(osg::Vec4 color);
+
+    virtual osg::Vec4 setBackgroundColor() const;
 
 private slots:
     void setNormalized(bool normalized);

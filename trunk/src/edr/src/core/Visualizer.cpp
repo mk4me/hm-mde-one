@@ -87,12 +87,23 @@ int Visualizer::getMaxSeries() const
 const core::VisualizerSeriePtr & Visualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
 {
     core::VisualizerSeriePtr serie(getImplementation()->createSerie(data, name));
+    
+    if(serie->getName().empty() == true){
+        serie->setName(name);
+    }
+
     auto it = dataSeries.insert(serie).first;
 
     TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
     if(timeline != nullptr && dynamic_cast<timeline::IChannel*>(serie.get()) != nullptr) {
 		timeline::IChannelPtr channel = core::dynamic_pointer_cast<timeline::IChannel>(serie);
-        timeline->addChannel(name, channel);
+        try{
+            timeline->addChannel(serie->getName(), channel);
+        }catch(std::runtime_error e){
+            LOG_WARNING("Could not add channel to timeline because: " << e.what());
+        }catch(...){
+            LOG_WARNING("Could not add channel to timeline. Unknown reason.");
+        }
         timelineDataSeries.insert(serie);
     }
 
@@ -106,7 +117,13 @@ void Visualizer::removeSerie(const core::VisualizerSeriePtr & serie)
     if(it != timelineDataSeries.end()){
         //usun z timeline
         TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
-        //timeline->removeChannel(serie->getName());
+        try{
+            timeline->removeChannel(serie->getName());
+        }catch(std::runtime_error e){
+            LOG_WARNING("Could not remove channel from timeline because: " << e.what());
+        }catch(...){
+            LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
+        }
         timelineDataSeries.erase(it);
     }
 
@@ -116,9 +133,17 @@ void Visualizer::removeSerie(const core::VisualizerSeriePtr & serie)
 
 void Visualizer::clearAllSeries()
 {
+    TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+
     while(timelineDataSeries.empty() == false){
         //usun z timeline
-
+        try{
+            timeline->removeChannel((*(timelineDataSeries.begin()))->getName());
+        }catch(std::runtime_error e){
+            LOG_WARNING("Could not remove channel from timeline because: " << e.what());
+        }catch(...){
+            LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
+        }
         getImplementation()->removeSerie((*timelineDataSeries.begin()).get());
         dataSeries.erase(*(timelineDataSeries.begin()));
         timelineDataSeries.erase(timelineDataSeries.begin());

@@ -139,7 +139,7 @@ public:
     //! \return Wskaznik do szukanego kanalu lub pusty wskaznik jesli nie znaleziono
     virtual Model::TChannelConstPtr findChannel(const std::string & path) const = 0;
 
-};    
+};
 
 class Controller : public IController, public OpenThreads::ReentrantMutex
 {

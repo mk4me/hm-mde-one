@@ -79,11 +79,13 @@ public:
 
 private:
     boost::scoped_ptr<T> impl;
-protected:
+
+public:
 
     virtual const T* getImplementation() const { return impl.get(); }
     virtual T* getImplementation() { return impl.get(); }
 
+protected:
     ObjectOutput createOutput()
     {
         std::vector<core::IOutputDescription::OutputInfo> coreOutputInfos;
