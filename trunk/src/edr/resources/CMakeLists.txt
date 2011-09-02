@@ -79,10 +79,10 @@ if(PROJECT_ENABLE_SVN_RESOURCES_COPYING)
 	if ( WIN32 )
 		set(_DEFAULT_RESOURCES_LOC)
 		foreach (buildType ${CMAKE_CONFIGURATION_TYPES})
-			list(APPEND _DEFAULT_RESOURCES_LOC "${PROJECT_BUILD_ROOT}/bin/${buildType}/data/resources")
+			list(APPEND _DEFAULT_RESOURCES_LOC "${PROJECT_BUILD_ROOT}/bin/${buildType}/resources")
 		endforeach()
 	else()
-		set(_DEFAULT_RESOURCES_LOC "${PROJECT_BUILD_ROOT}/bin/Debug/data/resources")
+		set(_DEFAULT_RESOURCES_LOC "${PROJECT_BUILD_ROOT}/bin/Debug/resources")
 	endif()
 	
 	# tak, trzeba wskazaæ œcie¿kê, gdzie to ma nast¹piæ

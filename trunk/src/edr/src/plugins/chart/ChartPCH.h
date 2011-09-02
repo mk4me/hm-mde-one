@@ -46,8 +46,8 @@ UTILS_POP_WARNINGS
 #include <osgui/EventCallback.h>
 #include <osgui/QOsgWidgets.h>
 #include <core/IServiceManager.h>
-#include <plugins/timeline/ITimeline.h>
-#include <plugins/timeline/Stream.h>
+//#include <plugins/timeline/ITimeline.h>
+//#include <plugins/timeline/Stream.h>
 
 #include <core/Plugin.h>
 

@@ -11,7 +11,7 @@
 
 #include <core/IService.h>
 #include <vidlib/PixelFormat.h>
-#include <plugins/timeline/Stream.h>
+//#include <plugins/timeline/Stream.h>
 
 class QWidget;
 class VideoWidget;
@@ -36,9 +36,9 @@ private:
     
 
     //! Lista strumieni.
-    typedef std::vector<timeline::StreamPtr> Streams;
+//    typedef std::vector<timeline::StreamPtr> Streams;
     //! Lista strumieni.
-    Streams streams;
+    //Streams streams;
 
 
 public:

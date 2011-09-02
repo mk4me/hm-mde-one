@@ -1,7 +1,7 @@
 #include "PCH.h"
 
-#include <plugins/timeline/Stream.h>
-#include <plugins/timeline/ITimeline.h>
+//#include <plugins/timeline/Stream.h>
+//#include <plugins/timeline/ITimeline.h>
 
 #include <core/IServiceManager.h>
 
@@ -9,7 +9,7 @@
 #include <core/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 //#include <core/C3DChannels.h>
-#include <plugins/timeline/Stream.h>
+//#include <plugins/timeline/Stream.h>
 #include <core/ILog.h>
 #include <core/IService.h>
 #include <boost/foreach.hpp>
@@ -33,7 +33,7 @@ KinematicService::KinematicService() :
 
 void KinematicService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
 {
-    ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
+   /* ITimelinePtr timeline = core::queryServices<ITimeline>(serviceManager);
     if ( timeline ) {
         for (int i = stream.size() - 1; i >= 0; --i) {
             timeline->removeStream(stream[i]);
@@ -44,6 +44,6 @@ void KinematicService::loadData(IServiceManager* serviceManager, core::IDataMana
         }
     } else {
         OSG_WARN<<"ITimeline not found."<<std::endl;
-    }
+    }*/
 }
 
