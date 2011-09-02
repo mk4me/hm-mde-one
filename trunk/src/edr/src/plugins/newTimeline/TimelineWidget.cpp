@@ -11,7 +11,7 @@
 #include <timelinelib/Controller.h>
 
 
-TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controlsler, QWidget * parent, Qt::WindowFlags f)
+TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidget * parent, Qt::WindowFlags f)
     : QWidget(parent, f), removeChannelsMenu(new QMenu()), scaleSpinBox(new QDoubleSpinBox()),
     playbackDirectionAction(new QAction(QString("Playback direction"), nullptr)), timeEditBox(new QTimeEdit()), timeToBeginAction(new QAction(QString("Begin"), nullptr)),
     timeToEndAction(new QAction(QString("End"), nullptr)), playPauseAction(new QAction(QString("Play"), nullptr)), visualTimeSlider(new QSlider(nullptr)),
@@ -20,12 +20,12 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controlsler, QWid
     slider(new TimeSliderWidget()), controls(new TimelineControlsWidget())
 {
     //ustawienie kontrolera
-    setController(controlsler);
+    setController(controller);
 
     //inicjalizujemy widok drzewa
 
     //rejestracja obserwacji kontrolera
-    controlsler->attach(this);
+    controller->attach(this);
 
     //unicjalizacja UI
 
