@@ -129,6 +129,8 @@ private:
                 chart->setShowGridX(true);
                 chart->setShowGridY(true);
 
+                chart->setMargin(5);
+
                 chart->setAxisXInside(false);
                 chart->setAxisYInside(false);
 
@@ -140,6 +142,12 @@ private:
 
                 chart->setShowingXUnitsSeparately(true);
                 chart->setShowingYUnitsSeparately(true);
+
+                chart->setShowingTimeInCursor(true);
+                chart->setShowingUnitsInCursor(true);
+
+                chart->setShowCursorBackground(true);
+                chart->setCursorBackgroundColor(osg::Vec4(1,1,1,0.95));
 
                 chart->setShowTitle(true);
 
@@ -156,10 +164,12 @@ private:
 
                 ChartVisualizer::ChartVisualizerSerie* chartSerie = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serie.get());
 
-                if(item->text(0).at(0) == 'L' || item->text(0).at(0) == 'l'){
+                if(item->text(0).at(0) == 'L' || item->text(0).at(0) == 'l' || item->text(0).at(1) == 'X' || item->text(0).at(1) == 'x'){
                     chartSerie->setColor(osg::Vec4(1,0,0,1));
-                }else{
+                }else if(item->text(0).at(0) == 'R' || item->text(0).at(0) == 'r' || item->text(0).at(1) == 'Y' || item->text(0).at(1) == 'y'){
                     chartSerie->setColor(osg::Vec4(0,1,0,1));
+                }else{
+                    chartSerie->setColor(osg::Vec4(0.5,0,1,1));
                 }
 
                 TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
@@ -176,7 +186,9 @@ private:
 
                 connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
     
-                pane->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
+                visu->setMinimumSize(250, 100);
+
+                topMainWindow->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
             }else{
 
                 /*TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
@@ -257,15 +269,15 @@ private:
                 connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
 
 			
-			    /*pane->setUpdatesEnabled(false);
+			    /*topMainWindow->setUpdatesEnabled(false);
 			    if (currentVisualizer) {
-				    pane->layout()->removeWidget(currentVisualizer);
+				    topMainWindow->layout()->removeWidget(currentVisualizer);
 				    delete currentVisualizer;
 			    }*/
 			    //currentVisualizer = visu;
-			    //pane->layout()->addWidget(visu);            
-                pane->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
-			    //pane->setUpdatesEnabled(true);
+			    //topMainWindow->layout()->addWidget(visu);            
+                topMainWindow->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
+			    //topMainWindow->setUpdatesEnabled(true);
             }else{
 
                 /*TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
@@ -306,9 +318,12 @@ private:
     std::map<QTreeWidgetItem*, EventsCollectionConstPtr> item2Events;
 	std::map<QTreeWidgetItem*, VectorChannelConstPtr> item2Vector;
 	std::map<QTreeWidgetItem*, VideoChannelConstPtr> item2Video;
-	VisualizerWidget* currentVisualizer;
-	//QWidget* pane;
-    QMainWindow* pane;
+	
+    VisualizerWidget* currentVisualizer;
+
+    QMainWindow* topMainWindow;
+    QMainWindow* bottomMainWindow;
+
 	QTreeWidget* treeWidget;
 
     std::map<timeline::IChannelConstPtr, VisualizerWidget*> channelToVisualizer;

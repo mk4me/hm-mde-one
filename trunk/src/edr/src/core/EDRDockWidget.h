@@ -58,6 +58,7 @@ private:
 private:
     QWidget * emptyTitleBar;
     EDRTitleBar * titleBar;
+    bool showTitleBar;
     EDRDockInnerWidget * innerWidget;
 
     QWidget * undockWidget;

@@ -20,7 +20,7 @@ using namespace core;
 HmmMainWindow::HmmMainWindow() :
 	MainWindow(),
 	currentVisualizer(nullptr),
-	pane(nullptr),
+	topMainWindow(nullptr),
 	treeWidget(nullptr)
 {
 	this->setWindowFlags(Qt::FramelessWindowHint);
@@ -35,27 +35,12 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 
 	topButton->setFixedWidth(0);
 	bottomButton->setFixedWidth(0);
-	//QString s = tabWidget->styleSheet();
-	/*tabWidget->setStyleSheet(
-		"QTabBar::tab:selected { color: rgb(135, 173, 255); }" 
-		"QTabBar::tab {  color: white; } "); */   //height: 100px; width: 100px; 
-	/*Badania_2->setStyleSheet(
-		"QTabBar::tab { background: gray; color: white; padding: 10px; } "
-		"QTabBar::tab:selected { background: lightgray; } "
-		"QTabWidget::pane { border: 0; } "
-		"QWidget { background: lightgray; } ");*/
-
 
 	connect(this->fontSlider, SIGNAL(valueChanged(int)), this, SLOT(setFont(int)));
 	connect(this->layoutTopSlider, SIGNAL(valueChanged(int)), this, SLOT(setTop(int)));
 	connect(this->layoutBottomSlider, SIGNAL(valueChanged(int)), this, SLOT(setBottom(int)));
 	
 	this->showFullScreen();
-	/*connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
-	connect(&getUpdateTimer(), SIGNAL(timeout()), this, SLOT(updateServices()));
-	connect(&getUpdateTimer(), SIGNAL(timeout()), this, SLOT(updateVisualizers()));
-    getUpdateTimer().start(20);
-    */
 
 	treeWidget = new QTreeWidget();
 	QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
@@ -128,25 +113,23 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 	QHBoxLayout *hlayout = new QHBoxLayout;
 	hlayout->addWidget(treeWidget);
 
-	//pane = new QWidget(this);
-    pane = new QMainWindow(nullptr);
-	//pane->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	//QGridLayout* gridLayout = new QGridLayout();
-	//pane->setLayout(gridLayout);
+    QSplitter * splitter = new QSplitter();
+    splitter->setOrientation(Qt::Vertical);
+    splitter->setChildrenCollapsible(false);
+
+    splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    topMainWindow = new QMainWindow(nullptr);
+    bottomMainWindow = new QMainWindow(nullptr);
+
+    splitter->addWidget(topMainWindow);
+    splitter->addWidget(bottomMainWindow);
+
 	hlayout->setSpacing(0);
 	hlayout->setMargin(0);
-	/*pane = new QFrame(this);
-	pane->setFrameShape(QFrame::Box);
-	pane->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);*/
-	/*QGridLayout* gridLayout = new QGridLayout();
-	gridLayout->setMargin(0);
-	gridLayout->setSpacing(0);*/
-	//pane->setLayout(gridLayout);
-	//VisualizerWidget* visualizerWidget = new VisualizerWidget();
 
-	hlayout->addWidget(pane);
+	hlayout->addWidget(splitter);
     int i = hlayout->children().size();
-	Analizy->setLayout(hlayout);
 
 	for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
 		IServicePtr service = ServiceManager::getInstance()->getService(i);
@@ -169,7 +152,6 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 
 			QVBoxLayout *layout = new QVBoxLayout;
 			layout->addWidget(settingsWidget);
-			//layout->addStretch();
 			this->Badania_2->setLayout(layout);
         }else if (name == "newTimeline") {
             std::vector<QObject*> mainWidgetActions;
@@ -188,30 +170,40 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
                 widget->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
             }
 
+            topMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+
             widget->getTitleBar()->setFloatButtonVisible(false);
             widget->getTitleBar()->setCloseButtonVisible(false);
 
             widget->setTitleBarVisible(false);
-
-            pane->addDockWidget(Qt::BottomDockWidgetArea, widget);
         }
 	}
 
+    Analizy->setLayout(hlayout);
+
+    // akcje - Workflow (VDF) i konsola
+
+    QMainWindow * actionsMainWindow = new QMainWindow(nullptr);
+
 	EDRWorkflowWidget* widget = new EDRWorkflowWidget();
 	QVBoxLayout* layout = new QVBoxLayout();
-	layout->addWidget(widget);
-	layout->addWidget(widgetConsole);
+    actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+    actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
+    layout->addWidget(actionsMainWindow);
 
 	Operations->setLayout(layout);
-	//getUpdateTimer().start(20);
+
+    // prototyp textu dla Charta
 
     chartTextPrototype = new osgText::Text();
 
     chartTextPrototype->setColor(osg::Vec4(0, 0, 0, 1));
-    chartTextPrototype->setFontResolution(200,200);
-    chartTextPrototype->setFont(osgText::readFontFile("fonts/arial.ttf"));
+    chartTextPrototype->setFontResolution(50,50);
+    chartTextPrototype->setFont(osgText::readFontFile("fonts/arial.ttf"));    
     chartTextPrototype->setCharacterSize(12);
-    chartTextPrototype->setAxisAlignment(osgText::Text::SCREEN); 
+    chartTextPrototype->setCharacterSizeMode(osgText::TextBase::OBJECT_COORDS);
+    chartTextPrototype->setAxisAlignment(osgText::Text::USER_DEFINED_ROTATION );
+    chartTextPrototype->setAutoRotateToScreen(false);
     chartTextPrototype->setAlignment(osgText::Text::CENTER_CENTER);
     chartTextPrototype->setText("");
     chartTextPrototype->setLayout(osgText::Text::LEFT_TO_RIGHT);
@@ -378,7 +370,7 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 		QDockWidget* dock = new QDockWidget();
 		QLabel* label = new QLabel("<font color = \"red\" size = 5> Tutaj trzeba dodac wizualizator VectorChannel :) </font> <br /> pozdrawiam, WK");
 		dock->setWidget(label);
-		pane->addDockWidget(Qt::LeftDockWidgetArea, dock);
+		topMainWindow->addDockWidget(Qt::LeftDockWidgetArea, dock);
 	}
 }
 

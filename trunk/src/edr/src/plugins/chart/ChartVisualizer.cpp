@@ -58,7 +58,7 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
 {
     viewer = new osgui::QOsgDefaultWidget();
     viewer->setTimerActive(false);
-    //viewer->addEventHandler( new osgViewer::StatsHandler() );
+    viewer->addEventHandler( new osgViewer::StatsHandler() );
 
     // pobranie cech kontekstu graficznego
     const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
@@ -75,8 +75,10 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
     // dodanie callbacak dostosowuj¹cego rozmiar kamery do rozmiaru okna
     camera->setEventCallback( osgui::createEventCallback( 
         osgGA::GUIEventAdapter::RESIZE,
-        [](osg::Node* node, const osgGA::GUIEventAdapter* event) { 
+        [&](osg::Node* node, const osgGA::GUIEventAdapter* event) {
+            //const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
             dynamic_cast<osg::Camera&>(*node).setProjectionMatrixAsOrtho2D(0, event->getWindowWidth(), 0, event->getWindowHeight()); 
+            //dynamic_cast<osg::Camera&>(*node).setProjectionMatrixAsOrtho2D(0, traits->width, 0, traits->height); 
     } 
     ));
 
@@ -464,4 +466,44 @@ bool ChartVisualizer::isShowingYUnits() const
 void ChartVisualizer::setShowingYUnits(bool showUnits)
 {
     chart->setShowingYUnits(showUnits);
+}
+
+bool ChartVisualizer::isShowingTimeInCursor() const
+{
+    return chart->isShowingTimeInCursor();
+}
+
+void ChartVisualizer::setShowingTimeInCursor(bool showTime)
+{
+    chart->setShowingTimeInCursor(showTime);
+}
+
+bool ChartVisualizer::isShowingUnitsInCursor() const
+{
+    return chart->isShowingUnitsInCursor();
+}
+
+void ChartVisualizer::setShowingUnitsInCursor(bool showUnits)
+{
+    chart->setShowingUnitsInCursor(showUnits);
+}
+
+bool ChartVisualizer::isShowingCursorBackground() const
+{
+    return chart->isShowingCursorBackground();
+}
+
+void ChartVisualizer::setShowCursorBackground(bool showBackground)
+{
+    chart->setShowCursorBackground(showBackground);
+}
+
+osg::Vec4 ChartVisualizer::getCursorBackgroundColor() const
+{
+    return chart->getCursorBackgroundColor();
+}
+
+void ChartVisualizer::setCursorBackgroundColor(osg::Vec4 color)
+{
+    chart->setCursorBackgroundColor(color);
 }

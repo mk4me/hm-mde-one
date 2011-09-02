@@ -51,11 +51,17 @@ public:
 
     }
 
+protected slots:
+
+    void tryAddNode();
+
 protected:
+
     virtual void mousePressEvent(QMouseEvent * event);
 
 private:
     EDRWorkflowWidget * workflowWidget;
+    QPoint pos;
 
 };
 
@@ -127,6 +133,7 @@ private:
 
     WorkflowItemPtr buildAndInitializeVisualizer(UniqueID id);
 
+
     void onNodeDelete(const osgVDF::osgVDFBaseNode * node);
     void onNodeDoubleClick(const osgVDF::osgVDFBaseNode * node, const osgWidget::XYCoord & pos);
 
@@ -136,7 +143,6 @@ protected slots:
     void stop();
 
     void tollbarButoonChanged(bool change);
-
 };
 
 #endif  //  HEADER_GUARD___WORKFLOWWIDGET_H__

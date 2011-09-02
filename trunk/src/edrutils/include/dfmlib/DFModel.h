@@ -157,7 +157,7 @@ private:
     //OpenThreads::Mutex leavesMutex;
 
     //! mutex do synchronizacji operacji uruchamiania/zatrzymywania/pauzowania dataflow
-    mutable OpenThreads::Mutex runningMutex;
+    mutable OpenThreads::ReentrantMutex runningMutex;
 
     //! w¹tek obs³uguj¹cy wyzwalanie Ÿróde³
     //boost::shared_ptr<ModelRunner> modelRunner;

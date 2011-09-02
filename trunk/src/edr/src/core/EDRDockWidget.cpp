@@ -23,6 +23,8 @@ EDRDockWidget::~EDRDockWidget()
 
 void EDRDockWidget::init()
 {
+    showTitleBar = true;
+
     //mo¿na focusowaæ widget
     setFocusPolicy(Qt::StrongFocus);
 
@@ -37,18 +39,20 @@ void EDRDockWidget::init()
 
 void EDRDockWidget::setTitleBarVisible(bool visible)
 {
-    if(visible == true){
-        if(titleBarWidget() == emptyTitleBar){
+    if(showTitleBar != visible){
+        showTitleBar = visible;
+        
+        if(showTitleBar == true){
             setTitleBarWidget(titleBar);
+        }else{
+            setTitleBarWidget(emptyTitleBar);
         }
-    }else if(titleBarWidget() != emptyTitleBar){
-        setTitleBarWidget(emptyTitleBar);
     }
 }
 
 bool EDRDockWidget::isTitlebarVisible() const
 {
-    return titleBarWidget() != nullptr;
+    return showTitleBar;
 }
 
 EDRDockInnerWidget * EDRDockWidget::getInnerWidget()

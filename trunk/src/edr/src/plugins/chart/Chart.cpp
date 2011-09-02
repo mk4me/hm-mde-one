@@ -17,25 +17,27 @@ namespace osgText
 {
     float textWidth(const Text & text)
     {
-        int c = 0;
-        //split text according to line breaks
-        auto prev = text.getText().begin();
-        auto it = std::find(prev, text.getText().end(), '\n');
-        while(it != text.getText().end()){
-            c = std::max(c, std::distance(prev, it));
-            prev = it;
-            prev++;
-            it = std::find(prev, text.getText().end(), '\n');
-        }
+        //int c = 0;
+        ////split text according to line breaks
+        //auto prev = text.getText().begin();
+        //auto it = std::find(prev, text.getText().end(), '\n');
+        //while(it != text.getText().end()){
+        //    c = std::max(c, std::distance(prev, it));
+        //    prev = it;
+        //    prev++;
+        //    it = std::find(prev, text.getText().end(), '\n');
+        //}
 
-        c = std::max(c, std::distance(prev, text.getText().end()));
+        //c = std::max(c, std::distance(prev, text.getText().end()));
 
-        return (float)c * text.getCharacterHeight() / text.getCharacterAspectRatio();
+        //return (float)c * text.getCharacterHeight() / text.getCharacterAspectRatio();
+        return text.getBound().xMax() - text.getBound().xMin();
     }
 
     float textHeight(const Text & text)
     {
-        return text.getCharacterHeight() * (1 + std::count(text.getText().begin(), text.getText().end(), '\n'));
+        //return text.getCharacterHeight() * (1 + std::count(text.getText().begin(), text.getText().end(), '\n'));
+        return text.getBound().yMax() - text.getBound().yMin();
     }
 } // namespace osgText
 
@@ -50,8 +52,9 @@ showGridX(true), showGridY(true), showAxisX(true), showAxisY(true),
 showFrame(true), z(0), zRange(0), labelsToAxisesOffset(8), showXUnits(true), showYUnits(true),
 x(0), y(0), w(0), h(0), frameWidth(2), axisXInside(true), axisYInside(true),
 dashWidth(8), activeSerieIndex(-1), showTitle(true), xUnitsSeparated(true), yUnitsSeparated(true),
-normalized(true), dirty(false), titlePosition(TOP_GRID_CENTER),
-frameColor(osg::Vec4(1,1,1,1)), axisesColor(osg::Vec4(1,1,1,1)),
+normalized(true), dirty(false), titlePosition(TOP_GRID_CENTER), showTimeInCursor(false),
+frameColor(osg::Vec4(1,1,1,1)), axisesColor(osg::Vec4(1,1,1,1)), showUnitsInCursor(false),
+showCursorBackground(false), cursorBackgroundColor(osg::Vec4(1,1,1,0)),
 cursorColor(osg::Vec4(1,1,1,1)), titleVisible(false), xUnitLabelVisible(false), yUnitLabelVisible(false)
 {
     autoRefresh = false;
@@ -73,6 +76,20 @@ cursorColor(osg::Vec4(1,1,1,1)), titleVisible(false), xUnitLabelVisible(false), 
 
     setGridDensity(10);
 
+    cursorBackground = new osg::Geometry();
+    cursorBackground->setVertexArray( new osg::Vec3Array );
+    cursorBackground->setColorArray( new osg::Vec4Array );
+    cursorBackground->setDataVariance( osg::Object::DYNAMIC );
+    cursorBackground->addPrimitiveSet( new osg::DrawArrays(GL_QUADS, 0, 4) );
+    osg::Vec3Array* normals = new osg::Vec3Array;
+    normals->push_back(osg::Vec3(0.0f,0.0f,1.0f));
+    cursorBackground->setNormalArray(normals);
+    cursorBackground->setNormalBinding(osg::Geometry::BIND_OVERALL);
+    cursorBackground->setColorBinding(osg::Geometry::BIND_OVERALL);
+    osg::StateSet* stateset = cursorBackground->getOrCreateStateSet();
+    stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
+    stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    cursorBackground->setName("cursorBackground");
 
     refreshAll();
     autoRefresh = true;
@@ -680,6 +697,12 @@ void Chart::setLabelPrototype( osgText::Text* prototype )
     if (prototype) {
         textPrototype = prototype;
 
+        //! FIX dla BOUNDINGBOX dla Text
+        textPrototype->setAxisAlignment(osgText::Text::USER_DEFINED_ROTATION); 
+        textPrototype->setCharacterSizeMode(osgText::TextBase::OBJECT_COORDS);
+        textPrototype->setAutoRotateToScreen(false);
+        //! Koniec FIXA
+
         for(int i = 0; i < labelsX.size(); i++){
             geode->removeDrawable(labelsX[i]);
             geode->removeDrawable(labelsY[i]);
@@ -714,7 +737,7 @@ void Chart::setLabelPrototype( osgText::Text* prototype )
 
         tmp = cursorText->getText().createUTF8EncodedString();
         auto pos = cursorText->getPosition();
-        cursorText = osg::clone( textPrototype.get(), "cursor", osg::CopyOp::SHALLOW_COPY );
+        cursorText = osg::clone( textPrototype.get(), "cursorText", osg::CopyOp::SHALLOW_COPY );
         cursorText->setText(tmp);
         geode->addDrawable(cursorText);
         cursorText->setPosition(pos);
@@ -728,7 +751,7 @@ void Chart::setLabelPrototype( osgText::Text* prototype )
 void Chart::refreshCursor()
 {
     float zStep = zRange/float(2 + series.size());
-    refreshCursor(z + zRange - zStep);
+    refreshCursor(z + zRange - zStep, zStep);
 }
 
 float Chart::maxLabelsWidth(const std::vector< osgText::TextPtr > & labels)
@@ -835,7 +858,7 @@ void Chart::refreshAll()
 
     currentZ += zStep;
 
-    refreshCursor(currentZ);
+    refreshCursor(currentZ, zStep);
 
     dirty = false;
 }
@@ -851,7 +874,14 @@ osg::ref_ptr<osgText::Text> Chart::createText( const osg::Vec3& pos, float size,
     text->setFont(font);
     text->setCharacterSize(size);
     //text->setDrawMode(osgText::Text::TEXT | osgText::Text::BOUNDINGBOX); 
-    text->setAxisAlignment(osgText::Text::SCREEN); 
+
+    //! FIX dla BOUNDINGBOX dla Text
+    text->setAxisAlignment(osgText::Text::USER_DEFINED_ROTATION); 
+    text->setCharacterSizeMode(osgText::TextBase::OBJECT_COORDS);
+    text->setAutoRotateToScreen(false);
+    //! Koniec FIXA
+
+
     text->setAlignment(osgText::Text::CENTER_CENTER);
     text->setText(label);
     text->setLayout(osgText::Text::LEFT_TO_RIGHT);
@@ -1292,7 +1322,7 @@ void Chart::refreshLabels( float z )
     }
 }
 
-void Chart::refreshCursor( float z )
+void Chart::refreshCursor( float z, float range )
 {
     using namespace osg;
 
@@ -1321,27 +1351,46 @@ void Chart::refreshCursor( float z )
         // nadajemy etykiete
         std::ostringstream buffer;
         formatStream(buffer, yrange.first, yrange.second);
-        buffer << value;
+        buffer << "Value: " <<value;
+
+        if(showUnitsInCursor == true){
+            buffer << serie->getYUnit();
+        }
+
+        if(showTimeInCursor == true){
+            buffer << "\nTime: " << time;
+
+            if(showUnitsInCursor == true){
+                buffer << serie->getXUnit();
+            }
+
+        }
+
+        cursorText->setAlignment( osgText::Text::LEFT_CENTER );
+
         cursorText->setText( buffer.str() );
 
         float width = osgText::textWidth(*cursorText);
+        float height = osgText::textHeight(*cursorText);
 
         //ustalamy pozycjê - mamy punkt zaczepienia (cursorX, cursorY)
-        //defaultowo wartoœci sa pokazywane nad punktem
+        //defaultowo wartoœci sa pokazywane z prawej storny kursora
         //ale mo¿e siê okazaæ ¿e bêd¹ niewidoczne wiêc bêdziemy musieli je modyfikowaæ
-        Vec3 pos(cursorX + labelsToAxisesOffset + width / 2.0, cursorY + labelsToAxisesOffset + getTextPrototypeHeight() / 2.0, z);
+        Vec3 pos(cursorX + labelsToAxisesOffset, cursorY, z);
 
-        if(pos.y() + getTextPrototypeHeight() / 2.0 > y + h){
-            pos.y() = cursorY - labelsToAxisesOffset - getTextPrototypeHeight() / 2.0;
+        if(pos.y() + height / 2.0 > y + h){
+            pos.y() = cursorY - labelsToAxisesOffset - height / 2.0;
         }
 
-        if(pos.x() + width / 2.0 > x + w){
-            pos.x() = cursorX - labelsToAxisesOffset - width / 2.0;
+        bool switched = false;
+
+        if(pos.x() + width > x + w){
+            pos.x() = cursorX - labelsToAxisesOffset - width;            
+            switched = true;
         }
 
         // teraz mo¿na pozycjonowaæ...
         cursorText->setPosition( pos );
-        cursorText->setAlignment( osgText::Text::CENTER_CENTER );
 
         // przygotowanie kursora
         Vec3Array* vertices = dynamic_cast<Vec3Array*>(cursor->getVertexArray());
@@ -1351,6 +1400,9 @@ void Chart::refreshCursor( float z )
         vertices->push_back( Vec3(cursorX, loc[1], z) );
         vertices->push_back( Vec3(cursorX, loc[1] + loc[2], z) );
 
+        vertices->push_back( Vec3(cursorX - labelsToAxisesOffset / 2.0, cursorY, z) );
+        vertices->push_back( Vec3(cursorX + labelsToAxisesOffset / 2.0, cursorY, z) );
+
         // kolory
         osg::Vec4Array* colors = dynamic_cast<osg::Vec4Array*>(cursor->getColorArray());
         colors->resize(1);
@@ -1359,10 +1411,43 @@ void Chart::refreshCursor( float z )
 
         // ustawienie prymitywów
         osg::DrawArrays* primitives = dynamic_cast<osg::DrawArrays*>(cursor->getPrimitiveSet(0));
-        primitives->set(GL_LINE_STRIP, 0, vertices->getNumElements());
+        primitives->set(GL_LINES, 0, vertices->getNumElements());
 
         // "zabrudzenie" geometrii
         cursor->setVertexArray(vertices);
+
+        if(showCursorBackground == true){
+            if(geode->getDrawableIndex(cursorBackground) == geode->getNumDrawables()){
+                geode->addDrawable(cursorBackground);
+            }
+
+            z -= range / 2.0;
+
+            auto bb = cursorText->getBound();
+            bb.xMin() -= labelsToAxisesOffset;
+            bb.xMax() += labelsToAxisesOffset;
+            bb.yMin() -= labelsToAxisesOffset;
+            bb.yMax() += labelsToAxisesOffset;
+
+            if(switched == true){
+                bb.xMax() += labelsToAxisesOffset;
+            }else{
+                bb.xMin() -= labelsToAxisesOffset;
+            }
+            
+            Vec4Array* colors = dynamic_cast<Vec4Array*>(cursorBackground->getColorArray());
+            colors->push_back(cursorBackgroundColor);
+            cursorBackground->setColorArray(colors);
+
+            //na podstawie osghud.cpp
+            Vec3Array* vertices = dynamic_cast<Vec3Array*>(cursorBackground->getVertexArray());
+            vertices->resize(0);
+            vertices->push_back(osg::Vec3(bb.xMin(),bb.yMax(),z));
+            vertices->push_back(osg::Vec3(bb.xMin(),bb.yMin(),z));
+            vertices->push_back(osg::Vec3(bb.xMax(),bb.yMin(),z));
+            vertices->push_back(osg::Vec3(bb.xMax(),bb.yMax(),z));
+            cursorBackground->setVertexArray(vertices);
+        }
     }
 }
 
@@ -1495,3 +1580,46 @@ void Chart::setShowingYUnits(bool showUnits)
     setDirty();
 }
 
+bool Chart::isShowingTimeInCursor() const
+{
+    return showTimeInCursor;
+}
+
+void Chart::setShowingTimeInCursor(bool showTime)
+{
+    showTimeInCursor = showTime;
+    setDirty();
+}
+
+bool Chart::isShowingUnitsInCursor() const
+{
+    return showUnitsInCursor;
+}
+
+void Chart::setShowingUnitsInCursor(bool showUnits)
+{
+    showUnitsInCursor = showUnits;
+    setDirty();
+}
+
+bool Chart::isShowingCursorBackground() const
+{
+    return showCursorBackground;
+}
+
+void Chart::setShowCursorBackground(bool showBackground)
+{
+    showCursorBackground = showBackground;
+    setDirty();
+}
+
+osg::Vec4 Chart::getCursorBackgroundColor() const
+{
+    return cursorBackgroundColor;
+}
+
+void Chart::setCursorBackgroundColor(osg::Vec4 color)
+{
+    cursorBackgroundColor = color;
+    setDirty();
+}

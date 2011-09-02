@@ -103,6 +103,16 @@ private:
     osg::Vec4 cursorColor;
     //! WskaŸnik bie¿¹cego czasu.
     osg::GeometryPtr cursor;
+    //! Czy pokazywaæ czas w kursorze
+    bool showTimeInCursor;
+    //! Czy pokazywac jednostki w kursorze
+    bool showUnitsInCursor;
+    //! Czy pokazywaæ dodatkowe t³o kursora
+    bool showCursorBackground;
+    //! Kolor t³a kursora
+    osg::Vec4 cursorBackgroundColor;
+    //! T³o kursora
+    osg::GeometryPtr cursorBackground;
 
     //! Jednostki osi X
     osgText::TextPtr xAxisUnitsLabel;
@@ -339,6 +349,18 @@ public:
     bool isShowingYUnits() const;
     void setShowingYUnits(bool showUnits);
 
+    bool isShowingTimeInCursor() const;
+    void setShowingTimeInCursor(bool showTime);
+
+    bool isShowingUnitsInCursor() const;
+    void setShowingUnitsInCursor(bool showUnits);
+
+    bool isShowingCursorBackground() const;
+    void setShowCursorBackground(bool showBackground);
+
+    osg::Vec4 getCursorBackgroundColor() const;
+    void setCursorBackgroundColor(osg::Vec4 color);
+
 
     //! \return Prototyp labelek.
     const osgText::Text* getLabelPrototype() const
@@ -385,7 +407,7 @@ private:
     void refreshAxis(float z);
     void refreshGrid(float z);
     void refreshLabels(float z);
-    void refreshCursor(float z);
+    void refreshCursor(float z, float range);
     void refreshTitle(float z);
     void refreshSeries(float & currentZ, float zStep);
 

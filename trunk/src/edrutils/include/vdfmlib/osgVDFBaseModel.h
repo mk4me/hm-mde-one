@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD__VDFBASEMODEL_H__
 #define HEADER_GUARD__VDFBASEMODEL_H__
 
-#include <OpenThreads/Mutex>
+#include <OpenThreads/ReentrantMutex>
 #include <OpenThreads/ScopedLock>
 #include <osgWidget/Widget>
 #include <osgWidget/WindowManager>
@@ -56,7 +56,7 @@ public:
 
 protected:
     
-    typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopeLock;
+    typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopeLock;
 
     //! Typ s³u¿¹cy do ³adowania konfiguracji wêz³ów
     typedef std::map<dflm::NPtr, osgWidget::XYCoord> NodesPositions;
@@ -573,7 +573,7 @@ private:
 	bool toolbarVisible;
 	Button * lastButton;
 
-    OpenThreads::Mutex stateMutex;
+    mutable OpenThreads::ReentrantMutex stateMutex;
 
     NodeDeleteAction deleteNodeAction;
 

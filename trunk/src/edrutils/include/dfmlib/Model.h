@@ -7,7 +7,7 @@
 #include <dfmlib/Node.h>
 #include <dfmlib/Pin.h>
 #include <boost/enable_shared_from_this.hpp>
-#include <OpenThreads/Mutex>
+#include <OpenThreads/ReentrantMutex>
 #include <OpenThreads/ScopedLock>
 #include <set>
 #include <vector>
@@ -38,7 +38,7 @@ public:
 
 protected:
 
-    typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
+    typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
 
 private:
 
@@ -201,7 +201,7 @@ private:
 
 protected:
     //! mutex dla zmiany stanu modelu
-    mutable OpenThreads::Mutex editMutex;
+    mutable OpenThreads::ReentrantMutex editMutex;
 
     const Nodes & innerGetNodes() const { return nodes; }
     const Nodes & innerGetLeafNodes() const { return leafNodes; }

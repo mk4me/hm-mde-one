@@ -89,57 +89,62 @@ WorkflowWidget::~WorkflowWidget()
 
 }
 
+void WorkflowCustomQOSGWidget::tryAddNode()
+{
+    try{
+        WorkflowItemPtr item(workflowWidget->actionsItemBuilders[workflowWidget->currentAction]());
+
+        if(item == nullptr){
+            return;
+        }
+
+        dflm::DFNPtr node;
+        //obuduj wezel
+        if(dynamic_cast<InputDescription*>(item.get()) == nullptr){
+            //sprawdz czy wezel poprawnie zbudowany!!
+            node.reset((EDRDFNode*)(new EDRDFSourceNode(item, item->getName())));
+        }else{
+            node.reset(new EDRDFNode(item, item->getName()));
+        }              
+
+        workflowWidget->workflowVDFModel->addNode(node, osg::ref_ptr<osg::Image>(), node->getName(), osgWidget::XYCoord(pos.x(), pos.y()));
+
+        workflowWidget->currentAction->blockSignals(true);
+        workflowWidget->currentAction->setChecked(false);
+        workflowWidget->currentAction->blockSignals(false);
+        workflowWidget->currentAction = nullptr;
+
+    }catch(std::runtime_error e){
+        LOG_ERROR("Error during node addition to workflow: " << e.what());
+        std::string info("Could not add requested node to workflow: ");
+        info += e.what();
+        QMessageBox msgBox;
+        msgBox.setText(info.c_str());
+        msgBox.exec();
+    }catch(std::invalid_argument e){
+        LOG_ERROR("Error during node addition to workflow: " << e.what());
+        std::string info("Could not add requested node to workflow: ");
+        info += e.what();
+        QMessageBox msgBox;
+        msgBox.setText(info.c_str());
+        msgBox.exec();
+    }catch(...){
+        LOG_ERROR("UNKNOWN error during node addition to workflow");
+        QMessageBox msgBox;
+        msgBox.setText("Could not add requested node to workflow. Unknown error");
+        msgBox.exec();
+    }
+}
+
 void WorkflowCustomQOSGWidget::mousePressEvent(QMouseEvent * event)
 {
     if(event->button() == Qt::LeftButton){
         //probuj dodac element
         if(workflowWidget->currentAction != nullptr){
 
-            try{
-                WorkflowItemPtr item(workflowWidget->actionsItemBuilders[workflowWidget->currentAction]());
+            pos = mapToGlobal(event->pos());
 
-                if(item == nullptr){
-                    return;
-                }
-
-                dflm::DFNPtr node;
-                //obuduj wezel
-                if(dynamic_cast<InputDescription*>(item.get()) == nullptr){
-                    //sprawdz czy wezel poprawnie zbudowany!!
-                    node.reset((EDRDFNode*)(new EDRDFSourceNode(item, item->getName())));
-                }else{
-                    node.reset(new EDRDFNode(item, item->getName()));
-                }              
-
-                QPoint pos = mapToGlobal(event->pos());
-
-                workflowWidget->workflowVDFModel->addNode(node, osg::ref_ptr<osg::Image>(), node->getName(), osgWidget::XYCoord(pos.x(), pos.y()));
-
-                workflowWidget->currentAction->blockSignals(true);
-                workflowWidget->currentAction->setChecked(false);
-                workflowWidget->currentAction->blockSignals(false);
-                workflowWidget->currentAction = nullptr;
-
-            }catch(std::runtime_error e){
-                LOG_ERROR("Error during node addition to workflow: " << e.what());
-                std::string info("Could not add requested node to workflow: ");
-                info += e.what();
-                QMessageBox msgBox;
-                msgBox.setText(info.c_str());
-                msgBox.exec();
-            }catch(std::invalid_argument e){
-                LOG_ERROR("Error during node addition to workflow: " << e.what());
-                std::string info("Could not add requested node to workflow: ");
-                info += e.what();
-                QMessageBox msgBox;
-                msgBox.setText(info.c_str());
-                msgBox.exec();
-            }catch(...){
-                LOG_ERROR("UNKNOWN error during node addition to workflow");
-                QMessageBox msgBox;
-                msgBox.setText("Could not add requested node to workflow. Unknown error");
-                msgBox.exec();
-            }
+            QMetaObject::invokeMethod(this, "tryAddNode");
 
             return;
         }
@@ -337,9 +342,9 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
         button->setDefaultAction(action);
 
-        actionsItemBuilders[action] = boost::bind(static_cast<DataSourcePtr(DataSourceManager::*)( UniqueID )>(&DataSourceManager::createDataSource), dsm, proto->getID());
-
         tmpWidget->layout()->addWidget(button);
+
+        actionsItemBuilders[action] = boost::bind(static_cast<DataSourcePtr(DataSourceManager::*)( UniqueID )>(&DataSourceManager::createDataSource), dsm, proto->getID());
 
         connect(action, SIGNAL(toggled(bool)), this, SLOT(tollbarButoonChanged(bool)));
 
@@ -583,12 +588,10 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
 
     VisualizerWidget* visWidget = new VisualizerWidget(id);
     visWidget->setAllowedAreas(Qt::RightDockWidgetArea);
-    //blokujemy zmiane wizualizatora
-    visWidget->setActiveVisualizerSwitch(true);
-    //pokazujemy wizualizator
-    visWidget->setVisible(true);
-    //nie niszcz wizualizatora przy jego zamykaniu !! dopiero usuniecie wêz³a powinno to robiæ
-    visWidget->setAttribute(Qt::WA_DeleteOnClose, false);
+    ////blokujemy zmiane wizualizatora
+    visWidget->setActiveVisualizerSwitch(false);
+    ////nie niszcz wizualizatora przy jego zamykaniu !! dopiero usuniecie wêz³a powinno to robiæ
+    visWidget->setPermanent(true);
     //dodajemy wizualizator do glownego okna
     window->addDockWidget(Qt::RightDockWidgetArea,visWidget);
 
@@ -597,6 +600,7 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
 
     return visWidget->getCurrentVisualizer();
 }
+
 
 void EDRWorkflowWidget::onNodeDelete(const osgVDF::osgVDFBaseNode * node)
 {

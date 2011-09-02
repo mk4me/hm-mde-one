@@ -241,6 +241,16 @@ public:
     virtual bool isShowingYUnits() const;
     virtual void setShowingYUnits(bool showUnits);
 
+    virtual bool isShowingUnitsInCursor() const;
+    virtual void setShowingUnitsInCursor(bool showUnits);
+
+    virtual bool isShowingCursorBackground() const;
+    virtual void setShowCursorBackground(bool showBackground);
+
+    virtual osg::Vec4 getCursorBackgroundColor() const;
+    virtual void setCursorBackgroundColor(osg::Vec4 color);
+
+
     //! \return Prototyp labelek.
     virtual const osgText::Text* getLabelPrototype() const;
     //! \param prototype Prototyp labelek. Obiekt nie jest kopiowany. Gdy wprowadza siê zmiany w labelce trzeba
@@ -251,6 +261,9 @@ public:
     virtual void setBackgroundColor(osg::Vec4 color);
 
     virtual osg::Vec4 setBackgroundColor() const;
+
+    virtual bool isShowingTimeInCursor() const;
+    virtual void setShowingTimeInCursor(bool showTime);
 
 private slots:
     void setNormalized(bool normalized);
