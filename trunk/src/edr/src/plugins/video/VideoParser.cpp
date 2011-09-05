@@ -138,6 +138,8 @@ void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const core::Fil
 			VideoChannelPtr channel(new VideoChannel(realStream->getFramerate(), realStream));
 			channel->setName(path.filename().string());
 			channelWrapper->set(channel);
+			channelWrapper->setName(path.filename().string());
+			channelWrapper->setSource(path.string());
         }
     }
 }
