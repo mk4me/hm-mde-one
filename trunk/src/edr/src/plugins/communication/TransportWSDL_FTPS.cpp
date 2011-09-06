@@ -115,45 +115,29 @@ void TransportWSDL_FTPS::abort()
 
 const std::string TransportWSDL_FTPS::getShallowCopy()
 {
-    LOG_WARNING("getShallowCopy");
     core::Filesystem::Path filename, schema = core::getApplicationDataString("db/schema/shallowcopy.xml");
-    LOG_WARNING("Schema path " << schema);
     //sciagnij plik
     filename = wsdl->getShallowCopy();
-    LOG_WARNING("Wsdl getShallowCopy " << filename);
     ftp->get(filename.string());
-    LOG_WARNING("Ftp get");
     wsdl->downloadComplete(0, filename.string());
-    LOG_WARNING("Wsdl download complete");
     core::Filesystem::createDirectory(std::string(core::getApplicationDataString("db/schema")));
-    LOG_WARNING("Create direcotry " << std::string(core::getApplicationDataString("db/schema")));
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
-    LOG_WARNING("DELETE file " << schema.string());
     core::Filesystem::move(ftp->getFilePath(filename.filename().string()), schema.string());
-    LOG_WARNING("Move file " << filename.filename().string() << " to " << schema.string());
     return schema.string();
 }
 
 const std::string TransportWSDL_FTPS::getMetadata()
 {
-    LOG_WARNING("getMetadata");
     core::Filesystem::Path filename, schema = core::getApplicationDataString("db/schema/metadata.xml");
 
-    LOG_WARNING("Schema path " << schema);
     //sciagnij plik
     filename = wsdl->getMetadata();
-    LOG_WARNING("Wsdl getMetadata " << filename);
     ftp->get(filename.string());
-    LOG_WARNING("Ftp get");
     wsdl->downloadComplete(0, filename.string());
-    LOG_WARNING("Wsdl download complete");
     core::Filesystem::createDirectory(std::string(core::getApplicationDataString("db/schema")));
-    LOG_WARNING("Create direcotry " << std::string(core::getApplicationDataString("db/schema")));
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
-    LOG_WARNING("DELETE file " << schema.string());
-    LOG_WARNING("Move file " << filename.filename().string() << " to " << schema.string());
     core::Filesystem::move(ftp->getFilePath(filename.filename().string()), schema.string());
     
     return schema.string();

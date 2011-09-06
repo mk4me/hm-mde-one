@@ -106,7 +106,6 @@ void FtpsConnection::get(const std::string& filename)
     progress.abort = false;
     std::string temp(getFilePath(filename));
 
-    LOG_WARNING("temp: " <<temp);
     FtpFile ftpfile =
     {
         temp,
@@ -125,8 +124,6 @@ void FtpsConnection::get(const std::string& filename)
         this->pswd = "anonymous@localhost";
     }
 
-    LOG_WARNING("URL: " <<url);
-
     curl_easy_setopt(this->curl, CURLOPT_USERNAME, this->usr.c_str());
     curl_easy_setopt(this->curl, CURLOPT_PASSWORD, this->pswd.c_str());
     curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
@@ -136,25 +133,18 @@ void FtpsConnection::get(const std::string& filename)
     curl_easy_setopt(this->curl, CURLOPT_PROGRESSFUNCTION, setProgress);
     curl_easy_setopt(this->curl, CURLOPT_PROGRESSDATA, &this->progress);
 
-    LOG_WARNING("After curl setup");
-
     this->res = curl_easy_perform(this->curl);
 
-    LOG_WARNING("Curl working");
-
     if(CURLE_OK != this->res) {
-        LOG_WARNING("Curl not OK");
         if(res == CURLE_ABORTED_BY_CALLBACK) {
-            LOG_WARNING("Curl aborted");
             if(ftpfile.stream) {
                 fclose(ftpfile.stream);
             }
             core::Filesystem::deleteFile(temp);
         }
-        LOG_WARNING(curl_easy_strerror(this->res));
         throw std::runtime_error(curl_easy_strerror(this->res));
     }
-    LOG_WARNING("Closing file");
+
     if(ftpfile.stream) {
         fclose(ftpfile.stream);
     }
@@ -210,9 +200,7 @@ size_t FtpsConnection::read(void* buffer, size_t size, size_t nmemb, void* strea
 size_t FtpsConnection::write(void* buffer, size_t size, size_t nmemb, void* stream)
 {
     FtpFile* out = (FtpFile*)stream;
-    LOG_WARNING("Low level writing");
     if(out && !out->stream) {
-        LOG_WARNING("Curl write path: " << out->filename.c_str());
         out->stream = fopen(out->filename.c_str(), "wb");
         if(!out->stream) {
             return -1;
