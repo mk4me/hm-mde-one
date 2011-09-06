@@ -48,7 +48,7 @@ public:
 private:
 	MotionCollection motions;
 	std::string name;
-
+	kinematic::SkeletalModelConstPtr skeletalModel;
 	
 public:
 	virtual ~Session() {}
@@ -62,6 +62,8 @@ public:
 	}
 	std::string getName() const { return name; }
 	void setName(std::string val) { name = val; }
+	kinematic::SkeletalModelConstPtr getSkeletalModel() const { return skeletalModel; }
+	void setSkeletalModel(kinematic::SkeletalModelConstPtr val) { skeletalModel = val; }
 
 	bool hasGrf() const {
 		BOOST_FOREACH(const MotionPtr& motion, getMotions()) {

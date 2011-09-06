@@ -38,13 +38,13 @@ public:
 	
 public:
     /// \brief  Zwraca surowe dane z parsera
-    const kinematic::SkeletalModelPtr & getSkeletalData() const { return skeletalModel; }
+    kinematic::SkeletalModelConstPtr getSkeletalData() const { return skeletalModel; }
 	//! Tworzy dane zgodne z parserami na podstawie reprezentacji wewnetrznej
 	//kinematic::SkeletalModelPtr createSkeletalData() const;
     /// \brief  Ustawia dane z parsera
     /// \details W tym miejscu tworzony jest pe³ny szkielet h-anim, robiona jest normalizacja danych
     /// \param  skeletalModel   The skeletal model. 
-    void setSkeletal(const kinematic::SkeletalModelPtr & skeletalModel, const kinematic::SkeletalDataPtr & skeletalData);
+    void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData);
     //! \brief zwraca szkielet zgodny z h-anim
     const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }
 	
@@ -60,7 +60,7 @@ public:
 
 private:
     /// \brief  Na podstawie danych z parsera tworzy tablice z kwaternionami
-    void createQuaternionRepresentation(const SkeletalDataPtr & skeletalData);
+    void createQuaternionRepresentation(SkeletalDataConstPtr & skeletalData);
     /// \brief  Wyszukuje i zwraca dlugosc najdluzszej z kosci w szkielecie
     /// \param  skeleton  Przeszukiwany szkielet
     /// \return Dlugosc najdluzszej z kosci. 
@@ -77,9 +77,9 @@ private:
 	
 private:
 	//! dane z parsera acclaim / biovision
-    kinematic::SkeletalModelPtr skeletalModel;
+    kinematic::SkeletalModelConstPtr skeletalModel;
 	//! dane z parsera acclaim / biovision
-	kinematic::SkeletalDataPtr skeletalData;
+	kinematic::SkeletalDataConstPtr skeletalData;
 	//! pelny szkielet h-anim                          
     kinematic::hAnimSkeletonPtr haSkeleton;
 	//! pozycje dla roota

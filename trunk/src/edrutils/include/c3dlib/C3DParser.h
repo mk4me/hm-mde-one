@@ -19,6 +19,40 @@
 
 namespace c3dlib {
 
+
+//! Opis platformy GRF
+struct C3DLIB_EXPORT ForcePlatform
+{
+	//! wierzcholki pojedynczej plyty
+	osg::Vec3 corners[4];
+	//! przesuniecie plyty w ukladzie odniesienia zgodnym z markerami
+	osg::Vec3 origin;
+	//! zwraca srodek plyty  w ukladzie odniesienia zgodnym z markerami
+	osg::Vec3 getCenter() const 
+	{
+		osg::Vec3 c;
+		c += corners[0];
+		c += corners[1];
+		c += corners[2];
+		c += corners[3];
+		c *= 0.25f;
+		c += origin;
+		return c;
+	}
+
+	float getWidth() const {
+		return (corners[0] - corners[1]).length();
+	}
+
+	float getLength() const {
+		return (corners[1] - corners[2]).length();
+	}
+};
+typedef boost::shared_ptr<ForcePlatform> ForcePlatformPtr;
+typedef boost::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;
+typedef const std::vector<ForcePlatformConstPtr>& ForcePlatformConstCollection;
+typedef std::vector<ForcePlatformConstPtr> ForcePlatformCollection;
+
 class C3DLIB_EXPORT C3DParser
 {
 public:
@@ -61,6 +95,8 @@ public:
 	};
 	typedef boost::shared_ptr<IAnalog> IAnalogPtr;
 	typedef boost::shared_ptr<const IAnalog> IAnalogConstPtr;
+
+	
 	
 	//! dostarcza danych o zdarzeniu zapisanym w c3d (np. dotkniecie stopa podlogi)
     class IEvent : public IAquisitionEntry
@@ -116,6 +152,8 @@ public:
 	int getNumEvents() const;
 	IEventPtr getEvent(int index) const;
 
+	ForcePlatformCollection getForcePlatforms() { return forcePlatforms; }
+
 private:
     //! realizacja idiomu "Cashire cat"
     //! http://en.wikipedia.org/wiki/Opaque_pointer
@@ -129,10 +167,14 @@ private:
     std::vector<IAnalogPtr> analogs;
 	//! kolekcja zdarzen
     std::vector<IEventPtr> events;
+	//! plyty GRF
+	std::vector<ForcePlatformConstPtr> forcePlatforms;
 
 private:
 	//! Zapewnia wlasciwe wczytywanie danych akwizycji
     void loadAcquisition();
+	//! zwraca mno¿nik, dziêki któremu mo¿na przekonwertowaæ wartoœæ do SI
+	float getUnitScale(const std::string& unit) const;
 };
 
 }

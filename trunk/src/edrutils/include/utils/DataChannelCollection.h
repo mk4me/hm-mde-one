@@ -69,6 +69,17 @@ public:
 		return channels[index];
 	}
 
+	ChannelConstPtr getChannel(const std::string& name) const
+	{
+		for (int i = channels.size() - 1; i >= 0; --i) {
+			if (channels[i]->getName() == name) {
+				return channels[i];
+			}
+		}
+
+		throw std::runtime_error("Unknown channel name");
+	}
+
 	int getNumPointsPerChannel() const
 	{
 		UTILS_ASSERT(channels.size());

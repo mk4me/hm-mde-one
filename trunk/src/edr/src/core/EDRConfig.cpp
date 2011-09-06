@@ -53,8 +53,10 @@ void EDRConfig::setResourcesPath(const Filesystem::Path& path)
 
 void EDRConfig::setPaths( EDRConfig& directoriesInfo )
 {
-	if (!trySetPathsFromRegistry(directoriesInfo) && !trySetDefaultPaths(directoriesInfo)) {
-		throw std::runtime_error("Unable to set paths");
+	if (!trySetPathsFromRegistry(directoriesInfo)) {
+	    if (!trySetDefaultPaths(directoriesInfo)) {
+			throw std::runtime_error("Unable to set paths");
+		}
 	}
 }
 
@@ -107,6 +109,7 @@ bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )
 bool EDRConfig::trySetDefaultPaths( EDRConfig& directoriesInfo )
 {
 	core::Filesystem::Path userPath(toString(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation)));
+	userPath /= "PJWSTK";
 	userPath /= "EDR";
 	directoriesInfo.setUserDataPath(userPath);
 
@@ -116,10 +119,6 @@ bool EDRConfig::trySetDefaultPaths( EDRConfig& directoriesInfo )
 	core::Filesystem::Path resourcesPath(core::toStdString(QDir::currentPath())); 
 	resourcesPath /= "resources";
 	directoriesInfo.setResourcesPath(resourcesPath);
-
-	/*core::Filesystem::Path test2 = boost::filesystem::initial_path();
-
-	core::Filesystem::Path testPath(toString(QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation)));*/
 	return true;
 }
 

@@ -135,11 +135,11 @@ std::string hAnimSkeleton::mapJointName(const std::string& given)
 	}*/
 }
 
-void hAnimSkeleton::doSkeletonMapping(SkeletalModelPtr skeletalModel)
+void hAnimSkeleton::doSkeletonMapping(SkeletalModelConstPtr skeletalModel)
 {
-    SkeletalModel::JointMap& jointMap = skeletalModel->getJointMap();
-    SkeletalModel::JointMap::iterator it;
-    for (it = jointMap.begin(); it != jointMap.end(); it++) {
+    const SkeletalModel::JointMap& jointMap = skeletalModel->getJointMap();
+    //SkeletalModel::JointMap::iterator it;
+    for (auto it = jointMap.cbegin(); it != jointMap.cend(); it++) {
         std::string mappedName = mapJointName(it->first);
         JointPtr joint = it->second;
         hAnimJointPtr hJoint = joints[mappedName];

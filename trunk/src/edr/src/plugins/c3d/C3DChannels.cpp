@@ -37,7 +37,7 @@ VectorChannel( data.getPointFrequency())
 	int numSamples = data.getNumPointFrames();
 
 	for (int i = 0; i < numSamples; i++) {
-		addPoint(point->getValue(i) * static_cast<osg::Vec3f::value_type>(0.004));
+		addPoint(point->getValue(i));
 	}
 	setName(point->getLabel());
 }

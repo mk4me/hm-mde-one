@@ -279,7 +279,9 @@ void HmmMainWindow::onOpen()
 			auto grfCollection = motion->getGrf();
 			if (grfCollection) {	
 				QTreeWidgetItem* grfItem = new QTreeWidgetItem();
+				item2GrfCollection[grfItem] = grfCollection;
 				grfItem->setText(0, "GRF");
+				grfItem->setIcon(0, icon3D);
 				motionItem->addChild(grfItem);
 				int count = grfCollection->getNumChannels();			
 				for (int i = 0; i < count; i++) {							
@@ -304,7 +306,8 @@ void HmmMainWindow::onOpen()
 
 			tryAddVectorToTree(motion->getForces(), "Forces", &icon3D, motionItem);
 			tryAddVectorToTree(motion->getMoments(), "Moments", &icon3D, motionItem);
-			tryAddVectorToTree(motion->getAngles(), "Angles", &icon3D, motionItem);
+			// do rozwiniecia - potrzeba parsowac pliki vsk i interpretowac strukture kinamatyczna tak jak to robi Vicon
+			//tryAddVectorToTree(motion->getAngles(), "Angles", &icon3D, motionItem);
 			tryAddVectorToTree(motion->getPowers(), "Powers", &icon3D, motionItem);
 
 			const auto markerCollection = motion->getMarkers();			
@@ -315,6 +318,24 @@ void HmmMainWindow::onOpen()
 				motionItem->addChild(markersItem);		
 				item2Markers[markersItem] = markerCollection;
 			}
+
+			const auto skeletalCollection = motion->getJoints();
+			if (skeletalCollection) {
+				QTreeWidgetItem* skeletonItem = new QTreeWidgetItem();
+				skeletonItem->setIcon(0, icon3D);
+				skeletonItem->setText(0, tr("Joints"));
+				motionItem->addChild(skeletonItem);
+				item2Skeleton[skeletonItem] = skeletalCollection;
+			}
+
+			if (skeletalCollection && markerCollection && grfCollection) {
+				QTreeWidgetItem* kinematicItem = new QTreeWidgetItem();
+				kinematicItem->setIcon(0, icon3D);
+				kinematicItem->setText(0, tr("Kinematic"));
+				motionItem->addChild(kinematicItem);
+				item2Kinematic[kinematicItem] = motion;
+			}
+
 
 			const std::vector<VideoChannelConstPtr>& videoCollection = motion->getVideos();
 			int count = videoCollection.size();
@@ -364,6 +385,8 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 	onClickedScalar<ScalarChannel, ScalarChannelConstPtr>(item, item2ScalarMap);
 	onClickedOther<MarkerCollection>(item, item2Markers);
 	onClickedOther<VideoChannel>(item, item2Video);
+	onClickedOther<GRFCollection>(item, item2GrfCollection);
+	onClickedOther<kinematic::JointAnglesCollection>(item, item2Skeleton);
 
 	auto it = item2Vector.find(item);
 	if (it != item2Vector.end()) {
@@ -371,6 +394,111 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 		QLabel* label = new QLabel("<font color = \"red\" size = 5> Tutaj trzeba dodac wizualizator VectorChannel :) </font> <br /> pozdrawiam, WK");
 		dock->setWidget(label);
 		topMainWindow->addDockWidget(Qt::LeftDockWidgetArea, dock);
+	}
+
+	auto it2 = item2Kinematic.find(item);
+	if (it2 != item2Kinematic.end()) {
+		std::stack<QString> pathStack;
+        QTreeWidgetItem * pomItem = item;
+
+        while(pomItem != nullptr){
+            pathStack.push(pomItem->text(0));
+            pomItem = pomItem->parent();
+        }
+
+        QString path;
+
+        path += pathStack.top();
+        pathStack.pop();
+
+        while(pathStack.empty() == false){
+            path += "/";
+            path += pathStack.top();
+            pathStack.pop();
+        }
+
+		VisualizerManager* visualizerManager = VisualizerManager::getInstance();
+		MotionPtr motion = it2->second;
+        if(visualizerManager->existVisualizerForType(typeid(MarkerCollection)) == true){
+			VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(MarkerCollection));
+            ObjectWrapperPtr wrapper = ObjectWrapper::create<MarkerCollection>();
+            //wrapper->set(motion->getMarkers());
+			wrapper->set(boost::const_pointer_cast<MarkerCollection>(motion->getMarkers()));
+            static std::string prefix = typeid(MarkerCollection).name();
+            // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+            prefix += "_";
+            wrapper->setName(prefix + "nazwa testowa");
+            wrapper->setSource(prefix + "Sciezka testowa");
+
+			ObjectWrapperPtr wrapper2 = ObjectWrapper::create<GRFCollection>();
+			wrapper2->set(boost::const_pointer_cast<GRFCollection>(motion->getGrf()));
+			wrapper2->setName(prefix + "nazwa testowa2");
+			wrapper2->setSource(prefix + "Sciezka testowa2");
+
+			ObjectWrapperPtr wrapper3 = ObjectWrapper::create<kinematic::JointAnglesCollection>();
+			wrapper3->set(boost::const_pointer_cast<kinematic::JointAnglesCollection>(motion->getJoints()));
+			wrapper3->setName(prefix + "nazwa testowa3");
+			wrapper3->setSource(prefix + "Sciezka testowa3");
+
+
+            vis->getOrCreateWidget();
+			   
+			VisualizerWidget* visu = new VisualizerWidget(vis);
+            visu->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+            //visu->setStyleSheet(styleSheet());
+            visu->setVisualizerIconVisible(false);
+            visu->setSplitHVisible(false);
+            visu->setSplitVVisible(false);
+            visu->setActiveVisualizerSwitch(false);
+            visu->setSourceVisible(false);
+
+            visu->setTitleBarVisible(false);
+
+            auto serie1 = vis->createSerie(wrapper, path.toStdString());
+			auto serie2 = vis->createSerie(wrapper2, path.toStdString());
+			auto serie3 = vis->createSerie(wrapper3, path.toStdString());
+
+            TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+            if(timeline != nullptr) {
+                //timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
+                timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serie1));
+                if(channel != nullptr){
+                    channelToVisualizer[channel] = visu;
+                    //timeline->setOnChannelDblClick(itemClickAction);
+                }
+				timeline::IChannelConstPtr channel2(core::dynamic_pointer_cast<const timeline::IChannel>(serie2));
+				if(channel2 != nullptr){
+					channelToVisualizer[channel2] = visu;
+				}
+				timeline::IChannelConstPtr channel3(core::dynamic_pointer_cast<const timeline::IChannel>(serie3));
+				if(channel3 != nullptr){
+					channelToVisualizer[channel3] = visu;
+				}
+            }
+
+            vis->getWidget()->setFocusProxy(visu);
+
+            connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+
+		//pane->addDockWidget(Qt::RightDockWidgetArea, visualizerWidget);
+			/*pane->setUpdatesEnabled(false);
+			if (currentVisualizer) {
+				pane->layout()->removeWidget(currentVisualizer);
+				delete currentVisualizer;
+			}*/
+			//currentVisualizer = visu;
+			//pane->layout()->addWidget(visu);            
+            pane->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
+			//pane->setUpdatesEnabled(true);
+        }else{
+
+            /*TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
+            if(timeline != nullptr && dynamic_cast<timeline::IChannel*>(serie.get()) != nullptr) {
+                timeline::IChannelPtr channel = core::dynamic_pointer_cast<timeline::IChannel>(serie);
+                timeline->addChannel(name, channel);
+                timelineDataSeries.insert(serie);
+            }*/
+        }
 	}
 }
 

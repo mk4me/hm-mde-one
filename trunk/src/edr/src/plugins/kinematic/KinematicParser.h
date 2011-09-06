@@ -8,11 +8,11 @@ class KinematicParser : public core::IParser
 {
     UNIQUE_ID("{AE673002-AE76-4E79-983E-ABDB15713E74}", "Kinematic parser");
 private:
-    core::ObjectWrapperPtr kinematicMarkersSkeleton;
-    core::ObjectWrapperPtr schemeMarkersSkeleton;
-    core::ObjectWrapperPtr skeleton;
-    core::ObjectWrapperPtr kinematicMarkers;
-    core::ObjectWrapperPtr schemeMarkers;
+    //core::ObjectWrapperPtr kinematicMarkersSkeleton;
+    //core::ObjectWrapperPtr schemeMarkersSkeleton;
+    core::ObjectWrapperPtr skeletonData;
+    //core::ObjectWrapperPtr kinematicMarkers;
+    //core::ObjectWrapperPtr schemeMarkers;
 
 public:
     KinematicParser();

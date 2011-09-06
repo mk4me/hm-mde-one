@@ -55,10 +55,13 @@ private:
 	btk::Point::ConstPointer point;
 	int numOfFrames;
 	Type type;
-
+	//! przez ta wartosc zostana przemnozone pobierane wartosci
+	float scale;
+	
 public:
 	Point() :
 	  numOfFrames(-1),
+	  scale(1.0f),
 	  point(nullptr)
 	  {
 
@@ -69,6 +72,8 @@ public:
 	void setType(Point::Type type) { this->type = type; }
 	void setPoint(btk::Point::ConstPointer val) { point = val; }
 	void setNumberOfFrames(int val) { numOfFrames = val; }
+	float getScale() const { return scale; }
+	void setScale(float val) { scale = val; }
 
 public:
 	virtual const std::string& getLabel() const		  { return point->GetLabel(); }
@@ -79,7 +84,7 @@ public:
 	{ 
 		const btk::Measure<3>::Values& value = point->GetValues();
 		const double* data = value.data();
-		return osg::Vec3(value[index ], value[index + numOfFrames], value[index + 2 * numOfFrames]);
+		return osg::Vec3(value[index ], value[index + numOfFrames], value[index + 2 * numOfFrames]) * scale;
 	}
 };
 typedef boost::shared_ptr<Point> PointPtr;
@@ -268,15 +273,35 @@ void C3DParser::loadAcquisition()
     this->data->virtualMarkersSeparator->Update();
 
 	this->data->forcePlatformsExtractor->Update();
-	auto fp = this->data->forcePlatformsExtractor->GetOutput();
+	btk::ForcePlatformCollection::Pointer fp = this->data->forcePlatformsExtractor->GetOutput();
+	float scale = getUnitScale("mm");
+	for (btk::ForcePlatformCollection::ConstIterator it = fp->Begin(); it != fp->End(); it++) {
+		// system jest przygotowany dla 4 wierzcholkow
+		// nie zaklada sie, ze platformy moga byc innym wielokatem.
+		if ((*it)->GetCorners().size() == 12) {
+			ForcePlatformPtr platform(new ForcePlatform());
+			platform->origin[0] = (*it)->GetOrigin()[0];
+			platform->origin[1] = (*it)->GetOrigin()[1];
+			platform->origin[2] = (*it)->GetOrigin()[2];
+			platform->origin *= scale;
+			for (int i = 0; i < 4; i++) {
+				platform->corners[i].set(
+					(*it)->GetCorner(i)(0,0),
+					(*it)->GetCorner(i)(1,0),
+					(*it)->GetCorner(i)(2,0)
+					);
+				platform->corners[i] *= scale;
+				
+			}
+			forcePlatforms.push_back(platform);
+		}
+	}
 
     this->data->firstFrame = this->data->aquisitionPointer->GetFirstFrame();
     this->data->lastFrame = this->data->aquisitionPointer->GetLastFrame();
     this->data->roi[0] = this->data->firstFrame;
     this->data->roi[1] = this->data->lastFrame; 
     
-    // The orders for the points are important as their ID follows the same rule than in the class btk::VTKMarkersFramesSource
-    // Markers
     btk::PointCollection::Pointer points = this->data->virtualMarkersSeparator->GetOutput(0);
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it)
     {
@@ -284,6 +309,7 @@ void C3DParser::loadAcquisition()
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
 		p->setType(Point::Marker);
+		p->setScale(scale);
 		this->points.push_back(p);
     }
     // Virtual markers (CoM, CoG, ...)
@@ -294,6 +320,7 @@ void C3DParser::loadAcquisition()
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
 		p->setType(Point::VirtualMarker);
+		p->setScale(scale);
         this->points.push_back(p);
     }
     // Virtual markers used to define frames
@@ -402,4 +429,12 @@ C3DParser::IEventPtr C3DParser::getEvent( int index ) const
 	UTILS_ASSERT(index >= 0 && index < getNumEvents());
 	return events[index];
 }
+
+float C3DParser::getUnitScale( const std::string& unit ) const
+{
+	if (unit == "m") return 1.0f;
+	if (unit == "mm") return 0.001f;
+	throw std::runtime_error("Unknown unit");
+}
+
 }

@@ -18,17 +18,17 @@ SkeletalVisualizationScheme::SkeletalVisualizationScheme() :
 
 void SkeletalVisualizationScheme::setNormalizedTime( double val )
 {
-    UTILS_ASSERT(kinematicModel);
+    UTILS_ASSERT(hasData());
     if (normalizedTime != val) {
         normalizedTime = val;
         if (val < 0.0 || val > 1.0) {
             LOGGER(Logger::Debug, "SkeletalVisualizationScheme : value out of <0,1>");
         }
 
-        if (kinematicModel->getSkeleton()) {
+        if (joints) {
             updateJointTransforms(val);
         }
-        if (kinematicModel->getMarkers()) {
+        if (markers) {
             updateMarkers(val);
         }
     }
@@ -81,7 +81,7 @@ void SkeletalVisualizationScheme::updateJointTransforms(const std::vector<osg::Q
     Vec3 shift = joint->getLocalShift();
        
     Quat pc = joint->getChildParentRotation();
-	int index = kinematicModel->getSkeleton()->tryGetIndex(joint->getName());
+	int index = joints->tryGetIndex(joint->getName());
     //auto it = rotations.find(joint->name);
     Quat rotation = index >= 0 ? rotations[index] * pc  * parentRot : pc * parentRot;
 
@@ -97,14 +97,13 @@ void SkeletalVisualizationScheme::updateJointTransforms(const std::vector<osg::Q
 
 void SkeletalVisualizationScheme::updateJointTransforms( double normalizedTime )
 {
-    UTILS_ASSERT(kinematicModel->getSkeleton());
+    UTILS_ASSERT(joints);
     counterHelper = 0;
 
-	JointAnglesCollectionPtr joints = kinematicModel->getSkeleton();
     hAnimSkeletonPtr skeleton = joints->getHAnimSkeleton();
     osg::Quat q; Vec3 pos;
     pos = joints->getRootPosition(normalizedTime);
-    updateJointTransforms(joints->getValues(static_cast<float>(normalizedTime * kinematicModel->getSkeleton()->getLength())), skeleton->getRoot(), q, pos);
+    updateJointTransforms(joints->getValues(static_cast<float>(normalizedTime * joints->getLength())), skeleton->getRoot(), q, pos);
  }
 
 void SkeletalVisualizationScheme::updateWorldTransforms( osg::Vec3 worldPosition, osg::Quat worldRotation )
@@ -134,49 +133,50 @@ core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::creat
     return scheme;
 }
 
-void SkeletalVisualizationScheme::setKinematicModel( KinematicModelConstPtr val )
-{
-    kinematicModel = val;
-
-    if (kinematicModel->getSkeleton() && kinematicModel->getSkeleton()->getSkeletalData()) {
-        const auto& jointMap = kinematicModel->getSkeleton()->getHAnimSkeleton()->getJoints();
-        int count = jointMap.size();
-        //jointMarkersStates.reserve(count + 5);
-        
-        auto it = jointMap.begin();
-        for (int index = 0; it != jointMap.end(); it++) {
-            if (it->second->isActive()) {
-                visJoints[it->second] = index++;
-            }
-        }
-
-        jointMarkersStates.resize(visJoints.size());
-        osg::Vec4 gold(1,1,0,1);
-        for (unsigned int i = 0; i < visJoints.size(); i++) {
-            jointMarkersStates[i].color = gold;
-        }
-
-        hAnimSkeletonPtr skeleton = kinematicModel->getSkeleton()->getHAnimSkeleton();
-
-        createSkeletonConnections(skeleton->getRoot());
-		//rewizja
-        updateJointTransforms(0.0);
-    }
-
-    if (kinematicModel->getMarkers()) {
-        MarkerCollectionConstPtr markers = kinematicModel->getMarkers();
-        int count =  markers->getNumChannels();
-        if (count && markersStates.size() != count) {
-            markersStates.resize(count);
-        }
-        osg::Vec4 blue(0,0,1,1);
-        for (int i = 0; i < count; i++) {
-            markersStates[i].position = markers->getValue(i, 0.0 );
-            markersStates[i].color = blue;
-        }
-    }
-    
-}
+//void SkeletalVisualizationScheme::setKinematicModel( KinematicModelConstPtr val )
+//{
+//    kinematicModel = val;
+//
+//    if (kinematicModel->getSkeleton() && kinematicModel->getSkeleton()->getSkeletalData()) {
+//        const auto& jointMap = kinematicModel->getSkeleton()->getHAnimSkeleton()->getJoints();
+//        int count = jointMap.size();
+//        //jointMarkersStates.reserve(count + 5);
+//        
+//        auto it = jointMap.begin();
+//        for (int index = 0; it != jointMap.end(); it++) {
+//            if (it->second->isActive()) {
+//                visJoints[it->second] = index++;
+//            }
+//        }
+//
+//        jointMarkersStates.resize(visJoints.size());
+//        osg::Vec4 gold(1,1,0,1);
+//        for (unsigned int i = 0; i < visJoints.size(); i++) {
+//            jointMarkersStates[i].color = gold;
+//        }
+//
+//        hAnimSkeletonPtr skeleton = kinematicModel->getSkeleton()->getHAnimSkeleton();
+//
+//        createSkeletonConnections(skeleton->getRoot());
+//		//rewizja
+//        updateJointTransforms(0.0);
+//    }
+//
+//	MarkerCollectionConstPtr markers = kinematicModel->getMarkers();
+//    if (markers) {
+//       setMarkers(markers);
+//        /*int count =  markers->getNumChannels();
+//        if (count && markersStates.size() != count) {
+//            markersStates.resize(count);
+//        }
+//        osg::Vec4 blue(0,0,1,1);
+//        for (int i = 0; i < count; i++) {
+//            markersStates[i].position = markers->getValue(i, 0.0 );
+//            markersStates[i].color = blue;
+//        }*/
+//    }
+//    
+//}
 
 
 void SkeletalVisualizationScheme::createSkeletonConnections(kinematic::hAnimJointPtr joint)
@@ -191,38 +191,24 @@ void SkeletalVisualizationScheme::createSkeletonConnections(kinematic::hAnimJoin
 		jointConnections.push_back(c);
 		createSkeletonConnections(child);
 	}
-	/*BOOST_FOREACH(hAnimBonePtr bone, joint->GetChildrenBones()) {
-		BOOST_FOREACH(hAnimJointPtr child, bone->childrenJoints) {
-			if (child->isActive()) {
-				Connection c;
-				c.index1 = visJoints[lastActive];
-				c.index2 = visJoints[child];
-				c.color = color;
-				jointConnections.push_back(c);
-				lastActive = child;
-			}
-			createSkeletonConnections(child, lastActive);
-		}
-	}*/
 }
 
 void SkeletalVisualizationScheme::updateMarkers( double normalizedTime )
 {
-    MarkerCollectionConstPtr markers = kinematicModel->getMarkers();
+	UTILS_ASSERT(markers);
     if (markers) {
         int count =  markers->getNumChannels();
         for (int i = 0; i < count; i++) {
-            markersStates[i].position = markers->getValue(i, normalizedTime * kinematicModel->getMarkers()->getLength());
+            markersStates[i].position = markers->getValue(i, normalizedTime * markers->getLength());
         }
     }
 }
 
 void SkeletalVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserConstPtr vsk )
 {
-    UTILS_ASSERT(kinematicModel && kinematicModel->getMarkers(), "There are no markers in kinematic model");
+    UTILS_ASSERT(markers, "There are no markers in kinematic model");
 
     std::map<std::string, int> markersIndices;
-    MarkerCollectionConstPtr markers = kinematicModel->getMarkers();
     for (int i = markers->getNumChannels() - 1; i >= 0; --i) {
         markersIndices[markers->getMarkerName(i)] = i;
     }
@@ -273,193 +259,46 @@ const std::vector<SkeletalVisualizationScheme::Connection> & SkeletalVisualizati
     return getJointConnections();
 }
 
-//void PointSchemeDrawer::init( SkeletalVisualizationSchemeWeak scheme )
-//{
-//    UTILS_ASSERT(scheme.lock());
-//    OsgSchemeDrawer::init(scheme);
-//
-//    node = new osg::Group;
-//    auto markers = scheme.lock()->getJointMarkersStates();
-//    createMarkersCrowd(markers);
-//}
-//
-//void PointSchemeDrawer::deinit()
-//{
-//    // TODO -> unparent
-//}
-//
-//void PointSchemeDrawer::update( double time )
-//{
-//    auto markers = getVisualiztionScheme().lock()->getJointMarkersStates();
-//    for (int i = markers.size() - 1; i >= 0; --i) {
-//        points[i]->setPosition(markers[i].position);
-//    }
-//}
-//
-//void PointSchemeDrawer::draw()
-//{
-//
-//}
-//
-//void PointSchemeDrawer::createMarkersCrowd(const std::vector<MarkerState>& markers)
-//{
-//    int count = markers.size();
-//    points.resize(count);
-//    for (int i = 0; i < count; ++i) {
-//        Vec3 position = markers[i].position;
-//        points[i] = addPoint(position);
-//        node->addChild(points[i]);
-//    }
-//}
-//
-//PointSchemeDrawer::GeodePtr PointSchemeDrawer::createMarker(const osg::Vec4& color, float scale) const
-//{
-//    PointSchemeDrawer::GeodePtr geode = new osg::Geode();
-//    ref_ptr<Geometry> geometry = new osg::Geometry();
-//
-//    geode->addDrawable(geometry);
-//
-//    ref_ptr<Vec3Array> pyramidVertices = new osg::Vec3Array;
-//
-//    pyramidVertices->push_back(osg::Vec3( 0.0f, 0.0f, 0.0f) * scale);
-//    pyramidVertices->push_back(osg::Vec3( 1.0f, 0.0f, 0.0f) * scale);
-//    pyramidVertices->push_back(osg::Vec3( 1.0f, 1.0f, 0.0f) * scale);
-//    pyramidVertices->push_back(osg::Vec3( 0.0f, 1.0f, 0.0f) * scale);
-//    pyramidVertices->push_back(osg::Vec3( 0.5f, 0.5f, 1.0f) * scale);
-//
-//    geometry->setVertexArray( pyramidVertices );
-//
-//    osg::DrawElementsUInt* geometryBase =
-//        new osg::DrawElementsUInt(osg::PrimitiveSet::QUADS, 0);
-//    geometryBase->push_back(3);
-//    geometryBase->push_back(2);
-//    geometryBase->push_back(1);
-//    geometryBase->push_back(0);
-//    geometry->addPrimitiveSet(geometryBase);
-//
-//    osg::DrawElementsUInt* pyramidFaceOne =
-//        new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
-//    pyramidFaceOne->push_back(0);
-//    pyramidFaceOne->push_back(1);
-//    pyramidFaceOne->push_back(4);
-//    geometry->addPrimitiveSet(pyramidFaceOne);
-//
-//    osg::DrawElementsUInt* pyramidFaceTwo =
-//        new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
-//    pyramidFaceTwo->push_back(1);
-//    pyramidFaceTwo->push_back(2);
-//    pyramidFaceTwo->push_back(4);
-//    geometry->addPrimitiveSet(pyramidFaceTwo);
-//
-//    osg::DrawElementsUInt* pyramidFaceThree =
-//        new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
-//    pyramidFaceThree->push_back(2);
-//    pyramidFaceThree->push_back(3);
-//    pyramidFaceThree->push_back(4);
-//    geometry->addPrimitiveSet(pyramidFaceThree);
-//
-//    osg::DrawElementsUInt* pyramidFaceFour =
-//        new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
-//    pyramidFaceFour->push_back(3);
-//    pyramidFaceFour->push_back(0);
-//    pyramidFaceFour->push_back(4);
-//    geometry->addPrimitiveSet(pyramidFaceFour);
-//
-//    osg::Vec4Array* colors = new osg::Vec4Array;
-//    colors->push_back(color);
-//    colors->push_back(color);
-//    colors->push_back(color);
-//    colors->push_back(color);
-//    colors->push_back(color);
-//
-//    geometry->setColorArray(colors);
-//    geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-//
-//    return geode;
-//}
-//
-//PointSchemeDrawer::TransformPtr PointSchemeDrawer::addPoint( const osg::Vec3& point )
-//{
-//    float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-//    Vec4 color(rand, 1, rand, 1);
-//    GeodePtr marker = createMarker(color, 1.5f);
-//    TransformPtr transform = new PositionAttitudeTransform();
-//    transform->addChild(marker);
-//    transform->setPosition(point);
-//    return transform;
-//}
+void SkeletalVisualizationScheme::setMarkers( MarkerCollectionConstPtr val )
+{
+	UTILS_ASSERT(!markers && val);
+	this->markers = val;
+    int count =  markers->getNumChannels();
+	if (count && markersStates.size() != count) {
+		markersStates.resize(count);
+	}
+	osg::Vec4 blue(0,0,1,1);
+	for (int i = 0; i < count; i++) {
+		markersStates[i].position = markers->getValue(i, 0.0 );
+		markersStates[i].color = blue;
+	}
+}
 
-//void LineSchemeDrawer::draw()
-//{
-//
-//}
-//
-//void LineSchemeDrawer::update( double time )
-//{
-//    auto joints = getVisualiztionScheme().lock()->getJointsStates();
-//    for (int i = joints.size() - 1; i >= 0; --i) {
-//        ref_ptr<Vec3Array> vertices = buffers[i];
-//        (*vertices)[0] = joints[i].from;
-//        (*vertices)[1] = joints[i].to;
-//        osg::Drawable* d = lines[i]->getDrawable(0);
-//        osg::Geometry* g = dynamic_cast<osg::Geometry*>(d);
-//
-//        //std::cout << "from : (" << (*vertices)[0][0] << ", " << (*vertices)[0][1] << ", "  << (*vertices)[0][2] << ") ";
-//        //std::cout << "to : (" << (*vertices)[1][0] << ", " << (*vertices)[1][1] << ", "  << (*vertices)[1][2] << ") " << endl;
-//
-//        g->setVertexArray(vertices);
-//    }
-//}
-//
-//void LineSchemeDrawer::deinit()
-//{
-//
-//}
-//
-//void LineSchemeDrawer::init( SkeletalVisualizationSchemeWeak scheme )
-//{
-//    UTILS_ASSERT(scheme.lock());
-//    OsgSchemeDrawer::init(scheme);
-//
-//    node = new osg::Group;
-//    auto bones = scheme.lock()->getJointsStates();
-//    
-//    BOOST_FOREACH(JointState& state, bones) {
-//        addLine(state.from, state.to);
-//    }
-//}
-//
-//osg::ref_ptr<osg::Node> LineSchemeDrawer::getNode()
-//{
-//    return node;
-//}
-//
-//void LineSchemeDrawer::addLine( const osg::Vec3& from, const osg::Vec3& to )
-//{
-//    GeodePtr geode = new Geode();
-//    lines.push_back(geode);
-//    osg::ref_ptr<Geometry> linesGeom = new osg::Geometry();
-//
-//    ref_ptr<Vec3Array> vertices = new osg::Vec3Array(2);
-//    buffers.push_back(vertices);
-//    (*vertices)[0] = from;
-//    (*vertices)[1] = to;
-//
-//    linesGeom->setVertexArray(vertices);
-//
-//    ref_ptr<Vec4Array> colors = new osg::Vec4Array;
-//    colors->push_back(osg::Vec4(1.0f, 1.0f, 0.0f, 1.0f));
-//    linesGeom->setColorArray(colors);
-//    linesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-//
-//
-//    osg::Vec3Array* normals = new osg::Vec3Array;
-//    normals->push_back(osg::Vec3(1.0f, -0.0f, 0.0f));
-//    linesGeom->setNormalArray(normals);
-//    linesGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-//
-//    linesGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 2));
-//
-//    geode->addDrawable(linesGeom);
-//    node->addChild(geode);
-//}
+void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
+{
+	UTILS_ASSERT(val && val->getSkeletalData());
+	this->joints = val;
+	const auto& jointMap = joints->getHAnimSkeleton()->getJoints();
+	int count = jointMap.size();
+	//jointMarkersStates.reserve(count + 5);
+	
+	auto it = jointMap.begin();
+	for (int index = 0; it != jointMap.end(); it++) {
+	    if (it->second->isActive()) {
+	        visJoints[it->second] = index++;
+	    }
+	}
+	
+	jointMarkersStates.resize(visJoints.size());
+	osg::Vec4 gold(1,1,0,1);
+	for (unsigned int i = 0; i < visJoints.size(); i++) {
+	    jointMarkersStates[i].color = gold;
+	}
+	
+	hAnimSkeletonPtr skeleton = joints->getHAnimSkeleton();
+	
+	createSkeletonConnections(skeleton->getRoot());
+	//rewizja
+	updateJointTransforms(0.0);
+}
+

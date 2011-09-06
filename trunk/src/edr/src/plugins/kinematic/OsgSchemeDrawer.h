@@ -18,6 +18,10 @@ public:
     }
 
 protected:
+	typedef osg::ref_ptr<osg::Geode> GeodePtr;
+	typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
+
+protected:
     SkeletalVisualizationSchemeConstPtr getVisualiztionScheme() const { return visualizationScheme; }
 
 private:

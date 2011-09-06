@@ -19,6 +19,11 @@ set(PRIVATE_H
 	GLLineSchemeDrawer.h
 	UniqueCollection.h
 	SchemeDrawerContainer.h
+	GRFSerie.h
+	MarkerSerie.h
+	SkeletonSerie.h
+	TrajectoriesDialog.h
+	TrajectoriesDrawer.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -46,12 +51,20 @@ set(TARGET_SRC
 	GLPointSchemeDrawer.cpp
 	GLLineSchemeDrawer.cpp
 	SchemeDrawerContainer.cpp
+	GRFSerie.cpp
+	MarkerSerie.cpp
+	SkeletonSerie.cpp
+	TrajectoriesDialog.cpp
+	TrajectoriesDrawer.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
 	KinematicVisualizer.h
+	SkeletonSerie.h
+	MarkerSerie.h
+	TrajectoriesDialog.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})

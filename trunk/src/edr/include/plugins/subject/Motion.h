@@ -32,6 +32,21 @@ public:
 
 	kinematic::JointAnglesCollectionConstPtr getJoints() const { return joints; }
 	void setJoints(kinematic::JointAnglesCollectionConstPtr val) { joints = val; }
+	void setSkeletalModel(kinematic::SkeletalModelConstPtr val)
+	{
+		skeletalModel = val;
+		if (skeletalModel && skeletalData) {
+			createJointCollection(skeletalModel, skeletalData);
+		}
+
+	}
+	void setSkeletalData(kinematic::SkeletalDataConstPtr val) 
+	{
+		skeletalData = val;
+		if (skeletalModel && skeletalData) {
+			createJointCollection(skeletalModel, skeletalData);
+		}
+	}
 
 	MarkerCollectionConstPtr getMarkers() const { return markers; }
 	void setMarkers(MarkerCollectionConstPtr val) { markers = val; }
@@ -60,13 +75,16 @@ public:
     EventsCollectionConstPtr getEvents() const { return events; }
     void setEvents(EventsCollectionConstPtr val) { events = val; }
 
-
+private:
+	void createJointCollection(kinematic::SkeletalModelConstPtr model, kinematic::SkeletalDataConstPtr data);
 
 
 private:
 	GRFCollectionConstPtr grf;
 	EMGCollectionConstPtr emg;
 	kinematic::JointAnglesCollectionConstPtr joints;
+	kinematic::SkeletalDataConstPtr skeletalData;
+	kinematic::SkeletalModelConstPtr skeletalModel;
 	MarkerCollectionConstPtr markers;
 	ForceCollectionConstPtr forces;
 	AngleCollectionConstPtr angles;

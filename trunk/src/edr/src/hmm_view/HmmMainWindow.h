@@ -1,9 +1,12 @@
 #ifndef HMM_TOOLBOXMAIN_H
 #define HMM_TOOLBOXMAIN_H
 
+#include <core/PluginCommon.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
+#include <plugins/kinematic/Wrappers.h>
+#include <plugins/subject/Motion.h>
 #include "plugins/chart/ChartVisualizer.h"
 #include <QtGui/QFrame>
 #include "MainWindow.h"
@@ -208,6 +211,19 @@ private:
 		auto it = item2Channel.find(item);
 		if (it != item2Channel.end()) {
             std::stack<QString> pathStack;
+			/*VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(*(it->second).get()));
+			ObjectWrapperPtr wrapper = ObjectWrapper::create<T>();
+			wrapper->set(boost::dynamic_pointer_cast<T>(boost::const_pointer_cast<T>(it->second)));
+			static std::string prefix = typeid(T).name();
+			// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+			prefix += "_";
+			wrapper->setName(prefix + "nazwa testowa");
+			wrapper->setSource(prefix + "Sciezka testowa");
+			vis->getOrCreateWidget();
+			VisualizerWidget* visualizerWidget = new VisualizerWidget(vis);
+            visualizerWidget->setAllowedAreas(Qt::RightDockWidgetArea);
+            visualizerWidget->setStyleSheet(styleSheet());
+            visualizerWidget->setTitleBarVisible(false);*/
 
             QTreeWidgetItem * pomItem = item;
 
@@ -256,7 +272,7 @@ private:
 
                 TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
                 if(timeline != nullptr) {
-                    timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
+                    //timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
                     timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serie));
                     if(channel != nullptr){
                         channelToVisualizer[channel] = visu;
@@ -268,7 +284,7 @@ private:
 
                 connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
 
-			
+			//pane->addDockWidget(Qt::RightDockWidgetArea, visualizerWidget);
 			    /*topMainWindow->setUpdatesEnabled(false);
 			    if (currentVisualizer) {
 				    topMainWindow->layout()->removeWidget(currentVisualizer);
@@ -313,14 +329,18 @@ private:
 	}
 
 private:
+	std::map<QTreeWidgetItem*, GRFCollectionConstPtr> item2GrfCollection;
 	std::map<QTreeWidgetItem*, ScalarChannelConstPtr> item2ScalarMap;
 	std::map<QTreeWidgetItem*, MarkerCollectionConstPtr> item2Markers;
     std::map<QTreeWidgetItem*, EventsCollectionConstPtr> item2Events;
 	std::map<QTreeWidgetItem*, VectorChannelConstPtr> item2Vector;
 	std::map<QTreeWidgetItem*, VideoChannelConstPtr> item2Video;
+	std::map<QTreeWidgetItem*, kinematic::JointAnglesCollectionConstPtr> item2Skeleton;
+	std::map<QTreeWidgetItem*, MotionPtr> item2Kinematic;
+	VisualizerWidget* currentVisualizer;
+	//QWidget* pane;
+    QMainWindow* pane;
 	
-    VisualizerWidget* currentVisualizer;
-
     QMainWindow* topMainWindow;
     QMainWindow* bottomMainWindow;
 

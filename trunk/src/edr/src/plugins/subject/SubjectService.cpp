@@ -76,57 +76,78 @@ void SubjectService::onWrappersAdded( const std::vector<core::ObjectWrapperPtr>&
 			wrapper->set(currentSession);
 			core::getDataManager()->addExternalData(wrapper);
 		}
-	
-		if (lastFileDescriptor.hasMotionDesc() && currentSession) {
-			std::string motionName = lastFileDescriptor.getMotionDesc();
-			MotionPtr currentMotion;
-			auto it = motions.find(motionName);
-			if (it == motions.end()) {
-				currentMotion = MotionPtr(new Motion);
-				currentMotion->setName(motionName);
-				currentSession->addMotion(currentMotion);
-				motions[motionName] = currentMotion;
-			} else {
-				currentMotion = it->second;
-			}
 
-			core::IDataManager* manager = core::getDataManager();
-			for (std::vector<core::ObjectWrapperPtr>::const_iterator it = wrappers.cbegin(); it != wrappers.cend(); it++) {
-				if ((*it)->isPtrSupported(typeid(EMGCollectionPtr))) {
-					manager->tryParseWrapper(*it);
-					currentMotion->setEmg((*it)->get());
-				} else if ((*it)->isPtrSupported(typeid(GRFCollectionPtr)) ) {
-					manager->tryParseWrapper(*it);
-					currentMotion->setGrf((*it)->get());
-				} else if ((*it)->isPtrSupported(typeid(MarkerCollectionPtr))) {
-					manager->tryParseWrapper(*it);
-					currentMotion->setMarkers((*it)->get());
-				} else if((*it)->isPtrSupported(typeid(kinematic::JointAnglesCollectionPtr)) ) {
-					manager->tryParseWrapper(*it);
-					currentMotion->setJoints((*it)->get());
-				} else if((*it)->isPtrSupported(typeid(AngleCollectionPtr)) ) {
-					manager->tryParseWrapper(*it);
-					currentMotion->setAngles((*it)->get());
-				} else if((*it)->isPtrSupported(typeid(ForceCollectionPtr)) ) {
-					manager->tryParseWrapper(*it);
-					currentMotion->setForces((*it)->get());
-				} else if((*it)->isPtrSupported(typeid(MomentCollectionPtr)) ) {
-					manager->tryParseWrapper(*it);
-					currentMotion->setMoments((*it)->get());
-				} else if((*it)->isPtrSupported(typeid(PowerCollectionPtr)) ) {
-					manager->tryParseWrapper(*it);
-					currentMotion->setPowers((*it)->get());
-				} else if((*it)->isPtrSupported(typeid(EventsCollectionPtr)) ) {
-					manager->tryParseWrapper(*it);
-					currentMotion->setEvents((*it)->get());
-				} else if ((*it)->isPtrSupported(typeid(VideoChannelPtr))) {
-					manager->tryParseWrapper(*it);
-					currentMotion->addVideo((*it)->get());
+		core::IDataManager* manager = core::getDataManager();
+		if (currentSession) {
+			bool hasMotionDesc = lastFileDescriptor.hasMotionDesc();
+			if (!hasMotionDesc) {
+				for (std::vector<core::ObjectWrapperPtr>::const_iterator it = wrappers.cbegin(); it != wrappers.cend(); it++) {
+					if ((*it)->isPtrSupported(typeid(kinematic::SkeletalModelPtr))) {
+						manager->tryParseWrapper(*it);
+						kinematic::SkeletalModelConstPtr model = (*it)->get();
+						if (model) {
+							currentSession->setSkeletalModel(model);
+							BOOST_FOREACH(MotionPtr motion, currentSession->getMotions()) {
+								motion->setSkeletalModel(model);
+							}
+						}
+					} 
+				}
+			} else  {
+				std::string motionName = lastFileDescriptor.getMotionDesc();
+				MotionPtr currentMotion;
+				auto it = motions.find(motionName);
+				if (it == motions.end()) {
+					currentMotion = MotionPtr(new Motion);
+					currentMotion->setName(motionName);
+					currentSession->addMotion(currentMotion);
+					motions[motionName] = currentMotion;
+				} else {
+					currentMotion = it->second;
+				}
+
+				
+				for (std::vector<core::ObjectWrapperPtr>::const_iterator it = wrappers.cbegin(); it != wrappers.cend(); it++) {
+					if ((*it)->isPtrSupported(typeid(EMGCollectionPtr))) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setEmg((*it)->get());
+					} else if ((*it)->isPtrSupported(typeid(GRFCollectionPtr)) ) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setGrf((*it)->get());
+					} else if ((*it)->isPtrSupported(typeid(MarkerCollectionPtr))) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setMarkers((*it)->get());
+					} else if((*it)->isPtrSupported(typeid(kinematic::JointAnglesCollectionPtr)) ) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setJoints((*it)->get());
+					} else if((*it)->isPtrSupported(typeid(AngleCollectionPtr)) ) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setAngles((*it)->get());
+					} else if((*it)->isPtrSupported(typeid(ForceCollectionPtr)) ) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setForces((*it)->get());
+					} else if((*it)->isPtrSupported(typeid(MomentCollectionPtr)) ) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setMoments((*it)->get());
+					} else if((*it)->isPtrSupported(typeid(PowerCollectionPtr)) ) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setPowers((*it)->get());
+					} else if((*it)->isPtrSupported(typeid(EventsCollectionPtr)) ) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setEvents((*it)->get());
+					} else if ((*it)->isPtrSupported(typeid(VideoChannelPtr))) {
+						manager->tryParseWrapper(*it);
+						currentMotion->addVideo((*it)->get());
+					} else if ((*it)->isPtrSupported(typeid(kinematic::SkeletalDataPtr))) {
+						manager->tryParseWrapper(*it);
+						currentMotion->setSkeletalData((*it)->get());
+						kinematic::SkeletalModelConstPtr model = currentSession->getSkeletalModel();
+						if (model) {
+							currentMotion->setSkeletalModel(model);
+						}
+					}
 				}
 			}
-		} else {
-			// to tez moze byc poprawny przebieg programu, po prostu wczytano plik, 
-			// ktory jest zwiazany z sesja a nie z motion, np. asf
 		}
 	}
 }

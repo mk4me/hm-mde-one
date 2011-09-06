@@ -25,6 +25,8 @@ C3DParser::C3DParser()
 	
 	leftEvents = core::ObjectWrapper::create<C3DEventsCollection>();
 	rightEvents = core::ObjectWrapper::create<C3DEventsCollection>();
+
+	//c3dMisc = core::ObjectWrapper::create<C3DMisc>();
 }
 
 C3DParser::~C3DParser()
@@ -49,6 +51,7 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 		GRFChannels[i]->setSource(path.string());
 		g->addChannel(ptr);
 	}
+	g->setPlatforms(parser->getForcePlatforms());
 	GRFs->set(g, path.filename().string(), path.string());
 
 	EMGCollectionPtr e(new EMGCollection());
@@ -82,7 +85,7 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 	AngleCollectionPtr angles(new AngleCollection);
 	MomentCollectionPtr moments(new MomentCollection);
 	PowerCollectionPtr powers(new PowerCollection);
-
+	
 #define CHANNEL_CASE(name, collection)						  	 \
 	case c3dlib::C3DParser::IPoint::##name:					  	 \
 		{														 \
@@ -131,6 +134,7 @@ void C3DParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
 	objects.push_back(angleChannels );
 	objects.push_back(momentChannels);
 	objects.push_back(powerChannels );
+	//objects.push_back(c3dMisc);
 }
 
 void C3DParser::saveFile( const core::Filesystem::Path& path )

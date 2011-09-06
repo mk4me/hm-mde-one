@@ -69,7 +69,8 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
     camera->setProjectionMatrix(osg::Matrix::ortho2D(0.0, double(traits->width), 0.0f, double(traits->height)));
     camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
     camera->setViewMatrix(osg::Matrix::identity());
-    camera->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
+    //camera->setClearColor(osg::Vec4(0.73f, 0.73f, 0.73f, 1));
+	camera->setClearColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1));
     //camera->setClearColor(osg::Vec4(1, 1, 1, 1));
 
     // dodanie callbacak dostosowuj¹cego rozmiar kamery do rozmiaru okna

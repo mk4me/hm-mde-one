@@ -51,6 +51,7 @@ namespace kinematic
 		const Skeleton& getSkeleton() const { return *skeleton; }
         /** Zwraca referencje do mapy : nazwa kosci -> kosc*/
         JointMap& getJointMap() { return jointsMap; }
+		const JointMap& getJointMap() const { return jointsMap; }
         /** Zwraca referencje do mapy : identyfikator kosci -> kosc*/
         JointIdMap& getJointIDMap() { return jointsIds; }
         // akcesory

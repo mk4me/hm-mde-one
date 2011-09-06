@@ -66,7 +66,7 @@ namespace kinematic {
 		hAnimBonePtr getBoneByName(const std::string& name);
 		/// \brief  Executes the skeleton mapping operation. 
 		/// \param  skeletalModel   The skeletal model. 
-		void doSkeletonMapping(SkeletalModelPtr skeletalModel);
+		void doSkeletonMapping(SkeletalModelConstPtr skeletalModel);
 		//! realizuje mapowanie pojedynczego jointa na nazwe w h-anim
 		//! \param given nazwa podanego jointa
 		//! \return zmapowana na h-anim nazwa

@@ -102,20 +102,19 @@ public: // akcesory
     }
 
     int getNumFrames() const { 
-        UTILS_ASSERT(kinematicModel->getSkeleton());  
-        return kinematicModel->getSkeleton()->getNumPointsPerChannel(); 
+        UTILS_ASSERT(joints);  
+        return joints->getNumPointsPerChannel(); 
     }
-    double getFrameTime() const { 
-        UTILS_ASSERT(kinematicModel->getSkeleton()); 
-		kinematic::JointAnglesCollectionPtr j = kinematicModel->getSkeleton();
-        return static_cast<double>(j->getLength()) / j->getNumPointsPerChannel(); 
+    double getFrameTime() const {
+        UTILS_ASSERT(joints); 
+        return static_cast<double>(joints->getLength()) / joints->getNumPointsPerChannel(); 
     }
     double getDuration() const { 
-        UTILS_ASSERT(kinematicModel);
-        if (kinematicModel->getSkeleton()) {
-            return static_cast<double>(kinematicModel->getSkeleton()->getLength()); 
-        } else if (kinematicModel->getMarkers()) {
-            return kinematicModel->getMarkers()->getLength();
+        UTILS_ASSERT(joints || markers);
+        if (joints) {
+            return static_cast<double>(joints->getLength()); 
+        } else if (markers) {
+            return markers->getLength();
         }
         UTILS_ASSERT(false);
         return 0.0;
@@ -131,9 +130,18 @@ public: // akcesory
     const std::vector<Connection> &getConnections(DataToDraw toDraw) const;
 
     //model kinematyczny
-   KinematicModelConstPtr getKinematicModel() const { return kinematicModel; }
-    void setKinematicModel(KinematicModelConstPtr val);
+   //KinematicModelConstPtr getKinematicModel() const { return kinematicModel; }
+    //void setKinematicModel(KinematicModelConstPtr val);
 
+	bool hasData() const { return markers || joints; }
+	bool hasMarkers() const { return markers.get() != nullptr; }
+	bool hasJoints() const { return joints.get() != nullptr; }
+
+	MarkerCollectionConstPtr getMarkers() const { return markers; }
+	kinematic::JointAnglesCollectionConstPtr getJoints() const { return joints; }
+
+	void setMarkers(MarkerCollectionConstPtr val);
+	void setJoints(kinematic::JointAnglesCollectionConstPtr val);
     void setMarkersDataFromVsk(kinematic::VskParserConstPtr vsk);
 
         
@@ -169,10 +177,13 @@ private:
     std::vector<Connection> jointConnections;
 
     std::vector<Connection> markerConnections;
+	
     ////! aktualny wizualizator schematu
     //ISchemeDrawerPtr schemeDrawer;
     //! model kinematyczny z danymi
-    KinematicModelConstPtr kinematicModel;
+    //KinematicModelConstPtr kinematicModel;
+	MarkerCollectionConstPtr markers;
+	kinematic::JointAnglesCollectionConstPtr joints;
     //! slaby wskaznik do this
     boost::weak_ptr<SkeletalVisualizationScheme> weak;
 };

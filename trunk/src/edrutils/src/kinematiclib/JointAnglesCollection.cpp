@@ -16,17 +16,17 @@ JointAnglesCollection::JointAnglesCollection(void) :
 {
 }
 
-void JointAnglesCollection::setSkeletal( const kinematic::SkeletalModelPtr & skeletalModel, const kinematic::SkeletalDataPtr & skeletalData )
+void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData )
 {
     UTILS_ASSERT(!this->skeletalModel && !this->skeletalData);
     this->skeletalModel = skeletalModel;
 	this->skeletalData = skeletalData;
     
-   std::vector<SkeletalData::singleFramePtr>& frm = skeletalData->getFrames();
+   const std::vector<SkeletalData::singleFramePtr>& frm = skeletalData->getFrames();
    this->haSkeleton = hAnimSkeleton::create();
    double maxLength = getMaxBoneLength(skeletalModel->getSkeleton());
-   // hack
-   maxLength = 1.0;
+   // hack, zamiast normalizacji dopasowanie skali do pliku c3d...
+   maxLength = 4.0;
    this->haSkeleton->doSkeletonMapping(skeletalModel);
    this->haSkeleton->createActiveHierarchy();
    lengthRatio = maxLength;
@@ -73,10 +73,10 @@ double JointAnglesCollection::getMaxLength(const JointConstPtr & joint, double m
     return maxLength;
  }
 
-void JointAnglesCollection::createQuaternionRepresentation( const kinematic::SkeletalDataPtr & data )
+void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalDataConstPtr & data )
 {
     UTILS_ASSERT(lengthRatio > 0.0);
-	std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
+	const std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
     int framesNo = frames.size();
     if (framesNo == 0) {
         throw kinematic::KinematicModelException("No frames loaded");

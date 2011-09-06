@@ -203,7 +203,15 @@ public:
 typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
 typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
-typedef utils::DataChannelCollection<GRFChannel> GRFCollection;
+class GRFCollection : public utils::DataChannelCollection<GRFChannel> 
+{
+public:
+	c3dlib::ForcePlatformCollection getPlatforms() const { return platforms; }
+	void setPlatforms(c3dlib::ForcePlatformCollection& val) { platforms = val; }
+
+private:
+	c3dlib::ForcePlatformCollection platforms;
+};
 typedef boost::shared_ptr<GRFCollection> GRFCollectionPtr;
 typedef boost::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
 
@@ -238,6 +246,18 @@ public:
 typedef core::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 
+
+//class C3DMisc
+//{
+//public:
+//	c3dlib::ForcePlatformCollection getPlatforms() const { return platforms; }
+//	void setPlatforms(c3dlib::ForcePlatformCollection& val) { platforms = val; }
+//	
+//private:
+//	c3dlib::ForcePlatformCollection platforms;
+//};
+//typedef boost::shared_ptr<C3DMisc> C3DMiscPtr;
+//typedef boost::shared_ptr<const C3DMisc> C3DMiscConstPtr;
 
 
 #define DEFINE_CHANNEL(name)																	 \
@@ -288,6 +308,7 @@ CORE_DEFINE_WRAPPER(ForceCollection, utils::PtrPolicyBoost, utils::ClonePolicyVi
 CORE_DEFINE_WRAPPER(AngleCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(PowerCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(MomentCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+//CORE_DEFINE_WRAPPER(C3DMisc, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
 CORE_DEFINE_WRAPPER(MarkerCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);

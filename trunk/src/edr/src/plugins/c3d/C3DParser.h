@@ -32,6 +32,7 @@ private:
 	core::ObjectWrapperPtr powerChannels;
 	core::ObjectWrapperPtr leftEvents;
 	core::ObjectWrapperPtr rightEvents;
+	//core::ObjectWrapperPtr c3dMisc;
 	ParserPtr parserPtr;
 	
 public:

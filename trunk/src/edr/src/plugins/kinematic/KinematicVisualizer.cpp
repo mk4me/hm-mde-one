@@ -1,5 +1,8 @@
 #include "PCH.h"
 #include "KinematicVisualizer.h"
+#include "GRFSerie.h"
+#include "SkeletonSerie.h"
+#include "MarkerSerie.h"
 
 void KinematicVisualizer::setUp( core::IObjectSource* source )
 {
@@ -21,17 +24,26 @@ void KinematicVisualizer::getInputInfo( std::vector<core::IInputDescription::Inp
 {
     core::IInputDescription::InputInfo input;
 
-    input.name = "model";
-    input.type = typeid(SkeletalVisualizationScheme);
-    input.required = false;
-    input.modify = false;
-
 	input.name = "markers";
 	input.type = typeid(MarkerCollection);
 	input.required = false;
 	input.modify = false;
 
+	info.push_back(input);
+
+	input.name = "grf";
+	input.type = typeid(GRFCollection);
+	input.required = false;
+	input.modify = false;
+
     info.push_back(input);
+
+	input.name = "skeleton";
+	input.type = typeid(kinematic::JointAnglesCollection);
+	input.required = false;
+	input.modify = false;
+
+	info.push_back(input);
 }
 
 int KinematicVisualizer::getMaxDataSeries() const
@@ -41,10 +53,22 @@ int KinematicVisualizer::getMaxDataSeries() const
 
 core::IVisualizer::SerieBase *KinematicVisualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
 {
-    core::IVisualizer::SerieBase * ret = new KinematicVisualizerSerie(this);
-    ret->setName(name);
-    ret->setData(data);
-
+	core::IVisualizer::SerieBase * ret = nullptr;
+	if (data->getTypeInfo() == typeid(GRFCollection)) {
+		ret = new GRFSerie(this);
+		ret->setName(name + "_grf");
+		ret->setData(data);
+	} else if (data->getTypeInfo() == typeid (MarkerCollection)) {
+		ret = new MarkerSerie(this);
+		ret->setName(name + "_markers");
+		ret->setData(data);
+	} else if (data->getTypeInfo() == typeid (kinematic::JointAnglesCollection)) {
+		ret = new SkeletonSerie(this);
+		ret->setName(name + "_skeleton");
+		ret->setData(data);
+	} else {
+		UTILS_ASSERT(false);
+	}
     return ret;
 }
 
@@ -65,12 +89,9 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
         widget->getCamera()->getOrCreateStateSet()
         ));
 
-    osg::ref_ptr<osgGA::OrbitManipulator> cameraManipulator = new osgGA::OrbitManipulator();
-    cameraManipulator->setElevation(30.0);
-    cameraManipulator->setHeading(10.0);
-
+    cameraManipulator = new osgGA::OrbitManipulator();
     widget->setCameraManipulator(cameraManipulator);
-
+	setLeft();
     // stworzenie i dodanie œwiat³a przyczepionego do kamery
     osg::ref_ptr<osg::Light> light = new osg::Light;
     light->setLightNum(1);
@@ -89,17 +110,37 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     connect(actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
     actions.push_back(actionSwitchAxes);
 
-    QMenu* visualizationMenu = new QMenu("Visualization", widget);
+	actionTrajectories = new QAction("Trajectories", widget);
+	actions.push_back(actionTrajectories);
+
+	QMenu* viewMenu = new QMenu("View", widget);
+
+
+	QAction* lft_action = viewMenu->addAction("Left"); 
+	QAction* rht_action = viewMenu->addAction("Right"); 
+	QAction* frn_action = viewMenu->addAction("Front"); 
+	QAction* bck_action = viewMenu->addAction("Back"); 
+	QAction* top_action = viewMenu->addAction("Top"); 
+	QAction* btm_action = viewMenu->addAction("Bottom"); 
+	
+	connect(lft_action, SIGNAL(triggered()), this, SLOT(setLeft()));
+	connect(rht_action, SIGNAL(triggered()), this, SLOT(setRight())); 
+	connect(frn_action, SIGNAL(triggered()), this, SLOT(setFront())); 
+	connect(bck_action, SIGNAL(triggered()), this, SLOT(setBehind()));
+	connect(top_action, SIGNAL(triggered()), this, SLOT(setTop()));
+	connect(btm_action, SIGNAL(triggered()), this, SLOT(setBottom())); 	
+	actions.push_back(viewMenu);
+	
+ /*   QMenu* visualizationMenu = new QMenu("Visualization", widget);
     QActionGroup* group = new QActionGroup(widget);
     connect(group, SIGNAL(triggered(QAction *)), this, SLOT(actionTriggered(QAction*)));
 
-    addAction(actions, "Markers", visualizationMenu, group);
-    addAction(actions, "Skeleton", visualizationMenu, group);
-    addAction(actions, "Both", visualizationMenu, group);
-    addAction(actions, "Rectangular", visualizationMenu, group);
-    actions.push_back(visualizationMenu);
-
-
+    addAction("Markers", visualizationMenu, group);
+    addAction("Skeleton", visualizationMenu, group);
+    addAction("Both", visualizationMenu, group);
+    addAction("Rectangular", visualizationMenu, group);
+    actions.push_back(visualizationMenu);*/
+	
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
     osg::Vec3 up(0,0,1);
 
@@ -135,41 +176,44 @@ void KinematicVisualizer::updateAnimation()
     }
 }
 
-KinematicVisualizer::GeodePtr KinematicVisualizer::createFloor()
+osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
 {
+	osg::ref_ptr<osg::Group> group = new osg::Group;
+	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
+    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+	colors->push_back(osg::Vec4(0.05f, 0.05f, 0.3f, 1.0f));
+
     GeodePtr geode = new osg::Geode();
     // todo sparametryzowac
     osg::ref_ptr<osg::Geometry> linesGeom = new osg::Geometry();
 
+	float length = 3.5f;
+
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array(44);
     osg::Vec3 v;
     for (int i = 0; i < 11; i++) {
-        v.set(-10.0f + 2*i, -10.0f, 0);
+        v.set(-length + 2 * (i / 10.0f) * length, -length, 0);
         (*vertices)[2 * i] = v;      
-        v.set(-10.0f + 2*i, 10.0f, 0);
+        v.set(-length + 2 * (i / 10.0f) * length, length, 0);
         (*vertices)[2 * i + 1] = v;   
-        v.set(-10.0f, -10.0f + 2*i, 0);
+        v.set(-length, -length + 2 * (i / 10.0f) * length, 0);
         (*vertices)[22 + 2 * i] = v;   
-        v.set(10.0f, -10.0f + 2*i, 0);
+        v.set(length, -length + 2 * (i / 10.0f) * length, 0);
         (*vertices)[22 + 2 * i + 1] = v;
-
     }
 
     linesGeom->setVertexArray(vertices);
-
-    osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
-    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
     geode->setStateSet(stateset);
-
-    osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-    colors->push_back(osg::Vec4(0.05f, 0.05f, 0.3f, 1.0f));
     linesGeom->setColorArray(colors);
     linesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
 
     linesGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 44));
 
     geode->addDrawable(linesGeom);
-    return geode;
+	group->addChild(geode);
+
+    return group;
 }
 
 QIcon* KinematicVisualizer::createIcon()
@@ -179,13 +223,13 @@ QIcon* KinematicVisualizer::createIcon()
 
 void KinematicVisualizer::setAxis( bool xyz )
 {
-    if (xyz) {
+    /*if (xyz) {
         osg::Quat q(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f));
         transformNode->setAttitude(q);
     } else {
         osg::Quat q;
         transformNode->setAttitude(q);
-    }
+    }*/
 }
 
 void KinematicVisualizer::actionTriggered( QAction* action )
@@ -208,7 +252,7 @@ void KinematicVisualizer::resetScene()
     rootNode->addChild(transformNode);
 }
 
-void KinematicVisualizer::addAction(std::vector<QObject*>& actions, const std::string& name, QMenu* menu, QActionGroup* group )
+void KinematicVisualizer::addAction(const std::string& name, QMenu* menu, QActionGroup* group)
 {
     QAction* act = menu->addAction(name.c_str());
 
@@ -232,3 +276,49 @@ osg::Node* KinematicVisualizer::debugGetLocalSceneRoot()
 {
     return rootNode;
 }
+
+void KinematicVisualizer::setLeft()
+{
+	this->cameraManipulator->setHeading(osg::RadiansToDegrees(-90.0));
+	this->cameraManipulator->setElevation(0);
+	this->cameraManipulator->setDistance(8);
+}
+
+void KinematicVisualizer::setRight()
+{
+	this->cameraManipulator->setHeading(osg::RadiansToDegrees(90.0));
+	this->cameraManipulator->setElevation(0);
+	this->cameraManipulator->setDistance(8);
+}
+
+void KinematicVisualizer::setFront()
+{
+	this->cameraManipulator->setHeading(0);
+	this->cameraManipulator->setElevation(0);
+	this->cameraManipulator->setDistance(8);
+}
+
+void KinematicVisualizer::setBehind()
+{
+	this->cameraManipulator->setHeading(osg::RadiansToDegrees(180.0));
+	this->cameraManipulator->setElevation(0);
+	this->cameraManipulator->setDistance(8);
+}
+
+void KinematicVisualizer::setTop()
+{
+	this->cameraManipulator->setHeading(0);
+	this->cameraManipulator->setElevation(osg::RadiansToDegrees(-90.0));
+	this->cameraManipulator->setDistance(8);
+}
+
+void KinematicVisualizer::setBottom()
+{
+	this->cameraManipulator->setHeading(0);
+	this->cameraManipulator->setElevation(osg::RadiansToDegrees(90.0));
+	this->cameraManipulator->setDistance(8);
+}
+
+
+
+
