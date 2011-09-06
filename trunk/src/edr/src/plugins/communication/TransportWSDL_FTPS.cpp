@@ -5,12 +5,14 @@
 #include "CommunicationPCH.h"
 #include <core/Filesystem.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
+#include <core/PluginCommon.h>
 
 using namespace communication;
 
 TransportWSDL_FTPS::TransportWSDL_FTPS()
 {
     ftp = core::shared_ptr<FtpsConnection>(new FtpsConnection());
+    ftp->setDefaultDownloadPath(core::getPathInterface()->getUserDataPath().string());
     wsdl = core::shared_ptr<FileStoremanService>(new FileStoremanService());
 }
 
@@ -88,13 +90,13 @@ const std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string
     //filePath.append(filename.substr(0, filename.find(".")));
     try {
         core::Filesystem::createDirectory(filePath.string());
-        core::Filesystem::move(filename, (filePath / filename).string());
+        core::Filesystem::move(ftp->getFilePath(filename), (filePath / filename).string());
     } catch(std::exception& e) {
         if(!filePath.empty()) {
             core::Filesystem::deleteDirectory(filePath.string());
         }
         if(!filename.empty()) {
-            core::Filesystem::deleteFile(filename);
+            core::Filesystem::deleteFile(ftp->getFilePath(filename));
         }
         throw std::runtime_error(e.what());
     }
@@ -113,30 +115,46 @@ void TransportWSDL_FTPS::abort()
 
 const std::string TransportWSDL_FTPS::getShallowCopy()
 {
+    LOG_WARNING("getShallowCopy");
     core::Filesystem::Path filename, schema = core::getApplicationDataString("db/schema/shallowcopy.xml");
-
+    LOG_WARNING("Schema path " << schema);
     //sciagnij plik
     filename = wsdl->getShallowCopy();
+    LOG_WARNING("Wsdl getShallowCopy " << filename);
     ftp->get(filename.string());
+    LOG_WARNING("Ftp get");
     wsdl->downloadComplete(0, filename.string());
+    LOG_WARNING("Wsdl download complete");
     core::Filesystem::createDirectory(std::string(core::getApplicationDataString("db/schema")));
+    LOG_WARNING("Create direcotry " << std::string(core::getApplicationDataString("db/schema")));
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
-    core::Filesystem::move(filename.filename().string(), schema.string());
+    LOG_WARNING("DELETE file " << schema.string());
+    core::Filesystem::move(ftp->getFilePath(filename.filename().string()), schema.string());
+    LOG_WARNING("Move file " << filename.filename().string() << " to " << schema.string());
     return schema.string();
 }
 
 const std::string TransportWSDL_FTPS::getMetadata()
 {
+    LOG_WARNING("getMetadata");
     core::Filesystem::Path filename, schema = core::getApplicationDataString("db/schema/metadata.xml");
 
+    LOG_WARNING("Schema path " << schema);
     //sciagnij plik
     filename = wsdl->getMetadata();
+    LOG_WARNING("Wsdl getMetadata " << filename);
     ftp->get(filename.string());
+    LOG_WARNING("Ftp get");
     wsdl->downloadComplete(0, filename.string());
+    LOG_WARNING("Wsdl download complete");
     core::Filesystem::createDirectory(std::string(core::getApplicationDataString("db/schema")));
+    LOG_WARNING("Create direcotry " << std::string(core::getApplicationDataString("db/schema")));
     //usuwamy wczesniejsza wersje pliku
     core::Filesystem::deleteFile(schema.string());
-    core::Filesystem::move(filename.filename().string(), schema.string());
+    LOG_WARNING("DELETE file " << schema.string());
+    LOG_WARNING("Move file " << filename.filename().string() << " to " << schema.string());
+    core::Filesystem::move(ftp->getFilePath(filename.filename().string()), schema.string());
+    
     return schema.string();
 }

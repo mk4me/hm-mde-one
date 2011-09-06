@@ -95,6 +95,10 @@ namespace communication
         Pole klasy przechowuj¹ce informacje o procentowym postêpie operacji. S³u¿y te¿ do przerwañ operacji.
         */
         Progress progress;
+        /**
+        Pole klasy przechowuj¹ce informacje o domyslnym katalogu zapisu plików œci¹ganych przez FTP
+        */
+        std::string defaultDownloadPath;
     private:
         /**
         WskaŸnik na obiekt typu CURL potrzebny do operacji ftpowych.
@@ -177,6 +181,20 @@ namespace communication
         Anuluje obecnie wykonywan¹ operacjê.
         */
         virtual void abort();
+
+        /**
+        Metoda ustawia domyslny katalog œci¹ganych plików
+        @param path Katalog do zapisu œci¹ganych plików
+        */
+        virtual void setDefaultDownloadPath(const std::string & path);
+
+        /**
+        Katalog zapisu œci¹ganych plików
+        @return Katalog zapisu œci¹ganych plików
+        */
+        const std::string & getDefaultDownloadPath() const;
+
+        std::string getFilePath(const std::string & filename) const;
     };
 }
 #endif //HEADER_GUARD_COMMUNICATION_FTPSCONNECTION_H__

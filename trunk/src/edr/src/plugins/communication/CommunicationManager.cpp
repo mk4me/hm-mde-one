@@ -159,9 +159,12 @@ void CommunicationManager::run()
         }
         case CopyDB: {
                 try {
+                    LOG_WARNING("Before CopyDB");
                     readDbSchemas(transportManager->getShallowCopy(), transportManager->getMetadata());
+                    LOG_WARNING("After CopyDB");
                     state = UpdateTrials;
                 } catch(std::exception& e) {
+                    LOG_WARNING("CopyDB exception");
                     state = Error;
                     errorMessage = e.what();
                 }
@@ -194,14 +197,18 @@ size_t CommunicationManager::pingDataCallback(void *buffer, size_t size, size_t 
 
 void CommunicationManager::readDbSchemas(const std::string& shallowCopyDir, const std::string& metaDataDir)
 {
+    LOG_WARNING("In readDbSchemas");
     ShallowCopyParserPtr ptrS = ShallowCopyParserPtr(new ShallowCopyParser());
     ptrS->parseFile(nullptr, shallowCopyDir);
+    LOG_WARNING("After parsing file " << shallowCopyDir );
     shallowCopy = ptrS->getShallowCopy();
 
+    LOG_WARNING("After getShallowCopy");
     MetadataParserPtr ptrM = MetadataParserPtr(new MetadataParser());
     ptrM->parseFile(nullptr, metaDataDir);
+    LOG_WARNING("After metadata parse file " << metaDataDir);
     metaData = ptrM->getMetadata();
-
+    LOG_WARNING("After get metadata");
     //
     ////budujemy relacje miedzy encjami bazodanowymi od nowa
     //performers.clear();

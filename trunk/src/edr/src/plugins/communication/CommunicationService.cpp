@@ -5,7 +5,7 @@
 CommunicationService::CommunicationService()
     : name("Communication")
 {
-    XmlUtils::TMPFILESDIR = core::getPathInterface()->getApplicationDataPath().string();
+    XmlUtils::TMPFILESDIR = core::getPathInterface()->getUserDataPath().string();
     WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();   
     this->model = communication::CommunicationManager::getInstance();
 
