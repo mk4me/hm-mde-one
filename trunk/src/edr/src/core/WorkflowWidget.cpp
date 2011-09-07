@@ -142,7 +142,9 @@ void WorkflowCustomQOSGWidget::mousePressEvent(QMouseEvent * event)
         //probuj dodac element
         if(workflowWidget->currentAction != nullptr){
 
-            pos = mapToGlobal(event->pos());
+            pos = event->pos();
+            //pos = mapToGlobal(event->pos());
+            pos.setY(height() - pos.y());
 
             QMetaObject::invokeMethod(this, "tryAddNode");
 

@@ -960,7 +960,7 @@ void osgVDFBaseModel::setNodeAbsolutePosition(const dflm::NPtr & node, const osg
 
 void osgVDFBaseModel::positionNode( osgVDFBaseNode* vnode, const osgWidget::XYCoord &nodePos ) 
 {
-    vnode->setOrigin(nodePos.x(), nodePos.y());
+    vnode->setOrigin(nodePos.x() - vnode->getWidth() / 2.0, nodePos.y() - vnode->getHeight() / 2.0);
     vnode->resizeAdd(0,0);
 }
 
@@ -2026,10 +2026,10 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
 
 		//to ensure unique names for nodes!! important for connections unique naming!!
 		//node->setNodeName(ss.str() + node->getName());
-		model->addNode(node, 0, node->getName());
+		model->addNode(node, 0, node->getName(), osgWidget::XYCoord(gea.getX(), gea.getY()));
 		model->focusedNode = model->getVisualNode(node);
-		osgWidget::XYCoord nSize = model->getNodeSize(node);
-		model->setNodeAbsolutePosition(node, osgWidget::XYCoord(gea.getX() - nSize.x() / 2.0, gea.getY() - nSize.y() / 2.0));
+		//osgWidget::XYCoord nSize = model->getNodeSize(node);
+		//model->setNodeAbsolutePosition(node, osgWidget::XYCoord(gea.getX() - nSize.x() / 2.0, gea.getY() - nSize.y() / 2.0));
 	}else if(model->contextMenuOn == false && gea.getEventType() == osgGA::GUIEventAdapter::PUSH && gea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON){
 		//collect connections in nearby to delete
 		osgWidget::XYCoord pos(gea.getX(), gea.getY());
