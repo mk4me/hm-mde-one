@@ -8,10 +8,10 @@
 
 C3DParser::C3DParser()
 {
-	for(int i=0; i<12; i++){
+	for(int i = 0; i < 4; i++){
 		GRFChannels.push_back(core::ObjectWrapper::create<GRFChannel>());
 	}
-	for(int i=12;i<28;i++){
+	for(int i = 0; i < 16; i++){
 		EMGChannels.push_back(core::ObjectWrapper::create<EMGChannel>());
 	}
 
@@ -44,7 +44,7 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
     parser->importFrom(files, importWarnings);
 
 	GRFCollectionPtr g(new GRFCollection());
-	for (int i = 0; i < 12; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		GRFChannelPtr ptr(new GRFChannel(*parser , i));
 		GRFChannels[i]->set(ptr);
 		GRFChannels[i]->setName(ptr->getName());

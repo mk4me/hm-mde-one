@@ -5,6 +5,7 @@ void SkeletonSerie::setSerieData( const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
 	connect(visualizer->actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
+	
 	kinematic::JointAnglesCollectionConstPtr collection = data->get();
 	scheme = SkeletalVisualizationScheme::create();
 	scheme->setJoints(collection);
@@ -17,6 +18,8 @@ void SkeletonSerie::setSerieData( const core::ObjectWrapperConstPtr & data )
 	
 	skeletonDrawers->init(scheme);
 	visualizer->transformNode->addChild(transformNode);
+	//setAxis(true);
+	visualizer->actionSwitchAxes->trigger();
 }
 
 void SkeletonSerie::setAxis( bool xyz)

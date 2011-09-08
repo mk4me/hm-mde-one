@@ -55,11 +55,11 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf ) const
 	//colors->push_back(osg::Vec4(1.0f, 0.3f, 0.3f, 1.0f));
 
 	float f = 0.0f;
-	float maxLength = f1[0]->getLength();
+	float maxLength = f1->getLength();
 	osg::Vec3 lastV1;
 	osg::Vec3 lastV2;
 	for (int i = 0; i < numSegments; i++) {
-		v.set((*f1[0])[f], (*f1[1])[f], (*f1[2])[f]);
+		v.set((*f1)[f]);
 		v *= grfScale;
 		v += origin;
 		if (v.length() > 0.00001f) {
@@ -71,7 +71,7 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf ) const
 			verts->push_back(origin); 
 		}
 		lastV1 = v;
-		v.set((*f2[0])[f], (*f2[1])[f], (*f2[2])[f]);
+		v.set((*f2)[f]);
 		v *= grfScale;
 		v += origin2;
 		if (v.length() > 0.00001f) {

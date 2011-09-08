@@ -181,24 +181,33 @@ typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
 
 //! Kanal GRF
-class GRFChannel : public C3DAnalogChannel
+class GRFChannel : public VectorChannel
 {
 public:
+	enum Type { Unknown, F1, M1, F2, M2 };
+
+public:
     explicit GRFChannel(int samplesPerSec) :
-    C3DAnalogChannel(samplesPerSec)
+    VectorChannel(samplesPerSec) ,
+	type(Unknown)
     {}
     GRFChannel(const GRFChannel& channel) :
-    C3DAnalogChannel(channel)
+    VectorChannel(channel),
+	type(channel.type)
     {}
-    GRFChannel(const c3dlib::C3DParser& data, int channelNo) :
-    C3DAnalogChannel(data, channelNo)
-    {}
+    GRFChannel(const c3dlib::C3DParser& data, int channelNo);
 
 public:
     virtual GRFChannel* clone() const
     {
         return new GRFChannel(*this);
     }
+
+	GRFChannel::Type getType() const { return type; }
+	
+private:
+	Type type;
+	
 };
 typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
 typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
@@ -208,6 +217,17 @@ class GRFCollection : public utils::DataChannelCollection<GRFChannel>
 public:
 	c3dlib::ForcePlatformCollection getPlatforms() const { return platforms; }
 	void setPlatforms(c3dlib::ForcePlatformCollection& val) { platforms = val; }
+
+	GRFChannelConstPtr getGRFChannel(GRFChannel::Type type) const
+	{
+		for (auto it = channels.begin(); it != channels.end(); it++) {
+			if ((*it)->getType() == type) {
+				return *it;
+			}
+		}
+
+		throw std::runtime_error("Wrong GRF channel type");
+	}
 
 private:
 	c3dlib::ForcePlatformCollection platforms;
@@ -314,7 +334,7 @@ CORE_DEFINE_WRAPPER(MarkerCollection, utils::PtrPolicyBoost, utils::ClonePolicyC
 CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
-CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, C3DAnalogChannel);
+CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);
 CORE_DEFINE_WRAPPER(GRFCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);

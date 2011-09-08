@@ -259,83 +259,104 @@ void HmmMainWindow::onOpen()
 			treeWidget->addTopLevelItem(motionItem);
 			//item->addChild(motionItem);
 			auto channelCollection = motion->getEmg();
-
-			if (channelCollection) {	
-				QTreeWidgetItem* emgItem = new QTreeWidgetItem();
-				motionItem->addChild(emgItem);
-				emgItem->setText(0, "EMG");
-				int count = channelCollection->getNumChannels();			
-				for (int i = 0; i < count; i++) {							
-					QTreeWidgetItem* channelItem = new QTreeWidgetItem();
-					channelItem->setIcon(0, icon);							
-					auto c = channelCollection->getChannel(i);				
-					channelItem->setText(0, c->getName().c_str());			
-					emgItem->addChild(channelItem);						
-					item2ScalarMap[channelItem] = 							
-						boost::dynamic_pointer_cast<const ScalarChannel>(c);
-				}														
-			}	
-
 			auto grfCollection = motion->getGrf();
-			if (grfCollection) {	
-				QTreeWidgetItem* grfItem = new QTreeWidgetItem();
-				item2GrfCollection[grfItem] = grfCollection;
-				grfItem->setText(0, "GRF");
-				grfItem->setIcon(0, icon3D);
-				motionItem->addChild(grfItem);
-				int count = grfCollection->getNumChannels();			
-				for (int i = 0; i < count; i++) {							
-					QTreeWidgetItem* channelItem = new QTreeWidgetItem();	
+
+			if (channelCollection || grfCollection) {
+				QTreeWidgetItem* analogItem = new QTreeWidgetItem();
+				analogItem->setText(0, tr("Analog data"));
+				motionItem->addChild(analogItem);
+				if (channelCollection) {	
+					QTreeWidgetItem* emgItem = new QTreeWidgetItem();
+					analogItem->addChild(emgItem);
+					emgItem->setText(0, "EMG");
+					int count = channelCollection->getNumChannels();			
+					for (int i = 0; i < count; i++) {							
+						QTreeWidgetItem* channelItem = new QTreeWidgetItem();
+						channelItem->setIcon(0, icon);							
+						auto c = channelCollection->getChannel(i);				
+						channelItem->setText(0, c->getName().c_str());			
+						emgItem->addChild(channelItem);						
+						item2ScalarMap[channelItem] = 							
+							boost::dynamic_pointer_cast<const ScalarChannel>(c);
+					}														
+				}	
+
+			
+				if (grfCollection) {	
+					QTreeWidgetItem* grfItem = new QTreeWidgetItem();
+					item2GrfCollection[grfItem] = grfCollection;
+					grfItem->setText(0, "GRF");
+					grfItem->setIcon(0, icon3D);
+					analogItem->addChild(grfItem);
+					int count = grfCollection->getNumChannels();			
+					for (int i = 0; i < count; i++) {							
+						QTreeWidgetItem* channelItem = new QTreeWidgetItem();	
 						
-					channelItem->setIcon(0, icon);							
-					auto c = grfCollection->getChannel(i);				
-					channelItem->setText(0, c->getName().c_str());			
-					grfItem->addChild(channelItem);						
-					item2ScalarMap[channelItem] = 							
-						boost::dynamic_pointer_cast<const ScalarChannel>(c);
-				}														
+						channelItem->setIcon(0, icon);							
+						auto c = grfCollection->getChannel(i);				
+						channelItem->setText(0, c->getName().c_str());			
+						grfItem->addChild(channelItem);						
+						item2Vector[channelItem] = 							
+							boost::dynamic_pointer_cast<const VectorChannel>(c);
+					}														
+				}
 			}
 
-            auto eventsCollection = motion->getEvents();
+            /*auto eventsCollection = motion->getEvents();
             if(eventsCollection){
                 QTreeWidgetItem* eventItem = new QTreeWidgetItem();
                 eventItem->setText(0, "Events");
                 motionItem->addChild(eventItem);
                 item2Events[eventItem] = eventsCollection;
-            }
+            }*/
 
-			tryAddVectorToTree(motion->getForces(), "Forces", &icon3D, motionItem);
-			tryAddVectorToTree(motion->getMoments(), "Moments", &icon3D, motionItem);
-			// do rozwiniecia - potrzeba parsowac pliki vsk i interpretowac strukture kinamatyczna tak jak to robi Vicon
-			//tryAddVectorToTree(motion->getAngles(), "Angles", &icon3D, motionItem);
-			tryAddVectorToTree(motion->getPowers(), "Powers", &icon3D, motionItem);
-
-			const auto markerCollection = motion->getMarkers();			
-			if (markerCollection) {
-				QTreeWidgetItem* markersItem = new QTreeWidgetItem();
-				markersItem->setIcon(0, icon3D);
-				markersItem->setText(0, tr("Markers"));							
-				motionItem->addChild(markersItem);		
-				item2Markers[markersItem] = markerCollection;
+			if (motion->getForces() || motion->getMoments() || motion->getPowers()) {
+				QTreeWidgetItem* kineticItem = new QTreeWidgetItem();
+				kineticItem->setText(0, tr("Kinetic data"));
+				motionItem->addChild(kineticItem);
+				tryAddVectorToTree(motion->getForces(), "Forces", &icon3D, kineticItem);
+				tryAddVectorToTree(motion->getMoments(), "Moments", &icon3D, kineticItem);
+				// do rozwiniecia - potrzeba parsowac pliki vsk i interpretowac strukture kinamatyczna tak jak to robi Vicon
+				//tryAddVectorToTree(motion->getAngles(), "Angles", &icon3D, kineticItem);
+				tryAddVectorToTree(motion->getPowers(), "Powers", &icon3D, kineticItem);
 			}
-
+	
+			const auto markerCollection = motion->getMarkers();	
 			const auto skeletalCollection = motion->getJoints();
-			if (skeletalCollection) {
-				QTreeWidgetItem* skeletonItem = new QTreeWidgetItem();
-				skeletonItem->setIcon(0, icon3D);
-				skeletonItem->setText(0, tr("Joints"));
-				motionItem->addChild(skeletonItem);
-				item2Skeleton[skeletonItem] = skeletalCollection;
-			}
 
-			if (skeletalCollection && markerCollection && grfCollection) {
+			if (markerCollection || skeletalCollection) {
 				QTreeWidgetItem* kinematicItem = new QTreeWidgetItem();
-				kinematicItem->setIcon(0, icon3D);
-				kinematicItem->setText(0, tr("Kinematic"));
+				kinematicItem->setText(0, tr("Kinematic data"));
 				motionItem->addChild(kinematicItem);
-				item2Kinematic[kinematicItem] = motion;
-			}
+				if (markerCollection) {
+					QTreeWidgetItem* markersItem = new QTreeWidgetItem();
+					markersItem->setIcon(0, icon3D);
+					markersItem->setText(0, tr("Markers"));							
+					kinematicItem->addChild(markersItem);		
+					item2Markers[markersItem] = markerCollection;
 
+					int count = markerCollection->getNumChannels();
+					for (int i = 0; i < count; i++) {
+						QTreeWidgetItem* markerItem = new QTreeWidgetItem();
+						markerItem->setText(0, markerCollection->getChannel(i)->getName().c_str());
+						markersItem->addChild(markerItem);
+						markerItem->setIcon(0, icon);
+						item2Vector[markerItem] = markerCollection->getChannel(i);
+					}
+				}
+
+				if (skeletalCollection) {
+					QTreeWidgetItem* skeletonItem = new QTreeWidgetItem();
+					skeletonItem->setIcon(0, icon3D);
+					skeletonItem->setText(0, tr("Joints"));
+					kinematicItem->addChild(skeletonItem);
+					item2Skeleton[skeletonItem] = skeletalCollection;
+				}
+				
+				if (skeletalCollection && markerCollection && grfCollection) {
+					item2Kinematic[kinematicItem] = motion;
+				}
+			}
 
 			const std::vector<VideoChannelConstPtr>& videoCollection = motion->getVideos();
 			int count = videoCollection.size();
@@ -355,8 +376,6 @@ void HmmMainWindow::onOpen()
 			}
 		}
 		
-		//FILL_TREE_WITH_SCALAR(Joints);
-		//FILL_TREE_WITH_SCALAR(Video);
 	}
 }
 
@@ -390,11 +409,124 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 
 	auto it = item2Vector.find(item);
 	if (it != item2Vector.end()) {
-		QDockWidget* dock = new QDockWidget();
-		QLabel* label = new QLabel("<font color = \"red\" size = 5> Tutaj trzeba dodac wizualizator VectorChannel :) </font> <br /> pozdrawiam, WK");
-		dock->setWidget(label);
-		topMainWindow->addDockWidget(Qt::LeftDockWidgetArea, dock);
-	}
+		VectorChannelConstPtr vectorChannel = it->second;
+		ScalarChannelPtr x, y, z;
+		extractScalarChannels(vectorChannel, x, y, z);
+		if(VisualizerManager::getInstance()->existVisualizerForType(typeid(ScalarChannel)) == true){
+			VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannel));
+
+            ObjectWrapperPtr wrapperX = ObjectWrapper::create<ScalarChannel>();
+			ObjectWrapperPtr wrapperY = ObjectWrapper::create<ScalarChannel>();
+			ObjectWrapperPtr wrapperZ = ObjectWrapper::create<ScalarChannel>();
+            
+            wrapperX->set(x);
+			wrapperY->set(y);
+			wrapperZ->set(z);
+
+            static std::string prefix = "Vector_prefix";
+            // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+            prefix += "_";
+            wrapperX->setName(prefix + "nazwa testowaX");
+            wrapperX->setSource(prefix + "Sciezka testowaX");
+			wrapperY->setName(prefix + "nazwa testowaX");
+			wrapperY->setSource(prefix + "Sciezka testowaX");
+			wrapperZ->setName(prefix + "nazwa testowaX");
+			wrapperZ->setSource(prefix + "Sciezka testowaX");
+            vis->getOrCreateWidget();
+			   
+			VisualizerWidget* visu = new VisualizerWidget(vis);
+            visu->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+            //visu->setStyleSheet(styleSheet());
+            visu->setVisualizerIconVisible(false);
+            visu->setSplitHVisible(false);
+            visu->setSplitVVisible(false);
+            visu->setActiveVisualizerSwitch(false);
+            visu->setSourceVisible(false);
+
+            visu->setTitleBarVisible(false);
+
+            auto serieX = vis->createSerie(wrapperX, wrapperX->getSource());
+			auto serieY = vis->createSerie(wrapperY, wrapperY->getSource());
+			auto serieZ = vis->createSerie(wrapperZ, wrapperZ->getSource());
+
+            ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(vis->getImplementation());
+
+                
+            chart->setAutoRefresh(false);
+
+            chart->setLabelPrototype(chartTextPrototype);
+
+            chart->setBackgroundColor(osg::Vec4(1,1,1,1));
+            chart->setCursorColor(osg::Vec4(0,0,0,1));
+            chart->setAxisesColor(osg::Vec4(0,0,0,1));
+            chart->setFrameColor(osg::Vec4(0,0,0,1));
+            chart->setShowFrame(true);
+
+            chart->setGridColor(osg::Vec4(0.2,0.2,0.2,1));
+
+            chart->setShowGridX(true);
+            chart->setShowGridY(true);
+
+            chart->setMargin(5);
+
+            chart->setAxisXInside(false);
+            chart->setAxisYInside(false);
+
+            chart->setShowAxisX(true);
+            chart->setShowAxisY(true);
+
+            chart->setShowingXUnits(true);
+            chart->setShowingYUnits(false);
+
+            chart->setShowingXUnitsSeparately(true);
+            chart->setShowingYUnitsSeparately(true);
+
+            chart->setShowingTimeInCursor(true);
+            chart->setShowingUnitsInCursor(true);
+
+            chart->setShowCursorBackground(true);
+            chart->setCursorBackgroundColor(osg::Vec4(1,1,1,0.95));
+
+            chart->setShowTitle(true);
+
+            std::string title;
+            title += item->text(0).toStdString();
+            title += " [";
+            title += it->second->getValueBaseUnit();
+            title += "]";
+            chart->setTitleText(title);
+            chart->setTitleTextSize(chartTextPrototype->getCharacterHeight());
+            chart->setTitlePosition(Chart::TOP_GRID_CENTER);
+
+            chart->setAutoRefresh(true);
+
+            ChartVisualizer::ChartVisualizerSerie* chartSerieX = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieX.get());
+			ChartVisualizer::ChartVisualizerSerie* chartSerieY = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieY.get());
+			ChartVisualizer::ChartVisualizerSerie* chartSerieZ = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieZ.get());
+			chartSerieX->setColor(osg::Vec4(1,0,0,1));
+			chartSerieY->setColor(osg::Vec4(0,1,0,1));
+			chartSerieZ->setColor(osg::Vec4(0,0,1,1));
+            
+            /*TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+            if(timeline != nullptr) {
+                timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
+                timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serieX));
+                if(channel != nullptr){
+                    channelToVisualizer[channel] = visu;
+                    timeline->setOnChannelDblClick(itemClickAction);
+                }
+            }*/
+
+            vis->getWidget()->setFocusProxy(visu);
+
+            connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+    
+            visu->setMinimumSize(250, 100);
+
+            topMainWindow->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
+            
+		}
+    }
 
 	auto it2 = item2Kinematic.find(item);
 	if (it2 != item2Kinematic.end()) {
@@ -480,16 +612,17 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 
             connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
 
-		//pane->addDockWidget(Qt::RightDockWidgetArea, visualizerWidget);
-			/*pane->setUpdatesEnabled(false);
-			if (currentVisualizer) {
-				pane->layout()->removeWidget(currentVisualizer);
-				delete currentVisualizer;
-			}*/
-			//currentVisualizer = visu;
-			//pane->layout()->addWidget(visu);            
-            pane->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
-			//pane->setUpdatesEnabled(true);
+		////pane->addDockWidget(Qt::RightDockWidgetArea, visualizerWidget);
+		//	/*pane->setUpdatesEnabled(false);
+		//	if (currentVisualizer) {
+		//		pane->layout()->removeWidget(currentVisualizer);
+		//		delete currentVisualizer;
+		//	}*/
+		//	//currentVisualizer = visu;
+		//	//pane->layout()->addWidget(visu);            
+  //          pane->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
+		//	//pane->setUpdatesEnabled(true);
+			topMainWindow->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
         }else{
 
             /*TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
@@ -499,6 +632,22 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
                 timelineDataSeries.insert(serie);
             }*/
         }
+	}
+}
+
+void HmmMainWindow::extractScalarChannels( VectorChannelConstPtr v, ScalarChannelPtr& x, ScalarChannelPtr& y, ScalarChannelPtr& z )
+{
+	int samplesPS = v->getSamplesPerSecond();
+	x = ScalarChannelPtr(new ScalarChannel(samplesPS));
+	y = ScalarChannelPtr(new ScalarChannel(samplesPS));
+	z = ScalarChannelPtr(new ScalarChannel(samplesPS));
+
+	unsigned int count = static_cast<unsigned int>(samplesPS * v->getLength());
+	for (unsigned int i = 0; i < count; i++) {
+		osg::Vec3 point = (*v)[i].second;
+		x->addPoint(point[0]);
+		y->addPoint(point[1]);
+		z->addPoint(point[2]);
 	}
 }
 

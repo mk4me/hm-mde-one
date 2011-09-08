@@ -23,10 +23,16 @@ void TrajectoriesDialog::setMarkers( MarkerCollectionConstPtr markers )
 	tree->setHeaderLabels(headers);
 
 	int count = markers->getNumChannels();
+
+	tree->setSelectionMode(QAbstractItemView::MultiSelection);
+
+	
 	for (int i = 0; i < count; i++) {
 		QTreeWidgetItem* item = new QTreeWidgetItem();
 		
 		item->setText(0, markers->getChannel(i)->getName().c_str());
+		
+		item->setFlags(item->flags() | Qt::ItemIsSelectable);
 		tree->addTopLevelItem(item);
 
 		QCheckBox* check1 = new QCheckBox(tree);
@@ -88,7 +94,7 @@ QTreeWidgetItem* TrajectoriesDialog::getItemWhichContains( QObject* object ) con
 			}
 		}
 	}
-	throw std::runtime_error("Treeitem not found");
+	throw std::runtime_error("Tree item not found");
 }
 
 void TrajectoriesDialog::setButtonColor( QPushButton* button, const QColor& color )

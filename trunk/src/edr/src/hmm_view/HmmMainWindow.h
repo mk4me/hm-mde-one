@@ -39,6 +39,8 @@ private slots:
 
 private:
 
+	void extractScalarChannels(VectorChannelConstPtr v, ScalarChannelPtr& x, ScalarChannelPtr& y, ScalarChannelPtr& z);
+
     class ItemDoubleClick
     {
     public:

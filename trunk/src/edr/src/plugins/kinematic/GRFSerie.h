@@ -38,12 +38,8 @@ protected:
 		UTILS_ASSERT(data->getTypeInfo() == typeid(GRFCollection));
 		grfCollection = data->get();
 		if (grfCollection->getPlatforms().size() == 2) {
-			f1[0] = grfCollection->getChannel("Fx1");
-			f1[1] = grfCollection->getChannel("Fy1");
-			f1[2] = grfCollection->getChannel("Fz1");
-			f2[0] = grfCollection->getChannel("Fx2");
-			f2[1] = grfCollection->getChannel("Fy2");
-			f2[2] = grfCollection->getChannel("Fz2");
+			f1 = grfCollection->getGRFChannel(GRFChannel::F1);
+			f2 = grfCollection->getGRFChannel(GRFChannel::F2);
 			visualizer->transformNode->addChild(createPlatformsGroup(grfCollection->getPlatforms()));
 			visualizer->transformNode->addChild(createButterfly(grfCollection));
 			visualizer->transformNode->addChild(createArrow());
@@ -72,8 +68,8 @@ protected:
 	{
 		const float treshold = 0.01f;
 		float t = static_cast<float>(time);
-		osg::Vec3 v1((*f1[0])[t], (*f1[1])[t], (*f1[2])[t]);
-		osg::Vec3 v2((*f2[0])[t], (*f2[1])[t], (*f2[2])[t]);
+		osg::Vec3 v1((*f1)[t]);
+		osg::Vec3 v2((*f2)[t]);
 		v1 *= grfScale;
 		v2 *= grfScale;
 		osg::Vec3 origin1 = grfCollection->getPlatforms()[0]->getCenter();
@@ -111,8 +107,8 @@ private:
 	osg::ref_ptr<osg::Geometry> arrowLines2;
 	osg::ref_ptr<osg::ShapeDrawable> platform1;
 	osg::ref_ptr<osg::ShapeDrawable> platform2;
-	GRFChannelConstPtr f1[3];
-	GRFChannelConstPtr f2[3];
+	GRFChannelConstPtr f1;
+	GRFChannelConstPtr f2;
 };
 
 
