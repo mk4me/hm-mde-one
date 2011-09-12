@@ -74,9 +74,14 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 # UI
 # set(TARGET_UI
 # )
+set(TARGET_UI
+	ui/TrajectoriesDialog.ui
+)
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
 set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
+
+
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek

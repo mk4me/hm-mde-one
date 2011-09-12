@@ -32,8 +32,11 @@ public:
 	void setColor(const std::string& name, const osg::Vec4& color);
 
 	void setLineWidth(const std::string& name, float width);
-
-
+	float getLineWidth(const std::string& name) const;
+	
+	std::pair<float, float> getTimes(const std::string& name) const;
+	void setTimes(const std::string& name, const std::pair<float, float>& times);
+	
 private:
 	void createTrajectories(MarkerCollectionConstPtr markers);
 
@@ -41,7 +44,10 @@ private:
 	 osg::ref_ptr<osg::Group> node;
 	 int density;
 	 osg::Vec4 color;
+	 
 	 std::map<std::string, GeodePtr> trajectoriesMap;
+	 std::map<std::string, std::pair<float, float> > timesMap;
+	 std::map<std::string, float> thicknessMap;
 };
 typedef boost::shared_ptr<TrajectoryDrawer> TrajectoryDrawerPtr;
 typedef boost::shared_ptr<const TrajectoryDrawer> TrajectoryDrawerConstPtr;

@@ -31,6 +31,8 @@ public:
 		  TrajectoryDrawerPtr t(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.5f), 300));
 		  trajectoryDrawer = t;
 		  dialog = new TrajectoriesDialog(visualizer->widget, trajectoryDrawer);
+		  dialog->setWindowFlags(Qt::Tool);
+		  dialog->setWindowTitle("Trajectories");
 	  }
 
 protected:

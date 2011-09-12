@@ -12,16 +12,20 @@
 
 #include <core/IVisualizer.h>
 #include <osg/Geode>
+#include <list>
 #include <timelinelib/IChannel.h>
 #include "KinematicVisualizer.h"
 
-const float grfScale = -0.0008f;
+const float grfScale = 0.0008f;
 
 class GRFSerie : public core::IVisualizer::SerieBase, public timeline::IChannel
 {
 public:
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;
 	typedef osg::ref_ptr<osg::Group> GroupPtr;
+	typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
+	typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
+	typedef osg::ref_ptr<osg::ShapeDrawable> ShapeDrawablePtr;
 
 public:
 	GRFSerie(KinematicVisualizer * visualizer) : 
@@ -33,20 +37,7 @@ public:
 protected:
 	virtual void setSerieName(const std::string & name){}			
 
-	virtual void setSerieData(const core::ObjectWrapperConstPtr & data)
-	{
-		UTILS_ASSERT(data->getTypeInfo() == typeid(GRFCollection));
-		grfCollection = data->get();
-		if (grfCollection->getPlatforms().size() == 2) {
-			f1 = grfCollection->getGRFChannel(GRFChannel::F1);
-			f2 = grfCollection->getGRFChannel(GRFChannel::F2);
-			visualizer->transformNode->addChild(createPlatformsGroup(grfCollection->getPlatforms()));
-			visualizer->transformNode->addChild(createButterfly(grfCollection));
-			visualizer->transformNode->addChild(createArrow());
-		} else {
-			grfCollection.reset();
-		}
-	}
+	virtual void setSerieData(const core::ObjectWrapperConstPtr & data);
 
 	//! \return Sklonowane dane w kanale
 	virtual timeline::IChannelPtr clone() const
@@ -64,51 +55,107 @@ protected:
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
-	virtual void setTime(double time)
-	{
-		const float treshold = 0.01f;
-		float t = static_cast<float>(time);
-		osg::Vec3 v1((*f1)[t]);
-		osg::Vec3 v2((*f2)[t]);
-		v1 *= grfScale;
-		v2 *= grfScale;
-		osg::Vec3 origin1 = grfCollection->getPlatforms()[0]->getCenter();
-		osg::Vec3 origin2 = grfCollection->getPlatforms()[1]->getCenter();
-		(*arrow1)[0] = v1 + origin1;
-		(*arrow1)[1] = origin1;
-		(*arrow2)[0] = v2 + origin2;
-		(*arrow2)[1] = origin2;
+	virtual void setTime(double time);
 
-		if (v1.length2() > treshold) {	
-			arrowLines1->setVertexArray(arrow1);
-			platform1->setColor(osg::Vec4(0.4f, 0.4f, 0.0f, 1.0f));
-		} else {
-			platform1->setColor(osg::Vec4(0.5f, 0.5f, 0.3f, 1.0f));
-		}
-		if (v2.length2() > treshold) {
-			arrowLines2->setVertexArray(arrow2);
-			platform2->setColor(osg::Vec4(0.4f, 0.4f, 0.0f, 1.0f));
-		} else {
-			platform2->setColor(osg::Vec4(0.5f, 0.5f, 0.3f, 1.0f));
-		}
-	}
+private:
+	struct Arrow 
+	{
+		TransformPtr mainPtr;
+		TransformPtr boxPtr;
+		TransformPtr conePtr;
+		ShapeDrawablePtr boxShape; 
+		ShapeDrawablePtr coneShape;
+		void setArrow(osg::Vec3 from, osg::Vec3 to);
+		void setColor(const osg::Vec4& color);
+		const osg::Vec4& getColor() const;
+	};
+	typedef boost::shared_ptr<Arrow> ArrowPtr;
+	typedef boost::shared_ptr<const Arrow> ArrowConstPtr;
+
+	friend class GhostStack;
+	class GhostStack
+	{
+	public:
+		typedef std::pair<osg::Vec3, osg::Vec3> ArrowState;
+
+		GhostStack(int maxSize, GroupPtr hookNode, const osg::Vec4& color ) :
+		  maxSize(maxSize) ,
+		  hookNode(hookNode),
+		  color(color)
+		  {
+			  UTILS_ASSERT(maxSize > 0);
+			  for (int i = 0; i < maxSize; i++) {
+				 freeArrows.push_back(createArrow());
+			  }
+		  }
+
+		 void addState(const ArrowState& state)
+		 {
+			 int no = takenArrows.size();
+			 if (no < maxSize) {
+				 ArrowPtr a = *freeArrows.begin();
+				 freeArrows.pop_front();
+				 a->setArrow(state.first, state.second);
+				 a->setColor(color);
+				 hookNode->addChild(a->mainPtr);
+				 takenArrows.push_back(a);
+			 } else {
+				 ArrowPtr a = *takenArrows.begin();
+				 takenArrows.pop_front();
+				 takenArrows.push_back(a);
+				 a->setArrow(state.first, state.second);
+			 }
+		 }
+
+		 void update()
+		 {
+			 float delta = 1.0f / static_cast<float>(maxSize);
+			 
+			 for (auto it = takenArrows.begin(); it != takenArrows.end(); it++) {
+				 ArrowPtr a = *it;
+				 const osg::Vec4& color = a->getColor();
+				 float alpha = color[3] - delta;
+				 if (alpha > 0) {
+					a->mainPtr->setNodeMask(0xffff);
+					a->setColor(osg::Vec4(color[0], color[1], color[2], alpha));
+				 } else {
+					a->mainPtr->setNodeMask(0);
+					freeArrows.push_back(a);
+					auto toErase = it;
+					it++;
+					takenArrows.erase(toErase);
+					if (it == takenArrows.end() || takenArrows.size() == 0) {
+						break;
+					}
+				 }
+			 }
+		 }
+
+	private:
+		osg::Vec4 color;
+		std::list<ArrowPtr> freeArrows;
+		std::list<ArrowPtr> takenArrows;
+		GroupPtr hookNode;
+		int maxSize;
+	};
+	typedef boost::shared_ptr<GhostStack> GhostStackPtr;
+	typedef boost::shared_ptr<const GhostStack> GhostStackConstPtr;
 
 private:
 	GroupPtr createPlatformsGroup(const c3dlib::ForcePlatformCollection& platforms);
-	GroupPtr createButterfly(GRFCollectionConstPtr grf) const;
-	GroupPtr createArrow();
-
+	GroupPtr createButterfly(GRFCollectionConstPtr grf, float& maxLength) const;
+	static ArrowPtr createArrow();
+	
 private:
 	KinematicVisualizer * visualizer;
 	GRFCollectionPtr grfCollection;
-	osg::ref_ptr<osg::Vec3Array> arrow1;
-	osg::ref_ptr<osg::Vec3Array> arrow2;
-	osg::ref_ptr<osg::Geometry> arrowLines1;
-	osg::ref_ptr<osg::Geometry> arrowLines2;
 	osg::ref_ptr<osg::ShapeDrawable> platform1;
 	osg::ref_ptr<osg::ShapeDrawable> platform2;
 	GRFChannelConstPtr f1;
 	GRFChannelConstPtr f2;
+	float maxLength;
+	ArrowPtr a1, a2;
+	GhostStackPtr g1, g2;
 };
 
 

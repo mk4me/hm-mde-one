@@ -47,6 +47,10 @@ struct C3DLIB_EXPORT ForcePlatform
 	float getLength() const {
 		return (corners[1] - corners[2]).length();
 	}
+
+	float getDistanceToCenter(const osg::Vec3& vec) const {
+		return (getCenter() - vec).length();
+	}
 };
 typedef boost::shared_ptr<ForcePlatform> ForcePlatformPtr;
 typedef boost::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;

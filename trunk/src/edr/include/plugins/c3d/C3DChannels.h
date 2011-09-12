@@ -183,19 +183,21 @@ typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 //! Kanal GRF
 class GRFChannel : public VectorChannel
 {
+friend class C3DParser;
 public:
 	enum Type { Unknown, F1, M1, F2, M2 };
 
 public:
-    explicit GRFChannel(int samplesPerSec) :
+    explicit GRFChannel(int samplesPerSec, float treshold = 100.0f) :
     VectorChannel(samplesPerSec) ,
-	type(Unknown)
+	type(Unknown),
+	treshold(treshold)
     {}
     GRFChannel(const GRFChannel& channel) :
     VectorChannel(channel),
 	type(channel.type)
     {}
-    GRFChannel(const c3dlib::C3DParser& data, int channelNo);
+    GRFChannel(const c3dlib::C3DParser& data, int channelNo, float treshold = 100.0f);
 
 public:
     virtual GRFChannel* clone() const
@@ -204,9 +206,19 @@ public:
     }
 
 	GRFChannel::Type getType() const { return type; }
+
+	bool hasStartEndData() const { return dataStart >= 0.0f && dataEnd >= 0.0f; }
+	float getDataStartTime() const { UTILS_ASSERT(dataStart >= 0.0f); return dataStart; }
+	float getDataEndTime() const { UTILS_ASSERT(dataEnd >= 0.0f); return dataEnd; }
+	
+	osg::Vec3 getEndPoint() const { UTILS_ASSERT(dataStart >= 0.0f); return endPoint; }
+	osg::Vec3 getStartPoint() const { UTILS_ASSERT(dataEnd >= 0.0f); return startPoint; }
 	
 private:
 	Type type;
+	float treshold;
+	float dataStart, dataEnd;
+	osg::Vec3 startPoint, endPoint;
 	
 };
 typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
@@ -259,8 +271,19 @@ typedef boost::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 class MarkerCollection : public utils::DataChannelCollection<MarkerChannel>
 {
 public:
-	virtual std::string getMarkerName(int markerNo) const {
+	virtual const std::string& getMarkerName(int markerNo) const {
 		return this->getChannel(markerNo)->getName();
+	}
+
+	MarkerChannelConstPtr tryGetChannelByName(const std::string& name) {
+		for (int i = this->getNumChannels() - 1; i >= 0; --i) {
+			if (getMarkerName(i) == name) {
+				return this->getChannel(i);
+			}
+		}
+
+		MarkerChannelConstPtr empty;
+		return empty;
 	}
 };
 typedef core::shared_ptr<MarkerCollection> MarkerCollectionPtr;

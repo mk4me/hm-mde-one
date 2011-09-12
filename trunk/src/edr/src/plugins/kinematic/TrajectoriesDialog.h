@@ -16,9 +16,10 @@
 #include <timelinelib/IChannel.h>
 #include "KinematicVisualizer.h"
 #include "TrajectoriesDrawer.h"
+#include "ui_TrajectoriesDialog.h"
 
 
-class TrajectoriesDialog : public QDialog
+class TrajectoriesDialog : public QDialog, private Ui::TrajectoriesDialog
 {
 	Q_OBJECT;
 public:
@@ -32,6 +33,9 @@ private slots:
 	void colorClicked();
 	void visibilityChanged(bool visible);
 	void widthChanged(double width);
+	void startTimeChanged(double time);
+	void endTimeChanged(double time);
+	void treeItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous );
 
 private:
 	QColor transformColor(const osg::Vec4& color) const;
@@ -41,8 +45,6 @@ private:
 
 private:
 	TrajectoryDrawerPtr trajectories;
-	QTableView* table;
-	QTreeWidget* tree;
 };
 
 

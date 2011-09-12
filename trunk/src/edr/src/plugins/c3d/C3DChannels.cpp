@@ -42,22 +42,43 @@ VectorChannel( data.getPointFrequency())
 	setName(point->getLabel());
 }
 
-GRFChannel::GRFChannel( const c3dlib::C3DParser& data, int channelNo ) :
+GRFChannel::GRFChannel( const c3dlib::C3DParser& data, int channelNo, float treshold) :
 	VectorChannel(static_cast<int>(data.getNumberAnalogSamplePerFrame() * data.getPointFrequency())),
-	type(Unknown)
+	type(Unknown),
+	dataStart(-1.0f),
+	dataEnd(-1.0f),
+	treshold(treshold)
 {
 	if ( data.getNumAnalogFrames() == 0) {
 		throw std::runtime_error("Incorrect number of frames.");
 	}
 
+	float treshold2 = treshold * treshold;
+
 	c3dlib::C3DParser::IAnalogConstPtr x = data.getAnalog(3 * channelNo + 0);
 	c3dlib::C3DParser::IAnalogConstPtr y = data.getAnalog(3 * channelNo + 1);
 	c3dlib::C3DParser::IAnalogConstPtr z = data.getAnalog(3 * channelNo + 2);
 
+	bool dataStartSet = false;
+	bool dataEndSet = false;
+
+	int startIndex, endIndex;
 
 	int numSamples = data.getNumAnalogFrames();
 	for (int i = 0; i < numSamples; i++) {
-		addPoint(osg::Vec3(x->getValue(i), y->getValue(i), z->getValue(i)));
+		osg::Vec3 val = osg::Vec3(x->getValue(i), y->getValue(i), z->getValue(i));
+		if (val.length2() > treshold2) {
+			if (!dataStartSet) {
+				dataStartSet = true;
+				startIndex = i;
+			}
+		} else {
+			if (dataStartSet && !dataEndSet) {
+				endIndex = i;
+				dataEndSet = true;
+			}
+		}
+		addPoint(val);
 	}
 
 	std::string name = x->getLabel();
@@ -73,6 +94,13 @@ GRFChannel::GRFChannel( const c3dlib::C3DParser& data, int channelNo ) :
 	//std::string name = x->getLabel().erase( remove( str.begin(), str.end(), 'x' ), str.end() );
 	setName(name);
 	setValueBaseUnit(x->getUnit());
+
+	if (dataStartSet) {
+		dataStart = (startIndex / static_cast<float>(numSamples)) * getLength();
+	}
+	if (dataEndSet) {
+		dataEnd = (endIndex / static_cast<float>(numSamples)) * getLength();
+	}
 
 	switch (channelNo) {
 		case 0:		type = F1;		break;

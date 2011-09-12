@@ -7,7 +7,6 @@ void TrajectoryDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
 {
 	UTILS_ASSERT(scheme && scheme->hasMarkers());
 	OsgSchemeDrawer::init(scheme);
-
 	node = new osg::Group;
 	createTrajectories(scheme->getMarkers());
 }
@@ -33,10 +32,10 @@ osg::ref_ptr<osg::Node> TrajectoryDrawer::getNode()
 }
 
 
-TrajectoryDrawer::TrajectoryDrawer( const osg::Vec4& color, int density )
+TrajectoryDrawer::TrajectoryDrawer( const osg::Vec4& color, int density ) :
+	color(color),
+	density(density)
 {
-	this->color = color;
-	this->density = density;
 }
 
 
@@ -44,9 +43,11 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 {
 	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
 	colors->push_back(color);
-	
-	
 
+	std::pair<float, float> times;
+	times.first = 0.0f;
+	times.second = markers->getLength();
+	
 	for (int i = markers->getNumChannels() - 1; i >= 0; --i) {
 		MarkerChannelConstPtr channel = markers->getChannel(i);
 
@@ -74,11 +75,16 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 		lines->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, vertices->size()));
 
 		trajectoriesMap[channel->getName()] = geode;
+		timesMap[channel->getName()] = times;
+		thicknessMap[channel->getName()] = 1.0f;
+
 		geode->addDrawable(lines);
 		
 		node->addChild(geode);
 		geode->setNodeMask(0);
 	}
+
+
 }
 
 void TrajectoryDrawer::setVisible( const std::string& name, bool visible)
@@ -118,6 +124,7 @@ void TrajectoryDrawer::setColor( const std::string& name, const osg::Vec4& color
 
 void TrajectoryDrawer::setLineWidth( const std::string& name, float width )
 {
+	thicknessMap[name] = width;
 	GeodePtr ptr = trajectoriesMap[name];
 	osg::StateSet* stateset = ptr->getStateSet();
 
@@ -125,4 +132,48 @@ void TrajectoryDrawer::setLineWidth( const std::string& name, float width )
 	linewidth->setWidth(width);
 	stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
 	//ptr->setStateSet(stateset);
+}
+
+
+float TrajectoryDrawer::getLineWidth( const std::string& name ) const
+{
+	auto it = thicknessMap.find(name);
+	if (it != thicknessMap.end()) {
+		return it->second;
+	}
+
+	throw std::runtime_error("Wrong marker name");
+}
+
+
+std::pair<float, float> TrajectoryDrawer::getTimes( const std::string& name ) const
+{
+	auto it = timesMap.find(name);
+	if (it != timesMap.end()) {
+		return it->second;
+	}
+
+	throw std::runtime_error("Wrong marker name");
+}
+
+void TrajectoryDrawer::setTimes( const std::string& name, const std::pair<float, float>& times )
+{
+	timesMap[name] = times;
+	GeodePtr ptr = trajectoriesMap[name];
+	try {
+		osg::Geometry* geometry = ptr->getDrawable(0)->asGeometry();
+		
+		float length = OsgSchemeDrawer::getVisualiztionScheme()->getDuration();
+		
+		const osg::Array* vertices = geometry->getVertexArray();
+		int start = static_cast<int>(vertices->getNumElements() * (times.first / length));
+		start = start - (start % 4);
+		int end = static_cast<int>(vertices->getNumElements() * (times.second / length));
+		if (end > start) {
+			geometry->removePrimitiveSet(0);
+			geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, start, end - start));
+		}
+	} catch (...) {
+		int i = 0;
+	}
 }

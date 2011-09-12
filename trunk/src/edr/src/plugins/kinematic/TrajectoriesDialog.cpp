@@ -2,57 +2,42 @@
 #include "TrajectoriesDialog.h"
 #include <QtGui/QTableView>
 
-const int columnCount = 4;
+const int columnCount = 2;
 
 TrajectoriesDialog::TrajectoriesDialog( QWidget* parent, TrajectoryDrawerPtr trajectoryDrawer ) :
 	QDialog(parent),
 	trajectories(trajectoryDrawer)
 {
-	QGridLayout* grid = new QGridLayout(this);
-	tree = new QTreeWidget(this);
-	tree->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	grid->addWidget(tree);
-	setLayout(grid);
+	Ui::TrajectoriesDialog::setupUi(this);
 }
 
 void TrajectoriesDialog::setMarkers( MarkerCollectionConstPtr markers )
 {
-	QStringList headers;
-	headers << "Marker" << "Visible" << "Thickness" << "Color";
-	UTILS_ASSERT(columnCount == headers.size());
-	tree->setHeaderLabels(headers);
-
 	int count = markers->getNumChannels();
 
-	tree->setSelectionMode(QAbstractItemView::MultiSelection);
+	//tree->setSelectionMode(QAbstractItemView::MultiSelection);
 
 	
 	for (int i = 0; i < count; i++) {
 		QTreeWidgetItem* item = new QTreeWidgetItem();
 		
-		item->setText(0, markers->getChannel(i)->getName().c_str());
+		item->setText(1, markers->getChannel(i)->getName().c_str());
 		
 		item->setFlags(item->flags() | Qt::ItemIsSelectable);
+		item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
 		tree->addTopLevelItem(item);
 
 		QCheckBox* check1 = new QCheckBox(tree);
-		tree->setItemWidget(item, 1, check1);
-
-		QDoubleSpinBox* spin = new QDoubleSpinBox(tree);
-		spin->setValue(1.0);
-		spin->setSingleStep(0.1);
-		tree->setItemWidget(item, 2, spin);
-
-		QPushButton* button = new QPushButton(tree);
-		setButtonColor(button, QColor(255,255,255,128));
-		tree->setItemWidget(item, 3, button);
-
-		connect(button, SIGNAL(clicked()), this, SLOT(colorClicked()));
+		tree->setItemWidget(item, 0, check1);
 		connect(check1, SIGNAL(clicked(bool)), this, SLOT(visibilityChanged(bool)));
-		connect(spin, SIGNAL(valueChanged ( double  )), this, SLOT(widthChanged(double)));
 	}
 
-	this->setMinimumSize(450, 600);
+	connect(Ui::TrajectoriesDialog::colorButton, SIGNAL(clicked()), this, SLOT(colorClicked()));
+	connect(thicknessSpin, SIGNAL(valueChanged(double)), this, SLOT(widthChanged(double)));
+	connect(startTimeSpin, SIGNAL(valueChanged(double)), this, SLOT(startTimeChanged(double)));
+	connect(endTimeSpin,   SIGNAL(valueChanged(double)), this, SLOT(endTimeChanged(double)));
+	connect(tree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+		    this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 }
 
 void TrajectoriesDialog::onTreeItemClicked( QTreeWidgetItem* item, int column )
@@ -108,33 +93,87 @@ void TrajectoriesDialog::visibilityChanged( bool visible )
 	QCheckBox* box = qobject_cast<QCheckBox*>(sender());
 	if (box) {
 		QTreeWidgetItem* item = getItemWhichContains(box);
-		trajectories->setVisible(item->text(0).toStdString(), visible);
+		item->setSelected(true);
+		trajectories->setVisible(item->text(1).toStdString(), visible);
+
+		int count = tree->topLevelItemCount();
+		for (int i = 0; i < count; i++) {
+			QTreeWidgetItem* itemToDeselect = tree->topLevelItem(i);
+			if (itemToDeselect != item) {
+				itemToDeselect->setSelected(false);
+			}
+		}
+
+		treeItemChanged(item, nullptr);
 	}
+
+
 }
 
 void TrajectoriesDialog::colorClicked()
 {
-	QPushButton* button = qobject_cast<QPushButton*>(sender());
-	if (button) {
-		QTreeWidgetItem* item = getItemWhichContains(button);
-		if (item) {
-			std::string name = item->text(0).toStdString();
-			QColor color = transformColor(trajectories->getColor(name));
-			color = QColorDialog::getColor ( color, this, tr("Choose color"), QColorDialog::ShowAlphaChannel);
+	QColor color;// = transformColor(trajectories->getColor(name));
+	color = QColorDialog::getColor ( color, this, tr("Choose color"), QColorDialog::ShowAlphaChannel);
+	int count = tree->topLevelItemCount();
+	for (int i = 0; i < count; i++) {
+		QTreeWidgetItem* item = tree->topLevelItem(i);
+		if (item && item->isSelected()) {
+			std::string name = item->text(1).toStdString();
 			trajectories->setColor(name, transformColor(color));
-			setButtonColor(button, color);
+			setButtonColor(colorButton, color);
 		}
 	}
 }
 
 void TrajectoriesDialog::widthChanged( double width )
 {
-	QDoubleSpinBox* spin = qobject_cast<QDoubleSpinBox*>(sender());
-	if (spin) {
-		QTreeWidgetItem* item = getItemWhichContains(spin);
-		if (item) {
-			std::string name = item->text(0).toStdString();
+	int count = tree->topLevelItemCount();
+	for (int i = 0; i < count; i++) {
+		QTreeWidgetItem* item = tree->topLevelItem(i);
+		if (item && item->isSelected()) {
+			std::string name = item->text(1).toStdString();
 			trajectories->setLineWidth(name, static_cast<float>(width));
 		}
 	}
+}
+
+void TrajectoriesDialog::startTimeChanged( double time )
+{
+	int count = tree->topLevelItemCount();
+	for (int i = 0; i < count; i++) {
+		QTreeWidgetItem* item = tree->topLevelItem(i);
+		if (item && item->isSelected()) {
+			std::string name = item->text(1).toStdString();
+			const std::pair<float, float>& times = trajectories->getTimes(name);
+			trajectories->setTimes(name, std::make_pair(static_cast<float>(time), times.second));
+		}
+	}
+}
+
+void TrajectoriesDialog::endTimeChanged( double time )
+{
+	int count = tree->topLevelItemCount();
+	for (int i = 0; i < count; i++) {
+		QTreeWidgetItem* item = tree->topLevelItem(i);
+		if (item && item->isSelected()) {
+			std::string name = item->text(1).toStdString();
+			const std::pair<float, float>& times = trajectories->getTimes(name);
+			trajectories->setTimes(name, std::make_pair(times.first, static_cast<float>(time)));
+		}
+	}
+}
+
+void TrajectoriesDialog::treeItemChanged( QTreeWidgetItem * current, QTreeWidgetItem * previous )
+{
+	std::string name = current->text(1).toStdString();
+
+	QColor color = transformColor(trajectories->getColor(name));
+	setButtonColor(colorButton, color);
+
+	const std::pair<float, float>& times = trajectories->getTimes(name);
+	startTimeSpin->setValue(times.first);
+	endTimeSpin->setValue(times.second);
+
+	float thickness = trajectories->getLineWidth(name);
+	thicknessSpin->setValue(thickness);
 }

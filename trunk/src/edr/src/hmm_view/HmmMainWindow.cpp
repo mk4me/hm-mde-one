@@ -362,7 +362,7 @@ void HmmMainWindow::onOpen()
 			int count = videoCollection.size();
 			if (count) {
 				QTreeWidgetItem* videoItem = new QTreeWidgetItem();
-				videoItem->setText(0, "Video");
+				videoItem->setText(0, "Videos");
 				motionItem->addChild(videoItem);			
 				for (int i = 0; i < count; i++) {							
 					QTreeWidgetItem* channelItem = new QTreeWidgetItem();

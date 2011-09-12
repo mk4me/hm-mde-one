@@ -60,7 +60,6 @@ VideoParser::VideoParser() :
 	adapter(core::ObjectWrapper::create<::VideoStream>()),
 	channelWrapper(core::ObjectWrapper::create<VideoChannel>())
 {
-
 }
 
 VideoParser::~VideoParser()

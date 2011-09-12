@@ -29,6 +29,7 @@ void MarkerSerie::setSerieData( const core::ObjectWrapperConstPtr & data )
 void MarkerSerie::trajectoriesDialog()
 {
 	dialog->show();
+	//dialog->exec();
 }
 
 

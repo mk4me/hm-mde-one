@@ -43,16 +43,16 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 	std::string importWarnings;
     parser->importFrom(files, importWarnings);
 
-	GRFCollectionPtr g(new GRFCollection());
+	GRFCollectionPtr grfs(new GRFCollection());
 	for (int i = 0; i < 4; ++i) {
 		GRFChannelPtr ptr(new GRFChannel(*parser , i));
 		GRFChannels[i]->set(ptr);
 		GRFChannels[i]->setName(ptr->getName());
 		GRFChannels[i]->setSource(path.string());
-		g->addChannel(ptr);
+		grfs->addChannel(ptr);
 	}
-	g->setPlatforms(parser->getForcePlatforms());
-	GRFs->set(g, path.filename().string(), path.string());
+	grfs->setPlatforms(parser->getForcePlatforms());
+	GRFs->set(grfs, path.filename().string(), path.string());
 
 	EMGCollectionPtr e(new EMGCollection());
 	for (int i = 12; i < 28; ++i) {
@@ -109,6 +109,59 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 	angleChannels->set(angles, path.filename().string(), path.string());
 	momentChannels->set(moments, path.filename().string(), path.string());
 	powerChannels->set(powers, path.filename().string(), path.string());
+
+	try {
+		GRFChannelPtr f1 = boost::const_pointer_cast<GRFChannel>(grfs->getGRFChannel(GRFChannel::F1));
+		GRFChannelPtr f2 = boost::const_pointer_cast<GRFChannel>(grfs->getGRFChannel(GRFChannel::F2));
+		GRFChannelPtr m1 = boost::const_pointer_cast<GRFChannel>(grfs->getGRFChannel(GRFChannel::M1));
+		GRFChannelPtr m2 = boost::const_pointer_cast<GRFChannel>(grfs->getGRFChannel(GRFChannel::M2));
+		if (f1->hasStartEndData() && f2->hasStartEndData()) {
+			MarkerChannelPtr ltoe = boost::const_pointer_cast<MarkerChannel>(markers->tryGetChannelByName("LTOE"));
+			MarkerChannelPtr rtoe = boost::const_pointer_cast<MarkerChannel>(markers->tryGetChannelByName("RTOE"));
+			MarkerChannelPtr lhee = boost::const_pointer_cast<MarkerChannel>(markers->tryGetChannelByName("LHEE"));
+			MarkerChannelPtr rhee = boost::const_pointer_cast<MarkerChannel>(markers->tryGetChannelByName("RHEE"));
+			auto platforms = grfs->getPlatforms();
+			float startTime1 = f1->getDataStartTime();
+			float endTime1 = f1->getDataEndTime();
+			float startTime2 = f2->getDataStartTime();
+			float endTime2 = f2->getDataEndTime();
+
+			float ltoeDistTo1 = platforms[0]->getDistanceToCenter((*ltoe)[endTime1]);
+			float ltoeDistTo2 = platforms[1]->getDistanceToCenter((*ltoe)[endTime1]);
+			float rtoeDistTo1 = platforms[0]->getDistanceToCenter((*rtoe)[endTime1]);
+			float rtoeDistTo2 = platforms[1]->getDistanceToCenter((*rtoe)[endTime1]);
+
+			float lmin = std::min(ltoeDistTo1, ltoeDistTo2);
+			float rmin = std::min(rtoeDistTo1, rtoeDistTo2);
+
+			if (lmin < rmin) {
+				if (ltoeDistTo1 < ltoeDistTo2) {
+					f1->startPoint = osg::Vec3((*lhee)[startTime1]);
+					f1->endPoint   = osg::Vec3((*ltoe)[endTime1]);
+					f2->startPoint = osg::Vec3((*rhee)[startTime2]);
+					f2->endPoint   = osg::Vec3((*rtoe)[endTime2]);
+				} else {			
+					f1->startPoint = osg::Vec3((*rhee)[startTime2]);
+					f1->endPoint   = osg::Vec3((*rtoe)[endTime2]);
+					f2->startPoint = osg::Vec3((*lhee)[startTime1]);
+					f2->endPoint   = osg::Vec3((*ltoe)[endTime2]);
+				}
+			} else {
+				if (rtoeDistTo1 < rtoeDistTo2) {
+					f1->startPoint = (*rhee)[startTime1];
+					f1->endPoint   = (*rtoe)[endTime1];
+					f2->startPoint = (*lhee)[startTime2];
+					f2->endPoint   = (*ltoe)[endTime2];
+				} else {				
+					f1->startPoint = (*lhee)[startTime2];
+					f1->endPoint   = (*ltoe)[endTime2];
+					f2->startPoint = (*rhee)[startTime1];
+					f2->endPoint   = (*rtoe)[endTime2];
+				}
+			}
+
+		}
+	} catch(...) {}
 }
 
 core::IParser* C3DParser::create()

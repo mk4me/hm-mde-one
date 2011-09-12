@@ -41,8 +41,14 @@ public:
 
 class VideoChannel : public utils::BaseChannel<VideoImageOsgPtr, float, VideoManipulator>
 {
+public:
+	enum View { Unknown, Left, Right, Front, Back };
+
 private:
 	mutable VideoStreamPtr videoStream;
+	View type;
+	
+
 public:
 	VideoChannel(int samplesPerSecond, VideoStreamPtr video) :
 	BaseChannel(samplesPerSecond) ,
@@ -74,6 +80,8 @@ public:
 	VideoStreamConstPtr getVideoStream() const {
 		return videoStream;
 	}
+
+	VideoChannel::View getType() const { return type; }
 
 protected:
 	//! \param time
