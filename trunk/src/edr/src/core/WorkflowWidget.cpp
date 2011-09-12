@@ -15,12 +15,6 @@
 #include "EDRDFSourceNode.h"
 #include "VisualizerWidget.h"
 
-#ifdef _DEBUG
-#define WM_FLAGS osgWidget::WindowManager::WM_PICK_DEBUG
-#else
-#define WM_FLAGS 0
-#endif
-
 WorkflowWidget::WorkflowWidget(WorkflowService* service)
     :   service(service)
 {
@@ -450,21 +444,31 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
     connect(workflowVDFWidget, SIGNAL(customContextMenuRequested(QPoint)), dynamic_cast<QObject*>(workflowVDFModel.get()), SLOT(contextMenuRequestPosition(QPoint)));
 
-    // stworzenie kamery
-    osg::Camera* multiViewCamera = workflowVDFModel->createParentOrthoCamera();
-    multiViewCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
-    multiViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
-    multiViewCamera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    //// stworzenie kamery
+    //osg::Camera* multiViewCamera = workflowVDFModel->createParentOrthoCamera();
+    //multiViewCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
+    //multiViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
+    //multiViewCamera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 
-    osg::ref_ptr<osg::Group> root = new osg::Group();
-    root->addChild(multiViewCamera);
-    workflowVDFWidget->setSceneData(root);
+    // konfiguracja kamery
+    osg::Camera* camera = workflowVDFWidget->getCamera();
+    camera->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF);
+    camera->setProjectionMatrix(osg::Matrix::ortho2D(0.0, double(traits->width), 0.0f, double(traits->height)));
+    camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+    camera->setViewMatrix(osg::Matrix::identity());
+    //camera->setClearColor(Vec4(0.73f, 0.73f, 0.73f, 1));
+
+    //osg::ref_ptr<osg::Group> root = new osg::Group();
+    //root->addChild(multiViewCamera);
+    //workflowVDFWidget->setSceneData(root);
+    workflowVDFWidget->setSceneData(workflowVDFModel);
 
     //workflowVDFWidget->addEventHandler( new core::OsgSceneDumpFileHandler("dump_vdf.txt") );
     workflowVDFWidget->addEventHandler( new osgWidget::MouseHandler(workflowVDFModel) );
-    workflowVDFWidget->addEventHandler( new osgWidget::ResizeHandler(workflowVDFModel, multiViewCamera) );
+    //workflowVDFWidget->addEventHandler( new osgWidget::ResizeHandler(workflowVDFModel, multiViewCamera) );
+    workflowVDFWidget->addEventHandler( new osgWidget::ResizeHandler(workflowVDFModel, camera) );
     workflowVDFWidget->addEventHandler( new osgViewer::StatsHandler );
-    workflowVDFWidget->addEventHandler( new osgGA::StateSetManipulator( workflowVDFWidget->getCamera()->getOrCreateStateSet() ) );
+    //workflowVDFWidget->addEventHandler( new osgGA::StateSetManipulator( workflowVDFWidget->getCamera()->getOrCreateStateSet() ) );
 
     // dodanie do widgeta
     getInnerWidget()->layoutContent->addWidget( workflowVDFWidget );

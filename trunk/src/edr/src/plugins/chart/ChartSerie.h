@@ -13,10 +13,10 @@
 #include <utility>
 #include <osg/Geometry>
 
-
 //! Klasa bazowa dla serii danych wykresów.
 class ChartSerie : public osg::Geometry
 {
+
 protected:
     float x;
     float y;
@@ -50,6 +50,10 @@ public:
     virtual float getValue() const = 0;
     //!
     virtual float getTime() const = 0;
+    //!
+    virtual bool isActive() const = 0;
+    //!
+    virtual void setActive(bool active) = 0;
 
 public:
     //! \return D³ugoœæ zakresu dla X.

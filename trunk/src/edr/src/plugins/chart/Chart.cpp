@@ -100,19 +100,61 @@ Chart::~Chart()
     
 }
 
-bool Chart::addSerie( const ChartSeriePtr& serie )
+const std::string & Chart::getSerieName(const ChartSeriePtr& serie) const
+{
+    auto it = serieNames.find(serie);
+
+    if(it == serieNames.end()){
+        throw std::runtime_error("Serie not exist in Chart");
+    }
+
+    return it->second;
+}
+
+void Chart::setSerieName(const ChartSeriePtr& serie, const std::string & name)
+{
+    auto it = serieNames.find(serie);
+
+    if(it == serieNames.end()){
+        throw std::runtime_error("Serie not exist in Chart");
+    }
+
+    it->second = name;
+
+    setDirty();
+}
+
+bool Chart::addSerie( const ChartSeriePtr& serie, const std::string & name )
 {
     if ( geode->containsDrawable(serie) ) {
         UTILS_FAIL("Kana³ ju¿ jest dodany.");
         return false;
     } else {
-        /*if ( activeSerieIndex < 0 ) {
-            activeSerieIndex = 0;
-        }*/
-        activeSerieIndex++;
+
+        bool noSeries = series.empty();
+
+        std::string newName(name);
+
+        //weryfikuj nazwe serii
+        if(name.empty() == true){
+            //nadajemy nazwe z automatu
+            std::stringstream tmpName;
+
+            tmpName << "Unnamed_" << defaultSerieNameIndex++;
+            newName = tmpName.str();
+        }
+
         // dodajemy do listy i do dzieci
         series.push_back(serie);
-        geode->addDrawable(serie);
+        geode->addDrawable(serie);        
+
+        serieNames[serie] = newName;
+
+        if(noSeries == true){
+            activeSerieIndex = 0;
+            series[0]->setActive(true);
+        }
+
         setDirty();
         return true;
     }
@@ -128,27 +170,21 @@ bool Chart::removeSerie( const ChartSeriePtr& serie )
     if(it != series.end()){
         ret = true;
 
-        if(activeSerieIndex >= 0){
-            if(series[activeSerieIndex] == serie){
-                if(series.size() > 1){
-                    if(activeSerieIndex - 1 >= 0){
-                        activeSerieIndex--;
-                    }else{
-                        activeSerieIndex = 0;
-                    }
-                }else{
-                    activeSerieIndex = -1;
-                }
-            }else{
-                int idx = std::distance(series.begin(), it);
-                if(idx < activeSerieIndex){
-                    activeSerieIndex--;
-                }
-            }
+        if(activeSerieIndex >= 0 && series[activeSerieIndex] == serie){
+            serie->setActive(false);
         }
 
+        serieNames.erase(serie);
         geode->removeDrawable(serie);
         series.erase(it);
+
+        if(series.empty() == false){
+            activeSerieIndex = 0;
+            series[0]->setActive(true);
+        }else{
+            activeSerieIndex = -1;
+        }
+        
         setDirty();
     }
 
@@ -157,17 +193,34 @@ bool Chart::removeSerie( const ChartSeriePtr& serie )
 
 void Chart::removeAllSeries()
 {
+    if(activeSerieIndex >= 0){
+        series[activeSerieIndex]->setActive(false);
+        activeSerieIndex = -1;
+    }
+
     BOOST_FOREACH(ChartSeriePtr chart, series) {
         geode->removeDrawable(chart);
     }
-    series.clear();
-    activeSerieIndex = -1;
+    series.swap(Series());
     setDirty();
 }
 
 int Chart::getNumSeries() const
 {
     return static_cast<int>(series.size());
+}
+
+int Chart::getSerieIndex(const ChartSeriePtr& serie) const
+{
+    int ret = -1;
+    for(int i = 0; i < series.size(); i++){
+        if(series[i] == serie){
+            ret = i;
+            break;
+        }
+    }
+
+    return ret;
 }
 
 int Chart::getActiveSerieIndex() const
@@ -177,7 +230,16 @@ int Chart::getActiveSerieIndex() const
 
 void Chart::setActiveSerie( int currentSerie )
 {
+    if(this->activeSerieIndex >= 0){
+        series[this->activeSerieIndex]->setActive(false);
+    }
+
     this->activeSerieIndex = currentSerie;
+
+    if(activeSerieIndex >= 0){
+        series[activeSerieIndex]->setActive(true);
+    }
+
     setDirty();
 }
 
@@ -304,73 +366,6 @@ void Chart::repositionAll()
 //! Przed wywo³aniem tej metody labelki powinny byæ zaktualizowane!!
 void Chart::getGridLocation(float& x, float& y, float& w, float& h) const
 {
-    //getClientLocation(x,y,w,h);
-
-    //float hDelta = 0;
-    //float xDelta = 0;
-    //float yDelta = 0;
-    //float wDelta = 0;
-
-    //if(isShowingAxisY() == true){
-    //    hDelta = std::max(hDelta, getTextPrototypeHeight() / 2.0f);
-
-    //    if(isAxisYInside() == false){
-    //        //pobierz teoretyczne wymiary i odejmij od ca³ego okna
-    //        xDelta = std::max(xDelta, getYAxisWidth());
-    //    }
-    //}
-
-    //if(isShowingAxisX() == true){
-    //    if(labelsX.empty() == false){
-    //        if(labelsX.front() != nullptr){
-    //            xDelta = std::max(xDelta, osgText::textWidth(*(labelsX.front())) / 2.0f);
-    //        }
-
-    //        if(labelsX.back() != nullptr){
-    //            wDelta = std::max(wDelta, osgText::textWidth(*(labelsX.back())) / 2.0f);
-    //        }
-    //    }
-
-    //    if(isAxisXInside() == false){
-    //        yDelta = std::max(yDelta, getXAxisHeight());
-    //    }
-    //}
-
-    //if(isShowingTitle() == true && getTitleText().empty() == false){
-
-    //    float titleHeight = osgText::textHeight(*titleLabel) + labelsToAxisesOffset;
-
-    //    auto pos = titleLabel->getPosition();
-
-    //    switch(titlePosition)
-    //    {
-    //        case BOTTOM_CHART_CENTER:
-    //        case BOTTOM_GRID_CENTER:
-    //                                    yDelta += titleHeight;
-    //                                    pos.y() = y;
-
-    //                                    break;
-
-    //        case TOP_CHART_CENTER:
-    //        case TOP_GRID_CENTER:
-    //                                    hDelta += titleHeight;
-    //                                    pos.y() = y + h - osgText::textHeight(*titleLabel);
-    //                                    break;
-    //    }
-    //    
-    //    titleLabel->setPosition(pos);
-    //}
-
-    //x += xDelta;
-
-    //// musimy te¿ uwzglêdniæ prawy opis wartoœci na osi X
-    //w -= (wDelta + xDelta);
-
-    //y += yDelta;
-
-    //// musimy tez uwzglêdniæ wysokoœc tekstu górnej wartoœci na osi Y
-
-    //h -= (hDelta + yDelta);
     x = gridPosition.x();
     y = gridPosition.y();
     w = gridPosition.w();
@@ -379,9 +374,6 @@ void Chart::getGridLocation(float& x, float& y, float& w, float& h) const
 
 osg::Vec4 Chart::getGridLocation() const
 {
-    /*osg::Vec4 ret(0,0,0,0);
-    getGridLocation(ret[0], ret[1], ret[2], ret[3]);
-    return ret;*/
     return gridPosition;
 }
 
@@ -558,7 +550,7 @@ void Chart::setGridDensity(int gridDensity)
     UTILS_ASSERT(gridDensity > 0);
 
     if(gridDensity < this->gridDensity){
-        for(int i = gridDensity+1; i < this->gridDensity + 1; i++){
+        for(int i = gridDensity+1; i <= this->gridDensity; i++){
             geode->removeDrawable(labelsX[i]);
             geode->removeDrawable(labelsY[i]);
         }
@@ -708,8 +700,8 @@ void Chart::setLabelPrototype( osgText::Text* prototype )
             geode->removeDrawable(labelsY[i]);
         }
 
-        labelsX.clear();
-        labelsY.clear();
+        labelsX.swap(std::vector< osgText::TextPtr >());
+        labelsY.swap(std::vector< osgText::TextPtr >());
 
         labelsX.resize(gridDensity + 1);
         labelsY.resize(gridDensity + 1);
@@ -750,7 +742,11 @@ void Chart::setLabelPrototype( osgText::Text* prototype )
 
 void Chart::refreshCursor()
 {
-    float zStep = zRange/float(2 + series.size());
+    if(gridPosition.w() <= 0 || gridPosition.z() <= 0){
+        return;
+    }
+
+    float zStep = zRange/float(3 + series.size());
     refreshCursor(z + zRange - zStep, zStep);
 }
 
@@ -837,6 +833,12 @@ void Chart::refreshAll()
     refreshAllLabelsText();
 
     repositionAll();
+
+    //sprawdz czy jest sens odœwie¿aæ
+    if(gridPosition.w() <= 0 || gridPosition.z() <= 0)
+    {
+        return;
+    }
 
     // odstêp miedzy elementami;
     // 2 podane jawnie, bo trzeba zarezerwowaæ wspó³rzêdne dla t³a i osiek
@@ -964,6 +966,17 @@ void Chart::refreshSeries(float & currentZ, float zStep)
     if(w < 0 || h < 0)
     {
         return;
+    }
+
+    //aktualizujemy aktywn¹ seriê
+    BOOST_FOREACH( const ChartSeriePtr& serie, series ) {
+        if(serie == getActiveSerie()){
+            if(serie->isActive() == false){
+                serie->setActive(true);
+            }
+        }else if(serie->isActive() == true){
+            serie->setActive(false);
+        }
     }
 
     if ( normalized ) {
@@ -1326,8 +1339,11 @@ void Chart::refreshCursor( float z, float range )
 {
     using namespace osg;
 
+    bool cursorTextCond = prepareText(cursorText, activeSerieIndex < 0, "cursorText");
+    bool cursorCond = prepareGeometry(cursor, activeSerieIndex < 0, "cursor");
+
     // tekst...
-    if ( prepareText(cursorText, activeSerieIndex < 0, "cursorText") && prepareGeometry(cursor, activeSerieIndex < 0, "cursor")) {
+    if ( cursorTextCond && cursorCond) {
         // okreœlamy miejsce gdzie bêdziemy rysowaæ tekst
         ChartSeriePtr serie = series[activeSerieIndex];
         float x = serie->getPosition().x();
@@ -1447,6 +1463,10 @@ void Chart::refreshCursor( float z, float range )
             vertices->push_back(osg::Vec3(bb.xMax(),bb.yMin(),z));
             vertices->push_back(osg::Vec3(bb.xMax(),bb.yMax(),z));
             cursorBackground->setVertexArray(vertices);
+        }
+    }else{
+        if(showCursorBackground == true && (geode->getDrawableIndex(cursorBackground) < geode->getNumDrawables())){
+            geode->removeDrawable(cursorBackground);
         }
     }
 }

@@ -3,9 +3,11 @@
 
 ChartVisualizer::ChartVisualizer() : 
     name("Chart"), prevActiveSerie(-1),
-    prevTime(0)
+    prevTime(0), activeSerieCombo(new QComboBox())
 {
-
+    activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
+    activeSerieCombo->setEnabled(false);
+    connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
 }
 
 ChartVisualizer::~ChartVisualizer()
@@ -110,26 +112,13 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
     chart->setAutoRefresh(true);
     viewer->setSceneData(chart);
 
-    //// przewidujemy kolory na 10 wykresów...
-    //seriesColors.resize(10);
-    //seriesColors[0] = osg::Vec4(1, 0, 0, 1);
-    //seriesColors[1] = osg::Vec4(0, 1, 0, 1);
-    //seriesColors[2] = osg::Vec4(0, 0, 1, 1);
-    //seriesColors[3] = osg::Vec4(1, 1, 0, 1);
-    //seriesColors[4] = osg::Vec4(0, 1, 1, 1);
-    //seriesColors[5] = osg::Vec4(1, 0, 1, 1);
-    //seriesColors[6] = osg::Vec4(1, 0.5, 0.5, 1);
-    //seriesColors[7] = osg::Vec4(0.5, 1, 0.5, 1);
-    //seriesColors[8] = osg::Vec4(0.5, 0.5, 1, 1);
-    //seriesColors[9] = osg::Vec4(1, 1, 0.5, 1);
-
-
     // dodajemy akcje
     actionNormalized = new QAction("normalize", viewer);
     actionNormalized->setCheckable(true);
     actionNormalized->setChecked( chart->isNormalized() );
     connect(actionNormalized, SIGNAL(triggered(bool)), this, SLOT(setNormalized(bool)));
     actions.push_back(actionNormalized);
+    actions.push_back(activeSerieCombo);
 
     //return widget;
     return viewer;
@@ -162,7 +151,9 @@ core::IVisualizer::SerieBase* ChartVisualizer::createSerie(const core::ObjectWra
     color.r() = (rand()%1000)/999.0f;
     color.g() = (rand()%1000)/999.0f;
     color.b() = (rand()%1000)/999.0f;
-    color.a() = 1.0f;    
+    color.a() = 1.0f; 
+
+    bool noSerie = series.empty();
 
     LineChartSeriePtr lineChart = new LineChartSerie();
     ScalarChannelConstPtr d = data->get();
@@ -172,7 +163,21 @@ core::IVisualizer::SerieBase* ChartVisualizer::createSerie(const core::ObjectWra
     chart->addSerie(lineChart);
 
     ChartVisualizerSerie* serie = new ChartVisualizerSerie(lineChart, this);
+    serie->setName(name);
+    
+    if(noSerie == true){
+        activeSerieCombo->blockSignals(true);
+        activeSerieCombo->clear();
+        activeSerieCombo->addItem(name.c_str());
+        activeSerieCombo->setCurrentIndex(0);
+        activeSerieCombo->blockSignals(false);
+    }else{
+        activeSerieCombo->addItem(name.c_str());
+    }
+
     series.push_back(serie);
+
+    activeSerieCombo->setEnabled(true);
     return serie;
 }
 
@@ -189,9 +194,23 @@ void ChartVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)
         throw std::runtime_error("Given serie dos not belong to this visualizer!");
     }
 
+    activeSerieCombo->blockSignals(true);
+
+    activeSerieCombo->removeItem(chart->getSerieIndex(chSerie->getSerie()));
+
     chart->removeSerie(chSerie->getSerie());
 
     series.erase(it);
+
+    if(series.empty() == true){
+        activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
+        activeSerieCombo->setCurrentIndex(0);
+        activeSerieCombo->setEnabled(false);
+    }else{
+        activeSerieCombo->setCurrentIndex(chart->getActiveSerieIndex());
+    }
+
+    activeSerieCombo->blockSignals(false);
 }
 
 void ChartVisualizer::setNormalized( bool normalized )

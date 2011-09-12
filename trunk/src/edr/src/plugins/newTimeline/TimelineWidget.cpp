@@ -471,6 +471,8 @@ void TimelineWidget::refreshPlayerStatus()
     if(getController()->getLength() > 0){
         slider->setRange(getController()->getModel()->getBeginTime(), getController()->getModel()->getEndTime());
         slider->setValue(getController()->getTime());
+    }else{
+        slider->setValue(slider->minValue());
     }
 
     //ustawiamy czas w oknie edycji textowej

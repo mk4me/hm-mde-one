@@ -11,7 +11,6 @@
 #include <osg/Geode>
 #include <osg/Geometry>
 #include "ChartSerie.h"
-#include <plugins/chart/ChartDataSeries.h>
 #include <plugins/c3d/C3DChannels.h>
 #include "Chart.h"
 
@@ -30,6 +29,8 @@ private:
     ScalarChannelStatsPtr stats;
     //! Znormalizowany kana³
     ScalarChannelPtr normalizedChannel;
+    //!
+    bool active;
 
 public:
     LineChartSerie();
@@ -66,6 +67,10 @@ public:
     virtual float getValue() const;
     //!
     virtual float getTime() const;
+    //!
+    virtual bool isActive() const;
+    //!
+    virtual void setActive(bool active);
 };
 
 typedef osg::ref_ptr<LineChartSerie> LineChartSeriePtr;

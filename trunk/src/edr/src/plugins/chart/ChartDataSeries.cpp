@@ -7,8 +7,9 @@ osg::Geode* ChartDataSeries::drawChart(osg::Vec3Array* chartVertices)
 	osg::Geometry* geom = new osg::Geometry;
 	geom->setVertexArray(chartVertices);
 	if(colors){
-	geom->setColorArray(colors);
-	geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);}
+	    geom->setColorArray(colors);
+	    geom->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE);
+    }
 	geom->addPrimitiveSet(new osg::DrawArrays(GL_LINE_STRIP,0,chartVertices->size()));
     
 	osg::Geode* geode = new osg::Geode;

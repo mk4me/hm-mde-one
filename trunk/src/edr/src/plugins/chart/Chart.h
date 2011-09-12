@@ -49,8 +49,15 @@ public:
     typedef Series::const_iterator const_iterator;
 
 private:
+    //!
+    typedef std::map<ChartSeriePtr, std::string> SerieNames;
+    //!
+    SerieNames serieNames;
+    //!
+    unsigned int defaultSerieNameIndex;
+
     //! Serie danych wykresu.
-    std::vector<ChartSeriePtr> series;
+    Series series;
     //! Bieøπca seria.
     int activeSerieIndex;
 
@@ -200,15 +207,22 @@ public:
     }
 
     //! Dodaje kana≥ do wykres.ug
-    bool addSerie( const ChartSeriePtr& serie );
+    bool addSerie( const ChartSeriePtr& serie, const std::string & serieName = std::string() );
 
     //! UsuniÍcie kana≥ z wykres.ug
     bool removeSerie( const ChartSeriePtr& serie );
+
+    const std::string & getSerieName(const ChartSeriePtr& serie) const;
+
+    void setSerieName(const ChartSeriePtr& serie, const std::string & name);
 
     //! Usuwa wszystkie wykresy.
     void removeAllSeries();
     //! \return Liczba kana≥Ûw.
     int getNumSeries() const;
+
+    //! \return Indeks kana≥u bπdü -1 jeúli kana≥u nie ma.
+    int getSerieIndex(const ChartSeriePtr& serie) const;
 
     //! \return Indeks aktywnego kana≥u bπdü -1.
     int getActiveSerieIndex() const;

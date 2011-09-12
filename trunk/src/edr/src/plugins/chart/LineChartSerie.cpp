@@ -126,6 +126,16 @@ void LineChartSerie::refresh()
     setColorArray(colors);
     setVertexArray(vertices);
 
+    osg::StateSet* stateset = new osg::StateSet;
+    osg::LineWidth* linewidth = new osg::LineWidth();
+
+    if(active == true){
+        linewidth->setWidth(2.0f);
+    }
+
+    stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
+    setStateSet(stateset);
+
     if ( getNumPrimitiveSets() ) {
         setPrimitiveSet(0, primitiveSet);
     } else {
@@ -180,4 +190,15 @@ float LineChartSerie::getTime() const
         throw std::runtime_error("Data not set.");
     }
     return timer->getTime();
+}
+
+bool LineChartSerie::isActive() const
+{
+    return active;
+}
+
+void LineChartSerie::setActive(bool active)
+{
+    this->active = active;
+    tryRefresh();
 }

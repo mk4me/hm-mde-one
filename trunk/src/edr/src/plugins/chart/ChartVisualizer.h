@@ -11,6 +11,7 @@
 
 #include <core/IObjectSource.h>
 #include <QtCore/QObject>
+#include <QtGui/QComboBox>
 #include <osgViewer/Viewer>
 #include <core/IVisualizer.h>
 #include "Chart.h"
@@ -94,8 +95,6 @@ private:
     std::string name;
     //! Viewer osg.
     osg::ref_ptr<osgui::QOsgDefaultWidget> viewer;
-    //! Kolory dla serii danych
-    std::vector<osg::Vec4> seriesColors;
     //! Faktyczny wykres.
     osg::ref_ptr<Chart> chart;
     //!
@@ -107,6 +106,8 @@ private:
 
     //!
     QAction* actionNormalized;
+    //!
+    QComboBox * activeSerieCombo;
 
 public:
     //!
