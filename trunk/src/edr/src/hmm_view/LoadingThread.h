@@ -33,6 +33,7 @@ public:
 private:
 	QString directoryName;
 	int filesToLoad;
+	std::set<QString> filesSended;
 
 private:
 	void onFileLoaded(const core::Filesystem::Path& p, bool loaded);

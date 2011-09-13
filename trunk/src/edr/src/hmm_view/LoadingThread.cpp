@@ -48,6 +48,11 @@ void LoadingThread::run()
 void LoadingThread::onFileLoaded( const core::Filesystem::Path& p, bool loaded )
 {
 	QString txt(p.filename().string().c_str());
-	emit sendFile(txt);
-	emit sendValue(++filesToLoad);
+	auto it = filesSended.find(txt);
+	if (it == filesSended.end()) {
+		emit sendFile(txt);
+		emit sendValue(++filesToLoad);
+		filesSended.insert(txt);
+	}
+	
 }

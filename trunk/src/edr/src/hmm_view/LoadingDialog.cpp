@@ -12,14 +12,16 @@ LoadingDialog::LoadingDialog() :
 	QDialog()
 {
 	Ui::LoadingDialog::setupUi(this);
+	label->setText("");
 }
 
 void LoadingDialog::start( const QString& directoryName )
 {
+	filesLoaded = 0;
 	LoadingThread lt(directoryName);
 	QObject::connect(&lt, SIGNAL(sendFile(const QString&)), this, SLOT(setFile(const QString&)), Qt::QueuedConnection);
 	QObject::connect(&lt, SIGNAL(sendMinMax(int, int)), this, SLOT(setMinMax(int, int)), Qt::QueuedConnection);
-	QObject::connect(&lt, SIGNAL(sendValue(int)), progressBar, SLOT(setValue(int)), Qt::QueuedConnection);
+	//QObject::connect(&lt, SIGNAL(sendValue(int)), progressBar, SLOT(setValue(int)), Qt::QueuedConnection);
 	QObject::connect(&lt, SIGNAL(loadingEnded()), this, SLOT(close()), Qt::QueuedConnection);
 	lt.start();
 	this->exec();
@@ -27,7 +29,7 @@ void LoadingDialog::start( const QString& directoryName )
 
 void LoadingDialog::setValue( int value )
 {
-	progressBar->setValue(0);
+	progressBar->setValue(value);
 }
 
 void LoadingDialog::setMinMax( int min, int max )
@@ -38,7 +40,12 @@ void LoadingDialog::setMinMax( int min, int max )
 
 void LoadingDialog::setFile( const QString& filename )
 {
+	std::string toLog = filename.toStdString();
+	toLog += " ";
+	toLog += boost::lexical_cast<std::string>(filesLoaded);
+	LOG_WARNING (toLog);
 	label->setText(filename);
+	setValue(filesLoaded++);
 }
 
 

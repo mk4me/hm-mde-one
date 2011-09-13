@@ -30,6 +30,9 @@ protected slots:
 	void setValue(int value);
 	void setMinMax(int min, int max);
 	void setFile(const QString& filename);
+
+private:
+	int filesLoaded;
 };
 
 #endif
