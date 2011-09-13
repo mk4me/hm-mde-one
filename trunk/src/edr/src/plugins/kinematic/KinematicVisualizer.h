@@ -63,8 +63,10 @@ private:
     void addAction(const std::string& name, QMenu* menu, QActionGroup* group);
     void refillDrawersMaps();
 
-    private slots:
+	private slots:
         void setAxis(bool xyz);
+
+	public slots:
 		void setLeft();
 		void setRight();
 		void setFront();

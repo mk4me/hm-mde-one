@@ -279,14 +279,14 @@ osg::Node* KinematicVisualizer::debugGetLocalSceneRoot()
 
 void KinematicVisualizer::setLeft()
 {
-	this->cameraManipulator->setHeading(osg::RadiansToDegrees(-90.0));
+	this->cameraManipulator->setHeading(osg::DegreesToRadians(-90.0));
 	this->cameraManipulator->setElevation(0);
 	this->cameraManipulator->setDistance(8);
 }
 
 void KinematicVisualizer::setRight()
 {
-	this->cameraManipulator->setHeading(osg::RadiansToDegrees(90.0));
+	this->cameraManipulator->setHeading(osg::DegreesToRadians(90.0));
 	this->cameraManipulator->setElevation(0);
 	this->cameraManipulator->setDistance(8);
 }
@@ -300,7 +300,7 @@ void KinematicVisualizer::setFront()
 
 void KinematicVisualizer::setBehind()
 {
-	this->cameraManipulator->setHeading(osg::RadiansToDegrees(180.0));
+	this->cameraManipulator->setHeading(osg::DegreesToRadians(180.0));
 	this->cameraManipulator->setElevation(0);
 	this->cameraManipulator->setDistance(8);
 }
@@ -308,14 +308,14 @@ void KinematicVisualizer::setBehind()
 void KinematicVisualizer::setTop()
 {
 	this->cameraManipulator->setHeading(0);
-	this->cameraManipulator->setElevation(osg::RadiansToDegrees(-90.0));
+	this->cameraManipulator->setElevation(osg::DegreesToRadians(-90.0));
 	this->cameraManipulator->setDistance(8);
 }
 
 void KinematicVisualizer::setBottom()
 {
 	this->cameraManipulator->setHeading(0);
-	this->cameraManipulator->setElevation(osg::RadiansToDegrees(90.0));
+	this->cameraManipulator->setElevation(osg::DegreesToRadians(90.0));
 	this->cameraManipulator->setDistance(8);
 }
 
