@@ -9,15 +9,16 @@ TrajectoriesDialog::TrajectoriesDialog( QWidget* parent, TrajectoryDrawerPtr tra
 	trajectories(trajectoryDrawer)
 {
 	Ui::TrajectoriesDialog::setupUi(this);
+	QIcon icon( core::getResourceString("icons/trajectory.png") );
+	QTreeWidgetItem* item = tree->headerItem();
+	item->setIcon(0, icon);
+	item->setText(0, "");
 }
 
 void TrajectoriesDialog::setMarkers( MarkerCollectionConstPtr markers )
 {
 	int count = markers->getNumChannels();
 
-	//tree->setSelectionMode(QAbstractItemView::MultiSelection);
-
-	
 	for (int i = 0; i < count; i++) {
 		QTreeWidgetItem* item = new QTreeWidgetItem();
 		
@@ -32,10 +33,25 @@ void TrajectoriesDialog::setMarkers( MarkerCollectionConstPtr markers )
 		connect(check1, SIGNAL(clicked(bool)), this, SLOT(visibilityChanged(bool)));
 	}
 
+	int maxVal = static_cast<int> (100 * markers->getLength()) - 1;
+	startSlider->setMinimum(0);
+	startSlider->setMaximum(maxVal-1);
+	endSlider->setMinimum(1);
+	endSlider->setMaximum(maxVal);
+	endSlider->setValue(maxVal);
+	startTimeSpin->setMinimum(0);
+	startTimeSpin->setMaximum(markers->getLength() - 0.001f);
+	endTimeSpin->setMinimum(1);
+	endTimeSpin->setMaximum(markers->getLength());
+	endTimeSpin->setValue(markers->getLength());
+
+
 	connect(Ui::TrajectoriesDialog::colorButton, SIGNAL(clicked()), this, SLOT(colorClicked()));
 	connect(thicknessSpin, SIGNAL(valueChanged(double)), this, SLOT(widthChanged(double)));
 	connect(startTimeSpin, SIGNAL(valueChanged(double)), this, SLOT(startTimeChanged(double)));
 	connect(endTimeSpin,   SIGNAL(valueChanged(double)), this, SLOT(endTimeChanged(double)));
+	connect(startSlider,   SIGNAL(valueChanged(int)), this, SLOT(startSliderChanged(int)));
+	connect(endSlider,     SIGNAL(valueChanged(int)), this, SLOT(endSliderChanged(int)));
 	connect(tree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
 		    this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 }
@@ -145,6 +161,10 @@ void TrajectoriesDialog::startTimeChanged( double time )
 		if (item && item->isSelected()) {
 			std::string name = item->text(1).toStdString();
 			const std::pair<float, float>& times = trajectories->getTimes(name);
+			blockAllSignals(true);
+			startTimeSpin->setValue(time);
+			startSlider->setValue(time * 100);
+			blockAllSignals(false);
 			trajectories->setTimes(name, std::make_pair(static_cast<float>(time), times.second));
 		}
 	}
@@ -157,6 +177,10 @@ void TrajectoriesDialog::endTimeChanged( double time )
 		QTreeWidgetItem* item = tree->topLevelItem(i);
 		if (item && item->isSelected()) {
 			std::string name = item->text(1).toStdString();
+			blockAllSignals(true);
+			endTimeSpin->setValue(time);
+			endSlider->setValue(time * 100);
+			blockAllSignals(false);
 			const std::pair<float, float>& times = trajectories->getTimes(name);
 			trajectories->setTimes(name, std::make_pair(times.first, static_cast<float>(time)));
 		}
@@ -169,11 +193,42 @@ void TrajectoriesDialog::treeItemChanged( QTreeWidgetItem * current, QTreeWidget
 
 	QColor color = transformColor(trajectories->getColor(name));
 	setButtonColor(colorButton, color);
-
+	blockAllSignals(true);
 	const std::pair<float, float>& times = trajectories->getTimes(name);
 	startTimeSpin->setValue(times.first);
 	endTimeSpin->setValue(times.second);
-
+	startSlider->setValue(times.first * 100);
+	endSlider->setValue(times.second * 100);
 	float thickness = trajectories->getLineWidth(name);
 	thicknessSpin->setValue(thickness);
+	blockAllSignals(false);
+}
+
+void TrajectoriesDialog::startSliderChanged(int value)
+{
+	if (endSlider->value() > value) {
+		startTimeChanged(value * 0.01f);
+	} else {
+		startSlider->setValue(endSlider->value() - 1);
+	}
+}
+
+void TrajectoriesDialog::endSliderChanged(int value)
+{
+	if (value > startSlider->value()) {
+		endTimeChanged(value * 0.01f);
+	} else {
+		endSlider->setValue(startSlider->value() + 1);
+	}
+}
+
+void TrajectoriesDialog::blockAllSignals( bool val )
+{
+	this->blockSignals(val);
+	startSlider->blockSignals(val);
+	startTimeSpin->blockSignals(val);
+	endTimeSpin->blockSignals(val);
+	endSlider->blockSignals(val);
+	thicknessSpin->blockSignals(val);
+	
 }

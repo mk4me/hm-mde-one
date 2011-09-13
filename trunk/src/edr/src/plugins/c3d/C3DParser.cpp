@@ -141,9 +141,9 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 					f2->startPoint = osg::Vec3((*rhee)[startTime2]);
 					f2->endPoint   = osg::Vec3((*rtoe)[endTime2]);
 				} else {			
-					f1->startPoint = osg::Vec3((*rhee)[startTime2]);
-					f1->endPoint   = osg::Vec3((*rtoe)[endTime2]);
-					f2->startPoint = osg::Vec3((*lhee)[startTime1]);
+					f1->startPoint = osg::Vec3((*rhee)[startTime1]);
+					f1->endPoint   = osg::Vec3((*rtoe)[endTime1]);
+					f2->startPoint = osg::Vec3((*lhee)[startTime2]);
 					f2->endPoint   = osg::Vec3((*ltoe)[endTime2]);
 				}
 			} else {

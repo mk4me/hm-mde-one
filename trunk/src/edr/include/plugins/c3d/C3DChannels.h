@@ -197,7 +197,7 @@ public:
     VectorChannel(channel),
 	type(channel.type)
     {}
-    GRFChannel(const c3dlib::C3DParser& data, int channelNo, float treshold = 100.0f);
+    GRFChannel(const c3dlib::C3DParser& data, int channelNo, float treshold = 200.0f);
 
 public:
     virtual GRFChannel* clone() const

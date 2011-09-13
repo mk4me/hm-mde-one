@@ -84,17 +84,13 @@ private:
 		  color(color)
 		  {
 			  UTILS_ASSERT(maxSize > 0);
-			  for (int i = 0; i < maxSize; i++) {
-				 freeArrows.push_back(createArrow());
-			  }
 		  }
 
 		 void addState(const ArrowState& state)
 		 {
 			 int no = takenArrows.size();
 			 if (no < maxSize) {
-				 ArrowPtr a = *freeArrows.begin();
-				 freeArrows.pop_front();
+				 ArrowPtr a = createArrow();
 				 a->setArrow(state.first, state.second);
 				 a->setColor(color);
 				 hookNode->addChild(a->mainPtr);
@@ -104,12 +100,13 @@ private:
 				 takenArrows.pop_front();
 				 takenArrows.push_back(a);
 				 a->setArrow(state.first, state.second);
+				 a->setColor(color);
 			 }
 		 }
 
 		 void update()
 		 {
-			 float delta = 1.0f / static_cast<float>(maxSize);
+			 float delta = color[3] / static_cast<float>(maxSize);
 			 
 			 for (auto it = takenArrows.begin(); it != takenArrows.end(); it++) {
 				 ArrowPtr a = *it;
@@ -120,20 +117,13 @@ private:
 					a->setColor(osg::Vec4(color[0], color[1], color[2], alpha));
 				 } else {
 					a->mainPtr->setNodeMask(0);
-					freeArrows.push_back(a);
-					auto toErase = it;
-					it++;
-					takenArrows.erase(toErase);
-					if (it == takenArrows.end() || takenArrows.size() == 0) {
-						break;
-					}
 				 }
 			 }
 		 }
 
 	private:
 		osg::Vec4 color;
-		std::list<ArrowPtr> freeArrows;
+		//std::list<ArrowPtr> freeArrows;
 		std::list<ArrowPtr> takenArrows;
 		GroupPtr hookNode;
 		int maxSize;

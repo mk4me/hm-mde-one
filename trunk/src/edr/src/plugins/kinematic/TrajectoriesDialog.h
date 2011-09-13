@@ -36,12 +36,15 @@ private slots:
 	void startTimeChanged(double time);
 	void endTimeChanged(double time);
 	void treeItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous );
+	void startSliderChanged(int value);
+	void endSliderChanged(int value);
 
 private:
 	QColor transformColor(const osg::Vec4& color) const;
 	osg::Vec4 transformColor(const QColor& color) const;
 	QTreeWidgetItem* getItemWhichContains(QObject* object) const;
 	void setButtonColor(QPushButton* button, const QColor& color);
+	void blockAllSignals(bool val);
 
 private:
 	TrajectoryDrawerPtr trajectories;

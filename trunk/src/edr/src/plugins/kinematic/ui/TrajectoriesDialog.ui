@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>183</width>
-    <height>542</height>
+    <width>179</width>
+    <height>569</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,11 @@
      </attribute>
      <column>
       <property name="text">
-       <string>Visible</string>
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../../core/ui/Icons.qrc">
+        <normaloff>:/resources/icons/trajectory.png</normaloff>:/resources/icons/trajectory.png</iconset>
       </property>
      </column>
      <column>
@@ -45,7 +49,7 @@
      <property name="title">
       <string>Properties</string>
      </property>
-     <layout class="QFormLayout" name="formLayout">
+     <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QLabel" name="colorLabel">
         <property name="text">
@@ -88,17 +92,31 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="endTimeLabel">
         <property name="text">
          <string>End Time</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="4" column="1">
        <widget class="QDoubleSpinBox" name="endTimeSpin">
         <property name="singleStep">
          <double>0.100000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QSlider" name="endSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QSlider" name="startSlider">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
@@ -107,6 +125,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../../core/ui/Icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

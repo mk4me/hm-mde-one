@@ -5,7 +5,7 @@ using namespace osg;
 using namespace boost;
 using namespace std;
 
-const osg::Vec3 arrowScale(0.03f, 0.03f, 1.0f);
+const osg::Vec3 arrowScale(0.01f, 0.01f, 1.0f);
 // prog dla ktorego sensowne jest wizualizowanie odczytow GRF
 const float treshold = 0.01f;
 
@@ -202,7 +202,7 @@ void GRFSerie::setTime( double time )
 			a1->mainPtr->setNodeMask(0xffff);
 			a1->setArrow(origin1, v1 + origin1);	
 			a1->setColor(c1);
-			//g1->addState(std::make_pair(origin1, v1 + origin1));
+			g1->addState(std::make_pair(origin1, v1 + origin1));
 			platform1->setColor(osg::Vec4(0.4f, 0.4f, 0.0f, 1.0f));
 		} else {
 			a1->mainPtr->setNodeMask(0);
@@ -214,15 +214,15 @@ void GRFSerie::setTime( double time )
 			a2->setColor(c2);
 			a2->setArrow(origin2, v2 + origin2);
 			a2->mainPtr->setNodeMask(0xffff);
-			//g2->addState(std::make_pair(origin2, v2 + origin2));
+			g2->addState(std::make_pair(origin2, v2 + origin2));
 			platform2->setColor(osg::Vec4(0.4f, 0.4f, 0.0f, 1.0f));
 		} else {
 			a2->mainPtr->setNodeMask(0);
 			platform2->setColor(osg::Vec4(0.5f, 0.5f, 0.3f, 1.0f));
 		}
 
-		/*g1->update();
-		g2->update();*/
+		g1->update();
+		g2->update();
 	} catch(...) {
 	}
 }
@@ -232,8 +232,8 @@ GRFSerie::ArrowPtr GRFSerie::createArrow()
 	GeodePtr boxGeode = new osg::Geode();
 	GeodePtr coneGeode = new osg::Geode();
 
-	osg::ref_ptr<osg::Box> unitBox = new osg::Box(Vec3(0, 0, 0), 0.5f, 0.5f, 0.8f);
-	osg::ref_ptr<osg::Cone> unitCone = new osg::Cone(Vec3(0, 0, 0), 1.0f, 0.2f);
+	osg::ref_ptr<osg::Box> unitBox = new osg::Box(Vec3(0, 0, 0), 0.5f, 0.5f, 0.9f);
+	osg::ref_ptr<osg::Cone> unitCone = new osg::Cone(Vec3(0, 0, 0), 1.0f, 0.1f);
 	osg::ref_ptr<osg::ShapeDrawable> boxShape = new osg::ShapeDrawable(unitBox);
 	osg::ref_ptr<osg::ShapeDrawable> coneShape = new osg::ShapeDrawable(unitCone);
 
@@ -246,10 +246,10 @@ GRFSerie::ArrowPtr GRFSerie::createArrow()
 
 	transformBox->addChild(boxGeode);
 	transformBox->setName("BOX");
-	transformBox->setPosition(Vec3(0, 0, 0.4f));
+	transformBox->setPosition(Vec3(0, 0, 0.45f));
 	transformCone->addChild(coneGeode);
 	transformCone->setName("CONE");
-	transformCone->setPosition(Vec3(0, 0, 0.4f));
+	transformCone->setPosition(Vec3(0, 0, 0.45f));
 
 	transform->setScale(arrowScale);
 
