@@ -34,8 +34,8 @@ private:
     //! Serie danych utrworzone przez u¿ytkownika
     DataSeries dataSeries;
 
-    //! Serie danych o charakterze czasowym wystêpuj¹ce w timeline
-    DataSeries timelineDataSeries;
+    ////! Serie danych o charakterze czasowym wystêpuj¹ce w timeline
+    //DataSeries timelineDataSeries;
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w³asnoœæ.
@@ -71,9 +71,11 @@ public:
 
     const DataSeries & getDataSeries() const;
 
-    const DataSeries & getTimelineDataSeries() const;
+    /*const DataSeries & getTimelineDataSeries() const;*/
 
     const core::VisualizerSeriePtr & createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name);
+
+    const core::VisualizerSeriePtr & createSerie(const core::VisualizerSerieConstPtr & serie);
 
     void removeSerie(const core::VisualizerSeriePtr & serie);
 

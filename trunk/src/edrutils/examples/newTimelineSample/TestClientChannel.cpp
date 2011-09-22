@@ -8,9 +8,9 @@ namespace timeline{
 
 	}
 
-	IChannelPtr TestClientChannel::clone() const
+	TestClientChannel * TestClientChannel::clone() const
 	{
-		return IChannelPtr(new TestClientChannel(*this));
+		return new TestClientChannel(*this);
 	}
 
 	double TestClientChannel::getLength() const

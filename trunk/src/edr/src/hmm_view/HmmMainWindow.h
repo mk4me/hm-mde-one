@@ -18,8 +18,23 @@
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain
 {
     Q_OBJECT
+
+public:
+
+    typedef std::set<IVisualizerChannelPtr> VisualizerChannels;
+
+private:
+
+    struct DataItemDescription{
+        core::IVisualizer::SerieBase* serie;
+        Visualizer* visualizer;
+        VisualizerWidget* wisualizerWidget;
+    };
+
 public:
 	HmmMainWindow();
+
+    virtual ~HmmMainWindow();
 
 public:
 	//! Natywne dodanie opcji do menu.
@@ -35,9 +50,13 @@ private slots:
 	void setTop(int size);
 	void setBottom(int size);
 	void onTreeItemClicked(QTreeWidgetItem *item, int column);
-    void visualizerGainedFocus();
+    void visualizerFocusChanged(bool focus);
+    void onTreeContextMenu(const QPoint & pos);
+    void createNewVisualizer();
 
 private:
+
+    bool isDataItem(QTreeWidgetItem * item);
 
 	void extractScalarChannels(VectorChannelConstPtr v, ScalarChannelPtr& x, ScalarChannelPtr& y, ScalarChannelPtr& z);
 
@@ -93,9 +112,10 @@ private:
 
             if(VisualizerManager::getInstance()->existVisualizerForType(typeid(*(it->second).get())) == true){
 			    VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(*(it->second).get()));
-                ObjectWrapperPtr wrapper = ObjectWrapper::create<T>();
+                //ObjectWrapperPtr wrapper = ObjectWrapper::create<T>();
+                ObjectWrapperPtr wrapper = ObjectWrapper::create<ScalarChannelReaderInterface>();
                 //Ptr ()
-                wrapper->set(boost::dynamic_pointer_cast<T>(boost::const_pointer_cast<T>(it->second)));
+                wrapper->set(core::const_pointer_cast<ScalarChannelReaderInterface>(core::dynamic_pointer_cast<const ScalarChannelReaderInterface>(it->second)));
                 static std::string prefix = typeid(T).name();
                 // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
                 prefix += "_";
@@ -177,23 +197,27 @@ private:
                     chartSerie->setColor(osg::Vec4(0.5,0,1,1));
                 }
 
-                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
-                if(timeline != nullptr) {
-                    timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
-                    timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serie));
-                    if(channel != nullptr){
-                        channelToVisualizer[channel] = visu;
-                        timeline->setOnChannelDblClick(itemClickAction);
-                    }
-                }
-
                 vis->getWidget()->setFocusProxy(visu);
 
-                connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+                connect(visu, SIGNAL(focuseChanged(bool)), this, SLOT(visualizerFocusChanged(bool)));
     
                 visu->setMinimumSize(250, 100);
 
                 topMainWindow->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
+
+                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+                if(timeline != nullptr) {
+
+                    VisualizerChannelPtr channel(new VisualizerChannel(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie), visu));
+
+                    try{
+                        timeline->addChannel(path.toStdString(), channel);
+                        visualizerChannels.insert(channel);
+                    }catch(...){
+                        LOG_ERROR("Could not add multichannel to timeline!");
+                    }
+                }
+
             }else{
 
                 /*TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
@@ -272,30 +296,27 @@ private:
 
                 auto serie = vis->createSerie(wrapper, path.toStdString());
 
-                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
-                if(timeline != nullptr) {
-                    //timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
-                    timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serie));
-                    if(channel != nullptr){
-                        channelToVisualizer[channel] = visu;
-                        timeline->setOnChannelDblClick(itemClickAction);
-                    }
-                }
-
                 vis->getWidget()->setFocusProxy(visu);
 
-                connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+                connect(visu, SIGNAL(focuseChanged(bool)), this, SLOT(visualizerFocusChanged(bool)));
 
-			//pane->addDockWidget(Qt::RightDockWidgetArea, visualizerWidget);
-			    /*topMainWindow->setUpdatesEnabled(false);
-			    if (currentVisualizer) {
-				    topMainWindow->layout()->removeWidget(currentVisualizer);
-				    delete currentVisualizer;
-			    }*/
-			    //currentVisualizer = visu;
-			    //topMainWindow->layout()->addWidget(visu);            
                 topMainWindow->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
-			    //topMainWindow->setUpdatesEnabled(true);
+
+                auto timeSerie = core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie);
+
+                if(timeSerie != nullptr){
+
+                    TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+                    if(timeline != nullptr) {
+                        VisualizerChannelPtr channel(new VisualizerChannel(timeSerie, visu));
+                        visualizerChannels.insert(channel);
+                        try{
+                            timeline->addChannel(path.toStdString(), channel);
+                        }catch(...){
+                            LOG_ERROR("Could not add multichannel to timeline!");
+                        }
+                    }
+                }
             }else{
 
                 /*TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
@@ -326,6 +347,7 @@ private:
 				collectionItem->addChild(channelItem);						
 				item2Vector[channelItem] = 							
 					boost::dynamic_pointer_cast<const VectorChannel>(c);
+                dataItems.insert(channelItem);
 			}	
 		}
 	}
@@ -339,6 +361,9 @@ private:
 	std::map<QTreeWidgetItem*, VideoChannelConstPtr> item2Video;
 	std::map<QTreeWidgetItem*, kinematic::JointAnglesCollectionConstPtr> item2Skeleton;
 	std::map<QTreeWidgetItem*, MotionPtr> item2Kinematic;
+
+    std::set<QTreeWidgetItem*> dataItems;
+
 	VisualizerWidget* currentVisualizer;
 	//QWidget* pane;
     QMainWindow* pane;
@@ -353,6 +378,18 @@ private:
     ItemDoubleClick itemClickAction;
 
     osg::ref_ptr<osgText::Text> chartTextPrototype;
+
+    //Zarz¹dzanie widokiem
+    //! Zbiór ju¿ dostêpnych, pustych wizualizatorów (ogólne, do specjalizacji)
+    std::set<VisualizerWidget*> emptyVisualizersPool;
+    //! Zbiór u¿ywanych wizualizatorów
+    std::vector<VisualizerWidget*> currentVisualizers;
+
+    std::map<QTreeWidgetItem*, DataItemDescription> items2Descriptions;
+
+    QTreeWidgetItem * currentItem;
+
+    VisualizerChannels visualizerChannels;
 };
 
 #endif // TOOLBOXMAIN_H

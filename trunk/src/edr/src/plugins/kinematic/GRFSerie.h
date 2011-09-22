@@ -13,12 +13,12 @@
 #include <core/IVisualizer.h>
 #include <osg/Geode>
 #include <list>
-#include <timelinelib/IChannel.h>
 #include "KinematicVisualizer.h"
+#include <utils/DataChannel.h>
 
 const float grfScale = 0.0008f;
 
-class GRFSerie : public core::IVisualizer::SerieBase, public timeline::IChannel
+class GRFSerie : public core::IVisualizer::TimeSerieBase, private utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float>
 {
 public:
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;
@@ -34,20 +34,22 @@ public:
 
 	  }
 
-protected:
-	virtual void setSerieName(const std::string & name){}			
+	virtual void setName(const std::string & name)
+    {
+        this->name = name;
+    }
 
-	virtual void setSerieData(const core::ObjectWrapperConstPtr & data);
+    virtual const std::string & getName() const
+    {
+        return name;
+    }
 
-	//! \return Sklonowane dane w kanale
-	virtual timeline::IChannelPtr clone() const
-	{
-		//! NIE WSPIERAMY TUTAJ KLONOWANIA!!
-		return timeline::IChannelPtr();
-	}
+	virtual void setData(const core::ObjectWrapperConstPtr & data);
+
+    virtual const core::ObjectWrapperConstPtr & getData() const;
 
 	//! \return Dlugosc kanalu w sekundach
-	virtual double getLength() const
+	virtual float getLength() const
 	{
 		UTILS_ASSERT(grfCollection);
 		return grfCollection->getLength();
@@ -55,7 +57,7 @@ protected:
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
-	virtual void setTime(double time);
+	virtual void setTime(float time);
 
 private:
 	struct Arrow 
@@ -146,6 +148,8 @@ private:
 	float maxLength;
 	ArrowPtr a1, a2;
 	GhostStackPtr g1, g2;
+    core::ObjectWrapperConstPtr data;
+    std::string name;
 };
 
 

@@ -1,11 +1,8 @@
 #ifndef HEADER_GUARD_TIMELINE__ICHANNEL_H__
 #define HEADER_GUARD_TIMELINE__ICHANNEL_H__
 
-#include <timelinelib/Types.h>
-
 namespace timeline
 {
-
     /** Klasa bazowa dla kanalow obslugiwanych przez timeline, definiuje ich podstawowe
     * wlasciwosi i operacje. Klient nie powinien modyfikowaæ wartoœci swojego kana³u po zmianie skali lub offsetu.
     * Zmiany te maj¹ jedynie charakter informacyjny - wszystkim zarz¹dza sam timeline i kana³y w które obudowuje timeline kana³y dostarczane przez klienta.
@@ -17,7 +14,7 @@ namespace timeline
         virtual ~IChannel() {}
 
         //! \return Sklonowany kana³
-        virtual IChannelPtr clone() const = 0;
+        virtual IChannel * clone() const = 0;
 
         //! \return Dlugosc kanalu w sekundach
         virtual double getLength() const = 0;

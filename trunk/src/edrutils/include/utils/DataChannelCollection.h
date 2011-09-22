@@ -21,9 +21,11 @@ namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Klasa agreguje klasy DataChannel, wszystkie dodawane kanaly powinny miec tyle samo wpisow
-template <class Channel>
-class DataChannelCollection
+template <class Channel, class TimeAccessor = GeneralDataChannelTimeAccessor<typename Channel::point_type, typename Channel::time_type>>
+class DataChannelCollection : public TimeAccessor
 {
+    UTILS_STATIC_ASSERT((boost::is_base_of<IRawGeneralDataChannelReader<typename Channel::point_type, typename Channel::time_type>, Channel>::value), "Base class should inherit from IRawGeneralDataChannelReader");
+    
 public:
 	typedef Channel ChannelType;
     typedef typename Channel::time_type TimeType;
@@ -69,16 +71,16 @@ public:
 		return channels[index];
 	}
 
-	ChannelConstPtr getChannel(const std::string& name) const
-	{
-		for (int i = channels.size() - 1; i >= 0; --i) {
-			if (channels[i]->getName() == name) {
-				return channels[i];
-			}
-		}
+    ChannelConstPtr getChannel(const std::string& name) const
+    {
+        for (int i = channels.size() - 1; i >= 0; --i) {
+            if (channels[i]->getName() == name) {
+                return channels[i];
+            }
+        }
 
-		throw std::runtime_error("Unknown channel name");
-	}
+        throw std::runtime_error("Unknown channel name");
+    }
 
 	int getNumPointsPerChannel() const
 	{
@@ -115,7 +117,8 @@ public:
 		int count = static_cast<int>(channels.size());
 		std::vector<PointType> res(channels.size());
 		for (int i = 0; i < count; i++) {
-			res[i] = channels[i]->getValue(time);
+			//res[i] = channels[i]->getValue(time);
+            res[i] = TimeAccessor::getChannelValue(time, *channels[i]);
 		}
 		return res;
 	}
@@ -136,7 +139,7 @@ public:
 	//! \return wartosc kanalu
 	PointType getValue(int index, TimeType time) const
 	{
-		return getChannel(index)->getValue(time);
+		return TimeAccessor::getChannelValue(time, *getChannel(index));
 	}
 
 	//! \return maksymalna wartosc w calej dziedzinie dla wszystkich kanalow

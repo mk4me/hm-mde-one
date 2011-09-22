@@ -23,7 +23,7 @@ namespace timeline{
 	public:
 		TestClientChannel(double length);
 
-		virtual IChannelPtr clone() const;
+		virtual TestClientChannel * clone() const;
 
 		virtual double getLength() const;
 

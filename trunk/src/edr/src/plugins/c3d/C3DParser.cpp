@@ -126,37 +126,63 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
 			float startTime2 = f2->getDataStartTime();
 			float endTime2 = f2->getDataEndTime();
 
-			float ltoeDistTo1 = platforms[0]->getDistanceToCenter((*ltoe)[endTime1]);
-			float ltoeDistTo2 = platforms[1]->getDistanceToCenter((*ltoe)[endTime1]);
-			float rtoeDistTo1 = platforms[0]->getDistanceToCenter((*rtoe)[endTime1]);
-			float rtoeDistTo2 = platforms[1]->getDistanceToCenter((*rtoe)[endTime1]);
+            /*float ltoeDistTo1 = platforms[0]->getDistanceToCenter((*ltoe)[endTime1]);
+            float ltoeDistTo2 = platforms[1]->getDistanceToCenter((*ltoe)[endTime1]);
+            float rtoeDistTo1 = platforms[0]->getDistanceToCenter((*rtoe)[endTime1]);
+            float rtoeDistTo2 = platforms[1]->getDistanceToCenter((*rtoe)[endTime1]);*/
+            float ltoeDistTo1 = platforms[0]->getDistanceToCenter(getChannelValue(endTime1, *ltoe));
+            float ltoeDistTo2 = platforms[1]->getDistanceToCenter(getChannelValue(endTime1, *ltoe));
+            float rtoeDistTo1 = platforms[0]->getDistanceToCenter(getChannelValue(endTime1, *rtoe));
+            float rtoeDistTo2 = platforms[1]->getDistanceToCenter(getChannelValue(endTime1, *rtoe));
 
 			float lmin = std::min(ltoeDistTo1, ltoeDistTo2);
 			float rmin = std::min(rtoeDistTo1, rtoeDistTo2);
 
 			if (lmin < rmin) {
 				if (ltoeDistTo1 < ltoeDistTo2) {
-					f1->startPoint = osg::Vec3((*lhee)[startTime1]);
+					/*f1->startPoint = osg::Vec3((*lhee)[startTime1]);
 					f1->endPoint   = osg::Vec3((*ltoe)[endTime1]);
 					f2->startPoint = osg::Vec3((*rhee)[startTime2]);
-					f2->endPoint   = osg::Vec3((*rtoe)[endTime2]);
+					f2->endPoint   = osg::Vec3((*rtoe)[endTime2]);*/
+
+                    f1->startPoint = osg::Vec3(getChannelValue(startTime1, *lhee));
+                    f1->endPoint   = osg::Vec3(getChannelValue(endTime1, *ltoe));
+                    f2->startPoint = osg::Vec3(getChannelValue(startTime2, *rhee));
+                    f2->endPoint   = osg::Vec3(getChannelValue(endTime2, *rtoe));
+
 				} else {			
-					f1->startPoint = osg::Vec3((*rhee)[startTime1]);
+					/*f1->startPoint = osg::Vec3((*rhee)[startTime1]);
 					f1->endPoint   = osg::Vec3((*rtoe)[endTime1]);
 					f2->startPoint = osg::Vec3((*lhee)[startTime2]);
-					f2->endPoint   = osg::Vec3((*ltoe)[endTime2]);
+					f2->endPoint   = osg::Vec3((*ltoe)[endTime2]);*/
+
+                    f1->startPoint = osg::Vec3(getChannelValue(startTime1, *rhee));
+                    f1->endPoint   = osg::Vec3(getChannelValue(endTime1, *rtoe));
+                    f2->startPoint = osg::Vec3(getChannelValue(startTime2, *lhee));
+                    f2->endPoint   = osg::Vec3(getChannelValue(endTime2, *ltoe));
 				}
 			} else {
 				if (rtoeDistTo1 < rtoeDistTo2) {
-					f1->startPoint = (*rhee)[startTime1];
+					/*f1->startPoint = (*rhee)[startTime1];
 					f1->endPoint   = (*rtoe)[endTime1];
 					f2->startPoint = (*lhee)[startTime2];
-					f2->endPoint   = (*ltoe)[endTime2];
+					f2->endPoint   = (*ltoe)[endTime2];*/
+
+                    f1->startPoint = osg::Vec3(getChannelValue(startTime1, *rhee));
+                    f1->endPoint   = osg::Vec3(getChannelValue(endTime1, *rtoe));
+                    f2->startPoint = osg::Vec3(getChannelValue(startTime2, *lhee));
+                    f2->endPoint   = osg::Vec3(getChannelValue(endTime2, *ltoe));
+
 				} else {				
-					f1->startPoint = (*lhee)[startTime2];
+					/*f1->startPoint = (*lhee)[startTime2];
 					f1->endPoint   = (*ltoe)[endTime2];
 					f2->startPoint = (*rhee)[startTime1];
-					f2->endPoint   = (*rtoe)[endTime2];
+					f2->endPoint   = (*rtoe)[endTime2];*/
+
+                    f1->startPoint = osg::Vec3(getChannelValue(startTime2, *lhee));
+                    f1->endPoint   = osg::Vec3(getChannelValue(endTime2, *ltoe));
+                    f2->startPoint = osg::Vec3(getChannelValue(startTime1, *rhee));
+                    f2->endPoint   = osg::Vec3(getChannelValue(endTime2, *rtoe));
 				}
 			}
 

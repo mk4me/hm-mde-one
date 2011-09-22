@@ -39,7 +39,9 @@ public:
 	}
 };
 
-class VideoChannel : public utils::BaseChannel<VideoImageOsgPtr, float, VideoManipulator>
+typedef utils::IRawUniformDataChannelReader<VideoImageOsgPtr, float> VideoChannelReaderInterface;
+
+class VideoChannel : public VideoChannelReaderInterface
 {
 public:
 	enum View { Unknown, Left, Right, Front, Back };
@@ -47,19 +49,42 @@ public:
 private:
 	mutable VideoStreamPtr videoStream;
 	View type;
-	
+    float samplesPerSecond;
+    float invSamplesPerSecond;
+    std::string name;
 
 public:
-	VideoChannel(int samplesPerSecond, VideoStreamPtr video) :
-	BaseChannel(samplesPerSecond) ,
-	videoStream(video)
-	{}
+	VideoChannel(VideoStreamPtr video, const std::string & name = std::string()) :
+	videoStream(video), samplesPerSecond(videoStream->getFramerate()), name(name)
+	{
+        invSamplesPerSecond = 1.0 / samplesPerSecond;
+    }
 
 	virtual VideoChannel* clone() const
 	{
 		VideoStreamPtr v(new VideoStream(videoStream)); //videoStream->clone();
-		return new VideoChannel(this->getSamplesPerSecond(), v);
+		return new VideoChannel(v,name);
 	}
+
+    virtual const std::string & getName() const
+    {
+        return name;
+    }
+
+    virtual void setName(const std::string & name)
+    {
+        this->name = name;
+    }
+
+    virtual float getSamplesPerSecond() const
+    {
+        return samplesPerSecond;
+    }
+
+    virtual float getSampleDuration() const
+    {
+        return invSamplesPerSecond;
+    }
 
 	virtual time_type getLength() const
 	{
@@ -75,6 +100,25 @@ public:
     virtual bool empty() const
     {
         return videoStream->getFrameCount() == 0;
+    }
+
+    //! \param idx Indeks probki
+    //! \return Wartosc czasu dla danego indeksu
+    virtual time_type argument(size_type idx) const
+    {
+        UTILS_ASSERT((idx >= 0),"B³êdny indeks dla kana³y - musi byæ wiêkszy lub równy 0");
+        return videoStream->getFrameDuration() * idx;
+    }
+
+    //! \param idx Indeks probki
+    //! \return Wartosc probki dla danego indeksu
+    virtual point_type_const_reference value(size_type idx) const
+    {
+        static VideoImageOsgPtr ret;
+
+        videoStream->setTime(idx * videoStream->getFrameDuration());
+
+        return ret = videoStream->getImage(vidlib::PixelFormatARGB);
     }
 
 	VideoStreamConstPtr getVideoStream() const {
@@ -100,7 +144,7 @@ protected:
 typedef boost::shared_ptr<VideoChannel> VideoChannelPtr;
 typedef boost::shared_ptr<const VideoChannel> VideoChannelConstPtr;
 
-class VideoCollection : public utils::DataChannelCollection<VideoChannel>
+class VideoCollection : public utils::DataChannelCollection<VideoChannel, utils::SimpleDataChannelTimeAccessor<VideoImageOsgPtr, float>>
 {
 };
 typedef boost::shared_ptr<VideoCollection> VideoCollectionPtr;

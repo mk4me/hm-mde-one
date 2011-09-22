@@ -13,7 +13,6 @@
 
 #include <core/IVisualizer.h>
 #include <osg/Geode>
-#include <timelinelib/IChannel.h>
 #include "KinematicVisualizer.h"
 #include "TrajectoriesDrawer.h"
 #include "ui_TrajectoriesDialog.h"

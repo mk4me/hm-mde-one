@@ -29,8 +29,8 @@ void ChartVisualizer::getInputInfo(std::vector<core::IInputDescription::InputInf
 {
     core::IInputDescription::InputInfo input;
 
-    input.type = typeid(ScalarChannel);
-    input.name = input.type.name();
+    input.type = typeid(ScalarChannelReaderInterface);
+    input.name = "Scalar";
     input.modify = false;
     input.required = false;
 
@@ -144,7 +144,7 @@ int ChartVisualizer::getMaxDataSeries() const
     return -1;
 }
 
-core::IVisualizer::SerieBase* ChartVisualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
+ChartVisualizer::ChartVisualizerSerie* ChartVisualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
 {
     //generuj kolor dla serii
     osg::Vec4 color;
@@ -156,7 +156,7 @@ core::IVisualizer::SerieBase* ChartVisualizer::createSerie(const core::ObjectWra
     bool noSerie = series.empty();
 
     LineChartSeriePtr lineChart = new LineChartSerie();
-    ScalarChannelConstPtr d = data->get();
+    ScalarChannelReaderInterfaceConstPtr d = data->get();
 
     lineChart->setData(d);
     lineChart->setColor(color);
@@ -179,6 +179,11 @@ core::IVisualizer::SerieBase* ChartVisualizer::createSerie(const core::ObjectWra
 
     activeSerieCombo->setEnabled(true);
     return serie;
+}
+
+ChartVisualizer::ChartVisualizerSerie* ChartVisualizer::createSerie(const SerieBase * serie)
+{
+    return nullptr;
 }
 
 void ChartVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)

@@ -16,7 +16,6 @@
 #include <core/IVisualizer.h>
 #include "Chart.h"
 #include "LineChartSerie.h"
-#include <timelinelib/IChannel.h>
 #include <osgui/QOsgWidgets.h>
 
 //! Wizualizator wykresów.
@@ -24,36 +23,33 @@ class ChartVisualizer : public QObject, public core::IVisualizer
 {
 public:
 
-    class ChartVisualizerSerie : public SerieBase, public timeline::IChannel
+    class ChartVisualizerSerie : public TimeSerieBase
     {
-    public:
+        friend class ChartVisualizer;
+
+    private:
         ChartVisualizerSerie(const LineChartSeriePtr & serie, ChartVisualizer * visualizer)
             : serie(serie), visualizer(visualizer)
         {
        
         }
 
+    public:
+
         const LineChartSeriePtr & getSerie() const
         {
             return serie;
         }
 
-        //! \return Sklonowane dane w kanale
-        virtual timeline::IChannelPtr clone() const
-        {
-            //! NIE WSPIERAMY TUTAJ KLONOWANIA!!
-            return timeline::IChannelPtr();
-        }
-
         //! \return Dlugosc kanalu w sekundach
-        virtual double getLength() const
+        virtual float getLength() const
         {
-            return (double)serie->getData()->getLength();
+            return (float)serie->getData()->getLength();
         }
 
         //! Czas zawiera siê miêdzy 0 a getLength()
         //! \param time Aktualny, lokalny czas kanalu w sekundach
-        virtual void setTime(double time)
+        virtual void setTime(float time)
         {
             serie->getTimer()->setTime(time);
         }
@@ -68,21 +64,34 @@ public:
             return serie->getColor();
         }
 
-    protected:
-        virtual void setSerieName(const std::string & name)
+        virtual void setName(const std::string & name)
         {
             //TODO
             //obecnie nazwy serii nie sa obslugiwane ale musimy pomyslec o tym i ewentualnie dodac!!
+            this->name = name;
         }
 
-        virtual void setSerieData(const core::ObjectWrapperConstPtr & data)
+        virtual const std::string & getName() const
         {
+            return name;
+        }
+
+        virtual void setData(const core::ObjectWrapperConstPtr & data)
+        {
+            this->data = data;
             serie->setData(data->get());
         }
 
+        virtual const core::ObjectWrapperConstPtr & getData() const
+        {
+            return data;
+        }
+
     private:
+        core::ObjectWrapperConstPtr data;
         LineChartSeriePtr serie;
         ChartVisualizer * visualizer;
+        std::string name;
     };
 
     friend class ChartVisualizerSerie;
@@ -137,7 +146,9 @@ public:
     virtual int getMaxDataSeries() const;
 
     //! \return Seria danych ktora mozna ustawiac - nazwa i dane, nie zarzadza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
-    virtual core::IVisualizer::SerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+    virtual ChartVisualizerSerie* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+
+    virtual ChartVisualizerSerie* createSerie(const SerieBase * serie);
 
     //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
     virtual void removeSerie(core::IVisualizer::SerieBase* serie);

@@ -9,13 +9,7 @@
 #ifndef __HEADER_GUARD_CORE__DATACHANNEL_H__
 #define __HEADER_GUARD_CORE__DATACHANNEL_H__
 
-#include <stack>
-#include <iterator>
 #include <vector>
-#include <map>
-#include <utility>
-#include <stdexcept>
-#include <sstream>
 #include <string>
 
 #include <boost/function.hpp>
@@ -47,7 +41,595 @@ namespace utils {
         typedef typename boost::add_reference<typename boost::add_const<PointType>::type>::type type;
     };
 
-    //! Sposób obs³ugi zapytañ o czas spoza zakresu
+    //! Interfejs do czytania opisu kana³u - osi x i y oraz nazwy kana³u.
+    class IChannelDescriptorReader
+    {
+    public:
+        virtual ~IChannelDescriptorReader() {}
+
+        //! \return
+        virtual const std::string& getTimeBaseUnit() const = 0;
+
+        virtual float getTimeScaleFactor() const = 0;
+
+        //! \return
+        virtual const std::string& getValueBaseUnit() const = 0;
+
+        virtual float getValueScaleFactor() const = 0;
+    };
+
+    //! Interfejs do modyfikacji opisu kana³u - osi x i y oraz nazwy kana³u.
+    class IChannelDescriptorWriter
+    {
+    public:
+        virtual ~IChannelDescriptorWriter() {}
+
+        //! \param xUnit
+        virtual void setTimeBaseUnit(const std::string& xUnit) = 0;
+
+        virtual void setTimeScaleFactor(float factor) = 0;
+
+        //! \param yUnit
+        virtual void setValueBaseUnit(const std::string& yUnit) = 0;
+
+        virtual void setValueScaleFactor(float factor) = 0;
+    };
+
+
+    class IChannelDescriptor : public virtual IChannelDescriptorReader, public virtual IChannelDescriptorWriter
+    {
+    public:
+        virtual ~IChannelDescriptor() {}
+
+    };
+
+    //! Implementacja interfejsu IChannelDescriptor
+    class ChannelDescriptor : public IChannelDescriptor
+    {
+    private:
+        //! Skala czasu
+        float timeScaleFactor;
+        //! Jednostka czasu
+        std::string timeBaseUnit;
+        //! Skala wartoœci
+        float valueScaleFactor;
+        //! Jendostka wartoœci
+        std::string valueBaseUnit;
+
+    public:
+
+        ChannelDescriptor() : timeScaleFactor(1.0f), valueScaleFactor(1.0f) {}
+
+        ChannelDescriptor(const std::string & valueBaseUnit,
+            float valueScaleFactor = 1.0f, float timeScaleFactor = 1.0f,
+            const std::string & timeBaseUnit = std::string("s"))
+            : valueBaseUnit(valueBaseUnit), valueScaleFactor(valueScaleFactor),
+            timeScaleFactor(timeScaleFactor), timeBaseUnit(timeBaseUnit)
+        {
+
+        }
+
+        ChannelDescriptor(const ChannelDescriptor & channel)
+            : valueBaseUnit(channel.valueBaseUnit),
+            valueScaleFactor(channel.valueScaleFactor),
+            timeScaleFactor(channel.timeScaleFactor),
+            timeBaseUnit(channel.timeBaseUnit)
+        {
+
+        }
+
+        ChannelDescriptor(const IChannelDescriptorReader & channel)
+            : valueBaseUnit(channel.getValueBaseUnit()),
+            valueScaleFactor(channel.getValueScaleFactor()),
+            timeScaleFactor(channel.getTimeScaleFactor()),
+            timeBaseUnit(channel.getTimeBaseUnit())
+        {
+
+        }
+
+    public:
+
+        virtual ~ChannelDescriptor() {}
+
+        //! \return
+        virtual const std::string& getTimeBaseUnit() const
+        { 
+            return timeBaseUnit;
+        }
+
+        //! \return
+        virtual float getTimeScaleFactor() const
+        { 
+            return timeScaleFactor;
+        }
+
+        //! \return
+        virtual const std::string& getValueBaseUnit() const
+        { 
+            return valueBaseUnit;
+        }
+
+        //! \return
+        virtual float getValueScaleFactor() const
+        { 
+            return valueScaleFactor;
+        }
+
+        //! \param timeBaseUnit
+        virtual void setTimeBaseUnit(const std::string& timeBaseUnit) 
+        { 
+            this->timeBaseUnit = timeBaseUnit;
+        }
+
+        //! \param timeBaseUnit
+        virtual void setTimeScaleFactor(float timeScaleFactor) 
+        { 
+            this->timeScaleFactor = timeScaleFactor;
+        }
+
+        //! \param yUnit
+        virtual void setValueBaseUnit(const std::string& valueBaseUnit) 
+        { 
+            this->valueBaseUnit = valueBaseUnit;
+        }
+
+        //! \param timeBaseUnit
+        virtual void setValueScaleFactor(float valueScaleFactor) 
+        { 
+            this->valueScaleFactor = valueScaleFactor;
+        }
+    };
+
+    //! Klasa pozwalaj¹ca obserwowaæ obiekty z danymi i modyfikowaæ w³asne wartoœci
+    //! U¿ywana do tworzenia modyfikatorów danych - œrednich krocz¹cych, ca³kowania, ...
+    template<class PointType, class TimeType>
+    class ChannelAutoModifier;
+
+    //! Klasa zapewniajaca dostep do danych w sposob ciagly (sposob realizacji wrazenia ciaglasci zalezny od implementacji)
+    template<class PointType, class TimeType>
+    class IDataChannelTimeAccessor;
+
+    //! Interfejs umozliwia dodawanie probek do kanalu w sposob chronologiczny
+    template<class PointType, class TimeType>
+    class IRawDataChannelBasicWriter;
+
+    //! Interfejs na potrzeby kanalow sledzacych, umozliwia zmiane wartosci probek dla danego indesku
+    template<class PointType, class TimeType>
+    class IRawDataChannelExtendedWriter;
+
+    //! Interfejs zapewniajacy odczyt surowych danych po indexach probek - czas probek w kolejnosci chronologicznej, uniezaleznia od sposobu przechowywania danych(vector, map, ...)
+    //! Mozna obserwowac
+    template<class PointType, class TimeType>
+    class IRawGeneralDataChannelReader : public virtual Observable<IRawGeneralDataChannelReader<PointType, TimeType>>
+    {
+    public:
+
+        typedef IRawGeneralDataChannelReader<PointType, TimeType> _MyRawChannelReaderType;
+
+        //! Typ czasu
+        typedef TimeType time_type;
+        //! Typ danych
+        typedef PointType point_type;
+        //! Typ sta³ej referencji do danych dla przekazywania parametrów
+        typedef typename ConstReferenceType<point_type>::type point_type_const_reference;
+
+        //! Typ referencji do danych dla przekazywania parametrów
+        typedef typename boost::add_reference<point_type>::type point_type_reference;
+
+    protected:
+        //! Typ danych o charakterze czasowym - czas -> próbka
+        typedef std::pair<time_type, point_type> value_type;
+        //! Typ przechowuj¹cy dane indeksowane po czasie
+        typedef std::vector<value_type> TimeData;
+
+    public:
+        //! Typ iloœci elementów w kanale
+        typedef typename TimeData::size_type size_type;
+
+        //! Typ obserwatora dla kana³u o podanym interfejsie ( typach danych)
+        typedef Observer<_MyRawChannelReaderType> _MyObserverType;
+        //! Typ dajacy siê obserwowaæ dla kana³u o podanym interfejsie ( typach danych)
+        typedef Observable<_MyRawChannelReaderType> _MyObservableType;
+        //! Timer dla danego kana³u danych
+
+        typedef boost::shared_ptr<_MyRawChannelReaderType> _MyChannelPtr;
+        typedef boost::shared_ptr<const _MyRawChannelReaderType> _MyChannelConstPtr;
+
+        typedef ChannelAutoModifier<point_type, time_type> _MyChannelTracker;
+
+        typedef IRawDataChannelExtendedWriter<point_type, time_type> _MyExtendedWriter;
+
+        //! Funktor do modyfikacji danych w Trackerach kana³ów
+        typedef boost::function<void(_MyExtendedWriter &, const _MyRawChannelReaderType &, const _MyRawChannelReaderType &)> _MyModifierType;
+
+    public:
+
+        virtual ~IRawGeneralDataChannelReader() {};
+
+        virtual _MyRawChannelReaderType* clone() const
+        {
+            return nullptr;
+        }
+
+        //! \return
+        virtual const std::string& getName() const = 0;
+
+        //! \return Czas trwania kana³u
+        virtual time_type getLength() const = 0;
+
+        //! \param idx Indeks probki
+        //! \return Wartosc czasu dla danego indeksu
+        virtual time_type argument(size_type idx) const = 0;
+
+        //! \param idx Indeks probki
+        //! \return Wartosc probki dla danego indeksu
+        virtual point_type_const_reference value(size_type idx) const = 0;
+
+        //! \return Iloœæ próbek w kanale
+        virtual size_type size() const = 0;
+
+        //! \return Czy kana³ nie zawiera danych
+        virtual bool empty() const = 0;
+        //! \param time Czas dla ktorego chemy uzyskac dwie najblizsze probki
+        //! \return para indeksow, pierwszy wskazujke probke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje probke o czasie wiekszym lub rownym zadanemu
+        virtual std::pair<size_type, size_type> getValueHelper(time_type time) const
+        {
+            size_type p1 = 0;
+            size_type p2 = 0;
+
+            size_type s = size();
+
+            while(p2 < s && argument(p2) < time){
+                p2++;
+            }
+
+            if(p2 != 0){
+                p1 = p2 - 1;
+            }
+
+            return std::pair<size_type, size_type>(p1, p2);
+        }
+    };
+
+    template<class PointType, class TimeType>
+    class IRawUniformDataChannelReader : public virtual IRawGeneralDataChannelReader<PointType, TimeType>
+    {
+    public:
+
+        virtual ~IRawUniformDataChannelReader() {};
+
+        // Fix na buga w Visual Studio z virtualnym dziedziczeniem i koherentnymi typami
+        // Niestety nie mo¿na wtedy klonowaæ obiektów typu IRawUniformChannelReader :(
+        // Link: https://connect.microsoft.com/VisualStudio/feedback/details/590625/visual-c-incorrectly-reports-ambiguity-when-covariance-is-used-with-virtual-inheritance
+        #ifndef _MSC_VER
+
+        virtual IRawUniformDataChannelReader<PointType, TimeType>* clone() const
+        {
+            return nullptr;
+        }
+
+        #endif
+
+        //! \return Czas trwania kana³u
+        virtual float getSamplesPerSecond() const = 0;
+
+        virtual float getSampleDuration() const = 0;
+
+        virtual std::pair<size_type, size_type> getValueHelper(time_type time) const
+        {
+            // wyznaczenie indeksów
+            size_type idx = static_cast<size_type>(time * getSamplesPerSecond());
+            UTILS_ASSERT( idx >= 0 && idx < size() );
+
+            return std::pair<size_type, size_type>(idx, (idx == size() - 1) ? idx : idx + 1);
+        }
+    };
+
+    template<class PointType, class TimeType>
+    class IRawDataChannelBasicWriter
+    {
+    public:
+        virtual ~IRawDataChannelBasicWriter() {}
+
+        virtual void addPoint(TimeType time, typename ConstReferenceType<PointType>::type point) = 0;
+        virtual void addPoint(typename ConstReferenceType<PointType>::type point) = 0;
+    };
+
+    template<class PointType, class TimeType>
+    class IRawDataChannelExtendedWriter : public virtual IRawDataChannelBasicWriter<PointType, TimeType>
+    {
+    public:
+        virtual ~IRawDataChannelExtendedWriter() {}
+      
+        virtual void setIndexData(typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type idx, typename ConstReferenceType<PointType>::type point) = 0;
+    };
+
+    template<class PointType, class TimeType>
+    class IDataChannelTimeAccessor
+    {
+    public:
+        typedef boost::shared_ptr<IDataChannelTimeAccessor<PointType, TimeType>> IDataChannelTimeAccessorPtr;
+        typedef boost::shared_ptr<const IDataChannelTimeAccessor<PointType, TimeType>> IDataChannelTimeAccessorConstPtr;
+
+    public:
+        virtual ~IDataChannelTimeAccessor() {}
+
+        virtual PointType getChannelValue(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel) const = 0;
+        
+        PointType getValue(TimeType time) const
+        {
+            return getChannelValue(time, *getChannel());
+        }
+
+        PointType operator[](TimeType time) const
+        {
+            return getValue(time);
+        }
+
+        virtual const typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr & getChannel() const = 0;
+        virtual void setChannel(const typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr & channel) = 0;
+    };
+
+    template<class PointType, class TimeType>
+    class RawGeneralDataChannel : public virtual IRawGeneralDataChannelReader<PointType, TimeType>, public virtual IRawDataChannelBasicWriter<PointType, TimeType>
+    {
+        friend class ChannelAutoModifier<PointType, TimeType>;
+
+    public:
+        //! Const iterator dla danych indeksowanych czasem
+        typedef typename TimeData::const_iterator const_iterator;
+        //! Const reverse iterator dla danych indeksowanych czasem
+        typedef typename TimeData::const_reverse_iterator const_reverse_iterator;
+        //! Const referencja do danych o charakterze czasowym
+        typedef typename TimeData::const_reference const_reference;
+
+    protected:
+        TimeData data;
+        std::string name;
+
+    public:
+        RawGeneralDataChannel(const std::string & name = std::string("")) : name(name) {}
+        RawGeneralDataChannel(const IRawGeneralDataChannelReader & channel, const std::string & name = std::string("")) : data(channel.begin(), channel.end()), name(name) {}
+        RawGeneralDataChannel(const RawGeneralDataChannel & channel) : data(channel.data), name(channel.name) {}
+        RawGeneralDataChannel(const RawGeneralDataChannel & channel, boost::false_type) : name(channel.name) {}
+
+
+        virtual RawGeneralDataChannel<PointType, TimeType> * clone() const
+        {
+            return new RawGeneralDataChannel(*this);
+        }
+
+        virtual RawGeneralDataChannel<PointType, TimeType> * create() const
+        {
+            return new RawGeneralDataChannel(*this, boost::false_type());
+        }
+
+        virtual const std::string & getName() const
+        {
+            return name;
+        }
+
+        virtual void setName(const std::string & name)
+        {
+            this->name = name;
+        }
+
+        //! \return Czas trwania kana³u
+        virtual time_type getLength() const
+        {
+            if(data.empty() == true){
+                return 0;
+            }
+
+            return data.rbegin()->first;
+        }
+
+        virtual time_type argument(size_type idx) const
+        {
+            return data[idx].first;
+        }
+
+        virtual point_type_const_reference value(size_type idx) const
+        {
+            return data[idx].second;
+        }
+
+        //! \return Iloœæ próbek w kanale
+        virtual size_type size() const
+        {
+            return data.size();
+        }
+
+        //! \return Czy kana³ nie zawiera danych
+        virtual bool empty() const
+        {
+            return data.empty();
+        }
+
+        //! \return Indeks punktu.
+        //! \return Wartoœæ na podstawie indeksu punktu czasowego.
+        virtual const_reference operator[](size_type idx) const
+        {
+            UTILS_ASSERT((idx >= 0 && idx < size()), "Wrong index parameter");
+            return data[idx];
+        }
+
+        //! \return
+        virtual const_iterator begin() const
+        {
+            return data.begin();
+        }
+
+        //! \return
+        virtual const_iterator end() const
+        {
+            return data.end();
+        }
+
+        //! \return
+        virtual const_reverse_iterator rbegin() const
+        {
+            return data.rbegin();
+        }
+
+        //! \return
+        virtual const_reverse_iterator rend() const
+        {
+            return data.rend();
+        }
+
+        virtual void addPoint(time_type time, point_type_const_reference point)
+        {
+            if(data.empty() == true){
+                if(time != 0) {
+                    throw std::runtime_error("First sample time must be 0");
+                }
+            }else if(time < data.back().first){
+                throw std::runtime_error("Samples time must be in chronological order");
+            }
+
+            data.push_back(value_type(time, point));
+
+            notify();
+        }
+
+        virtual void addPoint(point_type_const_reference point)
+        {
+            throw std::runtime_error("Not supported in general channel");
+            notify();
+        }
+    };
+
+    template<class PointType, class TimeType>
+    class RawUniformDataChannel : public IRawUniformDataChannelReader<PointType, TimeType>, public RawGeneralDataChannel<PointType, TimeType>
+    {
+    private:
+        float samplesPerSecond;
+        float invSamplesPerSecond;
+
+    protected:
+        RawUniformDataChannel(float samplesPerSecond = 25, const std::string & name = std::string("")) : RawGeneralDataChannel(name), samplesPerSecond(samplesPerSecond)
+        {
+            if(samplesPerSecond <= 0){
+                throw std::runtime_error("Invalid value for samples per second");
+            }
+
+            invSamplesPerSecond = 1.0 / samplesPerSecond;
+        }
+
+        RawUniformDataChannel(const RawUniformDataChannel & channel) : RawGeneralDataChannel(channel), samplesPerSecond(channel.samplesPerSecond), invSamplesPerSecond(channel.invSamplesPerSecond) {}
+        RawUniformDataChannel(const RawUniformDataChannel & channel, boost::false_type) : RawGeneralDataChannel(channel.name), samplesPerSecond(channel.samplesPerSecond), invSamplesPerSecond(channel.invSamplesPerSecond) {}
+
+
+    public:
+        virtual RawUniformDataChannel<PointType, TimeType> * clone() const
+        {
+            return new RawUniformDataChannel(*this);
+        }
+
+        virtual RawUniformDataChannel<PointType, TimeType> * create() const
+        {
+            return new RawUniformDataChannel(*this, boost::false_type());
+        }
+
+        virtual float getSamplesPerSecond() const
+        {
+            return samplesPerSecond;
+        }
+
+        virtual float getSampleDuration() const
+        {
+            return invSamplesPerSecond;
+        }
+
+        virtual void addPoint(time_type time, point_type_const_reference point)
+        {
+            if(data.empty() == true){
+                if(time != 0) {
+                    throw std::runtime_error("First sample time must be 0");
+                }
+            }else if(time < data.back().first){
+                throw std::runtime_error("Samples time must be in chronological order");
+            }else if(time - data.back().first != invSamplesPerSecond){
+                throw std::runtime_error("Sample time does not match defined delay");
+            }
+
+            data.push_back(value_type(time, point));
+
+            notify();
+        }
+
+        virtual void addPoint(point_type_const_reference point)
+        {
+            time_type t = 0;
+            if(data.empty() == false){
+                t = data.back().first + invSamplesPerSecond;
+            }
+
+            data.push_back(value_type(t, point));
+
+            notify();
+        }
+    };
+
+    template<class PointType, class TimeType>
+    class SimpleDataChannelTimeAccessor : public IDataChannelTimeAccessor<PointType, TimeType>
+    {
+    protected:
+        SimpleDataChannelTimeAccessor() {}
+
+    public:
+        SimpleDataChannelTimeAccessor(const typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr & channel) : channel(channel)
+        {
+            UTILS_ASSERT((channel != nullptr), "Wrong channel for time accessor");
+        }
+
+        virtual PointType getChannelValue(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel) const
+        {
+            if(channel.empty() == true){
+                throw std::runtime_error("Accessing data in empty channel");
+            }
+
+            if(time < 0){
+                return channel.value(0);
+            }else if(time > channel.argument(channel.size() - 1)){
+                return channel.value(channel.size() - 1);
+            }else{
+                auto r = channel.getValueHelper(time);
+                if(channel.argument(r.first) == time){
+                    return channel.value(r.first);
+                }else if(channel.argument(r.second) == time){
+                    return channel.value(r.second);
+                }else{
+                    if(time - channel.argument(r.first) < channel.argument(r.second) - time){
+                        return channel.value(r.first);
+                    }else{
+                        return channel.value(r.second);
+                    }
+                }
+            }            
+        }
+
+        virtual const typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr & getChannel() const
+        {
+            return channel;
+        }
+
+        virtual void setChannel(const typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr & channel)
+        {
+            if(channel == nullptr){
+                throw std::runtime_error("Wrong channel for time accessor");
+            }
+
+            this->channel = channel;
+        }
+
+        virtual ~SimpleDataChannelTimeAccessor() {}
+
+    protected:
+        typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr channel;
+    };
+
     template <class PointType, class TimeType, class PointRefType = typename boost::add_reference< typename PointType>::type >
     class ExceptionTimeOverflowResolver
     {
@@ -63,146 +645,298 @@ namespace utils {
     public:
         //! \param time Czas ponizej zera
         //! \param point Zwracana wartosc
-        void timeUnderflow(TimeType time, PointRefType point) const
+        PointType timeUnderflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel) const
         {
             throw std::runtime_error("Time value less than 0");
+            return PointType();
         }
 
         //! \param time Czas poza dlugoscia kanalu
         //! \param point Zwracana wartosc
-        void timeOverflow(TimeType time, PointRefType point) const
+        PointType timeOverflow(TimeType time, typename const IRawGeneralDataChannelReader<PointType, TimeType> & channel) const
         {
             throw std::runtime_error("Time value greater than channel length");
+            return PointType();
         }
     };
 
     //! Manipulator danych bazuj¹cy na operatorach typu. Interpoluje liniowo.
-    template <class PointType, class TimeType, class PointRefType = typename boost::add_reference<typename PointType>::type >
+    template <class PointType, class TimeType>
     struct DataOperatorsManipulator
     {
-        //! Typ stalej referencji do przekazywania wartosci
-        typedef typename ConstReferenceType<PointType>::type PointParamType;
-
-        bool isLower(PointParamType p1, PointParamType p2)
-        {
-            return p1 < p2;
-        }
-        PointType normalize(PointParamType p, PointParamType min, PointParamType max) const
-        {
-            return (p - min) / (max - min);
-        }
+        typedef typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type IndexType;
 
         //! \param point Zwracana interpolowana wartosc
         //! \param p1 Probka dla czasu ponizej lub identycznego
         //! \param Probka dla czasu powyzej lub identycznego
         //! \param time Wartosc okreslajaca procent przesuniecia wzgledem probki ponizej
-        void interpolate(typename PointRefType point, PointParamType p1, PointParamType p2, TimeType t) const
+        PointType extractValue(IndexType idxA, IndexType idxB, TimeType time, const typename IRawGeneralDataChannelReader<PointType, TimeType> & channel) const
         {
             // lerp
-            point = (p1 + (p2 - p1) * t);
+            return channel.value(idxA) + (channel.value(idxB) - channel.value(idxA)) * (time - channel.argument(idxA)) / (channel.argument(idxB) - channel.argument(idxA));
         }
     };
 
-    //! Interfejs do opisu kana³u - osi x i y oraz nazwy kana³u. Pozwala na edycjê opisu
-    class IChannelDescriptor
+    template<class PointType, class TimeType, class TimeOverflowResolver = ExceptionTimeOverflowResolver<PointType, TimeType>, class Manipulator = DataOperatorsManipulator<PointType, TimeType>>
+    class GeneralDataChannelTimeAccessor : public SimpleDataChannelTimeAccessor<PointType, TimeType>, public TimeOverflowResolver, public Manipulator
     {
     public:
-        virtual ~IChannelDescriptor() {}
+        GeneralDataChannelTimeAccessor(const typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr & channel) : SimpleDataChannelTimeAccessor(channel) {}
 
-        //! \return
-        virtual const std::string& getXUnit() const = 0;
+    protected:
 
-        //! \param xUnit
-        virtual void setXUnit(const std::string& xUnit) = 0;
+        GeneralDataChannelTimeAccessor() {}
 
-        //! \return
-        virtual const std::string& getYUnit() const = 0;
+    public:
 
-        //! \param yUnit
-        virtual void setYUnit(const std::string& yUnit) = 0;
+        virtual PointType getChannelValue(TimeType time, const IRawGeneralDataChannelReader<PointType, TimeType> & channel) const
+        {
+            if(channel.empty() == true){
+                throw std::runtime_error("Accessing data in empty channel");
+            }
 
-        //! \return
-        virtual const std::string& getName() const = 0;
-
-        //! \param name
-        virtual void setName(const std::string& name) = 0;
+            if(time < 0){
+                return TimeOverflowResolver::timeUnderflow(time, channel);
+            }else if(time > channel.argument(channel.size() - 1)){
+                return TimeOverflowResolver::timeOverflow(time, channel);
+            }else{
+                auto r = channel.getValueHelper(time);
+                if(channel.argument(r.first) == time){
+                    return channel.value(r.first);
+                }else if(channel.argument(r.second) == time){
+                    return channel.value(r.second);
+                }else{
+                    return Manipulator::extractValue(r.first, r.second, time, channel);
+                }
+            }            
+        }
     };
 
-    //! Formward declaration
-    //! Interfejs zapewniaj¹cy dostêp do danych w kanale - po czasie i indeksie
-    template<class PointType, class TimeType>
-    class IBaseChannel;
-
-    //! Klasa timera dla kana³ów - mo¿na tworzyc wiele timerów na jednym kanale, kazdy ma swój niezale¿ny czas
-    template<class PointType, class TimeType = float>
-    class ChannelTimer
+    template<class TimeType>
+    class ITimerReader
     {
     public:
-        typedef IBaseChannel<PointType, TimeType> BaseChannel;
-        typedef boost::shared_ptr<const BaseChannel> BaseChannelConstPtr;
+        typedef ITimerReader<TimeType> TimerReaderType;
+        typedef boost::shared_ptr<TimerReaderType> TimerReaderPtr;
+        typedef boost::shared_ptr<const TimerReaderType> TimerReaderConstPtr;
 
     public:
-        //! \param channel Kana³ któego dotyczy timer
-        ChannelTimer(const BaseChannelConstPtr & channel) : channel(channel), currentTime(0) {}
-        
-        //! \param timer Zegar który kopiujemy
-        ChannelTimer(const ChannelTimer & timer) : channel(timer.channel), currentTime(timer.currentTime) {}
-        
-        //! Polimorficzny destruktor
-        virtual ~ChannelTimer() {}
+        virtual ~ITimerReader() {}
 
-        //! \param time Aktualny czas zegara
-        void setTime(TimeType time)
+        virtual TimeType getTime() const = 0;
+    };
+
+    template<class TimeType>
+    class ITimer : public ITimerReader<TimeType> 
+    {
+    public:
+        typedef ITimer<TimeType> TimerType;
+        typedef boost::shared_ptr<TimerType> TimerPtr;
+        typedef boost::shared_ptr<const TimerType> TimerConstPtr;
+
+    public:
+
+        virtual void setTime(TimeType time) = 0;
+    };
+
+    template<class TimeType>
+    class Timer : public ITimer<TimeType>
+    {
+    public:
+
+        Timer() : time(0) {}
+
+        template<class U>
+        Timer(const ITimer<U> & timer) : time(timer.getTime()) {}
+
+        template<class U>
+        Timer(const Timer<U> & timer) : time(timer.time) {}
+
+        template<class U>
+        Timer(U time) : time(time) {}
+
+        virtual ~Timer() {}
+
+        virtual void setTime(TimeType time)
         {
-            currentTime = time;
+            this->time = time;
         }
 
-        //! \return Aktualny czas zegara
-        TimeType getTime() const
+        virtual TimeType getTime() const
         {
-            return currentTime;
-        }
-
-        //! \return Wartosc kana³y dla aktualnego czasu zegara
-        PointType getCurrentValue()
-        {
-            return channel->getValue(currentTime);
-        }
-
-        //! \return Kana³ którego zegar dotyczy
-        const BaseChannelConstPtr & getChannel() const
-        {
-            return channel;
+            return time;
         }
 
     private:
-        //! Kana³ na którym bazuje zegar
-        BaseChannelConstPtr channel;
-
-        //! Aktualny czas zegara
-        TimeType currentTime;
+        TimeType time;
     };
 
+    template<class TimeType>
+    class TimerOnTimer : public ITimerReader<TimeType>
+    {
+    public:
+
+        TimerOnTimer( const TimerReaderType::TimerReaderPtr & timerReader ) : timerReader(timerReader), constTimerReader(timerReader)
+        {
+            if(timerReader == nullptr){
+                throw std::runtime_error("Wrong TimerReader for TimerOnTimer");
+            }
+        }
+
+        virtual TimeType getTime() const
+        {
+            return constTimerReader->getTime();
+        }
+
+        const TimerReaderType::TimerReaderPtr & getTrueTimerReader()
+        {
+            return timerReader;
+        }
+
+        const TimerReaderType::TimerReaderConstPtr & getTrueTimerReader() const
+        {
+            return constTimerReader;
+        }
+
+    private:
+        TimerReaderType::TimerReaderPtr timerReader;
+        TimerReaderType::TimerReaderConstPtr constTimerReader;
+    };
+
+    template<class PointType, class TimeType>
+    class CurrentValueExtractor
+    {
+    public:
+        typedef typename ITimer<TimeType>::TimerType TimerType;
+        typedef IDataChannelTimeAccessor<PointType, TimeType> Accessor;
+        typedef IRawGeneralDataChannelReader<PointType, TimeType> DataChannel;
+
+    public:
+
+        CurrentValueExtractor(const typename Accessor::IDataChannelTimeAccessorPtr & accessor, const typename TimerType::TimerPtr & timer = TimerType::TimerPtr(new Timer<TimeType>())) : timer(timer), constTimer(timer),
+            accessor(accessor), constAccessor(accessor)
+        {
+            if(timer == nullptr){
+                throw std::runtime_error("Wrong accessor for CurrentValueExtractor");
+            }
+
+            if(accessor == nullptr){
+                throw std::runtime_error("Wrong accessor for CurrentValueExtractor");
+            }
+
+            if(accessor->getChannel() == nullptr){
+                throw std::runtime_error("Accessor not initialized with channel for CurrentValueExtractor");
+            }
+        }
+
+        virtual ~CurrentValueExtractor() {}
+
+        virtual PointType getCurrentValue() const
+        {
+            return accessor->getValue(timer->getTime());
+        }
+
+        virtual const typename Accessor::IDataChannelTimeAccessorPtr & getDataAccesor()
+        {
+            return accessor;
+        }
+
+        virtual const typename Accessor::IDataChannelTimeAccessorConstPtr & getDataAccesor() const
+        {
+            return constAccessor;
+        }
+
+        virtual void setDataAccesor(const typename Accessor::IDataChannelTimeAccessorPtr & accessor)
+        {
+            if(accessor == nullptr){
+                throw std::runtime_error("Wrong accessor for CurrentValueExtractor");
+            }
+
+            this->constAccessor = this->accessor = accessor;
+        }
+
+        virtual const typename TimerType::TimerPtr & getTimer()
+        {
+            return timer;
+        }
+
+        virtual const typename TimerType::TimerConstPtr & getTimer() const
+        {
+            return constTimer;
+        }
+
+        virtual void setTimer(const typename TimerType::TimerPtr & timer)
+        {
+            if(timer == nullptr){
+                throw std::runtime_error("Wrong accessor for CurrentValueExtractor");
+            }
+
+            this->constTimer = this->timer = timer;
+        }
+
+    private:
+        typename TimerType::TimerPtr timer;
+        typename TimerType::TimerConstPtr constTimer;
+
+        typename Accessor::IDataChannelTimeAccessorPtr accessor;
+        typename Accessor::IDataChannelTimeAccessorConstPtr constAccessor;
+    };
+
+    template<class T>
+    class EpsilonManager
+    {
+    public:
+        EpsilonManager() : epsilon(0), smallerIfEqual(false) {}
+        EpsilonManager(const EpsilonManager & manager) : epsilon(manager.epsilon), smallerIfEqual(manager.smallerIfEqual) {}
+        EpsilonManager(T epsilon, bool smallerIfEqual) : epsilon(epsilon), smallerIfEqual(smallerIfEqual) {}
+
+        //! \return Domyœlny epsilon dla czasu
+        T getEpsilon() const
+        {
+            return epsilon;
+        }
+
+        //! \param
+        void setEpsilon(T epsilon)
+        {
+            this->epsilon = epsilon;
+        }
+
+        //! \return Czy brana bêdzie mniejsza próbka jeœli równe
+        bool getSmallerIfEqualPolicy() const
+        {
+            return smallerIfEqual;
+        }
+
+
+        //! \param
+        void setSmallerIfEqualPolicy(bool smallerIfEqual)
+        {
+            this->smallerIfEqual = smallerIfEqual;
+        }
+
+    private:
+        T epsilon;
+        bool smallerIfEqual;
+    };
 
     //! Klasa ze statystykami kana³u - instancja trzymana po stronie kana³u, leniwie aktualizowana w momencie zapytania
     template<class PointType, class TimeType>
     class ChannelStats
     {
     public:
-        typedef IBaseChannel<PointType, TimeType> BaseChannel;
-        typedef boost::shared_ptr<const BaseChannel> BaseChannelConstPtr;
-        typedef boost::shared_ptr<BaseChannel> BaseChannelPtr;
-        typedef typename ConstReferenceType<PointType>::type PointTypeConstReference;
-
-        friend class BaseChannel;
+        typedef IRawGeneralDataChannelReader<PointType, TimeType> Channel;
+        typedef typename Channel::_MyChannelConstPtr ChannelConstPtr;
+        typedef typename Channel::_MyChannelPtr ChannelPtr;
+        typedef typename Channel::point_type_const_reference PointTypeConstReference;
 
     private:
         //! Klasa obserwuj¹ca - obiekt statystyk bezpoœrendio nie moze byæ obserwatore bo mo¿naby go by³o przypadkiem podpi¹æ pod kilka kana³ów!!
-        class ChannelObserver : public BaseChannel::_MyObserverType
+        class ChannelObserver : public Channel::_MyObserverType
         {
         public:
             //! \see update wzorca Obserwator
-            virtual void update(const BaseChannel * channel)
+            virtual void update(const Channel * channel)
             {
                 stats->changed = true;
             }
@@ -218,8 +952,8 @@ namespace utils {
         };
 
     public:
-        //! Prywatny konstruktor - tylko kana³ mo¿e tworzyæ obiekty statystyk
-        ChannelStats(const BaseChannelPtr & channel) : channel(channel), changed(false)
+
+        ChannelStats(const ChannelPtr & channel) : channel(channel), constChannel(channel), changed(false)
         {
             if(channel == nullptr){
                 throw std::runtime_error("Invalid channel for statistics");
@@ -232,6 +966,8 @@ namespace utils {
             observer.setChannelStats(this);
             channel->attach(&observer);
         }
+
+        virtual ~ChannelStats() {}
 
         //! \return Srednia wartoœ danych kana³u
         PointTypeConstReference meanValue() const
@@ -274,9 +1010,15 @@ namespace utils {
         }
 
         //! \return Kana³ którego zegar dotyczy
-        const BaseChannelConstPtr & getChannel() const
+        const ChannelPtr & getChannel()
         {
             return channel;
+        }
+
+        //! \return Kana³ którego zegar dotyczy
+        const ChannelConstPtr & getChannel() const
+        {
+            return constChannel;
         }
 
     protected:
@@ -289,8 +1031,8 @@ namespace utils {
             changed = false;
             Stats sts;
 
-            for(auto it = channel->begin(); it != channel->end(); it++){
-                sts(it->second);
+            for(auto i = 0; i < channel->size(); i++){
+                sts(channel->value(i));
             }
 
             meanVal = mean(sts);
@@ -315,908 +1057,286 @@ namespace utils {
         //! Obserwator zmian kana³u
         ChannelObserver observer;
         //! Obserwowany kana³
-        BaseChannelConstPtr channel;
+        ChannelConstPtr constChannel;
+
+        ChannelPtr channel;
     };
 
-    //! Klasa do topwrzenia obserwujacych, automodyfikujacych kana³ów
-    class AutoModifier;
+    template<class PointType, class TimeType>
+    class IChannelAutoModifier : public virtual IRawGeneralDataChannelReader<PointType, TimeType>
+    {
+    public:
 
-    //! Interfejs zapewniaj¹cy dostêp do danych w kanale - po czasie i indeksie
-    template<class PointType, class TimeType = float>
-    class IBaseChannel : public Observable<IBaseChannel<PointType, TimeType>>, public boost::enable_shared_from_this<IBaseChannel<PointType, TimeType>>
+        virtual ~IChannelAutoModifier() {}
+
+        virtual _MyChannelPtr getObservedChannel() = 0;
+
+        virtual _MyChannelConstPtr getObservedChannel() const = 0;
+
+        virtual void setObservedChannel(const _MyChannelPtr & channel) = 0;
+
+        virtual const _MyModifierType & getModifier() const = 0;
+    };
+
+    template<class PointType, class TimeType>
+    class ChannelAutoModifier : public IChannelAutoModifier<PointType, TimeType>, private IRawDataChannelExtendedWriter<PointType, TimeType>, private RawGeneralDataChannel<PointType, TimeType>
     {
 
-        friend class AutoModifier;
-
-    public:
-        //! Typ czasu
-        typedef TimeType time_type;
-        //! Typ danych
-        typedef PointType point_type;
-        //! Typ sta³ej referencji do danych dla przekazywania parametrów
-        typedef typename ConstReferenceType<point_type>::type point_type_const_reference;
-
-        //! Typ referencji do danych dla przekazywania parametrów
-        typedef typename boost::add_reference<point_type>::type point_type_reference;
-
-        //! Typ aktualnego interfejsu
-        typedef IBaseChannel<point_type, time_type> _MyChannelInterface;
-
-        //! Typ danych o charakterze czasowym - czas -> próbka
-        typedef std::pair<time_type, point_type> value_type;
-        //! Typ przechowuj¹cy dane indeksowane po czasie
-        typedef std::vector<value_type> TimeData;
-
-        //! Const iterator dla danych indeksowanych czasem
-        typedef typename TimeData::const_iterator const_iterator;
-        //! Const reverse iterator dla danych indeksowanych czasem
-        typedef typename TimeData::const_reverse_iterator const_reverse_iterator;
-        //! Const referencja do danych o charakterze czasowym
-        typedef typename TimeData::const_reference const_reference;
-        //! Typ iloœci elementów w kanale
-        typedef typename TimeData::size_type size_type;
-
-        //! Typ obserwatora dla kana³u o podanym interfejsie ( typach danych)
-        typedef Observer<_MyChannelInterface> _MyObserverType;
-        //! Typ dajacy siê obserwowaæ dla kana³u o podanym interfejsie ( typach danych)
-        typedef Observable<_MyChannelInterface> _MyObservableType;
-        //! Timer dla danego kana³u danych
-        typedef ChannelTimer<point_type, time_type> Timer;
-        //! Inteligetny wskaŸnik na Timer
-        typedef boost::shared_ptr<Timer> TimerPtr;
-
     private:
-        //! W³aœciwe dane indeksowane czasem
-        TimeData indexedData;
-
-    public:
-        //! Domyslny konstruktor na potrzeby klas pochodnych
-        IBaseChannel()
+        //! Prywatna klasa realizuj¹ca obserwacjê zadanej klasy. Na jej zmianê wyzwala modyfikacje
+        class UpdateNotifier : public _MyObserverType
         {
+        public:
 
-        }
-
-        //! Konstruktor kopiuj¹cy
-        //! \param channel
-        IBaseChannel(const IBaseChannel& channel) :
-        indexedData(channel.indexedData)
-        {
-
-        }
-
-    public:
-
-        //! Pusty polimorficzny destruktor.
-        virtual ~IBaseChannel() {}
-
-        //! Klonuje kana³ wraz z ustawieniami i danymi
-        virtual IBaseChannel * clone() const
-        {
-            return new IBaseChannel(*this);
-        }
-
-        //! Tworzy pusty kana³ z kopia ustawieñ danego
-        virtual IBaseChannel * create() const
-        {
-            return new IBaseChannel();
-        }
-
-        //! \return Nowy timer dla naszego kana³u
-        TimerPtr createTimer() const
-        {
-            return TimerPtr(new Timer(shared_from_this()));
-        }
-
-        //! \param Czas dla którego pobieramy wartoœæ
-        //! \return Wartoœæ kana³u dla zadanego czasu - mo¿e rzucac wyj¹tkami
-        point_type getValue(time_type time) const
-        {
-            if(empty() == true){
-                throw std::runtime_error("Value request to empty channel");
+            virtual void update(const _MyRawChannelReaderType * channel)
+            {
+                mod->update();
             }
 
-            return innerGetValue(time);
+            void setModifier(ChannelAutoModifier* mod)
+            {
+                this->mod = mod;
+            }
+
+        private:
+            ChannelAutoModifier* mod;
+        };
+
+        friend class UpdateNotifier;
+
+    public:
+
+        virtual ~ChannelAutoModifier() {}
+
+        virtual _MyChannelPtr getObservedChannel()
+        {
+            return channel;
         }
 
-        //! \return Czas trwania kana³u
+        virtual _MyChannelConstPtr getObservedChannel() const
+        {
+            return channel;
+        }
+
+        virtual void setObservedChannel(const _MyChannelPtr & channel)
+        {
+            if(channel == nullptr){
+                throw std::runtime_error("Wrong channel for Tracker");
+            }
+
+            data.swap(TimeData());
+
+            this->channel->detach(notifier);
+            this->channel = channel;
+            channel->attach(notifier);
+
+            //sprawdziæ czy s¹ jakieœ dane? jesli tak odpaliæ modifier
+            if(channel->empty() == false){
+                update();
+            }else{
+                notify();
+            }
+        }
+
+        virtual const _MyModifierType & getModifier() const
+        {
+            return modifier;
+        }
+
+        ChannelAutoModifier(const typename IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr & channel, const typename IChannelAutoModifier<PointType, TimeType>::_MyModifierType & modifier) : channel(channel), modifier(modifier), changed(false)
+        {
+            UTILS_ASSERT((channel != nullptr), "Wrong channel for Tracker");
+
+            if(channel == nullptr){
+                throw std::runtime_error("Wrong channel for Tracker");
+            }
+
+            notifier = new UpdateNotifier();
+            notifier->setModifier(this);
+            channel->attach(notifier);
+
+            //sprawdziæ czy s¹ jakieœ dane? jesli tak odpaliæ modifier
+            if(channel->empty() == false){
+                update();
+            }
+        }
+
         virtual time_type getLength() const
         {
-            if(empty() == true){
-                return 0;
-            }
-
-            return rbegin()->first;
+            return RawGeneralDataChannel<PointType, TimeType>::getLength();
         }
 
-    public:
+        //! \param idx Indeks probki
+        //! \return Wartosc czasu dla danego indeksu
+        virtual time_type argument(size_type idx) const
+        {
+            return RawGeneralDataChannel<PointType, TimeType>::argument(idx);
+        }
+
+        //! \param idx Indeks probki
+        //! \return Wartosc probki dla danego indeksu
+        virtual point_type_const_reference value(size_type idx) const
+        {
+            return RawGeneralDataChannel<PointType, TimeType>::value(idx);
+        }
 
         //! \return Iloœæ próbek w kanale
         virtual size_type size() const
         {
-            return indexedData.size();
+            return RawGeneralDataChannel<PointType, TimeType>::size();
         }
 
         //! \return Czy kana³ nie zawiera danych
         virtual bool empty() const
         {
-            return indexedData.empty();
+            return RawGeneralDataChannel<PointType, TimeType>::empty();
         }
-
-        //! \return Czas punktu.
-        //! \return Wartoœæ na podstawie punktu czasowego.
-        point_type operator[](time_type time) const
+        //! \param time Czas dla ktorego chemy uzyskac dwie najblizsze probki
+        //! \return para indeksow, pierwszy wskazujke probke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje probke o czasie wiekszym lub rownym zadanemu
+        virtual std::pair<size_type, size_type> getValueHelper(time_type time) const
         {
-            return getValue(time);
-        }
-
-        //! \return Indeks punktu.
-        //! \return Wartoœæ na podstawie indeksu punktu czasowego.
-        inline const_reference operator[](size_type idx) const
-        {
-            return indexedData[idx];
-        }
-
-        //! \return
-        inline const_iterator begin() const
-        {
-            return indexedData.begin();
-        }
-        //! \return
-        inline const_iterator end() const
-        {
-            return indexedData.end();
-        }
-        //! \return
-        inline const_reverse_iterator rbegin() const
-        {
-            return indexedData.rbegin();
-        }
-        //! \return
-        inline const_reverse_iterator rend() const
-        {
-            return indexedData.rend();
-        }
-
-        //! \param
-        //! \param
-        inline void setIndexValue(size_type idx, point_type_const_reference point)
-        {
-            __innerSetIndexValue(idx, point);
-            notify();
-        }
-
-        //! \param
-        //! \param
-        void addPoint(time_type time, point_type_const_reference point)
-        {
-            __innerAddPoint(time, point);
-            notify();
-        }
-
-    protected:
-
-        virtual point_type innerGetValue(time_type time) const
-        {
-            for(auto it = begin(); it != end(); it++){
-                if( (*it).first == time){
-                    return (*it).second;
-                }
-            }
-
-            throw std::runtime_error("Time sample not found in channel");
+            return RawGeneralDataChannel<PointType, TimeType>::getValueHelper(time);
         }
 
     private:
 
-        //! \param
-        //! \param
-        inline void __innerSetIndexValue(size_type idx, point_type_const_reference point)
+        void update()
         {
-            if(idx >= size() || idx < 0){
-                throw std::runtime_error("No sample with given chronological index");
+            changed = false;
+
+            modifier(*this, *channel, *this);
+
+            if(changed == true){
+                notify();
+            }
+        }
+
+        virtual void addPoint(time_type time, point_type_const_reference point)
+        {
+
+            if(data.empty() == true){
+                if(time != 0) {
+                    throw std::runtime_error("First sample time must be 0");
+                }
+            }else if(time < data.back().first){
+                throw std::runtime_error("Samples time must be in chronological order");
             }
 
-            indexedData[idx].second = point;            
+            data.push_back(value_type(time, point));
+
+            changed = true;
         }
 
-    protected:
-        //! \param
-        //! \param
-        virtual void __innerAddPoint(time_type time, point_type_const_reference point)
+        virtual void addPoint(point_type_const_reference point)
         {
-            if(empty() == true){
-                if(time != 0){
-                    throw std::runtime_error("First sample in channel must be for time 0");
-                }
-            }else if(time <= getLength()){
-                throw std::runtime_error("TimeData not in chronological order");
-            }
-
-            indexedData.push_back(value_type(time, point));
-        }
-    };
-
-    //! Klasa generuj¹ca kana³y reagujace na zmiany innych kana³ów
-    class AutoModifier
-    {
-        public:
-            //! Interfejs pozwalajacy zmieniac dane podczas notyfikacji o zmianie obiektu obserwowanego
-            template<class Channel>
-            class ChannelModifierInterface
-            {
-            public:
-                virtual void setIndexValue(typename Channel::size_type idx, typename Channel::point_type_const_reference point) = 0;
-
-                virtual void addPoint(typename Channel::time_type time, typename Channel::point_type_const_reference point) = 0;
-            };
-
-            template<class Channel, class Modifier>
-            static Channel * createAutoModChannel(Channel & channel, Modifier modifier)
-            {
-                return new AutoModImpl<Channel, Modifier>(channel, modifier);
-            }
-
-            template<class Channel, class Modifier>
-            static void modifyChannel(Channel & channel, Modifier modifier)
-            {
-                ChannelModifierImplementation<Channel> modImpl(&channel);
-                modifier((ChannelModifierInterface<Channel>&)(&(modImpl)), (const Channel &)mod);
-                if(modImpl.wasUpdated() == true)
-                {
-                    channel.notify();
-                }
-            }
-
-        private:
-            template<class Channel>
-            //! Prywatna klasa realizujaca interfejs umo¿liwiaj¹cy modyfikacje
-            class ChannelModifierImplementation : public ChannelModifierInterface<Channel>
-            {
-            public:
-                ChannelModifierImplementation() : updated(false) {}
-
-                ~ChannelModifierImplementation() {}
-
-                virtual void setIndexValue(typename Channel::size_type idx, typename Channel::point_type_const_reference point)
-                {
-                    MakePublicOperations::setIndexValue(*channel, idx, point);
-                    updated = true;
-                }
-
-                virtual void addPoint(typename Channel::time_type time, typename Channel::point_type_const_reference point)
-                {
-                    MakePublicOperations::addPoint(*channel, time, point);
-                    updated = true;
-                }
-
-                bool wasUpdated() const
-                {
-                    return updated;
-                }
-
-                void resetUpdate(){
-                    updated = false;
-                }
-
-                void setChannelToMod(Channel * channel)
-                {
-                    this->channel = channel;
-                }
-
-            private:
-                bool updated;
-                Channel * channel;
-            };
-
-            template<class Channel, class Modifier>
-            class AutoModImpl : public Channel 
-            {
-            private:
-
-            //! Prywatna klasa realizuj¹ca obserwacjê zadanej klasy. Na jej zmianê wyzwala modyfikacje
-            class UpdateNotifier : public Channel::_MyObserverType
-            {
-            public:
-
-                virtual void update(const typename Channel::_MyChannelInterface * channel)
-                {
-                    mod->fullDataUpdate();
-                }
-
-                void setModifier(AutoModImpl* mod)
-                {
-                    this->mod = mod;
-                }
-
-            private:
-                AutoModImpl* mod;
-            };
-
-            friend class UpdateNotifier;
-
-            private:
-                Modifier modifier;
-                UpdateNotifier notifier;
-                ChannelModifierImplementation<Channel> modifierImplementation;
-                Channel * observedChannel;
-
-            public:
-                AutoModImpl(Channel & channel, Modifier modifier)
-                    : Channel(channel), modifier(modifier), observedChannel(&channel)
-            {
-                modifierImplementation.setChannelToMod(this);
-                notifier.setModifier(this);
-                channel.attach(&notifier);
-
-                if(channel.empty() == false){
-                    refreshData();
-                }
-            }
-
-            private:
-
-                void refreshData()
-                {
-                    modifier((ChannelModifierInterface<Channel>&)modifierImplementation, (const Channel &)*this, (const Channel &)*observedChannel);
-                }
-
-                void fullDataUpdate()
-                {
-                    refreshData();
-                    if(modifierImplementation.wasUpdated() == true)
-                    {
-                        modifierImplementation.resetUpdate();
-                        notify();
-                    }
-                }
-            };
-
-        //! Pozwala modyfikowaæ dane indeksowane kolejnoœci¹ próbek
-        template<class Channel>
-        static void setIndexValue(Channel & channel, typename Channel::size_type idx, typename Channel::point_type_const_reference point)
-        {
-            channel.__innerSetIndexValue(idx, point);
+            throw std::runtime_error("Not suppported");
+            changed = true;
         }
 
-        //! Pozwala dodawaæ punkty do kana³u
-        template<class Channel>
-        static void addPoint(Channel & channel, typename Channel::time_type time, typename Channel::point_type_const_reference point)
+        virtual void setIndexData(size_type idx, point_type_const_reference point)
         {
-            ((Channel::_MyChannelInterface*)(&channel))->__innerAddPoint(time, point);
-        }
-
-        class MakePublicOperations
-        {
-        public:
-
-            //! Pozwala modyfikowaæ dane indeksowane kolejnoœci¹ próbek
-            template<class Channel>
-            static void setIndexValue(Channel & channel, typename Channel::size_type idx, typename Channel::point_type_const_reference point)
-            {
-                AutoModifier::setIndexValue(channel, idx, point);
-            }
-
-            //! Pozwala dodawaæ punkty do kana³u
-            template<class Channel>
-            static void addPoint(Channel & channel, typename Channel::time_type time, typename Channel::point_type_const_reference point)
-            {
-                AutoModifier::addPoint(channel, time, point);
-            }
-        };
-
-        friend class MakePublicOperations;
-    };
-
-
-    //! Kana³ z danymi dyskretnymi - dane nie s¹ interpolowane. Zapytanie o dok³adn¹ próbke czasow¹ kiedy ona nie wystepuje skutkuje wyj¹tkiem
-    //! Obs³uguje zapytania o czas spoza zakresu. Zapytania o czas wspieraj¹ obszar który jest rozpatrywany w przypadku braku próbki - zwracana jest najbli¿sza w przedziale.
-    //! W przypadku braku wyj¹tek. 
-    template<class PointType, class TimeType = float, class TimeOverflowResolver = ExceptionTimeOverflowResolver<PointType, TimeType>>
-    class DiscreteDataChannel : public IBaseChannel<PointType, TimeType>, public TimeOverflowResolver
-    {
-    public:
-        //! Mój typ bazowy
-        typedef DiscreteDataChannel<PointType, TimeType, TimeOverflowResolver> _MyChannelType;
-
-    private:
-        //! Domyœlne otoczenie wokó³ którego szukamy próbek
-        time_type timeEpsilon;
-        //! Czy jeœli nie znaleziono odpowiadaj¹cej próbki i ta po lewej i po prawej maj¹ tak¹ sam¹ odleg³oœæ to wybraæ mniejsz¹
-        bool smallerIfEqual;
-
-    public:
-        //! \param timeEpsilon Domyœlny przedzia³ przeszukiwania dla zapytañ czasowych
-        //! \param smallerIfEqual Polityka wyboru próbki jesli nie znaleziono w³aœciwej a odleg³oœæ po lewej i prawej stronie jest identyczna
-        DiscreteDataChannel(time_type timeEpsilon = 0, bool smallerIfEqual = true)
-            : timeEpsilon(timeEpsilon), smallerIfEqual(smallerIfEqual)
-        {
-
-        }
-
-        //! Konstruktor kopiuj¹cy
-        //! \param channel
-        //! \param timeEpsilon
-        //! \param smallerIfEqual
-        DiscreteDataChannel(const _MyChannelInterface& channel, time_type timeEpsilon = 0, bool smallerIfEqual = true) :
-          _MyChannelInterface(channel), timeEpsilon(timeEpsilon), smallerIfEqual(smallerIfEqual)
-        {
-            
-        }
-
-          //! Konstruktor kopiuj¹cy
-          //! \param channel
-          DiscreteDataChannel(const DiscreteDataChannel& channel) : _MyChannelInterface(channel),
-              timeEpsilon(channel.timeEpsilon), smallerIfEqual(channel.smallerIfEqual)
-          {
-             
-          }
-
-          //! Pusty polimorficzny destruktor.
-          virtual ~DiscreteDataChannel() {}
-
-    public:
-
-        //! Klonuje kana³.
-        virtual DiscreteDataChannel* clone() const
-        {
-            return new DiscreteDataChannel(*this);
-        }
-
-        //! Tworzy pusty kana³ z ustawieniami twórcy
-        virtual DiscreteDataChannel* create() const
-        {
-            return new DiscreteDataChannel(timeEpsilon, smallerIfEqual);
-        }
-
-        //! \return Domyœlny epsilon dla czasu
-        time_type getTimeEpsilon() const
-        {
-            return timeEpsilon;
-        }
-
-        //! \param
-        void setTimeEpsilon(time_type timeEpsilon)
-        {
-            this->timeEpsilon = timeEpsilon;
-        }
-
-        //! \return Czy brana bêdzie mniejsza próbka jeœli równe
-        bool getSmallerIfEqualPolicy() const
-        {
-            return smallerIfEqual;
-        }
-
-
-        //! \param
-        void setSmallerIfEqualPolicy(bool smallerIfEqual)
-        {
-            this->smallerIfEqual = smallerIfEqual;
-        }
-
-        using _MyChannelInterface::getValue;
-
-        //! \param
-        //! \param
-        //! \param
-        point_type getValue(time_type time, time_type epsilon, bool smallerIfEqual = true) const
-        {
-            UTILS_ASSERT((epsilon >= 0), "Nieprawid³owy epsilon - musi byæ wiêkszy lub równy 0");
-
-            if(empty() == true){
-                throw std::runtime_error("Value request to empty channel");
-            }
-            
-            return __getValue(time, epsilon, smallerIfEqual);
-        }
-
-    protected:
-        //! \param time
-        //! \return Zinterpolowana wartoœæ dla zadanego czasu.
-        virtual point_type innerGetValue(time_type time) const
-        {   
-            return __getValue(time, timeEpsilon, smallerIfEqual);
+            data[idx].second = point;
+            changed = true;
         }
 
     private:
-        point_type __getValue(time_type time, time_type epsilon, bool smallerIfEqual = false) const
-        {
-            bool pointSet = false;
-            point_type ret;
-
-            if ( time < 0 ) {
-                if(time >= -epsilon){
-                    pointSet = true;
-                    ret = (*this)[0u].second;
-                }else{
-                    TimeOverflowResolver::timeUnderflow(time, ret);
-                    pointSet = true;
-                }
-            }else if ( time > getLength() ) {
-                if(time - epsilon <= getLength()){
-                    pointSet = true;
-                    ret = rbegin()->second;
-                }else{
-                    TimeOverflowResolver::timeOverflow(time, ret);
-                    pointSet = true;
-                }
-            }else{
-                auto it = begin();
-                auto lowerBound = it;
-                bool wasLower = false;
-                for( ; it != end(); it++){
-                    if((*it).first == time){
-                        break;
-                    }else if(wasLower == false && (*it).first > time){
-                        wasLower = true;
-                        lowerBound = it;
-                    }
-                }
-
-                if(it == end()){
-
-                    // Czy wartoœæ mniejsza od pierwszej próbki
-                    if(lowerBound == begin()){
-                        if((*lowerBound).first - epsilon <= time){
-                            pointSet = true;
-                            ret = (*lowerBound).second;
-                        }
-                        // Wartoœæ gdzieœ wewn¹trz kana³u - istnieje próbka poprzednia
-                    }else{
-                        //probka poprzednia, mniejszy czas
-                        auto iT = lowerBound;
-                        iT--;
-
-                        auto closerIt = iT;
-
-                        if( ((*lowerBound).first - time) < (time - (*iT).first) || ( ((*lowerBound).first - time) == (time - (*iT).first) && smallerIfEqual == false) ){
-                            closerIt = lowerBound;
-                        }
-
-                        if(std::fabs((*closerIt).first - time) <= epsilon){
-                            pointSet = true;
-                            ret = (*closerIt).second;
-                        }
-                    }
-                }else{
-                    pointSet = true;
-                    ret = (*it).second;
-                }
-            }
-
-            if(pointSet == false){
-                throw std::runtime_error("No sample for specified time and surrounding");
-            }
-
-            return ret;
-        }
-    };
-
-    //! Kana³ z danymi ci¹g³ymi - wspiera interpolacjê za pomoca klasy Manipulator. Manipulator powinien umo¿liwiæ poprawne zapytanie o czas z zakrewsu [0, length] kana³u
-    //! Obs³uguje interpolacjê danych oraz obs³uge czasu spoza zakresu.
-    template<class PointType, class TimeType = float,
-        class Manipulator = DataOperatorsManipulator<PointType, TimeType>, class TimeOverflowResolver = ExceptionTimeOverflowResolver<PointType, TimeType>>
-    class ContiniousDataChannel : public IBaseChannel<PointType, TimeType>, public TimeOverflowResolver, public Manipulator
-    {
-    public:
-        //! Mój typ kana³u
-        typedef ContiniousDataChannel<PointType, TimeType, Manipulator, TimeOverflowResolver> _MyChannelType;        
-
-    public:
-        
-        ContiniousDataChannel()
-        {
-
-        }
-        
-        //! Konstruktor kopiuj¹cy
-        //! \param channel
-        ContiniousDataChannel(const _MyChannelInterface& channel) : _MyChannelInterface(channel)
-        {
-            
-        }
-
-        //! Konstruktor kopiuj¹cy
-        //! \param channel
-        ContiniousDataChannel(const ContiniousDataChannel& channel) : _MyChannelInterface(channel),
-            TimeOverflowResolver(channel), Manipulator(channel)
-        {
-            
-        }
-
-        //! Pusty polimorficzny destruktor.
-        virtual ~ContiniousDataChannel() {}
-
-    public:
-
-        //! Klonuje kana³.
-        virtual ContiniousDataChannel* clone() const
-        {
-            return new ContiniousDataChannel(*this);
-        }
-
-        //! Tworzy pusty kana³ z ustawieniami twórcy
-        virtual ContiniousDataChannel* create() const
-        {
-            return new ContiniousDataChannel();
-        }
-        
-    protected:
-        //! \param time
-        //! \return Zinterpolowana wartoœæ dla zadanego czasu.
-        virtual point_type innerGetValue(time_type time) const
-        {   
-            point_type ret;
-            if ( time < 0 ) {
-                TimeOverflowResolver::timeUnderflow(time, ret);
-            }else if ( time > getLength() ) {
-                TimeOverflowResolver::timeOverflow(time, ret);
-            }else{
-                auto points = getValueHelper(time);
-                if(&(points.first) == &(points.second)){
-                    ret = points.first.second;
-                }else{
-                    Manipulator::interpolate(ret, points.first.second, points.second.second, (time - points.first.first) / (points.second.first - points.first.first) );
-                }
-            }
-
-            return ret;
-        }
-
-        //! \return Para punktów pomiarowych pomiêdzy którymi nale¿y wykonaæ interpolacjê.
-        virtual std::pair<const_reference, const_reference> getValueHelper(time_type time) const
-        {   
-            auto it = begin();
-            auto lowerBound = it;
-            bool wasLower = false;
-            for( ; it != end(); it++){
-                if((*it).first == time){
-                    break;
-                }else if(wasLower == false && (*it).first > time){
-                    wasLower = true;
-                    lowerBound = it;
-                }
-            }
-
-            auto iT = it;
-
-            if(it == end()){
-                it = lowerBound;
-                iT = it;
-                it--;
-            }
-
-            return std::pair<const_reference, const_reference>(*it, *iT);
-        }            
+        typename IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr channel;
+        typename IChannelAutoModifier<PointType, TimeType>::_MyModifierType modifier;
+        UpdateNotifier * notifier;
+        bool changed;
     };
 
     template<class Channel>
-    class UniformTimeDataChannel : public Channel
+    class ChannelWithDescriptor : public Channel, public ChannelDescriptor
     {
+        UTILS_STATIC_ASSERT((boost::is_base_of<RawGeneralDataChannel<typename Channel::point_type, typename Channel::time_type>, Channel>::value), "Base class should inherit from RawGeneralDataChannel");
+        UTILS_STATIC_ASSERT(!(boost::is_base_of<ChannelDescriptor, Channel>::value), "Do you need two descriptor bases for this channel? Already added descriptor to channel?");
 
     public:
 
-        typedef typename Channel::time_type time_type;
-        typedef typename Channel::point_type point_type;
-        typedef typename Channel::point_type_const_reference point_type_const_reference;
-        typedef typename Channel::const_reference const_reference;
+        ChannelWithDescriptor() {}
+        ChannelWithDescriptor(const IChannelDescriptorReader & descriptor) : ChannelDescriptor(descriptor) {}
+        ChannelWithDescriptor(const Channel & channel, const IChannelDescriptorReader & descriptor = ChannelDescriptor()) : Channel(channel), ChannelDescriptor(descriptor) {}
+        ChannelWithDescriptor(const ChannelWithDescriptor & channel) : Channel(channel), ChannelDescriptor(channel) {}
+        ChannelWithDescriptor(float samplesPerSecond, const IChannelDescriptorReader & descriptor = ChannelDescriptor()) : Channel(samplesPerSecond), ChannelDescriptor(descriptor) {}
 
-        typedef UniformTimeDataChannel<Channel> _MyChannelType;
-        typedef typename Channel::_MyChannelType _MyBaseChannelType;
+        ChannelWithDescriptor(const Channel & channel, boost::false_type, const IChannelDescriptorReader & descriptor = ChannelDescriptor()) : Channel(channel, boost::false_type()), ChannelDescriptor(descriptor) {}
+        ChannelWithDescriptor(const ChannelWithDescriptor & channel, boost::false_type) : Channel(channel, boost::false_type()), ChannelDescriptor(channel) {}
 
-    private:
+        virtual ~ChannelWithDescriptor() {}
 
-        const time_type samplesPerSecond;
-        time_type samplesPerSecondInv;
-
-    public:
-        //! \param samplesPerSec Liczba próbek na sekundê.
-        UniformTimeDataChannel(time_type samplesPerSecond = 25)
-            : samplesPerSecond(samplesPerSecond)
+        virtual ChannelWithDescriptor * clone() const
         {
-            if(samplesPerSecond <= 0){
-                throw std::runtime_error("Incorrect samples per second value");
-            }
-
-            samplesPerSecondInv = 1.0 / samplesPerSecond;
+            return new ChannelWithDescriptor(*this);
         }
 
-        //! Konstruktor kopiuj¹cy
-        //! \param channel
-        UniformTimeDataChannel(const UniformTimeDataChannel& channel) :
-        Channel(channel), samplesPerSecond(channel.samplesPerSecond),
-            samplesPerSecondInv(channel.samplesPerSecondInv)
+        virtual ChannelWithDescriptor * create() const
         {
-
+            return new ChannelWithDescriptor(*this, boost::false_type());
         }
 
-    public:
-        //! Pusty polimorficzny destruktor.
-        virtual ~UniformTimeDataChannel() {}
-
-        //! \return Klon obiektu
-        virtual UniformTimeDataChannel* clone() const
-        {
-            return new UniformTimeDataChannel(*this);
-        }
-
-        //! Tworzy pusty kana³ z ustawieniami twórcy
-        virtual UniformTimeDataChannel* create() const
-        {
-            return new UniformTimeDataChannel(samplesPerSecond);
-        }
-
-        //! \return Iloœc próbek na sekundê
-        time_type getSamplesPerSecond() const
-        {
-            return samplesPerSecond;
-        }
-
-        //! \return Czas trwania jednej próbki
-        time_type getSampleDuration() const
-        {
-            return samplesPerSecondInv;
-        }
-
-        using Channel::addPoint;
-
-        void addPoint(point_type_const_reference point)
-        {
-            time_type t = getLength();
-
-            if(empty() == false){
-                t += samplesPerSecondInv;
-            }
-
-            Channel::__innerAddPoint(t, point);
-        }
-
-    protected:
-
-        //! \return Para punktów pomiarowych pomiêdzy którymi nale¿y wykonaæ interpolacjê.
-        virtual std::pair<const_reference, const_reference> getValueHelper(time_type time) const
-        {
-            // wyznaczenie indeksów
-            size_type idx = static_cast<size_type>(time * samplesPerSecond);
-            UTILS_ASSERT( idx < size() );
-
-            // pobranie punktów
-            const_reference p1 = operator[](idx);
-            const_reference p2 = (idx == size()-1) ? p1 : operator[](idx+1);
-            return std::pair<const_reference, const_reference>(p1, p2);
-        }
-
-        virtual void __innerAddPoint(time_type time, point_type_const_reference point)
-        {
-            time_type nextTime = getLength() + samplesPerSecondInv;
-            if( (time != 0) && (time != nextTime)){
-                throw std::runtime_error("Time breaks channel resolution");
-            }
-
-            Channel::__innerAddPoint(time, point);
-        }
     };
 
-    //! Implementacja interfejsu IChannelDescriptor
-    class ChannelDescriptor
+    template<class PointType, class TimeType, bool>
+    class IChannelReader : public virtual utils::IRawGeneralDataChannelReader<PointType, TimeType>, public virtual IChannelDescriptorReader
     {
-    private:
-        //! Skala czasu
-        float timeScaleFactor;
-        //! Jednostka czasu
-        std::string timeBaseUnit;
-        //! Skala wartoœci
-        float valueScaleFactor;
-        //! Jendostka wartoœci
-        std::string valueBaseUnit;
-        //! Nazwa kana³u
-        std::string name;
-
     public:
+        virtual ~IChannelReader() {}
 
-        ChannelDescriptor() : timeScaleFactor(1.0f), valueScaleFactor(1.0f) {}
-
-        ChannelDescriptor(const std::string & name, const std::string & valueBaseUnit,
-            float valueScaleFactor = 1.0f, float timeScaleFactor = 1.0f,
-            const std::string & timeBaseUnit = std::string("s"))
-            : name(name), valueBaseUnit(valueBaseUnit), valueScaleFactor(valueScaleFactor),
-            timeScaleFactor(timeScaleFactor), timeBaseUnit(timeBaseUnit)
-        {
-
-        }
-
-        ChannelDescriptor(const ChannelDescriptor & channel)
-            : name(channel.name), valueBaseUnit(channel.valueBaseUnit),
-            valueScaleFactor(channel.valueScaleFactor),
-            timeScaleFactor(channel.timeScaleFactor),
-            timeBaseUnit(channel.timeBaseUnit)
-        {
-
-        }
-
-    public:
-
-        virtual ~ChannelDescriptor() {}
-
-        //! \return
-        const std::string& getTimeBaseUnit() const
-        { 
-            return timeBaseUnit;
-        }
-
-        //! \return
-        float getTimeScaleFacotr() const
-        { 
-            return timeScaleFactor;
-        }
-
-        //! \return
-        const std::string& getValueBaseUnit() const
-        { 
-            return valueBaseUnit;
-        }
-
-        //! \return
-        float getValueScaleFacotr() const
-        { 
-            return valueScaleFactor;
-        }
-
-        //! \return
-        const std::string& getName() const
-        { 
-            return name;
-        }
-
-        //! \param timeBaseUnit
-        void setTimeBaseUnit(const std::string& timeBaseUnit) 
-        { 
-            this->timeBaseUnit = timeBaseUnit;
-        }
-
-        //! \param timeBaseUnit
-        void setTimeScaleFactor(float timeScaleFactor) 
-        { 
-            this->timeScaleFactor = timeScaleFactor;
-        }
-
-        //! \param yUnit
-        void setValueBaseUnit(const std::string& valueBaseUnit) 
-        { 
-            this->valueBaseUnit = valueBaseUnit;
-        }
-
-        //! \param timeBaseUnit
-        void setValueScaleFactor(float valueScaleFactor) 
-        { 
-            this->valueScaleFactor = valueScaleFactor;
-        }
-
-        //! \param name
-        void setName(const std::string& name) 
-        { 
-            this->name = name;
-        }
+        typedef utils::RawGeneralDataChannel<PointType, TimeType> RawChannel;
+        typedef utils::ChannelWithDescriptor<RawChannel> Implementation;
     };
 
-    template<class PointType, class TimeType = float, class Manipulator = utils::DataOperatorsManipulator<PointType, TimeType>>
-    class BaseChannel : public utils::UniformTimeDataChannel<utils::ContiniousDataChannel<PointType, TimeType, Manipulator>>, public utils::ChannelDescriptor
+    template<class PointType, class TimeType>
+    class IChannelReader<PointType, TimeType, true> : public virtual utils::IRawUniformDataChannelReader<PointType, TimeType>, public virtual IChannelDescriptorReader
     {
     public:
-        BaseChannel(time_type samplesPerSecond = 25, const ChannelDescriptor & descriptor = ChannelDescriptor()) : utils::UniformTimeDataChannel<utils::ContiniousDataChannel<PointType, TimeType, Manipulator>>(samplesPerSecond),
-            ChannelDescriptor(descriptor) {}
+        virtual ~IChannelReader() {}
 
-        BaseChannel(const BaseChannel & channel) : utils::UniformTimeDataChannel<utils::ContiniousDataChannel<PointType, TimeType, Manipulator>>(channel), ChannelDescriptor(channel) {}
+        typedef utils::RawUniformDataChannel<PointType, TimeType> RawChannel;
+        typedef utils::ChannelWithDescriptor<RawChannel> Implementation;
+    };
 
-        virtual ~BaseChannel() {}
+    template<class PointType, class TimeType = float, bool uniform = true>
+    class Channel : public IChannelReader<PointType, TimeType, uniform>, public IChannelReader<PointType, TimeType, uniform>::Implementation
+    {
+    public:
+        typedef IChannelReader<PointType, TimeType, uniform> Interface;
 
-        virtual BaseChannel * clone() const
+    public:
+
+        Channel() {}
+
+        Channel(const Channel & channel) : Implementation(channel) {}
+        Channel(const Channel & channel, boost::false_type) : Implementation(channel, boost::false_type()) {}
+
+        Channel(const IChannelDescriptorReader & descriptor) : Implementation(descriptor) {}
+        Channel(const RawChannel & channel, const IChannelDescriptorReader & descriptor = ChannelDescriptor()) : Implementation(channel, descriptor) {}
+        
+        Channel(float samplesPerSecond, const IChannelDescriptorReader & descriptor = ChannelDescriptor()) : Implementation(samplesPerSecond, descriptor) {}
+
+        Channel(const RawChannel & channel, boost::false_type, const IChannelDescriptorReader & descriptor = ChannelDescriptor()) : Implementation(channel, boost::false_type(), descriptor) {}
+
+        virtual ~Channel() {}
+
+        virtual Channel * clone() const
         {
-            return new BaseChannel(*this);
+            return new Channel(*this);
         }
 
-        virtual BaseChannel * create() const
+        virtual Channel * create() const
         {
-            return new BaseChannel(getSamplesPerSecond(), *this);
+            return new Channel(*this, boost::false_type());
+        }
+
+        virtual float getSamplesPerSecond() const
+        {
+            return Implementation::getSamplesPerSecond();
+        }
+
+        virtual float getSampleDuration() const
+        {
+            return Implementation::getSampleDuration();
         }
     };
 

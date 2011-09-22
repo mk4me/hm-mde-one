@@ -18,15 +18,118 @@
 #include <c3dlib/C3DParser.h>
 #include <kinematiclib/JointAnglesCollection.h>
 
-typedef utils::BaseChannel<osg::Vec3f> VectorChannel;
+typedef utils::ITimerReader<float>::TimerReaderType TimerReader;
+typedef utils::ITimerReader<float>::TimerReaderPtr TimerReaderPtr;
+typedef utils::ITimerReader<float>::TimerReaderConstPtr TimerReaderConstPtr;
+
+typedef utils::ITimer<float>::TimerType Timer;
+typedef utils::ITimer<float>::TimerPtr TimerPtr;
+typedef utils::ITimer<float>::TimerConstPtr TimerConstPtr;
+
+typedef utils::Timer<float> GeneralTimer;
+
+typedef utils::TimerOnTimer<float> TimerOnTimer;
+
+
+typedef utils::GeneralDataChannelTimeAccessor<float, float> ScalarContiniousTimeAccessor;
+typedef utils::CurrentValueExtractor<float, float> ScalarCurentValueExtractor;
+typedef utils::ChannelAutoModifier<float, float> ScalarModifier;
+
+typedef utils::Channel<float> ScalarChannel;
+typedef ScalarChannel::Interface ScalarChannelReaderInterface;
+
+typedef core::shared_ptr<ScalarChannelReaderInterface> ScalarChannelReaderInterfacePtr;
+typedef core::shared_ptr<const ScalarChannelReaderInterface> ScalarChannelReaderInterfaceConstPtr;
+
+typedef utils::Channel<osg::Vec3f> VectorChannel;
+
+typedef VectorChannel::Interface VectorChannelReaderInterface;
+
+typedef utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float> VectorContiniousTimeAccessor;
+typedef utils::CurrentValueExtractor<osg::Vec3f, float> VectorCurentValueExtractor;
+typedef utils::ChannelAutoModifier<osg::Vec3f, float> VectorModifier;
+
 typedef core::shared_ptr<VectorChannel> VectorChannelPtr;
 typedef core::shared_ptr<const VectorChannel> VectorChannelConstPtr;
 
-typedef utils::BaseChannel<float> ScalarChannel;
+typedef core::shared_ptr<VectorChannelReaderInterface> VectorChannelReaderInterfacePtr;
+typedef core::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
+
+class VectorToScalarAdaptor : public ScalarChannelReaderInterface, public utils::ChannelDescriptor
+{
+protected:
+    VectorToScalarAdaptor(const VectorToScalarAdaptor & adaptor) : utils::ChannelDescriptor(adaptor), vector(adaptor.vector), index(adaptor.index), name(adaptor.name) {}
+
+public:
+    VectorToScalarAdaptor(const VectorChannelReaderInterfaceConstPtr & vector, size_type idx, const std::string & name = std::string()) : utils::ChannelDescriptor(*vector), vector(vector), index(idx), name(name)
+    {
+        UTILS_ASSERT((idx >= 0 && idx < 3), "Bledny index dla adaptera skalarnego kanalu wektorowego");
+    }
+    virtual ~VectorToScalarAdaptor() {}
+
+    virtual const std::string& getName() const
+    {
+        return name;
+    }
+
+    virtual VectorToScalarAdaptor * clone() const
+    {
+        return new VectorToScalarAdaptor(*this);
+    }
+
+    //! \return Czas trwania kana³u
+    virtual time_type getLength() const
+    {
+        return vector->getLength();
+    }
+
+    //! \param idx Indeks probki
+    //! \return Wartosc czasu dla danego indeksu
+    virtual time_type argument(size_type idx) const
+    {
+        return vector->argument(idx);
+    }
+
+    //! \param idx Indeks probki
+    //! \return Wartosc probki dla danego indeksu
+    virtual point_type_const_reference value(size_type idx) const
+    {
+        return vector->value(idx)[index];
+    }
+
+    //! \return Iloœæ próbek w kanale
+    virtual size_type size() const
+    {
+        return vector->size();
+    }
+
+    //! \return Czy kana³ nie zawiera danych
+    virtual bool empty() const
+    {
+        return vector->empty();
+    }
+
+    virtual float getSamplesPerSecond() const
+    {
+        return vector->getSamplesPerSecond();
+    }
+
+    virtual float getSampleDuration() const
+    {
+        return vector->getSampleDuration();
+    }
+
+private:
+    VectorChannelReaderInterfaceConstPtr vector;
+    size_type index;
+    std::string name;
+};
+
 typedef core::shared_ptr<ScalarChannel> ScalarChannelPtr;
 typedef core::shared_ptr<const ScalarChannel> ScalarChannelConstPtr;
 
 typedef utils::ChannelStats<ScalarChannel::point_type, ScalarChannel::time_type> ScalarChannelStats;
+
 typedef core::shared_ptr<ScalarChannelStats> ScalarChannelStatsPtr;
 typedef core::shared_ptr<const ScalarChannelStats> ScalarChannelStatsConstPtr;
 
@@ -34,43 +137,44 @@ class ScalarChannelNormalizer
 {
 public:
 
-    void operator()(utils::AutoModifier::ChannelModifierInterface<ScalarChannel> & modifierInterface,
-        const ScalarChannel & myChannel,
-        const ScalarChannel & observedChannel)
+    void operator()(ScalarChannelReaderInterface::_MyExtendedWriter & modifierInterface,
+        const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
+        const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
         //uzupe³nij brakujace prboki
         if(myChannel.size() < observedChannel.size()){
             for(auto idx = myChannel.size(); idx < observedChannel.size(); idx++){
-                modifierInterface.addPoint(observedChannel[idx].first, observedChannel[idx].second);
+                modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
             }
         }
 
-        auto it = observedChannel.begin();
+        auto i = 0;
 
         //min i max
-        ScalarChannel::point_type minVal = it->second;
-        ScalarChannel::point_type maxVal = it->second;
+        auto minVal = observedChannel.value(0);
+        auto maxVal = minVal;
 
-        it++;
+        i++;
 
-        for( ; it != observedChannel.end(); it++){
-            if(it->second < minVal){
-                minVal = it->second;
-            }else if(it->second > maxVal){
-                maxVal = it->second;
+        for( ; i != observedChannel.size(); i++){
+            if(observedChannel.value(i) < minVal){
+                minVal = observedChannel.value(i);
+            }else if(observedChannel.value(i) > maxVal){
+                maxVal = observedChannel.value(i);
             }
         }
 
-        ScalarChannel::point_type diff = maxVal - minVal;
+        ScalarChannelReaderInterface::point_type diff = maxVal - minVal;
 
         if(diff != 0){
             //aktualizacja próbek
-            for(ScalarChannel::size_type idx = 0; idx < myChannel.size(); idx++){
-                modifierInterface.setIndexValue(idx, (observedChannel[idx].second - minVal) / diff);
+            for(ScalarChannelReaderInterface::size_type idx = 0; idx < myChannel.size(); idx++){
+                modifierInterface.setIndexData(idx, (observedChannel.value(idx) - minVal) / diff);
             }
         }
     }
 };
+
 
 //! Prosta kolekcja przechowujaca wszystkie zdarzenia z pliku c3d
 class C3DEventsCollection
@@ -341,7 +445,9 @@ DEFINE_CHANNEL(Moment);
 DEFINE_CHANNEL(Angle);
 DEFINE_CHANNEL(Power);
 
-CORE_DEFINE_WRAPPER(VectorChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER(VectorChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+//CORE_DEFINE_WRAPPER(VectorChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER_INHERITANCE(VectorChannel, VectorChannelReaderInterface);
 CORE_DEFINE_WRAPPER_INHERITANCE(MarkerChannel,VectorChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(MomentChannel,VectorChannel);
@@ -354,7 +460,10 @@ CORE_DEFINE_WRAPPER(MomentCollection, utils::PtrPolicyBoost, utils::ClonePolicyV
 //CORE_DEFINE_WRAPPER(C3DMisc, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
 CORE_DEFINE_WRAPPER(MarkerCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
-CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER(ScalarChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+//CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER_INHERITANCE(ScalarChannel, ScalarChannelReaderInterface);
+CORE_DEFINE_WRAPPER_INHERITANCE(VectorToScalarAdaptor, ScalarChannelReaderInterface);
 CORE_DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);

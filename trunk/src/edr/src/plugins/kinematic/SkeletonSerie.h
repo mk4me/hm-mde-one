@@ -12,10 +12,9 @@
 
 #include <core/IVisualizer.h>
 #include <osg/Geode>
-#include <timelinelib/IChannel.h>
 #include "KinematicVisualizer.h"
 
-class SkeletonSerie :  public QObject, public core::IVisualizer::SerieBase, public timeline::IChannel
+class SkeletonSerie :  public QObject, public core::IVisualizer::TimeSerieBase
 {
 	Q_OBJECT;
 public:
@@ -34,20 +33,26 @@ public:
 private slots:
 	void setAxis(bool);
 
-protected:
-	virtual void setSerieName(const std::string & name){}			
+public:
+	virtual void setName(const std::string & name)
+    {
+        this->name = name;
+    }
 
-	virtual void setSerieData(const core::ObjectWrapperConstPtr & data);
+    virtual const std::string & getName() const
+    {
+        return name;
+    }
 
-	//! \return Sklonowane dane w kanale
-	virtual timeline::IChannelPtr clone() const
-	{
-		//! NIE WSPIERAMY TUTAJ KLONOWANIA!!
-		return timeline::IChannelPtr();
-	}
+	virtual void setData(const core::ObjectWrapperConstPtr & data);
+
+    virtual const core::ObjectWrapperConstPtr & getData() const
+    {
+        return data;
+    }
 
 	//! \return Dlugosc kanalu w sekundach
-	virtual double getLength() const
+	virtual float getLength() const
 	{
 		UTILS_ASSERT(scheme);
 		return scheme->getDuration();
@@ -55,7 +60,7 @@ protected:
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
-	virtual void setTime(double time)
+	virtual void setTime(float time)
 	{
 		UTILS_ASSERT(scheme && skeletonDrawers);
 		scheme->setTime(time);
@@ -67,6 +72,8 @@ private:
 	SkeletalVisualizationSchemePtr scheme;
 	SchemeDrawerContainerPtr skeletonDrawers;
 	osg::ref_ptr<osg::PositionAttitudeTransform> transformNode;
+    core::ObjectWrapperConstPtr data;
+    std::string name;
 };
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;
 typedef boost::shared_ptr<const SkeletonSerie> SkeletonSerieConstPtr;

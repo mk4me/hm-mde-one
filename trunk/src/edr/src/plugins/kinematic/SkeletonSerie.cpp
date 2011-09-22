@@ -1,9 +1,10 @@
 #include "PCH.h"
 #include "SkeletonSerie.h"
 
-void SkeletonSerie::setSerieData( const core::ObjectWrapperConstPtr & data )
+void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
+    this->data = data;
 	connect(visualizer->actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
 	
 	kinematic::JointAnglesCollectionConstPtr collection = data->get();

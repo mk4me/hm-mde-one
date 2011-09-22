@@ -7,6 +7,7 @@
 #include "DataManager.h"
 #include "ui_VisualizerWidget.h"
 #include "MainWindow.h"
+#include <plugins/newTimeline/ITimelineService.h>
 
 using namespace core;
 
@@ -317,6 +318,31 @@ void VisualizerWidget::clearCurrentVisualizer()
 
 void VisualizerWidget::clearDataSeries()
 {
+    if(timelineChannels.empty() == false){
+        TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+        if(timeline != nullptr) {
+
+            do{
+
+                VisualizerChannelPtr channel = timelineChannels.begin()->second;
+
+                try{
+                    timeline->removeChannel(channel->getSerie()->getName());
+                }catch(std::runtime_error e){
+                    LOG_WARNING("Could not remove channel from timeline because: " << e.what());
+                }catch(...){
+                    LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
+                }
+
+                channel->releaseChannel();
+
+                timelineChannels.erase(timelineChannels.begin());
+            }while(timelineChannels.empty() == false);
+        }
+
+        timelineChannels.swap(TimelineChannels());
+    }
+
     currentSeriesData.swap(std::map<core::ObjectWrapperConstPtr, core::VisualizerSeriePtr >());
     groupedSeriesData.swap(std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> >());
 }
@@ -479,7 +505,7 @@ void VisualizerWidget::fillSourcesMenu()
 
             if(aditional > 0){
                 std::set<core::ObjectWrapperConstPtr> current(objects->begin(), objects->end());
-                std::vector<core::ObjectWrapperConstPtr> result(max(static_cast<int>(objects->size()), aditional));
+                std::vector<core::ObjectWrapperConstPtr> result(std::max(static_cast<int>(objects->size()), aditional));
 
                 auto stopIT = std::set_difference(iT->second.begin(), iT->second.end(), current.begin(), current.end(), result.begin());
                 total = current.size();
@@ -585,8 +611,6 @@ void VisualizerWidget::innerRemoveAllSeries()
     }
 
     clearDataSeries();
-
-    setPermanent(false);
 }
 
 void VisualizerWidget::sourceSelected()
@@ -615,28 +639,53 @@ void VisualizerWidget::sourceSelected()
             //dodaj nowa seriê
             VisualizerSeriePtr serie(visualizer->createSerie(lastSerie.second, getLabel(lastSerie.second, true)));
 
+            VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie));
+
+            if(timeSerie != nullptr){
+                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+                if(timeline != nullptr) {
+                    
+                    VisualizerChannelPtr channel(new VisualizerChannel(timeSerie, this));
+
+                    try{
+                        timeline->addChannel(timeSerie->getName(), channel);
+                        //timelineChannels.insert(TimelineChannels::value_type(timeSerie,channel));
+                        timelineChannels[timeSerie] = channel;
+                    }catch(std::runtime_error e){
+                        LOG_WARNING("Could not add channel to timeline because: " << e.what());
+                    }catch(...){
+                        LOG_WARNING("Could not add channel to timeline. Unknown reason.");
+                    }
+                    //timelineDataSeries.insert(serie);
+                }
+            }
+
             currentSeriesData[lastSerie.second] = serie;
             groupedSeriesData[td.first].insert(lastSerie.second);
         }else{
-            //nie moge utworzyc serii - przelacz ostatnia serie
-            lastSerie.first->blockSignals(true);
-            lastSerie.first->setChecked(false);
-            lastSerie.first->blockSignals(false);
+            //TODO
+            //co jeœli mam ju¿ komplet? moge odznaczaæ serie, ale nie dodawaæ - mo¿e jakoœ kolorem menu?
 
-            auto it = currentSeriesData.find(lastSerie.second);
-            VisualizerSeriePtr serie = it->second;
-            groupedSeriesData[lastSerie.first->data().value<TypeData>().first].erase(lastSerie.second);
-            currentSeriesData.erase(it);
 
-            //aktualizujemy ostatnia serie danych
-            lastSerie.first = action;
-            lastSerie.second = td.second;
+            ////nie moge utworzyc serii - przelacz ostatnia serie
+            //lastSerie.first->blockSignals(true);
+            //lastSerie.first->setChecked(false);
+            //lastSerie.first->blockSignals(false);
 
-            serie->setData(lastSerie.second);
-            serie->setName(getLabel(lastSerie.second, true));
+            //auto it = currentSeriesData.find(lastSerie.second);
+            //VisualizerSeriePtr serie = it->second;
+            //groupedSeriesData[lastSerie.first->data().value<TypeData>().first].erase(lastSerie.second);
+            //currentSeriesData.erase(it);
 
-            currentSeriesData[lastSerie.second] = serie;
-            groupedSeriesData[td.first].insert(lastSerie.second);
+            ////aktualizujemy ostatnia serie danych
+            //lastSerie.first = action;
+            //lastSerie.second = td.second;
+
+            //serie->setData(lastSerie.second);
+            //serie->setName(getLabel(lastSerie.second, true));
+
+            //currentSeriesData[lastSerie.second] = serie;
+            //groupedSeriesData[td.first].insert(lastSerie.second);
         }
     }else{
         //usuñ seriê
@@ -648,6 +697,32 @@ void VisualizerWidget::sourceSelected()
         }
 
         visualizer->removeSerie(it->second);
+
+        VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(it->second));
+
+        if(timeSerie != nullptr){
+
+            auto iT = timelineChannels.find(timeSerie);
+
+            if(iT != timelineChannels.end()){
+                //usun kanal z timeline
+                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+                if(timeline != nullptr) {
+                    try{
+                        timeline->removeChannel(iT->first->getName());
+                    }catch(std::runtime_error e){
+                        LOG_WARNING("Could not remove channel from timeline because: " << e.what());
+                    }catch(...){
+                        LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
+                    }
+                }
+
+                iT->second->releaseChannel();
+
+                timelineChannels.erase(iT);
+            }
+        }
+
         currentSeriesData.erase(it);
 
         if(currentSeriesData.empty() == true){

@@ -25,7 +25,7 @@ public:
 
 signals:
 
-    void focuseGained();
+    void focuseChanged(bool focuse);
 
 public slots:
     //! Zmienia stan dokowania.
@@ -48,6 +48,7 @@ public slots:
 protected:
 
     virtual void focusInEvent(QFocusEvent * event);
+    virtual void focusOutEvent(QFocusEvent * event);
 
 private slots:
     void onTopLevelChange(bool topLevel);

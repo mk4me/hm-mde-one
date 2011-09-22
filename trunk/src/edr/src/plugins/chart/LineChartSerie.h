@@ -22,13 +22,16 @@ private:
     //! Tablica wierzcho³ków.
     osg::ref_ptr<osg::Vec3Array> vertices;
     //! Obs³uga czasu serii danych
-    ScalarChannelConstPtr channel;
+    ScalarChannelReaderInterfaceConstPtr channel;
     //! Obs³uga czasu kana³u
-    ScalarChannel::TimerPtr timer;
+    GeneralTimer::TimerPtr timer;
     //! Obs³uga statystyk kana³u
     ScalarChannelStatsPtr stats;
     //! Znormalizowany kana³
-    ScalarChannelPtr normalizedChannel;
+    boost::shared_ptr<ScalarModifier> normalizedChannel;
+
+    boost::shared_ptr<ScalarContiniousTimeAccessor> accessor;
+    boost::shared_ptr<ScalarCurentValueExtractor> currentValue;
     //!
     bool active;
 
@@ -37,18 +40,18 @@ public:
 
 public:
     //! \return Dane wykresu.
-    inline const ScalarChannelConstPtr & getData() const
+    inline const ScalarChannelReaderInterfaceConstPtr & getData() const
     { 
         return channel;
     }
 
-    inline const ScalarChannel::TimerPtr & getTimer() const
+    inline const GeneralTimer::TimerPtr & getTimer() const
     {
         return timer;
     }
 
     //! \param data Dane wykresu.
-    void setData(const ScalarChannelConstPtr& channel);
+    void setData(const ScalarChannelReaderInterfaceConstPtr& channel);
 
 // ChartSerie
 public:

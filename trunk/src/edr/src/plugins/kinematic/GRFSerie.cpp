@@ -76,7 +76,7 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& 
 	osg::Vec3 lastOrigin1;
 	osg::Vec3 lastOrigin2;
 	for (int i = 0; i < numSegments; i++) {
-		v.set((*f1)[f]);
+		v.set(getChannelValue(f, *f1));
 		float length = v.length();
 
 		float ratio1 = (f - startTime1) / (endTime1 - startTime1);
@@ -109,7 +109,7 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& 
 		}
 		lastV1 = v;
 		lastOrigin1 = origin1;
-		v.set((*f2)[f]);
+		v.set(getChannelValue(f, *f2));
 		length = v.length();
 		v *= grfScale;
 		v[2] *= -1.0f;
@@ -161,12 +161,12 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& 
 	return group;
 }
 
-void GRFSerie::setTime( double time )
+void GRFSerie::setTime( float time )
 {
 	try {
-		float t = static_cast<float>(time);
-		osg::Vec3 v1((*f1)[t]);
-		osg::Vec3 v2((*f2)[t]);
+		float t = time;
+		osg::Vec3 v1(getChannelValue(t, *f1));
+		osg::Vec3 v2(getChannelValue(t, *f2));
 
 		float ratio1 = v1.length() / maxLength;
 		float ratio2 = v2.length() / maxLength;
@@ -272,9 +272,10 @@ GRFSerie::ArrowPtr GRFSerie::createArrow()
 	return a;
 }
 
-void GRFSerie::setSerieData( const core::ObjectWrapperConstPtr & data )
+void GRFSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(GRFCollection));
+    this->data = data;
 	grfCollection = data->get();
 
 	if (grfCollection->getPlatforms().size() == 2) {
@@ -298,6 +299,11 @@ void GRFSerie::setSerieData( const core::ObjectWrapperConstPtr & data )
 	} else {
 		grfCollection.reset();
 	}
+}
+
+const core::ObjectWrapperConstPtr & GRFSerie::getData() const
+{
+    return data;
 }
 
 

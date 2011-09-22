@@ -45,21 +45,32 @@ public:
 		  }
 
 	  protected:
-		  virtual void setSerieName(const std::string & name)
+		  virtual void setName(const std::string & name)
 		  {
-			  //TODO
-			  //obecnie nazwy serii nie sa obslugiwane ale musimy pomyslec o tym i ewentualnie dodac!!
+			  this->name = name;
 		  }
 
-		  virtual void setSerieData(const core::ObjectWrapperConstPtr & data)
+          virtual const std::string & getName() const
+          {
+                return name;
+          }
+
+		  virtual void setData(const core::ObjectWrapperConstPtr & data)
 		  {
 			  std::string txt;
 			  txt = "<b>SUBJECT VISUALIZER</b>";
 			  visualizer->widget->setText(QString(txt.c_str()));
 		  }
 
+          virtual const core::ObjectWrapperConstPtr & getData() const
+          {
+              return data;
+          }
+
 	  private:
 		  SubjectVisualizer* visualizer;
+          std::string name;
+          core::ObjectWrapperConstPtr data;
 	  };
 
 	  virtual IVisualizer* createClone() const
@@ -82,8 +93,14 @@ public:
 		  return ret;
 	  }
 
+      core::IVisualizer::SerieBase *createSerie(const core::IVisualizer::SerieBase * serie)
+      {
+          return nullptr;
+      }
+
 	  virtual void removeSerie(core::IVisualizer::SerieBase *serie)
 	  {
+
 	  }
 
 	  virtual QWidget* createWidget(std::vector<QObject*>& actions)

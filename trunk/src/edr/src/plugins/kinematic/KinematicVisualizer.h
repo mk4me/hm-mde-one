@@ -26,7 +26,6 @@
 #include "GlPointSchemeDrawer.h"
 #include "GlLineSchemeDrawer.h"
 #include "SchemeDrawerContainer.h"
-#include <timelinelib/IChannel.h>
 
 class KinematicVisualizer :  public QObject, public core::IVisualizer
 {
@@ -45,7 +44,8 @@ public:
     virtual void update( double deltaTime );
     virtual void setUp( core::IObjectSource* source );
 	virtual int getMaxDataSeries() const;
-    virtual core::IVisualizer::SerieBase *createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+    virtual core::IVisualizer::TimeSerieBase *createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+    virtual core::IVisualizer::TimeSerieBase *createSerie(const core::IVisualizer::SerieBase* serie);
     virtual void removeSerie(core::IVisualizer::SerieBase *serie);
 	virtual core::IVisualizer* createClone() const;
     virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info );

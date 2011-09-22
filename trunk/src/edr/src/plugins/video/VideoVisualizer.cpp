@@ -225,14 +225,19 @@ int VideoVisualizer::getMaxDataSeries() const
     return 1;
 }
 
-core::IVisualizer::SerieBase* VideoVisualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
+core::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const ObjectWrapperConstPtr & data, const std::string & name)
 {
-    core::IVisualizer::SerieBase* ret = new VideoSerie(this);
+    VideoSerie* ret = new VideoSerie(this);
 
     ret->setName(name);
     ret->setData(data);
 
     return ret;
+}
+
+core::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const core::IVisualizer::SerieBase * serie)
+{
+    return nullptr;
 }
 
 void VideoVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)

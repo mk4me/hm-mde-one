@@ -968,6 +968,8 @@ void Chart::refreshSeries(float & currentZ, float zStep)
         return;
     }
 
+    float activeSerieZ = currentZ + zStep * (float)(series.size() - 1);
+
     //aktualizujemy aktywn¹ seriê
     BOOST_FOREACH( const ChartSeriePtr& serie, series ) {
         if(serie == getActiveSerie()){
@@ -982,9 +984,14 @@ void Chart::refreshSeries(float & currentZ, float zStep)
     if ( normalized ) {
         BOOST_FOREACH( const ChartSeriePtr& serie, series ) {
             serie->setLocation( x, y, w, h );
-            serie->setZ(currentZ);
+            if(serie->isActive() == true){
+                serie->setZ(activeSerieZ);
+            }else{
+                serie->setZ(currentZ);
+                currentZ += zStep;
+            }
+
             serie->refresh();
-            currentZ += zStep;
         }
     } else {
 
@@ -1108,11 +1115,20 @@ void Chart::refreshSeries(float & currentZ, float zStep)
                     h * (yRange.second - yRange.first)/(yMax - yMin)    
                     );
 
-                serie->setZ(currentZ);
+                if(serie->isActive() == true){
+                    serie->setZ(activeSerieZ);
+                }else{
+                    serie->setZ(currentZ);
+                    currentZ += zStep;
+                }
+
                 serie->refresh();
-                currentZ += zStep;
             }
         } 
+    }
+
+    if(series.empty() == false){
+        currentZ += zStep;
     }
 }
 

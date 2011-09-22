@@ -109,5 +109,11 @@ void EDRDockWidget::onTopLevelChange(bool topLevel)
 void EDRDockWidget::focusInEvent(QFocusEvent * event)
 {
     QDockWidget::focusInEvent(event);
-    emit focuseGained();
+    emit focuseChanged(true);
+}
+
+void EDRDockWidget::focusOutEvent(QFocusEvent * event)
+{
+    QDockWidget::focusOutEvent(event);
+ //   emit focuseChanged(false);
 }

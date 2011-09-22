@@ -21,7 +21,10 @@ namespace kinematic
 {
 	
 //! Klasa reprezentuje kanal dla pojedynczego stawu, przechowuje rotacje wzgledne w postaci kwaternionow
-typedef utils::BaseChannel<osg::Quat, float, QuaternionManipulatorSlerp> JointAngleChannel;
+//typedef utils::BaseChannel<osg::Quat, float, QuaternionManipulatorSlerp> JointAngleChannel;
+
+typedef utils::Channel<osg::Quat> JointAngleChannel;
+
 typedef boost::shared_ptr<JointAngleChannel> JointAngleChannelPtr;
 typedef boost::shared_ptr<const JointAngleChannel> JointAngleChannelConstPtr;
 

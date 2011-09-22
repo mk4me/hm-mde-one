@@ -16,7 +16,6 @@
 #include <plugins/video/Wrappers.h>
 #include <osgui/QOsgWidgets.h>
 #include <osgui/OsgWidgetUtils.h>
-#include <timelinelib/IChannel.h>
 
 //! Wizualizator wykresów.
 class VideoVisualizer : public core::IVisualizer
@@ -50,7 +49,7 @@ private:
 
 private:
 
-    class VideoSerie : public core::IVisualizer::SerieBase, public timeline::IChannel
+    class VideoSerie : public core::IVisualizer::TimeSerieBase
     {
     public:
         VideoSerie(VideoVisualizer * visualizer)
@@ -59,15 +58,19 @@ private:
 
         }
 
-    protected:
-
-        virtual void setSerieName(const std::string & name)
+        virtual void setName(const std::string & name)
         {
-
+            this->name = name;
         }
 
-        virtual void setSerieData(const core::ObjectWrapperConstPtr & data)
+        virtual const std::string & getName() const
         {
+            return name;
+        }
+
+        virtual void setData(const core::ObjectWrapperConstPtr & data)
+        {
+            this->data = data;
             visualizer->reset();
             bool success = false;
 			if (data->isSupported(typeid(VideoStreamPtr))) {
@@ -91,22 +94,20 @@ private:
             visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
         }
 
-        //! \return Sklonowane dane w kanale
-        virtual timeline::IChannelPtr clone() const
+        virtual const core::ObjectWrapperConstPtr & getData() const
         {
-            //! NIE WSPIERAMY TUTAJ KLONOWANIA!!
-            return timeline::IChannelPtr();
+            return data;
         }
 
         //! \return Dlugosc kanalu w sekundach
-        virtual double getLength() const
+        virtual float getLength() const
         {
             return visualizer->stream->getDuration();
         }
 
         //! Czas zawiera siê miêdzy 0 a getLength()
         //! \param time Aktualny, lokalny czas kanalu w sekundach
-        virtual void setTime(double time)
+        virtual void setTime(float time)
         {
             osg::const_pointer_cast<VideoStream>(visualizer->stream)->setTime(time);
             visualizer->streamImage = visualizer->stream->getImage(vidlib::PixelFormatRGB24);
@@ -117,6 +118,8 @@ private:
 
     private:
         VideoVisualizer * visualizer;
+        std::string name;
+        core::ObjectWrapperConstPtr data;
     };
 
     friend class VideoSerie;
@@ -155,7 +158,9 @@ public:
     virtual int getMaxDataSeries() const;
 
     //! \return Seria danych ktora mozna ustawiac - nazwa i dane, nie zarzadza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
-    virtual core::IVisualizer::SerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+    virtual core::IVisualizer::TimeSerieBase* createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name = std::string());
+
+    virtual core::IVisualizer::TimeSerieBase* createSerie(const core::IVisualizer::SerieBase * serie);
 
     //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
     virtual void removeSerie(core::IVisualizer::SerieBase* serie);

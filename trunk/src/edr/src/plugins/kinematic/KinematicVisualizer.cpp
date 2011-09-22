@@ -51,9 +51,9 @@ int KinematicVisualizer::getMaxDataSeries() const
     return 1;
 }
 
-core::IVisualizer::SerieBase *KinematicVisualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
+core::IVisualizer::TimeSerieBase *KinematicVisualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
 {
-	core::IVisualizer::SerieBase * ret = nullptr;
+	core::IVisualizer::TimeSerieBase * ret = nullptr;
 	if (data->getTypeInfo() == typeid(GRFCollection)) {
 		ret = new GRFSerie(this);
 		ret->setName(name + "_grf");
@@ -70,6 +70,11 @@ core::IVisualizer::SerieBase *KinematicVisualizer::createSerie(const core::Objec
 		UTILS_ASSERT(false);
 	}
     return ret;
+}
+
+core::IVisualizer::TimeSerieBase * KinematicVisualizer::createSerie(const core::IVisualizer::SerieBase* serie)
+{
+    return nullptr;
 }
 
 void KinematicVisualizer::removeSerie(core::IVisualizer::SerieBase *serie)

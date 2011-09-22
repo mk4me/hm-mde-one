@@ -64,8 +64,8 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 		float mult = channel->getLength() / static_cast<float>(density);
 		
 		for (int n = 0; n < density - 1; n++) {	
-			vertices->push_back((*channel)[mult * n]);
-			vertices->push_back((*channel)[mult * (n + 1)]);
+			vertices->push_back(getChannelValue(mult * n, *channel));
+			vertices->push_back(getChannelValue(mult * (n+1), *channel));
 		}
 
 		geode->setStateSet(stateset);

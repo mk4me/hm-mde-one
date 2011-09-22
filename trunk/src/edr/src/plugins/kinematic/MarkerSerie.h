@@ -12,11 +12,10 @@
 
 #include <core/IVisualizer.h>
 #include <osg/Geode>
-#include <timelinelib/IChannel.h>
 #include "KinematicVisualizer.h"
 #include "TrajectoriesDialog.h"
 
-class MarkerSerie : public QObject, public core::IVisualizer::SerieBase, public timeline::IChannel
+class MarkerSerie : public QObject, public core::IVisualizer::TimeSerieBase
 {
 	Q_OBJECT;
 public:
@@ -35,20 +34,25 @@ public:
 		  dialog->setWindowTitle("Trajectories");
 	  }
 
-protected:
-	virtual void setSerieName(const std::string & name){}			
+    virtual void setName(const std::string & name)
+    {
+        this->name = name;
+    }
 
-	virtual void setSerieData(const core::ObjectWrapperConstPtr & data);
+    virtual const std::string & getName() const
+    {
+        return name;
+    }
 
-	//! \return Sklonowane dane w kanale
-	virtual timeline::IChannelPtr clone() const
-	{
-		//! NIE WSPIERAMY TUTAJ KLONOWANIA!!
-		return timeline::IChannelPtr();
-	}
+	virtual void setData(const core::ObjectWrapperConstPtr & data);
+
+    virtual const core::ObjectWrapperConstPtr & getData() const
+    {
+        return data;
+    }
 
 	//! \return Dlugosc kanalu w sekundach
-	virtual double getLength() const
+	virtual float getLength() const
 	{
 		UTILS_ASSERT(scheme);
 		return scheme->getDuration();
@@ -56,7 +60,7 @@ protected:
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
-	virtual void setTime(double time)
+	virtual void setTime(float time)
 	{
 		UTILS_ASSERT(scheme);
 		scheme->setTime(time);
@@ -72,6 +76,9 @@ private:
 	SchemeDrawerContainerPtr markersDrawer;
 	TrajectoryDrawerPtr trajectoryDrawer;
 	TrajectoriesDialog* dialog;
+
+    core::ObjectWrapperConstPtr data;
+    std::string name;
 };
 typedef boost::shared_ptr<MarkerSerie> MarkerSeriePtr;
 typedef boost::shared_ptr<const MarkerSerie> MarkerSerieConstPtr;

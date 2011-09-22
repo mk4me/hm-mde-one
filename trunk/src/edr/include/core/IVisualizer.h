@@ -15,6 +15,7 @@
 #include <core/IObjectSource.h>
 #include <core/ObjectWrapper.h>
 #include <core/IInputProcessItem.h>
+#include <utils/DataChannel.h>
 
 class QObject;
 class QWidget;
@@ -42,56 +43,44 @@ namespace core
             virtual ~SerieBase() {}
 
             //! \param name Nazwa serii danych do ustawienia
-            void setName(const std::string & name)
-            {
-                if(this->name != name){
-                    this->name = name;
-                    setSerieName(name);
-                }
-            }
+            virtual void setName(const std::string & name) = 0;
 
             //! \return Nazwa serii danych
-            const std::string & getName() const
-            {
-                return name;
-            }
+            virtual const std::string & getName() const = 0;
 
             //! \param data Dane do ustawienia w serii danych. ObjecWrappery pozwalaj¹ nam unikn¹æ potrzeby generowania wielu metod dla ró¿nych argumentów.
             //! Znacz¹co uprasza interfejs, w przeciwnym wypadku musielibyœmy skorzystaæ z template
-            void setData(const ObjectWrapperConstPtr & data)
-            {
-                if(this->data != data){
-                    this->data = data;
-                    setSerieData(data);
-                }
-            }
+            virtual void setData(const ObjectWrapperConstPtr & data) = 0;
 
             //! \return Dane serii
-            const ObjectWrapperConstPtr & getData() const
+            virtual const ObjectWrapperConstPtr & getData() const = 0;
+        };
+
+        class TimeSerieBase : public SerieBase
+        {
+        public:
+
+            virtual ~TimeSerieBase() {}
+
+            virtual void setTime(float time) = 0;
+
+            virtual float getLength() const = 0;
+
+            virtual void setOffset(float offset)
             {
-                return data;
+
             }
 
-        protected:
-            //! \name nazwa serri danych
-            virtual void setSerieName(const std::string & name) = 0;
-            //! \param data Dane serii
-            virtual void setSerieData(const ObjectWrapperConstPtr & data) = 0;
+            virtual void setScale(float scale)
+            {
 
-        private:
-            //! Nazwa serii danych
-            std::string name;
-            //! Dane serii
-            ObjectWrapperConstPtr data;
+            }
         };
 
     public:
 
         //! Pusty polimorficzny destruktor.
-        virtual ~IVisualizer() 
-        {
-
-        }
+        virtual ~IVisualizer() {}
 
         //! Tylko tutaj powinno nastêpowaæ tworzenie widgetu. Metoda wywo³ywana tylko jeden raz.
         //! To wizualizator musi niszczyæ widget w destruktorze. Gdy widget jest równoczeœnie
@@ -118,6 +107,8 @@ namespace core
         //! \return Seria danych ktora mozna ustawiac - nazwa i dane, nie zarzadza ta seria danych - czasem jej zycia, my zwalniamy jej zasoby!!
         virtual SerieBase* createSerie(const ObjectWrapperConstPtr & data, const std::string & name = std::string()) = 0;
 
+        virtual SerieBase* createSerie(const SerieBase* serie) = 0;
+
         //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
         virtual void removeSerie(SerieBase* serie) = 0;
 
@@ -137,6 +128,9 @@ namespace core
 
     typedef shared_ptr<IVisualizer::SerieBase> VisualizerSeriePtr;
     typedef shared_ptr<const IVisualizer::SerieBase> VisualizerSerieConstPtr;
+
+    typedef shared_ptr<IVisualizer::TimeSerieBase> VisualizerTimeSeriePtr;
+    typedef shared_ptr<const IVisualizer::TimeSerieBase> VisualizerTimeSerieConstPtr;
 
 } // namespace core
 

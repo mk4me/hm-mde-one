@@ -2,9 +2,10 @@
 #include "MarkerSerie.h"
 #include <QtGui/QTableView>
 
-void MarkerSerie::setSerieData( const core::ObjectWrapperConstPtr & data )
+void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(MarkerCollection));
+    this->data = data;
 	connect(visualizer->actionTrajectories, SIGNAL(triggered()), this, SLOT(trajectoriesDialog()));
 	MarkerCollectionConstPtr markersCollection = data->get();
 	scheme = SkeletalVisualizationScheme::create();

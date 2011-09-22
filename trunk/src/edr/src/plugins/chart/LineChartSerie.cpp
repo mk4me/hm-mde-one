@@ -9,7 +9,7 @@
 
 
 LineChartSerie::LineChartSerie() :
-vertices(new osg::Vec3Array)
+vertices(new osg::Vec3Array), timer(new GeneralTimer())
 {
     setDataVariance( osg::Object::DYNAMIC );
 
@@ -20,15 +20,27 @@ vertices(new osg::Vec3Array)
     setColorBinding(osg::Geometry::BIND_OVERALL);
 }
 
-void LineChartSerie::setData( const ScalarChannelConstPtr& channel )
+void LineChartSerie::setData( const ScalarChannelReaderInterfaceConstPtr& channel )
 {
     this->channel = channel;
 
-    ScalarChannelPtr nonConstChannel(core::const_pointer_cast<ScalarChannel>(channel));
+    ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(channel));
 
-    this->normalizedChannel.reset(utils::AutoModifier::createAutoModChannel(*nonConstChannel, ScalarChannelNormalizer()));
-    timer = nonConstChannel->createTimer();
-    stats.reset(new ScalarChannelStats(nonConstChannel));
+    if(normalizedChannel == nullptr){
+        normalizedChannel.reset(new ScalarModifier(nonConstChannel, ScalarChannelNormalizer()));
+    }else{
+        normalizedChannel->setObservedChannel(nonConstChannel);
+    }
+
+    if(accessor == nullptr){
+        accessor.reset(new ScalarContiniousTimeAccessor(normalizedChannel));
+    }
+
+    if(currentValue == nullptr){
+        currentValue.reset(new ScalarCurentValueExtractor(accessor, timer));
+    }
+
+    stats.reset(new ScalarChannelStats(normalizedChannel));
     tryRefresh();
 }
 
@@ -37,8 +49,8 @@ void LineChartSerie::refresh()
     UTILS_ASSERT(normalizedChannel, "No data set!");
     UTILS_ASSERT(w > 0 && h >= 0, "Wrong size set!");
 
-    typedef ScalarChannel::point_type point_type;
-    typedef ScalarChannel::time_type time_type;
+    typedef ScalarChannelReaderInterface::point_type point_type;
+    typedef ScalarChannelReaderInterface::time_type time_type;
 
     // dodajemy wierzcho³ki tylko tak, aby ich gêstoœæ wynosi³a maksymalnie verticesPerUnit per piksel
     // okreœlenie maksymalnej liczby wierzcho³ków
@@ -54,10 +66,10 @@ void LineChartSerie::refresh()
         vertices->reserve( maxVertices );
         vertices->resize(0);
         // nie ma co interpolowaæ, po prostu dodajemy
-        for(auto it = normalizedChannel->begin(); it != normalizedChannel->end(); it++) {
+        for(auto i = 0; i != normalizedChannel->size(); i++) {
             vertices->push_back(osg::Vec3(
-                it->first * lenInv * w + x,
-                it->second * h + y,
+                normalizedChannel->argument(i) * lenInv * w + x,
+                normalizedChannel->value(i) * h + y,
                 z
                 ));
         }
@@ -73,8 +85,8 @@ void LineChartSerie::refresh()
         time_type timeStart = 0;
         time_type timeEnd = delta;
         // interatory
-        ScalarChannel::const_iterator it = normalizedChannel->begin();
-        const ScalarChannel::const_iterator last = normalizedChannel->end();
+        auto i = 0;
+        auto last = normalizedChannel->size();
         // pocz¹tkowe maksimum i minimum w bie¿¹cym przedziale
         point_type nextMaxValue = 0;
         point_type nextMinValue = 1;
@@ -84,18 +96,18 @@ void LineChartSerie::refresh()
 
         // pêtla obliczaj¹ca minimum i maksimum w ka¿dym z przedzia³ów oraz dodaj¹ca linie pionowe
         // o d³ugoœci równej amplitudzie
-        while ( it != last ) {
+        while ( i != last ) {
             point_type minValue = nextMinValue;
             point_type maxValue = nextMaxValue;
             // wyznaczenie maksimum i minimum z punktów le¿¹cych w ca³oœci w danym przedziale
-            while ( it != last && (*it).first < timeEnd ) {
-                maxValue = std::max(maxValue, (*it).second);
-                minValue = std::min(minValue, (*it).second);
-                ++it;
+            while ( i != last && normalizedChannel->argument(i) < timeEnd ) {
+                maxValue = std::max(maxValue, normalizedChannel->value(i));
+                minValue = std::min(minValue, normalizedChannel->value(i));
+                ++i;
             }
             // mo¿e prawa skrajna wartoœæ jest wiêksza?
-            if ( it != last ) {
-                point_type interpolated = normalizedChannel->getValue( std::min(normalizedChannel->getLength(), timeEnd) );
+            if ( i != last ) {
+                point_type interpolated = accessor->getValue( std::min(normalizedChannel->getLength(), timeEnd) );
                 maxValue = std::max(maxValue, interpolated);
                 minValue = std::min(minValue, interpolated);
                 // uwaga: NIE zerujemy max/min, ¿eby kolejny przedzia³ równie¿ zaczynaæ od zinterpolowanych
@@ -181,7 +193,7 @@ float LineChartSerie::getValue() const
     if ( !channel ) {
         throw std::runtime_error("Data not set.");
     }
-    return timer->getCurrentValue();
+    return currentValue->getCurrentValue();
 }
 
 float LineChartSerie::getTime() const

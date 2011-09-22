@@ -15,8 +15,9 @@
 #include <core/IParser.h>
 #include <core/IDataManager.h>
 #include <c3dlib/C3DParser.h>
+#include <utils/DataChannel.h>
 
-class C3DParser : public core::IParser
+class C3DParser : public core::IParser, utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float>
 {
     UNIQUE_ID("{D7801231-BACA-42C6-9A8E-706F561A563F}", "C3D parser");
 	typedef core::shared_ptr<c3dlib::C3DParser> ParserPtr;

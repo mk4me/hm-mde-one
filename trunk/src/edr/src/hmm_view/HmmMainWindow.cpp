@@ -21,7 +21,8 @@ HmmMainWindow::HmmMainWindow() :
 	MainWindow(),
 	currentVisualizer(nullptr),
 	topMainWindow(nullptr),
-	treeWidget(nullptr)
+	treeWidget(nullptr),
+    currentItem(nullptr)
 {
 	this->setWindowFlags(Qt::FramelessWindowHint);
     itemClickAction.setMainWindow(this);
@@ -43,6 +44,8 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 	this->showFullScreen();
 
 	treeWidget = new QTreeWidget();
+    treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&)));    
 	QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
 	treeWidget->setMaximumWidth(250);
 	treeWidget->setHeaderHidden(true);
@@ -209,7 +212,50 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
     chartTextPrototype->setLayout(osgText::Text::LEFT_TO_RIGHT);
 }
 
-void HmmMainWindow::visualizerGainedFocus()
+HmmMainWindow::~HmmMainWindow()
+{
+    for(auto it = visualizerChannels.begin(); it != visualizerChannels.end(); it++){
+        (*it)->releaseChannel();
+    }
+}
+
+bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
+{
+    return dataItems.find(item) != dataItems.end();
+}
+
+void HmmMainWindow::createNewVisualizer()
+{
+    if(emptyVisualizersPool.empty() == false);
+}
+
+void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
+{
+    currentItem = treeWidget->itemAt(pos);
+
+    if(currentItem == nullptr || isDataItem(currentItem) == false){
+        return;
+    }
+
+    QMenu * menu = new QMenu();
+
+    if(items2Descriptions.find(currentItem) == items2Descriptions.end()){
+        QAction * addNew = new QAction(menu);
+        addNew->setText(QString::fromUtf8("Add to new visualizer"));
+        menu->addAction(addNew);
+        connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
+
+        menu->addAction("Add to existing visualizer");
+    }else{
+        QAction * action = new QAction(menu);
+        action->setText(QString::fromUtf8("Remove"));
+        menu->addAction(action);
+    }    
+
+    menu->exec(pos);
+}
+
+void HmmMainWindow::visualizerFocusChanged(bool focus)
 {
     VisualizerWidget * widget = qobject_cast<VisualizerWidget *>(sender());
 
@@ -217,13 +263,15 @@ void HmmMainWindow::visualizerGainedFocus()
         return;
     }
 
-    if(currentVisualizer != widget){
-        widget->setTitleBarVisible(true);
+    if(widget != currentVisualizer){
         if(currentVisualizer != nullptr){
-            currentVisualizer->setTitleBarVisible(false);
+            currentVisualizer->setTitleBarVisible(!focus);
         }
+
         currentVisualizer = widget;
     }
+
+    currentVisualizer->setTitleBarVisible(focus);
 }
 
 void HmmMainWindow::onOpen()
@@ -278,6 +326,7 @@ void HmmMainWindow::onOpen()
 						emgItem->addChild(channelItem);						
 						item2ScalarMap[channelItem] = 							
 							boost::dynamic_pointer_cast<const ScalarChannel>(c);
+                        dataItems.insert(channelItem);
 					}														
 				}	
 
@@ -285,6 +334,7 @@ void HmmMainWindow::onOpen()
 				if (grfCollection) {	
 					QTreeWidgetItem* grfItem = new QTreeWidgetItem();
 					item2GrfCollection[grfItem] = grfCollection;
+                    dataItems.insert(grfItem);
 					grfItem->setText(0, "GRF");
 					grfItem->setIcon(0, icon3D);
 					analogItem->addChild(grfItem);
@@ -298,6 +348,7 @@ void HmmMainWindow::onOpen()
 						grfItem->addChild(channelItem);						
 						item2Vector[channelItem] = 							
 							boost::dynamic_pointer_cast<const VectorChannel>(c);
+                        dataItems.insert(channelItem);
 					}														
 				}
 			}
@@ -334,6 +385,7 @@ void HmmMainWindow::onOpen()
 					markersItem->setText(0, tr("Markers"));							
 					kinematicItem->addChild(markersItem);		
 					item2Markers[markersItem] = markerCollection;
+                    dataItems.insert(markersItem);
 
 					int count = markerCollection->getNumChannels();
 					for (int i = 0; i < count; i++) {
@@ -342,6 +394,7 @@ void HmmMainWindow::onOpen()
 						markersItem->addChild(markerItem);
 						markerItem->setIcon(0, icon);
 						item2Vector[markerItem] = markerCollection->getChannel(i);
+                        dataItems.insert(markerItem);
 					}
 				}
 
@@ -351,10 +404,12 @@ void HmmMainWindow::onOpen()
 					skeletonItem->setText(0, tr("Joints"));
 					kinematicItem->addChild(skeletonItem);
 					item2Skeleton[skeletonItem] = skeletalCollection;
+                    dataItems.insert(skeletonItem);
 				}
 				
 				if (skeletalCollection && markerCollection && grfCollection) {
 					item2Kinematic[kinematicItem] = motion;
+                    dataItems.insert(kinematicItem);
 				}
 			}
 
@@ -372,6 +427,7 @@ void HmmMainWindow::onOpen()
 					videoItem->addChild(channelItem);						
 					item2Video[channelItem] = 							
 						boost::dynamic_pointer_cast<const VideoChannel>(c);
+                    dataItems.insert(channelItem);
 				}		
 			}
 		}
@@ -410,14 +466,17 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 	auto it = item2Vector.find(item);
 	if (it != item2Vector.end()) {
 		VectorChannelConstPtr vectorChannel = it->second;
-		ScalarChannelPtr x, y, z;
-		extractScalarChannels(vectorChannel, x, y, z);
-		if(VisualizerManager::getInstance()->existVisualizerForType(typeid(ScalarChannel)) == true){
-			VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannel));
 
-            ObjectWrapperPtr wrapperX = ObjectWrapper::create<ScalarChannel>();
-			ObjectWrapperPtr wrapperY = ObjectWrapper::create<ScalarChannel>();
-			ObjectWrapperPtr wrapperZ = ObjectWrapper::create<ScalarChannel>();
+        ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
+        ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
+        ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(vectorChannel, 2));
+		
+        if(VisualizerManager::getInstance()->existVisualizerForType(typeid(ScalarChannelReaderInterface)) == true){
+            VisualizerPtr vis = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannelReaderInterface));
+
+            ObjectWrapperPtr wrapperX = ObjectWrapper::create<ScalarChannelReaderInterface>();
+			ObjectWrapperPtr wrapperY = ObjectWrapper::create<ScalarChannelReaderInterface>();
+			ObjectWrapperPtr wrapperZ = ObjectWrapper::create<ScalarChannelReaderInterface>();
             
             wrapperX->set(x);
 			wrapperY->set(y);
@@ -428,10 +487,10 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
             prefix += "_";
             wrapperX->setName(prefix + "nazwa testowaX");
             wrapperX->setSource(prefix + "Sciezka testowaX");
-			wrapperY->setName(prefix + "nazwa testowaX");
-			wrapperY->setSource(prefix + "Sciezka testowaX");
-			wrapperZ->setName(prefix + "nazwa testowaX");
-			wrapperZ->setSource(prefix + "Sciezka testowaX");
+			wrapperY->setName(prefix + "nazwa testowaY");
+			wrapperY->setSource(prefix + "Sciezka testowaY");
+			wrapperZ->setName(prefix + "nazwa testowaZ");
+			wrapperZ->setSource(prefix + "Sciezka testowaZ");
             vis->getOrCreateWidget();
 			   
 			VisualizerWidget* visu = new VisualizerWidget(vis);
@@ -506,25 +565,32 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 			chartSerieX->setColor(osg::Vec4(1,0,0,1));
 			chartSerieY->setColor(osg::Vec4(0,1,0,1));
 			chartSerieZ->setColor(osg::Vec4(0,0,1,1));
-            
-            /*TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
-            if(timeline != nullptr) {
-                timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
-                timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serieX));
-                if(channel != nullptr){
-                    channelToVisualizer[channel] = visu;
-                    timeline->setOnChannelDblClick(itemClickAction);
-                }
-            }*/
 
             vis->getWidget()->setFocusProxy(visu);
 
-            connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+            connect(visu, SIGNAL(focuseChanged(bool)), this, SLOT(visualizerFocusChanged(bool)));
     
             visu->setMinimumSize(250, 100);
 
             topMainWindow->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
-            
+
+            TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+            if(timeline != nullptr) {
+                VisualizerMultiChannel::SeriesWidgets seriesWidgets;
+
+                seriesWidgets[core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serieX)] = visu;
+                seriesWidgets[core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serieY)] = visu;
+                seriesWidgets[core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serieZ)] = visu;
+
+                VisualizerMultiChannelPtr channel(new VisualizerMultiChannel(seriesWidgets));
+                
+                try{
+                    timeline->addChannel(vectorChannel->getName(), channel);
+                    visualizerChannels.insert(channel);
+                }catch(...){
+                    LOG_ERROR("Could not add multichannel to timeline!");
+                }
+            }            
 		}
     }
 
@@ -590,39 +656,58 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 			auto serie2 = vis->createSerie(wrapper2, path.toStdString());
 			auto serie3 = vis->createSerie(wrapper3, path.toStdString());
 
-            TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
-            if(timeline != nullptr) {
-                //timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
-                timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serie1));
-                if(channel != nullptr){
-                    channelToVisualizer[channel] = visu;
-                    //timeline->setOnChannelDblClick(itemClickAction);
-                }
-				timeline::IChannelConstPtr channel2(core::dynamic_pointer_cast<const timeline::IChannel>(serie2));
-				if(channel2 != nullptr){
-					channelToVisualizer[channel2] = visu;
-				}
-				timeline::IChannelConstPtr channel3(core::dynamic_pointer_cast<const timeline::IChannel>(serie3));
-				if(channel3 != nullptr){
-					channelToVisualizer[channel3] = visu;
-				}
-            }
-
             vis->getWidget()->setFocusProxy(visu);
 
             connect(visu, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
 
-		////pane->addDockWidget(Qt::RightDockWidgetArea, visualizerWidget);
-		//	/*pane->setUpdatesEnabled(false);
-		//	if (currentVisualizer) {
-		//		pane->layout()->removeWidget(currentVisualizer);
-		//		delete currentVisualizer;
-		//	}*/
-		//	//currentVisualizer = visu;
-		//	//pane->layout()->addWidget(visu);            
-  //          pane->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
-		//	//pane->setUpdatesEnabled(true);
 			topMainWindow->addDockWidget(Qt::TopDockWidgetArea, visu, Qt::Horizontal);
+
+            TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+            if(timeline != nullptr) {
+
+                //            //timeline->setChannelTooltip(path.toStdString(), "test Tooltip");
+                //            timeline::IChannelConstPtr channel(core::dynamic_pointer_cast<const timeline::IChannel>(serie1));
+                //            if(channel != nullptr){
+                //                channelToVisualizer[channel] = visu;
+                //                //timeline->setOnChannelDblClick(itemClickAction);
+                //            }
+                //timeline::IChannelConstPtr channel2(core::dynamic_pointer_cast<const timeline::IChannel>(serie2));
+                //if(channel2 != nullptr){
+                //	channelToVisualizer[channel2] = visu;
+                //}
+                //timeline::IChannelConstPtr channel3(core::dynamic_pointer_cast<const timeline::IChannel>(serie3));
+                //if(channel3 != nullptr){
+                //	channelToVisualizer[channel3] = visu;
+                //}
+
+                VisualizerChannelPtr channel(new VisualizerChannel(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie1), visu));
+
+                try{
+                    timeline->addChannel(serie1->getName(), channel);
+                    visualizerChannels.insert(channel);
+                }catch(...){
+
+                }
+
+                channel.reset(new VisualizerChannel(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie2), visu));
+
+                try{
+                    timeline->addChannel(serie2->getName(), channel);
+                    visualizerChannels.insert(channel);
+                }catch(...){
+
+                }
+
+                channel.reset(new VisualizerChannel(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie3), visu));
+
+                try{
+                    timeline->addChannel(serie3->getName(), channel);
+                    visualizerChannels.insert(channel);
+                }catch(...){
+
+                }
+            }
+
         }else{
 
             /*TimelinePtr timeline = core::queryServices<TimelineService>(core::getServiceManager());
