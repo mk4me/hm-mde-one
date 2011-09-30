@@ -4,7 +4,7 @@
 ChartSerie::ChartSerie() : 
     x(0), y(0), w(0), h(0), z(0),
     autoRefresh(false),
-    verticesPerUnit(10)
+    verticesPerUnit(1)
 {
 
 }
