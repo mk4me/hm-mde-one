@@ -4,7 +4,6 @@
 #include <QtGui/QMenu>
 #include <utils/ObserverPattern.h>
 #include <plugins/communication/CommunicationManager.h>
-#include <plugins/communication/CommunicationService.h>
 #include <plugins/communication/Entity.h>
 #include "ui_CommunicationWidgetEx.h"
 

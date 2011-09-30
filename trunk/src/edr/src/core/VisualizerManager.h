@@ -28,6 +28,7 @@ class DataManager;
 class VisualizerManager : public core::IVisualizerManager, public utils::Observable<VisualizerManager>
 {
     friend class Visualizer;
+    friend class IVisualizerChannel;
 public:
     //! Lista wizualizatorów.
     typedef std::vector<core::IVisualizerPtr> IVisualizers;
@@ -35,6 +36,7 @@ public:
     typedef boost::iterator_range<IVisualizers::const_iterator> IVisualizersConstRange;
 
     typedef std::list<Visualizer*> Visualizers;
+    typedef std::list<IVisualizerChannel*> VisualizerChannels;
     //! Lista typów kolejnych Ÿróde³.
     typedef ObjectSlots::SlotsInfo SourcesTypes; 
 
@@ -55,6 +57,9 @@ private:
     IVisualizers prototypes;
 
     Visualizers visualizers;
+
+    VisualizerChannels visualizerChannels;
+
     //! Sta³e dane wizualizatorów.
     std::vector< IVisualizerPersistantData* > visualizersData;
     //! Widget do wizualizacji struktury sceny 3D. Do debuggowania.
@@ -158,6 +163,9 @@ private:
 
     void notifyCreated(Visualizer* visualizer);
     void notifyDestroyed(Visualizer* visualizer);
+
+    void notifyCreated(IVisualizerChannel* channel);
+    void notifyDestroyed(IVisualizerChannel* channel);
 };
 
 

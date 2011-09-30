@@ -28,8 +28,7 @@ public:
 	virtual ~SubjectService();
 
 public:
-	//! 
-	virtual void finalize();
+
 	//! 
 	//! \param actions 
 	virtual QWidget* getWidget( std::vector<QObject*>& actions );

@@ -258,17 +258,6 @@ void VisualizerWidget::split( Qt::Orientation orientation )
 
 }
 
-void VisualizerWidget::closeEvent( QCloseEvent *event )
-{
-  //  MainWindow* mainwnd = qobject_cast<MainWindow*>(this->parentWidget());
-  //  UTILS_ASSERT(mainwnd);
-  //  if ( mainwnd ) {
-		//// rewizja
-  //      //mainwnd->visualizerWidgetClosed(this);
-  //  }
-    QDockWidget::closeEvent(event);
-}
-
 void VisualizerWidget::retranslateUi(QWidget *visualizerWidget)
 {
     actionSplitVertically->setText(QApplication::translate("VisualizerWidget", "Split vertically", 0, QApplication::UnicodeUTF8));
@@ -649,14 +638,12 @@ void VisualizerWidget::sourceSelected()
 
                     try{
                         timeline->addChannel(timeSerie->getName(), channel);
-                        //timelineChannels.insert(TimelineChannels::value_type(timeSerie,channel));
                         timelineChannels[timeSerie] = channel;
                     }catch(std::runtime_error e){
                         LOG_WARNING("Could not add channel to timeline because: " << e.what());
                     }catch(...){
                         LOG_WARNING("Could not add channel to timeline. Unknown reason.");
                     }
-                    //timelineDataSeries.insert(serie);
                 }
             }
 

@@ -28,12 +28,13 @@ namespace communication
 		@param path œcie¿ka wzglêdna do pliku na serwerze podana w rezultacie operacji RetrieveFile
 		*/
 		void downloadComplete(int fileID, const std::string& path);
+
 		/**
 		Wydobywanie pliku z bazy danych o podanym ID do uri zwracanego przez metode.
 		@param fileID id pliku do pobrania
 		@return œcie¿ka wzglêdna do pliku wraz z nazwa pliku
 		*/
-		const std::string& retrieveFile(int fileID);
+		std::string retrieveFile(int fileID);
 		/**
 		Realizuje wprowadzenie pojedynczego pliku przez performera pod kontrolê bazy danych.
 		@param performerID id performera
@@ -84,12 +85,12 @@ namespace communication
 		P³ytka kopia bazy danych.
 		@return œcie¿ka do pliku xml z kopi¹ db.
 		*/
-		const std::string& getShallowCopy();
+		std::string getShallowCopy();
 		/**
 		Metadane z bazy danych.
 		@return œcie¿ka do pliku xml z metadanymi.
 		*/
-		const std::string& getMetadata();
+		std::string getMetadata();
 	};
 }
 #endif //HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__

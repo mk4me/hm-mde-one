@@ -19,10 +19,6 @@ class HmmMainWindow : public core::MainWindow, private Ui::HMMMain
 {
     Q_OBJECT
 
-public:
-
-    typedef std::set<IVisualizerChannelPtr> VisualizerChannels;
-
 private:
 
     struct DataItemDescription{
@@ -212,7 +208,6 @@ private:
 
                     try{
                         timeline->addChannel(path.toStdString(), channel);
-                        visualizerChannels.insert(channel);
                     }catch(...){
                         LOG_ERROR("Could not add multichannel to timeline!");
                     }
@@ -309,7 +304,6 @@ private:
                     TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
                     if(timeline != nullptr) {
                         VisualizerChannelPtr channel(new VisualizerChannel(timeSerie, visu));
-                        visualizerChannels.insert(channel);
                         try{
                             timeline->addChannel(path.toStdString(), channel);
                         }catch(...){
@@ -388,8 +382,6 @@ private:
     std::map<QTreeWidgetItem*, DataItemDescription> items2Descriptions;
 
     QTreeWidgetItem * currentItem;
-
-    VisualizerChannels visualizerChannels;
 };
 
 #endif // TOOLBOXMAIN_H

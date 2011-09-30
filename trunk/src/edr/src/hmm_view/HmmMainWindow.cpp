@@ -214,9 +214,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 
 HmmMainWindow::~HmmMainWindow()
 {
-    for(auto it = visualizerChannels.begin(); it != visualizerChannels.end(); it++){
-        (*it)->releaseChannel();
-    }
+
 }
 
 bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
@@ -586,7 +584,6 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
                 
                 try{
                     timeline->addChannel(vectorChannel->getName(), channel);
-                    visualizerChannels.insert(channel);
                 }catch(...){
                     LOG_ERROR("Could not add multichannel to timeline!");
                 }
@@ -684,7 +681,6 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 
                 try{
                     timeline->addChannel(serie1->getName(), channel);
-                    visualizerChannels.insert(channel);
                 }catch(...){
 
                 }
@@ -693,7 +689,6 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 
                 try{
                     timeline->addChannel(serie2->getName(), channel);
-                    visualizerChannels.insert(channel);
                 }catch(...){
 
                 }
@@ -702,7 +697,6 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 
                 try{
                     timeline->addChannel(serie3->getName(), channel);
-                    visualizerChannels.insert(channel);
                 }catch(...){
 
                 }

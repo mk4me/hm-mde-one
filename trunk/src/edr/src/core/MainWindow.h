@@ -18,7 +18,6 @@
 #include <core/Window.h>
 #include <core/DataManager.h>
 
-//#include "ui_toolboxmaindeffile.h"
 #include <core/Filesystem.h>
 
 class UserInterfaceService;
@@ -31,7 +30,7 @@ class VisualizerWidget;
 
 namespace core {
 
-	class MainWindow : public QMainWindow, public core::Window, public osgViewer::CompositeViewer//, private Ui::EDRMain
+	class MainWindow : public QMainWindow, public core::Window//, public osgViewer::CompositeViewer//, private Ui::EDRMain
 	{
 		Q_OBJECT
 
@@ -44,9 +43,9 @@ namespace core {
 		bool updateEnabled;
 		//! Timer wyznaczaj¹cy update'y.
 		QTimer visualizerTimer;
-		QTimer serviceTimer;
+		//QTimer serviceTimer;
 		//! Korzeñ sceny.
-		osg::ref_ptr<osg::Node> sceneRoot;
+		//osg::ref_ptr<osg::Node> sceneRoot;
 		//! Pluginy.
 		core::PluginLoader* pluginLoader;
 		//! Timer u¿ywany gdy wyœwietlamy w trybie composite.
@@ -56,9 +55,6 @@ namespace core {
 		const QTimer& getVisualizerTimer() const { return visualizerTimer; }
 		QTimer& getVisualizerTimer() { return visualizerTimer; }
 
-		const QTimer& getServiceTimer() const { return serviceTimer; }
-		QTimer& getServiceTimer() { return serviceTimer; }
-
 	public:
 		MainWindow();
 		virtual ~MainWindow();
@@ -67,20 +63,14 @@ namespace core {
 
 		
 	public slots:
-		//! Aktualizacja us³ug.
-		void updateServices();
 		//! Aktualizacja wizualizatorow.
 		void updateVisualizers();
 
 	public:
-		// TODO: Embedded widgets initializations - should be in plugins!!! 
-		void InitializeOGSWidget();
 		void initializeConsole();
 		void InitializeControlWidget();
 
 	public:
-		/*void openFile( const std::string& path );
-		void openLayout( const QString& path );*/
 
 		void loadData();
 
@@ -91,56 +81,11 @@ namespace core {
 
 	public:
 		void openFile( const std::string& path );
-		//public slots:    
-		//	void refreshVisualizerWidgetsNames();
-		//	void visualizerWidgetClosed(VisualizerWidget* widget);
-		//	//! Aktualizacja us³ug.
-		//	void updateServices();
-		//	//! Aktualizacja wizualizatorow.
-		//	void updateVisualizers();
-
-		//	void onOpen();
-
-
-		//	void onExit();
-		//	void onMaterial();
-		//	void onBones();
-		//	void onWireframe();
-		//	void onCustomAction();
-		//	void onCustomAction(bool triggered);
-
-		//	void onSaveLayout();
-		//	void onOpenLayout();
-		//	void onShowSavedLayouts();
-
-		//	void addLayoutsToMenu( const core::Filesystem::Path &dir );
-		//	void onDockWidgetVisiblityChanged(bool visible);
-		//	void onLayoutTriggered();
-
-			// core::Window
-	protected:    
-		////! Natywne dodanie opcji do menu.
-		//virtual void onAddMenuItem( const std::string& path, bool checkable, bool initialState );
-		////! Natywne usuniêcie opcji z menu.
-		//virtual void onRemoveMenuItem( const std::string& path );
-
-		//private slots:
-		//	//! Wype³nia podmenu akcjami dla dostêpnych okien.
-		//	//! \param target Menu do wype³nienia.
-		//	void populateWindowMenu();
-		//	//! Wype³nia podmenu akcjami tworz¹cymi wizualizatory.
-		//	void populateVisualizersMenu();
-		//	//!
-		//	void actionCreateVisualizer();
-
-		//	void createWorkflow();
 
 	protected:
 
-		
-
 		//! Tworzy siatkê rozci¹gniêt¹ na p³aszczyŸnie.
-		osg::ref_ptr<osg::Node> createGrid(); 
+		//osg::ref_ptr<osg::Node> createGrid(); 
 
 		//! Rejestruje wbudowane us³ugi.
 		void registerCoreServices();
@@ -180,8 +125,6 @@ namespace core {
 	protected:
 		//!
 		virtual void closeEvent(QCloseEvent* event);
-		//!
-		virtual void paintEvent( QPaintEvent* event );
 
 	protected: 
 		//! Odczytuje ustawienia aplikacji.

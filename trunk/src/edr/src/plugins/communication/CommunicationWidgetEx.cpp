@@ -1,5 +1,6 @@
 #include "CommunicationPCH.h"
 #include "CommunicationWidgetEx.h"
+#include <plugins/communication/CommunicationService.h>
 #include <core/StringTools.h>
 #include <core/StringTools.h>
 #include <QtGui/QPainter>
@@ -221,7 +222,6 @@ void CommunicationWidgetEx::downloadPressed()
     actionLoad_trial->setDisabled(false);
     actionAbort_download->setDisabled(false);
     actionAbort_download->setVisible(true);
-    //downloadTrial(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getEntityID());
     downloadTrial(dynamic_cast<TrialTreeItem*>(currentView->currentItem())->getEntityID());
 }
 
@@ -233,7 +233,6 @@ void CommunicationWidgetEx::loadPressed()
         boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
         //sprawdzamy, czy zgadza sie nazwa folderu
         if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e)) {
-            //if(reinterpret_cast<TrialTreeItem*>(currentView->currentItem())->getName() == core::toQString(matches[2])) {
             if(dynamic_cast<TrialTreeItem*>(currentView->currentItem())->getName() == core::toQString(matches[2])) {
                 loadFiles(lTrial);
                 return;
@@ -251,11 +250,6 @@ void CommunicationWidgetEx::abortPressed()
     actionAbort_download->setVisible(false);
     communicationService->cancelDownloading();
 }
-
-//void CommunicationWidgetEx::loadTrial(const core::IDataManager::LocalTrial& localTrial)
-//{
-//    communicationService->loadFiles(localTrial);
-//}
 
 void CommunicationWidgetEx::loadFiles(const std::vector<core::Filesystem::Path>& files)
 {

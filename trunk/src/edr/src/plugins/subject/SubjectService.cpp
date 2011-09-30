@@ -8,11 +8,6 @@
 #include <core/ObjectWrapper.h>
 #include <plugins/subject/Session.h>
 
-void SubjectService::finalize()
-{
-	//core::getDataManager()->detach(this);
-}
-
 QWidget* SubjectService::getWidget( std::vector<QObject*>& actions )
 {
 	return nullptr;

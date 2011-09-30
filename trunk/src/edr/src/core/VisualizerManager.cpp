@@ -23,7 +23,15 @@ VisualizerManager::~VisualizerManager()
     BOOST_FOREACH( IVisualizerPersistantData* data, visualizersData ) {
         delete data;
     }
-    visualizersData.clear();
+
+    visualizersData.swap(std::vector< IVisualizerPersistantData* >());
+
+    // zwalniamy wszystkie pozosta³e kana³y poniewa¿ nie mamy ju¿ ¿adnego wizualizatora
+    BOOST_FOREACH( IVisualizerChannel* channel, visualizerChannels ) {
+        channel->releaseChannel();
+    }
+
+    visualizerChannels.swap(VisualizerChannels());
 }
 
 IVisualizerConstPtr VisualizerManager::getPrototype( UniqueID id ) const
@@ -169,5 +177,15 @@ void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
     if ( debugWidget ) {
         debugWidget->removeVisualizer(visualizer);
     }
+}
+
+void VisualizerManager::notifyCreated(IVisualizerChannel* channel)
+{
+    visualizerChannels.push_back(channel);
+}
+
+void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
+{
+    visualizerChannels.remove(channel);
 }
 

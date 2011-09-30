@@ -73,7 +73,6 @@ void LineChartSerie::refresh()
                 z
                 ));
         }
-        primitiveSet = new osg::DrawArrays(GL_LINE_STRIP,0,vertices->size());
     } else {
         // rezerwujemy odpowiedni¹ iloœæ miejsca; niekonieczne, ale powinno zmniejszyæ liczbê alokacji
         vertices->reserve( maxVertices*2 );
@@ -130,9 +129,9 @@ void LineChartSerie::refresh()
             timeStart = timeEnd;
             timeEnd += delta;
         }
-
-        primitiveSet = new osg::DrawArrays(GL_LINE_STRIP, 0, vertices->size());
     }
+
+    primitiveSet = new osg::DrawArrays(GL_LINE_STRIP, 0, vertices->size());
 
     colors->at(0) = color;
     setColorArray(colors);
@@ -143,6 +142,8 @@ void LineChartSerie::refresh()
 
     if(active == true){
         linewidth->setWidth(2.0f);
+    }else{
+        linewidth->setWidth(1.0f);
     }
 
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);

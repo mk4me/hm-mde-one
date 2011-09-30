@@ -14,6 +14,7 @@
 #include <boost/range.hpp>
 #include "InputItem.h"
 #include "ObjectSource.h"
+#include <timelinelib/IChannel.h>
 
 //! Wizualizator. Jego zadaniem jest stworzyæ widget (gdzie on bêdzie osadzony - nie jego sprawa),
 //! zadeklarowaæ ile Ÿróde³ i jakiego typu jest w stanie obs³u¿yæ oraz przyj¹æ Ÿród³a danych.
@@ -88,5 +89,93 @@ typedef core::shared_ptr<Visualizer> VisualizerPtr;
 typedef core::shared_ptr<const Visualizer> VisualizerConstPtr;
 typedef core::weak_ptr<Visualizer> VisualizerWeakPtr;
 typedef core::weak_ptr<const Visualizer> VisualizerConstWeakPtr;
+
+class VisualizerWidget;
+
+class IVisualizerChannel : public timeline::IChannel
+{
+public:
+    IVisualizerChannel();
+    virtual ~IVisualizerChannel();
+
+    virtual void releaseChannel() = 0;
+};
+
+class VisualizerChannel : public IVisualizerChannel
+{
+public:
+
+    VisualizerChannel(const core::VisualizerTimeSeriePtr & serie, VisualizerWidget * visualizer);
+
+    virtual void releaseChannel();
+
+    virtual ~VisualizerChannel();
+
+    //! \return Sklonowany kana³
+    virtual VisualizerChannel * clone() const;
+
+    //! \return Dlugosc kanalu w sekundach
+    virtual double getLength() const;
+
+    //! Czas zawiera siê miêdzy 0 a getLength()
+    //! \param time Aktualny, lokalny czas kanalu w sekundach
+    virtual void setTime(double time);
+
+    const core::VisualizerTimeSeriePtr & getSerie();
+
+    const core::VisualizerTimeSerieConstPtr & getSerie() const;
+
+    VisualizerWidget * getVisualizer();
+
+    const VisualizerWidget * getVisualizer() const;
+
+private:
+
+    core::VisualizerTimeSeriePtr serie;
+    core::VisualizerTimeSerieConstPtr constSerie;
+    VisualizerWidget * visualizer;
+};
+
+
+class VisualizerMultiChannel : public IVisualizerChannel
+{
+public:
+
+    typedef std::map<core::VisualizerTimeSeriePtr, VisualizerWidget *> SeriesWidgets;
+
+public:
+
+    VisualizerMultiChannel( const SeriesWidgets seriesWidgets );
+
+    virtual void releaseChannel();
+
+    virtual ~VisualizerMultiChannel();
+
+    //! \return Sklonowany kana³
+    virtual VisualizerMultiChannel * clone() const;
+
+    //! \return Dlugosc kanalu w sekundach
+    virtual double getLength() const;
+
+    //! Czas zawiera siê miêdzy 0 a getLength()
+    //! \param time Aktualny, lokalny czas kanalu w sekundach
+    virtual void setTime(double time);
+
+    const SeriesWidgets & getSeriesWidgets() const;
+
+private:
+
+    SeriesWidgets seriesWidgets;
+    float length;
+};
+
+typedef boost::shared_ptr<IVisualizerChannel> IVisualizerChannelPtr;
+typedef boost::shared_ptr<const IVisualizerChannel> IVisualizerChannelConstPtr;
+
+typedef boost::shared_ptr<VisualizerChannel> VisualizerChannelPtr;
+typedef boost::shared_ptr<const VisualizerChannel> VisualizerChannelConstPtr;
+
+typedef boost::shared_ptr<VisualizerMultiChannel> VisualizerMultiChannelPtr;
+typedef boost::shared_ptr<const VisualizerMultiChannel> VisualizerMultiChannelConstPtr;
 
 #endif  // HEADER_GUARD_CORE__VISUALIZER_H__

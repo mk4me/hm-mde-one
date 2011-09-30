@@ -58,6 +58,7 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
 	CommunicationWidgetEx.h
+	${HEADER_PATH}/CommunicationService.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})

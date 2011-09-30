@@ -2,7 +2,7 @@
 #include <core/ObjectWrapper.h>
 #include <core/Visualizer.h>
 #include "VisualizerManager.h"
-
+#include "VisualizerWidget.h"
 #include <plugins/newTimeline/ITimelineService.h>
 
 using namespace core;
@@ -94,71 +94,23 @@ const core::VisualizerSeriePtr & Visualizer::createSerie(const core::ObjectWrapp
 
     auto it = dataSeries.insert(serie).first;
 
-    /*if(tryAddToTimeline == true){
-        TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
-        if(timeline != nullptr && dynamic_cast<timeline::IChannel*>(serie.get()) != nullptr) {
-		    timeline::IChannelPtr channel = core::dynamic_pointer_cast<timeline::IChannel>(serie);
-            try{
-                timeline->addChannel(serie->getName(), channel);
-            }catch(std::runtime_error e){
-                LOG_WARNING("Could not add channel to timeline because: " << e.what());
-            }catch(...){
-                LOG_WARNING("Could not add channel to timeline. Unknown reason.");
-            }
-            timelineDataSeries.insert(serie);
-        }
-    }
-    */
-
     return *it;
 }
 
 void Visualizer::removeSerie(const core::VisualizerSeriePtr & serie)
 {
-    ////sprawdz czy to nie seria w timeline
-    //auto it = timelineDataSeries.find(serie);
-    //if(it != timelineDataSeries.end()){
-    //    //usun z timeline
-    //    TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
-    //    try{
-    //        timeline->removeChannel(serie->getName());
-    //    }catch(std::runtime_error e){
-    //        LOG_WARNING("Could not remove channel from timeline because: " << e.what());
-    //    }catch(...){
-    //        LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
-    //    }
-    //    timelineDataSeries.erase(it);
-    //}
-
     getImplementation()->removeSerie(serie.get());
     dataSeries.erase(serie);
 }
 
 void Visualizer::clearAllSeries()
 {
-    //TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
-
-    //while(timelineDataSeries.empty() == false){
-    //    //usun z timeline
-    //    try{
-    //        timeline->removeChannel((*(timelineDataSeries.begin()))->getName());
-    //    }catch(std::runtime_error e){
-    //        LOG_WARNING("Could not remove channel from timeline because: " << e.what());
-    //    }catch(...){
-    //        LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
-    //    }
-    //    getImplementation()->removeSerie((*timelineDataSeries.begin()).get());
-    //    dataSeries.erase(*(timelineDataSeries.begin()));
-    //    timelineDataSeries.erase(timelineDataSeries.begin());
-    //}
-
     while(dataSeries.empty() == false){
         getImplementation()->removeSerie((*dataSeries.begin()).get());
         dataSeries.erase(dataSeries.begin());
     }
 
     dataSeries.swap(DataSeries());
-    /*timelineDataSeries.swap(DataSeries());*/
 }
 
 const Visualizer::DataSeries & Visualizer::getDataSeries() const
@@ -166,12 +118,133 @@ const Visualizer::DataSeries & Visualizer::getDataSeries() const
     return dataSeries;
 }
 
-//const Visualizer::DataSeries & Visualizer::getTimelineDataSeries() const
-//{
-//    return timelineDataSeries;
-//}
-
 void Visualizer::reset()
 {
     clearAllSeries();
+}
+
+IVisualizerChannel::IVisualizerChannel()
+{
+    VisualizerManager::getInstance()->notifyCreated(this);
+}
+
+IVisualizerChannel::~IVisualizerChannel()
+{
+    if(VisualizerManager::getInstance() != nullptr){
+        VisualizerManager::getInstance()->notifyDestroyed(this);
+    }
+}
+
+VisualizerChannel::VisualizerChannel(const core::VisualizerTimeSeriePtr & serie, VisualizerWidget * visualizer)
+    : serie(serie), constSerie(serie), visualizer(visualizer)
+{
+
+}
+
+void VisualizerChannel::releaseChannel()
+{
+    serie = core::VisualizerTimeSeriePtr();
+    visualizer = nullptr;
+}
+
+VisualizerChannel::~VisualizerChannel()
+{
+    if(visualizer!= nullptr && visualizer->getCurrentVisualizer()){
+        visualizer->getCurrentVisualizer()->removeSerie(serie);
+    }
+}
+
+void VisualizerChannel::setTime(double time)
+{
+    serie->setTime(time);
+}
+
+double VisualizerChannel::getLength() const
+{
+    return serie->getLength();
+}
+
+VisualizerChannel * VisualizerChannel::clone() const
+{
+    //TODO
+    //mo¿na tutaj wprowadzic zarz¹dzanie klonowaniem serii
+
+    return nullptr;
+}
+
+const core::VisualizerTimeSeriePtr & VisualizerChannel::getSerie()
+{
+    return serie;
+}
+
+const core::VisualizerTimeSerieConstPtr & VisualizerChannel::getSerie() const
+{
+    return constSerie;
+}
+
+VisualizerWidget * VisualizerChannel::getVisualizer()
+{
+    return visualizer;
+}
+
+const VisualizerWidget * VisualizerChannel::getVisualizer() const
+{
+    return visualizer;
+}
+
+VisualizerMultiChannel::VisualizerMultiChannel( const SeriesWidgets seriesWidgets )
+    : seriesWidgets(seriesWidgets)
+{
+    UTILS_ASSERT((seriesWidgets.empty() == false), "Nie podano ¿adnych serii dla kanalu");
+
+    auto it = seriesWidgets.begin();
+
+    length = it->first->getLength();
+
+    it++;
+
+    for( ; it != seriesWidgets.end(); it++){
+        if(length < it->first->getLength()){
+            length = it->first->getLength();
+        }
+    }
+}
+
+void VisualizerMultiChannel::releaseChannel()
+{
+    seriesWidgets.swap(SeriesWidgets());
+}
+
+VisualizerMultiChannel::~VisualizerMultiChannel()
+{
+    for(auto it = seriesWidgets.begin(); it != seriesWidgets.end(); it++){
+        if(it->second->getCurrentVisualizer() != nullptr){
+            it->second->getCurrentVisualizer()->removeSerie(it->first);
+        }
+    }
+}
+
+void VisualizerMultiChannel::setTime(double time)
+{
+    for(auto it = seriesWidgets.begin(); it != seriesWidgets.end(); it++){
+        it->first->setTime(time);
+    }
+}
+
+double VisualizerMultiChannel::getLength() const
+{
+    return length;
+}
+
+VisualizerMultiChannel * VisualizerMultiChannel::clone() const
+{
+    //TODO
+    //mo¿na tutaj wprowadzic zarz¹dzanie klonowaniem serii
+
+    return nullptr;
+}
+
+const VisualizerMultiChannel::SeriesWidgets & VisualizerMultiChannel::getSeriesWidgets() const
+{
+    return seriesWidgets;
 }

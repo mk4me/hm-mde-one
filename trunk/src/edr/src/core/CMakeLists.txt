@@ -121,7 +121,6 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-	AppInitializer.cpp
 	MainWindow.cpp
 	EDRConsoleWidget.cpp
 	EDRConsoleInnerWidget.cpp

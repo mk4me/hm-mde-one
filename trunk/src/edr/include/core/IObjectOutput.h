@@ -106,11 +106,6 @@ namespace core
                     //skoro nie znaleziono to znaczy ¿e jest to nowy obiekt i mo¿na go opakowaæ ca³kowicie nowym ObjectWrapperem
                     objectWrapper = ObjectWrapper::create<Type>();
                     objectWrapper->set(object);
-
-                    //TODO
-                    //na potrzeby aktualnego timelina!! Potem do zmiany
-                    //dodajemy dane do DataManagera!!
-                    core::getDataManager()->addExternalData(objectWrapper);
                 }
                 
                 return objectWrapper;

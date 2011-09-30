@@ -27,60 +27,31 @@ namespace osg{
 
 namespace core 
 {
-    class IDataManager;
-
-
-    class IServiceManager;
-
-
     class IService : public IIdentifiable
     {
     public:
 	    virtual ~IService() {}
-
-
-        //------------------------------------------------------------------------------
-        // NOWY INTERFEJS US£UGI
  
         //! Inicjalizacja us³ugi. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
-        //! (nie zainicjalizowaniu!) wszystkich us³ug. Mo¿na wiêc pobieraæ wskaŸniki.
-        //! \param serviceManager Manager us³ug.
-        //! \param root Korzeñ wspólnej sceny 3D.
-	    //! \param dataManager Manager zasobów.
-        virtual void init(IServiceManager* serviceManager, core::IDataManager* dataManager)
+        //! (nie zainicjalizowaniu!) wszystkich us³ug.
+        virtual void init()
         {
 
         }
 
-        // TODO: zostaje tylko do momentu wprowadzenia nowego timeline'a
-        UTILS_DEPRECATED(virtual void loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
+        //! Póxna inicjalizacja us³ug, nastêpuje po wczytaniu i inicjalizacji wszystkich us³ug
+        virtual void lateInit()
         {
 
-        })
-
-        //! Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
-        //! \param serviceManager 
-        // TODO: zostaje tylko do momentu wprowadzenia nowego timeline'a
-        UTILS_DEPRECATED(virtual void update(double time, double timeDelta) 
-        { 
-
-        })
-
-        //! Drugi przebieg aktualizacji logiki; us³ugi jako takie nie maj¹ wp³ywu na kolejnoœæ, z jak¹
-        //! wywo³ywana jest metoda Update. Gdy jakaœ us³uga bazuje na pozosta³ych nale¿y wówczas
-        //! u¿yæ metody LateUpdate, która jest wywo³ywana po cyklu Update wszystkich us³ug.
-        //! Ten sam w¹tek co UI.
-        //! \param serviceManager
-        // TODO: zostaje tylko do momentu wprowadzenia nowego timeline'a
-        UTILS_DEPRECATED(virtual void lateUpdate(double time, double timeDelta) 
-        { 
-
-        })
+        }
 
         //! Metoda powinna w bezpieczny sposob zwalniac zasoby, majac na uwadze ¿e niekoniecznie wszystkie uslugi i zasoby pobrane z zewnatrz sa jeszcze dostepne.
         //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, które uruchomi³ serwis, moze tez zwalniac pamieæ przydzielon¹ dynamicznie
         //! Generalnie to taki bezpieczny destruktor uniezalezniajacy dana usluge od pozostalych uslug i przygotowujacy ja na usuniecie
-        virtual void finalize() = 0;
+        virtual void finalize()
+        {
+
+        }
 
         //! Us³uga nie musi mieæ wizualnej reprezentacji.
         //! \return Widget tworzony przez us³ugê b¹dŸ NULL.

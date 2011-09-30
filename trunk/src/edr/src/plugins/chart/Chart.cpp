@@ -91,6 +91,14 @@ cursorColor(osg::Vec4(1,1,1,1)), titleVisible(false), xUnitLabelVisible(false), 
     stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     cursorBackground->setName("cursorBackground");
 
+    osg::StateSet * mstateset = new osg::StateSet();
+
+
+    mstateset->setMode(GL_ALPHA_TEST, osg::StateAttribute::ON );
+    mstateset->setMode(GL_BLEND, osg::StateAttribute::ON );
+
+    this->setStateSet(stateset);
+
     refreshAll();
     autoRefresh = true;
 }

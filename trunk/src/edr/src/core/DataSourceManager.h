@@ -82,7 +82,6 @@ private:
     //! 
     DataSourcePtr createDataSource(const DataSource& prototype);
 
-private:
     //! \return Indeks prototypu.
     int getPrototypeIdx(UniqueID id) const;
 

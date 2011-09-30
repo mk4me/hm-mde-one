@@ -30,7 +30,7 @@ namespace communication
 		@param surname nazwisko performera
 		@return utworzony Performer
 		*/
-		wsdl::Performer createPerformer(const std::string& name = "", const std::string& surname = "");
+		//wsdl::Performer createPerformer(const std::string& name = "", const std::string& surname = "");
 		/**
 		Manualne utworzenie encji sesji przez u¿ytkownika (oznaczone TODO)
 		@param userID identyfikator u¿ytkownika

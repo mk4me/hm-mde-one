@@ -23,18 +23,6 @@ private:
     ServicesMap servicesMap; 
     //! Sekwencja us³ug.
     ServicesList servicesList;
-    //! Timer kontroluj¹cy czas widziany przez us³ugi.
-    osg::Timer serviceTimer;
-    //! Bie¿¹ca delta.
-    double serviceDeltaTime;
-    //! Bie¿acy czas.
-    double serviceTime;
-    //! Czas bie¿¹cej ramki.
-    osg::Timer_t serviceUpdateTime;
-    //! Pomocniczy wskaŸnik
-    void* updateMarker;
-    //! Chwilowy fix dla timeline - informacja czy pojawi³y siê nowe dane
-    bool dataChanged;
 
 public:
     ServiceManager(void);
@@ -46,29 +34,6 @@ public:
         return static_cast<ServiceManager*>(core::getServiceManager());
     }
 
-    //! Chwilowy fix dla timeline - informacja czy pojawi³y siê nowe dane
-    bool dataPassRequired() const
-    {
-        return dataChanged;
-    }
-
-    //! Chwilowy fix dla timeline - informacja czy pojawi³y siê nowe dane
-    void setDataPassRequired(bool required)
-    {
-        dataChanged = required;
-    }
-
-    //! Ustawia dane dla wszystkich us³ug.
-    //! \param dataManager
-    void loadDataPass(core::IDataManager* dataManager);
-    //! Przebieg update/lateUpdate.
-    void updatePass(); 
-    //! Zeruje czas widziany przez us³ugi.
-    void resetTime();
-    //! \return Czas dzia³ania.
-    double getTime();
-    //! \return Delta od ostatniej ramki.
-    double getDeltaTime();
     //! Metoda finalizujaca wszystkie serwisy  wywolywana przed niszczeniem managera
     void finalizeServices();
 
@@ -85,11 +50,6 @@ public:
     //! \param id ID us³ugi do wyszukania.
     //! \return Odnaleziona us³uga b¹dŸ NULL.
     virtual core::IServicePtr getService(UniqueID id);
-
-
-private: 
-    //! Aktualizuje czas widziany przez us³ugi.
-    void updateTime();
 };
 
 #endif //SERVICE_MANAGER_H

@@ -12,9 +12,6 @@ DataSourceManager::DataSourceManager()
 DataSourceManager::~DataSourceManager()
 {
     UTILS_ASSERT(dataSources.empty(), "Wszystkie Ÿród³a powinny byæ zniszczone.");
-    while (prototypes.size()) {
-        prototypes.pop_back();
-    }
 }
 
 IDataSourceConstPtr DataSourceManager::getPrototype( UniqueID id ) const

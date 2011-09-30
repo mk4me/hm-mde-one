@@ -2,7 +2,6 @@
 #include <core/TypeInfo.h>
 #include <core/ObjectWrapperFactory.h>
 #include "MainWindow.h"
-//#include "ui_toolboxmaindeffile.h"
 #include <osgui/QOsgWidgets.h>
 #include "SceneGraphWidget.h"
 
@@ -22,9 +21,7 @@
 #include "ServiceManager.h"
 #include "DataProcessorManager.h"
 #include "DataSourceManager.h"
-//#include <core/C3DParserEx.h>
 #include "UserInterfaceService.h"
-//#include "config/ConfigurationFileService.h"
 #include "EDRConfig.h"
 
 #include <iostream>
@@ -42,9 +39,6 @@
 #include "VisualizerWidget.h"
 
 #include <core/Visualizer.h>
-//#include <core/C3DChannels.h>
-
-//#include <core/Chart.h>
 #include <osgWidget/ViewerEventHandlers>
 
 #include <osgui/EventCallback.h>
@@ -58,21 +52,11 @@
 
 #include <core/EDRDockWidget.h>
 
-//#include <plugins/c3d/C3DChannels.h>
-
 #include "WorkflowService.h"
 #include "WorkflowWidget.h"
 #include "LocalDataSource.h"
 
 DEFINE_DEFAULT_LOGGER("edr.core");
-
-//struct SortActionsByNames 
-//{
-//    inline bool operator()(const QAction* a1, const QAction* a2)
-//    {
-//        return a1->text() < a2->text();
-//    }
-//};
 
 using namespace core;
 
@@ -91,7 +75,7 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr)
 void MainWindow::init(PluginLoader* pluginLoader) 
 {
 	this->pluginLoader = pluginLoader;
-    setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
+    //setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 
     DataManager* dataManager = DataManager::getInstance();
     ServiceManager* serviceManager = ServiceManager::getInstance();
@@ -123,43 +107,28 @@ void MainWindow::init(PluginLoader* pluginLoader)
     registerPluginsDataProcessors();
     registerPluginsDataSources();
 
-    sceneRoot = new osg::Group();
-    sceneRoot->setName("root");
-
 	dataManager->findResources(directoriesInfo->getResourcesPath().string());
     dataManager->loadResources();
 
     // inicjalizacja us³ug
     for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-        serviceManager->getService(i)->init(serviceManager, dataManager);
+        serviceManager->getService(i)->init();
     }
 
+    // inicjalizacja us³ug
+    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
+        serviceManager->getService(i)->lateInit();
+    }
 
     initializeConsole();          // Console Widget 
     InitializeControlWidget();          // Control Widget + TimeLine
     visualizerManager->setDebugWidget(widgetSceneGraph);
 
-    //initializeUI();
-
 
     readSettings(QSettings(), true);
 
-
-    //connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
-    bool test1 = connect(&serviceTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
-    bool test2 = connect(&visualizerTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
-    serviceTimer.start(20);
+    connect(&visualizerTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
 	visualizerTimer.start(20);
-
-    if ( getNumViews() ) {
-        connect( &viewerFrameTimer, SIGNAL(timeout()), this, SLOT(update()) );
-        viewerFrameTimer.start( 20 );
-    }
-
-
-   // populateVisualizersMenu(menuCreateVisualizer);
-
-   // DataProcessor::test();
 }
 
 MainWindow::~MainWindow()
@@ -194,24 +163,23 @@ void MainWindow::writeSettings()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
+    writeSettings();
     //¿¹danie od³¹czenia siê serwisów od widgetów i elementów UI oraz innych serwisów czy zasobów aplikacji
     ServiceManager::getInstance()->finalizeServices();
-    writeSettings();
     QMainWindow::closeEvent(event);
 }
 
 void MainWindow::InitializeControlWidget()
 {
-    InitializeOGSWidget();  // MainWidget 
-
     // inicjalizacja GridWidget
-    QDockWidget *gDock = new QDockWidget(tr("Service scene graph"), this, Qt::WindowTitleHint);
+    EDRDockWidget *gDock = new EDRDockWidget(tr("Service scene graph"), this, Qt::WindowTitleHint);
     gDock->setObjectName(QString("GridWidget"));
     gDock->setAllowedAreas(Qt::LeftDockWidgetArea);
 
     widgetSceneGraph = new SceneGraphWidget();    
     addDockWidget(Qt::LeftDockWidgetArea, gDock);
-    gDock->setWidget((QWidget*)widgetSceneGraph);
+    gDock->getInnerWidget()->layout()->addWidget((QWidget*)widgetSceneGraph);
+    gDock->setPermanent(true);
 }
 
 
@@ -222,85 +190,6 @@ void MainWindow::initializeConsole()
     widgetConsole->setObjectName("Console");
     widgetConsole->setAllowedAreas(Qt::BottomDockWidgetArea);
     addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
-}
-
-void MainWindow::InitializeOGSWidget()
-{
-    osg::ref_ptr<osg::Group> root = new osg::Group();
-    root->setName("root");
-    root->addChild(createGrid());
-}
-
-//--------------------------------------------------------------------------------------------------
-osg::ref_ptr<osg::Node> MainWindow::createGrid()
-{
-    osg::ref_ptr<osg::Geode> geode = new osg::Geode();
-    // create Geometry object to store all the vertices and lines primitive.
-    osg::ref_ptr<osg::Geometry>	linesGeom = new osg::Geometry();
-    float size = 0.5f; 
-    int sizeX = 21; 
-    int sizeY = 21; 
-    // this time we'll preallocate the vertex array to the size we
-    // need and then simple set them as array elements, 8 points
-    // makes 4 line segments.
-    osg::Vec3Array* vertices = new osg::Vec3Array((sizeX+sizeY)*2);
-    for (int i=0; i<sizeX; ++i)
-    {
-        float a_x = (float(i - sizeX/2) )*size; 
-        float a_y = -1.0f*(sizeX/2)*size; 
-        float b_x = (float(i - sizeX/2) )*size; 
-        float b_y = 1.0f*(sizeX/2)*size; 
-        (*vertices)[2*i].set( a_x, a_y, 0.0f);
-        (*vertices)[2*i+1].set( b_x, b_y, 0.0f);
-    }
-
-    for (int i=0; i<sizeY; ++i)
-    {
-        float a_x = -1.0f*(sizeY/2)*size; 
-        float a_y = (float(i - sizeY/2) )*size; 
-        float b_x = 1.0f*(sizeY/2)*size; 
-        float b_y = (float(i - sizeY/2) )*size; 
-        (*vertices)[sizeX*2+2*i].set( a_x, a_y, 0.0f);
-        (*vertices)[sizeX*2+2*i+1].set( b_x, b_y, 0.0f);
-    }
-    // pass the created vertex array to the points geometry object.
-    linesGeom->setVertexArray(vertices);
-    // set the colors as before, plus using the above
-    osg::Vec4Array* colors = new osg::Vec4Array;
-    colors->push_back( osg::Vec4(0.5f, 0.5f, 0.5f, 0.5f) );
-    linesGeom->setColorArray(colors);
-    linesGeom->setColorBinding( osg::Geometry::BIND_OVERALL );
-    // set the normal in the same way color.
-    osg::Vec3Array* normals = new osg::Vec3Array;
-    normals->push_back( osg::Vec3(0.0f, -1.0f, 0.0f) );
-    linesGeom->setNormalArray(normals);
-    linesGeom->setNormalBinding( osg::Geometry::BIND_OVERALL );
-    // This time we simply use primitive, and hardwire the number of coords to use 
-    // since we know up front,
-    linesGeom->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, (sizeX+sizeY)*2) );
-    // add the points geometry to the geode.
-    geode->addDrawable(linesGeom);
-    //osgView_->setSceneData((osg::Node *)geode);
-    geode->setName("grid");
-    return geode; 
-}
-
-void MainWindow::updateServices()
-{
-	//if(DataManager::getInstance()->isLoadLocalTrialData())	{
-    if(ServiceManager::getInstance()->dataPassRequired() == true)	{
-		loadData();
-	}
-    widgetConsole->flushQueue();
-    if ( updateEnabled ) {
-        ServiceManager::getInstance()->updatePass();
-    }
-    widgetConsole->flushQueue();
-}
-
-void MainWindow::loadData()
-{
-	ServiceManager::getInstance()->loadDataPass(DataManager::getInstance());
 }
 
 void MainWindow::updateVisualizers()
@@ -437,9 +326,9 @@ void MainWindow::safeRegisterDataSource(const IDataSourcePtr & dataSource)
 void MainWindow::registerCoreServices()
 {
     // us³uga UI
-    UserInterfaceService* userInterfaceService = new UserInterfaceService();
-    userInterfaceService->setMainWindow(this);
-    safeRegisterService(IServicePtr(userInterfaceService));
+//    UserInterfaceService* userInterfaceService = new UserInterfaceService();
+ //   userInterfaceService->setMainWindow(this);
+ //   safeRegisterService(IServicePtr(userInterfaceService));
 }
 
 void MainWindow::registerCoreDataSources()
@@ -696,13 +585,6 @@ QDockWidget* MainWindow::embeddWidget( QWidget* widget, std::vector<QObject*>& w
 //{
 //	ServiceManager::getInstance()->loadDataPass(DataManager::getInstance());
 //}
-
-void MainWindow::paintEvent( QPaintEvent* event )
-{
-    if ( getNumViews() ) {
-        frame();
-    }
-}
 
 //void MainWindow::onDockWidgetVisiblityChanged( bool visible )
 //{

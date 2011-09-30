@@ -17,24 +17,7 @@ namespace communication
     private:
         /**
         @author Marek Daniluk
-        @brief Struktura dla plików pobieranych lub wysy³anych przy pomocy bibliotek LibCurl. Zawiera informacje o nazwie
-        pliku i wskaŸnik na plik.
-        */
-        struct FtpFile
-        {
-            /**
-            Nazwa pliku.
-            */
-            const std::string& filename;
-            /**
-            WskaŸnik na plik.
-            */
-            FILE* stream;
-        };
-
-        /**
-        @author Marek Daniluk
-        @brief Struktura pozwalaj¹ca anulowanie operacji. Przechowuje te¿ informacjê o postêpie operacji.
+        @brief Struktura pozwalaj¹ca na anulowanie operacji. Przechowuje te¿ informacjê o postêpie operacji.
         */
         struct Progress
         {
@@ -95,10 +78,7 @@ namespace communication
         Pole klasy przechowuj¹ce informacje o procentowym postêpie operacji. S³u¿y te¿ do przerwañ operacji.
         */
         Progress progress;
-        /**
-        Pole klasy przechowuj¹ce informacje o domyslnym katalogu zapisu plików œci¹ganych przez FTP
-        */
-        std::string defaultDownloadPath;
+
     private:
         /**
         WskaŸnik na obiekt typu CURL potrzebny do operacji ftpowych.
@@ -166,35 +146,21 @@ namespace communication
         Metoda wysy³aj¹ca na serwer plik. Nazwa wys³anego pliku przechowywana jest w zmiennej filename.
         @param filename nazwa pliku który ma wzi¹æ udzia³ w operacji ftp
         */
-        virtual void put(const std::string& filename);
+        virtual void put(const std::string& localSource, const std::string & remoteDestination);
         /**
         Metoda pobieraj¹ca plik z serwera. Nazwa pobranego pliku przechowywana jest w zmiennej filename.
         @param filename nazwa pliku który ma wzi¹c udzia³ w operacji ftp
         */
-        virtual void get(const std::string& filename);
+        virtual void get(const std::string& remoteSource, const std::string & localDestination);
         /**
         Postêp operacji przesy³ania.
-        @return postêp wyra¿ony w procentach
+        @return postêp wyra¿ony w procentach dla pojedynczego transferu
         */
         virtual int getProgress() const;
         /**
-        Anuluje obecnie wykonywan¹ operacjê.
+        Anuluje obecnie wykonywan¹ operacjê. Czyœci zasoby uzyte na jej potrzeby (np. utworzone pliki)
         */
         virtual void abort();
-
-        /**
-        Metoda ustawia domyslny katalog œci¹ganych plików
-        @param path Katalog do zapisu œci¹ganych plików
-        */
-        virtual void setDefaultDownloadPath(const std::string & path);
-
-        /**
-        Katalog zapisu œci¹ganych plików
-        @return Katalog zapisu œci¹ganych plików
-        */
-        const std::string & getDefaultDownloadPath() const;
-
-        std::string getFilePath(const std::string & filename) const;
     };
 }
 #endif //HEADER_GUARD_COMMUNICATION_FTPSCONNECTION_H__

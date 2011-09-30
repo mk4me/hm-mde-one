@@ -15,11 +15,15 @@ implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
 #include <plugins/communication/ICommunication.h>
 #include <plugins/communication/QueryWSDL.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
+#include <QtCore/QObject>
 
-class CommunicationWidgetEx;
+Q_DECLARE_METATYPE ( communication::CommunicationManager::BasicRequest )
+Q_DECLARE_METATYPE ( std::string )
 
-class CommunicationService : public core::IService, public ICommunication
+class CommunicationService : public QObject, public core::IService, public ICommunication, private OpenThreads::Thread
 {
+    Q_OBJECT;
+
     UNIQUE_ID("{441D9894-1019-4382-97EE-F18B511A49CB}","Communication Service");
 private:
     /**
@@ -34,13 +38,59 @@ private:
     Nazwa serwisu
     */
     std::string name;
+
+    communication::CommunicationManager::State state;
+
+    bool finish;
+
+    communication::CommunicationManager::RequestCallbacks callbacks;
+
+    unsigned int sleepTime;
+    bool refreshProgress;
+
     /**
     ping serwera
     */
     void ping()
     {
-        model->ping();
+        //TODO
+        model->ping(callbacks);
     };
+
+private slots:
+
+    void updateProgress();
+
+    void onBeginRequest(const communication::CommunicationManager::BasicRequest & request);
+    void onEndRequest(const communication::CommunicationManager::BasicRequest & request);
+    void onCancelRequest(const communication::CommunicationManager::BasicRequest & request);
+    void onRequestError(const communication::CommunicationManager::BasicRequest & request, const std::string & error);
+
+private:
+
+    void onBeginRequestInvoker(const communication::CommunicationManager::BasicRequest & request);
+    void onEndRequestInvoker(const communication::CommunicationManager::BasicRequest & request);
+    void onCancelRequestInvoker(const communication::CommunicationManager::BasicRequest & request);
+    void onRequestErrorInvoker(const communication::CommunicationManager::BasicRequest & request, const std::string & error);
+
+    void turnOnProgressRefresh();
+    void turnOffProgressRefresh();   
+    
+    virtual void run(){        
+        while(finish == false){
+            if(refreshProgress == false){
+                if(model->requestsQueueEmpty() == true) {
+                    //pinguj co pol minuty
+                    ping();
+                }
+            }else{
+                QMetaObject::invokeMethod(this, "updateProgress");
+            }
+
+            microSleep(sleepTime);
+        }
+    }
+
 public:
     /**
     Konstruktor
@@ -58,21 +108,22 @@ public:
     @param root Korzeñ wspólnej sceny 3D.
     @param dataManager Manager zasobów.
     */
-    virtual void init(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
+    virtual void init();
 
-    virtual void finalize();
-    /**
-    Metoda z interfejsu IService. Aktualizacja logiki us³ugi. Ten sam w¹tek co UI.
-    */
-    virtual void update(double time, double timeDelta);
+    virtual void finalize()
+    {
+        if(isRunning() == true){
+            finish = true;
+            join();
+        }
+    }
+    
     /**
     Metoda z interfejsu IService. Us³uga nie musi mieæ wizualnej reprezentacji.
     @return Widget tworzony przez us³ugê b¹dŸ NULL.
     */
     virtual QWidget* getWidget(std::vector<QObject*>& actions)
-    { 
-        // HACK: ca³y ten system jest shackowany!
-        //return reinterpret_cast<IWidget*>(widget);
+    {
         return nullptr;
     }
     /**
@@ -81,7 +132,7 @@ public:
     */
     virtual QWidget* getSettingsWidget(std::vector<QObject*>& actions)
     {
-        return (QWidget*)widget;
+        return widget;
     }
     /**
     Metoda z interfejsu IService. Nazwa us³ugi.

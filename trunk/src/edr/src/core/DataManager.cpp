@@ -331,9 +331,6 @@ void DataManager::addExternalData(const core::ObjectWrapperPtr & object)
         for(auto it = supportedTypes.begin(); it != supportedTypes.end(); it++){
             groupedExternalData[*it].insert(object);
         }
-
-        //odœwie¿amy dane w serwisach
-        ServiceManager::getInstance()->setDataPassRequired(true);
     }
 }
 
@@ -358,8 +355,6 @@ void DataManager::removeExternalData(const core::ObjectWrapperPtr & object)
         for(auto it = supportedTypes.begin(); it != supportedTypes.end(); it++){
             groupedExternalData[*it].erase(object);
         }
-
-        ServiceManager::getInstance()->setDataPassRequired(true);
     }
 }
 
@@ -396,8 +391,6 @@ void DataManager::loadFiles(const std::vector<core::Filesystem::Path>& files, co
 			wrappersAddedSignal(loc, true);
 		}
 	}
-
-    ServiceManager::getInstance()->setDataPassRequired(true);
 }
 
 
@@ -406,8 +399,6 @@ void DataManager::addFiles( const std::vector<Path>& files )
 	BOOST_FOREACH(core::Filesystem::Path path, files) {
 		createParsers(path, false);
 	}
-
-    ServiceManager::getInstance()->setDataPassRequired(true);
 }
 
 void DataManager::removeFiles( const std::vector<Path>& files )
@@ -434,8 +425,6 @@ void DataManager::removeFiles( const std::vector<Path>& files )
 
 	// fizycznie usuwamy zbêdne wektory
 	currentParsers.erase( last, currentParsers.end() );
-
-    ServiceManager::getInstance()->setDataPassRequired(true);
 }
 
 void DataManager::loadResources()

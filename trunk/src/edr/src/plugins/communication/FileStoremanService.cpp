@@ -27,7 +27,7 @@ void FileStoremanService::downloadComplete(int fileID, const std::string& path)
 	}
 }
 
-const std::string& FileStoremanService::retrieveFile(int fileID)
+std::string FileStoremanService::retrieveFile(int fileID)
 {
 	this->setOperation("RetrieveFile");
 	if(invoker.status()) {
@@ -159,7 +159,7 @@ void FileStoremanService::storeTrialFiles(int trialID, const std::string& path)
 	}
 }
 
-const std::string& FileStoremanService::getShallowCopy()
+std::string FileStoremanService::getShallowCopy()
 {
 	this->setOperation("GetShallowCopy");
 	if(invoker.status()) {
@@ -174,7 +174,7 @@ const std::string& FileStoremanService::getShallowCopy()
 	}
 }
 
-const std::string& FileStoremanService::getMetadata()
+std::string FileStoremanService::getMetadata()
 {
 	this->setOperation("GetMetadata");
 	if(invoker.status()) {

@@ -15,17 +15,31 @@ i web serwisy wsdl.
 #include <plugins/communication/TransportWSDL_FTPS.h>
 #include <OpenThreads/ScopedLock>
 #include <OpenThreads/Mutex>
+#include <queue>
+#include <boost/function.hpp>
 
 typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
 
 namespace communication
 {
-    class CommunicationManager : public utils::Observable<CommunicationManager>, public OpenThreads::Thread
+    class CommunicationManager : public utils::Observable<CommunicationManager>, private OpenThreads::Thread
     {
     private:
+
         //! Sekwencja lokalnych prób pomiarowych.
         typedef std::vector<core::IDataManager::LocalTrial> LocalTrialsList;
+
     public:
+
+        enum Request
+        {
+            DownloadFile,
+            DownloadTrial,
+            CopyDB,
+            PingServer
+            //UpdateTrials
+        };
+
         /**
         Stany managera pomocne przy wykonywaniu dzia³añ wspó³bie¿nie.
         */
@@ -34,11 +48,79 @@ namespace communication
             Ready, /** Gotowy do wszelkich dzia³añ */
             DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
             DownloadingTrial, /** Trwa pobieranie plików próby pomiarowej */
-            UpdateTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
-            CopyDB, /** Trwa odnawianie informacji o encjach db*/
-            PingServer, /** Pingowanie serwera */
-            Error /** Wyst¹pi³ b³¹d */
+            //UpdateTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
+            CopyingDB, /** Trwa odnawianie informacji o encjach db*/
+            PingingServer, /** Pingowanie serwera */
         };
+
+        struct BasicRequest
+        {
+            Request type;
+            unsigned int id;
+        };
+
+        typedef boost::function<void(const BasicRequest &)> RequestCallback;
+        typedef boost::function<void(const BasicRequest &, const std::string &)> RequestErrorCallback;
+
+        struct RequestCallbacks
+        {
+            RequestCallback onBeginCallback;
+            RequestCallback onEndCallback;
+            RequestCallback onCancelCallback;
+            RequestErrorCallback onErrorCallback;
+        };
+
+        /**
+        Typ zlecenia przekazywany do kolejki zleceñ CommunicationManagera
+        */
+        struct CompleteRequest
+        {
+            BasicRequest request;
+            RequestCallbacks callbacks;
+        };
+
+        typedef std::queue<CompleteRequest> RequestsQueue;
+
+    private:
+
+        void popRequest(CompleteRequest & reuest)
+        {
+            ScopedLock lock(requestsMutex);
+            reuest = requestsQueue.front();
+            requestsQueue.pop();
+        }
+
+    public:
+
+        void pushRequest(const CompleteRequest & request)
+        {
+            ScopedLock lock(requestsMutex);
+            requestsQueue.push(request);
+
+            if(isRunning() == false){
+                start();
+            }
+        }
+
+        bool requestsQueueEmpty() const
+        {
+            ScopedLock lock(requestsMutex);
+            return requestsQueue.empty();
+        }
+
+        void cancelAllPendingRequests()
+        {
+            ScopedLock lock(requestsMutex);
+            while(requestsQueue.empty() == false)
+            {
+                if(requestsQueue.front().callbacks.onCancelCallback.empty() == false){
+                    requestsQueue.front().callbacks.onCancelCallback(requestsQueue.front().request);
+                }
+
+                requestsQueue.pop();
+            }
+        }
+
         /**
         @return p³ytka kopia DB
         */
@@ -58,10 +140,15 @@ namespace communication
         */
         void loadLocalTrials();
         /**
-        Zwraca postêp w procentach aktualnie wykonywanego zadania.
+        Zwraca postêp w procentach aktualnie wykonywanego zadania jako pejedynczego transferu
         @return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
         */
         int getProgress() const;
+        /**
+        Zwraca postêp w procentach aktualnie wykonywanego zadania jako calosci
+        @return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
+        */
+        int getTotalProgress() const;
         /**
         Informuje ile plików ma byæ œci¹gniêtych przy operacji pobierania plików.
         @return ile plików ma byæ œci¹gnietych
@@ -76,28 +163,37 @@ namespace communication
         */
         int getActualDownloadFileNumber() const
         {
-            return actualFile;
+            return actualDownloadFileNumer;
         };
+
+        void ping(const RequestCallbacks & callbacks = RequestCallbacks());
+
         /**
         P³ytka kopia bazy danych.
         */
-        void copyDbData();
+        void copyDbData(const RequestCallbacks & callbacks = RequestCallbacks());
+
+        std::string getTrialDirectoryName(int trialID);
+
         /**
         Pobieranie próby pomiarowej.
         @param trialID ID próby pomiarowej która ma byæ pobrana
         */
-        void downloadTrial(unsigned int trialID);
+        void downloadTrial(unsigned int trialID, const RequestCallbacks & callbacks = RequestCallbacks());
         /**
         Pobieranie pojedynczego pliku.
         @param fileID ID pliku który ma byæ pobrany
         */
-        void downloadFile(unsigned int fileID);
-        /**
-        Przerwanie operacji pobierania pliku lub próby pomiarowej.
-        */
-        void cancelDownloading()
+        void downloadFile(unsigned int fileID, const RequestCallbacks & callbacks = RequestCallbacks());
+        ///**
+        //Przerwanie operacji pobierania pliku lub próby pomiarowej.
+        //*/
+        void cancelDownload()
         {
-            transportManager->abort();
+            if(state != CopyingDB){
+                transportManager->abort();
+                cancelDownloading = true;
+            }
         };
         /**
         Listuje próby pomiarowe znajduj¹ce siê na lokalnym dysku.
@@ -134,28 +230,33 @@ namespace communication
         @param files lista plików do usuniêcia
         */
         void removeFiles(const std::vector<core::Filesystem::Path> files);
+
+    protected:
         /**
         Ustala stan w jakim znajduje siê Communication Service.
         @param state stan jaki ustaliæ jako aktualny dla CS
         */
-        void setState(const State& state)
+        void setState(State state)
         {
             ScopedLock lock(trialsMutex);
-            this->state = state;
+            this->state = state;    
         };
+
+    public:
         /**
         Sprawdza stan w jakim znajduje siê Communication Service.
         @return aktualny stan CS
         */
-        const State& getState()
+        State getState()
         {
             ScopedLock lock(trialsMutex);
             return state;
         };
-        /**
-        Pingowanie serwera.
-        */
-        void ping();
+        
+        ///**
+        //Pingowanie serwera.
+        //*/
+        //void ping();
         /**
         Podaje informacjê czy serwer odpowiedzia³ na ostatni ping.
         @return czy serwer odpowiedzia³?
@@ -164,18 +265,17 @@ namespace communication
         {
             return serverResponse;
         };
+
+    private:
+
         /**
         Metoda run pochodzi z interfejsu OpenThreads::Thread i zosta³a przes³oniêta do przeniesienia operacji do osobnego w¹tku.
         */
+
         virtual void run();
-        /**
-        Zwraca komunikat b³êdu gdy CS znajduje siê w stanie Error.
-        @return komunikat o b³êdzie
-        */
-        const std::string& getErrorMessage() const
-        {
-            return errorMessage;
-        };
+
+    public:
+
         /**
         Statyczna metoda pobieraj¹ca jedyna instancjê klasy CommuniationManagera.
         @return jedyna instancja CommunicationManagera
@@ -185,7 +285,13 @@ namespace communication
         Statyczna metoda usuwaj¹ca jedyn¹ instancjê CommunicationManagera.
         */
         static void destoryInstance();
+
+
     private:
+
+        unsigned int filesToDownload;
+        unsigned int actualDownloadFileNumer;
+
         /**
         Jedyna instancja klasy CommunicationManager.
         */
@@ -202,10 +308,12 @@ namespace communication
         Stan Communication Service
         */
         State state;
+
         /**
-        Komuniat ostaniego b³êdu
+        Kolejka zapytañ
         */
-        std::string errorMessage;
+        RequestsQueue requestsQueue;
+
         /**
         P³ytka kopia db
         */
@@ -227,22 +335,6 @@ namespace communication
         //*/
         //std::vector<Trial> serverTrials;
         /**
-        id encji wykorzystywanej przy operacjach pobiarnia i aktualizacji informacji
-        */
-        int entityID;
-        /**
-        Procentowa wartoœæ postêpu wykonywanej operacji
-        */
-        int progress;
-        /**
-        Iloœæ plików do pobrania przy operacji pobierania
-        */
-        int filesToDownload;
-        /**
-        Który z kolei plik jest aktualnie pobierany
-        */
-        int actualFile;
-        /**
         Czy serwer odpowiada na ping
         */
         bool serverResponse;
@@ -262,6 +354,10 @@ namespace communication
         Muteks zabezpieczaj¹cy przed zakleszczeniami.
         */
         OpenThreads::Mutex trialsMutex;
+        /**
+        Muteks synchronizuj¹cy obs³uge kolejki zleceñ
+        */
+        mutable OpenThreads::Mutex requestsMutex;
         /**
         Parsowanie plików xml p³ytkiej kopii bazy danych.
         */
@@ -285,6 +381,13 @@ namespace communication
         static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
 
         core::IDataManager::LocalTrial findLocalTrialsPaths(const core::Filesystem::Path& path);
+
+        bool finish;
+
+        bool cancelDownloading;
+
+        std::string shallowCopyPath;
+        std::string metadataPath;
     };
 }
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

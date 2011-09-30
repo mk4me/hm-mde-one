@@ -78,10 +78,10 @@ public:
 
 			// UWAGA - obiekty udostepniane klientom poprzez interfejsy musz¹ mieæ przywracane (zerowane) wartoœci na tym samym
 			// poziomie na którym zosta³y stworzone. Dlatego tutaj mamy Push dla logera i konfiguracji.
-			// Dodatkowo trzeba pamiêtaæ o kolejnoœci niszczenia obiektów po zakoñczeniu obszaru ich ¿ycia - jest to odwrotna kolejnoœæ
+			// Dodatkowo trzeba pamiêtaæ o kolejnoœci niszczenia obiektów po zakoñczeniu czasu ich ¿ycia - jest to odwrotna kolejnoœæ
 			// w stosunku do tej w jakiej zosta³y zdeklarowane w kodzie.
 
-			// MUSI TAK BY ABY LOGGER ŒCIE¯KI WIDZIA£
+			// MUSI TAK BY ABY LOGGER WIDZIA£ ŒCIE¯KI
 			utils::Push<IPath*> pushedDI(__instanceInfo.pathInterface, &edrConfig);
 
 			EDRLog logger(p.string());

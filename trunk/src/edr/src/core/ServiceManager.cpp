@@ -7,9 +7,7 @@
 
 
 ServiceManager::ServiceManager(void)
-: updateMarker(nullptr)
 {
-    resetTime();
 }
 
 
@@ -51,44 +49,6 @@ void ServiceManager::registerService(core::IServicePtr service)
     }
 };
 
-void ServiceManager::updatePass()
-{
-    // ustawienia markera update'a
-    updateMarker = OpenThreads::Thread::CurrentThread();
-
-    // aktualizacja czasu
-    updateTime();
-
-    // aktualizacja us³ug
-    for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
-        (*it)->update(getTime(), getDeltaTime());
-    }
-    // drugi cykl aktualizacji
-    for (ServicesList::iterator it = servicesList.begin(); it != servicesList.end(); ++it ) {
-        (*it)->lateUpdate(getTime(), getDeltaTime());
-    }
-
-    // ustawienia markera update'a
-    updateMarker = nullptr;
-}
-
-void ServiceManager::loadDataPass(core::IDataManager* dataManager)
-{
-    //TODO: prawdopodobnie trzeba to bedzie jakos poprawiæ? zeby bylo asynchronicznie
-    ServicesMap::iterator it = servicesMap.begin();  
-    while (it != servicesMap.end())
-    {
-        try {
-            it->second->loadData(this, dataManager); 
-        } catch (std::runtime_error& ex) {
-            LOG_ERROR(it->second->getName() << ": " << ex.what());
-        }
-        it++;
-    }
-
-    dataChanged = false;
-}
-
 int ServiceManager::getNumServices() const
 {
     return static_cast<int>(servicesList.size());
@@ -112,31 +72,3 @@ core::IServicePtr ServiceManager::getService( UniqueID id )
         return core::IServicePtr();
     }
 }
-
-double ServiceManager::getTime()
-{
-    UTILS_ASSERT(updateMarker == OpenThreads::Thread::CurrentThread());
-    return serviceTime;
-}
-
-double ServiceManager::getDeltaTime()
-{
-    UTILS_ASSERT(updateMarker == OpenThreads::Thread::CurrentThread());
-    return serviceDeltaTime;
-}
-
-void ServiceManager::resetTime()
-{
-    serviceTimer.setStartTick();
-    serviceUpdateTime = serviceTimer.getStartTick();
-    serviceDeltaTime = 0.0;
-}
-
-void ServiceManager::updateTime()
-{
-    osg::Timer_t tick = serviceTimer.tick();
-    serviceDeltaTime = serviceTimer.delta_s( serviceUpdateTime, tick );
-    serviceUpdateTime = tick;
-    serviceTime = serviceTimer.delta_s( serviceTimer.getStartTick(), tick );
-}
-

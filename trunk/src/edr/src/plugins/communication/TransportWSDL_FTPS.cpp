@@ -5,19 +5,19 @@
 #include "CommunicationPCH.h"
 #include <core/Filesystem.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
-#include <core/PluginCommon.h>
 
 using namespace communication;
 
 TransportWSDL_FTPS::TransportWSDL_FTPS()
+    : ftp(new FtpsConnection()), wsdl(new FileStoremanService()), aborted(false),
+    filesToDownload(0), downloadedFiles(0)
 {
-    ftp = core::shared_ptr<FtpsConnection>(new FtpsConnection());
-    ftp->setDefaultDownloadPath(core::getPathInterface()->getUserDataPath().string());
-    wsdl = core::shared_ptr<FileStoremanService>(new FileStoremanService());
+    
 }
 
 TransportWSDL_FTPS::~TransportWSDL_FTPS()
 {
+
 }
 
 void TransportWSDL_FTPS::setWSCredentials(const std::string& uri, const std::string& usr, const std::string& pswd)
@@ -30,16 +30,15 @@ void TransportWSDL_FTPS::setFTPCredentials(const std::string& addr, const std::s
     ftp->setCredentials(addr, usr, pswd);
 }
 
-int TransportWSDL_FTPS::storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename)
+int TransportWSDL_FTPS::storeSessionFile(int sessionID, const std::string& remoteDestination, const std::string& description, const std::string& localSource)
 {
     int value;
-    std::string local_path = path;
 
-    if(local_path.size() > 0 && local_path[local_path.size() - 1] != '/') {
-        local_path.append("/");
-    }
-    ftp->put(local_path + filename);
-    value = wsdl->storeSessionFile(sessionID, path, description, filename);
+    ftp->put(localSource, remoteDestination);
+
+    core::Filesystem::Path path(remoteDestination);
+
+    value = wsdl->storeSessionFile(sessionID, path.parent_path().string(), description, path.filename().string());
     return value;
 }
 
@@ -48,11 +47,15 @@ int TransportWSDL_FTPS::storeSessionFiles(int sessionID, const std::string& path
     throw std::runtime_error("not supported yet.");
 }
 
-int TransportWSDL_FTPS::storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename)
+int TransportWSDL_FTPS::storePerformerFile(int performerID, const std::string& remoteDestination, const std::string& description, const std::string& localSource)
 {
     int value;
-    ftp->put(filename);
-    value = wsdl->storePerformerFile(performerID, path, description, filename);
+
+    ftp->put(localSource, remoteDestination);
+
+    core::Filesystem::Path path(remoteDestination);
+
+    value = wsdl->storePerformerFile(performerID, path.parent_path().string(), description, path.filename().string());
     return value;
 }
 
@@ -61,11 +64,15 @@ void TransportWSDL_FTPS::storePerformerFiles(int performerID, const std::string&
     throw std::runtime_error("not supported yet.");
 }
 
-int TransportWSDL_FTPS::storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename)
+int TransportWSDL_FTPS::storeTrialFile(int trialID, const std::string& remoteDestination, const std::string& description, const std::string& localSource)
 {
     int value;
-    ftp->put(filename);
-    value = wsdl->storeTrialFile(trialID, path, description, filename);
+    
+    ftp->put(localSource, remoteDestination);
+
+    core::Filesystem::Path path(remoteDestination);
+
+    value = wsdl->storeTrialFile(trialID, path.parent_path().string(), description, path.filename().string());
     return value;
 }
 
@@ -74,33 +81,15 @@ void TransportWSDL_FTPS::storeTrialFiles(int trialID, const std::string& path)
     throw std::runtime_error("not supported yet.");
 }
 
-const std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string& path)
+std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string& path)
 {
-    std::string filename;
+    SafeWSDL_FTPManager safeEnder(fileID, wsdl, wsdl->retrieveFile(fileID)); 
 
-    //sciagnij plik
-    filename = wsdl->retrieveFile(fileID);
-    ftp->get(filename);
-    wsdl->downloadComplete(fileID, filename);
-    filename = filename.substr(filename.rfind("/") + 1, filename.npos);
+    //sciagnij plik -> sciezka FTP, lokalna sciezka
+    std::string localPath((core::Filesystem::Path(path) / core::Filesystem::Path(safeEnder.getFtpFilePath()).filename()).string());
+    ftp->get(safeEnder.getFtpFilePath(), localPath);
 
-    //utworz foldery do odpowiedniej sciezki i przerzuc tam plik
-    core::Filesystem::Path filePath(path);
-    filePath /= filename.substr(0, filename.find("."));
-    //filePath.append(filename.substr(0, filename.find(".")));
-    try {
-        core::Filesystem::createDirectory(filePath.string());
-        core::Filesystem::move(ftp->getFilePath(filename), (filePath / filename).string());
-    } catch(std::exception& e) {
-        if(!filePath.empty()) {
-            core::Filesystem::deleteDirectory(filePath.string());
-        }
-        if(!filename.empty()) {
-            core::Filesystem::deleteFile(ftp->getFilePath(filename));
-        }
-        throw std::runtime_error(e.what());
-    }
-    return filename;
+    return localPath;
 }
 
 int TransportWSDL_FTPS::getProgress() const
@@ -110,35 +99,22 @@ int TransportWSDL_FTPS::getProgress() const
 
 void TransportWSDL_FTPS::abort()
 {
+    aborted = true;
     ftp->abort();
 }
 
-const std::string TransportWSDL_FTPS::getShallowCopy()
+void TransportWSDL_FTPS::getShallowCopy(const std::string & path)
 {
-    core::Filesystem::Path filename, schema = core::getApplicationDataString("db/schema/shallowcopy.xml");
+    SafeWSDL_FTPManager safeEnder(0, wsdl, wsdl->getShallowCopy()); 
+
     //sciagnij plik
-    filename = wsdl->getShallowCopy();
-    ftp->get(filename.string());
-    wsdl->downloadComplete(0, filename.string());
-    core::Filesystem::createDirectory(std::string(core::getApplicationDataString("db/schema")));
-    //usuwamy wczesniejsza wersje pliku
-    core::Filesystem::deleteFile(schema.string());
-    core::Filesystem::move(ftp->getFilePath(filename.filename().string()), schema.string());
-    return schema.string();
+    ftp->get(safeEnder.getFtpFilePath(), path);
 }
 
-const std::string TransportWSDL_FTPS::getMetadata()
+void TransportWSDL_FTPS::getMetadata(const std::string & path)
 {
-    core::Filesystem::Path filename, schema = core::getApplicationDataString("db/schema/metadata.xml");
+    SafeWSDL_FTPManager safeEnder(0, wsdl, wsdl->getMetadata()); 
 
     //sciagnij plik
-    filename = wsdl->getMetadata();
-    ftp->get(filename.string());
-    wsdl->downloadComplete(0, filename.string());
-    core::Filesystem::createDirectory(std::string(core::getApplicationDataString("db/schema")));
-    //usuwamy wczesniejsza wersje pliku
-    core::Filesystem::deleteFile(schema.string());
-    core::Filesystem::move(ftp->getFilePath(filename.filename().string()), schema.string());
-    
-    return schema.string();
+    ftp->get(safeEnder.getFtpFilePath(), path);
 }
