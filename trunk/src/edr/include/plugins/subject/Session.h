@@ -42,71 +42,64 @@ class Session
 {
 public:
 	typedef std::vector<MotionPtr> MotionCollection;
-	typedef boost::iterator_range<MotionCollection::iterator> MotionIterator;
-	typedef boost::iterator_range<MotionCollection::const_iterator> MotionConstIterator;
+    typedef std::vector<core::ObjectWrapperPtr>::iterator WrapperIterator;
+    typedef boost::iterator_range<WrapperIterator> WrapperRange;
+	typedef boost::iterator_range<MotionCollection::iterator> MotionRange;
+	typedef boost::iterator_range<MotionCollection::const_iterator> MotionConstRange;
 	
 private:
 	MotionCollection motions;
 	std::string name;
-	kinematic::SkeletalModelConstPtr skeletalModel;
+    std::vector<core::ObjectWrapperPtr> wrappers;
+    core::ObjectWrapperPtr skeletalModelWrapper;
 	
 public:
 	virtual ~Session() {}
 
 public:
-	MotionIterator getMotions() { return boost::make_iterator_range(motions.begin(), motions.end()); }
-	MotionConstIterator getMotions() const { return boost::make_iterator_range(motions.cbegin(), motions.cend()); }
+	MotionRange getMotions() { return boost::make_iterator_range(motions.begin(), motions.end()); }
+	MotionConstRange getMotions() const { return boost::make_iterator_range(motions.cbegin(), motions.cend()); }
+
+    void addWrapper(core::ObjectWrapperPtr wrapper)
+    {
+        if (wrapper->getTypeInfo() == typeid(kinematic::SkeletalModel)) {
+            setSkeletalModel(wrapper);
+        }
+        wrappers.push_back(wrapper);
+    }
+
+    WrapperRange getWrappers() { return boost::make_iterator_range(wrappers.begin(), wrappers.end()); }
+
 	void addMotion(MotionPtr motion)
 	{
+        if (this->skeletalModelWrapper) {
+            motion->addWrapper(skeletalModelWrapper);
+        }
 		motions.push_back(motion);
 	}
+
+
 	std::string getName() const { return name; }
 	void setName(std::string val) { name = val; }
-	kinematic::SkeletalModelConstPtr getSkeletalModel() const { return skeletalModel; }
-	void setSkeletalModel(kinematic::SkeletalModelConstPtr val) { skeletalModel = val; }
 
-	bool hasGrf() const {
-		BOOST_FOREACH(const MotionPtr& motion, getMotions()) {
-			if (motion->getGrf()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	bool hasEmg() const {
-		BOOST_FOREACH(const MotionPtr& motion, getMotions()) {
-			if (motion->getEmg()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	bool hasMarkers() const {
-		BOOST_FOREACH(const MotionPtr& motion, getMotions()) {
-			if (motion->getMarkers()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	bool hasJoints() const {
-		BOOST_FOREACH(const MotionPtr& motion, getMotions()) {
-			if (motion->getJoints()) {
-				return true;
-			}
-		}
-		return false;
-	}
+    bool hasObjectOfType(const core::TypeInfo& type) const 
+    {
+        BOOST_FOREACH(const MotionPtr& motion, getMotions()) {
+            if (motion->hasObjectOfType(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	bool hasVideo() const {
-		BOOST_FOREACH(const MotionPtr& motion, getMotions()) {
-			if (motion->getVideos().size()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+private:
+    void setSkeletalModel(const core::ObjectWrapperPtr& model) 
+    {
+        this->skeletalModelWrapper = model;
+        BOOST_FOREACH(MotionPtr motion, getMotions()) {
+            motion->addWrapper(model);
+        }
+    }
 };
 
 

@@ -57,10 +57,10 @@ namespace core {
         //! \param object ObjectWrapperPtr do usuniecia wraz z danymi domenowymi, DataManager juz wiecej tych danych nie zwroci przy zapytaniu pasujacemu ich typowi
         virtual void removeExternalData(const ObjectWrapperPtr & object) = 0;
 
-		virtual void addFileCallback(boost::function<void (const Filesystem::Path&, bool)> function) = 0;
-		virtual void removeFileCallback(boost::function<void (const Filesystem::Path&, bool)> function) = 0;
-		virtual void addWrappersCallback(boost::function<void (const std::vector<ObjectWrapperPtr>&, bool)> function) = 0;
-		virtual void removeWrappersCallback(boost::function<void (const std::vector<ObjectWrapperPtr>&, bool)> function) = 0;
+		/*virtual void addFileCallback(boost::function<void (const Filesystem::Path&, bool)> function) = 0;
+		virtual void removeFileCallback(boost::function<void (const Filesystem::Path&, bool)> function) = 0;*/
+		virtual void addWrappersCallback(boost::function<void (const core::Filesystem::Path& path, const std::vector<ObjectWrapperPtr>&, bool)> function) = 0;
+		virtual void removeWrappersCallback(boost::function<void (const core::Filesystem::Path& path, const std::vector<ObjectWrapperPtr>&, bool)> function) = 0;
 		
 		//! Przeparsowanie danego wrappera
 		virtual bool tryParseWrapper(ObjectWrapperPtr wrapper) = 0;

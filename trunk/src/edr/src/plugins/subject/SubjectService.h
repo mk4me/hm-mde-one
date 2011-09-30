@@ -42,7 +42,7 @@ public:
 	virtual QWidget* getControlWidget( std::vector<QObject*>& actions );
 
 	void onFileLoaded(const core::Filesystem::Path& path, bool loaded);
-	void onWrappersAdded(const std::vector<core::ObjectWrapperPtr>& wrappers, bool loaded);
+	void onWrappersAdded(const core::Filesystem::Path& path, const std::vector<core::ObjectWrapperPtr>& wrappers, bool loaded);
 
 private:
 	struct fileDescriptor 

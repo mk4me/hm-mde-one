@@ -14,6 +14,7 @@
 #include <core/Filesystem.h>
 #include <core/IDataManager.h>
 
+
 class LoadingThread : public QThread
 {
 	Q_OBJECT
@@ -23,6 +24,7 @@ public:
 
 public:
 	virtual void run();
+
 
 	signals:
 		void sendValue(int value);
@@ -36,7 +38,7 @@ private:
 	std::set<QString> filesSended;
 
 private:
-	void onFileLoaded(const core::Filesystem::Path& p, bool loaded);
+	void onFileLoaded(const core::Filesystem::Path& p, const std::vector<core::ObjectWrapperPtr>&, bool loaded);
 };
 
 #endif

@@ -735,8 +735,13 @@ void Chart::setLabelPrototype( osgText::Text* prototype )
         titleLabel->setText(tmp);
         titleLabel->setCharacterSize(fontSize);
 
-        tmp = cursorText->getText().createUTF8EncodedString();
-        auto pos = cursorText->getPosition();
+        osg::Vec3 pos;
+        if (cursorText) {
+            tmp = cursorText->getText().createUTF8EncodedString();
+            pos = cursorText->getPosition();
+        } else {
+            tmp = "";
+        }
         cursorText = osg::clone( textPrototype.get(), "cursorText", osg::CopyOp::SHALLOW_COPY );
         cursorText->setText(tmp);
         geode->addDrawable(cursorText);

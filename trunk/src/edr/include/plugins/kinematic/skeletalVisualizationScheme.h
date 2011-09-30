@@ -12,6 +12,7 @@ UTILS_PUSH_WARNINGS
 UTILS_POP_WARNINGS
 
 #include <core/SmartPtr.h>
+#include <core/PluginCommon.h>
 #include <boost/utility.hpp>
 #include <boost/function.hpp>
 #include <kinematiclib/VskParser.h>

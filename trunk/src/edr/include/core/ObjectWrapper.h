@@ -70,6 +70,8 @@ namespace core {
         std::string source;
         //! Czy obiekt uleg³ zmianie?
         bool changed;
+
+	public:
         //! Return type resolver
         struct get_t
         {

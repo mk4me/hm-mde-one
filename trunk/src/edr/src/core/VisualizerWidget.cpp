@@ -395,7 +395,12 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
             }
 
             EDRDockInnerWidget * innerWidget = getInnerWidget();
+			/*std::string n = visualizer->getName();
+			if (n == "Video") {
+				innerWidget->setFixedSize(600,400);
+			}*/
             visualizerWidget = visualizer->getOrCreateWidget();
+
             if(visualizerWidget != nullptr){
                 innerWidget->layoutContent->addWidget(visualizerWidget);
             }

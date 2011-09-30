@@ -18,6 +18,7 @@
 #include <core/ObjectWrapper.h>
 #include "Visualizer.h"
 #include <QtCore/QMetaType>
+#include <QtGui/QIcon>
 #include <core/IVisualizerManager.h>
 
 Q_DECLARE_METATYPE(UniqueID);

@@ -136,7 +136,9 @@ private:
 private:
 	GroupPtr createPlatformsGroup(const c3dlib::ForcePlatformCollection& platforms);
 	GroupPtr createButterfly(GRFCollectionConstPtr grf, float& maxLength) const;
+	TransformPtr createPlatformTransform(osg::Texture2D* texture, const osg::Vec3& origin, float width, float lenght, float height) const;
 	static ArrowPtr createArrow();
+	static osg::ref_ptr<osg::Texture2D> getTexture(int number);
 	
 private:
 	KinematicVisualizer * visualizer;
@@ -148,6 +150,7 @@ private:
 	float maxLength;
 	ArrowPtr a1, a2;
 	GhostStackPtr g1, g2;
+	static osg::ref_ptr<osg::Texture2D> texture1, texture2;
     core::ObjectWrapperConstPtr data;
     std::string name;
 };

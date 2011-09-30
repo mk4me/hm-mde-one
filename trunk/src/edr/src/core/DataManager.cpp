@@ -387,8 +387,8 @@ void DataManager::loadFiles(const std::vector<core::Filesystem::Path>& files, co
 		BOOST_FOREACH(const Path& path, allFiles) {
 			std::vector<core::ObjectWrapperPtr> loc(createParsers(path, false));
 			objects.insert(objects.end(), loc.begin(), loc.end());
-			fileLoadedSignal(path, true);
-			wrappersAddedSignal(loc, true);
+			//fileLoadedSignal(path, true);
+			wrappersAddedSignal(path, loc, true);
 		}
 	}
 }
@@ -692,22 +692,23 @@ void DataManager::addObject( const DataProcessorPtr & dataProcessor,  const core
 	addObjects(dataProcessor, objects);
 }
 
-void DataManager::addFileCallback( boost::function<void (const core::Filesystem::Path&, bool)> function )
-{
-	this->fileLoadedSignal.connect(function);
-}
+//void DataManager::addFileCallback( boost::function<void (const core::Filesystem::Path&, bool)> function )
+//{
+//	UTILS_ASSERT(false);
+//	//this->fileLoadedSignal.connect(function);
+//}
 
-void DataManager::removeFileCallback( boost::function<void (const core::Filesystem::Path&, bool)> function )
-{						
-	//this->fileLoadedSignal.disconnect(function);					
-}		
+//void DataManager::removeFileCallback( boost::function<void (const core::Filesystem::Path&, bool)> function )
+//{						
+//	//this->fileLoadedSignal.disconnect(function);					
+//}		
 
-void DataManager::addWrappersCallback( boost::function<void (const std::vector<core::ObjectWrapperPtr>&, bool)> function )
+void DataManager::addWrappersCallback(boost::function<void (const core::Filesystem::Path& path, const std::vector<core::ObjectWrapperPtr>&, bool)> function )
 {
 	this->wrappersAddedSignal.connect(function);
 }
 
-void DataManager::removeWrappersCallback( boost::function<void (const std::vector<core::ObjectWrapperPtr>&, bool)> function )
+void DataManager::removeWrappersCallback( boost::function<void (const core::Filesystem::Path& path, const std::vector<core::ObjectWrapperPtr>&, bool)> function )
 {
 	//this->wrappersAddedSignal.disconnect(function);
 }

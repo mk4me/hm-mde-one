@@ -9,6 +9,9 @@ const osg::Vec3 arrowScale(0.01f, 0.01f, 1.0f);
 // prog dla ktorego sensowne jest wizualizowanie odczytow GRF
 const float treshold = 0.01f;
 
+osg::ref_ptr<osg::Texture2D> GRFSerie::texture1;
+osg::ref_ptr<osg::Texture2D> GRFSerie::texture2;
+
 osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const c3dlib::ForcePlatformCollection& platforms )
 {
 	osg::ref_ptr<osg::Group> group = new osg::Group();
@@ -19,7 +22,7 @@ osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const c3dlib::ForcePlat
 	for ( auto it = platforms.cbegin(); it != platforms.cend(); it++) {
 		GeodePtr platformGeode = new osg::Geode();
 
-		GeometryPtr platformLines = new osg::Geometry();
+		//GeometryPtr platformLines = new osg::Geometry();
 		osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 		stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
 		platformGeode->setStateSet(stateset);
@@ -35,6 +38,8 @@ osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const c3dlib::ForcePlat
 			platformGeode->addDrawable(platform2.get());
 		}
 		i++;
+		TransformPtr pform = createPlatformTransform(getTexture(i), (*it)->getCenter(), (*it)->getWidth() * 0.7f, (*it)->getLength() * 0.7f, 0.025f);
+		group->addChild(pform);
 		group->addChild(platformGeode);
 	}
 
@@ -305,6 +310,94 @@ const core::ObjectWrapperConstPtr & GRFSerie::getData() const
 {
     return data;
 }
+GRFSerie::TransformPtr GRFSerie::createPlatformTransform(osg::Texture2D* texture, const osg::Vec3& origin, float width, float length, float height) const
+{
+	float width2 = 0.5f * width;
+	float height2 = 0.5001f * height;
+	float lenght2 = 0.5f * length;
+
+	TransformPtr transform = new osg::PositionAttitudeTransform();
+	
+	GeodePtr geode = new osg::Geode();
+	//transform->addChild(geode);
+	GeometryPtr geometry = new osg::Geometry();
+	//geode->addDrawable(geometry);
+	osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
+	Vec3 v;
+	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+	osg::ref_ptr<osg::Vec2Array> coord = new osg::Vec2Array;
+
+	colors->push_back(osg::Vec4(1,1,1,1));
+
+	verts->push_back(osg::Vec3(-width2, -lenght2, height2));
+	
+	coord->push_back(osg::Vec2(0.0f, 0.0f));
+	verts->push_back(osg::Vec3(width2, -lenght2, height2));
+	coord->push_back(osg::Vec2(1.0f, 0.0f));
+	verts->push_back(osg::Vec3(width2, lenght2, height2));
+	coord->push_back(osg::Vec2(1.0f, 1.0f));
+	verts->push_back(osg::Vec3(-width2, lenght2, height2));
+	coord->push_back(osg::Vec2(0.0f, 1.0f));
+	
+	geometry->setVertexArray(verts);
+	geometry->setTexCoordArray(0, coord);
+	
+	geometry->setColorArray(colors);
+	geometry->setColorBinding(Geometry::BIND_OVERALL);
+	geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, verts->size()));
+	//geometry->setPrimitiveSet(0, indices);
+	
+	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
+	stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
+	stateset->setMode( GL_BLEND, osg::StateAttribute::ON );
+	stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
+	stateset->setTextureAttributeAndModes(0, texture, osg::StateAttribute::ON);
+	geode->setStateSet(stateset);
+
+	geode->addDrawable(geometry);
+	transform->setPosition(origin);
+	transform->addChild(geode);	
+
+	return transform;
+}
+
+osg::ref_ptr<osg::Texture2D> GRFSerie::getTexture( int number )
+{
+	if (number == 1) {
+		if (!texture1) {
+			osg::Texture2D* t = new osg::Texture2D;
+			t->setDataVariance(osg::Object::DYNAMIC); 
+			osg::Image* i = osgDB::readImageFile(core::getResourceString("images/1.png"));
+			if (!i) {
+				throw std::runtime_error("Unable to load texture: images/1.png");
+			}
+			t->setImage(i);
+			t->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
+			t->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::NEAREST);
+			texture1 = t;
+		}
+		return texture1;
+	} else if (number == 2) {
+		if (!texture2) {
+			osg::Texture2D* t = new osg::Texture2D;
+			t->setDataVariance(osg::Object::DYNAMIC); 
+			osg::Image* i = osgDB::readImageFile(core::getResourceString("images/2.png"));
+			if (!i) {
+				throw std::runtime_error("Unable to load texture: images/2.png");
+			}
+			t->setImage(i);
+			t->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
+			t->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::NEAREST);
+			texture2 = t;
+		}
+		return texture2;
+	} else {
+		UTILS_ASSERT(false);
+		throw std::runtime_error("Wrong texture number");
+	}
+}
+
+
 
 
 void GRFSerie::Arrow::setArrow( Vec3 from, Vec3 to )

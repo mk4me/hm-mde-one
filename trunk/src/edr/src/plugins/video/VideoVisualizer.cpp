@@ -9,7 +9,6 @@
 #include <osgWidget/Box>
 #include <osgui/AspectRatioKeeper.h>
 #include <core/StringTools.h>
-
 using namespace core;
 
 struct VideoVisualizer::Refresher
@@ -85,16 +84,17 @@ void VideoVisualizer::refresh( float width, float height )
 {
     // aktualizacja wspó³czynnika proporcji
     if ( streamImage ) {
-        ratioKeeper->setAspectRatio( streamImage->getPixelAspectRatio() * streamImage->s() / streamImage->t() );
+        //ratioKeeper->setAspectRatio( streamImage->getPixelAspectRatio() * streamImage->s() / streamImage->t() );
+		ratioKeeper->setAspectRatio( width / height );
     }
 
     // aktualizacja rozmiaru t³a
     workspace->setOrigin(0, 0);
-    workspace->resize(width, height);
+    workspace->resize(width , height);
     workspace->update();
     // aktualizacja tekstury t³a
     workspace->getBackground()->setTexCoordRegion(0, height, width, -height);
-
+	
     // aktualizacja rozmiaru tekstury
     if ( streamImage ) {
         // odœwie¿enia danych zale¿nych od obrazka
@@ -118,14 +118,33 @@ void VideoVisualizer::updateWidget()
             float oldS = fabs( ll.x() - ur.x() );
             float oldT = fabs( ll.y() - ur.y() );
 
+			float h = widget->getHeight();
+			float w = widget->getWidth();
+
+			float wR = w / h;
+			float tR = s / t;
+
+			float mul = wR / tR;
+
+			float nextS = s;
+			float nextT = t;
+			if (mul > 1.0f) {
+				nextT = s * h / w;
+			} else { 
+				nextS = w * t / h;
+			}
+			
+			float deltaS = (s - nextS) / 2.0f;
+			float deltaT = (t - nextT) / 2.0f;
+
             // czy trzeba aktualizowaæ?
-            if ( oldS != s || oldT != t ) {
-                widget->setTexCoord(0, t, osgWidget::Widget::UPPER_LEFT);
-                widget->setTexCoord(0, 0, osgWidget::Widget::LOWER_LEFT);
-                widget->setTexCoord(s, t, osgWidget::Widget::UPPER_RIGHT);
-                widget->setTexCoord(s, 0, osgWidget::Widget::LOWER_RIGHT);
+            //if ( oldS != s || oldT != t ) {
+                widget->setTexCoord(0 + deltaS, t - deltaT, osgWidget::Widget::UPPER_LEFT);
+                widget->setTexCoord(0 + deltaS, 0 + deltaT, osgWidget::Widget::LOWER_LEFT);
+                widget->setTexCoord(s - deltaS, t - deltaT, osgWidget::Widget::UPPER_RIGHT);
+                widget->setTexCoord(s - deltaS, 0 + deltaT, osgWidget::Widget::LOWER_RIGHT);
                 osgui::correctTexCoords(widget);
-            }
+            //}
         }
     }
 }

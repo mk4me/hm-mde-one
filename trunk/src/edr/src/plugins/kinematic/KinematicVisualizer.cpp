@@ -282,14 +282,14 @@ osg::Node* KinematicVisualizer::debugGetLocalSceneRoot()
     return rootNode;
 }
 
-void KinematicVisualizer::setLeft()
+void KinematicVisualizer::setRight()
 {
 	this->cameraManipulator->setHeading(osg::DegreesToRadians(-90.0));
 	this->cameraManipulator->setElevation(0);
 	this->cameraManipulator->setDistance(8);
 }
 
-void KinematicVisualizer::setRight()
+void KinematicVisualizer::setLeft()
 {
 	this->cameraManipulator->setHeading(osg::DegreesToRadians(90.0));
 	this->cameraManipulator->setElevation(0);
@@ -310,14 +310,14 @@ void KinematicVisualizer::setBehind()
 	this->cameraManipulator->setDistance(8);
 }
 
-void KinematicVisualizer::setTop()
+void KinematicVisualizer::setBottom()
 {
 	this->cameraManipulator->setHeading(0);
 	this->cameraManipulator->setElevation(osg::DegreesToRadians(-90.0));
 	this->cameraManipulator->setDistance(8);
 }
 
-void KinematicVisualizer::setBottom()
+void KinematicVisualizer::setTop()
 {
 	this->cameraManipulator->setHeading(0);
 	this->cameraManipulator->setElevation(osg::DegreesToRadians(90.0));

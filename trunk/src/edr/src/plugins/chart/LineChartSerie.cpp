@@ -139,6 +139,8 @@ void LineChartSerie::refresh()
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
+    
+   
 
     if(active == true){
         linewidth->setWidth(2.0f);
@@ -147,6 +149,16 @@ void LineChartSerie::refresh()
     }
 
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
+    stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
+    //stateset->setMode(GL_POINT_SMOOTH, osg::StateAttribute::ON);
+    //osg::BlendFunc* blend = new osg::BlendFunc();
+    //blend->setSourceAlpha(GL_CONSTANT_ALPHA);
+    //blend->setDestinationAlpha(GL_ONE_MINUS_SRC_ALPHA);
+    //
+    //setUseDisplayList(false);
+    ////stateset->setAttributeAndModes(blend, osg::StateAttribute::ON);
+    //stateset->setMode(GL_ALPHA_TEST, osg::StateAttribute::ON );
+    //stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     setStateSet(stateset);
 
     if ( getNumPrimitiveSets() ) {

@@ -42,28 +42,32 @@ void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesyst
     files.push_back(path.string());
 	std::string importWarnings;
     parser->importFrom(files, importWarnings);
+    
+    
+    GRFCollectionPtr grfs(new GRFCollection());
+    EMGCollectionPtr e(new EMGCollection());
+    if (parser->getNumAnalogs() == 28)
+    {
+        for (int i = 0; i < 4; ++i) {
+            GRFChannelPtr ptr(new GRFChannel(*parser , i));
+            GRFChannels[i]->set(ptr);
+            GRFChannels[i]->setName(ptr->getName());
+            GRFChannels[i]->setSource(path.string());
+            grfs->addChannel(ptr);
+        }
+        grfs->setPlatforms(parser->getForcePlatforms());
+        GRFs->set(grfs, path.filename().string(), path.string());
 
-	GRFCollectionPtr grfs(new GRFCollection());
-	for (int i = 0; i < 4; ++i) {
-		GRFChannelPtr ptr(new GRFChannel(*parser , i));
-		GRFChannels[i]->set(ptr);
-		GRFChannels[i]->setName(ptr->getName());
-		GRFChannels[i]->setSource(path.string());
-		grfs->addChannel(ptr);
-	}
-	grfs->setPlatforms(parser->getForcePlatforms());
-	GRFs->set(grfs, path.filename().string(), path.string());
-
-	EMGCollectionPtr e(new EMGCollection());
-	for (int i = 12; i < 28; ++i) {
-		EMGChannelPtr ptr(new EMGChannel(*parser , i));
-		EMGChannels[i-12]->set(ptr);
-		EMGChannels[i-12]->setName(ptr->getName());
-		EMGChannels[i-12]->setSource(path.string());
-		e->addChannel(ptr);
-	}
-	EMGs->set(e, path.filename().string(), path.string());
-
+        
+        for (int i = 12; i < 28; ++i) {
+            EMGChannelPtr ptr(new EMGChannel(*parser , i));
+            EMGChannels[i-12]->set(ptr);
+            EMGChannels[i-12]->setName(ptr->getName());
+            EMGChannels[i-12]->setSource(path.string());
+            e->addChannel(ptr);
+        }
+        EMGs->set(e, path.filename().string(), path.string());
+    }
 	int count = parser->getNumEvents();
 	EventsCollectionPtr leftEventsCollection(new C3DEventsCollection());
 	EventsCollectionPtr rightEventsCollection(new C3DEventsCollection());

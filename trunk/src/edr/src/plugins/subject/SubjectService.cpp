@@ -8,6 +8,17 @@
 #include <core/ObjectWrapper.h>
 #include <plugins/subject/Session.h>
 
+SubjectService::SubjectService()
+{
+	core::IDataManager* dataManager = core::getDataManager();
+	boost::function<void (const core::Filesystem::Path&, const std::vector<core::ObjectWrapperPtr>&, bool)> f2 = boost::bind(&SubjectService::onWrappersAdded, this, _1, _2, _3);
+	dataManager->addWrappersCallback(f2);
+}
+
+SubjectService::~SubjectService()
+{
+
+}
 QWidget* SubjectService::getWidget( std::vector<QObject*>& actions )
 {
 	return nullptr;
@@ -29,20 +40,6 @@ QWidget* SubjectService::getControlWidget( std::vector<QObject*>& actions )
 	return nullptr;
 }
 
-SubjectService::SubjectService()
-{
-	core::IDataManager* dataManager = core::getDataManager();
-	boost::function<void (const core::Filesystem::Path&, bool)> f1 = boost::bind(&SubjectService::onFileLoaded, this, _1, _2);
-	dataManager->addFileCallback(f1);
-	boost::function<void (const std::vector<core::ObjectWrapperPtr>&, bool)> f2 = boost::bind(&SubjectService::onWrappersAdded, this, _1, _2);
-	dataManager->addWrappersCallback(f2);
-}
-
-SubjectService::~SubjectService()
-{
-	
-}
-
 void SubjectService::onFileLoaded( const core::Filesystem::Path& path, bool loaded)
 {
 	if (loaded) {
@@ -54,8 +51,9 @@ void SubjectService::onFileLoaded( const core::Filesystem::Path& path, bool load
 	}
 }
 
-void SubjectService::onWrappersAdded( const std::vector<core::ObjectWrapperPtr>& wrappers, bool loaded)
+void SubjectService::onWrappersAdded(const core::Filesystem::Path& path, const std::vector<core::ObjectWrapperPtr>& wrappers, bool loaded)
 {
+	onFileLoaded(path, loaded);
 	if (lastFileDescriptor.hasSessionDesc()) {
 		std::string sessionName = lastFileDescriptor.getSessionDesc();
 	
@@ -77,16 +75,7 @@ void SubjectService::onWrappersAdded( const std::vector<core::ObjectWrapperPtr>&
 			bool hasMotionDesc = lastFileDescriptor.hasMotionDesc();
 			if (!hasMotionDesc) {
 				for (std::vector<core::ObjectWrapperPtr>::const_iterator it = wrappers.cbegin(); it != wrappers.cend(); it++) {
-					if ((*it)->isPtrSupported(typeid(kinematic::SkeletalModelPtr))) {
-						manager->tryParseWrapper(*it);
-						kinematic::SkeletalModelConstPtr model = (*it)->get();
-						if (model) {
-							currentSession->setSkeletalModel(model);
-							BOOST_FOREACH(MotionPtr motion, currentSession->getMotions()) {
-								motion->setSkeletalModel(model);
-							}
-						}
-					} 
+                    currentSession->addWrapper(*it);
 				}
 			} else  {
 				std::string motionName = lastFileDescriptor.getMotionDesc();
@@ -101,46 +90,17 @@ void SubjectService::onWrappersAdded( const std::vector<core::ObjectWrapperPtr>&
 					currentMotion = it->second;
 				}
 
-				
+                UTILS_ASSERT(currentMotion);
 				for (std::vector<core::ObjectWrapperPtr>::const_iterator it = wrappers.cbegin(); it != wrappers.cend(); it++) {
-					if ((*it)->isPtrSupported(typeid(EMGCollectionPtr))) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setEmg((*it)->get());
-					} else if ((*it)->isPtrSupported(typeid(GRFCollectionPtr)) ) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setGrf((*it)->get());
-					} else if ((*it)->isPtrSupported(typeid(MarkerCollectionPtr))) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setMarkers((*it)->get());
-					} else if((*it)->isPtrSupported(typeid(kinematic::JointAnglesCollectionPtr)) ) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setJoints((*it)->get());
-					} else if((*it)->isPtrSupported(typeid(AngleCollectionPtr)) ) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setAngles((*it)->get());
-					} else if((*it)->isPtrSupported(typeid(ForceCollectionPtr)) ) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setForces((*it)->get());
-					} else if((*it)->isPtrSupported(typeid(MomentCollectionPtr)) ) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setMoments((*it)->get());
-					} else if((*it)->isPtrSupported(typeid(PowerCollectionPtr)) ) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setPowers((*it)->get());
-					} else if((*it)->isPtrSupported(typeid(EventsCollectionPtr)) ) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setEvents((*it)->get());
-					} else if ((*it)->isPtrSupported(typeid(VideoChannelPtr))) {
-						manager->tryParseWrapper(*it);
-						currentMotion->addVideo((*it)->get());
-					} else if ((*it)->isPtrSupported(typeid(kinematic::SkeletalDataPtr))) {
-						manager->tryParseWrapper(*it);
-						currentMotion->setSkeletalData((*it)->get());
-						kinematic::SkeletalModelConstPtr model = currentSession->getSkeletalModel();
-						if (model) {
-							currentMotion->setSkeletalModel(model);
-						}
-					}
+					const std::string& ext = core::Filesystem::fileExtension(path);
+                    if (currentMotion->isSupported((*it)->getTypeInfo())) {
+                        if (ext == ".c3d") {
+                            manager->tryParseWrapper(*it);
+                        } else {
+                            (*it)->setName(path.filename().string());
+                        }
+                        currentMotion->addWrapper(*it);
+                    }
 				}
 			}
 		}

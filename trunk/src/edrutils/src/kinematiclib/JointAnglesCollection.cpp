@@ -91,7 +91,7 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalDa
 	
 
 	for (unsigned int i = 0; i < jointsData.size(); ++i) {
-		JointAngleChannelPtr channel(new JointAngleChannel(fps)); 
+		JointAngleChannelPtr channel(new JointAngleChannel(static_cast<float>(fps))); 
 		std::string name = haSkeleton->mapJointName(jointsData[i]->name);
 		channel->setName(name);
 		channelsMap[name] = channel;

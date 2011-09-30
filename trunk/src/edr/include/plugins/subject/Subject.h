@@ -20,6 +20,8 @@ class Subject
 private:
 	std::vector<ISubjectSystemPtr> systems;
 	MotionConstPtr motion;
+	// TODO - subject powinien agregowac wszystkie sesje z nim zwiazane
+
 public:
 	Subject() {}
 	Subject(const Subject& obj);

@@ -40,10 +40,6 @@ void LoadingDialog::setMinMax( int min, int max )
 
 void LoadingDialog::setFile( const QString& filename )
 {
-	std::string toLog = filename.toStdString();
-	toLog += " ";
-	toLog += boost::lexical_cast<std::string>(filesLoaded);
-	LOG_WARNING (toLog);
 	label->setText(filename);
 	setValue(filesLoaded++);
 }
