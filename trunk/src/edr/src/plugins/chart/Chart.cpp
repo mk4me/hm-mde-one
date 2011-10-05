@@ -17,26 +17,11 @@ namespace osgText
 {
     float textWidth(const Text & text)
     {
-        //int c = 0;
-        ////split text according to line breaks
-        //auto prev = text.getText().begin();
-        //auto it = std::find(prev, text.getText().end(), '\n');
-        //while(it != text.getText().end()){
-        //    c = std::max(c, std::distance(prev, it));
-        //    prev = it;
-        //    prev++;
-        //    it = std::find(prev, text.getText().end(), '\n');
-        //}
-
-        //c = std::max(c, std::distance(prev, text.getText().end()));
-
-        //return (float)c * text.getCharacterHeight() / text.getCharacterAspectRatio();
         return text.getBound().xMax() - text.getBound().xMin();
     }
 
     float textHeight(const Text & text)
     {
-        //return text.getCharacterHeight() * (1 + std::count(text.getText().begin(), text.getText().end(), '\n'));
         return text.getBound().yMax() - text.getBound().yMin();
     }
 } // namespace osgText
@@ -86,18 +71,16 @@ cursorColor(osg::Vec4(1,1,1,1)), titleVisible(false), xUnitLabelVisible(false), 
     cursorBackground->setNormalArray(normals);
     cursorBackground->setNormalBinding(osg::Geometry::BIND_OVERALL);
     cursorBackground->setColorBinding(osg::Geometry::BIND_OVERALL);
-    osg::StateSet* stateset = cursorBackground->getOrCreateStateSet();
-    stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
-    stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    //osg::StateSet* stateset = cursorBackground->getOrCreateStateSet();
+    //stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
+    //stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    //cursorBackground->setStateSet(stateset);
     cursorBackground->setName("cursorBackground");
 
-    osg::StateSet * mstateset = new osg::StateSet();
-
-
-    mstateset->setMode(GL_ALPHA_TEST, osg::StateAttribute::ON );
-    mstateset->setMode(GL_BLEND, osg::StateAttribute::ON );
-
-    this->setStateSet(stateset);
+    /*stateset = getOrCreateStateSet();
+    stateset->setMode(GL_ALPHA_TEST, osg::StateAttribute::ON );
+    stateset->setMode(GL_BLEND, osg::StateAttribute::ON );
+    setStateSet(stateset);*/
 
     refreshAll();
     autoRefresh = true;
@@ -1425,6 +1408,8 @@ void Chart::refreshCursor( float z, float range )
 
         if(pos.y() + height / 2.0 > y + h){
             pos.y() = cursorY - labelsToAxisesOffset - height / 2.0;
+        }else if(pos.y() - height / 2.0 < y){
+            pos.y() = cursorY + labelsToAxisesOffset + height / 2.0;
         }
 
         bool switched = false;
@@ -1469,15 +1454,15 @@ void Chart::refreshCursor( float z, float range )
             z -= range / 2.0;
 
             auto bb = cursorText->getBound();
-            bb.xMin() -= labelsToAxisesOffset;
-            bb.xMax() += labelsToAxisesOffset;
-            bb.yMin() -= labelsToAxisesOffset;
-            bb.yMax() += labelsToAxisesOffset;
+            bb.xMin() -= labelsToAxisesOffset / 2.0;
+            bb.xMax() += labelsToAxisesOffset / 2.0;
+            bb.yMin() -= labelsToAxisesOffset / 2.0;
+            bb.yMax() += labelsToAxisesOffset / 2.0;
 
             if(switched == true){
-                bb.xMax() += labelsToAxisesOffset;
+                bb.xMax() += labelsToAxisesOffset / 2.0;
             }else{
-                bb.xMin() -= labelsToAxisesOffset;
+                bb.xMin() -= labelsToAxisesOffset / 2.0;
             }
             
             Vec4Array* colors = dynamic_cast<Vec4Array*>(cursorBackground->getColorArray());

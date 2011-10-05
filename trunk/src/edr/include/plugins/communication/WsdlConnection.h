@@ -28,7 +28,7 @@ namespace communication
         /**
         Obiekt klasy WsdlInvoker biblioteki wsdlpull
         */
-        WsdlPull::WsdlInvoker invoker;
+        core::shared_ptr<WsdlPull::WsdlInvoker> invoker;
         /**
         Metoda konfiguruj¹ca obiekt invoker przed wykonaniem operacji web serwisowych.
         */

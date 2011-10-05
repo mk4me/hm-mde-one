@@ -74,7 +74,11 @@ public:
 
 			EDRConfig edrConfig;
 			EDRConfig::setPaths(edrConfig);
-			core::Filesystem::Path p = edrConfig.getResourcesPath() / "settings" / "log.ini";
+
+            //Tworzymy tempa jeœli brakuje
+            edrConfig.ensureTempDirectory();
+
+			core::Filesystem::Path p = edrConfig.getApplicationDataPath() / "resources" / "settings" / "log.ini";
 
 			// UWAGA - obiekty udostepniane klientom poprzez interfejsy musz¹ mieæ przywracane (zerowane) wartoœci na tym samym
 			// poziomie na którym zosta³y stworzone. Dlatego tutaj mamy Push dla logera i konfiguracji.
@@ -84,46 +88,58 @@ public:
 			// MUSI TAK BY ABY LOGGER WIDZIA£ ŒCIE¯KI
 			utils::Push<IPath*> pushedDI(__instanceInfo.pathInterface, &edrConfig);
 
-			EDRLog logger(p.string());
+            try{
 
-			utils::Push<ILog*> pushedIL(__instanceInfo.logInterface, &logger);
+			    EDRLog logger(p.string());
 
-			PluginLoader pluginLoader;
-			{
-				DataManager dataManager;
-				VisualizerManager visualizerManager;
-				DataProcessorManager dataProcessorManager;
-				DataSourceManager dataSourceManager;
-				ServiceManager serviceManager;
+			    utils::Push<ILog*> pushedIL(__instanceInfo.logInterface, &logger);
+
+			    PluginLoader pluginLoader;
+			    {
+				    DataManager dataManager;
+				    VisualizerManager visualizerManager;
+				    DataProcessorManager dataProcessorManager;
+				    DataSourceManager dataSourceManager;
+				    ServiceManager serviceManager;
 
 
-				// tworzenie managerów
-				// tworzenie/niszczenie managerów w ToolboxMain jest niebezpieczne
-				// z punktu widzenia destruktora - widgety mog¹ w jakimœ stopniu
-				// zale¿eæ od managerów, a wówczas wskaŸniki wskazywa³yby œmieci
-				// podobnie ¿ywotnoœæ do³adowanych bibliotek musi przekraczaæ zakoñczenie
-				// siê destruktora
-				utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
-				utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
-				utils::Push<IDataProcessorManager*> pushedDPM(__instanceInfo.dataProcessorManager, &dataProcessorManager);
-				utils::Push<IDataSourceManager*> pushedDSM(__instanceInfo.dataSourceManager, &dataSourceManager);
-				utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
+				    // tworzenie managerów
+				    // tworzenie/niszczenie managerów w ToolboxMain jest niebezpieczne
+				    // z punktu widzenia destruktora - widgety mog¹ w jakimœ stopniu
+				    // zale¿eæ od managerów, a wówczas wskaŸniki wskazywa³yby œmieci
+				    // podobnie ¿ywotnoœæ do³adowanych bibliotek musi przekraczaæ zakoñczenie
+				    // siê destruktora
+				    utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
+				    utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
+				    utils::Push<IDataProcessorManager*> pushedDPM(__instanceInfo.dataProcessorManager, &dataProcessorManager);
+				    utils::Push<IDataSourceManager*> pushedDSM(__instanceInfo.dataSourceManager, &dataSourceManager);
+				    utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
 
-				{
-					FrontpageWidget widget;
-					widget.init(&pluginLoader);
+				    {
+					    FrontpageWidget widget;
+					    widget.init(&pluginLoader);
 
-					logger.setConsoleWidget( widget.getConsole() );
-					widget.show();
-					if (!filePath.empty()) 
-					{
-						widget.openFile(filePath);
-					}
+					    logger.setConsoleWidget( widget.getConsole() );
+					    widget.show();
+					    if (!filePath.empty()) 
+					    {
+						    widget.openFile(filePath);
+					    }
 
-					result = application.exec();
-					logger.setConsoleWidget(NULL);
-				}
-			}
+					    result = application.exec();
+					    logger.setConsoleWidget(NULL);
+				    }
+			    }
+            }catch(...){
+                edrConfig.clearTempDirectory();
+                throw;
+            }
+
+            try{
+                edrConfig.clearTempDirectory();
+            }catch(std::exception & e){
+                std::cout << e.what() << std::endl;
+            }
 		}
 		return result;
 	}

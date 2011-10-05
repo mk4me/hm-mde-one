@@ -274,6 +274,10 @@ namespace communication
 
         virtual void run();
 
+        void init();
+
+        void deinit();
+
     public:
 
         /**

@@ -31,12 +31,19 @@ const Filesystem::Path& EDRConfig::getResourcesPath() const
 	return resourcesPath;
 }
 
+const Filesystem::Path& EDRConfig::getTempPath() const
+{
+    UTILS_ASSERT(!tempDataPath.empty(), "Path should be initialized first");
+    return tempDataPath;
+}
+
 void EDRConfig::setUserDataPath( const Filesystem::Path& path )
 {
 	UTILS_ASSERT(!path.empty(), "Path should not be empty");
 	//UTILS_ASSERT(!path.is_relative(), "Path should not be relative");
 	//UTILS_ASSERT(!path.has_filename(), "Path should not point to file");
 	userDataPath = path;
+    tempDataPath = userDataPath / "Temp";
 }
 
 void EDRConfig::setApplicationDataPath( const Filesystem::Path& path )
@@ -58,6 +65,23 @@ void EDRConfig::setPaths( EDRConfig& directoriesInfo )
 			throw std::runtime_error("Unable to set paths");
 		}
 	}
+}
+
+//! sprawdza czy katalog dla danych tymczasowych istnieje, jeœli nie tworzy go
+void EDRConfig::ensureTempDirectory() const
+{
+    //sprawdzamy czy katalog dla danych tymczasowych istnieje - jesli nie tworzymy go
+    if(Filesystem::pathExists(getTempPath()) == false){
+        Filesystem::createDirectory(getTempPath());
+    }
+}
+//! czyœci katalog danych tymczasowych przy zamykaniu aplikacji
+void EDRConfig::clearTempDirectory() const
+{
+    //sprawdzamy czy katalog dla danych tymczasowych istnieje - jesli nie tworzymy go
+    if(Filesystem::pathExists(getTempPath()) == true){
+        Filesystem::deleteDirectory(getTempPath());
+    }
 }
 
 bool EDRConfig::trySetPathsFromRegistry( EDRConfig& directoriesInfo )

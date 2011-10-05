@@ -19,15 +19,15 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionTrials(int sessionID)
 {
 	this->setOperation("ListSessionTrialsXML");
 	std::vector<wsdl::Trial> trials;
-	if(invoker.status()) {
-		if(!invoker.setValue("sessionID", WsdlConnection::toString<int>(sessionID))) {
-			throw std::runtime_error(invoker.errors().c_str());
+	if(invoker->status()) {
+		if(!invoker->setValue("sessionID", WsdlConnection::toString<int>(sessionID))) {
+			throw std::runtime_error(invoker->errors().c_str());
 		}
-		if(!invoker.invoke()) {
-			throw invoker.getXMLResponse();
+		if(!invoker->invoke()) {
+			throw invoker->getXMLResponse();
 		}
 		Schema::TypeContainer* tc = NULL;
-		tc = invoker.getOutput("ListSessionTrialsXMLResponse");
+		tc = invoker->getOutput("ListSessionTrialsXMLResponse");
 		if(!tc) {
 			throw std::runtime_error("Fail to get output.");
 		}
@@ -68,7 +68,7 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionTrials(int sessionID)
             trials.push_back(trial);
 		}
 	} else {
-		throw std::runtime_error(invoker.errors().c_str());
+		throw std::runtime_error(invoker->errors().c_str());
 	}
 	return trials;
 }
@@ -81,7 +81,7 @@ std::vector<wsdl::Session> BasicQueriesService::listLabSessionsWithAttributes(in
 
 	std::vector<wsdl::Session> sessions;
 	Schema::TypeContainer* tc = NULL;
-	tc = invoker.getOutput("ListLabSessionsWithAttributesXMLResponse");
+	tc = invoker->getOutput("ListLabSessionsWithAttributesXMLResponse");
 	if(!tc) {
 		throw std::runtime_error("Fail to get output.");
 	}
@@ -141,7 +141,7 @@ std::vector<wsdl::File> BasicQueriesService::listFiles(int ID, const std::string
 
 	std::vector<wsdl::File> files;
 	Schema::TypeContainer* tc = NULL;
-	tc = invoker.getOutput("ListFilesWithAttributesXMLResponse");
+	tc = invoker->getOutput("ListFilesWithAttributesXMLResponse");
 	if(!tc) {
 		throw std::runtime_error("Fail to get output.");
 	}
@@ -183,7 +183,7 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 
 	std::vector<wsdl::Trial> trials;
 	Schema::TypeContainer* tc = NULL;
-	tc = invoker.getOutput("ListSessionContentsResponse");
+	tc = invoker->getOutput("ListSessionContentsResponse");
 	if(!tc) {
 		throw std::runtime_error("Fail to get output.");
 	}
@@ -256,23 +256,23 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 //	this->setValue("id", WsdlConnection::toString<int>(performerID));
 //	this->invokeOperation();
 //
-//	if(invoker.status()) {
-//		//if(!invoker.setValue("id", WsdlConnection::toString<int>(performerID))) {
-//		//	throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		//if(!invoker->setValue("id", WsdlConnection::toString<int>(performerID))) {
+//		//	throw std::runtime_error(invoker->errors().c_str());
 //		//}
-//		//if(!invoker.invoke()) {
-//		//	throw std::runtime_error(invoker.errors().c_str());
+//		//if(!invoker->invoke()) {
+//		//	throw std::runtime_error(invoker->errors().c_str());
 //		//}
 //		Schema::Type type;
-//		std::string* name = ((std::string*)invoker.getValue("FirstName", type));
-//		std::string* surname = ((std::string*)invoker.getValue("LastName", type));
+//		std::string* name = ((std::string*)invoker->getValue("FirstName", type));
+//		std::string* surname = ((std::string*)invoker->getValue("LastName", type));
 //		if(name != NULL && surname != NULL) {
 //			return new Performer(performerID, name->c_str(), surname->c_str());
 //		} else {
 //			throw std::runtime_error("Bad operation return values.");
 //		}
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //}
 //
@@ -282,27 +282,27 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 ////Error validating schema instance
 //const Session* BasicQueriesService::getSessionById(int sessionID) {
 //	this->setOperation("GetSessionByIdXML");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("id", WsdlConnection::toString<int>(sessionID))) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->setValue("id", WsdlConnection::toString<int>(sessionID))) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}/*
 //		Schema::Type type;
-//		int SessionID = invoker.getValue<int>("SessionID", type));
-//		int UserID = invoker.getValue<int>("UserID", type));
-//		int UserID = invoker.getValue<int>("LabID", type));
-//		int motionKindName = invoker.getValue<int>("motionKindName", type));
-//		int PerformerID = invoker.getValue<int>("PerformerID", type));
-//		int SessionID = invoker.getValue<int>("SessionID", type));
-//		int UserID = invoker.getValue<int>("UserID", type));
-//		temp = ((std::string*)invoker.getValue("LastName", type));
+//		int SessionID = invoker->getValue<int>("SessionID", type));
+//		int UserID = invoker->getValue<int>("UserID", type));
+//		int UserID = invoker->getValue<int>("LabID", type));
+//		int motionKindName = invoker->getValue<int>("motionKindName", type));
+//		int PerformerID = invoker->getValue<int>("PerformerID", type));
+//		int SessionID = invoker->getValue<int>("SessionID", type));
+//		int UserID = invoker->getValue<int>("UserID", type));
+//		temp = ((std::string*)invoker->getValue("LastName", type));
 //		if(temp != NULL) {
 //			session.setSurname(temp->c_str());
 //		}*/
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //	return new Session();
 //}
@@ -313,24 +313,24 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 ////Error validating schema instance
 //const Segment* BasicQueriesService::getSegmentById(int segmentID) {
 //	this->setOperation("GetSegmentByIdXML");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("id", WsdlConnection::toString<int>(segmentID))) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->setValue("id", WsdlConnection::toString<int>(segmentID))) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //		/*Schema::Type type;
-//		std::string* temp = ((std::string*)invoker.getValue("FirstName", type));
+//		std::string* temp = ((std::string*)invoker->getValue("FirstName", type));
 //		if(temp != NULL) {
 //			session.setName(temp->c_str());
 //		}
-//		temp = ((std::string*)invoker.getValue("LastName", type));
+//		temp = ((std::string*)invoker->getValue("LastName", type));
 //		if(temp != NULL) {
 //			session.setSurname(temp->c_str());
 //		}*/
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //	return new Segment();
 //}
@@ -341,40 +341,40 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 ////Error validating schema instance
 //const Trial* BasicQueriesService::getTrialById(int trialID) {
 //	this->setOperation("GetTrialByIdXML");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("id", WsdlConnection::toString<int>(trialID))) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->setValue("id", WsdlConnection::toString<int>(trialID))) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //		/*Schema::Type type;
-//		std::string* temp = ((std::string*)invoker.getValue("FirstName", type));
+//		std::string* temp = ((std::string*)invoker->getValue("FirstName", type));
 //		if(temp != NULL) {
 //			session.setName(temp->c_str());
 //		}
-//		temp = ((std::string*)invoker.getValue("LastName", type));
+//		temp = ((std::string*)invoker->getValue("LastName", type));
 //		if(temp != NULL) {
 //			session.setSurname(temp->c_str());
 //		}*/
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //	return new Trial();
 //}
 //
 //const std::vector<Session>* BasicQueriesService::listPerformerSessions(int performerID) {
 //	this->setOperation("ListPerformerSessionsXML");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("performerID", WsdlConnection::toString<int>(performerID))) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->setValue("performerID", WsdlConnection::toString<int>(performerID))) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //		std::vector<Session>* sessions = new std::vector<Session>();
 //		Schema::TypeContainer* tc = NULL;
-//		tc = invoker.getOutput("ListPerformerSessionsXMLResponse");
+//		tc = invoker->getOutput("ListPerformerSessionsXMLResponse");
 //		if(!tc) {
 //			throw std::runtime_error("Fail to get output.");
 //		}
@@ -432,7 +432,7 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 //		}
 //		return sessions;
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //}
 //
@@ -442,16 +442,16 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 //
 //const std::vector<Session>* BasicQueriesService::listPerformerSessionsXML(int performerID) {
 //	this->setOperation("ListPerformerSessionsXML");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("performerID", WsdlConnection::toString<int>(performerID))) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->setValue("performerID", WsdlConnection::toString<int>(performerID))) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //		std::vector<Session>* sessions = new std::vector<Session>();
 //		Schema::TypeContainer* tc = NULL;
-//		tc = invoker.getOutput("ListPerformerSessionsXMLResponse");
+//		tc = invoker->getOutput("ListPerformerSessionsXMLResponse");
 //		if(!tc) {
 //			throw std::runtime_error("Fail to get output.");
 //		}
@@ -485,31 +485,31 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 //		}
 //		return sessions;
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //}
 //
 //const std::vector<Performer>* BasicQueriesService::listPerformers() {
 //	this->setOperation("ListPerformersXML");
-//	if(invoker.status()) {
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //		std::vector<Performer>* sessions = new std::vector<Performer>();
 //		return sessions;
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //}
 //
 //const std::vector<Performer>* BasicQueriesService::listPerformersWithAttributes() {
 //	this->setOperation("ListPerformersWithAttributesXML");
-//	if(invoker.status()) {
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //	return new std::vector<Performer>();
 //}
@@ -528,30 +528,30 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 //
 //const std::vector<Performer>* BasicQueriesService::listLabPerformersWithAttributes(int labID) {
 //	this->setOperation("ListLabPerformersWithAttributesXML");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("labID", WsdlConnection::toString<int>(labID))) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->setValue("labID", WsdlConnection::toString<int>(labID))) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //	return new std::vector<Performer>();
 //}
 
 //const std::vector<File>* BasicQueriesService::listSessionFiles(int sessionID) {
 //	this->setOperation("ListSessionFiles");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("sessionID", WsdlConnection::toString<int>(sessionID))) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->setValue("sessionID", WsdlConnection::toString<int>(sessionID))) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //	return new std::vector<File>();
 //}
@@ -562,38 +562,38 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 //
 //const std::vector<SessionGroup>* BasicQueriesService::listSessionGroupsDefined() {
 //	this->setOperation("ListSessionGroupsDefined");
-//	if(invoker.status()) {
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //	return new std::vector<SessionGroup>();
 //}
 //
 //const std::vector<MotionKind>* BasicQueriesService::listMotionKindsDefined() {
 //	this->setOperation("ListMotionKindsDefined");
-//	if(invoker.status()) {
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //	return new std::vector<MotionKind>();
 //}
 //
 //void BasicQueriesService::performQuery(const std::string& query) {
 //	this->setOperation("GenericQueryXML");
-//	if(invoker.status()) {
-//		if(!invoker.setValue("query", new std::string(query))) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//	if(invoker->status()) {
+//		if(!invoker->setValue("query", new std::string(query))) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
-//		if(!invoker.invoke()) {
-//			throw std::runtime_error(invoker.errors().c_str());
+//		if(!invoker->invoke()) {
+//			throw std::runtime_error(invoker->errors().c_str());
 //		}
 //	} else {
-//		throw std::runtime_error(invoker.errors().c_str());
+//		throw std::runtime_error(invoker->errors().c_str());
 //	}
 //}

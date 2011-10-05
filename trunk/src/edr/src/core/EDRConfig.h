@@ -25,6 +25,11 @@ public:
 	//! ustawia pelna sciezke do folderu z zasobami aplikacji
 	void setApplicationDataPath(const Filesystem::Path& path);
 
+    //! sprawdza czy katalog dla danych tymczasowych istnieje, jeśli nie tworzy go
+    void ensureTempDirectory() const;
+    //! czyści katalog danych tymczasowych przy zamykaniu aplikacji
+    void clearTempDirectory() const;
+
 public:
 	//! zwraca pelna sciezke do folderu "MyDocuments\EDR"
 	virtual const Filesystem::Path& getUserDataPath() const;
@@ -32,6 +37,8 @@ public:
 	virtual const Filesystem::Path& getApplicationDataPath() const;
 	//! zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Filesystem::Path& getResourcesPath() const;
+    //! \return Zwraca pełną ścieżkę do tymczasowego folderu, który jest czyszczony podczas każdego zamykania aplikacji
+    virtual const Filesystem::Path& getTempPath() const;
 
 public:
 	static void setPaths(EDRConfig& directoriesInfo);
@@ -51,6 +58,8 @@ private:
 	Filesystem::Path applicationDataPath;
 	//! sciezka do folderu "MyDocuments\EDR"
 	Filesystem::Path userDataPath;
+    //! sciezka do folderu Tempów ("MyDocuments\EDR\Temp"
+    Filesystem::Path tempDataPath;
 };
 
 }

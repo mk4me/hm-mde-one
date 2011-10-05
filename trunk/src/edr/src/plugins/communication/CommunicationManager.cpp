@@ -27,25 +27,9 @@ void CommunicationManager::destoryInstance()
 }
 
 CommunicationManager::CommunicationManager()
-    : transportManager(new communication::TransportWSDL_FTPS()),
-    queryManager(new communication::QueryWSDL()), finish(false),
-    filesToDownload(0), actualDownloadFileNumer(0)
+    : finish(false), filesToDownload(0), actualDownloadFileNumer(0)
 {
     setState(Ready);
-    //ping serwera
-    pingCurl = curl_easy_init();
-    if(pingCurl) {
-        curl_easy_setopt(pingCurl, CURLOPT_URL, "http://83.230.112.43/");
-        curl_easy_setopt(pingCurl, CURLOPT_CONNECTTIMEOUT, 1);
-        curl_easy_setopt(pingCurl, CURLOPT_WRITEFUNCTION, pingDataCallback);
-    }
-    
-    //TODO: dane wpisane na sztywno, dodac zapisywanie ustawien
-    transportManager->setFTPCredentials("ftps://83.230.112.43/", "testUser", "testUser");
-    transportManager->setWSCredentials("http://83.230.112.43/Motion/FileStoremanWS.svc?wsdl", "applet_user", "aplet4Motion");
-    queryManager->setWSCredentials("applet_user", "aplet4Motion");
-    queryManager->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
-    queryManager->setBasicUpdatesServiceUri("");
 
     //na razie recznie wpisane sciezki
     shallowCopyPath = core::getApplicationDataString("db/schema/shallowcopy.xml");
@@ -69,6 +53,33 @@ CommunicationManager::~CommunicationManager()
         finish = true;
         join();
     }
+}
+
+void CommunicationManager::init()
+{
+    transportManager.reset(new communication::TransportWSDL_FTPS());
+    queryManager.reset(new communication::QueryWSDL());
+
+    //ping serwera
+    pingCurl = curl_easy_init();
+    if(pingCurl) {
+        curl_easy_setopt(pingCurl, CURLOPT_URL, "http://83.230.112.43/");
+        curl_easy_setopt(pingCurl, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_easy_setopt(pingCurl, CURLOPT_WRITEFUNCTION, pingDataCallback);
+    }
+
+    //TODO: dane wpisane na sztywno, dodac zapisywanie ustawien
+    transportManager->setFTPCredentials("ftps://83.230.112.43/", "testUser", "testUser");
+    transportManager->setWSCredentials("http://83.230.112.43/Motion/FileStoremanWS.svc?wsdl", "applet_user", "aplet4Motion");
+    queryManager->setWSCredentials("applet_user", "aplet4Motion");
+    queryManager->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
+    queryManager->setBasicUpdatesServiceUri("");
+}
+
+void CommunicationManager::deinit()
+{
+    transportManager.reset();
+    queryManager.reset();
 }
 
 int CommunicationManager::getProgress() const
@@ -174,6 +185,9 @@ void CommunicationManager::removeFiles(const std::vector<core::Filesystem::Path>
 
 void CommunicationManager::run()
 {
+    //inicjujemy po³¹czenia dla us³ugi plików i zapytañ
+    init();
+
     while(finish == false){
 
         if(requestsQueueEmpty() == false){
@@ -392,6 +406,9 @@ void CommunicationManager::run()
             microSleep(10000);
         }
     }
+
+    //zwalniamy zasoby po³¹czeñ dla us³ugi plików i prostych zapytañ
+    deinit();
 }
 
 size_t CommunicationManager::pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream)

@@ -195,20 +195,27 @@ LogInitializer::LogInitializer( const char* configPath )
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(Logger::getLogger( "osg" ) ));
     qInstallMsgHandler(QtMessageHandler);
 
-    log4cxx::helpers::Pool p;  // buffer pool that for activateOptions()
-    LOG4CXX_DECODE_CHAR(loggerName, "file"); 
-    log4cxx::RollingFileAppenderPtr rfa = log4cxx::Logger::getRootLogger()->getAppender(loggerName);
-    if (rfa == 0)
-    {
-        // If there is no appender, then this is a serious error.
-        // Logging will not work at all.
-        return;
-    }
+    //log4cxx::helpers::Pool p;  // buffer pool that for activateOptions()
+    //LOG4CXX_DECODE_CHAR(loggerName, "file"); 
+    //log4cxx::RollingFileAppenderPtr rfa = log4cxx::Logger::getRootLogger()->getAppender(loggerName);
+    //if (rfa == 0)
+    //{
+    //    // If there is no appender, then this is a serious error.
+    //    // Logging will not work at all.
+    //    return;
+    //}
 
     // Configures the output log file name.
-    LOG4CXX_DECODE_CHAR(fileName, (core::getPathInterface()->getUserDataPath() / "log.xml").string());
-    rfa->setFile(fileName);
-    rfa->activateOptions(p);
+    //LOG4CXX_DECODE_CHAR(fileName, (core::getPathInterface()->getUserDataPath() / "log.xml").string());
+    //rfa->setFile(fileName);
+    /*std::cout << "Logger path: ";
+    for(int i = 0; i < rfa->getFile().size(); i++){
+        char c(rfa->getFile().c_str()[i]);
+        std::cout << c;
+    }
+
+    std::cout << std::endl;*/
+    //rfa->activateOptions(p);
 }
 
 LogInitializer::~LogInitializer()

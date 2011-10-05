@@ -274,20 +274,27 @@ namespace utils {
         //! \return para indeksow, pierwszy wskazujke probke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje probke o czasie wiekszym lub rownym zadanemu
         virtual std::pair<size_type, size_type> getValueHelper(time_type time) const
         {
-            size_type p1 = 0;
-            size_type p2 = 0;
+            size_type minIdx = 0;
+            size_type maxIdx = size() - 1;
 
-            size_type s = size();
+            while(minIdx < maxIdx){
+                size_type midIdx = (maxIdx + minIdx) >> 1;
+                time_type t = argument(midIdx);
 
-            while(p2 < s && argument(p2) < time){
-                p2++;
+                if(t < time){
+                    minIdx = midIdx + 1;
+                }else if(t > time){
+                    maxIdx = midIdx - 1;
+                }else{
+                    maxIdx = minIdx = midIdx;
+                }
             }
 
-            if(p2 != 0){
-                p1 = p2 - 1;
+            if(minIdx != 0 && minIdx == maxIdx && argument(minIdx) != time){
+                --minIdx;
             }
 
-            return std::pair<size_type, size_type>(p1, p2);
+            return std::pair<size_type, size_type>(minIdx, maxIdx);
         }
     };
 
