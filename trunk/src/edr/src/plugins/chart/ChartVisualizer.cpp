@@ -109,8 +109,9 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
     }
     ));
 
-    chart->setAutoRefresh(true);
     viewer->setSceneData(chart);
+    chart->setAutoRefresh(true);
+    
 
     // dodajemy akcje
     actionNormalized = new QAction("normalize", viewer);

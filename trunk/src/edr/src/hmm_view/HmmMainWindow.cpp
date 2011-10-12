@@ -15,6 +15,7 @@
 #include "EDRConsoleWidget.h"
 #include "EDRDockWidgetSet.h"
 #include "EDRDockWidgetManager.h"
+#include "DataFilterWidget.h"
 
 using namespace core;
 
@@ -23,7 +24,7 @@ HmmMainWindow::HmmMainWindow() :
 	MainWindow(),
 	currentVisualizer(nullptr),
 	topMainWindow(nullptr),
-	treeWidget(nullptr),
+	//treeWidget(nullptr),
     currentItem(nullptr)
 {
 	this->setWindowFlags(Qt::FramelessWindowHint);
@@ -45,78 +46,12 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 	
 	this->showFullScreen();
 
-	treeWidget = new QTreeWidget();
+    treeWidget->setColumnCount(2);
+    treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
+
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&)));    
 	QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
-	treeWidget->setMaximumWidth(250);
-	treeWidget->setHeaderHidden(true);
-
-	// TODO : przeniesc do designera
-	QString style = 
-		"QScrollBar:horizontal {											   "
-		"border: 1px ridge grey;											   "
-		"background: #FFFFFF;												   "
-		"height: 15px;														   "
-		"margin: 0px 0px 0px 0px;											   "
-		"}																	   "
-		"																	   "
-		"QScrollBar::handle:horizontal,  QScrollBar::handle:pressed {			"	
-		"background: rgb(135, 173, 255);									   "
-		"min-width: 2px;													   "
-		"max-width: 5px;													   "
-		"height:5px;				    									   "
-		"border: 0px solid grey;											   "
-		"}																	   "
-		"																	   "
-		"QScrollBar::handle:horizontal {									   "
-		"background: rgb(175, 213, 255);									   "
-		"selection-background-color: rgb(135, 173, 255);						"
-		"min-width: 2px;													   "
-		"max-width: 5px;													   "
-		"height:5px;				    									   "
-		"border: 0px solid grey;											   "
-		"}																	   "
-		"																	   "
-		"QScrollBar::add-line:horizontal {									   "
-		"border: 0px solid grey;											   "
-		"background: #FFFFFF;												   "
-		"width: 0px;														   "
-		"subcontrol-position: right;										   "
-		"subcontrol-origin: margin;											   "
-		"}																	   "
-		"																	   "
-		"QScrollBar::sub-line:horizontal {									   "
-		"border: 0px solid grey;											   "
-		"background: #FFFFFF;												   "
-		"width: 0px;														   "
-		"subcontrol-position: left;											   "
-		"subcontrol-origin: margin;											   "
-		"}																	   "
-		"																	   "
-		"QScrollBar:vertical {												   "
-		"border: 1px ridge grey;											   "
-		"background: #FFFFFF;												   "
-		"width: 15px;														   "
-		"margin: 2px 0 2px 0;												   "
-		"}																	   "
-		"																	   "
-		"QScrollBar::handle:vertical,  QScrollBar::handle:pressed {			   "
-		"background: rgb(135, 173, 255);									   "
-		"border: 0px outset grey;											   "
-		"min-height: 20px;													   "
-		"}																	   "
-		"																	   "
-		"QScrollBar::handle:vertical {										   "
-		"background: rgb(175, 213, 255);									   "
-		"selection-background-color: rgb(135, 173, 255);					   "
-		"border: 0px outset grey;											   "
-		"min-height: 20px;													   "
-		"}																	   ";
-
-	treeWidget->setStyleSheet(style);
-	QHBoxLayout *hlayout = new QHBoxLayout;
-	hlayout->addWidget(treeWidget);
 
     QSplitter * splitter = new QSplitter();
     splitter->setOrientation(Qt::Vertical);
@@ -125,15 +60,24 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
     splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     topMainWindow = new EDRDockWidgetManager(this);
-    bottomMainWindow = new QMainWindow(nullptr);
+    bottomMainWindow = new QMainWindow(this);
+    bottomMainWindow->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    splitter->addWidget(topMainWindow->asQWidget());
-    splitter->addWidget(bottomMainWindow);
+    createFilterTabs();
 
-	hlayout->setSpacing(0);
-	hlayout->setMargin(0);
 
-	hlayout->addWidget(splitter);
+    //splitter->addWidget(topMainWindow->asQWidget());
+    //splitter->addWidget(bottomMainWindow);
+
+    QGridLayout* v = new QGridLayout(hlayout);
+    //v->addWidget(splitter);
+    v->addWidget(topMainWindow->asQWidget());
+    topMainWindow->asQWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    v->addWidget(bottomMainWindow);
+    //bottomMainWindow->setMaximumHeight(bottomMainWindow->sizeHint().height());
+    bottomMainWindow->setMaximumHeight(120); // tymczasowo
+    hlayout->setLayout(v);
+
     int i = hlayout->children().size();
 
 	for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
@@ -159,32 +103,11 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
 			layout->addWidget(settingsWidget);
 			this->Badania_2->setLayout(layout);
         }else if (name == "newTimeline") {
-            std::vector<QObject*> mainWidgetActions;
-            QWidget* viewWidget = service->getWidget(mainWidgetActions);
-
-            std::vector<QObject*> controlWidgetActions;
-            QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
-
-            std::vector<QObject*> settingsWidgetActions;
-            QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
-
-            EDRDockWidget * widget = new EDRDockWidget();
-            widget->getInnerWidget()->layout()->addWidget(controlWidget);
-            widget->setAllowedAreas(Qt::BottomDockWidgetArea);
-            for(auto it = controlWidgetActions.begin(); it!= controlWidgetActions.end(); it++){
-                widget->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
-            }
-			
-            bottomMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
-
-            widget->getTitleBar()->setFloatButtonVisible(false);
-            widget->getTitleBar()->setCloseButtonVisible(false);
-
-            widget->setTitleBarVisible(false);
+            // przeniesione do showTimeline();
         }
 	}
 
-    Analizy->setLayout(hlayout);
+    //Analizy->setLayout(hlayout);
 
     // akcje - Workflow (VDF) i konsola
 
@@ -208,13 +131,8 @@ HmmMainWindow::~HmmMainWindow()
 
 bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
 {
-    auto it = item2Helper.find(item);
-    if (it != item2Helper.end()) {
-        return it->second->isDataItem();
-    } else {
-        return false;
-    }
-    //return dataItems.find(item) != dataItems.end();
+    HmmTreeItem* hmmItem = dynamic_cast<HmmTreeItem*>(item);
+    return hmmItem && hmmItem->getHelper()->isDataItem();
 }
 
 void HmmMainWindow::createNewVisualizer()
@@ -280,202 +198,10 @@ void HmmMainWindow::onOpen()
 		delete d;
 	}
 
-
-    
 	std::vector<SessionPtr> sessions = core::queryDataPtr(DataManager::getInstance());
-
-	for (int i = sessions.size() - 1; i >= 0; --i) {
-		SessionPtr session = sessions[i];
-		treeWidget->setColumnCount(2);
-		treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
-		
-		QIcon icon(core::getResourceString("icons/charts.png"));
-		QIcon icon3D(core::getResourceString("icons/3d.png"));
-		QIcon iconVideo(core::getResourceString("icons/video.png"));
-										
-		BOOST_FOREACH(MotionPtr motion, session->getMotions()) {	
-			QTreeWidgetItem* motionItem = new QTreeWidgetItem();  
-			motionItem->setText(0, motion->getName().c_str());	 
-			treeWidget->addTopLevelItem(motionItem);
-           
-            bool hasEmg = motion->hasObjectOfType(typeid(EMGChannel));
-            bool hasGrf = motion->hasObjectOfType(typeid(GRFChannel));
-            if (hasEmg || hasGrf) {
-                QTreeWidgetItem* analogItem = new QTreeWidgetItem();
-                analogItem->setText(0, tr("Analog data"));
-                motionItem->addChild(analogItem);
-                if (hasEmg) {	
-                	QTreeWidgetItem* emgItem = new QTreeWidgetItem();
-                	analogItem->addChild(emgItem);
-                	emgItem->setText(0, "EMG");
-                    std::vector<ObjectWrapperPtr> emgs = motion->getWrappers(typeid(EMGChannel));
-                	int count = emgs.size();			
-                	for (int i = 0; i < count; i++) {							
-                		QTreeWidgetItem* channelItem = new QTreeWidgetItem();
-                		channelItem->setIcon(0, icon);							
-                		EMGChannelPtr c = emgs[i]->get();	
-                        if (c) {
-                		    channelItem->setText(0, c->getName().c_str());			
-                		    emgItem->addChild(channelItem);			
-                            item2Helper[channelItem] = TreeItemHelperPtr(new ChartItemHelper(emgs[i]));
-                        }
-                	}														
-                }	
-
-                if (hasGrf) {	
-                	QTreeWidgetItem* grfItem = new QTreeWidgetItem();
-                    std::vector<ObjectWrapperPtr> grfCollections = motion->getWrappers(typeid(GRFCollection));
-                    if (grfCollections.size() == 1) {
-                        item2Helper[grfItem] = TreeItemHelperPtr(new TreeItemHelper(grfCollections[0]));
-                    }
-                	grfItem->setText(0, "GRF");
-                	grfItem->setIcon(0, icon3D);
-                	analogItem->addChild(grfItem);
-                    std::vector<ObjectWrapperPtr> grfs = motion->getWrappers(typeid(GRFChannel));
-                	int count = grfs.size();			
-                	for (int i = 0; i < count; i++) {
-                        GRFChannelPtr c = grfs[i]->get();
-                        if (c) {
-                            QTreeWidgetItem* channelItem = new QTreeWidgetItem();	
-                            channelItem->setIcon(0, icon);						
-                            channelItem->setText(0, c->getName().c_str());			
-                            grfItem->addChild(channelItem);			
-                            item2Helper[channelItem] = TreeItemHelperPtr(new Vector3ItemHelper(grfs[i]));
-                        }
-                	}														
-                }
-            }
-                
-            if (motion->hasObjectOfType(typeid(ForceCollection)) || motion->hasObjectOfType(typeid(MomentCollection)) || motion->hasObjectOfType(typeid(PowerCollection))) {
-                QTreeWidgetItem* kineticItem = new QTreeWidgetItem();
-                kineticItem->setText(0, tr("Kinetic data"));
-                motionItem->addChild(kineticItem);
-                std::vector<ObjectWrapperPtr> forces = motion->getWrappers(typeid(ForceCollection));
-                std::vector<ObjectWrapperPtr> moments = motion->getWrappers(typeid(MomentCollection));
-                std::vector<ObjectWrapperPtr> powers = motion->getWrappers(typeid(PowerCollection));
-                if (forces.size() > 0) {
-                    ForceCollectionPtr f = forces[0]->get();
-                    tryAddVectorToTree<ForceChannel>(motion, f, "Forces", &icon3D, kineticItem);
-                }
-                if (moments.size() > 0) {
-                    MomentCollectionPtr m = moments[0]->get();
-                    tryAddVectorToTree<MomentChannel>(motion, m, "Moments", &icon3D, kineticItem);
-                }
-                // do rozwiniecia - potrzeba parsowac pliki vsk i interpretowac strukture kinamatyczna tak jak to robi Vicon
-                //tryAddVectorToTree(motion->getAngles(), "Angles", &icon3D, kineticItem);
-                if (powers.size() > 0) {
-                    PowerCollectionPtr p = powers[0]->get();
-                    tryAddVectorToTree<PowerChannel>(motion, p, "Powers", &icon3D, kineticItem);
-                }
-            }
-
-            bool hasMarkers = motion->hasObjectOfType(typeid(MarkerCollection));	
-            bool hasJoints = motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection));
-                
-            if (hasMarkers || hasJoints) {
-                QTreeWidgetItem* kinematicItem = new QTreeWidgetItem();
-                kinematicItem->setText(0, tr("Kinematic data"));
-                motionItem->addChild(kinematicItem);
-                if (hasMarkers) {
-                	QTreeWidgetItem* markersItem = new QTreeWidgetItem();
-                	markersItem->setIcon(0, icon3D);
-                	markersItem->setText(0, tr("Markers"));							
-                	kinematicItem->addChild(markersItem);	
-                    core::ObjectWrapperPtr markerCollection = motion->getWrapperOfType(typeid(MarkerCollection));
-                    item2Helper[markersItem] = TreeItemHelperPtr(new TreeItemHelper(markerCollection));
-                    
-                    if (!markerCollection->isNull()) {
-                        MarkerCollectionPtr m = markerCollection->get(); 
-                        tryAddVectorToTree<MarkerChannel>(motion, m, "Marker collection", &icon3D, markersItem, false);
-                    }
-                }
-                
-                if (hasJoints) {
-                	QTreeWidgetItem* skeletonItem = new QTreeWidgetItem();
-                	skeletonItem->setIcon(0, icon3D);
-                	skeletonItem->setText(0, tr("Joints"));
-                	kinematicItem->addChild(skeletonItem);
-                    item2Helper[skeletonItem] = TreeItemHelperPtr(new JointsItemHelper(motion));
-                }
-                				
-                if (hasJoints || hasMarkers || hasGrf) {
-                	item2Helper[kinematicItem] = TreeItemHelperPtr(new Multiserie3D(motion));
-                }
-            }
-                
-            if (motion->hasObjectOfType(typeid(VideoChannel))) {
-                QTreeWidgetItem* videoItem = new QTreeWidgetItem();
-                videoItem->setText(0, "Videos");
-                motionItem->addChild(videoItem);
-                std::vector<ObjectWrapperPtr> videos = motion->getWrappers(typeid(VideoChannel));
-                int count = videos.size();			
-                for (int i = 0; i < count; i++) {							
-                    QTreeWidgetItem* channelItem = new QTreeWidgetItem();	
-
-                    channelItem->setIcon(0, icon3D);						
-                    channelItem->setText(0, videos[i]->getName().c_str());			
-                    videoItem->addChild(channelItem);						
-                    item2Helper[channelItem] = TreeItemHelperPtr(new TreeItemHelper(videos[i]));\
-                }		
-            }
-
-            QTreeWidgetItem* testItem = new QTreeWidgetItem();
-            testItem->setText(0, "TEST");
-            motionItem->addChild(testItem);
-            if (motion->hasObjectOfType(typeid(ForceCollection))) {
-                ObjectWrapperPtr forcesWrapper = motion->getWrapperOfType(typeid(ForceCollection));
-                ForceCollectionPtr forces = forcesWrapper->get();
-                std::vector<ObjectWrapperPtr> fxWrappers;
-                std::vector<ObjectWrapperPtr> fyWrappers;
-                std::vector<ObjectWrapperPtr> fzWrappers;
-                for( int i = 0; i < forces->getNumChannels(); i++) {
-                    ForceChannelPtr f = forces->getChannel(i);
-                    ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(f, 0));
-                    ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(f, 1));
-                    ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(f, 2));
-
-                    core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-                    core::ObjectWrapperPtr wrapperY = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-                    core::ObjectWrapperPtr wrapperZ = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-
-                    wrapperX->set(x);
-                    wrapperY->set(y);
-                    wrapperZ->set(z);
-
-                    static int number = 0;
-                    // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
-                    std::string suffix = boost::lexical_cast<std::string>(number++);
-                    wrapperX->setName("FX_" + suffix);
-                    wrapperX->setSource("FX_" + suffix);
-                    wrapperY->setName("FY_" + suffix);
-                    wrapperY->setSource("FY_" + suffix);
-                    wrapperZ->setName("FZ_" + suffix);
-                    wrapperZ->setSource("FZ_" + suffix);
-
-                    fxWrappers.push_back(wrapperX);
-                    fyWrappers.push_back(wrapperY);
-                    fzWrappers.push_back(wrapperZ);
-                }
-                QTreeWidgetItem* fX = new QTreeWidgetItem();
-                fX->setText(0, "Motion Forces - X");
-                item2Helper[fX] = TreeItemHelperPtr(new MultiserieHelper(fxWrappers));
-                testItem->addChild(fX);
-
-                QTreeWidgetItem* fY = new QTreeWidgetItem();
-                fY->setText(0, "Motion Forces - Y");
-                item2Helper[fY] = TreeItemHelperPtr(new MultiserieHelper(fyWrappers));
-                testItem->addChild(fY);
-
-                QTreeWidgetItem* fZ = new QTreeWidgetItem();
-                fZ->setText(0, "Motion Forces - Z");
-                item2Helper[fZ] = TreeItemHelperPtr(new MultiserieHelper(fzWrappers));
-                testItem->addChild(fZ);
-            }
-
-
-		}
-		
-	}
+    currentSessions = sessions;
+    QTreeWidgetItem* item = SimpleFilterCommand::createTree("Sessions", sessions);
+    treeWidget->addTopLevelItem(item);
 }
 
 void HmmMainWindow::setFont( int size )
@@ -501,9 +227,11 @@ void HmmMainWindow::setBottom( int size )
 void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
     // sprawdzanie, czy pod item jest podpiety jakis obiekt
-    auto it = item2Helper.find(item);
-    if (it != item2Helper.end()) {
-        TreeItemHelperPtr helper = it->second;
+    HmmTreeItem* hmmItem = dynamic_cast<HmmTreeItem*>(item);
+    
+    if (hmmItem) {
+        showTimeline();
+        TreeItemHelper* helper = hmmItem->getHelper();
         std::stack<QString> pathStack;
         QTreeWidgetItem * pomItem = item;
 
@@ -574,24 +302,227 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
                 }
             }
         }
-        
+    }
+}
 
-        /*for (int i = 0; i < series.size(); i++) {
-            auto timeSerie = series[i];
 
-            if(timeSerie != nullptr){
+void HmmMainWindow::showTimeline()
+{
+    static bool timelineVisible = false;
+    if (timelineVisible == false) {
+        for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
+		    IServicePtr service = ServiceManager::getInstance()->getService(i);
 
-                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
-                if(timeline != nullptr) {
-                    VisualizerChannelPtr channel(new VisualizerChannel(timeSerie, visualizerDockWidget));
-                    try{
-                        timeline->addChannel(path.toStdString(), channel);
-                    }catch(...){
-                        LOG_ERROR("Could not add multichannel to timeline!");
-                    }
+		    const std::string& name = service->getName();
+		    if (name == "newTimeline") {
+                std::vector<QObject*> mainWidgetActions;
+                QWidget* viewWidget = service->getWidget(mainWidgetActions);
+
+                std::vector<QObject*> controlWidgetActions;
+                QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
+
+                std::vector<QObject*> settingsWidgetActions;
+                QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
+
+                EDRDockWidget * widget = new EDRDockWidget();
+                widget->getInnerWidget()->layout()->addWidget(controlWidget);
+                widget->setAllowedAreas(Qt::BottomDockWidgetArea);
+                widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+                for(auto it = controlWidgetActions.begin(); it!= controlWidgetActions.end(); it++){
+                    widget->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
                 }
+			
+                bottomMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+
+                widget->getTitleBar()->setFloatButtonVisible(false);
+                widget->getTitleBar()->setCloseButtonVisible(false);
+
+                widget->setTitleBarVisible(false);
+                timelineVisible = true;
             }
-        }*/
+	    }
+    }
+}
+
+void HmmMainWindow::clearTree()
+{
+    treeWidget->clear();
+}
+
+void HmmMainWindow::addItemToTree( QTreeWidgetItem* item )
+{
+    treeWidget->addTopLevelItem(item);
+}
+
+void HmmMainWindow::createFilterTabs()
+{
+    filterTabWidget->clear();
+    createFilterTab1();
+    createFilterTab2();
+}
+
+void HmmMainWindow::createFilterTab1()
+{
+    QWidget* tab = new QWidget(filterTabWidget);
+    QVBoxLayout* tabLayout = new QVBoxLayout();
+    QMargins margins(0, 0, 0, 0);
+    tabLayout->setContentsMargins(margins);
+    tabLayout->setMargin(0);
+    tab->setLayout(tabLayout);
+    QWidget* h1 = new QWidget(tab);
+    QWidget* h2 = new QWidget(tab);
+    QHBoxLayout* htablayout1 = new QHBoxLayout();
+    htablayout1->setContentsMargins(margins);
+    htablayout1->setMargin(0);
+    QHBoxLayout* htablayout2 = new QHBoxLayout();
+    htablayout2->setContentsMargins(margins);
+    htablayout2->setMargin(0);
+    h1->setLayout(htablayout1);
+    h2->setLayout(htablayout2);
+    tabLayout->addWidget(h1);
+    tabLayout->addWidget(h2);
+    QIcon iconAnalog(core::getResourceString("icons/analogBig.png"));
+    QIcon iconKinetic(core::getResourceString("icons/kineticBig.png"));
+    QIcon iconKinematic(core::getResourceString("icons/kinematicBig.png"));
+    QIcon iconVideo(core::getResourceString("icons/videoBig.png"));
+    //DataFilterWidget* filter1 = new DataFilterWidget(icon.pixmap(64, 64), "Charts", "this filter gives only charts");
+    //DataFilterWidget* filter2 = new DataFilterWidget(icon.pixmap(64, 64), "Emg", "this filter gives only emgs");
+
+    DataFilterWidget* filter1 = new DataFilterWidget(iconAnalog.pixmap(48,48), this);
+    DataFilterWidget* filter2 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
+    DataFilterWidget* filter3 = new DataFilterWidget(iconKinematic.pixmap(48,48), this);
+    DataFilterWidget* filter4 = new DataFilterWidget(iconVideo.pixmap(48,48), this);
+
+    std::vector<TypeInfo> types;
+    types.push_back(typeid(GRFCollection));
+    types.push_back(typeid(GRFChannel));
+    TypeFilterPtr typeFilter1(new TypeFilter(types));
+    TypeFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
+
+    filter1->addFilter("Grf", "label", typeFilter1);
+    filter1->addFilter("Emg", "emg label", typeFilter2);
+
+    TypeFilterPtr typeFilter3(new TypeFilter(typeid(ForceCollection)));
+    TypeFilterPtr typeFilter4(new TypeFilter(typeid(MomentCollection)));
+    TypeFilterPtr typeFilter5(new TypeFilter(typeid(PowerCollection)));
+
+    filter2->addFilter("Force", "count: ", typeFilter3);
+    filter2->addFilter("Moment", "moments", typeFilter4);
+    filter2->addFilter("Power", "powers", typeFilter5);
+
+    TypeFilterPtr typeFilter6(new TypeFilter(typeid(MarkerCollection)));
+    TypeFilterPtr typeFilter7(new TypeFilter(typeid(kinematic::JointAnglesCollection)));
+
+    filter3->addFilter("Markers", "count: 1", typeFilter6);
+    filter3->addFilter("Joints", "count: 1", typeFilter7);
+
+    TypeFilterPtr typeFilter8(new TypeFilter(typeid(VideoChannel)));
+    filter4->addFilter("Video", "count: 4", typeFilter8);
+
+    connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter3, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter4, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+
+    dataFilterWidgets.push_back(filter1);
+    dataFilterWidgets.push_back(filter2);
+    dataFilterWidgets.push_back(filter3);
+    dataFilterWidgets.push_back(filter4);
+
+    htablayout1->addWidget(filter1);
+    htablayout1->addWidget(filter2);
+    htablayout2->addWidget(filter3);
+    htablayout2->addWidget(filter4);
+    filterTabWidget->addTab(tab, "Filters");
+}
+
+void HmmMainWindow::createFilterTab2()
+{
+    QWidget* tab = new QWidget(filterTabWidget);
+    QVBoxLayout* tabLayout = new QVBoxLayout();
+    tab->setLayout(tabLayout);
+    QWidget* h1 = new QWidget(tab);
+    QWidget* h2 = new QWidget(tab);
+    QHBoxLayout* htablayout1 = new QHBoxLayout();
+    QHBoxLayout* htablayout2 = new QHBoxLayout();
+    h1->setLayout(htablayout1);
+    h2->setLayout(htablayout2);
+
+    QMargins margins(0, 0, 0, 0);
+    tabLayout->setContentsMargins(margins);
+    tabLayout->setMargin(0);
+    htablayout1->setContentsMargins(margins);
+    htablayout1->setMargin(0);
+    htablayout2->setContentsMargins(margins);
+    htablayout2->setMargin(0);
+
+    tabLayout->addWidget(h1);
+    tabLayout->addWidget(h2);
+    QIcon iconKinetic(core::getResourceString("icons/kineticBig.png"));
+   
+    DataFilterWidget* filter1 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
+    DataFilterWidget* filter2 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
+    DataFilterWidget* filter3 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
+    DataFilterWidget* filter4 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
+
+    TypeFilterPtr typeFilter1(new TypeFilter(typeid(GRFChannel)));
+    TypeFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
+
+    IFilterCommandPtr multi1(new MultiChartCommand<ForceCollection>());
+    IFilterCommandPtr multi2(new MultiChartCommand<MomentCollection>());
+    IFilterCommandPtr multi3(new MultiChartCommand<PowerCollection>());
+
+    filter1->addFilter("Force", "Multi Chart", multi1);
+    filter1->addFilter("Moment", "Multi Chart", multi2);
+    filter1->addFilter("Power", "Multi Chart", multi3);
+
+    filter2->addFilter("Force", "Multi Chart", multi1);
+    filter2->addFilter("Moment", "Multi Chart", multi2);
+    filter2->addFilter("Power", "Multi Chart", multi3);
+
+    filter3->addFilter("Force", "Multi Chart", multi1);
+    filter3->addFilter("Moment", "Multi Chart", multi2);
+    filter3->addFilter("Power", "Multi Chart", multi3);
+
+    filter4->addFilter("Force", "Multi Chart", multi1);
+    filter4->addFilter("Moment", "Multi Chart", multi2);
+    filter4->addFilter("Power", "Multi Chart", multi3);
+
+    connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter3, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter4, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+
+    dataFilterWidgets.push_back(filter1);
+    dataFilterWidgets.push_back(filter2);
+    dataFilterWidgets.push_back(filter3);
+    dataFilterWidgets.push_back(filter4);
+
+    htablayout1->addWidget(filter1);
+    htablayout1->addWidget(filter2);
+    htablayout2->addWidget(filter3);
+    htablayout2->addWidget(filter4);
+    filterTabWidget->addTab(tab, "Multi charts");
+}
+
+void HmmMainWindow::filterGroupActivated( bool active )
+{
+    DataFilterWidget* dataWidget = qobject_cast<DataFilterWidget*>(sender());
+
+    if (dataWidget) {
+        BOOST_FOREACH(DataFilterWidget* widget, dataFilterWidgets) {
+            if (widget != dataWidget) {
+                widget->blockSignals(true);
+                widget->setActive(false);
+                widget->blockSignals(false);
+            }
+        }
+
+        if (!active) {
+            treeWidget->clear();
+            QTreeWidgetItem* item = SimpleFilterCommand::createTree("Sessions", getCurrentSessions());
+            treeWidget->addTopLevelItem(item);
+        }
     }
 }
 

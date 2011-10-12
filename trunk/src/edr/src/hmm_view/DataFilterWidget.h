@@ -1,0 +1,54 @@
+/********************************************************************
+	created:	2011/10/04
+	created:	4:10:2011   10:20
+	filename: 	DataFilterWidget.h
+	author:		Wojciech Kniec
+	
+	purpose:	
+*********************************************************************/
+
+#ifndef HEADER_GUARD_HMM__DATAFILTERWIDGET_H__
+#define HEADER_GUARD_HMM__DATAFILTERWIDGET_H__
+
+#include <QtCore/QString>
+#include <QtGui/QWidget>
+#include <boost/date_time.hpp>
+#include <boost/function.hpp>
+#include "FilterEntryWidget.h"
+#include "HmmMainWindow.h"
+#include "ui_filter.h"
+
+class DataFilterWidget : public QWidget, private Ui::FilterWidget
+{
+    Q_OBJECT;
+public:
+    DataFilterWidget(const QPixmap& pixmap, HmmMainWindow* hmmWindow);
+	virtual ~DataFilterWidget() {}
+
+public:
+    void addFilter(const QString& bigLabelText, const QString& smallLabelText, DataFilterPtr dataFilter);
+    void addFilter(const QString& bigLabelText, const QString& smallLabelText, IFilterCommandPtr command);
+    void addFilter(FilterEntryWidget* entry);
+    bool getActive() const { return active; }
+    void setActive(bool val);
+
+signals:
+    void activated(bool);
+
+protected:
+    virtual void mousePressEvent(QMouseEvent *e);
+
+private:
+    void onClick();
+
+private:
+    std::vector<FilterEntryWidget*> entries;
+    HmmMainWindow* hmmWindow;
+    bool active;
+    
+};
+typedef boost::shared_ptr<DataFilterWidget> DataFilterWidgetPtr;
+typedef boost::shared_ptr<const DataFilterWidget> DataFilterWidgetConstPtr;
+
+
+#endif

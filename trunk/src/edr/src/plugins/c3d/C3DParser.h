@@ -33,9 +33,10 @@ private:
 	core::ObjectWrapperPtr powerChannels;
 	core::ObjectWrapperPtr leftEvents;
 	core::ObjectWrapperPtr rightEvents;
+    core::ObjectWrapperPtr allMarkers;
 	//core::ObjectWrapperPtr c3dMisc;
 	ParserPtr parserPtr;
-	
+    	
 public:
     C3DParser();
     virtual ~C3DParser();
@@ -44,7 +45,9 @@ public:
     virtual void parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path);
     virtual core::IParser* create();
     virtual std::string getSupportedExtensions() const;
+
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
+
 
 	void saveFile(const core::Filesystem::Path& path);
 };

@@ -8,6 +8,8 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <plugins/subject/Motion.h>
 #include "plugins/chart/ChartVisualizer.h"
+#include <plugins/subject/Session.h>
+#include <plugins/subject/DataFilter.h>
 #include <QtGui/QFrame>
 #include "MainWindow.h"
 #include "TreeItemHelper.h"
@@ -17,6 +19,45 @@
 #include <timelinelib/IChannel.h>
 
 class EDRDockWidgetManager;
+class DataFilterWidget;
+
+class HmmTreeItem : public QTreeWidgetItem
+{
+public:
+    virtual TreeItemHelper* getHelper() = 0;
+};
+
+template <class HelperPolicy>
+class HmmTreePolicyItem : public HmmTreeItem, private HelperPolicy
+{
+public:
+    HmmTreePolicyItem(const core::ObjectWrapperPtr& wrapper) :
+      HelperPolicy(wrapper)
+      {
+      }
+
+public:
+    virtual TreeItemHelper* getHelper()
+    {
+        return dynamic_cast<TreeItemHelper*>(this);
+    }
+};
+
+template <>
+class HmmTreePolicyItem<MultiserieHelper> : public HmmTreeItem, private MultiserieHelper
+{
+public:
+    HmmTreePolicyItem(const std::vector<core::ObjectWrapperPtr>& wrappers) :
+      MultiserieHelper(wrappers)
+      {
+      }
+
+public:
+    virtual TreeItemHelper* getHelper()
+    {
+        return dynamic_cast<TreeItemHelper*>(this);
+    }
+};
 
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain
 {
@@ -24,7 +65,7 @@ class HmmMainWindow : public core::MainWindow, private Ui::HMMMain
 
 private:
 
-    struct DataItemDescription{
+    struct DataItemDescription {
         core::IVisualizer::SerieBase* serie;
         Visualizer* visualizer;
         VisualizerWidget* wisualizerWidget;
@@ -43,6 +84,10 @@ public:
 
 	virtual void init( core::PluginLoader* pluginLoader );
 
+    const std::vector<SessionPtr>& getCurrentSessions() const { return currentSessions; }
+    void addItemToTree(QTreeWidgetItem* item);
+    void clearTree();
+
 private slots:
 	void onOpen();
 	void setFont(int size);
@@ -52,12 +97,16 @@ private slots:
     void visualizerFocusChanged(bool focus);
     void onTreeContextMenu(const QPoint & pos);
     void createNewVisualizer();
+    void filterGroupActivated(bool active);
 
 private:
-
+    void showTimeline();
     bool isDataItem(QTreeWidgetItem * item);
-
+    //void createTree(const std::vector<SessionPtr>& sessions);
 	void extractScalarChannels(VectorChannelConstPtr v, ScalarChannelPtr& x, ScalarChannelPtr& y, ScalarChannelPtr& z);
+    void createFilterTabs();
+    void createFilterTab1();
+    void createFilterTab2();
 
     class ItemDoubleClick
     {
@@ -83,55 +132,16 @@ private:
 
     friend class ItemDoubleClick;
 
-	template <class Channel, class CollectionPtr>
-	void tryAddVectorToTree(MotionPtr motion, CollectionPtr collection, const std::string& name, QIcon* childIcon, QTreeWidgetItem* parentItem, bool createContainerItem = true ) 
-	{
-		if (collection) {
-            std::vector<ObjectWrapperPtr> wrappers;
-            for (int i = 0; i < collection->getNumChannels(); i++) {
-                ObjectWrapperPtr wrapper = ObjectWrapper::create<VectorChannel>();
-                wrapper->set(boost::dynamic_pointer_cast<VectorChannel>(collection->getChannel(i)));
-
-                static int number = 0;
-                std::string name = "Serie_" + boost::lexical_cast<std::string>(number);
-                wrapper->setName(name);
-                wrapper->setSource(name);
-                wrappers.push_back(wrapper);
-            }
-			QTreeWidgetItem* collectionItem;
-            if (createContainerItem) {
-                collectionItem = new QTreeWidgetItem();
-			    collectionItem->setText(0, tr(name.c_str()));	
-			    parentItem->addChild(collectionItem);
-            } else {
-                collectionItem = parentItem;
-            }
-			int count = wrappers.size();
-			for (int i = 0; i < count; i++) {	
-                VectorChannelPtr c = wrappers[i]->get();
-				QTreeWidgetItem* channelItem = new QTreeWidgetItem();
-				if (childIcon) {
-					channelItem->setIcon(0, *childIcon);							
-				}				
-				channelItem->setText(0, c->getName().c_str());			
-				collectionItem->addChild(channelItem);		
-                item2Helper[channelItem] = TreeItemHelperPtr(new Vector3ItemHelper(wrappers[i]));
-			}	
-		}
-	}
-
 private:
-    std::map<QTreeWidgetItem*, TreeItemHelperPtr> item2Helper;
-
-
+    std::vector<DataFilterPtr> filters;
+    std::vector<SessionPtr> currentSessions;
 	VisualizerWidget* currentVisualizer;
     QMainWindow* pane;
 	
     EDRDockWidgetManager* topMainWindow;
     QMainWindow* bottomMainWindow;
 
-	QTreeWidget* treeWidget;
-
+	std::vector<DataFilterWidget*> dataFilterWidgets;
     std::map<timeline::IChannelConstPtr, VisualizerWidget*> channelToVisualizer;
 
     ItemDoubleClick itemClickAction;

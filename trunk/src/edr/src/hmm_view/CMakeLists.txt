@@ -17,6 +17,10 @@ set(PRIVATE_H
 	EDRDockWidgetSet.h
 	EDRDockWidgetManager.h
 	TreeItemHelper.h
+	DataFilterWidget.h
+	FilterEntryWidget.h
+	FilterCommand.h
+	FilterGroup.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -39,6 +43,10 @@ set(TARGET_SRC
 	EDRDockWidgetSet.cpp
 	EDRDockWidgetManager.cpp
 	TreeItemHelper.cpp
+	DataFilterWidget.cpp
+	FilterCommand.cpp
+	FilterEntryWidget.cpp
+	FilterGroup.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -49,6 +57,9 @@ SET(TARGET_MOC_H
 	LoadingThread.h
 	EDRDockWidgetSet.h
 	EDRDockWidgetManager.h
+	DataFilterWidget.h
+	FilterEntryWidget.h
+	FilterGroup.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -59,6 +70,8 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 set(TARGET_UI
 	ui/toolboxmaindeffile.ui
 	ui/LoadingDialog.ui
+	ui/filter.ui
+	ui/filterEntry.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

@@ -23,13 +23,24 @@
 class Motion
 {
 public:
-	Motion();
-    Motion(const std::vector<core::TypeInfo>& supportedTypes);
+	/*Motion();
+    Motion(const std::vector<core::TypeInfo>& supportedTypes);*/
+    Motion()
+    {
+        fillDefaultTypesList();
+    }
+
+    Motion( const std::vector<core::TypeInfo>& supportedTypes )
+    {
+        types = supportedTypes;
+    }
 	virtual ~Motion() {}
 
 public:
     typedef std::vector<core::ObjectWrapperPtr>::iterator iterator;
+    typedef std::vector<core::ObjectWrapperPtr>::const_iterator const_iterator;
     typedef boost::iterator_range<iterator> range;
+    typedef boost::iterator_range<const_iterator> const_range;
 
 public:
 	template <class Ptr>
@@ -74,11 +85,41 @@ public:
         throw std::runtime_error("Object does not exist");
     }
 
-	void addWrapper(const core::ObjectWrapperPtr& wrapper);
-    void addWrappers(const std::vector<core::ObjectWrapperPtr>& wrappers);
+    void addWrapper( const core::ObjectWrapperPtr& wrapper )
+    {
+        if (!isSupported(wrapper->getTypeInfo())) {
+            throw std::runtime_error("type is not supported");
+        }
+        wrappers.push_back(wrapper);
+    }
+
+    template <class Collection>
+    void addWrappers(const Collection& wrappers) 
+    {
+        for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
+            addWrapper(*it);
+        }
+    }
+
+    bool isSupported( const core::TypeInfo& typeToCheck )
+    {
+        for (auto it = types.begin(); it != types.end(); it++) {
+            if (*it == typeToCheck) {
+                return true;
+            }
+        }
+        return false;
+    }
+	//void addWrapper(const core::ObjectWrapperPtr& wrapper);
+    //void addWrappers(const std::vector<core::ObjectWrapperPtr>& wrappers);
     range getWrappers() 
     {
         return boost::make_iterator_range(wrappers.begin(), wrappers.end());
+    }
+
+    const_range getWrappers() const
+    {
+        return boost::make_iterator_range(wrappers.cbegin(), wrappers.cend());
     }
 
     std::vector<core::ObjectWrapperPtr> getWrappers(const core::TypeInfo& type)
@@ -114,14 +155,33 @@ public:
         return temp;
     }
 
-    bool isSupported(const core::TypeInfo& type);
+    //bool isSupported(const core::TypeInfo& type);
     
     std::string getName() const { return name; }
     void setName(std::string val) { name = val; }
 
 private:
 	//void createJointCollection(kinematic::SkeletalModelConstPtr model, kinematic::SkeletalDataConstPtr data);
-	void fillDefaultTypesList();
+    void fillDefaultTypesList()
+    {
+        types.clear();
+        types.push_back(typeid(GRFCollection));
+        types.push_back(typeid(GRFChannel));
+        types.push_back(typeid(EMGCollection));
+        types.push_back(typeid(EMGChannel));
+        types.push_back(typeid(kinematic::JointAnglesCollection));
+        types.push_back(typeid(kinematic::SkeletalData));
+        types.push_back(typeid(kinematic::SkeletalModel));
+        types.push_back(typeid(MarkerCollection));
+        types.push_back(typeid(ForceCollection));
+        types.push_back(typeid(AngleCollection));
+        types.push_back(typeid(PowerCollection));
+        types.push_back(typeid(MomentCollection));
+        types.push_back(typeid(VectorChannel));
+        types.push_back(typeid(C3DEventsCollection));
+        types.push_back(typeid(VideoChannel));
+    }
+	//void fillDefaultTypesList();
     bool hasJoints()
     {
         bool hasData = false;

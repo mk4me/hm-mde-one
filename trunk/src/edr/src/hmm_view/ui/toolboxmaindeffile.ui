@@ -142,14 +142,11 @@
      </disabled>
     </palette>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
+   <layout class="QGridLayout" name="gridLayout">
     <property name="margin">
      <number>0</number>
     </property>
-    <item>
+    <item row="0" column="0">
      <widget class="QWidget" name="widget" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -438,7 +435,7 @@
             <enum>QTabWidget::Rounded</enum>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <property name="iconSize">
             <size>
@@ -666,6 +663,12 @@
             </attribute>
            </widget>
            <widget class="QWidget" name="Analizy">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="palette">
              <palette>
               <active>
@@ -760,6 +763,177 @@
             <attribute name="title">
              <string>Analizy</string>
             </attribute>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QWidget" name="widget_2" native="true">
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QSplitter" name="splitter_2">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <widget class="QSplitter" name="splitter_4">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>320</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <widget class="QTabWidget" name="filterTabWidget">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>200</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="currentIndex">
+                     <number>1</number>
+                    </property>
+                    <widget class="QWidget" name="tab_10">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <attribute name="title">
+                      <string>Tab 1</string>
+                     </attribute>
+                    </widget>
+                    <widget class="QWidget" name="tab_11">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <attribute name="title">
+                      <string>Tab 2</string>
+                     </attribute>
+                    </widget>
+                   </widget>
+                   <widget class="QTreeWidget" name="treeWidget">
+                    <property name="maximumSize">
+                     <size>
+                      <width>320</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QScrollBar:horizontal {											 
+		border: 1px ridge grey;											 
+		background: #FFFFFF;											
+		height: 15px;													
+		margin: 0px 0px 0px 0px;										
+		}																
+																		
+		QScrollBar::handle:horizontal,  QScrollBar::handle:pressed {		
+		background: rgb(135, 173, 255);									 
+		min-width: 2px;													 
+		max-width: 5px;													 
+		height:5px;				    									 
+		border: 0px solid grey;											 
+		}																
+																		
+		QScrollBar::handle:horizontal {									 
+		background: rgb(175, 213, 255);									 
+		selection-background-color: rgb(135, 173, 255);					
+		min-width: 2px;													 
+		max-width: 5px;													 
+		height:5px;				    									 
+		border: 0px solid grey;											 
+		}																
+																		
+		QScrollBar::add-line:horizontal {								
+		border: 0px solid grey;											 
+		background: #FFFFFF;											
+		width: 0px;														 
+		subcontrol-position: right;										 
+		subcontrol-origin: margin;										
+		}																
+																		
+		QScrollBar::sub-line:horizontal {								
+		border: 0px solid grey;											 
+		background: #FFFFFF;											
+		width: 0px;														 
+		subcontrol-position: left;										
+		subcontrol-origin: margin;										
+		}																
+																		
+		QScrollBar:vertical {											
+		border: 1px ridge grey;											 
+		background: #FFFFFF;											
+		width: 15px;													
+		margin: 2px 0 2px 0;											
+		}																
+																		
+		QScrollBar::handle:vertical,  QScrollBar::handle:pressed {		
+		background: rgb(135, 173, 255);									 
+		border: 0px outset grey;										
+		min-height: 20px;												
+		}																
+																		
+		QScrollBar::handle:vertical {									
+		background: rgb(175, 213, 255);									 
+		selection-background-color: rgb(135, 173, 255);					 
+		border: 0px outset grey;										
+		min-height: 20px;												
+		}						</string>
+                    </property>
+                    <attribute name="headerVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <attribute name="headerDefaultSectionSize">
+                     <number>320</number>
+                    </attribute>
+                    <column>
+                     <property name="text">
+                      <string notr="true">1</string>
+                     </property>
+                    </column>
+                   </widget>
+                  </widget>
+                  <widget class="QWidget" name="hlayout" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
            </widget>
            <widget class="QWidget" name="Raports">
             <property name="palette">

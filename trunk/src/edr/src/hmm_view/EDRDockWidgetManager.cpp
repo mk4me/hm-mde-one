@@ -32,8 +32,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 
 void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
 {
-	QWidget::setUpdatesEnabled(false);
-
+    QWidget::setUpdatesEnabled(false);
 	for (auto it = generatedList.begin(); it != generatedList.end(); it++) {
 		if ((*it)->isAdditionPossible(widget)) {
 			(*it)->addDockWidget(widget);

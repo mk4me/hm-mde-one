@@ -19,6 +19,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/SolidSystem.h
 	${HEADER_PATH}/Subject.h
 	${HEADER_PATH}/SubjectSystemConfiguration.h
+	${HEADER_PATH}/DataFilter.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
@@ -37,6 +38,7 @@ set(TARGET_SRC
 	SubjectVisualizer.cpp
 	SubjectService.cpp
 	SubjectPlugin.cpp
+	DataFilter.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

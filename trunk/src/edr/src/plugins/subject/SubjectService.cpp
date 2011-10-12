@@ -7,6 +7,7 @@
 #include <core/IDataManager.h>
 #include <core/ObjectWrapper.h>
 #include <plugins/subject/Session.h>
+#include <plugins/allc3d/AllC3DChannels.h>
 
 SubjectService::SubjectService()
 {

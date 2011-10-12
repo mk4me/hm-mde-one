@@ -68,6 +68,14 @@ public:
         wrappers.push_back(wrapper);
     }
 
+    template<class Collection>
+    void addWrappers(const Collection& collection) 
+    {
+        for (auto it = collection.begin(); it != collection.end(); it++) {
+            addWrapper(*it);
+        }
+    }
+
     WrapperRange getWrappers() { return boost::make_iterator_range(wrappers.begin(), wrappers.end()); }
 
 	void addMotion(MotionPtr motion)
@@ -101,8 +109,6 @@ private:
         }
     }
 };
-
-
 typedef core::shared_ptr<Session> SessionPtr;
 typedef core::shared_ptr<const Session> SessionConstPtr;
 
