@@ -30,7 +30,7 @@ class VisualizerWidget;
 
 namespace core {
 
-	class MainWindow : public QMainWindow, public core::Window//, public osgViewer::CompositeViewer//, private Ui::EDRMain
+	class MainWindow : public QMainWindow, public core::Window
 	{
 		Q_OBJECT
 
@@ -41,9 +41,10 @@ namespace core {
 		EDRConsoleWidget* widgetConsole; 
 		//! Czy update jest w³¹czony?
 		bool updateEnabled;
-		//! Timer wyznaczaj¹cy update'y.
+		//! Timer wyznaczaj¹cy update'y wizualizatorów.
 		QTimer visualizerTimer;
-		//QTimer serviceTimer;
+        //! Timer wyznaczaj¹cy updaty dla serwisów
+		QTimer serviceTimer;
 		//! Korzeñ sceny.
 		//osg::ref_ptr<osg::Node> sceneRoot;
 		//! Pluginy.
@@ -65,6 +66,7 @@ namespace core {
 	public slots:
 		//! Aktualizacja wizualizatorow.
 		void updateVisualizers();
+        void updateServices();
 
 	public:
 		void initializeConsole();
@@ -83,9 +85,6 @@ namespace core {
 		void openFile( const std::string& path );
 
 	protected:
-
-		//! Tworzy siatkê rozci¹gniêt¹ na p³aszczyŸnie.
-		//osg::ref_ptr<osg::Node> createGrid(); 
 
 		//! Rejestruje wbudowane us³ugi.
 		void registerCoreServices();
@@ -134,13 +133,8 @@ namespace core {
 		//! Zapisuje ustawienia aplikacji.
 		void writeSettings();
 
-
-
-
-
-
-
 	};
+
 typedef boost::shared_ptr<MainWindow> MainWindowPtr;
 typedef boost::shared_ptr<const MainWindow> MainWindowConstPtr;
 

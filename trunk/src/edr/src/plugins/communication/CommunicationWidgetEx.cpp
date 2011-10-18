@@ -6,12 +6,14 @@
 #include <QtGui/QPainter>
 #include <boost/regex.hpp>
 
+#include <regex>
+
 //http://hmdb.pjwstk.edu.pl/Motion/FileStoremanWS.svc?wsdl
 //http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl
 
 using namespace communication;
 
-CommunicationWidgetEx::PerformerTreeItem::PerformerTreeItem(PerformerRelationPtr performer)
+CommunicationWidgetEx::PerformerTreeItem::PerformerTreeItem(const communication::ShallowCopy::Performer * performer)
     : performer(performer)
 {
     menu = nullptr;
@@ -19,13 +21,11 @@ CommunicationWidgetEx::PerformerTreeItem::PerformerTreeItem(PerformerRelationPtr
     setToolTip(0, "Performer");
     setIcon(0, QIcon(core::getResourceString("icons/subject.png")));
 
-    QString name = QString::fromUtf8(performer->performer.firstName.c_str());
-    QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
-    setText(0, QString(name + " " + lastName));
-    setText(1, QString::number(performer->sessions.size()).append(" session(s)"));
+    setText(0, QString::number(performer->performerID));
+    setText(1, QString::number(performer->performerConfs.size()).append(" session(s)"));
 }
 
-CommunicationWidgetEx::SessionTreeItem::SessionTreeItem(SessionRelationPtr session)
+CommunicationWidgetEx::SessionTreeItem::SessionTreeItem(const communication::ShallowCopy::Session * session)
     : session(session)
 {
     menu = nullptr;
@@ -33,51 +33,25 @@ CommunicationWidgetEx::SessionTreeItem::SessionTreeItem(SessionRelationPtr sessi
     setToolTip(0, "Session");
     setIcon(0, QIcon(core::getResourceString("icons/session.png")));
 
-    setText(0, QString::fromUtf8(session->session.sessionName.c_str()));
+    setText(0, QString::fromUtf8(session->sessionName.c_str()));
     setText(1, QString::number(session->trials.size()).append(" trial(s)"));
-    setText(2, QString::fromUtf8(session->session.sessionDate.c_str()).left(10));
+    setText(2, QString::fromUtf8(session->sessionDate.c_str()).left(10));
 }
 
-CommunicationWidgetEx::TrialTreeItem::TrialTreeItem(TrialRelationPtr trial)
+CommunicationWidgetEx::TrialTreeItem::TrialTreeItem(const communication::ShallowCopy::Trial * trial)
     : trial(trial)
 {
-    
-
     menu = nullptr;
     headers << "" << "Element" << "Date" << "Performer" << "Session";
     setToolTip(0, "Trial");
     setIcon(0, QIcon(core::getResourceString("icons/trial.png")));
-    setText(0, QString::fromUtf8(trial->trial.trialName.c_str()).right(11));
-
-    QString files;
-    bool video = false, c3d = false, amc = false, asf = false;
-    BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
-    {
-        if(core::Filesystem::fileExtension(file.fileName).compare(".avi") == 0) {
-            video = true;
-        } else if(core::Filesystem::fileExtension(file.fileName).compare(".c3d") == 0) {
-            c3d = true;
-        } else if(core::Filesystem::fileExtension(file.fileName).compare(".amc") == 0) {
-            amc = true;
-        } else if(core::Filesystem::fileExtension(file.fileName).compare(".asf") == 0) {
-            asf = true;
-        }
-    }
-    if(video) {
-        files.append("VID");
-    }
-    if(c3d) {
-        files.append(" EMG GRF");
-    }
-    if(amc && asf && c3d) {
-        files.append(" MOC");
-    }
-    setText(1, QString::number(trial->trial.files.size()).append(" file(s) [").append(files).append("]"));
+    setText(0, QString::fromUtf8(trial->trialName.c_str()).right(11));
+    setText(1, QString::number(trial->files.size()).append(" file(s)"));
 }
 
 const QString CommunicationWidgetEx::TrialTreeItem::getName() const
 {
-    return core::toQString(trial->trial.trialName);
+    return core::toQString(trial->trialName);
 }
 
 CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
@@ -89,7 +63,7 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
     // dodanie grupy akcji (designer na to nie pozwala :()
     // TIP: w przyk³adach Qt nie ma jawnego zwalniania akcji
     // wzialem z VideoWidget
-    QActionGroup* formatGroup = new QActionGroup(this);
+    formatGroup = new QActionGroup(this);
     formatGroup->addAction(actionPerformer_View);
     formatGroup->addAction(actionSession_View);
     formatGroup->addAction(actionTrial_View);
@@ -99,8 +73,8 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
 
     currentView = performerView;
 
-    menu = new QMenu;
-    menu->addSeparator();
+    //menu = new QMenu;
+    //menu->addSeparator();
     
     view = new QMenu;
     view->setTitle("View");
@@ -112,17 +86,13 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
 
     menuTl = new QMenu;
     menuTl->addSeparator();
-    menuTl->addActions(menu->actions());
+    //menuTl->addActions(menu->actions());
     menuTl->addSeparator();
-    menuTl->addAction(actionLoad_trial);
-    menuTl->addAction(actionLoad_Trial_videos);
-    menuTl->addAction(actionLoad_Trial_GRF);
-    menuTl->addAction(actionLoad_Trial_EMG);
-    menuTl->addAction(actionLoad_Trial_MOCAP);
+    //menuTl->addAction(actionLoad_trial);
 
     menuTs = new QMenu;
     menuTs->addSeparator();
-    menuTs->addActions(menu->actions());
+    //menuTs->addActions(menu->actions());
     menuTs->addSeparator();
     menuTs->addAction(actionDownload);
 
@@ -130,6 +100,14 @@ CommunicationWidgetEx::CommunicationWidgetEx(CommunicationService* service)
     connect(sessionView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(treeItemClicked(QTreeWidgetItem*, int)));
     connect(trialView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(treeItemClicked(QTreeWidgetItem*, int)));
     connect(localView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(treeItemClicked(QTreeWidgetItem*, int)));
+}
+
+CommunicationWidgetEx::~CommunicationWidgetEx()
+{
+    delete formatGroup;
+    delete view;
+    delete menuTl;
+    delete menuTs;
 }
 
 void CommunicationWidgetEx::treeItemClicked(QTreeWidgetItem* item, int column)
@@ -167,6 +145,7 @@ void CommunicationWidgetEx::trialContextMenu(QPoint p)
             menu->addActions(item->getMenu()->actions());
     }
     menu->exec(mapToGlobal(p));
+    delete menu;
 }
 
 void CommunicationWidgetEx::contextMenu(QPoint p)
@@ -179,6 +158,7 @@ void CommunicationWidgetEx::contextMenu(QPoint p)
     menu->addMenu(view);
 
     menu->exec(mapToGlobal(p));
+    delete menu;
 }
 
 void CommunicationWidgetEx::performerViewPressed(bool tog)
@@ -263,41 +243,19 @@ void CommunicationWidgetEx::downloadTrial(int trialID)
 
 void CommunicationWidgetEx::update(const CommunicationManager* subject)
 {
-    //budujemy relacje miedzy encjami bazodanowymi
-    communication::ShallowCopy::ShallowCopy shallowCopy = subject->getShalloCopy();
-    performersWithRelations.clear();
-
-    BOOST_FOREACH(communication::ShallowCopy::Performer performer, shallowCopy.performers)
-    {
-        PerformerRelationPtr p = PerformerRelationPtr(new PerformerRelation);
-        p->performer = performer;
-        performersWithRelations.push_back(p);
-        //sesje polaczone z performerami
-        BOOST_FOREACH(communication::ShallowCopy::PerformerConf performerC, shallowCopy.performerConfs)
-        {
-            BOOST_FOREACH(communication::ShallowCopy::Session session, shallowCopy.sessions)
-            {
-                if(performerC.performerID == p->performer.performerID && performerC.sessionID == session.sessionID) {
-                    SessionRelationPtr s = SessionRelationPtr(new SessionRelation);
-                    s->session = session;
-                    p->sessions.push_back(s);
-                    //kojarzenie sesji z trialami
-                    BOOST_FOREACH(communication::ShallowCopy::Trial trial, shallowCopy.trials)
-                    {
-                        if(trial.sessionID == s->session.sessionID) {
-                            TrialRelationPtr t = TrialRelationPtr(new TrialRelation);
-                            t->trial = trial;
-                            s->trials.push_back(t);
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //p³ytka kopia bazy danych
+    constShallowCopy = subject->getShalloCopy();
 
     metaData = subject->getMetadata();
     localTrials = subject->getLocalTrials();
     infoLabel->setText("");
+    
+    if(constShallowCopy != nullptr){
+        buildPerformerView(performerView);
+        buildSessionView(sessionView);
+        buildTrialView(trialView);
+        buildLocalView(localView);
+    }
 
     refreshUI();
 }
@@ -309,12 +267,6 @@ void CommunicationWidgetEx::refreshUI()
     actionLoad_trial->setDisabled(false);
     actionAbort_download->setDisabled(true);
     actionAbort_download->setVisible(false);
-    
-    //buduj widoki tylko raz po zaladowaniu danych
-    buildPerformerView(performerView);
-    buildSessionView(sessionView);
-    buildTrialView(trialView);
-    buildLocalView(localView);
 
     progressBar->reset();
     if(actionPerformer_View->isChecked()) {
@@ -346,299 +298,37 @@ void CommunicationWidgetEx::setProgress(int value)
     }
 }
 
-void CommunicationWidgetEx::useVideos()
-{
-    std::vector<core::Filesystem::Path> files;
-    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
-    {
-        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
-        {
-            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
-            {
-                //lokalny czy serwerowy?
-                BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-                {
-                    boost::cmatch matches;
-                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
-                    //sprawdzamy, czy zgadza sie nazwa folderu
-                    if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
-                        if(trial->markVideos) {
-                            BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
-                            {
-                                core::Filesystem::Path f("trials");
-                                f /= core::Filesystem::Path(trial->trial.trialName) /= core::Filesystem::Path(file.fileName);
-                                if(core::Filesystem::fileExtension(f).compare(".avi") == 0) {
-                                    files.push_back(f);
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    loadFiles(files);
-}
-
-void CommunicationWidgetEx::useMocap()
-{
-    std::vector<core::Filesystem::Path> files;
-    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
-    {
-        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
-        {
-            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
-            {
-                //lokalny czy serwerowy?
-                BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-                {
-                    boost::cmatch matches;
-                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
-                    //sprawdzamy, czy zgadza sie nazwa folderu
-                    if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
-                        if(trial->markMocap) {
-                            BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
-                            {
-                                core::Filesystem::Path f("trials");
-                                f /= core::Filesystem::Path(trial->trial.trialName) /= core::Filesystem::Path(file.fileName);
-                                if(core::Filesystem::fileExtension(f).compare(".c3d") == 0 || core::Filesystem::fileExtension(f).compare(".amc") == 0 || core::Filesystem::fileExtension(f).compare(".asf") == 0) {
-                                    files.push_back(f);
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    loadFiles(files);
-}
-
-void CommunicationWidgetEx::useGrf()
-{
-    std::vector<core::Filesystem::Path> files;
-    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
-    {
-        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
-        {
-            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
-            {
-                //lokalny czy serwerowy?
-                BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-                {
-                    boost::cmatch matches;
-                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
-                    //sprawdzamy, czy zgadza sie nazwa folderu
-                    if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
-                        if(trial->markGrf) {
-                            BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
-                            {
-                                core::Filesystem::Path f("trials");
-                                f /= core::Filesystem::Path(trial->trial.trialName) /= core::Filesystem::Path(file.fileName);
-                                if(core::Filesystem::fileExtension(f).compare(".c3d") == 0) {
-                                    files.push_back(f);
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    loadFiles(files);
-}
-
-void CommunicationWidgetEx::useEmg()
-{
-    std::vector<core::Filesystem::Path> files;
-    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
-    {
-        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
-        {
-            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
-            {
-                //lokalny czy serwerowy?
-                BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-                {
-                    boost::cmatch matches;
-                    boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
-                    //sprawdzamy, czy zgadza sie nazwa folderu
-                    if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
-                        if(trial->markEmg) {
-                            BOOST_FOREACH(communication::ShallowCopy::File file, trial->trial.files)
-                            {
-                                core::Filesystem::Path f("trials");
-                                f /= core::Filesystem::Path(trial->trial.trialName) /= core::Filesystem::Path(file.fileName);
-                                if(core::Filesystem::fileExtension(f).compare(".c3d") == 0) {
-                                    files.push_back(f);
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    loadFiles(files);
-}
-
-void CommunicationWidgetEx::useTrialVideos()
-{
-    //std::vector<core::IDataManager::Path> files;
-    //if(currentView->currentItem()) {
-    //    TrialTreeItem* item = reinterpret_cast<TrialTreeItem*>(currentView->currentItem());
-    //    if(item->isMarkedVideos()) {
-    //        //lokalny czy serwerowy?
-    //        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-    //        {
-    //            boost::cmatch matches;
-    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
-    //            //sprawdzamy, czy zgadza sie nazwa folderu
-    //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
-    //                if(item->getTrial()->markVideos) {
-    //                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
-    //                    {
-    //                        core::Filesystem::Path f("data/trials");
-    //                        f /= core::Filesystem::Path(item->getTrial()->trial.trialName) /= core::Filesystem::Path(file.fileName);
-    //                        if(!f.extension().compare(".avi")) {
-    //                            files.push_back(f);
-    //                        }
-    //                    }
-    //                }
-    //                break;
-    //            }
-    //        }
-    //    }
-    //}
-    loadFiles(listTrialFiles(false, false, false, true));
-}
-
-void CommunicationWidgetEx::useTrialMocap()
-{
-    //std::vector<core::IDataManager::Path> files;
-    //if(currentView->currentItem()) {
-    //    TrialTreeItem* item = reinterpret_cast<TrialTreeItem*>(currentView->currentItem());
-    //    if(item->isMarkedVideos()) {
-    //        //lokalny czy serwerowy?
-    //        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-    //        {
-    //            boost::cmatch matches;
-    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
-    //            //sprawdzamy, czy zgadza sie nazwa folderu
-    //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
-    //                if(item->getTrial()->markMocap) {
-    //                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
-    //                    {
-    //                        core::Filesystem::Path f("data/trials");
-    //                        f /= core::Filesystem::Path(item->getTrial()->trial.trialName) /= core::Filesystem::Path(file.fileName);
-    //                            if(!f.extension().compare(".c3d") || !f.extension().compare(".amc") || !f.extension().compare(".asf")) {
-    //                            files.push_back(f);
-    //                        }
-    //                    }
-    //                }
-    //                break;
-    //            }
-    //        }
-    //    }
-    //}
-    //loadFiles(files);
-    loadFiles(listTrialFiles(true, false, false, false));
-}
-
-void CommunicationWidgetEx::useTrialGrf()
-{
-    //std::vector<core::IDataManager::Path> files;
-    //if(currentView->currentItem()) {
-    //    TrialTreeItem* item = reinterpret_cast<TrialTreeItem*>(currentView->currentItem());
-    //    if(item->isMarkedVideos()) {
-    //        //lokalny czy serwerowy?
-    //        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-    //        {
-    //            boost::cmatch matches;
-    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
-    //            //sprawdzamy, czy zgadza sie nazwa folderu
-    //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
-    //                if(item->getTrial()->markGrf) {
-    //                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
-    //                    {
-    //                        core::Filesystem::Path f("data/trials");
-    //                        f /= core::Filesystem::Path(item->getTrial()->trial.trialName) /= core::Filesystem::Path(file.fileName);
-    //                        if(!f.extension().compare(".c3d")) {
-    //                            files.push_back(f);
-    //                        }
-    //                    }
-    //                }
-    //                break;
-    //            }
-    //        }
-    //    }
-    //}
-    //loadFiles(files);
-    loadFiles(listTrialFiles(false, false, true, false));
-}
-
-void CommunicationWidgetEx::useTrialEmg()
-{
-    //std::vector<core::IDataManager::Path> files;
-    //if(currentView->currentItem()) {
-    //    TrialTreeItem* item = reinterpret_cast<TrialTreeItem*>(currentView->currentItem());
-    //    if(item->isMarkedVideos()) {
-    //        //lokalny czy serwerowy?
-    //        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-    //        {
-    //            boost::cmatch matches;
-    //            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
-    //            //sprawdzamy, czy zgadza sie nazwa folderu
-    //            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
-    //                if(item->getTrial()->markEmg) {
-    //                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
-    //                    {
-    //                        core::Filesystem::Path f("data/trials");
-    //                        f /= core::Filesystem::Path(item->getTrial()->trial.trialName) /= core::Filesystem::Path(file.fileName);
-    //                        if(!f.extension().compare(".c3d")) {
-    //                            files.push_back(f);
-    //                        }
-    //                    }
-    //                }
-    //                break;
-    //            }
-    //        }
-    //    }
-    //}
-    //loadFiles(files);
-    loadFiles(listTrialFiles(false, true, false, false));
-}
-
 void CommunicationWidgetEx::buildPerformerView(QTreeWidget* tree)
 {
     tree->clear();
     //listowanie performerow
-    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+
+    for(auto performerIT = constShallowCopy->performers.begin(); performerIT != constShallowCopy->performers.end(); performerIT++)
     {
-        PerformerTreeItem* item = new PerformerTreeItem(performer);
-        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
-        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
+        PerformerTreeItem* item = new PerformerTreeItem(performerIT->second);
         
-        //item->setPerformer(performer);
-        item->setMenu(menu);
+        //item->setMenu(menu);
         
         tree->addTopLevelItem(item);
-        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
+
+        QString perfID(QString::number(performerIT->second->performerID));
+        
+        for(auto perfConfIT = performerIT->second->performerConfs.begin(); perfConfIT != performerIT->second->performerConfs.end(); perfConfIT++)
         {
-            SessionTreeItem* itemS = new SessionTreeItem(session);
-            itemS->setMenu(menu);
-            itemS->setText(3, QString(name + " " + lastName));
+            SessionTreeItem* itemS = new SessionTreeItem(perfConfIT->second->session);
+            //itemS->setMenu(menu);
+            itemS->setText(3, perfID);
             item->addChild(itemS);
-            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
+
+            QString sessionID(core::toQString(perfConfIT->second->session->sessionDate).left(10));
+            QString sessionDate(QString::fromUtf8(perfConfIT->second->session->sessionName.c_str()));
+
+            for(auto trialIT = perfConfIT->second->session->trials.begin(); trialIT != perfConfIT->second->session->trials.end(); trialIT++)
             {
-                TrialTreeItem* itemT = createTrialItem(trial);
-                itemT->setText(2, core::toQString(session->session.sessionDate).left(10));
-                itemT->setText(3, QString(name + " " + lastName));
-                itemT->setText(4, QString::fromUtf8(session->session.sessionName.c_str()));
+                TrialTreeItem* itemT = createTrialItem(trialIT->second);
+                itemT->setText(2, sessionID);
+                itemT->setText(3, itemS->text(3));
+                itemT->setText(4, sessionDate);
                 itemS->addChild(itemT);
             }
         }
@@ -650,24 +340,23 @@ void CommunicationWidgetEx::buildSessionView(QTreeWidget* tree)
 {
     tree->clear();
     //listowanie sesji
-    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+    for(auto perfConfIT = constShallowCopy->performerConfs.begin(); perfConfIT != constShallowCopy->performerConfs.end(); perfConfIT++)
     {
-        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
-        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
-        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
+        SessionTreeItem* item = new SessionTreeItem(perfConfIT->second->session);
+        //item->setMenu(menu);
+        tree->addTopLevelItem(item);
+        item->setText(3, QString::number(perfConfIT->second->performer->performerID));
+            
+        QString sessionDate(core::toQString(perfConfIT->second->session->sessionDate).left(10));
+        QString sessionName(QString::fromUtf8(perfConfIT->second->session->sessionName.c_str()));
+
+        for(auto trialIT = perfConfIT->second->session->trials.begin(); trialIT != perfConfIT->second->session->trials.end(); trialIT++)
         {
-            SessionTreeItem* item = new SessionTreeItem(session);
-            item->setMenu(menu);
-            tree->addTopLevelItem(item);
-            item->setText(3, QString(name + " " + lastName));
-            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
-            {
-                TrialTreeItem* itemT = createTrialItem(trial);
-                itemT->setText(2, core::toQString(session->session.sessionDate).left(10));
-                itemT->setText(3, QString(name + " " + lastName));
-                itemT->setText(4, QString::fromUtf8(session->session.sessionName.c_str()));
-                item->addChild(itemT);
-            }
+            TrialTreeItem* itemT = createTrialItem(trialIT->second);
+            itemT->setText(2, sessionDate);
+            itemT->setText(3, item->text(3));
+            itemT->setText(4, sessionName);
+            item->addChild(itemT);
         }
     }
     refreshHeader(tree);
@@ -677,22 +366,16 @@ void CommunicationWidgetEx::buildTrialView(QTreeWidget* tree)
 {
     tree->clear();
     //listowanie triali
-    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+    for(auto trialIT = constShallowCopy->trials.begin(); trialIT != constShallowCopy->trials.end(); trialIT++)
     {
-        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
-        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
-        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
-        {
-            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
-            {
-                TrialTreeItem* item = createTrialItem(trial);
-                item->setText(2, core::toQString(session->session.sessionDate).left(10));
-                item->setText(3, QString(name + " " + lastName));
-                item->setText(4, QString::fromUtf8(session->session.sessionName.c_str()));
-                tree->addTopLevelItem(item);
-            }
-        }
+        TrialTreeItem* item = createTrialItem(trialIT->second);
+
+        item->setText(2, core::toQString(trialIT->second->session->sessionDate).left(10));
+        item->setText(3, QString::number(trialIT->second->session->performerConf->performer->performerID));
+        item->setText(4, QString::fromUtf8(trialIT->second->session->sessionName.c_str()));
+        tree->addTopLevelItem(item);
     }
+
     refreshHeader(tree);
 }
 
@@ -700,28 +383,25 @@ void CommunicationWidgetEx::buildLocalView(QTreeWidget* tree)
 {
     tree->clear();
     //listowanie triali
-    BOOST_FOREACH(PerformerRelationPtr performer, performersWithRelations)
+
+    for(auto trialIT = constShallowCopy->trials.begin(); trialIT != constShallowCopy->trials.end(); trialIT++)
     {
-        QString name = QString::fromUtf8(performer->performer.firstName.c_str());
-        QString lastName = QString::fromUtf8(performer->performer.lastName.c_str());
-        BOOST_FOREACH(SessionRelationPtr session, performer->sessions)
-        {
-            BOOST_FOREACH(TrialRelationPtr trial, session->trials)
-            {
-                TrialTreeItem* item = createTrialItem(trial);
-                item->setText(2, core::toQString(session->session.sessionDate).left(10));
-                item->setText(3, QString(name + " " + lastName));
-                item->setText(4, QString::fromUtf8(session->session.sessionName.c_str()));
-                if(item->textColor(0) != QColor(128, 128, 128)) {
-                    tree->addTopLevelItem(item);
-                }
-            }
+        TrialTreeItem* item = createTrialItem(trialIT->second);
+
+        item->setText(2, core::toQString(trialIT->second->session->sessionDate).left(10));
+        item->setText(3, QString::number(trialIT->second->session->performerConf->performer->performerID));
+        item->setText(4, QString::fromUtf8(trialIT->second->session->sessionName.c_str()));
+        if(item->textColor(0) != QColor(128, 128, 128)) {
+            tree->addTopLevelItem(item);
+        }else{
+            delete item;
         }
     }
+
     refreshHeader(tree);
 }
 
-CommunicationWidgetEx::TrialTreeItem* CommunicationWidgetEx::createTrialItem(TrialRelationPtr trial)
+CommunicationWidgetEx::TrialTreeItem* CommunicationWidgetEx::createTrialItem(const communication::ShallowCopy::Trial * trial)
 {
     TrialTreeItem* item = new TrialTreeItem(trial);
     //lokalny czy serwerowy? jeœli nie ma w ogole lokalnych prob to zaznaczamy od razu jako serwerowy
@@ -731,7 +411,7 @@ CommunicationWidgetEx::TrialTreeItem* CommunicationWidgetEx::createTrialItem(Tri
             boost::cmatch matches;
             boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
             //sprawdzamy, czy zgadza sie nazwa folderu
-            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trial.trialName.compare(matches[2])) {
+            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !trial->trialName.compare(matches[2])) {
                 item->setTextColor(0, QColor(0, 0, 0));
                 item->setMenu(menuTl);
                 break;
@@ -761,64 +441,4 @@ void CommunicationWidgetEx::refreshHeader(QTreeWidget* tree)
             tree->resizeColumnToContents(i);
         }
     }
-}
-
-std::vector<core::Filesystem::Path> CommunicationWidgetEx::listTrialFiles(bool mocap, bool emg, bool grf, bool videos)
-{
-    std::vector<core::Filesystem::Path> files;
-    if(currentView->currentItem()) {
-        //TrialTreeItem* item = reinterpret_cast<TrialTreeItem*>(currentView->currentItem());
-        TrialTreeItem* item = dynamic_cast<TrialTreeItem*>(currentView->currentItem());
-        //lokalny czy serwerowy?
-        BOOST_FOREACH(core::IDataManager::LocalTrial lTrial, localTrials)
-        {
-            boost::cmatch matches;
-            boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})(.*)");
-            //sprawdzamy, czy zgadza sie nazwa folderu
-            if(lTrial.size() > 0 && boost::regex_match(lTrial[0].string().c_str(), matches, e) && !item->getTrial()->trial.trialName.compare(matches[2])) {
-                if(videos) {
-                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
-                    {
-                        core::Filesystem::Path f("trials");
-                        f /= core::Filesystem::Path(item->getTrial()->trial.trialName) / core::Filesystem::Path(file.fileName);
-                        if(core::Filesystem::fileExtension(f).compare(".avi") == 0) {
-                            files.push_back(f);
-                        }
-                    }
-                }
-                if(mocap) {
-                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
-                    {
-                        core::Filesystem::Path f("trials");
-                        f /= core::Filesystem::Path(item->getTrial()->trial.trialName) / core::Filesystem::Path(file.fileName);
-                        if(core::Filesystem::fileExtension(f).compare(".c3d") == 0 || core::Filesystem::fileExtension(f).compare(".asf") == 0 || core::Filesystem::fileExtension(f).compare(".amc") == 0) {
-                            files.push_back(f);
-                        }
-                    }
-                }
-                if(grf) {
-                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
-                    {
-                        core::Filesystem::Path f("trials");
-                        f /= core::Filesystem::Path(item->getTrial()->trial.trialName) / core::Filesystem::Path(file.fileName);
-                        if(core::Filesystem::fileExtension(f).compare(".c3d") == 0) {
-                            files.push_back(f);
-                        }
-                    }
-                }
-                if(emg) {
-                    BOOST_FOREACH(communication::ShallowCopy::File file, item->getTrial()->trial.files)
-                    {
-                        core::Filesystem::Path f("trials");
-                        f /= core::Filesystem::Path(item->getTrial()->trial.trialName) /= core::Filesystem::Path(file.fileName);
-                        if(core::Filesystem::fileExtension(f).compare(".c3d") == 0) {
-                            files.push_back(f);
-                        }
-                    }
-                }
-                break;
-            }
-        }
-    }
-    return files;
 }

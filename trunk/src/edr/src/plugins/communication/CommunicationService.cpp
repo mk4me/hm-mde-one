@@ -4,7 +4,8 @@
 #include <boost/bind.hpp>
 
 CommunicationService::CommunicationService()
-    : name("Communication"), finish(false)
+    : name("Communication"), finish(false), sleepTime(500000), currentRequestID(-1), updatingRequestID(-1),
+    currentState(communication::CommunicationManager::Ready), previousState(communication::CommunicationManager::Ready)
 {
     XmlUtils::TMPFILESDIR = core::getPathInterface()->getTempPath().string();
     WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();   
@@ -13,15 +14,12 @@ CommunicationService::CommunicationService()
     this->widget = new CommunicationWidgetEx(this);
     this->model->attach(this->widget);
 
-    callbacks.onBeginCallback = boost::bind(&CommunicationService::onBeginRequestInvoker, this, _1);
-    callbacks.onEndCallback = boost::bind(&CommunicationService::onEndRequestInvoker, this, _1);
-    callbacks.onCancelCallback = boost::bind(&CommunicationService::onCancelRequestInvoker, this, _1);
-    callbacks.onErrorCallback = boost::bind(&CommunicationService::onRequestErrorInvoker, this, _1, _2);
+    callbacks.onBeginCallback = boost::bind(&CommunicationService::onBeginRequest, this, _1);
+    callbacks.onEndCallback = boost::bind(&CommunicationService::onEndRequest, this, _1);
+    callbacks.onCancelCallback = boost::bind(&CommunicationService::onCancelRequest, this, _1);
+    callbacks.onErrorCallback = boost::bind(&CommunicationService::onRequestError, this, _1, _2);
 
-    qRegisterMetaType<communication::CommunicationManager::BasicRequest>("communication::CommunicationManager::BasicRequest");
-    qRegisterMetaType<std::string>("std::string");
-
-    turnOffProgressRefresh();
+    resetWidgetState();
 }
 
 CommunicationService::~CommunicationService()
@@ -30,192 +28,199 @@ CommunicationService::~CommunicationService()
     this->model = nullptr;
 }
 
-void CommunicationService::turnOnProgressRefresh()
+void CommunicationService::resetWidgetState()
 {
-    refreshProgress = true;
-    sleepTime = 20000;
-}
-
-void CommunicationService::turnOffProgressRefresh()
-{
+    currentLabel = "";
     refreshProgress = false;
-    sleepTime = 500000;
+    refreshDBView = false;
+    refreshWidgetState = false;
+    refreshDBConnectionState = false;
 }
 
-void CommunicationService::updateProgress()
+void CommunicationService::update(double deltaTime)
 {
-    if(model->getFilesToDownloadCount() > 0){
-        std::ostringstream stream;
-        stream << "Downloading file " << model->getActualDownloadFileNumber() << " from " << model->getFilesToDownloadCount();
-        widget->setInfoLabel(stream.str());
-        widget->setProgress(model->getProgress());
+    ScopedLock lock(currentWidgetStateMutex);
+
+    bool requestChanged = false;
+
+    if(currentRequestID != updatingRequestID){
+        requestChanged = true;
+        if(previousState != communication::CommunicationManager::PingingServer && previousState != communication::CommunicationManager::Ready){
+            model->loadLocalTrials();
+        }else{
+            widget->refreshUI();
+        }
+
+        previousState = model->getState();
     }
-}
 
-void CommunicationService::onBeginRequestInvoker(const communication::CommunicationManager::BasicRequest & request)
-{
-    QMetaObject::invokeMethod(this, "onBeginRequest", Qt::BlockingQueuedConnection, Q_ARG(communication::CommunicationManager::BasicRequest, request));
-}
+    updatingRequestID = currentRequestID;
 
-void CommunicationService::onEndRequestInvoker(const communication::CommunicationManager::BasicRequest & request)
-{
-    QMetaObject::invokeMethod(this, "onEndRequest", Qt::BlockingQueuedConnection, Q_ARG(communication::CommunicationManager::BasicRequest, request));
-}
+    if(refreshProgress == true){
+        std::stringstream s;
 
-void CommunicationService::onCancelRequestInvoker(const communication::CommunicationManager::BasicRequest & request)
-{
-    QMetaObject::invokeMethod(this, "onCancelRequest", Qt::BlockingQueuedConnection, Q_ARG(communication::CommunicationManager::BasicRequest, request));
-}
-
-void CommunicationService::onRequestErrorInvoker(const communication::CommunicationManager::BasicRequest & request, const std::string & error)
-{
-    QMetaObject::invokeMethod(this, "onCancelRequest", Qt::BlockingQueuedConnection, Q_ARG(communication::CommunicationManager::BasicRequest, request),
-        Q_ARG(std::string, error));
+        s << currentLabel << " files [" << model->getActualDownloadFileNumber() << "/" << model->getFilesToDownloadCount() << "]";
+        widget->setInfoLabel(s.str());
+        widget->setProgress(model->getProgress());
+    }else{
+        widget->setInfoLabel(currentLabel);
+        widget->setProgress(100);
+    }
+    
+    if(refreshDBConnectionState == true){
+        widget->setOnline(model->isServerResponse());
+    }
 }
 
 void CommunicationService::onBeginRequest(const communication::CommunicationManager::BasicRequest & request)
 {
-    std::string info;
+    ScopedLock lock(currentWidgetStateMutex);
 
-    bool refreshDownloadProgress = false;
+    resetWidgetState();
+
+    currentRequestID++;
 
     switch(request.type){
         case communication::CommunicationManager::DownloadFile:
-            info = "File download";
-            refreshDownloadProgress = true;
+            currentLabel = "File download";
+            refreshProgress = true;
             break;
 
         case communication::CommunicationManager::DownloadTrial:
-            info = "Trial download";
-            refreshDownloadProgress = true;
+            currentLabel = "Trial download";
+            refreshProgress = true;
+            break;
+
+        case communication::CommunicationManager::DownloadSession:
+            currentLabel = "Session download";
+            refreshProgress = true;
+            break;
+
+        case communication::CommunicationManager::DownloadPerformer:
+            currentLabel = "Performer download";
+            refreshProgress = true;
             break;
 
         case communication::CommunicationManager::CopyDB:
-            info = "Database synchronization";
+            currentLabel = "Database synchronization";
             break;
     }
 
-    widget->setInfoLabel(info);
-    widget->setProgress(100);
-
-    if(refreshDownloadProgress == true){
-        turnOnProgressRefresh();
+    if(currentLabel.empty() == false){
+        LOG_INFO(currentLabel);
     }
 }
 
 void CommunicationService::onEndRequest(const communication::CommunicationManager::BasicRequest & request)
 {
-    std::string info;
-
-    bool refreshTrials = false;
-    bool refreshDownloadProgress = false;
+    ScopedLock lock(currentWidgetStateMutex);
 
     switch(request.type){
         case communication::CommunicationManager::DownloadFile:
-            info = "File download complete";
-            refreshTrials = true;
-            refreshDownloadProgress = true;
+            currentLabel = "File download complete";
+            refreshProgress = false;
             break;
 
         case communication::CommunicationManager::DownloadTrial:
-            info = "Trial download complete";
-            refreshTrials = true;
-            refreshDownloadProgress = true;
+            currentLabel = "Trial download complete";
+            refreshProgress = false;
+            break;
+
+        case communication::CommunicationManager::DownloadSession:
+            currentLabel = "Session download complete";
+            refreshProgress = false;
+            break;
+
+        case communication::CommunicationManager::DownloadPerformer:
+            currentLabel = "Performer download complete";
+            refreshProgress = false;
             break;
 
         case communication::CommunicationManager::CopyDB:
-            info = "Database synchronization complete";
-            refreshTrials = true;
+            currentLabel = "Database synchronization complete";
+            refreshProgress = false;
             break;
 
         case communication::CommunicationManager::PingServer:
-            if(model->requestsQueueEmpty() == true){
-                widget->setOnline(model->isServerResponse());
-            }
+            refreshDBConnectionState = true;
             break;
     }
 
-    if(refreshDownloadProgress == true){
-        turnOffProgressRefresh();
-    }
-
-    widget->setInfoLabel(info);
-    widget->setProgress(100);
-
-    if(refreshTrials == true){
-        model->loadLocalTrials();
+    if(currentLabel.empty() == false){
+        LOG_INFO(currentLabel);
     }
 }
 
 void CommunicationService::onCancelRequest(const communication::CommunicationManager::BasicRequest & request)
 {
-    std::string info;
-    bool refreshDownloadProgress = false;
+    ScopedLock lock(currentWidgetStateMutex);
 
     switch(request.type){
         case communication::CommunicationManager::DownloadFile:
-            info = "File download canceled";
-            refreshDownloadProgress = true;
+            currentLabel = "File download canceled";
+            refreshProgress = false;
             break;
 
         case communication::CommunicationManager::DownloadTrial:
-            info = "Trial download canceled";
-            refreshDownloadProgress = true;
+            currentLabel = "Trial download canceled";
+            refreshProgress = false;
+            break;
+
+        case communication::CommunicationManager::DownloadSession:
+            currentLabel = "Session download canceled";
+            refreshProgress = false;
+            break;
+
+        case communication::CommunicationManager::DownloadPerformer:
+            currentLabel = "Performer download canceled";
+            refreshProgress = false;
             break;
 
         case communication::CommunicationManager::CopyDB:
-            info = "Database synchronization canceled";
+            currentLabel = "Database synchronization canceled";
             break;
     }
 
-    if(refreshDownloadProgress == true){
-        turnOffProgressRefresh();
-    }
-
-    widget->setInfoLabel(info);
-    widget->setProgress(100);
-
-    widget->refreshUI();
+    LOG_INFO(currentLabel);
 }
 
 void CommunicationService::onRequestError(const communication::CommunicationManager::BasicRequest & request, const std::string & error)
 {
-    std::string info;
-
-    bool refreshDownloadProgress = false;
+    ScopedLock lock(currentWidgetStateMutex);
 
     switch(request.type){
     case communication::CommunicationManager::DownloadFile:
-        info = "File download error: ";
-        refreshDownloadProgress = true;
+        currentLabel = "File download error: ";
+        refreshProgress = false;
         break;
 
     case communication::CommunicationManager::DownloadTrial:
-        info = "Trial download error: ";
-        refreshDownloadProgress = true;
+        currentLabel = "Trial download error: ";
+        refreshProgress = false;
+        break;
+
+    case communication::CommunicationManager::DownloadSession:
+        currentLabel = "Session download error: ";
+        refreshProgress = false;
+        break;
+
+    case communication::CommunicationManager::DownloadPerformer:
+        currentLabel = "Performer download error: ";
+        refreshProgress = false;
         break;
 
     case communication::CommunicationManager::CopyDB:
-        info = "Database synchronization error: ";
+        currentLabel = "Database synchronization error: ";
         break;
     }
 
-    if(refreshDownloadProgress == true){
-        turnOffProgressRefresh();
-    }
-
     if(error.empty() == false){
-        info += error;
+        currentLabel += error;
     }else{
-        info += "UNKNOWN";
+        currentLabel += "UNKNOWN";
     }
 
-    LOG_ERROR(info);
-
-    widget->setInfoLabel(info);
-    widget->setProgress(100);
-
-    widget->refreshUI();
+    LOG_ERROR(currentLabel);
 }
 
 void CommunicationService::copyDbData()
@@ -231,6 +236,16 @@ void CommunicationService::downloadFile(unsigned int fileID)
 void CommunicationService::downloadTrial(unsigned int trialID)
 {
     model->downloadTrial(trialID, callbacks);
+}
+
+void CommunicationService::downloadSession(unsigned int sessionID)
+{
+    model->downloadSession(sessionID, callbacks);
+}
+
+void CommunicationService::downloadPerformer(unsigned int performerID)
+{
+    model->downloadPerformer(performerID, callbacks);
 }
 
 void CommunicationService::init()

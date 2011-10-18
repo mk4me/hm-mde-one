@@ -7,6 +7,9 @@
 
 CORE_DEFINE_WRAPPER(communication::ShallowCopy::ShallowCopy, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
+typedef core::shared_ptr<communication::ShallowCopy::ShallowCopy> ShallowCopyPtr;
+typedef core::shared_ptr<const communication::ShallowCopy::ShallowCopy> ShallowCopyConstPtr;
+
 class ShallowCopyParser : public core::IParser
 {
     UNIQUE_ID("{C11AD1FE-B44F-4F6B-80EE-B51DCE1758E8}", "Shallow Copy Parser");
@@ -21,13 +24,15 @@ public:
 
     virtual std::string getSupportedExtensions() const;
 
-    const communication::ShallowCopy::ShallowCopy& getShallowCopy() const;
+    const ShallowCopyConstPtr& getShallowCopy() const;
 
     virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
 
 private:
     core::Filesystem::Path path;
     core::ObjectWrapperPtr object;
+    ShallowCopyPtr shallowCopy;
+    ShallowCopyConstPtr constShallowCopy;
 };
 
 typedef core::shared_ptr<ShallowCopyParser> ShallowCopyParserPtr;

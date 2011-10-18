@@ -115,8 +115,8 @@ private:
 
     //!
     QAction* actionNormalized;
-    //!
-    QComboBox * activeSerieCombo;
+
+    QComboBox* activeSerieCombo;
 
 public:
     //!

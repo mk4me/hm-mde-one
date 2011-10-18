@@ -133,6 +133,42 @@ namespace communication {
 		friend std::ostream& operator <<(std::ostream& out, const DateTime& d) {
 			return out << d.toString();
 		}
+
+        bool operator<(const DateTime & p)
+        {
+            bool ret = false;
+
+            if(this->year < p.year){
+                ret = true;
+            }else if(this->month < p.month){
+                ret = true;
+            }else if(this->day < p.day){
+                ret = true;
+            }else if(this->hour < p.hour){
+                ret = true;
+            }else if(this->minutes < p.minutes){
+                ret = true;
+            }else if(this->seconds < p.seconds){
+                ret = true;
+            }
+
+            return ret;
+        }
+
+        bool operator>(const DateTime & p)
+        {
+            return !(*this < p);
+        }
+
+        bool operator<=(const DateTime & p)
+        {
+            return !(*this > p);
+        }
+
+        bool operator>=(const DateTime & p)
+        {
+            return !(*this < p);
+        }
 	};
 }
 #endif

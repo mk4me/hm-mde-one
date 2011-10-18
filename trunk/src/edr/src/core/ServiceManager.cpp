@@ -16,6 +16,19 @@ ServiceManager::~ServiceManager(void)
 	
 }
 
+void ServiceManager::update(double deltaTime)
+{
+    for(auto it = servicesList.begin(); it != servicesList.end(); it++){
+        try{
+            (*it)->update(deltaTime);
+        }catch(std::exception & e){
+            LOG_ERROR("Service: " << (*it)->getName() << " ID: " << (*it)->getID() << " caused an error during update: " << e.what());
+        }catch(...){
+            LOG_ERROR("Service: " << (*it)->getName() << " ID: " << (*it)->getID() << " caused an UNKNOWN error during update");
+        }
+    }
+}
+
 void ServiceManager::finalizeServices()
 {
     for(auto it = servicesList.begin(); it != servicesList.end(); it++){

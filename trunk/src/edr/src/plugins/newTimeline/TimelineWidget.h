@@ -126,28 +126,24 @@ private:
     QTreeWidgetItem * rootItem;
     //! Menu kontekstowe do usuwania zaznaczonych kana³ów
     QMenu * removeChannelsMenu;
-    //! Labelka opisuj¹ca kontrolkê zmiany skali
-    QLabel * scaleLabel;
+    ////! Labelka opisuj¹ca kontrolkê zmiany skali
+    //QLabel * scaleLabel;
     //! Kontrolka do zmiany skali timeline
-    QDoubleSpinBox * scaleSpinBox;
-    //! Labelka opisuj¹ca kontrolkê zmiany kierunku odtwarzania
-    QLabel * directionLabel;
-    //! Labelka opisuj¹ca kontrolkê zmiany czasu w formie tekstowej i spinnera
-    QLabel * timeLabel;
-    //! Kontrolka do zmiany czasu w formie tekstowej i spinnera
-    QTimeEdit * timeEditBox;
-    //! Slider u¿ywany do zarz¹dzania aktualnym czasem w timeline - g³ówny timeline!!
-    QSlider * visualTimeSlider;
-    //! Akcja do zmiany kierunku odtwarzania
-    QAction * playbackDirectionAction;
-    //! Akcja ustawiaj¹ca czas na pocz¹tek timeline
-    QAction * timeToBeginAction;
-    //! Akcja ustawiaj¹ca czas na koniec timeline
-    QAction * timeToEndAction;
-    //! Akcja zarz¹dzaj¹ca odtwarzaniem/wstrzymywaniem timeline
-    QAction * playPauseAction;
-    //! Akcja zatrzymuj¹ca timeline
-    QAction * stopAction;
+    //QDoubleSpinBox * scaleSpinBox;
+    ////! Labelka opisuj¹ca kontrolkê zmiany kierunku odtwarzania
+    //QLabel * directionLabel;
+    ////! Labelka opisuj¹ca kontrolkê zmiany czasu w formie tekstowej i spinnera
+    //QLabel * timeLabel;
+    ////! Akcja do zmiany kierunku odtwarzania
+    //QAction * playbackDirectionAction;
+    ////! Akcja ustawiaj¹ca czas na pocz¹tek timeline
+    //QAction * timeToBeginAction;
+    ////! Akcja ustawiaj¹ca czas na koniec timeline
+    //QAction * timeToEndAction;
+    ////! Akcja zarz¹dzaj¹ca odtwarzaniem/wstrzymywaniem timeline
+    //QAction * playPauseAction;
+    ////! Akcja zatrzymuj¹ca timeline
+    //QAction * stopAction;
 
     //! Nowy slider z osi¹ czasu
     TimeSliderWidget * slider;

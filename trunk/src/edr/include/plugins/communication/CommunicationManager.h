@@ -35,9 +35,10 @@ namespace communication
         {
             DownloadFile,
             DownloadTrial,
+            DownloadSession,
+            DownloadPerformer,
             CopyDB,
             PingServer
-            //UpdateTrials
         };
 
         /**
@@ -48,7 +49,8 @@ namespace communication
             Ready, /** Gotowy do wszelkich dzia³añ */
             DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
             DownloadingTrial, /** Trwa pobieranie plików próby pomiarowej */
-            //UpdateTrials, /** Trwa odnawianie informacji o zasobach bazodanowych */
+            DownloadingSession,
+            DownloadingPerformer,
             CopyingDB, /** Trwa odnawianie informacji o encjach db*/
             PingingServer, /** Pingowanie serwera */
         };
@@ -124,9 +126,9 @@ namespace communication
         /**
         @return p³ytka kopia DB
         */
-        const communication::ShallowCopy::ShallowCopy& getShalloCopy() const
+        const ShallowCopyConstPtr& getShalloCopy() const
         {
-            return shallowCopy;
+            return constShallowCopy;
         }
         /**
         @return metadane z DB
@@ -135,6 +137,7 @@ namespace communication
         {
             return metaData;
         }
+
         /**
         £adowanie lokalnych prób pomiarowych. Metoda wykorzystuje DataManagera.
         */
@@ -173,7 +176,23 @@ namespace communication
         */
         void copyDbData(const RequestCallbacks & callbacks = RequestCallbacks());
 
-        std::string getTrialDirectoryName(int trialID);
+        const std::string & getTrialName(int trialID);
+
+        const std::string & getSessionName(int sessionID);
+
+        const std::string & getFileName(int fileID);
+
+        const communication::ShallowCopy::Trial * getTrial(int trialID);
+
+        const communication::ShallowCopy::Session * getSession(int sessionID);
+
+        const communication::ShallowCopy::Performer * getPerformer(int performerID);
+
+        const communication::ShallowCopy::File * getFile(int fileID);
+
+        void downloadPerformer(unsigned int perrformerID, const RequestCallbacks & callbacks = RequestCallbacks());
+
+        void downloadSession(unsigned int sessionID, const RequestCallbacks & callbacks = RequestCallbacks());
 
         /**
         Pobieranie próby pomiarowej.
@@ -321,7 +340,7 @@ namespace communication
         /**
         P³ytka kopia db
         */
-        communication::ShallowCopy::ShallowCopy shallowCopy;
+        ShallowCopyConstPtr constShallowCopy;
         /**
         Metadane db
         */
@@ -392,6 +411,8 @@ namespace communication
 
         std::string shallowCopyPath;
         std::string metadataPath;
+
+        std::string localDataPath;
     };
 }
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

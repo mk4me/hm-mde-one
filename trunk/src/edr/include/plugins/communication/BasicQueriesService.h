@@ -22,6 +22,11 @@ namespace communication
 		Wirtualny destruktor klasy BasicQueriesService.
 		*/
 		virtual ~BasicQueriesService();
+
+        DateTime getRemoteShallowCopyVersion();
+
+        DateTime getLocalShallowCopyVersion(const std::string & path);
+
 		/**
 		Listuje próby pomiarowe sesji.
 		@param sessionID id sesji której próby pomiarowe maj¹ zostaæ wylistowane

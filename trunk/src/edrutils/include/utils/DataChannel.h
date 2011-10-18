@@ -1133,9 +1133,9 @@ namespace utils {
 
             data.swap(TimeData());
 
-            this->channel->detach(notifier);
+            this->channel->detach(notifier.get());
             this->channel = channel;
-            channel->attach(notifier);
+            channel->attach(notifier.get());
 
             //sprawdziæ czy s¹ jakieœ dane? jesli tak odpaliæ modifier
             if(channel->empty() == false){
@@ -1150,7 +1150,9 @@ namespace utils {
             return modifier;
         }
 
-        ChannelAutoModifier(const typename IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr & channel, const typename IChannelAutoModifier<PointType, TimeType>::_MyModifierType & modifier) : channel(channel), modifier(modifier), changed(false)
+        ChannelAutoModifier(const typename IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr & channel,
+            const typename IChannelAutoModifier<PointType, TimeType>::_MyModifierType & modifier) : channel(channel),
+            modifier(modifier), notifier(new UpdateNotifier()), changed(false)
         {
             UTILS_ASSERT((channel != nullptr), "Wrong channel for Tracker");
 
@@ -1158,9 +1160,8 @@ namespace utils {
                 throw std::runtime_error("Wrong channel for Tracker");
             }
 
-            notifier = new UpdateNotifier();
             notifier->setModifier(this);
-            channel->attach(notifier);
+            channel->attach(notifier.get());
 
             //sprawdziæ czy s¹ jakieœ dane? jesli tak odpaliæ modifier
             if(channel->empty() == false){
@@ -1249,7 +1250,7 @@ namespace utils {
     private:
         typename IChannelAutoModifier<PointType, TimeType>::_MyChannelPtr channel;
         typename IChannelAutoModifier<PointType, TimeType>::_MyModifierType modifier;
-        UpdateNotifier * notifier;
+        boost::shared_ptr<UpdateNotifier> notifier;
         bool changed;
     };
 

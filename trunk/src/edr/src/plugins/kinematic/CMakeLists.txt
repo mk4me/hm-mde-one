@@ -9,7 +9,6 @@ set(TARGET_TARGETNAME
 # nag³ówki prywatne
 set(PRIVATE_H
 	KinematicParser.h
-	KinematicService.h
 	KinematicVisualizer.h
 	ISchemeDrawer.h
 	LineSchemeDrawer.h
@@ -44,7 +43,6 @@ set(TARGET_SRC
 	skeletalVisualizationScheme.cpp
 	KinematicPlugin.cpp
 	KinematicParser.cpp
-	KinematicService.cpp
 	KinematicVisualizer.cpp
 	LineSchemeDrawer.cpp
 	PointSchemeDrawer.cpp

@@ -128,7 +128,9 @@ void MainWindow::init(PluginLoader* pluginLoader)
     readSettings(QSettings(), true);
 
     connect(&visualizerTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
+    connect(&serviceTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
 	visualizerTimer.start(20);
+    serviceTimer.start(20);
 }
 
 MainWindow::~MainWindow()
@@ -196,6 +198,13 @@ void MainWindow::updateVisualizers()
 {
     if ( updateEnabled ) {
         VisualizerManager::getInstance()->update();
+    }
+}
+
+void MainWindow::updateServices()
+{
+    if ( updateEnabled ) {
+        ServiceManager::getInstance()->update(0.02);
     }
 }
 
@@ -355,18 +364,8 @@ void MainWindow::registerPluginsParsers()
         }
     }
 
-    //IParserPtr c3dParser = core::shared_ptr<C3DParser>(new C3DParser());
-
-    //safeRegisterParser(c3dParser);
-
     safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<int>()) );
     safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<double>()) );
-    /*safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__ScalarChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__C3DAnalogChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__EMGChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__GRFChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__MarkerChannel>()) );
-    safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<__MarkerSet>()) );*/
 }
 
 void MainWindow::registerPluginsWrapperFactories()
@@ -409,58 +408,6 @@ void MainWindow::registerPluginsDataSources()
     }
 }
 
-//void MainWindow::onOpen()
-//{
-//    utils::Push<bool> pushed(updateEnabled, false);
-//    Filesystem::Path initPath = getUserDataPath() / "trial";
-//    const QString directory = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
-//    if (!directory.isEmpty()) 
-//    {
-//		std::vector<Filesystem::Path> paths;
-//        Filesystem::Path dirPath(directory.toStdString());
-//        Filesystem::Iterator itEnd;
-//
-//        for( Filesystem::Iterator it(dirPath); it != itEnd; it++){
-//            if(Filesystem::isRegularFile(*it) == true){
-//                //openFile((*it).path().string());
-//				paths.push_back(it->path());
-//            }
-//        }        
-//
-//		DataManager::getInstance()->loadFiles(paths);
-//    }
-//}
-//
-//void MainWindow::onExit()
-//{
-//    close();
-//}
-//
-//void MainWindow::onMaterial()
-//{
-//    
-//}
-//
-//void MainWindow::onBones()
-//{
-//
-//}
-//
-//void MainWindow::onWireframe()
-//{
-//
-//}
-//
-//void MainWindow::createWorkflow()
-//{
-//    EDRWorkflowWidget* widget = new EDRWorkflowWidget();
-//    widget->setAllowedAreas(Qt::AllDockWidgetAreas);
-//
-//    QObject::connect( widget, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
-//
-//    addDockWidget(Qt::LeftDockWidgetArea, widget);
-//}
-
 
 QDockWidget* MainWindow::embeddWidget( QWidget* widget, std::vector<QObject*>& widgetActions, const QString& name, const QString& style, const QString& sufix,
     Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)
@@ -470,7 +417,6 @@ QDockWidget* MainWindow::embeddWidget( QWidget* widget, std::vector<QObject*>& w
     dock->setAllowedAreas(area);
     dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
     dock->setStyleSheet(style);
-    //dock->setWidget(widget);
     dock->getInnerWidget()->layoutContent->addWidget(widget);
     QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
 
@@ -480,294 +426,3 @@ QDockWidget* MainWindow::embeddWidget( QWidget* widget, std::vector<QObject*>& w
 
     return dock;
 }
-
-
-//void MainWindow::onCustomAction()
-//{
-//    QObject* obj = QObject::sender();
-//    std::string path = toStdString(obj->objectName());
-//    this->triggerMenuItem(path, false);
-//}
-//
-//void MainWindow::onCustomAction( bool triggered )
-//{
-//    QObject* obj = QObject::sender();
-//    std::string path = toStdString(obj->objectName());
-//    this->triggerMenuItem(path, triggered);
-//}
-//
-//void MainWindow::onRemoveMenuItem( const std::string& path )
-//{
-//    // TODO: rekurencyjne usuwanie niepotrzebnych podmenu
-//    QAction* action = findChild<QAction*>(toQString(path));
-//    if ( action ) 
-//    {
-//        delete action;
-//    }
-//}
-//
-//
-//
-//void MainWindow::onAddMenuItem( const std::string& path, bool checkable, bool initialState )
-//{
-//    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-//    tokenizer tokens(path, boost::char_separator<char>("/"));
-//    tokenizer::iterator next;
-//    tokenizer::iterator token = tokens.begin();
-//
-//    QWidget* currentMenu = QMainWindow::menuBar();
-//    std::string pathPart;
-//
-//    for (token = tokens.begin(); token != tokens.end(); token = next ) 
-//    {        
-//        // ustawiamy nastêpny (przyda siê)
-//        next = token;
-//        ++next;
-//
-//        // aktualizacja bie¿¹cej œcie¿ki
-//        if ( !pathPart.empty() ) 
-//        {
-//            pathPart.append("/");
-//        }
-//        pathPart += *token;
-//
-//        // wyszukanie dziecka
-//        QString itemName = toQString(pathPart);
-//
-//        if ( next == tokens.end() ) 
-//        {
-//            // liœæ
-//            QAction* action = new QAction(this);
-//            action->setObjectName( toQString(pathPart) );
-//            action->setText(QApplication::translate("ToolboxMain", token->c_str(), 0, QApplication::UnicodeUTF8));
-//            currentMenu->addAction(action);
-//            if ( checkable ) 
-//            {
-//                action->setCheckable(true);
-//                action->setChecked(initialState);
-//                QObject::connect(action, SIGNAL(toggled(bool)), this , SLOT(onCustomAction(bool)));
-//            } 
-//            else 
-//            {
-//                QObject::connect(action, SIGNAL(triggered()), this , SLOT(onCustomAction()));
-//            }
-//        } 
-//        else 
-//        {
-//            if ( QMenu* menu = currentMenu->findChild<QMenu*>(itemName) )
-//            {
-//                // menu ju¿ istnieje
-//                currentMenu = menu;
-//            }
-//            else 
-//            {
-//                // ga³¹Ÿ
-//                menu = new QMenu(currentMenu);
-//                menu->setObjectName( itemName );
-//                menu->setTitle(QApplication::translate("ToolboxMain", token->c_str(), 0, QApplication::UnicodeUTF8));
-//                currentMenu->addAction( menu->menuAction() );
-//                currentMenu = menu;
-//            }
-//        }
-//    }
-//}
-//
-//
-//void MainWindow::openFile( const std::string& path )
-//{
-//    LOG_INFO("Opening file: " << path);
-//    std::vector<Filesystem::Path> paths;
-//    paths.push_back(path);
-//    DataManager::getInstance()->loadFiles(paths);
-//}
-//
-//void MainWindow::loadData()
-//{
-//	ServiceManager::getInstance()->loadDataPass(DataManager::getInstance());
-//}
-
-//void MainWindow::onDockWidgetVisiblityChanged( bool visible )
-//{
-//
-//}
-//
-//void MainWindow::onSaveLayout()
-//{
-//    // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
-//    Filesystem::Path dir = getPathInterface()->getUserDataPath() / "layouts";
-//
-//    //jesli nie istnieje spróbuj utworzyæ
-//    if(Filesystem::pathExists(dir) == false) {
-//        Filesystem::createDirectory(dir);
-//    }
-//
-//    if(Filesystem::pathExists(dir) == true) {        
-//        const QString fileName = QFileDialog::getSaveFileName(this, 0, dir.string().c_str(), "*.layout");
-//        if ( !fileName.isEmpty() ) {
-//            QSettings settings(fileName, QSettings::IniFormat);
-//            settings.setValue("Geometry", saveGeometry());
-//            settings.setValue("WindowState", saveState());
-//        }
-//    } else {
-//        LOG_ERROR("Could not create directory: "<<toStdString(dir));
-//    }
-//}
-
-//void MainWindow::openLayout( const QString& path )
-//{
-//    readSettings(QSettings(path, QSettings::IniFormat), false);
-//}
-//
-//void MainWindow::onOpenLayout()
-//{
-//    // TODO: czy na pewno ma wychodziæ gdy nie uda siê sprawdziæ, czy katalog istnieje?
-//    Filesystem::Path dir = getPathInterface()->getUserDataPath() / "layouts";
-//    utils::Push<bool> pushed(updateEnabled, false);
-//    const QString fileName = QFileDialog::getOpenFileName(this, 0, dir.string().c_str(), "*.layout");
-//    if ( !fileName.isEmpty() ) {
-//        openLayout(fileName);
-//    }
-//}
-//
-//void MainWindow::onShowSavedLayouts()
-//{
-//    // usuniêcie starych akcji
-//    menuLoad_layout->clear();
-//    menuLoad_layout->addAction(actionLayoutOpen);
-//
-//    // layouty wbudowane
-//    Filesystem::Path dir = getPathInterface()->getResourcesPath() / "layouts";
-//    addLayoutsToMenu(dir);
-//    // layouty zdefiniowane przez u¿ytkownika
-//    dir = getPathInterface()->getUserDataPath() / "layouts";
-//    addLayoutsToMenu(dir);
-//}
-//
-//
-//
-//void MainWindow::onLayoutTriggered()
-//{
-//    if ( QAction* action = qobject_cast<QAction*>(QObject::sender()) ) {
-//        openLayout( action->data().value<Filesystem::Path>().string().c_str() );
-//    }
-//}
-
-//void MainWindow::addLayoutsToMenu( const Filesystem::Path &dir )
-//{
-//    if ( Filesystem::pathExists(dir) == true ) {     
-//        std::vector<std::string> files = Filesystem::listFiles(dir, false, ".layout");
-//        if ( files.empty() == false ) {
-//            menuLoad_layout->addSeparator();
-//            BOOST_FOREACH(const std::string& file, files) {
-//                QAction* action = new QAction(menuLoad_layout);
-//                action->setText(file.c_str());
-//                QVariant v;
-//                v.setValue(dir / file);
-//                action->setData(v);
-//                menuLoad_layout->addAction(action);
-//                QObject::connect(action, SIGNAL(triggered()), this, SLOT(onLayoutTriggered()));
-//            }
-//        }
-//    }
-//}
-
-//void MainWindow::populateWindowMenu()
-//{
-//    // uwaga: nie musimy usuwaæ starych akcji, poniewa¿ QMenu pilnuje,
-//    // aby nie by³ dodane dwie jednakowe instancje
-//    populateWindowMenu(menuWindow);
-//}
-//
-//void MainWindow::populateVisualizersMenu()
-//{
-//    // czyœcimy menu
-//    menuCreateVisualizer->clear();
-//    populateVisualizersMenu(menuCreateVisualizer);
-//}
-
-//void MainWindow::actionCreateVisualizer()
-//{
-//    QAction* action = qobject_cast<QAction*>(sender());
-//    VisualizerWidget* widget = new VisualizerWidget(action->data().value<UniqueID>(), this, Qt::WindowTitleHint);
-//    widget->setAllowedAreas(Qt::RightDockWidgetArea);
-//    widget->setStyleSheet(styleSheet());
-//    addDockWidget(Qt::RightDockWidgetArea, widget);
-//}
-//
-//void MainWindow::visualizerWidgetClosed( VisualizerWidget* widget )
-//{
-//
-//}
-//
-//
-//void MainWindow::populateVisualizersMenu( QMenu* menu )
-//{
-//    std::vector<QAction*> sortedActions;
-//    // dodajemy wizualizatory
-//    BOOST_FOREACH(const IVisualizerConstPtr& vis, VisualizerManager::getInstance()->enumPrototypes()) {
-//        QAction* action = new QAction(toQString(vis->getName()), menu);
-//        action->setData( qVariantFromValue(vis->getID()) );
-//        action->setIcon( VisualizerManager::getInstance()->getIcon(vis->getID()) );
-//        action->connect( action, SIGNAL(triggered()), this, SLOT(actionCreateVisualizer()) );
-//        sortedActions.push_back(action);
-//    }
-//    std::sort(sortedActions.begin(), sortedActions.end(), SortActionsByNames());
-//    BOOST_FOREACH(QAction* action, sortedActions) {
-//        menu->addAction(action);
-//    }
-//}
-//
-//void MainWindow::populateWindowMenu( QMenu* menu )
-//{
-//    std::vector<QAction*> sortedActions;
-//
-//    QList<QDockWidget*> dockwidgets = qFindChildren<QDockWidget*>(this);
-//    if ( dockwidgets.size() ) {
-//        // pobranie i posortowanie akcji wg nazw
-//        sortedActions.reserve(dockwidgets.size());
-//        BOOST_FOREACH(QDockWidget* dockWidget, dockwidgets) {
-//            sortedActions.push_back(dockWidget->toggleViewAction());
-//        }
-//        std::sort(sortedActions.begin(), sortedActions.end(), SortActionsByNames());
-//        BOOST_FOREACH(QAction* action, sortedActions) {
-//            menu->addAction(action);
-//        }
-//        menu->addSeparator();
-//        sortedActions.resize(0);
-//    }
-//
-//    QList<QToolBar*> toolbars = qFindChildren<QToolBar*>(this);
-//    if (toolbars.size()) {
-//        sortedActions.reserve(toolbars.size());
-//        BOOST_FOREACH(QToolBar* toolbar, toolbars) {
-//            sortedActions.push_back(toolbar->toggleViewAction());
-//        }
-//        std::sort(sortedActions.begin(), sortedActions.end(), SortActionsByNames());
-//        BOOST_FOREACH(QAction* action, sortedActions) {
-//            menu->addAction(action);
-//        }
-//    }
-//}
-//
-//void MainWindow::refreshVisualizerWidgetsNames()
-//{
-//}
-
-
-//#ifdef UTILS_DEBUG
-//
-//void MainWindow::onTestItemClicked(const std::string& sender, bool state)
-//{
-//    if (removeOnClick) {
-//        removeMenuItem(sender);
-//    }
-//}
-//
-//void MainWindow::onTestRemoveToggled(const std::string& sender, bool state )
-//{
-//    removeOnClick = state;
-//}
-//
-//
-//
-//#endif // UTILS_DEBUG

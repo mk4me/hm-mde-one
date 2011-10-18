@@ -124,6 +124,8 @@ void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
             } 
             data->icon = *icon;
 
+            delete icon;
+
             data->sourcesTypes = Visualizer::getSlotsInfoFromInputInfo(visualizerInputInfo);
 
             visualizersData.push_back(data);

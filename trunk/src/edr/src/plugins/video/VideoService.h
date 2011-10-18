@@ -11,7 +11,6 @@
 
 #include <core/IService.h>
 #include <vidlib/PixelFormat.h>
-//#include <plugins/timeline/Stream.h>
 
 class QWidget;
 class VideoWidget;

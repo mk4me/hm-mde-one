@@ -16,7 +16,7 @@ void FileStoremanService::downloadComplete(int fileID, const std::string& path)
 	this->setOperation("DownloadComplete");
 	if(invoker->status()) {
 		if(!invoker->setValue("fileID", toString<int>(fileID)) ||
-			!invoker->setValue("path", new std::string(path))) {
+			!invoker->setValue("path", path/*new std::string(path)*/)) {
 				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker->invoke()) {
@@ -53,9 +53,9 @@ int FileStoremanService::storeSessionFile(int sessionID, const std::string& path
 	this->setOperation("StoreSessionFile");
 	if(invoker->status()) {
 		if(!invoker->setValue("sessionId", toString<int>(sessionID)) ||
-			!invoker->setValue("path", new std::string(path)) ||
-			!invoker->setValue("description", new std::string(description)) ||
-			!invoker->setValue("filename", new std::string(filename))) {
+			!invoker->setValue("path", path/*new std::string(path)*/) ||
+			!invoker->setValue("description", description/*new std::string(description)*/) ||
+			!invoker->setValue("filename", filename/*new std::string(filename)*/)) {
 				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker->invoke()) {
@@ -73,9 +73,9 @@ int FileStoremanService::storePerformerFile(int performerID, const std::string& 
 	this->setOperation("StorePerformerFile");
 	if(invoker->status()) {
 		if(!invoker->setValue("performerID", toString<int>(performerID)) ||
-			!invoker->setValue("path", new std::string(path)) ||
-			!invoker->setValue("description", new std::string(description)) ||
-			!invoker->setValue("filename", new std::string(filename))) {
+			!invoker->setValue("path", path/*new std::string(path)*/) ||
+			!invoker->setValue("description", description/*new std::string(description)*/) ||
+			!invoker->setValue("filename", filename/*new std::string(filename)*/)) {
 				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker->invoke()) {
@@ -93,9 +93,9 @@ int FileStoremanService::storeTrialFile(int trialID, const std::string& path, co
 	this->setOperation("StoreTrialFile");
 	if(invoker->status()) {
 		if(!invoker->setValue("trialID", toString<int>(trialID)) ||
-			!invoker->setValue("path", new std::string(path)) ||
-			!invoker->setValue("description", new std::string(description)) ||
-			!invoker->setValue("filename", new std::string(filename))) {
+			!invoker->setValue("path", path/*new std::string(path)*/) ||
+			!invoker->setValue("description", description/*new std::string(description)*/) ||
+			!invoker->setValue("filename", filename/*new std::string(filename)*/)) {
 				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker->invoke()) {
@@ -113,8 +113,8 @@ int FileStoremanService::storeSessionFiles(int sessionID, const std::string& pat
 	this->setOperation("StoreSessionFiles");
 	if(invoker->status()) {
 		if(!invoker->setValue("sessionID", toString<int>(sessionID)) ||
-			!invoker->setValue("path", new std::string(path)) ||
-			!invoker->setValue("description", new std::string(description))) {
+			!invoker->setValue("path", path/*new std::string(path)*/) ||
+			!invoker->setValue("description", description/*new std::string(description)*/)) {
 				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker->invoke()) {
@@ -132,7 +132,7 @@ void FileStoremanService::storePerformerFiles(int performerID, const std::string
 	this->setOperation("StorePerformerFiles");
 	if(invoker->status()) {
 		if(!invoker->setValue("performerID", toString<int>(performerID)) ||
-			!invoker->setValue("path", new std::string(path))) {
+			!invoker->setValue("path", path/*new std::string(path)*/)) {
 				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker->invoke()) {
@@ -148,7 +148,7 @@ void FileStoremanService::storeTrialFiles(int trialID, const std::string& path)
 	this->setOperation("StoreTrialFiles");
 	if(invoker->status()) {
 		if(!invoker->setValue("trialID", toString<int>(trialID)) ||
-			!invoker->setValue("path", new std::string(path))) {
+			!invoker->setValue("path", path/*new std::string(path)*/)) {
 				throw std::runtime_error("Bad operation arguments.");
 		}
 		if(!invoker->invoke()) {

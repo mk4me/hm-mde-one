@@ -3,16 +3,13 @@
 
 ChartVisualizer::ChartVisualizer() : 
     name("Chart"), prevActiveSerie(-1),
-    prevTime(0), activeSerieCombo(new QComboBox())
+    prevTime(0)
 {
-    activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
-    activeSerieCombo->setEnabled(false);
-    connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
+
 }
 
 ChartVisualizer::~ChartVisualizer()
 {
-
 }
 
 const std::string& ChartVisualizer::getName() const
@@ -119,9 +116,14 @@ QWidget* ChartVisualizer::createWidget(std::vector<QObject*>& actions)
     actionNormalized->setChecked( chart->isNormalized() );
     connect(actionNormalized, SIGNAL(triggered(bool)), this, SLOT(setNormalized(bool)));
     actions.push_back(actionNormalized);
+
+    activeSerieCombo = new QComboBox();
+    activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
+    activeSerieCombo->setEnabled(false);
+    connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
+
     actions.push_back(activeSerieCombo);
 
-    //return widget;
     return viewer;
 }
 

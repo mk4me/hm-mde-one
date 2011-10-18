@@ -20,51 +20,40 @@ class CommunicationWidgetEx : public QWidget, public Ui::CommunicationWidget, pu
 {
     Q_OBJECT
 
-struct EntityRelations
-{
-    EntityRelations(bool markMocap, bool markVideos, bool markEmg, bool markGrf)
-        : markMocap(markMocap), markVideos(markVideos), markEmg(markEmg), markGrf(markGrf)
-    {};
-    bool markMocap;
-    bool markVideos;
-    bool markEmg;
-    bool markGrf;
-};
-
-struct TrialRelation : public EntityRelations
+struct TrialRelation
 {
     TrialRelation()
-        : EntityRelations(false, false, false, false)
     {};
     communication::ShallowCopy::Trial trial;
 };
 
 typedef core::shared_ptr<TrialRelation> TrialRelationPtr;
-typedef std::vector<TrialRelationPtr> TrialsRelations;
+//typedef std::vector<TrialRelationPtr> TrialsRelations;
+typedef std::map<int, TrialRelationPtr> TrialsRelations;
 
-struct SessionRelation : public EntityRelations
+struct SessionRelation
 {
     SessionRelation()
-        : EntityRelations(false, false, false, false)
     {};
     communication::ShallowCopy::Session session;
     TrialsRelations trials;
 };
 
 typedef core::shared_ptr<SessionRelation> SessionRelationPtr;
-typedef std::vector<SessionRelationPtr> SessionsRelations;
+//typedef std::vector<SessionRelationPtr> SessionsRelations;
+typedef std::map<int, SessionRelationPtr> SessionsRelations;
 
-struct PerformerRelation : public EntityRelations
+struct PerformerRelation
 {
     PerformerRelation()
-        : EntityRelations(false, false, false, false)
     {};
     communication::ShallowCopy::Performer performer;
     SessionsRelations sessions;
 };
 
 typedef core::shared_ptr<PerformerRelation> PerformerRelationPtr;
-typedef std::vector<PerformerRelationPtr> PerformersRelations;
+//typedef std::vector<PerformerRelationPtr> PerformersRelations;
+typedef std::map<int,PerformerRelationPtr> PerformersRelations;
 
 /**
 @author Marek Daniluk
@@ -81,26 +70,6 @@ public:
     virtual ~IEntityTreeItem() {};
     
     virtual int getEntityID() = 0;
-
-    virtual void setMarkedAll(bool mark) = 0;
-
-    virtual bool isMarkedAll() const = 0;
-
-    virtual void setMarkedMocap(bool mark) = 0;
-
-    virtual bool isMarkedMocap() const = 0;
-
-    virtual void setMarkedVideos(bool mark) = 0;
-
-    virtual bool isMarkedVideos() const = 0;
-
-    virtual void setMarkedEmg(bool mark) = 0;
-
-    virtual bool isMarkedEmg() const = 0;
-
-    virtual void setMarkedGrf(bool mark) = 0;
-
-    virtual bool isMarkedGrf() const = 0;
 
     void setMenu(QMenu* menu)
     {
@@ -120,216 +89,49 @@ public:
 
 class PerformerTreeItem : public IEntityTreeItem
 {
-    PerformerRelationPtr performer;
+    const communication::ShallowCopy::Performer * performer;
 public:
-    PerformerTreeItem(PerformerRelationPtr performer);
+    PerformerTreeItem(const communication::ShallowCopy::Performer * performer);
 
     virtual ~PerformerTreeItem() {};
 
-    //void setPerformer(const PerformerMark& performer);
-
     virtual int getEntityID()
     {
-        return performer->performer.performerID;
-    };
-
-    virtual void setMarkedAll(bool mark)
-    {
-        performer->markMocap = mark;
-        performer->markVideos = mark;
-        performer->markEmg = mark;
-        performer->markGrf = mark;
-    };
-
-    virtual bool isMarkedAll() const
-    {
-        if(performer->markMocap && performer->markVideos && performer->markEmg && performer->markGrf)
-            return true;
-        return false;
-    };
-
-    virtual void setMarkedMocap(bool mark)
-    {
-        performer->markMocap = mark;
-    };
-
-    virtual bool isMarkedMocap() const
-    {
-        return performer->markMocap;
-    };
-
-    virtual void setMarkedVideos(bool mark)
-    {
-        performer->markVideos = mark;
-    };
-
-    virtual bool isMarkedVideos() const
-    {
-        return performer->markVideos;
-    };
-
-    virtual void setMarkedEmg(bool mark)
-    {
-        performer->markEmg = mark;
-    };
-
-    virtual bool isMarkedEmg() const
-    {
-        return performer->markEmg;
-    };
-
-    virtual void setMarkedGrf(bool mark)
-    {
-        performer->markGrf = mark;
-    };
-
-    virtual bool isMarkedGrf() const
-    {
-        return performer->markGrf;
+        return performer->performerID;
     };
 };
 
 class SessionTreeItem : public IEntityTreeItem
 {
-    SessionRelationPtr session;
+    const communication::ShallowCopy::Session * session;
 public:
-    SessionTreeItem(SessionRelationPtr session);
+    SessionTreeItem(const communication::ShallowCopy::Session * session);
 
     virtual ~SessionTreeItem() {};
 
     virtual int getEntityID()
     {
-        return session->session.sessionID;
-    };
-
-    virtual void setMarkedAll(bool mark)
-    {
-        session->markMocap = mark;
-        session->markVideos = mark;
-        session->markEmg = mark;
-        session->markGrf = mark;
-    };
-
-    virtual bool isMarkedAll() const
-    {
-        if(session->markMocap && session->markVideos && session->markEmg && session->markGrf)
-            return true;
-        return false;
-    };
-
-    virtual void setMarkedMocap(bool mark)
-    {
-        session->markMocap = mark;
-    };
-
-    virtual bool isMarkedMocap() const
-    {
-        return session->markMocap;
-    };
-
-    virtual void setMarkedVideos(bool mark)
-    {
-        session->markVideos = mark;
-    };
-
-    virtual bool isMarkedVideos() const
-    {
-        return session->markVideos;
-    };
-
-    virtual void setMarkedEmg(bool mark)
-    {
-        session->markEmg = mark;
-    };
-
-    virtual bool isMarkedEmg() const
-    {
-        return session->markEmg;
-    };
-
-    virtual void setMarkedGrf(bool mark)
-    {
-        session->markGrf = mark;
-    };
-
-    virtual bool isMarkedGrf() const
-    {
-        return session->markGrf;
+        return session->sessionID;
     };
 };
 
 class TrialTreeItem : public IEntityTreeItem
 {
 protected:
-    TrialRelationPtr trial;
+    const communication::ShallowCopy::Trial * trial;
 public:
-    TrialTreeItem(TrialRelationPtr trial);
+    TrialTreeItem(const communication::ShallowCopy::Trial * trial);
 
     virtual ~TrialTreeItem() {};
 
     virtual int getEntityID()
     {
-        return trial->trial.trialID;
+        return trial->trialID;
     };
 
-    TrialRelationPtr getTrial()
+    const communication::ShallowCopy::Trial * getTrial()
     {
         return trial;
-    };
-
-    virtual void setMarkedAll(bool mark)
-    {
-        trial->markMocap = mark;
-        trial->markVideos = mark;
-        trial->markEmg = mark;
-        trial->markGrf = mark;
-    };
-
-    virtual bool isMarkedAll() const
-    {
-        if(trial->markMocap && trial->markVideos && trial->markEmg && trial->markGrf)
-            return true;
-        return false;
-    };
-
-    virtual void setMarkedMocap(bool mark)
-    {
-        trial->markMocap = mark;
-    };
-
-    virtual bool isMarkedMocap() const
-    {
-        return trial->markMocap;
-    };
-
-    virtual void setMarkedVideos(bool mark)
-    {
-        trial->markVideos = mark;
-    };
-
-    virtual bool isMarkedVideos() const
-    {
-        return trial->markVideos;
-    };
-
-    virtual void setMarkedEmg(bool mark)
-    {
-        trial->markEmg = mark;
-    };
-
-    virtual bool isMarkedEmg() const
-    {
-        return trial->markEmg;
-    };
-
-    virtual void setMarkedGrf(bool mark)
-    {
-        trial->markGrf = mark;
-    };
-
-    virtual bool isMarkedGrf() const
-    {
-        return trial->markGrf;
     };
 
     const QString getName() const;
@@ -343,7 +145,7 @@ public:
     /**
     Wirtualny destruktor CommunicationWidget
     */
-    virtual ~CommunicationWidgetEx() {};
+    virtual ~CommunicationWidgetEx();
     /**
     Metoda aktualizuj¹ca dane widoku.
     @param subject dane pozwalaj¹ce zaktualizowaæ widok
@@ -376,6 +178,7 @@ public:
     W³aœciwa metoda aktualizuj¹ca widok. powinna wykonywaæ siê w g³ównym w¹tku.
     */
     void refreshUI();
+
 public slots:
     //widok performera
     void performerViewPressed(bool tog);
@@ -399,26 +202,12 @@ public slots:
     void trialContextMenu(QPoint);
     //
     void treeItemClicked(QTreeWidgetItem* item, int column);
-
-    void useVideos();
-    void useMocap();
-    void useGrf();
-    void useEmg();
-    //
-    void useTrialVideos();
-    void useTrialMocap();
-    void useTrialGrf();
-    void useTrialEmg();
 private:
     /**
     WskaŸnik na kontroler serwisu
     */
     CommunicationService* communicationService;
-    ///**
-    //Za³aduj trial do aplikacji.
-    //@param localTrial lista plików jednej próby pomiarowej do za³adowania.
-    //*/
-    //void loadTrial(const core::IDataManager::LocalTrial& localTrial);
+
     /**
     Za³aduj pliki do aplikacji.
     @param files lista plików do za³adowania po filtracji.
@@ -448,7 +237,7 @@ private:
     /**
     Tworzy widok triala
     */
-    TrialTreeItem* createTrialItem(TrialRelationPtr trial);
+    TrialTreeItem* createTrialItem(const communication::ShallowCopy::Trial * trial);
     /**
     Odœwie¿ headery drzewa danych. Dzia³a tylko gdy drzewo posiada same elementy IEntityTreeItem
     */
@@ -470,14 +259,16 @@ private:
     */
     QMenu* menuTl;
     QMenu* menuTs;
-    QMenu* menu;
+    //QMenu* menu;
     QMenu* view;
+    QActionGroup* formatGroup;
     /**
     Obecnie widoczny view CS.
     */
     QTreeWidget* currentView;
     /**
     */
-    std::vector<core::Filesystem::Path> listTrialFiles(bool mocap, bool emg, bool grf, bool videos);
+
+    ShallowCopyConstPtr constShallowCopy;
 };
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONWIDGETEX_H__

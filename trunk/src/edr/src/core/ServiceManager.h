@@ -34,6 +34,8 @@ public:
         return static_cast<ServiceManager*>(core::getServiceManager());
     }
 
+    void update(double deltaTime);
+
     //! Metoda finalizujaca wszystkie serwisy  wywolywana przed niszczeniem managera
     void finalizeServices();
 

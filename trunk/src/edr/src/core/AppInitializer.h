@@ -28,7 +28,6 @@
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
 #endif
-//#include "MainWindow.h"
 
 CORE_DEFINE_INSTANCE_INFO;
 

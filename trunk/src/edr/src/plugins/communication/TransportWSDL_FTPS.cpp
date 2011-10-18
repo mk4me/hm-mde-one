@@ -81,15 +81,13 @@ void TransportWSDL_FTPS::storeTrialFiles(int trialID, const std::string& path)
     throw std::runtime_error("not supported yet.");
 }
 
-std::string TransportWSDL_FTPS::downloadFile(int fileID, const std::string& path)
+void TransportWSDL_FTPS::downloadFile(int fileID, const std::string& path)
 {
     SafeWSDL_FTPManager safeEnder(fileID, wsdl, wsdl->retrieveFile(fileID)); 
 
     //sciagnij plik -> sciezka FTP, lokalna sciezka
-    std::string localPath((core::Filesystem::Path(path) / core::Filesystem::Path(safeEnder.getFtpFilePath()).filename()).string());
-    ftp->get(safeEnder.getFtpFilePath(), localPath);
-
-    return localPath;
+    //std::string localPath((core::Filesystem::Path(path) / core::Filesystem::Path(safeEnder.getFtpFilePath()).filename()).string());
+    ftp->get(safeEnder.getFtpFilePath(), path);  
 }
 
 int TransportWSDL_FTPS::getProgress() const

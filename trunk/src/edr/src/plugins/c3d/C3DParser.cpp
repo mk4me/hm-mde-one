@@ -6,6 +6,14 @@
 #include <c3dlib/c3dparser.h>
 #include <plugins/c3d/C3DChannels.h>
 
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 C3DParser::C3DParser()
 {
 	for(int i = 0; i < 4; i++){

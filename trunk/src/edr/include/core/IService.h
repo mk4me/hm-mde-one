@@ -53,6 +53,13 @@ namespace core
 
         }
 
+        //! Metoda aktualizuj¹ca pochodzi z w¹tku UI! Powinny tu byæ realizowane lekkie operacje odœwie¿ania widgetów!!
+        //! Jako parametr dostajemy przyrost czasu jaki mina³ od poprzedniego wywo³ania
+        virtual void update(double deltaTime)
+        {
+       
+        }
+
         //! Us³uga nie musi mieæ wizualnej reprezentacji.
         //! \return Widget tworzony przez us³ugê b¹dŸ NULL.
         virtual QWidget* getWidget(std::vector<QObject*>& actions) = 0;

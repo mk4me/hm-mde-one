@@ -38,28 +38,53 @@ private:
     Nazwa serwisu
     */
     std::string name;
+    /************************************************************************/
+    /* Aktualny stan modelu                                                                     */
+    /************************************************************************/
+    communication::CommunicationManager::State currentState;
+    communication::CommunicationManager::State previousState;
 
-    communication::CommunicationManager::State state;
-
+    /************************************************************************/
+    /* Czy zakoñczyæ w³asny w¹tek                                                                     */
+    /************************************************************************/
     bool finish;
-
+    /************************************************************************/
+    /* Callbacki do CommunicationManagera                                                                     */
+    /************************************************************************/
     communication::CommunicationManager::RequestCallbacks callbacks;
-
+    /************************************************************************/
+    /* Czas spania w³asnego w¹tku aktualizuj¹cego ping                                                                     */
+    /************************************************************************/
     unsigned int sleepTime;
+    /************************************************************************/
+    /* Czy aktualizowaæ stan œci¹gania plików                                                                     */
+    /************************************************************************/
     bool refreshProgress;
+    /************************************************************************/
+    /* Aktualne info dla widgeta                                                                     */
+    /************************************************************************/
+    std::string currentLabel;
+
+    bool refreshDBView;
+
+    bool refreshWidgetState;
+
+    bool refreshDBConnectionState;
+
+    OpenThreads::Mutex currentWidgetStateMutex;
+
+    int currentRequestID;
+    int updatingRequestID;
 
     /**
     ping serwera
     */
     void ping()
     {
-        //TODO
         model->ping(callbacks);
     };
 
-private slots:
-
-    void updateProgress();
+private:
 
     void onBeginRequest(const communication::CommunicationManager::BasicRequest & request);
     void onEndRequest(const communication::CommunicationManager::BasicRequest & request);
@@ -67,29 +92,18 @@ private slots:
     void onRequestError(const communication::CommunicationManager::BasicRequest & request, const std::string & error);
 
 private:
-
-    void onBeginRequestInvoker(const communication::CommunicationManager::BasicRequest & request);
-    void onEndRequestInvoker(const communication::CommunicationManager::BasicRequest & request);
-    void onCancelRequestInvoker(const communication::CommunicationManager::BasicRequest & request);
-    void onRequestErrorInvoker(const communication::CommunicationManager::BasicRequest & request, const std::string & error);
-
-    void turnOnProgressRefresh();
-    void turnOffProgressRefresh();   
     
     virtual void run(){        
         while(finish == false){
-            if(refreshProgress == false){
-                if(model->requestsQueueEmpty() == true) {
-                    //pinguj co pol minuty
-                    ping();
-                }
-            }else{
-                QMetaObject::invokeMethod(this, "updateProgress");
+            if(model->requestsQueueEmpty() == true) {
+                //pinguj co pol minuty
+                ping();
             }
-
             microSleep(sleepTime);
         }
     }
+
+    void resetWidgetState();
 
 public:
     /**
@@ -117,6 +131,8 @@ public:
             join();
         }
     }
+
+    virtual void update(double deltaTime);
     
     /**
     Metoda z interfejsu IService. Us³uga nie musi mieæ wizualnej reprezentacji.
@@ -152,6 +168,11 @@ public:
     @param trialID id triala w bazie danych którego pliki maj¹ byæ pobrane
     */
     virtual void downloadTrial(unsigned int trialID);
+
+    virtual void downloadSession(unsigned int sessionID);
+
+    virtual void downloadPerformer(unsigned int performerID);
+
     /**
     Metoda z interfejsu ICommunication. Pobieranie pojedynczego pliku.
     @param fileID id pliku w bazie danych który ma byæ pobrany

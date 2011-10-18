@@ -135,7 +135,7 @@ namespace communication
 		@param fileID
 		@param path sciezka do katalogu z plikami do wgrania na serwer
 		*/
-		virtual std::string downloadFile(int fileID, const std::string& path);
+		virtual void downloadFile(int fileID, const std::string& path);
 
 		virtual int getProgress() const;
 

@@ -14,7 +14,6 @@ CORE_PLUGIN_BEGIN("kinematic", UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-A5FE-5
     CORE_PLUGIN_ADD_PARSER(KinematicParser);
 	CORE_PLUGIN_ADD_PARSER(AsfParser);
     CORE_PLUGIN_ADD_VISUALIZER(KinematicVisualizer);
-    //CORE_PLUGIN_ADD_SERVICE(KinematicService);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::JointAnglesCollection);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::SkeletalData);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::SkeletalModel);

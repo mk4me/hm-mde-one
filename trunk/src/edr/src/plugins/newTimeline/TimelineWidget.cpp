@@ -12,11 +12,11 @@
 
 
 TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidget * parent, Qt::WindowFlags f)
-    : QWidget(parent, f), removeChannelsMenu(new QMenu()), scaleSpinBox(new QDoubleSpinBox()),
-    playbackDirectionAction(new QAction(QString("Playback direction"), nullptr)), timeEditBox(new QTimeEdit()), timeToBeginAction(new QAction(QString("Begin"), nullptr)),
-    timeToEndAction(new QAction(QString("End"), nullptr)), playPauseAction(new QAction(QString("Play"), nullptr)), visualTimeSlider(new QSlider(nullptr)),
+    : QWidget(parent, f), removeChannelsMenu(new QMenu()), /*scaleSpinBox(new QDoubleSpinBox()),
+    playbackDirectionAction(new QAction(QString("Playback direction"), nullptr)), timeToBeginAction(new QAction(QString("Begin"), nullptr)),
+    timeToEndAction(new QAction(QString("End"), nullptr)), playPauseAction(new QAction(QString("Play"), nullptr)),
     stopAction(new QAction(QString("Stop"), nullptr)), scaleLabel(new QLabel(QString("<font color=\"white\"><b>Scale:</b></font>"))),
-    timeLabel(new QLabel(QString("<font color=\"white\"><b>Time:</b></font>"))), rootItem(new QTreeWidgetItem()),
+    timeLabel(new QLabel(QString("<font color=\"white\"><b>Time:</b></font>"))),*/ rootItem(new QTreeWidgetItem()),
     slider(new TimeSliderWidget()), controls(new TimelineControlsWidget())
 {
     //ustawienie kontrolera
@@ -57,14 +57,14 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     connect(controls->timeEditBox, SIGNAL(timeChanged(QTime)), this, SLOT(timeChanged(QTime)));
 
     //skala
-    scaleSpinBox->setDecimals(2);
-    scaleSpinBox->setValue(1);
-    scaleSpinBox->setMinimum(0.01);
-    scaleSpinBox->setMaximum(100);
-    scaleSpinBox->setSingleStep(0.2);
+    //scaleSpinBox->setDecimals(2);
+    //scaleSpinBox->setValue(1);
+    //scaleSpinBox->setMinimum(0.01);
+    //scaleSpinBox->setMaximum(100);
+    //scaleSpinBox->setSingleStep(0.2);
 
     //po³¹czenie sygna³ów i slotów
-    connect(scaleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
+    //connect(scaleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
 
 
     //akcja kierunku odtwarzania
@@ -168,7 +168,7 @@ void TimelineWidget::loadToolbarElements(std::vector<QObject*> & elements) const
 
 TimelineWidget::~TimelineWidget()
 {
-
+    delete removeChannelsMenu;
 }
 
 void TimelineWidget::update(const State * state)
@@ -180,7 +180,7 @@ void TimelineWidget::refresh()
 {
     //blokujemy sygna³y modyfikowanych komponenrów
     controls->timeEditBox->blockSignals(true);
-    scaleSpinBox->blockSignals(true);
+    //scaleSpinBox->blockSignals(true);
     controls->playbackDirectionButton->blockSignals(true);
     controls->playPauseButton->blockSignals(true);
     controls->stopButton->blockSignals(true);
@@ -193,7 +193,7 @@ void TimelineWidget::refresh()
     //odblokuj komponenty
     slider->blockSignals(false);
     controls->timeEditBox->blockSignals(false);
-    scaleSpinBox->blockSignals(false);
+    //scaleSpinBox->blockSignals(false);
     controls->playbackDirectionButton->blockSignals(false);
     controls->playPauseButton->blockSignals(false);
     controls->stopButton->blockSignals(false);
@@ -258,7 +258,7 @@ void TimelineWidget::removeSelectedChannels()
 
 void TimelineWidget::timeSliderChanged(int value)
 {
-    getController()->setNormalizedTime((double)value / (double)visualTimeSlider->maximum());
+    getController()->setNormalizedTime((double)value / (slider->maxValue() - slider->minValue()));
 }
 
 void TimelineWidget::timeSliderChanged(double time)
@@ -418,7 +418,7 @@ void TimelineWidget::refreshPlayerStatus()
     controls->timeEditBox->setMaximumTime(convertToQTime(getController()->getModel()->getEndTime()));
 
     //ustaw skalê czasu
-    scaleSpinBox->setValue(getController()->getTimeScale());
+    //scaleSpinBox->setValue(getController()->getTimeScale());
 
     //kierunek odtwarzania
     controls->playbackDirectionButton->setChecked(getController()->getPlaybackDirection() == timeline::IController::PlayBackward ? true : false);
