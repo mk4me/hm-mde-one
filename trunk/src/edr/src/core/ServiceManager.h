@@ -7,10 +7,12 @@
 #include <vector>
 #include <osg/Timer>
 #include <core/PluginCommon.h>
+#include <core/IManagersAccessor.h>
+#include "ManagerHelper.h"
 
 class core::IDataManager;
 
-class ServiceManager: public core::IServiceManager
+class ServiceManager: public core::IServiceManager, public ManagerHelper<ServiceManager>
 {
 public:
     //! S³ownik us³ug.
@@ -25,14 +27,10 @@ private:
     ServicesList servicesList;
 
 public:
-    ServiceManager(void);
+    ServiceManager();
 	virtual ~ServiceManager(void);
 
 public:
-    static ServiceManager* getInstance()
-    {
-        return static_cast<ServiceManager*>(core::getServiceManager());
-    }
 
     void update(double deltaTime);
 

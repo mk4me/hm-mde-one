@@ -41,7 +41,7 @@ struct PtrPolicyRaw
     template <class T>
     void initPtr( T *& ptr )
     {
-        ptr = NULL;
+        ptr = nullptr;
     }
 
     //! Ustawienie nowej wartoúci.
@@ -52,6 +52,22 @@ struct PtrPolicyRaw
             deletePtr(ptr);
             ptr = data;
         }
+    }
+
+    //! Zwraca surowy wskaünik
+    //! \param ptr
+    template<class T>
+    void* getRawPtr(T* ptr)
+    {
+        return ptr;
+    }
+
+    //! Zwraca surowy wskaünik
+    //! \param ptr
+    template<class T>
+    const void* getRawPtr(const T * ptr) const
+    {
+        return ptr;
     }
 
     //! Czy wskaünik jest unikatowy?

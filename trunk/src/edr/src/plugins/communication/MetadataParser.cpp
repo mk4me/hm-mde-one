@@ -1,17 +1,17 @@
 #include "CommunicationPCH.h"
 #include <plugins/communication/MetadataParser.h>
 
-MetadataParser::MetadataParser()
+MetadataParser::MetadataParser() : metadata(new communication::MetaData::MetaData()),
+    object(core::ObjectWrapper::create<communication::MetaData::MetaData>())
 {
-    object = core::ObjectWrapper::create<communication::MetaData::MetaData>();
-    object->set(core::shared_ptr<communication::MetaData::MetaData>(new communication::MetaData::MetaData()));
+    object->set(metadata);
 }
 
 MetadataParser::~MetadataParser()
 {
 }
 
-void MetadataParser::parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path)
+void MetadataParser::parseFile(const core::Filesystem::Path& path)
 {
     this->path = path;
     
@@ -38,7 +38,7 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const core::File
             session_goup_element->QueryIntAttribute("SessionGroupID", &sessionGroup.sessionGroupID);
             session_goup_element->QueryStringAttribute("SessionGroupName", &sessionGroup.sessionGroupName);
 
-            static_cast< core::shared_ptr<communication::MetaData::MetaData> >(object->get())->sessionGroups.push_back(sessionGroup);
+            metadata->sessionGroups.push_back(sessionGroup);
             session_goup_element = session_goup_element->NextSiblingElement();
         }
     }
@@ -50,7 +50,7 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const core::File
             communication::MetaData::MotionKind motionKind;
             motion_kind_element->QueryStringAttribute("MotionKindName", &motionKind.motionKindName);
 
-            object->get<communication::MetaData::MetaData>()->motionKinds.push_back(motionKind);
+            metadata->motionKinds.push_back(motionKind);
             motion_kind_element = motion_kind_element->NextSiblingElement();
         }
     }
@@ -63,7 +63,7 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const core::File
             lab_element->QueryIntAttribute("LabID", &lab.labID);
             lab_element->QueryStringAttribute("LabName", &lab.labName);
 
-            object->get<communication::MetaData::MetaData>()->labs.push_back(lab);
+            metadata->labs.push_back(lab);
             lab_element = lab_element->NextSiblingElement();
         }
     }
@@ -104,7 +104,7 @@ void MetadataParser::parseFile(core::IDataManager* dataManager, const core::File
                 }
             }
 
-            object->get<communication::MetaData::MetaData>()->attributeGroups.push_back(attributeGroup);
+            metadata->attributeGroups.push_back(attributeGroup);
             attribute_group_element = attribute_group_element->NextSiblingElement();
         }
     }
@@ -116,17 +116,21 @@ core::IParser* MetadataParser::create()
     return new MetadataParser();
 }
 
-std::string MetadataParser::getSupportedExtensions() const
+void MetadataParser::getSupportedExtensions(core::IParser::Extensions & extensions) const
 {
-    return "xml";
+    core::IParser::ExtensionDescription desc;
+
+    desc.types.insert(typeid(communication::MetaData::MetaData));
+    desc.description = "Metadata from motion DB";
+    extensions["xml"] = desc;
 }
 
 const communication::MetaData::MetaData& MetadataParser::getMetadata() const
 {
-    return *object->get<communication::MetaData::MetaData>();
+    return *metadata;
 }
 
-void MetadataParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
+void MetadataParser::getObjects( core::Objects& objects )
 {
-    objects.push_back(object);
+    objects.insert(object);
 }

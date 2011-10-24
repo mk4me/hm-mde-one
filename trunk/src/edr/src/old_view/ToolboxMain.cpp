@@ -68,9 +68,9 @@ struct SortActionsByNames
 	}
 };
 
-void ToolboxMain::init( core::PluginLoader* pluginLoader )
+void ToolboxMain::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
-	MainWindow::init(pluginLoader);
+	MainWindow::init(pluginLoader, managersAccessor);
 	initializeUI();
 	setupUi(this);
 	connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
@@ -82,10 +82,10 @@ void ToolboxMain::initializeUI()
 {
 	//ladowanie styli qt
 	QString style;
-	if(DataManager::getInstance()->getApplicationSkinsFilePathCount() > 0)
+	if(getApplicationSkinsFilePathCount() > 0)
 	{
 		//style qt
-		QFile file(QString::fromAscii(DataManager::getInstance()->getApplicationSkinsFilePath(0).c_str(), DataManager::getInstance()->getApplicationSkinsFilePath(0).size()));
+		QFile file(QString::fromAscii(getApplicationSkinsFilePath(0).c_str(), getApplicationSkinsFilePath(0).size()));
 		if(file.open(QIODevice::ReadOnly | QIODevice::Text))
 		{
 			style = file.readAll();
@@ -152,17 +152,20 @@ void ToolboxMain::onOpen()
 	const QString directory = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
 	if (!directory.isEmpty()) 
 	{
-		std::vector<Filesystem::Path> paths;
+		//std::vector<Filesystem::Path> paths;
 		Filesystem::Path dirPath(directory.toStdString());
 		Filesystem::Iterator itEnd;
 
 		for( Filesystem::Iterator it(dirPath); it != itEnd; it++){
 			if(Filesystem::isRegularFile(*it) == true){
-				paths.push_back(it->path());
+				//paths.push_back(it->path());
+                try{
+                    DataManager::getInstance()->addData(*it);
+                }catch(...){
+
+                }
 			}
 		}        
-
-		DataManager::getInstance()->loadFiles(paths);
 	}
 }
 

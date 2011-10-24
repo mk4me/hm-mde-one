@@ -5,8 +5,9 @@
 
 #include <core/IDataManager.h>
 
+ServiceManager * ManagerHelper<ServiceManager>::manager = nullptr;
 
-ServiceManager::ServiceManager(void)
+ServiceManager::ServiceManager()
 {
 }
 

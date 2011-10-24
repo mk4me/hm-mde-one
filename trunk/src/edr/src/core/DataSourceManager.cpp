@@ -4,6 +4,8 @@
 
 using namespace core;
 
+DataSourceManager * ManagerHelper<DataSourceManager>::manager = nullptr;
+
 DataSourceManager::DataSourceManager()
 {
 

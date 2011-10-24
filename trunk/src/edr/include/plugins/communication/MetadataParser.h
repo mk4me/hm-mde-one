@@ -14,19 +14,20 @@ public:
 
     virtual ~MetadataParser();
     
-    virtual void parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path);
+    virtual void parseFile(const core::Filesystem::Path& path);
 
     virtual IParser* create();
 
-    virtual std::string getSupportedExtensions() const;
+    virtual void getSupportedExtensions(core::IParser::Extensions &) const;
 
     const communication::MetaData::MetaData& getMetadata() const;
 
-    virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
+    virtual void getObjects(core::Objects& objects);
 
 private:
     core::Filesystem::Path path;
     core::ObjectWrapperPtr object;
+    core::shared_ptr<communication::MetaData::MetaData> metadata;
 };
 
 typedef core::shared_ptr<MetadataParser> MetadataParserPtr;

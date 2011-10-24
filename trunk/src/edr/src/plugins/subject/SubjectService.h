@@ -10,17 +10,16 @@
 #ifndef HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__
 #define HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__
 
-#include <core/IService.h>
 #include <core/IDataManager.h>
+#include <core/IService.h>
+#include <core/ObjectWrapper.h>
 #include <utils/ObserverPattern.h>
 #include <core/PluginCommon.h>
-#include <utils/signalslib.hpp>
 #include <plugins/subject/Motion.h>
 #include <plugins/subject/Session.h>
 #include <plugins/subject/Subject.h>
 
-
-class SubjectService : public core::IService, boost::signalslib::trackable
+class SubjectService : public core::IService, public utils::Observer<core::IFileDataManager>
 {
 	UNIQUE_ID("{F39418DE-4BCB-46C1-8D84-93F435641C63}", "Subject Service");
 public:
@@ -28,6 +27,12 @@ public:
 	virtual ~SubjectService();
 
 public:
+
+    virtual void update(const core::IFileDataManager * fileDataManager);
+
+public:
+
+    virtual void init(core::IManagersAccessor * managersAccessor);
 
 	//! 
 	//! \param actions 
@@ -41,8 +46,8 @@ public:
 	//! \param actions 
 	virtual QWidget* getControlWidget( std::vector<QObject*>& actions );
 
-	void onFileLoaded(const core::Filesystem::Path& path, bool loaded);
-	void onWrappersAdded(const core::Filesystem::Path& path, const std::vector<core::ObjectWrapperPtr>& wrappers, bool loaded);
+	//void onFileLoaded(const core::Filesystem::Path& path, bool loaded);
+	//void onWrappersAdded(const core::Filesystem::Path& path, const core::Objects& wrappers, bool loaded);
 
 private:
 	struct fileDescriptor 
@@ -114,7 +119,8 @@ private:
 	typedef std::map<std::string, MotionPtr> MotionMap;
 	SessionMap sessions;
 	MotionMap motions;
-	fileDescriptor lastFileDescriptor;
+    core::IMemoryDataManager * memoryDataManager;
+    core::Files files;
 
 private:
 	void getFileDescriptor(const std::string& filename, fileDescriptor& descriptor);

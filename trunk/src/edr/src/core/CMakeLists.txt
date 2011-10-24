@@ -11,6 +11,7 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	ManagerHelper.h
 	AppInitializer.h
 	MainWindow.h
 	EDRConsoleWidget.h
@@ -19,7 +20,6 @@ set(PRIVATE_H
 	SceneGraphWidget.h
 	LogInitializer.h
 	ServiceManager.h
-	#ToolboxMain.h
 	UserInterfaceService.h
 	VisualizerWidget.h
 	VisualizerManager.h
@@ -54,14 +54,14 @@ set(PRIVATE_H
 	DataSourceManager.h
 	Log.h
 	PluginLoader.h
-	#
-	
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
+	${HEADER_PATH}/IManagersAccessor.h
+	${HEADER_PATH}/DataAccessors.h
 	${HEADER_PATH}/BaseDataTypes.h
 	${HEADER_PATH}/Filesystem.h
 	${HEADER_PATH}/IService.h
@@ -74,11 +74,6 @@ set(PUBLIC_H
 	${HEADER_PATH}/Plugin.h
 	${HEADER_PATH}/Export.h
 	${HEADER_PATH}/SmartPtr.h
-	# ${HEADER_PATH}/Parameter.h
-	# ${HEADER_PATH}/Parameters.h
-	# ${HEADER_PATH}/GroupData.h
-	# ${HEADER_PATH}/Header.h
-	# ${HEADER_PATH}/Data.h
 	${HEADER_PATH}/ILog.h
 	${HEADER_PATH}/ObjectWrapper.h
 	${HEADER_PATH}/ObjectWrapperCollection.h
@@ -103,17 +98,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/IPath.h
 	${HEADER_PATH}/IDataProcessorManager.h
 	${HEADER_PATH}/IDataSource.h
-	${HEADER_PATH}/IDataSourceManager.h
-	#${HEADER_PATH}/IntegumentarySystem.h
-	#${HEADER_PATH}/ISubjectSystem.h
-	#${HEADER_PATH}/Motion.h
-	#${HEADER_PATH}/MuscularSystem.h
-	#${HEADER_PATH}/Session.h
-	#${HEADER_PATH}/SkeletalSystem.h
-	#${HEADER_PATH}/SolidSystem.h
-	#${HEADER_PATH}/Subject.h
-	#${HEADER_PATH}/SubjectSystemConfiguration.h
-)
+	${HEADER_PATH}/IDataSourceManager.h)
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
@@ -121,16 +106,15 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	DataAccessors.cpp
 	MainWindow.cpp
 	EDRConsoleWidget.cpp
 	EDRConsoleInnerWidget.cpp
 	DataManager.cpp
 	SceneGraphWidget.cpp
 	LogInitializer.cpp
-	#main.cpp
 	PluginLoader.cpp
 	ServiceManager.cpp
-	#ToolboxMain.cpp
 	UserInterfaceService.cpp
 	VisualizerWidget.cpp
 	VisualizerManager.cpp
@@ -157,8 +141,6 @@ set(TARGET_SRC
 	LocalDataSourceWidget.cpp
 	DataSource.cpp
 	DataSourceManager.cpp
-	# Subject.cpp
-	# Motion.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -187,7 +169,6 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 set(TARGET_UI
 	ui/SceneGraphWidget.ui
 	ui/OsgWidget.ui
-	#ui/toolboxmaindeffile.ui
 	ui/VisualizerWidget.ui
 	ui/DataProcessorWidget.ui
 	ui/EDRTitleBar.ui

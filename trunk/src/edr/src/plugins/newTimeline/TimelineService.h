@@ -32,6 +32,11 @@ public:
 // IService
 public:
 
+    virtual void init(core::IManagersAccessor * managersAccessor)
+    {
+
+    }
+
     virtual void finalize();
     //!
     virtual QWidget* getWidget(std::vector<QObject*>& actions);

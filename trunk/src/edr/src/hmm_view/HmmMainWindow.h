@@ -82,9 +82,9 @@ public:
 	//! Natywne usuniêcie opcji z menu.
 	virtual void onRemoveMenuItem( const std::string& path ) {}
 
-	virtual void init( core::PluginLoader* pluginLoader );
+	virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
 
-    const std::vector<SessionPtr>& getCurrentSessions() const { return currentSessions; }
+    const std::vector<SessionConstPtr>& getCurrentSessions() const { return currentSessions; }
     void addItemToTree(QTreeWidgetItem* item);
     void clearTree();
 
@@ -134,7 +134,7 @@ private:
 
 private:
     std::vector<DataFilterPtr> filters;
-    std::vector<SessionPtr> currentSessions;
+    std::vector<SessionConstPtr> currentSessions;
 	VisualizerWidget* currentVisualizer;
     QMainWindow* pane;
 	

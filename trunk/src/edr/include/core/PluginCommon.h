@@ -25,7 +25,7 @@ namespace core
     //! Struktura przechowuj¹ca informacje o managerach. Tylko do wewnêtrznego u¿ytku.
     struct InstanceInfo
     {
-        IDataManager* dataManager;
+        //IDataManager* dataManager;
         IVisualizerManager* visualizerManager;
         IServiceManager* serviceManager;
 		IPath* pathInterface;
@@ -39,15 +39,15 @@ namespace core
     extern InstanceInfo __instanceInfo;
 
     //! Makro definiuj¹ce zmienn¹ przechowuj¹c¹ managery. Automatycznie u¿ywane w pluginach.
-    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }; }
+    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { /*nullptr,*/ nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }; }
 
     //! \return Bie¿¹ca instancja data managera. Rozwi¹zanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala
     //! na rozwijanie, wiêc jest potencjalnie szybsze.
-    inline IDataManager* getDataManager()
+    /*inline IDataManager* getDataManager()
     {
-        return __instanceInfo.dataManager;
-    }
+    return __instanceInfo.dataManager;
+    }*/
 
     //! \return Interfejs dostêpu do œcie¿ek aplikacji
 	inline IPath* getPathInterface()
@@ -61,35 +61,35 @@ namespace core
 		return __instanceInfo.logInterface;
 	}
 
-    //!
-    inline IVisualizerManager* getVisualizerManager()
-    {
-        return __instanceInfo.visualizerManager;
-    }
+    ////!
+    //inline IVisualizerManager* getVisualizerManager()
+    //{
+    //    return __instanceInfo.visualizerManager;
+    //}
 
-    //!
-    inline IServiceManager* getServiceManager()
-    {
-        return __instanceInfo.serviceManager;
-    }
+    ////!
+    //inline IServiceManager* getServiceManager()
+    //{
+    //    return __instanceInfo.serviceManager;
+    //}
 
-    //!
-    inline IDataProcessorManager* getDataProcessorManager()
-    {
-        return __instanceInfo.dataProcessorManager;
-    }
+    ////!
+    //inline IDataProcessorManager* getDataProcessorManager()
+    //{
+    //    return __instanceInfo.dataProcessorManager;
+    //}
 
-    //!
-    inline IDataSourceManager* getDataSourceManager()
-    {
-        return __instanceInfo.dataSourceManager;
-    }
+    ////!
+    //inline IDataSourceManager* getDataSourceManager()
+    //{
+    //    return __instanceInfo.dataSourceManager;
+    //}
 
-    //!
-    inline IWorkflowManager* getWorkflowManager()
-    {
-        return __instanceInfo.workflowManager;
-    }
+    ////!
+    //inline IWorkflowManager* getWorkflowManager()
+    //{
+    //    return __instanceInfo.workflowManager;
+    //}
 
     //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
     inline const Filesystem::Path& getResourcesPath()

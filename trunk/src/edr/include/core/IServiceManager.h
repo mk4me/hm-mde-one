@@ -10,19 +10,15 @@
 #define HEADER_GUARD___ISERVICEMANAGER_H__
 
 #include <core/IService.h>
-#include <map>
 #include <vector>
 #include <utils/Debug.h>
 
-namespace core{
-
-    class IDataManager;
-    class IService;
+namespace core {
 
     class IServiceManager
     {
     public:
-        virtual ~IServiceManager(void) {};
+        virtual ~IServiceManager() {};
 
         //! Rejestruje zadan¹ us³ugê.
         //! \param newService

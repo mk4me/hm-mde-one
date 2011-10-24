@@ -19,10 +19,10 @@ public:
     virtual ~KinematicParser();
 // IParser
 public:
-    virtual void parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path);
+    virtual void parseFile(const core::Filesystem::Path& path);
     virtual core::IParser* create();
-    virtual std::string getSupportedExtensions() const;
-    virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
+    virtual void getSupportedExtensions(Extensions & extensions) const;
+    virtual void getObjects(core::Objects& objects);
 };
 
 class AsfParser : public core::IParser
@@ -36,9 +36,9 @@ public:
 	virtual ~AsfParser();
 	// IParser
 public:
-	virtual void parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path);
+	virtual void parseFile(const core::Filesystem::Path& path);
 	virtual core::IParser* create();
-	virtual std::string getSupportedExtensions() const;
-	virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
+    virtual void getSupportedExtensions(Extensions & extensions) const;
+    virtual void getObjects(core::Objects& objects);
 };
 #endif  // __HEADER_GUARD_KINEMATIC__KINEMATICPARSER_H__

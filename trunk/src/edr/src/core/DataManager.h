@@ -6,267 +6,251 @@ resources, próby pomiarowe s¹ wyszukiwane i pobierane do trials.
 */
 #ifndef HEADER_GUARD_CORE_DATAMANAGER_H__
 #define HEADER_GUARD_CORE_DATAMANAGER_H__
+
+#include <OpenThreads/ReentrantMutex>
+#include <OpenThreads/ScopedLock>
 #include <core/TypeInfo.h>
 #include <core/IParser.h>
 #include <core/ObjectWrapperFactory.h>
 #include <core/IDataManager.h>
+#include "ManagerHelper.h"
 
-//#include <core/IPath.h>
-//#include <utils/Utils.h>
-#include <utils/signalslib.hpp>
-
-
-class DataManager: public core::IDataManager
+class DataManager : public core::IMemoryDataManager, public core::IFileDataManager, public ManagerHelper<DataManager>
 {
 public:
-	DataManager();
-	virtual ~DataManager();
-
-public:
-
-	virtual void clear();
-
-	virtual const std::string& getApplicationSkinsFilePath(int i);
-	virtual int getApplicationSkinsFilePathCount();
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-public:
-	//! Opis pojedynczego rozszerzenia plików
-	struct ExtensionDescription
-	{
-		//! Opis rozszerzenia
-		std::string description;
-		//! Mapa mo¿liwych typów i ich nazw, które mo¿an wyci¹gn¹c z tego rozszerzenia, to czy w konretnym pliku siê pojawi¹ czy nie to inna sprawa
-		//! Zapytanie takie mozna robiæ bez parsowania w oparciu o rejestrowane prototypy parserów dla danych rozszerzeñ
-		//! Info czy dany typ wyst¹pi³ w konretnym pliku czy nie wymaga parsowania i s³u¿y do tego specjalna funkcja
-		std::map<core::TypeInfo, std::string> possibleTypes;
-	};
-
-	//! S³ownik rozszerzeñ i ich opisów.
-	typedef std::map<std::string, ExtensionDescription> ExtensionDescriptions;
-
-    typedef core::Filesystem::Path Path;
+    DataManager();
+    virtual ~DataManager();
 
 private:
-	//! Deklaracja wewnêtrznej reprezentacji parsera, obudowauj¹cej core::IParser
-	class Parser;
-	//! Deklaracja predykatu. Zagnie¿d¿ony, aby mieæ dostêp do typu Parser.
-	struct FindByFilenamePredicate;
-	//! Deklaracja predykatu. Zagnie¿d¿ony, aby mieæ dostêp do typu Parser.
-	struct FindByRelativePathPredicate;
+    //! Deklaracja wewnêtrznej reprezentacji parsera, obudowauj¹cej core::IParser
+    class Parser;
 
-	//! WskaŸnik na parser.
-	typedef core::shared_ptr<Parser> ParserPtr;
-	//! S³aby wskaŸnik na parser
-	typedef core::weak_ptr<Parser> ParserWeakPtr;
-	// TODO: zastanwoiæ siê nad u¿yciem s³abych wskaŸników
+    //! WskaŸnik na parser.
+    typedef core::shared_ptr<Parser> ParserPtr;
+    //! S³aby wskaŸnik na parser
+    typedef core::weak_ptr<Parser> ParserWeakPtr;
+    // TODO: zastanwoiæ siê nad u¿yciem s³abych wskaŸników
+
+
+    typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
 
 private:
-	//! Wpis s³ownika obiektów.
-	struct ObjectsMapEntry {
-		//! Obiekt.
-		core::ObjectWrapperPtr object;
-		//! Parser z którego dany obiekt pochodzi.
-		ParserPtr parser;
-	};
 
-	//! S³ownik parserów wed³ug ID.
-	typedef std::map<UniqueID, core::IParserPtr> IParsersByID;
-	//! Multis³ownik parserów.
-	typedef std::multimap<std::string, core::IParserPtr> IParsersByExtensions;
-	//! Sekwencja parserów.
-	typedef std::vector<ParserPtr> ParsersList;
-	//! Typ mapy obiektów.
-	typedef std::multimap< core::TypeInfo, ObjectsMapEntry > ObjectsByType;
-	//! Mapa fabryk obiektów.
-	typedef std::map<core::TypeInfo, core::IObjectWrapperFactoryPtr> ObjectFactories;
-    //! Multimapa obiektów z elementów przetwarzaj¹cych
-	typedef std::multimap< core::TypeInfo, std::pair<DataProcessorPtr, core::ObjectWrapperWeakPtr> > ObjectFromProcessors;
-    //! Mapa typów i prototypów ich ObjectWrapperów
-	typedef std::map<core::TypeInfo, core::ObjectWrapperConstPtr> RegisteredTypesPrototypes;
+    class ParserInitializer : public core::IDataInitializer
+    {
+    public:
+        ParserInitializer(const ParserPtr & parser, DataManager * dm);
+
+        ~ParserInitializer();
+
+
+        virtual void initialize(core::ObjectWrapperPtr & object);
+
+    protected:
+        virtual void doDeinitialize(core::ObjectWrapperPtr & object);
+
+    private:
+        ParserPtr parser;
+        DataManager * dataManager;
+    };
+
+    friend class ParserInitializer;
+
+    //! ----------------------------- Dane sta³e w Datamanager ---------------------------------
+
+    //! Dane sta³e na temat rozszerzenia
+    struct ExtendedExtensionDescription : public ExtensionDescription
+    {
+        //! Prototypu parserów wspierajace to rozszerzenie
+        std::set<core::IParserPtr> parsers;
+    };
+
+    //! Kolekcja parserów zarzadzanych przez DataManager
+    typedef std::set<ParserPtr> Parsers;
+
+    //! S³ownik prototypów parserów wed³ug ID.
+    typedef std::map<UniqueID, core::IParserPtr> IParsersByID;
+
+    //! S³ownik wspieranych przez aplikacje rozszerzeñ plików poprzez mechanizm parserów
+    typedef std::map<std::string, ExtendedExtensionDescription> SupportedExtensionsPersistenceData;
+
+    //! ---------------------------------------------------------------------------------
+
+    //! -------------------- Struktury do obs³ugi danych pod postacia ObjectWrapperów i Parserów ------------------
+
+    typedef std::map<core::ObjectWrapperPtr, core::DataInitializerPtr> ObjectsWithInitializers;
+
+    //! S³ownik prawdziwych parserów i zwi¹zanych z nimi obiektów, które mo¿na pobraæ z DataManagera
+    typedef std::map<ParserPtr, core::Objects> ObjectsByParsers;
+    //! S³ownik obiektów domenowych za³adowanych do DataManger i odpowiadaj¹cych im parserów
+    typedef std::map<core::ObjectWrapperPtr, ParserPtr> ParsersByObjects;
+    //! S³ownik aktualnie obs³ugiwanych plików i skojarzonych z nimi parserów
+    typedef std::map<core::Filesystem::Path, Parsers> ParsersByFiles;
+    //! Typ mapy obiektów.
+    typedef std::map< core::TypeInfo, core::Objects > ObjectsByTypes;
     //! Mapa surowych wskaŸników i odpowiadaj¹cych im ObjectWrapperów
     typedef std::map<void *, core::ObjectWrapperPtr> RawObjectWrapperMapping;
-    //! Typ opisuj¹cy kolekcjê dancyh wprowadzanych do DataManagera z zewn¹trz
-    typedef std::set<core::ObjectWrapperPtr> ObjectWrapperSet;
 
-    typedef std::map<core::TypeInfo, ObjectWrapperSet> TypedExternalData;
+    //! ---------------------------------------------------------------------------------
+
+    //! Mapa fabryk obiektów.
+    typedef std::map<core::TypeInfo, core::IObjectWrapperFactoryPtr> ObjectFactories;
+    //! Mapa typów i prototypów ich ObjectWrapperów
+    typedef std::map<core::TypeInfo, core::ObjectWrapperConstPtr> RegisteredTypesPrototypes;
+    //! S³ownik hierarchii typow -> mapuje typ do jego typow bazowych (hierarchia dziedziczenia) [first] i do typow po nim dziedziczacych [second]
+    typedef std::map<core::TypeInfo, std::pair<core::TypeInfoSet, core::TypeInfoSet> > TypesHierarchy;
+
+    //typedef std::vector<FileCallback> FileCallbacks;
 
 private:
-	//! S³ownik fabryk typów.
-	ObjectFactories objectFactories;
-	//! S³owniki parserów niezainicjalizowanych.
-	IParsersByID registeredParsers;
-	//! S³ownik parserów przypisanych do rozszerzeñ.
-	IParsersByExtensions registeredExtensions;
-	//! S³ownik opisu rozszerzeñ zarejestrowanych przez parsery
-	ExtensionDescriptions extensionDescriptions;
+    //! S³owniki parserów niezainicjalizowanych.
+    IParsersByID registeredParsers;    
 
-	//! Obiekty pochodz¹ce z parserów.
-	ObjectsByType currentObjects;
-    //! Dane z DataProcesorów
-	ObjectFromProcessors objectsFromDataProcessors;
+    //! S³ownik parserów przypisanych do rozszerzeñ.
+    SupportedExtensionsPersistenceData registeredExtensions;
 
-	//! Lista parserów przypisanych do plików.
-	ParsersList currentParsers;
+    Extensions extensions;
 
-	//! Lista zasobów.
-	std::vector<std::string> resourcesPaths;
-	//! Lista skórek dla UI
-	std::vector<std::string> applicationSkinsPaths;
+    core::Objects objects;
 
-    //! Prototypy ObjecWrapperów zarejestrowanych typów danych
-	RegisteredTypesPrototypes registeredTypesPrototypes;
+    ObjectsWithInitializers objectsWithInitializers;
+
+    ObjectsByParsers objectsByParsers;
+
+    ParsersByObjects parsersByObjects;
+
+    ParsersByFiles parsersByFiles;
+
+    //! Obiekty pochodz¹ce z parserów.
+    ObjectsByTypes objectsByTypes;
 
     //! Mapowanie surowcyh wskaŸników do ObjectWrapperów - u¿ywane przy obs³udze wymiany danych w Workflow
     RawObjectWrapperMapping rawPointerToObjectWrapper;
-    //! Dane wprowadzane z zewn¹trz do DataManagera (nie przez Parsery)
-    ObjectWrapperSet externalData;
-    //! Dane wprowadzone z zewn¹trz pogrupowane wg typów
-    TypedExternalData groupedExternalData;
 
-	//boost::signal<void (const core::Filesystem::Path&, bool)> fileLoadedSignal;
-	boost::signal<void (const Path&, const std::vector<core::ObjectWrapperPtr>&, bool)> wrappersAddedSignal;
 
-protected:
-	//! Pomocnicza metoda, tworzy parsery dla zadanego rozszerzenia. Wspiera dodawanie wielu parserów dla jednego pliku.
-	//! Uwaga: plik nie zostaje jeszcze przeparsowany!
-	//! Zwraca obiekty domenowe ktore moga powstac w wyniku parsowania danego pliku!! jeszcze nie sa zainicjowane
-	std::vector<core::ObjectWrapperPtr> createParsers( const Path& path, bool resource );
+    //! S³ownik fabryk typów.
+    ObjectFactories objectFactories;
 
-	//! \param œcie¿ka do folderu z plikami próby pomiarowej
-	//! \return Pojedyncza próba pomiarowa ze œcie¿kami do wszystkich jej plików.
-	LocalTrial findLocalTrialsPaths(const Path& path);
+    //! Prototypy ObjecWrapperów zarejestrowanych typów danych
+    RegisteredTypesPrototypes registeredTypesPrototypes;
 
+    core::Types registeredTypes;
+
+    TypesHierarchy typesHierarchy;
+
+    mutable OpenThreads::ReentrantMutex stateMutex;
 
 public:
-	static DataManager* getInstance()
-	{
-		return static_cast<DataManager*>(core::getDataManager());
-	}
 
     //! \param factory Fabryka ObjectWrapperów zadanego typu dostarczana wraz z nowym typem rejestorwanym w aplikacji
-	void registerObjectFactory(const core::IObjectWrapperFactoryPtr & factory);
+    void registerObjectFactory(const core::IObjectWrapperFactoryPtr & factory);
 
     //! \param type Typ dla którego chcemy utworzyæ ObjectWrapper
     //! \return ObjectWrapper dla zadanego typu
-	virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo& type);
+    virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo& type);
 
     //! \param type Typ dla którego chcemy utworzyæ ObjectWrapperCollection
     //! \return ObjectWrapperCollection dla zadanego typu
-	virtual core::ObjectWrapperCollectionPtr createWrapperCollection(const core::TypeInfo& typeInfo);
+    virtual core::ObjectWrapperCollectionPtr createWrapperCollection(const core::TypeInfo& typeInfo);
 
     //! \param type Typ dla którego chcemy dostaæ prototyp ObjectWrappera
     //! \return prototyp ObjectWrapper dla zadanego typu
-	const core::ObjectWrapperConstPtr & getTypePrototype(const core::TypeInfo & typeInfo) const;
+    const core::ObjectWrapperConstPtr & getTypePrototype(const core::TypeInfo & typeInfo) const;
 
-	//! \param sourceTypeInfo Typ z ktorego chcemy pobrac dane
-	//! \param destTypeInfo Typ do ktorego chcemy zapisac dane
-	//! \return true jesli typ Ÿród³owy wspiera typ docelowy lub sa identyczne
-	bool isTypeCompatible(const core::TypeInfo & sourceTypeInfo, const core::TypeInfo & destTypeInfo) const
-	{
-		if(sourceTypeInfo == destTypeInfo){
-			return true;
-		}
+    //! \param sourceTypeInfo Typ z ktorego chcemy pobrac dane
+    //! \param destTypeInfo Typ do ktorego chcemy zapisac dane
+    //! \return true jesli typ Ÿród³owy wspiera typ docelowy lub sa identyczne
+    bool isTypeCompatible(const core::TypeInfo & sourceTypeInfo, const core::TypeInfo & destTypeInfo) const
+    {
+        if(sourceTypeInfo == destTypeInfo){
+            return true;
+        }
 
-		bool ret = false;
-		core::ObjectWrapper::Types supportedTypes;
-		getTypePrototype(sourceTypeInfo)->getSupportedTypes(supportedTypes);
-		if(std::find(supportedTypes.begin(), supportedTypes.end(), destTypeInfo) != supportedTypes.end()){
-			ret = true;
-		}
+        bool ret = false;
+        core::ObjectWrapper::Types supportedTypes;
+        getTypePrototype(sourceTypeInfo)->getSupportedTypes(supportedTypes);
+        if(std::find(supportedTypes.begin(), supportedTypes.end(), destTypeInfo) != supportedTypes.end()){
+            ret = true;
+        }
 
-		return ret;
-	}
+        return ret;
+    }
 
-	const ExtensionDescriptions & getRegisteredExtensionsWithDescriptions() const
-	{
-		return extensionDescriptions;
-	}
+    //! Rejestruje zadany parser.
+    //! \param newService
+    void registerParser(const core::IParserPtr & parser);
+    //! \return Liczba niezainicjalizowanych parserów.
+    int getNumRegisteredParsers() const;
+    //! \param idx Indeks parsera.
+    //! \return Parser o zadanym indeksie. Parser zawsze bêdzie niezainicjowany.
+    core::IParserConstPtr getRegisteredParser(int idx) const;
 
-	//! Rejestruje zadany parser.
-	//! \param newService
-	void registerParser(const core::IParserPtr & parser);
-	//! \return Liczba niezainicjalizowanych parserów.
-	int getNumRegisteredParsers() const;
-	//! \param idx Indeks parsera.
-	//! \return Parser o zadanym indeksie. Parser zawsze bêdzie niezainicjowany.
-	core::IParserConstPtr getRegisteredParser(int idx) const;
 
-	// core::IDataManager
+    void getObjects(core::Objects& objects, const core::TypeInfo& type, bool exact = false);
+
+    void getObjects(core::ObjectWrapperCollection& objects);
+
+    //! \param rawPtr Surowy wskaŸnik do danych
+    //! \return ObjectWrapperPtr opakowuj¹cy ten wskaŸnik lub pusty ObjectWrapperPtr jeœli nie ma takich danych w DataManager
+    core::ObjectWrapperPtr DataManager::getWrapper(void * rawPtr) const;
+
+    //! \return Zarejestrowane w aplikacji typy danych
+    const core::TypeInfoSet & getSupportedTypes() const;
+
+    //! \return Hierarchia typow danych - jakie operacje moge realizowac, po czym dziedzicze
+    const core::TypeInfoSet & getTypeBaseTypes(const core::TypeInfo & type) const;
+
+    //! \return Hierarchia typow danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i moze byc downcastowany na mnie
+    const core::TypeInfoSet & getTypeDerrivedTypes(const core::TypeInfo & type) const;
+
+    //core::IMemoryDataManager
 public:
-    virtual core::ObjectWrapperPtr getWrapper(void * rawPtr) const;
 
-    //! \param object ObjectWrapperPtr z nowymi danymi domenowymi wytworzonymi w czasie dzia³ania programu
-    virtual void addExternalData(const core::ObjectWrapperPtr & object);
+    //! \param objects Zbiór obiektów domenowych zarz¹dzanych przez ten DataManager
+    virtual void getManagedData(core::Objects & objects) const;
 
-    //! \param object ObjectWrapperPtr do usuniecia wraz z danymi domenowymi, DataManager juz wiecej tych danych nie zwroci przy zapytaniu pasujacemu ich typowi
-    virtual void removeExternalData(const core::ObjectWrapperPtr & object);
+    //! \param Obiekt ktory chcemy inicjalizowaæ
+    virtual void initializeData(core::ObjectWrapperPtr & data);
 
-	//! Tutaj nastêpuje leniwa inicjalizacja.
-	//! \see core::IDataManager::getObjects
-	virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact = false);
-	virtual void getObjectsFromParsers(std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact = false);
-    virtual void getExternalData(std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact = false);
-	//! \see core::IDataManager::isExtensionSupported
-	virtual bool isExtensionSupported(const std::string& extension) const;
+    //! \param Obiekt dla ktorego chcemy wykonac deinicjalizacje
+    virtual bool isInitializable(const core::ObjectWrapperPtr & data) const;
 
-	//! Dodawanie obiektow domenowych z innych zrodel niz parsery
-	//! \param dataProcessor zrodlo danych
-	//! \param objects wektor ze stworzonymi obiektami domenowymi (zrodlo powinno dalej je przechowywac!)
-	virtual void addObjects(const DataProcessorPtr & dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects);
+    //! \param Obiekt ktory chcemy deinicjalizowaæ - dalej jest w DataManager ale nie zawiera danych - trzeba potem inicjalizowaæ
+    virtual void deinitializeData(core::ObjectWrapperPtr & data);
 
-	//! Dodawanie obiektu domenowego z innego zrodla niz parser
-	//! \param dataProcessor zrodlo obiektu
-	//! \param object dodawany obiekt (zrodlo powinno dalej go przechowywac)
-	virtual void addObject(const DataProcessorPtr & dataProcessor, const core::ObjectWrapperPtr & object);
+    //! \param Obiekt ktory zostanie utrwalony w DataManager i bêdzie dostepny przy zapytaniach, nie morze byc niezainicjowany - isNull musi byæ false!!
+    virtual void addData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer = core::DataInitializerPtr());
 
-	//! Szuka na dysku zasobów.
-	virtual void findResources(const std::string& resourcesPath);
-	//! \param files lista do za³adowania, inicjalizacja parserów
-	virtual void loadFiles(const std::vector<Path>& files) {
-		core::ObjectWrapper::Types t;
-		loadFiles(files, t);
-	}
-	//! \param files lista do za³adowania, inicjalizacja parserów
-	virtual void loadFiles(const std::vector<Path>& files, const core::ObjectWrapper::Types& types)
-	{
-		std::vector<core::ObjectWrapperPtr> objects;
-		loadFiles(files, types, objects);
-	}
+    //! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
+    virtual void removeData(const core::ObjectWrapperPtr & data);
 
-	void loadFiles(const std::vector<Path>& files, const core::ObjectWrapper::Types& types, std::vector<core::ObjectWrapperPtr> & objects);
-	void loadFiles(const std::vector<Path>& files, std::vector<core::ObjectWrapperPtr> & objects)
-	{
-		core::ObjectWrapper::Types t;
-		loadFiles(files, t, objects);
-	}
+    // core::IFileDataManager
+public:
 
-	//! ³adowanie zasobów, czyli inicjalizacja parserów
-	virtual void loadResources();
+    //! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
+    virtual void getManagedData(core::Files & files) const;
 
-	virtual void addFiles(const std::vector<Path>& files);
-	virtual void removeFiles(const std::vector<Path>& files);
+    //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
+    //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
+    virtual void addData(const core::Filesystem::Path & file);
 
-	//! Czyszczenie po parserach.
-	void clearParsers();
+    //! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
+    virtual void removeData(const core::Filesystem::Path & file);
 
-	//virtual void addFileCallback(boost::function<void (const core::Filesystem::Path&, bool)> function);
-	//virtual void removeFileCallback(boost::function<void (const core::Filesystem::Path&, bool)> function);
-	virtual void addWrappersCallback(boost::function<void (const core::Filesystem::Path&, const std::vector<core::ObjectWrapperPtr>&, bool)> function);
-	virtual void removeWrappersCallback(boost::function<void (const core::Filesystem::Path&, const std::vector<core::ObjectWrapperPtr>&, bool)> function);
-	//! przeparsowanie konkretnego wrappera
-	virtual bool tryParseWrapper(core::ObjectWrapperPtr wrapper);
+    //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) WYMUSZAMY PARSOWANIE I INICJALIZACJE
+    virtual void initializeData(const core::Filesystem::Path & file);
 
-private:
-	//! Mapuje obiekty 
-	void mapObjectsToTypes(const std::vector<core::ObjectWrapperPtr>& objects, const ParserPtr & parser );
-	//! Usuwa obiekty kieruj¹c siê jakimiœ wyznacznikami.
-	template <class Predicate>
-	void removeObjects( Predicate pred );
+    //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) ZWALNIAMY ZASOBY, ALE ZEZWALAMY PONOWNIE NA LENIWA INICJALIZACJE
+    virtual void deinitializeData(const core::Filesystem::Path & file);
 
-	void dropRemovedWrappers(ObjectFromProcessors& objectsToCheck);
+    //! \param files Zbior plikow dla ktorych chcemy pobrac liste obiektow
+    //! \return Mapa obiektow wzgledem plikow z ktorych pochodza
+    virtual void  getObjectsForData(const core::Filesystem::Path & file, core::Objects & objects) const;
+
+    //! \return Zbior obslugiwanych rozszerzen plikow wraz z ich opisem
+    virtual const Extensions & getSupportedFilesExtensions() const;
+
+    virtual const ExtensionDescription & getExtensionDescription(const std::string & extension) const;
 };
 
 #endif // DATA_MANAGER_H

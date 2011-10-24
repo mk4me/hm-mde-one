@@ -9,7 +9,7 @@
 #ifndef __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
 #define __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
 
-#include <list>
+#include <set>
 #include <string>
 #include <boost/type_traits.hpp>
 #include <core/TypeInfo.h>
@@ -51,6 +51,8 @@ namespace core {
     typedef shared_ptr<const ObjectWrapper> ObjectWrapperConstPtr;
     typedef weak_ptr<ObjectWrapper> ObjectWrapperWeakPtr;
     typedef weak_ptr<const ObjectWrapper> ObjectWrapperConstWeakPtr;
+
+    typedef std::set<ObjectWrapperPtr> Objects;
 
     //! Baza dla typu wrapuj¹cego jakiœ obiekt. Poza trzymaniem metadanych klasy pochodne
     //! trzymaj¹ referencje do obiektów.
@@ -143,6 +145,10 @@ namespace core {
         }
 
     public:
+
+        virtual const void* getRawPtr() const = 0;
+        virtual void* getRawPtr() = 0;
+        virtual void reset() = 0;
 
         //! Próba pobrania obiektu z wrappera.
         //! \param object Rezultat.
@@ -367,7 +373,8 @@ namespace core {
         //!
         virtual ~__ObjectWrapperT()
         {
-            PtrPolicy::setPtr<T>(wrapped, nullptr);
+            //PtrPolicy::setPtr<T>(wrapped, nullptr);
+            reset();
         }
 
     public:
@@ -388,6 +395,23 @@ namespace core {
             PtrPolicy::setPtr(temp, newPtr);
             cloned->wrapped = temp;
             return ObjectWrapperPtr(cloned.release());
+        }
+
+        virtual const void* getRawPtr() const
+        {
+            return PtrPolicy::getRawPtr(wrapped);
+        }
+
+        virtual void* getRawPtr()
+        {
+            return PtrPolicy::getRawPtr(wrapped);
+        }
+
+        virtual void reset()
+        {
+            if(wrapped != nullptr){
+                PtrPolicy::setPtr<T>(wrapped, nullptr);
+            }
         }
 
         //! \param type 

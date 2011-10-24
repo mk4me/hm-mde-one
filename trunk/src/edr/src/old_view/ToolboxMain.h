@@ -29,7 +29,7 @@ public:
 	ToolboxMain() : MainWindow() {}
 
 public:
-	virtual void init( core::PluginLoader* pluginLoader );
+	virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
 
 public slots:
 	

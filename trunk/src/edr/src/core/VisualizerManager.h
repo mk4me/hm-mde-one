@@ -20,13 +20,15 @@
 #include <QtCore/QMetaType>
 #include <QtGui/QIcon>
 #include <core/IVisualizerManager.h>
+#include <core/IManagersAccessor.h>
+#include "ManagerHelper.h"
 
 Q_DECLARE_METATYPE(UniqueID);
 
 class SceneGraphWidget;
 class DataManager;
 
-class VisualizerManager : public core::IVisualizerManager, public utils::Observable<VisualizerManager>
+class VisualizerManager : public core::IVisualizerManager, public utils::Observable<VisualizerManager>, public ManagerHelper<VisualizerManager>
 {
     friend class Visualizer;
     friend class IVisualizerChannel;
@@ -39,7 +41,7 @@ public:
     typedef std::list<Visualizer*> Visualizers;
     typedef std::list<IVisualizerChannel*> VisualizerChannels;
     //! Lista typów kolejnych Ÿróde³.
-    typedef ObjectSlots::SlotsInfo SourcesTypes; 
+    typedef ObjectSlots::SlotsInfo SourcesTypes;
 
 private:
     //! Niezmienne dane pobrane z wizualizatorów.
@@ -73,10 +75,6 @@ public:
     ~VisualizerManager();
 
 public:
-    static VisualizerManager* getInstance()
-    {
-        return static_cast<VisualizerManager*>(core::getVisualizerManager());
-    }
 
     //! \return
     SceneGraphWidget* getDebugWidget() const

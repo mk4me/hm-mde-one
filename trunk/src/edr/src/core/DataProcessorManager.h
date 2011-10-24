@@ -12,8 +12,9 @@
 #include <utils/ObserverPattern.h>
 #include <core/IDataProcessorManager.h>
 #include "DataProcessor.h"
+#include "ManagerHelper.h"
 
-class DataProcessorManager : public core::IDataProcessorManager, public utils::Observable<DataProcessorManager>
+class DataProcessorManager : public core::IDataProcessorManager, public utils::Observable<DataProcessorManager>, public ManagerHelper<DataProcessorManager>
 {
     friend class DataProcessor;
 public:
@@ -38,10 +39,6 @@ public:
     ~DataProcessorManager();
 
 public:
-    static DataProcessorManager* getInstance()
-    {
-        return static_cast<DataProcessorManager*>(core::getDataProcessorManager());
-    }
 
     //! \param dataProcessor
     virtual void registerDataProcessor(const core::IDataProcessorPtr & dataProcessor);

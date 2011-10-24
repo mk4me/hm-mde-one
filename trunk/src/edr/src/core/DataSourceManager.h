@@ -12,8 +12,9 @@
 #include <utils/ObserverPattern.h>
 #include <core/IDataSourceManager.h>
 #include "DataSource.h"
+#include "ManagerHelper.h"
 
-class DataSourceManager : public core::IDataSourceManager, public utils::Observable<DataSourceManager>
+class DataSourceManager : public core::IDataSourceManager, public utils::Observable<DataSourceManager>, public ManagerHelper<DataSourceManager>
 {
     friend class DataSource;
 public:
@@ -38,10 +39,6 @@ public:
     ~DataSourceManager();
 
 public:
-    static DataSourceManager* getInstance()
-    {
-        return static_cast<DataSourceManager*>(core::getDataSourceManager());
-    }
 
     //! \param dataSource
     virtual void registerDataSource(const core::IDataSourcePtr & dataSource);

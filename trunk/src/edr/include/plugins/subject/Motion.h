@@ -15,6 +15,7 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/video/Wrappers.h>
 #include <core/PluginCommon.h>
+#include <core/DataAccessors.h>
 #include <core/SmartPtr.h>
 #include <core/TypeInfo.h>
 #include <boost/range.hpp>
@@ -23,9 +24,9 @@
 class Motion
 {
 public:
-	/*Motion();
-    Motion(const std::vector<core::TypeInfo>& supportedTypes);*/
-    Motion()
+	
+    Motion(core::IMemoryDataManager * memoryDataManager)
+        : memoryDataManager(memoryDataManager)
     {
         fillDefaultTypesList();
     }
@@ -110,8 +111,7 @@ public:
         }
         return false;
     }
-	//void addWrapper(const core::ObjectWrapperPtr& wrapper);
-    //void addWrappers(const std::vector<core::ObjectWrapperPtr>& wrappers);
+	
     range getWrappers() 
     {
         return boost::make_iterator_range(wrappers.begin(), wrappers.end());
@@ -154,14 +154,12 @@ public:
         }
         return temp;
     }
-
-    //bool isSupported(const core::TypeInfo& type);
     
     std::string getName() const { return name; }
     void setName(std::string val) { name = val; }
 
 private:
-	//void createJointCollection(kinematic::SkeletalModelConstPtr model, kinematic::SkeletalDataConstPtr data);
+	
     void fillDefaultTypesList()
     {
         types.clear();
@@ -181,7 +179,7 @@ private:
         types.push_back(typeid(C3DEventsCollection));
         types.push_back(typeid(VideoChannel));
     }
-	//void fillDefaultTypesList();
+
     bool hasJoints()
     {
         bool hasData = false;
@@ -214,9 +212,18 @@ private:
         }
 
         if (dataWrapper && modelWrapper) {
-            core::IDataManager* manager = core::getDataManager();
-            manager->tryParseWrapper(dataWrapper);
-            manager->tryParseWrapper(modelWrapper);
+            try{
+                memoryDataManager->initializeData(dataWrapper);
+            }catch(std::exception & e){
+
+            }
+
+            try{
+                memoryDataManager->initializeData(modelWrapper);
+            }catch(std::exception & e){
+
+            }
+
             kinematic::SkeletalDataPtr data = dataWrapper->get();
             kinematic::SkeletalModelPtr model = modelWrapper->get();
             kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
@@ -225,7 +232,7 @@ private:
             core::ObjectWrapperPtr jointsWrapper = core::ObjectWrapper::create<kinematic::JointAnglesCollection>();
             jointsWrapper->set(joints);
             wrappers.push_back(jointsWrapper);
-            manager->addExternalData(jointsWrapper);
+            memoryDataManager->addData(jointsWrapper);
             return jointsWrapper;
         }
 
@@ -236,95 +243,12 @@ private:
 	std::vector<core::ObjectWrapperPtr> wrappers;
 	std::vector<core::TypeInfo> types;
 	std::string name;
-    
+
+    core::IMemoryDataManager * memoryDataManager;
 };
 
 
 typedef core::shared_ptr<Motion> MotionPtr;
 typedef core::shared_ptr<const Motion> MotionConstPtr;
-
-//class Motion
-//{
-//public:
-//	Motion()
-//	{
-//	}
-//	virtual ~Motion() {}
-//
-//public:
-//	GRFCollectionConstPtr getGrf() const { return grf; }
-//	void setGrf(GRFCollectionConstPtr val) { grf = val; }
-//
-//	EMGCollectionConstPtr getEmg() const { return emg; }
-//	void setEmg(EMGCollectionConstPtr val) { emg = val; }
-//
-//	kinematic::JointAnglesCollectionConstPtr getJoints() const { return joints; }
-//	void setJoints(kinematic::JointAnglesCollectionConstPtr val) { joints = val; }
-//	void setSkeletalModel(kinematic::SkeletalModelConstPtr val)
-//	{
-//		skeletalModel = val;
-//		if (skeletalModel && skeletalData) {
-//			createJointCollection(skeletalModel, skeletalData);
-//		}
-//
-//	}
-//	void setSkeletalData(kinematic::SkeletalDataConstPtr val) 
-//	{
-//		skeletalData = val;
-//		if (skeletalModel && skeletalData) {
-//			createJointCollection(skeletalModel, skeletalData);
-//		}
-//	}
-//
-//	MarkerCollectionConstPtr getMarkers() const { return markers; }
-//	void setMarkers(MarkerCollectionConstPtr val) { markers = val; }
-//
-//	const std::vector<VideoChannelConstPtr>& getVideos() const { return videos; }
-//	void addVideo(VideoChannelConstPtr val) 
-//	{ 
-//		videos.push_back(val); 
-//	}
-//
-//	std::string getName() const { return name; }
-//	void setName(std::string val) { name = val; }
-//
-//	ForceCollectionConstPtr getForces() const { return forces; }
-//	void setForces(ForceCollectionConstPtr val) { forces = val; }
-//
-//	AngleCollectionConstPtr getAngles() const { return angles; }
-//	void setAngles(AngleCollectionConstPtr val) { angles = val; }
-//
-//	PowerCollectionConstPtr getPowers() const { return powers; }
-//	void setPowers(PowerCollectionConstPtr val) { powers = val; }
-//
-//	MomentCollectionConstPtr getMoments() const { return moments; }
-//	void setMoments(MomentCollectionConstPtr val) { moments = val; }
-//
-//    EventsCollectionConstPtr getEvents() const { return events; }
-//    void setEvents(EventsCollectionConstPtr val) { events = val; }
-//
-//private:
-//	void createJointCollection(kinematic::SkeletalModelConstPtr model, kinematic::SkeletalDataConstPtr data);
-//
-//
-//private:
-//	GRFCollectionConstPtr grf;
-//	EMGCollectionConstPtr emg;
-//	kinematic::JointAnglesCollectionConstPtr joints;
-//	kinematic::SkeletalDataConstPtr skeletalData;
-//	kinematic::SkeletalModelConstPtr skeletalModel;
-//	MarkerCollectionConstPtr markers;
-//	ForceCollectionConstPtr forces;
-//	AngleCollectionConstPtr angles;
-//	PowerCollectionConstPtr powers;
-//	MomentCollectionConstPtr moments;
-//    EventsCollectionConstPtr events;
-//
-//	std::vector<VideoChannelConstPtr> videos;
-//	std::string name;
-//};
-//typedef core::shared_ptr<Motion> MotionPtr;
-//typedef core::shared_ptr<const Motion> MotionConstPtr;
-
 
 #endif

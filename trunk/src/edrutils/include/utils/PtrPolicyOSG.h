@@ -62,6 +62,22 @@ struct PtrPolicyOSG
         ptr = data;
     }
 
+    //! Zwraca surowy wskaünik
+    //! \param ptr
+    template<class T>
+    void* getRawPtr(const osg::ref_ptr<T> & ptr)
+    {
+        return ptr.get();
+    }
+
+    //! Zwraca surowy wskaünik
+    //! \param ptr
+    template<class T>
+    const void* getRawPtr(const osg::ref_ptr<T> & ptr) const
+    {
+        return ptr.get();
+    }
+
     //! Implementacja unikalnoúci wskaünika dla osg::ref_ptr.
     //! \param ptr
     template<class T>

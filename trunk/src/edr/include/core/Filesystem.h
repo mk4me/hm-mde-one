@@ -6,6 +6,7 @@
 #define FILESYSTEM_H
 
 #include <vector>
+#include <set>
 #include <string>
 
 #include <boost/filesystem.hpp>
@@ -125,6 +126,12 @@ private:
     //! Prywatny konstruktor uniemo¿liwiaj¹cy tworzenie instancji typu.
     Filesystem() {}
 };
+
+// Zbiór œcie¿ek
+typedef std::set<Filesystem::Path> Paths;
+// Zbiór plikow
+typedef Paths Files;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

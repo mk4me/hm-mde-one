@@ -15,6 +15,7 @@
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
 #include <core/ILog.h>
+#include <core/DataAccessors.h>
 
 namespace core 
 {
@@ -100,15 +101,18 @@ namespace core
                 typedef typename SmartPtr::element_type Type;
                 
                 //mechanizm ograniczaj¹cy tworzenie wielu niezale¿nych ObjectWrapperów dla tych samych danych
-                core::ObjectWrapperPtr objectWrapper = core::getDataManager()->getWrapper(&*object);
-
-                if(objectWrapper == nullptr){
-                    //skoro nie znaleziono to znaczy ¿e jest to nowy obiekt i mo¿na go opakowaæ ca³kowicie nowym ObjectWrapperem
-                    objectWrapper = ObjectWrapper::create<Type>();
-                    objectWrapper->set(object);
-                }
+                //core::ObjectWrapperPtr objectWrapper = core::getDataManager()->getWrapper(&*object);
                 
-                return objectWrapper;
+                //core::ObjectWrapperPtr objectWrapper = core::getOrCreateWrapper(object);
+
+                //if(objectWrapper == nullptr){
+                //    //skoro nie znaleziono to znaczy ¿e jest to nowy obiekt i mo¿na go opakowaæ ca³kowicie nowym ObjectWrapperem
+                //    objectWrapper = ObjectWrapper::create<Type>();
+                //    objectWrapper->set(object);
+                //}
+                //
+                //return objectWrapper;
+                return core::getOrCreateWrapper(object).second;
             }
 
         private:

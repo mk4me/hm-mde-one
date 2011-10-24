@@ -72,9 +72,10 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr)
 }
 
 
-void MainWindow::init(PluginLoader* pluginLoader) 
+void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAccessor) 
 {
 	this->pluginLoader = pluginLoader;
+    this->managersAccessor = managersAccessor;
     //setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 
     DataManager* dataManager = DataManager::getInstance();
@@ -82,8 +83,6 @@ void MainWindow::init(PluginLoader* pluginLoader)
     VisualizerManager* visualizerManager = VisualizerManager::getInstance();
 	EDRConfig* directoriesInfo = EDRConfig::getInstance();
     DataProcessorManager* dataProcesorManager = DataProcessorManager::getInstance();
-
-    registerCoreServices();
 
     registerCoreDataSources();
 
@@ -107,12 +106,11 @@ void MainWindow::init(PluginLoader* pluginLoader)
     registerPluginsDataProcessors();
     registerPluginsDataSources();
 
-	dataManager->findResources(directoriesInfo->getResourcesPath().string());
-    dataManager->loadResources();
+	findResources(directoriesInfo->getResourcesPath().string());
 
     // inicjalizacja us³ug
     for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-        serviceManager->getService(i)->init();
+        serviceManager->getService(i)->init(managersAccessor);
     }
 
     // inicjalizacja us³ug
@@ -138,12 +136,42 @@ MainWindow::~MainWindow()
     VisualizerManager::getInstance()->setDebugWidget(nullptr);
 }
 
+void MainWindow::findResources(const std::string& resourcesPath)
+{
+    resourcesPaths.clear();
+    //szukaj shaderow
+    std::vector<std::string> ext;
+    ext.push_back(".frag");
+    ext.push_back(".vert");
+    //ext.push_back(".avi");
+    try {
+        std::vector<std::string> temp = Filesystem::listFiles(resourcesPath, true, ext);
+        resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
+        //szukaj mesh
+        temp = Filesystem::listFiles(resourcesPath, true, ".fmesh");
+        resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
+        //szukaj styli qt
+        temp = Filesystem::listFiles(resourcesPath, true, ".qss");
+        applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
+    } catch(std::exception& e) {
+        LOG_INFO("Finding resources exception: " << e.what());
+    }
+}
+
 void MainWindow::openFile( const std::string& path )
 {
 	LOG_INFO("Opening file: " << path);
 	std::vector<Filesystem::Path> paths;
 	paths.push_back(path);
-	DataManager::getInstance()->loadFiles(paths);
+    DataManager * dataManager = DataManager::getInstance();
+    for(auto it = paths.begin(); it != paths.end(); it++){
+        try{
+            dataManager->addData(*it);
+        }catch(...){
+
+        }
+    }
+
 }
 
 void MainWindow::readSettings( const QSettings& settings, bool readGeometry )
@@ -240,15 +268,15 @@ void MainWindow::safeRegisterParser(const IParserPtr & parser)
         DataManager::getInstance()->registerParser(parser);
 
     }catch(std::runtime_error e){ 
-        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() << " supporting extensions " << parser->getSupportedExtensions() <<
+        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
             " has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
     }
     catch(std::invalid_argument e){
-        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() << " supporting extensions " << parser->getSupportedExtensions() <<
+        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
             " has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
     }
     catch(...){
-        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() << " supporting extensions " << parser->getSupportedExtensions() <<
+        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
             " has caused an UNKNOWN error during registration. Parser NOT registered in application!" );
     }
 }
@@ -330,14 +358,6 @@ void MainWindow::safeRegisterDataSource(const IDataSourcePtr & dataSource)
         LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
             << " has caused an UNKNOWN error during registration. DataSource NOT registered in application!" );
     }
-}
-
-void MainWindow::registerCoreServices()
-{
-    // us³uga UI
-//    UserInterfaceService* userInterfaceService = new UserInterfaceService();
- //   userInterfaceService->setMainWindow(this);
- //   safeRegisterService(IServicePtr(userInterfaceService));
 }
 
 void MainWindow::registerCoreDataSources()

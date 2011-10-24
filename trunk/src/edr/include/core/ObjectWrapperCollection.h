@@ -13,6 +13,8 @@
 #include <vector>
 #include <core/ObjectWrapper.h>
 
+class DataManager;
+
 namespace core {
 
 class ObjectWrapperCollection;
@@ -28,6 +30,8 @@ typedef weak_ptr<const ObjectWrapperCollection> ObjectWrapperCollectionConstWeak
 //! Klasa sluzy do agregowania obiektow domenowych tego samego typu lub pocohdnych od tego samego typu
 class ObjectWrapperCollection
 {
+    friend class DataManager;
+
 public:
     typedef std::vector<ObjectWrapperConstPtr>::size_type size_type;
     typedef std::vector<ObjectWrapperConstPtr>::const_iterator const_iterator;
@@ -45,16 +49,23 @@ private:
     //! Czy kolekcja przechowyje elementy wylacznie danego typu czy rowniez pochodne mu
     bool exact;
 
-protected:
+private:
 
-    ObjectWrapperCollection(const ObjectWrapperCollection & owc) : typeInfo(owc.typeInfo),
-        constObjects(owc.constObjects), exact(owc.exact) {}
+    template<class Iter>
+    void loadCollectionWithData(Iter begin, Iter end)
+    {
+        constObjects.insert(constObjects.end(), begin, end);
+    };
+
 public:
 
     //! Chroniony konstruktor, klasa pochodna powinna zdeklarowac przechowywany typ
     //! \param info typ przechowywanych obiektow
     ObjectWrapperCollection(TypeInfo info, bool exact = true) :
-      typeInfo(info) {}
+      typeInfo(info), exact(exact) {}
+
+      ObjectWrapperCollection(const ObjectWrapperCollection & owc) : typeInfo(owc.typeInfo),
+          constObjects(owc.constObjects), exact(owc.exact) {}
 
     virtual ~ObjectWrapperCollection() {}
 
@@ -177,16 +188,6 @@ public:
             throw std::bad_cast("Type of object not supported by collection");
         }
     }
-};
-
-//! \brief Klasa dostarcza typu, ktorego elementy beda przechowywane
-template <class T>
-class ObjectWrapperCollectionT : public ObjectWrapperCollection
-{
-public:
-    ObjectWrapperCollectionT() :
-      ObjectWrapperCollection(typeid(T))
-      {}
 };
 
 }

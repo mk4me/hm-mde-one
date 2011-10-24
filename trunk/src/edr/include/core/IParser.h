@@ -21,6 +21,17 @@ namespace core
     class IParser : public IIdentifiable
     {
     public:
+        //! Typ opisuj¹cy rozszerzenie
+        struct ExtensionDescription
+        {
+            std::string description;
+            std::set<TypeInfo> types;
+        };
+
+        //! S³ownik rozszerzeñ wpsieranych przez parser z ich opisem
+        typedef std::map<std::string, ExtensionDescription> Extensions;
+
+    public:
         //! Pusty polimorficzny destruktor.
         virtual ~IParser() {}
         //! \return Instancja tego samego typu.
@@ -28,27 +39,13 @@ namespace core
         //! Przyporz¹dkowanie parsera do konkretnego pliku.
         //! Na ka¿dej instancji parsera ta metoda wywo³ywana jest maksymalnie jeden raz.
         //! \param path Œcie¿ka do pliku.
-        virtual void parseFile(IDataManager* dataManager, const Filesystem::Path& path) = 0;
+        virtual void parseFile(const Filesystem::Path& path) = 0;
         //! \retrun Lista rozszerzeñ, które parser obs³uguje. Musz¹ byæ oddzielone œrednikiem.
         //!         Obs³ugiwany format rozszerzenia: [ { *. | . } ]ext
-        virtual std::string getSupportedExtensions() const = 0;
-        //! \param extension Rozszerzenie dla ktorego chemy pobrac opis formatu pliku
-        //! \return Opis formatu danego rozszerzenia
-        virtual std::string getExtensionDescription(const std::string & extension) const
-        {
-            return std::string();
-        }
+        virtual void getSupportedExtensions(Extensions & extensions) const = 0;
 
         //! \return Obiekt danych parsera.
-        virtual void getObjects(std::vector<ObjectWrapperPtr>& objects) = 0;
-
-        //! \return Obiekt danych parsera dla konretnego rozszerzenia.
-        virtual void getExtensionObjects(const std::string & extension, std::vector<ObjectWrapperPtr>& objects)
-        {
-            //TODO
-            //wprowadzic taki opis!! Aktualnie dla kazdego rozszerzenia zwraca te same obiekty!!
-            getObjects(objects);
-        }
+        virtual void getObjects(Objects& objects) = 0;
     };
 
     typedef shared_ptr<IParser> IParserPtr;

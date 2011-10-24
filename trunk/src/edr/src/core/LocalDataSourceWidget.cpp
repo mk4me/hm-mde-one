@@ -49,19 +49,19 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                 core::Filesystem::Iterator it(p);
                 core::Filesystem::Iterator endIT;
 
-                DataManager* dataManager = DataManager::getInstance();
+                //DataManager* dataManager = DataManager::getInstance();
 
                 for( ; it != endIT; it++){
-                    if(core::Filesystem::isRegularFile((*it).path()) == true && dataManager->isExtensionSupported((*it).path().extension().string()) == true){
+                    //if(core::Filesystem::isRegularFile((*it).path()) == true && dataManager->isExtensionSupported((*it).path().extension().string()) == true){
                         files.push_back((*it).path());
-                    }
+                    //}
                 }
 
                 if(files.empty() == false){
                     //ladujemy pliki!!
                     std::vector<core::ObjectWrapperPtr> possibleData;
                     std::set<core::ObjectWrapperPtr> initialisedData;
-                    dataManager->loadFiles(files, possibleData);
+                    //dataManager->loadFiles(files, possibleData);
 
                     std::set<core::TypeInfo> dataTypes;
 
@@ -71,7 +71,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
 
                     for(auto it = dataTypes.begin(); it != dataTypes.end(); it++){
                         std::vector<core::ObjectWrapperPtr> objects;
-                        dataManager->getObjects(objects, *it, true);
+                        //dataManager->getObjects(objects, *it, true);
                         for(auto iT = objects.begin(); iT != objects.end(); iT++){
                             if((*iT)->isNull() == false && std::find(possibleData.begin(), possibleData.end(), *iT) != possibleData.end()){
                                 initialisedData.insert(*iT);
@@ -86,7 +86,7 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                         for(auto it = initialisedData.begin(); it != initialisedData.end(); it++){
                             core::TypeInfo typeInfo((*it)->getTypeInfo());
                             if(data.find(typeInfo) == data.end()){
-                                data.insert(std::make_pair(typeInfo, dataManager->createWrapperCollection(typeInfo)));
+                                data.insert(std::make_pair(typeInfo, core::ObjectWrapperCollectionPtr(new core::ObjectWrapperCollection(typeInfo))));
                             }
 
                             data[typeInfo]->addObject(*it);

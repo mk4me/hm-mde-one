@@ -2,8 +2,9 @@
 #include <boost/bind.hpp>
 #include <core/PluginCommon.h>
 #include <QtCore/QElapsedTimer>
+#include "DataManager.h"
 
-LoadingThread::LoadingThread( const QString& directoryName ) :
+LoadingThread::LoadingThread( const QString& directoryName) :
 	filesToLoad(0),
 	directoryName(directoryName),
 	QThread()
@@ -36,26 +37,23 @@ void LoadingThread::run()
 	emit sendValue(0);
 	
 	filesToLoad = 0;
-	core::IDataManager* dataManager = core::getDataManager();
-	boost::function<void (const core::Filesystem::Path&, const std::vector<core::ObjectWrapperPtr>&, bool)> f = boost::bind(&LoadingThread::onFileLoaded, this, _1, _2, _3);
-	dataManager->addWrappersCallback(f);
 
 	QElapsedTimer myTimer;
 	myTimer.start();
-	dataManager->loadFiles(paths);
+    
+    for(auto it = paths.begin(); it != paths.end(); it++){
+        std::string info((*it).filename().string());
+        try{
+            DataManager::getInstance()->addData(*it);
+        }catch(std::exception & e){
+            info.insert(0, "Error while adding file ");
+            LOG_DEBUG(info);
+        }
+        emit sendFile(QString(info.c_str()));
+        emit sendValue(++filesToLoad);
+    }
+
 	LOG_ERROR(myTimer.elapsed() / 1000.0f);
 
 	emit loadingEnded();
-}
-
-void LoadingThread::onFileLoaded( const core::Filesystem::Path& p, const std::vector<core::ObjectWrapperPtr>&, bool loaded )
-{
-	QString txt(p.filename().string().c_str());
-	auto it = filesSended.find(txt);
-	if (it == filesSended.end()) {
-		emit sendFile(txt);
-		emit sendValue(++filesToLoad);
-		filesSended.insert(txt);
-	}
-	
 }

@@ -19,6 +19,7 @@
 #include <core/DataManager.h>
 
 #include <core/Filesystem.h>
+#include <core/IManagersAccessor.h>
 
 class UserInterfaceService;
 class ServiceManager;
@@ -45,12 +46,16 @@ namespace core {
 		QTimer visualizerTimer;
         //! Timer wyznaczaj¹cy updaty dla serwisów
 		QTimer serviceTimer;
-		//! Korzeñ sceny.
-		//osg::ref_ptr<osg::Node> sceneRoot;
 		//! Pluginy.
 		core::PluginLoader* pluginLoader;
-		//! Timer u¿ywany gdy wyœwietlamy w trybie composite.
-		QTimer viewerFrameTimer;
+        //! Dostêp do managerów aplikacji.
+        core::IManagersAccessor* managersAccessor;
+
+        //! Lista zasobów.
+        std::vector<std::string> resourcesPaths;
+
+        //! Lista skórek dla UI
+        std::vector<std::string> applicationSkinsPaths;
 
 	protected:
 		const QTimer& getVisualizerTimer() const { return visualizerTimer; }
@@ -60,7 +65,7 @@ namespace core {
 		MainWindow();
 		virtual ~MainWindow();
 
-		virtual void init( core::PluginLoader* pluginLoader );
+		virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
 
 		
 	public slots:
@@ -104,6 +109,18 @@ namespace core {
 
 		void registerPluginsWrapperFactories();
 
+        //! Szuka na dysku zasobów.
+        void findResources(const std::string& resourcesPath);
+
+        const std::string& getApplicationSkinsFilePath(int i)
+        {
+            return applicationSkinsPaths[i];
+        }
+
+        int getApplicationSkinsFilePathCount()
+        {
+            return applicationSkinsPaths.size();
+        }
 
 		//! Opakowuje zadany widget QDockWidgetem.
 		//! \param widget

@@ -12,6 +12,7 @@
 #include <typeinfo>
 #include <boost/any.hpp>
 #include <list>
+#include <set>
 
 namespace core {
 
@@ -128,6 +129,7 @@ namespace core {
     };
 
     typedef std::list<TypeInfo> TypeInfoList;
+    typedef std::set<TypeInfo> TypeInfoSet;
 }
 
 #endif  // HEADER_GUARD_CORE__TYPEINFO_H__

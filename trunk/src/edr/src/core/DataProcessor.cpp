@@ -2,7 +2,8 @@
 #include <core/IDataProcessor.h>
 #include "DataProcessor.h"
 #include "DataProcessorManager.h"
-#include "DataManager.h"
+//#include "DataManager.h"
+#include <core/DataAccessors.h>
 
 using namespace core;
 

@@ -48,7 +48,7 @@ namespace core
         virtual ObjectWrapperCollection* createWrapperCollection()
         {
             UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-            return new ObjectWrapperCollectionT<T>();
+            return new ObjectWrapperCollection(typeid(T));
         }
 
         virtual const core::TypeInfo & getType() const

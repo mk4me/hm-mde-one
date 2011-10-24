@@ -24,7 +24,7 @@ public:
 	virtual ~IFilterCommand() {}
    
 public:
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionPtr>& sessions) = 0;
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions) = 0;
     virtual QWidget* getConfigurationWidget() { return nullptr; }
 };
 typedef boost::shared_ptr<IFilterCommand> IFilterCommandPtr;
@@ -36,9 +36,9 @@ public:
     SimpleFilterCommand(DataFilterPtr dataFilter);
 
 public:
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionPtr>& sessions);
-    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionPtr>& sessions);
-    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionPtr>& sessions, DataFilterPtr dataFilter);
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions);
+    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions);
+    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions, DataFilterPtr dataFilter);
     static QTreeWidgetItem* createMarkersBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
     static QTreeWidgetItem* createJointsBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
     static QTreeWidgetItem* createVideoBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
@@ -103,16 +103,16 @@ typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr
 template <class Type, class TypePtr = core::shared_ptr<Type> >
 class MultiChartCommand : public IFilterCommand
 {
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<SessionPtr>& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions );
 
 };
 
 template <class Type, class TypePtr>
-QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const std::vector<SessionPtr>& sessions )
+QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions )
 {
     QTreeWidgetItem* rootItem = new QTreeWidgetItem();
     rootItem->setText(0, rootItemName);
-    BOOST_FOREACH(SessionPtr session, sessions)
+    BOOST_FOREACH(SessionConstPtr session, sessions)
     {
         BOOST_FOREACH(MotionPtr motion, session->getMotions()) {
             QTreeWidgetItem* item = new QTreeWidgetItem();

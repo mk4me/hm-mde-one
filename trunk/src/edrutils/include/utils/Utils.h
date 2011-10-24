@@ -55,7 +55,7 @@ inline void zero(T & object)
 //! Zwalnia zadany wskaŸnik oraz zeruje jego wartoœæ.
 #define UTIL_DELETEPTR(ptr) UTILS_MULTISTATEMENT_BEGIN \
     delete ptr; \
-    ptr = NULL; \
+    ptr = nullptr; \
     UTILS_MULTISTATEMENT_END
 
 //! Zwalnia zadany wskaŸnik oraz zeruje jego wartoœæ.
@@ -64,7 +64,7 @@ template <class T>
 inline void deletePtr(T *& ptr)
 {
     delete ptr;
-    ptr = NULL;
+    ptr = nullptr;
 }
 
 //------------------------------------------------------------------------------

@@ -22,9 +22,7 @@ private:
 	//! Prawdziwy wewnêtrzny parser.
 	const IParserPtr parser;
 	//! Parsowany plik.
-	const Path filePath;
-	//! Czy parser zwi¹zany jest z zasobami sta³ymi?
-	const bool resource;
+	const Filesystem::Path filePath;
 	//! Czy przeparsowano plik?
 	bool parsed;
 	//! Czy u¿yto parsera do przeparsowania?
@@ -32,13 +30,12 @@ private:
 	//! Czy w³aœnie parsujemy?
 	bool parsing;
 
-
 public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
 	//!     czas ¿ycia.
 	//! \param resource Czy parser jest zwi¹zany z zasobami sta³ymi?
-	Parser(IParser* parser, const Path& path, bool resource = false) :
-	  parser(parser), parsed(false), used(false), resource(resource), filePath(path), parsing(false)
+	Parser(IParser* parser, const Filesystem::Path& path) :
+	  parser(parser), parsed(false), used(false), filePath(path), parsing(false)
 	  {
 		  UTILS_ASSERT(parser);
 		  UTILS_ASSERT(!filePath.empty());
@@ -56,11 +53,6 @@ public:
 	  }
 
 public:
-	//! \return Czy parser zwi¹zany jest z zasobami sta³ymi?
-	inline bool isResource() const
-	{
-		return resource;
-	}
 	//! \return Czy u¿yto tego parsera?
 	inline bool isUsed() const
 	{
@@ -71,13 +63,21 @@ public:
 	{
 		return parsed;
 	}
+
+    inline void reset()
+    {
+        used = false;
+        parsed = false;
+    }
+
 	//!
 	inline bool isParsing() const
 	{
 		return parsing;
 	}
+
 	//! \return Œcie¿ka do pliku.
-	inline const Path& getPath() const
+	inline const Filesystem::Path& getPath() const
 	{
 		return filePath;
 	}
@@ -88,22 +88,22 @@ public:
 	}
 
 	//! Mo¿e rzucaæ wyj¹tkami!
-	void parseFile(DataManager* dataManager)
+	void parseFile()
 	{
 		UTILS_ASSERT(!isUsed());
 		UTILS_ASSERT(!filePath.empty());
 		LOG_DEBUG("Parsing file: " << getPath() );
 		used = true;
 		utils::Push<bool> parsingPushed(parsing, true);
-		parser->parseFile(dataManager, filePath.string());
+		parser->parseFile(filePath.string());
 		parsed = true;
 	}
 	//! Nie rzuca wyj¹tkami.
 	//! \return Czy uda³o siê przeparsowaæ?
-	bool tryParse(DataManager* dataManager)
+	bool tryParse()
 	{
 		try {
-			parseFile(dataManager);
+			parseFile();
 			return true;
 		} catch (const std::exception& ex) {
 			LOG_ERROR("Error during parsing file " << getPath() << ": " << ex.what());
@@ -112,138 +112,130 @@ public:
 	}
 	//! \param objects Lista wrappowanych obiektów, zainicjowanych (przeparsowany parser)
 	//!         b¹dŸ nie.
-	inline void getObjects(std::vector<ObjectWrapperPtr>& objects)
+	inline void getObjects(core::Objects& objects)
 	{
 		parser->getObjects(objects);
 	}
 };
 
-////////////////////////////////////////////////////////////////////////////////
+DataManager::ParserInitializer::ParserInitializer(const ParserPtr & parser, DataManager * dm) : parser(parser), dataManager(dm)
+{
 
-struct DataManager::FindByFilenamePredicate {
-	std::string filter;
+}
 
-	FindByFilenamePredicate(const std::string& filetr) :
-	filter(filter)
-	{}
+DataManager::ParserInitializer::~ParserInitializer()
+{
 
-	bool operator()( const DataManager::ParserPtr& ptr ) const
-	{
-		// TODO: powinno byæ porównanie regexowe
-		const std::string filename = ptr->getPath().filename().string();
-		return filter == filename;
-	}
-};
+}
 
-////////////////////////////////////////////////////////////////////////////////
 
-struct DataManager::FindByRelativePathPredicate {
-	std::string filter;
+void DataManager::ParserInitializer::initialize(core::ObjectWrapperPtr & object)
+{
+    if(parser->isUsed() == false){
+        if(parser->tryParse() == true){
+            LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " successfully initialized object of type " << object->getTypeInfo().name() << " parsing file " << parser->getPath());
+        }else{
+            LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " failed to initialized object of type " << object->getTypeInfo().name() << " parsing file " << parser->getPath());
+        }
+    }
+}
 
-	FindByRelativePathPredicate(const std::string& filetr) :
-	filter(filter)
-	{}
+void DataManager::ParserInitializer::doDeinitialize(core::ObjectWrapperPtr & object)
+{
+    auto it = dataManager->objectsByParsers.find(parser);
+    if(it != dataManager->objectsByParsers.end() ){
+        for(auto objectIT = it->second.begin(); objectIT != it->second.end(); objectIT++){
+            if(*objectIT != nullptr){
+                (*objectIT)->reset();
+            }
+        }
 
-	bool operator()( const DataManager::ParserPtr& ptr ) const
-	{
-		// TODO: powinno byæ porównanie regexowe
-		const std::string filename = ptr->getPath().relative_path().string();
-		return filter == filename;
-	}
-};
+        parser->reset();
+    }
+}
 
-////////////////////////////////////////////////////////////////////////////////
-
+DataManager * ManagerHelper<DataManager>::manager = nullptr;
 
 DataManager::DataManager()
 {
-	clear();
+
 }
 
 DataManager::~DataManager()
 {
-	this->clear();
-}
 
-void DataManager::clear()
-{
-	clearParsers();
-}
-
-const std::string& DataManager::getApplicationSkinsFilePath(int i)
-{
-	return applicationSkinsPaths[i];
-}
-
-int DataManager::getApplicationSkinsFilePathCount()
-{
-	return applicationSkinsPaths.size();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void DataManager::registerParser(const core::IParserPtr & parser)
 {
-	//unikalne ID parsera
-	if(registeredParsers.find(parser->getID()) == registeredParsers.end()) {
-		// uzupe³nienie s³ownika rozszerzeñ
-		typedef boost::char_separator<char> Separator;
-		typedef boost::tokenizer<Separator> Tokenizer;
-		std::string extensions = parser->getSupportedExtensions();
-		Separator separator(";*");
-		Tokenizer tokenizer(extensions, separator);
-		BOOST_FOREACH( std::string extension, tokenizer ) {
-			// dodajemy wiod¹c¹ kropkê
-			if(extension.front() != '.') {
-				extension.insert(extension.begin(), '.');
-			}
-			// lowercase
-			boost::to_lower(extension);
-			// czy parser dla rozszerzenia ju¿ istnieje?
-			if ( isExtensionSupported(extension) ) {
-				LOG_WARNING("There is at least one parser that supports extension " << extension);
-			}
-			// rejestrujemy
-			registeredExtensions.insert(std::make_pair(extension, parser));
-			//rejestrujemy opis rozszerzenia
-			std::string extensionDescription(parser->getExtensionDescription(extension));
-			auto it = extensionDescriptions.find(extension);
+    //unikalne ID parsera
+    if(registeredParsers.find(parser->getID()) == registeredParsers.end()) {
+        // uzupe³nienie s³ownika rozszerzeñ
+        core::IParser::Extensions extensions;
+        // pobranie s³ownika rozszerzeñ z parsera
+        parser->getSupportedExtensions(extensions);
 
-			if(extensionDescription.empty() == false){    
-				if(it != extensionDescriptions.end()){
-					if(it->second.description.empty() == false){
-						it->second.description.append(" | " + extensionDescription);
-					}else{
-						it->second.description = extensionDescription;
-					}
-				}else{
-					ExtensionDescription extDescription;
-					extDescription.description = extensionDescription;                    
-					it = extensionDescriptions.insert(std::make_pair(extension, extDescription)).first;
-				}
-			}else{
-				if(it == extensionDescriptions.end()){
-					it = extensionDescriptions.insert(std::make_pair(extension, ExtensionDescription())).first;
-				}
-			}
+        if(extensions.empty() == true){
+            std::stringstream str;
+            str << "Parser ID: "<< parser->getID() << " Trying to register parser with 0 supported extensions";
+            throw std::runtime_error(str.str());
+        }
 
-			//rejestruj typy dla danego rozszerzenia ktorych moze dostarczyc parser!!
-			std::vector<core::ObjectWrapperPtr> objects;
-			parser->getExtensionObjects(extension, objects);
+        //weryfikacja rozszerzeñ
+        for(auto it = extensions.begin(); it != extensions.end(); it++){
 
-			UTILS_ASSERT((objects.empty() == false), "Dla danego rozszerzenia parser nie generuje zadnych obiektow!!");
+            if(it->first.empty() == true){
+                std::stringstream str;
+                str << "Parser ID: "<< parser->getID() << " Trying to register extension of length 0";
+                throw std::runtime_error(str.str());
+            }
 
-			for(auto iT = objects.begin(); iT != objects.end(); iT++){
-				it->second.possibleTypes.insert(std::make_pair((*iT)->getTypeInfo(), (*iT)->getClassName()));
-			}
+            if(it->second.types.empty() == true){
+                std::stringstream str;
+                str << "Trying to register extension " << it->first << " without supported types for parser " << parser->getID();
+                throw std::runtime_error(str.str());                
+            }
+        }
 
-			LOG_INFO("Parser for " << extension << " files registered.");
-		}
-		// uzupe³nienie pozosta³ych kolekcji
-		registeredParsers.insert(std::make_pair(parser->getID(), parser));
-	} else {
-		throw std::runtime_error("Parser with this ID already registered.");
-	}
+        for(auto it = extensions.begin(); it != extensions.end(); it++){
+            //w³aœciwe rozszerzenie
+            std::string extension(it->first);
+
+            //uzupe³niamy kropke
+            if(extension.front() != '.'){
+                extension.insert(extension.begin(), '.');
+            }
+
+            // lowercase rozszerzenia
+            boost::to_lower(extension);
+
+            auto extIT = registeredExtensions.find(extension);
+
+            if(extIT != registeredExtensions.end()) {
+                LOG_WARNING("There is at least one parser that supports extension " << extension);                
+            }else{
+                //tworzymy nowy wpis dla nowego rozszerzenia
+                extIT = registeredExtensions.insert(SupportedExtensionsPersistenceData::value_type(extension, ExtendedExtensionDescription())).first;
+            }
+
+            // aktualizujemy parsery dla danego rozszerzenia
+            extIT->second.parsers.insert(parser);
+            //prubujemy aktualizaowac opisy tego rozszerzenia
+            if(it->second.description.empty() == false){
+                extIT->second.descriptions.push_back(it->second.description);
+            }
+            //aktualizujemy typy tego rozszerzenia
+            extIT->second.types.insert(it->second.types.begin(), it->second.types.end());
+
+            LOG_INFO("Parser for extension " << extension << " registered. Parser ID: " << parser->getID());
+        }
+        // uzupe³nienie pozosta³ych kolekcji
+        registeredParsers.insert(std::make_pair(parser->getID(), parser));
+    } else {
+        throw std::runtime_error("Parser with this ID already registered.");
+    }
 }
 
 int DataManager::getNumRegisteredParsers() const
@@ -259,49 +251,10 @@ core::IParserConstPtr DataManager::getRegisteredParser( int idx ) const
 	return const_pointer_cast<const IParser>(it->second);
 }
 
-void DataManager::findResources(const std::string& resourcesPath)
-{
-	resourcesPaths.clear();
-	//szukaj shaderow
-	std::vector<std::string> ext;
-	ext.push_back(".frag");
-	ext.push_back(".vert");
-	//ext.push_back(".avi");
-	try {
-		std::vector<std::string> temp = Filesystem::listFiles(resourcesPath, true, ext);
-		resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
-		//szukaj mesh
-		temp = Filesystem::listFiles(resourcesPath, true, ".fmesh");
-		resourcesPaths.insert(resourcesPaths.end(), temp.begin(), temp.end());
-		//szukaj styli qt
-		temp = Filesystem::listFiles(resourcesPath, true, ".qss");
-		applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
-	} catch(std::exception& e) {
-		LOG_INFO("Finding resources exception: " << e.what());
-	}
-}
-
-IDataManager::LocalTrial DataManager::findLocalTrialsPaths(const core::Filesystem::Path& path)
-{
-	core::IDataManager::LocalTrial trial;
-
-	//przeszukujemy katalog w poszukiwaniu plikow:
-	std::vector<std::string> masks;
-	masks.push_back(".c3d");
-	masks.push_back(".amc");
-	masks.push_back(".asf");
-	masks.push_back(".avi");
-	masks.push_back(".imgsequence");
-	std::vector<std::string> filesPath = Filesystem::listFiles(path.string(), true, masks);
-	BOOST_FOREACH(std::string path, filesPath)
-	{
-		trial.push_back(path);
-	}
-	return trial;
-}
-
 core::ObjectWrapperPtr DataManager::getWrapper(void * rawPtr) const
 {
+    ScopedLock lock(stateMutex);
+
     auto it = rawPointerToObjectWrapper.find(rawPtr);
     if(it != rawPointerToObjectWrapper.end()){
         return it->second;
@@ -310,322 +263,460 @@ core::ObjectWrapperPtr DataManager::getWrapper(void * rawPtr) const
     return ObjectWrapperPtr();
 }
 
-void DataManager::addExternalData(const core::ObjectWrapperPtr & object)
+void DataManager::getManagedData(core::Objects & objects) const
 {
-    if(object == nullptr){
-        LOG_ERROR("Trying to store not initialized ObjectWrapper pointer");
-        return;
-    }
+    ScopedLock lock(stateMutex);
+    objects.insert(this->objects.begin(), this->objects.end());
+}
 
-    auto insData = externalData.insert(object);
-    if(insData.second == false){
-        LOG_WARNING("Given object already added to external data: " << object->getClassName());
-    }else{
 
-        core::ObjectWrapper::Types supportedTypes;
-        object->getSupportedTypes(supportedTypes);
+void DataManager::initializeData(core::ObjectWrapperPtr & data)
+{
+    ScopedLock lock(stateMutex);
 
-        UTILS_ASSERT((supportedTypes.empty() == false), "Obiekt nie wspiera ¿adnych typów - b³¹d!");
+    UTILS_ASSERT((data != nullptr), "Niezainicjowany ObjectWrapper");
+    if(data->isNull() == true){
+        //szukamy inicjalizatora - mamy go w spisie obiektow
+        auto initializerIT = objectsWithInitializers.find(data);
 
-        //uzupe³niamy dane wg typów
-        for(auto it = supportedTypes.begin(); it != supportedTypes.end(); it++){
-            groupedExternalData[*it].insert(object);
+        if(initializerIT->second == nullptr){
+            throw std::runtime_error("Trying to initialize object without initializer");
+        }
+
+        initializerIT->second->initialize(data);
+
+        if(data->isNull() == false){
+            rawPointerToObjectWrapper[data->getRawPtr()] = data;
+        }else{
+            LOG_DEBUG("Data type initialization failed: " << data->getTypeInfo().name());
         }
     }
 }
 
-void DataManager::removeExternalData(const core::ObjectWrapperPtr & object)
+
+bool DataManager::isInitializable(const core::ObjectWrapperPtr & data) const
 {
-    if(object == nullptr){
-        LOG_ERROR("Trying to remove not initialized ObjectWrapper pointer");
-        return;
+    ScopedLock lock(stateMutex);
+
+    //szukamy inicjalizatora - mamy go w spisie obiektow
+    auto initializerIT = objectsWithInitializers.find(data);
+
+    if(initializerIT == objectsWithInitializers.end() || initializerIT->second == nullptr){
+        return false;
     }
+    
+    return true;
+}
 
-    auto eData = externalData.erase(object);
-    if(eData == 0){
-        LOG_WARNING("Given object not exist in external data: " << object->getClassName());
-    }else{
 
-        core::ObjectWrapper::Types supportedTypes;
-        object->getSupportedTypes(supportedTypes);
+void DataManager::deinitializeData(core::ObjectWrapperPtr & data)
+{
+    ScopedLock lock(stateMutex);
 
-        UTILS_ASSERT((supportedTypes.empty() == false), "Obiekt nie wspiera ¿adnych typów - b³¹d!");
+    if(data->isNull() == false){
+        //szukamy inicjalizatora - mamy go w spisie obiektow
+        auto initializerIT = objectsWithInitializers.find(data);
 
-        //uzupe³niamy dane wg typów
-        for(auto it = supportedTypes.begin(); it != supportedTypes.end(); it++){
-            groupedExternalData[*it].erase(object);
+        if(initializerIT == objectsWithInitializers.end() || initializerIT->second == nullptr){
+            throw std::runtime_error("Trying deinitialize data without initializer");
+        }
+
+        void* rawPtr = data->getRawPtr();
+
+        initializerIT->second->deinitialize(data);
+
+        if(data == nullptr){
+            rawPointerToObjectWrapper.erase(rawPtr);
         }
     }
 }
 
-void DataManager::loadFiles(const std::vector<core::Filesystem::Path>& files, const core::ObjectWrapper::Types& types, std::vector<core::ObjectWrapperPtr> & objects)
+
+void DataManager::addData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer)
 {
-	std::set<Path> allFiles(files.begin(), files.end());
+    ScopedLock lock(stateMutex);
 
-	// usuwamy zbêdne obiekty i parsery
-	{
-		// szukamy parserów do usuniêcia
-		ParsersList::iterator last = std::remove_if( currentParsers.begin(), currentParsers.end(), 
-			[&](const ParserPtr& ptr) { return allFiles.find(ptr->getPath()) == allFiles.end(); } 
-		);
-		std::set<ParserPtr> parsersToRemove(last, currentParsers.end());
-		// usuwamy obiekty z ze zbêdnych parserów
-		removeObjects( [&](const ObjectsMapEntry& entry) { return parsersToRemove.find(entry.parser) != parsersToRemove.end(); } );
-		// fizycznie usuwamy zbêdne wektory
-		currentParsers.erase( last, currentParsers.end() );
-	}
+    auto it = objects.find(data);
 
-	// dodajemy nowe
-	{
-		// usuwamy z allFile te parsery, które ju¿ s¹
-		std::for_each( currentParsers.begin(), currentParsers.end(), [&](const ParserPtr& ptr) {
-			auto found = allFiles.find(ptr->getPath());
-			if ( found != allFiles.end() ) {
-				allFiles.erase(ptr->getPath());
-			}
-		});
-		BOOST_FOREACH(const Path& path, allFiles) {
-			std::vector<core::ObjectWrapperPtr> loc(createParsers(path, false));
-			objects.insert(objects.end(), loc.begin(), loc.end());
-			//fileLoadedSignal(path, true);
-			wrappersAddedSignal(path, loc, true);
-		}
-	}
+    if(it != objects.end()){
+        throw std::runtime_error("Trying to add data already managed by DataManager");
+    }
+
+    if(data->isNull() == false || initializer != nullptr){
+
+        objects.insert(data);
+
+        //dodaj do grupowania po typach
+        core::TypeInfoList types;
+        data->getSupportedTypes(types);
+
+        for(auto it = types.begin(); it != types.end(); it++){
+            objectsByTypes[*it].insert(data);
+        }
+
+        if(initializer != nullptr){
+            objectsWithInitializers[data] = initializer;
+        }
+    }else{
+        throw std::runtime_error("Attempting to add empty data without initializer");
+    }
+
+    this->core::IMemoryDataManager::notify();
 }
 
 
-void DataManager::addFiles( const std::vector<Path>& files )
+void DataManager::removeData(const core::ObjectWrapperPtr & data)
 {
-	BOOST_FOREACH(core::Filesystem::Path path, files) {
-		createParsers(path, false);
-	}
+    ScopedLock lock(stateMutex);
+
+    auto it = objects.find(data);
+
+    if(it == objects.end()){
+        throw std::runtime_error("Trying to remove data not managed by DataManager");
+    }
+
+    objects.erase(data);
+
+    //usun z grupowania po typach
+    core::TypeInfoList types;
+    data->getSupportedTypes(types);
+
+    for(auto it = types.begin(); it != types.end(); it++){
+        auto IT = objectsByTypes.find(*it);
+        IT->second.erase(data);
+        if(IT->second.empty() == true){
+            objectsByTypes.erase(IT);
+        }
+    }
+
+    objectsWithInitializers.erase(data);
+
+    if(data->isNull() == false){
+        rawPointerToObjectWrapper.erase(data->getRawPtr());
+    }
+
+    this->core::IMemoryDataManager::notify();
 }
 
-void DataManager::removeFiles( const std::vector<Path>& files )
+void DataManager::getManagedData(core::Files & files) const
 {
-	std::set<Path> filesToRemove(files.begin(), files.end());
+    ScopedLock lock(stateMutex);
 
-	// szukamy parserów dla zadanych plików
-	ParsersList::iterator last = std::remove_if( currentParsers.begin(), currentParsers.end(), 
-		[&](const ParserPtr& ptr) { return filesToRemove.find(ptr->getPath()) != filesToRemove.end(); } 
-	);
-	std::set<ParserPtr> parsersToRemove(last, currentParsers.end());
-
-	// usuwamy obiekty dla zadanych parserów
-	for ( ObjectsByType::iterator it = currentObjects.begin(); it != currentObjects.end(); ) {
-		ObjectsMapEntry& entry = it->second;
-		if ( parsersToRemove.find(entry.parser) != parsersToRemove.end() ) {
-			// usuwamy wpis
-			ObjectsByType::iterator toErase = it++;
-			currentObjects.erase(toErase);
-		} else {
-			++it;
-		}
-	}
-
-	// fizycznie usuwamy zbêdne wektory
-	currentParsers.erase( last, currentParsers.end() );
+    for(auto it = parsersByFiles.begin(); it != parsersByFiles.end(); it++){
+        files.insert(it->first);
+    }
 }
 
-void DataManager::loadResources()
+void DataManager::addData(const core::Filesystem::Path & file)
 {
-	BOOST_FOREACH(std::string resourcePath, resourcesPaths) {
-		core::Filesystem::Path path(resourcePath);
-		//sciezka istnieje, jest plikiem i zgadza sie nazwa
-		if (core::Filesystem::pathExists(path) && core::Filesystem::isDirectory(path) == false) {
-			createParsers(path, true);
-		}
-	}
+    ScopedLock lock(stateMutex);
+
+    auto extIT = registeredExtensions.find(file.extension().string());
+
+    if(extIT == registeredExtensions.end()){
+        throw std::runtime_error("Trying to add unsupported file. Extension not registered by any parser");
+    }
+
+    auto fileIT = parsersByFiles.find(file);    
+    if(fileIT != parsersByFiles.end()){
+        throw std::runtime_error("Trying to add file that already is managed by DataManager");
+    }
+
+    Parsers parsers;
+    Objects totalObjects;
+
+    //jeœli pliku nie ma dodaj go, stwórz parsery i rozszerz dostêpne dane wraz z ich opisem
+    for(auto parserIT = extIT->second.parsers.begin(); parserIT != extIT->second.parsers.end(); parserIT++){
+        //twworzymy w³asne opakowanie parsera klienckiego
+        ParserPtr parser(new Parser((*parserIT)->create(), file));
+        Objects objects;
+        //pobieramy udostepniane obiekty
+        parser->getObjects(objects);
+
+        Objects verifiedObjects;
+
+        //zarejestrowanie obiektów i ich zwi¹zku z parserem i typami danych
+        for(auto objectIT = objects.begin(); objectIT != objects.end(); objectIT++){
+
+            if(*objectIT == nullptr){
+
+                LOG_DEBUG("Unitialized object " << parser->getPath() << " for parser ID " << parser->getParser()->getID());
+
+            }else{
+
+                if((*objectIT)->getSource().empty() == true){
+                    LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " not initialized properly source for type " << (*objectIT)->getTypeInfo().name() << " while parsing file " << parser->getPath() << " Setting source to file path");
+                    (*objectIT)->setSource(file.string());
+                }
+
+                //ObjectByParsers
+                verifiedObjects.insert(*objectIT);
+                //ParsersByObjects
+                parsersByObjects[*objectIT] = parser;
+                
+                addData(*objectIT, core::DataInitializerPtr(new ParserInitializer(parser, this)));
+
+                //UWAGA!!
+                //mapowanie surowego wskaŸnika do ObjectWrappera jest robione podczas parsowania!!
+                //teraz mamy leniw¹ inicjalizacjê
+            }
+        }
+
+        if(verifiedObjects.empty() == false){
+            //pomocnicza zmienna - ¿ebyt nie czytaæ mapy za ka¿dym razem dla tego samego argumentu
+            objectsByParsers[parser].insert(verifiedObjects.begin(), verifiedObjects.end());
+            //kojarzymy nowy parser z plikiem
+            parsers.insert(parser);
+
+            totalObjects.insert(verifiedObjects.begin(), verifiedObjects.end());
+        }
+    }
+
+    if(parsers.empty() == true){
+        LOG_DEBUG("Any of known parsers did not provide proper object wrappers for file: " << file);
+    }else{
+        parsersByFiles.insert(ParsersByFiles::value_type(file, parsers));
+        LOG_INFO("File: " << file << " sussesfully loaded to DataManager");
+        
+        this->core::IFileDataManager::notify();
+    }
 }
 
-void DataManager::clearParsers()
+void DataManager::removeData(const core::Filesystem::Path & file)
 {
-	currentParsers.clear();
-	currentObjects.clear();
+    ScopedLock lock(stateMutex);
+
+    auto fileIT = parsersByFiles.find(file);    
+    if(fileIT != parsersByFiles.end()){
+        throw std::runtime_error("Trying to remove file that is not managed by DataManager");
+    }
+
+    Objects totalObjects;
+
+    //zwalniamy zasoby parserów ¿eby potem zwolniæ same parsery
+    for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); parserIT++){
+        auto objectsByParserIT = objectsByParsers.find(*parserIT);
+        
+        totalObjects.insert(objectsByParserIT->second.begin(), objectsByParserIT->second.end());
+
+        for(auto objectIT = objectsByParserIT->second.begin(); objectIT != objectsByParserIT->second.end(); objectIT++){
+
+            removeData(*objectIT);
+
+            parsersByObjects.erase(*objectIT);
+        }
+
+        //usuwamy ten wpis
+        objectsByParsers.erase(objectsByParserIT);
+    }
+
+    //usuwamy ten wpis
+    parsersByFiles.erase(fileIT);
+
+   this->core::IFileDataManager::notify();
 }
 
-bool DataManager::isExtensionSupported( const std::string& extension ) const
+void DataManager::initializeData(const core::Filesystem::Path & file)
 {
-	return registeredExtensions.find(extension) != registeredExtensions.end();
+    ScopedLock lock(stateMutex);
+
+    Objects toInitialize;
+    
+    getObjectsForData(file, toInitialize);
+
+    Objects invalid;
+
+    for(auto objectIT = toInitialize.begin(); objectIT != toInitialize.end(); objectIT++){
+        initializeData(core::const_pointer_cast<ObjectWrapper>(*objectIT));
+
+        if((*objectIT)->isNull()){
+            //nie powiod³a siê inicjalizacja - albo parser rzucil bledem podczas parsowania, albo w danych nie bylo tego czego szukamy i co deklarowal parser
+            invalid.insert(*objectIT);
+            LOG_DEBUG("Failed to initialize data type " << (*objectIT)->getTypeInfo().name() << " for file " << file);
+        }
+    }
+
+    // usuniêcie niew³aœciwych wpisów
+    if ( invalid.empty() == false ) {
+        LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after parsing " << file);
+        for(auto it = invalid.begin(); it != invalid.end(); it++){
+            
+            auto parserIT = parsersByObjects.find(*it);
+            objectsByParsers[parserIT->second].erase(*it);
+            parsersByObjects.erase(parserIT);        
+
+            removeData(*it);
+        }
+    }
 }
 
-void DataManager::getObjects( std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact /*= false*/ )
+void DataManager::deinitializeData(const core::Filesystem::Path & file)
 {
-    //pobranie danych dostarczonych do DataManagera z zewn¹trz
-    getExternalData(objects, type, exact);
+    ScopedLock lock(stateMutex);
 
-	// pobranie obiektow z parserow
-	getObjectsFromParsers(objects, type, exact);
+    Objects toDeinitialize;
+    getObjectsForData(file, toDeinitialize);
 
-	// pobranie obiektow z procesorow danych
-	dropRemovedWrappers(objectsFromDataProcessors);
-	ObjectFromProcessors::iterator found = objectsFromDataProcessors.find( type );
-	if ( found != objectsFromDataProcessors.end() ) {
-		for ( ObjectFromProcessors::iterator last = objectsFromDataProcessors.upper_bound( type ); found != last; ++found ) {
-			ObjectWrapperPtr object = found->second.second.lock();
-			if ( !exact || object->isTypeEqual(type) ) {
-				UTILS_ASSERT(!object->isNull());
-				// wszystko ok, dodajemy
-				objects.push_back(object);
-			}
-		}
-	}
+    Parsers parsersQueue;
+
+    Objects invalid;
+
+    for(auto objectIT = toDeinitialize.begin(); objectIT != toDeinitialize.end(); objectIT++){
+        deinitializeData(core::const_pointer_cast<ObjectWrapper>(*objectIT));
+    }
 }
 
-void DataManager::getExternalData(std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo& type, bool exact)
+void DataManager::getObjectsForData(const core::Filesystem::Path & file, Objects & objects) const
 {
-    auto it = groupedExternalData.find(type);
-    if(it != groupedExternalData.end()){
-        for(auto iT = it->second.begin(); iT != it->second.end(); iT++){
-            core::ObjectWrapperPtr object(*iT);
-            if ( !exact || object->isTypeEqual(type) ) {
-                objects.push_back(object);
+    ScopedLock lock(stateMutex);
+
+    auto fileIT = parsersByFiles.find(file);    
+    if(fileIT == parsersByFiles.end()){
+        throw std::runtime_error("Trying to get object for file that is not managed by DataManager");
+    }
+
+    for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); parserIT++){
+        auto it = objectsByParsers.find(*parserIT);
+        objects.insert(it->second.begin(), it->second.end());
+    }
+}
+
+const DataManager::Extensions & DataManager::getSupportedFilesExtensions() const
+{
+    return extensions;
+}
+
+const IFileDataManager::ExtensionDescription & DataManager::getExtensionDescription(const std::string & extension) const
+{
+    auto it = registeredExtensions.find(extension);
+    if(it == registeredExtensions.end()){
+        throw std::runtime_error("Request for description of unsupported/unregistered extension");
+    }
+
+    return it->second;
+}
+
+const core::Types & DataManager::getSupportedTypes() const
+{
+    return registeredTypes;
+}
+
+const core::Types & DataManager::getTypeBaseTypes(const core::TypeInfo & type) const
+{
+    auto it = typesHierarchy.find(type);
+    if(it == typesHierarchy.end()){
+        throw std::runtime_error("Request for description of unsupported type");
+    }
+
+    return it->second.first;
+}
+
+const core::Types & DataManager::getTypeDerrivedTypes(const core::TypeInfo & type) const
+{
+    auto it = typesHierarchy.find(type);
+    if(it == typesHierarchy.end()){
+        throw std::runtime_error("Request for description of unsupported type");
+    }
+
+    return it->second.second;
+}
+
+void DataManager::getObjects(core::ObjectWrapperCollection& objects)
+{
+    ScopedLock lock(stateMutex);
+
+    core::Objects ob;
+    getObjects(ob, objects.getTypeInfo(), objects.exactTypes());
+    objects.loadCollectionWithData(ob.begin(), ob.end());
+}
+
+void DataManager::getObjects( core::Objects& objects, const core::TypeInfo& type, bool exact /*= false*/ )
+{
+    ScopedLock lock(stateMutex);
+
+    if(registeredTypes.find(type) == registeredTypes.end()){
+        std::stringstream str;
+        str << "Request for unsupported data type " << type.name();
+        throw std::runtime_error(str.str());
+    }
+
+    core::Objects invalid;
+    core::Types types;
+    types.insert(type);
+
+    if(exact == false){
+        auto & derrived = getTypeDerrivedTypes(type);
+        types.insert(derrived.begin(), derrived.end());
+    }
+
+    for(auto typeIT = types.begin(); typeIT != types.end(); typeIT++){
+
+        auto typeObjectsIT = objectsByTypes.find(*typeIT);
+
+        if(typeObjectsIT == objectsByTypes.end()){
+            //nie mamy jeszcze zadnego obiektu tego typu wiec idziemyu dalej
+            continue;
+        }
+
+        for(auto objectIT = typeObjectsIT->second.begin(); objectIT != typeObjectsIT->second.end(); objectIT++){
+            
+            initializeData(core::const_pointer_cast<ObjectWrapper>(*objectIT));
+
+            if((*objectIT)->isNull() == true){
+                //jesli nadal nie udalo sie zainicjalizowac danych to trzeba je usunac
+                invalid.insert(*objectIT);
+            }else{
+                objects.insert(*objectIT);
             }
         }
     }
-}
 
-void DataManager::getObjectsFromParsers( std::vector<core::ObjectWrapperPtr>& objects, const core::TypeInfo & type, bool exact /*= false*/ )
-{
-	// obiekty które bêdziemy usuwaæ
-	std::set<ObjectWrapperPtr> invalid;
+    if ( invalid.empty() == false ) {
+        LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after data request of type " << type.name());
+        for(auto it = invalid.begin(); it != invalid.end(); it++){
+            
+            removeData(*it);
 
-	// je¿eli znaleŸliœmy dany typ...
-	ObjectsByType::iterator found = currentObjects.find( type );
-	if ( found != currentObjects.end() ) {
-		// to iterujemy po wszystkich jego wariantach
-		for ( ObjectsByType::iterator last = currentObjects.upper_bound( type ); found != last; ++found ) {
+            //sprawdz czy dane pochodza z pliku, jesli tak to aktualizuj info o parserach
 
-			// to, czy sprawdzamy czy to dok³adnie ten typ kontroluje prametr exact
-			ObjectWrapperPtr object = found->second.object;
-			ParserPtr parser = found->second.parser;
+            /*auto parserIT = parsersByObjects.find(*it);
 
-			if ( !exact || object->isTypeEqual(type) ) {
-				// czy obiekt ju¿ jest?
-				if ( object->isNull() ) {
-					if ( parser->isParsing() ) {
-						throw std::runtime_error("Parsers recursion detected!");
-					}
-					// mo¿e musimy przeparsowaæ?
-					if ( !parser->isUsed() ) {
-						LOG_DEBUG("Loading object of type \"" << object->getTypeInfo().name() << "\" when looking for \"" << type.name() << "\"");
-						if ( parser->tryParse(this) ) {
-							if ( object->isNull() ) {
-								// ci¹gle coœ jest nie tak, komunikat o b³êdzie
-								LOG_DEBUG("Object is null and parser for " << parser->getPath() << " is already used.");
-								invalid.insert(object);
-							} else {
-								// uda³o siê, hurra
-								// pozosta³e obiekty z tego parsera te¿ powinny byæ za³adowane
-								objects.push_back(object);
-							}
-						} else {
-							// dodaæ parser do listy do usuniêcia
-							invalid.insert(object);
-						}
-					} else {
-						// 
-						LOG_DEBUG("Object is null and parser for " << parser->getPath() << " is already used.");
-						invalid.insert(object);
-					}
-				} else {
-					// wszystko ok, dodajemy
-					objects.push_back(object);
-				}
-			}
-		}
-	}
-
-	// usuniêcie niew³aœciwych wpisów
-	if ( !invalid.empty() ) {
-		LOG_DEBUG("Removing " << invalid.size() << " null objects after looking for " << type.name());
-		for ( ObjectsByType::iterator it = currentObjects.begin(), last = currentObjects.end(); it != last && !invalid.empty(); ) {
-			if ( invalid.erase(it->second.object) ) {
-				ObjectsByType::iterator toErase = it++;
-				currentObjects.erase(toErase);
-			} else {
-				++it;
-			}
-		}
-	}
-}
-
-void DataManager::mapObjectsToTypes( const std::vector<ObjectWrapperPtr>& objects, const ParserPtr & parser )
-{
-	// pobieramy obiekty i dodajemy je do s³ownika obiektów
-	BOOST_FOREACH(ObjectWrapperPtr object, objects) {
-		if ( !object ) {
-			LOG_ERROR("Unitialized object from " << parser->getPath() << " (id: " << parser->getParser()->getID() << ")");
-
-		} else {
-			ObjectsMapEntry entry = { object, parser };
-			core::TypeInfoList supportedTypes;
-			object->getSupportedTypes(supportedTypes);
-			BOOST_FOREACH( TypeInfo type, supportedTypes ) {
-				currentObjects.insert( std::make_pair(type, entry) );
-			}
-		}
-	}
-}
-
-std::vector<ObjectWrapperPtr> DataManager::createParsers( const Path& path, bool resource )
-{
-	std::vector<core::ObjectWrapperPtr> ret;
-	// próbujemy pobraæ prototyp dla zadanego rozszerzenia
-	std::string extension = path.extension().string();
-	IParsersByExtensions::iterator found = registeredExtensions.find( extension );
-	if ( found != registeredExtensions.end() ) {
-		IParsersByExtensions::iterator last = registeredExtensions.upper_bound(extension);
-		if(std::distance(found, last) > 1) {
-			// TODO: wybór parsera!
-			LOG_WARNING("Multiple parsers found for extension: " << extension);
-		}
-		// to iterujemy po wszystkich jego wariantach
-		for ( ; found != last; ++found ) {
-			// tworzymy parser
-			ParserPtr parser(new Parser(found->second->create(), path, resource));
-			std::vector<ObjectWrapperPtr> objects;
-			parser->getObjects(objects);
-			ret.insert(ret.end(), objects.begin(), objects.end());
-			// mapujemy obiekty
-			mapObjectsToTypes(objects, parser);
-			// dodajemy do bie¿¹cej listy
-			currentParsers.push_back(parser);
-		}
-	} else {
-		LOG_WARNING("No parser found for " << path);
-	}
-
-	return ret;
-}
-
-template <class Predicate>
-void DataManager::removeObjects( Predicate predicate )
-{
-	// usuwamy obiekty dla zadanych parserów
-	for ( ObjectsByType::iterator it = currentObjects.begin(); it != currentObjects.end(); ) {
-		ObjectsMapEntry& entry = it->second;
-		if ( predicate(entry) ) {
-			// usuwamy wpis
-			ObjectsByType::iterator toErase = it++;
-			currentObjects.erase(toErase);
-		} else {
-			++it;
-		}
-	}
+            if(parserIT != parsersByObjects.end()){
+                objectsByParsers[parserIT->second].erase(*it);
+                parsersByObjects.erase(parserIT);
+            }*/
+        }
+    }
 }
 
 void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & factory )
 {
 	core::TypeInfo type = factory->getType();
-	if ( !objectFactories.insert(std::make_pair(type, factory)).second ) {
+    auto it = registeredTypes.find(type);
+
+	if ( it != registeredTypes.end() ) {
 		LOG_ERROR("Factory for " << type.name() << " already exists.");
 	}else{
 		//tworzymy prototyp by miec dostep do informacji o wspieranych typach
 		core::ObjectWrapperConstPtr proto(factory->createWrapper());
 
-		//rejestrujemy typ i jego prototyp
-		registeredTypesPrototypes.insert(std::make_pair(type, proto));
+        //rejestrujemy typ i jego prototyp
+        registeredTypesPrototypes.insert(std::make_pair(type, proto));
+
+        //aktualizujemy hierarchiê typów
+        registeredTypes.insert(type);
+
+        //hierarchia typow
+        core::TypeInfoList types;
+        proto->getSupportedTypes(types);
+
+        types.remove(type);
+
+        typesHierarchy[type].first.insert(types.begin(), types.end());
+
+        for(auto typeIT = types.begin(); typeIT != types.end(); typeIT++){
+            typesHierarchy[*typeIT].second.insert(type);
+        }
 	}
 }
 
@@ -660,94 +751,3 @@ const core::ObjectWrapperConstPtr & DataManager::getTypePrototype(const core::Ty
 
 	return it->second;
 }
-
-void DataManager::addObjects(const DataManager::DataProcessorPtr & dataProcessor, const std::vector<core::ObjectWrapperPtr>& objects) 
-{
-	for ( int i = objects.size() - 1; i >= 0; --i) { 
-		ObjectWrapper::Types types;
-		objects[i]->getSupportedTypes(types);
-		for (ObjectWrapper::Types::iterator it = types.begin(); it != types.end(); it++) {
-			std::pair<DataProcessorPtr, ObjectWrapperWeakPtr> p = std::make_pair(dataProcessor, ObjectWrapperWeakPtr(objects[i]));
-			objectsFromDataProcessors.insert(std::make_pair(*it, p));
-		}
-	}
-}
-
-void DataManager::dropRemovedWrappers(ObjectFromProcessors& objectsToCheck)
-{
-	for (ObjectFromProcessors::iterator it = objectsToCheck.begin(); it != objectsToCheck.end(); ) {
-		if (!it->second.second.lock()) {
-			ObjectFromProcessors::iterator toDelete = it++;
-			objectsToCheck.erase(toDelete);
-		} else {
-			it++;
-		}
-	}
-}
-
-void DataManager::addObject( const DataProcessorPtr & dataProcessor,  const core::ObjectWrapperPtr & object )
-{
-	std::vector<core::ObjectWrapperPtr> objects;
-	objects.push_back(object);
-	addObjects(dataProcessor, objects);
-}
-
-//void DataManager::addFileCallback( boost::function<void (const core::Filesystem::Path&, bool)> function )
-//{
-//	UTILS_ASSERT(false);
-//	//this->fileLoadedSignal.connect(function);
-//}
-
-//void DataManager::removeFileCallback( boost::function<void (const core::Filesystem::Path&, bool)> function )
-//{						
-//	//this->fileLoadedSignal.disconnect(function);					
-//}		
-
-void DataManager::addWrappersCallback(boost::function<void (const core::Filesystem::Path& path, const std::vector<core::ObjectWrapperPtr>&, bool)> function )
-{
-	this->wrappersAddedSignal.connect(function);
-}
-
-void DataManager::removeWrappersCallback( boost::function<void (const core::Filesystem::Path& path, const std::vector<core::ObjectWrapperPtr>&, bool)> function )
-{
-	//this->wrappersAddedSignal.disconnect(function);
-}
-
-bool DataManager::tryParseWrapper( core::ObjectWrapperPtr wrapper )
-{
-	// je¿eli znaleŸliœmy dany typ...
-	TypeInfo type = wrapper->getTypeInfo();
-	ObjectsByType::iterator found = currentObjects.find( type );
-	if ( found != currentObjects.end() ) {
-		// to iterujemy po wszystkich jego wariantach
-		for ( ObjectsByType::iterator last = currentObjects.upper_bound( type ); found != last; ++found ) {
-
-			// to, czy sprawdzamy czy to dok³adnie ten typ kontroluje prametr exact
-			ObjectWrapperPtr object = found->second.object;
-
-			if (object == wrapper) {
-				ParserPtr parser = found->second.parser;
-				if ( object->isNull() ) {
-					if ( parser->isParsing() ) {
-						return false;
-					}
-					// mo¿e musimy przeparsowaæ?
-					if ( !parser->isUsed() ) {
-						LOG_DEBUG("Loading object of type \"" << object->getTypeInfo().name() << "\" when looking for \"" << type.name() << "\"");
-						parser->tryParse(this);
-						if (object->isNull()) {
-							return false;
-						}
-						return true;
-					} 
-				} else {
-					return true;
-				}
-			}
-		}
-	}
-
-	return false;
-}
-
-

@@ -13,23 +13,23 @@ SimpleFilterCommand::SimpleFilterCommand( DataFilterPtr dataFilter ) :
 }
 
 
-QTreeWidgetItem* SimpleFilterCommand::createTreeBranch(const QString& rootItemName, const std::vector<SessionPtr>& sessions )
+QTreeWidgetItem* SimpleFilterCommand::createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions )
 {
     return createTree(rootItemName, sessions, dataFilter);
 }
 
-QTreeWidgetItem* SimpleFilterCommand::createTree(const QString& rootItemName, const std::vector<SessionPtr>& sessions)
+QTreeWidgetItem* SimpleFilterCommand::createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions)
 {
     DataFilterPtr nullFilter;
     return createTree(rootItemName, sessions, nullFilter);
 }
 
-QTreeWidgetItem* SimpleFilterCommand::createTree(const QString& rootItemName, const std::vector<SessionPtr>& sessions, DataFilterPtr dataFilter)
+QTreeWidgetItem* SimpleFilterCommand::createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions, DataFilterPtr dataFilter)
 {
     QTreeWidgetItem* rootItem = new QTreeWidgetItem();
     rootItem->setText(0, rootItemName);
     for (int i = sessions.size() - 1; i >= 0; --i) {
-        SessionPtr session = dataFilter ? dataFilter->filterData(sessions[i]) : sessions[i];
+        SessionConstPtr session = dataFilter ? dataFilter->filterData(sessions[i]) : sessions[i];
         
         QIcon icon(core::getResourceString("icons/charts.png"));
         QIcon icon3D(core::getResourceString("icons/3d.png"));

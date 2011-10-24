@@ -25,7 +25,7 @@ private:
 
     typedef std::map<core::VisualizerTimeSeriePtr, VisualizerChannelPtr> TimelineChannels;
 
-private:
+private:    
 
     //-------------------------- Old VisualizerTitleBar fields -------------------------------------------
     QAction *actionSplitVertically;

@@ -6,7 +6,7 @@
 
 using namespace core;
 
-
+VisualizerManager * ManagerHelper<VisualizerManager>::manager = nullptr;
 
 VisualizerManager::VisualizerManager() :
 debugWidget(nullptr)

@@ -24,6 +24,7 @@
 #include "DataProcessorManager.h"
 #include "DataSourceManager.h"
 #include <utils/Push.h>
+#include <core/IManagersAccessor.h>
 
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
@@ -33,13 +34,113 @@ CORE_DEFINE_INSTANCE_INFO;
 
 namespace core {
 
-
 class AppInitializer
 {
 public:
 	template<class FrontpageWidget>
 	static int start(int argc, char *argv[])
 	{
+        UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyæ po klasie MainWindow");
+
+        class AppManagers : public IManagersAccessor
+        {
+        public:
+            AppManagers()
+            {
+                dataManager.manager = &dataManager;
+                serviceManager.manager = &serviceManager;
+                visualizerManager.manager = &visualizerManager;
+                dataProcessorManager.manager = &dataProcessorManager;
+                dataSourceManager.manager = &dataSourceManager;
+            }
+
+            ~AppManagers()
+            {
+                dataManager.manager = nullptr;
+                serviceManager.manager = nullptr;
+                visualizerManager.manager = nullptr;
+                dataProcessorManager.manager = nullptr;
+                dataSourceManager.manager = nullptr;
+            }
+
+            virtual IFileDataManager * getFileDataManager()
+            {
+                return &dataManager;
+            }
+
+            virtual const IFileDataManager * getFileDataManager() const
+            {
+                return &dataManager;
+            }
+
+            virtual IMemoryDataManager * getMemoryDataManager()
+            {
+                return &dataManager;
+            }
+
+            virtual const IMemoryDataManager * getMemoryDataManager() const
+            {
+                return &dataManager;
+            }
+
+            virtual DataManager * getDataManager()
+            {
+                return &dataManager;
+            }
+
+            virtual const DataManager * getDataManager() const
+            {
+                return &dataManager;
+            }
+
+            virtual ServiceManager * getServiceManager()
+            {
+                return &serviceManager;
+            }
+
+            virtual const ServiceManager * getServiceManager() const
+            {
+                return &serviceManager;
+            }
+
+            virtual VisualizerManager * getVisualizerManager()
+            {
+                return &visualizerManager;
+            }
+
+            virtual const VisualizerManager * getVisualizerManager() const
+            {
+                return &visualizerManager;
+            }
+
+            virtual DataProcessorManager * getDataProcessorManager()
+            {
+                return &dataProcessorManager;
+            }
+
+            virtual const DataProcessorManager * getDataProcessorManager() const
+            {
+                return &dataProcessorManager;
+            }
+
+            virtual DataSourceManager * getDataSourceManager()
+            {
+                return &dataSourceManager;
+            }
+
+            virtual const DataSourceManager * getDataSourceManager() const
+            {
+                return &dataSourceManager;
+            }
+
+        private:
+            DataManager dataManager;
+            VisualizerManager visualizerManager;
+            DataProcessorManager dataProcessorManager;
+            DataSourceManager dataSourceManager;
+            ServiceManager serviceManager;
+        };
+
 		osg::ArgumentParser arguments(&argc,argv);
 		arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
 		arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" example usage of EDR.");
@@ -95,12 +196,13 @@ public:
 
 			    PluginLoader pluginLoader;
 			    {
-				    DataManager dataManager;
+				    /*DataManager dataManager;
 				    VisualizerManager visualizerManager;
 				    DataProcessorManager dataProcessorManager;
 				    DataSourceManager dataSourceManager;
-				    ServiceManager serviceManager;
+				    ServiceManager serviceManager;*/
 
+                    AppManagers appManagers;
 
 				    // tworzenie managerów
 				    // tworzenie/niszczenie managerów w ToolboxMain jest niebezpieczne
@@ -108,15 +210,15 @@ public:
 				    // zale¿eæ od managerów, a wówczas wskaŸniki wskazywa³yby œmieci
 				    // podobnie ¿ywotnoœæ do³adowanych bibliotek musi przekraczaæ zakoñczenie
 				    // siê destruktora
-				    utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
-				    utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
+				    //utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
+				    /*utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
 				    utils::Push<IDataProcessorManager*> pushedDPM(__instanceInfo.dataProcessorManager, &dataProcessorManager);
 				    utils::Push<IDataSourceManager*> pushedDSM(__instanceInfo.dataSourceManager, &dataSourceManager);
-				    utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);
+				    utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);*/
 
 				    {
 					    FrontpageWidget widget;
-					    widget.init(&pluginLoader);
+					    widget.init(&pluginLoader, &appManagers);
 
 					    logger.setConsoleWidget( widget.getConsole() );
 					    widget.show();

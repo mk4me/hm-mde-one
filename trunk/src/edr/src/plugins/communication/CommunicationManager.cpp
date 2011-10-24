@@ -290,7 +290,7 @@ void CommunicationManager::loadFiles(const std::vector<core::Filesystem::Path> f
 
 void CommunicationManager::removeFiles(const std::vector<core::Filesystem::Path> files)
 {
-    dataManager->removeFiles(files);
+    dataManager->unloadFiles(files);
 }
 
 void CommunicationManager::run()

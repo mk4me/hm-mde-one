@@ -32,7 +32,7 @@ void DataFilterWidget::addFilter( const QString& bigLabelText, const QString& sm
 void DataFilterWidget::onClick()
 {
     setActive(!getActive());
-    const std::vector<SessionPtr>& sessions = hmmWindow->getCurrentSessions();
+    const std::vector<SessionConstPtr>& sessions = hmmWindow->getCurrentSessions();
     hmmWindow->clearTree();
     BOOST_FOREACH(FilterEntryWidget* filter, entries) {
         hmmWindow->addItemToTree(filter->getFilterCommand()->createTreeBranch(filter->getName(), sessions));

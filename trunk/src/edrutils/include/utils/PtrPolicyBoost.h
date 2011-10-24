@@ -62,6 +62,22 @@ struct PtrPolicyBoost
         ptr = data;
     }
 
+    //! Zwraca surowy wskaünik
+    //! \param ptr
+    template<class T>
+    void* getRawPtr(const boost::shared_ptr<T> & ptr)
+    {
+        return ptr.get();
+    }
+
+    //! Zwraca surowy wskaünik
+    //! \param ptr
+    template<class T>
+    const void* getRawPtr(const boost::shared_ptr<T> & ptr) const
+    {
+        return ptr.get();
+    }
+
     //! Czy wskaünik jest unikatowy?
     //! \param ptr
     template<class T>

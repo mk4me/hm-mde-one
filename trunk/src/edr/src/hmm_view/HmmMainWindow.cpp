@@ -32,9 +32,10 @@ HmmMainWindow::HmmMainWindow() :
 }
 
 
-void HmmMainWindow::init( core::PluginLoader* pluginLoader )
+void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
-	core::MainWindow::init(pluginLoader);
+	core::MainWindow::init(pluginLoader, managersAccessor);
+
 	setupUi(this);
 
 	topButton->setFixedWidth(0);
@@ -107,8 +108,6 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
         }
 	}
 
-    //Analizy->setLayout(hlayout);
-
     // akcje - Workflow (VDF) i konsola
 
     QMainWindow * actionsMainWindow = new QMainWindow(nullptr);
@@ -120,8 +119,6 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader )
     layout->addWidget(actionsMainWindow);
 
 	Operations->setLayout(layout);
-
-    
 }
 
 HmmMainWindow::~HmmMainWindow()
@@ -198,7 +195,7 @@ void HmmMainWindow::onOpen()
 		delete d;
 	}
 
-	std::vector<SessionPtr> sessions = core::queryDataPtr(DataManager::getInstance());
+	std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
     currentSessions = sessions;
     QTreeWidgetItem* item = SimpleFilterCommand::createTree("Sessions", sessions);
     treeWidget->addTopLevelItem(item);
@@ -275,7 +272,7 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
         topMainWindow->autoAddDockWidget( visualizerDockWidget);
         connect(visualizerDockWidget, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
 
-        TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+        TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
         if(timeline != nullptr) {
             if (series.size() == 1 && series[0] != nullptr) {
                 VisualizerChannelPtr channel(new VisualizerChannel(series[0], visualizerDockWidget));
@@ -363,6 +360,8 @@ void HmmMainWindow::createFilterTabs()
 
 void HmmMainWindow::createFilterTab1()
 {
+    core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
+
     QWidget* tab = new QWidget(filterTabWidget);
     QVBoxLayout* tabLayout = new QVBoxLayout();
     QMargins margins(0, 0, 0, 0);
@@ -396,27 +395,27 @@ void HmmMainWindow::createFilterTab1()
     std::vector<TypeInfo> types;
     types.push_back(typeid(GRFCollection));
     types.push_back(typeid(GRFChannel));
-    TypeFilterPtr typeFilter1(new TypeFilter(types));
-    TypeFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
+    TypeFilterPtr typeFilter1(new TypeFilter(memoryDataManager, types));
+    TypeFilterPtr typeFilter2(new TypeFilter(memoryDataManager, typeid(EMGChannel)));
 
     filter1->addFilter("Grf", "label", typeFilter1);
     filter1->addFilter("Emg", "emg label", typeFilter2);
 
-    TypeFilterPtr typeFilter3(new TypeFilter(typeid(ForceCollection)));
-    TypeFilterPtr typeFilter4(new TypeFilter(typeid(MomentCollection)));
-    TypeFilterPtr typeFilter5(new TypeFilter(typeid(PowerCollection)));
+    TypeFilterPtr typeFilter3(new TypeFilter(memoryDataManager, typeid(ForceCollection)));
+    TypeFilterPtr typeFilter4(new TypeFilter(memoryDataManager, typeid(MomentCollection)));
+    TypeFilterPtr typeFilter5(new TypeFilter(memoryDataManager, typeid(PowerCollection)));
 
     filter2->addFilter("Force", "count: ", typeFilter3);
     filter2->addFilter("Moment", "moments", typeFilter4);
     filter2->addFilter("Power", "powers", typeFilter5);
 
-    TypeFilterPtr typeFilter6(new TypeFilter(typeid(MarkerCollection)));
-    TypeFilterPtr typeFilter7(new TypeFilter(typeid(kinematic::JointAnglesCollection)));
+    TypeFilterPtr typeFilter6(new TypeFilter(memoryDataManager, typeid(MarkerCollection)));
+    TypeFilterPtr typeFilter7(new TypeFilter(memoryDataManager, typeid(kinematic::JointAnglesCollection)));
 
     filter3->addFilter("Markers", "count: 1", typeFilter6);
     filter3->addFilter("Joints", "count: 1", typeFilter7);
 
-    TypeFilterPtr typeFilter8(new TypeFilter(typeid(VideoChannel)));
+    TypeFilterPtr typeFilter8(new TypeFilter(memoryDataManager, typeid(VideoChannel)));
     filter4->addFilter("Video", "count: 4", typeFilter8);
 
     connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
@@ -438,6 +437,8 @@ void HmmMainWindow::createFilterTab1()
 
 void HmmMainWindow::createFilterTab2()
 {
+    core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
+
     QWidget* tab = new QWidget(filterTabWidget);
     QVBoxLayout* tabLayout = new QVBoxLayout();
     tab->setLayout(tabLayout);
@@ -465,8 +466,8 @@ void HmmMainWindow::createFilterTab2()
     DataFilterWidget* filter3 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
     DataFilterWidget* filter4 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
 
-    TypeFilterPtr typeFilter1(new TypeFilter(typeid(GRFChannel)));
-    TypeFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
+    TypeFilterPtr typeFilter1(new TypeFilter(memoryDataManager, typeid(GRFChannel)));
+    TypeFilterPtr typeFilter2(new TypeFilter(memoryDataManager, typeid(EMGChannel)));
 
     IFilterCommandPtr multi1(new MultiChartCommand<ForceCollection>());
     IFilterCommandPtr multi2(new MultiChartCommand<MomentCollection>());

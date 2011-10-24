@@ -66,7 +66,7 @@ VideoParser::~VideoParser()
 {
 }
 
-void VideoParser::parseFile(core::IDataManager* /*dataManager*/, const core::Filesystem::Path& path)
+void VideoParser::parseFile(const core::Filesystem::Path& path)
 {
     if ( core::Filesystem::fileExtension(path).compare(".imgsequence") == 0 ) {
         
@@ -148,13 +148,31 @@ core::IParser* VideoParser::create()
     return new VideoParser();
 }
 
-std::string VideoParser::getSupportedExtensions() const
+void VideoParser::getSupportedExtensions(Extensions & extensions) const
 {
-    return "avi;mpg;mpeg;imgsequence";
+    core::IParser::ExtensionDescription extDesc;
+    extDesc.description = "Audio Video Interleaved format";
+
+    extDesc.types.insert(typeid(VideoChannel));
+
+    extensions["avi"] = extDesc;
+
+    extDesc.description = "Moving Picture Experts Group format";
+
+    extensions["mpg"] = extDesc;
+
+    extensions["mpeg"] = extDesc;
+
+    extDesc.description = "Custom image sequence format (XML based)";
+
+    extDesc.types.clear();
+    extDesc.types.insert(typeid(::VideoStream));
+
+    extensions["imgsequence"] = extDesc;
 }
 
-void VideoParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
+void VideoParser::getObjects( core::Objects& objects )
 {
-    objects.push_back(adapter);
-	objects.push_back(channelWrapper);
+    objects.insert(adapter);
+	objects.insert(channelWrapper);
 }

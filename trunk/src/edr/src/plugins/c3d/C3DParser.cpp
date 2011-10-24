@@ -41,7 +41,7 @@ C3DParser::~C3DParser()
 {
 }
 
-void C3DParser::parseFile( core::IDataManager* dataManager, const core::Filesystem::Path& path )
+void C3DParser::parseFile( const core::Filesystem::Path& path )
 {
 	ParserPtr parser(new c3dlib::C3DParser());
 	parserPtr = parser;
@@ -207,25 +207,39 @@ core::IParser* C3DParser::create()
     return new C3DParser();
 }
 
-std::string C3DParser::getSupportedExtensions() const
+void C3DParser::getSupportedExtensions(core::IParser::Extensions & extensions) const
 {
-    return "c3d";
+    core::IParser::ExtensionDescription extDesc;
+    extDesc.description = "C3D format";
+
+    extDesc.types.insert(typeid(GRFChannel));
+    extDesc.types.insert(typeid(EMGChannel));
+    extDesc.types.insert(typeid(GRFCollection));
+    extDesc.types.insert(typeid(EMGCollection));
+    extDesc.types.insert(typeid(MarkerCollection));
+    extDesc.types.insert(typeid(ForceCollection));
+    extDesc.types.insert(typeid(AngleCollection));
+    extDesc.types.insert(typeid(MomentCollection));
+    extDesc.types.insert(typeid(PowerCollection));
+    extDesc.types.insert(typeid(C3DEventsCollection));
+
+    extensions["c3d"] = extDesc;
 }
 
-void C3DParser::getObjects( std::vector<core::ObjectWrapperPtr>& objects )
+void C3DParser::getObjects( core::Objects& objects )
 {
-	objects.insert(objects.end(), GRFChannels.begin(), GRFChannels.end());
-	objects.insert(objects.end(), EMGChannels.begin(), EMGChannels.end());
-	objects.push_back(markerChannels);
-	objects.push_back(leftEvents);
-	objects.push_back(rightEvents);
-	objects.push_back(EMGs);
-	objects.push_back(GRFs);
-	objects.push_back(forceChannels );
-	objects.push_back(angleChannels );
-	objects.push_back(momentChannels);
-	objects.push_back(powerChannels );
-	//objects.push_back(c3dMisc);
+	objects.insert(GRFChannels.begin(), GRFChannels.end());
+	objects.insert(EMGChannels.begin(), EMGChannels.end());
+	objects.insert(markerChannels);
+	objects.insert(leftEvents);
+	objects.insert(rightEvents);
+	objects.insert(EMGs);
+	objects.insert(GRFs);
+	objects.insert(forceChannels );
+	objects.insert(angleChannels );
+	objects.insert(momentChannels);
+	objects.insert(powerChannels );
+	//objects.insert(c3dMisc);
 }
 
 void C3DParser::saveFile( const core::Filesystem::Path& path )

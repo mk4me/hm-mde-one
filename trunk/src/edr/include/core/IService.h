@@ -14,6 +14,7 @@
 #include <core/BaseDataTypes.h>
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
+#include <core/IManagersAccessor.h>
 
 class QObject;
 class QWidget;
@@ -34,10 +35,7 @@ namespace core
  
         //! Inicjalizacja us³ugi. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich us³ug.
-        virtual void init()
-        {
-
-        }
+        virtual void init(IManagersAccessor * managersAccessor) = 0;
 
         //! Póxna inicjalizacja us³ug, nastêpuje po wczytaniu i inicjalizacji wszystkich us³ug
         virtual void lateInit()

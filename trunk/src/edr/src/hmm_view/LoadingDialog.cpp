@@ -15,7 +15,7 @@ LoadingDialog::LoadingDialog() :
 	label->setText("");
 }
 
-void LoadingDialog::start( const QString& directoryName )
+void LoadingDialog::start( const QString& directoryName)
 {
 	filesLoaded = 0;
 	LoadingThread lt(directoryName);
@@ -23,8 +23,8 @@ void LoadingDialog::start( const QString& directoryName )
 	QObject::connect(&lt, SIGNAL(sendMinMax(int, int)), this, SLOT(setMinMax(int, int)), Qt::QueuedConnection);
 	//QObject::connect(&lt, SIGNAL(sendValue(int)), progressBar, SLOT(setValue(int)), Qt::QueuedConnection);
 	QObject::connect(&lt, SIGNAL(loadingEnded()), this, SLOT(close()), Qt::QueuedConnection);
-	lt.start();
-	this->exec();
+    lt.start();
+    this->exec();
 }
 
 void LoadingDialog::setValue( int value )

@@ -4,9 +4,12 @@
 #include <core/StringTools.h>
 #include <boost/foreach.hpp>
 #include "VisualizerWidget.h"
-#include "DataManager.h"
+//#include "DataManager.h"
+#include <core/DataAccessors.h>
 #include "ui_VisualizerWidget.h"
 #include "MainWindow.h"
+#include <core/DataAccessors.h>
+#include "ServiceManager.h"
 #include <plugins/newTimeline/ITimelineService.h>
 
 using namespace core;
@@ -308,7 +311,7 @@ void VisualizerWidget::clearCurrentVisualizer()
 void VisualizerWidget::clearDataSeries()
 {
     if(timelineChannels.empty() == false){
-        TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+        TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
         if(timeline != nullptr) {
 
             do{
@@ -339,7 +342,7 @@ void VisualizerWidget::clearDataSeries()
 void VisualizerWidget::setCurrentVisualizer( UniqueID id )
 {
     if ( !visualizer || visualizer->getID() != id ) {
-        setCurrentVisualizer( static_cast<VisualizerManager*>(getVisualizerManager())->createVisualizer(id) );
+        setCurrentVisualizer( VisualizerManager::getInstance()->createVisualizer(id) );
     }
 }
 
@@ -359,15 +362,20 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
             for(int i = 0; i < visualizer->getNumInputs(); i++){
                 bool exact = false;
                 //pobieram dane
-                std::vector<core::ObjectWrapperPtr> dmData;
-                DataManager::getInstance()->getObjects(dmData, visualizer->getInputType(i), exact);
+                //std::vector<core::ObjectWrapperPtr> dmData;
+                //DataManager::getInstance()->getObjects(dmData, visualizer->getInputType(i), exact);
+                //core::Objects dmData(core::queryData(visualizer->getInputType(i), exact));
+                
+                //core::Objects dmData;
 
                 //stworz nowy OWC, odswiezajacy dane z DM ObjectWrapperCollection
                 core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), exact));
 
-                for(auto it = dmData.begin(); it != dmData.end(); it++){
-                    collection->addObject(*it);
-                }
+                //for(auto it = dmData.begin(); it != dmData.end(); it++){
+                //    collection->addObject(*it);
+                //}
+
+                core::queryData(*collection);
 
                 visualizer->setObjects(i, collection);
             }
@@ -636,7 +644,7 @@ void VisualizerWidget::sourceSelected()
             VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie));
 
             if(timeSerie != nullptr){
-                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+                TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
                 if(timeline != nullptr) {
                     
                     VisualizerChannelPtr channel(new VisualizerChannel(timeSerie, this));
@@ -698,7 +706,7 @@ void VisualizerWidget::sourceSelected()
 
             if(iT != timelineChannels.end()){
                 //usun kanal z timeline
-                TimelinePtr timeline = core::queryServices<ITimelineService>(core::getServiceManager());
+                TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
                 if(timeline != nullptr) {
                     try{
                         timeline->removeChannel(iT->first->getName());

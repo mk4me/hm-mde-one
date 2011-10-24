@@ -18,15 +18,15 @@ public:
 
     virtual ~ShallowCopyParser();
     
-    virtual void parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path);
+    virtual void parseFile(const core::Filesystem::Path& path);
 
     virtual IParser* create();
 
-    virtual std::string getSupportedExtensions() const;
+    virtual void getSupportedExtensions(core::IParser::Extensions & extensions) const;
 
     const ShallowCopyConstPtr& getShallowCopy() const;
 
-    virtual void getObjects(std::vector<core::ObjectWrapperPtr>& objects);
+    virtual void getObjects(core::Objects& objects);
 
 private:
     core::Filesystem::Path path;

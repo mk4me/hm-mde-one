@@ -4,6 +4,8 @@
 
 using namespace core;
 
+DataProcessorManager * ManagerHelper<DataProcessorManager>::manager = nullptr;
+
 DataProcessorManager::DataProcessorManager()
 {
 

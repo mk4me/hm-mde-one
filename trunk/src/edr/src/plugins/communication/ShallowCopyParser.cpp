@@ -13,7 +13,7 @@ ShallowCopyParser::~ShallowCopyParser()
 {
 }
 
-void ShallowCopyParser::parseFile(core::IDataManager* dataManager, const core::Filesystem::Path& path)
+void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
 {
     this->path = path;
 
@@ -317,9 +317,13 @@ core::IParser* ShallowCopyParser::create()
     return new ShallowCopyParser();
 }
 
-std::string ShallowCopyParser::getSupportedExtensions() const
+void ShallowCopyParser::getSupportedExtensions(core::IParser::Extensions & extensions) const
 {
-    return "xml";
+    core::IParser::ExtensionDescription desc;
+
+    desc.types.insert(typeid(communication::ShallowCopy::ShallowCopy));
+    desc.description = "Shallow copy of motion DB";
+    extensions["xml"] = desc;
 }
 
 const ShallowCopyConstPtr& ShallowCopyParser::getShallowCopy() const
@@ -327,7 +331,7 @@ const ShallowCopyConstPtr& ShallowCopyParser::getShallowCopy() const
     return constShallowCopy;
 }
 
-void ShallowCopyParser::getObjects(std::vector<core::ObjectWrapperPtr>& objects)
+void ShallowCopyParser::getObjects(core::Objects& objects)
 {
-    objects.push_back(object);
+    objects.insert(object);
 }
