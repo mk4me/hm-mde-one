@@ -22,7 +22,6 @@
 #include "OsgSchemeDrawer.h"
 #include "LineSchemeDrawer.h"
 #include "PointSchemeDrawer.h"
-#include "KinematicService.h"
 #include "GlPointSchemeDrawer.h"
 #include "GlLineSchemeDrawer.h"
 #include "SchemeDrawerContainer.h"
