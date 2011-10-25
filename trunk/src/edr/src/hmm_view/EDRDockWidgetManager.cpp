@@ -1,3 +1,4 @@
+#include "hmmPCH.h"
 #include "EdrDockWidgetSet.h"
 #include "EDRDockWidgetManager.h"
 

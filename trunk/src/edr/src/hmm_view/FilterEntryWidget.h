@@ -12,6 +12,7 @@
 
 #include <boost/function.hpp>
 #include <QtGui/QWidget>
+#include <osg/Vec3>
 #include "FilterCommand.h"
 #include "ui_filterEntry.h"
 
@@ -21,25 +22,42 @@ class FilterEntryWidget : public QWidget, private Ui::FilterEntry
 {
     Q_OBJECT;
 public:
-    FilterEntryWidget(QWidget* parent, HmmMainWindow* hmm, const QString& bigLabelText, const QString& smallLabelText, IFilterCommandPtr filterCommand) :
+    FilterEntryWidget(QWidget* parent, HmmMainWindow* hmm, const QString& bigLabelText, const QString& smallLabelText, IFilterCommandPtr filterCommand, const QPixmap* icon = nullptr) :
       QWidget(parent),
       filterCommand(filterCommand),
       hmm(hmm)
     {
         setupUi(this);
         this->pushButton->setText(bigLabelText);
+
+        this->pushButton->setAttribute(Qt::WA_NoSystemBackground, true);
         this->smallLabel->setText(smallLabelText);
+        if (icon) {
+            this->pushButton->setIcon(*icon);
+        }
+        this->configurationButton->setVisible(false);
+        this->setMouseTracking(true);
+
         connect(pushButton, SIGNAL(clicked()), this, SLOT(onButton()));
         connect(configurationButton, SIGNAL(clicked()), this, SLOT(onConfigurationButton()));
+        QIcon icon2(core::getResourceString("images/przod.png"));
+        configurationButton->setIcon(icon2);
     }
 	virtual ~FilterEntryWidget() {}
+
 public:
     IFilterCommandPtr getFilterCommand() const { return filterCommand; }
     QString getName() const { return pushButton->text(); }
+    void setActiveBackground(bool val);
+
 
 private slots:
     void onButton();
     void onConfigurationButton();
+
+protected:
+    virtual void enterEvent( QEvent * );
+    virtual void leaveEvent( QEvent * );
 
 private:
     IFilterCommandPtr filterCommand;

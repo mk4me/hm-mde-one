@@ -1,6 +1,8 @@
+#include "hmmPCH.h"
 #include "EDRDockWidgetSet.h"
 
 const int maxWidgets = 5;
+
 
 EDRDockWidgetSet::EDRDockWidgetSet( const QString &title, QWidget *parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
 	EDRDockWidget(title, parent, flags),

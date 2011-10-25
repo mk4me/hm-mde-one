@@ -1,3 +1,4 @@
+#include "hmmPCH.h"
 #include <core/IDataManager.h>
 #include <core/PluginCommon.h>
 #include "LoadingDialog.h"
@@ -13,6 +14,7 @@ LoadingDialog::LoadingDialog() :
 {
 	Ui::LoadingDialog::setupUi(this);
 	label->setText("");
+    setWindowFlags(Qt::Tool);
 }
 
 void LoadingDialog::start( const QString& directoryName)

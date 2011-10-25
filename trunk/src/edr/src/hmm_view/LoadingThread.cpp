@@ -1,3 +1,4 @@
+#include "hmmPCH.h"
 #include "LoadingThread.h"
 #include <boost/bind.hpp>
 #include <core/PluginCommon.h>

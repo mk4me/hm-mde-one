@@ -14,21 +14,24 @@
 #include <QtGui/QWidget>
 #include <boost/date_time.hpp>
 #include <boost/function.hpp>
+#include <osg/Vec3>
 #include "FilterEntryWidget.h"
 #include "HmmMainWindow.h"
 #include "ui_filter.h"
+
 
 class DataFilterWidget : public QWidget, private Ui::FilterWidget
 {
     Q_OBJECT;
 public:
-    DataFilterWidget(const QPixmap& pixmap, HmmMainWindow* hmmWindow);
+    DataFilterWidget(const QString& name, const QPixmap& pixmap, HmmMainWindow* hmmWindow);
 	virtual ~DataFilterWidget() {}
 
 public:
-    void addFilter(const QString& bigLabelText, const QString& smallLabelText, DataFilterPtr dataFilter);
-    void addFilter(const QString& bigLabelText, const QString& smallLabelText, IFilterCommandPtr command);
+    void addFilter(const QString& bigLabelText, const QString& smallLabelText, DataFilterPtr dataFilter, const QPixmap* icon = nullptr);
+    void addFilter(const QString& bigLabelText, const QString& smallLabelText, IFilterCommandPtr command, const QPixmap* icon = nullptr);
     void addFilter(FilterEntryWidget* entry);
+    void closeFilters();
     bool getActive() const { return active; }
     void setActive(bool val);
 
@@ -45,7 +48,7 @@ private:
     std::vector<FilterEntryWidget*> entries;
     HmmMainWindow* hmmWindow;
     bool active;
-    
+    bool filtersClosed;
 };
 typedef boost::shared_ptr<DataFilterWidget> DataFilterWidgetPtr;
 typedef boost::shared_ptr<const DataFilterWidget> DataFilterWidgetConstPtr;

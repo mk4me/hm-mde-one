@@ -20,6 +20,7 @@
 
 class EDRDockWidgetManager;
 class DataFilterWidget;
+class AnalisisWidget;
 
 class HmmTreeItem : public QTreeWidgetItem
 {
@@ -98,6 +99,7 @@ private slots:
     void onTreeContextMenu(const QPoint & pos);
     void createNewVisualizer();
     void filterGroupActivated(bool active);
+    void onToolButton();
 
 private:
     void showTimeline();
@@ -155,6 +157,11 @@ private:
     std::map<QTreeWidgetItem*, DataItemDescription> items2Descriptions;
 
     QTreeWidgetItem * currentItem;
+    AnalisisWidget* analisis;
+    QWidget* tests;
+    QWidget* operations;
+    QWidget* raports;
+    std::map<QWidget*, QWidget*> button2TabWindow;
 };
 
 #endif // TOOLBOXMAIN_H

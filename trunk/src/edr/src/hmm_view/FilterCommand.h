@@ -15,8 +15,15 @@
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QDoubleSpinBox>
+#include <QtGui/QCheckBox>
+
+#include <utils/DataChannel.h>
+#include <utils/DataChannelCollection.h>
+#include <core/SmartPtr.h>
+
 #include <plugins/subject/Session.h>
 #include <plugins/subject/DataFilter.h>
+#include "TreeBuilder.h"
 
 class IFilterCommand
 {
@@ -25,7 +32,7 @@ public:
    
 public:
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions) = 0;
-    virtual QWidget* getConfigurationWidget() { return nullptr; }
+    virtual QWidget* getConfigurationWidget(QWidget* parent) { return nullptr; }
 };
 typedef boost::shared_ptr<IFilterCommand> IFilterCommandPtr;
 typedef boost::shared_ptr<const IFilterCommand> IFilterCommandConstPtr;
@@ -36,8 +43,11 @@ public:
     SimpleFilterCommand(DataFilterPtr dataFilter);
 
 public:
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions);
-    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions);
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions) 
+    {
+        return TreeBuilder::createTree(rootItemName, sessions, dataFilter);
+    }
+    /*static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions);
     static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions, DataFilterPtr dataFilter);
     static QTreeWidgetItem* createMarkersBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
     static QTreeWidgetItem* createJointsBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
@@ -92,8 +102,11 @@ public:
         QDoubleSpinBox* spin = new QDoubleSpinBox(widget);
         layout->addWidget(spin);
         return widget;
-    }
+    }*/
 
+    //virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionPtr>& sessions);
+    virtual QWidget* getConfigurationWidget(QWidget* parent);
+    
 private:
     DataFilterPtr dataFilter;
 };

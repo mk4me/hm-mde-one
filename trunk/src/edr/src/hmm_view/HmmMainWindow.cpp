@@ -1,12 +1,5 @@
+#include "hmmPCH.h"
 #include "HmmMainWindow.h"
-#include <core/ServiceManager.h>
-#include <core/IService.h>
-#include <utils/Push.h>
-#include <plugins/subject/Motion.h>
-#include <plugins/subject/Session.h>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QGridLayout>
-#include <boost/foreach.hpp>
 #include "ui_LoadingDialog.h"
 #include "LoadingDialog.h"
 #include "VisualizerWidget.h"
@@ -16,7 +9,9 @@
 #include "EDRDockWidgetSet.h"
 #include "EDRDockWidgetManager.h"
 #include "DataFilterWidget.h"
-
+#include "TreeBuilder.h"
+#include "Vector3DFilterCommand.h"
+#include "AnalisisWidget.h"
 using namespace core;
 
 
@@ -24,8 +19,10 @@ HmmMainWindow::HmmMainWindow() :
 	MainWindow(),
 	currentVisualizer(nullptr),
 	topMainWindow(nullptr),
-	//treeWidget(nullptr),
-    currentItem(nullptr)
+	analisis(nullptr),
+    currentItem(nullptr),
+    tests(nullptr),
+    operations(nullptr)
 {
 	this->setWindowFlags(Qt::FramelessWindowHint);
     itemClickAction.setMainWindow(this);
@@ -38,15 +35,40 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
 	setupUi(this);
 
-	topButton->setFixedWidth(0);
-	bottomButton->setFixedWidth(0);
+    this->analisis = new AnalisisWidget(nullptr);
+    this->tests = new QWidget(nullptr);
+    this->operations = new QWidget(nullptr);
+    this->raports = new QWidget(nullptr);
+	//topButton->setFixedWidth(0);
+	//bottomButton->setFixedWidth(0);
 
-	connect(this->fontSlider, SIGNAL(valueChanged(int)), this, SLOT(setFont(int)));
-	connect(this->layoutTopSlider, SIGNAL(valueChanged(int)), this, SLOT(setTop(int)));
-	connect(this->layoutBottomSlider, SIGNAL(valueChanged(int)), this, SLOT(setBottom(int)));
+    button2TabWindow[this->testsButton] = this->tests;
+    button2TabWindow[this->operationsButton] = this->operations;
+    button2TabWindow[this->raportsButton] = this->raports;
+    button2TabWindow[this->analisisButton] = this->analisis;
+
+    QGridLayout* grid = new QGridLayout;
+    grid->setMargin(0);
+    QMargins m(0, 0, 0, 0);
+    grid->setContentsMargins(m);
+    mainArea->setLayout(grid);
+    for(auto it = button2TabWindow.begin(); it != button2TabWindow.end(); it++) {
+        mainArea->layout()->addWidget(it->second);
+        it->second->hide();
+        bool c = connect(it->first, SIGNAL(clicked()), this, SLOT(onToolButton()));
+        UTILS_ASSERT(c);
+    }
+
+    this->tests->show();
+
+    
+
+	//connect(this->fontSlider, SIGNAL(valueChanged(int)), this, SLOT(setFont(int)));
+	//connect(this->layoutTopSlider, SIGNAL(valueChanged(int)), this, SLOT(setTop(int)));
+	//connect(this->layoutBottomSlider, SIGNAL(valueChanged(int)), this, SLOT(setBottom(int)));
 	
 	this->showFullScreen();
-
+    QTreeWidget* treeWidget = this->analisis->getTreeWidget();
     treeWidget->setColumnCount(2);
     treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
 
@@ -70,14 +92,14 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     //splitter->addWidget(topMainWindow->asQWidget());
     //splitter->addWidget(bottomMainWindow);
 
-    QGridLayout* v = new QGridLayout(hlayout);
+    QWidget* analisisArea = analisis->getArea();
+    QGridLayout* v = new QGridLayout(analisisArea);
     //v->addWidget(splitter);
     v->addWidget(topMainWindow->asQWidget());
     topMainWindow->asQWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     v->addWidget(bottomMainWindow);
-    //bottomMainWindow->setMaximumHeight(bottomMainWindow->sizeHint().height());
     bottomMainWindow->setMaximumHeight(120); // tymczasowo
-    hlayout->setLayout(v);
+    analisisArea->setLayout(v);
 
     int i = hlayout->children().size();
 
@@ -102,7 +124,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
 			QVBoxLayout *layout = new QVBoxLayout;
 			layout->addWidget(settingsWidget);
-			this->Badania_2->setLayout(layout);
+			this->tests->setLayout(layout);
         }else if (name == "newTimeline") {
             // przeniesione do showTimeline();
         }
@@ -118,12 +140,17 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
     layout->addWidget(actionsMainWindow);
 
-	Operations->setLayout(layout);
+	operations->setLayout(layout);
 }
 
 HmmMainWindow::~HmmMainWindow()
 {
-
+    this->analisis->setParent(nullptr);
+    delete this->analisis;
+    this->tests->setParent(nullptr);
+    delete tests;
+    this->operations->setParent(nullptr);
+    delete operations;
 }
 
 bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
@@ -139,6 +166,7 @@ void HmmMainWindow::createNewVisualizer()
 
 void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
 {
+    QTreeWidget* treeWidget = analisis->getTreeWidget();
     currentItem = treeWidget->itemAt(pos);
 
     if(currentItem == nullptr || isDataItem(currentItem) == false){
@@ -190,35 +218,35 @@ void HmmMainWindow::onOpen()
 	if (!directory.isEmpty()) 
 	{
 		LoadingDialog* d = new LoadingDialog();
-		d->setWindowFlags(Qt::Tool);
+		//d->setWindowFlags(Qt::Tool);
 		d->start(directory);
 		delete d;
 	}
 
 	std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
     currentSessions = sessions;
-    QTreeWidgetItem* item = SimpleFilterCommand::createTree("Sessions", sessions);
-    treeWidget->addTopLevelItem(item);
+    QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", sessions);
+    analisis->getTreeWidget()->addTopLevelItem(item);
 }
 
 void HmmMainWindow::setFont( int size )
 {
-	const QFont& font = this->tabWidget->font();
+	/*const QFont& font = tabWidget->font();
 	QFont newFont(font);
 	newFont.setPointSize(size);
-	this->tabWidget->setFont(newFont);
+	tabWidget->setFont(newFont);*/
 }
 
 void HmmMainWindow::setTop( int size )
 {
-	topButton->setFixedHeight(size);
-	topButton->setFixedWidth(0);
+	//topButton->setFixedHeight(size);
+	//topButton->setFixedWidth(0);
 }
 
 void HmmMainWindow::setBottom( int size )
 {
-	bottomButton->setFixedHeight(size);
-	bottomButton->setFixedWidth(0);
+	/*bottomButton->setFixedHeight(size);
+	bottomButton->setFixedWidth(0);*/
 }
 
 void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
@@ -343,17 +371,17 @@ void HmmMainWindow::showTimeline()
 
 void HmmMainWindow::clearTree()
 {
-    treeWidget->clear();
+    analisis->getTreeWidget()->clear();
 }
 
 void HmmMainWindow::addItemToTree( QTreeWidgetItem* item )
 {
-    treeWidget->addTopLevelItem(item);
+    analisis->getTreeWidget()->addTopLevelItem(item);
 }
 
 void HmmMainWindow::createFilterTabs()
 {
-    filterTabWidget->clear();
+    analisis->getTreeWidget()->clear();
     createFilterTab1();
     createFilterTab2();
 }
@@ -361,6 +389,7 @@ void HmmMainWindow::createFilterTabs()
 void HmmMainWindow::createFilterTab1()
 {
     core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
+    QTabWidget* filterTabWidget = analisis->getFilterTabWidget();
 
     QWidget* tab = new QWidget(filterTabWidget);
     QVBoxLayout* tabLayout = new QVBoxLayout();
@@ -380,43 +409,75 @@ void HmmMainWindow::createFilterTab1()
     h2->setLayout(htablayout2);
     tabLayout->addWidget(h1);
     tabLayout->addWidget(h2);
-    QIcon iconAnalog(core::getResourceString("icons/analogBig.png"));
-    QIcon iconKinetic(core::getResourceString("icons/kineticBig.png"));
-    QIcon iconKinematic(core::getResourceString("icons/kinematicBig.png"));
-    QIcon iconVideo(core::getResourceString("icons/videoBig.png"));
+    QPixmap iconAnalog(core::getResourceString("icons/analogBig.png"));
+    QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
+    QPixmap iconKinematic(core::getResourceString("icons/kinematicBig.png"));
+    QPixmap iconVideo(core::getResourceString("icons/videoBig.png"));
     //DataFilterWidget* filter1 = new DataFilterWidget(icon.pixmap(64, 64), "Charts", "this filter gives only charts");
     //DataFilterWidget* filter2 = new DataFilterWidget(icon.pixmap(64, 64), "Emg", "this filter gives only emgs");
 
-    DataFilterWidget* filter1 = new DataFilterWidget(iconAnalog.pixmap(48,48), this);
-    DataFilterWidget* filter2 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
-    DataFilterWidget* filter3 = new DataFilterWidget(iconKinematic.pixmap(48,48), this);
-    DataFilterWidget* filter4 = new DataFilterWidget(iconVideo.pixmap(48,48), this);
+    //QImage image_iconEmgSmall(core::getResourceString("icons/emg1Small.png"));
+    //QImage image_iconForceSmall(core::getResourceString("icons/forcesSmall.png"));
+    //QImage image_iconPowerSmall(core::getResourceString("icons/powerSmall.png"));
+    //QImage image_iconGRFSmall(core::getResourceString("icons/grfSmall.png"));
+    //QImage image_iconMomentSmall(core::getResourceString("icons/momentSmall.png"));
+    //QImage image_iconJointSmall(core::getResourceString("icons/jointSmall.png"));
+    //QImage image_iconMarkerSmall(core::getResourceString("icons/markerSmall.png"));
+    //QImage image_iconMarkerSmall(core::getResourceString("icons/videoSmall.png"));
 
+    QPixmap iconEmgSmall(core::getResourceString("icons/emg1Small.png"));
+    QPixmap iconForceSmall(core::getResourceString("icons/forcesSmall.png"));
+    QPixmap iconPowerSmall(core::getResourceString("icons/powerSmall.png"));
+    QPixmap iconGRFSmall(core::getResourceString("icons/grfSmall.png"));
+    QPixmap iconMomentSmall(core::getResourceString("icons/momentSmall.png"));
+    QPixmap iconJointSmall(core::getResourceString("icons/jointSmall.png"));
+    QPixmap iconMarkerSmall(core::getResourceString("icons/markerSmall.png"));
+    QPixmap iconVideoSmall(core::getResourceString("icons/videoSmall.png"));
+
+
+
+    DataFilterWidget* filter1 = new DataFilterWidget("ANALOG", iconAnalog, this);
+    DataFilterWidget* filter2 = new DataFilterWidget("KINETIC", iconKinetic, this);
+    DataFilterWidget* filter3 = new DataFilterWidget("KINEMATIC", iconKinematic, this);
+    DataFilterWidget* filter4 = new DataFilterWidget("VIDEO", iconVideo, this);
+    
     std::vector<TypeInfo> types;
     types.push_back(typeid(GRFCollection));
     types.push_back(typeid(GRFChannel));
     TypeFilterPtr typeFilter1(new TypeFilter(memoryDataManager, types));
     TypeFilterPtr typeFilter2(new TypeFilter(memoryDataManager, typeid(EMGChannel)));
 
-    filter1->addFilter("Grf", "label", typeFilter1);
-    filter1->addFilter("Emg", "emg label", typeFilter2);
+    filter1->addFilter("GRF", "label", typeFilter1, &iconGRFSmall);
+    filter1->addFilter("EMG", "emg label", typeFilter2, &iconEmgSmall);
+    filter1->closeFilters();
 
     TypeFilterPtr typeFilter3(new TypeFilter(memoryDataManager, typeid(ForceCollection)));
     TypeFilterPtr typeFilter4(new TypeFilter(memoryDataManager, typeid(MomentCollection)));
     TypeFilterPtr typeFilter5(new TypeFilter(memoryDataManager, typeid(PowerCollection)));
 
-    filter2->addFilter("Force", "count: ", typeFilter3);
-    filter2->addFilter("Moment", "moments", typeFilter4);
-    filter2->addFilter("Power", "powers", typeFilter5);
+    IFilterCommandPtr vFilter(new Vector3DFilterCommand<PowerChannel, PowerCollectionPtr>(memoryDataManager));
+    IFilterCommandPtr vFilter2(new Vector3DFilterCommand2<MomentChannel, MomentCollectionPtr>(memoryDataManager, Vector3DFilterCommand2<MomentChannel, MomentCollectionPtr>::Skeletal));
+    IFilterCommandPtr vFilter3(new Vector3DFilterCommand2<ForceChannel, ForceCollectionPtr>(memoryDataManager, Vector3DFilterCommand2<ForceChannel, ForceCollectionPtr>::Muscular));
 
     TypeFilterPtr typeFilter6(new TypeFilter(memoryDataManager, typeid(MarkerCollection)));
     TypeFilterPtr typeFilter7(new TypeFilter(memoryDataManager, typeid(kinematic::JointAnglesCollection)));
+    filter2->addFilter("FORCES", "count: ", vFilter3, &iconForceSmall);
+    //filter2->addFilter("Moment", "moments", typeFilter4);
+    filter2->addFilter("MOMENTS", "test", vFilter2, &iconMomentSmall);
+    //filter2->addFilter("Power", "powers", typeFilter5);
+    filter2->addFilter("POWERS", "powers", vFilter, &iconPowerSmall);
+    filter2->closeFilters();
 
-    filter3->addFilter("Markers", "count: 1", typeFilter6);
-    filter3->addFilter("Joints", "count: 1", typeFilter7);
+    //TypeFilterPtr typeFilter6(new TypeFilter(typeid(MarkerCollection)));
+    //TypeFilterPtr typeFilter7(new TypeFilter(typeid(kinematic::JointAnglesCollection)));
+
+    filter3->addFilter("MARKERS", "count: 1", typeFilter6, &iconMarkerSmall);
+    filter3->addFilter("JOINTS", "count: 1", typeFilter7, &iconJointSmall);
+    filter3->closeFilters();
 
     TypeFilterPtr typeFilter8(new TypeFilter(memoryDataManager, typeid(VideoChannel)));
-    filter4->addFilter("Video", "count: 4", typeFilter8);
+    filter4->addFilter("VIDEOS", "count: 4", typeFilter8, &iconVideoSmall);
+    filter4->closeFilters();
 
     connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
     connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
@@ -438,6 +499,7 @@ void HmmMainWindow::createFilterTab1()
 void HmmMainWindow::createFilterTab2()
 {
     core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
+    QTabWidget* filterTabWidget = analisis->getFilterTabWidget();
 
     QWidget* tab = new QWidget(filterTabWidget);
     QVBoxLayout* tabLayout = new QVBoxLayout();
@@ -459,12 +521,12 @@ void HmmMainWindow::createFilterTab2()
 
     tabLayout->addWidget(h1);
     tabLayout->addWidget(h2);
-    QIcon iconKinetic(core::getResourceString("icons/kineticBig.png"));
+    QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
    
-    DataFilterWidget* filter1 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
-    DataFilterWidget* filter2 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
-    DataFilterWidget* filter3 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
-    DataFilterWidget* filter4 = new DataFilterWidget(iconKinetic.pixmap(48,48), this);
+    DataFilterWidget* filter1 = new DataFilterWidget("MULTI", iconKinetic, this);
+    DataFilterWidget* filter2 = new DataFilterWidget("MULTI", iconKinetic, this);
+    DataFilterWidget* filter3 = new DataFilterWidget("MULTI", iconKinetic, this);
+    DataFilterWidget* filter4 = new DataFilterWidget("MULTI", iconKinetic, this);
 
     TypeFilterPtr typeFilter1(new TypeFilter(memoryDataManager, typeid(GRFChannel)));
     TypeFilterPtr typeFilter2(new TypeFilter(memoryDataManager, typeid(EMGChannel)));
@@ -520,11 +582,25 @@ void HmmMainWindow::filterGroupActivated( bool active )
         }
 
         if (!active) {
+            QTreeWidget* treeWidget = analisis->getTreeWidget();
             treeWidget->clear();
-            QTreeWidgetItem* item = SimpleFilterCommand::createTree("Sessions", getCurrentSessions());
+            QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", getCurrentSessions());
             treeWidget->addTopLevelItem(item);
         }
     }
+}
+
+void HmmMainWindow::onToolButton()
+{
+    for (auto it = button2TabWindow.begin(); it != button2TabWindow.end(); it++) {
+        it->second->hide();
+    }
+
+    QToolButton* button = qobject_cast<QToolButton*>(sender());
+    if (button) {
+       button2TabWindow[button]->show();
+    }
+    
 }
 
 

@@ -21,6 +21,11 @@ set(PRIVATE_H
 	FilterEntryWidget.h
 	FilterCommand.h
 	FilterGroup.h
+	TreeBuilder.h
+	Vector3DFilterCommand.h
+	ConfigurationDialog.h
+	ConfigurationPainter.h
+	AnalisisWidget.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -47,6 +52,9 @@ set(TARGET_SRC
 	FilterCommand.cpp
 	FilterEntryWidget.cpp
 	FilterGroup.cpp
+	TreeBuilder.cpp
+	ConfigurationDialog.cpp
+	ConfigurationPainter.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -60,6 +68,10 @@ SET(TARGET_MOC_H
 	DataFilterWidget.h
 	FilterEntryWidget.h
 	FilterGroup.h
+	Vector3DFilterCommand.h
+	ConfigurationPainter.h
+	ConfigurationDialog.h
+	AnalisisWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -72,6 +84,8 @@ set(TARGET_UI
 	ui/LoadingDialog.ui
 	ui/filter.ui
 	ui/filterEntry.ui
+	ui/configurationDialog.ui
+	ui/AnalisisWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
@@ -110,13 +124,13 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek
-# set(PRECOMPILED_H CorePCH.h)
-# set(PRECOMPILED_SRC CorePCH.cpp)
-# SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
-# source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
-# set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
-# source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
-# set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
+set(PRECOMPILED_H HmmPCH.h)
+set(PRECOMPILED_SRC HmmPCH.cpp)
+SET_PRECOMPILED_HEADER(${PRECOMPILED_H} ${PRECOMPILED_SRC} "${TARGET_SRC}")
+source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRECOMPILED_H})
+set(TARGET_H ${TARGET_H} ${PRECOMPILED_H})
+source_group("${SOURCEGROUP_SOURCES}" FILES ${PRECOMPILED_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${PRECOMPILED_SRC})
 
 
 #------------------------------------------------------------------------------

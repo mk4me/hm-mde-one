@@ -1,3 +1,4 @@
+#include "hmmPCH.h"
 #include "TreeItemHelper.h"
 #include "VisualizerManager.h"
 

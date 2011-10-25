@@ -1,9 +1,8 @@
 project(plugins)
 set(PROJECTS_NAME plugins)
 
-# animation
-# ADD_PROJECT(animation "OSG;QT;corelib")
 ADD_PROJECT(c3d "BOOST;corelib;C3DLIB")
+# ADD_PROJECT(allC3D "BOOST;corelib;C3DLIB")
 ADD_PROJECT(video "OSG;QT;VIDLIB;FFMPEG;corelib")
 # ADD_PROJECT(timeline "BOOST;QT;corelib")
 ADD_PROJECT(newTimeline "BOOST;QT;QWT;corelib;TIMELINELIB;OSG")	# OSG na potrzeby OpenThreads!!

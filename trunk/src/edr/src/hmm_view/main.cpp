@@ -1,3 +1,4 @@
+#include "hmmPCH.h"
 #include "AppInitializer.h"
 #include "HmmMainWindow.h"
 //#include "vld.h"
