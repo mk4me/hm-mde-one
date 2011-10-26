@@ -69,7 +69,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 	
 	this->showFullScreen();
     QTreeWidget* treeWidget = this->analisis->getTreeWidget();
-    treeWidget->setColumnCount(2);
+    //treeWidget->setColumnCount(2);
     treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -389,16 +389,16 @@ void HmmMainWindow::createFilterTabs()
 void HmmMainWindow::createFilterTab1()
 {
     core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
-    QTabWidget* filterTabWidget = analisis->getFilterTabWidget();
-
-    QWidget* tab = new QWidget(filterTabWidget);
-    QVBoxLayout* tabLayout = new QVBoxLayout();
-    QMargins margins(0, 0, 0, 0);
+    //QWidget* filterTabWidget = analisis->getFilterTabWidget();
+    //QLayout* tabLayout = filterTabWidget->layout();
+    /*QWidget* tab = new QWidget(filterTabWidget);
+    QVBoxLayout* tabLayout = new QVBoxLayout();*/
+    /*QMargins margins(0, 0, 0, 0);
     tabLayout->setContentsMargins(margins);
-    tabLayout->setMargin(0);
-    tab->setLayout(tabLayout);
-    QWidget* h1 = new QWidget(tab);
-    QWidget* h2 = new QWidget(tab);
+    tabLayout->setMargin(0);*/
+    //tab->setLayout(tabLayout);
+   /* QWidget* h1 = new QWidget(filterTabWidget);
+    QWidget* h2 = new QWidget(filterTabWidget);
     QHBoxLayout* htablayout1 = new QHBoxLayout();
     htablayout1->setContentsMargins(margins);
     htablayout1->setMargin(0);
@@ -408,22 +408,13 @@ void HmmMainWindow::createFilterTab1()
     h1->setLayout(htablayout1);
     h2->setLayout(htablayout2);
     tabLayout->addWidget(h1);
-    tabLayout->addWidget(h2);
+    tabLayout->addWidget(h2);*/
     QPixmap iconAnalog(core::getResourceString("icons/analogBig.png"));
     QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
     QPixmap iconKinematic(core::getResourceString("icons/kinematicBig.png"));
     QPixmap iconVideo(core::getResourceString("icons/videoBig.png"));
     //DataFilterWidget* filter1 = new DataFilterWidget(icon.pixmap(64, 64), "Charts", "this filter gives only charts");
     //DataFilterWidget* filter2 = new DataFilterWidget(icon.pixmap(64, 64), "Emg", "this filter gives only emgs");
-
-    //QImage image_iconEmgSmall(core::getResourceString("icons/emg1Small.png"));
-    //QImage image_iconForceSmall(core::getResourceString("icons/forcesSmall.png"));
-    //QImage image_iconPowerSmall(core::getResourceString("icons/powerSmall.png"));
-    //QImage image_iconGRFSmall(core::getResourceString("icons/grfSmall.png"));
-    //QImage image_iconMomentSmall(core::getResourceString("icons/momentSmall.png"));
-    //QImage image_iconJointSmall(core::getResourceString("icons/jointSmall.png"));
-    //QImage image_iconMarkerSmall(core::getResourceString("icons/markerSmall.png"));
-    //QImage image_iconMarkerSmall(core::getResourceString("icons/videoSmall.png"));
 
     QPixmap iconEmgSmall(core::getResourceString("icons/emg1Small.png"));
     QPixmap iconForceSmall(core::getResourceString("icons/forcesSmall.png"));
@@ -433,9 +424,7 @@ void HmmMainWindow::createFilterTab1()
     QPixmap iconJointSmall(core::getResourceString("icons/jointSmall.png"));
     QPixmap iconMarkerSmall(core::getResourceString("icons/markerSmall.png"));
     QPixmap iconVideoSmall(core::getResourceString("icons/videoSmall.png"));
-
-
-
+    
     DataFilterWidget* filter1 = new DataFilterWidget("ANALOG", iconAnalog, this);
     DataFilterWidget* filter2 = new DataFilterWidget("KINETIC", iconKinetic, this);
     DataFilterWidget* filter3 = new DataFilterWidget("KINEMATIC", iconKinematic, this);
@@ -448,36 +437,145 @@ void HmmMainWindow::createFilterTab1()
     TypeFilterPtr typeFilter2(new TypeFilter(memoryDataManager, typeid(EMGChannel)));
 
     filter1->addFilter("GRF", "label", typeFilter1, &iconGRFSmall);
+
+    //QString pathFront = core::getResourceString("images/muscular_front/muscular_front.xml");
+    //QString pathBack = core::getResourceString("images/muscular_back/muscular_back.xml");
+
     filter1->addFilter("EMG", "emg label", typeFilter2, &iconEmgSmall);
-    filter1->closeFilters();
+ 
 
     TypeFilterPtr typeFilter3(new TypeFilter(memoryDataManager, typeid(ForceCollection)));
     TypeFilterPtr typeFilter4(new TypeFilter(memoryDataManager, typeid(MomentCollection)));
     TypeFilterPtr typeFilter5(new TypeFilter(memoryDataManager, typeid(PowerCollection)));
 
-    IFilterCommandPtr vFilter(new Vector3DFilterCommand<PowerChannel, PowerCollectionPtr>(memoryDataManager));
-    IFilterCommandPtr vFilter2(new Vector3DFilterCommand2<MomentChannel, MomentCollectionPtr>(memoryDataManager, Vector3DFilterCommand2<MomentChannel, MomentCollectionPtr>::Skeletal));
-    IFilterCommandPtr vFilter3(new Vector3DFilterCommand2<ForceChannel, ForceCollectionPtr>(memoryDataManager, Vector3DFilterCommand2<ForceChannel, ForceCollectionPtr>::Muscular));
+    
+    typedef Vector3DFilterCommand2<MomentChannel, MomentCollectionPtr> MomentsCommand;
+    typedef Vector3DFilterCommand2<ForceChannel, ForceCollectionPtr> ForcesCommand;
+    typedef Vector3DFilterCommand2<PowerChannel, PowerCollectionPtr> PowerCommand;
+    
+    QString pathFront = core::getResourceString("images/skeleton_front/skeleton_front.xml");
+    QString pathBack = core::getResourceString("images/skeleton_back/skeleton_back.xml");
 
-    TypeFilterPtr typeFilter6(new TypeFilter(memoryDataManager, typeid(MarkerCollection)));
-    TypeFilterPtr typeFilter7(new TypeFilter(memoryDataManager, typeid(kinematic::JointAnglesCollection)));
+    PowerCommand::NamesDictionary powersNames;
+    powersNames["LAnkle" ] = std::make_pair("LAnklePower", "Left Ankle");
+    powersNames["LElbow" ] = std::make_pair("LElbowPower", "Left Elbow");
+    powersNames["LHip" ] = std::make_pair("LHipPower", "Left Hip");
+    powersNames["LKnee" ] = std::make_pair("LKneePower", "Left Knee");
+    powersNames["LNeck" ] = std::make_pair("LNeckPower", "Left Neck");
+    powersNames["LShoulder" ] = std::make_pair("LShoulderPower", "Left Shoulder");
+    powersNames["LWaist" ] = std::make_pair("LWaistPower", "Left Waist");
+    powersNames["LWrist" ] = std::make_pair("LWristPower", "Left Wrist");
+    powersNames["RAnkle" ] = std::make_pair("RAnklePower", "Right Ankle");
+    powersNames["RElbow"] = std::make_pair("RElbowPower", "Right Elbow");
+    powersNames["RHip"] = std::make_pair("RHipPower", "Right Hip");
+    powersNames["RKnee"] = std::make_pair("RKneePower", "Right Knee");
+    powersNames["RNeck"] = std::make_pair("RNeckPower", "Right Neck");
+    powersNames["RShoulder"] = std::make_pair("RShoulderPower", "Right Shoulder");
+    powersNames["RWaist"] = std::make_pair("RWaistPower", "Right Waist");
+    powersNames["RWrist"] = std::make_pair("RWristPower", "Right Wrist");
+    IFilterCommandPtr vFilter(new PowerCommand(memoryDataManager, powersNames, pathFront, pathBack));
+    
+    MomentsCommand::NamesDictionary momentsNames;
+    momentsNames["LAnkle" ] = std::make_pair("LAnkleMoment", "Left Ankle");
+    momentsNames["LElbow" ] = std::make_pair("LElbowMoment", "Left Elbow");
+    momentsNames["LGroundReaction" ] = std::make_pair("LGroundReactionMoment", "Left GRF");
+    momentsNames["LHip" ] = std::make_pair("LHipMoment", "Left Hip");
+    momentsNames["LKnee" ] = std::make_pair("LKneeMoment", "Left Knee");
+    momentsNames["LNeck" ] = std::make_pair("LNeckMoment", "Left Neck");
+    momentsNames["LShoulder" ] = std::make_pair("LShoulderMoment", "Left Shoulder");
+    momentsNames["LWaist" ] = std::make_pair("LWaistMoment", "Left Waist");
+    momentsNames["LWrist" ] = std::make_pair("LWristMoment", "Left Wrist");
+    momentsNames["RAnkle" ] = std::make_pair("RAnkleMoment", "Right Ankle");
+    momentsNames["RElbow"] = std::make_pair("RElbowMoment", "Right Elbow");
+    momentsNames["RGroundReaction"] = std::make_pair("RGroundReactionMoment", "Right GRF");
+    momentsNames["RHip"] = std::make_pair("RHipMoment", "Right Hip");
+    momentsNames["RKnee"] = std::make_pair("RKneeMoment", "Right Knee");
+    momentsNames["RNeck"] = std::make_pair("RNeckMoment", "Right Neck");
+    momentsNames["RShoulder"] = std::make_pair("RShoulderMoment", "Right Shoulder");
+    momentsNames["RWaist"] = std::make_pair("RWaistMoment", "Right Waist");
+    momentsNames["RWrist"] = std::make_pair("RWristMoment", "Right Wrist");
+    
+    IFilterCommandPtr vFilter2(new MomentsCommand(memoryDataManager, momentsNames, pathFront, pathBack));
+
+    ForcesCommand::NamesDictionary forcesNames;
+    forcesNames["LAnkle" ] = std::make_pair("LAnkleForce", "Left Ankle");
+    forcesNames["LElbow" ] = std::make_pair("LElbowForce", "Left Elbow");
+    forcesNames["LGroundReaction" ] = std::make_pair("LGroundReactionForce", "Left GRF");
+    forcesNames["LHip" ] = std::make_pair("LHipForce", "Left Hip");
+    forcesNames["LKnee" ] = std::make_pair("LKneeForce", "Left Knee");
+    forcesNames["LNeck" ] = std::make_pair("LNeckForce", "Left Neck");
+    forcesNames["LShoulder" ] = std::make_pair("LShoulderForce", "Left Shoulder");
+    forcesNames["LWaist" ] = std::make_pair("LWaistForce", "Left Waist");
+    forcesNames["LWrist" ] = std::make_pair("LWristForce", "Left Wrist");
+    forcesNames["RAnkle" ] = std::make_pair("RAnkleForce", "Right Ankle");
+    forcesNames["RElbow"] = std::make_pair("RElbowForce", "Right Elbow");
+    forcesNames["RGroundReaction"] = std::make_pair("RGroundReactionForce", "Right GRF");
+    forcesNames["RHip"] = std::make_pair("RHipForce", "Right Hip");
+    forcesNames["RKnee"] = std::make_pair("RKneeForce", "Right Knee");
+    forcesNames["RNeck"] = std::make_pair("RNeckForce", "Right Neck");
+    forcesNames["RShoulder"] = std::make_pair("RShoulderForce", "Right Shoulder");
+    forcesNames["RWaist"] = std::make_pair("RWaistForce", "Right Waist");
+    forcesNames["RWrist"] = std::make_pair("RWristForce", "Right W rist");
+    forcesNames["RNormalizedGR"] = std::make_pair("RNormalisedGRF", "Right, normalised GRF");
+    forcesNames["LNormalizedGR"] = std::make_pair("LNormalisedGRF", "Left, normalised GRF");
+    IFilterCommandPtr vFilter3(new ForcesCommand(memoryDataManager, forcesNames, pathFront, pathBack));
+
+    
     filter2->addFilter("FORCES", "count: ", vFilter3, &iconForceSmall);
-    //filter2->addFilter("Moment", "moments", typeFilter4);
     filter2->addFilter("MOMENTS", "test", vFilter2, &iconMomentSmall);
-    //filter2->addFilter("Power", "powers", typeFilter5);
     filter2->addFilter("POWERS", "powers", vFilter, &iconPowerSmall);
-    filter2->closeFilters();
 
-    //TypeFilterPtr typeFilter6(new TypeFilter(typeid(MarkerCollection)));
-    //TypeFilterPtr typeFilter7(new TypeFilter(typeid(kinematic::JointAnglesCollection)));
-
-    filter3->addFilter("MARKERS", "count: 1", typeFilter6, &iconMarkerSmall);
+    typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollectionPtr> MarkersCommand;
+    MarkersCommand::NamesDictionary markersNames;
+    markersNames["RFHD"] = std::make_pair("RFHD" , "Right front of head");
+    markersNames["LFHD"] = std::make_pair("LFHD" , "Left front of head");
+    markersNames["CLAV"] = std::make_pair("CLAV" , "Clavicle");
+    markersNames["STRN"] = std::make_pair("STRN" , "Sternum");
+    markersNames["LSHO"] = std::make_pair("LSHO" , "Left shoulder");
+    markersNames["RSHO"] = std::make_pair("RSHO" , "Right shoulder");
+    markersNames["LUPA"] = std::make_pair("LUPA" , "Left upper arm");
+    markersNames["RUPA"] = std::make_pair("RUPA" , "Right upper arm");
+    markersNames["RELB"] = std::make_pair("RELB" , "Right elbow");
+    markersNames["LELB"] = std::make_pair("LELB" , "Left elbow");
+    markersNames["RFRM"] = std::make_pair("RFRM" , "Right forearm");
+    markersNames["LRFM"] = std::make_pair("LRFM" , "Left forearm");
+    markersNames["RWRB"] = std::make_pair("RWRB" , "Right wrist marker B");
+    markersNames["RWRA"] = std::make_pair("RWRA" , "Right wrist marker A");
+    markersNames["RFIN"] = std::make_pair("RFIN" , "Right finger");
+    markersNames["LWRA"] = std::make_pair("LWRA" , "Left wrist marker A");
+    markersNames["LWRB"] = std::make_pair("LWRB" , "Left wrist marker B");
+    markersNames["LFIN"] = std::make_pair("LFIN" , "Left finger");
+    markersNames["RASI"] = std::make_pair("RASI" , "Right asis");
+    markersNames["LASI"] = std::make_pair("LASI" , "Left asis");
+    markersNames["RTOE"] = std::make_pair("RTOE" , "Right toe");
+    markersNames["RANK"] = std::make_pair("RANK" , "Right ankle");
+    markersNames["LANK"] = std::make_pair("LANK" , "Left ankle");
+    markersNames["LTOE"] = std::make_pair("LTOE" , "Left toe");
+    markersNames["LTHI"] = std::make_pair("LTHI" , "Left thigh");
+    markersNames["RTHI"] = std::make_pair("RTHI" , "Right thigh");
+    markersNames["RKNE"] = std::make_pair("RKNE" , "Right knee");
+    markersNames["LKNE"] = std::make_pair("LKNE" , "Left knee");
+    markersNames["RTIB"] = std::make_pair("RTIB" , "Right tibial wand marker");
+    markersNames["LTIB"] = std::make_pair("LTIB" , "Left tibial wand marker");
+    markersNames["LPSI"] = std::make_pair("LPSI" , "Left psis");
+    markersNames["RPSI"] = std::make_pair("RPSI" , "Right psis");
+    markersNames["LBHD"] = std::make_pair("LBHD" , "Left back of head");
+    markersNames["RBHD"] = std::make_pair("RBHD" , "Right back of head");
+    markersNames["RBAK"] = std::make_pair("RBAK" , "Right back");
+    markersNames["C7"  ] = std::make_pair("C7"   , "Cervical Vertebra");
+    markersNames["T10" ] = std::make_pair("T10"  , "Thoracic Vertebra");
+    QString markersFront = core::getResourceString("images/skeleton_front/skeleton_markers.xml");
+    QString markersBack = core::getResourceString("images/skeleton_back/skeleton_markers.xml");
+    IFilterCommandPtr vFilter6(new MarkersCommand(memoryDataManager, markersNames, markersFront, markersBack));
+    //TypeFilterPtr typeFilter6(new TypeFilter(memoryDataManager, typeid(MarkerCollection)));
+    TypeFilterPtr typeFilter7(new TypeFilter(memoryDataManager, typeid(kinematic::JointAnglesCollection)));
+    filter3->addFilter("MARKERS", "count: 1", vFilter6, &iconMarkerSmall);
     filter3->addFilter("JOINTS", "count: 1", typeFilter7, &iconJointSmall);
-    filter3->closeFilters();
+    //filter3->closeFilters();
 
     TypeFilterPtr typeFilter8(new TypeFilter(memoryDataManager, typeid(VideoChannel)));
     filter4->addFilter("VIDEOS", "count: 4", typeFilter8, &iconVideoSmall);
-    filter4->closeFilters();
+    //filter4->closeFilters();
 
     connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
     connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
@@ -489,38 +587,42 @@ void HmmMainWindow::createFilterTab1()
     dataFilterWidgets.push_back(filter3);
     dataFilterWidgets.push_back(filter4);
 
-    htablayout1->addWidget(filter1);
+    /*htablayout1->addWidget(filter1);
     htablayout1->addWidget(filter2);
     htablayout2->addWidget(filter3);
-    htablayout2->addWidget(filter4);
-    filterTabWidget->addTab(tab, "Filters");
+    htablayout2->addWidget(filter4);*/
+    this->analisis->addDataFilterWidget(filter1);
+    this->analisis->addDataFilterWidget(filter2);
+    this->analisis->addDataFilterWidget(filter3);
+    this->analisis->addDataFilterWidget(filter4);
+    //filterTabWidget->addTab(tab, "Filters");
 }
 
 void HmmMainWindow::createFilterTab2()
 {
     core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
-    QTabWidget* filterTabWidget = analisis->getFilterTabWidget();
+    //QWidget* filterTabWidget = analisis->getFilterTabWidget();
+    //QLayout* tabLayout = filterTabWidget->layout();
+    ///*QWidget* tab = new QWidget(filterTabWidget);
+    //QVBoxLayout* tabLayout = new QVBoxLayout();
+    //tab->setLayout(tabLayout)*/;
+    //QWidget* h1 = new QWidget(filterTabWidget);
+    //QWidget* h2 = new QWidget(filterTabWidget);
+    //QHBoxLayout* htablayout1 = new QHBoxLayout();
+    //QHBoxLayout* htablayout2 = new QHBoxLayout();
+    //h1->setLayout(htablayout1);
+    //h2->setLayout(htablayout2);
 
-    QWidget* tab = new QWidget(filterTabWidget);
-    QVBoxLayout* tabLayout = new QVBoxLayout();
-    tab->setLayout(tabLayout);
-    QWidget* h1 = new QWidget(tab);
-    QWidget* h2 = new QWidget(tab);
-    QHBoxLayout* htablayout1 = new QHBoxLayout();
-    QHBoxLayout* htablayout2 = new QHBoxLayout();
-    h1->setLayout(htablayout1);
-    h2->setLayout(htablayout2);
+    //QMargins margins(0, 0, 0, 0);
+    //tabLayout->setContentsMargins(margins);
+    //tabLayout->setMargin(0);
+    //htablayout1->setContentsMargins(margins);
+    //htablayout1->setMargin(0);
+    //htablayout2->setContentsMargins(margins);
+    //htablayout2->setMargin(0);
 
-    QMargins margins(0, 0, 0, 0);
-    tabLayout->setContentsMargins(margins);
-    tabLayout->setMargin(0);
-    htablayout1->setContentsMargins(margins);
-    htablayout1->setMargin(0);
-    htablayout2->setContentsMargins(margins);
-    htablayout2->setMargin(0);
-
-    tabLayout->addWidget(h1);
-    tabLayout->addWidget(h2);
+    //tabLayout->addWidget(h1);
+    //tabLayout->addWidget(h2);
     QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
    
     DataFilterWidget* filter1 = new DataFilterWidget("MULTI", iconKinetic, this);
@@ -561,11 +663,16 @@ void HmmMainWindow::createFilterTab2()
     dataFilterWidgets.push_back(filter3);
     dataFilterWidgets.push_back(filter4);
 
-    htablayout1->addWidget(filter1);
+    this->analisis->addDataFilterWidget(filter1);
+    this->analisis->addDataFilterWidget(filter2);
+    this->analisis->addDataFilterWidget(filter3);
+    this->analisis->addDataFilterWidget(filter4);
+
+   /* htablayout1->addWidget(filter1);
     htablayout1->addWidget(filter2);
     htablayout2->addWidget(filter3);
-    htablayout2->addWidget(filter4);
-    filterTabWidget->addTab(tab, "Multi charts");
+    htablayout2->addWidget(filter4);*/
+    //filterTabWidget->addTab(tab, "Multi charts");
 }
 
 void HmmMainWindow::filterGroupActivated( bool active )

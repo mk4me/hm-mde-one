@@ -23,15 +23,15 @@ public:
 
 public:
     void setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap);
-    void addWidget(QWidget* widget)
-    {
-        this->horizontalLayout->addWidget(widget);
-    }
+    void setText(const QString& text);
+    void loadConfigurations(const QString& frontXml, const QString& backXml, const  std::map<QString, std::pair<QString, QString>>& names);
+
 signals:
     void itemSelected(const QString&, bool);
+    void elementHovered(const QString& name, bool selected);
 
 public slots:
-    void loadConfigurations(const QString& frontXml, const QString& backXml);
+    void onElementHovered(const QString& name, bool selected);
 
 private slots:
     void onItemSelected(const QString& name, bool selected)
@@ -48,6 +48,8 @@ private slots:
             this->currentPainter = &painterFront;
         } else {
             emit itemSelected(name, selected);
+            this->painterFront.trySetActive(name, selected);
+            this->painterBack.trySetActive(name, selected);
         }
         
     }

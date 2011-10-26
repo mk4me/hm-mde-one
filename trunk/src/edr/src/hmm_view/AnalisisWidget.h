@@ -16,7 +16,8 @@ class AnalisisWidget : public QWidget, public Ui::AnalisisWidget
 {
 public:
     AnalisisWidget(QWidget* parent, Qt::WindowFlags flags = 0) : 
-      QWidget(parent, flags)
+      QWidget(parent, flags),
+      filterWidth(-1), filterHeight(-1)
       {
           setupUi(this);
       }
@@ -24,9 +25,35 @@ public:
 
 public:
     QTreeWidget* getTreeWidget() { return this->treeWidget; }
-    QTabWidget * getFilterTabWidget() { return filterTabWidget; }
+    void addDataFilterWidget(DataFilterWidget* filter)
+    {
+        if (filterWidth < 0 && filterHeight < 0) {
+            filterWidth = filter->width();
+            filterHeight = filter->height();
+        }
+
+        UTILS_ASSERT(filterHeight == filter->height() && filterWidth == filter->width());
+        
+
+        int count = filterScroll->children().size();
+        int x = count % 2;
+        int y = count / 2;
+
+        if (x == 0) {
+            filterScroll->setMinimumSize(filterWidth * 2, filterHeight * (y + 1));
+        }
+
+        filter->setParent(filterScroll);
+        filter->setGeometry(x * filterWidth, y * filterHeight, filterWidth, filterHeight);
+    }
+    //QWidget * getFilterTabWidget() { return filterScroll; }
     QWidget* getArea() { return analisisArea; }
+
+private:
+    int filterWidth;
+    int filterHeight;
 };
+
 
 
 #endif

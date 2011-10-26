@@ -5,7 +5,6 @@
 #include "OsgSchemeDrawer.h"
 #include "PointSchemeDrawer.h"
 #include "LineSchemeDrawer.h"
-//#include <plugins/kinematic/KinematicService.h>
 #include <plugins/kinematic/KinematicParser.h>
 #include <core/ILog.h>
 #include <plugins/kinematic/Wrappers.h>

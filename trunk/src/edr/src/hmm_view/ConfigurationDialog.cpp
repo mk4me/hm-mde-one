@@ -15,6 +15,8 @@ ConfigurationDialog::ConfigurationDialog(QWidget* parent) :
     setWindowFlags(Qt::Tool);
     connect(&painterFront, SIGNAL(elementSelected(const QString&, bool)), this, SLOT(onItemSelected(const QString&, bool)));
     connect(&painterBack, SIGNAL(elementSelected(const QString&, bool)), this, SLOT(onItemSelected(const QString&, bool)));
+    connect(&painterFront, SIGNAL(elementHovered(const QString&, bool)), this, SLOT(onElementHovered(const QString&, bool)));
+    connect(&painterBack, SIGNAL(elementHovered(const QString&, bool)), this, SLOT(onElementHovered(const QString&, bool)));
 }
 
 void ConfigurationDialog::setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap )
@@ -35,10 +37,14 @@ void ConfigurationDialog::loadPictures(ConfigurationPainter& painter, const QStr
     painter.repaint(painter.rect());
 }
 
-void ConfigurationDialog::loadConfigurations(const QString& frontXml, const QString& backXml)
+void ConfigurationDialog::loadConfigurations(const QString& frontXml, const QString& backXml, const  std::map<QString, std::pair<QString, QString>>& names)
 {
     loadXml(painterFront, frontXml);
     loadXml(painterBack, backXml);
+
+    painterFront.intersectNames(names);
+    painterBack.intersectNames(names);
+
     QString path1 = core::getResourceString("images/przod.png");
     QString path2 = core::getResourceString("images/tyl.png");
     loadPicture(painterFront, path1, 10, 10, true);
@@ -88,4 +94,15 @@ void ConfigurationDialog::loadXml(ConfigurationPainter& painter, const QString &
         }
         element = element->NextSiblingElement();
     }
+}
+
+void ConfigurationDialog::onElementHovered( const QString& name, bool selected )
+{
+    emit elementHovered(name, selected);
+    
+}
+
+void ConfigurationDialog::setText( const QString& text )
+{
+    this->label->setText(text);
 }

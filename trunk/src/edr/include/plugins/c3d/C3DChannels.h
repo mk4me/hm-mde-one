@@ -190,6 +190,16 @@ public:
 private:
 	//! kolekcja przechowuje zdarzenia wczytane z pliku c3d
 	std::vector<EventPtr> events;
+    // wyglada na to, ze VS2010 ma blad - wrzucenie naglowka zawierajacego funkcje lambda
+    // do naglowkow prekompilowanych skutkuje uniemozliwieniem korzystania z lambdy wszedzie indziej
+    // porownywanie eventow odbywa sie zatem w 'klasyczny' sposob
+    struct EventFunctor : public std::binary_function<EventPtr,EventPtr,bool>
+    {
+        inline bool operator()(const EventPtr& e1, const EventPtr& e2)
+        {
+            return e1->getTime() < e2->getTime();
+        }
+    };
 
 public:
 	//! Konstruktor
@@ -236,11 +246,8 @@ public:
 	void addEvent(EventPtr event) 
 	{
 		events.push_back(event);
-		std::sort(events.begin(), events.end(), 
-		[](const EventPtr& e1, const EventPtr& e2) -> bool
-		{
-			return e1->getTime() < e2->getTime();
-		});
+        // wymuszenie kolejnosci zwiazanej z czasem
+		std::sort(events.begin(), events.end(), EventFunctor());
 	}
 };
 typedef boost::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
@@ -493,19 +500,6 @@ public:
 };
 typedef core::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
-
-
-//class C3DMisc
-//{
-//public:
-//	c3dlib::ForcePlatformCollection getPlatforms() const { return platforms; }
-//	void setPlatforms(c3dlib::ForcePlatformCollection& val) { platforms = val; }
-//	
-//private:
-//	c3dlib::ForcePlatformCollection platforms;
-//};
-//typedef boost::shared_ptr<C3DMisc> C3DMiscPtr;
-//typedef boost::shared_ptr<const C3DMisc> C3DMiscConstPtr;
 
 
 #define DEFINE_CHANNEL(name)																	 \

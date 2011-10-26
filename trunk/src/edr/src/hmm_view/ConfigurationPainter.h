@@ -174,7 +174,7 @@ public:
 
 public:
     typedef std::list<IAreaPtr> AreasList;
-
+    typedef std::map<QString, std::pair<QString, QString>> NamesDictionary;
 public:
     QPixmapConstPtr getBackground() const { return background; }
     const QString& getName() const { return name; }
@@ -183,6 +183,8 @@ public:
     void removeArea(const QString& name);
     AreasList::const_iterator getBegin() const { return areas.cbegin(); }
     AreasList::const_iterator getEnd() const { return areas.cend(); }
+    void trySetActive( const QString& name, bool selected );
+    void intersectNames( const NamesDictionary& names );
 
 signals:
     void elementHovered(const QString& name, bool selected);
@@ -195,10 +197,10 @@ protected:
     virtual void paintEvent(QPaintEvent *);
 
     bool eventFilter(QObject *obj, QEvent *event);
-
-
+    
 private:
     IAreaPtr getArea(int x, int y);
+    
 
 private:
     QPixmapConstPtr background;

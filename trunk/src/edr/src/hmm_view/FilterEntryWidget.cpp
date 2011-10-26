@@ -21,7 +21,8 @@ void FilterEntryWidget::onConfigurationButton()
         dialog->setLayout(layout);
         int w = configuration->width();
         int h = configuration->height();
-        dialog->resize(w, h);
+        //dialog->resize(w, h);
+        dialog->setFixedSize(w, h);
         dialog->exec();
         delete dialog;
     }

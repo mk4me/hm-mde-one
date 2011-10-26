@@ -22,6 +22,10 @@ PicturePlacerWindow::PicturePlacerWindow() :
     connect(this->actionSave, SIGNAL(triggered()), this, SLOT(saveProject()));
     connect(this->actionMarkersMode, SIGNAL(triggered()), this, SLOT(setMarkers()));
     connect(this->actionNormalMode, SIGNAL(triggered()), this, SLOT(setNormal()));
+    connect(&this->painter, SIGNAL(markerAdded(SingleMarkerPtr)), this, SLOT(markerAdded(SingleMarkerPtr)));
+    connect(this->markersList, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(markerNameChanged(QListWidgetItem *)));
+    connect(this->markersList, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(currentItemChanged(QListWidgetItem*, QListWidgetItem*)));
+    connect(this->imagesList, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(currentItemChanged(QListWidgetItem*, QListWidgetItem*)));
 }
 
 void PicturePlacerWindow::showAbout()
@@ -31,7 +35,7 @@ void PicturePlacerWindow::showAbout()
 
 void PicturePlacerWindow::loadBackground()
 {
-    const QString filename = QFileDialog::getOpenFileName(this, tr("Load background file"), "C:\\programming\\HMEdr\\src\\edr\\src\\hmm_view\\ui", "*.png");
+    const QString filename = QFileDialog::getOpenFileName(this, tr("Load background file"), "C:\\programming\\HMEdr\\src\\edr\\resources\\images", "*.png");
     if (!filename.isEmpty()) {
         QPixmapPtr pixmap(new QPixmap(filename));
         setBackground(filename, pixmap);
@@ -46,7 +50,7 @@ void PicturePlacerWindow::setBackground(const QString& name, QPixmapConstPtr pix
 
 void PicturePlacerWindow::loadPictures()
 {
-    QStringList files = QFileDialog::getOpenFileNames(this, tr("Load image files"), "C:\\programming\\HMEdr\\src\\edr\\src\\hmm_view\\ui", "*.png");
+    QStringList files = QFileDialog::getOpenFileNames(this, tr("Load image files"), "C:\\programming\\HMEdr\\src\\edr\\resources\\images", "*.png");
     loadPictures(files);
 }
 
@@ -63,7 +67,7 @@ void PicturePlacerWindow::loadPictures( const QStringList &files )
 
 void PicturePlacerWindow::saveProject()
 {
-    QString name = QFileDialog::getSaveFileName(this, tr("Load image files"), "C:\\programming\\HMEdr\\src\\edr\\src\\hmm_view\\ui", "*.xml");
+    QString name = QFileDialog::getSaveFileName(this, tr("Load image files"), "C:\\programming\\HMEdr\\src\\edr\\resources\\images", "*.xml");
     if (!name.isEmpty()) {
         saveXml(name, painter);
     }
@@ -71,7 +75,7 @@ void PicturePlacerWindow::saveProject()
 
 void PicturePlacerWindow::loadProject()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Load background file"), "C:\\programming\\HMEdr\\src\\edr\\src\\hmm_view\\ui", "*.xml");
+    QString filename = QFileDialog::getOpenFileName(this, tr("Load background file"), "C:\\programming\\HMEdr\\src\\edr\\resources\\images", "*.xml");
     if (!filename.isEmpty()) {
         loadXml(filename);
     }
@@ -161,7 +165,9 @@ void PicturePlacerWindow::loadXml( const QString& filename )
         } else if (val == "Marker") {
             QString name(element->Attribute("Name"));
             SingleMarkerPtr marker(new SingleMarker(name, x, y));
-            painter.addArea(marker);
+            
+            addMarker(marker);
+
         }
         
         element = element->NextSiblingElement();
@@ -175,6 +181,7 @@ void PicturePlacerWindow::loadPicture( const QString& name, int x, int y )
     QFileInfo info(name);
     QListWidgetItem* item = new QListWidgetItem(info.baseName());
     imagesList->addItem(item);
+    item2Area[item] = data;
 }
 
 void PicturePlacerWindow::undo()
@@ -197,6 +204,40 @@ void PicturePlacerWindow::setMarkers()
     painter.setState(Painter::Markers);
 }
 
+void PicturePlacerWindow::markerAdded(SingleMarkerPtr marker)
+{
+    QListWidgetItem* item = new QListWidgetItem(marker->getName());
+    item2Area[item] = marker;
+    item->setFlags (item->flags () | Qt::ItemIsEditable);
+    markersList->addItem(item);
+}
+
+void PicturePlacerWindow::markerNameChanged( QListWidgetItem * current)
+{
+    SingleMarkerPtr marker = boost::dynamic_pointer_cast<SingleMarker>(item2Area[current]);
+    if (marker) {
+        marker->setName(current->text());
+    }
+}
+
+void PicturePlacerWindow::currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous )
+{
+    if (current) {
+        painter.setActiveArea(item2Area[current]);
+    } else {
+        painter.setActiveArea(IAreaPtr());
+    }
+}
+
+void PicturePlacerWindow::addMarker( SingleMarkerPtr marker )
+{
+    painter.addArea(marker);
+    QListWidgetItem* item = new QListWidgetItem(marker->getName());
+    item2Area[item] = marker;
+    item->setFlags (item->flags () | Qt::ItemIsEditable);
+    markersList->addItem(item);
+}
+
 void Painter::paintEvent( QPaintEvent * )
 {
     QPainter painter(this);
@@ -206,6 +247,13 @@ void Painter::paintEvent( QPaintEvent * )
 
     for (auto it = areas.begin(); it != areas.end(); it++) {
         (*it)->draw(painter);
+    }
+
+    if (activeArea) {
+        QPen pen(QColor(255,100,10));
+        pen.setWidth(2);
+        painter.setPen(pen);
+        painter.drawRect(activeArea->getX() - 2, activeArea->getY() - 2, activeArea->getWidth() + 2, activeArea->getHeight() + 2);
     }
 }
 
@@ -262,6 +310,7 @@ void Painter::mousePressEvent( QMouseEvent * event )
         SingleMarkerPtr marker(new SingleMarker(name, p.x(), p.y()));
         addArea(marker);
         repaint(rect());
+        emit markerAdded(marker);
         /*QListWidgetItem* item = new QListWidgetItem(name);
         markersList->addItem(item);*/
     }

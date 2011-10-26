@@ -60,6 +60,7 @@ public:
     virtual int getWidth() const { return 2 * r; }
     virtual int getHeight() const { return 2 * r; }
     virtual const QString& getName() const { return name; }
+    void setName(const QString& name) { this->name = name; }
     virtual void draw(QPainter& painter) 
     {
         QPen pen(QColor(100,255,10));
@@ -171,6 +172,12 @@ public:
     Painter::State getState() const { return state; }
     void setState(Painter::State val) { state = val; }
 
+    IAreaPtr getActiveArea() const { return activeArea; }
+    void setActiveArea(IAreaPtr val) { activeArea = val; repaint(rect()); }
+
+signals:
+    void markerAdded(SingleMarkerPtr);
+
 protected:
     virtual void mouseMoveEvent ( QMouseEvent * event );
     virtual void mousePressEvent ( QMouseEvent * event );
@@ -190,7 +197,7 @@ private:
     int pressedY;
     int markerCounter;
     State state;
-    
+    IAreaPtr activeArea;
 };
 
 
@@ -217,7 +224,9 @@ public slots:
     void redo();
     void setNormal();
     void setMarkers();
-
+    void markerAdded(SingleMarkerPtr marker);
+    void markerNameChanged(QListWidgetItem * current);
+    void currentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
 private:    
     void loadPictures(const QStringList &files );
 
@@ -226,9 +235,12 @@ private:
     void saveXml(const QString& filename, const Painter& painter );
     void loadXml(const QString& filename);
 
+    void addMarker( SingleMarkerPtr marker );
+
 private:
     Painter painter;
     QHBoxLayout scrollLayout;    
+    std::map<QListWidgetItem*, IAreaPtr> item2Area;
 };
 
 #endif 

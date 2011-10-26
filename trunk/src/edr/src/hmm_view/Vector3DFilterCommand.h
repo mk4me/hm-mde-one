@@ -30,6 +30,8 @@
 #include "FilterCommand.h"
 #include "configurationDialog.h"
 
+//! klasa, dzieki ktorej mozliwe jest korzystanie z sygnalow i slotow w klasie szablonowej.
+//! obsluguje sloty w klasach Vector3DFilterCommand i Vector3DFilterCommand2
 class __Helper : public QObject
 {
     Q_OBJECT;
@@ -38,20 +40,48 @@ public:
       function(function) 
       {
       }
-      public slots:
-          void checkBoxChanged ( int state )
-          {
-              QCheckBox* checkBox = qobject_cast<QCheckBox *>(sender());
-              function(checkBox->text(), state);
-          }
+public:
+    typedef std::map<QString, std::pair<QString,QString> > NamesDictionary;
+public slots:
+    void checkBoxChanged ( int state )
+    {
+        QCheckBox* checkBox = qobject_cast<QCheckBox *>(sender());
+        function(checkBox->text(), state);
+    }
 
-          void onItemSelected(const QString& name, bool selected)
-          {
-              function(name, selected ? 1 : 0);
-          }
+    void onItemSelected(const QString& name, bool selected)
+    {
+        UTILS_ASSERT(namesDictionary.size() > 0);
+        auto it = namesDictionary.find(name);
+        if (it != namesDictionary.end()) {
+            function(it->second.first, selected ? 1 : 0);
+        } else {
+            // ?
+        }
+    }
+
+    void onElementHovered(const QString& name, bool selected) {
+        ConfigurationDialog* dialog = qobject_cast<ConfigurationDialog*>(sender());
+        if (selected) {
+            auto it = namesDictionary.find(name);
+            if (it != namesDictionary.end()) {
+                dialog->setText(it->second.second);
+            } else {
+                // ?
+                dialog->setText("");
+            }
+        } else {
+            dialog->setText("");
+        }
+    }
+
+public:
+    void setNamesDictionary(const NamesDictionary& val) { namesDictionary = val; }
+    const NamesDictionary& getNamesDictionary() const { return namesDictionary; }
 
 private:
     boost::function<void (const QString&, int)> function;
+    NamesDictionary namesDictionary;
 };
 
 
@@ -59,13 +89,11 @@ private:
 template <class Channel, class CollectionPtr>
 class Vector3DFilterCommand : public IFilterCommand
 {
-    
-    
 public:
-    Vector3DFilterCommand(core::IMemoryDataManager * memoryDataManager) :
-      memoryDataManager(memoryDataManager),
-      simpleTypeFilter(new TypeFilter(memoryDataManager, typeid(CollectionPtr::element_type))),
-      helper(boost::bind( &Vector3DFilterCommand::checkBoxChanged, this, _1, _2 ))
+      Vector3DFilterCommand(core::IMemoryDataManager * memoryDataManager) :
+          memoryDataManager(memoryDataManager),
+          simpleTypeFilter(new TypeFilter(memoryDataManager, typeid(CollectionPtr::element_type))),
+          helper(boost::bind( &Vector3DFilterCommand::checkBoxChanged, this, _1, _2 ))
       {
 
       }
@@ -74,7 +102,7 @@ public:
 
       void checkBoxChanged (const QString& box, int state )
       {
-          std::string name = box2Name[box];
+          std::string name = box.toStdString(); 
           nameDictionary[name] = (bool)state;
       }
 
@@ -87,7 +115,6 @@ private:
 
 protected:
     std::map<std::string, bool> nameDictionary;
-    std::map<QString, std::string> box2Name;
     DataFilterPtr simpleTypeFilter;
     __Helper helper;
     core::IMemoryDataManager * memoryDataManager;
@@ -108,7 +135,6 @@ QWidget* Vector3DFilterCommand<Channel, CollectionPtr>::getConfigurationWidget(Q
         }
     }
 
-    box2Name.clear();
     QWidget* widget = new QWidget(parent);
     QVBoxLayout* vlayout = new QVBoxLayout(widget);
     widget->setLayout(vlayout);
@@ -120,9 +146,6 @@ QWidget* Vector3DFilterCommand<Channel, CollectionPtr>::getConfigurationWidget(Q
         label->setText(it->first.c_str());
         hlayout->addWidget(label);
         QCheckBox* checkBox = new QCheckBox(entry);
-        // todo
-        QString cbName = it->first.c_str();
-        box2Name[cbName] = it->first;
         QObject::connect(checkBox, SIGNAL(stateChanged ( int)), &helper, SLOT(checkBoxChanged(int)));
         checkBox->setChecked(it->second);
         hlayout->addWidget(checkBox);
@@ -188,35 +211,15 @@ template <class Channel, class CollectionPtr>
 class Vector3DFilterCommand2 : public Vector3DFilterCommand<Channel, CollectionPtr>
 {
 public:
-    enum Configuration
-    {
-        Skeletal,
-        Muscular
-    };
+    typedef __Helper::NamesDictionary NamesDictionary;
 public:
-    Vector3DFilterCommand2(core::IMemoryDataManager * memoryDataManager,Configuration configuration) : 
+    Vector3DFilterCommand2(core::IMemoryDataManager * memoryDataManager, const NamesDictionary& namesDictionary, const QString& frontXml, const QString& backXml) : 
       Vector3DFilterCommand(memoryDataManager),
-      configuration(configuration)
+      frontXml(frontXml),
+      backXml(backXml)
     {
-        box2Name["Marker_0"] = "LAnkleMoment";
-        box2Name["Marker_1"] = "LElbowMoment";
-        box2Name["Marker_2"] = "LGroundReactionMoment";
-        box2Name["Marker_3"] = "LHipMoment";
-        box2Name["Marker_4"] = "LKneeMoment";
-        box2Name["Marker_5"] = "LNeckMoment";
-        box2Name["Marker_6"] = "LShoulderMoment";
-        box2Name["Marker_7"] = "LWaistMoment";
-        box2Name["Marker_8"] = "LWristMoment";
-        box2Name["Marker_9"] = "RAnkleMoment";
-        box2Name["Marker_10"] = "RElbowMoment";
-        box2Name["Marker_11"] = "RGroundReactionMoment";
-        box2Name["Marker_12"] = "RHipMoment";
-        box2Name["Marker_13"] = "RKneeMoment";
-        box2Name["Marker_14"] = "RNeckMoment";
-        box2Name["Marker_15"] = "RShoulderMoment";
-        box2Name["Marker_16"] = "RWaistMoment";
-        box2Name["Marker_17"] = "RWristMoment";
-   }
+        helper.setNamesDictionary(namesDictionary);
+    }
                              
 public:
     virtual QWidget* getConfigurationWidget( QWidget* parent) 
@@ -224,16 +227,9 @@ public:
         ConfigurationDialog* dialog = new ConfigurationDialog(parent);
         int w = dialog->width();
         int h = dialog->height();
-        if (configuration == Muscular) {
-            QString pathFront = core::getResourceString("images/muscular_front/muscular_front.xml");
-            QString pathBack = core::getResourceString("images/muscular_back/muscular_back.xml");
-            dialog->loadConfigurations(pathFront, pathBack);
-        } else if (configuration == Skeletal) {
-            QString pathFront = core::getResourceString("images/skeleton_front/skeleton_front.xml");
-            QString pathBack = core::getResourceString("images/skeleton_back/skeleton_back.xml");
-            dialog->loadConfigurations(pathFront, pathBack);
-        }
+        dialog->loadConfigurations(frontXml, backXml, helper.getNamesDictionary());
         QObject::connect(dialog, SIGNAL(itemSelected(const QString&, bool)), &helper, SLOT(onItemSelected(const QString&, bool)));
+        QObject::connect(dialog, SIGNAL(elementHovered(const QString&, bool)), &helper, SLOT(onElementHovered(const QString&, bool)));
 
         w = dialog->width();
         h = dialog->height();
@@ -241,7 +237,7 @@ public:
     }
 
 private:
-    Configuration configuration;
+    QString frontXml, backXml;
 };
 
 

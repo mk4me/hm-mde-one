@@ -46,25 +46,13 @@ void ConfigurationPainter::mouseMoveEvent( QMouseEvent * event )
             //currentPicture->setGlobalAlpha(255);
             emit elementHovered(currentArea->getName(), false);
         }
-        if (picture && picture->isActive() == false) {
+        if (picture) {
            // picture->setGlobalAlpha(100);
             emit elementHovered(picture->getName(), true);
         }
         currentArea = picture;
         repaint();
     }
-      
-    /*if (currentPicture) {
-        QPointF p = event->posF();
-        int gX = p.x();
-        int gY = p.y();
-        currentPicture->setX(currentPicture->getX() + (gX - pressedX));
-        currentPicture->setY(currentPicture->getY() + (gY - pressedY));
-        pressedX = gX;
-        pressedY = gY;
-        repaint(rect());
-    }*/
-
 }
 
 void ConfigurationPainter::mousePressEvent( QMouseEvent * event )
@@ -91,17 +79,38 @@ void ConfigurationPainter::mouseReleaseEvent( QMouseEvent * event )
 
 IAreaPtr ConfigurationPainter::getArea( int x, int y )
 {
+    typedef std::pair<IAreaPtr, int> pair;
+    std::vector<pair> clickedAreas;
     for (auto it = areas.rbegin(); it != areas.rend(); it++) {
         int x1 = (*it)->getX();
         int x2 = x1 + (*it)->getWidth();
         int y1 = (*it)->getY();
         int y2 = y1 + (*it)->getHeight();
         if (x1 <= x && x2 >= x && y1 <= y && y2 >= y) {
-            return *it;
+            // TODO : obrazki moglyby byc sprawdzane za pomoca alphy
+            int w2 = (*it)->getWidth() / 2;
+            int h2 = (*it)->getHeight() / 2;
+            int distX = x - (x1 + w2);
+            int distY = y - (y1 + h2);
+            clickedAreas.push_back(std::make_pair(*it, distX * distX + distY * distY));
         }
     }
 
-    return SinglePicturePtr();
+    if (clickedAreas.size() > 0) {
+        if (clickedAreas.size() > 1) {
+            int dupa = 1;
+            dupa += 10;
+        }
+        auto lambda_sort = [&](const pair& left, const pair& right) 
+        {
+            return left.second < right.second;
+        };
+        std::sort(clickedAreas.begin(), clickedAreas.end(), lambda_sort);
+
+        return clickedAreas[0].first;
+    }
+
+    return IAreaPtr();
 }
 
 bool ConfigurationPainter::eventFilter( QObject *obj, QEvent *event )
@@ -111,6 +120,39 @@ bool ConfigurationPainter::eventFilter( QObject *obj, QEvent *event )
         this->mouseMoveEvent(mouseEvent);
     }
     return false;
+}
+
+void ConfigurationPainter::trySetActive( const QString& name, bool selected )
+{
+    for (auto it = areas.begin(); it != areas.end(); it++) {
+        if ((*it)->getName() == name) {
+            (*it)->setActive(selected);
+            return;
+        }
+    }
+}
+
+void ConfigurationPainter::intersectNames( const  NamesDictionary& names )
+{
+    std::list<AreasList::iterator> toErase;
+    for (AreasList::iterator it = areas.begin(); it != areas.end(); it++) {
+        const QString& areaName = (*it)->getName();
+        bool found = false;
+        for (auto it2 = names.begin(); it2 != names.end(); it2++) {
+            QString name = it2->first;
+            if (name == areaName) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            toErase.push_back(it);
+        }
+    }
+
+    for (auto it = toErase.begin(); it != toErase.end(); it++) {
+        areas.erase(*it);
+    }
 }
 
 void SinglePicture::setPixmapAlpha(QPixmap& pixmap, unsigned int alpha )
