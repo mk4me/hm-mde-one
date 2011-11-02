@@ -10,6 +10,8 @@
 #ifndef HEADER_GUARD_HMM__CONFIGURATIONPAINTER_H__
 #define HEADER_GUARD_HMM__CONFIGURATIONPAINTER_H__
 
+#include <QtCore/QFileInfo>
+
 typedef boost::shared_ptr<QPixmap> QPixmapPtr;
 typedef boost::shared_ptr<const QPixmap> QPixmapConstPtr;
 
@@ -108,10 +110,14 @@ class SinglePicture : public IArea
 public:
       SinglePicture(const QString& name, int x = 0, int y = 0, bool alwaysVisible = false) :
       pixmap(new QPixmap(name)),
-          name(name),
+          //name(name),
           x(x), y(y),
           alwaysVisible(alwaysVisible)
-      {}
+      {
+          QFileInfo info(name);
+          this->name = info.baseName();
+      }
+
       SinglePicture(const QString& name, const QPixmapPtr& pixmap, int x = 0, int y = 0, bool alwaysVisible = false) :
       pixmap(pixmap),
           name(name),
@@ -181,8 +187,10 @@ public:
     void setBackground(const QString& name, QPixmapConstPtr val) { this->name = name; background = val; }
     void addArea(IAreaPtr data);
     void removeArea(const QString& name);
-    AreasList::const_iterator getBegin() const { return areas.cbegin(); }
-    AreasList::const_iterator getEnd() const { return areas.cend(); }
+    AreasList::const_iterator begin() const { return areas.cbegin(); }
+    AreasList::const_iterator end() const { return areas.cend(); }
+    AreasList::iterator begin() { return areas.begin(); }
+    AreasList::iterator end() { return areas.end(); }
     void trySetActive( const QString& name, bool selected );
     void intersectNames( const NamesDictionary& names );
 

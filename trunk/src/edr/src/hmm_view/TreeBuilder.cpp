@@ -208,7 +208,8 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( MotionPtr motion, const QString
 
 QTreeWidgetItem* TreeBuilder::createJointsBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon )
 {
-    QTreeWidgetItem* skeletonItem = new QTreeWidgetItem();
+   // QTreeWidgetItem* skeletonItem = new QTreeWidgetItem();
+    QTreeWidgetItem* skeletonItem = new HmmTreePolicyItem<JointsItemHelper>(motion);
     skeletonItem->setIcon(0, itemIcon);
     skeletonItem->setText(0, rootName);
     return skeletonItem;

@@ -106,25 +106,6 @@ void SkeletalVisualizationScheme::updateJointTransforms( double normalizedTime )
     updateJointTransforms(joints->getValues(static_cast<float>(normalizedTime * joints->getLength())), skeleton->getRoot(), q, pos);
  }
 
-void SkeletalVisualizationScheme::updateWorldTransforms( osg::Vec3 worldPosition, osg::Quat worldRotation )
-{
-    throw kinematic::NotYetImplemented("");
-}
-
-void SkeletalVisualizationScheme::updateSkinnedTransforms()
-{
-    throw kinematic::NotYetImplemented("");
-}
-
-//void SkeletalVisualizationScheme::setSchemeDrawer( ISchemeDrawerPtr drawer )
-//{
-//   if (this->schemeDrawer) {
-//       this->schemeDrawer->deinit();
-//   }
-//
-//   this->schemeDrawer = drawer;
-//   this->schemeDrawer->init(weak);
-//}
 
 core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::create()
 {
@@ -132,52 +113,6 @@ core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::creat
     scheme->weak = scheme;
     return scheme;
 }
-
-//void SkeletalVisualizationScheme::setKinematicModel( KinematicModelConstPtr val )
-//{
-//    kinematicModel = val;
-//
-//    if (kinematicModel->getSkeleton() && kinematicModel->getSkeleton()->getSkeletalData()) {
-//        const auto& jointMap = kinematicModel->getSkeleton()->getHAnimSkeleton()->getJoints();
-//        int count = jointMap.size();
-//        //jointMarkersStates.reserve(count + 5);
-//        
-//        auto it = jointMap.begin();
-//        for (int index = 0; it != jointMap.end(); it++) {
-//            if (it->second->isActive()) {
-//                visJoints[it->second] = index++;
-//            }
-//        }
-//
-//        jointMarkersStates.resize(visJoints.size());
-//        osg::Vec4 gold(1,1,0,1);
-//        for (unsigned int i = 0; i < visJoints.size(); i++) {
-//            jointMarkersStates[i].color = gold;
-//        }
-//
-//        hAnimSkeletonPtr skeleton = kinematicModel->getSkeleton()->getHAnimSkeleton();
-//
-//        createSkeletonConnections(skeleton->getRoot());
-//		//rewizja
-//        updateJointTransforms(0.0);
-//    }
-//
-//	MarkerCollectionConstPtr markers = kinematicModel->getMarkers();
-//    if (markers) {
-//       setMarkers(markers);
-//        /*int count =  markers->getNumChannels();
-//        if (count && markersStates.size() != count) {
-//            markersStates.resize(count);
-//        }
-//        osg::Vec4 blue(0,0,1,1);
-//        for (int i = 0; i < count; i++) {
-//            markersStates[i].position = markers->getValue(i, 0.0 );
-//            markersStates[i].color = blue;
-//        }*/
-//    }
-//    
-//}
-
 
 void SkeletalVisualizationScheme::createSkeletonConnections(kinematic::hAnimJointPtr joint)
 { 

@@ -25,7 +25,8 @@ public:
     FilterEntryWidget(QWidget* parent, HmmMainWindow* hmm, const QString& bigLabelText, const QString& smallLabelText, IFilterCommandPtr filterCommand, const QPixmap* icon = nullptr) :
       QWidget(parent),
       filterCommand(filterCommand),
-      hmm(hmm)
+      hmm(hmm),
+      dialog(nullptr)
     {
         setupUi(this);
         this->pushButton->setText(bigLabelText);
@@ -43,13 +44,16 @@ public:
         QIcon icon2(core::getResourceString("images/przod.png"));
         configurationButton->setIcon(icon2);
     }
-	virtual ~FilterEntryWidget() {}
+	virtual ~FilterEntryWidget() 
+    {
+        if (dialog) {
+            delete dialog;
+        }
+    }
 
 public:
     IFilterCommandPtr getFilterCommand() const { return filterCommand; }
     QString getName() const { return pushButton->text(); }
-    void setActiveBackground(bool val);
-
 
 private slots:
     void onButton();
@@ -62,6 +66,7 @@ protected:
 private:
     IFilterCommandPtr filterCommand;
     HmmMainWindow* hmm;
+    QDialog* dialog;
 };
 
 

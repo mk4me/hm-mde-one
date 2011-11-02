@@ -17,8 +17,7 @@ UTILS_POP_WARNINGS
 #include <boost/function.hpp>
 #include <kinematiclib/VskParser.h>
 #include <kinematiclib/JointAnglesCollection.h>
-#include <plugins/kinematic/KinematicModel.h>
-
+#include <plugins/c3d/C3DChannels.h>
 
 //! Pomocnicza klasa do obslugi plikow vsk. Likwiduje koniecznosc ich wielokrotnego parsowania
 class Vsk
@@ -130,10 +129,6 @@ public: // akcesory
     const std::vector<JointState> &getStates(DataToDraw toDraw) const;
     const std::vector<Connection> &getConnections(DataToDraw toDraw) const;
 
-    //model kinematyczny
-   //KinematicModelConstPtr getKinematicModel() const { return kinematicModel; }
-    //void setKinematicModel(KinematicModelConstPtr val);
-
 	bool hasData() const { return markers || joints; }
 	bool hasMarkers() const { return markers.get() != nullptr; }
 	bool hasJoints() const { return joints.get() != nullptr; }
@@ -152,14 +147,12 @@ private:
     //! odswiezenie informacji o markerach
     void updateMarkers(double time);
     //! obliczenie poczatkowych transformacji
-    void computeBindPoses(KinematicModelPtr model);
+    //void computeBindPoses(KinematicModelPtr model);
     //! obliczenie transformacji dla podanego czasu
     void updateJointTransforms(double time);
     //! obliczenie transformacji dla podanego czasu
     void updateJointTransforms(const std::vector<osg::Quat>& rotations, kinematic::hAnimJointPtr joint, 
         osg::Quat parentRot, osg::Vec3 parentPos);
-    void updateWorldTransforms(osg::Vec3 worldPosition, osg::Quat worldRotation);
-    void updateSkinnedTransforms();
 
     void createSkeletonConnections(kinematic::hAnimJointPtr joint);
 
@@ -176,13 +169,7 @@ private:
     std::map<kinematic::hAnimJointPtr, int> visJoints;
     //! zawiera informacje o polaczeniach miedzy stawami
     std::vector<Connection> jointConnections;
-
     std::vector<Connection> markerConnections;
-	
-    ////! aktualny wizualizator schematu
-    //ISchemeDrawerPtr schemeDrawer;
-    //! model kinematyczny z danymi
-    //KinematicModelConstPtr kinematicModel;
 	MarkerCollectionConstPtr markers;
 	kinematic::JointAnglesCollectionConstPtr joints;
     //! slaby wskaznik do this

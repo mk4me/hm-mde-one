@@ -28,7 +28,10 @@
 #include <plugins/subject/DataFilter.h>
 
 #include "FilterCommand.h"
+#include "TreeItemHelper.h"
 #include "configurationDialog.h"
+
+typedef std::map<QString, std::pair<QString,QString> > NamesDictionary;
 
 //! klasa, dzieki ktorej mozliwe jest korzystanie z sygnalow i slotow w klasie szablonowej.
 //! obsluguje sloty w klasach Vector3DFilterCommand i Vector3DFilterCommand2
@@ -41,7 +44,7 @@ public:
       {
       }
 public:
-    typedef std::map<QString, std::pair<QString,QString> > NamesDictionary;
+    
 public slots:
     void checkBoxChanged ( int state )
     {
@@ -84,9 +87,7 @@ private:
     NamesDictionary namesDictionary;
 };
 
-
-
-template <class Channel, class CollectionPtr>
+template <class Channel, class CollectionPtr, class ItemHelper>
 class Vector3DFilterCommand : public IFilterCommand
 {
 public:
@@ -97,150 +98,175 @@ public:
       {
 
       }
-      virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions);
-      virtual QWidget* getConfigurationWidget(QWidget* parent);
+      virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions)
+      {
+          QTreeWidgetItem* root = new QTreeWidgetItem();
+          root->setText(0, rootItemName);
+          BOOST_FOREACH(SessionConstPtr session, sessions) {
+              SessionPtr filtered = simpleTypeFilter->filterData(session);
+              BOOST_FOREACH(MotionPtr motion, filtered->getMotions()) {
+                  QTreeWidgetItem* motionItem = new QTreeWidgetItem();
+                  motionItem->setText(0, motion->getName().c_str());
+                  root->addChild(motionItem);
+                  BOOST_FOREACH(ObjectWrapperPtr wrapper, motion->getWrappers(typeid(CollectionPtr::element_type))) {
+                      CollectionPtr collection = wrapper->get();
+                      int count = collection->getNumChannels();
+                      for (int i = 0 ; i < count; i++) {
+                          __ChannelPtr channel = collection->getChannel(i);
+                          auto entry = activeElements.find(channel->getName());
+                          if (entry == activeElements.end() || (entry != activeElements.end() && entry->second)) {
+
+                              core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<Channel>();
+
+                              //wrapper->set(boost::dynamic_pointer_cast<Channel>(collection->getChannel(i)));
+                              wrapper->set(channel);
+                              static int number = 0;
+                              std::string name = "serie_" + boost::lexical_cast<std::string>(number);
+                              wrapper->setName(name);
+                              wrapper->setSource(name);
+                              QTreeWidgetItem* treeItem = new HmmTreePolicyItem<ItemHelper>(wrapper);
+                              treeItem->setText(0, channel->getName().c_str());
+                              motionItem->addChild(treeItem);
+                          }
+                      }
+                  }
+              }
+          }
+      return root;
+        }
+      virtual QDialog* getConfigurationDialog(QWidget* parent)
+      {
+          std::vector<SessionConstPtr> sessions = core::queryDataPtr();
+          BOOST_FOREACH(SessionConstPtr session, sessions) {
+              SessionPtr filtered = simpleTypeFilter->filterData(session);
+              BOOST_FOREACH(MotionPtr motion, filtered->getMotions()) {
+                  QTreeWidgetItem* motionItem = new QTreeWidgetItem();
+                  BOOST_FOREACH(ObjectWrapperPtr wrapper, motion->getWrappers(typeid(CollectionPtr::element_type))) {
+                      CollectionPtr collection = wrapper->get();
+                      createNameDictionary(collection);
+                  }
+              }
+          }
+
+          QDialog* widget = new QDialog(parent);
+          QVBoxLayout* vlayout = new QVBoxLayout(widget);
+          widget->setLayout(vlayout);
+          for (auto it = activeElements.begin(); it != activeElements.end(); it++) {
+              QWidget* entry = new QWidget(widget);
+              QHBoxLayout* hlayout = new QHBoxLayout(entry);
+              entry->setLayout(hlayout);
+              QLabel* label = new QLabel(entry);
+              label->setText(it->first.c_str());
+              hlayout->addWidget(label);
+              QCheckBox* checkBox = new QCheckBox(entry);
+              QObject::connect(checkBox, SIGNAL(stateChanged ( int)), &helper, SLOT(checkBoxChanged(int)));
+              checkBox->setChecked(it->second);
+              hlayout->addWidget(checkBox);
+              vlayout->addWidget(entry);
+          }
+
+          return widget;
+      }
 
       void checkBoxChanged (const QString& box, int state )
       {
           std::string name = box.toStdString(); 
-          nameDictionary[name] = (bool)state;
+          activeElements[name] = (bool)state;
       }
 
 private:
     typedef CollectionPtr __CollectionPtr;
     typedef core::shared_ptr<Channel> __ChannelPtr;
-    void createNameDictionary(__CollectionPtr collection);
 
+private:
+    void createNameDictionary(__CollectionPtr collection)
+    {
+        int count = collection->getNumChannels();
+        for (int i = 0; i < count; i++) {
+            __ChannelPtr channel = collection->getChannel(i);
+            std::string name = channel->getName();
+            auto it = activeElements.find(name);
+            if (it == activeElements.end()) {
+                activeElements[name] = true;
+            }
+        }
+    }
+
+public:
+    virtual void configurationStart() 
+    {
+        tempNameDictionary = activeElements;
+    }
+
+    virtual void configurationStop( ConfigurationResult result ) 
+    {
+        if (result == Cancel) {
+            activeElements = tempNameDictionary;
+        }
+    }
 
 
 protected:
-    std::map<std::string, bool> nameDictionary;
+    std::map<std::string, bool> activeElements;
+    std::map<std::string, bool> tempNameDictionary;
     DataFilterPtr simpleTypeFilter;
     __Helper helper;
     core::IMemoryDataManager * memoryDataManager;
 };
 
-template <class Channel, class CollectionPtr>
-QWidget* Vector3DFilterCommand<Channel, CollectionPtr>::getConfigurationWidget(QWidget* parent)
+template <class Channel, class CollectionPtr, class ItemHelper>
+class Vector3DFilterCommand2 : public Vector3DFilterCommand<Channel, CollectionPtr, ItemHelper>
 {
-    std::vector<SessionConstPtr> sessions = core::queryDataPtr();
-    BOOST_FOREACH(SessionConstPtr session, sessions) {
-        SessionPtr filtered = simpleTypeFilter->filterData(session);
-        BOOST_FOREACH(MotionPtr motion, filtered->getMotions()) {
-            QTreeWidgetItem* motionItem = new QTreeWidgetItem();
-            BOOST_FOREACH(ObjectWrapperPtr wrapper, motion->getWrappers(typeid(CollectionPtr::element_type))) {
-                CollectionPtr collection = wrapper->get();
-                createNameDictionary(collection);
-            }
-        }
-    }
-
-    QWidget* widget = new QWidget(parent);
-    QVBoxLayout* vlayout = new QVBoxLayout(widget);
-    widget->setLayout(vlayout);
-    for (auto it = nameDictionary.begin(); it != nameDictionary.end(); it++) {
-        QWidget* entry = new QWidget(widget);
-        QHBoxLayout* hlayout = new QHBoxLayout(entry);
-        entry->setLayout(hlayout);
-        QLabel* label = new QLabel(entry);
-        label->setText(it->first.c_str());
-        hlayout->addWidget(label);
-        QCheckBox* checkBox = new QCheckBox(entry);
-        QObject::connect(checkBox, SIGNAL(stateChanged ( int)), &helper, SLOT(checkBoxChanged(int)));
-        checkBox->setChecked(it->second);
-        hlayout->addWidget(checkBox);
-        vlayout->addWidget(entry);
-    }
-
-    return widget;
-}
-
-template <class Channel, class CollectionPtr>
-QTreeWidgetItem* Vector3DFilterCommand<Channel, CollectionPtr>::createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions )
-{
-    QTreeWidgetItem* root = new QTreeWidgetItem();
-    root->setText(0, rootItemName);
-    BOOST_FOREACH(SessionConstPtr session, sessions) {
-        SessionPtr filtered = simpleTypeFilter->filterData(session);
-        BOOST_FOREACH(MotionPtr motion, filtered->getMotions()) {
-            QTreeWidgetItem* motionItem = new QTreeWidgetItem();
-            motionItem->setText(0, motion->getName().c_str());
-            root->addChild(motionItem);
-            BOOST_FOREACH(ObjectWrapperPtr wrapper, motion->getWrappers(typeid(CollectionPtr::element_type))) {
-                CollectionPtr collection = wrapper->get();
-                int count = collection->getNumChannels();
-                for (int i = 0 ; i < count; i++) {
-                    __ChannelPtr channel = collection->getChannel(i);
-                    auto entry = nameDictionary.find(channel->getName());
-                    if (entry == nameDictionary.end() || (entry != nameDictionary.end() && entry->second)) {
-
-                        core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<Channel>();
-
-                        //wrapper->set(boost::dynamic_pointer_cast<Channel>(collection->getChannel(i)));
-                        wrapper->set(channel);
-                        static int number = 0;
-                        std::string name = "serie_" + boost::lexical_cast<std::string>(number);
-                        wrapper->setName(name);
-                        wrapper->setSource(name);
-                        QTreeWidgetItem* treeItem = new HmmTreePolicyItem<Vector3ItemHelper>(wrapper);
-                        treeItem->setText(0, channel->getName().c_str());
-                        motionItem->addChild(treeItem);
-                    }
-                }
-            }
-        }
-    }
-    return root;
-}
-
-template <class Channel, class CollectionPtr>
-void Vector3DFilterCommand<Channel, CollectionPtr>::createNameDictionary( __CollectionPtr collection )
-{
-    int count = collection->getNumChannels();
-    for (int i = 0; i < count; i++) {
-        __ChannelPtr channel = collection->getChannel(i);
-        std::string name = channel->getName();
-        auto it = nameDictionary.find(name);
-        if (it == nameDictionary.end()) {
-            nameDictionary[name] = true;
-        }
-    }
-}
-
-template <class Channel, class CollectionPtr>
-class Vector3DFilterCommand2 : public Vector3DFilterCommand<Channel, CollectionPtr>
-{
-public:
-    typedef __Helper::NamesDictionary NamesDictionary;
 public:
     Vector3DFilterCommand2(core::IMemoryDataManager * memoryDataManager, const NamesDictionary& namesDictionary, const QString& frontXml, const QString& backXml) : 
       Vector3DFilterCommand(memoryDataManager),
       frontXml(frontXml),
-      backXml(backXml)
+      backXml(backXml),
+      dialog(nullptr)
     {
         helper.setNamesDictionary(namesDictionary);
     }
+
+    virtual ~Vector3DFilterCommand2() 
+    {
+    }
                              
 public:
-    virtual QWidget* getConfigurationWidget( QWidget* parent) 
+    virtual QDialog* getConfigurationDialog( QWidget* parent) 
     {
-        ConfigurationDialog* dialog = new ConfigurationDialog(parent);
-        int w = dialog->width();
-        int h = dialog->height();
-        dialog->loadConfigurations(frontXml, backXml, helper.getNamesDictionary());
-        QObject::connect(dialog, SIGNAL(itemSelected(const QString&, bool)), &helper, SLOT(onItemSelected(const QString&, bool)));
-        QObject::connect(dialog, SIGNAL(elementHovered(const QString&, bool)), &helper, SLOT(onElementHovered(const QString&, bool)));
+        if (!dialog) {
+            dialog = new ConfigurationDialog(parent);
+            int w = dialog->width();
+            int h = dialog->height();
+            dialog->loadConfigurations(frontXml, backXml, helper.getNamesDictionary());
+            QObject::connect(dialog, SIGNAL(itemSelected(const QString&, bool)), &helper, SLOT(onItemSelected(const QString&, bool)));
+            QObject::connect(dialog, SIGNAL(elementHovered(const QString&, bool)), &helper, SLOT(onElementHovered(const QString&, bool)));
 
-        w = dialog->width();
-        h = dialog->height();
+            w = dialog->width();
+            h = dialog->height();
+        }
         return dialog;
+    }
+
+    virtual void configurationStart() 
+    {
+        Vector3DFilterCommand::configurationStart();
+        std::map<QString, bool> visibles;
+        const NamesDictionary& names = helper.getNamesDictionary();
+        for (auto elementIT = activeElements.begin(); elementIT != activeElements.end(); elementIT++) {
+            for (auto nameIT = names.cbegin(); nameIT != names.cend(); nameIT++) {
+                if (nameIT->second.first.toStdString() == elementIT->first) {
+                    visibles[nameIT->first] = elementIT->second;
+                }
+            }
+        }
+        dialog->setVisibles(visibles);
     }
 
 private:
     QString frontXml, backXml;
+    ConfigurationDialog* dialog;
 };
-
-
 #endif
 
 

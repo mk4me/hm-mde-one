@@ -5,7 +5,8 @@
 ConfigurationDialog::ConfigurationDialog(QWidget* parent) :
     QDialog(parent),
     painterFront(this),
-    painterBack(this)
+    painterBack(this),
+    isFront(true)
 {
     setupUi(this);
     scrollAreaWidget->setLayout(&scrollLayout);
@@ -17,14 +18,22 @@ ConfigurationDialog::ConfigurationDialog(QWidget* parent) :
     connect(&painterBack, SIGNAL(elementSelected(const QString&, bool)), this, SLOT(onItemSelected(const QString&, bool)));
     connect(&painterFront, SIGNAL(elementHovered(const QString&, bool)), this, SLOT(onElementHovered(const QString&, bool)));
     connect(&painterBack, SIGNAL(elementHovered(const QString&, bool)), this, SLOT(onElementHovered(const QString&, bool)));
+    connect(switchButton, SIGNAL(clicked()), this, SLOT(onSwitchButton()));
 }
 
 void ConfigurationDialog::setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap )
 { 
-    scrollAreaWidget->setFixedSize(pixmap->width(), pixmap->height());
+    scrollArea->setFixedSize(pixmap->width(), pixmap->height());
+    this->setFixedSize(scrollArea->width(), scrollArea->height() + label->height());
     painter.setBackground(name, pixmap);
 }
 
+void ConfigurationDialog::loadPicture(ConfigurationPainter& painter, const QString& name, int x, int y, bool alwaysVisible)
+{
+    SinglePicturePtr data(new SinglePicture(name, x, y, alwaysVisible));
+    data->setActive(true);
+    painter.addArea(data);
+}
 
 void ConfigurationDialog::loadPictures(ConfigurationPainter& painter, const QStringList &files )
 {
@@ -36,6 +45,14 @@ void ConfigurationDialog::loadPictures(ConfigurationPainter& painter, const QStr
 
     painter.repaint(painter.rect());
 }
+
+void ConfigurationDialog::createMarker( ConfigurationPainter &painter, const QString& name, int x, int y)
+{
+    SingleMarkerPtr marker(new SingleMarker(name, x, y));
+    marker->setActive(true);
+    painter.addArea(marker);
+}
+
 
 void ConfigurationDialog::loadConfigurations(const QString& frontXml, const QString& backXml, const  std::map<QString, std::pair<QString, QString>>& names)
 {
@@ -51,11 +68,7 @@ void ConfigurationDialog::loadConfigurations(const QString& frontXml, const QStr
     loadPicture(painterBack, path2, 10, 10, true);
 }
 
-void ConfigurationDialog::loadPicture(ConfigurationPainter& painter, const QString& name, int x, int y, bool alwaysVisible)
-{
-    SinglePicturePtr data(new SinglePicture(name, x, y, alwaysVisible));
-    painter.addArea(data);
-}
+
 
 void ConfigurationDialog::loadXml(ConfigurationPainter& painter, const QString &filename )
 {
@@ -88,9 +101,8 @@ void ConfigurationDialog::loadXml(ConfigurationPainter& painter, const QString &
             loadPicture(painter, filename, x, y);
         } else if (val == "Marker") {
             QString name(element->Attribute("Name"));
-            SingleMarkerPtr marker(new SingleMarker(name, x, y));
-            marker->setActive(true);
-            painter.addArea(marker);
+            createMarker(painter, name, x, y);
+
         }
         element = element->NextSiblingElement();
     }
@@ -106,3 +118,24 @@ void ConfigurationDialog::setText( const QString& text )
 {
     this->label->setText(text);
 }
+
+void ConfigurationDialog::setVisibles( const std::map<QString, bool>& visibles )
+{
+    for (auto it = painterFront.begin(); it != painterFront.end(); it++) {
+        auto found = visibles.find((*it)->getName());
+        if (found == visibles.end()) {
+            (*it)->setActive(true);
+        } else {
+            (*it)->setActive(found->second);
+        }
+    }
+    for (auto it = painterBack.begin(); it != painterBack.end(); it++) {
+        auto found = visibles.find((*it)->getName());
+        if (found == visibles.end()) {
+            (*it)->setActive(true);
+        } else {
+            (*it)->setActive(found->second);
+        }
+    }
+}
+

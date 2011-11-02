@@ -168,7 +168,8 @@ public:
 		{
 			// ustawienia aplikacji
 			QApplication application(argc, argv);
-			application.setApplicationName("EDR");
+            //
+            application.setApplicationName("EDR");
 			application.setOrganizationName("PJWSTK");
 			QSettings::setDefaultFormat(QSettings::IniFormat);
 

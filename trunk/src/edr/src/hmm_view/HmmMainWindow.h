@@ -48,16 +48,16 @@ template <>
 class HmmTreePolicyItem<MultiserieHelper> : public HmmTreeItem, private MultiserieHelper
 {
 public:
-    HmmTreePolicyItem(const std::vector<core::ObjectWrapperPtr>& wrappers) :
-      MultiserieHelper(wrappers)
-      {
-      }
+    HmmTreePolicyItem(const std::vector<core::ObjectWrapperPtr>& wrappers) : MultiserieHelper(wrappers) {}
+    virtual TreeItemHelper* getHelper() { return dynamic_cast<TreeItemHelper*>(this); }
+};
 
+template <>
+class HmmTreePolicyItem<JointsItemHelper> : public HmmTreeItem, private JointsItemHelper
+{
 public:
-    virtual TreeItemHelper* getHelper()
-    {
-        return dynamic_cast<TreeItemHelper*>(this);
-    }
+    HmmTreePolicyItem(MotionPtr motion) : JointsItemHelper(motion) {}
+    virtual TreeItemHelper* getHelper() { return dynamic_cast<TreeItemHelper*>(this); }
 };
 
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain

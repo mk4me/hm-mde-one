@@ -160,6 +160,18 @@
        </property>
        <item>
         <widget class="QToolButton" name="testsButton">
+         <property name="minimumSize">
+          <size>
+           <width>54</width>
+           <height>54</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>54</width>
+           <height>54</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">QToolButton {
 	background-color: rgb(135, 177, 255);
@@ -186,6 +198,18 @@
        </item>
        <item>
         <widget class="QToolButton" name="analisisButton">
+         <property name="minimumSize">
+          <size>
+           <width>54</width>
+           <height>54</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>54</width>
+           <height>54</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">QToolButton {
 	background-color: rgb(135, 177, 255);
@@ -212,6 +236,18 @@
        </item>
        <item>
         <widget class="QToolButton" name="raportsButton">
+         <property name="minimumSize">
+          <size>
+           <width>54</width>
+           <height>54</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>54</width>
+           <height>54</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">QToolButton {
 	background-color: rgb(135, 177, 255);
@@ -238,6 +274,18 @@
        </item>
        <item>
         <widget class="QToolButton" name="operationsButton">
+         <property name="minimumSize">
+          <size>
+           <width>54</width>
+           <height>54</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>54</width>
+           <height>54</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">QToolButton {
 	background-color: rgb(135, 177, 255);
@@ -266,14 +314,14 @@
         <widget class="QPushButton" name="openButton">
          <property name="minimumSize">
           <size>
-           <width>44</width>
-           <height>44</height>
+           <width>54</width>
+           <height>54</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>44</width>
-           <height>44</height>
+           <width>54</width>
+           <height>54</height>
           </size>
          </property>
          <property name="toolTip">
@@ -298,14 +346,14 @@
         <widget class="QPushButton" name="closeButton">
          <property name="minimumSize">
           <size>
-           <width>44</width>
-           <height>44</height>
+           <width>54</width>
+           <height>54</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>44</width>
-           <height>44</height>
+           <width>54</width>
+           <height>54</height>
           </size>
          </property>
          <property name="toolTip">
@@ -430,7 +478,6 @@
  <layoutdefault spacing="6" margin="11"/>
  <resources>
   <include location="Icons.qrc"/>
-  <include location="../../../../../../../Users/Wojtek/.designer/backup/Icons.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -136,16 +136,6 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
 	connect(btm_action, SIGNAL(triggered()), this, SLOT(setBottom())); 	
 	actions.push_back(viewMenu);
 	
- /*   QMenu* visualizationMenu = new QMenu("Visualization", widget);
-    QActionGroup* group = new QActionGroup(widget);
-    connect(group, SIGNAL(triggered(QAction *)), this, SLOT(actionTriggered(QAction*)));
-
-    addAction("Markers", visualizationMenu, group);
-    addAction("Skeleton", visualizationMenu, group);
-    addAction("Both", visualizationMenu, group);
-    addAction("Rectangular", visualizationMenu, group);
-    actions.push_back(visualizationMenu);*/
-	
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
     osg::Vec3 up(0,0,1);
 

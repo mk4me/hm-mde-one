@@ -31,7 +31,6 @@ string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOU
 set(PUBLIC_H
 	${HEADER_PATH}/Wrappers.h
 	${HEADER_PATH}/skeletalVisualizationScheme.h
-	${HEADER_PATH}/KinematicModel.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})

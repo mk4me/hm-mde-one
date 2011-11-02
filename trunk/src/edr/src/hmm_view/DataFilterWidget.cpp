@@ -60,11 +60,7 @@ void DataFilterWidget::setActive( bool val )
     } else {
         setStyleSheet("background-color: rgb(255, 255, 255)");
     }
-
-    for (auto it = entries.begin(); it != entries.end(); it++) {
-        (*it)->setActiveBackground(val);
-    }
-
+    
     active = val;
     emit activated(val); 
 }

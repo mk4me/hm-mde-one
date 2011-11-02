@@ -11,20 +11,17 @@ void FilterEntryWidget::onButton()
 
 void FilterEntryWidget::onConfigurationButton()
 {
-    QWidget* configuration = filterCommand->getConfigurationWidget(this);
-    if (configuration) {
-        QDialog* dialog = new QDialog();
-        dialog->setWindowFlags(Qt::Tool);
-        dialog->setWindowTitle(getName());
-        QHBoxLayout* layout = new QHBoxLayout();
-        layout->addWidget(configuration);
-        dialog->setLayout(layout);
-        int w = configuration->width();
-        int h = configuration->height();
-        //dialog->resize(w, h);
-        dialog->setFixedSize(w, h);
+    if (!dialog) {
+        dialog =  filterCommand->getConfigurationDialog(this);
+    }
+    if (dialog) {
+        filterCommand->configurationStart();
         dialog->exec();
-        delete dialog;
+        int result = dialog->result();
+        filterCommand->configurationStop(result ? IFilterCommand::OK : IFilterCommand::Cancel);
+        if (result) {
+            onButton();
+        }
     }
 }
 
@@ -38,13 +35,3 @@ void FilterEntryWidget::leaveEvent( QEvent * )
     this->configurationButton->setVisible(false);
 }
 
-void FilterEntryWidget::setActiveBackground( bool val )
-{
-    /*if (!val) {
-    setStyleSheet("background-color: none");
-    this->pushButton->setStyleSheet("background-color: none");
-    } else {
-    setStyleSheet("background-color: none");
-    this->pushButton->setStyleSheet("background-color: none");
-    }*/
-}

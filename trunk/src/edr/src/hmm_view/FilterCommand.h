@@ -28,11 +28,19 @@
 class IFilterCommand
 {
 public:
+    enum ConfigurationResult
+    {
+        OK,
+        Cancel
+    };
+public:
 	virtual ~IFilterCommand() {}
    
 public:
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions) = 0;
-    virtual QWidget* getConfigurationWidget(QWidget* parent) { return nullptr; }
+    virtual QDialog* getConfigurationDialog(QWidget* parent) { return nullptr; }
+    virtual void configurationStart() {}
+    virtual void configurationStop(ConfigurationResult result) {}
 };
 typedef boost::shared_ptr<IFilterCommand> IFilterCommandPtr;
 typedef boost::shared_ptr<const IFilterCommand> IFilterCommandConstPtr;
@@ -47,65 +55,6 @@ public:
     {
         return TreeBuilder::createTree(rootItemName, sessions, dataFilter);
     }
-    /*static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions);
-    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions, DataFilterPtr dataFilter);
-    static QTreeWidgetItem* createMarkersBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
-    static QTreeWidgetItem* createJointsBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
-    static QTreeWidgetItem* createVideoBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
-    static QTreeWidgetItem* createGRFBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
-    static QTreeWidgetItem* createEMGBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
-
-    template <class Channel, class CollectionPtr>
-    static void tryAddVectorToTree(MotionPtr motion, CollectionPtr collection, const std::string& name, const QIcon* childIcon, QTreeWidgetItem* parentItem, bool createContainerItem = true ) 
-    {
-        if (collection) {
-            std::vector<ObjectWrapperPtr> wrappers;
-            for (int i = 0; i < collection->getNumChannels(); i++) {
-                ObjectWrapperPtr wrapper = ObjectWrapper::create<VectorChannel>();
-                wrapper->set(boost::dynamic_pointer_cast<VectorChannel>(collection->getChannel(i)));
-
-                static int number = 0;
-                std::string name = "Serie_" + boost::lexical_cast<std::string>(number);
-                wrapper->setName(name);
-                wrapper->setSource(name);
-                wrappers.push_back(wrapper);
-            }
-            QTreeWidgetItem* collectionItem;
-            if (createContainerItem) {
-                collectionItem = new QTreeWidgetItem();
-                collectionItem->setText(0, name.c_str());	
-                parentItem->addChild(collectionItem);
-            } else {
-                collectionItem = parentItem;
-            }
-            int count = wrappers.size();
-            for (int i = 0; i < count; i++) {	
-                VectorChannelPtr c = wrappers[i]->get();
-                QTreeWidgetItem* channelItem = new HmmTreePolicyItem<Vector3ItemHelper>(wrappers[i]);
-                if (childIcon) {
-                    channelItem->setIcon(0, *childIcon);							
-                }				
-                channelItem->setText(0, c->getName().c_str());			
-                collectionItem->addChild(channelItem);		
-            }	
-        }
-    }
-
-    virtual QWidget* getConfigurationWidget()
-    {
-        QHBoxLayout* layout = new QHBoxLayout();
-        QWidget* widget = new QWidget();
-        widget->setLayout(layout);
-        QLabel* label = new QLabel(widget);
-        label->setText("Configuration widget");
-        layout->addWidget(label);
-        QDoubleSpinBox* spin = new QDoubleSpinBox(widget);
-        layout->addWidget(spin);
-        return widget;
-    }*/
-
-    //virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionPtr>& sessions);
-    virtual QWidget* getConfigurationWidget(QWidget* parent);
     
 private:
     DataFilterPtr dataFilter;
