@@ -30,16 +30,21 @@ bool EDRDockWidgetSet::isAdditionPossible(EDRDockWidget* widget) const
 	return (additionPossible && (getNumWidgets() < getMaxWidgetsNumber()));
 }
 
-void EDRDockWidgetSet::addDockWidget( EDRDockWidget* widget )
+void EDRDockWidgetSet::addDockWidget( EDRDockWidget* widget, Qt::Orientation orientation )
 {
 	QWidget::setUpdatesEnabled(false);
 	if (isAdditionPossible(widget)) {
-		this->mainWindow->addDockWidget(Qt::TopDockWidgetArea, widget, getNumWidgets() % 2 ? Qt::Horizontal : Qt::Vertical);
+		this->mainWindow->addDockWidget(Qt::TopDockWidgetArea, widget, orientation);
 		widgetsList.push_back(widget);
 	} else {
 		throw std::runtime_error("Unable to add widget");
 	}
 	QWidget::setUpdatesEnabled(true);
+}
+
+void EDRDockWidgetSet::addDockWidget( EDRDockWidget* widget )
+{
+    addDockWidget(widget, getNumWidgets() % 2 ? Qt::Horizontal : Qt::Vertical);
 }
 
 int EDRDockWidgetSet::getNumWidgets() const 

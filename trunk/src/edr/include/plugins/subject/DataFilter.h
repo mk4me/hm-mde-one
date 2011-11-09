@@ -7,8 +7,8 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_SUBJECT__DATAFILTER_H__
-#define HEADER_GUARD_SUBJECT__DATAFILTER_H__
+#ifndef HEADER_GUARD_SUBJECT__IDATAFILTER_H__
+#define HEADER_GUARD_SUBJECT__IDATAFILTER_H__
 
 #include <boost/date_time.hpp>
 #include <plugins/subject/Session.h>
@@ -22,6 +22,19 @@ public:
 	virtual ~DataFilter() {}
 public:
     virtual SessionPtr filterData(SessionConstPtr session) const = 0;
+
+    std::vector<SessionPtr> filterSessions(const std::vector<SessionConstPtr>& sessions) const 
+    {
+        std::vector<SessionPtr> ret;
+        for (auto it = sessions.begin(); it != sessions.end(); it++) {
+            auto filtered = filterData(*it);
+            if (filtered) {
+                ret.push_back(filtered);
+            }
+        }
+
+        return ret;
+    }
 
 protected:
     core::IMemoryDataManager * memoryDataManager;
@@ -100,56 +113,19 @@ public:
     {
         SessionPtr temp = boost::const_pointer_cast<Session>(session);
         BOOST_FOREACH(DataFilterConstPtr filter, filters) {
-            temp = filter->filterData(temp);
+            if (temp) {
+                temp = filter->filterData(temp);
+            }
         }
 
         return temp;
     }
 
+    
+
 private:
     std::vector<DataFilterPtr> filters;
 };
 
-//class DataFilterCombiner
-//{
-//private:
-//    DataFilterCombiner();
-//public:
-//    static SessionPtr combine(const std::vector<SessionPtr>& sessions)
-//    {
-//        std::set<core::ObjectWrapperPtr> sessionWrappers;
-//        std::map<MotionPtr, std::set<core::ObjectWrapperPtr>> motionWrappers;
-//        std::map<std::string, MotionPtr> motionMap;
-//        BOOST_FOREACH(SessionPtr session, sessions) {
-//            Session::WrapperRange sw = session->getWrappers();
-//            sessionWrappers.insert(sw.begin(), sw.end());
-//            BOOST_FOREACH(MotionPtr motion, session->getMotions()) {
-//                MotionPtr combinedMotion;
-//                auto it = motionMap.find(motion->getName());
-//                if (it != motionMap.end()) {
-//                    combinedMotion = it->second;
-//                } else {
-//                    combinedMotion = MotionPtr(new Motion());
-//                    combinedMotion->setName(motion->getName());
-//                    motionMap[motion->getName()] = combinedMotion;
-//                }
-//                Motion::range ww = motion->getWrappers();
-//                motionWrappers[combinedMotion].insert(ww.begin(), ww.end());
-//            }
-//        }
-//
-//        SessionPtr combinedSession(new Session());
-//        combinedSession->addWrappers(sessionWrappers);
-//        for (auto it = motionWrappers.begin(); it != motionWrappers.end(); it++) {
-//            MotionPtr motion = it->first;
-//            auto& wrappers = it->second;
-//            motion->addWrappers(wrappers);
-//            combinedSession->addMotion(it->first);
-//        }
-//        return combinedSession;
-//    }
-//};
-//typedef boost::shared_ptr<DataFilterCombiner> DataFilterCollectorPtr;
-//typedef boost::shared_ptr<const DataFilterCombiner> DataFilterCollectorConstPtr;
 
 #endif

@@ -25,6 +25,8 @@
 #include <plugins/subject/DataFilter.h>
 #include "TreeBuilder.h"
 
+
+
 class IFilterCommand
 {
 public:
@@ -114,15 +116,15 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
                     yWrappers.push_back(wrapperY);
                     zWrappers.push_back(wrapperZ);
                 }
-                QTreeWidgetItem* fX = new HmmTreePolicyItem<MultiserieHelper>(xWrappers);
+                QTreeWidgetItem* fX = new MultiserieHelper(xWrappers);
                 fX->setText(0, "Motion Forces - X");
                 item->addChild(fX);
 
-                QTreeWidgetItem* fY = new HmmTreePolicyItem<MultiserieHelper>(yWrappers);
+                QTreeWidgetItem* fY = new MultiserieHelper(yWrappers);
                 fY->setText(0, "Motion Forces - Y");
                 item->addChild(fY);
 
-                QTreeWidgetItem* fZ = new HmmTreePolicyItem<MultiserieHelper>(zWrappers);
+                QTreeWidgetItem* fZ = new MultiserieHelper(zWrappers);
                 fZ->setText(0, "Motion Forces - Z");
                 item->addChild(fZ);
             }

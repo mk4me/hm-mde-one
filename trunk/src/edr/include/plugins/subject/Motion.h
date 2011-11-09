@@ -7,8 +7,8 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_SUBJECT__MOTION_H__
-#define HEADER_GUARD_SUBJECT__MOTION_H__
+#ifndef HEADER_GUARD_SUBJECT__MOTION_TESTETESTEH__
+#define HEADER_GUARD_SUBJECT__MOTION_TESTETESTEH__
 
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/kinematic/Wrappers.h>
@@ -31,9 +31,10 @@ public:
         fillDefaultTypesList();
     }
 
-    Motion( const std::vector<core::TypeInfo>& supportedTypes )
+    Motion(core::IMemoryDataManager * memoryDataManager, const std::vector<core::TypeInfo>& supportedTypes)
+        : memoryDataManager(memoryDataManager), types(supportedTypes)
     {
-        types = supportedTypes;
+        
     }
 	virtual ~Motion() {}
 
@@ -56,6 +57,11 @@ public:
 		return false;
 	}
 
+    void addType(const core::TypeInfo& type)
+    {
+        types.push_back(type);
+    }
+    
 	bool hasObjectOfType(const core::TypeInfo& type, bool exact = false)
     {
         if (type == typeid(kinematic::JointAnglesCollection)) {
@@ -175,6 +181,11 @@ private:
         types.push_back(typeid(AngleCollection));
         types.push_back(typeid(PowerCollection));
         types.push_back(typeid(MomentCollection));
+        types.push_back(typeid(MarkerChannel));
+        types.push_back(typeid(ForceChannel));
+        types.push_back(typeid(AngleChannel));
+        types.push_back(typeid(PowerChannel));
+        types.push_back(typeid(MomentChannel));
         types.push_back(typeid(VectorChannel));
         types.push_back(typeid(C3DEventsCollection));
         types.push_back(typeid(VideoChannel));

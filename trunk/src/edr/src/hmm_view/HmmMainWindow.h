@@ -6,7 +6,7 @@
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/kinematic/Wrappers.h>
-#include <plugins/subject/Motion.h>
+//#include <plugins/subject/Motion.h>
 #include "plugins/chart/ChartVisualizer.h"
 #include <plugins/subject/Session.h>
 #include <plugins/subject/DataFilter.h>
@@ -22,43 +22,8 @@ class EDRDockWidgetManager;
 class DataFilterWidget;
 class AnalisisWidget;
 
-class HmmTreeItem : public QTreeWidgetItem
-{
-public:
-    virtual TreeItemHelper* getHelper() = 0;
-};
 
-template <class HelperPolicy>
-class HmmTreePolicyItem : public HmmTreeItem, private HelperPolicy
-{
-public:
-    HmmTreePolicyItem(const core::ObjectWrapperPtr& wrapper) :
-      HelperPolicy(wrapper)
-      {
-      }
 
-public:
-    virtual TreeItemHelper* getHelper()
-    {
-        return dynamic_cast<TreeItemHelper*>(this);
-    }
-};
-
-template <>
-class HmmTreePolicyItem<MultiserieHelper> : public HmmTreeItem, private MultiserieHelper
-{
-public:
-    HmmTreePolicyItem(const std::vector<core::ObjectWrapperPtr>& wrappers) : MultiserieHelper(wrappers) {}
-    virtual TreeItemHelper* getHelper() { return dynamic_cast<TreeItemHelper*>(this); }
-};
-
-template <>
-class HmmTreePolicyItem<JointsItemHelper> : public HmmTreeItem, private JointsItemHelper
-{
-public:
-    HmmTreePolicyItem(MotionPtr motion) : JointsItemHelper(motion) {}
-    virtual TreeItemHelper* getHelper() { return dynamic_cast<TreeItemHelper*>(this); }
-};
 
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain
 {
@@ -95,6 +60,9 @@ private slots:
 	void setTop(int size);
 	void setBottom(int size);
 	void onTreeItemClicked(QTreeWidgetItem *item, int column);
+
+     VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
+
     void visualizerFocusChanged(bool focus);
     void onTreeContextMenu(const QPoint & pos);
     void createNewVisualizer();

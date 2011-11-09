@@ -15,8 +15,9 @@
 class AnalisisWidget : public QWidget, public Ui::AnalisisWidget
 {
 public:
-    AnalisisWidget(QWidget* parent, Qt::WindowFlags flags = 0) : 
+    AnalisisWidget(QWidget* parent, int margin = 2, Qt::WindowFlags flags = 0) : 
       QWidget(parent, flags),
+      margin(margin),
       filterWidth(-1), filterHeight(-1)
       {
           setupUi(this);
@@ -25,6 +26,12 @@ public:
 
 public:
     QTreeWidget* getTreeWidget() { return this->treeWidget; }
+
+    void setActivePixmapAndText(const QPixmap& pixmap, const QString& name) 
+    {
+        label->setText(name);
+        picture->setPixmap(pixmap);
+    }
     void addDataFilterWidget(DataFilterWidget* filter)
     {
         if (filterWidth < 0 && filterHeight < 0) {
@@ -40,11 +47,17 @@ public:
         int y = count / 2;
 
         if (x == 0) {
-            filterScroll->setMinimumSize(filterWidth * 2, filterHeight * (y + 1));
+            int w = 3 * margin + filterWidth * 2;
+            int h = 2 * margin + (filterHeight + margin) * (y + 1);
+            filterScroll->setMinimumSize(w, h);
+            scrollArea->setMinimumWidth(w);
+            scrollArea->setMaximumWidth(w);
+            frame->setMaximumWidth(w);
+            scrollArea->setMinimumHeight(3 * margin + filterHeight * 2);
         }
 
         filter->setParent(filterScroll);
-        filter->setGeometry(x * filterWidth, y * filterHeight, filterWidth, filterHeight);
+        filter->setGeometry(margin + x * (filterWidth + margin),margin +  y * (margin + filterHeight), filterWidth, filterHeight);
     }
     //QWidget * getFilterTabWidget() { return filterScroll; }
     QWidget* getArea() { return analisisArea; }
@@ -52,6 +65,7 @@ public:
 private:
     int filterWidth;
     int filterHeight;
+    int margin;
 };
 
 

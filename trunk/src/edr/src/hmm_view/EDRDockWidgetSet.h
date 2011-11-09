@@ -25,7 +25,8 @@ public:
 	virtual ~EDRDockWidgetSet() {}
 
 public:
-	void addDockWidget(EDRDockWidget* widget);
+	void addDockWidget(EDRDockWidget* widget, Qt::Orientation orientation);
+    void addDockWidget(EDRDockWidget* widget);
 	bool isAdditionPossible(EDRDockWidget* widget) const;
 	void blockAddition(bool additionPossible);
 	int getNumWidgets() const;

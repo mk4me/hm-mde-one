@@ -6,23 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>867</width>
-    <height>572</height>
+    <width>733</width>
+    <height>498</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QScrollArea" name="scrollArea">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -35,12 +41,20 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>330</width>
-         <height>160</height>
+         <width>16777215</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">QScrollBar:horizontal {											 
+        <string notr="true">QScrollArea { 
+     border: 2px solid; 
+     border-color: rgb(135, 177, 255);
+     border-radius: 9px; 
+	padding: 2px;
+ } 
+
+
+QScrollBar:horizontal {											 
 		border: 1px ridge grey;											 
 		background: #FFFFFF;											
 		height: 4px;													
@@ -114,23 +128,118 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>328</width>
-          <height>158</height>
+          <width>329</width>
+          <height>152</height>
          </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
         </property>
        </widget>
       </widget>
      </item>
      <item>
-      <widget class="QTreeWidget" name="treeWidget">
+      <widget class="QFrame" name="frame">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">QScrollBar:horizontal {											 
+        <string notr="true">QFrame { 
+     border: 2px solid; 
+     border-color: rgb(135, 177, 255);
+     border-radius: 9px; 
+	padding: 2px;
+ } 
+
+background-color: rgb(255, 255, 255);
+</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="picture">
+            <property name="minimumSize">
+             <size>
+              <width>65</width>
+              <height>65</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">border:none;</string>
+            </property>
+            <property name="text">
+             <string>Pitcture!</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QFrame { 
+     border: none;
+	color: rgb(114, 114, 113);
+ } 
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTreeWidget" name="treeWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QTreeWidget { 
+     border: none;
+ } 
+
+
+QScrollBar:horizontal {											 
 		border: 1px ridge grey;											 
 		background: #FFFFFF;											
 		height: 4px;													
@@ -189,15 +298,18 @@
 		border: 0px outset grey;										
 		min-height: 20px;												
 		}					</string>
-       </property>
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string notr="true">1</string>
-        </property>
-       </column>
+          </property>
+          <attribute name="headerVisible">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string notr="true">1</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>

@@ -23,10 +23,23 @@
     <file alias="wejscie2.png">../../../resources/icons/wejscie2.png</file>
     <file alias="wizualizacja2.png">../../../resources/icons/wizualizacja2.png</file>
     <file alias="word_wrap_16x16.png">../../../resources/icons/word_wrap_16x16.png</file>
-    <file alias="toBegin.png">../../../resources/icons/toBegin.png</file>
-    <file alias="toEnd.png">../../../resources/icons/toEnd.png</file>
-    <file alias="playbackForward.png">../../../resources/icons/playbackForward.png</file>
-    <file alias="playbackBackward.png">../../../resources/icons/playbackBackward.png</file>
+    <file alias="direction-white.png">../../../resources/icons/direction-white.png</file>
+	<file alias="direction.png">../../../resources/icons/direction.png</file>
+	<file alias="direction2-white.png">../../../resources/icons/direction2-white.png</file>
+	<file alias="direction2.png">../../../resources/icons/direction2.png</file>
+	<file alias="forw.png">../../../resources/icons/forw.png</file>
+	<file alias="forw2.png">../../../resources/icons/forw2.png</file>
+	<file alias="loop-white.png">../../../resources/icons/loop-white.png</file>
+	<file alias="loop.png">../../../resources/icons/loop.png</file>
+	<file alias="pause.png">../../../resources/icons/pause.png</file>
+	<file alias="pause2.png">../../../resources/icons/pause2.png</file>
+	<file alias="play.png">../../../resources/icons/play.png</file>
+	<file alias="play2.png">../../../resources/icons/play2.png</file>
+	<file alias="rew.png">../../../resources/icons/rew.png</file>
+	<file alias="rew2.png">../../../resources/icons/rew2.png</file>
+	<file alias="stop.png">../../../resources/icons/stop.png</file>
+	<file alias="stop2.png">../../../resources/icons/stop2.png</file>
     <file alias="x.png">../../../resources/icons/x.png</file>
+	<file alias="header.png">../../../resources/icons/header.png</file>
   </qresource>
 </RCC>

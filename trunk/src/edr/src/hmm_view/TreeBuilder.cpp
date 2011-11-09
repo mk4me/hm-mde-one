@@ -158,7 +158,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( MotionPtr motion, const QString& 
     for (int i = 0; i < count; i++) {	
         EMGChannelPtr c = emgs[i]->get();	
         if (c) {
-            QTreeWidgetItem* channelItem = new HmmTreePolicyItem<ChartItemHelper>(emgs[i]);
+            QTreeWidgetItem* channelItem = new ChartItemHelper(emgs[i]);
             channelItem->setIcon(0, itemIcon);	
             channelItem->setText(0, c->getName().c_str());			
             emgItem->addChild(channelItem);			
@@ -171,7 +171,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( MotionPtr motion, const QString& 
 QTreeWidgetItem*  TreeBuilder::createGRFBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon )
 {
     std::vector<core::ObjectWrapperPtr> grfCollections = motion->getWrappers(typeid(GRFCollection));
-    QTreeWidgetItem* grfItem = new HmmTreePolicyItem<TreeItemHelper>(grfCollections[0]);
+    QTreeWidgetItem* grfItem = new TreeWrappedItemHelper(grfCollections[0]);
     grfItem->setText(0, rootName);
     //grfItem->setIcon(0, icon3D);
     std::vector<core::ObjectWrapperPtr> grfs = motion->getWrappers(typeid(GRFChannel));
@@ -179,7 +179,7 @@ QTreeWidgetItem*  TreeBuilder::createGRFBranch( MotionPtr motion, const QString&
     for (int i = 0; i < count; i++) {
         GRFChannelPtr c = grfs[i]->get();
         if (c) {
-            QTreeWidgetItem* channelItem = new HmmTreePolicyItem<Vector3ItemHelper>(grfs[i]);	
+            QTreeWidgetItem* channelItem = new Vector3ItemHelper(grfs[i]);	
             channelItem->setIcon(0, itemIcon);						
             channelItem->setText(0, c->getName().c_str());			
             grfItem->addChild(channelItem);			
@@ -196,7 +196,7 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( MotionPtr motion, const QString
     std::vector<core::ObjectWrapperPtr> videos = motion->getWrappers(typeid(VideoChannel));
     int count = videos.size();			
     for (int i = 0; i < count; i++) {							
-        QTreeWidgetItem* channelItem = new HmmTreePolicyItem<TreeItemHelper>(videos[i]);	
+        QTreeWidgetItem* channelItem = new TreeWrappedItemHelper(videos[i]);	
 
         channelItem->setIcon(0, itemIcon);						
         channelItem->setText(0, videos[i]->getName().c_str());			
@@ -209,7 +209,7 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( MotionPtr motion, const QString
 QTreeWidgetItem* TreeBuilder::createJointsBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon )
 {
    // QTreeWidgetItem* skeletonItem = new QTreeWidgetItem();
-    QTreeWidgetItem* skeletonItem = new HmmTreePolicyItem<JointsItemHelper>(motion);
+    QTreeWidgetItem* skeletonItem = new JointsItemHelper(motion);
     skeletonItem->setIcon(0, itemIcon);
     skeletonItem->setText(0, rootName);
     return skeletonItem;
@@ -218,7 +218,7 @@ QTreeWidgetItem* TreeBuilder::createJointsBranch( MotionPtr motion, const QStrin
 QTreeWidgetItem* TreeBuilder::createMarkersBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon )
 {
     core::ObjectWrapperPtr markerCollection = motion->getWrapperOfType(typeid(MarkerCollection));
-    QTreeWidgetItem* markersItem = new HmmTreePolicyItem<TreeItemHelper>(markerCollection);
+    QTreeWidgetItem* markersItem = new TreeWrappedItemHelper(markerCollection);
     markersItem->setIcon(0, itemIcon);
     markersItem->setText(0, rootName);		
 

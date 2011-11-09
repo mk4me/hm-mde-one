@@ -34,14 +34,19 @@ public:
     void closeFilters();
     bool getActive() const { return active; }
     void setActive(bool val);
+    const QPixmap& getPixmap() const { return *this->pictureLabel->pixmap(); }
+    const QString& getName() const { return this->label->text(); }
+
+protected:
+    bool eventFilter(QObject *object, QEvent *event);
 
 signals:
     void activated(bool);
 
-protected:
+public:
     virtual void mousePressEvent(QMouseEvent *e);
 
-private:
+private slots:
     void onClick();
 
 private:

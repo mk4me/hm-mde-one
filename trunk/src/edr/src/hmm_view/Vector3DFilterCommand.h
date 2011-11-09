@@ -98,6 +98,7 @@ public:
       {
 
       }
+
       virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions)
       {
           QTreeWidgetItem* root = new QTreeWidgetItem();
@@ -124,7 +125,7 @@ public:
                               std::string name = "serie_" + boost::lexical_cast<std::string>(number);
                               wrapper->setName(name);
                               wrapper->setSource(name);
-                              QTreeWidgetItem* treeItem = new HmmTreePolicyItem<ItemHelper>(wrapper);
+                              QTreeWidgetItem* treeItem = new ItemHelper(wrapper);
                               treeItem->setText(0, channel->getName().c_str());
                               motionItem->addChild(treeItem);
                           }

@@ -31,6 +31,11 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"> QPushButton {
+     background-color: palette(Window);
+ }</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
     <number>2</number>
@@ -77,14 +82,19 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="Icons.qrc">
-          <normaloff>:/resources/icons/toBegin.png</normaloff>:/resources/icons/toBegin.png</iconset>
+         <iconset>
+          <normaloff>:/resources/icons/toBegin.png</normaloff>
+          <normalon>:/resources/icons/rew.png</normalon>
+          <disabledoff>:/resources/icons/rew2.png</disabledoff>:/resources/icons/toBegin.png</iconset>
         </property>
         <property name="iconSize">
          <size>
           <width>24</width>
           <height>24</height>
          </size>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -113,6 +123,9 @@
         <property name="checkable">
          <bool>true</bool>
         </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item>
@@ -128,13 +141,17 @@
         </property>
         <property name="icon">
          <iconset resource="../../../core/ui/Icons.qrc">
-          <normaloff>:/resources/icons/stop.png</normaloff>:/resources/icons/stop.png</iconset>
+          <normaloff>:/resources/icons/stop.png</normaloff>
+          <normalon>:/resources/icons/stop2.png</normalon>:/resources/icons/stop.png</iconset>
         </property>
         <property name="iconSize">
          <size>
           <width>24</width>
           <height>24</height>
          </size>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -150,14 +167,18 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="Icons.qrc">
-          <normaloff>:/resources/icons/toEnd.png</normaloff>:/resources/icons/toEnd.png</iconset>
+         <iconset resource="../../../core/ui/Icons.qrc">
+          <normaloff>:/resources/icons/forw.png</normaloff>
+          <normalon>:/resources/icons/forw2.png</normalon>:/resources/icons/forw.png</iconset>
         </property>
         <property name="iconSize">
          <size>
           <width>24</width>
           <height>24</height>
          </size>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -247,9 +268,9 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="Icons.qrc">
-          <normaloff>:/resources/icons/playbackForward.png</normaloff>
-          <normalon>:/resources/icons/playbackBackward.png</normalon>:/resources/icons/playbackForward.png</iconset>
+         <iconset resource="../../../core/ui/Icons.qrc">
+          <normaloff>:/resources/icons/direction-white.png</normaloff>
+          <normalon>:/resources/icons/direction2-white.png</normalon>:/resources/icons/direction-white.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -258,6 +279,9 @@
          </size>
         </property>
         <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
          <bool>true</bool>
         </property>
        </widget>

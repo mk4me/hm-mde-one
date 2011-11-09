@@ -1,8 +1,20 @@
 <RCC>
   <qresource prefix="resources/icons">
-    <file>../../../../resources/icons/toBegin.png</file>
-    <file>../../../../resources/icons/toEnd.png</file>
-    <file>../../../../resources/icons/playbackForward.png</file>
-    <file>../../../../resources/icons/playbackBackward.png</file>
+	<file>../../../../resources/icons/direction-white.png</file>
+	<file>../../../../resources/icons/direction.png</file>
+	<file>../../../../resources/icons/direction2-white.png</file>
+	<file>../../../../resources/icons/direction2.png</file>
+	<file>../../../../resources/icons/forw.png</file>
+	<file>../../../../resources/icons/forw2.png</file>
+	<file>../../../../resources/icons/loop-white.png</file>
+	<file>../../../../resources/icons/loop.png</file>
+	<file>../../../../resources/icons/pause.png</file>
+	<file>../../../../resources/icons/pause2.png</file>
+	<file>../../../../resources/icons/play.png</file>
+	<file>../../../../resources/icons/play2.png</file>
+	<file>../../../../resources/icons/rew.png</file>
+	<file>../../../../resources/icons/rew2.png</file>
+	<file>../../../../resources/icons/stop.png</file>
+	<file>../../../../resources/icons/stop2.png</file>
   </qresource>
 </RCC>

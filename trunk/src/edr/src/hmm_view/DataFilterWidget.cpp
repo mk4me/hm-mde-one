@@ -13,7 +13,23 @@ DataFilterWidget::DataFilterWidget(const QString& name, const QPixmap& pixmap, H
     this->label->setText(name);
     this->pictureLabel->setPixmap(pixmap);
     //this->verticalLayout->setAlignment(Qt::AlignTop);
+    this->installEventFilter(this);
+    groupBox->installEventFilter(this);
 }
+
+    bool DataFilterWidget::eventFilter(QObject *object, QEvent *event)
+    {
+        if ( event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                onClick();
+                // Special tab handling
+                return true;
+            } else
+                return false;
+        }
+        return false;
+    }
 
 void DataFilterWidget::addFilter(const QString& bigLabelText, const QString& smallLabelText, DataFilterPtr dataFilter, const QPixmap* icon)
 {
@@ -36,12 +52,13 @@ void DataFilterWidget::addFilter( const QString& bigLabelText, const QString& sm
 
 void DataFilterWidget::onClick()
 {
-    setActive(!getActive());
+   
     const std::vector<SessionConstPtr>& sessions = hmmWindow->getCurrentSessions();
     hmmWindow->clearTree();
     BOOST_FOREACH(FilterEntryWidget* filter, entries) {
         hmmWindow->addItemToTree(filter->getFilterCommand()->createTreeBranch(filter->getName(), sessions));
-    }
+    } 
+    setActive(!getActive());
 }
 
 void DataFilterWidget::mousePressEvent( QMouseEvent *e )
@@ -55,11 +72,11 @@ void DataFilterWidget::mousePressEvent( QMouseEvent *e )
 
 void DataFilterWidget::setActive( bool val )
 {
-    if (!val) {
+    /*if (!val) {
         setStyleSheet("background-color: rgb(235, 235, 235)");
     } else {
         setStyleSheet("background-color: rgb(255, 255, 255)");
-    }
+    }*/
     
     active = val;
     emit activated(val); 

@@ -26,6 +26,7 @@ set(PRIVATE_H
 	ConfigurationDialog.h
 	ConfigurationPainter.h
 	AnalisisWidget.h
+	IllnessUnit.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -55,6 +56,7 @@ set(TARGET_SRC
 	TreeBuilder.cpp
 	ConfigurationDialog.cpp
 	ConfigurationPainter.cpp
+	IllnessUnit.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

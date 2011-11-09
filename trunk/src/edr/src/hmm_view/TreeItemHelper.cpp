@@ -5,19 +5,21 @@
 
 osg::ref_ptr<osgText::Text> TreeItemHelper::chartTextPrototype;
 
-TreeItemHelper::TreeItemHelper( const core::ObjectWrapperPtr& wrapper ) :
-    wrapper(wrapper)
-{
+//TreeItemHelper::TreeItemHelper( const core::ObjectWrapperPtr& wrapper ) :
+//    wrapper(wrapper)
+//{
+//
+//}
 
-}
-
-VisualizerPtr TreeItemHelper::createVisualizer()
+VisualizerPtr TreeWrappedItemHelper::createVisualizer()
 {
+    UTILS_ASSERT(wrapper, "Item should be initialized");
     return VisualizerManager::getInstance()->createVisualizer(wrapper->getTypeInfo());
 }
 
-void TreeItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void TreeWrappedItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
+    UTILS_ASSERT(wrapper, "Item should be initialized");
     auto serie = visualizer->createSerie(wrapper, path.toStdString());
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
 }
@@ -88,7 +90,7 @@ void TreeItemHelper::setUpChart( ChartVisualizer* chart, const std::string& titl
 
 VisualizerPtr ChartItemHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = TreeItemHelper::createVisualizer();
+    VisualizerPtr visualizer = TreeWrappedItemHelper::createVisualizer();
     visualizer->getOrCreateWidget();
     ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
@@ -107,11 +109,11 @@ VisualizerPtr ChartItemHelper::createVisualizer()
     return visualizer;
 }
 
-ChartItemHelper::ChartItemHelper( const core::ObjectWrapperPtr& wrapper ) : 
-    TreeItemHelper(wrapper)
-{
-
-}
+//ChartItemHelper::ChartItemHelper( const core::ObjectWrapperPtr& wrapper ) : 
+//    TreeItemHelper(wrapper)
+//{
+//
+//}
 
 void ChartItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
@@ -136,11 +138,11 @@ void ChartItemHelper::createSeries( VisualizerPtr visualizer, const QString& pat
 
 
 
-Vector3ItemHelper::Vector3ItemHelper( const core::ObjectWrapperPtr& wrapper ) :
-    TreeItemHelper(wrapper)
-{
-   
-}
+//Vector3ItemHelper::Vector3ItemHelper( const core::ObjectWrapperPtr& wrapper ) :
+//    TreeItemHelper(wrapper)
+//{
+//   
+//}
 
 VisualizerPtr Vector3ItemHelper::createVisualizer()
 {
@@ -206,12 +208,53 @@ void Vector3ItemHelper::createSeries( VisualizerPtr visualizer, const QString& p
 
 void MultiserieHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
-    for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
-        auto serieX = visualizer->createSerie(*it, (*it)->getSource());
+    int count = wrappers.size();
+    int count2 = count / 2;
+    for (int i = 0; i < count; i++) {
+        core::ObjectWrapperPtr wrapper = wrappers[i];
+        auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
         ChartVisualizer::ChartVisualizerSerie* chartSerieX = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieX.get());
-        float r = static_cast<float>(rand()) / RAND_MAX;
-        float g = static_cast<float>(rand()) / RAND_MAX;
-        float b = static_cast<float>(rand()) / RAND_MAX;
+        float r = 0;
+        float g = 0;
+        float b = 0;
+
+        switch (colorPolicy) 
+        {
+        case Random:
+            r = static_cast<float>(rand()) / RAND_MAX;
+            g = static_cast<float>(rand()) / RAND_MAX;
+            b = static_cast<float>(rand()) / RAND_MAX;
+            break;
+
+        case GreenRandom:
+            r = (static_cast<float>(rand()) / RAND_MAX) * 0.7f;
+            g = 255;                                 
+            b = (static_cast<float>(rand()) / RAND_MAX) * 0.99f;
+            break;                                    
+                                                      
+        case RedRandom:                               
+            r = 255;                                  
+            g = (static_cast<float>(rand()) / RAND_MAX) * 0.7f;
+            b = (static_cast<float>(rand()) / RAND_MAX) * 0.99f;
+            break;
+
+        case Red:
+            r = 255;                                  
+            g = 0;
+            b = 0;
+            break;
+        case Green:
+            r = 0;
+            g = 255;
+            b = 0;
+            break;
+        case HalfRedHalfGreen:
+            r = i >= count2 ? 255 : 0;
+            g = i >= count2 ? 0 : 255;
+            b = i >= count2 ? 0 : 0;
+            break;
+        }
+
         chartSerieX->setColor(osg::Vec4(r, g, b, 1.0f));
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
     }
@@ -233,12 +276,12 @@ VisualizerPtr MultiserieHelper::createVisualizer()
 
     return visualizer;
 }
-
-Multiserie3D::Multiserie3D(MotionPtr motion) :
-    motion(motion)
-{
-    UTILS_ASSERT(motion);
-}
+//
+//Multiserie3D::Multiserie3D(MotionPtr motion) :
+//    motion(motion)
+//{
+//    UTILS_ASSERT(motion);
+//}
 
 void Multiserie3D::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
@@ -278,8 +321,3 @@ void JointsItemHelper::createSeries( VisualizerPtr visualizer, const QString& pa
     }
 }
 
-JointsItemHelper::JointsItemHelper( MotionPtr motion ) :
-    motion(motion)
-{
-
-}

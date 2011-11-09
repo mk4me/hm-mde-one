@@ -12,6 +12,8 @@
 #include "TreeBuilder.h"
 #include "Vector3DFilterCommand.h"
 #include "AnalisisWidget.h"
+#include "IllnessUnit.h"
+
 using namespace core;
 
 
@@ -55,11 +57,11 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     button2TabWindow[this->raportsButton] = this->raports;
     button2TabWindow[this->analisisButton] = this->analisis;
 
-    QGridLayout* grid = new QGridLayout;
+    /*QHBoxLayout* grid = new QHBoxLayout;
     grid->setMargin(0);
-    QMargins m(0, 0, 0, 0);
+    QMargins m(1, 1, 1, 1);
     grid->setContentsMargins(m);
-    mainArea->setLayout(grid);
+    mainArea->setLayout(grid);*/
     for(auto it = button2TabWindow.begin(); it != button2TabWindow.end(); it++) {
         mainArea->layout()->addWidget(it->second);
         it->second->hide();
@@ -163,8 +165,8 @@ HmmMainWindow::~HmmMainWindow()
 
 bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
 {
-    HmmTreeItem* hmmItem = dynamic_cast<HmmTreeItem*>(item);
-    return hmmItem && hmmItem->getHelper()->isDataItem();
+    TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(item);
+    return hmmItem && hmmItem->isDataItem();
 }
 
 void HmmMainWindow::createNewVisualizer()
@@ -260,80 +262,41 @@ void HmmMainWindow::setBottom( int size )
 void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
     // sprawdzanie, czy pod item jest podpiety jakis obiekt
-    HmmTreeItem* hmmItem = dynamic_cast<HmmTreeItem*>(item);
+    TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(item);
     
     if (hmmItem) {
         showTimeline();
-        TreeItemHelper* helper = hmmItem->getHelper();
-        std::stack<QString> pathStack;
-        QTreeWidgetItem * pomItem = item;
+        VisualizerWidget* w = createDockVisualizer(hmmItem);
+        topMainWindow->autoAddDockWidget( w );
+    }
 
-        while(pomItem != nullptr){
-            pathStack.push(pomItem->text(0));
-            pomItem = pomItem->parent();
-        }
-
-        QString path;
-
-        path += pathStack.top();
-        pathStack.pop();
-
-        while(pathStack.empty() == false){
-            path += "/";
-            path += pathStack.top();
-            pathStack.pop();
-        }
-
-        VisualizerManager* visualizerManager = VisualizerManager::getInstance();
-        VisualizerPtr visualizer = helper->createVisualizer();
-        visualizer->getOrCreateWidget();
-
-        VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer);
-        visualizerDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-        //visu->setStyleSheet(styleSheet());
-        visualizerDockWidget->setVisualizerIconVisible(false);
-        visualizerDockWidget->setSplitHVisible(false);
-        visualizerDockWidget->setSplitVVisible(false);
-        visualizerDockWidget->setActiveVisualizerSwitch(false);
-        visualizerDockWidget->setSourceVisible(false);
-
-        visualizerDockWidget->setTitleBarVisible(false);
-
-        std::vector<VisualizerTimeSeriePtr> series;
-        helper->createSeries(visualizer, path, series);
-        visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
-
-        connect(visualizerDockWidget, SIGNAL(focuseChanged(bool)), this, SLOT(visualizerFocusChanged(bool)));
-
-        topMainWindow->autoAddDockWidget( visualizerDockWidget);
-        connect(visualizerDockWidget, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
-
-        TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
-        if(timeline != nullptr) {
-            if (series.size() == 1 && series[0] != nullptr) {
-                VisualizerChannelPtr channel(new VisualizerChannel(series[0], visualizerDockWidget));
-                try{
-                    timeline->addChannel(path.toStdString(), channel);
-                }catch(...){
-                    LOG_ERROR("Could not add channel to timeline!");
-                }
-            } else {
-                VisualizerMultiChannel::SeriesWidgets seriesMap;
-                for (int i = 0; i < series.size(); i++) {
-                    auto timeSerie = series[i];
-                    if(timeSerie != nullptr){
-                       seriesMap[timeSerie] = visualizerDockWidget;
-                    }
-                }
-                if (seriesMap.size() > 0) {
-                    VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(seriesMap));
-                    try {
-                        timeline->addChannel(path.toStdString(), multi);
-                    } catch (...) {
-                        LOG_ERROR("Could not add multichannel to timeline!");
-                    }
-                }
+    ChildrenVisualizers* cv = dynamic_cast<ChildrenVisualizers*>(item);
+    if (cv) {
+        EDRDockWidgetSet* set = new EDRDockWidgetSet(this);
+        int count = cv->childCount();
+        for (int i = 0; i < count; i++) {
+            TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(cv->child(i));
+            VisualizerWidget* w = createDockVisualizer(hmmItem);
+            switch (cv->getPolicy()) {
+            case ChildrenVisualizers::Auto:
+                set->addDockWidget(w);
+                break;
+            case ChildrenVisualizers::Horizontal:
+                set->addDockWidget(w, Qt::Horizontal);
+                break;
+            case ChildrenVisualizers::Vertical:
+                set->addDockWidget(w, Qt::Vertical);
+                break;
             }
+        }
+        int added = set->getNumWidgets();
+        
+        if (added > 0) {
+            showTimeline();
+            set->setMaxWidgetsNumber(added);
+            topMainWindow->addDockWidgetSet(set);
+        } else {
+            delete set;
         }
     }
 }
@@ -623,38 +586,37 @@ void HmmMainWindow::createFilterTab1()
     this->analisis->addDataFilterWidget(filter4);
 }
 
+
+
+
 void HmmMainWindow::createFilterTab2()
 {
     core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
-    //QWidget* filterTabWidget = analisis->getFilterTabWidget();
-    //QLayout* tabLayout = filterTabWidget->layout();
-    ///*QWidget* tab = new QWidget(filterTabWidget);
-    //QVBoxLayout* tabLayout = new QVBoxLayout();
-    //tab->setLayout(tabLayout)*/;
-    //QWidget* h1 = new QWidget(filterTabWidget);
-    //QWidget* h2 = new QWidget(filterTabWidget);
-    //QHBoxLayout* htablayout1 = new QHBoxLayout();
-    //QHBoxLayout* htablayout2 = new QHBoxLayout();
-    //h1->setLayout(htablayout1);
-    //h2->setLayout(htablayout2);
-
-    //QMargins margins(0, 0, 0, 0);
-    //tabLayout->setContentsMargins(margins);
-    //tabLayout->setMargin(0);
-    //htablayout1->setContentsMargins(margins);
-    //htablayout1->setMargin(0);
-    //htablayout2->setContentsMargins(margins);
-    //htablayout2->setMargin(0);
-
-    //tabLayout->addWidget(h1);
-    //tabLayout->addWidget(h2);
     QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
+    QPixmap iconIllness(core::getResourceString("icons/jed.chorobowe.png"));
+    QPixmap iconEndo(core::getResourceString("icons/po_endoplastyce.png"));
+    QPixmap iconStroke(core::getResourceString("icons/po_udarze.png"));
+    QPixmap iconSpine(core::getResourceString("icons/zwyrodnienia.png"));
    
-    DataFilterWidget* filter1 = new DataFilterWidget("MULTI", iconKinetic, this);
+    DataFilterWidget* filter1 = new DataFilterWidget("ILLNESS", iconIllness, this);
     DataFilterWidget* filter2 = new DataFilterWidget("MULTI", iconKinetic, this);
     DataFilterWidget* filter3 = new DataFilterWidget("MULTI", iconKinetic, this);
     DataFilterWidget* filter4 = new DataFilterWidget("MULTI", iconKinetic, this);
 
+    IFilterCommandPtr endo(new Endo());
+    IFilterCommandPtr stroke(new Stroke());
+    IFilterCommandPtr spine(new Spine());
+
+    filter1->addFilter("Endo", "...", endo, &iconEndo);
+    filter1->addFilter("Stroke", "...", stroke, &iconStroke);
+    filter1->addFilter("Spine", "...", spine, &iconSpine);
+
+    
+    /*filter2->addFilter("EMG", "...", stroke, &iconStroke);
+
+    filter3->addFilter("EMG", "...", spine1, &iconSpine);
+    filter3->addFilter("KINETIC", "...", spine2, &iconSpine);
+    filter3->addFilter("ANGLES", "...", spine3, &iconSpine);*/
     TypeFilterPtr typeFilter1(new TypeFilter(memoryDataManager, typeid(GRFChannel)));
     TypeFilterPtr typeFilter2(new TypeFilter(memoryDataManager, typeid(EMGChannel)));
 
@@ -662,26 +624,26 @@ void HmmMainWindow::createFilterTab2()
     IFilterCommandPtr multi2(new MultiChartCommand<MomentCollection>());
     IFilterCommandPtr multi3(new MultiChartCommand<PowerCollection>());
 
-    filter1->addFilter("Force", "Multi Chart", multi1);
+    /*filter1->addFilter("Force", "Multi Chart", multi1);
     filter1->addFilter("Moment", "Multi Chart", multi2);
-    filter1->addFilter("Power", "Multi Chart", multi3);
+    filter1->addFilter("Power", "Multi Chart", multi3);*/
 
-    filter2->addFilter("Force", "Multi Chart", multi1);
+    /*filter2->addFilter("Force", "Multi Chart", multi1);
     filter2->addFilter("Moment", "Multi Chart", multi2);
-    filter2->addFilter("Power", "Multi Chart", multi3);
+    filter2->addFilter("Power", "Multi Chart", multi3);*/
 
-    filter3->addFilter("Force", "Multi Chart", multi1);
+    /*filter3->addFilter("Force", "Multi Chart", multi1);
     filter3->addFilter("Moment", "Multi Chart", multi2);
-    filter3->addFilter("Power", "Multi Chart", multi3);
+    filter3->addFilter("Power", "Multi Chart", multi3);*/
 
     filter4->addFilter("Force", "Multi Chart", multi1);
     filter4->addFilter("Moment", "Multi Chart", multi2);
     filter4->addFilter("Power", "Multi Chart", multi3);
 
-    connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
-    connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
-    connect(filter3, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
-    connect(filter4, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    bool connectionOK = connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connectionOK = connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connectionOK = connect(filter3, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connectionOK = connect(filter4, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
 
     dataFilterWidgets.push_back(filter1);
     dataFilterWidgets.push_back(filter2);
@@ -693,11 +655,8 @@ void HmmMainWindow::createFilterTab2()
     this->analisis->addDataFilterWidget(filter3);
     this->analisis->addDataFilterWidget(filter4);
 
-   /* htablayout1->addWidget(filter1);
-    htablayout1->addWidget(filter2);
-    htablayout2->addWidget(filter3);
-    htablayout2->addWidget(filter4);*/
-    //filterTabWidget->addTab(tab, "Multi charts");
+    QPixmap big(core::getResourceString("icons/Big.png"));
+    this->analisis->setActivePixmapAndText(big, "ALL");
 }
 
 void HmmMainWindow::filterGroupActivated( bool active )
@@ -714,10 +673,16 @@ void HmmMainWindow::filterGroupActivated( bool active )
         }
 
         if (!active) {
-            QTreeWidget* treeWidget = analisis->getTreeWidget();
-            treeWidget->clear();
+            this->clearTree();
             QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", getCurrentSessions());
-            treeWidget->addTopLevelItem(item);
+            this->addItemToTree(item);
+            QPixmap big(core::getResourceString("icons/Big.png"));
+            this->analisis->setActivePixmapAndText(big, "ALL");
+            
+        } else {
+            QPixmap pix(dataWidget->getPixmap());
+            QString name = dataWidget->getName();
+            this->analisis->setActivePixmapAndText(pix, name);
         }
     }
 }
@@ -733,6 +698,87 @@ void HmmMainWindow::onToolButton()
        button2TabWindow[button]->show();
     }
     
+    mainArea->layout()->update();
+}
+
+ VisualizerWidget* HmmMainWindow::createDockVisualizer( TreeItemHelper* hmmItem )
+{
+    std::stack<QString> pathStack;
+    QTreeWidgetItem * pomItem = hmmItem;
+
+    while(pomItem != nullptr){
+        pathStack.push(pomItem->text(0));
+        pomItem = pomItem->parent();
+    }
+
+    QString path;
+
+    path += pathStack.top();
+    pathStack.pop();
+
+    while(pathStack.empty() == false){
+        path += "/";
+        path += pathStack.top();
+        pathStack.pop();
+    }
+
+    static int incr = 0;
+    QString suffix = QString("/id_%1").arg(incr++);
+    path += suffix;
+
+    VisualizerManager* visualizerManager = VisualizerManager::getInstance();
+    VisualizerPtr visualizer = hmmItem->createVisualizer();
+    visualizer->getOrCreateWidget();
+
+    VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer);
+    visualizerDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    //visu->setStyleSheet(styleSheet());
+    visualizerDockWidget->setVisualizerIconVisible(false);
+    visualizerDockWidget->setSplitHVisible(false);
+    visualizerDockWidget->setSplitVVisible(false);
+    visualizerDockWidget->setActiveVisualizerSwitch(false);
+    visualizerDockWidget->setSourceVisible(false);
+
+    visualizerDockWidget->setTitleBarVisible(false);
+
+    std::vector<VisualizerTimeSeriePtr> series;
+    hmmItem->createSeries(visualizer, path, series);
+    visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
+
+    connect(visualizerDockWidget, SIGNAL(focuseChanged(bool)), this, SLOT(visualizerFocusChanged(bool)));
+
+    //topMainWindow->autoAddDockWidget( visualizerDockWidget);
+    connect(visualizerDockWidget, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
+
+    TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
+    if(timeline != nullptr) {
+        if (series.size() == 1 && series[0] != nullptr) {
+            VisualizerChannelPtr channel(new VisualizerChannel(series[0], visualizerDockWidget));
+            try{
+                timeline->addChannel(path.toStdString(), channel);
+            }catch(...){
+                LOG_ERROR("Could not add channel to timeline!");
+            }
+        } else {
+            VisualizerMultiChannel::SeriesWidgets seriesMap;
+            for (int i = 0; i < series.size(); i++) {
+                auto timeSerie = series[i];
+                if(timeSerie != nullptr){
+                    seriesMap[timeSerie] = visualizerDockWidget;
+                }
+            }
+            if (seriesMap.size() > 0) {
+                VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(seriesMap));
+                try {
+                    timeline->addChannel(path.toStdString(), multi);
+                } catch (...) {
+                    LOG_ERROR("Could not add multichannel to timeline!");
+                }
+            }
+        }
+    }
+
+    return visualizerDockWidget;
 }
 
 
