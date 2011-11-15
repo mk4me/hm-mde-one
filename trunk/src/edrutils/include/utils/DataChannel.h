@@ -33,12 +33,29 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
+    template<bool flag, class T, class U>
+    struct Select
+    {
+        typedef T Result;
+    };
+
+    template<class T, class U>
+    struct Select<false, T, U>
+    {
+        typedef U Result;
+    };
 
     //! Wzorzec wyci¹gaj¹cy const referencjê do danych - przydatny przy przekazywaniu danych w innych wzorcach
     template<class PointType>
     struct ConstReferenceType
     {
-        typedef typename boost::add_reference<typename boost::add_const<PointType>::type>::type type;
+        typedef typename Select<boost::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::const_reference>::Result type;
+    };
+
+    template<class PointType>
+    struct ReferenceType
+    {
+        typedef typename Select<boost::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::reference>::Result type;
     };
 
     //! Interfejs do czytania opisu kana³u - osi x i y oraz nazwy kana³u.
@@ -214,7 +231,7 @@ namespace utils {
         typedef typename ConstReferenceType<point_type>::type point_type_const_reference;
 
         //! Typ referencji do danych dla przekazywania parametrów
-        typedef typename boost::add_reference<point_type>::type point_type_reference;
+        typedef typename ReferenceType<point_type>::type point_type_reference;
 
     protected:
         //! Typ danych o charakterze czasowym - czas -> próbka
@@ -338,8 +355,8 @@ namespace utils {
     public:
         virtual ~IRawDataChannelBasicWriter() {}
 
-        virtual void addPoint(TimeType time, typename ConstReferenceType<PointType>::type point) = 0;
-        virtual void addPoint(typename ConstReferenceType<PointType>::type point) = 0;
+        virtual void addPoint(TimeType time, typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
+        virtual void addPoint(typename typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
     };
 
     template<class PointType, class TimeType>
@@ -348,7 +365,7 @@ namespace utils {
     public:
         virtual ~IRawDataChannelExtendedWriter() {}
       
-        virtual void setIndexData(typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type idx, typename ConstReferenceType<PointType>::type point) = 0;
+        virtual void setIndexData(typename IRawGeneralDataChannelReader<PointType, TimeType>::size_type idx, typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_const_reference point) = 0;
     };
 
     template<class PointType, class TimeType>
@@ -637,7 +654,7 @@ namespace utils {
         typename IRawGeneralDataChannelReader<PointType, TimeType>::_MyChannelConstPtr channel;
     };
 
-    template <class PointType, class TimeType, class PointRefType = typename boost::add_reference< typename PointType>::type >
+    template <class PointType, class TimeType, class PointRefType = typename IRawGeneralDataChannelReader<PointType, TimeType>::point_type_reference >
     class ExceptionTimeOverflowResolver
     {
     public:
