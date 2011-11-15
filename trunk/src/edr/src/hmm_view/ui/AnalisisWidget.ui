@@ -47,10 +47,10 @@
        </property>
        <property name="styleSheet">
         <string notr="true">QScrollArea { 
-     border: 2px solid; 
+     border: 1px solid; 
      border-color: rgb(135, 177, 255);
-     border-radius: 9px; 
-	padding: 2px;
+     border-radius: 5px; 
+	padding: 4px;
  } 
 
 
@@ -112,13 +112,27 @@ QScrollBar:horizontal {
 		selection-background-color: rgb(135, 173, 255);					 
 		border: 0px outset grey;										
 		min-height: 20px;												
-		}					</string>
+		}					
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+      border: 0 solid grey;
+      width: 0px;
+      height: 0px;
+  }
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {								
+		border: 0px solid grey;											 
+		background: #FFFFFF;											
+		width: 0px;														 
+		subcontrol-position: right;										 
+		subcontrol-origin: margin;										
+		}	</string>
        </property>
        <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAsNeeded</enum>
+        <enum>Qt::ScrollBarAlwaysOn</enum>
        </property>
        <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
+        <enum>Qt::ScrollBarAsNeeded</enum>
        </property>
        <property name="widgetResizable">
         <bool>true</bool>
@@ -128,8 +142,8 @@ QScrollBar:horizontal {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>329</width>
-          <height>152</height>
+          <width>326</width>
+          <height>150</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -148,7 +162,7 @@ QScrollBar:horizontal {
        </property>
        <property name="styleSheet">
         <string notr="true">QFrame { 
-     border: 2px solid; 
+     border: 1px solid; 
      border-color: rgb(135, 177, 255);
      border-radius: 9px; 
 	padding: 2px;
@@ -173,8 +187,8 @@ background-color: rgb(255, 255, 255);
            <widget class="QLabel" name="picture">
             <property name="minimumSize">
              <size>
-              <width>65</width>
-              <height>65</height>
+              <width>70</width>
+              <height>70</height>
              </size>
             </property>
             <property name="styleSheet">

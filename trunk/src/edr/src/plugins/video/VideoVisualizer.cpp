@@ -84,8 +84,9 @@ void VideoVisualizer::refresh( float width, float height )
 {
     // aktualizacja wspó³czynnika proporcji
     if ( streamImage ) {
-        //ratioKeeper->setAspectRatio( streamImage->getPixelAspectRatio() * streamImage->s() / streamImage->t() );
-		ratioKeeper->setAspectRatio( width / height );
+        ratioKeeper->setAspectRatio( streamImage->getPixelAspectRatio() * streamImage->s() / streamImage->t() );
+		//ratioKeeper->setAspectRatio( width / height );
+
     }
 
     // aktualizacja rozmiaru t³a
@@ -138,13 +139,17 @@ void VideoVisualizer::updateWidget()
 			float deltaT = (t - nextT) / 2.0f;
 
             // czy trzeba aktualizowaæ?
-            //if ( oldS != s || oldT != t ) {
-                widget->setTexCoord(0 + deltaS, t - deltaT, osgWidget::Widget::UPPER_LEFT);
-                widget->setTexCoord(0 + deltaS, 0 + deltaT, osgWidget::Widget::LOWER_LEFT);
-                widget->setTexCoord(s - deltaS, t - deltaT, osgWidget::Widget::UPPER_RIGHT);
-                widget->setTexCoord(s - deltaS, 0 + deltaT, osgWidget::Widget::LOWER_RIGHT);
-                osgui::correctTexCoords(widget);
-            //}
+            if ( oldS != s || oldT != t ) {
+                //widget->setTexCoord(0 + deltaS, t - deltaT, osgWidget::Widget::UPPER_LEFT);
+                //widget->setTexCoord(0 + deltaS, 0 + deltaT, osgWidget::Widget::LOWER_LEFT);
+                //widget->setTexCoord(s - deltaS, t - deltaT, osgWidget::Widget::UPPER_RIGHT);
+                //widget->setTexCoord(s - deltaS, 0 + deltaT, osgWidget::Widget::LOWER_RIGHT);
+                widget->setTexCoord(0, t , osgWidget::Widget::UPPER_LEFT);
+                widget->setTexCoord(0, 0 , osgWidget::Widget::LOWER_LEFT);
+                widget->setTexCoord(s, t , osgWidget::Widget::UPPER_RIGHT);
+                widget->setTexCoord(s, 0 , osgWidget::Widget::LOWER_RIGHT);
+              osgui::correctTexCoords(widget);
+            }
         }
     }
 }

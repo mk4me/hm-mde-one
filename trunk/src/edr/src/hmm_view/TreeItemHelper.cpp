@@ -1,8 +1,7 @@
 #include "hmmPCH.h"
 #include "TreeItemHelper.h"
 #include "VisualizerManager.h"
-
-
+#include <plugins/newChart/NewChartVisualizer.h>
 osg::ref_ptr<osgText::Text> TreeItemHelper::chartTextPrototype;
 
 //TreeItemHelper::TreeItemHelper( const core::ObjectWrapperPtr& wrapper ) :
@@ -90,7 +89,7 @@ void TreeItemHelper::setUpChart( ChartVisualizer* chart, const std::string& titl
 
 VisualizerPtr ChartItemHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = TreeWrappedItemHelper::createVisualizer();
+    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(ChartVisualizer::getClassID());
     visualizer->getOrCreateWidget();
     ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
@@ -109,11 +108,6 @@ VisualizerPtr ChartItemHelper::createVisualizer()
     return visualizer;
 }
 
-//ChartItemHelper::ChartItemHelper( const core::ObjectWrapperPtr& wrapper ) : 
-//    TreeItemHelper(wrapper)
-//{
-//
-//}
 
 void ChartItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
@@ -136,17 +130,9 @@ void ChartItemHelper::createSeries( VisualizerPtr visualizer, const QString& pat
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
 }
 
-
-
-//Vector3ItemHelper::Vector3ItemHelper( const core::ObjectWrapperPtr& wrapper ) :
-//    TreeItemHelper(wrapper)
-//{
-//   
-//}
-
 VisualizerPtr Vector3ItemHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannelReaderInterface));
+    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(ChartVisualizer::getClassID());
     visualizer->getOrCreateWidget();
     ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
@@ -263,7 +249,7 @@ void MultiserieHelper::createSeries( VisualizerPtr visualizer, const QString& pa
 
 VisualizerPtr MultiserieHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannelReaderInterface));
+    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(ChartVisualizer::getClassID());
     visualizer->getOrCreateWidget();
     ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
@@ -321,3 +307,163 @@ void JointsItemHelper::createSeries( VisualizerPtr visualizer, const QString& pa
     }
 }
 
+VisualizerPtr NewChartItemHelper::createVisualizer()
+{
+    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(NewChartVisualizer::getClassID());
+    visualizer->getOrCreateWidget();
+    NewChartVisualizer* chart = dynamic_cast<NewChartVisualizer*>(visualizer->getImplementation());
+    if (!chart) {
+        UTILS_ASSERT(false);
+        LOG_ERROR("Wrong visualizer type!");
+    } else {
+        std::string title;
+        ScalarChannelReaderInterfacePtr scalar = wrapper->get();
+        title += scalar->getName();
+        title += " [";
+        title += scalar->getValueBaseUnit();
+        title += "]";
+        chart->setTitle(QString(title.c_str()));
+    }
+
+    return visualizer;
+}
+
+
+void NewChartItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+{
+    auto serie = visualizer->createSerie(wrapper, path.toStdString());
+    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
+}
+
+VisualizerPtr NewVector3ItemHelper::createVisualizer()
+{
+    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(NewChartVisualizer::getClassID());
+    visualizer->getOrCreateWidget();
+    NewChartVisualizer* chart = dynamic_cast<NewChartVisualizer*>(visualizer->getImplementation());
+    if (!chart) {
+        UTILS_ASSERT(false);
+        LOG_ERROR("Wrong visualizer type!");
+    } else {
+        std::string title;
+        VectorChannelPtr vectorChannel = wrapper->get();
+        title += vectorChannel->getName();
+        title += " [";
+        title += vectorChannel->getValueBaseUnit();
+        title += "]";
+        chart->setTitle(QString(title.c_str()));
+    }
+    return visualizer;
+}
+
+void NewVector3ItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+{
+    VectorChannelPtr vectorChannel = wrapper->get();
+
+    ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
+    ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
+    ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(vectorChannel, 2));
+    core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    core::ObjectWrapperPtr wrapperY = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    core::ObjectWrapperPtr wrapperZ = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+    wrapperX->set(x);
+    wrapperY->set(y);
+    wrapperZ->set(z);
+
+    static int number = 0;
+    // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+    std::string suffix = boost::lexical_cast<std::string>(number++);
+    wrapperX->setName  ("X_" + suffix);
+    wrapperX->setSource("X_" + suffix);
+    wrapperY->setName  ("Y_" + suffix);
+    wrapperY->setSource("Y_" + suffix);
+    wrapperZ->setName  ("Z_" + suffix);
+    wrapperZ->setSource("Z_" + suffix);
+    visualizer->getOrCreateWidget();
+
+    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getSource());
+    auto serieY = visualizer->createSerie(wrapperY, wrapperY->getSource());
+    auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getSource());
+
+    NewChartVisualizer::NewChartSerie* chartSerieX = dynamic_cast<NewChartVisualizer::NewChartSerie*>(serieX.get());
+    NewChartVisualizer::NewChartSerie* chartSerieY = dynamic_cast<NewChartVisualizer::NewChartSerie*>(serieY.get());
+    NewChartVisualizer::NewChartSerie* chartSerieZ = dynamic_cast<NewChartVisualizer::NewChartSerie*>(serieZ.get());
+
+    chartSerieX->setColor(255, 0, 0);
+    chartSerieY->setColor(0, 255, 0);
+    chartSerieZ->setColor(0, 0, 255);
+
+    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
+    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieY));
+    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieZ));
+}
+
+
+
+void NewMultiserieHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+{
+    int count = wrappers.size();
+    int count2 = count / 2;
+    for (int i = 0; i < count; i++) {
+        core::ObjectWrapperPtr wrapper = wrappers[i];
+        auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
+        NewChartVisualizer::NewChartSerie* chartSerieX = dynamic_cast<NewChartVisualizer::NewChartSerie*>(serieX.get());
+        int r = 0;
+        int g = 0;
+        int b = 0;
+
+        switch (colorPolicy) 
+        {
+        case Random:
+            r = rand() % 256;
+            g = rand() % 256;
+            b = rand() % 256;
+            break;
+
+        case GreenRandom:
+            r = rand() % 200;
+            g = 255;                                 
+            b = rand() % 245;
+            break;                                    
+
+        case RedRandom:                               
+            r = 255;                                  
+            g = rand() % 200;
+            b = rand() % 245;
+            break;
+
+        case Red:
+            r = 255;                                  
+            g = 0;
+            b = 0;
+            break;
+        case Green:
+            r = 0;
+            g = 255;
+            b = 0;
+            break;
+        case HalfRedHalfGreen:
+            r = i >= count2 ? 255 : 0;
+            g = i >= count2 ? 0 : 255;
+            b = i >= count2 ? 0 : 0;
+            break;
+        }
+
+        chartSerieX->setColor(r, g, b);
+        series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
+    }
+}
+
+
+VisualizerPtr NewMultiserieHelper::createVisualizer()
+{
+    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(NewChartVisualizer::getClassID());
+    visualizer->getOrCreateWidget();
+    NewChartVisualizer* chart = dynamic_cast<NewChartVisualizer*>(visualizer->getImplementation());
+    if (!chart) {
+        UTILS_ASSERT(false);
+        LOG_ERROR("Wrong visualizer type!");
+    } else {
+        chart->setTitle(title);
+    }
+    return visualizer;
+}

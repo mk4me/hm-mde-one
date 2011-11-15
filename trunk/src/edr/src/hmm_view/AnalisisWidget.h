@@ -50,16 +50,16 @@ public:
             int w = 3 * margin + filterWidth * 2;
             int h = 2 * margin + (filterHeight + margin) * (y + 1);
             filterScroll->setMinimumSize(w, h);
-            scrollArea->setMinimumWidth(w);
-            scrollArea->setMaximumWidth(w);
-            frame->setMaximumWidth(w);
-            scrollArea->setMinimumHeight(3 * margin + filterHeight * 2);
+            scrollArea->setMinimumWidth(w + 16);
+            scrollArea->setMaximumWidth(w + 16);
+            frame->setMaximumWidth     (w + 16);
+            scrollArea->setMinimumHeight(3 * margin + filterHeight * 2 + 8);
         }
 
         filter->setParent(filterScroll);
         filter->setGeometry(margin + x * (filterWidth + margin),margin +  y * (margin + filterHeight), filterWidth, filterHeight);
     }
-    //QWidget * getFilterTabWidget() { return filterScroll; }
+
     QWidget* getArea() { return analisisArea; }
 
 private:

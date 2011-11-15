@@ -24,7 +24,7 @@ void KinematicParser::parseFile(const core::Filesystem::Path& path)
 {
 	using namespace kinematic;
 	using kinematic::AsfParser;
-	//SkeletalModelPtr modelPtr(new SkeletalModel);
+
 	SkeletalDataPtr dataPtr(new SkeletalData());
 
 	if(core::Filesystem::fileExtension(path).compare(".amc") == 0) {
@@ -38,26 +38,8 @@ void KinematicParser::parseFile(const core::Filesystem::Path& path)
 		bvh.parse(modelPtr, dataPtr, path.string());
 	}*/
 	
-	if ( /*modelPtr &&*/ dataPtr && dataPtr->getFrames().size() > 0) {
+	if (  dataPtr && dataPtr->getFrames().size() > 0) {
 		skeletonData->set(dataPtr);
-		//KinematicModelPtr kin(new KinematicModel);
-		/*JointAnglesCollectionPtr kinematicSkeleton(new JointAnglesCollection);
-		kinematicSkeleton->setSkeletal(modelPtr, dataPtr);
-		skeletonData->set(kinematicSkeleton)*/;
-		/*kin->setSkeleton(kinematicSkeleton);
-		kin->setMarkers(markers[0]);
-		kinematicMarkersSkeleton->set(kin);
-		kinematicMarkersSkeleton->setName(path.filename().string());
-		kinematicMarkersSkeleton->setSource(path.filename().string());*/
-		/*SkeletalVisualizationSchemePtr scheme = SkeletalVisualizationScheme::create();
-		scheme->setMarkers(markers[0]);
-		scheme->setJoints(kinematicSkeleton);
-		if (vsk) {
-			scheme->setMarkersDataFromVsk(vsk);
-		}
-		schemeMarkersSkeleton->set(scheme);
-		schemeMarkersSkeleton->setName(path.filename().string());
-		schemeMarkersSkeleton->setSource(path.string());*/
 	}
 }
 

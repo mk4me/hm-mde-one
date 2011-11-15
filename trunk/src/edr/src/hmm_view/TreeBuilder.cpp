@@ -179,7 +179,7 @@ QTreeWidgetItem*  TreeBuilder::createGRFBranch( MotionPtr motion, const QString&
     for (int i = 0; i < count; i++) {
         GRFChannelPtr c = grfs[i]->get();
         if (c) {
-            QTreeWidgetItem* channelItem = new Vector3ItemHelper(grfs[i]);	
+            QTreeWidgetItem* channelItem = new NewVector3ItemHelper(grfs[i]);	
             channelItem->setIcon(0, itemIcon);						
             channelItem->setText(0, c->getName().c_str());			
             grfItem->addChild(channelItem);			

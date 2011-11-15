@@ -15,37 +15,12 @@
 #include <plugins/subject/Motion.h>
 #include "Visualizer.h"
 
-//class HmmTreeItem : public QTreeWidgetItem
-//{
-//public:
-//    virtual TreeItemHelper* getHelper() = 0;
-//};
-
-//template <class HelperPolicy>
-//class HmmTreePolicyItem : public HmmTreeItem, public HelperPolicy
-//{
-//public:
-//    template<class Arg>
-//    HmmTreePolicyItem(const Arg& arg) 
-//    {
-//        HelperPolicy::init(arg);
-//    }
-//    virtual TreeItemHelper* getHelper()
-//    {
-//        return dynamic_cast<TreeItemHelper*>(this);
-//    }
-//};
-
-
 //! podstawowa klasa ulatwiajaca tworzenie wizualizatora na podstawie elementu drzewa
 class TreeItemHelper : public QTreeWidgetItem
 {
 public:
-    //TreeItemHelper(const core::ObjectWrapperPtr& wrapper);
     TreeItemHelper() {}
 	virtual ~TreeItemHelper() {}
-/*protected:
-    TreeItemHelper() {}*/
 
 public:
     virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series) = 0;
@@ -54,7 +29,6 @@ public:
 
 protected:
     static void setUpChart(ChartVisualizer* chart, const std::string& title);
-    //const core::ObjectWrapperPtr wrapper;
 
 private:
     static osg::ref_ptr<osgText::Text> chartTextPrototype;
@@ -115,11 +89,29 @@ public:
     virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
 };
 
+//! klasa pomocnicza przy tworzeniu wizualizatora wykresow
+class NewChartItemHelper : public TreeWrappedItemHelper
+{
+public:
+    NewChartItemHelper(const core::ObjectWrapperPtr& wrapper) : TreeWrappedItemHelper(wrapper) { }
+    virtual VisualizerPtr createVisualizer();
+    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+};
+
 //! klasa pomocnicza przy tworzeniu wykresow z wektora 3-elementowego
 class Vector3ItemHelper : public TreeWrappedItemHelper
 {
 public:
     Vector3ItemHelper(const core::ObjectWrapperPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
+    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual VisualizerPtr createVisualizer();
+};
+
+//! klasa pomocnicza przy tworzeniu wykresow z wektora 3-elementowego
+class NewVector3ItemHelper : public TreeWrappedItemHelper
+{
+public:
+    NewVector3ItemHelper(const core::ObjectWrapperPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
     virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
 };
@@ -151,6 +143,41 @@ public:
 
 private:
     std::vector<core::ObjectWrapperPtr> wrappers;
+    ColorPolicy colorPolicy;
+};
+
+//! klasa pomocnicza przy tworzeniu wykresow z wieloma seriami
+class NewMultiserieHelper : public TreeItemHelper
+{
+public:
+    enum ColorPolicy {
+        Random,
+        GreenRandom,
+        RedRandom,
+        Red,
+        Green,
+        HalfRedHalfGreen
+    };
+
+public:
+    NewMultiserieHelper(const std::vector<core::ObjectWrapperPtr>& charts): 
+      colorPolicy(Random), title("")
+    {
+        wrappers = charts;
+    }
+
+    void setColorPolicy(ColorPolicy policy) { colorPolicy = policy; }
+
+public:
+    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual VisualizerPtr createVisualizer();
+    const QString& getTitle() const { return title; }
+    void setTitle(const QString& val) { title = val; }
+
+private:
+    std::vector<core::ObjectWrapperPtr> wrappers;
+    QString title;
+    
     ColorPolicy colorPolicy;
 };
 

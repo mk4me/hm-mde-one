@@ -32,7 +32,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(255, 255, 255);</string>
+   <string notr="true">background-color: rgb(235, 235, 235);</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
@@ -64,12 +64,13 @@
 	 color: rgb(135, 177, 255);
  }*/
 
-background-color: rgb(235, 235, 235);
+
 
 QGroupBox { 
-     border: 2px solid; 
+     border: 1px solid; 
      border-color: rgb(135, 177, 255);
-     border-radius: 9px; 
+     border-radius: 5px; 
+	background-color: rgb(235, 235, 235);
  } 
 </string>
      </property>

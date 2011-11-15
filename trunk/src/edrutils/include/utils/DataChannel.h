@@ -696,8 +696,15 @@ namespace utils {
         //! \param time Wartosc okreslajaca procent przesuniecia wzgledem probki ponizej
         PointType extractValue(IndexType idxA, IndexType idxB, TimeType time, const typename IRawGeneralDataChannelReader<PointType, TimeType> & channel) const
         {
-            // lerp
+            //// lerp
+            //auto iA = channel.value(idxA);
+            //auto iB = channel.value(idxB);
+            //auto aA = channel.argument(idxA);
+            //auto aB = channel.argument(idxB);
+            //auto ret = iA + (iB - iA) * (time - aA) / (aB - aA);
+            //return ret;
             return channel.value(idxA) + (channel.value(idxB) - channel.value(idxA)) * (time - channel.argument(idxA)) / (channel.argument(idxB) - channel.argument(idxA));
+            
         }
     };
 
@@ -730,7 +737,8 @@ namespace utils {
                 }else if(channel.argument(r.second) == time){
                     return channel.value(r.second);
                 }else{
-                    return Manipulator::extractValue(r.first, r.second, time, channel);
+                    auto test = Manipulator::extractValue(r.first, r.second, time, channel);
+                    return test;
                 }
             }            
         }
@@ -1056,6 +1064,7 @@ namespace utils {
             Stats sts;
 
             for(auto i = 0; i < channel->size(); i++){
+                float val = channel->value(i);
                 sts(channel->value(i));
             }
 
