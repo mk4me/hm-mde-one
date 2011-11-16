@@ -17,7 +17,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 
 	this->addDockWidget(Qt::TopDockWidgetArea, set, Qt::Horizontal);
 	dockList.push_back(set);
-	 
+	connect(set, SIGNAL(destroyed(QObject*)), this, SLOT(onSetClosed(QObject*)));
 	if (dockList.size() > 1) {
 		auto it = dockList.begin();
 		auto it2 = dockList.begin();
@@ -52,4 +52,19 @@ void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
 	}
 	QWidget::setUpdatesEnabled(true);
 
+}
+
+
+void EDRDockWidgetManager::onSetClosed( QObject* object )
+{
+    // edr dock widget juz nie isnieje, ale potrzebny jest nam tylko wskaznik,
+    // zeby usunac obiekt z listy
+    EDRDockWidgetSet* set = reinterpret_cast<EDRDockWidgetSet*>(object);
+    dockList.remove(set);
+    generatedList.remove(set);
+}
+
+void EDRDockWidgetManager::setTabsPosition( QTabWidget::TabPosition tabPosition )
+{
+    setTabPosition(Qt::AllDockWidgetAreas, tabPosition);
 }

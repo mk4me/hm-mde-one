@@ -93,6 +93,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     topMainWindow = new EDRDockWidgetManager(this);
+    topMainWindow->setTabsPosition(QTabWidget::North);
     bottomMainWindow = new QMainWindow(this);
     bottomMainWindow->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 

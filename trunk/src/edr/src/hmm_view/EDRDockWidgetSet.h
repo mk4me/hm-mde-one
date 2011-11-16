@@ -38,6 +38,9 @@ private:
 	std::list<EDRDockWidget*> widgetsList;
 	int maxWidgetsNumber;
 	bool additionPossible;
+
+private slots:
+    void onDockWidgetClosed(QObject* object);
 };
 
 #endif

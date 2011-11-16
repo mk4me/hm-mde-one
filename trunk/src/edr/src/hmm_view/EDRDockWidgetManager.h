@@ -17,6 +17,7 @@ class EDRDockWidgetSet;
 
 class EDRDockWidgetManager : protected QMainWindow
 {
+    Q_OBJECT;
 public:
 	explicit EDRDockWidgetManager(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~EDRDockWidgetManager() {}
@@ -25,10 +26,14 @@ public:
 public:
 	void addDockWidgetSet(EDRDockWidgetSet* set);
 	void autoAddDockWidget(EDRDockWidget* widget);
+    void setTabsPosition(QTabWidget::TabPosition tabPosition);
 
 private:
 	std::list<EDRDockWidgetSet*> dockList;
 	std::list<EDRDockWidgetSet*> generatedList;
+
+private slots:
+    void onSetClosed(QObject* object);
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "NewChartVisualizer.h"
+#include <qwt/qwt_plot_canvas.h>
 
 const int ACTIVE_WIDTH = 3;
 const int NON_ACTIVE_WIDTH = 1;
@@ -15,6 +16,7 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     QwtText txt(getName().c_str());
     qwtPlot.reset(new QwtPlot(txt, nullptr));
     qwtPlot->setAutoReplot(true);
+    qwtPlot->canvas()->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
    
     zoomer.reset(new QwtPlotZoomer(qwtPlot->canvas()));
     zoomer->setStateMachine(new QwtPickerDragRectMachine);

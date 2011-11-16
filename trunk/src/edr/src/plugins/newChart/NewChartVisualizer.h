@@ -30,6 +30,7 @@
 class NewChartVisualizer : public QObject, public core::IVisualizer
 {
     Q_OBJECT;
+    UNIQUE_ID("{1122BD8A-6056-4965-9AEA-502F99CA2433}", "New Chart Visualizer");
 public:
     struct Scales
     {
@@ -41,8 +42,10 @@ public:
         bool initialized;
     };
     NewChartVisualizer() : markerX(0.0f) {}
-	virtual ~NewChartVisualizer() {}
-    UNIQUE_ID("{1122BD8A-6056-4965-9AEA-502F99CA2433}", "New Chart Visualizer");
+	virtual ~NewChartVisualizer() 
+    {
+    }
+    
 
 public:
       class NewChartSerie : public TimeSerieBase
@@ -57,8 +60,6 @@ public:
                     accessor(new ScalarContiniousTimeAccessor(reader))          
                 {
                     ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
-                    //normalizedChannel.reset(new ScalarModifier(nonConstChannel, ScalarChannelNormalizer()));
-                    //accessor.reset(new ScalarContiniousTimeAccessor());
                     stats.reset(new ScalarChannelStats(nonConstChannel));
                 }
                 virtual double y(double x) const
@@ -84,7 +85,6 @@ public:
               ScalarChannelReaderInterfaceConstPtr reader;
               ScalarChannelStatsPtr stats;
               boost::shared_ptr<ScalarContiniousTimeAccessor> accessor;
-              //boost::shared_ptr<ScalarModifier> normalizedChannel;
           };
       public:
           NewChartSerie(NewChartVisualizer * visualizer)
@@ -214,7 +214,6 @@ signals:
      
 private:
       core::shared_ptr<QwtPlot> qwtPlot;
-      //core::shared_ptr<QwtPlotMarker> qwtMarker;
       QwtPlotMarker* qwtMarker;
       core::shared_ptr<QwtPlotGrid> grid;
       core::shared_ptr<QwtPlotZoomer> zoomer;
