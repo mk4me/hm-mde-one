@@ -7,48 +7,111 @@
 
 using namespace communication;
 
-FileStoremanService::FileStoremanService() { }
-
-FileStoremanService::~FileStoremanService() { }
-
-void FileStoremanService::downloadComplete(int fileID, const std::string& path)
+void FileStoremanServiceBase::fileDownloadComplete(int fileID, const std::string& path)
 {
-	this->setOperation("DownloadComplete");
-	if(invoker->status()) {
-		if(!invoker->setValue("fileID", toString<int>(fileID)) ||
-			!invoker->setValue("path", path/*new std::string(path)*/)) {
-				throw std::runtime_error("Bad operation arguments.");
-		}
-		if(!invoker->invoke()) {
-			throw std::runtime_error(invoker->errors().c_str());
-		}
-	} else {
-		throw std::runtime_error(invoker->errors().c_str());
-	}
+    this->setOperation("DownloadComplete");
+    if(invoker->status()) {
+        if(!invoker->setValue("fileID", toString<int>(fileID)) ||
+            !invoker->setValue("path", path)) {
+                throw std::runtime_error("Bad operation arguments.");
+        }
+        if(!invoker->invoke()) {
+            throw std::runtime_error(invoker->errors().c_str());
+        }
+    } else {
+        throw std::runtime_error(invoker->errors().c_str());
+    }
 }
 
-std::string FileStoremanService::retrieveFile(int fileID)
+std::string FileStoremanServiceBase::retrieveFile(int fileID)
 {
-	this->setOperation("RetrieveFile");
-	if(invoker->status()) {
-		if(!invoker->setValue("fileID", toString<int>(fileID))) {
-			throw std::runtime_error("Bad operation arguments.");
-		}
-		if(!invoker->invoke()) {
-			throw std::runtime_error(invoker->errors().c_str());
-		}
-		Schema::Type type;
-		void *val = invoker->getValue("FileLocation", type);
-		if(val == NULL) {
-			throw std::runtime_error("Bad response in retrieveFile operation.");
-		}
-		return *(std::string*)val;
-	} else {
-		throw std::runtime_error(invoker->errors().c_str());
-	}
+    this->setOperation("RetrieveFile");
+    if(invoker->status()) {
+        if(!invoker->setValue("fileID", toString<int>(fileID))) {
+            throw std::runtime_error("Bad operation arguments.");
+        }
+        if(!invoker->invoke()) {
+            throw std::runtime_error(invoker->errors().c_str());
+        }
+        Schema::Type type;
+        void *val = invoker->getValue("FileLocation", type);
+        if(val == NULL) {
+            throw std::runtime_error("Bad response in retrieveFile operation.");
+        }
+        return *(std::string*)val;
+    } else {
+        throw std::runtime_error(invoker->errors().c_str());
+    }
 }
 
-int FileStoremanService::storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename)
+void FileStoremanServiceBase::photoDownloadComplete(int photoID, const std::string& path)
+{
+    this->setOperation("DownloadComplete");
+    if(invoker->status()) {
+        if(!invoker->setValue("photoID", toString<int>(photoID)) ||
+            !invoker->setValue("path", path)) {
+                throw std::runtime_error("Bad operation arguments.");
+        }
+        if(!invoker->invoke()) {
+            throw std::runtime_error(invoker->errors().c_str());
+        }
+    } else {
+        throw std::runtime_error(invoker->errors().c_str());
+    }
+}
+
+std::string FileStoremanServiceBase::retrievePhoto(int photoID)
+{
+    this->setOperation("RetrievePhoto");
+    if(invoker->status()) {
+        if(!invoker->setValue("photoID", toString<int>(photoID))) {
+            throw std::runtime_error("Bad operation arguments.");
+        }
+        if(!invoker->invoke()) {
+            throw std::runtime_error(invoker->errors().c_str());
+        }
+        Schema::Type type;
+        void *val = invoker->getValue("FileLocation", type);
+        if(val == NULL) {
+            throw std::runtime_error("Bad response in RetrievePhoto operation.");
+        }
+        return *(std::string*)val;
+    } else {
+        throw std::runtime_error(invoker->errors().c_str());
+    }
+}
+
+std::string FileStoremanServiceBase::getShallowCopy()
+{
+    this->setOperation("GetShallowCopy");
+    if(invoker->status()) {
+        if(!invoker->invoke()) {
+            throw std::runtime_error(invoker->errors().c_str());
+        }
+        Schema::Type type;
+        void *val = invoker->getValue("GetShallowCopyResult", type);
+        return *(std::string*)val;
+    } else {
+        throw std::runtime_error(invoker->errors().c_str());
+    }
+}
+
+std::string FileStoremanServiceBase::getMetadata()
+{
+    this->setOperation("GetMetadata");
+    if(invoker->status()) {
+        if(!invoker->invoke()) {
+            throw std::runtime_error(invoker->errors().c_str());
+        }
+        Schema::Type type;
+        void *val = invoker->getValue("GetMetadataResult", type);
+        return *(std::string*)val;
+    } else {
+        throw std::runtime_error(invoker->errors().c_str());
+    }
+}
+
+int MotionFileStoremanService::storeSessionFile(int sessionID, const std::string& path, const std::string& description, const std::string& filename)
 {
 	this->setOperation("StoreSessionFile");
 	if(invoker->status()) {
@@ -68,7 +131,7 @@ int FileStoremanService::storeSessionFile(int sessionID, const std::string& path
 	}
 }
 
-int FileStoremanService::storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename)
+int MotionFileStoremanService::storePerformerFile(int performerID, const std::string& path, const std::string& description, const std::string& filename)
 {
 	this->setOperation("StorePerformerFile");
 	if(invoker->status()) {
@@ -88,7 +151,7 @@ int FileStoremanService::storePerformerFile(int performerID, const std::string& 
 	}
 }
 
-int FileStoremanService::storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename)
+int MotionFileStoremanService::storeTrialFile(int trialID, const std::string& path, const std::string& description, const std::string& filename)
 {
 	this->setOperation("StoreTrialFile");
 	if(invoker->status()) {
@@ -108,7 +171,7 @@ int FileStoremanService::storeTrialFile(int trialID, const std::string& path, co
 	}
 }
 
-int FileStoremanService::storeSessionFiles(int sessionID, const std::string& path, const std::string& description)
+int MotionFileStoremanService::storeSessionFiles(int sessionID, const std::string& path, const std::string& description)
 {
 	this->setOperation("StoreSessionFiles");
 	if(invoker->status()) {
@@ -127,7 +190,7 @@ int FileStoremanService::storeSessionFiles(int sessionID, const std::string& pat
 	}
 }
 
-void FileStoremanService::storePerformerFiles(int performerID, const std::string& path)
+void MotionFileStoremanService::storePerformerFiles(int performerID, const std::string& path)
 {
 	this->setOperation("StorePerformerFiles");
 	if(invoker->status()) {
@@ -143,7 +206,7 @@ void FileStoremanService::storePerformerFiles(int performerID, const std::string
 	}
 }
 
-void FileStoremanService::storeTrialFiles(int trialID, const std::string& path)
+void MotionFileStoremanService::storeTrialFiles(int trialID, const std::string& path)
 {
 	this->setOperation("StoreTrialFiles");
 	if(invoker->status()) {
@@ -154,36 +217,6 @@ void FileStoremanService::storeTrialFiles(int trialID, const std::string& path)
 		if(!invoker->invoke()) {
 			throw std::runtime_error(invoker->errors().c_str());
 		}
-	} else {
-		throw std::runtime_error(invoker->errors().c_str());
-	}
-}
-
-std::string FileStoremanService::getShallowCopy()
-{
-	this->setOperation("GetShallowCopy");
-	if(invoker->status()) {
-		if(!invoker->invoke()) {
-			throw std::runtime_error(invoker->errors().c_str());
-		}
-		Schema::Type type;
-		void *val = invoker->getValue("GetShallowCopyResult", type);
-		return *(std::string*)val;
-	} else {
-		throw std::runtime_error(invoker->errors().c_str());
-	}
-}
-
-std::string FileStoremanService::getMetadata()
-{
-	this->setOperation("GetMetadata");
-	if(invoker->status()) {
-		if(!invoker->invoke()) {
-			throw std::runtime_error(invoker->errors().c_str());
-		}
-		Schema::Type type;
-		void *val = invoker->getValue("GetMetadataResult", type);
-		return *(std::string*)val;
 	} else {
 		throw std::runtime_error(invoker->errors().c_str());
 	}

@@ -23,15 +23,17 @@ TreeItem* createArgsItem(const QString& name, const Args& args, QTreeWidgetItem*
     return dynamic_cast<TreeItem*>(item);
 }
 
-std::vector<core::ObjectWrapperPtr> Endo::extractWrappersFromVector( const std::vector<SessionPtr>& sessions, int scalarIndex = 0 )
+std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromVector( const std::vector<SessionConstPtr>& sessions, int scalarIndex = 0 )
 {
-    std::vector<core::ObjectWrapperPtr> xWrappers;
-    BOOST_FOREACH(SessionPtr session, sessions)
+    std::vector<core::ObjectWrapperConstPtr> xWrappers;
+    BOOST_FOREACH(SessionConstPtr session, sessions)
     {   
-        BOOST_FOREACH(MotionPtr motion, session->getMotions()) {
+        Motions motions;
+        session->getMotions(motions);
+        BOOST_FOREACH(MotionConstPtr motion, motions) {
             if (motion->hasObjectOfType(typeid(VectorChannel))) {
-                core::ObjectWrapperPtr wrapper = motion->getWrapperOfType(typeid(VectorChannel));
-                VectorChannelPtr moment = wrapper->get();
+                core::ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(VectorChannel));
+                VectorChannelConstPtr moment = wrapper->get();
                 ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(moment, scalarIndex));
 
                 core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
@@ -49,83 +51,84 @@ std::vector<core::ObjectWrapperPtr> Endo::extractWrappersFromVector( const std::
 }
 
 void Endo::createKineticBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
-{
-    core::IMemoryDataManager* managerNULL = nullptr;
-    
-    DataFilterPtr leftPrev =  createCustomV3Filter<MomentCollectionPtr>(managerNULL, false, "LHipMoment");
-    DataFilterPtr rightPrev = createCustomV3Filter<MomentCollectionPtr>(managerNULL, false, "RHipMoment");
-    DataFilterPtr leftPost =  createCustomV3Filter<MomentCollectionPtr>(managerNULL, true, "LHipMoment");
-    DataFilterPtr rightPost = createCustomV3Filter<MomentCollectionPtr>(managerNULL, true, "RHipMoment");
+{   
+    DataFilterPtr leftPrev =  createCustomV3Filter<MomentCollection>(false, "LHipMoment");
+    DataFilterPtr rightPrev = createCustomV3Filter<MomentCollection>(false, "RHipMoment");
+    DataFilterPtr leftPost =  createCustomV3Filter<MomentCollection>(true, "LHipMoment");
+    DataFilterPtr rightPost = createCustomV3Filter<MomentCollection>(true, "RHipMoment");
     createVectorEntry(root, sessions, "Moment w stawie biodrowym", leftPrev, rightPrev, leftPost, rightPost, 0);
 
     
-    DataFilterPtr leftPrevF =  createCustomV3Filter<ForceCollectionPtr>(managerNULL, false, "LHipForce");
-    DataFilterPtr rightPrevF = createCustomV3Filter<ForceCollectionPtr>(managerNULL, false, "RHipForce");
-    DataFilterPtr leftPostF =  createCustomV3Filter<ForceCollectionPtr>(managerNULL, true, "LHipForce");
-    DataFilterPtr rightPostF = createCustomV3Filter<ForceCollectionPtr>(managerNULL, true, "RHipForce");
+    DataFilterPtr leftPrevF =  createCustomV3Filter<ForceCollection>(false, "LHipForce");
+    DataFilterPtr rightPrevF = createCustomV3Filter<ForceCollection>(false, "RHipForce");
+    DataFilterPtr leftPostF =  createCustomV3Filter<ForceCollection>(true, "LHipForce");
+    DataFilterPtr rightPostF = createCustomV3Filter<ForceCollection>(true, "RHipForce");
     createVectorEntry(root,sessions, "Sila w stawie biodrowym", leftPrevF, rightPrevF, leftPostF, rightPostF, 0);
 
-    DataFilterPtr leftPrevP =  createCustomV3Filter<PowerCollectionPtr>(managerNULL, false, "LHipPower");
-    DataFilterPtr rightPrevP = createCustomV3Filter<PowerCollectionPtr>(managerNULL, false, "RHipPower");
-    DataFilterPtr leftPostP =  createCustomV3Filter<PowerCollectionPtr>(managerNULL, true, "LHipPower");
-    DataFilterPtr rightPostP = createCustomV3Filter<PowerCollectionPtr>(managerNULL, true, "RHipPower");
+    DataFilterPtr leftPrevP =  createCustomV3Filter<PowerCollection>(false, "LHipPower");
+    DataFilterPtr rightPrevP = createCustomV3Filter<PowerCollection>(false, "RHipPower");
+    DataFilterPtr leftPostP =  createCustomV3Filter<PowerCollection>(true, "LHipPower");
+    DataFilterPtr rightPostP = createCustomV3Filter<PowerCollection>(true, "RHipPower");
     createVectorEntry(root, sessions, "Moc w stawie biodrowym", leftPrevP, rightPrevP, leftPostP, rightPostP, 0);
 }
 
-template<class CollectionPtr>
-DataFilterPtr Endo::createCustomV3Filter( core::IMemoryDataManager* manager, bool post, const std::string& name )
+template<class Collection>
+DataFilterPtr Endo::createCustomV3Filter(bool post, const std::string& name )
 {
     std::vector<DataFilterPtr> filters;
-    filters.push_back(DataFilterPtr(new SessionNumberFilter(manager, post ? 3 : 1, post ? 4 : 2)));
-    filters.push_back(DataFilterPtr(new TypeFilter(manager, typeid(CollectionPtr::element_type))));
-    filters.push_back(DataFilterPtr(new ChannelExtractorFilter<CollectionPtr>(manager)));
-    filters.push_back(DataFilterPtr(new NameFilter(manager, name)));
-    return DataFilterPtr(new CustomFilter(manager, filters));
+    filters.push_back(DataFilterPtr(new SessionNumberFilter(post ? 3 : 1, post ? 4 : 2)));
+    filters.push_back(DataFilterPtr(new TypeFilter(typeid(Collection))));
+    filters.push_back(DataFilterPtr(new ChannelExtractorFilter<Collection>()));
+    filters.push_back(DataFilterPtr(new NameFilter(name)));
+    return DataFilterPtr(new CustomFilter(filters));
 }
 
 void Endo::createEMGBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
 {
     QTreeWidgetItem* emgItem = root;
     {
-        DataFilterPtr lprev = createCustomEMGFilter(nullptr, false, "L1");
-        DataFilterPtr rprev = createCustomEMGFilter(nullptr, false, "R9");
-        DataFilterPtr lpost = createCustomEMGFilter(nullptr, true, "L1");
-        DataFilterPtr rpost = createCustomEMGFilter(nullptr, true, "R9");
+        DataFilterPtr lprev = createCustomEMGFilter(false, "L1");
+        DataFilterPtr rprev = createCustomEMGFilter(false, "R9");
+        DataFilterPtr lpost = createCustomEMGFilter(true, "L1");
+        DataFilterPtr rpost = createCustomEMGFilter(true, "R9");
         createEMGEntry(root, sessions, "miesien prosty uda", lprev, rprev, lpost, rpost);
     }
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(nullptr, false, "L5");
-        DataFilterPtr rprev = createCustomEMGFilter(nullptr, false, "R13");
-        DataFilterPtr lpost = createCustomEMGFilter(nullptr, true, "L5");
-        DataFilterPtr rpost = createCustomEMGFilter(nullptr, true, "R13");
+        DataFilterPtr lprev = createCustomEMGFilter(false, "L5");
+        DataFilterPtr rprev = createCustomEMGFilter(false, "R13");
+        DataFilterPtr lpost = createCustomEMGFilter(true, "L5");
+        DataFilterPtr rpost = createCustomEMGFilter(true, "R13");
         createEMGEntry(root, sessions, "miesien posladkowy sredni", lprev, rprev, lpost, rpost);
     }
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(nullptr, false, "L7");
-        DataFilterPtr rprev = createCustomEMGFilter(nullptr, false, "R15");
-        DataFilterPtr lpost = createCustomEMGFilter(nullptr, true, "L7");
-        DataFilterPtr rpost = createCustomEMGFilter(nullptr, true, "R15");
+        DataFilterPtr lprev = createCustomEMGFilter(false, "L7");
+        DataFilterPtr rprev = createCustomEMGFilter(false, "R15");
+        DataFilterPtr lpost = createCustomEMGFilter(true, "L7");
+        DataFilterPtr rpost = createCustomEMGFilter(true, "R15");
         createEMGEntry(root, sessions, "Gluteus Maximus", lprev, rprev, lpost, rpost);
     }
 }
 
-DataFilterPtr Endo::createCustomEMGFilter( core::IMemoryDataManager* manager, bool post, const std::string& name )
+DataFilterPtr Endo::createCustomEMGFilter(bool post, const std::string& name )
 {
     std::vector<DataFilterPtr> filters;
-    filters.push_back(DataFilterPtr(new SessionNumberFilter(manager, post ? 3 : 1, post ? 4 : 2)));
-    filters.push_back(DataFilterPtr(new TypeFilter(manager, typeid(EMGChannel))));
-    filters.push_back(DataFilterPtr(new NameFilter(manager, name)));
-    return DataFilterPtr(new CustomFilter(manager, filters));
+    filters.push_back(DataFilterPtr(new SessionNumberFilter(post ? 3 : 1, post ? 4 : 2)));
+    filters.push_back(DataFilterPtr(new TypeFilter(typeid(EMGChannel))));
+    filters.push_back(DataFilterPtr(new NameFilter(name)));
+    return DataFilterPtr(new CustomFilter(filters));
 }
 
-std::vector<core::ObjectWrapperPtr> Endo::extractWrappersFromEMG(const std::vector<SessionPtr>& sessions)
+std::vector<core::ObjectWrapperConstPtr> Endo::extractWrappersFromEMG(const std::vector<SessionConstPtr>& sessions)
 {
-    std::vector<core::ObjectWrapperPtr> ret;
-    BOOST_FOREACH(SessionPtr session, sessions) {
-        BOOST_FOREACH(MotionPtr motion, session->getMotions()) {
-            std::vector<core::ObjectWrapperPtr> emgs = motion->getWrappers(typeid(EMGChannel));
+    std::vector<core::ObjectWrapperConstPtr> ret;
+    BOOST_FOREACH(SessionConstPtr session, sessions) {
+        Motions motions;
+        session->getMotions(motions);
+        BOOST_FOREACH(MotionConstPtr motion, motions) {
+            std::vector<core::ObjectWrapperConstPtr> emgs;
+            motion->getWrappers(emgs, typeid(EMGChannel));
             ret.insert(ret.end(), emgs.begin(), emgs.end());
         }
     }
@@ -135,12 +138,10 @@ std::vector<core::ObjectWrapperPtr> Endo::extractWrappersFromEMG(const std::vect
 
 void Endo::createAngleBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
 {
-    core::IMemoryDataManager* managerNULL = nullptr;
-
-    DataFilterPtr leftPrevA =  createCustomV3Filter<AngleCollectionPtr>(managerNULL, false, "LHipAngles");
-    DataFilterPtr rightPrevA = createCustomV3Filter<AngleCollectionPtr>(managerNULL, false, "RHipAngles");
-    DataFilterPtr leftPostA =  createCustomV3Filter<AngleCollectionPtr>(managerNULL, true, "LHipAngles");
-    DataFilterPtr rightPostA = createCustomV3Filter<AngleCollectionPtr>(managerNULL, true, "RHipAngles");
+    DataFilterPtr leftPrevA =  createCustomV3Filter<AngleCollection>(false, "LHipAngles");
+    DataFilterPtr rightPrevA = createCustomV3Filter<AngleCollection>(false, "RHipAngles");
+    DataFilterPtr leftPostA =  createCustomV3Filter<AngleCollection>(true, "LHipAngles");
+    DataFilterPtr rightPostA = createCustomV3Filter<AngleCollection>(true, "RHipAngles");
     createVectorEntry(root, sessions, "kat zgiecia stawu biodrowego w plaszczyznie strzalkowej", leftPrevA, rightPrevA, leftPostA, rightPostA, 0);
     createVectorEntry(root, sessions, "kat odwodzenia stawu biodrowego w plaszczyznie czolowej", leftPrevA, rightPrevA, leftPostA, rightPostA, 1);
     createVectorEntry(root, sessions, "kat rotacji biodra", leftPrevA, rightPrevA, leftPostA, rightPostA, 2);
@@ -148,7 +149,6 @@ void Endo::createAngleBranch( QTreeWidgetItem* root, const std::vector<SessionCo
 
 QTreeWidgetItem* Endo::createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions )
 {
-    
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
     this->createEMGBranch(root, sessions);
@@ -160,13 +160,17 @@ QTreeWidgetItem* Endo::createTreeBranch( const QString& rootItemName, const std:
 void Endo::createEMGEntry(QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions, const QString& name,
     DataFilterPtr leftPrev, DataFilterPtr rightPrev, DataFilterPtr leftPost, DataFilterPtr rightPost)
 {
-    std::vector<core::ObjectWrapperPtr> wrpX1 = extractWrappersFromEMG(leftPrev->filterSessions (sessions)); 
-    std::vector<core::ObjectWrapperPtr> wrpX2 = extractWrappersFromEMG(rightPrev->filterSessions(sessions));
-    std::vector<core::ObjectWrapperPtr> wrpX3 = extractWrappersFromEMG(leftPost->filterSessions (sessions)); 
-    std::vector<core::ObjectWrapperPtr> wrpX4 = extractWrappersFromEMG(rightPost->filterSessions(sessions));
+    std::vector<SessionPtr> filtered = leftPrev->filterData (sessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end())); 
+    filtered = rightPrev->filterData (sessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
+    filtered = leftPost->filterData (sessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end())); 
+    filtered = rightPost->filterData (sessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromEMG(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()));
 
-    std::vector<core::ObjectWrapperPtr> wrpX12 = wrpX1; wrpX12.insert(wrpX12.end(), wrpX2.begin(), wrpX2.end());
-    std::vector<core::ObjectWrapperPtr> wrpX34 = wrpX3; wrpX34.insert(wrpX34.end(), wrpX4.begin(), wrpX4.end());
+    std::vector<core::ObjectWrapperConstPtr> wrpX12 = wrpX1; wrpX12.insert(wrpX12.end(), wrpX2.begin(), wrpX2.end());
+    std::vector<core::ObjectWrapperConstPtr> wrpX34 = wrpX3; wrpX34.insert(wrpX34.end(), wrpX4.begin(), wrpX4.end());
 
     ChildrenVisualizers* hipMoment = createItem<ChildrenVisualizers> (name, root);
 
@@ -185,13 +189,17 @@ void Endo::createEMGEntry(QTreeWidgetItem* root, const std::vector<SessionConstP
 void Endo::createVectorEntry(QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions, const QString& name,
     DataFilterPtr leftPrev, DataFilterPtr rightPrev, DataFilterPtr leftPost, DataFilterPtr rightPost, int index)
 {
-    std::vector<core::ObjectWrapperPtr> wrpX1 = extractWrappersFromVector(leftPrev->filterSessions (sessions), index); 
-    std::vector<core::ObjectWrapperPtr> wrpX2 = extractWrappersFromVector(rightPrev->filterSessions(sessions), index);
-    std::vector<core::ObjectWrapperPtr> wrpX3 = extractWrappersFromVector(leftPost->filterSessions (sessions), index); 
-    std::vector<core::ObjectWrapperPtr> wrpX4 = extractWrappersFromVector(rightPost->filterSessions(sessions), index);
+    std::vector<SessionPtr> filtered = leftPrev->filterData (sessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX1 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index); 
+    filtered = rightPrev->filterData (sessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX2 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
+    filtered = leftPost->filterData (sessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX3 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index); 
+    filtered = rightPost->filterData (sessions);
+    std::vector<core::ObjectWrapperConstPtr> wrpX4 = extractWrappersFromVector(std::vector<SessionConstPtr>(filtered.begin(), filtered.end()), index);
 
-    std::vector<core::ObjectWrapperPtr> wrpX12 = wrpX1; wrpX12.insert(wrpX12.end(), wrpX2.begin(), wrpX2.end());
-    std::vector<core::ObjectWrapperPtr> wrpX34 = wrpX3; wrpX34.insert(wrpX34.end(), wrpX4.begin(), wrpX4.end());
+    std::vector<core::ObjectWrapperConstPtr> wrpX12 = wrpX1; wrpX12.insert(wrpX12.end(), wrpX2.begin(), wrpX2.end());
+    std::vector<core::ObjectWrapperConstPtr> wrpX34 = wrpX3; wrpX34.insert(wrpX34.end(), wrpX4.begin(), wrpX4.end());
 
     ChildrenVisualizers* hipMoment = createItem<ChildrenVisualizers> (name, root);
     hipMoment->setPolicy(ChildrenVisualizers::Vertical);
@@ -224,18 +232,18 @@ QTreeWidgetItem* Stroke::createTreeBranch( const QString& rootItemName, const st
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(0, rootItemName);
     {
-        DataFilterPtr lprev = createCustomEMGFilter(nullptr, false, "L1");
-        DataFilterPtr rprev = createCustomEMGFilter(nullptr, false, "R9");
-        DataFilterPtr lpost = createCustomEMGFilter(nullptr, true, "L1");
-        DataFilterPtr rpost = createCustomEMGFilter(nullptr, true, "R9");
+        DataFilterPtr lprev = createCustomEMGFilter(false, "L1");
+        DataFilterPtr rprev = createCustomEMGFilter(false, "R9");
+        DataFilterPtr lpost = createCustomEMGFilter(true, "L1");
+        DataFilterPtr rpost = createCustomEMGFilter(true, "R9");
         createEMGEntry(root, sessions, "miesien prosty uda", lprev, rprev, lpost, rpost);
     }
     
     {
-        DataFilterPtr lprev = createCustomEMGFilter(nullptr, false, "L2");
-        DataFilterPtr rprev = createCustomEMGFilter(nullptr, false, "R10");
-        DataFilterPtr lpost = createCustomEMGFilter(nullptr, true, "L2");
-        DataFilterPtr rpost = createCustomEMGFilter(nullptr, true, "R10");
+        DataFilterPtr lprev = createCustomEMGFilter(false, "L2");
+        DataFilterPtr rprev = createCustomEMGFilter(false, "R10");
+        DataFilterPtr lpost = createCustomEMGFilter(true, "L2");
+        DataFilterPtr rpost = createCustomEMGFilter(true, "R10");
         createEMGEntry(root, sessions, "Byc moze miesien piszczelowy sredni", lprev, rprev, lpost, rpost);
 
     }
@@ -251,26 +259,26 @@ void Spine::createEMGBranch( QTreeWidgetItem* root, const std::vector<SessionCon
 
     QTreeWidgetItem* emgItem = root;
     {
-        DataFilterPtr lprev = createCustomEMGFilter(nullptr, false, "L1");
-        DataFilterPtr rprev = createCustomEMGFilter(nullptr, false, "R9");
-        DataFilterPtr lpost = createCustomEMGFilter(nullptr, true, "L1");
-        DataFilterPtr rpost = createCustomEMGFilter(nullptr, true, "R9");
+        DataFilterPtr lprev = createCustomEMGFilter(false, "L1");
+        DataFilterPtr rprev = createCustomEMGFilter(false, "R9");
+        DataFilterPtr lpost = createCustomEMGFilter(true, "L1");
+        DataFilterPtr rpost = createCustomEMGFilter(true, "R9");
         createEMGEntry(root, sessions, "miesien prosty uda", lprev, rprev, lpost, rpost);
     }
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(nullptr, false, "L5");
-        DataFilterPtr rprev = createCustomEMGFilter(nullptr, false, "R13");
-        DataFilterPtr lpost = createCustomEMGFilter(nullptr, true, "L5");
-        DataFilterPtr rpost = createCustomEMGFilter(nullptr, true, "R13");
+        DataFilterPtr lprev = createCustomEMGFilter(false, "L5");
+        DataFilterPtr rprev = createCustomEMGFilter(false, "R13");
+        DataFilterPtr lpost = createCustomEMGFilter(true, "L5");
+        DataFilterPtr rpost = createCustomEMGFilter(true, "R13");
         createEMGEntry(root, sessions, "miesien posladkowy sredni", lprev, rprev, lpost, rpost);
     }
 
     {
-        DataFilterPtr lprev = createCustomEMGFilter(nullptr, false, "L7");
-        DataFilterPtr rprev = createCustomEMGFilter(nullptr, false, "R15");
-        DataFilterPtr lpost = createCustomEMGFilter(nullptr, true, "L7");
-        DataFilterPtr rpost = createCustomEMGFilter(nullptr, true, "R15");
+        DataFilterPtr lprev = createCustomEMGFilter(false, "L7");
+        DataFilterPtr rprev = createCustomEMGFilter(false, "R15");
+        DataFilterPtr lpost = createCustomEMGFilter(true, "L7");
+        DataFilterPtr rpost = createCustomEMGFilter(true, "R15");
         createEMGEntry(root, sessions, "Gluteus Maximus", lprev, rprev, lpost, rpost);
 
     }
@@ -284,19 +292,18 @@ void Spine::createKineticBranch( QTreeWidgetItem* root, const std::vector<Sessio
 
     // 8. moment si³y w talii w p³aszczyŸnie strza³kowej X
     // 9. moment si³y w talii w p³aszczyŸnie czo³owej Y
-    core::IMemoryDataManager* managerNULL = nullptr;
 
-    DataFilterPtr leftPrev =  createCustomV3Filter<MomentCollectionPtr>(managerNULL, false, "LWaistMoment");
-    DataFilterPtr rightPrev = createCustomV3Filter<MomentCollectionPtr>(managerNULL, false, "RWaistMoment");
-    DataFilterPtr leftPost =  createCustomV3Filter<MomentCollectionPtr>(managerNULL, true,  "LWaistMoment");
-    DataFilterPtr rightPost = createCustomV3Filter<MomentCollectionPtr>(managerNULL, true,  "RWaistMoment");
+    DataFilterPtr leftPrev =  createCustomV3Filter<MomentCollection>(false, "LWaistMoment");
+    DataFilterPtr rightPrev = createCustomV3Filter<MomentCollection>(false, "RWaistMoment");
+    DataFilterPtr leftPost =  createCustomV3Filter<MomentCollection>(true,  "LWaistMoment");
+    DataFilterPtr rightPost = createCustomV3Filter<MomentCollection>(true,  "RWaistMoment");
     createVectorEntry(root, sessions, "Moment w talii (p. strzalkowa)", leftPrev, rightPrev, leftPost, rightPost, 0);
     createVectorEntry(root, sessions, "Moment w talii (p. czolowa)", leftPrev, rightPrev, leftPost, rightPost, 1);
 
-    DataFilterPtr leftPrevF =  createCustomV3Filter<ForceCollectionPtr>(managerNULL, false, "LWaistForce");
-    DataFilterPtr rightPrevF = createCustomV3Filter<ForceCollectionPtr>(managerNULL, false, "RWaistForce");
-    DataFilterPtr leftPostF =  createCustomV3Filter<ForceCollectionPtr>(managerNULL, true,  "LWaistForce");
-    DataFilterPtr rightPostF = createCustomV3Filter<ForceCollectionPtr>(managerNULL, true,  "RWaistForce");
+    DataFilterPtr leftPrevF =  createCustomV3Filter<ForceCollection>(false, "LWaistForce");
+    DataFilterPtr rightPrevF = createCustomV3Filter<ForceCollection>(false, "RWaistForce");
+    DataFilterPtr leftPostF =  createCustomV3Filter<ForceCollection>(true,  "LWaistForce");
+    DataFilterPtr rightPostF = createCustomV3Filter<ForceCollection>(true,  "RWaistForce");
     createVectorEntry(root, sessions, "Sila w talii (p. strzalkowa)", leftPrev, rightPrev, leftPost, rightPost, 0);
     createVectorEntry(root, sessions, "Sila w talii (p. czolowa)", leftPrev, rightPrev, leftPost, rightPost, 1);
 }
@@ -306,12 +313,11 @@ void Spine::createAngleBranch( QTreeWidgetItem* root, const std::vector<SessionC
     //
     // 6. k¹t krêgos³upa w p³aszczyŸnie strza³kowej X
     // 7. k¹t krêgos³upa w p³aszczyŸnie czo³owej Y
-    core::IMemoryDataManager* managerNULL = nullptr;
 
-    DataFilterPtr leftPrevA =  createCustomV3Filter<AngleCollectionPtr>(managerNULL, false, "LSpineAngles");
-    DataFilterPtr rightPrevA = createCustomV3Filter<AngleCollectionPtr>(managerNULL, false, "RSpineAngles");
-    DataFilterPtr leftPostA =  createCustomV3Filter<AngleCollectionPtr>(managerNULL, true, "LSpineAngles");
-    DataFilterPtr rightPostA = createCustomV3Filter<AngleCollectionPtr>(managerNULL, true, "RSpineAngles");
+    DataFilterPtr leftPrevA =  createCustomV3Filter<AngleCollection>(false, "LSpineAngles");
+    DataFilterPtr rightPrevA = createCustomV3Filter<AngleCollection>(false, "RSpineAngles");
+    DataFilterPtr leftPostA =  createCustomV3Filter<AngleCollection>(true, "LSpineAngles");
+    DataFilterPtr rightPostA = createCustomV3Filter<AngleCollection>(true, "RSpineAngles");
     createVectorEntry(root, sessions, "kat kregoslupa (p. strzalkowa)", leftPrevA, rightPrevA, leftPostA, rightPostA, 0);
     createVectorEntry(root, sessions, "kat kregoslupa (p. czolowa)", leftPrevA, rightPrevA, leftPostA, rightPostA, 1);
  }

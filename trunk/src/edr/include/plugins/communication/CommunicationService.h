@@ -11,25 +11,25 @@ implementacjê funkcjonalnoœci wymaganych przez serwis komunikacji.
 
 #include <core/IService.h>
 #include <plugins/communication/CommunicationManager.h>
-#include <plugins/communication/CommunicationWidgetEx.h>
+//#include <plugins/communication/CommunicationWidgetEx.h>
 #include <plugins/communication/ICommunication.h>
 #include <plugins/communication/QueryWSDL.h>
 #include <plugins/communication/TransportWSDL_FTPS.h>
-#include <QtCore/QObject>
+//#include <QtCore/QObject>
 
-Q_DECLARE_METATYPE ( communication::CommunicationManager::BasicRequest )
-Q_DECLARE_METATYPE ( std::string )
+//Q_DECLARE_METATYPE ( communication::CommunicationManager::BasicRequest )
+//Q_DECLARE_METATYPE ( std::string )
 
-class CommunicationService : public QObject, public core::IService, public ICommunication, private OpenThreads::Thread
+class CommunicationService : /*public QObject,*/ public core::IService, /*public ICommunication,*/ private OpenThreads::Thread
 {
-    Q_OBJECT;
+    //Q_OBJECT;
 
     UNIQUE_ID("{441D9894-1019-4382-97EE-F18B511A49CB}","Communication Service");
 private:
     /**
     Widok serwisu
     */
-    CommunicationWidgetEx* widget;
+    //CommunicationWidgetEx* widget;
     /**
     Model serwisu
     */
@@ -38,58 +38,60 @@ private:
     Nazwa serwisu
     */
     std::string name;
-    /************************************************************************/
-    /* Aktualny stan modelu                                                                     */
-    /************************************************************************/
-    communication::CommunicationManager::State currentState;
-    communication::CommunicationManager::State previousState;
+    ///************************************************************************/
+    ///* Aktualny stan modelu                                                                     */
+    ///************************************************************************/
+    //communication::CommunicationManager::State currentState;
+    //communication::CommunicationManager::State previousState;
 
     /************************************************************************/
     /* Czy zakoñczyæ w³asny w¹tek                                                                     */
     /************************************************************************/
     bool finish;
-    /************************************************************************/
-    /* Callbacki do CommunicationManagera                                                                     */
-    /************************************************************************/
-    communication::CommunicationManager::RequestCallbacks callbacks;
+    ///************************************************************************/
+    ///* Callbacki do CommunicationManagera                                                                     */
+    ///************************************************************************/
+    //communication::CommunicationManager::RequestCallbacks callbacks;
     /************************************************************************/
     /* Czas spania w³asnego w¹tku aktualizuj¹cego ping                                                                     */
     /************************************************************************/
     unsigned int sleepTime;
-    /************************************************************************/
-    /* Czy aktualizowaæ stan œci¹gania plików                                                                     */
-    /************************************************************************/
-    bool refreshProgress;
-    /************************************************************************/
-    /* Aktualne info dla widgeta                                                                     */
-    /************************************************************************/
-    std::string currentLabel;
+    ///************************************************************************/
+    ///* Czy aktualizowaæ stan œci¹gania plików                                                                     */
+    ///************************************************************************/
+    //bool refreshProgress;
+    ///************************************************************************/
+    ///* Aktualne info dla widgeta                                                                     */
+    ///************************************************************************/
+    //std::string currentLabel;
 
-    bool refreshDBView;
+    //bool refreshDBView;
 
-    bool refreshWidgetState;
+    //bool refreshWidgetState;
 
-    bool refreshDBConnectionState;
+    //bool refreshDBConnectionState;
 
-    OpenThreads::Mutex currentWidgetStateMutex;
+    //OpenThreads::Mutex currentWidgetStateMutex;
 
-    int currentRequestID;
-    int updatingRequestID;
+    //int currentRequestID;
+    //int updatingRequestID;
 
-    /**
-    ping serwera
-    */
-    void ping()
-    {
-        model->ping(callbacks);
-    };
+    core::IManagersAccessor * managersAccessor;
 
 private:
 
-    void onBeginRequest(const communication::CommunicationManager::BasicRequest & request);
-    void onEndRequest(const communication::CommunicationManager::BasicRequest & request);
-    void onCancelRequest(const communication::CommunicationManager::BasicRequest & request);
-    void onRequestError(const communication::CommunicationManager::BasicRequest & request, const std::string & error);
+    //void onBeginRequest(const communication::CommunicationManager::BasicRequest & request);
+    //void onEndRequest(const communication::CommunicationManager::BasicRequest & request);
+    //void onCancelRequest(const communication::CommunicationManager::BasicRequest & request);
+    //void onRequestError(const communication::CommunicationManager::BasicRequest & request, const std::string & error);
+
+    // /**
+    //ping serwera
+    //*/
+    //void ping()
+    //{
+    //    //model->ping(callbacks);
+    //};
 
 private:
     
@@ -97,13 +99,13 @@ private:
         while(finish == false){
             if(model->requestsQueueEmpty() == true) {
                 //pinguj co pol minuty
-                ping();
+                model->requestPing();
             }
             microSleep(sleepTime);
         }
     }
 
-    void resetWidgetState();
+    //void resetWidgetState();
 
 public:
     /**
@@ -122,7 +124,9 @@ public:
     @param root Korzeñ wspólnej sceny 3D.
     @param dataManager Manager zasobów.
     */
-    virtual void init();
+    virtual void init(core::IManagersAccessor * managersAccessor);
+
+    virtual void lateInit();
 
     virtual void finalize()
     {
@@ -148,7 +152,8 @@ public:
     */
     virtual QWidget* getSettingsWidget(std::vector<QObject*>& actions)
     {
-        return widget;
+        //return widget;
+        return nullptr;
     }
     /**
     Metoda z interfejsu IService. Nazwa us³ugi.
@@ -158,45 +163,33 @@ public:
     {
         return name;
     }
-    //ICommunication
-	/**
-	Metoda z interfejsu ICommunication. P³ytka kopia bazy danych.
-	*/
-	virtual void copyDbData();
-    /**
-    Metoda z interfejsu ICommunication. Pobieranie wszystkich plików próby pomiarowej.
-    @param trialID id triala w bazie danych którego pliki maj¹ byæ pobrane
-    */
-    virtual void downloadTrial(unsigned int trialID);
+ //   //ICommunication
+	///**
+	//Metoda z interfejsu ICommunication. P³ytka kopia bazy danych.
+	//*/
+	//virtual void copyMotionDbData();
 
-    virtual void downloadSession(unsigned int sessionID);
+ //   void copyMedicalDbData();
+ //   /**
+ //   Metoda z interfejsu ICommunication. Pobieranie wszystkich plików próby pomiarowej.
+ //   @param trialID id triala w bazie danych którego pliki maj¹ byæ pobrane
+ //   */
+ //   virtual void downloadTrial(unsigned int trialID);
 
-    virtual void downloadPerformer(unsigned int performerID);
+ //   virtual void downloadSession(unsigned int sessionID);
 
-    /**
-    Metoda z interfejsu ICommunication. Pobieranie pojedynczego pliku.
-    @param fileID id pliku w bazie danych który ma byæ pobrany
-    */
-    virtual void downloadFile(unsigned int fileID);
-    /**
-    //Metoda z interfejsu ICommunication. £adowanie lokalnej próby pomiarowej do edytora.
-    //@param localTrial lokalna próba pomiarowa do za³adowania
-    //*/
-    //virtual void loadTrial(const core::IDataManager::LocalTrial& localTrial);
-    /**
-    Metoda z interfejsu ICommunication. £adowanie listy plików do edytora.
-    @param files lista plików do za³adowania
-    */
-    virtual void loadFiles(const std::vector<core::Filesystem::Path> files);
-    /**
-    Metoda z interfejsu ICommunication. Usuwanie listy plików z edytora.
-    @param files lista plików do usuniêcia
-    */
-    virtual void removeFiles(const std::vector<core::Filesystem::Path> files);
-    /**
-    Metoda z interfejsu ICommunication. Przerwanie pobierania pliku lub triala.
-    */
-    virtual void cancelDownloading();
+ //   virtual void downloadPerformer(unsigned int performerID);
+
+ //   /**
+ //   Metoda z interfejsu ICommunication. Pobieranie pojedynczego pliku.
+ //   @param fileID id pliku w bazie danych który ma byæ pobrany
+ //   */
+ //   virtual void downloadFile(unsigned int fileID);
+ //   
+ //   /**
+ //   Metoda z interfejsu ICommunication. Przerwanie pobierania pliku lub triala.
+ //   */
+ //   virtual void cancelDownloading();
 };
 
 typedef boost::shared_ptr<CommunicationService> CommunicationServicePtr;

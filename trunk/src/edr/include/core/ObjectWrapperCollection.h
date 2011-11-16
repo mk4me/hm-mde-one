@@ -51,6 +51,9 @@ private:
 
 private:
 
+    //! Metoda dedykowana DataManager do szybkiego ³adowania kolekcji bez sprawdzania typów ladowanych danych - powinno byc juz sprawdzone i zagwarantowane
+    //! \param begin Iterator pocz¹tku zakresu ObjectWrapperPtr
+    //! \param begin Iterator koñca zakresu ObjectWrapperPtr
     template<class Iter>
     void loadCollectionWithData(Iter begin, Iter end)
     {
@@ -85,11 +88,11 @@ public:
 
     //! \param exact Czy dane maj¹ byæ dok³adnie tego typu dla którego utworzono kolekcjê
     //! \param clear Czy czyœciæ dane niezgodne z typem kolekcji - pochodne mu
-    void setExactTypes(bool exact, bool clear = false)
+    void setExactTypes(bool exact)
     {
         this->exact = exact;
 
-        if(exact == true && clear == true){
+        if(exact == true){
             removeDerivedTypes();
         }
     }

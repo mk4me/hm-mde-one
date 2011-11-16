@@ -2,24 +2,24 @@
 #include <plugins/communication/ShallowCopyParser.h>
 #include <core/IDataManager.h>
 
-ShallowCopyParser::ShallowCopyParser() : shallowCopy(communication::ShallowCopy::ShallowCopy::create()),
-    object(core::ObjectWrapper::create<communication::ShallowCopy::ShallowCopy>())
+MotionShallowCopyParser::MotionShallowCopyParser() : shallowCopy(communication::MotionShallowCopy::ShallowCopy::create()),
+    object(core::ObjectWrapper::create<communication::MotionShallowCopy::ShallowCopy>())
 {
     constShallowCopy = shallowCopy;
     object->set(shallowCopy);
 }
 
-ShallowCopyParser::~ShallowCopyParser()
+MotionShallowCopyParser::~MotionShallowCopyParser()
 {
 }
 
-void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
+void MotionShallowCopyParser::parseFile(const core::Filesystem::Path& path)
 {
     this->path = path;
 
     TiXmlDocument document(path.string());
     if(!document.LoadFile()) {
-        UTILS_ASSERT(false, "Blad wczytania pliku ShallowCopy");
+        UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
     }
     TiXmlHandle hDocument(&document);
     TiXmlElement* _element;
@@ -27,7 +27,7 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
 
     _element = hDocument.FirstChildElement().Element();
     if(!_element) {
-        UTILS_ASSERT(false, "Blad wczytania z pliku ShallowCopy");
+        UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
     }
     hParent = TiXmlHandle(_element);
 
@@ -36,8 +36,8 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
     if(performers_element) {
         TiXmlElement* performer_element = performers_element->FirstChildElement("Performer");
         while(performer_element) {
-            //communication::ShallowCopy::Performer * performer = new communication::ShallowCopy::Performer;
-            communication::ShallowCopy::Performer * performer = nullptr;
+            //communication::MotionShallowCopy::Performer * performer = new communication::MotionShallowCopy::Performer;
+            communication::MotionShallowCopy::Performer * performer = nullptr;
             
             int perfID;
 
@@ -45,7 +45,7 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
 
             auto perfIT = shallowCopy->performers.find(perfID);
             if(perfIT == shallowCopy->performers.end()){
-                performer = new communication::ShallowCopy::Performer;
+                performer = new communication::MotionShallowCopy::Performer;
                 performer->performerID = perfID;
                 shallowCopy->performers[perfID] = performer;
             }else{
@@ -57,11 +57,11 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    communication::ShallowCopy::A attr;
-                    attr_element->QueryStringAttribute("Name", &attr.name);
-                    attr_element->QueryStringAttribute("Value", &attr.value);
+                    communication::MotionShallowCopy::Attrs::_Val_type attribute;
+                    attr_element->QueryStringAttribute("Name", &attribute.first);
+                    attr_element->QueryStringAttribute("Value", &attribute.second);
                     
-                    performer->attrs[attr.name] = attr;
+                    performer->attrs.insert(attribute);
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
@@ -75,15 +75,15 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
     if(sessions_element) {
         TiXmlElement* session_element = sessions_element->FirstChildElement("Session");
         while(session_element) {
-            //communication::ShallowCopy::Session * session = new communication::ShallowCopy::Session;
-            communication::ShallowCopy::Session * session = nullptr;
+            //communication::MotionShallowCopy::Session * session = new communication::MotionShallowCopy::Session;
+            communication::MotionShallowCopy::Session * session = nullptr;
 
             int sessionID;
             session_element->QueryIntAttribute("SessionID", &sessionID);
 
             auto sessionIT = shallowCopy->sessions.find(sessionID);
             if(sessionIT == shallowCopy->sessions.end()){
-                session = new communication::ShallowCopy::Session;
+                session = new communication::MotionShallowCopy::Session;
                 session->sessionID = sessionID;
                 shallowCopy->sessions[sessionID] = session;
             }else{
@@ -105,11 +105,12 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    communication::ShallowCopy::A attr;
-                    attr_element->QueryStringAttribute("Name", &attr.name);
-                    attr_element->QueryStringAttribute("Value", &attr.value);
-                    
-                    session->attrs[attr.name]  = attr;
+                    communication::MotionShallowCopy::Attrs::_Val_type attribute;
+                    attr_element->QueryStringAttribute("Name", &attribute.first);
+                    attr_element->QueryStringAttribute("Value", &attribute.second);
+
+                    session->attrs.insert(attribute);
+
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
@@ -119,8 +120,8 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             if(files_element) {
                 TiXmlElement* file_element = files_element->FirstChildElement("File");
                 while(file_element) {
-                    //communication::ShallowCopy::File * file = new communication::ShallowCopy::File;
-                    communication::ShallowCopy::File * file = nullptr;
+                    //communication::MotionShallowCopy::File * file = new communication::MotionShallowCopy::File;
+                    communication::MotionShallowCopy::File * file = nullptr;
 
                     int fileID;
 
@@ -129,7 +130,7 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
                     auto fileIT = shallowCopy->files.find(fileID);
 
                     if(fileIT == shallowCopy->files.end()){
-                        file = new communication::ShallowCopy::File;
+                        file = new communication::MotionShallowCopy::File;
                         file->fileID = fileID;
                         shallowCopy->files[fileID] = file;
                     }else{
@@ -158,7 +159,7 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
     if(group_assignments_element) {
         TiXmlElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
         while(group_assignment_element) {
-            communication::ShallowCopy::GroupAssigment group_assignment ;
+            communication::MotionShallowCopy::GroupAssigment group_assignment ;
             int sessionID;
             group_assignment_element->QueryIntAttribute("SessionID", &sessionID);
             group_assignment.sessions[sessionID] = shallowCopy->sessions[sessionID];
@@ -176,8 +177,8 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
     if(trials_element) {
         TiXmlElement* trial_element = trials_element->FirstChildElement("Trial");
         while(trial_element) {
-            //communication::ShallowCopy::Trial * trial = new communication::ShallowCopy::Trial;
-            communication::ShallowCopy::Trial * trial = nullptr;
+            //communication::MotionShallowCopy::Trial * trial = new communication::MotionShallowCopy::Trial;
+            communication::MotionShallowCopy::Trial * trial = nullptr;
             
             int sessionID;
             int trialID;
@@ -186,7 +187,7 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             auto trialIT = shallowCopy->trials.find(trialID);
 
             if(trialIT == shallowCopy->trials.end()){
-                trial = new communication::ShallowCopy::Trial;
+                trial = new communication::MotionShallowCopy::Trial;
                 trial->trialID = trialID;
                 shallowCopy->trials[trialID] = trial;
             }else{
@@ -208,11 +209,12 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    communication::ShallowCopy::A attr;
-                    attr_element->QueryStringAttribute("Name", &attr.name);
-                    attr_element->QueryStringAttribute("Value", &attr.value);
-                    
-                    trial->attrs[attr.name] = attr;
+                    communication::MotionShallowCopy::Attrs::_Val_type attribute;
+                    attr_element->QueryStringAttribute("Name", &attribute.first);
+                    attr_element->QueryStringAttribute("Value", &attribute.second);
+
+                    trial->attrs.insert(attribute);
+
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
@@ -222,15 +224,15 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             if(files_element) {
                 TiXmlElement* file_element = files_element->FirstChildElement("File");
                 while(file_element) {
-                    //communication::ShallowCopy::File * file = new communication::ShallowCopy::File;
-                    communication::ShallowCopy::File * file = nullptr;
+                    //communication::MotionShallowCopy::File * file = new communication::MotionShallowCopy::File;
+                    communication::MotionShallowCopy::File * file = nullptr;
                     int fileID;
                     file_element->QueryIntAttribute("FileID", &fileID);
 
                     auto fileIT = shallowCopy->files.find(fileID);
 
                     if(fileIT == shallowCopy->files.end()){
-                        file = new communication::ShallowCopy::File;
+                        file = new communication::MotionShallowCopy::File;
                         file->fileID = fileID;
                         shallowCopy->files[fileID] = file;
                     }else{
@@ -259,8 +261,8 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
     if(performer_consfs_element) {
         TiXmlElement* performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
         while(performer_consf_element) {
-            //communication::ShallowCopy::PerformerConf * performerConf = new communication::ShallowCopy::PerformerConf;
-            communication::ShallowCopy::PerformerConf * performerConf = nullptr;
+            //communication::MotionShallowCopy::PerformerConf * performerConf = new communication::MotionShallowCopy::PerformerConf;
+            communication::MotionShallowCopy::PerformerConf * performerConf = nullptr;
 
             int perfConfID;
             performer_consf_element->QueryIntAttribute("PerformerConfID", &perfConfID);
@@ -268,7 +270,7 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             auto perfConfIT = shallowCopy->performerConfs.find(perfConfID);
 
             if(perfConfIT == shallowCopy->performerConfs.end()){
-                performerConf = new communication::ShallowCopy::PerformerConf;
+                performerConf = new communication::MotionShallowCopy::PerformerConf;
                 performerConf->performerConfID = perfConfID;
                 shallowCopy->performerConfs[performerConf->performerConfID] = performerConf;
             }else{
@@ -297,11 +299,12 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             if(attrs_element) {
                 TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
-                    communication::ShallowCopy::A attr;
-                    attr_element->QueryStringAttribute("Name", &attr.name);
-                    attr_element->QueryStringAttribute("Value", &attr.value);
+                    communication::MotionShallowCopy::Attrs::_Val_type attribute;
+                    attr_element->QueryStringAttribute("Name", &attribute.first);
+                    attr_element->QueryStringAttribute("Value", &attribute.second);
+
+                    performerConf->attrs.insert(attribute);
                     
-                    performerConf->attrs[attr.name] = attr;
                     attr_element = attr_element->NextSiblingElement();
                 }
             }
@@ -309,29 +312,186 @@ void ShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             performer_consf_element = performer_consf_element->NextSiblingElement();
         }
     }
-    LOG_INFO("shallow copy parsed.");
+    LOG_INFO("Motion shallow copy parsed.");
 }
 
-core::IParser* ShallowCopyParser::create()
+core::IParser* MotionShallowCopyParser::create()
 {
-    return new ShallowCopyParser();
+    return new MotionShallowCopyParser();
 }
 
-void ShallowCopyParser::getSupportedExtensions(core::IParser::Extensions & extensions) const
+void MotionShallowCopyParser::getSupportedExtensions(core::IParser::Extensions & extensions) const
 {
     core::IParser::ExtensionDescription desc;
 
-    desc.types.insert(typeid(communication::ShallowCopy::ShallowCopy));
+    desc.types.insert(typeid(communication::MotionShallowCopy::ShallowCopy));
     desc.description = "Shallow copy of motion DB";
     extensions["xml"] = desc;
 }
 
-const ShallowCopyConstPtr& ShallowCopyParser::getShallowCopy() const
+const MotionShallowCopyConstPtr& MotionShallowCopyParser::getShallowCopy() const
 {
     return constShallowCopy;
 }
 
-void ShallowCopyParser::getObjects(core::Objects& objects)
+const MotionShallowCopyPtr& MotionShallowCopyParser::getShallowCopy() 
+{
+    return shallowCopy;
+}
+
+void MotionShallowCopyParser::getObjects(core::Objects& objects)
+{
+    objects.insert(object);
+}
+
+
+MedicalShallowCopyParser::MedicalShallowCopyParser() : shallowCopy(communication::MedicalShallowCopy::ShallowCopy::create()),
+    object(core::ObjectWrapper::create<communication::MedicalShallowCopy::ShallowCopy>())
+{
+    constShallowCopy = shallowCopy;
+    object->set(shallowCopy);
+}
+
+MedicalShallowCopyParser::~MedicalShallowCopyParser()
+{
+}
+
+void MedicalShallowCopyParser::parseFile(const core::Filesystem::Path& path)
+{
+    this->path = path;
+
+    TiXmlDocument document(path.string());
+    if(!document.LoadFile()) {
+        UTILS_ASSERT(false, "Blad wczytania pliku MedicalShallowCopy");
+    }
+    TiXmlHandle hDocument(&document);
+    TiXmlElement* _element;
+    TiXmlHandle hParent(0);
+
+    _element = hDocument.FirstChildElement().Element();
+    if(!_element) {
+        UTILS_ASSERT(false, "Blad wczytania z pliku MedicalShallowCopy");
+    }
+    hParent = TiXmlHandle(_element);
+
+    //S³owniki
+    TiXmlElement* dictionary_elements = hParent.FirstChild("Dictionaries").ToElement();
+    if(dictionary_elements != nullptr){
+        //Disorders
+        TiXmlElement* disorder_elements = dictionary_elements->FirstChild("Disorders")->ToElement();
+        if(disorder_elements != nullptr){
+            TiXmlElement* disorder_element = disorder_elements->FirstChildElement("Disorder");
+            while(disorder_element != nullptr){
+
+                int disorderID;
+                disorder_element->QueryIntAttribute("DisorderID", &disorderID);
+
+                auto it = shallowCopy->disorders.find(disorderID);
+
+                if(it == shallowCopy->disorders.end()){
+                    it = shallowCopy->disorders.insert(communication::MedicalShallowCopy::Disorders::value_type(disorderID, new communication::MedicalShallowCopy::Disorder)).first;
+                    it->second->disorderID = disorderID;
+                }
+
+                disorder_element->QueryStringAttribute("DisorderName", &it->second->name);
+
+                disorder_element = disorder_element->NextSiblingElement();
+            }
+        }
+
+        //TODO
+        //ExamGroups <- aktualnie niewykorzystywane
+    }
+
+    //Patients
+    TiXmlElement* patient_elements = hParent.FirstChild("Patients").ToElement();
+    if(patient_elements) {
+        TiXmlElement* patient_element = patient_elements->FirstChildElement("Patient");
+        while(patient_element) {
+            communication::MedicalShallowCopy::Patient * patient = nullptr;
+
+            int patientID;
+
+            patient_element->QueryIntAttribute("PatientID", &patientID);
+
+            auto perfIT = shallowCopy->patients.find(patientID);
+            if(perfIT == shallowCopy->patients.end()){
+                patient = new communication::MedicalShallowCopy::Patient;
+                patient->patientID = patientID;
+                shallowCopy->patients[patientID] = patient;
+            }else{
+                patient = perfIT->second;
+            }
+
+            patient_element->QueryIntAttribute("BDRPerformerID", &patient->motionPerformerID);
+            patient_element->QueryStringAttribute("FirstName", &patient->name);
+            patient_element->QueryStringAttribute("LastName", &patient->surname);
+
+            std::string gender;
+            patient_element->QueryStringAttribute("Gender", &gender);
+            patient->gender = gender[0];
+
+            shallowCopy->patientsByGender[patient->gender].insert(patient);
+
+            patient_element->QueryStringAttribute("BirthDate", &patient->birthDate);
+
+            patient_element = patient_element->NextSiblingElement();
+        }
+    }
+
+    //DisordersOccurences
+    TiXmlElement* disorder_elements = hParent.FirstChild("DisorderOccurences").ToElement();
+    if(disorder_elements) {
+        TiXmlElement* disorder_element = disorder_elements->FirstChildElement("DisorderOccurence");
+        while(disorder_element) {
+
+            int patientID;
+            disorder_element->QueryIntAttribute("PatientID", &patientID);
+
+            int disorderID;
+            disorder_element->QueryIntAttribute("DisorderID", &disorderID);
+
+            auto & disorder = shallowCopy->patients[patientID]->disorders[disorderID];
+
+            disorder_element->QueryStringAttribute("Focus", &disorder.focus);
+
+            disorder_element->QueryStringAttribute("DiagnosisDate", &disorder.diagnosisDate);
+            disorder_element->QueryStringAttribute("Comments", &disorder.comments);
+
+            shallowCopy->patientsByDisorder[disorderID].insert(shallowCopy->patients[patientID]);
+
+            disorder_element = disorder_element->NextSiblingElement();
+        }
+    }
+    
+    LOG_INFO("Medical shallow copy parsed.");
+}
+
+core::IParser* MedicalShallowCopyParser::create()
+{
+    return new MedicalShallowCopyParser();
+}
+
+void MedicalShallowCopyParser::getSupportedExtensions(core::IParser::Extensions & extensions) const
+{
+    core::IParser::ExtensionDescription desc;
+
+    desc.types.insert(typeid(communication::MedicalShallowCopy::ShallowCopy));
+    desc.description = "Shallow copy of medical DB";
+    extensions["xml"] = desc;
+}
+
+const MedicalShallowCopyConstPtr& MedicalShallowCopyParser::getShallowCopy() const
+{
+    return constShallowCopy;
+}
+
+const MedicalShallowCopyPtr& MedicalShallowCopyParser::getShallowCopy() 
+{
+    return shallowCopy;
+}
+
+void MedicalShallowCopyParser::getObjects(core::Objects& objects)
 {
     objects.insert(object);
 }

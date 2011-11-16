@@ -15,7 +15,7 @@ class ManagerHelper
 public:
     virtual ~ManagerHelper() {}
 
-    static Manager * getInstance()
+    inline static Manager * getInstance()
     {
         return manager;
     }

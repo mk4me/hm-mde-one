@@ -375,7 +375,7 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
                 //    collection->addObject(*it);
                 //}
 
-                core::queryData(*collection);
+                DataManager::getInstance()->getObjects(*collection);
 
                 visualizer->setObjects(i, collection);
             }

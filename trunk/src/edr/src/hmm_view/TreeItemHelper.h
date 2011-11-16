@@ -11,6 +11,7 @@
 #define HEADER_GUARD_HMM__TREEITEMHELPER_H__
 
 #include <QtCore/QString>
+#include <QtGui/QTreeWidgetItem>
 #include <plugins/chart/ChartVisualizer.h>
 #include <plugins/subject/Motion.h>
 #include "Visualizer.h"
@@ -23,7 +24,7 @@ public:
 	virtual ~TreeItemHelper() {}
 
 public:
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series) = 0;
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series) = 0;
     virtual VisualizerPtr createVisualizer() = 0;
     virtual bool isDataItem() const { return true; }
 
@@ -69,41 +70,41 @@ private:
 class TreeWrappedItemHelper : public TreeItemHelper
 {
 public:
-    TreeWrappedItemHelper(core::ObjectWrapperPtr wrapper) : wrapper(wrapper)
+    TreeWrappedItemHelper(const core::ObjectWrapperConstPtr & wrapper) : wrapper(wrapper)
     {
     }
 
 public:
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
 protected:
-    core::ObjectWrapperPtr wrapper;
+    core::ObjectWrapperConstPtr wrapper;
 };
 
 //! klasa pomocnicza przy tworzeniu wizualizatora wykresow
 class ChartItemHelper : public TreeWrappedItemHelper
 {
 public:
-    ChartItemHelper(const core::ObjectWrapperPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
+    ChartItemHelper(const core::ObjectWrapperConstPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
     virtual VisualizerPtr createVisualizer();
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
 };
 
 //! klasa pomocnicza przy tworzeniu wizualizatora wykresow
 class NewChartItemHelper : public TreeWrappedItemHelper
 {
 public:
-    NewChartItemHelper(const core::ObjectWrapperPtr& wrapper) : TreeWrappedItemHelper(wrapper) { }
+    NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper) : TreeWrappedItemHelper(wrapper) { }
     virtual VisualizerPtr createVisualizer();
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
 };
 
 //! klasa pomocnicza przy tworzeniu wykresow z wektora 3-elementowego
 class Vector3ItemHelper : public TreeWrappedItemHelper
 {
 public:
-    Vector3ItemHelper(const core::ObjectWrapperPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    Vector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
 };
 
@@ -111,8 +112,8 @@ public:
 class NewVector3ItemHelper : public TreeWrappedItemHelper
 {
 public:
-    NewVector3ItemHelper(const core::ObjectWrapperPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
 };
 
@@ -130,19 +131,19 @@ public:
     };
     
 public:
-    MultiserieHelper(const std::vector<core::ObjectWrapperPtr>& charts): colorPolicy(Random) 
+    MultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts): colorPolicy(Random), wrappers(charts)
     {
-      wrappers = charts;
+      
     }
 
     void setColorPolicy(ColorPolicy policy) { colorPolicy = policy; }
 
 public:
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
 
 private:
-    std::vector<core::ObjectWrapperPtr> wrappers;
+    std::vector<core::ObjectWrapperConstPtr> wrappers;
     ColorPolicy colorPolicy;
 };
 
@@ -160,22 +161,22 @@ public:
     };
 
 public:
-    NewMultiserieHelper(const std::vector<core::ObjectWrapperPtr>& charts): 
-      colorPolicy(Random), title("")
+    NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts): 
+      colorPolicy(Random), title(""), wrappers(charts)
     {
-        wrappers = charts;
+        
     }
 
     void setColorPolicy(ColorPolicy policy) { colorPolicy = policy; }
 
 public:
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
     const QString& getTitle() const { return title; }
     void setTitle(const QString& val) { title = val; }
 
 private:
-    std::vector<core::ObjectWrapperPtr> wrappers;
+    std::vector<core::ObjectWrapperConstPtr> wrappers;
     QString title;
     
     ColorPolicy colorPolicy;
@@ -185,34 +186,34 @@ private:
 class JointsItemHelper : public TreeItemHelper
 {
 public:
-    JointsItemHelper(MotionPtr motion)
+    JointsItemHelper(const MotionConstPtr & motion) : motion(motion)
     {
-        this->motion = motion;
+        
     }
 
 public:
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
 
 private:
-    MotionPtr motion;
+    MotionConstPtr motion;
 };
 
 //! klasa pomocnicza przy tworzeniu zbiorczego widoku 3d (markery + jointy + plyty GRF)
 class Multiserie3D : public TreeItemHelper
 {
 public:
-    Multiserie3D(MotionPtr motion)
+    Multiserie3D(const MotionConstPtr motion) : motion(motion)
     {
-        this->motion = motion;
+
     }
 
 public:
-    virtual void createSeries(VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
 
 private:
-    MotionPtr motion;
+    MotionConstPtr motion;
 };
 
 

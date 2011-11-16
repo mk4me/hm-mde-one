@@ -37,30 +37,47 @@ namespace core {
 class AppInitializer
 {
 public:
+
+    //! Metoda uruchamiaj¹ca aplikacje, pobiera jako parametr wzorca widok który bêdzie uruchomiony, widok powinien dziedziczyæ po MainWindow
 	template<class FrontpageWidget>
 	static int start(int argc, char *argv[])
 	{
         UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyæ po klasie MainWindow");
 
+        //! Wewnêtrzna klasa tworz¹ca wszystkie managery aplikacji i udostepniaj¹ca je widokom oraz serwisom
         class AppManagers : public IManagersAccessor
         {
         public:
+
+            //! Domyœlny konstruktor inicjuje wrazenie singletona dla kazdego managera
+            //! Dzieki temu w kodzie po stronie EDR mamy wrazenie ze pracujemy z singletonami i mamy globalnie dostep do managerow!!
             AppManagers()
             {
-                dataManager.manager = &dataManager;
-                serviceManager.manager = &serviceManager;
-                visualizerManager.manager = &visualizerManager;
-                dataProcessorManager.manager = &dataProcessorManager;
-                dataSourceManager.manager = &dataSourceManager;
+                __instanceInfo.dataManagerReader = dataManager.manager = &dataManager;
+                __instanceInfo.serviceManager = serviceManager.manager = &serviceManager;
+                __instanceInfo.visualizerManager = visualizerManager.manager = &visualizerManager;
+                __instanceInfo.dataProcessorManager = dataProcessorManager.manager = &dataProcessorManager;
+                __instanceInfo.dataSourceManager = dataSourceManager.manager = &dataSourceManager;
             }
 
+            //! Destruktor deinicjalizuje wrazenie singletona managerow
             ~AppManagers()
             {
-                dataManager.manager = nullptr;
-                serviceManager.manager = nullptr;
-                visualizerManager.manager = nullptr;
-                dataProcessorManager.manager = nullptr;
-                dataSourceManager.manager = nullptr;
+                __instanceInfo.dataManagerReader = dataManager.manager = nullptr;
+                __instanceInfo.serviceManager = serviceManager.manager = nullptr;
+                __instanceInfo.visualizerManager = visualizerManager.manager = nullptr;
+                __instanceInfo.dataProcessorManager = dataProcessorManager.manager = nullptr;
+                __instanceInfo.dataSourceManager = dataSourceManager.manager = nullptr;
+            }
+
+            virtual IDataManagerBase * getDataManagerReader()
+            {
+                return &dataManager;
+            }
+
+            virtual const IDataManagerBase * getDataManagerReader() const
+            {
+                return &dataManager;
             }
 
             virtual IFileDataManager * getFileDataManager()
@@ -134,6 +151,8 @@ public:
             }
 
         private:
+            //sEKCJA WSZYSTKICH MANAGEROW W APLIKACJI - TUTAJ POWINNY SIÊ ZNAJDOWAÆ ICH JEDYNE INSTANJCE!!
+
             DataManager dataManager;
             VisualizerManager visualizerManager;
             DataProcessorManager dataProcessorManager;
@@ -197,12 +216,7 @@ public:
 
 			    PluginLoader pluginLoader;
 			    {
-				    /*DataManager dataManager;
-				    VisualizerManager visualizerManager;
-				    DataProcessorManager dataProcessorManager;
-				    DataSourceManager dataSourceManager;
-				    ServiceManager serviceManager;*/
-
+                    //Inicjalizacja managerów
                     AppManagers appManagers;
 
 				    // tworzenie managerów
@@ -211,24 +225,24 @@ public:
 				    // zale¿eæ od managerów, a wówczas wskaŸniki wskazywa³yby œmieci
 				    // podobnie ¿ywotnoœæ do³adowanych bibliotek musi przekraczaæ zakoñczenie
 				    // siê destruktora
-				    //utils::Push<IDataManager*> pushedDM(__instanceInfo.dataManager, &dataManager);
-				    /*utils::Push<IVisualizerManager*> pushedVM(__instanceInfo.visualizerManager, &visualizerManager);
-				    utils::Push<IDataProcessorManager*> pushedDPM(__instanceInfo.dataProcessorManager, &dataProcessorManager);
-				    utils::Push<IDataSourceManager*> pushedDSM(__instanceInfo.dataSourceManager, &dataSourceManager);
-				    utils::Push<IServiceManager*> pushedSM(__instanceInfo.serviceManager, &serviceManager);*/
 
 				    {
+                        // tworzymy widok
 					    FrontpageWidget widget;
+                        //inicjalizujemy widok
 					    widget.init(&pluginLoader, &appManagers);
-
+                        //inicjalizujemy konsolê logowania
 					    logger.setConsoleWidget( widget.getConsole() );
+                        //pokazujemy widok
 					    widget.show();
 					    if (!filePath.empty()) 
 					    {
 						    widget.openFile(filePath);
 					    }
 
+                        //uruchamiamy aplikacjê - kontekst UI z QT
 					    result = application.exec();
+                        //resetujemy konsolê po zakoñczeniu aplikacji
 					    logger.setConsoleWidget(NULL);
 				    }
 			    }

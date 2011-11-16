@@ -21,8 +21,7 @@
 #include <utils/DataChannelCollection.h>
 #include <core/SmartPtr.h>
 
-#include <plugins/subject/Session.h>
-#include <plugins/subject/DataFilter.h>
+#include <core/SubjectDataFilters.h>
 #include "TreeBuilder.h"
 
 
@@ -78,16 +77,18 @@ QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QStri
     rootItem->setText(0, rootItemName);
     BOOST_FOREACH(SessionConstPtr session, sessions)
     {
-        BOOST_FOREACH(MotionPtr motion, session->getMotions()) {
+        std::vector<MotionConstPtr> motions;
+        session->getMotions(motions);
+        BOOST_FOREACH(MotionConstPtr motion, motions) {
             QTreeWidgetItem* item = new QTreeWidgetItem();
             rootItem->addChild(item);
-            item->setText(0, motion->getName().c_str());
+            item->setText(0, motion->getLocalName().c_str());
             if (motion->hasObjectOfType(typeid(Type))) {
-                ObjectWrapperPtr wrapper = motion->getWrapperOfType(typeid(Type));
+                ObjectWrapperConstPtr wrapper = motion->getWrapperOfType(typeid(Type));
                 TypePtr collection = wrapper->get();
-                std::vector<ObjectWrapperPtr> xWrappers;
-                std::vector<ObjectWrapperPtr> yWrappers;
-                std::vector<ObjectWrapperPtr> zWrappers;
+                std::vector<ObjectWrapperConstPtr> xWrappers;
+                std::vector<ObjectWrapperConstPtr> yWrappers;
+                std::vector<ObjectWrapperConstPtr> zWrappers;
                 for( int i = 0; i < collection->getNumChannels(); i++) {
                     Type::ChannelPtr f = collection->getChannel(i);
                     ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(f, 0));

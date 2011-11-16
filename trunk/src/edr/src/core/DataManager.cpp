@@ -118,7 +118,131 @@ public:
 	}
 };
 
-DataManager::ParserInitializer::ParserInitializer(const ParserPtr & parser, DataManager * dm) : parser(parser), dataManager(dm)
+DataManager::DMObjectWrapper::DMObjectWrapper(const core::ObjectWrapperPtr & wrapper) : wrapper(wrapper)
+{
+    UTILS_ASSERT(wrapper != nullptr);
+}
+
+DataManager::DMObjectWrapper::~DMObjectWrapper()
+{
+
+}
+
+const void* DataManager::DMObjectWrapper::getRawPtr() const
+{
+    return wrapper->getRawPtr();
+}
+
+void* DataManager::DMObjectWrapper::getRawPtr()
+{
+    return wrapper->getRawPtr();
+}
+
+void DataManager::DMObjectWrapper::reset()
+{
+    wrapper->reset();
+}
+
+std::size_t DataManager::DMObjectWrapper::getClassID() const
+{
+    return wrapper->getClassID();
+}
+
+const std::string& DataManager::DMObjectWrapper::getClassName() const
+{
+    return wrapper->getClassName();
+}
+
+const std::string& DataManager::DMObjectWrapper::getName() const
+{
+    return wrapper->getName();
+}
+
+void DataManager::DMObjectWrapper::setName(const std::string& name)
+{
+    return wrapper->setName(name);
+}
+
+const std::string& DataManager::DMObjectWrapper::getSource() const
+{
+    return wrapper->getSource();
+}
+
+void DataManager::DMObjectWrapper::setSource(const std::string& source)
+{
+    wrapper->setSource(source);
+}
+
+bool DataManager::DMObjectWrapper::isChanged() const
+{
+    return wrapper->isChanged();
+}
+
+void DataManager::DMObjectWrapper::setChanged(bool changed)
+{
+    wrapper->setChanged(changed);
+}
+
+bool DataManager::DMObjectWrapper::isSupported(const core::TypeInfo& type) const
+{
+    return wrapper->isSupported(type);
+}
+
+bool DataManager::DMObjectWrapper::isPtrSupported(const core::TypeInfo& type) const
+{
+    return wrapper->isPtrSupported(type);
+}
+
+core::TypeInfo DataManager::DMObjectWrapper::getTypeInfo() const
+{
+    return wrapper->getTypeInfo();
+}
+
+std::pair<core::TypeInfo, core::TypeInfo> DataManager::DMObjectWrapper::getPtrTypeInfo() const
+{
+    return wrapper->getPtrTypeInfo();
+}
+
+void DataManager::DMObjectWrapper::getSupportedTypes(Types& supported) const
+{
+    wrapper->getSupportedTypes(supported);
+}
+
+bool DataManager::DMObjectWrapper::isNull() const
+{
+    return wrapper->isNull();
+}
+
+core::ObjectWrapperPtr DataManager::DMObjectWrapper::clone() const
+{
+    return core::ObjectWrapperPtr(new DMObjectWrapper(wrapper->clone())); 
+}
+
+core::ObjectWrapperPtr DataManager::DMObjectWrapper::create() const {
+    return ObjectWrapperPtr(new DMObjectWrapper(wrapper->create()));
+}
+
+bool DataManager::DMObjectWrapper::setSmartPtr(const void* ptr, const core::TypeInfo& type)
+{
+    return core::IObjectWrapper::IObjectWrapperHelper::setSmartPtr(wrapper, ptr,type);
+    //return wrapper->setSmartPtr(ptr,type);
+}
+
+bool DataManager::DMObjectWrapper::getSmartPtr(void* ptr, const core::TypeInfo& type) const
+{
+    if(wrapper->getRawPtr() == nullptr){
+        try{
+            DataManager::getInstance()->initializeData(core::ObjectWrapperPtr(core::const_pointer_cast<DMObjectWrapper>(shared_from_this())));
+        }
+        catch(std::exception & e){
+
+        }
+    }
+
+    return core::IObjectWrapper::IObjectWrapperHelper::getSmartPtr(wrapper, ptr, type);
+}
+
+DataManager::ParserInitializer::ParserInitializer(const ParserPtr & parser) : parser(parser)
 {
 
 }
@@ -142,8 +266,8 @@ void DataManager::ParserInitializer::initialize(core::ObjectWrapperPtr & object)
 
 void DataManager::ParserInitializer::doDeinitialize(core::ObjectWrapperPtr & object)
 {
-    auto it = dataManager->objectsByParsers.find(parser);
-    if(it != dataManager->objectsByParsers.end() ){
+    auto it = DataManager::getInstance()->objectsByParsers.find(parser);
+    if(it != DataManager::getInstance()->objectsByParsers.end() ){
         for(auto objectIT = it->second.begin(); objectIT != it->second.end(); objectIT++){
             if(*objectIT != nullptr){
                 (*objectIT)->reset();
@@ -192,9 +316,12 @@ void DataManager::registerParser(const core::IParserPtr & parser)
                 throw std::runtime_error(str.str());
             }
 
+            std::string ext(it->first);
+            prepareExtension(ext);
+
             if(it->second.types.empty() == true){
                 std::stringstream str;
-                str << "Trying to register extension " << it->first << " without supported types for parser " << parser->getID();
+                str << "Trying to register extension " << ext << " without supported types for parser " << parser->getID();
                 throw std::runtime_error(str.str());                
             }
         }
@@ -203,13 +330,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
             //w³aœciwe rozszerzenie
             std::string extension(it->first);
 
-            //uzupe³niamy kropke
-            if(extension.front() != '.'){
-                extension.insert(extension.begin(), '.');
-            }
-
-            // lowercase rozszerzenia
-            boost::to_lower(extension);
+            prepareExtension(extension);
 
             auto extIT = registeredExtensions.find(extension);
 
@@ -251,17 +372,17 @@ core::IParserConstPtr DataManager::getRegisteredParser( int idx ) const
 	return const_pointer_cast<const IParser>(it->second);
 }
 
-core::ObjectWrapperPtr DataManager::getWrapper(void * rawPtr) const
-{
-    ScopedLock lock(stateMutex);
-
-    auto it = rawPointerToObjectWrapper.find(rawPtr);
-    if(it != rawPointerToObjectWrapper.end()){
-        return it->second;
-    }
-
-    return ObjectWrapperPtr();
-}
+//core::ObjectWrapperPtr DataManager::getWrapper(void * rawPtr) const
+//{
+//    ScopedLock lock(stateMutex);
+//
+//    auto it = rawPointerToObjectWrapper.find(rawPtr);
+//    if(it != rawPointerToObjectWrapper.end()){
+//        return it->second;
+//    }
+//
+//    return ObjectWrapperPtr();
+//}
 
 void DataManager::getManagedData(core::Objects & objects) const
 {
@@ -331,6 +452,24 @@ void DataManager::deinitializeData(core::ObjectWrapperPtr & data)
     }
 }
 
+const core::ObjectWrapperPtr & DataManager::getObjectWrapperForRawPtr(void * ptr) const
+{
+    ScopedLock lock(stateMutex);
+
+    auto it = rawPointerToObjectWrapper.find(ptr);
+
+    if(it == rawPointerToObjectWrapper.end()){
+        throw std::runtime_error("Object not managed by DataManager");
+    }
+
+    return it->second;
+}
+
+bool DataManager::objectIsManaged(void * ptr) const
+{
+    ScopedLock lock(stateMutex);
+    return rawPointerToObjectWrapper.find(ptr) != rawPointerToObjectWrapper.end();
+}
 
 void DataManager::addData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer)
 {
@@ -343,6 +482,9 @@ void DataManager::addData(const core::ObjectWrapperPtr & data, const core::DataI
     }
 
     if(data->isNull() == false || initializer != nullptr){
+
+        //przepakowujemy do naszego wrappera
+
 
         objects.insert(data);
 
@@ -449,12 +591,14 @@ void DataManager::addData(const core::Filesystem::Path & file)
                     (*objectIT)->setSource(file.string());
                 }
 
+                ObjectWrapperPtr obj(new DMObjectWrapper(*objectIT));
+
                 //ObjectByParsers
-                verifiedObjects.insert(*objectIT);
+                verifiedObjects.insert(obj);
                 //ParsersByObjects
-                parsersByObjects[*objectIT] = parser;
+                parsersByObjects[obj] = parser;
                 
-                addData(*objectIT, core::DataInitializerPtr(new ParserInitializer(parser, this)));
+                addData(obj, core::DataInitializerPtr(new ParserInitializer(parser)));
 
                 //UWAGA!!
                 //mapowanie surowego wskaŸnika do ObjectWrappera jest robione podczas parsowania!!
@@ -520,14 +664,14 @@ void DataManager::initializeData(const core::Filesystem::Path & file)
 {
     ScopedLock lock(stateMutex);
 
-    Objects toInitialize;
+    std::vector<core::ObjectWrapperPtr> toInitialize;
     
     getObjectsForData(file, toInitialize);
 
     Objects invalid;
 
     for(auto objectIT = toInitialize.begin(); objectIT != toInitialize.end(); objectIT++){
-        initializeData(core::const_pointer_cast<ObjectWrapper>(*objectIT));
+        initializeData(*objectIT);
 
         if((*objectIT)->isNull()){
             //nie powiod³a siê inicjalizacja - albo parser rzucil bledem podczas parsowania, albo w danych nie bylo tego czego szukamy i co deklarowal parser
@@ -541,9 +685,9 @@ void DataManager::initializeData(const core::Filesystem::Path & file)
         LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after parsing " << file);
         for(auto it = invalid.begin(); it != invalid.end(); it++){
             
-            auto parserIT = parsersByObjects.find(*it);
+            /*auto parserIT = parsersByObjects.find(*it);
             objectsByParsers[parserIT->second].erase(*it);
-            parsersByObjects.erase(parserIT);        
+            parsersByObjects.erase(parserIT);        */
 
             removeData(*it);
         }
@@ -554,19 +698,15 @@ void DataManager::deinitializeData(const core::Filesystem::Path & file)
 {
     ScopedLock lock(stateMutex);
 
-    Objects toDeinitialize;
+    std::vector<core::ObjectWrapperPtr> toDeinitialize;
     getObjectsForData(file, toDeinitialize);
 
-    Parsers parsersQueue;
-
-    Objects invalid;
-
     for(auto objectIT = toDeinitialize.begin(); objectIT != toDeinitialize.end(); objectIT++){
-        deinitializeData(core::const_pointer_cast<ObjectWrapper>(*objectIT));
+        deinitializeData(*objectIT);
     }
 }
 
-void DataManager::getObjectsForData(const core::Filesystem::Path & file, Objects & objects) const
+void DataManager::getObjectsForData(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects) const
 {
     ScopedLock lock(stateMutex);
 
@@ -577,7 +717,7 @@ void DataManager::getObjectsForData(const core::Filesystem::Path & file, Objects
 
     for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); parserIT++){
         auto it = objectsByParsers.find(*parserIT);
-        objects.insert(it->second.begin(), it->second.end());
+        objects.insert(objects.end(), it->second.begin(), it->second.end());
     }
 }
 
@@ -588,9 +728,15 @@ const DataManager::Extensions & DataManager::getSupportedFilesExtensions() const
 
 const IFileDataManager::ExtensionDescription & DataManager::getExtensionDescription(const std::string & extension) const
 {
-    auto it = registeredExtensions.find(extension);
+    std::string ext(extension);
+
+    prepareExtension(ext);
+
+    auto it = registeredExtensions.find(ext);
     if(it == registeredExtensions.end()){
-        throw std::runtime_error("Request for description of unsupported/unregistered extension");
+        std::stringstream str;
+        str << "Request for description of unsupported/unregistered extension " << ext;
+        throw std::runtime_error(str.str());
     }
 
     return it->second;
@@ -621,16 +767,25 @@ const core::Types & DataManager::getTypeDerrivedTypes(const core::TypeInfo & typ
     return it->second.second;
 }
 
+core::ObjectWrapperPtr DataManager::createObjectWrapper(const TypeInfo & typeInfo) const
+{
+    auto it = registeredTypesPrototypes.find(typeInfo);
+    if(it == registeredTypesPrototypes.end()){
+        throw std::runtime_error("Object Wrapper request for undefined data");
+    }
+
+    return core::ObjectWrapperPtr(new DMObjectWrapper(it->second->create()));
+}
+
 void DataManager::getObjects(core::ObjectWrapperCollection& objects)
 {
     ScopedLock lock(stateMutex);
-
-    core::Objects ob;
+    std::vector<core::ObjectWrapperConstPtr> ob;
     getObjects(ob, objects.getTypeInfo(), objects.exactTypes());
     objects.loadCollectionWithData(ob.begin(), ob.end());
 }
 
-void DataManager::getObjects( core::Objects& objects, const core::TypeInfo& type, bool exact /*= false*/ )
+void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects, const core::TypeInfo& type, bool exact /*= false*/ )
 {
     ScopedLock lock(stateMutex);
 
@@ -660,13 +815,15 @@ void DataManager::getObjects( core::Objects& objects, const core::TypeInfo& type
 
         for(auto objectIT = typeObjectsIT->second.begin(); objectIT != typeObjectsIT->second.end(); objectIT++){
             
-            initializeData(core::const_pointer_cast<ObjectWrapper>(*objectIT));
+            core::ObjectWrapperPtr wrapper(*objectIT);
+
+            initializeData(wrapper);
 
             if((*objectIT)->isNull() == true){
                 //jesli nadal nie udalo sie zainicjalizowac danych to trzeba je usunac
                 invalid.insert(*objectIT);
             }else{
-                objects.insert(*objectIT);
+                objects.push_back(*objectIT);
             }
         }
     }
@@ -676,16 +833,15 @@ void DataManager::getObjects( core::Objects& objects, const core::TypeInfo& type
         for(auto it = invalid.begin(); it != invalid.end(); it++){
             
             removeData(*it);
-
-            //sprawdz czy dane pochodza z pliku, jesli tak to aktualizuj info o parserach
-
-            /*auto parserIT = parsersByObjects.find(*it);
-
-            if(parserIT != parsersByObjects.end()){
-                objectsByParsers[parserIT->second].erase(*it);
-                parsersByObjects.erase(parserIT);
-            }*/
         }
+    }
+}
+
+void DataManager::prepareExtension(std::string & extension)
+{
+    if(extension.empty() == false && extension.front() != '.'){
+        extension.insert(0, ".");
+        boost::to_lower(extension);
     }
 }
 
@@ -720,16 +876,16 @@ void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & 
 	}
 }
 
-core::ObjectWrapperPtr DataManager::createWrapper( const core::TypeInfo& type )
-{
-	auto found = objectFactories.find(type);
-	if ( found != objectFactories.end() ) {
-		return ObjectWrapperPtr(found->second->createWrapper());
-	} else {
-		// TODO: elaborate
-		throw std::runtime_error("Type not supported.");
-	}
-}
+//core::ObjectWrapperPtr DataManager::createWrapper( const core::TypeInfo& type )
+//{
+//	auto found = objectFactories.find(type);
+//	if ( found != objectFactories.end() ) {
+//		return ObjectWrapperPtr(found->second->createWrapper());
+//	} else {
+//		// TODO: elaborate
+//		throw std::runtime_error("Type not supported.");
+//	}
+//}
 
 core::ObjectWrapperCollectionPtr DataManager::createWrapperCollection(const core::TypeInfo& typeInfo)
 {

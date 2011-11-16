@@ -1,6 +1,6 @@
 /**
 @author Marek Daniluk
-@brief Klasa BasicUpdatesService dziedzicz¹ca po WsdlConnection wykonuj¹ca operacje dokumentu BasicUpdatesService.wsdl.
+@brief Klasa MotionBasicUpdatesService dziedzicz¹ca po WsdlConnection wykonuj¹ca operacje dokumentu MotionBasicUpdatesService.wsdl.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_BASICUPDATESSERVICE_H__
@@ -12,18 +12,17 @@
 namespace communication
 {
 
-	class BasicUpdatesService : public WsdlConnection
+	class MotionBasicUpdatesService : public WsdlConnection
 	{
-	protected:
 	public:
 		/**
-		Konstruktor klasy BasicUpdatesService.
+		Konstruktor klasy MotionBasicUpdatesService.
 		*/
-		BasicUpdatesService();
+		MotionBasicUpdatesService();
 		/**
-		Wirtualny destruktor klasy BasicUpdatesService.
+		Wirtualny destruktor klasy MotionBasicUpdatesService.
 		*/
-		virtual ~BasicUpdatesService();
+		virtual ~MotionBasicUpdatesService();
 		/**
 		Manualne utworzenie encji performera w oparciu o dane z aplikacji klienckiej
 		@param name imiê performera
@@ -76,5 +75,12 @@ namespace communication
 		//*/
 		//bool assignSessionToGroup(int sessionID, int groupID);
 	};
+
+    class MedicalBasicUpdatesService : public WsdlConnection
+    {
+    public:
+        MedicalBasicUpdatesService() {}
+        virtual ~MedicalBasicUpdatesService() {}
+    };
 }
 #endif

@@ -21,6 +21,7 @@
 #include <QtGui/QLabel>
 #include <core/IDataManager.h>
 #include <core/ObjectWrapper.h>
+#include <plugins/subject/Subject.h>
 
 class SubjectVisualizer : public core::IVisualizer
 {

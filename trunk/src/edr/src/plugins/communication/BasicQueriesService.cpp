@@ -4,21 +4,94 @@
 
 #include "CommunicationPCH.h"
 #include <plugins/communication/BasicQueriesService.h>
+#include <boost/tokenizer.hpp>
 
 using namespace communication;
 
-BasicQueriesService::BasicQueriesService()
+GeneralBasicQueriesService::GeneralBasicQueriesService()
 {
 }
 
-BasicQueriesService::~BasicQueriesService()
+GeneralBasicQueriesService::~GeneralBasicQueriesService()
 {
 }
 
-std::vector<wsdl::Trial> BasicQueriesService::listSessionTrials(int sessionID)
+DateTime GeneralBasicQueriesService::dbTimeFormatExtractor(const std::string & time)
+{
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    static boost::char_separator<char> sep("-T:");
+
+    DateTime ret;
+
+    //musimy poci¹æ datê na kawa³ki        
+    tokenizer tokens(time, sep);
+    tokenizer::iterator it = tokens.begin();
+    ret.setYear(boost::lexical_cast<int>(*it)); it++;
+    ret.setMonth(boost::lexical_cast<int>(*it)); it++;
+    ret.setDay(boost::lexical_cast<int>(*it)); it++;
+    ret.setHour(boost::lexical_cast<int>(*it)); it++;
+    ret.setMinutes(boost::lexical_cast<int>(*it)); it++;
+    ret.setSeconds(boost::lexical_cast<int>(*it));
+
+    return ret;
+}
+
+DateTime GeneralBasicQueriesService::getLastDBModificationTime()
+{
+    this->setOperation("GetDBTimestamp");
+    if(invoker->status()) {
+        
+        if(!invoker->invoke()) {
+            throw invoker->getXMLResponse();
+        }
+
+        Schema::Type type;
+        void *val = invoker->getValue("GetDBTimestampResult", type);
+        if(val == nullptr) {
+            throw std::runtime_error("Bad response in GetDBTimestamp operation.");
+        }
+
+        return dbTimeFormatExtractor(*(std::string*)val);
+
+    } else {
+        throw std::runtime_error(invoker->errors().c_str());
+    }
+}
+
+DateTime GeneralBasicQueriesService::getLastMetadataModificationTime()
+{
+    this->setOperation("GetMetadataTimestamp");
+    if(invoker->status()) {
+
+        if(!invoker->invoke()) {
+            throw invoker->getXMLResponse();
+        }
+
+        Schema::Type type;
+        void *val = invoker->getValue("GetMetadataTimestampResult", type);
+        if(val == nullptr) {
+            throw std::runtime_error("Bad response in GetMetadataTimestamp operation.");
+        }
+        
+        return dbTimeFormatExtractor(*(std::string*)val);
+
+    } else {
+        throw std::runtime_error(invoker->errors().c_str());
+    }
+}
+
+MotionBasicQueriesService::MotionBasicQueriesService()
+{
+}
+
+MotionBasicQueriesService::~MotionBasicQueriesService()
+{
+}
+
+std::vector<motionWsdl::Trial> MotionBasicQueriesService::listSessionTrials(int sessionID)
 {
 	this->setOperation("ListSessionTrialsXML");
-	std::vector<wsdl::Trial> trials;
+	std::vector<motionWsdl::Trial> trials;
 	if(invoker->status()) {
 		if(!invoker->setValue("sessionID", WsdlConnection::toString<int>(sessionID))) {
 			throw std::runtime_error(invoker->errors().c_str());
@@ -38,7 +111,7 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionTrials(int sessionID)
 		TypeContainer* SessionTrialList = tc->getChildContainer("SessionTrialList");
 		TypeContainer* TrialDetails = SessionTrialList->getChildContainer("TrialDetails");
 		while(TrialDetails) {
-			wsdl::Trial trial;
+			motionWsdl::Trial trial;
 			TypeContainer* temp;
 			temp = TrialDetails->getAttributeContainer("TrialID");
 			if(temp) {
@@ -73,13 +146,13 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionTrials(int sessionID)
 	return trials;
 }
 
-std::vector<wsdl::Session> BasicQueriesService::listLabSessionsWithAttributes(int labID)
+std::vector<motionWsdl::Session> MotionBasicQueriesService::listLabSessionsWithAttributes(int labID)
 {
 	this->setOperation("ListLabSessionsWithAttributesXML");
 	this->setValue("labID", WsdlConnection::toString<int>(labID));
 	this->invokeOperation();
 
-	std::vector<wsdl::Session> sessions;
+	std::vector<motionWsdl::Session> sessions;
 	Schema::TypeContainer* tc = NULL;
 	tc = invoker->getOutput("ListLabSessionsWithAttributesXMLResponse");
 	if(!tc) {
@@ -87,7 +160,7 @@ std::vector<wsdl::Session> BasicQueriesService::listLabSessionsWithAttributes(in
 	}
 	TypeContainer* sessionDetails = tc->getChildContainer("SessionDetailsWithAttributes");
 	while(sessionDetails) {
-		wsdl::Session session;
+		motionWsdl::Session session;
 		void* temp;
 		Schema::Type type;
 		temp = sessionDetails->getValue("SessionID", type);
@@ -116,7 +189,10 @@ std::vector<wsdl::Session> BasicQueriesService::listLabSessionsWithAttributes(in
 		}
 		temp = sessionDetails->getValue("SessionDate", type);
 		if(temp) {
-			session.sessionDate.setDate(*((std::string*)temp));
+            //TODO
+            //setDate nie dzia³a dla DateTime w formacie YYYY-MM-DD
+
+			//session.sessionDate.setDate(*((std::string*)temp));
 		} else {
 			throw std::runtime_error("Bad document structure format: session date.");
 		}
@@ -132,14 +208,14 @@ std::vector<wsdl::Session> BasicQueriesService::listLabSessionsWithAttributes(in
 	return sessions;
 }
 
-std::vector<wsdl::File> BasicQueriesService::listFiles(int ID, const std::string& subjectType)
+std::vector<motionWsdl::File> MotionBasicQueriesService::listFiles(int ID, const std::string& subjectType)
 {
 	this->setOperation("ListFilesWithAttributesXML");
 	this->setValue("subjectID", WsdlConnection::toString<int>(ID));
 	this->setValue("subjectType", subjectType);
 	this->invokeOperation();
 
-	std::vector<wsdl::File> files;
+	std::vector<motionWsdl::File> files;
 	Schema::TypeContainer* tc = NULL;
 	tc = invoker->getOutput("ListFilesWithAttributesXMLResponse");
 	if(!tc) {
@@ -147,7 +223,7 @@ std::vector<wsdl::File> BasicQueriesService::listFiles(int ID, const std::string
 	}
 	TypeContainer* fileDetails = tc->getChildContainer("FileDetailsWithAttributes");
 	while(fileDetails) {
-		wsdl::File file;
+		motionWsdl::File file;
 		TypeContainer* temp;
 		temp = fileDetails->getAttributeContainer("FileID");
 		if(temp) {
@@ -173,7 +249,7 @@ std::vector<wsdl::File> BasicQueriesService::listFiles(int ID, const std::string
 	return files;
 }
 
-std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
+std::vector<motionWsdl::Trial> MotionBasicQueriesService::listSessionContents()
 {
 	int id = 1;
 	this->setOperation("ListSessionContents");
@@ -181,7 +257,7 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 	this->setValue("pageNo", WsdlConnection::toString<int>(id));
 	this->invokeOperation();
 
-	std::vector<wsdl::Trial> trials;
+	std::vector<motionWsdl::Trial> trials;
 	Schema::TypeContainer* tc = NULL;
 	tc = invoker->getOutput("ListSessionContentsResponse");
 	if(!tc) {
@@ -197,7 +273,7 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 		}
 		TypeContainer* TrialContent = SessionContent->getChildContainer("TrialContent");
 		while(TrialContent) {
-			wsdl::Trial trial;
+			motionWsdl::Trial trial;
 			trial.sessionId = sessionId;
 
 			temp = TrialContent->getChildContainer("TrialID");
@@ -247,353 +323,10 @@ std::vector<wsdl::Trial> BasicQueriesService::listSessionContents()
 	return trials;
 }
 
-//TODO: A Schema Parser runtime_error occurred while parsing the response at line 1:444
-//Schema Parser Exception : Could not find element PerformerDetailsWithAttributes
-//in GetPerformerByIdXMLResponse
-//Error validating schema instance
-//const Performer* BasicQueriesService::getPerformerById(int performerID) {
-//	this->setOperation("GetPerformerByIdXML");
-//	this->setValue("id", WsdlConnection::toString<int>(performerID));
-//	this->invokeOperation();
-//
-//	if(invoker->status()) {
-//		//if(!invoker->setValue("id", WsdlConnection::toString<int>(performerID))) {
-//		//	throw std::runtime_error(invoker->errors().c_str());
-//		//}
-//		//if(!invoker->invoke()) {
-//		//	throw std::runtime_error(invoker->errors().c_str());
-//		//}
-//		Schema::Type type;
-//		std::string* name = ((std::string*)invoker->getValue("FirstName", type));
-//		std::string* surname = ((std::string*)invoker->getValue("LastName", type));
-//		if(name != NULL && surname != NULL) {
-//			return new Performer(performerID, name->c_str(), surname->c_str());
-//		} else {
-//			throw std::runtime_error("Bad operation return values.");
-//		}
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//}
-//
-////A Schema Parser runtime_error occurred while parsing the response at line 1:438
-////Schema Parser Exception : Could not find element SessionDetailsWithAttributes in
-////GetSessionByIdXMLResponse
-////Error validating schema instance
-//const Session* BasicQueriesService::getSessionById(int sessionID) {
-//	this->setOperation("GetSessionByIdXML");
-//	if(invoker->status()) {
-//		if(!invoker->setValue("id", WsdlConnection::toString<int>(sessionID))) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}/*
-//		Schema::Type type;
-//		int SessionID = invoker->getValue<int>("SessionID", type));
-//		int UserID = invoker->getValue<int>("UserID", type));
-//		int UserID = invoker->getValue<int>("LabID", type));
-//		int motionKindName = invoker->getValue<int>("motionKindName", type));
-//		int PerformerID = invoker->getValue<int>("PerformerID", type));
-//		int SessionID = invoker->getValue<int>("SessionID", type));
-//		int UserID = invoker->getValue<int>("UserID", type));
-//		temp = ((std::string*)invoker->getValue("LastName", type));
-//		if(temp != NULL) {
-//			session.setSurname(temp->c_str());
-//		}*/
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//	return new Session();
-//}
-//
-////A Schema Parser runtime_error occurred while parsing the response at line 1:438
-////Schema Parser Exception : Could not find element SegmentDetailsWithAttributes in
-////GetSegmentByIdXMLResponse
-////Error validating schema instance
-//const Segment* BasicQueriesService::getSegmentById(int segmentID) {
-//	this->setOperation("GetSegmentByIdXML");
-//	if(invoker->status()) {
-//		if(!invoker->setValue("id", WsdlConnection::toString<int>(segmentID))) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		/*Schema::Type type;
-//		std::string* temp = ((std::string*)invoker->getValue("FirstName", type));
-//		if(temp != NULL) {
-//			session.setName(temp->c_str());
-//		}
-//		temp = ((std::string*)invoker->getValue("LastName", type));
-//		if(temp != NULL) {
-//			session.setSurname(temp->c_str());
-//		}*/
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//	return new Segment();
-//}
-//
-////A Schema Parser runtime_error occurred while parsing the response at line 1:432
-////Schema Parser Exception : Could not find element TrialDetailsWithAttributes in
-////GetTrialByIdXMLResponse
-////Error validating schema instance
-//const Trial* BasicQueriesService::getTrialById(int trialID) {
-//	this->setOperation("GetTrialByIdXML");
-//	if(invoker->status()) {
-//		if(!invoker->setValue("id", WsdlConnection::toString<int>(trialID))) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		/*Schema::Type type;
-//		std::string* temp = ((std::string*)invoker->getValue("FirstName", type));
-//		if(temp != NULL) {
-//			session.setName(temp->c_str());
-//		}
-//		temp = ((std::string*)invoker->getValue("LastName", type));
-//		if(temp != NULL) {
-//			session.setSurname(temp->c_str());
-//		}*/
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//	return new Trial();
-//}
-//
-//const std::vector<Session>* BasicQueriesService::listPerformerSessions(int performerID) {
-//	this->setOperation("ListPerformerSessionsXML");
-//	if(invoker->status()) {
-//		if(!invoker->setValue("performerID", WsdlConnection::toString<int>(performerID))) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		std::vector<Session>* sessions = new std::vector<Session>();
-//		Schema::TypeContainer* tc = NULL;
-//		tc = invoker->getOutput("ListPerformerSessionsXMLResponse");
-//		if(!tc) {
-//			throw std::runtime_error("Fail to get output.");
-//		}
-//		tc = tc->getChildContainer("ListPerformerSessionsXMLResult");
-//		if(!tc) {
-//			throw std::runtime_error("Fail to get output.");
-//		}
-//		TypeContainer* performerSessionList = tc->getChildContainer("PerformerSessionList");
-//		TypeContainer* sessionDetails = performerSessionList->getChildContainer("SessionDetails");
-//		while(sessionDetails) {
-//			Session session;
-//			TypeContainer* temp;
-//			temp = sessionDetails->getAttributeContainer("SessionID");
-//			if(temp) {
-//				session.setID(*((int*)temp->getValue()));
-//			}
-//			else
-//			{
-//				throw std::runtime_error("Bad document structure format.");
-//			}
-//			temp = sessionDetails->getAttributeContainer("MotionKindID");
-//			if(temp) {
-//				session.setmotionKindID(*((int*)temp->getValue()));
-//			}
-//			else
-//			{
-//				throw std::runtime_error("Bad document structure format.");
-//			}
-//			temp = sessionDetails->getAttributeContainer("PerformerID");
-//			if(temp) {
-//				session.setPerformerID(*((int*)temp->getValue()));
-//			}
-//			else
-//			{
-//				throw std::runtime_error("Bad document structure format.");
-//			}
-//			temp = sessionDetails->getAttributeContainer("SessionDate");
-//			if(temp) {
-//				session.setSessionDate(DateTime(*((std::string*)temp->getValue())));
-//			}
-//			else
-//			{
-//				throw std::runtime_error("Bad document structure format.");
-//			}
-//			temp = sessionDetails->getAttributeContainer("SessionDescription");
-//			if(temp) {
-//				session.setSessionDescription(((std::string*)temp->getValue())->c_str());
-//			}
-//			else
-//			{
-//				throw std::runtime_error("Bad document structure format.");
-//			}
-//			sessionDetails = performerSessionList->getChildContainer("SessionDetails");
-//			sessions->push_back(session);
-//		}
-//		return sessions;
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//}
-//
-//const std::vector<Session>* BasicQueriesService::listPerformerSessionsWithAttributes(int performerID) {
-//	throw std::runtime_error("not supported yet.");
-//}
-//
-//const std::vector<Session>* BasicQueriesService::listPerformerSessionsXML(int performerID) {
-//	this->setOperation("ListPerformerSessionsXML");
-//	if(invoker->status()) {
-//		if(!invoker->setValue("performerID", WsdlConnection::toString<int>(performerID))) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		std::vector<Session>* sessions = new std::vector<Session>();
-//		Schema::TypeContainer* tc = NULL;
-//		tc = invoker->getOutput("ListPerformerSessionsXMLResponse");
-//		if(!tc) {
-//			throw std::runtime_error("Fail to get output.");
-//		}
-//
-//		tc = tc->getChildContainer("ListPerformerSessionsXMLResult");
-//		if(!tc) {
-//			throw std::runtime_error("Fail to get output.");
-//		}
-//		TypeContainer* plainSession = tc->getChildContainer("PlainSessionDetails");
-//		while(plainSession) {
-//			TypeContainer* temp;
-//			Session session;
-//			temp = plainSession->getChildContainer("SessionID");
-//			if(temp) {
-//				session.setID(*((int*)temp->getValue()));
-//			}
-//			temp = plainSession->getChildContainer("PerformerID");
-//			if(temp) {
-//				session.setPerformerID(*((int*)temp->getValue()));
-//			}
-//			temp = plainSession->getChildContainer("SessionDate");
-//			if(temp) {
-//				session.setSessionDate(DateTime(*((std::string*)temp->getValue())));
-//			}
-//			temp = plainSession->getChildContainer("SessionDescription");
-//			if(temp) {
-//				session.setSessionDescription(((std::string*)temp->getValue())->c_str());
-//			}
-//			plainSession = tc->getChildContainer("PlainSessionDetails");
-//			sessions->push_back(session);
-//		}
-//		return sessions;
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//}
-//
-//const std::vector<Performer>* BasicQueriesService::listPerformers() {
-//	this->setOperation("ListPerformersXML");
-//	if(invoker->status()) {
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		std::vector<Performer>* sessions = new std::vector<Performer>();
-//		return sessions;
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//}
-//
-//const std::vector<Performer>* BasicQueriesService::listPerformersWithAttributes() {
-//	this->setOperation("ListPerformersWithAttributesXML");
-//	if(invoker->status()) {
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//	return new std::vector<Performer>();
-//}
+MedicalBasicQueriesService::MedicalBasicQueriesService()
+{
+}
 
-//const std::vector<Trial>* BasicQueriesService::listSessionTrialsWithAttributes(int sessionID) {
-//	throw std::runtime_error("not supported yet.");
-//}
-//
-//const std::vector<Segment>* BasicQueriesService::listTrialSegments(int trialID) {
-//	throw std::runtime_error("not supported yet.");
-//}
-//
-//const std::vector<Segment>* BasicQueriesService::listTrialSegmentsWithAttributes(int trialID) {
-//	throw std::runtime_error("not supported yet.");
-//}
-//
-//const std::vector<Performer>* BasicQueriesService::listLabPerformersWithAttributes(int labID) {
-//	this->setOperation("ListLabPerformersWithAttributesXML");
-//	if(invoker->status()) {
-//		if(!invoker->setValue("labID", WsdlConnection::toString<int>(labID))) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//	return new std::vector<Performer>();
-//}
-
-//const std::vector<File>* BasicQueriesService::listSessionFiles(int sessionID) {
-//	this->setOperation("ListSessionFiles");
-//	if(invoker->status()) {
-//		if(!invoker->setValue("sessionID", WsdlConnection::toString<int>(sessionID))) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//	return new std::vector<File>();
-//}
-
-//const std::vector<File>* BasicQueriesService::listFilesWithAttributes(int ID, const std::string& subjectType) {
-//	throw std::runtime_error("not supported yet.");
-//}
-//
-//const std::vector<SessionGroup>* BasicQueriesService::listSessionGroupsDefined() {
-//	this->setOperation("ListSessionGroupsDefined");
-//	if(invoker->status()) {
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//	return new std::vector<SessionGroup>();
-//}
-//
-//const std::vector<MotionKind>* BasicQueriesService::listMotionKindsDefined() {
-//	this->setOperation("ListMotionKindsDefined");
-//	if(invoker->status()) {
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//	return new std::vector<MotionKind>();
-//}
-//
-//void BasicQueriesService::performQuery(const std::string& query) {
-//	this->setOperation("GenericQueryXML");
-//	if(invoker->status()) {
-//		if(!invoker->setValue("query", new std::string(query))) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//		if(!invoker->invoke()) {
-//			throw std::runtime_error(invoker->errors().c_str());
-//		}
-//	} else {
-//		throw std::runtime_error(invoker->errors().c_str());
-//	}
-//}
+MedicalBasicQueriesService::~MedicalBasicQueriesService()
+{
+}

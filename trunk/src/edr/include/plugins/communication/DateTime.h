@@ -9,9 +9,9 @@ Na chwile obecna nie ma zadnej walidacji wprowadzanych danych.
 #define _DATETIME_H_
 
 namespace communication {
-
-	class DateTime {
-	protected:
+    
+    class Date{
+        private:
 		/**
 		Pole klasy przechowujace informacje o roku
 		*/
@@ -24,36 +24,17 @@ namespace communication {
 		Pole klasy przechowujace informacje o dniu
 		*/
 		int day;
-		/**
-		Pole klasy przechowujace informacje o godzinie
-		*/
-		int hour;
-		/**
-		Pole klasy przechowujace informacje o minutach
-		*/
-		int minutes;
-		/**
-		Pole klasy przechowujace informacje o sekundach
-		*/
-		int seconds;
-	public:
-		/**
-		Konstruktor klasy DateTime. Ustawia aktualny czas.
-		*/
-		DateTime();
-		/**
-		Konstruktor klasy DateTime.
-		*/
-		DateTime(int year, int month, int day, int hour, int minutes, int seconds);
-		/**
-		Konstruktor klasy DateTime.
-		*/
-		DateTime(const std::string& date);
-		/**
-		Wirtualny destruktor klasy DateTime.
-		*/
-		virtual ~DateTime();
-		/**
+
+    public:
+
+        Date();
+        Date(const Date & date);
+        Date(int year, int month = 1, int day = 1);
+        virtual ~Date();
+
+        static Date today();
+
+        /**
 		Setter year
 		@param year rok
 		*/
@@ -83,11 +64,88 @@ namespace communication {
 		@return dzien
 		*/
 		const int getDay() const;
+
+        std::string toString() const;
+
+        friend std::ostream& operator <<(std::ostream& out, const Date& d) {
+            return out << d.toString();
+        }
+
+        bool operator==(const Date & date) const
+        {
+            bool ret = false;
+
+            if(year == date.year && month == date.month && day == date.day){
+                ret = true;
+            }
+
+            return true;
+        }
+
+        bool operator!=(const Date & date) const
+        {
+            return !((*this) == date);
+        }
+
+        bool operator<(const Date & date) const
+        {
+            bool ret = false;
+
+            if(this->year < date.year){
+                ret = true;
+            }else if(this->month < date.month){
+                ret = true;
+            }else if(this->day < date.day){
+                ret = true;
+            }
+
+            return ret;
+        }
+
+        bool operator>(const Date & date) const
+        {
+            return !(*this < date) && !(*this == date);
+        }
+
+        bool operator<=(const Date & date) const
+        {
+            return !(*this > date);
+        }
+
+        bool operator>=(const Date & date) const
+        {
+            return !(*this < date);
+        }
+    };
+
+    class Time{
+    private:
+        /**
+		Pole klasy przechowujace informacje o godzinie
+		*/
+		int hour;
 		/**
+		Pole klasy przechowujace informacje o minutach
+		*/
+		int minutes;
+		/**
+		Pole klasy przechowujace informacje o sekundach
+		*/
+		int seconds;
+
+    public:
+
+        Time(const Time & time);
+        Time(int hour = 0, int minutes = 0, int seconds = 0);
+        virtual ~Time();
+
+        static Time now();
+
+        /**
 		Setter hour
 		@param hour godzina
 		*/
-		void setHour(int hour);
+        void setHour(int hour);
 		/**
 		Getter hour
 		@return godzina
@@ -113,20 +171,86 @@ namespace communication {
 		@return sekundy
 		*/
 		const int getSeconds() const;
+
+        std::string toString() const;
+
+        friend std::ostream& operator <<(std::ostream& out, const Time& d) {
+            return out << d.toString();
+        }
+
+        bool operator==(const Time & time) const
+        {
+            bool ret = false;
+
+            if(hour == time.hour && minutes == time.minutes && seconds == time.seconds){
+                ret = true;
+            }
+
+            return true;
+        }
+
+        bool operator!=(const Time & time) const
+        {
+            return !((*this) == time);
+        }
+
+        bool operator>(const Time & time) const
+        {
+            bool ret = false;
+
+            if(hour > time.hour && minutes > time.minutes && seconds > time.seconds){
+                ret = true;
+            }
+
+            return ret;
+        }
+
+        bool operator<(const Time & time) const
+        {
+            return !(*this > time) && !(*this == time);
+        }
+
+        bool operator<=(const Time & time) const
+        {
+            return !(*this > time);
+        }
+
+        bool operator>=(const Time & time) const
+        {
+            return !(*this < time);
+        }
+    };
+
+	class DateTime : public Date, public Time {
+	public:
+
+        static DateTime now();
+
 		/**
-		Setter date
-		@param date data jako string
+		Konstruktor klasy DateTime. Ustawia aktualny czas.
 		*/
-		void setDate(const std::string& date);
+		DateTime();
+		/**
+		Konstruktor klasy DateTime.
+		*/
+		DateTime(int year, int month = 1, int day = 1, int hour = 0, int minutes = 0, int seconds = 0);
+		/**
+		Konstruktor klasy DateTime.
+		*/
+		DateTime(const DateTime& date);
+		/**
+		Wirtualny destruktor klasy DateTime.
+		*/
+		virtual ~DateTime();
+		
 		/**
 		To string
 		@return format jaki przyjmuja dokumenty WSDL
 		*/
-		virtual const std::string toString() const;
-		/**
-		Aktualny czas
-		*/
-		virtual void now();
+		const std::string toString() const
+        {
+            return Date::toString().append("-").append(Time::toString());
+        }
 		/**
 		Operator wyjscia dla DateTime pod cout
 		*/
@@ -134,38 +258,44 @@ namespace communication {
 			return out << d.toString();
 		}
 
-        bool operator<(const DateTime & p)
+        bool operator==(const DateTime & p) const
         {
             bool ret = false;
 
-            if(this->year < p.year){
-                ret = true;
-            }else if(this->month < p.month){
-                ret = true;
-            }else if(this->day < p.day){
-                ret = true;
-            }else if(this->hour < p.hour){
-                ret = true;
-            }else if(this->minutes < p.minutes){
-                ret = true;
-            }else if(this->seconds < p.seconds){
+            if((const Date &)(*this) == (const Date &)p && (const Time &)(*this) == (const Time &)p){
                 ret = true;
             }
 
             return ret;
         }
 
-        bool operator>(const DateTime & p)
+        bool operator!=(const DateTime & p) const
+        {
+            return !(*this == p);
+        }
+
+        bool operator<(const DateTime & p) const
+        {
+            bool ret = false;
+
+            if((const Date &)(*this) < (const Date &)p && (const Time &)(*this) < (const Time &)p){
+                ret = true;
+            }
+
+            return ret;
+        }
+
+        bool operator>(const DateTime & p) const
         {
             return !(*this < p);
         }
 
-        bool operator<=(const DateTime & p)
+        bool operator<=(const DateTime & p) const
         {
             return !(*this > p);
         }
 
-        bool operator>=(const DateTime & p)
+        bool operator>=(const DateTime & p) const
         {
             return !(*this < p);
         }

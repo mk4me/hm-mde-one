@@ -11,9 +11,11 @@ resources, próby pomiarowe s¹ wyszukiwane i pobierane do trials.
 #include <OpenThreads/ScopedLock>
 #include <core/TypeInfo.h>
 #include <core/IParser.h>
+#include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperFactory.h>
 #include <core/IDataManager.h>
 #include "ManagerHelper.h"
+
 
 class DataManager : public core::IMemoryDataManager, public core::IFileDataManager, public ManagerHelper<DataManager>
 {
@@ -36,10 +38,76 @@ private:
 
 private:
 
+    class DMObjectWrapper : public core::IObjectWrapper, public boost::enable_shared_from_this<DMObjectWrapper>
+    {
+    public:
+        DMObjectWrapper(const core::ObjectWrapperPtr & wrapper);
+        ~DMObjectWrapper();
+
+        virtual const void* getRawPtr() const;
+        virtual void* getRawPtr();
+        virtual void reset();
+
+
+        //! \return ID typu.
+        virtual std::size_t getClassID() const;
+        //! \return Nazwa typu.
+        virtual const std::string& getClassName() const;
+        //! \return Nazwa obiektu.
+        virtual const std::string& getName() const;
+        //! \param name Nazwa obiektu.
+        virtual void setName(const std::string& name);
+        //! \return
+        virtual const std::string& getSource() const;
+        //! \param source
+        virtual void setSource(const std::string& source);
+
+        //! \return
+        virtual bool isChanged() const;
+        //! \param changed
+        virtual void setChanged(bool changed);
+
+        //! \param type 
+        //! \return Czy obiekt wspiera okreœlony typ?
+        virtual bool isSupported(const core::TypeInfo& type) const;
+        //! \param type Typ inteligentnego wskaŸnika.
+        //! \return true je¿eli do z obiektu mo¿na wy³uskaæ dany wskaŸnik.
+        virtual bool isPtrSupported(const core::TypeInfo& type) const;
+
+        //! \return Informacje o typie.
+        virtual core::TypeInfo getTypeInfo() const;
+
+        //! \return Informacje o typie odpowiednio normalnego i sta³ego wskaŸnika.
+        virtual std::pair<core::TypeInfo, core::TypeInfo> getPtrTypeInfo() const;
+
+        //! \param supported Lista wspieranych rozszerzeñ.
+        virtual void getSupportedTypes(Types& supported) const;
+
+        //! \return Czy wrappowany obiekt jest wyzerowany?
+        virtual bool isNull() const;
+
+        //! \return Klon bie¿¹cego obiektu. Wewnêtrzny wskaŸnik równie¿ jest kopiowany.
+        virtual core::ObjectWrapperPtr clone() const;
+
+        virtual core::ObjectWrapperPtr create() const;
+
+    protected:
+
+        virtual bool setSmartPtr(const void* ptr, const core::TypeInfo& type);
+
+        //! \return Czy uda³o siê ustawiæ m¹dry wskaŸnik?
+        virtual bool getSmartPtr(void* ptr, const core::TypeInfo& type) const;
+
+    private:
+
+        core::ObjectWrapperPtr wrapper;
+
+    };
+
     class ParserInitializer : public core::IDataInitializer
     {
     public:
-        ParserInitializer(const ParserPtr & parser, DataManager * dm);
+        ParserInitializer(const ParserPtr & parser);
 
         ~ParserInitializer();
 
@@ -51,7 +119,6 @@ private:
 
     private:
         ParserPtr parser;
-        DataManager * dataManager;
     };
 
     friend class ParserInitializer;
@@ -141,13 +208,15 @@ private:
     mutable OpenThreads::ReentrantMutex stateMutex;
 
 public:
+    //! \param extension Rozszerzenie, które doprowadzamy do formy obs³ugiwanej przez DM - zaczynamy od kropki, wszystko ma³ymi literami
+    static void prepareExtension(std::string & extension);
 
     //! \param factory Fabryka ObjectWrapperów zadanego typu dostarczana wraz z nowym typem rejestorwanym w aplikacji
     void registerObjectFactory(const core::IObjectWrapperFactoryPtr & factory);
 
     //! \param type Typ dla którego chcemy utworzyæ ObjectWrapper
     //! \return ObjectWrapper dla zadanego typu
-    virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo& type);
+    //virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo& type);
 
     //! \param type Typ dla którego chcemy utworzyæ ObjectWrapperCollection
     //! \return ObjectWrapperCollection dla zadanego typu
@@ -157,9 +226,9 @@ public:
     //! \return prototyp ObjectWrapper dla zadanego typu
     const core::ObjectWrapperConstPtr & getTypePrototype(const core::TypeInfo & typeInfo) const;
 
-    //! \param sourceTypeInfo Typ z ktorego chcemy pobrac dane
-    //! \param destTypeInfo Typ do ktorego chcemy zapisac dane
-    //! \return true jesli typ Ÿród³owy wspiera typ docelowy lub sa identyczne
+    ////! \param sourceTypeInfo Typ z ktorego chcemy pobrac dane
+    ////! \param destTypeInfo Typ do ktorego chcemy zapisac dane
+    ////! \return true jesli typ Ÿród³owy wspiera typ docelowy lub sa identyczne
     bool isTypeCompatible(const core::TypeInfo & sourceTypeInfo, const core::TypeInfo & destTypeInfo) const
     {
         if(sourceTypeInfo == destTypeInfo){
@@ -185,23 +254,27 @@ public:
     //! \return Parser o zadanym indeksie. Parser zawsze bêdzie niezainicjowany.
     core::IParserConstPtr getRegisteredParser(int idx) const;
 
+//IDataManagerReader
+public:
 
-    void getObjects(core::Objects& objects, const core::TypeInfo& type, bool exact = false);
+    //virtual core::ObjectWrapperPtr createWrapper(const core::TypeInfo & typeInfo) const;
 
-    void getObjects(core::ObjectWrapperCollection& objects);
+    virtual void getObjects(std::vector<core::ObjectWrapperConstPtr>& objects, const core::TypeInfo& type, bool exact = true);
+
+    virtual void getObjects(core::ObjectWrapperCollection& objects);
 
     //! \param rawPtr Surowy wskaŸnik do danych
     //! \return ObjectWrapperPtr opakowuj¹cy ten wskaŸnik lub pusty ObjectWrapperPtr jeœli nie ma takich danych w DataManager
-    core::ObjectWrapperPtr DataManager::getWrapper(void * rawPtr) const;
+    //virtual core::ObjectWrapperConstPtr getWrapper(void * rawPtr) const;
 
     //! \return Zarejestrowane w aplikacji typy danych
-    const core::TypeInfoSet & getSupportedTypes() const;
+    virtual const core::TypeInfoSet & getSupportedTypes() const;
 
     //! \return Hierarchia typow danych - jakie operacje moge realizowac, po czym dziedzicze
-    const core::TypeInfoSet & getTypeBaseTypes(const core::TypeInfo & type) const;
+    virtual const core::TypeInfoSet & getTypeBaseTypes(const core::TypeInfo & type) const;
 
     //! \return Hierarchia typow danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i moze byc downcastowany na mnie
-    const core::TypeInfoSet & getTypeDerrivedTypes(const core::TypeInfo & type) const;
+    virtual const core::TypeInfoSet & getTypeDerrivedTypes(const core::TypeInfo & type) const;
 
     //core::IMemoryDataManager
 public:
@@ -218,11 +291,19 @@ public:
     //! \param Obiekt ktory chcemy deinicjalizowaæ - dalej jest w DataManager ale nie zawiera danych - trzeba potem inicjalizowaæ
     virtual void deinitializeData(core::ObjectWrapperPtr & data);
 
+    //! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
+    virtual void removeData(const core::ObjectWrapperPtr & data);
+
+private:
+
     //! \param Obiekt ktory zostanie utrwalony w DataManager i bêdzie dostepny przy zapytaniach, nie morze byc niezainicjowany - isNull musi byæ false!!
     virtual void addData(const core::ObjectWrapperPtr & data, const core::DataInitializerPtr & initializer = core::DataInitializerPtr());
 
-    //! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
-    virtual void removeData(const core::ObjectWrapperPtr & data);
+    virtual const core::ObjectWrapperPtr & getObjectWrapperForRawPtr(void * ptr) const;
+
+    virtual bool objectIsManaged(void * ptr) const;
+
+    virtual core::ObjectWrapperPtr createObjectWrapper(const core::TypeInfo & type) const;
 
     // core::IFileDataManager
 public:
@@ -245,7 +326,7 @@ public:
 
     //! \param files Zbior plikow dla ktorych chcemy pobrac liste obiektow
     //! \return Mapa obiektow wzgledem plikow z ktorych pochodza
-    virtual void  getObjectsForData(const core::Filesystem::Path & file, core::Objects & objects) const;
+    virtual void  getObjectsForData(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects) const;
 
     //! \return Zbior obslugiwanych rozszerzen plikow wraz z ich opisem
     virtual const Extensions & getSupportedFilesExtensions() const;

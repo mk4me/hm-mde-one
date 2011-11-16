@@ -14,102 +14,123 @@
 #include "TreeItemHelper.h"
 
 //! klasa zapewnia filtrowanie po typie
-template<class CollectionPtr>
-class ChannelExtractorFilter : public DataFilter
+template<class Collection>
+class ChannelExtractorFilter : public Sub::IDataFilter
 {
 public:
-    ChannelExtractorFilter(core::IMemoryDataManager * memoryDataManager) : DataFilter(memoryDataManager) {}
+    ChannelExtractorFilter() {}
     
-    virtual SessionPtr filterData(SessionConstPtr session) const
+    virtual SessionPtr doDataFiltering(const SessionConstPtr & session) const
     {
-        typedef CollectionPtr::element_type Collection;
-        typedef Collection::ChannelType Channel;
-        typedef Collection::ChannelPtr ChannelPtr;
-        std::vector<core::TypeInfo> types; 
-        types.push_back(typeid(Channel));
-        SessionPtr filtered(new Session());
-        SessionPtr s = boost::const_pointer_cast<Session>(session);
-        BOOST_FOREACH(MotionPtr motion, s->getMotions()) {
+        typedef core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
+        typedef core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
+        typedef typename Collection::ChannelType Channel;
+        typedef core::ObjectWrapperT<Channel>::Ptr ChannelPtr;
+        typedef core::ObjectWrapperT<Channel>::ConstPtr ChannelConstPtr;
+        Motions motions;
+
+        std::vector<MotionPtr> newMotions;
+
+        session->getMotions(motions);
+        BOOST_FOREACH(MotionConstPtr motion, motions) {
             if (motion->hasObjectOfType(typeid(Collection))) {
-                Motion* mm = new Motion(memoryDataManager);
-                MotionPtr m(mm);
-                m->addType(typeid(Channel));
-                m->setName(motion->getName());
-                
-                BOOST_FOREACH(core::ObjectWrapperPtr ow, motion->getWrappers(typeid(Collection))) {
-                    CollectionPtr c = ow->get();
+                std::vector<core::ObjectWrapperConstPtr> newMotionObjects;
+                //m->setName(motion->getName());
+                std::vector<core::ObjectWrapperConstPtr> objects;
+                motion->getWrappers(objects, typeid(Collection));
+                BOOST_FOREACH(core::ObjectWrapperConstPtr ow, objects) {
+                    CollectionConstPtr c = ow->get();
                     for (int i = 0 ; i < c->getNumChannels(); i++) {
-                       ChannelPtr channel = c->getChannel(i);
+                       ChannelConstPtr channel = c->getChannel(i);
                        core::ObjectWrapperPtr cw = core::ObjectWrapper::create<Channel>();
-                       cw->set(channel);
+                       cw->set(core::const_pointer_cast<Channel>(channel));
                        cw->setName(channel->getName());
                        cw->setSource(channel->getName());
-                       m->addWrapper(cw);
+                       newMotionObjects.push_back(cw);
                     }
                 }
-                filtered->addMotion(m);
+
+                newMotions.push_back(createFilteredMotion(motion, newMotionObjects));
             }
         }
 
-        return filtered;
+        std::vector<core::ObjectWrapperConstPtr> objects;
+        session->getWrappers(objects);
+
+        return createFilteredSession(session, newMotions, objects);
     }
 
 private:
     std::vector<core::TypeInfo> types;
 };
 
-class SessionNumberFilter : public DataFilter
+class SessionNumberFilter : public Sub::IDataFilter
 {
 public:
-    SessionNumberFilter(core::IMemoryDataManager* manager, int nr) : DataFilter(manager) { numbers.push_back(nr); }
-    SessionNumberFilter(core::IMemoryDataManager* manager, int nr1, int nr2) : DataFilter(manager) { numbers.push_back(nr1); numbers.push_back(nr2); }
-    SessionNumberFilter(core::IMemoryDataManager* manager, const std::vector<int>& numbers) : DataFilter(manager), numbers(numbers) { }
-    virtual SessionPtr filterData( SessionConstPtr session ) const
+    SessionNumberFilter(int nr) { numbers.push_back(nr); }
+    SessionNumberFilter(int nr1, int nr2) { numbers.push_back(nr1); numbers.push_back(nr2); }
+    SessionNumberFilter(const std::vector<int>& numbers) : numbers(numbers) { }
+    virtual SessionPtr doDataFiltering(const SessionConstPtr & session ) const
     {
-        std::string name = session->getName();
-        int size = name.size();
-        if (size > 2) {
-            std::string numberStr = name.substr(size - 2, 2);
-            int number = boost::lexical_cast<int>(numberStr);
-            for(auto it = numbers.begin(); it != numbers.end(); it++) {
-                if (*it == number) {
-                    return SessionPtr(new Session(*session));
-                }
+        SessionPtr ret;
+
+        bool found = false;
+        SubjectID id = session->getLocalID();
+        for(auto it = numbers.begin(); it != numbers.end(); it++){
+            if(*it == id){
+                found = true;
+                break;
             }
         }
-        return SessionPtr();
+
+        if(found == true){
+            ret = cloneSession(session);
+        }
+
+        return ret;
     }
 
 private:
     std::vector<int> numbers;
 };
 
-class NameFilter : public DataFilter
+class NameFilter : public Sub::IDataFilter
 {
 public:
-    NameFilter(core::IMemoryDataManager* manager, const std::string& name) : DataFilter(manager) { names.push_back(name); }
-    NameFilter(core::IMemoryDataManager* manager, const std::vector<std::string>& names) : DataFilter(manager), names(names) {}
+    NameFilter(const std::string& name) { names.push_back(name); }
+    NameFilter(const std::vector<std::string>& names) : names(names) {}
 
 public:
-    virtual SessionPtr filterData( SessionConstPtr session ) const
+    virtual SessionPtr doDataFiltering( const SessionConstPtr & session ) const
     {
-        SessionPtr filtered(new Session());
-        SessionPtr s = boost::const_pointer_cast<Session>(session);
-        BOOST_FOREACH(MotionPtr motion, s->getMotions()) {
-            MotionPtr m(new Motion(memoryDataManager));
-            m->setName(motion->getName());
-            BOOST_FOREACH(const core::ObjectWrapperPtr wrapper, motion->getWrappers()) {
+        SessionPtr ret;
+        std::vector<MotionPtr> newMotions;
+        std::vector<core::ObjectWrapperConstPtr> objects;
+        session->getWrappers(objects);
+        
+        Motions motions;
+        session->getMotions(motions);
+
+        for(auto motionIT = motions.begin(); motionIT != motions.end(); motionIT++){
+            std::vector<core::ObjectWrapperConstPtr> objects;
+            std::vector<core::ObjectWrapperConstPtr> validObjects;
+            (*motionIT)->getWrappers(objects);
+
+            for(auto objectIT = objects.begin(); objectIT != objects.end(); objectIT++){
                 for (auto it = names.begin(); it != names.end(); it++) {
-                    if (wrapper->getName() == *it) {
-                        m->addWrapper(wrapper);
+                    if ((*objectIT)->getName() == *it) {
+                        validObjects.push_back(*objectIT);
+                        break;
                     }
                 }
-                
             }
-            filtered->addMotion(m);
+
+            if(objects.empty() == true || validObjects.empty() == false){
+                newMotions.push_back(createFilteredMotion(*motionIT, validObjects));
+            }
         }
 
-        return filtered;
+        return createFilteredSession(session, newMotions, objects);
     }
 
 private:
@@ -133,12 +154,12 @@ protected:
     void createEMGEntry(QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions, const QString& name,
         DataFilterPtr leftPrev, DataFilterPtr rightPrev, DataFilterPtr leftPost, DataFilterPtr rightPost);
 
-    DataFilterPtr createCustomEMGFilter(core::IMemoryDataManager* manager, bool post, const std::string& name);
-    std::vector<core::ObjectWrapperPtr> extractWrappersFromEMG(const std::vector<SessionPtr>& sessions);
+    DataFilterPtr createCustomEMGFilter(bool post, const std::string& name);
+    std::vector<core::ObjectWrapperConstPtr> extractWrappersFromEMG(const std::vector<SessionConstPtr>& sessions);
     
     template<class CollectionPtr>
-    DataFilterPtr createCustomV3Filter(core::IMemoryDataManager* manager, bool post, const std::string& name);
-    std::vector<core::ObjectWrapperPtr> extractWrappersFromVector( const std::vector<SessionPtr>& sessions, int scalarIndex );
+    DataFilterPtr createCustomV3Filter(bool post, const std::string& name);
+    std::vector<core::ObjectWrapperConstPtr> extractWrappersFromVector( const std::vector<SessionConstPtr>& sessions, int scalarIndex );
 };
 
 

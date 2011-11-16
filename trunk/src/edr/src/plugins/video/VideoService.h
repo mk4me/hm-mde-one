@@ -71,8 +71,6 @@ public:
         return name;
     }
 
-    virtual void loadData(core::IServiceManager* serviceManager, core::IDataManager* dataManager);
-
     //!
     virtual osg::Node* debugGetLocalSceneRoot();
 };

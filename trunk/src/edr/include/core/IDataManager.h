@@ -4,13 +4,12 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <boost/type_traits.hpp>
 #include <utils/Utils.h>
 #include <utils/ObserverPattern.h>
-#include <core/IParser.h>
 #include <core/Filesystem.h>
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
-#include <boost/function.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,13 +41,47 @@ namespace core {
 
     typedef core::shared_ptr<IDataInitializer> DataInitializerPtr;
 
+
+    class IDataManagerBase
+    {
+    public:
+        virtual ~IDataManagerBase() {}
+
+
+
+        //virtual ObjectWrapperPtr createWrapper(const TypeInfo & typeInfo) const = 0;
+
+        virtual void getObjects(std::vector<ObjectWrapperConstPtr> & objects, const TypeInfo & type, bool exact = true) = 0;
+
+        virtual void getObjects(core::ObjectWrapperCollection& objects) = 0;
+
+        //! \param rawPtr Surowy wskaŸnik do danych
+        //! \return ObjectWrapperConstPtr opakowuj¹cy ten wskaŸnik lub pusty ObjectWrapperPtr jeœli nie ma takich danych w DataManager
+        //virtual ObjectWrapperConstPtr getWrapper(void * rawPtr) const = 0;
+
+        //! \return Zarejestrowane w aplikacji typy danych
+        virtual const TypeInfoSet & getSupportedTypes() const = 0;
+
+        //! \return Hierarchia typow danych - jakie operacje moge realizowac, po czym dziedzicze
+        virtual const TypeInfoSet & getTypeBaseTypes(const TypeInfo & type) const = 0;
+
+        //! \return Hierarchia typow danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i moze byc downcastowany na mnie
+        virtual const TypeInfoSet & getTypeDerrivedTypes(const TypeInfo & type) const = 0;
+    };
+
     //! Zbiór typów
     typedef std::set<TypeInfo> Types;
     //! Zbiór obiektów domenowych
-    typedef core::Objects Objects;
+    //typedef core::Objects Objects;
 
-    class IMemoryDataManager : public utils::Observable<IMemoryDataManager>
+    class IMemoryDataManager : public utils::Observable<IMemoryDataManager>, public virtual IDataManagerBase
     {
+        template<class SmartPtr>
+        friend core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer);
+
+        template<class SmartPtr>
+        friend void removeData(IMemoryDataManager * manager, const SmartPtr & data);
+
     public:
 
         virtual ~IMemoryDataManager() {};
@@ -66,15 +99,55 @@ namespace core {
         //! \param Obiekt ktory chcemy deinicjalizowaæ - dalej jest w DataManager ale nie zawiera danych - trzeba potem inicjalizowaæ
         virtual void deinitializeData(core::ObjectWrapperPtr & data) = 0;
 
+        //! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
+        virtual void removeData(const core::ObjectWrapperPtr & data) = 0;
+
+    private:
+
         //! \param Obiekt ktory zostanie utrwalony w DataManager i bêdzie dostepny przy zapytaniach, nie morze byc niezainicjowany - isNull musi byæ false!!
         virtual void addData(const core::ObjectWrapperPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr()) = 0;
 
-        //! \param Obiekt ktory zostanie usuniety jesli zarzadza nim DataManager
-        virtual void removeData(const core::ObjectWrapperPtr & data) = 0;
+        virtual bool objectIsManaged(void * ptr) const = 0;
+
+        virtual const ObjectWrapperPtr & getObjectWrapperForRawPtr(void * ptr) const = 0;
+
+        virtual ObjectWrapperPtr createObjectWrapper(const TypeInfo & type) const = 0;
     };
 
+    template<class SmartPtr>
+    core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr())
+    {
+        UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+        //UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer sie nie zgadza");
+
+        if(manager->objectIsManaged(data.get()) == true){
+            throw std::runtime_error("Object already managed by DataManager");
+        }
+
+        core::ObjectWrapperPtr objectWrapper(manager->createObjectWrapper(typeid(typename SmartPtr::element_type)));
+        objectWrapper->set(data);
+
+        manager->addData(objectWrapper, initializer);
+
+        return objectWrapper;
+    }
+
+    /*template<class SmartPtr>
+    core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data)
+    {
+        return addData(manager, data, DataInitializerPtr());
+    }*/
+
+    template<class SmartPtr>
+    void removeData(IMemoryDataManager * manager, const SmartPtr & data)
+    {
+        UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+        //UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer sie nie zgadza");
+        manager->removeData(getObjectWrapperForRawPtr(data.get()));
+    }
+
     //! Interfejs dostepu do danych i ³adowania danych w aplikacji
-	class IFileDataManager : public utils::Observable<IFileDataManager>
+	class IFileDataManager : public utils::Observable<IFileDataManager>, public virtual IDataManagerBase
 	{
 	public:
         //! Zbiór rozszerzeñ
@@ -111,10 +184,17 @@ namespace core {
 
         //! \param files Zbior plikow dla ktorych chcemy pobrac liste obiektow
         //! \return Mapa obiektow wzgledem plikow z ktorych pochodza
-        virtual void getObjectsForData(const Filesystem::Path & file, Objects & objects) const = 0;
+        virtual void getObjectsForData(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects) const = 0;
 
         //! \return Zbior obslugiwanych rozszerzen plikow wraz z ich opisem
         virtual const Extensions & getSupportedFilesExtensions() const = 0;
+
+        //! \return true jeœli rozszerznie jest wspierane przez DataManager, w przeciwnym wypadku false
+        virtual bool isExtensionSupported(const std::string & extension) const
+        {
+            auto const & ext = getSupportedFilesExtensions();
+            return ext.find(extension) != ext.end();
+        }
 
         //! \param extension Rozszerzenie dla którego pytamy o opis
         //! \return Opis rozszerzenia

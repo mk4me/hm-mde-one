@@ -9,7 +9,7 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
     return TreeBuilder::createTree(rootItemName, sessions, nullFilter);
 }
 
-QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions, DataFilterPtr dataFilter)
+QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions, const DataFilterPtr & dataFilter)
 {
     QTreeWidgetItem* rootItem = new QTreeWidgetItem();
     rootItem->setText(0, rootItemName);
@@ -19,10 +19,11 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
         QIcon icon(core::getResourceString("icons/charts.png"));
         QIcon icon3D(core::getResourceString("icons/3d.png"));
         QIcon iconVideo(core::getResourceString("icons/video.png"));
-
-        BOOST_FOREACH(MotionPtr motion, session->getMotions()) {	
+        std::vector<MotionConstPtr> motions;
+        session->getMotions(motions);
+        BOOST_FOREACH(MotionConstPtr motion, motions) {	
             QTreeWidgetItem* motionItem = new QTreeWidgetItem();  
-            motionItem->setText(0, motion->getName().c_str());
+            motionItem->setText(0, motion->getLocalName().c_str());
             rootItem->addChild(motionItem);
             bool hasEmg = motion->hasObjectOfType(typeid(EMGChannel));
             bool hasGrf = motion->hasObjectOfType(typeid(GRFCollection));
@@ -43,9 +44,12 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                 QTreeWidgetItem* kineticItem = new QTreeWidgetItem();
                 kineticItem->setText(0, QObject::tr("Kinetic data"));
                 motionItem->addChild(kineticItem);
-                std::vector<core::ObjectWrapperPtr> forces = motion->getWrappers(typeid(ForceCollection));
-                std::vector<core::ObjectWrapperPtr> moments = motion->getWrappers(typeid(MomentCollection));
-                std::vector<core::ObjectWrapperPtr> powers = motion->getWrappers(typeid(PowerCollection));
+                std::vector<core::ObjectWrapperConstPtr> forces;
+                motion->getWrappers(forces, typeid(ForceCollection));
+                std::vector<core::ObjectWrapperConstPtr> moments;
+                motion->getWrappers(moments, typeid(MomentCollection));
+                std::vector<core::ObjectWrapperConstPtr> powers;
+                motion->getWrappers(powers, typeid(PowerCollection));
                 if (forces.size() > 0) {
                     ForceCollectionPtr f = forces[0]->get();
                     tryAddVectorToTree<ForceChannel>(motion, f, "Forces", &icon3D, kineticItem);
@@ -149,11 +153,12 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
     return rootItem;
 }
 
-QTreeWidgetItem* TreeBuilder::createEMGBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon )
 {
     QTreeWidgetItem* emgItem = new QTreeWidgetItem();
     emgItem->setText(0, rootName);
-    std::vector<core::ObjectWrapperPtr> emgs = motion->getWrappers(typeid(EMGChannel));
+    std::vector<core::ObjectWrapperConstPtr> emgs;
+    motion->getWrappers(emgs, typeid(EMGChannel));
     int count = emgs.size();			
     for (int i = 0; i < count; i++) {	
         EMGChannelPtr c = emgs[i]->get();	
@@ -168,16 +173,18 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( MotionPtr motion, const QString& 
     return emgItem;
 }
 
-QTreeWidgetItem*  TreeBuilder::createGRFBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon )
+QTreeWidgetItem*  TreeBuilder::createGRFBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon )
 {
-    std::vector<core::ObjectWrapperPtr> grfCollections = motion->getWrappers(typeid(GRFCollection));
+    std::vector<core::ObjectWrapperConstPtr> grfCollections;
+    motion->getWrappers(grfCollections, typeid(GRFCollection));
     QTreeWidgetItem* grfItem = new TreeWrappedItemHelper(grfCollections[0]);
     grfItem->setText(0, rootName);
     //grfItem->setIcon(0, icon3D);
-    std::vector<core::ObjectWrapperPtr> grfs = motion->getWrappers(typeid(GRFChannel));
+    std::vector<core::ObjectWrapperConstPtr> grfs;
+    motion->getWrappers(grfs, typeid(GRFChannel));
     int count = grfs.size();			
     for (int i = 0; i < count; i++) {
-        GRFChannelPtr c = grfs[i]->get();
+        GRFChannelConstPtr c = grfs[i]->get();
         if (c) {
             QTreeWidgetItem* channelItem = new NewVector3ItemHelper(grfs[i]);	
             channelItem->setIcon(0, itemIcon);						
@@ -189,11 +196,12 @@ QTreeWidgetItem*  TreeBuilder::createGRFBranch( MotionPtr motion, const QString&
     return grfItem;
 }
 
-QTreeWidgetItem* TreeBuilder::createVideoBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon )
 {
     QTreeWidgetItem* videoItem = new QTreeWidgetItem();
     videoItem->setText(0, rootName);
-    std::vector<core::ObjectWrapperPtr> videos = motion->getWrappers(typeid(VideoChannel));
+    std::vector<core::ObjectWrapperConstPtr> videos;
+    motion->getWrappers(videos, typeid(VideoChannel));
     int count = videos.size();			
     for (int i = 0; i < count; i++) {							
         QTreeWidgetItem* channelItem = new TreeWrappedItemHelper(videos[i]);	
@@ -206,7 +214,7 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( MotionPtr motion, const QString
     return videoItem;
 }
 
-QTreeWidgetItem* TreeBuilder::createJointsBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon )
 {
    // QTreeWidgetItem* skeletonItem = new QTreeWidgetItem();
     QTreeWidgetItem* skeletonItem = new JointsItemHelper(motion);
@@ -215,14 +223,14 @@ QTreeWidgetItem* TreeBuilder::createJointsBranch( MotionPtr motion, const QStrin
     return skeletonItem;
 }
 
-QTreeWidgetItem* TreeBuilder::createMarkersBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon )
+QTreeWidgetItem* TreeBuilder::createMarkersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon )
 {
-    core::ObjectWrapperPtr markerCollection = motion->getWrapperOfType(typeid(MarkerCollection));
+    core::ObjectWrapperConstPtr markerCollection = motion->getWrapperOfType(typeid(MarkerCollection));
     QTreeWidgetItem* markersItem = new TreeWrappedItemHelper(markerCollection);
     markersItem->setIcon(0, itemIcon);
     markersItem->setText(0, rootName);		
 
-    MarkerCollectionPtr m = markerCollection->get(); 
+    MarkerCollectionConstPtr m = markerCollection->get(); 
     tryAddVectorToTree<MarkerChannel>(motion, m, "Marker collection", &itemIcon, markersItem, false);
     return markersItem;
 }

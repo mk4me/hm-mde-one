@@ -61,7 +61,8 @@ protected:
     VectorToScalarAdaptor(const VectorToScalarAdaptor & adaptor) : utils::ChannelDescriptor(adaptor), vector(adaptor.vector), index(adaptor.index), name(adaptor.name) {}
 
 public:
-    VectorToScalarAdaptor(const VectorChannelReaderInterfaceConstPtr & vector, size_type idx, const std::string & name = std::string()) : utils::ChannelDescriptor(*vector), vector(vector), index(idx), name(name)
+    VectorToScalarAdaptor(const VectorChannelReaderInterfaceConstPtr & vector, size_type idx, const std::string & name = std::string())
+        : utils::ChannelDescriptor(*vector), vector(core::const_pointer_cast<VectorChannelReaderInterface>(vector)), index(idx), name(name)
     {
         UTILS_ASSERT((idx >= 0 && idx < 3), "Bledny index dla adaptera skalarnego kanalu wektorowego");
     }
@@ -120,7 +121,7 @@ public:
     }
 
 private:
-    VectorChannelReaderInterfaceConstPtr vector;
+    VectorChannelReaderInterfacePtr vector;
     size_type index;
     std::string name;
 };

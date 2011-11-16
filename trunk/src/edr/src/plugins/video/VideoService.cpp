@@ -19,11 +19,6 @@ VideoService::VideoService()
 
 }
 
-void VideoService::loadData(IServiceManager* serviceManager, core::IDataManager* dataManager)
-{
-
-}
-
 vidlib::PixelFormat VideoService::getOutputFormat()
 {
     return vidlib::PixelFormatUndefined;

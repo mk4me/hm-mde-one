@@ -10,25 +10,27 @@
 #ifndef HEADER_GUARD_HMM__TREEBUILDER_H__
 #define HEADER_GUARD_HMM__TREEBUILDER_H__
 
+#include <plugins/subject/Types.h>
+
 class TreeBuilder
 {
 public:
     static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions);
-    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions, DataFilterPtr dataFilter);
-    static QTreeWidgetItem* createMarkersBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
-    static QTreeWidgetItem* createJointsBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
-    static QTreeWidgetItem* createVideoBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
-    static QTreeWidgetItem* createGRFBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
-    static QTreeWidgetItem* createEMGBranch( MotionPtr motion, const QString& rootName, const QIcon& itemIcon );
+    static QTreeWidgetItem* createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions, const DataFilterPtr & dataFilter);
+    static QTreeWidgetItem* createMarkersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon );
+    static QTreeWidgetItem* createJointsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon );
+    static QTreeWidgetItem* createVideoBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon );
+    static QTreeWidgetItem* createGRFBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon );
+    static QTreeWidgetItem* createEMGBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon );
 
     template <class Channel, class CollectionPtr>
-    static void tryAddVectorToTree(MotionPtr motion, CollectionPtr collection, const std::string& name, const QIcon* childIcon, QTreeWidgetItem* parentItem, bool createContainerItem = true ) 
+    static void tryAddVectorToTree(const MotionConstPtr & motion, const CollectionPtr & collection, const std::string& name, const QIcon* childIcon, QTreeWidgetItem* parentItem, bool createContainerItem = true ) 
     {
         if (collection) {
-            std::vector<core::ObjectWrapperPtr> wrappers;
+            std::vector<core::ObjectWrapperConstPtr> wrappers;
             for (int i = 0; i < collection->getNumChannels(); i++) {
                 core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<VectorChannel>();
-                wrapper->set(boost::dynamic_pointer_cast<VectorChannel>(collection->getChannel(i)));
+                wrapper->set(core::const_pointer_cast<VectorChannel>(boost::dynamic_pointer_cast<const VectorChannel>(collection->getChannel(i))));
 
                 static int number = 0;
                 std::string name = "Serie_" + boost::lexical_cast<std::string>(number);
@@ -46,7 +48,7 @@ public:
             }
             int count = wrappers.size();
             for (int i = 0; i < count; i++) {	
-                VectorChannelPtr c = wrappers[i]->get();
+                VectorChannelConstPtr c = wrappers[i]->get();
                 QTreeWidgetItem* channelItem = new Vector3ItemHelper(wrappers[i]);
                 if (childIcon) {
                     channelItem->setIcon(0, *childIcon);							

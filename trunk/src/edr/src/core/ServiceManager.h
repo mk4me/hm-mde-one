@@ -10,8 +10,6 @@
 #include <core/IManagersAccessor.h>
 #include "ManagerHelper.h"
 
-class core::IDataManager;
-
 class ServiceManager: public core::IServiceManager, public ManagerHelper<ServiceManager>
 {
 public:

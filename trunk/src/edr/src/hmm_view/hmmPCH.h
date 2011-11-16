@@ -70,9 +70,6 @@
 #include <core/IDataManager.h>
 #include <core/Filesystem.h>
 
-#include <plugins/subject/Session.h>
-#include <plugins/subject/DataFilter.h>
-//#include <plugins/subject/Motion.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>

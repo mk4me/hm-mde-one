@@ -1,6 +1,6 @@
 /**
 @author Marek Daniluk
-@brief Klasa QueryWSDL implementuje funkcjonalnoœæ interfejsu IQueryable przy pomocy web serwisów.
+@brief Klasa MotionQueryWSDL implementuje funkcjonalnoœæ interfejsu IQueryable przy pomocy web serwisów.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_QUERYWSDL_H__
@@ -11,28 +11,28 @@
 
 namespace communication
 {
-	class QueryWSDL
+	class MotionQueryWSDL
 	{
 	protected:	
 		/**
-		WskaŸnik na obiekt klasy BasicQueriesService pozwalaj¹cy na korzystanie z web serwisu
+		WskaŸnik na obiekt klasy MotionBasicQueriesService pozwalaj¹cy na korzystanie z web serwisu
 		zdefiniowanego do komunikacji z baz¹ danych generuj¹cego zapytania
 		*/
-		core::shared_ptr<BasicQueriesService> bqs;
+		core::shared_ptr<MotionBasicQueriesService> bqs;
 		/**
-		WskaŸnik na obiekt klasy BasicUpdatesService pozwalaj¹cy na korzystanie z web serwisu
+		WskaŸnik na obiekt klasy MotionBasicUpdatesService pozwalaj¹cy na korzystanie z web serwisu
 		zdefiniowanego do komunikacji z baz¹ danych pozwalaj¹cego tworzenie nowych encji
 		*/
-		core::shared_ptr<BasicUpdatesService> bus;
+		core::shared_ptr<MotionBasicUpdatesService> bus;
 	public:
 		/**
-		Konstruktor klasy QueryWSDL.
+		Konstruktor klasy MotionQueryWSDL.
 		*/
-		QueryWSDL();
+		MotionQueryWSDL();
 		/**
-		Wirtualny destruktor klasy QueryWSDL.
+		Wirtualny destruktor klasy MotionQueryWSDL.
 		*/
-		virtual ~QueryWSDL();
+		virtual ~MotionQueryWSDL();
 		/**
 		Metoda setWSCredentials ustala login i has³o potrzebne do autoryzacji web serwisów.
 		@param usr nazwa u¿ytkownika
@@ -40,40 +40,45 @@ namespace communication
 		*/
 		void setWSCredentials(const std::string& usr, const std::string& pswd);
 		/**
-		Metoda setBasicQueriesServiceUri ustala uri do web serwisu BasicQueriesService.
-		@param uri uri do pliku definicji BasicQueriesService
+		Metoda setBasicQueriesServiceUri ustala uri do web serwisu MotionBasicQueriesService.
+		@param uri uri do pliku definicji MotionBasicQueriesService
 		*/
 		void setBasicQueriesServiceUri(const std::string& uri);
 		/**
-		Metoda setBasicUpdatesServiceUri ustala uri do web serwisu BasicUpdatesService.
-		@param uri uri do pliku definicji BasicUpdatesService
+		Metoda setBasicUpdatesServiceUri ustala uri do web serwisu MotionBasicUpdatesService.
+		@param uri uri do pliku definicji MotionBasicUpdatesService
 		*/
 		void setBasicUpdatesServiceUri(const std::string& uri);
+
+        DateTime getLastDBModificationTime();
+
+        DateTime getLastMetadataModificationTime();
+
 		/**
 		Listuje próby pomiarowe sesji.
 		@param sessionID id sesji której próby pomiarowe maj¹ zostaæ wylistowane
 		@return zbiór prób pomiarowych dla wybranej sesji
 		*/
-		virtual std::vector<wsdl::Trial> listSessionTrials(int sessionID);
+		virtual std::vector<motionWsdl::Trial> listSessionTrials(int sessionID);
 		/**
 		Listuje sesje dla danego laboratorium.
 		@param labID id labu którego sesje maj¹ zostaæ wylistowane
 		@return zbiór sesji dla wybranego labu
 		*/
-		virtual std::vector<wsdl::Session> listLabSessionsWithAttributes(int labID);
+		virtual std::vector<motionWsdl::Session> listLabSessionsWithAttributes(int labID);
 		/**
 		Listuje pliki dla encji typu subjectType i id ID.
 		@param ID id encji dla której maj¹ zostaæ wylistowane pliki
 		@param subjectType typ encji dla której maj¹ zostaæ wylistowane pliki
 		@return zbiór plików dla wybranej encji
 		*/
-		virtual std::vector<wsdl::File> listFiles(int ID, const std::string& subjectType);
+		virtual std::vector<motionWsdl::File> listFiles(int ID, const std::string& subjectType);
 		/**
 		TODO: Listuje encje bazodanowe, sesje, podleg³e sesjom próby pomiarowe i
 		informacje o plikach poszczególnych sesji i prób pomiarowych.
 		@return lista prób pomiarowych, w przysz³oœci powinno znaleŸæ siê drzewko zale¿noœci miêdzy encjami
 		*/
-		virtual std::vector<wsdl::Trial> listSessionContents();
+		virtual std::vector<motionWsdl::Trial> listSessionContents();
 
 		///**
 		//*/
@@ -157,5 +162,49 @@ namespace communication
 		//*/
 		//void performQuery(const std::string& query);
 	};
+
+    class MedicalQueryWSDL
+	{
+	protected:	
+		/**
+		WskaŸnik na obiekt klasy MotionBasicQueriesService pozwalaj¹cy na korzystanie z web serwisu
+		zdefiniowanego do komunikacji z baz¹ danych generuj¹cego zapytania
+		*/
+		core::shared_ptr<MedicalBasicQueriesService> bqs;
+		/**
+		WskaŸnik na obiekt klasy MotionBasicUpdatesService pozwalaj¹cy na korzystanie z web serwisu
+		zdefiniowanego do komunikacji z baz¹ danych pozwalaj¹cego tworzenie nowych encji
+		*/
+		core::shared_ptr<MedicalBasicUpdatesService> bus;
+	public:
+		/**
+		Konstruktor klasy MotionQueryWSDL.
+		*/
+		MedicalQueryWSDL();
+		/**
+		Wirtualny destruktor klasy MotionQueryWSDL.
+		*/
+		virtual ~MedicalQueryWSDL();
+		/**
+		Metoda setWSCredentials ustala login i has³o potrzebne do autoryzacji web serwisów.
+		@param usr nazwa u¿ytkownika
+		@param pswd haslo u¿ytkownika
+		*/
+		void setWSCredentials(const std::string& usr, const std::string& pswd);
+		/**
+		Metoda setBasicQueriesServiceUri ustala uri do web serwisu MotionBasicQueriesService.
+		@param uri uri do pliku definicji MotionBasicQueriesService
+		*/
+		void setBasicQueriesServiceUri(const std::string& uri);
+		/**
+		Metoda setBasicUpdatesServiceUri ustala uri do web serwisu MotionBasicUpdatesService.
+		@param uri uri do pliku definicji MotionBasicUpdatesService
+		*/
+		void setBasicUpdatesServiceUri(const std::string& uri);
+
+        DateTime getLastDBModificationTime();
+
+        DateTime getLastMetadataModificationTime();
+    };
 }
 #endif //HEADER_GUARD_COMMUNICATION_QUERYWSDL_H__

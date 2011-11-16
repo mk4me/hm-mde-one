@@ -10,21 +10,26 @@ set(TARGET_TARGETNAME plugin_subject)
 # nag³ówki
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
+	${HEADER_PATH}/ISubject.h
+	${HEADER_PATH}/ISession.h
+	${HEADER_PATH}/IMotion.h
+	${HEADER_PATH}/IDataFilter.h
+	${HEADER_PATH}/Types.h
+	${HEADER_PATH}/ISubjectService.h
 	${HEADER_PATH}/IntegumentarySystem.h
 	${HEADER_PATH}/ISubjectSystem.h
-	${HEADER_PATH}/Motion.h
 	${HEADER_PATH}/MuscularSystem.h
-	${HEADER_PATH}/Session.h
 	${HEADER_PATH}/SkeletalSystem.h
 	${HEADER_PATH}/SolidSystem.h
-	${HEADER_PATH}/Subject.h
 	${HEADER_PATH}/SubjectSystemConfiguration.h
-	${HEADER_PATH}/DataFilter.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
 	SubjectVisualizer.h
-	SubjectService.h	
+	SubjectService.h
+	Motion.h
+	Session.h
+	Subject.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -34,11 +39,11 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 # Ÿród³a
 set(TARGET_SRC
 	Motion.cpp
+	Session.cpp
 	Subject.cpp
 	SubjectVisualizer.cpp
 	SubjectService.cpp
 	SubjectPlugin.cpp
-	DataFilter.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

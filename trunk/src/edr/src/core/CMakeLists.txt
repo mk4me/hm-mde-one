@@ -11,6 +11,7 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	SubjectDataFilters.h
 	ManagerHelper.h
 	AppInitializer.h
 	MainWindow.h
@@ -106,6 +107,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	SubjectDataFilters.cpp
 	DataAccessors.cpp
 	MainWindow.cpp
 	EDRConsoleWidget.cpp

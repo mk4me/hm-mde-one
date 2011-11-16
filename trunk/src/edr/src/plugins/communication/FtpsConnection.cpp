@@ -125,7 +125,8 @@ void FtpsConnection::get(const std::string& remoteSource, const std::string& loc
         if(res == CURLE_ABORTED_BY_CALLBACK) {
             core::Filesystem::deleteFile(localDestination);
         }else{
-            throw std::runtime_error(curl_easy_strerror(this->res));
+            std::string error(curl_easy_strerror(this->res));
+            throw std::runtime_error(error);
         }
     }
 }

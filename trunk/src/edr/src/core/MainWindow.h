@@ -91,6 +91,12 @@ namespace core {
 
 	protected:
 
+        template<class T>
+        void registerCustomWrapperFactory(const T * dummy = nullptr)
+        {
+            safeRegisterObjectFactory( IObjectWrapperFactoryPtr(new ObjectWrapperFactory<T>()) );
+        }
+
 		//! Rejestruje wbudowane us³ugi.
 		void registerCoreServices();
 		//! Rejestruje wbudowane Ÿród³a danych.

@@ -12,6 +12,7 @@
 #include "TreeBuilder.h"
 #include "Vector3DFilterCommand.h"
 #include "AnalisisWidget.h"
+#include <plugins/subject/ISubjectService.h>
 #include "IllnessUnit.h"
 
 using namespace core;
@@ -114,6 +115,11 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     int i = hlayout->children().size();
 
+    // akcje - Workflow (VDF) i konsola <--- aktualnie œmietnik na inne serwisy i testy
+
+    QMainWindow * actionsMainWindow = new QMainWindow(nullptr);
+    QVBoxLayout* layout = new QVBoxLayout();
+
 	for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
 		IServicePtr service = ServiceManager::getInstance()->getService(i);
 
@@ -138,15 +144,24 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 			this->tests->setLayout(layout);
         }else if (name == "newTimeline") {
             // przeniesione do showTimeline();
+        }else{
+            std::vector<QObject*> mainWidgetActions;
+            QWidget* viewWidget = service->getWidget(mainWidgetActions);
+
+            std::vector<QObject*> controlWidgetActions;
+            QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
+
+            std::vector<QObject*> settingsWidgetActions;
+            QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
+
+            layout->addWidget(settingsWidget);
+            layout->addWidget(viewWidget);
+            layout->addWidget(controlWidget);
         }
 	}
 
     // akcje - Workflow (VDF) i konsola
-
-    QMainWindow * actionsMainWindow = new QMainWindow(nullptr);
-
 	EDRWorkflowWidget* widget = new EDRWorkflowWidget();
-	QVBoxLayout* layout = new QVBoxLayout();
     actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
     actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
     layout->addWidget(actionsMainWindow);
@@ -360,7 +375,7 @@ void HmmMainWindow::createFilterTabs()
 
 void HmmMainWindow::createFilterTab1()
 {
-    core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
+    //core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
     QPixmap iconAnalog(core::getResourceString("icons/analogBig.png"));
     QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
     QPixmap iconKinematic(core::getResourceString("icons/kinematicBig.png"));
@@ -383,15 +398,15 @@ void HmmMainWindow::createFilterTab1()
     std::vector<TypeInfo> types;
     types.push_back(typeid(GRFCollection));
     types.push_back(typeid(GRFChannel));
-    TypeFilterPtr typeFilter1(new TypeFilter(memoryDataManager, types));
-    TypeFilterPtr typeFilter2(new TypeFilter(memoryDataManager, typeid(EMGChannel)));
+    DataFilterPtr typeFilter1(new TypeFilter(types));
+    DataFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
 
     filter1->addFilter(tr("GRF"), "label", typeFilter1, &iconGRFSmall);
 
     QString emgFront = core::getResourceString("images/muscular_front/muscular_front.xml");
     QString emgBack = core::getResourceString("images/muscular_back/muscular_back.xml");
 
-    typedef Vector3DFilterCommand2<EMGChannel, EMGCollectionPtr, ChartItemHelper> EMGCommand;
+    typedef Vector3DFilterCommand2<EMGChannel, EMGCollection, ChartItemHelper> EMGCommand;
     NamesDictionary emgNames;
     emgNames["noga1"  ] = std::make_pair("L1",  "Elektroda L1");
     emgNames["noga1R" ] = std::make_pair("L2",  "Elektroda L2");
@@ -436,18 +451,18 @@ void HmmMainWindow::createFilterTab1()
     emgNames["ramie-tyl6P"] = std::make_pair("", "");*/
     //emgNames["ramie3" ] = std::make_pair("", "Dioda ");
     //emgNames["ramie3R"] = std::make_pair("", "Dioda ");
-    IFilterCommandPtr emgCommand(new EMGCommand(memoryDataManager, emgNames, emgFront, emgBack));
+    IFilterCommandPtr emgCommand(new EMGCommand(emgNames, emgFront, emgBack));
     //filter1->addFilter("EMG", "emg label", typeFilter2, &iconEmgSmall);
     filter1->addFilter(tr("EMG"), "emg label", emgCommand, &iconEmgSmall);
 
-    TypeFilterPtr typeFilter3(new TypeFilter(memoryDataManager, typeid(ForceCollection)));
-    TypeFilterPtr typeFilter4(new TypeFilter(memoryDataManager, typeid(MomentCollection)));
-    TypeFilterPtr typeFilter5(new TypeFilter(memoryDataManager, typeid(PowerCollection)));
+    DataFilterPtr typeFilter3(new TypeFilter(typeid(ForceCollection)));
+    DataFilterPtr typeFilter4(new TypeFilter(typeid(MomentCollection)));
+    DataFilterPtr typeFilter5(new TypeFilter(typeid(PowerCollection)));
 
     
-    typedef Vector3DFilterCommand2<MomentChannel, MomentCollectionPtr, Vector3ItemHelper> MomentsCommand;
-    typedef Vector3DFilterCommand2<ForceChannel, ForceCollectionPtr, Vector3ItemHelper> ForcesCommand;
-    typedef Vector3DFilterCommand2<PowerChannel, PowerCollectionPtr, Vector3ItemHelper> PowerCommand;
+    typedef Vector3DFilterCommand2<MomentChannel, MomentCollection, Vector3ItemHelper> MomentsCommand;
+    typedef Vector3DFilterCommand2<ForceChannel, ForceCollection, Vector3ItemHelper> ForcesCommand;
+    typedef Vector3DFilterCommand2<PowerChannel, PowerCollection, Vector3ItemHelper> PowerCommand;
     
     QString pathFront = core::getResourceString("images/skeleton_front/skeleton_front.xml");
     QString pathBack = core::getResourceString("images/skeleton_back/skeleton_back.xml");
@@ -469,7 +484,7 @@ void HmmMainWindow::createFilterTab1()
     powersNames["RShoulder" ] = std::make_pair("RShoulderPower", "Right Shoulder");
     powersNames["RWaist"    ] = std::make_pair("RWaistPower",    "Right Waist");
     powersNames["RWrist"    ] = std::make_pair("RWristPower",    "Right Wrist");
-    IFilterCommandPtr vFilter(new PowerCommand(memoryDataManager, powersNames, pathFront, pathBack));
+    IFilterCommandPtr vFilter(new PowerCommand(powersNames, pathFront, pathBack));
     
     NamesDictionary momentsNames;
     momentsNames["LAnkle"           ] = std::make_pair("LAnkleMoment",          "Left Ankle");
@@ -491,7 +506,7 @@ void HmmMainWindow::createFilterTab1()
     momentsNames["RWaist"           ] = std::make_pair("RWaistMoment",          "Right Waist");
     momentsNames["RWrist"           ] = std::make_pair("RWristMoment",          "Right Wrist");
     
-    IFilterCommandPtr vFilter2(new MomentsCommand(memoryDataManager, momentsNames, pathFront, pathBack));
+    IFilterCommandPtr vFilter2(new MomentsCommand(momentsNames, pathFront, pathBack));
 
     NamesDictionary forcesNames;
     forcesNames["LAnkle"          ] = std::make_pair("LAnkleForce",          "Left Ankle");
@@ -514,14 +529,14 @@ void HmmMainWindow::createFilterTab1()
     forcesNames["RWrist"          ] = std::make_pair("RWristForce",          "Right W rist");
     forcesNames["RNormalizedGR"   ] = std::make_pair("RNormalisedGRF",       "Right, normalised GRF");
     forcesNames["LNormalizedGR"   ] = std::make_pair("LNormalisedGRF",       "Left, normalised GRF");
-    IFilterCommandPtr vFilter3(new ForcesCommand(memoryDataManager, forcesNames, pathFront, pathBack));
+    IFilterCommandPtr vFilter3(new ForcesCommand(forcesNames, pathFront, pathBack));
 
     
     filter2->addFilter(tr("FORCES"), "count: ", vFilter3, &iconForceSmall);
     filter2->addFilter(tr("MOMENTS"), "test", vFilter2, &iconMomentSmall);
     filter2->addFilter(tr("POWERS"), "powers", vFilter, &iconPowerSmall);
 
-    typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollectionPtr, Vector3ItemHelper> MarkersCommand;
+    typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollection, Vector3ItemHelper> MarkersCommand;
     NamesDictionary markersNames;
     markersNames["RFHD"] = std::make_pair("RFHD", "Right front of head");
     markersNames["LFHD"] = std::make_pair("LFHD", "Left front of head");
@@ -562,13 +577,13 @@ void HmmMainWindow::createFilterTab1()
     markersNames["T10" ] = std::make_pair("T10" , "Thoracic Vertebra");
     QString markersFront = core::getResourceString("images/skeleton_front/skeleton_markers.xml");
     QString markersBack = core::getResourceString("images/skeleton_back/skeleton_markers.xml");
-    IFilterCommandPtr vFilter6(new MarkersCommand(memoryDataManager, markersNames, markersFront, markersBack));
-    TypeFilterPtr typeFilter7(new TypeFilter(memoryDataManager, typeid(kinematic::JointAnglesCollection)));
+    IFilterCommandPtr vFilter6(new MarkersCommand(markersNames, markersFront, markersBack));
+    DataFilterPtr typeFilter7(new TypeFilter(typeid(kinematic::JointAnglesCollection)));
 
     filter3->addFilter(tr("MARKERS"), "count: 1", vFilter6, &iconMarkerSmall);
     filter3->addFilter(tr("JOINTS"), "count: 1", typeFilter7, &iconJointSmall);
     
-    TypeFilterPtr typeFilter8(new TypeFilter(memoryDataManager, typeid(VideoChannel)));
+    DataFilterPtr typeFilter8(new TypeFilter(typeid(VideoChannel)));
     filter4->addFilter(tr("VIDEOS"), "count: 4", typeFilter8, &iconVideoSmall);
     
     connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
@@ -618,8 +633,8 @@ void HmmMainWindow::createFilterTab2()
     filter3->addFilter("EMG", "...", spine1, &iconSpine);
     filter3->addFilter("KINETIC", "...", spine2, &iconSpine);
     filter3->addFilter("ANGLES", "...", spine3, &iconSpine);*/
-    TypeFilterPtr typeFilter1(new TypeFilter(memoryDataManager, typeid(GRFChannel)));
-    TypeFilterPtr typeFilter2(new TypeFilter(memoryDataManager, typeid(EMGChannel)));
+    DataFilterPtr typeFilter1(new TypeFilter(typeid(GRFChannel)));
+    DataFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
 
     IFilterCommandPtr multi1(new MultiChartCommand<ForceCollection>());
     IFilterCommandPtr multi2(new MultiChartCommand<MomentCollection>());
@@ -658,6 +673,21 @@ void HmmMainWindow::createFilterTab2()
 
     QPixmap big(core::getResourceString("icons/Big.png"));
     this->analisis->setActivePixmapAndText(big, "ALL");
+}
+
+const std::vector<SessionConstPtr>& HmmMainWindow::getCurrentSessions()
+{
+    currentSessions = core::queryDataPtr(DataManager::getInstance());    
+
+    QTreeWidget * tree = analisis->getTreeWidget();
+    if(tree->topLevelItemCount() > 0){
+        delete tree->takeTopLevelItem(0);
+    }
+    
+    QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", currentSessions);
+    analisis->getTreeWidget()->addTopLevelItem(item);
+
+    return currentSessions;
 }
 
 void HmmMainWindow::filterGroupActivated( bool active )

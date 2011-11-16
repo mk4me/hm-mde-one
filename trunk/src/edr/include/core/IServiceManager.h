@@ -42,7 +42,7 @@ namespace core {
     //! Metoda wyszukuj¹ca wszystkie us³ugi danego typu (np. implementuj¹ce
     //! dany interfejs).
     template <class T>
-    shared_ptr<T> queryServices(IServiceManager* manager, T* dummy = NULL)
+    shared_ptr<T> queryServices(IServiceManager* manager, T* dummy = nullptr)
     {
         std::vector<shared_ptr<T>> result;
         queryServices(manager, result);

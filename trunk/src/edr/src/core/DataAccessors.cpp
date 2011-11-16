@@ -4,12 +4,12 @@
 
 namespace core {
 
-    ObjectWrapperPtr __DataAccessorHelper::getWrapper(void * ptr)
+    /*ObjectWrapperPtr __DataAccessorHelper::getWrapper(void * ptr)
     {
         return DataManager::getInstance()->getWrapper(ptr);
-    }
+    }*/
 
-    void queryData(ObjectWrapperCollection & collection)
+    /*void queryData(ObjectWrapperCollection & collection)
     {
         DataManager::getInstance()->getObjects(collection);
     }
@@ -40,6 +40,6 @@ namespace core {
     const TypeInfoSet & getTypeDerrivedTypes(const TypeInfo & type)
     {
         return DataManager::getInstance()->getTypeDerrivedTypes(type);
-    }
+    }*/
 
 }

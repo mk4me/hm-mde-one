@@ -21,12 +21,15 @@ namespace core
     public:
         //! Pusty polimorficzny destruktor.
         virtual ~IObjectWrapperFactory() {}
-        //! 
+
+        //!
+        virtual const TypeInfo & getType() const = 0;
+
+        //!
         virtual ObjectWrapper* createWrapper() = 0;
         //!
         virtual ObjectWrapperCollection* createWrapperCollection() = 0;
-        //!
-        virtual const TypeInfo & getType() const = 0;
+        
     };
 
     typedef shared_ptr<IObjectWrapperFactory> IObjectWrapperFactoryPtr;
@@ -36,25 +39,33 @@ namespace core
     template <class T>
     class ObjectWrapperFactory : public IObjectWrapperFactory
     {
-    public:
+        UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+
+        friend class Plugin;
+        friend class MainWindow;        
+
+    private:
+
         ObjectWrapperFactory() : typeInfo(typeid(T)) {}
+
+    public:
+
+        virtual const core::TypeInfo & getType() const
+        {
+            return typeInfo;
+        }
 
         virtual ObjectWrapper* createWrapper()
         {
-            UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+            //UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
             return new ObjectWrapperT<T>();
         }
 
         virtual ObjectWrapperCollection* createWrapperCollection()
         {
-            UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+            //UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
             return new ObjectWrapperCollection(typeid(T));
         }
-
-        virtual const core::TypeInfo & getType() const
-        {
-            return typeInfo;
-        }  
 
     private:
         core::TypeInfo typeInfo;

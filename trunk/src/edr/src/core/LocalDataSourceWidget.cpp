@@ -49,49 +49,49 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                 core::Filesystem::Iterator it(p);
                 core::Filesystem::Iterator endIT;
 
-                //DataManager* dataManager = DataManager::getInstance();
+                DataManager* dataManager = DataManager::getInstance();
 
                 for( ; it != endIT; it++){
-                    //if(core::Filesystem::isRegularFile((*it).path()) == true && dataManager->isExtensionSupported((*it).path().extension().string()) == true){
+                    if(core::Filesystem::isRegularFile((*it).path()) == true && dataManager->isExtensionSupported(core::Filesystem::fileExtension(*it)) == true){
                         files.push_back((*it).path());
-                    //}
+                    }
                 }
 
                 if(files.empty() == false){
                     //ladujemy pliki!!
-                    std::vector<core::ObjectWrapperPtr> possibleData;
                     std::set<core::ObjectWrapperPtr> initialisedData;
-                    //dataManager->loadFiles(files, possibleData);
-
                     std::set<core::TypeInfo> dataTypes;
 
-                    for(auto it = possibleData.begin(); it != possibleData.end(); it++){
-                        dataTypes.insert((*it)->getTypeInfo());
-                    }
+                    for(auto it = files.begin(); it != files.end(); it++){
+                        try{
+                            dataManager->addData(*it);
+                            dataManager->initializeData(*it);
+                        }catch(...){
 
-                    for(auto it = dataTypes.begin(); it != dataTypes.end(); it++){
+                        }
+
                         std::vector<core::ObjectWrapperPtr> objects;
-                        //dataManager->getObjects(objects, *it, true);
-                        for(auto iT = objects.begin(); iT != objects.end(); iT++){
-                            if((*iT)->isNull() == false && std::find(possibleData.begin(), possibleData.end(), *iT) != possibleData.end()){
-                                initialisedData.insert(*iT);
+
+                        try{
+                            dataManager->getObjectsForData(*it, objects);
+
+                            for(auto it = objects.begin(); it != objects.end(); it++){
+                                core::TypeInfo typeInfo = (*it)->getTypeInfo();
+                                auto dataIT = data.find(typeInfo);
+                                if(dataIT == data.end()){
+                                    dataIT = data.insert(std::make_pair(typeInfo, core::ObjectWrapperCollectionPtr(new core::ObjectWrapperCollection(typeInfo)))).first;
+                                }
+
+                                dataIT->second->addObject(*it);
                             }
+
+                        }catch(...){
+
                         }
+
                     }
 
-                    if(initialisedData.empty() == false){
-
-                        //grupuj dane po typach - tym moge zasilic juz agregaty!!
-
-                        for(auto it = initialisedData.begin(); it != initialisedData.end(); it++){
-                            core::TypeInfo typeInfo((*it)->getTypeInfo());
-                            if(data.find(typeInfo) == data.end()){
-                                data.insert(std::make_pair(typeInfo, core::ObjectWrapperCollectionPtr(new core::ObjectWrapperCollection(typeInfo))));
-                            }
-
-                            data[typeInfo]->addObject(*it);
-                        }
-
+                    if(data.empty() == false){
                         //teraz budujemy opis wyjœæ
                         tableWidget->setRowCount(data.size());
                         bool checked = true;

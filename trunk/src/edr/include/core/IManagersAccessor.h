@@ -17,12 +17,17 @@ namespace core {
     class IDataProcessorManager;
     class IDataSourceManager;
     class IVisualizerManager;
+    class IDataManagerBase;
 
     class IManagersAccessor
     {
     public:
 
         virtual ~IManagersAccessor() {}
+
+        virtual IDataManagerBase * getDataManagerReader() = 0;
+
+        virtual const IDataManagerBase * getDataManagerReader() const = 0;
 
         virtual IFileDataManager * getFileDataManager() = 0;
 

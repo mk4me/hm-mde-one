@@ -7,11 +7,11 @@
 
 using namespace communication;
 
-BasicUpdatesService::BasicUpdatesService() { }
+MotionBasicUpdatesService::MotionBasicUpdatesService() { }
 
-BasicUpdatesService::~BasicUpdatesService() { }
+MotionBasicUpdatesService::~MotionBasicUpdatesService() { }
 //
-//Performer* BasicUpdatesService::createPerformer(const std::string& name, const std::string& surname) {
+//Performer* MotionBasicUpdatesService::createPerformer(const std::string& name, const std::string& surname) {
 //	this->setOperation("CreatePerformer");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("Name", new std::string(name)) ||
@@ -28,7 +28,7 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	}
 //}
 
-//Session* BasicUpdatesService::createSession(int labID, int performerID, DateTime& sessionDate, const std::string& sessionDescription, const std::string& motionKindName, std::vector<int>& groupsIDs) {
+//Session* MotionBasicUpdatesService::createSession(int labID, int performerID, DateTime& sessionDate, const std::string& sessionDescription, const std::string& motionKindName, std::vector<int>& groupsIDs) {
 //	this->setOperation("CreateSession");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("labID", toString<int>(labID)) ||
@@ -49,7 +49,7 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	}
 //}
 //
-//Trial* BasicUpdatesService::createTrial(int sessionID, const std::string& trialDescription, int trialDuration) {
+//Trial* MotionBasicUpdatesService::createTrial(int sessionID, const std::string& trialDescription, int trialDuration) {
 //	this->setOperation("CreateTrial");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
@@ -67,7 +67,7 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	}
 //}
 //
-//Segment* BasicUpdatesService::defineTrialSegment(int trialID, const std::string& segmentName, int startTime, int endTime) {
+//Segment* MotionBasicUpdatesService::defineTrialSegment(int trialID, const std::string& segmentName, int startTime, int endTime) {
 //	this->setOperation("DefineTrialSegment");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("trialID", toString<int>(trialID)) ||
@@ -86,7 +86,7 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	}
 //}
 //
-//bool BasicUpdatesService::assignSessionToGroup(int sessionID, int groupID) {
+//bool MotionBasicUpdatesService::assignSessionToGroup(int sessionID, int groupID) {
 //	this->setOperation("AssignSessionToGroup");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
@@ -102,7 +102,7 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	}
 //}
 //
-//int BasicUpdatesService::setPerformerAttribute(int performerID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionBasicUpdatesService::setPerformerAttribute(int performerID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	this->setOperation("SetPerformerAttribute");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("performerID", toString<int>(performerID)) ||
@@ -120,7 +120,7 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	}
 //}
 //
-//int BasicUpdatesService::setTrialAttribute(int trialID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionBasicUpdatesService::setTrialAttribute(int trialID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	this->setOperation("SetTrialAttribute");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("trialID", toString<int>(trialID)) ||
@@ -138,7 +138,7 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	}
 //}
 //
-//int BasicUpdatesService::setSessionAttribute(int sessionID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionBasicUpdatesService::setSessionAttribute(int sessionID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	this->setOperation("SetSessionAttribute");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("sessionID", toString<int>(sessionID)) ||
@@ -156,7 +156,7 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	}
 //}
 //
-//int BasicUpdatesService::setFileAttribute(int fileID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionBasicUpdatesService::setFileAttribute(int fileID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	this->setOperation("SetFileAttribute");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("fileID", toString<int>(fileID)) ||
@@ -174,7 +174,7 @@ BasicUpdatesService::~BasicUpdatesService() { }
 //	}
 //}
 //
-//int BasicUpdatesService::setSegmentAttribute(int segmentID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionBasicUpdatesService::setSegmentAttribute(int segmentID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	this->setOperation("SetSegmentAttribute");
 //	if(invoker.status()) {
 //		if(!invoker.setValue("segmentID", toString<int>(segmentID)) ||

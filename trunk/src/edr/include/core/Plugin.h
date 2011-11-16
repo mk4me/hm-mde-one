@@ -98,7 +98,8 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
 
 //! Dodanie nowego typu domenowego poprzez utworzenie dla niego ObjectWrapperFactory
 #define CORE_PLUGIN_ADD_OBJECT_WRAPPER(className)               \
-    instance->addObjectWrapperFactory( core::IObjectWrapperFactoryPtr(new core::ObjectWrapperFactory<className>()) ); 
+    instance->addObjectWrapperFactory<className>();//( core::IObjectWrapperFactoryPtr(new core::ObjectWrapperFactory<className>()) ); 
+    //instance->addObjectWrapperFactory( core::IObjectWrapperFactoryPtr(new core::ObjectWrapperFactory<className>()) ); 
 
 
 //! Interfejs pluginu przez który dostarczane sa us³ugi (serwisy) i prototypy elementów przetwarzaj¹cych dane
@@ -292,9 +293,11 @@ public:
     }
 
     //! \param factory
-    void addObjectWrapperFactory(const IObjectWrapperFactoryPtr & factory)
+    template<class T>
+    void addObjectWrapperFactory(const T * dummy = nullptr/*const IObjectWrapperFactoryPtr & factory*/)
     {
-        this->factories.push_back(factory);
+        //this->factories.push_back(factory);
+        this->factories.push_back(IObjectWrapperFactoryPtr(new ObjectWrapperFactory<T>()));
     }
     //! \return
     int getNumWrapperFactories() const

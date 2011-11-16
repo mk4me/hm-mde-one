@@ -97,8 +97,14 @@ namespace core
             template <class SmartPtr>
             ObjectWrapperPtr __setObjectPODResolver(const SmartPtr& object, boost::false_type)
             {
-                // jeøeli tutaj jest b≥πd oznacza to, øe przekazany typ nie jest ani POD, ani inteligentnym wskaünikiem.
                 typedef typename SmartPtr::element_type Type;
+                // jeøeli tutaj jest b≥πd oznacza to, øe przekazany typ nie jest ani POD, ani inteligentnym wskaünikiem.
+                UTILS_STATIC_ASSERT(ObjectWrapperTraits<Type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+                UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaznikowi odbslugujacemu zadany typ");
+                
+                if(object == nullptr){
+                    throw std::runtime_error("Could not create wprapper for nullptr");
+                }
                 
                 //mechanizm ograniczajπcy tworzenie wielu niezaleønych ObjectWrapperÛw dla tych samych danych
                 //core::ObjectWrapperPtr objectWrapper = core::getDataManager()->getWrapper(&*object);
@@ -112,7 +118,11 @@ namespace core
                 //}
                 //
                 //return objectWrapper;
-                return core::getOrCreateWrapper(object).second;
+                //return core::getOrCreateWrapper(object).second;
+
+                ObjectWrapperPtr ret(core::ObjectWrapper::create<Type>());
+                ret->set(object);
+                return ret;
             }
 
         private:

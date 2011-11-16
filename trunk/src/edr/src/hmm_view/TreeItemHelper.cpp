@@ -16,7 +16,7 @@ VisualizerPtr TreeWrappedItemHelper::createVisualizer()
     return VisualizerManager::getInstance()->createVisualizer(wrapper->getTypeInfo());
 }
 
-void TreeWrappedItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void TreeWrappedItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
     auto serie = visualizer->createSerie(wrapper, path.toStdString());
@@ -109,10 +109,10 @@ VisualizerPtr ChartItemHelper::createVisualizer()
 }
 
 
-void ChartItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void ChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     auto serie = visualizer->createSerie(wrapper, path.toStdString());
-    ScalarChannelReaderInterfacePtr item = wrapper->get();
+    ScalarChannelReaderInterfaceConstPtr item = wrapper->get();
     QString text = item->getName().c_str();
     ChartVisualizer::ChartVisualizerSerie* chartSerie = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serie.get());
     if (chartSerie) {
@@ -150,7 +150,7 @@ VisualizerPtr Vector3ItemHelper::createVisualizer()
     return visualizer;
 }
 
-void Vector3ItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void Vector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     VectorChannelPtr vectorChannel = wrapper->get();
 
@@ -192,12 +192,12 @@ void Vector3ItemHelper::createSeries( VisualizerPtr visualizer, const QString& p
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieZ));
 }
 
-void MultiserieHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void MultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     int count = wrappers.size();
     int count2 = count / 2;
     for (int i = 0; i < count; i++) {
-        core::ObjectWrapperPtr wrapper = wrappers[i];
+        core::ObjectWrapperConstPtr wrapper = wrappers[i];
         auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
         ChartVisualizer::ChartVisualizerSerie* chartSerieX = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieX.get());
         float r = 0;
@@ -269,11 +269,11 @@ VisualizerPtr MultiserieHelper::createVisualizer()
 //    UTILS_ASSERT(motion);
 //}
 
-void Multiserie3D::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
-    core::ObjectWrapperPtr m = motion->getWrapperOfType(typeid(MarkerCollection));
-    core::ObjectWrapperPtr j = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
-    core::ObjectWrapperPtr g = motion->getWrapperOfType(typeid(GRFCollection));
+    core::ObjectWrapperConstPtr m = motion->getWrapperOfType(typeid(MarkerCollection));
+    core::ObjectWrapperConstPtr j = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
+    core::ObjectWrapperConstPtr g = motion->getWrapperOfType(typeid(GRFCollection));
 
     if (!m->isNull()) {
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(m ,path.toStdString())));
@@ -296,9 +296,9 @@ VisualizerPtr JointsItemHelper::createVisualizer()
     return VisualizerManager::getInstance()->createVisualizer(typeid(kinematic::JointAnglesCollection));
 }
 
-void JointsItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
-    core::ObjectWrapperPtr joints = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
+    core::ObjectWrapperConstPtr joints = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
     if (!joints->isNull()) {
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(joints, path.toStdString())));
     } else {
@@ -329,7 +329,7 @@ VisualizerPtr NewChartItemHelper::createVisualizer()
 }
 
 
-void NewChartItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     auto serie = visualizer->createSerie(wrapper, path.toStdString());
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
@@ -355,9 +355,9 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer()
     return visualizer;
 }
 
-void NewVector3ItemHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
-    VectorChannelPtr vectorChannel = wrapper->get();
+    VectorChannelConstPtr vectorChannel = wrapper->get();
 
     ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
     ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
@@ -399,12 +399,12 @@ void NewVector3ItemHelper::createSeries( VisualizerPtr visualizer, const QString
 
 
 
-void NewMultiserieHelper::createSeries( VisualizerPtr visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     int count = wrappers.size();
     int count2 = count / 2;
     for (int i = 0; i < count; i++) {
-        core::ObjectWrapperPtr wrapper = wrappers[i];
+        core::ObjectWrapperConstPtr wrapper = wrappers[i];
         auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
         NewChartVisualizer::NewChartSerie* chartSerieX = dynamic_cast<NewChartVisualizer::NewChartSerie*>(serieX.get());
         int r = 0;

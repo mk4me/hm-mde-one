@@ -29,6 +29,7 @@ namespace core {
     {
     public:
         typedef T* Ptr;
+        typedef const T* ConstPtr;
         Ptr get()
         {
             UTILS_STATIC_ASSERT(false, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego naglowka. Poszukaj wystapienia CORE_DEFINE_WRAPPER.");
@@ -46,39 +47,42 @@ namespace core {
         static const bool isDefinitionVisible = false;
     };
 
-    class ObjectWrapper;
-    typedef shared_ptr<ObjectWrapper> ObjectWrapperPtr;
-    typedef shared_ptr<const ObjectWrapper> ObjectWrapperConstPtr;
-    typedef weak_ptr<ObjectWrapper> ObjectWrapperWeakPtr;
-    typedef weak_ptr<const ObjectWrapper> ObjectWrapperConstWeakPtr;
+    class IObjectWrapper;
+    typedef shared_ptr<IObjectWrapper> ObjectWrapperPtr;
+    typedef shared_ptr<const IObjectWrapper> ObjectWrapperConstPtr;
+    typedef weak_ptr<IObjectWrapper> ObjectWrapperWeakPtr;
+    typedef weak_ptr<const IObjectWrapper> ObjectWrapperConstWeakPtr;
 
     typedef std::set<ObjectWrapperPtr> Objects;
+    typedef std::set<ObjectWrapperConstPtr> ConstObjects;
 
-    //! Baza dla typu wrapuj¹cego jakiœ obiekt. Poza trzymaniem metadanych klasy pochodne
-    //! trzymaj¹ referencje do obiektów.
-    class ObjectWrapper
+    class IObjectWrapper
     {
+    protected:
+        class IObjectWrapperHelper
+        {
+        public:
+            static bool getSmartPtr(const ObjectWrapperPtr & ow, void* ptr, const TypeInfo& type)
+            {
+                return ow->getSmartPtr(ptr, type);
+            }
+
+            static bool setSmartPtr(const ObjectWrapperPtr & ow, const void* ptr, const TypeInfo& type)
+            {
+                return ow->setSmartPtr(ptr, type);
+            }
+        };
+
     public:
         //! Lista typów.
         typedef TypeInfoList Types;
-    protected:
-        //! Nazwa instancji.
-        std::string name;
-        //! Nazwa typu.
-        std::string className;
-        //! Hash identyfikuj¹cy typ.
-        std::size_t classID;
-        //! Opis Ÿród³a.
-        std::string source;
-        //! Czy obiekt uleg³ zmianie?
-        bool changed;
 
-	public:
+    public:
         //! Return type resolver
         struct get_t
         {
-            ObjectWrapper* wrapper;
-            const ObjectWrapper* constWrapper;
+            IObjectWrapper* wrapper;
+            const IObjectWrapper* constWrapper;
             bool exact;
 
             template <class Ptr>
@@ -107,14 +111,14 @@ namespace core {
         //! \param object
         //! \param name
         //! \return Wrapper obiektu.
-        template <class T>
+        /*template <class T>
         static ObjectWrapperPtr create(T* dummy = nullptr)
         {
             UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
             typedef ObjectWrapperT<T> Wrapper;
             Wrapper * wrapper = new Wrapper();
             return ObjectWrapperPtr(wrapper);
-        }
+        }*/
 
         //! \return Nazwa dla zadanego typu.
         template <class T>
@@ -131,24 +135,11 @@ namespace core {
             return getTypeInfo() == type;
         }
 
-    protected:
-        //! \param className
-        //! \param classId
-        ObjectWrapper(const char* className, const TypeInfo& type) :
-             className(className), classID(0), changed(false)
-             {}
-
     public:
         //! Pusty polimorficzny destruktor.
-        virtual ~ObjectWrapper() 
-        {
-        }
+        virtual ~IObjectWrapper() {}
 
     public:
-
-        virtual const void* getRawPtr() const = 0;
-        virtual void* getRawPtr() = 0;
-        virtual void reset() = 0;
 
         //! Próba pobrania obiektu z wrappera.
         //! \param object Rezultat.
@@ -221,30 +212,30 @@ namespace core {
         //! Ustawia obiekt wrappera. W razie b³êdu rzuca bad_castem.
         //! \param object Obiekt.
         template <class Ptr>
-        void set(Ptr& object, const std::string& name, const std::string& source)
+        void set(const Ptr& object, const std::string& name, const std::string& source)
         {
             if ( !trySet(object, name, source) ) {
                 throw std::bad_cast("Invalid cast");
             }
         }
 
-		//! Ustawia obiekt wrappera, jego nazwe i zrodlo
-		//! \param object Obiekt
-		//! \param name Nazwa obiektu, ktora ma byc wyswietlona
-		//! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
-		template <class Ptr>
-		void set(Ptr& object)
-		{
-			if ( !trySet(object)) {
-				throw std::bad_cast("Invalid cast");
-			}
-		}
+        //! Ustawia obiekt wrappera, jego nazwe i zrodlo
+        //! \param object Obiekt
+        //! \param name Nazwa obiektu, ktora ma byc wyswietlona
+        //! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
+        template <class Ptr>
+        void set(const Ptr& object)
+        {
+            if ( !trySet(object)) {
+                throw std::bad_cast("Invalid cast");
+            }
+        }
 
         //! Ustawia obiekt wrappera.
         //! \param object Obiekt.
         //! \return Sukces/pora¿ka.
         template <class Ptr>
-        bool trySet(Ptr& object)
+        bool trySet(const Ptr& object)
         {
             TypeInfo type = typeid(Ptr);
             if ( getPtrTypeInfo().first == type ) {
@@ -254,62 +245,43 @@ namespace core {
             }
         }
 
-		//! Ustawia obiekt wrappera, jego nazwe i zrodlo
-		//! \param object Obiekt
-		//! \param name Nazwa obiektu, ktora ma byc wyswietlona
-		//! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
-		template <class Ptr>
-		bool trySet(Ptr& object, const std::string& name, const std::string& source)
-		{
-			if (trySet(object)) {
-				setName(name);
-				setSource(source);
-				return true;
-			}
-			return false;
-		}
+        //! Ustawia obiekt wrappera, jego nazwe i zrodlo
+        //! \param object Obiekt
+        //! \param name Nazwa obiektu, ktora ma byc wyswietlona
+        //! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
+        template <class Ptr>
+        bool trySet(const Ptr& object, const std::string& name, const std::string& source)
+        {
+            if (trySet(object)) {
+                setName(name);
+                setSource(source);
+                return true;
+            }
+            return false;
+        }
+
+        virtual const void* getRawPtr() const = 0;
+        virtual void* getRawPtr() = 0;
+        virtual void reset() = 0;
+
 
         //! \return ID typu.
-        inline std::size_t getClassID() const
-        { 
-            return classID;
-        }
+        virtual std::size_t getClassID() const = 0;
         //! \return Nazwa typu.
-        inline const std::string& getClassName() const
-        {
-            return className;
-        }
+        virtual const std::string& getClassName() const = 0;
         //! \return Nazwa obiektu.
-        inline const std::string& getName() const
-        {
-            return name;
-        }
+        virtual const std::string& getName() const = 0;
         //! \param name Nazwa obiektu.
-        inline void setName(const std::string& name)
-        {
-            this->name = name;
-        }
+        virtual void setName(const std::string& name) = 0;
         //! \return
-        inline const std::string& getSource() const
-        { 
-            return source;
-        }
+        virtual const std::string& getSource() const = 0;
         //! \param source
-        void setSource(const std::string& source) 
-        { 
-            this->source = source; 
-        }
+        virtual void setSource(const std::string& source) = 0;
 
         //! \return
-        bool isChanged() const
-        { 
-            return changed;
-        }
+        virtual bool isChanged() const = 0;
         //! \param changed
-        void setChanged(bool changed) 
-        { 
-            this->changed = changed; 
-        }
+        virtual void setChanged(bool changed) = 0;
 
         //! \param type 
         //! \return Czy obiekt wspiera okreœlony typ?
@@ -333,7 +305,9 @@ namespace core {
         //! \return Klon bie¿¹cego obiektu. Wewnêtrzny wskaŸnik równie¿ jest kopiowany.
         virtual ObjectWrapperPtr clone() const = 0;
 
-    private:
+        virtual ObjectWrapperPtr create() const = 0;
+
+    protected:
 
         //! \return Czy uda³o siê ustawiæ m¹dry wskaŸnik?
         virtual bool getSmartPtr(void* ptr, const TypeInfo& type) const = 0;
@@ -341,12 +315,296 @@ namespace core {
         virtual bool setSmartPtr(const void* ptr, const TypeInfo& type) = 0;
     };
 
+    //! Baza dla typu wrapuj¹cego jakiœ obiekt. Poza trzymaniem metadanych klasy pochodne
+    //! trzymaj¹ referencje do obiektów.
+    class ObjectWrapper : public IObjectWrapper
+    {
+    protected:
+        //! Nazwa instancji.
+        std::string name;
+        //! Nazwa typu.
+        std::string className;
+        //! Hash identyfikuj¹cy typ.
+        std::size_t classID;
+        //! Opis Ÿród³a.
+        std::string source;
+        //! Czy obiekt uleg³ zmianie?
+        bool changed;
+
+	public:
+        ////! Return type resolver
+        //struct get_t
+        //{
+        //    ObjectWrapper* wrapper;
+        //    const ObjectWrapper* constWrapper;
+        //    bool exact;
+
+        //    template <class Ptr>
+        //    operator Ptr()
+        //    {
+        //        Ptr result;
+        //        if (wrapper->tryGet(result, exact)) {
+        //            return result;
+        //        } else {
+        //            throw std::bad_cast("Invalid cast");
+        //        }
+        //    }
+        //    template <class Ptr>
+        //    operator Ptr() const
+        //    {
+        //        Ptr result;
+        //        if (constWrapper->tryGet(result, exact)) {
+        //            return result;
+        //        } else {
+        //            throw std::bad_cast("Invalid cast");
+        //        }
+        //    }
+        //};
+
+    public:
+        //! \param object
+        //! \param name
+        //! \return Wrapper obiektu.
+        template <class T>
+        static ObjectWrapperPtr create(T* dummy = nullptr)
+        {
+            UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
+            typedef ObjectWrapperT<T> Wrapper;
+            Wrapper * wrapper = new Wrapper();
+            return ObjectWrapperPtr(wrapper);
+        }
+
+        //! \return Nazwa dla zadanego typu.
+        //template <class T>
+        //static const char* getClassName(T* dummy = nullptr)
+        //{
+        //    UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
+        //    return ObjectWrapperT<T>::className();
+        //}
+
+        ////! \param type Typ do porównania.
+        ////! \return Czy to te same typy?
+        //inline bool isTypeEqual(const TypeInfo& type) const
+        //{
+        //    return getTypeInfo() == type;
+        //}
+
+    protected:
+        //! \param className
+        //! \param classId
+        ObjectWrapper(const char* className, const TypeInfo& type) :
+             className(className), classID(0), changed(false)
+             {}
+
+    public:
+        //! Pusty polimorficzny destruktor.
+        virtual ~ObjectWrapper() 
+        {
+
+        }
+
+    public:
+
+        /*virtual const void* getRawPtr() const = 0;
+        virtual void* getRawPtr() = 0;
+        virtual void reset() = 0;*/
+
+        //! Próba pobrania obiektu z wrappera.
+        //! \param object Rezultat.
+        //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
+        //! \return Sukces/pora¿ka.
+  //      template <class Ptr>
+  //      bool tryGet(Ptr& object, bool exact = false)
+  //      {
+  //          TypeInfo type = typeid(Ptr);
+  //          if ( exact ) {
+  //              auto types = getPtrTypeInfo();
+  //              if ( types.first == type || types.second == type ) {
+  //                  return getSmartPtr(&object, type);
+  //              } else {
+  //                  return false;
+  //              }
+  //          } else {
+  //              return getSmartPtr(&object, type);
+  //          }
+  //      }
+
+  //      //! Próba pobrania obiektu z wrappera.
+  //      //! \param object Rezultat.
+  //      //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
+  //      //! \return Sukces/pora¿ka.
+  //      template <class Ptr>
+  //      bool tryGet(Ptr& object, bool exact = false) const
+  //      {
+  //          TypeInfo type = typeid(Ptr);
+  //          if ( exact ) {
+  //              auto types = getPtrTypeInfo();
+  //              if ( types.second == type ) {
+  //                  return getSmartPtr(&object, type);
+  //              } else {
+  //                  return false;
+  //              }
+  //          } else {
+  //              return getSmartPtr(&object, type);
+  //          }
+  //      }
+
+  //      //! Pobiera obiekt z wrappera. W razie b³êdu rzuca bad_castem.
+  //      //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
+  //      //! \return Return Type Resolver
+  //      get_t get(bool exact = false)
+  //      {
+  //          get_t result = { this, nullptr, exact };
+  //          return result;
+  //      }
+
+  //      //! \param dummy Pozostawiæ pusty.
+  //      //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
+  //      template <class T>
+  //      typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
+  //      {   
+  //          UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
+  //          typedef ObjectWrapperT<T> Wrapper;
+  //          return static_cast<Wrapper::Ptr>(get());
+  //      }
+
+  //      //! Pobiera obiekt z wrappera. W razie b³êdu rzuca bad_castem.
+  //      //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
+  //      //! \return Return Type Resolver
+  //      const get_t get(bool exact = false) const
+  //      {
+  //          const get_t result = { nullptr, this, exact };
+  //          return result;
+  //      }
+
+  //      //! Ustawia obiekt wrappera. W razie b³êdu rzuca bad_castem.
+  //      //! \param object Obiekt.
+  //      template <class Ptr>
+  //      void set(Ptr& object, const std::string& name, const std::string& source)
+  //      {
+  //          if ( !trySet(object, name, source) ) {
+  //              throw std::bad_cast("Invalid cast");
+  //          }
+  //      }
+
+		////! Ustawia obiekt wrappera, jego nazwe i zrodlo
+		////! \param object Obiekt
+		////! \param name Nazwa obiektu, ktora ma byc wyswietlona
+		////! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
+		//template <class Ptr>
+		//void set(Ptr& object)
+		//{
+		//	if ( !trySet(object)) {
+		//		throw std::bad_cast("Invalid cast");
+		//	}
+		//}
+
+  //      //! Ustawia obiekt wrappera.
+  //      //! \param object Obiekt.
+  //      //! \return Sukces/pora¿ka.
+  //      template <class Ptr>
+  //      bool trySet(Ptr& object)
+  //      {
+  //          TypeInfo type = typeid(Ptr);
+  //          if ( getPtrTypeInfo().first == type ) {
+  //              return setSmartPtr(&object, type);
+  //          } else {
+  //              return false;
+  //          }
+  //      }
+
+		////! Ustawia obiekt wrappera, jego nazwe i zrodlo
+		////! \param object Obiekt
+		////! \param name Nazwa obiektu, ktora ma byc wyswietlona
+		////! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
+		//template <class Ptr>
+		//bool trySet(Ptr& object, const std::string& name, const std::string& source)
+		//{
+		//	if (trySet(object)) {
+		//		setName(name);
+		//		setSource(source);
+		//		return true;
+		//	}
+		//	return false;
+		//}
+
+        //! \return ID typu.
+        virtual std::size_t getClassID() const
+        { 
+            return classID;
+        }
+        //! \return Nazwa typu.
+        virtual const std::string& getClassName() const
+        {
+            return className;
+        }
+        //! \return Nazwa obiektu.
+        virtual const std::string& getName() const
+        {
+            return name;
+        }
+        //! \param name Nazwa obiektu.
+        virtual void setName(const std::string& name)
+        {
+            this->name = name;
+        }
+        //! \return
+        virtual const std::string& getSource() const
+        { 
+            return source;
+        }
+        //! \param source
+        virtual void setSource(const std::string& source) 
+        { 
+            this->source = source; 
+        }
+
+        //! \return
+        virtual bool isChanged() const
+        { 
+            return changed;
+        }
+        //! \param changed
+        virtual void setChanged(bool changed) 
+        { 
+            this->changed = changed; 
+        }
+
+    //    //! \param type 
+    //    //! \return Czy obiekt wspiera okreœlony typ?
+    //    virtual bool isSupported(const TypeInfo& type) const = 0;
+    //    //! \param type Typ inteligentnego wskaŸnika.
+    //    //! \return true je¿eli do z obiektu mo¿na wy³uskaæ dany wskaŸnik.
+    //    virtual bool isPtrSupported(const TypeInfo& type) const = 0;
+
+    //    //! \return Informacje o typie.
+    //    virtual TypeInfo getTypeInfo() const = 0;
+
+    //    //! \return Informacje o typie odpowiednio normalnego i sta³ego wskaŸnika.
+    //    virtual std::pair<TypeInfo, TypeInfo> getPtrTypeInfo() const = 0;
+
+    //    //! \param supported Lista wspieranych rozszerzeñ.
+    //    virtual void getSupportedTypes(Types& supported) const = 0;
+
+    //    //! \return Czy wrappowany obiekt jest wyzerowany?
+    //    virtual bool isNull() const = 0;
+
+    //    //! \return Klon bie¿¹cego obiektu. Wewnêtrzny wskaŸnik równie¿ jest kopiowany.
+    //    virtual ObjectWrapperPtr clone() const = 0;
+
+    //private:
+
+    //    //! \return Czy uda³o siê ustawiæ m¹dry wskaŸnik?
+    //    virtual bool getSmartPtr(void* ptr, const TypeInfo& type) const = 0;
+
+    //    virtual bool setSmartPtr(const void* ptr, const TypeInfo& type) = 0;
+    };
+
     //! Pomocniczy typ bazowy, zarz¹dzaj¹cy obiektem za pomoc¹ parametru
     //! PtrPolicy. Tego typu nigdy nie u¿ywa siê wprost.
     template <class T, class PtrPolicy, class ClonePolicy>
     class __ObjectWrapperT : public ObjectWrapper, protected PtrPolicy, protected ClonePolicy
     {
-
     public:
         //!
         typedef PtrPolicy PtrPolicy;
@@ -389,12 +647,16 @@ namespace core {
         }
 
         virtual ObjectWrapperPtr clone() const {
-            std::auto_ptr<__ObjectWrapperT> cloned(new __ObjectWrapperT(*this));
+            std::auto_ptr<ObjectWrapperT<T>> cloned(new ObjectWrapperT<T>(ObjectWrapperT<T>::className()));
             T* newPtr = ClonePolicy::clone<T>(&*wrapped);
             Ptr temp;
             PtrPolicy::setPtr(temp, newPtr);
             cloned->wrapped = temp;
             return ObjectWrapperPtr(cloned.release());
+        }
+
+        virtual ObjectWrapperPtr create() const {
+            return ObjectWrapperPtr(new __ObjectWrapperT(this->getClassName().c_str()));
         }
 
         virtual const void* getRawPtr() const
@@ -436,6 +698,8 @@ namespace core {
             return type == typeid(Ptr) || type == typeid(ConstPtr);
         }
 
+    protected:
+
         virtual bool getSmartPtr(void* ptr, const TypeInfo& type) const
         {
             if ( type == typeid(Ptr) ) {
@@ -471,7 +735,8 @@ namespace core {
         typedef typename PtrPolicy::Ptr<T>::Type Ptr;
         //! 
         typedef typename PtrPolicy::Ptr<const T>::Type ConstPtr;
-    public:
+
+    protected:
         //! \param wrapped
         __ObjectWrapperTInherited(const char* className)
             : Base(className)
@@ -481,6 +746,19 @@ namespace core {
         virtual TypeInfo getTypeInfo() const
         {
             return typeid(T);
+        }
+
+        /*virtual ObjectWrapperPtr clone() const {
+            std::auto_ptr<__ObjectWrapperTInherited> cloned(new __ObjectWrapperTInherited(*this));
+            T* newPtr = clone<T>(&*wrapped);
+            Ptr temp;
+            setPtr(temp, newPtr);
+            cloned->wrapped = temp;
+            return ObjectWrapperPtr(cloned.release());
+        }*/
+
+        virtual ObjectWrapperPtr create() const {
+            return ObjectWrapperPtr(new __ObjectWrapperTInherited(ObjectWrapperT<T>::className()));
         }
 
         //! \param type 
@@ -505,6 +783,8 @@ namespace core {
         {
             return std::pair<TypeInfo, TypeInfo>(typeid(Ptr), typeid(ConstPtr));
         }
+
+    protected:
 
         //! \see ObjectWrapper::getSmartPtr
         virtual bool getSmartPtr(void* ptr, const TypeInfo& type) const
@@ -531,6 +811,8 @@ namespace core {
             }
         }
 
+    public:
+
         virtual bool isPtrSupported(const TypeInfo& type) const
         {
             return type == typeid(Ptr) || type == typeid(ConstPtr) || Base::isPtrSupported(type);
@@ -546,7 +828,10 @@ namespace core {
 template <> struct ObjectWrapperTraits<type>                                                      \
 {                                                                                                 \
     static const bool isDefinitionVisible = true;                                                 \
-};     
+};
+
+template<class T>
+class ObjectWrapperFactory;
 
 // Makro tworz¹ce specjalizacjê ObjectWrapperT. Musi wystêpowaæ w globalnym
 // namespace. Drugim parametrem mo¿e byæ dowolny typ maj¹cy cechy ptrPolicy,
@@ -556,9 +841,13 @@ namespace core {                                                                
     template <>                                                                                   \
 class ObjectWrapperT<type> : public __ObjectWrapperT<type,  ptrPolicy, clonePolicy>               \
 {                                                                                                 \
+    friend class __ObjectWrapperT<type,  ptrPolicy, clonePolicy>;                                    \
+    friend class ObjectWrapperFactory<type>;                                                             \
+    friend class ObjectWrapper;                                                                         \
 public:                                                                                           \
+    typedef ObjectWrapperT<type> ObjectWrapperType;                                                                         \
     static const char* className() { return #type; }                                              \
-public:                                                                                           \
+protected:                                                                                         \
     ObjectWrapperT(const char* className = #type) :                                               \
     __ObjectWrapperT<type,ptrPolicy, clonePolicy >(className)                                     \
       {}                                                                                          \
@@ -571,10 +860,14 @@ __CORE_WRAPPER_DEFINE_META(type)                                                
 namespace core {                                                                                   \
     template <>                                                                                    \
 class ObjectWrapperT<type> : public __ObjectWrapperTInherited<type,  baseType>                     \
-{                                                                                                  \
+{                                                                                                   \
+    friend class __ObjectWrapperTInherited<type,  baseType>;                                         \
+    friend class ObjectWrapperFactory<type>;                                                             \
+    friend class ObjectWrapper;                                                                         \
 public:                                                                                            \
+    typedef ObjectWrapperT<type> ObjectWrapperType;                                                                         \
     static const char* className() { return #type; }                                               \
-public:                                                                                            \
+protected:                                                                                            \
     ObjectWrapperT(const char* className = #type) :                                                \
     __ObjectWrapperTInherited<type,baseType>(className)                                            \
       {}                                                                                           \

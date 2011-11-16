@@ -7,17 +7,17 @@
 
 using namespace communication;
 
-QueryWSDL::QueryWSDL()
+MotionQueryWSDL::MotionQueryWSDL() : bqs(new MotionBasicQueriesService()),
+    bus(new MotionBasicUpdatesService())
 {
-    bqs = core::shared_ptr<BasicQueriesService>(new BasicQueriesService());
-    bus = core::shared_ptr<BasicUpdatesService>(new BasicUpdatesService());
+    
 }
 
-QueryWSDL::~QueryWSDL()
+MotionQueryWSDL::~MotionQueryWSDL()
 {
 }
 
-void QueryWSDL::setWSCredentials(const std::string& usr, const std::string& pswd)
+void MotionQueryWSDL::setWSCredentials(const std::string& usr, const std::string& pswd)
 {
     bqs->setUser(usr);
     bqs->setPassword(pswd);
@@ -25,139 +25,177 @@ void QueryWSDL::setWSCredentials(const std::string& usr, const std::string& pswd
     bus->setPassword(pswd);
 }
 
-void QueryWSDL::setBasicQueriesServiceUri(const std::string& uri)
+void MotionQueryWSDL::setBasicQueriesServiceUri(const std::string& uri)
 {
     bqs->setUri(uri);
 }
 
-void QueryWSDL::setBasicUpdatesServiceUri(const std::string& uri)
+void MotionQueryWSDL::setBasicUpdatesServiceUri(const std::string& uri)
 {
     bus->setUri(uri);
 }
 
-std::vector<wsdl::Trial> QueryWSDL::listSessionContents()
+std::vector<motionWsdl::Trial> MotionQueryWSDL::listSessionContents()
 {
     return bqs->listSessionContents();
 }
 
-std::vector<wsdl::Trial> QueryWSDL::listSessionTrials(int sessionID)
+std::vector<motionWsdl::Trial> MotionQueryWSDL::listSessionTrials(int sessionID)
 {
     return bqs->listSessionTrials(sessionID);
 }
 
-std::vector<wsdl::Session> QueryWSDL::listLabSessionsWithAttributes(int labID)
+std::vector<motionWsdl::Session> MotionQueryWSDL::listLabSessionsWithAttributes(int labID)
 {
     return bqs->listLabSessionsWithAttributes(labID);
 }
 
-std::vector<wsdl::File> QueryWSDL::listFiles(int ID, const std::string& subjectType)
+std::vector<motionWsdl::File> MotionQueryWSDL::listFiles(int ID, const std::string& subjectType)
 {
     return bqs->listFiles(ID, subjectType);
 }
 
-//Performer* QueryWSDL::createPerformer(const std::string& name, const std::string& surname) {
+DateTime MotionQueryWSDL::getLastDBModificationTime()
+{
+    return bqs->getLastDBModificationTime();
+}
+
+DateTime MotionQueryWSDL::getLastMetadataModificationTime()
+{
+    return bqs->getLastMetadataModificationTime();
+}
+
+MedicalQueryWSDL::MedicalQueryWSDL() : bqs(new MedicalBasicQueriesService()),
+    bus(new MedicalBasicUpdatesService())
+{
+    
+}
+
+MedicalQueryWSDL::~MedicalQueryWSDL()
+{
+}
+
+void MedicalQueryWSDL::setWSCredentials(const std::string& usr, const std::string& pswd)
+{
+    bqs->setUser(usr);
+    bqs->setPassword(pswd);
+    bus->setUser(usr);
+    bus->setPassword(pswd);
+}
+
+void MedicalQueryWSDL::setBasicQueriesServiceUri(const std::string& uri)
+{
+    bqs->setUri(uri);
+}
+
+void MedicalQueryWSDL::setBasicUpdatesServiceUri(const std::string& uri)
+{
+    bus->setUri(uri);
+}
+
+//Performer* MotionQueryWSDL::createPerformer(const std::string& name, const std::string& surname) {
 //	return bus->createPerformer(name, surname);
 //}
-//Session* QueryWSDL::createSession(int labID, int performerID, DateTime& sessionDate, const std::string& sessionDescription, const std::string& motionKindName, std::vector<int>& groupsIDs) {
+//Session* MotionQueryWSDL::createSession(int labID, int performerID, DateTime& sessionDate, const std::string& sessionDescription, const std::string& motionKindName, std::vector<int>& groupsIDs) {
 //	return bus->createSession(labID, performerID, sessionDate, sessionDescription, motionKindName, groupsIDs);
 //}
 //
-//Trial* QueryWSDL::createTrial(int sessionID, const std::string& trialDescription, int trialDuration) {
+//Trial* MotionQueryWSDL::createTrial(int sessionID, const std::string& trialDescription, int trialDuration) {
 //	return bus->createTrial(sessionID, trialDescription, trialDuration);
 //}
 //
-//Segment* QueryWSDL::defineTrialSegment(int trialID, const std::string& segmentName, int startTime, int endTime) {
+//Segment* MotionQueryWSDL::defineTrialSegment(int trialID, const std::string& segmentName, int startTime, int endTime) {
 //	return bus->defineTrialSegment(trialID, segmentName, startTime, endTime);
 //}
 //
-//int QueryWSDL::setPerformerAttribute(int performerID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionQueryWSDL::setPerformerAttribute(int performerID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	return bus->setPerformerAttribute(performerID, attributeName, attributeVal, update);
 //}
 //
-//int QueryWSDL::setSessionAttribute(int sessionID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionQueryWSDL::setSessionAttribute(int sessionID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	return bus->setSessionAttribute(sessionID, attributeName, attributeVal, update);
 //}
 //
-//int QueryWSDL::setTrialAttribute(int trialID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionQueryWSDL::setTrialAttribute(int trialID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	return bus->setTrialAttribute(trialID, attributeName, attributeVal, update);
 //}
 //
-//int QueryWSDL::setFileAttribute(int fileID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionQueryWSDL::setFileAttribute(int fileID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	return bus->setFileAttribute(fileID, attributeName, attributeVal, update);
 //}
 //
-//int QueryWSDL::setSegmentAttribute(int segmentID, const std::string& attributeName, const std::string& attributeVal, bool update) {
+//int MotionQueryWSDL::setSegmentAttribute(int segmentID, const std::string& attributeName, const std::string& attributeVal, bool update) {
 //	return bus->setSegmentAttribute(segmentID, attributeName, attributeVal, update);
 //}
 //
-//bool QueryWSDL::assignSessionToGroup(int sessionID, int groupID) {
+//bool MotionQueryWSDL::assignSessionToGroup(int sessionID, int groupID) {
 //	return bus->assignSessionToGroup(sessionID, groupID);
 //}
 //
-//const Performer* QueryWSDL::getPerformerById(int performerID) {
+//const Performer* MotionQueryWSDL::getPerformerById(int performerID) {
 //	return bqs->getPerformerById(performerID);
 //}
 //
-//const Session* QueryWSDL::getSessionById(int sessionID) {
+//const Session* MotionQueryWSDL::getSessionById(int sessionID) {
 //	return bqs->getSessionById(sessionID);
 //}
 //
-//const Segment* QueryWSDL::getSegmentById(int segmentID) {
+//const Segment* MotionQueryWSDL::getSegmentById(int segmentID) {
 //	return bqs->getSegmentById(segmentID);
 //}
 //
-//const Trial* QueryWSDL::getTrialById(int trialID) {
+//const Trial* MotionQueryWSDL::getTrialById(int trialID) {
 //	return bqs->getTrialById(trialID);
 //}
 //
-//const std::vector<Session>* QueryWSDL::listPerformerSessions(int performerID) {
+//const std::vector<Session>* MotionQueryWSDL::listPerformerSessions(int performerID) {
 //	return bqs->listPerformerSessions(performerID);
 //}
 //
-//const std::vector<Session>* QueryWSDL::listPerformerSessionsWithAttributes(int performerID) {
+//const std::vector<Session>* MotionQueryWSDL::listPerformerSessionsWithAttributes(int performerID) {
 //	return bqs->listPerformerSessionsWithAttributes(performerID);
 //}
 //
-//const std::vector<Performer>* QueryWSDL::listPerformers() {
+//const std::vector<Performer>* MotionQueryWSDL::listPerformers() {
 //	return bqs->listPerformers();
 //}
 //
-//const std::vector<Performer>* QueryWSDL::listPerformersWithAttributes() {
+//const std::vector<Performer>* MotionQueryWSDL::listPerformersWithAttributes() {
 //	return bqs->listPerformersWithAttributes();
 //}
 
-//const std::vector<Trial>* QueryWSDL::listSessionTrialsWithAttributes(int sessionID) {
+//const std::vector<Trial>* MotionQueryWSDL::listSessionTrialsWithAttributes(int sessionID) {
 //	return bqs->listSessionTrialsWithAttributes(sessionID);
 //}
 //
-//const std::vector<Segment>* QueryWSDL::listTrialSegments(int trialID) {
+//const std::vector<Segment>* MotionQueryWSDL::listTrialSegments(int trialID) {
 //	return bqs->listTrialSegments(trialID);
 //}
 //
-//const std::vector<Segment>* QueryWSDL::listTrialSegmentsWithAttributes(int trialID) {
+//const std::vector<Segment>* MotionQueryWSDL::listTrialSegmentsWithAttributes(int trialID) {
 //	return bqs->listTrialSegmentsWithAttributes(trialID);
 //}
 //
-//const std::vector<Performer>* QueryWSDL::listLabPerformersWithAttributes(int labID) {
+//const std::vector<Performer>* MotionQueryWSDL::listLabPerformersWithAttributes(int labID) {
 //	return bqs->listLabPerformersWithAttributes(labID);
 //}
 
-//const std::vector<File>* QueryWSDL::listSessionFiles(int sessionID) {
+//const std::vector<File>* MotionQueryWSDL::listSessionFiles(int sessionID) {
 //	return bqs->listSessionFiles(sessionID);
 //}
 
-//const std::vector<File>* QueryWSDL::listFilesWithAttributes(int ID, const std::string& subjectType) {
+//const std::vector<File>* MotionQueryWSDL::listFilesWithAttributes(int ID, const std::string& subjectType) {
 //	return bqs->listFilesWithAttributes(ID, subjectType);
 //}
 //
-//const std::vector<SessionGroup>* QueryWSDL::listSessionGroupsDefined() {
+//const std::vector<SessionGroup>* MotionQueryWSDL::listSessionGroupsDefined() {
 //	return bqs->listSessionGroupsDefined();
 //}
 //
-//const std::vector<MotionKind>* QueryWSDL::listMotionKindsDefined() {
+//const std::vector<MotionKind>* MotionQueryWSDL::listMotionKindsDefined() {
 //	return bqs->listMotionKindsDefined();
 //}
 //
-//void QueryWSDL::performQuery(const std::string& query) {
+//void MotionQueryWSDL::performQuery(const std::string& query) {
 //	bqs->performQuery(query);
 //}

@@ -24,8 +24,7 @@
 #include <utils/DataChannelCollection.h>
 #include <core/SmartPtr.h>
 
-#include <plugins/subject/Session.h>
-#include <plugins/subject/DataFilter.h>
+#include <plugins/subject/ISubjectService.h>
 
 #include "FilterCommand.h"
 #include "TreeItemHelper.h"
@@ -87,13 +86,21 @@ private:
     NamesDictionary namesDictionary;
 };
 
-template <class Channel, class CollectionPtr, class ItemHelper>
+template <class Channel, class Collection, class ItemHelper>
 class Vector3DFilterCommand : public IFilterCommand
 {
 public:
-      Vector3DFilterCommand(core::IMemoryDataManager * memoryDataManager) :
-          memoryDataManager(memoryDataManager),
-          simpleTypeFilter(new TypeFilter(memoryDataManager, typeid(CollectionPtr::element_type))),
+
+    typedef typename core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
+    typedef typename core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
+
+    typedef typename core::ObjectWrapperT<Channel>::Ptr ChannelPtr;
+    typedef typename core::ObjectWrapperT<Channel>::ConstPtr ChannelConstPtr;
+
+public:
+
+      Vector3DFilterCommand() :
+          simpleTypeFilter(new TypeFilter(typeid(Collection))),
           helper(boost::bind( &Vector3DFilterCommand::checkBoxChanged, this, _1, _2 ))
       {
 
@@ -105,22 +112,26 @@ public:
           root->setText(0, rootItemName);
           BOOST_FOREACH(SessionConstPtr session, sessions) {
               SessionPtr filtered = simpleTypeFilter->filterData(session);
-              BOOST_FOREACH(MotionPtr motion, filtered->getMotions()) {
+              Motions motions;
+              filtered->getMotions(motions);
+              BOOST_FOREACH(MotionConstPtr motion, motions) {
                   QTreeWidgetItem* motionItem = new QTreeWidgetItem();
-                  motionItem->setText(0, motion->getName().c_str());
+                  motionItem->setText(0, motion->getLocalName().c_str());
                   root->addChild(motionItem);
-                  BOOST_FOREACH(ObjectWrapperPtr wrapper, motion->getWrappers(typeid(CollectionPtr::element_type))) {
-                      CollectionPtr collection = wrapper->get();
+                  std::vector<core::ObjectWrapperConstPtr> objects;
+                  motion->getWrappers(objects, typeid(Collection));
+                  BOOST_FOREACH(ObjectWrapperConstPtr wrapper, objects) {
+                      CollectionConstPtr collection = wrapper->get();
                       int count = collection->getNumChannels();
                       for (int i = 0 ; i < count; i++) {
-                          __ChannelPtr channel = collection->getChannel(i);
+                          ChannelConstPtr channel = collection->getChannel(i);
                           auto entry = activeElements.find(channel->getName());
                           if (entry == activeElements.end() || (entry != activeElements.end() && entry->second)) {
 
                               core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<Channel>();
 
                               //wrapper->set(boost::dynamic_pointer_cast<Channel>(collection->getChannel(i)));
-                              wrapper->set(channel);
+                              wrapper->set(core::const_pointer_cast<Channel>(channel));
                               static int number = 0;
                               std::string name = "serie_" + boost::lexical_cast<std::string>(number);
                               wrapper->setName(name);
@@ -137,13 +148,18 @@ public:
         }
       virtual QDialog* getConfigurationDialog(QWidget* parent)
       {
-          std::vector<SessionConstPtr> sessions = core::queryDataPtr();
+          std::vector<SessionConstPtr> sessions;
+          core::queryDataPtr(core::getDataManagerReader(), sessions);
           BOOST_FOREACH(SessionConstPtr session, sessions) {
               SessionPtr filtered = simpleTypeFilter->filterData(session);
-              BOOST_FOREACH(MotionPtr motion, filtered->getMotions()) {
+              Motions motions;
+              filtered->getMotions(motions);
+              BOOST_FOREACH(MotionConstPtr motion, motions) {
                   QTreeWidgetItem* motionItem = new QTreeWidgetItem();
-                  BOOST_FOREACH(ObjectWrapperPtr wrapper, motion->getWrappers(typeid(CollectionPtr::element_type))) {
-                      CollectionPtr collection = wrapper->get();
+                  std::vector<core::ObjectWrapperConstPtr> objects;
+                  motion->getWrappers(objects, typeid(Collection));
+                  BOOST_FOREACH(ObjectWrapperConstPtr wrapper, objects) {
+                      CollectionConstPtr collection = wrapper->get();
                       createNameDictionary(collection);
                   }
               }
@@ -176,15 +192,11 @@ public:
       }
 
 private:
-    typedef CollectionPtr __CollectionPtr;
-    typedef core::shared_ptr<Channel> __ChannelPtr;
-
-private:
-    void createNameDictionary(__CollectionPtr collection)
+    void createNameDictionary(const CollectionConstPtr & collection)
     {
         int count = collection->getNumChannels();
         for (int i = 0; i < count; i++) {
-            __ChannelPtr channel = collection->getChannel(i);
+            ChannelConstPtr channel = collection->getChannel(i);
             std::string name = channel->getName();
             auto it = activeElements.find(name);
             if (it == activeElements.end()) {
@@ -212,15 +224,14 @@ protected:
     std::map<std::string, bool> tempNameDictionary;
     DataFilterPtr simpleTypeFilter;
     __Helper helper;
-    core::IMemoryDataManager * memoryDataManager;
 };
 
-template <class Channel, class CollectionPtr, class ItemHelper>
-class Vector3DFilterCommand2 : public Vector3DFilterCommand<Channel, CollectionPtr, ItemHelper>
+template <class Channel, class Collection, class ItemHelper>
+class Vector3DFilterCommand2 : public Vector3DFilterCommand<Channel, Collection, ItemHelper>
 {
 public:
-    Vector3DFilterCommand2(core::IMemoryDataManager * memoryDataManager, const NamesDictionary& namesDictionary, const QString& frontXml, const QString& backXml) : 
-      Vector3DFilterCommand(memoryDataManager),
+    Vector3DFilterCommand2(const NamesDictionary& namesDictionary, const QString& frontXml, const QString& backXml) : 
+      Vector3DFilterCommand(),
       frontXml(frontXml),
       backXml(backXml),
       dialog(nullptr)

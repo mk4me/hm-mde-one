@@ -9,13 +9,17 @@ set(TARGET_TARGETNAME
 # nag³ówki prywatne
 set(PRIVATE_H
 	CommunicationPlugin.h
-	CommunicationWidgetEx.h
+	CommunicationDataSource.h
+	Patient.h
+	DownloadDialogWidget.h
+#	CommunicationWidgetEx.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
+	${HEADER_PATH}/IPatient.h
 	${HEADER_PATH}/DateTime.h
 	${HEADER_PATH}/BasicQueriesService.h
 	${HEADER_PATH}/BasicUpdatesService.h
@@ -38,13 +42,15 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	DownloadDialogWidget.cpp
+	Patient.cpp
 	DateTime.cpp
 	BasicQueriesService.cpp
 	BasicUpdatesService.cpp
 	CommunicationManager.cpp
 	CommunicationPlugin.cpp
 	CommunicationService.cpp
-	CommunicationWidgetEx.cpp
+#	CommunicationWidgetEx.cpp
 	FileStoremanService.cpp
 	FtpsConnection.cpp
 	QueryWSDL.cpp
@@ -52,13 +58,16 @@ set(TARGET_SRC
 	ShallowCopyParser.cpp
 	TransportWSDL_FTPS.cpp
 	WsdlConnection.cpp
+	CommunicationDataSource.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
-	CommunicationWidgetEx.h
+#	CommunicationWidgetEx.h
 	${HEADER_PATH}/CommunicationService.h
+	CommunicationDataSource.h
+	DownloadDialogWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -67,7 +76,8 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 set(TARGET_UI
-	ui/CommunicationWidgetEx.ui
+	#ui/CommunicationWidgetEx.ui
+	ui/DownloadDialog.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

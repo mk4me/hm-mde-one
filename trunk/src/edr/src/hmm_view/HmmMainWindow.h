@@ -3,13 +3,13 @@
 
 #include <core/PluginCommon.h>
 #include <plugins/c3d/C3DChannels.h>
+#include <plugins/subject/ISubjectService.h>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/kinematic/Wrappers.h>
 //#include <plugins/subject/Motion.h>
 #include "plugins/chart/ChartVisualizer.h"
-#include <plugins/subject/Session.h>
-#include <plugins/subject/DataFilter.h>
+#include <core/SubjectDataFilters.h>
 #include <QtGui/QFrame>
 #include "MainWindow.h"
 #include "TreeItemHelper.h"
@@ -50,7 +50,7 @@ public:
 
 	virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
 
-    const std::vector<SessionConstPtr>& getCurrentSessions() const { return currentSessions; }
+    const std::vector<SessionConstPtr>& getCurrentSessions();
     void addItemToTree(QTreeWidgetItem* item);
     void clearTree();
 
@@ -106,6 +106,9 @@ private:
     std::vector<DataFilterPtr> filters;
     std::vector<SessionConstPtr> currentSessions;
 	VisualizerWidget* currentVisualizer;
+
+    ISubjectService * subjectService;
+
     QMainWindow* pane;
 	
     EDRDockWidgetManager* topMainWindow;

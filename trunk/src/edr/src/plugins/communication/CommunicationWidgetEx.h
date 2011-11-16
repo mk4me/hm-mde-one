@@ -253,7 +253,7 @@ private:
     /**
     Kopia prób pomiarowych znajduj¹cych siê lokalnie.
     */
-    std::vector<core::IDataManager::LocalTrial> localTrials;
+    //std::vector<core::IDataManager::LocalTrial> localTrials;
     /**
     menu kontekstowe dla poszczególnych elementów ui.
     */

@@ -25,7 +25,7 @@ namespace core
     //! Struktura przechowuj¹ca informacje o managerach. Tylko do wewnêtrznego u¿ytku.
     struct InstanceInfo
     {
-        //IDataManager* dataManager;
+        IDataManagerBase* dataManagerReader;
         IVisualizerManager* visualizerManager;
         IServiceManager* serviceManager;
 		IPath* pathInterface;
@@ -39,15 +39,15 @@ namespace core
     extern InstanceInfo __instanceInfo;
 
     //! Makro definiuj¹ce zmienn¹ przechowuj¹c¹ managery. Automatycznie u¿ywane w pluginach.
-    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { /*nullptr,*/ nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }; }
+    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }; }
 
-    //! \return Bie¿¹ca instancja data managera. Rozwi¹zanie w ten sposób, w stosunku do
+    //! \return Bie¿¹ca instancja data managera readera. Rozwi¹zanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala
     //! na rozwijanie, wiêc jest potencjalnie szybsze.
-    /*inline IDataManager* getDataManager()
+    inline IDataManagerBase* getDataManagerReader()
     {
-    return __instanceInfo.dataManager;
-    }*/
+        return __instanceInfo.dataManagerReader;
+    }
 
     //! \return Interfejs dostêpu do œcie¿ek aplikacji
 	inline IPath* getPathInterface()
@@ -67,11 +67,11 @@ namespace core
     //    return __instanceInfo.visualizerManager;
     //}
 
-    ////!
-    //inline IServiceManager* getServiceManager()
-    //{
-    //    return __instanceInfo.serviceManager;
-    //}
+    //!
+    inline IServiceManager* getServiceManager()
+    {
+        return __instanceInfo.serviceManager;
+    }
 
     ////!
     //inline IDataProcessorManager* getDataProcessorManager()

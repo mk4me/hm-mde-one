@@ -5,7 +5,7 @@
 #include "CommunicationPCH.h"
 #include <core/Filesystem.h>
 #include <plugins/communication/CommunicationManager.h>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 
 using namespace communication;
 
@@ -28,23 +28,44 @@ void CommunicationManager::destoryInstance()
 }
 
 CommunicationManager::CommunicationManager()
-    : finish(false), filesToDownload(0), actualDownloadFileNumer(0)
+    : finish(false), state(Ready), pingCurl(nullptr)//, filesToDownload(0), actualDownloadFileNumer(0),
+    //localDBImagesPath(core::getApplicationDataString("db/schema/")), localDataPath(core::getUserDataString("data/sessions"))
 {
-    setState(Ready);
+    ////na razie recznie wpisane sciezki
+    //motionShallowCopyPath = (localDBImagesPath / "motion" / "shallowcopy.xml").string();
+    //motionMetadataPath = (localDBImagesPath / "motion" / "metadata.xml").string();
 
-    //na razie recznie wpisane sciezki
-    shallowCopyPath = core::getApplicationDataString("db/schema/shallowcopy.xml");
-    metadataPath = core::getApplicationDataString("db/schema/metadata.xml");
+    //medicalShallowCopyPath = (localDBImagesPath / "medical" / "shallowcopy.xml").string();
+    //medicalMetadataPath = (localDBImagesPath / "medical" / "metadata.xml").string();    
 
-    localDataPath = core::getUserDataString("data/trials");
+    //if(core::Filesystem::pathExists(localDBImagesPath / "medical") == false){
+    //    core::Filesystem::createDirectory(localDBImagesPath / "medical");
+    //}
 
-    //sorawdzenie przy uruchomieniu czy mamy pliki plytkiej kopii DB
-    if(core::Filesystem::pathExists(shallowCopyPath) == true && core::Filesystem::pathExists(metadataPath) == true) {
-        readDbSchemas(shallowCopyPath, metadataPath);
-    } else {
-        LOG_WARNING("Missing DB data from XML files.");
-        copyDbData();
-    }
+    //if(core::Filesystem::pathExists(localDBImagesPath / "motion") == false){
+    //    core::Filesystem::createDirectory(localDBImagesPath / "motion");
+    //}
+
+    ////sorawdzenie przy uruchomieniu czy mamy pliki plytkiej kopii DB
+    //if(core::Filesystem::pathExists(motionShallowCopyPath) == true && core::Filesystem::pathExists(motionMetadataPath) == true) {
+    //    readMotionDbSchemas(motionShallowCopyPath, motionMetadataPath);
+    //} else {
+    //    LOG_WARNING("Missing motion DB data from XML files.");
+    //    copyMotionDbData();
+    //}
+
+    ////sorawdzenie przy uruchomieniu czy mamy pliki plytkiej kopii DB
+    //if(core::Filesystem::pathExists(medicalShallowCopyPath) == true && core::Filesystem::pathExists(medicalMetadataPath) == true) {
+    //    readMedicalDbSchemas(medicalShallowCopyPath, medicalMetadataPath);
+    //} else {
+    //    LOG_WARNING("Missing medical DB data from XML files.");
+    //    copyMedicalDbData();
+    //}
+
+    ////czekamy a¿ skonczy sci¹gaæ
+    //while(requestsQueueEmpty() == false){
+    //    OpenThreads::Thread::microSleep(10000);
+    //}
 }
 
 CommunicationManager::~CommunicationManager()
@@ -60,8 +81,12 @@ CommunicationManager::~CommunicationManager()
 
 void CommunicationManager::init()
 {
-    transportManager.reset(new communication::TransportWSDL_FTPS());
-    queryManager.reset(new communication::QueryWSDL());
+    ScopedLock lock(requestsMutex);
+
+    motionTransportManager.reset(new communication::MotionTransportWSDL_FTPS());
+    medicalTransportManager.reset(new communication::MedicalTransportWSDL_FTPS());
+    motionQueryManager.reset(new communication::MotionQueryWSDL());
+    medicalQueryManager.reset(new communication::MedicalQueryWSDL());
 
     //ping serwera
     pingCurl = curl_easy_init();
@@ -70,227 +95,185 @@ void CommunicationManager::init()
         curl_easy_setopt(pingCurl, CURLOPT_CONNECTTIMEOUT, 1);
         curl_easy_setopt(pingCurl, CURLOPT_WRITEFUNCTION, pingDataCallback);
     }
-    //MotionMed
     //TODO: dane wpisane na sztywno, dodac zapisywanie ustawien
-    transportManager->setFTPCredentials("ftps://v21.pjwstk.edu.pl/", "testUser", "testUser");
-    transportManager->setWSCredentials("http://v21.pjwstk.edu.pl/Motion/FileStoremanWS.svc?wsdl", "applet_user", "aplet4Motion");
-    queryManager->setWSCredentials("applet_user", "aplet4Motion");
-    queryManager->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
-    queryManager->setBasicUpdatesServiceUri("");
+    motionTransportManager->setFTPCredentials("ftps://v21.pjwstk.edu.pl/", "testUser", "testUser");
+    motionTransportManager->setWSCredentials("http://v21.pjwstk.edu.pl/Motion/FileStoremanWS.svc?wsdl", "applet_user", "aplet4Motion");
+
+    medicalTransportManager->setFTPCredentials("ftps://v21.pjwstk.edu.pl/", "testUser", "testUser");
+    medicalTransportManager->setWSCredentials("http://v21.pjwstk.edu.pl/MotionMed/FileStoremanWS.svc?wsdl", "applet_user", "aplet4Motion");
+
+    motionQueryManager->setWSCredentials("applet_user", "aplet4Motion");
+    motionQueryManager->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
+    motionQueryManager->setBasicUpdatesServiceUri("");
+
+    /*medicalQueryManager->setWSCredentials("applet_user", "aplet4Motion");
+    medicalQueryManager->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
+    medicalQueryManager->setBasicUpdatesServiceUri("");*/
 }
 
 void CommunicationManager::deinit()
 {
-    transportManager.reset();
-    queryManager.reset();
+    motionTransportManager.reset();
+    motionQueryManager.reset();
+
+    medicalTransportManager.reset();
+    medicalQueryManager.reset();
 }
 
 int CommunicationManager::getProgress() const
 {
-    return transportManager->getProgress();
+    ScopedLock lock(transportManagerMutex);
+    return currentTransportManager == nullptr ? 0 : currentTransportManager->getProgress();
 }
 
-int CommunicationManager::getTotalProgress() const
+//int CommunicationManager::getTotalProgress() const
+//{
+//    int count = getFilesToDownloadCount();
+//
+//    int ret = getProgress();
+//
+//    if(count > 0){
+//        ret = (getActualDownloadFileNumber() + ret / 100.0) / (float)count;
+//    }
+//
+//    return ret;
+//}
+//
+//void CommunicationManager::copyMotionDbData(const RequestCallbacks & callbacks)
+//{
+//    CompleteRequest request;
+//    request.request.type = CopyMotionDB;
+//    request.request.id = 0;
+//    request.callbacks = callbacks;
+//    pushRequest(request);
+//}
+//
+//void CommunicationManager::copyMedicalDbData(const RequestCallbacks & callbacks)
+//{
+//    CompleteRequest request;
+//    request.request.type = CopyMedicalDB;
+//    request.request.id = 0;
+//    request.callbacks = callbacks;
+//    pushRequest(request);
+//}
+//
+//const communication::MotionShallowCopy::Performer * CommunicationManager::getPerformer(int performerID)
+//{
+//    auto it = constMotionShallowCopy->performers.find(performerID);
+//
+//    if(it == constMotionShallowCopy->performers.end()){
+//        throw std::runtime_error("Could not find performer with given id - try refreshing shallow copy");
+//    }
+//
+//    return it->second;
+//}
+//
+//const communication::MotionShallowCopy::Trial * CommunicationManager::getTrial(int trialID)
+//{
+//    auto it = constMotionShallowCopy->trials.find(trialID);
+//
+//    if(it == constMotionShallowCopy->trials.end()){
+//        throw std::runtime_error("Could not find trial with given id - try refreshing shallow copy");
+//    }
+//    
+//    return it->second;
+//}
+//
+//const communication::MotionShallowCopy::Session * CommunicationManager::getSession(int sessionID)
+//{
+//    auto it = constMotionShallowCopy->sessions.find(sessionID);
+//
+//    if(it == constMotionShallowCopy->sessions.end()){
+//        throw std::runtime_error("Could not find session with given id - try refreshing shallow copy");
+//    }
+//
+//    return it->second;
+//}
+//
+//const communication::MotionShallowCopy::File * CommunicationManager::getFile(int fileID)
+//{
+//    auto it = constMotionShallowCopy->files.find(fileID);
+//
+//    if(it == constMotionShallowCopy->files.end()){
+//        throw std::runtime_error("Could not find file with given id - try refreshing shallow copy");
+//    }
+//
+//    return it->second;
+//}
+//
+//const std::string & CommunicationManager::getTrialName(int trialID)
+//{
+//    return getTrial(trialID)->trialName;
+//}
+//
+//const std::string & CommunicationManager::getSessionName(int sessionID)
+//{
+//    return getSession(sessionID)->sessionName;
+//}
+//
+//const std::string & CommunicationManager::getFileName(int fileID)
+//{
+//    return getFile(fileID)->fileName;
+//}
+//
+//void CommunicationManager::downloadPerformer(unsigned int performerID, const RequestCallbacks & callbacks)
+//{
+//    CompleteRequest request;
+//    request.request.type = DownloadPerformer;
+//    request.request.id = performerID;
+//    request.callbacks = callbacks;
+//    pushRequest(request);
+//}
+//
+//void CommunicationManager::downloadSession(unsigned int sessionID, const RequestCallbacks & callbacks)
+//{
+//    CompleteRequest request;
+//    request.request.type = DownloadSession;
+//    request.request.id = sessionID;
+//    request.callbacks = callbacks;
+//    pushRequest(request);
+//}
+//
+//void CommunicationManager::downloadTrial(unsigned int trialID, const RequestCallbacks & callbacks)
+//{
+//    CompleteRequest request;
+//    request.request.type = DownloadTrial;
+//    request.request.id = trialID;
+//    request.callbacks = callbacks;
+//    pushRequest(request);
+//}
+//
+//void CommunicationManager::downloadFile(unsigned int fileID, const RequestCallbacks & callbacks)
+//{
+//    CompleteRequest request;
+//    request.request.type = DownloadFile;
+//    request.request.id = fileID;
+//    request.callbacks = callbacks;
+//    pushRequest(request);
+//}
+//
+//void CommunicationManager::ping(const RequestCallbacks & callbacks)
+//{
+//    CompleteRequest request;
+//    request.request.type = PingServer;
+//    request.request.id = 0;
+//    request.callbacks = callbacks;
+//    pushRequest(request);
+//}
+
+void CommunicationManager::cancelRequest(const RequestPtr & request)
 {
-    int count = getFilesToDownloadCount();
+    request->cancelled = true;
+    if(currentRequest.request == request){
+        if(currentTransportManager != nullptr){
+            currentTransportManager->abort();
+            cancelDownloading = true;
+        }
 
-    int ret = getProgress();
-
-    if(count > 0){
-        ret = (transportManager->getDownloadedFilesCount() + ret / 100.0) / (float)count;
-    }
-
-    return ret;
-}
-
-void CommunicationManager::copyDbData(const RequestCallbacks & callbacks)
-{
-    CompleteRequest request;
-    request.request.type = CopyDB;
-    request.request.id = 0;
-    request.callbacks = callbacks;
-    pushRequest(request);
-}
-
-const communication::ShallowCopy::Performer * CommunicationManager::getPerformer(int performerID)
-{
-    auto it = constShallowCopy->performers.find(performerID);
-
-    if(it == constShallowCopy->performers.end()){
-        throw std::runtime_error("Could not find performer with given id - try refreshing shallow copy");
-    }
-
-    return it->second;
-}
-
-const communication::ShallowCopy::Trial * CommunicationManager::getTrial(int trialID)
-{
-    auto it = constShallowCopy->trials.find(trialID);
-
-    if(it == constShallowCopy->trials.end()){
-        throw std::runtime_error("Could not find trial with given id - try refreshing shallow copy");
-    }
-    
-    return it->second;
-}
-
-const communication::ShallowCopy::Session * CommunicationManager::getSession(int sessionID)
-{
-    auto it = constShallowCopy->sessions.find(sessionID);
-
-    if(it == constShallowCopy->sessions.end()){
-        throw std::runtime_error("Could not find session with given id - try refreshing shallow copy");
-    }
-
-    return it->second;
-}
-
-const communication::ShallowCopy::File * CommunicationManager::getFile(int fileID)
-{
-    auto it = constShallowCopy->files.find(fileID);
-
-    if(it == constShallowCopy->files.end()){
-        throw std::runtime_error("Could not find file with given id - try refreshing shallow copy");
-    }
-
-    return it->second;
-}
-
-const std::string & CommunicationManager::getTrialName(int trialID)
-{
-    return getTrial(trialID)->trialName;
-}
-
-const std::string & CommunicationManager::getSessionName(int sessionID)
-{
-    return getSession(sessionID)->sessionName;
-}
-
-const std::string & CommunicationManager::getFileName(int fileID)
-{
-    return getFile(fileID)->fileName;
-}
-
-void CommunicationManager::downloadPerformer(unsigned int performerID, const RequestCallbacks & callbacks)
-{
-    CompleteRequest request;
-    request.request.type = DownloadPerformer;
-    request.request.id = performerID;
-    request.callbacks = callbacks;
-    pushRequest(request);
-}
-
-void CommunicationManager::downloadSession(unsigned int sessionID, const RequestCallbacks & callbacks)
-{
-    CompleteRequest request;
-    request.request.type = DownloadSession;
-    request.request.id = sessionID;
-    request.callbacks = callbacks;
-    pushRequest(request);
-}
-
-void CommunicationManager::downloadTrial(unsigned int trialID, const RequestCallbacks & callbacks)
-{
-    CompleteRequest request;
-    request.request.type = DownloadTrial;
-    request.request.id = trialID;
-    request.callbacks = callbacks;
-    pushRequest(request);
-}
-
-void CommunicationManager::downloadFile(unsigned int fileID, const RequestCallbacks & callbacks)
-{
-    CompleteRequest request;
-    request.request.type = DownloadFile;
-    request.request.id = fileID;
-    request.callbacks = callbacks;
-    pushRequest(request);
-}
-
-void CommunicationManager::ping(const RequestCallbacks & callbacks)
-{
-    CompleteRequest request;
-    request.request.type = PingServer;
-    request.request.id = 0;
-    request.callbacks = callbacks;
-    pushRequest(request);
-}
-
-void CommunicationManager::loadLocalTrials()
-{
-    localTrials.clear();
-
-    std::map<std::string, std::vector<std::string> > trials;
-
-    //przeszukujemy liste prob pomiarowych, nie plikow
-    std::vector<std::string> sessionPaths = core::Filesystem::listSubdirectories(localDataPath);
-    BOOST_FOREACH(std::string path, sessionPaths)
-    {
-        core::Filesystem::Path p(path);
-        std::string dirName(p.filename().string());
-
-        boost::cmatch matches;
-        boost::regex e("(.*)(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,})(.*)");
-        //sprawdzamy, czy zgadza sie nazwa folderu z nazwa sesji
-        if(dirName.size() > 0 && boost::regex_search(dirName.c_str(), matches, e)) {
-
-            std::string sessionID(matches[0].first, matches[0].second);
-
-            std::vector<std::string> masks;
-
-            masks.push_back(".c3d");
-            masks.push_back(".avi");
-            masks.push_back(".amc");
-            masks.push_back(".imgsequence");
-
-            try{
-
-                std::vector<std::string> trialFiles = core::Filesystem::listFiles(path, false, masks);
-
-                //iterujemy po plikach, grupujemy je wg triali
-                for(auto fileIT = trialFiles.begin(); fileIT != trialFiles.end(); fileIT++){
-                    boost::cmatch matches;
-                    boost::regex e("(\\d{4}-\\d{2}-\\d{2}-B\\d{4,}-S\\d{2,}-T\\d{2,})");
-
-                    core::Filesystem::Path p(*fileIT);
-                    std::string file(p.filename().string());
-
-                    if(file.size() > 0 && boost::regex_search(file.c_str(), matches, e)) {
-                        
-                        std::string trialID(matches[0].first, matches[0].second);
-
-                        if(trialID.find(sessionID) != std::string::npos){
-                            trials[trialID].push_back(*fileIT);
-                        }
-                    }
-                }
-            }catch(std::exception & e){
-                LOG_WARNING("Error during session exploration: " << path << " Error: " << e.what());
-            }catch(...){
-                LOG_WARNING("Error during session exploration: " << path << " Error: UNKNOWN");
-            }
+        if(currentRequest.callbacks.onCancelCallback.empty() == false){
+            currentRequest.callbacks.onCancelCallback(currentRequest.request);
         }
     }
-
-    for(auto it = trials.begin(); it != trials.end(); it++){
-        core::IDataManager::LocalTrial trial;
-        for(auto iT = it->second.begin(); iT != it->second.end(); iT++){
-            trial.push_back(*iT);
-        }
-        localTrials.push_back(trial);
-    }
-    
-    notify();
-}
-
-void CommunicationManager::loadFiles(const std::vector<core::Filesystem::Path> files)
-{
-    dataManager->loadFiles(files);
-}
-
-void CommunicationManager::removeFiles(const std::vector<core::Filesystem::Path> files)
-{
-    dataManager->unloadFiles(files);
 }
 
 void CommunicationManager::run()
@@ -304,426 +287,566 @@ void CommunicationManager::run()
 
             cancelDownloading = false;
 
-            CompleteRequest request;
+            popRequest(currentRequest);
 
-            popRequest(request);
-            
-            switch(request.request.type) {
-                case DownloadFile: {
+            if(currentRequest.request->cancelled == false){
 
-                    cancelDownloading = false;
+                switch(currentRequest.request->type) {
+                    case DownloadFile: {
 
-                    setState(DownloadingFile);
+                        cancelDownloading = false;
 
-                    if(request.callbacks.onBeginCallback.empty() == false){
-                        request.callbacks.onBeginCallback(request.request);
-                    }
+                        setState(DownloadingFile);
 
-                    core::Filesystem::Path path;
-
-                    try {
-
-                        const communication::ShallowCopy::File * file = getFile(request.request.id);
-
-                        path = core::Filesystem::Path(localDataPath) / core::Filesystem::Path(getSessionName(file->session->sessionID));
-
-                        core::Filesystem::createDirectory(path);
-                        actualDownloadFileNumer = 1;
-                        filesToDownload = 1;
-                        transportManager->downloadFile(request.request.id, path.string());
-
-                        if(cancelDownloading == false){
-                            if(request.callbacks.onEndCallback.empty() == false){
-                                request.callbacks.onEndCallback(request.request);
-                            }
-                        }else{
-                            if(request.callbacks.onCancelCallback.empty() == false){
-                                request.callbacks.onCancelCallback(request.request);
-                            }
-                        }
-                    } catch(std::exception& e) {
-                        //czyœcimy jesli nie uda³o siê utworzyæ zasobów w ca³oœci
-                        if(path.empty() == false){
-                            core::Filesystem::deleteDirectory(path);
+                        if(currentRequest.callbacks.onBeginCallback.empty() == false){
+                            currentRequest.callbacks.onBeginCallback(currentRequest.request);
                         }
 
-                        if(request.callbacks.onErrorCallback.empty() == false){
-                            request.callbacks.onErrorCallback(request.request, e.what());
-                        }
-                    }
-
-                    actualDownloadFileNumer = 0;
-                    filesToDownload = 0;
-
-                    break;
-                    }
-
-                case DownloadTrial: {
-
-                        cancelDownloading = false;    
-
-                        setState(DownloadingTrial);
-
-                        if(request.callbacks.onBeginCallback.empty() == false){
-                            request.callbacks.onBeginCallback(request.request);
-                        }
-
-                        core::Filesystem::Path path;
-                        std::map<int, std::string> toDownload;
+                        //core::Filesystem::Path path;
 
                         try {
 
-                            auto trial = getTrial(request.request.id);
+                            core::shared_ptr<FileRequest> fileRequest = core::dynamic_pointer_cast<FileRequest>(currentRequest.request);
+                            setCurrentTransportManager(motionTransportManager);
+                            /*const communication::MotionShallowCopy::File * file = getFile(request.request.id);
 
-                            //sprawdz czy sesja juz istnieje
-                            auto sessionPath = core::Filesystem::Path(localDataPath) / core::Filesystem::Path(trial->session->sessionName);
+                            path = core::Filesystem::Path(localDataPath) / core::Filesystem::Path(getSessionName(file->session->sessionID));
 
-                            if(core::Filesystem::pathExists(sessionPath) == false){
-                                core::Filesystem::createDirectory(sessionPath);
-                            }
+                            core::Filesystem::createDirectory(path);
+                            actualDownloadFileNumer = 1;
+                            filesToDownload = 1;*/
+                            motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath);
 
-                            //sprawdz czy wszystkie pliki sesji juz sa - jesli nie kaz dosciagac brakujace pliki
-                            auto localSessionFiles = core::Filesystem::listFiles(sessionPath);
-
-                            std::set<std::string> localFileNamesOnly;
-
-                            for(auto it = localSessionFiles.begin(); it != localSessionFiles.end(); it++){
-                                localFileNamesOnly.insert(core::Filesystem::Path(*it).filename().string());
-                            }
-
-                            for(auto it = trial->session->files.begin(); it != trial->session->files.end(); it++){
-                                if(localFileNamesOnly.find(it->second->fileName) == localFileNamesOnly.end()){
-                                    toDownload[it->second->fileID] = (sessionPath / core::Filesystem::Path(it->second->fileName)).string();
-                                }
-                            }
-
-                            //dodajemy pliki triala
-                            for(auto it = trial->files.begin(); it != trial->files.end(); it++){
-                                if(localFileNamesOnly.find(it->second->fileName) == localFileNamesOnly.end()){
-                                    //brakuje nam pliku - trzeba go sciagnac
-                                    toDownload[it->second->fileID] = (sessionPath / core::Filesystem::Path(it->second->fileName)).string();
-                                }
-                            }
-
-                            if(toDownload.empty() == false){
-                                actualDownloadFileNumer = 1;
-                                filesToDownload = toDownload.size();
-                            }
-
-                            for(auto it = toDownload.begin(); it != toDownload.end(); it++){
-
-                                if(cancelDownloading == true){
-                                    break;
-                                }
-
-                                transportManager->downloadFile(it->first, it->second);
-                                actualDownloadFileNumer++;
-                            }
-
-                            if(cancelDownloading == false || actualDownloadFileNumer == filesToDownload){
-                                cancelDownloading = false;
-                                if(request.callbacks.onEndCallback.empty() == false){
-                                    request.callbacks.onEndCallback(request.request);
+                            if(cancelDownloading == false){
+                                if(currentRequest.callbacks.onEndCallback.empty() == false){
+                                    currentRequest.callbacks.onEndCallback(currentRequest.request);
                                 }
                             }else{
-
-                                //czyœcimy jesli przerwano
-                                for(auto it = toDownload.begin(); it != toDownload.end(); it++){
-                                    if(core::Filesystem::pathExists(it->second) == true){
-                                        core::Filesystem::deleteFile(it->second);
-                                    }else{
-                                        break;
-                                    }
-                                }
-
-                                if(request.callbacks.onCancelCallback.empty() == false){
-                                    request.callbacks.onCancelCallback(request.request);
+                                if(currentRequest.callbacks.onCancelCallback.empty() == false){
+                                    currentRequest.callbacks.onCancelCallback(currentRequest.request);
                                 }
                             }
                         } catch(std::exception& e) {
                             //czyœcimy jesli nie uda³o siê utworzyæ zasobów w ca³oœci
-                            for(auto it = toDownload.begin(); it != toDownload.end(); it++){
-                                if(core::Filesystem::pathExists(it->second) == true){
-                                    core::Filesystem::deleteFile(it->second);
-                                }else{
-                                    break;
-                                }
-                            }
+                            /*if(path.empty() == false){
+                                core::Filesystem::deleteDirectory(path);
+                            }*/
 
-                            if(request.callbacks.onErrorCallback.empty() == false){
-                                request.callbacks.onErrorCallback(request.request, e.what());
+                            if(currentRequest.callbacks.onErrorCallback.empty() == false){
+                                currentRequest.callbacks.onErrorCallback(currentRequest.request, e.what());
                             }
                         }
 
-                        actualDownloadFileNumer = 0;
-                        filesToDownload = 0;
+                        //actualDownloadFileNumer = 0;
+                        //filesToDownload = 0;
 
                         break;
-                    }
-
-                case DownloadSession: {
-
-                    cancelDownloading = false;    
-
-                    setState(DownloadingSession);
-
-                    if(request.callbacks.onBeginCallback.empty() == false){
-                        request.callbacks.onBeginCallback(request.request);
-                    }
-
-                    core::Filesystem::Path path;
-                    std::map<int, std::string> toDownload;
-
-                    try {
-
-                        auto session = getSession(request.request.id);
-                        //sprawdz czy sesja juz istnieje
-                        auto sessionPath = core::Filesystem::Path(localDataPath) / core::Filesystem::Path(session->sessionName);
-
-                        if(core::Filesystem::pathExists(sessionPath) == false){
-                            core::Filesystem::createDirectory(sessionPath);
                         }
 
-                        //sprawdz czy wszystkie pliki sesji juz sa - jesli nie kaz dosciagac brakujace pliki
-                        auto localSessionFiles = core::Filesystem::listFiles(sessionPath);
+                    case DownloadPhoto: {
 
-                        for(auto sessionFilesIT = session->files.begin(); sessionFilesIT != session->files.end(); sessionFilesIT++){
-                            if( std::find(localSessionFiles.begin(), localSessionFiles.end(), sessionFilesIT->second->fileName) == localSessionFiles.end()){
-                                //brakuje nam pliku - trzeba go sciagnac
-                                toDownload[sessionFilesIT->second->fileID] = (sessionPath / core::Filesystem::Path(sessionFilesIT->second->fileName)).string();
-                            } 
+                        cancelDownloading = false;
+
+                        setState(DownloadingPhoto);
+
+                        if(currentRequest.callbacks.onBeginCallback.empty() == false){
+                            currentRequest.callbacks.onBeginCallback(currentRequest.request);
                         }
 
-                        //dodajemy pliki triali
-                        for(auto trialsIT = session->trials.begin(); trialsIT != session->trials.end(); trialsIT++){
-                            //weryfikujemy pliki triali, jeœli brakuje dodajemy je
-
-                            for(auto filesIT = trialsIT->second->files.begin(); filesIT != trialsIT->second->files.end(); filesIT++){
-                                if( std::find(localSessionFiles.begin(), localSessionFiles.end(), filesIT->second->fileName) == localSessionFiles.end()){
-                                    //brakuje nam pliku - trzeba go sciagnac
-                                    toDownload[filesIT->second->fileID] = (sessionPath / core::Filesystem::Path(filesIT->second->fileName)).string();
-                                }
-                            }
-                        }
-
-                        actualDownloadFileNumer = 1;
-                        filesToDownload = toDownload.size();
-
-                        for(auto it = toDownload.begin(); it != toDownload.end(); it++){
-
-                            if(cancelDownloading == true){
-                                break;
-                            }
-
-                            transportManager->downloadFile(it->first, it->second);
-                            actualDownloadFileNumer++;
-                        }
-
-                        if(cancelDownloading == false){
-                            if(request.callbacks.onEndCallback.empty() == false){
-                                request.callbacks.onEndCallback(request.request);
-                            }
-                        }else{
-
-                            //czyœcimy jesli przerwano
-                            for(auto it = toDownload.begin(); it != toDownload.end(); it++){
-                                if(core::Filesystem::pathExists(it->second) == true){
-                                    core::Filesystem::deleteFile(it->second);
-                                }else{
-                                    break;
-                                }
-                            }
-
-                            if(request.callbacks.onCancelCallback.empty() == false){
-                                request.callbacks.onCancelCallback(request.request);
-                            }
-                        }
-                    } catch(std::exception& e) {
-                        //czyœcimy jesli nie uda³o siê utworzyæ zasobów w ca³oœci
-                        for(auto it = toDownload.begin(); it != toDownload.end(); it++){
-                            if(core::Filesystem::pathExists(it->second) == true){
-                                core::Filesystem::deleteFile(it->second);
-                            }else{
-                                break;
-                            }
-                        }
-
-                        if(request.callbacks.onErrorCallback.empty() == false){
-                            request.callbacks.onErrorCallback(request.request, e.what());
-                        }
-                    }
-
-                    actualDownloadFileNumer = 0;
-                    filesToDownload = 0;
-
-                    break;
-                    }
-
-                case DownloadPerformer: {
-                    cancelDownloading = false;    
-
-                    setState(DownloadingPerformer);
-
-                    if(request.callbacks.onBeginCallback.empty() == false){
-                        request.callbacks.onBeginCallback(request.request);
-                    }
-
-                    core::Filesystem::Path path;
-                    std::map<int, std::string> toDownload;
-
-                    try {
-
-                        auto performer = getPerformer(request.request.id);
-
-                        for(auto perfConfIT = performer->performerConfs.begin(); perfConfIT != performer->performerConfs.end(); perfConfIT++){
-                            //sprawdz czy sesja juz istnieje
-                            auto sessionPath = core::Filesystem::Path(localDataPath) / core::Filesystem::Path(perfConfIT->second->session->sessionName);
-
-                            if(core::Filesystem::pathExists(sessionPath) == false){
-                                core::Filesystem::createDirectory(sessionPath);
-                            }
-
-                            //sprawdz czy wszystkie pliki sesji juz sa - jesli nie kaz dosciagac brakujace pliki
-                            auto localSessionFiles = core::Filesystem::listFiles(sessionPath);
-
-                            for(auto sessionFilesIT = perfConfIT->second->session->files.begin(); sessionFilesIT != perfConfIT->second->session->files.end(); sessionFilesIT++){
-                                if( std::find(localSessionFiles.begin(), localSessionFiles.end(), sessionFilesIT->second->fileName) == localSessionFiles.end()){
-                                    //brakuje nam pliku - trzeba go sciagnac
-                                    toDownload[sessionFilesIT->second->fileID] = (sessionPath / core::Filesystem::Path(sessionFilesIT->second->fileName)).string();
-                                } 
-                            }
-
-                            //dodajemy pliki triali
-                            for(auto trialsIT = perfConfIT->second->session->trials.begin(); trialsIT != perfConfIT->second->session->trials.end(); trialsIT++){
-
-                                //weryfikujemy pliki triali, jeœli brakuje dodajemy je
-
-                                for(auto filesIT = trialsIT->second->files.begin(); filesIT != trialsIT->second->files.end(); filesIT++){
-                                    if( std::find(localSessionFiles.begin(), localSessionFiles.end(), filesIT->second->fileName) == localSessionFiles.end()){
-                                        //brakuje nam pliku - trzeba go sciagnac
-                                        toDownload[filesIT->second->fileID] = (sessionPath / core::Filesystem::Path(filesIT->second->fileName)).string();
-                                    }
-                                }
-                            }
-                        }                        
-
-                        actualDownloadFileNumer = 1;
-                        filesToDownload = toDownload.size();
-
-                        for(auto it = toDownload.begin(); it != toDownload.end(); it++){
-
-                            if(cancelDownloading == true){
-                                break;
-                            }
-
-                            transportManager->downloadFile(it->first, it->second);
-                            actualDownloadFileNumer++;
-                        }
-
-                        if(cancelDownloading == false){
-                            if(request.callbacks.onEndCallback.empty() == false){
-                                request.callbacks.onEndCallback(request.request);
-                            }
-                        }else{
-
-                            //czyœcimy jesli przerwano
-                            for(auto it = toDownload.begin(); it != toDownload.end(); it++){
-                                if(core::Filesystem::pathExists(it->second) == true){
-                                    core::Filesystem::deleteFile(it->second);
-                                }else{
-                                    break;
-                                }
-                            }
-
-                            if(request.callbacks.onCancelCallback.empty() == false){
-                                request.callbacks.onCancelCallback(request.request);
-                            }
-                        }
-                    } catch(std::exception& e) {
-                        //czyœcimy jesli nie uda³o siê utworzyæ zasobów w ca³oœci
-                        for(auto it = toDownload.begin(); it != toDownload.end(); it++){
-                            if(core::Filesystem::pathExists(it->second) == true){
-                                core::Filesystem::deleteFile(it->second);
-                            }else{
-                                break;
-                            }
-                        }
-
-                        if(request.callbacks.onErrorCallback.empty() == false){
-                            request.callbacks.onErrorCallback(request.request, e.what());
-                        }
-                    }
-
-                    actualDownloadFileNumer = 0;
-                    filesToDownload = 0;
-
-                    break;
-                }
-
-                case CopyDB: {
-
-                        setState(CopyingDB);
-
-                        if(request.callbacks.onBeginCallback.empty() == false){
-                            request.callbacks.onBeginCallback(request.request);
-                        }
+                        //core::Filesystem::Path path;
 
                         try {
+                            core::shared_ptr<PhotoRequest> photoRequest = core::dynamic_pointer_cast<PhotoRequest>(currentRequest.request);
+                            setCurrentTransportManager(motionTransportManager);
+                            /*const communication::MotionShallowCopy::File * file = getFile(request.request.id);
 
+                            path = core::Filesystem::Path(localDataPath) / core::Filesystem::Path(getSessionName(file->session->sessionID));
+
+                            core::Filesystem::createDirectory(path);
                             actualDownloadFileNumer = 1;
-                            filesToDownload = 2;
+                            filesToDownload = 1;*/
+                            motionTransportManager->downloadPhoto(photoRequest->photoID, photoRequest->filePath);
 
-                            transportManager->getShallowCopy(shallowCopyPath);
-                            actualDownloadFileNumer = 2;
-                            transportManager->getMetadata(metadataPath);
-
-                            readDbSchemas(shallowCopyPath, metadataPath);
-                            
                             if(cancelDownloading == false){
-                                if(request.callbacks.onEndCallback.empty() == false){
-                                    request.callbacks.onEndCallback(request.request);
+                                if(currentRequest.callbacks.onEndCallback.empty() == false){
+                                    currentRequest.callbacks.onEndCallback(currentRequest.request);
                                 }
                             }else{
-                                if(request.callbacks.onCancelCallback.empty() == false){
-                                    request.callbacks.onCancelCallback(request.request);
+                                if(currentRequest.callbacks.onCancelCallback.empty() == false){
+                                    currentRequest.callbacks.onCancelCallback(currentRequest.request);
                                 }
                             }
                         } catch(std::exception& e) {
-                            if(request.callbacks.onErrorCallback.empty() == false){
-                                request.callbacks.onErrorCallback(request.request, e.what());
+                            //czyœcimy jesli nie uda³o siê utworzyæ zasobów w ca³oœci
+                            /*if(path.empty() == false){
+                                core::Filesystem::deleteDirectory(path);
+                            }*/
+
+                            if(currentRequest.callbacks.onErrorCallback.empty() == false){
+                                currentRequest.callbacks.onErrorCallback(currentRequest.request, e.what());
                             }
                         }
 
-                        actualDownloadFileNumer = 0;
-                        filesToDownload = 0;
+                        //actualDownloadFileNumer = 0;
+                        //filesToDownload = 0;
+
+                        break;
+                        }
+
+                    //case DownloadTrial: {
+
+                    //        cancelDownloading = false;    
+
+                    //        setState(DownloadingTrial);
+
+                    //        if(request.callbacks.onBeginCallback.empty() == false){
+                    //            request.callbacks.onBeginCallback(request.request);
+                    //        }
+
+                    //        core::Filesystem::Path path;
+                    //        std::map<int, std::string> toDownload;
+
+                    //        try {
+
+                    //            auto trial = getTrial(request.request.id);
+
+                    //            //sprawdz czy sesja juz istnieje
+                    //            auto sessionPath = core::Filesystem::Path(localDataPath) / core::Filesystem::Path(trial->session->sessionName);
+
+                    //            if(core::Filesystem::pathExists(sessionPath) == false){
+                    //                core::Filesystem::createDirectory(sessionPath);
+                    //            }
+
+                    //            //sprawdz czy wszystkie pliki sesji juz sa - jesli nie kaz dosciagac brakujace pliki
+                    //            auto localSessionFiles = core::Filesystem::listFiles(sessionPath);
+
+                    //            std::set<std::string> localFileNamesOnly;
+
+                    //            for(auto it = localSessionFiles.begin(); it != localSessionFiles.end(); it++){
+                    //                localFileNamesOnly.insert(core::Filesystem::Path(*it).filename().string());
+                    //            }
+
+                    //            for(auto it = trial->session->files.begin(); it != trial->session->files.end(); it++){
+                    //                if(localFileNamesOnly.find(it->second->fileName) == localFileNamesOnly.end()){
+                    //                    toDownload[it->second->fileID] = (sessionPath / core::Filesystem::Path(it->second->fileName)).string();
+                    //                }
+                    //            }
+
+                    //            //dodajemy pliki triala
+                    //            for(auto it = trial->files.begin(); it != trial->files.end(); it++){
+                    //                if(localFileNamesOnly.find(it->second->fileName) == localFileNamesOnly.end()){
+                    //                    //brakuje nam pliku - trzeba go sciagnac
+                    //                    toDownload[it->second->fileID] = (sessionPath / core::Filesystem::Path(it->second->fileName)).string();
+                    //                }
+                    //            }
+
+                    //            if(toDownload.empty() == false){
+                    //                actualDownloadFileNumer = 1;
+                    //                filesToDownload = toDownload.size();
+                    //            }
+
+                    //            for(auto it = toDownload.begin(); it != toDownload.end(); it++){
+
+                    //                if(cancelDownloading == true){
+                    //                    break;
+                    //                }
+
+                    //                motionTransportManager->downloadFile(it->first, it->second);
+                    //                actualDownloadFileNumer++;
+                    //            }
+
+                    //            if(cancelDownloading == false || actualDownloadFileNumer == filesToDownload){
+                    //                cancelDownloading = false;
+                    //                if(request.callbacks.onEndCallback.empty() == false){
+                    //                    request.callbacks.onEndCallback(request.request);
+                    //                }
+                    //            }else{
+
+                    //                //czyœcimy jesli przerwano
+                    //                for(auto it = toDownload.begin(); it != toDownload.end(); it++){
+                    //                    if(core::Filesystem::pathExists(it->second) == true){
+                    //                        core::Filesystem::deleteFile(it->second);
+                    //                    }else{
+                    //                        break;
+                    //                    }
+                    //                }
+
+                    //                if(request.callbacks.onCancelCallback.empty() == false){
+                    //                    request.callbacks.onCancelCallback(request.request);
+                    //                }
+                    //            }
+                    //        } catch(std::exception& e) {
+                    //            //czyœcimy jesli nie uda³o siê utworzyæ zasobów w ca³oœci
+                    //            for(auto it = toDownload.begin(); it != toDownload.end(); it++){
+                    //                if(core::Filesystem::pathExists(it->second) == true){
+                    //                    core::Filesystem::deleteFile(it->second);
+                    //                }else{
+                    //                    break;
+                    //                }
+                    //            }
+
+                    //            if(request.callbacks.onErrorCallback.empty() == false){
+                    //                request.callbacks.onErrorCallback(request.request, e.what());
+                    //            }
+                    //        }
+
+                    //        actualDownloadFileNumer = 0;
+                    //        filesToDownload = 0;
+
+                    //        break;
+                    //    }
+
+                    //case DownloadSession: {
+
+                    //    cancelDownloading = false;    
+
+                    //    setState(DownloadingSession);
+
+                    //    if(request.callbacks.onBeginCallback.empty() == false){
+                    //        request.callbacks.onBeginCallback(request.request);
+                    //    }
+
+                    //    core::Filesystem::Path path;
+                    //    std::map<int, std::string> toDownload;
+
+                    //    try {
+
+                    //        auto session = getSession(request.request.id);
+                    //        //sprawdz czy sesja juz istnieje
+                    //        auto sessionPath = core::Filesystem::Path(localDataPath) / core::Filesystem::Path(session->sessionName);
+
+                    //        if(core::Filesystem::pathExists(sessionPath) == false){
+                    //            core::Filesystem::createDirectory(sessionPath);
+                    //        }
+
+                    //        //sprawdz czy wszystkie pliki sesji juz sa - jesli nie kaz dosciagac brakujace pliki
+                    //        auto localSessionFiles = core::Filesystem::listFiles(sessionPath);
+
+                    //        for(auto sessionFilesIT = session->files.begin(); sessionFilesIT != session->files.end(); sessionFilesIT++){
+                    //            if( std::find(localSessionFiles.begin(), localSessionFiles.end(), sessionFilesIT->second->fileName) == localSessionFiles.end()){
+                    //                //brakuje nam pliku - trzeba go sciagnac
+                    //                toDownload[sessionFilesIT->second->fileID] = (sessionPath / core::Filesystem::Path(sessionFilesIT->second->fileName)).string();
+                    //            } 
+                    //        }
+
+                    //        //dodajemy pliki triali
+                    //        for(auto trialsIT = session->trials.begin(); trialsIT != session->trials.end(); trialsIT++){
+                    //            //weryfikujemy pliki triali, jeœli brakuje dodajemy je
+
+                    //            for(auto filesIT = trialsIT->second->files.begin(); filesIT != trialsIT->second->files.end(); filesIT++){
+                    //                if( std::find(localSessionFiles.begin(), localSessionFiles.end(), filesIT->second->fileName) == localSessionFiles.end()){
+                    //                    //brakuje nam pliku - trzeba go sciagnac
+                    //                    toDownload[filesIT->second->fileID] = (sessionPath / core::Filesystem::Path(filesIT->second->fileName)).string();
+                    //                }
+                    //            }
+                    //        }
+
+                    //        actualDownloadFileNumer = 1;
+                    //        filesToDownload = toDownload.size();
+
+                    //        for(auto it = toDownload.begin(); it != toDownload.end(); it++){
+
+                    //            if(cancelDownloading == true){
+                    //                break;
+                    //            }
+
+                    //            motionTransportManager->downloadFile(it->first, it->second);
+                    //            actualDownloadFileNumer++;
+                    //        }
+
+                    //        if(cancelDownloading == false){
+                    //            if(request.callbacks.onEndCallback.empty() == false){
+                    //                request.callbacks.onEndCallback(request.request);
+                    //            }
+                    //        }else{
+
+                    //            //czyœcimy jesli przerwano
+                    //            for(auto it = toDownload.begin(); it != toDownload.end(); it++){
+                    //                if(core::Filesystem::pathExists(it->second) == true){
+                    //                    core::Filesystem::deleteFile(it->second);
+                    //                }else{
+                    //                    break;
+                    //                }
+                    //            }
+
+                    //            if(request.callbacks.onCancelCallback.empty() == false){
+                    //                request.callbacks.onCancelCallback(request.request);
+                    //            }
+                    //        }
+                    //    } catch(std::exception& e) {
+                    //        //czyœcimy jesli nie uda³o siê utworzyæ zasobów w ca³oœci
+                    //        for(auto it = toDownload.begin(); it != toDownload.end(); it++){
+                    //            if(core::Filesystem::pathExists(it->second) == true){
+                    //                core::Filesystem::deleteFile(it->second);
+                    //            }else{
+                    //                break;
+                    //            }
+                    //        }
+
+                    //        if(request.callbacks.onErrorCallback.empty() == false){
+                    //            request.callbacks.onErrorCallback(request.request, e.what());
+                    //        }
+                    //    }
+
+                    //    actualDownloadFileNumer = 0;
+                    //    filesToDownload = 0;
+
+                    //    break;
+                    //    }
+
+                    //case DownloadPerformer: {
+                    //    cancelDownloading = false;    
+
+                    //    setState(DownloadingPerformer);
+
+                    //    if(request.callbacks.onBeginCallback.empty() == false){
+                    //        request.callbacks.onBeginCallback(request.request);
+                    //    }
+
+                    //    core::Filesystem::Path path;
+                    //    std::map<int, std::string> toDownload;
+
+                    //    try {
+
+                    //        auto performer = getPerformer(request.request.id);
+
+                    //        for(auto perfConfIT = performer->performerConfs.begin(); perfConfIT != performer->performerConfs.end(); perfConfIT++){
+                    //            //sprawdz czy sesja juz istnieje
+                    //            auto sessionPath = core::Filesystem::Path(localDataPath) / core::Filesystem::Path(perfConfIT->second->session->sessionName);
+
+                    //            if(core::Filesystem::pathExists(sessionPath) == false){
+                    //                core::Filesystem::createDirectory(sessionPath);
+                    //            }
+
+                    //            //sprawdz czy wszystkie pliki sesji juz sa - jesli nie kaz dosciagac brakujace pliki
+                    //            auto localSessionFiles = core::Filesystem::listFiles(sessionPath);
+
+                    //            for(auto sessionFilesIT = perfConfIT->second->session->files.begin(); sessionFilesIT != perfConfIT->second->session->files.end(); sessionFilesIT++){
+                    //                if( std::find(localSessionFiles.begin(), localSessionFiles.end(), sessionFilesIT->second->fileName) == localSessionFiles.end()){
+                    //                    //brakuje nam pliku - trzeba go sciagnac
+                    //                    toDownload[sessionFilesIT->second->fileID] = (sessionPath / core::Filesystem::Path(sessionFilesIT->second->fileName)).string();
+                    //                } 
+                    //            }
+
+                    //            //dodajemy pliki triali
+                    //            for(auto trialsIT = perfConfIT->second->session->trials.begin(); trialsIT != perfConfIT->second->session->trials.end(); trialsIT++){
+
+                    //                //weryfikujemy pliki triali, jeœli brakuje dodajemy je
+
+                    //                for(auto filesIT = trialsIT->second->files.begin(); filesIT != trialsIT->second->files.end(); filesIT++){
+                    //                    if( std::find(localSessionFiles.begin(), localSessionFiles.end(), filesIT->second->fileName) == localSessionFiles.end()){
+                    //                        //brakuje nam pliku - trzeba go sciagnac
+                    //                        toDownload[filesIT->second->fileID] = (sessionPath / core::Filesystem::Path(filesIT->second->fileName)).string();
+                    //                    }
+                    //                }
+                    //            }
+                    //        }                        
+
+                    //        actualDownloadFileNumer = 1;
+                    //        filesToDownload = toDownload.size();
+
+                    //        for(auto it = toDownload.begin(); it != toDownload.end(); it++){
+
+                    //            if(cancelDownloading == true){
+                    //                break;
+                    //            }
+
+                    //            motionTransportManager->downloadFile(it->first, it->second);
+                    //            actualDownloadFileNumer++;
+                    //        }
+
+                    //        if(cancelDownloading == false){
+                    //            if(request.callbacks.onEndCallback.empty() == false){
+                    //                request.callbacks.onEndCallback(request.request);
+                    //            }
+                    //        }else{
+
+                    //            //czyœcimy jesli przerwano
+                    //            for(auto it = toDownload.begin(); it != toDownload.end(); it++){
+                    //                if(core::Filesystem::pathExists(it->second) == true){
+                    //                    core::Filesystem::deleteFile(it->second);
+                    //                }else{
+                    //                    break;
+                    //                }
+                    //            }
+
+                    //            if(request.callbacks.onCancelCallback.empty() == false){
+                    //                request.callbacks.onCancelCallback(request.request);
+                    //            }
+                    //        }
+                    //    } catch(std::exception& e) {
+                    //        //czyœcimy jesli nie uda³o siê utworzyæ zasobów w ca³oœci
+                    //        for(auto it = toDownload.begin(); it != toDownload.end(); it++){
+                    //            if(core::Filesystem::pathExists(it->second) == true){
+                    //                core::Filesystem::deleteFile(it->second);
+                    //            }else{
+                    //                break;
+                    //            }
+                    //        }
+
+                    //        if(request.callbacks.onErrorCallback.empty() == false){
+                    //            request.callbacks.onErrorCallback(request.request, e.what());
+                    //        }
+                    //    }
+
+                    //    actualDownloadFileNumer = 0;
+                    //    filesToDownload = 0;
+
+                    //    break;
+                    //}
+
+                    case CopyMotionShallowCopy: {
+
+                            setState(CopyingMotionShallowCopy);
+
+                            if(currentRequest.callbacks.onBeginCallback.empty() == false){
+                                currentRequest.callbacks.onBeginCallback(currentRequest.request);
+                            }
+
+                            try {
+                                core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(currentRequest.request);
+                                setCurrentTransportManager(motionTransportManager);
+                                motionTransportManager->getShallowCopy(metaRequest->filePath);
+                            
+                                if(cancelDownloading == false){
+                                    if(currentRequest.callbacks.onEndCallback.empty() == false){
+                                        currentRequest.callbacks.onEndCallback(currentRequest.request);
+                                    }
+                                }else{
+                                    if(currentRequest.callbacks.onCancelCallback.empty() == false){
+                                        currentRequest.callbacks.onCancelCallback(currentRequest.request);
+                                    }
+                                }
+                            } catch(std::exception& e) {
+                                if(currentRequest.callbacks.onErrorCallback.empty() == false){
+                                    currentRequest.callbacks.onErrorCallback(currentRequest.request, e.what());
+                                }
+                            }
+
+                            break;
+                        }
+                
+                    case CopyMotionMetadata: {
+
+                        setState(CopyingMotionMetadata);
+
+                        if(currentRequest.callbacks.onBeginCallback.empty() == false){
+                            currentRequest.callbacks.onBeginCallback(currentRequest.request);
+                        }
+
+                        try {
+                            core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(currentRequest.request);
+                            setCurrentTransportManager(motionTransportManager);
+                            motionTransportManager->getMetadata(metaRequest->filePath);
+
+                            if(cancelDownloading == false){
+                                if(currentRequest.callbacks.onEndCallback.empty() == false){
+                                    currentRequest.callbacks.onEndCallback(currentRequest.request);
+                                }
+                            }else{
+                                if(currentRequest.callbacks.onCancelCallback.empty() == false){
+                                    currentRequest.callbacks.onCancelCallback(currentRequest.request);
+                                }
+                            }
+                        } catch(std::exception& e) {
+                            if(currentRequest.callbacks.onErrorCallback.empty() == false){
+                                currentRequest.callbacks.onErrorCallback(currentRequest.request, e.what());
+                            }
+                        }
 
                         break;
                     }
-                case PingServer: {
 
-                        setState(PingingServer);
+                    case CopyMedicalShallowCopy: {
 
-                        if(request.callbacks.onBeginCallback.empty() == false){
-                            request.callbacks.onBeginCallback(request.request);
+                        setState(CopyingMedicalShallowCopy);
+
+                        if(currentRequest.callbacks.onBeginCallback.empty() == false){
+                            currentRequest.callbacks.onBeginCallback(currentRequest.request);
                         }
 
-                        if(pingCurl) {
-                            pingCurlResult = curl_easy_perform(pingCurl);
-                            if(pingCurlResult) {
-                                serverResponse = false;
+                        try {
+                            core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(currentRequest.request);
+                            setCurrentTransportManager(medicalTransportManager);
+                            medicalTransportManager->getShallowCopy(metaRequest->filePath);
+
+                            if(cancelDownloading == false){
+                                if(currentRequest.callbacks.onEndCallback.empty() == false){
+                                    currentRequest.callbacks.onEndCallback(currentRequest.request);
+                                }
+                            }else{
+                                if(currentRequest.callbacks.onCancelCallback.empty() == false){
+                                    currentRequest.callbacks.onCancelCallback(currentRequest.request);
+                                }
+                            }
+                        } catch(std::exception& e) {
+                            if(currentRequest.callbacks.onErrorCallback.empty() == false){
+                                currentRequest.callbacks.onErrorCallback(currentRequest.request, e.what());
+                            }
+                        }
+
+                        break;
+                    }
+
+                    case CopyMedicalMetadata: {
+
+                        setState(CopyingMedicalMetadata);
+
+                        if(currentRequest.callbacks.onBeginCallback.empty() == false){
+                            currentRequest.callbacks.onBeginCallback(currentRequest.request);
+                        }
+
+                        try {
+                            core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(currentRequest.request);
+                            setCurrentTransportManager(medicalTransportManager);
+                            medicalTransportManager->getMetadata(metaRequest->filePath);
+
+                            if(cancelDownloading == false){
+                                if(currentRequest.callbacks.onEndCallback.empty() == false){
+                                    currentRequest.callbacks.onEndCallback(currentRequest.request);
+                                }
+                            }else{
+                                if(currentRequest.callbacks.onCancelCallback.empty() == false){
+                                    currentRequest.callbacks.onCancelCallback(currentRequest.request);
+                                }
+                            }
+                        } catch(std::exception& e) {
+                            if(currentRequest.callbacks.onErrorCallback.empty() == false){
+                                currentRequest.callbacks.onErrorCallback(currentRequest.request, e.what());
+                            }
+                        }
+
+                        break;
+                    }
+
+
+                    case PingServer: {
+
+                            setState(PingingServer);
+                            setCurrentTransportManager(core::shared_ptr<communication::TransportWSDL_FTPSBase>());
+                            if(currentRequest.callbacks.onBeginCallback.empty() == false){
+                                currentRequest.callbacks.onBeginCallback(currentRequest.request);
+                            }
+
+                            if(pingCurl) {
+                                pingCurlResult = curl_easy_perform(pingCurl);
+                                if(pingCurlResult) {
+                                    serverResponse = false;
+                                } else {
+                                    serverResponse = true;
+                                }
                             } else {
-                                serverResponse = true;
+                                serverResponse = false;
                             }
-                        } else {
-                            serverResponse = false;
-                        }
 
-                        if(request.callbacks.onEndCallback.empty() == false){
-                            request.callbacks.onEndCallback(request.request);
-                        }
+                            if(currentRequest.callbacks.onEndCallback.empty() == false){
+                                currentRequest.callbacks.onEndCallback(currentRequest.request);
+                            }
 
-                        break;
-                    }
+                            break;
+                        }
+                }
+                currentRequest.request.reset();
             }
         }else{
             if(state != Ready){
@@ -742,35 +865,95 @@ size_t CommunicationManager::pingDataCallback(void *buffer, size_t size, size_t 
     return size*nmemb;
 }
 
-void CommunicationManager::readDbSchemas(const std::string& shallowCopyDir, const std::string& metaDataDir)
-{
-    ShallowCopyParserPtr ptrS = ShallowCopyParserPtr(new ShallowCopyParser());
-    ptrS->parseFile(nullptr, shallowCopyDir);
-    constShallowCopy = ptrS->getShallowCopy();
+//void CommunicationManager::readMotionDbSchemas(const std::string& shallowCopyPath, const std::string& metaDataPath)
+//{
+//    MotionShallowCopyParserPtr ptrS = MotionShallowCopyParserPtr(new MotionShallowCopyParser());
+//    ptrS->parseFile(shallowCopyPath);
+//    constMotionShallowCopy = ptrS->getShallowCopy();
+//
+//    MotionMetadataParserPtr ptrM = MotionMetadataParserPtr(new MotionMetadataParser());
+//    ptrM->parseFile(metaDataPath);
+//    motionMetaData = ptrM->getMetadata();
+//}
+//
+//void CommunicationManager::readMedicalDbSchemas(const std::string& shallowCopyPath, const std::string& metaDataPath)
+//{
+//    MedicalShallowCopyParserPtr ptrS = MedicalShallowCopyParserPtr(new MedicalShallowCopyParser());
+//    ptrS->parseFile(shallowCopyPath);
+//    constMedicalShallowCopy = ptrS->getShallowCopy();
+//
+//    MedicalMetadataParserPtr ptrM = MedicalMetadataParserPtr(new MedicalMetadataParser());
+//    ptrM->parseFile(metaDataPath);
+//    medicalMetaData = ptrM->getMetadata();
+//}
 
-    MetadataParserPtr ptrM = MetadataParserPtr(new MetadataParser());
-    ptrM->parseFile(nullptr, metaDataDir);
-    metaData = ptrM->getMetadata();
+//core::IDataManager::LocalTrial CommunicationManager::findLocalTrialsPaths(const core::Filesystem::Path& path)
+//{
+//    core::IDataManager::LocalTrial trial;
+//
+//    //przeszukujemy katalog w poszukiwaniu plikow:
+//    std::vector<std::string> masks;
+//    masks.push_back(".c3d");
+//    masks.push_back(".mp");
+//    masks.push_back(".vsk");
+//    masks.push_back(".zip");
+//    masks.push_back(".amc");
+//    masks.push_back(".asf");
+//    masks.push_back(".avi");
+//    masks.push_back(".imgsequence");
+//    std::vector<std::string> filesPath = core::Filesystem::listFiles(path.string(), true, masks);
+//    BOOST_FOREACH(std::string path, filesPath)
+//    {
+//        trial.push_back(path);
+//    }
+//    return trial;
+//}
+
+CommunicationManager::RequestPtr CommunicationManager::requestFile(unsigned int fileID, const std::string filePath, const RequestCallbacks & callbacks)
+{
+    RequestPtr ret(new FileRequest(false, DownloadFile, filePath, fileID));
+
+    CompleteRequest request;
+    request.request = ret;
+    request.callbacks = callbacks;
+
+    pushRequest(request);
+
+    return ret;
 }
 
-core::IDataManager::LocalTrial CommunicationManager::findLocalTrialsPaths(const core::Filesystem::Path& path)
+CommunicationManager::RequestPtr CommunicationManager::requestPhoto(unsigned int fileID, const std::string filePath, const RequestCallbacks & callbacks)
 {
-    core::IDataManager::LocalTrial trial;
+    RequestPtr ret;
+    return ret;
+}
 
-    //przeszukujemy katalog w poszukiwaniu plikow:
-    std::vector<std::string> masks;
-    masks.push_back(".c3d");
-    masks.push_back(".mp");
-    masks.push_back(".vsk");
-    masks.push_back(".zip");
-    masks.push_back(".amc");
-    masks.push_back(".asf");
-    masks.push_back(".avi");
-    masks.push_back(".imgsequence");
-    std::vector<std::string> filesPath = core::Filesystem::listFiles(path.string(), true, masks);
-    BOOST_FOREACH(std::string path, filesPath)
-    {
-        trial.push_back(path);
-    }
-    return trial;
+CommunicationManager::RequestPtr CommunicationManager::requestMotionShallowCopy(const std::string filePath, const RequestCallbacks & callbacks)
+{
+    RequestPtr ret;
+    return ret;
+}
+
+CommunicationManager::RequestPtr CommunicationManager::requestMotionMetadata(const std::string filePath, const RequestCallbacks & callbacks)
+{
+    RequestPtr ret;
+    return ret;
+}
+
+CommunicationManager::RequestPtr CommunicationManager::requestMedicalShallowCopy(const std::string filePath, const RequestCallbacks & callbacks)
+{
+    RequestPtr ret;
+    return ret;
+}
+
+CommunicationManager::RequestPtr CommunicationManager::requestMedicalMetadata(const std::string filePath, const RequestCallbacks & callbacks)
+{
+    RequestPtr ret;
+    return ret;
+}
+
+CommunicationManager::RequestPtr CommunicationManager::requestPing(const RequestCallbacks & callbacks)
+{
+    RequestPtr ret;
+    return ret;
 }

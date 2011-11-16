@@ -1,6 +1,6 @@
 /**
 @author Marek Daniluk
-@brief Klasa FileStoremanService dziedzicz¹ca po WsdlConnection wykonuj¹ca operacje dokumentu FileStoremanService.wsdl.
+@brief Klasa MotionFileStoremanService dziedzicz¹ca po WsdlConnection wykonuj¹ca operacje dokumentu MotionFileStoremanService.wsdl.
 */
 
 #ifndef HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__
@@ -10,24 +10,17 @@
 
 namespace communication
 {
-	class FileStoremanService : public WsdlConnection
-	{
-	protected:
-	public:
-		/**
-		Konstruktor klasy FileStoremanService.
-		*/
-		FileStoremanService();
-		/**
-		Wirtualny destruktor klasy FileStoremanService.
-		*/
-		virtual ~FileStoremanService();
-		/**
+    class FileStoremanServiceBase : public WsdlConnection
+    {
+    public:
+        FileStoremanServiceBase() {}
+        virtual ~FileStoremanServiceBase() {}
+        /**
 		Potwierdza ukoñczenie pobierania. Stanowi zarazem sygna³ dla us³ugi, aby uprzatn¹c plik z serwera ftp.
 		@param fileID id pobranego pliku
 		@param path œcie¿ka wzglêdna do pliku na serwerze podana w rezultacie operacji RetrieveFile
 		*/
-		void downloadComplete(int fileID, const std::string& path);
+		void fileDownloadComplete(int fileID, const std::string& path);
 
 		/**
 		Wydobywanie pliku z bazy danych o podanym ID do uri zwracanego przez metode.
@@ -35,6 +28,34 @@ namespace communication
 		@return œcie¿ka wzglêdna do pliku wraz z nazwa pliku
 		*/
 		std::string retrieveFile(int fileID);
+
+        std::string retrievePhoto(int photoID);
+        void photoDownloadComplete(int fileID, const std::string& path);
+
+        /**
+		P³ytka kopia bazy danych.
+		@return œcie¿ka do pliku xml z kopi¹ db.
+		*/
+		std::string getShallowCopy();
+		/**
+		Metadane z bazy danych.
+		@return œcie¿ka do pliku xml z metadanymi.
+		*/
+		std::string getMetadata();
+    };
+
+	class MotionFileStoremanService : public FileStoremanServiceBase
+	{
+	public:
+		/**
+		Konstruktor klasy MotionFileStoremanService.
+		*/
+		MotionFileStoremanService() {}
+		/**
+		Wirtualny destruktor klasy MotionFileStoremanService.
+		*/
+		virtual ~MotionFileStoremanService() {}
+		
 		/**
 		Realizuje wprowadzenie pojedynczego pliku przez performera pod kontrolê bazy danych.
 		@param performerID id performera
@@ -92,5 +113,18 @@ namespace communication
 		*/
 		std::string getMetadata();
 	};
+
+    class MedicalFileStoremanService : public FileStoremanServiceBase
+    {
+    public:
+        /**
+		Konstruktor klasy MedicalFileStoremanService.
+		*/
+		MedicalFileStoremanService() {}
+		/**
+		Wirtualny destruktor klasy MedicalFileStoremanService.
+		*/
+        virtual ~MedicalFileStoremanService() {}
+    };
 }
 #endif //HEADER_GUARD_COMMUNICATION_FILESTOREMANSERVICE_H__

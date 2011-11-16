@@ -122,7 +122,7 @@ void DataProcessor::test()
 
     // tworzymy "Ÿród³o"
     ObjectWrapperCollectionPtr wrapperCollection = DataManager::getInstance()->createWrapperCollection(typeid(int));
-    ObjectWrapperPtr wrapper = DataManager::getInstance()->createWrapper(typeid(int));
+    ObjectWrapperPtr wrapper = core::ObjectWrapper::create<int>();
     wrapper->set(IntPtr(new int(666)));
     wrapperCollection->addObject( wrapper );
 

@@ -13,7 +13,7 @@ namespace communication
     /**
     Encje bazodanowe operacji wsdlowych.
     */
-    namespace wsdl
+    namespace motionWsdl
     {
         struct Trial
         {
@@ -46,11 +46,16 @@ namespace communication
 
         typedef int Performer;
     }
+
+    namespace medicalWsdl
+    {
+
+    }
     
     /**
-    Encje bazodanowe z operacji p造tkiej kopii bazy danych. Schemat MetaData.
+    Encje bazodanowe z operacji p造tkiej kopii bazy danych. Schemat MotionMetaData.
     */
-    namespace MetaData
+    namespace MotionMetaData
     {
         struct SessionGroup
         {
@@ -75,21 +80,14 @@ namespace communication
 
         typedef std::vector<Lab> Labs;
 
-        struct Enumeration
-        {
-            std::string enumValue;
-        };
-
-        typedef std::vector<Enumeration> Enumerations;
-
         struct Attribute
         {
-            Enumerations enumValues;
             std::string attributeName;
             std::string attributeType;
+            std::string unit;
         };
 
-        typedef std::vector<Attribute> Attributes;
+        typedef std::map<std::string, Attribute> Attributes;
 
         struct AttributeGroup
         {
@@ -97,7 +95,6 @@ namespace communication
             int attributeGroupID;
             std::string attributeGroupName;
             std::string describedEntity;
-            std::string unit;
         };
 
         typedef std::vector<AttributeGroup> AttributeGroups;
@@ -110,11 +107,36 @@ namespace communication
             AttributeGroups attributeGroups;
         };
     }
+
+    namespace MedicalMetaData
+    {
+        struct ExamType
+        {
+            int id;
+            std::string name;
+        };
+
+        typedef std::map<int, ExamType> ExamTypes;
+
+        struct DisorderType
+        {
+            int id;
+            std::string name;
+        };
+
+        typedef std::map<int, DisorderType> DisorderTypes;
+
+        struct MetaData
+        {
+            ExamTypes examTypes;
+            DisorderTypes disorderTypes;
+        };
+    }
     
     /**
-    Encje bazodanowe z operacji p造tkiej kopii bazy danych. Schemat ShallowCopy.
+    Encje bazodanowe z operacji p造tkiej kopii bazy danych. Schemat MotionShallowCopy.
     */
-    namespace ShallowCopy
+    namespace MotionShallowCopy
     {
         struct File;
         struct Trial;
@@ -123,14 +145,7 @@ namespace communication
         struct PerformerConf;
         struct ShallowCopy;
 
-        struct A
-        {
-            std::string name;
-            std::string value;
-        };
-
-        //typedef std::vector<A> Attrs;
-        typedef std::map<std::string, A> Attrs;
+        typedef std::map<std::string, std::string> Attrs;
 
         struct File
         {
@@ -258,184 +273,69 @@ namespace communication
         };
     }
 
-    class File
+    namespace MedicalShallowCopy
     {
-    private:
-        communication::ShallowCopy::File file;
-        core::Filesystem::Path localPath;
-        bool isLocal;
-    public:
-        File() {};
-        File(const communication::ShallowCopy::File& file)
+        struct Disorder
         {
-            setFile(file);
+            int disorderID;
+            std::string name;
         };
-        void setFile(const communication::ShallowCopy::File& file)
-        {
-            this->file = file;
-        };
-        void setLocalPath(const core::Filesystem::Path& localPath)
-        {
-            this->localPath = localPath;
-        }
-        void setIsLocal(bool local)
-        {
-            isLocal = local;
-        };
-        const communication::ShallowCopy::File& getFile() const
-        {
-            return file;
-        };
-        const core::Filesystem::Path& getLocalPath() const
-        {
-            return localPath;
-        };
-        bool getIsLocal() const
-        {
-            return isLocal;
-        };
-    };
 
-    typedef core::shared_ptr<File> FilePtr;
+        typedef std::map<int, Disorder*> Disorders;
 
-    class Trial
-    {
-    private:
-        std::vector<FilePtr> files;
-        communication::ShallowCopy::Trial trial;
-        //pola pomocnicze
-        bool hasEmg;
-        bool hasGrf;
-        bool hasVideo;
-        bool hasMocap;
-        bool isLocal;
-    public:
-        Trial() {};
-        Trial(const communication::ShallowCopy::Trial& trial)
+        struct DisorderCharacteristics
         {
-            setTrial(trial);
+            Disorder * diosorder;
+            std::string focus;
+            std::string diagnosisDate;
+            std::string comments;
         };
-        void setTrial(const communication::ShallowCopy::Trial& trial)
-        {
-            this->trial = trial;
-        };
-        void setFiles(const std::vector<FilePtr>& files)
-        {
-            this->files = files;
-        };
-        void setHasEmg(bool emg)
-        {
-            hasEmg = emg;
-        };
-        void setHasGrf(bool grf)
-        {
-            hasGrf = grf;
-        };
-        void setHasVideo(bool video)
-        {
-            hasVideo = video;
-        };
-        void setHasMocap(bool mocap)
-        {
-            hasMocap = mocap;
-        };
-        void setIsLocal(bool local)
-        {
-            isLocal = local;
-        };
-        const std::vector<FilePtr>& getFiles() const
-        {
-            return files;
-        };
-        const communication::ShallowCopy::Trial& getTrial() const
-        {
-            return trial;
-        };
-        bool getHasEmg() const
-        {
-            return hasEmg;
-        };
-        bool getHasGrf() const
-        {
-            return hasGrf;
-        };
-        bool getHasVideo() const
-        {
-            return hasVideo;
-        };
-        bool getHasMocap() const
-        {
-            return hasMocap;
-        };
-        bool getIsLocal() const
-        {
-            return isLocal;
-        };
-    };
-    
-    typedef core::shared_ptr<Trial> TrialPtr;
 
-    class Session
-    {
-    private:
-        std::vector<TrialPtr> trials;
-        communication::ShallowCopy::Session session;
-    public:
-        Session() {};
-        Session(const communication::ShallowCopy::Session& session)
-        {
-            setSession(session);
-        };
-        void setSession(const communication::ShallowCopy::Session& session)
-        {
-            this->session = session;
-        };
-        void setTrials(const std::vector<TrialPtr>& trials)
-        {
-            this->trials = trials;
-        };
-        const std::vector<TrialPtr>& getTrials() const
-        {
-            return trials;
-        };
-        const communication::ShallowCopy::Session& getSession() const
-        {
-            return session;
-        };
-    };
-    
-    typedef core::shared_ptr<Session> SessionPtr;
+        typedef std::map<int, DisorderCharacteristics> PatientDisorders;
 
-    class Performer
-    {
-    private:
-        std::vector<SessionPtr> sessions;
-        communication::ShallowCopy::Performer performer;
-    public:
-        Performer() {};
-        Performer(const communication::ShallowCopy::Performer& performer)
+        struct Patient
         {
-            setPerformer(performer);
+            int patientID;
+            int motionPerformerID;
+            std::string name;
+            std::string surname;
+            std::string birthDate;
+            char gender;
+            PatientDisorders disorders;
         };
-        void setPerformer(const communication::ShallowCopy::Performer& performer)
-        {
-            this->performer = performer;
-        };
-        void setSessions(const std::vector<SessionPtr>& sessions)
-        {
-            this->sessions = sessions;
-        };
-        const std::vector<SessionPtr>& getSessions() const
-        {
-            return sessions;
-        };
-        const communication::ShallowCopy::Performer& getPerformer() const
-        {
-            return performer;
-        };
-    };
 
-    typedef core::shared_ptr<Performer> PerformerPtr;
+        typedef std::map<int, Patient*> Patients;
 
+        typedef std::map<char, std::set<Patient*> > PatientsByGender;
+
+        typedef std::map<int, std::set<Patient*> > PatientsByDisorder;
+
+        struct ShallowCopy
+        {
+            Disorders disorders;
+            Patients patients;
+            PatientsByGender patientsByGender;
+            PatientsByDisorder patientsByDisorder;
+
+            static ShallowCopy * create()
+            {
+                return new ShallowCopy;
+            }
+
+            ~ShallowCopy()
+            {
+                for(auto it = disorders.begin(); it !=disorders.end(); it++){
+                    delete it->second;
+                }
+
+                for(auto it = patients.begin(); it != patients.end(); it++){
+                    delete it->second;
+                }
+            }
+
+        private:
+            ShallowCopy() {}
+        };
+    }
 }
 #endif //HEADER_GUARD_COMMUNICATION_ENTITY_H__
