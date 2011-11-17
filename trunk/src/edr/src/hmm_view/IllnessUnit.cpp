@@ -174,16 +174,26 @@ void Endo::createEMGEntry(QTreeWidgetItem* root, const std::vector<SessionConstP
 
     ChildrenVisualizers* hipMoment = createItem<ChildrenVisualizers> (name, root);
 
-    MultiserieHelper* hipMomentPrev = createArgsItem< MultiserieHelper >("Pre",  wrpX12,hipMoment);
-    MultiserieHelper* hipMomentPost = createArgsItem< MultiserieHelper >("Post", wrpX34,hipMoment);
+    NewMultiserieHelper* hipMomentPrev = createArgsItem< NewMultiserieHelper >("Pre",  wrpX12,hipMoment);
+    NewMultiserieHelper* hipMomentPost = createArgsItem< NewMultiserieHelper >("Post", wrpX34,hipMoment);
 
-    hipMomentPrev->setColorPolicy(MultiserieHelper::HalfRedHalfGreen);
-    hipMomentPost->setColorPolicy(MultiserieHelper::HalfRedHalfGreen);
+    hipMomentPrev->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
+    hipMomentPost->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
 
-    createArgsItem<MultiserieHelper>("Left",  wrpX1, hipMomentPrev)->setColorPolicy(MultiserieHelper::Red);
-    createArgsItem<MultiserieHelper>("Right", wrpX2, hipMomentPrev)->setColorPolicy(MultiserieHelper::Green);
-    createArgsItem<MultiserieHelper>("Left",  wrpX3, hipMomentPost)->setColorPolicy(MultiserieHelper::Red);
-    createArgsItem<MultiserieHelper>("Right", wrpX4, hipMomentPost)->setColorPolicy(MultiserieHelper::Green);
+    NewMultiserieHelper* l1 = createArgsItem<NewMultiserieHelper>("Left",  wrpX1, hipMomentPrev);
+    NewMultiserieHelper* r1 = createArgsItem<NewMultiserieHelper>("Right", wrpX2, hipMomentPrev);
+    NewMultiserieHelper* l2 = createArgsItem<NewMultiserieHelper>("Left",  wrpX3, hipMomentPost);
+    NewMultiserieHelper* r2 = createArgsItem<NewMultiserieHelper>("Right", wrpX4, hipMomentPost);
+
+    l1->setColorPolicy(NewMultiserieHelper::Red);
+    r1->setColorPolicy(NewMultiserieHelper::Green);
+    l2->setColorPolicy(NewMultiserieHelper::Red);
+    r2->setColorPolicy(NewMultiserieHelper::Green);
+
+    l1->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Left"));
+    r1->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
+    l2->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Left"));
+    r2->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
 }
 
 void Endo::createVectorEntry(QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions, const QString& name,
@@ -206,25 +216,26 @@ void Endo::createVectorEntry(QTreeWidgetItem* root, const std::vector<SessionCon
 
     NewMultiserieHelper* hipMomentPrev = createArgsItem< NewMultiserieHelper >(QObject::tr("Pre"),  wrpX12, hipMoment);
     
-    //NewMultiserieHelper* hipMomentPost = createArgsItem< NewMultiserieHelper >("Post", wrpX34,hipMoment);
-    MultiserieHelper* hipMomentPost = createArgsItem< MultiserieHelper >(QObject::tr("Post"), wrpX12, hipMoment);
+    NewMultiserieHelper* hipMomentPost = createArgsItem< NewMultiserieHelper >(QObject::tr("Post"), wrpX12, hipMoment);
 
     hipMomentPrev->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
     hipMomentPrev->setTitle(QString("Multichart - %1").arg(name));
 
-    hipMomentPost->setColorPolicy(MultiserieHelper::HalfRedHalfGreen);
+    hipMomentPost->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
 
-    NewMultiserieHelper* lHelper = createArgsItem<NewMultiserieHelper >(QObject::tr("Left"),  wrpX1, hipMomentPrev);
-    NewMultiserieHelper* rHelper = createArgsItem<NewMultiserieHelper >(QObject::tr("Right"), wrpX2, hipMomentPrev);
-    lHelper->setColorPolicy(NewMultiserieHelper::Red);
-    rHelper->setColorPolicy(NewMultiserieHelper::Green);
-    lHelper->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Left"));
-    rHelper->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
+    NewMultiserieHelper* lHelper1 = createArgsItem<NewMultiserieHelper >(QObject::tr("Left"),  wrpX1, hipMomentPrev);
+    NewMultiserieHelper* rHelper1 = createArgsItem<NewMultiserieHelper >(QObject::tr("Right"), wrpX2, hipMomentPrev);
+    lHelper1->setColorPolicy(NewMultiserieHelper::Red);
+    rHelper1->setColorPolicy(NewMultiserieHelper::Green);
+    lHelper1->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Left"));
+    rHelper1->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
 
-    //createArgsItem<NewMultiserieHelper >("Left",  wrpX3, hipMomentPost)->setColorPolicy(NewMultiserieHelper::Red);
-    //createArgsItem<NewMultiserieHelper >("Right", wrpX4, hipMomentPost)->setColorPolicy(NewMultiserieHelper::Green);
-    createArgsItem<MultiserieHelper >("Left",  wrpX1, hipMomentPost)->setColorPolicy(MultiserieHelper::Red);
-    createArgsItem<MultiserieHelper >("Right", wrpX2, hipMomentPost)->setColorPolicy(MultiserieHelper::Green);
+    NewMultiserieHelper* lHelper2 = createArgsItem<NewMultiserieHelper >("Left",  wrpX1, hipMomentPost);
+    NewMultiserieHelper* rHelper2 = createArgsItem<NewMultiserieHelper >("Right", wrpX2, hipMomentPost);
+    lHelper2->setColorPolicy(NewMultiserieHelper::Red);
+    rHelper2->setColorPolicy(NewMultiserieHelper::Green);
+    lHelper2->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Left"));
+    rHelper2->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
 }
 
 QTreeWidgetItem* Stroke::createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions )

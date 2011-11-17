@@ -464,6 +464,7 @@ VisualizerPtr NewMultiserieHelper::createVisualizer()
         LOG_ERROR("Wrong visualizer type!");
     } else {
         chart->setTitle(title);
+        chart->setShowLegend(false);
     }
     return visualizer;
 }

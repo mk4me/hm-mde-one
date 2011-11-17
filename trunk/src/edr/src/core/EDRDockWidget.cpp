@@ -18,7 +18,8 @@ EDRDockWidget::EDRDockWidget(QWidget * parent, Qt::WindowFlags flags)
 
 EDRDockWidget::~EDRDockWidget()
 {
-
+    int a = 0;
+    a++;
 }
 
 void EDRDockWidget::init()

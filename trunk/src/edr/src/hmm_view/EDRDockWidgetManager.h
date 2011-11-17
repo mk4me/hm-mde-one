@@ -32,6 +32,9 @@ private:
 	std::list<EDRDockWidgetSet*> dockList;
 	std::list<EDRDockWidgetSet*> generatedList;
 
+private:
+    void setTabNames();
+
 private slots:
     void onSetClosed(QObject* object);
 };

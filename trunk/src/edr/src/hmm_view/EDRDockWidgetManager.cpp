@@ -17,6 +17,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 
 	this->addDockWidget(Qt::TopDockWidgetArea, set, Qt::Horizontal);
 	dockList.push_back(set);
+    set->setWindowTitle(QString(tr("Tab %1")).arg(dockList.size()));
 	connect(set, SIGNAL(destroyed(QObject*)), this, SLOT(onSetClosed(QObject*)));
 	if (dockList.size() > 1) {
 		auto it = dockList.begin();
@@ -62,9 +63,18 @@ void EDRDockWidgetManager::onSetClosed( QObject* object )
     EDRDockWidgetSet* set = reinterpret_cast<EDRDockWidgetSet*>(object);
     dockList.remove(set);
     generatedList.remove(set);
+    setTabNames();
 }
 
 void EDRDockWidgetManager::setTabsPosition( QTabWidget::TabPosition tabPosition )
 {
     setTabPosition(Qt::AllDockWidgetAreas, tabPosition);
+}
+
+void EDRDockWidgetManager::setTabNames()
+{
+    int i = 0;
+    for (auto it = dockList.begin(); it != dockList.end(); it++) {
+        (*it)->setWindowTitle(QString(tr("Tab %1")).arg(++i));
+    }
 }

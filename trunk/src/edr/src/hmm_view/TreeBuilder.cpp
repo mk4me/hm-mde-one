@@ -92,60 +92,6 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                 motionItem->addChild(createVideoBranch(motion, "Videos", icon3D));
             }
 
-            //QTreeWidgetItem* testItem = new QTreeWidgetItem();
-            //testItem->setText(0, "TEST");
-            //motionItem->addChild(testItem);
-            //if (motion->hasObjectOfType(typeid(ForceCollection))) {
-            //    ObjectWrapperPtr forcesWrapper = motion->getWrapperOfType(typeid(ForceCollection));
-            //    ForceCollectionPtr forces = forcesWrapper->get();
-            //    std::vector<ObjectWrapperPtr> fxWrappers;
-            //    std::vector<ObjectWrapperPtr> fyWrappers;
-            //    std::vector<ObjectWrapperPtr> fzWrappers;
-            //    for( int i = 0; i < forces->getNumChannels(); i++) {
-            //        ForceChannelPtr f = forces->getChannel(i);
-            //        ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(f, 0));
-            //        ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(f, 1));
-            //        ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(f, 2));
-
-            //        core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-            //        core::ObjectWrapperPtr wrapperY = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-            //        core::ObjectWrapperPtr wrapperZ = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-
-            //        wrapperX->set(x);
-            //        wrapperY->set(y);
-            //        wrapperZ->set(z);
-
-            //        static int number = 0;
-            //        // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
-            //        std::string suffix = boost::lexical_cast<std::string>(number++);
-            //        wrapperX->setName("FX_" + suffix);
-            //        wrapperX->setSource("FX_" + suffix);
-            //        wrapperY->setName("FY_" + suffix);
-            //        wrapperY->setSource("FY_" + suffix);
-            //        wrapperZ->setName("FZ_" + suffix);
-            //        wrapperZ->setSource("FZ_" + suffix);
-
-            //        fxWrappers.push_back(wrapperX);
-            //        fyWrappers.push_back(wrapperY);
-            //        fzWrappers.push_back(wrapperZ);
-            //    }
-            //    QTreeWidgetItem* fX = new QTreeWidgetItem();
-            //    fX->setText(0, "Motion Forces - X");
-            //    //item2Helper[fX] = TreeItemHelperPtr(new MultiserieHelper(fxWrappers));
-            //    testItem->addChild(fX);
-
-            //    QTreeWidgetItem* fY = new QTreeWidgetItem();
-            //    fY->setText(0, "Motion Forces - Y");
-            //    //item2Helper[fY] = TreeItemHelperPtr(new MultiserieHelper(fyWrappers));
-            //    testItem->addChild(fY);
-
-            //    QTreeWidgetItem* fZ = new QTreeWidgetItem();
-            //    fZ->setText(0, "Motion Forces - Z");
-            //    //item2Helper[fZ] = TreeItemHelperPtr(new MultiserieHelper(fzWrappers));
-            //    testItem->addChild(fZ);
-            //}
-
-
         }
 
     }
@@ -163,7 +109,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     for (int i = 0; i < count; i++) {	
         EMGChannelPtr c = emgs[i]->get();	
         if (c) {
-            QTreeWidgetItem* channelItem = new ChartItemHelper(emgs[i]);
+            QTreeWidgetItem* channelItem = new NewChartItemHelper(emgs[i]);
             channelItem->setIcon(0, itemIcon);	
             channelItem->setText(0, c->getName().c_str());			
             emgItem->addChild(channelItem);			

@@ -43,7 +43,7 @@ public:
 public:
     SessionPtr filterData(const SessionConstPtr & session) const
     {
-        if(filteredDataFactory == nullptr){
+        if(!filteredDataFactory || !session){
             return SessionPtr();
         }
 

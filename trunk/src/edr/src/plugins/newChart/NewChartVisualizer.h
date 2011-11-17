@@ -26,6 +26,7 @@
 #include <qwt/qwt_plot_grid.h>
 #include <qwt/qwt_plot_zoomer.h>
 #include <qwt/qwt_picker_machine.h>
+#include <qwt/qwt_legend.h>
 
 class NewChartVisualizer : public QObject, public core::IVisualizer
 {
@@ -41,7 +42,7 @@ public:
         float xMin, xMax, yMin, yMax;
         bool initialized;
     };
-    NewChartVisualizer() : markerX(0.0f) {}
+    NewChartVisualizer() : markerX(0.0f), showLegend(true) {}
 	virtual ~NewChartVisualizer() 
     {
     }
@@ -202,6 +203,16 @@ public:
           qwtPlot->setTitle(title);
       }
 
+      bool isShowLegend() const { return showLegend; }
+      void setShowLegend(bool val)
+      {
+          if (qwtPlot) {
+              // todo - sprawdzic wyciek...
+              qwtPlot->insertLegend( val ? new QwtLegend() : nullptr, QwtPlot::RightLegend );
+          }
+          showLegend = val;
+      }
+
 private:
       void addPlotCurve(QwtPlotCurve* curve, const Scales& scales);
 
@@ -222,6 +233,7 @@ private:
       QString markerLabel;
       QComboBox* activeSerieCombo;
       std::vector<NewChartSerie*> series;
+      bool showLegend;
 };
     
 #endif  

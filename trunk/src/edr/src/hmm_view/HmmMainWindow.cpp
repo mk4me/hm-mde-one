@@ -275,6 +275,7 @@ void HmmMainWindow::setBottom( int size )
 	bottomButton->setFixedWidth(0);*/
 }
 
+
 void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
     // sprawdzanie, czy pod item jest podpiety jakis obiekt
@@ -406,7 +407,7 @@ void HmmMainWindow::createFilterTab1()
     QString emgFront = core::getResourceString("images/muscular_front/muscular_front.xml");
     QString emgBack = core::getResourceString("images/muscular_back/muscular_back.xml");
 
-    typedef Vector3DFilterCommand2<EMGChannel, EMGCollection, ChartItemHelper> EMGCommand;
+    typedef Vector3DFilterCommand2<EMGChannel, EMGCollection, NewChartItemHelper> EMGCommand;
     NamesDictionary emgNames;
     emgNames["noga1"  ] = std::make_pair("L1",  "Elektroda L1");
     emgNames["noga1R" ] = std::make_pair("L2",  "Elektroda L2");
@@ -460,9 +461,9 @@ void HmmMainWindow::createFilterTab1()
     DataFilterPtr typeFilter5(new TypeFilter(typeid(PowerCollection)));
 
     
-    typedef Vector3DFilterCommand2<MomentChannel, MomentCollection, Vector3ItemHelper> MomentsCommand;
-    typedef Vector3DFilterCommand2<ForceChannel, ForceCollection, Vector3ItemHelper> ForcesCommand;
-    typedef Vector3DFilterCommand2<PowerChannel, PowerCollection, Vector3ItemHelper> PowerCommand;
+    typedef Vector3DFilterCommand2<MomentChannel, MomentCollection, NewVector3ItemHelper> MomentsCommand;
+    typedef Vector3DFilterCommand2<ForceChannel, ForceCollection, NewVector3ItemHelper> ForcesCommand;
+    typedef Vector3DFilterCommand2<PowerChannel, PowerCollection, NewVector3ItemHelper> PowerCommand;
     
     QString pathFront = core::getResourceString("images/skeleton_front/skeleton_front.xml");
     QString pathBack = core::getResourceString("images/skeleton_back/skeleton_back.xml");
@@ -536,7 +537,7 @@ void HmmMainWindow::createFilterTab1()
     filter2->addFilter(tr("MOMENTS"), "test", vFilter2, &iconMomentSmall);
     filter2->addFilter(tr("POWERS"), "powers", vFilter, &iconPowerSmall);
 
-    typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollection, Vector3ItemHelper> MarkersCommand;
+    typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollection, NewVector3ItemHelper> MarkersCommand;
     NamesDictionary markersNames;
     markersNames["RFHD"] = std::make_pair("RFHD", "Right front of head");
     markersNames["LFHD"] = std::make_pair("LFHD", "Left front of head");

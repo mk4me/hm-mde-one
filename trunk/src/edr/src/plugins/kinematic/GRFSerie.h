@@ -139,6 +139,7 @@ private:
 	TransformPtr createPlatformTransform(osg::Texture2D* texture, const osg::Vec3& origin, float width, float lenght, float height) const;
 	static ArrowPtr createArrow();
 	static osg::ref_ptr<osg::Texture2D> getTexture(int number);
+    static bool tryGetTexture(osg::ref_ptr<osg::Texture2D>& ret, int number);
 	
 private:
 	KinematicVisualizer * visualizer;

@@ -38,8 +38,14 @@ osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const c3dlib::ForcePlat
 			platformGeode->addDrawable(platform2.get());
 		}
 		i++;
-		TransformPtr pform = createPlatformTransform(getTexture(i), (*it)->getCenter(), (*it)->getWidth() * 0.7f, (*it)->getLength() * 0.7f, 0.025f);
-		group->addChild(pform);
+
+        osg::ref_ptr<osg::Texture2D> tex;
+        
+		TransformPtr pform;
+        if (tryGetTexture(tex, i)) {
+            pform = createPlatformTransform(tex, (*it)->getCenter(), (*it)->getWidth() * 0.7f, (*it)->getLength() * 0.7f, 0.025f);
+            group->addChild(pform);
+        }		
 		group->addChild(platformGeode);
 	}
 
@@ -351,7 +357,7 @@ GRFSerie::TransformPtr GRFSerie::createPlatformTransform(osg::Texture2D* texture
 	stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
 	stateset->setMode( GL_BLEND, osg::StateAttribute::ON );
 	stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
-	stateset->setTextureAttributeAndModes(0, texture, osg::StateAttribute::ON);
+    stateset->setTextureAttributeAndModes(0, texture, osg::StateAttribute::ON);
 	geode->setStateSet(stateset);
 
 	geode->addDrawable(geometry);
@@ -396,6 +402,18 @@ osg::ref_ptr<osg::Texture2D> GRFSerie::getTexture( int number )
 		throw std::runtime_error("Wrong texture number");
 	}
 }
+
+bool GRFSerie::tryGetTexture( osg::ref_ptr<osg::Texture2D>& ret, int number )
+{
+    try {
+        ret = getTexture(number);
+    }
+    catch (...) {
+        return false;
+    }
+    return true;
+}
+
 
 
 

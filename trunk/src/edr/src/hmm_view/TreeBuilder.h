@@ -49,7 +49,7 @@ public:
             int count = wrappers.size();
             for (int i = 0; i < count; i++) {	
                 VectorChannelConstPtr c = wrappers[i]->get();
-                QTreeWidgetItem* channelItem = new Vector3ItemHelper(wrappers[i]);
+                QTreeWidgetItem* channelItem = new NewVector3ItemHelper(wrappers[i]);
                 if (childIcon) {
                     channelItem->setIcon(0, *childIcon);							
                 }				
