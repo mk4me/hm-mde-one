@@ -12,6 +12,25 @@ Motion::Motion(core::IMemoryDataManager * memoryDataManager, SubjectID motionID,
     SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers) : memoryDataManager(memoryDataManager),
     motionID(motionID), session(session), localMotionID(localMotionID), wrappers(wrappers)
 {
+    //generujemy nazwe
+
+    std::stringstream ss;
+    ss.fill('0');
+    ss.width(4);
+    ss << motionID;
+
+    name = "Motion" + ss.str();
+
+    localName = session->getLocalName() + "-M";
+
+    std::stringstream ss1;
+    ss1.fill('0');
+    ss1.width(2);
+    ss1 << localMotionID;
+
+    localName += ss1.str();
+
+
     //sprawdzamy joint angles - jesli nie ma budujemy i dodajemy do DM
     core::ObjectWrapperConstPtr dataWrapper;
     core::ObjectWrapperConstPtr modelWrapper;
@@ -20,10 +39,11 @@ Motion::Motion(core::IMemoryDataManager * memoryDataManager, SubjectID motionID,
             return;
         } else if ((*it)->isSupported(typeid(kinematic::SkeletalData))) {
             dataWrapper = *it;
-        } else if ((*it)->isSupported(typeid(kinematic::SkeletalModel))) {
-            modelWrapper = *it;
+            break;
         }
     }
+
+    modelWrapper = session->getWrapperOfType(typeid(kinematic::SkeletalModel));
 
     if (dataWrapper && modelWrapper) {
         kinematic::SkeletalDataPtr data;
@@ -44,24 +64,10 @@ Motion::Motion(core::IMemoryDataManager * memoryDataManager, SubjectID motionID,
         joints->setSkeletal(model, data);
 
         core::ObjectWrapperPtr jointsWrapper(core::addData(memoryDataManager, joints));
+        jointsWrapper->setName(localName + " joints");
+        jointsWrapper->setSource("SubjectPlugin->motion->" + localName);
         this->wrappers.push_back(jointsWrapper);
     }
-
-    std::stringstream ss;
-    ss.fill('0');
-    ss.width(4);
-    ss << motionID;
-
-    name = "Motion" + ss.str();
-
-    localName = session->getLocalName() + "-M";
-
-    std::stringstream ss1;
-    ss1.fill('0');
-    ss1.width(2);
-    ss1 << localMotionID;
-
-    localName += ss1.str();
 }
 
 Motion::~Motion()

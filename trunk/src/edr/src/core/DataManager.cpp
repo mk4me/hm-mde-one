@@ -591,6 +591,11 @@ void DataManager::addData(const core::Filesystem::Path & file)
                     (*objectIT)->setSource(file.string());
                 }
 
+                if((*objectIT)->getName().empty() == true){
+                    LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " not initialized properly name for type " << (*objectIT)->getTypeInfo().name() << " while parsing file " << parser->getPath() << " Setting source to file name");
+                    (*objectIT)->setName(file.filename().string());
+                }                
+
                 ObjectWrapperPtr obj(new DMObjectWrapper(*objectIT));
 
                 //ObjectByParsers

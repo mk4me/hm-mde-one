@@ -299,7 +299,7 @@ VisualizerPtr JointsItemHelper::createVisualizer()
 void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     core::ObjectWrapperConstPtr joints = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
-    if (!joints->isNull()) {
+    if (joints && !joints->isNull()) {
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(joints, path.toStdString())));
     } else {
         LOG_ERROR("Empty object - joints");

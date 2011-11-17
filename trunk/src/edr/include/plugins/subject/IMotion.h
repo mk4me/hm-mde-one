@@ -11,6 +11,7 @@
 
 #include <plugins/subject/Types.h>
 #include <core/ObjectWrapper.h>
+#include <plugins/subject/ISession.h>
 
 class IMotion
 {
@@ -28,8 +29,6 @@ public:
     template <class Ptr>
     bool tryGet(Ptr& object, bool exact = false) const
     {
-        //clearInvalidWrappers();
-
         for(auto it = begin(); it !+ end(); it++){
             if ((*it)->tryGet(object, exact)) {
                 return true;
@@ -42,7 +41,6 @@ public:
     template<class Channel, class Collection>
     void getWrappersFromCollection(const Collection& collection, std::vector<core::ObjectWrapperConstPtr> & channes) const
     {
-        //clearInvalidWrappers();
         Collection& tempCollection = const_cast<Collection&>(collection);
         int count = tempCollection.getNumChannels();
         for (int i = 0; i < count; i++) {
@@ -56,12 +54,10 @@ public:
                 }
             }
         }
-        //return temp;
     }
 
     virtual SubjectID getID() const = 0;
     virtual SubjectID getLocalID() const = 0;
-    //const std::string & getName() const;
     virtual const SessionConstPtr & getSession() const = 0;
 
     virtual bool hasObjectOfType(const core::TypeInfo& type, bool exact = false) const

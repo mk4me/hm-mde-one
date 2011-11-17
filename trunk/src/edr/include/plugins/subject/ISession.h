@@ -32,25 +32,30 @@ public:
 
     virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const = 0;
 
-    virtual bool hasObjectOfType(const core::TypeInfo& type) const
+    virtual core::ObjectWrapperConstPtr getWrapperOfType(const core::TypeInfo& type, bool exact = false) const
+    {
+        std::vector<core::ObjectWrapperConstPtr> wrappers;
+        getWrappers(wrappers);
+        for(auto it = wrappers.begin(); it != wrappers.end(); it++){
+            if((*it)->getTypeInfo() == type || (exact == false && (*it)->isSupported(type))){
+                return (*it);
+            }
+        }
+
+        //throw std::runtime_error("Object type not stored in Session");
+        return core::ObjectWrapperConstPtr();
+    }
+
+    virtual bool hasObjectOfType(const core::TypeInfo& type, bool exact = false) const
     {
         std::vector<core::ObjectWrapperConstPtr> wrappers;
         getWrappers(wrappers);
 
         for(auto it = wrappers.begin(); it != wrappers.end(); it++){
-            if((*it)->getTypeInfo() == type){
+            if((*it)->getTypeInfo() == type || (exact == false && (*it)->isSupported(type))){
                 return true;
             }
         }
-
-        /*Motions motions;
-
-        getMotions(motions);
-        for(auto it = motions.begin(); it != motions.end(); it++){
-            if((*it)->hasObjectOfType(type) == true){
-                return true;
-            }
-        }*/
 
         return false;
     }
