@@ -339,6 +339,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
             }else{
                 //tworzymy nowy wpis dla nowego rozszerzenia
                 extIT = registeredExtensions.insert(SupportedExtensionsPersistenceData::value_type(extension, ExtendedExtensionDescription())).first;
+                this->extensions.insert(extension);
             }
 
             // aktualizujemy parsery dla danego rozszerzenia
@@ -729,6 +730,15 @@ void DataManager::getObjectsForData(const core::Filesystem::Path & file, std::ve
 const DataManager::Extensions & DataManager::getSupportedFilesExtensions() const
 {
     return extensions;
+}
+
+bool DataManager::isExtensionSupported(const std::string & extension) const
+{
+    std::string ext(extension);
+
+    prepareExtension(ext);
+
+    return extensions.find(ext) != extensions.end();
 }
 
 const IFileDataManager::ExtensionDescription & DataManager::getExtensionDescription(const std::string & extension) const

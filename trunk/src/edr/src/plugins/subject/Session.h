@@ -18,31 +18,6 @@
 #include <core/SmartPtr.h>
 #include <core/ObjectWrapper.h>
 
-//#include <plugins/Subject/Motion.h>
-//#include <boost/foreach.hpp>
-
-//struct AntropometricData
-//{
-//	double width;
-//};
-//typedef core::shared_ptr<AntropometricData> AntropometricDataPtr;
-//typedef core::shared_ptr<const AntropometricData> AntropometricDataConstPtr;
-//
-//struct ExaminationData
-//{
-//
-//};
-//typedef core::shared_ptr<ExaminationData> ExaminationDataPtr;
-//typedef core::shared_ptr<const ExaminationData> ExaminationDataConstPtr;
-//
-//struct PersonalData
-//{
-//	std::string name;
-//	std::string surname;
-//};
-//typedef core::shared_ptr<PersonalData> PersonalDataPtr;
-//typedef core::shared_ptr<const PersonalData> PersonalDataConstPtr;
-
 class SubjectService;
 
 class Session : public ISession
@@ -51,7 +26,6 @@ class Session : public ISession
 
 
 private:
-	//std::string name;
     SubjectID sessionID;
 
     SubjectID localSessionID;

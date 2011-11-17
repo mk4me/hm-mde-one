@@ -190,11 +190,7 @@ namespace core {
         virtual const Extensions & getSupportedFilesExtensions() const = 0;
 
         //! \return true jeœli rozszerznie jest wspierane przez DataManager, w przeciwnym wypadku false
-        virtual bool isExtensionSupported(const std::string & extension) const
-        {
-            auto const & ext = getSupportedFilesExtensions();
-            return ext.find(extension) != ext.end();
-        }
+        virtual bool isExtensionSupported(const std::string & extension) const = 0;
 
         //! \param extension Rozszerzenie dla którego pytamy o opis
         //! \return Opis rozszerzenia

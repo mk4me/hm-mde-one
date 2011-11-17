@@ -600,7 +600,7 @@ void ItemView::fillContextMenu(const SessionGroupItem * sessionGroupItem, QMenu 
         break;
     }*/
 
-    throw std::runtime_error("Not supported");
+    //throw std::runtime_error("Not supported");
 }
 
 void ItemView::fillContextMenu(const SessionItem * sessionItem, QMenu & menu)
@@ -633,7 +633,7 @@ void ItemView::fillContextMenu(const SessionItem * sessionItem, QMenu & menu)
         if(sessionItem->getDataLocality() == Local){
             QAction * loadAction = menu.addAction(QString("Load"));
             loadAction->setData(QVariant(sessionItem->getSessionID()));
-            connect(loadAction, SIGNAL(triggered()), this, SLOT(loadSubject()));
+            connect(loadAction, SIGNAL(triggered()), this, SLOT(loadSession()));
         }
 
         break;
@@ -864,22 +864,6 @@ void ItemView::onCustomContextMenuRequested ( const QPoint & pos )
 {
     QMenu menu;
 
-    /*QMenu * view = menu.addMenu(tr("View"));
-    QAction * patientViewAction = view->addAction(tr("Patients"));
-    patientViewAction->setCheckable(true);
-    QAction * disordersViewAction = view->addAction(tr("Disorders"));
-    disordersViewAction->setCheckable(true);
-
-    if(tree == patientsWidget){
-        patientViewAction->setChecked(true);
-        patientViewAction->setEnabled(false);
-    }else{
-        disordersViewAction->setChecked(true);
-        disordersViewAction->setEnabled(false);
-    }
-
-    menu.addSeparator();*/
-
     QTreeWidget * tree = qobject_cast<QTreeWidget*>(sender());
     QTreeWidgetItem * item = tree->itemAt(pos);
     ItemBase * itemBase = dynamic_cast<ItemBase*>(item);
@@ -1090,11 +1074,16 @@ void ItemView::refreshUsage(SessionItem * sessionItem, bool goUp)
     }else{
         usage = getItemChildrenCommonUsage(sessionItem);
 
-        //weryfikuj pliki sesji!!
-        auto session = motionShallowCopy->sessions.find(sessionItem->getSessionID())->second;
+        if(usage != PartiallyLoaded){
 
-        for(auto it = session->files.begin(); it != session->files.end(); it++){
-            usage |= source->getUsage(it->second);
+            //weryfikuj pliki sesji!!
+            auto session = motionShallowCopy->sessions.find(sessionItem->getSessionID())->second;
+            std::vector<const communication::MotionShallowCopy::File*> files;
+            for(auto it = session->files.begin(); it != session->files.end(); it++){
+                files.push_back(it->second);
+            }
+
+            usage |= source->getUsage(files);
         }
     }
 
@@ -1264,25 +1253,26 @@ void MotionView::doUIRefresh()
 
             fillItemContent(subjectItem, performerIT->second);
 
-            int subjectLocality = Remote;
+            int subjectLocality = UnknownLocality;
 
             for(auto sessionIT = performerIT->second->performerConfs.begin(); sessionIT != performerIT->second->performerConfs.end(); sessionIT++){
                 
                 SessionItem * sessionItem = nullptr;
+                auto sessionID = sessionIT->second->session->sessionID;
 
-                auto sessionUIIT = sessionsUIMapping.find(sessionIT->first);
+                auto sessionUIIT = sessionsUIMapping.find(sessionID);
 
                 if(sessionUIIT != sessionsUIMapping.end()){
                     sessionItem = sessionUIIT->second;
                 }else{
-                    sessionItem = new SessionItem(this, sessionIT->second->session->sessionID);
-                    sessionsUIMapping[sessionIT->first] = sessionItem;
+                    sessionItem = new SessionItem(this, sessionID);
+                    sessionsUIMapping[sessionID] = sessionItem;
                     subjectItem->addItemBase(sessionItem);
                 }    
 
                 fillItemContent(sessionItem, sessionIT->second->session);
 
-                int sessionLocality = Remote;                
+                int sessionLocality = UnknownLocality;                
 
                 for(auto trialIT = sessionIT->second->session->trials.begin(); trialIT != sessionIT->second->session->trials.end(); trialIT++){
                     
@@ -1660,7 +1650,7 @@ PatientItem * MedicalView::createPatientItemTree(const communication::MedicalSha
 
     fillItemContent(patientItem, patient);
 
-    int patientLocality = Remote;
+    int patientLocality = UnknownLocality;
 
     auto performerIT = motionShallowCopy->performers.find(patient->motionPerformerID);
 
@@ -2290,14 +2280,16 @@ DataUsage CommunicationDataSource::getUsage(const communication::MotionShallowCo
 {
     int usage = UnknownLocality;
 
+    std::vector<const communication::MotionShallowCopy::File*> files;
+
     for(auto it = session->files.begin(); it != session->files.end(); it++){
-        usage |= getUsage(it->second);
-        if(usage == PartiallyLoaded){
-            break;
-        }
+        files.push_back(it->second);
     }
 
+    usage |= getUsage(files);
+
     if(usage != PartiallyLoaded){
+
         for(auto it = session->trials.begin(); it != session->trials.end(); it++){
             usage |= getUsage(it->second);
             if(usage == PartiallyLoaded){
@@ -2311,35 +2303,54 @@ DataUsage CommunicationDataSource::getUsage(const communication::MotionShallowCo
 
 DataUsage CommunicationDataSource::getUsage(const communication::MotionShallowCopy::Trial * motion) const
 {
-    int usage = UnknownUsage;
+    std::vector<const communication::MotionShallowCopy::File*> files;
 
     for(auto it = motion->files.begin(); it != motion->files.end(); it++){
-        usage |= getUsage(it->second);
-        if(usage == PartiallyLoaded){
-            break;
-        }
+        files.push_back(it->second);
     }
 
-    return (DataUsage)usage;
+    //return (DataUsage)usage;
+    return getUsage(files);
 }
 
 DataUsage CommunicationDataSource::getUsage(const communication::MotionShallowCopy::File * file) const
 {
-    DataUsage ret = UnknownUsage;
+    std::vector<const communication::MotionShallowCopy::File*> files;
+
+    files.push_back(file);
+
+    return getUsage(files);
+}
+
+DataUsage CommunicationDataSource::getUsage(const std::vector<const communication::MotionShallowCopy::File*> & files) const
+{
+    int ret = UnknownUsage;
 
     core::Files managedFiles;
 
     fileDataManager->getManagedData(managedFiles);
 
-    auto filePath = getFilePath(file);
+    for(auto it = files.begin(); it != files.end(); it++){
+        if(fileDataManager->isExtensionSupported(core::Filesystem::fileExtension((*it)->fileName)) == true){
+            auto filePath = getFilePath(*it);
 
-    if(managedFiles.find(filePath) != managedFiles.end()){
-        ret = Loaded;
-    }else{
-        ret = Unloaded;
+            if(managedFiles.find(filePath) != managedFiles.end()){
+                ret |= Loaded;
+            }else{
+                ret |= Unloaded;
+            }
+
+            if(ret == PartiallyLoaded){
+                break;
+            }
+        }
     }
 
-    return ret;
+    if(files.empty() == false && ret == UnknownUsage){
+        ret = Loaded;
+    }
+
+    return (DataUsage)ret;
 }
 
 void CommunicationDataSource::getFiles(const communication::MedicalShallowCopy::Disorder * disorder, std::vector<const communication::MotionShallowCopy::File *> & files) const

@@ -719,6 +719,7 @@ public:
     DataUsage getUsage(const std::set<const communication::MotionShallowCopy::Session *> & sessions) const;
     DataUsage getUsage(const communication::MotionShallowCopy::Trial * motion) const;
     DataUsage getUsage(const communication::MotionShallowCopy::File * file) const;
+    DataUsage getUsage(const std::vector<const communication::MotionShallowCopy::File*> & files) const;
 
     std::pair<DataLocality, DataUsage> getStatus(const communication::MedicalShallowCopy::Disorder * disorder) const;
     std::pair<DataLocality, DataUsage> getStatus(const communication::MedicalShallowCopy::Patient * patient) const;

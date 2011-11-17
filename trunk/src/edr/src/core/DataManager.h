@@ -328,6 +328,9 @@ public:
     //! \return Mapa obiektow wzgledem plikow z ktorych pochodza
     virtual void  getObjectsForData(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects) const;
 
+    //! \return true jeœli rozszerznie jest wspierane przez DataManager, w przeciwnym wypadku false
+    virtual bool isExtensionSupported(const std::string & extension) const;
+
     //! \return Zbior obslugiwanych rozszerzen plikow wraz z ich opisem
     virtual const Extensions & getSupportedFilesExtensions() const;
 

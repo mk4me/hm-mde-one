@@ -23,6 +23,11 @@ struct Disorder
     std::map<std::string, std::string> attributes;
 };
 
+struct AntropometricData
+{
+
+};
+
 class IPatient
 {
 public:
