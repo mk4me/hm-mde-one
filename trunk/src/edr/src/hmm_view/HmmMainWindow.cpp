@@ -733,6 +733,16 @@ void HmmMainWindow::onToolButton()
     mainArea->layout()->update();
 }
 
+
+void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
+{
+    //VisualizerWidget * vis = qobject_cast<VisualizerWidget *>(visualizer);
+
+    if(visualizer == currentVisualizer){
+        currentVisualizer = nullptr;
+    }
+}
+
  VisualizerWidget* HmmMainWindow::createDockVisualizer( TreeItemHelper* hmmItem )
 {
     std::stack<QString> pathStack;
@@ -782,25 +792,27 @@ void HmmMainWindow::onToolButton()
     //topMainWindow->autoAddDockWidget( visualizerDockWidget);
     connect(visualizerDockWidget, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
 
+    connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
+
     TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
     if(timeline != nullptr) {
         if (series.size() == 1 && series[0] != nullptr) {
-            VisualizerChannelPtr channel(new VisualizerChannel(series[0], visualizerDockWidget));
+            VisualizerChannelPtr channel(new VisualizerChannel(path.toStdString(), visualizer.get(), series[0]));
             try{
                 timeline->addChannel(path.toStdString(), channel);
             }catch(...){
                 LOG_ERROR("Could not add channel to timeline!");
             }
         } else {
-            VisualizerMultiChannel::SeriesWidgets seriesMap;
+            VisualizerMultiChannel::SeriesWidgets visSeries;
             for (int i = 0; i < series.size(); i++) {
                 auto timeSerie = series[i];
                 if(timeSerie != nullptr){
-                    seriesMap[timeSerie] = visualizerDockWidget;
+                    visSeries.push_back(timeSerie);
                 }
             }
-            if (seriesMap.size() > 0) {
-                VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(seriesMap));
+            if (visSeries.size() > 0) {
+                VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(path.toStdString(), visualizer.get(), visSeries));
                 try {
                     timeline->addChannel(path.toStdString(), multi);
                 } catch (...) {

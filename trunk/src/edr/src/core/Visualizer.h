@@ -72,8 +72,6 @@ public:
 
     const DataSeries & getDataSeries() const;
 
-    /*const DataSeries & getTimelineDataSeries() const;*/
-
     const core::VisualizerSeriePtr & createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name);
 
     const core::VisualizerSeriePtr & createSerie(const core::VisualizerSerieConstPtr & serie);
@@ -94,20 +92,32 @@ class VisualizerWidget;
 
 class IVisualizerChannel : public timeline::IChannel
 {
+
+friend class VisualizerManager;
+
 public:
-    IVisualizerChannel();
+    IVisualizerChannel(const std::string & path, Visualizer * visualizer);
     virtual ~IVisualizerChannel();
 
-    virtual void releaseChannel() = 0;
+    const std::string & getChannelPath() const;
+    const Visualizer * getVisualizer() const;
+    Visualizer * getVisualizer();
+
+    //virtual void releaseChannel() = 0;
+
+private:
+    std::string path;
+    Visualizer * visualizer;
+    bool managed;
 };
 
 class VisualizerChannel : public IVisualizerChannel
 {
 public:
 
-    VisualizerChannel(const core::VisualizerTimeSeriePtr & serie, VisualizerWidget * visualizer);
+    VisualizerChannel(const std::string & path, Visualizer * visualizer, const core::VisualizerTimeSeriePtr & serie);
 
-    virtual void releaseChannel();
+    //virtual void releaseChannel();
 
     virtual ~VisualizerChannel();
 
@@ -125,15 +135,10 @@ public:
 
     const core::VisualizerTimeSerieConstPtr & getSerie() const;
 
-    VisualizerWidget * getVisualizer();
-
-    const VisualizerWidget * getVisualizer() const;
-
 private:
 
     core::VisualizerTimeSeriePtr serie;
     core::VisualizerTimeSerieConstPtr constSerie;
-    VisualizerWidget * visualizer;
 };
 
 
@@ -141,13 +146,13 @@ class VisualizerMultiChannel : public IVisualizerChannel
 {
 public:
 
-    typedef std::map<core::VisualizerTimeSeriePtr, VisualizerWidget *> SeriesWidgets;
+    typedef std::vector<core::VisualizerTimeSeriePtr> SeriesWidgets;
 
 public:
 
-    VisualizerMultiChannel( const SeriesWidgets seriesWidgets );
+    VisualizerMultiChannel(const std::string & path, Visualizer * visualizer, const SeriesWidgets seriesWidgets);
 
-    virtual void releaseChannel();
+    //virtual void releaseChannel();
 
     virtual ~VisualizerMultiChannel();
 

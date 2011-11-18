@@ -55,6 +55,8 @@ public:
     void clearTree();
 
 private slots:
+    void visualizerDestroyed(QObject * visualizer);
+
 	void onOpen();
 	void setFont(int size);
 	void setTop(int size);

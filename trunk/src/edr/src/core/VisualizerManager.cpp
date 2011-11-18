@@ -1,5 +1,7 @@
 #include "CorePCH.h"
 #include "VisualizerManager.h"
+#include <plugins/newTimeline/ITimelineService.h>
+#include "ServiceManager.h"
 #include "DataManager.h"
 #include "SceneGraphWidget.h"
 #include <boost/foreach.hpp>
@@ -26,12 +28,14 @@ VisualizerManager::~VisualizerManager()
 
     visualizersData.swap(std::vector< IVisualizerPersistantData* >());
 
-    // zwalniamy wszystkie pozosta³e kana³y poniewa¿ nie mamy ju¿ ¿adnego wizualizatora
-    BOOST_FOREACH( IVisualizerChannel* channel, visualizerChannels ) {
-        channel->releaseChannel();
-    }
+    UTILS_ASSERT(visualizerChannels.empty(), "Wszystkie kana³y czasowe wizualizatorów powinny byæ zniszczone.");
 
-    visualizerChannels.swap(VisualizerChannels());
+    //// zwalniamy wszystkie pozosta³e kana³y poniewa¿ nie mamy ju¿ ¿adnego wizualizatora
+    //BOOST_FOREACH( IVisualizerChannel* channel, visualizerChannels ) {
+    //    channel->releaseChannel();
+    //}
+
+    //visualizerChannels.swap(VisualizerChannels());
 }
 
 IVisualizerConstPtr VisualizerManager::getPrototype( UniqueID id ) const
@@ -84,6 +88,31 @@ VisualizerPtr VisualizerManager::createVisualizer( const core::TypeInfo& typeInf
 		}
 	}
 	throw std::runtime_error("Visualizer not registered.");
+}
+
+void VisualizerManager::clearVisualizerChannels(Visualizer * visualizer)
+{
+    TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
+    if(timeline != nullptr) {
+
+        auto it = groupedVisualizerChannels.find(visualizer);
+
+        if(it != groupedVisualizerChannels.end()){
+            for(auto channelIT = it->second.begin(); channelIT != it->second.end(); channelIT++){
+                try{
+                    (*channelIT)->managed = true;
+                    visualizerChannels.remove(*channelIT);
+                    timeline->removeChannel((*channelIT)->getChannelPath());
+                }catch(std::runtime_error e){
+                    LOG_WARNING("Could not remove channel from timeline because: " << e.what());
+                }catch(...){
+                    LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
+                }
+            }
+        }
+
+        groupedVisualizerChannels.erase(it);
+    }
 }
 
 void VisualizerManager::update()
@@ -176,6 +205,7 @@ void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
 {
     LOG_DEBUG("Visualizer " << visualizer->getName() << " destroyed.");
     visualizers.remove(visualizer);
+
     if ( debugWidget ) {
         debugWidget->removeVisualizer(visualizer);
     }
@@ -184,10 +214,12 @@ void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
 void VisualizerManager::notifyCreated(IVisualizerChannel* channel)
 {
     visualizerChannels.push_back(channel);
+    groupedVisualizerChannels[channel->getVisualizer()].push_back(channel);
 }
 
 void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
 {
     visualizerChannels.remove(channel);
+    groupedVisualizerChannels[channel->getVisualizer()].remove(channel);
 }
 

@@ -2511,11 +2511,23 @@ void CommunicationDataSource::load(const std::set<const communication::MotionSha
 
 void CommunicationDataSource::load(const communication::MotionShallowCopy::Trial * motion)
 {
+    std::vector<core::ObjectWrapperPtr> objects;
     for(auto it = motion->files.begin(); it != motion->files.end(); it++){
-        load(it->second);
+        load(it->second, objects);
     }
 
-    createMotion(motion);
+    createMotion(motion, std::vector<core::ObjectWrapperConstPtr>(objects.begin(), objects.end()));
+}
+
+void CommunicationDataSource::load(const communication::MotionShallowCopy::File * file, std::vector<core::ObjectWrapperPtr> & objects)
+{
+    try{
+        auto filePath = getFilePath(file);
+        fileDataManager->addData(filePath);
+        fileDataManager->getObjectsForData(filePath, objects);
+    }catch(...){
+
+    }
 }
 
 void CommunicationDataSource::load(const communication::MotionShallowCopy::File * file)

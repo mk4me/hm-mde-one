@@ -326,7 +326,7 @@ void VisualizerWidget::clearDataSeries()
                     LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
                 }
 
-                channel->releaseChannel();
+                //channel->releaseChannel();
 
                 timelineChannels.erase(timelineChannels.begin());
             }while(timelineChannels.empty() == false);
@@ -609,6 +609,7 @@ void VisualizerWidget::removeAllSeries()
 void VisualizerWidget::innerRemoveAllSeries()
 {
     if(visualizer != nullptr){
+        VisualizerManager::getInstance()->clearVisualizerChannels(visualizer.get());
         visualizer->clearAllSeries();
     }
 
@@ -647,10 +648,10 @@ void VisualizerWidget::sourceSelected()
                 TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
                 if(timeline != nullptr) {
                     
-                    VisualizerChannelPtr channel(new VisualizerChannel(timeSerie, this));
+                    VisualizerChannelPtr channel(new VisualizerChannel(timeSerie->getName(), visualizer.get(), timeSerie));
 
                     try{
-                        timeline->addChannel(timeSerie->getName(), channel);
+                        timeline->addChannel(channel->getChannelPath(), channel);
                         timelineChannels[timeSerie] = channel;
                     }catch(std::runtime_error e){
                         LOG_WARNING("Could not add channel to timeline because: " << e.what());
@@ -717,7 +718,7 @@ void VisualizerWidget::sourceSelected()
                     }
                 }
 
-                iT->second->releaseChannel();
+                //iT->second->releaseChannel();
 
                 timelineChannels.erase(iT);
             }

@@ -703,6 +703,7 @@ public:
     void load(const std::set<const communication::MotionShallowCopy::Session *> & sessions);
     void load(const communication::MotionShallowCopy::Trial * motion);
     void load(const communication::MotionShallowCopy::File * file);
+    void load(const communication::MotionShallowCopy::File * file, std::vector<core::ObjectWrapperPtr> & objects);
 
     DataLocality getLocality(const communication::MedicalShallowCopy::Disorder * disorder) const;
     DataLocality getLocality(const communication::MedicalShallowCopy::Patient * patient) const;
@@ -811,6 +812,28 @@ private:
             ret = subjectService->createSession(subject, date.getYear(), date.getMonth(), date.getDay(), std::vector<core::ObjectWrapperConstPtr>(sessionWrappers.begin(), sessionWrappers.end()));
             auto sessionWrapper = core::addData(memoryDataManager, ret);
             sessionsMapping[session] = sessionWrapper;
+        }
+
+        return ret;
+    }
+
+    MotionPtr createMotion(const communication::MotionShallowCopy::Trial * motion, const std::vector<core::ObjectWrapperConstPtr> & objects, SessionConstPtr session = SessionConstPtr())
+    {
+        MotionPtr ret;
+
+        if(subjectService != nullptr && motionsMapping.find(motion) == motionsMapping.end()){
+            if(session == nullptr){
+                auto sessionIT = sessionsMapping.find(motion->session);
+                if(sessionIT == sessionsMapping.end()){
+                    session = createSession(motion->session);
+                }else{
+                    session = sessionIT->second->get();
+                }
+            }
+
+            ret = subjectService->createMotion(session, objects);
+            auto motionWrapper = core::addData(memoryDataManager, ret);
+            motionsMapping[motion] = motionWrapper;
         }
 
         return ret;

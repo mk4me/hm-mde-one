@@ -40,6 +40,9 @@ public:
 
     typedef std::list<Visualizer*> Visualizers;
     typedef std::list<IVisualizerChannel*> VisualizerChannels;
+
+    typedef std::map<Visualizer*, std::list<IVisualizerChannel*>> GroupedVisualizerChannels;
+
     //! Lista typów kolejnych Ÿróde³.
     typedef ObjectSlots::SlotsInfo SourcesTypes;
 
@@ -62,6 +65,7 @@ private:
     Visualizers visualizers;
 
     VisualizerChannels visualizerChannels;
+    GroupedVisualizerChannels groupedVisualizerChannels;
 
     //! Sta³e dane wizualizatorów.
     std::vector< IVisualizerPersistantData* > visualizersData;
@@ -154,7 +158,9 @@ public:
 	//! Tworzy instancjê wizualizatora.
 	//! \param typeInfo typ, ktory bedzie wyswietlany w wizualizatorze.
 	//! \return Instancja wizualizatora.
-	VisualizerPtr createVisualizer(const core::TypeInfo& typeInfo); 
+	VisualizerPtr createVisualizer(const core::TypeInfo& typeInfo);
+
+    void clearVisualizerChannels(Visualizer * visualizer);
 
 private:
     //! \return Indeks prototypu.

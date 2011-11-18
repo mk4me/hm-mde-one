@@ -123,35 +123,52 @@ void Visualizer::reset()
     clearAllSeries();
 }
 
-IVisualizerChannel::IVisualizerChannel()
+IVisualizerChannel::IVisualizerChannel(const std::string & path, Visualizer * visualizer) : path(path), visualizer(visualizer), managed(false)
 {
     VisualizerManager::getInstance()->notifyCreated(this);
 }
 
 IVisualizerChannel::~IVisualizerChannel()
 {
-    if(VisualizerManager::getInstance() != nullptr){
+    //if(VisualizerManager::getInstance() != nullptr){
+    if(managed == false){
         VisualizerManager::getInstance()->notifyDestroyed(this);
     }
+    //}
 }
 
-VisualizerChannel::VisualizerChannel(const core::VisualizerTimeSeriePtr & serie, VisualizerWidget * visualizer)
-    : serie(serie), constSerie(serie), visualizer(visualizer)
+const std::string & IVisualizerChannel::getChannelPath() const
+{
+    return path;
+}
+
+const Visualizer * IVisualizerChannel::getVisualizer() const
+{
+    return visualizer;
+}
+
+Visualizer * IVisualizerChannel::getVisualizer()
+{
+    return visualizer;
+}
+
+VisualizerChannel::VisualizerChannel(const std::string & path, Visualizer * visualizer, const core::VisualizerTimeSeriePtr & serie)
+    : IVisualizerChannel(path, visualizer), serie(serie), constSerie(serie)
 {
 
 }
 
-void VisualizerChannel::releaseChannel()
-{
-    serie = core::VisualizerTimeSeriePtr();
-    visualizer = nullptr;
-}
+//void VisualizerChannel::releaseChannel()
+//{
+//    serie = core::VisualizerTimeSeriePtr();
+//    visualizer = nullptr;
+//}
 
 VisualizerChannel::~VisualizerChannel()
 {
-    if(visualizer!= nullptr && visualizer->getCurrentVisualizer()){
+    /*if(visualizer!= nullptr && visualizer->getCurrentVisualizer()){
         visualizer->getCurrentVisualizer()->removeSerie(serie);
-    }
+    }*/
 }
 
 void VisualizerChannel::setTime(double time)
@@ -182,52 +199,52 @@ const core::VisualizerTimeSerieConstPtr & VisualizerChannel::getSerie() const
     return constSerie;
 }
 
-VisualizerWidget * VisualizerChannel::getVisualizer()
-{
-    return visualizer;
-}
+//VisualizerWidget * VisualizerChannel::getVisualizer()
+//{
+//    return visualizer;
+//}
+//
+//const VisualizerWidget * VisualizerChannel::getVisualizer() const
+//{
+//    return visualizer;
+//}
 
-const VisualizerWidget * VisualizerChannel::getVisualizer() const
-{
-    return visualizer;
-}
-
-VisualizerMultiChannel::VisualizerMultiChannel( const SeriesWidgets seriesWidgets )
-    : seriesWidgets(seriesWidgets)
+VisualizerMultiChannel::VisualizerMultiChannel(const std::string & path, Visualizer * visualizer, const SeriesWidgets seriesWidgets)
+    : IVisualizerChannel(path, visualizer), seriesWidgets(seriesWidgets)
 {
     UTILS_ASSERT((seriesWidgets.empty() == false), "Nie podano ¿adnych serii dla kanalu");
 
     auto it = seriesWidgets.begin();
 
-    length = it->first->getLength();
+    length = (*it)->getLength();
 
     it++;
 
     for( ; it != seriesWidgets.end(); it++){
-        if(length < it->first->getLength()){
-            length = it->first->getLength();
+        if(length < (*it)->getLength()){
+            length = (*it)->getLength();
         }
     }
 }
 
-void VisualizerMultiChannel::releaseChannel()
-{
-    seriesWidgets.swap(SeriesWidgets());
-}
+//void VisualizerMultiChannel::releaseChannel()
+//{
+//    //seriesWidgets.swap(SeriesWidgets());
+//}
 
 VisualizerMultiChannel::~VisualizerMultiChannel()
 {
-    for(auto it = seriesWidgets.begin(); it != seriesWidgets.end(); it++){
+    /*for(auto it = seriesWidgets.begin(); it != seriesWidgets.end(); it++){
         if(it->second->getCurrentVisualizer() != nullptr){
             it->second->getCurrentVisualizer()->removeSerie(it->first);
         }
-    }
+    }*/
 }
 
 void VisualizerMultiChannel::setTime(double time)
 {
     for(auto it = seriesWidgets.begin(); it != seriesWidgets.end(); it++){
-        it->first->setTime(time);
+        (*it)->setTime(time);
     }
 }
 
