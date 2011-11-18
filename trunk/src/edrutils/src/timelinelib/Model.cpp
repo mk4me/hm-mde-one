@@ -813,7 +813,6 @@ void Model::innerRemoveChannel(const TChannelConstPtr & channel)
     //Usunac ten kanal z rodzica oraz z mapowania!!
     TChannelPtr parent(getWritableTChannel(channel->getParent()));
     parent->removeChild(getWritableTChannel(channel));
-    updateParentLength(parent,channel);
     
     ConstTags tags;
     ConstChannels channels;
@@ -829,6 +828,12 @@ void Model::innerRemoveChannel(const TChannelConstPtr & channel)
 
     for(auto it = channels.begin(); it != channels.end(); it++){
         channelToTChannel.erase(*it);
+    }
+
+    if(parent->isRoot() == false && parent->isLeaf() == true && parent->getData()->getInnerChannel() == nullptr){
+        innerRemoveChannel(parent);
+    }else{
+        updateParentLength(parent,channel);
     }
 }
 
