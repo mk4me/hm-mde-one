@@ -236,9 +236,15 @@ public:
         }
 
         bool ret = false;
-        core::ObjectWrapper::Types supportedTypes;
-        getTypePrototype(sourceTypeInfo)->getSupportedTypes(supportedTypes);
-        if(std::find(supportedTypes.begin(), supportedTypes.end(), destTypeInfo) != supportedTypes.end()){
+        //core::ObjectWrapper::Types supportedTypes;
+        //getTypePrototype(sourceTypeInfo)->getSupportedTypes(supportedTypes);
+        //if(std::find(supportedTypes.begin(), supportedTypes.end(), destTypeInfo) != supportedTypes.end()){
+            //ret = true;
+        //}
+
+        auto const & typesSet = getTypeBaseTypes(sourceTypeInfo);
+
+        if(typesSet.find(destTypeInfo) != typesSet.end()){
             ret = true;
         }
 

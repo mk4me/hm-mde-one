@@ -61,34 +61,26 @@ void LocalDataSourceWidget::onEdit(const QString & text)
                     //ladujemy pliki!!
                     std::set<core::ObjectWrapperPtr> initialisedData;
                     std::set<core::TypeInfo> dataTypes;
+                    std::vector<core::ObjectWrapperPtr> objects;
 
                     for(auto it = files.begin(); it != files.end(); it++){
                         try{
                             dataManager->addData(*it);
-                            dataManager->initializeData(*it);
-                        }catch(...){
-
-                        }
-
-                        std::vector<core::ObjectWrapperPtr> objects;
-
-                        try{
+                            //dataManager->initializeData(*it);
                             dataManager->getObjectsForData(*it, objects);
-
-                            for(auto it = objects.begin(); it != objects.end(); it++){
-                                core::TypeInfo typeInfo = (*it)->getTypeInfo();
-                                auto dataIT = data.find(typeInfo);
-                                if(dataIT == data.end()){
-                                    dataIT = data.insert(std::make_pair(typeInfo, core::ObjectWrapperCollectionPtr(new core::ObjectWrapperCollection(typeInfo)))).first;
-                                }
-
-                                dataIT->second->addObject(*it);
-                            }
-
                         }catch(...){
 
                         }
+                    }
 
+                    for(auto it = objects.begin(); it != objects.end(); it++){
+                        core::TypeInfo typeInfo = (*it)->getTypeInfo();
+                        auto dataIT = data.find(typeInfo);
+                        if(dataIT == data.end()){
+                            dataIT = data.insert(std::make_pair(typeInfo, core::ObjectWrapperCollectionPtr(new core::ObjectWrapperCollection(typeInfo)))).first;
+                        }
+
+                        dataIT->second->addObject(*it);
                     }
 
                     if(data.empty() == false){

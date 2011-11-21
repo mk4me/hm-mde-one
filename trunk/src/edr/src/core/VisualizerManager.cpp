@@ -109,9 +109,9 @@ void VisualizerManager::clearVisualizerChannels(Visualizer * visualizer)
                     LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
                 }
             }
-        }
 
-        groupedVisualizerChannels.erase(it);
+            groupedVisualizerChannels.erase(it);
+        }        
     }
 }
 

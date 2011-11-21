@@ -868,6 +868,10 @@ void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & 
 	if ( it != registeredTypes.end() ) {
 		LOG_ERROR("Factory for " << type.name() << " already exists.");
 	}else{
+
+        //zapamiêtyjemy fabrykê
+        objectFactories[type] = factory;
+
 		//tworzymy prototyp by miec dostep do informacji o wspieranych typach
 		core::ObjectWrapperConstPtr proto(factory->createWrapper());
 
