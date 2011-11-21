@@ -66,9 +66,10 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                 }
             }
 
-            bool hasMarkers = motion->hasObjectOfType(typeid(MarkerCollection));	
+            bool hasMarkers = motion->hasObjectOfType(typeid(MarkerCollection));
+            LOG_DEBUG( "checkin joints" );
             bool hasJoints = motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection));
-
+            LOG_DEBUG( "Motion " << motion->getName() << " " << motion->getLocalName() << " joints status: " << hasJoints ? "true" : "false" );
             if (hasMarkers || hasJoints) {
                 QTreeWidgetItem* kinematicItem = new QTreeWidgetItem();
                 kinematicItem->setText(0, QObject::tr("Kinematic data"));
@@ -163,6 +164,7 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
 QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& itemIcon )
 {
    // QTreeWidgetItem* skeletonItem = new QTreeWidgetItem();
+    LOG_DEBUG( "Creating joints branch" );
     QTreeWidgetItem* skeletonItem = new JointsItemHelper(motion);
     skeletonItem->setIcon(0, itemIcon);
     skeletonItem->setText(0, rootName);

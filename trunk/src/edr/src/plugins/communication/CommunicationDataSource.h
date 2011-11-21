@@ -767,7 +767,7 @@ private:
     SessionPtr createSession(const communication::MotionShallowCopy::Session * session, SubjectConstPtr subject = SubjectConstPtr()) 
     {
         SessionPtr ret;
-
+        LOG_DEBUG("Creating subject");
         if(subjectService != nullptr && sessionsMapping.find(session) == sessionsMapping.end()){
             if(subject == nullptr){
                 auto subjectIT = subjectsMapping.find(session->performerConf->performer);
@@ -789,11 +789,13 @@ private:
             std::vector<core::ObjectWrapperPtr> sessionWrappers;
 
             for(auto it = session->files.begin(); it != session->files.end(); it++){
-                
                 auto filePath = getFilePath(it->second);
+
+                LOG_DEBUG("Operating file " << filePath.string());
                 
                 if(files.find(filePath) == files.end() && core::Filesystem::pathExists(filePath) == true){
                     try{
+                        LOG_DEBUG("Loading to DM");
                         fileDataManager->addData(filePath);
                     }catch(...){
 
@@ -801,10 +803,13 @@ private:
                 }
 
                 try{
+                    LOG_DEBUG("Getting objects");
                     fileDataManager->getObjectsForData(filePath, sessionWrappers);
                 }catch(...){
 
                 }
+
+                LOG_DEBUG("File operated");
             }
 
             std::vector<core::ObjectWrapperConstPtr> wrappers(sessionWrappers.begin(), sessionWrappers.end());
@@ -813,6 +818,8 @@ private:
             auto sessionWrapper = core::addData(memoryDataManager, ret);
             sessionsMapping[session] = sessionWrapper;
         }
+
+        LOG_DEBUG("Subject created");
 
         return ret;
     }
