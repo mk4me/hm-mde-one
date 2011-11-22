@@ -66,7 +66,7 @@ CORE_DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstru
 Q_DECLARE_METATYPE ( Filesystem::Path );
 
 MainWindow::MainWindow():
-QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr)
+QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr), widgetSceneGraph(nullptr)
 {
 
 }
@@ -119,8 +119,8 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
     }
 
     //initializeConsole();          // Console Widget 
-    InitializeControlWidget();          // Control Widget + TimeLine
-    visualizerManager->setDebugWidget(widgetSceneGraph);
+    //InitializeControlWidget();          // Control Widget + TimeLine
+    //visualizerManager->setDebugWidget(widgetSceneGraph);
 
 
     readSettings(QSettings(), true);
