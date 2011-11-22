@@ -2,7 +2,7 @@
 #include "NewChartSerie.h"
 #include "NewChartVisualizer.h"
 
-const int ACTIVE_WIDTH = 3;
+const int ACTIVE_WIDTH = 2;
 const int NON_ACTIVE_WIDTH = 1;
 
 void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
@@ -26,8 +26,9 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
 
 void NewChartSerie::setTime( float time )
 {
-    visualizer->markerX = time;
-    visualizer->markerLabel = QString("y(%1) = %2").arg(time).arg(pointHelper->y(time));
+    this->time = time;
+    //visualizer->markerX = time;
+    //visualizer->markerLabel = QString("y(%1) = %2").arg(time).arg(pointHelper->y(time));
 }
 
 void NewChartSerie::setActive( bool val )

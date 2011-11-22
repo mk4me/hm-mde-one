@@ -73,6 +73,8 @@ public:
 
     }
 
+    float getTime() const { return time; }
+    float getCurrentValue() const { return static_cast<float>(pointHelper->y(static_cast<double>(time))); }
     virtual void setTime(float time);
 
     virtual float getLength() const { return pointHelper->getLength(); }
@@ -126,7 +128,7 @@ private:
     QwtPlotCurve* curve;
     PointData* pointHelper;
     bool active;
-
+    float time;
 };
 
 #endif

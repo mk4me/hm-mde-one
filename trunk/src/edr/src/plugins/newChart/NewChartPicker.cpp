@@ -1,3 +1,4 @@
+#include "NewChartPCH.h"
 #include <QtGui/QApplication>
 #include <QtCore/QEvent>
 #include <QtGui/QPainter>
@@ -43,10 +44,8 @@ bool NewChartPicker::eventFilter( QObject *object, QEvent *event )
 
 void NewChartPicker::select( const QPoint &pos )
 {
-    QwtPlotCurve *curve = NULL;
+    QwtPlotCurve *curve = nullptr;
     double dist = 10e10;
-    int index = -1;
-
     const QwtPlotItemList& itmList = plot->itemList();
     for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
         if ( ( *it )->rtti() == QwtPlotItem::Rtti_PlotCurve )
@@ -54,11 +53,10 @@ void NewChartPicker::select( const QPoint &pos )
             QwtPlotCurve *c = ( QwtPlotCurve* )( *it );
 
             double d;
-            int idx = c->closestPoint( pos, &d );
+            c->closestPoint( pos, &d );
             if ( d < dist )
             {
                 curve = c;
-                index = idx;
                 dist = d;
             }
         }

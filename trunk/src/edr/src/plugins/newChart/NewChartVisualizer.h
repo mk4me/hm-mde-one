@@ -10,7 +10,6 @@
 #ifndef HEADER_GUARD_NEW_CHART__CHARTVISUALIZER_H__
 #define HEADER_GUARD_NEW_CHART__CHARTVISUALIZER_H__
 
-
 #include <QtCore/QObject>
 #include <QtGui/QWidget>
 #include <QtGui/QComboBox>
@@ -38,7 +37,7 @@ class NewChartVisualizer : public QObject, public core::IVisualizer
     UNIQUE_ID("{1122BD8A-6056-4965-9AEA-502F99CA2433}", "New Chart Visualizer");
 
 public:
-    NewChartVisualizer() : markerX(0.0f), showLegend(true) {}
+    NewChartVisualizer() : showLegend(true), currentSerie(-1) {}
 	virtual ~NewChartVisualizer() 
     {
     }
@@ -84,8 +83,18 @@ public:
 
       virtual void update(double deltaTime)
       {
-          qwtMarker->setXValue(markerX);
-          qwtMarker->setLabel(markerLabel);
+          if (currentSerie >= 0 && currentSerie < series.size()) {
+             
+             qwtMarker->setVisible(true);
+             NewChartSerie* serie = series[currentSerie];
+             float x = serie->getTime();
+             float y = serie->getCurrentValue();
+             qwtMarker->setXValue(x);
+             qwtMarker->setYValue(y);
+             qwtMarker->setLabel(QString("Time: %1, Value: %2").arg(x).arg(y));
+          } else {
+             qwtMarker->setVisible(false);
+          }
       }
       virtual void reset()
       {
@@ -124,12 +133,11 @@ private:
       core::shared_ptr<QwtPlotGrid> grid;
       core::shared_ptr<QwtPlotZoomer> zoomer;
       Scales plotScales;
-      float markerX;
-      QString markerLabel;
       QComboBox* activeSerieCombo;
       std::vector<NewChartSerie*> series;
       bool showLegend;
       NewChartPicker* picker;
+      int currentSerie;
 };
     
 #endif  

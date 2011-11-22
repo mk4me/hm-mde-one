@@ -16,6 +16,7 @@ set(PRIVATE_H
 	NewChartVisualizer.h
 	NewChartSerie.h
 	NewChartPicker.h
+	NewChartMarker.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -28,6 +29,7 @@ set(TARGET_SRC
 	NewChartVisualizer.cpp
 	NewChartSerie.cpp
 	NewChartPicker.cpp
+	NewChartMarker.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

@@ -1,3 +1,4 @@
+#include "NewChartPCH.h"
 #include "NewChartVisualizer.h"
 #include <qwt/qwt_plot_canvas.h>
 #include <qwt/qwt_scale_draw.h>
@@ -6,8 +7,8 @@
 #include <qwt/qwt_plot_panner.h>
 #include <qwt/qwt_plot_magnifier.h>
 #include <qwt/qwt_legend.h>
-//#include <qwt/qwt_symbol.h>
 #include "NewChartPicker.h"
+#include "NewChartMarker.h"
 
 
 QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
@@ -53,12 +54,12 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 
     connect(qwtPlot.get(), SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
     //qwtMarker.reset(new QwtPlotMarker());
-    qwtMarker = new QwtPlotMarker();
+    qwtMarker = new NewChartMarker();
     qwtMarker->setLabel(QString(""));
     qwtMarker->setLabelAlignment(Qt::AlignLeft | Qt::AlignBottom);
     qwtMarker->setLabelOrientation(Qt::Horizontal);
     qwtMarker->setLineStyle(QwtPlotMarker::VLine);
-    qwtMarker->setLinePen(QPen(Qt::black, 0, Qt::DashDotLine));
+    qwtMarker->setLinePen(QPen(Qt::black, 0, Qt::SolidLine));
     qwtMarker->setXValue(0);
     //qwtMarker->setSymbol( new QwtSymbol( QwtSymbol::Diamond,
     //    QColor( Qt::yellow ), QColor( Qt::green ), QSize( 7, 7 ) ) );
@@ -94,18 +95,18 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     NewChartSerie * ret = new NewChartSerie(this);
     ret->setName(name);
     ret->setData(data);
+    series.push_back(ret);
 
-    if(series.size() == 0){
+    if(series.size() == 1){
         activeSerieCombo->blockSignals(true);
         activeSerieCombo->clear();
         activeSerieCombo->addItem(name.c_str());
         activeSerieCombo->setCurrentIndex(0);
         activeSerieCombo->blockSignals(false);
+        setActiveSerie(0);
     }else{
         activeSerieCombo->addItem(name.c_str());
     }
-
-    series.push_back(ret);
 
     activeSerieCombo->setEnabled(true);
 
@@ -151,7 +152,8 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
     }else{
         activeSerieCombo->clear();
         int active = 0;
-        for (int i = 0; i < series.size(); i++) {
+        int count = series.size();
+        for (int i = 0; i < count; i++) {
             NewChartSerie* serie = series[i];
             activeSerieCombo->addItem(serie->getName().c_str());
             if (serie->getActive()) {
@@ -170,6 +172,7 @@ void NewChartVisualizer::setActiveSerie( int idx )
     for (int i = series.size() - 1; i >= 0; --i) {
         series[i]->setActive(idx == i);
     }
+    currentSerie = idx;
 }
 
 void NewChartVisualizer::setNormalized( bool normalized )
