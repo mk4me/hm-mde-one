@@ -15,6 +15,7 @@ source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
 	NewChartVisualizer.h
 	NewChartSerie.h
+	NewChartPicker.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -26,11 +27,13 @@ set(TARGET_SRC
 	NewChartPlugin.cpp	
 	NewChartVisualizer.cpp
 	NewChartSerie.cpp
+	NewChartPicker.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 SET(TARGET_MOC_H
-NewChartVisualizer.h
+	NewChartVisualizer.h
+	NewChartPicker.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})

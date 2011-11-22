@@ -384,9 +384,9 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     auto serieY = visualizer->createSerie(wrapperY, wrapperY->getSource());
     auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getSource());
 
-    NewChartVisualizer::NewChartSerie* chartSerieX = dynamic_cast<NewChartVisualizer::NewChartSerie*>(serieX.get());
-    NewChartVisualizer::NewChartSerie* chartSerieY = dynamic_cast<NewChartVisualizer::NewChartSerie*>(serieY.get());
-    NewChartVisualizer::NewChartSerie* chartSerieZ = dynamic_cast<NewChartVisualizer::NewChartSerie*>(serieZ.get());
+    NewChartSerie* chartSerieX = dynamic_cast<NewChartSerie*>(serieX.get());
+    NewChartSerie* chartSerieY = dynamic_cast<NewChartSerie*>(serieY.get());
+    NewChartSerie* chartSerieZ = dynamic_cast<NewChartSerie*>(serieZ.get());
 
     chartSerieX->setColor(255, 0, 0);
     chartSerieY->setColor(0, 255, 0);
@@ -406,7 +406,7 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
     for (int i = 0; i < count; i++) {
         core::ObjectWrapperConstPtr wrapper = wrappers[i];
         auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
-        NewChartVisualizer::NewChartSerie* chartSerieX = dynamic_cast<NewChartVisualizer::NewChartSerie*>(serieX.get());
+        NewChartSerie* chartSerieX = dynamic_cast<NewChartSerie*>(serieX.get());
         int r = 0;
         int g = 0;
         int b = 0;

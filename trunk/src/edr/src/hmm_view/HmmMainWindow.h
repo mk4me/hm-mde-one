@@ -39,7 +39,6 @@ private:
 
 public:
 	HmmMainWindow();
-
     virtual ~HmmMainWindow();
 
 public:
@@ -58,9 +57,6 @@ private slots:
     void visualizerDestroyed(QObject * visualizer);
 
 	void onOpen();
-	void setFont(int size);
-	void setTop(int size);
-	void setBottom(int size);
 	void onTreeItemClicked(QTreeWidgetItem *item, int column);
 
      VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );

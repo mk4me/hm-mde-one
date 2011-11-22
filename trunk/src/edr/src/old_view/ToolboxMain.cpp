@@ -74,7 +74,8 @@ void ToolboxMain::init( core::PluginLoader* pluginLoader, core::IManagersAccesso
 	initializeUI();
 	setupUi(this);
 	connect(menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));
-
+    initializeConsole();
+    addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
 	populateVisualizersMenu(menuCreateVisualizer);
 }
 

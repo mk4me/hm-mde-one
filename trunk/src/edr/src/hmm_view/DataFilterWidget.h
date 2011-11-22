@@ -35,7 +35,7 @@ public:
     bool getActive() const { return active; }
     void setActive(bool val);
     const QPixmap& getPixmap() const { return *this->pictureLabel->pixmap(); }
-    const QString& getName() const { return this->label->text(); }
+    QString getName() const { return this->label->text(); }
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);

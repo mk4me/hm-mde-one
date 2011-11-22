@@ -7,10 +7,8 @@
 #include <qwt/qwt_plot_magnifier.h>
 #include <qwt/qwt_legend.h>
 //#include <qwt/qwt_symbol.h>
+#include "NewChartPicker.h"
 
-
-const int ACTIVE_WIDTH = 3;
-const int NON_ACTIVE_WIDTH = 1;
 
 QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 {
@@ -25,7 +23,9 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     qwtPlot.reset(new QwtPlot(txt, nullptr));
     qwtPlot->setAutoReplot(true);
     if (isShowLegend()) {
-        qwtPlot->insertLegend( new QwtLegend(), QwtPlot::RightLegend );
+        QwtLegend* legend = new QwtLegend();
+        legend->setItemMode(QwtLegend::ClickableItem);
+        qwtPlot->insertLegend( legend, QwtPlot::RightLegend );
     }
     qwtPlot->canvas()->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
 
@@ -48,7 +48,10 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 
     ( void ) new QwtPlotPanner( qwtPlot->canvas() );
     ( void ) new QwtPlotMagnifier( qwtPlot->canvas() );
+    picker = new NewChartPicker( qwtPlot.get() );
+    connect(picker, SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
 
+    connect(qwtPlot.get(), SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
     //qwtMarker.reset(new QwtPlotMarker());
     qwtMarker = new QwtPlotMarker();
     qwtMarker->setLabel(QString(""));
@@ -174,39 +177,16 @@ void NewChartVisualizer::setNormalized( bool normalized )
 
 }
 
-
-
-
-void NewChartVisualizer::NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
+void NewChartVisualizer::onSerieSelected( QwtPlotItem* item)
 {
-    this->data = data;
-    curve = new QwtPlotCurve(data->getName().c_str());
-    ScalarChannelReaderInterfaceConstPtr reader = data->get();
-    
-    pointHelper = new PointData(reader, 500);
-       
-    curve->setData(pointHelper);
-    int r = rand() % 256;
-    int g = rand() % 256;
-    int b = rand() % 256;
-    setColor(r, g, b);
-    setWidth(active ? ACTIVE_WIDTH : NON_ACTIVE_WIDTH);
-    curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
-    //curve->setCurveAttribute( QwtPlotCurve::Fitted );
-    visualizer->addPlotCurve(curve, getScales());
-}
-
-void NewChartVisualizer::NewChartSerie::setTime( float time )
-{
-    visualizer->markerX = time;
-    visualizer->markerLabel = QString("y(%1) = %2").arg(time).arg(pointHelper->y(time));
-}
-
-void NewChartVisualizer::NewChartSerie::setActive( bool val )
-{
-    this->active = val;
-    if (curve) {
-        setWidth(val ? ACTIVE_WIDTH : NON_ACTIVE_WIDTH);
+    QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
+    for (int i = series.size() - 1; i >= 0; --i) {
+        if (series[i]->curve == curve) {
+            // powinno wywolac sygnal, ktory ustawi aktywna serie
+            activeSerieCombo->setCurrentIndex(i);
+            return;
+        }
     }
 }
+
 

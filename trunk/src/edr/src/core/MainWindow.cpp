@@ -118,7 +118,7 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
         serviceManager->getService(i)->lateInit();
     }
 
-    initializeConsole();          // Console Widget 
+    //initializeConsole();          // Console Widget 
     InitializeControlWidget();          // Control Widget + TimeLine
     visualizerManager->setDebugWidget(widgetSceneGraph);
 
@@ -219,7 +219,7 @@ void MainWindow::initializeConsole()
     widgetConsole = new EDRConsoleWidget(tr("Console"), this, Qt::WindowTitleHint);    
     widgetConsole->setObjectName("Console");
     widgetConsole->setAllowedAreas(Qt::BottomDockWidgetArea);
-    addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
+    //addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
 }
 
 void MainWindow::updateVisualizers()

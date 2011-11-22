@@ -29,6 +29,7 @@ HmmMainWindow::HmmMainWindow() :
 {
 	this->setWindowFlags(Qt::FramelessWindowHint);
     itemClickAction.setMainWindow(this);
+    setMouseTracking(true);
 }
 
 
@@ -50,19 +51,12 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     this->tests = new QWidget(nullptr);
     this->operations = new QWidget(nullptr);
     this->raports = new QWidget(nullptr);
-	//topButton->setFixedWidth(0);
-	//bottomButton->setFixedWidth(0);
 
     button2TabWindow[this->testsButton] = this->tests;
     button2TabWindow[this->operationsButton] = this->operations;
     button2TabWindow[this->raportsButton] = this->raports;
     button2TabWindow[this->analisisButton] = this->analisis;
 
-    /*QHBoxLayout* grid = new QHBoxLayout;
-    grid->setMargin(0);
-    QMargins m(1, 1, 1, 1);
-    grid->setContentsMargins(m);
-    mainArea->setLayout(grid);*/
     for(auto it = button2TabWindow.begin(); it != button2TabWindow.end(); it++) {
         mainArea->layout()->addWidget(it->second);
         it->second->hide();
@@ -71,21 +65,15 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     }
 
     this->tests->show();
-
-    
-
-	//connect(this->fontSlider, SIGNAL(valueChanged(int)), this, SLOT(setFont(int)));
-	//connect(this->layoutTopSlider, SIGNAL(valueChanged(int)), this, SLOT(setTop(int)));
-	//connect(this->layoutBottomSlider, SIGNAL(valueChanged(int)), this, SLOT(setBottom(int)));
-	
+    	
 	this->showFullScreen();
     QTreeWidget* treeWidget = this->analisis->getTreeWidget();
     //treeWidget->setColumnCount(2);
-    treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    //treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&)));    
-	QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
+	QObject::connect(treeWidget, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
 
     QSplitter * splitter = new QSplitter();
     splitter->setOrientation(Qt::Vertical);
@@ -100,17 +88,17 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     createFilterTabs();
 
-
-    //splitter->addWidget(topMainWindow->asQWidget());
-    //splitter->addWidget(bottomMainWindow);
-
     QWidget* analisisArea = analisis->getArea();
-    QGridLayout* v = new QGridLayout(analisisArea);
-    //v->addWidget(splitter);
+    QLayout* v = analisisArea->layout() ? analisisArea->layout() : new QGridLayout(analisisArea);
+    
+    v->setMargin(0);
+    v->setContentsMargins(QMargins(0, 0, 0, 0));
     v->addWidget(topMainWindow->asQWidget());
     topMainWindow->asQWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     v->addWidget(bottomMainWindow);
     bottomMainWindow->setMaximumHeight(120); // tymczasowo
+    bottomMainWindow->layout()->setMargin(0);
+    bottomMainWindow->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
     analisisArea->setLayout(v);
 
     int i = hlayout->children().size();
@@ -163,6 +151,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     // akcje - Workflow (VDF) i konsola
 	EDRWorkflowWidget* widget = new EDRWorkflowWidget();
     actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+    initializeConsole();
     actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
     layout->addWidget(actionsMainWindow);
 
@@ -199,8 +188,7 @@ void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
         return;
     }
 
-    QMenu * menu = new QMenu();
-
+    QMenu * menu = new QMenu(treeWidget);
     if(items2Descriptions.find(currentItem) == items2Descriptions.end()){
         QAction * addNew = new QAction(menu);
         addNew->setText(QString::fromUtf8("Add to new visualizer"));
@@ -214,7 +202,7 @@ void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
         menu->addAction(action);
     }    
 
-    menu->exec(pos);
+    menu->exec(treeWidget->mapToGlobal(pos));
 }
 
 void HmmMainWindow::visualizerFocusChanged(bool focus)
@@ -254,27 +242,6 @@ void HmmMainWindow::onOpen()
     QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", sessions);
     analisis->getTreeWidget()->addTopLevelItem(item);
 }
-
-void HmmMainWindow::setFont( int size )
-{
-	/*const QFont& font = tabWidget->font();
-	QFont newFont(font);
-	newFont.setPointSize(size);
-	tabWidget->setFont(newFont);*/
-}
-
-void HmmMainWindow::setTop( int size )
-{
-	//topButton->setFixedHeight(size);
-	//topButton->setFixedWidth(0);
-}
-
-void HmmMainWindow::setBottom( int size )
-{
-	/*bottomButton->setFixedHeight(size);
-	bottomButton->setFixedWidth(0);*/
-}
-
 
 void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
@@ -338,7 +305,10 @@ void HmmMainWindow::showTimeline()
                 QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
 
                 EDRDockWidget * widget = new EDRDockWidget();
-                widget->getInnerWidget()->layout()->addWidget(controlWidget);
+                QLayout* layout = widget->getInnerWidget()->layout();
+                layout->setMargin(0);
+                layout->setContentsMargins(QMargins(0, 0, 0, 0));
+                layout->addWidget(controlWidget);
                 widget->setAllowedAreas(Qt::BottomDockWidgetArea);
                 widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
                 for(auto it = controlWidgetActions.begin(); it!= controlWidgetActions.end(); it++){

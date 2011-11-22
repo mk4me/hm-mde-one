@@ -10,18 +10,26 @@
 #ifndef HEADER_GUARD_HMM__ANALISISWIDGET_H__
 #define HEADER_GUARD_HMM__ANALISISWIDGET_H__
 
+#include <QtCore/QEvent>
+#include <QtGui/QMouseEvent>
+#include "DataFilterWidget.h"
 #include "ui_AnalisisWidget.h"
+
+class AnalisisTreeWidget : public QTreeWidget
+{
+    Q_OBJECT;
+public:
+    explicit AnalisisTreeWidget(QWidget *parent = 0);
+
+protected:
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void contextMenuEvent ( QContextMenuEvent * event );
+};
 
 class AnalisisWidget : public QWidget, public Ui::AnalisisWidget
 {
 public:
-    AnalisisWidget(QWidget* parent, int margin = 2, Qt::WindowFlags flags = 0) : 
-      QWidget(parent, flags),
-      margin(margin),
-      filterWidth(-1), filterHeight(-1)
-      {
-          setupUi(this);
-      }
+    AnalisisWidget(QWidget* parent, int margin = 2, Qt::WindowFlags flags = 0);
 	virtual ~AnalisisWidget() {}
 
 public:
@@ -32,40 +40,28 @@ public:
         label->setText(name);
         picture->setPixmap(pixmap);
     }
-    void addDataFilterWidget(DataFilterWidget* filter)
-    {
-        if (filterWidth < 0 && filterHeight < 0) {
-            filterWidth = filter->width();
-            filterHeight = filter->height();
-        }
-
-        UTILS_ASSERT(filterHeight == filter->height() && filterWidth == filter->width());
-        
-
-        int count = filterScroll->children().size();
-        int x = count % 2;
-        int y = count / 2;
-
-        if (x == 0) {
-            int w = 3 * margin + filterWidth * 2;
-            int h = 2 * margin + (filterHeight + margin) * (y + 1);
-            filterScroll->setMinimumSize(w, h);
-            scrollArea->setMinimumWidth(w + 16);
-            scrollArea->setMaximumWidth(w + 16);
-            frame->setMaximumWidth     (w + 16);
-            scrollArea->setMinimumHeight(3 * margin + filterHeight * 2 + 8);
-        }
-
-        filter->setParent(filterScroll);
-        filter->setGeometry(margin + x * (filterWidth + margin),margin +  y * (margin + filterHeight), filterWidth, filterHeight);
-    }
+    void addDataFilterWidget(DataFilterWidget* filter);
 
     QWidget* getArea() { return analisisArea; }
+
+protected:
+    virtual bool eventFilter(QObject* object, QEvent* event)
+    {
+        if (event->type() == QEvent::MouseButtonRelease) {
+            QMouseEvent* mouse = static_cast<QMouseEvent*>(event);
+            lastMouseButton = mouse->button();
+        }
+
+        return false;
+    }
+
 
 private:
     int filterWidth;
     int filterHeight;
     int margin;
+    Qt::MouseButton lastMouseButton;
+    AnalisisTreeWidget* treeWidget;
 };
 
 

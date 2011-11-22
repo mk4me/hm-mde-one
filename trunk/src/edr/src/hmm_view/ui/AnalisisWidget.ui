@@ -142,7 +142,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>326</width>
+          <width>348</width>
           <height>150</height>
          </rect>
         </property>
@@ -240,87 +240,13 @@ background-color: rgb(255, 255, 255);
          </layout>
         </item>
         <item>
-         <widget class="QTreeWidget" name="treeWidget">
+         <widget class="QWidget" name="treeHolder" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QTreeWidget { 
-     border: none;
- } 
-
-
-QScrollBar:horizontal {											 
-		border: 1px ridge grey;											 
-		background: #FFFFFF;											
-		height: 4px;													
-		margin: 0px 0px 0px 0px;										
-		}																
-																		
-		QScrollBar::handle:horizontal,  QScrollBar::handle:pressed {		
-		background: rgb(135, 173, 255);									 
-		min-width: 2px;													 
-		max-width: 4px;													 
-		height:4px;				    									 
-		border: 0px solid grey;											 
-		}																
-																		
-		QScrollBar::handle:horizontal {									 
-		background: rgb(175, 213, 255);									 
-		selection-background-color: rgb(135, 173, 255);					
-		min-width: 2px;													 
-		max-width: 5px;													 
-		height:4px;				    									 
-		border: 0px solid grey;											 
-		}																
-																		
-		QScrollBar::add-line:horizontal {								
-		border: 0px solid grey;											 
-		background: #FFFFFF;											
-		width: 0px;														 
-		subcontrol-position: right;										 
-		subcontrol-origin: margin;										
-		}																
-																		
-		QScrollBar::sub-line:horizontal {								
-		border: 0px solid grey;											 
-		background: #FFFFFF;											
-		width: 0px;														 
-		subcontrol-position: left;										
-		subcontrol-origin: margin;										
-		}																
-																		
-		QScrollBar:vertical {											
-		border: 1px ridge grey;											 
-		background: #FFFFFF;											
-		width: 4px;													
-		margin: 2px 0 2px 0;											
-		}																
-																		
-		QScrollBar::handle:vertical,  QScrollBar::handle:pressed {		
-		background: rgb(135, 173, 255);									 
-		border: 0px outset grey;										
-		min-height: 20px;												
-		}																
-																		
-		QScrollBar::handle:vertical {									
-		background: rgb(175, 213, 255);									 
-		selection-background-color: rgb(135, 173, 255);					 
-		border: 0px outset grey;										
-		min-height: 20px;												
-		}					</string>
-          </property>
-          <attribute name="headerVisible">
-           <bool>false</bool>
-          </attribute>
-          <column>
-           <property name="text">
-            <string notr="true">1</string>
-           </property>
-          </column>
          </widget>
         </item>
        </layout>

@@ -57,6 +57,7 @@ set(TARGET_SRC
 	ConfigurationDialog.cpp
 	ConfigurationPainter.cpp
 	IllnessUnit.cpp
+	AnalisisWidget.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

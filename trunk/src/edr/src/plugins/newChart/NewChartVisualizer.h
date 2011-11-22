@@ -28,128 +28,22 @@
 #include <qwt/qwt_picker_machine.h>
 #include <qwt/qwt_legend.h>
 
+#include "NewChartSerie.h"
+#include "NewChartPicker.h"
+
 class NewChartVisualizer : public QObject, public core::IVisualizer
 {
+    friend class NewChartSerie;
     Q_OBJECT;
     UNIQUE_ID("{1122BD8A-6056-4965-9AEA-502F99CA2433}", "New Chart Visualizer");
-public:
-    struct Scales
-    {
-        Scales() : initialized(false) {}
-        Scales(float xMin, float xMax, float yMin, float yMax) :
-            xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax), initialized(true) {}
 
-        float xMin, xMax, yMin, yMax;
-        bool initialized;
-    };
+public:
     NewChartVisualizer() : markerX(0.0f), showLegend(true) {}
 	virtual ~NewChartVisualizer() 
     {
     }
     
-
 public:
-      class NewChartSerie : public TimeSerieBase
-      {
-      protected:
-          class PointData: public QwtSyntheticPointData
-          {
-          public:
-              PointData(ScalarChannelReaderInterfaceConstPtr reader, int size = 100):
-                QwtSyntheticPointData(size),
-                    reader(reader),
-                    accessor(new ScalarContiniousTimeAccessor(reader))          
-                {
-                    ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
-                    stats.reset(new ScalarChannelStats(nonConstChannel));
-                }
-                virtual double y(double x) const
-                {
-                    if (x > 3.3f && x < 3.5f) {
-                        int x = 0;
-                        x = x;
-                    }
-                    if (x >= 0 && x < reader->getLength()) {
-                        
-                        return accessor->getValue(x);
-                    } else {
-                        return 0.0;
-                    }
-                }
-
-                Scales getScales() const { return Scales(0.0f, reader->getLength(), getMin(), getMax()); }
-                float getLength() const { return reader->getLength(); }
-                float getMin() const { return stats->minValue(); }
-                float getMax() const { return stats->maxValue(); }
-
-          private:
-              ScalarChannelReaderInterfaceConstPtr reader;
-              ScalarChannelStatsPtr stats;
-              boost::shared_ptr<ScalarContiniousTimeAccessor> accessor;
-          };
-      public:
-          NewChartSerie(NewChartVisualizer * visualizer)
-              : visualizer(visualizer), active(false)
-          {
-
-          }
-
-          virtual void setTime(float time);
-
-          virtual float getLength() const { return pointHelper->getLength(); }
-
-          void setColor(int r, int g, int b, int a = 255) 
-          {
-              UTILS_ASSERT(curve);
-              QPen pen = curve->pen();
-              pen.setColor(QColor(r, g, b, a));
-              curve->setPen(pen);
-          }
-
-          void setWidth(int width)
-          {
-              UTILS_ASSERT(curve);
-              QPen pen = curve->pen();
-              pen.setWidth(width);
-              curve->setPen(pen);
-          }
-
-          virtual void setName(const std::string & name)
-          {
-              this->name = name;
-          }
-
-          virtual const std::string & getName() const
-          {
-              return name;
-          }
-
-          virtual void setData(const core::ObjectWrapperConstPtr & data);
-
-          virtual const core::ObjectWrapperConstPtr & getData() const
-          {
-              return data;
-          }
-
-          Scales getScales() const 
-          { 
-              UTILS_ASSERT(pointHelper);
-              return pointHelper->getScales(); 
-          }
-          
-          bool getActive() const { return active; }
-          void setActive(bool val);
-
-      private:
-          NewChartVisualizer* visualizer;
-          std::string name;
-          core::ObjectWrapperConstPtr data;
-          QwtPlotCurve* curve;
-          PointData* pointHelper;
-          bool active;
-          
-      };
-
       virtual IVisualizer* createClone() const
       {
           return new NewChartVisualizer();
@@ -219,9 +113,10 @@ private:
 private slots:
     void setNormalized(bool normalized);
     void setActiveSerie(int idx);
+    void onSerieSelected(QwtPlotItem*);
 
-signals:
-     void activeSeriePicked(int idx);
+//signals:
+//     void activeSeriePicked(int idx);
      
 private:
       core::shared_ptr<QwtPlot> qwtPlot;
@@ -234,6 +129,7 @@ private:
       QComboBox* activeSerieCombo;
       std::vector<NewChartSerie*> series;
       bool showLegend;
+      NewChartPicker* picker;
 };
     
 #endif  
