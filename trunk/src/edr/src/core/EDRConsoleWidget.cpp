@@ -67,7 +67,7 @@ void EDRConsoleWidget::logEntry( const EDRConsoleWidgetEntry& entry )
     if ( entry.severity == core::LogSeverityInfo ) {
         fmt.setForeground( QColor(0, 0, 0, 255) );
     } else if ( entry.severity == core::LogSeverityWarning ) {
-        fmt.setForeground( QColor(255, 255, 0, 255) );
+        fmt.setForeground( QColor(255, 130, 0, 255) );
     } else if ( entry.severity == core::LogSeverityError ) {
         fmt.setForeground( QColor(255, 0, 0, 255) );
     } else {

@@ -67,4 +67,5 @@ QTreeWidget(parent)
 {
     setHeaderHidden(true);
     setFrameShape(QFrame::NoFrame);
+    setStyleSheet("border: 0px;");
 }
