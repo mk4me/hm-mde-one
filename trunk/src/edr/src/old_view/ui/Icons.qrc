@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="resources/icons">
+  <qresource prefix="/resources/icons">
     <file alias="load.png">../../../resources/icons/load.png</file>
     <file alias="save.png">../../../resources/icons/save.png</file>
     <file alias="video.png">../../../resources/icons/video.png</file>
