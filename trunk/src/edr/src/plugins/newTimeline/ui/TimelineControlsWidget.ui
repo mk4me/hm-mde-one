@@ -110,7 +110,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="Icons2.qrc">
+         <iconset resource="Icons.qrc">
           <normaloff>:/resources/icons/play.png</normaloff>
           <normalon>:/resources/icons/pause.png</normalon>:/resources/icons/play.png</iconset>
         </property>
@@ -140,7 +140,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="Icons2.qrc">
+         <iconset resource="Icons.qrc">
           <normaloff>:/resources/icons/stop.png</normaloff>
           <normalon>:/resources/icons/stop2.png</normalon>:/resources/icons/stop.png</iconset>
         </property>
@@ -167,7 +167,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="Icons2.qrc">
+         <iconset resource="Icons.qrc">
           <normaloff>:/resources/icons/forw.png</normaloff>
           <normalon>:/resources/icons/forw2.png</normalon>:/resources/icons/forw.png</iconset>
         </property>
@@ -268,7 +268,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="Icons2.qrc">
+         <iconset resource="Icons.qrc">
           <normaloff>:/resources/icons/direction-white.png</normaloff>
           <normalon>:/resources/icons/direction2-white.png</normalon>:/resources/icons/direction-white.png</iconset>
         </property>
@@ -292,7 +292,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="Icons2.qrc"/>
+  <include location="Icons.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -64,7 +64,7 @@ set(TARGET_H ${TARGET_H} ${TARGET_UI} ${TARGET_UI_H})
 #------------------------------------------------------------------------------
 # RC
 set(TARGET_RC
-	ui/Icons2.qrc
+	ui/Icons.qrc
 )
 QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
