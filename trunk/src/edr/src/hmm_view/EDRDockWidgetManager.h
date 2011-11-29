@@ -9,6 +9,8 @@
 
 #ifndef HEADER_GUARD_HMM__EDRDOCKWIDGETMANAGER_H__
 #define HEADER_GUARD_HMM__EDRDOCKWIDGETMANAGER_H__
+
+#include <boost/range.hpp>
 #include <QtGui/QWidget>
 #include <QtGui/QMainWindow>
 
@@ -18,6 +20,9 @@ class EDRDockWidgetSet;
 class EDRDockWidgetManager : protected QMainWindow
 {
     Q_OBJECT;
+
+public:
+    typedef boost::iterator_range<std::list<EDRDockWidgetSet*>::const_iterator> const_range;
 public:
 	explicit EDRDockWidgetManager(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~EDRDockWidgetManager() {}
@@ -27,6 +32,7 @@ public:
 	void addDockWidgetSet(EDRDockWidgetSet* set);
 	void autoAddDockWidget(EDRDockWidget* widget);
     void setTabsPosition(QTabWidget::TabPosition tabPosition);
+    const_range getDockSet() const { return boost::make_iterator_range(dockList.cbegin(), dockList.cend()); }
 
 private:
 	std::list<EDRDockWidgetSet*> dockList;

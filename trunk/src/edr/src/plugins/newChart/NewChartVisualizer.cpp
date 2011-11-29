@@ -1,27 +1,30 @@
 #include "NewChartPCH.h"
+#include <QtGui/QAction>
 #include "NewChartVisualizer.h"
 #include <qwt/qwt_plot_canvas.h>
 #include <qwt/qwt_scale_draw.h>
 #include <qwt/qwt_scale_widget.h>
 #include <qwt/qwt_plot_layout.h>
-#include <qwt/qwt_plot_panner.h>
-#include <qwt/qwt_plot_magnifier.h>
 #include <qwt/qwt_legend.h>
 #include "NewChartPicker.h"
 #include "NewChartMarker.h"
+#include "NewChartValueMarker.h"
+#include "NewChartVerticals.h"
+#include "NewChartHorizontals.h"
 
+NewChartVisualizer::NewChartVisualizer() : 
+showLegend(true), 
+    currentSerie(-1),
+    plotPanner(nullptr),
+    plotMagnifier(nullptr)
+{
+
+}
 
 QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 {
-    activeSerieCombo = new QComboBox();
-    activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
-    activeSerieCombo->setEnabled(false);
-    connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
-
-    actions.push_back(activeSerieCombo);
-
     QwtText txt(getName().c_str());
-    qwtPlot.reset(new QwtPlot(txt, nullptr));
+    qwtPlot = new QwtPlot(txt, nullptr);
     qwtPlot->setAutoReplot(true);
     if (isShowLegend()) {
         QwtLegend* legend = new QwtLegend();
@@ -29,6 +32,27 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
         qwtPlot->insertLegend( legend, QwtPlot::RightLegend );
     }
     qwtPlot->canvas()->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
+    qwtPlot->canvas()->installEventFilter(this);
+
+    activeSerieCombo = new QComboBox();
+    activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
+    activeSerieCombo->setEnabled(false);
+    connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
+
+    actions.push_back(activeSerieCombo);
+    NewChartPickerPtr picker(new NewChartPicker(this));
+    connect(picker.get(), SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
+    statesMap[new QAction("Picker", this)] = picker;
+    statesMap[new QAction("Value Marker", this)] =  NewChartStatePtr(new NewChartValueMarker(this));
+    statesMap[new QAction("Horizontal Marker", this)] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Horizontal));
+    statesMap[new QAction("Vertical Marker", this)] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Vertical));
+    
+    for (auto it = statesMap.begin(); it != statesMap.end(); it++) {
+        actions.push_back(it->first);
+        connect(it->first, SIGNAL(triggered()), this, SLOT(onStateAction()));
+    }
+    
+    
 
     for ( int i = 0; i < QwtPlot::axisCnt; i++ )    {
         QwtScaleWidget *scaleWidget = qwtPlot->axisWidget( i );
@@ -47,23 +71,18 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     zoomer->setTrackerMode(QwtPicker::ActiveOnly);
     zoomer->setRubberBand(QwtPicker::RectRubberBand); */
 
-    ( void ) new QwtPlotPanner( qwtPlot->canvas() );
-    ( void ) new QwtPlotMagnifier( qwtPlot->canvas() );
-    picker = new NewChartPicker( qwtPlot.get() );
-    connect(picker, SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
+    plotPanner =  new QwtPlotPanner( qwtPlot->canvas() );
+    plotMagnifier =  new QwtPlotMagnifier( qwtPlot->canvas() );
+    
 
-    connect(qwtPlot.get(), SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
+    connect(qwtPlot, SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
     //qwtMarker.reset(new QwtPlotMarker());
     qwtMarker = new NewChartMarker();
-    qwtMarker->setLabel(QString(""));
-    qwtMarker->setLabelAlignment(Qt::AlignLeft | Qt::AlignBottom);
-    qwtMarker->setLabelOrientation(Qt::Horizontal);
-    qwtMarker->setLineStyle(QwtPlotMarker::VLine);
-    qwtMarker->setLinePen(QPen(Qt::black, 0, Qt::SolidLine));
     qwtMarker->setXValue(0);
+    qwtMarker->setYValue(0);
     //qwtMarker->setSymbol( new QwtSymbol( QwtSymbol::Diamond,
     //    QColor( Qt::yellow ), QColor( Qt::green ), QSize( 7, 7 ) ) );
-    qwtMarker->attach(qwtPlot.get());
+    qwtMarker->attach(qwtPlot);
 
     grid.reset(new QwtPlotGrid);
     grid->enableXMin(false);
@@ -71,10 +90,13 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 
     grid->setMajPen(QPen(Qt::gray, 0, Qt::DashLine));
     //grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-    grid->attach(qwtPlot.get());
+    grid->attach(qwtPlot);
+
+    this->currentState = picker;
+    this->currentState->stateBegin();
 
     qwtPlot->replot();
-    return qwtPlot.get();
+    return qwtPlot;
 }
 
 
@@ -126,7 +148,7 @@ void NewChartVisualizer::addPlotCurve( QwtPlotCurve* curve, const Scales& scales
 
     qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
     qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
-    curve->attach(qwtPlot.get());
+    curve->attach(qwtPlot);
 }
 
 void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
@@ -191,5 +213,39 @@ void NewChartVisualizer::onSerieSelected( QwtPlotItem* item)
         }
     }
 }
+
+void NewChartVisualizer::onStateAction()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (currentState) {
+        currentState->stateEnd();
+    }
+    currentState = statesMap[action];
+    currentState->stateBegin();
+}
+
+bool NewChartVisualizer::eventFilter( QObject *object, QEvent *event )
+{
+    if (currentState && !currentState->stateEventFilter(object, event)) {
+        return QObject::eventFilter(object, event);
+    }
+
+    return true;
+}
+
+QwtPlot* NewChartVisualizer::getPlot()
+{
+    UTILS_ASSERT(qwtPlot);
+    return qwtPlot;
+}
+
+void NewChartVisualizer::setManipulation( bool val )
+{
+    UTILS_ASSERT(plotPanner && plotMagnifier);
+    plotPanner->setEnabled(val);
+    plotMagnifier->setEnabled(val);
+}
+
+
 
 

@@ -18,39 +18,34 @@ class QCustomEvent;
 class QwtPlot;
 class QwtPlotItem;
 
-class NewChartPicker: public QObject
+#include "NewChartSerie.h"
+#include "NewChartState.h"
+
+class NewChartPicker: public NewChartState
 {
     Q_OBJECT
 public:
-    NewChartPicker( QwtPlot* plot );
+    NewChartPicker( NewChartVisualizer* visualizer );
 	virtual ~NewChartPicker() {}
 
 public:
-    virtual bool eventFilter( QObject *, QEvent * );
-    //virtual bool event( QEvent * );
+    virtual bool stateEventFilter( QObject *, QEvent * );
+    virtual void draw(QPainter* painter) {} 
+    virtual void stateBegin();
+    virtual void stateEnd() {}
+
+    int getPixelTolerance() const { return pixelTolerance; }
+    void setPixelTolerance(int val) { pixelTolerance = val; }
 
 signals:
     void serieSelected(QwtPlotItem* curve);
 
 private:
     void select( const QPoint & );
-    /*void move( const QPoint & );
-    void moveBy( int dx, int dy );*/
-
-    //void release();
-
-    /*void showCursor( bool enable );
-    void shiftPointCursor( bool up );
-    void shiftCurveCursor( bool up );*/
-
-    /*QwtPlot *plot();
-    const QwtPlot *plot() const;
-
-    QwtPlotCurve *d_selectedCurve;
-    int d_selectedPoint;*/
 
 private:
-    QwtPlot* plot;
+    QwtPlotCanvas* canvas;
+    int pixelTolerance;
 };
 typedef core::shared_ptr<NewChartPicker> NewChartPickerPtr;
 typedef core::shared_ptr<const NewChartPicker> NewChartPickerConstPtr;

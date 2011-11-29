@@ -33,6 +33,7 @@ public slots:
     //! \param floating Czy widget ma byæ oddokowany?
     void setFloating(bool floating);
 
+public:
     EDRDockInnerWidget * getInnerWidget();
     const EDRDockInnerWidget * getInnerWidget() const;
 
@@ -44,6 +45,8 @@ public slots:
 
     void setTitleBarVisible(bool visible);
     bool isTitlebarVisible() const;
+
+    QString getTitle() const { return windowTitle(); }
 
 protected:
 
@@ -61,7 +64,6 @@ private:
     EDRTitleBar * titleBar;
     bool showTitleBar;
     EDRDockInnerWidget * innerWidget;
-
     QWidget * undockWidget;
 };
 

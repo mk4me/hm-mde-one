@@ -22,6 +22,22 @@ class EDRDockWidgetManager;
 class DataFilterWidget;
 class AnalisisWidget;
 
+class ContextAction : public QAction
+{
+    Q_OBJECT;
+public:
+    ContextAction(TreeItemHelper* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr()) : 
+      helper(itemHelper), QAction(parent), visualizer(vis) {}
+
+public:
+    TreeItemHelper* getItemHelper() const { return helper; }
+    VisualizerPtr getVisualizer() const { return visualizer; }
+
+private:
+    TreeItemHelper* helper;
+    VisualizerPtr visualizer;
+};
+
 
 
 
@@ -61,9 +77,12 @@ private slots:
 
      VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
 
+     void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
+
     void visualizerFocusChanged(bool focus);
     void onTreeContextMenu(const QPoint & pos);
     void createNewVisualizer();
+    void addToVisualizer();
     void filterGroupActivated(bool active);
     void onToolButton();
 

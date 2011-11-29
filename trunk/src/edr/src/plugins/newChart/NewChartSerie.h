@@ -79,12 +79,24 @@ public:
 
     virtual float getLength() const { return pointHelper->getLength(); }
 
-    void setColor(int r, int g, int b, int a = 255) 
+    const QwtPlotCurve* getCurve() const { return curve; }
+
+    void setColor(int r, int g, int b, int a = 255)
+    {
+        setColor(QColor(r, g, b, a));
+    }
+
+    void setColor(const QColor& color)
     {
         UTILS_ASSERT(curve);
         QPen pen = curve->pen();
-        pen.setColor(QColor(r, g, b, a));
+        pen.setColor(color);
         curve->setPen(pen);
+    }
+
+    QColor getColor() const {
+        UTILS_ASSERT(curve);
+        return curve->pen().color();
     }
 
     void setWidth(int width)
@@ -126,6 +138,7 @@ private:
     std::string name;
     core::ObjectWrapperConstPtr data;
     QwtPlotCurve* curve;
+    
     PointData* pointHelper;
     bool active;
     float time;

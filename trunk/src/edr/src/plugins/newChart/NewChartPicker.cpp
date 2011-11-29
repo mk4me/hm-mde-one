@@ -9,21 +9,22 @@
 #include <qwt/qwt_plot_curve.h>
 #include <qwt/qwt_plot_directpainter.h>
 #include "NewChartPicker.h"
+#include "NewChartVisualizer.h"
 
-NewChartPicker::NewChartPicker( QwtPlot *plot ):
-    QObject( plot ),
-    plot(plot)
+NewChartPicker::NewChartPicker( NewChartVisualizer* visualizer):
+    NewChartState( visualizer ),
+    pixelTolerance(20)
 {
-    QwtPlotCanvas *canvas = plot->canvas();
+    canvas = visualizer->getPlot()->canvas();
     canvas->installEventFilter( this );
-    canvas->setFocusPolicy( Qt::StrongFocus );
+    //canvas->setFocusPolicy( Qt::StrongFocus );
     canvas->setFocusIndicator( QwtPlotCanvas::ItemFocusIndicator );
     canvas->setFocus();
 }
 
-bool NewChartPicker::eventFilter( QObject *object, QEvent *event )
+bool NewChartPicker::stateEventFilter( QObject *object, QEvent *event )
 {
-    if ( plot == NULL || object != plot->canvas() ) {
+    if (object != canvas ) {
         return false;
     }
 
@@ -46,7 +47,7 @@ void NewChartPicker::select( const QPoint &pos )
 {
     QwtPlotCurve *curve = nullptr;
     double dist = 10e10;
-    const QwtPlotItemList& itmList = plot->itemList();
+    const QwtPlotItemList& itmList = visualizer->getPlot()->itemList();
     for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
         if ( ( *it )->rtti() == QwtPlotItem::Rtti_PlotCurve )
         {
@@ -62,7 +63,13 @@ void NewChartPicker::select( const QPoint &pos )
         }
     }
 
-    if ( curve && dist < 10 ) {
+    if ( curve && dist < pixelTolerance ) {
         emit serieSelected(static_cast<QwtPlotItem*>(curve));
     }
+}
+
+void NewChartPicker::stateBegin()
+{
+    visualizer->setManipulation(true);
+    canvas->setCursor(Qt::DragLinkCursor);
 }

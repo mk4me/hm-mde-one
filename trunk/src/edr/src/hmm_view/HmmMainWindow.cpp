@@ -176,8 +176,41 @@ bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
 
 void HmmMainWindow::createNewVisualizer()
 {
-    if(emptyVisualizersPool.empty() == false);
+    ContextAction* action = qobject_cast<ContextAction*>(sender());
+    UTILS_ASSERT(action);
+    if (action) {
+        showTimeline();
+        VisualizerWidget* w = createDockVisualizer(action->getItemHelper());
+        topMainWindow->autoAddDockWidget( w );
+    }
 }
+
+
+void HmmMainWindow::addToVisualizer()
+{
+    ContextAction* action = qobject_cast<ContextAction*>(sender());
+    UTILS_ASSERT(action);
+    if (action) {
+        try {
+            VisualizerPtr visualizer = action->getVisualizer();
+            TreeItemHelper* helper = action->getItemHelper();
+            static int counter = 0;
+            QString path = QString("Existin...%1").arg(counter++);
+            std::vector<core::VisualizerTimeSeriePtr> series;
+            helper->createSeries(visualizer, path, series);
+            addSeriesToTimeline(series, path, visualizer);
+        } catch (std::exception& e) {
+            QString message("Unable to add data to visualizer");
+            message += "\n";
+            message += tr("reason: ");
+            message += tr(e.what());
+            QMessageBox::warning(this, tr("Warning"), message);
+        } catch (...) {
+            QMessageBox::warning(this, tr("Warning"), tr("Unable to add data to visualizer"));
+        }
+    }
+}
+
 
 void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
 {
@@ -188,21 +221,39 @@ void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
         return;
     }
 
-    QMenu * menu = new QMenu(treeWidget);
-    if(items2Descriptions.find(currentItem) == items2Descriptions.end()){
-        QAction * addNew = new QAction(menu);
-        addNew->setText(QString::fromUtf8("Add to new visualizer"));
-        menu->addAction(addNew);
-        connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
+    TreeItemHelper* helper = dynamic_cast<TreeItemHelper*>(currentItem);
 
-        menu->addAction("Add to existing visualizer");
-    }else{
-        QAction * action = new QAction(menu);
-        action->setText(QString::fromUtf8("Remove"));
-        menu->addAction(action);
-    }    
+    if (helper) {
+        QMenu * menu = new QMenu(treeWidget);
+        if(items2Descriptions.find(currentItem) == items2Descriptions.end()){
+            QAction * addNew = new ContextAction(helper, menu);
+            addNew->setText(tr("Add to new visualizer"));
+            menu->addAction(addNew);
+            connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
 
-    menu->exec(treeWidget->mapToGlobal(pos));
+            BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
+                QMenu* group = new QMenu(set->getTitle(), menu);
+                menu->addMenu(group);
+                BOOST_FOREACH(EDRDockWidget* dock, set->getDockWidgets()) {
+                    VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(dock);
+                    if (vw ) {
+                        VisualizerPtr visualizer = vw->getCurrentVisualizer();
+                        QAction* addAction = new ContextAction(helper, group, visualizer);
+                        addAction->setText(vw->getTitle());
+                        connect(addAction, SIGNAL(triggered()), this, SLOT(addToVisualizer()));
+                        group->addAction(addAction);
+                    }
+                }
+            }
+            //menu->addAction("Add to existing visualizer");
+        }else{
+            QAction * action = new QAction(menu);
+            action->setText(QString::fromUtf8("Remove"));
+            menu->addAction(action);
+        }    
+
+        menu->exec(treeWidget->mapToGlobal(pos));
+    }
 }
 
 void HmmMainWindow::visualizerFocusChanged(bool focus)
@@ -573,9 +624,6 @@ void HmmMainWindow::createFilterTab1()
     this->analisis->addDataFilterWidget(filter4);
 }
 
-
-
-
 void HmmMainWindow::createFilterTab2()
 {
     core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
@@ -764,36 +812,42 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
 
-    TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
-    if(timeline != nullptr) {
-        if (series.size() == 1 && series[0] != nullptr) {
-            VisualizerChannelPtr channel(new VisualizerChannel(path.toStdString(), visualizer.get(), series[0]));
-            try{
-                timeline->addChannel(path.toStdString(), channel);
-            }catch(...){
-                LOG_ERROR("Could not add channel to timeline!");
-            }
-        } else {
-            VisualizerMultiChannel::SeriesWidgets visSeries;
-            for (int i = 0; i < series.size(); i++) {
-                auto timeSerie = series[i];
-                if(timeSerie != nullptr){
-                    visSeries.push_back(timeSerie);
-                }
-            }
-            if (visSeries.size() > 0) {
-                VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(path.toStdString(), visualizer.get(), visSeries));
-                try {
-                    timeline->addChannel(path.toStdString(), multi);
-                } catch (...) {
-                    LOG_ERROR("Could not add multichannel to timeline!");
-                }
-            }
-        }
-    }
+    addSeriesToTimeline(series, path, visualizer);
+
 
     return visualizerDockWidget;
 }
+
+ void HmmMainWindow::addSeriesToTimeline( const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer )
+ {
+     TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
+     if(timeline != nullptr) {
+         if (series.size() == 1 && series[0] != nullptr) {
+             VisualizerChannelPtr channel(new VisualizerChannel(path.toStdString(), visualizer.get(), series[0]));
+             try{
+                 timeline->addChannel(path.toStdString(), channel);
+             }catch(...){
+                 LOG_ERROR("Could not add channel to timeline!");
+             }
+         } else {
+             VisualizerMultiChannel::SeriesWidgets visSeries;
+             for (int i = 0; i < series.size(); i++) {
+                 auto timeSerie = series[i];
+                 if(timeSerie != nullptr){
+                     visSeries.push_back(timeSerie);
+                 }
+             }
+             if (visSeries.size() > 0) {
+                 VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(path.toStdString(), visualizer.get(), visSeries));
+                 try {
+                     timeline->addChannel(path.toStdString(), multi);
+                 } catch (...) {
+                     LOG_ERROR("Could not add multichannel to timeline!");
+                 }
+             }
+         }
+     }
+ }
 
 
 

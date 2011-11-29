@@ -17,6 +17,11 @@ set(PRIVATE_H
 	NewChartSerie.h
 	NewChartPicker.h
 	NewChartMarker.h
+	NewChartState.h
+	NewChartValueMarker.h
+	NewChartHorizontals.h
+	NewChartVerticals.h
+	NewChartLabelState.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -30,12 +35,22 @@ set(TARGET_SRC
 	NewChartSerie.cpp
 	NewChartPicker.cpp
 	NewChartMarker.cpp
+	NewChartState.cpp
+	NewChartValueMarker.cpp
+	NewChartHorizontals.cpp
+	NewChartVerticals.cpp
+	NewChartLabelState.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 SET(TARGET_MOC_H
 	NewChartVisualizer.h
+	NewChartState.h
 	NewChartPicker.h
+	NewChartValueMarker.h
+	NewChartHorizontals.h
+	NewChartVerticals.h
+	NewChartLabelState.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})

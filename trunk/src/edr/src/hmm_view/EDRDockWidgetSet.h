@@ -10,6 +10,7 @@
 #ifndef HEADER_GUARD_HMM__EDRDOCKWIDGETSET_H__
 #define HEADER_GUARD_HMM__EDRDOCKWIDGETSET_H__
 
+#include <boost/range.hpp>
 #include <QtCore/QString>
 #include <QtGui/QMainWindow>
 #include "EDRDockWidget.h"
@@ -19,6 +20,10 @@
 class EDRDockWidgetSet : public EDRDockWidget
 {
 	Q_OBJECT;
+
+public:
+    typedef boost::iterator_range<std::list<EDRDockWidget*>::const_iterator> const_range;
+
 public:
 	explicit EDRDockWidgetSet(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	explicit EDRDockWidgetSet(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
@@ -32,6 +37,7 @@ public:
 	int getNumWidgets() const;
 	int getMaxWidgetsNumber() const { return maxWidgetsNumber; }
 	void setMaxWidgetsNumber(int val) { maxWidgetsNumber = val; }
+    const_range getDockWidgets() const { return boost::make_iterator_range(widgetsList.cbegin(), widgetsList.cend()); }
 
 private:
 	QMainWindow* mainWindow;
