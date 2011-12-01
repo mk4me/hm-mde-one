@@ -35,6 +35,7 @@ private:
     NewChartLabel* currentLabel;
     boost::shared_ptr<QPointF> point1;
     NewChartLabel::ConnectionStyle style;
+    NewChartMarker marker;
 };
 typedef core::shared_ptr<NewChartVerticals> NewChartVerticalsPtr;
 typedef core::shared_ptr<const NewChartVerticals> NewChartVerticalsConstPtr;

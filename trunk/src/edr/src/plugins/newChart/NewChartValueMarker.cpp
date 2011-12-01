@@ -9,7 +9,7 @@ NewChartValueMarker::NewChartValueMarker( NewChartVisualizer* visualizer ) :
     NewChartLabelState(visualizer),
     currentLabel(nullptr)
 {
-
+    marker.setLerpRatios(1.0f);
 }
 
 bool NewChartValueMarker::stateEventFilter( QObject *object, QEvent *event )

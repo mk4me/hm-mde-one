@@ -1,16 +1,29 @@
 #include "NewChartPCH.h"
 #include "NewChartMarker.h"
+#include <utils/Utils.h>
 #include <QtGui/QPainter>
+
+const int LABEL_WIDTH = 90;
+const int LABEL_HEIGHT = 35;
+const int LABEL_PDIST = 20;
+const int LABEL_BOUND = 3;
+const float MIN_LERP_DIST = 15.0f;
+const float LERP_Y = 0.1f;
+const float LERP_X = 0.33f;
 
 NewChartMarker::NewChartMarker( ScalarChannelReaderInterfaceConstPtr reader ) :
     reader(reader),
-    positionSet(false)
+    positionSet(false),
+    lerpX(LERP_X),
+    lerpY(LERP_Y)
 {
-
+    setZ(1001);
 }
 
 NewChartMarker::NewChartMarker() :
-    positionSet(false)
+positionSet(false),
+    lerpX(LERP_X),
+    lerpY(LERP_Y)
 {
 
 }
@@ -26,13 +39,6 @@ float lerp(float from, float to, float ratio)
     return from * (1.0f - ratio) + to * ratio;
 }
 
-const int LABEL_WIDTH = 90;
-const int LABEL_HEIGHT = 35;
-const int LABEL_PDIST = 20;
-const int LABEL_BOUND = 3;
-const float LERP_Y = 0.1f;
-const float LERP_X = 0.33f;
-
 
 void NewChartMarker::drawLabel( QPainter *painter, const QRectF &rect, const QPointF & point ) const
 {
@@ -42,8 +48,9 @@ void NewChartMarker::drawLabel( QPainter *painter, const QRectF &rect, const QPo
     int px = point.x();
     int py = point.y();
 
-    if (px < rect.left() || px > rect.right()) {
-        px = rect.left();
+    if (px < rect.left() || px > rect.right() || py > rect.bottom() || py < rect.top()) {
+        resetMomentum();
+        return;
     }
 
     float destX = px + LABEL_PDIST;
@@ -63,13 +70,24 @@ void NewChartMarker::drawLabel( QPainter *painter, const QRectF &rect, const QPo
         positionSet = true;
     }
     
-   
-    position.setX(lerp(position.x(), destX, LERP_X));
-    position.setY(lerp(position.y(), destY, LERP_Y));
+    
+    if (abs(position.x() - destX) > MIN_LERP_DIST) {
+        position.setX(lerp(position.x(), destX, lerpX));
+    }
+
+    if (abs(position.y() - destY) > MIN_LERP_DIST) {
+       position.setY(lerp(position.y(), destY, lerpY)); 
+    }
+    
+    
 
     painter->setPen(QPen(QColor(135, 173, 255)));
     painter->setBrush(QBrush(QColor(255,255,255)));
-    painter->drawLine(point.x() + 3, point.y() + 3, static_cast<int>(position.x()) , static_cast<int>(position.y()));
+
+    int lineX = utils::clamp(point.x(), position.x(), position.x() + LABEL_WIDTH);
+    int lineY = utils::clamp(point.y(), position.y(), position.y() + LABEL_HEIGHT);
+
+    painter->drawLine(point.x() + 3, point.y() + 3, lineX, lineY);
    
     QRect textRect;
     textRect.setX(static_cast<int>(position.x()));
@@ -119,7 +137,7 @@ void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtS
     UTILS_ASSERT(point1);
     QPoint transformed1 = QwtScaleMap::transform(xMap, yMap, point1->getPosition()).toPoint();
     
-    painter->setBrush(brush);
+    
     painter->setPen(pen);
 
     QRect textRect;
@@ -134,11 +152,37 @@ void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtS
     boxRect.setWidth(textRect.width() + LABEL_BOUND * 2);
     boxRect.setHeight(textRect.height() + LABEL_BOUND * 2);
 
-    drawConnection(painter, QPoint(boxRect.x(), boxRect.y()), transformed1, connectionStyle);
-    if (point2) {
+    QBrush b(pen.color());
+    b.setStyle(Qt::SolidPattern);
+    painter->setBrush(b);
+    if (!point2) {
+        drawConnection(painter, boxRect, transformed1, connectionStyle);
+    } else {
         QPoint transformed2 = QwtScaleMap::transform(xMap, yMap, point2->getPosition()).toPoint();
-        drawConnection(painter, transformed2, QPoint(boxRect.x(), boxRect.y()), connectionStyle);
+
+        if (connectionStyle == Horizontal) {
+            if (transformed1.x() > transformed2.x()) {
+                QPoint temp = transformed1;
+                transformed1 = transformed2;
+                transformed2 = temp;
+            }
+
+            drawConnection(painter, boxRect, transformed1, connectionStyle, boxRect.left() > transformed2.x());
+            drawConnection(painter, boxRect, transformed2,  connectionStyle, boxRect.right() < transformed1.x());
+        } else if (connectionStyle == Vertical) {
+            if (transformed1.y() > transformed2.y()) {
+                QPoint temp = transformed1;
+                transformed1 = transformed2;
+                transformed2 = temp;
+            }
+            drawConnection(painter, boxRect, transformed1, connectionStyle, boxRect.top() > transformed2.y());
+            drawConnection(painter, boxRect, transformed2,  connectionStyle, boxRect.bottom() < transformed1.y());
+        } else {
+            UTILS_ASSERT(false);
+        }
     }
+
+    painter->setBrush(brush);
     painter->drawRoundedRect(boxRect, 6, 6);
         
     painter->setPen(QPen(QColor(100, 100, 100)));
@@ -193,40 +237,47 @@ void NewChartLabel::connectDots( const QPointF& point1, const QPointF& point2, C
     connectDots(p1, p2, style);
 }
 
-void NewChartLabel::drawConnection(QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo, ConnectionStyle style ) const
+void NewChartLabel::drawConnection(QPainter* painter, const QRect& box, const QPoint& transformedTo, ConnectionStyle style, bool arrowOutside) const
 {
     switch(style) {
-    case Simple: {
-        drawArrow(painter, transformedFrom, transformedTo);
-        } break;
+        case Simple: {
+            int pX = utils::clamp(transformedTo.x(), box.left(), box.right());
+            int pY = utils::clamp(transformedTo.y(), box.top(), box.bottom());
+            drawArrow(painter, QPoint(pX, pY), transformedTo, arrowOutside);
+            } break;
 
-    case Horizontal: {
-        QPoint p(transformedFrom.x(), transformedTo.y());
-        painter->drawLine(transformedFrom, p);
-        painter->drawLine(transformedTo, p);
-        } break;
+        case Horizontal: {
+            QPoint transformedFrom(box.left(), box.top() + box.height() / 2);
+            QPoint p(transformedTo.x(), transformedFrom.y());
+            drawArrow(painter, transformedFrom, p, arrowOutside);
+            painter->drawLine(transformedTo, p);
+            } break;
 
-    case Vertical: {
-        QPoint p(transformedTo.x(), transformedFrom.y());
-        painter->drawLine(transformedFrom, p);
-        painter->drawLine(p, transformedTo);
-        } break;
+        case Vertical: {
+            QPoint transformedFrom(box.left() + box.width() / 2, box.top());
+            QPoint p(transformedFrom.x(), transformedTo.y());
+            drawArrow(painter, transformedFrom, p, arrowOutside);
+            painter->drawLine(p, transformedTo);
+            } break;
 
-    default:
-        UTILS_ASSERT(false);
+        default:
+            UTILS_ASSERT(false);
     }
 }
 
-void NewChartLabel::drawArrow( QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo ) const
+void NewChartLabel::drawArrow( QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo, bool outside ) const
 {
     painter->drawLine(transformedFrom, transformedTo);
     QPointF normal = (transformedTo- transformedFrom);
     float length = sqrt(normal.x() * normal.x() + normal.y() * normal.y());
+    if (length < 0.0001f) {
+        return;
+    }
     normal.setX(normal.x() / length);
     normal.setY(normal.y() / length);
 
     QPointF normalR(-normal.y(), normal.x());
-    QPointF base = transformedTo - (12 * normal);
+    QPointF base = outside ? (transformedTo + (12 * normal)) : (transformedTo - (12 * normal));
     QPointF pL = base + normalR * 5;
     QPointF pR = base - normalR * 5;
 

@@ -86,8 +86,8 @@ public:
     void connectDots(const QPointF& point1, const QPointF& point2, ConnectionStyle style);
 
 private:
-    void drawConnection(QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo, ConnectionStyle style) const;
-    void drawArrow(QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo) const;
+    void drawConnection(QPainter* painter, const QRect& box, const QPoint& transformedTo, ConnectionStyle style, bool arrowOutside = false) const;
+    void drawArrow(QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo, bool outside = false) const;
 
 private:
     QString text;
@@ -116,11 +116,14 @@ protected:
 public:
     static void drawDot( QPainter * painter, const QPointF & point, int size = 5 );
     void resetMomentum() const { positionSet = false; }
+    void setLerpRatios(float x, float y) { lerpX = x; lerpY = y; }
+    void setLerpRatios(float lerp) { lerpX = lerp; lerpY = lerp; }
 
 private:
     ScalarChannelReaderInterfaceConstPtr reader;
     mutable QPointF position;
     mutable bool positionSet;
+    float lerpX, lerpY;
 };
 typedef core::shared_ptr<NewChartMarker> NewChartMarkerPtr;
 typedef core::shared_ptr<const NewChartMarker> NewChartMarkerConstPtr;

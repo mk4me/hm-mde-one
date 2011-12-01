@@ -14,6 +14,7 @@ NewChartVerticals::NewChartVerticals( NewChartVisualizer* visualizer, NewChartLa
     UTILS_ASSERT(style == NewChartLabel::Horizontal || style == NewChartLabel::Vertical);
     labelMarker->attach(plot);
     labelMarker->setVisible(false);
+    marker.setLerpRatios(1.0f);
 }
 
 bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
@@ -36,14 +37,14 @@ bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
         if (!currentLabel && mouseEvent->button() == Qt::LeftButton) {
             QPointF sample;
             double dist = getClosestPoint(sample, currentSerie->getCurve(), mouseEvent->pos());
-            if (dist < MIN_DIST) {
-                if (point1) {
-                    insertNewMarker(*point1, sample, currentSerie->getColor());
-                    point1.reset();
-                } else {
+            
+            if (point1) {
+                insertNewMarker(*point1, sample, currentSerie->getColor());
+                point1.reset();
+            } else {
+                if (dist < MIN_DIST) {
                     point1.reset(new QPointF(sample));
                 }
-                
             }
         }
     } else if (event->type() == QEvent::MouseButtonRelease) {
@@ -59,9 +60,15 @@ bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
             currentLabel = nullptr;
             QPointF sample;
             double dist = getClosestPoint(sample, currentSerie->getCurve(), mouseEvent->pos());
-            if (dist < MIN_DIST && point1) {
+            if (!point1 && dist < MIN_DIST) {
+                marker.setVisible(true);
+                marker.setValue(sample);
+            } else {  
+                marker.setVisible(false);
+            }
+            if ( point1) {
                 double diff = (style == NewChartLabel::Horizontal) ? (sample.x() - point1->x()) : (sample.y() - point1->y());
-                labelMarker->setText(QString("Difference : %1").arg(diff));
+                labelMarker->setText(QString("Diff : %1").arg(diff));
                 labelMarker->connectDots(sample, *point1, style);
                 labelMarker->setVisible(true);
                 labelMarker->itemChanged();
@@ -80,23 +87,26 @@ void NewChartVerticals::stateBegin()
     visualizer->setManipulation(false);
     canvas->setCursor(Qt::DragLinkCursor);
     labelMarker->attach(plot);
+    marker.attach(plot);
 }
 
 void NewChartVerticals::stateEnd()
 {
     labelMarker->detach();
+    marker.detach();
 }
 
 void NewChartVerticals::insertNewMarker( const QPointF& point1, const QPointF& point2, const QColor& color )
 {
     NewChartDotPtr dot1(new NewChartDot(point1, 5));
     NewChartDotPtr dot2(new NewChartDot(point2, 5));
-    NewChartLabelPtr label(new NewChartLabel(QString("Diff: %1").arg(point2.y() - point1.y())));
+    double delta = (style == NewChartLabel::Vertical) ? (point2.y() - point1.y()) : (point2.x() - point1.x());
+    NewChartLabelPtr label(new NewChartLabel(QString("Diff: %1").arg(delta)));
     label->setPen(QPen(color));
     dot1->attach(plot);
     dot2->attach(plot);
     label->attach(plot);
-    label->connectDots(dot1, dot2, NewChartLabel::Horizontal);
+    label->connectDots(dot2, dot1, style);
     labels.push_back(label);
 }
 
