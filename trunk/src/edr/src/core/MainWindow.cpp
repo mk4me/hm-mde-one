@@ -60,6 +60,59 @@ DEFINE_DEFAULT_LOGGER("edr.core");
 
 using namespace core;
 
+
+void MainWindow::setStyle( const core::Filesystem::Path& path )
+{
+    QFile file(QString::fromUtf8(path.string().c_str()));
+    if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QString style;
+        style = file.readAll();
+        file.close();
+        setStyleSheet(style);
+    } else {
+        throw std::runtime_error(std::string("Problem loading file : ") + path.string() );
+    }
+}
+
+
+bool MainWindow::trySetStyle( const core::Filesystem::Path& path )
+{
+    try {
+        setStyle(path);
+    } catch(...) {
+        return false;
+    }
+
+    return true;
+}
+
+
+void MainWindow::setStyleByName( const std::string& styleName )
+{
+    int count = getApplicationSkinsFilePathCount();
+    for (int i = 0; i < count; i++) {
+        const core::Filesystem::Path& path = getApplicationSkinsFilePath(i);
+        if (path.stem() == styleName) {
+            setStyle(path);
+            return;
+        }
+    }
+
+    throw std::runtime_error(std::string("Unable to set style : ") + styleName);
+}
+
+
+bool MainWindow::trySetStyleByName( const std::string& styleName )
+{
+    try {
+        setStyleByName(styleName);
+    } catch(...) {
+        return false;
+    }
+
+    return true;
+}
+
 CORE_DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 CORE_DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
@@ -138,6 +191,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::findResources(const std::string& resourcesPath)
 {
+    // TODO : potrzebna rewizja tego kodu...
     resourcesPaths.clear();
     //szukaj shaderow
     std::vector<std::string> ext;

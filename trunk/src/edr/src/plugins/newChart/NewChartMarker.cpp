@@ -114,7 +114,11 @@ void NewChartMarker::drawDot( QPainter * painter, const QPointF & point, int siz
     painter->drawEllipse(point, 1, 1);
 
     painter->setPen(QPen(QColor(135, 173, 255)));
-    painter->setBrush(QBrush(QColor(65, 113, 195, 128)));
+    
+    QBrush b;
+    b.setStyle(Qt::NoBrush);
+    //painter->setBrush(QBrush(QColor(65, 113, 195, 128)));
+    painter->setBrush(b);
     painter->drawEllipse(point, size, size);
 }
 
@@ -138,7 +142,7 @@ void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtS
     QPoint transformed1 = QwtScaleMap::transform(xMap, yMap, point1->getPosition()).toPoint();
     
     
-    painter->setPen(pen);
+    
 
     QRect textRect;
     textRect.setX(transformed1.x() + shift.x());
@@ -152,9 +156,11 @@ void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtS
     boxRect.setWidth(textRect.width() + LABEL_BOUND * 2);
     boxRect.setHeight(textRect.height() + LABEL_BOUND * 2);
 
-    QBrush b(pen.color());
+    /*QBrush b(pen.color());
     b.setStyle(Qt::SolidPattern);
-    painter->setBrush(b);
+    painter->setBrush(b);*/
+    painter->setPen(QPen(Qt::black));
+    painter->setBrush(QBrush(Qt::black));
     if (!point2) {
         drawConnection(painter, boxRect, transformed1, connectionStyle);
     } else {
@@ -182,6 +188,7 @@ void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtS
         }
     }
 
+    painter->setPen(pen);
     painter->setBrush(brush);
     painter->drawRoundedRect(boxRect, 6, 6);
         
@@ -277,9 +284,9 @@ void NewChartLabel::drawArrow( QPainter* painter, const QPoint& transformedFrom,
     normal.setY(normal.y() / length);
 
     QPointF normalR(-normal.y(), normal.x());
-    QPointF base = outside ? (transformedTo + (12 * normal)) : (transformedTo - (12 * normal));
-    QPointF pL = base + normalR * 5;
-    QPointF pR = base - normalR * 5;
+    QPointF base = outside ? (transformedTo + (7 * normal)) : (transformedTo - (7 * normal));
+    QPointF pL = base + normalR * 2;
+    QPointF pR = base - normalR * 2;
 
     QPolygon triangle;
     triangle.clear();
@@ -303,8 +310,10 @@ NewChartDot::NewChartDot(const QPointF& position, int size /*= 5*/) :
 void NewChartDot::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const
 {
     painter->setPen(pen);
-    painter->setBrush(brush);
-    
+    //painter->setBrush(brush);
+    QBrush b;
+    b.setStyle(Qt::NoBrush);
+    painter->setBrush(b);
 
     QPoint transformed = QwtScaleMap::transform(xMap, yMap, position).toPoint();
     painter->drawEllipse(transformed, size, size);

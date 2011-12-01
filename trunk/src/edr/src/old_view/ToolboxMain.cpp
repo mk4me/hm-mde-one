@@ -82,19 +82,20 @@ void ToolboxMain::init( core::PluginLoader* pluginLoader, core::IManagersAccesso
 void ToolboxMain::initializeUI()
 {
 	//ladowanie styli qt
-	QString style;
-	if(getApplicationSkinsFilePathCount() > 0)
-	{
-		//style qt
-		QFile file(QString::fromAscii(getApplicationSkinsFilePath(0).c_str(), getApplicationSkinsFilePath(0).size()));
-		if(file.open(QIODevice::ReadOnly | QIODevice::Text))
-		{
-			style = file.readAll();
-			file.close();
-		}
-	}
-	setStyleSheet(style);
-
+	//QString style;
+	//if(getApplicationSkinsFilePathCount() > 0)
+	//{
+	//	//style qt
+	//	QFile file(QString::fromAscii(getApplicationSkinsFilePath(0).c_str(), getApplicationSkinsFilePath(0).size()));
+	//	if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+	//	{
+	//		style = file.readAll();
+	//		file.close();
+	//	}
+	//}
+	//setStyleSheet(style);
+    trySetStyleByName("dark");
+    QString style = this->styleSheet();
 	setDockOptions( AllowNestedDocks | AllowTabbedDocks );
 	setTabPosition( Qt::RightDockWidgetArea, QTabWidget::North );
 	setCentralWidget( nullptr );

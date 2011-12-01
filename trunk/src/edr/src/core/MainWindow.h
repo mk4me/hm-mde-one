@@ -55,7 +55,7 @@ namespace core {
         std::vector<std::string> resourcesPaths;
 
         //! Lista skórek dla UI
-        std::vector<std::string> applicationSkinsPaths;
+        std::vector<core::Filesystem::Path> applicationSkinsPaths;
 
 	protected:
 		const QTimer& getVisualizerTimer() const { return visualizerTimer; }
@@ -76,6 +76,12 @@ namespace core {
 	public:
 		void initializeConsole();
 		void InitializeControlWidget();
+
+        void setStyle(const core::Filesystem::Path& path);
+        bool trySetStyle(const core::Filesystem::Path& path);
+        void setStyleByName(const std::string& styleName);
+        bool trySetStyleByName(const std::string& styleName);
+
 
 	public:
 
@@ -118,7 +124,7 @@ namespace core {
         //! Szuka na dysku zasobów.
         void findResources(const std::string& resourcesPath);
 
-        const std::string& getApplicationSkinsFilePath(int i)
+        const core::Filesystem::Path& getApplicationSkinsFilePath(int i)
         {
             return applicationSkinsPaths[i];
         }

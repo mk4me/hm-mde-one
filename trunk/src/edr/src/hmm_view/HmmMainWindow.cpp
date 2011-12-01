@@ -47,6 +47,8 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     
 	setupUi(this);
 
+    trySetStyleByName("hmm");
+
     this->analisis = new AnalisisWidget(nullptr);
     this->tests = new QWidget(nullptr);
     this->operations = new QWidget(nullptr);

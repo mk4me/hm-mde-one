@@ -67,8 +67,9 @@ bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
                 marker.setVisible(false);
             }
             if ( point1) {
+                QString serieName = (style == NewChartLabel::Horizontal) ? "t" : currentSerie->getName().c_str();
                 double diff = (style == NewChartLabel::Horizontal) ? (sample.x() - point1->x()) : (sample.y() - point1->y());
-                labelMarker->setText(QString("Diff : %1").arg(diff));
+                labelMarker->setText(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(diff));
                 labelMarker->connectDots(sample, *point1, style);
                 labelMarker->setVisible(true);
                 labelMarker->itemChanged();
@@ -98,10 +99,13 @@ void NewChartVerticals::stateEnd()
 
 void NewChartVerticals::insertNewMarker( const QPointF& point1, const QPointF& point2, const QColor& color )
 {
-    NewChartDotPtr dot1(new NewChartDot(point1, 5));
-    NewChartDotPtr dot2(new NewChartDot(point2, 5));
+    const NewChartSerie* currentSerie = visualizer->tryGetCurrentSerie();
+    UTILS_ASSERT(currentSerie);
+    NewChartDotPtr dot1(new NewChartDot(point1));
+    NewChartDotPtr dot2(new NewChartDot(point2));
     double delta = (style == NewChartLabel::Vertical) ? (point2.y() - point1.y()) : (point2.x() - point1.x());
-    NewChartLabelPtr label(new NewChartLabel(QString("Diff: %1").arg(delta)));
+    QString serieName = (style == NewChartLabel::Horizontal) ? "t" : currentSerie->getName().c_str();
+    NewChartLabelPtr label(new NewChartLabel(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(delta)));
     label->setPen(QPen(color));
     dot1->attach(plot);
     dot2->attach(plot);

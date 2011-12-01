@@ -15,7 +15,7 @@
 class NewChartDot : public QwtPlotItem
 {
 public:
-    NewChartDot(const QPointF& position, int size = 5);
+    NewChartDot(const QPointF& position, int size = 2);
 
 public:
     virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;

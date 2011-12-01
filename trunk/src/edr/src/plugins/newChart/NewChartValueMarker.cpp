@@ -76,7 +76,7 @@ void NewChartValueMarker::stateEnd()
 
 void NewChartValueMarker::insertNewMarker( const QPointF& point, const QColor& color )
 {
-    NewChartDotPtr dot(new NewChartDot(point, 5));
+    NewChartDotPtr dot(new NewChartDot(point));
     NewChartLabelPtr label(new NewChartLabel(QString("Time: %1\nValue: %2").arg(point.x()).arg(point.y())));
     label->setPen(QPen(color));
     dot->attach(plot);
