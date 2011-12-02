@@ -13,6 +13,8 @@
 #include <string>
 #include <plugins/subject/ISubject.h>
 #include <core/SmartPtr.h>
+#include <boost/units/quantity.hpp>
+#include <boost/units/systems/si.hpp>
 
 struct Disorder
 {
@@ -25,7 +27,33 @@ struct Disorder
 
 struct AntropometricData
 {
+    typedef boost::units::quantity<boost::units::si::length> length;
+    typedef boost::units::quantity<boost::units::si::mass> mass;
 
+    length height;
+    length interAsisDistance;
+    length leftLegLength;
+    length rightLegLenght;
+   /*     <A Name="LeftKneeWidth" Value="124" />
+        <A Name="RightKneeWidth" Value="124" />
+        <A Name="LeftAnkleWidth" Value="71" />
+        <A Name="RightAnkleWidth" Value="71" />
+        <A Name="LeftCircuitThigh" Value="0" />
+        <A Name="RightCircuitThight" Value="0" />
+        <A Name="LeftCircuitShank" Value="0" />
+        <A Name="RightCircuitShank" Value="0" />
+        <A Name="LeftShoulderOffset" Value="40" />
+        <A Name="RightShoulderOffset" Value="40" />
+        <A Name="LeftElbowWidth" Value="65" />
+        <A Name="RightElbowWidth" Value="65" />
+        <A Name="LeftWristWidth" Value="41" />
+        <A Name="RightWristWidth" Value="41" />
+        <A Name="LeftWristThickness" Value="0" />
+        <A Name="RightWristThickness" Value="0" />
+        <A Name="LeftHandWidth" Value="0" />
+        <A Name="RightHandWidth" Value="0" />
+        <A Name="LeftHandThickness" Value="26" />
+        <A Name="RightHandThickness" Value="25" />*/
 };
 
 class IPatient

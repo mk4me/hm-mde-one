@@ -85,15 +85,23 @@ const std::string& FtpsConnection::getPassword() const
     return this->pswd;
 }
 
-void FtpsConnection::get(const std::string& remoteSource, const std::string& localDestination)
+const std::string & FtpsConnection::getLastError() const
 {
+    return errorMessage;
+}
+
+FtpsConnection::OperationStatus FtpsConnection::get(const std::string& remoteSource, const std::string& localDestination, IProgress * customProgress)
+{
+    errorMessage.swap(std::string());
     progress.progress = 0;
     progress.abort = false;
+    progress.customProgress = customProgress;
 
     FILE* ftpfile = fopen(localDestination.c_str(), "wb");
 
     if(ftpfile == nullptr){
-        throw std::runtime_error("Could not create file for writing");
+        errorMessage = "Could not create file for writing";
+        return Error;
     }
 
     std::string url(this->uri);
@@ -114,7 +122,12 @@ void FtpsConnection::get(const std::string& remoteSource, const std::string& loc
     curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, write);
     curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, ftpfile);
     curl_easy_setopt(this->curl, CURLOPT_NOPROGRESS, 0L);
-    curl_easy_setopt(this->curl, CURLOPT_PROGRESSFUNCTION, setProgress);
+    if(customProgress == nullptr){
+        curl_easy_setopt(this->curl, CURLOPT_PROGRESSFUNCTION, setProgress);
+    }else{
+        curl_easy_setopt(this->curl, CURLOPT_PROGRESSFUNCTION, setCustomProgress);
+    }
+
     curl_easy_setopt(this->curl, CURLOPT_PROGRESSDATA, &this->progress);
 
     this->res = curl_easy_perform(this->curl);
@@ -124,20 +137,28 @@ void FtpsConnection::get(const std::string& remoteSource, const std::string& loc
     if(CURLE_OK != this->res) {
         if(res == CURLE_ABORTED_BY_CALLBACK) {
             core::Filesystem::deleteFile(localDestination);
+            return Cancelled;
         }else{
-            std::string error(curl_easy_strerror(this->res));
-            throw std::runtime_error(error);
+            errorMessage = curl_easy_strerror(this->res);
+            //throw std::runtime_error(error);
+            return Error;
         }
     }
+
+    return Complete;
 }
 
-void FtpsConnection::put(const std::string& localSource, const std::string& remoteDestination)
+FtpsConnection::OperationStatus FtpsConnection::put(const std::string& localSource, const std::string& remoteDestination)
 {
+    errorMessage.swap(std::string());
+
     std::string url(this->uri);
     url.append(remoteDestination);
     FILE * ftpfile = fopen(localSource.c_str(), "rb");
     if(ftpfile == nullptr) {
-        throw std::runtime_error("No specified file.");
+        //throw std::runtime_error("No specified file.");
+        errorMessage = "No specified file";
+        return Error;
     }
     //This option determines whether curl verifies the authenticity of the
     //peer's certificate. A value of 1 means curl verifies; zero means it doesn't.
@@ -160,8 +181,12 @@ void FtpsConnection::put(const std::string& localSource, const std::string& remo
     fclose(ftpfile);
 
     if(CURLE_OK != this->res) {
-        throw std::runtime_error(curl_easy_strerror(this->res));
+        //throw std::runtime_error(curl_easy_strerror(this->res));
+        errorMessage = curl_easy_strerror(this->res);
+        return Error;
     }
+
+    return Complete;
 }
 
 size_t FtpsConnection::read(void* buffer, size_t size, size_t nmemb, void* stream)
@@ -181,6 +206,19 @@ size_t FtpsConnection::setProgress(Progress* progress, double t, double d, doubl
         return -1;
     }
     progress->progress = static_cast<int>((d * 100.0)/t);
+    return 0;
+}
+
+size_t FtpsConnection::setCustomProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow)
+{
+    if(progress->abort) {
+        return -1;
+    }
+
+    double val = (d * 100.0) / t;
+
+    progress->customProgress->setProgress(val);
+    progress->progress = static_cast<int>(val);
     return 0;
 }
 

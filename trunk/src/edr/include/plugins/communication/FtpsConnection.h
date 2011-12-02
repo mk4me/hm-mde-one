@@ -14,6 +14,19 @@ namespace communication
 {
     class FtpsConnection
     {
+    public:
+
+        enum OperationStatus {Complete, Error, Cancelled};
+
+        class IProgress
+        {
+        public:
+            virtual ~IProgress() {}
+
+            virtual void setProgress(double progress) = 0;
+
+        };
+
     private:
         /**
         @author Marek Daniluk
@@ -25,6 +38,12 @@ namespace communication
             Postêp
             */
             int progress;
+
+            /**
+            Postep szczegolowy wg klienta
+            */
+            IProgress * customProgress;
+
             /**
             czy anulowaæ?
             */
@@ -61,6 +80,7 @@ namespace communication
         @return iloœæ bajtów przetworzonych przez funkcjê
         */
         static size_t setProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow);
+        static size_t setCustomProgress(Progress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow);
     protected:
         /**
         Pole klasy przechowuj¹ce uri do serwera FTPS.
@@ -78,6 +98,8 @@ namespace communication
         Pole klasy przechowuj¹ce informacje o procentowym postêpie operacji. S³u¿y te¿ do przerwañ operacji.
         */
         Progress progress;
+
+        std::string errorMessage;
 
     private:
         /**
@@ -146,12 +168,12 @@ namespace communication
         Metoda wysy³aj¹ca na serwer plik. Nazwa wys³anego pliku przechowywana jest w zmiennej filename.
         @param filename nazwa pliku który ma wzi¹æ udzia³ w operacji ftp
         */
-        virtual void put(const std::string& localSource, const std::string & remoteDestination);
+        virtual OperationStatus put(const std::string& localSource, const std::string & remoteDestination);
         /**
         Metoda pobieraj¹ca plik z serwera. Nazwa pobranego pliku przechowywana jest w zmiennej filename.
         @param filename nazwa pliku który ma wzi¹c udzia³ w operacji ftp
         */
-        virtual void get(const std::string& remoteSource, const std::string & localDestination);
+        virtual OperationStatus get(const std::string& remoteSource, const std::string & localDestination, IProgress * customProgress = nullptr);
         /**
         Postêp operacji przesy³ania.
         @return postêp wyra¿ony w procentach dla pojedynczego transferu
@@ -161,6 +183,8 @@ namespace communication
         Anuluje obecnie wykonywan¹ operacjê. Czyœci zasoby uzyte na jej potrzeby (np. utworzone pliki)
         */
         virtual void abort();
+
+        virtual const std::string & getLastError() const;
     };
 }
 #endif //HEADER_GUARD_COMMUNICATION_FTPSCONNECTION_H__

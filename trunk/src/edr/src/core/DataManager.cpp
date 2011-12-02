@@ -588,12 +588,12 @@ void DataManager::addData(const core::Filesystem::Path & file)
             }else{
 
                 if((*objectIT)->getSource().empty() == true){
-                    LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " not initialized properly source for type " << (*objectIT)->getTypeInfo().name() << " while parsing file " << parser->getPath() << " Setting source to file path");
+                    //LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " not initialized properly source for type " << (*objectIT)->getTypeInfo().name() << " while parsing file " << parser->getPath() << " Setting source to file path");
                     (*objectIT)->setSource(file.string());
                 }
 
                 if((*objectIT)->getName().empty() == true){
-                    LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " not initialized properly name for type " << (*objectIT)->getTypeInfo().name() << " while parsing file " << parser->getPath() << " Setting source to file name");
+                    //LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " not initialized properly name for type " << (*objectIT)->getTypeInfo().name() << " while parsing file " << parser->getPath() << " Setting source to file name");
                     (*objectIT)->setName(file.filename().string());
                 }                
 

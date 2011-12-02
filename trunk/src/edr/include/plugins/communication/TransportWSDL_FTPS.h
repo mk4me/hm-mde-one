@@ -45,6 +45,8 @@ namespace communication
 
     protected:
 
+        std::string errorMessage;
+
         /**
 		Szyfrowane po³¹czenie FTP.
 		*/
@@ -54,11 +56,6 @@ namespace communication
 		Funkcjonalnoœæ web serwisu MotionFileStoremanService.
 		*/
 		core::shared_ptr<FileStoremanServiceBase> wsdl;
-
-        /**
-		Fakt anulowania operacji œci¹gania plików po FTP
-		*/
-        bool aborted;
 
     public:
 
@@ -75,14 +72,14 @@ namespace communication
 		@param fileID
 		@param path sciezka do katalogu z plikami do wgrania na serwer
 		*/
-		void downloadFile(int fileID, const std::string& path);
+		FtpsConnection::OperationStatus downloadFile(int fileID, const std::string& path, communication::FtpsConnection::IProgress * progress = nullptr);
 
         /**
 		Realizuje wprowadzenie plikow pod kontrole bazy danych.
 		@param fileID
 		@param path sciezka do katalogu z plikami do wgrania na serwer
 		*/
-		void downloadPhoto(int photoID, const std::string& path);
+		FtpsConnection::OperationStatus downloadPhoto(int photoID, const std::string& path, communication::FtpsConnection::IProgress * progress = nullptr);
 
         /**
 		Metoda setWSCredentials ustala dane potrzebne do autoryzacji do web serwisu.
@@ -106,12 +103,14 @@ namespace communication
 		P³ytka kopia bazy danych ruchu.
 		@return œcie¿ka do pliku xml z kopi¹ db ruchu.
 		*/
-		void getShallowCopy(const std::string & path);
+		FtpsConnection::OperationStatus getShallowCopy(const std::string & path, communication::FtpsConnection::IProgress * progress = nullptr);
 		/**
 		Metadane z bazy danych ruchu.
 		@return œcie¿ka do pliku xml z metadanymi ruchu.
 		*/
-		void getMetadata(const std::string & path);
+		FtpsConnection::OperationStatus getMetadata(const std::string & path, communication::FtpsConnection::IProgress * progress = nullptr);
+
+        const std::string & getLastError() const;
     };
 
 	class MotionTransportWSDL_FTPS : public TransportWSDL_FTPSBase
@@ -163,7 +162,7 @@ namespace communication
 		@param performerID id performera
 		@param path sciezka do katalogu z plikami do wgrania na serwer
 		*/
-		virtual void storePerformerFiles(int performerID, const std::string& path);
+		virtual int storePerformerFiles(int performerID, const std::string& path);
 		/**
 		Realizuje wprowadzenie pojedynczego pliku sesji pod kontrole bazy danych.
 		@param trialID id trial
@@ -178,7 +177,7 @@ namespace communication
 		@param trialID id trial
 		@param path sciezka do katalogu z plikami do wgrania na serwer
 		*/
-		virtual void storeTrialFiles(int trialID, const std::string& path);
+		virtual int storeTrialFiles(int trialID, const std::string& path);
 	};
 
     class MedicalTransportWSDL_FTPS : public TransportWSDL_FTPSBase

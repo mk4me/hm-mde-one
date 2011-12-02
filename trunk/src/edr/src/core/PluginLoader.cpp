@@ -185,7 +185,6 @@ bool PluginLoader::addPlugIn( const std::string& path )
         } else {
             LOG_ERROR("Unknown error (" << err << ") during loading " << path << ".");
         }
-        
     }
     FreeLibrary(library);
     return false;

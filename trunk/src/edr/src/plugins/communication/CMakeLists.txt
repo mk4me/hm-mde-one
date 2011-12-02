@@ -8,6 +8,7 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	PatientCardWidget.h
 	CommunicationPlugin.h
 	CommunicationDataSource.h
 	Patient.h
@@ -42,6 +43,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	PatientCardWidget.cpp
 	DownloadDialogWidget.cpp
 	Patient.cpp
 	DateTime.cpp
@@ -68,6 +70,7 @@ SET(TARGET_MOC_H
 	${HEADER_PATH}/CommunicationService.h
 	CommunicationDataSource.h
 	DownloadDialogWidget.h
+	PatientCardWidget.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -78,6 +81,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 set(TARGET_UI
 	#ui/CommunicationWidgetEx.ui
 	ui/DownloadDialog.ui
+	ui/PatientCardWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

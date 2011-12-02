@@ -146,7 +146,7 @@ private:
 
     QTreeWidgetItem * currentItem;
     AnalisisWidget* analisis;
-    QWidget* tests;
+    QWidget* data;
     QWidget* operations;
     QWidget* raports;
     std::map<QWidget*, QWidget*> button2TabWindow;

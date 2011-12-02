@@ -9,7 +9,7 @@
 
 using namespace communication;
 
-TransportWSDL_FTPSBase::TransportWSDL_FTPSBase() : ftp(new FtpsConnection()), aborted(false)
+TransportWSDL_FTPSBase::TransportWSDL_FTPSBase() : ftp(new FtpsConnection())
 {
 
 }
@@ -31,44 +31,112 @@ int TransportWSDL_FTPSBase::getProgress() const
 
 void TransportWSDL_FTPSBase::abort()
 {
-    aborted = true;
     ftp->abort();
 }
 
-void TransportWSDL_FTPSBase::getShallowCopy(const std::string & path)
+const std::string & TransportWSDL_FTPSBase::getLastError() const
 {
-    std::string remoteFile(wsdl->getShallowCopy());
-    SafeWSDL_FTPManagerBase safeEnder(boost::bind(&FileStoremanServiceBase::fileDownloadComplete, wsdl, 0, remoteFile)); 
-
-    //sciagnij plik
-    ftp->get(remoteFile, path);
+    return errorMessage;
 }
 
-void TransportWSDL_FTPSBase::getMetadata(const std::string & path)
+FtpsConnection::OperationStatus TransportWSDL_FTPSBase::getShallowCopy(const std::string & path, communication::FtpsConnection::IProgress * progress)
 {
-    std::string remoteFile(wsdl->getMetadata());
-    SafeWSDL_FTPManagerBase safeEnder(boost::bind(&FileStoremanServiceBase::fileDownloadComplete, wsdl, 0, remoteFile)); 
+    FtpsConnection::OperationStatus ret = FtpsConnection::Complete;
+    try{
+        std::string remoteFile(wsdl->getShallowCopy());
+        SafeWSDL_FTPManagerBase safeEnder(boost::bind(&FileStoremanServiceBase::fileDownloadComplete, wsdl, 0, remoteFile)); 
 
-    //sciagnij plik
-    ftp->get(remoteFile, path);
+        //sciagnij plik
+        ret = ftp->get(remoteFile, path, progress);
+        
+        if(ret == FtpsConnection::Error){
+            errorMessage = ftp->getLastError();
+        }
+
+    }catch(const std::exception & e){
+        ret = FtpsConnection::Error;
+        errorMessage = e.what();
+    }catch(...){
+        ret = FtpsConnection::Error;
+        errorMessage = "Unknown error while getting shallowcopy";
+    }
+
+    return ret;
 }
 
-void TransportWSDL_FTPSBase::downloadFile(int fileID, const std::string& path)
+FtpsConnection::OperationStatus TransportWSDL_FTPSBase::getMetadata(const std::string & path, communication::FtpsConnection::IProgress * progress)
 {
-    std::string remoteFile(wsdl->retrieveFile(fileID));
-    SafeWSDL_FTPManagerBase safeEnder(boost::bind(&FileStoremanServiceBase::fileDownloadComplete, wsdl, 0, remoteFile)); 
+    FtpsConnection::OperationStatus ret = FtpsConnection::Complete;
+    try{
+        std::string remoteFile(wsdl->getMetadata());
+        SafeWSDL_FTPManagerBase safeEnder(boost::bind(&FileStoremanServiceBase::fileDownloadComplete, wsdl, 0, remoteFile)); 
 
-    //sciagnij plik
-    ftp->get(remoteFile, path);
+        //sciagnij plik
+        ret = ftp->get(remoteFile, path, progress);
+        
+        if(ret == FtpsConnection::Error){
+            errorMessage = ftp->getLastError();
+        }
+
+    }catch(const std::exception & e){
+        ret = FtpsConnection::Error;
+        errorMessage = e.what();
+    }catch(...){
+        ret = FtpsConnection::Error;
+        errorMessage = "Unknown error while getting metadata";
+    }
+
+    return ret;
 }
 
-void TransportWSDL_FTPSBase::downloadPhoto(int photoID, const std::string& path)
+FtpsConnection::OperationStatus TransportWSDL_FTPSBase::downloadFile(int fileID, const std::string& path, communication::FtpsConnection::IProgress * progress)
 {
-    std::string remoteFile(wsdl->retrievePhoto(photoID));
-    SafeWSDL_FTPManagerBase safeEnder(boost::bind(&FileStoremanServiceBase::photoDownloadComplete, wsdl, 0, remoteFile)); 
+    FtpsConnection::OperationStatus ret = FtpsConnection::Complete;
+    try{
+        std::string remoteFile(wsdl->retrieveFile(fileID));
+        SafeWSDL_FTPManagerBase safeEnder(boost::bind(&FileStoremanServiceBase::fileDownloadComplete, wsdl, 0, remoteFile)); 
 
-    //sciagnij plik
-    ftp->get(remoteFile, path);
+        //sciagnij plik
+        ret = ftp->get(remoteFile, path, progress);
+        
+        if(ret == FtpsConnection::Error){
+            errorMessage = ftp->getLastError();
+        }
+
+    }catch(const std::exception & e){
+        ret = FtpsConnection::Error;
+        errorMessage = e.what();
+    }catch(...){
+        ret = FtpsConnection::Error;
+        errorMessage = "Unknown error while getting file";
+    }
+
+    return ret;
+}
+
+FtpsConnection::OperationStatus TransportWSDL_FTPSBase::downloadPhoto(int photoID, const std::string& path, communication::FtpsConnection::IProgress * progress)
+{
+    FtpsConnection::OperationStatus ret = FtpsConnection::Complete;
+    try{
+        std::string remoteFile(wsdl->retrievePhoto(photoID));
+        SafeWSDL_FTPManagerBase safeEnder(boost::bind(&FileStoremanServiceBase::photoDownloadComplete, wsdl, 0, remoteFile)); 
+
+        //sciagnij plik
+        ret = ftp->get(remoteFile, path, progress);
+        
+        if(ret == FtpsConnection::Error){
+            errorMessage = ftp->getLastError();
+        }
+
+    }catch(const std::exception & e){
+        ret = FtpsConnection::Error;
+        errorMessage = e.what();
+    }catch(...){
+        ret = FtpsConnection::Error;
+        errorMessage = "Unknown error while getting photo";
+    }
+
+    return ret;
 }
 
 MotionTransportWSDL_FTPS::MotionTransportWSDL_FTPS()
@@ -111,9 +179,10 @@ int MotionTransportWSDL_FTPS::storePerformerFile(int performerID, const std::str
     return value;
 }
 
-void MotionTransportWSDL_FTPS::storePerformerFiles(int performerID, const std::string& path)
+int MotionTransportWSDL_FTPS::storePerformerFiles(int performerID, const std::string& path)
 {
     throw std::runtime_error("not supported yet.");
+    return -1;
 }
 
 int MotionTransportWSDL_FTPS::storeTrialFile(int trialID, const std::string& remoteDestination, const std::string& description, const std::string& localSource)
@@ -128,9 +197,10 @@ int MotionTransportWSDL_FTPS::storeTrialFile(int trialID, const std::string& rem
     return value;
 }
 
-void MotionTransportWSDL_FTPS::storeTrialFiles(int trialID, const std::string& path)
+int MotionTransportWSDL_FTPS::storeTrialFiles(int trialID, const std::string& path)
 {
     throw std::runtime_error("not supported yet.");
+    return -1;
 }
 
 

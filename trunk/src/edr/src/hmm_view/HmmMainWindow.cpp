@@ -24,7 +24,7 @@ HmmMainWindow::HmmMainWindow() :
 	topMainWindow(nullptr),
 	analisis(nullptr),
     currentItem(nullptr),
-    tests(nullptr),
+    data(nullptr),
     operations(nullptr)
 {
 	this->setWindowFlags(Qt::FramelessWindowHint);
@@ -50,11 +50,11 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     trySetStyleByName("hmm");
 
     this->analisis = new AnalisisWidget(nullptr);
-    this->tests = new QWidget(nullptr);
+    this->data = new QWidget(nullptr);
     this->operations = new QWidget(nullptr);
     this->raports = new QWidget(nullptr);
 
-    button2TabWindow[this->testsButton] = this->tests;
+    button2TabWindow[this->dataButton] = this->data;
     button2TabWindow[this->operationsButton] = this->operations;
     button2TabWindow[this->raportsButton] = this->raports;
     button2TabWindow[this->analisisButton] = this->analisis;
@@ -66,7 +66,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         UTILS_ASSERT(c);
     }
 
-    this->tests->show();
+    this->data->show();
     	
 	this->showFullScreen();
     QTreeWidget* treeWidget = this->analisis->getTreeWidget();
@@ -119,7 +119,8 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 		// Nie da sie jednak includowac z tego poziomu odpowiedniego naglowka 
 		// (gdzies po drodze wymagane sa prywane naglowki z Communication)
 		// Moze wlasciwe bedzie identyfikowanie po UniqueID.
-		if (name == "Communication") {
+		//if (name == "Communication") {
+        if (name == "DataExplorer") {
 			std::vector<QObject*> mainWidgetActions;
 			QWidget* viewWidget = service->getWidget(mainWidgetActions);
 
@@ -130,8 +131,10 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 			QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
 
 			QVBoxLayout *layout = new QVBoxLayout;
-			layout->addWidget(settingsWidget);
-			this->tests->setLayout(layout);
+            layout->addWidget(settingsWidget);
+            layout->addWidget(viewWidget);
+            layout->addWidget(controlWidget);
+			this->data->setLayout(layout);
         }else if (name == "newTimeline") {
             // przeniesione do showTimeline();
         }else{
@@ -164,8 +167,8 @@ HmmMainWindow::~HmmMainWindow()
 {
     this->analisis->setParent(nullptr);
     delete this->analisis;
-    this->tests->setParent(nullptr);
-    delete tests;
+    this->data->setParent(nullptr);
+    delete data;
     this->operations->setParent(nullptr);
     delete operations;
 }

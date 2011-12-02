@@ -65,7 +65,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         }
         grfs->setPlatforms(parser->getForcePlatforms());
         GRFs->set(grfs, path.filename().string(), path.string());
-
+        GRFs->setSource(path.string());
         
         for (int i = 12; i < 28; ++i) {
             EMGChannelPtr ptr(new EMGChannel(*parser , i));
@@ -75,6 +75,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
             e->addChannel(ptr);
         }
         EMGs->set(e, path.filename().string(), path.string());
+        EMGs->setSource(path.string());
     }
 	int count = parser->getNumEvents();
 	EventsCollectionPtr leftEventsCollection(new C3DEventsCollection());

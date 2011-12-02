@@ -311,7 +311,7 @@
         <number>4</number>
        </property>
        <item>
-        <widget class="QToolButton" name="testsButton">
+        <widget class="QToolButton" name="dataButton">
          <property name="minimumSize">
           <size>
            <width>84</width>
@@ -350,7 +350,7 @@
  }*/</string>
          </property>
          <property name="text">
-          <string>Badania</string>
+          <string>Dane</string>
          </property>
          <property name="icon">
           <iconset resource="Icons.qrc">

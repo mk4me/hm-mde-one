@@ -11,27 +11,11 @@
 
 #include "ui_DownloadDialog.h"
 #include <plugins/communication/CommunicationManager.h>
-#include <OpenThreads/Mutex>
-#include <OpenThreads/ScopedLock>
 #include <QtCore/QTimer>
-#include <QtCore/QThread>
 
 class DownloadDialog : protected QDialog, private Ui::Dialog
 {
     Q_OBJECT;
-
-private:
-    class LoadFiles : public QThread
-    {
-    public:
-        LoadFiles(DownloadDialog * dialog);
-        virtual void run();
-
-    private:
-        DownloadDialog * dialog;
-    };
-
-    friend class LoadFiles;
 
 public:
 
@@ -45,32 +29,29 @@ private slots:
     void cancelPressed();
 
 private:
-    void cancelDownload();
-
-    void startRefreshingProgress();
-    void stopRefreshingProgress();
 
     void onBeginCallback(const communication::CommunicationManager::RequestPtr & request);
     void onEndCallback(const communication::CommunicationManager::RequestPtr & request);
     void onCancelCallback(const communication::CommunicationManager::RequestPtr & request);
     void onErrorCallback(const communication::CommunicationManager::RequestPtr & request, const std::string & error);
 
+    void onFileEndCallback(const communication::CommunicationManager::RequestPtr & request);
+
 private:
-    bool dialogStarted;
-    communication::CommunicationManager::RequestCallbacks callbacks;
-    QTimer timer;
-    OpenThreads::Mutex requestMutex;
-    bool cancelRequests;
-    std::vector<communication::CommunicationManager::RequestPtr> requests;
-    std::map<int, std::string> toDownload;
-    std::map<int, std::string> * downloaded;
 
-    double currentProgress;
-
+    bool processingStarted;
+    bool processingFinished;
     std::string finalMessage;
     bool error;
 
-    bool refreshingProgress;
+    communication::CommunicationManager::RequestCallbacks complexCallbacks;
+    communication::CommunicationManager::RequestCallbacks fileCallbacks;
+    QTimer timer;
+    OpenThreads::Mutex requestMutex;
+    communication::CommunicationManager::RequestPtr complexRequest;
+    std::map<int, std::string> toDownload;
+    std::map<int, std::string> * downloaded;
+    
     communication::CommunicationManager * communicationManager;
 };
 

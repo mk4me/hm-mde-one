@@ -21,6 +21,7 @@ void MotionShallowCopyParser::parseFile(const core::Filesystem::Path& path)
     if(!document.LoadFile()) {
         UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
     }
+
     TiXmlHandle hDocument(&document);
     TiXmlElement* _element;
     TiXmlHandle hParent(0);
@@ -364,6 +365,7 @@ void MedicalShallowCopyParser::parseFile(const core::Filesystem::Path& path)
     if(!document.LoadFile()) {
         UTILS_ASSERT(false, "Blad wczytania pliku MedicalShallowCopy");
     }
+
     TiXmlHandle hDocument(&document);
     TiXmlElement* _element;
     TiXmlHandle hParent(0);
@@ -452,7 +454,7 @@ void MedicalShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             disorder_element->QueryIntAttribute("DisorderID", &disorderID);
 
             auto & disorder = shallowCopy->patients[patientID]->disorders[disorderID];
-
+            shallowCopy->patients[patientID]->disorders[disorderID].diosorder = shallowCopy->disorders.find(disorderID)->second;
             disorder_element->QueryStringAttribute("Focus", &disorder.focus);
 
             disorder_element->QueryStringAttribute("DiagnosisDate", &disorder.diagnosisDate);

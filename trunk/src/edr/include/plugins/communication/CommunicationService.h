@@ -99,7 +99,10 @@ private:
         while(finish == false){
             if(model->requestsQueueEmpty() == true) {
                 //pinguj co pol minuty
-                model->requestPing();
+                //model->requestPing();
+                communication::CommunicationManager::CompleteRequest req;
+                req.request = model->createRequestPing();
+                model->pushRequest(req);
             }
             microSleep(sleepTime);
         }

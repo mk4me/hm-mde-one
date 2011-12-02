@@ -31,6 +31,7 @@ namespace communication
         enum Request
         {
             DownloadFile,
+            Complex,
             DownloadPhoto,
             CopyMotionShallowCopy,
             CopyMotionMetadata,
@@ -45,6 +46,7 @@ namespace communication
         enum State
         {
             Ready, /** Gotowy do wszelkich dzia³añ */
+            ProcessingComplex, /** Przetwarzanie kompleksowego zapytania */
             DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
             DownloadingPhoto, /** Trwa pobieranie pojedynczego pliku */
             CopyingMotionShallowCopy, /** Trwa odnawianie informacji o encjach db*/
@@ -54,50 +56,129 @@ namespace communication
             PingingServer /** Pingowanie serwera */
         };
 
-        struct BasicRequest
+
+        class MetadataRequest;
+        class FileRequest;
+        class PhotoRequest;
+        class ComplexRequest;
+
+        class BasicRequest
         {
-            public:
+            friend class CommunicationManager;
+            friend class MetadataRequest;
+            friend class FileRequest;
+            friend class PhotoRequest;
+            friend class ComplexRequest;
 
-            BasicRequest(bool cancelled, Request type) : cancelled(cancelled), type(type) {}
+        public:
 
-            public:
-
-            bool cancelled;
-            const Request type;
             virtual ~BasicRequest() {}
+
+            void cancel()
+            {
+                OpenThreads::ScopedLock<OpenThreads::Mutex> lock(cancelLock);
+                cancelled = true;
+            }
+
+            bool isCancelled() const
+            {
+                OpenThreads::ScopedLock<OpenThreads::Mutex> lock(cancelLock);
+                return cancelled;
+            }
+
+            Request getType() const
+            {
+                return type;
+            }
+
+            virtual double getProgress() const
+            {
+                return 0;
+            }
+
+            bool isComplete() const
+            {
+                return getProgress() == 100.0;
+            }
+
+        private:
+            BasicRequest(Request type) : type(type), cancelled(false) {}
+
+        private:
+            mutable OpenThreads::Mutex cancelLock;
+            bool cancelled;
+            Request type;
         };
 
-        struct MetadataRequest : public BasicRequest
+        class MetadataRequest : public BasicRequest, public FtpsConnection::IProgress
         {
-            public:
+            friend class CommunicationManager;
+            friend class FileRequest;
+            friend class PhotoRequest;
 
-            MetadataRequest(bool cancelled, Request type, const std::string & filePath) : BasicRequest(cancelled, type), filePath(filePath) {}
+        private:
 
-            public:
+            MetadataRequest(Request type, const std::string & filePath) : BasicRequest(type), filePath(filePath), progress(0) {}
 
-            const std::string filePath;
+        public:
+            const std::string & getFilePath() const
+            {
+                return filePath;
+            }
+
+            virtual void setProgress(double p)
+            {
+                progress = p;
+            }
+
+            virtual double getProgress() const
+            {
+                return progress;
+            }
+
+        private:
+            double progress;
+            std::string filePath;
         };
 
-        struct FileRequest : public MetadataRequest
+        class FileRequest : public MetadataRequest
         {
-            public:
+            friend class CommunicationManager;
 
-            FileRequest(bool cancelled, Request type, const std::string & filePath, unsigned int fileID) : MetadataRequest(cancelled, type, filePath), fileID(fileID) {}
+        private:
 
-            public:
+            FileRequest(const std::string & filePath, unsigned int fileID) : MetadataRequest(DownloadFile, filePath), fileID(fileID) {}
 
-            const unsigned int fileID;
+        public:
+
+            unsigned int getFileID() const
+            {
+                return fileID;
+            }
+
+        private:
+
+            unsigned int fileID;
         };
 
-        struct PhotoRequest : public MetadataRequest
+        class PhotoRequest : public MetadataRequest
         {
-            public:
+            friend class CommunicationManager;
 
-            PhotoRequest(bool cancelled, Request type, const std::string & filePath, unsigned int photoID) : MetadataRequest(cancelled, type, filePath), photoID(photoID) {}
+        private:
 
-            public:
+            PhotoRequest(const std::string & filePath, unsigned int photoID) : MetadataRequest(DownloadPhoto, filePath), photoID(photoID) {}
+            
+        public:
 
-            const unsigned int photoID;
+            unsigned int getPhotoID() const
+            {
+                return photoID;
+            }
+
+        private:
+
+            unsigned int photoID;
         };
 
         typedef core::shared_ptr<BasicRequest> RequestPtr;
@@ -113,9 +194,7 @@ namespace communication
             RequestErrorCallback onErrorCallback;
         };
 
-    private:
-
-         /**
+        /**
         Typ zlecenia przekazywany do kolejki zleceñ CommunicationManagera
         */
         struct CompleteRequest
@@ -125,6 +204,50 @@ namespace communication
         };
 
         typedef std::queue<CompleteRequest> RequestsQueue;
+
+        class ComplexRequest : public BasicRequest
+        {
+            friend class CommunicationManager;
+
+        private:
+            ComplexRequest(const std::vector<CompleteRequest> & requests) : BasicRequest(Complex), requests(requests) {}
+
+        public:
+
+            unsigned int size() const
+            {
+                return requests.size();
+            }
+
+            bool empty() const
+            {
+                return requests.empty();
+            }
+
+            const CompleteRequest & getRequest(unsigned int i) const
+            {
+                return requests.at(i);
+            }
+
+            virtual double getProgress() const
+            {
+                double ret = 0;
+
+                for(auto it = requests.begin(); it != requests.end(); it++){
+                    double loc = (*it).request->getProgress();
+                    if(loc == 0){
+                        break;
+                    }
+
+                    ret += loc;
+                }
+
+                return 100.0 * (ret / (100 * requests.size()));
+            }
+
+        private:
+            std::vector<CompleteRequest> requests;
+        };
 
     private:
 
@@ -153,6 +276,23 @@ namespace communication
             requestsQueue.pop();
         }
 
+        void setCurrentTransportManager(const core::shared_ptr<communication::TransportWSDL_FTPSBase> & transportManager)
+        {
+            ScopedLock lock(transportManagerMutex);
+            currentTransportManager = transportManager;
+        }
+
+        FtpsConnection::OperationStatus processComplex(const CompleteRequest & request, std::string & message = std::string());
+        FtpsConnection::OperationStatus processPhoto(const CompleteRequest & request, std::string & message = std::string());
+        FtpsConnection::OperationStatus processFile(const CompleteRequest & request, std::string & message = std::string());
+        FtpsConnection::OperationStatus processMotionShallowCopy(const CompleteRequest & request, std::string & message = std::string());
+        FtpsConnection::OperationStatus processMotionMetadata(const CompleteRequest & request, std::string & message = std::string());
+        FtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request, std::string & message = std::string());
+        FtpsConnection::OperationStatus processMedicalMetadata(const CompleteRequest & request, std::string & message = std::string());
+        FtpsConnection::OperationStatus processPing(const CompleteRequest & request, std::string & message = std::string());
+
+    public:
+
         void pushRequest(const CompleteRequest & request)
         {
             ScopedLock lock(requestsMutex);
@@ -163,38 +303,16 @@ namespace communication
             }
         }
 
-        void setCurrentTransportManager(const core::shared_ptr<communication::TransportWSDL_FTPSBase> & transportManager)
-        {
-            ScopedLock lock(transportManagerMutex);
-            currentTransportManager = transportManager;
-        }
-
-    public:
-
-        RequestPtr requestFile(unsigned int fileID, const std::string filePath, const RequestCallbacks & callbacks = RequestCallbacks());
-        RequestPtr requestPhoto(unsigned int fileID, const std::string filePath, const RequestCallbacks & callbacks = RequestCallbacks());
-        RequestPtr requestMotionShallowCopy(const std::string filePath, const RequestCallbacks & callbacks = RequestCallbacks());
-        RequestPtr requestMotionMetadata(const std::string filePath, const RequestCallbacks & callbacks = RequestCallbacks());
-        RequestPtr requestMedicalShallowCopy(const std::string filePath, const RequestCallbacks & callbacks = RequestCallbacks());
-        RequestPtr requestMedicalMetadata(const std::string filePath, const RequestCallbacks & callbacks = RequestCallbacks());
-        RequestPtr requestPing(const RequestCallbacks & callbacks = RequestCallbacks());
+        static RequestPtr createRequestComplex(const std::vector<CompleteRequest> & requests);
+        static RequestPtr createRequestFile(unsigned int fileID, const std::string & filePath);
+        static RequestPtr createRequestPhoto(unsigned int fileID, const std::string & filePath);
+        static RequestPtr createRequestMotionShallowCopy(const std::string & filePath);
+        static RequestPtr createRequestMotionMetadata(const std::string & filePath);
+        static RequestPtr createRequestMedicalShallowCopy(const std::string & filePath);
+        static RequestPtr createRequestMedicalMetadata(const std::string & filePath);
+        static RequestPtr createRequestPing();
 
         void cancelRequest(const RequestPtr & request);
-
-    //    /*core::Filesystem::Path getFileTheoreticalPath(const communication::MotionShallowCopy::File * file) const
-    //    {
-    //        return  getSessionTheoreticalPath( file->isSessionFile() == true ? file->session : file->trial->session) / file->fileName;
-    //    }
-
-    //    core::Filesystem::Path getSessionTheoreticalPath(const communication::MotionShallowCopy::Session * session) const
-    //    {
-    //        return getLocalDataPath() / session->sessionName;
-    //    }
-
-    //    core::Filesystem::Path getLocalDataPath() const
-    //    {
-    //        return localDataPath;
-    //    }*/
 
         bool requestsQueueEmpty() const
         {
@@ -202,124 +320,24 @@ namespace communication
             return requestsQueue.empty();
         }
 
-    //    /*void cancelAllPendingRequests()
-    //    {
-    //        ScopedLock lock(requestsMutex);
-    //        while(requestsQueue.empty() == false)
-    //        {
-    //            if(requestsQueue.front().callbacks.onCancelCallback.empty() == false){
-    //                requestsQueue.front().callbacks.onCancelCallback(requestsQueue.front().request);
-    //            }
+        void cancelAllPendingRequests()
+        {
+            ScopedLock lock(requestsMutex);
+            while(requestsQueue.empty() == false)
+            {
+                if(requestsQueue.front().callbacks.onCancelCallback.empty() == false){
+                    requestsQueue.front().callbacks.onCancelCallback(requestsQueue.front().request);
+                }
 
-    //            requestsQueue.pop();
-    //        }
-    //    }*/
-
-    //    ///**
-    //    //@return p³ytka kopia DB ruchu
-    //    //*/
-    //    //const MotionShallowCopyConstPtr& getMotionShallowCopy() const
-    //    //{
-    //    //    return constMotionShallowCopy;
-    //    //}
-    //    ///**
-    //    //@return metadane z DB ruchu
-    //    //*/
-    //    //const communication::MotionMetaData::MetaData& getMotionMetadata() const
-    //    //{
-    //    //    return motionMetaData;
-    //    //}
-
-    //    ///**
-    //    //@return p³ytka kopia DB medycznych
-    //    //*/
-    //    //const MedicalShallowCopyConstPtr& getMedicalShallowCopy() const
-    //    //{
-    //    //    return constMedicalShallowCopy;
-    //    //}
-
-    //    ///**
-    //    //@return metadane z DB medycznych
-    //    //*/
-    //    //const communication::MedicalMetaData::MetaData& getMedicalMetadata() const
-    //    //{
-    //    //    return medicalMetaData;
-    //    //}
+                requestsQueue.pop();
+            }
+        }
 
         /**
         Zwraca postêp w procentach aktualnie wykonywanego zadania jako pejedynczego transferu
         @return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
         */
         int getProgress() const;
-    //    ///**
-    //    //Zwraca postêp w procentach aktualnie wykonywanego zadania jako calosci
-    //    //@return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
-    //    //*/
-    //    //int getTotalProgress() const;
-    //    ///**
-    //    //Informuje ile plików ma byæ œci¹gniêtych przy operacji pobierania plików.
-    //    //@return ile plików ma byæ œci¹gnietych
-    //    //*/
-    //    //int getFilesToDownloadCount() const
-    //    //{
-    //    //    return filesToDownload;
-    //    //};
-    //    ///**
-    //    //Informuje który z kolei plik jest aktualnie œci¹gany,
-    //    //@return który plik z kolei jest aktualnie œci¹gany
-    //    //*/
-    //    //int getActualDownloadFileNumber() const
-    //    //{
-    //    //    return actualDownloadFileNumer;
-    //    //};
-
-    //    //! Ping serwera z baz¹ danych
-    //    //void ping(const RequestCallbacks & callbacks = RequestCallbacks());
-
-    //    /**
-    //    P³ytka kopia bazy danych ruchu.
-    //    */
-    //    //void copyMotionDbData(const RequestCallbacks & callbacks = RequestCallbacks());
-
-    //    /**
-    //    P³ytka kopia bazy danych medycznych.
-    //    */
-    //    //void copyMedicalDbData(const RequestCallbacks & callbacks = RequestCallbacks());
-
-    //    //const std::string & getTrialName(int trialID);
-
-    //    //const std::string & getSessionName(int sessionID);
-
-    //    //const std::string & getFileName(int fileID);
-
-    //    //const communication::MotionShallowCopy::Trial * getTrial(int trialID);
-
-    //    //const communication::MotionShallowCopy::Session * getSession(int sessionID);
-
-    //    //const communication::MotionShallowCopy::Performer * getPerformer(int performerID);
-
-    //    //const communication::MotionShallowCopy::File * getFile(int fileID);
-
-    //    //void downloadPerformer(unsigned int perrformerID, const RequestCallbacks & callbacks = RequestCallbacks());
-
-    //    //void downloadSession(unsigned int sessionID, const RequestCallbacks & callbacks = RequestCallbacks());
-
-    //    ///**
-    //    //Pobieranie próby pomiarowej.
-    //    //@param trialID ID próby pomiarowej która ma byæ pobrana
-    //    //*/
-    //    //void downloadTrial(unsigned int trialID, const RequestCallbacks & callbacks = RequestCallbacks());
-    //    ///**
-    //    //Pobieranie pojedynczego pliku.
-    //    //@param fileID ID pliku który ma byæ pobrany
-    //    //*/
-    //    //void downloadFile(unsigned int fileID, const RequestCallbacks & callbacks = RequestCallbacks());
-
-    //    ///**
-    //    //Pobieranie pojedynczego zdjêcia pacjenta.
-    //    //@param photoID ID pliku ze zdjêciem pacjenta który ma byæ pobrany
-    //    //*/
-    //    //void downloadPhoto(unsigned int photoID, const RequestCallbacks & callbacks = RequestCallbacks());
 
         /**
         Przerwanie operacji pobierania pliku lub próby pomiarowej.
@@ -344,25 +362,25 @@ namespace communication
             this->state = state;    
         };
 
-    //public:
-    //    /**
-    //    Sprawdza stan w jakim znajduje siê Communication Service.
-    //    @return aktualny stan CS
-    //    */
-    //    State getState()
-    //    {
-    //        ScopedLock lock(trialsMutex);
-    //        return state;
-    //    };
+    public:
+        /**
+        Sprawdza stan w jakim znajduje siê Communication Service.
+        @return aktualny stan CS
+        */
+        State getState()
+        {
+            ScopedLock lock(trialsMutex);
+            return state;
+        };
         
         /**
         Podaje informacjê czy serwer odpowiedzia³ na ostatni ping.
         @return czy serwer odpowiedzia³?
         */
-        /*bool isServerResponse() const
+        bool isServerResponse() const
         {
             return serverResponse;
-        };*/
+        };
 
     private:
 
@@ -391,23 +409,23 @@ namespace communication
 
     private:
 
-        //unsigned int filesToDownload;
-        //unsigned int actualDownloadFileNumer;
-
         /**
         Jedyna instancja klasy CommunicationManager.
         */
         static CommunicationManager* instance;
         /**
-        WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych
+        WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych ruchu
         */
         core::shared_ptr<communication::MotionTransportWSDL_FTPS> motionTransportManager;
 
         /**
-        WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych
+        WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych medycznych
         */
         core::shared_ptr<communication::MedicalTransportWSDL_FTPS> medicalTransportManager;
 
+        /**
+        WskaŸnik na klasê TransportWSDL_FTPSBase odpowiedzialn¹ za aktualny transport danych
+        */
         core::shared_ptr<communication::TransportWSDL_FTPSBase> currentTransportManager;
 
         /**
@@ -425,30 +443,15 @@ namespace communication
         */
         State state;
 
+        /**
+        Aktualnie realizowane zapytanie
+        */
         CompleteRequest currentRequest;
 
         /**
         Kolejka zapytañ
         */
         RequestsQueue requestsQueue;
-
-        ///**
-        //P³ytka kopia db ruchu
-        //*/
-        //MotionShallowCopyConstPtr constMotionShallowCopy;
-        ///**
-        //Metadane db ruchu
-        //*/
-        //communication::MotionMetaData::MetaData motionMetaData;
-
-        ///**
-        //P³ytka kopia db medycznej
-        //*/
-        //MedicalShallowCopyConstPtr constMedicalShallowCopy;
-        ///**
-        //Metadane db medycznej
-        //*/
-        //communication::MedicalMetaData::MetaData medicalMetaData;
 
         /**
         Czy serwer odpowiada na ping
@@ -472,29 +475,10 @@ namespace communication
         mutable OpenThreads::ReentrantMutex requestsMutex;
 
         mutable OpenThreads::ReentrantMutex transportManagerMutex;
-        /**
-        Parsowanie plików xml p³ytkiej kopii bazy danych ruchu.
-        */
-        //void readMotionDbSchemas(const std::string& shallowCopyPath, const std::string& metaDataPath);
-
-        /**
-        Parsowanie plików xml p³ytkiej kopii bazy danych ruchu.
-        */
-        //void readMedicalDbSchemas(const std::string& shallowCopyPath, const std::string& metaDataPath);
 
         bool finish;
 
         bool cancelDownloading;
-
-        /*std::string motionShallowCopyPath;
-        std::string motionMetadataPath;
-
-        std::string medicalShallowCopyPath;
-        std::string medicalMetadataPath;
-
-        std::string localDataPath;
-
-        core::Filesystem::Path localDBImagesPath;*/
     };
 }
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

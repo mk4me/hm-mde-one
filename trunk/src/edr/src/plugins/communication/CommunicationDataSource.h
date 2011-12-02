@@ -17,8 +17,11 @@
 #include <plugins/subject/IMotion.h>
 #include <QtCore/QObject>
 #include <QtGui/QTreeWidget>
+#include <QtGui/QTableWidget>
+#include <QtGui/QListWidget>
 #include <QtGui/QLabel>
 #include "Patient.h"
+#include "PatientCardWidget.h"
 
 class CommunicationDataSource;
 
@@ -470,16 +473,6 @@ protected:
     virtual void getHeaders(const MotionItem * motionItem, QStringList & headers) const;
     virtual void getHeaders(const FileItem * fileItem, QStringList & headers) const;
 
-    ////CONTEXT MENU
-    //virtual void fillContextMenu(const ItemBase * itemBase, QMenu & menu);
-    //virtual void fillContextMenu(const DisorderItem * disorderItem, QMenu & menu);
-    //virtual void fillContextMenu(const PatientItem * patientItem, QMenu & menu);
-    //virtual void fillContextMenu(const SubjectItem * subjectItem, QMenu & menu);
-    //virtual void fillContextMenu(const SessionGroupItem * sessionGroupItem, QMenu & menu);
-    //virtual void fillContextMenu(const SessionItem * sessionItem, QMenu & menu);
-    //virtual void fillContextMenu(const MotionItem * motionItem, QMenu & menu);
-    //virtual void fillContextMenu(const FileItem * fileItem, QMenu & menu);
-
     //REFRESH/SET CONTENT
     virtual void refreshContent(ItemBase * itemBase);
     virtual void refreshContent(DisorderItem * disorderItem);
@@ -489,51 +482,6 @@ protected:
     virtual void refreshContent(SessionItem * sessionItem);
     virtual void refreshContent(MotionItem * motionItem);
     virtual void refreshContent(FileItem * fileItem);
-
-    ////REFRESH LOCALITY
-    //virtual void refreshLocality(ItemBase * itemBase, bool goUp = true);
-    //virtual void refreshLocality(DisorderItem * disorderItem, bool goUp = true);
-    //virtual void refreshLocality(PatientItem * patientItem, bool goUp = true);
-    //virtual void refreshLocality(SubjectItem * subjectItem, bool goUp = true);
-    //virtual void refreshLocality(SessionGroupItem * sessionGroupItem, bool goUp = true);
-    //virtual void refreshLocality(SessionItem * sessionItem, bool goUp = true);
-    //virtual void refreshLocality(MotionItem * motionItem, bool goUp = true);
-    //virtual void refreshLocality(FileItem * fileItem, bool goUp = true);
-
-    ////REFRESH USAGE
-    //virtual void refreshUsage(ItemBase * itemBase, bool goUp = true);
-    //virtual void refreshUsage(DisorderItem * disorderItem, bool goUp = true);
-    //virtual void refreshUsage(PatientItem * patientItem, bool goUp = true);
-    //virtual void refreshUsage(SubjectItem * subjectItem, bool goUp = true);
-    //virtual void refreshUsage(SessionGroupItem * sessionGroupItem, bool goUp = true);
-    //virtual void refreshUsage(SessionItem * sessionItem, bool goUp = true);
-    //virtual void refreshUsage(MotionItem * motionItem, bool goUp = true);
-    //virtual void refreshUsage(FileItem * fileItem, bool goUp = true);
-
-    ////REFRESH STATUS
-    //virtual void refreshStatus(ItemBase * itemBase, bool goUp = true);
-    //virtual void refreshStatus(DisorderItem * disorderItem, bool goUp = true);
-    //virtual void refreshStatus(PatientItem * patientItem, bool goUp = true);
-    //virtual void refreshStatus(SubjectItem * subjectItem, bool goUp = true);
-    //virtual void refreshStatus(SessionGroupItem * sessionGroupItem, bool goUp = true);
-    //virtual void refreshStatus(SessionItem * sessionItem, bool goUp = true);
-    //virtual void refreshStatus(MotionItem * motionItem, bool goUp = true);
-    //virtual void refreshStatus(FileItem * fileItem, bool goUp = true);
-
-//protected slots:
-//
-//    void downloadSubject();
-//    void downloadSession();
-//    void downloadMotion();
-//    void downloadFile();
-//
-//    void loadSubject();
-//    void loadSession();
-//    void loadMotion();
-//    void loadFile();
-//
-//    void onItemClicked(QTreeWidgetItem* item, int column);
-//    void onCustomContextMenuRequested ( const QPoint & pos );
 
 protected:
 
@@ -615,6 +563,10 @@ protected slots:
 
     void showPatients();
     void showDisorders();
+    void showPatientCards();
+
+    void patientCardRequest(QListWidgetItem * current, QListWidgetItem * previous);
+    void onPatientCardContextMenu(const QPoint & pos);
 
 protected:
 
@@ -633,6 +585,7 @@ protected:
     void fillItemContent(MotionItem * motionItem, const communication::MotionShallowCopy::Trial * motion);
     void fillItemContent(FileItem * fileItem, const communication::MotionShallowCopy::File * file);
 
+    void createPatientRow(unsigned int row, const communication::MedicalShallowCopy::Patient * patient);
     PatientItem * createPatientItemTree(const communication::MedicalShallowCopy::Patient * patient);
     SessionGroupItem * createSessionGroupItem(const std::string & name, const communication::MotionShallowCopy::Sessions & sessions);
     SessionItem * createSessionItem(const std::string & prefix, const communication::MotionShallowCopy::Session * session);
@@ -643,8 +596,12 @@ protected:
     QTreeWidget * disordersTree;
     QTreeWidget * patientsTree;
 
+    PatientCardWidget * patientCardWidget;
+    QListWidget * patientsList;
+    QWidget * patientCardsWidget;
+
     std::map<int, DisorderItem*> disordersUIMapping;
-    std::map<int, std::set<PatientItem*>> patientsUIMapping;
+    std::map<int, std::vector<PatientItem*>> patientsUIMapping;
     std::map<int, SessionItem*> sessionsUIMapping;
     std::map<int, MotionItem*> motionsUIMapping;
     std::map<int, FileItem*> filesUIMapping;
@@ -732,10 +689,17 @@ public:
 
     std::pair<DataLocality, DataUsage> getStatus(const std::vector<const communication::MotionShallowCopy::File *> files) const;
 
+    core::shared_ptr<QPixmap> getPatientPhoto(const communication::MedicalShallowCopy::Patient * patient);
+
 private:
 
     QWidget * createMedicalView();
     QWidget * createMotionView();
+
+private slots:
+
+    void refresh();
+
 
 private:
 
@@ -752,6 +716,18 @@ private:
 
     bool downloadFiles(const std::vector<const communication::MotionShallowCopy::File *> & files);
 
+   /* PatientPtr createPatient(const communication::MedicalShallowCopy::Patient * patient ) 
+    {
+        PatientPtr ret;
+        if(subjectService != nullptr){
+            ret = subjectService->createSubject();
+            auto subjectWrapper = core::addData(memoryDataManager, ret);
+            subjectsMapping[subject] = subjectWrapper;
+        }
+
+        return ret;
+    }*/
+
     SubjectPtr createSubject(const communication::MotionShallowCopy::Performer * subject ) 
     {
         SubjectPtr ret;
@@ -767,7 +743,6 @@ private:
     SessionPtr createSession(const communication::MotionShallowCopy::Session * session, SubjectConstPtr subject = SubjectConstPtr()) 
     {
         SessionPtr ret;
-        LOG_DEBUG("Creating subject");
         if(subjectService != nullptr && sessionsMapping.find(session) == sessionsMapping.end()){
             if(subject == nullptr){
                 auto subjectIT = subjectsMapping.find(session->performerConf->performer);
@@ -790,12 +765,9 @@ private:
 
             for(auto it = session->files.begin(); it != session->files.end(); it++){
                 auto filePath = getFilePath(it->second);
-
-                LOG_DEBUG("Operating file " << filePath.string());
                 
                 if(files.find(filePath) == files.end() && core::Filesystem::pathExists(filePath) == true){
                     try{
-                        LOG_DEBUG("Loading to DM");
                         fileDataManager->addData(filePath);
                     }catch(...){
 
@@ -803,13 +775,10 @@ private:
                 }
 
                 try{
-                    LOG_DEBUG("Getting objects");
                     fileDataManager->getObjectsForData(filePath, sessionWrappers);
                 }catch(...){
 
                 }
-
-                LOG_DEBUG("File operated");
             }
 
             std::vector<core::ObjectWrapperConstPtr> wrappers(sessionWrappers.begin(), sessionWrappers.end());
@@ -818,8 +787,6 @@ private:
             auto sessionWrapper = core::addData(memoryDataManager, ret);
             sessionsMapping[session] = sessionWrapper;
         }
-
-        LOG_DEBUG("Subject created");
 
         return ret;
     }
@@ -886,7 +853,8 @@ private:
         return ret;
     }
 
-
+    void onDataDownloadComplete(const communication::CommunicationManager::RequestPtr & request);
+    void onDataDownloadCompleteRefresh(const communication::CommunicationManager::RequestPtr & request);
     
     void ensureSessionDirectories(const std::set<const communication::MotionShallowCopy::Session*> & sessions, std::set<core::Filesystem::Path> & createdPaths) const;
 
@@ -916,7 +884,7 @@ private:
     core::IFileDataManager * fileDataManager;
     QAction * refreshAction;
     QWidget * widget;
-    QWidget * currentView;
+    ItemView * currentView;
     QTreeWidget * patientsWidget;
     QTreeWidget * disordersWidget;
 
@@ -933,6 +901,7 @@ private:
     core::Filesystem::Path localSchemasPath;
     core::Filesystem::Path localMotionSchemasPath;
     core::Filesystem::Path localMedicalSchemasPath;
+    core::Filesystem::Path localPatientPhotosPath;
     core::Filesystem::Path localMotionShallowCopyPath;
     core::Filesystem::Path localMotionMetadataPath;
     core::Filesystem::Path localMedicalShallowCopyPath;
@@ -944,7 +913,7 @@ private:
     MedicalShallowCopyParserPtr medicalShallowCopyParser; 
     MedicalMetadataParserPtr medicalMetadataParser;
 
-    std::map<const communication::MedicalShallowCopy::Patient*, core::shared_ptr<QPixmap> > patientPhotos;
+    std::map<unsigned int, core::shared_ptr<QPixmap> > patientPhotos;
 
     std::map<const communication::MedicalShallowCopy::Patient*, core::ObjectWrapperPtr> patientsMapping;
     std::map<const communication::MotionShallowCopy::Performer*, core::ObjectWrapperPtr> subjectsMapping;
