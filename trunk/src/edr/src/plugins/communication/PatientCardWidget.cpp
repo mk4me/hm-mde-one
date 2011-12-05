@@ -2,20 +2,16 @@
 
 #include "PatientCardWidget.h"
 
-PatientCardWidget::PatientCardWidget() : patient(nullptr), performer(nullptr)
+PatientCardWidget::PatientCardWidget() : patient(nullptr), performer(nullptr), antropometricGeneralDataModel(new QStandardItemModel()), antropometricLeftRightDataModel(new QStandardItemModel())
 {
     setupUi(this);
     refreshCard();
-
-    generalTable->setItem(0,0, new QTableWidgetItem("General"));
-
-    
-
 }
 
 PatientCardWidget::PatientCardWidget(const communication::MedicalShallowCopy::Patient * patient, const communication::MotionShallowCopy::Performer * performer,
     const PhotoConstPtr & photo, const IFilterConstPtr & filter)
-    : patient(patient), performer(performer), filter(filter), photo(photo)
+    : patient(patient), performer(performer), filter(filter), photo(photo), antropometricGeneralDataModel(new QStandardItemModel()),
+    antropometricLeftRightDataModel(new QStandardItemModel())
 {
     setupUi(this);
     refreshCard();
@@ -67,15 +63,7 @@ void PatientCardWidget::resetCard()
 
 void PatientCardWidget::refreshCard()
 {
-
-    generalTable->columnSpan(0,3);
-    auto maxSize = generalTable->maximumSize();
-    generalTable->setMaximumSize(0,0);
-    generalTable->setMaximumSize(maxSize.width(), maxSize.height());
-    generalTable->resizeRowsToContents();
-
-    leftRightTable->columnSpan(0,4);
-    leftRightTable->resizeRowsToContents();
+    generalDataTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
 
     if(patient == nullptr || performer == nullptr){
         //proste inicjowanie pol karty wartosciami domyslnymi
@@ -107,6 +95,7 @@ void PatientCardWidget::refreshCard()
         refreshDisorders();
         
         refreshSessions();
+
         detailsFrame->show();
     }
 }
@@ -186,10 +175,20 @@ void PatientCardWidget::refreshSessions()
         treeWidget->addTopLevelItem(item);
     }
 
-    if(groupedData.rbegin()->second.empty() == false){
+    if(groupedData.begin()->first != groupedData.rbegin()->first && groupedData.rbegin()->second.empty() == false){
         QTreeWidgetItem * item = createBranch("Po", groupedData.rbegin()->second);
         treeWidget->addTopLevelItem(item);
     }
+}
+
+void PatientCardWidget::fillAntropometricData(const communication::MotionShallowCopy::PerformerConf * configuration)
+{
+
+}
+
+void PatientCardWidget::setAttribute(QTableWidget * table, int row, int column, const std::string & attribute, const communication::MotionShallowCopy::Attrs & attributes)
+{
+
 }
 
 QTreeWidgetItem * PatientCardWidget::createBranch(const std::string & name, const std::map<int, const communication::MotionShallowCopy::Session *> & sessions)

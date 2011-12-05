@@ -853,6 +853,7 @@ private:
         return ret;
     }
 
+    void onPatientPhotosDownloadCompleteRefresh(const communication::CommunicationManager::RequestPtr & request);
     void onDataDownloadComplete(const communication::CommunicationManager::RequestPtr & request);
     void onDataDownloadCompleteRefresh(const communication::CommunicationManager::RequestPtr & request);
     

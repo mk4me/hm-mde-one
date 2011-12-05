@@ -11,6 +11,7 @@
 
 #include <core/SmartPtr.h>
 #include <QtGui/QWidget>
+#include <QtGui/QStandardItemModel>
 #include "ui_PatientCardWidget.h"
 #include <plugins/communication/Entity.h>
 
@@ -69,6 +70,10 @@ private:
 
     QTreeWidgetItem * createBranch(const std::string & name, const std::map<int, const communication::MotionShallowCopy::Session *> & sessions);
 
+    void fillAntropometricData(const communication::MotionShallowCopy::PerformerConf * configuration);
+
+    static void setAttribute(QTableWidget * table, int row, int column, const std::string & attribute, const communication::MotionShallowCopy::Attrs & attributes);
+
 private:
 
     const communication::MedicalShallowCopy::Patient * patient;
@@ -76,6 +81,8 @@ private:
 
     IFilterConstPtr filter;
     PhotoConstPtr photo;
+    QStandardItemModel * antropometricGeneralDataModel;
+    QStandardItemModel * antropometricLeftRightDataModel;
 };
 
 #endif HEADER_GUARD___PATIENTCARDWIDGET_H__

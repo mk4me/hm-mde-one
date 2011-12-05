@@ -1980,28 +1980,16 @@ void MedicalView::doUIRefresh()
     if(motionShallowCopy != nullptr && medicalShallowCopy != nullptr){
         unsigned int i = 0;
 
-        const communication::MedicalShallowCopy::Patient * currentPatient = nullptr;
-
         //budujemy drzewo i tabelê pacjentów na potrzeby kart
         for(auto patientIT = medicalShallowCopy->patients.begin(); patientIT != medicalShallowCopy->patients.end(); patientIT++){
-
-            if(currentPatient == nullptr){
-                currentPatient = patientIT->second;
-            }
-
             createPatientItemTree(patientIT->second);
             createPatientRow(i, patientIT->second);
             i++;
         }
 
         if(patientCardWidget->getPatient() == nullptr){
-            if(currentPatient != nullptr){
-                auto it = motionShallowCopy->performers.find(currentPatient->motionPerformerID);
-
-                if(it != motionShallowCopy->performers.end()){
-                    patientCardWidget->setPatient(currentPatient, it->second, source->getPatientPhoto(currentPatient));
-                    patientCardWidget->refreshCard();
-                }
+            if(patientsList->count() > 0){
+                patientsList->setCurrentRow(0, QItemSelectionModel::SelectCurrent);
             }
         }else{
             patientCardWidget->refreshCard();
@@ -2330,6 +2318,23 @@ void CommunicationDataSource::onDataDownloadComplete(const communication::Commun
     readMedicalDbSchemas(localMedicalShallowCopyPath.string(), localMedicalMetadataPath.string());
     retrivePatientPhotos();
     onDataDownloadCompleteRefresh(request);
+}
+
+void CommunicationDataSource::onPatientPhotosDownloadCompleteRefresh(const communication::CommunicationManager::RequestPtr & request)
+{
+    auto complexRequest = core::dynamic_pointer_cast<communication::CommunicationManager::ComplexRequest>(request);
+    bool loaded = false;
+    for(unsigned int i = 0; i < complexRequest->size(); i++){
+        auto photoRequest = core::dynamic_pointer_cast<communication::CommunicationManager::PhotoRequest>(complexRequest->getRequest(i).request);
+        if(photoRequest != nullptr){
+            patientPhotos[photoRequest->getPhotoID()] = core::shared_ptr<QPixmap>(new QPixmap(photoRequest->getFilePath().c_str()));
+            loaded = true;
+        }
+    }
+
+    if(loaded == true){
+        onDataDownloadCompleteRefresh(request);
+    }
 }
 
 void CommunicationDataSource::onDataDownloadCompleteRefresh(const communication::CommunicationManager::RequestPtr & request)
@@ -2842,7 +2847,7 @@ void CommunicationDataSource::retrivePatientPhotos()
 
             communication::CommunicationManager::CompleteRequest req;
             req.request = communicationManager->createRequestComplex(requests);
-            req.callbacks.onEndCallback = boost::bind(&CommunicationDataSource::onDataDownloadCompleteRefresh, this, _1);
+            req.callbacks.onEndCallback = boost::bind(&CommunicationDataSource::onPatientPhotosDownloadCompleteRefresh, this, _1);
 
             communicationManager->pushRequest(req);
         }else if(loaded == true){
