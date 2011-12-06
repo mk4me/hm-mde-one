@@ -69,7 +69,12 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
             bool hasMarkers = motion->hasObjectOfType(typeid(MarkerCollection));
             bool hasJoints = motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection));
             if (hasMarkers || hasJoints) {
-                QTreeWidgetItem* kinematicItem = new QTreeWidgetItem();
+                QTreeWidgetItem* kinematicItem;
+                if (hasJoints || hasMarkers || hasGrf) {
+                    kinematicItem = new Multiserie3D(motion);
+                } else {
+                    kinematicItem = new QTreeWidgetItem();
+                }
                 kinematicItem->setText(0, QObject::tr("Kinematic data"));
                 motionItem->addChild(kinematicItem);
                 if (hasMarkers) {
@@ -82,9 +87,9 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
 
                 }
 
-                if (hasJoints || hasMarkers || hasGrf) {
-                    //item2Helper[kinematicItem] = TreeItemHelperPtr(new Multiserie3D(motion));
-                }
+                /*if  {
+                    item2Helper[kinematicItem] = TreeItemHelperPtr(new Multiserie3D(motion));
+                }*/
             }
 
             if (motion->hasObjectOfType(typeid(VideoChannel))) {
@@ -164,6 +169,14 @@ QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion,
     QTreeWidgetItem* skeletonItem = new JointsItemHelper(motion);
     skeletonItem->setIcon(0, itemIcon);
     skeletonItem->setText(0, rootName);
+
+    try {
+        core::ObjectWrapperConstPtr angleCollection = motion->getWrapperOfType(typeid(AngleCollection));
+        AngleCollectionConstPtr m = angleCollection->get();
+        tryAddVectorToTree<AngleChannel>(motion, m, "Angle collection", &itemIcon, skeletonItem, false);
+    } catch (...) {
+
+    }
     return skeletonItem;
 }
 

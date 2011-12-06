@@ -1,11 +1,13 @@
 #include "NewChartPCH.h"
 #include <QtGui/QAction>
+#include <QtGui/QHBoxLayout>
 #include "NewChartVisualizer.h"
 #include <qwt/qwt_plot_canvas.h>
 #include <qwt/qwt_scale_draw.h>
 #include <qwt/qwt_scale_widget.h>
 #include <qwt/qwt_plot_layout.h>
 #include <qwt/qwt_legend.h>
+#include "StatsTable.h"
 #include "NewChartPicker.h"
 #include "NewChartMarker.h"
 #include "NewChartValueMarker.h"
@@ -16,7 +18,8 @@ NewChartVisualizer::NewChartVisualizer() :
 showLegend(true), 
     currentSerie(-1),
     plotPanner(nullptr),
-    plotMagnifier(nullptr)
+    plotMagnifier(nullptr),
+    statsTable(nullptr)
 {
 
 }
@@ -96,7 +99,20 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     this->currentState->stateBegin();
 
     qwtPlot->replot();
-    return qwtPlot;
+
+    statsTable = new StatsTable();
+    statsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    qwtPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    
+    QWidget* widget = new QWidget();
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(qwtPlot);
+    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
+    
+    layout->addWidget(statsTable);
+    widget->setLayout(layout);
+    return widget;
 }
 
 
@@ -118,6 +134,8 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     ret->setName(name);
     ret->setData(data);
     series.push_back(ret);
+
+    statsTable->addEntry(QString(name.c_str()), ret->getStats());
 
     if(series.size() == 1){
         activeSerieCombo->blockSignals(true);

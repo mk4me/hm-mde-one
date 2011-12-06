@@ -301,43 +301,47 @@ void HmmMainWindow::onOpen()
 
 void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
-    // sprawdzanie, czy pod item jest podpiety jakis obiekt
-    TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(item);
+    try {
+        // sprawdzanie, czy pod item jest podpiety jakis obiekt
+        TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(item);
     
-    if (hmmItem) {
-        showTimeline();
-        VisualizerWidget* w = createDockVisualizer(hmmItem);
-        topMainWindow->autoAddDockWidget( w );
-    }
-
-    ChildrenVisualizers* cv = dynamic_cast<ChildrenVisualizers*>(item);
-    if (cv) {
-        EDRDockWidgetSet* set = new EDRDockWidgetSet(this);
-        int count = cv->childCount();
-        for (int i = 0; i < count; i++) {
-            TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(cv->child(i));
+        if (hmmItem) {
+            showTimeline();
             VisualizerWidget* w = createDockVisualizer(hmmItem);
-            switch (cv->getPolicy()) {
-            case ChildrenVisualizers::Auto:
-                set->addDockWidget(w);
-                break;
-            case ChildrenVisualizers::Horizontal:
-                set->addDockWidget(w, Qt::Horizontal);
-                break;
-            case ChildrenVisualizers::Vertical:
-                set->addDockWidget(w, Qt::Vertical);
-                break;
+            topMainWindow->autoAddDockWidget( w );
+        }
+
+        ChildrenVisualizers* cv = dynamic_cast<ChildrenVisualizers*>(item);
+        if (cv) {
+            EDRDockWidgetSet* set = new EDRDockWidgetSet(this);
+            int count = cv->childCount();
+            for (int i = 0; i < count; i++) {
+                TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(cv->child(i));
+                VisualizerWidget* w = createDockVisualizer(hmmItem);
+                switch (cv->getPolicy()) {
+                case ChildrenVisualizers::Auto:
+                    set->addDockWidget(w);
+                    break;
+                case ChildrenVisualizers::Horizontal:
+                    set->addDockWidget(w, Qt::Horizontal);
+                    break;
+                case ChildrenVisualizers::Vertical:
+                    set->addDockWidget(w, Qt::Vertical);
+                    break;
+                }
+            }
+            int added = set->getNumWidgets();
+        
+            if (added > 0) {
+                showTimeline();
+                set->setMaxWidgetsNumber(added);
+                topMainWindow->addDockWidgetSet(set);
+            } else {
+                delete set;
             }
         }
-        int added = set->getNumWidgets();
-        
-        if (added > 0) {
-            showTimeline();
-            set->setMaxWidgetsNumber(added);
-            topMainWindow->addDockWidgetSet(set);
-        } else {
-            delete set;
-        }
+    } catch ( std::exception& e) {
+        LOG_ERROR("Click on tree failed, reason : " << e.what());
     }
 }
 

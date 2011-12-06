@@ -22,6 +22,7 @@ set(PRIVATE_H
 	NewChartHorizontals.h
 	NewChartVerticals.h
 	NewChartLabelState.h
+	StatsTable.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -40,6 +41,7 @@ set(TARGET_SRC
 	NewChartHorizontals.cpp
 	NewChartVerticals.cpp
 	NewChartLabelState.cpp
+	StatsTable.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -51,6 +53,7 @@ SET(TARGET_MOC_H
 	NewChartHorizontals.h
 	NewChartVerticals.h
 	NewChartLabelState.h
+	StatsTable.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -60,7 +63,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 SET(TARGET_UI
-#pusto
+	ui/statsTable.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

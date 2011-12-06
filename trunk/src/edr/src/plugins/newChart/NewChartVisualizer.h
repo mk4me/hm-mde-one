@@ -32,6 +32,8 @@
 #include "NewChartSerie.h"
 #include "NewChartState.h"
 
+class StatsTable;
+
 class NewChartVisualizer : public QObject, public core::IVisualizer, public boost::enable_shared_from_this<NewChartVisualizer>
 {
     friend class NewChartSerie;
@@ -158,6 +160,7 @@ private:
       int currentSerie;
       QwtPlotPanner* plotPanner;
       QwtPlotMagnifier* plotMagnifier;
+      StatsTable* statsTable;
 };
 typedef core::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef core::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;

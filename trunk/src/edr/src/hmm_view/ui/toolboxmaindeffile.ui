@@ -199,6 +199,9 @@
      </disabled>
     </palette>
    </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(41, 41, 41);</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>0</number>
@@ -291,7 +294,7 @@
       </property>
       <property name="styleSheet">
        <string notr="true">     background-color: rgb(91, 91, 91);
-     border-top-right-radius: 12px; /* same radius as the QComboBox */
+     border-top-right-radius: 12px; 
      border-top-left-radius: 12px;</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">

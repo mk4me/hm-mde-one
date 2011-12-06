@@ -60,6 +60,7 @@ protected:
           float getLength() const { return reader->getLength(); }
           float getMin() const { return stats->minValue(); }
           float getMax() const { return stats->maxValue(); }
+          ScalarChannelStatsConstPtr getStats() const { return stats; }
 
     private:
         ScalarChannelReaderInterfaceConstPtr reader;
@@ -132,6 +133,8 @@ public:
 
     bool getActive() const { return active; }
     void setActive(bool val);
+
+    ScalarChannelStatsConstPtr getStats() const { return pointHelper->getStats(); }
 
 private:
     NewChartVisualizer* visualizer;
