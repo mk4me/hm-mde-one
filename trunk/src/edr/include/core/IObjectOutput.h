@@ -63,11 +63,11 @@ namespace core
 
             //! Wzorzec metody addObject akceptuj¹cy smart pointery do typów domenowych. Wewnêtrznie opakowuje dane w odpowiedni ObjectWrapperPtr i dodaje do kolekcji
             template<class T>
-            void addObject(const T & object)
+            void addObject(const T & object, const std::string & name, const std::string & source)
             {
                 UTILS_ASSERT((collection != nullptr), "Bledna kolekcja w proxy dla wejscia");
 
-                ObjectWrapperPtr obj = __setObjectPointerResolver(object, boost::is_pointer<T>());
+                ObjectWrapperPtr obj = __setObjectPointerResolver(object, name, source, boost::is_pointer<T>());
 
                 collection->addObject(obj);
             }
@@ -82,46 +82,32 @@ namespace core
             }
 
             template <class T>
-            ObjectWrapperPtr __setObjectPointerResolver(const T& object, boost::false_type)
+            ObjectWrapperPtr __setObjectPointerResolver(const T& object, const std::string & name, const std::string & source, boost::false_type)
             {
-                return __setObjectPODResolver(object, boost::is_pod<T>());
+                return __setObjectPODResolver(object, name, source, boost::is_pod<T>());
             }
 
             template <class T>
-            ObjectWrapperPtr __setObjectPODResolver(const T& object, boost::true_type)
+            ObjectWrapperPtr __setObjectPODResolver(const T& object, const std::string & name, const std::string & source, boost::true_type)
             {
                 UTILS_STATIC_ASSERT(false, "Niezaimplementowane");
                 return ObjectWrapperPtr();
             }
 
             template <class SmartPtr>
-            ObjectWrapperPtr __setObjectPODResolver(const SmartPtr& object, boost::false_type)
+            ObjectWrapperPtr __setObjectPODResolver(const SmartPtr& object, const std::string & name, const std::string & source, boost::false_type)
             {
                 typedef typename SmartPtr::element_type Type;
                 // je¿eli tutaj jest b³¹d oznacza to, ¿e przekazany typ nie jest ani POD, ani inteligentnym wskaŸnikiem.
                 UTILS_STATIC_ASSERT(ObjectWrapperTraits<Type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
                 UTILS_STATIC_ASSERT((boost::is_same<SmartPtr, ObjectWrapperT<Type>::Ptr>::value), "SmartPtr nie odpowiada inteligetnemu wskaznikowi odbslugujacemu zadany typ");
-                
+
                 if(object == nullptr){
                     throw std::runtime_error("Could not create wprapper for nullptr");
                 }
-                
-                //mechanizm ograniczaj¹cy tworzenie wielu niezale¿nych ObjectWrapperów dla tych samych danych
-                //core::ObjectWrapperPtr objectWrapper = core::getDataManager()->getWrapper(&*object);
-                
-                //core::ObjectWrapperPtr objectWrapper = core::getOrCreateWrapper(object);
-
-                //if(objectWrapper == nullptr){
-                //    //skoro nie znaleziono to znaczy ¿e jest to nowy obiekt i mo¿na go opakowaæ ca³kowicie nowym ObjectWrapperem
-                //    objectWrapper = ObjectWrapper::create<Type>();
-                //    objectWrapper->set(object);
-                //}
-                //
-                //return objectWrapper;
-                //return core::getOrCreateWrapper(object).second;
 
                 ObjectWrapperPtr ret(core::ObjectWrapper::create<Type>());
-                ret->set(object);
+                ret->set(object, name, source);
                 return ret;
             }
 

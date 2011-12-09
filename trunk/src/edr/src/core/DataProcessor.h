@@ -30,7 +30,7 @@ public:
         getImplementation()->process(getSource(), getOutput());
     }
 
-    static void test();
+    //static void test();
 
 };
 
