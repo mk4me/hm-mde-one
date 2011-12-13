@@ -5,15 +5,46 @@
 const int ACTIVE_WIDTH = 2;
 const int NON_ACTIVE_WIDTH = 1;
 
+
 void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
     this->data = data;
     curve = new QwtPlotCurve(data->getName().c_str());
-    ScalarChannelReaderInterfaceConstPtr reader = data->get();
+    reader = data->get();
+    accessor.reset(new ScalarContiniousTimeAccessor(reader));
+    ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
+    stats.reset(new ScalarChannelStats(nonConstChannel));
+    int count = reader->size();
+    xvals = new double[count];
+    yvals = new double[count];
+    for (int i = 0; i < count; i++) {
+        xvals[i] = reader->argument(i);
+        yvals[i] = reader->value(i);
+    }
 
-    pointHelper = new PointData(reader, 500);
+    //ScalarChannelReaderInterfacePtr nonConstChannel2(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
+    //
+    //if(absChannel == nullptr) {
+    //    absChannel.reset(new ScalarModifier(nonConstChannel2, ScalarChannelAbs()));
+    //}
+    //
+    //boost::shared_ptr<ChannelNoCopyModifier<float, float>> absTest( new AbsMeanChannel<float, float>(nonConstChannel2));
+    //
+    //absTest->initialize();
+    //
+    //if (integratorChannel == nullptr) {
+    //    integratorChannel.reset(new ScalarModifier(absTest, ScalarChannelIntegrator()));
+    //}
 
-    curve->setData(pointHelper);
+    //stats.reset(new ScalarChannelStats(integratorChannel));
+    //int count = integratorChannel->size();
+    //xvals = new double[count];
+    //yvals = new double[count];
+    //for (int i = 0; i < count; i++) {
+    //    xvals[i] = integratorChannel->argument(i);
+    //    yvals[i] = integratorChannel->value(i);
+    //}
+    curve->setRawSamples(xvals, yvals, count);
     int r = rand() % 256;
     int g = rand() % 256;
     int b = rand() % 256;
@@ -27,8 +58,6 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
 void NewChartSerie::setTime( float time )
 {
     this->time = time;
-    //visualizer->markerX = time;
-    //visualizer->markerLabel = QString("y(%1) = %2").arg(time).arg(pointHelper->y(time));
 }
 
 void NewChartSerie::setActive( bool val )
@@ -37,4 +66,10 @@ void NewChartSerie::setActive( bool val )
     if (curve) {
         setWidth(val ? ACTIVE_WIDTH : NON_ACTIVE_WIDTH);
     }
+}
+
+NewChartSerie::~NewChartSerie()
+{
+    delete[] xvals;
+    delete[] yvals;
 }

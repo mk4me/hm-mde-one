@@ -507,7 +507,7 @@ void VisualizerWidget::fillSourcesMenu()
 
             if(aditional > 0){
                 std::set<core::ObjectWrapperConstPtr> current(objects->begin(), objects->end());
-                std::vector<core::ObjectWrapperConstPtr> result(std::max(static_cast<int>(objects->size()), aditional));
+                std::vector<core::ObjectWrapperConstPtr> result((std::max)(static_cast<int>(objects->size()), aditional));
 
                 auto stopIT = std::set_difference(iT->second.begin(), iT->second.end(), current.begin(), current.end(), result.begin());
                 total = current.size();

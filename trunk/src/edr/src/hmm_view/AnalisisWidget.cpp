@@ -69,3 +69,4 @@ QTreeWidget(parent)
     setFrameShape(QFrame::NoFrame);
     setStyleSheet("border: 0px;");
 }
+

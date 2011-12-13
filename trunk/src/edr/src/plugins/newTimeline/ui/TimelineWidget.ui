@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>635</width>
-    <height>152</height>
+    <width>629</width>
+    <height>178</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,13 +17,7 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>

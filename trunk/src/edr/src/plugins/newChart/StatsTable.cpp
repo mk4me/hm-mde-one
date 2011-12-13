@@ -24,8 +24,8 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
  {
      QTreeWidgetItem* item = new QTreeWidgetItem();
      item->setText(0, name);
-     item->setText(1, QString("%1").arg(stats->minValue()));
-     item->setText(2, QString("%1").arg(stats->maxValue()));
+     item->setText(1, QString("%1 ( %2s )").arg(stats->minValue()).arg(stats->minArgument()));
+     item->setText(2, QString("%1 ( %2s )").arg(stats->maxValue()).arg(stats->maxArgument()));
      item->setText(3, QString("%1").arg(stats->meanValue()));
      item->setText(4, QString("%1").arg(stats->varianceValue()));
      table->addTopLevelItem(item);

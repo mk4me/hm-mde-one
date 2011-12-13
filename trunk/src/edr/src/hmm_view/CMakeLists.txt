@@ -17,6 +17,7 @@ set(PRIVATE_H
 	EDRDockWidgetSet.h
 	EDRDockWidgetManager.h
 	TreeItemHelper.h
+	EmgFilter.h
 	DataFilterWidget.h
 	FilterEntryWidget.h
 	FilterCommand.h
@@ -27,6 +28,7 @@ set(PRIVATE_H
 	ConfigurationPainter.h
 	AnalisisWidget.h
 	IllnessUnit.h
+	LanguageDialog.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -49,6 +51,7 @@ set(TARGET_SRC
 	EDRDockWidgetSet.cpp
 	EDRDockWidgetManager.cpp
 	TreeItemHelper.cpp
+	EmgFilter.cpp
 	DataFilterWidget.cpp
 	FilterCommand.cpp
 	FilterEntryWidget.cpp
@@ -58,6 +61,7 @@ set(TARGET_SRC
 	ConfigurationPainter.cpp
 	IllnessUnit.cpp
 	AnalisisWidget.cpp
+	LanguageDialog.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -75,6 +79,7 @@ SET(TARGET_MOC_H
 	ConfigurationPainter.h
 	ConfigurationDialog.h
 	AnalisisWidget.h
+	LanguageDialog.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -83,6 +88,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 set(TARGET_UI
+    #ui/LanguageDialogWidget.ui
 	ui/toolboxmaindeffile.ui
 	ui/LoadingDialog.ui
 	ui/filter.ui

@@ -73,6 +73,12 @@
       </item>
       <item>
        <widget class="QTreeWidget" name="table">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="styleSheet">
          <string notr="true">QFrame { 
      border: 0px solid; 

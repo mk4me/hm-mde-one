@@ -61,7 +61,7 @@ public:
     //! \return Lista obserwowanych obiektów
     const ObservedObjects & getObservedObjects() const
     {
-        return observedObjects
+        return observedObjects;
     }
 
 private:

@@ -39,13 +39,25 @@ private:
 };
 
 
-
-
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain
 {
     Q_OBJECT
 
 private:
+
+private:
+    //! Obserwuje Memory data manager. Jezeli dane sie zmienia, to odswiezone zostanie drzewo.
+    class DataObserver : public utils::Observer<core::IMemoryDataManager>
+    {
+    public:
+        DataObserver(HmmMainWindow* hmm) : hmm(hmm), motionsCount(0) {}
+        virtual void update( const core::IMemoryDataManager * subject );
+
+    private:
+        HmmMainWindow* hmm;
+        int motionsCount;
+    };
+    typedef core::shared_ptr<DataObserver> DataObserverPtr;
 
     struct DataItemDescription {
         core::IVisualizer::SerieBase* serie;
@@ -72,7 +84,7 @@ public:
 private slots:
     void visualizerDestroyed(QObject * visualizer);
 
-	void onOpen();
+	//void onOpen();
 	void onTreeItemClicked(QTreeWidgetItem *item, int column);
 
      VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
@@ -94,6 +106,7 @@ private:
     void createFilterTabs();
     void createFilterTab1();
     void createFilterTab2();
+    void refreshTree();
 
     class ItemDoubleClick
     {
@@ -150,6 +163,7 @@ private:
     QWidget* operations;
     QWidget* raports;
     std::map<QWidget*, QWidget*> button2TabWindow;
+    DataObserverPtr dataObserver;
 };
 
 #endif // TOOLBOXMAIN_H

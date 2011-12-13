@@ -1,6 +1,7 @@
 #include "NewChartPCH.h"
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
+#include <QtGui/QSplitter>
 #include "NewChartVisualizer.h"
 #include <qwt/qwt_plot_canvas.h>
 #include <qwt/qwt_scale_draw.h>
@@ -31,7 +32,7 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     qwtPlot->setAutoReplot(true);
     if (isShowLegend()) {
         QwtLegend* legend = new QwtLegend();
-        legend->setItemMode(QwtLegend::ClickableItem);
+        legend->setItemMode(QwtLegend::CheckableItem);
         qwtPlot->insertLegend( legend, QwtPlot::RightLegend );
     }
     qwtPlot->canvas()->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
@@ -105,6 +106,18 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     qwtPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
     QWidget* widget = new QWidget();
+
+    /*QSplitter * splitter = new QSplitter();
+    splitter->setOrientation(Qt::Vertical);
+    splitter->setChildrenCollapsible(false);
+    splitter->addWidget(qwtPlot);
+    splitter->addWidget(statsTable);
+
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(splitter);
+    widget->setLayout(layout);*/
     QVBoxLayout* layout = new QVBoxLayout();
     layout->addWidget(qwtPlot);
     layout->setMargin(0);

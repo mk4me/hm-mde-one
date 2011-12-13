@@ -11,6 +11,8 @@
 
 #include <core/SmartPtr.h>
 #include <utils/DataChannel.h>
+#include <utils/DataChannelModifiers.h>
+#include <utils/DataChannelStats.h>
 #include <utils/DataChannelCollection.h>
 #include <core/ObjectWrapper.h>
 #include <osg/Vec3>

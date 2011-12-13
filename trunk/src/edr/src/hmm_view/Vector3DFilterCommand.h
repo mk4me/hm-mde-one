@@ -19,6 +19,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <boost/type_traits.hpp>
 
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
@@ -86,7 +87,7 @@ private:
     NamesDictionary namesDictionary;
 };
 
-template <class Channel, class Collection, class ItemHelper>
+template <class Channel, class Collection, class ItemHelper, bool useTreeItemHelperForRoot = false>
 class Vector3DFilterCommand : public IFilterCommand
 {
 public:
@@ -115,13 +116,20 @@ public:
               Motions motions;
               filtered->getMotions(motions);
               BOOST_FOREACH(MotionConstPtr motion, motions) {
-                  QTreeWidgetItem* motionItem = new QTreeWidgetItem();
-                  motionItem->setText(0, motion->getLocalName().c_str());
-                  root->addChild(motionItem);
+                  
                   std::vector<core::ObjectWrapperConstPtr> objects;
                   motion->getWrappers(objects, typeid(Collection));
-                  BOOST_FOREACH(ObjectWrapperConstPtr wrapper, objects) {
-                      CollectionConstPtr collection = wrapper->get();
+                  if (objects.size() == 1) {
+                      QTreeWidgetItem* motionItem;
+                      if (useTreeItemHelperForRoot) {
+                          motionItem = new TreeWrappedItemHelper(objects[0]);
+                      } else {
+                          motionItem = new QTreeWidgetItem();
+                      }
+                      motionItem->setText(0, motion->getLocalName().c_str());
+                      root->addChild(motionItem);
+
+                      CollectionConstPtr collection = objects[0]->get();
                       int count = collection->getNumChannels();
                       for (int i = 0 ; i < count; i++) {
                           ChannelConstPtr channel = collection->getChannel(i);
@@ -144,8 +152,9 @@ public:
                   }
               }
           }
-      return root;
-        }
+
+          return root;
+      }
       virtual QDialog* getConfigurationDialog(QWidget* parent)
       {
           std::vector<SessionConstPtr> sessions;
@@ -226,8 +235,8 @@ protected:
     __Helper helper;
 };
 
-template <class Channel, class Collection, class ItemHelper>
-class Vector3DFilterCommand2 : public Vector3DFilterCommand<Channel, Collection, ItemHelper>
+template <class Channel, class Collection, class ItemHelper, bool useTreeItemHelperForRoot = false>
+class Vector3DFilterCommand2 : public Vector3DFilterCommand<Channel, Collection, ItemHelper, useTreeItemHelperForRoot>
 {
 public:
     Vector3DFilterCommand2(const NamesDictionary& namesDictionary, const QString& frontXml, const QString& backXml) : 
@@ -278,6 +287,26 @@ public:
 private:
     QString frontXml, backXml;
     ConfigurationDialog* dialog;
+};
+
+
+class JointsCommand : public IFilterCommand
+{
+public:
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions ) 
+    {
+        QTreeWidgetItem* root = new QTreeWidgetItem();
+        root->setText(0, rootItemName);
+        BOOST_FOREACH(SessionConstPtr session, sessions) {
+            Motions motions;
+            session->getMotions(motions);
+            BOOST_FOREACH(MotionConstPtr motion, motions) {
+                root->addChild(TreeBuilder::createJointsBranch(motion, motion->getLocalName().c_str(), QIcon()));
+            }
+        }
+
+        return root;
+    }
 };
 #endif
 

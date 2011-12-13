@@ -14,6 +14,7 @@
 #include "AnalisisWidget.h"
 #include <plugins/subject/ISubjectService.h>
 #include "IllnessUnit.h"
+#include "EMGFilter.h"
 
 using namespace core;
 
@@ -25,11 +26,14 @@ HmmMainWindow::HmmMainWindow() :
 	analisis(nullptr),
     currentItem(nullptr),
     data(nullptr),
-    operations(nullptr)
+    operations(nullptr),
+    dataObserver(new DataObserver(this))
 {
 	this->setWindowFlags(Qt::FramelessWindowHint);
     itemClickAction.setMainWindow(this);
     setMouseTracking(true);
+    IMemoryDataManager* manager = DataManager::getInstance();
+    manager->attach(dataObserver.get());
 }
 
 
@@ -59,6 +63,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     button2TabWindow[this->raportsButton] = this->raports;
     button2TabWindow[this->analisisButton] = this->analisis;
 
+    analisisButton->setEnabled(false);
+    raportsButton->setEnabled(false);
+
     for(auto it = button2TabWindow.begin(); it != button2TabWindow.end(); it++) {
         mainArea->layout()->addWidget(it->second);
         it->second->hide();
@@ -77,11 +84,11 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&)));    
 	QObject::connect(treeWidget, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
 
-    QSplitter * splitter = new QSplitter();
+   /* QSplitter * splitter = new QSplitter();
     splitter->setOrientation(Qt::Vertical);
     splitter->setChildrenCollapsible(false);
 
-    splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);*/
 
     topMainWindow = new EDRDockWidgetManager(this);
     topMainWindow->setTabsPosition(QTabWidget::North);
@@ -200,7 +207,7 @@ void HmmMainWindow::addToVisualizer()
             VisualizerPtr visualizer = action->getVisualizer();
             TreeItemHelper* helper = action->getItemHelper();
             static int counter = 0;
-            QString path = QString("Existin...%1").arg(counter++);
+            QString path = QString("Custom_addition...%1").arg(counter++);
             std::vector<core::VisualizerTimeSeriePtr> series;
             helper->createSeries(visualizer, path, series);
             addSeriesToTimeline(series, path, visualizer);
@@ -280,24 +287,24 @@ void HmmMainWindow::visualizerFocusChanged(bool focus)
     currentVisualizer->setTitleBarVisible(focus);
 }
 
-void HmmMainWindow::onOpen()
-{
-	utils::Push<bool> pushed(updateEnabled, false);
-	Filesystem::Path initPath = getUserDataPath() / "trial";
-	const QString directory = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
-	if (!directory.isEmpty()) 
-	{
-		LoadingDialog* d = new LoadingDialog();
-		//d->setWindowFlags(Qt::Tool);
-		d->start(directory);
-		delete d;
-	}
-
-	std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
-    currentSessions = sessions;
-    QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", sessions);
-    analisis->getTreeWidget()->addTopLevelItem(item);
-}
+//void HmmMainWindow::onOpen()
+//{
+//	utils::Push<bool> pushed(updateEnabled, false);
+//	Filesystem::Path initPath = getUserDataPath() / "trial";
+//	const QString directory = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
+//	if (!directory.isEmpty()) 
+//	{
+//		LoadingDialog* d = new LoadingDialog();
+//		//d->setWindowFlags(Qt::Tool);
+//		d->start(directory);
+//		delete d;
+//	}
+//
+//	std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
+//    currentSessions = sessions;
+//    QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", sessions);
+//    analisis->getTreeWidget()->addTopLevelItem(item);
+//}
 
 void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
@@ -437,7 +444,7 @@ void HmmMainWindow::createFilterTab1()
     QString emgFront = core::getResourceString("images/muscular_front/muscular_front.xml");
     QString emgBack = core::getResourceString("images/muscular_back/muscular_back.xml");
 
-    typedef Vector3DFilterCommand2<EMGChannel, EMGCollection, NewChartItemHelper> EMGCommand;
+    typedef Vector3DFilterCommand2<EMGChannel, EMGCollection, EMGFilterHelper> EMGCommand;
     NamesDictionary emgNames;
     emgNames["noga1"  ] = std::make_pair("L1",  "Elektroda L1");
     emgNames["noga1R" ] = std::make_pair("L2",  "Elektroda L2");
@@ -567,7 +574,7 @@ void HmmMainWindow::createFilterTab1()
     filter2->addFilter(tr("MOMENTS"), "test", vFilter2, &iconMomentSmall);
     filter2->addFilter(tr("POWERS"), "powers", vFilter, &iconPowerSmall);
 
-    typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollection, NewVector3ItemHelper> MarkersCommand;
+    typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollection, NewVector3ItemHelper, true> MarkersCommand;
     NamesDictionary markersNames;
     markersNames["RFHD"] = std::make_pair("RFHD", "Right front of head");
     markersNames["LFHD"] = std::make_pair("LFHD", "Left front of head");
@@ -609,7 +616,7 @@ void HmmMainWindow::createFilterTab1()
     QString markersFront = core::getResourceString("images/skeleton_front/skeleton_markers.xml");
     QString markersBack = core::getResourceString("images/skeleton_back/skeleton_markers.xml");
     IFilterCommandPtr vFilter6(new MarkersCommand(markersNames, markersFront, markersBack));
-    DataFilterPtr typeFilter7(new TypeFilter(typeid(kinematic::JointAnglesCollection)));
+    IFilterCommandPtr typeFilter7(new JointsCommand());
 
     filter3->addFilter(tr("MARKERS"), "count: 1", vFilter6, &iconMarkerSmall);
     filter3->addFilter(tr("JOINTS"), "count: 1", typeFilter7, &iconJointSmall);
@@ -707,13 +714,13 @@ const std::vector<SessionConstPtr>& HmmMainWindow::getCurrentSessions()
 {
     currentSessions = core::queryDataPtr(DataManager::getInstance());    
 
-    QTreeWidget * tree = analisis->getTreeWidget();
+    /*QTreeWidget * tree = analisis->getTreeWidget();
     if(tree->topLevelItemCount() > 0){
         delete tree->takeTopLevelItem(0);
     }
     
     QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", currentSessions);
-    analisis->getTreeWidget()->addTopLevelItem(item);
+    analisis->getTreeWidget()->addTopLevelItem(item);*/
 
     return currentSessions;
 }
@@ -858,8 +865,28 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      }
  }
 
+ void HmmMainWindow::refreshTree()
+ {
+     std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
+     currentSessions = sessions;
+     QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", sessions);
+     item->setExpanded(true);
+     QTreeWidget* tree = analisis->getTreeWidget();
+     tree->clear();
+     tree->addTopLevelItem(item);
+ }
 
 
-
-
-
+ void HmmMainWindow::DataObserver::update( const core::IMemoryDataManager * subject )
+ {
+     std::vector<MotionConstPtr> motions = core::queryDataPtr(DataManager::getInstance());
+     int count = motions.size();
+     if (motionsCount == 0 && count > 0) {
+         hmm->analisisButton->setEnabled(true);
+         hmm->raportsButton->setEnabled(true);
+     }
+     if (motionsCount != count) {
+        hmm->refreshTree();
+        motionsCount = count;
+     }
+ }

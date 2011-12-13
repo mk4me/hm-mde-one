@@ -6,7 +6,9 @@
 void FilterEntryWidget::onButton()
 {
     hmm->clearTree();
-    hmm->addItemToTree(filterCommand->createTreeBranch(getName(), hmm->getCurrentSessions()));
+    QTreeWidgetItem* item = filterCommand->createTreeBranch(getName(), hmm->getCurrentSessions());
+    item->setExpanded(true);
+    hmm->addItemToTree(item);
 }
 
 void FilterEntryWidget::onConfigurationButton()

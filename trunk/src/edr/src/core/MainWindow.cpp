@@ -31,7 +31,7 @@
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
 #include <functional>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 
 #include "Log.h"
 #include <core/StringTools.h>

@@ -84,5 +84,8 @@ UTILS_POP_WARNINGS
 #   pragma warning( default : 4511 )
 #endif
 
+using std::min;
+using std::max;
+
 #endif  // DISABLE_PRECOMPILED_HEADERS
 #endif  // __HEADER_GUARD__COREPCH_H__

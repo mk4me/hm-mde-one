@@ -30,55 +30,28 @@ struct Scales
 class NewChartSerie : public core::IVisualizer::TimeSerieBase
 {
     friend class NewChartVisualizer;
-protected:
-    class PointData: public QwtSyntheticPointData
-    {
-    public:
-        PointData(ScalarChannelReaderInterfaceConstPtr reader, int size = 100):
-          QwtSyntheticPointData(size),
-              reader(reader),
-              accessor(new ScalarContiniousTimeAccessor(reader))          
-          {
-              ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
-              stats.reset(new ScalarChannelStats(nonConstChannel));
-          }
-          virtual double y(double x) const
-          {
-              if (x > 3.3f && x < 3.5f) {
-                  int x = 0;
-                  x = x;
-              }
-              if (x >= 0 && x < reader->getLength()) {
-
-                  return accessor->getValue(x);
-              } else {
-                  return 0.0;
-              }
-          }
-
-          Scales getScales() const { return Scales(0.0f, reader->getLength(), getMin(), getMax()); }
-          float getLength() const { return reader->getLength(); }
-          float getMin() const { return stats->minValue(); }
-          float getMax() const { return stats->maxValue(); }
-          ScalarChannelStatsConstPtr getStats() const { return stats; }
-
-    private:
-        ScalarChannelReaderInterfaceConstPtr reader;
-        ScalarChannelStatsPtr stats;
-        boost::shared_ptr<ScalarContiniousTimeAccessor> accessor;
-    };
 public:
-    NewChartSerie(NewChartVisualizer * visualizer)
-        : visualizer(visualizer), active(false)
+    NewChartSerie(NewChartVisualizer * visualizer) :
+      visualizer(visualizer), 
+      active(false),
+      xvals(nullptr),
+      yvals(nullptr),
+      time(0.0f)
     {
 
     }
 
+    virtual ~NewChartSerie();
+
+public:
     float getTime() const { return time; }
-    float getCurrentValue() const { return static_cast<float>(pointHelper->y(static_cast<double>(time))); }
+    float getCurrentValue() const 
+    { 
+        return accessor->getValue(time); 
+    } 
     virtual void setTime(float time);
 
-    virtual float getLength() const { return pointHelper->getLength(); }
+    virtual float getLength() const { return reader->getLength(); } 
 
     const QwtPlotCurve* getCurve() const { return curve; }
 
@@ -127,24 +100,29 @@ public:
 
     Scales getScales() const 
     { 
-        UTILS_ASSERT(pointHelper);
-        return pointHelper->getScales(); 
+        return Scales(0.0f, reader->getLength(), getStats()->minValue(), getStats()->maxValue()); 
     }
 
     bool getActive() const { return active; }
     void setActive(bool val);
 
-    ScalarChannelStatsConstPtr getStats() const { return pointHelper->getStats(); }
+    ScalarChannelStatsConstPtr getStats() const { return stats; } //return pointHelper->getStats(); }
 
 private:
     NewChartVisualizer* visualizer;
     std::string name;
     core::ObjectWrapperConstPtr data;
     QwtPlotCurve* curve;
-    
-    PointData* pointHelper;
+    ScalarChannelStatsPtr stats;
+    core::shared_ptr<ScalarContiniousTimeAccessor> accessor;
+    ScalarChannelReaderInterfaceConstPtr reader;
+    double* xvals;
+    double* yvals;
+    //PointData* pointHelper;
     bool active;
     float time;
+    //core::shared_ptr<ScalarModifier> absChannel;
+    //core::shared_ptr<ScalarModifier> integratorChannel;
 };
 
 #endif

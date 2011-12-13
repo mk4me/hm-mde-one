@@ -48,7 +48,7 @@ void KinematicVisualizer::getInputInfo( std::vector<core::IInputDescription::Inp
 
 int KinematicVisualizer::getMaxDataSeries() const
 {
-    return 1;
+    return -1;
 }
 
 core::IVisualizer::TimeSerieBase *KinematicVisualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)

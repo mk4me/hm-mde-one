@@ -25,7 +25,7 @@
 
 class SubjectVisualizer : public core::IVisualizer
 {
-	UNIQUE_ID("{1122BD8A-6056-4965-9AEA-502F99CA2433}", "Subject visualizer");
+	UNIQUE_ID("{9D6687BA-C4D6-438A-B6C9-02FDAA6ABDC5}", "Subject visualizer");
 
 	std::string name;
 	std::auto_ptr<QLabel> widget;

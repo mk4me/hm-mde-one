@@ -1,7 +1,7 @@
 #include "hmmPCH.h"
 #include "TreeBuilder.h"
 #include "HmmMainWindow.h"
-
+#include "EMGFilter.h"
 
 QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions)
 {
@@ -113,7 +113,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     for (int i = 0; i < count; i++) {	
         EMGChannelPtr c = emgs[i]->get();	
         if (c) {
-            QTreeWidgetItem* channelItem = new NewChartItemHelper(emgs[i]);
+            QTreeWidgetItem* channelItem = new EMGFilterHelper(emgs[i]);
             channelItem->setIcon(0, itemIcon);	
             channelItem->setText(0, c->getName().c_str());			
             emgItem->addChild(channelItem);			

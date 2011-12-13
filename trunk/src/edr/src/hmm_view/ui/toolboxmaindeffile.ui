@@ -293,9 +293,44 @@
        </sizepolicy>
       </property>
       <property name="styleSheet">
-       <string notr="true">     background-color: rgb(91, 91, 91);
+       <string notr="true">QWidget{
+     background-color: rgb(91, 91, 91);
      border-top-right-radius: 12px; 
-     border-top-left-radius: 12px;</string>
+     border-top-left-radius: 12px;
+}
+
+QToolButton[enabled=true] {
+    border-style: solid;
+     border-width: 1px;
+     border-radius: 9px;
+    /*hack! - istniejaca ramka, ktorej nie widac
+				   bez tego ikona rusza sie, w momencie wl/wyl ramki */
+     border-color: rgb(91, 91, 91);
+	color: white; 
+}
+ QToolButton:hover {
+	 border-style: solid;
+     border-width: 1px;
+     border-radius: 9px;
+     border-color: rgb(135, 177, 255);
+	 color: rgb(135, 177, 255);
+ }
+
+QToolButton[enabled=false] {
+     border-style: solid;
+     border-width: 1px;
+     border-radius: 9px;
+     border-color: rgb(91, 91, 91);
+	 color: black;
+}
+
+/* QToolButton:pressed {
+	 border-style: solid;
+     border-width: 1px;
+     border-radius: 9px;
+     border-color: rgb(41, 41, 41);
+	 color: rgb(41, 41, 41);
+ }*/</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
@@ -328,29 +363,7 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">QToolButton {
-	/*background-color: rgb(135, 177, 255);*/
-    border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(91, 91, 91);
-	color: white; 
-}
- QToolButton:hover {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(135, 177, 255);
-	 color: rgb(135, 177, 255);
- }
-
-/* QToolButton:pressed {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(41, 41, 41);
-	 color: rgb(41, 41, 41);
- }*/</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Dane</string>
@@ -359,6 +372,7 @@
           <iconset resource="Icons.qrc">
            <normaloff>:/resources/icons/Badania.png</normaloff>
            <normalon>:/resources/icons/BadaniaH.png</normalon>
+           <disabledoff>:/resources/icons/BadaniaH.png</disabledoff>
            <disabledon>:/resources/icons/BadaniaH.png</disabledon>
            <activeoff>:/resources/icons/BadaniaP.png</activeoff>
            <activeon>:/resources/icons/BadaniaH.png</activeon>
@@ -380,6 +394,9 @@
        </item>
        <item>
         <widget class="QToolButton" name="analisisButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="minimumSize">
           <size>
            <width>84</width>
@@ -393,29 +410,7 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">QToolButton {
-	/*background-color: rgb(135, 177, 255);*/
-    border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(91, 91, 91);
-	color: white; 
-}
- QToolButton:hover {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(135, 177, 255);
-	 color: rgb(135, 177, 255);
- }
-
-/* QToolButton:pressed {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(41, 41, 41);
-	 color: rgb(41, 41, 41);
- }*/</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Analizy</string>
@@ -424,6 +419,7 @@
           <iconset resource="Icons.qrc">
            <normaloff>:/resources/icons/Analizy.png</normaloff>
            <normalon>:/resources/icons/AnalizyH.png</normalon>
+           <disabledoff>:/resources/icons/AnalizyH.png</disabledoff>
            <disabledon>:/resources/icons/AnalizyH.png</disabledon>
            <activeoff>:/resources/icons/AnalizyP.png</activeoff>
            <activeon>:/resources/icons/AnalizyH.png</activeon>
@@ -445,6 +441,9 @@
        </item>
        <item>
         <widget class="QToolButton" name="raportsButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="minimumSize">
           <size>
            <width>84</width>
@@ -458,29 +457,7 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">QToolButton {
-	/*background-color: rgb(135, 177, 255);*/
-    border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(91, 91, 91);
-	color: white; 
-}
- QToolButton:hover {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(135, 177, 255);
-	 color: rgb(135, 177, 255);
- }
-
-/* QToolButton:pressed {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(41, 41, 41);
-	 color: rgb(41, 41, 41);
- }*/</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Raporty</string>
@@ -489,6 +466,8 @@
           <iconset resource="Icons.qrc">
            <normaloff>:/resources/icons/Raporty.png</normaloff>
            <normalon>:/resources/icons/RaportyH.png</normalon>
+           <disabledoff>:/resources/icons/RaportyH.png</disabledoff>
+           <disabledon>:/resources/icons/RaportyH.png</disabledon>
            <activeoff>:/resources/icons/RaportyP.png</activeoff>
            <selectedon>:/resources/icons/RaportyH.png</selectedon>:/resources/icons/Raporty.png</iconset>
          </property>
@@ -521,29 +500,7 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">QToolButton {
-	/*background-color: rgb(135, 177, 255);*/
-    border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(91, 91, 91);
-	color: white; 
-}
- QToolButton:hover {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(135, 177, 255);
-	 color: rgb(135, 177, 255);
- }
-
-/* QToolButton:pressed {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(41, 41, 41);
-	 color: rgb(41, 41, 41);
- }*/</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Operacje</string>
@@ -552,6 +509,8 @@
           <iconset resource="Icons.qrc">
            <normaloff>:/resources/icons/Operacje.png</normaloff>
            <normalon>:/resources/icons/OperacjeH.png</normalon>
+           <disabledoff>:/resources/icons/OperacjeH.png</disabledoff>
+           <disabledon>:/resources/icons/OperacjeH.png</disabledon>
            <activeoff>:/resources/icons/OperacjeP.png</activeoff>:/resources/icons/Operacje.png</iconset>
          </property>
          <property name="iconSize">
@@ -570,6 +529,9 @@
        </item>
        <item>
         <widget class="QToolButton" name="openButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="minimumSize">
           <size>
            <width>84</width>
@@ -577,23 +539,7 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">QToolButton {
-	/*background-color: rgb(135, 177, 255);*/
-    border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(91, 91, 91);
-	color: white; 
-}
- QToolButton:hover {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(135, 177, 255);
-	 color: rgb(135, 177, 255);
- }
-
-</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Open</string>
