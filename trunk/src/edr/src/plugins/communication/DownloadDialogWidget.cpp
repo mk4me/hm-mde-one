@@ -69,7 +69,7 @@ void DownloadDialog::refreshProgress()
             currentProgressBar->setValue(communicationManager->getProgress());
         }
 
-        fileTotalLabel->setText(QString::number(std::min(downloaded->size() + 1, toDownload.size())) + QString(" / ") + QString::number(toDownload.size()));
+        fileTotalLabel->setText(QString::number((std::min)(downloaded->size() + 1, toDownload.size())) + QString(" / ") + QString::number(toDownload.size()));
 
         if(processingFinished == true){
 
