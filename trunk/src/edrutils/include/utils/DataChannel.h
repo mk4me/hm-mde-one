@@ -14,6 +14,7 @@
 
 #include <boost/function.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/mpl/if.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/accumulators/accumulators.hpp>
@@ -26,29 +27,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
-    template<bool flag, class T, class U>
-    struct Select
-    {
-        typedef T Result;
-    };
-
-    template<class T, class U>
-    struct Select<false, T, U>
-    {
-        typedef U Result;
-    };
-
-    //! Wzorzec wyci¹gaj¹cy const referencjê do danych - przydatny przy przekazywaniu danych w innych wzorcach
+        //! Wzorzec wyci¹gaj¹cy const referencjê do danych - przydatny przy przekazywaniu danych w innych wzorcach
     template<class PointType>
     struct ConstReferenceType
     {
-        typedef typename Select<boost::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::const_reference>::Result type;
+        typedef typename boost::mpl::if_c<boost::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::const_reference>::type type;
     };
 
     template<class PointType>
     struct ReferenceType
     {
-        typedef typename Select<boost::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::reference>::Result type;
+        typedef typename boost::mpl::if_c<boost::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::reference>::type type;
     };
 
     //! Interfejs do czytania opisu kana³u - osi x i y oraz nazwy kana³u.

@@ -8,6 +8,14 @@ QMainWindow {
      width: 3px; /* when vertical */
      height: 3px; /* when horizontal */
  }
+ 
+QWidget#EDRTitleBar  QAbstractButton 
+ {
+	border: 1px solid; 
+    border-color: rgb(135, 177, 255);
+    border-radius: 9px; 
+	padding: 2px;
+ }
 
  QMainWindow::separator:hover {
      background: black;

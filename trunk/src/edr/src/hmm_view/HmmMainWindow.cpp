@@ -110,7 +110,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     bottomMainWindow->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
     analisisArea->setLayout(v);
 
-    int i = hlayout->children().size();
+    int i = toolBar->children().size();
 
     // akcje - Workflow (VDF) i konsola <--- aktualnie œmietnik na inne serwisy i testy
 
