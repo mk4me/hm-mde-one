@@ -44,7 +44,6 @@ void NewChartMarker::drawLabel( QPainter *painter, const QRectF &rect, const QPo
 {
     drawDot(painter, point);
 
-
     int px = point.x();
     int py = point.y();
 
@@ -141,9 +140,6 @@ void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtS
     UTILS_ASSERT(point1);
     QPoint transformed1 = QwtScaleMap::transform(xMap, yMap, point1->getPosition()).toPoint();
     
-    
-    
-
     QRect textRect;
     textRect.setX(transformed1.x() + shift.x());
     textRect.setY(transformed1.y() + shift.y());

@@ -7,15 +7,13 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_NEW_CHART__CHARTSERIE_H__
-#define HEADER_GUARD_NEW_CHART__CHARTSERIE_H__
+#ifndef HEADER_GUARD_NEW_CHART__NEWCHARTSERIE_H__
+#define HEADER_GUARD_NEW_CHART__NEWCHARTSERIE_H__
 
 #include <core/IVisualizer.h>
 #include <core/IObjectSource.h>
-#include <plugins/c3d/C3DChannels.h>
 #include <qwt/qwt_plot_curve.h>
-
-class NewChartVisualizer;
+#include <plugins/c3d/C3DChannels.h>
 
 struct Scales
 {
@@ -27,7 +25,7 @@ struct Scales
     bool initialized;
 };
 
-class NewChartSerie : public core::IVisualizer::TimeSerieBase
+class NewChartSerie : public EventSerieBase
 {
     friend class NewChartVisualizer;
 public:
@@ -52,6 +50,7 @@ public:
     virtual void setTime(float time);
 
     virtual float getLength() const { return reader->getLength(); } 
+    virtual void setEvents(EventsCollectionConstPtr val);
 
     const QwtPlotCurve* getCurve() const { return curve; }
 
@@ -107,6 +106,7 @@ public:
     void setActive(bool val);
 
     ScalarChannelStatsConstPtr getStats() const { return stats; } //return pointHelper->getStats(); }
+    ScalarChannelReaderInterfaceConstPtr getReader() const { return reader; }
 
 private:
     NewChartVisualizer* visualizer;
@@ -116,6 +116,7 @@ private:
     ScalarChannelStatsPtr stats;
     core::shared_ptr<ScalarContiniousTimeAccessor> accessor;
     ScalarChannelReaderInterfaceConstPtr reader;
+    
     double* xvals;
     double* yvals;
     //PointData* pointHelper;

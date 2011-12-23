@@ -59,7 +59,8 @@
 //#include <osg/Referenced>
 //#include <osg/Vec3>
 //UTILS_POP_WARNINGS
-
+#include <core/IVisualizer.h>
+#include <plugins/c3d/C3DChannels.h>
 #include <utils/Push.h>
 #include <timelinelib/IChannel.h>
 
@@ -70,11 +71,10 @@
 #include <core/IDataManager.h>
 #include <core/Filesystem.h>
 
-#include <plugins/c3d/C3DChannels.h>
+
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/kinematic/Wrappers.h>
-#include <plugins/chart/ChartVisualizer.h>
 
 
 #endif

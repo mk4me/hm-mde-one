@@ -15,6 +15,9 @@
 typedef boost::shared_ptr<QPixmap> QPixmapPtr;
 typedef boost::shared_ptr<const QPixmap> QPixmapConstPtr;
 
+#include <QtGui/QPen>
+#include <QtGui/QPainter>
+
 class IArea
 {
 public:

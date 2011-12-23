@@ -2,7 +2,6 @@
 #include "TreeItemHelper.h"
 #include "VisualizerManager.h"
 #include <plugins/newChart/NewChartVisualizer.h>
-osg::ref_ptr<osgText::Text> TreeItemHelper::chartTextPrototype;
 
 //TreeItemHelper::TreeItemHelper( const core::ObjectWrapperPtr& wrapper ) :
 //    wrapper(wrapper)
@@ -23,7 +22,7 @@ void TreeWrappedItemHelper::createSeries( const VisualizerPtr & visualizer, cons
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
 }
 
-void TreeItemHelper::setUpChart( ChartVisualizer* chart, const std::string& title )
+void ChartItemHelper::setUpChart( ChartVisualizer* chart, const std::string& title )
 {
     if (!chartTextPrototype) {
         // prototyp textu dla Charta
@@ -130,138 +129,138 @@ void ChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
 }
 
-VisualizerPtr Vector3ItemHelper::createVisualizer()
-{
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(ChartVisualizer::getClassID());
-    visualizer->getOrCreateWidget();
-    ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
-    if (!chart) {
-        UTILS_ASSERT(false);
-        LOG_ERROR("Wrong visualizer type!");
-    } else {
-        VectorChannelPtr vector = wrapper->get();
-        std::string title;
-        title += vector->getName();
-        title += " [";
-        title += vector->getValueBaseUnit();
-        title += "]";
-        setUpChart(chart, title);
-    }
-    return visualizer;
-}
+//VisualizerPtr Vector3ItemHelper::createVisualizer()
+//{
+//    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(ChartVisualizer::getClassID());
+//    visualizer->getOrCreateWidget();
+//    ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
+//    if (!chart) {
+//        UTILS_ASSERT(false);
+//        LOG_ERROR("Wrong visualizer type!");
+//    } else {
+//        VectorChannelPtr vector = wrapper->get();
+//        std::string title;
+//        title += vector->getName();
+//        title += " [";
+//        title += vector->getValueBaseUnit();
+//        title += "]";
+//        setUpChart(chart, title);
+//    }
+//    return visualizer;
+//}
+//
+//void Vector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+//{
+//    VectorChannelPtr vectorChannel = wrapper->get();
+//
+//    ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
+//    ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
+//    ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(vectorChannel, 2));
+//    core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+//    core::ObjectWrapperPtr wrapperY = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+//    core::ObjectWrapperPtr wrapperZ = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+//    wrapperX->set(x);
+//    wrapperY->set(y);
+//    wrapperZ->set(z);
+//
+//    static int number = 0;
+//    // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+//    std::string suffix = boost::lexical_cast<std::string>(number++);
+//    wrapperX->setName  ("X_" + suffix);
+//    wrapperX->setSource("X_" + suffix);
+//    wrapperY->setName  ("Y_" + suffix);
+//    wrapperY->setSource("Y_" + suffix);
+//    wrapperZ->setName  ("Z_" + suffix);
+//    wrapperZ->setSource("Z_" + suffix);
+//    visualizer->getOrCreateWidget();
+//
+//    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getSource());
+//    auto serieY = visualizer->createSerie(wrapperY, wrapperY->getSource());
+//    auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getSource());
+//
+//    ChartVisualizer::ChartVisualizerSerie* chartSerieX = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieX.get());
+//    ChartVisualizer::ChartVisualizerSerie* chartSerieY = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieY.get());
+//    ChartVisualizer::ChartVisualizerSerie* chartSerieZ = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieZ.get());
+//
+//    chartSerieX->setColor(osg::Vec4(1,0,0,1));
+//    chartSerieY->setColor(osg::Vec4(0,1,0,1));
+//    chartSerieZ->setColor(osg::Vec4(0,0,1,1));
+//
+//    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
+//    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieY));
+//    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieZ));
+//}
 
-void Vector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
-{
-    VectorChannelPtr vectorChannel = wrapper->get();
-
-    ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
-    ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
-    ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(vectorChannel, 2));
-    core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-    core::ObjectWrapperPtr wrapperY = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-    core::ObjectWrapperPtr wrapperZ = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
-    wrapperX->set(x);
-    wrapperY->set(y);
-    wrapperZ->set(z);
-
-    static int number = 0;
-    // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
-    std::string suffix = boost::lexical_cast<std::string>(number++);
-    wrapperX->setName  ("X_" + suffix);
-    wrapperX->setSource("X_" + suffix);
-    wrapperY->setName  ("Y_" + suffix);
-    wrapperY->setSource("Y_" + suffix);
-    wrapperZ->setName  ("Z_" + suffix);
-    wrapperZ->setSource("Z_" + suffix);
-    visualizer->getOrCreateWidget();
-
-    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getSource());
-    auto serieY = visualizer->createSerie(wrapperY, wrapperY->getSource());
-    auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getSource());
-
-    ChartVisualizer::ChartVisualizerSerie* chartSerieX = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieX.get());
-    ChartVisualizer::ChartVisualizerSerie* chartSerieY = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieY.get());
-    ChartVisualizer::ChartVisualizerSerie* chartSerieZ = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieZ.get());
-
-    chartSerieX->setColor(osg::Vec4(1,0,0,1));
-    chartSerieY->setColor(osg::Vec4(0,1,0,1));
-    chartSerieZ->setColor(osg::Vec4(0,0,1,1));
-
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieY));
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieZ));
-}
-
-void MultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
-{
-    int count = wrappers.size();
-    int count2 = count / 2;
-    for (int i = 0; i < count; i++) {
-        core::ObjectWrapperConstPtr wrapper = wrappers[i];
-        auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
-        ChartVisualizer::ChartVisualizerSerie* chartSerieX = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieX.get());
-        float r = 0;
-        float g = 0;
-        float b = 0;
-
-        switch (colorPolicy) 
-        {
-        case Random:
-            r = static_cast<float>(rand()) / RAND_MAX;
-            g = static_cast<float>(rand()) / RAND_MAX;
-            b = static_cast<float>(rand()) / RAND_MAX;
-            break;
-
-        case GreenRandom:
-            r = (static_cast<float>(rand()) / RAND_MAX) * 0.7f;
-            g = 255;                                 
-            b = (static_cast<float>(rand()) / RAND_MAX) * 0.99f;
-            break;                                    
-                                                      
-        case RedRandom:                               
-            r = 255;                                  
-            g = (static_cast<float>(rand()) / RAND_MAX) * 0.7f;
-            b = (static_cast<float>(rand()) / RAND_MAX) * 0.99f;
-            break;
-
-        case Red:
-            r = 255;                                  
-            g = 0;
-            b = 0;
-            break;
-        case Green:
-            r = 0;
-            g = 255;
-            b = 0;
-            break;
-        case HalfRedHalfGreen:
-            r = i >= count2 ? 255 : 0;
-            g = i >= count2 ? 0 : 255;
-            b = i >= count2 ? 0 : 0;
-            break;
-        }
-
-        chartSerieX->setColor(osg::Vec4(r, g, b, 1.0f));
-        series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
-    }
-}
-
-
-VisualizerPtr MultiserieHelper::createVisualizer()
-{
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(ChartVisualizer::getClassID());
-    visualizer->getOrCreateWidget();
-    ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
-    if (!chart) {
-        UTILS_ASSERT(false);
-        LOG_ERROR("Wrong visualizer type!");
-    } else {
-        std::string title = "Forces - X [N]";
-        setUpChart(chart, title);
-    }
-
-    return visualizer;
-}
+//void MultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+//{
+//    int count = wrappers.size();
+//    int count2 = count / 2;
+//    for (int i = 0; i < count; i++) {
+//        core::ObjectWrapperConstPtr wrapper = wrappers[i];
+//        auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
+//        ChartVisualizer::ChartVisualizerSerie* chartSerieX = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serieX.get());
+//        float r = 0;
+//        float g = 0;
+//        float b = 0;
+//
+//        switch (colorPolicy) 
+//        {
+//        case Random:
+//            r = static_cast<float>(rand()) / RAND_MAX;
+//            g = static_cast<float>(rand()) / RAND_MAX;
+//            b = static_cast<float>(rand()) / RAND_MAX;
+//            break;
+//
+//        case GreenRandom:
+//            r = (static_cast<float>(rand()) / RAND_MAX) * 0.7f;
+//            g = 255;                                 
+//            b = (static_cast<float>(rand()) / RAND_MAX) * 0.99f;
+//            break;                                    
+//                                                      
+//        case RedRandom:                               
+//            r = 255;                                  
+//            g = (static_cast<float>(rand()) / RAND_MAX) * 0.7f;
+//            b = (static_cast<float>(rand()) / RAND_MAX) * 0.99f;
+//            break;
+//
+//        case Red:
+//            r = 255;                                  
+//            g = 0;
+//            b = 0;
+//            break;
+//        case Green:
+//            r = 0;
+//            g = 255;
+//            b = 0;
+//            break;
+//        case HalfRedHalfGreen:
+//            r = i >= count2 ? 255 : 0;
+//            g = i >= count2 ? 0 : 255;
+//            b = i >= count2 ? 0 : 0;
+//            break;
+//        }
+//
+//        chartSerieX->setColor(osg::Vec4(r, g, b, 1.0f));
+//        series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
+//    }
+//}
+//
+//
+//VisualizerPtr MultiserieHelper::createVisualizer()
+//{
+//    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(ChartVisualizer::getClassID());
+//    visualizer->getOrCreateWidget();
+//    ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
+//    if (!chart) {
+//        UTILS_ASSERT(false);
+//        LOG_ERROR("Wrong visualizer type!");
+//    } else {
+//        std::string title = "Forces - X [N]";
+//        setUpChart(chart, title);
+//    }
+//
+//    return visualizer;
+//}
 //
 //Multiserie3D::Multiserie3D(MotionPtr motion) :
 //    motion(motion)
@@ -302,8 +301,9 @@ void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QSt
     if (joints && !joints->isNull()) {
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(joints, path.toStdString())));
     } else {
-        LOG_ERROR("Empty object - joints");
-        UTILS_ASSERT(false);
+        //LOG_ERROR("Empty object - joints");
+        //UTILS_ASSERT(false);
+        throw std::runtime_error("Empty object - joints");
     }
 }
 
@@ -464,7 +464,23 @@ VisualizerPtr NewMultiserieHelper::createVisualizer()
         LOG_ERROR("Wrong visualizer type!");
     } else {
         chart->setTitle(title);
-        chart->setShowLegend(false);
+        //chart->setShowLegend(false);
     }
     return visualizer;
 }
+
+void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+{
+    createSeries(visualizer, path, series);
+    auto& type = typeid(C3DEventsCollection);
+    if (motion && motion->hasObjectOfType(type)) {
+        EventsCollectionConstPtr events = motion->getWrapperOfType(type)->get();
+        BOOST_FOREACH(core::VisualizerTimeSeriePtr ptr, series) {
+            EventSerieBasePtr eventPtr = boost::dynamic_pointer_cast<EventSerieBase>(ptr);
+            if (eventPtr) {
+                eventPtr->setEvents(events);
+            }
+        }
+    }
+}
+

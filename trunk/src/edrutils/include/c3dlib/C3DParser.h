@@ -13,8 +13,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <boost/noncopyable.hpp>
 #include <osg/Vec3>
-#include <boost/shared_ptr.hpp>
 #include <c3dlib/Export.h>
 
 namespace c3dlib {
@@ -52,8 +52,12 @@ struct C3DLIB_EXPORT ForcePlatform
 		return (getCenter() - vec).length();
 	}
 };
-typedef boost::shared_ptr<ForcePlatform> ForcePlatformPtr;
-typedef boost::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;
+//typedef boost::shared_ptr<ForcePlatform> ForcePlatformPtr;
+//typedef boost::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;
+//typedef const std::vector<ForcePlatformConstPtr>& ForcePlatformConstCollection;
+//typedef std::vector<ForcePlatformConstPtr> ForcePlatformCollection;
+typedef ForcePlatform* ForcePlatformPtr;
+typedef const ForcePlatform* ForcePlatformConstPtr;
 typedef const std::vector<ForcePlatformConstPtr>& ForcePlatformConstCollection;
 typedef std::vector<ForcePlatformConstPtr> ForcePlatformCollection;
 
@@ -72,8 +76,10 @@ public:
 		//! \return Opis danych akwizycji
 		virtual const std::string& getDescription() const = 0;
 	};
-	typedef boost::shared_ptr<IAquisitionEntry> IAqusitionEntryPtr;
-	typedef boost::shared_ptr<const IAquisitionEntry> IAqusitionEntryConstPtr;
+	//typedef boost::shared_ptr<IAquisitionEntry> IAqusitionEntryPtr;
+	//typedef boost::shared_ptr<const IAquisitionEntry> IAqusitionEntryConstPtr;
+    typedef IAquisitionEntry* IAqusitionEntryPtr;
+    typedef const IAquisitionEntry* IAqusitionEntryConstPtr;
 
 	//! Interfejs dostarcza potrzebnych danych nt. punktu c3d
     class IPoint : public IAquisitionEntry
@@ -83,11 +89,11 @@ public:
 	public:
         //! \return Typ punktu c3d 
         virtual Type getType() const = 0;
-		
+		virtual const std::string& getUnit() const = 0;
 		virtual osg::Vec3 getValue(int index) const = 0;
     };
-	typedef boost::shared_ptr<IPoint> IPointPtr;
-	typedef boost::shared_ptr<const IPoint> IPointConstPtr;
+	typedef IPoint* IPointPtr;
+	typedef const IPoint* IPointConstPtr;
 		
 	//! Dostarcza danych dla kanalu analogowego
     class IAnalog : public IAquisitionEntry
@@ -97,22 +103,30 @@ public:
 		virtual double getScale() const = 0;
 		virtual double getValue(int index) const = 0;
 	};
-	typedef boost::shared_ptr<IAnalog> IAnalogPtr;
-	typedef boost::shared_ptr<const IAnalog> IAnalogConstPtr;
+	typedef IAnalog* IAnalogPtr;
+	typedef const IAnalog* IAnalogConstPtr;
 
 	
 	
 	//! dostarcza danych o zdarzeniu zapisanym w c3d (np. dotkniecie stopa podlogi)
     class IEvent : public IAquisitionEntry
     {
+    public:
+        enum Context
+        {
+            General,
+            Left,
+            Right
+        };
+
 	public:
-        virtual std::string getContext() const = 0;
+        virtual Context getContext() const = 0;
         virtual std::string getSubject() const = 0;
         virtual double getTime() const = 0;
-		virtual boost::shared_ptr<IEvent> clone() const = 0;
+		virtual IEvent* clone() const = 0;
     };
-	typedef boost::shared_ptr<IEvent> IEventPtr;
-	typedef boost::shared_ptr<const IEvent> IEventConstPtr;
+	typedef IEvent* IEventPtr;
+	typedef const IEvent* IEventConstPtr;
 
 public:
     C3DParser();

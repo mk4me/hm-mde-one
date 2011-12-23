@@ -209,7 +209,7 @@ void HmmMainWindow::addToVisualizer()
             static int counter = 0;
             QString path = QString("Custom_addition...%1").arg(counter++);
             std::vector<core::VisualizerTimeSeriePtr> series;
-            helper->createSeries(visualizer, path, series);
+            helper->getSeries(visualizer, path, series);
             addSeriesToTimeline(series, path, visualizer);
         } catch (std::exception& e) {
             QString message("Unable to add data to visualizer");
@@ -433,13 +433,14 @@ void HmmMainWindow::createFilterTab1()
     DataFilterWidget* filter3 = new DataFilterWidget(tr("KINEMATIC"), iconKinematic, this);
     DataFilterWidget* filter4 = new DataFilterWidget(tr("VIDEO"), iconVideo, this);
     
-    std::vector<TypeInfo> types;
-    types.push_back(typeid(GRFCollection));
-    types.push_back(typeid(GRFChannel));
-    DataFilterPtr typeFilter1(new TypeFilter(types));
-    DataFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
+    //std::vector<TypeInfo> types;
+    //types.push_back(typeid(GRFCollection));
+    //types.push_back(typeid(GRFChannel));
+    //DataFilterPtr typeFilter1(new TypeFilter(types));
+    //DataFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
 
-    filter1->addFilter(tr("GRF"), "label", typeFilter1, &iconGRFSmall);
+    IFilterCommandPtr grfCommand(new BuilderFilterCommand(TreeBuilder::createGRFBranch, TreeBuilder::getRootGRFIcon(), TreeBuilder::getGRFIcon()));
+    filter1->addFilter(tr("GRF"), "label", grfCommand, &iconGRFSmall);
 
     QString emgFront = core::getResourceString("images/muscular_front/muscular_front.xml");
     QString emgBack = core::getResourceString("images/muscular_back/muscular_back.xml");
@@ -489,8 +490,9 @@ void HmmMainWindow::createFilterTab1()
     emgNames["ramie-tyl6P"] = std::make_pair("", "");*/
     //emgNames["ramie3" ] = std::make_pair("", "Dioda ");
     //emgNames["ramie3R"] = std::make_pair("", "Dioda ");
-    IFilterCommandPtr emgCommand(new EMGCommand(emgNames, emgFront, emgBack));
-    //filter1->addFilter("EMG", "emg label", typeFilter2, &iconEmgSmall);
+    //IFilterCommandPtr emgCommand(new EMGCommand(emgNames, emgFront, emgBack));
+    IFilterCommandPtr emgCommand(new BuilderConfiguredFilterCommand<EMGCollection>(TreeBuilder::createEMGBranch, 
+        emgNames, emgFront, emgBack, TreeBuilder::getRootEMGIcon(), TreeBuilder::getEMGIcon()));
     filter1->addFilter(tr("EMG"), "emg label", emgCommand, &iconEmgSmall);
 
     DataFilterPtr typeFilter3(new TypeFilter(typeid(ForceCollection)));
@@ -498,9 +500,14 @@ void HmmMainWindow::createFilterTab1()
     DataFilterPtr typeFilter5(new TypeFilter(typeid(PowerCollection)));
 
     
-    typedef Vector3DFilterCommand2<MomentChannel, MomentCollection, NewVector3ItemHelper> MomentsCommand;
+    /*typedef Vector3DFilterCommand2<MomentChannel, MomentCollection, NewVector3ItemHelper> MomentsCommand;
     typedef Vector3DFilterCommand2<ForceChannel, ForceCollection, NewVector3ItemHelper> ForcesCommand;
-    typedef Vector3DFilterCommand2<PowerChannel, PowerCollection, NewVector3ItemHelper> PowerCommand;
+    typedef Vector3DFilterCommand2<PowerChannel, PowerCollection, NewVector3ItemHelper> PowerCommand;*/
+
+    typedef BuilderConfiguredFilterCommand<MomentCollection> MomentsCommand;
+    typedef BuilderConfiguredFilterCommand<ForceCollection> ForcesCommand;
+    typedef BuilderConfiguredFilterCommand<PowerCollection> PowerCommand;
+    typedef BuilderConfiguredFilterCommand<MarkerCollection> MarkersCommand;
     
     QString pathFront = core::getResourceString("images/skeleton_front/skeleton_front.xml");
     QString pathBack = core::getResourceString("images/skeleton_back/skeleton_back.xml");
@@ -522,8 +529,9 @@ void HmmMainWindow::createFilterTab1()
     powersNames["RShoulder" ] = std::make_pair("RShoulderPower", "Right Shoulder");
     powersNames["RWaist"    ] = std::make_pair("RWaistPower",    "Right Waist");
     powersNames["RWrist"    ] = std::make_pair("RWristPower",    "Right Wrist");
-    IFilterCommandPtr vFilter(new PowerCommand(powersNames, pathFront, pathBack));
-    
+    //IFilterCommandPtr vFilter(new PowerCommand(powersNames, pathFront, pathBack));
+    IFilterCommandPtr powerFilter(new PowerCommand(TreeBuilder::createPowersBranch, 
+        powersNames, pathFront, pathBack, TreeBuilder::getRootPowersIcon(), TreeBuilder::getPowersIcon()));
     NamesDictionary momentsNames;
     momentsNames["LAnkle"           ] = std::make_pair("LAnkleMoment",          "Left Ankle");
     momentsNames["LElbow"           ] = std::make_pair("LElbowMoment",          "Left Elbow");
@@ -544,7 +552,9 @@ void HmmMainWindow::createFilterTab1()
     momentsNames["RWaist"           ] = std::make_pair("RWaistMoment",          "Right Waist");
     momentsNames["RWrist"           ] = std::make_pair("RWristMoment",          "Right Wrist");
     
-    IFilterCommandPtr vFilter2(new MomentsCommand(momentsNames, pathFront, pathBack));
+    //IFilterCommandPtr vFilter2(new MomentsCommand(momentsNames, pathFront, pathBack));
+    IFilterCommandPtr momentFilter(new MomentsCommand(TreeBuilder::createMomentsBranch, 
+        momentsNames, pathFront, pathBack, TreeBuilder::getRootMomentsIcon(), TreeBuilder::getMomentsIcon()));
 
     NamesDictionary forcesNames;
     forcesNames["LAnkle"          ] = std::make_pair("LAnkleForce",          "Left Ankle");
@@ -567,14 +577,15 @@ void HmmMainWindow::createFilterTab1()
     forcesNames["RWrist"          ] = std::make_pair("RWristForce",          "Right W rist");
     forcesNames["RNormalizedGR"   ] = std::make_pair("RNormalisedGRF",       "Right, normalised GRF");
     forcesNames["LNormalizedGR"   ] = std::make_pair("LNormalisedGRF",       "Left, normalised GRF");
-    IFilterCommandPtr vFilter3(new ForcesCommand(forcesNames, pathFront, pathBack));
-
+    //IFilterCommandPtr vFilter3(new ForcesCommand(forcesNames, pathFront, pathBack));
+    IFilterCommandPtr forceFilter(new ForcesCommand(TreeBuilder::createForcesBranch, 
+        forcesNames, pathFront, pathBack, TreeBuilder::getRootForcesIcon(), TreeBuilder::getForcesIcon()));
     
-    filter2->addFilter(tr("FORCES"), "count: ", vFilter3, &iconForceSmall);
-    filter2->addFilter(tr("MOMENTS"), "test", vFilter2, &iconMomentSmall);
-    filter2->addFilter(tr("POWERS"), "powers", vFilter, &iconPowerSmall);
+    filter2->addFilter(tr("FORCES"), "count: ", forceFilter, &iconForceSmall);
+    filter2->addFilter(tr("MOMENTS"), "test", momentFilter, &iconMomentSmall);
+    filter2->addFilter(tr("POWERS"), "powers", powerFilter, &iconPowerSmall);
 
-    typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollection, NewVector3ItemHelper, true> MarkersCommand;
+    //typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollection, NewVector3ItemHelper, true> MarkersCommand;
     NamesDictionary markersNames;
     markersNames["RFHD"] = std::make_pair("RFHD", "Right front of head");
     markersNames["LFHD"] = std::make_pair("LFHD", "Left front of head");
@@ -615,14 +626,19 @@ void HmmMainWindow::createFilterTab1()
     markersNames["T10" ] = std::make_pair("T10" , "Thoracic Vertebra");
     QString markersFront = core::getResourceString("images/skeleton_front/skeleton_markers.xml");
     QString markersBack = core::getResourceString("images/skeleton_back/skeleton_markers.xml");
-    IFilterCommandPtr vFilter6(new MarkersCommand(markersNames, markersFront, markersBack));
-    IFilterCommandPtr typeFilter7(new JointsCommand());
+    //IFilterCommandPtr vFilter6(new MarkersCommand(markersNames, markersFront, markersBack));
+    IFilterCommandPtr markersFilter(new MarkersCommand(TreeBuilder::createMarkersBranch, 
+        markersNames, markersFront, markersBack, TreeBuilder::getRootMarkersIcon(), TreeBuilder::getMarkersIcon()));
+    IFilterCommandPtr jointsFilter(new JointsCommand());
 
-    filter3->addFilter(tr("MARKERS"), "count: 1", vFilter6, &iconMarkerSmall);
-    filter3->addFilter(tr("JOINTS"), "count: 1", typeFilter7, &iconJointSmall);
+    filter3->addFilter(tr("MARKERS"), "count: 1", markersFilter, &iconMarkerSmall);
+    filter3->addFilter(tr("JOINTS"), "count: 1", jointsFilter, &iconJointSmall);
     
-    DataFilterPtr typeFilter8(new TypeFilter(typeid(VideoChannel)));
-    filter4->addFilter(tr("VIDEOS"), "count: 4", typeFilter8, &iconVideoSmall);
+    /*DataFilterPtr typeFilter8(new TypeFilter(typeid(VideoChannel)));
+    filter4->addFilter(tr("VIDEOS"), "count: 4", typeFilter8, &iconVideoSmall);*/
+    IFilterCommandPtr videoFilter(new BuilderFilterCommand(TreeBuilder::createVideoBranch, 
+        TreeBuilder::getRootVideoIcon(), TreeBuilder::getVideoIcon()));
+    filter4->addFilter(tr("VIDEOS"), "count: 4", videoFilter, &iconVideoSmall);
     
     connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
     connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
@@ -739,12 +755,12 @@ void HmmMainWindow::filterGroupActivated( bool active )
         }
 
         if (!active) {
-            this->clearTree();
-            QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", getCurrentSessions());
+            /*this->clearTree();
+            QTreeWidgetItem* item = TreeBuilder::createTree(tr("Active Data"), getCurrentSessions());
             this->addItemToTree(item);
             QPixmap big(core::getResourceString("icons/Big.png"));
-            this->analisis->setActivePixmapAndText(big, "ALL");
-            
+            this->analisis->setActivePixmapAndText(big, "ALL");*/
+            refreshTree();
         } else {
             QPixmap pix(dataWidget->getPixmap());
             QString name = dataWidget->getName();
@@ -818,7 +834,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     visualizerDockWidget->setTitleBarVisible(false);
 
     std::vector<VisualizerTimeSeriePtr> series;
-    hmmItem->createSeries(visualizer, path, series);
+    hmmItem->getSeries(visualizer, path, series);
     visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
 
     connect(visualizerDockWidget, SIGNAL(focuseChanged(bool)), this, SLOT(visualizerFocusChanged(bool)));
@@ -869,11 +885,25 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
      currentSessions = sessions;
-     QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", sessions);
-     item->setExpanded(true);
+     QTreeWidgetItem* item = TreeBuilder::createTree("Active Data", sessions);
+     
      QTreeWidget* tree = analisis->getTreeWidget();
      tree->clear();
      tree->addTopLevelItem(item);
+     item->setExpanded(true);
+
+     QFont font = item->font(0);
+     font.setPointSize(font.pointSize() + 4);
+     item->setFont(0, font);
+
+     for (int i = 0; i < item->childCount(); i++) {
+         QTreeWidgetItem* child = item->child(i);
+         child->setExpanded(true);
+
+         QFont font = item->font(0);
+         font.setPointSize(font.pointSize() + 3);
+         item->setFont(0, font);
+     }
  }
 
 

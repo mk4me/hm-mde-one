@@ -185,21 +185,27 @@ private:
 
 public:
 
-    ChannelStats(const ChannelPtr & channel) : channel(channel), constChannel(channel), changed(false)
+    ChannelStats(const ChannelPtr & channel) : 
+      useDefinedTimes(false)
     {
-        if(channel == nullptr){
-            throw std::runtime_error("Invalid channel for statistics");
-        }
-
-        if(channel->empty() == false){
-            changed = true;
-        }
-
-        observer.setChannelStats(this);
-        channel->attach(&observer);
+        init(channel);
     }
 
+    ChannelStats(const ChannelPtr& channel, const TimeType& from, const TimeType& to) : 
+        useDefinedTimes(true),
+        definedFrom(from),
+        definedTo(to)
+    {
+        init(channel);
+    }
     virtual ~ChannelStats() {}
+
+    void setDefinedTimes(const TimeType& from, const TimeType& to)
+    {
+        definedFrom = from;
+        definedTo = to;
+        changed = true;
+    }
 
     //! \return Srednia wartoœ danych kana³u
     PointTypeConstReference meanValue() const
@@ -300,7 +306,20 @@ protected:
         changed = false;
         Stats sts;
 
-        for(auto i = 0; i < channel->size(); i++){
+        size_t from;
+        size_t to;
+        
+        if (useDefinedTimes) {
+            // w jaki sposob brac probki?
+            from = channel->getValueHelper(definedFrom).first;
+            to = channel->getValueHelper(definedTo).second;
+        } else {
+            from = 0;
+            to = channel->size();
+        }
+        
+
+        for(auto i = from; i < to; i++){
             float val = channel->value(i);
             sts(channel->value(i));
         }
@@ -309,6 +328,24 @@ protected:
         minVal = min_with_index(sts);
         maxVal = max_with_index(sts);
         varianceVal = variance(sts);
+    }
+
+    void init( const ChannelPtr & channel ) 
+    {
+        this->channel = channel; 
+        this->constChannel = channel; 
+        this->changed = false;
+
+        if(channel == nullptr){
+            throw std::runtime_error("Invalid channel for statistics");
+        }
+
+        if(channel->empty() == false){
+            changed = true;
+        }
+
+        observer.setChannelStats(this);
+        channel->attach(&observer);
     }
 
 private:
@@ -323,6 +360,10 @@ private:
 
     //! Czy kana³ uleg³ zmianie
     mutable bool changed;
+
+    bool useDefinedTimes;
+    TimeType definedFrom;
+    TimeType definedTo;
 
     //! Obserwator zmian kana³u
     ChannelObserver observer;

@@ -2,6 +2,8 @@
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QSplitter>
+#include <QtGui/QPainter>
+#include <QtGui/QMenu>
 #include "NewChartVisualizer.h"
 #include <qwt/qwt_plot_canvas.h>
 #include <qwt/qwt_scale_draw.h>
@@ -15,15 +17,27 @@
 #include "NewChartVerticals.h"
 #include "NewChartHorizontals.h"
 
+
 NewChartVisualizer::NewChartVisualizer() : 
 showLegend(true), 
     currentSerie(-1),
     plotPanner(nullptr),
     plotMagnifier(nullptr),
-    statsTable(nullptr)
+    statsTable(nullptr),
+    eventsItem(nullptr),
+    eventMode(true),
+    eventsVisible(false),
+    context(C3DEventsCollection::Context::Left)
 {
 
 }
+
+
+NewChartVisualizer::~NewChartVisualizer()
+{
+
+}
+
 
 QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 {
@@ -42,6 +56,21 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
     activeSerieCombo->setEnabled(false);
     connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
+
+    QMenu* menu = new QMenu("Event Context");
+    
+    QAction* leftEvents = menu->addAction("Left");
+    QAction* rightEvents = menu->addAction("Right");
+
+    actions.push_back(menu);
+
+    QAction* eventMode = new QAction(QString(tr("Event mode")), nullptr);
+    eventMode->setCheckable(true);
+    actions.push_back(eventMode);
+    connect(eventMode, SIGNAL(triggered(bool)), this, SLOT(setEventMode(bool)));
+
+    connect(leftEvents, SIGNAL(triggered()), this, SLOT(onEventContext()));
+    connect(rightEvents, SIGNAL(triggered()), this, SLOT(onEventContext()));
 
     actions.push_back(activeSerieCombo);
     NewChartPickerPtr picker(new NewChartPicker(this));
@@ -105,6 +134,11 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     statsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     qwtPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
+
+    /*qwtPlot->canvas()->setLineWidth( 1 );
+    qwtPlot->canvas()->setFrameStyle( QFrame::Box | QFrame::Plain );
+    qwtPlot->canvas()->setBorderRadius( 15 );*/
+
     QWidget* widget = new QWidget();
 
     /*QSplitter * splitter = new QSplitter();
@@ -164,6 +198,11 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     activeSerieCombo->setEnabled(true);
 
     return ret;
+}
+
+core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::IVisualizer::SerieBase * serie )
+{
+    return nullptr;
 }
 
 void NewChartVisualizer::addPlotCurve( QwtPlotCurve* curve, const Scales& scales)
@@ -277,6 +316,261 @@ void NewChartVisualizer::setManipulation( bool val )
     plotMagnifier->setEnabled(val);
 }
 
+const NewChartSerie* NewChartVisualizer::tryGetCurrentSerie() const
+{
+    if (currentSerie >= 0 && currentSerie < series.size()) {
+        return series[currentSerie];
+    }
+    return nullptr;
+}
+
+void NewChartVisualizer::update( double deltaTime )
+{
+    if (currentSerie >= 0 && currentSerie < series.size()) {
+        
+        qwtMarker->setVisible(true);
+        NewChartSerie* serie = series[currentSerie];
+        float x = serie->getTime();
+        float y = serie->getCurrentValue();
+        qwtMarker->setXValue(x);
+        qwtMarker->setYValue(y);
+        qwtMarker->setLabel(QString("Time: %1, Value: %2").arg(x).arg(y));
+
+        if (eventsVisible && eventMode) {
+            auto helper = eventsHelpers.find(serie);
+            if (helper != eventsHelpers.end()) {
+                EventsHelperPtr h = helper->second;
+                EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
+                if (segment) {
+                    qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
+                    qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
+                } else {
+                    qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
+                    qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
+                }
+                
+            }
+        }
+        /*if (eventsVisible && eventMode) {
+            EventsCollectionConstPtr events = eventsItem->getEvents();
+            C3DEventsCollection::EventConstPtr event = events->getEvent(x, context);
+            C3DEventsCollection::EventConstPtr nextEvent;
+            if (event) {
+                nextEvent = events->getNextEvent(event, context); 
+                if (nextEvent) {
+                    nextEvent = events->getNextEvent(nextEvent, context);
+                }
+            }
+
+            if (event && nextEvent) {
+                qwtPlot->setAxisScale(QwtPlot::xBottom, event->getTime(), nextEvent->getTime());
+            } else {
+                qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
+            }
+            
+        }*/
+    } else {
+        qwtMarker->setVisible(false);
+    }
+
+    
+}
+
+void NewChartVisualizer::setShowLegend( bool val )
+{
+    if (qwtPlot) {
+        // todo - sprawdzic wyciek...
+        qwtPlot->insertLegend( val ? new QwtLegend() : nullptr, QwtPlot::RightLegend );
+    }
+    showLegend = val;
+}
+
+const std::string& NewChartVisualizer::getName() const
+{
+    static std::string name = "NewChartVisualizer";
+    return name;
+}
+
+core::IVisualizer* NewChartVisualizer::createClone() const
+{
+    return new NewChartVisualizer();
+}
+
+QIcon* NewChartVisualizer::createIcon()
+{
+    return nullptr;
+}
+
+
+void NewChartVisualizer::reset()
+{
+
+}
+
+void NewChartVisualizer::setUp( core::IObjectSource* source )
+{
+
+}
+
+int NewChartVisualizer::getMaxDataSeries( void ) const
+{
+    return -1;
+}
+
+void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPtr val )
+{
+    // jesli nie istnieje jeszcze wizualizacja eventow, to tworzymy obiekt eventow 
+    // i dolaczamy go do wykresu.
+    if (!eventsItem) {
+        eventsItem = new EventsPlotItem(val);
+        eventsItem->attach(qwtPlot);
+        eventsVisible = true;
+    } else if (eventsVisible) {
+        // jesli obiekt z eventami juz istnieje, to sprawdzamy, czy dotyczy tych samych eventow
+        // jesli tak, to nie trzeba robic nic, bo wizualizujemy dobre eventy
+        // jesli nie, to wylaczamy obiekt, poki co nie rysujemy roznych eventow na wykresach
+        if (eventsItem->getEvents() != val) {
+            eventsVisible = false;
+            eventsItem->detach();
+        }
+    }
+
+    EventsHelperPtr helper(new EventsHelper(val, serie->getReader()));
+    eventsHelpers[serie] = helper;
+    int no = 0;
+    for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); segment++) {
+        statsTable->addEntry(QString("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats);
+    }
+    no = 0;
+    for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); segment++) {
+        statsTable->addEntry(QString("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats);
+    }
+}
+
+void NewChartVisualizer::onEventContext()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action->text() == "Left") {
+        context = C3DEventsCollection::Context::Left;
+    } else if (action->text() == "Right") {
+        context = C3DEventsCollection::Context::Right;
+    } else {
+        UTILS_ASSERT(false);
+    }
+}
+
+void NewChartVisualizer::rescale( float t1, float t2 )
+{
+
+}
+
+
+const QColor leftColor1(255, 0, 0, 15);
+const QColor leftColor2(128, 0, 0, 15);
+const QColor rightColor1(0, 255, 0, 15);
+const QColor rightColor2(0, 128, 0, 15);
+
+EventsPlotItem::EventsPlotItem( EventsCollectionConstPtr events ) : 
+events(events) 
+{
+    UTILS_ASSERT(events);
+}
+
+
+void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const
+{
+  int count = events->getNumEvents();
+  C3DEventsCollection::EventConstPtr lastLeftEvent;
+  C3DEventsCollection::EventConstPtr lastRightEvent;
+
+  for (int i = 0; i < count; i++) {
+      C3DEventsCollection::EventConstPtr event = events->getEvent(i);
+      if (event->getContext() != C3DEventsCollection::Context::Left && event->getContext() != C3DEventsCollection::Context::Right) {
+          continue;
+      }
+      int x = static_cast<int>(xMap.transform(event->getTime()));
+      
+      int half = (canvasRect.bottom() - canvasRect.top())/ 2 + canvasRect.top();
+      bool left = event->getContext() == C3DEventsCollection::Context::Left;
+      int top = left ? canvasRect.top() : half;
+      int bottom = left ? half : canvasRect.bottom();
+      
+      painter->setFont(QFont("Tahoma", 8));
+      painter->setPen(QPen(QColor(0, 0, 0, 70)));
+      painter->drawLine(x, top, x, bottom);
+
+      painter->save();
+      painter->translate(x + 10, bottom - 30);
+      painter->rotate(-90); // or 270
+      painter->drawText(0, 0, QString(event->getLabel().c_str()));
+      painter->restore();
+      //painter->drawText(x + 2, bottom - 30, QString(event->getLabel().c_str()));
+      
+
+      if (lastLeftEvent && left) {
+          painter->setBrush(QBrush(i % 2 ? leftColor1 : leftColor2));
+          int lastX = static_cast<int>(xMap.transform(lastLeftEvent->getTime()));
+          painter->drawRect(lastX, top, x - lastX, bottom - top);
+      } else if (lastRightEvent && !left) {
+          painter->setBrush(QBrush(i % 2 ? rightColor1 : rightColor2));
+          int lastX = static_cast<int>(xMap.transform(lastRightEvent->getTime()));
+          painter->drawRect(lastX, top, x - lastX, bottom - top);
+      } else if (!lastLeftEvent && left) {
+          // pierwszy lewy event
+          painter->setPen(QPen(Qt::white));
+          painter->setFont(QFont("Tahoma", 72));
+          painter->setPen(QPen(QColor(255, 0, 0, 35)));
+          painter->drawText(x + 30, bottom - 82, "Left");
+      } else if (!lastRightEvent && right) {
+          // pierwszy prawy event
+          painter->setPen(QPen(Qt::white));
+          painter->setFont(QFont("Tahoma", 72));
+          painter->setPen(QPen(QColor(0,255,  0, 35)));
+          painter->drawText(x + 30, bottom - 82, "Right");
+      }
+
+      if (event->getContext() == C3DEventsCollection::Context::Left) {
+          lastLeftEvent = event;
+      } else {
+          lastRightEvent = event;
+      }
+  }
+  
+}
 
 
 
+void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEventsCollection::Context context)
+{
+    SegmentPtr currentSegment;
+    for( auto it = events->cbegin(); it != events->cend(); it++) {
+        EventConstPtr event = *it;
+        if (event->getContext() == context) {
+            if (event->getLabel() == "Foot Strike") {
+                if (currentSegment) {
+                    UTILS_ASSERT(currentSegment->event1);
+                    currentSegment->end = event->getTime();
+                    ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
+                    currentSegment->stats = ScalarChannelStatsPtr(new ScalarChannelStats(nonConstChannel, currentSegment->begin, currentSegment->end));
+                    collection.push_back(currentSegment);
+                }
+
+                currentSegment.reset(new Segment());
+                currentSegment->event1 = event;
+                currentSegment->begin = event->getTime();
+            } else if (currentSegment && event->getLabel() == "Foot Off") {
+                currentSegment->event2 = event;
+            }
+        } 
+    }
+    
+    
+}
+
+EventsHelper::EventsHelper( EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar ) :
+    events(events),
+    scalar(scalar)
+{
+    createSegments(leftSegments, C3DEventsCollection::Context::Left);
+    createSegments(rightSegments, C3DEventsCollection::Context::Right);
+}

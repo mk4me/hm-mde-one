@@ -11,6 +11,7 @@
 #define HEADER_GUARD_NEW_CHART__NEWCHARTMARKER_H__
 
 #include <qwt/qwt_plot_marker.h>
+#include <plugins/c3d/C3DChannels.h>
 
 class NewChartDot : public QwtPlotItem
 {

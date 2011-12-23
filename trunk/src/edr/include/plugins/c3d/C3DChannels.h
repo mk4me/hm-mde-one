@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD_C3D__C3DCHANNELS_H__
 #define __HEADER_GUARD_C3D__C3DCHANNELS_H__
 
+#include <core/IVisualizer.h>
 #include <core/SmartPtr.h>
 #include <utils/DataChannel.h>
 #include <utils/DataChannelModifiers.h>
@@ -19,6 +20,7 @@
 #include <osg/Math>
 #include <c3dlib/C3DParser.h>
 #include <kinematiclib/JointAnglesCollection.h>
+
 
 typedef utils::ITimerReader<float>::TimerReaderType TimerReader;
 typedef utils::ITimerReader<float>::TimerReaderPtr TimerReaderPtr;
@@ -184,11 +186,12 @@ class C3DEventsCollection
 {
 public: 
 	// pomocnicze typy
-	typedef c3dlib::C3DParser::IEventPtr EventPtr;
-	typedef c3dlib::C3DParser::IEventConstPtr EventConstPtr;
+	typedef core::shared_ptr<c3dlib::C3DParser::IEvent> EventPtr;
+	typedef core::shared_ptr<const c3dlib::C3DParser::IEvent> EventConstPtr;
 	typedef std::vector<EventPtr> Collection;
 	typedef Collection::iterator iterator;
 	typedef Collection::const_iterator const_iterator;
+    typedef c3dlib::C3DParser::IEvent::Context Context;
 
 private:
 	//! kolekcja przechowuje zdarzenia wczytane z pliku c3d
@@ -215,7 +218,7 @@ public:
 		int count = static_cast<int>(es.events.size());
 		events.resize(count);
 		for (int i = 0; i < count; i++) {
-			events[i] = es.events[i]->clone();
+			events[i] = EventPtr(es.events[i]->clone());
 		}
 	}
 
@@ -252,6 +255,67 @@ public:
         // wymuszenie kolejnosci zwiazanej z czasem
 		std::sort(events.begin(), events.end(), EventFunctor());
 	}
+
+
+    //! Zwraca event o okreslonym kontekscie; nastepny do danego
+    //! \param event konkretny event
+    //! \param context konteks, ktory musi miec zwracany event
+    //! \return event, ktory spelnia zalozenia lub pusty wskaznik
+    EventConstPtr getNextEvent(EventConstPtr event, Context context) const
+    {
+        // szukanie elementu 'event' w kolekcji
+        std::vector<EventPtr>::const_iterator it = events.cbegin();
+        for (; it != events.cend(); it++) {
+            if (*it == event) {
+                break;
+            }
+        }
+        // jesli znaleziono event;
+        if (it != events.cend()) {
+            for (it++; it != events.cend(); it++) {
+                if ((*it)->getContext() == context) {
+                    return *it;
+                } 
+            }
+        }
+
+        return EventConstPtr();
+    }
+
+    //! Zwraca event dla podanego czasu, event musi miec odpowiedni kontekst,
+    //! czas rozpoczecia mniejszy lub rowny t i nie moze byc ostatnim eventem w kolekcji
+    //! \param t czas, dla ktorego wyszukiwany jest event
+    //! \param context kontekst, dla ktorego wyszukiwany jest event (lewy, prawy.. )
+    //! \return event, ktory spelnia zalozenia lub pusty wskaznik
+    EventConstPtr getEvent(float t, Context context) const
+    {
+        // przefiltrowanie eventow wzgledem kontekstu
+        std::vector<EventPtr> temp;
+        for (auto it = events.cbegin(); it != events.cend(); it++) {
+            if ((*it)->getContext() == context) {
+                temp.push_back(*it);
+            }
+        }
+        
+        EventConstPtr found;
+        // poszukiwanie odpowiedniego eventu
+        for (auto it = temp.begin(); it != temp.end(); it++) {
+            
+             if ((*it)->getTime() <= t) {
+                auto check = it;
+                check++;
+                if (check != temp.end()) {
+                    found = *it;
+                } else {
+                    // event znaleziony, ale jest ostatni
+                    return EventConstPtr();
+                }
+             }
+             
+        }
+        // nie znaleziono odpowiedniego eventu
+        return found;
+    }
 };
 typedef boost::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
 typedef boost::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
@@ -469,9 +533,11 @@ public:
             int numSamples = data.getNumPointFrames();
 
             for (int i = 0; i < numSamples; i++) {
-                addPoint(point->getValue(i));
+                osg::Vec3 val = point->getValue(i);
+                addPoint(val);
             }
             setName(point->getLabel());
+            setValueBaseUnit(point->getUnit());
         }
 public:
     virtual MarkerChannel* clone() const
@@ -527,6 +593,7 @@ typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 				  addPoint(point->getValue(i));													 \
 			  }																					 \
 			  setName(point->getLabel());														 \
+              setValueBaseUnit(point->getUnit());                                                \
 		  }																						 \
 																								 \
 	public:																						 \
@@ -537,6 +604,23 @@ typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 	typedef core::shared_ptr<const name##Channel> name##ChannelConstPtr;						 \
 	typedef core::shared_ptr<name##Collection> name##CollectionPtr;								 \
 	typedef core::shared_ptr<const name##Collection> name##CollectionConstPtr;	  
+
+
+
+class EventSerieBase : public core::IVisualizer::TimeSerieBase
+{
+public:
+    virtual void setEvents(EventsCollectionConstPtr val) = 0;
+    C3DEventsCollection::Context getContext() const { return context; }
+	void setContext(C3DEventsCollection::Context val) { context = val; }
+
+private:
+    C3DEventsCollection::Context context; 
+	
+};
+typedef core::shared_ptr<EventSerieBase> EventSerieBasePtr;
+typedef core::shared_ptr<const EventSerieBase> EventSerieBaseConstPtr;
+
 
 DEFINE_CHANNEL(Force);
 DEFINE_CHANNEL(Moment);
@@ -568,4 +652,7 @@ CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);
 CORE_DEFINE_WRAPPER(GRFCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+
+
+
 #endif  // __HEADER_GUARD_CORE__C3DCHANNELS_H__

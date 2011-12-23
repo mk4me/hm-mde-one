@@ -1,3 +1,4 @@
+#include <boost/smart_ptr.hpp>
 #include <c3dlib/C3DParser.h>
 #include <btkC3DFileIO.h>
 #include <Utilities/StringStreamBuf.h>
@@ -19,7 +20,6 @@
 #include <btkMergeAcquisitionFilter.h>
 #include <utils/Debug.h>
 #include <utils/DataChannelCollection.h>
-
 namespace c3dlib {
 
 // Kanal analogowy
@@ -45,8 +45,8 @@ public:
 	btk::Analog::ConstPointer getAnalog() const       { return analog; }
 	
 };
-typedef boost::shared_ptr<Analog> AnalogPtr;
-typedef boost::shared_ptr<const Analog> AnalogConstPtr;
+typedef Analog* AnalogPtr;
+typedef const Analog* AnalogConstPtr;
 
 // pojedynczy punkt c3d
 class Point : public C3DParser::IPoint
@@ -57,12 +57,14 @@ private:
 	Type type;
 	//! przez ta wartosc zostana przemnozone pobierane wartosci
 	float scale;
+    std::string unit;
 	
 public:
 	Point() :
 	  numOfFrames(-1),
 	  scale(1.0f),
-	  point(nullptr)
+	  point(nullptr),
+      unit("unknown")
 	  {
 
 	  }
@@ -74,10 +76,12 @@ public:
 	void setNumberOfFrames(int val) { numOfFrames = val; }
 	float getScale() const { return scale; }
 	void setScale(float val) { scale = val; }
+    void setUnit(const std::string& val) { unit = val; }
 
 public:
 	virtual const std::string& getLabel() const		  { return point->GetLabel(); }
 	virtual const std::string& getDescription() const { return point->GetDescription(); }
+    virtual const std::string& getUnit() const { return unit; }
 	virtual Point::Type getType() const { return type; }
 
 	virtual osg::Vec3 getValue(int index) const 
@@ -87,8 +91,8 @@ public:
 		return osg::Vec3(value[index ], value[index + numOfFrames], value[index + 2 * numOfFrames]) * scale;
 	}
 };
-typedef boost::shared_ptr<Point> PointPtr;
-typedef boost::shared_ptr<const Point> PointConstPtr;
+typedef Point* PointPtr;
+typedef const Point* PointConstPtr;
 
 
 class Event : public C3DParser::IEvent
@@ -97,9 +101,16 @@ private:
 	btk::Event::ConstPointer eventPtr;
 
 public:
-	virtual std::string getContext() const 
+	virtual Context getContext() const 
 	{
-		return eventPtr->GetContext();
+        std::string ctx = eventPtr->GetContext();
+        if (ctx == "Left") {
+            return Left;
+        } else if (ctx == "Right") {
+            return Right;
+        } else {
+            return General;
+        }
 	}
 	virtual std::string getSubject() const
 	{
@@ -122,18 +133,19 @@ public:
 		return eventPtr->GetDescription();
 	}
 
-	virtual boost::shared_ptr<IEvent> clone() const 
+	virtual IEvent* clone() const 
 	{
-		boost::shared_ptr<Event> newEvent(new Event());
-		newEvent->setEventPtr(eventPtr->Clone());
+		//Event* newEvent = new Event();
+		//newEvent->setEventPtr(eventPtr->Clone());
+        Event* newEvent = new Event(*this);
 		return newEvent;
 	}
 public:
 	btk::Event::ConstPointer getEventPtr() const { return eventPtr; }
 	void setEventPtr(btk::Event::ConstPointer val) { eventPtr = val; }
 };
-typedef boost::shared_ptr<Event> EventPtr;
-typedef boost::shared_ptr<const Event> EventConstPtr;
+typedef Event* EventPtr;
+typedef const Event* EventConstPtr;
 
 //! Pola tej klasy agreguja te dane wykorzystywane wewnatrz klasy C3DParser,
 //! ktore nie moga byc widoczne w naglowku
@@ -171,6 +183,21 @@ C3DParser::C3DParser() :
 C3DParser::~C3DParser()
 {
     delete data;
+    for (auto it = points.begin(); it != points.end(); it++) {
+        delete(*it);
+    }
+    //! kolekcja kanalow analogowych
+    for (auto it = analogs.begin(); it != analogs.end(); it++) {
+        delete(*it);
+    }
+
+    for (auto it =  events.begin(); it != events.end(); it++) {
+        delete(*it);
+    }
+    //! plyty GRF
+    for (auto it = forcePlatforms.begin(); it != forcePlatforms.end(); it++) {
+        delete(*it);
+    }
 }
 
 
@@ -305,30 +332,33 @@ void C3DParser::loadAcquisition()
     btk::PointCollection::Pointer points = this->data->virtualMarkersSeparator->GetOutput(0);
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it)
     {
-        PointPtr p(new Point());
+        PointPtr p = new Point();
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
 		p->setType(Point::Marker);
 		p->setScale(scale);
+        p->setUnit(data->aquisitionPointer->GetPointUnit((*it)->GetType()));
 		this->points.push_back(p);
     }
     // Virtual markers (CoM, CoG, ...)
 	
     points = this->data->virtualMarkersSeparator->GetOutput(2);
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
-        PointPtr p(new Point());
+        PointPtr p = new Point();
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
 		p->setType(Point::VirtualMarker);
 		p->setScale(scale);
+        p->setUnit(data->aquisitionPointer->GetPointUnit((*it)->GetType()));
         this->points.push_back(p);
     }
     // Virtual markers used to define frames
     points = this->data->virtualMarkersSeparator->GetOutput(1);
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
-        PointPtr p(new Point());
+        PointPtr p = new Point();
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
+        p->setUnit(data->aquisitionPointer->GetPointUnit((*it)->GetType()));
 		p->setType(Point::VirtualMarkerForFrame);
         this->points.push_back(p);
     }
@@ -336,7 +366,7 @@ void C3DParser::loadAcquisition()
     points = this->data->virtualMarkersSeparator->GetOutput(3);
 	
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
-        PointPtr p(new Point());
+        PointPtr p = new Point();
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
 		switch((*it)->GetType()) {
@@ -346,20 +376,20 @@ void C3DParser::loadAcquisition()
 		case btk::Point::Power: p->setType(Point::Power); break;
 		case btk::Point::Scalar: p->setType(Point::Scalar); break;
 		}
-        
+        p->setUnit(data->aquisitionPointer->GetPointUnit((*it)->GetType()));
         this->points.push_back(p);
     }
 
 	
     for (btk::Acquisition::AnalogIterator it = this->data->aquisitionPointer->BeginAnalog() ; it != this->data->aquisitionPointer->EndAnalog() ; ++it) {
-        AnalogPtr a(new Analog());
+        AnalogPtr a = new Analog();
 		a->setAnalog(*it);
 		this->analogs.push_back(a);
     }
 
     // Event
     for (btk::Acquisition::EventIterator it = this->data->aquisitionPointer->BeginEvent() ; it != this->data->aquisitionPointer->EndEvent() ; ++it) {
-        EventPtr e(new Event());
+        EventPtr e = new Event();
         e->setEventPtr(*it);
         this->events.push_back(e);
     }

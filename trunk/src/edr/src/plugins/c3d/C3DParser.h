@@ -31,8 +31,9 @@ private:
 	core::ObjectWrapperPtr angleChannels;
 	core::ObjectWrapperPtr momentChannels;
 	core::ObjectWrapperPtr powerChannels;
-	core::ObjectWrapperPtr leftEvents;
-	core::ObjectWrapperPtr rightEvents;
+	//core::ObjectWrapperPtr leftEvents;
+	//core::ObjectWrapperPtr rightEvents;
+    core::ObjectWrapperPtr allEvents;
     core::ObjectWrapperPtr allMarkers;
 	//core::ObjectWrapperPtr c3dMisc;
 	ParserPtr parserPtr;

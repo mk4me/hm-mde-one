@@ -111,14 +111,6 @@ namespace core
 
         //! \param serie Seria danych do usuniêcia, nie powinien usuwac tej serii! Zarzadzamy nia my!!
         virtual void removeSerie(SerieBase* serie) = 0;
-
-#ifdef DEBUG
-        //! \return Korzeñ lokalnej sceny osg.
-        virtual osg::Node* debugGetLocalSceneRoot()
-        {
-            return nullptr;
-        }
-#endif
     };
 
     typedef shared_ptr<IVisualizer> IVisualizerPtr;

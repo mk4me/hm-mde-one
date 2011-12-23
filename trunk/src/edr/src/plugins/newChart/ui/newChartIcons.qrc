@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>../../../../resources/icons/downArrows.png</file>
+    <file>../../../../resources/icons/upArrows.png</file>
+  </qresource>
+</RCC>

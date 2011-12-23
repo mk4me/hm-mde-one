@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEW_CHART__STATSTABLE_H__
 
 #include "ui_statsTable.h"
-
+#include <plugins/c3d/C3DChannels.h>
 class StatsTable : public QWidget, private Ui::StatsTable
 {
     Q_OBJECT;

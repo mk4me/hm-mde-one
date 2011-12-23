@@ -87,6 +87,133 @@ private:
     NamesDictionary namesDictionary;
 };
 
+
+class BuilderFilterCommand : public IFilterCommand
+{
+public:
+    typedef boost::function<QTreeWidgetItem* (const MotionConstPtr&, const QString&, const QIcon&, const QIcon&)> BranchFunction;
+public:
+    BuilderFilterCommand(BranchFunction function, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon()) : 
+        branchFunction(function),
+        elementIcon(elementIcon),
+        rootIcon(rootIcon)
+     { }
+
+public:
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions ) 
+    {
+        QTreeWidgetItem* root = new QTreeWidgetItem();
+        root->setText(0, rootItemName);
+        root->setIcon(0, rootIcon);
+        BOOST_FOREACH(SessionConstPtr session, sessions) {
+            Motions motions;
+            session->getMotions(motions);
+            BOOST_FOREACH(MotionConstPtr motion, motions) {
+                root->addChild(branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon));
+            }
+        }
+
+        return root;
+    }
+
+private:
+    BranchFunction branchFunction;
+    QIcon elementIcon;
+    QIcon rootIcon;
+};
+
+template <class Collection>
+class BuilderConfiguredFilterCommand : public BuilderFilterCommand
+{
+public:
+    typedef typename core::ObjectWrapperT<Collection>::Ptr CollectionPtr;
+    typedef typename core::ObjectWrapperT<Collection>::ConstPtr CollectionConstPtr;
+
+public:
+    BuilderConfiguredFilterCommand(BranchFunction function, const NamesDictionary& namesDictionary, 
+        const QString& frontXml, const QString& backXml, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon()) :
+          BuilderFilterCommand(function, rootIcon, elementIcon),
+          helper(boost::bind( &BuilderConfiguredFilterCommand::checkBoxChanged, this, _1, _2 )),
+          frontXml(frontXml),
+          backXml(backXml),
+          dialog(nullptr)
+      {
+        helper.setNamesDictionary(namesDictionary);
+      }
+
+      void checkBoxChanged (const QString& box, int state )
+      {
+          std::string name = box.toStdString(); 
+          activeElements[name] = (bool)state;
+      }
+
+private:
+    void createNameDictionary(const CollectionConstPtr & collection)
+    {
+        int count = collection->getNumChannels();
+        for (int i = 0; i < count; i++) {
+            ChannelConstPtr channel = collection->getChannel(i);
+            std::string name = channel->getName();
+            auto it = activeElements.find(name);
+            if (it == activeElements.end()) {
+                activeElements[name] = true;
+            }
+        }
+    }
+
+public:
+    virtual void configurationStop( ConfigurationResult result ) 
+    {
+        if (result == Cancel) {
+            activeElements = tempNameDictionary;
+        }
+    }
+
+public:
+    virtual QDialog* getConfigurationDialog( QWidget* parent) 
+    {
+        if (!dialog) {
+            dialog = new ConfigurationDialog(parent);
+            int w = dialog->width();
+            int h = dialog->height();
+            dialog->loadConfigurations(frontXml, backXml, helper.getNamesDictionary());
+            QObject::connect(dialog, SIGNAL(itemSelected(const QString&, bool)), &helper, SLOT(onItemSelected(const QString&, bool)));
+            QObject::connect(dialog, SIGNAL(elementHovered(const QString&, bool)), &helper, SLOT(onElementHovered(const QString&, bool)));
+
+            w = dialog->width();
+            h = dialog->height();
+        }
+        return dialog;
+    }
+
+    virtual void configurationStart() 
+    {
+        tempNameDictionary = activeElements;
+        std::map<QString, bool> visibles;
+        const NamesDictionary& names = helper.getNamesDictionary();
+        for (auto elementIT = activeElements.begin(); elementIT != activeElements.end(); elementIT++) {
+            for (auto nameIT = names.cbegin(); nameIT != names.cend(); nameIT++) {
+                if (nameIT->second.first.toStdString() == elementIT->first) {
+                    visibles[nameIT->first] = elementIT->second;
+                }
+            }
+        }
+        dialog->setVisibles(visibles);
+    }
+    
+protected:
+    std::map<std::string, bool> activeElements;
+    std::map<std::string, bool> tempNameDictionary;
+    DataFilterPtr simpleTypeFilter;
+    __Helper helper;
+    QString frontXml, backXml;
+    ConfigurationDialog* dialog;
+};
+
+
+
+
+
 template <class Channel, class Collection, class ItemHelper, bool useTreeItemHelperForRoot = false>
 class Vector3DFilterCommand : public IFilterCommand
 {
@@ -107,6 +234,9 @@ public:
 
       }
 
+      //! 
+      //! \param rootItemName 
+      //! \param sessions fdsdsd
       virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions)
       {
           QTreeWidgetItem* root = new QTreeWidgetItem();
@@ -116,13 +246,14 @@ public:
               Motions motions;
               filtered->getMotions(motions);
               BOOST_FOREACH(MotionConstPtr motion, motions) {
-                  
                   std::vector<core::ObjectWrapperConstPtr> objects;
                   motion->getWrappers(objects, typeid(Collection));
                   if (objects.size() == 1) {
                       QTreeWidgetItem* motionItem;
                       if (useTreeItemHelperForRoot) {
-                          motionItem = new TreeWrappedItemHelper(objects[0]);
+                          TreeWrappedItemHelper* wrapped = new TreeWrappedItemHelper(objects[0]);
+                          wrapped->setMotion(motion);
+                          motionItem = wrapped;
                       } else {
                           motionItem = new QTreeWidgetItem();
                       }
@@ -144,7 +275,8 @@ public:
                               std::string name = "serie_" + boost::lexical_cast<std::string>(number);
                               wrapper->setName(name);
                               wrapper->setSource(name);
-                              QTreeWidgetItem* treeItem = new ItemHelper(wrapper);
+                              ItemHelper* treeItem = new ItemHelper(wrapper);
+                              treeItem->setMotion(motion);
                               treeItem->setText(0, channel->getName().c_str());
                               motionItem->addChild(treeItem);
                           }
@@ -301,7 +433,7 @@ public:
             Motions motions;
             session->getMotions(motions);
             BOOST_FOREACH(MotionConstPtr motion, motions) {
-                root->addChild(TreeBuilder::createJointsBranch(motion, motion->getLocalName().c_str(), QIcon()));
+                root->addChild(TreeBuilder::createJointsBranch(motion, motion->getLocalName().c_str(), TreeBuilder::getRootJointsIcon(), TreeBuilder::getJointsIcon()));
             }
         }
 
