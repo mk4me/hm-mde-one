@@ -53,21 +53,29 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     qwtPlot->canvas()->installEventFilter(this);
 
     activeSerieCombo = new QComboBox();
+
+    connect(activeSerieCombo, SIGNAL(destroyed ( QObject *)), this, SLOT(onComboDestroy(QObject*)));
+
     activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
     activeSerieCombo->setEnabled(false);
     connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
 
+    QAction* eventMode = new QAction(QString(tr("Event mode")), nullptr);
+    QIcon icon0;
+    icon0.addFile(QString::fromUtf8(":/resources/icons/normalizacja1.png"), QSize(), QIcon::Normal, QIcon::Off);
+    eventMode->setIcon(icon0);
+    eventMode->setCheckable(true);
+    //actions.push_back(eventMode);
+    connect(eventMode, SIGNAL(triggered(bool)), this, SLOT(setEventMode(bool)));
+
+
+
     QMenu* menu = new QMenu("Event Context");
-    
+
     QAction* leftEvents = menu->addAction("Left");
     QAction* rightEvents = menu->addAction("Right");
-
     actions.push_back(menu);
 
-    QAction* eventMode = new QAction(QString(tr("Event mode")), nullptr);
-    eventMode->setCheckable(true);
-    actions.push_back(eventMode);
-    connect(eventMode, SIGNAL(triggered(bool)), this, SLOT(setEventMode(bool)));
 
     connect(leftEvents, SIGNAL(triggered()), this, SLOT(onEventContext()));
     connect(rightEvents, SIGNAL(triggered()), this, SLOT(onEventContext()));
@@ -75,17 +83,45 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     actions.push_back(activeSerieCombo);
     NewChartPickerPtr picker(new NewChartPicker(this));
     connect(picker.get(), SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
-    statesMap[new QAction("Picker", this)] = picker;
-    statesMap[new QAction("Value Marker", this)] =  NewChartStatePtr(new NewChartValueMarker(this));
-    statesMap[new QAction("Horizontal Marker", this)] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Horizontal));
-    statesMap[new QAction("Vertical Marker", this)] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Vertical));
+
+    //akcje powinny byc zwracane zawsze w takiej samej kolejnosci - inaczej w UI beda za kazdym razem inaczej organizowane!!
+    // dlatego od razu w takije kolejnosci jak sa tworzone leca do wektora
+
+    QIcon icon1;
+    icon1.addFile(QString::fromUtf8(":/resources/icons/picker.png"), QSize(), QIcon::Normal, QIcon::Off);
+    QAction * action = new QAction("Picker", this);
+    action->setIcon(icon1);
+    actions.push_back(action);
+    statesMap[action] = picker;
     
-    for (auto it = statesMap.begin(); it != statesMap.end(); it++) {
-        actions.push_back(it->first);
-        connect(it->first, SIGNAL(triggered()), this, SLOT(onStateAction()));
+    QIcon icon2;
+    icon2.addFile(QString::fromUtf8(":/resources/icons/value_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
+    action = new QAction("Value Marker", this);
+    action->setIcon(icon2);
+    actions.push_back(action);
+    statesMap[action] =  NewChartStatePtr(new NewChartValueMarker(this));
+
+    QIcon icon3;
+    icon3.addFile(QString::fromUtf8(":/resources/icons/horizontal_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
+    action = new QAction("Horizontal Marker", this);
+    action->setIcon(icon3);
+    actions.push_back(action);
+    statesMap[action] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Horizontal));
+
+    QIcon icon4;
+    icon4.addFile(QString::fromUtf8(":/resources/icons/vertical_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
+    action = new QAction("Vertical Marker", this);
+    action->setIcon(icon4);
+    actions.push_back(action);
+    statesMap[action] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Vertical));
+    
+    for (auto it = actions.begin(); it != actions.end(); it++) {
+        //actions.push_back(it->first);
+        connect(*it, SIGNAL(triggered()), this, SLOT(onStateAction()));
     }
-    
-    
+
+    //nie powinna zmieniaæ stanu wizualizatora wiêc nie ³¹czymy jej ze slotem
+    actions.insert(actions.begin(), eventMode);
 
     for ( int i = 0; i < QwtPlot::axisCnt; i++ )    {
         QwtScaleWidget *scaleWidget = qwtPlot->axisWidget( i );
@@ -219,6 +255,13 @@ void NewChartVisualizer::addPlotCurve( QwtPlotCurve* curve, const Scales& scales
     qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
     qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
     curve->attach(qwtPlot);
+}
+
+//TODO
+//kod debugowy - do usuniêcia na koniec
+void NewChartVisualizer::onComboDestroy(QObject * obj)
+{
+    obj = nullptr;
 }
 
 void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
@@ -398,7 +441,7 @@ core::IVisualizer* NewChartVisualizer::createClone() const
 
 QIcon* NewChartVisualizer::createIcon()
 {
-    return nullptr;
+    return new QIcon(QString::fromUtf8(":/resources/icons/2D.png"));
 }
 
 

@@ -23,7 +23,7 @@
 
 class UserInterfaceService;
 class ServiceManager;
-class SceneGraphWidget;
+//class SceneGraphWidget;
 class EDRConsoleWidget;
 class VisualizerManager;
 class DataProcessorManager;
@@ -33,11 +33,14 @@ namespace core {
 
 	class MainWindow : public QMainWindow, public core::Window
 	{
-		Q_OBJECT
+		Q_OBJECT        
 
-	protected:    
+	protected:
+
+        static MainWindow * instance;
+
 		//! Widget ze scen¹ jakiegoœ grafu OSG.
-		SceneGraphWidget* widgetSceneGraph;
+		//SceneGraphWidget* widgetSceneGraph;
 		//! Widget konsoli.
 		EDRConsoleWidget* widgetConsole; 
 		//! Czy update jest w³¹czony?
@@ -67,7 +70,10 @@ namespace core {
 
 		virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
 
-		
+		static MainWindow * getInstance()
+        {
+            return instance;
+        }
 	public slots:
 		//! Aktualizacja wizualizatorow.
 		void updateVisualizers();
@@ -75,12 +81,14 @@ namespace core {
 
 	public:
 		void initializeConsole();
-		void InitializeControlWidget();
+		//void InitializeControlWidget();
 
         void setStyle(const core::Filesystem::Path& path);
         bool trySetStyle(const core::Filesystem::Path& path);
         void setStyleByName(const std::string& styleName);
         bool trySetStyleByName(const std::string& styleName);
+
+        virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget) = 0;
 
 
 	public:

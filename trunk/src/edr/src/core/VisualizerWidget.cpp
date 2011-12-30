@@ -4,9 +4,7 @@
 #include <core/StringTools.h>
 #include <boost/foreach.hpp>
 #include "VisualizerWidget.h"
-//#include "DataManager.h"
 #include <core/DataAccessors.h>
-#include "ui_VisualizerWidget.h"
 #include "MainWindow.h"
 #include <core/DataAccessors.h>
 #include "ServiceManager.h"
@@ -68,33 +66,31 @@ void VisualizerWidget::clearCurrentVisualizerWidget()
         return;
     }
 
-    //ustaw jego rodzica ale samego widgetu nie usuwaj!!
-    QLayout * layout = getInnerWidget()->layoutContent;
-    if(layout->count() > 0){
-        QLayoutItem * item = layout->takeAt(layout->indexOf(visualizerWidget));
-        if(item != nullptr){
-            visualizerWidget->setParent(nullptr);
-            visualizerWidget = nullptr;
-            delete item;
-        }
+    if(widget() == visualizerWidget){
+        setWidget(nullptr);
+        visualizerWidget->setParent(nullptr);
+        visualizerWidget = nullptr;
     }
 }
 
 void VisualizerWidget::init()
 {
+    setFocusPolicy(Qt::StrongFocus);
     lastSerie.first = nullptr;    
 
-    EDRTitleBar * titleBar = getTitleBar();
-
     //labelka jako ikona z okiem
-    label = new QLabel(titleBar);
+    label = new QLabel();
     label->setObjectName(QString::fromUtf8("label"));
     label->setPixmap(QPixmap(QString::fromUtf8(":/resources/icons/wizualizacja2.png")));
 
+    visualizerCommonElements[label] = InnerVisualizerElement(true, label, IEDRTitleBar::Left);
+
     //combo do przechowywania typów wizualizatorów
-    comboType = new QComboBox(titleBar);
+    comboType = new QComboBox();
     comboType->setObjectName(QString::fromUtf8("comboType"));
     comboType->setInsertPolicy(QComboBox::InsertAlphabetically);
+
+    visualizerCommonElements[comboType] = InnerVisualizerElement(true, comboType, IEDRTitleBar::Left);
 
     //ustawienie zdarzen na zmiane pozycji w combo (zmiana wizualizatora)
     connect(comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(setCurrentVisualizer(int)));
@@ -103,118 +99,44 @@ void VisualizerWidget::init()
     comboType->setCurrentIndex(-1);
 
     //ustawienie menu odpowiedzialnego za wybor Ÿród³a danych
-    menuSource = new QMenu(titleBar);
-
-    buttonSource = new QToolButton(titleBar);
-    buttonSource->setObjectName(QString::fromUtf8("buttonSource"));
-    QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    sizePolicy1.setHorizontalStretch(0);
-    sizePolicy1.setVerticalStretch(0);
-    sizePolicy1.setHeightForWidth(buttonSource->sizePolicy().hasHeightForWidth());
-    buttonSource->setSizePolicy(sizePolicy1);
-    buttonSource->setMaximumSize(QSize(80, 22));
-    buttonSource->setStyleSheet(QString::fromUtf8(""));
+    menuSource = new QMenu(tr("Sources"), this);
     QIcon icon2;
     icon2.addFile(QString::fromUtf8(":/resources/icons/dane.wejsciowe.png"), QSize(), QIcon::Normal, QIcon::Off);
-    buttonSource->setIcon(icon2);
-    buttonSource->setPopupMode(QToolButton::InstantPopup);
-    buttonSource->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    buttonSource->setArrowType(Qt::NoArrow);
-    buttonSource->setText(QString::fromUtf8("Sources"));
+    menuSource->setIcon(icon2);
+
+    visualizerCommonElements[menuSource] = InnerVisualizerElement(true, menuSource, IEDRTitleBar::Left);
 
     //dynamiczne ³adowanie menu Ÿróde³ na ich rozwiniêcie
     connect(menuSource, SIGNAL(aboutToShow()), this, SLOT(fillSourcesMenu()));
 
-    //³¹czenie menu z przyciskami
-    buttonSource->setMenu(menuSource);
-
     //wyczyszczenie wizualizatorow, inicjalizacja wszystkich kontrolek z tym zwiazanych
     clearCurrentVisualizer();
 
-    //ustawienie akcji dziel¹cych wizualizator (tworzacych nowy po odpowiedniej stronie)
-    actionSplitVertically = new QAction(titleBar);
-    actionSplitVertically->setObjectName(QString::fromUtf8("actionSplitVertically"));
-    QIcon icon3;
-    icon3.addFile(QString::fromUtf8(":/resources/icons/vertical.png"), QSize(), QIcon::Normal, QIcon::Off);
-    actionSplitVertically->setIcon(icon3);
-    
-    actionSplitHorizontally = new QAction(titleBar);
-    actionSplitHorizontally->setObjectName(QString::fromUtf8("actionSplitHorizontally"));
-    QIcon icon4;
-    icon4.addFile(QString::fromUtf8(":/resources/icons/horizontal.png"), QSize(), QIcon::Normal, QIcon::Off);
-    actionSplitHorizontally->setIcon(icon4);
-        
-    //ustawienie przyciskow odpowiedzialnych za akcje dizelenia wizualizatora
-    buttonSplitV = new QToolButton(titleBar);
-    buttonSplitV->setObjectName(QString::fromUtf8("buttonSplitV"));
-
-    buttonSplitH = new QToolButton(titleBar);
-    buttonSplitH->setObjectName(QString::fromUtf8("buttonSplitH"));
-    
-    buttonSplitH->setDefaultAction(actionSplitHorizontally);
-    buttonSplitV->setDefaultAction(actionSplitVertically);    
 
     //dodanie stworzonych elementow do titleBara
-    titleBar->addObject(label, IEDRTitleBar::Left);
-    titleBar->addObject(comboType, IEDRTitleBar::Left);
-    titleBar->addObject(buttonSource, IEDRTitleBar::Left);
-
-    titleBar->addObject(buttonSplitH, IEDRTitleBar::Right);
-    titleBar->addObject(buttonSplitV, IEDRTitleBar::Right);
-
-
-    //inicjalizacja pozostalych sygnalow i slotow
-    connect( this, SIGNAL(topLevelChanged(bool)), titleBar->actionFloat, SLOT(setChecked(bool)) );
-
-    connect( actionSplitVertically, SIGNAL(triggered()), this, SLOT(splitVertically()));
-    connect( actionSplitHorizontally, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
-
-    connect( this, SIGNAL(topLevelChanged(bool)), buttonSplitH, SLOT(setHidden(bool)));
-    connect( this, SIGNAL(topLevelChanged(bool)), buttonSplitV, SLOT(setHidden(bool)));
-
-    // niszczymy przy zamykaniu, nie chowamy!
-    setPermanent(false);
+    visualizerCommonElementsOrder.push_back(label);
+    visualizerCommonElementsOrder.push_back(comboType);
+    visualizerCommonElementsOrder.push_back(menuSource);
 
     //ALL old visualizer elements
-
-    retranslateUi(this);
-
     QMetaObject::connectSlotsByName(this);
 }
 
 void VisualizerWidget::setSourceVisible(bool visible)
 {
-    buttonSource->setVisible(visible);
+    menuSource->setVisible(visible);
+    visualizerCommonElements[menuSource].visible = visible;
 }
 
 bool VisualizerWidget::isSourceVisible() const
 {
-    return buttonSource->isVisible();
-}
-
-void VisualizerWidget::setSplitHVisible(bool visible)
-{
-    buttonSplitH->setVisible(visible);
-}
-
-bool VisualizerWidget::isSplitHVisible() const
-{
-    return buttonSplitH->isVisible();
-}
-
-void VisualizerWidget::setSplitVVisible(bool visible)
-{
-    buttonSplitV->setVisible(visible);
-}
-
-bool VisualizerWidget::isSplitVVisible() const
-{
-    return buttonSplitV->isVisible();
+    return menuSource->isVisible();
 }
 
 void VisualizerWidget::setVisualizerIconVisible(bool visible)
 {
     label->setVisible(visible);
+    visualizerCommonElements[label].visible = visible;
 }
 
 bool VisualizerWidget::isVisualizerIconVisible() const
@@ -222,14 +144,25 @@ bool VisualizerWidget::isVisualizerIconVisible() const
     return label->isVisible();
 }
 
-void VisualizerWidget::setActiveVisualizerSwitch(bool active)
+void VisualizerWidget::setVisualizerSwitchEnable(bool active)
 {
     comboType->setEnabled(active);
 }
 
-bool VisualizerWidget::isActiveVisualizerSwich() const
+bool VisualizerWidget::isVisualizerSwichEnable() const
 {
     return comboType->isEnabled();
+}
+
+void VisualizerWidget::setVisualizerSwitchVisible(bool visible)
+{
+    comboType->setVisible(visible);
+    visualizerCommonElements[comboType].visible = visible;
+}
+
+bool VisualizerWidget::isVisualizerSwichVisible() const
+{
+    return comboType->isVisible();
 }
 
 void VisualizerWidget::splitHorizontally()
@@ -257,19 +190,10 @@ void VisualizerWidget::split( Qt::Orientation orientation )
     } else {
         dockWidget = new VisualizerWidget(mainWindow);
     }
+
     mainWindow->splitDockWidget(this, dockWidget, orientation);
-
+    dockWidget->setPermanent(false);
 }
-
-void VisualizerWidget::retranslateUi(QWidget *visualizerWidget)
-{
-    actionSplitVertically->setText(QApplication::translate("VisualizerWidget", "Split vertically", 0, QApplication::UnicodeUTF8));
-    actionSplitHorizontally->setText(QApplication::translate("VisualizerWidget", "Split horizontally", 0, QApplication::UnicodeUTF8));
-    label->setText(QString());
-    buttonSplitV->setText(QApplication::translate("VisualizerWidget", "split v", 0, QApplication::UnicodeUTF8));
-    buttonSplitH->setText(QApplication::translate("VisualizerWidget", "split h", 0, QApplication::UnicodeUTF8));
-    buttonSource->setText(QApplication::translate("VisualizerWidget", "Source", 0, QApplication::UnicodeUTF8));
-} // retranslateUi
 
 void VisualizerWidget::addVisualizer( const QString& label, UniqueID id )
 {
@@ -279,6 +203,20 @@ void VisualizerWidget::addVisualizer( const QString& label, UniqueID id )
 void VisualizerWidget::addVisualizer( const QIcon& icon, const QString& label, UniqueID id )
 {
     comboType->addItem( icon, label, qVariantFromValue(id) );
+}
+
+void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements & titleBarElements) const
+{
+    for(auto it = visualizerCommonElementsOrder.begin(); it != visualizerCommonElementsOrder.end(); it++){
+        auto elementIT = visualizerCommonElements.find(*it);
+        if(elementIT->second.visible == true){
+            titleBarElements.push_back(VisualizerTitleBarElement(elementIT->second.object, elementIT->second.side));
+        }
+    }
+
+    for(auto it = visualizerImplementationCustomElements.begin(); it != visualizerImplementationCustomElements.end(); it++){
+        titleBarElements.push_back(VisualizerTitleBarElement(*it, IEDRTitleBar::Left));
+    }
 }
 
 void VisualizerWidget::clearCurrentVisualizer()
@@ -295,14 +233,6 @@ void VisualizerWidget::clearCurrentVisualizer()
 
     // usuniêcie wizualizatora
     visualizer.reset();
-
-    // czyszczenie fragmentu z customowymi akcjami
-    EDRTitleBar * titleBar = getTitleBar();
-    BOOST_FOREACH(QObject* obj, visualizerCustomElements){
-        titleBar->removeObject(obj);
-    }
-
-    visualizerCustomElements.swap(std::vector<QObject*>());
 
     //usuñ wizualizator widget z innerWidget!!
     clearCurrentVisualizerWidget();
@@ -362,18 +292,9 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
             for(int i = 0; i < visualizer->getNumInputs(); i++){
                 bool exact = false;
                 //pobieram dane
-                //std::vector<core::ObjectWrapperPtr> dmData;
-                //DataManager::getInstance()->getObjects(dmData, visualizer->getInputType(i), exact);
-                //core::Objects dmData(core::queryData(visualizer->getInputType(i), exact));
-                
-                //core::Objects dmData;
 
                 //stworz nowy OWC, odswiezajacy dane z DM ObjectWrapperCollection
                 core::ObjectWrapperCollectionPtr collection(new core::ObjectWrapperCollection(visualizer->getInputType(i), exact));
-
-                //for(auto it = dmData.begin(); it != dmData.end(); it++){
-                //    collection->addObject(*it);
-                //}
 
                 DataManager::getInstance()->getObjects(*collection);
 
@@ -393,28 +314,16 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
             UTILS_ASSERT(idx >= 0);
             comboType->setCurrentIndex(idx);
 
-            EDRTitleBar * titleBar = getTitleBar();
-
-            visualizerCustomElements = visualizer->getOrCreateGenericActions();
-
-            // dodajemy akcje ogólne widgetu
-            BOOST_FOREACH(QObject* obj, visualizerCustomElements) {
-                titleBar->addObject(obj, IEDRTitleBar::Left);
-            }
-
-            EDRDockInnerWidget * innerWidget = getInnerWidget();
-			/*std::string n = visualizer->getName();
-			if (n == "Video") {
-				innerWidget->setFixedSize(600,400);
-			}*/
             visualizerWidget = visualizer->getOrCreateWidget();
-
+            visualizerImplementationCustomElements = visualizer->getGenericActions();
             if(visualizerWidget != nullptr){
-                innerWidget->layoutContent->addWidget(visualizerWidget);
+                visualizerWidget->setObjectName(QString::fromUtf8("visualizerWidget"));
+                setWidget(visualizerWidget);
             }
 
-            innerWidget->setWindowTitle( visualizer->getUIName() );
-            setWindowTitle( innerWidget->windowTitle() );
+            setWindowTitle(visualizer->getUIName());
+
+            MainWindow::getInstance()->setCurrentVisualizerActions(this);
         }
         else{
             setWindowTitle( "Empty visualizer" );
@@ -464,7 +373,6 @@ void VisualizerWidget::fillSourcesMenu()
     QMenu * avaiableDataMenu = menuSource->addMenu("Available data");
     //aktywne dane w seriach
     QMenu * activeDataMenu = menuSource->addMenu("Active data");
-    //activeDataMenu->setEnabled(currentSeriesData.empty() == false);
     activeDataMenu->setEnabled(visualizer->getDataSeries().empty() == false);
 
     // akcja zeruj¹ca obiekt - czyœci wszystkie serie danych
@@ -589,8 +497,8 @@ void VisualizerWidget::fillSourcesMenu()
 
     avaiableDataMenu->setEnabled( !(allNotInitialized == true && visualizer->getDataSeries().empty() == true) );
 
-    if(buttonSource->isVisible() == false){
-        buttonSource->show();
+    if(menuSource->isVisible() == false){
+        menuSource->show();
     }
 }
 
@@ -733,8 +641,6 @@ void VisualizerWidget::sourceSelected()
             actionNone->blockSignals(false);
         }
     }
-
-    //setPermanent(visualizer->getTimelineDataSeries().empty() == false);
 
     visualizerWidget->update();
 }

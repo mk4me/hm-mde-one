@@ -8,7 +8,6 @@
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
 #include <list>
-//#include <boost/regex.hpp>
 #include <utils/Push.h>
 #include <core/ServiceManager.h>
 

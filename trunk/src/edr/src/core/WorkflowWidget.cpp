@@ -14,6 +14,7 @@
 #include "EDRDFNode.h"
 #include "EDRDFSourceNode.h"
 #include "VisualizerWidget.h"
+#include "EDRTitleBar.h"
 
 WorkflowWidget::WorkflowWidget(WorkflowService* service)
     :   service(service)
@@ -411,8 +412,16 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
     tmpWidget->setLayout(tmpLayout);
     toolbar->addTab(tmpWidget, "Sinks");
 
+    QWidget * mainWidget = new QWidget();
+    auto layout = new QVBoxLayout();
+    layout->setMargin(0);
+    layout->addWidget(toolbar);
+    mainWidget->setLayout(layout);
+
+    setWidget(mainWidget);
+
     //dodajemy toolbar
-    getInnerWidget()->layoutContent->addWidget(toolbar);
+    //getInnerWidget()->layoutContent->addWidget(toolbar);
 
     //inicjalizaca VDF
     workflowVDFWidget = new WorkflowCustomQOSGWidget(this);
@@ -471,7 +480,8 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
     //workflowVDFWidget->addEventHandler( new osgGA::StateSetManipulator( workflowVDFWidget->getCamera()->getOrCreateStateSet() ) );
 
     // dodanie do widgeta
-    getInnerWidget()->layoutContent->addWidget( workflowVDFWidget );
+    //getInnerWidget()->layoutContent->addWidget( workflowVDFWidget );
+    layout->addWidget( workflowVDFWidget );
 
     StylesSet styleSet = generateRequiredStyles();
 
@@ -481,9 +491,12 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
     workflowVDFModel->showDefaultToolbar(false);
 
-    EDRTitleBar * titleBar = getTitleBar();
+    //EDRTitleBar * titleBar = getTitleBar();
+    //EDRTitleBar * titleBar = new EDRTitleBar();
+    //setTitleBarWidget(titleBar);
 
-
+    EDRTitleBar * titleBar = supplyWithEDRTitleBar(this);
+    
     actionStart = new QAction(titleBar);
     actionStart->setText(QString::fromUtf8("Start"));
     actionStart->setObjectName(QString::fromUtf8("actionStart"));
@@ -595,7 +608,7 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
     VisualizerWidget* visWidget = new VisualizerWidget(id);
     visWidget->setAllowedAreas(Qt::RightDockWidgetArea);
     ////blokujemy zmiane wizualizatora
-    visWidget->setActiveVisualizerSwitch(false);
+    visWidget->setVisualizerSwitchEnable(false);
     ////nie niszcz wizualizatora przy jego zamykaniu !! dopiero usuniecie wêz³a powinno to robiæ
     visWidget->setPermanent(true);
     //dodajemy wizualizator do glownego okna

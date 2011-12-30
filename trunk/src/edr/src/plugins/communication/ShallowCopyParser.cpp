@@ -454,7 +454,7 @@ void MedicalShallowCopyParser::parseFile(const core::Filesystem::Path& path)
             disorder_element->QueryIntAttribute("DisorderID", &disorderID);
 
             auto & disorder = shallowCopy->patients[patientID]->disorders[disorderID];
-            shallowCopy->patients[patientID]->disorders[disorderID].diosorder = shallowCopy->disorders.find(disorderID)->second;
+            shallowCopy->patients[patientID]->disorders[disorderID].disorder = shallowCopy->disorders.find(disorderID)->second;
             disorder_element->QueryStringAttribute("Focus", &disorder.focus);
 
             disorder_element->QueryStringAttribute("DiagnosisDate", &disorder.diagnosisDate);

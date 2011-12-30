@@ -149,6 +149,9 @@ private:
       void rescale(float t1, float t2);
 
 private slots:
+
+        void onComboDestroy(QObject * obj);
+
       void setNormalized(bool normalized);
       void setActiveSerie(int idx);
       void onSerieSelected(QwtPlotItem*);

@@ -127,6 +127,7 @@
  </widget>
  <resources>
   <include location="../../../core/ui/Icons.qrc"/>
+  <include location="Icons.qrc"/>
  </resources>
  <connections/>
 </ui>

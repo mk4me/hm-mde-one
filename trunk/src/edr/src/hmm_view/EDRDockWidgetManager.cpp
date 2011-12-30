@@ -8,6 +8,7 @@ EDRDockWidgetManager::EDRDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowF
 {
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setDockOptions(QMainWindow::ForceTabbedDocks);
+    //setDocumentMode(true);
     setDocumentMode(true);
 }
 
@@ -15,10 +16,12 @@ EDRDockWidgetManager::EDRDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowF
 void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 {
 	QWidget::setUpdatesEnabled(false);
+    //setDocumentMode(true);
     setDocumentMode(true);
+    set->setWindowTitle(QString(tr("Tab %1")).arg(dockList.size()));
 	this->addDockWidget(Qt::TopDockWidgetArea, set, Qt::Horizontal);
 	dockList.push_back(set);
-    set->setWindowTitle(QString(tr("Tab %1")).arg(dockList.size()));
+    
 	connect(set, SIGNAL(destroyed(QObject*)), this, SLOT(onSetClosed(QObject*)));
 	if (dockList.size() > 1) {
 		auto it = dockList.begin();
@@ -31,6 +34,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 		set->raise();
 	} 
 	QWidget::setUpdatesEnabled(true);
+    set->setPermanent(false);
 }
 
 void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
@@ -53,7 +57,7 @@ void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
 		throw std::runtime_error("Unable to add widget");
 	}
 	QWidget::setUpdatesEnabled(true);
-
+    set->setPermanent(false);
 }
 
 

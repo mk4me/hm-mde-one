@@ -11,6 +11,8 @@
 #include "DownloadDialogWidget.h"
 #include "PatientCardWidget.h"
 
+#include <algorithm>
+
 
 Q_DECLARE_METATYPE(std::set<int>);
 
@@ -33,11 +35,39 @@ private:
 
 };
 
-ItemBase::ItemBase(ItemView * view) : view(view), statusWidget(new QLabel()), pixmap(20,20)
+ItemBase::ItemBase(ItemView * view) : view(view)//, pixmap(20,20)
 {
-    statusWidget->setMaximumSize(20, 20);
-    statusWidget->setMinimumSize(20, 20);
-    pixmap.fill(QColor("transparent"));
+
+}
+
+QPixmap ItemBase::mergePixmaps(const QPixmap & pmL, const QPixmap & pmR)
+{
+    int halfWidth = max(pmL.width(), pmR.width());
+    int width = max(pmL.width() + pmR.width(), 2 * halfWidth);
+    int pomHalfWidth = halfWidth/4;
+    width += pomHalfWidth;
+
+    int height = max(pmL.height(), pmR.height());
+
+    QPixmap ret(width, height);
+
+    QPainter painter(&ret);    
+    painter.fillRect(0,0, width, height, Qt::white);
+
+    painter.setOpacity(1);
+
+    QPoint pos;
+    pos.setX((halfWidth - pmL.width()) / 2);
+    pos.setY((height - pmL.height()) / 2);
+
+    painter.drawPixmap(pos, pmL);
+
+    pos.setX(halfWidth + pomHalfWidth + (halfWidth - pmR.width()) / 2);
+    pos.setY((height - pmR.height()) / 2);
+
+    painter.drawPixmap(pos, pmR);
+
+    return ret;
 }
 
 void ItemBase::refresh()
@@ -45,9 +75,19 @@ void ItemBase::refresh()
     refreshStatus();
 }
 
-QWidget * ItemBase::getStatusWidget()
+const QIcon & ItemBase::getStatusIcon()
 {
-    return statusWidget;
+    return statusIcon;
+}
+
+const QIcon & ItemBase::getLocalityStatusIcon()
+{
+    return localityStatusIcon;
+}
+
+const QIcon & ItemBase::getUsageStatusIcon()
+{
+    return usageStatusIcon;
 }
 
 void ItemBase::addItemBase(ItemBase * item)
@@ -75,24 +115,32 @@ void ItemBase::setDataLocality(DataLocality locality)
 {
     this->locality = locality;
 
-    QColor color;
+    //QColor color;
 
     switch(locality){
     case Local:
-                color = Qt::GlobalColor::green;
+                localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/lokalne.png"));
+                //color = Qt::GlobalColor::green;
                 break;
+
+    default:
     case Remote:
-                color = Qt::GlobalColor::red;
+                localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/zdalne.png"));
+                //color = Qt::GlobalColor::red;
                 break;
     case PartiallyLocal:
-                color = Qt::GlobalColor::yellow;
+                localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/polnapol-dane.png"));
+                //color = Qt::GlobalColor::yellow;
                 break;
     }
 
-    QPainter painter(&pixmap);
-    painter.fillRect(QRectF(0,0,10,20), color);
+    localityStatusIcon = QIcon(localityStatusPixmap);
 
-    statusWidget->setPixmap(pixmap);
+    refreshStatusContent();
+    //QPainter painter(&pixmap);
+    //painter.fillRect(QRectF(0,0,10,20), color);
+
+    //localityStatusIcon->setPixmap(pixmap);
 }
 
 DataUsage ItemBase::getDataUsage() const
@@ -104,24 +152,39 @@ void ItemBase::setDataUsage(DataUsage usage)
 {
     this->usage = usage;
 
-    QColor color;
+    //QColor color;
 
     switch(usage){
     case Loaded:
-        color = Qt::GlobalColor::green;
+        usageStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/zaladowane.png"));
+        //color = Qt::GlobalColor::green;
         break;
+
+    default:
     case Unloaded:
-        color = Qt::GlobalColor::red;
+        usageStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/niezaladowane.png"));
+        //color = Qt::GlobalColor::red;
         break;
     case PartiallyLoaded:
-        color = Qt::GlobalColor::yellow;
+        usageStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/polnapol-ladowanie2.png"));
+        //color = Qt::GlobalColor::yellow;
         break;
     }
 
-    QPainter painter(&pixmap);
-    painter.fillRect(QRectF(10,0,10,20), color);
+    usageStatusIcon = QIcon(usageStatusPixmap);
 
-    statusWidget->setPixmap(pixmap);
+    refreshStatusContent();
+
+    //QPainter painter(&pixmap);
+    //painter.fillRect(QRectF(10,0,10,20), color);
+
+    //localityStatusIcon->setPixmap(pixmap);
+}
+
+void ItemBase::refreshStatusContent()
+{
+    statusIcon = QIcon(mergePixmaps(localityStatusPixmap, usageStatusPixmap));
+    view->refreshStatusIcons(this);
 }
 
 PatientItem::PatientItem(ItemView * view, int patientID) : ItemBase(view), patientID(patientID)
@@ -413,6 +476,12 @@ ItemView::ItemView(CommunicationDataSource * source) : source(source), motionSha
 ItemView::~ItemView()
 {
 
+}
+
+void ItemView::refreshStatusIcons(ItemBase* item)
+{
+    item->setIcon(0, item->getStatusIcon());
+    //item->setSizeHint(0, QSize(s.width() + 40 , max(20, s.height())));
 }
 
 void ItemView::refresh()
@@ -722,7 +791,7 @@ void ItemView::fillContextMenu(const MotionItem * motionItem, QMenu & menu)
 
 void ItemView::fillContextMenu(const FileItem * fileItem, QMenu & menu)
 {
-    switch(fileItem->getDataLocality()){
+    /*switch(fileItem->getDataLocality()){
     case Remote:
         {
             QAction * downloadAction = menu.addAction(QString("Download"));
@@ -765,7 +834,7 @@ void ItemView::fillContextMenu(const FileItem * fileItem, QMenu & menu)
         }
 
         break;
-    }
+    }*/
 }
 
 void ItemView::downloadDisorder()
@@ -848,7 +917,7 @@ void ItemView::downloadMotion()
 
 void ItemView::downloadFile()
 {
-    QAction * action = qobject_cast<QAction*>(sender());
+    /*QAction * action = qobject_cast<QAction*>(sender());
 
     int id = action->data().toInt();
 
@@ -856,7 +925,7 @@ void ItemView::downloadFile()
 
     if(status == true){
         refreshFileItem(id);
-    }
+    }*/
 }
 
 void ItemView::onItemClicked(QTreeWidgetItem* item, int column)
@@ -869,14 +938,15 @@ void ItemView::onItemClicked(QTreeWidgetItem* item, int column)
 
     QTreeWidget * tree = qobject_cast<QTreeWidget*>(sender());
 
-    int columns = itemBase->columnCount();
-    tree->setColumnCount(columns);
+    //int columns = itemBase->columnCount();
+    //tree->setColumnCount(columns);
 
     QStringList headers;
     itemBase->getHeaders(headers);
+    tree->setColumnCount(headers.size());
     tree->setHeaderLabels(headers);
 
-    for(int i = 0; i < columns; i++) {
+    for(int i = 0; i < headers.size(); i++) {
         tree->resizeColumnToContents(i);
     }
 }
@@ -967,12 +1037,12 @@ void ItemView::loadMotion()
 
 void ItemView::loadFile()
 {
-    QAction * action = qobject_cast<QAction*>(sender());
+    /*QAction * action = qobject_cast<QAction*>(sender());
     int id = action->data().toInt();
 
     source->load(motionShallowCopy->files.find(id)->second);
 
-    refreshFileItem(id);
+    refreshFileItem(id);*/
 }
 
 //REFRESH LOCALITY
@@ -1252,19 +1322,22 @@ void ItemView::refreshStatus(FileItem * fileItem, bool goUp)
     updateStatus(fileItem, status, goUp);
 }
 
-void ItemView::setStatusWidgets(QTreeWidget * tree, ItemBase * item)
-{
-    tree->setItemWidget(item, 0, item->getStatusWidget());
-    for(int i = 0; i < item->itemBaseChildrenCount(); i++){
-        setStatusWidgets(tree, item->getItemBaseChild(i));
-    }
-}
+//void ItemView::setStatusWidgets(QTreeWidget * tree, ItemBase * item)
+//{
+//    tree->setItemWidget(item, 0, item->getStatusIcon());
+//    item->getStatusIcon()->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+//    for(int i = 0; i < item->itemBaseChildrenCount(); i++){
+//        setStatusWidgets(tree, item->getItemBaseChild(i));
+//    }
+//}
 
 MotionView::MotionView(CommunicationDataSource * source) : ItemView(source), subjectsTree(new QTreeWidget())
 {
     QHBoxLayout * layout = new QHBoxLayout;
 
     subjectsTree->setContextMenuPolicy( Qt::CustomContextMenu );
+    subjectsTree->setUniformRowHeights(false);
+    //subjectsTree->setIconSize(QSize(40, 20));
 
     connect(subjectsTree, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onItemClicked(QTreeWidgetItem*, int)));
     connect(subjectsTree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenuRequested(const QPoint &)));
@@ -1362,7 +1435,7 @@ void MotionView::doUIRefresh()
             subjectItem->setDataLocality((DataLocality)subjectLocality);
             subjectItem->setDataUsage(Unloaded);
 
-            setStatusWidgets(subjectsTree, subjectItem);
+            //setStatusWidgets(subjectsTree, subjectItem);
         }
     }else{
         subjectsTree->clear();
@@ -1418,15 +1491,15 @@ void MotionView::refreshFileItem(int id)
 
 void MotionView::fillItemContent(SubjectItem * subjectItem, const communication::MotionShallowCopy::Performer * performer)
 {
-    subjectItem->setText(1, QString("Subject") + QString("%1").arg(performer->performerID, 4, 10, QChar('0')));
+    subjectItem->setText(0, QString("Subject") + QString("%1").arg(performer->performerID, 4, 10, QChar('0')));
 }
 
 void MotionView::fillItemContent(SessionItem * sessionItem, const communication::MotionShallowCopy::Session * session)
-{
-    sessionItem->setText(1, QString(session->sessionName.c_str()));
-    sessionItem->setText(2, QString(session->sessionDate.c_str()));
-    sessionItem->setText(3, QString::fromUtf8(session->motionKind.c_str()));
-    sessionItem->setText(4, QString::fromUtf8(session->sessionDescription.c_str()));
+{   
+    sessionItem->setText(0, QString(session->sessionName.c_str()));
+    sessionItem->setText(1, QString(session->sessionDate.c_str()));
+    sessionItem->setText(2, QString::fromUtf8(session->motionKind.c_str()));
+    sessionItem->setText(3, QString::fromUtf8(session->sessionDescription.c_str()));
 
     std::string attributes;
 
@@ -1434,14 +1507,14 @@ void MotionView::fillItemContent(SessionItem * sessionItem, const communication:
         attributes += it->first + "=" + it->second + ";";
     }
 
-    sessionItem->setText(5, QString::fromUtf8(attributes.c_str()));
-    sessionItem->setText(6, QString::fromUtf8(session->tags.c_str()));
+    sessionItem->setText(4, QString::fromUtf8(attributes.c_str()));
+    sessionItem->setText(5, QString::fromUtf8(session->tags.c_str()));
 }
 
 void MotionView::fillItemContent(MotionItem * motionItem, const communication::MotionShallowCopy::Trial * motion)
 {
-    motionItem->setText(1, QString(motion->trialName.c_str()));
-    motionItem->setText(2, QString::fromUtf8(motion->trialDescription.c_str()));
+    motionItem->setText(0, QString(motion->trialName.c_str()));
+    motionItem->setText(1, QString::fromUtf8(motion->trialDescription.c_str()));
 
     std::string attributes;
 
@@ -1449,13 +1522,13 @@ void MotionView::fillItemContent(MotionItem * motionItem, const communication::M
         attributes += it->first + "=" + it->second + ";";
     }
 
-    motionItem->setText(3, QString::fromUtf8(attributes.c_str()));
+    motionItem->setText(2, QString::fromUtf8(attributes.c_str()));
 }
 
 void MotionView::fillItemContent(FileItem * fileItem, const communication::MotionShallowCopy::File * file)
 {
-    fileItem->setText(1, QString(file->fileName.c_str()));
-    fileItem->setText(2, QString::fromUtf8(file->fileDescription.c_str()));
+    fileItem->setText(0, QString(file->fileName.c_str()));
+    fileItem->setText(1, QString::fromUtf8(file->fileDescription.c_str()));
 }
 
 //HEADERS
@@ -1476,7 +1549,6 @@ void MotionView::getHeaders(const PatientItem * patientItem, QStringList & heade
 
 void MotionView::getHeaders(const SubjectItem * subjectItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("Subject"));
 }
 
@@ -1487,7 +1559,6 @@ void MotionView::getHeaders(const SessionGroupItem * sessionGroupItem, QStringLi
 
 void MotionView::getHeaders(const SessionItem * sessionItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("Session"));
     headers.push_back(QString("Date"));
     headers.push_back(QString("Motion kind"));
@@ -1498,7 +1569,6 @@ void MotionView::getHeaders(const SessionItem * sessionItem, QStringList & heade
 
 void MotionView::getHeaders(const MotionItem * motionItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("Motion"));
     headers.push_back(QString("Description"));
     headers.push_back(QString("Attributes"));
@@ -1506,7 +1576,6 @@ void MotionView::getHeaders(const MotionItem * motionItem, QStringList & headers
 
 void MotionView::getHeaders(const FileItem * fileItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("File"));
     headers.push_back(QString("Description"));
 }
@@ -1562,6 +1631,23 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
     patientsTree->setContextMenuPolicy( Qt::CustomContextMenu );
     disordersTree->setContextMenuPolicy( Qt::CustomContextMenu );
     patientCardsWidget->setContextMenuPolicy( Qt::CustomContextMenu );
+    patientsTree->setIconSize(QSize(40, 20));
+    disordersTree->setIconSize(QSize(40, 20));
+    /*
+    auto f = patientsTree->font();
+    f.setPointSize(20);
+    patientsTree->setFont(f);
+
+    f = disordersTree->font();
+    f.setPointSize(20);
+    disordersTree->setFont(f);
+
+    //patientsTree->setUniformRowHeights(false);
+    patientsTree->setIconSize(QSize(40, 20));
+
+    //disordersTree->setUniformRowHeights(false);
+    disordersTree->setIconSize(QSize(40, 20));
+    */
 
     connect(patientsTree, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onItemClicked(QTreeWidgetItem*, int)));
     connect(patientsTree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenuRequested(const QPoint &)));
@@ -1570,8 +1656,9 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
     connect(disordersTree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenuRequested(const QPoint &)));
 
 
-    connect(patientCardsWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onPatientCardContextMenu(const QPoint &)));
     connect(patientsList, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(patientCardRequest(QListWidgetItem*,QListWidgetItem*)));
+    patientsList->setFrameStyle(QFrame::Box);
+    patientsList->setLineWidth(2);
 
     this->setLayout(layout);
 
@@ -1588,12 +1675,13 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
 
     patientCardsWidget->setLayout(patientLayout);
 
-    layout->addWidget(patientCardsWidget);
-    layout->addWidget(patientsTree);
-    layout->addWidget(disordersTree);
-    currentView = nullptr;
-    disordersTree->hide();
-    patientsTree->hide();
+    QTabWidget * tabWidget = new QTabWidget();
+
+    tabWidget->addTab(patientCardsWidget, QString::fromUtf8("Patient card"));
+    tabWidget->addTab(patientsTree, QString::fromUtf8("Patients Data"));
+    tabWidget->addTab(disordersTree, QString::fromUtf8("Disorders Data"));
+
+    layout->addWidget(tabWidget);
 
     QStringList headers;
 
@@ -1627,13 +1715,11 @@ void MedicalView::getHeaders(const ItemBase * itemBase, QStringList & headers) c
 
 void MedicalView::getHeaders(const DisorderItem * disorderItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("Disorder"));
 }
 
 void MedicalView::getHeaders(const PatientItem * patientItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("Name"));
     headers.push_back(QString("Surname"));
     headers.push_back(QString("Gender"));
@@ -1647,14 +1733,12 @@ void MedicalView::getHeaders(const SubjectItem * subjectItem, QStringList & head
 
 void MedicalView::getHeaders(const SessionGroupItem * sessionGroupItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("Session Group"));
     headers.push_back(QString("Date"));
 }
 
 void MedicalView::getHeaders(const SessionItem * sessionItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("Session"));
     headers.push_back(QString("Date"));
     headers.push_back(QString("Motion kind"));
@@ -1665,7 +1749,6 @@ void MedicalView::getHeaders(const SessionItem * sessionItem, QStringList & head
 
 void MedicalView::getHeaders(const MotionItem * motionItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("Motion"));
     headers.push_back(QString("Description"));
     headers.push_back(QString("Attributes"));
@@ -1673,7 +1756,6 @@ void MedicalView::getHeaders(const MotionItem * motionItem, QStringList & header
 
 void MedicalView::getHeaders(const FileItem * fileItem, QStringList & headers) const
 {
-    headers.push_back(QString("Status"));
     headers.push_back(QString("File"));
     headers.push_back(QString("Description"));
 }
@@ -1770,7 +1852,7 @@ PatientItem * MedicalView::createPatientItemTree(const communication::MedicalSha
     patientItem->setDataLocality((DataLocality)patientLocality);
     patientItem->setDataUsage(Unloaded);
 
-    setStatusWidgets(patientsTree, patientItem);
+    //setStatusWidgets(patientsTree, patientItem);
 
     return patientItem;
 }
@@ -1855,79 +1937,6 @@ SessionItem * MedicalView::createSessionItem(const std::string & prefix, const c
     return sessionItem;
 }
 
-void MedicalView::fillContextMenu(const DisorderItem * disorderItem, QMenu & menu)
-{
-    ItemView::fillContextMenu(disorderItem, menu);
-    addChangeViewAction(menu);
-}
-
-void MedicalView::fillContextMenu(const PatientItem * patientItem, QMenu & menu)
-{
-    ItemView::fillContextMenu(patientItem, menu);
-    addChangeViewAction(menu);
-}
-
-void MedicalView::fillContextMenu(const SubjectItem * subjectItem, QMenu & menu)
-{
-    ItemView::fillContextMenu(subjectItem, menu);
-    addChangeViewAction(menu);
-}
-
-void MedicalView::fillContextMenu(const SessionGroupItem * sessionGroupItem, QMenu & menu)
-{
-    ItemView::fillContextMenu(sessionGroupItem, menu);
-    addChangeViewAction(menu);
-}
-
-void MedicalView::fillContextMenu(const SessionItem * sessionItem, QMenu & menu)
-{
-    ItemView::fillContextMenu(sessionItem, menu);
-    addChangeViewAction(menu);
-}
-
-void MedicalView::fillContextMenu(const MotionItem * motionItem, QMenu & menu)
-{
-    ItemView::fillContextMenu(motionItem, menu);
-    addChangeViewAction(menu);
-}
-
-void MedicalView::fillContextMenu(const FileItem * fileItem, QMenu & menu)
-{
-    ItemView::fillContextMenu(fileItem, menu);
-    addChangeViewAction(menu);
-}
-
-void MedicalView::onPatientCardContextMenu(const QPoint & pos)
-{
-    QMenu menu;
-    addChangeViewAction(menu);
-    menu.exec(patientCardsWidget->mapToGlobal(pos));
-}
-
-void MedicalView::showPatients()
-{   
-    patientCardsWidget->hide();
-    disordersTree->hide();
-    currentView = patientsTree;
-    currentView->show();
-}
-
-void MedicalView::showDisorders()
-{
-    patientCardsWidget->hide();
-    patientsTree->hide();
-    currentView = disordersTree;
-    currentView->show();
-}
-
-void MedicalView::showPatientCards()
-{
-    disordersTree->hide();
-    patientsTree->hide();
-    currentView = nullptr;
-    patientCardsWidget->show();
-}
-
 void MedicalView::patientCardRequest(QListWidgetItem * current, QListWidgetItem * previous)
 {
     PatientListItem * pItem = dynamic_cast<PatientListItem *>(current);
@@ -1937,34 +1946,6 @@ void MedicalView::patientCardRequest(QListWidgetItem * current, QListWidgetItem 
 
     patientCardWidget->setPatient(patient, performer, source->getPatientPhoto(patient));
     patientCardWidget->refreshCard();
-}
-
-void MedicalView::addChangeViewAction(QMenu & menu)
-{
-    menu.addSeparator();
-    QMenu * view = menu.addMenu(QString("View"));
-    QAction * patientsView = view->addAction(QString("Patients"));
-    QAction * disordersView = view->addAction(QString("Disorders"));
-    QAction * patientCardView = view->addAction(QString("Patient Card"));
-
-    patientsView->setCheckable(true);
-    disordersView->setCheckable(true);
-    patientCardView->setCheckable(true);
-
-    if(currentView == patientsTree){
-        patientsView->setChecked(true);
-        patientsView->setEnabled(false);
-    }else if(currentView == disordersTree){
-        disordersView->setChecked(true);
-        disordersView->setEnabled(false);
-    }else{
-        patientCardView->setChecked(true);
-        patientCardView->setEnabled(false);
-    }
-
-    connect(patientsView, SIGNAL(triggered()), this, SLOT(showPatients()));
-    connect(disordersView, SIGNAL(triggered()), this, SLOT(showDisorders()));
-    connect(patientCardView, SIGNAL(triggered()), this, SLOT(showPatientCards()));
 }
 
 void MedicalView::createPatientRow(unsigned int row, const communication::MedicalShallowCopy::Patient * patient)
@@ -2022,7 +2003,7 @@ void MedicalView::doUIRefresh()
             disorderItem->setDataLocality((DataLocality)disorderLocality);
             disorderItem->setDataUsage(Unloaded);
 
-            setStatusWidgets(disordersTree, disorderItem);
+            //setStatusWidgets(disordersTree, disorderItem);
         }
 
     }else{
@@ -2101,29 +2082,29 @@ void MedicalView::refreshFileItem(int id)
 
 void MedicalView::fillItemContent(DisorderItem * disorderItem, const communication::MedicalShallowCopy::Disorder * disorder)
 {
-    disorderItem->setText(1, QString::fromUtf8(disorder->name.c_str()));
+    disorderItem->setText(0, QString::fromUtf8(disorder->name.c_str()));
 }
 
 void MedicalView::fillItemContent(PatientItem * patientItem, const communication::MedicalShallowCopy::Patient * patient)
 {
-    patientItem->setText(1, QString::fromUtf8(patient->name.c_str()));
-    patientItem->setText(2, QString::fromUtf8(patient->surname.c_str()));
-    patientItem->setText(3, QString(QChar(patient->gender)));
-    patientItem->setText(4, QString(patient->birthDate.c_str()));
+    patientItem->setText(0, QString::fromUtf8(patient->name.c_str()));
+    patientItem->setText(1, QString::fromUtf8(patient->surname.c_str()));
+    patientItem->setText(2, QString(QChar(patient->gender)));
+    patientItem->setText(3, QString(patient->birthDate.c_str()));
 }
 
 void MedicalView::fillItemContent(SessionGroupItem * sessionItem, const SessionGroupDescription & description)
 {
-    sessionItem->setText(1, QString::fromUtf8(description.name.c_str()));
-    sessionItem->setText(2, QString(description.date.c_str()));
+    sessionItem->setText(0, QString::fromUtf8(description.name.c_str()));
+    sessionItem->setText(1, QString(description.date.c_str()));
 }
 
 void MedicalView::fillItemContent(SessionItem * sessionItem, const communication::MotionShallowCopy::Session * session)
 {
-    sessionItem->setText(1, QString(sessionsPrefixes[session->sessionID].c_str()) + QString(" - ") + QString(session->sessionName.c_str()));
-    sessionItem->setText(2, QString(session->sessionDate.c_str()));
-    sessionItem->setText(3, QString::fromUtf8(session->motionKind.c_str()));
-    sessionItem->setText(4, QString::fromUtf8(session->sessionDescription.c_str()));
+    sessionItem->setText(0, QString(sessionsPrefixes[session->sessionID].c_str()) + QString(" - ") + QString(session->sessionName.c_str()));
+    sessionItem->setText(1, QString(session->sessionDate.c_str()));
+    sessionItem->setText(2, QString::fromUtf8(session->motionKind.c_str()));
+    sessionItem->setText(3, QString::fromUtf8(session->sessionDescription.c_str()));
 
     QString attributes;
 
@@ -2131,14 +2112,14 @@ void MedicalView::fillItemContent(SessionItem * sessionItem, const communication
         attributes += QString::fromUtf8(it->first.c_str()) + QString("=") + QString(it->second.c_str()) + QString(";");
     }
 
-    sessionItem->setText(5, attributes);
-    sessionItem->setText(6, QString::fromUtf8(session->tags.c_str()));
+    sessionItem->setText(4, attributes);
+    sessionItem->setText(5, QString::fromUtf8(session->tags.c_str()));
 }
 
 void MedicalView::fillItemContent(MotionItem * motionItem, const communication::MotionShallowCopy::Trial * motion)
 {
-    motionItem->setText(1, QString(motion->trialName.c_str()));
-    motionItem->setText(2, QString::fromUtf8(motion->trialDescription.c_str()));
+    motionItem->setText(0, QString(motion->trialName.c_str()));
+    motionItem->setText(1, QString::fromUtf8(motion->trialDescription.c_str()));
 
     QString attributes;
 
@@ -2146,13 +2127,13 @@ void MedicalView::fillItemContent(MotionItem * motionItem, const communication::
         attributes += QString::fromUtf8(it->first.c_str()) + QString("=") + QString(it->second.c_str()) + QString(";");
     }
 
-    motionItem->setText(3, attributes);
+    motionItem->setText(2, attributes);
 }
 
 void MedicalView::fillItemContent(FileItem * fileItem, const communication::MotionShallowCopy::File * file)
 {
-    fileItem->setText(1, QString(file->fileName.c_str()));
-    fileItem->setText(2, QString::fromUtf8(file->fileDescription.c_str()));
+    fileItem->setText(0, QString(file->fileName.c_str()));
+    fileItem->setText(1, QString::fromUtf8(file->fileDescription.c_str()));
 }
 
 CommunicationDataSource::CommunicationDataSource(communication::CommunicationManager * communicationManager, ISubjectService * subjectService)
@@ -2174,8 +2155,11 @@ QWidget * CommunicationDataSource::getOrCreateView()
     if(widget == nullptr){
         //inicjalizujemy zak³¹dki naszego okienka
         widget = new QWidget;
+        widget->setContentsMargins(0,0,0,0);
+        widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
         QHBoxLayout * layout = new QHBoxLayout;
+        layout->setContentsMargins(0,0,0,0);
 
         widget->setLayout(layout);
 
@@ -2665,7 +2649,9 @@ void CommunicationDataSource::load(const communication::MedicalShallowCopy::Diso
 
 void CommunicationDataSource::load(const communication::MedicalShallowCopy::Patient * patient)
 {
+    load(motionShallowCopy->performers.find(patient->motionPerformerID)->second);
 
+    createPatient(patient);
 }
 
 void CommunicationDataSource::load(const communication::MotionShallowCopy::Performer * subject)

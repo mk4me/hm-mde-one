@@ -39,7 +39,9 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="Icons.qrc"/>
+ </resources>
  <connections/>
  <slots>
   <slot>displayTypeChanged(int)</slot>

@@ -3,15 +3,15 @@
 #include <plugins/newTimeline/ITimelineService.h>
 #include "ServiceManager.h"
 #include "DataManager.h"
-#include "SceneGraphWidget.h"
+//#include "SceneGraphWidget.h"
 #include <boost/foreach.hpp>
 
 using namespace core;
 
 VisualizerManager * ManagerHelper<VisualizerManager>::manager = nullptr;
 
-VisualizerManager::VisualizerManager() :
-debugWidget(nullptr)
+VisualizerManager::VisualizerManager() //:
+//debugWidget(nullptr)
 {
 
 }
@@ -196,9 +196,9 @@ void VisualizerManager::notifyCreated( Visualizer* visualizer )
 {
     LOG_DEBUG("Visualizer " << visualizer->getName() << " created");
     visualizers.push_back(visualizer);
-    if ( debugWidget ) {
+    /*if ( debugWidget ) {
         debugWidget->addVisualizer(visualizer);
-    }
+    }*/
 }
 
 void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
@@ -206,9 +206,9 @@ void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
     LOG_DEBUG("Visualizer " << visualizer->getName() << " destroyed.");
     visualizers.remove(visualizer);
 
-    if ( debugWidget ) {
+    /*if ( debugWidget ) {
         debugWidget->removeVisualizer(visualizer);
-    }
+    }*/
 }
 
 void VisualizerManager::notifyCreated(IVisualizerChannel* channel)

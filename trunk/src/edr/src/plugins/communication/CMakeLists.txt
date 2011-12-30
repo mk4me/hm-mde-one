@@ -8,6 +8,7 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	QMultiToolBox.h
 	PatientCardWidget.h
 	CommunicationPlugin.h
 	CommunicationDataSource.h
@@ -43,6 +44,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	QMultiToolBox.cpp
 	PatientCardWidget.cpp
 	DownloadDialogWidget.cpp
 	Patient.cpp
@@ -67,6 +69,7 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
 #	CommunicationWidgetEx.h
+	QMultiToolBox.h
 	${HEADER_PATH}/CommunicationService.h
 	CommunicationDataSource.h
 	DownloadDialogWidget.h
@@ -87,6 +90,16 @@ QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
 set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 
+#------------------------------------------------------------------------------
+
+# RC
+set(TARGET_RC
+	#ui/ConsoleWidget.qrc
+	ui/Icons.qrc
+)
+QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
+source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek
 

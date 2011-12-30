@@ -1,6 +1,20 @@
 <RCC>
-  <qresource prefix="icons">
-    <file>../../../../resources/icons/downArrows.png</file>
-    <file>../../../../resources/icons/upArrows.png</file>
+  <qresource prefix="resources/icons">
+    <file alias="horizontal_tag.png">../../../../resources/embedded/icons/horizontal_tag.png</file>
+    <file alias="horizontal_taga.png">../../../../resources/embedded/icons/horizontal_taga.png</file>
+    <file alias="normalizacja1.png">../../../../resources/embedded/icons/normalizacja1.png</file>
+    <file alias="normalizacja1a.png">../../../../resources/embedded/icons/normalizacja1a.png</file>
+    <file alias="normalizacja2.png">../../../../resources/embedded/icons/normalizacja2.png</file>
+    <file alias="normalizacja2a.png">../../../../resources/embedded/icons/normalizacja2a.png</file>
+    <file alias="picker.png">../../../../resources/embedded/icons/picker.png</file>
+    <file alias="pickera.png">../../../../resources/embedded/icons/pickera.png</file>
+    <file alias="value_tag.png">../../../../resources/embedded/icons/value_tag.png</file>
+    <file alias="value_taga.png">../../../../resources/embedded/icons/value_taga.png</file>
+    <file alias="vertical_tag.png">../../../../resources/embedded/icons/vertical_tag.png</file>
+    <file alias="vertical_taga.png">../../../../resources/embedded/icons/vertical_taga.png</file>
+    <file alias="view.png">../../../../resources/embedded/icons/view.png</file>
+    <file alias="viewa.png">../../../../resources/embedded/icons/viewa.png</file>
+    <file alias="downArrows.png">../../../../resources/embedded/icons/downArrows.png</file>
+    <file alias="upArrows.png">../../../../resources/embedded/icons/upArrows.png</file>
   </qresource>
 </RCC>

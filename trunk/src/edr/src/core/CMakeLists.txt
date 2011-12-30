@@ -11,6 +11,11 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	IAppUsageContext.h
+	IAppUsageContextManager.h
+	FlexiWidgetTabContentWidget.h
+	FlexiTabWidget.h
+	FlexiTabSectionWidget.h
 	SubjectDataFilters.h
 	ManagerHelper.h
 	AppInitializer.h
@@ -18,7 +23,7 @@ set(PRIVATE_H
 	EDRConsoleWidget.h
 	EDRConsoleInnerWidget.h
 	DataManager.h
-	SceneGraphWidget.h
+	#SceneGraphWidget.h
 	LogInitializer.h
 	ServiceManager.h
 	UserInterfaceService.h
@@ -31,8 +36,7 @@ set(PRIVATE_H
 	ObjectSlots.h
 	EDRTitleBar.h
 	EDRDockWidget.h
-	EDRDockInnerWidget.h
-	TestEDRWidget.h
+	#TestEDRWidget.h
 	WorkflowItemEncapsulator.h
 	InputItem.h
 	InputDescription.h
@@ -107,13 +111,16 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	FlexiWidgetTabContentWidget.cpp
+	FlexiTabWidget.cpp
+	FlexiTabSectionWidget.cpp
 	SubjectDataFilters.cpp
 	DataAccessors.cpp
 	MainWindow.cpp
 	EDRConsoleWidget.cpp
 	EDRConsoleInnerWidget.cpp
 	DataManager.cpp
-	SceneGraphWidget.cpp
+	#SceneGraphWidget.cpp
 	LogInitializer.cpp
 	PluginLoader.cpp
 	ServiceManager.cpp
@@ -125,8 +132,7 @@ set(TARGET_SRC
 	DataProcessor.cpp
 	EDRTitleBar.cpp
 	EDRDockWidget.cpp
-	EDRDockInnerWidget.cpp	
-	TestEDRWidget.cpp
+	#TestEDRWidget.cpp
 	InputDescription.cpp
 	OutputDescription.cpp
 	EDRConfig.cpp
@@ -148,15 +154,17 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
+	FlexiWidgetTabContentWidget.h
+	FlexiTabWidget.h
+	FlexiTabSectionWidget.h
 	EDRConsoleWidget.h
 	EDRConsoleInnerWidget.h
     MainWindow.h
-	SceneGraphWidget.h
+	#SceneGraphWidget.h
 	VisualizerWidget.h
 	EDRTitleBar.h
 	EDRDockWidget.h
-	EDRDockInnerWidget.h
-	TestEDRWidget.h
+	#TestEDRWidget.h
 	WorkflowWidget.h
 	WorkflowVDFModel.h
 	WorkflowVDFConnDelContextMenu.h
@@ -169,14 +177,16 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 set(TARGET_UI
-	ui/SceneGraphWidget.ui
-	ui/OsgWidget.ui
-	ui/VisualizerWidget.ui
+	ui/FlexiWidgetTabContentWidget.ui
+	ui/FlexiTabWidget.ui
+	ui/FlexiTabSectionWidget.ui
+	#ui/SceneGraphWidget.ui
+	#ui/OsgWidget.ui
+	#ui/VisualizerWidget.ui
 	ui/DataProcessorWidget.ui
 	ui/EDRTitleBar.ui
-	ui/EDRDockInnerWidget.ui
 	ui/EDRConsoleInnerWidget.ui
-	ui/TestEDRWidget.ui
+	#ui/TestEDRWidget.ui
 	ui/WorkflowWidget.ui
 	ui/LocalDataSourceWidget.ui
 )
@@ -187,8 +197,8 @@ set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 #------------------------------------------------------------------------------
 # RC
 set(TARGET_RC
-	ui/ConsoleWidget.qrc
-	ui/Icons.qrc
+	#ui/ConsoleWidget.qrc
+	ui/CoreIcons.qrc
 )
 QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})

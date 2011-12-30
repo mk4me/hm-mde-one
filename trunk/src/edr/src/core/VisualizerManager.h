@@ -25,7 +25,7 @@
 
 Q_DECLARE_METATYPE(UniqueID);
 
-class SceneGraphWidget;
+//class SceneGraphWidget;
 class DataManager;
 
 class VisualizerManager : public core::IVisualizerManager, public utils::Observable<VisualizerManager>, public ManagerHelper<VisualizerManager>
@@ -70,7 +70,7 @@ private:
     //! Sta³e dane wizualizatorów.
     std::vector< IVisualizerPersistantData* > visualizersData;
     //! Widget do wizualizacji struktury sceny 3D. Do debuggowania.
-    SceneGraphWidget* debugWidget;
+    //SceneGraphWidget* debugWidget;
 
 public:
     //! Tworzenie i niszczenie tylko przez metody singletonu.
@@ -81,15 +81,15 @@ public:
 public:
 
     //! \return
-    SceneGraphWidget* getDebugWidget() const
+    /*SceneGraphWidget* getDebugWidget() const
     { 
         return debugWidget;
-    }
+    }*/
     //! \param debugWidget
-    void setDebugWidget(SceneGraphWidget* debugWidget) 
+   /* void setDebugWidget(SceneGraphWidget* debugWidget) 
     { 
         this->debugWidget = debugWidget; 
-    }
+    }*/
 
     //! \param visualizer
     void registerVisualizer(core::IVisualizerPtr visualizer);

@@ -103,7 +103,7 @@ set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 #------------------------------------------------------------------------------
 # RC
 set(TARGET_RC
-	ui/ConsoleWidget.qrc
+	#ui/ConsoleWidget.qrc
 	ui/Icons.qrc
 )
 QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})

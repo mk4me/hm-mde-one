@@ -12,9 +12,31 @@
 #include <map>
 #include <QtCore/QObject>
 #include <QtGui/QTabWidget>
+#include <QtGui/QTabBar>
 #include <core/IService.h>
 #include <core/SmartPtr.h>
 #include <plugins/dataExplorer/IDataExplorerSource.h>
+
+class TabWidget : public QTabWidget
+{
+    Q_OBJECT;
+
+public:
+    explicit TabWidget(QWidget *parent = 0) : QTabWidget(parent) {}
+    ~TabWidget() {}
+
+public slots:
+
+        void showTabs()
+        {
+            tabBar()->show();
+        }
+
+        void hideTabs()
+        {
+            tabBar()->hide();
+        }
+};
 
 class DataExplorerService : public QObject, public core::IService
 {
@@ -56,7 +78,7 @@ private:
     ActionsToConfiguration actionsToConfiguration;
     core::IManagersAccessor * managersAccessor;
     std::map<UniqueID, DataExplorerSourcePtr> sources;
-    QTabWidget * widget;
+    TabWidget * widget;
 };
 
 #endif HEADER_GUARD___DATAEXPLORERSERVICE_H__

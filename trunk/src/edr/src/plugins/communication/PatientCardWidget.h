@@ -11,11 +11,31 @@
 
 #include <core/SmartPtr.h>
 #include <QtGui/QWidget>
+#include <QtGui/QTextEdit>
+#include <QtGui/QLineEdit>
+#include <QtGui/QSpinBox>
+#include <QtGui/QDateEdit>
+#include <QtGui/QLabel>
+#include <QtGui/QComboBox>
+#include <QtGui/QTableWidget>
+#include <QtGui/QTreeWidget>
 #include <QtGui/QStandardItemModel>
+#include "QMultiToolBox.h"
 #include "ui_PatientCardWidget.h"
 #include <plugins/communication/Entity.h>
 
-class PatientCardWidget : public QWidget, public Ui::PatientCard
+class CardSessionItem : public QTreeWidgetItem
+{
+public:
+    CardSessionItem(unsigned int sessionId);
+
+    unsigned int getSessionID() const;
+
+private:
+    unsigned int sessionID;
+};
+
+class PatientCardWidget : public QFrame, public Ui::PatientCard
 {
     Q_OBJECT;
 
@@ -62,15 +82,21 @@ private slots:
 
     void setActiveSession(unsigned int id);
     void clearActiveSession();
+    void currentSessionChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 
 private:
+
+    void init();
+
+    static void centerTableCellsText(QTableWidget * table);
 
     void refreshDisorders();
     void refreshSessions();
 
     QTreeWidgetItem * createBranch(const std::string & name, const std::map<int, const communication::MotionShallowCopy::Session *> & sessions);
 
-    void fillAntropometricData(const communication::MotionShallowCopy::PerformerConf * configuration);
+    void resetAntropometricData();
+    void fillAntropometricData(const communication::MotionShallowCopy::Attrs & attributes = communication::MotionShallowCopy::Attrs());
 
     static void setAttribute(QTableWidget * table, int row, int column, const std::string & attribute, const communication::MotionShallowCopy::Attrs & attributes);
 
@@ -83,6 +109,18 @@ private:
     PhotoConstPtr photo;
     QStandardItemModel * antropometricGeneralDataModel;
     QStandardItemModel * antropometricLeftRightDataModel;
+    QMultiToolBox * multiToolBoxWidget;
+
+    QWidget * personalDataWidget;
+    QLabel * patientPhotoWidget;
+    QLineEdit * patientEdit;
+    QSpinBox * patientAgeEdit;
+    QComboBox * patientGenderEdit;
+    QLabel * patientBirthDateEdit;
+
+    QTableWidget * disordersTable;
+    QTreeWidget * sessionsWidget;
+    QTextEdit * adnotationsWidget;
 };
 
 #endif HEADER_GUARD___PATIENTCARDWIDGET_H__

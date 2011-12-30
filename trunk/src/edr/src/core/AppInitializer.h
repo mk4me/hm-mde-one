@@ -44,6 +44,12 @@ public:
 	{
         UTILS_STATIC_ASSERT((boost::is_base_of<MainWindow, FrontpageWidget>::value), "Klasa widoku musi dziedziczyæ po klasie MainWindow");
 
+        //WA¯NE!!
+        //tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest tak¹ bibliotek¹ i jego resourcy musza byæ jawnie inicjalizowane
+        //Nazwa resourców musi byc unikalna poniewa¿ Qt "miesza" nazwy metod z nazwamy plików resourców które chcemy inicjalizowaæ tworz¹c unikalne statyczne funkcje na potrzeby inicjalizacji
+        //link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dó³ stronki
+        Q_INIT_RESOURCE(CoreIcons);
+
         //! Wewnêtrzna klasa tworz¹ca wszystkie managery aplikacji i udostepniaj¹ca je widokom oraz serwisom
         class AppManagers : public IManagersAccessor
         {
@@ -151,7 +157,7 @@ public:
             }
 
         private:
-            //sEKCJA WSZYSTKICH MANAGEROW W APLIKACJI - TUTAJ POWINNY SIÊ ZNAJDOWAÆ ICH JEDYNE INSTANJCE!!
+            //SEKCJA WSZYSTKICH MANAGEROW W APLIKACJI - TUTAJ POWINNY SIÊ ZNAJDOWAÆ ICH JEDYNE INSTANJCE!!
 
             DataManager dataManager;
             VisualizerManager visualizerManager;

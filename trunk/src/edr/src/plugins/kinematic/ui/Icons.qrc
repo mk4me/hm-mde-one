@@ -1,0 +1,12 @@
+<RCC>
+  <qresource prefix="resources/icons">
+    <file>../../../../resources/icons/foot_trace.png</file>
+    <file>../../../../resources/icons/foot_tracea.png</file>
+    <file>../../../../resources/icons/force_trace.png</file>
+    <file>../../../../resources/icons/force_tracea.png</file>
+    <file>../../../../resources/icons/skeletal_trace.png</file>
+    <file>../../../../resources/icons/skeletal_tracea.png</file>
+    <file>../../../../resources/icons/trace.png</file>
+    <file>../../../../resources/icons/tracea.png</file>
+  </qresource>
+</RCC>

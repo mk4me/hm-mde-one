@@ -1,4 +1,5 @@
 #include "hmmPCH.h"
+#include <cmath>
 #include "HmmMainWindow.h"
 #include "ui_LoadingDialog.h"
 #include "LoadingDialog.h"
@@ -15,9 +16,231 @@
 #include <plugins/subject/ISubjectService.h>
 #include "IllnessUnit.h"
 #include "EMGFilter.h"
+#include "EDRTitleBar.h"
+
 
 using namespace core;
 
+HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
+{
+
+}
+
+void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
+{
+    if(contextWidget == nullptr){
+        return;
+    }
+
+    auto it = visualizersData.find(contextWidget);
+
+    if(it == visualizersData.end()){
+        return;
+    }
+
+    if(it->second.empty() == false){
+        auto visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
+        auto vis = visWidget->getCurrentVisualizer();
+        //tworzymy grupe dla wizualizatora
+        visualizerGroupID = flexiTabWidget->addGroup(QString::fromUtf8("Visualizer - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
+
+        for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); sectionIT++){
+            auto sectionID = flexiTabWidget->addSection(visualizerGroupID, sectionIT->second, sectionIT->first);
+            sectionIT->second->setVisible(true);
+            visualizerSectionsIDs.insert(sectionID);
+        }
+        
+        flexiTabWidget->setCurrentGroup(visualizerGroupID);
+    }
+}
+
+void HMMVisualizerUsageContext::deactivateContext(QWidget * contextWidget)
+{
+    auto visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
+
+    if(visualizerGroupID != -1 && getCurrentContextWidget() == contextWidget){
+        flexiTabWidget->removeGroup(visualizerGroupID);
+        visualizerGroupID = -1;
+        visualizerSectionsIDs.swap(std::set<FlexiTabWidget::GUIID>());
+    }
+}
+
+void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
+{
+    VisualizerWidget * visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
+    // przygotowanie do wypelnienia grupy
+    VisualizerWidget::VisualizerTitleBarElements titleBarElements;
+
+    visWidget->getVisualizerTitleBarElements(titleBarElements);
+
+    if(titleBarElements.empty() == false){
+        auto vis = visWidget->getCurrentVisualizer();
+
+        //podziel elementy na 4 grupy - akcje, menusy, widget i inne nieobslugiwane elementy
+        //przy okazji wyznaczamy ilosc elementow oraz ich sumaryczna szerokosc i najwieksza wysokosc do pozniejszego layoutowania
+        //elementy sa indeksowane tak jak podeslal nam je klient, ale ich kolejnosc moze zostac zmieniona zeby lepiej je rozlozyc
+        std::map<unsigned int, QAction*> actions;
+        std::map<unsigned int, QMenu*> menus;
+        //std::map<unsigned int, QWidget*> widgets;
+        std::map<unsigned int, QObject*> others;
+
+        // budujemy widgety ktore beda potem trafialy do toolbarow
+        std::map<unsigned int, QWidget*> toolbarElements;
+
+        int maxHeight = 0;
+        int totalWidth = 0;
+        int totalElements = titleBarElements.size();
+
+        for(unsigned int i = 0; i < totalElements; i++){
+            if(QAction * action = qobject_cast<QAction*>(titleBarElements[i].first)){
+                actions[i] = action;
+            }else if(QMenu * menu = qobject_cast<QMenu*>(titleBarElements[i].first)){
+                menus[i] = menu;
+            }else if(QWidget * widget = qobject_cast<QWidget*>(titleBarElements[i].first)){
+                //widgets[i] = widget;
+                toolbarElements[i] = widget;
+                //dodajemy od razu do elementow toolbara - indeksy zostaja zachowane dla pozniejszego rozmieszczania wg kolejnosci
+                auto s = widget->sizeHint();
+                int width = min(s.width(), 250);
+                if(s.width() > 250){
+                    widget->setMaximumWidth(250);
+                }
+                totalWidth += width;
+                maxHeight = max(maxHeight, s.height());
+            }else{
+                others[i] = titleBarElements[i].first;
+            }
+        }
+
+        totalElements -= others.size();
+
+        if(totalElements == 0){
+            return;
+        }
+
+        for(auto it = actions.begin(); it != actions.end(); it++){
+            QToolButton * actionButton = new QToolButton();
+            if(it->second->toolTip().isEmpty() == true){
+                actionButton->setToolTip(it->second->text());
+            }
+
+            //actionButton->setIconSize(QSize(20,20));
+            //actionButton->setFixedSize(20,20);
+
+            actionButton->setDefaultAction(it->second);
+            //actionButton->setMaximumSize(QSize(20,20));
+            actionButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+            toolbarElements[it->first] = actionButton;
+
+            auto s = actionButton->sizeHint();
+            totalWidth += s.width();
+            maxHeight = max(maxHeight, s.height());
+        }
+
+        for(auto it = menus.begin(); it != menus.end(); it++){
+            QToolButton * menuButton = new QToolButton();
+
+            if(it->second->toolTip().isEmpty() == true){
+                menuButton->setToolTip(it->second->title());
+            }
+
+            menuButton->setMenu(it->second);
+
+            //menuButton->setIconSize(QSize(20,20));
+            //menuButton->setMaximumHeight(20);
+
+            menuButton->setText(it->second->title());
+            menuButton->setPopupMode(QToolButton::InstantPopup);
+
+            menuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+            toolbarElements[it->first] = menuButton;
+
+            auto s = menuButton->sizeHint();
+            totalWidth += s.width();
+            maxHeight = max(maxHeight, s.height());
+        }
+
+        //rozkladamy to w niezaleznych QToolBarach. Maksymalnie 2 rzedy.
+        //TODO
+        //dodac maksymalna szerokosc + przerzucanie elementow do ukrytego panelu jesli za duzo ich jest
+
+        int halfWidth = totalWidth;
+
+        int halfElements = totalElements / 2;
+
+        QVBoxLayout * layout = new QVBoxLayout();
+        QToolBar * topToolbar = new QToolBar();
+        layout->addWidget(topToolbar);
+
+        QToolBar * bottomToolbar = nullptr;
+
+        //budujemy 2 wiersze jesli conajmniej 5 elementow
+        if(halfElements > 4){
+            bottomToolbar = new QToolBar();
+            layout->addWidget(bottomToolbar);
+            halfWidth /= 2;
+        }
+
+        layout->addSpacerItem(new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+        int currentWidth = 0;
+        auto it = toolbarElements.begin();
+
+        while(it != toolbarElements.end()){
+            auto s = it->second->sizeHint();
+            int width = min(s.width(), 250);
+            if(currentWidth + width > halfWidth){
+                it++;
+            }else{
+                topToolbar->addWidget(it->second);
+                currentWidth += width;
+                it = toolbarElements.erase(it);
+            }
+        }
+
+        if(bottomToolbar != nullptr){
+            it = toolbarElements.begin();
+
+            while(it != toolbarElements.end()){
+                bottomToolbar->addWidget(it->second);
+                it++;
+            }
+        }
+
+        //wypelniamy grupe
+        QWidget * widget = new QWidget();
+        widget->setLayout(layout);
+        layout->setContentsMargins(0,0,0,0);
+        layout->setMargin(0);
+        layout->setSpacing(1);
+
+        visualizersData[contextWidget][QString::fromUtf8("Default operations")] = widget;
+    }
+}
+
+void HMMVisualizerUsageContext::onUnregisterContextWidget(QWidget * contextWidget)
+{
+    auto it = visualizersData.find(contextWidget);
+
+    if(it == visualizersData.end()){
+        return;
+    }
+
+    for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); sectionIT++){
+        try{
+
+            delete sectionIT->second;
+
+        }catch(...)
+        {
+
+        }
+    }
+
+    visualizersData.erase(it);
+}
 
 HmmMainWindow::HmmMainWindow() :
 	MainWindow(),
@@ -27,8 +250,16 @@ HmmMainWindow::HmmMainWindow() :
     currentItem(nullptr),
     data(nullptr),
     operations(nullptr),
-    dataObserver(new DataObserver(this))
+    dataObserver(new DataObserver(this)),
+    visualizersActionsTab(new QWidget()),
+    flexiTabWidget(new FlexiTabWidget())
 {
+    setupUi(this);
+
+    visualizerUsageContext.reset(new HMMVisualizerUsageContext(flexiTabWidget));
+
+    tabPlaceholder->layout()->addWidget(flexiTabWidget);
+
 	this->setWindowFlags(Qt::FramelessWindowHint);
     itemClickAction.setMainWindow(this);
     setMouseTracking(true);
@@ -36,6 +267,20 @@ HmmMainWindow::HmmMainWindow() :
     manager->attach(dataObserver.get());
 }
 
+void HmmMainWindow::onFocusChange(QWidget * oldWidget, QWidget * newWidget)
+{
+    //jesli faktycznie contextWidget to ustawiamy aktywny kontekst
+    if(isContextWidget(newWidget)){
+        setCurrentContext(newWidget);
+    }else{
+
+        QWidget * widget = getParentContextWidget(newWidget);
+
+        if(widget != nullptr && widget != getCurrentContextWidget()){
+            setCurrentContext(widget);
+        }
+    }
+}
 
 void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
@@ -49,12 +294,16 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     }
     qApp->installTranslator(&translator);
     
-	setupUi(this);
+    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChange(QWidget*,QWidget*)));
+	
 
     trySetStyleByName("hmm");
 
     this->analisis = new AnalisisWidget(nullptr);
     this->data = new QWidget(nullptr);
+
+    this->data->setContentsMargins(0,0,0,0);
+
     this->operations = new QWidget(nullptr);
     this->raports = new QWidget(nullptr);
 
@@ -168,6 +417,26 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     layout->addWidget(actionsMainWindow);
 
 	operations->setLayout(layout);
+
+    toolsGroupID = flexiTabWidget->addGroup(QString::fromUtf8("Tools"));
+    visualizerGroupID = flexiTabWidget->addGroup(QString::fromUtf8("Visualizer"), QIcon(), false);
+
+    //TODO
+    //Tak dlugo jak nie mamy raportow chowamy je w wersji release
+    //Podobnie odnosnik do stronki
+    #ifndef _DEBUG
+        raportsButton->setVisible(false);
+        openButton->setVisible(false);
+    #endif
+}
+
+void HmmMainWindow::setCurrentVisualizerActions(VisualizerWidget * visWidget)
+{
+    if(currentVisualizer != visWidget){
+        return;
+    }
+
+    setCurrentContext(visWidget);
 }
 
 HmmMainWindow::~HmmMainWindow()
@@ -244,14 +513,14 @@ void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
             connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
 
             BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
-                QMenu* group = new QMenu(set->getTitle(), menu);
+                QMenu* group = new QMenu(set->windowTitle(), menu);
                 menu->addMenu(group);
                 BOOST_FOREACH(EDRDockWidget* dock, set->getDockWidgets()) {
                     VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(dock);
                     if (vw ) {
                         VisualizerPtr visualizer = vw->getCurrentVisualizer();
                         QAction* addAction = new ContextAction(helper, group, visualizer);
-                        addAction->setText(vw->getTitle());
+                        addAction->setText(vw->windowTitle());
                         connect(addAction, SIGNAL(triggered()), this, SLOT(addToVisualizer()));
                         group->addAction(addAction);
                     }
@@ -266,25 +535,6 @@ void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
 
         menu->exec(treeWidget->mapToGlobal(pos));
     }
-}
-
-void HmmMainWindow::visualizerFocusChanged(bool focus)
-{
-    VisualizerWidget * widget = qobject_cast<VisualizerWidget *>(sender());
-
-    if(widget == nullptr){
-        return;
-    }
-
-    if(widget != currentVisualizer){
-        if(currentVisualizer != nullptr){
-            currentVisualizer->setTitleBarVisible(!focus);
-        }
-
-        currentVisualizer = widget;
-    }
-
-    currentVisualizer->setTitleBarVisible(focus);
 }
 
 //void HmmMainWindow::onOpen()
@@ -371,23 +621,20 @@ void HmmMainWindow::showTimeline()
                 std::vector<QObject*> settingsWidgetActions;
                 QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
 
-                EDRDockWidget * widget = new EDRDockWidget();
-                QLayout* layout = widget->getInnerWidget()->layout();
+                EDRDockWidget * widget = new EDRDockWidget(nullptr);
+                widget->setTitleBarWidget(new QWidget());
+                widget->titleBarWidget()->setEnabled(false);
+                /*QLayout* layout = widget->getInnerWidget()->layout();
                 layout->setMargin(0);
                 layout->setContentsMargins(QMargins(0, 0, 0, 0));
-                layout->addWidget(controlWidget);
+                layout->addWidget(controlWidget);*/
+                widget->setWidget(controlWidget);
                 widget->setAllowedAreas(Qt::BottomDockWidgetArea);
                 widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-                for(auto it = controlWidgetActions.begin(); it!= controlWidgetActions.end(); it++){
-                    widget->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
-                }
 			
                 bottomMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
 
-                widget->getTitleBar()->setFloatButtonVisible(false);
-                widget->getTitleBar()->setCloseButtonVisible(false);
-
-                widget->setTitleBarVisible(false);
+                
                 timelineVisible = true;
             }
 	    }
@@ -413,7 +660,7 @@ void HmmMainWindow::createFilterTabs()
 
 void HmmMainWindow::createFilterTab1()
 {
-    //core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
+    /*
     QPixmap iconAnalog(core::getResourceString("icons/analogBig.png"));
     QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
     QPixmap iconKinematic(core::getResourceString("icons/kinematicBig.png"));
@@ -427,6 +674,21 @@ void HmmMainWindow::createFilterTab1()
     QPixmap iconJointSmall(core::getResourceString("icons/jointSmall.png"));
     QPixmap iconMarkerSmall(core::getResourceString("icons/markerSmall.png"));
     QPixmap iconVideoSmall(core::getResourceString("icons/videoSmall.png"));
+    */
+
+    QPixmap iconAnalog(QString::fromUtf8(":/resources/icons/analogBig.png"));
+    QPixmap iconKinetic(QString::fromUtf8(":/resources/icons/kineticBig.png"));
+    QPixmap iconKinematic(QString::fromUtf8(":/resources/icons/kinematicBig.png"));
+    QPixmap iconVideo(QString::fromUtf8(":/resources/icons/videoBig.png"));
+
+    QPixmap iconEmgSmall(QString::fromUtf8(":/resources/icons/emg1Small.png"));
+    QPixmap iconForceSmall(QString::fromUtf8(":/resources/icons/forcesSmall.png"));
+    QPixmap iconPowerSmall(QString::fromUtf8(":/resources/icons/powerSmall.png"));
+    QPixmap iconGRFSmall(QString::fromUtf8(":/resources/icons/grfSmall.png"));
+    QPixmap iconMomentSmall(QString::fromUtf8(":/resources/icons/momentSmall.png"));
+    QPixmap iconJointSmall(QString::fromUtf8(":/resources/icons/jointSmall.png"));
+    QPixmap iconMarkerSmall(QString::fromUtf8(":/resources/icons/markerSmall.png"));
+    QPixmap iconVideoSmall(QString::fromUtf8(":/resources/icons/videoSmall.png"));
     
     DataFilterWidget* filter1 = new DataFilterWidget(tr("ANALOG"), iconAnalog, this);
     DataFilterWidget* filter2 = new DataFilterWidget(tr("KINETIC"), iconKinetic, this);
@@ -659,11 +921,19 @@ void HmmMainWindow::createFilterTab1()
 void HmmMainWindow::createFilterTab2()
 {
     core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
+    /*
     QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
     QPixmap iconIllness(core::getResourceString("icons/jed.chorobowe.png"));
     QPixmap iconEndo(core::getResourceString("icons/po_endoplastyce.png"));
     QPixmap iconStroke(core::getResourceString("icons/po_udarze.png"));
     QPixmap iconSpine(core::getResourceString("icons/zwyrodnienia.png"));
+    */
+
+    QPixmap iconKinetic(QString::fromUtf8(":/resources/icons/kineticBig.png"));
+    QPixmap iconIllness(QString::fromUtf8(":/resources/icons/jed.chorobowe.png"));
+    QPixmap iconEndo(QString::fromUtf8(":/resources/icons/po_endoplastyce.png"));
+    QPixmap iconStroke(QString::fromUtf8(":/resources/icons/po_udarze.png"));
+    QPixmap iconSpine(QString::fromUtf8(":/resources/icons/zwyrodnienia.png"));
    
     DataFilterWidget* filter1 = new DataFilterWidget("ILLNESS", iconIllness, this);
     DataFilterWidget* filter2 = new DataFilterWidget("MULTI", iconKinetic, this);
@@ -722,7 +992,8 @@ void HmmMainWindow::createFilterTab2()
     this->analisis->addDataFilterWidget(filter3);
     this->analisis->addDataFilterWidget(filter4);
 
-    QPixmap big(core::getResourceString("icons/Big.png"));
+    //QPixmap big(core::getResourceString("icons/Big.png"));
+    QPixmap big(QString::fromUtf8(":/resources/icons/Big.png"));
     this->analisis->setActivePixmapAndText(big, "ALL");
 }
 
@@ -786,11 +1057,7 @@ void HmmMainWindow::onToolButton()
 
 void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 {
-    //VisualizerWidget * vis = qobject_cast<VisualizerWidget *>(visualizer);
-
-    if(visualizer == currentVisualizer){
-        currentVisualizer = nullptr;
-    }
+    removeContext(qobject_cast<QWidget*>(visualizer));
 }
 
  VisualizerWidget* HmmMainWindow::createDockVisualizer( TreeItemHelper* hmmItem )
@@ -823,29 +1090,34 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     visualizer->getOrCreateWidget();
 
     VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer);
+    visualizerDockWidget->setPermanent(false);
     visualizerDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     //visu->setStyleSheet(styleSheet());
     visualizerDockWidget->setVisualizerIconVisible(false);
-    visualizerDockWidget->setSplitHVisible(false);
-    visualizerDockWidget->setSplitVVisible(false);
-    visualizerDockWidget->setActiveVisualizerSwitch(false);
+    visualizerDockWidget->setVisualizerSwitchEnable(false);
+    visualizerDockWidget->setVisualizerSwitchVisible(false);
     visualizerDockWidget->setSourceVisible(false);
 
-    visualizerDockWidget->setTitleBarVisible(false);
+    //auto titleBar = new EDRTitleBar();
+    //visualizerDockWidget->setTitleBarWidget(titleBar);
+    //connect(visualizerDockWidget, SIGNAL(windowTitleChanged(const QString &)), titleBar, SLOT(setTitle(const QString &)));
+    //connect(titleBar->actionFloat, SIGNAL(triggered()), visualizerDockWidget, SLOT(toggleFloating()));
+    //connect(titleBar->actionClose, SIGNAL(triggered()), visualizerDockWidget, SLOT(close()));
+    //odswiezam titlebar!!
+    //visualizerDockWidget->setWindowTitle(visualizerDockWidget->windowTitle());
+    EDRTitleBar * titleBar = supplyWithEDRTitleBar(visualizerDockWidget);
 
     std::vector<VisualizerTimeSeriePtr> series;
     hmmItem->getSeries(visualizer, path, series);
     visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
 
-    connect(visualizerDockWidget, SIGNAL(focuseChanged(bool)), this, SLOT(visualizerFocusChanged(bool)));
-
-    //topMainWindow->autoAddDockWidget( visualizerDockWidget);
-    connect(visualizerDockWidget, SIGNAL(focuseGained()), this, SLOT(visualizerGainedFocus()));
-
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
 
     addSeriesToTimeline(series, path, visualizer);
 
+    //kontekst wizualizatora!!
+    addContext(visualizerUsageContext);
+    addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
 
     return visualizerDockWidget;
 }

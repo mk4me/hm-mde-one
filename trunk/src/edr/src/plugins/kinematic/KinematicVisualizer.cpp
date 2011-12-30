@@ -213,7 +213,7 @@ osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
 
 QIcon* KinematicVisualizer::createIcon()
 {
-    return new QIcon(core::getResourceString("icons/3D.png"));
+    return new QIcon(QString::fromUtf8(":/resources/icons/3D.png"));
 }
 
 void KinematicVisualizer::setAxis( bool xyz )

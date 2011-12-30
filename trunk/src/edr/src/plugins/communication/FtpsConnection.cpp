@@ -43,7 +43,11 @@ FtpsConnection::FtpsConnection(const std::string& uri, const std::string& usr, c
 FtpsConnection::~FtpsConnection()
 {
     if(this->curl) {
-        curl_easy_cleanup(this->curl);
+        try{
+            curl_easy_cleanup(this->curl);
+        }catch(...){
+
+        }
     }
     curl_global_cleanup();
 }
@@ -92,6 +96,7 @@ const std::string & FtpsConnection::getLastError() const
 
 FtpsConnection::OperationStatus FtpsConnection::get(const std::string& remoteSource, const std::string& localDestination, IProgress * customProgress)
 {
+    OperationStatus ret = Complete;
     errorMessage.swap(std::string());
     progress.progress = 0;
     progress.abort = false;
@@ -137,15 +142,16 @@ FtpsConnection::OperationStatus FtpsConnection::get(const std::string& remoteSou
     if(CURLE_OK != this->res) {
         if(res == CURLE_ABORTED_BY_CALLBACK) {
             core::Filesystem::deleteFile(localDestination);
-            return Cancelled;
+            ret = Cancelled;
         }else{
             errorMessage = curl_easy_strerror(this->res);
-            //throw std::runtime_error(error);
-            return Error;
+            ret = Error;
         }
     }
 
-    return Complete;
+    curl_easy_reset(this->curl);
+
+    return ret;
 }
 
 FtpsConnection::OperationStatus FtpsConnection::put(const std::string& localSource, const std::string& remoteDestination)
@@ -217,8 +223,13 @@ size_t FtpsConnection::setCustomProgress(Progress* progress, double t, /* dltota
 
     double val = (d * 100.0) / t;
 
-    progress->customProgress->setProgress(val);
     progress->progress = static_cast<int>(val);
+    //try{
+    progress->customProgress->setProgress(val);
+    //}catch(const std::exception & e)
+    //{
+    //    std::cout << e.what();
+    //}
     return 0;
 }
 

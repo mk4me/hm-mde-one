@@ -13,15 +13,16 @@
 #include <QtGui/QWidget>
 #include <core/IEDRTitleBar.h>
 #include <map>
+#include "EDRDockWidget.h"
 
 class EDRTitleBar : public QWidget, public Ui::EDRTitleBar, public IEDRTitleBar
 {
     Q_OBJECT
 
 private:
-    typedef std::pair<SideType, QWidget*> OBJECT_DESCRIPTOR;
-    typedef std::map<QObject*, OBJECT_DESCRIPTOR> OBJECTS_DATA;
-    typedef std::map<QWidget*, QObject*> WIDGET_OBJECTS;
+    typedef std::pair<SideType, QWidget*> ObjectDescriptor;
+    typedef std::map<QObject*, ObjectDescriptor> ObjectData;
+    typedef std::map<QWidget*, QObject*> WidgetObjects;
 
 public:
     //! \param parent
@@ -32,15 +33,21 @@ public:
 
     virtual void addObject(QObject * object, SideType side);
     virtual void removeObject(QObject * object);
+    bool isCloseButtonVisible() const;
+    bool isFloatButtonVisible() const;
+    bool isTitleVisible() const;
+    QString getTitle() const;
     
+public slots:
     virtual void clearSide(SideType side);
     virtual void clear();
 
-    bool isCloseButtonVisible() const;
     void setCloseButtonVisible(bool visible);
-
-    bool isFloatButtonVisible() const;
     void setFloatButtonVisible(bool visible);
+    void setTitleVisible(bool visible);
+    void setTitle(const QString & title);
+
+    void refreshFeatures(QDockWidget::DockWidgetFeatures features);
 
 protected:
     virtual void paintEvent(QPaintEvent *paintEvent);
@@ -50,8 +57,10 @@ private:
 
 private:
 
-    OBJECTS_DATA objectData;
-    WIDGET_OBJECTS widgetObjects;
+    ObjectData objectData;
+    WidgetObjects widgetObjects;
 };
+
+EDRTitleBar * supplyWithEDRTitleBar(EDRDockWidget * dockWidget, bool refresh = true);
 
 #endif  //  HEADER_GUARD_CORE__EDRTITLEBAR_H__

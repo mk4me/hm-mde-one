@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include "EDRConsoleWidget.h"
+#include "EDRTitleBar.h"
 
 EDRConsoleWidget::EDRConsoleWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)
     : EDRDockWidget(title, parent, flags), consoleWidget(new EDRConsoleInnerWidget())
@@ -23,10 +24,16 @@ void EDRConsoleWidget::init()
     qRegisterMetaType<EDRConsoleWidgetEntry>("EDRConsoleWidgetEntry");
     qRegisterMetaType<EDRConsoleWidgetEntryPtr>("EDRConsoleWidgetEntryPtr");
 
-    getInnerWidget()->layoutContent->addWidget(consoleWidget);
+    EDRTitleBar * titleBar = supplyWithEDRTitleBar(this);
+
+    //EDRTitleBar * titleBar = new EDRTitleBar();
+    //setTitleBarWidget(titleBar);
+
+    //connect(this, SIGNAL(windowTitleChanged(const QString &)), titleBar, SLOT(setTitle(const QString &)));
+
+    setWidget(consoleWidget);
     setWindowTitle(consoleWidget->windowTitle());
 
-    EDRTitleBar * titleBar = getTitleBar();
 
     //QLabel * label;
     QToolButton *clearButton;
@@ -35,14 +42,14 @@ void EDRConsoleWidget::init()
     clearButton = new QToolButton(titleBar);
     clearButton->setObjectName(QString::fromUtf8("clearButton"));
     QIcon icon;
-    icon.addFile(QString::fromUtf8("resources/icons/clear_console_16x16.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon.addFile(QString::fromUtf8(":/resources/icons/clear_console.png"), QSize(), QIcon::Normal, QIcon::Off);
     clearButton->setIcon(icon);
     clearButton->setIconSize(QSize(16, 16));
 
     toggleWordWrapButton = new QToolButton(titleBar);
     toggleWordWrapButton->setObjectName(QString::fromUtf8("toggleWordWrapButton"));
     QIcon icon1;
-    icon1.addFile(QString::fromUtf8("resources/icons/word_wrap_16x16.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon1.addFile(QString::fromUtf8(":/resources/icons/word_wrap_16x16.png"), QSize(), QIcon::Normal, QIcon::Off);
     toggleWordWrapButton->setIcon(icon1);
     toggleWordWrapButton->setCheckable(true);
 

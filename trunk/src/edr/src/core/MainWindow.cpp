@@ -3,7 +3,7 @@
 #include <core/ObjectWrapperFactory.h>
 #include "MainWindow.h"
 #include <osgui/QOsgWidgets.h>
-#include "SceneGraphWidget.h"
+//#include "SceneGraphWidget.h"
 
 #include <osg/Vec3d>
 #include <osg/Quat>
@@ -23,6 +23,7 @@
 #include "DataSourceManager.h"
 #include "UserInterfaceService.h"
 #include "EDRConfig.h"
+#include "EDRTitleBar.h"
 
 #include <iostream>
 
@@ -31,7 +32,6 @@
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
 #include <functional>
-//#include <boost/regex.hpp>
 
 #include "Log.h"
 #include <core/StringTools.h>
@@ -60,6 +60,7 @@ DEFINE_DEFAULT_LOGGER("edr.core");
 
 using namespace core;
 
+MainWindow * MainWindow::instance = nullptr;
 
 void MainWindow::setStyle( const core::Filesystem::Path& path )
 {
@@ -119,7 +120,7 @@ CORE_DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstru
 Q_DECLARE_METATYPE ( Filesystem::Path );
 
 MainWindow::MainWindow():
-QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr), widgetSceneGraph(nullptr)
+QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr)//, widgetSceneGraph(nullptr)//, currentContextWidget(nullptr)
 {
 
 }
@@ -127,6 +128,7 @@ QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr), widgetSceneGra
 
 void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAccessor) 
 {
+    instance = this;
 	this->pluginLoader = pluginLoader;
     this->managersAccessor = managersAccessor;
     //setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
@@ -186,7 +188,7 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 
 MainWindow::~MainWindow()
 {
-    VisualizerManager::getInstance()->setDebugWidget(nullptr);
+//    VisualizerManager::getInstance()->setDebugWidget(nullptr);
 }
 
 void MainWindow::findResources(const std::string& resourcesPath)
@@ -253,18 +255,19 @@ void MainWindow::closeEvent(QCloseEvent* event)
     QMainWindow::closeEvent(event);
 }
 
-void MainWindow::InitializeControlWidget()
-{
-    // inicjalizacja GridWidget
-    EDRDockWidget *gDock = new EDRDockWidget(tr("Service scene graph"), this, Qt::WindowTitleHint);
-    gDock->setObjectName(QString("GridWidget"));
-    gDock->setAllowedAreas(Qt::LeftDockWidgetArea);
-
-    widgetSceneGraph = new SceneGraphWidget();    
-    addDockWidget(Qt::LeftDockWidgetArea, gDock);
-    gDock->getInnerWidget()->layout()->addWidget((QWidget*)widgetSceneGraph);
-    gDock->setPermanent(true);
-}
+//void MainWindow::InitializeControlWidget()
+//{
+//    // inicjalizacja GridWidget
+//    EDRDockWidget *gDock = new EDRDockWidget(tr("Service scene graph"), this, Qt::WindowTitleHint);
+//    gDock->setObjectName(QString("GridWidget"));
+//    gDock->setAllowedAreas(Qt::LeftDockWidgetArea);
+//
+//    widgetSceneGraph = new SceneGraphWidget();    
+//    addDockWidget(Qt::LeftDockWidgetArea, gDock);
+//    //gDock->getInnerWidget()->layout()->addWidget((QWidget*)widgetSceneGraph);
+//    gDock->setWidget((QWidget*)widgetSceneGraph);
+//    gDock->setPermanent(true);
+//}
 
 
 
@@ -273,6 +276,7 @@ void MainWindow::initializeConsole()
     widgetConsole = new EDRConsoleWidget(tr("Console"), this, Qt::WindowTitleHint);    
     widgetConsole->setObjectName("Console");
     widgetConsole->setAllowedAreas(Qt::BottomDockWidgetArea);
+    widgetConsole->setPermanent(true);
     //addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
 }
 
@@ -491,11 +495,21 @@ QDockWidget* MainWindow::embeddWidget( QWidget* widget, std::vector<QObject*>& w
     dock->setAllowedAreas(area);
     dock->setObjectName(name + widget->objectName() + "WIDGET" + sufix);
     dock->setStyleSheet(style);
-    dock->getInnerWidget()->layoutContent->addWidget(widget);
+    dock->setWidget(widget);
+    dock->setPermanent(true);
     QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
 
-    for(auto it = widgetActions.begin(); it!= widgetActions.end(); it++){
-        dock->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
+    if(widgetActions.empty() == false){
+
+        //EDRTitleBar * titleBar = new EDRTitleBar();
+        //dock->setTitleBarWidget(titleBar);
+
+        EDRTitleBar * titleBar = supplyWithEDRTitleBar(dock);
+
+        for(auto it = widgetActions.begin(); it!= widgetActions.end(); it++){
+            //dock->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
+            titleBar->addObject(*it, IEDRTitleBar::Left);
+        }
     }
 
     return dock;

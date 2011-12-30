@@ -10,7 +10,7 @@ EDRTitleBar::EDRTitleBar(QWidget* parent) : QWidget(parent)
 
 EDRTitleBar::~EDRTitleBar()
 {
-
+    clear();
 }
 
 void EDRTitleBar::addObject(QObject * object, SideType side)
@@ -52,7 +52,7 @@ void EDRTitleBar::addObject(QObject * object, SideType side)
     }
         
     frame->layout()->addWidget(widget);
-    objectData[object] = OBJECT_DESCRIPTOR(side, widget);
+    objectData[object] = ObjectDescriptor(side, widget);
     widgetObjects[widget] = object;
 }
 
@@ -65,7 +65,12 @@ void EDRTitleBar::removeObject(QObject * object)
     QLayout * layout = getSideFrame(it->second.first)->layout();
     
     layout->removeWidget(it->second.second);
-    delete it->second.second;
+    
+    //jezeli nie widget customowy to znaczy ze akcja lub menu dla ktorych przygotowalem button,
+    // reszta klient sam zarzadza
+    if(it->first != it->second.second){
+        delete it->second.second;
+    }
 
     widgetObjects.erase(it->second.second);
     objectData.erase(it);
@@ -108,8 +113,8 @@ void EDRTitleBar::clear()
     clearSide(Left);
     clearSide(Right);
 
-    objectData.swap(OBJECTS_DATA());
-    widgetObjects.swap(WIDGET_OBJECTS());
+    objectData.swap(ObjectData());
+    widgetObjects.swap(WidgetObjects());
 }
 
 bool EDRTitleBar::isCloseButtonVisible() const
@@ -138,4 +143,74 @@ void EDRTitleBar::paintEvent( QPaintEvent *paintEvent )
     opt.init(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this); // PE_Widget
+}
+
+bool EDRTitleBar::isTitleVisible() const
+{
+    return titleLabel->isVisible();
+}
+
+QString EDRTitleBar::getTitle() const
+{
+    return titleLabel->text();
+}
+
+void EDRTitleBar::setTitleVisible(bool visible)
+{
+    titleLabel->setVisible(visible);
+}
+
+void EDRTitleBar::setTitle(const QString & title)
+{
+    titleLabel->setText(title);
+}
+
+void EDRTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
+{
+    if(features && QDockWidget::DockWidgetClosable){
+        buttonClose->setVisible(true);
+    }else{
+        buttonClose->setVisible(false);
+    }
+
+    if(features && QDockWidget::DockWidgetFloatable){
+        buttonFloat->setVisible(true);
+    }else{
+        buttonFloat->setVisible(false);
+    }
+
+    if(features && QDockWidget::DockWidgetMovable){
+        setEnabled(true);
+    }else{
+        setEnabled(false);
+    }
+}
+
+EDRTitleBar * supplyWithEDRTitleBar(EDRDockWidget * dockWidget, bool refresh)
+{
+    if(dockWidget == nullptr){
+        throw std::runtime_error("EDRTitleBar supply request for uninitialized EDRDockWidget");
+    }
+
+    if(dockWidget->titleBarWidget() != nullptr){
+        LOG_WARNING("DockWidget already has a titlebar!!");
+        return nullptr;
+    }
+
+    auto titleBar = new EDRTitleBar();
+
+    dockWidget->setTitleBarWidget(titleBar);
+
+    QObject::connect(dockWidget, SIGNAL(windowTitleChanged(const QString &)), titleBar, SLOT(setTitle(const QString &)));
+    QObject::connect(dockWidget, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), titleBar, SLOT(refreshFeatures(QDockWidget::DockWidgetFeatures)));
+    QObject::connect(titleBar->actionFloat, SIGNAL(triggered()), dockWidget, SLOT(toggleFloating()));
+    QObject::connect(titleBar->actionClose, SIGNAL(triggered()), dockWidget, SLOT(close()));
+    
+    //odswiezam titlebar!!
+    if(refresh == true){
+        dockWidget->setWindowTitle(dockWidget->windowTitle());
+        dockWidget->setFeatures(dockWidget->features());
+    }
+
+    return titleBar;
 }

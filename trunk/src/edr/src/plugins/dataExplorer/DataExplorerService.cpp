@@ -4,9 +4,10 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QLayout>
 
-DataExplorerService::DataExplorerService() : widget(new QTabWidget())
+DataExplorerService::DataExplorerService() : widget(new TabWidget())
 {
-
+    widget->hideTabs();
+    widget->setContentsMargins(0,0,0,0);
 }
 
 DataExplorerService::~DataExplorerService()
@@ -54,6 +55,10 @@ void DataExplorerService::registerSource(IDataExplorerSource * source)
     //ostateczna rejestracja Ÿród³a
 
     sources[source->getID()] = sourcePtr;
+
+    if(sources.size() > 1){
+        widget->showTabs();
+    }
 }
 
 void DataExplorerService::addSourceToWidget(IDataExplorerSource * source)

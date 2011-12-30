@@ -14,7 +14,7 @@
 #include "MainWindow.h"
 class UserInterfaceService;
 class ServiceManager;
-class SceneGraphWidget;
+//class SceneGraphWidget;
 class EDRConsoleWidget;
 class VisualizerManager;
 class DataProcessorManager;
@@ -30,6 +30,7 @@ public:
 
 public:
 	virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
+    virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
 
 public slots:
 	

@@ -2,78 +2,20 @@
 #include "EDRDockWidget.h"
 
 EDRDockWidget::EDRDockWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)
-    : QDockWidget(title, parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRDockInnerWidget()),
-    emptyTitleBar( new QWidget())
+    : QDockWidget(title, parent, flags)
 {
-    init();
+
 }
 
 EDRDockWidget::EDRDockWidget(QWidget * parent, Qt::WindowFlags flags)
-    : QDockWidget(parent, flags), titleBar(new EDRTitleBar()), innerWidget(new EDRDockInnerWidget()),
-    emptyTitleBar( new QWidget())
+    : QDockWidget(parent, flags)
 {
-    init();
-    setWindowTitle("Default EDRDockWidget");
+    //setWindowTitle("Default EDRDockWidget");
 }
 
 EDRDockWidget::~EDRDockWidget()
 {
-    int a = 0;
-    a++;
-}
 
-void EDRDockWidget::init()
-{
-    showTitleBar = true;
-
-    //mo¿na focusowaæ widget
-    setFocusPolicy(Qt::StrongFocus);
-
-    connect( this, SIGNAL(topLevelChanged(bool)), this, SLOT(onTopLevelChange(bool)) );
-    connect( titleBar->actionClose, SIGNAL(triggered()), this, SLOT(close()) );
-    connect( titleBar->actionFloat, SIGNAL(triggered(bool)), this, SLOT(setFloating(bool)) );
-
-    setTitleBarWidget(titleBar);
-
-    setWidget(innerWidget);
-}
-
-void EDRDockWidget::setTitleBarVisible(bool visible)
-{
-    if(showTitleBar != visible){
-        showTitleBar = visible;
-        
-        if(showTitleBar == true){
-            setTitleBarWidget(titleBar);
-        }else{
-            setTitleBarWidget(emptyTitleBar);
-        }
-    }
-}
-
-bool EDRDockWidget::isTitlebarVisible() const
-{
-    return showTitleBar;
-}
-
-EDRDockInnerWidget * EDRDockWidget::getInnerWidget()
-{
-    return innerWidget;
-}
-
-const EDRDockInnerWidget * EDRDockWidget::getInnerWidget() const
-{
-    return innerWidget;
-}
-
-EDRTitleBar * EDRDockWidget::getTitleBar()
-{
-    return titleBar;
-}
-
-const EDRTitleBar * EDRDockWidget::getTitleBar() const
-{
-    return titleBar;
 }
 
 bool EDRDockWidget::isPermanent() const
@@ -83,7 +25,7 @@ bool EDRDockWidget::isPermanent() const
 
 void EDRDockWidget::setPermanent(bool permanent)
 {
-    setAttribute(Qt::WA_DeleteOnClose, permanent);
+    setAttribute(Qt::WA_DeleteOnClose, !permanent);
 }
 
 void EDRDockWidget::toggleFloating()
@@ -91,30 +33,14 @@ void EDRDockWidget::toggleFloating()
     QDockWidget::setFloating( !isFloating() );
 }
 
-void EDRDockWidget::setFloating( bool floating )
+void EDRDockWidget::setWindowTitle(const QString & title)
 {
-    QDockWidget::setFloating( floating );
+    QWidget::setWindowTitle(title);
+    emit windowTitleChanged(title);
 }
 
-void EDRDockWidget::onTopLevelChange(bool topLevel)
+void EDRDockWidget::setFeatures(DockWidgetFeatures features)
 {
-    if(topLevel == true){
-        Qt::WindowFlags flags = this->windowFlags();
-        if( (flags & Qt::FramelessWindowHint) == Qt::FramelessWindowHint){
-            this->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint);
-            this->show();
-        }
-    }
-}
-
-void EDRDockWidget::focusInEvent(QFocusEvent * event)
-{
-    QDockWidget::focusInEvent(event);
-    emit focuseChanged(true);
-}
-
-void EDRDockWidget::focusOutEvent(QFocusEvent * event)
-{
-    QDockWidget::focusOutEvent(event);
- //   emit focuseChanged(false);
+    QDockWidget::setFeatures(features);
+    emit featuresChanged(features);
 }

@@ -139,7 +139,7 @@ void ChartVisualizer::reset()
 
 QIcon* ChartVisualizer::createIcon()
 {
-    return new QIcon( core::getResourceString("icons/charts.png") );
+    return new QIcon( QString::fromUtf8(":/resources/icons/charts.png") );
 }
 
 int ChartVisualizer::getMaxDataSeries() const

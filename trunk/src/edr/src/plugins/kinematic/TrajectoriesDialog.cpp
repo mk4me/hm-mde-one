@@ -9,7 +9,7 @@ TrajectoriesDialog::TrajectoriesDialog( QWidget* parent, TrajectoryDrawerPtr tra
 	trajectories(trajectoryDrawer)
 {
 	Ui::TrajectoriesDialog::setupUi(this);
-	QIcon icon( core::getResourceString("icons/trajectory.png") );
+	QIcon icon( QString::fromUtf8(":/resources/icons/trajectory.png") );
 	QTreeWidgetItem* item = tree->headerItem();
 	item->setIcon(0, icon);
 	item->setText(0, "");

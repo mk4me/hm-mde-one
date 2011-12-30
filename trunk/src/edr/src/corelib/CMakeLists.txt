@@ -47,21 +47,11 @@ set(TARGET_SRC
 	Window.cpp
 	MultiView.cpp
 	MultiViewWidgetItem.cpp
-	#DECreader.cpp
 	Filesystem.cpp
-	#GroupData.cpp
-	#Header.cpp
-	#INTELreader.cpp
-	#MIPSreader.cpp
-	#Parameter.cpp
-	#Parameters.cpp
 	MultiViewFunctorWidgetAdapter.cpp
 	MultiViewCameraItem.cpp
 	MultiViewManipulatorItem.cpp
 	OsgSceneDump.cpp
-	#GroupData.cpp
-	#Header.cpp
-	#Data.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

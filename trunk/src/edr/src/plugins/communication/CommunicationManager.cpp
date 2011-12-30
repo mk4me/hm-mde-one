@@ -5,7 +5,6 @@
 #include "CommunicationPCH.h"
 #include <core/Filesystem.h>
 #include <plugins/communication/CommunicationManager.h>
-//#include <boost/regex.hpp>
 
 using namespace communication;
 

@@ -92,8 +92,8 @@ background-color: rgb(233, 232, 231);
           </property>
           <property name="icon">
            <iconset resource="newChartIcons.qrc">
-            <normaloff>:/icons/resources/icons/upArrows.png</normaloff>
-            <normalon>:/icons/resources/icons/downArrows.png</normalon>:/icons/resources/icons/upArrows.png</iconset>
+            <normaloff>:/resources/icons/downArrows.png</normaloff>
+            <normalon>:/resources/icons/upArrows.png</normalon>:/resources/icons/downArrows.png</iconset>
           </property>
           <property name="checkable">
            <bool>true</bool>

@@ -10,9 +10,9 @@
 #define HEADER_GUARD_CORE__EDRDOCKWIDGET_H__
 
 #include <QtGui/QDockWidget>
-#include "EDRTitleBar.h"
-#include "EDRDockInnerWidget.h"
 
+//! Klasa rozszerza klasycznego QDockWidget o mo¿liwosæ prze³anczania trybu oddokowywania na przeciwny,
+//! ustawaiania okna jako "niesmiertelnego" przy zamykaniu go oraz modyfikacji jego flag przy oddokowywaniu
 class EDRDockWidget : public QDockWidget
 {
     Q_OBJECT
@@ -25,46 +25,23 @@ public:
 
 signals:
 
-    void focuseChanged(bool focuse);
+    void windowTitleChanged(const QString & title);
+    void featuresChanged(DockWidgetFeatures features);
 
 public slots:
+
     //! Zmienia stan dokowania.
     void toggleFloating();
-    //! \param floating Czy widget ma byæ oddokowany?
-    void setFloating(bool floating);
 
 public:
-    EDRDockInnerWidget * getInnerWidget();
-    const EDRDockInnerWidget * getInnerWidget() const;
+    // przykrywamy oryginaln¹ metodê ¿eby móc emitowaæ sygna³!
+    void setWindowTitle(const QString & title);
+    void setFeatures(DockWidgetFeatures features);
 
-    EDRTitleBar * getTitleBar();
-    const EDRTitleBar * getTitleBar() const;
+public:
 
     bool isPermanent() const;
     void setPermanent(bool permanent);
-
-    void setTitleBarVisible(bool visible);
-    bool isTitlebarVisible() const;
-
-    QString getTitle() const { return windowTitle(); }
-
-protected:
-
-    virtual void focusInEvent(QFocusEvent * event);
-    virtual void focusOutEvent(QFocusEvent * event);
-
-private slots:
-    void onTopLevelChange(bool topLevel);
-
-private:
-    void init();
-
-private:
-    QWidget * emptyTitleBar;
-    EDRTitleBar * titleBar;
-    bool showTitleBar;
-    EDRDockInnerWidget * innerWidget;
-    QWidget * undockWidget;
 };
 
 #endif  //  HEADER_GUARD_CORE__EDRDOCKWIDGET_H__

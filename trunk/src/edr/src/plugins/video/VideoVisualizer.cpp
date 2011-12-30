@@ -241,7 +241,7 @@ void VideoVisualizer::setUp( core::IObjectSource* source )
 
 QIcon* VideoVisualizer::createIcon()
 {
-    return new QIcon(getResourceString("icons/video.png"));
+    return new QIcon(QString::fromUtf8(":/resources/icons/video.png"));
 }
 
 int VideoVisualizer::getMaxDataSeries() const

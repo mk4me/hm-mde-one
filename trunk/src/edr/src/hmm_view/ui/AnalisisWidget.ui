@@ -161,15 +161,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">QFrame { 
-     border: 1px solid; 
-     border-color: rgb(135, 177, 255);
-     border-radius: 9px; 
-	padding: 2px;
- } 
-
-background-color: rgb(255, 255, 255);
-</string>
+        <string notr="true"/>
        </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>

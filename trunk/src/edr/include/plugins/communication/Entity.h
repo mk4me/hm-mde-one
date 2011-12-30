@@ -285,7 +285,7 @@ namespace communication
 
         struct DisorderCharacteristics
         {
-            Disorder * diosorder;
+            Disorder * disorder;
             std::string focus;
             std::string diagnosisDate;
             std::string comments;

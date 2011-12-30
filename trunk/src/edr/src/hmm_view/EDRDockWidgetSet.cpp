@@ -1,5 +1,6 @@
 #include "hmmPCH.h"
 #include "EDRDockWidgetSet.h"
+#include "EDRTitleBar.h"
 
 const int maxWidgets = 5;
 
@@ -9,10 +10,12 @@ EDRDockWidgetSet::EDRDockWidgetSet( const QString &title, QWidget *parent /*= 0*
 	maxWidgetsNumber(maxWidgets),
 	additionPossible(true)
 {
-	EDRDockInnerWidget* inner = getInnerWidget();
-	mainWindow = new QMainWindow(parent);
-	inner->layoutContent->addWidget(mainWindow);
-    setAttribute(Qt::WA_DeleteOnClose);
+    supplyWithEDRTitleBar(this);
+
+	mainWindow = new QMainWindow();
+    mainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //mainWindow->setDocumentMode(true);
+    setWidget(mainWindow);
 }
 
 EDRDockWidgetSet::EDRDockWidgetSet( QWidget *parent /*= nullptr*/, Qt::WindowFlags flags /*= 0*/ ) :
@@ -20,11 +23,12 @@ EDRDockWidgetSet::EDRDockWidgetSet( QWidget *parent /*= nullptr*/, Qt::WindowFla
 	maxWidgetsNumber(maxWidgets), 
 	additionPossible(true)
 {
-	EDRDockInnerWidget* inner = getInnerWidget();
-	mainWindow = new QMainWindow(parent);
+    supplyWithEDRTitleBar(this);
+
+	mainWindow = new QMainWindow();
 	mainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	inner->layoutContent->addWidget(mainWindow);
-    setAttribute(Qt::WA_DeleteOnClose);
+    //mainWindow->setDocumentMode(true);
+    setWidget(mainWindow);
 }
 
 bool EDRDockWidgetSet::isAdditionPossible(EDRDockWidget* widget) const
@@ -38,7 +42,7 @@ void EDRDockWidgetSet::addDockWidget( EDRDockWidget* widget, Qt::Orientation ori
 	if (isAdditionPossible(widget)) {
 		this->mainWindow->addDockWidget(Qt::TopDockWidgetArea, widget, orientation);
         connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(onDockWidgetClosed(QObject*)));
-        widget->setAttribute(Qt::WA_DeleteOnClose);
+        widget->setPermanent(false);
 		widgetsList.push_back(widget);
 	} else {
 		throw std::runtime_error("Unable to add widget");

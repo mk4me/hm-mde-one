@@ -15,35 +15,56 @@
 #include "VisualizerManager.h"
 #include <core/PluginCommon.h>
 #include "EDRDockWidget.h"
+#include <QtGui/QLabel>
+#include <QtGui/QComboBox>
+#include <core/IEDRTitleBar.h>
 
 //! Widget wizualizacyjny.
 class VisualizerWidget : public EDRDockWidget
 {
     Q_OBJECT
 
+public:
+
+    typedef std::pair<QObject*, IEDRTitleBar::SideType> VisualizerTitleBarElement;
+    typedef std::vector<VisualizerTitleBarElement> VisualizerTitleBarElements;
+
 private:
 
+    struct InnerVisualizerElement
+    {
+        InnerVisualizerElement() : visible(false), object(nullptr), side(IEDRTitleBar::Left)
+        {
+
+        }
+
+        InnerVisualizerElement(bool visible, QObject* object, IEDRTitleBar::SideType side)
+            : visible(visible), object(object), side(side)
+        {
+
+        }
+
+        bool visible;
+        QObject* object;
+        IEDRTitleBar::SideType side;
+    };
+
     typedef std::map<core::VisualizerTimeSeriePtr, VisualizerChannelPtr> TimelineChannels;
+    typedef std::map<QObject*, InnerVisualizerElement> InnerVisualizerElements;
 
 private:    
 
     //-------------------------- Old VisualizerTitleBar fields -------------------------------------------
-    QAction *actionSplitVertically;
-    QAction *actionSplitHorizontally;
     QAction *actionNone;
     QLabel *label;
     QComboBox *comboType;
 
-    QToolButton *buttonSplitV;
-    QToolButton *buttonSplitH;
-
     //! Bie¿¹cy wizualizator.
     VisualizerPtr visualizer;
     //customowe elementu titlebara dla danego wizualizatora
-    std::vector<QObject*> visualizerCustomElements;
-
-    //-------------------------- Old VisualizerTitleBarComboPick fields -------------------------------------------
-    QToolButton *buttonSource;
+    InnerVisualizerElements visualizerCommonElements;
+    std::vector<QObject*> visualizerCommonElementsOrder;
+    std::vector<QObject*> visualizerImplementationCustomElements;
 
     //! Menu do wyboru Ÿróde³.
     QMenu* menuSource;
@@ -94,37 +115,32 @@ public:
         return visualizer;
     }
 
-    void setSourceVisible(bool visible);
-    bool isSourceVisible() const;
+public slots:
 
-    void setSplitHVisible(bool visible);
-    bool isSplitHVisible() const;
-
-    void setSplitVVisible(bool visible);
-    bool isSplitVVisible() const;
-
-    void setVisualizerIconVisible(bool visible);
-    bool isVisualizerIconVisible() const;
-
-    void setActiveVisualizerSwitch(bool lock);
-    bool isActiveVisualizerSwich() const;
-        
-private slots:
-
-    void removeAllSeries();
-
-    //! \param Czy zamieniæ pasek tytu³owy na systemowy?
-    //void setReplaceTitleBar(bool replace);
-    //! \param Czy zamieniæ pasek tytu³owy na systemowy?
-    //void queueReplaceTitleBar(bool replace);
-    //!
     void splitHorizontally();
     //!
     void splitVertically();
     //!
     void split(Qt::Orientation orientation);
 
-    //-------------------------- Old VisualizerTitleBar slots -------------------------------------------
+    void setSourceVisible(bool visible);
+    void setVisualizerIconVisible(bool visible);
+    void setVisualizerSwitchEnable(bool enable);
+    void setVisualizerSwitchVisible(bool visible);
+
+public:
+
+    bool isSourceVisible() const;  
+    bool isVisualizerIconVisible() const;    
+    bool isVisualizerSwichEnable() const;    
+    bool isVisualizerSwichVisible() const;
+
+    void getVisualizerTitleBarElements(VisualizerTitleBarElements & titleBarElements) const;
+        
+private slots:
+
+    void removeAllSeries();    
+
     //! \param id Id bie¿¹cego wizualizatora.
     void setCurrentVisualizer(UniqueID id);
     //! \param visualizer Bie¿¹cy wizualizator.
@@ -132,9 +148,6 @@ private slots:
     //! \param idx Indeks bie¿¹cego wizualizatora.
     void setCurrentVisualizer(int idx);
 
-private slots:
-
-    //-------------------------- Old VisualizerTitleBarComboPick slots -------------------------------------------
     //! 
     void fillSourcesMenu();
     //!

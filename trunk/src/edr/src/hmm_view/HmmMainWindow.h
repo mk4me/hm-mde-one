@@ -17,10 +17,15 @@
 #include "ui_toolboxmaindeffile.h"
 #include <stack>
 #include <timelinelib/IChannel.h>
+#include "FlexiTabWidget.h"
+#include "IAppUsageContextManager.h"
+#include <QtGui/QToolBox>
 
 class EDRDockWidgetManager;
 class DataFilterWidget;
 class AnalisisWidget;
+
+
 
 class ContextAction : public QAction
 {
@@ -38,8 +43,30 @@ private:
     VisualizerPtr visualizer;
 };
 
+class HMMVisualizerUsageContext : public IAppUsageContext
+{
+public:
+    HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget);
+    // IAppUsageContext
+public:
 
-class HmmMainWindow : public core::MainWindow, private Ui::HMMMain
+    virtual void activateContext(QWidget * contextWidget);
+
+    virtual void deactivateContext(QWidget * contextWidget);
+
+    virtual void onRegisterContextWidget(QWidget * contextWidget);
+    virtual void onUnregisterContextWidget(QWidget * contextWidget);
+
+private:
+    FlexiTabWidget * flexiTabWidget;
+    FlexiTabWidget::GUIID visualizerGroupID;
+    std::set<FlexiTabWidget::GUIID> visualizerSectionsIDs;
+
+    std::map<QWidget*, std::map<QString, QWidget *>> visualizersData;
+};
+
+
+class HmmMainWindow : public core::MainWindow, private Ui::HMMMain, protected IAppUsageContextManager
 {
     Q_OBJECT
 
@@ -81,17 +108,19 @@ public:
     void addItemToTree(QTreeWidgetItem* item);
     void clearTree();
 
+    virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
+
 private slots:
+    void onFocusChange(QWidget * oldWidget, QWidget * newWidget);
     void visualizerDestroyed(QObject * visualizer);
 
 	//void onOpen();
 	void onTreeItemClicked(QTreeWidgetItem *item, int column);
 
-     VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
+    VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
 
-     void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
+    void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
 
-    void visualizerFocusChanged(bool focus);
     void onTreeContextMenu(const QPoint & pos);
     void createNewVisualizer();
     void addToVisualizer();
@@ -162,8 +191,19 @@ private:
     QWidget* data;
     QWidget* operations;
     QWidget* raports;
+
+    QWidget* visualizersActionsTab;
+    FlexiTabWidget * flexiTabWidget;
+
+    FlexiTabWidget::GUIID visualizerGroupID;
+    FlexiTabWidget::GUIID toolsGroupID;
+
     std::map<QWidget*, QWidget*> button2TabWindow;
     DataObserverPtr dataObserver;
+
+    std::list<VisualizerWidget*> currentVisualizerWidgets;
+
+    AppUsageContextPtr visualizerUsageContext;
 };
 
 #endif // TOOLBOXMAIN_H

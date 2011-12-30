@@ -14,7 +14,6 @@
 #include <QtCore/QString>
 #include <QtGui/QMainWindow>
 #include "EDRDockWidget.h"
-#include "EDRDockInnerWidget.h"
 
 
 class EDRDockWidgetSet : public EDRDockWidget

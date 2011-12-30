@@ -44,6 +44,8 @@ public:
 
     ItemBase(ItemView * view);
 
+    static QPixmap mergePixmaps(const QPixmap & pmL, const QPixmap & pmR);
+
     /*void refreshLocalityHierarchyUp(const ItemBase * child);
     virtual void refreshLocalityHierarchyDown();
 
@@ -52,6 +54,8 @@ public:
 
     void refreshHierarchyUp(const ItemBase * child);
     virtual void refreshHierarchyDown();*/
+
+    void refreshStatusContent();
 
     virtual void refreshContent() = 0;
     virtual void getHeaders(QStringList & headers) const = 0;
@@ -75,7 +79,10 @@ public:
 
     void setDataUsage(DataUsage usage);
 
-    QWidget * getStatusWidget();
+    const QIcon & getStatusIcon();
+
+    const QIcon & getLocalityStatusIcon();
+    const QIcon & getUsageStatusIcon();
 
     //void refreshStatus();
 
@@ -93,8 +100,14 @@ protected:
     DataLocality locality;
     DataUsage usage;
     Items items;
-    QLabel * statusWidget;
-    QPixmap pixmap;
+    QIcon localityStatusIcon;
+    QIcon usageStatusIcon;
+
+    QPixmap localityStatusPixmap;
+    QPixmap usageStatusPixmap;
+
+    QIcon statusIcon;
+    //QPixmap pixmap;
     ItemView * view;
 };
 
@@ -254,7 +267,8 @@ protected:
 
     virtual void doUIRefresh() = 0;
 
-    static void setStatusWidgets(QTreeWidget * tree, ItemBase * item);
+    //static void setStatusWidgets(QTreeWidget * tree, ItemBase * item);
+    virtual void refreshStatusIcons(ItemBase* item);
 
     //HEADERS
     virtual void getHeaders(const ItemBase * itemBase, QStringList & headers) const = 0;
@@ -519,16 +533,6 @@ public:
 
 protected:
 
-    void addChangeViewAction(QMenu & menu);
-
-    virtual void fillContextMenu(const DisorderItem * disorderItem, QMenu & menu);
-    virtual void fillContextMenu(const PatientItem * patientItem, QMenu & menu);
-    virtual void fillContextMenu(const SubjectItem * subjectItem, QMenu & menu);
-    virtual void fillContextMenu(const SessionGroupItem * sessionGroupItem, QMenu & menu);
-    virtual void fillContextMenu(const SessionItem * sessionItem, QMenu & menu);
-    virtual void fillContextMenu(const MotionItem * motionItem, QMenu & menu);
-    virtual void fillContextMenu(const FileItem * fileItem, QMenu & menu);
-
     //HEADERS
     virtual void getHeaders(const ItemBase * itemBase, QStringList & headers) const;
     virtual void getHeaders(const DisorderItem * disorderItem, QStringList & headers) const;
@@ -561,12 +565,7 @@ protected:
 
 protected slots:
 
-    void showPatients();
-    void showDisorders();
-    void showPatientCards();
-
     void patientCardRequest(QListWidgetItem * current, QListWidgetItem * previous);
-    void onPatientCardContextMenu(const QPoint & pos);
 
 protected:
 
@@ -591,7 +590,6 @@ protected:
     SessionItem * createSessionItem(const std::string & prefix, const communication::MotionShallowCopy::Session * session);
 
 protected:
-    QTreeWidget * currentView;
 
     QTreeWidget * disordersTree;
     QTreeWidget * patientsTree;
@@ -716,25 +714,64 @@ private:
 
     bool downloadFiles(const std::vector<const communication::MotionShallowCopy::File *> & files);
 
-   /* PatientPtr createPatient(const communication::MedicalShallowCopy::Patient * patient ) 
+    PatientPtr createPatient(const communication::MedicalShallowCopy::Patient * patient, SubjectPtr & subject = SubjectPtr() ) 
     {
         PatientPtr ret;
-        if(subjectService != nullptr){
-            ret = subjectService->createSubject();
-            auto subjectWrapper = core::addData(memoryDataManager, ret);
-            subjectsMapping[subject] = subjectWrapper;
+
+        auto patientIT = patientsMapping.find(patient);
+
+        if(patientIT != patientsMapping.end()){
+            ret = patientIT->second->get();
+        }else{
+
+            if(subject == nullptr){
+
+                auto sub = motionShallowCopy->performers.find(patient->motionPerformerID);
+                auto subWrapperIT = subjectsMapping.find(sub->second);
+
+                if(subWrapperIT != subjectsMapping.end()){
+                    subject = subWrapperIT->second->get();
+                }
+            }
+
+            if(subject != nullptr){
+
+                std::vector<Disorder> disorders;
+
+                for(auto it = patient->disorders.begin(); it != patient->disorders.end(); it++){
+                    Disorder dis;
+                    dis.name = it->second.disorder->name;
+                    dis.focus = it->second.focus;
+                    dis.comments = it->second.comments;
+                    dis.diagnosisDate = it->second.diagnosisDate;
+                    disorders.push_back(dis);
+                }
+
+                ret.reset(new Patient(subject->getID(), patient->name, patient->surname, patient->birthDate, patient->gender, getPatientPhoto(patient), disorders));
+                auto patientWrapper = core::addData(memoryDataManager, ret);
+                patientsMapping[patient] = patientWrapper;
+            }
         }
 
         return ret;
-    }*/
+    }
 
-    SubjectPtr createSubject(const communication::MotionShallowCopy::Performer * subject ) 
+    SubjectPtr createSubject(const communication::MotionShallowCopy::Performer * subject) 
     {
         SubjectPtr ret;
         if(subjectService != nullptr){
             ret = subjectService->createSubject();
             auto subjectWrapper = core::addData(memoryDataManager, ret);
             subjectsMapping[subject] = subjectWrapper;
+
+            if(medicalShallowCopy != nullptr){
+                for(auto it = medicalShallowCopy->patients.begin(); it != medicalShallowCopy->patients.end(); it++){
+                    if(it->second->motionPerformerID == subject->performerID){
+                        //stworz pacjenta
+                        createPatient(it->second, ret);
+                    }
+                }
+            }
         }
 
         return ret;

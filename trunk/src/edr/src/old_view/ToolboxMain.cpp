@@ -5,7 +5,7 @@
 #include <core/ObjectWrapperFactory.h>
 #include "MainWindow.h"
 #include <osgui/QOsgWidgets.h>
-#include "SceneGraphWidget.h"
+//#include "SceneGraphWidget.h"
 
 #include <osg/Vec3d>
 #include <osg/Quat>
@@ -33,7 +33,6 @@
 #include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
 #include <functional>
-//#include <boost/regex.hpp>
 
 #include "Log.h"
 #include <core/StringTools.h>
@@ -53,6 +52,7 @@
 #include "DataProcessor.h"
 
 #include <core/EDRDockWidget.h>
+#include "EDRTitleBar.h"
 
 #include "WorkflowService.h"
 #include "WorkflowWidget.h"
@@ -79,21 +79,30 @@ void ToolboxMain::init( core::PluginLoader* pluginLoader, core::IManagersAccesso
 	populateVisualizersMenu(menuCreateVisualizer);
 }
 
+void ToolboxMain::setCurrentVisualizerActions(VisualizerWidget * visWidget)
+{
+    auto vis = visWidget->getCurrentVisualizer();
+
+    VisualizerWidget::VisualizerTitleBarElements titleBarElements;
+
+    visWidget->getVisualizerTitleBarElements(titleBarElements);
+
+    auto titleBar = qobject_cast<EDRTitleBar*>(visWidget->titleBarWidget());
+
+    if(titleBar == nullptr){
+        LOG_WARNING("Could not load visualizer toolbar elements - TitleBar uninitialized");
+    }else{
+
+        titleBar->clear();
+
+        for(auto it = titleBarElements.begin(); it != titleBarElements.end(); it++){
+            titleBar->addObject((*it).first, (*it).second);
+        }
+    }
+}
+
 void ToolboxMain::initializeUI()
 {
-	//ladowanie styli qt
-	//QString style;
-	//if(getApplicationSkinsFilePathCount() > 0)
-	//{
-	//	//style qt
-	//	QFile file(QString::fromAscii(getApplicationSkinsFilePath(0).c_str(), getApplicationSkinsFilePath(0).size()));
-	//	if(file.open(QIODevice::ReadOnly | QIODevice::Text))
-	//	{
-	//		style = file.readAll();
-	//		file.close();
-	//	}
-	//}
-	//setStyleSheet(style);
     trySetStyleByName("dark");
     QString style = this->styleSheet();
 	setDockOptions( AllowNestedDocks | AllowTabbedDocks );
