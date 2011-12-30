@@ -186,7 +186,9 @@ private:
 public:
 
     ChannelStats(const ChannelPtr & channel) : 
-      useDefinedTimes(false)
+      useDefinedTimes(false),
+      definedFrom(0),
+      definedTo(channel->getLength())
     {
         init(channel);
     }
@@ -296,6 +298,42 @@ public:
         return constChannel;
     }
 
+    //! \return czas, od ktorego liczone sa statystyki
+    TimeType getDefinedFrom() const 
+    { 
+        return definedFrom; 
+    }
+
+    //! \return czas, do ktorego liczone sa statystyki
+    TimeType getDefinedTo() const 
+    { 
+        return definedTo; 
+    }
+
+    const std::string& getTimeUnit() const
+    {
+        UTILS_ASSERT(channel);
+        IChannelDescriptorReader* reader = dynamic_cast<IChannelDescriptorReader*>(channel.get());
+        if (reader) {
+            return reader->getTimeBaseUnit();
+        } else {
+            static std::string dummy = "NA";
+            return dummy;
+        }
+    }
+
+    const std::string& getValueUnit() const 
+    {
+        UTILS_ASSERT(channel);
+        IChannelDescriptorReader* reader = dynamic_cast<IChannelDescriptorReader*>(channel.get());
+        if (reader) {
+            return reader->getValueBaseUnit(); 
+        } else {
+            static std::string dummy = "NA";
+            return dummy;
+        }
+    }
+
 protected:
     //! Aktualizuje statystyki kana³u
     virtual void updateStats() const
@@ -364,7 +402,6 @@ private:
     bool useDefinedTimes;
     TimeType definedFrom;
     TimeType definedTo;
-
     //! Obserwator zmian kana³u
     ChannelObserver observer;
     //! Obserwowany kana³

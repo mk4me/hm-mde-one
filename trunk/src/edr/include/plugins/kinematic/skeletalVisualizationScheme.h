@@ -82,12 +82,12 @@ public:
         osg::Vec4 color;
     };
             
-private:
+public:
     SkeletalVisualizationScheme();
 
-public:
-    //! Metoda tworzy schemat wizualizacji, zachowujac przy okazji slaby wskaznik do niego
-    static core::shared_ptr<SkeletalVisualizationScheme> create();
+//public:
+//    //! Metoda tworzy schemat wizualizacji, zachowujac przy okazji slaby wskaznik do niego
+//    static core::shared_ptr<SkeletalVisualizationScheme> create();
 
 public: // akcesory
     double getNormalizedTime() const { return normalizedTime; }
@@ -173,7 +173,7 @@ private:
 	MarkerCollectionConstPtr markers;
 	kinematic::JointAnglesCollectionConstPtr joints;
     //! slaby wskaznik do this
-    boost::weak_ptr<SkeletalVisualizationScheme> weak;
+    //boost::weak_ptr<SkeletalVisualizationScheme> weak;
 };
 
 typedef core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;

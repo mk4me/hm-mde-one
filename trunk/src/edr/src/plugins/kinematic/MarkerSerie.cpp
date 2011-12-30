@@ -6,9 +6,14 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(MarkerCollection));
     this->data = data;
+    // taki maly workaround, na razie MarkerSerie jest odpowiedzialny za tworzenie dialogu, 
+    // dlatego polaczenie musi nastapic tutaj
+    visualizer->actionTrajectories->setVisible(true);
 	connect(visualizer->actionTrajectories, SIGNAL(triggered()), this, SLOT(trajectoriesDialog()));
+    visualizer->actionGhost->setVisible(true);
+    connect(visualizer->actionGhost, SIGNAL(triggered(bool)), this, SLOT(showGhost(bool)));
 	MarkerCollectionConstPtr markersCollection = data->get();
-	scheme = SkeletalVisualizationScheme::create();
+	scheme = SkeletalVisualizationSchemePtr(new SkeletalVisualizationScheme());
 	scheme->setMarkers(markersCollection);
 	int markersCount = markersCollection->getNumChannels();
 	try {
@@ -31,6 +36,38 @@ void MarkerSerie::trajectoriesDialog()
 {
 	dialog->show();
 	//dialog->exec();
+}
+
+void MarkerSerie::showGhost( bool visible )
+{
+    float time = 0.0f;
+    if (!ghostNode) {
+        ghostNode = new osg::PositionAttitudeTransform();
+        MarkerCollectionConstPtr markersCollection = data->get();
+        while (time < this->getLength()) {
+            SkeletalVisualizationSchemePtr scheme(new SkeletalVisualizationScheme);
+            
+            scheme->setMarkers(markersCollection);
+            try {
+                scheme->setMarkersDataFromVsk(Vsk::get(static_cast<Vsk::MarkersCount>(markersCollection->getNumChannels())));
+            } catch (...) {}
+            scheme->setTime(time);
+            osg::Vec4 color(1.0f, 1.0f, 0.9f, 0.25f);
+            OsgSchemeDrawerPtr drawer1(new GlPointSchemeDrawer(DrawMarkers, 3, 0.02f, color));
+            OsgSchemeDrawerPtr drawer2(new GlLineSchemeDrawer(DrawMarkers, 10, 0.005f, color));
+            drawer1->init(scheme);
+            drawer2->init(scheme);
+            drawer1->update();
+            drawer2->update();
+            ghostNode->addChild(drawer1->getNode());
+            ghostNode->addChild(drawer2->getNode());
+            time += 1.0f;
+        }
+
+        visualizer->transformNode->addChild(ghostNode);
+    }
+
+    ghostNode->setNodeMask(visible ? 0xFFFF : 0);
 }
 
 

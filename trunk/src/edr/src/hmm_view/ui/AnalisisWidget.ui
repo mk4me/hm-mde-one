@@ -21,230 +21,132 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QScrollArea" name="scrollArea">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>330</width>
-         <height>160</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QScrollArea { 
+    <widget class="QFrame" name="containerFrame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QFrame#containerFrame { 
      border: 1px solid; 
      border-color: rgb(135, 177, 255);
      border-radius: 5px; 
 	padding: 4px;
+	background-color: white;
  } 
-
-
-QScrollBar:horizontal {											 
-		border: 1px ridge grey;											 
-		background: #FFFFFF;											
-		height: 4px;													
-		margin: 0px 0px 0px 0px;										
-		}																
-																		
-		QScrollBar::handle:horizontal,  QScrollBar::handle:pressed {		
-		background: rgb(135, 173, 255);									 
-		min-width: 2px;													 
-		max-width: 4px;													 
-		height:4px;				    									 
-		border: 0px solid grey;											 
-		}																
-																		
-		QScrollBar::handle:horizontal {									 
-		background: rgb(175, 213, 255);									 
-		selection-background-color: rgb(135, 173, 255);					
-		min-width: 2px;													 
-		max-width: 5px;													 
-		height:4px;				    									 
-		border: 0px solid grey;											 
-		}																
-																		
-		QScrollBar::add-line:horizontal {								
-		border: 0px solid grey;											 
-		background: #FFFFFF;											
-		width: 0px;														 
-		subcontrol-position: right;										 
-		subcontrol-origin: margin;										
-		}																
-																		
-		QScrollBar::sub-line:horizontal {								
-		border: 0px solid grey;											 
-		background: #FFFFFF;											
-		width: 0px;														 
-		subcontrol-position: left;										
-		subcontrol-origin: margin;										
-		}																
-																		
-		QScrollBar:vertical {											
-		border: 1px ridge grey;											 
-		background: #FFFFFF;											
-		width: 4px;													
-		margin: 2px 0 2px 0;											
-		}																
-																		
-		QScrollBar::handle:vertical,  QScrollBar::handle:pressed {		
-		background: rgb(135, 173, 255);									 
-		border: 0px outset grey;										
-		min-height: 20px;												
-		}																
-																		
-		QScrollBar::handle:vertical {									
-		background: rgb(175, 213, 255);									 
-		selection-background-color: rgb(135, 173, 255);					 
-		border: 0px outset grey;										
-		min-height: 20px;												
-		}					
-
-QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
-      border: 0 solid grey;
-      width: 0px;
-      height: 0px;
-  }
-
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {								
-		border: 0px solid grey;											 
-		background: #FFFFFF;											
-		width: 0px;														 
-		subcontrol-position: right;										 
-		subcontrol-origin: margin;										
-		}	</string>
-       </property>
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOn</enum>
-       </property>
-       <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAsNeeded</enum>
-       </property>
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="filterScroll">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>348</width>
-          <height>150</height>
-         </rect>
+</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="rightMargin">
+       <number>1</number>
+      </property>
+      <item>
+       <widget class="QScrollArea" name="scrollArea">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>330</width>
+          <height>160</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);</string>
+         <string notr="true">QFrame#scrollArea
+{
+	border:none;
+}</string>
         </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOn</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="filterScroll">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>328</width>
+           <height>232</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+        </widget>
        </widget>
-      </widget>
-     </item>
-     <item>
-      <widget class="QFrame" name="frame">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="margin">
-         <number>0</number>
+      </item>
+      <item>
+       <widget class="QFrame" name="treeFrame">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QLabel" name="picture">
-            <property name="minimumSize">
-             <size>
-              <width>70</width>
-              <height>70</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border:none;</string>
-            </property>
-            <property name="text">
-             <string>Pitcture!</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QFrame { 
+        <property name="styleSheet">
+         <string notr="true">QFrame#treeFrame { 
      border: none;
-	color: rgb(114, 114, 113);
  } 
-
-
 </string>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QWidget" name="treeHolder" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QWidget" name="treeHolder" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/*QTreeView::branch:has-children:!has-siblings:closed,
+     QTreeView::branch:closed:has-children:has-siblings {
+             border-image: none;
+             image: url(trojkat-6x6-dodolu.png);
+     }
+
+     QTreeView::branch:open:has-children:!has-siblings,
+     QTreeView::branch:open:has-children:has-siblings  {
+             border-image: none;
+             image: url(trojkat-6x6-naboku.png);
+     }*/</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <widget class="QWidget" name="analisisArea" native="true">

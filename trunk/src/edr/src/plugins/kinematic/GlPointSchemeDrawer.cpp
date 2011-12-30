@@ -5,6 +5,26 @@ using namespace osg;
 using namespace boost;
 using namespace std;
 
+GlPointSchemeDrawer::GlPointSchemeDrawer( DataToDraw toDraw, int sphereComplex, float sphereRadius ) :
+    dataToDraw(toDraw) ,
+    complex(sphereComplex),
+    radius(sphereRadius),
+    useCustomColor(false)
+{
+}
+
+GlPointSchemeDrawer::GlPointSchemeDrawer( DataToDraw toDraw, int sphereComplex, float sphereRadius, const osg::Vec4& color ) :
+    dataToDraw(toDraw) ,
+    complex(sphereComplex),
+    radius(sphereRadius),
+    useCustomColor(true),
+    customColor(color)
+{
+
+}
+
+
+
 void GlPointSchemeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
 {
     UTILS_ASSERT(scheme);
@@ -40,7 +60,7 @@ void GlPointSchemeDrawer::createMarkersCrowd(const std::vector<MarkerState>& mar
     
     points.resize(count);
     for (int i = 0; i < count; ++i) {
-        points[i] = addPoint(markers[i].position, markers[i].color);
+        points[i] = addPoint(markers[i].position, useCustomColor ? customColor : markers[i].color);
         node->addChild(points[i]);
     }
 }
@@ -50,6 +70,7 @@ GlPointSchemeDrawer::TransformPtr GlPointSchemeDrawer::addPoint( const osg::Vec3
     GeodePtr marker = createMarker(color, 0.08f);
     ref_ptr<StateSet> stateset = new osg::StateSet;
     stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
+    stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
     marker->setStateSet(stateset);
     TransformPtr transform = new PositionAttitudeTransform();
     transform->addChild(marker);
@@ -156,4 +177,6 @@ GlPointSchemeDrawer::GeometryPtr GlPointSchemeDrawer::createCustomSphere( int co
     ref_ptr<StateSet> stateset = new osg::StateSet;
     return sphereGeom;
 }
+
+
 

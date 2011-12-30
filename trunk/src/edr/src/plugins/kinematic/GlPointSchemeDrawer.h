@@ -10,12 +10,9 @@
 class GlPointSchemeDrawer : public OsgSchemeDrawer
 {
 public:
-    GlPointSchemeDrawer(DataToDraw toDraw, int sphereComplex, float sphereRadius) :
-      dataToDraw(toDraw) ,
-      complex(sphereComplex),
-      radius(sphereRadius)
-      {
-      }
+    GlPointSchemeDrawer(DataToDraw toDraw, int sphereComplex, float sphereRadius);
+    GlPointSchemeDrawer(DataToDraw toDraw, int sphereComplex, float sphereRadius, const osg::Vec4& color);
+
 public:
     virtual void draw();
     virtual void update();
@@ -42,6 +39,8 @@ private:
     std::map<osg::Vec4f, GeometryPtr> spheresByColor;
     int complex;
     float radius;
+    osg::Vec4 customColor;
+    bool useCustomColor;
 };
 
 #endif //HEADER_GUARD_POINTSCHEMEDRAWER_H__

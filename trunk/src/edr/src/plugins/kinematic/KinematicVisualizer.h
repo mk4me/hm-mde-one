@@ -63,7 +63,7 @@ private:
     void refillDrawersMaps();
 
 	private slots:
-        void setAxis(bool xyz);
+       // void setAxis(bool xyz);
 
 	public slots:
 		void setLeft();
@@ -91,8 +91,9 @@ private:
 
     osg::ref_ptr<osgui::QOsgDefaultWidget> widget;
     OsgSchemeDrawerPtr currentDrawer;
+    QAction* actionTrajectories;
+    QAction* actionGhost;
     QAction* actionSwitchAxes;
-	QAction* actionTrajectories;
 };
 
 

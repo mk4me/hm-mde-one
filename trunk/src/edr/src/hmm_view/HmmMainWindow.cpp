@@ -392,7 +392,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
             layout->addWidget(controlWidget);
 			this->data->setLayout(layout);
         }else if (name == "newTimeline") {
-            // przeniesione do showTimeline();
+            showTimeline();
         }else{
             std::vector<QObject*> mainWidgetActions;
             QWidget* viewWidget = service->getWidget(mainWidgetActions);
@@ -634,6 +634,7 @@ void HmmMainWindow::showTimeline()
 			
                 bottomMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
 
+                
                 
                 timelineVisible = true;
             }
@@ -992,23 +993,13 @@ void HmmMainWindow::createFilterTab2()
     this->analisis->addDataFilterWidget(filter3);
     this->analisis->addDataFilterWidget(filter4);
 
-    //QPixmap big(core::getResourceString("icons/Big.png"));
-    QPixmap big(QString::fromUtf8(":/resources/icons/Big.png"));
-    this->analisis->setActivePixmapAndText(big, "ALL");
+    //QPixmap big(core::getResourceString(":/resources/icons/Big.png"));
+    //this->analisis->setActivePixmapAndText(big, "ALL");
 }
 
 const std::vector<SessionConstPtr>& HmmMainWindow::getCurrentSessions()
 {
     currentSessions = core::queryDataPtr(DataManager::getInstance());    
-
-    /*QTreeWidget * tree = analisis->getTreeWidget();
-    if(tree->topLevelItemCount() > 0){
-        delete tree->takeTopLevelItem(0);
-    }
-    
-    QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", currentSessions);
-    analisis->getTreeWidget()->addTopLevelItem(item);*/
-
     return currentSessions;
 }
 
@@ -1033,9 +1024,9 @@ void HmmMainWindow::filterGroupActivated( bool active )
             this->analisis->setActivePixmapAndText(big, "ALL");*/
             refreshTree();
         } else {
-            QPixmap pix(dataWidget->getPixmap());
-            QString name = dataWidget->getName();
-            this->analisis->setActivePixmapAndText(pix, name);
+            //QPixmap pix(dataWidget->getPixmap());
+            //QString name = dataWidget->getName();
+            //this->analisis->setActivePixmapAndText(pix, name);
         }
     }
 }

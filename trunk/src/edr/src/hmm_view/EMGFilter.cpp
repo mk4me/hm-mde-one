@@ -276,7 +276,7 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     wrapperX->setSource(wrapper->getSource());
     visualizer->getOrCreateWidget();
 
-    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getSource());
+    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getName());
 
     NewChartSerie* chartSerieX = dynamic_cast<NewChartSerie*>(serieX.get());
 

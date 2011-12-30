@@ -39,8 +39,9 @@ void AnalisisWidget::addDataFilterWidget( DataFilterWidget* filter )
         filterScroll->setMinimumSize(w, h);
         scrollArea->setMinimumWidth(w + 16);
         scrollArea->setMaximumWidth(w + 16);
-        frame->setMaximumWidth     (w + 16);
-        scrollArea->setMinimumHeight(3 * margin + filterHeight * 2 + 8);
+        treeFrame->setMaximumWidth (w + 16);
+        containerFrame->setMaximumWidth(w + 40);
+        scrollArea->setMinimumHeight(3 * margin + filterHeight * 2);
     }
 
     filter->setParent(filterScroll);
@@ -67,6 +68,6 @@ QTreeWidget(parent)
 {
     setHeaderHidden(true);
     setFrameShape(QFrame::NoFrame);
-    setStyleSheet("border: 0px;");
+    //setStyleSheet("border: 0px;");
 }
 

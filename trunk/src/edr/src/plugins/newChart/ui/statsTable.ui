@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
-    <height>232</height>
+    <width>837</width>
+    <height>231</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -46,7 +52,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -76,16 +82,8 @@
           </property>
           <property name="styleSheet">
            <string notr="true">QToolButton[enabled=true]  {
-   color: white; 
- border-width: 0px;
-background-color: rgb(233, 232, 231);
-}
-QToolButton[enabled=false] {
- border-width: 0px;
-	 color: black;
-background-color: rgb(233, 232, 231);
-}
-</string>
+   border: none;
+}</string>
           </property>
           <property name="text">
            <string/>
@@ -116,12 +114,26 @@ background-color: rgb(233, 232, 231);
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="styleSheet">
          <string notr="true"/>
+        </property>
+        <property name="rootIsDecorated">
+         <bool>true</bool>
         </property>
         <column>
          <property name="text">
           <string>Serie</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>TimeSpan</string>
          </property>
         </column>
         <column>
@@ -131,7 +143,17 @@ background-color: rgb(233, 232, 231);
         </column>
         <column>
          <property name="text">
+          <string>Min time</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
           <string>Max</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Max time</string>
          </property>
         </column>
         <column>

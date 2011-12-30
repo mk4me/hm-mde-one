@@ -147,6 +147,7 @@ private:
       void addPlotCurve(QwtPlotCurve* curve, const Scales& scales);
       void setEvents(NewChartSerie* serie, EventsCollectionConstPtr val );
       void rescale(float t1, float t2);
+      void recreateStats(ScalarChannelStatsConstPtr stats = ScalarChannelStatsConstPtr());
 
 private slots:
 

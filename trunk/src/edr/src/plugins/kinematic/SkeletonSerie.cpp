@@ -8,7 +8,7 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
 	connect(visualizer->actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
 	
 	kinematic::JointAnglesCollectionConstPtr collection = data->get();
-	scheme = SkeletalVisualizationScheme::create();
+	scheme = SkeletalVisualizationSchemePtr(new SkeletalVisualizationScheme());
 	scheme->setJoints(collection);
 	
 	skeletonDrawers->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawSkeleton, 3, 0.02f)));
@@ -19,8 +19,8 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
 	
 	skeletonDrawers->init(scheme);
 	visualizer->transformNode->addChild(transformNode);
-	//setAxis(true);
-	visualizer->actionSwitchAxes->trigger();
+	setAxis(true);
+	//visualizer->actionSwitchAxes->trigger();
 }
 
 void SkeletonSerie::setAxis( bool xyz)

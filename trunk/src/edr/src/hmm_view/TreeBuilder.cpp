@@ -93,7 +93,7 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
             }
 
             if (motion->hasObjectOfType(typeid(VideoChannel))) {
-                motionItem->addChild(createVideoBranch(motion, "Videos", getRootVideoIcon(), getVideoIcon()));
+                motionItem->addChild(createVideoBranch(motion, "Videos", QIcon(), getVideoIcon()));
             }
 
         }

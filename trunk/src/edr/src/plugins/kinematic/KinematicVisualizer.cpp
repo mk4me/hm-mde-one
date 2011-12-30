@@ -112,12 +112,18 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     actionSwitchAxes = new QAction("Switch Axes", widget);
     actionSwitchAxes->setCheckable(true);
     actionSwitchAxes->setChecked(false );
-    connect(actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
+    actionSwitchAxes->setVisible(false);
+    //connect(actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
     actions.push_back(actionSwitchAxes);
 
 	actionTrajectories = new QAction("Trajectories", widget);
+    actionTrajectories->setCheckable(true);
+    actionTrajectories->setVisible(false);
+    actionGhost = new QAction("Ghost", widget);
+    actionGhost->setCheckable(true);
+    actionGhost->setVisible(false);
 	actions.push_back(actionTrajectories);
-
+    actions.push_back(actionGhost);
 	QMenu* viewMenu = new QMenu("View", widget);
 
 
@@ -216,16 +222,16 @@ QIcon* KinematicVisualizer::createIcon()
     return new QIcon(QString::fromUtf8(":/resources/icons/3D.png"));
 }
 
-void KinematicVisualizer::setAxis( bool xyz )
-{
-    /*if (xyz) {
-        osg::Quat q(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f));
-        transformNode->setAttitude(q);
-    } else {
-        osg::Quat q;
-        transformNode->setAttitude(q);
-    }*/
-}
+//void KinematicVisualizer::setAxis( bool xyz )
+//{
+//    /*if (xyz) {
+//        osg::Quat q(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f));
+//        transformNode->setAttitude(q);
+//    } else {
+//        osg::Quat q;
+//        transformNode->setAttitude(q);
+//    }*/
+//}
 
 void KinematicVisualizer::actionTriggered( QAction* action )
 {

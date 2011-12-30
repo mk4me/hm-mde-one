@@ -166,8 +166,9 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 
     qwtPlot->replot();
 
-    statsTable = new StatsTable();
-    statsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    QWidget* widget = new QWidget();
+    statsTable = new StatsTable(widget);
+    statsTable->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     qwtPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
 
@@ -175,7 +176,7 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     qwtPlot->canvas()->setFrameStyle( QFrame::Box | QFrame::Plain );
     qwtPlot->canvas()->setBorderRadius( 15 );*/
 
-    QWidget* widget = new QWidget();
+    
 
     /*QSplitter * splitter = new QSplitter();
     splitter->setOrientation(Qt::Vertical);
@@ -218,7 +219,7 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     ret->setData(data);
     series.push_back(ret);
 
-    statsTable->addEntry(QString(name.c_str()), ret->getStats());
+    statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), ret->getStats());
 
     if(series.size() == 1){
         activeSerieCombo->blockSignals(true);
@@ -379,19 +380,24 @@ void NewChartVisualizer::update( double deltaTime )
         qwtMarker->setYValue(y);
         qwtMarker->setLabel(QString("Time: %1, Value: %2").arg(x).arg(y));
 
+        static EventsHelper::SegmentConstPtr oldSegment = EventsHelper::SegmentConstPtr();
         if (eventsVisible && eventMode) {
             auto helper = eventsHelpers.find(serie);
             if (helper != eventsHelpers.end()) {
                 EventsHelperPtr h = helper->second;
                 EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
-                if (segment) {
-                    qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
-                    qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
-                } else {
-                    qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
-                    qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
+                if (segment != oldSegment) {
+                    if (segment) {
+                        qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
+                        qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
+                        recreateStats(segment->stats);
+                    } else {
+                        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
+                        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
+                        recreateStats();
+                    }
+                    oldSegment = segment;
                 }
-                
             }
         }
         /*if (eventsVisible && eventMode) {
@@ -482,11 +488,11 @@ void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPt
     eventsHelpers[serie] = helper;
     int no = 0;
     for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); segment++) {
-        statsTable->addEntry(QString("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats);
+        statsTable->addEntry(QString("Left"), QString("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
     }
     no = 0;
     for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); segment++) {
-        statsTable->addEntry(QString("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats);
+        statsTable->addEntry(QString("Right"), QString("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
     }
 }
 
@@ -505,6 +511,30 @@ void NewChartVisualizer::onEventContext()
 void NewChartVisualizer::rescale( float t1, float t2 )
 {
 
+}
+
+void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= ScalarChannelStatsConstPtr()*/ )
+{
+    statsTable->clear();
+    for (auto it = series.begin(); it != series.end(); it++) {
+        statsTable->addEntry("Whole chart", (*it)->getName().c_str(), (*it)->getStats() );
+    }
+    if (stats) {
+        QString group = context == C3DEventsCollection::Context::Left ? "Left" : "Right";
+        QColor color  = context == C3DEventsCollection::Context::Left ?  QColor(255, 200, 200) : QColor(200, 255, 200);
+        statsTable->addEntry(group, stats->getChannel()->getName().c_str(), stats, color);
+    } else {
+        for (auto it = series.begin(); it != series.end(); it++) {
+            int no = 0;
+            for (auto segment = eventsHelpers[*it]->getLeftSegments().begin(); segment != eventsHelpers[*it]->getLeftSegments().end(); segment++) {
+                statsTable->addEntry(QString("Left"), QString("%1: Left step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
+            }
+            no = 0;
+            for (auto segment = eventsHelpers[*it]->getRightSegments().begin(); segment != eventsHelpers[*it]->getRightSegments().end(); segment++) {
+                statsTable->addEntry(QString("Right"), QString("%1: Right step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
+            }
+        }
+    }
 }
 
 

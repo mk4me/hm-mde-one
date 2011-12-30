@@ -107,12 +107,12 @@ void SkeletalVisualizationScheme::updateJointTransforms( double normalizedTime )
  }
 
 
-core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::create()
-{
-    core::shared_ptr<SkeletalVisualizationScheme> scheme(new SkeletalVisualizationScheme());
-    scheme->weak = scheme;
-    return scheme;
-}
+//core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::create()
+//{
+//    core::shared_ptr<SkeletalVisualizationScheme> scheme(new SkeletalVisualizationScheme());
+//    scheme->weak = scheme;
+//    return scheme;
+//}
 
 void SkeletalVisualizationScheme::createSkeletonConnections(kinematic::hAnimJointPtr joint)
 { 

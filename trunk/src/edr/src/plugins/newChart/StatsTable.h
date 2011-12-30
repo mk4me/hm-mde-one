@@ -12,6 +12,9 @@
 
 #include "ui_statsTable.h"
 #include <plugins/c3d/C3DChannels.h>
+
+//! Wyswietla statystyki wykresow w postaci pogrupowanego drzewa wpisow.
+//! Widget normalnie jest zwiniety, rozwijanie nastepuje po nacisnieciu przycisku.
 class StatsTable : public QWidget, private Ui::StatsTable
 {
     Q_OBJECT;
@@ -20,14 +23,29 @@ public:
 	virtual ~StatsTable() {}
 
 public slots:
+    //! Rozwiniecie lub zwiniecie widgeta ze statystykami
+    //! \param expand true - rozwiniecie, false - zwiniecie
     void setExpand(bool expand);
-    void addEntry(const QString& name, ScalarChannelStatsConstPtr stats);
+    //! Dodanie wpisu ze statystykami
+    //! \param group nazwa grupy (np. strona lewa, prawa ...), jesli grupa nie istnieje, to zostanie stworzona, jesli "" to grupa jest pominieta.
+    //! \param name nazwa wpisu 
+    //! \param stats obiekt ze statystykami
+    //! \param backgroundColor kolor tla dla dodawanego elementu
+    //! \return utworzony element drzwa
+    QTreeWidgetItem* addEntry(const QString& group, const QString& name, ScalarChannelStatsConstPtr stats, const QColor& backgroundColor = Qt::white);
+
+    QTreeWidgetItem* tryGetEntry(const QString& group, const QString& name);
+
+    void setActive(QTreeWidgetItem* treeItem);
+    void setActive(const QString& group, const QString& name);
+    void clear();
 
 private slots:
     void onButton();
 
 private:
     bool expanded;
+    int rowHeight;
 };
 typedef core::shared_ptr<StatsTable> StatsTablePtr;
 typedef core::shared_ptr<const StatsTable> StatsTableConstPtr;

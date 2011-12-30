@@ -340,6 +340,7 @@ protected:
 
              setName(analog->getLabel());
              setValueBaseUnit(analog->getUnit());
+             setTimeBaseUnit("s");
          }
 
     C3DAnalogChannel( int samplesPerSec ) :
@@ -449,6 +450,8 @@ public:
         //std::string name = x->getLabel().erase( remove( str.begin(), str.end(), 'x' ), str.end() );
         setName(name);
         setValueBaseUnit(x->getUnit());
+        //? w pliku c3d nie pojawia sie cos takiego jak jednostka czasu, dlatego mozna przyjac sekundy
+        setTimeBaseUnit("s");
 
         if (dataStartSet) {
             dataStart = (startIndex / static_cast<float>(numSamples)) * getLength();
@@ -538,6 +541,7 @@ public:
             }
             setName(point->getLabel());
             setValueBaseUnit(point->getUnit());
+            setTimeBaseUnit("s");
         }
 public:
     virtual MarkerChannel* clone() const

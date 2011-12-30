@@ -35,11 +35,11 @@ public:
 public:
     QTreeWidget* getTreeWidget() { return this->treeWidget; }
 
-    void setActivePixmapAndText(const QPixmap& pixmap, const QString& name) 
+    /*void setActivePixmapAndText(const QPixmap& pixmap, const QString& name) 
     {
         label->setText(name);
         picture->setPixmap(pixmap);
-    }
+    }*/
     void addDataFilterWidget(DataFilterWidget* filter);
 
     QWidget* getArea() { return analisisArea; }

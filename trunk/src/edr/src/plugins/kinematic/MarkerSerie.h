@@ -69,6 +69,7 @@ public:
 
 private slots:
 	void trajectoriesDialog();
+    void showGhost(bool visible);
 	
 private:
 	KinematicVisualizer * visualizer;
@@ -76,6 +77,7 @@ private:
 	SchemeDrawerContainerPtr markersDrawer;
 	TrajectoryDrawerPtr trajectoryDrawer;
 	TrajectoriesDialog* dialog;
+    osg::ref_ptr<osg::PositionAttitudeTransform> ghostNode;
 
     core::ObjectWrapperConstPtr data;
     std::string name;
