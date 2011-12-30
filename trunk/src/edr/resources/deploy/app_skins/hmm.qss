@@ -1,51 +1,117 @@
-QMainWindow { 
-	background-color: rgb(41, 41, 41);
-	}
+/********** POCZ¥TEK styli dla QMenu ***********/
 
-/* separatory okna glownego */
- QMainWindow::separator {
-     background: rgb(41,41,41);
-     width: 3px; /* when vertical */
-     height: 3px; /* when horizontal */
+QMenu {
+     background-color: white;
+     margin: 2px; /* some spacing around the menu */
  }
- 
-QWidget#EDRTitleBar  QAbstractButton 
- {
-	border: 1px solid; 
-    border-color: rgb(135, 177, 255);
-    border-radius: 9px; 
+
+ QMenu::item {
+     padding: 2px 25px 2px 20px;
+     border: 1px solid transparent; /* reserve space for selection border */
+ }
+
+ QMenu::item:selected {
+     border-color: darkblue;
+     background: rgba(100, 100, 100, 150);
+ }
+
+ QMenu::icon:checked { /* appearance of a 'checked' icon */
+     background: gray;
+     border: 1px inset gray;
+     position: absolute;
+     top: 1px;
+     right: 1px;
+     bottom: 1px;
+     left: 1px;
+ }
+
+ QMenu::separator {
+     height: 2px;
+     background: lightblue;
+     margin-left: 10px;
+     margin-right: 5px;
+ }
+
+ QMenu::indicator {
+     width: 13px;
+     height: 13px;
+ }
+
+ /********** KONIEC styli dla QMenu ***********/
+
+
+ /********** POCZ¥TEK styli dla FlexiTabBarSection ***********/
+
+QFrame#FlexiTabBarSection {
+	border-right-style: solid;
+	border-right-width: 2px;
+	border-right-color: #898989;
+}
+
+QFrame#FlexiTabBarSection > QFrame#bottomArea > QLabel {
+	color: white;
+}
+
+QFrame#FlexiTabBarSection > QScrollArea#userArea {
+	margin: 2px;
+}
+
+ /********** KONIECT styli dla FlexiTabBarSection ***********/
+
+ /********** POCZ¥TEK styli dla FlexiTabWidget ***********/
+
+ /*jezeli documentMode jest wlaczone nie ma ramki pomimo styli! nie jest renderowana*/
+
+ QWidget#FlexiTabWidget > QTabWidget::pane {
+	background-color: #727271;
+	border-top: 1px solid transparent;
+	border-bottom: none;
+	border-left: none;
+	border-right: none;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+QWidget#FlexiTabWidget > QTabWidget::pane QWidget {
+	background-color: #727271;
+	border: none;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab {
+	border: none;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	background-color: #5B5B5B;
+	color: #87AFFF;
+	min-width: 8ex;
 	padding: 2px;
  }
 
- QMainWindow::separator:hover {
-     background: black;
- }
- 
- /* tlo wszystkich widgetow */
- QWidget {
-     background: white;
+QWidget#FlexiTabWidget QTabBar::tab:hover {
+     background-color: #898989;
  }
 
+QWidget#FlexiTabWidget QTabBar::tab:selected {
+	background-color: #727271;
+ }
+
+QWidget#FlexiTabWidget QTabBar::tab:last {
+	border: none;
+	margin-right: 0px;
+ }
+
+ /********** KONIEC styli dla FlexiTabWidget ***********/
+ 
+ 
  /*
-QFrame { 
-     border: 1px solid; 
-     border-color: rgb(135, 177, 255);
-     border-radius: 9px; 
-	padding: 2px;
- } */
-
-/* dokowane widgety 
- QDockWidget::title {
-     text-align: left;
-     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #888888, stop:1 darkgray);
-     padding-left: 5px;
- } */
- 
- /* menu okien 
- QMenuBar {
-     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 lightgray, stop:1 darkgray);
- }*/
-
  QMenuBar::item {
      spacing: 3px;
      padding: 1px 4px;
@@ -73,6 +139,7 @@ QFrame {
  QMenu::item:selected {
      background-color: #888888;
  }
+ */
 
  /* pola edycji */
   QLineEdit {
@@ -93,36 +160,6 @@ QFrame {
      background-color: #8f8f91;
      width: 20px;
  }
- 
- /* przyciski 
- QPushButton, QToolButton {
-     border: 2px solid #8f8f91;
-     border-radius: 4px;
-     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 lightgray, stop:1 darkgray);
- }
-
- QPushButton {
-	min-width: 80px;
-	min-height: 20px;
- }
- 
- QPushButton:hover, QToolButton:hover {
-     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 darkgray, stop:1 lightgray);
- }
-
- QPushButton:flat, QToolButton:flat {
-     border: none;
- }
-
- QPushButton:default, QToolButton:default {
-     border-color: navy;
- }*/
- 
- /* przesuniêcie je¿eli jest strza³ka z prawej strony */
- /*QToolButton[popupMode="2"] {
-	 background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 lightgray, stop:1 darkgray);
-     padding-right: 10px;
- }*/
 
  /* zakladki */
  QTabBar::tab {
@@ -136,21 +173,12 @@ QFrame {
  QTabBar::tab:selected {
      background: darkgray;
      border-top-color: darkgray;
-/*     font: bold; */
  }
 
  QTabBar::tab:hover {
      border-top-color: lightgray;
      background: lightgray;
  }
- 
- /* headery 
-  QHeaderView::section {
-     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #888888, stop:1 darkgray);
-     padding: 4px;
-     height: 10px;
-     border: 1px solid #888888;
- }*/
  
  /* pasek przesuwany */
 	QSlider::groove:horizontal {
@@ -204,12 +232,12 @@ border-radius: 4px;
      border-radius: 4px;
  }
  
- QScrollArea { 
+ /*QScrollArea { 
      border: 1px solid; 
      border-color: rgb(135, 177, 255);
      border-radius: 5px; 
 	padding: 4px;
- } 
+ }*/ 
 
 
 QScrollBar:horizontal {											 

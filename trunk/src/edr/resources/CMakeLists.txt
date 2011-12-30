@@ -4,9 +4,9 @@ set(ALL_RESURCES)
 
 # ustawienia
 set(SETTINGS 
-	settings/log.ini
+	deploy/settings/log.ini
 )
-source_group("settings" FILES ${SETTINGS})
+source_group("deploy\\settings" FILES ${SETTINGS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SETTINGS})
 
 # modele
@@ -20,55 +20,56 @@ set(ALL_RESURCES ${ALL_RESURCES} ${SETTINGS})
 
 # pliki shaderów
 set(SHADERS 
-	shaders/textureRect_yuv_to_rgb.frag
-	shaders/texture2D_yuv_to_rgb.frag
-	shaders/lighting.vert
-	shaders/lighting.frag
+	deploy/shaders/textureRect_yuv_to_rgb.frag
+	deploy/shaders/texture2D_yuv_to_rgb.frag
+	deploy/shaders/lighting.vert
+	deploy/shaders/lighting.frag
 )
-source_group("shaders" FILES ${SHADERS})
+source_group("deploy\\shaders" FILES ${SHADERS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SHADERS})
 
 set(SCHEMAS
-	schemas/http.xsd
-	schemas/mime.xsd
-	schemas/schema.dtd
-	schemas/soap.xsd
-	schemas/soap12.xsd
-	schemas/soap-encoding.xsd
-	schemas/soap-encoding12.xsd
-	schemas/wsdl10.xsd
+	deploy/schemas/http.xsd
+	deploy/schemas/mime.xsd
+	deploy/schemas/schema.dtd
+	deploy/schemas/soap.xsd
+	deploy/schemas/soap12.xsd
+	deploy/schemas/soap-encoding.xsd
+	deploy/schemas/soap-encoding12.xsd
+	deploy/schemas/wsdl10.xsd
 )
-source_group("schemas" FILES ${SCHEMAS})
+source_group("deploy\\schemas" FILES ${SCHEMAS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SCHEMAS})
 
 set(TRIAL
-	trial/M39.vsk
-	trial/M53.vsk
+	deploy/trial/M39.vsk
+	deploy/trial/M53.vsk
 )
-source_group("trial" FILES ${TRIAL})
+source_group("deploy\\trial" FILES ${TRIAL})
 set(ALL_RESURCES ${ALL_RESURCES} ${TRIAL})
 
 # style qt
 set(APPSKINS 
-	app_skins/dark.qss
+	deploy/app_skins/dark.qss
+	deploy/app_skins/hmm.qss
 )
-source_group("appskins" FILES ${APPSKINS})
+source_group("deploy\\appskins" FILES ${APPSKINS})
 set(ALL_RESURCES ${ALL_RESURCES} ${APPSKINS})
 
 # ikony
-file(GLOB ICONS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/icons/*.png")
-source_group("icons" FILES ${ICONS})
+file(GLOB ICONS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/embedded/icons/*.png")
+source_group("embedded\\icons" FILES ${ICONS})
 set(ALL_RESURCES ${ALL_RESURCES} ${ICONS})
 
 # ikony vdf
-file(GLOB ICONSVDF RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/icons/vdf/*.png")
-source_group("iconsvdf" FILES ${ICONSVDF})
+file(GLOB ICONSVDF RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/deploy/icons/vdf/*.png")
+source_group("deploy\\iconsvdf" FILES ${ICONSVDF})
 set(ALL_RESURCES ${ALL_RESURCES} ${ICONSVDF})
 #MESSAGE( STATUS "CMAKE_CURRENT_SOURCE_DIR: " ${ICONSVDF} )
 
 # obrazki
-file(GLOB IMAGES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/images/*.png")
-source_group("images" FILES ${IMAGES})
+file(GLOB IMAGES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/deploy/images/*.png")
+source_group("deploy\\images" FILES ${IMAGES})
 set(ALL_RESURCES ${ALL_RESURCES} ${IMAGES})
 
 # czy kopiowaæ zasoby?
@@ -98,7 +99,7 @@ if(PROJECT_ENABLE_SVN_RESOURCES_COPYING)
 		# wyjaœnienie: komentarz dodajemy ze wszystkimi œcie¿kami, poniewa¿ w VS i tak tylko pierwszy komentarz
 		# jest uwzglêdniony
 		add_custom_command(TARGET resources PRE_BUILD 
-			COMMAND "@CMAKE_COMMAND@" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}" "${path}"
+			COMMAND "@CMAKE_COMMAND@" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/deploy" "${path}"
 			COMMENT "Copying resources to ${PROJECT_SVN_RESOURCES_DESTINATION}"
 		)
 	endforeach()
