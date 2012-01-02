@@ -9,7 +9,6 @@ EDRDockWidgetManager::EDRDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowF
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setDockOptions(QMainWindow::ForceTabbedDocks);
     //setDocumentMode(true);
-    setDocumentMode(true);
 }
 
 
@@ -17,7 +16,6 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 {
 	QWidget::setUpdatesEnabled(false);
     //setDocumentMode(true);
-    setDocumentMode(true);
     set->setWindowTitle(QString(tr("Tab %1")).arg(dockList.size()));
 	this->addDockWidget(Qt::TopDockWidgetArea, set, Qt::Horizontal);
 	dockList.push_back(set);

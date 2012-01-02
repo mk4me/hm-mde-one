@@ -172,6 +172,9 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
         QVBoxLayout * layout = new QVBoxLayout();
         QToolBar * topToolbar = new QToolBar();
+
+        topToolbar->setIconSize(QSize(20,20));
+
         layout->addWidget(topToolbar);
 
         QToolBar * bottomToolbar = nullptr;
@@ -179,6 +182,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
         //budujemy 2 wiersze jesli conajmniej 5 elementow
         if(halfElements > 4){
             bottomToolbar = new QToolBar();
+            bottomToolbar->setIconSize(QSize(20,20));
             layout->addWidget(bottomToolbar);
             halfWidth /= 2;
         }

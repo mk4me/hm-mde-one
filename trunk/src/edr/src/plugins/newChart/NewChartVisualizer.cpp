@@ -167,8 +167,8 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     qwtPlot->replot();
 
     QWidget* widget = new QWidget();
-    statsTable = new StatsTable(widget);
-    statsTable->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    statsTable = new StatsTable();
+    //statsTable->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     qwtPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
 
@@ -192,7 +192,8 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     QVBoxLayout* layout = new QVBoxLayout();
     layout->addWidget(qwtPlot);
     layout->setMargin(0);
-    layout->setContentsMargins(0, 0, 0, 0);
+    //layout->setContentsMargins(2, 2, 2, 2);
+    layout->setContentsMargins(2,0,2,2);
     
     layout->addWidget(statsTable);
     widget->setLayout(layout);

@@ -23,7 +23,7 @@
    <string notr="true">QFrame#frame { 
      border: 1px solid; 
      border-color: rgb(135, 177, 255);
-     border-radius: 9px; 
+     border-radius: 4px; 
 	 padding: 2px;
 	background-color: rgb(233, 232, 231);
  } </string>

@@ -245,8 +245,8 @@ QToolButton:pressed {
       <property name="styleSheet">
        <string notr="true">QFrame#toolBar{
      background-color: rgb(91, 91, 91);
-     border-top-right-radius: 12px; 
-     border-top-left-radius: 12px;
+     border-top-right-radius: 8px; 
+     border-top-left-radius: 8px;
 }
 
 QFrame#toolBar &gt; QWidget {
@@ -644,8 +644,19 @@ border-top: 1px solid rgb(101, 101, 101);
 padding-top: 2px;
 }
 
-QFrame#mainArea &gt; QWidget {
+QFrame#mainArea &gt; QWidget, QFrame#mainArea QWidget#analisisArea, QFrame#mainArea QWidget#analisisArea EDRDockWidgetManager, QFrame#mainArea QWidget#analisisArea QMainWindow {
 	background-color: rgb(91, 91, 91);
+}
+
+QFrame#mainArea QWidget#analisisArea &gt; *, QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
+	border: 1px solid black;
+	border-radius: 4px;
+}
+
+QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
+	border-top: none;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
 }
 
 QFrame#mainArea * QWidget {
@@ -657,11 +668,8 @@ QFrame#mainArea EDRTitleBar, QFrame#mainArea EDRTitleBar * {
 	color: white;
 	margin: 0px;
 	border: none;
-}
-
-QFrame#mainArea QMainWindow {
-	border: 1px solid black;
-	border-radius: 0px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
 }
 
 /*QFrame#mainArea*/ QDockWidget &gt; .QWidget, /*QFrame#mainArea*/ EDRDockWidget &gt; .QWidget, /*QFrame#mainArea*/ VisualizerWidget &gt; .QWidget, /*QFrame#mainArea*/ EDRDockWidgetSet &gt; .QWidget {
@@ -669,28 +677,29 @@ QFrame#mainArea QMainWindow {
 	border-top: none;
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
 }
 
-VisualizerWidget &gt; .QWidget {
-	padding: 1px;
-}
-
-/*QFrame#mainArea*/ EDRDockWidgetSet &gt; EDRTitleBar {
+QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; EDRTitleBar {
 	margin-bottom: -1px;
 	border-bottom: 2px solid white;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
 }
 
 /* separatory okna glownego */
 QFrame#mainArea QMainWindow::separator {
      background: rgb(91,91,91);
-     width: 3px; /* when vertical */
-     height: 3px; /* when horizontal */
+     width: 2px; /* when vertical */
+     height: 2px; /* when horizontal */
+	margin: 1px;
  }
 
 QFrame#mainArea QMainWindow::separator:hover {
-     background-color: rgb(101, 101, 101);
+     background-color: rgb(255, 255, 255);
  }</string>
       </property>
       <property name="frameShape">
@@ -766,6 +775,7 @@ QFrame#mainArea QMainWindow::separator:hover {
  <resources>
   <include location="../../core/ui/CoreIcons.qrc"/>
   <include location="Icons.qrc"/>
+  <include location="C:/Users/mati/.designer/backup/Icons.qrc"/>
  </resources>
  <connections>
   <connection>

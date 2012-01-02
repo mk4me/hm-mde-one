@@ -157,9 +157,7 @@
       </sizepolicy>
      </property>
      <property name="styleSheet">
-      <string notr="true">QFrame {
-	border: 0px;
-}</string>
+      <string notr="true"/>
      </property>
     </widget>
    </item>
