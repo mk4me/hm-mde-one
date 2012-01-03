@@ -310,7 +310,8 @@ void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QSt
 VisualizerPtr NewChartItemHelper::createVisualizer()
 {
     VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(NewChartVisualizer::getClassID());
-    visualizer->getOrCreateWidget();
+    QWidget * visWidget = visualizer->getOrCreateWidget();
+    visWidget->layout()->setContentsMargins(2, 0, 2, 2);
     NewChartVisualizer* chart = dynamic_cast<NewChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
         UTILS_ASSERT(false);
@@ -338,7 +339,8 @@ void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const Q
 VisualizerPtr NewVector3ItemHelper::createVisualizer()
 {
     VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(NewChartVisualizer::getClassID());
-    visualizer->getOrCreateWidget();
+    QWidget * visWidget = visualizer->getOrCreateWidget();
+    visWidget->layout()->setContentsMargins(2, 0, 2, 2);
     NewChartVisualizer* chart = dynamic_cast<NewChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
         UTILS_ASSERT(false);
@@ -457,7 +459,8 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
 VisualizerPtr NewMultiserieHelper::createVisualizer()
 {
     VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(NewChartVisualizer::getClassID());
-    visualizer->getOrCreateWidget();
+    QWidget * visWidget = visualizer->getOrCreateWidget();
+    visWidget->layout()->setContentsMargins(2, 0, 2, 2);
     NewChartVisualizer* chart = dynamic_cast<NewChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
         UTILS_ASSERT(false);

@@ -193,7 +193,7 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     layout->addWidget(qwtPlot);
     layout->setMargin(0);
     //layout->setContentsMargins(2, 2, 2, 2);
-    layout->setContentsMargins(2,0,2,2);
+    //layout->setContentsMargins(2,0,2,2);
     
     layout->addWidget(statsTable);
     widget->setLayout(layout);

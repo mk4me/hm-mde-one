@@ -157,7 +157,107 @@
       </sizepolicy>
      </property>
      <property name="styleSheet">
-      <string notr="true"/>
+      <string notr="true">QWidget {
+	background: transparent;
+}
+
+#analisisArea {
+	background-color: rgb(91, 91, 91);
+	border: none;
+}
+
+#analisisArea &gt; *, EDRDockWidgetSet &gt; * {
+	border: 1px solid black;
+	border-radius: 4px;
+}
+
+#analisisArea QMainWindow {
+	background-color: white;
+}
+
+QMainWindow &gt; * {
+	background-color: rgb(91, 91, 91);
+}
+
+EDRDockWidgetSet &gt; * {
+	border-top: none;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+}
+
+QMainWindow EDRTitleBar, QMainWindow EDRTitleBar * {
+	background-color: rgb(43, 42, 41);
+	color: white;
+	margin: 0px;
+	border: none;
+	border-radius: 0px;
+}
+
+QMainWindow EDRTitleBar {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+QDockWidget &gt; .QWidget, EDRDockWidget &gt; .QWidget, VisualizerWidget &gt; .QWidget, EDRDockWidgetSet &gt; .QWidget {
+	border: 1px solid black;
+	border-top: none;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	background: white;
+}
+
+EDRDockWidgetSet &gt; EDRTitleBar {
+	margin-bottom: -1px;
+	border-bottom: 2px solid white;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+QMainWindow::separator {
+	background-color: rgb(91, 91, 91);
+}
+
+QMainWindow::separator:hover {
+	background-color: rgb(135, 173, 255);
+}
+
+QMainWindow::separator:vertical {
+	margin: 1px;
+	border: 1px solid white;
+	border-top: 4px solid white;
+	border-bottom: 4px solid white;
+	width: 2px;
+ }
+
+QMainWindow::separator:horizontal {
+	margin: 1px;
+	border: 1px solid white;
+	border-left: 4px solid white;
+	border-right: 4px solid white;
+	height: 2px;
+}
+
+
+QMainWindow::separator:vertical:hover {
+   	margin: 1px;
+	border: none;
+	border-top: 2px solid white;
+	border-bottom: 2px solid white;
+	width: 4px;
+ }
+
+QMainWindow::separator:horizontal:hover {
+   	margin: 1px;
+	border: none;
+	border-left: 2px solid white;
+	border-right: 2px solid white;
+	height: 4px;
+ }
+</string>
      </property>
     </widget>
    </item>

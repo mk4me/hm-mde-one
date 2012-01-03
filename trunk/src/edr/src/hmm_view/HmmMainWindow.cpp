@@ -99,6 +99,12 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             }else if(QWidget * widget = qobject_cast<QWidget*>(titleBarElements[i].first)){
                 //widgets[i] = widget;
                 toolbarElements[i] = widget;
+
+                if(QComboBox * cbox = qobject_cast<QComboBox*>(widget)){
+                    cbox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
+                    cbox->setMinimumContentsLength(min(cbox->currentText().size(), 10));
+                }
+
                 //dodajemy od razu do elementow toolbara - indeksy zostaja zachowane dla pozniejszego rozmieszczania wg kolejnosci
                 auto s = widget->sizeHint();
                 int width = min(s.width(), 250);
@@ -125,7 +131,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             }
 
             //actionButton->setIconSize(QSize(20,20));
-            //actionButton->setFixedSize(20,20);
+            actionButton->setFixedSize(20,20);
 
             actionButton->setDefaultAction(it->second);
             //actionButton->setMaximumSize(QSize(20,20));
@@ -146,7 +152,6 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             }
 
             menuButton->setMenu(it->second);
-
             //menuButton->setIconSize(QSize(20,20));
             //menuButton->setMaximumHeight(20);
 
@@ -172,7 +177,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 
         QVBoxLayout * layout = new QVBoxLayout();
         QToolBar * topToolbar = new QToolBar();
-
+        topToolbar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         topToolbar->setIconSize(QSize(20,20));
 
         layout->addWidget(topToolbar);
@@ -182,12 +187,13 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
         //budujemy 2 wiersze jesli conajmniej 5 elementow
         if(halfElements > 4){
             bottomToolbar = new QToolBar();
+            bottomToolbar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
             bottomToolbar->setIconSize(QSize(20,20));
             layout->addWidget(bottomToolbar);
             halfWidth /= 2;
         }
 
-        layout->addSpacerItem(new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+        layout->addSpacerItem(new QSpacerItem(1,1, QSizePolicy::Fixed, QSizePolicy::Expanding));
 
         int currentWidth = 0;
         auto it = toolbarElements.begin();
@@ -1087,19 +1093,11 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer);
     visualizerDockWidget->setPermanent(false);
     visualizerDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    //visu->setStyleSheet(styleSheet());
     visualizerDockWidget->setVisualizerIconVisible(false);
     visualizerDockWidget->setVisualizerSwitchEnable(false);
     visualizerDockWidget->setVisualizerSwitchVisible(false);
     visualizerDockWidget->setSourceVisible(false);
 
-    //auto titleBar = new EDRTitleBar();
-    //visualizerDockWidget->setTitleBarWidget(titleBar);
-    //connect(visualizerDockWidget, SIGNAL(windowTitleChanged(const QString &)), titleBar, SLOT(setTitle(const QString &)));
-    //connect(titleBar->actionFloat, SIGNAL(triggered()), visualizerDockWidget, SLOT(toggleFloating()));
-    //connect(titleBar->actionClose, SIGNAL(triggered()), visualizerDockWidget, SLOT(close()));
-    //odswiezam titlebar!!
-    //visualizerDockWidget->setWindowTitle(visualizerDockWidget->windowTitle());
     EDRTitleBar * titleBar = supplyWithEDRTitleBar(visualizerDockWidget);
 
     std::vector<VisualizerTimeSeriePtr> series;
