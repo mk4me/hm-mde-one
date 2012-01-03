@@ -28,14 +28,15 @@ public:
 	virtual ~DataFilterWidget() {}
 
 public:
-    void addFilter(const QString& bigLabelText, const QString& smallLabelText, DataFilterPtr dataFilter, const QPixmap* icon = nullptr);
-    void addFilter(const QString& bigLabelText, const QString& smallLabelText, IFilterCommandPtr command, const QPixmap* icon = nullptr);
+    void addFilter(const QString& bigLabelText, DataFilterPtr dataFilter, const QPixmap* icon = nullptr);
+    void addFilter(const QString& bigLabelText, IFilterCommandPtr command, const QPixmap* icon = nullptr);
     void addFilter(FilterEntryWidget* entry);
     void closeFilters();
     bool getActive() const { return active; }
     void setActive(bool val);
     const QPixmap& getPixmap() const { return *this->pictureLabel->pixmap(); }
     QString getName() const { return this->label->text(); }
+    void setColor(const QColor& color);
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);

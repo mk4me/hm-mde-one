@@ -137,19 +137,19 @@ QMenu {
         <widget class="QToolButton" name="minimizeButton">
          <property name="maximumSize">
           <size>
-           <width>16</width>
-           <height>16</height>
+           <width>21</width>
+           <height>15</height>
           </size>
          </property>
          <property name="styleSheet">
           <string notr="true">QToolButton {
     background-color: rgb(43, 42, 41);
-    border-width: 2px;
+    border-width: 1px;
      border-color:  rgb(63, 62, 61);
      border-style: solid; 
      border-top: none; 
      border-bottom-left-radius: 5px;
-     border-right-width: 1px;
+     border-right-width: 0px;
 } 
 
 QToolButton:hover {
@@ -184,14 +184,14 @@ QToolButton:pressed {
         <widget class="QToolButton" name="exitButton">
          <property name="maximumSize">
           <size>
-           <width>22</width>
-           <height>16</height>
+           <width>29</width>
+           <height>15</height>
           </size>
          </property>
          <property name="styleSheet">
           <string notr="true">QToolButton {
     background-color: rgb(43, 42, 41);
-     border-width: 2px;
+     border-width: 1px;
      border-color:  rgb(63, 62, 61);
      border-style: solid; 
      border-top: none; 
@@ -253,18 +253,27 @@ QFrame#toolBar &gt; QWidget {
 	background-color: rgb(91, 91, 91);
 	border: none;
 }
-
-QFrame#toolBar &gt; QToolButton[enabled=true] {
+ 
+QFrame#toolBar &gt; QToolButton:enabled {
     background-color: rgb(91, 91, 91);
     border-style: solid;
      border-width: 1px;
      border-radius: 9px;
-    /*hack! - istniejaca ramka, ktorej nie widac
+    /* hack! - istniejaca ramka, ktorej nie widac
 				   bez tego ikona rusza sie, w momencie wl/wyl ramki */
      border-color: rgb(91, 91, 91);
 	color: white; 
+} 
+QFrame#toolBar &gt; QToolButton:!enabled {
+     background-color: rgb(91, 91, 91);
+     border-style: solid;
+     border-width: 1px;
+     border-radius: 9px;
+     border-color: rgb(91, 91, 91);
+	 color: black;
 }
-QFrame#toolBar &gt; QToolButton:hover {
+
+QFrame#toolBar &gt; QToolButton:enabled:hover {
      background-color: rgb(91, 91, 91);
 	 border-style: solid;
      border-width: 1px;
@@ -273,14 +282,7 @@ QFrame#toolBar &gt; QToolButton:hover {
 	 color: rgb(135, 177, 255);
  }
 
-QFrame#toolBar &gt; QToolButton[enabled=false] {
-     background-color: rgb(91, 91, 91);
-     border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(91, 91, 91);
-	 color: black;
-}
+
 </string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -555,22 +557,52 @@ QFrame#toolBar &gt; QToolButton[enabled=false] {
 	padding: 0px;
 	spacing: 0px;
 	border: none;
-	background-color: rgb(91,91,91);
+     background-color: transparent;
 	color: white;
  }
  
 QPushButton:hover, QToolButton:hover {
+     /*background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 darkgray, stop:1 lightgray);*/
 	border: 1px solid rgb(135, 177, 255);
  }
 
-QToolButton[popupMode=&quot;2&quot;], QToolButton[popupMode=&quot;1&quot;] {
-     padding-right: 10px;
-	border: 1px solid navy;
+QPushButton:flat, QToolButton:flat {
+	margin: 0px;
+	padding: 0px;
+	spacing: 0px;
+	border: none;
  }
 
+QPushButton:default, QToolButton:default {
+     /*border-color: navy;*/
+	margin: 0px;
+	padding: 0px;
+	spacing: 0px;
+	border: none;
+ }
+
+QToolButton[popupMode=&quot;2&quot;], QToolButton[popupMode=&quot;1&quot;] {
+	 /*background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 lightgray, stop:1 darkgray);*/
+     padding-right: 10px;
+	border: 1px solid navy;
+	background-color: rgb(91,91,91);
+	color: white;
+ }
+
+QToolButton[popupMode=&quot;2&quot;]:hover, QToolButton[popupMode=&quot;1&quot;]:hover {
+	 /*background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 lightgray, stop:1 darkgray);*/
+    /* padding-right: 10px;*/
+	border: 1px solid rgb(135, 177, 255);
+ }
+
+/* { 
+     padding-right: 20px;
+	border: 1px solid navy;
+ }
+*/
+
 QPushButton:pressed, QToolButton:pressed {
-	border: 1px solid rgb(185, 220, 255);
-	background-color: rgb(101, 101, 101);
+     /*background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #dadbde, stop: 1 #f6f7fa);*/
  }
 
 QToolButton::menu-button {
@@ -578,47 +610,13 @@ QToolButton::menu-button {
      border-radius: 0px;
  }
 
-/*
-QToolButton::menu-arrow, QComboBox::down-arrow {
+QToolButton::menu-arrow {
      image: url(downarrow.png);
  }
-*/
 
 QToolButton::menu-arrow:open {
      top: 1px; left: 1px;
- }
-
-QComboBox {
-     border: 1px solid gray;
-     min-width: 6em;
- }
-
- QComboBox:editable {
-     background: white;
- }
-
- QComboBox:on { 
-     padding-top: 3px;
-     padding-left: 4px;
- }
-/*
- QComboBox::drop-down {
-     subcontrol-origin: padding;
-     subcontrol-position: top right;
-     width: 15px;
-
-     border-left-width: 1px;
-     border-left-color: darkgray;
-     border-left-style: solid; 
-     border-top-right-radius: 3px; 
-     border-bottom-right-radius: 3px;
- }
-
- QComboBox::down-arrow:on {
-     top: 1px;
-     left: 1px;
- }
-*/</string>
+ }</string>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="spacing">
@@ -648,13 +646,63 @@ border-top: 1px solid rgb(101, 101, 101);
 padding-top: 2px;
 }
 
-QFrame#mainArea &gt; * {
+QFrame#mainArea &gt; QWidget, QFrame#mainArea QWidget#analisisArea, QFrame#mainArea QWidget#analisisArea EDRDockWidgetManager, QFrame#mainArea QWidget#analisisArea QMainWindow {
 	background-color: rgb(91, 91, 91);
 }
 
-QFrame#mainArea * &gt; QWidget {
+QFrame#mainArea QWidget#analisisArea &gt; *, QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
+	border: 1px solid black;
+	border-radius: 4px;
+}
+
+QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
+	border-top: none;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+}
+
+QFrame#mainArea * QWidget {
 	background-color: white;
-}</string>
+}
+
+QFrame#mainArea EDRTitleBar, QFrame#mainArea EDRTitleBar * {
+	background-color: rgb(43, 42, 41);
+	color: white;
+	margin: 0px;
+	border: none;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+/*QFrame#mainArea*/ QDockWidget &gt; .QWidget, /*QFrame#mainArea*/ EDRDockWidget &gt; .QWidget, /*QFrame#mainArea*/ VisualizerWidget &gt; .QWidget, /*QFrame#mainArea*/ EDRDockWidgetSet &gt; .QWidget {
+	border: 1px solid black;
+	border-top: none;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
+
+QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; EDRTitleBar {
+	margin-bottom: -1px;
+	border-bottom: 2px solid white;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+/* separatory okna glownego */
+QFrame#mainArea QMainWindow::separator {
+     background: rgb(91,91,91);
+     width: 2px; /* when vertical */
+     height: 2px; /* when horizontal */
+	margin: 1px;
+ }
+
+QFrame#mainArea QMainWindow::separator:hover {
+     background-color: rgb(255, 255, 255);
+ }</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -729,7 +777,6 @@ QFrame#mainArea * &gt; QWidget {
  <resources>
   <include location="../../core/ui/CoreIcons.qrc"/>
   <include location="Icons.qrc"/>
-  <include location="C:/Users/mati/.designer/backup/Icons.qrc"/>
  </resources>
  <connections>
   <connection>

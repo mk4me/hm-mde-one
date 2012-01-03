@@ -141,7 +141,7 @@ public:
       void setShowLegend(bool val);
       bool eventFilter( QObject *object, QEvent *event );
 
-      bool getEventMode() const { return eventMode; }
+      bool isEventMode() const { return eventMode; }
       
 private:
       void addPlotCurve(QwtPlotCurve* curve, const Scales& scales);
@@ -158,7 +158,7 @@ private slots:
       void onSerieSelected(QwtPlotItem*);
       void onStateAction();
       void onEventContext();
-      void setEventMode(bool val) { eventMode = val; }
+      void setEventMode(bool val);
 
 private:
       QwtPlot* qwtPlot;

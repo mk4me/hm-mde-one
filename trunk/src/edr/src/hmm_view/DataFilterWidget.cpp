@@ -10,11 +10,13 @@ DataFilterWidget::DataFilterWidget(const QString& name, const QPixmap& pixmap, H
     filtersClosed(false)
 {
     setupUi(this);
+    setActive(false);
     this->label->setText(name);
     this->pictureLabel->setPixmap(pixmap);
     //this->verticalLayout->setAlignment(Qt::AlignTop);
     this->installEventFilter(this);
-    groupBox->installEventFilter(this);
+    colorBox->installEventFilter(this);
+
 }
 
     bool DataFilterWidget::eventFilter(QObject *object, QEvent *event)
@@ -31,10 +33,10 @@ DataFilterWidget::DataFilterWidget(const QString& name, const QPixmap& pixmap, H
         return false;
     }
 
-void DataFilterWidget::addFilter(const QString& bigLabelText, const QString& smallLabelText, DataFilterPtr dataFilter, const QPixmap* icon)
+void DataFilterWidget::addFilter(const QString& bigLabelText, DataFilterPtr dataFilter, const QPixmap* icon)
 {
     SimpleFilterCommandPtr simple(new SimpleFilterCommand(dataFilter));
-    addFilter(bigLabelText, smallLabelText, simple, icon);
+    addFilter(bigLabelText, simple, icon);
 }
 
 void DataFilterWidget::addFilter(FilterEntryWidget* entry) 
@@ -44,9 +46,9 @@ void DataFilterWidget::addFilter(FilterEntryWidget* entry)
     this->verticalLayout->addWidget(entry);
 }
 
-void DataFilterWidget::addFilter( const QString& bigLabelText, const QString& smallLabelText, IFilterCommandPtr command, const QPixmap* icon)
+void DataFilterWidget::addFilter( const QString& bigLabelText, IFilterCommandPtr command, const QPixmap* icon)
 {
-    FilterEntryWidget* entry = new FilterEntryWidget(this, hmmWindow, bigLabelText, smallLabelText, command, icon);
+    FilterEntryWidget* entry = new FilterEntryWidget(this, hmmWindow, bigLabelText, command, icon);
     addFilter(entry);
 }
 
@@ -72,12 +74,7 @@ void DataFilterWidget::mousePressEvent( QMouseEvent *e )
 
 void DataFilterWidget::setActive( bool val )
 {
-    /*if (!val) {
-        setStyleSheet("background-color: rgb(235, 235, 235)");
-    } else {
-        setStyleSheet("background-color: rgb(255, 255, 255)");
-    }*/
-    
+    setColor(val ? QColor(235, 235, 235) : Qt::white);
     active = val;
     emit activated(val); 
 }
@@ -89,5 +86,11 @@ void DataFilterWidget::closeFilters()
     FilterEntryWidget* e = entries[0];
     QSpacerItem* item = new QSpacerItem(0, e->height() * (3 - entries.size()));
     verticalLayout->addSpacerItem(item);
+}
+
+void DataFilterWidget::setColor( const QColor& color )
+{
+    QString style = QString("#colorBox { background: rgb(%1, %2, %3); }").arg(color.red()).arg(color.green()).arg(color.blue());
+    colorBox->setStyleSheet(style);
 }
 

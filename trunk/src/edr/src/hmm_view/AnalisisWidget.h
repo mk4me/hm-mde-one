@@ -28,6 +28,7 @@ protected:
 
 class AnalisisWidget : public QWidget, public Ui::AnalisisWidget
 {
+    Q_OBJECT;
 public:
     AnalisisWidget(QWidget* parent, int margin = 2, Qt::WindowFlags flags = 0);
 	virtual ~AnalisisWidget() {}
@@ -45,16 +46,10 @@ public:
     QWidget* getArea() { return analisisArea; }
 
 protected:
-    virtual bool eventFilter(QObject* object, QEvent* event)
-    {
-        if (event->type() == QEvent::MouseButtonRelease) {
-            QMouseEvent* mouse = static_cast<QMouseEvent*>(event);
-            lastMouseButton = mouse->button();
-        }
+    virtual bool eventFilter(QObject* object, QEvent* event);
 
-        return false;
-    }
-
+private slots:
+    void setFiltersExpanded(bool expand);
 
 private:
     int filterWidth;

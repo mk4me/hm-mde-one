@@ -16,7 +16,11 @@ QWidget(parent, flags),
         treeHolder->setLayout(layout);
     }
     treeWidget = new AnalisisTreeWidget(treeHolder);
+    //treeWidget->setRootIsDecorated(false);
+    treeWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     treeHolder->layout()->addWidget(treeWidget);
+    connect(hideButton, SIGNAL(clicked(bool)), this, SLOT(setFiltersExpanded(bool)));
+    setFiltersExpanded(hideButton->isChecked());
 }
 
 void AnalisisWidget::addDataFilterWidget( DataFilterWidget* filter )
@@ -37,15 +41,28 @@ void AnalisisWidget::addDataFilterWidget( DataFilterWidget* filter )
         int w = 3 * margin + filterWidth * 2;
         int h = 2 * margin + (filterHeight + margin) * (y + 1);
         filterScroll->setMinimumSize(w, h);
-        scrollArea->setMinimumWidth(w + 16);
-        scrollArea->setMaximumWidth(w + 16);
-        treeFrame->setMaximumWidth (w + 16);
-        containerFrame->setMaximumWidth(w + 40);
+        containerFrame->setMaximumWidth(w + 22);
+        containerFrame->setMinimumWidth(w + 22);
         scrollArea->setMinimumHeight(3 * margin + filterHeight * 2);
     }
 
     filter->setParent(filterScroll);
     filter->setGeometry(margin + x * (filterWidth + margin),margin +  y * (margin + filterHeight), filterWidth, filterHeight);
+}
+
+bool AnalisisWidget::eventFilter( QObject* object, QEvent* event )
+{
+    if (event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent* mouse = static_cast<QMouseEvent*>(event);
+        lastMouseButton = mouse->button();
+    }
+
+    return false;
+}
+
+void AnalisisWidget::setFiltersExpanded( bool expand )
+{
+    scrollArea->setHidden(!expand);
 }
 
 

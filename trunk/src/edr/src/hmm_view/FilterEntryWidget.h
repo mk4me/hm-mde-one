@@ -22,7 +22,7 @@ class FilterEntryWidget : public QWidget, private Ui::FilterEntry
 {
     Q_OBJECT;
 public:
-    FilterEntryWidget(QWidget* parent, HmmMainWindow* hmm, const QString& bigLabelText, const QString& smallLabelText, IFilterCommandPtr filterCommand, const QPixmap* icon = nullptr) :
+    FilterEntryWidget(QWidget* parent, HmmMainWindow* hmm, const QString& bigLabelText, IFilterCommandPtr filterCommand, const QPixmap* icon = nullptr) :
       QWidget(parent),
       filterCommand(filterCommand),
       hmm(hmm),
@@ -32,7 +32,7 @@ public:
         this->pushButton->setText(bigLabelText);
 
         this->pushButton->setAttribute(Qt::WA_NoSystemBackground, true);
-        this->smallLabel->setText(smallLabelText);
+        
         if (icon) {
             this->pushButton->setIcon(*icon);
         }

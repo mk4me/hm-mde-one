@@ -20,13 +20,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QFrame#frame { 
-     border: 1px solid; 
-     border-color: rgb(135, 177, 255);
-     border-radius: 4px; 
-	 padding: 2px;
-	background-color: rgb(233, 232, 231);
- } </string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="margin">
@@ -35,7 +29,17 @@
    <item>
     <widget class="QFrame" name="frame">
      <property name="styleSheet">
-      <string notr="true"/>
+      <string notr="true">QFrame#frame { 
+     border: 1px solid; 
+     border-color: rgb(135, 177, 255);
+     border-radius: 4px; 
+	 padding: 2px;
+	background-color: rgb(233, 232, 231);
+ } 
+
+QWidget#header &gt; QWidget { 
+	background-color: rgb(233, 232, 231);
+ } </string>
      </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -48,63 +52,65 @@
        <number>0</number>
       </property>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QWidget#label
+       <widget class="QWidget" name="Header" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QWidget#label
 {
 	background-color: rgb(233, 232, 231);
 };
 </string>
-          </property>
-          <property name="text">
-           <string>&lt;b&gt;Statistics&lt;/b&gt;</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="hideButton">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QToolButton[enabled=true]  {
+           </property>
+           <property name="text">
+            <string>&lt;b&gt;Statistics&lt;/b&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="hideButton">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QToolButton[enabled=true]  {
    border: none;
 }</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="newChartIcons.qrc">
-            <normaloff>:/resources/icons/downArrows.png</normaloff>
-            <normalon>:/resources/icons/upArrows.png</normalon>:/resources/icons/downArrows.png</iconset>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-          <property name="autoRaise">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="newChartIcons.qrc">
+             <normaloff>:/resources/icons/strzalka-dol.png</normaloff>
+             <normalon>:/resources/icons/strzalka-gora.png</normalon>:/resources/icons/strzalka-dol.png</iconset>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
       <item>
        <widget class="QTreeWidget" name="table">

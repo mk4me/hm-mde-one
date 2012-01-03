@@ -14,7 +14,7 @@
     <file alias="vertical_taga.png">../../../../resources/embedded/icons/vertical_taga.png</file>
     <file alias="view.png">../../../../resources/embedded/icons/view.png</file>
     <file alias="viewa.png">../../../../resources/embedded/icons/viewa.png</file>
-    <file alias="downArrows.png">../../../../resources/embedded/icons/downArrows.png</file>
-    <file alias="upArrows.png">../../../../resources/embedded/icons/upArrows.png</file>
+    <file alias="strzalka-dol.png">../../../../resources/embedded/icons/strzalka-dol.png</file>
+    <file alias="strzalka-gora.png">../../../../resources/embedded/icons/strzalka-gora.png</file>
   </qresource>
 </RCC>

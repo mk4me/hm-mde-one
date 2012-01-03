@@ -81,45 +81,6 @@ QPushButton {
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="smallLabel">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>41</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>5</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLabel {
- color: rgb(199, 199, 199
-);
-}</string>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-   </property>
-   <property name="margin">
-    <number>0</number>
-   </property>
-   <property name="indent">
-    <number>0</number>
-   </property>
-  </widget>
   <widget class="QPushButton" name="configurationButton">
    <property name="geometry">
     <rect>
@@ -136,7 +97,6 @@ QPushButton {
     <bool>true</bool>
    </property>
   </widget>
-  <zorder>smallLabel</zorder>
   <zorder>configurationButton</zorder>
   <zorder>pushButton</zorder>
  </widget>

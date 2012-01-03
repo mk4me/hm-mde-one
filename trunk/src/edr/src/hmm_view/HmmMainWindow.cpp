@@ -671,21 +671,6 @@ void HmmMainWindow::createFilterTabs()
 
 void HmmMainWindow::createFilterTab1()
 {
-    /*
-    QPixmap iconAnalog(core::getResourceString("icons/analogBig.png"));
-    QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
-    QPixmap iconKinematic(core::getResourceString("icons/kinematicBig.png"));
-    QPixmap iconVideo(core::getResourceString("icons/videoBig.png"));
-
-    QPixmap iconEmgSmall(core::getResourceString("icons/emg1Small.png"));
-    QPixmap iconForceSmall(core::getResourceString("icons/forcesSmall.png"));
-    QPixmap iconPowerSmall(core::getResourceString("icons/powerSmall.png"));
-    QPixmap iconGRFSmall(core::getResourceString("icons/grfSmall.png"));
-    QPixmap iconMomentSmall(core::getResourceString("icons/momentSmall.png"));
-    QPixmap iconJointSmall(core::getResourceString("icons/jointSmall.png"));
-    QPixmap iconMarkerSmall(core::getResourceString("icons/markerSmall.png"));
-    QPixmap iconVideoSmall(core::getResourceString("icons/videoSmall.png"));
-    */
 
     QPixmap iconAnalog(QString::fromUtf8(":/resources/icons/analogBig.png"));
     QPixmap iconKinetic(QString::fromUtf8(":/resources/icons/kineticBig.png"));
@@ -713,7 +698,7 @@ void HmmMainWindow::createFilterTab1()
     //DataFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
 
     IFilterCommandPtr grfCommand(new BuilderFilterCommand(TreeBuilder::createGRFBranch, TreeBuilder::getRootGRFIcon(), TreeBuilder::getGRFIcon()));
-    filter1->addFilter(tr("GRF"), "label", grfCommand, &iconGRFSmall);
+    filter1->addFilter(tr("GRF"), grfCommand, &iconGRFSmall);
 
     QString emgFront = core::getResourceString("images/muscular_front/muscular_front.xml");
     QString emgBack = core::getResourceString("images/muscular_back/muscular_back.xml");
@@ -766,7 +751,7 @@ void HmmMainWindow::createFilterTab1()
     //IFilterCommandPtr emgCommand(new EMGCommand(emgNames, emgFront, emgBack));
     IFilterCommandPtr emgCommand(new BuilderConfiguredFilterCommand<EMGCollection>(TreeBuilder::createEMGBranch, 
         emgNames, emgFront, emgBack, TreeBuilder::getRootEMGIcon(), TreeBuilder::getEMGIcon()));
-    filter1->addFilter(tr("EMG"), "emg label", emgCommand, &iconEmgSmall);
+    filter1->addFilter(tr("EMG"), emgCommand, &iconEmgSmall);
 
     DataFilterPtr typeFilter3(new TypeFilter(typeid(ForceCollection)));
     DataFilterPtr typeFilter4(new TypeFilter(typeid(MomentCollection)));
@@ -854,9 +839,9 @@ void HmmMainWindow::createFilterTab1()
     IFilterCommandPtr forceFilter(new ForcesCommand(TreeBuilder::createForcesBranch, 
         forcesNames, pathFront, pathBack, TreeBuilder::getRootForcesIcon(), TreeBuilder::getForcesIcon()));
     
-    filter2->addFilter(tr("FORCES"), "count: ", forceFilter, &iconForceSmall);
-    filter2->addFilter(tr("MOMENTS"), "test", momentFilter, &iconMomentSmall);
-    filter2->addFilter(tr("POWERS"), "powers", powerFilter, &iconPowerSmall);
+    filter2->addFilter(tr("FORCES"), forceFilter, &iconForceSmall);
+    filter2->addFilter(tr("MOMENTS"), momentFilter, &iconMomentSmall);
+    filter2->addFilter(tr("POWERS"), powerFilter, &iconPowerSmall);
 
     //typedef Vector3DFilterCommand2<MarkerChannel, MarkerCollection, NewVector3ItemHelper, true> MarkersCommand;
     NamesDictionary markersNames;
@@ -904,14 +889,14 @@ void HmmMainWindow::createFilterTab1()
         markersNames, markersFront, markersBack, TreeBuilder::getRootMarkersIcon(), TreeBuilder::getMarkersIcon()));
     IFilterCommandPtr jointsFilter(new JointsCommand());
 
-    filter3->addFilter(tr("MARKERS"), "count: 1", markersFilter, &iconMarkerSmall);
-    filter3->addFilter(tr("JOINTS"), "count: 1", jointsFilter, &iconJointSmall);
+    filter3->addFilter(tr("MARKERS"), markersFilter, &iconMarkerSmall);
+    filter3->addFilter(tr("JOINTS"), jointsFilter, &iconJointSmall);
     
     /*DataFilterPtr typeFilter8(new TypeFilter(typeid(VideoChannel)));
     filter4->addFilter(tr("VIDEOS"), "count: 4", typeFilter8, &iconVideoSmall);*/
     IFilterCommandPtr videoFilter(new BuilderFilterCommand(TreeBuilder::createVideoBranch, 
         TreeBuilder::getRootVideoIcon(), TreeBuilder::getVideoIcon()));
-    filter4->addFilter(tr("VIDEOS"), "count: 4", videoFilter, &iconVideoSmall);
+    filter4->addFilter(tr("VIDEOS"), videoFilter, &iconVideoSmall);
     
     connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
     connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
@@ -955,9 +940,9 @@ void HmmMainWindow::createFilterTab2()
     IFilterCommandPtr stroke(new Stroke());
     IFilterCommandPtr spine(new Spine());
 
-    filter1->addFilter("Endo", "...", endo, &iconEndo);
-    filter1->addFilter("Stroke", "...", stroke, &iconStroke);
-    filter1->addFilter("Spine", "...", spine, &iconSpine);
+    filter1->addFilter("Endo", endo, &iconEndo);
+    filter1->addFilter("Stroke", stroke, &iconStroke);
+    filter1->addFilter("Spine", spine, &iconSpine);
 
     
     /*filter2->addFilter("EMG", "...", stroke, &iconStroke);
@@ -984,9 +969,9 @@ void HmmMainWindow::createFilterTab2()
     filter3->addFilter("Moment", "Multi Chart", multi2);
     filter3->addFilter("Power", "Multi Chart", multi3);*/
 
-    filter4->addFilter("Force", "Multi Chart", multi1);
-    filter4->addFilter("Moment", "Multi Chart", multi2);
-    filter4->addFilter("Power", "Multi Chart", multi3);
+    filter4->addFilter("Force", multi1);
+    filter4->addFilter("Moment", multi2);
+    filter4->addFilter("Power", multi3);
 
     bool connectionOK = connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
     connectionOK = connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));

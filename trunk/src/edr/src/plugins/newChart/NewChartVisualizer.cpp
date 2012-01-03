@@ -538,6 +538,15 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
     }
 }
 
+void NewChartVisualizer::setEventMode( bool val )
+{
+    eventMode = val;
+    if (!eventMode) {
+        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
+        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
+    }
+}
+
 
 const QColor leftColor1(255, 0, 0, 15);
 const QColor leftColor2(128, 0, 0, 15);

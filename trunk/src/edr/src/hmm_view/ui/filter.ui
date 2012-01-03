@@ -32,7 +32,17 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(235, 235, 235);</string>
+   <string notr="true">QGroupBox { 
+     border: 1px solid; 
+     border-color: rgb(135, 177, 255);
+     border-radius: 5px; 
+     background-color: rgb(235, 235, 235);
+ } 
+
+#colorBox QWidget
+{
+	background: transparent;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
@@ -42,7 +52,10 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="colorBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -56,23 +69,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">/*QGroupBox {
-	 border-style: solid;
-     border-width: 1px;
-     border-radius: 9px;
-     border-color: rgb(135, 177, 255);
-	 color: rgb(135, 177, 255);
- }*/
-
-
-
-QGroupBox { 
-     border: 1px solid; 
-     border-color: rgb(135, 177, 255);
-     border-radius: 5px; 
-	background-color: rgb(235, 235, 235);
- } 
-</string>
+      <string notr="true"/>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <property name="spacing">
@@ -94,6 +91,9 @@ QGroupBox {
           <width>150</width>
           <height>80</height>
          </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
         <widget class="QLabel" name="label">
          <property name="geometry">
@@ -149,6 +149,9 @@ QGroupBox {
          </property>
         </widget>
         <widget class="QWidget" name="widget_2" native="true">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="geometry">
           <rect>
            <x>70</x>
