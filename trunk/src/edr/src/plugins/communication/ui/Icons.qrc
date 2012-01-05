@@ -6,6 +6,7 @@
     <file alias="niezaladowane.png">../../../../resources/embedded/icons/niezaladowane.png</file>
     <file alias="zaladowane.png">../../../../resources/embedded/icons/zaladowane.png</file>
     <file alias="polnapol-dane.png">../../../../resources/embedded/icons/polnapol-dane.png</file>
+    <file alias="pol-na-pol-green.png">../../../../resources/embedded/icons/pol-na-pol-green.png</file>
     <file alias="lokalne.png">../../../../resources/embedded/icons/lokalne.png</file>
     <file alias="session.png">../../../../resources/embedded/icons/session.png</file>
     <file alias="subject.png">../../../../resources/embedded/icons/subject.png</file>

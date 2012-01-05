@@ -152,8 +152,10 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
             }
 
             menuButton->setMenu(it->second);
-            //menuButton->setIconSize(QSize(20,20));
-            //menuButton->setMaximumHeight(20);
+
+            //if(it->second->icon().isNull() == false){
+                //menuButton->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonTextBesideIcon);
+            //}
 
             menuButton->setText(it->second->title());
             menuButton->setPopupMode(QToolButton::InstantPopup);
@@ -350,7 +352,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);*/
 
     topMainWindow = new EDRDockWidgetManager(this);
-    topMainWindow->setTabsPosition(QTabWidget::North);
+    topMainWindow->setTabsPosition(QTabWidget::South);
     bottomMainWindow = new QMainWindow(this);
     bottomMainWindow->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 

@@ -109,23 +109,37 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     // tworzenie kamery
     widget->getCamera()->setClearColor(osg::Vec4(0.0f, 0.0f, 0.1f, 1));
 
+    QIcon icon0;
+    icon0.addFile(QString::fromUtf8(":/resources/icons/switch-axisa.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+    icon0.addFile(QString::fromUtf8(":/resources/icons/switch-axis.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
     actionSwitchAxes = new QAction("Switch Axes", widget);
+    actionSwitchAxes->setIcon(icon0);
     actionSwitchAxes->setCheckable(true);
     actionSwitchAxes->setChecked(false );
     actionSwitchAxes->setVisible(false);
     //connect(actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
     actions.push_back(actionSwitchAxes);
 
+    QIcon icon1;
+    icon1.addFile(QString::fromUtf8(":/resources/icons/tracea.png"));
 	actionTrajectories = new QAction("Trajectories", widget);
+    actionTrajectories->setIcon(icon1);
     actionTrajectories->setCheckable(true);
     actionTrajectories->setVisible(false);
+
+    QIcon icon2;
+    icon2.addFile(QString::fromUtf8(":/resources/icons/skeletal_tracea.png"));
     actionGhost = new QAction("Ghost", widget);
+    actionGhost->setIcon(icon2);
     actionGhost->setCheckable(true);
     actionGhost->setVisible(false);
 	actions.push_back(actionTrajectories);
     actions.push_back(actionGhost);
-	QMenu* viewMenu = new QMenu("View", widget);
-
+	
+    QIcon icon3;
+    icon3.addFile(QString::fromUtf8(":/resources/icons/viewa.png"));
+    QMenu* viewMenu = new QMenu("View", widget);
+    viewMenu->setIcon(icon3);
 
 	QAction* lft_action = viewMenu->addAction("Left"); 
 	QAction* rht_action = viewMenu->addAction("Right"); 

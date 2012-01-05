@@ -45,15 +45,11 @@ QMenu {
 QFrame#FlexiTabBarSection {
 	border-right-style: solid;
 	border-right-width: 2px;
-	border-right-color: #898989;
+	border-right-color: red;
 }
 
 QFrame#FlexiTabBarSection > QFrame#bottomArea > QLabel {
 	color: white;
-}
-
-QFrame#FlexiTabBarSection > QScrollArea#userArea {
-	margin: 2px;
 }
 
  /********** KONIECT styli dla FlexiTabBarSection ***********/

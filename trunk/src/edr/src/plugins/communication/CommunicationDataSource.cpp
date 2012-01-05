@@ -129,7 +129,8 @@ void ItemBase::setDataLocality(DataLocality locality)
                 //color = Qt::GlobalColor::red;
                 break;
     case PartiallyLocal:
-                localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/polnapol-dane.png"));
+                //localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/polnapol-dane.png"));
+                localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/pol-na-pol-green.png"));
                 //color = Qt::GlobalColor::yellow;
                 break;
     }

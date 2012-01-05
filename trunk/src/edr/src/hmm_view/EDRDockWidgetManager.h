@@ -17,7 +17,7 @@
 class EDRDockWidget;
 class EDRDockWidgetSet;
 
-class EDRDockWidgetManager : protected QMainWindow
+class EDRDockWidgetManager : public QMainWindow
 {
     Q_OBJECT;
 

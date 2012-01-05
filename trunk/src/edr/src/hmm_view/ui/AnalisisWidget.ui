@@ -33,10 +33,10 @@
      </property>
      <property name="styleSheet">
       <string notr="true">QFrame#LeftContainer {
-	  border: 1px solid; 
-     border-color: rgb(135, 177, 255);
-     border-radius: 5px; 
-	padding: 0px;
+	  border: 1px solid black; 
+     /*border-color: rgb(135, 177, 255)*/;
+     border-radius: /*5*/ 4px; 
+	padding: 1px;
     background-color: rgb(235, 235, 235);
 }
 
@@ -61,15 +61,14 @@ QWidget {
         </property>
         <property name="styleSheet">
          <string notr="true">QFrame#containerFrame { 
-     border: 1px solid; 
-     border-color: rgb(135, 177, 255);
-     border-radius: 5px; 
-	padding: 4px;
+     border: 1px solid rgb(135, 177, 255); 
+     border-radius: 4px; 
+	padding: 2px;
     background-color: rgb(235, 235, 235);
  } 
 
  QWidget {
-	 background-color: rgb(235, 235, 235);
+	 background-color:  rgb(235, 235, 235);
 }</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -201,7 +200,7 @@ QWidget {
               <x>0</x>
               <y>0</y>
               <width>314</width>
-              <height>260</height>
+              <height>263</height>
              </rect>
             </property>
             <property name="styleSheet">
@@ -259,7 +258,6 @@ QWidget {
 
 #analisisArea {
 	background-color: rgb(91, 91, 91);
-	border: none;
 }
 
 #analisisArea &gt; *, EDRDockWidgetSet &gt; * {
@@ -269,6 +267,8 @@ QWidget {
 
 #analisisArea QMainWindow {
 	background-color: white;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
 }
 
 QMainWindow &gt; * {
@@ -314,45 +314,137 @@ EDRDockWidgetSet &gt; EDRTitleBar {
 }
 
 QMainWindow::separator {
-	background-color: rgb(91, 91, 91);
+	background-color: transparent;
+	width: 4px;
+	height: 4px;
 }
 
 QMainWindow::separator:hover {
-	background-color: rgb(135, 173, 255);
+	background-color: rgb(190, 210, 250);
 }
 
 QMainWindow::separator:vertical {
-	margin: 1px;
-	border: 1px solid white;
-	border-top: 4px solid white;
-	border-bottom: 4px solid white;
-	width: 2px;
+	image: url(:/resources/icons/splitter-dots-vertical.png);
  }
 
 QMainWindow::separator:horizontal {
-	margin: 1px;
-	border: 1px solid white;
-	border-left: 4px solid white;
-	border-right: 4px solid white;
-	height: 2px;
+	image: url(:/resources/icons/splitter-dots-horizontal.png);
 }
 
-
 QMainWindow::separator:vertical:hover {
-   	margin: 1px;
-	border: none;
-	border-top: 2px solid white;
-	border-bottom: 2px solid white;
-	width: 4px;
+	margin-top: 4px;
+	margin-bottom: 4px;
  }
 
 QMainWindow::separator:horizontal:hover {
-   	margin: 1px;
-	border: none;
-	border-left: 2px solid white;
-	border-right: 2px solid white;
-	height: 4px;
+	margin-left: 4px;
+	margin-right: 4px;
+}
+
+/* previous
+QMainWindow QTabBar::tab {
+	border: 1px solid  rgb(91, 91, 91);
+	border-radius: 0px;
+	background-color: rgb(91, 91, 91);
+	color: white;
+	min-width: 8ex;
+	padding: 2px;
  }
+
+QMainWindow QTabBar::tab:hover {
+     background-color: #898989;
+ }
+
+QMainWindow QTabBar::tab:selected {
+	border: 1px solid  rgb(41, 41, 41);
+	background-color: rgb(41, 41, 41);
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+ }
+*/
+
+/*
+QWidget {}
+*/
+
+QTabBar, QTabBar * {}
+
+QTabBar::tab {
+	border: 1px solid  black;
+	border-top: none;
+	border-radius: 0px;
+	background-color: transparent;
+	color: white;
+	min-width: 10ex;
+	padding: 2px;
+	margin: 0px;
+}
+
+QTabBar::tab:previous-selected {
+	border-right: none;
+}
+
+QTabBar::tab:next-selected, QTabBar::tab:middle:next-selected {
+	border-right: 1px solid black;
+}
+
+QTabBar::tab:first {
+	border: 1px solid  black;
+	border-top: none;
+	border-bottom-left-radius: 4px;
+}
+
+QTabBar::tab:first:previous-selected {
+	border-right: none;
+}
+
+QTabBar::tab:middle {
+	border: 1px solid  black;
+	border-top: none;
+	border-left: none;
+}
+
+QTabBar::tab:last {
+	border: 1px solid  black;
+	border-top: none;
+	border-left: none;
+	border-bottom-right-radius: 4px;
+}
+
+QTabBar::tab:middle:selected {
+	border: 1px solid  black;
+	background-color: black;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	margin-left: -1px;
+	margin-right: -1px;
+}
+
+QTabBar::tab:first:selected {
+border: 1px solid black;
+	background-color: black;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	margin-left: 0px;
+	margin-right: -1px;
+}
+
+QTabBar::tab:last:selected {
+border: 1px solid  black;
+	background-color: black;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+		margin-left: -1px;
+	margin-right: 0px;
+}
+
+QTabBar::tab:first:!selected, QTabBar::tab:last:!selected, QTabBar::tab:middle:!selected {
+	margin-bottom: 4px;
+}
+
+QTabBar::tab:hover {
+    background-color: #898989;
+}
 </string>
      </property>
     </widget>

@@ -68,9 +68,6 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
 set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 
 #------------------------------------------------------------------------------
-# UI
-# set(TARGET_UI
-# )
 set(TARGET_UI
 	ui/TrajectoriesDialog.ui
 )
@@ -78,7 +75,14 @@ QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})
 set(TARGET_H ${TARGET_H} ${TARGET_UI_H} ${TARGET_UI})
 
-
+#------------------------------------------------------------------------------
+# RC
+set(TARGET_RC
+	ui/Icons.qrc
+)
+QT4_ADD_RESOURCES(TARGET_RCC_SRC ${TARGET_RC})
+source_group("${SOURCEGROUP_UI}" FILES ${TARGET_RC} ${TARGET_RCC_SRC})
+set(TARGET_SRC ${TARGET_SRC} ${TARGET_RCC_SRC} ${TARGET_RC})
 
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek

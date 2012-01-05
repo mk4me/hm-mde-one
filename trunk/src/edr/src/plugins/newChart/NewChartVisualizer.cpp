@@ -102,14 +102,14 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     statesMap[action] =  NewChartStatePtr(new NewChartValueMarker(this));
 
     QIcon icon3;
-    icon3.addFile(QString::fromUtf8(":/resources/icons/horizontal_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon3.addFile(QString::fromUtf8(":/resources/icons/vertical_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
     action = new QAction("Horizontal Marker", this);
     action->setIcon(icon3);
     actions.push_back(action);
     statesMap[action] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Horizontal));
 
     QIcon icon4;
-    icon4.addFile(QString::fromUtf8(":/resources/icons/vertical_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon4.addFile(QString::fromUtf8(":/resources/icons/horizontal_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
     action = new QAction("Vertical Marker", this);
     action->setIcon(icon4);
     actions.push_back(action);

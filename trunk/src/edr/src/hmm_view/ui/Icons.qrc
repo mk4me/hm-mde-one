@@ -1,11 +1,11 @@
 <RCC>
   <qresource prefix="resources/icons">
-	<file alias="x-alpha.png">../../../resources/embedded/icons/x-alpha.png</file>
-	<file alias="minimalizacja-alpha.png">../../../resources/embedded/icons/minimalizacja-alpha.png</file>
-	<file alias="strzalka-gora.png">../../../resources/embedded/icons/strzalka-gora.png</file>
-	<file alias="strzalka-dol.png">../../../resources/embedded/icons/strzalka-dol.png</file>
-	<file alias="trojkat-8x8-naboku.png">../../../resources/embedded/icons/trojkat-8x8-naboku.png</file>
-	<file alias="trojkat-8x8-dodolu.png">../../../resources/embedded/icons/trojkat-8x8-dodolu.png</file>
+	  <file alias="x-alpha.png">../../../resources/embedded/icons/x-alpha.png</file>
+	  <file alias="minimalizacja-alpha.png">../../../resources/embedded/icons/minimalizacja-alpha.png</file>
+	  <file alias="strzalka-gora.png">../../../resources/embedded/icons/strzalka-gora.png</file>
+	  <file alias="strzalka-dol.png">../../../resources/embedded/icons/strzalka-dol.png</file>
+	  <file alias="trojkat-8x8-naboku.png">../../../resources/embedded/icons/trojkat-8x8-naboku.png</file>
+	  <file alias="trojkat-8x8-dodolu.png">../../../resources/embedded/icons/trojkat-8x8-dodolu.png</file>
     <file alias="header.png">../../../resources/embedded/icons/header.png</file>
     <file alias="Triangle.png">../../../resources/embedded/icons/triangle.png</file>
     <file alias="Analizy.png">../../../resources/embedded/icons/Analizy.png</file>
@@ -65,5 +65,7 @@
     <file alias="forcesSmall.png">../../../resources/embedded/icons/forcesSmall.png</file>
     <file alias="momentSmall.png">../../../resources/embedded/icons/momentSmall.png</file>
     <file alias="powerSmall.png">../../../resources/embedded/icons/powerSmall.png</file>
+    <file alias="splitter-dots-horizontal.png">../../../resources/embedded/icons/splitter-dots-horizontal.png</file>
+    <file alias="splitter-dots-vertical.png">../../../resources/embedded/icons/splitter-dots-vertical.png</file>
   </qresource>
 </RCC>
