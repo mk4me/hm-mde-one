@@ -48,6 +48,7 @@ private:
 
 private slots:
     void onDockWidgetClosed(QObject* object);
+    void onDockWidgetLocationChanged(Qt::DockWidgetArea area);
 };
 
 #endif

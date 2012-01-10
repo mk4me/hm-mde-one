@@ -40,7 +40,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 
         for(int i = 0; i < tabBars.size(); i++){
             QTabBar* tab = tabBars[i];
-            if(tab != nullptr /*&& tab->parent() == this*/){
+            if(tab != nullptr && tab->parent() == this){
                 tab->setDrawBase(false);
             }
         }

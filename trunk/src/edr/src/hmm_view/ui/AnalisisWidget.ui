@@ -283,9 +283,9 @@ QWidget {
 	padding: 0px;
 }
 
-VisualizerWidget &gt; .QWidget {
-	border-top-left: 0px;
-	border-bottom-left: 0px;
+#analisisArea VisualizerWidget &gt; .QWidget {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
 }
 
 /* styl titlebarów i ich dzieci */
@@ -367,10 +367,14 @@ QMainWindow::separator:horizontal:hover {
 	margin-right: 4px;
 }
 
-QTabBar, QTabBar * {}
+QTabBar, QTabBar *, EDRDockWidgetSet QTabBar, EDRDockWidgetSet QTabBar * {}
 QTabBar {
 	background: rgb(91, 91, 91);
 	border-top: 3px solid black;
+}
+
+EDRDockWidgetSet QTabBar {
+	background: white;
 }
 
 QTabBar::tab {
@@ -384,6 +388,10 @@ QTabBar::tab {
 	margin: 0px;
 }
 
+EDRDockWidgetSet QTabBar::tab {
+	background: rgb(91, 91, 91);
+}
+
 QTabBar::tab:previous-selected {
 	border-right: none;
 }
@@ -392,10 +400,11 @@ QTabBar::tab:next-selected, QTabBar::tab:middle:next-selected {
 	border-right: 1px solid black;
 }
 
-QTabBar::tab:first {
+QTabBar::tab:first, EDRDockWidgetSet QTabBar::tab:first{
 	border: 1px solid  black;
 	border-top: 3px solid black;
 	border-bottom-left-radius: 4px;
+	padding: 2px;
 }
 
 QTabBar::tab:first:previous-selected {
@@ -444,12 +453,6 @@ border-top: 3px solid black;
 		margin-left: -1px;
 	margin-right: 0px;
 }
-
-/*
-QTabBar::tab:first:!selected, QTabBar::tab:last:!selected, QTabBar::tab:middle:!selected {
-	margin-bottom: 4px;
-}
-*/
 
 QTabBar::tab:hover {
     background-color: #898989;
