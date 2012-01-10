@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="resources/icons">
-	  <file alias="x-alpha.png">../../../resources/embedded/icons/x-alpha.png</file>
 	  <file alias="minimalizacja-alpha.png">../../../resources/embedded/icons/minimalizacja-alpha.png</file>
 	  <file alias="strzalka-gora.png">../../../resources/embedded/icons/strzalka-gora.png</file>
 	  <file alias="strzalka-dol.png">../../../resources/embedded/icons/strzalka-dol.png</file>

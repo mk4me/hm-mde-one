@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>387</width>
-    <height>20</height>
+    <height>21</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -150,6 +150,9 @@
        <height>16777215</height>
       </size>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>o</string>
      </property>
@@ -169,6 +172,9 @@
        <height>16777215</height>
       </size>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>x</string>
      </property>
@@ -186,7 +192,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="Icons.qrc">
+    <iconset>
      <normaloff>:/resources/icons/oddokowywanie.png</normaloff>
      <normalon>:/resources/icons/dokowanie.png</normalon>:/resources/icons/oddokowywanie.png</iconset>
    </property>
@@ -199,8 +205,8 @@
   </action>
   <action name="actionClose">
    <property name="icon">
-    <iconset resource="Icons.qrc">
-     <normaloff>:/resources/icons/x.png</normaloff>:/resources/icons/x.png</iconset>
+    <iconset>
+     <normaloff>:/resources/icons/x-alpha.png</normaloff>:/resources/icons/x-alpha.png</iconset>
    </property>
    <property name="text">
     <string>Close</string>
@@ -211,7 +217,7 @@
   </action>
  </widget>
  <resources>
-  <include location="Icons.qrc"/>
+  <include location="CoreIcons.qrc"/>
  </resources>
  <connections/>
  <slots>

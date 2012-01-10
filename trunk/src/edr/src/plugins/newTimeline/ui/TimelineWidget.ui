@@ -25,6 +25,9 @@
      <property name="contextMenuPolicy">
       <enum>Qt::CustomContextMenu</enum>
      </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
      <property name="editTriggers">
       <set>QAbstractItemView::SelectedClicked</set>
      </property>

@@ -29,6 +29,8 @@ public:
 	virtual ~EDRDockWidgetSet() {}
 
 public:
+    void addDockWidget(EDRDockWidget* widget, Qt::DockWidgetArea area, Qt::Orientation orientation);
+
 	void addDockWidget(EDRDockWidget* widget, Qt::Orientation orientation);
     void addDockWidget(EDRDockWidget* widget);
 	bool isAdditionPossible(EDRDockWidget* widget) const;

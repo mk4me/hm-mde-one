@@ -181,6 +181,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
         QToolBar * topToolbar = new QToolBar();
         topToolbar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         topToolbar->setIconSize(QSize(20,20));
+        topToolbar->setStyleSheet(QString::fromUtf8("QToolBar { spacing: 2px; }"));
 
         layout->addWidget(topToolbar);
 
@@ -351,9 +352,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);*/
 
-    topMainWindow = new EDRDockWidgetManager(this);
+    topMainWindow = new EDRDockWidgetManager();
     topMainWindow->setTabsPosition(QTabWidget::South);
-    bottomMainWindow = new QMainWindow(this);
+    bottomMainWindow = new QMainWindow();
     bottomMainWindow->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     createFilterTabs();
@@ -633,9 +634,10 @@ void HmmMainWindow::showTimeline()
                 std::vector<QObject*> settingsWidgetActions;
                 QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
 
-                EDRDockWidget * widget = new EDRDockWidget(nullptr);
+                EDRDockWidget * widget = new EDRDockWidget();
                 widget->setTitleBarWidget(new QWidget());
-                widget->titleBarWidget()->setEnabled(false);
+                //widget->titleBarWidget()->setEnabled(false);
+                widget->setFeatures(QDockWidget::NoDockWidgetFeatures);
                 /*QLayout* layout = widget->getInnerWidget()->layout();
                 layout->setMargin(0);
                 layout->setContentsMargins(QMargins(0, 0, 0, 0));

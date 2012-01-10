@@ -165,6 +165,7 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     rootNode->setUpdateCallback(new KinematicNotifier(this));
     rootNode->addChild(createFloor());
     widget->setSceneData(rootNode);
+    widget->setMinimumSize(50, 50);
     return widget;
 }
 

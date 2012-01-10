@@ -88,8 +88,8 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     //nowy slider
     slider->setScalePosition(QwtSlider::TopScale);
     slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    slider->setHandleSize(40,10);
-    slider->
+    slider->setHandleSize(20,10);
+    slider->setSpacing(-4);
 
     connect(slider, SIGNAL(valueChanged(double)), this, SLOT(timeSliderChanged(double)));
 

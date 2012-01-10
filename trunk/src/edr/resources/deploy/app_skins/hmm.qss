@@ -42,14 +42,17 @@ QMenu {
 
  /********** POCZ¥TEK styli dla FlexiTabBarSection ***********/
 
-QFrame#FlexiTabBarSection {
-	border-right-style: solid;
-	border-right-width: 2px;
-	border-right-color: red;
+QWidget#FlexiTabWidget QFrame#FlexiTabBarSection {
+	border-right: 1px solid rgb(101, 101, 101);
 }
 
-QFrame#FlexiTabBarSection > QFrame#bottomArea > QLabel {
+QFrame#FlexiTabBarSection QFrame#bottomArea > QLabel {
 	color: white;
+}
+
+QFrame#FlexiTabBarSection QFrame#userArea QToolBar {
+	border: none;
+	margin: 0px;
 }
 
  /********** KONIECT styli dla FlexiTabBarSection ***********/
@@ -58,27 +61,18 @@ QFrame#FlexiTabBarSection > QFrame#bottomArea > QLabel {
 
  /*jezeli documentMode jest wlaczone nie ma ramki pomimo styli! nie jest renderowana*/
 
- QWidget#FlexiTabWidget > QTabWidget::pane {
-	background-color: #727271;
-	border-top: 1px solid transparent;
+ QWidget#FlexiTabWidget QTabWidget::pane {
+	background-color: rgb(91, 91, 91);
+	border: 1px solid rgb(101, 101, 101);
 	border-bottom: none;
-	border-left: none;
-	border-right: none;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
+	border-radius: 0px;
 }
 
 QWidget#FlexiTabWidget > QTabWidget::pane QWidget {
-	background-color: #727271;
-	border: none;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
+	background-color: rgb(91, 91, 91);
 }
 
+/*
 QWidget#FlexiTabWidget QTabBar::tab {
 	border: none;
 	border-top-left-radius: 0px;
@@ -103,6 +97,105 @@ QWidget#FlexiTabWidget QTabBar::tab:last {
 	border: none;
 	margin-right: 0px;
  }
+
+ */
+
+ /* Nowa wersja na bazie tabów z analiz - tutaj taby sa u gory!! */
+
+ QWidget#FlexiTabWidget QTabBar::tab {
+	border: 1px solid rgb(101,101,101);
+	border-bottom: none;
+	border-radius: 0px;
+	background-color: transparent;
+	color: white;
+	min-width: 10ex;
+	padding: 2px;
+	margin: 0px;
+	margin-top: 4px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:previous-selected {
+	border-right: none;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:next-selected, QWidget#FlexiTabWidget QTabBar::tab:middle:next-selected {
+	border-right-width: 1px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:first {
+	border-width: 1px;
+	border-bottom: none;
+	border-top-left-radius: 4px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:first:previous-selected {
+	border-right: none;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:middle {
+	border: 1px solid rgb(101,101,101);
+	border-bottom: none;
+	border-left: none;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:last {
+	border: 1px solid rgb(101,101,101);
+	border-bottom: none;
+	border-left: none;
+	border-top-right-radius: 4px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:middle:selected {
+	border: 1px solid rgb(101,101,101);
+	border-top: none;
+	border-bottom: none;
+	background-color: rgb(41,41,41);
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	margin-left: -1px;
+	margin-right: -1px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:first:selected {
+	border: 1px solid rgb(101,101,101);
+	border-top: none;
+	border-bottom: none;
+	background-color: rgb(41,41,41);
+	border-top-left-radius: 4px;
+	border-top-right-radius: 0px;
+	margin-left: 0px;
+	margin-right: -1px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:last:selected {
+	border: 1px solid rgb(101,101,101);
+	border-top: none;
+	border-bottom: none;
+	background-color: rgb(41,41,41);
+	border-top-left-radius: 0px;
+	border-top-right-radius: 4px;
+	margin-left: -1px;
+	margin-right: 0px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:first:!selected, QWidget#FlexiTabWidget QTabBar::tab:last:!selected, QWidget#FlexiTabWidget QTabBar::tab:middle:!selected {
+	margin-top: 4px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:hover {
+    background-color: #898989;
+}
+
+
+QWidget#FlexiTabWidget QTabBar::tab:only-one {
+	border: 1px solid rgb(101,101,101);
+	border-top: none;
+	border-bottom: none;
+	background-color: rgb(41,41,41);
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
 
  /********** KONIEC styli dla FlexiTabWidget ***********/
  

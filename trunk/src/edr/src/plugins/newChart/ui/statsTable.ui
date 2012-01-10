@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>837</width>
-    <height>231</height>
+    <height>241</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,7 +37,7 @@
 	background-color: rgb(233, 232, 231);
  } 
 
-QWidget#header &gt; QWidget { 
+QWidget#header, QWidget#header &gt; QWidget { 
 	background-color: rgb(233, 232, 231);
  } </string>
      </property>

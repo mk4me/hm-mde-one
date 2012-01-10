@@ -252,65 +252,91 @@ QWidget {
       </sizepolicy>
      </property>
      <property name="styleSheet">
-      <string notr="true">QWidget {
+      <string notr="true">#analisisArea {
+	background-color: rgb(91, 91, 91);
+}
+
+/* timeline */
+#analisisArea .QMainWindow .QTreeWidget {
 	background: transparent;
 }
 
-#analisisArea {
-	background-color: rgb(91, 91, 91);
-}
-
-#analisisArea &gt; *, EDRDockWidgetSet &gt; * {
+/* topWindow i bottomWindow */
+#analisisArea &gt; QMainWindow {
 	border: 1px solid black;
 	border-radius: 4px;
-}
-
-#analisisArea QMainWindow {
-	background-color: white;
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
-}
-
-QMainWindow &gt; * {
-	background-color: rgb(91, 91, 91);
-}
-
-EDRDockWidgetSet &gt; * {
-	border-top: none;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-}
-
-QMainWindow EDRTitleBar, QMainWindow EDRTitleBar * {
-	background-color: rgb(43, 42, 41);
-	color: white;
-	margin: 0px;
-	border: none;
-	border-radius: 0px;
-}
-
-QMainWindow EDRTitleBar {
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
-}
-
-QDockWidget &gt; .QWidget, EDRDockWidget &gt; .QWidget, VisualizerWidget &gt; .QWidget, EDRDockWidgetSet &gt; .QWidget {
-	border: 1px solid black;
-	border-top: none;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
 	background: white;
 }
 
-EDRDockWidgetSet &gt; EDRTitleBar {
-	margin-bottom: -1px;
-	border-bottom: 2px solid white;
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
+/* topWindow */
+#analisisArea &gt; EDRDockWidgetManager {
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
+	margin: 0px;
+	padding: 0px;
+}
+
+#analisisArea &gt; EDRDockWidgetManager QMainWindow {
+	border-radius: 0px;
+	background: white;
+	margin: 0px;
+	padding: 0px;
+}
+
+VisualizerWidget &gt; .QWidget {
+	border-top-left: 0px;
+	border-bottom-left: 0px;
+}
+
+/* styl titlebarów i ich dzieci */
+EDRTitleBar, EDRTitleBar * {
+	background-color: rgb(43, 42, 41);
+	color: white;
+	border: none;
+	border-radius: 0px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	margin: 0px;
+	padding: 0px;
+}
+
+EDRTitleBar QToolButton#buttonFloat {
+    background: rgb(43, 42, 41);
+    border: 1px solid rgb(63, 62, 61);
+     border-bottom: none;
+	 border-radius: 0px;
+     border-top-left-radius: 4px;
+     border-right: none;
+	margin-top: 4px;
+	max-height: 12px;
+	min-width: 17px;
+} 
+
+EDRTitleBar QToolButton#buttonFloat:hover {
+    background-color: rgb(135, 177, 255);
+ }
+
+EDRTitleBar QToolButton#buttonFloat:pressed {
+    background-color: rgb(55, 97, 180);
+}
+
+EDRTitleBar QToolButton#buttonClose {
+    background-color: rgb(43, 42, 41);
+     border: 1px solid rgb(63, 62, 61);
+     border-bottom: none; 
+	border-radius: 0px;
+     border-top-right-radius: 4px;
+		margin-top: 4px;
+	max-height: 12px;
+	min-width: 23px;
+}
+
+ EDRTitleBar QToolButton#buttonClose:hover {
+     background-color: rgb(200, 0, 0);	
+ }
+
+EDRTitleBar QToolButton#buttonClose:pressed {
+         background-color: rgb(128, 0, 0);
 }
 
 QMainWindow::separator {
@@ -341,37 +367,15 @@ QMainWindow::separator:horizontal:hover {
 	margin-right: 4px;
 }
 
-/* previous
-QMainWindow QTabBar::tab {
-	border: 1px solid  rgb(91, 91, 91);
-	border-radius: 0px;
-	background-color: rgb(91, 91, 91);
-	color: white;
-	min-width: 8ex;
-	padding: 2px;
- }
-
-QMainWindow QTabBar::tab:hover {
-     background-color: #898989;
- }
-
-QMainWindow QTabBar::tab:selected {
-	border: 1px solid  rgb(41, 41, 41);
-	background-color: rgb(41, 41, 41);
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
- }
-*/
-
-/*
-QWidget {}
-*/
-
 QTabBar, QTabBar * {}
+QTabBar {
+	background: rgb(91, 91, 91);
+	border-top: 3px solid black;
+}
 
 QTabBar::tab {
 	border: 1px solid  black;
-	border-top: none;
+	border-top: 3px solid black;
 	border-radius: 0px;
 	background-color: transparent;
 	color: white;
@@ -390,7 +394,7 @@ QTabBar::tab:next-selected, QTabBar::tab:middle:next-selected {
 
 QTabBar::tab:first {
 	border: 1px solid  black;
-	border-top: none;
+	border-top: 3px solid black;
 	border-bottom-left-radius: 4px;
 }
 
@@ -400,50 +404,56 @@ QTabBar::tab:first:previous-selected {
 
 QTabBar::tab:middle {
 	border: 1px solid  black;
-	border-top: none;
+	border-top: 3px solid black;
 	border-left: none;
 }
 
 QTabBar::tab:last {
 	border: 1px solid  black;
-	border-top: none;
+	border-top: 3px solid black;
 	border-left: none;
 	border-bottom-right-radius: 4px;
 }
 
 QTabBar::tab:middle:selected {
 	border: 1px solid  black;
+	border-top: 3px solid black;
 	background-color: black;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
 	margin-left: -1px;
 	margin-right: -1px;
 }
 
 QTabBar::tab:first:selected {
 border: 1px solid black;
+	border-top: 3px solid black;
 	background-color: black;
 	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 0px;
 	margin-left: 0px;
 	margin-right: -1px;
 }
 
 QTabBar::tab:last:selected {
 border: 1px solid  black;
+border-top: 3px solid black;
 	background-color: black;
-	border-bottom-left-radius: 4px;
+	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 4px;
 		margin-left: -1px;
 	margin-right: 0px;
 }
 
+/*
 QTabBar::tab:first:!selected, QTabBar::tab:last:!selected, QTabBar::tab:middle:!selected {
 	margin-bottom: 4px;
 }
+*/
 
 QTabBar::tab:hover {
     background-color: #898989;
+	border-top: 3px solid black;
 }
 </string>
      </property>

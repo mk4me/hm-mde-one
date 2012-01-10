@@ -8,6 +8,7 @@ EDRDockWidgetManager::EDRDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowF
 {
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setDockOptions(QMainWindow::ForceTabbedDocks | QMainWindow::AnimatedDocks | QMainWindow::AllowTabbedDocks);
+    setCentralWidget(nullptr);
     //setDocumentMode(true);
 }
 
@@ -39,7 +40,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 
         for(int i = 0; i < tabBars.size(); i++){
             QTabBar* tab = tabBars[i];
-            if(tab != nullptr && tab->parent() == this){
+            if(tab != nullptr /*&& tab->parent() == this*/){
                 tab->setDrawBase(false);
             }
         }
@@ -67,7 +68,7 @@ void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
 		}
 	}
 
-	EDRDockWidgetSet* set = new EDRDockWidgetSet(this);
+	EDRDockWidgetSet* set = new EDRDockWidgetSet();
 	//if (set->isAdditionPossible(widget)) {
 		set->addDockWidget(widget);
 		addDockWidgetSet(set);
