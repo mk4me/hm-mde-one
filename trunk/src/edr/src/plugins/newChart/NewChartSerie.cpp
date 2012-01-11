@@ -35,7 +35,7 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
     QwtWeedingCurveFitter* fitter = new QwtWeedingCurveFitter(0.0);
     //fitter->setFitMode(QwtSplineCurveFitter::ParametricSpline);
     curve->setCurveFitter(nullptr);
-    curve->setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
+//    curve->setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
     //curve->setCurveAttribute( QwtPlotCurve::Fitted );
     visualizer->addPlotCurve(curve, getScales());
 }

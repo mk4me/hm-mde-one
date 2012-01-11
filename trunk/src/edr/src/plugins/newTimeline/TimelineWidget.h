@@ -15,6 +15,9 @@
 #include <QtGui/QSlider>
 #include <QtGui/QComboBox>
 #include <QtGui/QTimeEdit>
+#include <QtGui/QTabBar>
+#include <QtGui/QToolBar>
+#include <QtGui/QTabWidget>
 #include <QtGui/QLabel>
 #include <QtGui/QAction>
 #include <QtCore/QTime>
@@ -134,21 +137,30 @@ private:
     //QLabel * directionLabel;
     ////! Labelka opisuj¹ca kontrolkê zmiany czasu w formie tekstowej i spinnera
     //QLabel * timeLabel;
-    ////! Akcja do zmiany kierunku odtwarzania
-    //QAction * playbackDirectionAction;
-    ////! Akcja ustawiaj¹ca czas na pocz¹tek timeline
-    //QAction * timeToBeginAction;
-    ////! Akcja ustawiaj¹ca czas na koniec timeline
-    //QAction * timeToEndAction;
-    ////! Akcja zarz¹dzaj¹ca odtwarzaniem/wstrzymywaniem timeline
-    //QAction * playPauseAction;
-    ////! Akcja zatrzymuj¹ca timeline
-    //QAction * stopAction;
+    //! Akcja do zmiany kierunku odtwarzania
+    QAction * playbackDirectionAction;
+    //! Akcja ustawiaj¹ca czas na pocz¹tek timeline
+    QAction * timeToBeginAction;
+    //! Akcja ustawiaj¹ca czas na koniec timeline
+    QAction * timeToEndAction;
+    //! Akcja zarz¹dzaj¹ca odtwarzaniem/wstrzymywaniem timeline
+    QAction * playPauseAction;
+    //! Akcja zatrzymuj¹ca timeline
+    QAction * stopAction;
+    //! Widget do precyzyjnego ustawiania czasu
+    QDateTimeEdit * preciseTimeWidget;
+    //! Kontener na akcje kontrolujace timeline
+    QWidget * timelineTabs;
+    //! lewy kontener na kontrolki timeline - kierunek i precyzyjny czas
+    QToolBar * leftTabButton;
+    //! œrodkowy kontener na kontrolki timeline - do poczatku, odtwarzaj/pauza, stop, do konca
+    QToolBar * middleTabButton;
+    //! prawy kontener na kontrolki timeline - aktualnie pusty
+    QToolBar * rightTabButton;
+
 
     //! Nowy slider z osi¹ czasu
     TimeSliderWidget * slider;
-
-    TimelineControlsWidget * controls;
 
     std::map<timeline::Model::TChannelConstPtr, ChannelsTreeItem*> modelToUIChannels;
 

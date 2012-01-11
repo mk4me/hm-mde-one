@@ -156,12 +156,14 @@ private slots:
       void setNormalized(bool normalized);
       void setActiveSerie(int idx);
       void onSerieSelected(QwtPlotItem*);
+      void onSerieSelected(QwtPlotItem* dataSerie, bool on, int idx);
       void onStateAction();
       void onEventContext();
       void setEventMode(bool val);
 
 private:
       QwtPlot* qwtPlot;
+      QwtLegend* legend;
       QwtPlotMarker* qwtMarker;
       core::shared_ptr<QwtPlotGrid> grid;
       core::shared_ptr<QwtPlotZoomer> zoomer;

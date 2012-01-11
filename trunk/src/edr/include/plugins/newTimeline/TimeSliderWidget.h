@@ -30,6 +30,8 @@ public:
 
     double getRightMargin() const;
 
+    QwtScaleDraw * scaleDraw();
+
 signals:
 
     void marginsChanged(double leftMargin, double rightMargin) const;

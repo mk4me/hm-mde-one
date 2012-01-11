@@ -4,7 +4,7 @@
 #include <QtGui/QCheckBox>
 
 #include <math.h>
-
+#include <qwt/qwt_scale_draw.h>
 #include "TimelineWidget.h"
 #include "ChannelCheckbox.h"
 #include "ChannelWidget.h"
@@ -12,12 +12,13 @@
 
 
 TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidget * parent, Qt::WindowFlags f)
-    : QWidget(parent, f), removeChannelsMenu(new QMenu()), /*scaleSpinBox(new QDoubleSpinBox()),
+    : QWidget(parent, f), removeChannelsMenu(new QMenu()), /*scaleSpinBox(new QDoubleSpinBox()),*/
     playbackDirectionAction(new QAction(QString("Playback direction"), nullptr)), timeToBeginAction(new QAction(QString("Begin"), nullptr)),
     timeToEndAction(new QAction(QString("End"), nullptr)), playPauseAction(new QAction(QString("Play"), nullptr)),
-    stopAction(new QAction(QString("Stop"), nullptr)), scaleLabel(new QLabel(QString("<font color=\"white\"><b>Scale:</b></font>"))),
+    stopAction(new QAction(QString("Stop"), nullptr)), /*scaleLabel(new QLabel(QString("<font color=\"white\"><b>Scale:</b></font>"))),
     timeLabel(new QLabel(QString("<font color=\"white\"><b>Time:</b></font>"))),*/ rootItem(new QTreeWidgetItem()),
-    slider(new TimeSliderWidget()), controls(new TimelineControlsWidget())
+    slider(new TimeSliderWidget()), preciseTimeWidget(new QDateTimeEdit()), timelineTabs(new QWidget()),
+    leftTabButton(new QToolBar()), middleTabButton(new QToolBar()), rightTabButton(new QToolBar())
 {
     //ustawienie kontrolera
     setController(controller);
@@ -33,28 +34,81 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     //ustaw akcje odtwarzania
 
+    //TabWidget z timeline
+
+    leftTabButton->setIconSize(QSize(16,15));
+    leftTabButton->setContentsMargins(0,0,0,0);
+    middleTabButton->setIconSize(QSize(22,15));;
+    middleTabButton->setContentsMargins(0,0,0,0);
+    rightTabButton->setIconSize(QSize(16,15));
+    rightTabButton->setContentsMargins(0,0,0,0);
+
+    leftTabButton->setFixedHeight(22);
+    middleTabButton->setFixedHeight(22);;
+    rightTabButton->setFixedHeight(22);
+
+    leftTabButton->setObjectName(QString::fromUtf8("leftControls"));
+    middleTabButton->setObjectName(QString::fromUtf8("centerControls"));
+    rightTabButton->setObjectName(QString::fromUtf8("rightControls"));
+
+    timelineTabs->setObjectName("timelineGroupedControls");
+
+    //LEWY TAB
+    preciseTimeWidget->setDisplayFormat(QString::fromUtf8("mm:ss:zzz"));
+    preciseTimeWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    QIcon icon0;
+    icon0.addFile(QString::fromUtf8(":/resources/icons/direction.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon0.addFile(QString::fromUtf8(":/resources/icons/direction2.png"), QSize(), QIcon::Normal, QIcon::On);
+    playbackDirectionAction->setIcon(icon0);
+    playbackDirectionAction->setCheckable(true);
+
+    leftTabButton->addWidget(preciseTimeWidget);
+    leftTabButton->addAction(playbackDirectionAction);
+
+    //SRODKOWY-GLOWNY TAB
+    QIcon icon1;
+    icon1.addFile(QString::fromUtf8(":/resources/icons/rew.png"), QSize(), QIcon::Normal, QIcon::Off);
+    timeToBeginAction->setIcon(icon1);
+
+    QIcon icon2;
+    icon2.addFile(QString::fromUtf8(":/resources/icons/forw.png"), QSize(), QIcon::Normal, QIcon::Off);
+    timeToEndAction->setIcon(icon2);
+
+    QIcon icon3;
+    icon3.addFile(QString::fromUtf8(":/resources/icons/play.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon3.addFile(QString::fromUtf8(":/resources/icons/pause.png"), QSize(), QIcon::Normal, QIcon::On);
+    playPauseAction->setIcon(icon3);
+    playPauseAction->setCheckable(true);
+    playPauseAction->setEnabled(false);
+
+    QIcon icon4;
+    icon4.addFile(QString::fromUtf8(":/resources/icons/stop.png"), QSize(), QIcon::Normal, QIcon::Off);
+    stopAction->setIcon(icon4);
+    stopAction->setEnabled(false);
+
+    middleTabButton->addAction(timeToBeginAction);
+    middleTabButton->addAction(playPauseAction);
+    middleTabButton->addAction(stopAction);
+    middleTabButton->addAction(timeToEndAction);
+
+    //TODO
+    //PRAWY TAB = aktualnie pusty!!
+
     // toBegin action
-    connect(controls->toBeginButton, SIGNAL(pressed()), this, SLOT(toBegin()));
+    connect(timeToBeginAction, SIGNAL(triggered()), this, SLOT(toBegin()));
  
     // toEnd action
-    connect(controls->toEndButton, SIGNAL(pressed()), this, SLOT(toEnd()));
+    connect(timeToEndAction, SIGNAL(triggered()), this, SLOT(toEnd()));
 
     //play | pause action
-    controls->playPauseButton->setCheckable(true);
-    connect(controls->playPauseButton, SIGNAL(toggled(bool)), this, SLOT(pause(bool)));
-    controls->playPauseButton->setEnabled(false);
+    connect(playPauseAction, SIGNAL(triggered(bool)), this, SLOT(pause(bool)));
 
     // stop action
-    connect(controls->stopButton, SIGNAL(pressed()), this, SLOT(stop()));
-    controls->stopButton->setEnabled(false);
+    connect(stopAction, SIGNAL(triggered()), this, SLOT(stop()));
 
     // edycja tekstowa czasu
-    controls->timeEditBox->setDisplayFormat(QString("mm:ss:zz"));
-    controls->timeEditBox->setTime(QTime(0,0));
-    controls->timeEditBox->setMinimumTime(QTime(0,0));
-    controls->timeEditBox->setMaximumTime(QTime(0,0));
-
-    connect(controls->timeEditBox, SIGNAL(timeChanged(QTime)), this, SLOT(timeChanged(QTime)));
+    connect(preciseTimeWidget, SIGNAL(timeChanged(QTime)), this, SLOT(timeChanged(QTime)));
 
     //skala
     //scaleSpinBox->setDecimals(2);
@@ -66,12 +120,8 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     //po³¹czenie sygna³ów i slotów
     //connect(scaleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(scaleChanged(double)));
 
-
-    //akcja kierunku odtwarzania
-    controls->playbackDirectionButton->setCheckable(true);
-
     ////po³¹czenie sygna³ów i slotów
-    connect(controls->playbackDirectionButton, SIGNAL(toggled(bool)), this, SLOT(playbackDirectionChanged(bool)));
+    connect(playbackDirectionAction, SIGNAL(triggered(bool)), this, SLOT(playbackDirectionChanged(bool)));
 
     //elementy widgeta
 
@@ -81,23 +131,25 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     headers << "Channel" << "Active" << "Time";
     channelsWidget->setHeaderLabels(headers);
 
-    rootItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
+    rootItem->setFlags(Qt::NoItemFlags /* | Qt::ItemIsEnabled*/);
 
     channelsWidget->addTopLevelItem(rootItem);
+
+    rootItem->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
 
     //nowy slider
     slider->setScalePosition(QwtSlider::TopScale);
     slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    slider->setHandleSize(20,10);
-    slider->setSpacing(-4);
+    slider->setHandleSize(45,10);
+    slider->setSpacing(-6);
+    slider->scaleDraw()->setTickLength(QwtScaleDiv::MinorTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MinorTick) + 4);
+    slider->scaleDraw()->setTickLength(QwtScaleDiv::MajorTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MajorTick) + 4);
+    slider->scaleDraw()->setTickLength(QwtScaleDiv::MediumTick, slider->scaleDraw()->tickLength(QwtScaleDiv::MediumTick) + 4);
 
     connect(slider, SIGNAL(valueChanged(double)), this, SLOT(timeSliderChanged(double)));
 
-    channelsWidget->setItemWidget(rootItem, 2, slider);
-    slider->setFixedHeight(slider->height() + 6);
-
-    channelsWidget->setItemWidget(rootItem, 0, controls);
-    
+    //channelsWidget->setItemWidget(rootItem, 2, slider);
+    //slider->setFixedHeight(slider->height() + 6);    
 
     channelsWidget->header()->setMinimumSectionSize(14);
     channelsWidget->header()->resizeSection(1, 14);
@@ -107,6 +159,65 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     // menu kontekstowe dla drzewa kana³ów z akcj¹ usuwaj¹c¹ zaznaczone kana³y
     removeChannelsMenu->addAction(actionRemoveChannels);
+
+    QHBoxLayout * layout = new QHBoxLayout();
+    layout->setSpacing(0);
+    layout->setContentsMargins(0,0,0,8);
+    //left side
+    QWidget * w = new QWidget();
+    w->setObjectName(QString::fromUtf8("leftContainer"));
+    QHBoxLayout * l = new QHBoxLayout();
+    l->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed));
+    l->addWidget(leftTabButton);
+    w->setLayout(l);
+    layout->addWidget(w);
+
+    //center
+    w = new QWidget();
+    w->setObjectName(QString::fromUtf8("centerContainer"));
+    l = new QHBoxLayout();
+    l->addWidget(middleTabButton);
+    w->setLayout(l);
+    layout->addWidget(w);
+
+    //right side
+    w = new QWidget();
+    w->setObjectName(QString::fromUtf8("rightContainer"));
+    l = new QHBoxLayout();
+    l->addWidget(rightTabButton);
+    l->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed));
+    w->setLayout(l);
+    layout->addWidget(w);
+
+    timelineTabs->setLayout(layout);
+
+    //HACK
+    //to powinno byc stylowane za pomoc¹ CSS, niestety Qwt operuje tylko na paletach
+    QPalette sliderPalette(this->palette());
+    sliderPalette.setBrush(QPalette::ColorRole::Light, QBrush(QColor(135, 177, 255)));
+    sliderPalette.setBrush(QPalette::ColorRole::Mid, QBrush(QColor(255,0,0)));
+    sliderPalette.setBrush(QPalette::ColorRole::Dark, QBrush(QColor(135, 177, 255)));
+    sliderPalette.setBrush(QPalette::ColorRole::Button, QBrush(QColor(0,0,0)));
+    slider->setPalette(sliderPalette);
+
+    QWidget * widget = new QWidget();
+    widget->setObjectName("timelineControls");
+    widget->setLayout(new QVBoxLayout());
+    widget->layout()->setSpacing(4);
+    widget->layout()->setContentsMargins(1,0,1,0);
+    widget->layout()->addWidget(slider);
+    slider->setContentsMargins(4,0,4,0);
+    widget->layout()->addWidget(timelineTabs);
+    widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    //channelsWidget->setItemWidget(rootItem, 2, widget);
+    channelsWidget->setVisible(false);
+    this->layout()->addWidget(widget);
+
+    rightTabButton->setVisible(false);
+
+    /*int w = std::max(leftTabButton->sizeHint().width(), rightTabButton->sizeHint().width());
+    leftTabButton->setMinimumWidth(w);
+    rightTabButton->setMinimumWidth(w);*/
 }
 
 void TimelineWidget::setChannelTooltip(const std::string & path, const std::string & tooltip)
@@ -179,11 +290,8 @@ void TimelineWidget::update(const State * state)
 void TimelineWidget::refresh()
 {
     //blokujemy sygna³y modyfikowanych komponenrów
-    controls->timeEditBox->blockSignals(true);
+    preciseTimeWidget->blockSignals(true);
     //scaleSpinBox->blockSignals(true);
-    controls->playbackDirectionButton->blockSignals(true);
-    controls->playPauseButton->blockSignals(true);
-    controls->stopButton->blockSignals(true);
     slider->blockSignals(true);
 
     refreshChannelsHierarchy();
@@ -192,11 +300,8 @@ void TimelineWidget::refresh()
     
     //odblokuj komponenty
     slider->blockSignals(false);
-    controls->timeEditBox->blockSignals(false);
+    preciseTimeWidget->blockSignals(false);
     //scaleSpinBox->blockSignals(false);
-    controls->playbackDirectionButton->blockSignals(false);
-    controls->playPauseButton->blockSignals(false);
-    controls->stopButton->blockSignals(false);
 }
 
 void TimelineWidget::showChannelsTreeContextMenu(const QPoint& pnt)
@@ -306,8 +411,9 @@ void TimelineWidget::toEnd()
 
 void TimelineWidget::stop()
 {
-    controls->playPauseButton->setEnabled(true);
-    controls->playPauseButton->setChecked(false);
+    playPauseAction->setEnabled(true);
+    playPauseAction->setChecked(false);
+    getController()->pause();
     getController()->getPlaybackDirection() == timeline::IController::PlayForward ? toBegin() : toEnd();
 }
 
@@ -361,6 +467,8 @@ void TimelineWidget::refreshChannelsHierarchy()
         recursiveHierarchyRefresh(rootItem->child(i));
     }
 
+    rootItem->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
+
     channelsWidget->update();
 }
 
@@ -384,20 +492,20 @@ void TimelineWidget::refreshPlayerStatus()
 {
     //jeœli nie mamy pustego timeline (sa kana³y) to umo¿liwiamy odtwarzanie i zatrzymywanie
     if(getController()->getModel()->sizeChannels() > 0){
-        controls->playPauseButton->setEnabled(true);
-        controls->stopButton->setEnabled(true);
+        playPauseAction->setEnabled(true);
+        stopAction->setEnabled(true);
     }else{
-        controls->playPauseButton->setEnabled(false);
-        controls->stopButton->setEnabled(false);
+        playPauseAction->setEnabled(false);
+        stopAction->setEnabled(false);
     }
 
     if(getController()->isPlaying() == false){
-        if(controls->playPauseButton->isChecked() == true){
-            controls->playPauseButton->setChecked(false);
-            controls->playPauseButton->setEnabled(false);
+        if(playPauseAction->isChecked() == true){
+            playPauseAction->setChecked(false);
+            playPauseAction->setEnabled(false);
         }else if((getController()->getPlaybackDirection() == timeline::IController::PlayForward && getController()->getTime() < getController()->getModel()->getEndTime()) ||
             (getController()->getPlaybackDirection() == timeline::IController::PlayBackward && getController()->getTime() > getController()->getModel()->getBeginTime())) {
-                controls->playPauseButton->setEnabled(true);
+                playPauseAction->setEnabled(true);
         }
     }
 
@@ -411,17 +519,17 @@ void TimelineWidget::refreshPlayerStatus()
     }
 
     //ustawiamy czas w oknie edycji textowej
-    controls->timeEditBox->setTime(convertToQTime(getController()->getTime()));
+    preciseTimeWidget->setTime(convertToQTime(getController()->getTime()));
     //ustaw czas minimalny
-    controls->timeEditBox->setMinimumTime(convertToQTime(getController()->getModel()->getBeginTime()));
+    preciseTimeWidget->setMinimumTime(convertToQTime(getController()->getModel()->getBeginTime()));
     //ustaw czas maxymalny
-    controls->timeEditBox->setMaximumTime(convertToQTime(getController()->getModel()->getEndTime()));
+    preciseTimeWidget->setMaximumTime(convertToQTime(getController()->getModel()->getEndTime()));
 
     //ustaw skalê czasu
     //scaleSpinBox->setValue(getController()->getTimeScale());
 
     //kierunek odtwarzania
-    controls->playbackDirectionButton->setChecked(getController()->getPlaybackDirection() == timeline::IController::PlayBackward ? true : false);
+    playbackDirectionAction->setChecked(getController()->getPlaybackDirection() == timeline::IController::PlayBackward ? true : false);
 }
 
 void TimelineWidget::compareNodes(const std::set<QTreeWidgetItem*> & uiNodes, const std::set<timeline::Model::TChannelConstPtr> & modelNodes,

@@ -288,6 +288,99 @@ QWidget {
 	border-top-right-radius: 0px;
 }
 
+/* timeline */
+#timelineControls, #TimelineWidget {
+	spacing: 0px;
+	margin: 0px;
+	padding-left: 4px;
+	padding-right: 4px;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+}
+
+#timelineControls QAbstractSpinBox{
+	border: 1px solid rgb(135, 177, 255);
+	border-radius: 4px;
+}
+
+#timelineControls QToolButton, #timelineControls QPushButton {
+	background: transparent;
+	border: 1px rgb(135, 177, 255);
+	border-radius: 0px;
+	padding: 0px;
+	margin: 0px;
+	spacing: 0px;
+}
+
+/*
+#timelineControls QAbstractSpinBox::up-button {
+	subcontrol-origin: border;
+     subcontrol-position: top right;
+}
+
+#timelineControls QAbstractSpinBox::down-arrow {
+     background: url(:/resources/strzalka-dol.png);
+     width: 7px;
+     height: 7px;
+ }
+
+#timelineControls QAbstractSpinBox::up-arrow {
+     background: url(:/resources/strzalka-gora.png);
+     width: 7px;
+     height: 7px;
+ }
+
+#timelineControls QAbstractSpinBox::down-button {
+	subcontrol-origin: border;
+     subcontrol-position: bottom right;
+}
+
+#timelineControls QAbstractSpinBox::up-button, #timelineControls QAbstractSpinBox::down-button {
+	width: 16px;
+}
+*/
+
+#timelineGroupedControls {
+	spacing: 0px;
+	margin: 0px;
+	padding: 0px;
+	background: rgb(101, 101, 101); 
+}
+
+#leftContainer, #centerContainer, #rightContainer {
+	border: 2px solid rgb(135, 177, 255);
+	background: rgb(101, 101, 101); 
+	spacing: 0px;
+	margin: 0px;
+	padding: 0px;
+}
+
+#leftContainer {
+	border-bottom: none;
+	border-left: none;
+	border-right: none;
+}
+
+#rightContainer {
+	border-bottom: none;
+	border-left: none;
+	border-right: none;
+}
+
+#centerContainer {
+	border-top: none;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	background: white;
+}
+
+#leftControls, #rightCOntrols, #centerControls {
+	border: none;
+	margin: 0px;
+	padding: 0px;
+	background: transparent;
+}
+
 /* styl titlebarów i ich dzieci */
 EDRTitleBar, EDRTitleBar * {
 	background-color: rgb(43, 42, 41);
@@ -345,9 +438,11 @@ QMainWindow::separator {
 	height: 4px;
 }
 
+/*
 QMainWindow::separator:hover {
 	background-color: rgb(190, 210, 250);
 }
+*/
 
 QMainWindow::separator:vertical {
 	image: url(:/resources/icons/splitter-dots-vertical.png);

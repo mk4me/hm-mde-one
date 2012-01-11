@@ -45,6 +45,11 @@ TimeSliderWidget::~TimeSliderWidget()
 
 }
 
+QwtScaleDraw * TimeSliderWidget::scaleDraw()
+{
+    return QwtSlider::scaleDraw();
+}
+
 void TimeSliderWidget::drawSlider(QPainter *painter, const QRect &sliderRect ) const
 {
     QwtSlider::drawSlider(painter, sliderRect);

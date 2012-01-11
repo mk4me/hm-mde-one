@@ -9,6 +9,7 @@
 #include <qwt/qwt_scale_draw.h>
 #include <qwt/qwt_scale_widget.h>
 #include <qwt/qwt_plot_layout.h>
+#include <qwt/qwt_legend_label.h>
 #include <qwt/qwt_legend.h>
 #include "StatsTable.h"
 #include "NewChartPicker.h"
@@ -41,20 +42,25 @@ NewChartVisualizer::~NewChartVisualizer()
 
 QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 {
+    QWidget* widget = new QWidget();
     QwtText txt(getName().c_str());
     qwtPlot = new QwtPlot(txt, nullptr);
+    //aby legenda nie by³a usuwana podczas chowania i pokazywania trzeba ustawiæ parenta innego ni¿ QwtPlot
+    legend = new QwtLegend(widget);
+    legend->setDefaultItemMode(QwtLegendData::Checkable);
     qwtPlot->setAutoReplot(true);
-    if (isShowLegend()) {
-        QwtLegend* legend = new QwtLegend();
-        legend->setItemMode(QwtLegend::CheckableItem);
+
+    if (isShowLegend()) {    
+        //legend->setItemMode(QwtLegend::CheckableItem);
         qwtPlot->insertLegend( legend, QwtPlot::RightLegend );
     }
+
     qwtPlot->canvas()->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
     qwtPlot->canvas()->installEventFilter(this);
 
     activeSerieCombo = new QComboBox();
 
-    connect(activeSerieCombo, SIGNAL(destroyed ( QObject *)), this, SLOT(onComboDestroy(QObject*)));
+    //connect(activeSerieCombo, SIGNAL(destroyed ( QObject *)), this, SLOT(onComboDestroy(QObject*)));
 
     activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
     activeSerieCombo->setEnabled(false);
@@ -144,7 +150,8 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     plotMagnifier =  new QwtPlotMagnifier( qwtPlot->canvas() );
     
 
-    connect(qwtPlot, SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
+    //connect(qwtPlot, SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
+    connect(legend, SIGNAL(checked( QwtPlotItem *, bool, int)), this, SLOT(onSerieSelected(QwtPlotItem*, bool, int)));
     //qwtMarker.reset(new QwtPlotMarker());
     qwtMarker = new NewChartMarker();
     qwtMarker->setXValue(0);
@@ -166,7 +173,6 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 
     qwtPlot->replot();
 
-    QWidget* widget = new QWidget();
     statsTable = new StatsTable();
     //statsTable->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     qwtPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -234,6 +240,15 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     }
 
     activeSerieCombo->setEnabled(true);
+
+    if(series.size() == 1){
+        QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(ret->getCurve()));
+        if(legendLabel != nullptr && legendLabel->isChecked() == false){
+            legend->blockSignals(true);
+            legendLabel->setChecked(true);
+            legend->blockSignals(false);
+        }
+    }
 
     return ret;
 }
@@ -315,6 +330,33 @@ void NewChartVisualizer::setActiveSerie( int idx )
 void NewChartVisualizer::setNormalized( bool normalized )
 {
 
+}
+
+void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
+{
+    legend->blockSignals(true);
+    if(on == true){
+        
+        QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
+        for (int i = 0; i < series.size(); i++) {
+            if (series[i]->curve == curve) {
+                // powinno wywolac sygnal, ktory ustawi aktywna serie
+                activeSerieCombo->setCurrentIndex(i);
+            }else{
+                QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(series[i]->curve));
+                if(legendLabel != nullptr && legendLabel->isChecked() == true){
+                    legendLabel->setChecked(false);
+                }
+            }
+        }
+    }else{
+        //ignorujemy to - zawsze musi byæ jedna seria aktywna
+        QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(item));
+        if(legendLabel != nullptr && legendLabel->isChecked() == false){
+            legendLabel->setChecked(true);
+        }
+    }
+    legend->blockSignals(false);
 }
 
 void NewChartVisualizer::onSerieSelected( QwtPlotItem* item)
@@ -430,7 +472,7 @@ void NewChartVisualizer::setShowLegend( bool val )
 {
     if (qwtPlot) {
         // todo - sprawdzic wyciek...
-        qwtPlot->insertLegend( val ? new QwtLegend() : nullptr, QwtPlot::RightLegend );
+        qwtPlot->insertLegend( val ? legend : nullptr, QwtPlot::RightLegend );
     }
     showLegend = val;
 }
