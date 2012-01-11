@@ -368,6 +368,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     topMainWindow->asQWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     v->addWidget(bottomMainWindow);
     bottomMainWindow->setMaximumHeight(120); // tymczasowo
+    bottomMainWindow->setMinimumHeight(120); // tymczasowo
     bottomMainWindow->layout()->setMargin(0);
     bottomMainWindow->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
     analisisArea->setLayout(v);
