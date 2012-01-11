@@ -1,12 +1,12 @@
 #include "hmmPCH.h"
 #include "AnalisisWidget.h"
 
-AnalisisWidget::AnalisisWidget( QWidget* parent, int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
+AnalisisWidget::AnalisisWidget( QWidget* parent, HmmMainWindow* hmm, int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
 QWidget(parent, flags),
     margin(margin),
     lastMouseButton(Qt::NoButton),
+    hmm(hmm),
     filterWidth(-1), filterHeight(-1)
-    
 {
     setupUi(this);
     if (!treeHolder->layout()) {
@@ -20,7 +20,10 @@ QWidget(parent, flags),
     treeWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     treeHolder->layout()->addWidget(treeWidget);
     connect(hideButton, SIGNAL(clicked(bool)), this, SLOT(setFiltersExpanded(bool)));
+    hideButton->setChecked(!hideButton->isChecked());
     setFiltersExpanded(hideButton->isChecked());
+    connect(applyButton, SIGNAL(clicked()), this, SLOT(applyClicked()));
+    applyButton->hide();
 }
 
 void AnalisisWidget::addDataFilterWidget( DataFilterWidget* filter )
@@ -43,11 +46,17 @@ void AnalisisWidget::addDataFilterWidget( DataFilterWidget* filter )
         filterScroll->setMinimumSize(w, h);
         containerFrame->setMaximumWidth(w + 22);
         containerFrame->setMinimumWidth(w + 22);
+        //containerFrame->setFixedSize(w + 22, h + 22);
         scrollArea->setMinimumHeight(3 * margin + filterHeight * 2);
     }
 
     filter->setParent(filterScroll);
     filter->setGeometry(margin + x * (filterWidth + margin),margin +  y * (margin + filterHeight), filterWidth, filterHeight);
+
+    connect(filter, SIGNAL( clicked()), this, SLOT(switchToFirstTab()));
+    for (int i = 0; i < filter->getNumEntries(); i++) {
+        connect(filter->getEntry(i), SIGNAL( onFilterClicked(FilterEntryWidget*)), this, SLOT(filterClicked(FilterEntryWidget*)));
+    }
 }
 
 bool AnalisisWidget::eventFilter( QObject* object, QEvent* event )
@@ -63,6 +72,70 @@ bool AnalisisWidget::eventFilter( QObject* object, QEvent* event )
 void AnalisisWidget::setFiltersExpanded( bool expand )
 {
     scrollArea->setHidden(!expand);
+}
+
+void AnalisisWidget::filterClicked( FilterEntryWidget* filter )
+{
+    currentFilter = filter;
+    recreateTree(filter);
+    if (configurationWidget->layout()) {
+        delete configurationWidget->layout();
+    }
+    // TODO zrobic to w lepszy sposob...
+    const QObjectList& childList = configurationWidget->children();
+    for (int i = childList.size() - 1; i >= 0; --i) {
+        QWidget* w = qobject_cast<QWidget*>(childList.at(i));
+        w->hide();
+    }
+    configurationWidget->setLayout(new QVBoxLayout());
+
+    QWidget* configurator = filter->getConfigurator();
+    if (configurator) {
+        
+        //QDialog* dialog = new QDialog(this);
+        //QHBoxLayout* layout = new QHBoxLayout(dialog);
+        //layout->addWidget(configurator);
+        //dialog->setLayout(layout);
+        //dialog->exec();
+
+        //TODO usuwanie smieci, lub button jako pole klasy
+        QLayout* layout = configurationWidget->layout();
+        configurator->setVisible(true);
+        layout->addWidget(configurator);
+        //QWidget* spacer = new QWidget();
+        //spacer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        applyButton->setVisible(true);
+        applyButton->setText(QString("%1 - Apply").arg(filter->getName()));
+        
+    } else {
+        switchToFirstTab();
+        applyButton->hide();
+    }
+    
+}
+
+void AnalisisWidget::applyClicked()
+{
+    UTILS_ASSERT(currentFilter);
+    recreateTree(currentFilter);
+
+    switchToFirstTab();
+
+}
+
+void AnalisisWidget::recreateTree(FilterEntryWidget* filter)
+{
+    QTreeWidget* tree = getTreeWidget();
+    tree->clear();
+    QTreeWidgetItem* item = filter->createTreeEntry(hmm->getCurrentSessions());
+    tree->addTopLevelItem(item);
+    item->setExpanded(true);
+}
+
+void AnalisisWidget::switchToFirstTab()
+{
+    // Hack - to rozwiazanie nie jest odporne na zmiane kolejnosci tabow
+    tabWidget->setCurrentIndex(0);
 }
 
 

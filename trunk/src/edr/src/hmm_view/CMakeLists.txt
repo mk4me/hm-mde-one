@@ -89,12 +89,14 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 # UI
 set(TARGET_UI
     #ui/LanguageDialogWidget.ui
+	#ui/ConfigurationWidget.ui
 	ui/toolboxmaindeffile.ui
 	ui/LoadingDialog.ui
 	ui/filter.ui
 	ui/filterEntry.ui
 	ui/configurationDialog.ui
 	ui/AnalisisWidget.ui
+	ui/FilterConfiguratorWidget.ui
 )
 QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

@@ -520,10 +520,9 @@ typedef boost::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
 //! Kanal zawiera dane o jednym markerze
 class MarkerChannel : public VectorChannel
 {
-private:
+public:  
     MarkerChannel(int samplesPerSec) : VectorChannel(samplesPerSec) {}
         
-public:        
     MarkerChannel(const MarkerChannel& channel) :
         VectorChannel(channel)
         { }

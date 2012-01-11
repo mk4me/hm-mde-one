@@ -64,17 +64,17 @@ public slots:
     }
 
     void onElementHovered(const QString& name, bool selected) {
-        ConfigurationDialog* dialog = qobject_cast<ConfigurationDialog*>(sender());
+        ConfigurationWidget* widget = qobject_cast<ConfigurationWidget*>(sender());
         if (selected) {
             auto it = namesDictionary.find(name);
             if (it != namesDictionary.end()) {
-                dialog->setText(it->second.second);
+                widget->setText(it->second.second);
             } else {
                 // ?
-                dialog->setText("");
+                widget->setText("");
             }
         } else {
-            dialog->setText("");
+            widget->setText("");
         }
     }
 
@@ -136,7 +136,7 @@ public:
           helper(boost::bind( &BuilderConfiguredFilterCommand::checkBoxChanged, this, _1, _2 )),
           frontXml(frontXml),
           backXml(backXml),
-          dialog(nullptr)
+          configurationWidget(nullptr)
       {
         helper.setNamesDictionary(namesDictionary);
       }
@@ -170,7 +170,7 @@ public:
     }
 
 public:
-    virtual QDialog* getConfigurationDialog( QWidget* parent) 
+ /*   virtual QDialog* getConfigurationDialog( QWidget* parent) 
     {
         if (!dialog) {
             dialog = new ConfigurationDialog(parent);
@@ -185,6 +185,18 @@ public:
         }
         return dialog;
     }
+*/
+
+    virtual QWidget* getConfigurationWidget()
+    {
+        if (!configurationWidget) {
+            configurationWidget = new ConfigurationWidget(nullptr);
+            configurationWidget->loadConfigurations(frontXml, backXml, helper.getNamesDictionary());
+            QObject::connect(configurationWidget, SIGNAL(itemSelected(const QString&, bool)), &helper, SLOT(onItemSelected(const QString&, bool)));
+            QObject::connect(configurationWidget, SIGNAL(elementHovered(const QString&, bool)), &helper, SLOT(onElementHovered(const QString&, bool)));
+        }
+        return configurationWidget;
+    }
 
     virtual void configurationStart() 
     {
@@ -198,16 +210,48 @@ public:
                 }
             }
         }
-        dialog->setVisibles(visibles);
+        configurationWidget->setVisibles(visibles);
     }
+
+
     
+
+
+    //! 
+    //! \param rootItemName 
+    //! \param sessions fdsdsd
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions)
+    {
+        QTreeWidgetItem* root = BuilderFilterCommand::createTreeBranch(rootItemName, sessions);
+        filterTree(root);
+        return root;
+    }
+
+ private:
+    
+    void filterTree(QTreeWidgetItem* item)
+    {
+        if (item->childCount()) {
+            for (int i = item->childCount() - 1; i >= 0; --i) {
+                filterTree(item->child(i));
+            }
+        } else {
+            std::string name = item->text(0).toStdString();
+            auto entry = activeElements.find(name);
+            if (entry != activeElements.end() && !entry->second) {
+                delete item;
+            }
+        }
+       
+    }
+
 protected:
     std::map<std::string, bool> activeElements;
     std::map<std::string, bool> tempNameDictionary;
     DataFilterPtr simpleTypeFilter;
     __Helper helper;
     QString frontXml, backXml;
-    ConfigurationDialog* dialog;
+    ConfigurationWidget* configurationWidget;
 };
 
 
@@ -418,7 +462,7 @@ public:
 
 private:
     QString frontXml, backXml;
-    ConfigurationDialog* dialog;
+    ConfigurationWidget* dialog;
 };
 
 

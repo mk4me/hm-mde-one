@@ -137,7 +137,7 @@ public:
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
-        //uzupe³nij brakujace probki : co dziesiata...
+        ////uzupe³nij brakujace probki : co dziesiata...
         int skipN = 10;
         if(myChannel.size() * skipN < observedChannel.size()){
             for(auto idx = myChannel.size() * skipN; idx < observedChannel.size(); idx += skipN){
@@ -155,7 +155,7 @@ public:
         sizeT meanR = 10;
         sizeT count = myChannel.size() - meanR;
 
-        for (int step = 0; step < 5; step++) {
+        for (int step = 0; step < 50; step++) {
             // brzeg lewy...
             for (sizeT l_idx = 0; l_idx < meanR; l_idx++) {
                 pointT sum = 0;
@@ -231,7 +231,10 @@ public:
 
     virtual point_type_const_reference modify( point_type_const_reference point ) const
     {
-        return tempPoint = point > mean ? point : -point;
+        tempPoint = point - mean;
+        tempPoint = tempPoint > 0 ? tempPoint : -tempPoint;
+
+        return tempPoint;
     }
 
     virtual void initialize() 
@@ -239,7 +242,7 @@ public:
         point_type sum = 0;
         //srednia
         size_type count = channel->size();
-        for(size_type idx = 0; idx < channel->size(); idx++){
+        for(size_type idx = 0; idx < count; idx++){
             sum += channel->value(idx);
         }
 

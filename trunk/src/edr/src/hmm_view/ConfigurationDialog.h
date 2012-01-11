@@ -14,12 +14,13 @@
 #include <QtCore/QFileInfo>
 #include "ConfigurationPainter.h"
 #include "ui_configurationDialog.h"
+#include "ui_FilterConfiguratorWidget.h"
 
-class ConfigurationDialog : public QDialog, public Ui::ConfigurationDialog
+class ConfigurationWidget : public QWidget, public Ui::FilterConfiguratorWidget
 {
     Q_OBJECT;
 public:
-    ConfigurationDialog(QWidget* parent);
+    ConfigurationWidget(QWidget* parent);
 
 public:
     void setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap);
@@ -75,7 +76,7 @@ private:
         this->painterFront.show();
         this->painterBack.hide();
         this->currentPainter = &painterFront;
-        this->switchButton->setText(tr("Back"));
+        //this->switchButton->setText(tr("Back"));
         isFront = true;
 
     }
@@ -86,7 +87,7 @@ private:
         this->painterFront.hide();
         this->painterBack.show();
         this->currentPainter = &painterBack;
-        this->switchButton->setText(tr("Front"));
+        //this->switchButton->setText(tr("Front"));
         isFront = false;
     }
 

@@ -2,12 +2,16 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QListWidgetItem>
 
-ConfigurationDialog::ConfigurationDialog(QWidget* parent) :
-    QDialog(parent),
+const float SCALE = 0.6f;
+
+ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
+    QWidget(parent),
     painterFront(this),
     painterBack(this),
     isFront(true)
 {
+    painterFront.setScale(SCALE);
+    painterBack.setScale(SCALE);
     setupUi(this);
     scrollAreaWidget->setLayout(&scrollLayout);
     scrollLayout.addWidget(&painterFront);
@@ -18,24 +22,26 @@ ConfigurationDialog::ConfigurationDialog(QWidget* parent) :
     connect(&painterBack, SIGNAL(elementSelected(const QString&, bool)), this, SLOT(onItemSelected(const QString&, bool)));
     connect(&painterFront, SIGNAL(elementHovered(const QString&, bool)), this, SLOT(onElementHovered(const QString&, bool)));
     connect(&painterBack, SIGNAL(elementHovered(const QString&, bool)), this, SLOT(onElementHovered(const QString&, bool)));
-    connect(switchButton, SIGNAL(clicked()), this, SLOT(onSwitchButton()));
+    //connect(switchButton, SIGNAL(clicked()), this, SLOT(onSwitchButton()));
 }
 
-void ConfigurationDialog::setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap )
+void ConfigurationWidget::setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap )
 { 
-    scrollArea->setFixedSize(pixmap->width(), pixmap->height());
-    this->setFixedSize(scrollArea->width(), scrollArea->height() + label->height());
+    scrollArea->setMaximumSize(SCALE * pixmap->width(),SCALE *  pixmap->height());
+    scrollArea->setMinimumSize(SCALE * pixmap->width(),SCALE *  pixmap->height());
+    /*this->setMaximumSize(scrollArea->width(), scrollArea->height());
+    this->setMinimumSize(scrollArea->width(), scrollArea->height());*/
     painter.setBackground(name, pixmap);
 }
 
-void ConfigurationDialog::loadPicture(ConfigurationPainter& painter, const QString& name, int x, int y, bool alwaysVisible)
+void ConfigurationWidget::loadPicture(ConfigurationPainter& painter, const QString& name, int x, int y, bool alwaysVisible)
 {
     SinglePicturePtr data(new SinglePicture(name, x, y, alwaysVisible));
     data->setActive(true);
     painter.addArea(data);
 }
 
-void ConfigurationDialog::loadPictures(ConfigurationPainter& painter, const QStringList &files )
+void ConfigurationWidget::loadPictures(ConfigurationPainter& painter, const QStringList &files )
 {
     int count = files.size();
     for (int i = 0; i < count; i++) {
@@ -46,7 +52,7 @@ void ConfigurationDialog::loadPictures(ConfigurationPainter& painter, const QStr
     painter.repaint(painter.rect());
 }
 
-void ConfigurationDialog::createMarker( ConfigurationPainter &painter, const QString& name, int x, int y)
+void ConfigurationWidget::createMarker( ConfigurationPainter &painter, const QString& name, int x, int y)
 {
     SingleMarkerPtr marker(new SingleMarker(name, x, y));
     marker->setActive(true);
@@ -54,7 +60,7 @@ void ConfigurationDialog::createMarker( ConfigurationPainter &painter, const QSt
 }
 
 
-void ConfigurationDialog::loadConfigurations(const QString& frontXml, const QString& backXml, const  std::map<QString, std::pair<QString, QString>>& names)
+void ConfigurationWidget::loadConfigurations(const QString& frontXml, const QString& backXml, const  std::map<QString, std::pair<QString, QString>>& names)
 {
     loadXml(painterFront, frontXml);
     loadXml(painterBack, backXml);
@@ -64,13 +70,13 @@ void ConfigurationDialog::loadConfigurations(const QString& frontXml, const QStr
 
     QString path1 = core::getResourceString("images/przod.png");
     QString path2 = core::getResourceString("images/tyl.png");
-    loadPicture(painterFront, path1, 10, 10, true);
-    loadPicture(painterBack, path2, 10, 10, true);
+    loadPicture(painterFront, path1, 0, 0, true);
+    loadPicture(painterBack, path2, 0, 0, true);
 }
 
 
 
-void ConfigurationDialog::loadXml(ConfigurationPainter& painter, const QString &filename )
+void ConfigurationWidget::loadXml(ConfigurationPainter& painter, const QString &filename )
 {
     QFileInfo fileInfo(filename);
     QString path = fileInfo.absolutePath();
@@ -108,18 +114,18 @@ void ConfigurationDialog::loadXml(ConfigurationPainter& painter, const QString &
     }
 }
 
-void ConfigurationDialog::onElementHovered( const QString& name, bool selected )
+void ConfigurationWidget::onElementHovered( const QString& name, bool selected )
 {
     emit elementHovered(name, selected);
     
 }
 
-void ConfigurationDialog::setText( const QString& text )
+void ConfigurationWidget::setText( const QString& text )
 {
     this->label->setText(text);
 }
 
-void ConfigurationDialog::setVisibles( const std::map<QString, bool>& visibles )
+void ConfigurationWidget::setVisibles( const std::map<QString, bool>& visibles )
 {
     for (auto it = painterFront.begin(); it != painterFront.end(); it++) {
         auto found = visibles.find((*it)->getName());

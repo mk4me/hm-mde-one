@@ -37,6 +37,8 @@ public:
 	
 	std::pair<float, float> getTimes(const std::string& name) const;
 	void setTimes(const std::string& name, const std::pair<float, float>& times);
+
+    MarkerCollectionConstPtr getMarkers() const;
 	
 private:
 	void createTrajectories(MarkerCollectionConstPtr markers);

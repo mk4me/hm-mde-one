@@ -61,6 +61,7 @@ void DataFilterWidget::onClick()
         hmmWindow->addItemToTree(filter->getFilterCommand()->createTreeBranch(filter->getName(), sessions));
     } 
     setActive(!getActive());
+    emit clicked();
 }
 
 void DataFilterWidget::mousePressEvent( QMouseEvent *e )
@@ -92,5 +93,11 @@ void DataFilterWidget::setColor( const QColor& color )
 {
     QString style = QString("#colorBox { background: rgb(%1, %2, %3); }").arg(color.red()).arg(color.green()).arg(color.blue());
     colorBox->setStyleSheet(style);
+}
+
+const FilterEntryWidget* DataFilterWidget::getEntry( int index ) const
+{
+    UTILS_ASSERT(index >= 0 && index < entries.size());
+    return entries[index];
 }
 

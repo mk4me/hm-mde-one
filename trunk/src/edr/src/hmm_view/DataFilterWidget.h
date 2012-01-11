@@ -37,12 +37,16 @@ public:
     const QPixmap& getPixmap() const { return *this->pictureLabel->pixmap(); }
     QString getName() const { return this->label->text(); }
     void setColor(const QColor& color);
+    
+    int getNumEntries() const { return entries.size(); }
+    const FilterEntryWidget* getEntry(int index) const;
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);
 
 signals:
     void activated(bool);
+    void clicked();
 
 public:
     virtual void mousePressEvent(QMouseEvent *e);

@@ -3,6 +3,7 @@
 #include <core/Visualizer.h>
 #include "VisualizerManager.h"
 #include "VisualizerWidget.h"
+#include "PrintWidgetAction.h"
 #include <plugins/newTimeline/ITimelineService.h>
 
 using namespace core;
@@ -34,7 +35,11 @@ QWidget* Visualizer::getOrCreateWidget()
 {
     if (!widget) {
         LOG_DEBUG("Visualizer " << getImplementation()->getName() << " widget created");
+        
         widget = getImplementation()->createWidget(genericActions);
+        PrintWidgetAction* print = new PrintWidgetAction(widget, "Print visualizer", widget);
+        
+        genericActions.push_back(print);
         tryRun();
         UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");
     }

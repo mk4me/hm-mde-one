@@ -85,6 +85,7 @@ void KinematicVisualizer::removeSerie(core::IVisualizer::SerieBase *serie)
 QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
 {
     widget = new osgui::QOsgDefaultWidget();
+    trajectoriesDialog = new TrajectoriesDialog(widget);
     const osg::GraphicsContext::Traits* traits = widget->getCamera()->getGraphicsContext()->getTraits();
     widget->setTimerActive(true);
     osg::ref_ptr<osgViewer::StatsHandler> handler = new osgViewer::StatsHandler;
@@ -125,7 +126,7 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
 	actionTrajectories = new QAction("Trajectories", widget);
     actionTrajectories->setIcon(icon1);
     actionTrajectories->setCheckable(true);
-    actionTrajectories->setVisible(false);
+    connect(actionTrajectories, SIGNAL(triggered()), this, SLOT(showTrajectoriesDialog()));
 
     QIcon icon2;
     icon2.addFile(QString::fromUtf8(":/resources/icons/skeletal_tracea.png"));
@@ -175,7 +176,8 @@ const std::string& KinematicVisualizer::getName() const
 }
 
 KinematicVisualizer::KinematicVisualizer() :
-    name("KinematicVisualizer")
+    name("KinematicVisualizer"),
+    trajectoriesDialog(nullptr)
 {
 
 }
@@ -333,6 +335,11 @@ void KinematicVisualizer::setTop()
 	this->cameraManipulator->setHeading(0);
 	this->cameraManipulator->setElevation(osg::DegreesToRadians(90.0));
 	this->cameraManipulator->setDistance(8);
+}
+
+void KinematicVisualizer::showTrajectoriesDialog()
+{
+    trajectoriesDialog->show();
 }
 
 

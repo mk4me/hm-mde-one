@@ -215,7 +215,6 @@ void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
 	this->joints = val;
 	const auto& jointMap = joints->getHAnimSkeleton()->getJoints();
 	int count = jointMap.size();
-	//jointMarkersStates.reserve(count + 5);
 	
 	auto it = jointMap.begin();
 	for (int index = 0; it != jointMap.end(); it++) {
@@ -229,11 +228,8 @@ void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
 	for (unsigned int i = 0; i < visJoints.size(); i++) {
 	    jointMarkersStates[i].color = gold;
 	}
-	
 	hAnimSkeletonPtr skeleton = joints->getHAnimSkeleton();
-	
 	createSkeletonConnections(skeleton->getRoot());
-	//rewizja
 	updateJointTransforms(0.0);
 }
 

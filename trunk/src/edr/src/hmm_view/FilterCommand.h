@@ -39,9 +39,10 @@ public:
    
 public:
     virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions) = 0;
-    virtual QDialog* getConfigurationDialog(QWidget* parent) { return nullptr; }
-    virtual void configurationStart() {}
-    virtual void configurationStop(ConfigurationResult result) {}
+    //virtual QDialog* getConfigurationDialog(QWidget* parent) { return nullptr; }
+    virtual QWidget* getConfigurationWidget() { return nullptr; }
+    /*virtual void configurationStart() {}
+    virtual void configurationStop(ConfigurationResult result) {}*/
 };
 typedef boost::shared_ptr<IFilterCommand> IFilterCommandPtr;
 typedef boost::shared_ptr<const IFilterCommand> IFilterCommandConstPtr;

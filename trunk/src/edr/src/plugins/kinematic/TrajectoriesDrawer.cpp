@@ -177,3 +177,9 @@ void TrajectoryDrawer::setTimes( const std::string& name, const std::pair<float,
 		int i = 0;
 	}
 }
+
+MarkerCollectionConstPtr TrajectoryDrawer::getMarkers() const
+{
+    UTILS_ASSERT(getVisualiztionScheme() && getVisualiztionScheme()->getMarkers());
+    return getVisualiztionScheme()->getMarkers();
+}

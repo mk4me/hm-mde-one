@@ -16,8 +16,19 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
 	
 	transformNode = new osg::PositionAttitudeTransform();
 	transformNode->addChild(skeletonDrawers->getNode());
+
+    
 	
-	skeletonDrawers->init(scheme);
+    skeletonDrawers->init(scheme);
+    
+    SkeletalVisualizationSchemePtr scheme(new SkeletalVisualizationScheme());
+    MarkerCollectionConstPtr mc = createTrajectories(collection);
+    scheme->setMarkers(mc);
+    TrajectoryDrawerPtr trajectoryDrawer(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 1), 300));
+    trajectoryDrawer->init(scheme);
+    transformNode->addChild(trajectoryDrawer->getNode());
+
+    visualizer->trajectoriesDialog->setMarkers(trajectoryDrawer, QString(data->getName().c_str()));
 	visualizer->transformNode->addChild(transformNode);
 	setAxis(true);
 	//visualizer->actionSwitchAxes->trigger();
@@ -33,5 +44,43 @@ void SkeletonSerie::setAxis( bool xyz)
 		osg::Quat q;
 		transformNode->setAttitude(q);
 	}
+}
+
+MarkerCollectionConstPtr SkeletonSerie::createTrajectories( kinematic::JointAnglesCollectionConstPtr joints )
+{
+    if (joints->getNumChannels() > 0) {
+        using namespace kinematic;
+        MarkerCollectionPtr markers(new MarkerCollection);
+        SkeletalVisualizationScheme scheme;
+        scheme.setJoints(joints);
+        JointAngleChannelConstPtr joint = joints->getChannel(0);
+        const std::vector<SkeletalVisualizationScheme::JointState>& states = scheme.getJointStates();
+        int count = states.size();
+        for (int i = 0; i < count; i++) {
+            MarkerChannelPtr marker(new MarkerChannel(joint->getSamplesPerSecond()));
+            std::string s("Joint");
+            s += boost::lexical_cast<std::string>(i);
+            marker->setName(s);
+            markers->addChannel(marker);
+        }
+   
+        
+        int argumentsSize = joint->size();
+        for (int arg = 0; arg < argumentsSize; arg++) {
+            scheme.setTime(joint->argument(arg));
+
+            const std::vector<SkeletalVisualizationScheme::JointState>& states = scheme.getJointStates();
+            // czy kolejnosc jest zapewniona? 
+            int size = states.size();
+            for (int i = 0; i < size; i++) {
+                MarkerChannelPtr marker = markers->getChannel(i);
+                marker->addPoint(states[i].position);
+            }
+        }
+        
+        return markers;
+    }
+
+    throw std::runtime_error("Skeleton Serie: Null object passed");
 }
 

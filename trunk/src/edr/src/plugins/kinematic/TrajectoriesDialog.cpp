@@ -4,48 +4,15 @@
 
 const int columnCount = 2;
 
-TrajectoriesDialog::TrajectoriesDialog( QWidget* parent, TrajectoryDrawerPtr trajectoryDrawer ) :
-	QDialog(parent),
-	trajectories(trajectoryDrawer)
+TrajectoriesDialog::TrajectoriesDialog( QWidget* parent) :
+	QDialog(parent)
 {
 	Ui::TrajectoriesDialog::setupUi(this);
 	QIcon icon( QString::fromUtf8(":/resources/icons/trajectory.png") );
 	QTreeWidgetItem* item = tree->headerItem();
 	item->setIcon(0, icon);
 	item->setText(0, "");
-}
-
-void TrajectoriesDialog::setMarkers( MarkerCollectionConstPtr markers )
-{
-	int count = markers->getNumChannels();
-
-	for (int i = 0; i < count; i++) {
-		QTreeWidgetItem* item = new QTreeWidgetItem();
-		
-		item->setText(1, markers->getChannel(i)->getName().c_str());
-		
-		item->setFlags(item->flags() | Qt::ItemIsSelectable);
-		item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
-		tree->addTopLevelItem(item);
-
-		QCheckBox* check1 = new QCheckBox(tree);
-		tree->setItemWidget(item, 0, check1);
-		connect(check1, SIGNAL(clicked(bool)), this, SLOT(visibilityChanged(bool)));
-	}
-
-	int maxVal = static_cast<int> (100 * markers->getLength()) - 1;
-	startSlider->setMinimum(0);
-	startSlider->setMaximum(maxVal-1);
-	endSlider->setMinimum(1);
-	endSlider->setMaximum(maxVal);
-	endSlider->setValue(maxVal);
-	startTimeSpin->setMinimum(0);
-	startTimeSpin->setMaximum(markers->getLength() - 0.001f);
-	endTimeSpin->setMinimum(1);
-	endTimeSpin->setMaximum(markers->getLength());
-	endTimeSpin->setValue(markers->getLength());
-
-
+    
 	connect(Ui::TrajectoriesDialog::colorButton, SIGNAL(clicked()), this, SLOT(colorClicked()));
 	connect(thicknessSpin, SIGNAL(valueChanged(double)), this, SLOT(widthChanged(double)));
 	connect(startTimeSpin, SIGNAL(valueChanged(double)), this, SLOT(startTimeChanged(double)));
@@ -56,10 +23,46 @@ void TrajectoriesDialog::setMarkers( MarkerCollectionConstPtr markers )
 		    this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 }
 
-void TrajectoriesDialog::onTreeItemClicked( QTreeWidgetItem* item, int column )
+void TrajectoriesDialog::setMarkers(TrajectoryDrawerPtr drawer, const QString& rootName )
 {
-	LOG_WARNING("TST");
+    UTILS_ASSERT(drawer->getMarkers());
+    MarkerCollectionConstPtr markers = drawer->getMarkers();
+	int count = markers->getNumChannels();
+    
+    if (count) {
+        QTreeWidgetItem* root = new QTreeWidgetItem();
+        root->setText(0, rootName);
+        tree->addTopLevelItem(root);
+        for (int i = 0; i < count; i++) {
+            QTreeWidgetItem* item = new QTreeWidgetItem();
+
+            item->setText(1, markers->getChannel(i)->getName().c_str());
+
+            item->setFlags(item->flags() | Qt::ItemIsSelectable);
+            item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
+            root->addChild(item);
+
+            QCheckBox* check1 = new QCheckBox(tree);
+            tree->setItemWidget(item, 0, check1);
+            connect(check1, SIGNAL(clicked(bool)), this, SLOT(visibilityChanged(bool)));
+            item2Trajectories[item] = drawer;
+        }
+    }
+
+
+    int maxVal = static_cast<int> (100 * markers->getLength()) - 1;
+    startSlider->setMinimum(0);
+    startSlider->setMaximum(maxVal-1);
+    endSlider->setMinimum(1);
+    endSlider->setMaximum(maxVal);
+    endSlider->setValue(maxVal);
+    startTimeSpin->setMinimum(0);
+    startTimeSpin->setMaximum(markers->getLength() - 0.001f);
+    endTimeSpin->setMinimum(1);
+    endTimeSpin->setMaximum(markers->getLength());
+    endTimeSpin->setValue(markers->getLength());
 }
+
 
 
 
@@ -84,16 +87,34 @@ osg::Vec4 TrajectoriesDialog::transformColor( const QColor& color ) const
 
 }
 
+
+QTreeWidgetItem* getItemWhichContainsRecurr(QTreeWidget* tree, QTreeWidgetItem* item, QObject* object )
+{
+    for (int c = 0; c < columnCount; c++) {
+        if (tree->itemWidget(item, c) == object) {
+            return item;
+        }
+    }
+
+    for (int c = 0; c < item->childCount(); c++) {
+        QTreeWidgetItem* child = getItemWhichContainsRecurr(tree, item->child(c), object);
+        if (child) {
+            return child;
+        }
+    }
+
+    return nullptr;
+}
+
 QTreeWidgetItem* TrajectoriesDialog::getItemWhichContains( QObject* object ) const
 {
 	int count = tree->topLevelItemCount();
 	for (int i = 0; i < count; i++) {
-		QTreeWidgetItem* item = tree->topLevelItem(i);
-		for (int c = 0; c < columnCount; c++) {
-			if (tree->itemWidget(item, c) == object) {
-				return item;
-			}
-		}
+        QTreeWidgetItem* item = getItemWhichContainsRecurr(tree, tree->topLevelItem(i), object);
+        if (item) {
+            return item;
+        }
+		
 	}
 	throw std::runtime_error("Tree item not found");
 }
@@ -110,7 +131,7 @@ void TrajectoriesDialog::visibilityChanged( bool visible )
 	if (box) {
 		QTreeWidgetItem* item = getItemWhichContains(box);
 		item->setSelected(true);
-		trajectories->setVisible(item->text(1).toStdString(), visible);
+		currentTrajectories->setVisible(item->text(1).toStdString(), visible);
 
 		int count = tree->topLevelItemCount();
 		for (int i = 0; i < count; i++) {
@@ -135,7 +156,7 @@ void TrajectoriesDialog::colorClicked()
 		QTreeWidgetItem* item = tree->topLevelItem(i);
 		if (item && item->isSelected()) {
 			std::string name = item->text(1).toStdString();
-			trajectories->setColor(name, transformColor(color));
+			currentTrajectories->setColor(name, transformColor(color));
 			setButtonColor(colorButton, color);
 		}
 	}
@@ -148,7 +169,7 @@ void TrajectoriesDialog::widthChanged( double width )
 		QTreeWidgetItem* item = tree->topLevelItem(i);
 		if (item && item->isSelected()) {
 			std::string name = item->text(1).toStdString();
-			trajectories->setLineWidth(name, static_cast<float>(width));
+			currentTrajectories->setLineWidth(name, static_cast<float>(width));
 		}
 	}
 }
@@ -160,12 +181,12 @@ void TrajectoriesDialog::startTimeChanged( double time )
 		QTreeWidgetItem* item = tree->topLevelItem(i);
 		if (item && item->isSelected()) {
 			std::string name = item->text(1).toStdString();
-			const std::pair<float, float>& times = trajectories->getTimes(name);
+			const std::pair<float, float>& times = currentTrajectories->getTimes(name);
 			blockAllSignals(true);
 			startTimeSpin->setValue(time);
 			startSlider->setValue(time * 100);
 			blockAllSignals(false);
-			trajectories->setTimes(name, std::make_pair(static_cast<float>(time), times.second));
+			currentTrajectories->setTimes(name, std::make_pair(static_cast<float>(time), times.second));
 		}
 	}
 }
@@ -181,8 +202,8 @@ void TrajectoriesDialog::endTimeChanged( double time )
 			endTimeSpin->setValue(time);
 			endSlider->setValue(time * 100);
 			blockAllSignals(false);
-			const std::pair<float, float>& times = trajectories->getTimes(name);
-			trajectories->setTimes(name, std::make_pair(times.first, static_cast<float>(time)));
+			const std::pair<float, float>& times = currentTrajectories->getTimes(name);
+			currentTrajectories->setTimes(name, std::make_pair(times.first, static_cast<float>(time)));
 		}
 	}
 }
@@ -190,16 +211,21 @@ void TrajectoriesDialog::endTimeChanged( double time )
 void TrajectoriesDialog::treeItemChanged( QTreeWidgetItem * current, QTreeWidgetItem * previous )
 {
 	std::string name = current->text(1).toStdString();
+    currentTrajectories = item2Trajectories[current];
+    // w drzewie moga istniec elementy, nie odnoszace sie bezposrednio do trajektorii.
+    if (!currentTrajectories) {
+        return;         // <----------   return !
+    }
 
-	QColor color = transformColor(trajectories->getColor(name));
+	QColor color = transformColor(currentTrajectories->getColor(name));
 	setButtonColor(colorButton, color);
 	blockAllSignals(true);
-	const std::pair<float, float>& times = trajectories->getTimes(name);
+	const std::pair<float, float>& times = currentTrajectories->getTimes(name);
 	startTimeSpin->setValue(times.first);
 	endTimeSpin->setValue(times.second);
 	startSlider->setValue(times.first * 100);
 	endSlider->setValue(times.second * 100);
-	float thickness = trajectories->getLineWidth(name);
+	float thickness = currentTrajectories->getLineWidth(name);
 	thicknessSpin->setValue(thickness);
 	blockAllSignals(false);
 }

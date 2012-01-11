@@ -21,7 +21,7 @@ void ConfigurationPainter::addArea( IAreaPtr data )
             throw std::runtime_error("Picture already added!");
         }
     }
-
+    data->setScale(scale);
     areas.push_back(data);
 }
 
@@ -152,6 +152,14 @@ void ConfigurationPainter::intersectNames( const  NamesDictionary& names )
 
     for (auto it = toErase.begin(); it != toErase.end(); it++) {
         areas.erase(*it);
+    }
+}
+
+void ConfigurationPainter::setScale( float val )
+{
+    scale = val;
+    for (AreasList::iterator it = areas.begin(); it != areas.end(); it++) {
+        (*it)->setScale(val);
     }
 }
 

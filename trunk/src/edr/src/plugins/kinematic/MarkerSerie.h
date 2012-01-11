@@ -13,7 +13,6 @@
 #include <core/IVisualizer.h>
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
-#include "TrajectoriesDialog.h"
 
 class MarkerSerie : public QObject, public core::IVisualizer::TimeSerieBase
 {
@@ -27,11 +26,7 @@ public:
 	  visualizer(visualizer),
 	  markersDrawer(new SchemeDrawerContainer())
 	  {
-		  TrajectoryDrawerPtr t(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.5f), 300));
-		  trajectoryDrawer = t;
-		  dialog = new TrajectoriesDialog(visualizer->widget, trajectoryDrawer);
-		  dialog->setWindowFlags(Qt::Tool);
-		  dialog->setWindowTitle("Trajectories");
+		  
 	  }
 
     virtual void setName(const std::string & name)
@@ -68,7 +63,6 @@ public:
 	}
 
 private slots:
-	void trajectoriesDialog();
     void showGhost(bool visible);
 	
 private:
@@ -76,7 +70,7 @@ private:
 	SkeletalVisualizationSchemePtr scheme;
 	SchemeDrawerContainerPtr markersDrawer;
 	TrajectoryDrawerPtr trajectoryDrawer;
-	TrajectoriesDialog* dialog;
+	
     osg::ref_ptr<osg::PositionAttitudeTransform> ghostNode;
 
     core::ObjectWrapperConstPtr data;

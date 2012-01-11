@@ -21,7 +21,7 @@ typedef boost::shared_ptr<const QPixmap> QPixmapConstPtr;
 class IArea
 {
 public:
-    IArea() : active(false) {}
+    IArea() : active(false),  scale(1.0f) {}
     virtual ~IArea() {}
 public:
     virtual int getY() const = 0;
@@ -34,9 +34,13 @@ public:
     virtual void draw(QPainter& painter, bool selected) = 0;
     bool isActive() const { return active; }
     void setActive(bool val) { active = val; }
+    float getScale() const { return scale; }
+    void setScale(float val) { scale = val; }
 
 private:
     bool active;
+    float scale;
+    
 };
 typedef boost::shared_ptr<IArea> IAreaPtr;
 typedef boost::shared_ptr<const IArea> IAreaConstPtr;
@@ -55,12 +59,12 @@ public:
     }
 
 public:
-    virtual int getY() const { return posY - r; }
+    virtual int getY() const { return getScale() * ( posY - r); }
     virtual void setY(int val) { posY = val + r; }
-    virtual int getX() const { return posX - r; }
+    virtual int getX() const { return getScale() * (posX - r); }
     virtual void setX(int val) { posX = val + r; }
-    virtual int getWidth() const { return 2 * r; }
-    virtual int getHeight() const { return 2 * r; }
+    virtual int getWidth() const { return getScale() * (2 * r); }
+    virtual int getHeight() const { return getScale() * (2 * r); }
     virtual const QString& getName() const { return name; }
     virtual void draw(QPainter& painter, bool selected) 
     {
@@ -129,24 +133,24 @@ public:
       {}
 
 public:
-    virtual int getY() const { return y; }
+    virtual int getY() const { return getScale() * (y); }
     virtual void setY(int val) { y = val; }
-    virtual int getX() const { return x; }
+    virtual int getX() const { return getScale() * (x); }
     virtual void setX(int val) { x = val; }
-    virtual int getWidth() const { return pixmap->width(); }
-    virtual int getHeight() const { return pixmap->height(); }
+    virtual int getWidth() const { return getScale() * (pixmap->width()); }
+    virtual int getHeight() const { return getScale() * (pixmap->height()); }
     virtual const QString& getName() const { return name; }
     virtual void draw(QPainter& painter, bool selected)
     {
         if (alwaysVisible || isActive()) {
-            painter.drawPixmap(x, y, pixmap->width(), pixmap->height(), *pixmap);
+            painter.drawPixmap(getX(), getY(), getWidth(), getHeight(), *pixmap);
         } else {
             if (selected) {
                 QPixmapConstPtr p = getPixmap();
                 // trzeba dodac membera, ktory bedzie przechowywal kopie dla aktualnej pixmapy
                 QPixmap copy = *p;
                 SinglePicture::setPixmapAlpha(copy, 100);
-                painter.drawPixmap(getX(), getY(), p->width(), p->height(), copy);
+                painter.drawPixmap(getX(), getY(), getWidth(), getHeight(), copy);
             }
         }
         
@@ -175,7 +179,8 @@ class ConfigurationPainter : public QWidget
     Q_OBJECT;
 public:
     ConfigurationPainter(QWidget* parent) :
-      QWidget(parent)
+      QWidget(parent),
+      scale(1.0f)
       {
           setMouseTracking(true);
           installEventFilter(this);
@@ -196,6 +201,9 @@ public:
     AreasList::iterator end() { return areas.end(); }
     void trySetActive( const QString& name, bool selected );
     void intersectNames( const NamesDictionary& names );
+
+    float getScale() const { return scale; }
+    void setScale(float val);
 
 signals:
     void elementHovered(const QString& name, bool selected);
@@ -218,6 +226,7 @@ private:
     QString name;
     AreasList areas;
     IAreaPtr currentArea;
+    float scale;
 };
 
 

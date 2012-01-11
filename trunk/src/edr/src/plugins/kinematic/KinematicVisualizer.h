@@ -26,6 +26,8 @@
 #include "GlLineSchemeDrawer.h"
 #include "SchemeDrawerContainer.h"
 
+#include "TrajectoriesDialog.h"
+
 class KinematicVisualizer :  public QObject, public core::IVisualizer
 {
 	// wszystkie mozliwe serie przeniesione do osobnego pliku
@@ -64,15 +66,16 @@ private:
 
 	private slots:
        // void setAxis(bool xyz);
+        void showTrajectoriesDialog();
 
-	public slots:
-		void setLeft();
-		void setRight();
-		void setFront();
-		void setBehind();
-		void setTop();
-		void setBottom();
-        void actionTriggered(QAction* action);
+public slots:
+	void setLeft();
+	void setRight();
+	void setFront();
+	void setBehind();
+	void setTop();
+	void setBottom();
+    void actionTriggered(QAction* action);
 
 public:
     virtual osg::Node* debugGetLocalSceneRoot();
@@ -94,6 +97,7 @@ private:
     QAction* actionTrajectories;
     QAction* actionGhost;
     QAction* actionSwitchAxes;
+    TrajectoriesDialog* trajectoriesDialog;
 };
 
 

@@ -6,10 +6,6 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(MarkerCollection));
     this->data = data;
-    // taki maly workaround, na razie MarkerSerie jest odpowiedzialny za tworzenie dialogu, 
-    // dlatego polaczenie musi nastapic tutaj
-    visualizer->actionTrajectories->setVisible(true);
-	connect(visualizer->actionTrajectories, SIGNAL(triggered()), this, SLOT(trajectoriesDialog()));
     visualizer->actionGhost->setVisible(true);
     connect(visualizer->actionGhost, SIGNAL(triggered(bool)), this, SLOT(showGhost(bool)));
 	MarkerCollectionConstPtr markersCollection = data->get();
@@ -24,19 +20,17 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 	
 	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.02f)));
 	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.005f)));
+    
+    trajectoryDrawer = TrajectoryDrawerPtr(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 1), 300));
 	markersDrawer->addDrawer(trajectoryDrawer);
 	//visualizer->currentDrawer = markersDrawer;
 	//visualizer->actionByName["Markers"]->setVisible(true);
 	markersDrawer->init(scheme);
+    visualizer->trajectoriesDialog->setMarkers(trajectoryDrawer, QString(data->getName().c_str()));
 	visualizer->transformNode->addChild(markersDrawer->getNode());
-	dialog->setMarkers(markersCollection);
+	
 }
 
-void MarkerSerie::trajectoriesDialog()
-{
-	dialog->show();
-	//dialog->exec();
-}
 
 void MarkerSerie::showGhost( bool visible )
 {

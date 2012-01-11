@@ -312,7 +312,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     trySetStyleByName("hmm");
 
-    this->analisis = new AnalisisWidget(nullptr);
+    this->analisis = new AnalisisWidget(nullptr, this);
     this->data = new QWidget(nullptr);
 
     this->data->setContentsMargins(0,0,0,0);
@@ -762,6 +762,15 @@ void HmmMainWindow::createFilterTab1()
     DataFilterPtr typeFilter4(new TypeFilter(typeid(MomentCollection)));
     DataFilterPtr typeFilter5(new TypeFilter(typeid(PowerCollection)));
 
+    /*ConfigurationDialog* dialog = new ConfigurationDialog(analisis->configure1);
+    dialog->loadConfigurations(emgFront, emgBack, emgNames);
+    dialog->show();
+    dialog->setFixedSize(200, 500);
+    if (!analisis->configure1->layout()) {
+        analisis->configure1->setLayout(new QHBoxLayout());
+    }
+    QLayout* dlay = analisis->configure1->layout();
+    dlay->addWidget(dialog);*/
     
     /*typedef Vector3DFilterCommand2<MomentChannel, MomentCollection, NewVector3ItemHelper> MomentsCommand;
     typedef Vector3DFilterCommand2<ForceChannel, ForceCollection, NewVector3ItemHelper> ForcesCommand;

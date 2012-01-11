@@ -26,7 +26,7 @@ public:
       QWidget(parent),
       filterCommand(filterCommand),
       hmm(hmm),
-      dialog(nullptr)
+      configurator(nullptr)
     {
         setupUi(this);
         this->pushButton->setText(bigLabelText);
@@ -36,37 +36,35 @@ public:
         if (icon) {
             this->pushButton->setIcon(*icon);
         }
-        this->configurationButton->setVisible(false);
-        this->setMouseTracking(true);
 
         connect(pushButton, SIGNAL(clicked()), this, SLOT(onButton()));
-        connect(configurationButton, SIGNAL(clicked()), this, SLOT(onConfigurationButton()));
-        QIcon icon2(core::getResourceString("images/przod.png"));
-        configurationButton->setIcon(icon2);
     }
 	virtual ~FilterEntryWidget() 
     {
-        if (dialog) {
-            delete dialog;
+        if (configurator) {
+            delete configurator;
         }
     }
 
 public:
     IFilterCommandPtr getFilterCommand() const { return filterCommand; }
+    QTreeWidgetItem* createTreeEntry(const std::vector<SessionConstPtr>& sessions);
+    QWidget* getConfigurator() const { return filterCommand->getConfigurationWidget(); }
     QString getName() const { return pushButton->text(); }
+
+signals:
+    void onFilterClicked(FilterEntryWidget* filter);
 
 private slots:
     void onButton();
-    void onConfigurationButton();
 
-protected:
-    virtual void enterEvent( QEvent * );
-    virtual void leaveEvent( QEvent * );
+    
+
 
 private:
     IFilterCommandPtr filterCommand;
     HmmMainWindow* hmm;
-    QDialog* dialog;
+    QWidget* configurator;
 };
 
 

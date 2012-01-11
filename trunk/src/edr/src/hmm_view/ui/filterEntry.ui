@@ -81,24 +81,6 @@ QPushButton {
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="configurationButton">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>0</y>
-     <width>21</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <zorder>configurationButton</zorder>
-  <zorder>pushButton</zorder>
  </widget>
  <resources/>
  <connections/>

@@ -13,7 +13,6 @@
 
 #include <core/IVisualizer.h>
 #include <osg/Geode>
-#include "KinematicVisualizer.h"
 #include "TrajectoriesDrawer.h"
 #include "ui_TrajectoriesDialog.h"
 
@@ -22,13 +21,12 @@ class TrajectoriesDialog : public QDialog, private Ui::TrajectoriesDialog
 {
 	Q_OBJECT;
 public:
-	TrajectoriesDialog(QWidget* parent, TrajectoryDrawerPtr trajectoryDrawer);
+	TrajectoriesDialog(QWidget* parent);
 
 public:
-	void setMarkers(MarkerCollectionConstPtr markers);
+	void setMarkers(TrajectoryDrawerPtr drawer, const QString& rootName);
 
 private slots:
-	void onTreeItemClicked(QTreeWidgetItem* item, int column);
 	void colorClicked();
 	void visibilityChanged(bool visible);
 	void widthChanged(double width);
@@ -46,7 +44,8 @@ private:
 	void blockAllSignals(bool val);
 
 private:
-	TrajectoryDrawerPtr trajectories;
+	TrajectoryDrawerPtr currentTrajectories;
+    std::map<QTreeWidgetItem*, TrajectoryDrawerPtr> item2Trajectories;
 };
 
 

@@ -68,6 +68,9 @@ public:
 	}
 
 private:
+    MarkerCollectionConstPtr createTrajectories(kinematic::JointAnglesCollectionConstPtr joints);
+
+private:
 	KinematicVisualizer * visualizer;
 	SkeletalVisualizationSchemePtr scheme;
 	SchemeDrawerContainerPtr skeletonDrawers;

@@ -26,11 +26,12 @@ protected:
     virtual void contextMenuEvent ( QContextMenuEvent * event );
 };
 
+
 class AnalisisWidget : public QWidget, public Ui::AnalisisWidget
 {
     Q_OBJECT;
 public:
-    AnalisisWidget(QWidget* parent, int margin = 2, Qt::WindowFlags flags = 0);
+    AnalisisWidget(QWidget* parent, HmmMainWindow* hmm, int margin = 2, Qt::WindowFlags flags = 0);
 	virtual ~AnalisisWidget() {}
 
 public:
@@ -50,6 +51,12 @@ protected:
 
 private slots:
     void setFiltersExpanded(bool expand);
+    void filterClicked(FilterEntryWidget* filter);
+    void applyClicked();
+
+    void switchToFirstTab();
+
+    void recreateTree(FilterEntryWidget* currentFilter);
 
 private:
     int filterWidth;
@@ -57,6 +64,9 @@ private:
     int margin;
     Qt::MouseButton lastMouseButton;
     AnalisisTreeWidget* treeWidget;
+    HmmMainWindow* hmm;
+    //TODO potrzebne tylko, aby przekazac info miedzy elementami.
+    FilterEntryWidget* currentFilter;
 };
 
 
