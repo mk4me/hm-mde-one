@@ -19,6 +19,8 @@
 #include <QtGui/QTreeWidget>
 #include <QtGui/QTableWidget>
 #include <QtGui/QListWidget>
+#include <QtGui/QRadioButton>
+#include <QtGui/QButtonGroup>
 #include <QtGui/QLabel>
 #include "Patient.h"
 #include "PatientCardWidget.h"
@@ -45,15 +47,6 @@ public:
     ItemBase(ItemView * view);
 
     static QPixmap mergePixmaps(const QPixmap & pmL, const QPixmap & pmR);
-
-    /*void refreshLocalityHierarchyUp(const ItemBase * child);
-    virtual void refreshLocalityHierarchyDown();
-
-    void refreshUsageHierarchyUp(const ItemBase * child);
-    virtual void refreshUsageHierarchyDown();
-
-    void refreshHierarchyUp(const ItemBase * child);
-    virtual void refreshHierarchyDown();*/
 
     void refreshStatusContent();
 
@@ -84,19 +77,14 @@ public:
     const QIcon & getLocalityStatusIcon();
     const QIcon & getUsageStatusIcon();
 
-    //void refreshStatus();
-
 public slots:
 
     void refresh();
 
 private:
 
-    /*DataLocality checkChildrenDataLocality() const;
-    DataUsage checkChildrenDataUsage() const;*/
 
 protected:
-    //CommunicationDataSource * source;
     DataLocality locality;
     DataUsage usage;
     Items items;
@@ -107,7 +95,6 @@ protected:
     QPixmap usageStatusPixmap;
 
     QIcon statusIcon;
-    //QPixmap pixmap;
     ItemView * view;
 };
 
@@ -267,7 +254,6 @@ protected:
 
     virtual void doUIRefresh() = 0;
 
-    //static void setStatusWidgets(QTreeWidget * tree, ItemBase * item);
     virtual void refreshStatusIcons(ItemBase* item);
 
     //HEADERS
@@ -565,7 +551,8 @@ protected:
 
 protected slots:
 
-    void patientCardRequest(QListWidgetItem * current, QListWidgetItem * previous);
+    void perspectiveChanged(QAbstractButton* button);
+    void currentPatientChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 
 protected:
 
@@ -597,6 +584,9 @@ protected:
     PatientCardWidget * patientCardWidget;
     QListWidget * patientsList;
     QWidget * patientCardsWidget;
+    QButtonGroup * perspectiveButtonsLogicGroup;
+    QRadioButton * patientsPerspectiveRadio;
+    QRadioButton * disorderPerspectiveRadio;
 
     std::map<int, DisorderItem*> disordersUIMapping;
     std::map<int, std::vector<PatientItem*>> patientsUIMapping;

@@ -316,6 +316,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     this->data = new QWidget(nullptr);
 
     this->data->setContentsMargins(0,0,0,0);
+    this->analisis->setContentsMargins(0,0,0,0);
 
     this->operations = new QWidget(nullptr);
     this->raports = new QWidget(nullptr);
@@ -354,8 +355,16 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     topMainWindow = new EDRDockWidgetManager();
     topMainWindow->setTabsPosition(QTabWidget::South);
+    topMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     bottomMainWindow = new QMainWindow();
-    bottomMainWindow->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    bottomMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    
+    //TODO
+    //trzeba wyzanaczaæ max wysokoœæ tak aby nie "wypycha³o" nam timeline!!
+    // powinno byæ mniej wiêcej coœ takiego - wysokoœæ dla aktualnej rozdzielczoœci - wysokoœc timeline - wysokoœæ górnego paska - przestrzeñ wolna pomiêdzy tymi elementami w pionie
+    // ~ currentRes.h - 270 w przybli¿eniu -> trtzeba dok³¹dnie sprawdziæ i policzyæ
+    //topMainWindow->setMaximumHeight(850);
+    //topMainWindow->setMinimumHeight(850);
 
     createFilterTabs();
 
@@ -367,6 +376,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     v->addWidget(topMainWindow->asQWidget());
     topMainWindow->asQWidget()->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     v->addWidget(bottomMainWindow);
+    //TODO
+    //zapewniamy timelie minimaln¹, ale wystarczaj¹ca iloœc miejsca
+    //trzeba to zgraæ razem z max wysokoœci¹ dla wizualizatorów
     bottomMainWindow->setMaximumHeight(120); // tymczasowo
     bottomMainWindow->setMinimumHeight(120); // tymczasowo
     bottomMainWindow->layout()->setMargin(0);

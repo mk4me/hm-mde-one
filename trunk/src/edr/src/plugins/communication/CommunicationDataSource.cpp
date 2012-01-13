@@ -10,30 +10,12 @@
 #include <boost/bind.hpp>
 #include "DownloadDialogWidget.h"
 #include "PatientCardWidget.h"
+#include <QtGui/QGroupBox>
 
 #include <algorithm>
 
 
 Q_DECLARE_METATYPE(std::set<int>);
-
-class PatientListItem : public QListWidgetItem
-{
-public:
-    explicit PatientListItem(unsigned int patientID, QListWidget *view = 0, int type = Type) : QListWidgetItem(view, type), patientID(patientID) {}
-    explicit PatientListItem(unsigned int patientID, const QString &text, QListWidget *view = 0, int type = Type) : QListWidgetItem(text, view, type), patientID(patientID) {}
-    explicit PatientListItem(unsigned int patientID, const QIcon &icon, const QString &text,
-        QListWidget *view = 0, int type = Type) : QListWidgetItem(icon, text, view, type), patientID(patientID) {}
-    PatientListItem(const PatientListItem &other) : QListWidgetItem(other), patientID(patientID) {}
-
-    unsigned int getPatientID() const
-    {
-        return patientID;
-    }
-
-private:
-    unsigned int patientID;
-
-};
 
 ItemBase::ItemBase(ItemView * view) : view(view)//, pixmap(20,20)
 {
@@ -115,33 +97,25 @@ void ItemBase::setDataLocality(DataLocality locality)
 {
     this->locality = locality;
 
-    //QColor color;
 
     switch(locality){
     case Local:
                 localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/lokalne.png"));
-                //color = Qt::GlobalColor::green;
                 break;
 
     default:
     case Remote:
                 localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/zdalne.png"));
-                //color = Qt::GlobalColor::red;
                 break;
     case PartiallyLocal:
                 //localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/polnapol-dane.png"));
                 localityStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/pol-na-pol-green.png"));
-                //color = Qt::GlobalColor::yellow;
                 break;
     }
 
     localityStatusIcon = QIcon(localityStatusPixmap);
 
     refreshStatusContent();
-    //QPainter painter(&pixmap);
-    //painter.fillRect(QRectF(0,0,10,20), color);
-
-    //localityStatusIcon->setPixmap(pixmap);
 }
 
 DataUsage ItemBase::getDataUsage() const
@@ -153,33 +127,23 @@ void ItemBase::setDataUsage(DataUsage usage)
 {
     this->usage = usage;
 
-    //QColor color;
-
     switch(usage){
     case Loaded:
         usageStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/zaladowane.png"));
-        //color = Qt::GlobalColor::green;
         break;
 
     default:
     case Unloaded:
         usageStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/niezaladowane.png"));
-        //color = Qt::GlobalColor::red;
         break;
     case PartiallyLoaded:
         usageStatusPixmap = QPixmap(QString::fromUtf8(":/resources/icons/polnapol-ladowanie2.png"));
-        //color = Qt::GlobalColor::yellow;
         break;
     }
 
     usageStatusIcon = QIcon(usageStatusPixmap);
 
     refreshStatusContent();
-
-    //QPainter painter(&pixmap);
-    //painter.fillRect(QRectF(10,0,10,20), color);
-
-    //localityStatusIcon->setPixmap(pixmap);
 }
 
 void ItemBase::refreshStatusContent()
@@ -482,7 +446,36 @@ ItemView::~ItemView()
 void ItemView::refreshStatusIcons(ItemBase* item)
 {
     item->setIcon(0, item->getStatusIcon());
-    //item->setSizeHint(0, QSize(s.width() + 40 , max(20, s.height())));
+
+    QString localityColor("red");
+    QString dataLocality(tr("Remote"));
+    switch(item->getDataLocality()){
+    case Local:
+        dataLocality = tr("Local");
+        localityColor = "green";
+        break;
+
+    case PartiallyLocal:
+        dataLocality = tr("Partially local");
+        localityColor = "orange";
+        break;
+    }
+
+    QString usageColor("red");
+    QString dataUsage(tr("Unloaded"));
+    switch(item->getDataUsage()){
+    case Loaded:
+        dataUsage = tr("Loaded");
+        usageColor = "green";
+        break;
+
+    case PartiallyLoaded:
+        dataUsage = tr("Partially loaded");
+        usageColor = "orange";
+        break;
+    }
+
+    item->setToolTip(0, QString::fromUtf8("<p style=\"color:%1\">Data storage: %2</p><p style=\"color:%3\">Data usage: %4</p>").arg(localityColor).arg(dataLocality).arg(usageColor).arg(dataUsage));
 }
 
 void ItemView::refresh()
@@ -939,9 +932,6 @@ void ItemView::onItemClicked(QTreeWidgetItem* item, int column)
 
     QTreeWidget * tree = qobject_cast<QTreeWidget*>(sender());
 
-    //int columns = itemBase->columnCount();
-    //tree->setColumnCount(columns);
-
     QStringList headers;
     itemBase->getHeaders(headers);
     tree->setColumnCount(headers.size());
@@ -1323,22 +1313,12 @@ void ItemView::refreshStatus(FileItem * fileItem, bool goUp)
     updateStatus(fileItem, status, goUp);
 }
 
-//void ItemView::setStatusWidgets(QTreeWidget * tree, ItemBase * item)
-//{
-//    tree->setItemWidget(item, 0, item->getStatusIcon());
-//    item->getStatusIcon()->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-//    for(int i = 0; i < item->itemBaseChildrenCount(); i++){
-//        setStatusWidgets(tree, item->getItemBaseChild(i));
-//    }
-//}
-
 MotionView::MotionView(CommunicationDataSource * source) : ItemView(source), subjectsTree(new QTreeWidget())
 {
     QHBoxLayout * layout = new QHBoxLayout;
 
     subjectsTree->setContextMenuPolicy( Qt::CustomContextMenu );
     subjectsTree->setUniformRowHeights(false);
-    //subjectsTree->setIconSize(QSize(40, 20));
 
     connect(subjectsTree, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onItemClicked(QTreeWidgetItem*, int)));
     connect(subjectsTree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenuRequested(const QPoint &)));
@@ -1624,65 +1604,40 @@ void MotionView::refreshContent(FileItem * fileItem)
 
 MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
     patientsTree(new QTreeWidget), disordersTree(new QTreeWidget),
-    patientCardWidget(new PatientCardWidget()), patientsList(new QListWidget()),
-    patientCardsWidget(new QWidget())
+    patientCardWidget(new PatientCardWidget()),
+    perspectiveButtonsLogicGroup(new QButtonGroup()),
+    patientsPerspectiveRadio(new QRadioButton(tr("Patients"))),
+    disorderPerspectiveRadio(new QRadioButton(tr("Disorders")))
 {
     QHBoxLayout * layout = new QHBoxLayout;
 
     patientsTree->setContextMenuPolicy( Qt::CustomContextMenu );
     disordersTree->setContextMenuPolicy( Qt::CustomContextMenu );
-    patientCardsWidget->setContextMenuPolicy( Qt::CustomContextMenu );
     patientsTree->setIconSize(QSize(40, 20));
     disordersTree->setIconSize(QSize(40, 20));
-    /*
-    auto f = patientsTree->font();
-    f.setPointSize(20);
-    patientsTree->setFont(f);
-
-    f = disordersTree->font();
-    f.setPointSize(20);
-    disordersTree->setFont(f);
-
-    //patientsTree->setUniformRowHeights(false);
-    patientsTree->setIconSize(QSize(40, 20));
-
-    //disordersTree->setUniformRowHeights(false);
-    disordersTree->setIconSize(QSize(40, 20));
-    */
 
     connect(patientsTree, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onItemClicked(QTreeWidgetItem*, int)));
+    connect(patientsTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(currentPatientChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
     connect(patientsTree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenuRequested(const QPoint &)));
 
     connect(disordersTree, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onItemClicked(QTreeWidgetItem*, int)));
+    connect(disordersTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(currentPatientChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
     connect(disordersTree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenuRequested(const QPoint &)));
-
-
-    connect(patientsList, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(patientCardRequest(QListWidgetItem*,QListWidgetItem*)));
-    patientsList->setFrameStyle(QFrame::Box);
-    patientsList->setLineWidth(2);
 
     this->setLayout(layout);
 
-    QHBoxLayout * patientLayout = new QHBoxLayout();
+    QWidget * leftSide = new QWidget();
+    QVBoxLayout * leftLayout = new QVBoxLayout();
+    perspectiveButtonsLogicGroup->addButton(patientsPerspectiveRadio);
+    perspectiveButtonsLogicGroup->addButton(disorderPerspectiveRadio);
+    patientsPerspectiveRadio->setChecked(true);
 
-    patientLayout->addWidget(patientsList);
+    QGroupBox * perspectiveButtonsUiGroup = new QGroupBox(QString(tr("Data perspective")));
+    perspectiveButtonsUiGroup->setLayout(new QHBoxLayout());
+    perspectiveButtonsUiGroup->layout()->addWidget(patientsPerspectiveRadio);
+    perspectiveButtonsUiGroup->layout()->addWidget(disorderPerspectiveRadio);
 
-    patientsList->setMaximumWidth(250);
-    patientsList->setSelectionBehavior(QAbstractItemView::SelectRows);
-    patientsList->setSelectionMode(QAbstractItemView::SingleSelection);
-    //patientsList->setSortingEnabled(true);
-
-    patientLayout->addWidget(patientCardWidget);
-
-    patientCardsWidget->setLayout(patientLayout);
-
-    QTabWidget * tabWidget = new QTabWidget();
-
-    tabWidget->addTab(patientCardsWidget, QString::fromUtf8("Patient card"));
-    tabWidget->addTab(patientsTree, QString::fromUtf8("Patients Data"));
-    tabWidget->addTab(disordersTree, QString::fromUtf8("Disorders Data"));
-
-    layout->addWidget(tabWidget);
+    connect(perspectiveButtonsLogicGroup, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(perspectiveChanged(QAbstractButton*)));
 
     QStringList headers;
 
@@ -1701,11 +1656,48 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
     for(int i = 0; i < headers.size(); i++){
         disordersTree->resizeColumnToContents(i);
     }
+
+    leftLayout->addWidget(perspectiveButtonsUiGroup);
+    leftLayout->addWidget(patientsTree);
+    leftLayout->addWidget(disordersTree);
+
+    disordersTree->setVisible(false);
+
+    leftSide->setLayout(leftLayout);
+
+    leftSide->setMaximumWidth(350);
+    leftSide->setMinimumWidth(350);
+
+    layout->addWidget(leftSide);
+    layout->addWidget(patientCardWidget);    
 }
 
 MedicalView::~MedicalView()
 {
 
+}
+
+void MedicalView::perspectiveChanged(QAbstractButton* button)
+{
+    if(button == patientsPerspectiveRadio){
+        patientsTree->setVisible(true);
+        disordersTree->setVisible(false);
+    }else{
+        patientsTree->setVisible(false);
+        disordersTree->setVisible(true);
+    }
+}
+
+void MedicalView::currentPatientChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous)
+{
+    PatientItem * pItem = dynamic_cast<PatientItem *>(current);
+    if(pItem != nullptr){
+        auto patient = medicalShallowCopy->patients.find(pItem->getPatientID())->second;
+        auto performer = motionShallowCopy->performers.find(patient->motionPerformerID)->second;
+
+        patientCardWidget->setPatient(patient, performer, source->getPatientPhoto(patient));
+        patientCardWidget->refreshCard();
+    }
 }
 
 //HEADERS
@@ -1721,10 +1713,7 @@ void MedicalView::getHeaders(const DisorderItem * disorderItem, QStringList & he
 
 void MedicalView::getHeaders(const PatientItem * patientItem, QStringList & headers) const
 {
-    headers.push_back(QString("Name"));
-    headers.push_back(QString("Surname"));
-    headers.push_back(QString("Gender"));
-    headers.push_back(QString("Birth date"));
+    headers.push_back(QString("Patient"));
 }
 
 void MedicalView::getHeaders(const SubjectItem * subjectItem, QStringList & headers) const
@@ -1735,30 +1724,21 @@ void MedicalView::getHeaders(const SubjectItem * subjectItem, QStringList & head
 void MedicalView::getHeaders(const SessionGroupItem * sessionGroupItem, QStringList & headers) const
 {
     headers.push_back(QString("Session Group"));
-    headers.push_back(QString("Date"));
 }
 
 void MedicalView::getHeaders(const SessionItem * sessionItem, QStringList & headers) const
 {
     headers.push_back(QString("Session"));
-    headers.push_back(QString("Date"));
-    headers.push_back(QString("Motion kind"));
-    headers.push_back(QString("Description"));
-    headers.push_back(QString("Attributes"));
-    headers.push_back(QString("Tags"));
 }
 
 void MedicalView::getHeaders(const MotionItem * motionItem, QStringList & headers) const
 {
     headers.push_back(QString("Motion"));
-    headers.push_back(QString("Description"));
-    headers.push_back(QString("Attributes"));
 }
 
 void MedicalView::getHeaders(const FileItem * fileItem, QStringList & headers) const
 {
     headers.push_back(QString("File"));
-    headers.push_back(QString("Description"));
 }
 
 //REFRESH/SET CONTENT
@@ -1938,43 +1918,15 @@ SessionItem * MedicalView::createSessionItem(const std::string & prefix, const c
     return sessionItem;
 }
 
-void MedicalView::patientCardRequest(QListWidgetItem * current, QListWidgetItem * previous)
-{
-    PatientListItem * pItem = dynamic_cast<PatientListItem *>(current);
-    
-    auto patient = medicalShallowCopy->patients.find(pItem->getPatientID())->second;
-    auto performer = motionShallowCopy->performers.find(patient->motionPerformerID)->second;
-
-    patientCardWidget->setPatient(patient, performer, source->getPatientPhoto(patient));
-    patientCardWidget->refreshCard();
-}
-
-void MedicalView::createPatientRow(unsigned int row, const communication::MedicalShallowCopy::Patient * patient)
-{
-    PatientListItem * item = new PatientListItem(patient->patientID, QString::fromUtf8((patient->surname + ", " +patient->name).c_str()));
-    patientsList->addItem(item);
-}
-
 void MedicalView::doUIRefresh()
-{
-    patientsList->clear();
-    
+{    
     if(motionShallowCopy != nullptr && medicalShallowCopy != nullptr){
         unsigned int i = 0;
 
         //budujemy drzewo i tabelê pacjentów na potrzeby kart
         for(auto patientIT = medicalShallowCopy->patients.begin(); patientIT != medicalShallowCopy->patients.end(); patientIT++){
             createPatientItemTree(patientIT->second);
-            createPatientRow(i, patientIT->second);
             i++;
-        }
-
-        if(patientCardWidget->getPatient() == nullptr){
-            if(patientsList->count() > 0){
-                patientsList->setCurrentRow(0, QItemSelectionModel::SelectCurrent);
-            }
-        }else{
-            patientCardWidget->refreshCard();
         }
 
         //budujemy drzewo chorob
@@ -2003,8 +1955,6 @@ void MedicalView::doUIRefresh()
 
             disorderItem->setDataLocality((DataLocality)disorderLocality);
             disorderItem->setDataUsage(Unloaded);
-
-            //setStatusWidgets(disordersTree, disorderItem);
         }
 
     }else{
@@ -2033,6 +1983,10 @@ void MedicalView::doUIRefresh()
 
     for(int i = 0; i < headers.size(); i++){
         disordersTree->resizeColumnToContents(i);
+    }
+
+    if(patientsTree->topLevelItemCount() > 0){
+        patientsTree->setCurrentItem(patientsTree->topLevelItem(0));
     }
 }
 
@@ -2088,53 +2042,27 @@ void MedicalView::fillItemContent(DisorderItem * disorderItem, const communicati
 
 void MedicalView::fillItemContent(PatientItem * patientItem, const communication::MedicalShallowCopy::Patient * patient)
 {
-    patientItem->setText(0, QString::fromUtf8(patient->name.c_str()));
-    patientItem->setText(1, QString::fromUtf8(patient->surname.c_str()));
-    patientItem->setText(2, QString(QChar(patient->gender)));
-    patientItem->setText(3, QString(patient->birthDate.c_str()));
+    patientItem->setText(0, QString::fromUtf8(patient->surname.c_str()).append(", ") + QString::fromUtf8(patient->name.c_str()));
 }
 
 void MedicalView::fillItemContent(SessionGroupItem * sessionItem, const SessionGroupDescription & description)
 {
     sessionItem->setText(0, QString::fromUtf8(description.name.c_str()));
-    sessionItem->setText(1, QString(description.date.c_str()));
 }
 
 void MedicalView::fillItemContent(SessionItem * sessionItem, const communication::MotionShallowCopy::Session * session)
 {
     sessionItem->setText(0, QString(sessionsPrefixes[session->sessionID].c_str()) + QString(" - ") + QString(session->sessionName.c_str()));
-    sessionItem->setText(1, QString(session->sessionDate.c_str()));
-    sessionItem->setText(2, QString::fromUtf8(session->motionKind.c_str()));
-    sessionItem->setText(3, QString::fromUtf8(session->sessionDescription.c_str()));
-
-    QString attributes;
-
-    for(auto it = session->attrs.begin(); it != session->attrs.end(); it++){
-        attributes += QString::fromUtf8(it->first.c_str()) + QString("=") + QString(it->second.c_str()) + QString(";");
-    }
-
-    sessionItem->setText(4, attributes);
-    sessionItem->setText(5, QString::fromUtf8(session->tags.c_str()));
 }
 
 void MedicalView::fillItemContent(MotionItem * motionItem, const communication::MotionShallowCopy::Trial * motion)
 {
     motionItem->setText(0, QString(motion->trialName.c_str()));
-    motionItem->setText(1, QString::fromUtf8(motion->trialDescription.c_str()));
-
-    QString attributes;
-
-    for(auto it = motion->attrs.begin(); it != motion->attrs.end(); it++){
-        attributes += QString::fromUtf8(it->first.c_str()) + QString("=") + QString(it->second.c_str()) + QString(";");
-    }
-
-    motionItem->setText(2, attributes);
 }
 
 void MedicalView::fillItemContent(FileItem * fileItem, const communication::MotionShallowCopy::File * file)
 {
     fileItem->setText(0, QString(file->fileName.c_str()));
-    fileItem->setText(1, QString::fromUtf8(file->fileDescription.c_str()));
 }
 
 CommunicationDataSource::CommunicationDataSource(communication::CommunicationManager * communicationManager, ISubjectService * subjectService)

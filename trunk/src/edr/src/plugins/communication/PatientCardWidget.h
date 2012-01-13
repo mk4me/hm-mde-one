@@ -114,7 +114,6 @@ private:
     QWidget * personalDataWidget;
     QLabel * patientPhotoWidget;
     QLineEdit * patientEdit;
-    QSpinBox * patientAgeEdit;
     QComboBox * patientGenderEdit;
     QLabel * patientBirthDateEdit;
 

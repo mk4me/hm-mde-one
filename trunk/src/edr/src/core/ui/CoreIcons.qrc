@@ -21,5 +21,9 @@
     <file alias="x.png">../../../resources/embedded/icons/x.png</file>
     <file alias="2D.png">../../../resources/embedded/icons/2D.png</file>
     <file alias="3D.png">../../../resources/embedded/icons/3D.png</file>
+    <file alias="niezaladowane.png">../../../resources/embedded/icons/niezaladowane.png</file>
+    <file alias="zaladowane.png">../../../resources/embedded/icons/zaladowane.png</file>
+    <file alias="zdalne.png">../../../resources/embedded/icons/zdalne.png</file>
+    <file alias="lokalne.png">../../../resources/embedded/icons/lokalne.png</file>
   </qresource>
 </RCC>

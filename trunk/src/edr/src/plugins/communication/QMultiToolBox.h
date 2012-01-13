@@ -149,6 +149,7 @@ private:
     PageList pageList;
     QVBoxLayout *_layout;
     Page *lastPage;
+    QSpacerItem * verticalSpacer;
 };
 
 inline int QMultiToolBox::addItem(QWidget *item, const QString &text, bool expanded)

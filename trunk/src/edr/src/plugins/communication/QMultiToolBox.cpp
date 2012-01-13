@@ -148,9 +148,9 @@ void QMultiToolBoxButton::paintEvent(QPaintEvent *)
     Constructs a new toolbox with the given \a parent and the flags, \a f.
 */
 QMultiToolBox::QMultiToolBox(QWidget *parent, Qt::WindowFlags f)
-    :  QFrame(parent, f), _currentlyExpandedItemsCount(0), lastPage(0), _lastIndex(-1)
+    :  QFrame(parent, f), _currentlyExpandedItemsCount(0), lastPage(0), _lastIndex(-1),
+    _layout(new QVBoxLayout()), verticalSpacer(new QSpacerItem(1,1,QSizePolicy::Fixed, QSizePolicy::Expanding))
 {   
-    _layout = new QVBoxLayout();
     setLayout(_layout);
     setBackgroundRole(QPalette::Button);
 }
@@ -161,6 +161,8 @@ QMultiToolBox::QMultiToolBox(QWidget *parent, Qt::WindowFlags f)
 
 QMultiToolBox::~QMultiToolBox()
 {
+    _layout->removeItem(verticalSpacer);
+    delete verticalSpacer;
 }
 
 /*!
@@ -224,8 +226,10 @@ int QMultiToolBox::insertItem(int index, QWidget *widget, const QIcon &icon, con
     if (index < 0 || index >= (int)pageList.count()) {
         index = pageList.count();
         pageList.append(c);
+        _layout->removeItem(verticalSpacer);
         _layout->addWidget(c.button);
         _layout->addWidget(c.sv);
+        _layout->addItem(verticalSpacer);
         if (index == 0)
             _lastIndex = index;
     } else {
@@ -350,13 +354,16 @@ void QMultiToolBox::setItemExpanded(int index, bool expanded)
 
 void QMultiToolBox::relayout()
 {
-    delete layout();
-    setLayout(new QVBoxLayout(this));
-    layout()->setMargin(0);
+    _layout->removeItem(verticalSpacer);
+    delete _layout;
+    _layout = new QVBoxLayout(this);
+    setLayout(_layout);
+    _layout->setMargin(0);
     for (PageList::ConstIterator i = pageList.constBegin(); i != pageList.constEnd(); ++i) {
-        layout()->addWidget((*i).button);
-        layout()->addWidget((*i).sv);
+        _layout->addWidget((*i).button);
+        _layout->addWidget((*i).sv);
     }
+    _layout->addItem(verticalSpacer);
 }
 
 void QMultiToolBox::_q_widgetDestroyed(QObject *object)
@@ -370,8 +377,8 @@ void QMultiToolBox::_q_widgetDestroyed(QObject *object)
 
     bool wasExpanded = c->button->isSelected();
 
-    layout()->removeWidget(c->sv);
-    layout()->removeWidget(c->button);
+    _layout->removeWidget(c->sv);
+    _layout->removeWidget(c->button);
     c->sv->deleteLater(); // page might still be a child of sv
     delete c->button;
 
