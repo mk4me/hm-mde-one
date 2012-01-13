@@ -125,7 +125,7 @@ private slots:
     void createNewVisualizer();
     void addToVisualizer();
     void filterGroupActivated(bool active);
-    void onToolButton();
+    void onToolButton(bool checked);
 
 private:
     void showTimeline();
@@ -199,6 +199,7 @@ private:
     FlexiTabWidget::GUIID toolsGroupID;
 
     std::map<QWidget*, QWidget*> button2TabWindow;
+    QToolButton* currentButton;
     DataObserverPtr dataObserver;
 
     std::list<VisualizerWidget*> currentVisualizerWidgets;

@@ -314,17 +314,19 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     this->analisis = new AnalisisWidget(nullptr, this);
     this->data = new QWidget(nullptr);
+    this->data->setObjectName(QString::fromUtf8("DataWidget"));
 
     this->data->setContentsMargins(0,0,0,0);
     this->analisis->setContentsMargins(0,0,0,0);
 
-    this->operations = new QWidget(nullptr);
-    this->raports = new QWidget(nullptr);
+    this->operations = new QWidget();
+    this->raports = new QWidget();
 
     button2TabWindow[this->dataButton] = this->data;
     button2TabWindow[this->operationsButton] = this->operations;
     button2TabWindow[this->raportsButton] = this->raports;
     button2TabWindow[this->analisisButton] = this->analisis;
+    currentButton = dataButton;
 
     analisisButton->setEnabled(false);
     raportsButton->setEnabled(false);
@@ -332,13 +334,10 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     for(auto it = button2TabWindow.begin(); it != button2TabWindow.end(); it++) {
         mainArea->layout()->addWidget(it->second);
         it->second->hide();
-        bool c = connect(it->first, SIGNAL(clicked()), this, SLOT(onToolButton()));
+        bool c = connect(it->first, SIGNAL(toggled(bool)), this, SLOT(onToolButton(bool)));
         UTILS_ASSERT(c);
     }
 
-    this->data->show();
-    	
-	this->showFullScreen();
     QTreeWidget* treeWidget = this->analisis->getTreeWidget();
     //treeWidget->setColumnCount(2);
     //treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
@@ -413,6 +412,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 			QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
 
 			QVBoxLayout *layout = new QVBoxLayout;
+            layout->setContentsMargins(0,0,0,0);
             layout->addWidget(settingsWidget);
             layout->addWidget(viewWidget);
             layout->addWidget(controlWidget);
@@ -454,6 +454,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         raportsButton->setVisible(false);
         openButton->setVisible(false);
     #endif
+
+    this->data->show();
+    this->showFullScreen();
 }
 
 void HmmMainWindow::setCurrentVisualizerActions(VisualizerWidget * visWidget)
@@ -1052,15 +1055,24 @@ void HmmMainWindow::filterGroupActivated( bool active )
     }
 }
 
-void HmmMainWindow::onToolButton()
+void HmmMainWindow::onToolButton(bool checked)
 {
-    for (auto it = button2TabWindow.begin(); it != button2TabWindow.end(); it++) {
-        it->second->hide();
-    }
-
     QToolButton* button = qobject_cast<QToolButton*>(sender());
-    if (button) {
-       button2TabWindow[button]->show();
+
+    //zawsze ktorys button z podstawowych musi byc klikniety/checked
+    if(currentButton == button){
+        if(checked == false){
+            button->blockSignals(true);
+            button->setChecked(true);
+            button->blockSignals(false);
+        }
+    }else{
+        currentButton->blockSignals(true);
+        currentButton->setChecked(false);
+        currentButton->blockSignals(false);
+        button2TabWindow[currentButton]->hide();
+        button2TabWindow[button]->show();
+        currentButton = button;
     }
     
     mainArea->layout()->update();

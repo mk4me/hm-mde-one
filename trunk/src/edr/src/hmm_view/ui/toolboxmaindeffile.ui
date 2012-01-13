@@ -282,6 +282,15 @@ QFrame#toolBar &gt; QToolButton:enabled:hover {
 	 color: rgb(135, 177, 255);
  }
 
+QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:checked {
+     background-color: rgb(91, 91, 91);
+	 border-style: solid;
+     border-width: 1px;
+     border-radius: 9px;
+     border-color: white;
+	 color: white;
+ }
+
 
 </string>
       </property>
@@ -324,18 +333,21 @@ QFrame#toolBar &gt; QToolButton:enabled:hover {
          <property name="icon">
           <iconset resource="Icons.qrc">
            <normaloff>:/resources/icons/Badania.png</normaloff>
-           <normalon>:/resources/icons/BadaniaH.png</normalon>
+           <normalon>:/resources/icons/Badania.png</normalon>
            <disabledoff>:/resources/icons/BadaniaH.png</disabledoff>
-           <disabledon>:/resources/icons/BadaniaH.png</disabledon>
-           <activeoff>:/resources/icons/BadaniaP.png</activeoff>
-           <activeon>:/resources/icons/BadaniaH.png</activeon>
-           <selectedon>:/resources/icons/BadaniaH.png</selectedon>:/resources/icons/Badania.png</iconset>
+           <disabledon>:/resources/icons/BadaniaH.png</disabledon>:/resources/icons/Badania.png</iconset>
          </property>
          <property name="iconSize">
           <size>
            <width>28</width>
            <height>28</height>
           </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -371,18 +383,18 @@ QFrame#toolBar &gt; QToolButton:enabled:hover {
          <property name="icon">
           <iconset resource="Icons.qrc">
            <normaloff>:/resources/icons/Analizy.png</normaloff>
-           <normalon>:/resources/icons/AnalizyH.png</normalon>
+           <normalon>:/resources/icons/Analizy.png</normalon>
            <disabledoff>:/resources/icons/AnalizyH.png</disabledoff>
-           <disabledon>:/resources/icons/AnalizyH.png</disabledon>
-           <activeoff>:/resources/icons/AnalizyP.png</activeoff>
-           <activeon>:/resources/icons/AnalizyH.png</activeon>
-           <selectedon>:/resources/icons/AnalizyH.png</selectedon>:/resources/icons/Analizy.png</iconset>
+           <disabledon>:/resources/icons/AnalizyH.png</disabledon>:/resources/icons/Analizy.png</iconset>
          </property>
          <property name="iconSize">
           <size>
            <width>28</width>
            <height>28</height>
           </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -418,17 +430,18 @@ QFrame#toolBar &gt; QToolButton:enabled:hover {
          <property name="icon">
           <iconset resource="Icons.qrc">
            <normaloff>:/resources/icons/Raporty.png</normaloff>
-           <normalon>:/resources/icons/RaportyH.png</normalon>
+           <normalon>:/resources/icons/Raporty.png</normalon>
            <disabledoff>:/resources/icons/RaportyH.png</disabledoff>
-           <disabledon>:/resources/icons/RaportyH.png</disabledon>
-           <activeoff>:/resources/icons/RaportyP.png</activeoff>
-           <selectedon>:/resources/icons/RaportyH.png</selectedon>:/resources/icons/Raporty.png</iconset>
+           <disabledon>:/resources/icons/RaportyH.png</disabledon>:/resources/icons/Raporty.png</iconset>
          </property>
          <property name="iconSize">
           <size>
            <width>28</width>
            <height>28</height>
           </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -461,16 +474,18 @@ QFrame#toolBar &gt; QToolButton:enabled:hover {
          <property name="icon">
           <iconset resource="Icons.qrc">
            <normaloff>:/resources/icons/Operacje.png</normaloff>
-           <normalon>:/resources/icons/OperacjeH.png</normalon>
+           <normalon>:/resources/icons/Operacje.png</normalon>
            <disabledoff>:/resources/icons/OperacjeH.png</disabledoff>
-           <disabledon>:/resources/icons/OperacjeH.png</disabledon>
-           <activeoff>:/resources/icons/OperacjeP.png</activeoff>:/resources/icons/Operacje.png</iconset>
+           <disabledon>:/resources/icons/OperacjeH.png</disabledon>:/resources/icons/Operacje.png</iconset>
          </property>
          <property name="iconSize">
           <size>
            <width>28</width>
            <height>28</height>
           </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -666,6 +681,11 @@ QFrame#mainArea * QWidget {
 	background-color: white;
 }
 
+QFrame#mainArea &gt; QWidget#dataWidget, QFrame#mainArea &gt; QWidget#dataWidget QWidget#DataExplorerWidget *, QFrame#mainArea &gt; QWidget#dataWidget QWidget#DataExplorerWidget * *, QFrame#mainArea &gt; QWidget#dataWidget QWidget#DataExplorerWidget * * *, QFrame#mainArea &gt; QWidget#dataWidget QWidget#DataExplorerWidget * * * * {
+	background-color: rgb(91, 91, 91);
+	border: 3px solid red;
+} 
+
 QFrame#mainArea EDRTitleBar, QFrame#mainArea EDRTitleBar * {
 	background-color: rgb(43, 42, 41);
 	color: white;
@@ -704,7 +724,8 @@ QFrame#mainArea QMainWindow::separator {
 
 QFrame#mainArea QMainWindow::separator:hover {
      background-color: rgb(255, 255, 255);
- }</string>
+ }
+</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -779,6 +800,7 @@ QFrame#mainArea QMainWindow::separator:hover {
  <resources>
   <include location="../../core/ui/CoreIcons.qrc"/>
   <include location="Icons.qrc"/>
+  <include location="C:/Users/mati/.designer/backup/Icons.qrc"/>
  </resources>
  <connections>
   <connection>
