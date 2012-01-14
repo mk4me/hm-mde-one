@@ -25,5 +25,7 @@
     <file alias="zaladowane.png">../../../resources/embedded/icons/zaladowane.png</file>
     <file alias="zdalne.png">../../../resources/embedded/icons/zdalne.png</file>
     <file alias="lokalne.png">../../../resources/embedded/icons/lokalne.png</file>
+	<file alias="screenshot-a.png">../../../resources/embedded/icons/screenshot-a.png</file>
+	<file alias="screenshot-b.png">../../../resources/embedded/icons/screenshot-b.png</file>
   </qresource>
 </RCC>

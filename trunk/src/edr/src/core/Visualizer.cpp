@@ -38,7 +38,10 @@ QWidget* Visualizer::getOrCreateWidget()
         
         widget = getImplementation()->createWidget(genericActions);
         PrintWidgetAction* print = new PrintWidgetAction(widget, "Print visualizer", widget);
-        
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/resources/icons/screenshot-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+        icon.addFile(QString::fromUtf8(":/resources/icons/screenshot-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
+        print->setIcon(icon);
         genericActions.push_back(print);
         tryRun();
         UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");

@@ -28,8 +28,6 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
     rowHeight(12)
 {
     setupUi(this);
-    setExpand(false);
-    connect(hideButton, SIGNAL(clicked()), this, SLOT(onButton()));
     table->setItemDelegate(new ItemDelegate(100, rowHeight));
 }
 
@@ -48,26 +46,22 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      return sum;
  }
 
- void StatsTable::setExpand( bool expand )
- {
-     expanded = expand;
-     table->resizeColumnToContents(0);
-     table->setHidden(!expand);
-     if (expand) {
+ //void StatsTable::setExpand( bool expand )
+ //{
+ //    expanded = expand;
+ //    table->resizeColumnToContents(0);
+ //    table->setHidden(!expand);
+ //    if (expand) {
 
-         int height = 0;
-         for (int i = 0; i < table->topLevelItemCount(); i++) {
-             height += getTreeItemRows(table->topLevelItem(i));
-         }
-         table->setMaximumHeight(height * rowHeight + table->header()->height());
-     }
- }
+ //        int height = 0;
+ //        for (int i = 0; i < table->topLevelItemCount(); i++) {
+ //            height += getTreeItemRows(table->topLevelItem(i));
+ //        }
+ //        table->setMaximumHeight(height * rowHeight + table->header()->height());
+ //    }
+ //}
 
- void StatsTable::onButton()
- {
-     setExpand(!expanded);
- }
- 
+  
  QTreeWidgetItem* StatsTable::addEntry(const QString& group, const QString& name, ScalarChannelStatsConstPtr stats, const QColor& backgroundColor )
  {
      if (group.isEmpty()) {
@@ -153,4 +147,14 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
  void StatsTable::clear()
  {
      table->clear();
+ }
+
+ void StatsTable::recalculateHeight()
+ {
+     table->resizeColumnToContents(0);
+     int height = 0;
+     for (int i = 0; i < table->topLevelItemCount(); i++) {
+         height += getTreeItemRows(table->topLevelItem(i));
+     }
+     table->setMaximumHeight(height * rowHeight + table->header()->height());
  }

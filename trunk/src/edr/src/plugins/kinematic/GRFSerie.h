@@ -18,7 +18,7 @@
 
 const float grfScale = 0.0008f;
 
-class GRFSerie : public core::IVisualizer::TimeSerieBase, private utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float>
+class GRFSerie : public KinematicSerie, private utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float>
 {
 public:
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;

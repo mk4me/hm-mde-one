@@ -8,6 +8,7 @@
 *********************************************************************/
 
 #include <QtGui/QAction>
+#include <QtGui/QClipboard>
 
 #ifndef HEADER_GUARD_CORE__PRINTWIDGETACTION_H__
 #define HEADER_GUARD_CORE__PRINTWIDGETACTION_H__
@@ -31,23 +32,25 @@ signals:
 private slots:
     void onPrint()
     {
-        //QPixmap pixmap;
-        //QGLWidget* gl = dynamic_cast<QGLWidget*>(widgetToPrint);
-        //if (gl) {
-        //    pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
-        //    QRect widgetRect = gl->geometry();
-        //    widgetRect.moveTopLeft(gl->parentWidget()->mapToGlobal(widgetRect.topLeft()));
-        //
-        //    pixmap = pixmap.copy(widgetRect);
-        //    //pixmap = gl->renderPixmap();
-        //} else {
-        //    pixmap = QPixmap::grabWidget(widgetToPrint);
-        //}
-        //
-        //static int c = 0;
-        //QString name = QString("C:\\Users\\Wojtek\\Desktop\\tmp\\Screen%1.png").arg(c++);
-        //pixmap.save(name);
-        //emit printTriggered(pixmap);
+        QPixmap pixmap;
+        QGLWidget* gl = dynamic_cast<QGLWidget*>(widgetToPrint);
+        if (gl) {
+            pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
+            QRect widgetRect = gl->geometry();
+            widgetRect.moveTopLeft(gl->parentWidget()->mapToGlobal(widgetRect.topLeft()));
+        
+            pixmap = pixmap.copy(widgetRect);
+            //pixmap = gl->renderPixmap();
+        } else {
+            pixmap = QPixmap::grabWidget(widgetToPrint);
+        }
+        
+        /*static int c = 0;
+        QString name = QString("C:\\Users\\Wojtek\\Desktop\\tmp\\Screen%1.png").arg(c++);
+        pixmap.save(name);*/
+        QClipboard* clipboard = QApplication::clipboard();
+        clipboard->setImage(pixmap.toImage());
+        emit printTriggered(pixmap);
     }
 
 private:

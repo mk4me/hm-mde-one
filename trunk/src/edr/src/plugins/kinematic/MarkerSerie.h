@@ -14,7 +14,7 @@
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
 
-class MarkerSerie : public QObject, public core::IVisualizer::TimeSerieBase
+class MarkerSerie : public QObject, public KinematicSerie
 {
 	Q_OBJECT;
 public:
@@ -70,7 +70,6 @@ private:
 	SkeletalVisualizationSchemePtr scheme;
 	SchemeDrawerContainerPtr markersDrawer;
 	TrajectoryDrawerPtr trajectoryDrawer;
-	
     osg::ref_ptr<osg::PositionAttitudeTransform> ghostNode;
 
     core::ObjectWrapperConstPtr data;

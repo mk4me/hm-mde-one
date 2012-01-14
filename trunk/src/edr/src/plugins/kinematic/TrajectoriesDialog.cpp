@@ -151,61 +151,74 @@ void TrajectoriesDialog::colorClicked()
 {
 	QColor color;// = transformColor(trajectories->getColor(name));
 	color = QColorDialog::getColor ( color, this, tr("Choose color"), QColorDialog::ShowAlphaChannel);
-	int count = tree->topLevelItemCount();
-	for (int i = 0; i < count; i++) {
-		QTreeWidgetItem* item = tree->topLevelItem(i);
-		if (item && item->isSelected()) {
-			std::string name = item->text(1).toStdString();
-			currentTrajectories->setColor(name, transformColor(color));
-			setButtonColor(colorButton, color);
-		}
-	}
+
+    for (int j = 0; j < tree->topLevelItemCount(); j++) {
+        QTreeWidgetItem* topItem = tree->topLevelItem(j);
+        int count = topItem->childCount();
+        for (int i = 0; i < count; i++) {
+            QTreeWidgetItem* item = topItem->child(i);
+            if (item && item->isSelected()) {
+                std::string name = item->text(1).toStdString();
+                currentTrajectories->setColor(name, transformColor(color));
+                setButtonColor(colorButton, color);
+            }
+        }
+    }
 }
 
 void TrajectoriesDialog::widthChanged( double width )
 {
-	int count = tree->topLevelItemCount();
-	for (int i = 0; i < count; i++) {
-		QTreeWidgetItem* item = tree->topLevelItem(i);
-		if (item && item->isSelected()) {
-			std::string name = item->text(1).toStdString();
-			currentTrajectories->setLineWidth(name, static_cast<float>(width));
-		}
-	}
+    for (int j = 0; j < tree->topLevelItemCount(); j++) {
+        QTreeWidgetItem* topItem = tree->topLevelItem(j);
+        int count = topItem->childCount();
+        for (int i = 0; i < count; i++) {
+            QTreeWidgetItem* item = topItem->child(i);
+            if (item && item->isSelected()) {
+                std::string name = item->text(1).toStdString();
+                currentTrajectories->setLineWidth(name, static_cast<float>(width));
+            }
+        }
+    }
 }
 
 void TrajectoriesDialog::startTimeChanged( double time )
 {
-	int count = tree->topLevelItemCount();
-	for (int i = 0; i < count; i++) {
-		QTreeWidgetItem* item = tree->topLevelItem(i);
-		if (item && item->isSelected()) {
-			std::string name = item->text(1).toStdString();
-			const std::pair<float, float>& times = currentTrajectories->getTimes(name);
-			blockAllSignals(true);
-			startTimeSpin->setValue(time);
-			startSlider->setValue(time * 100);
-			blockAllSignals(false);
-			currentTrajectories->setTimes(name, std::make_pair(static_cast<float>(time), times.second));
-		}
-	}
+    for (int j = 0; j < tree->topLevelItemCount(); j++) {
+        QTreeWidgetItem* topItem = tree->topLevelItem(j);
+        int count = topItem->childCount();
+        for (int i = 0; i < count; i++) {
+            QTreeWidgetItem* item = topItem->child(i);
+            if (item && item->isSelected()) {
+                std::string name = item->text(1).toStdString();
+                const std::pair<float, float>& times = currentTrajectories->getTimes(name);
+                blockAllSignals(true);
+                startTimeSpin->setValue(time);
+                startSlider->setValue(time * 100);
+                blockAllSignals(false);
+                currentTrajectories->setTimes(name, std::make_pair(static_cast<float>(time), times.second));
+            }
+        }
+    }
 }
 
 void TrajectoriesDialog::endTimeChanged( double time )
 {
-	int count = tree->topLevelItemCount();
-	for (int i = 0; i < count; i++) {
-		QTreeWidgetItem* item = tree->topLevelItem(i);
-		if (item && item->isSelected()) {
-			std::string name = item->text(1).toStdString();
-			blockAllSignals(true);
-			endTimeSpin->setValue(time);
-			endSlider->setValue(time * 100);
-			blockAllSignals(false);
-			const std::pair<float, float>& times = currentTrajectories->getTimes(name);
-			currentTrajectories->setTimes(name, std::make_pair(times.first, static_cast<float>(time)));
-		}
-	}
+    for (int j = 0; j < tree->topLevelItemCount(); j++) {
+        QTreeWidgetItem* topItem = tree->topLevelItem(j);
+        int count = topItem->childCount();
+        for (int i = 0; i < count; i++) {
+            QTreeWidgetItem* item = topItem->child(i);
+            if (item && item->isSelected()) {
+                std::string name = item->text(1).toStdString();
+                blockAllSignals(true);
+                endTimeSpin->setValue(time);
+                endSlider->setValue(time * 100);
+                blockAllSignals(false);
+                const std::pair<float, float>& times = currentTrajectories->getTimes(name);
+                currentTrajectories->setTimes(name, std::make_pair(times.first, static_cast<float>(time)));
+            }
+        }
+    }
 }
 
 void TrajectoriesDialog::treeItemChanged( QTreeWidgetItem * current, QTreeWidgetItem * previous )

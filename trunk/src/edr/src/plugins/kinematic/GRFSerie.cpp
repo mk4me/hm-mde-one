@@ -292,8 +292,8 @@ void GRFSerie::setData( const core::ObjectWrapperConstPtr & data )
 	if (grfCollection->getPlatforms().size() == 2) {
 		f1 = grfCollection->getGRFChannel(GRFChannel::F1);
 		f2 = grfCollection->getGRFChannel(GRFChannel::F2);
-		visualizer->transformNode->addChild(createPlatformsGroup(grfCollection->getPlatforms()));
-		visualizer->transformNode->addChild(createButterfly(grfCollection, this->maxLength));
+		transformNode->addChild(createPlatformsGroup(grfCollection->getPlatforms()));
+		transformNode->addChild(createButterfly(grfCollection, this->maxLength));
 
 		a1 = createArrow();
 		a2 = createArrow();
@@ -301,10 +301,10 @@ void GRFSerie::setData( const core::ObjectWrapperConstPtr & data )
 		a1->mainPtr->setNodeMask(0);
 		a2->mainPtr->setNodeMask(0);
 
-		visualizer->transformNode->addChild(a1->mainPtr);
-		visualizer->transformNode->addChild(a2->mainPtr);
-		GhostStackPtr ghost1(new GhostStack(8, visualizer->transformNode, osg::Vec4(1,1,1,1)));
-		GhostStackPtr ghost2(new GhostStack(8, visualizer->transformNode, osg::Vec4(1,1,1,1)));
+		transformNode->addChild(a1->mainPtr);
+		transformNode->addChild(a2->mainPtr);
+		GhostStackPtr ghost1(new GhostStack(8, transformNode, osg::Vec4(1,1,1,1)));
+		GhostStackPtr ghost2(new GhostStack(8, transformNode, osg::Vec4(1,1,1,1)));
 		g1 = ghost1;
 		g2 = ghost2;
 	} else {

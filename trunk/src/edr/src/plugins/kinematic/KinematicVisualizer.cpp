@@ -4,6 +4,8 @@
 #include "SkeletonSerie.h"
 #include "MarkerSerie.h"
 
+const float DEFAULT_SHIFT = 1.0f;
+
 void KinematicVisualizer::setUp( core::IObjectSource* source )
 {
     reset();
@@ -53,7 +55,7 @@ int KinematicVisualizer::getMaxDataSeries() const
 
 core::IVisualizer::TimeSerieBase *KinematicVisualizer::createSerie(const core::ObjectWrapperConstPtr & data, const std::string & name)
 {
-	core::IVisualizer::TimeSerieBase * ret = nullptr;
+	KinematicSerie * ret = nullptr;
 	if (data->getTypeInfo() == typeid(GRFCollection)) {
 		ret = new GRFSerie(this);
 		ret->setName(name + "_grf");
@@ -69,6 +71,21 @@ core::IVisualizer::TimeSerieBase *KinematicVisualizer::createSerie(const core::O
 	} else {
 		UTILS_ASSERT(false);
 	}
+
+    transformNode->addChild(ret->getTransformNode());
+    series.push_back(ret);
+    if(series.size() == 1){
+        activeSerieCombo->blockSignals(true);
+        activeSerieCombo->clear();
+        activeSerieCombo->addItem(name.c_str());
+        activeSerieCombo->setCurrentIndex(0);
+        activeSerieCombo->blockSignals(false);
+        setActiveSerie(0);
+    }else{
+        activeSerieCombo->addItem(name.c_str());
+    }
+
+    activeSerieCombo->setEnabled(true);
     return ret;
 }
 
@@ -142,6 +159,28 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     QMenu* viewMenu = new QMenu("View", widget);
     viewMenu->setIcon(icon3);
 
+    activeSerieCombo = new QComboBox();
+    activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
+    activeSerieCombo->setEnabled(false);
+    connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
+    actions.push_back(activeSerieCombo);
+
+    QAction* leftAction = new QAction("Shift left", widget);
+    connect(leftAction, SIGNAL(triggered()), this, SLOT(shiftLeft()));
+    QIcon iconLeft;
+    iconLeft.addFile(QString::fromUtf8(":/resources/icons/left-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+    iconLeft.addFile(QString::fromUtf8(":/resources/icons/left-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
+    leftAction->setIcon(iconLeft);
+    actions.push_back(leftAction);
+
+    QAction* rightAction = new QAction("Shift right", widget);
+    connect(rightAction, SIGNAL(triggered()), this, SLOT(shiftRight()));
+    QIcon iconRight;
+    iconRight.addFile(QString::fromUtf8(":/resources/icons/right-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+    iconRight.addFile(QString::fromUtf8(":/resources/icons/right-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
+    rightAction->setIcon(iconRight);
+    actions.push_back(rightAction);
+
 	QAction* lft_action = viewMenu->addAction("Left"); 
 	QAction* rht_action = viewMenu->addAction("Right"); 
 	QAction* frn_action = viewMenu->addAction("Front"); 
@@ -167,6 +206,8 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     rootNode->addChild(createFloor());
     widget->setSceneData(rootNode);
     widget->setMinimumSize(50, 50);
+
+    indicatorNode = createIndicator();
     return widget;
 }
 
@@ -177,7 +218,8 @@ const std::string& KinematicVisualizer::getName() const
 
 KinematicVisualizer::KinematicVisualizer() :
     name("KinematicVisualizer"),
-    trajectoriesDialog(nullptr)
+    trajectoriesDialog(nullptr),
+    currentSerie(-1)
 {
 
 }
@@ -340,6 +382,85 @@ void KinematicVisualizer::setTop()
 void KinematicVisualizer::showTrajectoriesDialog()
 {
     trajectoriesDialog->show();
+}
+
+void KinematicVisualizer::setActiveSerie( int idx )
+{
+    /*for (int i = series.size() - 1; i >= 0; --i) {
+        series[i]->setActive(idx == i);
+    }*/
+    if (currentSerie >= 0) {
+        series[currentSerie]->getTransformNode()->removeChild(indicatorNode);
+    }
+    currentSerie = idx;
+    series[currentSerie]->getTransformNode()->addChild(indicatorNode);
+}
+
+KinematicSerie* KinematicVisualizer::tryGetCurrentSerie()
+{
+    if (currentSerie >= 0 && currentSerie < series.size()) {
+        return series[currentSerie];
+    }
+    return nullptr;
+}
+
+
+
+void KinematicVisualizer::shiftLeft()
+{
+    KinematicSerie* current = tryGetCurrentSerie();
+    if (current) {
+        KinematicSerie::TransformPtr transform = current->getTransformNode();
+        transform->setPosition(transform->getPosition() + osg::Vec3(DEFAULT_SHIFT, 0.0f, 0.0f));
+    }
+}
+
+void KinematicVisualizer::shiftRight()
+{
+    KinematicSerie* current = tryGetCurrentSerie();
+    if (current) {
+        KinematicSerie::TransformPtr transform = current->getTransformNode();
+        transform->setPosition(transform->getPosition() + osg::Vec3(-DEFAULT_SHIFT, 0.0f, 0.0f));
+    }
+}
+
+osg::ref_ptr<osg::PositionAttitudeTransform> KinematicVisualizer::createIndicator() const
+{
+    using namespace osg;
+    GeodePtr boxGeode = new osg::Geode();
+    GeodePtr coneGeode = new osg::Geode();
+
+    osg::ref_ptr<osg::Box> unitBox = new osg::Box(Vec3(0, 0, 0), 0.5f, 0.5f, 0.9f);
+    osg::ref_ptr<osg::Cone> unitCone = new osg::Cone(Vec3(0, 0, 0), 1.0f, 0.1f);
+    osg::ref_ptr<osg::ShapeDrawable> boxShape = new osg::ShapeDrawable(unitBox);
+    osg::ref_ptr<osg::ShapeDrawable> coneShape = new osg::ShapeDrawable(unitCone);
+
+    boxGeode->addDrawable(boxShape);
+    coneGeode->addDrawable(coneShape);
+
+    TransformPtr transformBox = new osg::PositionAttitudeTransform();
+    TransformPtr transformCone = new osg::PositionAttitudeTransform();
+    TransformPtr transform = new osg::PositionAttitudeTransform();
+
+    transformBox->addChild(boxGeode);
+    transformBox->setName("BOX");
+    transformBox->setPosition(Vec3(0, 0, 0.45f));
+    transformCone->addChild(coneGeode);
+    transformCone->setName("CONE");
+    transformCone->setPosition(Vec3(0, 0, 0.45f));
+
+    transform->setScale(Vec3(0.03f, 0.03f, 0.5f));
+
+    transform->addChild(transformBox);
+    transformBox->addChild(transformCone);
+    //transform->addChild(transformCone);
+    osg::Matrix mat; 
+    mat.makeRotate(osg::DegreesToRadians(90.0f), 1.0f, 0.0f, 0.0f);
+    osg::Quat orientation;
+    orientation.set(mat);
+    transform->setAttitude(orientation);
+    transform->setPosition(osg::Vec3(0.0f, 3.0f, 0.0f));
+    return transform;
 }
 
 

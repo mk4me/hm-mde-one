@@ -23,9 +23,6 @@ public:
 	virtual ~StatsTable() {}
 
 public slots:
-    //! Rozwiniecie lub zwiniecie widgeta ze statystykami
-    //! \param expand true - rozwiniecie, false - zwiniecie
-    void setExpand(bool expand);
     //! Dodanie wpisu ze statystykami
     //! \param group nazwa grupy (np. strona lewa, prawa ...), jesli grupa nie istnieje, to zostanie stworzona, jesli "" to grupa jest pominieta.
     //! \param name nazwa wpisu 
@@ -39,12 +36,9 @@ public slots:
     void setActive(QTreeWidgetItem* treeItem);
     void setActive(const QString& group, const QString& name);
     void clear();
-
-private slots:
-    void onButton();
-
+    void recalculateHeight();
+    
 private:
-    bool expanded;
     int rowHeight;
 };
 typedef core::shared_ptr<StatsTable> StatsTablePtr;

@@ -202,6 +202,17 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     //layout->setContentsMargins(2,0,2,2);
     
     layout->addWidget(statsTable);
+    statsTable->setVisible(false);
+
+    QAction* showStats = new QAction("Statistics", widget);
+    showStats->setCheckable(true);
+    showStats->setChecked(false);
+    QIcon iconStats;
+    iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+    iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
+    showStats->setIcon(iconStats);
+    actions.push_back(showStats);
+    connect(showStats, SIGNAL(triggered(bool)), this, SLOT(showStatistics(bool)));
     widget->setLayout(layout);
     return widget;
 }
@@ -423,7 +434,7 @@ void NewChartVisualizer::update( double deltaTime )
         qwtMarker->setYValue(y);
         qwtMarker->setLabel(QString("Time: %1, Value: %2").arg(x).arg(y));
 
-        static EventsHelper::SegmentConstPtr oldSegment = EventsHelper::SegmentConstPtr();
+        //static EventsHelper::SegmentConstPtr oldSegment = EventsHelper::SegmentConstPtr();
         if (eventsVisible && eventMode) {
             auto helper = eventsHelpers.find(serie);
             if (helper != eventsHelpers.end()) {
@@ -587,6 +598,14 @@ void NewChartVisualizer::setEventMode( bool val )
         qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
         qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
     }
+}
+
+void NewChartVisualizer::showStatistics( bool visible )
+{
+    if (visible) {
+        statsTable->recalculateHeight();
+    }
+    statsTable->setVisible(visible);
 }
 
 

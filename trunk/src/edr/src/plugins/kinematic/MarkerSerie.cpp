@@ -27,7 +27,8 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 	//visualizer->actionByName["Markers"]->setVisible(true);
 	markersDrawer->init(scheme);
     visualizer->trajectoriesDialog->setMarkers(trajectoryDrawer, QString(data->getName().c_str()));
-	visualizer->transformNode->addChild(markersDrawer->getNode());
+
+	transformNode->addChild(markersDrawer->getNode());
 	
 }
 
@@ -58,7 +59,7 @@ void MarkerSerie::showGhost( bool visible )
             time += 1.0f;
         }
 
-        visualizer->transformNode->addChild(ghostNode);
+        transformNode->addChild(ghostNode);
     }
 
     ghostNode->setNodeMask(visible ? 0xFFFF : 0);

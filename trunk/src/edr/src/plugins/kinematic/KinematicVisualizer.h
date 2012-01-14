@@ -28,6 +28,22 @@
 
 #include "TrajectoriesDialog.h"
 
+class KinematicSerie : public core::IVisualizer::TimeSerieBase
+{
+public: 
+    typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
+
+    KinematicSerie() :
+        transformNode(new osg::PositionAttitudeTransform())
+    {
+    }
+
+    TransformPtr getTransformNode() { return transformNode; }
+
+protected:
+    TransformPtr transformNode;
+};
+
 class KinematicVisualizer :  public QObject, public core::IVisualizer
 {
 	// wszystkie mozliwe serie przeniesione do osobnego pliku
@@ -35,6 +51,7 @@ class KinematicVisualizer :  public QObject, public core::IVisualizer
 	friend class MarkerSerie;
 	friend class SkeletonSerie;
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
+    typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
     Q_OBJECT;
     UNIQUE_ID("{E8B5DEB2-5C57-4323-937D-1FFD288B65B9}", "Kinematic visualizer");
 
@@ -63,10 +80,15 @@ private:
     osg::ref_ptr<osg::Group> createFloor();
     void addAction(const std::string& name, QMenu* menu, QActionGroup* group);
     void refillDrawersMaps();
+    KinematicSerie* tryGetCurrentSerie();
+    
 
-	private slots:
-       // void setAxis(bool xyz);
-        void showTrajectoriesDialog();
+private slots:
+    // void setAxis(bool xyz);
+    void showTrajectoriesDialog();
+    void setActiveSerie(int idx);
+    void shiftLeft();
+    void shiftRight();
 
 public slots:
 	void setLeft();
@@ -79,15 +101,16 @@ public slots:
 
 public:
     virtual osg::Node* debugGetLocalSceneRoot();
+    TransformPtr createIndicator() const;
 
 private:
     SkeletalVisualizationSchemePtr scheme;
     QTimer updateTimer;
     std::string name;
     osg::ref_ptr<osg::Group> rootNode;
-    osg::ref_ptr<osg::PositionAttitudeTransform> transformNode;
+    TransformPtr transformNode;
 	osg::ref_ptr<osgGA::OrbitManipulator> cameraManipulator;
-
+    TransformPtr indicatorNode;
     std::map<QAction*, SchemeDrawerContainerPtr> drawersByAction;
     std::map<std::string, SchemeDrawerContainerPtr> drawersByName;
     std::map<std::string, QAction*> actionByName;
@@ -98,6 +121,10 @@ private:
     QAction* actionGhost;
     QAction* actionSwitchAxes;
     TrajectoriesDialog* trajectoriesDialog;
+
+    QComboBox* activeSerieCombo;
+    int currentSerie;
+    std::vector<KinematicSerie*> series;
 };
 
 

@@ -1,6 +1,14 @@
 #include "PCH.h"
 #include "SkeletonSerie.h"
 
+SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer ) : 
+    visualizer(visualizer), 
+    skeletonDrawers(new SchemeDrawerContainer()),
+    skeletonNode(new osg::PositionAttitudeTransform())
+{
+
+}
+
 void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
 	UTILS_ASSERT(data->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
@@ -14,8 +22,7 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
 	skeletonDrawers->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawSkeleton, 3, 0.02f)));
 	skeletonDrawers->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 10, 0.005f)));
 	
-	transformNode = new osg::PositionAttitudeTransform();
-	transformNode->addChild(skeletonDrawers->getNode());
+	skeletonNode->addChild(skeletonDrawers->getNode());
 
     
 	
@@ -26,10 +33,11 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
     scheme->setMarkers(mc);
     TrajectoryDrawerPtr trajectoryDrawer(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 1), 300));
     trajectoryDrawer->init(scheme);
-    transformNode->addChild(trajectoryDrawer->getNode());
+    skeletonNode->addChild(trajectoryDrawer->getNode());
 
     visualizer->trajectoriesDialog->setMarkers(trajectoryDrawer, QString(data->getName().c_str()));
-	visualizer->transformNode->addChild(transformNode);
+    transformNode->addChild(skeletonNode);
+	//visualizer->transformNode->addChild(skeletonNode);
 	setAxis(true);
 	//visualizer->actionSwitchAxes->trigger();
 }
@@ -39,10 +47,10 @@ void SkeletonSerie::setAxis( bool xyz)
 	if (xyz) {
 		osg::Quat q(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f));
 		osg::Quat q2(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
-		transformNode->setAttitude(q * q2);
+		skeletonNode->setAttitude(q * q2);
 	} else {
 		osg::Quat q;
-		transformNode->setAttitude(q);
+		skeletonNode->setAttitude(q);
 	}
 }
 
@@ -83,4 +91,7 @@ MarkerCollectionConstPtr SkeletonSerie::createTrajectories( kinematic::JointAngl
 
     throw std::runtime_error("Skeleton Serie: Null object passed");
 }
+
+
+
 

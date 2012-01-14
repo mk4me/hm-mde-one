@@ -159,6 +159,7 @@ private slots:
       void onSerieSelected(QwtPlotItem* dataSerie, bool on, int idx);
       void onStateAction();
       void onEventContext();
+      void showStatistics(bool visible);
       void setEventMode(bool val);
 
 private:
@@ -182,6 +183,7 @@ private:
       bool eventsVisible;
       C3DEventsCollection::Context context;
       std::map<NewChartSerie*, EventsHelperPtr> eventsHelpers;
+      EventsHelper::SegmentConstPtr oldSegment;
 };
 typedef core::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef core::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;

@@ -14,7 +14,7 @@
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
 
-class SkeletonSerie :  public QObject, public core::IVisualizer::TimeSerieBase
+class SkeletonSerie :  public QObject, public KinematicSerie
 {
 	Q_OBJECT;
 public:
@@ -22,12 +22,7 @@ public:
 	typedef osg::ref_ptr<osg::Group> GroupPtr;
 
 public:
-	SkeletonSerie(KinematicVisualizer * visualizer) : 
-	  visualizer(visualizer),
-	  skeletonDrawers(new SchemeDrawerContainer())
-	  {
-
-	  }
+	SkeletonSerie(KinematicVisualizer * visualizer);
 	virtual ~SkeletonSerie() {}
 
 private slots:
@@ -67,6 +62,7 @@ public:
 		skeletonDrawers->update();
 	}
 
+
 private:
     MarkerCollectionConstPtr createTrajectories(kinematic::JointAnglesCollectionConstPtr joints);
 
@@ -74,9 +70,9 @@ private:
 	KinematicVisualizer * visualizer;
 	SkeletalVisualizationSchemePtr scheme;
 	SchemeDrawerContainerPtr skeletonDrawers;
-	osg::ref_ptr<osg::PositionAttitudeTransform> transformNode;
     core::ObjectWrapperConstPtr data;
     std::string name;
+    TransformPtr skeletonNode;
 };
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;
 typedef boost::shared_ptr<const SkeletonSerie> SkeletonSerieConstPtr;
