@@ -20,6 +20,7 @@
 
 #include <core/Filesystem.h>
 #include <core/IManagersAccessor.h>
+#include <QtCore/QObject>
 
 class UserInterfaceService;
 class ServiceManager;
@@ -30,6 +31,15 @@ class DataProcessorManager;
 class VisualizerWidget;
 
 namespace core {
+
+    template<class T>
+    T* createNamedObject(const QString & objectName) {
+        UTILS_STATIC_ASSERT((boost::is_base_of<QObject, T>::value), "Object must be derrived from QtCore::QObject");
+        UTILS_ASSERT(objectName.isEmpty() == false);
+        T* ret = new T();
+        ret->setObjectName(objectName);
+        return ret;
+    }
 
 	class MainWindow : public QMainWindow, public core::Window
 	{

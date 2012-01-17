@@ -1603,13 +1603,23 @@ void MotionView::refreshContent(FileItem * fileItem)
 }
 
 MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
-    patientsTree(new QTreeWidget), disordersTree(new QTreeWidget),
+    patientsTree(new QTreeWidget()), disordersTree(new QTreeWidget()),
     patientCardWidget(new PatientCardWidget()),
     perspectiveButtonsLogicGroup(new QButtonGroup()),
     patientsPerspectiveRadio(new QRadioButton(tr("Patients"))),
     disorderPerspectiveRadio(new QRadioButton(tr("Disorders")))
 {
-    QHBoxLayout * layout = new QHBoxLayout;
+    patientsTree->setObjectName(QString::fromUtf8("patientsTree"));
+    disordersTree->setObjectName(QString::fromUtf8("disordersTree"));
+    patientCardWidget->setObjectName(QString::fromUtf8("patientCard"));
+
+    QHBoxLayout * layout = new QHBoxLayout();
+    this->setContentsMargins(0,0,0,0);
+    this->setLayout(layout);
+    this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    
+    patientsTree->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    disordersTree->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
     patientsTree->setContextMenuPolicy( Qt::CustomContextMenu );
     disordersTree->setContextMenuPolicy( Qt::CustomContextMenu );
@@ -1624,15 +1634,18 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
     connect(disordersTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(currentPatientChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
     connect(disordersTree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onCustomContextMenuRequested(const QPoint &)));
 
-    this->setLayout(layout);
-
     QWidget * leftSide = new QWidget();
+    leftSide->setObjectName(QString::fromUtf8("leftSide"));
+    
     QVBoxLayout * leftLayout = new QVBoxLayout();
+    leftSide->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+
     perspectiveButtonsLogicGroup->addButton(patientsPerspectiveRadio);
     perspectiveButtonsLogicGroup->addButton(disorderPerspectiveRadio);
     patientsPerspectiveRadio->setChecked(true);
 
     QGroupBox * perspectiveButtonsUiGroup = new QGroupBox(QString(tr("Data perspective")));
+    perspectiveButtonsUiGroup->setObjectName(QString::fromUtf8("perspectiveGroup"));
     perspectiveButtonsUiGroup->setLayout(new QHBoxLayout());
     perspectiveButtonsUiGroup->layout()->addWidget(patientsPerspectiveRadio);
     perspectiveButtonsUiGroup->layout()->addWidget(disorderPerspectiveRadio);
@@ -1664,9 +1677,13 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
     disordersTree->setVisible(false);
 
     leftSide->setLayout(leftLayout);
+    leftSide->setContentsMargins(0,0,0,0);
+    leftLayout->setContentsMargins(0,0,0,0);
 
     leftSide->setMaximumWidth(350);
     leftSide->setMinimumWidth(350);
+
+    patientCardWidget->setContentsMargins(0,0,0,0);
 
     layout->addWidget(leftSide);
     layout->addWidget(patientCardWidget);    
@@ -2083,12 +2100,12 @@ QWidget * CommunicationDataSource::getOrCreateView()
 {
     if(widget == nullptr){
         //inicjalizujemy zak³¹dki naszego okienka
-        widget = new QWidget;
-        widget->setContentsMargins(0,0,0,0);
+        widget = new QWidget();
         widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
         QHBoxLayout * layout = new QHBoxLayout;
         layout->setContentsMargins(0,0,0,0);
+        widget->setContentsMargins(0,0,0,0);
 
         widget->setLayout(layout);
 
@@ -2097,6 +2114,7 @@ QWidget * CommunicationDataSource::getOrCreateView()
 
         //currentView = new MotionView(this);
         currentView = new MedicalView(this);
+        currentView->setObjectName(QString::fromUtf8("medicalView"));
         currentView->refresh();
 
         layout->addWidget(currentView);

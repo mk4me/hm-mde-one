@@ -6,8 +6,8 @@
 
 DataExplorerService::DataExplorerService() : widget(new TabWidget())
 {
+    widget->setObjectName(QString::fromUtf8("sourcesTabs"));
     widget->hideTabs();
-    widget->setContentsMargins(0,0,0,0);
 }
 
 DataExplorerService::~DataExplorerService()
@@ -82,21 +82,42 @@ void DataExplorerService::addSourceToWidget(IDataExplorerSource * source)
     QAction * refreshAction = source->getOrCreateRefreshAction();
 
     QWidget * tabWidget = new QWidget();
-    QWidget * currentWidget = tabWidget;
+    tabWidget->setObjectName(QString::fromUtf8("sourceTab"));
+    //tabWidget->setContentsMargins(4,4,4,4);
 
-    //dzielimy widok na pó³ w pionie
-    QHBoxLayout * hLayout = new QHBoxLayout();
-    tabWidget->setLayout(hLayout);
+    //dzielimy widok na pó³ w poziomie
+    QVBoxLayout * vLayout = new QVBoxLayout();
+    tabWidget->setLayout(vLayout);
+
+
+    QWidget * centerWidget = new QWidget();
+    centerWidget->setObjectName(QString::fromUtf8("sourceCenter"));
+    centerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    centerWidget->setLayout(new QHBoxLayout());
+
+    QWidget * currentWidget = new QWidget();
+    currentWidget->setObjectName(QString::fromUtf8("source"));
+    currentWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    currentWidget->setLayout(new QVBoxLayout());
+    currentWidget->setContentsMargins(0,0,0,0);
+
+    currentWidget->layout()->addWidget(viewWidget);
+    //currentWidget->layout()->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding));
+
+    QWidget * actionsWidget = new QWidget();
+    actionsWidget->setObjectName(QString::fromUtf8("sourceActions"));
+    actionsWidget->setContentsMargins(0,0,0,0);
+    QVBoxLayout * vLayoutActions = new QVBoxLayout();
+    actionsWidget->setLayout(vLayoutActions);
+    actionsWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+
+    centerWidget->layout()->addWidget(currentWidget);
+    centerWidget->layout()->addWidget(actionsWidget);
+    centerWidget->layout()->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed));
 
     if(refreshAction != nullptr || configDialog != nullptr){
 
-        //nowa czêœæ g³ówna
-        currentWidget = new QWidget();
-        hLayout->addWidget(currentWidget);
-
         //czêœæ na operacje
-        QWidget * actionsWidget = new QWidget();
-        QVBoxLayout * vLayout = new QVBoxLayout();
         if(refreshAction != nullptr){
             QToolButton * button = new QToolButton();
             button->setDefaultAction(refreshAction);
@@ -113,25 +134,14 @@ void DataExplorerService::addSourceToWidget(IDataExplorerSource * source)
 
             vLayout->addWidget(button);
         }
-        
-        actionsWidget->setLayout(vLayout);
-
-        hLayout->addWidget(actionsWidget);
-
-        actionsWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-
     }
 
     if(filterWidget != nullptr){
-        //dzielimy widok na pó³ w pionie
-        QVBoxLayout * hLayout = new QVBoxLayout();
-        
-        hLayout->addWidget(filterWidget);
-        
-        currentWidget->setLayout(hLayout);
+        vLayout->addWidget(filterWidget);
     }
 
-    currentWidget->layout()->addWidget(viewWidget);
+    vLayout->addWidget(centerWidget);
+    vLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Preferred));
 
     widget->addTab(tabWidget, QString(name.c_str()));
 }

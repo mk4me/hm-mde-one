@@ -114,7 +114,7 @@ public:
     int count() const;
 
     public slots:
-        void setAllItemsExpanded(bool expanded = true);
+        void expandAllItems(bool expanded = true);
         void setItemExpanded(int index, bool expanded = true);
         void setItemExpanded(QWidget *widget, bool expanded = true);
 
@@ -149,7 +149,6 @@ private:
     PageList pageList;
     QVBoxLayout *_layout;
     Page *lastPage;
-    QSpacerItem * verticalSpacer;
 };
 
 inline int QMultiToolBox::addItem(QWidget *item, const QString &text, bool expanded)

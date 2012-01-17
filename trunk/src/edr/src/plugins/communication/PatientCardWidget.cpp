@@ -37,73 +37,58 @@ void PatientCardWidget::init()
     setupUi(this);
 
     multiToolBoxWidget = new QMultiToolBox();
-    multiToolBoxWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    multiToolBoxWidget->setObjectName(QString::fromUtf8("closableDataGroups"));
+    multiToolBoxWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     this->frame->layout()->addWidget(multiToolBoxWidget);
+    this->frame->layout()->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding));
+
+    multiToolBoxWidget->setContentsMargins(0,0,0,0);
+    multiToolBoxWidget->layout()->setContentsMargins(0,0,0,0);
     //this->frame->layout()->addItem(new QSpacerItem(0,0,QSizePolicy::Preferred, QSizePolicy::Expanding));
 
     //dodajemy poszczegolne elementy:
 
-    //dane personalne
-    //g³ówny widget i layout
-    personalDataWidget = new QWidget();
-    auto mainLayout = new QHBoxLayout();
-    mainLayout->setMargin(0);
-    personalDataWidget->setLayout(mainLayout);
-
-    //miejsce na zdjêcie
-    patientPhotoWidget = new QLabel();
-    patientPhotoWidget->setText("Patient photo");
-    patientPhotoWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    patientPhotoWidget->setLineWidth(2);
-
-    mainLayout->addWidget(patientPhotoWidget);
-
-    //formatka z danymi pacjenta
-    QWidget * innerContent = new QWidget();
-    auto innerLayout = new QFormLayout();
-    innerLayout->setMargin(0);
-
-    innerContent->setLayout(innerLayout);
-
-    mainLayout->addWidget(innerContent);
-    
-    //elementy edytowalne formatki
-    patientEdit = new QLineEdit();
-    patientGenderEdit = new QComboBox();
-    patientGenderEdit->addItem(tr("Men"));
-    patientGenderEdit->addItem(tr("Women"));
-
-    patientBirthDateEdit = new QLabel();   
-
-    //wypelnianie formatki
-    innerLayout->addRow(tr("Patient"), patientEdit);
-    innerLayout->addRow(tr("Gender"), patientGenderEdit);
-    innerLayout->addRow(tr("Birth date"), patientBirthDateEdit);
-
     //dane o chorobach
     disordersTable = new QTableWidget();
+    disordersTable->setMaximumHeight(300);
     
     //sesje
     sessionsWidget = new QTreeWidget();
+    sessionsWidget->setMaximumHeight(300);
 
     connect(sessionsWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(currentSessionChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
     //adnotacje
     adnotationsWidget = new QTextEdit();
 
     //dodajemy wszystko do multitoolboxa
-    multiToolBoxWidget->addItem(personalDataWidget, tr("Patient data"), true);
     multiToolBoxWidget->addItem(disordersTable, tr("Disorders"));
     multiToolBoxWidget->addItem(sessionsWidget, tr("Sessions"));
     multiToolBoxWidget->addItem(adnotationsWidget, tr("Notes"));
+    multiToolBoxWidget->expandAllItems();
 
     QStringList headers;
 
     headers << tr("Name");
     headers << tr("Diagnosis Date");
     headers << tr("Focus");
-    headers << tr("Comments");
-    disordersTable->setColumnCount(4);
+    disordersTable->setColumnCount(3);
     disordersTable->setHorizontalHeaderLabels(headers);
+
+    resetAntropometricData();
+    centerTableCellsText(generalDataTable);
+    centerTableCellsText(leftRightDataTable);
+    
+    generalDataTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    leftRightDataTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+
+    generalDataTable->verticalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    leftRightDataTable->verticalHeader()->setDefaultAlignment(Qt::AlignCenter);
+
+    generalDataTable->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
+    leftRightDataTable->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
+
+    generalDataTable->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+    leftRightDataTable->verticalHeader()->setResizeMode(QHeaderView::Fixed);
 }
 
 PatientCardWidget::~PatientCardWidget()
@@ -152,51 +137,36 @@ void PatientCardWidget::resetCard()
 
 void PatientCardWidget::refreshCard()
 {
-    centerTableCellsText(generalDataTable);
-    centerTableCellsText(leftRightDataTable);
-
-    generalDataTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
-    leftRightDataTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
-
     if(patient == nullptr || performer == nullptr){
         //proste inicjowanie pol karty wartosciami domyslnymi
         
         patientEdit->clear();
-        patientEdit->setEnabled(false);
 
-        patientBirthDateEdit->clear();
-        patientBirthDateEdit->setEnabled(false);
+        birthdateEdit->clear();
 
-        patientGenderEdit->setCurrentIndex(-1);
-        patientGenderEdit->setEnabled(false);
+        genderEdit->clear();
         
-        patientPhotoWidget->setPixmap(QPixmap());
+        photoContainer->setPixmap(QPixmap());
 
         disordersTable->clearContents();
         sessionsWidget->clear();
-        
-        detailsFrame->hide();        
     }else{
         //wlasciwe inicjowanie karty dostarczonymi wartosciami
         patientEdit->setText(QString::fromUtf8((patient->surname + ", " + patient->name).c_str()));
-        patientBirthDateEdit->setText(QString(patient->birthDate.c_str()));
+        birthdateEdit->setText(QString(patient->birthDate.c_str()));
         
-        patientGenderEdit->setCurrentIndex(patient->gender == 'M' ? 0 : 1);
+        genderEdit->setText(patient->gender == 'M' ? tr("Men") : tr("Women"));
         
         //ustawiamy fotke
         if(photo != nullptr){
-            patientPhotoWidget->clear();
-            patientPhotoWidget->setPixmap(*photo);
-            personalDataWidget->setMinimumSize(photo->size());
+            photoContainer->clear();
+            photoContainer->setPixmap(*photo);
         }else{
-            patientPhotoWidget->setText("No photo avaiable");
+            photoContainer->setText("No photo avaiable");
         }
         
         refreshDisorders();
-        
         refreshSessions();
-
-        detailsFrame->show();
     }
 }
 
@@ -210,12 +180,9 @@ void PatientCardWidget::refreshDisorders()
     //czyscimy
     disordersTable->clearContents();
 
-    
-
     //ustalam ilosc wpisow
     disordersTable->setRowCount(patient->disorders.size());
     
-
     //wypelniamy chorobami
     int i = 0;
     for(auto it = patient->disorders.begin(); it != patient->disorders.end(); it++){
@@ -231,9 +198,6 @@ void PatientCardWidget::refreshDisorders()
         item = new QTableWidgetItem(QString::fromUtf8(it->second.focus.c_str()));
         disordersTable->setItem(i,2, item);
 
-        //komentarz
-        item = new QTableWidgetItem(QString::fromUtf8(it->second.comments.c_str()));
-        disordersTable->setItem(i,3, item);
         i++;
     }
 
@@ -453,16 +417,6 @@ QTreeWidgetItem * PatientCardWidget::createBranch(const std::string & name, cons
     ret->addChild(item);
 
     return ret;
-}
-
-void PatientCardWidget::setActiveSession(unsigned int id)
-{
-
-}
-
-void PatientCardWidget::clearActiveSession()
-{
-
 }
 
 void PatientCardWidget::setFilter(const IFilterConstPtr & filter)

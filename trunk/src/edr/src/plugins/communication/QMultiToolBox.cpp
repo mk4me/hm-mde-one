@@ -76,7 +76,7 @@ void QMultiToolBoxButton::initStyleOption(QStyleOptionToolBox *option) const
     option->icon = icon();
 
     if (QStyleOptionToolBoxV2 *optionV2 = qstyleoption_cast<QStyleOptionToolBoxV2 *>(option)) {
-        QMultiToolBox *toolBox = static_cast<QMultiToolBox *>(parentWidget()); // I know I'm in a tool box.
+        QMultiToolBox *toolBox = static_cast<QMultiToolBox *>(parentWidget()); // I know I'm in a multi tool box.
         int widgetCount = toolBox->count();
         if (widgetCount == 1) {
             optionV2->position = QStyleOptionToolBoxV2::OnlyOneTab;
@@ -149,7 +149,7 @@ void QMultiToolBoxButton::paintEvent(QPaintEvent *)
 */
 QMultiToolBox::QMultiToolBox(QWidget *parent, Qt::WindowFlags f)
     :  QFrame(parent, f), _currentlyExpandedItemsCount(0), lastPage(0), _lastIndex(-1),
-    _layout(new QVBoxLayout()), verticalSpacer(new QSpacerItem(1,1,QSizePolicy::Fixed, QSizePolicy::Expanding))
+    _layout(new QVBoxLayout())
 {   
     setLayout(_layout);
     setBackgroundRole(QPalette::Button);
@@ -161,8 +161,7 @@ QMultiToolBox::QMultiToolBox(QWidget *parent, Qt::WindowFlags f)
 
 QMultiToolBox::~QMultiToolBox()
 {
-    _layout->removeItem(verticalSpacer);
-    delete verticalSpacer;
+
 }
 
 /*!
@@ -217,6 +216,7 @@ int QMultiToolBox::insertItem(int index, QWidget *widget, const QIcon &icon, con
     c.sv = new QScrollArea();
     c.sv->setWidget(widget);
     c.sv->setWidgetResizable(true);
+    c.sv->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     c.sv->setFrameStyle(QFrame::NoFrame);
 
@@ -226,10 +226,8 @@ int QMultiToolBox::insertItem(int index, QWidget *widget, const QIcon &icon, con
     if (index < 0 || index >= (int)pageList.count()) {
         index = pageList.count();
         pageList.append(c);
-        _layout->removeItem(verticalSpacer);
         _layout->addWidget(c.button);
         _layout->addWidget(c.sv);
-        _layout->addItem(verticalSpacer);
         if (index == 0)
             _lastIndex = index;
     } else {
@@ -293,7 +291,7 @@ int QMultiToolBox::count() const
     return pageList.count();
 }
 
-void QMultiToolBox::setAllItemsExpanded(bool expanded)
+void QMultiToolBox::expandAllItems(bool expanded)
 {
     int oldVal = _currentlyExpandedItemsCount;
     if(expanded == true){
@@ -354,7 +352,6 @@ void QMultiToolBox::setItemExpanded(int index, bool expanded)
 
 void QMultiToolBox::relayout()
 {
-    _layout->removeItem(verticalSpacer);
     delete _layout;
     _layout = new QVBoxLayout(this);
     setLayout(_layout);
@@ -363,7 +360,6 @@ void QMultiToolBox::relayout()
         _layout->addWidget((*i).button);
         _layout->addWidget((*i).sv);
     }
-    _layout->addItem(verticalSpacer);
 }
 
 void QMultiToolBox::_q_widgetDestroyed(QObject *object)

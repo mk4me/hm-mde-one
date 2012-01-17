@@ -313,8 +313,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     trySetStyleByName("hmm");
 
     this->analisis = new AnalisisWidget(nullptr, this);
-    this->data = new QWidget(nullptr);
-    this->data->setObjectName(QString::fromUtf8("DataWidget"));
+    //this->data = new QWidget();
+    //this->data->setObjectName(QString::fromUtf8("dataWidget"));
+    this->data = createNamedObject<QWidget>(QString::fromUtf8("dataWidget"));
 
     this->data->setContentsMargins(0,0,0,0);
     this->analisis->setContentsMargins(0,0,0,0);
@@ -411,7 +412,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 			std::vector<QObject*> settingsWidgetActions;
 			QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
 
-			QVBoxLayout *layout = new QVBoxLayout;
+			QVBoxLayout *layout = new QVBoxLayout();
             layout->setContentsMargins(0,0,0,0);
             layout->addWidget(settingsWidget);
             layout->addWidget(viewWidget);

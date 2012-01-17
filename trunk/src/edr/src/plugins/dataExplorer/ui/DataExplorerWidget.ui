@@ -18,9 +18,12 @@
     <rect>
      <x>40</x>
      <y>70</y>
-     <width>127</width>
-     <height>80</height>
+     <width>401</width>
+     <height>231</height>
     </rect>
+   </property>
+   <property name="tabPosition">
+    <enum>QTabWidget::South</enum>
    </property>
    <property name="movable">
     <bool>true</bool>

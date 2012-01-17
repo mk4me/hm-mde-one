@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>930</width>
+    <width>932</width>
     <height>626</height>
    </rect>
   </property>
@@ -296,7 +296,7 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
-        <number>0</number>
+        <number>9</number>
        </property>
        <property name="leftMargin">
         <number>9</number>
@@ -335,7 +335,9 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
            <normaloff>:/resources/icons/Badania.png</normaloff>
            <normalon>:/resources/icons/Badania.png</normalon>
            <disabledoff>:/resources/icons/BadaniaH.png</disabledoff>
-           <disabledon>:/resources/icons/BadaniaH.png</disabledon>:/resources/icons/Badania.png</iconset>
+           <disabledon>:/resources/icons/BadaniaH.png</disabledon>
+           <activeoff>:/resources/icons/BadaniaP.png</activeoff>
+           <activeon>:/resources/icons/Badania.png</activeon>:/resources/icons/Badania.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -385,7 +387,9 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
            <normaloff>:/resources/icons/Analizy.png</normaloff>
            <normalon>:/resources/icons/Analizy.png</normalon>
            <disabledoff>:/resources/icons/AnalizyH.png</disabledoff>
-           <disabledon>:/resources/icons/AnalizyH.png</disabledon>:/resources/icons/Analizy.png</iconset>
+           <disabledon>:/resources/icons/AnalizyH.png</disabledon>
+           <activeoff>:/resources/icons/AnalizyP.png</activeoff>
+           <activeon>:/resources/icons/Analizy.png</activeon>:/resources/icons/Analizy.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -432,7 +436,9 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
            <normaloff>:/resources/icons/Raporty.png</normaloff>
            <normalon>:/resources/icons/Raporty.png</normalon>
            <disabledoff>:/resources/icons/RaportyH.png</disabledoff>
-           <disabledon>:/resources/icons/RaportyH.png</disabledon>:/resources/icons/Raporty.png</iconset>
+           <disabledon>:/resources/icons/RaportyH.png</disabledon>
+           <activeoff>:/resources/icons/RaportyP.png</activeoff>
+           <activeon>:/resources/icons/Raporty.png</activeon>:/resources/icons/Raporty.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -476,7 +482,9 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
            <normaloff>:/resources/icons/Operacje.png</normaloff>
            <normalon>:/resources/icons/Operacje.png</normalon>
            <disabledoff>:/resources/icons/OperacjeH.png</disabledoff>
-           <disabledon>:/resources/icons/OperacjeH.png</disabledon>:/resources/icons/Operacje.png</iconset>
+           <disabledon>:/resources/icons/OperacjeH.png</disabledon>
+           <activeoff>:/resources/icons/OperacjeP.png</activeoff>
+           <activeon>:/resources/icons/Operacje.png</activeon>:/resources/icons/Operacje.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -514,7 +522,11 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
          </property>
          <property name="icon">
           <iconset resource="Icons.qrc">
-           <normaloff>:/resources/icons/Strona.png</normaloff>:/resources/icons/Strona.png</iconset>
+           <normaloff>:/resources/icons/Strona.png</normaloff>
+           <disabledoff>:/resources/icons/StronaH.png</disabledoff>
+           <disabledon>:/resources/icons/StronaH.png</disabledon>
+           <activeoff>:/resources/icons/StronaP.png</activeoff>
+           <activeon>:/resources/icons/Strona.png</activeon>:/resources/icons/Strona.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -655,64 +667,17 @@ QToolButton::menu-arrow:open {
        </sizepolicy>
       </property>
       <property name="styleSheet">
-       <string notr="true">QFrame#mainArea  {
+       <string notr="true">
+/* OGÓLNE - QFrame#mainArea */
+QFrame#mainArea  {
 	background-color: rgb(91, 91, 91);
 border-top: 1px solid rgb(101, 101, 101);
 padding-top: 2px;
 }
 
-QFrame#mainArea &gt; QWidget, QFrame#mainArea QWidget#analisisArea, QFrame#mainArea QWidget#analisisArea EDRDockWidgetManager, QFrame#mainArea QWidget#analisisArea QMainWindow {
+QFrame#mainArea &gt; QWidget, QFrame#mainArea QWidget#analisisArea, QFrame#mainArea QWidget#analisisArea EDRDockWidgetManager, QFrame#mainArea QWidget#analisisArea QMainWindow, QFrame#mainArea &gt; QWidget#dataWidget, QFrame#mainArea QWidget#dataWidget, QWidget#dataWidget QTabWidget#sourcesTabs, QWidget#dataWidget QTabWidget#sourcesTabs &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QWidget#leftSide  {
 	background-color: rgb(91, 91, 91);
 }
-
-QFrame#mainArea QWidget#analisisArea &gt; *, QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
-	border: 1px solid black;
-	border-radius: 4px;
-}
-
-QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	margin: 3px;
-	margin-top: 0px;
-}
-
-QFrame#mainArea * QWidget {
-	background-color: white;
-}
-
-QFrame#mainArea &gt; QWidget#dataWidget, QFrame#mainArea &gt; QWidget#dataWidget QWidget#DataExplorerWidget *, QFrame#mainArea &gt; QWidget#dataWidget QWidget#DataExplorerWidget * *, QFrame#mainArea &gt; QWidget#dataWidget QWidget#DataExplorerWidget * * *, QFrame#mainArea &gt; QWidget#dataWidget QWidget#DataExplorerWidget * * * * {
-	background-color: rgb(91, 91, 91);
-	border: 3px solid red;
-} 
-
-QFrame#mainArea EDRTitleBar, QFrame#mainArea EDRTitleBar * {
-	background-color: rgb(43, 42, 41);
-	color: white;
-	margin: 0px;
-	border: none;
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
-}
-
-/*QFrame#mainArea*/ QDockWidget &gt; .QWidget, /*QFrame#mainArea*/ EDRDockWidget &gt; .QWidget, /*QFrame#mainArea*/ VisualizerWidget &gt; .QWidget, /*QFrame#mainArea*/ EDRDockWidgetSet &gt; .QWidget {
-	border: 1px solid black;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
-}
-
-/*
-QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; EDRTitleBar {
-	margin-bottom: -1px;
-	border-bottom: 2px solid white;
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
-}
-*/
 
 /* separatory okna glownego */
 QFrame#mainArea QMainWindow::separator {
@@ -725,6 +690,175 @@ QFrame#mainArea QMainWindow::separator {
 QFrame#mainArea QMainWindow::separator:hover {
      background-color: rgb(255, 255, 255);
  }
+
+QFrame#mainArea * QWidget {
+	background-color: white;
+}
+
+
+/* DANE - QWidget#dataWidget */
+QWidget#dataWidget QTabWidget#sourcesTabs::pane {
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 2px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QGroupBox#perspectiveGroup {
+	color: black;
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 2px;
+	padding-top: 8px;
+	margin-top: 2ex; /* leave space at the top for the title */
+ }
+
+ QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QGroupBox#perspectiveGroup::title {
+     subcontrol-origin: margin;
+		subcontrol-position: top left; /* position at the top center */
+     padding: 2px;	
+	left: 2ex;
+border: 1px solid black;
+border-radius: 4px;
+background: white;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QTreeWidget {
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 2px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard {
+	background: rgb(91, 91, 91);
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 2px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QFrame#detailsFrame, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QFrame#frame, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QLabel#antropometricLabel, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QMultiToolBox#closableDataGroups {
+	background: rgb(91, 91, 91);
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QGroupBox#groupBox {
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 2px;
+	margin: 0px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QMultiToolBox::tab, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QScrollArea {
+	margin: 0px;
+	border: 1px solid black;
+	border-radius: 4px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QMultiToolBox::tab {
+	background: rgb(41,41,41);
+	color: white;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QScrollArea {
+	background: white;
+	color: black;
+	padding: 2px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView {
+	background: rgb(91,91,91);
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section {
+	padding: 2px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QTableView QTableCornerButton::section {
+	background: rgb(41,41,41);
+	color: white;
+	border: none;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QTableView QTableCornerButton::section {
+	border-top-left-radius: 4px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:last:horizontal {
+	border-top-right-radius: 4px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:only-one:horizontal {
+	border-top-right-radius: 4px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:only-one:vertical {
+	border-bottom-left-radius: 4px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:selected:vertical {
+	selection-background-color: red;
+	background: red;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:last:vertical {
+	border-bottom-left-radius: 4px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:middle:horizontal, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:last:horizontal {
+	border-left: 1px solid white;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:middle:vertical, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:last:vertical {
+	border-top: 1px solid white;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QTableView, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QTreeView {
+	border: none;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QTableView {
+	gridline-color: black;
+	background: rgb(91,91,91);
+	alternate-background-color: rgb(101,101,101);
+	selection-background-color: rgb(135, 177, 255);
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QTableView::item:focus {
+	border: 0px;
+}
+
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QHeaderView::section:checked:vertical {
+	background: rgb(135, 177, 255);
+}
+
+/* ANALIZY - QWidget#analisisArea */
+QFrame#mainArea QWidget#analisisArea &gt; *, QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 2px;
+}
+
+QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	margin: 3px;
+	margin-top: 0px;
+}
+
+QFrame#mainArea EDRTitleBar, QFrame#mainArea EDRTitleBar * {
+	background-color: rgb(43, 42, 41);
+	color: white;
+	margin: 0px;
+	border: none;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+QDockWidget &gt; .QWidget, EDRDockWidget &gt; .QWidget, VisualizerWidget &gt; .QWidget, EDRDockWidgetSet &gt; .QWidget {
+	border: 1px solid black;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
 </string>
       </property>
       <property name="frameShape">

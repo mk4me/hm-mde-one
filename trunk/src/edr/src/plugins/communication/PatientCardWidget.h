@@ -80,8 +80,6 @@ public slots:
 
 private slots:
 
-    void setActiveSession(unsigned int id);
-    void clearActiveSession();
     void currentSessionChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 
 private:
@@ -110,12 +108,6 @@ private:
     QStandardItemModel * antropometricGeneralDataModel;
     QStandardItemModel * antropometricLeftRightDataModel;
     QMultiToolBox * multiToolBoxWidget;
-
-    QWidget * personalDataWidget;
-    QLabel * patientPhotoWidget;
-    QLineEdit * patientEdit;
-    QComboBox * patientGenderEdit;
-    QLabel * patientBirthDateEdit;
 
     QTableWidget * disordersTable;
     QTreeWidget * sessionsWidget;
