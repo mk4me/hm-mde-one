@@ -57,7 +57,7 @@ set(FIND_DIR_RELEASE "${FIND_DIR_RELEASE}/osgPlugins-${OSG_VERSION}")
 FIND_MODULE(OSG_PLUGIN_PNG FALSE "osgdb_png")
 FIND_MODULE(OSG_PLUGIN_GLSL FALSE "osgdb_glsl")
 FIND_MODULE(OSG_PLUGIN_FREETYPE FALSE "osgdb_freetype")
-#FIND_MODULE(OSG_PLUGIN_JPEG FALSE "osgdb_jpeg")
+FIND_MODULE(OSG_PLUGIN_JPEG FALSE "osgdb_jpeg")
 
 # poza znalezieniem trzeba jeszcze ustawiæ suffix œcie¿ki docelowej
 # dla pluginów

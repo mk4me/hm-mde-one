@@ -135,10 +135,12 @@ option(PROJECT_ENABLE_SVN_RESOURCES "Enable svn resources?" ON)
 if(PROJECT_ENABLE_SVN_RESOURCES)
 	set(PROJECT_SVN_RESOURCES_ROOT "${PROJECT_SOURCE_DIR}/../resources/" CACHE PATH "Location of resources being part of repository.")
 	add_subdirectory(${PROJECT_SVN_RESOURCES_ROOT} ${PROJECT_BINARY_DIR}/resources)
-	install(DIRECTORY ${PROJECT_SVN_RESOURCES_ROOT} DESTINATION bin/ COMPONENT core
+	install(DIRECTORY ${PROJECT_SVN_RESOURCES_ROOT}/deploy/ DESTINATION bin/resources/ COMPONENT core
 		PATTERN ".svn" EXCLUDE
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "log.ini" EXCLUDE		)
+	install(DIRECTORY ${PROJECT_LIBRARIES_ROOT}/win32/release/qt/plugins/ DESTINATION bin/ COMPONENT core 
+		PATTERN "*.lib" EXCLUDE)
 endif()
 
 #---------------------------------------------------
@@ -167,7 +169,7 @@ set(CPACK_COMPONENT_NEWTIMELINE_DISPLAY_NAME "Timeline plugin")
 set(CPACK_COMPONENT_CORE_DISPLAY_NAME "Main application")
 set(CPACK_COMPONENT_CORE_REQUIRED ON)
 set(CPACK_COMPONENT_TRIALS_DISPLAY_NAME "Demo data")
-set(CPACK_COMPONENTS_ALL communication dataExplorer c3d core newChart video newTimeline trials kinematic)
+set(CPACK_COMPONENTS_ALL communication dataExplorer c3d core newChart video newtimeline trials kinematic)
 option(ENABLE_CPACK "Set on to enable CPack" OFF)
 option(ENABLE_CTEST "Set on to enable CTest" OFF)
 if(ENABLE_CTEST)
