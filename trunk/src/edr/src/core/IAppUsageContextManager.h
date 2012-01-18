@@ -72,6 +72,12 @@ public:
             throw std::runtime_error("Trying to register widget to unregistered context");
         }
 
+        auto contextWidgetIT = widgets.find(contextWidget);
+
+        if(contextWidgetIT != widgets.end()){
+            throw std::runtime_error("Trying to register already registered widget");
+        }
+
         widgetContexts[contextWidget] = context;
         widgets.insert(contextWidget);
 
@@ -113,8 +119,7 @@ public:
         }
 
         if(it->second->isActive() == true && it->second->getCurrentContextWidget() == contextWidget){
-            it->second->tryDeactivate();
-            it->second->tryActivate();
+            refreshContext(it->second);
         }
 
         widgets.erase(it->first);        
@@ -124,7 +129,7 @@ public:
 
     bool isContextWidget(QWidget * candidate) const
     {
-        return widgetContexts.find(candidate) != widgetContexts.end();
+        return widgets.find(candidate) != widgets.end();
     }
 
     QWidget * getParentContextWidget(QWidget * candidate) const
@@ -204,6 +209,50 @@ public:
             throw std::runtime_error("Trying to set widget not registered within context");
         }
 
+        innerSetCurrentContext(context, contextWidget);
+    }
+
+    void setCurrentContext(QWidget * contextWidget)
+    {
+        if(contextWidget == nullptr){
+            //chowamy caly ³añcuch kontekstów
+            if(currentContextChain.empty() == false){
+                limitCurrentChainToPosition(-1);
+                currentContextChain.swap(ContextChain());
+            }
+
+        }else if(contextWidget == getCurrentContextWidget()){
+
+            refreshContext(currentContextChain.back(), contextWidget);
+
+        }else {
+
+            auto it = widgetContexts.find(contextWidget);
+
+            if(it == widgetContexts.end()){
+                throw std::runtime_error("Trying to activate unregistered context widget");
+            }
+
+            innerSetCurrentContext(it->second, contextWidget);
+        }
+    }
+
+    const ContextChain & getCurrentContextChain() const
+    {
+        return currentContextChain;
+    }
+
+private:
+
+    static void refreshContext(const AppUsageContextPtr & context, QWidget * nextContextWidget = nullptr)
+    {
+        context->tryDeactivate(nextContextWidget, true);
+        context->tryActivate(nextContextWidget);
+    }
+
+    void innerSetCurrentContext(const AppUsageContextPtr & context = AppUsageContextPtr(), QWidget * contextWidget = nullptr)
+    {
+
         if(context == nullptr){
             //chowamy caly ³añcuch kontekstów
             if(currentContextChain.empty() == false){
@@ -212,14 +261,17 @@ public:
             }
         }else{
             //sprawdzamy czy kontekst nie jest juz aktywny - jesli tak to wszystkie nizsze od niego sa dezaktywowane
-            auto pos = contextPositionInCurrentChain(context);
+            int pos = contextPositionInCurrentChain(context);
 
             if(pos > -1){
                 limitCurrentChainToPosition(pos);
-                if(currentContextChain.back()->getCurrentContextWidget() != contextWidget){
-                    currentContextChain.back()->tryDeactivate();
-                    currentContextChain.back()->tryActivate(contextWidget);
-                }
+                //if(currentContextChain.back()->getCurrentContextWidget() != contextWidget){
+                    //currentContextChain.back()->tryDeactivate();
+                    //currentContextChain.back()->tryActivate(contextWidget);
+                //}
+
+                //prze³adowanie kontekstu / odœwie¿enie, dla widgetów które zmieniaj¹ stan ale nie ze wzglêdu na inne widgety dzieci (np. QTreeWidget na zmianê aktualnego wiersza)
+                refreshContext(currentContextChain.back(), contextWidget);
             }else{
                 //nowy kontest wydaje sie niezalezny od aktualnie aktywnych - szukamy zaleznosci
 
@@ -243,14 +295,14 @@ public:
                     limitCurrentChainToPosition(contextPositionInCurrentChain(parent));
 
                     //jesli ostatni ma widget to musimy go przelaczyc
-                    auto tmpCurrent = currentContextChain.rbegin();
-                    if((*tmpCurrent)->getCurrentContextWidget() != nullptr){
-                        (*tmpCurrent)->tryDeactivate();
-                        //aktywujemy juz bez widgeta!!
-                        (*tmpCurrent)->tryActivate();
-                        if((*tmpCurrent)->isActive() == false){
+                    auto tmpCurrent = currentContextChain.back();
+                    if(tmpCurrent->getCurrentContextWidget() != nullptr){
+                        
+                        refreshContext(tmpCurrent);
+                        
+                        /*if(tmpCurrent->isActive() == false){
                             currentContextChain.pop_back();
-                        }
+                        }*/
                     }
 
                 }else{
@@ -268,100 +320,21 @@ public:
                     currentContextChain[i]->activate();
                 }
 
-                if(currentContextChain[currentContextChain.size()-1]->tryActivate(contextWidget) == false){
+                bool active = currentContextChain.back()->tryActivate(contextWidget);
+
+                /*
+                if(active == false){
                     currentContextChain.pop_back();
                 }
+                */
             }
         }
     }
-
-    void setCurrentContext(QWidget * contextWidget)
-    {
-        if(contextWidget == nullptr){
-            //chowamy caly ³añcuch kontekstów
-            if(currentContextChain.empty() == false){
-                limitCurrentChainToPosition(-1);
-                currentContextChain.swap(ContextChain());
-            }
-
-        }else{
-            auto it = widgetContexts.find(contextWidget);
-
-            if(it == widgetContexts.end()){
-                throw std::runtime_error("Trying to activate unregistered context widget");
-            }
-
-            //sprawdzamy czy kontekst nie jest juz aktywny - jesli tak to wszystkie nizsze od niego sa dezaktywowane
-            auto pos = contextPositionInCurrentChain(contextWidget);
-
-            if(pos > -1){
-                limitCurrentChainToPosition(pos);
-            }else{
-                //nowy kontest wydaje sie niezalezny od aktualnie aktywnych - szukamy zaleznosci
-
-                //szukamy zaleznosci wzgledem aktualnego lancucha idac w gore od zadanego kontekstu
-                auto parent = it->second->parentContext();
-                ContextChain newContextChain;
-                newContextChain.push_back(it->second);
-                while(parent != nullptr){
-                    if(parent->isActive() == true){
-                        break;
-                    }else{
-                        newContextChain.push_back(parent);
-                        parent = parent->parentContext();
-                    }
-                }
-
-                if(parent != nullptr){
-                    //mamy punkt przeciecia nowego kontekstu z aktualnie aktywnymi
-                    
-                    //ograniczamy aktualny lancuch do punktu przeciecia
-                    limitCurrentChainToPosition(contextPositionInCurrentChain(parent));
-                    
-                    //jesli ostatni ma widget to musimy go przelaczyc
-                    auto tmpCurrent = currentContextChain.rbegin();
-                    if((*tmpCurrent)->getCurrentContextWidget() != nullptr){
-                        (*tmpCurrent)->tryDeactivate();
-                        //aktywujemy juz bez widgeta!!
-                        (*tmpCurrent)->tryActivate();
-                        if((*tmpCurrent)->isActive() == false){
-                            currentContextChain.pop_back();
-                        }
-                    }
-
-                }else{
-                    //mamy calkowicie nowy kontekst - zamykamy caly obecny i budujemy od zera nowy, mamy jego przebieg w newContext
-                    limitCurrentChainToPosition(-1);
-                }
-
-                int lastPos = currentContextChain.size();
-
-                currentContextChain.insert(currentContextChain.end(), newContextChain.begin(), newContextChain.end());
-
-                int newLastPos = currentContextChain.size()-1;
-
-                for(int i = lastPos; i < newLastPos; i++){
-                    currentContextChain[i]->activate();
-                }
-
-                if(currentContextChain[currentContextChain.size()-1]->tryActivate(contextWidget) == false){
-                    currentContextChain.pop_back();
-                }
-            }
-        }
-    }
-
-    const ContextChain & getCurrentContextChain() const
-    {
-        return currentContextChain;
-    }
-
-private:
 
     void limitCurrentChainToPosition(int limitPos)
     {
         for(int pos = currentContextChain.size() - 1; pos > limitPos; pos--){
-            currentContextChain[pos]->deactivate();
+            currentContextChain[pos]->tryDeactivate();
             currentContextChain.pop_back();
         }
     }
@@ -375,11 +348,6 @@ private:
     }
 
 protected:
-
-    void deactivateCurrentChainAfterPosition(int limitPos)
-    {
-
-    }
 
     int contextPositionInCurrentChain(QWidget * contextWidget)
     {

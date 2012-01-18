@@ -52,7 +52,7 @@ public:
 
     virtual void activateContext(QWidget * contextWidget);
 
-    virtual void deactivateContext(QWidget * contextWidget);
+    virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
 
     virtual void onRegisterContextWidget(QWidget * contextWidget);
     virtual void onUnregisterContextWidget(QWidget * contextWidget);

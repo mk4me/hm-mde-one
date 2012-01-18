@@ -90,22 +90,22 @@ private:
         return ret;
     }
 
-    void deactivate()
+    void deactivate(QWidget * nextContextWidget = nullptr, bool refresh = false)
     {
         if(active == false){
             throw std::runtime_error("Trying to deactivate inactive context");
         }
 
-        deactivateContext(currentContextWidget);
+        deactivateContext(nextContextWidget, refresh);
         active = false;
         currentContextWidget = nullptr;
     }
 
-    bool tryDeactivate()
+    bool tryDeactivate(QWidget * nextContextWidget = nullptr, bool refresh = false)
     {
         bool ret = true;
         try{
-            deactivate();
+            deactivate(nextContextWidget, refresh);
         }catch(...){
             ret = false;
         }
@@ -158,7 +158,7 @@ private:
 private:
 
     virtual void activateContext(QWidget * contextWidget) = 0;
-    virtual void deactivateContext(QWidget * contextWidget) = 0;
+    virtual void deactivateContext(QWidget * nextContextWidget = nullptr, bool refresh = false) = 0;
 
     virtual void onRegisterContextWidget(QWidget * widget) {}
     virtual void onUnregisterContextWidget(QWidget * widget) {}

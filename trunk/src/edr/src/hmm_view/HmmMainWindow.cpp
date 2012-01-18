@@ -28,7 +28,8 @@ HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWi
 
 void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
 {
-    if(contextWidget == nullptr){
+    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest juz zaladowany
+    if(contextWidget == nullptr || visualizerGroupID != -1){
         return;
     }
 
@@ -54,11 +55,13 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
     }
 }
 
-void HMMVisualizerUsageContext::deactivateContext(QWidget * contextWidget)
+void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, bool refresh)
 {
-    auto visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
+    if(nextContextWidget == getCurrentContextWidget()){
+        return;
+    }
 
-    if(visualizerGroupID != -1 && getCurrentContextWidget() == contextWidget){
+    if(visualizerGroupID != -1){
         flexiTabWidget->removeGroup(visualizerGroupID);
         visualizerGroupID = -1;
         visualizerSectionsIDs.swap(std::set<FlexiTabWidget::GUIID>());
@@ -289,7 +292,7 @@ void HmmMainWindow::onFocusChange(QWidget * oldWidget, QWidget * newWidget)
 
         QWidget * widget = getParentContextWidget(newWidget);
 
-        if(widget != nullptr && widget != getCurrentContextWidget()){
+        if(widget != nullptr){
             setCurrentContext(widget);
         }
     }

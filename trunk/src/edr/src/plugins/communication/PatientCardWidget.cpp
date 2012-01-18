@@ -55,6 +55,7 @@ void PatientCardWidget::init()
     //sesje
     sessionsWidget = new QTreeWidget();
     sessionsWidget->setMaximumHeight(300);
+    sessionsWidget->header()->setResizeMode(QHeaderView::Fixed);
 
     connect(sessionsWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(currentSessionChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
     //adnotacje
@@ -293,32 +294,32 @@ void PatientCardWidget::resetAntropometricData()
 
 void PatientCardWidget::fillAntropometricData(const communication::MotionShallowCopy::Attrs & attributes)
 {
-    setAttribute(generalDataTable, 0, 2, "BodyMass", attributes);
-    setAttribute(generalDataTable, 1, 2, "Height", attributes);
-    setAttribute(generalDataTable, 2, 2, "InterAsisDistance", attributes);
+    setAttribute(generalDataTable, 0, 1, "BodyMass", attributes);
+    setAttribute(generalDataTable, 1, 1, "Height", attributes);
+    setAttribute(generalDataTable, 2, 1, "InterAsisDistance", attributes);
 
-    setAttribute(leftRightDataTable, 0, 2, "LeftLegLength", attributes);
-    setAttribute(leftRightDataTable, 0, 3, "RightLegLenght", attributes);
-    setAttribute(leftRightDataTable, 1, 2, "LeftKneeWidth", attributes);
-    setAttribute(leftRightDataTable, 1, 3, "RightKneeWidth", attributes);
-    setAttribute(leftRightDataTable, 2, 2, "LeftAnkleWidth", attributes);
-    setAttribute(leftRightDataTable, 2, 3, "RightAnkleWidth", attributes);
-    setAttribute(leftRightDataTable, 3, 2, "LeftCircuitThigh", attributes);
-    setAttribute(leftRightDataTable, 3, 3, "RightCircuitThight", attributes);
-    setAttribute(leftRightDataTable, 4, 2, "LeftCircuitShank", attributes);
-    setAttribute(leftRightDataTable, 4, 3, "RightCircuitShank", attributes);
-    setAttribute(leftRightDataTable, 5, 2, "LeftShoulderOffset", attributes);
-    setAttribute(leftRightDataTable, 5, 3, "RightShoulderOffset", attributes);
-    setAttribute(leftRightDataTable, 6, 2, "LeftElbowWidth", attributes);
-    setAttribute(leftRightDataTable, 6, 3, "RightElbowWidth", attributes);
-    setAttribute(leftRightDataTable, 7, 2, "LeftWristWidth", attributes);
-    setAttribute(leftRightDataTable, 7, 3, "RightWristWidth", attributes);
-    setAttribute(leftRightDataTable, 8, 2, "LeftWristThickness", attributes);
-    setAttribute(leftRightDataTable, 8, 3, "RightWristThickness", attributes);
-    setAttribute(leftRightDataTable, 9, 2, "LeftHandWidth", attributes);
-    setAttribute(leftRightDataTable, 9, 3, "RightHandWidth", attributes);
-    setAttribute(leftRightDataTable, 10, 2, "LeftHandThickness", attributes);
-    setAttribute(leftRightDataTable, 10, 3, "RightHandThickness", attributes);
+    setAttribute(leftRightDataTable, 0, 1, "LeftLegLength", attributes);
+    setAttribute(leftRightDataTable, 0, 2, "RightLegLenght", attributes);
+    setAttribute(leftRightDataTable, 1, 1, "LeftKneeWidth", attributes);
+    setAttribute(leftRightDataTable, 1, 2, "RightKneeWidth", attributes);
+    setAttribute(leftRightDataTable, 2, 1, "LeftAnkleWidth", attributes);
+    setAttribute(leftRightDataTable, 2, 2, "RightAnkleWidth", attributes);
+    setAttribute(leftRightDataTable, 3, 1, "LeftCircuitThigh", attributes);
+    setAttribute(leftRightDataTable, 3, 2, "RightCircuitThight", attributes);
+    setAttribute(leftRightDataTable, 4, 1, "LeftCircuitShank", attributes);
+    setAttribute(leftRightDataTable, 4, 2, "RightCircuitShank", attributes);
+    setAttribute(leftRightDataTable, 5, 1, "LeftShoulderOffset", attributes);
+    setAttribute(leftRightDataTable, 5, 2, "RightShoulderOffset", attributes);
+    setAttribute(leftRightDataTable, 6, 1, "LeftElbowWidth", attributes);
+    setAttribute(leftRightDataTable, 6, 2, "RightElbowWidth", attributes);
+    setAttribute(leftRightDataTable, 7, 1, "LeftWristWidth", attributes);
+    setAttribute(leftRightDataTable, 7, 2, "RightWristWidth", attributes);
+    setAttribute(leftRightDataTable, 8, 1, "LeftWristThickness", attributes);
+    setAttribute(leftRightDataTable, 8, 2, "RightWristThickness", attributes);
+    setAttribute(leftRightDataTable, 9, 1, "LeftHandWidth", attributes);
+    setAttribute(leftRightDataTable, 9, 2, "RightHandWidth", attributes);
+    setAttribute(leftRightDataTable, 10, 1, "LeftHandThickness", attributes);
+    setAttribute(leftRightDataTable, 10, 2, "RightHandThickness", attributes);
 }
 
 void PatientCardWidget::setAttribute(QTableWidget * table, int row, int column, const std::string & attribute, const communication::MotionShallowCopy::Attrs & attributes)
