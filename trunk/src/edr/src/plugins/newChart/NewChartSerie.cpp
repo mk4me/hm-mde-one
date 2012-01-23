@@ -66,3 +66,8 @@ void NewChartSerie::setEvents( EventsCollectionConstPtr val )
     eventsItem->attach(visualizer->getPlot());*/
     visualizer->setEvents(this, val);
 }
+
+void NewChartSerie::removeItemsFromPlot()
+{
+    curve->detach();
+}

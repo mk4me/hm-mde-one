@@ -217,7 +217,7 @@ const std::string& KinematicVisualizer::getName() const
 }
 
 KinematicVisualizer::KinematicVisualizer() :
-    name("KinematicVisualizer"),
+    name("Visualizer 3D"),
     trajectoriesDialog(nullptr),
     currentSerie(-1)
 {

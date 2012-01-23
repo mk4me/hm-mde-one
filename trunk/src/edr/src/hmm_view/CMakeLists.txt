@@ -29,6 +29,8 @@ set(PRIVATE_H
 	AnalisisWidget.h
 	IllnessUnit.h
 	LanguageDialog.h
+	HmmContexts.h
+	TextEdit.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -62,6 +64,8 @@ set(TARGET_SRC
 	IllnessUnit.cpp
 	AnalisisWidget.cpp
 	LanguageDialog.cpp
+	HmmContexts.cpp
+	TextEdit.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -80,6 +84,8 @@ SET(TARGET_MOC_H
 	ConfigurationDialog.h
 	AnalisisWidget.h
 	LanguageDialog.h
+	TextEdit.h
+	HmmContexts.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})

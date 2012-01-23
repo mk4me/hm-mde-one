@@ -33,7 +33,7 @@ public:
 
 	void addDockWidget(EDRDockWidget* widget, Qt::Orientation orientation);
     void addDockWidget(EDRDockWidget* widget);
-	bool isAdditionPossible(EDRDockWidget* widget) const;
+	bool isAdditionPossible(EDRDockWidget* widget = nullptr) const;
 	void blockAddition(bool additionPossible);
 	int getNumWidgets() const;
 	int getMaxWidgetsNumber() const { return maxWidgetsNumber; }

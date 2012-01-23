@@ -472,6 +472,14 @@ VisualizerPtr NewMultiserieHelper::createVisualizer()
     return visualizer;
 }
 
+std::vector<core::TypeInfo> NewMultiserieHelper::getTypeInfos() const
+{
+    std::vector<core::TypeInfo> ret;
+    ret.push_back(typeid(ScalarChannelReaderInterface));
+    return ret;
+}
+
+
 void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     createSeries(visualizer, path, series);

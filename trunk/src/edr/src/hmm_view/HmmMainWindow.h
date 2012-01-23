@@ -2,6 +2,7 @@
 #define HMM_TOOLBOXMAIN_H
 
 #include <core/PluginCommon.h>
+#include <core/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/newTimeline/ITimelineService.h>
@@ -21,49 +22,35 @@
 #include "IAppUsageContextManager.h"
 #include <QtGui/QToolBox>
 
+#include "HmmContexts.h"
+
 class EDRDockWidgetManager;
 class DataFilterWidget;
 class AnalisisWidget;
-
+class EDRDockWidgetSet;
 
 
 class ContextAction : public QAction
 {
     Q_OBJECT;
 public:
-    ContextAction(TreeItemHelper* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr()) : 
-      helper(itemHelper), QAction(parent), visualizer(vis) {}
+    ContextAction(TreeItemHelper* itemHelper, QObject* parent, VisualizerPtr vis = VisualizerPtr(), EDRDockWidgetSet* set = nullptr) : 
+      helper(itemHelper), QAction(parent), visualizer(vis), set(set){}
 
 public:
     TreeItemHelper* getItemHelper() const { return helper; }
-    VisualizerPtr getVisualizer() const { return visualizer; }
+    VisualizerPtr getVisualizer() const { return visualizer.lock(); }
+    EDRDockWidgetSet* getDockSet() const { return set; }
 
 private:
     TreeItemHelper* helper;
-    VisualizerPtr visualizer;
+    VisualizerWeakPtr visualizer;
+    EDRDockWidgetSet* set;
 };
 
-class HMMVisualizerUsageContext : public IAppUsageContext
-{
-public:
-    HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget);
-    // IAppUsageContext
-public:
 
-    virtual void activateContext(QWidget * contextWidget);
 
-    virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
-
-    virtual void onRegisterContextWidget(QWidget * contextWidget);
-    virtual void onUnregisterContextWidget(QWidget * contextWidget);
-
-private:
-    FlexiTabWidget * flexiTabWidget;
-    FlexiTabWidget::GUIID visualizerGroupID;
-    std::set<FlexiTabWidget::GUIID> visualizerSectionsIDs;
-
-    std::map<QWidget*, std::map<QString, QWidget *>> visualizersData;
-};
+    
 
 
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain, protected IAppUsageContextManager
@@ -86,10 +73,20 @@ private:
     };
     typedef core::shared_ptr<DataObserver> DataObserverPtr;
 
-    struct DataItemDescription {
-        core::IVisualizer::SerieBase* serie;
-        Visualizer* visualizer;
-        VisualizerWidget* wisualizerWidget;
+    struct DataItemDescription 
+    {
+        DataItemDescription(VisualizerWeakPtr visualizer, const std::vector<core::VisualizerTimeSeriePtr>& series, VisualizerWidget* widget) : 
+            visualizer(visualizer),
+            visualizerWidget(widget) 
+        {
+            // konwersja na weak ptr.
+            for (auto it = series.begin(); it != series.end(); it++) {
+                this->series.push_back(*it);
+            }
+        }
+        std::vector<core::VisualizerTimeSerieWeakPtr> series;
+        VisualizerWeakPtr visualizer;
+        VisualizerWidget* visualizerWidget;
     };
 
 public:
@@ -107,7 +104,7 @@ public:
     const std::vector<SessionConstPtr>& getCurrentSessions();
     void addItemToTree(QTreeWidgetItem* item);
     void clearTree();
-
+    QMenu* getContextMenu( QWidget* parent, TreeItemHelper* helper );
     virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
 
 private slots:
@@ -122,8 +119,18 @@ private slots:
     void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
 
     void onTreeContextMenu(const QPoint & pos);
+
+    
+
     void createNewVisualizer();
+    void createVisualizerInNewSet();
+    void removeFromVisualizer();
     void addToVisualizer();
+    //void highlightVisualizer();
+    void menuHighlightVisualizer(QAction* action = nullptr);
+
+    void highlightVisualizer( const VisualizerPtr& visualizer  );
+
     void filterGroupActivated(bool active);
     void onToolButton(bool checked);
 
@@ -136,6 +143,7 @@ private:
     void createFilterTab1();
     void createFilterTab2();
     void refreshTree();
+    void dropUnusedElements(std::multimap<TreeItemHelper*, DataItemDescription>& multimap);
 
     class ItemDoubleClick
     {
@@ -184,7 +192,7 @@ private:
     //! Zbiór u¿ywanych wizualizatorów
     std::vector<VisualizerWidget*> currentVisualizers;
 
-    std::map<QTreeWidgetItem*, DataItemDescription> items2Descriptions;
+    std::multimap<TreeItemHelper*, DataItemDescription> items2Descriptions;
 
     QTreeWidgetItem * currentItem;
     AnalisisWidget* analisis;
@@ -205,6 +213,7 @@ private:
     std::list<VisualizerWidget*> currentVisualizerWidgets;
 
     AppUsageContextPtr visualizerUsageContext;
+    HMMTreeItemUsageContextPtr treeUsageContext;
 };
 
 #endif // TOOLBOXMAIN_H

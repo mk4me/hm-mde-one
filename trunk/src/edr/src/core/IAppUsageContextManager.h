@@ -13,6 +13,7 @@
 #include <queue>
 #include <vector>
 #include <set>
+#include <algorithm>
 
 class IAppUsageContextManager
 {
@@ -147,7 +148,7 @@ public:
                 candidate = candidate->parentWidget();
             }
 
-            std::vector<QWidget*> intersection(min(widgets.size(), parentWidgets.size()));
+            std::vector<QWidget*> intersection((std::min)(widgets.size(), parentWidgets.size()));
 
             auto intIT = std::set_intersection(parentWidgets.begin(), parentWidgets.end(), widgets.begin(), widgets.end(), intersection.begin());
 

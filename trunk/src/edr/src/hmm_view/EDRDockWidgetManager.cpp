@@ -45,9 +45,8 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
             }
         }
 
-	    set->setVisible(true);
-	    set->setFocus();
-	    set->raise();
+        raiseSet(set);
+
     }
 
     set->setWindowTitle(QString(tr("Group %1")).arg(dockList.size()));
@@ -103,4 +102,25 @@ void EDRDockWidgetManager::setTabNames()
     for (auto it = dockList.begin(); it != dockList.end(); it++) {
         (*it)->setWindowTitle(QString(tr("Group %1")).arg(++i));
     }
+}
+
+void EDRDockWidgetManager::raiseSet( EDRDockWidgetSet* set )
+{
+    set->setVisible(true);
+    set->setFocus();
+    set->raise();
+}
+
+EDRDockWidgetSet* EDRDockWidgetManager::tryGetDockSet( EDRDockWidget* widget )
+{
+    for (auto it = dockList.begin(); it != dockList.end(); it++) {
+        BOOST_FOREACH(const EDRDockWidget* dock, (*it)->getDockWidgets()) {
+            if (dock == widget) {
+                return *it;
+            }
+        }
+        
+    }
+
+    return nullptr;
 }

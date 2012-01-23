@@ -108,6 +108,8 @@ public:
     ScalarChannelStatsConstPtr getStats() const { return stats; } //return pointHelper->getStats(); }
     ScalarChannelReaderInterfaceConstPtr getReader() const { return reader; }
 
+    void removeItemsFromPlot();
+
 private:
     NewChartVisualizer* visualizer;
     std::string name;

@@ -34,6 +34,7 @@ public:
     MotionConstPtr getMotion() const { return motion; }
     void setMotion(MotionConstPtr val) { motion = val; }
 
+    virtual std::vector<core::TypeInfo> getTypeInfos() const = 0;
 
 private:
      VisualizerPtr createdVisualizer;
@@ -82,6 +83,15 @@ public:
 public:
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
+
+    std::vector<core::TypeInfo> getTypeInfos() const
+    {
+        std::vector<core::TypeInfo> ret;
+        ret.push_back(wrapper->getTypeInfo());
+        return ret;
+    }
+
+
 protected:
     core::ObjectWrapperConstPtr wrapper;
 };
@@ -108,6 +118,13 @@ public:
     NewChartItemHelper(const core::ObjectWrapperConstPtr& wrapper) : TreeWrappedItemHelper(wrapper) { }
     virtual VisualizerPtr createVisualizer();
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+    std::vector<core::TypeInfo> getTypeInfos() const
+    {
+        std::vector<core::TypeInfo> ret;
+        ret.push_back(typeid(ScalarChannelReaderInterface));
+        return ret;
+    }
+
 };
 
 ////! klasa pomocnicza przy tworzeniu wykresow z wektora 3-elementowego
@@ -126,6 +143,13 @@ public:
     NewVector3ItemHelper(const core::ObjectWrapperConstPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
+
+    std::vector<core::TypeInfo> getTypeInfos() const
+    {
+        std::vector<core::TypeInfo> ret;
+        ret.push_back(typeid(ScalarChannelReaderInterface));
+        return ret;
+    }
 };
 
 ////! klasa pomocnicza przy tworzeniu wykresow z wieloma seriami
@@ -186,6 +210,8 @@ public:
     const QString& getTitle() const { return title; }
     void setTitle(const QString& val) { title = val; }
 
+    virtual std::vector<core::TypeInfo> getTypeInfos() const;
+
 private:
     std::vector<core::ObjectWrapperConstPtr> wrappers;
     QString title;
@@ -206,6 +232,14 @@ public:
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
 
+    std::vector<core::TypeInfo> getTypeInfos() const
+    {
+        std::vector<core::TypeInfo> ret;
+        ret.push_back(typeid(kinematic::JointAnglesCollection));
+        return ret;
+    }
+
+
 private:
     MotionConstPtr motion;
 };
@@ -222,6 +256,16 @@ public:
 public:
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
     virtual VisualizerPtr createVisualizer();
+
+    std::vector<core::TypeInfo> getTypeInfos() const
+    {
+        std::vector<core::TypeInfo> ret;
+        ret.push_back(typeid(kinematic::JointAnglesCollection));
+        ret.push_back(typeid(GRFCollection));
+        ret.push_back(typeid(MarkerCollection));
+        return ret;
+    }
+
 
 private:
     MotionConstPtr motion;

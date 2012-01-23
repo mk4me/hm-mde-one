@@ -255,7 +255,7 @@ QTreeWidgetItem* Stroke::createTreeBranch( const QString& rootItemName, const st
         DataFilterPtr rprev = createCustomEMGFilter(false, "R10");
         DataFilterPtr lpost = createCustomEMGFilter(true, "L2");
         DataFilterPtr rpost = createCustomEMGFilter(true, "R10");
-        createEMGEntry(root, sessions, "Byc moze miesien piszczelowy sredni", lprev, rprev, lpost, rpost);
+        createEMGEntry(root, sessions, "miesien piszczelowy sredni (?)", lprev, rprev, lpost, rpost);
 
     }
 

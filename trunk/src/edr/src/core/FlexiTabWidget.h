@@ -12,6 +12,7 @@
 #include <QtGui/QTabWidget>
 #include <QtGui/QTabBar>
 #include <QtGui/QFrame>
+#include <QtGui/QScrollArea>
 #include "FlexiTabSectionWidget.h"
 #include "ui_FlexiTabWidget.h"
 

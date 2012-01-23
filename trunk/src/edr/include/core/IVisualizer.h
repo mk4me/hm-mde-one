@@ -123,6 +123,8 @@ namespace core
 
     typedef shared_ptr<IVisualizer::TimeSerieBase> VisualizerTimeSeriePtr;
     typedef shared_ptr<const IVisualizer::TimeSerieBase> VisualizerTimeSerieConstPtr;
+    typedef weak_ptr<IVisualizer::TimeSerieBase> VisualizerTimeSerieWeakPtr;
+    typedef weak_ptr<const IVisualizer::TimeSerieBase> VisualizerTimeSerieConstWeakPtr;
 
 } // namespace core
 

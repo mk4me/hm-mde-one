@@ -69,8 +69,10 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     QAction* eventMode = new QAction(QString(tr("Event mode")), nullptr);
     QIcon icon0;
     icon0.addFile(QString::fromUtf8(":/resources/icons/normalizacja1.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon0.addFile(QString::fromUtf8(":/resources/icons/normalizacja1a.png"), QSize(), QIcon::Normal, QIcon::On);
     eventMode->setIcon(icon0);
     eventMode->setCheckable(true);
+    eventMode->setChecked(false);
     //actions.push_back(eventMode);
     connect(eventMode, SIGNAL(triggered(bool)), this, SLOT(setEventMode(bool)));
 
@@ -306,8 +308,9 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
     }
 
     activeSerieCombo->blockSignals(true);
+    (*it)->removeItemsFromPlot();
     series.erase(it);
-
+    
     if(series.empty() == true){
         activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
         activeSerieCombo->setCurrentIndex(0);
@@ -490,7 +493,7 @@ void NewChartVisualizer::setShowLegend( bool val )
 
 const std::string& NewChartVisualizer::getName() const
 {
-    static std::string name = "NewChartVisualizer";
+    static std::string name = "Visualizer 2D";
     return name;
 }
 
@@ -594,6 +597,7 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
 void NewChartVisualizer::setEventMode( bool val )
 {
     eventMode = val;
+    eventsItem->setVisible(val);
     if (!eventMode) {
         qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
         qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
@@ -627,6 +631,8 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
   C3DEventsCollection::EventConstPtr lastLeftEvent;
   C3DEventsCollection::EventConstPtr lastRightEvent;
 
+  int half = (canvasRect.bottom() - canvasRect.top())/ 2 + canvasRect.top();
+ 
   for (int i = 0; i < count; i++) {
       C3DEventsCollection::EventConstPtr event = events->getEvent(i);
       if (event->getContext() != C3DEventsCollection::Context::Left && event->getContext() != C3DEventsCollection::Context::Right) {
@@ -634,8 +640,7 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
       }
       int x = static_cast<int>(xMap.transform(event->getTime()));
       
-      int half = (canvasRect.bottom() - canvasRect.top())/ 2 + canvasRect.top();
-      bool left = event->getContext() == C3DEventsCollection::Context::Left;
+       bool left = event->getContext() == C3DEventsCollection::Context::Left;
       int top = left ? canvasRect.top() : half;
       int bottom = left ? half : canvasRect.bottom();
       
@@ -659,19 +664,19 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
           painter->setBrush(QBrush(i % 2 ? rightColor1 : rightColor2));
           int lastX = static_cast<int>(xMap.transform(lastRightEvent->getTime()));
           painter->drawRect(lastX, top, x - lastX, bottom - top);
-      } else if (!lastLeftEvent && left) {
-          // pierwszy lewy event
-          painter->setPen(QPen(Qt::white));
-          painter->setFont(QFont("Tahoma", 72));
-          painter->setPen(QPen(QColor(255, 0, 0, 35)));
-          painter->drawText(x + 30, bottom - 82, "Left");
-      } else if (!lastRightEvent && right) {
-          // pierwszy prawy event
-          painter->setPen(QPen(Qt::white));
-          painter->setFont(QFont("Tahoma", 72));
-          painter->setPen(QPen(QColor(0,255,  0, 35)));
-          painter->drawText(x + 30, bottom - 82, "Right");
-      }
+      } //else if (!lastLeftEvent && left) {
+      //    // pierwszy lewy event
+      //    painter->setPen(QPen(Qt::white));
+      //    painter->setFont(QFont("Tahoma", 72));
+      //    painter->setPen(QPen(QColor(255, 0, 0, 35)));
+      //    painter->drawText(x + 30, top + 82, "Left");
+      //} else if (!lastRightEvent && right) {
+      //    // pierwszy prawy event
+      //    painter->setPen(QPen(Qt::white));
+      //    painter->setFont(QFont("Tahoma", 72));
+      //    painter->setPen(QPen(QColor(0,255,  0, 35)));
+      //    painter->drawText(x + 30, top + 82, "Right");
+      //}
 
       if (event->getContext() == C3DEventsCollection::Context::Left) {
           lastLeftEvent = event;
@@ -679,7 +684,22 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
           lastRightEvent = event;
       }
   }
+      
+  painter->setFont(QFont("Tahoma", 32));  
+  painter->save();
   
+  painter->translate(canvasRect.left() + 30, half - 10);
+  painter->rotate(-90); 
+  painter->setPen(QPen(QColor(255, 0, 0, 55)));
+  painter->drawText(0, 0, "Left");
+  painter->restore();
+
+  painter->save();
+  painter->translate(canvasRect.left() + 30, canvasRect.bottom() - 10);
+  painter->rotate(-90); 
+  painter->setPen(QPen(QColor(0, 255, 0, 55)));
+  painter->drawText(0, 0, "Right");
+  painter->restore();
 }
 
 

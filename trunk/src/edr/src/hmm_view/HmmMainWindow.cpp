@@ -1,4 +1,5 @@
 #include "hmmPCH.h"
+
 #include <cmath>
 #include "HmmMainWindow.h"
 #include "ui_LoadingDialog.h"
@@ -17,246 +18,13 @@
 #include "IllnessUnit.h"
 #include "EMGFilter.h"
 #include "EDRTitleBar.h"
+#include "TextEdit.h"
 
 
 using namespace core;
 
-HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
-{
 
-}
 
-void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
-{
-    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest juz zaladowany
-    if(contextWidget == nullptr || visualizerGroupID != -1){
-        return;
-    }
-
-    auto it = visualizersData.find(contextWidget);
-
-    if(it == visualizersData.end()){
-        return;
-    }
-
-    if(it->second.empty() == false){
-        auto visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
-        auto vis = visWidget->getCurrentVisualizer();
-        //tworzymy grupe dla wizualizatora
-        visualizerGroupID = flexiTabWidget->addGroup(QString::fromUtf8("Visualizer - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
-
-        for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); sectionIT++){
-            auto sectionID = flexiTabWidget->addSection(visualizerGroupID, sectionIT->second, sectionIT->first);
-            sectionIT->second->setVisible(true);
-            visualizerSectionsIDs.insert(sectionID);
-        }
-        
-        flexiTabWidget->setCurrentGroup(visualizerGroupID);
-    }
-}
-
-void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, bool refresh)
-{
-    if(nextContextWidget == getCurrentContextWidget()){
-        return;
-    }
-
-    if(visualizerGroupID != -1){
-        flexiTabWidget->removeGroup(visualizerGroupID);
-        visualizerGroupID = -1;
-        visualizerSectionsIDs.swap(std::set<FlexiTabWidget::GUIID>());
-    }
-}
-
-void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
-{
-    VisualizerWidget * visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
-    // przygotowanie do wypelnienia grupy
-    VisualizerWidget::VisualizerTitleBarElements titleBarElements;
-
-    visWidget->getVisualizerTitleBarElements(titleBarElements);
-
-    if(titleBarElements.empty() == false){
-        auto vis = visWidget->getCurrentVisualizer();
-
-        //podziel elementy na 4 grupy - akcje, menusy, widget i inne nieobslugiwane elementy
-        //przy okazji wyznaczamy ilosc elementow oraz ich sumaryczna szerokosc i najwieksza wysokosc do pozniejszego layoutowania
-        //elementy sa indeksowane tak jak podeslal nam je klient, ale ich kolejnosc moze zostac zmieniona zeby lepiej je rozlozyc
-        std::map<unsigned int, QAction*> actions;
-        std::map<unsigned int, QMenu*> menus;
-        //std::map<unsigned int, QWidget*> widgets;
-        std::map<unsigned int, QObject*> others;
-
-        // budujemy widgety ktore beda potem trafialy do toolbarow
-        std::map<unsigned int, QWidget*> toolbarElements;
-
-        int maxHeight = 0;
-        int totalWidth = 0;
-        int totalElements = titleBarElements.size();
-
-        for(unsigned int i = 0; i < totalElements; i++){
-            if(QAction * action = qobject_cast<QAction*>(titleBarElements[i].first)){
-                actions[i] = action;
-            }else if(QMenu * menu = qobject_cast<QMenu*>(titleBarElements[i].first)){
-                menus[i] = menu;
-            }else if(QWidget * widget = qobject_cast<QWidget*>(titleBarElements[i].first)){
-                //widgets[i] = widget;
-                toolbarElements[i] = widget;
-
-                if(QComboBox * cbox = qobject_cast<QComboBox*>(widget)){
-                    cbox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-                    cbox->setMinimumContentsLength(min(cbox->currentText().size(), 10));
-                }
-
-                //dodajemy od razu do elementow toolbara - indeksy zostaja zachowane dla pozniejszego rozmieszczania wg kolejnosci
-                auto s = widget->sizeHint();
-                int width = min(s.width(), 250);
-                if(s.width() > 250){
-                    widget->setMaximumWidth(250);
-                }
-                totalWidth += width;
-                maxHeight = max(maxHeight, s.height());
-            }else{
-                others[i] = titleBarElements[i].first;
-            }
-        }
-
-        totalElements -= others.size();
-
-        if(totalElements == 0){
-            return;
-        }
-
-        for(auto it = actions.begin(); it != actions.end(); it++){
-            QToolButton * actionButton = new QToolButton();
-            if(it->second->toolTip().isEmpty() == true){
-                actionButton->setToolTip(it->second->text());
-            }
-
-            //actionButton->setIconSize(QSize(20,20));
-            actionButton->setFixedSize(20,20);
-
-            actionButton->setDefaultAction(it->second);
-            //actionButton->setMaximumSize(QSize(20,20));
-            actionButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
-            toolbarElements[it->first] = actionButton;
-
-            auto s = actionButton->sizeHint();
-            totalWidth += s.width();
-            maxHeight = max(maxHeight, s.height());
-        }
-
-        for(auto it = menus.begin(); it != menus.end(); it++){
-            QToolButton * menuButton = new QToolButton();
-
-            if(it->second->toolTip().isEmpty() == true){
-                menuButton->setToolTip(it->second->title());
-            }
-
-            menuButton->setMenu(it->second);
-
-            //if(it->second->icon().isNull() == false){
-                //menuButton->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonTextBesideIcon);
-            //}
-
-            menuButton->setText(it->second->title());
-            menuButton->setPopupMode(QToolButton::InstantPopup);
-
-            menuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
-            toolbarElements[it->first] = menuButton;
-
-            auto s = menuButton->sizeHint();
-            totalWidth += s.width();
-            maxHeight = max(maxHeight, s.height());
-        }
-
-        //rozkladamy to w niezaleznych QToolBarach. Maksymalnie 2 rzedy.
-        //TODO
-        //dodac maksymalna szerokosc + przerzucanie elementow do ukrytego panelu jesli za duzo ich jest
-
-        int halfWidth = totalWidth;
-
-        int halfElements = totalElements / 2;
-
-        QVBoxLayout * layout = new QVBoxLayout();
-        QToolBar * topToolbar = new QToolBar();
-        topToolbar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        topToolbar->setIconSize(QSize(20,20));
-        topToolbar->setStyleSheet(QString::fromUtf8("QToolBar { spacing: 2px; }"));
-
-        layout->addWidget(topToolbar);
-
-        QToolBar * bottomToolbar = nullptr;
-
-        //budujemy 2 wiersze jesli conajmniej 5 elementow
-        if(halfElements > 4){
-            bottomToolbar = new QToolBar();
-            bottomToolbar->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-            bottomToolbar->setIconSize(QSize(20,20));
-            layout->addWidget(bottomToolbar);
-            halfWidth /= 2;
-        }
-
-        layout->addSpacerItem(new QSpacerItem(1,1, QSizePolicy::Fixed, QSizePolicy::Expanding));
-
-        int currentWidth = 0;
-        auto it = toolbarElements.begin();
-
-        while(it != toolbarElements.end()){
-            auto s = it->second->sizeHint();
-            int width = min(s.width(), 250);
-            if(currentWidth + width > halfWidth){
-                it++;
-            }else{
-                topToolbar->addWidget(it->second);
-                currentWidth += width;
-                it = toolbarElements.erase(it);
-            }
-        }
-
-        if(bottomToolbar != nullptr){
-            it = toolbarElements.begin();
-
-            while(it != toolbarElements.end()){
-                bottomToolbar->addWidget(it->second);
-                it++;
-            }
-        }
-
-        //wypelniamy grupe
-        QWidget * widget = new QWidget();
-        widget->setLayout(layout);
-        layout->setContentsMargins(0,0,0,0);
-        layout->setMargin(0);
-        layout->setSpacing(1);
-
-        visualizersData[contextWidget][QString::fromUtf8("Default operations")] = widget;
-    }
-}
-
-void HMMVisualizerUsageContext::onUnregisterContextWidget(QWidget * contextWidget)
-{
-    auto it = visualizersData.find(contextWidget);
-
-    if(it == visualizersData.end()){
-        return;
-    }
-
-    for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); sectionIT++){
-        try{
-
-            delete sectionIT->second;
-
-        }catch(...)
-        {
-
-        }
-    }
-
-    visualizersData.erase(it);
-}
 
 HmmMainWindow::HmmMainWindow() :
 	MainWindow(),
@@ -273,7 +41,7 @@ HmmMainWindow::HmmMainWindow() :
     setupUi(this);
 
     visualizerUsageContext.reset(new HMMVisualizerUsageContext(flexiTabWidget));
-
+    treeUsageContext.reset(new HMMTreeItemUsageContext(flexiTabWidget, this));
     tabPlaceholder->layout()->addWidget(flexiTabWidget);
 
 	this->setWindowFlags(Qt::FramelessWindowHint);
@@ -316,15 +84,17 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     trySetStyleByName("hmm");
 
     this->analisis = new AnalisisWidget(nullptr, this);
-    //this->data = new QWidget();
-    //this->data->setObjectName(QString::fromUtf8("dataWidget"));
+    QTreeWidget* treeWidget = this->analisis->getTreeWidget();
+    addContext(treeUsageContext);
+    addWidgetToContext(treeUsageContext, treeWidget);
+   
     this->data = createNamedObject<QWidget>(QString::fromUtf8("dataWidget"));
 
     this->data->setContentsMargins(0,0,0,0);
     this->analisis->setContentsMargins(0,0,0,0);
 
     this->operations = new QWidget();
-    this->raports = new QWidget();
+    this->raports = new TextEdit();
 
     button2TabWindow[this->dataButton] = this->data;
     button2TabWindow[this->operationsButton] = this->operations;
@@ -342,7 +112,6 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         UTILS_ASSERT(c);
     }
 
-    QTreeWidget* treeWidget = this->analisis->getTreeWidget();
     //treeWidget->setColumnCount(2);
     //treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
 
@@ -495,7 +264,89 @@ void HmmMainWindow::createNewVisualizer()
     if (action) {
         showTimeline();
         VisualizerWidget* w = createDockVisualizer(action->getItemHelper());
-        topMainWindow->autoAddDockWidget( w );
+        if (action->getDockSet()) {
+            action->getDockSet()->addDockWidget(w);
+        } else {
+            topMainWindow->autoAddDockWidget( w );
+        }
+    }
+}
+
+void HmmMainWindow::createVisualizerInNewSet()
+{
+    ContextAction* action = qobject_cast<ContextAction*>(sender());
+    UTILS_ASSERT(action);
+    if (action) {
+        showTimeline();
+        VisualizerWidget* w = createDockVisualizer(action->getItemHelper());
+        EDRDockWidgetSet* set = new EDRDockWidgetSet(QString(w->getCurrentVisualizer()->getUIName()), topMainWindow);
+        set->addDockWidget(w);
+        topMainWindow->addDockWidgetSet(set);
+    }
+}
+
+void HmmMainWindow::removeFromVisualizer()
+{
+    ContextAction* action = qobject_cast<ContextAction*>(sender());
+    UTILS_ASSERT(action);
+    if (action) {
+        typedef std::multimap<TreeItemHelper*, DataItemDescription> mmap;
+        std::list<mmap::iterator> toErase;
+        auto range = items2Descriptions.equal_range(action->getItemHelper());
+        for (auto it = range.first; it != range.second; it++) {
+            DataItemDescription& desc = it->second;
+            // jesli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
+            // to znaczy, ze chcemy usunac dane z wszystkich wizualizatorw
+            if (action->getVisualizer() == nullptr || desc.visualizer.lock() == action->getVisualizer()) {
+                toErase.push_back(it);
+                
+                for (int i = 0; i < desc.series.size(); i++) {
+                    desc.visualizer.lock()->removeSerie(desc.series[i].lock());
+                }
+                if (desc.visualizer.lock()->getDataSeries().size() == 0) {
+                    desc.visualizerWidget->close();
+                    delete desc.visualizerWidget;
+                }
+            }
+            
+        }
+        for (auto it = toErase.begin(); it != toErase.end(); it++) {
+            items2Descriptions.erase(*it);
+        }
+    }
+}
+
+//void HmmMainWindow::highlightVisualizer()
+//{
+//    ContextAction* action = qobject_cast<ContextAction*>(sender());
+//    UTILS_ASSERT(action);
+//    if (action) {
+//        for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); it++) {
+//            DataItemDescription desc = it->second;
+//            if (desc.visualizer.lock() == action->getVisualizer()) {
+//                desc.visualizerWidget->setStyleSheet("color: red;");
+//            } else {
+//                desc.visualizerWidget->setStyleSheet("");
+//            }
+//
+//        }
+//    }
+//}
+
+void HmmMainWindow::highlightVisualizer(const VisualizerPtr& visualizer )
+{
+    for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); it++) {
+        DataItemDescription desc = it->second;
+        if (desc.visualizer.lock() == visualizer) {
+            // todo: optymalniej!
+            EDRDockWidgetSet* set = topMainWindow->tryGetDockSet(desc.visualizerWidget);
+            if (set) {
+                topMainWindow->raiseSet(set);
+            }
+            desc.visualizerWidget->setStyleSheet("color: red;");
+        } else {
+            desc.visualizerWidget->setStyleSheet("");
+        }
     }
 }
 
@@ -513,6 +364,19 @@ void HmmMainWindow::addToVisualizer()
             std::vector<core::VisualizerTimeSeriePtr> series;
             helper->getSeries(visualizer, path, series);
             addSeriesToTimeline(series, path, visualizer);
+
+            VisualizerWidget* vw = nullptr;
+            for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); it++) {
+                DataItemDescription& d = it->second;
+                if (d.visualizer.lock() == visualizer) {
+                    vw = d.visualizerWidget;
+                    break;
+                }
+            }
+            UTILS_ASSERT(vw);
+            DataItemDescription desc(visualizer, series, vw);
+            items2Descriptions.insert(std::make_pair(helper, desc));
+
         } catch (std::exception& e) {
             QString message("Unable to add data to visualizer");
             message += "\n";
@@ -530,7 +394,7 @@ void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
 {
     QTreeWidget* treeWidget = analisis->getTreeWidget();
     currentItem = treeWidget->itemAt(pos);
-
+    treeWidget->setCurrentItem(currentItem);
     if(currentItem == nullptr || isDataItem(currentItem) == false){
         return;
     }
@@ -538,64 +402,18 @@ void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
     TreeItemHelper* helper = dynamic_cast<TreeItemHelper*>(currentItem);
 
     if (helper) {
-        QMenu * menu = new QMenu(treeWidget);
-        if(items2Descriptions.find(currentItem) == items2Descriptions.end()){
-            QAction * addNew = new ContextAction(helper, menu);
-            addNew->setText(tr("Add to new visualizer"));
-            menu->addAction(addNew);
-            connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
-
-            BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
-                QMenu* group = new QMenu(set->windowTitle(), menu);
-                menu->addMenu(group);
-                BOOST_FOREACH(EDRDockWidget* dock, set->getDockWidgets()) {
-                    VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(dock);
-                    if (vw ) {
-                        VisualizerPtr visualizer = vw->getCurrentVisualizer();
-                        QAction* addAction = new ContextAction(helper, group, visualizer);
-                        addAction->setText(vw->windowTitle());
-                        connect(addAction, SIGNAL(triggered()), this, SLOT(addToVisualizer()));
-                        group->addAction(addAction);
-                    }
-                }
-            }
-            //menu->addAction("Add to existing visualizer");
-        }else{
-            QAction * action = new QAction(menu);
-            action->setText(QString::fromUtf8("Remove"));
-            menu->addAction(action);
-        }    
-
+        QMenu* menu = getContextMenu(treeWidget, helper);
         menu->exec(treeWidget->mapToGlobal(pos));
     }
 }
-
-//void HmmMainWindow::onOpen()
-//{
-//	utils::Push<bool> pushed(updateEnabled, false);
-//	Filesystem::Path initPath = getUserDataPath() / "trial";
-//	const QString directory = QFileDialog::getExistingDirectory(this, 0, initPath.string().c_str());
-//	if (!directory.isEmpty()) 
-//	{
-//		LoadingDialog* d = new LoadingDialog();
-//		//d->setWindowFlags(Qt::Tool);
-//		d->start(directory);
-//		delete d;
-//	}
-//
-//	std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
-//    currentSessions = sessions;
-//    QTreeWidgetItem* item = TreeBuilder::createTree("Sessions", sessions);
-//    analisis->getTreeWidget()->addTopLevelItem(item);
-//}
 
 void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
 {
     try {
         // sprawdzanie, czy pod item jest podpiety jakis obiekt
         TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(item);
-    
-        if (hmmItem) {
+        //treeUsageContext->setActiveTreeItem(hmmItem);
+        /*if (hmmItem) {
             showTimeline();
             VisualizerWidget* w = createDockVisualizer(hmmItem);
             topMainWindow->autoAddDockWidget( w );
@@ -629,7 +447,7 @@ void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
             } else {
                 delete set;
             }
-        }
+        }*/
     } catch ( std::exception& e) {
         LOG_ERROR("Click on tree failed, reason : " << e.what());
     }
@@ -1131,6 +949,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     hmmItem->getSeries(visualizer, path, series);
     visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
 
+    DataItemDescription desc(visualizer, series, visualizerDockWidget);
+    items2Descriptions.insert(std::make_pair(hmmItem, desc));
+
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
 
     addSeriesToTimeline(series, path, visualizer);
@@ -1198,7 +1019,137 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      }
  }
 
+ QMenu* HmmMainWindow::getContextMenu( QWidget* parent, TreeItemHelper* helper )
+ {
+     dropUnusedElements(items2Descriptions);
+     QMenu * menu = new QMenu(parent);
+     //connect(menu, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
+     //connect(menu, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
+     QAction * addNew = new ContextAction(helper, menu);
+     addNew->setText(tr("Create new visualizer"));
+     menu->addAction(addNew);
+     connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
 
+     QMenu* addTo = new QMenu(tr("Add to:"), menu);
+     connect(addTo, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
+     connect(addTo, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
+     BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
+         QMenu* group = new QMenu(set->windowTitle(), menu);
+
+         BOOST_FOREACH(EDRDockWidget* dock, set->getDockWidgets()) {
+             VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(dock);
+             if (vw ) {
+                 VisualizerPtr visualizer = vw->getCurrentVisualizer();
+                 DataManager* dataManager = DataManager::getInstance();
+                 bool compatibile = false;
+                 for (int idx = 0; idx < visualizer->getNumInputs(); idx++) {
+                     std::vector<TypeInfo> types = helper->getTypeInfos();
+                     for (int h = 0; h < types.size(); h++) {
+                         if (dataManager->isTypeCompatible(visualizer->getInputType(idx), types[h])) {
+                             compatibile = true;
+                             break;
+                         }
+                     }
+
+                 }
+
+                 if (compatibile) {
+                     QAction* addAction = new ContextAction(helper, group, visualizer);
+                     addAction->setText(vw->windowTitle());
+                     connect(addAction, SIGNAL(triggered()), this, SLOT(addToVisualizer()));
+                     //connect(addAction, SIGNAL(hovered()), this, SLOT(highlightVisualizer()));
+                     group->addAction(addAction);
+                 }
+             }
+         }
+
+         if (group->actions().size()) {
+             addTo->addMenu(group);
+         } else  {
+             delete group;
+         }
+     }
+     if (addTo->actions().size()) {
+         menu->addMenu(addTo);
+     }
+
+
+     if(items2Descriptions.find(helper) != items2Descriptions.end()) {
+         QMenu* removeFrom = new QMenu(QString::fromUtf8("Remove from:"), menu);
+         connect(removeFrom, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
+         connect(removeFrom, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
+         menu->addMenu(removeFrom);
+
+         auto range = items2Descriptions.equal_range(helper);
+         for (auto it = range.first; it != range.second; it++) {
+             DataItemDescription desc = it->second;
+             QAction * action = new ContextAction(helper, menu, desc.visualizer.lock());
+             action->setText(desc.visualizer.lock()->getUIName());
+             connect(action, SIGNAL(triggered()), this, SLOT(removeFromVisualizer()));
+             removeFrom->addAction(action);
+         }
+
+         QAction* all = new ContextAction(helper, menu);
+         all->setText("All visualizers");
+         connect(all, SIGNAL(triggered()), this, SLOT(removeFromVisualizer()));
+         removeFrom->addAction(all);
+     }    
+
+     QMenu* createIn = new QMenu(tr("Create in:"), menu);
+     BOOST_FOREACH(EDRDockWidgetSet* set, topMainWindow->getDockSet()) {
+         if (set->isAdditionPossible()) {
+             QAction* action = new ContextAction(helper, menu, VisualizerPtr(), set);
+             action->setText(set->windowTitle());
+             createIn->addAction(action);
+             connect(action, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
+         }
+     }
+     QAction* newGroup = new ContextAction(helper, menu);
+     newGroup->setText(tr("New group"));
+     createIn->addAction(newGroup);
+     connect(newGroup, SIGNAL(triggered()), this, SLOT(createVisualizerInNewSet()));
+     if (createIn->actions().size()) {
+         menu->addMenu(createIn);
+     }
+
+     return menu;
+ }
+
+ void HmmMainWindow::menuHighlightVisualizer( QAction* action )
+ {
+     ContextAction* context = qobject_cast<ContextAction*>(action);
+     if (context) {
+         highlightVisualizer(context->getVisualizer());
+
+     } else {
+         highlightVisualizer(VisualizerPtr());
+     }
+ }
+
+ void HmmMainWindow::dropUnusedElements( std::multimap<TreeItemHelper*, DataItemDescription>& multimap )
+ {
+     typedef std::multimap<TreeItemHelper*, DataItemDescription> mmap;
+     for (auto it = multimap.begin(); it != multimap.end(); ) {
+         DataItemDescription& desc = it->second;
+         bool emptySerie = false;
+         for (auto s = desc.series.begin(); s != desc.series.end(); s++) {
+             if ((*s).use_count() == 0) {
+                 emptySerie = true;
+                 break;
+             }
+         }
+         if (emptySerie || desc.visualizer.use_count() == 0) {
+             auto toErase = it;
+             it++;
+             multimap.erase(toErase);
+         } else {
+             it++;
+         }
+
+     }
+ }
+
+ 
  void HmmMainWindow::DataObserver::update( const core::IMemoryDataManager * subject )
  {
      std::vector<MotionConstPtr> motions = core::queryDataPtr(DataManager::getInstance());
