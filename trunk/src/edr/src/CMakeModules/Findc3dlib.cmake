@@ -2,7 +2,7 @@
 FIND_INIT(C3DLIB c3dlib)
 
 # szukanie
-FIND_STATIC(C3DLIB "c3dlib")
+FIND_SHARED(C3DLIB "c3dlib" "c3dlib")
 
 # skopiowanie
 FIND_FINISH(C3DLIB)
