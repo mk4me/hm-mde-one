@@ -62,6 +62,11 @@ void HmmMainWindow::onFocusChange(QWidget * oldWidget, QWidget * newWidget)
 
         if(widget != nullptr){
             setCurrentContext(widget);
+            if(widget->hasFocus() == false){
+                widget->blockSignals(true);
+                widget->setFocus();
+                widget->blockSignals(false);
+            }
         }
     }
 }
@@ -947,7 +952,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
     std::vector<VisualizerTimeSeriePtr> series;
     hmmItem->getSeries(visualizer, path, series);
-    visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
+    visualizer->getWidget()->setFocusPolicy(Qt::ClickFocus);
+    //visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
+    visualizerDockWidget->setFocusProxy(visualizer->getWidget());
 
     DataItemDescription desc(visualizer, series, visualizerDockWidget);
     items2Descriptions.insert(std::make_pair(hmmItem, desc));

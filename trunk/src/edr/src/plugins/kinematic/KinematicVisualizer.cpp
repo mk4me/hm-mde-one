@@ -4,6 +4,12 @@
 #include "SkeletonSerie.h"
 #include "MarkerSerie.h"
 
+#ifdef _DEBUG
+
+#include <core/MultiViewWidgetItem.h>
+
+#endif
+
 const float DEFAULT_SHIFT = 1.0f;
 
 void KinematicVisualizer::setUp( core::IObjectSource* source )
@@ -102,11 +108,10 @@ void KinematicVisualizer::removeSerie(core::IVisualizer::SerieBase *serie)
 QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
 {
     widget = new osgui::QOsgDefaultWidget();
+    widget->setTimerActive(true);
+
     trajectoriesDialog = new TrajectoriesDialog(widget);
     const osg::GraphicsContext::Traits* traits = widget->getCamera()->getGraphicsContext()->getTraits();
-    widget->setTimerActive(true);
-    osg::ref_ptr<osgViewer::StatsHandler> handler = new osgViewer::StatsHandler;
-    widget->addEventHandler(handler);
 
     widget->addEventHandler(new osgGA::StateSetManipulator(
         widget->getCamera()->getOrCreateStateSet()
@@ -208,7 +213,30 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     widget->setMinimumSize(50, 50);
 
     indicatorNode = createIndicator();
-    return widget;
+
+
+#ifndef _DEBUG
+
+    //dodajemy dodatkowy zwyk³y widget
+    QWidget * retWidget = new QWidget();
+    retWidget->setLayout(new QVBoxLayout());
+    retWidget->layout()->addWidget(widget);
+
+#else
+
+    //widget proxy przekierowujacy focusa do okienka osg
+    QWidget * retWidget = new core::QOsgEncapsulatorWidget(widget);
+    //dodajemy tez event handler ze statystykami
+    widget->addEventHandler( new osgViewer::StatsHandler() );
+    widget->setTimerActive(true);
+
+#endif
+
+    retWidget->setFocusPolicy(Qt::StrongFocus);
+    widget->setFocusPolicy(Qt::StrongFocus);
+    retWidget->layout()->setContentsMargins(2,0,2,2);
+
+    return retWidget;
 }
 
 const std::string& KinematicVisualizer::getName() const

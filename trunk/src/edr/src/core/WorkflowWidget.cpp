@@ -16,6 +16,12 @@
 #include "VisualizerWidget.h"
 #include "EDRTitleBar.h"
 
+#ifdef _DEBUG
+
+#include <core/MultiViewWidgetItem.h>
+
+#endif
+
 WorkflowWidget::WorkflowWidget(WorkflowService* service)
     :   service(service)
 {
@@ -23,6 +29,7 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
 
     workflowVDFWidget = new WorkflowCustomQOSGWidget(this);
     workflowVDFWidget->setMouseTracking(true);
+    workflowVDFWidget->setFocusPolicy(Qt::StrongFocus);
 
     //dla lapania pozycji kursora na menu kontekstowe poniewa¿ z poziomu OSG tracê czêœciowo t¹ informacjê
     workflowVDFWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -33,8 +40,10 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
         workflowVDFWidget,
         traits->width,
         traits->height,
-        0xF0000000,
-        osgWidget::WindowManager::WM_PICK_DEBUG
+        0xF0000000
+#ifdef _DEBUG
+        , osgWidget::WindowManager::WM_PICK_DEBUG
+#endif
         );
 
     workflowVDFModel->setModel(dflm::MPtr(new EDRDataFlow()));
@@ -54,7 +63,7 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
     //workflowVDFWidget->addEventHandler( new core::OsgSceneDumpFileHandler("dump_vdf.txt") );
     workflowVDFWidget->addEventHandler( new osgWidget::MouseHandler(workflowVDFModel) );
     workflowVDFWidget->addEventHandler( new osgWidget::ResizeHandler(workflowVDFModel, multiViewCamera) );
-    workflowVDFWidget->addEventHandler( new osgViewer::StatsHandler );
+
     workflowVDFWidget->addEventHandler( new osgGA::StateSetManipulator( workflowVDFWidget->getCamera()->getOrCreateStateSet() ) );
 
     // dodanie do widgeta
@@ -77,6 +86,27 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
 
         //dodaj odpowiadaj¹cy element do toolbara
     }
+
+#ifndef _DEBUG
+
+    //dodajemy dodatkowy zwyk³y widget
+    QWidget * retWidget = new QWidget();
+    retWidget->setLayout(new QVBoxLayout());
+    retWidget->layout()->addWidget(workflowVDFWidget);
+
+#else
+
+    //widget proxy przekierowujacy focusa do okienka osg
+    QWidget * retWidget = new core::QOsgEncapsulatorWidget(workflowVDFWidget);
+    //dodajemy tez event handler ze statystykami
+    workflowVDFWidget->addEventHandler( new osgViewer::StatsHandler() );
+    workflowVDFWidget->setTimerActive(true);
+
+#endif
+
+    retWidget->layout()->setContentsMargins(2,0,2,2);
+    retWidget->setFocusPolicy(Qt::StrongFocus);
+    workflowVDFWidget->setFocusPolicy(Qt::StrongFocus);
 }
 
 WorkflowWidget::~WorkflowWidget()
@@ -420,13 +450,12 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
     setWidget(mainWidget);
 
-    //dodajemy toolbar
-    //getInnerWidget()->layoutContent->addWidget(toolbar);
-
     //inicjalizaca VDF
     workflowVDFWidget = new WorkflowCustomQOSGWidget(this);
     workflowVDFWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     workflowVDFWidget->workflowWidget = this;
+
+    workflowVDFWidget->setTimerActive(true);
 
     workflowVDFWidget->setMouseTracking(true);
 
@@ -439,10 +468,11 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
         workflowVDFWidget,
         traits->width,
         traits->height,
-        0xF0000000,
-        osgWidget::WindowManager::WM_PICK_DEBUG
+        0xF0000000
+#ifdef _DEBUG
+        , osgWidget::WindowManager::WM_PICK_DEBUG
+#endif
         );
-
 
     workflowVDFModel->setNodeDeleteAction(boost::bind(&EDRWorkflowWidget::onNodeDelete, this, _1));
     workflowVDFModel->setNodeDoubleClickAction(boost::bind(&EDRWorkflowWidget::onNodeDoubleClick, this, _1, _2));
@@ -453,35 +483,16 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
     connect(workflowVDFWidget, SIGNAL(customContextMenuRequested(QPoint)), dynamic_cast<QObject*>(workflowVDFModel.get()), SLOT(contextMenuRequestPosition(QPoint)));
 
-    //// stworzenie kamery
-    //osg::Camera* multiViewCamera = workflowVDFModel->createParentOrthoCamera();
-    //multiViewCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
-    //multiViewCamera->setRenderOrder(osg::Camera::POST_RENDER, 1);
-    //multiViewCamera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-
     // konfiguracja kamery
     osg::Camera* camera = workflowVDFWidget->getCamera();
     camera->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF);
     camera->setProjectionMatrix(osg::Matrix::ortho2D(0.0, double(traits->width), 0.0f, double(traits->height)));
     camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
     camera->setViewMatrix(osg::Matrix::identity());
-    //camera->setClearColor(Vec4(0.73f, 0.73f, 0.73f, 1));
-
-    //osg::ref_ptr<osg::Group> root = new osg::Group();
-    //root->addChild(multiViewCamera);
-    //workflowVDFWidget->setSceneData(root);
     workflowVDFWidget->setSceneData(workflowVDFModel);
 
-    //workflowVDFWidget->addEventHandler( new core::OsgSceneDumpFileHandler("dump_vdf.txt") );
     workflowVDFWidget->addEventHandler( new osgWidget::MouseHandler(workflowVDFModel) );
-    //workflowVDFWidget->addEventHandler( new osgWidget::ResizeHandler(workflowVDFModel, multiViewCamera) );
     workflowVDFWidget->addEventHandler( new osgWidget::ResizeHandler(workflowVDFModel, camera) );
-    workflowVDFWidget->addEventHandler( new osgViewer::StatsHandler );
-    //workflowVDFWidget->addEventHandler( new osgGA::StateSetManipulator( workflowVDFWidget->getCamera()->getOrCreateStateSet() ) );
-
-    // dodanie do widgeta
-    //getInnerWidget()->layoutContent->addWidget( workflowVDFWidget );
-    layout->addWidget( workflowVDFWidget );
 
     StylesSet styleSet = generateRequiredStyles();
 
@@ -490,10 +501,6 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
     }
 
     workflowVDFModel->showDefaultToolbar(false);
-
-    //EDRTitleBar * titleBar = getTitleBar();
-    //EDRTitleBar * titleBar = new EDRTitleBar();
-    //setTitleBarWidget(titleBar);
 
     EDRTitleBar * titleBar = supplyWithEDRTitleBar(this);
     
@@ -512,6 +519,30 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
 
     titleBar->addObject(actionStart, IEDRTitleBar::Left);
     titleBar->addObject(actionStop, IEDRTitleBar::Left);
+
+
+#ifndef _DEBUG
+
+    //dodajemy dodatkowy zwyk³y widget
+    QWidget * retWidget = new QWidget();
+    retWidget->setLayout(new QVBoxLayout());
+    retWidget->layout()->addWidget(workflowVDFWidget);
+
+#else
+
+    //widget proxy przekierowujacy focusa do okienka osg
+    QWidget * retWidget = new core::QOsgEncapsulatorWidget(workflowVDFWidget);
+    //dodajemy tez event handler ze statystykami
+    workflowVDFWidget->addEventHandler( new osgViewer::StatsHandler() );
+    workflowVDFWidget->setTimerActive(true);
+
+#endif
+
+    retWidget->setFocusPolicy(Qt::StrongFocus);
+    workflowVDFWidget->setFocusPolicy(Qt::StrongFocus);
+    retWidget->layout()->setContentsMargins(2,0,2,2);
+
+    layout->addWidget(retWidget);
 }
 
 EDRWorkflowWidget::~EDRWorkflowWidget()

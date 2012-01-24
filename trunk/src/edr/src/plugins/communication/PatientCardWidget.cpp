@@ -56,6 +56,7 @@ void PatientCardWidget::init()
     sessionsWidget = new QTreeWidget();
     sessionsWidget->setMaximumHeight(300);
     sessionsWidget->header()->setResizeMode(QHeaderView::Fixed);
+    sessionsWidget->header()->setVisible(false);
 
     connect(sessionsWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(currentSessionChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
     //adnotacje
@@ -74,10 +75,6 @@ void PatientCardWidget::init()
     headers << tr("Focus");
     disordersTable->setColumnCount(3);
     disordersTable->setHorizontalHeaderLabels(headers);
-
-    resetAntropometricData();
-    centerTableCellsText(generalDataTable);
-    centerTableCellsText(leftRightDataTable);
     
     generalDataTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
     leftRightDataTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
@@ -90,6 +87,27 @@ void PatientCardWidget::init()
 
     generalDataTable->verticalHeader()->setResizeMode(QHeaderView::Fixed);
     leftRightDataTable->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+
+    /*int vHeaderColumnMaxWidth = 0;
+    for(int i = 0; i < leftRightDataTable->rowCount(); i++){
+        vHeaderColumnMaxWidth = max(vHeaderColumnMaxWidth, leftRightDataTable->verticalHeaderItem(i)->sizeHint().width());
+    }
+
+    for(int i = 0; i < generalDataTable->rowCount(); i++){
+        vHeaderColumnMaxWidth = max(vHeaderColumnMaxWidth, generalDataTable->verticalHeaderItem(i)->sizeHint().width());
+    }
+
+    for(int i = 0; i < leftRightDataTable->rowCount(); i++){
+        leftRightDataTable->verticalHeaderItem(i)->setSizeHint(QSize(vHeaderColumnMaxWidth, leftRightDataTable->verticalHeaderItem(i)->sizeHint().height()));
+    }
+
+    for(int i = 0; i < generalDataTable->rowCount(); i++){
+        generalDataTable->verticalHeaderItem(i)->setSizeHint(QSize(vHeaderColumnMaxWidth, generalDataTable->verticalHeaderItem(i)->sizeHint().height()));
+    }*/
+
+    resetAntropometricData();
+    centerTableCellsText(generalDataTable);
+    centerTableCellsText(leftRightDataTable);
 }
 
 PatientCardWidget::~PatientCardWidget()
@@ -239,12 +257,12 @@ void PatientCardWidget::refreshSessions()
 
     if(groupedData.begin()->second.empty() == false){
 
-        QTreeWidgetItem * item = createBranch("Przed", groupedData.begin()->second);
+        QTreeWidgetItem * item = createBranch("Before", groupedData.begin()->second);
         sessionsWidget->addTopLevelItem(item);
     }
 
     if(groupedData.begin()->first != groupedData.rbegin()->first && groupedData.rbegin()->second.empty() == false){
-        QTreeWidgetItem * item = createBranch("Po", groupedData.rbegin()->second);
+        QTreeWidgetItem * item = createBranch("After", groupedData.rbegin()->second);
         sessionsWidget->addTopLevelItem(item);
     }
 
@@ -320,6 +338,12 @@ void PatientCardWidget::fillAntropometricData(const communication::MotionShallow
     setAttribute(leftRightDataTable, 9, 2, "RightHandWidth", attributes);
     setAttribute(leftRightDataTable, 10, 1, "LeftHandThickness", attributes);
     setAttribute(leftRightDataTable, 10, 2, "RightHandThickness", attributes);
+
+    leftRightDataTable->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    generalDataTable->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+
+    generalDataTable->horizontalHeader()->resizeSection(0, leftRightDataTable->horizontalHeader()->sectionSize(0));
+    generalDataTable->horizontalHeader()->resizeSection(1, leftRightDataTable->horizontalHeader()->sectionSize(1) + leftRightDataTable->horizontalHeader()->sectionSize(2));
 }
 
 void PatientCardWidget::setAttribute(QTableWidget * table, int row, int column, const std::string & attribute, const communication::MotionShallowCopy::Attrs & attributes)
@@ -347,7 +371,8 @@ QTreeWidgetItem * PatientCardWidget::createBranch(const std::string & name, cons
 
     auto date = sessions.begin()->second->sessionDate;
 
-    ret->setText(0, QString::fromUtf8(name.c_str()));
+    //ret->setText(0, QString::fromUtf8(name.c_str()));
+    ret->setText(0, tr(name.c_str()));
     ret->setText(1, date.c_str());
 
     //gorna partia

@@ -12,6 +12,7 @@
 #include <osgWidget/Window>
 #include <osgWidget/Widget>
 #include <core/MultiView.h>
+#include <osgui/QOsgWidgets.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -63,9 +64,56 @@ public:
 
 };
 
+
+class QOsgEncapsulatorWidget : public QWidget
+{
+public:
+    QOsgEncapsulatorWidget(osgui::QOsgDefaultWidget * encapsulatedWidget, QWidget * parent = nullptr) : QWidget(parent), encapsulatedWidget(encapsulatedWidget)
+    {
+        if(encapsulatedWidget == nullptr){
+            throw std::runtime_error("Null QOsgDefaultWidget widget to encapsulate not supported");
+        }
+
+        this->setLayout(new QVBoxLayout());
+        this->layout()->addWidget(encapsulatedWidget);
+    }
+
+    virtual ~QOsgEncapsulatorWidget()
+    {
+
+    }
+
+    osgui::QOsgDefaultWidget * getEncapsulatedWidget()
+    {
+        return encapsulatedWidget;
+    }
+
+    const osgui::QOsgDefaultWidget * getEncapsulatedWidget() const
+    {
+        return encapsulatedWidget;
+    }
+
+protected:
+
+    virtual void keyPressEvent(QKeyEvent * event)
+    {
+        encapsulatedWidget->keyPressEvent(event);
+    }
+
+    virtual void keyReleaseEvent(QKeyEvent * event)
+    {
+        encapsulatedWidget->keyReleaseEvent(event);
+    }
+
+private:
+
+    osgui::QOsgDefaultWidget * encapsulatedWidget;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////
+
 
 
 #endif  // __HEADER_GUARD__MULTIVIEWWIDGETITEM_H__

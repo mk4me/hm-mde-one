@@ -43,8 +43,10 @@ NewChartVisualizer::~NewChartVisualizer()
 QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
 {
     QWidget* widget = new QWidget();
+    widget->setObjectName(QString::fromUtf8("newChartVisualizerWidget"));
     QwtText txt(getName().c_str());
     qwtPlot = new QwtPlot(txt, nullptr);
+    qwtPlot->setObjectName(QString::fromUtf8("plot"));
     //aby legenda nie by³a usuwana podczas chowania i pokazywania trzeba ustawiæ parenta innego ni¿ QwtPlot
     legend = new QwtLegend(widget);
     legend->setDefaultItemMode(QwtLegendData::Checkable);

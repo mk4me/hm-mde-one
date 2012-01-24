@@ -64,7 +64,7 @@ DateTime GeneralBasicQueriesService::getLastMetadataModificationTime()
     if(invoker->status()) {
 
         if(!invoker->invoke()) {
-            throw invoker->getXMLResponse();
+            throw std::runtime_error(invoker->errors().c_str());
         }
 
         Schema::Type type;

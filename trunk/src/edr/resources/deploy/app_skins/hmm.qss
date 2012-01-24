@@ -402,3 +402,8 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
 		subcontrol-position: right;										 
 		subcontrol-origin: margin;										
 		}	
+
+
+VisualizerWidget > .QWidget {
+	border: 2px solid rgb(135, 177, 255);
+}

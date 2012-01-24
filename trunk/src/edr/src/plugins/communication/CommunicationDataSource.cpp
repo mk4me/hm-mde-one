@@ -1621,6 +1621,9 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
     patientsTree->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     disordersTree->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
+    patientsTree->header()->setResizeMode(QHeaderView::Fixed);
+    disordersTree->header()->setResizeMode(QHeaderView::Fixed);
+
     patientsTree->setContextMenuPolicy( Qt::CustomContextMenu );
     disordersTree->setContextMenuPolicy( Qt::CustomContextMenu );
     patientsTree->setIconSize(QSize(40, 20));
@@ -1644,7 +1647,7 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
     perspectiveButtonsLogicGroup->addButton(disorderPerspectiveRadio);
     patientsPerspectiveRadio->setChecked(true);
 
-    QGroupBox * perspectiveButtonsUiGroup = new QGroupBox(QString(tr("Data perspective")));
+    QGroupBox * perspectiveButtonsUiGroup = new QGroupBox(QString(tr("View")));
     perspectiveButtonsUiGroup->setObjectName(QString::fromUtf8("perspectiveGroup"));
     perspectiveButtonsUiGroup->setLayout(new QHBoxLayout());
     perspectiveButtonsUiGroup->layout()->addWidget(patientsPerspectiveRadio);
@@ -1685,7 +1688,14 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
 
     patientCardWidget->setContentsMargins(0,0,0,0);
 
-    layout->addWidget(leftSide);
+    QTabWidget * leftTabs = new QTabWidget();
+    leftTabs->setObjectName(QString::fromUtf8("leftTabs"));
+    leftTabs->addTab(leftSide, QString::fromUtf8("Motion data"));
+    leftTabs->addTab(new QWidget(), QString::fromUtf8("User data"));
+
+    leftTabs->setTabPosition(QTabWidget::South);
+
+    layout->addWidget(leftTabs);
     layout->addWidget(patientCardWidget);    
 }
 

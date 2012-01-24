@@ -675,7 +675,7 @@ border-top: 1px solid rgb(101, 101, 101);
 padding-top: 2px;
 }
 
-QFrame#mainArea &gt; QWidget, QFrame#mainArea QWidget#analisisArea, QFrame#mainArea QWidget#analisisArea EDRDockWidgetManager, QFrame#mainArea QWidget#analisisArea QMainWindow, QFrame#mainArea &gt; QWidget#dataWidget, QFrame#mainArea QWidget#dataWidget, QWidget#dataWidget QTabWidget#sourcesTabs, QWidget#dataWidget QTabWidget#sourcesTabs &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source &gt; *, /* QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView &gt; *,*/ QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QWidget#leftSide  {
+QFrame#mainArea &gt; QWidget, QFrame#mainArea QWidget#analisisArea, QFrame#mainArea QWidget#analisisArea EDRDockWidgetManager, QFrame#mainArea QWidget#analisisArea QMainWindow, QFrame#mainArea &gt; QWidget#dataWidget, QFrame#mainArea QWidget#dataWidget, QWidget#dataWidget QTabWidget#sourcesTabs, QWidget#dataWidget QTabWidget#sourcesTabs &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source &gt; *,  QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QWidget#leftSide  {
 	background-color: rgb(91, 91, 91);
 }
 
@@ -723,17 +723,10 @@ background: white;
 }
 
 QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard {
-	/*background: rgb(91, 91, 91);*/
 	border: 1px solid black;
 	border-radius: 4px;
 	padding: 2px;
 }
-
-/*
-QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QFrame#detailsFrame, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QFrame#frame, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QLabel#antropometricLabel, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QMultiToolBox#closableDataGroups {
-	background: rgb(91, 91, 91);
-}
-*/
 
 QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QGroupBox#groupBox {
 	border: 1px solid black;
@@ -758,12 +751,6 @@ QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter
 	color: black;
 	padding: 2px;
 }
-
-/*
-QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QHeaderView {
-	background: rgb(91,91,91);
-}
-*/
 
 QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QHeaderView:horizontal {
 	border: none;
@@ -840,7 +827,7 @@ QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter
 	border: none;
 	border-radius: 4px;
 	gridline-color: black;
-	alternate-background-color: 	lightgray/*rgb(101,101,101)*/;
+	alternate-background-color: 	lightgray;
 	selection-background-color: rgb(135, 177, 255);
 }
 
@@ -854,42 +841,57 @@ QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter
 }
 
 QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QTreeView QHeaderView::section:only-one:horizontal {
-	/*border-top: 1px solid rgb(41, 41,41);*/
 	border: none;
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;	
 }
 
-/*
-QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QTreeView QHeaderView::section:last:horizontal {
-	border-top-right-radius: 4px;
-	border-top: 1px solid rgb(41, 41,41);
-	border-right: 1px solid rgb(41, 41,41);
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QTreeWidget, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard QTextEdit {
+	border: none;
 }
 
-QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QTreeView QHeaderView::section:first:horizontal {
-	border-left: 1px solid rgb(41, 41,41);
-	border-top: 1px solid rgb(41, 41,41);
+QWidget#dataWidget QTabWidget {
+	/*background: white;*/
+background: rgb(91, 91, 91);
 }
 
-QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QTreeView QHeaderView::section:only-one:horizontal {
-	border-top-right-radius: 4px;
+QWidget#dataWidget QTabWidget::pane {
+	border: 1px solid black;
 	border-top-left-radius: 4px;
-	border-right: 1px solid rgb(41, 41,41);
-	border-left: 1px solid rgb(41, 41,41);
-	border-top: 1px solid rgb(41, 41,41);
+	border-top-right-radius: 4px;
+	border-bottom: 3px solid black;
+	margin: 0px;
+	padding: 2px;
+/*	background: white;*/
+background: rgb(91, 91, 91);
 }
 
-QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QTreeView QHeaderView::section:middle:horizontal, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QTreeView QHeaderView::section:last:horizontal {
-	border-left: 1px solid white;
+QWidget#dataWidget QTabBar {
+	background: rgb(91, 91, 91);
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
 }
-*/
 
-/*
-QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QHeaderView::section:checked:vertical {
-	background: rgb(135, 177, 255);
+QWidget#dataWidget QTabBar::tab, QWidget#dataWidget QTabBar::tab:first, QWidget#dataWidget QTabBar::tab:middle, QWidget#dataWidget QTabBar::tab:last, QWidget#dataWidget QTabBar::tab:selected {
+border: none;
+ border-radius: 0px;
+ background-color: transparent;
+ color: black;
+min-width: 8ex;
+ padding: 4px;
+margin-right: 1px;
 }
-*/
+
+QWidget#dataWidget QTabBar::tab:hover {
+    background-color: #898989;
+}
+
+QWidget#dataWidget QTabBar::tab:selected, QWidget#dataWidget QTabBar::tab:hover:selected {
+ background-color: black;
+color: white;
+ border-bottom-left-radius: 4px;
+ border-bottom-right-radius: 4px;
+}
 
 /* ANALIZY - QWidget#analisisArea */
 QFrame#mainArea QWidget#analisisArea &gt; *, QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
@@ -905,7 +907,7 @@ QFrame#mainArea EDRDockWidgetManager .EDRDockWidgetSet &gt; * {
 	margin-top: 0px;
 }
 
-QFrame#mainArea EDRTitleBar, QFrame#mainArea EDRTitleBar * {
+QFrame#mainArea EDRTitleBar{
 	background-color: rgb(43, 42, 41);
 	color: white;
 	margin: 0px;
@@ -914,12 +916,27 @@ QFrame#mainArea EDRTitleBar, QFrame#mainArea EDRTitleBar * {
 	border-top-right-radius: 4px;
 }
 
-QDockWidget &gt; .QWidget, EDRDockWidget &gt; .QWidget, VisualizerWidget &gt; .QWidget, EDRDockWidgetSet &gt; .QWidget {
-	border: 1px solid black;
+QFrame#mainArea EDRTitleBar * {
+	background-color: rgb(43, 42, 41);
+	color: white;
+	margin: 0px;
+	border: none;
+}
+
+QFrame#mainArea QDockWidget &gt; .QWidget, QFrame#mainArea EDRDockWidget &gt; .QWidget, QFrame#mainArea VisualizerWidget &gt; .QWidget, QFrame#mainArea EDRDockWidgetSet &gt; .QWidget {
+	border: 1px solid /*black*/ rgb(220,220, 220);
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
 	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
+}
+
+QFrame#mainArea VisualizerWidget &gt; .QWidget:focus, QFrame#mainArea VisualizerWidget &gt; .QWidget:focus:hover {
+	border: 2px solid orange;
+}
+
+QFrame#mainArea VisualizerWidget &gt; .QWidget:hover {
+	border: 2px solid rgb(135, 177, 255);
 }
 </string>
       </property>

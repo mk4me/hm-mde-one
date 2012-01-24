@@ -16,6 +16,7 @@
 class EDRDockWidget : public QDockWidget
 {
     Q_OBJECT
+        Q_PROPERTY(QString windowTitle READ windowTitle WRITE setWindowTitle NOTIFY windowTitleChanged);
 
 public:
     explicit EDRDockWidget(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0);
@@ -26,7 +27,6 @@ public:
 signals:
 
     void windowTitleChanged(const QString & title);
-    void featuresChanged(DockWidgetFeatures features);
 
 public slots:
 
@@ -34,11 +34,8 @@ public slots:
     void toggleFloating();
 
 public:
-    // przykrywamy oryginaln¹ metodê ¿eby móc emitowaæ sygna³!
+    //// przykrywamy oryginaln¹ metodê ¿eby móc emitowaæ sygna³!
     void setWindowTitle(const QString & title);
-    void setFeatures(DockWidgetFeatures features);
-
-public:
 
     bool isPermanent() const;
     void setPermanent(bool permanent);

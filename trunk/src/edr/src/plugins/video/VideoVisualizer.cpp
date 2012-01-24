@@ -9,6 +9,13 @@
 #include <osgWidget/Box>
 #include <osgui/AspectRatioKeeper.h>
 #include <core/StringTools.h>
+
+#ifdef _DEBUG
+
+#include <core/MultiViewWidgetItem.h>
+
+#endif
+
 using namespace core;
 
 struct VideoVisualizer::Refresher
@@ -187,8 +194,6 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
     viewer = new QOsgDefaultWidget();
     viewer->setTimerActive(false);
 
-    viewer->addEventHandler( new osgViewer::StatsHandler() );
-
     // pobranie cech kontekstu graficznego
     const GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
 
@@ -217,8 +222,9 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
     manager->addChild(workspace);
 
     // dodanie widgetu
-    widget = new Widget("video", 100, 100);
-    widget->setSize(100, 100);
+    //widget = new Widget("video", 100, 100);
+    widget = new Widget("video");
+    //widget->setSize(100, 100);
     widget->setUpdateCallback( new WidgetUpdater(this) );
 
     // ratio keeper
@@ -231,7 +237,29 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
 
     refresh(float(viewer->width()), float(viewer->height()));
 
-    return viewer;
+
+#ifndef _DEBUG
+
+    //dodajemy dodatkowy zwyk³y widget
+    QWidget * retWidget = new QWidget();
+    retWidget->setLayout(new QVBoxLayout());
+    retWidget->layout()->addWidget(viewer);
+
+#else
+
+    //widget proxy przekierowujacy focusa do okienka osg
+    QWidget * retWidget = new QOsgEncapsulatorWidget(viewer);
+    //dodajemy tez event handler ze statystykami
+    viewer->addEventHandler( new osgViewer::StatsHandler() );
+    viewer->setTimerActive(true);
+
+#endif
+
+    retWidget->layout()->setContentsMargins(2,0,2,2);
+    retWidget->setFocusPolicy(Qt::StrongFocus);
+    viewer->setFocusPolicy(Qt::StrongFocus);
+
+    return retWidget;
 }
 
 void VideoVisualizer::setUp( core::IObjectSource* source )
