@@ -1,5 +1,5 @@
 # przygotowanie do szukania
-FIND_INIT(VIDLIB vidlib)
+FIND_INIT_EDRUTILS_MODULE(VIDLIB vidlib)
 
 # szukanie
 FIND_SHARED(VIDLIB "vidlib" "vidlib")

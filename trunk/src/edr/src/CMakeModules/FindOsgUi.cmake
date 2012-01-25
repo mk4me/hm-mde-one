@@ -1,5 +1,5 @@
 # przygotowanie do szukania
-FIND_INIT(OSGUI osgui)
+FIND_INIT_EDRUTILS_MODULE(OSGUI osgui)
 
 # szukanie
 FIND_STATIC(OSGUI "osgui")

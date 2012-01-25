@@ -106,7 +106,13 @@ macro(FIND_FINISH variable)
 
 endmacro(FIND_FINISH)
 
+# Wyszukuje elementy edrutils dla edr
+macro(FIND_INIT_EDRUTILS_MODULE variable dirName)
 
+	FIND_INIT2(variable dirName "${PROJECT_INCLUDE_ROOT}/../../edrutils/include" "../../../_out/edrutils/bin/Debug" "../../../_out/edrutils/bin/Release")
+	FIND_INCLUDE_PLATFORM_HEADERS2(variable dirName "${PROJECT_INCLUDE_ROOT}/../../../_out/edrutils")
+
+endmacro(FIND_INIT_EDRUTILS_MODULE)
 
 ###############################################################################
 

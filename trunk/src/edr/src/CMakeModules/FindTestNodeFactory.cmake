@@ -1,5 +1,5 @@
 # przygotowanie do szukania
-FIND_INIT(TESTNODEFACTORY testnodefactory)
+FIND_INIT_EDRUTILS_MODULE(TESTNODEFACTORY testnodefactory)
 
 # szukanie
 FIND_STATIC(TESTNODEFACTORY "testnodefactory")
