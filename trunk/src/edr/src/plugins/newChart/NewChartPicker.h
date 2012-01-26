@@ -36,16 +36,19 @@ public:
 
     int getPixelTolerance() const { return pixelTolerance; }
     void setPixelTolerance(int val) { pixelTolerance = val; }
+    void setCurrentCurve(QwtPlotCurve * curve);
 
 signals:
     void serieSelected(QwtPlotItem* curve);
 
 private:
-    void select( const QPoint & );
+    bool select( const QPoint & );
 
 private:
     QwtPlotCanvas* canvas;
     int pixelTolerance;
+    QwtPlotCurve* currentCurve;
+    bool move;
 };
 typedef core::shared_ptr<NewChartPicker> NewChartPickerPtr;
 typedef core::shared_ptr<const NewChartPicker> NewChartPickerConstPtr;

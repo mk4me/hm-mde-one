@@ -13,13 +13,19 @@
 
 NewChartPicker::NewChartPicker( NewChartVisualizer* visualizer):
     NewChartState( visualizer ),
-    pixelTolerance(20)
+    pixelTolerance(20), currentCurve(nullptr),
+    move(false)
 {
     canvas = visualizer->getPlot()->canvas();
     canvas->installEventFilter( this );
     //canvas->setFocusPolicy( Qt::StrongFocus );
     canvas->setFocusIndicator( QwtPlotCanvas::ItemFocusIndicator );
     canvas->setFocus();
+}
+
+void NewChartPicker::setCurrentCurve(QwtPlotCurve * curve)
+{
+    currentCurve = curve;
 }
 
 bool NewChartPicker::stateEventFilter( QObject *object, QEvent *event )
@@ -33,8 +39,24 @@ bool NewChartPicker::stateEventFilter( QObject *object, QEvent *event )
             QApplication::postEvent( this, new QEvent( QEvent::User ) );
             break;
         }
-        case QEvent::MouseButtonPress: {
-            select( ( ( QMouseEvent * )event )->pos() );
+        case QEvent::MouseMove:
+            move = true;
+            break;
+
+        case QEvent::MouseButtonRelease: {
+            if(move == false){
+                QMouseEvent * mouseEvent = (QMouseEvent*)event;
+
+                if(mouseEvent->button() == Qt::LeftButton){
+                    if(select( mouseEvent->pos() ) == true){
+                        mouseEvent->accept();
+                        return true;
+                    }
+                }
+            }
+            
+            move = false;
+            break;
         }
         default:
             break;
@@ -43,9 +65,10 @@ bool NewChartPicker::stateEventFilter( QObject *object, QEvent *event )
     return QObject::eventFilter( object, event );
 }
 
-void NewChartPicker::select( const QPoint &pos )
+bool NewChartPicker::select( const QPoint &pos )
 {
-    QwtPlotCurve *curve = nullptr;
+    bool ret = false;
+    QwtPlotCurve* curve = nullptr;
     double dist = 10e10;
     const QwtPlotItemList& itmList = visualizer->getPlot()->itemList();
     for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
@@ -63,9 +86,12 @@ void NewChartPicker::select( const QPoint &pos )
         }
     }
 
-    if ( curve && dist < pixelTolerance ) {
+    if ( curve && curve != currentCurve && dist < pixelTolerance ) {
+        ret = true;
         emit serieSelected(static_cast<QwtPlotItem*>(curve));
     }
+
+    return ret;
 }
 
 void NewChartPicker::stateBegin()

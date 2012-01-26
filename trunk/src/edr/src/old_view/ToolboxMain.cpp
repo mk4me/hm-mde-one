@@ -87,7 +87,11 @@ void ToolboxMain::setCurrentVisualizerActions(VisualizerWidget * visWidget)
 
     visWidget->getVisualizerTitleBarElements(titleBarElements);
 
-    auto titleBar = qobject_cast<EDRTitleBar*>(visWidget->titleBarWidget());
+    EDRTitleBar * titleBar = nullptr;
+
+    if(visWidget->titleBarWidget() == nullptr){
+        titleBar = supplyWithEDRTitleBar(visWidget);
+    }
 
     if(titleBar == nullptr){
         LOG_WARNING("Could not load visualizer toolbar elements - TitleBar uninitialized");

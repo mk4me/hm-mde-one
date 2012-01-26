@@ -31,6 +31,7 @@
 
 #include "NewChartSerie.h"
 #include "NewChartState.h"
+#include "NewChartPicker.h"
 
 class StatsTable;
 
@@ -153,6 +154,7 @@ private:
       void setEvents(NewChartSerie* serie, EventsCollectionConstPtr val );
       void rescale(float t1, float t2);
       void recreateStats(ScalarChannelStatsConstPtr stats = ScalarChannelStatsConstPtr());
+      void refreshSerieLayers();
 
 private slots:
 
@@ -189,6 +191,7 @@ private:
       C3DEventsCollection::Context context;
       std::map<NewChartSerie*, EventsHelperPtr> eventsHelpers;
       EventsHelper::SegmentConstPtr oldSegment;
+      NewChartPickerPtr picker;
 };
 typedef core::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef core::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;

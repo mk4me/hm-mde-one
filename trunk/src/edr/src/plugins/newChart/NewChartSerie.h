@@ -34,7 +34,9 @@ public:
       active(false),
       xvals(nullptr),
       yvals(nullptr),
-      time(0.0f)
+      time(0.0f),
+      _z(0),
+      _zBase(0)
     {
 
     }
@@ -110,6 +112,9 @@ public:
 
     void removeItemsFromPlot();
 
+    void setZ(double z, bool replot = false);
+    double z() const;
+
 private:
     NewChartVisualizer* visualizer;
     std::string name;
@@ -124,6 +129,8 @@ private:
     //PointData* pointHelper;
     bool active;
     float time;
+    double _z;
+    double _zBase;
     //core::shared_ptr<ScalarModifier> absChannel;
     //core::shared_ptr<ScalarModifier> integratorChannel;
 };

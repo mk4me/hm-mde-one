@@ -32,17 +32,34 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
     curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
     curve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
     curve->setItemAttribute(QwtPlotItem::AutoScale, true);
-    QwtWeedingCurveFitter* fitter = new QwtWeedingCurveFitter(0.0);
+    curve->setItemAttribute(QwtPlotItem::Legend, true);
+    //QwtWeedingCurveFitter* fitter = new QwtWeedingCurveFitter(0.0);
     //fitter->setFitMode(QwtSplineCurveFitter::ParametricSpline);
     curve->setCurveFitter(nullptr);
 //    curve->setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
     //curve->setCurveAttribute( QwtPlotCurve::Fitted );
     visualizer->addPlotCurve(curve, getScales());
+
+    _zBase = curve->z();
+    curve->setZ(_zBase + _z);
 }
 
 void NewChartSerie::setTime( float time )
 {
     this->time = time;
+}
+
+void NewChartSerie::setZ(double z, bool replot)
+{
+    _z = z;
+    if(replot == true && curve != nullptr){
+        curve->setZ(_zBase + _z);
+    }
+}
+
+double NewChartSerie::z() const
+{
+    return _z;
 }
 
 void NewChartSerie::setActive( bool val )

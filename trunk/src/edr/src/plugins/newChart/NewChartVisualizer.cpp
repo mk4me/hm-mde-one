@@ -12,7 +12,6 @@
 #include <qwt/qwt_legend_label.h>
 #include <qwt/qwt_legend.h>
 #include "StatsTable.h"
-#include "NewChartPicker.h"
 #include "NewChartMarker.h"
 #include "NewChartValueMarker.h"
 #include "NewChartVerticals.h"
@@ -91,7 +90,7 @@ QWidget* NewChartVisualizer::createWidget( std::vector<QObject*>& actions )
     connect(rightEvents, SIGNAL(triggered()), this, SLOT(onEventContext()));
 
     actions.push_back(activeSerieCombo);
-    NewChartPickerPtr picker(new NewChartPicker(this));
+    picker.reset(new NewChartPicker(this));
     connect(picker.get(), SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
 
     //akcje powinny byc zwracane zawsze w takiej samej kolejnosci - inaczej w UI beda za kazdym razem inaczej organizowane!!
@@ -337,10 +336,61 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
 
 void NewChartVisualizer::setActiveSerie( int idx )
 {
-    for (int i = series.size() - 1; i >= 0; --i) {
-        series[i]->setActive(idx == i);
+    bool layersRefreshRequired = false;
+
+    //ostatnia zmieniamy na nieaktywna
+    if(currentSerie > -1){
+        series[currentSerie]->setActive(false);
+
+        //odznacz w legendzie
+        QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(series[currentSerie]->curve));
+        if(legendLabel != nullptr && legendLabel->isChecked() == true){
+            legendLabel->blockSignals(true);
+            legendLabel->setChecked(false);
+            legendLabel->blockSignals(false);
+        }
+
+        currentSerie = -1;
+        layersRefreshRequired = true;
+        picker->setCurrentCurve(nullptr);
     }
-    currentSerie = idx;
+
+    if(idx > -1){
+        currentSerie = idx;
+        series[currentSerie]->setActive(true);
+        picker->setCurrentCurve(series[currentSerie]->curve);
+
+        //zaznacz w legendzie
+        QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(series[currentSerie]->curve));
+        if(legendLabel != nullptr && legendLabel->isChecked() == false){
+            legendLabel->blockSignals(true);
+            legendLabel->setChecked(true);
+            legendLabel->blockSignals(false);
+        }
+        
+        layersRefreshRequired = true;
+    }
+
+    if(layersRefreshRequired == true){
+        refreshSerieLayers();
+    }
+}
+
+void NewChartVisualizer::refreshSerieLayers()
+{
+    qwtPlot->setAutoReplot(false);
+    qwtPlot->blockSignals(true);
+    int size = series.size();
+    for(int i = 0; i < size; ++i){
+        series[i]->setZ(i == currentSerie ? 1.0 : (double)i / (double)size , true);
+    }
+
+    //legend->setVisible(false);
+    //legend->setVisible(true);
+    qwtPlot->updateLayout();
+    qwtPlot->blockSignals(false);
+    qwtPlot->setAutoReplot(true);
+    qwtPlot->replot();
 }
 
 void NewChartVisualizer::setNormalized( bool normalized )
@@ -350,29 +400,19 @@ void NewChartVisualizer::setNormalized( bool normalized )
 
 void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
 {
-    legend->blockSignals(true);
     if(on == true){
+
+        onSerieSelected(item);
         
-        QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
-        for (int i = 0; i < series.size(); i++) {
-            if (series[i]->curve == curve) {
-                // powinno wywolac sygnal, ktory ustawi aktywna serie
-                activeSerieCombo->setCurrentIndex(i);
-            }else{
-                QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(series[i]->curve));
-                if(legendLabel != nullptr && legendLabel->isChecked() == true){
-                    legendLabel->setChecked(false);
-                }
-            }
-        }
     }else{
         //ignorujemy to - zawsze musi byæ jedna seria aktywna
         QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(item));
         if(legendLabel != nullptr && legendLabel->isChecked() == false){
+            legendLabel->blockSignals(true);
             legendLabel->setChecked(true);
+            legendLabel->blockSignals(false);
         }
     }
-    legend->blockSignals(false);
 }
 
 void NewChartVisualizer::onSerieSelected( QwtPlotItem* item)
