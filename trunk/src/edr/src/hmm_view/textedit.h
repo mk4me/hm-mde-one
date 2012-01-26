@@ -60,6 +60,12 @@ class TextEdit : public QMainWindow
 public:
     TextEdit(QWidget *parent = 0);
 
+public:
+    void setHtml(const QString& html);
+    QComboBox* createSizeCombo();
+    QFontComboBox* createFontCombo();
+    QComboBox* createStyleCombo();
+
 protected:
     virtual void closeEvent(QCloseEvent *e);
 
@@ -102,6 +108,7 @@ private:
     void colorChanged(const QColor &c);
     void alignmentChanged(Qt::Alignment a);
 
+public: 
     QAction *actionSave,
         *actionTextBold,
         *actionTextUnderline,
@@ -117,6 +124,13 @@ private:
         *actionCopy,
         *actionPaste;
 
+    QAction* actionNew;
+    QAction* actionOpen;
+    QAction* actionSaveAs;
+    QAction* actionPrint;
+    QAction* actionPrintPreview;
+    QAction* actionExportPdf;
+
     QComboBox *comboStyle;
     QFontComboBox *comboFont;
     QComboBox *comboSize;
@@ -124,6 +138,7 @@ private:
     QToolBar *tb;
     QString fileName;
     QTextEdit *textEdit;
+    
 };
 
 #endif

@@ -12,7 +12,7 @@
 
 #ifndef HEADER_GUARD_CORE__PRINTWIDGETACTION_H__
 #define HEADER_GUARD_CORE__PRINTWIDGETACTION_H__
-
+/*
 class PrintWidgetAction : public QAction
 {
     Q_OBJECT;
@@ -45,9 +45,9 @@ private slots:
             pixmap = QPixmap::grabWidget(widgetToPrint);
         }
         
-        /*static int c = 0;
-        QString name = QString("C:\\Users\\Wojtek\\Desktop\\tmp\\Screen%1.png").arg(c++);
-        pixmap.save(name);*/
+        //static int c = 0;
+        //QString name = QString("C:\\Users\\Wojtek\\Desktop\\tmp\\Screen%1.png").arg(c++);
+        //pixmap.save(name);
         QClipboard* clipboard = QApplication::clipboard();
         clipboard->setImage(pixmap.toImage());
         emit printTriggered(pixmap);
@@ -58,6 +58,6 @@ private:
 };
 typedef core::shared_ptr<PrintWidgetAction> PrintWidgetActionPtr;
 typedef core::shared_ptr<const PrintWidgetAction> PrintWidgetActionConstPtr;
-
+*/
 
 #endif

@@ -36,7 +36,7 @@ public:
 
 public:
     QTreeWidget* getTreeWidget() { return this->treeWidget; }
-
+    QWidget* getRaportsThumbnailList() { return raportsArea; }
     /*void setActivePixmapAndText(const QPixmap& pixmap, const QString& name) 
     {
         label->setText(name);

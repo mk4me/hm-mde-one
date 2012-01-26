@@ -37,12 +37,14 @@ QWidget* Visualizer::getOrCreateWidget()
         LOG_DEBUG("Visualizer " << getImplementation()->getName() << " widget created");
         
         widget = getImplementation()->createWidget(genericActions);
-        PrintWidgetAction* print = new PrintWidgetAction(widget, "Print visualizer", widget);
+        //PrintWidgetAction* print = new PrintWidgetAction(widget, "Print visualizer", widget);
+        QAction* print = new QAction("Print visualizer", widget);
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/resources/icons/screenshot-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
         icon.addFile(QString::fromUtf8(":/resources/icons/screenshot-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
         print->setIcon(icon);
         genericActions.push_back(print);
+        connect(print, SIGNAL(triggered()), this, SLOT(printActionPressed()));
         tryRun();
         UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");
     }
@@ -131,6 +133,7 @@ void Visualizer::reset()
     clearAllSeries();
 }
 
+
 IVisualizerChannel::IVisualizerChannel(const std::string & path, Visualizer * visualizer) : path(path), visualizer(visualizer), managed(false)
 {
     VisualizerManager::getInstance()->notifyCreated(this);
@@ -205,6 +208,12 @@ const core::VisualizerTimeSeriePtr & VisualizerChannel::getSerie()
 const core::VisualizerTimeSerieConstPtr & VisualizerChannel::getSerie() const
 {
     return constSerie;
+}
+
+void Visualizer::printActionPressed()
+{
+    QPixmap p = getImplementation()->print();
+    emit this->printTriggered(p);
 }
 
 //VisualizerWidget * VisualizerChannel::getVisualizer()

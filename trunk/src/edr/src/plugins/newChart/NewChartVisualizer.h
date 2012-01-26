@@ -142,6 +142,11 @@ public:
       bool eventFilter( QObject *object, QEvent *event );
 
       bool isEventMode() const { return eventMode; }
+
+      virtual QPixmap print() const 
+      {
+          return QPixmap::grabWidget(qwtPlot);
+      }
       
 private:
       void addPlotCurve(QwtPlotCurve* curve, const Scales& scales);

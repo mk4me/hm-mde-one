@@ -1,8 +1,11 @@
 #include "hmmPCH.h"
 #include <QtGui/QToolBar>
+#include <core/PluginCommon.h>
 #include "VisualizerWidget.h"
 #include "HmmContexts.h"
 #include "HmmMainWindow.h"
+#include "textedit.h"
+#include "AnalisisWidget.h"
 
 
 HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
@@ -308,12 +311,15 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
     
     if (helper) {
         QVBoxLayout* l = new QVBoxLayout(flexiSection);
+        l->setContentsMargins(0, 0, 0, 0);
+        l->setSpacing(3);
         QLabel* label = new QLabel(helper->text(0));
         l->addWidget(label);
         QMenu* menu = hmm->getContextMenu(nullptr, helper);
         QWidget* horizontal = new QWidget(flexiSection);
         l->addWidget(horizontal);
         QHBoxLayout* hl = new QHBoxLayout();
+        hl->setContentsMargins(0, 0, 0, 0);
         horizontal->setLayout(hl);
 
         QList<QAction*> actions = menu->actions();
@@ -364,4 +370,235 @@ void HMMTreeItemUsageContext::refresh( QAction* dummy /*= nullptr*/ )
 {
     //QTreeWidget* tree = qobject_cast<QTreeWidget*>(getCurrentContextWidget());
     //recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(tree->currentItem()));
+}
+
+
+RaportsThumbnailsContext::RaportsThumbnailsContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) : 
+    flexiTabWidget(flexiTabWidget),
+    groupID(-1), 
+    hmm(hmm),
+    flexiSection(new QWidget(flexiTabWidget))
+{
+
+}
+
+void RaportsThumbnailsContext::activateContext( QWidget * contextWidget )
+{
+       //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest juz zaladowany
+    if(contextWidget == nullptr || groupID != -1){
+        return;
+    }
+    
+    groupID = flexiTabWidget->addGroup(QString::fromUtf8("Raports Tab"));
+
+    flexiTabWidget->addSection(groupID, flexiSection, "Actions");
+    flexiSection->setVisible(true);
+    flexiTabWidget->setCurrentGroup(groupID);
+}
+
+void RaportsThumbnailsContext::deactivateContext( QWidget * nextContextWidget, bool refresh )
+{
+    if(nextContextWidget == getCurrentContextWidget()){
+        return;
+    }
+
+    if(groupID != -1){
+        flexiTabWidget->removeGroup(groupID);
+        groupID = -1;
+    }
+}
+
+void RaportsThumbnailsContext::onRegisterContextWidget( QWidget * contextWidget )
+{
+    flexiSection = new QWidget();
+    QVBoxLayout* l = new QVBoxLayout();
+    l->setContentsMargins(0, 0, 0, 0);
+    l->setSpacing(0);
+    QToolButton* button = new QToolButton();
+    connect(button, SIGNAL(clicked()), this, SLOT(createRaport()));
+    button->setText(tr("Create raport"));
+
+    projectName = new QPlainTextEdit();
+    projectName->setMaximumSize(100, 20);
+    projectName->setPlainText("Simple Raport");
+    projectName->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    projectTemplate = new QComboBox();
+    projectTemplate->addItem("Default");
+    projectTemplate->setMaximumSize(100, 20);
+    projectTemplate->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    QWidget* upper = new QWidget();
+    upper->setLayout(new QHBoxLayout());
+    QLabel* label = new QLabel("Raport name:");
+    label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    upper->layout()->addWidget(label);
+    upper->layout()->addWidget(projectName);
+    upper->layout()->setContentsMargins(1, 0, 1, 1);
+
+    QWidget* lower = new QWidget();
+    lower->setLayout(new QHBoxLayout());
+    label = new QLabel("Raport template:");
+    label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    lower->layout()->addWidget(label);
+    lower->layout()->addWidget(projectTemplate);
+    lower->layout()->setContentsMargins(1, 1, 1, 0);
+
+    l->addWidget(upper);
+    l->addWidget(lower);
+    l->addWidget(button);
+    flexiSection->setLayout(l);
+}
+
+void RaportsThumbnailsContext::onUnregisterContextWidget( QWidget * contextWidget )
+{
+
+}
+
+void RaportsThumbnailsContext::createRaport()
+{
+    // tymczasowo
+    const QWidget* thumbParent = hmm->getAnalisis()->raportsArea;
+
+    QObjectList children = thumbParent->children();
+    QDateTime time = QDateTime::currentDateTime();
+    QString images;
+    int counter = 0;
+    int sec = time.time().second() + time.time().minute() * 60 + time.time().hour() * 60 * 60;
+    QString dirName = QString("Raport_%1_%2_%3_%4").arg(time.date().day()).arg(time.date().month()).arg(time.date().year()).arg(sec);
+    QString dir = core::getApplicationDataString(dirName.toStdString());
+    QDir().mkdir(dir);
+    for (auto it = children.begin(); it != children.end(); it++) {
+        QLabel* l = qobject_cast<QLabel*>(*it);
+        if (l) {
+            const QPixmap* pixmap = l->pixmap();
+            if (pixmap) {
+                int w = pixmap->width();
+                int h = pixmap->height();
+
+                QString path = dir + QString("/Screenshot%1.png").arg(++counter);
+                pixmap->save(path);
+                images += QString("Screenshot %1 <br> <IMG SRC=\"%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(path).arg(w).arg(h);
+            }
+            
+        }
+    }
+    QString str = QString("                                                                       "
+        "<HTML>                                                                                   "
+        "<BODY>                                                                                   "
+        "<P><FONT SIZE=6> %1</FONT></P>                                                           "
+        "<P><FONT SIZE=3> %2</FONT></P>                                                           "
+        "<OL>                                                                                     "
+        "<LI><P><FONT SIZE=5>Headline</FONT></P>                                                  "
+        "Headline placeholder.                                                                    "
+        "<LI><P><FONT SIZE=5>Data</FONT></P>                                                      "
+        "%3                                                                                       "
+        "<LI><P><FONT SIZE=5>Conclusion</FONT></P>                                                "
+        "Conclusion placeholder                                                                   "
+        "</P>                                                                                     "
+        "</OL>                                                                                    "
+        "</P>                                                                                     "
+        "</BODY>                                                                                  "
+        "</HTML>                                                                                  ")
+        .arg(projectName->toPlainText()).arg(time.toString()).arg(images);
+
+    hmm->createRaport(str);
+}
+
+RaportsTabContext::RaportsTabContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) : 
+    flexiTabWidget(flexiTabWidget),
+    groupID(-1), 
+    hmm(hmm),
+    flexiSection(new QWidget(flexiTabWidget))
+{
+
+}
+
+
+void RaportsTabContext::activateContext( QWidget * contextWidget )
+{
+    //nie wpsieramy kontekstu bez widgeta i nie ma sensu nic z kontekstem robic skoro jest juz zaladowany
+    if(contextWidget == nullptr || groupID != -1){
+        return;
+    }
+
+    groupID = flexiTabWidget->addGroup(QString::fromUtf8("Raports Tab"));
+
+    flexiTabWidget->addSection(groupID, flexiSection, "Actions");
+    flexiSection->setVisible(true);
+    flexiTabWidget->setCurrentGroup(groupID);
+}
+
+void RaportsTabContext::deactivateContext( QWidget * nextContextWidget, bool refresh )
+{
+    if(nextContextWidget == getCurrentContextWidget()){
+        return;
+    }
+
+    if(groupID != -1){
+        flexiTabWidget->removeGroup(groupID);
+        groupID = -1;
+    }
+}
+
+void RaportsTabContext::onRegisterContextWidget( QWidget * contextWidget )
+{
+    TextEdit* textEdit = qobject_cast<TextEdit*>(contextWidget);
+
+    flexiSection = new QWidget();
+    QVBoxLayout* l = new QVBoxLayout();
+    l->setContentsMargins(0, 0, 0, 0);
+    l->setSpacing(0);
+    QWidget* upper = new QWidget();
+    QHBoxLayout* upperLayout = new QHBoxLayout();
+    upper->setLayout(upperLayout);
+    QWidget* lower = new QWidget();
+    QHBoxLayout* lowerLayout = new QHBoxLayout();
+    lower->setLayout(lowerLayout);
+
+    upperLayout->setContentsMargins(3, 3, 3, 3);
+    lowerLayout->setContentsMargins(3, 3, 3, 3);
+    std::list<QAction*> actions;
+
+    actions.push_back(textEdit->actionNew);
+    actions.push_back(textEdit->actionOpen);
+    actions.push_back(textEdit->actionSaveAs);
+    actions.push_back(textEdit->actionPrint);
+    actions.push_back(textEdit->actionPrintPreview);
+    actions.push_back(textEdit->actionExportPdf);
+    actions.push_back(textEdit->actionSave);
+    actions.push_back(textEdit->actionTextBold);
+    actions.push_back(textEdit->actionTextUnderline);
+    actions.push_back(textEdit->actionTextItalic);
+    actions.push_back(textEdit->actionTextColor);
+    actions.push_back(textEdit->actionAlignLeft);
+    actions.push_back(textEdit->actionAlignCenter);
+    actions.push_back(textEdit->actionAlignRight);
+    actions.push_back(textEdit->actionAlignJustify);
+    actions.push_back(textEdit->actionUndo);
+    actions.push_back(textEdit->actionRedo);
+    actions.push_back(textEdit->actionCut);
+    actions.push_back(textEdit->actionCopy);
+    actions.push_back(textEdit->actionPaste);
+
+    for (auto it = actions.begin(); it != actions.end(); it++) {
+        QToolButton* b = new QToolButton();
+        b->setDefaultAction(*it);
+        b->setToolTip((*it)->text());
+        b->setFixedSize(20,20);
+        b->setIcon((*it)->icon());
+        upperLayout->addWidget(b);
+    }
+
+    lowerLayout->addWidget(textEdit->createStyleCombo());
+    lowerLayout->addWidget(textEdit->createFontCombo());
+    lowerLayout->addWidget(textEdit->createSizeCombo());
+
+    l->addWidget(upper);
+    l->addWidget(lower);
+    flexiSection->setLayout(l);
+}
+
+void RaportsTabContext::onUnregisterContextWidget( QWidget * contextWidget )
+{
+
 }

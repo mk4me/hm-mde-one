@@ -48,7 +48,7 @@ private:
     EDRDockWidgetSet* set;
 };
 
-
+class TextEdit;
 
     
 
@@ -105,6 +105,8 @@ public:
     void addItemToTree(QTreeWidgetItem* item);
     void clearTree();
     QMenu* getContextMenu( QWidget* parent, TreeItemHelper* helper );
+    const AnalisisWidget* getAnalisis() const { return analisis; }
+    void createRaport( const QString& html );
     virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
 
 private slots:
@@ -120,6 +122,7 @@ private slots:
 
     void onTreeContextMenu(const QPoint & pos);
 
+    void addToRaports(const QPixmap& pixmap);
     
 
     void createNewVisualizer();
@@ -144,7 +147,7 @@ private:
     void createFilterTab2();
     void refreshTree();
     void dropUnusedElements(std::multimap<TreeItemHelper*, DataItemDescription>& multimap);
-
+    
     class ItemDoubleClick
     {
     public:
@@ -196,9 +199,10 @@ private:
 
     QTreeWidgetItem * currentItem;
     AnalisisWidget* analisis;
+    
     QWidget* data;
     QWidget* operations;
-    QWidget* raports;
+    TextEdit* raports;
 
     QWidget* visualizersActionsTab;
     FlexiTabWidget * flexiTabWidget;
@@ -214,6 +218,8 @@ private:
 
     AppUsageContextPtr visualizerUsageContext;
     HMMTreeItemUsageContextPtr treeUsageContext;
+    RaportsThumbnailsContextPtr raportsThumbnailsContext;
+    RaportsTabContextPtr raportsTabContext;
 };
 
 #endif // TOOLBOXMAIN_H

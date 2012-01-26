@@ -87,6 +87,8 @@ public:
             return data;
         }
 
+        
+
     private:
         core::ObjectWrapperConstPtr data;
         LineChartSeriePtr serie;
@@ -262,6 +264,10 @@ public:
     virtual osg::Vec4 getCursorBackgroundColor() const;
     virtual void setCursorBackgroundColor(osg::Vec4 color);
 
+    virtual QPixmap print() const 
+    {
+        return QPixmap();
+    }
 
     //! \return Prototyp labelek.
     virtual const osgText::Text* getLabelPrototype() const;

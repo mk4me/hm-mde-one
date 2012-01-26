@@ -491,6 +491,14 @@ osg::ref_ptr<osg::PositionAttitudeTransform> KinematicVisualizer::createIndicato
     return transform;
 }
 
+QPixmap KinematicVisualizer::print() const
+{
+    QPixmap pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
+    QRect widgetRect = widget->geometry();
+    widgetRect.moveTopLeft(widget->parentWidget()->mapToGlobal(widgetRect.topLeft()));
+    return pixmap.copy(widgetRect);
+}
+
 
 
 

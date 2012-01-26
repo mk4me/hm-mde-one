@@ -12,6 +12,8 @@
 
 #include "FlexiTabWidget.h"
 #include "IAppUsageContextManager.h"
+#include <QtGui/QPlainTextEdit>
+#include <QtGui/QComboBox>
 
 
 class HMMVisualizerUsageContext : public IAppUsageContext
@@ -71,5 +73,52 @@ private:
 };
 typedef core::shared_ptr<HMMTreeItemUsageContext> HMMTreeItemUsageContextPtr;
 typedef core::shared_ptr<const HMMTreeItemUsageContext> HMMTreeItemUsageContextConstPtr;
+
+class RaportsThumbnailsContext : public QObject, public IAppUsageContext
+{
+    Q_OBJECT;
+public:
+    RaportsThumbnailsContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
+public:
+
+    virtual void activateContext(QWidget * contextWidget);
+    virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
+    virtual void onRegisterContextWidget(QWidget * contextWidget);
+    virtual void onUnregisterContextWidget(QWidget * contextWidget);
+
+private slots:
+    void createRaport();
+
+private:
+    FlexiTabWidget * flexiTabWidget;
+    QWidget* flexiSection;
+    FlexiTabWidget::GUIID groupID;
+    HmmMainWindow* hmm;
+    QPlainTextEdit* projectName;
+    QComboBox* projectTemplate;
+};
+typedef core::shared_ptr<RaportsThumbnailsContext> RaportsThumbnailsContextPtr;
+typedef core::shared_ptr<const RaportsThumbnailsContext> RaportsThumbnailsContextConstPtr;
+
+class RaportsTabContext : public QObject, public IAppUsageContext
+{
+    Q_OBJECT;
+public:
+    RaportsTabContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
+public:
+
+    virtual void activateContext(QWidget * contextWidget);
+    virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
+    virtual void onRegisterContextWidget(QWidget * contextWidget);
+    virtual void onUnregisterContextWidget(QWidget * contextWidget);
+
+private:
+    FlexiTabWidget * flexiTabWidget;
+    QWidget* flexiSection;
+    FlexiTabWidget::GUIID groupID;
+    HmmMainWindow* hmm;
+};
+typedef core::shared_ptr<RaportsTabContext> RaportsTabContextPtr;
+typedef core::shared_ptr<const RaportsTabContext> RaportsTabContextConstPtr;
 
 #endif

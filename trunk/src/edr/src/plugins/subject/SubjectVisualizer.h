@@ -79,6 +79,11 @@ public:
 		  return new SubjectVisualizer();
 	  }
 
+      virtual QPixmap print() const 
+      {
+          return QPixmap::grabWidget(widget.get());
+      }
+
 	  virtual const std::string& getName() const
 	  {
 		  static std::string name = "SubjectVisualizer";

@@ -152,6 +152,7 @@ public:
     virtual QWidget* createWidget(std::vector<QObject*>& actions);
     //! \see IVisualizer::createIcon
     virtual QIcon* createIcon();
+    virtual QPixmap print() const;
     //! \see IVisualizer::setUp
     virtual void setUp(core::IObjectSource* source);
 

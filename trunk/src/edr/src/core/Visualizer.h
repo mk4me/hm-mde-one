@@ -18,8 +18,9 @@
 
 //! Wizualizator. Jego zadaniem jest stworzyæ widget (gdzie on bêdzie osadzony - nie jego sprawa),
 //! zadeklarowaæ ile Ÿróde³ i jakiego typu jest w stanie obs³u¿yæ oraz przyj¹æ Ÿród³a danych.
-class Visualizer : public InputItem<core::IVisualizer>
+class Visualizer : public QObject, public InputItem<core::IVisualizer>
 {
+        Q_OBJECT;
 public:
     typedef std::set<core::shared_ptr<core::IVisualizer::SerieBase> > DataSeries;
 
@@ -81,6 +82,12 @@ public:
     void clearAllSeries();
 
     virtual void reset();
+
+signals:
+    void printTriggered(const QPixmap& pixmap);
+
+private slots:
+    void printActionPressed();
 };
 
 typedef core::shared_ptr<Visualizer> VisualizerPtr;

@@ -71,7 +71,7 @@ public:
     virtual QIcon* createIcon();
     virtual const std::string& getName() const;
     virtual void reset();
-
+    virtual QPixmap print() const;
 public:
     void updateAnimation();
 	void resetScene();

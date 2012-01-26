@@ -42,6 +42,8 @@ HmmMainWindow::HmmMainWindow() :
 
     visualizerUsageContext.reset(new HMMVisualizerUsageContext(flexiTabWidget));
     treeUsageContext.reset(new HMMTreeItemUsageContext(flexiTabWidget, this));
+    raportsThumbnailsContext.reset(new RaportsThumbnailsContext(flexiTabWidget, this));
+    raportsTabContext.reset(new RaportsTabContext(flexiTabWidget, this));
     tabPlaceholder->layout()->addWidget(flexiTabWidget);
 
 	this->setWindowFlags(Qt::FramelessWindowHint);
@@ -92,6 +94,14 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     QTreeWidget* treeWidget = this->analisis->getTreeWidget();
     addContext(treeUsageContext);
     addWidgetToContext(treeUsageContext, treeWidget);
+
+    
+    addContext(raportsThumbnailsContext);
+    //addWidgetToContext(raportsThumbnailsContext, analisis->getRaportsThumbnailList());
+    addWidgetToContext(raportsThumbnailsContext, analisis->scrollArea_3);
+
+    
+
    
     this->data = createNamedObject<QWidget>(QString::fromUtf8("dataWidget"));
 
@@ -100,7 +110,8 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     this->operations = new QWidget();
     this->raports = new TextEdit();
-
+    addContext(raportsTabContext);
+    addWidgetToContext(raportsTabContext, this->raports);
     button2TabWindow[this->dataButton] = this->data;
     button2TabWindow[this->operationsButton] = this->operations;
     button2TabWindow[this->raportsButton] = this->raports;
@@ -939,7 +950,8 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     VisualizerManager* visualizerManager = VisualizerManager::getInstance();
     VisualizerPtr visualizer = hmmItem->createVisualizer();
     visualizer->getOrCreateWidget();
-
+    // todo : zastanowic sie nad bezpieczenstwem tej operacji
+    connect(visualizer.get(), SIGNAL(printTriggered(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
     VisualizerWidget* visualizerDockWidget = new VisualizerWidget(visualizer);
     visualizerDockWidget->setPermanent(false);
     visualizerDockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
@@ -1156,6 +1168,52 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      }
  }
 
+ void HmmMainWindow::addToRaports( const QPixmap& pixmap )
+ {
+     analisis->tabWidget->setCurrentWidget(analisis->raportsTab);
+     if (!(pixmap.width() && pixmap.height())) {
+         return;
+     }
+     const int maxH = 128;
+     const int maxW = 128;
+     QWidget* list = analisis->getRaportsThumbnailList();
+     QLabel* thumb = new QLabel();
+     /*if (pixmap.width() > pixmap.height()) {
+        thumb->setPixmap(pixmap.scaledToWidth(maxW));
+     } else {
+         thumb->setPixmap(pixmap.scaledToHeight(maxH));
+     }*/
+
+     if (pixmap.width() > pixmap.height()) {
+         int newHeight = static_cast<int>(1.0 * maxH * pixmap.height() / pixmap.width());
+         thumb->setFixedSize(maxW, newHeight);
+     } else {
+         int newWidth = static_cast<int>(1.0 * maxW * pixmap.width() / pixmap.height());
+         thumb->setFixedSize(newWidth, maxH);
+     }
+
+     thumb->setScaledContents(true);
+     thumb->setPixmap(pixmap);
+
+     QGridLayout* grid = qobject_cast<QGridLayout*>(list->layout());
+     if (grid) {
+         int size = list->children().size() - 1;
+         int x = size % 2;
+         int y = size / 2;
+         grid->addWidget(thumb, y, x);
+     } else {
+        list->layout()->addWidget(thumb);
+     }
+ }
+
+ void HmmMainWindow::createRaport( const QString& html )
+ {
+     raportsButton->setEnabled(true);
+     raportsButton->click();
+     raports->setFocus();
+     raports->setHtml(html);
+ }
+
  
  void HmmMainWindow::DataObserver::update( const core::IMemoryDataManager * subject )
  {
@@ -1163,7 +1221,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      int count = motions.size();
      if (motionsCount == 0 && count > 0) {
          hmm->analisisButton->setEnabled(true);
-         hmm->raportsButton->setEnabled(true);
+         //hmm->raportsButton->setEnabled(true);
      }
      if (motionsCount != count) {
         hmm->refreshTree();

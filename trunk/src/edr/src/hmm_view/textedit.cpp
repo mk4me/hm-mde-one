@@ -75,7 +75,6 @@ TextEdit::TextEdit(QWidget *parent)
     setupFileActions();
     setupEditActions();
     setupTextActions();
-
     {
         QMenu *helpMenu = new QMenu(tr("Help"), this);
         menuBar()->addMenu(helpMenu);
@@ -83,6 +82,7 @@ TextEdit::TextEdit(QWidget *parent)
         helpMenu->addAction(tr("About &Qt"), qApp, SLOT(aboutQt()));
     }
 
+    menuBar()->setVisible(false);
     textEdit = new QTextEdit(this);
     connect(textEdit, SIGNAL(currentCharFormatChanged(QTextCharFormat)),
             this, SLOT(currentCharFormatChanged(QTextCharFormat)));
@@ -91,6 +91,8 @@ TextEdit::TextEdit(QWidget *parent)
 
     setCentralWidget(textEdit);
     textEdit->setFocus();
+
+    textEdit->document()->setPageSize(QSizeF(1500, 1000));
     setCurrentFileName(QString());
 
     fontChanged(textEdit->font());
@@ -157,14 +159,14 @@ void TextEdit::setupFileActions()
     QAction *a;
 
     QIcon newIcon = QIcon::fromTheme("document-new", QIcon(rsrcPath + "/filenew.png"));
-    a = new QAction( newIcon, tr("&New"), this);
+    actionNew = a = new QAction( newIcon, tr("&New"), this);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(QKeySequence::New);
     connect(a, SIGNAL(triggered()), this, SLOT(fileNew()));
     tb->addAction(a);
     menu->addAction(a);
 
-    a = new QAction(QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png")),
+    actionOpen = a = new QAction(QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png")),
                     tr("&Open..."), this);
     a->setShortcut(QKeySequence::Open);
     connect(a, SIGNAL(triggered()), this, SLOT(fileOpen()));
@@ -181,14 +183,14 @@ void TextEdit::setupFileActions()
     tb->addAction(a);
     menu->addAction(a);
 
-    a = new QAction(tr("Save &As..."), this);
+    actionSaveAs = a = new QAction(tr("Save &As..."), this);
     a->setPriority(QAction::LowPriority);
     connect(a, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
     menu->addAction(a);
     menu->addSeparator();
 
 #ifndef QT_NO_PRINTER
-    a = new QAction(QIcon::fromTheme("document-print", QIcon(rsrcPath + "/fileprint.png")),
+    actionPrint = a = new QAction(QIcon::fromTheme("document-print", QIcon(rsrcPath + "/fileprint.png")),
                     tr("&Print..."), this);
     a->setPriority(QAction::LowPriority);    
     a->setShortcut(QKeySequence::Print);
@@ -196,12 +198,12 @@ void TextEdit::setupFileActions()
     tb->addAction(a);
     menu->addAction(a);
 
-    a = new QAction(QIcon::fromTheme("fileprint", QIcon(rsrcPath + "/fileprint.png")),
+    actionPrintPreview = a = new QAction(QIcon::fromTheme("fileprint", QIcon(rsrcPath + "/fileprint.png")),
                     tr("Print Preview..."), this);
     connect(a, SIGNAL(triggered()), this, SLOT(filePrintPreview()));
     menu->addAction(a);
 
-    a = new QAction(QIcon::fromTheme("exportpdf", QIcon(rsrcPath + "/exportpdf.png")),
+    actionExportPdf = a = new QAction(QIcon::fromTheme("exportpdf", QIcon(rsrcPath + "/exportpdf.png")),
     tr("&Export PDF..."), this);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(Qt::CTRL + Qt::Key_D);
@@ -216,6 +218,9 @@ void TextEdit::setupFileActions()
     a->setShortcut(Qt::CTRL + Qt::Key_Q);
     connect(a, SIGNAL(triggered()), this, SLOT(close()));
     menu->addAction(a);
+
+    tb->setVisible(false);
+    menu->setVisible(false);
 }
 
 void TextEdit::setupEditActions()
@@ -261,6 +266,9 @@ void TextEdit::setupEditActions()
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
         actionPaste->setEnabled(md->hasText());
 #endif
+
+    tb->setVisible(false);
+    menu->setVisible(false);
 }
 
 void TextEdit::setupTextActions()
@@ -351,6 +359,7 @@ void TextEdit::setupTextActions()
     tb->addAction(actionTextColor);
     menu->addAction(actionTextColor);
 
+    tb->setVisible(false);
 
     tb = new QToolBar(this);
     tb->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
@@ -358,38 +367,50 @@ void TextEdit::setupTextActions()
     addToolBarBreak(Qt::TopToolBarArea);
     addToolBar(tb);
 
-    comboStyle = new QComboBox(tb);
+    //comboStyle = new QComboBox(tb);
+    //tb->addWidget(comboStyle);
+    //comboStyle->addItem("Standard");
+    //comboStyle->addItem("Bullet List (Disc)");
+    //comboStyle->addItem("Bullet List (Circle)");
+    //comboStyle->addItem("Bullet List (Square)");
+    //comboStyle->addItem("Ordered List (Decimal)");
+    //comboStyle->addItem("Ordered List (Alpha lower)");
+    //comboStyle->addItem("Ordered List (Alpha upper)");
+    //comboStyle->addItem("Ordered List (Roman lower)");
+    //comboStyle->addItem("Ordered List (Roman upper)");
+    //connect(comboStyle, SIGNAL(activated(int)),
+    //        this, SLOT(textStyle(int)));
+
+    comboStyle = createStyleCombo();
     tb->addWidget(comboStyle);
-    comboStyle->addItem("Standard");
-    comboStyle->addItem("Bullet List (Disc)");
-    comboStyle->addItem("Bullet List (Circle)");
-    comboStyle->addItem("Bullet List (Square)");
-    comboStyle->addItem("Ordered List (Decimal)");
-    comboStyle->addItem("Ordered List (Alpha lower)");
-    comboStyle->addItem("Ordered List (Alpha upper)");
-    comboStyle->addItem("Ordered List (Roman lower)");
-    comboStyle->addItem("Ordered List (Roman upper)");
-    connect(comboStyle, SIGNAL(activated(int)),
-            this, SLOT(textStyle(int)));
 
-    comboFont = new QFontComboBox(tb);
+    //comboFont = new QFontComboBox(tb);
+    //tb->addWidget(comboFont);
+    //connect(comboFont, SIGNAL(activated(QString)),
+    //        this, SLOT(textFamily(QString)));
+    //
+    comboFont = createFontCombo();
     tb->addWidget(comboFont);
-    connect(comboFont, SIGNAL(activated(QString)),
-            this, SLOT(textFamily(QString)));
 
-    comboSize = new QComboBox(tb);
-    comboSize->setObjectName("comboSize");
+    //comboSize = new QComboBox(tb);
+    //comboSize->setObjectName("comboSize");
+    //tb->addWidget(comboSize);
+    //comboSize->setEditable(true);
+    //
+    //QFontDatabase db;
+    //foreach(int size, db.standardSizes())
+    //    comboSize->addItem(QString::number(size));
+    //
+    //connect(comboSize, SIGNAL(activated(QString)),
+    //        this, SLOT(textSize(QString)));
+    //comboSize->setCurrentIndex(comboSize->findText(QString::number(QApplication::font()
+    //                                                               .pointSize())));
+
+    comboSize = createSizeCombo();
     tb->addWidget(comboSize);
-    comboSize->setEditable(true);
-
-    QFontDatabase db;
-    foreach(int size, db.standardSizes())
-        comboSize->addItem(QString::number(size));
-
-    connect(comboSize, SIGNAL(activated(QString)),
-            this, SLOT(textSize(QString)));
-    comboSize->setCurrentIndex(comboSize->findText(QString::number(QApplication::font()
-                                                                   .pointSize())));
+    //
+    tb->setVisible(false);
+    menu->setVisible(false);
 }
 
 bool TextEdit::load(const QString &f)
@@ -726,5 +747,50 @@ void TextEdit::alignmentChanged(Qt::Alignment a)
     } else if (a & Qt::AlignJustify) {
         actionAlignJustify->setChecked(true);
     }
+}
+
+void TextEdit::setHtml( const QString& html )
+{
+    textEdit->setHtml(html);
+}
+
+QComboBox* TextEdit::createSizeCombo()
+{
+    QComboBox* comboSize = new QComboBox();
+    comboSize->setEditable(true);
+
+    QFontDatabase db;
+    foreach(int size, db.standardSizes()) {
+        comboSize->addItem(QString::number(size));
+    }
+
+    connect(comboSize, SIGNAL(activated(QString)), this, SLOT(textSize(QString)));
+    comboSize->setCurrentIndex(comboSize->findText(QString::number(QApplication::font().pointSize())));
+    return comboSize;
+
+}
+
+QFontComboBox* TextEdit::createFontCombo()
+{
+    QFontComboBox* comboFont = new QFontComboBox();
+    connect(comboFont, SIGNAL(activated(QString)), this, SLOT(textFamily(QString)));
+    return comboFont;
+}
+
+QComboBox* TextEdit::createStyleCombo()
+{
+    QComboBox* comboStyle = new QComboBox();
+    comboStyle->addItem("Standard");
+    comboStyle->addItem("Bullet List (Disc)");
+    comboStyle->addItem("Bullet List (Circle)");
+    comboStyle->addItem("Bullet List (Square)");
+    comboStyle->addItem("Ordered List (Decimal)");
+    comboStyle->addItem("Ordered List (Alpha lower)");
+    comboStyle->addItem("Ordered List (Alpha upper)");
+    comboStyle->addItem("Ordered List (Roman lower)");
+    comboStyle->addItem("Ordered List (Roman upper)");
+    connect(comboStyle, SIGNAL(activated(int)),
+        this, SLOT(textStyle(int)));
+    return comboStyle;
 }
 

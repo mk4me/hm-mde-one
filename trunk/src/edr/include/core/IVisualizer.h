@@ -16,6 +16,7 @@
 #include <core/ObjectWrapper.h>
 #include <core/IInputProcessItem.h>
 #include <utils/DataChannel.h>
+#include <QtGui/QPixmap>
 
 class QObject;
 class QWidget;
@@ -93,6 +94,8 @@ namespace core
         //! Tworzy ikonê dla zadanego wizualizatora. Mo¿e zwracaæ nullptr, chocia¿ to niewskazane.
         //! W odgró¿nieniu od createWidget ikona przejmowana jest na w³asnoœæ.
         virtual QIcon* createIcon() = 0;
+
+        virtual QPixmap print() const = 0;
 
         //! Aktualizacja wyœwietlania. NIE aktualizacja stanu wyœwietlanych danych.
         virtual void update(double deltaTime) = 0;
