@@ -26,9 +26,9 @@ namespace communication
         */
         std::string uri;
 
-        bool verifyPeer;
-        WsdlPull::WsdlInvoker::HostVerification verifyHost;
-        std::string caPath;
+        //bool verifyPeer;
+        //WsdlPull::WsdlInvoker::HostVerification verifyHost;
+        //std::string caPath;
         /**
         Obiekt klasy WsdlInvoker biblioteki wsdlpull
         */
@@ -48,7 +48,7 @@ namespace communication
         @param usr nazwa u¿ytkownika
         @param pswd has³o u¿ytkownika
         */
-        WsdlConnection(const std::string& uri, const std::string& usr, const std::string& pswd, bool verifyPeer = false, const std::string & caPath = std::string(), WsdlPull::WsdlInvoker::HostVerification verifyHost = WsdlPull::WsdlInvoker::CNAny);
+        WsdlConnection(const std::string& uri, const std::string& usr, const std::string& pswd/*, bool verifyPeer = false, const std::string & caPath = std::string(), WsdlPull::WsdlInvoker::HostVerification verifyHost = WsdlPull::WsdlInvoker::CNAny*/);
         /**
         Wirtualny destruktor klasy WsdlConnection.
         */
@@ -59,7 +59,7 @@ namespace communication
         */
         virtual void setUri(const std::string& uri);
 
-        void setSecurity(bool verifyPeer, const std::string & caPath, WsdlPull::WsdlInvoker::HostVerification verifyHost);
+        //void setSecurity(bool verifyPeer, const std::string & caPath, WsdlPull::WsdlInvoker::HostVerification verifyHost);
         /**
         Metoda setUser ustala nazwê u¿ytkownika wykorzystywana do logowania.
         @param usr nazwa u¿ytkownika

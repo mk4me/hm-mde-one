@@ -14,6 +14,8 @@ set(PROJECT_LIBRARIES_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../../../include" CACH
 set(PROJECT_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../include" CACHE PATH "Location of includes.")
 set(PROJECT_ROOT "${PROJECT_SOURCE_DIR}")
 set(PROJECT_BUILD_ROOT "${PROJECT_BINARY_DIR}")
+set(EDRUTILS_INCLUDE_ROOT "${PROJECT_SOURCE_DIR}/../../edrutils/include" CACHE PATH "Location of edrutils public includes.")
+set(EDRUTILS_BUILD_ROOT "${PROJECT_SOURCE_DIR}/../../../_out/edrutils" CACHE PATH "Location of edrutils project build.")
 
 # Blok definicje zale¿ne od platformy
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")

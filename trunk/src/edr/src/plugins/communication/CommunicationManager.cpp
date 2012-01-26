@@ -73,13 +73,15 @@ void CommunicationManager::init()
     /*medicalQueryManager->setWSCredentials("applet_user", "aplet4Motion");
     medicalQueryManager->setBasicQueriesServiceUri("http://v21.pjwstk.edu.pl/Motion/res/BasicQueriesWSStandalone.wsdl");
     medicalQueryManager->setBasicUpdatesServiceUri("");*/
-
+    
+    /*
+    WsdlPull::WsdlParser::useLocalSchema_ = false;
     communication::WsdlConnection conn;
     conn.setCredentials("https://v21.pjwstk.edu.pl/SecureSample/Service1.svc?wsdl", "hml", "hml");
     conn.setOperation("CallMe");
     conn.setValue("value", "1");
     try{
-    conn.setSecurity(true, (core::getPathInterface()->getResourcesPath() / "v21.pjwstk.edu.pem").string(), WsdlPull::WsdlInvoker::CNAny);
+    conn.setSecurity(true, (core::getPathInterface()->getResourcesPath() / "pjwstk-hm.crt").string(), WsdlPull::WsdlInvoker::CNAny);
     //conn.setSecurity(true, "c:\\ca.crt", WsdlPull::WsdlInvoker::CNAny);
     conn.invokeOperation();
     
@@ -87,10 +89,14 @@ void CommunicationManager::init()
     catch(const std::exception & e){
         LOG_DEBUG(e.what());
     }
+    catch(...){
+
+    }
     
     auto resp = conn.getXMLResponse();
     LOG_DEBUG("HTTPS Communication:");
     LOG_DEBUG(resp);
+    */
 }
 
 void CommunicationManager::deinit()
