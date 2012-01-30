@@ -154,7 +154,7 @@ bool PluginLoader::addPlugIn( const std::string& path )
     HMODULE library = ::LoadLibrary( path.c_str() );
     if ( library ) {
         try{
-            if ( checkPluginVersion(library, path) && checkLibrariesVersions(library, path) ) {
+            if (checkPluginVersion(library, path) && checkLibrariesVersions(library, path) && checkPluginBuildType(library, path) ) {
                 FARPROC proc = ::GetProcAddress(library, STRINGIZE(CORE_CREATE_PLUGIN_FUNCTION_NAME));
                 if ( proc ) {
                     bool success = onAddPlugin(path, reinterpret_cast<uint32_t>(library),
@@ -399,6 +399,23 @@ bool PluginLoader::checkPluginVersion( HMODULE library, const std::string& path 
         }
     } else {
         LOG_ERROR(path<<" is a .dll, but finding "<<STRINGIZE(CORE_GET_PLUGIN_VERSION_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
+        return false;
+    }
+}
+
+bool PluginLoader::checkPluginBuildType( HMODULE library, const std::string& path )
+{
+    FARPROC buildTypeProc = ::GetProcAddress(library, STRINGIZE(CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME));
+    if ( buildTypeProc ) {
+        int buildType = reinterpret_cast<Plugin::GetBuildTypeFunction>(buildTypeProc)();
+        if ( buildType != CORE_PLUGIN_BUILD_TYPE ) {
+            LOG_ERROR(path<<" has obsolete interface buildType; should be "<<CORE_PLUGIN_BUILD_TYPE<<", is "<<buildType);
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        LOG_ERROR(path<<" is a .dll, but finding "<<STRINGIZE(CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME)<<" failed. Is it a plugin or library?");
         return false;
     }
 }

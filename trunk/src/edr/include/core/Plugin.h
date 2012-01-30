@@ -34,7 +34,15 @@ namespace core {
 //! nie bêd¹ ³adowane do aplikacji!!
 
 //! Sami musimy modyfikowaæ ta wersjê!!
-#define CORE_PLUGIN_INTERFACE_VERSION 3
+#define CORE_PLUGIN_INTERFACE_VERSION 4
+
+
+//! Weryfikacja typu bilda pluginu
+#ifdef _DEBUG
+    #define CORE_PLUGIN_BUILD_TYPE 0
+#else
+    #define CORE_PLUGIN_BUILD_TYPE 1
+#endif
 
 #ifdef _CPPLIB_VER
 #define CORE_CPPLIB_VER _CPPLIB_VER
@@ -44,6 +52,8 @@ namespace core {
 
 //! Nazwa funkcji pobieraj¹cej numer wersji pluginu.
 #define CORE_GET_PLUGIN_VERSION_FUNCTION_NAME CoreGetPluginInterfaceVersion
+
+#define CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME CoreGetPluginBuildType
 //! Nazwa funkcji tworz¹cej plugin.
 #define CORE_CREATE_PLUGIN_FUNCTION_NAME CoreCreatePluginInstance
 //! 
@@ -58,6 +68,10 @@ DEFINE_DEFAULT_LOGGER("edr." name)                                      \
 extern "C" CORE_EXPORT unsigned CORE_GET_PLUGIN_VERSION_FUNCTION_NAME() \
 {                                                                       \
     return CORE_PLUGIN_INTERFACE_VERSION;                               \
+}                                                                       \
+extern "C" CORE_EXPORT unsigned CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME() \
+{                                                                       \
+    return CORE_PLUGIN_BUILD_TYPE;                                      \
 }                                                                       \
 extern "C" CORE_EXPORT void CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME(  \
     int* boostVersion, int* qtVersion, int* stlVersion)                 \
@@ -141,6 +155,8 @@ public:
     typedef Plugin* (*CreateFunction)(InstanceInfo* data);
     //! Typ funkcji pobierajacej wersjê pluginu.
     typedef int (*GetVersionFunction)();
+    //! Typ funkcji pobieraj¹cej typ builda pluginu
+    typedef int (*GetBuildTypeFunction)();
     //!
     typedef int (*GetLibrariesVersionFunction)(int* boostVersion, int* qtVersion, int* stlVersion);
     //! Typ listy us³ug.

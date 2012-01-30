@@ -91,6 +91,11 @@ private:
     //! \param library
     //! \param path
     bool checkPluginVersion( HMODULE library, const std::string& path );
+
+    //! 
+    //! \param library
+    //! \param path
+    bool checkPluginBuildType( HMODULE library, const std::string& path );
     //! 
     //! \param library
     //! \param path
