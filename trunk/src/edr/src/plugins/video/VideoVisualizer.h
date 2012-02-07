@@ -149,7 +149,7 @@ public:
     //! \see IVisualizer::update
     virtual void update(double deltaTime);
     //! \see IVisualizer::createWidget
-    virtual QWidget* createWidget(std::vector<QObject*>& actions);
+    virtual QWidget* createWidget(core::IActionsGroupManager * manager);
     //! \see IVisualizer::createIcon
     virtual QIcon* createIcon();
     virtual QPixmap print() const;

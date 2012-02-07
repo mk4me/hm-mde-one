@@ -272,7 +272,7 @@ const TimelineService::UIChannelAction & TimelineWidget::getOnChannelRemove() co
     return onItemRemoveAction;
 }
 
-void TimelineWidget::loadToolbarElements(std::vector<QObject*> & elements) const
+void TimelineWidget::loadToolbarElements(core::IActionsGroupManager * actionsManager) const
 {
 
 }

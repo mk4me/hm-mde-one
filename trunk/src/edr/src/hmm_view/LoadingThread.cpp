@@ -45,7 +45,7 @@ void LoadingThread::run()
     for(auto it = paths.begin(); it != paths.end(); it++){
         std::string info((*it).filename().string());
         try{
-            DataManager::getInstance()->addData(*it);
+            DataManager::getInstance()->addFile(*it);
         }catch(std::exception & e){
             info.insert(0, "Error while adding file ");
             LOG_DEBUG(info);

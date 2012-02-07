@@ -6,7 +6,7 @@
 #include <core/DataAccessors.h>
 #include <plugins/subject/ISession.h>
 
-Subject::Subject(core::IMemoryDataManager * memoryDataManager, SubjectID subjectID) : memoryDataManager(memoryDataManager), subjectID(subjectID), currentSessionID(0)
+Subject::Subject(SubjectID subjectID) : subjectID(subjectID), currentSessionID(0)
 {
     std::stringstream ss;
     ss.fill('0');
@@ -26,30 +26,15 @@ const std::string & Subject::getName() const
     return name;
 }
 
-//void Subject::setCurrentMotion( MotionConstPtr motion )
-//{	 
-//	 
-//}	 
-//	 
-//void Subject::addSystem( ISubjectSystemPtr system )
-//{
-//
-//}
-
 SubjectID Subject::getID() const
 {
     return subjectID;
 }
 
-//const std::string & Subject::getName() const
-//{
-//    return name;
-//}
-
 void Subject::getSessions(Sessions & sessions) const
 {
     Sessions toFilter;
-    core::queryDataPtr(memoryDataManager, toFilter, true);
+    core::queryDataPtr(core::getDataManagerReader(), toFilter, true);
 
     for(auto it = toFilter.begin(); it != toFilter.end(); it++){
         if((*it)->getSubject().get() == this){
@@ -57,9 +42,4 @@ void Subject::getSessions(Sessions & sessions) const
         }
     }
 }
-
-//Subject::Subject( const Subject& obj ) : subjectID(obj.subjectID)
-//{
-//	throw std::runtime_error("not implemented");
-//}
 

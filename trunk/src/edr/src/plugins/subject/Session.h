@@ -39,13 +39,11 @@ private:
 
     std::vector<core::ObjectWrapperConstPtr> wrappers;
 
-    core::IMemoryDataManager * memoryDataManager;
-
     std::string name;
     std::string localName;
 	
 private:
-    Session(core::IMemoryDataManager * memoryDataManager, SubjectID sessionID, const SubjectConstPtr & subject, SubjectID localSessionID, unsigned int year,
+    Session(SubjectID sessionID, const SubjectConstPtr & subject, SubjectID localSessionID, unsigned int year,
         unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
 
 public:

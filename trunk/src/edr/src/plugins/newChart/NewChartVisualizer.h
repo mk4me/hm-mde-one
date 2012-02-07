@@ -124,7 +124,7 @@ public:
       
       virtual void removeSerie(core::IVisualizer::SerieBase *serie);
 
-      virtual QWidget* createWidget(std::vector<QObject*>& actions);
+      virtual QWidget* createWidget(core::IActionsGroupManager * manager);
 
       virtual QIcon* createIcon();
       
@@ -188,6 +188,14 @@ private:
       StatsTable* statsTable;
       bool eventMode;
       bool eventsVisible;
+
+      QMenu * eventsMenu;
+      QAction * leftEvents;
+      QAction * rightEvents;
+      QAction * noneEvents;
+      QActionGroup * eventsActionGroup;
+
+
       C3DEventsCollection::Context context;
       std::map<NewChartSerie*, EventsHelperPtr> eventsHelpers;
       EventsHelper::SegmentConstPtr oldSegment;

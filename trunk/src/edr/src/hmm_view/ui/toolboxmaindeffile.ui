@@ -675,7 +675,7 @@ border-top: 1px solid rgb(101, 101, 101);
 padding-top: 2px;
 }
 
-QFrame#mainArea &gt; QWidget, QFrame#mainArea QWidget#analisisArea, QFrame#mainArea QWidget#analisisArea EDRDockWidgetManager, QFrame#mainArea QWidget#analisisArea QMainWindow, QFrame#mainArea &gt; QWidget#dataWidget, QFrame#mainArea QWidget#dataWidget, QWidget#dataWidget QTabWidget#sourcesTabs, QWidget#dataWidget QTabWidget#sourcesTabs &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source &gt; *,  QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QWidget#leftSide  {
+QFrame#mainArea &gt; QWidget, QFrame#mainArea QWidget#analisisArea, QFrame#mainArea QWidget#analisisArea EDRDockWidgetManager, QFrame#mainArea QWidget#analisisArea QMainWindow, QFrame#mainArea &gt; QWidget#dataWidget, QFrame#mainArea QWidget#dataWidget, QWidget#dataWidget QTabWidget#sourcesTabs, QWidget#dataWidget QTabWidget#sourcesTabs &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter &gt; *, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source, QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source &gt; */*,  QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QWidget#leftSide*/  {
 	background-color: rgb(91, 91, 91);
 }
 
@@ -703,24 +703,33 @@ QWidget#dataWidget QTabWidget#sourcesTabs::pane {
 	padding: 2px;
 }
 
+QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QFrame#perspectiveGroup {
+	color: black;
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 2px;
+ }
+
+/*
 QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QGroupBox#perspectiveGroup {
 	color: black;
 	border: 1px solid black;
 	border-radius: 4px;
 	padding: 2px;
 	padding-top: 8px;
-	margin-top: 2ex; /* leave space at the top for the title */
+	margin-top: 2ex;
  }
 
  QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView QGroupBox#perspectiveGroup::title {
      subcontrol-origin: margin;
-		subcontrol-position: top left; /* position at the top center */
+		subcontrol-position: top left;
      padding: 2px;	
 	left: 2ex;
 border: 1px solid black;
 border-radius: 4px;
 background: white;
 }
+*/
 
 QWidget#dataWidget QTabWidget#sourcesTabs QWidget#sourceTab QWidget#sourceCenter QWidget#source MedicalView#medicalView PatientCardWidget#patientCard {
 	border: 1px solid black;
@@ -862,8 +871,16 @@ QWidget#dataWidget QTabWidget::pane {
 	border-bottom: 3px solid black;
 	margin: 0px;
 	padding: 2px;
-/*	background: white;*/
 background: rgb(91, 91, 91);
+}
+
+QWidget#dataWidget MedicalView#medicalView QTabWidget::pane {
+	background: white;
+}
+
+QWidget#dataWidget MedicalView#medicalView QFrame#detailsFrame {
+	border: 1px solid black;
+	border-radius: 4px;
 }
 
 QWidget#dataWidget QTabBar {
@@ -879,7 +896,16 @@ border: none;
  color: black;
 min-width: 8ex;
  padding: 4px;
-margin-right: 1px;
+margin-right: 3px;
+}
+
+QWidget#dataWidget QTabBar::tab:middle {
+	margin-left: 3px;
+}
+
+QWidget#dataWidget QTabBar::tab:last {
+	margin-right: 1px;
+	margin-left: 3px;
 }
 
 QWidget#dataWidget QTabBar::tab:hover {
@@ -1013,7 +1039,7 @@ QFrame#mainArea VisualizerWidget &gt; .QWidget:hover {
  <resources>
   <include location="../../core/ui/CoreIcons.qrc"/>
   <include location="Icons.qrc"/>
-  <include location="C:/Users/mati/.designer/backup/Icons.qrc"/>
+  <include location="../../../../../../../../#PRACA/Project MOTION/edytor/src/edr/src/hmm_view/ui/Icons.qrc"/>
  </resources>
  <connections>
   <connection>

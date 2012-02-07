@@ -14,7 +14,7 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-    //Interfejs Klasy s³u¿¹ca do inicjalizacji/deinicjalizacji obiektów domenowych
+    //! Interfejs s³u¿¹ca do inicjalizacji/deinicjalizacji obiektów domenowych
     class IDataInitializer
     {
     public:
@@ -26,6 +26,8 @@ namespace core {
         //! \param object Obiekt do deinicjalizacji
         void deinitialize(core::ObjectWrapperPtr & object)
         {
+            //wywolujemy metode klienta do deinicjalizacji
+            //nie musi bezposrednio resetowaæ wskaŸnika - zrobimy to tutaj sami jeœli trzeba
             doDeinitialize(object);
             if(object->isNull() == false){
                 object->reset();
@@ -41,13 +43,11 @@ namespace core {
 
     typedef core::shared_ptr<IDataInitializer> DataInitializerPtr;
 
-
+    //! Podstawowe operacje zwiazane z danymi - pobieranie danych, informacje o hierarchi typów danych, informacje o wspieranych typach danych
     class IDataManagerBase
     {
     public:
         virtual ~IDataManagerBase() {}
-
-
 
         //virtual ObjectWrapperPtr createWrapper(const TypeInfo & typeInfo) const = 0;
 
@@ -71,14 +71,16 @@ namespace core {
 
     //! Zbiór typów
     typedef std::set<TypeInfo> Types;
-    //! Zbiór obiektów domenowych
-    //typedef core::Objects Objects;
 
-    class IMemoryDataManager : public utils::Observable<IMemoryDataManager>, public virtual IDataManagerBase
+    //! Interfejs najni¿szego poziomu DataManager - pozwala zarz¹dzaæ pojedynczymi ObjectWrapperami: dodawaæ je do puli danych, usuwaæ, inicjalizowaæ, deinicjalizowaæ.
+    //!  
+    class IMemoryDataManager : public utils::Observable<IMemoryDataManager>//, public virtual IDataManagerBase
     {
+        //! ZaprzyjaŸniona metoda pomagaj¹ca dodawaæ dane do DM
         template<class SmartPtr>
         friend core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer);
 
+        //! ZaprzyjaŸniona metoda pomagaj¹ca usuwaæ dane z DM
         template<class SmartPtr>
         friend void removeData(IMemoryDataManager * manager, const SmartPtr & data);
 
@@ -107,10 +109,16 @@ namespace core {
         //! \param Obiekt ktory zostanie utrwalony w DataManager i bêdzie dostepny przy zapytaniach, nie morze byc niezainicjowany - isNull musi byæ false!!
         virtual void addData(const core::ObjectWrapperPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr()) = 0;
 
+        //! \param ptr Surowy wskaŸnik, dla którego sprawdzamy czy jest juz za¿adzany przez DM
+        //! \return prawda jeœli wskaŸnik jest zarz¹dzany prze DM i opakowano go w OW
         virtual bool objectIsManaged(void * ptr) const = 0;
 
-        virtual const ObjectWrapperPtr & getObjectWrapperForRawPtr(void * ptr) const = 0;
+        //! \param ptr Surowy wskaŸnik, dla którego sprawdzamy czy jest juz za¿adzany przez DM
+        //! \return OW opakowuj¹cy dany wskaŸnik
+        virtual const ObjectWrapperPtr & getObjectWrapperForRawPtr(const void * ptr) const = 0;
 
+        //! \param type Typ dla którego tworzymy specyficzny dla DM ObjectWrapper
+        //! \return OW dla zadanego typu
         virtual ObjectWrapperPtr createObjectWrapper(const TypeInfo & type) const = 0;
     };
 
@@ -133,9 +141,9 @@ namespace core {
     }
 
     /*template<class SmartPtr>
-    core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data)
+    core::ObjectWrapperPtr addFile(IMemoryDataManager * manager, const SmartPtr & data)
     {
-        return addData(manager, data, DataInitializerPtr());
+        return addFile(manager, data, DataInitializerPtr());
     }*/
 
     template<class SmartPtr>
@@ -147,7 +155,7 @@ namespace core {
     }
 
     //! Interfejs dostepu do danych i ³adowania danych w aplikacji
-	class IFileDataManager : public utils::Observable<IFileDataManager>, public virtual IDataManagerBase
+	class IFileDataManager : public utils::Observable<IFileDataManager>//, public virtual IDataManagerBase
 	{
 	public:
         //! Zbiór rozszerzeñ
@@ -167,24 +175,28 @@ namespace core {
 		virtual ~IFileDataManager() {};
 
         //! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
-        virtual void getManagedData(core::Files & files) const = 0;
+        virtual void getManagedFiles(core::Files & files) const = 0;
+        
+        //! \param file Plik kótry weryfikujemy czy jest zarzadzany przez DM
+        //! \return Prawda jesli plik jest zarz¹dzany przez ten DM
+        virtual bool isFileManaged(core::Filesystem::Path & file) const = 0;
 
         //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
         //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
-		virtual void addData(const Filesystem::Path & file) = 0;
+		virtual void addFile(const Filesystem::Path & file) = 0;
 
         //! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
-		virtual void removeData(const Filesystem::Path & file) = 0;
+		virtual void removeFile(const Filesystem::Path & file) = 0;
 
         //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) WYMUSZAMY PARSOWANIE I INICJALIZACJE
-        virtual void initializeData(const Filesystem::Path & file) = 0;
+        virtual void initializeFile(const Filesystem::Path & file) = 0;
 
         //! \param path Œciezka pliku który chemy za³adowaæ (parsowaæ) ZWALNIAMY ZASOBY, ALE ZEZWALAMY PONOWNIE NA LENIWA INICJALIZACJE
-        virtual void deinitializeData(const Filesystem::Path & file) = 0;
+        virtual void deinitializeFile(const Filesystem::Path & file) = 0;
 
         //! \param files Zbior plikow dla ktorych chcemy pobrac liste obiektow
         //! \return Mapa obiektow wzgledem plikow z ktorych pochodza
-        virtual void getObjectsForData(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects) const = 0;
+        virtual void getObjectsForFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects) const = 0;
 
         //! \return Zbior obslugiwanych rozszerzen plikow wraz z ich opisem
         virtual const Extensions & getSupportedFilesExtensions() const = 0;

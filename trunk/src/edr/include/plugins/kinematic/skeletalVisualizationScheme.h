@@ -19,6 +19,14 @@ UTILS_POP_WARNINGS
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/c3d/C3DChannels.h>
 
+#ifdef max
+    #undef max
+#endif
+
+#ifdef min
+    #undef min
+#endif
+
 //! Pomocnicza klasa do obslugi plikow vsk. Likwiduje koniecznosc ich wielokrotnego parsowania
 class Vsk
 {
@@ -94,7 +102,9 @@ public: // akcesory
     void setNormalizedTime(double val);
 
     void setTime(double time) {
-        setNormalizedTime(time / getDuration());
+        //TODO
+        //Trzeba to zweryfikowaæ!!
+        setNormalizedTime(std::max(0.0, std::min(1.0, time / getDuration())));
     }
 
     double getTime() const {

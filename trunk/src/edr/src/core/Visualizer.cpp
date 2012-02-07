@@ -36,15 +36,18 @@ QWidget* Visualizer::getOrCreateWidget()
     if (!widget) {
         LOG_DEBUG("Visualizer " << getImplementation()->getName() << " widget created");
         
-        widget = getImplementation()->createWidget(genericActions);
+        widget = getImplementation()->createWidget(&genericActions);
         //PrintWidgetAction* print = new PrintWidgetAction(widget, "Print visualizer", widget);
         QAction* print = new QAction("Print visualizer", widget);
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/resources/icons/screenshot-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
         icon.addFile(QString::fromUtf8(":/resources/icons/screenshot-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
         print->setIcon(icon);
-        genericActions.push_back(print);
         connect(print, SIGNAL(triggered()), this, SLOT(printActionPressed()));
+
+        core::IActionsGroupManager::GroupID id = genericActions.createGroup("Common");
+        genericActions.addGroupAction(id, print);
+        
         tryRun();
         UTILS_ASSERT(widget, "Nie uda³o siê stworzyæ widgeta.");
     }
@@ -56,12 +59,12 @@ const QIcon& Visualizer::getIcon() const
     return VisualizerManager::getInstance()->getIcon(getID());
 }
 
-const std::vector<QObject*>& Visualizer::getGenericActions() const
+const ActionsGroupManager& Visualizer::getGenericActions() const
 {
     return genericActions;
 }
 
-const std::vector<QObject*>& Visualizer::getOrCreateGenericActions()
+const ActionsGroupManager& Visualizer::getOrCreateGenericActions()
 {
     if ( !widget ) {
         getOrCreateWidget();
@@ -261,7 +264,7 @@ VisualizerMultiChannel::~VisualizerMultiChannel()
 void VisualizerMultiChannel::setTime(double time)
 {
     for(auto it = seriesWidgets.begin(); it != seriesWidgets.end(); it++){
-        (*it)->setTime(time);
+        (*it)->setTime(time > (*it)->getLength() ? (*it)->getLength() : time);
     }
 }
 

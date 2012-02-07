@@ -21,6 +21,7 @@
 #include <core/Filesystem.h>
 #include <core/IManagersAccessor.h>
 #include <QtCore/QObject>
+#include "ActionsGroupManager.h"
 
 class UserInterfaceService;
 class ServiceManager;
@@ -157,7 +158,7 @@ namespace core {
 		//! \param name
 		//! \param style
 		//! \param area
-		QDockWidget* embeddWidget(QWidget* widget, std::vector<QObject*>& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
+		QDockWidget* embeddWidget(QWidget* widget, const ActionsGroupManager& widgetActions, const QString& name, const QString& style, const QString& sufix, Qt::DockWidgetArea area = Qt::AllDockWidgetAreas);
 
 		void safeRegisterPlugin(const core::PluginPtr & plugin);
 		void safeRegisterService(const core::IServicePtr & service);

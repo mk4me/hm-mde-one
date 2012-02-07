@@ -63,8 +63,8 @@ private:
     VisualizerPtr visualizer;
     //customowe elementu titlebara dla danego wizualizatora
     InnerVisualizerElements visualizerCommonElements;
-    std::vector<QObject*> visualizerCommonElementsOrder;
-    std::vector<QObject*> visualizerImplementationCustomElements;
+    ActionsGroupManager visualizerCommonElementsOrder;
+    ActionsGroupManager visualizerImplementationCustomElements;
 
     //! Menu do wyboru Ÿróde³.
     QMenu* menuSource;
@@ -136,6 +136,8 @@ public:
     bool isVisualizerSwichVisible() const;
 
     void getVisualizerTitleBarElements(VisualizerTitleBarElements & titleBarElements) const;
+    const ActionsGroupManager & getVisualizerActionsManager() const;
+    const ActionsGroupManager & getGenericVisualizerActionsManager() const;
         
 private slots:
 

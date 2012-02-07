@@ -15,6 +15,7 @@
 #include "InputItem.h"
 #include "ObjectSource.h"
 #include <timelinelib/IChannel.h>
+#include "ActionsGroupManager.h"
 
 //! Wizualizator. Jego zadaniem jest stworzyæ widget (gdzie on bêdzie osadzony - nie jego sprawa),
 //! zadeklarowaæ ile Ÿróde³ i jakiego typu jest w stanie obs³u¿yæ oraz przyj¹æ Ÿród³a danych.
@@ -29,7 +30,7 @@ private:
     QWidget* widget;
 
     //! Akcje wizualizatora.
-    std::vector<QObject*> genericActions;
+    ActionsGroupManager genericActions;
     //! Nazwa uzupe³niona o przyrostek.
     QString uiName;
 
@@ -49,9 +50,9 @@ public:
 
 public:
     //! \return Lista akcji ogólnych wizualizatora.
-    const std::vector<QObject*>& getGenericActions() const;
+    const ActionsGroupManager& getGenericActions() const;
     //! \return Lista akcji ogólnych wizualizatora.
-    const std::vector<QObject*>& getOrCreateGenericActions();
+    const ActionsGroupManager& getOrCreateGenericActions();
 
     //! \return Widget wizualizatora.
     QWidget* getOrCreateWidget();

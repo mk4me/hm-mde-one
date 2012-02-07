@@ -62,14 +62,14 @@ const TimelineService::UIChannelAction & TimelineService::getOnChannelRemove() c
     return widget->getOnChannelRemove();
 }
   
- QWidget* TimelineService::getWidget(std::vector<QObject*>& actions)
+ QWidget* TimelineService::getWidget(core::IActionsGroupManager * actionsManager)
  {
      return nullptr;
  }
 
-QWidget* TimelineService::getControlWidget(std::vector<QObject*>& actions)
+QWidget* TimelineService::getControlWidget(core::IActionsGroupManager * actionsManager)
 {
-    widget->loadToolbarElements(actions);
+    widget->loadToolbarElements(actionsManager);
     return widget;
 }
 

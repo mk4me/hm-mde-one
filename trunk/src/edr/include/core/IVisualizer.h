@@ -15,6 +15,7 @@
 #include <core/IObjectSource.h>
 #include <core/ObjectWrapper.h>
 #include <core/IInputProcessItem.h>
+#include <core/IActionsGroupManager.h>
 #include <utils/DataChannel.h>
 #include <QtGui/QPixmap>
 
@@ -89,7 +90,7 @@ namespace core
         //! \param action Akcje które nale¿y dodaæ do paska tytu³owego. Ka¿dym elementem mo¿e byæ
         //! albo QAction, QMenu z zagnied¿onymi akcjami, albo ca³y QWidget. Rodzice tych elementów nie s¹ zmieniani!
         //! \return Widget bêd¹cy korzeniem wizualizacji. Musi mieæ slot setActiveSource(int).
-        virtual QWidget* createWidget(std::vector<QObject*>& actions) = 0;
+        virtual QWidget* createWidget(IActionsGroupManager * manager) = 0;
 
         //! Tworzy ikonê dla zadanego wizualizatora. Mo¿e zwracaæ nullptr, chocia¿ to niewskazane.
         //! W odgró¿nieniu od createWidget ikona przejmowana jest na w³asnoœæ.

@@ -39,9 +39,9 @@ public:
 
     virtual void finalize();
     //!
-    virtual QWidget* getWidget(std::vector<QObject*>& actions);
+    virtual QWidget* getWidget(core::IActionsGroupManager * actionsManager);
     //!
-    virtual QWidget* getControlWidget(std::vector<QObject*>& actions);
+    virtual QWidget* getControlWidget(core::IActionsGroupManager * actionsManager);
     //!
     virtual const std::string& getName() const;
 

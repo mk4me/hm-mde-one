@@ -11,6 +11,8 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	SourceManager.h
+	ActionsGroupManager.h
 	IAppUsageContext.h
 	IAppUsageContextManager.h
 	FlexiWidgetTabContentWidget.h
@@ -66,6 +68,9 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
+	${HEADER_PATH}/ISource.h
+	${HEADER_PATH}/ISourceManager.h
+	${HEADER_PATH}/IActionsGroupManager.h
 	${HEADER_PATH}/IManagersAccessor.h
 	${HEADER_PATH}/DataAccessors.h
 	${HEADER_PATH}/BaseDataTypes.h
@@ -112,6 +117,8 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	SourceManager.cpp
+	ActionsGroupManager.cpp
 	FlexiWidgetTabContentWidget.cpp
 	FlexiTabWidget.cpp
 	FlexiTabSectionWidget.cpp

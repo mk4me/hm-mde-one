@@ -12,8 +12,6 @@
 
 #include <plugins/subject/ISubject.h>
 #include <core/IDataManager.h>
-//#include <plugins/subject/ISubjectSystem.h>
-//#include <plugins/subject/Motion.h>
 
 class SubjectService;
 
@@ -27,35 +25,16 @@ private:
     std::string name;
     SubjectID currentSessionID;
 
-    //std::string name;
-	//std::vector<ISubjectSystemPtr> systems;
-	//MotionConstPtr motion;
-	// TODO - subject powinien agregowac wszystkie sesje z nim zwiazane
-    core::IMemoryDataManager * memoryDataManager;
-
 public:
-	Subject(core::IMemoryDataManager * memoryDataManager, SubjectID subjectID);
+	Subject(SubjectID subjectID);
 
-	//Subject(const Subject& obj);
 	virtual ~Subject();
 
     virtual const std::string & getName() const;
 
     virtual SubjectID getID() const;
-    //const std::string & getName() const;
-	//void addSystem(ISubjectSystemPtr system);
-	//void setCurrentMotion(MotionConstPtr motion);
 
     virtual void getSessions(Sessions & sessions) const;
-
-    //ISystemPtr getConfiguredSystem(ISystemPtr system, ObjectWrapperPtr data) const;
-
-	/*template<class System>
-	System getSystem() const;*/
 };
-
-
-//CORE_DEFINE_WRAPPER(Subject, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
-
 
 #endif

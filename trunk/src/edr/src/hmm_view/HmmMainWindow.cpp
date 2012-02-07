@@ -191,14 +191,14 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 		// Moze wlasciwe bedzie identyfikowanie po UniqueID.
 		//if (name == "Communication") {
         if (name == "DataExplorer") {
-			std::vector<QObject*> mainWidgetActions;
-			QWidget* viewWidget = service->getWidget(mainWidgetActions);
+			ActionsGroupManager mainWidgetActions;
+			QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
-			std::vector<QObject*> controlWidgetActions;
-			QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
+			ActionsGroupManager controlWidgetActions;
+			QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
 
-			std::vector<QObject*> settingsWidgetActions;
-			QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
+			ActionsGroupManager settingsWidgetActions;
+			QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
 
 			QVBoxLayout *layout = new QVBoxLayout();
             layout->setContentsMargins(0,0,0,0);
@@ -209,14 +209,14 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         }else if (name == "newTimeline") {
             showTimeline();
         }else{
-            std::vector<QObject*> mainWidgetActions;
-            QWidget* viewWidget = service->getWidget(mainWidgetActions);
+            ActionsGroupManager mainWidgetActions;
+            QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
-            std::vector<QObject*> controlWidgetActions;
-            QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
+            ActionsGroupManager controlWidgetActions;
+            QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
 
-            std::vector<QObject*> settingsWidgetActions;
-            QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
+            ActionsGroupManager settingsWidgetActions;
+            QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
 
             layout->addWidget(settingsWidget);
             layout->addWidget(viewWidget);
@@ -227,8 +227,10 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     // akcje - Workflow (VDF) i konsola
 	EDRWorkflowWidget* widget = new EDRWorkflowWidget();
     actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+    widget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
     initializeConsole();
     actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
+    widgetConsole->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
     layout->addWidget(actionsMainWindow);
 
 	operations->setLayout(layout);
@@ -240,7 +242,6 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     //Tak dlugo jak nie mamy raportow chowamy je w wersji release
     //Podobnie odnosnik do stronki
     #ifndef _DEBUG
-        raportsButton->setVisible(false);
         openButton->setVisible(false);
     #endif
 
@@ -259,6 +260,7 @@ void HmmMainWindow::setCurrentVisualizerActions(VisualizerWidget * visWidget)
 
 HmmMainWindow::~HmmMainWindow()
 {
+    setCurrentContext(nullptr);
     this->analisis->setParent(nullptr);
     delete this->analisis;
     this->data->setParent(nullptr);
@@ -479,14 +481,14 @@ void HmmMainWindow::showTimeline()
 
 		    const std::string& name = service->getName();
 		    if (name == "newTimeline") {
-                std::vector<QObject*> mainWidgetActions;
-                QWidget* viewWidget = service->getWidget(mainWidgetActions);
+                ActionsGroupManager mainWidgetActions;
+                QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
-                std::vector<QObject*> controlWidgetActions;
-                QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
+                ActionsGroupManager controlWidgetActions;
+                QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
 
-                std::vector<QObject*> settingsWidgetActions;
-                QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
+                ActionsGroupManager settingsWidgetActions;
+                QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
 
                 EDRDockWidget * widget = new EDRDockWidget();
                 widget->setTitleBarWidget(new QWidget());
@@ -1005,8 +1007,10 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                  VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(path.toStdString(), visualizer.get(), visSeries));
                  try {
                      timeline->addChannel(path.toStdString(), multi);
+                 } catch ( const std::exception & e){
+                     LOG_ERROR("Could not add multichannel to timeline! Reason: " << e.what());
                  } catch (...) {
-                     LOG_ERROR("Could not add multichannel to timeline!");
+                     LOG_ERROR("Could not add multichannel to timeline! UNKNOWN REASON");
                  }
              }
          }

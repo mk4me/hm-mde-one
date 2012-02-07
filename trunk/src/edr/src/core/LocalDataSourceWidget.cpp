@@ -65,9 +65,9 @@ void LocalDataSourceWidget::onEdit(const QString & text)
 
                     for(auto it = files.begin(); it != files.end(); it++){
                         try{
-                            dataManager->addData(*it);
+                            dataManager->addFile(*it);
                             //dataManager->initializeData(*it);
-                            dataManager->getObjectsForData(*it, objects);
+                            dataManager->getObjectsForFile(*it, objects);
                         }catch(...){
 
                         }

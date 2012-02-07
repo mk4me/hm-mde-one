@@ -64,12 +64,12 @@ void SubjectService::init(core::IManagersAccessor * managersAccessor)
     memoryDataManager = managersAccessor->getMemoryDataManager();
 }
 
-QWidget* SubjectService::getWidget( std::vector<QObject*>& actions )
+QWidget* SubjectService::getWidget( core::IActionsGroupManager * actionsManager )
 {
 	return nullptr;
 }
 
-QWidget* SubjectService::getSettingsWidget( std::vector<QObject*>& actions )
+QWidget* SubjectService::getSettingsWidget( core::IActionsGroupManager * actionsManager )
 {
 	return nullptr;
 }
@@ -80,7 +80,7 @@ const std::string& SubjectService::getName() const
 	return s;
 }
 
-QWidget* SubjectService::getControlWidget( std::vector<QObject*>& actions )
+QWidget* SubjectService::getControlWidget( core::IActionsGroupManager * actionsManager )
 {
 	return nullptr;
 }
@@ -93,7 +93,7 @@ SubjectPtr SubjectService::createSubject()
         throw std::runtime_error("Subjects overflow");
     }
 
-    SubjectPtr ret(new Subject(memoryDataManager, ++currentSubjectID));
+    SubjectPtr ret(new Subject(++currentSubjectID));
 
     localSessionIDs[ret] = 0;
 
@@ -117,7 +117,7 @@ SessionPtr SubjectService::createSession(const SubjectConstPtr & subject, unsign
         throw std::runtime_error("Wrong session date");
     }
 
-    SessionPtr ret(new Session(memoryDataManager, ++currentSessionID, subject,
+    SessionPtr ret(new Session(++currentSessionID, subject,
         ++localSessionIDs[subject], year, month, day, wrappers));
 
     localMotionIDs[ret] = 0;

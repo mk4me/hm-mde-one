@@ -109,7 +109,7 @@ public:
 
 	  }
 
-	  virtual QWidget* createWidget(std::vector<QObject*>& actions)
+	  virtual QWidget* createWidget(core::IActionsGroupManager * manager)
 	  {
 		  widget.reset(new QLabel(nullptr));
 		  widget->setStyleSheet(  "QLabel { background: blue; }" );

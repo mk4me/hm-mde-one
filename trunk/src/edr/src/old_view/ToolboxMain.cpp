@@ -119,14 +119,14 @@ void ToolboxMain::initializeUI()
 		IServicePtr service = ServiceManager::getInstance()->getService(i);
 
 		// HACK
-		std::vector<QObject*> mainWidgetActions;
-		QWidget* viewWidget = service->getWidget(mainWidgetActions);
+		ActionsGroupManager mainWidgetActions;
+		QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
-		std::vector<QObject*> controlWidgetActions;
-		QWidget* controlWidget = service->getControlWidget(controlWidgetActions);
+		ActionsGroupManager controlWidgetActions;
+		QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
 
-		std::vector<QObject*> settingsWidgetActions;
-		QWidget* settingsWidget = service->getSettingsWidget(settingsWidgetActions);
+		ActionsGroupManager settingsWidgetActions;
+		QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
 
 		if ( viewWidget ) {
 
@@ -175,7 +175,7 @@ void ToolboxMain::onOpen()
 			if(Filesystem::isRegularFile(*it) == true){
 				//paths.push_back(it->path());
                 try{
-                    DataManager::getInstance()->addData(*it);
+                    DataManager::getInstance()->addFile(*it);
                 }catch(...){
 
                 }

@@ -8,7 +8,6 @@
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/kinematic/Wrappers.h>
-//#include <plugins/subject/Motion.h>
 #include "plugins/chart/ChartVisualizer.h"
 #include <core/SubjectDataFilters.h>
 #include <QtGui/QFrame>

@@ -510,17 +510,17 @@ namespace utils {
     class RawUniformDataChannel : public IRawUniformDataChannelReader<PointType, TimeType>, public RawGeneralDataChannel<PointType, TimeType>
     {
     private:
-        float samplesPerSecond;
-        float invSamplesPerSecond;
+        TimeType samplesPerSecond;
+        TimeType invSamplesPerSecond;
 
     protected:
-        RawUniformDataChannel(float samplesPerSecond = 25, const std::string & name = std::string("")) : RawGeneralDataChannel(name), samplesPerSecond(samplesPerSecond)
+        RawUniformDataChannel(TimeType samplesPerSecond = 25, const std::string & name = std::string("")) : RawGeneralDataChannel(name), samplesPerSecond(samplesPerSecond)
         {
-            if(samplesPerSecond <= 0){
+            if(samplesPerSecond <= (TimeType)0.0){
                 throw std::runtime_error("Invalid value for samples per second");
             }
 
-            invSamplesPerSecond = 1.0 / samplesPerSecond;
+            invSamplesPerSecond = (TimeType)1.0 / samplesPerSecond;
         }
 
         RawUniformDataChannel(const RawUniformDataChannel & channel) : RawGeneralDataChannel(channel), samplesPerSecond(channel.samplesPerSecond), invSamplesPerSecond(channel.invSamplesPerSecond) {}
@@ -567,12 +567,14 @@ namespace utils {
 
         virtual void addPoint(point_type_const_reference point)
         {
-            time_type t = 0;
+            /*time_type t = 0;
             if(data.empty() == false){
                 t = data.back().first + invSamplesPerSecond;
-            }
+            }*/
 
-            data.push_back(value_type(t, point));
+            //data.push_back(value_type(t, point));
+
+            data.push_back(value_type((TimeType)data.size() * invSamplesPerSecond, point));
 
             notify();
         }

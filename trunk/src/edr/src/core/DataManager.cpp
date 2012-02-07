@@ -390,7 +390,6 @@ void DataManager::getManagedData(core::Objects & objects) const
     objects.insert(this->objects.begin(), this->objects.end());
 }
 
-
 void DataManager::initializeData(core::ObjectWrapperPtr & data)
 {
     ScopedLock lock(stateMutex);
@@ -452,7 +451,7 @@ void DataManager::deinitializeData(core::ObjectWrapperPtr & data)
     }
 }
 
-const core::ObjectWrapperPtr & DataManager::getObjectWrapperForRawPtr(void * ptr) const
+const core::ObjectWrapperPtr & DataManager::getObjectWrapperForRawPtr(const void * ptr) const
 {
     ScopedLock lock(stateMutex);
 
@@ -540,7 +539,7 @@ void DataManager::removeData(const core::ObjectWrapperPtr & data)
     this->core::IMemoryDataManager::notify();
 }
 
-void DataManager::getManagedData(core::Files & files) const
+void DataManager::getManagedFiles(core::Files & files) const
 {
     ScopedLock lock(stateMutex);
 
@@ -549,7 +548,13 @@ void DataManager::getManagedData(core::Files & files) const
     }
 }
 
-void DataManager::addData(const core::Filesystem::Path & file)
+bool DataManager::isFileManaged(core::Filesystem::Path & file) const
+{
+    ScopedLock lock(stateMutex);
+    return parsersByFiles.find(file) != parsersByFiles.end();
+}
+
+void DataManager::addFile(const core::Filesystem::Path & file)
 {
     ScopedLock lock(stateMutex);
 
@@ -631,7 +636,7 @@ void DataManager::addData(const core::Filesystem::Path & file)
     }
 }
 
-void DataManager::removeData(const core::Filesystem::Path & file)
+void DataManager::removeFile(const core::Filesystem::Path & file)
 {
     ScopedLock lock(stateMutex);
 
@@ -665,13 +670,13 @@ void DataManager::removeData(const core::Filesystem::Path & file)
    this->core::IFileDataManager::notify();
 }
 
-void DataManager::initializeData(const core::Filesystem::Path & file)
+void DataManager::initializeFile(const core::Filesystem::Path & file)
 {
     ScopedLock lock(stateMutex);
 
     std::vector<core::ObjectWrapperPtr> toInitialize;
     
-    getObjectsForData(file, toInitialize);
+    getObjectsForFile(file, toInitialize);
 
     Objects invalid;
 
@@ -699,19 +704,19 @@ void DataManager::initializeData(const core::Filesystem::Path & file)
     }
 }
 
-void DataManager::deinitializeData(const core::Filesystem::Path & file)
+void DataManager::deinitializeFile(const core::Filesystem::Path & file)
 {
     ScopedLock lock(stateMutex);
 
     std::vector<core::ObjectWrapperPtr> toDeinitialize;
-    getObjectsForData(file, toDeinitialize);
+    getObjectsForFile(file, toDeinitialize);
 
     for(auto objectIT = toDeinitialize.begin(); objectIT != toDeinitialize.end(); objectIT++){
         deinitializeData(*objectIT);
     }
 }
 
-void DataManager::getObjectsForData(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects) const
+void DataManager::getObjectsForFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects) const
 {
     ScopedLock lock(stateMutex);
 

@@ -47,15 +47,15 @@ public:
 
 	//! 
 	//! \param actions 
-	virtual QWidget* getWidget( std::vector<QObject*>& actions );
+	virtual QWidget* getWidget( core::IActionsGroupManager * actionsManager );
 	//! 
 	//! \param actions 
-	virtual QWidget* getSettingsWidget( std::vector<QObject*>& actions );
+	virtual QWidget* getSettingsWidget( core::IActionsGroupManager * actionsManager );
 	//! 
 	virtual const std::string& getName() const;
 	//! 
 	//! \param actions 
-	virtual QWidget* getControlWidget( std::vector<QObject*>& actions );
+	virtual QWidget* getControlWidget( core::IActionsGroupManager * actionsManager );
 
 //ISubjectService
 public:

@@ -105,7 +105,7 @@ void KinematicVisualizer::removeSerie(core::IVisualizer::SerieBase *serie)
     reset();
 }
 
-QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
+QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
 {
     widget = new osgui::QOsgDefaultWidget();
     widget->setTimerActive(true);
@@ -141,7 +141,6 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     actionSwitchAxes->setChecked(false );
     actionSwitchAxes->setVisible(false);
     //connect(actionSwitchAxes, SIGNAL(triggered(bool)), this, SLOT(setAxis(bool)));
-    actions.push_back(actionSwitchAxes);
 
     QIcon icon1;
     icon1.addFile(QString::fromUtf8(":/resources/icons/tracea.png"));
@@ -156,8 +155,6 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     actionGhost->setIcon(icon2);
     actionGhost->setCheckable(true);
     actionGhost->setVisible(false);
-	actions.push_back(actionTrajectories);
-    actions.push_back(actionGhost);
 	
     QIcon icon3;
     icon3.addFile(QString::fromUtf8(":/resources/icons/viewa.png"));
@@ -168,7 +165,6 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
     activeSerieCombo->setEnabled(false);
     connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
-    actions.push_back(activeSerieCombo);
 
     QAction* leftAction = new QAction("Shift left", widget);
     connect(leftAction, SIGNAL(triggered()), this, SLOT(shiftLeft()));
@@ -176,7 +172,6 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     iconLeft.addFile(QString::fromUtf8(":/resources/icons/left-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
     iconLeft.addFile(QString::fromUtf8(":/resources/icons/left-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
     leftAction->setIcon(iconLeft);
-    actions.push_back(leftAction);
 
     QAction* rightAction = new QAction("Shift right", widget);
     connect(rightAction, SIGNAL(triggered()), this, SLOT(shiftRight()));
@@ -184,7 +179,6 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     iconRight.addFile(QString::fromUtf8(":/resources/icons/right-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
     iconRight.addFile(QString::fromUtf8(":/resources/icons/right-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
     rightAction->setIcon(iconRight);
-    actions.push_back(rightAction);
 
 	QAction* lft_action = viewMenu->addAction("Left"); 
 	QAction* rht_action = viewMenu->addAction("Right"); 
@@ -199,7 +193,6 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
 	connect(bck_action, SIGNAL(triggered()), this, SLOT(setBehind()));
 	connect(top_action, SIGNAL(triggered()), this, SLOT(setTop()));
 	connect(btm_action, SIGNAL(triggered()), this, SLOT(setBottom())); 	
-	actions.push_back(viewMenu);
 	
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
     osg::Vec3 up(0,0,1);
@@ -231,6 +224,17 @@ QWidget* KinematicVisualizer::createWidget(std::vector<QObject*>& actions)
     widget->setTimerActive(true);
 
 #endif
+
+    core::IActionsGroupManager::GroupID id = manager->createGroup("Properties");
+    manager->addGroupAction(id, activeSerieCombo);
+    manager->addGroupAction(id, actionTrajectories);
+    manager->addGroupAction(id, actionGhost);
+
+    id = manager->createGroup("View");
+    manager->addGroupAction(id, viewMenu);
+    manager->addGroupAction(id, leftAction);
+    manager->addGroupAction(id, rightAction);
+    manager->addGroupAction(id, actionSwitchAxes);
 
     retWidget->setFocusPolicy(Qt::StrongFocus);
     widget->setFocusPolicy(Qt::StrongFocus);

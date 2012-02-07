@@ -13,6 +13,7 @@
 #include <core/ObjectWrapper.h>
 #include <plugins/subject/ISession.h>
 
+//! Abstrakcyjna klasa reprezentuj¹ca pojedynczy ruch obiektu w ramach sesji
 class IMotion
 {
 public:
@@ -23,7 +24,16 @@ public:
 
     virtual ~IMotion() {}
 
+    //! \return Globalny, unikalny ID ruchu
+    virtual SubjectID getID() const = 0;
+    //! \return Lokalny, unikalny ID w ramach sesji
+    virtual SubjectID getLocalID() const = 0;
+    //! \return Sesja z któr¹ zwi¹zany jest ten ruch
+    virtual const SessionConstPtr & getSession() const = 0;
+
+    //! \return Globalna nazwa ruchu
     virtual const std::string & getName() const = 0;
+    //! \return Lokalna nazwa ruchu w ramach sesji
     virtual const std::string & getLocalName() const = 0;
 
     template <class Ptr>
@@ -55,10 +65,6 @@ public:
             }
         }
     }
-
-    virtual SubjectID getID() const = 0;
-    virtual SubjectID getLocalID() const = 0;
-    virtual const SessionConstPtr & getSession() const = 0;
 
     virtual bool hasObjectOfType(const core::TypeInfo& type, bool exact = false) const
     {
@@ -106,8 +112,6 @@ public:
 
     virtual int size() const = 0;
     virtual const core::ObjectWrapperConstPtr & get(int i) const = 0;
-
-    //virtual void clearInvalidWrappers() const = 0;
 };
 
 CORE_DEFINE_WRAPPER(IMotion, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);

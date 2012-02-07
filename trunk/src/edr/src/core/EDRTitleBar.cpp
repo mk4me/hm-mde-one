@@ -167,19 +167,19 @@ void EDRTitleBar::setTitle(const QString & title)
 
 void EDRTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
 {
-    if(features && QDockWidget::DockWidgetClosable){
+    if(features & QDockWidget::DockWidgetClosable){
         buttonClose->setVisible(true);
     }else{
         buttonClose->setVisible(false);
     }
 
-    if(features && QDockWidget::DockWidgetFloatable){
+    if(features & QDockWidget::DockWidgetFloatable){
         buttonFloat->setVisible(true);
     }else{
         buttonFloat->setVisible(false);
     }
 
-    if(features && QDockWidget::DockWidgetMovable){
+    if(features & QDockWidget::DockWidgetMovable){
         setEnabled(true);
     }else{
         setEnabled(false);
@@ -208,8 +208,8 @@ EDRTitleBar * supplyWithEDRTitleBar(EDRDockWidget * dockWidget, bool refresh)
     
     //odswiezam titlebar!!
     if(refresh == true){
-        dockWidget->setWindowTitle(dockWidget->windowTitle());
-        dockWidget->setFeatures(dockWidget->features());
+        titleBar->setTitle(dockWidget->windowTitle());
+        titleBar->refreshFeatures(dockWidget->features());
     }
 
     return titleBar;

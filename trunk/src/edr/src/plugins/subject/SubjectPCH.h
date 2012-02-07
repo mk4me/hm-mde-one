@@ -10,6 +10,7 @@
 #ifndef HEADER_GUARD_SUBJECT__SUBJECTPCH_H__
 #define HEADER_GUARD_SUBJECT__SUBJECTPCH_H__
 
+#include <core/PluginCommon.h>
 #include <boost/utility.hpp>
 #include <core/SmartPtr.h>
 

@@ -20,6 +20,12 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
         return;
     }
 
+    contextWidget->setStyleSheet(QString::fromUtf8(
+        "VisualizerWidget > .QWidget, VisualizerWidget > .QWidget:focus:hover {" \
+            "border: 2px solid orange;"\
+        "}"
+    ));
+
     auto it = visualizersData.find(contextWidget);
 
     if(it == visualizersData.end()){
@@ -48,6 +54,8 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
         return;
     }
 
+    getCurrentContextWidget()->setStyleSheet(QString());
+
     if(visualizerGroupID != -1){
         flexiTabWidget->removeGroup(visualizerGroupID);
         visualizerGroupID = -1;
@@ -58,54 +66,53 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
 void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
 {
     VisualizerWidget * visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
-    // przygotowanie do wypelnienia grupy
-    VisualizerWidget::VisualizerTitleBarElements titleBarElements;
 
-    visWidget->getVisualizerTitleBarElements(titleBarElements);
+    auto actionsManager = visWidget->getVisualizerActionsManager();
 
-    if(titleBarElements.empty() == false){
-        auto vis = visWidget->getCurrentVisualizer();
+    if(actionsManager.empty() == true){
+        return;
+    }
+    auto vis = visWidget->getCurrentVisualizer();
+
+    for(auto groupIT = actionsManager.begin(); groupIT != actionsManager.end(); groupIT++){
 
         //podziel elementy na 4 grupy - akcje, menusy, widget i inne nieobslugiwane elementy
         //przy okazji wyznaczamy ilosc elementow oraz ich sumaryczna szerokosc i najwieksza wysokosc do pozniejszego layoutowania
         //elementy sa indeksowane tak jak podeslal nam je klient, ale ich kolejnosc moze zostac zmieniona zeby lepiej je rozlozyc
-        std::map<unsigned int, QAction*> actions;
-        std::map<unsigned int, QMenu*> menus;
-        //std::map<unsigned int, QWidget*> widgets;
-        std::map<unsigned int, QObject*> others;
+        std::map<int, QAction*> actions;
+        std::map<int, QMenu*> menus;
+        std::map<int, QObject*> others;
+        std::map<int, QObject*> all;
 
         // budujemy widgety ktore beda potem trafialy do toolbarow
-        std::map<unsigned int, QWidget*> toolbarElements;
+        std::map<int, QWidget*> toolbarElements;
+
+        (*groupIT).getActions(actions);
+        (*groupIT).getMenus(menus);
+        (*groupIT).getObjects(others);
+        (*groupIT).getWidgets(toolbarElements);
+        (*groupIT).getAllObjects(all);
+
 
         int maxHeight = 0;
         int totalWidth = 0;
-        int totalElements = titleBarElements.size();
+        int totalElements = all.size();
 
-        for(unsigned int i = 0; i < totalElements; i++){
-            if(QAction * action = qobject_cast<QAction*>(titleBarElements[i].first)){
-                actions[i] = action;
-            }else if(QMenu * menu = qobject_cast<QMenu*>(titleBarElements[i].first)){
-                menus[i] = menu;
-            }else if(QWidget * widget = qobject_cast<QWidget*>(titleBarElements[i].first)){
-                //widgets[i] = widget;
-                toolbarElements[i] = widget;
-
-                if(QComboBox * cbox = qobject_cast<QComboBox*>(widget)){
-                    cbox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-                    cbox->setMinimumContentsLength(min(cbox->currentText().size(), 10));
-                }
-
-                //dodajemy od razu do elementow toolbara - indeksy zostaja zachowane dla pozniejszego rozmieszczania wg kolejnosci
-                auto s = widget->sizeHint();
-                int width = min(s.width(), 250);
-                if(s.width() > 250){
-                    widget->setMaximumWidth(250);
-                }
-                totalWidth += width;
-                maxHeight = max(maxHeight, s.height());
-            }else{
-                others[i] = titleBarElements[i].first;
+        for(auto it = toolbarElements.begin(); it != toolbarElements.end(); it++){
+            QWidget * widget = it->second;
+            if(QComboBox * cbox = qobject_cast<QComboBox*>(widget)){
+                cbox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
+                cbox->setMinimumContentsLength(min(cbox->currentText().size(), 10));
             }
+
+            //dodajemy od razu do elementow toolbara - indeksy zostaja zachowane dla pozniejszego rozmieszczania wg kolejnosci
+            auto s = widget->sizeHint();
+            int width = min(s.width(), 250);
+            if(s.width() > 250){
+                widget->setMaximumWidth(250);
+            }
+            totalWidth += width;
+            maxHeight = max(maxHeight, s.height());
         }
 
         totalElements -= others.size();
@@ -219,7 +226,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
         layout->setMargin(0);
         layout->setSpacing(1);
 
-        visualizersData[contextWidget][QString::fromUtf8("Default operations")] = widget;
+        visualizersData[contextWidget][QString::fromUtf8((*groupIT).name().c_str())] = widget;
     }
 }
 

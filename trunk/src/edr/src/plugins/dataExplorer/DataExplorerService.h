@@ -58,7 +58,7 @@ public:
 public:
 
     virtual void init(core::IManagersAccessor * managersAccessor);
-    virtual QWidget* getWidget(std::vector<QObject*>& actions);
+    virtual QWidget* getWidget(core::IActionsGroupManager * actionsManager);
     virtual const std::string& getName() const;
 
 

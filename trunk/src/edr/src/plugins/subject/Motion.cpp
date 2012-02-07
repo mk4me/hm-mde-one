@@ -26,20 +26,8 @@ Motion::Motion(core::IMemoryDataManager * memoryDataManager, SubjectID motionID,
           virtual void initialize(core::ObjectWrapperPtr & object)
           {
               kinematic::SkeletalDataPtr data;
-              bool ok = dataWrapper->tryGet(data);
-
-              if(ok == false){
-                  return;
-              }
-
               kinematic::SkeletalModelPtr model;
-              ok = modelWrapper->tryGet(model);
-
-              if(ok == false){
-                  return;
-              }
-
-              if(data != nullptr && model != nullptr){
+              if(dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
                   kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
                   joints->setSkeletal(model, data);
                   object->trySet(joints);

@@ -3,7 +3,6 @@
 #include <core/ObjectWrapperFactory.h>
 #include "MainWindow.h"
 #include <osgui/QOsgWidgets.h>
-//#include "SceneGraphWidget.h"
 
 #include <osg/Vec3d>
 #include <osg/Quat>
@@ -222,7 +221,7 @@ void MainWindow::openFile( const std::string& path )
     DataManager * dataManager = DataManager::getInstance();
     for(auto it = paths.begin(); it != paths.end(); it++){
         try{
-            dataManager->addData(*it);
+            dataManager->addFile(*it);
         }catch(...){
 
         }
@@ -487,7 +486,7 @@ void MainWindow::registerPluginsDataSources()
 }
 
 
-QDockWidget* MainWindow::embeddWidget( QWidget* widget, std::vector<QObject*>& widgetActions, const QString& name, const QString& style, const QString& sufix,
+QDockWidget* MainWindow::embeddWidget( QWidget* widget, const ActionsGroupManager & widgetActions, const QString& name, const QString& style, const QString& sufix,
     Qt::DockWidgetArea area /*= Qt::AllDockWidgetAreas*/)
 {
     // dodajemy widget dokowalny     
@@ -499,18 +498,28 @@ QDockWidget* MainWindow::embeddWidget( QWidget* widget, std::vector<QObject*>& w
     dock->setPermanent(true);
     QObject::connect( dock, SIGNAL(visibilityChanged(bool)), this, SLOT(onDockWidgetVisiblityChanged(bool)) );
 
-    if(widgetActions.empty() == false){
+    EDRTitleBar * titleBar = supplyWithEDRTitleBar(dock);
 
-        //EDRTitleBar * titleBar = new EDRTitleBar();
-        //dock->setTitleBarWidget(titleBar);
-
-        EDRTitleBar * titleBar = supplyWithEDRTitleBar(dock);
-
-        for(auto it = widgetActions.begin(); it!= widgetActions.end(); it++){
-            //dock->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
-            titleBar->addObject(*it, IEDRTitleBar::Left);
+    for(auto groupIT = widgetActions.begin(); groupIT != widgetActions.end(); groupIT++){
+        std::map<int, QObject *> allObjects;
+        (*groupIT).getAllObjects(allObjects);
+        for(auto objectIT = allObjects.begin(); objectIT != allObjects.end(); objectIT++){
+            titleBar->addObject(objectIT->second, IEDRTitleBar::Left);
         }
     }
+
+    //if(widgetActions.empty() == false){
+
+    //    //EDRTitleBar * titleBar = new EDRTitleBar();
+    //    //dock->setTitleBarWidget(titleBar);
+
+    //    EDRTitleBar * titleBar = supplyWithEDRTitleBar(dock);
+
+    //    for(auto it = widgetActions.begin(); it!= widgetActions.end(); it++){
+    //        //dock->getTitleBar()->addObject(*it, IEDRTitleBar::Left);
+    //        titleBar->addObject(*it, IEDRTitleBar::Left);
+    //    }
+    //}
 
     return dock;
 }

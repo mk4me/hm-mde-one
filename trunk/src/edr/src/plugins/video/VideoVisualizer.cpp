@@ -185,7 +185,7 @@ void VideoVisualizer::update( double deltaTime )
     }
 }
 
-QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
+QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
 {
     using namespace osg;
     using namespace osgWidget;
@@ -206,10 +206,10 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
     camera->setClearColor(Vec4(0.73f, 0.73f, 0.73f, 1));
 
     // dodanie WMa
-    WindowManager* manager = new WindowManager(viewer, float(traits->width), float(traits->height), 0xFF/*, WindowManager::WM_PICK_DEBUG*/);
-    viewer->setSceneData(manager);
-    viewer->addEventHandler( new osgWidget::MouseHandler(manager) );
-    viewer->addEventHandler( new osgWidget::ResizeHandler(manager, camera) );
+    WindowManager* windowManager = new WindowManager(viewer, float(traits->width), float(traits->height), 0xFF/*, WindowManager::WM_PICK_DEBUG*/);
+    viewer->setSceneData(windowManager);
+    viewer->addEventHandler( new osgWidget::MouseHandler(windowManager) );
+    viewer->addEventHandler( new osgWidget::ResizeHandler(windowManager, camera) );
 
     // dodanie obszaru roboczego
     workspace = new osgWidget::Box();
@@ -219,7 +219,7 @@ QWidget* VideoVisualizer::createWidget(std::vector<QObject*>& actions)
 		texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
 		texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
 	}
-    manager->addChild(workspace);
+    windowManager->addChild(workspace);
 
     // dodanie widgetu
     //widget = new Widget("video", 100, 100);

@@ -20,7 +20,7 @@ void DataExplorerService::init(core::IManagersAccessor * managersAccessor)
     this->managersAccessor = managersAccessor;
 }
 
-QWidget* DataExplorerService::getWidget(std::vector<QObject*>& actions)
+QWidget* DataExplorerService::getWidget(core::IActionsGroupManager * actionsManager)
 {
     return widget;
 }

@@ -8,9 +8,9 @@
 #include "SubjectService.h"
 #include <core/DataAccessors.h>
 
-Session::Session(core::IMemoryDataManager * memoryDataManager, SubjectID sessionID, const SubjectConstPtr & subject, SubjectID localSessionID, unsigned int year,
+Session::Session(SubjectID sessionID, const SubjectConstPtr & subject, SubjectID localSessionID, unsigned int year,
     unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
-    : memoryDataManager(memoryDataManager), sessionID(sessionID), subject(subject), localSessionID(localSessionID), year(year), month(month), day(day), wrappers(wrappers),
+    : sessionID(sessionID), subject(subject), localSessionID(localSessionID), year(year), month(month), day(day), wrappers(wrappers),
      currentMotionID(0)
 {
     //data
@@ -76,15 +76,10 @@ SubjectID Session::getLocalID() const
     return localSessionID;
 }
 
-//const std::string & Session::getName() const
-//{
-//    return name;
-//}
-
 void Session::getMotions(Motions & motions) const
 {
     Motions toFiltering;
-    core::queryDataPtr(memoryDataManager, toFiltering, true);
+    core::queryDataPtr(core::getDataManagerReader(), toFiltering, true);
 
     for(auto it = toFiltering.begin(); it != toFiltering.end(); it++){
         if((*it)->getSession().get() == this){

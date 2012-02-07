@@ -15,16 +15,10 @@
 #include <core/IIdentifiable.h>
 #include <core/SmartPtr.h>
 #include <core/IManagersAccessor.h>
+#include <core/IActionsGroupManager.h>
 
 class QObject;
 class QWidget;
-
-namespace osg{
-
-    //! Deklaracja wyprzedzaj¹ca
-    class Node;
-
-}
 
 namespace core 
 {
@@ -60,16 +54,16 @@ namespace core
 
         //! Us³uga nie musi mieæ wizualnej reprezentacji.
         //! \return Widget tworzony przez us³ugê b¹dŸ NULL.
-        virtual QWidget* getWidget(std::vector<QObject*>& actions) = 0;
+        virtual QWidget* getWidget(IActionsGroupManager * actionsManager) = 0;
         
         //! \return Widget kontroluj¹cy zachowanie us³ugi/us³ug zale¿nych.
-        virtual QWidget* getControlWidget(std::vector<QObject*>& actions)
+        virtual QWidget* getControlWidget(IActionsGroupManager * actionsManager)
         {
             return nullptr;
         }
 
         //! \return Widget dostarczaj¹cy opcji zwi¹zanych z us³ug¹/us³ugami zale¿nymi.
-        virtual QWidget* getSettingsWidget(std::vector<QObject*>& actions)
+        virtual QWidget* getSettingsWidget(IActionsGroupManager * actionsManager)
         {
             return nullptr;
         }

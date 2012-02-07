@@ -19,6 +19,7 @@
 #include <core/PluginCommon.h>
 #include <core/SmartPtr.h>
 #include <core/IService.h>
+#include <core/ISource.h>
 #include <core/IParser.h>
 #include <core/IVisualizer.h>
 #include <core/IDataProcessor.h>
@@ -34,8 +35,7 @@ namespace core {
 //! nie bÍdπ ≥adowane do aplikacji!!
 
 //! Sami musimy modyfikowaÊ ta wersjÍ!!
-#define CORE_PLUGIN_INTERFACE_VERSION 4
-
+#define CORE_PLUGIN_INTERFACE_VERSION 5
 
 //! Weryfikacja typu bilda pluginu
 #ifdef _DEBUG
@@ -94,6 +94,10 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
 #define CORE_PLUGIN_ADD_SERVICE(className)                              \
     instance->addService( core::IServicePtr(new className) );
 
+    //! Dodaje ürÛd≥o danych DM zadanego typu do pluginu.
+#define CORE_PLUGIN_ADD_SOURCE(className)                              \
+    instance->addSource( core::ISourcePtr(new className) );
+
 //! Dodaje parser zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_PARSER(className)                               \
     instance->addParser( core::IParserPtr(new className) );
@@ -112,8 +116,7 @@ extern "C" CORE_EXPORT core::Plugin* CORE_CREATE_PLUGIN_FUNCTION_NAME(core::Inst
 
 //! Dodanie nowego typu domenowego poprzez utworzenie dla niego ObjectWrapperFactory
 #define CORE_PLUGIN_ADD_OBJECT_WRAPPER(className)               \
-    instance->addObjectWrapperFactory<className>();//( core::IObjectWrapperFactoryPtr(new core::ObjectWrapperFactory<className>()) ); 
-    //instance->addObjectWrapperFactory( core::IObjectWrapperFactoryPtr(new core::ObjectWrapperFactory<className>()) ); 
+    instance->addObjectWrapperFactory<className>();
 
 
 //! Interfejs pluginu przez ktÛry dostarczane sa us≥ugi (serwisy) i prototypy elementÛw przetwarzajπcych dane
@@ -126,6 +129,10 @@ public:
     virtual int getNumServices() const = 0;
     //! \return Us≥uga.
     virtual IService* getService(int idx) = 0;
+    //! \return Liczba ürÛde≥ danych DM.
+    virtual int getNumSources() const = 0;
+    //! \return èrÛd≥o danych DM.
+    virtual ISource* getSource(int idx) = 0;
     //! \return Liczba parserÛw.
     virtual int getNumParsers() const = 0;
     //! \return Parser.
@@ -138,11 +145,10 @@ public:
     virtual int getNumDataProcesors() const = 0;
     //! \return Element przetwarzajπcy.
     virtual IDataProcessor* getDataProcessor(int idx) = 0;
-    //! \return Liczba ürÛde≥ danych.
+    //! \return Liczba ürÛde≥ danych workflow.
     virtual int getNumDataSources() const = 0;
-    //! \return èrÛd≥o danych.
+    //! \return èrÛd≥o danych workflow.
     virtual IDataSource* getDataSource(int idx) = 0;
-
 };
 
 /**
@@ -161,13 +167,15 @@ public:
     typedef int (*GetLibrariesVersionFunction)(int* boostVersion, int* qtVersion, int* stlVersion);
     //! Typ listy us≥ug.
     typedef std::vector<IServicePtr> Services;
+    //! Typ listy ürÛde≥ danych DM.
+    typedef std::vector<ISourcePtr> Sources;
     //! Typ listy parserÛw.
     typedef std::vector<IParserPtr> Parsers;
     //! Typ listy wizualizatorÛw.
     typedef std::vector<IVisualizerPtr> Visualizers;
     //! Typ listy elementÛw przetwarzajπcych.
     typedef std::vector<IDataProcessorPtr> DataProcessors;
-    //! Typ listy ürÛde≥ danych.
+    //! Typ listy ürÛde≥ danych workflow.
     typedef std::vector<IDataSourcePtr> DataSources;
     //! Typ listy wrapperÛw.
     typedef std::vector<IObjectWrapperFactoryPtr> ObjectWrapperFactories;
@@ -175,13 +183,15 @@ public:
 private:
     //! Lista us≥ug pluginu.
     Services services;
+    //! Lista ürÛdÍ≥ danych DM pluginu.
+    Sources sources;
     //! Lista parserÛw pluginu.
 	Parsers parsers;
     //! Lista wizualizatorÛw pluginu.
     Visualizers visualizers;
     //! Lista elementÛw przetwarzajπcych pluginu.
     DataProcessors dataProcessors;
-    //! Lista ürÛde≥ danych pluginu.
+    //! Lista ürÛde≥ danych workflow pluginu.
     DataSources dataSources;
     //! Lista fabryk wrapperÛw.
     ObjectWrapperFactories factories;
@@ -244,6 +254,22 @@ public:
     {
         return services[i];
     }
+
+    //! \service èrÛd≥o DM do dodania do pluginu.
+    void addSource(const ISourcePtr & source)
+    {
+        sources.push_back(source);
+    }
+    //! \return Liczba ürÛde≥ DM dostarczanych przez plugin.
+    int getNumSources() const
+    {
+        return static_cast<int>(sources.size());
+    }
+    //! \param i
+    const ISourcePtr & getSource(int i)
+    {
+        return sources[i];
+    }
 	
     //! \parser Parser do dodania do pluginu.
 	void addParser(const IParserPtr & parser)
@@ -292,12 +318,12 @@ public:
         return this->dataProcessors[i];
     }
 
-    //! \param dataSource èrÛd≥o danych do dodania do pluginu.
+    //! \param dataSource èrÛd≥o danych workflow do dodania do pluginu.
     void addDataSource(const IDataSourcePtr & dataSource)
     {
         this->dataSources.push_back(dataSource);
     }
-    //! \return Liczba ürÛde≥ danych dostarczanych przez plugin.
+    //! \return Liczba ürÛde≥ danych workflow dostarczanych przez plugin.
     int getNumDataSources() const
     {
         return static_cast<int>(this->dataSources.size());

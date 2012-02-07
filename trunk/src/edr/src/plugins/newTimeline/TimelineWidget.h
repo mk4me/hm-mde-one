@@ -43,7 +43,7 @@ public:
 
     virtual void update(const State * state);
 
-    void loadToolbarElements(std::vector<QObject*> & elements) const;
+    void loadToolbarElements(core::IActionsGroupManager * actionsManager) const;
 
     void setChannelTooltip(const std::string & path, const std::string & tooltip);
     std::string getChannelTooltip(const std::string & path) const;

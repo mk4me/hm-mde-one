@@ -112,11 +112,12 @@ void VisualizerWidget::init()
     //wyczyszczenie wizualizatorow, inicjalizacja wszystkich kontrolek z tym zwiazanych
     clearCurrentVisualizer();
 
+    ActionsGroupManager::GroupID id = visualizerCommonElementsOrder.createGroup("Decoration");
+    visualizerCommonElementsOrder.addGroupAction(id, label);
 
-    //dodanie stworzonych elementow do titleBara
-    visualizerCommonElementsOrder.push_back(label);
-    visualizerCommonElementsOrder.push_back(comboType);
-    visualizerCommonElementsOrder.push_back(menuSource);
+    id = visualizerCommonElementsOrder.createGroup("Data");
+    visualizerCommonElementsOrder.addGroupAction(id, comboType);
+    visualizerCommonElementsOrder.addGroupAction(id, menuSource);
 
     //ALL old visualizer elements
     QMetaObject::connectSlotsByName(this);
@@ -205,17 +206,42 @@ void VisualizerWidget::addVisualizer( const QIcon& icon, const QString& label, U
     comboType->addItem( icon, label, qVariantFromValue(id) );
 }
 
+const ActionsGroupManager & VisualizerWidget::getVisualizerActionsManager() const
+{
+    return visualizerImplementationCustomElements;
+}
+
+const ActionsGroupManager & VisualizerWidget::getGenericVisualizerActionsManager() const
+{
+    return visualizerCommonElementsOrder;
+}
+
 void VisualizerWidget::getVisualizerTitleBarElements(VisualizerTitleBarElements & titleBarElements) const
 {
-    for(auto it = visualizerCommonElementsOrder.begin(); it != visualizerCommonElementsOrder.end(); it++){
-        auto elementIT = visualizerCommonElements.find(*it);
-        if(elementIT->second.visible == true){
-            titleBarElements.push_back(VisualizerTitleBarElement(elementIT->second.object, elementIT->second.side));
+    for(auto groupIT = visualizerCommonElementsOrder.begin(); groupIT != visualizerCommonElementsOrder.end(); groupIT++){
+        
+        std::map<int, QObject *> allGroupObjects;
+        (*groupIT).getAllObjects(allGroupObjects);
+        
+        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); actionIT++){
+            auto elementIT = visualizerCommonElements.find(actionIT->second);
+            if(elementIT != visualizerCommonElements.end()){
+                if(elementIT->second.visible == true){
+                    titleBarElements.push_back(VisualizerTitleBarElement(elementIT->second.object, elementIT->second.side));
+                }
+            }else{
+                titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, IEDRTitleBar::Left));
+            }
         }
     }
 
-    for(auto it = visualizerImplementationCustomElements.begin(); it != visualizerImplementationCustomElements.end(); it++){
-        titleBarElements.push_back(VisualizerTitleBarElement(*it, IEDRTitleBar::Left));
+    for(auto groupIT = visualizerImplementationCustomElements.begin(); groupIT != visualizerImplementationCustomElements.end(); groupIT++){
+        std::map<int, QObject *> allGroupObjects;
+        (*groupIT).getAllObjects(allGroupObjects);
+
+        for(auto actionIT = allGroupObjects.begin(); actionIT != allGroupObjects.end(); actionIT++){
+            titleBarElements.push_back(VisualizerTitleBarElement(actionIT->second, IEDRTitleBar::Left));
+        }
     }
 }
 

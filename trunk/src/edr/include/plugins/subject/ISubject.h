@@ -12,14 +12,18 @@
 #include <plugins/subject/Types.h>
 #include <core/ObjectWrapper.h>
 
+//! Abstrakcyjna klasa reprezentuj¹ca obiekt wykonuj¹cy ruch - cz³owiek, zwierzê, avatar
 class ISubject
 {
 public:
 
     virtual ~ISubject() {}
 
+    //! \return Unikalny identyfikator obiektu. Po usuniêciu i ponownym dodaniu zostanie przyznany nowy!!
     virtual SubjectID getID() const = 0;
+    //! \return "Przyjazna" lub "naturalna" nazwa obiektu.
     virtual const std::string & getName() const = 0;
+    //! \param sessions Lista sesji zwi¹zanych z tym obiektem - dynamicznie pobierana z DM!!
     virtual void getSessions(Sessions & sessions) const = 0;
 };
 

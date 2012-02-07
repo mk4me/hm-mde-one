@@ -67,7 +67,7 @@ public:
     virtual void removeSerie(core::IVisualizer::SerieBase *serie);
 	virtual core::IVisualizer* createClone() const;
     virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info );
-    virtual QWidget* createWidget(std::vector<QObject*>& actions);
+    virtual QWidget* createWidget(core::IActionsGroupManager * manager);
     virtual QIcon* createIcon();
     virtual const std::string& getName() const;
     virtual void reset();
