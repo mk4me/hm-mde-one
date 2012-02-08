@@ -19,7 +19,9 @@ void SchemeDrawerContainer::init( SkeletalVisualizationSchemeConstPtr scheme )
     OsgSchemeDrawer::init(scheme);
     wasInit = true;
     BOOST_FOREACH(OsgSchemeDrawerPtr drawer, drawers) {
-        drawer->init(scheme);
+        if (!drawer->isInitialized()) {
+            drawer->init(scheme);
+        }
         nodes->addChild(drawer->getNode());
     }
 }
@@ -57,6 +59,16 @@ void SchemeDrawerContainer::update()
     BOOST_FOREACH(OsgSchemeDrawerPtr drawer, drawers) {
         drawer->update();
     }
+}
+
+SchemeDrawerContainer::const_range SchemeDrawerContainer::getDrawers() const
+{
+    return boost::make_iterator_range(drawers.cbegin(), drawers.cend());
+}
+
+SchemeDrawerContainer::range SchemeDrawerContainer::getDrawers()
+{
+    return boost::make_iterator_range(drawers.begin(), drawers.end());
 }
 
 

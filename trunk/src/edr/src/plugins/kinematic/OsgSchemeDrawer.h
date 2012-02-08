@@ -10,12 +10,20 @@ public:
 public:
     //! metoda powinna zwracac wezel 
     virtual osg::ref_ptr<osg::Node> getNode() = 0;
+
+    virtual void setVisible(bool visible) 
+    {
+        getNode()->setNodeMask(visible ? 0xFFFF : 0);
+    }
+
     virtual void init(SkeletalVisualizationSchemeConstPtr scheme) 
     { 
         UTILS_ASSERT(initialized == false, "Drawer was previously initialized");
         visualizationScheme = scheme; 
         initialized = true;
     }
+
+    bool isInitialized() const { return initialized; }
 
 protected:
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;

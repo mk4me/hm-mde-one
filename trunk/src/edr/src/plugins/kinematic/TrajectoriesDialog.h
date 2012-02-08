@@ -24,11 +24,12 @@ public:
 	TrajectoriesDialog(QWidget* parent);
 
 public:
-	void setMarkers(TrajectoryDrawerPtr drawer, const QString& rootName);
+	void setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName);
 
 private slots:
 	void colorClicked();
 	void visibilityChanged(bool visible);
+    void rootVisibilityChanged(bool visible);
 	void widthChanged(double width);
 	void startTimeChanged(double time);
 	void endTimeChanged(double time);
@@ -46,6 +47,7 @@ private:
 private:
 	TrajectoryDrawerPtr currentTrajectories;
     std::map<QTreeWidgetItem*, TrajectoryDrawerPtr> item2Trajectories;
+    std::map<QTreeWidgetItem*, OsgSchemeDrawerPtr> item2Root;
 };
 
 

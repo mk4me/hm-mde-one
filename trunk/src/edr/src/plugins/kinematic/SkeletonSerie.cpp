@@ -21,21 +21,19 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
 	
 	skeletonDrawers->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawSkeleton, 3, 0.02f)));
 	skeletonDrawers->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawSkeleton, 10, 0.005f)));
-	
-	skeletonNode->addChild(skeletonDrawers->getNode());
-
     
+    TrajectoryDrawerPtr trajectoryDrawer(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.33f), 300));
+    SkeletalVisualizationSchemePtr tempScheme(new SkeletalVisualizationScheme());
+    MarkerCollectionConstPtr mc = createTrajectories(collection);
+    tempScheme->setMarkers(mc);
+    trajectoryDrawer->init(tempScheme);
+    skeletonDrawers->addDrawer(trajectoryDrawer);
 	
     skeletonDrawers->init(scheme);
+    skeletonNode->addChild(skeletonDrawers->getNode());
+    //skeletonNode->addChild(trajectoryDrawer->getNode());
     
-    SkeletalVisualizationSchemePtr scheme(new SkeletalVisualizationScheme());
-    MarkerCollectionConstPtr mc = createTrajectories(collection);
-    scheme->setMarkers(mc);
-    TrajectoryDrawerPtr trajectoryDrawer(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 1), 300));
-    trajectoryDrawer->init(scheme);
-    skeletonNode->addChild(trajectoryDrawer->getNode());
-
-    visualizer->trajectoriesDialog->setMarkers(trajectoryDrawer, QString(data->getName().c_str()));
+    visualizer->trajectoriesDialog->setDrawer(skeletonDrawers, QString(data->getName().c_str()));
     transformNode->addChild(skeletonNode);
 	//visualizer->transformNode->addChild(skeletonNode);
 	setAxis(true);

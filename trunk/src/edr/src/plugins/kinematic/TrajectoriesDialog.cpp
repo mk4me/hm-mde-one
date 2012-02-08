@@ -1,6 +1,7 @@
 #include "PCH.h"
-#include "TrajectoriesDialog.h"
 #include <QtGui/QTableView>
+#include "TrajectoriesDialog.h"
+#include "SchemeDrawerContainer.h"
 
 const int columnCount = 2;
 
@@ -23,44 +24,60 @@ TrajectoriesDialog::TrajectoriesDialog( QWidget* parent) :
 		    this, SLOT(treeItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 }
 
-void TrajectoriesDialog::setMarkers(TrajectoryDrawerPtr drawer, const QString& rootName )
+void TrajectoriesDialog::setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName )
 {
-    UTILS_ASSERT(drawer->getMarkers());
-    MarkerCollectionConstPtr markers = drawer->getMarkers();
-	int count = markers->getNumChannels();
+    QTreeWidgetItem* root = new QTreeWidgetItem();
+    root->setText(0, rootName);
+    tree->addTopLevelItem(root);
+    QCheckBox* rootCheck = new QCheckBox(tree);
+    rootCheck->setChecked(true);
+    tree->setItemWidget(root, 0, rootCheck);
+    connect(rootCheck, SIGNAL(clicked(bool)), this, SLOT(rootVisibilityChanged(bool)));
+    item2Root[root] = drawer;
     
-    if (count) {
-        QTreeWidgetItem* root = new QTreeWidgetItem();
-        root->setText(0, rootName);
-        tree->addTopLevelItem(root);
-        for (int i = 0; i < count; i++) {
-            QTreeWidgetItem* item = new QTreeWidgetItem();
+    SchemeDrawerContainerPtr container = core::dynamic_pointer_cast<SchemeDrawerContainer>(drawer);
+    if (container) {
+        BOOST_FOREACH (OsgSchemeDrawerPtr child, container->getDrawers()) {
+            TrajectoryDrawerPtr trajectories = core::dynamic_pointer_cast<TrajectoryDrawer>(child);
+            if (trajectories) {
+                MarkerCollectionConstPtr markers = trajectories->getMarkers();
+                int count = markers->getNumChannels();
+                if (count) {
+                    for (int i = 0; i < count; i++) {
+                        QTreeWidgetItem* item = new QTreeWidgetItem();
 
-            item->setText(1, markers->getChannel(i)->getName().c_str());
+                        item->setText(1, markers->getChannel(i)->getName().c_str());
 
-            item->setFlags(item->flags() | Qt::ItemIsSelectable);
-            item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
-            root->addChild(item);
+                        item->setFlags(item->flags() | Qt::ItemIsSelectable);
+                        item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
+                        root->addChild(item);
 
-            QCheckBox* check1 = new QCheckBox(tree);
-            tree->setItemWidget(item, 0, check1);
-            connect(check1, SIGNAL(clicked(bool)), this, SLOT(visibilityChanged(bool)));
-            item2Trajectories[item] = drawer;
+                        QCheckBox* check1 = new QCheckBox(tree);
+                        tree->setItemWidget(item, 0, check1);
+                        connect(check1, SIGNAL(clicked(bool)), this, SLOT(visibilityChanged(bool)));
+                        item2Trajectories[item] = trajectories;
+                    }
+                
+                    int maxVal = static_cast<int> (100 * markers->getLength()) - 1;
+                    startSlider->setMinimum(0);
+                    startSlider->setMaximum(maxVal-1);
+                    endSlider->setMinimum(1);
+                    endSlider->setMaximum(maxVal);
+                    endSlider->setValue(maxVal);
+                    startTimeSpin->setMinimum(0);
+                    startTimeSpin->setMaximum(markers->getLength() - 0.001f);
+                    endTimeSpin->setMinimum(1);
+                    endTimeSpin->setMaximum(markers->getLength());
+                    endTimeSpin->setValue(markers->getLength());
+                }
+            }
         }
+       
     }
+    
 
 
-    int maxVal = static_cast<int> (100 * markers->getLength()) - 1;
-    startSlider->setMinimum(0);
-    startSlider->setMaximum(maxVal-1);
-    endSlider->setMinimum(1);
-    endSlider->setMaximum(maxVal);
-    endSlider->setValue(maxVal);
-    startTimeSpin->setMinimum(0);
-    startTimeSpin->setMaximum(markers->getLength() - 0.001f);
-    endTimeSpin->setMinimum(1);
-    endTimeSpin->setMaximum(markers->getLength());
-    endTimeSpin->setValue(markers->getLength());
+    
 }
 
 
@@ -149,7 +166,7 @@ void TrajectoriesDialog::visibilityChanged( bool visible )
 
 void TrajectoriesDialog::colorClicked()
 {
-	QColor color;// = transformColor(trajectories->getColor(name));
+	QColor color(255, 255, 255, 80);// = transformColor(trajectories->getColor(name));
 	color = QColorDialog::getColor ( color, this, tr("Choose color"), QColorDialog::ShowAlphaChannel);
 
     for (int j = 0; j < tree->topLevelItemCount(); j++) {
@@ -270,4 +287,13 @@ void TrajectoriesDialog::blockAllSignals( bool val )
 	endSlider->blockSignals(val);
 	thicknessSpin->blockSignals(val);
 	
+}
+
+void TrajectoriesDialog::rootVisibilityChanged( bool visible )
+{
+    QCheckBox* box = qobject_cast<QCheckBox*>(sender());
+    if (box) {
+        QTreeWidgetItem* item = getItemWhichContains(box);
+        item2Root[item]->setVisible(visible);
+    }
 }
