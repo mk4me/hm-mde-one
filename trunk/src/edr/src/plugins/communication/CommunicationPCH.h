@@ -23,5 +23,7 @@
 #include <plugins/communication/ShallowCopyParser.h>
 #include <plugins/communication/MetadataParser.h>
 
+#include <core/Plugin.h>
+
 #endif
 #endif

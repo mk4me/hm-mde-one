@@ -2448,7 +2448,7 @@ DataUsage CommunicationDataSource::getUsage(const std::vector<const communicatio
 
     core::Files managedFiles;
 
-    fileDataManager->getManagedData(managedFiles);
+    fileDataManager->getManagedFiles(managedFiles);
 
     for(auto it = files.begin(); it != files.end(); it++){
         if(fileDataManager->isExtensionSupported(core::Filesystem::fileExtension((*it)->fileName)) == true){
@@ -2650,8 +2650,8 @@ void CommunicationDataSource::load(const communication::MotionShallowCopy::File 
 {
     try{
         auto filePath = getFilePath(file);
-        fileDataManager->addData(filePath);
-        fileDataManager->getObjectsForData(filePath, objects);
+        fileDataManager->addFile(filePath);
+        fileDataManager->getObjectsForFile(filePath, objects);
     }catch(...){
 
     }
@@ -2660,7 +2660,7 @@ void CommunicationDataSource::load(const communication::MotionShallowCopy::File 
 void CommunicationDataSource::load(const communication::MotionShallowCopy::File * file)
 {
     try{
-        fileDataManager->addData(getFilePath(file));
+        fileDataManager->addFile(getFilePath(file));
     }catch(...){
 
     }
@@ -2726,7 +2726,7 @@ std::pair<DataLocality, DataUsage> CommunicationDataSource::getStatus(const std:
     std::pair<int, int> ret(UnknownLocality, UnknownUsage);
 
     core::Files managedFiles;
-    fileDataManager->getManagedData(managedFiles);
+    fileDataManager->getManagedFiles(managedFiles);
 
     std::set<const communication::MotionShallowCopy::File *> uniqueFiles(files.begin(), files.end());
 

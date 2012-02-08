@@ -785,7 +785,7 @@ private:
 
             core::Files files;
 
-            fileDataManager->getManagedData(files);
+            fileDataManager->getManagedFiles(files);
 
             //pobierz OW sesji tutaj
             std::vector<core::ObjectWrapperPtr> sessionWrappers;
@@ -795,14 +795,14 @@ private:
                 
                 if(files.find(filePath) == files.end() && core::Filesystem::pathExists(filePath) == true){
                     try{
-                        fileDataManager->addData(filePath);
+                        fileDataManager->addFile(filePath);
                     }catch(...){
 
                     }
                 }
 
                 try{
-                    fileDataManager->getObjectsForData(filePath, sessionWrappers);
+                    fileDataManager->getObjectsForFile(filePath, sessionWrappers);
                 }catch(...){
 
                 }
@@ -856,7 +856,7 @@ private:
 
             core::Files files;
 
-            fileDataManager->getManagedData(files);
+            fileDataManager->getManagedFiles(files);
 
             //pobierz OW sesji tutaj
             std::vector<core::ObjectWrapperPtr> motionWrappers;
@@ -865,7 +865,7 @@ private:
                 auto filePath = getFilePath(it->second);
                 if(files.find(filePath) != files.end()){
                     try{
-                        fileDataManager->getObjectsForData(filePath, motionWrappers);
+                        fileDataManager->getObjectsForFile(filePath, motionWrappers);
                     }catch(...){
 
                     }
