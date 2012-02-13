@@ -236,7 +236,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     manager->addGroupAction(id, hMarkerAction);
     manager->addGroupAction(id, vMarkerAction);
 
-    noneEvents->setChecked(true);
+    leftEvents->setChecked(true);
 
     return widget;
 }
@@ -594,6 +594,7 @@ void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPt
         eventsItem = new EventsPlotItem(val);
         eventsItem->attach(qwtPlot);
         eventsVisible = true;
+
     } else if (eventsVisible) {
         // jesli obiekt z eventami juz istnieje, to sprawdzamy, czy dotyczy tych samych eventow
         // jesli tak, to nie trzeba robic nic, bo wizualizujemy dobre eventy

@@ -28,7 +28,7 @@ public:
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Filesystem::Path& getResourcesPath() const = 0;
     //! \return Zwraca pełną ścieżkę do tymczasowego folderu, który jest czyszczony podczas każdego zamykania aplikacji
-    virtual const Filesystem::Path& getTempPath() const = 0;
+    virtual const Filesystem::Path& getTmpPath() const = 0;
 };
 
 }

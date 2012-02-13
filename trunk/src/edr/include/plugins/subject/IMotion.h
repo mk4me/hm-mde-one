@@ -18,10 +18,6 @@ class IMotion
 {
 public:
 
-    typedef std::vector<core::ObjectWrapperConstPtr>::const_iterator const_iterator;
-
-public:
-
     virtual ~IMotion() {}
 
     //! \return Globalny, unikalny ID ruchu
@@ -36,11 +32,18 @@ public:
     //! \return Lokalna nazwa ruchu w ramach sesji
     virtual const std::string & getLocalName() const = 0;
 
+    //! \return Iloœæ obiektów domenowych Motiona
+    virtual int size() const = 0;
+    //! \param i Indeks obiektu domenowego który chcemy pobraæ [0 - (size() - 1)]
+    //! \return Obiekt domenowy
+    virtual const core::ObjectWrapperConstPtr & get(int i) const = 0;
+
     template <class Ptr>
     bool tryGet(Ptr& object, bool exact = false) const
     {
-        for(auto it = begin(); it !+ end(); it++){
-            if ((*it)->tryGet(object, exact)) {
+        auto s = size();
+        for(int i = 0; i < s; ++i){
+            if (get(i)->tryGet(object, exact)) {
                 return true;
             }
         }
@@ -49,17 +52,19 @@ public:
     }
 
     template<class Channel, class Collection>
-    void getWrappersFromCollection(const Collection& collection, std::vector<core::ObjectWrapperConstPtr> & channes) const
+    void getWrappersFromCollection(const Collection& collection, std::vector<core::ObjectWrapperConstPtr> & channels) const
     {
         Collection& tempCollection = const_cast<Collection&>(collection);
         int count = tempCollection.getNumChannels();
-        for (int i = 0; i < count; i++) {
+        auto s = size();
+        for (int i = 0; i < count; ++i) {
             Channel c = boost::dynamic_pointer_cast<Channel::element_type>(tempCollection.getChannel(i));
-            for(auto i = 0; i < size() ; i++){
+            for(auto j = 0; j < s ; ++j){
                 Channel wc;
-                if (get(i)->tryGet(wc)) {
+                auto obj = get(j);
+                if (obj->tryGet(wc)) {
                     if (wc == c) {
-                        channes.push_back(*it);
+                        channels.push_back(obj);
                     }
                 }
             }
@@ -68,7 +73,8 @@ public:
 
     virtual bool hasObjectOfType(const core::TypeInfo& type, bool exact = false) const
     {
-        for(int i = 0; i < size(); i++){
+        auto s = size();
+        for(int i = 0; i < s; ++i){
             auto obj = get(i);
             
             if(obj->getTypeInfo() == type || (exact == false && obj->isSupported(type))){
@@ -81,7 +87,8 @@ public:
 
     virtual core::ObjectWrapperConstPtr getWrapperOfType(const core::TypeInfo& type, bool exact = false) const
     {
-        for(int i = 0; i < size(); i++){
+        auto s = size();
+        for(int i = 0; i < s; ++i){
             auto obj = get(i);
             
             if(obj->getTypeInfo() == type || (exact == false && obj->isSupported(type))){
@@ -94,14 +101,16 @@ public:
 
     virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const
     {
-        for(int i = 0; i < size(); i++){
+        auto s = size();
+        for(int i = 0; i < s; ++i){
             wrappers.push_back(get(i));
         }
     }
 
     virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers, const core::TypeInfo& type, bool exact = false) const
     {
-        for(int i = 0; i < size(); i++){
+        auto s = size();
+        for(int i = 0; i < s; ++i){
             auto obj = get(i);
 
             if(obj->getTypeInfo() == type || (exact == false && obj->isSupported(type))){
@@ -109,9 +118,6 @@ public:
             }
         }
     }
-
-    virtual int size() const = 0;
-    virtual const core::ObjectWrapperConstPtr & get(int i) const = 0;
 };
 
 CORE_DEFINE_WRAPPER(IMotion, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);

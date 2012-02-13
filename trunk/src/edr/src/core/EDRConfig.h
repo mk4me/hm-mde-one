@@ -38,7 +38,7 @@ public:
 	//! zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Filesystem::Path& getResourcesPath() const;
     //! \return Zwraca pełną ścieżkę do tymczasowego folderu, który jest czyszczony podczas każdego zamykania aplikacji
-    virtual const Filesystem::Path& getTempPath() const;
+    virtual const Filesystem::Path& getTmpPath() const;
 
 public:
 	static void setPaths(EDRConfig& directoriesInfo);

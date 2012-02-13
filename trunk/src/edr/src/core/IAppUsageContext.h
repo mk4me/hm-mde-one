@@ -38,7 +38,7 @@ private:
     typedef std::set<AppUsageContextPtr> ChildContexts;
 
 protected:
-    IAppUsageContext() : active(false), currentContextWidget(nullptr) {}
+    IAppUsageContext() : active(false), currentContextWidget(nullptr), destroyed_(false) {}
 
 public:
     virtual ~IAppUsageContext() {
@@ -58,6 +58,16 @@ public:
     bool isActive() const
     {
         return active;
+    }
+
+    bool isCurrentContextWidgetDestroyed() const
+    {
+        return destroyed_;
+    }
+
+    void setCurrentContextWidgetDestroyed(bool destroyed)
+    {
+        destroyed_ = destroyed;
     }
 
 private:
@@ -165,11 +175,11 @@ private:
 
 private:
     bool active;
+    bool destroyed_;
     QWidget * currentContextWidget;
     std::set<QWidget*> contextWidgets;
     AppUsageContextWeakPtr parent;
     ChildContexts childContexts;
-
 };
 
 #endif HEADER_GUARD___IAPPUSAGECONTEXT_H__

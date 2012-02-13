@@ -36,6 +36,7 @@ private:
     std::set<FlexiTabWidget::GUIID> visualizerSectionsIDs;
 
     std::map<QWidget*, std::map<QString, QWidget *>> visualizersData;
+
 };
 
 

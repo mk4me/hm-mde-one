@@ -921,7 +921,9 @@ void HmmMainWindow::onToolButton(bool checked)
 
 void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 {
+    visualizerUsageContext->setCurrentContextWidgetDestroyed(true);
     removeContext(qobject_cast<QWidget*>(visualizer));
+    visualizerUsageContext->setCurrentContextWidgetDestroyed(false);
 }
 
  VisualizerWidget* HmmMainWindow::createDockVisualizer( TreeItemHelper* hmmItem )

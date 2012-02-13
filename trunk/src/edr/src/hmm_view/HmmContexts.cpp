@@ -54,7 +54,9 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
         return;
     }
 
-    getCurrentContextWidget()->setStyleSheet(QString());
+    if(isCurrentContextWidgetDestroyed() == false){
+        getCurrentContextWidget()->setStyleSheet(QString());
+    }
 
     if(visualizerGroupID != -1){
         flexiTabWidget->removeGroup(visualizerGroupID);
