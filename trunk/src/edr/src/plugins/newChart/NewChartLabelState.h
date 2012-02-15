@@ -13,6 +13,7 @@
 #include "NewChartMarker.h"
 #include "NewChartState.h"
 
+class NewChartSerie;
 class NewChartLabelState : public NewChartState
 {
 public:
@@ -24,13 +25,28 @@ public:
     virtual void stateBegin();
     virtual void stateEnd();
 
+    void removeSerieLabels(const NewChartSerie* serie);
+    void setVisible(const NewChartSerie* serie, bool visible);
+
 protected:
     void move(const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label);
     NewChartLabel* getLabel(const QPoint& pos, const QwtPlotCurve* curve);
     double getClosestPoint(QPointF& ret, const QwtPlotCurve* curve, const QPoint& pos);
 
 protected:
-    std::vector<NewChartLabelPtr> labels;
+    struct LabelData
+    {
+        NewChartLabelPtr label;
+        NewChartDotPtr dot1;
+        NewChartDotPtr dot2;
+        const NewChartSerie* serie;
+    };
+    typedef core::shared_ptr<LabelData> LabelDataPtr;
+    typedef core::shared_ptr<const LabelData> LabelDataConstPtr;
+
+protected:
+    std::vector<LabelDataPtr> labels;
+
 };
 typedef core::shared_ptr<NewChartLabelState> NewChartLabelStatePtr;
 typedef core::shared_ptr<const NewChartLabelState> NewChartLabelStateConstPtr;

@@ -10,11 +10,11 @@
 #ifndef HEADER_GUARD_HMM__HMMCONTEXTS_H__
 #define HEADER_GUARD_HMM__HMMCONTEXTS_H__
 
-#include "FlexiTabWidget.h"
-#include "IAppUsageContextManager.h"
+#include <boost/tuple/tuple.hpp>
 #include <QtGui/QPlainTextEdit>
 #include <QtGui/QComboBox>
-
+#include "FlexiTabWidget.h"
+#include "IAppUsageContextManager.h"
 
 class HMMVisualizerUsageContext : public IAppUsageContext
 {
@@ -59,9 +59,12 @@ public:
 
     //void setActiveTreeItem(TreeItemHelper* helper);
 
+public slots:
+    void refresh();
+
 private slots:
     void itemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void refresh(QAction* dummy = nullptr);
+    //void refresh(QAction* dummy = nullptr);
 
 private:
     void recreateFlexiSectionWidget(QWidget* flexiSection, TreeItemHelper* helper);
@@ -106,16 +109,22 @@ class RaportsTabContext : public QObject, public IAppUsageContext
     Q_OBJECT;
 public:
     RaportsTabContext(FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm);
-public:
 
+public:
     virtual void activateContext(QWidget * contextWidget);
     virtual void deactivateContext(QWidget * nextContextWidget, bool refresh);
     virtual void onRegisterContextWidget(QWidget * contextWidget);
     virtual void onUnregisterContextWidget(QWidget * contextWidget);
 
 private:
+    boost::tuple<QWidget*, QLayout*, QLayout*> createTwoLineWidget();
+    void placeObjects( const QList<QObject*> &editList, QLayout* lowerLayout, QLayout* upperLayout, bool actionsOnTop = false );
+
+private:
     FlexiTabWidget * flexiTabWidget;
-    QWidget* flexiSection;
+    QWidget* editSection;
+    QWidget* textSection;
+    QWidget* fileSection;
     FlexiTabWidget::GUIID groupID;
     HmmMainWindow* hmm;
 };

@@ -4,6 +4,9 @@
 #include <QtGui/QSplitter>
 #include <QtGui/QPainter>
 #include <QtGui/QMenu>
+#include <QtGui/QCheckBox>
+#include <QtGui/QPushButton>
+#include <boost/foreach.hpp>
 #include "NewChartVisualizer.h"
 #include <qwt/qwt_plot_canvas.h>
 #include <qwt/qwt_scale_draw.h>
@@ -26,7 +29,7 @@ showLegend(true),
     statsTable(nullptr),
     eventsItem(nullptr),
     eventMode(false),
-    eventsVisible(false),
+    eventsVisible(true),
     context(C3DEventsCollection::Context::Left),
     eventsMenu(nullptr), eventsActionGroup(nullptr),
     noneEvents(nullptr), leftEvents(nullptr),
@@ -58,13 +61,14 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     qwtPlot = new QwtPlot(txt, nullptr);
     qwtPlot->setObjectName(QString::fromUtf8("plot"));
     //aby legenda nie by³a usuwana podczas chowania i pokazywania trzeba ustawiæ parenta innego ni¿ QwtPlot
-    legend = new QwtLegend(widget);
+    legend = new NewChartLegend(widget);
     legend->setDefaultItemMode(QwtLegendData::Checkable);
+  
     qwtPlot->setAutoReplot(true);
 
     if (isShowLegend()) {    
         //legend->setItemMode(QwtLegend::CheckableItem);
-        qwtPlot->insertLegend( legend, QwtPlot::RightLegend );
+        qwtPlot->insertLegend( legend, QwtPlot::BottomLegend );
     }
 
     qwtPlot->canvas()->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
@@ -169,7 +173,8 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     
 
     //connect(qwtPlot, SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
-    connect(legend, SIGNAL(checked( QwtPlotItem *, bool, int)), this, SLOT(onSerieSelected(QwtPlotItem*, bool, int)));
+    bool c = connect(legend, SIGNAL(checked( QwtPlotItem *, bool, int)), this, SLOT(onSerieSelected(QwtPlotItem*, bool, int)));
+    c = connect(legend, SIGNAL(checkboxChanged(const QwtPlotItem*, bool)), this, SLOT(onSerieVisible(const QwtPlotItem*, bool)));
     //qwtMarker.reset(new QwtPlotMarker());
     qwtMarker = new NewChartMarker();
     qwtMarker->setXValue(0);
@@ -277,10 +282,11 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     activeSerieCombo->setEnabled(true);
 
     if(series.size() == 1){
-        QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(ret->getCurve()));
-        if(legendLabel != nullptr && legendLabel->isChecked() == false){
+        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
+        if(legendLabel != nullptr && legendLabel->isItemActive() == false){
             legend->blockSignals(true);
-            legendLabel->setChecked(true);
+            legendLabel->setItemActive(true);
+            legendLabel->setItemVisibleEnabled(false);
             legend->blockSignals(false);
         }
     }
@@ -295,17 +301,10 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::IVis
 
 void NewChartVisualizer::addPlotCurve( QwtPlotCurve* curve, const Scales& scales)
 {
-    if (plotScales.initialized) {
-        plotScales.xMin = std::min(plotScales.xMin, scales.xMin);
-        plotScales.xMax = std::max(plotScales.xMax, scales.xMax);
-        plotScales.yMin = std::min(plotScales.yMin, scales.yMin);
-        plotScales.yMax = std::max(plotScales.yMax, scales.yMax);
-    } else {
-        plotScales = scales;
-    }
+    plotScales.merge(scales);
 
-    qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
-    qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
+    qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+    qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
     curve->attach(qwtPlot);
 }
 
@@ -344,7 +343,7 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
         for (int i = 0; i < count; i++) {
             NewChartSerie* serie = series[i];
             activeSerieCombo->addItem(serie->getName().c_str());
-            if (serie->getActive()) {
+            if (serie->isActive()) {
                 active = i;
             }
         }
@@ -364,10 +363,10 @@ void NewChartVisualizer::setActiveSerie( int idx )
         series[currentSerie]->setActive(false);
 
         //odznacz w legendzie
-        QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(series[currentSerie]->curve));
-        if(legendLabel != nullptr && legendLabel->isChecked() == true){
+        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[currentSerie]->curve));
+        if(legendLabel != nullptr && legendLabel->isItemActive() == true){
             legendLabel->blockSignals(true);
-            legendLabel->setChecked(false);
+            legendLabel->setItemActive(false);
             legendLabel->blockSignals(false);
         }
 
@@ -382,10 +381,10 @@ void NewChartVisualizer::setActiveSerie( int idx )
         picker->setCurrentCurve(series[currentSerie]->curve);
 
         //zaznacz w legendzie
-        QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(series[currentSerie]->curve));
-        if(legendLabel != nullptr && legendLabel->isChecked() == false){
+        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[currentSerie]->curve));
+        if(legendLabel != nullptr && legendLabel->isItemActive() == false){
             legendLabel->blockSignals(true);
-            legendLabel->setChecked(true);
+            legendLabel->setItemActive(true);
             legendLabel->blockSignals(false);
         }
         
@@ -421,31 +420,50 @@ void NewChartVisualizer::setNormalized( bool normalized )
 
 void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
 {
+    idx = -1; // idx nie chcemy wykorzystywac!
+    legend->blockSignals(true);
     if(on == true){
 
-        onSerieSelected(item);
+        //onSerieSelected(item);
         
+        QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
+        for (int i = 0; i < series.size(); i++) {
+            NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->curve));
+            if (series[i]->curve == curve) {
+                // powinno wywolac sygnal, ktory ustawi aktywna serie
+                activeSerieCombo->setCurrentIndex(i);
+                legendLabel->setItemVisible(true);
+                series[i]->setVisible(true);
+                legendLabel->setItemVisibleEnabled(false);
+            }else{                
+                if(legendLabel != nullptr && legendLabel->isItemActive() == true){
+                    legendLabel->setItemActive(false);
+                    legendLabel->setItemVisibleEnabled(true);
+                }
+            }
+        }
     }else{
         //ignorujemy to - zawsze musi byæ jedna seria aktywna
-        QwtLegendLabel * legendLabel = qobject_cast<QwtLegendLabel *>(legend->legendWidget(item));
-        if(legendLabel != nullptr && legendLabel->isChecked() == false){
-            legendLabel->blockSignals(true);
-            legendLabel->setChecked(true);
+        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(item));
+        if(legendLabel != nullptr && legendLabel->isItemActive() == false){
+            legendLabel->setItemActive(true);
             legendLabel->blockSignals(false);
         }
     }
+    legend->blockSignals(false);
 }
 
 void NewChartVisualizer::onSerieSelected( QwtPlotItem* item)
 {
-    QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
-    for (int i = series.size() - 1; i >= 0; --i) {
-        if (series[i]->curve == curve) {
-            // powinno wywolac sygnal, ktory ustawi aktywna serie
-            activeSerieCombo->setCurrentIndex(i);
-            return;
-        }
-    }
+    onSerieSelected(item, true, -1);
+    //QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
+    //for (int i = series.size() - 1; i >= 0; --i) {
+    //    if (series[i]->curve == curve) {
+    //        // powinno wywolac sygnal, ktory ustawi aktywna serie
+    //        activeSerieCombo->setCurrentIndex(i);
+    //        return;
+    //    }
+    //}
 }
 
 void NewChartVisualizer::onStateAction()
@@ -512,8 +530,8 @@ void NewChartVisualizer::update( double deltaTime )
                         qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
                         recreateStats(segment->stats);
                     } else {
-                        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
-                        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
+                        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+                        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
                         recreateStats();
                     }
                     oldSegment = segment;
@@ -670,8 +688,8 @@ void NewChartVisualizer::setEventMode( bool val )
     eventMode = val;
     eventsItem->setVisible(val);
     if (!eventMode) {
-        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
-        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.yMin, plotScales.yMax);
+        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
     }
 }
 
@@ -809,3 +827,171 @@ EventsHelper::EventsHelper( EventsCollectionConstPtr events, ScalarChannelReader
     createSegments(leftSegments, C3DEventsCollection::Context::Left);
     createSegments(rightSegments, C3DEventsCollection::Context::Right);
 }
+
+QWidget * NewChartLegend::createWidget( const QwtLegendData & data ) const
+{
+    NewChartLegendItem* item = new NewChartLegendItem(data);
+    bool c2 = connect( item, SIGNAL( buttonClicked( bool ) ), this,  SLOT( itemChecked( bool ) ) );
+    bool c3 = connect( item, SIGNAL( checkClicked(bool)), this, SLOT(onCheck(bool)));
+    return item;
+}
+
+void NewChartLegend::onCheck(bool checked)
+{
+    auto it = widget2PlotItem.find(qobject_cast<QWidget*>(sender()));
+    if (it != widget2PlotItem.end()) {
+        const QwtPlotItem* plotItem = it->second;
+        emit checkboxChanged(plotItem, checked);
+    } else {
+        UTILS_ASSERT(false);
+    }
+}
+
+void NewChartLegend::updateLegend( const QwtPlotItem *item, const QList<QwtLegendData> &list )
+{
+    QwtLegend::updateLegend(item, list);
+    widget2PlotItem[this->legendWidget(item)] = item;
+}
+
+
+NewChartLegendItem::NewChartLegendItem( const QwtLegendData & data, QWidget* parent /*= nullptr*/ ) :
+    QWidget(parent)
+{
+    QHBoxLayout* l = new QHBoxLayout();
+    l->setContentsMargins(0, 0, 0, 0);
+    check = new QCheckBox();
+    check->setCheckable(true);
+    check->setChecked(true);
+    l->addWidget(check);
+
+    button = new QPushButton();
+    button->setIcon(QIcon(data.icon().toPixmap()));
+    button->setStyleSheet(
+        "QPushButton:!checked {                    "
+        "    border-style: none;                   "
+        "}                                         "
+        " QPushButton:checked {                    "
+        "     border-style: solid;                 "
+        "     border-width: 1px;                   "
+        "     border-radius: 4px;                  "
+        "     border-color: rgb(91, 91, 91);       "
+        "}                                         ");
+
+    button->setText(data.title().text());
+    button->setCheckable(true);
+    l->addWidget(button);
+    //l->addWidget(QwtLegend::createWidget(data));
+    this->setLayout(l);
+
+    bool c2 = connect(button, SIGNAL(clicked(bool)), this, SLOT(onClick(bool)));
+    bool c3 = connect(check, SIGNAL(clicked(bool)), this, SLOT(onClick(bool)));
+}
+
+bool NewChartLegendItem::isItemVisible()
+{
+    return check->isChecked();
+}
+
+void NewChartLegendItem::setItemVisible(bool active)
+{
+    check->setChecked(active);
+}
+
+bool NewChartLegendItem::isItemActive() const
+{
+    return button->isChecked();
+}
+
+void NewChartLegendItem::setItemActive( bool checked )
+{
+    button->setChecked(checked);
+    check->setEnabled(!checked);
+}
+
+void NewChartLegendItem::onClick( bool val )
+{
+    QPushButton* b = qobject_cast<QPushButton*>(sender());
+    if (b) {
+        emit buttonClicked(val);
+        return;
+    } 
+
+    QCheckBox* c = qobject_cast<QCheckBox*>(sender());
+    if (c) {
+        emit checkClicked(val);
+        return;
+    }
+
+    UTILS_ASSERT(false);
+}
+
+void NewChartLegendItem::setItemVisibleEnabled( bool enabled )
+{
+    check->setEnabled(enabled);
+}
+
+void NewChartLegendItem::setItemActiveEnabled( bool enabled )
+{
+    button->setEnabled(enabled);
+}
+
+void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visible )
+{
+    legend->blockSignals(true);
+    const QwtPlotCurve* curve = dynamic_cast<const QwtPlotCurve*>(dataSerie);
+    for (int i = 0; i < series.size(); i++) {
+        if (series[i]->curve == curve) {
+            if (!series[i]->isActive()) {
+                series[i]->setVisible(visible);
+                auto list = statsTable->getEntriesByChannel(series[i]->getStats()->getChannel());
+                BOOST_FOREACH(QTreeWidgetItem* item, list) {
+                    item->setHidden(!visible);
+                }
+                for (auto it = statesMap.begin(); it != statesMap.end(); it++) {
+                    NewChartLabelStatePtr labelState = core::dynamic_pointer_cast<NewChartLabelState>(it->second);
+                    if (labelState) {
+                        labelState->setVisible(series[i], visible);
+                    }
+                }
+            } else {
+                // aktywna seria nie moze byc niewidoczna, trzeba zapobiegac tej sytuacji wylaczajac checkBoxa
+                UTILS_ASSERT(false, "Active serie has to be visible");
+            }
+
+            break;
+        }
+    }
+    recreateScales();
+    if (!eventMode || !timeInsideEvent()) {
+        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
+    }
+    legend->blockSignals(false);
+}
+
+void NewChartVisualizer::recreateScales()
+{
+    plotScales.clear();
+    for (auto it = series.begin(); it != series.end(); it++) {
+        if ((*it)->isVisible()) {
+            plotScales.merge((*it)->getScales());
+        }
+    }
+    UTILS_ASSERT(plotScales.isInitialized());
+
+}
+
+bool NewChartVisualizer::timeInsideEvent()
+{
+    NewChartSerie* serie = series[currentSerie];
+    auto helper = eventsHelpers.find(serie);
+    if (helper != eventsHelpers.end()) {
+        EventsHelperPtr h = helper->second;
+        if (h->getSegment(serie->getTime(), this->context)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+

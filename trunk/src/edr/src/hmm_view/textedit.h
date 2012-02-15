@@ -62,20 +62,22 @@ public:
 
 public:
     void setHtml(const QString& html);
-    QComboBox* createSizeCombo();
-    QFontComboBox* createFontCombo();
-    QComboBox* createStyleCombo();
 
-protected:
-    virtual void closeEvent(QCloseEvent *e);
+    const QList<QObject*>& getFileActions() const { return fileList; }
+    const QList<QObject*>& getEditActions() const { return editList; }
+    const QList<QObject*>& getTextActions() const { return textList; }
 
 private:
-    void setupFileActions();
-    void setupEditActions();
-    void setupTextActions();
-    bool load(const QString &f);
+    void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
+    void fontChanged(const QFont &f);
+    void colorChanged(const QColor &c);
+    void alignmentChanged(Qt::Alignment a);
     bool maybeSave();
+    bool load(const QString &f);
     void setCurrentFileName(const QString &fileName);
+    void createFileActions();
+    void createEditActions();
+    void createTextActions();
 
 private slots:
     void fileNew();
@@ -103,27 +105,28 @@ private slots:
     void printPreview(QPrinter *);
 
 private:
-    void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
-    void fontChanged(const QFont &f);
-    void colorChanged(const QColor &c);
-    void alignmentChanged(Qt::Alignment a);
+    
 
-public: 
-    QAction *actionSave,
-        *actionTextBold,
-        *actionTextUnderline,
-        *actionTextItalic,
-        *actionTextColor,
-        *actionAlignLeft,
-        *actionAlignCenter,
-        *actionAlignRight,
-        *actionAlignJustify,
-        *actionUndo,
-        *actionRedo,
-        *actionCut,
-        *actionCopy,
-        *actionPaste;
+private: 
+    QList<QObject*> editList;
+    QList<QObject*> fileList;
+    QList<QObject*> textList;
 
+    // tymczasowo!
+    QAction* actionSave;
+    QAction* actionTextBold;
+    QAction* actionTextUnderline;
+    QAction* actionTextItalic;
+    QAction* actionTextColor;
+    QAction* actionAlignLeft;
+    QAction* actionAlignCenter;
+    QAction* actionAlignRight;
+    QAction* actionAlignJustify;
+    QAction* actionUndo;
+    QAction* actionRedo;
+    QAction* actionCut;
+    QAction* actionCopy;
+    QAction* actionPaste;
     QAction* actionNew;
     QAction* actionOpen;
     QAction* actionSaveAs;
@@ -135,10 +138,9 @@ public:
     QFontComboBox *comboFont;
     QComboBox *comboSize;
 
-    QToolBar *tb;
+    //QToolBar *tb;
     QString fileName;
     QTextEdit *textEdit;
-    
 };
 
 #endif

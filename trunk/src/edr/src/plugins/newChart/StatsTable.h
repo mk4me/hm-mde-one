@@ -19,6 +19,12 @@ class StatsTable : public QWidget, private Ui::StatsTable
 {
     Q_OBJECT;
 public:
+    typedef std::multimap<ScalarChannelStatsConstPtr, QTreeWidgetItem*> statsMultimap;
+    typedef boost::iterator_range<statsMultimap::iterator> range;
+    typedef boost::iterator_range<statsMultimap::const_iterator> const_range;
+    typedef ScalarChannelStatsConstPtr::element_type::ChannelConstPtr channelConstPtr;
+
+public:
     StatsTable(QWidget* parent = nullptr, Qt::WindowFlags f = 0);
 	virtual ~StatsTable() {}
 
@@ -33,6 +39,10 @@ public slots:
 
     QTreeWidgetItem* tryGetEntry(const QString& group, const QString& name);
 
+    range getEntries(ScalarChannelStatsConstPtr stats);
+    std::list<QTreeWidgetItem*> getEntriesByChannel(channelConstPtr channel);
+    
+    QStringList getGroups() const;
     void setActive(QTreeWidgetItem* treeItem);
     void setActive(const QString& group, const QString& name);
     void clear();
@@ -40,6 +50,7 @@ public slots:
     
 private:
     int rowHeight;
+    std::multimap<ScalarChannelStatsConstPtr, QTreeWidgetItem*> stats2TreeItems;
 };
 typedef core::shared_ptr<StatsTable> StatsTablePtr;
 typedef core::shared_ptr<const StatsTable> StatsTableConstPtr;

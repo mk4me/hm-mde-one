@@ -86,6 +86,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
         item->setBackgroundColor(i, backgroundColor);
      }
     
+     stats2TreeItems.insert(std::make_pair(stats, item));
      for (int i = 0; i < table->topLevelItemCount(); i++) {
          QTreeWidgetItem* groupItem = table->topLevelItem(i);
          if (groupItem->text(0) == group) {
@@ -146,6 +147,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
 
  void StatsTable::clear()
  {
+     stats2TreeItems.clear();
      table->clear();
  }
 
@@ -158,3 +160,30 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      }
      table->setMaximumHeight(height * rowHeight + table->header()->height());
  }
+
+QStringList StatsTable::getGroups() const
+ {
+     QStringList list;
+     for(int i = 0; i < table->topLevelItemCount(); i++) {
+        list.push_back(table->topLevelItem(i)->text(0));
+     }
+     return list;
+ }
+
+StatsTable::range StatsTable::getEntries( ScalarChannelStatsConstPtr stats )
+{
+    auto r = stats2TreeItems.equal_range(stats);
+    return boost::make_iterator_range(r.first, r.second);
+}
+
+std::list<QTreeWidgetItem*> StatsTable::getEntriesByChannel( channelConstPtr channel )
+{
+    std::list<QTreeWidgetItem*> list;
+    for (auto it = stats2TreeItems.begin(); it != stats2TreeItems.end(); it++) {
+        if (it->first->getChannel() == channel) {
+            list.push_back(it->second);
+        }
+    }
+
+    return list;
+}

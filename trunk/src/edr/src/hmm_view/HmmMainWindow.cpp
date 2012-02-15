@@ -59,16 +59,16 @@ void HmmMainWindow::onFocusChange(QWidget * oldWidget, QWidget * newWidget)
     if(isContextWidget(newWidget)){
         setCurrentContext(newWidget);
     }else{
-
+    
         QWidget * widget = getParentContextWidget(newWidget);
-
+    
         if(widget != nullptr){
             setCurrentContext(widget);
-            if(widget->hasFocus() == false){
-                widget->blockSignals(true);
-                widget->setFocus();
-                widget->blockSignals(false);
-            }
+            //if(widget->hasFocus() == false){
+            //    widget->blockSignals(true);
+            //    widget->setFocus();
+            //    widget->blockSignals(false);
+            //}
         }
     }
 }
@@ -146,7 +146,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     topMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     bottomMainWindow = new QMainWindow();
     bottomMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    
+    bool c = connect(topMainWindow, SIGNAL(changed()), treeUsageContext.get(), SLOT(refresh()));
     //TODO
     //trzeba wyzanaczaæ max wysokoœæ tak aby nie "wypycha³o" nam timeline!!
     // powinno byæ mniej wiêcej coœ takiego - wysokoœæ dla aktualnej rozdzielczoœci - wysokoœc timeline - wysokoœæ górnego paska - przestrzeñ wolna pomiêdzy tymi elementami w pionie
@@ -303,35 +303,16 @@ void HmmMainWindow::createVisualizerInNewSet()
     }
 }
 
+void HmmMainWindow::removeFromAll()
+{
+    ContextAction* action = qobject_cast<ContextAction*>(sender());
+    removeFromVisualizers(action, false);
+}
+
 void HmmMainWindow::removeFromVisualizer()
 {
     ContextAction* action = qobject_cast<ContextAction*>(sender());
-    UTILS_ASSERT(action);
-    if (action) {
-        typedef std::multimap<TreeItemHelper*, DataItemDescription> mmap;
-        std::list<mmap::iterator> toErase;
-        auto range = items2Descriptions.equal_range(action->getItemHelper());
-        for (auto it = range.first; it != range.second; it++) {
-            DataItemDescription& desc = it->second;
-            // jesli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
-            // to znaczy, ze chcemy usunac dane z wszystkich wizualizatorw
-            if (action->getVisualizer() == nullptr || desc.visualizer.lock() == action->getVisualizer()) {
-                toErase.push_back(it);
-                
-                for (int i = 0; i < desc.series.size(); i++) {
-                    desc.visualizer.lock()->removeSerie(desc.series[i].lock());
-                }
-                if (desc.visualizer.lock()->getDataSeries().size() == 0) {
-                    desc.visualizerWidget->close();
-                    delete desc.visualizerWidget;
-                }
-            }
-            
-        }
-        for (auto it = toErase.begin(); it != toErase.end(); it++) {
-            items2Descriptions.erase(*it);
-        }
-    }
+    removeFromVisualizers(action, true);
 }
 
 //void HmmMainWindow::highlightVisualizer()
@@ -361,9 +342,12 @@ void HmmMainWindow::highlightVisualizer(const VisualizerPtr& visualizer )
             if (set) {
                 topMainWindow->raiseSet(set);
             }
-            desc.visualizerWidget->setStyleSheet("color: red;");
+            desc.visualizerWidget->setStyleSheet(QString::fromUtf8(
+                "VisualizerWidget > .QWidget {" \
+                "border: 2px solid red;"\
+                "}"));
         } else {
-            desc.visualizerWidget->setStyleSheet("");
+            desc.visualizerWidget->setStyleSheet(QString());
         }
     }
 }
@@ -1046,6 +1030,12 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
  QMenu* HmmMainWindow::getContextMenu( QWidget* parent, TreeItemHelper* helper )
  {
+     /*QMenu * m = new QMenu(parent);
+     QAction * an = new ContextAction(helper, m);
+     an->setText(tr("Create new visualizer"));
+     m->addAction(an);
+     connect(an, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
+	 return m;*/
      dropUnusedElements(items2Descriptions);
      QMenu * menu = new QMenu(parent);
      //connect(menu, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
@@ -1053,7 +1043,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      QAction * addNew = new ContextAction(helper, menu);
      addNew->setText(tr("Create new visualizer"));
      menu->addAction(addNew);
+     menu->addSeparator();
      connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
+     connect(addNew, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
      QMenu* addTo = new QMenu(tr("Add to:"), menu);
      connect(addTo, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
@@ -1082,6 +1074,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                      QAction* addAction = new ContextAction(helper, group, visualizer);
                      addAction->setText(vw->windowTitle());
                      connect(addAction, SIGNAL(triggered()), this, SLOT(addToVisualizer()));
+                     connect(addAction, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
                      //connect(addAction, SIGNAL(hovered()), this, SLOT(highlightVisualizer()));
                      group->addAction(addAction);
                  }
@@ -1111,12 +1104,15 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              QAction * action = new ContextAction(helper, menu, desc.visualizer.lock());
              action->setText(desc.visualizer.lock()->getUIName());
              connect(action, SIGNAL(triggered()), this, SLOT(removeFromVisualizer()));
+             connect(action, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
              removeFrom->addAction(action);
          }
 
          QAction* all = new ContextAction(helper, menu);
          all->setText("All visualizers");
-         connect(all, SIGNAL(triggered()), this, SLOT(removeFromVisualizer()));
+         connect(all, SIGNAL(triggered()), this, SLOT(removeFromAll()));
+         connect(all, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
+         removeFrom->addSeparator();
          removeFrom->addAction(all);
      }    
 
@@ -1127,12 +1123,14 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              action->setText(set->windowTitle());
              createIn->addAction(action);
              connect(action, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
+             connect(action, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
          }
      }
      QAction* newGroup = new ContextAction(helper, menu);
      newGroup->setText(tr("New group"));
      createIn->addAction(newGroup);
      connect(newGroup, SIGNAL(triggered()), this, SLOT(createVisualizerInNewSet()));
+     connect(newGroup, SIGNAL(triggered()), treeUsageContext.get(), SLOT(refresh()));
      if (createIn->actions().size()) {
          menu->addMenu(createIn);
      }
@@ -1219,6 +1217,43 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      raports->setFocus();
      raports->setHtml(html);
  }
+
+ void HmmMainWindow::removeFromVisualizers( ContextAction* action, bool once)
+ {
+     UTILS_ASSERT(action);
+     if (action) {
+         typedef std::multimap<TreeItemHelper*, DataItemDescription> mmap;
+         std::list<mmap::iterator> toErase;
+         auto range = items2Descriptions.equal_range(action->getItemHelper());
+         for (auto it = range.first; it != range.second; ) {
+             // na razie kopia, w przeciwnym razie jest problem z usuwaniem.
+             DataItemDescription desc = it->second;
+             // jesli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
+             // to znaczy, ze chcemy usunac dane z wszystkich wizualizatorw
+             if (action->getVisualizer() == nullptr || desc.visualizer.lock() == action->getVisualizer()) {
+                 auto toErase = it; it++;
+                 items2Descriptions.erase(toErase);
+                 for (int i = 0; i < desc.series.size(); i++) {
+                     desc.visualizer.lock()->removeSerie(desc.series[i].lock());
+                 }
+                 if (desc.visualizer.lock()->getDataSeries().size() == 0) {
+                     desc.visualizerWidget->close();
+                     delete desc.visualizerWidget;
+                 }
+
+                 
+                 if (once) {
+                    break;
+                 }
+             } else {
+                 it++;
+             }
+
+         }
+     }
+ }
+
+ 
 
  
  void HmmMainWindow::DataObserver::update( const core::IMemoryDataManager * subject )

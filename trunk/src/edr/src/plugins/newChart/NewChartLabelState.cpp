@@ -53,3 +53,39 @@ void NewChartLabelState::stateEnd()
 {
     //marker.detach();
 }
+
+void NewChartLabelState::removeSerieLabels( const NewChartSerie* serie )
+{
+    for (auto it = labels.begin(); it != labels.end(); it++) {
+        LabelDataPtr data = *it;
+        if (data->serie == serie) {
+            if (data->dot1) {
+                data->dot1->detach();
+            }
+            if (data->dot2) {
+                data->dot2->detach();
+            }
+            if (data->label) {
+                data->label->detach();
+            }
+        }
+    }
+}
+
+void NewChartLabelState::setVisible( const NewChartSerie* serie, bool visible )
+{
+    for (auto it = labels.begin(); it != labels.end(); it++) {
+        LabelDataPtr data = *it;
+        if (data->serie == serie) {
+            if (data->dot1) {
+                data->dot1->setVisible(visible);
+            }
+            if (data->dot2) {
+                data->dot2->setVisible(visible);
+            }
+            if (data->label) {
+                data->label->setVisible(visible);
+            }
+        }
+    }
+}

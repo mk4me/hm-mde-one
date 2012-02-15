@@ -4,12 +4,15 @@
 #include <QtGui/QTabWidget>
 
 EDRDockWidgetManager::EDRDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
-	QMainWindow(parent, flags)
+	QMainWindow(parent, flags)//,
+    //plusWidget(new EDRDockWidgetSet("+")),
+    //wasRemoved(false)
 {
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setDockOptions(QMainWindow::ForceTabbedDocks | QMainWindow::AnimatedDocks | QMainWindow::AllowTabbedDocks);
     setCentralWidget(nullptr);
     //setDocumentMode(true);
+    //connect(plusWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(plusWidgetVisibilityChanged(bool)));
 }
 
 void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
@@ -19,6 +22,7 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 	this->addDockWidget(Qt::TopDockWidgetArea, set, Qt::Horizontal);
 	dockList.push_back(set);
 
+    connect(set, SIGNAL(dockClosed()), this, SLOT(dockClosed()));
 	connect(set, SIGNAL(destroyed(QObject*)), this, SLOT(onSetClosed(QObject*)));
 	if (dockList.size() > 1) {
 		auto it = dockList.begin();
@@ -47,8 +51,13 @@ void EDRDockWidgetManager::addDockWidgetSet( EDRDockWidgetSet* set )
 
         raiseSet(set);
 
+    } else {
+        //addDockWidget(Qt::TopDockWidgetArea, plusWidget, Qt::Horizontal);
     }
-
+    //plusWidget->blockSignals(true);
+    //this->tabifyDockWidget(*dockList.rbegin(), plusWidget);
+    //raiseSet(set);
+    //plusWidget->blockSignals(false);
     set->setWindowTitle(QString(tr("Group %1")).arg(dockList.size()));
 
 	//QWidget::setUpdatesEnabled(true);
@@ -68,6 +77,7 @@ void EDRDockWidgetManager::autoAddDockWidget( EDRDockWidget* widget )
 	}
 
 	EDRDockWidgetSet* set = new EDRDockWidgetSet();
+    connect(set, SIGNAL(dockClosed()), this, SLOT(dockClosed()));
 	//if (set->isAdditionPossible(widget)) {
 		set->addDockWidget(widget);
 		addDockWidgetSet(set);
@@ -89,6 +99,14 @@ void EDRDockWidgetManager::onSetClosed( QObject* object )
     dockList.remove(set);
     generatedList.remove(set);
     setTabNames();
+    /*if (dockList.size()) {
+        raiseSet(*dockList.begin());
+       // wasRemoved = true;
+    } else {
+       // this->removeDockWidget(plusWidget);
+    }*/
+
+    emit changed();
 }
 
 void EDRDockWidgetManager::setTabsPosition( QTabWidget::TabPosition tabPosition )
@@ -123,4 +141,21 @@ EDRDockWidgetSet* EDRDockWidgetManager::tryGetDockSet( EDRDockWidget* widget )
     }
 
     return nullptr;
+}
+
+//void EDRDockWidgetManager::plusWidgetVisibilityChanged( bool visible )
+//{
+//    if (visible && !wasRemoved) {
+//        EDRDockWidgetSet* set = new EDRDockWidgetSet();
+//        addDockWidgetSet(set);
+//        generatedList.push_back(set);
+//        set->setPermanent(false);
+//    } else {
+//        wasRemoved = false;
+//    }
+//}
+
+void EDRDockWidgetManager::dockClosed()
+{
+    emit changed();
 }

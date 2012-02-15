@@ -127,6 +127,10 @@ private slots:
     void createNewVisualizer();
     void createVisualizerInNewSet();
     void removeFromVisualizer();
+
+    void removeFromVisualizers( ContextAction* action, bool once );
+
+    void removeFromAll();
     void addToVisualizer();
     //void highlightVisualizer();
     void menuHighlightVisualizer(QAction* action = nullptr);

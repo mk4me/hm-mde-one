@@ -15,12 +15,32 @@
 #include <qwt/qwt_plot_curve.h>
 #include <plugins/c3d/C3DChannels.h>
 
-struct Scales
+class Scales
 {
-    Scales() : initialized(false) {}
+public:
+    Scales() : 
+      initialized(false) 
+      {}
     Scales(float xMin, float xMax, float yMin, float yMax) :
-    xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax), initialized(true) {}
+        xMin(xMin),
+        xMax(xMax),
+        yMin(yMin),
+        yMax(yMax),
+        initialized(true) 
+    {}
 
+public:
+    float getYMax() const { return yMax; }
+    float getYMin() const { return yMin; }
+    float getXMax() const { return xMax; }
+    float getXMin() const { return xMin; }
+    bool isInitialized() const { return initialized; }
+
+public:
+    void clear() { initialized = false; }
+    void merge(const Scales& scales);
+
+private:
     float xMin, xMax, yMin, yMax;
     bool initialized;
 };
@@ -55,6 +75,16 @@ public:
     virtual void setEvents(EventsCollectionConstPtr val);
 
     const QwtPlotCurve* getCurve() const { return curve; }
+
+    void setVisible(bool visible)
+    {
+        curve->setVisible(visible);
+    }
+
+    bool isVisible() const 
+    {
+        return curve->isVisible();
+    }
 
     void setColor(int r, int g, int b, int a = 255)
     {
@@ -104,7 +134,7 @@ public:
         return Scales(0.0f, reader->getLength(), getStats()->minValue(), getStats()->maxValue()); 
     }
 
-    bool getActive() const { return active; }
+    bool isActive() const { return active; }
     void setActive(bool val);
 
     ScalarChannelStatsConstPtr getStats() const { return stats; } //return pointHelper->getStats(); }

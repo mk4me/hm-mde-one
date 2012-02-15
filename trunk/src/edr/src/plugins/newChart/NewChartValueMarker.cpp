@@ -82,7 +82,13 @@ void NewChartValueMarker::insertNewMarker( const QPointF& point, const QColor& c
     dot->attach(plot);
     label->attach(plot);
     label->connectDot(dot);
-    labels.push_back(label);
+
+    LabelDataPtr data(new LabelData());
+    data->dot1 = dot;
+    data->label = label;
+    data->serie = visualizer->tryGetCurrentSerie();
+
+    labels.push_back(data);
 }
 
 

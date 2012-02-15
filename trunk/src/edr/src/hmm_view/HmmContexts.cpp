@@ -1,4 +1,5 @@
 #include "hmmPCH.h"
+#include <boost/tuple/tuple.hpp>
 #include <QtGui/QToolBar>
 #include <core/PluginCommon.h>
 #include "VisualizerWidget.h"
@@ -259,7 +260,7 @@ HMMTreeItemUsageContext::HMMTreeItemUsageContext( FlexiTabWidget * flexiTabWidge
     flexiTabWidget(flexiTabWidget),
     groupID(-1), 
     hmm(hmm),
-    flexiSection(new QWidget(flexiTabWidget))
+    flexiSection(new QWidget())
 {
 
 }
@@ -276,8 +277,8 @@ void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
     if (item) {*/
     groupID = flexiTabWidget->addGroup(QString::fromUtf8("Tree"));
 
-    //recreateFlexiSectionWidget(flexiSection, item);
-    flexiTabWidget->addSection(groupID, flexiSection, "Testowy");
+    recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(tree->currentItem()));
+    flexiTabWidget->addSection(groupID, flexiSection, "Item Actions");
     flexiSection->setVisible(true);
     flexiTabWidget->setCurrentGroup(groupID);
     //}*/
@@ -309,17 +310,25 @@ void HMMTreeItemUsageContext::onUnregisterContextWidget( QWidget * contextWidget
 
 void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, TreeItemHelper* helper)
 {
-    if (flexiSection->layout()) {
-        delete flexiSection->layout();
-    }
+   if (!flexiSection->layout()) {
+       flexiSection->setLayout(new QVBoxLayout());
+        //delete flexiSection->layout();
+   }
 
     const QObjectList& children = flexiSection->children();
     for (int i = children.size() - 1; i >= 0; --i) {
-        delete children[i];
+        //QWidget* w = qobject_cast
+        //children[i]->setVisible(false);
+        //children[i]->deleteLater();
+        QWidget* w = qobject_cast<QWidget*>(children[i]);
+        if (w) {
+            w->setVisible(false);
+        }
     }
     
     if (helper) {
-        QVBoxLayout* l = new QVBoxLayout(flexiSection);
+        QLayout* l = new QVBoxLayout(flexiSection);
+        l = flexiSection->layout();
         l->setContentsMargins(0, 0, 0, 0);
         l->setSpacing(3);
         QLabel* label = new QLabel(helper->text(0));
@@ -344,7 +353,7 @@ void HMMTreeItemUsageContext::recreateFlexiSectionWidget(QWidget* flexiSection, 
                 
                 menuButton->setMenu(m);
                 hl->addWidget(menuButton);
-            } else {
+            } else if (!(*it)->isSeparator()) {
                 QToolButton* actionButton = new QToolButton(horizontal);
                 actionButton->setIcon(QIcon(QString::fromUtf8(":/resources/icons/viewa.png")));
                 //actionButton->addAction(*it);
@@ -375,10 +384,13 @@ void HMMTreeItemUsageContext::itemChanged( QTreeWidgetItem* current, QTreeWidget
     recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(current));
 }
 
-void HMMTreeItemUsageContext::refresh( QAction* dummy /*= nullptr*/ )
+
+void HMMTreeItemUsageContext::refresh()
 {
-    //QTreeWidget* tree = qobject_cast<QTreeWidget*>(getCurrentContextWidget());
-    //recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(tree->currentItem()));
+   QTreeWidget* tree = qobject_cast<QTreeWidget*>(getCurrentContextWidget());
+   if (tree) {
+     recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(tree->currentItem()));
+   }
 }
 
 
@@ -386,7 +398,7 @@ RaportsThumbnailsContext::RaportsThumbnailsContext( FlexiTabWidget * flexiTabWid
     flexiTabWidget(flexiTabWidget),
     groupID(-1), 
     hmm(hmm),
-    flexiSection(new QWidget(flexiTabWidget))
+    flexiSection(new QWidget())
 {
 
 }
@@ -499,6 +511,16 @@ void RaportsThumbnailsContext::createRaport()
         "<OL>                                                                                     "
         "<LI><P><FONT SIZE=5>Headline</FONT></P>                                                  "
         "Headline placeholder.                                                                    "
+        //"<table border=\"1\">                                                                     "
+        //"   <tr>                                                                                  "
+        //"       <td>komórka1</td>                                                                 "
+        //"       <td>komórka2</td>                                                                 "
+        //"   </tr>                                                                                 "
+        //"   <tr>                                                                                  "
+        //"       <td>komórka3</td>                                                                 "
+        //"       <td>komórka4</td>                                                                 "
+        //"   </tr>                                                                                 "
+        //"</table>                                                                                 "
         "<LI><P><FONT SIZE=5>Data</FONT></P>                                                      "
         "%3                                                                                       "
         "<LI><P><FONT SIZE=5>Conclusion</FONT></P>                                                "
@@ -517,7 +539,9 @@ RaportsTabContext::RaportsTabContext( FlexiTabWidget * flexiTabWidget, HmmMainWi
     flexiTabWidget(flexiTabWidget),
     groupID(-1), 
     hmm(hmm),
-    flexiSection(new QWidget(flexiTabWidget))
+    editSection(nullptr),
+    textSection(nullptr),
+    fileSection(nullptr)
 {
 
 }
@@ -532,8 +556,14 @@ void RaportsTabContext::activateContext( QWidget * contextWidget )
 
     groupID = flexiTabWidget->addGroup(QString::fromUtf8("Raports Tab"));
 
-    flexiTabWidget->addSection(groupID, flexiSection, "Actions");
-    flexiSection->setVisible(true);
+    fileSection->setVisible(true);
+    editSection->setVisible(true);
+    textSection->setVisible(true);
+
+    flexiTabWidget->addSection(groupID, fileSection, "File");
+    flexiTabWidget->addSection(groupID, editSection, "Edit");
+    flexiTabWidget->addSection(groupID, textSection, "Text");
+
     flexiTabWidget->setCurrentGroup(groupID);
 }
 
@@ -553,61 +583,71 @@ void RaportsTabContext::onRegisterContextWidget( QWidget * contextWidget )
 {
     TextEdit* textEdit = qobject_cast<TextEdit*>(contextWidget);
 
-    flexiSection = new QWidget();
-    QVBoxLayout* l = new QVBoxLayout();
-    l->setContentsMargins(0, 0, 0, 0);
-    l->setSpacing(0);
-    QWidget* upper = new QWidget();
-    QHBoxLayout* upperLayout = new QHBoxLayout();
-    upper->setLayout(upperLayout);
-    QWidget* lower = new QWidget();
-    QHBoxLayout* lowerLayout = new QHBoxLayout();
-    lower->setLayout(lowerLayout);
+    auto twoLine = createTwoLineWidget();
+    editSection = twoLine.get<0>();  
+    placeObjects(textEdit->getEditActions(), twoLine.get<1>(), twoLine.get<2>());
 
-    upperLayout->setContentsMargins(3, 3, 3, 3);
-    lowerLayout->setContentsMargins(3, 3, 3, 3);
-    std::list<QAction*> actions;
+    twoLine = createTwoLineWidget();
+    fileSection = twoLine.get<0>();
+    placeObjects(textEdit->getFileActions(), twoLine.get<1>(), twoLine.get<2>());
 
-    actions.push_back(textEdit->actionNew);
-    actions.push_back(textEdit->actionOpen);
-    actions.push_back(textEdit->actionSaveAs);
-    actions.push_back(textEdit->actionPrint);
-    actions.push_back(textEdit->actionPrintPreview);
-    actions.push_back(textEdit->actionExportPdf);
-    actions.push_back(textEdit->actionSave);
-    actions.push_back(textEdit->actionTextBold);
-    actions.push_back(textEdit->actionTextUnderline);
-    actions.push_back(textEdit->actionTextItalic);
-    actions.push_back(textEdit->actionTextColor);
-    actions.push_back(textEdit->actionAlignLeft);
-    actions.push_back(textEdit->actionAlignCenter);
-    actions.push_back(textEdit->actionAlignRight);
-    actions.push_back(textEdit->actionAlignJustify);
-    actions.push_back(textEdit->actionUndo);
-    actions.push_back(textEdit->actionRedo);
-    actions.push_back(textEdit->actionCut);
-    actions.push_back(textEdit->actionCopy);
-    actions.push_back(textEdit->actionPaste);
-
-    for (auto it = actions.begin(); it != actions.end(); it++) {
-        QToolButton* b = new QToolButton();
-        b->setDefaultAction(*it);
-        b->setToolTip((*it)->text());
-        b->setFixedSize(20,20);
-        b->setIcon((*it)->icon());
-        upperLayout->addWidget(b);
-    }
-
-    lowerLayout->addWidget(textEdit->createStyleCombo());
-    lowerLayout->addWidget(textEdit->createFontCombo());
-    lowerLayout->addWidget(textEdit->createSizeCombo());
-
-    l->addWidget(upper);
-    l->addWidget(lower);
-    flexiSection->setLayout(l);
+    twoLine = createTwoLineWidget();
+    textSection = twoLine.get<0>();
+    placeObjects(textEdit->getTextActions(), twoLine.get<1>(), twoLine.get<2>(), true);       
 }
 
 void RaportsTabContext::onUnregisterContextWidget( QWidget * contextWidget )
 {
 
+}
+
+void RaportsTabContext::placeObjects( const QList<QObject*> &editList, QLayout* lowerLayout, QLayout* upperLayout, bool actionsOnTop)
+{
+    int count = editList.size();
+    for (int i = 0; i < count; i++) {
+        QAction* a = qobject_cast<QAction*>(editList[i]);
+        if (a) {
+            QToolButton* b = new QToolButton();
+            b->setDefaultAction(a);
+            b->setToolTip(a->text().remove("&"));
+            b->setFixedSize(20,20);
+            b->setIcon(a->icon());
+            b->setIconSize(QSize(20, 20));
+            if (actionsOnTop || i < count / 2) {
+                upperLayout->addWidget(b);
+            } else {
+                lowerLayout->addWidget(b);
+            }
+        } else {
+            QWidget* w = qobject_cast<QWidget*>(editList[i]);
+            if (actionsOnTop || i >= count / 2) {
+                lowerLayout->addWidget(w);
+            } else {                   
+                upperLayout->addWidget(w);
+            }
+        }
+
+    }
+}
+
+boost::tuple<QWidget*, QLayout*, QLayout*> RaportsTabContext::createTwoLineWidget()
+{
+    QWidget* flexiSection = new QWidget();
+    QVBoxLayout* l = new QVBoxLayout();
+    l->setContentsMargins(0, 0, 0, 0);
+    l->setSpacing(0);
+    QWidget* upper = new QWidget();
+    QLayout* upperLayout = new QHBoxLayout();
+    upper->setLayout(upperLayout);
+    QWidget* lower = new QWidget();
+    QLayout* lowerLayout = new QHBoxLayout();
+    lower->setLayout(lowerLayout);
+
+    upperLayout->setContentsMargins(3, 3, 3, 3);
+    lowerLayout->setContentsMargins(3, 3, 3, 3);
+    l->addWidget(upper);
+    l->addWidget(lower);
+    flexiSection->setLayout(l);
+
+    return boost::make_tuple(flexiSection, lowerLayout, upperLayout);
 }

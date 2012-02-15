@@ -124,7 +124,8 @@ void EDRDockWidgetSet::blockAddition( bool additionPossible )
 }
 
 void EDRDockWidgetSet::onDockWidgetClosed( QObject* object )
-{
+{ 
+    emit dockClosed();
     //mainWindow->setCentralWidget(nullptr);
     // konwersja wystarczajaca, poniewaz chcemy tylko usunac obiekt z listy
     EDRDockWidget* widget = reinterpret_cast<EDRDockWidget*>(object);

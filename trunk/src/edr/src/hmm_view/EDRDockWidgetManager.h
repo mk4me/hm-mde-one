@@ -41,14 +41,21 @@ public:
     EDRDockWidgetSet* tryGetDockSet(EDRDockWidget* widget);
 
 private:
-	std::list<EDRDockWidgetSet*> dockList;
-	std::list<EDRDockWidgetSet*> generatedList;
-
-private:
     void setTabNames();
 
 private slots:
     void onSetClosed(QObject* object);
+    //void plusWidgetVisibilityChanged(bool visible);
+    void dockClosed();
+
+signals:
+    void changed();
+
+private:
+	std::list<EDRDockWidgetSet*> dockList;
+	std::list<EDRDockWidgetSet*> generatedList;
+    //QDockWidget* plusWidget;
+    //bool wasRemoved;
 };
 
 #endif

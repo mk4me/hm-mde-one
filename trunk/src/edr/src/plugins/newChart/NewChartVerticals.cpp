@@ -111,6 +111,12 @@ void NewChartVerticals::insertNewMarker( const QPointF& point1, const QPointF& p
     dot2->attach(plot);
     label->attach(plot);
     label->connectDots(dot2, dot1, style);
-    labels.push_back(label);
+
+    LabelDataPtr data(new LabelData);
+    data->dot1 = dot1;
+    data->dot2 = dot2;
+    data->label = label;
+    data->serie = currentSerie;
+    labels.push_back(data);
 }
 

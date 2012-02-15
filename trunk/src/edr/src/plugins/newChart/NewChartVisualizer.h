@@ -13,6 +13,8 @@
 #include <QtCore/QObject>
 #include <QtGui/QWidget>
 #include <QtGui/QComboBox>
+#include <QtGui/QCheckBox>
+#include <QtGui/QPushButton>
 #include <core/IVisualizer.h>
 #include <core/IObjectSource.h>
 #include <plugins/c3d/C3DChannels.h>
@@ -100,6 +102,58 @@ private:
 
 };
 
+class NewChartLegendItem : public QWidget
+{
+    Q_OBJECT;
+public:
+    NewChartLegendItem(const QwtLegendData & data, QWidget* parent = nullptr);
+
+public:
+    bool isItemVisible();
+    void setItemVisible(bool active);
+    void setItemVisibleEnabled(bool enabled);
+
+    bool isItemActive() const;
+    void setItemActive(bool checked);
+    void setItemActiveEnabled(bool enabled);
+
+signals:
+    void buttonClicked(bool);
+    void checkClicked(bool);
+
+private slots:
+    void onClick(bool);
+
+private:
+    QCheckBox* check;
+    QPushButton* button;
+};
+
+class NewChartLegend : public QwtLegend
+{
+    Q_OBJECT;
+public:
+    explicit NewChartLegend( QWidget *parent = NULL ):
+        QwtLegend(parent)
+    {
+    }
+
+protected:
+    virtual QWidget *createWidget( const QwtLegendData & ) const;
+
+signals:
+    void checkboxChanged(const QwtPlotItem* item, bool active);
+
+public slots:
+    virtual void updateLegend( const QwtPlotItem *, const QList<QwtLegendData> & );
+
+private slots:
+    void onCheck(bool checked);
+
+private:
+    std::map<const QWidget*, const QwtPlotItem *> widget2PlotItem;
+};
+
 class NewChartVisualizer : public QObject, public core::IVisualizer, public boost::enable_shared_from_this<NewChartVisualizer>
 {
     friend class NewChartSerie;
@@ -151,27 +205,27 @@ public:
       
 private:
       void addPlotCurve(QwtPlotCurve* curve, const Scales& scales);
+      void recreateScales();
       void setEvents(NewChartSerie* serie, EventsCollectionConstPtr val );
       void rescale(float t1, float t2);
       void recreateStats(ScalarChannelStatsConstPtr stats = ScalarChannelStatsConstPtr());
       void refreshSerieLayers();
 
 private slots:
-
-        void onComboDestroy(QObject * obj);
-
+      void onComboDestroy(QObject * obj);
       void setNormalized(bool normalized);
       void setActiveSerie(int idx);
       void onSerieSelected(QwtPlotItem*);
       void onSerieSelected(QwtPlotItem* dataSerie, bool on, int idx);
+      void onSerieVisible(const QwtPlotItem* dataSerie, bool visible);
       void onStateAction();
       void onEventContext();
       void showStatistics(bool visible);
       void setEventMode(bool val);
-
+      bool timeInsideEvent();
 private:
       QwtPlot* qwtPlot;
-      QwtLegend* legend;
+      NewChartLegend* legend;
       QwtPlotMarker* qwtMarker;
       core::shared_ptr<QwtPlotGrid> grid;
       core::shared_ptr<QwtPlotZoomer> zoomer;

@@ -40,6 +40,9 @@ public:
 	void setMaxWidgetsNumber(int val) { maxWidgetsNumber = val; }
     const_range getDockWidgets() const { return boost::make_iterator_range(widgetsList.cbegin(), widgetsList.cend()); }
 
+signals:
+    void dockClosed();
+
 private:
 	QMainWindow* mainWindow;
 	std::list<EDRDockWidget*> widgetsList;
