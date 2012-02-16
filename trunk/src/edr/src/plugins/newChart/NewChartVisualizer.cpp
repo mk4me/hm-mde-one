@@ -22,18 +22,17 @@
 
 
 NewChartVisualizer::NewChartVisualizer() : 
-showLegend(true), 
+    showLegend(true), 
     currentSerie(-1),
     plotPanner(nullptr),
     plotMagnifier(nullptr),
     statsTable(nullptr),
     eventsItem(nullptr),
-    eventMode(false),
     eventsVisible(true),
-    context(C3DEventsCollection::Context::Left),
-    eventsMenu(nullptr), eventsActionGroup(nullptr),
-    noneEvents(nullptr), leftEvents(nullptr),
-    rightEvents(nullptr)
+    context(C3DEventsCollection::Context::General),
+    eventsContextWidget(nullptr),
+    eventsMenu(nullptr),
+    scaleToActive(false)
 {
 
 }
@@ -43,12 +42,8 @@ NewChartVisualizer::~NewChartVisualizer()
 {
     //TODO
     //przejrzec niszczenie dynamicznie tworzonych zasobów
-    if(eventsMenu != nullptr){
-        delete eventsMenu;
-    }
-
-    if(eventsActionGroup != nullptr){
-        delete eventsActionGroup;
+    if(eventsContextWidget != nullptr){
+        delete eventsContextWidget;
     }
 }
 
@@ -75,41 +70,27 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     qwtPlot->canvas()->installEventFilter(this);
 
     activeSerieCombo = new QComboBox();
-
-    //connect(activeSerieCombo, SIGNAL(destroyed ( QObject *)), this, SLOT(onComboDestroy(QObject*)));
-
     activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
     activeSerieCombo->setEnabled(false);
     connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
 
-    //QAction* eventMode = new QAction(QString(tr("Event mode")), nullptr);
-    //QIcon icon0;
-    //icon0.addFile(QString::fromUtf8(":/resources/icons/normalizacja1.png"), QSize(), QIcon::Normal, QIcon::Off);
-    //icon0.addFile(QString::fromUtf8(":/resources/icons/normalizacja1a.png"), QSize(), QIcon::Normal, QIcon::On);
-    //eventMode->setIcon(icon0);
-    //eventMode->setCheckable(true);
-    //eventMode->setChecked(false);
-    ////actions.push_back(eventMode);
-    //connect(eventMode, SIGNAL(triggered(bool)), this, SLOT(setEventMode(bool)));
+    eventsContextWidget = new QWidget();
+    QVBoxLayout* eventsLayout = new QVBoxLayout();
+    eventsLayout->setMargin(0);
+    eventsLayout->setContentsMargins(0, 0, 0, 0);
 
-    eventsMenu = new QMenu("Event Context");
-    
-    eventsActionGroup = new QActionGroup(widget);
-    noneEvents = eventsMenu->addAction(tr("None events"));
-    leftEvents = eventsMenu->addAction(tr("Left events"));
-    rightEvents = eventsMenu->addAction(tr("Right events"));
+    QLabel* eventsLabel = new QLabel("Events Context", eventsContextWidget);
+    eventsLabel->setTextFormat(Qt::RichText);
+    eventsLabel->setText("<img src=\":/resources/icons/normalizacja1.png\"> Events Context");
+    eventsLayout->addWidget(eventsLabel);
+    eventsMenu = new QComboBox(eventsContextWidget);
+    connect(eventsMenu, SIGNAL(activated(int)), this, SLOT(onEventContext(int)));
+    eventsLayout->addWidget(eventsMenu);
+    eventsContextWidget->setLayout(eventsLayout);
 
-    noneEvents->setCheckable(true);
-    leftEvents->setCheckable(true);
-    rightEvents->setCheckable(true);
-
-    eventsActionGroup->addAction(noneEvents);
-    eventsActionGroup->addAction(leftEvents);
-    eventsActionGroup->addAction(rightEvents);
-
-    connect(noneEvents, SIGNAL(triggered()), this, SLOT(onEventContext()));
-    connect(leftEvents, SIGNAL(triggered()), this, SLOT(onEventContext()));
-    connect(rightEvents, SIGNAL(triggered()), this, SLOT(onEventContext()));
+    eventsMenu->addItem(tr("None events") , QVariant(C3DEventsCollection::Context::General));
+    eventsMenu->addItem(tr("Left events") , QVariant(C3DEventsCollection::Context::Left));
+    eventsMenu->addItem(tr("Right events"), QVariant(C3DEventsCollection::Context::Right));
 
     picker.reset(new NewChartPicker(this));
     connect(picker.get(), SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
@@ -142,6 +123,12 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     statesMap[vMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Vertical));
     connect(vMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 
+    QAction* scaleAction = new QAction("Scale to active", this);
+    scaleAction->setCheckable(true);
+    scaleAction->setChecked(scaleToActive);
+    connect(scaleAction, SIGNAL(triggered(bool)), this, SLOT(scaleToActiveSerie(bool)));
+
+
     QAction* showStats = new QAction("Statistics", widget);
     showStats->setCheckable(true);
     showStats->setChecked(false);
@@ -172,15 +159,11 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     plotMagnifier =  new QwtPlotMagnifier( qwtPlot->canvas() );
     
 
-    //connect(qwtPlot, SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
     bool c = connect(legend, SIGNAL(checked( QwtPlotItem *, bool, int)), this, SLOT(onSerieSelected(QwtPlotItem*, bool, int)));
     c = connect(legend, SIGNAL(checkboxChanged(const QwtPlotItem*, bool)), this, SLOT(onSerieVisible(const QwtPlotItem*, bool)));
-    //qwtMarker.reset(new QwtPlotMarker());
     qwtMarker = new NewChartMarker();
     qwtMarker->setXValue(0);
     qwtMarker->setYValue(0);
-    //qwtMarker->setSymbol( new QwtSymbol( QwtSymbol::Diamond,
-    //    QColor( Qt::yellow ), QColor( Qt::green ), QSize( 7, 7 ) ) );
     qwtMarker->attach(qwtPlot);
 
     grid.reset(new QwtPlotGrid);
@@ -200,29 +183,9 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     //statsTable->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     qwtPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
-
-    /*qwtPlot->canvas()->setLineWidth( 1 );
-    qwtPlot->canvas()->setFrameStyle( QFrame::Box | QFrame::Plain );
-    qwtPlot->canvas()->setBorderRadius( 15 );*/
-
-    
-
-    /*QSplitter * splitter = new QSplitter();
-    splitter->setOrientation(Qt::Vertical);
-    splitter->setChildrenCollapsible(false);
-    splitter->addWidget(qwtPlot);
-    splitter->addWidget(statsTable);
-
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->setMargin(0);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(splitter);
-    widget->setLayout(layout);*/
     QVBoxLayout* layout = new QVBoxLayout();
     layout->addWidget(qwtPlot);
     layout->setMargin(0);
-    //layout->setContentsMargins(2, 2, 2, 2);
-    //layout->setContentsMargins(2,0,2,2);
     layout->addWidget(statsTable);
     statsTable->setVisible(false);
     widget->setLayout(layout);
@@ -231,17 +194,15 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, pickerAction);
     manager->addGroupAction(id, showStats);
+    manager->addGroupAction(id, scaleAction);
 
     id = manager->createGroup("Events");
-    //manager->addGroupAction(id, eventMode);
-    manager->addGroupAction(id, eventsMenu);
+    manager->addGroupAction(id, eventsContextWidget);
 
     id = manager->createGroup("Tags");
     manager->addGroupAction(id, valueMarkerAction);
     manager->addGroupAction(id, hMarkerAction);
     manager->addGroupAction(id, vMarkerAction);
-
-    leftEvents->setChecked(true);
 
     return widget;
 }
@@ -405,8 +366,6 @@ void NewChartVisualizer::refreshSerieLayers()
         series[i]->setZ(i == currentSerie ? 1.0 : (double)i / (double)size , true);
     }
 
-    //legend->setVisible(false);
-    //legend->setVisible(true);
     qwtPlot->updateLayout();
     qwtPlot->blockSignals(false);
     qwtPlot->setAutoReplot(true);
@@ -422,10 +381,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
 {
     idx = -1; // idx nie chcemy wykorzystywac!
     legend->blockSignals(true);
-    if(on == true){
-
-        //onSerieSelected(item);
-        
+    if (on == true) {
         QwtPlotCurve* curve = dynamic_cast<QwtPlotCurve*>(item);
         for (int i = 0; i < series.size(); i++) {
             NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->curve));
@@ -519,8 +475,19 @@ void NewChartVisualizer::update( double deltaTime )
         qwtMarker->setLabel(QString("Time: %1, Value: %2").arg(x).arg(y));
 
         //static EventsHelper::SegmentConstPtr oldSegment = EventsHelper::SegmentConstPtr();
-        if (eventsVisible && eventMode) {
+        if (eventsVisible && context != C3DEventsCollection::Context::General) {
+            setScale(scaleToActive, true);
             auto helper = eventsHelpers.find(serie);
+            if (helper != eventsHelpers.end()) {
+                EventsHelperPtr h = helper->second;
+                EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
+                if (segment != oldSegment) {
+                    recreateStats(segment ? segment->stats : ScalarChannelStatsConstPtr());
+                    setScale(this->scaleToActive, segment ? true : false);
+                    oldSegment = segment;
+                }
+            }
+            /*auto helper = eventsHelpers.find(serie);
             if (helper != eventsHelpers.end()) {
                 EventsHelperPtr h = helper->second;
                 EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
@@ -536,26 +503,8 @@ void NewChartVisualizer::update( double deltaTime )
                     }
                     oldSegment = segment;
                 }
-            }
+            }*/
         }
-        /*if (eventsVisible && eventMode) {
-            EventsCollectionConstPtr events = eventsItem->getEvents();
-            C3DEventsCollection::EventConstPtr event = events->getEvent(x, context);
-            C3DEventsCollection::EventConstPtr nextEvent;
-            if (event) {
-                nextEvent = events->getNextEvent(event, context); 
-                if (nextEvent) {
-                    nextEvent = events->getNextEvent(nextEvent, context);
-                }
-            }
-
-            if (event && nextEvent) {
-                qwtPlot->setAxisScale(QwtPlot::xBottom, event->getTime(), nextEvent->getTime());
-            } else {
-                qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.xMin, plotScales.xMax);
-            }
-            
-        }*/
     } else {
         qwtMarker->setVisible(false);
     }
@@ -610,6 +559,7 @@ void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPt
     // i dolaczamy go do wykresu.
     if (!eventsItem) {
         eventsItem = new EventsPlotItem(val);
+        eventsItem->setVisible(context != C3DEventsCollection::Context::General);
         eventsItem->attach(qwtPlot);
         eventsVisible = true;
 
@@ -635,23 +585,16 @@ void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPt
     }
 }
 
-void NewChartVisualizer::onEventContext()
+void NewChartVisualizer::onEventContext(int index)
 {
-    QAction* action = qobject_cast<QAction*>(sender());
-    if (action == noneEvents) {
-        setEventMode(false);
-    }else{
-        setEventMode(true);
-        if (action == leftEvents) {
-            context = C3DEventsCollection::Context::Left;
-        } else if (action == rightEvents) {
-            context = C3DEventsCollection::Context::Right;
-        } else {
-            UTILS_ASSERT(false);
-        }
+    C3DEventsCollection::Context c = static_cast<C3DEventsCollection::Context>(eventsMenu->itemData(index).toInt());
+    bool eventMode = (c != C3DEventsCollection::Context::General);
+    eventsItem->setVisible(eventMode);
+    if (!eventMode) {
+        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
     }
-
-    eventsMenu->setTitle(action->text());
+    context = c;
 }
 
 void NewChartVisualizer::rescale( float t1, float t2 )
@@ -680,16 +623,6 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
                 statsTable->addEntry(QString("Right"), QString("%1: Right step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
             }
         }
-    }
-}
-
-void NewChartVisualizer::setEventMode( bool val )
-{
-    eventMode = val;
-    eventsItem->setVisible(val);
-    if (!eventMode) {
-        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
-        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
     }
 }
 
@@ -753,20 +686,7 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
           painter->setBrush(QBrush(i % 2 ? rightColor1 : rightColor2));
           int lastX = static_cast<int>(xMap.transform(lastRightEvent->getTime()));
           painter->drawRect(lastX, top, x - lastX, bottom - top);
-      } //else if (!lastLeftEvent && left) {
-      //    // pierwszy lewy event
-      //    painter->setPen(QPen(Qt::white));
-      //    painter->setFont(QFont("Tahoma", 72));
-      //    painter->setPen(QPen(QColor(255, 0, 0, 35)));
-      //    painter->drawText(x + 30, top + 82, "Left");
-      //} else if (!lastRightEvent && right) {
-      //    // pierwszy prawy event
-      //    painter->setPen(QPen(Qt::white));
-      //    painter->setFont(QFont("Tahoma", 72));
-      //    painter->setPen(QPen(QColor(0,255,  0, 35)));
-      //    painter->drawText(x + 30, top + 82, "Right");
-      //}
-
+      } 
       if (event->getContext() == C3DEventsCollection::Context::Left) {
           lastLeftEvent = event;
       } else {
@@ -816,8 +736,6 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
             }
         } 
     }
-    
-    
 }
 
 EventsHelper::EventsHelper( EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar ) :
@@ -962,9 +880,8 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
         }
     }
     recreateScales();
-    if (!eventMode || !timeInsideEvent()) {
-        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
-        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
+    if (context == C3DEventsCollection::Context::General || !timeInsideEvent()) {
+        setScale(this->scaleToActive, false);
     }
     legend->blockSignals(false);
 }
@@ -993,5 +910,64 @@ bool NewChartVisualizer::timeInsideEvent()
     }
 
     return false;
+}
+
+void NewChartVisualizer::scaleToActiveSerie( bool scaleToActive)
+{
+    this->scaleToActive = scaleToActive;
+    setScale(scaleToActive, context != C3DEventsCollection::Context::General);
+}
+
+void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
+{
+    if (eventMode) {
+        NewChartSerie* serie = series[currentSerie];
+        float x = serie->getTime();
+        auto helper = eventsHelpers.find(serie);
+        if (helper != eventsHelpers.end()) {
+            EventsHelperPtr h = helper->second;
+            EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
+            if (segment) {
+                if (scaleToActive) {
+                    qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
+                    qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
+                } else {
+                    float minY = segment->stats->minValue();
+                    float maxY = segment->stats->maxValue();
+                    for (auto it = series.begin(); it != series.end(); it++) {
+                        if ((*it)->isVisible()) {
+                            auto h = eventsHelpers.find(*it);
+                            if (h != eventsHelpers.end()) {
+                                EventsHelper::SegmentConstPtr s = h->second->getSegment(x, this->context);
+                                if (s) {
+                                    minY = (std::min)(minY, s->stats->minValue());
+                                    maxY = (std::max)(maxY, s->stats->maxValue());
+                                }
+                            }
+                        }
+                    }
+                    qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
+                    qwtPlot->setAxisScale(QwtPlot::yLeft, minY, maxY);
+                }
+            } else {
+                setGlobalScales(scaleToActive);
+            }
+        }
+    } else {
+        setGlobalScales(scaleToActive);
+
+    }
+}
+
+void NewChartVisualizer::setGlobalScales(bool scaleToActive)
+{
+    if (scaleToActive) {
+        Scales s = series[currentSerie]->getScales();
+        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+        qwtPlot->setAxisScale(QwtPlot::yLeft, s.getYMin(), s.getYMax());
+    } else {
+        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
+    }
 }
 

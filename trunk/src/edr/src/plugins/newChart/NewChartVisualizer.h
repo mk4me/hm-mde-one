@@ -196,7 +196,7 @@ public:
       void setShowLegend(bool val);
       bool eventFilter( QObject *object, QEvent *event );
 
-      bool isEventMode() const { return eventMode; }
+      bool isEventMode() const { return context != C3DEventsCollection::Context::General; }
 
       virtual QPixmap print() const 
       {
@@ -210,6 +210,8 @@ private:
       void rescale(float t1, float t2);
       void recreateStats(ScalarChannelStatsConstPtr stats = ScalarChannelStatsConstPtr());
       void refreshSerieLayers();
+      void setScale(bool scaleToActive, bool eventMode);
+      void setGlobalScales(bool scaleToActive);
 
 private slots:
       void onComboDestroy(QObject * obj);
@@ -219,10 +221,11 @@ private slots:
       void onSerieSelected(QwtPlotItem* dataSerie, bool on, int idx);
       void onSerieVisible(const QwtPlotItem* dataSerie, bool visible);
       void onStateAction();
-      void onEventContext();
+      void onEventContext(int);
       void showStatistics(bool visible);
-      void setEventMode(bool val);
       bool timeInsideEvent();
+      void scaleToActiveSerie(bool);
+
 private:
       QwtPlot* qwtPlot;
       NewChartLegend* legend;
@@ -240,15 +243,11 @@ private:
       QwtPlotMagnifier* plotMagnifier;
       EventsPlotItem* eventsItem;
       StatsTable* statsTable;
-      bool eventMode;
       bool eventsVisible;
+      bool scaleToActive;
 
-      QMenu * eventsMenu;
-      QAction * leftEvents;
-      QAction * rightEvents;
-      QAction * noneEvents;
-      QActionGroup * eventsActionGroup;
-
+      QWidget* eventsContextWidget;
+      QComboBox * eventsMenu;
 
       C3DEventsCollection::Context context;
       std::map<NewChartSerie*, EventsHelperPtr> eventsHelpers;

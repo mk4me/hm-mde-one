@@ -10,7 +10,7 @@ CommunicationService::CommunicationService()
     : name("Communication"), finish(false), sleepTime(500000)//, currentRequestID(-1), updatingRequestID(-1),
     //currentState(communication::CommunicationManager::Ready), previousState(communication::CommunicationManager::Ready)
 {
-    XmlUtils::TMPFILESDIR = core::getPathInterface()->getTempPath().string();
+    XmlUtils::TMPFILESDIR = core::getPathInterface()->getTmpPath().string();
     WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();   
     this->model = communication::CommunicationManager::getInstance();
 
