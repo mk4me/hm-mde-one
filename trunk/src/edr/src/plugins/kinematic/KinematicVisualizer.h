@@ -18,6 +18,7 @@
 #include <QtGui/QIcon>
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
+#include <QtGui/QDoubleSpinBox>
 #include "ISchemeDrawer.h"
 #include "OsgSchemeDrawer.h"
 #include "LineSchemeDrawer.h"
@@ -89,6 +90,9 @@ private slots:
     void setActiveSerie(int idx);
     void shiftLeft();
     void shiftRight();
+    void shiftX(double d);
+    void shiftY(double d);
+    void shiftZ(double d);
 
 public slots:
 	void setLeft();

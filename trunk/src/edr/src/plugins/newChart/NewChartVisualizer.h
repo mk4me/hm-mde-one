@@ -30,6 +30,7 @@
 #include <qwt/qwt_legend.h>
 #include <qwt/qwt_plot_panner.h>
 #include <qwt/qwt_plot_magnifier.h>
+#include <qwt/qwt_scale_draw.h>
 
 #include "NewChartSerie.h"
 #include "NewChartState.h"
@@ -154,6 +155,35 @@ private:
     std::map<const QWidget*, const QwtPlotItem *> widget2PlotItem;
 };
 
+class PercentScaleDraw : public QwtScaleDraw
+{
+public:
+    PercentScaleDraw(double left, double right, bool percentMode = false) :
+      QwtScaleDraw(),
+      left(left),
+      right(right),
+      percentMode(percentMode)
+      {
+      }
+
+public:
+    void setLeftRightValues(double left, double right)
+    {
+        this->left = left;
+        this->right = right;
+    }
+    bool isPercentMode() const { return percentMode; }
+    void setPercentMode(bool val) { percentMode = val; }
+
+protected:
+    void drawLabel( QPainter *painter, double value ) const;
+
+private:
+    double left;
+    double right;
+    bool percentMode;
+};
+
 class NewChartVisualizer : public QObject, public core::IVisualizer, public boost::enable_shared_from_this<NewChartVisualizer>
 {
     friend class NewChartSerie;
@@ -245,6 +275,7 @@ private:
       StatsTable* statsTable;
       bool eventsVisible;
       bool scaleToActive;
+      PercentScaleDraw* percentDraw;
 
       QWidget* eventsContextWidget;
       QComboBox * eventsMenu;

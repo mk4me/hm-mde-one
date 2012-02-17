@@ -173,12 +173,41 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     iconLeft.addFile(QString::fromUtf8(":/resources/icons/left-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
     leftAction->setIcon(iconLeft);
 
+
     QAction* rightAction = new QAction("Shift right", widget);
     connect(rightAction, SIGNAL(triggered()), this, SLOT(shiftRight()));
     QIcon iconRight;
     iconRight.addFile(QString::fromUtf8(":/resources/icons/right-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
     iconRight.addFile(QString::fromUtf8(":/resources/icons/right-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
     rightAction->setIcon(iconRight);
+    QWidget* spinWidgetX = new QWidget(widget);
+    QWidget* spinWidgetY = new QWidget(widget);
+    QWidget* spinWidgetZ = new QWidget(widget);
+    spinWidgetX->setLayout(new QHBoxLayout());
+    spinWidgetY->setLayout(new QHBoxLayout());
+    spinWidgetZ->setLayout(new QHBoxLayout());
+    spinWidgetX->layout()->addWidget(new QLabel("X:"));
+    spinWidgetY->layout()->addWidget(new QLabel("Y:"));
+    spinWidgetZ->layout()->addWidget(new QLabel("Z:"));
+    QDoubleSpinBox* spinX = new QDoubleSpinBox(widget);
+    QDoubleSpinBox* spinY = new QDoubleSpinBox(widget);
+    QDoubleSpinBox* spinZ = new QDoubleSpinBox(widget);
+    connect(spinX, SIGNAL(valueChanged(double)), this, SLOT(shiftX(double)));
+    connect(spinY, SIGNAL(valueChanged(double)), this, SLOT(shiftY(double)));
+    connect(spinZ, SIGNAL(valueChanged(double)), this, SLOT(shiftZ(double)));
+    spinX->setMaximum(1000.0);
+    spinY->setMaximum(1000.0);
+    spinZ->setMaximum(1000.0);
+    spinX->setMinimum(-1000.0);
+    spinY->setMinimum(-1000.0);
+    spinZ->setMinimum(-1000.0);
+    spinX->setSingleStep(0.03);
+    spinY->setSingleStep(0.03);
+    spinZ->setSingleStep(0.03);
+
+    spinWidgetX->layout()->addWidget(spinX);
+    spinWidgetY->layout()->addWidget(spinY);
+    spinWidgetZ->layout()->addWidget(spinZ);
 
 	QAction* lft_action = viewMenu->addAction("Left"); 
 	QAction* rht_action = viewMenu->addAction("Right"); 
@@ -235,7 +264,9 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     manager->addGroupAction(id, leftAction);
     manager->addGroupAction(id, rightAction);
     manager->addGroupAction(id, actionSwitchAxes);
-
+    manager->addGroupAction(id, spinWidgetX);
+    manager->addGroupAction(id, spinWidgetY);
+    manager->addGroupAction(id, spinWidgetZ);
     retWidget->setFocusPolicy(Qt::StrongFocus);
     widget->setFocusPolicy(Qt::StrongFocus);
     retWidget->layout()->setContentsMargins(2,0,2,2);
@@ -501,6 +532,39 @@ QPixmap KinematicVisualizer::print() const
     QRect widgetRect = widget->geometry();
     widgetRect.moveTopLeft(widget->parentWidget()->mapToGlobal(widgetRect.topLeft()));
     return pixmap.copy(widgetRect);
+}
+
+void KinematicVisualizer::shiftX( double d )
+{
+    KinematicSerie* current = tryGetCurrentSerie();
+    if (current) {
+        KinematicSerie::TransformPtr transform = current->getTransformNode();
+        osg::Vec3 pos = transform->getPosition();
+        pos._v[0] = d;
+        transform->setPosition(pos);
+    }
+}
+
+void KinematicVisualizer::shiftY( double d )
+{
+    KinematicSerie* current = tryGetCurrentSerie();
+    if (current) {
+        KinematicSerie::TransformPtr transform = current->getTransformNode();
+        osg::Vec3 pos = transform->getPosition();
+        pos._v[1] = d;
+        transform->setPosition(pos);
+    }
+}
+
+void KinematicVisualizer::shiftZ( double d )
+{
+    KinematicSerie* current = tryGetCurrentSerie();
+    if (current) {
+        KinematicSerie::TransformPtr transform = current->getTransformNode();
+        osg::Vec3 pos = transform->getPosition();
+        pos._v[2] = d;
+        transform->setPosition(pos);
+    }
 }
 
 

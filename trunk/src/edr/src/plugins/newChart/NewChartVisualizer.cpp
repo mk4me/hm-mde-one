@@ -32,7 +32,8 @@ NewChartVisualizer::NewChartVisualizer() :
     context(C3DEventsCollection::Context::General),
     eventsContextWidget(nullptr),
     eventsMenu(nullptr),
-    scaleToActive(false)
+    scaleToActive(false),
+    percentDraw(nullptr)
 {
 
 }
@@ -45,6 +46,8 @@ NewChartVisualizer::~NewChartVisualizer()
     if(eventsContextWidget != nullptr){
         delete eventsContextWidget;
     }
+
+    delete percentDraw;
 }
 
 
@@ -55,6 +58,8 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     QwtText txt(getName().c_str());
     qwtPlot = new QwtPlot(txt, nullptr);
     qwtPlot->setObjectName(QString::fromUtf8("plot"));
+    percentDraw = new PercentScaleDraw(0.0, 5.0);
+    qwtPlot->setAxisScaleDraw(QwtPlot::xBottom, percentDraw);
     //aby legenda nie by³a usuwana podczas chowania i pokazywania trzeba ustawiæ parenta innego ni¿ QwtPlot
     legend = new NewChartLegend(widget);
     legend->setDefaultItemMode(QwtLegendData::Checkable);
@@ -79,18 +84,20 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     eventsLayout->setMargin(0);
     eventsLayout->setContentsMargins(0, 0, 0, 0);
 
-    QLabel* eventsLabel = new QLabel("Events Context", eventsContextWidget);
-    eventsLabel->setTextFormat(Qt::RichText);
-    eventsLabel->setText("<img src=\":/resources/icons/normalizacja1.png\"> Events Context");
-    eventsLayout->addWidget(eventsLabel);
+    //QLabel* eventsLabel = new QLabel("Events Context", eventsContextWidget);
+    //eventsLabel->setTextFormat(Qt::RichText);
+    //eventsLabel->setText("<img src=\":/resources/icons/normalizacja1.png\"> Events Context");
+    //eventsLayout->addWidget(eventsLabel);
     eventsMenu = new QComboBox(eventsContextWidget);
+    eventsMenu->setToolTip(tr("Events context"));
     connect(eventsMenu, SIGNAL(activated(int)), this, SLOT(onEventContext(int)));
     eventsLayout->addWidget(eventsMenu);
     eventsContextWidget->setLayout(eventsLayout);
 
-    eventsMenu->addItem(tr("None events") , QVariant(C3DEventsCollection::Context::General));
-    eventsMenu->addItem(tr("Left events") , QVariant(C3DEventsCollection::Context::Left));
-    eventsMenu->addItem(tr("Right events"), QVariant(C3DEventsCollection::Context::Right));
+    QIcon eventsIcon(":/resources/icons/normalizacja1.png");
+    eventsMenu->addItem(eventsIcon, tr("None events") , QVariant(C3DEventsCollection::Context::General));
+    eventsMenu->addItem(eventsIcon, tr("Left events") , QVariant(C3DEventsCollection::Context::Left));
+    eventsMenu->addItem(eventsIcon, tr("Right events"), QVariant(C3DEventsCollection::Context::Right));
 
     picker.reset(new NewChartPicker(this));
     connect(picker.get(), SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
@@ -487,23 +494,6 @@ void NewChartVisualizer::update( double deltaTime )
                     oldSegment = segment;
                 }
             }
-            /*auto helper = eventsHelpers.find(serie);
-            if (helper != eventsHelpers.end()) {
-                EventsHelperPtr h = helper->second;
-                EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
-                if (segment != oldSegment) {
-                    if (segment) {
-                        qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
-                        qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
-                        recreateStats(segment->stats);
-                    } else {
-                        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
-                        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
-                        recreateStats();
-                    }
-                    oldSegment = segment;
-                }
-            }*/
         }
     } else {
         qwtMarker->setVisible(false);
@@ -590,11 +580,8 @@ void NewChartVisualizer::onEventContext(int index)
     C3DEventsCollection::Context c = static_cast<C3DEventsCollection::Context>(eventsMenu->itemData(index).toInt());
     bool eventMode = (c != C3DEventsCollection::Context::General);
     eventsItem->setVisible(eventMode);
-    if (!eventMode) {
-        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
-        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
-    }
     context = c;
+    setScale(scaleToActive, eventMode);
 }
 
 void NewChartVisualizer::rescale( float t1, float t2 )
@@ -920,6 +907,7 @@ void NewChartVisualizer::scaleToActiveSerie( bool scaleToActive)
 
 void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 {
+    UTILS_ASSERT(percentDraw);
     if (eventMode) {
         NewChartSerie* serie = series[currentSerie];
         float x = serie->getTime();
@@ -930,6 +918,8 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
             if (segment) {
                 if (scaleToActive) {
                     qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
+                    percentDraw->setPercentMode(true);
+                    percentDraw->setLeftRightValues(segment->begin, segment->end);
                     qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
                 } else {
                     float minY = segment->stats->minValue();
@@ -947,6 +937,8 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
                         }
                     }
                     qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
+                    percentDraw->setLeftRightValues(segment->begin, segment->end);
+                    percentDraw->setPercentMode(true);
                     qwtPlot->setAxisScale(QwtPlot::yLeft, minY, maxY);
                 }
             } else {
@@ -961,6 +953,8 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 
 void NewChartVisualizer::setGlobalScales(bool scaleToActive)
 {
+    UTILS_ASSERT(percentDraw);
+    percentDraw->setPercentMode(false);
     if (scaleToActive) {
         Scales s = series[currentSerie]->getScales();
         qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
@@ -971,3 +965,29 @@ void NewChartVisualizer::setGlobalScales(bool scaleToActive)
     }
 }
 
+
+
+void PercentScaleDraw::drawLabel( QPainter *painter, double value ) const
+{
+   double val = percentMode ? ((value - left) / (right - left) * 100) : value;
+   QwtText lbl = tickLabel( painter->font(), val);
+   
+   if ( lbl.isEmpty() )
+       return;
+   if (percentMode) {
+       lbl.setText(lbl.text() + "%");
+   }
+   QPointF pos = labelPosition( value );
+
+   QSizeF labelSize = lbl.textSize( painter->font() );
+
+   const QTransform transform = labelTransformation( pos, labelSize );
+
+   painter->save();
+   painter->setWorldTransform( transform, true );
+
+   lbl.draw ( painter, QRect( QPoint( 0, 0 ), labelSize.toSize() ) );
+
+   painter->restore();
+   
+}
