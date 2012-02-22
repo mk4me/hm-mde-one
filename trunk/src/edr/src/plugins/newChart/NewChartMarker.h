@@ -16,13 +16,13 @@
 class NewChartDot : public QwtPlotItem
 {
 public:
-    NewChartDot(const QPointF& position, int size = 2);
+    NewChartDot( int size = 2);
 
 public:
     virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
 
-    const QPointF& getPosition() const { return position; }
-    void setPosition(const QPointF& val) { position = val; }
+    virtual const QPointF& getPosition() const = 0;
+    virtual void setPosition(const QPointF& val)  = 0;
 
     const QBrush& getBrush() const { return brush; }
     void setBrush(const QBrush& val) { brush = val; }
@@ -34,12 +34,44 @@ public:
 
 private:
     int size;
-    QPointF position;
     QPen pen;
     QBrush brush;
 };
 typedef core::shared_ptr<NewChartDot> NewChartDotPtr;
 typedef core::shared_ptr<const NewChartDot> NewChartDotConstPtr;
+
+class NewChartDotFixed : public NewChartDot
+{
+public:
+    NewChartDotFixed(const QPointF& position, int size = 2) :
+      NewChartDot(size),
+      position(position)
+      {
+
+      }
+
+public:
+    virtual const QPointF& getPosition() const { return position; }
+    virtual void setPosition(const QPointF& val) { position = val; }
+
+private:
+    QPointF position;
+};
+
+class NewChartSerie;
+class NewChartDotFloating : public NewChartDot
+{
+public:
+    NewChartDotFloating(const QPointF& position, const NewChartSerie* relatedSerie, int size = 2);
+
+public:
+    virtual const QPointF& getPosition() const;
+    virtual void setPosition(const QPointF& val);
+
+private:
+    QPointF position;
+    const NewChartSerie* relatedSerie;
+};
 
 
 class NewChartLabel : public QwtPlotItem

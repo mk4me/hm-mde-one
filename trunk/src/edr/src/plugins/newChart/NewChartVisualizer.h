@@ -15,6 +15,7 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QCheckBox>
 #include <QtGui/QPushButton>
+#include <QtGui/QSpinBox>
 #include <core/IVisualizer.h>
 #include <core/IObjectSource.h>
 #include <plugins/c3d/C3DChannels.h>
@@ -35,154 +36,11 @@
 #include "NewChartSerie.h"
 #include "NewChartState.h"
 #include "NewChartPicker.h"
+#include "NewChartEvents.h"
 
 class StatsTable;
-
-class EventsHelper
-{
-public:
-    typedef float timeType;
-    typedef C3DEventsCollection::EventConstPtr EventConstPtr;
-    typedef C3DEventsCollection::EventPtr EventPtr;
-    struct Segment 
-    {
-        EventConstPtr event1;
-        EventConstPtr event2;
-        timeType begin;
-        timeType end;
-        ScalarChannelStatsPtr stats;
-    };
-    typedef core::shared_ptr<Segment> SegmentPtr;
-    typedef core::shared_ptr<const Segment> SegmentConstPtr;
-    typedef std::vector<SegmentPtr> Segments;
-    typedef boost::iterator_range<Segments::const_iterator> SegmentsConstRange;
-
-public:
-    EventsHelper(EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar);
-    EventsCollectionConstPtr getEvents() const { return events; }
-
-    SegmentConstPtr getSegment(timeType time, C3DEventsCollection::Context context)
-    {
-        UTILS_ASSERT(context == C3DEventsCollection::Context::Left || context == C3DEventsCollection::Context::Right);
-        std::vector<SegmentPtr>& segments = context == C3DEventsCollection::Context::Left ? leftSegments : rightSegments;
-        for (auto it = segments.cbegin(); it != segments.cend(); it++) {
-            if (time >= (*it)->begin && time <= (*it)->end) {
-                return *it;
-            }
-        }
-        return SegmentConstPtr();
-    }
-
-    SegmentsConstRange getRightSegments() const { return boost::make_iterator_range(rightSegments.cbegin(), rightSegments.cend()); }
-    SegmentsConstRange getLeftSegments() const { return boost::make_iterator_range(leftSegments.cbegin(), leftSegments.cend());  }
-
-private:
-    void createSegments(std::vector<SegmentPtr>& collection, C3DEventsCollection::Context context);
-
-private:
-    std::vector<SegmentPtr> leftSegments;
-    std::vector<SegmentPtr> rightSegments;
-    EventsCollectionConstPtr events;
-    ScalarChannelReaderInterfaceConstPtr scalar;
-};
-typedef core::shared_ptr<EventsHelper> EventsHelperPtr;
-typedef core::shared_ptr<const EventsHelper> EventsHelperConstPtr;
-
-class EventsPlotItem : public QwtPlotItem
-{
-public:
-    EventsPlotItem(EventsCollectionConstPtr events);
-    ~EventsPlotItem() {}
-
-public:
-    virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
-    EventsCollectionConstPtr getEvents() const { return events; }
-
-private:
-    EventsCollectionConstPtr events;
-
-};
-
-class NewChartLegendItem : public QWidget
-{
-    Q_OBJECT;
-public:
-    NewChartLegendItem(const QwtLegendData & data, QWidget* parent = nullptr);
-
-public:
-    bool isItemVisible();
-    void setItemVisible(bool active);
-    void setItemVisibleEnabled(bool enabled);
-
-    bool isItemActive() const;
-    void setItemActive(bool checked);
-    void setItemActiveEnabled(bool enabled);
-
-signals:
-    void buttonClicked(bool);
-    void checkClicked(bool);
-
-private slots:
-    void onClick(bool);
-
-private:
-    QCheckBox* check;
-    QPushButton* button;
-};
-
-class NewChartLegend : public QwtLegend
-{
-    Q_OBJECT;
-public:
-    explicit NewChartLegend( QWidget *parent = NULL ):
-        QwtLegend(parent)
-    {
-    }
-
-protected:
-    virtual QWidget *createWidget( const QwtLegendData & ) const;
-
-signals:
-    void checkboxChanged(const QwtPlotItem* item, bool active);
-
-public slots:
-    virtual void updateLegend( const QwtPlotItem *, const QList<QwtLegendData> & );
-
-private slots:
-    void onCheck(bool checked);
-
-private:
-    std::map<const QWidget*, const QwtPlotItem *> widget2PlotItem;
-};
-
-class PercentScaleDraw : public QwtScaleDraw
-{
-public:
-    PercentScaleDraw(double left, double right, bool percentMode = false) :
-      QwtScaleDraw(),
-      left(left),
-      right(right),
-      percentMode(percentMode)
-      {
-      }
-
-public:
-    void setLeftRightValues(double left, double right)
-    {
-        this->left = left;
-        this->right = right;
-    }
-    bool isPercentMode() const { return percentMode; }
-    void setPercentMode(bool val) { percentMode = val; }
-
-protected:
-    void drawLabel( QPainter *painter, double value ) const;
-
-private:
-    double left;
-    double right;
-    bool percentMode;
-};
+class NewChartLegend;
+class PercentScaleDraw;
 
 class NewChartVisualizer : public QObject, public core::IVisualizer, public boost::enable_shared_from_this<NewChartVisualizer>
 {
@@ -240,6 +98,7 @@ private:
       void rescale(float t1, float t2);
       void recreateStats(ScalarChannelStatsConstPtr stats = ScalarChannelStatsConstPtr());
       void refreshSerieLayers();
+      void refreshSpinBoxes();
       void setScale(bool scaleToActive, bool eventMode);
       void setGlobalScales(bool scaleToActive);
 
@@ -255,6 +114,10 @@ private slots:
       void showStatistics(bool visible);
       bool timeInsideEvent();
       void scaleToActiveSerie(bool);
+      void onShiftX(double d);
+      void onShiftY(double d);
+      void onScaleX(double d);
+      void onScaleY(double d);
 
 private:
       QwtPlot* qwtPlot;
@@ -279,6 +142,11 @@ private:
 
       QWidget* eventsContextWidget;
       QComboBox * eventsMenu;
+
+      QDoubleSpinBox* shiftSpinX;
+      QDoubleSpinBox* shiftSpinY;
+      QDoubleSpinBox* scaleSpinX;
+      QDoubleSpinBox* scaleSpinY;
 
       C3DEventsCollection::Context context;
       std::map<NewChartSerie*, EventsHelperPtr> eventsHelpers;

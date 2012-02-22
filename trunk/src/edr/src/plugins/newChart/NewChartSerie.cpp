@@ -1,8 +1,9 @@
 #include "NewChartPCH.h"
 #include <QtGui/QPainter>
+#include <qwt/qwt_curve_fitter.h>
 #include "NewChartSerie.h"
 #include "NewChartVisualizer.h"
-#include <qwt/qwt_curve_fitter.h>
+#include "NewChartSeriesData.h"
 
 const int ACTIVE_WIDTH = 2;
 const int NON_ACTIVE_WIDTH = 1;
@@ -10,20 +11,22 @@ const int NON_ACTIVE_WIDTH = 1;
 void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
 {
     this->data = data;
-    curve = new QwtPlotCurve(data->getName().c_str());
+    curve = new NewChartCurve(data->getName().c_str());
+    //curve = new QwtPlotCurve(data->getName().c_str());
     reader = data->get();
     accessor.reset(new ScalarContiniousTimeAccessor(reader));
     ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
     stats.reset(new ScalarChannelStats(nonConstChannel));
-    int count = reader->size();
-    xvals = new double[count];
-    yvals = new double[count];
-    for (int i = 0; i < count; i++) {
-        xvals[i] = reader->argument(i);
-        yvals[i] = reader->value(i);
-    }
+    //int count = reader->size();
+    //xvals = new double[count];
+    //yvals = new double[count];
+    //for (int i = 0; i < count; i++) {
+    //    xvals[i] = reader->argument(i);
+    //    yvals[i] = reader->value(i);
+    //}
 
-    curve->setRawSamples(xvals, yvals, count);
+    //curve->setRawSamples(xvals, yvals, count);
+    curve->setSamples(new NewChartSeriesData(reader));
     int r = rand() % 256;
     int g = rand() % 256;
     int b = rand() % 256;
@@ -89,21 +92,87 @@ void NewChartSerie::removeItemsFromPlot()
     curve->detach();
 }
 
-void Scales::merge( const Scales& scales )
+const QwtPlotCurve* NewChartSerie::getCurve() const
 {
-    UTILS_ASSERT(initialized || scales.isInitialized());
-    if (initialized && scales.isInitialized()) {
-        xMin = (std::min)(xMin, scales.getXMin());
-        xMax = (std::max)(xMax, scales.getXMax());
-        yMin = (std::min)(yMin, scales.getYMin());
-        yMax = (std::max)(yMax, scales.getYMax());
-    } else if (scales.isInitialized()) {
-        xMin = scales.getXMin();
-        xMax = scales.getXMax();
-        yMin = scales.getYMin();
-        yMax = scales.getYMax();
-        initialized = true;
-    } else if (!initialized || !scales.isInitialized()) {
-        throw std::runtime_error("Both scales uninitialized");
-    }
+    return curve;
 }
+
+void NewChartSerie::setVisible( bool visible )
+{
+    curve->setVisible(visible);
+}
+
+bool NewChartSerie::isVisible() const
+{
+    return curve->isVisible();
+}
+
+QColor NewChartSerie::getColor() const
+{
+    UTILS_ASSERT(curve);
+    return curve->pen().color();
+}
+
+void NewChartSerie::setWidth( int width )
+{
+    UTILS_ASSERT(curve);
+    QPen pen = curve->pen();
+    pen.setWidth(width);
+    curve->setPen(pen);
+}
+
+double NewChartSerie::getXOffset() const
+{
+    return curve->getXOffset();
+}
+
+void NewChartSerie::setXOffset( double val )
+{
+    curve->setXOffset(val);
+}
+
+double NewChartSerie::getYOffset() const
+{
+    return curve->getYOffset();
+}
+
+void NewChartSerie::setYOffset( double val )
+{
+    curve->setYOffset(val);
+}
+
+QPointF NewChartSerie::getOffset() const
+{
+    return curve->getOffset();
+}
+
+void NewChartSerie::setOffset( const QPointF& offset )
+{
+    curve->setOffset(offset);
+}
+double NewChartSerie::getXScale() const
+{
+    return curve->getXScale();
+}
+
+void NewChartSerie::setXScale( double val )
+{
+    curve->setXScale(val);
+}
+
+double NewChartSerie::getYScale() const
+{
+    return curve->getYScale();
+}
+
+void NewChartSerie::setYScale( double val )
+{
+    curve->setYScale(val);
+}
+
+Scales NewChartSerie::getScales() const
+{ 
+    return Scales(0.0f, reader->getLength(), getStats()->minValue(), getStats()->maxValue()); 
+}
+
+

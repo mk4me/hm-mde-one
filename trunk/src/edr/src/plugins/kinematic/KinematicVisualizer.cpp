@@ -166,20 +166,20 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     activeSerieCombo->setEnabled(false);
     connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
 
-    QAction* leftAction = new QAction("Shift left", widget);
+    /*QAction* leftAction = new QAction("Shift left", widget);
     connect(leftAction, SIGNAL(triggered()), this, SLOT(shiftLeft()));
     QIcon iconLeft;
     iconLeft.addFile(QString::fromUtf8(":/resources/icons/left-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
     iconLeft.addFile(QString::fromUtf8(":/resources/icons/left-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
-    leftAction->setIcon(iconLeft);
+    leftAction->setIcon(iconLeft);*/
 
 
-    QAction* rightAction = new QAction("Shift right", widget);
+    /*QAction* rightAction = new QAction("Shift right", widget);
     connect(rightAction, SIGNAL(triggered()), this, SLOT(shiftRight()));
     QIcon iconRight;
     iconRight.addFile(QString::fromUtf8(":/resources/icons/right-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
     iconRight.addFile(QString::fromUtf8(":/resources/icons/right-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
-    rightAction->setIcon(iconRight);
+    rightAction->setIcon(iconRight);*/
     QWidget* spinWidgetX = new QWidget(widget);
     QWidget* spinWidgetY = new QWidget(widget);
     QWidget* spinWidgetZ = new QWidget(widget);
@@ -208,6 +208,14 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     spinWidgetX->layout()->addWidget(spinX);
     spinWidgetY->layout()->addWidget(spinY);
     spinWidgetZ->layout()->addWidget(spinZ);
+
+    spinWidgetX->layout()->setMargin(0);
+    spinWidgetY->layout()->setMargin(0);
+    spinWidgetZ->layout()->setMargin(0);
+
+    spinWidgetX->layout()->setContentsMargins(0, 0, 0, 0);
+    spinWidgetY->layout()->setContentsMargins(0, 0, 0, 0);
+    spinWidgetZ->layout()->setContentsMargins(0, 0, 0, 0);
 
 	QAction* lft_action = viewMenu->addAction("Left"); 
 	QAction* rht_action = viewMenu->addAction("Right"); 
@@ -258,15 +266,16 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, actionTrajectories);
     manager->addGroupAction(id, actionGhost);
-
-    id = manager->createGroup("View");
-    manager->addGroupAction(id, viewMenu);
-    manager->addGroupAction(id, leftAction);
-    manager->addGroupAction(id, rightAction);
-    manager->addGroupAction(id, actionSwitchAxes);
     manager->addGroupAction(id, spinWidgetX);
     manager->addGroupAction(id, spinWidgetY);
     manager->addGroupAction(id, spinWidgetZ);
+
+    id = manager->createGroup("View");
+    manager->addGroupAction(id, viewMenu);
+    //manager->addGroupAction(id, leftAction);
+    //manager->addGroupAction(id, rightAction);
+    manager->addGroupAction(id, actionSwitchAxes);
+    
     retWidget->setFocusPolicy(Qt::StrongFocus);
     widget->setFocusPolicy(Qt::StrongFocus);
     retWidget->layout()->setContentsMargins(2,0,2,2);

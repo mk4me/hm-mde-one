@@ -2,6 +2,7 @@
 #include "NewChartMarker.h"
 #include <utils/Utils.h>
 #include <QtGui/QPainter>
+#include "NewChartSerie.h"
 
 const int LABEL_WIDTH = 90;
 const int LABEL_HEIGHT = 35;
@@ -121,7 +122,13 @@ void NewChartMarker::drawDot( QPainter * painter, const QPointF & point, int siz
     painter->drawEllipse(point, size, size);
 }
 
+NewChartDotFloating::NewChartDotFloating( const QPointF& position, const NewChartSerie* relatedSerie, int size /*= 2*/ ) :
+NewChartDot(size),
+    position(position - relatedSerie->getOffset()),
+    relatedSerie(relatedSerie)
+{
 
+}
 
 NewChartLabel::NewChartLabel(const QString& text, const QPoint& shift, const QPoint& size) :
     text(text),
@@ -235,8 +242,8 @@ void NewChartLabel::connectDots( NewChartDotConstPtr point1, NewChartDotConstPtr
 
 void NewChartLabel::connectDots( const QPointF& point1, const QPointF& point2, ConnectionStyle style )
 {
-    NewChartDotPtr p1(new NewChartDot(point1));
-    NewChartDotPtr p2(new NewChartDot(point2));
+    NewChartDotPtr p1(new NewChartDotFixed(point1));
+    NewChartDotPtr p2(new NewChartDotFixed(point2));
     connectDots(p1, p2, style);
 }
 
@@ -293,8 +300,7 @@ void NewChartLabel::drawArrow( QPainter* painter, const QPoint& transformedFrom,
     painter->drawPolygon(triangle);
 }
 
-NewChartDot::NewChartDot(const QPointF& position, int size /*= 5*/) :
-    position(position),
+NewChartDot::NewChartDot( int size /*= 2*/) :
     size(size)
 {
     pen.setColor(Qt::darkBlue);
@@ -311,9 +317,24 @@ void NewChartDot::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtSca
     b.setStyle(Qt::NoBrush);
     painter->setBrush(b);
 
-    QPoint transformed = QwtScaleMap::transform(xMap, yMap, position).toPoint();
+    QPoint transformed = QwtScaleMap::transform(xMap, yMap, getPosition()).toPoint();
     painter->drawEllipse(transformed, size, size);
     
     painter->setPen(QPen(QColor(Qt::black)));
     painter->drawEllipse(transformed, 1, 1);
 }
+
+const QPointF& NewChartDotFloating::getPosition() const
+{
+   QPointF p = position;
+   p.setX(p.x() * relatedSerie->getXScale());
+   p.setY(p.y() * relatedSerie->getYScale());
+   return p + relatedSerie->getOffset();
+}
+
+void NewChartDotFloating::setPosition( const QPointF& val )
+{
+   position = val; 
+}
+
+

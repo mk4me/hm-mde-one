@@ -6,6 +6,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QCheckBox>
 #include <QtGui/QPushButton>
+#include <QtGui/QDoubleSpinBox>
 #include <boost/foreach.hpp>
 #include "NewChartVisualizer.h"
 #include <qwt/qwt_plot_canvas.h>
@@ -19,6 +20,9 @@
 #include "NewChartValueMarker.h"
 #include "NewChartVerticals.h"
 #include "NewChartHorizontals.h"
+#include "NewChartHelpers.h"
+#include "NewChartScaleDrawer.h"
+#include "NewChartLegend.h"
 
 
 NewChartVisualizer::NewChartVisualizer() : 
@@ -33,7 +37,11 @@ NewChartVisualizer::NewChartVisualizer() :
     eventsContextWidget(nullptr),
     eventsMenu(nullptr),
     scaleToActive(false),
-    percentDraw(nullptr)
+    percentDraw(nullptr),
+    shiftSpinX(nullptr),
+    shiftSpinY(nullptr),
+    scaleSpinX(nullptr),
+    scaleSpinY(nullptr)
 {
 
 }
@@ -46,8 +54,6 @@ NewChartVisualizer::~NewChartVisualizer()
     if(eventsContextWidget != nullptr){
         delete eventsContextWidget;
     }
-
-    delete percentDraw;
 }
 
 
@@ -60,6 +66,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     qwtPlot->setObjectName(QString::fromUtf8("plot"));
     percentDraw = new PercentScaleDraw(0.0, 5.0);
     qwtPlot->setAxisScaleDraw(QwtPlot::xBottom, percentDraw);
+    
     //aby legenda nie by³a usuwana podczas chowania i pokazywania trzeba ustawiæ parenta innego ni¿ QwtPlot
     legend = new NewChartLegend(widget);
     legend->setDefaultItemMode(QwtLegendData::Checkable);
@@ -197,6 +204,42 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     statsTable->setVisible(false);
     widget->setLayout(layout);
 
+    auto shiftX = LabeledSpinbox::create(widget, "X:", 0.03, -1000.0, 1000.0);
+    auto shiftY = LabeledSpinbox::create(widget, "Y:", 0.03, -1000.0, 1000.0);
+    connect(shiftX.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftX(double)));
+    connect(shiftY.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftY(double)));
+    shiftSpinX = shiftX.get<2>();
+    shiftSpinY = shiftY.get<2>();
+
+    auto scaleX = LabeledSpinbox::create(widget, "SX:", 0.01, -5.0, 5.0);
+    auto scaleY = LabeledSpinbox::create(widget, "SY:", 0.01, -5.0, 5.0);
+    connect(scaleX.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onScaleX(double)));
+    connect(scaleY.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onScaleY(double)));
+    scaleSpinX = scaleX.get<2>();
+    scaleSpinY = scaleY.get<2>();
+ 
+    //QWidget* spinWidgetX = new QWidget(widget);
+    //QWidget* spinWidgetY = new QWidget(widget);
+    //spinWidgetX->setLayout(new QHBoxLayout());
+    //spinWidgetY->setLayout(new QHBoxLayout());
+    //spinWidgetX->layout()->addWidget(new QLabel("X:"));
+    //spinWidgetY->layout()->addWidget(new QLabel("Y:"));
+    //spinX = new QDoubleSpinBox(widget);
+    //spinY = new QDoubleSpinBox(widget);
+    //connect(spinX, SIGNAL(valueChanged(double)), this, SLOT(shiftX(double)));
+    //connect(spinY, SIGNAL(valueChanged(double)), this, SLOT(shiftY(double)));
+    //spinX->setMaximum(1000.0);
+    //spinY->setMaximum(1000.0);
+    //spinX->setMinimum(-1000.0);
+    //spinY->setMinimum(-1000.0);
+    //spinX->setSingleStep(0.03);
+    //spinY->setSingleStep(0.03);
+    //spinWidgetX->layout()->addWidget(spinX);
+    //spinWidgetY->layout()->addWidget(spinY);
+    //spinWidgetX->layout()->setMargin(0);
+    //spinWidgetY->layout()->setMargin(0);
+    //spinWidgetX->layout()->setContentsMargins(0, 0, 0, 0);
+
     core::IActionsGroupManager::GroupID id = manager->createGroup("Operations");
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, pickerAction);
@@ -211,6 +254,11 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     manager->addGroupAction(id, hMarkerAction);
     manager->addGroupAction(id, vMarkerAction);
 
+    id = manager->createGroup("Active Serie");
+    manager->addGroupAction(id, shiftX.get<0>());
+    manager->addGroupAction(id, shiftY.get<0>());
+    manager->addGroupAction(id, scaleX.get<0>());
+    manager->addGroupAction(id, scaleY.get<0>());
     return widget;
 }
 
@@ -248,9 +296,10 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     }
 
     activeSerieCombo->setEnabled(true);
-
+    NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
+    legendLabel->setToolTip(data->getSource().c_str());
     if(series.size() == 1){
-        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
+        
         if(legendLabel != nullptr && legendLabel->isItemActive() == false){
             legend->blockSignals(true);
             legendLabel->setItemActive(true);
@@ -347,6 +396,9 @@ void NewChartVisualizer::setActiveSerie( int idx )
         currentSerie = idx;
         series[currentSerie]->setActive(true);
         picker->setCurrentCurve(series[currentSerie]->curve);
+
+        refreshSpinBoxes();
+
 
         //zaznacz w legendzie
         NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[currentSerie]->curve));
@@ -477,8 +529,8 @@ void NewChartVisualizer::update( double deltaTime )
         NewChartSerie* serie = series[currentSerie];
         float x = serie->getTime();
         float y = serie->getCurrentValue();
-        qwtMarker->setXValue(x);
-        qwtMarker->setYValue(y);
+        qwtMarker->setXValue(x * serie->getXScale() + serie->getXOffset());
+        qwtMarker->setYValue(y * serie->getYScale() + serie->getYOffset());
         qwtMarker->setLabel(QString("Time: %1, Value: %2").arg(x).arg(y));
 
         //static EventsHelper::SegmentConstPtr oldSegment = EventsHelper::SegmentConstPtr();
@@ -621,225 +673,6 @@ void NewChartVisualizer::showStatistics( bool visible )
     statsTable->setVisible(visible);
 }
 
-
-const QColor leftColor1(255, 0, 0, 15);
-const QColor leftColor2(128, 0, 0, 15);
-const QColor rightColor1(0, 255, 0, 15);
-const QColor rightColor2(0, 128, 0, 15);
-
-EventsPlotItem::EventsPlotItem( EventsCollectionConstPtr events ) : 
-events(events) 
-{
-    UTILS_ASSERT(events);
-}
-
-
-void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const
-{
-  int count = events->getNumEvents();
-  C3DEventsCollection::EventConstPtr lastLeftEvent;
-  C3DEventsCollection::EventConstPtr lastRightEvent;
-
-  int half = (canvasRect.bottom() - canvasRect.top())/ 2 + canvasRect.top();
- 
-  for (int i = 0; i < count; i++) {
-      C3DEventsCollection::EventConstPtr event = events->getEvent(i);
-      if (event->getContext() != C3DEventsCollection::Context::Left && event->getContext() != C3DEventsCollection::Context::Right) {
-          continue;
-      }
-      int x = static_cast<int>(xMap.transform(event->getTime()));
-      
-       bool left = event->getContext() == C3DEventsCollection::Context::Left;
-      int top = left ? canvasRect.top() : half;
-      int bottom = left ? half : canvasRect.bottom();
-      
-      painter->setFont(QFont("Tahoma", 8));
-      painter->setPen(QPen(QColor(0, 0, 0, 70)));
-      painter->drawLine(x, top, x, bottom);
-
-      painter->save();
-      painter->translate(x + 10, bottom - 30);
-      painter->rotate(-90); // or 270
-      painter->drawText(0, 0, QString(event->getLabel().c_str()));
-      painter->restore();
-      //painter->drawText(x + 2, bottom - 30, QString(event->getLabel().c_str()));
-      
-
-      if (lastLeftEvent && left) {
-          painter->setBrush(QBrush(i % 2 ? leftColor1 : leftColor2));
-          int lastX = static_cast<int>(xMap.transform(lastLeftEvent->getTime()));
-          painter->drawRect(lastX, top, x - lastX, bottom - top);
-      } else if (lastRightEvent && !left) {
-          painter->setBrush(QBrush(i % 2 ? rightColor1 : rightColor2));
-          int lastX = static_cast<int>(xMap.transform(lastRightEvent->getTime()));
-          painter->drawRect(lastX, top, x - lastX, bottom - top);
-      } 
-      if (event->getContext() == C3DEventsCollection::Context::Left) {
-          lastLeftEvent = event;
-      } else {
-          lastRightEvent = event;
-      }
-  }
-      
-  painter->setFont(QFont("Tahoma", 32));  
-  painter->save();
-  
-  painter->translate(canvasRect.left() + 30, half - 10);
-  painter->rotate(-90); 
-  painter->setPen(QPen(QColor(255, 0, 0, 55)));
-  painter->drawText(0, 0, "Left");
-  painter->restore();
-
-  painter->save();
-  painter->translate(canvasRect.left() + 30, canvasRect.bottom() - 10);
-  painter->rotate(-90); 
-  painter->setPen(QPen(QColor(0, 255, 0, 55)));
-  painter->drawText(0, 0, "Right");
-  painter->restore();
-}
-
-
-
-void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEventsCollection::Context context)
-{
-    SegmentPtr currentSegment;
-    for( auto it = events->cbegin(); it != events->cend(); it++) {
-        EventConstPtr event = *it;
-        if (event->getContext() == context) {
-            if (event->getLabel() == "Foot Strike") {
-                if (currentSegment) {
-                    UTILS_ASSERT(currentSegment->event1);
-                    currentSegment->end = event->getTime();
-                    ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
-                    currentSegment->stats = ScalarChannelStatsPtr(new ScalarChannelStats(nonConstChannel, currentSegment->begin, currentSegment->end));
-                    collection.push_back(currentSegment);
-                }
-
-                currentSegment.reset(new Segment());
-                currentSegment->event1 = event;
-                currentSegment->begin = event->getTime();
-            } else if (currentSegment && event->getLabel() == "Foot Off") {
-                currentSegment->event2 = event;
-            }
-        } 
-    }
-}
-
-EventsHelper::EventsHelper( EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar ) :
-    events(events),
-    scalar(scalar)
-{
-    createSegments(leftSegments, C3DEventsCollection::Context::Left);
-    createSegments(rightSegments, C3DEventsCollection::Context::Right);
-}
-
-QWidget * NewChartLegend::createWidget( const QwtLegendData & data ) const
-{
-    NewChartLegendItem* item = new NewChartLegendItem(data);
-    bool c2 = connect( item, SIGNAL( buttonClicked( bool ) ), this,  SLOT( itemChecked( bool ) ) );
-    bool c3 = connect( item, SIGNAL( checkClicked(bool)), this, SLOT(onCheck(bool)));
-    return item;
-}
-
-void NewChartLegend::onCheck(bool checked)
-{
-    auto it = widget2PlotItem.find(qobject_cast<QWidget*>(sender()));
-    if (it != widget2PlotItem.end()) {
-        const QwtPlotItem* plotItem = it->second;
-        emit checkboxChanged(plotItem, checked);
-    } else {
-        UTILS_ASSERT(false);
-    }
-}
-
-void NewChartLegend::updateLegend( const QwtPlotItem *item, const QList<QwtLegendData> &list )
-{
-    QwtLegend::updateLegend(item, list);
-    widget2PlotItem[this->legendWidget(item)] = item;
-}
-
-
-NewChartLegendItem::NewChartLegendItem( const QwtLegendData & data, QWidget* parent /*= nullptr*/ ) :
-    QWidget(parent)
-{
-    QHBoxLayout* l = new QHBoxLayout();
-    l->setContentsMargins(0, 0, 0, 0);
-    check = new QCheckBox();
-    check->setCheckable(true);
-    check->setChecked(true);
-    l->addWidget(check);
-
-    button = new QPushButton();
-    button->setIcon(QIcon(data.icon().toPixmap()));
-    button->setStyleSheet(
-        "QPushButton:!checked {                    "
-        "    border-style: none;                   "
-        "}                                         "
-        " QPushButton:checked {                    "
-        "     border-style: solid;                 "
-        "     border-width: 1px;                   "
-        "     border-radius: 4px;                  "
-        "     border-color: rgb(91, 91, 91);       "
-        "}                                         ");
-
-    button->setText(data.title().text());
-    button->setCheckable(true);
-    l->addWidget(button);
-    //l->addWidget(QwtLegend::createWidget(data));
-    this->setLayout(l);
-
-    bool c2 = connect(button, SIGNAL(clicked(bool)), this, SLOT(onClick(bool)));
-    bool c3 = connect(check, SIGNAL(clicked(bool)), this, SLOT(onClick(bool)));
-}
-
-bool NewChartLegendItem::isItemVisible()
-{
-    return check->isChecked();
-}
-
-void NewChartLegendItem::setItemVisible(bool active)
-{
-    check->setChecked(active);
-}
-
-bool NewChartLegendItem::isItemActive() const
-{
-    return button->isChecked();
-}
-
-void NewChartLegendItem::setItemActive( bool checked )
-{
-    button->setChecked(checked);
-    check->setEnabled(!checked);
-}
-
-void NewChartLegendItem::onClick( bool val )
-{
-    QPushButton* b = qobject_cast<QPushButton*>(sender());
-    if (b) {
-        emit buttonClicked(val);
-        return;
-    } 
-
-    QCheckBox* c = qobject_cast<QCheckBox*>(sender());
-    if (c) {
-        emit checkClicked(val);
-        return;
-    }
-
-    UTILS_ASSERT(false);
-}
-
-void NewChartLegendItem::setItemVisibleEnabled( bool enabled )
-{
-    check->setEnabled(enabled);
-}
-
-void NewChartLegendItem::setItemActiveEnabled( bool enabled )
-{
-    button->setEnabled(enabled);
-}
-
 void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visible )
 {
     legend->blockSignals(true);
@@ -908,6 +741,7 @@ void NewChartVisualizer::scaleToActiveSerie( bool scaleToActive)
 void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 {
     UTILS_ASSERT(percentDraw);
+   
     if (eventMode) {
         NewChartSerie* serie = series[currentSerie];
         float x = serie->getTime();
@@ -917,10 +751,11 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
             EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
             if (segment) {
                 if (scaleToActive) {
-                    qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
+                    //qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
                     percentDraw->setPercentMode(true);
                     percentDraw->setLeftRightValues(segment->begin, segment->end);
                     qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
+                    qwtPlot->setAxisScaleDiv(QwtPlot::xBottom, percentDraw->getScaleDiv());
                 } else {
                     float minY = segment->stats->minValue();
                     float maxY = segment->stats->maxValue();
@@ -936,10 +771,11 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
                             }
                         }
                     }
-                    qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
+                    //qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
                     percentDraw->setLeftRightValues(segment->begin, segment->end);
                     percentDraw->setPercentMode(true);
                     qwtPlot->setAxisScale(QwtPlot::yLeft, minY, maxY);
+                    qwtPlot->setAxisScaleDiv(QwtPlot::xBottom, percentDraw->getScaleDiv());
                 }
             } else {
                 setGlobalScales(scaleToActive);
@@ -965,29 +801,53 @@ void NewChartVisualizer::setGlobalScales(bool scaleToActive)
     }
 }
 
-
-
-void PercentScaleDraw::drawLabel( QPainter *painter, double value ) const
+void NewChartVisualizer::onShiftX( double d )
 {
-   double val = percentMode ? ((value - left) / (right - left) * 100) : value;
-   QwtText lbl = tickLabel( painter->font(), val);
-   
-   if ( lbl.isEmpty() )
-       return;
-   if (percentMode) {
-       lbl.setText(lbl.text() + "%");
-   }
-   QPointF pos = labelPosition( value );
-
-   QSizeF labelSize = lbl.textSize( painter->font() );
-
-   const QTransform transform = labelTransformation( pos, labelSize );
-
-   painter->save();
-   painter->setWorldTransform( transform, true );
-
-   lbl.draw ( painter, QRect( QPoint( 0, 0 ), labelSize.toSize() ) );
-
-   painter->restore();
-   
+    NewChartSerie* s = series[currentSerie];
+    s->setXOffset(d);
+    qwtPlot->replot();
 }
+
+void NewChartVisualizer::onShiftY( double d )
+{
+    NewChartSerie* s = series[currentSerie];
+    s->setYOffset(d);
+    qwtPlot->replot();
+}
+
+void NewChartVisualizer::onScaleX( double d )
+{
+    NewChartSerie* s = series[currentSerie];
+    s->setXScale(d);
+    qwtPlot->replot();
+}
+
+void NewChartVisualizer::onScaleY( double d )
+{
+    NewChartSerie* s = series[currentSerie];
+    s->setYScale(d);
+    qwtPlot->replot();
+}
+
+void NewChartVisualizer::refreshSpinBoxes()
+{
+    shiftSpinX->blockSignals(true);
+    shiftSpinX->setValue(series[currentSerie]->getXOffset());
+    shiftSpinX->blockSignals(false);
+
+    shiftSpinY->blockSignals(true);
+    shiftSpinY->setValue(series[currentSerie]->getYOffset());
+    shiftSpinY->blockSignals(false);
+
+    scaleSpinX->blockSignals(true);
+    scaleSpinX->setValue(series[currentSerie]->getXScale());
+    scaleSpinX->blockSignals(false);
+     
+    scaleSpinY->blockSignals(true);
+    scaleSpinY->setValue(series[currentSerie]->getYScale());
+    scaleSpinY->blockSignals(false);
+}
+
+
+
+

@@ -31,6 +31,8 @@ set(PRIVATE_H
 	LanguageDialog.h
 	HmmContexts.h
 	TextEdit.h
+	#Raport.h
+	#RaportsManager.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -66,6 +68,8 @@ set(TARGET_SRC
 	LanguageDialog.cpp
 	HmmContexts.cpp
 	TextEdit.cpp
+	#Raport.cpp
+	#RaportsManager.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

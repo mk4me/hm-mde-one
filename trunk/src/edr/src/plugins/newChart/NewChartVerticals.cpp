@@ -101,8 +101,8 @@ void NewChartVerticals::insertNewMarker( const QPointF& point1, const QPointF& p
 {
     const NewChartSerie* currentSerie = visualizer->tryGetCurrentSerie();
     UTILS_ASSERT(currentSerie);
-    NewChartDotPtr dot1(new NewChartDot(point1));
-    NewChartDotPtr dot2(new NewChartDot(point2));
+    NewChartDotPtr dot1(new NewChartDotFloating(point1, currentSerie));
+    NewChartDotPtr dot2(new NewChartDotFloating(point2, currentSerie));
     double delta = (style == NewChartLabel::Vertical) ? (point2.y() - point1.y()) : (point2.x() - point1.x());
     QString serieName = (style == NewChartLabel::Horizontal) ? "t" : currentSerie->getName().c_str();
     NewChartLabelPtr label(new NewChartLabel(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(delta)));

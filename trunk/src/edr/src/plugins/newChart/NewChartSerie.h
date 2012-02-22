@@ -12,38 +12,13 @@
 
 #include <core/IVisualizer.h>
 #include <core/IObjectSource.h>
+#include <qwt/qwt_scale_map.h>
 #include <qwt/qwt_plot_curve.h>
 #include <plugins/c3d/C3DChannels.h>
+#include "NewChartCurve.h"
+#include "Scales.h"
 
-class Scales
-{
-public:
-    Scales() : 
-      initialized(false) 
-      {}
-    Scales(float xMin, float xMax, float yMin, float yMax) :
-        xMin(xMin),
-        xMax(xMax),
-        yMin(yMin),
-        yMax(yMax),
-        initialized(true) 
-    {}
-
-public:
-    float getYMax() const { return yMax; }
-    float getYMin() const { return yMin; }
-    float getXMax() const { return xMax; }
-    float getXMin() const { return xMin; }
-    bool isInitialized() const { return initialized; }
-
-public:
-    void clear() { initialized = false; }
-    void merge(const Scales& scales);
-
-private:
-    float xMin, xMax, yMin, yMax;
-    bool initialized;
-};
+class NewChartCurve;
 
 class NewChartSerie : public EventSerieBase
 {
@@ -74,17 +49,11 @@ public:
     virtual float getLength() const { return reader->getLength(); } 
     virtual void setEvents(EventsCollectionConstPtr val);
 
-    const QwtPlotCurve* getCurve() const { return curve; }
+    const QwtPlotCurve* getCurve() const; 
 
-    void setVisible(bool visible)
-    {
-        curve->setVisible(visible);
-    }
+    void setVisible(bool visible);
 
-    bool isVisible() const 
-    {
-        return curve->isVisible();
-    }
+    bool isVisible() const;
 
     void setColor(int r, int g, int b, int a = 255)
     {
@@ -99,18 +68,9 @@ public:
         curve->setPen(pen);
     }
 
-    QColor getColor() const {
-        UTILS_ASSERT(curve);
-        return curve->pen().color();
-    }
+    QColor getColor() const;
 
-    void setWidth(int width)
-    {
-        UTILS_ASSERT(curve);
-        QPen pen = curve->pen();
-        pen.setWidth(width);
-        curve->setPen(pen);
-    }
+    void setWidth(int width);
 
     virtual void setName(const std::string & name)
     {
@@ -129,10 +89,8 @@ public:
         return data;
     }
 
-    Scales getScales() const 
-    { 
-        return Scales(0.0f, reader->getLength(), getStats()->minValue(), getStats()->maxValue()); 
-    }
+    Scales getScales() const; 
+    
 
     bool isActive() const { return active; }
     void setActive(bool val);
@@ -145,24 +103,34 @@ public:
     void setZ(double z, bool replot = false);
     double z() const;
 
+    double getXScale() const;
+    void setXScale(double val);
+    double getYScale() const;
+    void setYScale(double val);
+
+    double getXOffset() const;
+    void setXOffset(double val);
+    double getYOffset() const;
+    void setYOffset(double val);
+
+    QPointF getOffset() const;
+    void setOffset(const QPointF& offset);
+
 private:
     NewChartVisualizer* visualizer;
     std::string name;
     core::ObjectWrapperConstPtr data;
-    QwtPlotCurve* curve;
+    NewChartCurve* curve;
     ScalarChannelStatsPtr stats;
     core::shared_ptr<ScalarContiniousTimeAccessor> accessor;
     ScalarChannelReaderInterfaceConstPtr reader;
     
     double* xvals;
     double* yvals;
-    //PointData* pointHelper;
     bool active;
     float time;
     double _z;
-    double _zBase;
-    //core::shared_ptr<ScalarModifier> absChannel;
-    //core::shared_ptr<ScalarModifier> integratorChannel;
+    double _zBase;    
 };
 
 #endif

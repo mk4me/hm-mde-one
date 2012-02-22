@@ -374,17 +374,18 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     static int number = 0;
     // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
     std::string suffix = boost::lexical_cast<std::string>(number++);
+    std::string p = path.toStdString();
     wrapperX->setName  ("X_" + suffix);
-    wrapperX->setSource("X_" + suffix);
     wrapperY->setName  ("Y_" + suffix);
-    wrapperY->setSource("Y_" + suffix);
     wrapperZ->setName  ("Z_" + suffix);
-    wrapperZ->setSource("Z_" + suffix);
+    wrapperX->setSource(p + "/X_" + suffix);
+    wrapperY->setSource(p + "/Y_" + suffix);
+    wrapperZ->setSource(p + "/Z_" + suffix);
     visualizer->getOrCreateWidget();
 
-    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getSource());
-    auto serieY = visualizer->createSerie(wrapperY, wrapperY->getSource());
-    auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getSource());
+    auto serieX = visualizer->createSerie(wrapperX, wrapperX->getName());
+    auto serieY = visualizer->createSerie(wrapperY, wrapperY->getName());
+    auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getName());
 
     NewChartSerie* chartSerieX = dynamic_cast<NewChartSerie*>(serieX.get());
     NewChartSerie* chartSerieY = dynamic_cast<NewChartSerie*>(serieY.get());
