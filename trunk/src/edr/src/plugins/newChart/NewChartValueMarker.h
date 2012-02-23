@@ -28,6 +28,7 @@ public:
 
 private:
     void insertNewMarker(const QPointF& point, const QColor& color = QColor(Qt::blue));
+    void updateLabels();
 
 private:
     NewChartMarker marker;

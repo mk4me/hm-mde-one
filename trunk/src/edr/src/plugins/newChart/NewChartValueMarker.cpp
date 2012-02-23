@@ -56,6 +56,9 @@ bool NewChartValueMarker::stateEventFilter( QObject *object, QEvent *event )
                 marker.setVisible(false);
             }
         }
+    } else if (event->type() == QEvent::Paint) {
+        updateLabels();
+        
     }
 
     return QObject::eventFilter( object, event );
@@ -90,6 +93,14 @@ void NewChartValueMarker::insertNewMarker( const QPointF& point, const QColor& c
     data->serie = serie;
 
     labels.push_back(data);
+}
+
+void NewChartValueMarker::updateLabels()
+{
+    for (auto it = labels.begin(); it != labels.end(); it++) {
+        const QPointF& p = (*it)->dot1->getPosition();
+        (*it)->label->setText(QString("Time: %1\nValue: %2").arg(p.x()).arg(p.y()));
+    }
 }
 
 

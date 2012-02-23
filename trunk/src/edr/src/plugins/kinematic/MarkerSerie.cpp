@@ -27,6 +27,7 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 	//visualizer->actionByName["Markers"]->setVisible(true);
 	markersDrawer->init(scheme);
     visualizer->trajectoriesDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
+    visualizer->schemeDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
 
 	transformNode->addChild(markersDrawer->getNode());
 	

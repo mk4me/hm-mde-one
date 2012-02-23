@@ -111,6 +111,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     widget->setTimerActive(true);
 
     trajectoriesDialog = new TrajectoriesDialog(widget);
+    schemeDialog = new SchemeDialog(widget);
     const osg::GraphicsContext::Traits* traits = widget->getCamera()->getGraphicsContext()->getTraits();
 
     widget->addEventHandler(new osgGA::StateSetManipulator(
@@ -148,6 +149,11 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     actionTrajectories->setIcon(icon1);
     actionTrajectories->setCheckable(true);
     connect(actionTrajectories, SIGNAL(triggered()), this, SLOT(showTrajectoriesDialog()));
+
+    actionScheme = new QAction("Scheme Drawers", widget);
+    actionScheme->setIcon(QIcon(QString::fromUtf8(":/resources/icons/tracea.png")));
+    actionScheme->setCheckable(true);
+    connect(actionScheme, SIGNAL(triggered()), this, SLOT(showSchemeDialog()));
 
     QIcon icon2;
     icon2.addFile(QString::fromUtf8(":/resources/icons/skeletal_tracea.png"));
@@ -189,9 +195,9 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     spinWidgetX->layout()->addWidget(new QLabel("X:"));
     spinWidgetY->layout()->addWidget(new QLabel("Y:"));
     spinWidgetZ->layout()->addWidget(new QLabel("Z:"));
-    QDoubleSpinBox* spinX = new QDoubleSpinBox(widget);
-    QDoubleSpinBox* spinY = new QDoubleSpinBox(widget);
-    QDoubleSpinBox* spinZ = new QDoubleSpinBox(widget);
+    spinX = new QDoubleSpinBox(widget);
+    spinY = new QDoubleSpinBox(widget);
+    spinZ = new QDoubleSpinBox(widget);
     connect(spinX, SIGNAL(valueChanged(double)), this, SLOT(shiftX(double)));
     connect(spinY, SIGNAL(valueChanged(double)), this, SLOT(shiftY(double)));
     connect(spinZ, SIGNAL(valueChanged(double)), this, SLOT(shiftZ(double)));
@@ -265,6 +271,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     core::IActionsGroupManager::GroupID id = manager->createGroup("Properties");
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, actionTrajectories);
+    manager->addGroupAction(id, actionScheme);
     manager->addGroupAction(id, actionGhost);
     manager->addGroupAction(id, spinWidgetX);
     manager->addGroupAction(id, spinWidgetY);
@@ -291,7 +298,11 @@ const std::string& KinematicVisualizer::getName() const
 KinematicVisualizer::KinematicVisualizer() :
     name("Visualizer 3D"),
     trajectoriesDialog(nullptr),
-    currentSerie(-1)
+    schemeDialog(nullptr),
+    currentSerie(-1),
+    spinX(nullptr),
+    spinY(nullptr),
+    spinZ(nullptr)
 {
 
 }
@@ -454,6 +465,7 @@ void KinematicVisualizer::setTop()
 void KinematicVisualizer::showTrajectoriesDialog()
 {
     trajectoriesDialog->show();
+    
 }
 
 void KinematicVisualizer::setActiveSerie( int idx )
@@ -465,6 +477,7 @@ void KinematicVisualizer::setActiveSerie( int idx )
         series[currentSerie]->getTransformNode()->removeChild(indicatorNode);
     }
     currentSerie = idx;
+    refreshSpinboxes();
     series[currentSerie]->getTransformNode()->addChild(indicatorNode);
 }
 
@@ -574,6 +587,33 @@ void KinematicVisualizer::shiftZ( double d )
         pos._v[2] = d;
         transform->setPosition(pos);
     }
+}
+
+void KinematicVisualizer::showSchemeDialog()
+{
+    schemeDialog->show();
+}
+
+void KinematicVisualizer::refreshSpinboxes()
+{
+    KinematicSerie* current = tryGetCurrentSerie();
+    if (current) {
+        KinematicSerie::TransformPtr transform = current->getTransformNode();
+        osg::Vec3 pos = transform->getPosition();
+
+        spinX->blockSignals(true);
+        spinX->setValue(pos.x());
+        spinX->blockSignals(false);
+
+        spinY->blockSignals(true);
+        spinY->setValue(pos.y());
+        spinY->blockSignals(false);
+
+        spinZ->blockSignals(true);
+        spinZ->setValue(pos.z());
+        spinZ->blockSignals(false);
+    }
+    
 }
 
 

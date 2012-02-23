@@ -206,6 +206,7 @@ void SkeletalVisualizationScheme::setMarkers( MarkerCollectionConstPtr val )
 	for (int i = 0; i < count; i++) {
 		markersStates[i].position = markers->getValue(i, 0.0 );
 		markersStates[i].color = blue;
+        markersStates[i].name = markers->getMarkerName(i);
 	}
 }
 
@@ -225,8 +226,9 @@ void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
 	
 	jointMarkersStates.resize(visJoints.size());
 	osg::Vec4 gold(1,1,0,1);
-	for (unsigned int i = 0; i < visJoints.size(); i++) {
-	    jointMarkersStates[i].color = gold;
+	for (auto it = visJoints.begin(); it != visJoints.end(); it++) {
+	    jointMarkersStates[it->second].color = gold;
+        jointMarkersStates[it->second].name = it->first->getName();
 	}
 	hAnimSkeletonPtr skeleton = joints->getHAnimSkeleton();
 	createSkeletonConnections(skeleton->getRoot());

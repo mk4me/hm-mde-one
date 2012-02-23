@@ -84,8 +84,7 @@
         <property name="icon">
          <iconset>
           <normaloff>:/resources/icons/toBegin.png</normaloff>
-          <normalon>:/resources/icons/rew.png</normalon>
-          <disabledoff>:/resources/icons/rew2.png</disabledoff>:/resources/icons/toBegin.png</iconset>
+          <normalon>:/resources/icons/rew.png</normalon>:/resources/icons/toBegin.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -214,6 +213,9 @@
       </property>
       <item>
        <widget class="QDateTimeEdit" name="timeEditBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>

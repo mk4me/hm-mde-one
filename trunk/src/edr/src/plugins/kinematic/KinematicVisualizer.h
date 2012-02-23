@@ -28,6 +28,7 @@
 #include "SchemeDrawerContainer.h"
 
 #include "TrajectoriesDialog.h"
+#include "SchemeDialog.h"
 
 class KinematicSerie : public core::IVisualizer::TimeSerieBase
 {
@@ -82,11 +83,13 @@ private:
     void addAction(const std::string& name, QMenu* menu, QActionGroup* group);
     void refillDrawersMaps();
     KinematicSerie* tryGetCurrentSerie();
+    void refreshSpinboxes();
     
 
 private slots:
     // void setAxis(bool xyz);
     void showTrajectoriesDialog();
+    void showSchemeDialog();
     void setActiveSerie(int idx);
     void shiftLeft();
     void shiftRight();
@@ -122,13 +125,19 @@ private:
     osg::ref_ptr<osgui::QOsgDefaultWidget> widget;
     OsgSchemeDrawerPtr currentDrawer;
     QAction* actionTrajectories;
+    QAction* actionScheme;
     QAction* actionGhost;
     QAction* actionSwitchAxes;
     TrajectoriesDialog* trajectoriesDialog;
+    SchemeDialog* schemeDialog;
 
     QComboBox* activeSerieCombo;
     int currentSerie;
     std::vector<KinematicSerie*> series;
+
+    QDoubleSpinBox* spinX;
+    QDoubleSpinBox* spinY;
+    QDoubleSpinBox* spinZ;
 };
 
 

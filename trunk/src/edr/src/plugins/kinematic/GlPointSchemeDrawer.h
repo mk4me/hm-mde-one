@@ -42,5 +42,7 @@ private:
     osg::Vec4 customColor;
     bool useCustomColor;
 };
+typedef core::shared_ptr<GlPointSchemeDrawer> GlPointSchemeDrawerPtr;
+typedef core::shared_ptr<const GlPointSchemeDrawer> GlPointSchemeDrawerConstPtr;
 
 #endif //HEADER_GUARD_POINTSCHEMEDRAWER_H__

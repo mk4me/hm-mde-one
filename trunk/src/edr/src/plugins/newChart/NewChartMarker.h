@@ -21,7 +21,7 @@ public:
 public:
     virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
 
-    virtual const QPointF& getPosition() const = 0;
+    virtual QPointF getPosition() const = 0;
     virtual void setPosition(const QPointF& val)  = 0;
 
     const QBrush& getBrush() const { return brush; }
@@ -51,7 +51,7 @@ public:
       }
 
 public:
-    virtual const QPointF& getPosition() const { return position; }
+    virtual QPointF getPosition() const { return position; }
     virtual void setPosition(const QPointF& val) { position = val; }
 
 private:
@@ -65,7 +65,7 @@ public:
     NewChartDotFloating(const QPointF& position, const NewChartSerie* relatedSerie, int size = 2);
 
 public:
-    virtual const QPointF& getPosition() const;
+    virtual QPointF getPosition() const;
     virtual void setPosition(const QPointF& val);
 
 private:

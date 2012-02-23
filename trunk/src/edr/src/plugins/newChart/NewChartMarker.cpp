@@ -123,11 +123,12 @@ void NewChartMarker::drawDot( QPainter * painter, const QPointF & point, int siz
 }
 
 NewChartDotFloating::NewChartDotFloating( const QPointF& position, const NewChartSerie* relatedSerie, int size /*= 2*/ ) :
-NewChartDot(size),
-    position(position - relatedSerie->getOffset()),
+    NewChartDot(size),
     relatedSerie(relatedSerie)
 {
-
+    QPointF p(position.x() / relatedSerie->getXScale(), position.y() / relatedSerie->getYScale());
+    p -= relatedSerie->getOffset();
+    this->position = p;
 }
 
 NewChartLabel::NewChartLabel(const QString& text, const QPoint& shift, const QPoint& size) :
@@ -324,7 +325,7 @@ void NewChartDot::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtSca
     painter->drawEllipse(transformed, 1, 1);
 }
 
-const QPointF& NewChartDotFloating::getPosition() const
+QPointF NewChartDotFloating::getPosition() const
 {
    QPointF p = position;
    p.setX(p.x() * relatedSerie->getXScale());

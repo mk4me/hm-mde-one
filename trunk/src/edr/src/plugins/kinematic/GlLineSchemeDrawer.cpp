@@ -49,6 +49,7 @@ void GlLineSchemeDrawer::update()
 		rotation.set(Matrix::inverse(mat));
         t->setPosition(from);
         t->setAttitude(rotation);
+        t->setNodeMask(state1.visible && state2.visible ? 0xFFFF : 0);
     }
 }
 

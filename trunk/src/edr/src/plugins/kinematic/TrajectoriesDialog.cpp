@@ -27,7 +27,7 @@ TrajectoriesDialog::TrajectoriesDialog( QWidget* parent) :
 void TrajectoriesDialog::setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName )
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
-    root->setText(0, rootName);
+    root->setText(1, rootName);
     tree->addTopLevelItem(root);
     QCheckBox* rootCheck = new QCheckBox(tree);
     rootCheck->setChecked(true);

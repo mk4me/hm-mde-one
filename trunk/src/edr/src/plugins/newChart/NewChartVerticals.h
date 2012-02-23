@@ -29,6 +29,7 @@ public:
 
 private:
     void insertNewMarker(const QPointF& point1, const QPointF& point2, const QColor& color = QColor(Qt::blue));
+    void updateLabels();
 
 private:
     NewChartLabelPtr labelMarker;

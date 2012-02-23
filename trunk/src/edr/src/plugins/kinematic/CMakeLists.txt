@@ -23,6 +23,7 @@ set(PRIVATE_H
 	SkeletonSerie.h
 	TrajectoriesDialog.h
 	TrajectoriesDrawer.h
+	SchemeDialog.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -53,6 +54,7 @@ set(TARGET_SRC
 	SkeletonSerie.cpp
 	TrajectoriesDialog.cpp
 	TrajectoriesDrawer.cpp
+	SchemeDialog.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
@@ -62,6 +64,7 @@ SET(TARGET_MOC_H
 	SkeletonSerie.h
 	MarkerSerie.h
 	TrajectoriesDialog.h
+	SchemeDialog.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})

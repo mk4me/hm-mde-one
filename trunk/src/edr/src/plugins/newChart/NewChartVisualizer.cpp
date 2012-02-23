@@ -817,16 +817,20 @@ void NewChartVisualizer::onShiftY( double d )
 
 void NewChartVisualizer::onScaleX( double d )
 {
-    NewChartSerie* s = series[currentSerie];
-    s->setXScale(d);
-    qwtPlot->replot();
+    if (d != 0.0) {
+        NewChartSerie* s = series[currentSerie];
+        s->setXScale(d);
+        qwtPlot->replot();
+    }
 }
 
 void NewChartVisualizer::onScaleY( double d )
 {
-    NewChartSerie* s = series[currentSerie];
-    s->setYScale(d);
-    qwtPlot->replot();
+    if (d != 0.0) {
+        NewChartSerie* s = series[currentSerie];
+        s->setYScale(d);
+        qwtPlot->replot();
+    }
 }
 
 void NewChartVisualizer::refreshSpinBoxes()

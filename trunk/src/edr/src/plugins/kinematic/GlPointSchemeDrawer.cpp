@@ -44,6 +44,7 @@ void GlPointSchemeDrawer::update()
 {
     auto markers = getVisualiztionScheme()->getStates(dataToDraw);
     for (int i = markers.size() - 1; i >= 0; --i) {
+        points[i]->setNodeMask(markers[i].visible ? 0xFFFF : 0);
         points[i]->setPosition(markers[i].position);
     }
 }

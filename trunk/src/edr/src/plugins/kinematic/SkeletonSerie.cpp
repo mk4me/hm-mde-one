@@ -34,6 +34,7 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
     //skeletonNode->addChild(trajectoryDrawer->getNode());
     
     visualizer->trajectoriesDialog->setDrawer(skeletonDrawers, QString(data->getName().c_str()));
+    visualizer->schemeDialog->setDrawer(skeletonDrawers, QString(data->getName().c_str()));
     transformNode->addChild(skeletonNode);
 	//visualizer->transformNode->addChild(skeletonNode);
 	setAxis(true);
@@ -64,9 +65,7 @@ MarkerCollectionConstPtr SkeletonSerie::createTrajectories( kinematic::JointAngl
         int count = states.size();
         for (int i = 0; i < count; i++) {
             MarkerChannelPtr marker(new MarkerChannel(joint->getSamplesPerSecond()));
-            std::string s("Joint");
-            s += boost::lexical_cast<std::string>(i);
-            marker->setName(s);
+            marker->setName(states[i].name);
             markers->addChannel(marker);
         }
    

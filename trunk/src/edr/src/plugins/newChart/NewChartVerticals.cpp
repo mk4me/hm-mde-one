@@ -23,9 +23,7 @@ bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
     if (object != canvas || !currentSerie ) {
         return false;
     }
-
-    QEvent::Type eventType = event->type();
-
+    
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent* mouseEvent = (QMouseEvent*)event;
         if (mouseEvent->button() == Qt::LeftButton) {
@@ -77,6 +75,8 @@ bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
                 labelMarker->setVisible(false);
             }
         }
+    } else  if (event->type() == QEvent::Paint) {
+        updateLabels();
     }
 
     return QObject::eventFilter( object, event );
@@ -118,5 +118,16 @@ void NewChartVerticals::insertNewMarker( const QPointF& point1, const QPointF& p
     data->label = label;
     data->serie = currentSerie;
     labels.push_back(data);
+}
+
+void NewChartVerticals::updateLabels()
+{
+    for (auto it = labels.begin(); it != labels.end(); it++) {
+        QPointF p1 = (*it)->dot1->getPosition();
+        QPointF p2 = (*it)->dot2->getPosition();
+        double delta = (style == NewChartLabel::Vertical) ? (p2.y() - p1.y()) : (p2.x() - p1.x());
+        QString serieName = (style == NewChartLabel::Horizontal) ? "t" : (*it)->serie->getName().c_str();
+        (*it)->label->setText(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(delta));
+    }
 }
 

@@ -75,19 +75,24 @@ class SkeletalVisualizationScheme
 public:
     //! stan pojedynczego markera / jointa
     struct JointState {
+        JointState() : position(), color(), isEffector(false), visible(true), name("UNKNOWN") {}
         osg::Vec3 position;  //!< pozycja w globalnym ukladzie odniesienia
         osg::Vec4 color;     //!< kolor w formacie RGBA <0,1>
         bool isEffector;     //!< czy joint jest lisciem w hierarchii
+        bool visible;        //!< czy joint powinien byæ widoczny
+        std::string name;    //!< nazwa jointa
     };
 
     //! struktura zawiera jedno polaczenie pomiedzy stawami lub markerami
     struct Connection {
+        Connection() : index1(-1), index2(-1), color(), visible(true) {}
         //! indeks pierwszego stawu/markera (zgodny z przekazywana tablica JointState)
         int index1;         
         //! indeks drugiego stawu/markera (zgodny z przekazywana tablica JointState)
         int index2;
         //! kolor po³¹czenia (RGBA <0,1>)
         osg::Vec4 color;
+        bool visible;
     };
             
 public:
