@@ -1,4 +1,5 @@
 #include "NewChartPCH.h"
+#include <limits>
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QSplitter>
@@ -204,8 +205,8 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     statsTable->setVisible(false);
     widget->setLayout(layout);
 
-    auto shiftX = LabeledSpinbox::create(widget, "X:", 0.03, -1000.0, 1000.0);
-    auto shiftY = LabeledSpinbox::create(widget, "Y:", 0.03, -1000.0, 1000.0);
+    auto shiftX = LabeledSpinbox::create(widget, "X:", 0.03, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    auto shiftY = LabeledSpinbox::create(widget, "Y:", 0.03, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
     connect(shiftX.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftX(double)));
     connect(shiftY.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftY(double)));
     shiftSpinX = shiftX.get<2>();
@@ -307,6 +308,9 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
             legend->blockSignals(false);
         }
     }
+
+    adjustOffsetStep(shiftSpinX, QwtPlot::xBottom);
+    adjustOffsetStep(shiftSpinY, QwtPlot::yLeft);
 
     return ret;
 }
@@ -751,7 +755,6 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
             EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
             if (segment) {
                 if (scaleToActive) {
-                    //qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
                     percentDraw->setPercentMode(true);
                     percentDraw->setLeftRightValues(segment->begin, segment->end);
                     qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
@@ -785,6 +788,9 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
         setGlobalScales(scaleToActive);
 
     }
+
+    adjustOffsetStep(shiftSpinX, QwtPlot::xBottom);
+    adjustOffsetStep(shiftSpinY, QwtPlot::yLeft);
 }
 
 void NewChartVisualizer::setGlobalScales(bool scaleToActive)
@@ -850,6 +856,16 @@ void NewChartVisualizer::refreshSpinBoxes()
     scaleSpinY->blockSignals(true);
     scaleSpinY->setValue(series[currentSerie]->getYScale());
     scaleSpinY->blockSignals(false);
+}
+
+void NewChartVisualizer::adjustOffsetStep( QDoubleSpinBox* spinBox, QwtPlot::Axis axis)
+{
+    double upper = qwtPlot->axisScaleDiv(axis).upperBound();
+    double lower = qwtPlot->axisScaleDiv(axis).lowerBound();
+    if (lower < upper) {
+        spinBox->setSingleStep((upper - lower) / 50.0);
+    }
+    
 }
 
 

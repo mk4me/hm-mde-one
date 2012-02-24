@@ -101,6 +101,7 @@ private:
       void refreshSpinBoxes();
       void setScale(bool scaleToActive, bool eventMode);
       void setGlobalScales(bool scaleToActive);
+      void adjustOffsetStep(QDoubleSpinBox* spinBox, QwtPlot::Axis axis);
 
 private slots:
       void onComboDestroy(QObject * obj);

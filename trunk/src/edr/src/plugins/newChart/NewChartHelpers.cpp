@@ -12,6 +12,7 @@ boost::tuple<QWidget*, QLabel*, QDoubleSpinBox*> LabeledSpinbox::create(QWidget*
     spin->setMaximum(maximum);
     spin->setMinimum(minimum);
     spin->setSingleStep(singleStep);
+    spin->setMaximumWidth(90);
     spinWidget->layout()->addWidget(spin);
     spinWidget->layout()->setMargin(0);
     spinWidget->layout()->setContentsMargins(0, 0, 0, 0);
