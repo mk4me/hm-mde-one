@@ -48,7 +48,7 @@ public:
 
 public:
     IFilterCommandPtr getFilterCommand() const { return filterCommand; }
-    QTreeWidgetItem* createTreeEntry(const std::vector<SessionConstPtr>& sessions);
+    QTreeWidgetItem* createTreeEntry(const std::vector<PluginSubject::SessionConstPtr>& sessions);
     QWidget* getConfigurator() const { return filterCommand->getConfigurationWidget(); }
     QString getName() const { return pushButton->text(); }
 

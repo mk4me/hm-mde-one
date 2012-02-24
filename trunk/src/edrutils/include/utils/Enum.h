@@ -15,8 +15,9 @@ purpose:
 #include <string>
 #include <sstream>
 #include <map>
-//#include <boost/regex.hpp>
 #include <utils/Macros.h>
+#include <stdexcept>
+#include <algorithm>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {

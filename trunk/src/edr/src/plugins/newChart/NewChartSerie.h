@@ -39,14 +39,14 @@ public:
     virtual ~NewChartSerie();
 
 public:
-    float getTime() const { return time; }
-    float getCurrentValue() const 
+    double getTime() const { return time; }
+    double getCurrentValue() const 
     { 
         return accessor->getValue(time); 
     } 
-    virtual void setTime(float time);
+    virtual void setTime(double time);
 
-    virtual float getLength() const { return reader->getLength(); } 
+    virtual double getLength() const { return reader->getLength(); } 
     virtual void setEvents(EventsCollectionConstPtr val);
 
     const QwtPlotCurve* getCurve() const; 
@@ -128,7 +128,7 @@ private:
     double* xvals;
     double* yvals;
     bool active;
-    float time;
+    double time;
     double _z;
     double _zBase;    
 };

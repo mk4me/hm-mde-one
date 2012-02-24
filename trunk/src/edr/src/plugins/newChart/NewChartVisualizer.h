@@ -103,6 +103,26 @@ private:
       void setGlobalScales(bool scaleToActive);
       void adjustOffsetStep(QDoubleSpinBox* spinBox, QwtPlot::Axis axis);
 
+      //! Metoda wywo³ywana kiedy zmieni siê stan wykresów
+      void plotChanged();
+      void refreshBounds();
+
+      void simpleMovingAverage(int startIdx, int endIdx, const std::vector<float> & inReal,
+          int optInTimePeriod, int & outBegIdx, int & outNBElement, std::vector<float> & outReal);
+
+      void bbands( int startIdx, int endIdx, const std::vector<float> & inReal,
+          int optInTimePeriod, double optInNbDevUp, double optInNbDevDn, int & outBegIdx, int & outNBElement,
+          std::vector<float> & outRealUpperBand,
+          std::vector<float> & outRealMiddleBand,
+          std::vector<float> & outRealLowerBand);
+
+      void stddev_using_precalc_ma( const std::vector<float> & inReal,
+          const std::vector<float> & inMovAvg,
+          int inMovAvgBegIdx,
+          int inMovAvgNbElement,
+          int timePeriod,
+          std::vector<float> & output);
+
 private slots:
       void onComboDestroy(QObject * obj);
       void setNormalized(bool normalized);
@@ -120,7 +140,28 @@ private slots:
       void onScaleX(double d);
       void onScaleY(double d);
 
+      void showBands(bool show);
+      //! Wstêgi wokó³ serii danych - zbiorcze dla wszystkich serii na wykresie
+      void showDataBounds(bool show);
+      //! Œrdenia danych
+      void showMovingAverageCurve(bool show);
+      //! Auto odœwie¿anie wstêg
+      void setAutoRefreshDataBounds(bool autorefresh);
+      //! Okno czasowe dla œredniej krocz¹cej
+      void setMovingAverageTimeWindow(double timeWindow);
+
 private:
+
+    QwtPlotCurve* upperBoundCurve;
+    QwtPlotCurve* lowerBoundCurve;
+    QwtPlotCurve* averageCurve;
+
+    bool boundsAutoRefresh;
+    bool boundsToRefresh;
+
+    double movingAverageTimeWindow;
+    int pointsPerWindow;
+
       QwtPlot* qwtPlot;
       NewChartLegend* legend;
       QwtPlotMarker* qwtMarker;

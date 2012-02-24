@@ -38,7 +38,7 @@ public:
 	virtual ~IFilterCommand() {}
    
 public:
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions) = 0;
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) = 0;
     //virtual QDialog* getConfigurationDialog(QWidget* parent) { return nullptr; }
     virtual QWidget* getConfigurationWidget() { return nullptr; }
     /*virtual void configurationStart() {}
@@ -50,16 +50,16 @@ typedef boost::shared_ptr<const IFilterCommand> IFilterCommandConstPtr;
 class SimpleFilterCommand : public IFilterCommand
 {
 public:
-    SimpleFilterCommand(DataFilterPtr dataFilter);
+    SimpleFilterCommand(PluginSubject::DataFilterPtr dataFilter);
 
 public:
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions) 
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions) 
     {
         return TreeBuilder::createTree(rootItemName, sessions, dataFilter);
     }
     
 private:
-    DataFilterPtr dataFilter;
+    PluginSubject::DataFilterPtr dataFilter;
 };
 typedef boost::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;
 typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr;
@@ -67,12 +67,12 @@ typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr
 template <class Type, class TypePtr = core::shared_ptr<Type> >
 class MultiChartCommand : public IFilterCommand
 {
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions );
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions );
 
 };
 
 template <class Type, class TypePtr>
-QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions )
+QTreeWidgetItem* MultiChartCommand<Type, TypePtr>::createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions )
 {
     QTreeWidgetItem* rootItem = new QTreeWidgetItem();
     rootItem->setText(0, rootItemName);

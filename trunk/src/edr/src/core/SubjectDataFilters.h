@@ -17,10 +17,8 @@
 #include <plugins/subject/IMotion.h>
 #include <plugins/subject/ISession.h>
 
-
-
 //! klasa zapewnia filtrowanie po typie
-class TypeFilter : public Sub::IDataFilter
+class TypeFilter : public PluginSubject::IDataFilter
 {
 public:
 
@@ -30,7 +28,7 @@ public:
     virtual ~TypeFilter() {}
 
 protected:
-    virtual SessionPtr doDataFiltering(const SessionConstPtr & session) const;
+    virtual PluginSubject::SessionPtr doDataFiltering(const PluginSubject::SessionConstPtr & session) const;
 
 private:
     std::vector<core::TypeInfo> types;
@@ -57,17 +55,17 @@ private:
 //};
 
 //! klasa jest zlozeniem filtrow prostych
-class CustomFilter : public Sub::IDataFilter
+class CustomFilter : public PluginSubject::IDataFilter
 {
 public:
-    CustomFilter(const std::vector<DataFilterPtr>& filters);
+    CustomFilter(const std::vector<PluginSubject::DataFilterPtr>& filters);
     virtual ~CustomFilter() {}
 
 public:
-    virtual SessionPtr doDataFiltering(const SessionConstPtr & session) const;    
+    virtual PluginSubject::SessionPtr doDataFiltering(const PluginSubject::SessionConstPtr & session) const;    
 
 private:
-    std::vector<DataFilterPtr> filters;
+    std::vector<PluginSubject::DataFilterPtr> filters;
 };
 
 

@@ -15,12 +15,12 @@ class Patient : public IPatient
 {
 public:
 
-    Patient(SubjectID id, const std::string & name, const std::string & surname, const std::string & birthday,
+    Patient(PluginSubject::SubjectID id, const std::string & name, const std::string & surname, const std::string & birthday,
         char gender, const core::shared_ptr<const QPixmap> & photo, const std::vector<Disorder> & disorders);
 
     virtual ~Patient();
 
-    virtual SubjectID getID() const;
+    virtual PluginSubject::SubjectID getID() const;
     virtual const std::string & getName() const;
     virtual const std::string & getSurname() const;
     virtual const std::string & getBirthday() const;
@@ -31,7 +31,7 @@ public:
     virtual const Disorder & disorder(unsigned int idx) const;
 
 private:
-    SubjectID id;
+    PluginSubject::SubjectID id;
     std::string name;
     std::string surname;
     std::string birthday;

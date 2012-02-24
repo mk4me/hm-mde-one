@@ -1,7 +1,7 @@
 #include "CommunicationPCH.h"
 #include "Patient.h"
 
-Patient::Patient(SubjectID id, const std::string & name, const std::string & surname, const std::string & birthday,
+Patient::Patient(PluginSubject::SubjectID id, const std::string & name, const std::string & surname, const std::string & birthday,
     char gender, const core::shared_ptr<const QPixmap> & photo, const std::vector<Disorder> & disorders)
     :id(id), name(name), surname(surname), birthday(birthday), gender(gender), photo(photo), disorders(disorders)
 {
@@ -13,7 +13,7 @@ Patient::~Patient()
 
 }
 
-SubjectID Patient::getID() const
+PluginSubject::SubjectID Patient::getID() const
 {
     return id;
 }

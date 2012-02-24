@@ -2,6 +2,8 @@
 #include "SubjectDataFilters.h"
 #include <boost/foreach.hpp>
 
+using namespace PluginSubject;
+
 TypeFilter::TypeFilter(const core::TypeInfo& type)
 {
     types.push_back(type);

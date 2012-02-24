@@ -9,6 +9,8 @@
 #include <plugins/subject/Subject.h>
 #include <plugins/subject/Motion.h>
 
+using namespace PluginSubject;
+
 FilteredDataFacory::FilteredDataFacory()
 {
 

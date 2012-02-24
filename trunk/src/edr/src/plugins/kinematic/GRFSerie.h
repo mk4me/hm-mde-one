@@ -49,7 +49,7 @@ public:
     virtual const core::ObjectWrapperConstPtr & getData() const;
 
 	//! \return Dlugosc kanalu w sekundach
-	virtual float getLength() const
+	virtual double getLength() const
 	{
 		UTILS_ASSERT(grfCollection);
 		return grfCollection->getLength();
@@ -57,7 +57,7 @@ public:
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
-	virtual void setTime(float time);
+	virtual void setTime(double time);
 
 private:
 	struct Arrow 

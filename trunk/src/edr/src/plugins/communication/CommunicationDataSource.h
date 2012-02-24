@@ -609,7 +609,7 @@ class CommunicationDataSource : public QObject, public IDataExplorerSource
 
 public:
 
-    CommunicationDataSource(communication::CommunicationManager * communicationManager, ISubjectService * subjectService);
+    CommunicationDataSource(communication::CommunicationManager * communicationManager, PluginSubject::ISubjectService * subjectService);
 
     ~CommunicationDataSource();
 
@@ -704,7 +704,7 @@ private:
 
     bool downloadFiles(const std::vector<const communication::MotionShallowCopy::File *> & files);
 
-    PatientPtr createPatient(const communication::MedicalShallowCopy::Patient * patient, SubjectPtr & subject = SubjectPtr() ) 
+    PatientPtr createPatient(const communication::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectPtr & subject = PluginSubject::SubjectPtr() ) 
     {
         PatientPtr ret;
 
@@ -746,9 +746,9 @@ private:
         return ret;
     }
 
-    SubjectPtr createSubject(const communication::MotionShallowCopy::Performer * subject) 
+    PluginSubject::SubjectPtr createSubject(const communication::MotionShallowCopy::Performer * subject) 
     {
-        SubjectPtr ret;
+        PluginSubject::SubjectPtr ret;
         if(subjectService != nullptr){
             ret = subjectService->createSubject();
             auto subjectWrapper = core::addData(memoryDataManager, ret);
@@ -767,9 +767,9 @@ private:
         return ret;
     }
 
-    SessionPtr createSession(const communication::MotionShallowCopy::Session * session, SubjectConstPtr subject = SubjectConstPtr()) 
+    PluginSubject::SessionPtr createSession(const communication::MotionShallowCopy::Session * session, PluginSubject::SubjectConstPtr subject = PluginSubject::SubjectConstPtr()) 
     {
-        SessionPtr ret;
+        PluginSubject::SessionPtr ret;
         if(subjectService != nullptr && sessionsMapping.find(session) == sessionsMapping.end()){
             if(subject == nullptr){
                 auto subjectIT = subjectsMapping.find(session->performerConf->performer);
@@ -818,9 +818,9 @@ private:
         return ret;
     }
 
-    MotionPtr createMotion(const communication::MotionShallowCopy::Trial * motion, const std::vector<core::ObjectWrapperConstPtr> & objects, SessionConstPtr session = SessionConstPtr())
+    PluginSubject::MotionPtr createMotion(const communication::MotionShallowCopy::Trial * motion, const std::vector<core::ObjectWrapperConstPtr> & objects, PluginSubject::SessionConstPtr session = PluginSubject::SessionConstPtr())
     {
-        MotionPtr ret;
+        PluginSubject::MotionPtr ret;
 
         if(subjectService != nullptr && motionsMapping.find(motion) == motionsMapping.end()){
             if(session == nullptr){
@@ -840,9 +840,9 @@ private:
         return ret;
     }
 
-    MotionPtr createMotion(const communication::MotionShallowCopy::Trial * motion, SessionConstPtr session = SessionConstPtr())
+    PluginSubject::MotionPtr createMotion(const communication::MotionShallowCopy::Trial * motion, PluginSubject::SessionConstPtr session = PluginSubject::SessionConstPtr())
     {
-        MotionPtr ret;
+        PluginSubject::MotionPtr ret;
 
         if(subjectService != nullptr && motionsMapping.find(motion) == motionsMapping.end()){
             if(session == nullptr){
@@ -907,7 +907,7 @@ private:
 private:
     communication::CommunicationManager * communicationManager;
     core::IMemoryDataManager * memoryDataManager;
-    ISubjectService * subjectService;
+    PluginSubject::ISubjectService * subjectService;
 
     core::IFileDataManager * fileDataManager;
     QAction * refreshAction;

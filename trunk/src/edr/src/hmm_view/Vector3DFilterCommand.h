@@ -91,7 +91,7 @@ private:
 class BuilderFilterCommand : public IFilterCommand
 {
 public:
-    typedef boost::function<QTreeWidgetItem* (const MotionConstPtr&, const QString&, const QIcon&, const QIcon&)> BranchFunction;
+    typedef boost::function<QTreeWidgetItem* (const PluginSubject::MotionConstPtr&, const QString&, const QIcon&, const QIcon&)> BranchFunction;
 public:
     BuilderFilterCommand(BranchFunction function, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon()) : 
         branchFunction(function),
@@ -100,15 +100,15 @@ public:
      { }
 
 public:
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions ) 
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
     {
         QTreeWidgetItem* root = new QTreeWidgetItem();
         root->setText(0, rootItemName);
         root->setIcon(0, rootIcon);
-        BOOST_FOREACH(SessionConstPtr session, sessions) {
-            Motions motions;
+        BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
+            PluginSubject::Motions motions;
             session->getMotions(motions);
-            BOOST_FOREACH(MotionConstPtr motion, motions) {
+            BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
                 root->addChild(branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon));
             }
         }
@@ -220,7 +220,7 @@ public:
     //! 
     //! \param rootItemName 
     //! \param sessions fdsdsd
-    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions)
+    virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
     {
         QTreeWidgetItem* root = BuilderFilterCommand::createTreeBranch(rootItemName, sessions);
         filterTree(root);
@@ -248,7 +248,7 @@ public:
 protected:
     std::map<std::string, bool> activeElements;
     std::map<std::string, bool> tempNameDictionary;
-    DataFilterPtr simpleTypeFilter;
+    PluginSubject::DataFilterPtr simpleTypeFilter;
     __Helper helper;
     QString frontXml, backXml;
     ConfigurationWidget* configurationWidget;
@@ -281,7 +281,7 @@ public:
       //! 
       //! \param rootItemName 
       //! \param sessions fdsdsd
-      virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions)
+      virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
       {
           QTreeWidgetItem* root = new QTreeWidgetItem();
           root->setText(0, rootItemName);
@@ -407,7 +407,7 @@ public:
 protected:
     std::map<std::string, bool> activeElements;
     std::map<std::string, bool> tempNameDictionary;
-    DataFilterPtr simpleTypeFilter;
+    PluginSubject::DataFilterPtr simpleTypeFilter;
     __Helper helper;
 };
 
@@ -469,14 +469,14 @@ private:
 class JointsCommand : public IFilterCommand
 {
 public:
-    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<SessionConstPtr>& sessions ) 
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
     {
         QTreeWidgetItem* root = new QTreeWidgetItem();
         root->setText(0, rootItemName);
-        BOOST_FOREACH(SessionConstPtr session, sessions) {
-            Motions motions;
+        BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
+            PluginSubject::Motions motions;
             session->getMotions(motions);
-            BOOST_FOREACH(MotionConstPtr motion, motions) {
+            BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
                 root->addChild(TreeBuilder::createJointsBranch(motion, motion->getLocalName().c_str(), TreeBuilder::getRootJointsIcon(), TreeBuilder::getJointsIcon()));
             }
         }

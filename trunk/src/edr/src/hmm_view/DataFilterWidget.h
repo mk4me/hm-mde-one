@@ -28,7 +28,7 @@ public:
 	virtual ~DataFilterWidget() {}
 
 public:
-    void addFilter(const QString& bigLabelText, DataFilterPtr dataFilter, const QPixmap* icon = nullptr);
+    void addFilter(const QString& bigLabelText, PluginSubject::DataFilterPtr dataFilter, const QPixmap* icon = nullptr);
     void addFilter(const QString& bigLabelText, IFilterCommandPtr command, const QPixmap* icon = nullptr);
     void addFilter(FilterEntryWidget* entry);
     void closeFilters();

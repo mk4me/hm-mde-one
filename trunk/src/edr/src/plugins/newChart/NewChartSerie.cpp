@@ -47,7 +47,7 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
     curve->setZ(_zBase + _z);
 }
 
-void NewChartSerie::setTime( float time )
+void NewChartSerie::setTime( double time )
 {
     this->time = time;
 }

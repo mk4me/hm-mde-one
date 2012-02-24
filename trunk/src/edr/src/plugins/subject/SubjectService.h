@@ -18,19 +18,19 @@
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/IDataFilter.h>
 
-class FilteredDataFacory : public Sub::IFilteredDataFactory
+class FilteredDataFacory : public PluginSubject::IFilteredDataFactory
 {
 public:
     FilteredDataFacory();
     virtual ~FilteredDataFacory();
 
-    virtual MotionPtr createFilteredMotion(const MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const;
-    virtual SessionPtr createFilteredSession(const SessionConstPtr & originalSession, const std::vector<MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const;
+    virtual PluginSubject::MotionPtr createFilteredMotion(const PluginSubject::MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const;
+    virtual PluginSubject::SessionPtr createFilteredSession(const PluginSubject::SessionConstPtr & originalSession, const std::vector<PluginSubject::MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers) const;
 };
 
 
 
-class SubjectService : public core::IService, public ISubjectService
+class SubjectService : public core::IService, public PluginSubject::ISubjectService
 {
 	UNIQUE_ID("{F39418DE-4BCB-46C1-8D84-93F435641C63}", "Subject Service");
 
@@ -60,21 +60,21 @@ public:
 //ISubjectService
 public:
 
-    virtual SubjectPtr createSubject();
+    virtual PluginSubject::SubjectPtr createSubject();
 
-    virtual SessionPtr createSession(const SubjectConstPtr & subject, unsigned int year,
+    virtual PluginSubject::SessionPtr createSession(const PluginSubject::SubjectConstPtr & subject, unsigned int year,
         unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
 
-    virtual MotionPtr createMotion(const SessionConstPtr & session,
+    virtual PluginSubject::MotionPtr createMotion(const PluginSubject::SessionConstPtr & session,
         const std::vector<core::ObjectWrapperConstPtr> & wrappers);
 
 private:
 
-    virtual const FilteredDataFacoryPtr & getFilteredDataFacotry() const;
+    virtual const PluginSubject::FilteredDataFacoryPtr & getFilteredDataFacotry() const;
 
 private:
 
-    FilteredDataFacoryPtr filteredDataFactory;
+    PluginSubject::FilteredDataFacoryPtr filteredDataFactory;
 
     core::IMemoryDataManager * memoryDataManager;
 
@@ -82,12 +82,12 @@ private:
     OpenThreads::Mutex sessionCreationMutex;
     OpenThreads::Mutex motionCreationMutex;
 
-    SubjectID currentSubjectID;
-    SubjectID currentSessionID;
-    SubjectID currentMotionID;
+    PluginSubject::SubjectID currentSubjectID;
+    PluginSubject::SubjectID currentSessionID;
+    PluginSubject::SubjectID currentMotionID;
 
-    std::map<SubjectConstPtr, SubjectID> localSessionIDs;
-    std::map<SessionConstPtr, SubjectID> localMotionIDs;
+    std::map<PluginSubject::SubjectConstPtr, PluginSubject::SubjectID> localSessionIDs;
+    std::map<PluginSubject::SessionConstPtr, PluginSubject::SubjectID> localMotionIDs;
 };
 
 #endif //   HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__

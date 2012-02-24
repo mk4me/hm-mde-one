@@ -192,7 +192,9 @@ void VisualizerChannel::setTime(double time)
 
 double VisualizerChannel::getLength() const
 {
-    return serie->getLength();
+    double ret = 0;
+    ret = serie->getLength();
+    return ret;
 }
 
 VisualizerChannel * VisualizerChannel::clone() const

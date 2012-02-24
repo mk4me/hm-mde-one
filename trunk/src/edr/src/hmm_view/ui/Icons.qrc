@@ -67,4 +67,7 @@
     <file alias="splitter-dots-horizontal.png">../../../resources/embedded/icons/splitter-dots-horizontal.png</file>
     <file alias="splitter-dots-vertical.png">../../../resources/embedded/icons/splitter-dots-vertical.png</file>
   </qresource>
+  <qresource prefix="resources/splashscreen">
+    <file alias="spplash.png">../../../resources/embedded/splashscreen/spplash.png</file>
+  </qresource>
 </RCC>

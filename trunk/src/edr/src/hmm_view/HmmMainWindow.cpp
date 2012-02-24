@@ -19,11 +19,14 @@
 #include "EMGFilter.h"
 #include "EDRTitleBar.h"
 #include "TextEdit.h"
+#include "PseudoLoginWidget.h"
+#include <QtGui/QApplication>
+#include <QtGui/QCloseEvent>
 
 
 using namespace core;
 
-
+using namespace PluginSubject;
 
 
 HmmMainWindow::HmmMainWindow() :
@@ -39,6 +42,7 @@ HmmMainWindow::HmmMainWindow() :
     flexiTabWidget(new FlexiTabWidget())
 {
     setupUi(this);
+    splashScreen()->setPixmap(QPixmap(":/resources/splashscreen/spplash.png"));
 
     visualizerUsageContext.reset(new HMMVisualizerUsageContext(flexiTabWidget));
     treeUsageContext.reset(new HMMTreeItemUsageContext(flexiTabWidget, this));
@@ -245,8 +249,17 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         openButton->setVisible(false);
     #endif
 
-    this->data->show();
     this->showFullScreen();
+
+    PseudoLoginWidget login;
+    int ret = login.exec();
+    if(ret == QDialog::Accepted){
+        this->data->show();
+    }else{
+        QApplication::postEvent(qApp, new QCloseEvent());
+        //QTimer::singleShot(500, qApp, SLOT(quit()));
+    }
+    
 }
 
 void HmmMainWindow::setCurrentVisualizerActions(VisualizerWidget * visWidget)

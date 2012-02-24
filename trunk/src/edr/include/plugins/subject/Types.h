@@ -12,6 +12,8 @@
 #include <core/SmartPtr.h>
 #include <vector>
 
+namespace PluginSubject {
+
 class ISubjectService;
 
 typedef unsigned int SubjectID;
@@ -30,15 +32,15 @@ typedef core::shared_ptr<IMotion> MotionPtr;
 typedef core::shared_ptr<const IMotion> MotionConstPtr;
 typedef std::vector<MotionConstPtr> Motions;
 
-namespace Sub{
-    class IDataFilter;
-    class IFilteredDataFactory;
+class IDataFilter;
+class IFilteredDataFactory;
+
+typedef core::shared_ptr<IDataFilter> DataFilterPtr;
+typedef core::shared_ptr<const IDataFilter> DataFilterConstPtr;
+
+typedef core::shared_ptr<IFilteredDataFactory> FilteredDataFacoryPtr;
+typedef core::shared_ptr<const IFilteredDataFactory> FilteredDataFacoryConstPtr;
+
 }
-
-typedef core::shared_ptr<Sub::IDataFilter> DataFilterPtr;
-typedef core::shared_ptr<const Sub::IDataFilter> DataFilterConstPtr;
-
-typedef core::shared_ptr<Sub::IFilteredDataFactory> FilteredDataFacoryPtr;
-typedef core::shared_ptr<const Sub::IFilteredDataFactory> FilteredDataFacoryConstPtr;
 
 #endif HEADER_GUARD_SUBJECT__TYPES_H__

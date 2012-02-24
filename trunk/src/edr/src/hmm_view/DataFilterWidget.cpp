@@ -3,6 +3,7 @@
 #include "FilterEntryWidget.h"
 #include "FilterCommand.h"
 
+using namespace PluginSubject;
 
 DataFilterWidget::DataFilterWidget(const QString& name, const QPixmap& pixmap, HmmMainWindow* hmmWindow) :
     hmmWindow(hmmWindow),

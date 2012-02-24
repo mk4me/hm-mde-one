@@ -172,7 +172,7 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& 
 	return group;
 }
 
-void GRFSerie::setTime( float time )
+void GRFSerie::setTime( double time )
 {
 	try {
 		float t = time;

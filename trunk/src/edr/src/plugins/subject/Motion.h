@@ -27,13 +27,13 @@
 class SubjectService;
 
 //! Klasa reprezentuje pojedyncza probe pomiarowa w ramach konkretnej sesji.
-class Motion : public IMotion
+class Motion : public PluginSubject::IMotion
 {
     friend class SubjectService;
 
 private:
 	
-    Motion(core::IMemoryDataManager * memoryDataManager, SubjectID motionID, const SessionConstPtr & session, SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    Motion(core::IMemoryDataManager * memoryDataManager, PluginSubject::SubjectID motionID, const PluginSubject::SessionConstPtr & session, PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
 
 public:
 
@@ -44,10 +44,10 @@ public:
     virtual const std::string & getName() const;
     virtual const std::string & getLocalName() const;
 
-    virtual SubjectID getID() const;
-    virtual SubjectID getLocalID() const;
+    virtual PluginSubject::SubjectID getID() const;
+    virtual PluginSubject::SubjectID getLocalID() const;
     //const std::string & getName() const;
-    const SessionConstPtr & getSession() const;
+    const PluginSubject::SessionConstPtr & getSession() const;
 
     virtual int size() const;
     virtual const core::ObjectWrapperConstPtr & get(int i) const;
@@ -60,42 +60,42 @@ private:
 	std::vector<core::ObjectWrapperConstPtr> wrappers;
 	std::vector<core::TypeInfo> types;
 	//std::string name;
-    SubjectID motionID;
-    SubjectID localMotionID;
+    PluginSubject::SubjectID motionID;
+    PluginSubject::SubjectID localMotionID;
 
-    SessionConstPtr session;
+    PluginSubject::SessionConstPtr session;
 
     core::IMemoryDataManager * memoryDataManager;
     std::string name;
     std::string localName;
 };
 
-class FilteredMotion : public IMotion
+class FilteredMotion : public PluginSubject::IMotion
 {
 public:
 
-    FilteredMotion(const MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    FilteredMotion(const PluginSubject::MotionConstPtr & originalMotion, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
     virtual ~FilteredMotion();
 
     virtual const std::string & getName() const;
     virtual const std::string & getLocalName() const;
 
-    virtual SubjectID getID() const;
-    virtual SubjectID getLocalID() const;
+    virtual PluginSubject::SubjectID getID() const;
+    virtual PluginSubject::SubjectID getLocalID() const;
     //const std::string & getName() const;
-    virtual const SessionConstPtr & getSession() const;
+    virtual const PluginSubject::SessionConstPtr & getSession() const;
 
     virtual int size() const;
     virtual const core::ObjectWrapperConstPtr & get(int i) const;
 
 
-    void setSession(const SessionConstPtr & session);
+    void setSession(const PluginSubject::SessionConstPtr & session);
 
-    const MotionConstPtr & getOriginalMotion() const;
+    const PluginSubject::MotionConstPtr & getOriginalMotion() const;
 
 private:
-    SessionConstPtr session;
-    MotionConstPtr originalMotion;
+    PluginSubject::SessionConstPtr session;
+    PluginSubject::MotionConstPtr originalMotion;
     std::vector<core::ObjectWrapperConstPtr> wrappers;
 };
 

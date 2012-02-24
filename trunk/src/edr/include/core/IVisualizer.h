@@ -64,16 +64,16 @@ namespace core
 
             virtual ~TimeSerieBase() {}
 
-            virtual void setTime(float time) = 0;
+            virtual void setTime(double time) = 0;
 
-            virtual float getLength() const = 0;
+            virtual double getLength() const = 0;
 
-            virtual void setOffset(float offset)
+            virtual void setOffset(double offset)
             {
 
             }
 
-            virtual void setScale(float scale)
+            virtual void setScale(double scale)
             {
 
             }

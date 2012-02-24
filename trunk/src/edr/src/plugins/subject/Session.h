@@ -20,18 +20,18 @@
 
 class SubjectService;
 
-class Session : public ISession
+class Session : public PluginSubject::ISession
 {
     friend class SubjectService;
 
 
 private:
-    SubjectID sessionID;
+    PluginSubject::SubjectID sessionID;
 
-    SubjectID localSessionID;
+    PluginSubject::SubjectID localSessionID;
 
-    SubjectID currentMotionID;
-    SubjectConstPtr subject;
+    PluginSubject::SubjectID currentMotionID;
+    PluginSubject::SubjectConstPtr subject;
 
     unsigned int year;
     unsigned char month;
@@ -43,7 +43,7 @@ private:
     std::string localName;
 	
 private:
-    Session(SubjectID sessionID, const SubjectConstPtr & subject, SubjectID localSessionID, unsigned int year,
+    Session(PluginSubject::SubjectID sessionID, const PluginSubject::SubjectConstPtr & subject, PluginSubject::SubjectID localSessionID, unsigned int year,
         unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
 
 public:
@@ -55,12 +55,12 @@ public:
     virtual const std::string & getName() const;
     virtual const std::string & getLocalName() const;
 
-    virtual SubjectID getID() const;
-    virtual SubjectID getLocalID() const;
+    virtual PluginSubject::SubjectID getID() const;
+    virtual PluginSubject::SubjectID getLocalID() const;
     //const std::string & getName() const;
-    virtual void getMotions(Motions & motions) const;
+    virtual void getMotions(PluginSubject::Motions & motions) const;
 
-    virtual const SubjectConstPtr & getSubject() const;
+    virtual const PluginSubject::SubjectConstPtr & getSubject() const;
 
     virtual unsigned int getYear() const;
     virtual unsigned char getMonth() const;
@@ -71,21 +71,21 @@ public:
     virtual bool hasObjectOfType(const core::TypeInfo& type) const; 
 };
 
-class FilteredSession : public ISession
+class FilteredSession : public PluginSubject::ISession
 {
 public:
 
-    FilteredSession(const SessionConstPtr & originalSession, const std::vector<MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    FilteredSession(const PluginSubject::SessionConstPtr & originalSession, const std::vector<PluginSubject::MotionPtr> & motions, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
     virtual ~FilteredSession();
 
     virtual const std::string & getName() const;
     virtual const std::string & getLocalName() const;
 
-    virtual SubjectID getID() const;
-    virtual SubjectID getLocalID() const;
-    virtual void getMotions(Motions & motions) const;
+    virtual PluginSubject::SubjectID getID() const;
+    virtual PluginSubject::SubjectID getLocalID() const;
+    virtual void getMotions(PluginSubject::Motions & motions) const;
 
-    virtual const SubjectConstPtr & getSubject() const;
+    virtual const PluginSubject::SubjectConstPtr & getSubject() const;
 
     virtual unsigned int getYear() const;
     virtual unsigned char getMonth() const;
@@ -93,11 +93,11 @@ public:
 
     virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const;
 
-    const SessionConstPtr & getOriginalSession() const;
+    const PluginSubject::SessionConstPtr & getOriginalSession() const;
 
 private:
-    SessionConstPtr originalSession;
-    std::vector<MotionConstPtr> motions;
+    PluginSubject::SessionConstPtr originalSession;
+    std::vector<PluginSubject::MotionConstPtr> motions;
     std::vector<core::ObjectWrapperConstPtr> wrappers;
     std::string name;
     std::string localName;

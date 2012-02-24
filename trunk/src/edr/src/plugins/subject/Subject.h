@@ -16,25 +16,25 @@
 class SubjectService;
 
 //! Reprezentacja subjecta. Z jednym subjectem zwiazane sa sytemy (np. miesniowy, szkieletowy) oraz jeden ruch (motion)
-class Subject : public ISubject
+class Subject : public PluginSubject::ISubject
 {
     friend class SubjectService;
 
 private:
-    SubjectID subjectID;
+    PluginSubject::SubjectID subjectID;
     std::string name;
-    SubjectID currentSessionID;
+    PluginSubject::SubjectID currentSessionID;
 
 public:
-	Subject(SubjectID subjectID);
+	Subject(PluginSubject::SubjectID subjectID);
 
 	virtual ~Subject();
 
     virtual const std::string & getName() const;
 
-    virtual SubjectID getID() const;
+    virtual PluginSubject::SubjectID getID() const;
 
-    virtual void getSessions(Sessions & sessions) const;
+    virtual void getSessions(PluginSubject::Sessions & sessions) const;
 };
 
 #endif

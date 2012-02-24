@@ -12,7 +12,7 @@
 
 #include <QtCore/QString>
 #include <QtGui/QTreeWidgetItem>
-#include <plugins/chart/ChartVisualizer.h>
+//#include <plugins/chart/ChartVisualizer.h>
 #include <plugins/subject/Motion.h>
 #include "Visualizer.h"
 
@@ -31,14 +31,14 @@ public:
     virtual bool isDataItem() const { return true; }
 
     void getSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
-    MotionConstPtr getMotion() const { return motion; }
-    void setMotion(MotionConstPtr val) { motion = val; }
+    PluginSubject::MotionConstPtr getMotion() const { return motion; }
+    void setMotion(PluginSubject::MotionConstPtr val) { motion = val; }
 
     virtual std::vector<core::TypeInfo> getTypeInfos() const = 0;
 
 private:
      VisualizerPtr createdVisualizer;
-     MotionConstPtr motion;
+     PluginSubject::MotionConstPtr motion;
 };
 
 typedef boost::shared_ptr<TreeItemHelper> TreeItemHelperPtr;
@@ -96,20 +96,20 @@ protected:
     core::ObjectWrapperConstPtr wrapper;
 };
 
-//! klasa pomocnicza przy tworzeniu wizualizatora wykresow
-class ChartItemHelper : public TreeWrappedItemHelper
-{
-public:
-    ChartItemHelper(const core::ObjectWrapperConstPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
-    virtual VisualizerPtr createVisualizer();
-    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
-
-private:
-    void setUpChart(ChartVisualizer* chart, const std::string& title);
-
-private:
-    osg::ref_ptr<osgText::Text> chartTextPrototype;
-};
+////! klasa pomocnicza przy tworzeniu wizualizatora wykresow
+//class ChartItemHelper : public TreeWrappedItemHelper
+//{
+//public:
+//    ChartItemHelper(const core::ObjectWrapperConstPtr& wrapper) : TreeWrappedItemHelper(wrapper) {}
+//    virtual VisualizerPtr createVisualizer();
+//    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
+//
+//private:
+//    void setUpChart(ChartVisualizer* chart, const std::string& title);
+//
+//private:
+//    osg::ref_ptr<osgText::Text> chartTextPrototype;
+//};
 
 //! klasa pomocnicza przy tworzeniu wizualizatora wykresow
 class NewChartItemHelper : public TreeWrappedItemHelper
@@ -223,7 +223,7 @@ private:
 class JointsItemHelper : public TreeItemHelper
 {
 public:
-    JointsItemHelper(const MotionConstPtr & motion) : motion(motion)
+    JointsItemHelper(const PluginSubject::MotionConstPtr & motion) : motion(motion)
     {
         
     }
@@ -241,14 +241,14 @@ public:
 
 
 private:
-    MotionConstPtr motion;
+    PluginSubject::MotionConstPtr motion;
 };
 
 //! klasa pomocnicza przy tworzeniu zbiorczego widoku 3d (markery + jointy + plyty GRF)
 class Multiserie3D : public TreeItemHelper
 {
 public:
-    Multiserie3D(const MotionConstPtr motion) : motion(motion)
+    Multiserie3D(const PluginSubject::MotionConstPtr motion) : motion(motion)
     {
 
     }
@@ -268,12 +268,7 @@ public:
 
 
 private:
-    MotionConstPtr motion;
+    PluginSubject::MotionConstPtr motion;
 };
-
-
-
-
-
 
 #endif

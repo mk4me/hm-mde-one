@@ -16,7 +16,7 @@ void FilterEntryWidget::onButton()
 }
 
 
-QTreeWidgetItem* FilterEntryWidget::createTreeEntry(const std::vector<SessionConstPtr>& sessions)
+QTreeWidgetItem* FilterEntryWidget::createTreeEntry(const std::vector<PluginSubject::SessionConstPtr>& sessions)
 {
     QTreeWidgetItem* item = filterCommand->createTreeBranch(getName(), sessions);
     item->setExpanded(true);

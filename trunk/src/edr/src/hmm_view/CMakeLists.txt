@@ -11,6 +11,7 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	PseudoLoginWidget.h
 	HmmMainWindow.h
 	LoadingDialog.h
 	LoadingThread.h
@@ -75,6 +76,7 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # metadane generowane przez MOC
 SET(TARGET_MOC_H
+	PseudoLoginWidget.h
     HmmMainWindow.h
 	LoadingDialog.h
 	LoadingThread.h
@@ -98,6 +100,7 @@ set(TARGET_SRC ${TARGET_SRC} ${TARGET_MOC_SRC})
 #------------------------------------------------------------------------------
 # UI
 set(TARGET_UI
+	ui/PseudoLoginWidget.ui
     #ui/LanguageDialogWidget.ui
 	#ui/ConfigurationWidget.ui
 	ui/toolboxmaindeffile.ui

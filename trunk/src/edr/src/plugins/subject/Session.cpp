@@ -8,6 +8,8 @@
 #include "SubjectService.h"
 #include <core/DataAccessors.h>
 
+using namespace PluginSubject;
+
 Session::Session(SubjectID sessionID, const SubjectConstPtr & subject, SubjectID localSessionID, unsigned int year,
     unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
     : sessionID(sessionID), subject(subject), localSessionID(localSessionID), year(year), month(month), day(day), wrappers(wrappers),

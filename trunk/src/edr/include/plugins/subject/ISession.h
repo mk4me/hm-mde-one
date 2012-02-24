@@ -12,6 +12,8 @@
 #include <plugins/subject/Types.h>
 #include <core/ObjectWrapper.h>
 
+namespace PluginSubject {
+
 //! Abstrakcyjna klasa reprezentuj¹ca zbiór ruchów w ramach jednego celu/badania/grupy
 class ISession
 {
@@ -72,6 +74,8 @@ public:
     }
 };
 
-CORE_DEFINE_WRAPPER(ISession, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+}
+
+CORE_DEFINE_WRAPPER(PluginSubject::ISession, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 #endif //   HEADER_GUARD___ISESSION_H__

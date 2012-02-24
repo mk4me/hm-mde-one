@@ -118,12 +118,22 @@ CORE_DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstru
 
 Q_DECLARE_METATYPE ( Filesystem::Path );
 
-MainWindow::MainWindow():
-QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr)//, widgetSceneGraph(nullptr)//, currentContextWidget(nullptr)
+MainWindow::MainWindow(): QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr),
+    splashScreen_(new QSplashScreen())
 {
-
+    splashScreen_->setWindowFlags(splashScreen_->windowFlags() | Qt::WindowStaysOnTopHint);
 }
 
+QSplashScreen * MainWindow::splashScreen()
+{
+    return splashScreen_;
+}
+
+void MainWindow::showSplashScreenMessage(const QString & message, int alignment, const QColor & color)
+{
+    splashScreen_->showMessage(message, Qt::AlignLeft | Qt::AlignBottom, Qt::white);
+    QCoreApplication::processEvents();
+}
 
 void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAccessor) 
 {
@@ -132,13 +142,22 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
     this->managersAccessor = managersAccessor;
     //setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 
+    splashScreen_->setVisible(true);
+    QCoreApplication::processEvents();
+
+    showSplashScreenMessage(tr("Preparing application core managers"));
+
     DataManager* dataManager = DataManager::getInstance();
     ServiceManager* serviceManager = ServiceManager::getInstance();
     VisualizerManager* visualizerManager = VisualizerManager::getInstance();
 	EDRConfig* directoriesInfo = EDRConfig::getInstance();
     DataProcessorManager* dataProcesorManager = DataProcessorManager::getInstance();
 
+    showSplashScreenMessage(tr("Registering application core data sources"));
+
     registerCoreDataSources();
+
+    showSplashScreenMessage(tr("Registering plugins"));
 
 	Filesystem::Path pluginPath = getApplicationDataPath() / "plugins";
 	
@@ -152,15 +171,33 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 	}
     pluginLoader->load();
 
+    showSplashScreenMessage(tr("Registering plugins data types"));
+
     registerPluginsWrapperFactories();
 
+    showSplashScreenMessage(tr("Registering plugins services"));
+
     registerPluginsServices();
+
+    showSplashScreenMessage(tr("Registering plugins parsers"));
+
 	registerPluginsParsers();
+
+    showSplashScreenMessage(tr("Registering plugins visualizers"));
+
     registerPluginsVisualizers();
+
+    showSplashScreenMessage(tr("Registering plugins data processors"));
+
     registerPluginsDataProcessors();
+
+    showSplashScreenMessage(tr("Registering plugins data sources"));
+
     registerPluginsDataSources();
 
 	findResources(directoriesInfo->getResourcesPath().string());
+
+    showSplashScreenMessage(tr("Initializing services"));
 
     // inicjalizacja us³ug
     for (int i = 0; i < serviceManager->getNumServices(); ++i) {
@@ -183,6 +220,11 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
     connect(&serviceTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
 	visualizerTimer.start(20);
     serviceTimer.start(20);
+
+
+
+    splashScreen_->setVisible(false);
+    QCoreApplication::processEvents();
 }
 
 MainWindow::~MainWindow()

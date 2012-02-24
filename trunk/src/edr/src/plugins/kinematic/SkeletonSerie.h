@@ -47,7 +47,7 @@ public:
     }
 
 	//! \return Dlugosc kanalu w sekundach
-	virtual float getLength() const
+	virtual double getLength() const
 	{
 		UTILS_ASSERT(scheme);
 		return scheme->getDuration();
@@ -55,7 +55,7 @@ public:
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
-	virtual void setTime(float time)
+	virtual void setTime(double time)
 	{
 		UTILS_ASSERT(scheme && skeletonDrawers);
 		scheme->setTime(time);

@@ -2092,7 +2092,7 @@ void MedicalView::fillItemContent(FileItem * fileItem, const communication::Moti
     fileItem->setText(0, QString(file->fileName.c_str()));
 }
 
-CommunicationDataSource::CommunicationDataSource(communication::CommunicationManager * communicationManager, ISubjectService * subjectService)
+CommunicationDataSource::CommunicationDataSource(communication::CommunicationManager * communicationManager, PluginSubject::ISubjectService * subjectService)
     : communicationManager(communicationManager), widget(nullptr), refreshAction(nullptr), subjectService(subjectService), currentView(nullptr)
 {
     UTILS_ASSERT((communicationManager != nullptr), "Niezainicjalizowany CommunicationManager");

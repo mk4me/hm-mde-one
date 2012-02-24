@@ -16,7 +16,7 @@
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>
 
-namespace Sub {
+namespace PluginSubject {
 
 class IFilteredDataFactory
 {

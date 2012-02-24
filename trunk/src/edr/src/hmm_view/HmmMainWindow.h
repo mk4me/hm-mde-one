@@ -8,7 +8,7 @@
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/kinematic/Wrappers.h>
-#include "plugins/chart/ChartVisualizer.h"
+//#include "plugins/chart/ChartVisualizer.h"
 #include <core/SubjectDataFilters.h>
 #include <QtGui/QFrame>
 #include "MainWindow.h"
@@ -100,7 +100,7 @@ public:
 
 	virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
 
-    const std::vector<SessionConstPtr>& getCurrentSessions();
+    const std::vector<PluginSubject::SessionConstPtr>& getCurrentSessions();
     void addItemToTree(QTreeWidgetItem* item);
     void clearTree();
     QMenu* getContextMenu( QWidget* parent, TreeItemHelper* helper );
@@ -176,11 +176,11 @@ private:
     friend class ItemDoubleClick;
 
 private:
-    std::vector<DataFilterPtr> filters;
-    std::vector<SessionConstPtr> currentSessions;
+    std::vector<PluginSubject::DataFilterPtr> filters;
+    std::vector<PluginSubject::SessionConstPtr> currentSessions;
 	VisualizerWidget* currentVisualizer;
 
-    ISubjectService * subjectService;
+    PluginSubject::ISubjectService * subjectService;
 
     QMainWindow* pane;
 	

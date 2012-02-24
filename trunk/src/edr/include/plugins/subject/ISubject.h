@@ -12,7 +12,10 @@
 #include <plugins/subject/Types.h>
 #include <core/ObjectWrapper.h>
 
+namespace PluginSubject {
+
 //! Abstrakcyjna klasa reprezentuj¹ca obiekt wykonuj¹cy ruch - cz³owiek, zwierzê, avatar
+
 class ISubject
 {
 public:
@@ -27,7 +30,9 @@ public:
     virtual void getSessions(Sessions & sessions) const = 0;
 };
 
-CORE_DEFINE_WRAPPER(ISubject, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+}
+
+CORE_DEFINE_WRAPPER(PluginSubject::ISubject, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 #endif //   HEADER_GUARD___ISUBJECT_H__
 

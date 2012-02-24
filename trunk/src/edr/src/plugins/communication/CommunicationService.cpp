@@ -267,7 +267,7 @@ void CommunicationService::init(core::IManagersAccessor * managersAccessor)
 void CommunicationService::lateInit()
 {
     auto dataExplorer = core::queryServices<DataExplorerService>(managersAccessor->getServiceManager());
-    auto subjectService = core::queryServices<ISubjectService>(managersAccessor->getServiceManager());
+    auto subjectService = core::queryServices<PluginSubject::ISubjectService>(managersAccessor->getServiceManager());
     if(dataExplorer != nullptr){
         try{
             dataExplorer->registerSource(new CommunicationDataSource(model, subjectService.get()));

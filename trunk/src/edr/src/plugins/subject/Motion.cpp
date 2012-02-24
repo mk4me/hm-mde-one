@@ -9,8 +9,10 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <core/IDataManager.h>
 
-Motion::Motion(core::IMemoryDataManager * memoryDataManager, SubjectID motionID, const SessionConstPtr & session,
-    SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers) : memoryDataManager(memoryDataManager),
+using namespace PluginSubject;
+
+Motion::Motion(core::IMemoryDataManager * memoryDataManager, PluginSubject::SubjectID motionID, const PluginSubject::SessionConstPtr & session,
+    PluginSubject::SubjectID localMotionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers) : memoryDataManager(memoryDataManager),
     motionID(motionID), session(session), localMotionID(localMotionID), wrappers(wrappers)
 {
 

@@ -24,6 +24,7 @@
 #include "NewChartHelpers.h"
 #include "NewChartScaleDrawer.h"
 #include "NewChartLegend.h"
+#include <limits>
 
 
 NewChartVisualizer::NewChartVisualizer() : 
@@ -42,7 +43,13 @@ NewChartVisualizer::NewChartVisualizer() :
     shiftSpinX(nullptr),
     shiftSpinY(nullptr),
     scaleSpinX(nullptr),
-    scaleSpinY(nullptr)
+    scaleSpinY(nullptr),
+    upperBoundCurve(nullptr),
+    lowerBoundCurve(nullptr),
+    averageCurve(nullptr),
+    boundsAutoRefresh(true),
+    movingAverageTimeWindow(0.125),
+    pointsPerWindow(25)
 {
 
 }
@@ -241,11 +248,36 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     //spinWidgetY->layout()->setMargin(0);
     //spinWidgetX->layout()->setContentsMargins(0, 0, 0, 0);
 
+    QAction * bandsAction = new QAction("Show Bands", this);
+    bandsAction->setCheckable(true);
+    bandsAction->setChecked(false);
+    connect(bandsAction, SIGNAL(triggered(bool)), this, SLOT(showBands(bool)));
+
+    upperBoundCurve = new QwtPlotCurve(tr("Upper bound"));
+    lowerBoundCurve = new QwtPlotCurve(tr("Lower bound"));
+    averageCurve = new QwtPlotCurve(tr("Moving average"));
+
+    upperBoundCurve->setPen( QPen( Qt::black, 2, Qt::DotLine ) ),
+    upperBoundCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true);
+    lowerBoundCurve->setPen( QPen( Qt::black, 2, Qt::DotLine ) ),
+    lowerBoundCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+    averageCurve->setPen( QPen( Qt::black, 4, Qt::DashLine ) ),
+    averageCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    upperBoundCurve->setVisible(false);
+    lowerBoundCurve->setVisible(false);
+    averageCurve->setVisible(false);
+
+    upperBoundCurve->attach(qwtPlot);
+    lowerBoundCurve->attach(qwtPlot);
+    averageCurve->attach(qwtPlot);
+
     core::IActionsGroupManager::GroupID id = manager->createGroup("Operations");
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, pickerAction);
     manager->addGroupAction(id, showStats);
     manager->addGroupAction(id, scaleAction);
+    manager->addGroupAction(id, bandsAction);
 
     id = manager->createGroup("Events");
     manager->addGroupAction(id, eventsContextWidget);
@@ -282,6 +314,8 @@ core::IVisualizer::SerieBase * NewChartVisualizer::createSerie( const core::Obje
     ret->setName(name);
     ret->setData(data);
     series.push_back(ret);
+
+    plotChanged();
 
     statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), ret->getStats());
 
@@ -373,6 +407,8 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
     }
 
     activeSerieCombo->blockSignals(false);
+
+    plotChanged();
 }
 
 void NewChartVisualizer::setActiveSerie( int idx )
@@ -708,6 +744,8 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
         setScale(this->scaleToActive, false);
     }
     legend->blockSignals(false);
+
+    plotChanged();
 }
 
 void NewChartVisualizer::recreateScales()
@@ -812,6 +850,8 @@ void NewChartVisualizer::onShiftX( double d )
     NewChartSerie* s = series[currentSerie];
     s->setXOffset(d);
     qwtPlot->replot();
+
+    plotChanged();
 }
 
 void NewChartVisualizer::onShiftY( double d )
@@ -819,6 +859,8 @@ void NewChartVisualizer::onShiftY( double d )
     NewChartSerie* s = series[currentSerie];
     s->setYOffset(d);
     qwtPlot->replot();
+
+    plotChanged();
 }
 
 void NewChartVisualizer::onScaleX( double d )
@@ -827,6 +869,8 @@ void NewChartVisualizer::onScaleX( double d )
         NewChartSerie* s = series[currentSerie];
         s->setXScale(d);
         qwtPlot->replot();
+
+        plotChanged();
     }
 }
 
@@ -836,6 +880,8 @@ void NewChartVisualizer::onScaleY( double d )
         NewChartSerie* s = series[currentSerie];
         s->setYScale(d);
         qwtPlot->replot();
+
+        plotChanged();
     }
 }
 
@@ -865,7 +911,297 @@ void NewChartVisualizer::adjustOffsetStep( QDoubleSpinBox* spinBox, QwtPlot::Axi
     if (lower < upper) {
         spinBox->setSingleStep((upper - lower) / 50.0);
     }
+
+}
+
+void NewChartVisualizer::plotChanged()
+{
+    if(boundsAutoRefresh == true){
+        refreshBounds();
+    }else{
+        boundsToRefresh = true;
+    }
+}
+
+void NewChartVisualizer::refreshBounds()
+{
+    boundsToRefresh = false;
+
+    if(series.empty() == true){
+        return;
+    }
+
+    float minT = std::numeric_limits<float>::min();
+    float maxT = std::numeric_limits<float>::max();
+
+    //wyznaczamy parametry dla wsteg i œrednich
+    //minimalny czas dla wszystkich seri danych
+    //maksymalny czas dla wszystkich serii danych
+    //minimalna rozdzielczoœæ dla wszystkich kana³ów
+    std::vector<ScalarChannelReaderInterfaceConstPtr> channels;
+    for (auto it = series.begin(); it != series.end(); it++) {
+        ScalarChannelReaderInterfaceConstPtr data((*it)->getData()->get());
+        minT = std::max(minT, data->argument(0));
+        maxT = std::min(maxT, data->argument(data->size() - 1));
+        channels.push_back(data);
+    }
+
+    int totalWindows = (maxT - minT) / movingAverageTimeWindow;
+
+    if(totalWindows == 0){
+        return;
+    }
+
+    //obcinam max do ca³kowitej liczby okien
+    //maxT = std::min(maxT, (float)totalWindows * (float)movingAverageTimeWindow);
+    maxT = totalWindows * movingAverageTimeWindow;
+    //wyliczam ilosc wszystkich punktow jakie mam
+    int totalPoints = totalWindows * pointsPerWindow;
+    //wyliczam pojedynczy krok czasu
+    float timeStep = (maxT - minT) / (float)totalPoints;
+    //dzielnik dla œredniej
+    float size = channels.size();
+    //akcesor do danych
+    core::shared_ptr<ScalarContiniousTimeAccessor> accessor(new ScalarContiniousTimeAccessor(channels.front()));
+
+    //wyliczamy próbki czasowe
+    //wyliczam œredni¹ dla wszystkich próbek
+    std::vector<float> timeValues;
+    std::vector<float> avgValues;
+    int i = 0;
+    for(auto time = minT; i < totalPoints; ++i, time = minT + (float)i * timeStep){
+        float value = 0;
+        for (auto channelIT = channels.begin(); channelIT != channels.end(); ++channelIT) {
+            accessor->setChannel(*channelIT);
+            value += accessor->getValue(time);
+        }
+        
+        timeValues.push_back(time);
+        avgValues.push_back(value / size);
+    }
+
+    int outBegIdx = 0;
+    int outNBElement = 0;
+
+    //potem liczê œredni¹ krocz¹c¹ z danym oknem    
+    //odœwie¿yæ œredni¹ krocz¹c¹
+    //odœwie¿yæ wstêgi
+
+    std::vector<float> maAvgValues(totalPoints);
+    std::vector<float> upperBandValues(totalPoints);
+    std::vector<float> lowerBandValues(totalPoints);
+
+    bbands(0, totalPoints-1, avgValues, pointsPerWindow, 5, 5, outBegIdx,
+        outNBElement, upperBandValues, maAvgValues, lowerBandValues);
+
+    QPolygonF pointsAvg;
+    QPolygonF pointsUp;
+    QPolygonF pointsDown;
+    for(int i = 0; i < totalPoints; ++i){
+        auto time = timeValues[i];
+        pointsAvg << QPointF( time, maAvgValues[i] );
+        pointsUp << QPointF( time, upperBandValues[i] );
+        pointsDown << QPointF( time, lowerBandValues[i] );
+    }
     
+    upperBoundCurve->setSamples( pointsUp );
+    lowerBoundCurve->setSamples( pointsDown );
+    averageCurve->setSamples( pointsAvg );
+}
+
+void NewChartVisualizer::showBands(bool show)
+{
+    showDataBounds(show);
+    showMovingAverageCurve(show);
+}
+
+void NewChartVisualizer::showDataBounds(bool show)
+{
+    upperBoundCurve->setVisible(show);
+    lowerBoundCurve->setVisible(show);
+}
+
+void NewChartVisualizer::showMovingAverageCurve(bool show)
+{
+    averageCurve->setVisible(show);
+}
+
+void NewChartVisualizer::setAutoRefreshDataBounds(bool autorefresh)
+{
+    boundsAutoRefresh = autorefresh;
+
+    if(boundsAutoRefresh == true && boundsToRefresh == true){
+        refreshBounds();
+    }
+}
+
+void NewChartVisualizer::setMovingAverageTimeWindow(double timeWindow)
+{
+    movingAverageTimeWindow = timeWindow;
+    refreshBounds();
+}
+
+void NewChartVisualizer::simpleMovingAverage(int startIdx, int endIdx, const std::vector<float> & inReal,
+    int optInTimePeriod, int & outBegIdx, int & outNBElement, std::vector<float> & outReal)
+{
+    double periodTotal, tempReal;
+    int i, outIdx, trailingIdx, lookbackTotal;
+    lookbackTotal = (optInTimePeriod-1);
+    if( startIdx < lookbackTotal )
+        startIdx = lookbackTotal;
+    if( startIdx > endIdx )
+    {
+        outBegIdx = 0 ;
+        outNBElement = 0 ;
+        return;
+    }
+    periodTotal = 0;
+    trailingIdx = startIdx-lookbackTotal;
+    i=trailingIdx;
+    if( optInTimePeriod > 1 )
+    {
+        while( i < startIdx )
+            periodTotal += inReal[i++];
+    }
+    outIdx = 0;
+    do
+    {
+        periodTotal += inReal[i++];
+        tempReal = periodTotal;
+        periodTotal -= inReal[trailingIdx++];
+        outReal[outIdx++] = tempReal / optInTimePeriod;
+    } while( i <= endIdx );
+    outNBElement = outIdx;
+    outBegIdx = startIdx;
+}
+
+void NewChartVisualizer::bbands( int startIdx, int endIdx, const std::vector<float> & inReal,
+    int optInTimePeriod, double optInNbDevUp, double optInNbDevDn, int & outBegIdx, int & outNBElement,
+    std::vector<float> & outRealUpperBand,
+    std::vector<float> & outRealMiddleBand,
+    std::vector<float> & outRealLowerBand)
+{
+    int i;
+    double tempReal, tempReal2;
+    std::vector<float> & tempBuffer1 = outRealMiddleBand;
+    std::vector<float> tempBuffer2 ;
+    if( startIdx < 0 )
+        return;
+    if( (endIdx < 0) || (endIdx < startIdx))
+        return;
+    if( optInTimePeriod == std::numeric_limits<int>::min() )
+        optInTimePeriod = 5;
+    else if( (optInTimePeriod < 2) || (optInTimePeriod > 100000) )
+        return;
+    if( optInNbDevUp == (-4e+37) )
+        optInNbDevUp = 2.000000e+0;
+    else if( (optInNbDevUp < -3.000000e+37) || (optInNbDevUp > 3.000000e+37) )
+        return;
+    if( optInNbDevDn == (-4e+37) )
+        optInNbDevDn = 2.000000e+0;
+    else if( (optInNbDevDn < -3.000000e+37) || (optInNbDevDn > 3.000000e+37) )
+        return ;
+    //tempBuffer1 = outRealMiddleBand;
+    tempBuffer2 = outRealLowerBand;
+    
+    simpleMovingAverage(startIdx, endIdx, inReal,
+        optInTimePeriod, outBegIdx, outNBElement, tempBuffer1 );
+    
+    stddev_using_precalc_ma ( inReal, tempBuffer1,
+        outBegIdx , outNBElement,
+        optInTimePeriod, tempBuffer2 );
+    
+    if( optInNbDevUp == optInNbDevDn )
+    {
+        if( optInNbDevUp == 1.0 )
+        {
+            for( i=0; i < outNBElement ; i++ )
+            {
+                tempReal = tempBuffer2[i];
+                tempReal2 = outRealMiddleBand[i];
+                outRealUpperBand[i] = tempReal2 + tempReal;
+                outRealLowerBand[i] = tempReal2 - tempReal;
+            }
+        }
+        else
+        {
+            for( i=0; i < outNBElement ; i++ )
+            {
+                tempReal = tempBuffer2[i] * optInNbDevUp;
+                tempReal2 = outRealMiddleBand[i];
+                outRealUpperBand[i] = tempReal2 + tempReal;
+                outRealLowerBand[i] = tempReal2 - tempReal;
+            }
+        }
+    }
+    else if( optInNbDevUp == 1.0 )
+    {
+        for( i=0; i < outNBElement ; i++ )
+        {
+            tempReal = tempBuffer2[i];
+            tempReal2 = outRealMiddleBand[i];
+            outRealUpperBand[i] = tempReal2 + tempReal;
+            outRealLowerBand[i] = tempReal2 - (tempReal * optInNbDevDn);
+        }
+    }
+    else if( optInNbDevDn == 1.0 )
+    {
+        for( i=0; i < outNBElement ; i++ )
+        {
+            tempReal = tempBuffer2[i];
+            tempReal2 = outRealMiddleBand[i];
+            outRealLowerBand[i] = tempReal2 - tempReal;
+            outRealUpperBand[i] = tempReal2 + (tempReal * optInNbDevUp);
+        }
+    }
+    else
+    {
+        for( i=0; i < outNBElement ; i++ )
+        {
+            tempReal = tempBuffer2[i];
+            tempReal2 = outRealMiddleBand[i];
+            outRealUpperBand[i] = tempReal2 + (tempReal * optInNbDevUp);
+            outRealLowerBand[i] = tempReal2 - (tempReal * optInNbDevDn);
+        }
+    }
+}
+
+void NewChartVisualizer::stddev_using_precalc_ma( const std::vector<float> & inReal,
+    const std::vector<float> & inMovAvg,
+    int inMovAvgBegIdx,
+    int inMovAvgNbElement,
+    int timePeriod,
+    std::vector<float> & output)
+{
+    double tempReal, periodTotal2, meanValue2;
+    int outIdx;
+    int startSum, endSum;
+    startSum = 1+inMovAvgBegIdx-timePeriod;
+    endSum = inMovAvgBegIdx;
+    periodTotal2 = 0;
+    for( outIdx = startSum; outIdx < endSum; outIdx++)
+    {
+        tempReal = inReal[outIdx];
+        tempReal *= tempReal;
+        periodTotal2 += tempReal;
+    }
+    for( outIdx=0; outIdx < inMovAvgNbElement; outIdx++, startSum++, endSum++ )
+    {
+        tempReal = inReal[endSum];
+        tempReal *= tempReal;
+        periodTotal2 += tempReal;
+        meanValue2 = periodTotal2/timePeriod;
+        tempReal = inReal[startSum];
+        tempReal *= tempReal;
+        periodTotal2 -= tempReal;
+        tempReal = inMovAvg[outIdx];
+        tempReal *= tempReal;
+        meanValue2 -= tempReal;
+        if( ! (meanValue2<0.00000001) )
+            output[outIdx] = std::sqrt(meanValue2);
+        else
+            output[outIdx] = 0;
+    }
 }
 
 

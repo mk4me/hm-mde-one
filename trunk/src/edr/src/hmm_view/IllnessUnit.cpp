@@ -1,6 +1,8 @@
 #include "hmmPCH.h"
 #include "IllnessUnit.h"
 
+using namespace PluginSubject;
+
 template<class TreeItem>
 TreeItem* createItem(const QString& name, QTreeWidgetItem* parent = nullptr) 
 {

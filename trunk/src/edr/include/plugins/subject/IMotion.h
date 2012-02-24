@@ -13,6 +13,8 @@
 #include <core/ObjectWrapper.h>
 #include <plugins/subject/ISession.h>
 
+namespace PluginSubject{
+
 //! Abstrakcyjna klasa reprezentuj¹ca pojedynczy ruch obiektu w ramach sesji
 class IMotion
 {
@@ -120,6 +122,8 @@ public:
     }
 };
 
-CORE_DEFINE_WRAPPER(IMotion, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+}
+
+CORE_DEFINE_WRAPPER(PluginSubject::IMotion, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 #endif //   HEADER_GUARD___IMOTION_H__

@@ -61,7 +61,7 @@ class IPatient
 public:
     virtual ~IPatient() {};
 
-    virtual SubjectID getID() const = 0;
+    virtual PluginSubject::SubjectID getID() const = 0;
     virtual const std::string & getName() const = 0;
     virtual const std::string & getSurname() const = 0;
     virtual const std::string & getBirthday() const = 0;

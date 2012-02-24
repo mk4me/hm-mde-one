@@ -13,9 +13,11 @@
 #include <plugins/subject/Types.h>
 #include <core/TypeInfo.h>
 
+namespace PluginSubject {
+
 class ISubjectService
 {
-    friend class Sub::IDataFilter;
+    friend class IDataFilter;
 
 public:
     virtual ~ISubjectService() {}
@@ -32,6 +34,8 @@ private:
 
     virtual const FilteredDataFacoryPtr & getFilteredDataFacotry() const = 0;
 };
+
+}
 
 #endif //   HEADER_GUARD___ISUBJECTSERVICE_H__
 

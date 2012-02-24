@@ -22,112 +22,112 @@ void TreeWrappedItemHelper::createSeries( const VisualizerPtr & visualizer, cons
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
 }
 
-void ChartItemHelper::setUpChart( ChartVisualizer* chart, const std::string& title )
-{
-    if (!chartTextPrototype) {
-        // prototyp textu dla Charta
-
-        chartTextPrototype = new osgText::Text();
-
-        chartTextPrototype->setColor(osg::Vec4(0, 0, 0, 1));
-        chartTextPrototype->setFontResolution(50,50);
-        chartTextPrototype->setFont(osgText::readFontFile("fonts/arial.ttf"));    
-        chartTextPrototype->setCharacterSize(12);
-        chartTextPrototype->setCharacterSizeMode(osgText::TextBase::OBJECT_COORDS);
-        chartTextPrototype->setAxisAlignment(osgText::Text::USER_DEFINED_ROTATION );
-        chartTextPrototype->setAutoRotateToScreen(false);
-        chartTextPrototype->setAlignment(osgText::Text::CENTER_CENTER);
-        chartTextPrototype->setText("");
-        chartTextPrototype->setLayout(osgText::Text::LEFT_TO_RIGHT);
-    }
-    chart->setAutoRefresh(false);
-
-    chart->setLabelPrototype(chartTextPrototype);
-
-    chart->setBackgroundColor(osg::Vec4(1,1,1,1));
-    chart->setCursorColor(osg::Vec4(0,0,0,1));
-    chart->setAxisesColor(osg::Vec4(0,0,0,1));
-    chart->setFrameColor(osg::Vec4(0,0,0,1));
-    chart->setShowFrame(true);
-
-    chart->setGridColor(osg::Vec4(0.2,0.2,0.2,1));
-
-    chart->setShowGridX(true);
-    chart->setShowGridY(true);
-
-    chart->setMargin(5);
-
-    chart->setAxisXInside(false);
-    chart->setAxisYInside(false);
-
-    chart->setShowAxisX(true);
-    chart->setShowAxisY(true);
-
-    chart->setShowingXUnits(true);
-    chart->setShowingYUnits(false);
-
-    chart->setShowingXUnitsSeparately(true);
-    chart->setShowingYUnitsSeparately(true);
-
-    chart->setShowingTimeInCursor(true);
-    chart->setShowingUnitsInCursor(true);
-
-    chart->setShowCursorBackground(true);
-    chart->setCursorBackgroundColor(osg::Vec4(1,1,1,0.95));
-
-    chart->setShowTitle(true);
-
-    
-    chart->setTitleText(title);
-    chart->setTitleTextSize(chartTextPrototype->getCharacterHeight());
-    chart->setTitlePosition(Chart::TOP_GRID_CENTER);
-
-    chart->setAutoRefresh(true);
-}
-
-
-VisualizerPtr ChartItemHelper::createVisualizer()
-{
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(ChartVisualizer::getClassID());
-    visualizer->getOrCreateWidget();
-    ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
-    if (!chart) {
-        UTILS_ASSERT(false);
-        LOG_ERROR("Wrong visualizer type!");
-    } else {
-        std::string title;
-        ScalarChannelReaderInterfacePtr scalar = wrapper->get();
-        title += scalar->getName();
-        title += " [";
-        title += scalar->getValueBaseUnit();
-        title += "]";
-        setUpChart(chart, title);
-    }
-
-    return visualizer;
-}
+//void ChartItemHelper::setUpChart( ChartVisualizer* chart, const std::string& title )
+//{
+//    if (!chartTextPrototype) {
+//        // prototyp textu dla Charta
+//
+//        chartTextPrototype = new osgText::Text();
+//
+//        chartTextPrototype->setColor(osg::Vec4(0, 0, 0, 1));
+//        chartTextPrototype->setFontResolution(50,50);
+//        chartTextPrototype->setFont(osgText::readFontFile("fonts/arial.ttf"));    
+//        chartTextPrototype->setCharacterSize(12);
+//        chartTextPrototype->setCharacterSizeMode(osgText::TextBase::OBJECT_COORDS);
+//        chartTextPrototype->setAxisAlignment(osgText::Text::USER_DEFINED_ROTATION );
+//        chartTextPrototype->setAutoRotateToScreen(false);
+//        chartTextPrototype->setAlignment(osgText::Text::CENTER_CENTER);
+//        chartTextPrototype->setText("");
+//        chartTextPrototype->setLayout(osgText::Text::LEFT_TO_RIGHT);
+//    }
+//    chart->setAutoRefresh(false);
+//
+//    chart->setLabelPrototype(chartTextPrototype);
+//
+//    chart->setBackgroundColor(osg::Vec4(1,1,1,1));
+//    chart->setCursorColor(osg::Vec4(0,0,0,1));
+//    chart->setAxisesColor(osg::Vec4(0,0,0,1));
+//    chart->setFrameColor(osg::Vec4(0,0,0,1));
+//    chart->setShowFrame(true);
+//
+//    chart->setGridColor(osg::Vec4(0.2,0.2,0.2,1));
+//
+//    chart->setShowGridX(true);
+//    chart->setShowGridY(true);
+//
+//    chart->setMargin(5);
+//
+//    chart->setAxisXInside(false);
+//    chart->setAxisYInside(false);
+//
+//    chart->setShowAxisX(true);
+//    chart->setShowAxisY(true);
+//
+//    chart->setShowingXUnits(true);
+//    chart->setShowingYUnits(false);
+//
+//    chart->setShowingXUnitsSeparately(true);
+//    chart->setShowingYUnitsSeparately(true);
+//
+//    chart->setShowingTimeInCursor(true);
+//    chart->setShowingUnitsInCursor(true);
+//
+//    chart->setShowCursorBackground(true);
+//    chart->setCursorBackgroundColor(osg::Vec4(1,1,1,0.95));
+//
+//    chart->setShowTitle(true);
+//
+//    
+//    chart->setTitleText(title);
+//    chart->setTitleTextSize(chartTextPrototype->getCharacterHeight());
+//    chart->setTitlePosition(Chart::TOP_GRID_CENTER);
+//
+//    chart->setAutoRefresh(true);
+//}
 
 
-void ChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
-{
-    auto serie = visualizer->createSerie(wrapper, path.toStdString());
-    ScalarChannelReaderInterfaceConstPtr item = wrapper->get();
-    QString text = item->getName().c_str();
-    ChartVisualizer::ChartVisualizerSerie* chartSerie = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serie.get());
-    if (chartSerie) {
-        if(text.at(0) == 'L' || text.at(0) == 'l' || text.at(1) == 'X' || text.at(1) == 'x'){
-            chartSerie->setColor(osg::Vec4(1,0,0,1));
-        }else if(text.at(0) == 'R' || text.at(0) == 'r' || text.at(1) == 'Y' || text.at(1) == 'y'){
-            chartSerie->setColor(osg::Vec4(0,1,0,1));
-        }else{
-            chartSerie->setColor(osg::Vec4(0.5,0,1,1));
-        }
-    } else {
-        UTILS_ASSERT(false);
-        LOG_ERROR("Wrong chart serie");
-    }
-    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
-}
+//VisualizerPtr ChartItemHelper::createVisualizer()
+//{
+//    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(ChartVisualizer::getClassID());
+//    visualizer->getOrCreateWidget();
+//    ChartVisualizer* chart = dynamic_cast<ChartVisualizer*>(visualizer->getImplementation());
+//    if (!chart) {
+//        UTILS_ASSERT(false);
+//        LOG_ERROR("Wrong visualizer type!");
+//    } else {
+//        std::string title;
+//        ScalarChannelReaderInterfacePtr scalar = wrapper->get();
+//        title += scalar->getName();
+//        title += " [";
+//        title += scalar->getValueBaseUnit();
+//        title += "]";
+//        setUpChart(chart, title);
+//    }
+//
+//    return visualizer;
+//}
+
+
+//void ChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
+//{
+//    auto serie = visualizer->createSerie(wrapper, path.toStdString());
+//    ScalarChannelReaderInterfaceConstPtr item = wrapper->get();
+//    QString text = item->getName().c_str();
+//    ChartVisualizer::ChartVisualizerSerie* chartSerie = dynamic_cast<ChartVisualizer::ChartVisualizerSerie*>(serie.get());
+//    if (chartSerie) {
+//        if(text.at(0) == 'L' || text.at(0) == 'l' || text.at(1) == 'X' || text.at(1) == 'x'){
+//            chartSerie->setColor(osg::Vec4(1,0,0,1));
+//        }else if(text.at(0) == 'R' || text.at(0) == 'r' || text.at(1) == 'Y' || text.at(1) == 'y'){
+//            chartSerie->setColor(osg::Vec4(0,1,0,1));
+//        }else{
+//            chartSerie->setColor(osg::Vec4(0.5,0,1,1));
+//        }
+//    } else {
+//        UTILS_ASSERT(false);
+//        LOG_ERROR("Wrong chart serie");
+//    }
+//    series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serie));
+//}
 
 //VisualizerPtr Vector3ItemHelper::createVisualizer()
 //{

@@ -21,6 +21,7 @@
 #include <core/Filesystem.h>
 #include <core/IManagersAccessor.h>
 #include <QtCore/QObject>
+#include <QtGui/QSplashScreen>
 #include "ActionsGroupManager.h"
 
 class UserInterfaceService;
@@ -71,9 +72,15 @@ namespace core {
         //! Lista skórek dla UI
         std::vector<core::Filesystem::Path> applicationSkinsPaths;
 
+        QSplashScreen * splashScreen_;
+
 	protected:
 		const QTimer& getVisualizerTimer() const { return visualizerTimer; }
 		QTimer& getVisualizerTimer() { return visualizerTimer; }
+
+        QSplashScreen * splashScreen();
+
+        void showSplashScreenMessage(const QString & message, int alignment = Qt::AlignLeft, const QColor & color = Qt::black);
 
 	public:
 		MainWindow();
@@ -180,7 +187,6 @@ namespace core {
 		void readSettings(const QSettings& settings, bool readGeometry);
 		//! Zapisuje ustawienia aplikacji.
 		void writeSettings();
-
 	};
 
 typedef boost::shared_ptr<MainWindow> MainWindowPtr;

@@ -6,7 +6,7 @@
 #include <core/DataAccessors.h>
 #include <plugins/subject/ISession.h>
 
-Subject::Subject(SubjectID subjectID) : subjectID(subjectID), currentSessionID(0)
+Subject::Subject(PluginSubject::SubjectID subjectID) : subjectID(subjectID), currentSessionID(0)
 {
     std::stringstream ss;
     ss.fill('0');
@@ -26,14 +26,14 @@ const std::string & Subject::getName() const
     return name;
 }
 
-SubjectID Subject::getID() const
+PluginSubject::SubjectID Subject::getID() const
 {
     return subjectID;
 }
 
-void Subject::getSessions(Sessions & sessions) const
+void Subject::getSessions(PluginSubject::Sessions & sessions) const
 {
-    Sessions toFilter;
+    PluginSubject::Sessions toFilter;
     core::queryDataPtr(core::getDataManagerReader(), toFilter, true);
 
     for(auto it = toFilter.begin(); it != toFilter.end(); it++){
