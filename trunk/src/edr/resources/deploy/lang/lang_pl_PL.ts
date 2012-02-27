@@ -170,6 +170,14 @@
     </message>
 </context>
 <context>
+    <name>DataExplorerService</name>
+    <message>
+        <location filename="../../../src/plugins/dataExplorer/DataExplorerService.cpp" line="129"/>
+        <source>Configure</source>
+        <translation>Konfiguracja</translation>
+    </message>
+</context>
+<context>
     <name>DataExplorerSourceWidget</name>
     <message>
         <location filename="../../../src/plugins/dataExplorer/ui/DataExplorerSourceWidget.ui" line="14"/>
@@ -457,6 +465,19 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>EDRWorkflowWidget</name>
+    <message>
+        <location filename="../../../src/core/WorkflowWidget.cpp" line="508"/>
+        <source>Start</source>
+        <translation>Rozpocznij</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/WorkflowWidget.cpp" line="514"/>
+        <source>Stop</source>
+        <translation>Zatrzymaj</translation>
+    </message>
+</context>
+<context>
     <name>FilterConfiguratorWidget</name>
     <message>
         <location filename="../../../src/hmm_view/ui/FilterConfiguratorWidget.ui" line="14"/>
@@ -628,98 +649,103 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HmmMainWindow</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="385"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="403"/>
         <source>reason: </source>
         <translation>powód:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="387"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="389"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="405"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="407"/>
         <source>Warning</source>
         <translation>Ostrzeżenie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="389"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="407"/>
         <source>Unable to add data to visualizer</source>
         <translation>Nie można dodać danych do wizualizatora</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="533"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="551"/>
         <source>ANALOG</source>
         <translation>ANALOGOWE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="534"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="552"/>
         <source>KINETIC</source>
         <translation>KINETYCZNE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="535"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="553"/>
         <source>KINEMATIC</source>
         <translation>KINEMATYCZNE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="536"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="554"/>
         <source>VIDEO</source>
         <translation>VIDEO</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="545"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="563"/>
         <source>GRF</source>
         <translation>GRF</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="598"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="616"/>
         <source>EMG</source>
         <translation>EMG</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="695"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="713"/>
         <source>FORCES</source>
         <translation>SIŁY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="696"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="714"/>
         <source>MOMENTS</source>
         <translation>MOMENTY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="697"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="715"/>
         <source>POWERS</source>
         <translation>MOCE</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="745"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="763"/>
         <source>MARKERS</source>
         <translation>MARKERY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="746"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="764"/>
         <source>JOINTS</source>
         <translation>STAWY</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="752"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="770"/>
         <source>VIDEOS</source>
         <translation>VIDEO</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1044"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1062"/>
         <source>Create new visualizer</source>
         <translation>Twórz nowy wizualizator</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1050"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1068"/>
         <source>Add to:</source>
         <translation>Dodaj do:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1119"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1114"/>
+        <source>Remove from:</source>
+        <translation>Usuń z:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1137"/>
         <source>Create in:</source>
         <translation>Twórz w:</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1130"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1148"/>
         <source>New group</source>
         <translation>Nowa grupa</translation>
     </message>
@@ -755,6 +781,45 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="473"/>
         <source>Partially loaded</source>
         <translation>Częściowo załadowane</translation>
+    </message>
+</context>
+<context>
+    <name>KinematicVisualizer</name>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="139"/>
+        <source>Switch Axes</source>
+        <translation>Przełącz osie</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="148"/>
+        <source>Trajectories</source>
+        <translation>Trajektorie</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="153"/>
+        <source>Scheme Drawers</source>
+        <translation>Konfigurator obiektów</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="160"/>
+        <source>Ghost</source>
+        <translation>Wizualizacja czasowo przestrzenna</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="167"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="280"/>
+        <source>View</source>
+        <translation>Widok</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="171"/>
+        <source>No active serie</source>
+        <translation>Brak aktywnej serii danych</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="271"/>
+        <source>Properties</source>
+        <translation>Własności</translation>
     </message>
 </context>
 <context>
@@ -1092,28 +1157,109 @@ p, li { white-space: pre-wrap; }
         <source>View</source>
         <translation>Widok</translation>
     </message>
+    <message>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1693"/>
+        <source>Motion data</source>
+        <translation>Dane pomiarowe</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1694"/>
+        <source>User data</source>
+        <translation>Dane użytkownika</translation>
+    </message>
 </context>
 <context>
     <name>NewChartVisualizer</name>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="99"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="93"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="394"/>
+        <source>No active serie</source>
+        <translation>Brak aktywnej serii danych</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="107"/>
         <source>Events context</source>
         <translation>Normalizacja</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="105"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="113"/>
         <source>None events</source>
         <translation>Brak</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="106"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="114"/>
         <source>Left events</source>
         <translation>Normalizacja wg kontekstu zdarzeń lewej stopy</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="107"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="115"/>
         <source>Right events</source>
         <translation>Normalizacja wg kontekstu zdarzeń prawej stopy</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="122"/>
+        <source>Picker</source>
+        <translation>Wskaźnik</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="129"/>
+        <source>Value Marker</source>
+        <translation>Znacznik wartości</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="136"/>
+        <source>Horizontal Marker</source>
+        <translation>Znacznik różnicy czasu</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="143"/>
+        <source>Vertical Marker</source>
+        <translation>Znacznik różnicy wartości</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="148"/>
+        <source>Scale to active</source>
+        <translation>Skaluj do aktywnej serii danych</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="154"/>
+        <source>Statistics</source>
+        <translation>Statystyki</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="259"/>
+        <source>Upper bound</source>
+        <translation>Górna granica przedziału</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="260"/>
+        <source>Lower bound</source>
+        <translation>Dolna granica przedziału</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="261"/>
+        <source>Moving average</source>
+        <translation>Średnia ruchoma</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="278"/>
+        <source>Operations</source>
+        <translation>Operacje</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="285"/>
+        <source>Events</source>
+        <translation>Zdarzenia</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="288"/>
+        <source>Tags</source>
+        <translation>Znaczniki</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="293"/>
+        <source>Active Data Series</source>
+        <translation>Aktywna seria danych</translation>
     </message>
 </context>
 <context>
@@ -1204,7 +1350,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/plugins/communication/ui/PatientCardWidget.ui" line="347"/>
         <source>Inter Axis Distance</source>
-        <translation>Dystans między osiami</translation>
+        <translation>ASIS-ASIS</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/communication/ui/PatientCardWidget.ui" line="352"/>
@@ -1373,6 +1519,11 @@ p, li { white-space: pre-wrap; }
         <source>Women</source>
         <translation>Kobieta</translation>
     </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="381"/>
+        <source>Upper body</source>
+        <translation>Górna część ciała</translation>
+    </message>
 </context>
 <context>
     <name>PicturePlacerWindow</name>
@@ -1470,41 +1621,112 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>PseudoLoginWidget</name>
+    <message>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="14"/>
+        <source>Dialog</source>
+        <translation>Dialog</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="104"/>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="116"/>
+        <source>Login</source>
+        <translation>Login</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="132"/>
+        <source>Login [e-mail]:</source>
+        <translation>Login[e-mail]:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="142"/>
+        <source>Password:</source>
+        <translation>Hasło:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="158"/>
+        <source>Register</source>
+        <translation>Rejestracja</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="170"/>
+        <source>Send registration request</source>
+        <translation>Zarejestruj</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="186"/>
+        <source>Name:</source>
+        <translation>Imię:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="196"/>
+        <source>Surname:</source>
+        <translation>Nazwisko:</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/PseudoLoginWidget.ui" line="206"/>
+        <source>e-mail [login]:</source>
+        <translation>adres email[login]:</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
-        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="217"/>
+        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="219"/>
         <source>Pre</source>
         <translation>Przed</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="219"/>
+        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="221"/>
         <source>Post</source>
         <translation>Po </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="226"/>
+        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="228"/>
         <source>Left</source>
         <translation>Lewa strona</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="227"/>
+        <location filename="../../../src/hmm_view/IllnessUnit.cpp" line="229"/>
         <source>Right</source>
         <translation>Prawa strona</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="29"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="31"/>
         <source>Analog data</source>
         <translation>Dane analogowe</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="42"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="44"/>
         <source>Kinetic data</source>
         <translation>Dane kinetyczne</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="78"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="80"/>
         <source>Kinematic data</source>
         <translation>Dane kinematyczne</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="40"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="243"/>
+        <source>Visualizer</source>
+        <translation>Wizualizator</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="278"/>
+        <source>Tree</source>
+        <translation>Drzewo danych</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="413"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="557"/>
+        <source>Raports Tab</source>
+        <translation>Raporty</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="242"/>
+        <source>Tools</source>
+        <translation>Narzędzia</translation>
     </message>
 </context>
 <context>
@@ -1922,6 +2144,21 @@ Do you want to save your changes?</source>
         <source>End</source>
         <translation>Koniec</translation>
     </message>
+    <message>
+        <location filename="../../../src/plugins/newTimeline/TimelineWidget.cpp" line="131"/>
+        <source>Channel</source>
+        <translation>Kanał</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newTimeline/TimelineWidget.cpp" line="131"/>
+        <source>Active</source>
+        <translation>Aktywny</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newTimeline/TimelineWidget.cpp" line="131"/>
+        <source>Time</source>
+        <translation>Czas</translation>
+    </message>
 </context>
 <context>
     <name>TrajectoriesDialog</name>
@@ -2168,7 +2405,57 @@ Do you want to save your changes?</source>
 <context>
     <name>core::MainWindow</name>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="275"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="148"/>
+        <source>Preparing application core managers</source>
+        <translation>Przygotowanie managerów podstawowych aplikacji</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="156"/>
+        <source>Registering application core data sources</source>
+        <translation>Rejestrowanie podstawowych źródeł danych</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="160"/>
+        <source>Registering plugins</source>
+        <translation>Rejestrowanie pluginów</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="174"/>
+        <source>Registering plugins data types</source>
+        <translation>Rejestrowanie typów danych pochodzących z pluginów</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="178"/>
+        <source>Registering plugins services</source>
+        <translation>Rejestrowanie usług </translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="182"/>
+        <source>Registering plugins parsers</source>
+        <translation>Rejestracja parserów</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="186"/>
+        <source>Registering plugins visualizers</source>
+        <translation>Rejestrowanie wizualizatorów</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="190"/>
+        <source>Registering plugins data processors</source>
+        <translation>Rejestrowanie elementów przetwarzania danych</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="194"/>
+        <source>Registering plugins data sources</source>
+        <translation>Rejestrowanie źródeł danych</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="200"/>
+        <source>Initializing services</source>
+        <translation>Inicjalizacja usług</translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="317"/>
         <source>Console</source>
         <translation>Konsola</translation>
     </message>
