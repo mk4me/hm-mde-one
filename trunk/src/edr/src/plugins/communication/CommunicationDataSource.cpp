@@ -1689,9 +1689,9 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
     patientCardWidget->setContentsMargins(0,0,0,0);
 
     QTabWidget * leftTabs = new QTabWidget();
-    leftTabs->setObjectName(QString::fromUtf8("leftTabs"));
-    leftTabs->addTab(leftSide, QString::fromUtf8("Motion data"));
-    leftTabs->addTab(new QWidget(), QString::fromUtf8("User data"));
+    leftTabs->setObjectName(QString("leftTabs"));
+    leftTabs->addTab(leftSide, tr("Motion data"));
+    leftTabs->addTab(new QWidget(), tr("User data"));
 
     leftTabs->setTabPosition(QTabWidget::South);
 
@@ -2079,7 +2079,7 @@ void MedicalView::fillItemContent(SessionGroupItem * sessionItem, const SessionG
 
 void MedicalView::fillItemContent(SessionItem * sessionItem, const communication::MotionShallowCopy::Session * session)
 {
-    sessionItem->setText(0, QString(sessionsPrefixes[session->sessionID].c_str()) + QString(" - ") + QString(session->sessionName.c_str()));
+    sessionItem->setText(0, tr(sessionsPrefixes[session->sessionID].c_str()) + " - " + QString(session->sessionName.c_str()));
 }
 
 void MedicalView::fillItemContent(MotionItem * motionItem, const communication::MotionShallowCopy::Trial * motion)

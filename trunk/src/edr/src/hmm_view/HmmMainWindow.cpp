@@ -239,8 +239,8 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
 	operations->setLayout(layout);
 
-    toolsGroupID = flexiTabWidget->addGroup(QString::fromUtf8("Tools"));
-    visualizerGroupID = flexiTabWidget->addGroup(QString::fromUtf8("Visualizer"), QIcon(), false);
+    toolsGroupID = flexiTabWidget->addGroup(QObject::tr("Tools"));
+    visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer"), QIcon(), false);
 
     //TODO
     //Tak dlugo jak nie mamy raportow chowamy je w wersji release
@@ -251,6 +251,8 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     this->showFullScreen();
 
+#ifndef EDR_PRESENTATION_MODE_
+
     PseudoLoginWidget login;
     int ret = login.exec();
     if(ret == QDialog::Accepted){
@@ -259,6 +261,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         QApplication::postEvent(qApp, new QCloseEvent());
         //QTimer::singleShot(500, qApp, SLOT(quit()));
     }
+#else
+    this->data->show();
+#endif
     
 }
 
@@ -1106,7 +1111,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
 
      if(items2Descriptions.find(helper) != items2Descriptions.end()) {
-         QMenu* removeFrom = new QMenu(QString::fromUtf8("Remove from:"), menu);
+         QMenu* removeFrom = new QMenu(tr("Remove from:"), menu);
          connect(removeFrom, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
          connect(removeFrom, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
          menu->addMenu(removeFrom);

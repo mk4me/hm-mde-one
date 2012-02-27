@@ -126,7 +126,7 @@ void DataExplorerService::addSourceToWidget(IDataExplorerSource * source)
 
         if(configDialog != nullptr){
             QToolButton * button = new QToolButton();
-            QAction * configAction = new QAction(QString::fromUtf8("Konfiguruj"), nullptr);
+            QAction * configAction = new QAction(tr("Configure"), nullptr);
             actionsToConfiguration[configAction] = configDialog;
             button->setDefaultAction(configAction);
 

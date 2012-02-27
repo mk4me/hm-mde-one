@@ -90,7 +90,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     qwtPlot->canvas()->installEventFilter(this);
 
     activeSerieCombo = new QComboBox();
-    activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
+    activeSerieCombo->addItem(tr("No active serie"));
     activeSerieCombo->setEnabled(false);
     connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
 
@@ -119,39 +119,39 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
 
     QIcon icon1;
     icon1.addFile(QString::fromUtf8(":/resources/icons/picker.png"), QSize(), QIcon::Normal, QIcon::Off);
-    QAction * pickerAction = new QAction("Picker", this);
+    QAction * pickerAction = new QAction(tr("Picker"), this);
     pickerAction->setIcon(icon1);
     statesMap[pickerAction] = picker;
     connect(pickerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
     
     QIcon icon2;
     icon2.addFile(QString::fromUtf8(":/resources/icons/value_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
-    QAction * valueMarkerAction = new QAction("Value Marker", this);
+    QAction * valueMarkerAction = new QAction(tr("Value Marker"), this);
     valueMarkerAction->setIcon(icon2);
     statesMap[valueMarkerAction] =  NewChartStatePtr(new NewChartValueMarker(this));
     connect(valueMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 
     QIcon icon3;
     icon3.addFile(QString::fromUtf8(":/resources/icons/vertical_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
-    QAction * hMarkerAction = new QAction("Horizontal Marker", this);
+    QAction * hMarkerAction = new QAction(tr("Horizontal Marker"), this);
     hMarkerAction->setIcon(icon3);
     statesMap[hMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Horizontal));
     connect(hMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 
     QIcon icon4;
     icon4.addFile(QString::fromUtf8(":/resources/icons/horizontal_tag.png"), QSize(), QIcon::Normal, QIcon::Off);
-    QAction * vMarkerAction = new QAction("Vertical Marker", this);
+    QAction * vMarkerAction = new QAction(tr("Vertical Marker"), this);
     vMarkerAction->setIcon(icon4);
     statesMap[vMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Vertical));
     connect(vMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 
-    QAction* scaleAction = new QAction("Scale to active", this);
+    QAction* scaleAction = new QAction(tr("Scale to active"), this);
     scaleAction->setCheckable(true);
     scaleAction->setChecked(scaleToActive);
     connect(scaleAction, SIGNAL(triggered(bool)), this, SLOT(scaleToActiveSerie(bool)));
 
 
-    QAction* showStats = new QAction("Statistics", widget);
+    QAction* showStats = new QAction(tr("Statistics"), widget);
     showStats->setCheckable(true);
     showStats->setChecked(false);
     QIcon iconStats;
@@ -248,7 +248,10 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     //spinWidgetY->layout()->setMargin(0);
     //spinWidgetX->layout()->setContentsMargins(0, 0, 0, 0);
 
-    QAction * bandsAction = new QAction("Show Bands", this);
+    QAction * bandsAction = new QAction("Bands", this);
+    QIcon iconBands;
+    iconBands.addFile(QString::fromUtf8(":/resources/icons/charts.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+    bandsAction->setIcon(iconBands);
     bandsAction->setCheckable(true);
     bandsAction->setChecked(false);
     connect(bandsAction, SIGNAL(triggered(bool)), this, SLOT(showBands(bool)));
@@ -272,22 +275,22 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     lowerBoundCurve->attach(qwtPlot);
     averageCurve->attach(qwtPlot);
 
-    core::IActionsGroupManager::GroupID id = manager->createGroup("Operations");
+    core::IActionsGroupManager::GroupID id = manager->createGroup(tr("Operations").toStdString());
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, pickerAction);
     manager->addGroupAction(id, showStats);
     manager->addGroupAction(id, scaleAction);
     manager->addGroupAction(id, bandsAction);
 
-    id = manager->createGroup("Events");
+    id = manager->createGroup(tr("Events").toStdString());
     manager->addGroupAction(id, eventsContextWidget);
 
-    id = manager->createGroup("Tags");
+    id = manager->createGroup(tr("Tags").toStdString());
     manager->addGroupAction(id, valueMarkerAction);
     manager->addGroupAction(id, hMarkerAction);
     manager->addGroupAction(id, vMarkerAction);
 
-    id = manager->createGroup("Active Serie");
+    id = manager->createGroup(tr("Active Data Series").toStdString());
     manager->addGroupAction(id, shiftX.get<0>());
     manager->addGroupAction(id, shiftY.get<0>());
     manager->addGroupAction(id, scaleX.get<0>());
@@ -388,7 +391,7 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
     series.erase(it);
     
     if(series.empty() == true){
-        activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
+        activeSerieCombo->addItem(tr("No active serie"));
         activeSerieCombo->setCurrentIndex(0);
         activeSerieCombo->setEnabled(false);
     }else{

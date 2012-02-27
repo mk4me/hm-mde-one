@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="resources/icons">
+    <file alias="charts.png">../../../resources/embedded/icons/charts.png</file>
     <file alias="x-alpha.png">../../../resources/embedded/icons/x-alpha.png</file>
     <file alias="trajectory.png">../../../resources/embedded/icons/trajectory.png</file>
     <file alias="load.png">../../../resources/embedded/icons/load.png</file>

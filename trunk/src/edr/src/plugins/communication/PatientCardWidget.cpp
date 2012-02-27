@@ -378,7 +378,7 @@ QTreeWidgetItem * PatientCardWidget::createBranch(const std::string & name, cons
     //gorna partia
     if(sessions.begin()->first % 2 == 0){
         QTreeWidgetItem * item = new CardSessionItem(sessions.begin()->second->sessionID);
-        item->setText(0, (std::string("Upper body - ") + sessions.begin()->second->sessionName).c_str());
+        item->setText(0, tr("Upper body") + " - " + sessions.begin()->second->sessionName.c_str());
         item->setText(1, QString::number(sessions.begin()->second->labID));
         item->setText(2, QString::number(sessions.begin()->second->userID));
         item->setText(3, QString::fromUtf8(sessions.begin()->second->motionKind.c_str()));
@@ -403,7 +403,7 @@ QTreeWidgetItem * PatientCardWidget::createBranch(const std::string & name, cons
     }
 
     QTreeWidgetItem * item = new CardSessionItem(sessions.begin()->second->sessionID);
-    item->setText(0, (sname + " - " + sessions.begin()->second->sessionName).c_str());
+    item->setText(0, tr(sname.c_str()) + " - " + QString(sessions.begin()->second->sessionName.c_str()));
     item->setText(1, QString::number(sessions.begin()->second->labID));
     item->setText(2, QString::number(sessions.begin()->second->userID));
     item->setText(3, QString::fromUtf8(sessions.begin()->second->motionKind.c_str()));
@@ -426,7 +426,7 @@ QTreeWidgetItem * PatientCardWidget::createBranch(const std::string & name, cons
     sname = "Lower body";
 
     item = new CardSessionItem(sessions.rbegin()->second->sessionID);
-    item->setText(0, (sname + " - " + sessions.rbegin()->second->sessionName).c_str());
+    item->setText(0, tr(sname.c_str()) + " - " + QString(sessions.rbegin()->second->sessionName.c_str()));
     item->setText(1, QString::number(sessions.rbegin()->second->labID));
     item->setText(2, QString::number(sessions.rbegin()->second->userID));
     item->setText(3, QString::fromUtf8(sessions.rbegin()->second->motionKind.c_str()));

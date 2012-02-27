@@ -603,7 +603,7 @@ protected:
 
 class CommunicationDataSource : public QObject, public IDataExplorerSource
 {
-    UNIQUE_ID("{441D9894-1019-4382-97EE-F18A511A49CB}","Communication Data Source");
+    UNIQUE_ID("{451D9894-1019-4382-97EE-F18A511A49CB}","newCommunication Data Source");
 
     Q_OBJECT;
 

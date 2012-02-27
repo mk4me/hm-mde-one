@@ -136,7 +136,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     QIcon icon0;
     icon0.addFile(QString::fromUtf8(":/resources/icons/switch-axisa.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
     icon0.addFile(QString::fromUtf8(":/resources/icons/switch-axis.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
-    actionSwitchAxes = new QAction("Switch Axes", widget);
+    actionSwitchAxes = new QAction(tr("Switch Axes"), widget);
     actionSwitchAxes->setIcon(icon0);
     actionSwitchAxes->setCheckable(true);
     actionSwitchAxes->setChecked(false );
@@ -145,30 +145,30 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
 
     QIcon icon1;
     icon1.addFile(QString::fromUtf8(":/resources/icons/tracea.png"));
-	actionTrajectories = new QAction("Trajectories", widget);
+	actionTrajectories = new QAction(tr("Trajectories"), widget);
     actionTrajectories->setIcon(icon1);
     actionTrajectories->setCheckable(true);
     connect(actionTrajectories, SIGNAL(triggered()), this, SLOT(showTrajectoriesDialog()));
 
-    actionScheme = new QAction("Scheme Drawers", widget);
+    actionScheme = new QAction(tr("Scheme Drawers"), widget);
     actionScheme->setIcon(QIcon(QString::fromUtf8(":/resources/icons/tracea.png")));
     actionScheme->setCheckable(true);
     connect(actionScheme, SIGNAL(triggered()), this, SLOT(showSchemeDialog()));
 
     QIcon icon2;
     icon2.addFile(QString::fromUtf8(":/resources/icons/skeletal_tracea.png"));
-    actionGhost = new QAction("Ghost", widget);
+    actionGhost = new QAction(tr("Ghost"), widget);
     actionGhost->setIcon(icon2);
     actionGhost->setCheckable(true);
     actionGhost->setVisible(false);
 	
     QIcon icon3;
     icon3.addFile(QString::fromUtf8(":/resources/icons/viewa.png"));
-    QMenu* viewMenu = new QMenu("View", widget);
+    QMenu* viewMenu = new QMenu(tr("View"), widget);
     viewMenu->setIcon(icon3);
 
     activeSerieCombo = new QComboBox();
-    activeSerieCombo->addItem(QString::fromUtf8("No active serie"));
+    activeSerieCombo->addItem(tr("No active serie"));
     activeSerieCombo->setEnabled(false);
     connect(activeSerieCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setActiveSerie(int)));
 
@@ -268,7 +268,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
 
 #endif
 
-    core::IActionsGroupManager::GroupID id = manager->createGroup("Properties");
+    core::IActionsGroupManager::GroupID id = manager->createGroup(tr("Properties").toStdString());
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, actionTrajectories);
     manager->addGroupAction(id, actionScheme);
@@ -277,7 +277,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     manager->addGroupAction(id, spinWidgetY);
     manager->addGroupAction(id, spinWidgetZ);
 
-    id = manager->createGroup("View");
+    id = manager->createGroup(tr("View").toStdString());
     manager->addGroupAction(id, viewMenu);
     //manager->addGroupAction(id, leftAction);
     //manager->addGroupAction(id, rightAction);

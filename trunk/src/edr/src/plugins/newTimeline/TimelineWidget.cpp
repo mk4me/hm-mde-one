@@ -128,7 +128,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     setupUi(this);
 
     QStringList headers;
-    headers << "Channel" << "Active" << "Time";
+    headers << tr("Channel") << tr("Active") << tr("Time");
     channelsWidget->setHeaderLabels(headers);
 
     rootItem->setFlags(Qt::NoItemFlags /* | Qt::ItemIsEnabled*/);

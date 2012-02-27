@@ -37,7 +37,7 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
         auto visWidget = qobject_cast<VisualizerWidget*>(contextWidget);
         auto vis = visWidget->getCurrentVisualizer();
         //tworzymy grupe dla wizualizatora
-        visualizerGroupID = flexiTabWidget->addGroup(QString::fromUtf8("Visualizer - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
+        visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer") + QString(" - ") + QString::fromUtf8(vis->getName().c_str()), VisualizerManager::getInstance()->getIcon(visWidget->getCurrentVisualizer()->getID()));
 
         for(auto sectionIT = it->second.begin(); sectionIT != it->second.end(); sectionIT++){
             auto sectionID = flexiTabWidget->addSection(visualizerGroupID, sectionIT->second, sectionIT->first);
@@ -275,7 +275,7 @@ void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
     QTreeWidget* tree = qobject_cast<QTreeWidget*>(contextWidget);/*
     TreeItemHelper* item = dynamic_cast<TreeItemHelper*>(tree->currentItem());
     if (item) {*/
-    groupID = flexiTabWidget->addGroup(QString::fromUtf8("Tree"));
+    groupID = flexiTabWidget->addGroup(QObject::tr("Tree"));
 
     recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(tree->currentItem()));
     flexiTabWidget->addSection(groupID, flexiSection, "Item Actions");
@@ -410,7 +410,7 @@ void RaportsThumbnailsContext::activateContext( QWidget * contextWidget )
         return;
     }
     
-    groupID = flexiTabWidget->addGroup(QString::fromUtf8("Raports Tab"));
+    groupID = flexiTabWidget->addGroup(QObject::tr("Raports Tab"));
 
     flexiTabWidget->addSection(groupID, flexiSection, "Actions");
     flexiSection->setVisible(true);
@@ -554,7 +554,7 @@ void RaportsTabContext::activateContext( QWidget * contextWidget )
         return;
     }
 
-    groupID = flexiTabWidget->addGroup(QString::fromUtf8("Raports Tab"));
+    groupID = flexiTabWidget->addGroup(QObject::tr("Raports Tab"));
 
     fileSection->setVisible(true);
     editSection->setVisible(true);

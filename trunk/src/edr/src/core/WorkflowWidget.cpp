@@ -505,13 +505,13 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
     EDRTitleBar * titleBar = supplyWithEDRTitleBar(this);
     
     actionStart = new QAction(titleBar);
-    actionStart->setText(QString::fromUtf8("Start"));
+    actionStart->setText(tr("Start"));
     actionStart->setObjectName(QString::fromUtf8("actionStart"));
     actionStart->setEnabled(false);
 
     actionStop = new QAction(titleBar);
     actionStop->setEnabled(false);
-    actionStop->setText(QString::fromUtf8("Stop"));
+    actionStop->setText(tr("Stop"));
     actionStop->setObjectName(QString::fromUtf8("actionStop"));
 
     connect(actionStart, SIGNAL(triggered()), this, SLOT(start()));
