@@ -45,7 +45,7 @@ QWidget* Visualizer::getOrCreateWidget()
         print->setIcon(icon);
         connect(print, SIGNAL(triggered()), this, SLOT(printActionPressed()));
 
-        core::IActionsGroupManager::GroupID id = genericActions.createGroup("Common");
+        core::IActionsGroupManager::GroupID id = genericActions.createGroup(tr("Common"));
         genericActions.addGroupAction(id, print);
         
         tryRun();

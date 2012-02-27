@@ -229,7 +229,7 @@ void HMMVisualizerUsageContext::onRegisterContextWidget(QWidget * contextWidget)
         layout->setMargin(0);
         layout->setSpacing(1);
 
-        visualizersData[contextWidget][QString::fromUtf8((*groupIT).name().c_str())] = widget;
+        visualizersData[contextWidget][(*groupIT).name()] = widget;
     }
 }
 
@@ -498,7 +498,7 @@ void RaportsThumbnailsContext::createRaport()
 
                 QString path = dir + QString("/Screenshot%1.png").arg(++counter);
                 pixmap->save(path);
-                images += QString("Screenshot %1 <br> <IMG SRC=\"%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(path).arg(w).arg(h);
+                images += tr("Screenshot %1 <br> <IMG SRC=\"%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(path).arg(w).arg(h);
             }
             
         }

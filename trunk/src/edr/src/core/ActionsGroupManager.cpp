@@ -2,7 +2,7 @@
 #include "ActionsGroupManager.h"
 
 
-ActionsGroup::ActionsGroup(const std::string & name) : name_(name)
+ActionsGroup::ActionsGroup(const QString & name) : name_(name)
 {
 
 }
@@ -35,7 +35,7 @@ void ActionsGroup::addAction(QObject * action)
     }
 }
 
-const std::string & ActionsGroup::name() const
+const QString & ActionsGroup::name() const
 {
     return name_;
 }
@@ -79,7 +79,7 @@ ActionsGroupManager::~ActionsGroupManager()
 
 }
 
-ActionsGroupManager::GroupID ActionsGroupManager::createGroup(const std::string & groupName)
+ActionsGroupManager::GroupID ActionsGroupManager::createGroup(const QString & groupName)
 {
     auto it = nameToPos.find(groupName);
 

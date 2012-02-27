@@ -4,7 +4,7 @@
 #include <QtGui/QPainter>
 #include "NewChartSerie.h"
 
-const int LABEL_WIDTH = 90;
+const int LABEL_WIDTH = 100;
 const int LABEL_HEIGHT = 35;
 const int LABEL_PDIST = 20;
 const int LABEL_BOUND = 3;
@@ -102,7 +102,7 @@ void NewChartMarker::drawLabel( QPainter *painter, const QRectF &rect, const QPo
     boxRect.setHeight(textRect.height() + LABEL_BOUND * 2);
    
     painter->drawRoundedRect(boxRect, 6, 6);
-    QString text = QString("Time: %1\nValue: %2").arg(xValue()).arg(yValue());
+    QString text = QObject::tr("Time: %1\nValue: %2").arg(xValue()).arg(yValue());
 
     painter->setPen(QPen(QColor(100, 100, 100)));
     painter->drawText(textRect, Qt::AlignCenter, text);

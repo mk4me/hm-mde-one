@@ -268,7 +268,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
 
 #endif
 
-    core::IActionsGroupManager::GroupID id = manager->createGroup(tr("Properties").toStdString());
+    core::IActionsGroupManager::GroupID id = manager->createGroup(tr("Properties"));
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, actionTrajectories);
     manager->addGroupAction(id, actionScheme);
@@ -277,7 +277,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     manager->addGroupAction(id, spinWidgetY);
     manager->addGroupAction(id, spinWidgetZ);
 
-    id = manager->createGroup(tr("View").toStdString());
+    id = manager->createGroup(tr("View"));
     manager->addGroupAction(id, viewMenu);
     //manager->addGroupAction(id, leftAction);
     //manager->addGroupAction(id, rightAction);

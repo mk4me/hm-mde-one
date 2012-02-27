@@ -21,12 +21,12 @@
 class ActionsGroup
 {
 public:
-    ActionsGroup(const std::string & name);
+    ActionsGroup(const QString & name);
     ~ActionsGroup();
 
     void addAction(QObject * action);
 
-    const std::string & name() const;
+    const QString & name() const;
     void getAllObjects(std::map<int, QObject *> & allObjects) const;
     void getWidgets(std::map<int, QWidget *> & widgets) const;
     void getActions(std::map<int, QAction *> & actions) const;
@@ -34,7 +34,7 @@ public:
     void getObjects(std::map<int, QObject *> & objects) const;
 
 private:
-    std::string name_;
+    QString name_;
     std::map<QObject *, int> allActions;
     std::map<int, QObject *> objects;
     std::map<int, QAction *> actions;
@@ -56,7 +56,7 @@ public:
     ActionsGroupManager();
     virtual ~ActionsGroupManager();
 
-    virtual GroupID createGroup(const std::string & groupName);
+    virtual GroupID createGroup(const QString & groupName);
     virtual void addGroupAction(GroupID groupID, QObject * action);
 
     size_type size() const;
@@ -71,7 +71,7 @@ public:
 private:
 
     Groups groups;
-    std::map<std::string, int> nameToPos;
+    std::map<QString, int> nameToPos;
 
 };
 

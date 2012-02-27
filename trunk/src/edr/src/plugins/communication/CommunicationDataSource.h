@@ -574,7 +574,7 @@ protected:
     void createPatientRow(unsigned int row, const communication::MedicalShallowCopy::Patient * patient);
     PatientItem * createPatientItemTree(const communication::MedicalShallowCopy::Patient * patient);
     SessionGroupItem * createSessionGroupItem(const std::string & name, const communication::MotionShallowCopy::Sessions & sessions);
-    SessionItem * createSessionItem(const std::string & prefix, const communication::MotionShallowCopy::Session * session);
+    SessionItem * createSessionItem(const QString & prefix, const communication::MotionShallowCopy::Session * session);
 
 protected:
 
@@ -595,7 +595,7 @@ protected:
     std::map<int, FileItem*> filesUIMapping;
 
     std::map<SessionGroupItem*, SessionGroupDescription> sessionGroupsDescriprion;
-    std::map<int, std::string> sessionsPrefixes;
+    std::map<int, QString> sessionsPrefixes;
     
 };
 

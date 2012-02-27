@@ -81,7 +81,7 @@ void NewChartValueMarker::insertNewMarker( const QPointF& point, const QColor& c
 {
     const NewChartSerie* serie = visualizer->tryGetCurrentSerie();
     NewChartDotPtr dot(new NewChartDotFloating(point, serie));
-    NewChartLabelPtr label(new NewChartLabel(QString("Time: %1\nValue: %2").arg(point.x()).arg(point.y())));
+    NewChartLabelPtr label(new NewChartLabel(QObject::tr("Time: %1\nValue: %2").arg(point.x()).arg(point.y())));
     label->setPen(QPen(color));
     dot->attach(plot);
     label->attach(plot);
@@ -99,7 +99,7 @@ void NewChartValueMarker::updateLabels()
 {
     for (auto it = labels.begin(); it != labels.end(); it++) {
         const QPointF& p = (*it)->dot1->getPosition();
-        (*it)->label->setText(QString("Time: %1\nValue: %2").arg(p.x()).arg(p.y()));
+        (*it)->label->setText(QObject::tr("Time: %1\nValue: %2").arg(p.x()).arg(p.y()));
     }
 }
 

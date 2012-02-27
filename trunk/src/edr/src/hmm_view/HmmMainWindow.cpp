@@ -242,6 +242,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     this->showFullScreen();
 
+#define EDR_PRESENTATION_MODE_
 #ifndef EDR_PRESENTATION_MODE_
 
     PseudoLoginWidget login;
@@ -1016,7 +1017,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());
      currentSessions = sessions;
-     QTreeWidgetItem* item = TreeBuilder::createTree("Active Data", sessions);
+     QTreeWidgetItem* item = TreeBuilder::createTree(tr("Active Data"), sessions);
      
      QTreeWidget* tree = analisis->getTreeWidget();
      tree->clear();

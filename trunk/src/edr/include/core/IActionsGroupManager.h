@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__IACTIONSGROUPMANAGER_H__
 #define HEADER_GUARD_CORE__IACTIONSGROUPMANAGER_H__
 
-#include <string>
+#include <QtCore/QString>
 
 class QObject;
 
@@ -23,7 +23,7 @@ namespace core {
     public:
         virtual ~IActionsGroupManager() {};
 
-        virtual GroupID createGroup(const std::string & groupName) = 0;
+        virtual GroupID createGroup(const QString & groupName) = 0;
         virtual void addGroupAction(GroupID groupID, QObject * action) = 0;
     };
 

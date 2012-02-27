@@ -89,3 +89,7 @@ void NewChartLabelState::setVisible( const NewChartSerie* serie, bool visible )
         }
     }
 }
+
+
+                                         
+                                 

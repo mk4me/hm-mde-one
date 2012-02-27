@@ -31,11 +31,11 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                 analogItem->setText(0, QObject::tr("Analog data"));
                 motionItem->addChild(analogItem);
                 if (hasEmg) {	
-                    analogItem->addChild(createEMGBranch(motion, "EMG", getRootEMGIcon(), getEMGIcon()));
-                }	
-
+                    analogItem->addChild(createEMGBranch(motion, QObject::tr("EMG"), getRootEMGIcon(), getEMGIcon()));
+                }	         
+                             
                 if (hasGrf) {
-                    analogItem->addChild(createGRFBranch(motion, "GRF", getRootGRFIcon(), getGRFIcon()));
+                    analogItem->addChild(createGRFBranch(motion, QObject::tr("GRF"), getRootGRFIcon(), getGRFIcon()));
                 }
             }
 
@@ -52,19 +52,19 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                 if (forces.size() > 0) {
                     /*ForceCollectionPtr f = forces[0]->get();
                     tryAddVectorToTree<ForceChannel>(motion, f, "Forces", &icon3D, kineticItem);*/
-                    kineticItem->addChild(createForcesBranch(motion, "Forces", getRootForcesIcon(), getForcesIcon()));
+                    kineticItem->addChild(createForcesBranch(motion, QObject::tr("Forces"), getRootForcesIcon(), getForcesIcon()));
                 }
                 if (moments.size() > 0) {
                    // MomentCollectionPtr m = moments[0]->get();
                    // tryAddVectorToTree<MomentChannel>(motion, m, "Moments", getMomentsIcon(), kineticItem);
-                    kineticItem->addChild(createForcesBranch(motion, "Moments", getRootMomentsIcon(), getMomentsIcon()));
+                    kineticItem->addChild(createForcesBranch(motion, QObject::tr("Moments"), getRootMomentsIcon(), getMomentsIcon()));
                 }
                 // do rozwiniecia - potrzeba parsowac pliki vsk i interpretowac strukture kinamatyczna tak jak to robi Vicon
                 //tryAddVectorToTree(motion->getAngles(), "Angles", &icon3D, kineticItem);
                 if (powers.size() > 0) {
                     //PowerCollectionPtr p = powers[0]->get();
                     //tryAddVectorToTree<PowerChannel>(motion, p, "Powers", getPowersIcon(), kineticItem);
-                    kineticItem->addChild(createForcesBranch(motion, "Powers", getRootPowersIcon(), getPowersIcon()));
+                    kineticItem->addChild(createForcesBranch(motion, QObject::tr("Powers"), getRootPowersIcon(), getPowersIcon()));
                 }
             }
 
@@ -80,12 +80,12 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                 kinematicItem->setText(0, QObject::tr("Kinematic data"));
                 motionItem->addChild(kinematicItem);
                 if (hasMarkers) {
-                    kinematicItem->addChild(createMarkersBranch(motion, "Markers", getRootMarkersIcon(), getMarkersIcon()));
+                    kinematicItem->addChild(createMarkersBranch(motion, QObject::tr("Markers"), getRootMarkersIcon(), getMarkersIcon()));
 
                 }
 
                 if (hasJoints) {
-                    kinematicItem->addChild(createJointsBranch(motion, "Joints", getRootJointsIcon(), getJointsIcon()));
+                    kinematicItem->addChild(createJointsBranch(motion, QObject::tr("Joints"), getRootJointsIcon(), getJointsIcon()));
 
                 }
 
@@ -95,7 +95,7 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
             }
 
             if (motion->hasObjectOfType(typeid(VideoChannel))) {
-                motionItem->addChild(createVideoBranch(motion, "Videos", QIcon(), getVideoIcon()));
+                motionItem->addChild(createVideoBranch(motion, QObject::tr("Videos"), QIcon(), getVideoIcon()));
             }
 
         }

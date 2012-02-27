@@ -498,7 +498,7 @@ void ItemView::fillContextMenu(const DisorderItem * disorderItem, QMenu & menu)
     switch(disorderItem->getDataLocality()){
     case Remote:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(disorderItem->getDisorderID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadDisorder()));
         }
@@ -509,7 +509,7 @@ void ItemView::fillContextMenu(const DisorderItem * disorderItem, QMenu & menu)
         break;
     case PartiallyLocal:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(disorderItem->getDisorderID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadDisorder()));
         }
@@ -521,7 +521,7 @@ void ItemView::fillContextMenu(const DisorderItem * disorderItem, QMenu & menu)
     case Unloaded:
 
         if(disorderItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(disorderItem->getDisorderID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadDisorder()));
         }
@@ -532,7 +532,7 @@ void ItemView::fillContextMenu(const DisorderItem * disorderItem, QMenu & menu)
     case PartiallyLoaded:
 
         if(disorderItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(disorderItem->getDisorderID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadDisorder()));
         }
@@ -546,7 +546,7 @@ void ItemView::fillContextMenu(const PatientItem * patientItem, QMenu & menu)
     switch(patientItem->getDataLocality()){
     case Remote:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(patientItem->getPatientID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadPatient()));
         }
@@ -557,7 +557,7 @@ void ItemView::fillContextMenu(const PatientItem * patientItem, QMenu & menu)
         break;
     case PartiallyLocal:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(patientItem->getPatientID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadPatient()));
         }
@@ -569,7 +569,7 @@ void ItemView::fillContextMenu(const PatientItem * patientItem, QMenu & menu)
     case Unloaded:
 
         if(patientItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(patientItem->getPatientID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadPatient()));
         }
@@ -580,7 +580,7 @@ void ItemView::fillContextMenu(const PatientItem * patientItem, QMenu & menu)
     case PartiallyLoaded:
 
         if(patientItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(patientItem->getPatientID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadPatient()));
         }
@@ -594,7 +594,7 @@ void ItemView::fillContextMenu(const SubjectItem * subjectItem, QMenu & menu)
     switch(subjectItem->getDataLocality()){
     case Remote:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(subjectItem->getSubjectID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadSubject()));
         }
@@ -605,7 +605,7 @@ void ItemView::fillContextMenu(const SubjectItem * subjectItem, QMenu & menu)
         break;
     case PartiallyLocal:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(subjectItem->getSubjectID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadSubject()));
         }
@@ -617,7 +617,7 @@ void ItemView::fillContextMenu(const SubjectItem * subjectItem, QMenu & menu)
     case Unloaded:
 
         if(subjectItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(subjectItem->getSubjectID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadSubject()));
         }
@@ -628,7 +628,7 @@ void ItemView::fillContextMenu(const SubjectItem * subjectItem, QMenu & menu)
     case PartiallyLoaded:
 
         if(subjectItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(subjectItem->getSubjectID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadSubject()));
         }
@@ -692,7 +692,7 @@ void ItemView::fillContextMenu(const SessionItem * sessionItem, QMenu & menu)
     switch(sessionItem->getDataLocality()){
     case Remote:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(sessionItem->getSessionID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadSession()));
         }
@@ -703,7 +703,7 @@ void ItemView::fillContextMenu(const SessionItem * sessionItem, QMenu & menu)
         break;
     case PartiallyLocal:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(sessionItem->getSessionID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadSession()));
         }
@@ -715,7 +715,7 @@ void ItemView::fillContextMenu(const SessionItem * sessionItem, QMenu & menu)
     case Unloaded:
 
         if(sessionItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(sessionItem->getSessionID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadSession()));
         }
@@ -726,7 +726,7 @@ void ItemView::fillContextMenu(const SessionItem * sessionItem, QMenu & menu)
     case PartiallyLoaded:
 
         if(sessionItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(sessionItem->getSessionID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadSession()));
         }
@@ -740,7 +740,7 @@ void ItemView::fillContextMenu(const MotionItem * motionItem, QMenu & menu)
     switch(motionItem->getDataLocality()){
     case Remote:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(motionItem->getMotionID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadMotion()));
         }
@@ -751,7 +751,7 @@ void ItemView::fillContextMenu(const MotionItem * motionItem, QMenu & menu)
         break;
     case PartiallyLocal:
         {
-            QAction * downloadAction = menu.addAction(QString("Download"));
+            QAction * downloadAction = menu.addAction(QObject::tr("Download"));
             downloadAction->setData(QVariant(motionItem->getMotionID()));
             connect(downloadAction, SIGNAL(triggered()), this, SLOT(downloadMotion()));
         }
@@ -763,7 +763,7 @@ void ItemView::fillContextMenu(const MotionItem * motionItem, QMenu & menu)
     case Unloaded:
 
         if(motionItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(motionItem->getMotionID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadMotion()));
         }
@@ -774,7 +774,7 @@ void ItemView::fillContextMenu(const MotionItem * motionItem, QMenu & menu)
     case PartiallyLoaded:
 
         if(motionItem->getDataLocality() == Local){
-            QAction * loadAction = menu.addAction(QString("Load"));
+            QAction * loadAction = menu.addAction(QObject::tr("Load"));
             loadAction->setData(QVariant(motionItem->getMotionID()));
             connect(loadAction, SIGNAL(triggered()), this, SLOT(loadMotion()));
         }
@@ -955,7 +955,7 @@ void ItemView::onCustomContextMenuRequested ( const QPoint & pos )
 
             menu.addSeparator();
 
-            auto refreshAction = menu.addAction(QString("Refresh"));
+            auto refreshAction = menu.addAction(QObject::tr("Refresh"));
             connect(refreshAction, SIGNAL(triggered()), itemBase, SLOT(refresh()));
 
             menu.exec(tree->mapToGlobal(pos));
@@ -1735,12 +1735,12 @@ void MedicalView::getHeaders(const ItemBase * itemBase, QStringList & headers) c
 
 void MedicalView::getHeaders(const DisorderItem * disorderItem, QStringList & headers) const
 {
-    headers.push_back(QString("Disorder"));
+    headers.push_back(tr("Disorder"));
 }
 
 void MedicalView::getHeaders(const PatientItem * patientItem, QStringList & headers) const
 {
-    headers.push_back(QString("Patient"));
+    headers.push_back(tr("Patient"));
 }
 
 void MedicalView::getHeaders(const SubjectItem * subjectItem, QStringList & headers) const
@@ -1839,7 +1839,7 @@ PatientItem * MedicalView::createPatientItemTree(const communication::MedicalSha
 
         UTILS_ASSERT(sessionGroups.size() == 2);
 
-        SessionGroupItem * item = createSessionGroupItem("Before surgery", sessionGroups);
+        SessionGroupItem * item = createSessionGroupItem(QObject::tr("Before surgery").toStdString(), sessionGroups);
 
         patientLocality |= item->getDataLocality();
 
@@ -1849,7 +1849,7 @@ PatientItem * MedicalView::createPatientItemTree(const communication::MedicalSha
 
         UTILS_ASSERT(sessionGroups.size() == 2);
 
-        item = createSessionGroupItem("After surgery", sessionGroups);
+        item = createSessionGroupItem(QObject::tr("After surgery").toStdString(), sessionGroups);
 
         patientLocality |= item->getDataLocality();
 
@@ -1887,13 +1887,13 @@ SessionGroupItem * MedicalView::createSessionGroupItem(const std::string & name,
 
     int groupLocality = UnknownLocality;
 
-    SessionItem * session = createSessionItem("Upper body", sessions.begin()->second);
+    SessionItem * session = createSessionItem(QObject::tr("Upper body"), sessions.begin()->second);
 
     groupLocality |= session->getDataLocality();
 
     group->addItemBase(session);
 
-    session = createSessionItem("Lower body", sessions.rbegin()->second);
+    session = createSessionItem(QObject::tr("Lower body"), sessions.rbegin()->second);
 
     groupLocality |= session->getDataLocality();
 
@@ -1905,7 +1905,7 @@ SessionGroupItem * MedicalView::createSessionGroupItem(const std::string & name,
     return group;
 }
 
-SessionItem * MedicalView::createSessionItem(const std::string & prefix, const communication::MotionShallowCopy::Session * session)
+SessionItem * MedicalView::createSessionItem(const QString & prefix, const communication::MotionShallowCopy::Session * session)
 {
     SessionItem * sessionItem = new SessionItem(this, session->sessionID);
     sessionsUIMapping[session->sessionID] = sessionItem;
@@ -2079,7 +2079,7 @@ void MedicalView::fillItemContent(SessionGroupItem * sessionItem, const SessionG
 
 void MedicalView::fillItemContent(SessionItem * sessionItem, const communication::MotionShallowCopy::Session * session)
 {
-    sessionItem->setText(0, tr(sessionsPrefixes[session->sessionID].c_str()) + " - " + QString(session->sessionName.c_str()));
+    sessionItem->setText(0, sessionsPrefixes[session->sessionID] + QString(" - ") + QString(session->sessionName.c_str()));
 }
 
 void MedicalView::fillItemContent(MotionItem * motionItem, const communication::MotionShallowCopy::Trial * motion)

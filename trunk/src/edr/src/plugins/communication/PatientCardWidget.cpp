@@ -257,12 +257,12 @@ void PatientCardWidget::refreshSessions()
 
     if(groupedData.begin()->second.empty() == false){
 
-        QTreeWidgetItem * item = createBranch("Before", groupedData.begin()->second);
+        QTreeWidgetItem * item = createBranch(tr("Before").toStdString(), groupedData.begin()->second);
         sessionsWidget->addTopLevelItem(item);
     }
 
     if(groupedData.begin()->first != groupedData.rbegin()->first && groupedData.rbegin()->second.empty() == false){
-        QTreeWidgetItem * item = createBranch("After", groupedData.rbegin()->second);
+        QTreeWidgetItem * item = createBranch(tr("After").toStdString(), groupedData.rbegin()->second);
         sessionsWidget->addTopLevelItem(item);
     }
 

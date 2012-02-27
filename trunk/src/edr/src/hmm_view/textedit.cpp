@@ -124,7 +124,7 @@ void TextEdit::createFileActions()
     a->setEnabled(textEdit->document()->isModified());
     fileList.push_back(a);
 
-    actionSaveAs = a = new QAction(tr("Save &As..."), this);
+    actionSaveAs = a = new QAction(QIcon(rsrcPath + "/filesave.png"), tr("Save &As..."), this);
     a->setPriority(QAction::LowPriority);
     connect(a, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
     fileList.push_back(a);

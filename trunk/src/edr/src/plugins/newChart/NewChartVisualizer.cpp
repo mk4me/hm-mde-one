@@ -275,22 +275,22 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     lowerBoundCurve->attach(qwtPlot);
     averageCurve->attach(qwtPlot);
 
-    core::IActionsGroupManager::GroupID id = manager->createGroup(tr("Operations").toStdString());
+    core::IActionsGroupManager::GroupID id = manager->createGroup(tr("Operations"));
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, pickerAction);
     manager->addGroupAction(id, showStats);
     manager->addGroupAction(id, scaleAction);
     manager->addGroupAction(id, bandsAction);
 
-    id = manager->createGroup(tr("Events").toStdString());
+    id = manager->createGroup(tr("Events"));
     manager->addGroupAction(id, eventsContextWidget);
 
-    id = manager->createGroup(tr("Tags").toStdString());
+    id = manager->createGroup(tr("Tags"));
     manager->addGroupAction(id, valueMarkerAction);
     manager->addGroupAction(id, hMarkerAction);
     manager->addGroupAction(id, vMarkerAction);
 
-    id = manager->createGroup(tr("Active Data Series").toStdString());
+    id = manager->createGroup(tr("Active Data Series"));
     manager->addGroupAction(id, shiftX.get<0>());
     manager->addGroupAction(id, shiftY.get<0>());
     manager->addGroupAction(id, scaleX.get<0>());
@@ -574,7 +574,7 @@ void NewChartVisualizer::update( double deltaTime )
         float y = serie->getCurrentValue();
         qwtMarker->setXValue(x * serie->getXScale() + serie->getXOffset());
         qwtMarker->setYValue(y * serie->getYScale() + serie->getYOffset());
-        qwtMarker->setLabel(QString("Time: %1, Value: %2").arg(x).arg(y));
+        //qwtMarker->setLabel(QObject::tr("Time: %1, Value: %2").arg(x).arg(y));
 
         //static EventsHelper::SegmentConstPtr oldSegment = EventsHelper::SegmentConstPtr();
         if (eventsVisible && context != C3DEventsCollection::Context::General) {
