@@ -196,6 +196,15 @@ public:
             //
             application.setApplicationName("EDR");
 			application.setOrganizationName("PJWSTK");
+            QString locale = QLocale::system().name();
+            
+            QTranslator translator;
+            translator.load(QString("lang_") + locale);
+            if (translator.isEmpty()) {
+                translator.load("lang_en_EN");
+            }
+            qApp->installTranslator(&translator);
+
 			QSettings::setDefaultFormat(QSettings::IniFormat);
 
 			EDRConfig edrConfig;

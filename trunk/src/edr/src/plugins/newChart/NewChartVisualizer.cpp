@@ -212,15 +212,15 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     statsTable->setVisible(false);
     widget->setLayout(layout);
 
-    auto shiftX = LabeledSpinbox::create(widget, "X:", 0.03, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-    auto shiftY = LabeledSpinbox::create(widget, "Y:", 0.03, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    auto shiftX = LabeledSpinbox::create(widget, tr("X:"), 0.03, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    auto shiftY = LabeledSpinbox::create(widget, tr("Y:"), 0.03, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
     connect(shiftX.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftX(double)));
     connect(shiftY.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftY(double)));
     shiftSpinX = shiftX.get<2>();
     shiftSpinY = shiftY.get<2>();
 
-    auto scaleX = LabeledSpinbox::create(widget, "SX:", 0.01, -5.0, 5.0);
-    auto scaleY = LabeledSpinbox::create(widget, "SY:", 0.01, -5.0, 5.0);
+    auto scaleX = LabeledSpinbox::create(widget, tr("SX:"), 0.01, -5.0, 5.0);
+    auto scaleY = LabeledSpinbox::create(widget, tr("SY:"), 0.01, -5.0, 5.0);
     connect(scaleX.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onScaleX(double)));
     connect(scaleY.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onScaleY(double)));
     scaleSpinX = scaleX.get<2>();
@@ -662,11 +662,11 @@ void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPt
     eventsHelpers[serie] = helper;
     int no = 0;
     for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); segment++) {
-        statsTable->addEntry(QString("Left"), QString("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
+        statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
     }
     no = 0;
     for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); segment++) {
-        statsTable->addEntry(QString("Right"), QString("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
+        statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
     }
 }
 
@@ -688,21 +688,21 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
 {
     statsTable->clear();
     for (auto it = series.begin(); it != series.end(); it++) {
-        statsTable->addEntry("Whole chart", (*it)->getName().c_str(), (*it)->getStats() );
+        statsTable->addEntry(tr("Whole chart"), (*it)->getName().c_str(), (*it)->getStats() );
     }
     if (stats) {
-        QString group = context == C3DEventsCollection::Context::Left ? "Left" : "Right";
+        QString group = context == C3DEventsCollection::Context::Left ? tr("Left") : tr("Right");
         QColor color  = context == C3DEventsCollection::Context::Left ?  QColor(255, 200, 200) : QColor(200, 255, 200);
         statsTable->addEntry(group, stats->getChannel()->getName().c_str(), stats, color);
     } else {
         for (auto it = series.begin(); it != series.end(); it++) {
             int no = 0;
             for (auto segment = eventsHelpers[*it]->getLeftSegments().begin(); segment != eventsHelpers[*it]->getLeftSegments().end(); segment++) {
-                statsTable->addEntry(QString("Left"), QString("%1: Left step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
+                statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
             }
             no = 0;
             for (auto segment = eventsHelpers[*it]->getRightSegments().begin(); segment != eventsHelpers[*it]->getRightSegments().end(); segment++) {
-                statsTable->addEntry(QString("Right"), QString("%1: Right step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
+                statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
             }
         }
     }

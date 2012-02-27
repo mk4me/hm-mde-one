@@ -278,7 +278,7 @@ void HMMTreeItemUsageContext::activateContext( QWidget * contextWidget )
     groupID = flexiTabWidget->addGroup(QObject::tr("Tree"));
 
     recreateFlexiSectionWidget(flexiSection, dynamic_cast<TreeItemHelper*>(tree->currentItem()));
-    flexiTabWidget->addSection(groupID, flexiSection, "Item Actions");
+    flexiTabWidget->addSection(groupID, flexiSection, tr("Item Actions"));
     flexiSection->setVisible(true);
     flexiTabWidget->setCurrentGroup(groupID);
     //}*/
@@ -412,7 +412,7 @@ void RaportsThumbnailsContext::activateContext( QWidget * contextWidget )
     
     groupID = flexiTabWidget->addGroup(QObject::tr("Raports Tab"));
 
-    flexiTabWidget->addSection(groupID, flexiSection, "Actions");
+    flexiTabWidget->addSection(groupID, flexiSection, tr("Actions"));
     flexiSection->setVisible(true);
     flexiTabWidget->setCurrentGroup(groupID);
 }
@@ -441,10 +441,10 @@ void RaportsThumbnailsContext::onRegisterContextWidget( QWidget * contextWidget 
 
     projectName = new QPlainTextEdit();
     projectName->setMaximumSize(100, 20);
-    projectName->setPlainText("Simple Raport");
+    projectName->setPlainText(tr("Simple Raport"));
     projectName->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     projectTemplate = new QComboBox();
-    projectTemplate->addItem("Default");
+    projectTemplate->addItem(tr("Default"));
     projectTemplate->setMaximumSize(100, 20);
     projectTemplate->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
@@ -458,7 +458,7 @@ void RaportsThumbnailsContext::onRegisterContextWidget( QWidget * contextWidget 
 
     QWidget* lower = new QWidget();
     lower->setLayout(new QHBoxLayout());
-    label = new QLabel("Raport template:");
+    label = new QLabel(tr("Raport template:"));
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     lower->layout()->addWidget(label);
     lower->layout()->addWidget(projectTemplate);
@@ -503,7 +503,7 @@ void RaportsThumbnailsContext::createRaport()
             
         }
     }
-    QString str = QString("                                                                       "
+    QString str = tr("                                                                            "
         "<HTML>                                                                                   "
         "<BODY>                                                                                   "
         "<P><FONT SIZE=6> %1</FONT></P>                                                           "
@@ -511,16 +511,6 @@ void RaportsThumbnailsContext::createRaport()
         "<OL>                                                                                     "
         "<LI><P><FONT SIZE=5>Headline</FONT></P>                                                  "
         "Headline placeholder.                                                                    "
-        //"<table border=\"1\">                                                                     "
-        //"   <tr>                                                                                  "
-        //"       <td>komórka1</td>                                                                 "
-        //"       <td>komórka2</td>                                                                 "
-        //"   </tr>                                                                                 "
-        //"   <tr>                                                                                  "
-        //"       <td>komórka3</td>                                                                 "
-        //"       <td>komórka4</td>                                                                 "
-        //"   </tr>                                                                                 "
-        //"</table>                                                                                 "
         "<LI><P><FONT SIZE=5>Data</FONT></P>                                                      "
         "%3                                                                                       "
         "<LI><P><FONT SIZE=5>Conclusion</FONT></P>                                                "
@@ -560,9 +550,9 @@ void RaportsTabContext::activateContext( QWidget * contextWidget )
     editSection->setVisible(true);
     textSection->setVisible(true);
 
-    flexiTabWidget->addSection(groupID, fileSection, "File");
-    flexiTabWidget->addSection(groupID, editSection, "Edit");
-    flexiTabWidget->addSection(groupID, textSection, "Text");
+    flexiTabWidget->addSection(groupID, fileSection, tr("File"));
+    flexiTabWidget->addSection(groupID, editSection, tr("Edit"));
+    flexiTabWidget->addSection(groupID, textSection, tr("Text"));
 
     flexiTabWidget->setCurrentGroup(groupID);
 }

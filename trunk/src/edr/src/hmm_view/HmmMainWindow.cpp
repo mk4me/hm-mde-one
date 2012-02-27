@@ -79,16 +79,7 @@ void HmmMainWindow::onFocusChange(QWidget * oldWidget, QWidget * newWidget)
 
 void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
-	core::MainWindow::init(pluginLoader, managersAccessor);
-    
-    QString locale = QLocale::system().name();
-    QTranslator translator;
-    translator.load(QString("lang_") + locale);
-    if (translator.isEmpty()) {
-        translator.load("lang_en_EN");
-    }
-    qApp->installTranslator(&translator);
-    
+    core::MainWindow::init(pluginLoader, managersAccessor);
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChange(QWidget*,QWidget*)));
 	
 
