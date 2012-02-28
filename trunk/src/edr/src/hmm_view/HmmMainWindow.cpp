@@ -242,7 +242,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     this->showFullScreen();
 
-#define EDR_PRESENTATION_MODE_
+//#define EDR_PRESENTATION_MODE_
 #ifndef EDR_PRESENTATION_MODE_
 
     PseudoLoginWidget login;

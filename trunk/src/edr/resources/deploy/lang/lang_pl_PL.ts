@@ -622,12 +622,12 @@ p, li { white-space: pre-wrap; }
         <translation>Form</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/filter.ui" line="117"/>
+        <location filename="../../../src/hmm_view/ui/filter.ui" line="118"/>
         <source>ANALOG</source>
         <translation>ANALOG</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/filter.ui" line="148"/>
+        <location filename="../../../src/hmm_view/ui/filter.ui" line="149"/>
         <source>TextLabel</source>
         <translation>TextLabel</translation>
     </message>
@@ -1405,7 +1405,7 @@ Wartość: %2</translation>
     <name>NewChartVisualizer</name>
     <message>
         <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="93"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="394"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="395"/>
         <source>No active serie</source>
         <translation>Brak aktywnej serii danych</translation>
     </message>
@@ -1455,93 +1455,93 @@ Wartość: %2</translation>
         <translation>Skaluj do aktywnej serii danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="154"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="155"/>
         <source>Statistics</source>
         <translation>Statystyki</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="215"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="216"/>
         <source>X:</source>
         <translation>X:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="216"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="217"/>
         <source>Y:</source>
         <translation>Y:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="222"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="223"/>
         <source>SX:</source>
         <translation>SX:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="223"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="224"/>
         <source>SY:</source>
         <translation>SY:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="259"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="260"/>
         <source>Upper bound</source>
         <translation>Górna granica przedziału</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="260"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="261"/>
         <source>Lower bound</source>
         <translation>Dolna granica przedziału</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="261"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="262"/>
         <source>Moving average</source>
         <translation>Średnia ruchoma</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="278"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="279"/>
         <source>Operations</source>
         <translation>Operacje</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="285"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="286"/>
         <source>Events</source>
         <translation>Zdarzenia</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="288"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="289"/>
         <source>Tags</source>
         <translation>Znaczniki</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="293"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="294"/>
         <source>Active Data Series</source>
         <translation>Aktywna seria danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="665"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="694"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="701"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="666"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="695"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="702"/>
         <source>Left</source>
         <translation>Strona lewa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="665"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="701"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="666"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="702"/>
         <source>%1: Left step %2</source>
-        <translation>%1: Lewa noga %2</translation>
+        <translation>%1: Krok %2</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="669"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="694"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="705"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="670"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="695"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="706"/>
         <source>Right</source>
         <translation>Strona prawa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="669"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="705"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="670"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="706"/>
         <source>%1: Right step %2</source>
-        <translation>%1: Prawa noga %2</translation>
+        <translation>%1: Krok %2</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="691"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="692"/>
         <source>Whole chart</source>
         <translation>Wszystkie wykresy</translation>
     </message>
@@ -2057,7 +2057,7 @@ Wartość: %2</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/HmmContexts.cpp" line="413"/>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="547"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="550"/>
         <source>Raports Tab</source>
         <translation>Raporty</translation>
     </message>
@@ -2132,21 +2132,31 @@ Wartość: %2</translation>
         <source>Time: %1, Value: %2</source>
         <translation type="obsolete">Czas: %1, Wartość: %2</translation>
     </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="86"/>
+        <source>Foot Strike</source>
+        <translation>Stąpnięcie</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="87"/>
+        <source>Foot Off</source>
+        <translation>Oderwanie stopy</translation>
+    </message>
 </context>
 <context>
     <name>RaportsTabContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="553"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="556"/>
         <source>File</source>
         <translation>Plik</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="554"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="557"/>
         <source>Edit</source>
         <translation>Edycja</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="555"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="558"/>
         <source>Text</source>
         <translation>Tekst</translation>
     </message>
@@ -2290,47 +2300,47 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
         <translation>Form</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="82"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="94"/>
         <source>&lt;b&gt;Statistics&lt;/b&gt;</source>
         <translation>&lt;b&gt;Statystyki&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="111"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="219"/>
         <source>Serie</source>
         <translation>Seria</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="116"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="224"/>
         <source>TimeSpan</source>
         <translation>Przedział czasu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="121"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="229"/>
         <source>Min</source>
         <translation>Min</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="126"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="234"/>
         <source>Min time</source>
         <translation>Min czas</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="131"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="239"/>
         <source>Max</source>
         <translation>Max</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="136"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="244"/>
         <source>Max time</source>
         <translation>Max czas</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="141"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="249"/>
         <source>Mean</source>
         <translation>Wartość średnia</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="146"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="254"/>
         <source>Variance</source>
         <translation>Wariancja</translation>
     </message>
@@ -2421,161 +2431,161 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
 <context>
     <name>TextEdit</name>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="613"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="614"/>
         <source>About</source>
         <translation>O programie </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="108"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="109"/>
         <source>&amp;New</source>
         <translation>&amp;Nowy</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="115"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="116"/>
         <source>&amp;Open...</source>
         <translation>&amp;Otwórz...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="120"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="121"/>
         <source>&amp;Save</source>
         <translation>&amp;Zapisz</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="127"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="128"/>
         <source>Save &amp;As...</source>
         <translation>Zapisz &amp;jako...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="134"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="135"/>
         <source>&amp;Print...</source>
         <translation>&amp;Drukuj...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="141"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="142"/>
         <source>Print Preview...</source>
         <translation>Podgląd wydruku...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="146"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="147"/>
         <source>&amp;Export PDF...</source>
         <translation>&amp;Eksportuj do PDF... </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="162"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="163"/>
         <source>&amp;Undo</source>
         <translation>&amp;Cofnij</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="167"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="168"/>
         <source>&amp;Redo</source>
         <translation>&amp;Popraw</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="172"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="173"/>
         <source>Cu&amp;t</source>
         <translation>Wy&amp;tnij</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="177"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="178"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopiuj</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="182"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="183"/>
         <source>&amp;Paste</source>
         <translation>&amp;Wklej</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="215"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="216"/>
         <source>&amp;Bold</source>
         <translation>&amp;Pogrubienie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="225"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="226"/>
         <source>&amp;Italic</source>
         <translation>P&amp;ochylenie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="235"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="236"/>
         <source>&amp;Underline</source>
         <translation>Pod&amp;kreślenie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="251"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="257"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="252"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="258"/>
         <source>&amp;Left</source>
         <translation>Do &amp;lewej</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="252"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="256"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="253"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="257"/>
         <source>C&amp;enter</source>
         <translation>&amp;Centruj</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="253"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="255"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="254"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="256"/>
         <source>&amp;Right</source>
         <translation>Do P&amp;rawej</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="259"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="260"/>
         <source>&amp;Justify</source>
         <translation>&amp;Justuj</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="282"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="283"/>
         <source>&amp;Color...</source>
         <translation>&amp;Zmień kolor...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="349"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="350"/>
         <source>Application</source>
         <translation>Aplikacja</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="350"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="351"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
         <translation>Dokument został zmodyfikowany. Czy chcesz zachować zmiany?</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="372"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="373"/>
         <source>%1[*] - %2</source>
         <translation>%1[*] - %2</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="372"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="373"/>
         <source>Rich Text</source>
         <translation>Format RTF</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="386"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="387"/>
         <source>Open File...</source>
         <translation>Otwórz plik...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="387"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="388"/>
         <source>HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation>Pliki HTML (*.htm *.html);;Wszystkie pliki (*)</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="406"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="407"/>
         <source>Save as...</source>
         <translation>Zapisz jako...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="407"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="408"/>
         <source>ODF files (*.odt);;HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation>Pliki ODF (*.odt);;Pliki HTML (*.htm *.html);; Wszystkie pliki(*)</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="423"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="424"/>
         <source>Print Document</source>
         <translation>Drukuj dokument</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="613"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="614"/>
         <source>This example demonstrates Qt&apos;s rich text editing facilities in action, providing an example document for you to experiment with.</source>
         <translation>Ten przykład pokazuje udogodnienia rft w akcji, dostarczając przykładowy dokument do eksperymentów.</translation>
     </message>

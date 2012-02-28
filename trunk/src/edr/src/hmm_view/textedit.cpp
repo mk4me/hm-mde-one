@@ -65,6 +65,7 @@
 #include <QtGui/QCloseEvent>
 #include <QtGui/QMessageBox>
 #include <QtGui/QPrintPreviewDialog>
+#include <QtCore/QFile>
 
 const QString rsrcPath = ":/resources/icons/textedit";
 
@@ -662,6 +663,19 @@ void TextEdit::setHtml( const QString& html )
     textEdit->setFocus();
     setCurrentFileName(QString());
     textEdit->setHtml(html);
+    //QFile f("C:\\Users\\Wojtek\\Downloads\\sandstorm\\style.css", nullptr);
+    //if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+    //    return;
+    //
+    //QTextStream in(&f);
+    //QString css;
+    //QString line = in.readLine();
+    //css += line + "\n";
+    //while (!line.isNull()) {
+    //    line = in.readLine();
+    //    css += line + "\n";
+    //}
+    //textEdit->document()->setDefaultStyleSheet(css);
 }
 
 

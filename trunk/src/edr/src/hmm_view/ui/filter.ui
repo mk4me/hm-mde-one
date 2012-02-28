@@ -106,6 +106,7 @@
          </property>
          <property name="font">
           <font>
+           <pointsize>7</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -178,6 +179,9 @@
           </property>
          </layout>
         </widget>
+        <zorder>pictureLabel</zorder>
+        <zorder>widget_2</zorder>
+        <zorder>label</zorder>
        </widget>
       </item>
      </layout>

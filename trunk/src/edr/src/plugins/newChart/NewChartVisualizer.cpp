@@ -148,6 +148,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     QAction* scaleAction = new QAction(tr("Scale to active"), this);
     scaleAction->setCheckable(true);
     scaleAction->setChecked(scaleToActive);
+    scaleAction->setIcon(QIcon(QString::fromUtf8(":/resources/icons/pomiary.png")));
     connect(scaleAction, SIGNAL(triggered(bool)), this, SLOT(scaleToActiveSerie(bool)));
 
 
@@ -202,7 +203,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     qwtPlot->replot();
 
     statsTable = new StatsTable();
-    //statsTable->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    statsTable->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     qwtPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
     QVBoxLayout* layout = new QVBoxLayout();

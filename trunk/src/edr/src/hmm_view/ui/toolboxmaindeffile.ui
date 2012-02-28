@@ -1039,7 +1039,7 @@ QFrame#mainArea VisualizerWidget &gt; .QWidget:hover {
  <resources>
   <include location="../../core/ui/CoreIcons.qrc"/>
   <include location="Icons.qrc"/>
-  <include location="../../../../../../../../#PRACA/Project MOTION/edytor/src/edr/src/hmm_view/ui/Icons.qrc"/>
+  <include location="Icons.qrc"/>
  </resources>
  <connections>
   <connection>

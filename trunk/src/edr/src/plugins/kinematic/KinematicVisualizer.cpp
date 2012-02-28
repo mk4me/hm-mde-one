@@ -151,7 +151,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     connect(actionTrajectories, SIGNAL(triggered()), this, SLOT(showTrajectoriesDialog()));
 
     actionScheme = new QAction(tr("Scheme Drawers"), widget);
-    actionScheme->setIcon(QIcon(QString::fromUtf8(":/resources/icons/tracea.png")));
+    actionScheme->setIcon(QIcon(QString::fromUtf8(":/resources/icons/trace-blue.png")));
     actionScheme->setCheckable(true);
     connect(actionScheme, SIGNAL(triggered()), this, SLOT(showSchemeDialog()));
 

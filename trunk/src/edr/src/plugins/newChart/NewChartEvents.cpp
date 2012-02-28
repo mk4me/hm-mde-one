@@ -39,7 +39,7 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
         painter->save();
         painter->translate(x + 10, bottom - 30);
         painter->rotate(-90); // or 270
-        painter->drawText(0, 0, QString(event->getLabel().c_str()));
+        painter->drawText(0, 0, QObject::tr(event->getLabel().c_str()));
         painter->restore();
         //painter->drawText(x + 2, bottom - 30, QString(event->getLabel().c_str()));
 
@@ -66,14 +66,14 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
     painter->translate(canvasRect.left() + 30, half - 10);
     painter->rotate(-90); 
     painter->setPen(QPen(QColor(255, 0, 0, 55)));
-    painter->drawText(0, 0, "Left");
+    painter->drawText(0, 0, ("Left"));
     painter->restore();
 
     painter->save();
     painter->translate(canvasRect.left() + 30, canvasRect.bottom() - 10);
     painter->rotate(-90); 
     painter->setPen(QPen(QColor(0, 255, 0, 55)));
-    painter->drawText(0, 0, "Right");
+    painter->drawText(0, 0, ("Right"));
     painter->restore();
 }
 
@@ -81,6 +81,10 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
 
 void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEventsCollection::Context context)
 {
+    // te translacje, uzywane sa pozniej, w trakcie rysowania
+    // nazwy te pochodza z pliku c3d
+    QObject::tr("Foot Strike");
+    QObject::tr("Foot Off"   );
     SegmentPtr currentSegment;
     for( auto it = events->cbegin(); it != events->cend(); it++) {
         EventConstPtr event = *it;

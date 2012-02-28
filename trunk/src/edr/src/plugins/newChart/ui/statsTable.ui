@@ -28,18 +28,24 @@
    </property>
    <item>
     <widget class="QFrame" name="frame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="styleSheet">
       <string notr="true">QFrame#frame { 
      border: 1px solid; 
      border-color: rgb(135, 177, 255);
      border-radius: 4px; 
 	 padding: 2px;
-	background-color: rgb(233, 232, 231);
+	/*background-color: rgb(233, 232, 231);*/
  } 
-
+/*
 QWidget#header, QWidget#header &gt; QWidget { 
 	background-color: rgb(233, 232, 231);
- } </string>
+ } */</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -56,6 +62,12 @@ QWidget#header, QWidget#header &gt; QWidget {
       </property>
       <item>
        <widget class="QWidget" name="Header" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="topMargin">
           <number>0</number>
@@ -72,11 +84,11 @@ QWidget#header, QWidget#header &gt; QWidget {
             </sizepolicy>
            </property>
            <property name="styleSheet">
-            <string notr="true">QWidget#label
+            <string notr="true">/*QWidget#label
 {
 	background-color: rgb(233, 232, 231);
 };
-</string>
+*/</string>
            </property>
            <property name="text">
             <string>&lt;b&gt;Statistics&lt;/b&gt;</string>
@@ -89,7 +101,7 @@ QWidget#header, QWidget#header &gt; QWidget {
       <item>
        <widget class="QTreeWidget" name="table">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -101,10 +113,106 @@ QWidget#header, QWidget#header &gt; QWidget {
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true"/>
+         <string notr="true">QHeaderView:horizontal {
+	border: none;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	color: white;
+}
+
+QHeaderView:vertical {
+	border: none;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+
+QHeaderView::section {
+	padding: 2px;
+}
+
+QTableView QTableCornerButton::section {
+	background: rgb(41,41,41);
+	color: white;
+	border: none;
+}
+
+QTableView QTableCornerButton::section {
+	border-top-left-radius: 4px;
+	border-left: 1px solid rgb(41,41,41);
+	border-top: 1px solid rgb(41,41,41);
+}
+
+QHeaderView::section:horizontal {
+	border-top: 1px solid rgb(41,41,41);
+}
+
+QHeaderView::section:last:horizontal {
+	border-top: 1px solid rgb(41,41,41);
+	border-right: 1px solid rgb(41,41,41);
+	border-top-right-radius: 4px;
+}
+
+QHeaderView::section:only-one:horizontal {
+	border-top: 1px solid rgb(41,41,41);
+	border-right: 1px solid rgb(41,41,41);
+	border-left: 1px solid rgb(41,41,41);
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+QHeaderView::section:vertical {
+	border-left: 1px solid rgb(41,41,41);
+}
+
+QHeaderView::section:last:vertical {
+	border-left: 1px solid rgb(41,41,41);
+	border-bottom: 1px solid rgb(41,41,41);
+	border-bottom-left-radius: 4px;
+}
+
+QHeaderView::section:last:horizontal {
+	border-left: 1px solid white;
+	border-top: 1px solid rgb(41,41,41);
+}
+
+QHeaderView::section:last:vertical {
+	border-top: 1px solid white;
+	border-left: 1px solid rgb(41,41,41);
+}
+
+QTreeView {
+	border: 1px solid black;
+	border-radius: 4px;
+}
+
+/*QTableView {
+	border: none;
+	border-radius: 4px;
+	gridline-color: black;
+	alternate-background-color: 	lightgray;
+	selection-background-color: rgb(135, 177, 255);
+}*/
+
+QTreeView QHeaderView * {
+	background: rgb(41, 41,41);
+}
+
+QTreeView QHeaderView::section:horizontal {
+	background: rgb(41, 41,41);
+	color : white;
+}
+
+QTreeView QHeaderView::section:only-one:horizontal {
+	border: none;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;	
+}</string>
         </property>
         <property name="rootIsDecorated">
          <bool>true</bool>
+        </property>
+        <property name="uniformRowHeights">
+         <bool>false</bool>
         </property>
         <column>
          <property name="text">

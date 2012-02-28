@@ -25,7 +25,7 @@ private:
 
 StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/ ) :
     QWidget(parent, f),
-    rowHeight(12)
+    rowHeight(13)
 {
     setupUi(this);
     table->setItemDelegate(new ItemDelegate(100, rowHeight));
@@ -158,7 +158,8 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      for (int i = 0; i < table->topLevelItemCount(); i++) {
          height += getTreeItemRows(table->topLevelItem(i));
      }
-     table->setMaximumHeight(height * rowHeight + table->header()->height());
+     table->setMaximumHeight(height * rowHeight + table->header()->height() + 8);
+     label->height();
  }
 
 QStringList StatsTable::getGroups() const

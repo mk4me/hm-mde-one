@@ -505,6 +505,9 @@ void RaportsThumbnailsContext::createRaport()
     }
     QString str = tr("                                                                            "
         "<HTML>                                                                                   "
+        //"<HEAD>                                                                                   "
+        //"<link rel=\"stylesheet\" type=\"text/css\" href=\"C:\\Users\\Wojtek\\Downloads\\sandstorm\\style.css\" /> "
+        //"</HEAD>"
         "<BODY>                                                                                   "
         "<P><FONT SIZE=6> %1</FONT></P>                                                           "
         "<P><FONT SIZE=3> %2</FONT></P>                                                           "
