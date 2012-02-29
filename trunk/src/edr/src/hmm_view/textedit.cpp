@@ -418,6 +418,8 @@ void TextEdit::filePrint()
 {
 #ifndef QT_NO_PRINTER
     QPrinter printer(QPrinter::HighResolution);
+    printer.setOrientation(QPrinter::Landscape);
+    printer.setPageMargins(15, 15, 15, 15, QPrinter::Millimeter);
     QPrintDialog *dlg = new QPrintDialog(&printer, this);
     if (textEdit->textCursor().hasSelection())
         dlg->addEnabledOption(QAbstractPrintDialog::PrintSelection);
@@ -459,6 +461,7 @@ void TextEdit::filePrintPdf()
         if (QFileInfo(fileName).suffix().isEmpty())
             fileName.append(".pdf");
         QPrinter printer(QPrinter::HighResolution);
+        printer.setPageSize(QPrinter::A2);
         printer.setOutputFormat(QPrinter::PdfFormat);
         printer.setOutputFileName(fileName);
         textEdit->document()->print(&printer);
@@ -676,6 +679,8 @@ void TextEdit::setHtml( const QString& html )
     //    css += line + "\n";
     //}
     //textEdit->document()->setDefaultStyleSheet(css);
+    //textEdit->setStyleSheet(css);
+    //textEdit->setStyleSheet("body {background-color: red}");
 }
 
 

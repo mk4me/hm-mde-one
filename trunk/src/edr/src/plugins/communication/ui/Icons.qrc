@@ -7,5 +7,7 @@
     <file alias="session.png">../../../../resources/embedded/icons/session.png</file>
     <file alias="subject.png">../../../../resources/embedded/icons/subject.png</file>
     <file alias="trial.png">../../../../resources/embedded/icons/trial.png</file>
+	<file alias="osobowe.png">../../../../resources/embedded/icons/osobowe.png</file>
+	<file alias="pomiar.png">../../../../resources/embedded/icons/pomiar.png</file>
   </qresource>
 </RCC>

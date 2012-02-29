@@ -15,7 +15,7 @@
     <message>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="88"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="88"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="140"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="143"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="88"/>
         <source>Active Data</source>
         <translation>Aktywne dane</translation>
@@ -25,29 +25,29 @@
         <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="97"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="97"/>
         <source>Summary</source>
-        <translation type="unfinished"></translation>
+        <translation>Podsumowanie</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="117"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="117"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="117"/>
         <source>1</source>
-        <translation type="unfinished"></translation>
+        <translation>1</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="122"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="122"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="122"/>
         <source>2</source>
-        <translation type="unfinished"></translation>
+        <translation>2</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="144"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="215"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="144"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="215"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="164"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="238"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="167"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="241"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget2.ui" line="164"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="144"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="215"/>
@@ -57,7 +57,7 @@
     <message>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="234"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="234"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="257"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="260"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget2.ui" line="183"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="234"/>
         <source>hide</source>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="330"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="329"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="356"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="359"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="330"/>
         <source>Apply</source>
         <translation>Zastosuj</translation>
@@ -74,7 +74,7 @@
     <message>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="361"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="360"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="391"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="394"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="361"/>
         <source>Raports</source>
         <translation>Raporty</translation>
@@ -83,7 +83,7 @@
         <location filename="../../../src/hmm_view/ui/AnalisisWidget2.ui" line="93"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget2.ui" line="261"/>
         <source>Strona</source>
-        <translation type="unfinished"></translation>
+        <translation>Strona</translation>
     </message>
 </context>
 <context>
@@ -211,27 +211,27 @@
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="30"/>
         <source>Skeleton - front</source>
-        <translation type="unfinished"></translation>
+        <translation>Szkielet - przód</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="54"/>
         <source>Skeleton - back</source>
-        <translation type="unfinished"></translation>
+        <translation>Szkielet - tył</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="78"/>
         <source>Muscular - front</source>
-        <translation type="unfinished"></translation>
+        <translation>Mięśnie - przód</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="102"/>
         <source>Muscular - back</source>
-        <translation type="unfinished"></translation>
+        <translation>Mięśnie - tył</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="126"/>
         <source>Strona</source>
-        <translation type="unfinished"></translation>
+        <translation>Strona</translation>
     </message>
 </context>
 <context>
@@ -239,27 +239,27 @@
     <message>
         <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Form</translation>
+        <translation>Form</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="59"/>
         <source>TextLabel</source>
-        <translation type="unfinished">TextLabel</translation>
+        <translation>Etykieta</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="97"/>
         <source>Back</source>
-        <translation type="unfinished">Tył</translation>
+        <translation>Tył</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="114"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="121"/>
         <source>Cancel</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
 </context>
 <context>
@@ -713,7 +713,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="622"/>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="922"/>
         <source>Badania</source>
-        <translation type="unfinished"></translation>
+        <translation>Badania</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="728"/>
@@ -725,12 +725,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="803"/>
         <source>Tab 1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="814"/>
         <source>Tab 2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="986"/>
@@ -749,35 +749,35 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1248"/>
         <source>Strona</source>
-        <translation type="unfinished"></translation>
+        <translation>Strona</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1304"/>
         <source>Layout Top</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1317"/>
         <source>Font size</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozmiar czcionki</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1330"/>
         <source>Layout Bottom</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1362"/>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1375"/>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1388"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1432"/>
         <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="521"/>
         <source>Open</source>
-        <translation type="unfinished">Otwórz</translation>
+        <translation>Otwórz</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1464"/>
@@ -787,7 +787,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1484"/>
         <source>PushButton</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1514"/>
@@ -923,6 +923,33 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="762"/>
         <source>VIDEOS</source>
         <translation>VIDEO</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="797"/>
+        <source>ILLNESS</source>
+        <translation>JEDNOSTKI CHOROBOWE</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="798"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="799"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="800"/>
+        <source>MULTI</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="806"/>
+        <source>Endo</source>
+        <translation>Endoproteza</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="807"/>
+        <source>Stroke</source>
+        <translation>Udar</translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="808"/>
+        <source>Spine</source>
+        <translation>Zwyrodnienie</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1020"/>
@@ -1405,143 +1432,143 @@ Wartość: %2</translation>
     <name>NewChartVisualizer</name>
     <message>
         <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="93"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="395"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="444"/>
         <source>No active serie</source>
         <translation>Brak aktywnej serii danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="107"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="156"/>
         <source>Events context</source>
         <translation>Normalizacja</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="113"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="162"/>
         <source>None events</source>
         <translation>Brak</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="114"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="163"/>
         <source>Left events</source>
         <translation>Normalizacja wg kontekstu zdarzeń lewej stopy</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="115"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="164"/>
         <source>Right events</source>
         <translation>Normalizacja wg kontekstu zdarzeń prawej stopy</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="122"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="171"/>
         <source>Picker</source>
         <translation>Wskaźnik</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="129"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="178"/>
         <source>Value Marker</source>
         <translation>Znacznik wartości</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="136"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="185"/>
         <source>Horizontal Marker</source>
         <translation>Znacznik różnicy czasu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="143"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="192"/>
         <source>Vertical Marker</source>
         <translation>Znacznik różnicy wartości</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="148"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="197"/>
         <source>Scale to active</source>
         <translation>Skaluj do aktywnej serii danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="155"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="204"/>
         <source>Statistics</source>
         <translation>Statystyki</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="216"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="265"/>
         <source>X:</source>
         <translation>X:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="217"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="266"/>
         <source>Y:</source>
         <translation>Y:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="223"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="272"/>
         <source>SX:</source>
         <translation>SX:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="224"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="273"/>
         <source>SY:</source>
         <translation>SY:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="260"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="309"/>
         <source>Upper bound</source>
         <translation>Górna granica przedziału</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="261"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="310"/>
         <source>Lower bound</source>
         <translation>Dolna granica przedziału</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="262"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="311"/>
         <source>Moving average</source>
         <translation>Średnia ruchoma</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="279"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="328"/>
         <source>Operations</source>
         <translation>Operacje</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="286"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="335"/>
         <source>Events</source>
         <translation>Zdarzenia</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="289"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="338"/>
         <source>Tags</source>
         <translation>Znaczniki</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="294"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="343"/>
         <source>Active Data Series</source>
         <translation>Aktywna seria danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="666"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="695"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="702"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="715"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="744"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="751"/>
         <source>Left</source>
         <translation>Strona lewa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="666"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="702"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="715"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="751"/>
         <source>%1: Left step %2</source>
         <translation>%1: Krok %2</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="670"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="695"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="706"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="719"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="744"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="755"/>
         <source>Right</source>
         <translation>Strona prawa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="670"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="706"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="719"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="755"/>
         <source>%1: Right step %2</source>
         <translation>%1: Krok %2</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="692"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="741"/>
         <source>Whole chart</source>
         <translation>Wszystkie wykresy</translation>
     </message>
@@ -2042,7 +2069,7 @@ Wartość: %2</translation>
     <message>
         <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="98"/>
         <source>Videos</source>
-        <translation>Nagrania</translation>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/HmmContexts.cpp" line="40"/>
@@ -2057,7 +2084,7 @@ Wartość: %2</translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/HmmContexts.cpp" line="413"/>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="550"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="567"/>
         <source>Raports Tab</source>
         <translation>Raporty</translation>
     </message>
@@ -2146,17 +2173,17 @@ Wartość: %2</translation>
 <context>
     <name>RaportsTabContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="556"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="573"/>
         <source>File</source>
         <translation>Plik</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="557"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="574"/>
         <source>Edit</source>
         <translation>Edycja</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="558"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="575"/>
         <source>Text</source>
         <translation>Tekst</translation>
     </message>
@@ -2194,9 +2221,13 @@ Wartość: %2</translation>
         <translation>Rysunek %1 &lt;br&gt; &lt;IMG SRC=&quot;%2&quot; ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0&gt;&lt;/P&gt; &lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="506"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="521"/>
+        <source>                                                                            &lt;HTML&gt;                                                                                   &lt;HEAD&gt;                                                                                   &lt;style type=&quot;text/css&quot;&gt;                                                                %4                                                                                      &lt;/style&gt;                                                                                 &lt;/HEAD&gt;                                                                                  &lt;BODY&gt;                                                                                   &lt;P&gt;&lt;FONT SIZE=6&gt; %1&lt;/FONT&gt;&lt;/P&gt;                                                           &lt;P&gt;&lt;FONT SIZE=3&gt; %2&lt;/FONT&gt;&lt;/P&gt;                                                           &lt;OL&gt;                                                                                     &lt;LI&gt;&lt;P&gt;&lt;FONT SIZE=5&gt;Headline&lt;/FONT&gt;&lt;/P&gt;                                                  Headline placeholder.                                                                    &lt;LI&gt;&lt;P&gt;&lt;FONT SIZE=5&gt;Data&lt;/FONT&gt;&lt;/P&gt;                                                      %3                                                                                       &lt;LI&gt;&lt;P&gt;&lt;FONT SIZE=5&gt;Conclusion&lt;/FONT&gt;&lt;/P&gt;                                                Conclusion placeholder                                                                   &lt;/P&gt;                                                                                     &lt;/OL&gt;                                                                                    &lt;/P&gt;                                                                                     &lt;/BODY&gt;                                                                                  &lt;/HTML&gt;                                                                                  </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>                                                                            &lt;HTML&gt;                                                                                   &lt;BODY&gt;                                                                                   &lt;P&gt;&lt;FONT SIZE=6&gt; %1&lt;/FONT&gt;&lt;/P&gt;                                                           &lt;P&gt;&lt;FONT SIZE=3&gt; %2&lt;/FONT&gt;&lt;/P&gt;                                                           &lt;OL&gt;                                                                                     &lt;LI&gt;&lt;P&gt;&lt;FONT SIZE=5&gt;Headline&lt;/FONT&gt;&lt;/P&gt;                                                  Headline placeholder.                                                                    &lt;LI&gt;&lt;P&gt;&lt;FONT SIZE=5&gt;Data&lt;/FONT&gt;&lt;/P&gt;                                                      %3                                                                                       &lt;LI&gt;&lt;P&gt;&lt;FONT SIZE=5&gt;Conclusion&lt;/FONT&gt;&lt;/P&gt;                                                Conclusion placeholder                                                                   &lt;/P&gt;                                                                                     &lt;/OL&gt;                                                                                    &lt;/P&gt;                                                                                     &lt;/BODY&gt;                                                                                  &lt;/HTML&gt;                                                                                  </source>
-        <translation>&lt;HTML&gt;
+        <translation type="obsolete">&lt;HTML&gt;
 &lt;BODY&gt;
 &lt;P&gt;&lt;FONT SIZE=6&gt; %1&lt;/FONT&gt;&lt;/P&gt;
 &lt;P&gt;&lt;FONT SIZE=3&gt; %2&lt;/FONT&gt;&lt;/P&gt;
@@ -2305,42 +2336,42 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
         <translation>&lt;b&gt;Statystyki&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="219"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="162"/>
         <source>Serie</source>
         <translation>Seria</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="224"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="167"/>
         <source>TimeSpan</source>
         <translation>Przedział czasu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="229"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="172"/>
         <source>Min</source>
         <translation>Min</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="234"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="177"/>
         <source>Min time</source>
         <translation>Min czas</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="239"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="182"/>
         <source>Max</source>
         <translation>Max</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="244"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="187"/>
         <source>Max time</source>
         <translation>Max czas</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="249"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="192"/>
         <source>Mean</source>
         <translation>Wartość średnia</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="254"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="197"/>
         <source>Variance</source>
         <translation>Wariancja</translation>
     </message>

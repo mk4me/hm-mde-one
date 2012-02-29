@@ -794,18 +794,18 @@ void HmmMainWindow::createFilterTab2()
     QPixmap iconStroke(QString::fromUtf8(":/resources/icons/po_udarze.png"));
     QPixmap iconSpine(QString::fromUtf8(":/resources/icons/zwyrodnienia.png"));
    
-    DataFilterWidget* filter1 = new DataFilterWidget("ILLNESS", iconIllness, this);
-    DataFilterWidget* filter2 = new DataFilterWidget("MULTI", iconKinetic, this);
-    DataFilterWidget* filter3 = new DataFilterWidget("MULTI", iconKinetic, this);
-    DataFilterWidget* filter4 = new DataFilterWidget("MULTI", iconKinetic, this);
+    DataFilterWidget* filter1 = new DataFilterWidget(tr("ILLNESS"), iconIllness, this);
+    DataFilterWidget* filter2 = new DataFilterWidget(tr("MULTI"), iconKinetic, this);
+    DataFilterWidget* filter3 = new DataFilterWidget(tr("MULTI"), iconKinetic, this);
+    DataFilterWidget* filter4 = new DataFilterWidget(tr("MULTI"), iconKinetic, this);
 
     IFilterCommandPtr endo(new Endo());
     IFilterCommandPtr stroke(new Stroke());
     IFilterCommandPtr spine(new Spine());
 
-    filter1->addFilter("Endo", endo, &iconEndo);
-    filter1->addFilter("Stroke", stroke, &iconStroke);
-    filter1->addFilter("Spine", spine, &iconSpine);
+    filter1->addFilter(tr("Endo"), endo, &iconEndo);
+    filter1->addFilter(tr("Stroke"), stroke, &iconStroke);
+    filter1->addFilter(tr("Spine"), spine, &iconSpine);
 
     
     /*filter2->addFilter("EMG", "...", stroke, &iconStroke);

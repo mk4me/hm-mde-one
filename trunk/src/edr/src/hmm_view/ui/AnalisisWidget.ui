@@ -89,6 +89,9 @@ QTabWidget::pane {
 	background: white;
 }
 
+QTabWidget::pane &gt; * {
+   border: none;
+}
 QTabBar {
 	background: rgb(91, 91, 91);
 	border-bottom-left-radius: 4px;
@@ -129,7 +132,7 @@ color: white;
          <enum>QTabWidget::South</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="activeDataTab">
          <attribute name="icon">
@@ -393,6 +396,11 @@ QPushButton#applyButton:hover
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QScrollArea" name="scrollArea_3">
+            <property name="styleSheet">
+             <string notr="true">#scrollArea_3 {
+	border: none;
+}</string>
+            </property>
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
@@ -401,9 +409,12 @@ QPushButton#applyButton:hover
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>314</width>
-               <height>655</height>
+               <width>318</width>
+               <height>659</height>
               </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_7">
               <item>

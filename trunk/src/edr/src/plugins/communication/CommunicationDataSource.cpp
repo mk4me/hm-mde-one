@@ -1690,8 +1690,10 @@ MedicalView::MedicalView(CommunicationDataSource * source) : ItemView(source),
 
     QTabWidget * leftTabs = new QTabWidget();
     leftTabs->setObjectName(QString("leftTabs"));
-    leftTabs->addTab(leftSide, tr("Motion data"));
-    leftTabs->addTab(new QWidget(), tr("User data"));
+    int idx = leftTabs->addTab(leftSide, tr("Motion data"));
+    leftTabs->setTabIcon(idx, QIcon(":/resources/icons/zdalne.png"));
+    idx = leftTabs->addTab(new QWidget(), tr("User data"));
+    leftTabs->setTabIcon(idx, QIcon(":/resources/icons/pomiar.png"));
 
     leftTabs->setTabPosition(QTabWidget::South);
 
