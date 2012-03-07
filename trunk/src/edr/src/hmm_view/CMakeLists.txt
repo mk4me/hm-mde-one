@@ -32,6 +32,7 @@ set(PRIVATE_H
 	LanguageDialog.h
 	HmmContexts.h
 	TextEdit.h
+	base64.h
 	#Raport.h
 	#RaportsManager.h
 )
@@ -69,6 +70,7 @@ set(TARGET_SRC
 	LanguageDialog.cpp
 	HmmContexts.cpp
 	TextEdit.cpp
+	base64.cpp
 	#Raport.cpp
 	#RaportsManager.cpp
 )

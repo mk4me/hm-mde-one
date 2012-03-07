@@ -66,6 +66,11 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QPrintPreviewDialog>
 #include <QtCore/QFile>
+#include <QtGui/QTextFrame>
+#include <QtCore/QUrl>
+#include <QtCore/QBuffer>
+#include <QtGui/QToolButton>
+#include "base64.h"
 
 const QString rsrcPath = ":/resources/icons/textedit";
 
@@ -394,9 +399,19 @@ bool TextEdit::fileSave()
 {
     if (fileName.isEmpty())
         return fileSaveAs();
+    QTextDocument* savedDocument = textEdit->document();
+    if(fileName.endsWith(".odt")) {
+        savedDocument = textEdit->document();
+        //QTextCursor cursor(savedDocument);
+        //QTextFrame *root = savedDocument->rootFrame();
+        processFrame(savedDocument->rootFrame(), savedDocument, toOdt);
 
+    } else if (fileName.endsWith(".htm") || fileName.endsWith(".html")) {
+        savedDocument = textEdit->document();
+        processFrame(savedDocument->rootFrame(), savedDocument, toHtml);
+    }
     QTextDocumentWriter writer(fileName);
-    bool success = writer.write(textEdit->document());
+    bool success = writer.write(savedDocument);
     if (success)
         textEdit->document()->setModified(false);
     return success;
@@ -435,6 +450,8 @@ void TextEdit::filePrintPreview()
 {
 #ifndef QT_NO_PRINTER
     QPrinter printer(QPrinter::HighResolution);
+    printer.setOrientation(QPrinter::Landscape);
+    printer.setPageMargins(15, 15, 15, 15, QPrinter::Millimeter);
     QPrintPreviewDialog preview(&printer, this);
     connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPreview(QPrinter*)));
     preview.exec();
@@ -461,7 +478,7 @@ void TextEdit::filePrintPdf()
         if (QFileInfo(fileName).suffix().isEmpty())
             fileName.append(".pdf");
         QPrinter printer(QPrinter::HighResolution);
-        printer.setPageSize(QPrinter::A2);
+        printer.setPageSize(QPrinter::A3);
         printer.setOutputFormat(QPrinter::PdfFormat);
         printer.setOutputFileName(fileName);
         textEdit->document()->print(&printer);
@@ -666,61 +683,126 @@ void TextEdit::setHtml( const QString& html )
     textEdit->setFocus();
     setCurrentFileName(QString());
     textEdit->setHtml(html);
-    //QFile f("C:\\Users\\Wojtek\\Downloads\\sandstorm\\style.css", nullptr);
-    //if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
-    //    return;
-    //
-    //QTextStream in(&f);
-    //QString css;
-    //QString line = in.readLine();
-    //css += line + "\n";
-    //while (!line.isNull()) {
-    //    line = in.readLine();
-    //    css += line + "\n";
-    //}
-    //textEdit->document()->setDefaultStyleSheet(css);
-    //textEdit->setStyleSheet(css);
-    //textEdit->setStyleSheet("body {background-color: red}");
+    changeLinksToBase64(textEdit->document()->rootFrame(), textEdit->document());
 }
 
+void TextEdit::processFrame( QTextFrame * frame, QTextDocument* document, SaveMode saveMode )
+{
+    for (auto rootIt = frame->begin(); !(rootIt.atEnd()); rootIt++) {
+        QTextBlock block = rootIt.currentBlock();
+        for (auto it = block.begin(); !(it.atEnd()); ++it) {
+            QTextFragment fragment = it.fragment(); 
+            if (fragment.isValid()) {
+                QTextImageFormat newImageFormat = fragment.charFormat().toImageFormat();
 
-//QComboBox* TextEdit::createSizeCombo()
-//{
-//    QComboBox* comboSize = new QComboBox();
-//    comboSize->setEditable(true);
-//
-//    QFontDatabase db;
-//    foreach(int size, db.standardSizes()) {
-//        comboSize->addItem(QString::number(size));
-//    }
-//
-//    connect(comboSize, SIGNAL(activated(QString)), this, SLOT(textSize(QString)));
-//    comboSize->setCurrentIndex(comboSize->findText(QString::number(QApplication::font().pointSize())));
-//    return comboSize;
-//
-//}
-//
-//QFontComboBox* TextEdit::createFontCombo()
-//{
-//    QFontComboBox* comboFont = new QFontComboBox();
-//    connect(comboFont, SIGNAL(activated(QString)), this, SLOT(textFamily(QString)));
-//    return comboFont;
-//}
-//
-//QComboBox* TextEdit::createStyleCombo()
-//{
-//    QComboBox* comboStyle = new QComboBox();
-//    comboStyle->addItem("Standard");
-//    comboStyle->addItem("Bullet List (Disc)");
-//    comboStyle->addItem("Bullet List (Circle)");
-//    comboStyle->addItem("Bullet List (Square)");
-//    comboStyle->addItem("Ordered List (Decimal)");
-//    comboStyle->addItem("Ordered List (Alpha lower)");
-//    comboStyle->addItem("Ordered List (Alpha upper)");
-//    comboStyle->addItem("Ordered List (Roman lower)");
-//    comboStyle->addItem("Ordered List (Roman upper)");
-//    connect(comboStyle, SIGNAL(activated(int)),
-//        this, SLOT(textStyle(int)));
-//    return comboStyle;
-//}
+                if (newImageFormat.isValid()) {
+                    QString name = newImageFormat.name();
+
+                    //QString prefix = (saveMode == toHtml) ? : "data:im";//age/png;base64,";
+                    QString res;
+                    if (saveMode == toOdt) {
+                        if (name.startsWith("data:im")) { ;
+                        res = base64ToResource(document, name.right(name.length() -  name.indexOf(",")));
+                        }
+                    } else if (name.startsWith("created_image", Qt::CaseInsensitive)) {
+                        res = QString("data:image/png;base64,")  + resourceToBase64(document, name);
+                    }
+
+                    if (res.length()) {
+                        QTextCursor c = textEdit->textCursor();
+                        c.setPosition(fragment.position());
+                        c.setPosition(fragment.position() + fragment.length(), QTextCursor::KeepAnchor);
+                        newImageFormat.setName(res);
+                        c.setCharFormat(newImageFormat);
+                    }
+                }
+
+            }
+        }
+    }
+
+    auto frames = frame->childFrames();
+    for (auto it = frames.begin(); it != frames.end(); it++){
+        processFrame(*it, document, saveMode);
+    }
+
+}
+
+QString TextEdit::base64ToResource(QTextDocument* document, const QString& encrypted ) const
+{
+    QByteArray ba = QByteArray::fromBase64(encrypted.toAscii());
+    QImage image; 
+    image.loadFromData(ba);
+    static int counter = 0;
+    QString name = QString("created_image%1").arg(counter++);
+    document->addResource(QTextDocument::ImageResource, QUrl(name.toAscii()), image);
+    
+    return name;
+}
+
+QString TextEdit::resourceToBase64( QTextDocument* document, const QString& resource ) const
+{
+    QImage img = qvariant_cast<QImage>(document->resource(QTextDocument::ImageResource, QUrl(resource.toAscii())));
+     
+    QBuffer buffer;
+    img.save(&buffer, "PNG");
+    return buffer.buffer().toBase64();
+}
+
+void TextEdit::changeLinksToBase64( QTextFrame * root, QTextDocument* document )
+{
+    for (auto rootIt = root->begin(); !(rootIt.atEnd()); rootIt++) {
+        QTextBlock block = rootIt.currentBlock();
+        for (auto it = block.begin(); !(it.atEnd()); ++it) {
+            QTextFragment fragment = it.fragment(); 
+            if (fragment.isValid()) {
+                QTextImageFormat newImageFormat = fragment.charFormat().toImageFormat();
+
+                if (newImageFormat.isValid()) {
+                    QString name = newImageFormat.name();
+                    
+                    if (!name.startsWith("data:im") && !name.startsWith("created_image")) { 
+                        QString res;
+                        bool loaded = tryChangeLinkToBase64(res, name);
+                        if (loaded) {
+                            QTextCursor c = textEdit->textCursor();
+                            c.setPosition(fragment.position());
+                            c.setPosition(fragment.position() + fragment.length(), QTextCursor::KeepAnchor);
+                            newImageFormat.setName(QString("data:image/png;base64,") + res);
+                            c.setCharFormat(newImageFormat);
+                        }
+                    }
+
+                    
+                }
+
+            }
+        }
+    }
+
+    auto frames = root->childFrames();
+    for (auto it = frames.begin(); it != frames.end(); it++){
+        changeLinksToBase64(*it, document);
+    }
+}
+
+bool TextEdit::tryChangeLinkToBase64( QString& result, const QString& link ) const
+{
+    //QString templateDir = QString("C:\\programming\\HMEdr\\src\\edr\\resources\\deploy\\templates\\");
+    QString templateDir = core::getResourceString("templates\\");
+    QString imgPath = templateDir + link;
+    if (QFile::exists(imgPath)) {
+        QPixmap file(imgPath);
+        QLabel* l = new QLabel;
+        l->setPixmap(file);
+        l->show();
+        QBuffer buffer;
+        file.save(&buffer, "PNG");
+        result = buffer.buffer().toBase64();
+        return true;
+    } else {
+        return false;
+    }
+}
+
 

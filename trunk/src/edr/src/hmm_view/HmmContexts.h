@@ -100,6 +100,7 @@ private:
     HmmMainWindow* hmm;
     QPlainTextEdit* projectName;
     QComboBox* projectTemplate;
+    QComboBox* cssCombo;
 };
 typedef core::shared_ptr<RaportsThumbnailsContext> RaportsThumbnailsContextPtr;
 typedef core::shared_ptr<const RaportsThumbnailsContext> RaportsThumbnailsContextConstPtr;

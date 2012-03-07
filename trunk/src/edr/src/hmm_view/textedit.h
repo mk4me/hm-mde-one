@@ -45,6 +45,7 @@
 #include <QtGui/QMainWindow>
 #include <QtCore/QMap>
 #include <QtCore/QPointer>
+#include <QtGui/QTextDocument>
 
 QT_FORWARD_DECLARE_CLASS(QAction)
 QT_FORWARD_DECLARE_CLASS(QComboBox)
@@ -56,6 +57,11 @@ QT_FORWARD_DECLARE_CLASS(QMenu)
 class TextEdit : public QMainWindow
 {
     Q_OBJECT
+
+    enum SaveMode {
+        toHtml,
+        toOdt
+    };
 
 public:
     TextEdit(QWidget *parent = 0);
@@ -83,6 +89,8 @@ private slots:
     void fileNew();
     void fileOpen();
     bool fileSave();
+
+    
     bool fileSaveAs();
     void filePrint();
     void filePrintPreview();
@@ -105,7 +113,11 @@ private slots:
     void printPreview(QPrinter *);
 
 private:
-    
+    QString base64ToResource(QTextDocument* document, const QString& encrypted) const;
+    QString resourceToBase64(QTextDocument* document, const QString& resource) const;
+    bool tryChangeLinkToBase64(QString& result, const QString& link) const;
+    void processFrame( QTextFrame * root, QTextDocument* savedDocument, SaveMode saveMode );
+    void changeLinksToBase64( QTextFrame * root, QTextDocument* document);
 
 private: 
     QList<QObject*> editList;
@@ -141,6 +153,7 @@ private:
     //QToolBar *tb;
     QString fileName;
     QTextEdit *textEdit;
+    
 };
 
 #endif

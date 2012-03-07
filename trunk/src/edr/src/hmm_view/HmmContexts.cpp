@@ -7,6 +7,7 @@
 #include "HmmMainWindow.h"
 #include "textedit.h"
 #include "AnalisisWidget.h"
+#include "base64.h"
 
 
 HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
@@ -443,10 +444,25 @@ void RaportsThumbnailsContext::onRegisterContextWidget( QWidget * contextWidget 
     projectName->setMaximumSize(100, 20);
     projectName->setPlainText(tr("Simple Raport"));
     projectName->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    QString dirPath = core::getResourceString("templates");
+    QStringList filters;
+    filters << "*.htm" << "*.html";
+    QDir templateDir(dirPath);
+    templateDir.setNameFilters(filters);
+
     projectTemplate = new QComboBox();
-    projectTemplate->addItem(tr("Default"));
+    projectTemplate->addItem(tr("Empty"));
+    projectTemplate->addItems(templateDir.entryList());
     projectTemplate->setMaximumSize(100, 20);
     projectTemplate->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    
+    QDir cssDir(dirPath, "*.css");
+    cssCombo = new QComboBox();
+    cssCombo->addItem(tr("Empty"));
+    cssCombo->addItems(cssDir.entryList());
+    cssCombo->setMaximumSize(100, 20);
+    cssCombo->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
     QWidget* upper = new QWidget();
     upper->setLayout(new QHBoxLayout());
@@ -462,6 +478,7 @@ void RaportsThumbnailsContext::onRegisterContextWidget( QWidget * contextWidget 
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     lower->layout()->addWidget(label);
     lower->layout()->addWidget(projectTemplate);
+    lower->layout()->addWidget(cssCombo);
     lower->layout()->setContentsMargins(1, 1, 1, 0);
 
     l->addWidget(upper);
@@ -485,47 +502,64 @@ void RaportsThumbnailsContext::createRaport()
     QString images;
     int counter = 0;
     int sec = time.time().second() + time.time().minute() * 60 + time.time().hour() * 60 * 60;
-    QString dirName = QString("Raport_%1_%2_%3_%4").arg(time.date().day()).arg(time.date().month()).arg(time.date().year()).arg(sec);
-    QString dir = core::getApplicationDataString(dirName.toStdString());
-    QDir().mkdir(dir);
     for (auto it = children.begin(); it != children.end(); it++) {
         QLabel* l = qobject_cast<QLabel*>(*it);
         if (l) {
             const QPixmap* pixmap = l->pixmap();
             if (pixmap) {
+                QBuffer buffer;
+                pixmap->save(&buffer, "PNG");
                 int w = pixmap->width();
                 int h = pixmap->height();
-
-                QString path = dir + QString("/Screenshot%1.png").arg(++counter);
-                pixmap->save(path);
-                images += tr("Screenshot %1 <br> <IMG SRC=\"%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(path).arg(w).arg(h);
+                int maxWidth = 800;
+                if (w > maxWidth) {
+                    h *= static_cast<double>(maxWidth) / w;
+                    w = maxWidth;
+                }
+                const unsigned char* raw = reinterpret_cast<const unsigned char*>(buffer.buffer().constData());
+                QString base64 = QString::fromStdString(base64_encode(raw, buffer.size()));
+                images += tr("Screenshot %1 <br> <IMG SRC=\"data:image/png;base64,%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(base64).arg(w).arg(h);
             }
             
         }
     }
-    QString str = tr("                                                                            "
-        "<HTML>                                                                                   "
-        //"<HEAD>                                                                                   "
-        //"<link rel=\"stylesheet\" type=\"text/css\" href=\"C:\\Users\\Wojtek\\Downloads\\sandstorm\\style.css\" /> "
-        //"</HEAD>"
-        "<BODY>                                                                                   "
-        "<P><FONT SIZE=6> %1</FONT></P>                                                           "
-        "<P><FONT SIZE=3> %2</FONT></P>                                                           "
-        "<OL>                                                                                     "
-        "<LI><P><FONT SIZE=5>Headline</FONT></P>                                                  "
-        "Headline placeholder.                                                                    "
-        "<LI><P><FONT SIZE=5>Data</FONT></P>                                                      "
-        "%3                                                                                       "
-        "<LI><P><FONT SIZE=5>Conclusion</FONT></P>                                                "
-        "Conclusion placeholder                                                                   "
-        "</P>                                                                                     "
-        "</OL>                                                                                    "
-        "</P>                                                                                     "
-        "</BODY>                                                                                  "
-        "</HTML>                                                                                  ")
-        .arg(projectName->toPlainText()).arg(time.toString()).arg(images);
 
-    hmm->createRaport(str);
+    QString templateDir = core::getResourceString("templates\\");//QString("C:\\programming\\HMEdr\\src\\edr\\resources\\deploy\\templates\\");
+    QString cssFile = templateDir + cssCombo->currentText();
+    QFile f(cssFile);
+    QString css;
+    if (f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        css = f.readAll();
+        f.close();
+    }
+     
+
+    QString p = templateDir + projectTemplate->currentText();
+    QFile file(p);
+    QString html;
+    if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QString raw = QString::fromUtf8(file.readAll());
+        html = raw.arg(projectName->toPlainText()).arg(time.toString()).arg(images).arg(css);
+    } else {
+        if (css.length()) {
+            css = QString(
+                "<HEAD>                    "
+                "<style type=\"text/css\"> "
+                "%1                        "
+                "</style>                  "
+                "</HEAD> ").arg(css);
+        }
+        html = QString(
+            "<HTML> "                                  
+            "%1     "                            
+            "<BODY> "
+            "<P><FONT SIZE=8> %3</FONT></P>"
+            "%2     "                            
+            "</BODY>"                                  
+            "</HTML>").arg(css).arg(images).arg(projectName->toPlainText());   
+    }
+    
+    hmm->createRaport(html);
 }
 
 RaportsTabContext::RaportsTabContext( FlexiTabWidget * flexiTabWidget, HmmMainWindow* hmm ) : 
