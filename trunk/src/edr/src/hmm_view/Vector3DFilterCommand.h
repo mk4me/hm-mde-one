@@ -136,7 +136,8 @@ public:
           helper(boost::bind( &BuilderConfiguredFilterCommand::checkBoxChanged, this, _1, _2 )),
           frontXml(frontXml),
           backXml(backXml),
-          configurationWidget(nullptr)
+          configurationWidget(nullptr),
+          parentWidget(nullptr)
       {
         helper.setNamesDictionary(namesDictionary);
       }
@@ -170,32 +171,38 @@ public:
     }
 
 public:
- /*   virtual QDialog* getConfigurationDialog( QWidget* parent) 
-    {
-        if (!dialog) {
-            dialog = new ConfigurationDialog(parent);
-            int w = dialog->width();
-            int h = dialog->height();
-            dialog->loadConfigurations(frontXml, backXml, helper.getNamesDictionary());
-            QObject::connect(dialog, SIGNAL(itemSelected(const QString&, bool)), &helper, SLOT(onItemSelected(const QString&, bool)));
-            QObject::connect(dialog, SIGNAL(elementHovered(const QString&, bool)), &helper, SLOT(onElementHovered(const QString&, bool)));
-
-            w = dialog->width();
-            h = dialog->height();
-        }
-        return dialog;
-    }
-*/
-
     virtual QWidget* getConfigurationWidget()
     {
         if (!configurationWidget) {
+            parentWidget = new QWidget(nullptr);
+            QLayout* h = new QHBoxLayout();
+            h->setMargin(0);
+            h->setContentsMargins(0, 0, 0, 0);
             configurationWidget = new ConfigurationWidget(nullptr);
+            QWidget* left = new QWidget();
+            QWidget* right = new QWidget();
+            left->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            right->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            h->addWidget(left);
+            h->addWidget(configurationWidget);
+            h->addWidget(right);
+            parentWidget->setLayout(h);
             configurationWidget->loadConfigurations(frontXml, backXml, helper.getNamesDictionary());
             QObject::connect(configurationWidget, SIGNAL(itemSelected(const QString&, bool)), &helper, SLOT(onItemSelected(const QString&, bool)));
             QObject::connect(configurationWidget, SIGNAL(elementHovered(const QString&, bool)), &helper, SLOT(onElementHovered(const QString&, bool)));
         }
-        return configurationWidget;
+        return parentWidget;
+    }
+
+    virtual void reset()
+    {
+        for (auto it = activeElements.begin(); it != activeElements.end(); it++) {
+            it->second = true;
+        }
+        if (configurationWidget) {
+            configurationStart();
+            configurationWidget->repaint();
+        }
     }
 
     virtual void configurationStart() 
@@ -252,6 +259,7 @@ protected:
     __Helper helper;
     QString frontXml, backXml;
     ConfigurationWidget* configurationWidget;
+    QWidget* parentWidget;
 };
 
 

@@ -22,44 +22,22 @@ class FilterEntryWidget : public QWidget, private Ui::FilterEntry
 {
     Q_OBJECT;
 public:
-    FilterEntryWidget(QWidget* parent, HmmMainWindow* hmm, const QString& bigLabelText, IFilterCommandPtr filterCommand, const QPixmap* icon = nullptr) :
-      QWidget(parent),
-      filterCommand(filterCommand),
-      hmm(hmm),
-      configurator(nullptr)
-    {
-        setupUi(this);
-        this->pushButton->setText(bigLabelText);
-
-        this->pushButton->setAttribute(Qt::WA_NoSystemBackground, true);
-        
-        if (icon) {
-            this->pushButton->setIcon(*icon);
-        }
-
-        connect(pushButton, SIGNAL(clicked()), this, SLOT(onButton()));
-    }
-	virtual ~FilterEntryWidget() 
-    {
-        if (configurator) {
-            delete configurator;
-        }
-    }
+    FilterEntryWidget(QWidget* parent, HmmMainWindow* hmm, const QString& bigLabelText, IFilterCommandPtr filterCommand, const QPixmap* icon = nullptr);
+	virtual ~FilterEntryWidget();
 
 public:
     IFilterCommandPtr getFilterCommand() const { return filterCommand; }
     QTreeWidgetItem* createTreeEntry(const std::vector<PluginSubject::SessionConstPtr>& sessions);
     QWidget* getConfigurator() const { return filterCommand->getConfigurationWidget(); }
     QString getName() const { return pushButton->text(); }
+    bool isChecked() const { return pushButton->isChecked(); }
+    void setChecked(bool val) { pushButton->setChecked(val); }
 
 signals:
     void onFilterClicked(FilterEntryWidget* filter);
 
 private slots:
     void onButton();
-
-    
-
 
 private:
     IFilterCommandPtr filterCommand;

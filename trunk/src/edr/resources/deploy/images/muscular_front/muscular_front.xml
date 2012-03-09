@@ -1,21 +1,21 @@
 <?xml version="1.0" ?>
 <Project version="0.01" BackgroundFilename="miesnie2.png">
-    <Picture Filename="noga1.png" X="95" Y="295" />
-    <Picture Filename="noga1R.png" X="170" Y="296" />
-    <Picture Filename="noga2.png" X="109" Y="459" />
-    <Picture Filename="noga2R.png" X="170" Y="455" />
-    <Picture Filename="noga3.png" X="99" Y="276" />
-    <Picture Filename="noga3R.png" X="150" Y="277" />
-    <Picture Filename="noga4.png" X="104" Y="466" />
-    <Picture Filename="noga4R.png" X="174" Y="468" />
-    <Picture Filename="noga5.png" X="101" Y="441" />
-    <Picture Filename="noga5R.png" X="178" Y="439" />
-    <Picture Filename="palec1.png" X="14" Y="289" />
-    <Picture Filename="palec1R.png" X="256" Y="292" />
-    <Picture Filename="ramie1.png" X="80" Y="112" />
-    <Picture Filename="ramie1R.png" X="156" Y="113" />
-    <Picture Filename="ramie2.png" X="67" Y="108" />
-    <Picture Filename="ramie2R.png" X="179" Y="108" />
-    <Picture Filename="ramie3.png" X="60" Y="156" />
-    <Picture Filename="ramie3R.png" X="211" Y="153" />
+    <Picture Filename="noga1.png" X="102" Y="309" />
+    <Picture Filename="noga1R.png" X="178" Y="314" />
+    <Picture Filename="noga2.png" X="118" Y="471" />
+    <Picture Filename="noga2R.png" X="182" Y="469" />
+    <Picture Filename="noga3.png" X="106" Y="289" />
+    <Picture Filename="noga3R.png" X="159" Y="288" />
+    <Picture Filename="noga4.png" X="113" Y="487" />
+    <Picture Filename="noga4R.png" X="186" Y="485" />
+    <Picture Filename="noga5.png" X="108" Y="454" />
+    <Picture Filename="noga5R.png" X="190" Y="453" />
+    <Picture Filename="palec1.png" X="16" Y="298" />
+    <Picture Filename="palec1R.png" X="272" Y="301" />
+    <Picture Filename="ramie1.png" X="83" Y="118" />
+    <Picture Filename="ramie1R.png" X="171" Y="117" />
+    <Picture Filename="ramie2.png" X="71" Y="113" />
+    <Picture Filename="ramie2R.png" X="194" Y="113" />
+    <Picture Filename="ramie3.png" X="65" Y="161" />
+    <Picture Filename="ramie3R.png" X="223" Y="160" />
 </Project>

@@ -1,27 +1,27 @@
 <?xml version="1.0" ?>
 <Project version="0.01" BackgroundFilename="miesnie-tyl.png">
-    <Picture Filename="noga-tyl1.png" X="147" Y="462" />
-    <Picture Filename="noga-tyl1P.png" X="118" Y="461" />
-    <Picture Filename="noga-tyl2.png" X="179" Y="461" />
-    <Picture Filename="noga-tyl2P.png" X="78" Y="466" />
-    <Picture Filename="noga-tyl3.png" X="180" Y="350" />
-    <Picture Filename="noga-tyl3P.png" X="102" Y="351" />
-    <Picture Filename="noga-tyl4.png" X="151" Y="342" />
-    <Picture Filename="noga-tyl4P.png" X="120" Y="344" />
+    <Picture Filename="noga-tyl1.png" X="156" Y="477" />
+    <Picture Filename="noga-tyl1P.png" X="125" Y="478" />
+    <Picture Filename="noga-tyl2.png" X="189" Y="478" />
+    <Picture Filename="noga-tyl2P.png" X="85" Y="478" />
+    <Picture Filename="noga-tyl3.png" X="193" Y="361" />
+    <Picture Filename="noga-tyl3P.png" X="109" Y="358" />
+    <Picture Filename="noga-tyl4.png" X="162" Y="354" />
+    <Picture Filename="noga-tyl4P.png" X="127" Y="351" />
     <Picture Filename="noga-tyl5.png" X="42" Y="244" />
-    <Picture Filename="noga-tyl5P.png" X="239" Y="244" />
-    <Picture Filename="noga-tyl6.png" X="149" Y="285" />
-    <Picture Filename="noga-tyl6P.png" X="86" Y="287" />
-    <Picture Filename="ramie-tyl1.png" X="210" Y="148" />
-    <Picture Filename="ramie-tyl1P.png" X="75" Y="149" />
-    <Picture Filename="ramie-tyl2.png" X="224" Y="152" />
-    <Picture Filename="ramie-tyl2P.png" X="59" Y="149" />
-    <Picture Filename="ramie-tyl3.png" X="53" Y="97" />
-    <Picture Filename="ramie-tyl3P.png" X="181" Y="96" />
-    <Picture Filename="ramie-tyl4.png" X="81" Y="60" />
-    <Picture Filename="ramie-tyl4P.png" X="146" Y="59" />
-    <Picture Filename="ramie-tyl5.png" X="80" Y="96" />
-    <Picture Filename="ramie-tyl5P.png" X="147" Y="97" />
+    <Picture Filename="noga-tyl5P.png" X="251" Y="245" />
+    <Picture Filename="noga-tyl6.png" X="160" Y="295" />
+    <Picture Filename="noga-tyl6P.png" X="95" Y="290" />
+    <Picture Filename="ramie-tyl1.png" X="219" Y="149" />
+    <Picture Filename="ramie-tyl1P.png" X="80" Y="153" />
+    <Picture Filename="ramie-tyl2.png" X="235" Y="155" />
+    <Picture Filename="ramie-tyl2P.png" X="65" Y="154" />
+    <Picture Filename="ramie-tyl3.png" X="59" Y="99" />
+    <Picture Filename="ramie-tyl3P.png" X="191" Y="100" />
+    <Picture Filename="ramie-tyl4.png" X="92" Y="60" />
+    <Picture Filename="ramie-tyl4P.png" X="158" Y="62" />
+    <Picture Filename="ramie-tyl5.png" X="90" Y="99" />
+    <Picture Filename="ramie-tyl5P.png" X="161" Y="99" />
     <Picture Filename="ramie-tyl6.png" X="-17" Y="408" />
     <Picture Filename="ramie-tyl6P.png" X="241" Y="444" />
 </Project>

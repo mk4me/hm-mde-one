@@ -12,6 +12,8 @@ PicturePlacerWindow::PicturePlacerWindow() :
     scrollLayout(this)
 {
     setupUi(this);
+    scrollLayout.setMargin(0);
+    scrollLayout.setContentsMargins(0,0,0,0);
     scrollAreaWidget->setLayout(&scrollLayout);
     scrollLayout.addWidget(&painter);
     //scrollAreaWidget->layout()->addWidget(&painter);

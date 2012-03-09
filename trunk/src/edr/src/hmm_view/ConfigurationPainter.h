@@ -12,8 +12,8 @@
 
 #include <QtCore/QFileInfo>
 
-typedef boost::shared_ptr<QPixmap> QPixmapPtr;
-typedef boost::shared_ptr<const QPixmap> QPixmapConstPtr;
+typedef boost::shared_ptr<QImage> QPixmapPtr;
+typedef boost::shared_ptr<const QImage> QPixmapConstPtr;
 
 #include <QtGui/QPen>
 #include <QtGui/QPainter>
@@ -32,10 +32,14 @@ public:
     virtual int getHeight() const = 0;
     virtual const QString& getName() const = 0;
     virtual void draw(QPainter& painter, bool selected) = 0;
+
+    virtual bool isInside(int x, int y) const;
+
     bool isActive() const { return active; }
     void setActive(bool val) { active = val; }
     float getScale() const { return scale; }
     void setScale(float val) { scale = val; }
+
 
 private:
     bool active;
@@ -116,21 +120,26 @@ class SinglePicture : public IArea
 {
 public:
       SinglePicture(const QString& name, int x = 0, int y = 0, bool alwaysVisible = false) :
-      pixmap(new QPixmap(name)),
+          pixmap(new QImage(name)),
+          alphaPixmap( new QImage(name)),
           //name(name),
           x(x), y(y),
           alwaysVisible(alwaysVisible)
       {
           QFileInfo info(name);
           this->name = info.baseName();
+          setPixmapAlpha(*alphaPixmap, 100);
       }
 
       SinglePicture(const QString& name, const QPixmapPtr& pixmap, int x = 0, int y = 0, bool alwaysVisible = false) :
-      pixmap(pixmap),
+          pixmap(pixmap),
+          alphaPixmap(new QImage(*pixmap)),
           name(name),
           x(x), y(y),
           alwaysVisible(alwaysVisible)
-      {}
+      {
+          setPixmapAlpha(*alphaPixmap, 100);
+      }
 
 public:
     virtual int getY() const { return getScale() * (y); }
@@ -140,32 +149,20 @@ public:
     virtual int getWidth() const { return getScale() * (pixmap->width()); }
     virtual int getHeight() const { return getScale() * (pixmap->height()); }
     virtual const QString& getName() const { return name; }
-    virtual void draw(QPainter& painter, bool selected)
-    {
-        if (alwaysVisible || isActive()) {
-            painter.drawPixmap(getX(), getY(), getWidth(), getHeight(), *pixmap);
-        } else {
-            if (selected) {
-                QPixmapConstPtr p = getPixmap();
-                // trzeba dodac membera, ktory bedzie przechowywal kopie dla aktualnej pixmapy
-                QPixmap copy = *p;
-                SinglePicture::setPixmapAlpha(copy, 100);
-                painter.drawPixmap(getX(), getY(), getWidth(), getHeight(), copy);
-            }
-        }
-        
-    }
+    virtual void draw(QPainter& painter, bool selected);
+    virtual bool isInside(int x, int y) const;
 
 public:
     QPixmapConstPtr getPixmap() const { return pixmap; }
 
 public:
-    static void setPixmapAlpha(QPixmap& pixmap, unsigned int alpha);
+    static void setPixmapAlpha(QImage& pixmap, unsigned int alpha);
 
 
 private:
     QString name;
     QPixmapPtr pixmap;
+    QPixmapPtr alphaPixmap;
 
     int x, y;
     bool alwaysVisible;
@@ -178,13 +175,7 @@ class ConfigurationPainter : public QWidget
 {
     Q_OBJECT;
 public:
-    ConfigurationPainter(QWidget* parent) :
-      QWidget(parent),
-      scale(1.0f)
-      {
-          setMouseTracking(true);
-          installEventFilter(this);
-      }
+    ConfigurationPainter(QWidget* parent);
 
 public:
     typedef std::list<IAreaPtr> AreasList;
@@ -214,12 +205,10 @@ protected:
     virtual void mousePressEvent ( QMouseEvent * event );
     virtual void mouseReleaseEvent ( QMouseEvent * event );
     virtual void paintEvent(QPaintEvent *);
-
     bool eventFilter(QObject *obj, QEvent *event);
     
 private:
     IAreaPtr getArea(int x, int y);
-    
 
 private:
     QPixmapConstPtr background;

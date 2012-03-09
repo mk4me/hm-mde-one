@@ -47,9 +47,14 @@ protected:
 signals:
     void activated(bool);
     void clicked();
+    //void entryClicked(FilterEntryWidget*);
 
 public:
     virtual void mousePressEvent(QMouseEvent *e);
+    void uncheckEntries(FilterEntryWidget* toSkip = nullptr);
+
+public slots:
+    void resetFilters();
 
 private slots:
     void onClick();

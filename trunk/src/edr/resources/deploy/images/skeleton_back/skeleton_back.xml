@@ -1,23 +1,23 @@
 <?xml version="1.0" ?>
 <Project version="0.01" BackgroundFilename="szkieletW2.png">
-    <Marker Name="RShoulder" X="215" Y="117" />
-    <Marker Name="LShoulder" X="80" Y="117" />
-    <Marker Name="LElbow" X="66" Y="216" />
-    <Marker Name="RElbow" X="226" Y="215" />
-    <Marker Name="RWrist" X="248" Y="295" />
-    <Marker Name="LWrist" X="46" Y="295" />
-    <Marker Name="RHip" X="188" Y="277" />
-    <Marker Name="LHip" X="106" Y="272" />
-    <Marker Name="RKnee" X="184" Y="420" />
-    <Marker Name="LKnee" X="110" Y="419" />
-    <Marker Name="RAnkle" X="179" Y="544" />
-    <Marker Name="LAnkle" X="116" Y="542" />
+    <Marker Name="RShoulder" X="229" Y="121" />
+    <Marker Name="LShoulder" X="82" Y="122" />
+    <Marker Name="LElbow" X="70" Y="221" />
+    <Marker Name="RElbow" X="247" Y="215" />
+    <Marker Name="RWrist" X="273" Y="308" />
+    <Marker Name="LWrist" X="47" Y="312" />
+    <Marker Name="RHip" X="197" Y="282" />
+    <Marker Name="LHip" X="119" Y="280" />
+    <Marker Name="RKnee" X="199" Y="428" />
+    <Marker Name="LKnee" X="119" Y="426" />
+    <Marker Name="RAnkle" X="195" Y="557" />
+    <Marker Name="LAnkle" X="120" Y="556" />
     <Marker Name="RGroundReaction" X="256" Y="583" />
     <Marker Name="LGroundReaction" X="40" Y="583" />
-    <Marker Name="LWaist" X="123" Y="221" />
-    <Marker Name="RWaist" X="166" Y="221" />
-    <Marker Name="LNeck" X="135" Y="95" />
-    <Marker Name="RNeck" X="157" Y="95" />
+    <Marker Name="LWaist" X="136" Y="223" />
+    <Marker Name="RWaist" X="182" Y="222" />
+    <Marker Name="LNeck" X="148" Y="95" />
+    <Marker Name="RNeck" X="169" Y="95" />
     <Marker Name="LNormalizedGR" X="38" Y="508" />
     <Marker Name="RNormalizedGR" X="257" Y="503" />
 </Project>

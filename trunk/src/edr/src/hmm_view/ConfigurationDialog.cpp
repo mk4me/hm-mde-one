@@ -13,6 +13,8 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
     painterFront.setScale(SCALE);
     painterBack.setScale(SCALE);
     setupUi(this);
+    scrollLayout.setMargin(0);
+    scrollLayout.setContentsMargins(0, 0, 0, 0);
     scrollAreaWidget->setLayout(&scrollLayout);
     scrollLayout.addWidget(&painterFront);
     scrollLayout.addWidget(&painterBack);
@@ -27,10 +29,11 @@ ConfigurationWidget::ConfigurationWidget(QWidget* parent) :
 
 void ConfigurationWidget::setBackground(ConfigurationPainter& painter, const QString& name, QPixmapConstPtr pixmap )
 { 
-    scrollArea->setMaximumSize(SCALE * pixmap->width(),SCALE *  pixmap->height());
-    scrollArea->setMinimumSize(SCALE * pixmap->width(),SCALE *  pixmap->height());
-    /*this->setMaximumSize(scrollArea->width(), scrollArea->height());
-    this->setMinimumSize(scrollArea->width(), scrollArea->height());*/
+    int w = static_cast<int>(SCALE * pixmap->width());
+    int h = static_cast<int>(SCALE * pixmap->height());
+    scrollArea->setMaximumSize(w, h);
+    scrollArea->setMinimumSize(w, h);
+    scrollAreaWidget->setGeometry(QRect(0, 0, w, h));
     painter.setBackground(name, pixmap);
 }
 
@@ -92,7 +95,7 @@ void ConfigurationWidget::loadXml(ConfigurationPainter& painter, const QString &
 
     QString background(root->Attribute("BackgroundFilename"));
     background = path + "\\" + background;
-    QPixmapPtr pixmap(new QPixmap(background));
+    QPixmapPtr pixmap(new QImage(background));
     setBackground(painter, background, pixmap);
 
     TiXmlElement* element = root->FirstChildElement();
@@ -143,5 +146,49 @@ void ConfigurationWidget::setVisibles( const std::map<QString, bool>& visibles )
             (*it)->setActive(found->second);
         }
     }
+}
+
+void ConfigurationWidget::onItemSelected( const QString& name, bool selected )
+{
+    QFileInfo info(name);
+    QString filename = info.baseName();
+    if (filename == "przod") {
+        showBack();
+    } else if (filename == "tyl") {
+        showFront();
+    } else {
+        emit itemSelected(name, selected);
+        this->painterFront.trySetActive(name, selected);
+        this->painterBack.trySetActive(name, selected);
+    }
+}
+
+void ConfigurationWidget::onSwitchButton()
+{
+    if (isFront) {
+        showBack();
+    } else {
+        showFront();
+    }
+}
+
+void ConfigurationWidget::showFront()
+{
+    UTILS_ASSERT(!isFront);
+    this->painterFront.show();
+    this->painterBack.hide();
+    this->currentPainter = &painterFront;
+    //this->switchButton->setText(tr("Back"));
+    isFront = true;
+}
+
+void ConfigurationWidget::showBack()
+{
+    UTILS_ASSERT(isFront);
+    this->painterFront.hide();
+    this->painterBack.show();
+    this->currentPainter = &painterBack;
+    //this->switchButton->setText(tr("Front"));
+    isFront = false;
 }
 

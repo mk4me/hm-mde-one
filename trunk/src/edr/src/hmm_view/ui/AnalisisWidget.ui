@@ -243,6 +243,13 @@ color: white;
                  </widget>
                 </item>
                 <item>
+                 <widget class="QToolButton" name="resetButton">
+                  <property name="text">
+                   <string>Reset All</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QToolButton" name="hideButton">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
@@ -374,7 +381,7 @@ QPushButton#applyButton:hover
                   <x>0</x>
                   <y>0</y>
                   <width>318</width>
-                  <height>437</height>
+                  <height>436</height>
                  </rect>
                 </property>
                </widget>

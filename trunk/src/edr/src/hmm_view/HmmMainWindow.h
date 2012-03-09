@@ -27,6 +27,7 @@ class EDRDockWidgetManager;
 class DataFilterWidget;
 class AnalisisWidget;
 class EDRDockWidgetSet;
+class FilterEntryWidget;
 
 
 class ContextAction : public QAction
@@ -108,13 +109,16 @@ public:
     void createRaport( const QString& html );
     virtual void setCurrentVisualizerActions(VisualizerWidget * visWidget);
 
+public slots:
+    void refreshTree();
+
 private slots:
     void onFocusChange(QWidget * oldWidget, QWidget * newWidget);
     void visualizerDestroyed(QObject * visualizer);
 
 	//void onOpen();
 	void onTreeItemClicked(QTreeWidgetItem *item, int column);
-
+    void filterClicked(FilterEntryWidget* entry);
     VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
 
     void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
@@ -148,7 +152,6 @@ private:
     void createFilterTabs();
     void createFilterTab1();
     void createFilterTab2();
-    void refreshTree();
     void dropUnusedElements(std::multimap<TreeItemHelper*, DataItemDescription>& multimap);
     
     class ItemDoubleClick

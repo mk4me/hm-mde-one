@@ -46,7 +46,6 @@ void AnalisisWidget::addDataFilterWidget( DataFilterWidget* filter )
         filterScroll->setMinimumSize(w, h);
         containerFrame->setMaximumWidth(w + 22);
         containerFrame->setMinimumWidth(w + 22);
-        //containerFrame->setFixedSize(w + 22, h + 22);
         scrollArea->setMinimumHeight(3 * margin + filterHeight * 2);
     }
 
@@ -54,6 +53,8 @@ void AnalisisWidget::addDataFilterWidget( DataFilterWidget* filter )
     filter->setGeometry(margin + x * (filterWidth + margin),margin +  y * (margin + filterHeight), filterWidth, filterHeight);
 
     connect(filter, SIGNAL( clicked()), this, SLOT(switchToFirstTab()));
+    connect(this->resetButton, SIGNAL(clicked()), filter, SLOT(resetFilters()));
+    connect(this->resetButton, SIGNAL(clicked()), hmm, SLOT(refreshTree()));
     for (int i = 0; i < filter->getNumEntries(); i++) {
         connect(filter->getEntry(i), SIGNAL( onFilterClicked(FilterEntryWidget*)), this, SLOT(filterClicked(FilterEntryWidget*)));
     }
@@ -76,42 +77,37 @@ void AnalisisWidget::setFiltersExpanded( bool expand )
 
 void AnalisisWidget::filterClicked( FilterEntryWidget* filter )
 {
-    currentFilter = filter;
-    recreateTree(filter);
-    if (configurationWidget->layout()) {
-        delete configurationWidget->layout();
-    }
-    // TODO zrobic to w lepszy sposob...
-    const QObjectList& childList = configurationWidget->children();
-    for (int i = childList.size() - 1; i >= 0; --i) {
-        QWidget* w = qobject_cast<QWidget*>(childList.at(i));
-        w->hide();
-    }
-    configurationWidget->setLayout(new QVBoxLayout());
-
-    QWidget* configurator = filter->getConfigurator();
-    if (configurator) {
-        
-        //QDialog* dialog = new QDialog(this);
-        //QHBoxLayout* layout = new QHBoxLayout(dialog);
-        //layout->addWidget(configurator);
-        //dialog->setLayout(layout);
-        //dialog->exec();
-
-        //TODO usuwanie smieci, lub button jako pole klasy
-        QLayout* layout = configurationWidget->layout();
-        configurator->setVisible(true);
-        layout->addWidget(configurator);
-        //QWidget* spacer = new QWidget();
-        //spacer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-        applyButton->setVisible(true);
-        applyButton->setText(QString("%1 - Apply").arg(filter->getName()));
-        
-    } else {
+    if (!filter->isChecked()) {
+        hmm->refreshTree();
         switchToFirstTab();
-        applyButton->hide();
+    } else {
+        currentFilter = filter;
+        recreateTree(filter);
+        if (configurationWidget->layout()) {
+            delete configurationWidget->layout();
+        }
+        // TODO zrobic to w lepszy sposob...
+        const QObjectList& childList = configurationWidget->children();
+        for (int i = childList.size() - 1; i >= 0; --i) {
+            QWidget* w = qobject_cast<QWidget*>(childList.at(i));
+            w->hide();
+        }
+        configurationWidget->setLayout(new QVBoxLayout());
+
+        QWidget* configurator = filter->getConfigurator();
+        if (configurator) {
+            //TODO usuwanie smieci, lub button jako pole klasy
+            QLayout* layout = configurationWidget->layout();
+            configurator->setVisible(true);
+            configurator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            layout->addWidget(configurator);
+            applyButton->setVisible(true);
+            applyButton->setText(QString("%1 - Apply").arg(filter->getName()));
+        } else {
+            switchToFirstTab();
+            applyButton->hide();
+        }
     }
-    
 }
 
 void AnalisisWidget::applyClicked()
@@ -158,6 +154,5 @@ QTreeWidget(parent)
 {
     setHeaderHidden(true);
     setFrameShape(QFrame::NoFrame);
-    //setStyleSheet("border: 0px;");
 }
 

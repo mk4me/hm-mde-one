@@ -36,60 +36,16 @@ public slots:
     void onElementHovered(const QString& name, bool selected);
 
 private slots:
-    void onItemSelected(const QString& name, bool selected)
-    {
-        QFileInfo info(name);
-        QString filename = info.baseName();
-        if (filename == "przod") {
-            showBack();
-        } else if (filename == "tyl") {
-            showFront();
-        } else {
-            emit itemSelected(name, selected);
-            this->painterFront.trySetActive(name, selected);
-            this->painterBack.trySetActive(name, selected);
-        }
-        
-    }
-
-    void onSwitchButton()
-    {
-        if (isFront) {
-            showBack();
-        } else {
-            showFront();
-        }
-    }
+    void onItemSelected(const QString& name, bool selected);
+    void onSwitchButton();
 
 private:   
     void loadPictures(ConfigurationPainter& painter, const QStringList &files );
-
     void loadPicture(ConfigurationPainter& painter, const QString& name, int x, int y, bool alwaysVisible = false);
-
     void loadXml(ConfigurationPainter& painter, const QString& filename);
-
     void createMarker(ConfigurationPainter &painter, const QString& name, int x, int y);
-    
-    void showFront()
-    {
-        UTILS_ASSERT(!isFront);
-        this->painterFront.show();
-        this->painterBack.hide();
-        this->currentPainter = &painterFront;
-        //this->switchButton->setText(tr("Back"));
-        isFront = true;
-
-    }
-
-    void showBack()
-    {
-        UTILS_ASSERT(isFront);
-        this->painterFront.hide();
-        this->painterBack.show();
-        this->currentPainter = &painterBack;
-        //this->switchButton->setText(tr("Front"));
-        isFront = false;
-    }
+    void showFront();
+    void showBack();
 
 private:
     ConfigurationPainter painterFront;

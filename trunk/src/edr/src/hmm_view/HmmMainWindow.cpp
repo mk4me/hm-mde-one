@@ -242,7 +242,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     this->showFullScreen();
 
-//#define EDR_PRESENTATION_MODE_
+#define EDR_PRESENTATION_MODE_
 #ifndef EDR_PRESENTATION_MODE_
 
     PseudoLoginWidget login;
@@ -611,20 +611,6 @@ void HmmMainWindow::createFilterTab1()
     DataFilterPtr typeFilter4(new TypeFilter(typeid(MomentCollection)));
     DataFilterPtr typeFilter5(new TypeFilter(typeid(PowerCollection)));
 
-    /*ConfigurationDialog* dialog = new ConfigurationDialog(analisis->configure1);
-    dialog->loadConfigurations(emgFront, emgBack, emgNames);
-    dialog->show();
-    dialog->setFixedSize(200, 500);
-    if (!analisis->configure1->layout()) {
-        analisis->configure1->setLayout(new QHBoxLayout());
-    }
-    QLayout* dlay = analisis->configure1->layout();
-    dlay->addWidget(dialog);*/
-    
-    /*typedef Vector3DFilterCommand2<MomentChannel, MomentCollection, NewVector3ItemHelper> MomentsCommand;
-    typedef Vector3DFilterCommand2<ForceChannel, ForceCollection, NewVector3ItemHelper> ForcesCommand;
-    typedef Vector3DFilterCommand2<PowerChannel, PowerCollection, NewVector3ItemHelper> PowerCommand;*/
-
     typedef BuilderConfiguredFilterCommand<MomentCollection> MomentsCommand;
     typedef BuilderConfiguredFilterCommand<ForceCollection> ForcesCommand;
     typedef BuilderConfiguredFilterCommand<PowerCollection> PowerCommand;
@@ -755,8 +741,6 @@ void HmmMainWindow::createFilterTab1()
     filter3->addFilter(tr("MARKERS"), markersFilter, &iconMarkerSmall);
     filter3->addFilter(tr("JOINTS"), jointsFilter, &iconJointSmall);
     
-    /*DataFilterPtr typeFilter8(new TypeFilter(typeid(VideoChannel)));
-    filter4->addFilter(tr("VIDEOS"), "count: 4", typeFilter8, &iconVideoSmall);*/
     IFilterCommandPtr videoFilter(new BuilderFilterCommand(TreeBuilder::createVideoBranch, 
         TreeBuilder::getRootVideoIcon(), TreeBuilder::getVideoIcon()));
     filter4->addFilter(tr("VIDEOS"), videoFilter, &iconVideoSmall);
@@ -775,18 +759,17 @@ void HmmMainWindow::createFilterTab1()
     this->analisis->addDataFilterWidget(filter2);
     this->analisis->addDataFilterWidget(filter3);
     this->analisis->addDataFilterWidget(filter4);
+
+    for (auto it = dataFilterWidgets.begin(); it != dataFilterWidgets.end(); it++) {
+        for (int i = 0; i < (*it)->getNumEntries(); i++) {
+            connect((*it)->getEntry(i), SIGNAL(onFilterClicked(FilterEntryWidget*)), this, SLOT(filterClicked(FilterEntryWidget*)));
+        }
+    }
 }
 
 void HmmMainWindow::createFilterTab2()
 {
     core::IMemoryDataManager * memoryDataManager = managersAccessor->getMemoryDataManager();
-    /*
-    QPixmap iconKinetic(core::getResourceString("icons/kineticBig.png"));
-    QPixmap iconIllness(core::getResourceString("icons/jed.chorobowe.png"));
-    QPixmap iconEndo(core::getResourceString("icons/po_endoplastyce.png"));
-    QPixmap iconStroke(core::getResourceString("icons/po_udarze.png"));
-    QPixmap iconSpine(core::getResourceString("icons/zwyrodnienia.png"));
-    */
 
     QPixmap iconKinetic(QString::fromUtf8(":/resources/icons/kineticBig.png"));
     QPixmap iconIllness(QString::fromUtf8(":/resources/icons/jed.chorobowe.png"));
@@ -807,30 +790,12 @@ void HmmMainWindow::createFilterTab2()
     filter1->addFilter(tr("Stroke"), stroke, &iconStroke);
     filter1->addFilter(tr("Spine"), spine, &iconSpine);
 
-    
-    /*filter2->addFilter("EMG", "...", stroke, &iconStroke);
-
-    filter3->addFilter("EMG", "...", spine1, &iconSpine);
-    filter3->addFilter("KINETIC", "...", spine2, &iconSpine);
-    filter3->addFilter("ANGLES", "...", spine3, &iconSpine);*/
     DataFilterPtr typeFilter1(new TypeFilter(typeid(GRFChannel)));
     DataFilterPtr typeFilter2(new TypeFilter(typeid(EMGChannel)));
 
     IFilterCommandPtr multi1(new MultiChartCommand<ForceCollection>());
     IFilterCommandPtr multi2(new MultiChartCommand<MomentCollection>());
     IFilterCommandPtr multi3(new MultiChartCommand<PowerCollection>());
-
-    /*filter1->addFilter("Force", "Multi Chart", multi1);
-    filter1->addFilter("Moment", "Multi Chart", multi2);
-    filter1->addFilter("Power", "Multi Chart", multi3);*/
-
-    /*filter2->addFilter("Force", "Multi Chart", multi1);
-    filter2->addFilter("Moment", "Multi Chart", multi2);
-    filter2->addFilter("Power", "Multi Chart", multi3);*/
-
-    /*filter3->addFilter("Force", "Multi Chart", multi1);
-    filter3->addFilter("Moment", "Multi Chart", multi2);
-    filter3->addFilter("Power", "Multi Chart", multi3);*/
 
     filter4->addFilter("Force", multi1);
     filter4->addFilter("Moment", multi2);
@@ -850,9 +815,6 @@ void HmmMainWindow::createFilterTab2()
     this->analisis->addDataFilterWidget(filter2);
     this->analisis->addDataFilterWidget(filter3);
     this->analisis->addDataFilterWidget(filter4);
-
-    //QPixmap big(core::getResourceString(":/resources/icons/Big.png"));
-    //this->analisis->setActivePixmapAndText(big, "ALL");
 }
 
 const std::vector<SessionConstPtr>& HmmMainWindow::getCurrentSessions()
@@ -875,17 +837,8 @@ void HmmMainWindow::filterGroupActivated( bool active )
         }
 
         if (!active) {
-            /*this->clearTree();
-            QTreeWidgetItem* item = TreeBuilder::createTree(tr("Active Data"), getCurrentSessions());
-            this->addItemToTree(item);
-            QPixmap big(core::getResourceString("icons/Big.png"));
-            this->analisis->setActivePixmapAndText(big, "ALL");*/
             refreshTree();
-        } else {
-            //QPixmap pix(dataWidget->getPixmap());
-            //QString name = dataWidget->getName();
-            //this->analisis->setActivePixmapAndText(pix, name);
-        }
+        } 
     }
 }
 
@@ -1040,16 +993,8 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
  QMenu* HmmMainWindow::getContextMenu( QWidget* parent, TreeItemHelper* helper )
  {
-     /*QMenu * m = new QMenu(parent);
-     QAction * an = new ContextAction(helper, m);
-     an->setText(tr("Create new visualizer"));
-     m->addAction(an);
-     connect(an, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
-	 return m;*/
      dropUnusedElements(items2Descriptions);
      QMenu * menu = new QMenu(parent);
-     //connect(menu, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
-     //connect(menu, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
      QAction * addNew = new ContextAction(helper, menu);
      addNew->setText(tr("Create new visualizer"));
      menu->addAction(addNew);
@@ -1183,7 +1128,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  }
 
  void HmmMainWindow::addToRaports( const QPixmap& pixmap )
- {
+ { 
      analisis->tabWidget->setCurrentWidget(analisis->raportsTab);
      if (!(pixmap.width() && pixmap.height())) {
          return;
@@ -1192,11 +1137,6 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      const int maxW = 128;
      QWidget* list = analisis->getRaportsThumbnailList();
      QLabel* thumb = new QLabel();
-     /*if (pixmap.width() > pixmap.height()) {
-        thumb->setPixmap(pixmap.scaledToWidth(maxW));
-     } else {
-         thumb->setPixmap(pixmap.scaledToHeight(maxH));
-     }*/
 
      if (pixmap.width() > pixmap.height()) {
          int newHeight = static_cast<int>(1.0 * maxH * pixmap.height() / pixmap.width());
@@ -1260,6 +1200,13 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              }
 
          }
+     }
+ }
+
+ void HmmMainWindow::filterClicked( FilterEntryWidget* entry )
+ {
+     for (auto it = dataFilterWidgets.begin(); it != dataFilterWidgets.end(); it++) {
+         (*it)->uncheckEntries(entry);
      }
  }
 
