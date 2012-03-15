@@ -50,21 +50,14 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                 std::vector<core::ObjectWrapperConstPtr> powers;
                 motion->getWrappers(powers, typeid(PowerCollection));
                 if (forces.size() > 0) {
-                    /*ForceCollectionPtr f = forces[0]->get();
-                    tryAddVectorToTree<ForceChannel>(motion, f, "Forces", &icon3D, kineticItem);*/
                     kineticItem->addChild(createForcesBranch(motion, QObject::tr("Forces"), getRootForcesIcon(), getForcesIcon()));
                 }
                 if (moments.size() > 0) {
-                   // MomentCollectionPtr m = moments[0]->get();
-                   // tryAddVectorToTree<MomentChannel>(motion, m, "Moments", getMomentsIcon(), kineticItem);
-                    kineticItem->addChild(createForcesBranch(motion, QObject::tr("Moments"), getRootMomentsIcon(), getMomentsIcon()));
+                    kineticItem->addChild(createMomentsBranch(motion, QObject::tr("Moments"), getRootMomentsIcon(), getMomentsIcon()));
                 }
                 // do rozwiniecia - potrzeba parsowac pliki vsk i interpretowac strukture kinamatyczna tak jak to robi Vicon
-                //tryAddVectorToTree(motion->getAngles(), "Angles", &icon3D, kineticItem);
                 if (powers.size() > 0) {
-                    //PowerCollectionPtr p = powers[0]->get();
-                    //tryAddVectorToTree<PowerChannel>(motion, p, "Powers", getPowersIcon(), kineticItem);
-                    kineticItem->addChild(createForcesBranch(motion, QObject::tr("Powers"), getRootPowersIcon(), getPowersIcon()));
+                    kineticItem->addChild(createPowersBranch(motion, QObject::tr("Powers"), getRootPowersIcon(), getPowersIcon()));
                 }
             }
 
