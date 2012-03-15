@@ -55,120 +55,120 @@ osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const c3dlib::ForcePlat
 GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& maxLength ) const
 {
 	osg::ref_ptr<osg::Group> group = new osg::Group();
+    if (f1->hasStartEndData() && f2->hasStartEndData()) { 
+        osg::Vec3 start1 = f1->getStartPoint();
+	    osg::Vec3 end1   = f1->getEndPoint();
+	    osg::Vec3 start2 = f2->getStartPoint();
+	    osg::Vec3 end2   = f2->getEndPoint();
+	    float startTime1 = f1->getDataStartTime();
+	    float endTime1	 = f1->getDataEndTime();
+	    float startTime2 = f2->getDataStartTime();
+	    float endTime2	 = f2->getDataEndTime();
 
-	osg::Vec3 start1 = f1->getStartPoint();
-	osg::Vec3 end1   = f1->getEndPoint();
-	osg::Vec3 start2 = f2->getStartPoint();
-	osg::Vec3 end2   = f2->getEndPoint();
-	float startTime1 = f1->getDataStartTime();
-	float endTime1	 = f1->getDataEndTime();
-	float startTime2 = f2->getDataStartTime();
-	float endTime2	 = f2->getDataEndTime();
+	    int numSegments = 300;
+	    float delta = (grf->getLength() / static_cast<float>(numSegments));
+	    GeodePtr geode = new osg::Geode();
+	    osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
+	    Vec3 v;
+	    osg::Vec3 origin1 = grf->getPlatforms()[0]->getCenter();
+	    osg::Vec3 origin2 = grf->getPlatforms()[1]->getCenter();
 
-	int numSegments = 300;
-	float delta = (grf->getLength() / static_cast<float>(numSegments));
-	GeodePtr geode = new osg::Geode();
-	osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
-	Vec3 v;
-	osg::Vec3 origin1 = grf->getPlatforms()[0]->getCenter();
-	osg::Vec3 origin2 = grf->getPlatforms()[1]->getCenter();
+	    osg::Vec4 highColor(1.0f, 0.0f, 0.0f, 0.7f);
+	    osg::Vec4 lowColor(0.0f, 1.0f, 0.0f, 0.0f);
+	    osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+	    //colors->push_back(osg::Vec4(1.0f, 0.3f, 0.3f, 1.0f));
 
-	osg::Vec4 highColor(1.0f, 0.0f, 0.0f, 0.7f);
-	osg::Vec4 lowColor(0.0f, 1.0f, 0.0f, 0.0f);
-	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-	//colors->push_back(osg::Vec4(1.0f, 0.3f, 0.3f, 1.0f));
+	    maxLength = 0.0f;
 
-	maxLength = 0.0f;
+	    float f = 0.0f;
+	    float lengthBuffer = f1->getLength();
+	    osg::Vec3 lastV1;
+	    osg::Vec3 lastV2;
+	    osg::Vec3 lastOrigin1;
+	    osg::Vec3 lastOrigin2;
+	    for (int i = 0; i < numSegments; i++) {
+		    v.set(getChannelValue(f, *f1));
+		    float length = v.length();
 
-	float f = 0.0f;
-	float lengthBuffer = f1->getLength();
-	osg::Vec3 lastV1;
-	osg::Vec3 lastV2;
-	osg::Vec3 lastOrigin1;
-	osg::Vec3 lastOrigin2;
-	for (int i = 0; i < numSegments; i++) {
-		v.set(getChannelValue(f, *f1));
-		float length = v.length();
-
-		float ratio1 = (f - startTime1) / (endTime1 - startTime1);
-		float ratio2 = (f - startTime2) / (endTime2 - startTime2);
-		origin1  = start1  * (1.0f - ratio1) + end1 * ratio1;
-		origin2 = start2  * (1.0f - ratio2) + end2 * ratio2;
-		v *= grfScale;	 
-		v[2] *= -1.0f;
-		v += origin1;
+		    float ratio1 = (f - startTime1) / (endTime1 - startTime1);
+		    float ratio2 = (f - startTime2) / (endTime2 - startTime2);
+		    origin1  = start1  * (1.0f - ratio1) + end1 * ratio1;
+		    origin2 = start2  * (1.0f - ratio2) + end2 * ratio2;
+		    v *= grfScale;	 
+		    v[2] *= -1.0f;
+		    v += origin1;
 		
-		//if (length > treshold) {
-		if (ratio1 >= 0.0f && ratio1 <= 1.0f) {
-			colors->push_back(highColor);
-			verts->push_back(v);
-			colors->push_back(highColor);
-			verts->push_back(lastV1);
-			colors->push_back(lowColor);
-			verts->push_back(origin1); 
+		    //if (length > treshold) {
+		    if (ratio1 >= 0.0f && ratio1 <= 1.0f) {
+			    colors->push_back(highColor);
+			    verts->push_back(v);
+			    colors->push_back(highColor);
+			    verts->push_back(lastV1);
+			    colors->push_back(lowColor);
+			    verts->push_back(origin1); 
 
-			colors->push_back(highColor);
-			verts->push_back(lastV1);
-			colors->push_back(lowColor);
-			verts->push_back(origin1);
-			colors->push_back(lowColor);
-			verts->push_back(lastOrigin1);
+			    colors->push_back(highColor);
+			    verts->push_back(lastV1);
+			    colors->push_back(lowColor);
+			    verts->push_back(origin1);
+			    colors->push_back(lowColor);
+			    verts->push_back(lastOrigin1);
 			
-		}
-		if (length > maxLength) {
-			maxLength = length;
-		}
-		lastV1 = v;
-		lastOrigin1 = origin1;
-		v.set(getChannelValue(f, *f2));
-		length = v.length();
-		v *= grfScale;
-		v[2] *= -1.0f;
-		v += origin2;
+		    }
+		    if (length > maxLength) {
+			    maxLength = length;
+		    }
+		    lastV1 = v;
+		    lastOrigin1 = origin1;
+		    v.set(getChannelValue(f, *f2));
+		    length = v.length();
+		    v *= grfScale;
+		    v[2] *= -1.0f;
+		    v += origin2;
 		
-		//if (length > treshold) {
-		if (ratio2 >= 0.0f && ratio2 <= 1.0f) {
-			colors->push_back(highColor);
-			verts->push_back(v);
-			colors->push_back(highColor);
-			verts->push_back(lastV2);
-			colors->push_back(lowColor);
-			verts->push_back(origin2); 
+		    //if (length > treshold) {
+		    if (ratio2 >= 0.0f && ratio2 <= 1.0f) {
+			    colors->push_back(highColor);
+			    verts->push_back(v);
+			    colors->push_back(highColor);
+			    verts->push_back(lastV2);
+			    colors->push_back(lowColor);
+			    verts->push_back(origin2); 
 
-			colors->push_back(highColor);
-			verts->push_back(lastV2);
-			colors->push_back(lowColor);
-			verts->push_back(origin2);
-			colors->push_back(lowColor);
-			verts->push_back(lastOrigin2);
-		}
+			    colors->push_back(highColor);
+			    verts->push_back(lastV2);
+			    colors->push_back(lowColor);
+			    verts->push_back(origin2);
+			    colors->push_back(lowColor);
+			    verts->push_back(lastOrigin2);
+		    }
 
-		if (length > maxLength) {
-			maxLength = length;
-		}
-		lastV2 = v;
-		lastOrigin2 = origin2;
-		f += delta;
-		if (f > lengthBuffer) {
-			f = lengthBuffer;
-		}
+		    if (length > maxLength) {
+			    maxLength = length;
+		    }
+		    lastV2 = v;
+		    lastOrigin2 = origin2;
+		    f += delta;
+		    if (f > lengthBuffer) {
+			    f = lengthBuffer;
+		    }
 		
-	}
+	    }
 
-	osg::ref_ptr<osg::Geometry> lines = new osg::Geometry();
+	    osg::ref_ptr<osg::Geometry> lines = new osg::Geometry();
 
-	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
-	stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-	stateset->setMode( GL_BLEND, osg::StateAttribute::ON );
-	stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
-	geode->setStateSet(stateset);
-	lines->setVertexArray(verts);
-	lines->setColorArray(colors);
-	lines->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-	lines->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, verts->size()));
-	geode->addDrawable(lines);
-	group->addChild(geode);
-	
+	    osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
+	    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+	    stateset->setMode( GL_BLEND, osg::StateAttribute::ON );
+	    stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
+	    geode->setStateSet(stateset);
+	    lines->setVertexArray(verts);
+	    lines->setColorArray(colors);
+	    lines->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+	    lines->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, verts->size()));
+	    geode->addDrawable(lines);
+	    group->addChild(geode);
+    }
 	return group;
 }
 

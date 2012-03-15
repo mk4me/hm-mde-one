@@ -33,6 +33,7 @@ class Vsk
 public:
 	enum MarkersCount
 	{
+        MarkersCount16 = 16,
 		MarkersCount39 = 39,
 		MarkersCount53 = 53
 	};
@@ -42,6 +43,12 @@ public:
 	{
 		switch(count) 
 		{
+        case MarkersCount16:										
+            if (!Count16->isLoaded()) {	
+                Count16->parse(core::getResourceString("trial/CZD.vsk"));		
+            } 																
+            return Count16;
+
 		case MarkersCount39:										
 			if (!Count39->isLoaded()) {	
 				Count39->parse(core::getResourceString("trial/M39.vsk"));		
@@ -60,6 +67,7 @@ public:
 	}
 
 private:
+    static kinematic::VskParserPtr Count16;
 	static kinematic::VskParserPtr Count39;
 	static kinematic::VskParserPtr Count53;
 };

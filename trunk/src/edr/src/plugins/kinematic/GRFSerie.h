@@ -125,7 +125,6 @@ private:
 
 	private:
 		osg::Vec4 color;
-		//std::list<ArrowPtr> freeArrows;
 		std::list<ArrowPtr> takenArrows;
 		GroupPtr hookNode;
 		int maxSize;

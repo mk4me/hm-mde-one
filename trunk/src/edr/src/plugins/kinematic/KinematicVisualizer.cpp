@@ -470,9 +470,6 @@ void KinematicVisualizer::showTrajectoriesDialog()
 
 void KinematicVisualizer::setActiveSerie( int idx )
 {
-    /*for (int i = series.size() - 1; i >= 0; --i) {
-        series[i]->setActive(idx == i);
-    }*/
     if (currentSerie >= 0) {
         series[currentSerie]->getTransformNode()->removeChild(indicatorNode);
     }

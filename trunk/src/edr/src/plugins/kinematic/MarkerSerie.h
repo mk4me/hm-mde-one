@@ -71,7 +71,6 @@ private:
 	SchemeDrawerContainerPtr markersDrawer;
 	TrajectoryDrawerPtr trajectoryDrawer;
     osg::ref_ptr<osg::PositionAttitudeTransform> ghostNode;
-
     core::ObjectWrapperConstPtr data;
     std::string name;
 };

@@ -270,17 +270,16 @@ void TreeWrappedItemHelper::createSeries( const VisualizerPtr & visualizer, cons
 
 void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
-    core::ObjectWrapperConstPtr m = motion->getWrapperOfType(typeid(MarkerCollection));
-    core::ObjectWrapperConstPtr j = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
-    core::ObjectWrapperConstPtr g = motion->getWrapperOfType(typeid(GRFCollection));
-
-    if (!m->isNull()) {
+    if (motion->hasObjectOfType(typeid(MarkerCollection))) {
+        core::ObjectWrapperConstPtr m = motion->getWrapperOfType(typeid(MarkerCollection));
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(m ,path.toStdString())));
     }                                            
-    if (!j->isNull()) {                          
+    if (motion->hasObjectOfType(typeid(kinematic::JointAnglesCollection))) {                          
+        core::ObjectWrapperConstPtr j = motion->getWrapperOfType(typeid(kinematic::JointAnglesCollection));
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(j ,path.toStdString())));
     }                                            
-    if (!g->isNull()) {                          
+    if (motion->hasObjectOfType(typeid(GRFCollection))) {                          
+        core::ObjectWrapperConstPtr g = motion->getWrapperOfType(typeid(GRFCollection));
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(visualizer->createSerie(g ,path.toStdString())));
     }
 }

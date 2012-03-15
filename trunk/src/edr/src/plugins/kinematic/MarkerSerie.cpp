@@ -15,16 +15,12 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 	try {
 		scheme->setMarkersDataFromVsk(Vsk::get(static_cast<Vsk::MarkersCount>(markersCount)));
 	} catch (...) {}
-
-	//SchemeDrawerContainerPtr markersDrawer = visualizer->drawersByName["Markers"];
-	
+    	
 	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.02f)));
 	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.005f)));
     
     trajectoryDrawer = TrajectoryDrawerPtr(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.33f), 300));
 	markersDrawer->addDrawer(trajectoryDrawer);
-	//visualizer->currentDrawer = markersDrawer;
-	//visualizer->actionByName["Markers"]->setVisible(true);
 	markersDrawer->init(scheme);
     visualizer->trajectoriesDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
     visualizer->schemeDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));

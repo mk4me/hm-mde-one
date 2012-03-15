@@ -8,6 +8,7 @@ using namespace osg;
 using namespace boost;
 using namespace kinematic;
 
+kinematic::VskParserPtr Vsk::Count16(new kinematic::VskParser());
 kinematic::VskParserPtr Vsk::Count39(new kinematic::VskParser());
 kinematic::VskParserPtr Vsk::Count53(new kinematic::VskParser());
 

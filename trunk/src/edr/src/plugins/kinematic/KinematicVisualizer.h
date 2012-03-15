@@ -87,7 +87,6 @@ private:
     
 
 private slots:
-    // void setAxis(bool xyz);
     void showTrajectoriesDialog();
     void showSchemeDialog();
     void setActiveSerie(int idx);
