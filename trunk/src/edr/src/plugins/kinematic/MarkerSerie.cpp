@@ -62,4 +62,14 @@ void MarkerSerie::showGhost( bool visible )
     ghostNode->setNodeMask(visible ? 0xFFFF : 0);
 }
 
+void MarkerSerie::setLocalTime( double time )
+{
+    UTILS_ASSERT(scheme);
+    scheme->setTime(time);
+    markersDrawer->update();
+    //osg::Matrix m = matrixTransform->getMatrix();
+    //m.setTrans(scheme->getCurrentPosition());
+    //matrixTransform->setMatrix(m);
+}
+
 

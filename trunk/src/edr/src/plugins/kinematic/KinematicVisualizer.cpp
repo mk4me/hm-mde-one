@@ -3,6 +3,8 @@
 #include "GRFSerie.h"
 #include "SkeletonSerie.h"
 #include "MarkerSerie.h"
+#include "PickHandler.h"
+#include "Manipulators.h"
 
 #ifdef _DEBUG
 
@@ -78,7 +80,8 @@ core::IVisualizer::TimeSerieBase *KinematicVisualizer::createSerie(const core::O
 		UTILS_ASSERT(false);
 	}
 
-    transformNode->addChild(ret->getTransformNode());
+    transformNode->addChild(ret->getMatrixTransformNode());
+    
     series.push_back(ret);
     if(series.size() == 1){
         activeSerieCombo->blockSignals(true);
@@ -186,49 +189,69 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     iconRight.addFile(QString::fromUtf8(":/resources/icons/right-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
     iconRight.addFile(QString::fromUtf8(":/resources/icons/right-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
     rightAction->setIcon(iconRight);*/
-    QWidget* spinWidgetX = new QWidget(widget);
-    QWidget* spinWidgetY = new QWidget(widget);
-    QWidget* spinWidgetZ = new QWidget(widget);
-    spinWidgetX->setLayout(new QHBoxLayout());
-    spinWidgetY->setLayout(new QHBoxLayout());
-    spinWidgetZ->setLayout(new QHBoxLayout());
-    spinWidgetX->layout()->addWidget(new QLabel("X:"));
-    spinWidgetY->layout()->addWidget(new QLabel("Y:"));
-    spinWidgetZ->layout()->addWidget(new QLabel("Z:"));
-    spinX = new QDoubleSpinBox(widget);
-    spinY = new QDoubleSpinBox(widget);
-    spinZ = new QDoubleSpinBox(widget);
-    connect(spinX, SIGNAL(valueChanged(double)), this, SLOT(shiftX(double)));
-    connect(spinY, SIGNAL(valueChanged(double)), this, SLOT(shiftY(double)));
-    connect(spinZ, SIGNAL(valueChanged(double)), this, SLOT(shiftZ(double)));
-    spinX->setMaximum(1000.0);
-    spinY->setMaximum(1000.0);
-    spinZ->setMaximum(1000.0);
-    spinX->setMinimum(-1000.0);
-    spinY->setMinimum(-1000.0);
-    spinZ->setMinimum(-1000.0);
-    spinX->setSingleStep(0.03);
-    spinY->setSingleStep(0.03);
-    spinZ->setSingleStep(0.03);
+    //QWidget* spinWidgetX = new QWidget(widget);
+    //QWidget* spinWidgetY = new QWidget(widget);
+    //QWidget* spinWidgetZ = new QWidget(widget);
+    //spinWidgetX->setLayout(new QHBoxLayout());
+    //spinWidgetY->setLayout(new QHBoxLayout());
+    //spinWidgetZ->setLayout(new QHBoxLayout());
+    //spinWidgetX->layout()->addWidget(new QLabel("X:"));
+    //spinWidgetY->layout()->addWidget(new QLabel("Y:"));
+    //spinWidgetZ->layout()->addWidget(new QLabel("Z:"));
+    //spinX = new QDoubleSpinBox(widget);
+    //spinY = new QDoubleSpinBox(widget);
+    //spinZ = new QDoubleSpinBox(widget);
+    //connect(spinX, SIGNAL(valueChanged(double)), this, SLOT(shiftX(double)));
+    //connect(spinY, SIGNAL(valueChanged(double)), this, SLOT(shiftY(double)));
+    //connect(spinZ, SIGNAL(valueChanged(double)), this, SLOT(shiftZ(double)));
+    //spinX->setMaximum(1000.0);
+    //spinY->setMaximum(1000.0);
+    //spinZ->setMaximum(1000.0);
+    //spinX->setMinimum(-1000.0);
+    //spinY->setMinimum(-1000.0);
+    //spinZ->setMinimum(-1000.0);
+    //spinX->setSingleStep(0.03);
+    //spinY->setSingleStep(0.03);
+    //spinZ->setSingleStep(0.03);
+    //
+    //spinWidgetX->layout()->addWidget(spinX);
+    //spinWidgetY->layout()->addWidget(spinY);
+    //spinWidgetZ->layout()->addWidget(spinZ);
+    //
+    //spinWidgetX->layout()->setMargin(0);
+    //spinWidgetY->layout()->setMargin(0);
+    //spinWidgetZ->layout()->setMargin(0);
+    //
+    //spinWidgetX->layout()->setContentsMargins(0, 0, 0, 0);
+    //spinWidgetY->layout()->setContentsMargins(0, 0, 0, 0);
+    //spinWidgetZ->layout()->setContentsMargins(0, 0, 0, 0);
 
-    spinWidgetX->layout()->addWidget(spinX);
-    spinWidgetY->layout()->addWidget(spinY);
-    spinWidgetZ->layout()->addWidget(spinZ);
+    pickerAction = new QAction(widget);
+    translateAction = new QAction(widget);
+    rotateAction = new QAction(widget);
+    scaleAction = new QAction(widget);
 
-    spinWidgetX->layout()->setMargin(0);
-    spinWidgetY->layout()->setMargin(0);
-    spinWidgetZ->layout()->setMargin(0);
+    pickerAction->setText(tr("Picker"));
+    translateAction->setText(tr("Translate"));
+    rotateAction->setText(tr("Rotate"));
+    scaleAction->setText(tr("Scale"));
 
-    spinWidgetX->layout()->setContentsMargins(0, 0, 0, 0);
-    spinWidgetY->layout()->setContentsMargins(0, 0, 0, 0);
-    spinWidgetZ->layout()->setContentsMargins(0, 0, 0, 0);
+    pickerAction->setIcon(QIcon(":/resources/icons/manipulator-objects.png"));
+    translateAction->setIcon(QIcon(":/resources/icons/manipulator-translate.png"));
+    rotateAction->setIcon(QIcon(":/resources/icons/manipulator-rotate.png"));
+    scaleAction->setIcon(QIcon(":/resources/icons/manipulator-scale.png"));
 
-	QAction* lft_action = viewMenu->addAction("Left"); 
-	QAction* rht_action = viewMenu->addAction("Right"); 
-	QAction* frn_action = viewMenu->addAction("Front"); 
-	QAction* bck_action = viewMenu->addAction("Back"); 
-	QAction* top_action = viewMenu->addAction("Top"); 
-	QAction* btm_action = viewMenu->addAction("Bottom"); 
+    connect(pickerAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
+    connect(translateAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
+    connect(rotateAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
+    connect(scaleAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
+
+	QAction* lft_action = viewMenu->addAction(tr("Left")); 
+	QAction* rht_action = viewMenu->addAction(tr("Right")); 
+	QAction* frn_action = viewMenu->addAction(tr("Front")); 
+	QAction* bck_action = viewMenu->addAction(tr("Back")); 
+	QAction* top_action = viewMenu->addAction(tr("Top")); 
+	QAction* btm_action = viewMenu->addAction(tr("Bottom")); 
 	
 	connect(lft_action, SIGNAL(triggered()), this, SLOT(setLeft()));
 	connect(rht_action, SIGNAL(triggered()), this, SLOT(setRight())); 
@@ -259,23 +282,51 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     retWidget->layout()->addWidget(widget);
 
 #else
-
     //widget proxy przekierowujacy focusa do okienka osg
     QWidget * retWidget = new core::QOsgEncapsulatorWidget(widget);
     //dodajemy tez event handler ze statystykami
     widget->addEventHandler( new osgViewer::StatsHandler() );
     widget->setTimerActive(true);
-
 #endif
+
+    //auto info = [&](const PickHandler::PickerList& list) {
+    //    for (auto it = list.begin(); it != list.end(); it++) {
+    //        GeodePtr geode = it->get<0>();
+    //        if (geode) {
+    //            geode->setNodeMask(geode->getNodeMask() == 0 ? 0xFFFF : 0);
+    //        }
+    //    }
+    //    //QString message;
+    //    //for (auto it = list.begin(); it != list.end(); it++) {
+    //    //    message += QString("Hit : %1, D: %2\n").arg(it->get<0>() ? it->get<0>()->getName().c_str() : "n/a").arg(it->get<1>() ? it->get<1>()->className() : "n/a");
+    //    //}
+    //    //QMessageBox box(QMessageBox::Warning, "HITS", message);
+    //    //box.exec();
+    //};
+    auto info = [&](const PickHandler::PickerList& list) {
+        auto it = list.begin();
+        if (it != list.end()) {
+            GeodePtr geode = it->get<0>();
+            KinematicSerie* s = getParentSerie(geode);
+            if (s) {
+                setActiveSerie(s);
+            }
+        }
+    };
+    widget->addEventHandler(new PickHandler(info));
 
     core::IActionsGroupManager::GroupID id = manager->createGroup(tr("Properties"));
     manager->addGroupAction(id, activeSerieCombo);
     manager->addGroupAction(id, actionTrajectories);
     manager->addGroupAction(id, actionScheme);
     manager->addGroupAction(id, actionGhost);
-    manager->addGroupAction(id, spinWidgetX);
-    manager->addGroupAction(id, spinWidgetY);
-    manager->addGroupAction(id, spinWidgetZ);
+    //manager->addGroupAction(id, spinWidgetX);
+    //manager->addGroupAction(id, spinWidgetY);
+    //manager->addGroupAction(id, spinWidgetZ);
+    manager->addGroupAction(id, pickerAction);
+    manager->addGroupAction(id, translateAction);
+    manager->addGroupAction(id, rotateAction);
+    manager->addGroupAction(id, scaleAction);
 
     id = manager->createGroup(tr("View"));
     manager->addGroupAction(id, viewMenu);
@@ -286,6 +337,12 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     retWidget->setFocusPolicy(Qt::StrongFocus);
     widget->setFocusPolicy(Qt::StrongFocus);
     retWidget->layout()->setContentsMargins(2,0,2,2);
+
+    currentDragger = nullptr;
+    translateDragger = Manipulators::creatreDraggerContainer(Manipulators::TranslateAxis);
+    rotationDragger = Manipulators::creatreDraggerContainer(Manipulators::Trackball);
+    scaleDragger = Manipulators::creatreDraggerContainer(Manipulators::TabBox);
+
 
     return retWidget;
 }
@@ -302,14 +359,23 @@ KinematicVisualizer::KinematicVisualizer() :
     currentSerie(-1),
     spinX(nullptr),
     spinY(nullptr),
-    spinZ(nullptr)
+    spinZ(nullptr),
+    currentDragger(nullptr),
+    lastTime(-1.0f)
 {
 
 }
 
 void KinematicVisualizer::update( double deltaTime )
 {
-
+    KinematicSerie* serie = tryGetCurrentSerie();
+    if (serie->getTime() != lastTime) {
+        lastTime = serie->getTime();
+        if (currentDragger && serie) {
+            currentDragger->setDraggerPivot(serie->getPivot());
+        }
+    }
+    
 }
 
 void KinematicVisualizer::updateAnimation()
@@ -471,11 +537,22 @@ void KinematicVisualizer::showTrajectoriesDialog()
 void KinematicVisualizer::setActiveSerie( int idx )
 {
     if (currentSerie >= 0) {
-        series[currentSerie]->getTransformNode()->removeChild(indicatorNode);
+        series[currentSerie]->getMatrixTransformNode()->removeChild(indicatorNode);
     }
     currentSerie = idx;
     refreshSpinboxes();
-    series[currentSerie]->getTransformNode()->addChild(indicatorNode);
+    series[currentSerie]->getMatrixTransformNode()->addChild(indicatorNode);
+}
+
+void KinematicVisualizer::setActiveSerie( KinematicSerie* serie )
+{
+    for (int i = 0; i < series.size(); i++) {
+        if (series[i] == serie) {
+            setActiveSerie(i);
+            return;
+        }
+    }
+    UTILS_ASSERT(false);
 }
 
 KinematicSerie* KinematicVisualizer::tryGetCurrentSerie()
@@ -490,20 +567,20 @@ KinematicSerie* KinematicVisualizer::tryGetCurrentSerie()
 
 void KinematicVisualizer::shiftLeft()
 {
-    KinematicSerie* current = tryGetCurrentSerie();
-    if (current) {
-        KinematicSerie::TransformPtr transform = current->getTransformNode();
-        transform->setPosition(transform->getPosition() + osg::Vec3(DEFAULT_SHIFT, 0.0f, 0.0f));
-    }
+    //KinematicSerie* current = tryGetCurrentSerie();
+    //if (current) {
+    //    KinematicSerie::TransformPtr transform = current->getMatrixTransformNode();
+    //    transform->setPosition(transform->getPosition() + osg::Vec3(DEFAULT_SHIFT, 0.0f, 0.0f));
+    //}
 }
 
 void KinematicVisualizer::shiftRight()
 {
-    KinematicSerie* current = tryGetCurrentSerie();
-    if (current) {
-        KinematicSerie::TransformPtr transform = current->getTransformNode();
-        transform->setPosition(transform->getPosition() + osg::Vec3(-DEFAULT_SHIFT, 0.0f, 0.0f));
-    }
+    //KinematicSerie* current = tryGetCurrentSerie();
+    //if (current) {
+    //    KinematicSerie::TransformPtr transform = current->getTransformNode();
+    //    transform->setPosition(transform->getPosition() + osg::Vec3(-DEFAULT_SHIFT, 0.0f, 0.0f));
+    //}
 }
 
 osg::ref_ptr<osg::PositionAttitudeTransform> KinematicVisualizer::createIndicator() const
@@ -557,10 +634,10 @@ void KinematicVisualizer::shiftX( double d )
 {
     KinematicSerie* current = tryGetCurrentSerie();
     if (current) {
-        KinematicSerie::TransformPtr transform = current->getTransformNode();
-        osg::Vec3 pos = transform->getPosition();
-        pos._v[0] = d;
-        transform->setPosition(pos);
+        //KinematicSerie::TransformPtr transform = current->getTransformNode();
+        //osg::Vec3 pos = transform->getPosition();
+        //pos._v[0] = d;
+        //transform->setPosition(pos);
     }
 }
 
@@ -568,10 +645,10 @@ void KinematicVisualizer::shiftY( double d )
 {
     KinematicSerie* current = tryGetCurrentSerie();
     if (current) {
-        KinematicSerie::TransformPtr transform = current->getTransformNode();
-        osg::Vec3 pos = transform->getPosition();
-        pos._v[1] = d;
-        transform->setPosition(pos);
+        //KinematicSerie::TransformPtr transform = current->getTransformNode();
+        //osg::Vec3 pos = transform->getPosition();
+        //pos._v[1] = d;
+        //transform->setPosition(pos);
     }
 }
 
@@ -579,10 +656,10 @@ void KinematicVisualizer::shiftZ( double d )
 {
     KinematicSerie* current = tryGetCurrentSerie();
     if (current) {
-        KinematicSerie::TransformPtr transform = current->getTransformNode();
-        osg::Vec3 pos = transform->getPosition();
-        pos._v[2] = d;
-        transform->setPosition(pos);
+        //KinematicSerie::TransformPtr transform = current->getTransformNode();
+        //osg::Vec3 pos = transform->getPosition();
+        //pos._v[2] = d;
+        //transform->setPosition(pos);
     }
 }
 
@@ -595,22 +672,78 @@ void KinematicVisualizer::refreshSpinboxes()
 {
     KinematicSerie* current = tryGetCurrentSerie();
     if (current) {
-        KinematicSerie::TransformPtr transform = current->getTransformNode();
-        osg::Vec3 pos = transform->getPosition();
-
-        spinX->blockSignals(true);
-        spinX->setValue(pos.x());
-        spinX->blockSignals(false);
-
-        spinY->blockSignals(true);
-        spinY->setValue(pos.y());
-        spinY->blockSignals(false);
-
-        spinZ->blockSignals(true);
-        spinZ->setValue(pos.z());
-        spinZ->blockSignals(false);
+        //KinematicSerie::TransformPtr transform = current->getMatrixTransformNode();
+        //osg::Vec3 pos = transform->getPosition();
+        //
+        //spinX->blockSignals(true);
+        //spinX->setValue(pos.x());
+        //spinX->blockSignals(false);
+        //
+        //spinY->blockSignals(true);
+        //spinY->setValue(pos.y());
+        //spinY->blockSignals(false);
+        //
+        //spinZ->blockSignals(true);
+        //spinZ->setValue(pos.z());
+        //spinZ->blockSignals(false);
     }
     
+}
+
+void KinematicVisualizer::draggerTriggered()
+{
+    QAction* a = qobject_cast<QAction*>(sender());
+    //Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), translateDragger);
+    //Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), rotationDragger);
+    //Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), scaleDragger);
+    if (currentDragger) {
+        Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), currentDragger);
+    }
+
+    if (a == translateAction) {
+        currentDragger = translateDragger;
+    } else if (a == rotateAction) {
+        currentDragger = rotationDragger;
+    } else if (a == scaleAction) {
+        currentDragger = scaleDragger;
+    } else if (a == pickerAction) {
+        currentDragger = nullptr;
+    } else {
+        UTILS_ASSERT(false);
+    }
+    
+    if (currentDragger) {
+        Manipulators::connect(transformNode, series[currentSerie]->getMatrixTransformNode(), currentDragger, series[currentSerie]->getPivot()); 
+    }
+}
+
+bool isChildRecursive(osg::Group* group, osg::Geode* geode)
+{
+    int count = group->getNumChildren();
+    for (int i = 0; i < count; i++) {
+        osg::Node* child = group->getChild(i);
+        if (geode == child) {
+            return true;
+        }
+        osg::Group* childGroup = dynamic_cast<osg::Group*>(child);
+        if (childGroup && isChildRecursive(childGroup, geode)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+KinematicSerie* KinematicVisualizer::getParentSerie( GeodePtr geode )
+{
+    for (auto it = series.begin(); it != series.end(); it++) {
+        osg::MatrixTransform* node = (*it)->getMatrixTransformNode();
+        if (isChildRecursive(node, geode)) {
+            return *it;
+        }
+    }
+
+    return nullptr;
 }
 
 

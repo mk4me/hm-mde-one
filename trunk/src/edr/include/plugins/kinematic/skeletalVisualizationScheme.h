@@ -48,7 +48,6 @@ public:
                 Count16->parse(core::getResourceString("trial/CZD.vsk"));		
             } 																
             return Count16;
-
 		case MarkersCount39:										
 			if (!Count39->isLoaded()) {	
 				Count39->parse(core::getResourceString("trial/M39.vsk"));		
@@ -124,6 +123,8 @@ public: // akcesory
         return getNormalizedTime() * getDuration();
     }
 
+    const osg::Vec3& getCurrentPosition() const { return currentPosition; }
+
     int getNumFrames() const { 
         UTILS_ASSERT(joints);  
         return joints->getNumPointsPerChannel(); 
@@ -197,6 +198,7 @@ private:
 	kinematic::JointAnglesCollectionConstPtr joints;
     //! slaby wskaznik do this
     //boost::weak_ptr<SkeletalVisualizationScheme> weak;
+    osg::Vec3 currentPosition;
 };
 
 typedef core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;

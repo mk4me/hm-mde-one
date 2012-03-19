@@ -24,6 +24,8 @@ set(PRIVATE_H
 	TrajectoriesDialog.h
 	TrajectoriesDrawer.h
 	SchemeDialog.h
+	PickHandler.h
+	Manipulators.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -55,6 +57,8 @@ set(TARGET_SRC
 	TrajectoriesDialog.cpp
 	TrajectoriesDrawer.cpp
 	SchemeDialog.cpp
+	PickHandler.cpp
+	Manipulators.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

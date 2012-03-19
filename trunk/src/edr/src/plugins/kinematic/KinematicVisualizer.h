@@ -26,29 +26,50 @@
 #include "GlPointSchemeDrawer.h"
 #include "GlLineSchemeDrawer.h"
 #include "SchemeDrawerContainer.h"
-
+#include "Manipulators.h"
 #include "TrajectoriesDialog.h"
 #include "SchemeDialog.h"
 
 class KinematicSerie : public EventSerieBase
 {
 public: 
+    typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
 
     KinematicSerie() :
-        transformNode(new osg::PositionAttitudeTransform())
+        transformNode(new osg::PositionAttitudeTransform()),
+        matrixTransform(new osg::MatrixTransform())
     {
+        matrixTransform->addChild(transformNode);
     }
 
-    TransformPtr getTransformNode() { return transformNode; }
+    MatrixTransformPtr getMatrixTransformNode() { return matrixTransform; }
+    osg::Vec3 getPivot() const 
+    {
+        auto matrix = matrixTransform->getMatrix();
+        auto t1 = matrix.getTrans();
+        matrix.setTrans(osg::Vec3());
+        return getLocalPivot() * matrix + t1; 
+    }
 
      virtual void setEvents(EventsCollectionConstPtr val) {
          events = val;
      }
 
+    double getTime() const { return time; }
+    virtual void setTime(double val) { time = val; setLocalTime(val); }
+
+protected:
+    virtual osg::Vec3 getLocalPivot() const { return transformNode->getPosition(); }
+    virtual void setLocalTime(double time) = 0;
+
 protected:
     TransformPtr transformNode;
     EventsCollectionConstPtr events;
+
+private:
+    MatrixTransformPtr matrixTransform;
+    double time;
 };
 
 class KinematicVisualizer :  public QObject, public core::IVisualizer
@@ -89,12 +110,13 @@ private:
     void refillDrawersMaps();
     KinematicSerie* tryGetCurrentSerie();
     void refreshSpinboxes();
-    
+    KinematicSerie* getParentSerie(GeodePtr geode);
 
 private slots:
     void showTrajectoriesDialog();
     void showSchemeDialog();
     void setActiveSerie(int idx);
+    void setActiveSerie(KinematicSerie* serie);
     void shiftLeft();
     void shiftRight();
     void shiftX(double d);
@@ -109,6 +131,7 @@ public slots:
 	void setTop();
 	void setBottom();
     void actionTriggered(QAction* action);
+    void draggerTriggered();
 
 public:
     virtual osg::Node* debugGetLocalSceneRoot();
@@ -132,6 +155,12 @@ private:
     QAction* actionScheme;
     QAction* actionGhost;
     QAction* actionSwitchAxes;
+
+    QAction* pickerAction;
+    QAction* translateAction;
+    QAction* rotateAction;
+    QAction* scaleAction;
+
     TrajectoriesDialog* trajectoriesDialog;
     SchemeDialog* schemeDialog;
 
@@ -142,6 +171,12 @@ private:
     QDoubleSpinBox* spinX;
     QDoubleSpinBox* spinY;
     QDoubleSpinBox* spinZ;
+
+    DraggerContainerPtr translateDragger;
+    DraggerContainerPtr rotationDragger;
+    DraggerContainerPtr scaleDragger;
+    DraggerContainerPtr currentDragger;
+    double lastTime;
 };
 
 

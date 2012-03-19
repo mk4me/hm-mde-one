@@ -16,5 +16,9 @@
 	<file alias="right-b.png">../../../../resources/embedded/icons/right-b.png</file>
 	<file alias="left-a.png">../../../../resources/embedded/icons/left-a.png</file>
 	<file alias="left-b.png">../../../../resources/embedded/icons/left-b.png</file>
+	<file alias="manipulator-objects.png">../../../../resources/embedded/icons/manipulator-objects.png</file>
+	<file alias="manipulator-translate.png">../../../../resources/embedded/icons/manipulator-translate.png</file>
+	<file alias="manipulator-rotate.png">../../../../resources/embedded/icons/manipulator-rotate.png</file>
+	<file alias="manipulator-scale.png">../../../../resources/embedded/icons/manipulator-scale.png</file>
   </qresource>
 </RCC>

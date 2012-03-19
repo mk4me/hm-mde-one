@@ -134,9 +134,15 @@ void SkeletalVisualizationScheme::updateMarkers( double normalizedTime )
 	UTILS_ASSERT(markers);
     if (markers) {
         int count =  markers->getNumChannels();
+        currentPosition.set(0.0, 0.0, 0.0);
         for (int i = 0; i < count; i++) {
             markersStates[i].position = markers->getValue(i, normalizedTime * markers->getLength());
+            currentPosition += markersStates[i].position;
         }
+        currentPosition *= (1.0f / count);
+        //for (int i = 0; i < count; i++) {
+        //    markersStates[i].position -= currentPosition;
+        //}
     }
 }
 
@@ -205,10 +211,12 @@ void SkeletalVisualizationScheme::setMarkers( MarkerCollectionConstPtr val )
 	}
 	osg::Vec4 blue(0,0,1,1);
 	for (int i = 0; i < count; i++) {
-		markersStates[i].position = markers->getValue(i, 0.0 );
+		//markersStates[i].position = markers->getValue(i, 0.0 );
 		markersStates[i].color = blue;
         markersStates[i].name = markers->getMarkerName(i);
 	}
+
+    updateMarkers(0.0);
 }
 
 void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )

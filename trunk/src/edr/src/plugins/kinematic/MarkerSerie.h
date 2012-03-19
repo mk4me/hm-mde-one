@@ -53,14 +53,14 @@ public:
 		return scheme->getDuration();
 	}
 
+    virtual osg::Vec3 getLocalPivot() const
+    {
+        return scheme->getCurrentPosition();
+    }
+
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
-	virtual void setTime(double time)
-	{
-		UTILS_ASSERT(scheme);
-		scheme->setTime(time);
-		markersDrawer->update();
-	}
+	virtual void setLocalTime(double time);
 
 private slots:
     void showGhost(bool visible);

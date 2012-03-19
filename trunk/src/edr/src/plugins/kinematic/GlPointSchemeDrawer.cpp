@@ -59,14 +59,15 @@ void GlPointSchemeDrawer::createMarkersCrowd(const std::vector<MarkerState>& mar
     int count = markers.size();
     points.resize(count);
     for (int i = 0; i < count; ++i) {
-        points[i] = addPoint(markers[i].position, useCustomColor ? customColor : markers[i].color);
+        points[i] = addPoint(markers[i].position, useCustomColor ? customColor : markers[i].color, markers[i].name);
         node->addChild(points[i]);
     }
 }
 
-GlPointSchemeDrawer::TransformPtr GlPointSchemeDrawer::addPoint( const osg::Vec3& point, const osg::Vec4& color )
+GlPointSchemeDrawer::TransformPtr GlPointSchemeDrawer::addPoint( const osg::Vec3& point, const osg::Vec4& color, const std::string& name)
 {
     GeodePtr marker = createMarker(color, 0.08f);
+    marker->setName(name.c_str());
     ref_ptr<StateSet> stateset = new osg::StateSet;
     stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
     stateset->setMode(GL_BLEND,osg::StateAttribute::ON);

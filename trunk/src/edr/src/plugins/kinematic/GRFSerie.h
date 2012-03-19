@@ -57,7 +57,7 @@ public:
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
-	virtual void setTime(double time);
+	virtual void setLocalTime(double time);
 
 private:
 	struct Arrow 

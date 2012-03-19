@@ -42,6 +42,7 @@ source_group("deploy\\schemas" FILES ${SCHEMAS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SCHEMAS})
 
 set(TRIAL
+	deploy/trial/CZD.vsk
 	deploy/trial/M39.vsk
 	deploy/trial/M53.vsk
 )

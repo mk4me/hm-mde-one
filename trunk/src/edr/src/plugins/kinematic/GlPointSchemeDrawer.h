@@ -29,7 +29,7 @@ private:
 private:
     void createMarkersCrowd(const std::vector<MarkerState>& markers);
     GeodePtr createMarker(osg::Vec4 color, float scale = 1.0f);
-    TransformPtr addPoint(const osg::Vec3& point, const osg::Vec4& color);
+    TransformPtr addPoint(const osg::Vec3& point, const osg::Vec4& color, const std::string& name = std::string());
     GeometryPtr createCustomSphere(int complex, osg::Vec4 color) const;
 
 private:
