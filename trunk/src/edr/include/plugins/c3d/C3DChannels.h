@@ -394,10 +394,12 @@ public:
 	type(Unknown),
 	treshold(treshold)
     {}
+
     GRFChannel(const GRFChannel& channel) :
     VectorChannel(channel),
 	type(channel.type)
     {}
+
     GRFChannel( const c3dlib::C3DParser& data, int channelNo, float treshold = 200.0f) :
     VectorChannel(static_cast<int>(data.getNumberAnalogSamplePerFrame() * data.getPointFrequency())),
         type(Unknown),

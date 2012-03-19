@@ -57,8 +57,6 @@ void GlPointSchemeDrawer::draw()
 void GlPointSchemeDrawer::createMarkersCrowd(const std::vector<MarkerState>& markers)
 {
     int count = markers.size();
-    
-    
     points.resize(count);
     for (int i = 0; i < count; ++i) {
         points[i] = addPoint(markers[i].position, useCustomColor ? customColor : markers[i].color);

@@ -16,6 +16,7 @@
 #include <core/IDataManager.h>
 #include <c3dlib/C3DParser.h>
 #include <utils/DataChannel.h>
+#include <plugins/c3d/C3DChannels.h>
 
 class C3DParser : public core::IParser, utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float>
 {
@@ -44,13 +45,16 @@ public:
 
 public:
     virtual void parseFile(const core::Filesystem::Path& path);
+
+    void computeDataForPlatform( GRFChannelPtr f1, MarkerCollectionPtr markers, c3dlib::ForcePlatformConstPtr platform, EventsCollectionConstPtr events );
+
     virtual core::IParser* create();
-
     virtual void getObjects(core::Objects& objects);
-
     virtual void getSupportedExtensions(Extensions & extensions) const;
-
 	void saveFile(const core::Filesystem::Path& path);
+        
+private:
+    bool isInsideXY(const osg::Vec3& v, c3dlib::ForcePlatformConstPtr fp) const;
 };
 
 

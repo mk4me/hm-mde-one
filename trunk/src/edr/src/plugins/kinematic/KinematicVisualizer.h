@@ -30,7 +30,7 @@
 #include "TrajectoriesDialog.h"
 #include "SchemeDialog.h"
 
-class KinematicSerie : public core::IVisualizer::TimeSerieBase
+class KinematicSerie : public EventSerieBase
 {
 public: 
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
@@ -42,8 +42,13 @@ public:
 
     TransformPtr getTransformNode() { return transformNode; }
 
+     virtual void setEvents(EventsCollectionConstPtr val) {
+         events = val;
+     }
+
 protected:
     TransformPtr transformNode;
+    EventsCollectionConstPtr events;
 };
 
 class KinematicVisualizer :  public QObject, public core::IVisualizer
