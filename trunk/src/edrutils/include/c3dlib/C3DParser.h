@@ -48,6 +48,14 @@ struct C3DLIB_EXPORT ForcePlatform
 		return (corners[1] - corners[2]).length();
 	}
 
+    float getSignX() const {
+        return (corners[1].x() - corners[0].x()) >= 0.0f ? 1.0f : -1.0f;
+    }
+
+    float getSignY() const {
+        return (corners[2].y() - corners[1].y()) >= 0.0f ? 1.0f : -1.0f;
+    }
+
 	float getDistanceToCenter(const osg::Vec3& vec) const {
 		return (getCenter() - vec).length();
 	}

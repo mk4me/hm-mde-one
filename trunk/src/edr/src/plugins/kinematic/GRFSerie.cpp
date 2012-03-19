@@ -27,7 +27,7 @@ osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const c3dlib::ForcePlat
 		stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
 		platformGeode->setStateSet(stateset);
 
-		osg::ref_ptr<osg::Box> box = new osg::Box((*it)->getCenter() - Vec3(0,0, 0.025f), (*it)->getWidth(), (*it)->getLength(), 0.025f);
+        osg::ref_ptr<osg::Box> box = new osg::Box((*it)->getCenter() - Vec3(0,0, 0.025f), (*it)->getWidth(), (*it)->getLength(), 0.025f);		
 		if (i == 0) {
 			platform1 = new osg::ShapeDrawable(box);
 			platform1->setColor(Vec4(0.5f, 0.5f, 0.3f, 1.0f));
@@ -94,7 +94,9 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& 
             float ratio2 = (f - startTime2) / (endTime2 - startTime2);
             origin1  = start1  * (1.0f - ratio1) + end1 * ratio1;
             origin2 = start2  * (1.0f - ratio2) + end2 * ratio2;
-            v *= grfScale;	 
+            v *= grfScale;
+            v[0] *= grf->getPlatforms()[0]->getSignX();
+            v[1] *= grf->getPlatforms()[0]->getSignY();
             v[2] *= -1.0f;
             v += origin1;
 
@@ -123,6 +125,8 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& 
             v.set(getChannelValue(f, *f2));
             length = v.length();
             v *= grfScale;
+            v[0] *= grf->getPlatforms()[1]->getSignX();
+            v[1] *= grf->getPlatforms()[1]->getSignY();
             v[2] *= -1.0f;
             v += origin2;
 
@@ -186,8 +190,12 @@ void GRFSerie::setLocalTime( double time )
 		osg::Vec4 c2(ratio2, 1.0f - ratio2, 0.0f, 1.0f);
 
 		v1 *= grfScale;
+        v1[0] *= grfCollection->getPlatforms()[0]->getSignX();
+        v1[1] *= grfCollection->getPlatforms()[0]->getSignY();
 		v1[2] *= -1.0f;
 		v2 *= grfScale;
+        v2[0] *= grfCollection->getPlatforms()[1]->getSignX();
+        v2[1] *= grfCollection->getPlatforms()[1]->getSignY();
 		v2[2] *= -1.0f;
 		//osg::Vec3 origin1 = grfCollection->getPlatforms()[0]->getCenter();
 		//osg::Vec3 origin2 = grfCollection->getPlatforms()[1]->getCenter();
