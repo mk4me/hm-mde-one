@@ -16,6 +16,7 @@
 #include <qwt/qwt_plot_curve.h>
 #include <plugins/c3d/C3DChannels.h>
 #include "NewChartCurve.h"
+#include "NewChartEvents.h"
 #include "Scales.h"
 
 class NewChartCurve;
@@ -54,6 +55,8 @@ public:
     void setVisible(bool visible);
 
     bool isVisible() const;
+
+    EventsHelperPtr getEventsHelper() const { return eventsHelper; }
 
     void setColor(int r, int g, int b, int a = 255)
     {
@@ -124,7 +127,9 @@ private:
     ScalarChannelStatsPtr stats;
     core::shared_ptr<ScalarContiniousTimeAccessor> accessor;
     ScalarChannelReaderInterfaceConstPtr reader;
+    EventsHelperPtr eventsHelper;
     
+
     double* xvals;
     double* yvals;
     bool active;

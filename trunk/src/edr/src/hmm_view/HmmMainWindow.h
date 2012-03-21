@@ -117,7 +117,7 @@ private slots:
     void visualizerDestroyed(QObject * visualizer);
 
 	//void onOpen();
-	void onTreeItemClicked(QTreeWidgetItem *item, int column);
+	//void onTreeItemClicked(QTreeWidgetItem *item, int column);
     void filterClicked(FilterEntryWidget* entry);
     VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
 
@@ -129,8 +129,19 @@ private slots:
     
 
     void createNewVisualizer();
+
+    void createNewVisualizer( TreeItemHelper* helper, EDRDockWidgetSet* dockSet = nullptr );
+
     void createVisualizerInNewSet();
     void removeFromVisualizer();
+
+    void allFromSession();
+    void allXFromSession();
+
+    void allTFromSession( NewVector3ItemHelper* helper, int channelNo );
+
+    void allYFromSession();
+    void allZFromSession();
 
     void removeFromVisualizers( ContextAction* action, bool once );
 

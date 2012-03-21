@@ -78,7 +78,7 @@ MarkerCollectionConstPtr SkeletonSerie::createTrajectories( kinematic::JointAngl
             // czy kolejnosc jest zapewniona? 
             int size = states.size();
             for (int i = 0; i < size; i++) {
-                MarkerChannelPtr marker = markers->getChannel(i);
+                VectorChannelPtr marker = markers->getChannel(i);
                 marker->addPoint(states[i].position);
             }
         }

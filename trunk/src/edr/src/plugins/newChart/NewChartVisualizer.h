@@ -55,6 +55,7 @@ public:
 public:
       QwtPlot* getPlot();
       const NewChartSerie* tryGetCurrentSerie() const;
+      NewChartSerie* tryGetCurrentSerie();
 
       virtual IVisualizer* createClone() const;
       
@@ -176,7 +177,7 @@ private:
       int currentSerie;
       QwtPlotPanner* plotPanner;
       QwtPlotMagnifier* plotMagnifier;
-      EventsPlotItem* eventsItem;
+      //EventsPlotItem* eventsItem;
       StatsTable* statsTable;
       bool eventsVisible;
       bool scaleToActive;
@@ -191,7 +192,7 @@ private:
       QDoubleSpinBox* scaleSpinY;
 
       C3DEventsCollection::Context context;
-      std::map<NewChartSerie*, EventsHelperPtr> eventsHelpers;
+      //std::map<NewChartSerie*, EventsHelperPtr> eventsHelpers;
       EventsHelper::SegmentConstPtr oldSegment;
       NewChartPickerPtr picker;
 };

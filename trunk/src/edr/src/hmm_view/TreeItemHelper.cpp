@@ -406,8 +406,12 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
     int count = wrappers.size();
     int count2 = count / 2;
     for (int i = 0; i < count; i++) {
-        core::ObjectWrapperConstPtr wrapper = wrappers[i];
+        auto wrapper = wrappers[i].first;
         auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());
+        if (wrappers[i].second) {
+            EventSerieBasePtr eventSerie = core::dynamic_pointer_cast<EventSerieBase>(serieX);
+            eventSerie->setEvents(wrappers[i].second);
+        }
         NewChartSerie* chartSerieX = dynamic_cast<NewChartSerie*>(serieX.get());
         int r = 0;
         int g = 0;

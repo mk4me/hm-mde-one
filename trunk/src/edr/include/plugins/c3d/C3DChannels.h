@@ -381,6 +381,11 @@ typedef boost::shared_ptr<EMGCollection> EMGCollectionPtr;
 typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
 
+typedef utils::DataChannelCollection<VectorChannel> VectorChannelCollection;
+typedef core::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
+typedef core::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
+
+
 //! Kanal GRF
 class GRFChannel : public VectorChannel
 {
@@ -496,7 +501,7 @@ private:
 typedef boost::shared_ptr<GRFChannel> GRFChannelPtr;
 typedef boost::shared_ptr<const GRFChannel> GRFChannelConstPtr;
 
-class GRFCollection : public utils::DataChannelCollection<GRFChannel> 
+class GRFCollection : public VectorChannelCollection 
 {
 public:
 	c3dlib::ForcePlatformCollection getPlatforms() const { return platforms; }
@@ -505,8 +510,9 @@ public:
 	GRFChannelConstPtr getGRFChannel(GRFChannel::Type type) const
 	{
 		for (auto it = channels.begin(); it != channels.end(); it++) {
-			if ((*it)->getType() == type) {
-				return *it;
+            GRFChannelConstPtr channel = core::dynamic_pointer_cast<const GRFChannel>(*it);
+			if (channel->getType() == type) {
+				return channel;
 			}
 		}
 
@@ -554,26 +560,28 @@ typedef boost::shared_ptr<MarkerChannel> MarkerChannelPtr;
 typedef boost::shared_ptr<const MarkerChannel> MarkerChannelConstPtr;
 
 //! Kontener wszystkich markerow modelu
-class MarkerCollection : public utils::DataChannelCollection<MarkerChannel>
+class MarkerCollection : public VectorChannelCollection
 {
 public:
 	virtual const std::string& getMarkerName(int markerNo) const {
 		return this->getChannel(markerNo)->getName();
 	}
 
-	MarkerChannelConstPtr tryGetChannelByName(const std::string& name) {
+	VectorChannelConstPtr tryGetChannelByName(const std::string& name) {
 		for (int i = this->getNumChannels() - 1; i >= 0; --i) {
 			if (getMarkerName(i) == name) {
 				return this->getChannel(i);
 			}
 		}
 
-		MarkerChannelConstPtr empty;
-		return empty;
+		return VectorChannelConstPtr();
 	}
 };
 typedef core::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
+
+
+
 
 
 #define DEFINE_CHANNEL(name)																	 \
@@ -604,11 +612,12 @@ typedef core::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 	public:																						 \
 		virtual name##Channel* clone() const {  return new name##Channel(*this); }				 \
 	};												 											 \
-	class name##Collection : public utils::DataChannelCollection<name##Channel> {};				 \
+	class name##Collection : public VectorChannelCollection {};				 \
 	typedef core::shared_ptr<name##Channel> name##ChannelPtr;									 \
 	typedef core::shared_ptr<const name##Channel> name##ChannelConstPtr;						 \
 	typedef core::shared_ptr<name##Collection> name##CollectionPtr;								 \
 	typedef core::shared_ptr<const name##Collection> name##CollectionConstPtr;	  
+
 
 
 
@@ -640,13 +649,20 @@ CORE_DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(MomentChannel,VectorChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(AngleChannel, VectorChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(PowerChannel, VectorChannel);
-CORE_DEFINE_WRAPPER(ForceCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER(AngleCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER(PowerCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-CORE_DEFINE_WRAPPER(MomentCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-//CORE_DEFINE_WRAPPER(C3DMisc, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
-CORE_DEFINE_WRAPPER(MarkerCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+CORE_DEFINE_WRAPPER(VectorChannelCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+CORE_DEFINE_WRAPPER_INHERITANCE(ForceCollection,  VectorChannelCollection);
+CORE_DEFINE_WRAPPER_INHERITANCE(AngleCollection,  VectorChannelCollection);
+CORE_DEFINE_WRAPPER_INHERITANCE(PowerCollection,  VectorChannelCollection);
+CORE_DEFINE_WRAPPER_INHERITANCE(MomentCollection, VectorChannelCollection);
+CORE_DEFINE_WRAPPER_INHERITANCE(MarkerCollection, VectorChannelCollection);
+CORE_DEFINE_WRAPPER_INHERITANCE(GRFCollection, VectorChannelCollection);
+//CORE_DEFINE_WRAPPER(ForceCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+//CORE_DEFINE_WRAPPER(AngleCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+//CORE_DEFINE_WRAPPER(PowerCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+//CORE_DEFINE_WRAPPER(MomentCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+//CORE_DEFINE_WRAPPER(MarkerCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+
 CORE_DEFINE_WRAPPER(ScalarChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 //CORE_DEFINE_WRAPPER(ScalarChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER_INHERITANCE(ScalarChannel, ScalarChannelReaderInterface);
@@ -654,7 +670,7 @@ CORE_DEFINE_WRAPPER_INHERITANCE(VectorToScalarAdaptor, ScalarChannelReaderInterf
 CORE_DEFINE_WRAPPER_INHERITANCE(C3DAnalogChannel, ScalarChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(EMGChannel, C3DAnalogChannel);
 CORE_DEFINE_WRAPPER_INHERITANCE(GRFChannel, VectorChannel);
-CORE_DEFINE_WRAPPER(GRFCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+//CORE_DEFINE_WRAPPER(GRFCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 CORE_DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 

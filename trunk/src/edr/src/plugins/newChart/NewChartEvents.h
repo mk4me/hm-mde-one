@@ -12,6 +12,21 @@
 
 #include <plugins/c3d/C3DChannels.h>
 
+class EventsPlotItem : public QwtPlotItem
+{
+public:
+    EventsPlotItem(EventsCollectionConstPtr events);
+    ~EventsPlotItem() {}
+
+public:
+    virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
+    EventsCollectionConstPtr getEvents() const { return events; }
+
+private:
+    EventsCollectionConstPtr events;
+
+};
+
 class EventsHelper
 {
 public:
@@ -34,7 +49,8 @@ public:
 public:
     EventsHelper(EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar);
     EventsCollectionConstPtr getEvents() const { return events; }
-
+    const EventsPlotItem* getEventsItem() const { return eventsItem; }
+    EventsPlotItem* getEventsItem() { return eventsItem; }
     SegmentConstPtr getSegment(timeType time, C3DEventsCollection::Context context)
     {
         UTILS_ASSERT(context == C3DEventsCollection::Context::Left || context == C3DEventsCollection::Context::Right);
@@ -58,22 +74,12 @@ private:
     std::vector<SegmentPtr> rightSegments;
     EventsCollectionConstPtr events;
     ScalarChannelReaderInterfaceConstPtr scalar;
+    EventsPlotItem* eventsItem;
+    
+    
 };
 typedef core::shared_ptr<EventsHelper> EventsHelperPtr;
 typedef core::shared_ptr<const EventsHelper> EventsHelperConstPtr;
 
-class EventsPlotItem : public QwtPlotItem
-{
-public:
-    EventsPlotItem(EventsCollectionConstPtr events);
-    ~EventsPlotItem() {}
 
-public:
-    virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
-    EventsCollectionConstPtr getEvents() const { return events; }
-
-private:
-    EventsCollectionConstPtr events;
-
-};
 #endif

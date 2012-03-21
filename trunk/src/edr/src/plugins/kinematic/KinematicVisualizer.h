@@ -160,6 +160,7 @@ private:
     QAction* translateAction;
     QAction* rotateAction;
     QAction* scaleAction;
+    QAction* resetAction;
 
     TrajectoriesDialog* trajectoriesDialog;
     SchemeDialog* schemeDialog;

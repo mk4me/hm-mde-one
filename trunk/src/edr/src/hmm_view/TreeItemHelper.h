@@ -91,6 +91,8 @@ public:
         return ret;
     }
 
+    const core::ObjectWrapperConstPtr getWrapper() const { return wrapper; }
+
 
 protected:
     core::ObjectWrapperConstPtr wrapper;
@@ -195,11 +197,23 @@ public:
         HalfRedHalfGreen
     };
 
+    typedef std::pair<core::ObjectWrapperConstPtr, EventsCollectionConstPtr> ChartWithEvents;
+    typedef std::vector<ChartWithEvents> ChartWithEventsCollection;
+
 public:
-    NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts): 
+    NewMultiserieHelper(const ChartWithEventsCollection& charts): 
       colorPolicy(Random), title(""), wrappers(charts)
     {
         
+    }
+
+    // obsolete
+    NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts): 
+    colorPolicy(Random), title("")
+    {
+        for (auto it = charts.begin(); it != charts.end(); it++) {
+            wrappers.push_back(std::make_pair(*it, EventsCollectionConstPtr()));
+        }
     }
 
     void setColorPolicy(ColorPolicy policy) { colorPolicy = policy; }
@@ -213,7 +227,7 @@ public:
     virtual std::vector<core::TypeInfo> getTypeInfos() const;
 
 private:
-    std::vector<core::ObjectWrapperConstPtr> wrappers;
+    ChartWithEventsCollection wrappers;
     QString title;
     
     ColorPolicy colorPolicy;

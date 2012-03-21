@@ -49,7 +49,7 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 	times.second = markers->getLength();
 	
 	for (int i = markers->getNumChannels() - 1; i >= 0; --i) {
-		MarkerChannelConstPtr channel = markers->getChannel(i);
+		VectorChannelConstPtr channel = markers->getChannel(i);
 
 		// stateset colowo jest generowany dla kazdej trajektorii osobno
 		// mozna w ten sposob zmieniac grubosc linii, itp.

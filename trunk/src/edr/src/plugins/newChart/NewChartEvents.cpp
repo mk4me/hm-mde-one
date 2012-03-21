@@ -109,9 +109,11 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
 }
 
 EventsHelper::EventsHelper( EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar ) :
-events(events),
-    scalar(scalar)
+    events(events),
+    scalar(scalar),
+    eventsItem(new EventsPlotItem(events))
 {
     createSegments(leftSegments, C3DEventsCollection::Context::Left);
     createSegments(rightSegments, C3DEventsCollection::Context::Right);
+   
 }

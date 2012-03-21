@@ -212,10 +212,10 @@ bool C3DParser::isInsideXY( const osg::Vec3& v, c3dlib::ForcePlatformConstPtr fp
 
 void C3DParser::computeDataForPlatform( GRFChannelPtr f1, MarkerCollectionPtr markers, c3dlib::ForcePlatformConstPtr platform, EventsCollectionConstPtr events )
 {
-    MarkerChannelPtr ltoe = boost::const_pointer_cast<MarkerChannel>(markers->tryGetChannelByName("LTOE"));
-    MarkerChannelPtr rtoe = boost::const_pointer_cast<MarkerChannel>(markers->tryGetChannelByName("RTOE"));
-    MarkerChannelPtr lhee = boost::const_pointer_cast<MarkerChannel>(markers->tryGetChannelByName("LHEE"));
-    MarkerChannelPtr rhee = boost::const_pointer_cast<MarkerChannel>(markers->tryGetChannelByName("RHEE"));
+    VectorChannelPtr ltoe = boost::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("LTOE"));
+    VectorChannelPtr rtoe = boost::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("RTOE"));
+    VectorChannelPtr lhee = boost::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("LHEE"));
+    VectorChannelPtr rhee = boost::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("RHEE"));
 
 
     

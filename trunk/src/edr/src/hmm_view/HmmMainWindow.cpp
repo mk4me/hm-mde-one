@@ -15,6 +15,7 @@
 #include "Vector3DFilterCommand.h"
 #include "AnalisisWidget.h"
 #include <plugins/subject/ISubjectService.h>
+#include <plugins/c3d/C3DChannels.h>
 #include "IllnessUnit.h"
 #include "EMGFilter.h"
 #include "EDRTitleBar.h"
@@ -128,7 +129,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&)));    
-	QObject::connect(treeWidget, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
+	//QObject::connect(treeWidget, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
 
    /* QSplitter * splitter = new QSplitter();
     splitter->setOrientation(Qt::Vertical);
@@ -290,13 +291,18 @@ void HmmMainWindow::createNewVisualizer()
     ContextAction* action = qobject_cast<ContextAction*>(sender());
     UTILS_ASSERT(action);
     if (action) {
-        showTimeline();
-        VisualizerWidget* w = createDockVisualizer(action->getItemHelper());
-        if (action->getDockSet()) {
-            action->getDockSet()->addDockWidget(w);
-        } else {
-            topMainWindow->autoAddDockWidget( w );
-        }
+        createNewVisualizer(action->getItemHelper(), action->getDockSet());
+    }
+}
+
+void HmmMainWindow::createNewVisualizer( TreeItemHelper* helper, EDRDockWidgetSet* dockSet )
+{
+    showTimeline();
+    VisualizerWidget* w = createDockVisualizer(helper);
+    if (dockSet) {
+        dockSet->addDockWidget(w);
+    } else {
+        topMainWindow->autoAddDockWidget( w );
     }
 }
 
@@ -419,52 +425,52 @@ void HmmMainWindow::onTreeContextMenu(const QPoint & pos)
     }
 }
 
-void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
-{
-    try {
-        // sprawdzanie, czy pod item jest podpiety jakis obiekt
-        TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(item);
-        //treeUsageContext->setActiveTreeItem(hmmItem);
-        /*if (hmmItem) {
-            showTimeline();
-            VisualizerWidget* w = createDockVisualizer(hmmItem);
-            topMainWindow->autoAddDockWidget( w );
-        }
-
-        ChildrenVisualizers* cv = dynamic_cast<ChildrenVisualizers*>(item);
-        if (cv) {
-            EDRDockWidgetSet* set = new EDRDockWidgetSet(this);
-            int count = cv->childCount();
-            for (int i = 0; i < count; i++) {
-                TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(cv->child(i));
-                VisualizerWidget* w = createDockVisualizer(hmmItem);
-                switch (cv->getPolicy()) {
-                case ChildrenVisualizers::Auto:
-                    set->addDockWidget(w);
-                    break;
-                case ChildrenVisualizers::Horizontal:
-                    set->addDockWidget(w, Qt::Horizontal);
-                    break;
-                case ChildrenVisualizers::Vertical:
-                    set->addDockWidget(w, Qt::Vertical);
-                    break;
-                }
-            }
-            int added = set->getNumWidgets();
-        
-            if (added > 0) {
-                showTimeline();
-                set->setMaxWidgetsNumber(added);
-                topMainWindow->addDockWidgetSet(set);
-            } else {
-                delete set;
-            }
-        }*/
-    } catch ( std::exception& e) {
-        LOG_ERROR("Click on tree failed, reason : " << e.what());
-    }
-}
-
+//void HmmMainWindow::onTreeItemClicked( QTreeWidgetItem *item, int column )
+//{
+//    try {
+//        // sprawdzanie, czy pod item jest podpiety jakis obiekt
+//        TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(item);
+//        //treeUsageContext->setActiveTreeItem(hmmItem);
+//        /*if (hmmItem) {
+//            showTimeline();
+//            VisualizerWidget* w = createDockVisualizer(hmmItem);
+//            topMainWindow->autoAddDockWidget( w );
+//        }
+//
+//        ChildrenVisualizers* cv = dynamic_cast<ChildrenVisualizers*>(item);
+//        if (cv) {
+//            EDRDockWidgetSet* set = new EDRDockWidgetSet(this);
+//            int count = cv->childCount();
+//            for (int i = 0; i < count; i++) {
+//                TreeItemHelper* hmmItem = dynamic_cast<TreeItemHelper*>(cv->child(i));
+//                VisualizerWidget* w = createDockVisualizer(hmmItem);
+//                switch (cv->getPolicy()) {
+//                case ChildrenVisualizers::Auto:
+//                    set->addDockWidget(w);
+//                    break;
+//                case ChildrenVisualizers::Horizontal:
+//                    set->addDockWidget(w, Qt::Horizontal);
+//                    break;
+//                case ChildrenVisualizers::Vertical:
+//                    set->addDockWidget(w, Qt::Vertical);
+//                    break;
+//                }
+//            }
+//            int added = set->getNumWidgets();
+//        
+//            if (added > 0) {
+//                showTimeline();
+//                set->setMaxWidgetsNumber(added);
+//                topMainWindow->addDockWidgetSet(set);
+//            } else {
+//                delete set;
+//            }
+//        }*/
+//    } catch ( std::exception& e) {
+//        LOG_ERROR("Click on tree failed, reason : " << e.what());
+//    }
+//}
+//
 
 void HmmMainWindow::showTimeline()
 {
@@ -994,6 +1000,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  QMenu* HmmMainWindow::getContextMenu( QWidget* parent, TreeItemHelper* helper )
  {
      dropUnusedElements(items2Descriptions);
+     //helper->getTypeInfos()
      QMenu * menu = new QMenu(parent);
      QAction * addNew = new ContextAction(helper, menu);
      addNew->setText(tr("Create new visualizer"));
@@ -1001,6 +1008,39 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      menu->addSeparator();
      connect(addNew, SIGNAL(triggered()), this, SLOT(createNewVisualizer()));
      connect(addNew, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+
+     if (dynamic_cast<NewChartItemHelper*>(helper)) {
+         QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);
+         QAction * multi = new ContextAction(helper, menu);
+         multi->setText(tr("All from session"));
+         multiMenu->addAction(multi);
+         connect(multi, SIGNAL(triggered()), this, SLOT(allFromSession()));
+         connect(multi, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+         menu->addMenu(multiMenu);
+     }
+
+     if (dynamic_cast<NewVector3ItemHelper*>(helper)) {
+         QMenu* multiMenu = new QMenu(tr("Multi chart"), menu);
+         QAction * multiX = new ContextAction(helper, menu);
+         multiX->setText(tr("All X from session"));
+         multiMenu->addAction(multiX);
+         connect(multiX, SIGNAL(triggered()), this, SLOT(allXFromSession()));
+         connect(multiX, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+
+         QAction * multiY = new ContextAction(helper, menu);
+         multiY->setText(tr("All Y from session"));
+         multiMenu->addAction(multiY);
+         connect(multiY, SIGNAL(triggered()), this, SLOT(allYFromSession()));
+         connect(multiY, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+
+         QAction * multiZ = new ContextAction(helper, menu);
+         multiZ->setText(tr("All Z from session"));
+         multiMenu->addAction(multiZ);
+         connect(multiZ, SIGNAL(triggered()), this, SLOT(allZFromSession()));
+         connect(multiZ, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+
+         menu->addMenu(multiMenu);
+     }
 
      QMenu* addTo = new QMenu(tr("Add to:"), menu);
      connect(addTo, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
@@ -1210,8 +1250,109 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      }
  }
 
- 
+ void HmmMainWindow::allFromSession()
+ {
+     ContextAction* a = qobject_cast<ContextAction*>(sender());
+     NewChartItemHelper* helper = dynamic_cast<NewChartItemHelper*>(a->getItemHelper());
+     UTILS_ASSERT(helper);
+    
+     if (helper) {
+         NewMultiserieHelper::ChartWithEventsCollection toVisualize;
+         SessionConstPtr s = helper->getMotion()->getSession();
+         Motions motions;
+         s->getMotions(motions);
 
+         for (auto itMotion = motions.begin(); itMotion != motions.end(); itMotion++) {
+             std::vector<core::ObjectWrapperConstPtr> wrappers;
+             (*itMotion)->getWrappers(wrappers, typeid(ScalarChannel), false);
+             EventsCollectionConstPtr events;
+             if ((*itMotion)->hasObjectOfType(typeid(C3DEventsCollection))) {
+                 auto w = (*itMotion)->getWrapperOfType(typeid(C3DEventsCollection));
+                 events = w->get();
+             }
+
+             for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
+                 if ((*it)->getName() == helper->getWrapper()->getName()) {
+                     toVisualize.push_back(std::make_pair(*it, events));
+                 }
+             }
+         }
+         NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
+         createNewVisualizer(multi);
+         delete multi;
+     }
+ }
+
+ void HmmMainWindow::allXFromSession()
+ {
+     int channelNo = 0;
+     ContextAction* a = qobject_cast<ContextAction*>(sender());
+     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     allTFromSession(helper, channelNo);
+ }
+
+ void HmmMainWindow::allYFromSession()
+ {
+     int channelNo = 1;
+     ContextAction* a = qobject_cast<ContextAction*>(sender());
+     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     allTFromSession(helper, channelNo);
+ }
+
+ void HmmMainWindow::allZFromSession()
+ {
+     int channelNo = 2;
+     ContextAction* a = qobject_cast<ContextAction*>(sender());
+     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     allTFromSession(helper, channelNo);
+ }
+
+ void HmmMainWindow::allTFromSession( NewVector3ItemHelper* helper, int channelNo )
+ {
+     UTILS_ASSERT(helper);
+
+     if (helper) {
+         NewMultiserieHelper::ChartWithEventsCollection toVisualize;
+         SessionConstPtr s = helper->getMotion()->getSession();
+         Motions motions;
+         s->getMotions(motions);
+
+         for (auto it = motions.begin(); it != motions.end(); it++) {
+             std::vector<core::ObjectWrapperConstPtr> wrappers;
+             (*it)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
+
+             EventsCollectionConstPtr events;
+             if ((*it)->hasObjectOfType(typeid(C3DEventsCollection))) {
+                 auto w = (*it)->getWrapperOfType(typeid(C3DEventsCollection));
+                 events = w->get();
+             }
+
+             for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
+                 VectorChannelCollectionConstPtr collection = (*it)->get();
+                 int count = collection->getNumChannels();
+                 for (int i = 0; i < count; i++) {
+                     VectorChannelConstPtr channel = collection->getChannel(i);
+                     VectorChannelConstPtr helperChannel = helper->getWrapper()->get();
+                     if (channel->getName() == helperChannel->getName()) {
+                        ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
+                        core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+                        wrapper->set(reader);
+                        int no = toVisualize.size();
+                        std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
+                        wrapper->setName  (prefix + boost::lexical_cast<std::string>(no));
+                        wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
+                        toVisualize.push_back(std::make_pair(wrapper, events));
+                     }
+                     
+                 }
+                
+             }
+         }
+         NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
+         createNewVisualizer(multi);
+         delete multi;
+     }
+ }
  
  void HmmMainWindow::DataObserver::update( const core::IMemoryDataManager * subject )
  {
@@ -1219,7 +1360,6 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      int count = motions.size();
      if (motionsCount == 0 && count > 0) {
          hmm->analisisButton->setEnabled(true);
-         //hmm->raportsButton->setEnabled(true);
      }
      if (motionsCount != count) {
         hmm->refreshTree();

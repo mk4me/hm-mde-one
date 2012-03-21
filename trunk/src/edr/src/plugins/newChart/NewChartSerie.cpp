@@ -84,7 +84,39 @@ void NewChartSerie::setEvents( EventsCollectionConstPtr val )
     UTILS_ASSERT(val);
     /*EventsPlotItem* eventsItem = new EventsPlotItem(val);
     eventsItem->attach(visualizer->getPlot());*/
+    //visualizer->setEvents(this, val);
+
+
+
+   //// jesli nie istnieje jeszcze wizualizacja eventow, to tworzymy obiekt eventow 
+   //// i dolaczamy go do wykresu.
+   //if (!eventsItem) {
+   //    eventsItem = new EventsPlotItem(val);
+   //    eventsItem->setVisible(context != C3DEventsCollection::Context::General);
+   //    eventsItem->attach(qwtPlot);
+   //    eventsVisible = true;
+   //
+   //} else if (eventsVisible) {
+   //    // jesli obiekt z eventami juz istnieje, to sprawdzamy, czy dotyczy tych samych eventow
+   //    // jesli tak, to nie trzeba robic nic, bo wizualizujemy dobre eventy
+   //    // jesli nie, to wylaczamy obiekt, poki co nie rysujemy roznych eventow na wykresach
+   //    if (eventsItem->getEvents() != val) {
+   //        eventsVisible = false;
+   //        eventsItem->detach();
+   //    }
+   //}
+    eventsHelper = EventsHelperPtr(new EventsHelper(val, getReader()));
     visualizer->setEvents(this, val);
+    //EventsHelperPtr helper(new EventsHelper(val, getReader()));
+    //eventsHelpers[serie] = helper;
+    //int no = 0;
+    //for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); segment++) {
+    //    statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
+    //}
+    //no = 0;
+    //for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); segment++) {
+    //    statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
+    //}
 }
 
 void NewChartSerie::removeItemsFromPlot()

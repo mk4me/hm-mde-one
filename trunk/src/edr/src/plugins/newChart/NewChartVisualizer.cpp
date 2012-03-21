@@ -33,7 +33,7 @@ NewChartVisualizer::NewChartVisualizer() :
     plotPanner(nullptr),
     plotMagnifier(nullptr),
     statsTable(nullptr),
-    eventsItem(nullptr),
+    //eventsItem(nullptr),
     eventsVisible(true),
     context(C3DEventsCollection::Context::General),
     eventsContextWidget(nullptr),
@@ -421,10 +421,17 @@ void NewChartVisualizer::setActiveSerie( int idx )
 
     //ostatnia zmieniamy na nieaktywna
     if(currentSerie > -1){
-        series[currentSerie]->setActive(false);
+        NewChartSerie* serie = series[currentSerie];
+        serie->setActive(false);
+
+        auto helper = serie->getEventsHelper();
+        if (helper && helper->getEventsItem()) {
+            //helper->getEventsItem()->detach();
+             helper->getEventsItem()->setVisible(false);
+        }
 
         //odznacz w legendzie
-        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[currentSerie]->curve));
+        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(serie->curve));
         if(legendLabel != nullptr && legendLabel->isItemActive() == true){
             legendLabel->blockSignals(true);
             legendLabel->setItemActive(false);
@@ -438,14 +445,20 @@ void NewChartVisualizer::setActiveSerie( int idx )
 
     if(idx > -1){
         currentSerie = idx;
-        series[currentSerie]->setActive(true);
-        picker->setCurrentCurve(series[currentSerie]->curve);
+        NewChartSerie* serie = series[currentSerie];
+        serie->setActive(true);
+        picker->setCurrentCurve(serie->curve);
 
         refreshSpinBoxes();
 
+        auto helper = serie->getEventsHelper();
+        if (helper && helper->getEventsItem()) {
+            helper->getEventsItem()->setVisible(context != C3DEventsCollection::Context::General);
+            //helper->getEventsItem()->attach(qwtPlot);
+        }
 
         //zaznacz w legendzie
-        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[currentSerie]->curve));
+        NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(serie->curve));
         if(legendLabel != nullptr && legendLabel->isItemActive() == false){
             legendLabel->blockSignals(true);
             legendLabel->setItemActive(true);
@@ -556,8 +569,15 @@ void NewChartVisualizer::setManipulation( bool val )
     plotPanner->setEnabled(val);
     plotMagnifier->setEnabled(val);
 }
-
 const NewChartSerie* NewChartVisualizer::tryGetCurrentSerie() const
+{
+    if (currentSerie >= 0 && currentSerie < series.size()) {
+        return series[currentSerie];
+    }
+    return nullptr;
+}
+
+NewChartSerie* NewChartVisualizer::tryGetCurrentSerie()
 {
     if (currentSerie >= 0 && currentSerie < series.size()) {
         return series[currentSerie];
@@ -580,10 +600,9 @@ void NewChartVisualizer::update( double deltaTime )
         //static EventsHelper::SegmentConstPtr oldSegment = EventsHelper::SegmentConstPtr();
         if (eventsVisible && context != C3DEventsCollection::Context::General) {
             setScale(scaleToActive, true);
-            auto helper = eventsHelpers.find(serie);
-            if (helper != eventsHelpers.end()) {
-                EventsHelperPtr h = helper->second;
-                EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
+            auto helper = serie->getEventsHelper();
+            if (helper) {
+                EventsHelper::SegmentConstPtr segment = helper->getSegment(x, this->context);
                 if (segment != oldSegment) {
                     recreateStats(segment ? segment->stats : ScalarChannelStatsConstPtr());
                     setScale(this->scaleToActive, segment ? true : false);
@@ -641,26 +660,11 @@ int NewChartVisualizer::getMaxDataSeries( void ) const
 
 void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPtr val )
 {
-    // jesli nie istnieje jeszcze wizualizacja eventow, to tworzymy obiekt eventow 
-    // i dolaczamy go do wykresu.
-    if (!eventsItem) {
-        eventsItem = new EventsPlotItem(val);
-        eventsItem->setVisible(context != C3DEventsCollection::Context::General);
-        eventsItem->attach(qwtPlot);
-        eventsVisible = true;
-
-    } else if (eventsVisible) {
-        // jesli obiekt z eventami juz istnieje, to sprawdzamy, czy dotyczy tych samych eventow
-        // jesli tak, to nie trzeba robic nic, bo wizualizujemy dobre eventy
-        // jesli nie, to wylaczamy obiekt, poki co nie rysujemy roznych eventow na wykresach
-        if (eventsItem->getEvents() != val) {
-            eventsVisible = false;
-            eventsItem->detach();
-        }
-    }
-
-    EventsHelperPtr helper(new EventsHelper(val, serie->getReader()));
-    eventsHelpers[serie] = helper;
+    C3DEventsCollection::Context c = static_cast<C3DEventsCollection::Context>(eventsMenu->itemData(eventsMenu->currentIndex()).toInt());
+    bool eventMode = (c != C3DEventsCollection::Context::General);
+    EventsHelperPtr helper = serie->getEventsHelper();
+    helper->getEventsItem()->attach(qwtPlot);
+    helper->getEventsItem()->setVisible(serie == tryGetCurrentSerie() && eventMode);
     int no = 0;
     for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); segment++) {
         statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
@@ -675,9 +679,15 @@ void NewChartVisualizer::onEventContext(int index)
 {
     C3DEventsCollection::Context c = static_cast<C3DEventsCollection::Context>(eventsMenu->itemData(index).toInt());
     bool eventMode = (c != C3DEventsCollection::Context::General);
-    eventsItem->setVisible(eventMode);
-    context = c;
-    setScale(scaleToActive, eventMode);
+    NewChartSerie* serie = tryGetCurrentSerie();
+    if (serie) {
+        auto helper = serie->getEventsHelper();
+        if (helper && helper->getEventsItem()) {
+            helper->getEventsItem()->setVisible(eventMode);
+            context = c;
+            setScale(scaleToActive, eventMode);
+        }
+    }
 }
 
 void NewChartVisualizer::rescale( float t1, float t2 )
@@ -698,11 +708,12 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
     } else {
         for (auto it = series.begin(); it != series.end(); it++) {
             int no = 0;
-            for (auto segment = eventsHelpers[*it]->getLeftSegments().begin(); segment != eventsHelpers[*it]->getLeftSegments().end(); segment++) {
+            EventsHelperPtr helper = (*it)->getEventsHelper();
+            for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); segment++) {
                 statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
             }
             no = 0;
-            for (auto segment = eventsHelpers[*it]->getRightSegments().begin(); segment != eventsHelpers[*it]->getRightSegments().end(); segment++) {
+            for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); segment++) {
                 statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
             }
         }
@@ -767,10 +778,10 @@ void NewChartVisualizer::recreateScales()
 bool NewChartVisualizer::timeInsideEvent()
 {
     NewChartSerie* serie = series[currentSerie];
-    auto helper = eventsHelpers.find(serie);
-    if (helper != eventsHelpers.end()) {
-        EventsHelperPtr h = helper->second;
-        if (h->getSegment(serie->getTime(), this->context)) {
+
+    auto helper = serie->getEventsHelper();
+    if (helper) {
+        if (helper->getSegment(serie->getTime(), this->context)) {
             return true;
         }
     }
@@ -791,9 +802,8 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
     if (eventMode) {
         NewChartSerie* serie = series[currentSerie];
         float x = serie->getTime();
-        auto helper = eventsHelpers.find(serie);
-        if (helper != eventsHelpers.end()) {
-            EventsHelperPtr h = helper->second;
+        EventsHelperPtr h = serie->getEventsHelper();
+        if (h) {
             EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
             if (segment) {
                 if (scaleToActive) {
@@ -806,9 +816,9 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
                     float maxY = segment->stats->maxValue();
                     for (auto it = series.begin(); it != series.end(); it++) {
                         if ((*it)->isVisible()) {
-                            auto h = eventsHelpers.find(*it);
-                            if (h != eventsHelpers.end()) {
-                                EventsHelper::SegmentConstPtr s = h->second->getSegment(x, this->context);
+                            auto h = (*it)->getEventsHelper();
+                            if (h) {
+                                EventsHelper::SegmentConstPtr s = h->getSegment(x, this->context);
                                 if (s) {
                                     minY = (std::min)(minY, s->stats->minValue());
                                     maxY = (std::max)(maxY, s->stats->maxValue());
@@ -816,7 +826,7 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
                             }
                         }
                     }
-                    //qwtPlot->setAxisScale(QwtPlot::xBottom, segment->begin, segment->end);
+
                     percentDraw->setLeftRightValues(segment->begin, segment->end);
                     percentDraw->setPercentMode(true);
                     qwtPlot->setAxisScale(QwtPlot::yLeft, minY, maxY);
