@@ -110,16 +110,16 @@ void CommunicationManager::deinit()
 
 int CommunicationManager::getProgress() const
 {
-    ScopedLock lock(transportManagerMutex);
-    return currentTransportManager == nullptr ? 0 : currentTransportManager->getProgress();
+    ScopedLock lock(downloadHelperMutex);
+    return currentDownloadHelper == nullptr ? 0 : currentDownloadHelper->getProgress();
 }
 
 void CommunicationManager::cancelRequest(const RequestPtr & request)
 {
     request->cancel();
     if(currentRequest.request == request){
-        if(currentTransportManager != nullptr){
-            currentTransportManager->abort();
+        if(currentDownloadHelper != nullptr){
+            currentDownloadHelper->abort();
         }
     }
 }
@@ -229,7 +229,7 @@ FtpsConnection::OperationStatus CommunicationManager::processPhoto(const Complet
     try {
 
         core::shared_ptr<PhotoRequest> photoRequest = core::dynamic_pointer_cast<PhotoRequest>(request.request);
-        setCurrentTransportManager(medicalTransportManager);
+        setCurrentDownloadHelper(medicalTransportManager);
 
         ret = medicalTransportManager->downloadPhoto(photoRequest->getPhotoID(), photoRequest->getFilePath(), photoRequest.get());
 
@@ -281,7 +281,7 @@ FtpsConnection::OperationStatus CommunicationManager::processFile(const Complete
     try {
 
         core::shared_ptr<FileRequest> fileRequest = core::dynamic_pointer_cast<FileRequest>(request.request);
-        setCurrentTransportManager(motionTransportManager);
+        setCurrentDownloadHelper(motionTransportManager);
 
         ret = motionTransportManager->downloadFile(fileRequest->fileID, fileRequest->filePath, fileRequest.get());
 
@@ -332,7 +332,7 @@ FtpsConnection::OperationStatus CommunicationManager::processMotionShallowCopy(c
 
     try {
         core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(request.request);
-        setCurrentTransportManager(motionTransportManager);
+        setCurrentDownloadHelper(motionTransportManager);
         
         ret = motionTransportManager->getShallowCopy(metaRequest->filePath, metaRequest.get());
 
@@ -382,7 +382,7 @@ FtpsConnection::OperationStatus CommunicationManager::processMotionMetadata(cons
 
     try {
         core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(request.request);
-        setCurrentTransportManager(motionTransportManager);
+        setCurrentDownloadHelper(motionTransportManager);
 
         ret = motionTransportManager->getMetadata(metaRequest->filePath, metaRequest.get());
 
@@ -433,7 +433,7 @@ FtpsConnection::OperationStatus CommunicationManager::processMedicalShallowCopy(
 
     try {
         core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(request.request);
-        setCurrentTransportManager(medicalTransportManager);
+        setCurrentDownloadHelper(medicalTransportManager);
         medicalTransportManager->getShallowCopy(metaRequest->filePath);
 
         ret = medicalTransportManager->getShallowCopy(metaRequest->filePath, metaRequest.get());
@@ -484,7 +484,7 @@ FtpsConnection::OperationStatus CommunicationManager::processMedicalMetadata(con
 
     try {
         core::shared_ptr<MetadataRequest> metaRequest = core::dynamic_pointer_cast<MetadataRequest>(request.request);
-        setCurrentTransportManager(medicalTransportManager);
+        setCurrentDownloadHelper(medicalTransportManager);
         
         ret = medicalTransportManager->getMetadata(metaRequest->filePath, metaRequest.get());
 
@@ -528,7 +528,7 @@ FtpsConnection::OperationStatus CommunicationManager::processPing(const Complete
 {
     FtpsConnection::OperationStatus ret = FtpsConnection::Complete;
 
-    setCurrentTransportManager(core::shared_ptr<communication::TransportWSDL_FTPSBase>());
+    setCurrentDownloadHelper(core::shared_ptr<communication::TransportWSDL_FTPSBase>());
     
     if(request.callbacks.onBeginCallback.empty() == false){
         request.callbacks.onBeginCallback(request.request);

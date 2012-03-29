@@ -18,6 +18,7 @@
 #include "EDRConsoleWidget.h"
 
 #include "ServiceManager.h"
+#include "SourceManager.h"
 #include "DataProcessorManager.h"
 #include "DataSourceManager.h"
 #include "UserInterfaceService.h"
@@ -121,7 +122,7 @@ Q_DECLARE_METATYPE ( Filesystem::Path );
 MainWindow::MainWindow(): QMainWindow(nullptr), updateEnabled(true), pluginLoader(nullptr),
     splashScreen_(new QSplashScreen())
 {
-    splashScreen_->setWindowFlags(splashScreen_->windowFlags() | Qt::WindowStaysOnTopHint);
+    //splashScreen_->setWindowFlags(splashScreen_->windowFlags() | Qt::WindowStaysOnTopHint);
 }
 
 QSplashScreen * MainWindow::splashScreen()
@@ -149,6 +150,7 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 
     DataManager* dataManager = DataManager::getInstance();
     ServiceManager* serviceManager = ServiceManager::getInstance();
+	SourceManager * sourceManager = SourceManager::getInstance();
     VisualizerManager* visualizerManager = VisualizerManager::getInstance();
 	EDRConfig* directoriesInfo = EDRConfig::getInstance();
     DataProcessorManager* dataProcesorManager = DataProcessorManager::getInstance();
@@ -179,6 +181,10 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 
     registerPluginsServices();
 
+	showSplashScreenMessage(tr("Registering plugins sources"));
+
+	registerPluginsSources();
+
     showSplashScreenMessage(tr("Registering plugins parsers"));
 
 	registerPluginsParsers();
@@ -197,17 +203,24 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 
 	findResources(directoriesInfo->getResourcesPath().string());
 
-    showSplashScreenMessage(tr("Initializing services"));
+	showSplashScreenMessage(tr("Initializing services"));
 
-    // inicjalizacja us³ug
-    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-        serviceManager->getService(i)->init(managersAccessor);
-    }
+	// inicjalizacja us³ug
+	for (int i = 0; i < serviceManager->getNumServices(); ++i) {
+		serviceManager->getService(i)->init(managersAccessor);
+	}
 
-    // inicjalizacja us³ug
-    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
-        serviceManager->getService(i)->lateInit();
-    }
+	// inicjalizacja us³ug
+	for (int i = 0; i < serviceManager->getNumServices(); ++i) {
+		serviceManager->getService(i)->lateInit();
+	}
+
+	showSplashScreenMessage(tr("Initializing sources"));
+
+	// inicjalizacja Ÿróde³
+	for (int i = 0; i < sourceManager->getNumSources(); ++i) {
+		sourceManager->getSource(i)->init(dataManager, dataManager, serviceManager);
+	}
 
     //initializeConsole();          // Console Widget 
     //InitializeControlWidget();          // Control Widget + TimeLine
@@ -346,11 +359,7 @@ void MainWindow::safeRegisterService(const IServicePtr & service)
 
         ServiceManager::getInstance()->registerService(service);
 
-    }catch(std::runtime_error e){
-        LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
-            " has caused an error during registration: " << e.what() << ". Service NOT registered in application!" );
-    }
-    catch(std::invalid_argument e){
+    }catch(std::exception & e){
         LOG_WARNING("Service " << service->getName() << " " <<service->getDescription() << " with ID " << service->getID() <<
             " has caused an error during registration: " << e.what() << ". Service NOT registered in application!" );
     }
@@ -360,17 +369,29 @@ void MainWindow::safeRegisterService(const IServicePtr & service)
     }
 }
 
+void MainWindow::safeRegisterSource(const ISourcePtr & source)
+{
+	try{
+
+		SourceManager::getInstance()->registerSource(source);
+
+	}catch(std::exception & e){
+		LOG_WARNING("Source " << source->getName() << " with ID " << source->getID() <<
+			" has caused an error during registration: " << e.what() << ". Source NOT registered in application!" );
+	}
+	catch(...){
+		LOG_WARNING("Source " << source->getName() << " with ID " << source->getID() <<
+			" has caused an UNKNOWN error during registration. Source NOT registered in application!" );
+	}
+}
+
 void MainWindow::safeRegisterParser(const IParserPtr & parser)
 {
     try{
 
         DataManager::getInstance()->registerParser(parser);
 
-    }catch(std::runtime_error e){ 
-        LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
-            " has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
-    }
-    catch(std::invalid_argument e){
+    }catch(std::exception & e){ 
         LOG_WARNING("Parser " << parser->getDescription() << " with ID " << parser->getID() <<
             " has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
     }
@@ -386,11 +407,7 @@ void MainWindow::safeRegisterObjectFactory(const IObjectWrapperFactoryPtr & fact
 
         DataManager::getInstance()->registerObjectFactory(factory);
 
-    }catch(std::runtime_error e){ 
-        LOG_WARNING("Object factory for type " << factory->getType().name() << " has caused an error during registration: "
-            << e.what() << ". Object type NOT registered in application!" );
-    }
-    catch(std::invalid_argument e){
+    }catch(std::exception & e){ 
         LOG_WARNING("Object factory for type " << factory->getType().name() << " has caused an error during registration: "
             << e.what() << ". Object type NOT registered in application!" );
     }
@@ -405,11 +422,7 @@ void MainWindow::safeRegisterVisualizer(const IVisualizerPtr & visualizer)
 
         VisualizerManager::getInstance()->registerVisualizer(visualizer);
 
-    }catch(std::runtime_error e){ 
-        LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
-            << " has caused an error during registration: " << e.what() << ". Visualizer NOT registered in application!" );
-    }
-    catch(std::invalid_argument e){
+    }catch(std::exception & e){ 
         LOG_WARNING("Visualizer " << visualizer->getName() << " with ID " << visualizer->getID()
             << " has caused an error during registration: " << e.what() << ". Visualizer NOT registered in application!" );
     }
@@ -425,11 +438,7 @@ void MainWindow::safeRegisterDataProcessor(const IDataProcessorPtr & dataProcess
 
         DataProcessorManager::getInstance()->registerDataProcessor(dataProcessor);
 
-    }catch(std::runtime_error e){ 
-        LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
-            << " has caused an error during registration: " << e.what() << ". DataProcessor NOT registered in application!" );
-    }
-    catch(std::invalid_argument e){
+    }catch(std::exception & e){ 
         LOG_WARNING("DataProcessor " << dataProcessor->getName() << " with ID " << dataProcessor->getID()
             << " has caused an error during registration: " << e.what() << ". DataProcessor NOT registered in application!" );
     }
@@ -445,11 +454,7 @@ void MainWindow::safeRegisterDataSource(const IDataSourcePtr & dataSource)
 
         DataSourceManager::getInstance()->registerDataSource(dataSource);
 
-    }catch(std::runtime_error e){ 
-        LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
-            << " has caused an error during registration: " << e.what() << ". DataSource NOT registered in application!" );
-    }
-    catch(std::invalid_argument e){
+    }catch(std::exception & e){ 
         LOG_WARNING("DataSource " << dataSource->getName() << " with ID " << dataSource->getID()
             << " has caused an error during registration: " << e.what() << ". DataSource NOT registered in application!" );
     }
@@ -472,6 +477,16 @@ void MainWindow::registerPluginsServices()
             safeRegisterService(plugin->getService(j));
         }
     }
+}
+
+void MainWindow::registerPluginsSources()
+{
+	for ( int i = 0; i < pluginLoader->getNumPlugins(); ++i ) {
+		PluginPtr plugin = pluginLoader->getPlugin(i);
+		for ( int j = 0; j < plugin->getNumSources(); ++j ) {
+			safeRegisterSource(plugin->getSource(j));
+		}
+	}
 }
 
 void MainWindow::registerPluginsParsers()

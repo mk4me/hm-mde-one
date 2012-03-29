@@ -55,6 +55,43 @@ QFrame#FlexiTabBarSection QFrame#userArea QToolBar {
 	margin: 0px;
 }
 
+/* EXPERIMENTAL */
+
+QWidget#FlexiTabWidget QFrame#FlexiTabBarSection QComboBox {
+     border: 1px solid gray;
+     border-top-left-radius: 4px;
+	 border-bottom-left-radius: 4px;
+     padding: 2px 18px 1px 4px;
+     min-width: 6em;
+ }
+
+ QWidget#FlexiTabWidget QFrame#FlexiTabBarSection QComboBox:hover {
+	border: 1px solid rgb(135, 177, 255);
+ }
+
+ /* QComboBox gets the "on" state when the popup is open */
+QWidget#FlexiTabWidget QFrame#FlexiTabBarSection QComboBox:on { /* shift the text when the popup opens */
+     padding-top: 3px;
+     padding-left: 4px;
+	 border-bottom-left-radius: 0px;
+	 border: 1px solid rgb(135, 177, 255);
+ }
+
+QWidget#FlexiTabWidget QFrame#FlexiTabBarSection QComboBox QListView {
+     subcontrol-origin: padding;
+     subcontrol-position: top right;
+     width: 15px;
+
+     border: 1px solid rgb(135, 177, 255);
+	 border-bottom-left-radius: 4px;
+	 border-bottom-right-radius: 4px;
+	 padding: 2px;
+ }
+
+ QWidget#FlexiTabWidget QFrame#FlexiTabBarSection QComboBox QListView::item:focus {
+	background: rgb(135, 177, 255);
+ }
+
  /********** KONIECT styli dla FlexiTabBarSection ***********/
 
  /********** POCZ¥TEK styli dla FlexiTabWidget ***********/
@@ -75,11 +112,8 @@ QWidget#FlexiTabWidget > QTabWidget::pane QWidget {
 /*
 QWidget#FlexiTabWidget QTabBar::tab {
 	border: none;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
-	background-color: #5B5B5B;
+	border-radius: 0px;
+	background: #5B5B5B;
 	color: #87AFFF;
 	min-width: 8ex;
 	padding: 2px;
@@ -102,6 +136,15 @@ QWidget#FlexiTabWidget QTabBar::tab:last {
 
  /* Nowa wersja na bazie tabów z analiz - tutaj taby sa u gory!! */
 
+ QWidget#FlexiTabWidget QTabBar QWidget, QWidget#FlexiTabWidget QTabBar::tab QWidget {
+	border-radius: 0px;
+ }
+
+ QWidget#FlexiTabWidget QTabBar QLabel {
+	border-radius: 0px;
+	border: 1px solid green;
+ }
+
  QWidget#FlexiTabWidget QTabBar::tab {
 	border: 1px solid rgb(101,101,101);
 	border-bottom: none;
@@ -110,32 +153,34 @@ QWidget#FlexiTabWidget QTabBar::tab:last {
 	color: white;
 	min-width: 10ex;
 	padding: 2px;
-	margin: 0px;
-	margin-top: 4px;
-}
-
-QWidget#FlexiTabWidget QTabBar::tab:previous-selected {
-	border-right: none;
-}
-
-QWidget#FlexiTabWidget QTabBar::tab:next-selected, QWidget#FlexiTabWidget QTabBar::tab:middle:next-selected {
-	border-right-width: 1px;
+	/*margin: 0px;*/
+	margin-top: /*4*/2px;
 }
 
 QWidget#FlexiTabWidget QTabBar::tab:first {
 	border-width: 1px;
 	border-bottom: none;
 	border-top-left-radius: 4px;
+	padding: 2px;
 }
 
-QWidget#FlexiTabWidget QTabBar::tab:first:previous-selected {
-	border-right: none;
+QWidget#FlexiTabWidget QTabBar::tab:first:previous-selected, QWidget#FlexiTabWidget QTabBar::tab:previous-selected {
+	border-right: 1px solid rgb(101,101,101);
+	border-top-right-radius: 4px;
+	padding: 2px;
+}
+
+QWidget#FlexiTabWidget QTabBar::tab:next-selected, QWidget#FlexiTabWidget QTabBar::tab:middle:next-selected {
+	border-left: 1px solid rgb(101,101,101);
+	border-top-left-radius: 4px;
+	padding: 2px;
 }
 
 QWidget#FlexiTabWidget QTabBar::tab:middle {
-	border: 1px solid rgb(101,101,101);
+	border-right: 1px solid rgb(101,101,101);
 	border-bottom: none;
 	border-left: none;
+	padding: 2px;
 }
 
 QWidget#FlexiTabWidget QTabBar::tab:last {
@@ -143,39 +188,46 @@ QWidget#FlexiTabWidget QTabBar::tab:last {
 	border-bottom: none;
 	border-left: none;
 	border-top-right-radius: 4px;
+	padding: 2px;
 }
 
 QWidget#FlexiTabWidget QTabBar::tab:middle:selected {
+	/*
 	border: 1px solid rgb(101,101,101);
 	border-top: none;
 	border-bottom: none;
+	*/
+	border: none;
 	background-color: rgb(41,41,41);
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	margin-left: -1px;
-	margin-right: -1px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	padding: 2px;
 }
 
 QWidget#FlexiTabWidget QTabBar::tab:first:selected {
+	/*
 	border: 1px solid rgb(101,101,101);
 	border-top: none;
 	border-bottom: none;
+	*/
+	border: none;
 	background-color: rgb(41,41,41);
 	border-top-left-radius: 4px;
-	border-top-right-radius: 0px;
-	margin-left: 0px;
-	margin-right: -1px;
+	border-top-right-radius: 4px;
+	padding: 2px;
 }
 
 QWidget#FlexiTabWidget QTabBar::tab:last:selected {
+	/*
 	border: 1px solid rgb(101,101,101);
 	border-top: none;
 	border-bottom: none;
+	*/
+	border: none;
 	background-color: rgb(41,41,41);
-	border-top-left-radius: 0px;
+	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
-	margin-left: -1px;
-	margin-right: 0px;
+	padding: 2px;
 }
 
 QWidget#FlexiTabWidget QTabBar::tab:first:!selected, QWidget#FlexiTabWidget QTabBar::tab:last:!selected, QWidget#FlexiTabWidget QTabBar::tab:middle:!selected {
@@ -194,6 +246,7 @@ QWidget#FlexiTabWidget QTabBar::tab:only-one {
 	background-color: rgb(41,41,41);
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
+	padding: 2px;
 }
 
 

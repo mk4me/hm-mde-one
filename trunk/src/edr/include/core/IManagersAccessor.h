@@ -14,6 +14,7 @@ namespace core {
     class IFileDataManager;
     class IMemoryDataManager;
     class IServiceManager;
+	class ISourceManager;
     class IDataProcessorManager;
     class IDataSourceManager;
     class IVisualizerManager;
@@ -40,6 +41,10 @@ namespace core {
         virtual IServiceManager * getServiceManager() = 0;
 
         virtual const IServiceManager * getServiceManager() const = 0;
+
+		virtual ISourceManager * getSourceManager() = 0;
+
+		virtual const ISourceManager * getSourceManager() const = 0;
 
         virtual IVisualizerManager * getVisualizerManager() = 0;
 

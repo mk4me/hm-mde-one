@@ -136,6 +136,8 @@ namespace core {
 
 		//! Rejestruje us³ugi pochodz¹ce z pluginów.
 		void registerPluginsServices();
+		//! Rejestruje Ÿród³a pochodz¹ce z pluginów.
+		void registerPluginsSources();
 		//! Rejestruje parsery pochodz¹ce z pluginów.
 		void registerPluginsParsers();
 		//!
@@ -169,6 +171,7 @@ namespace core {
 
 		void safeRegisterPlugin(const core::PluginPtr & plugin);
 		void safeRegisterService(const core::IServicePtr & service);
+		void safeRegisterSource(const core::ISourcePtr & source);
 		void safeRegisterParser(const core::IParserPtr & parser);
 		void safeRegisterObjectFactory(const core::IObjectWrapperFactoryPtr & factory);
 		void safeRegisterVisualizer(const core::IVisualizerPtr & visualizer);

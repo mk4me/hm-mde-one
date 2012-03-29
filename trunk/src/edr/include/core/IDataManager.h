@@ -74,17 +74,49 @@ namespace core {
 
     //! Interfejs najni¿szego poziomu DataManager - pozwala zarz¹dzaæ pojedynczymi ObjectWrapperami: dodawaæ je do puli danych, usuwaæ, inicjalizowaæ, deinicjalizowaæ.
     //!  
-    class IMemoryDataManager : public utils::Observable<IMemoryDataManager>//, public virtual IDataManagerBase
+    class IMemoryDataManager : public utils::Observable<IMemoryDataManager>
     {
-        //! ZaprzyjaŸniona metoda pomagaj¹ca dodawaæ dane do DM
-        template<class SmartPtr>
-        friend core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer);
+        ////! ZaprzyjaŸniona metoda pomagaj¹ca dodawaæ dane do DM
+        //template<class SmartPtr>
+        //friend core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer);
 
-        //! ZaprzyjaŸniona metoda pomagaj¹ca usuwaæ dane z DM
-        template<class SmartPtr>
-        friend void removeData(IMemoryDataManager * manager, const SmartPtr & data);
+        ////! ZaprzyjaŸniona metoda pomagaj¹ca usuwaæ dane z DM
+        //template<class SmartPtr>
+        //friend void removeData(IMemoryDataManager * manager, const SmartPtr & data);
 
     public:
+
+		template<class SmartPtr>
+		static core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr())
+		{
+			UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+			//UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer sie nie zgadza");
+
+			if(manager->objectIsManaged(data.get()) == true){
+				throw std::runtime_error("Object already managed by DataManager");
+			}
+
+			core::ObjectWrapperPtr objectWrapper(manager->createObjectWrapper(typeid(typename SmartPtr::element_type)));
+			objectWrapper->set(data);
+
+			manager->addData(objectWrapper, initializer);
+
+			return objectWrapper;
+		}
+
+		/*template<class SmartPtr>
+		static core::ObjectWrapperPtr addFile(IMemoryDataManager * manager, const SmartPtr & data)
+		{
+			return addFile(manager, data, DataInitializerPtr());
+		}*/
+
+		template<class SmartPtr>
+		static void removeData(IMemoryDataManager * manager, const SmartPtr & data)
+		{
+			UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
+			//UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer sie nie zgadza");
+			manager->removeData(getObjectWrapperForRawPtr(data.get()));
+		}
 
         virtual ~IMemoryDataManager() {};
 
@@ -122,40 +154,8 @@ namespace core {
         virtual ObjectWrapperPtr createObjectWrapper(const TypeInfo & type) const = 0;
     };
 
-    template<class SmartPtr>
-    core::ObjectWrapperPtr addData(IMemoryDataManager * manager, const SmartPtr & data, const DataInitializerPtr & initializer = DataInitializerPtr())
-    {
-        UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-        //UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer sie nie zgadza");
-
-        if(manager->objectIsManaged(data.get()) == true){
-            throw std::runtime_error("Object already managed by DataManager");
-        }
-
-        core::ObjectWrapperPtr objectWrapper(manager->createObjectWrapper(typeid(typename SmartPtr::element_type)));
-        objectWrapper->set(data);
-
-        manager->addData(objectWrapper, initializer);
-
-        return objectWrapper;
-    }
-
-    /*template<class SmartPtr>
-    core::ObjectWrapperPtr addFile(IMemoryDataManager * manager, const SmartPtr & data)
-    {
-        return addFile(manager, data, DataInitializerPtr());
-    }*/
-
-    template<class SmartPtr>
-    void removeData(IMemoryDataManager * manager, const SmartPtr & data)
-    {
-        UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-        //UTILS_STATIC_ASSERT(boost::is_same<SmartPtr, ObjectWrapperT<typename SmartPtr::element_type>::Ptr>::value, "Pointer sie nie zgadza");
-        manager->removeData(getObjectWrapperForRawPtr(data.get()));
-    }
-
     //! Interfejs dostepu do danych i ³adowania danych w aplikacji
-	class IFileDataManager : public utils::Observable<IFileDataManager>//, public virtual IDataManagerBase
+	class IFileDataManager : public utils::Observable<IFileDataManager>
 	{
 	public:
         //! Zbiór rozszerzeñ
@@ -182,8 +182,9 @@ namespace core {
         virtual bool isFileManaged(core::Filesystem::Path & file) const = 0;
 
         //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
+		//! \param objects [out] Agregat obiektów wyci¹gniêtych z danego pliku przez parsery
         //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
-		virtual void addFile(const Filesystem::Path & file) = 0;
+		virtual void addFile(const Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects = std::vector<ObjectWrapperPtr>()) = 0;
 
         //! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
 		virtual void removeFile(const Filesystem::Path & file) = 0;

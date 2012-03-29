@@ -53,6 +53,15 @@ public:
 	static void move(const std::string& pathOld, const std::string& pathNew);
     static void move(const Path& pathOld, const Path& pathNew);
 
+	/*
+	Kopiuje plik lub folder wraz z zawartoœci¹ o podanej œcie¿ce. W przypadku istnienia
+	w miejscu docelowym pliku o tej samej nazwie plik siê nadpisze, w przypadku folderów nie (trzeba to naprawiæ).
+	@param pathOldFile œcie¿ka do pliku lub folderu który ma byæ kopiowany
+	@param pathNewFile œcie¿ka docelowa kopiowania
+	*/
+	static void copy(const std::string& pathOld, const std::string& pathNew);
+    static void copy(const Path& pathOld, const Path& pathNew);
+
     /*
 	Listuje wszystkie pliki danego folderu spe³niaj¹ce kryterium maski.
 	@param path œcie¿ka do folderu który ma byæ przeszukany

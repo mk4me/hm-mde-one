@@ -41,7 +41,7 @@ private:
 
     bool processingStarted;
     bool processingFinished;
-    std::string finalMessage;
+    QString finalMessage;
     bool error;
 
     communication::CommunicationManager::RequestCallbacks complexCallbacks;

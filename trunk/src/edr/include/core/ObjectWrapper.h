@@ -331,36 +331,6 @@ namespace core {
         //! Czy obiekt uleg³ zmianie?
         bool changed;
 
-	public:
-        ////! Return type resolver
-        //struct get_t
-        //{
-        //    ObjectWrapper* wrapper;
-        //    const ObjectWrapper* constWrapper;
-        //    bool exact;
-
-        //    template <class Ptr>
-        //    operator Ptr()
-        //    {
-        //        Ptr result;
-        //        if (wrapper->tryGet(result, exact)) {
-        //            return result;
-        //        } else {
-        //            throw std::bad_cast("Invalid cast");
-        //        }
-        //    }
-        //    template <class Ptr>
-        //    operator Ptr() const
-        //    {
-        //        Ptr result;
-        //        if (constWrapper->tryGet(result, exact)) {
-        //            return result;
-        //        } else {
-        //            throw std::bad_cast("Invalid cast");
-        //        }
-        //    }
-        //};
-
     public:
         //! \param object
         //! \param name
@@ -373,21 +343,6 @@ namespace core {
             Wrapper * wrapper = new Wrapper();
             return ObjectWrapperPtr(wrapper);
         }
-
-        //! \return Nazwa dla zadanego typu.
-        //template <class T>
-        //static const char* getClassName(T* dummy = nullptr)
-        //{
-        //    UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
-        //    return ObjectWrapperT<T>::className();
-        //}
-
-        ////! \param type Typ do porównania.
-        ////! \return Czy to te same typy?
-        //inline bool isTypeEqual(const TypeInfo& type) const
-        //{
-        //    return getTypeInfo() == type;
-        //}
 
     protected:
         //! \param className
@@ -404,129 +359,6 @@ namespace core {
         }
 
     public:
-
-        /*virtual const void* getRawPtr() const = 0;
-        virtual void* getRawPtr() = 0;
-        virtual void reset() = 0;*/
-
-        //! Próba pobrania obiektu z wrappera.
-        //! \param object Rezultat.
-        //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-        //! \return Sukces/pora¿ka.
-  //      template <class Ptr>
-  //      bool tryGet(Ptr& object, bool exact = false)
-  //      {
-  //          TypeInfo type = typeid(Ptr);
-  //          if ( exact ) {
-  //              auto types = getPtrTypeInfo();
-  //              if ( types.first == type || types.second == type ) {
-  //                  return getSmartPtr(&object, type);
-  //              } else {
-  //                  return false;
-  //              }
-  //          } else {
-  //              return getSmartPtr(&object, type);
-  //          }
-  //      }
-
-  //      //! Próba pobrania obiektu z wrappera.
-  //      //! \param object Rezultat.
-  //      //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-  //      //! \return Sukces/pora¿ka.
-  //      template <class Ptr>
-  //      bool tryGet(Ptr& object, bool exact = false) const
-  //      {
-  //          TypeInfo type = typeid(Ptr);
-  //          if ( exact ) {
-  //              auto types = getPtrTypeInfo();
-  //              if ( types.second == type ) {
-  //                  return getSmartPtr(&object, type);
-  //              } else {
-  //                  return false;
-  //              }
-  //          } else {
-  //              return getSmartPtr(&object, type);
-  //          }
-  //      }
-
-  //      //! Pobiera obiekt z wrappera. W razie b³êdu rzuca bad_castem.
-  //      //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-  //      //! \return Return Type Resolver
-  //      get_t get(bool exact = false)
-  //      {
-  //          get_t result = { this, nullptr, exact };
-  //          return result;
-  //      }
-
-  //      //! \param dummy Pozostawiæ pusty.
-  //      //! \return Wrappowany obiekt. Gdy wrapper jest innego typu ni¿ parametr szablonu rzucany jest wyj¹tek.
-  //      template <class T>
-  //      typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
-  //      {   
-  //          UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
-  //          typedef ObjectWrapperT<T> Wrapper;
-  //          return static_cast<Wrapper::Ptr>(get());
-  //      }
-
-  //      //! Pobiera obiekt z wrappera. W razie b³êdu rzuca bad_castem.
-  //      //! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-  //      //! \return Return Type Resolver
-  //      const get_t get(bool exact = false) const
-  //      {
-  //          const get_t result = { nullptr, this, exact };
-  //          return result;
-  //      }
-
-  //      //! Ustawia obiekt wrappera. W razie b³êdu rzuca bad_castem.
-  //      //! \param object Obiekt.
-  //      template <class Ptr>
-  //      void set(Ptr& object, const std::string& name, const std::string& source)
-  //      {
-  //          if ( !trySet(object, name, source) ) {
-  //              throw std::bad_cast("Invalid cast");
-  //          }
-  //      }
-
-		////! Ustawia obiekt wrappera, jego nazwe i zrodlo
-		////! \param object Obiekt
-		////! \param name Nazwa obiektu, ktora ma byc wyswietlona
-		////! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
-		//template <class Ptr>
-		//void set(Ptr& object)
-		//{
-		//	if ( !trySet(object)) {
-		//		throw std::bad_cast("Invalid cast");
-		//	}
-		//}
-
-  //      //! Ustawia obiekt wrappera.
-  //      //! \param object Obiekt.
-  //      //! \return Sukces/pora¿ka.
-  //      template <class Ptr>
-  //      bool trySet(Ptr& object)
-  //      {
-  //          TypeInfo type = typeid(Ptr);
-  //          if ( getPtrTypeInfo().first == type ) {
-  //              return setSmartPtr(&object, type);
-  //          } else {
-  //              return false;
-  //          }
-  //      }
-
-		////! Ustawia obiekt wrappera, jego nazwe i zrodlo
-		////! \param object Obiekt
-		////! \param name Nazwa obiektu, ktora ma byc wyswietlona
-		////! \param source Zrodlo obiektu - sciezka do pliku z ktorego pochodzi
-		//template <class Ptr>
-		//bool trySet(Ptr& object, const std::string& name, const std::string& source)
-		//{
-		//	if (trySet(object)) {
-		//		setName(name);
-		//		setSource(source);
-		//		return true;
-		//	}
-		//	return false;
-		//}
 
         //! \return ID typu.
         virtual std::size_t getClassID() const
@@ -569,35 +401,6 @@ namespace core {
         { 
             this->changed = changed; 
         }
-
-    //    //! \param type 
-    //    //! \return Czy obiekt wspiera okreœlony typ?
-    //    virtual bool isSupported(const TypeInfo& type) const = 0;
-    //    //! \param type Typ inteligentnego wskaŸnika.
-    //    //! \return true je¿eli do z obiektu mo¿na wy³uskaæ dany wskaŸnik.
-    //    virtual bool isPtrSupported(const TypeInfo& type) const = 0;
-
-    //    //! \return Informacje o typie.
-    //    virtual TypeInfo getTypeInfo() const = 0;
-
-    //    //! \return Informacje o typie odpowiednio normalnego i sta³ego wskaŸnika.
-    //    virtual std::pair<TypeInfo, TypeInfo> getPtrTypeInfo() const = 0;
-
-    //    //! \param supported Lista wspieranych rozszerzeñ.
-    //    virtual void getSupportedTypes(Types& supported) const = 0;
-
-    //    //! \return Czy wrappowany obiekt jest wyzerowany?
-    //    virtual bool isNull() const = 0;
-
-    //    //! \return Klon bie¿¹cego obiektu. Wewnêtrzny wskaŸnik równie¿ jest kopiowany.
-    //    virtual ObjectWrapperPtr clone() const = 0;
-
-    //private:
-
-    //    //! \return Czy uda³o siê ustawiæ m¹dry wskaŸnik?
-    //    virtual bool getSmartPtr(void* ptr, const TypeInfo& type) const = 0;
-
-    //    virtual bool setSmartPtr(const void* ptr, const TypeInfo& type) = 0;
     };
 
     //! Pomocniczy typ bazowy, zarz¹dzaj¹cy obiektem za pomoc¹ parametru

@@ -78,6 +78,8 @@ find_package(Qt)
 find_package(Qwt)
 find_package(ODE)
 find_package(BTK)
+find_package(cURL)
+find_package(wsdlpull)
 #find_package(BTKIO)
 #find_package(BTKCOMMON)
 
@@ -126,6 +128,8 @@ ADD_PROJECT(vdfmlib "osgui;dfmlib;BOOST;OSG;utils")
 ADD_PROJECT(testnodefactory "dfmlib;BOOST;utils")
 ADD_PROJECT(timelinelib "OSG;utils;BOOST;QT")
 ADD_PROJECT(c3dlib "STDINT;BTK;BOOST;OSG")
+ADD_PROJECT(webserviceslib "BOOST;TINYXML;CURL;OSG")
+ADD_PROJECT(qthtmlgenlib "BOOST;TINYXML;QT;utils")
 #ADD_PROJECT(asfamctoquatcsv "kinematiclib;OSG;BOOST;TINYXML;utils")
 
 #---------------------------------------------------

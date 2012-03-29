@@ -88,9 +88,9 @@ private slots:
             accept();
         }else{
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Login problem");
-            msgBox.setText("Invalid username or password - please try again or quit application.");
-            msgBox.setInformativeText("Unsuccessful login");
+            msgBox.setWindowTitle(tr("Login problem"));
+            msgBox.setText(tr("Invalid username or password - please try again or quit application."));
+            msgBox.setInformativeText(tr("Unsuccessful login"));
             msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Close);
             msgBox.setDefaultButton(QMessageBox::Retry);
             msgBox.setIcon(QMessageBox::Warning);

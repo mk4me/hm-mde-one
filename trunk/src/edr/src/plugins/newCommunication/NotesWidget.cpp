@@ -1,0 +1,295 @@
+#include "CommunicationPCH.h"
+#include "NotesWidget.h"
+#include <utils/Debug.h>
+
+#include <QtGui/QFormLayout>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QTableWidgetItem>
+#include <QtGui/QMessageBox>
+
+
+NoteDialog::NoteDialog(QWidget * parent) : QDialog(parent),
+	titleEdit(new QLineEdit()), textEdit(new QLineEdit()),
+	acceptButton(new QPushButton()), cancelButton(new QPushButton(tr("Cancel")))
+{
+	connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+	connect(acceptButton, SIGNAL(clicked()), this, SLOT(buttonAccepted()));
+
+	QFormLayout * formLayout = new QFormLayout();
+
+	formLayout->addRow(tr("Title"), titleEdit);
+	formLayout->addRow(tr("Text"), textEdit);
+	
+	QHBoxLayout * hBoxLayout = new QHBoxLayout();
+	hBoxLayout->addWidget(acceptButton);
+	hBoxLayout->addItem(new QSpacerItem(0,0, QSizePolicy::Expanding, QSizePolicy::Fixed));
+	hBoxLayout->addWidget(cancelButton);
+
+	QVBoxLayout * vBoxLayout = new QVBoxLayout();
+
+	vBoxLayout->addLayout(formLayout);
+	vBoxLayout->addLayout(hBoxLayout);
+
+	this->setLayout(vBoxLayout);
+}
+
+void NoteDialog::buttonAccepted()
+{
+	emit acceptRequest();
+}
+
+NoteDialog::~NoteDialog()
+{
+
+}
+
+NotesWidget::NotesWidget(QWidget * parent) : QFrame(parent), currentPatientID(-1)
+{
+	setupUi(this);
+}
+
+NotesWidget::~NotesWidget()
+{
+
+}
+
+void NotesWidget::setCurrentPatient(int patientID)
+{
+	currentPatientID = patientID;
+	
+	reloadPatientNotes();
+}
+
+void NotesWidget::reloadPatientNotes()
+{
+	clearNotesList();
+	fillNotesList();
+
+	for(int i = 0; i < notesTable->columnCount(); ++i){
+		notesTable->resizeColumnToContents(i);
+	}
+}
+
+void NotesWidget::addNote(int patientID, const QDateTime & created, const QString & title, const QString & text)
+{
+	UTILS_ASSERT(patientID >= 0,"Bledny identyfikator pacjenta");
+
+	core::shared_ptr<NoteData> noteData(new NoteData());
+	noteData->title = title;
+	noteData->text = text;
+	noteData->globalID = generateNoteUniqueID();
+	noteData->patientID = patientID;
+	noteData->localID = patientNotes[patientID].size();
+	noteData->created = created;
+
+	notes[noteData->globalID] = noteData;
+
+	patientNotes[patientID][noteData->localID] = noteData;
+
+	if(currentPatientID == patientID){
+		//dodaæ dane do listy(tabeli)
+		bool sorting = notesTable->isSortingEnabled();
+		notesTable->setSortingEnabled(false);
+		int row = notesTable->rowCount();
+		notesTable->insertRow(row);
+		//ID
+		notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(noteData->localID)));
+		//Title
+		notesTable->setItem(row, 1, new QTableWidgetItem(noteData->title));
+		//Created
+		notesTable->setItem(row, 1, new QTableWidgetItem(noteData->created.toString("dd.MM.yyyy")));
+		//Modified - empty
+		notesTable->setItem(row, 1, new QTableWidgetItem());
+		notesTable->setSortingEnabled(sorting);
+	}
+}
+
+void NotesWidget::addNote(const QDateTime & created, const QString & title, const QString & text)
+{
+	core::shared_ptr<NoteData> noteData(new NoteData());
+	noteData->title = title;
+	noteData->text = text;
+	noteData->globalID = generateNoteUniqueID();
+	noteData->patientID = currentPatientID;
+	noteData->localID = patientNotes[currentPatientID].size() + 1;
+	noteData->created = created;
+
+	notes[noteData->globalID] = noteData;
+
+	patientNotes[currentPatientID][noteData->localID] = noteData;
+
+	bool sorting = notesTable->isSortingEnabled();
+	notesTable->setSortingEnabled(false);
+	int row = notesTable->rowCount();
+	notesTable->insertRow(row);
+	//ID
+	notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(noteData->localID)));
+	//Title
+	notesTable->setItem(row, 1, new QTableWidgetItem(noteData->title));
+	//Created
+	notesTable->setItem(row, 2, new QTableWidgetItem(noteData->created.toString("dd.MM.yyyy")));
+	//Modified - empty
+	notesTable->setItem(row, 3, new QTableWidgetItem());
+	notesTable->setSortingEnabled(sorting);
+}
+
+void NotesWidget::removeNote()
+{
+	notes.erase(currentNote->globalID);
+
+	auto pNotes = patientNotes[currentPatientID];
+
+	notesTable->clearSelection();
+	bool sorting = notesTable->isSortingEnabled();
+	notesTable->setSortingEnabled(false);
+	notesTable->removeRow(notesTable->currentRow());
+
+	for(int i = currentNote->localID; i < pNotes.size()-1; ++i){
+		pNotes[i] = pNotes[i+1];
+		pNotes[i]->localID = i;
+
+		//przebuduj indeksy pozosta³ych
+		notesTable->item(notesTable->visualRow(i), 0)->setText(QString::number(i));
+	}
+
+	pNotes.erase(--pNotes.end());
+
+	notesTable->setSortingEnabled(sorting);	
+
+	if(notesTable->rowCount() > 0){
+		notesTable->selectRow(0);
+	}
+}
+
+void NotesWidget::addNoteDialog()
+{
+	NoteDialog dialog;
+
+	dialog.setWindowTitle(tr("New note"));
+	dialog.acceptButton->setText("Add note");
+
+	connect(&dialog, SIGNAL(acceptRequest()), this, SLOT(noteDialogConfirm()));
+
+	int ret = dialog.exec();
+	if(ret == QDialog::Accepted){
+		addNote(QDateTime::currentDateTime(), dialog.titleEdit->text(), dialog.textEdit->text());
+	}
+}
+
+void NotesWidget::editNoteDialog()
+{
+	NoteDialog dialog;
+
+	dialog.setWindowTitle(tr("Edit note"));
+	dialog.acceptButton->setText("Update note");
+
+	connect(&dialog, SIGNAL(acceptRequest()), this, SLOT(noteDialogConfirm()));
+
+	int ret = dialog.exec();
+	
+	if(ret == QDialog::Accepted){
+		updateNote(QDateTime::currentDateTime(), dialog.titleEdit->text(), dialog.textEdit->text());
+	}
+}
+
+void NotesWidget::noteDialogConfirm()
+{
+	NoteDialog * dialog = qobject_cast<NoteDialog*>(sender());
+
+	if(dialog->titleEdit->text().isEmpty() == true || dialog->textEdit->text().isEmpty() == true){
+		QMessageBox message;
+		message.setWindowTitle(tr("Note validation"));
+		message.setText(tr("All note fields must be filled. Please fill them and try again."));
+		message.setIcon(QMessageBox::Warning);
+		message.setStandardButtons(QMessageBox::Ok);
+		message.setDefaultButton(QMessageBox::Ok);
+		message.show();
+	}else{
+
+		dialog->accept();
+	}
+}
+
+void NotesWidget::loadNote()
+{
+	if(currentNote == nullptr){
+		notePlaceholder->clear();
+	}else{
+		notePlaceholder->setText(currentNote->text);
+	}
+}
+
+void NotesWidget::clearNote()
+{
+	notePlaceholder->clear();
+}
+
+void NotesWidget::fillNotesList()
+{
+	auto it = patientNotes.find(currentPatientID);
+
+	if(it == patientNotes.end() || it->second.empty() == true){
+		return;
+	}
+
+	bool sorting = notesTable->isSortingEnabled();
+	notesTable->setSortingEnabled(false);
+
+	notesTable->setRowCount(it->second.size());
+
+	for(int row = 0; row < it->second.size(); ++row){
+		notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(it->second[row]->localID)));
+		notesTable->setItem(row, 1, new QTableWidgetItem(it->second[row]->title));
+		notesTable->setItem(row, 2, new QTableWidgetItem(it->second[row]->created.toString("dd.MM.yyyy")));
+		notesTable->setItem(row, 3, new QTableWidgetItem());
+	}
+
+	notesTable->setSortingEnabled(sorting);
+}
+
+void NotesWidget::clearNotesList()
+{
+	notesTable->clearSelection();
+	notesTable->clearContents();
+}
+
+void NotesWidget::updateNote(const QDateTime & modified, const QString & title, const QString & text)
+{
+	currentNote->modified = modified;
+	currentNote->title = title;
+	currentNote->text = text;	
+
+	//odœwie¿ listê danych (tabelê) - aktualny wpis
+	bool sorting = notesTable->isSortingEnabled();
+	notesTable->setSortingEnabled(false);
+
+	int row = notesTable->currentRow();
+	notesTable->item(row, 1)->setText(title);
+	notesTable->item(row, 3)->setText(modified.toString("dd.MM.yyyy"));
+
+	notesTable->setSortingEnabled(sorting);
+	//odœwie¿ treœæ notatki
+	loadNote();	
+}
+
+void NotesWidget::onCurrentNoteChange()
+{
+	int currentRow = notesTable->currentRow() + 1;
+	if(currentRow <= 0){
+		currentNote.reset();
+		clearNote();
+		removeNoteButton->setEnabled(false);
+		editNoteButton->setEnabled(false);
+	}else{
+		currentNote = patientNotes[currentPatientID][currentRow];
+		loadNote();
+		removeNoteButton->setEnabled(true);
+		editNoteButton->setEnabled(true);
+	}
+}
+
+int NotesWidget::generateNoteUniqueID()
+{
+	return notes.size();
+}

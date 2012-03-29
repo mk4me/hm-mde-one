@@ -18,50 +18,50 @@ using namespace std;
 class DataManager::Parser
 {
 private:
-	//! Prawdziwy wewnêtrzny parser.
-	const IParserPtr parser;
-	//! Parsowany plik.
-	const Filesystem::Path filePath;
-	//! Czy przeparsowano plik?
-	bool parsed;
-	//! Czy u¿yto parsera do przeparsowania?
-	bool used;
-	//! Czy w³aœnie parsujemy?
-	bool parsing;
+    //! Prawdziwy wewnêtrzny parser.
+    const IParserPtr parser;
+    //! Parsowany plik.
+    const Filesystem::Path filePath;
+    //! Czy przeparsowano plik?
+    bool parsed;
+    //! Czy u¿yto parsera do przeparsowania?
+    bool used;
+    //! Czy w³aœnie parsujemy?
+    bool parsing;
 
 public:
-	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
-	//!     czas ¿ycia.
-	//! \param resource Czy parser jest zwi¹zany z zasobami sta³ymi?
-	Parser(IParser* parser, const Filesystem::Path& path) :
-	  parser(parser), parsed(false), used(false), filePath(path), parsing(false)
-	  {
-		  UTILS_ASSERT(parser);
-		  UTILS_ASSERT(!filePath.empty());
-	  }
-	  //! Destruktor drukuj¹cy wiadomoœæ o wy³adowaniu pliku.
-	  ~Parser()
-	  {
-		  if ( isParsed() ) {
-			  LOG_DEBUG("Unloading parser for file: " << getPath() );
-		  } else if ( isUsed() ) {
-			  LOG_DEBUG("Unloading invalid parser for file: " << getPath() );
-		  } else {
-			  LOG_DEBUG("Unloading unused parser for file: " << getPath() );
-		  }
-	  }
+    //! \param parser Faktyczny parser. To ten obiekt kontroluje jego
+    //!     czas ¿ycia.
+    //! \param resource Czy parser jest zwi¹zany z zasobami sta³ymi?
+    Parser(IParser* parser, const Filesystem::Path& path) :
+      parser(parser), parsed(false), used(false), filePath(path), parsing(false)
+      {
+          UTILS_ASSERT(parser);
+          UTILS_ASSERT(!filePath.empty());
+      }
+      //! Destruktor drukuj¹cy wiadomoœæ o wy³adowaniu pliku.
+      ~Parser()
+      {
+          if ( isParsed() ) {
+              LOG_DEBUG("Unloading parser for file: " << getPath() );
+          } else if ( isUsed() ) {
+              LOG_DEBUG("Unloading invalid parser for file: " << getPath() );
+          } else {
+              LOG_DEBUG("Unloading unused parser for file: " << getPath() );
+          }
+      }
 
 public:
-	//! \return Czy u¿yto tego parsera?
-	inline bool isUsed() const
-	{
-		return used;
-	}
-	//! \return Czy uda³o siê przeparsowaæ plik?
-	inline bool isParsed() const
-	{
-		return parsed;
-	}
+    //! \return Czy u¿yto tego parsera?
+    inline bool isUsed() const
+    {
+        return used;
+    }
+    //! \return Czy uda³o siê przeparsowaæ plik?
+    inline bool isParsed() const
+    {
+        return parsed;
+    }
 
     inline void reset()
     {
@@ -69,52 +69,52 @@ public:
         parsed = false;
     }
 
-	//!
-	inline bool isParsing() const
-	{
-		return parsing;
-	}
+    //!
+    inline bool isParsing() const
+    {
+        return parsing;
+    }
 
-	//! \return Œcie¿ka do pliku.
-	inline const Filesystem::Path& getPath() const
-	{
-		return filePath;
-	}
-	//! \return
-	inline IParserPtr getParser() const
-	{
-		return parser;
-	}
+    //! \return Œcie¿ka do pliku.
+    inline const Filesystem::Path& getPath() const
+    {
+        return filePath;
+    }
+    //! \return
+    inline IParserPtr getParser() const
+    {
+        return parser;
+    }
 
-	//! Mo¿e rzucaæ wyj¹tkami!
-	void parseFile()
-	{
-		UTILS_ASSERT(!isUsed());
-		UTILS_ASSERT(!filePath.empty());
-		LOG_DEBUG("Parsing file: " << getPath() );
-		used = true;
-		utils::Push<bool> parsingPushed(parsing, true);
-		parser->parseFile(filePath.string());
-		parsed = true;
-	}
-	//! Nie rzuca wyj¹tkami.
-	//! \return Czy uda³o siê przeparsowaæ?
-	bool tryParse()
-	{
-		try {
-			parseFile();
-			return true;
-		} catch (const std::exception& ex) {
-			LOG_ERROR("Error during parsing file " << getPath() << ": " << ex.what());
-			return false;
-		}
-	}
-	//! \param objects Lista wrappowanych obiektów, zainicjowanych (przeparsowany parser)
-	//!         b¹dŸ nie.
-	inline void getObjects(core::Objects& objects)
-	{
-		parser->getObjects(objects);
-	}
+    //! Mo¿e rzucaæ wyj¹tkami!
+    void parseFile()
+    {
+        UTILS_ASSERT(!isUsed());
+        UTILS_ASSERT(!filePath.empty());
+        LOG_DEBUG("Parsing file: " << getPath() );
+        used = true;
+        utils::Push<bool> parsingPushed(parsing, true);
+        parser->parseFile(filePath.string());
+        parsed = true;
+    }
+    //! Nie rzuca wyj¹tkami.
+    //! \return Czy uda³o siê przeparsowaæ?
+    bool tryParse()
+    {
+        try {
+            parseFile();
+            return true;
+        } catch (const std::exception& ex) {
+            LOG_ERROR("Error during parsing file " << getPath() << ": " << ex.what());
+            return false;
+        }
+    }
+    //! \param objects Lista wrappowanych obiektów, zainicjowanych (przeparsowany parser)
+    //!         b¹dŸ nie.
+    inline void getObjects(core::Objects& objects)
+    {
+        parser->getObjects(objects);
+    }
 };
 
 DataManager::DMObjectWrapper::DMObjectWrapper(const core::ObjectWrapperPtr & wrapper) : wrapper(wrapper)
@@ -361,15 +361,15 @@ void DataManager::registerParser(const core::IParserPtr & parser)
 
 int DataManager::getNumRegisteredParsers() const
 {
-	return static_cast<int>(registeredParsers.size());
+    return static_cast<int>(registeredParsers.size());
 }
 
 core::IParserConstPtr DataManager::getRegisteredParser( int idx ) const
 {
-	UTILS_ASSERT(idx >= 0 && idx < getNumRegisteredParsers());
-	auto it = registeredParsers.begin();
-	std::advance( it, idx );
-	return const_pointer_cast<const IParser>(it->second);
+    UTILS_ASSERT(idx >= 0 && idx < getNumRegisteredParsers());
+    auto it = registeredParsers.begin();
+    std::advance( it, idx );
+    return const_pointer_cast<const IParser>(it->second);
 }
 
 //core::ObjectWrapperPtr DataManager::getWrapper(void * rawPtr) const
@@ -554,7 +554,7 @@ bool DataManager::isFileManaged(core::Filesystem::Path & file) const
     return parsersByFiles.find(file) != parsersByFiles.end();
 }
 
-void DataManager::addFile(const core::Filesystem::Path & file)
+void DataManager::addFile(const core::Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects)
 {
     ScopedLock lock(stateMutex);
 
@@ -629,6 +629,10 @@ void DataManager::addFile(const core::Filesystem::Path & file)
     if(parsers.empty() == true){
         LOG_DEBUG("Any of known parsers did not provide proper object wrappers for file: " << file);
     }else{
+
+        for(auto it = totalObjects.begin(); it != totalObjects.end(); ++it){
+            objects.push_back(*it);
+        }
         parsersByFiles.insert(ParsersByFiles::value_type(file, parsers));
         LOG_INFO("File: " << file << " sussesfully loaded to DataManager");
         
@@ -641,7 +645,7 @@ void DataManager::removeFile(const core::Filesystem::Path & file)
     ScopedLock lock(stateMutex);
 
     auto fileIT = parsersByFiles.find(file);    
-    if(fileIT != parsersByFiles.end()){
+    if(fileIT == parsersByFiles.end()){
         throw std::runtime_error("Trying to remove file that is not managed by DataManager");
     }
 
@@ -866,18 +870,18 @@ void DataManager::prepareExtension(std::string & extension)
 
 void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & factory )
 {
-	core::TypeInfo type = factory->getType();
+    core::TypeInfo type = factory->getType();
     auto it = registeredTypes.find(type);
 
-	if ( it != registeredTypes.end() ) {
-		LOG_ERROR("Factory for " << type.name() << " already exists.");
-	}else{
+    if ( it != registeredTypes.end() ) {
+        LOG_ERROR("Factory for " << type.name() << " already exists.");
+    }else{
 
         //zapamiêtyjemy fabrykê
         objectFactories[type] = factory;
 
-		//tworzymy prototyp by miec dostep do informacji o wspieranych typach
-		core::ObjectWrapperConstPtr proto(factory->createWrapper());
+        //tworzymy prototyp by miec dostep do informacji o wspieranych typach
+        core::ObjectWrapperConstPtr proto(factory->createWrapper());
 
         //rejestrujemy typ i jego prototyp
         registeredTypesPrototypes.insert(std::make_pair(type, proto));
@@ -896,7 +900,7 @@ void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & 
         for(auto typeIT = types.begin(); typeIT != types.end(); typeIT++){
             typesHierarchy[*typeIT].second.insert(type);
         }
-	}
+    }
 }
 
 //core::ObjectWrapperPtr DataManager::createWrapper( const core::TypeInfo& type )
@@ -912,21 +916,21 @@ void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & 
 
 core::ObjectWrapperCollectionPtr DataManager::createWrapperCollection(const core::TypeInfo& typeInfo)
 {
-	auto found = objectFactories.find(typeInfo);
-	if ( found != objectFactories.end() ) {
-		return ObjectWrapperCollectionPtr(found->second->createWrapperCollection());
-	} else {
-		// TODO: elaborate
-		throw std::runtime_error("Type not supported.");
-	}
+    auto found = objectFactories.find(typeInfo);
+    if ( found != objectFactories.end() ) {
+        return ObjectWrapperCollectionPtr(found->second->createWrapperCollection());
+    } else {
+        // TODO: elaborate
+        throw std::runtime_error("Type not supported.");
+    }
 }
 
 const core::ObjectWrapperConstPtr & DataManager::getTypePrototype(const core::TypeInfo & typeInfo) const
 {
-	auto it = registeredTypesPrototypes.find(typeInfo);
-	if(it == registeredTypesPrototypes.end()){
-		throw std::runtime_error("Given type is not supported! It was not registered in application.");
-	}
+    auto it = registeredTypesPrototypes.find(typeInfo);
+    if(it == registeredTypesPrototypes.end()){
+        throw std::runtime_error("Given type is not supported! It was not registered in application.");
+    }
 
-	return it->second;
+    return it->second;
 }

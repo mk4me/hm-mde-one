@@ -20,465 +20,468 @@ i web serwisy wsdl.
 
 namespace communication
 {
-    class CommunicationManager : public utils::Observable<CommunicationManager>, private OpenThreads::Thread
-    {
-    private:
 
-        typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
+class CommunicationManager : public utils::Observable<CommunicationManager>, private OpenThreads::Thread
+{
+private:
+
+    typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
+
+public:
+
+    enum Request
+    {
+        DownloadFile,
+        Complex,
+        DownloadPhoto,
+        CopyMotionShallowCopy,
+        CopyMotionMetadata,
+        CopyMedicalShallowCopy,
+        CopyMedicalMetadata,
+        PingServer
+    };
+
+    /**
+    Stany managera pomocne przy wykonywaniu dzia³añ wspó³bie¿nie.
+    */
+    enum State
+    {
+        Ready, /** Gotowy do wszelkich dzia³añ */
+        ProcessingComplex, /** Przetwarzanie kompleksowego zapytania */
+        DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
+        DownloadingPhoto, /** Trwa pobieranie pojedynczego pliku */
+        CopyingMotionShallowCopy, /** Trwa odnawianie informacji o encjach db*/
+        CopyingMotionMetadata, /** Trwa odnawianie informacji o encjach db*/
+        CopyingMedicalShallowCopy, /** Trwa odnawianie informacji o encjach db*/
+        CopyingMedicalMetadata, /** Trwa odnawianie informacji o encjach db*/
+        PingingServer /** Pingowanie serwera */
+    };
+
+
+    class MetadataRequest;
+    class FileRequest;
+    class PhotoRequest;
+    class ComplexRequest;
+
+    class BasicRequest
+    {
+        friend class CommunicationManager;
+        friend class MetadataRequest;
+        friend class FileRequest;
+        friend class PhotoRequest;
+        friend class ComplexRequest;
 
     public:
 
-        enum Request
+        virtual ~BasicRequest() {}
+
+        void cancel()
         {
-            DownloadFile,
-            Complex,
-            DownloadPhoto,
-            CopyMotionShallowCopy,
-            CopyMotionMetadata,
-            CopyMedicalShallowCopy,
-            CopyMedicalMetadata,
-            PingServer
-        };
+            OpenThreads::ScopedLock<OpenThreads::Mutex> lock(cancelLock);
+            cancelled = true;
+        }
 
-        /**
-        Stany managera pomocne przy wykonywaniu dzia³añ wspó³bie¿nie.
-        */
-        enum State
+        bool isCancelled() const
         {
-            Ready, /** Gotowy do wszelkich dzia³añ */
-            ProcessingComplex, /** Przetwarzanie kompleksowego zapytania */
-            DownloadingFile, /** Trwa pobieranie pojedynczego pliku */
-            DownloadingPhoto, /** Trwa pobieranie pojedynczego pliku */
-            CopyingMotionShallowCopy, /** Trwa odnawianie informacji o encjach db*/
-            CopyingMotionMetadata, /** Trwa odnawianie informacji o encjach db*/
-            CopyingMedicalShallowCopy, /** Trwa odnawianie informacji o encjach db*/
-            CopyingMedicalMetadata, /** Trwa odnawianie informacji o encjach db*/
-            PingingServer /** Pingowanie serwera */
-        };
+            OpenThreads::ScopedLock<OpenThreads::Mutex> lock(cancelLock);
+            return cancelled;
+        }
 
-
-        class MetadataRequest;
-        class FileRequest;
-        class PhotoRequest;
-        class ComplexRequest;
-
-        class BasicRequest
+        Request getType() const
         {
-            friend class CommunicationManager;
-            friend class MetadataRequest;
-            friend class FileRequest;
-            friend class PhotoRequest;
-            friend class ComplexRequest;
+            return type;
+        }
 
-        public:
-
-            virtual ~BasicRequest() {}
-
-            void cancel()
-            {
-                OpenThreads::ScopedLock<OpenThreads::Mutex> lock(cancelLock);
-                cancelled = true;
-            }
-
-            bool isCancelled() const
-            {
-                OpenThreads::ScopedLock<OpenThreads::Mutex> lock(cancelLock);
-                return cancelled;
-            }
-
-            Request getType() const
-            {
-                return type;
-            }
-
-            virtual double getProgress() const
-            {
-                return 0;
-            }
-
-            bool isComplete() const
-            {
-                return getProgress() == 100.0;
-            }
-
-        private:
-            BasicRequest(Request type) : type(type), cancelled(false) {}
-
-        private:
-            mutable OpenThreads::Mutex cancelLock;
-            bool cancelled;
-            Request type;
-        };
-
-        class MetadataRequest : public BasicRequest, public FtpsConnection::IProgress
+        virtual double getProgress() const
         {
-            friend class CommunicationManager;
-            friend class FileRequest;
-            friend class PhotoRequest;
+            return 0;
+        }
 
-        private:
-
-            MetadataRequest(Request type, const std::string & filePath) : BasicRequest(type), filePath(filePath), progress(0) {}
-
-        public:
-            const std::string & getFilePath() const
-            {
-                return filePath;
-            }
-
-            virtual void setProgress(double p)
-            {
-                progress = p;
-            }
-
-            virtual double getProgress() const
-            {
-                return progress;
-            }
-
-        private:
-            double progress;
-            std::string filePath;
-        };
-
-        class FileRequest : public MetadataRequest
+        bool isComplete() const
         {
-            friend class CommunicationManager;
+            return getProgress() == 100.0;
+        }
 
-        private:
+    private:
+        BasicRequest(Request type) : type(type), cancelled(false) {}
 
-            FileRequest(const std::string & filePath, unsigned int fileID) : MetadataRequest(DownloadFile, filePath), fileID(fileID) {}
+    private:
+        mutable OpenThreads::Mutex cancelLock;
+        bool cancelled;
+        Request type;
+    };
 
-        public:
-
-            unsigned int getFileID() const
-            {
-                return fileID;
-            }
-
-        private:
-
-            unsigned int fileID;
-        };
-
-        class PhotoRequest : public MetadataRequest
-        {
-            friend class CommunicationManager;
-
-        private:
-
-            PhotoRequest(const std::string & filePath, unsigned int photoID) : MetadataRequest(DownloadPhoto, filePath), photoID(photoID) {}
-            
-        public:
-
-            unsigned int getPhotoID() const
-            {
-                return photoID;
-            }
-
-        private:
-
-            unsigned int photoID;
-        };
-
-        typedef core::shared_ptr<BasicRequest> RequestPtr;
-
-        typedef boost::function<void(const RequestPtr &)> RequestCallback;
-        typedef boost::function<void(const RequestPtr &, const std::string &)> RequestErrorCallback;
-
-        struct RequestCallbacks
-        {
-            RequestCallback onBeginCallback;
-            RequestCallback onEndCallback;
-            RequestCallback onCancelCallback;
-            RequestErrorCallback onErrorCallback;
-        };
-
-        /**
-        Typ zlecenia przekazywany do kolejki zleceñ CommunicationManagera
-        */
-        struct CompleteRequest
-        {
-            RequestPtr request;
-            RequestCallbacks callbacks;
-        };
-
-        typedef std::queue<CompleteRequest> RequestsQueue;
-
-        class ComplexRequest : public BasicRequest
-        {
-            friend class CommunicationManager;
-
-        private:
-            ComplexRequest(const std::vector<CompleteRequest> & requests) : BasicRequest(Complex), requests(requests) {}
-
-        public:
-
-            unsigned int size() const
-            {
-                return requests.size();
-            }
-
-            bool empty() const
-            {
-                return requests.empty();
-            }
-
-            const CompleteRequest & getRequest(unsigned int i) const
-            {
-                return requests.at(i);
-            }
-
-            virtual double getProgress() const
-            {
-                double ret = 0;
-
-                for(auto it = requests.begin(); it != requests.end(); it++){
-                    double loc = (*it).request->getProgress();
-                    if(loc == 0){
-                        break;
-                    }
-
-                    ret += loc;
-                }
-
-                return 100.0 * (ret / (100 * requests.size()));
-            }
-
-        private:
-            std::vector<CompleteRequest> requests;
-        };
+    class MetadataRequest : public BasicRequest, public FtpsConnection::IProgress
+    {
+        friend class CommunicationManager;
+        friend class FileRequest;
+        friend class PhotoRequest;
 
     private:
 
-        /**
-        Ukryty konstruktor
-        */
-        CommunicationManager();
-        /**
-        Ukryty destruktor
-        */
-        virtual ~CommunicationManager();
-        /**
-        Metoda statyczna (wymagana przez curla) typu callback do odbierania danych podczas pingowania.
-        @param buffer wskaŸnik do bloku pamiêci o rozmiarze size*nmemb
-        @param size rozmiar w bajtach elementu do odczytania
-        @param nmemb liczba elementów do odczytania
-        @param stream wskaŸnik na strumieñ danych
-        @return iloœæ bajtów przetworzonych przez funkcjê
-        */
-        static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
+        MetadataRequest(Request type, const std::string & filePath) : BasicRequest(type), filePath(filePath), progress(0) {}
 
-        void popRequest(CompleteRequest & reuest)
+    public:
+        const std::string & getFilePath() const
         {
-            ScopedLock lock(requestsMutex);
-            reuest = requestsQueue.front();
+            return filePath;
+        }
+
+        virtual void setProgress(double p)
+        {
+            progress = p;
+        }
+
+        virtual double getProgress() const
+        {
+            return progress;
+        }
+
+    private:
+        double progress;
+        std::string filePath;
+    };
+
+    class FileRequest : public MetadataRequest
+    {
+        friend class CommunicationManager;
+
+    private:
+
+        FileRequest(const std::string & filePath, unsigned int fileID) : MetadataRequest(DownloadFile, filePath), fileID(fileID) {}
+
+    public:
+
+        unsigned int getFileID() const
+        {
+            return fileID;
+        }
+
+    private:
+
+        unsigned int fileID;
+    };
+
+    class PhotoRequest : public MetadataRequest
+    {
+        friend class CommunicationManager;
+
+    private:
+
+        PhotoRequest(const std::string & filePath, unsigned int photoID) : MetadataRequest(DownloadPhoto, filePath), photoID(photoID) {}
+            
+    public:
+
+        unsigned int getPhotoID() const
+        {
+            return photoID;
+        }
+
+    private:
+
+        unsigned int photoID;
+    };
+
+    typedef core::shared_ptr<BasicRequest> RequestPtr;
+
+    typedef boost::function<void(const RequestPtr &)> RequestCallback;
+    typedef boost::function<void(const RequestPtr &, const std::string &)> RequestErrorCallback;
+
+    struct RequestCallbacks
+    {
+        RequestCallback onBeginCallback;
+        RequestCallback onEndCallback;
+        RequestCallback onCancelCallback;
+        RequestErrorCallback onErrorCallback;
+    };
+
+    /**
+    Typ zlecenia przekazywany do kolejki zleceñ CommunicationManagera
+    */
+    struct CompleteRequest
+    {
+        RequestPtr request;
+        RequestCallbacks callbacks;
+    };
+
+    typedef std::queue<CompleteRequest> RequestsQueue;
+
+    class ComplexRequest : public BasicRequest
+    {
+        friend class CommunicationManager;
+
+    private:
+        ComplexRequest(const std::vector<CompleteRequest> & requests) : BasicRequest(Complex), requests(requests) {}
+
+    public:
+
+        unsigned int size() const
+        {
+            return requests.size();
+        }
+
+        bool empty() const
+        {
+            return requests.empty();
+        }
+
+        const CompleteRequest & getRequest(unsigned int i) const
+        {
+            return requests.at(i);
+        }
+
+        virtual double getProgress() const
+        {
+            double ret = 0;
+
+            for(auto it = requests.begin(); it != requests.end(); it++){
+                double loc = (*it).request->getProgress();
+                if(loc == 0){
+                    break;
+                }
+
+                ret += loc;
+            }
+
+            return 100.0 * (ret / (100 * requests.size()));
+        }
+
+    private:
+        std::vector<CompleteRequest> requests;
+    };
+
+private:
+
+    /**
+    Ukryty konstruktor
+    */
+    CommunicationManager();
+    /**
+    Ukryty destruktor
+    */
+    virtual ~CommunicationManager();
+    /**
+    Metoda statyczna (wymagana przez curla) typu callback do odbierania danych podczas pingowania.
+    @param buffer wskaŸnik do bloku pamiêci o rozmiarze size*nmemb
+    @param size rozmiar w bajtach elementu do odczytania
+    @param nmemb liczba elementów do odczytania
+    @param stream wskaŸnik na strumieñ danych
+    @return iloœæ bajtów przetworzonych przez funkcjê
+    */
+    static size_t pingDataCallback(void *buffer, size_t size, size_t nmemb, void *stream);
+
+    void popRequest(CompleteRequest & reuest)
+    {
+        ScopedLock lock(requestsMutex);
+        reuest = requestsQueue.front();
+        requestsQueue.pop();
+    }
+
+    void setCurrentDownloadHelper(const core::shared_ptr<TransportWSDL_FTPSBase> & transportManager)
+    {
+        ScopedLock lock(downloadHelperMutex);
+        currentDownloadHelper = transportManager;
+    }
+
+    FtpsConnection::OperationStatus processComplex(const CompleteRequest & request, std::string & message = std::string());
+    FtpsConnection::OperationStatus processPhoto(const CompleteRequest & request, std::string & message = std::string());
+    FtpsConnection::OperationStatus processFile(const CompleteRequest & request, std::string & message = std::string());
+    FtpsConnection::OperationStatus processMotionShallowCopy(const CompleteRequest & request, std::string & message = std::string());
+	FtpsConnection::OperationStatus processMotionMetadata(const CompleteRequest & request, std::string & message = std::string());
+	FtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request, std::string & message = std::string());
+	FtpsConnection::OperationStatus processMedicalMetadata(const CompleteRequest & request, std::string & message = std::string());
+    FtpsConnection::OperationStatus processPing(const CompleteRequest & request, std::string & message = std::string());
+
+public:
+
+    void pushRequest(const CompleteRequest & request)
+    {
+        ScopedLock lock(requestsMutex);
+        requestsQueue.push(request);
+
+        if(isRunning() == false){
+            start();
+        }
+    }
+
+    static RequestPtr createRequestComplex(const std::vector<CompleteRequest> & requests);
+    static RequestPtr createRequestFile(unsigned int fileID, const std::string & filePath);
+    static RequestPtr createRequestPhoto(unsigned int fileID, const std::string & filePath);
+    static RequestPtr createRequestMotionShallowCopy(const std::string & filePath);
+    static RequestPtr createRequestMotionMetadata(const std::string & filePath);
+    static RequestPtr createRequestMedicalShallowCopy(const std::string & filePath);
+    static RequestPtr createRequestMedicalMetadata(const std::string & filePath);
+    static RequestPtr createRequestPing();
+
+    void cancelRequest(const RequestPtr & request);
+
+    bool requestsQueueEmpty() const
+    {
+        ScopedLock lock(requestsMutex);
+        return requestsQueue.empty();
+    }
+
+    void cancelAllPendingRequests()
+    {
+        ScopedLock lock(requestsMutex);
+        while(requestsQueue.empty() == false)
+        {
+            if(requestsQueue.front().callbacks.onCancelCallback.empty() == false){
+                requestsQueue.front().callbacks.onCancelCallback(requestsQueue.front().request);
+            }
+
             requestsQueue.pop();
         }
+    }
 
-        void setCurrentTransportManager(const core::shared_ptr<communication::TransportWSDL_FTPSBase> & transportManager)
-        {
-            ScopedLock lock(transportManagerMutex);
-            currentTransportManager = transportManager;
-        }
+    /**
+    Zwraca postêp w procentach aktualnie wykonywanego zadania jako pejedynczego transferu
+    @return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
+    */
+    int getProgress() const;
 
-        FtpsConnection::OperationStatus processComplex(const CompleteRequest & request, std::string & message = std::string());
-        FtpsConnection::OperationStatus processPhoto(const CompleteRequest & request, std::string & message = std::string());
-        FtpsConnection::OperationStatus processFile(const CompleteRequest & request, std::string & message = std::string());
-        FtpsConnection::OperationStatus processMotionShallowCopy(const CompleteRequest & request, std::string & message = std::string());
-        FtpsConnection::OperationStatus processMotionMetadata(const CompleteRequest & request, std::string & message = std::string());
-        FtpsConnection::OperationStatus processMedicalShallowCopy(const CompleteRequest & request, std::string & message = std::string());
-        FtpsConnection::OperationStatus processMedicalMetadata(const CompleteRequest & request, std::string & message = std::string());
-        FtpsConnection::OperationStatus processPing(const CompleteRequest & request, std::string & message = std::string());
+    /**
+    Przerwanie operacji pobierania pliku lub próby pomiarowej.
+    */
+    //void cancelDownload()
+    //{
+    //    //if(state != CopyingMotionDB){
+    //    if(currentDownloadHelper != nullptr){
+    //        currentDownloadHelper->abort();
+    //        cancelDownloading = true;
+    //    //}
+    //};
 
-    public:
-
-        void pushRequest(const CompleteRequest & request)
-        {
-            ScopedLock lock(requestsMutex);
-            requestsQueue.push(request);
-
-            if(isRunning() == false){
-                start();
-            }
-        }
-
-        static RequestPtr createRequestComplex(const std::vector<CompleteRequest> & requests);
-        static RequestPtr createRequestFile(unsigned int fileID, const std::string & filePath);
-        static RequestPtr createRequestPhoto(unsigned int fileID, const std::string & filePath);
-        static RequestPtr createRequestMotionShallowCopy(const std::string & filePath);
-        static RequestPtr createRequestMotionMetadata(const std::string & filePath);
-        static RequestPtr createRequestMedicalShallowCopy(const std::string & filePath);
-        static RequestPtr createRequestMedicalMetadata(const std::string & filePath);
-        static RequestPtr createRequestPing();
-
-        void cancelRequest(const RequestPtr & request);
-
-        bool requestsQueueEmpty() const
-        {
-            ScopedLock lock(requestsMutex);
-            return requestsQueue.empty();
-        }
-
-        void cancelAllPendingRequests()
-        {
-            ScopedLock lock(requestsMutex);
-            while(requestsQueue.empty() == false)
-            {
-                if(requestsQueue.front().callbacks.onCancelCallback.empty() == false){
-                    requestsQueue.front().callbacks.onCancelCallback(requestsQueue.front().request);
-                }
-
-                requestsQueue.pop();
-            }
-        }
-
-        /**
-        Zwraca postêp w procentach aktualnie wykonywanego zadania jako pejedynczego transferu
-        @return wartoœæ procentowa (od 0 do 100) pokazuj¹ca postêp wykonywanej operacji
-        */
-        int getProgress() const;
-
-        /**
-        Przerwanie operacji pobierania pliku lub próby pomiarowej.
-        */
-        //void cancelDownload()
-        //{
-        //    //if(state != CopyingMotionDB){
-        //    if(currentTransportManager != nullptr){
-        //        currentTransportManager->abort();
-        //        cancelDownloading = true;
-        //    //}
-        //};
-
-    protected:
-        /**
-        Ustala stan w jakim znajduje siê Communication Service.
-        @param state stan jaki ustaliæ jako aktualny dla CS
-        */
-        void setState(State state)
-        {
-            ScopedLock lock(trialsMutex);
-            this->state = state;    
-        };
-
-    public:
-        /**
-        Sprawdza stan w jakim znajduje siê Communication Service.
-        @return aktualny stan CS
-        */
-        State getState()
-        {
-            ScopedLock lock(trialsMutex);
-            return state;
-        };
-        
-        /**
-        Podaje informacjê czy serwer odpowiedzia³ na ostatni ping.
-        @return czy serwer odpowiedzia³?
-        */
-        bool isServerResponse() const
-        {
-            return serverResponse;
-        };
-
-    private:
-
-        /**
-        Metoda run pochodzi z interfejsu OpenThreads::Thread i zosta³a przes³oniêta do przeniesienia operacji do osobnego w¹tku.
-        */
-
-        virtual void run();
-
-        void init();
-
-        void deinit();
-
-    public:
-
-        /**
-        Statyczna metoda pobieraj¹ca jedyna instancjê klasy CommuniationManagera.
-        @return jedyna instancja CommunicationManagera
-        */
-        static CommunicationManager* getInstance();
-        /**
-        Statyczna metoda usuwaj¹ca jedyn¹ instancjê CommunicationManagera.
-        */
-        static void destoryInstance();
-
-
-    private:
-
-        /**
-        Jedyna instancja klasy CommunicationManager.
-        */
-        static CommunicationManager* instance;
-        /**
-        WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych ruchu
-        */
-        core::shared_ptr<communication::MotionTransportWSDL_FTPS> motionTransportManager;
-
-        /**
-        WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych medycznych
-        */
-        core::shared_ptr<communication::MedicalTransportWSDL_FTPS> medicalTransportManager;
-
-        /**
-        WskaŸnik na klasê TransportWSDL_FTPSBase odpowiedzialn¹ za aktualny transport danych
-        */
-        core::shared_ptr<communication::TransportWSDL_FTPSBase> currentTransportManager;
-
-        /**
-        WskaŸnik na klasê MotionQueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
-        */
-        core::shared_ptr<communication::MotionQueryWSDL> motionQueryManager;
-
-        /**
-        WskaŸnik na klasê MotionQueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
-        */
-        core::shared_ptr<communication::MedicalQueryWSDL> medicalQueryManager;
-
-        /**
-        Stan Communication Service
-        */
-        State state;
-
-        /**
-        Aktualnie realizowane zapytanie
-        */
-        CompleteRequest currentRequest;
-
-        /**
-        Kolejka zapytañ
-        */
-        RequestsQueue requestsQueue;
-
-        /**
-        Czy serwer odpowiada na ping
-        */
-        bool serverResponse;
-        /**
-        Instancja curla do pingowania serwera.
-        */
-        CURL* pingCurl;
-        /**
-        Informacja o stanie instancji curla.
-        */
-        CURLcode pingCurlResult;
-        /**
-        Muteks zabezpieczaj¹cy przed zakleszczeniami.
-        */
-        OpenThreads::ReentrantMutex trialsMutex;
-        /**
-        Muteks synchronizuj¹cy obs³uge kolejki zleceñ
-        */
-        mutable OpenThreads::ReentrantMutex requestsMutex;
-
-        mutable OpenThreads::ReentrantMutex transportManagerMutex;
-
-        bool finish;
-
-        bool cancelDownloading;
+protected:
+    /**
+    Ustala stan w jakim znajduje siê Communication Service.
+    @param state stan jaki ustaliæ jako aktualny dla CS
+    */
+    void setState(State state)
+    {
+        ScopedLock lock(trialsMutex);
+        this->state = state;    
     };
+
+public:
+    /**
+    Sprawdza stan w jakim znajduje siê Communication Service.
+    @return aktualny stan CS
+    */
+    State getState()
+    {
+        ScopedLock lock(trialsMutex);
+        return state;
+    };
+        
+    /**
+    Podaje informacjê czy serwer odpowiedzia³ na ostatni ping.
+    @return czy serwer odpowiedzia³?
+    */
+    bool isServerResponse() const
+    {
+        return serverResponse;
+    };
+
+private:
+
+    /**
+    Metoda run pochodzi z interfejsu OpenThreads::Thread i zosta³a przes³oniêta do przeniesienia operacji do osobnego w¹tku.
+    */
+
+    virtual void run();
+
+    void init();
+
+    void deinit();
+
+public:
+
+    /**
+    Statyczna metoda pobieraj¹ca jedyna instancjê klasy CommuniationManagera.
+    @return jedyna instancja CommunicationManagera
+    */
+    static CommunicationManager* getInstance();
+    /**
+    Statyczna metoda usuwaj¹ca jedyn¹ instancjê CommunicationManagera.
+    */
+    static void destoryInstance();
+
+
+private:
+
+    /**
+    Jedyna instancja klasy CommunicationManager.
+    */
+    static CommunicationManager* instance;
+    /**
+    WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych ruchu
+    */
+    core::shared_ptr<communication::MotionTransportWSDL_FTPS> motionTransportManager;
+
+    /**
+    WskaŸnik na klasê MotionTransportWSDL_FTPS odpowiedzialn¹ za transport danych medycznych
+    */
+    core::shared_ptr<communication::MedicalTransportWSDL_FTPS> medicalTransportManager;
+
+    /**
+    WskaŸnik na klasê TransportWSDL_FTPSBase odpowiedzialn¹ za aktualny transport danych
+    */
+    core::shared_ptr<communication::TransportWSDL_FTPSBase> currentDownloadHelper;
+
+    /**
+    WskaŸnik na klasê MotionQueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
+    */
+    core::shared_ptr<communication::MotionQueryWSDL> motionQueryManager;
+
+    /**
+    WskaŸnik na klasê MotionQueryWSDL odpowiedzialn¹ za odpytywanie bazy danych
+    */
+    core::shared_ptr<communication::MedicalQueryWSDL> medicalQueryManager;
+
+    /**
+    Stan Communication Service
+    */
+    State state;
+
+    /**
+    Aktualnie realizowane zapytanie
+    */
+    CompleteRequest currentRequest;
+
+    /**
+    Kolejka zapytañ
+    */
+    RequestsQueue requestsQueue;
+
+    /**
+    Czy serwer odpowiada na ping
+    */
+    bool serverResponse;
+    /**
+    Instancja curla do pingowania serwera.
+    */
+    CURL* pingCurl;
+    /**
+    Informacja o stanie instancji curla.
+    */
+    CURLcode pingCurlResult;
+    /**
+    Muteks zabezpieczaj¹cy przed zakleszczeniami.
+    */
+    OpenThreads::ReentrantMutex trialsMutex;
+    /**
+    Muteks synchronizuj¹cy obs³uge kolejki zleceñ
+    */
+    mutable OpenThreads::ReentrantMutex requestsMutex;
+
+    mutable OpenThreads::ReentrantMutex downloadHelperMutex;
+
+    bool finish;
+
+    bool cancelDownloading;
+};
+
 }
+
 #endif //HEADER_GUARD_COMMUNICATION_COMMUNICATIONMANAGER_H__

@@ -13,6 +13,7 @@
 #include <core/IDataManager.h>
 #include <core/IVisualizerManager.h>
 #include <core/IServiceManager.h>
+#include <core/ISourceManager.h>
 #include <core/IDataProcessorManager.h>
 #include <core/IDataSourceManager.h>
 #include <core/StringTools.h>
@@ -28,6 +29,7 @@ namespace core
         IDataManagerBase* dataManagerReader;
         IVisualizerManager* visualizerManager;
         IServiceManager* serviceManager;
+		ISourceManager* sourceManager;
 		IPath* pathInterface;
 		ILog* logInterface;
         IDataProcessorManager* dataProcessorManager;
@@ -39,7 +41,7 @@ namespace core
     extern InstanceInfo __instanceInfo;
 
     //! Makro definiuj¹ce zmienn¹ przechowuj¹c¹ managery. Automatycznie u¿ywane w pluginach.
-    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }; }
+    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }; }
 
     //! \return Bie¿¹ca instancja data managera readera. Rozwi¹zanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala

@@ -26,9 +26,6 @@ namespace communication
         */
         std::string uri;
 
-        //bool verifyPeer;
-        //WsdlPull::WsdlInvoker::HostVerification verifyHost;
-        //std::string caPath;
         /**
         Obiekt klasy WsdlInvoker biblioteki wsdlpull
         */

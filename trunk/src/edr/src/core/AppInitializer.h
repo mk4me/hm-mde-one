@@ -18,6 +18,7 @@
 #include <core/ObjectWrapperCollection.h>
 
 #include "ServiceManager.h"
+#include "SourceManager.h"
 #include "DataManager.h"
 #include "VisualizerManager.h"
 #include "EDRConfig.h"
@@ -61,6 +62,7 @@ public:
             {
                 __instanceInfo.dataManagerReader = dataManager.manager = &dataManager;
                 __instanceInfo.serviceManager = serviceManager.manager = &serviceManager;
+				__instanceInfo.sourceManager = sourceManager.manager = &sourceManager;
                 __instanceInfo.visualizerManager = visualizerManager.manager = &visualizerManager;
                 __instanceInfo.dataProcessorManager = dataProcessorManager.manager = &dataProcessorManager;
                 __instanceInfo.dataSourceManager = dataSourceManager.manager = &dataSourceManager;
@@ -71,6 +73,7 @@ public:
             {
                 __instanceInfo.dataManagerReader = dataManager.manager = nullptr;
                 __instanceInfo.serviceManager = serviceManager.manager = nullptr;
+				__instanceInfo.sourceManager = sourceManager.manager = nullptr;
                 __instanceInfo.visualizerManager = visualizerManager.manager = nullptr;
                 __instanceInfo.dataProcessorManager = dataProcessorManager.manager = nullptr;
                 __instanceInfo.dataSourceManager = dataSourceManager.manager = nullptr;
@@ -126,6 +129,16 @@ public:
                 return &serviceManager;
             }
 
+			virtual ISourceManager * getSourceManager()
+			{
+				return &sourceManager;
+			}
+
+			virtual const ISourceManager * getSourceManager() const
+			{
+				return &sourceManager;
+			}
+
             virtual VisualizerManager * getVisualizerManager()
             {
                 return &visualizerManager;
@@ -164,6 +177,7 @@ public:
             DataProcessorManager dataProcessorManager;
             DataSourceManager dataSourceManager;
             ServiceManager serviceManager;
+			SourceManager sourceManager;
         };
 
 		osg::ArgumentParser arguments(&argc,argv);
@@ -198,12 +212,19 @@ public:
 			application.setOrganizationName("PJWSTK");
             QString locale = QLocale::system().name();
             
-            QTranslator translator;
-            translator.load(QString("lang_") + locale);
-            if (translator.isEmpty()) {
-                translator.load("lang_en_EN");
+            QTranslator appTranslator;
+            appTranslator.load(QString("lang_") + locale);
+            if (appTranslator.isEmpty()) {
+                appTranslator.load("lang_pl_PL");
             }
-            qApp->installTranslator(&translator);
+            qApp->installTranslator(&appTranslator);
+
+            QTranslator qtTranslator;
+            qtTranslator.load(QString("qt_") + locale);
+            if (qtTranslator.isEmpty()) {
+                qtTranslator.load("qt_pl_PL");
+            }
+            qApp->installTranslator(&qtTranslator);
 
 			QSettings::setDefaultFormat(QSettings::IniFormat);
 

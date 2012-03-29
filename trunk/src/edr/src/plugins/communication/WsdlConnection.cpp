@@ -80,6 +80,7 @@ const std::string& WsdlConnection::getPassword() const
 void WsdlConnection::initializeInvoker() 
 {
     invoker.reset(new WsdlPull::WsdlInvoker());
+	invoker->setVerbose(true);
     //invoker->setProxy("127.0.0.1", 8888);
     if(this->usr.length() > 0) {
         invoker->setAuth(usr, pswd);

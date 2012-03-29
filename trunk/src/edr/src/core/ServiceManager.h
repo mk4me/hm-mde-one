@@ -5,9 +5,7 @@
 #include <core/IService.h>
 #include <map>
 #include <vector>
-#include <osg/Timer>
 #include <core/PluginCommon.h>
-#include <core/IManagersAccessor.h>
 #include "ManagerHelper.h"
 
 class ServiceManager: public core::IServiceManager, public ManagerHelper<ServiceManager>

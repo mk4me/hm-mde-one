@@ -14,6 +14,7 @@
 
 #include <core/IIdentifiable.h>
 #include <core/IDataManager.h>
+#include <core/IServiceManager.h>
 #include <core/IActionsGroupManager.h>
 
 class QObject;
@@ -29,12 +30,27 @@ namespace core
 
         //! Inicjalizacja ürÛd≥a. NastÍpuje juø po wczytaniu pluginÛw i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich ürÛde≥.
-        virtual void init(IMemoryDataManager * memoryDM, IFileDataManager * fileDM) = 0;
+        virtual void init(IMemoryDataManager * memoryDM, IFileDataManager * fileDM, IServiceManager * serviceManager) = 0;
 
         //! PÛüna inicjalizacja ürÛd≥a, nastÍpuje po wczytaniu i inicjalizacji wszystkich innych ürÛde≥
         virtual void lateInit()
         {
 
+        }
+
+		//! Metoda powinna w bezpieczny sposob zwalniac zasoby, majac na uwadze øe niekoniecznie wszystkie uslugi i zasoby pobrane z zewnatrz sa jeszcze dostepne.
+        //! Ta metoda w szczegolnoscis powinna zamknac wszystkie watki, ktÛre uruchomi≥ serwis, moze tez zwalniac pamieÊ przydzielonπ dynamicznie
+        //! Generalnie to taki bezpieczny destruktor uniezalezniajacy dana usluge od pozostalych uslug i przygotowujacy ja na usuniecie
+        virtual void finalize()
+        {
+
+        }
+
+        //! Metoda aktualizujπca pochodzi z wπtku UI! Powinny tu byÊ realizowane lekkie operacje odúwieøania widgetÛw!!
+        //! Jako parametr dostajemy przyrost czasu jaki mina≥ od poprzedniego wywo≥ania
+        virtual void update(double deltaTime)
+        {
+       
         }
 
         //! èrÛd≥o nie musi mieÊ wizualnej reprezentacji.

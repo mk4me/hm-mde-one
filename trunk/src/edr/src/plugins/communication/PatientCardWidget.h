@@ -23,6 +23,7 @@
 #include "QMultiToolBox.h"
 #include "ui_PatientCardWidget.h"
 #include <plugins/communication/Entity.h>
+#include <qthtmlgenlib/TableGenerator.h>
 
 class CardSessionItem : public QTreeWidgetItem
 {
@@ -96,7 +97,23 @@ private:
     void resetAntropometricData();
     void fillAntropometricData(const communication::MotionShallowCopy::Attrs & attributes = communication::MotionShallowCopy::Attrs());
 
-    static void setAttribute(QTableWidget * table, int row, int column, const std::string & attribute, const communication::MotionShallowCopy::Attrs & attributes);
+    static void setAttribute(QTableWidget * table, HtmlDataTableContent & htmlTable, int row, int column, const std::string & attribute, const communication::MotionShallowCopy::Attrs & attributes);
+
+    void initAntropometric();
+    void initAntropometricHeadersStructure();
+    void initAntropometricContent();
+    void initAntropometricStyles();
+    void initAntropometricAtributes();
+    void resetContent();
+
+private:
+
+    struct AntropometricTabel {
+        HtmlDataTableContent antropometricContent;
+        TableHeadersStructureDescriptor antropometricHeadersStructure;
+        HtmlDataTableCellAttributes antropometricCellsAttributes;
+        HtmlDataTableStyles antropometricStyles;
+    };
 
 private:
 
@@ -112,6 +129,10 @@ private:
     QTableWidget * disordersTable;
     QTreeWidget * sessionsWidget;
     QTextEdit * adnotationsWidget;
+
+    
+    AntropometricTabel antropometricGeneralTable;
+    AntropometricTabel antropometricLeftRightTable;
 };
 
 #endif HEADER_GUARD___PATIENTCARDWIDGET_H__

@@ -88,7 +88,9 @@ private:
         QString name;
         QIcon icon;
         bool visible;
+        //! Pozycja zak³¹dki w QTabBar
         int tabPos;
+        //! Pozycja zak³¹dki w FlexiTab (mo¿e byæ ukryta -> ró¿na od tabPos)
         unsigned int flexiPos;
         QScrollArea * tabArea;
         QWidget * contentWidget;
@@ -114,6 +116,8 @@ private:
 
     void shiftTabPosLeft(unsigned int begin, unsigned int end);
     void shiftTabPosRight(unsigned int begin, unsigned int end);
+
+    void refreshTabsTexts();
 
 private:
 

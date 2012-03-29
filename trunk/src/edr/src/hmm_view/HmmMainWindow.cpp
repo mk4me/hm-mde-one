@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include "HmmMainWindow.h"
+#include "SourceManager.h"
 #include "ui_LoadingDialog.h"
 #include "LoadingDialog.h"
 #include "VisualizerWidget.h"
@@ -187,7 +188,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 		// Moze wlasciwe bedzie identyfikowanie po UniqueID.
 		//if (name == "Communication") {
         if (name == "DataExplorer") {
-			ActionsGroupManager mainWidgetActions;
+			/*ActionsGroupManager mainWidgetActions;
 			QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
 			ActionsGroupManager controlWidgetActions;
@@ -201,7 +202,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
             layout->addWidget(settingsWidget);
             layout->addWidget(viewWidget);
             layout->addWidget(controlWidget);
-			this->data->setLayout(layout);
+			this->data->setLayout(layout);*/
         }else if (name == "newTimeline") {
             showTimeline();
         }else{
@@ -220,17 +221,44 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         }
 	}
 
-    // akcje - Workflow (VDF) i konsola
+	// akcje - Workflow (VDF) i konsola
 	EDRWorkflowWidget* widget = new EDRWorkflowWidget();
-    actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
-    widget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    initializeConsole();
-    actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
-    widgetConsole->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    layout->addWidget(actionsMainWindow);
+	actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+	widget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+	initializeConsole();
+	actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
+	widgetConsole->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+	layout->addWidget(actionsMainWindow);
 
 	operations->setLayout(layout);
 
+	QTabWidget * dataTabWidget = core::createNamedObject<QTabWidget>(QString("dataTabWidget"));
+
+	for (int i = 0; i < SourceManager::getInstance()->getNumSources(); ++i) {
+		auto service = SourceManager::getInstance()->getSource(i);
+
+		ActionsGroupManager settingsWidgetActions;
+		dataTabWidget->addTab(service->getWidget(&settingsWidgetActions), QString::fromStdString(service->getName()));
+		//TODO
+		//obs³u¿yc konteksy Ÿróde³
+	}
+
+	layout = new QVBoxLayout();
+	layout->addWidget(dataTabWidget);
+	this->data->setLayout(layout);	
+
+	//chowamy zak³adki jesli tylko jedno Ÿród³o
+	if(dataTabWidget->count() == 1){
+		QList<QTabBar*> tabBars = dataTabWidget->findChildren<QTabBar*>();
+		for(auto it = tabBars.begin(); it != tabBars.end(); ++it){
+			if((*it)->parent() == dataTabWidget){
+				(*it)->setVisible(false);
+				break;
+			}
+		}
+	}    
+
+	//inicjalizacja title bara
     toolsGroupID = flexiTabWidget->addGroup(QObject::tr("Tools"));
     visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer"), QIcon(), false);
 
@@ -243,21 +271,20 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     this->showFullScreen();
 
-#define EDR_PRESENTATION_MODE_
-#ifndef EDR_PRESENTATION_MODE_
-
-    PseudoLoginWidget login;
-    int ret = login.exec();
-    if(ret == QDialog::Accepted){
-        this->data->show();
-    }else{
-        QApplication::postEvent(qApp, new QCloseEvent());
-        //QTimer::singleShot(500, qApp, SLOT(quit()));
-    }
-#else
+//#ifndef EDR_PRESENTATION_MODE_
+//
+//    PseudoLoginWidget login;
+//    int ret = login.exec();
+//    if(ret == QDialog::Accepted){
+//        this->data->show();
+//    }else{
+//        QApplication::postEvent(qApp, new QCloseEvent());
+//        //QTimer::singleShot(500, qApp, SLOT(quit()));
+//    }
+//#else
+//    this->data->show();
+//#endif
     this->data->show();
-#endif
-    
 }
 
 void HmmMainWindow::setCurrentVisualizerActions(VisualizerWidget * visWidget)
@@ -1358,11 +1385,19 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
  {
      std::vector<MotionConstPtr> motions = core::queryDataPtr(DataManager::getInstance());
      int count = motions.size();
-     if (motionsCount == 0 && count > 0) {
-         hmm->analisisButton->setEnabled(true);
-     }
-     if (motionsCount != count) {
-        hmm->refreshTree();
-        motionsCount = count;
-     }
+
+	 if(count > 0){
+		 if (motionsCount == 0) {
+			 hmm->analisisButton->setEnabled(true);			 
+		 }
+	 }else{
+		 if (motionsCount != 0) {
+			 hmm->analisisButton->setEnabled(false);
+		 }
+	 }
+
+	 if (motionsCount != count) {
+		 hmm->refreshTree();
+		 motionsCount = count;
+	 }
  }

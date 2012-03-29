@@ -73,8 +73,23 @@ void Filesystem::move(const Path& pathOld, const Path& pathNew)
 		return;
 	}
 
-	copy_file(pathOld, pathNew);
+	Filesystem::copy(pathOld, pathNew);
     remove(pathOld);
+}
+
+void Filesystem::copy(const std::string& pathOld, const std::string& pathNew)
+{
+	Filesystem::copy(Path(pathOld), Path(pathNew));
+}
+
+void Filesystem::copy(const Path& pathOld, const Path& pathNew)
+{
+	if(pathOld.empty() || pathNew.empty())
+	{
+		return;
+	}
+
+	copy(pathOld, pathNew);
 }
 
 std::vector<std::string> Filesystem::listFiles(const std::string& path, bool recursive)

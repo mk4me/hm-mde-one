@@ -738,7 +738,7 @@ private:
                 }
 
                 ret.reset(new Patient(subject->getID(), patient->name, patient->surname, patient->birthDate, patient->gender, getPatientPhoto(patient), disorders));
-                auto patientWrapper = core::addData(memoryDataManager, ret);
+                auto patientWrapper = core::IMemoryDataManager::addData(memoryDataManager, ret);
                 patientsMapping[patient] = patientWrapper;
             }
         }
@@ -751,7 +751,7 @@ private:
         PluginSubject::SubjectPtr ret;
         if(subjectService != nullptr){
             ret = subjectService->createSubject();
-            auto subjectWrapper = core::addData(memoryDataManager, ret);
+            auto subjectWrapper = core::IMemoryDataManager::addData(memoryDataManager, ret);
             subjectsMapping[subject] = subjectWrapper;
 
             if(medicalShallowCopy != nullptr){
@@ -811,7 +811,7 @@ private:
             std::vector<core::ObjectWrapperConstPtr> wrappers(sessionWrappers.begin(), sessionWrappers.end());
 
             ret = subjectService->createSession(subject, date.getYear(), date.getMonth(), date.getDay(), std::vector<core::ObjectWrapperConstPtr>(sessionWrappers.begin(), sessionWrappers.end()));
-            auto sessionWrapper = core::addData(memoryDataManager, ret);
+            auto sessionWrapper = core::IMemoryDataManager::addData(memoryDataManager, ret);
             sessionsMapping[session] = sessionWrapper;
         }
 
@@ -833,7 +833,7 @@ private:
             }
 
             ret = subjectService->createMotion(session, objects);
-            auto motionWrapper = core::addData(memoryDataManager, ret);
+            auto motionWrapper = core::IMemoryDataManager::addData(memoryDataManager, ret);
             motionsMapping[motion] = motionWrapper;
         }
 
@@ -873,7 +873,7 @@ private:
             }
 
             ret = subjectService->createMotion(session, std::vector<core::ObjectWrapperConstPtr>(motionWrappers.begin(), motionWrappers.end()));
-            auto motionWrapper = core::addData(memoryDataManager, ret);
+            auto motionWrapper = core::IMemoryDataManager::addData(memoryDataManager, ret);
             motionsMapping[motion] = motionWrapper;
         }
 

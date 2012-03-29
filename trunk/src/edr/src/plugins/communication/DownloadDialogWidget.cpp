@@ -77,18 +77,18 @@ void DownloadDialog::refreshProgress()
             if(error == true){
                 //error message
                 QMessageBox msgBox;
-                msgBox.setText("Error during data download");
-                msgBox.setInformativeText(QString(finalMessage.c_str()));
+                msgBox.setText(tr("Error during data download"));
+                msgBox.setInformativeText(finalMessage);
                 msgBox.setStandardButtons(QMessageBox::Ok);
                 msgBox.setIcon(QMessageBox::Critical);
                 msgBox.exec();
                 reject();
                 return;
-            }else if(finalMessage.empty() == false){
+            }else if(finalMessage.isEmpty() == false){
                 //info message
                 QMessageBox msgBox;
-                msgBox.setText("Data downloading finished");
-                msgBox.setInformativeText(QString(finalMessage.c_str()));
+                msgBox.setText(tr("Data downloading finished"));
+                msgBox.setInformativeText(finalMessage);
                 msgBox.setStandardButtons(QMessageBox::Ok);
                 msgBox.setIcon(QMessageBox::Information);
                 msgBox.exec();
@@ -110,7 +110,7 @@ void DownloadDialog::cancelPressed()
     if(processingStarted == false){
         processingStarted = true;
         processingFinished = true;
-        finalMessage = "Operation cancelled";
+        finalMessage = tr("Operation cancelled");
     }
 }
 
@@ -127,14 +127,14 @@ void DownloadDialog::onEndCallback(const communication::CommunicationManager::Re
 void DownloadDialog::onCancelCallback(const communication::CommunicationManager::RequestPtr & request)
 {
     processingFinished = true;
-    finalMessage = "Operation cancelled";
+    finalMessage = tr("Operation cancelled");
 }
 
 void DownloadDialog::onErrorCallback(const communication::CommunicationManager::RequestPtr & request, const std::string & error)
 {
     processingFinished = true;
     this->error = true;
-    finalMessage = error;
+    finalMessage = QString::fromStdString(error);
 }
 
 void DownloadDialog::onFileEndCallback(const communication::CommunicationManager::RequestPtr & request)

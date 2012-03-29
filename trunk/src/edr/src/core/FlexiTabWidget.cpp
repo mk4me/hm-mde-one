@@ -38,7 +38,8 @@ void FlexiTabWidget::setGroupName(GUIID groupID, const QString & name)
     groupIT->second->name = name;
 
     if(groupIT->second->visible == true){
-        innerFlexiTabWidget->setTabText(groupIT->second->tabPos, name);
+        //innerFlexiTabWidget->setTabText(groupIT->second->tabPos, name);
+        refreshTabsTexts();
     }
 }
 
@@ -91,6 +92,7 @@ void FlexiTabWidget::setSectionWidget(GUIID sectionID, QWidget * widget)
 FlexiTabWidget::GUIID FlexiTabWidget::addGroup(const QString & name, const QIcon & icon, bool visible)
 {
     GroupData *gData = new GroupData();
+    gData->name = name;
     gData->tabArea = new QScrollArea();
     gData->tabArea->setFrameShape(QFrame::NoFrame);
     gData->tabArea->setLineWidth(0);
@@ -111,13 +113,14 @@ FlexiTabWidget::GUIID FlexiTabWidget::addGroup(const QString & name, const QIcon
     gData->visible = visible;
     gData->flexiPos = groupDataByID.size();
     gData->tabPos = innerFlexiTabWidget->count();
-    
-    if(visible == true){
-        innerFlexiTabWidget->addTab(gData->tabArea, icon, name);
-    }
 
     groupDataByID[nextGroupID] = gData;
     groupDataByIndex.push_back(gData);
+
+    if(visible == true){
+        innerFlexiTabWidget->addTab(gData->tabArea, icon, name);
+        refreshTabsTexts();
+    }
 
     if(groupDataByID.size() == 1){
         currentGroupID = nextGroupID;
@@ -131,6 +134,7 @@ FlexiTabWidget::GUIID FlexiTabWidget::insertGroup(unsigned int pos, const QStrin
     UTILS_ASSERT(pos < groupDataByID.size());
 
     GroupData *gData = new GroupData();
+    gData->name = name;
     gData->tabArea = new QScrollArea();
     gData->tabArea->setFrameShape(QFrame::NoFrame);
     gData->tabArea->setLineWidth(0);
@@ -162,6 +166,10 @@ FlexiTabWidget::GUIID FlexiTabWidget::insertGroup(unsigned int pos, const QStrin
     std::advance(newIT, pos);
 
     groupDataByIndex.insert(newIT, gData);
+
+    if(visible == true){
+        refreshTabsTexts();
+    }
 
     if(groupDataByID.size() == 1){
         currentGroupID = nextGroupID;
@@ -203,6 +211,10 @@ void FlexiTabWidget::moveGroup(GUIID groupID, unsigned int newPos)
     std::advance(newIT, newPos - srcPos);
 
     groupDataByIndex.insert(newIT, srcGroupIT->second);
+
+    if(srcGroupIT->second->visible == true){
+        refreshTabsTexts();
+    }
     
     if(currentGroupID > -1){
         setCurrentGroup(currentGroupID);
@@ -286,6 +298,10 @@ void FlexiTabWidget::removeGroup(GUIID groupID)
     delete groupIT->second->contentWidget;
     delete groupIT->second->tabArea;
 
+    if(groupIT->second->visible == true){
+        refreshTabsTexts();
+    }
+
     delete groupIT->second;
 
     groupDataByID.erase(groupIT);
@@ -331,6 +347,7 @@ void FlexiTabWidget::setGroupVisible(GUIID groupID, bool visible)
     }
 
     groupIT->second->visible = visible;
+    refreshTabsTexts();
 }
 
 FlexiTabWidget::GUIID FlexiTabWidget::addSection(GUIID groupID, QWidget * widget, const QString & name, const QIcon & icon, bool visible, QDialog * cfgDialog)
@@ -477,5 +494,17 @@ void FlexiTabWidget::shiftTabPosRight(unsigned int begin, unsigned int end)
 {
     for(auto i = begin; i < end; i++){
         groupDataByIndex[i]->tabPos++;
+    }
+}
+
+void FlexiTabWidget::refreshTabsTexts()
+{
+    int size = groupDataByIndex.size();
+    
+    for(int i = 0; i < size; ++i){
+        auto groupData = groupDataByIndex[i];
+        if(groupData->visible == true){
+            innerFlexiTabWidget->setTabText(groupData->tabPos, groupData->name);
+        }
     }
 }

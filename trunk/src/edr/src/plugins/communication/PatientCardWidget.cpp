@@ -3,6 +3,9 @@
 #include "PatientCardWidget.h"
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QFormLayout>
+#include <utils/Debug.h>
+#include <boost/any.hpp>
+#include <qthtmlgenlib/DocumentGenerator.h>
 
 CardSessionItem::CardSessionItem(unsigned int sessionId) : QTreeWidgetItem(), sessionID(sessionId)
 {
@@ -87,6 +90,57 @@ void PatientCardWidget::init()
 
     generalDataTable->verticalHeader()->setResizeMode(QHeaderView::Fixed);
     leftRightDataTable->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+
+    generalDataTable->hide();
+    leftRightDataTable->hide();
+
+    /*textEdit->setHtml(QString::fromUtf8("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">" \
+        "<html><head><meta name=\"qrichtext\" content_=\"1\" /><style type=\"text/css\">" \
+"#tableX {" \
+"border: 1px solid #e3e3e3; " \
+    "background-color: #f2f2f2;" \
+"width: 100%;" \
+    "border-radius: 6px;" \
+    "-webkit-border-radius: 6px;" \
+    "-moz-border-radius: 6px;}" \
+"#tableX td, #table th {" \
+"padding: 5px;" \
+"color: #333;}" \
+"#tableX thead {" \
+    "font-family: \"Lucida Sans Unicode\", \"Lucida Grande\", sans-serif;" \
+"padding: .2em 0 .2em .5em;" \
+    "text-align: left;" \
+"color: #4B4B4B;" \
+    "background-color: #C8C8C8;" \
+    "background-image: -webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#e3e3e3), color-stop(.6,#B3B3B3));" \
+    "background-image: -moz-linear-gradient(top, #D6D6D6, #B0B0B0, #B3B3B3 90%);" \
+    "border-bottom: solid 1px #999;}"\
+"#tableX th {" \
+    "font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;" \
+    "font-size: 17px;" \
+    "line-height: 20px;" \
+    "font-style: normal;" \
+    "font-weight: normal;" \
+    "text-align: left;" \
+    "text-shadow: white 1px 1px 1px;}") + QString::fromUtf8("#table td {" \
+    "line-height: 20px;" \
+    "font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;" \
+    "font-size: 14px;" \
+    "border-bottom: 1px solid #fff;" \
+    "border-top: 1px solid #fff;}" \
+"#tableX td:hover {" \
+"background-color: #fff;}" \
+    "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\"><table id=\"tableX\">" \
+    "<tbody><tr><td style=\"font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif; padding: .2em 0 .2em .5em; text-align: left; color: #4B4B4B; background-color: #C8C8C8; background-image: -webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#e3e3e3), color-stop(.6,#B3B3B3)); background-image: -moz-linear-gradient(top, #D6D6D6, #B0B0B0, #B3B3B3 90%); border-bottom: solid 1px #999;\">First Name</td><td>Last Name</td><td>Email Address</td><td>Website</td></tr>" \
+        "<tr><td>John</td><td>Smith</td><td>johnsmith@example.com</td><td>http://www.example.com</td></tr>" \
+        "<tr><td>Peter</td><td>James</td><td>peterjames@example.com</td><td>http://www.example.com</td></tr>" \
+        "<tr><td>Ronald</td><td>Weeley</td><td>ronweeley@example.com</td><td>http://www.example.com</td></tr>" \
+        "</tbody></table></body></html>"));*/
+
+    textEdit->setReadOnly(true);
+    textEdit->setMinimumWidth(400);
+
+    initAntropometric();
 
     /*int vHeaderColumnMaxWidth = 0;
     for(int i = 0; i < leftRightDataTable->rowCount(); i++){
@@ -179,7 +233,7 @@ void PatientCardWidget::refreshCard()
         //ustawiamy fotke
         if(photo != nullptr){
             photoContainer->clear();
-            photoContainer->setPixmap(*photo);
+            photoContainer->setPixmap(photo->scaled(photoContainer->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }else{
             photoContainer->setText("No photo avaiable");
         }
@@ -312,41 +366,67 @@ void PatientCardWidget::resetAntropometricData()
 
 void PatientCardWidget::fillAntropometricData(const communication::MotionShallowCopy::Attrs & attributes)
 {
-    setAttribute(generalDataTable, 0, 1, "BodyMass", attributes);
-    setAttribute(generalDataTable, 1, 1, "Height", attributes);
-    setAttribute(generalDataTable, 2, 1, "InterAsisDistance", attributes);
+    setAttribute(generalDataTable, antropometricGeneralTable.antropometricContent, 0, 1, "BodyMass", attributes);
+    setAttribute(generalDataTable, antropometricGeneralTable.antropometricContent, 1, 1, "Height", attributes);
+    setAttribute(generalDataTable, antropometricGeneralTable.antropometricContent, 2, 1, "InterAsisDistance", attributes);
 
-    setAttribute(leftRightDataTable, 0, 1, "LeftLegLength", attributes);
-    setAttribute(leftRightDataTable, 0, 2, "RightLegLenght", attributes);
-    setAttribute(leftRightDataTable, 1, 1, "LeftKneeWidth", attributes);
-    setAttribute(leftRightDataTable, 1, 2, "RightKneeWidth", attributes);
-    setAttribute(leftRightDataTable, 2, 1, "LeftAnkleWidth", attributes);
-    setAttribute(leftRightDataTable, 2, 2, "RightAnkleWidth", attributes);
-    setAttribute(leftRightDataTable, 3, 1, "LeftCircuitThigh", attributes);
-    setAttribute(leftRightDataTable, 3, 2, "RightCircuitThight", attributes);
-    setAttribute(leftRightDataTable, 4, 1, "LeftCircuitShank", attributes);
-    setAttribute(leftRightDataTable, 4, 2, "RightCircuitShank", attributes);
-    setAttribute(leftRightDataTable, 5, 1, "LeftShoulderOffset", attributes);
-    setAttribute(leftRightDataTable, 5, 2, "RightShoulderOffset", attributes);
-    setAttribute(leftRightDataTable, 6, 1, "LeftElbowWidth", attributes);
-    setAttribute(leftRightDataTable, 6, 2, "RightElbowWidth", attributes);
-    setAttribute(leftRightDataTable, 7, 1, "LeftWristWidth", attributes);
-    setAttribute(leftRightDataTable, 7, 2, "RightWristWidth", attributes);
-    setAttribute(leftRightDataTable, 8, 1, "LeftWristThickness", attributes);
-    setAttribute(leftRightDataTable, 8, 2, "RightWristThickness", attributes);
-    setAttribute(leftRightDataTable, 9, 1, "LeftHandWidth", attributes);
-    setAttribute(leftRightDataTable, 9, 2, "RightHandWidth", attributes);
-    setAttribute(leftRightDataTable, 10, 1, "LeftHandThickness", attributes);
-    setAttribute(leftRightDataTable, 10, 2, "RightHandThickness", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 0, 1, "LeftLegLength", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 0, 2, "RightLegLenght", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 1, 1, "LeftKneeWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 1, 2, "RightKneeWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 2, 1, "LeftAnkleWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 2, 2, "RightAnkleWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 3, 1, "LeftCircuitThigh", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 3, 2, "RightCircuitThight", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 4, 1, "LeftCircuitShank", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 4, 2, "RightCircuitShank", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 5, 1, "LeftShoulderOffset", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 5, 2, "RightShoulderOffset", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 6, 1, "LeftElbowWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 6, 2, "RightElbowWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 7, 1, "LeftWristWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 7, 2, "RightWristWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 8, 1, "LeftWristThickness", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 8, 2, "RightWristThickness", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 9, 1, "LeftHandWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 9, 2, "RightHandWidth", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 10, 1, "LeftHandThickness", attributes);
+    setAttribute(leftRightDataTable, antropometricLeftRightTable.antropometricContent, 10, 2, "RightHandThickness", attributes);
 
     leftRightDataTable->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     generalDataTable->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
     generalDataTable->horizontalHeader()->resizeSection(0, leftRightDataTable->horizontalHeader()->sectionSize(0));
     generalDataTable->horizontalHeader()->resizeSection(1, leftRightDataTable->horizontalHeader()->sectionSize(1) + leftRightDataTable->horizontalHeader()->sectionSize(2));
+
+    QString html;
+
+    DocumentGenerator::openDocument(html);
+    DocumentGenerator::openBody(html);
+
+    QString genTable;
+
+    HtmlDataTableGenerator::generateHtmlTable(genTable, antropometricGeneralTable.antropometricContent, antropometricGeneralTable.antropometricHeadersStructure,
+        antropometricGeneralTable.antropometricCellsAttributes, antropometricGeneralTable.antropometricStyles);
+
+    QString lrTable;
+
+    HtmlDataTableGenerator::generateHtmlTable(lrTable, antropometricLeftRightTable.antropometricContent, antropometricLeftRightTable.antropometricHeadersStructure,
+        antropometricLeftRightTable.antropometricCellsAttributes, antropometricLeftRightTable.antropometricStyles);
+
+    html += genTable;
+
+    html += "<p></p>";
+
+    html += lrTable;
+
+    DocumentGenerator::closeBody(html);
+    DocumentGenerator::closeDocument(html);
+
+    textEdit->setHtml(html);
 }
 
-void PatientCardWidget::setAttribute(QTableWidget * table, int row, int column, const std::string & attribute, const communication::MotionShallowCopy::Attrs & attributes)
+void PatientCardWidget::setAttribute(QTableWidget * table, HtmlDataTableContent & htmlTable,int row, int column, const std::string & attribute, const communication::MotionShallowCopy::Attrs & attributes)
 {
     QString value("-");
     auto it = attributes.find(attribute);
@@ -363,6 +443,8 @@ void PatientCardWidget::setAttribute(QTableWidget * table, int row, int column, 
     }else{
         item->setText(value);
     }
+
+    htmlTable.setCell(row+1, column+1, value);
 }
 
 QTreeWidgetItem * PatientCardWidget::createBranch(const std::string & name, const std::map<int, const communication::MotionShallowCopy::Session *> & sessions)
@@ -395,15 +477,15 @@ QTreeWidgetItem * PatientCardWidget::createBranch(const std::string & name, cons
         ret->addChild(item);
     }
 
-    std::string sname("Lower body");
+    QString sname(tr("Lower body"));
 
     //gorna partia
     if(sessions.begin()->first % 2 == 1){
-        sname = "Upper body";
+        sname = tr("Upper body");
     }
 
     QTreeWidgetItem * item = new CardSessionItem(sessions.begin()->second->sessionID);
-    item->setText(0, tr(sname.c_str()) + " - " + QString(sessions.begin()->second->sessionName.c_str()));
+    item->setText(0, sname + " - " + QString(sessions.begin()->second->sessionName.c_str()));
     item->setText(1, QString::number(sessions.begin()->second->labID));
     item->setText(2, QString::number(sessions.begin()->second->userID));
     item->setText(3, QString::fromUtf8(sessions.begin()->second->motionKind.c_str()));
@@ -423,10 +505,10 @@ QTreeWidgetItem * PatientCardWidget::createBranch(const std::string & name, cons
         return ret;
     }
 
-    sname = "Lower body";
+    sname = tr("Lower body");
 
     item = new CardSessionItem(sessions.rbegin()->second->sessionID);
-    item->setText(0, tr(sname.c_str()) + " - " + QString(sessions.rbegin()->second->sessionName.c_str()));
+    item->setText(0, sname + " - " + QString(sessions.rbegin()->second->sessionName.c_str()));
     item->setText(1, QString::number(sessions.rbegin()->second->labID));
     item->setText(2, QString::number(sessions.rbegin()->second->userID));
     item->setText(3, QString::fromUtf8(sessions.rbegin()->second->motionKind.c_str()));
@@ -453,4 +535,126 @@ void PatientCardWidget::setFilter(const IFilterConstPtr & filter)
 void PatientCardWidget::resetFilter()
 {
     this->filter.reset();
+}
+
+void PatientCardWidget::initAntropometric()
+{
+    initAntropometricContent();
+    initAntropometricAtributes();
+    initAntropometricHeadersStructure();
+    initAntropometricStyles();
+}
+
+void PatientCardWidget::initAntropometricHeadersStructure()
+{
+    antropometricGeneralTable.antropometricHeadersStructure.headerRows = 1;
+    antropometricGeneralTable.antropometricHeadersStructure.headerColumns = 1;
+
+    antropometricLeftRightTable.antropometricHeadersStructure.headerRows = 1;
+    antropometricLeftRightTable.antropometricHeadersStructure.headerColumns = 1;
+}
+
+void PatientCardWidget::initAntropometricContent()
+{
+    //wymiary
+    antropometricGeneralTable.antropometricContent.setDimensions(4, 3);
+    antropometricLeftRightTable.antropometricContent.setDimensions(12, 4);
+
+    //zawartoœæ tabeli z danymi ogólnymi
+    //! wiersz nag³ówkowy - pierwsza komórka pusta - ³¹cznik z nag³ówkiem pionowym
+    antropometricGeneralTable.antropometricContent.setCell(0, 1, tr("Unit"));
+    antropometricGeneralTable.antropometricContent.setCell(0, 2, tr("Value"));
+    //! kolumna nag³ówkowa - pierwsza komórka pusta - ³¹cznik z nag³ówkiem poziomym
+    antropometricGeneralTable.antropometricContent.setCell(1, 0, tr("Body Mass"));
+    antropometricGeneralTable.antropometricContent.setCell(2, 0, tr("Height"));
+    antropometricGeneralTable.antropometricContent.setCell(3, 0, tr("ASIS-ASIS"));
+    //! pierwsza kolumna z jednostkami
+    antropometricGeneralTable.antropometricContent.setCell(1, 1, "[" + tr("kg") + "]");
+    antropometricGeneralTable.antropometricContent.setCell(2, 1, "[" + tr("mm") + "]");
+    antropometricGeneralTable.antropometricContent.setCell(3, 1, "[" + tr("mm") + "]");
+
+    //zawartoœæ tabeli z danymi szczegó³owymi dla lewej i prawej storny
+    //! wiersz nag³ówkowy - pierwsza komórka pusta - ³¹cznik z nag³ówkiem pionowym
+    antropometricLeftRightTable.antropometricContent.setCell(0, 1, tr("Unit"));
+    antropometricLeftRightTable.antropometricContent.setCell(0, 2, tr("Left Value"));
+    antropometricLeftRightTable.antropometricContent.setCell(0, 3, tr("Right Value"));
+    //! kolumna nag³ówkowa - pierwsza komórka pusta - ³¹cznik z nag³ówkiem poziomym
+    antropometricLeftRightTable.antropometricContent.setCell(1, 0, tr("Leg Length"));
+    antropometricLeftRightTable.antropometricContent.setCell(2, 0, tr("Knee Width"));
+    antropometricLeftRightTable.antropometricContent.setCell(3, 0, tr("Anckle Width"));
+    antropometricLeftRightTable.antropometricContent.setCell(4, 0, tr("Circuit Thight"));
+    antropometricLeftRightTable.antropometricContent.setCell(5, 0, tr("Circuit Shank"));
+    antropometricLeftRightTable.antropometricContent.setCell(6, 0, tr("Shoulder Offset"));
+    antropometricLeftRightTable.antropometricContent.setCell(7, 0, tr("Elbow Width"));
+    antropometricLeftRightTable.antropometricContent.setCell(8, 0, tr("Wrist Width"));
+    antropometricLeftRightTable.antropometricContent.setCell(9, 0, tr("Wrist Thickness"));
+    antropometricLeftRightTable.antropometricContent.setCell(10, 0, tr("Hand Width"));
+    antropometricLeftRightTable.antropometricContent.setCell(11, 0, tr("Hand Thickness"));
+
+    //! pierwsza kolumna z jednostkami
+    antropometricLeftRightTable.antropometricContent.setCell(1, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(2, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(3, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(4, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(5, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(6, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(7, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(8, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(9, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(10, 1, "[" + tr("mm") + "]");
+    antropometricLeftRightTable.antropometricContent.setCell(11, 1, "[" + tr("mm") + "]");
+}
+
+void PatientCardWidget::initAntropometricStyles()
+{
+    antropometricGeneralTable.antropometricStyles.tableStyle_ = "width: 300px; border-style: solid; border-color: rgb(0, 0, 0); border-radius: 4px;";
+    antropometricGeneralTable.antropometricStyles.headerRowStyle_[StyleStatus::Single] = "color: white; background: rgb(41, 41, 41);";
+    
+    //wiersz nag³ówkowy
+    antropometricGeneralTable.antropometricStyles.headersStyles[StyleStatus::Single][StyleStatus::Middle] = "color: white; border-style: none; border-color: white;";
+    // kolumna nag³ówkowa - musze dodaæ kolor, nie da siê kolumnom przypisywaæ w³aœciwoœci
+    antropometricGeneralTable.antropometricStyles.headersStyles[StyleStatus::Middle][StyleStatus::Single] = "color: white; border-style: none; border-color: white; background: rgb(41, 41, 41);";
+    // ostatni element kolumny nag³ówkowej - tylko kolor
+    antropometricGeneralTable.antropometricStyles.headersStyles[StyleStatus::Last][StyleStatus::Single] = "color: white; background: rgb(41, 41, 41);";
+
+    //style contentu - tutaj chcemy uzyskaæ efekt kratownicy bez ramki
+    antropometricGeneralTable.antropometricStyles.contentStyles[StyleStatus::First][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+    antropometricGeneralTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+    antropometricGeneralTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+
+    // kopiujemy wiêkszoœæ ustawieñ
+    antropometricLeftRightTable.antropometricStyles = antropometricGeneralTable.antropometricStyles;
+    //poprawiamy style contentu - wiêcej mo¿liwoœci
+    antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::First][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+    antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::First][StyleStatus::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
+    antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::First][StyleStatus::Last] = QString();
+
+    antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Middle][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+    antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Middle][StyleStatus::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
+    antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Middle][StyleStatus::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+
+    antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
+    antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
+    antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+}
+
+void PatientCardWidget::initAntropometricAtributes()
+{
+
+}
+
+void PatientCardWidget::resetContent()
+{
+    const static QString emptyCell("-");
+    for(int i = antropometricLeftRightTable.antropometricHeadersStructure.headerRows; i < antropometricLeftRightTable.antropometricContent.rows(); ++i){
+        for(int j = antropometricLeftRightTable.antropometricHeadersStructure.headerColumns; i < antropometricLeftRightTable.antropometricContent.columns(); ++j){
+            antropometricLeftRightTable.antropometricContent.setCell(i,j, emptyCell);
+        }
+    }
+
+    for(int i = antropometricGeneralTable.antropometricHeadersStructure.headerRows; i < antropometricGeneralTable.antropometricContent.rows(); ++i){
+        for(int j = antropometricGeneralTable.antropometricHeadersStructure.headerColumns; i < antropometricGeneralTable.antropometricContent.columns(); ++j){
+            antropometricGeneralTable.antropometricContent.setCell(i,j, emptyCell);
+        }
+    }
 }

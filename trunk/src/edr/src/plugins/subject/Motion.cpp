@@ -75,7 +75,7 @@ Motion::Motion(core::IMemoryDataManager * memoryDataManager, PluginSubject::Subj
     modelWrapper = session->getWrapperOfType(typeid(kinematic::SkeletalModel));
 
     if (dataWrapper && modelWrapper) {
-        core::ObjectWrapperPtr jointsWrapper(core::addData(memoryDataManager, kinematic::JointAnglesCollectionPtr(), core::DataInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper))));        
+        core::ObjectWrapperPtr jointsWrapper(core::IMemoryDataManager::addData(memoryDataManager, kinematic::JointAnglesCollectionPtr(), core::DataInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper))));        
         jointsWrapper->setName(localName + " joints");
         jointsWrapper->setSource("SubjectPlugin->motion->" + localName);
         this->wrappers.push_back(jointsWrapper);

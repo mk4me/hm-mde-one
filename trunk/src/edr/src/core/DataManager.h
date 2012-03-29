@@ -312,7 +312,7 @@ public:
 
     //! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
     //! bêda dostepne poprzez DataMangera LENIWA INICJALIZACJA
-    virtual void addFile(const core::Filesystem::Path & file);
+    virtual void addFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects = std::vector<core::ObjectWrapperPtr>());
 
     //! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
     virtual void removeFile(const core::Filesystem::Path & file);

@@ -475,7 +475,9 @@ void ItemView::refreshStatusIcons(ItemBase* item)
         break;
     }
 
-    item->setToolTip(0, QString::fromUtf8("<p style=\"color:%1\">Data storage: %2</p><p style=\"color:%3\">Data usage: %4</p>").arg(localityColor).arg(dataLocality).arg(usageColor).arg(dataUsage));
+    QString message = QString::fromUtf8("<p style=\"color:%1\">") + tr("Data storage") + QString(": %2</p><p style=\"color:%3\">") + tr("Data usage") + QString(": %4</p>");
+
+    item->setToolTip(0, message.arg(localityColor).arg(dataLocality).arg(usageColor).arg(dataUsage));
 }
 
 void ItemView::refresh()
@@ -1832,9 +1834,7 @@ PatientItem * MedicalView::createPatientItemTree(const communication::MedicalSha
         groupedByDateSessions[sessionIT->second->session->sessionDate][sessionIT->second->session->sessionID] = sessionIT->second->session;
     }
 
-    if(groupedByDateSessions.size() == 2){    
-
-        UTILS_ASSERT(groupedByDateSessions.size() == 2);
+    if(groupedByDateSessions.size() == 2){
 
         //tworzymy grupy badañ - przed i po zabiegu
         auto & sessionGroups = groupedByDateSessions.begin()->second;
@@ -1856,8 +1856,18 @@ PatientItem * MedicalView::createPatientItemTree(const communication::MedicalSha
         patientLocality |= item->getDataLocality();
 
         patientItem->addItemBase(item);
-    }
-    
+
+    }else{
+
+        for(auto sessionIT = performerIT->second->performerConfs.begin(); sessionIT != performerIT->second->performerConfs.end(); sessionIT++){
+            auto item = createSessionItem(QObject::tr("Inna klasyfikacja"), sessionIT->second->session);
+
+            patientLocality |= item->getDataLocality();
+
+            patientItem->addItemBase(item);
+        }
+
+    }    
 
     patientItem->setDataLocality((DataLocality)patientLocality);
     patientItem->setDataUsage(Unloaded);
@@ -2834,9 +2844,9 @@ bool CommunicationDataSource::downloadFiles(const std::vector<const communicatio
     bool ret = true;
     if(files.size() > 10){
         //warning - sporo plików, czy kontynuowaæ
-        std::stringstream info;
-        info << "You are about to start the download of " << files.size() << " files. Are you sure there is enough space on disk and you can wait some longer time?";
-        QMessageBox message(QMessageBox::Warning, QString("Attempt to download large amount of files"), QString(info.str().c_str()), QMessageBox::Ok | QMessageBox::Cancel);
+        QString info;
+        info += tr("You are about to start the download of ") + QString::number(files.size()) + tr(" files. Are you sure there is enough space on disk and you can wait some longer time?");
+        QMessageBox message(QMessageBox::Warning, tr("Attempt to download large amount of files"), info, QMessageBox::Ok | QMessageBox::Cancel);
         message.setDefaultButton(QMessageBox::Cancel);
         int ret = message.exec();
 
