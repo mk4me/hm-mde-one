@@ -227,9 +227,6 @@ void CommunicationDataSource::logout()
         throw std::runtime_error("Already logout");
     }
 
-    //TODO
-    //wy³aduj z DataManagera za³adowane dane!!
-
     //czyszcze lokalne dane u¿ytkownika rozpakowane z localStorage
     pathsManager->removeUserDataPaths();
 
@@ -241,12 +238,8 @@ void CommunicationDataSource::logout()
 
     //wyczyœc p³ytk¹ kopiê bazy danych
     fullShallowCopy = ShallowCopy();
-    //resetuj filtry i perspektywy
-    
-    
-    //TODO
-    //wyczyœæ kartê pacjenta
-    //resetuj ustawienia karty pacjenta
+	fileStatusManager->removeAllFiles();
+	fullShallowCopyStatus->setShallowCopy(nullptr);
 
     //notyfikuj o zmianie stanu
     notify();

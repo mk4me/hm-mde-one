@@ -710,6 +710,220 @@ QFrame#mainArea * QWidget {
 }
 
 
+/* DANE - nowa odsłona bez dataExplorera */
+QFrame#mainArea &gt; #dataTabWidget, QTabWidget#dataTabWidget::pane, QTabWidget#dataTabWidget::pane &gt; *, QTabWidget#dataTabWidget::tab-bar, #dataTabWidget &gt; * {
+	background-color: rgb(91, 91, 91);
+	padding: 0px;
+	margin: 0px;
+}
+
+QTabWidget#dataTabWidget::pane {
+border: none;
+}
+
+/* nowy plugin communication - DataSourceWidget */
+
+QTabWidget#DataSourceWidget, QTabWidget#DataSourceWidget::pane, QTabWidget#DataSourceWidget::pane &gt; *, QTabWidget#DataSourceWidget #motionDataTab,  QTabWidget#DataSourceWidget #userDataTab, QTabWidget#DataSourceWidget #configTab {
+	background-color: rgb(91, 91, 91);
+	padding: 0px;
+	margin: 0px;
+}
+
+QTabWidget#DataSourceWidget QScrollBar:vertical {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+QTabWidget#DataSourceWidget QScrollBar:horizontal {
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+QTabWidget#DataSourceWidget::pane {
+	border: 1px solid black;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-bottom: 3px solid black;
+	margin: 0px;
+	padding: 2px;
+background: rgb(91, 91, 91);
+}
+
+QTabWidget#DataSourceWidget #dataViewWidget, QTabWidget#DataSourceWidget #patientCardPlaceholerWidget, QTabWidget#DataSourceWidget #configPlaceholderWidget {
+	border: 1px solid black;
+	padding: 2px;
+	border-radius: 4px;
+}
+
+QTabWidget#DataSourceWidget DefaultPatientCardWidget, QTabWidget#DataSourceWidget #patientCardPlaceholerWidget, QTabWidget#DataSourceWidget #widget {
+	background: rgb(91, 91, 91);
+}
+
+QTabWidget#DataSourceWidget:tab-bar, QTabWidget#DataSourceWidget &gt; QTabBar {
+	background: rgb(91, 91, 91);
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
+
+QTabWidget#DataSourceWidget &gt; QTabBar::tab, QTabWidget#DataSourceWidget &gt; QTabBar::tab:first, QTabWidget#DataSourceWidget &gt; QTabBar::tab:middle, QTabWidget#DataSourceWidget &gt; QTabBar::tab:last, QTabWidget#DataSourceWidget &gt; QTabBar::tab:selected {
+border: none;
+ border-radius: 0px;
+ background-color: transparent;
+ color: black;
+min-width: 8ex;
+ padding: 4px;
+margin-right: 3px;
+}
+
+QTabWidget#DataSourceWidget &gt; QTabBar::tab:middle {
+	margin-left: 3px;
+}
+
+QTabWidget#DataSourceWidget &gt; QTabBar::tab:last {
+	margin-right: 1px;
+	margin-left: 3px;
+}
+
+QTabWidget#DataSourceWidget &gt; QTabBar::tab:hover {
+    background-color: #898989;
+}
+
+QTabWidget#DataSourceWidget  &gt; QTabBar::tab:selected, QTabWidget#DataSourceWidget &gt; QTabBar::tab:hover:selected {
+ background-color: black;
+color: white;
+ border-bottom-left-radius: 4px;
+ border-bottom-right-radius: 4px;
+}
+
+QTabWidget#DataSourceWidget QToolBox::tab {
+	background: rgb(41,41,41);
+	color: white;
+margin: 0px;
+	border: 1px solid black;
+	border-radius: 4px;
+}
+
+QTabWidget#dataTabWidget QTextEdit {
+	border: none;
+}
+
+QTabWidget#dataTabWidget QGroupBox {
+	color: black;
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 2px;
+	padding-top: 8px;
+	margin-top: 6ex;
+color: white;
+font: bold 18px;
+ }
+
+QTabWidget#dataTabWidget QGroupBox::title {
+     subcontrol-origin: margin;
+		subcontrol-position: top left;
+     padding: 4px;	
+	left: 2ex;
+border: 1px solid black;
+border-radius: 4px;
+background: black;
+min-width: 10em;
+}
+
+QTabWidget#dataTabWidget QHeaderView:horizontal {
+	border: none;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+QTabWidget#dataTabWidget QHeaderView:vertical {
+	border: none;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+
+QTabWidget#dataTabWidget QHeaderView::section {
+	padding: 2px;
+}
+
+QTabWidget#dataTabWidget QHeaderView::section, QTabWidget#dataTabWidget QTableView QTableCornerButton::section {
+	background: rgb(41,41,41);
+	color: white;
+	border: none;
+}
+
+QTabWidget#dataTabWidget QTableView QTableCornerButton::section {
+	border-top-left-radius: 4px;
+	border-left: 1px solid rgb(41,41,41);
+	border-top: 1px solid rgb(41,41,41);
+}
+
+QTabWidget#dataTabWidget QHeaderView::section:horizontal {
+	border-top: 1px solid rgb(41,41,41);
+}
+
+QTabWidget#dataTabWidget QHeaderView::section:last:horizontal {
+	border-top: 1px solid rgb(41,41,41);
+	border-right: 1px solid rgb(41,41,41);
+	border-top-right-radius: 4px;
+}
+
+QTabWidget#dataTabWidget QHeaderView::section:only-one:horizontal {
+	border-top: 1px solid rgb(41,41,41);
+	border-right: 1px solid rgb(41,41,41);
+	border-left: 1px solid rgb(41,41,41);
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+QTabWidget#dataTabWidget QHeaderView::section:vertical {
+	border-left: 1px solid rgb(41,41,41);
+}
+
+QTabWidget#dataTabWidget QHeaderView::section:only-one:vertical, QTabWidget#dataTabWidget QHeaderView::section:last:vertical {
+	border-left: 1px solid rgb(41,41,41);
+	border-bottom: 1px solid rgb(41,41,41);
+	border-bottom-left-radius: 4px;
+}
+
+QTabWidget#dataTabWidget QHeaderView::section:middle:horizontal, QTabWidget#dataTabWidget QHeaderView::section:last:horizontal {
+	border-left: 1px solid white;
+	border-top: 1px solid rgb(41,41,41);
+}
+
+QTabWidget#dataTabWidget QHeaderView::section:middle:vertical, QTabWidget#dataTabWidget QHeaderView::section:last:vertical {
+	border-top: 1px solid white;
+	border-left: 1px solid rgb(41,41,41);
+}
+
+QTabWidget#dataTabWidget QTreeView {
+	border: 1px solid black;
+	border-radius: 4px;
+}
+
+QTabWidget#dataTabWidget QTableView {
+	border: none;
+	border-radius: 4px;
+	gridline-color: black;
+	alternate-background-color: 	lightgray;
+	selection-background-color: rgb(135, 177, 255);
+}
+
+QTabWidget#dataTabWidget QTreeView QHeaderView, 
+QTabWidget#dataTabWidget QTreeView QHeaderView * {
+	background: rgb(41, 41,41);
+}
+
+QTabWidget#dataTabWidget QTreeView QHeaderView::section:horizontal {
+	background: rgb(41, 41,41);
+}
+
+QTabWidget#dataTabWidget QTreeView QHeaderView::section:only-one:horizontal {
+	border: none;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;	
+}
+
+
 /* DANE - QWidget#dataWidget */
 QWidget#dataWidget QTabWidget#sourcesTabs::pane {
 	border: 1px solid black;

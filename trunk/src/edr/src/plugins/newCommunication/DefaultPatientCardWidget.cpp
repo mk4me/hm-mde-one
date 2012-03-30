@@ -92,7 +92,6 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 
 	layout->addLayout(vLayout);
 	layout->addWidget(groupE);
-	layout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Expanding, QSizePolicy::Fixed));
 
 	//layout->addWidget(leftBox);
 	//layout->addWidget(rightBox);

@@ -448,6 +448,23 @@ void DataSourceWidget::onPerspectiveCurrentItemChanged(QTreeWidgetItem * current
 	getPatientAndSubject(current, patient, subject);
 
 	patientCardManager.currentPatientCard()->setPatient(patient, subject, QPixmap(), dataSource->currentUser_.userData());
+	
+	//nag³ówek danych
+	QStringList headers;
+	bool ok = perspectiveManager.currentPerspective()->headers(current, headers);
+	if(ok == false){
+		headers.clear();
+		if(contentManager.currentContent()->headers(current, headers) == false){
+			headers.clear();
+			headers << tr("Data");
+		}
+	}
+
+	auto currentPerspective = perspectiveManager.currentPerspectiveWidget();
+	currentPerspective->setHeaderLabels(headers);
+	for(int i = 0; i < headers.size(); ++i){
+		currentPerspective->resizeColumnToContents(i);
+	}
 }
 
 
@@ -804,6 +821,16 @@ void DataSourceWidget::onPerspectiveChange(int idx)
 		if(refreshContent == true){
 			//wype³niamy content aktualnej perspektywy
 			refreshCurrentPerspectiveContent();
+		}
+
+		if(currentPW->topLevelItemCount() > 0){
+			currentPW->setCurrentItem(currentPW->topLevelItem(0));
+			currentPW->setItemSelected(currentPW->topLevelItem(0), true);
+		}else{
+			QStringList headers;
+			headers << tr("Data");
+			currentPW->setHeaderLabels(headers);
+			currentPW->resizeColumnToContents(0);
 		}
 	}catch(...){
 

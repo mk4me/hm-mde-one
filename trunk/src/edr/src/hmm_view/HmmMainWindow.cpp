@@ -98,9 +98,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     addWidgetToContext(raportsThumbnailsContext, analisis->scrollArea_3);
 
     
-
+	QTabWidget * dataTabWidget = createNamedObject<QTabWidget>(QString::fromUtf8("dataTabWidget"));
    
-    this->data = createNamedObject<QWidget>(QString::fromUtf8("dataWidget"));
+    this->data = dataTabWidget;
 
     this->data->setContentsMargins(0,0,0,0);
     this->analisis->setContentsMargins(0,0,0,0);
@@ -177,6 +177,8 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     QMainWindow * actionsMainWindow = new QMainWindow(nullptr);
     QVBoxLayout* layout = new QVBoxLayout();
 
+	IServicePtr dataExplorer;
+
 	for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
 		IServicePtr service = ServiceManager::getInstance()->getService(i);
 
@@ -187,7 +189,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 		// (gdzies po drodze wymagane sa prywane naglowki z Communication)
 		// Moze wlasciwe bedzie identyfikowanie po UniqueID.
 		//if (name == "Communication") {
-        if (name == "DataExplorer") {
+		//if (name == "DataExplorer") {
 			ActionsGroupManager mainWidgetActions;
 			QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
@@ -203,9 +205,9 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
             layout->addWidget(viewWidget);
             layout->addWidget(controlWidget);
 			this->data->setLayout(layout);
-        }else if (name == "newTimeline") {
+        if (name == "newTimeline") {
             showTimeline();
-        }else{
+        }else if(name != "DataExplorer") {
             ActionsGroupManager mainWidgetActions;
             QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
@@ -218,7 +220,10 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
             layout->addWidget(settingsWidget);
             layout->addWidget(viewWidget);
             layout->addWidget(controlWidget);
-        }
+        }else{
+			//mam dataExplorer - zapamiêtuje i potem go wrzuce do danych
+			dataExplorer = service;
+		}
 	}
 
 	// akcje - Workflow (VDF) i konsola
@@ -232,20 +237,25 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
 	operations->setLayout(layout);
 
-	QTabWidget * dataTabWidget = core::createNamedObject<QTabWidget>(QString("dataTabWidget"));
+	//QTabWidget * dataTabWidget = core::createNamedObject<QTabWidget>(QString("dataTabWidget"));
 
 	for (int i = 0; i < SourceManager::getInstance()->getNumSources(); ++i) {
-		auto service = SourceManager::getInstance()->getSource(i);
+		auto source = SourceManager::getInstance()->getSource(i);
 
 		ActionsGroupManager settingsWidgetActions;
-		dataTabWidget->addTab(service->getWidget(&settingsWidgetActions), QString::fromStdString(service->getName()));
+		dataTabWidget->addTab(source->getWidget(&settingsWidgetActions), QString::fromStdString(source->getName()));
 		//TODO
 		//obs³u¿yc konteksy Ÿróde³
 	}
 
-	layout = new QVBoxLayout();
-	layout->addWidget(dataTabWidget);
-	this->data->setLayout(layout);	
+	if(dataExplorer != nullptr){
+		ActionsGroupManager settingsWidgetActions;
+		dataTabWidget->addTab(dataExplorer->getWidget(&settingsWidgetActions), QString::fromStdString(dataExplorer->getName()));
+	}
+
+	//layout = new QVBoxLayout();
+	//layout->addWidget(dataTabWidget);
+	//this->data->setLayout(layout);
 
 	//chowamy zak³adki jesli tylko jedno Ÿród³o
 	if(dataTabWidget->count() == 1){
