@@ -2,6 +2,7 @@
 #include "TreeItemHelper.h"
 #include "VisualizerManager.h"
 #include <plugins/newChart/NewChartVisualizer.h>
+#include <plugins/c3d/EventSerieBase.h>
 
 //TreeItemHelper::TreeItemHelper( const core::ObjectWrapperPtr& wrapper ) :
 //    wrapper(wrapper)

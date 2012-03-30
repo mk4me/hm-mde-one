@@ -11,6 +11,7 @@
 #define HEADER_GUARD_NEW_CHART__NEWCHARTEVENTS_H__
 
 #include <plugins/c3d/C3DChannels.h>
+#include <plugins/c3d/C3DCollections.h>
 
 class EventsPlotItem : public QwtPlotItem
 {
@@ -40,11 +41,13 @@ public:
         timeType begin;
         timeType end;
         ScalarChannelStatsPtr stats;
+        QwtPlotCurve* normalizedCurve;
     };
     typedef core::shared_ptr<Segment> SegmentPtr;
     typedef core::shared_ptr<const Segment> SegmentConstPtr;
     typedef std::vector<SegmentPtr> Segments;
     typedef boost::iterator_range<Segments::const_iterator> SegmentsConstRange;
+    typedef boost::iterator_range<Segments::iterator> SegmentsRange;
 
 public:
     EventsHelper(EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar);
@@ -65,6 +68,8 @@ public:
 
     SegmentsConstRange getRightSegments() const { return boost::make_iterator_range(rightSegments.cbegin(), rightSegments.cend()); }
     SegmentsConstRange getLeftSegments() const { return boost::make_iterator_range(leftSegments.cbegin(), leftSegments.cend());  }
+    SegmentsRange getRightSegments() { return boost::make_iterator_range(rightSegments.begin(), rightSegments.end()); }
+    SegmentsRange getLeftSegments() { return boost::make_iterator_range(leftSegments.begin(), leftSegments.end());  }
 
 private:
     void createSegments(std::vector<SegmentPtr>& collection, C3DEventsCollection::Context context);

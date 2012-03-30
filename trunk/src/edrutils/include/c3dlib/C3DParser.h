@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <boost/noncopyable.hpp>
 #include <osg/Vec3>
 #include <c3dlib/Export.h>
@@ -27,38 +28,10 @@ struct C3DLIB_EXPORT ForcePlatform
 	osg::Vec3 corners[4];
 	//! przesuniecie plyty w ukladzie odniesienia zgodnym z markerami
 	osg::Vec3 origin;
-	//! zwraca srodek plyty  w ukladzie odniesienia zgodnym z markerami
-	osg::Vec3 getCenter() const 
-	{
-		osg::Vec3 c;
-		c += corners[0];
-		c += corners[1];
-		c += corners[2];
-		c += corners[3];
-		c *= 0.25f;
-		c += origin;
-		return c;
-	}
-
-	float getWidth() const {
-		return (corners[0] - corners[1]).length();
-	}
-
-	float getLength() const {
-		return (corners[1] - corners[2]).length();
-	}
-
-    float getSignX() const {
-        return (corners[1].x() - corners[0].x()) >= 0.0f ? 1.0f : -1.0f;
-    }
-
-    float getSignY() const {
-        return (corners[2].y() - corners[1].y()) >= 0.0f ? 1.0f : -1.0f;
-    }
-
-	float getDistanceToCenter(const osg::Vec3& vec) const {
-		return (getCenter() - vec).length();
-	}
+    //! typ plyty, w aplikacji obslugiwany jest 2
+    int type;
+    //! lista indeksow kanalow analogowych podpietych do plyty (np. F1 i M1 to kanaly 1-6)
+    std::set<std::string> channelLabels;
 };
 //typedef boost::shared_ptr<ForcePlatform> ForcePlatformPtr;
 //typedef boost::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;
@@ -67,7 +40,7 @@ struct C3DLIB_EXPORT ForcePlatform
 typedef ForcePlatform* ForcePlatformPtr;
 typedef const ForcePlatform* ForcePlatformConstPtr;
 typedef const std::vector<ForcePlatformConstPtr>& ForcePlatformConstCollection;
-typedef std::vector<ForcePlatformConstPtr> ForcePlatformCollection;
+typedef std::vector<ForcePlatformPtr> ForcePlatformCollection;
 
 class C3DLIB_EXPORT C3DParser
 {
@@ -194,7 +167,7 @@ private:
 	//! kolekcja zdarzen
     std::vector<IEventPtr> events;
 	//! plyty GRF
-	std::vector<ForcePlatformConstPtr> forcePlatforms;
+	ForcePlatformCollection forcePlatforms;
 
 private:
 	//! Zapewnia wlasciwe wczytywanie danych akwizycji

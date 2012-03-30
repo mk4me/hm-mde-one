@@ -188,7 +188,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 		// Moze wlasciwe bedzie identyfikowanie po UniqueID.
 		//if (name == "Communication") {
         if (name == "DataExplorer") {
-			/*ActionsGroupManager mainWidgetActions;
+			ActionsGroupManager mainWidgetActions;
 			QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
 			ActionsGroupManager controlWidgetActions;
@@ -202,7 +202,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
             layout->addWidget(settingsWidget);
             layout->addWidget(viewWidget);
             layout->addWidget(controlWidget);
-			this->data->setLayout(layout);*/
+			this->data->setLayout(layout);
         }else if (name == "newTimeline") {
             showTimeline();
         }else{

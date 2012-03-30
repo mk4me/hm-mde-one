@@ -17,15 +17,6 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
     accessor.reset(new ScalarContiniousTimeAccessor(reader));
     ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(reader));
     stats.reset(new ScalarChannelStats(nonConstChannel));
-    //int count = reader->size();
-    //xvals = new double[count];
-    //yvals = new double[count];
-    //for (int i = 0; i < count; i++) {
-    //    xvals[i] = reader->argument(i);
-    //    yvals[i] = reader->value(i);
-    //}
-
-    //curve->setRawSamples(xvals, yvals, count);
     curve->setSamples(new NewChartSeriesData(reader));
     int r = rand() % 256;
     int g = rand() % 256;
@@ -36,11 +27,7 @@ void NewChartSerie::setData( const core::ObjectWrapperConstPtr & data )
     curve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
     curve->setItemAttribute(QwtPlotItem::AutoScale, true);
     curve->setItemAttribute(QwtPlotItem::Legend, true);
-    //QwtWeedingCurveFitter* fitter = new QwtWeedingCurveFitter(0.0);
-    //fitter->setFitMode(QwtSplineCurveFitter::ParametricSpline);
     curve->setCurveFitter(nullptr);
-//    curve->setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
-    //curve->setCurveAttribute( QwtPlotCurve::Fitted );
     visualizer->addPlotCurve(curve, getScales());
 
     _zBase = curve->z();
@@ -82,31 +69,11 @@ NewChartSerie::~NewChartSerie()
 void NewChartSerie::setEvents( EventsCollectionConstPtr val )
 {
     UTILS_ASSERT(val);
-    /*EventsPlotItem* eventsItem = new EventsPlotItem(val);
-    eventsItem->attach(visualizer->getPlot());*/
-    //visualizer->setEvents(this, val);
-
-
-
-   //// jesli nie istnieje jeszcze wizualizacja eventow, to tworzymy obiekt eventow 
-   //// i dolaczamy go do wykresu.
-   //if (!eventsItem) {
-   //    eventsItem = new EventsPlotItem(val);
-   //    eventsItem->setVisible(context != C3DEventsCollection::Context::General);
-   //    eventsItem->attach(qwtPlot);
-   //    eventsVisible = true;
-   //
-   //} else if (eventsVisible) {
-   //    // jesli obiekt z eventami juz istnieje, to sprawdzamy, czy dotyczy tych samych eventow
-   //    // jesli tak, to nie trzeba robic nic, bo wizualizujemy dobre eventy
-   //    // jesli nie, to wylaczamy obiekt, poki co nie rysujemy roznych eventow na wykresach
-   //    if (eventsItem->getEvents() != val) {
-   //        eventsVisible = false;
-   //        eventsItem->detach();
-   //    }
-   //}
     eventsHelper = EventsHelperPtr(new EventsHelper(val, getReader()));
+    setColorsForEvents(eventsHelper->getLeftSegments(), getColor());
+    setColorsForEvents(eventsHelper->getRightSegments(), getColor());
     visualizer->setEvents(this, val);
+
     //EventsHelperPtr helper(new EventsHelper(val, getReader()));
     //eventsHelpers[serie] = helper;
     //int no = 0;
@@ -139,11 +106,6 @@ bool NewChartSerie::isVisible() const
     return curve->isVisible();
 }
 
-QColor NewChartSerie::getColor() const
-{
-    UTILS_ASSERT(curve);
-    return curve->pen().color();
-}
 
 void NewChartSerie::setWidth( int width )
 {
@@ -207,4 +169,12 @@ Scales NewChartSerie::getScales() const
     return Scales(0.0f, reader->getLength(), getStats()->minValue(), getStats()->maxValue()); 
 }
 
+void NewChartSerie::setColorsForEvents( EventsHelper::SegmentsRange range, const QColor& color )
+{
+    for (auto it = range.begin(); it != range.end(); it++) {
+        QPen pen = (*it)->normalizedCurve->pen();
+        pen.setColor(color);
+        (*it)->normalizedCurve->setPen(pen);
+    }
+}
 

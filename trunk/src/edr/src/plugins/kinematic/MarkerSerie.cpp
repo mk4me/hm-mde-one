@@ -13,7 +13,8 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 	scheme->setMarkers(markersCollection);
 	int markersCount = markersCollection->getNumChannels();
 	try {
-		scheme->setMarkersDataFromVsk(Vsk::get(static_cast<Vsk::MarkersCount>(markersCount)));
+        auto vsk = markersCollection->getVsk();
+		scheme->setMarkersDataFromVsk(vsk ? vsk : Vsk::get(static_cast<Vsk::MarkersCount>(markersCount)));
 	} catch (...) {}
     	
 	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.02f)));

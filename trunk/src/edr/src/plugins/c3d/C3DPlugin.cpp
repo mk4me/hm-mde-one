@@ -1,5 +1,6 @@
 #include <core/Plugin.h>
 #include <plugins/c3d/C3DChannels.h>
+#include <plugins/c3d/C3DCollections.h>
 #include "C3DParser.h"
 
 

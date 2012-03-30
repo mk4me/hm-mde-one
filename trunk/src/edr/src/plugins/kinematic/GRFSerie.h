@@ -15,6 +15,7 @@
 #include <list>
 #include "KinematicVisualizer.h"
 #include <utils/DataChannel.h>
+#include <plugins/c3d/IForcePlatform.h>
 
 const float grfScale = 0.0008f;
 
@@ -74,6 +75,8 @@ private:
 	typedef boost::shared_ptr<Arrow> ArrowPtr;
 	typedef boost::shared_ptr<const Arrow> ArrowConstPtr;
 
+    typedef std::map<IForcePlatformConstPtr, osg::ref_ptr<osg::ShapeDrawable> > Platform2Shape;
+
 	friend class GhostStack;
 	class GhostStack
 	{
@@ -86,12 +89,18 @@ private:
 		  color(color)
 		  {
 			  UTILS_ASSERT(maxSize > 0);
+              for (int i = 0; i < maxSize; i++) {
+                  ArrowPtr a = createArrow();
+                  hookNode->addChild(a->mainPtr);
+                  a->mainPtr->setNodeMask(0);
+                  takenArrows.push_back(a);
+              }
 		  }
 
 		 void addState(const ArrowState& state)
 		 {
 			 int no = takenArrows.size();
-			 if (no < maxSize) {
+			 if (no < maxSize - 1) {
 				 ArrowPtr a = createArrow();
 				 a->setArrow(state.first, state.second);
 				 a->setColor(color);
@@ -133,9 +142,14 @@ private:
 	typedef boost::shared_ptr<const GhostStack> GhostStackConstPtr;
 
 private:
-	GroupPtr createPlatformsGroup(const c3dlib::ForcePlatformCollection& platforms);
+	GroupPtr createPlatformsGroup(const IForcePlatformCollection& platforms);
 	GroupPtr createButterfly(GRFCollectionConstPtr grf, float& maxLength) const;
-	TransformPtr createPlatformTransform(osg::Texture2D* texture, const osg::Vec3& origin, float width, float lenght, float height) const;
+
+    //GeodePtr createPlatformButterfly(IForcePlatformConstPtr platform, GRFCollectionConstPtr grf, float& maxLength) const;
+
+    GeodePtr createStep( IForcePlatform::IStepConstPtr step, float &maxLength, IForcePlatformConstPtr platform) const;
+
+    TransformPtr createPlatformTransform(osg::Texture2D* texture, const osg::Vec3& origin, float width, float lenght, float height) const;
 	static ArrowPtr createArrow();
 	static osg::ref_ptr<osg::Texture2D> getTexture(int number);
     static bool tryGetTexture(osg::ref_ptr<osg::Texture2D>& ret, int number);
@@ -143,16 +157,18 @@ private:
 private:
 	KinematicVisualizer * visualizer;
 	GRFCollectionPtr grfCollection;
-	osg::ref_ptr<osg::ShapeDrawable> platform1;
-	osg::ref_ptr<osg::ShapeDrawable> platform2;
-	GRFChannelConstPtr f1;
-	GRFChannelConstPtr f2;
+	//osg::ref_ptr<osg::ShapeDrawable> platform1;
+	//osg::ref_ptr<osg::ShapeDrawable> platform2;
+	//GRFChannelConstPtr f1;
+	//GRFChannelConstPtr f2;
 	float maxLength;
-	ArrowPtr a1, a2;
-	GhostStackPtr g1, g2;
+    std::map<IForcePlatform::IStepConstPtr, std::pair<ArrowPtr, GhostStackPtr>> stepsData;
+	//ArrowPtr a1, a2;
+	//GhostStackPtr g1, g2;
 	static osg::ref_ptr<osg::Texture2D> texture1, texture2;
     core::ObjectWrapperConstPtr data;
     std::string name;
+    Platform2Shape platform2Shape;
 };
 
 

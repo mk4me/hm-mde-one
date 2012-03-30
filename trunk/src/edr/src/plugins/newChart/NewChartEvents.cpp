@@ -1,5 +1,6 @@
 #include "NewChartPCH.h"
 #include "NewChartEvents.h"
+#include "NewChartSeriesData.h"
 
 const QColor leftColor1(255, 0, 0, 15);
 const QColor leftColor2(128, 0, 0, 15);
@@ -105,6 +106,18 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
                 currentSegment->event2 = event;
             }
         } 
+    }
+
+    for (int i = 0; i < collection.size(); i++) {
+        ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
+        SegmentPtr segment = collection[i];
+        QString name = QString("%1:%2").arg(scalar->getName().c_str()).arg(i);
+        segment->normalizedCurve = new QwtPlotCurve(name);
+        segment->normalizedCurve->setData(new NewChartEventStateData(scalar, segment->begin, segment->end));
+        segment->normalizedCurve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
+        segment->normalizedCurve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
+        segment->normalizedCurve->setItemAttribute(QwtPlotItem::AutoScale, true);
+        segment->normalizedCurve->setItemAttribute(QwtPlotItem::Legend, true);
     }
 }
 

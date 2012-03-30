@@ -39,4 +39,20 @@ private:
     double scaleY;
 };
 
+class NewChartEventStateData : public QwtSeriesData<QPointF>
+{
+public:
+    NewChartEventStateData(ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime);
+
+public:
+    virtual size_t size() const;
+    virtual QPointF sample( size_t i ) const;
+    virtual QRectF boundingRect() const;
+
+private:
+    ScalarChannelReaderInterfaceConstPtr channel;
+    int startIndex;
+    int endIndex;
+};
+
 #endif

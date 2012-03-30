@@ -18,6 +18,7 @@ UTILS_POP_WARNINGS
 #include <kinematiclib/VskParser.h>
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/c3d/C3DChannels.h>
+#include <plugins/c3d/C3DCollections.h>
 
 #ifdef max
     #undef max

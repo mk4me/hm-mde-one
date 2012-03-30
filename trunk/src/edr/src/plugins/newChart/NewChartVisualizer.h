@@ -77,6 +77,9 @@ public:
 
       virtual void setUp(core::IObjectSource* source);
       virtual void update(double deltaTime);
+
+      void setScale();
+
       virtual void reset();
 
       void setTitle( const QString& title ) { qwtPlot->setTitle(title); }
@@ -103,10 +106,11 @@ private:
       void setScale(bool scaleToActive, bool eventMode);
       void setGlobalScales(bool scaleToActive);
       void adjustOffsetStep(QDoubleSpinBox* spinBox, QwtPlot::Axis axis);
-
+      bool isCurveFromSerie(const QwtPlotCurve* ) const;
       //! Metoda wywo³ywana kiedy zmieni siê stan wykresów
       void plotChanged();
       void refreshBounds();
+      void setLabelsVisible(bool);
 
       void simpleMovingAverage(int startIdx, int endIdx, const std::vector<float> & inReal,
           int optInTimePeriod, int & outBegIdx, int & outNBElement, std::vector<float> & outReal);
@@ -136,6 +140,7 @@ private slots:
       void showStatistics(bool visible);
       bool timeInsideEvent();
       void scaleToActiveSerie(bool);
+      void setEventStepMode(bool);
       void onShiftX(double d);
       void onShiftY(double d);
       void onScaleX(double d);
@@ -163,38 +168,45 @@ private:
     double movingAverageTimeWindow;
     int pointsPerWindow;
 
-      QwtPlot* qwtPlot;
-      NewChartLegend* legend;
-      QwtPlotMarker* qwtMarker;
-      core::shared_ptr<QwtPlotGrid> grid;
-      core::shared_ptr<QwtPlotZoomer> zoomer;
-      Scales plotScales;
-      QComboBox* activeSerieCombo;
-      std::vector<NewChartSerie*> series;
-      std::map<QAction*, NewChartStatePtr> statesMap;
-      bool showLegend;
-      NewChartStatePtr currentState;
-      int currentSerie;
-      QwtPlotPanner* plotPanner;
-      QwtPlotMagnifier* plotMagnifier;
-      //EventsPlotItem* eventsItem;
-      StatsTable* statsTable;
-      bool eventsVisible;
-      bool scaleToActive;
-      PercentScaleDraw* percentDraw;
+    QwtPlot* qwtPlot;
+    NewChartLegend* legend;
+    QwtPlotMarker* qwtMarker;
+    core::shared_ptr<QwtPlotGrid> grid;
+    core::shared_ptr<QwtPlotZoomer> zoomer;
+    Scales plotScales;
+    QComboBox* activeSerieCombo;
+    std::vector<NewChartSerie*> series;
+    std::map<QAction*, NewChartStatePtr> statesMap;
+    bool showLegend;
+    NewChartStatePtr currentState;
+    int currentSerie;
+    QwtPlotPanner* plotPanner;
+    QwtPlotMagnifier* plotMagnifier;
+    StatsTable* statsTable;
+    bool eventStepMode;
+    bool scaleToActive;
+    PercentScaleDraw* percentDraw;
 
-      QWidget* eventsContextWidget;
-      QComboBox * eventsMenu;
+    QWidget* eventsContextWidget;
+    QComboBox * eventsMenu;
+    QAction* leftStepAction;
+    QAction* rightStepAction;
+    QAction* pickerAction;
+    QAction* valueMarkerAction;
+    QAction* vMarkerAction;
+    QAction* hMarkerAction;
+    QAction* scaleAction;
+    QAction* bandsAction;
 
-      QDoubleSpinBox* shiftSpinX;
-      QDoubleSpinBox* shiftSpinY;
-      QDoubleSpinBox* scaleSpinX;
-      QDoubleSpinBox* scaleSpinY;
+    QDoubleSpinBox* shiftSpinX;
+    QDoubleSpinBox* shiftSpinY;
+    QDoubleSpinBox* scaleSpinX;
+    QDoubleSpinBox* scaleSpinY;
 
-      C3DEventsCollection::Context context;
-      //std::map<NewChartSerie*, EventsHelperPtr> eventsHelpers;
-      EventsHelper::SegmentConstPtr oldSegment;
-      NewChartPickerPtr picker;
+    C3DEventsCollection::Context context;
+    EventsHelper::SegmentConstPtr oldSegment;
+    NewChartPickerPtr picker;
+
 };
 typedef core::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef core::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;

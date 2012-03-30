@@ -320,6 +320,12 @@ void C3DParser::loadAcquisition()
 				platform->corners[i] *= scale;
 				
 			}
+            platform->type = (*it)->GetType();
+            int count = (*it)->GetChannelNumber();
+            for (int i = 0; i < count; i++) {
+                auto channel = (*it)->GetChannel(i);
+                platform->channelLabels.insert(channel->GetLabel());
+            }
 			forcePlatforms.push_back(platform);
 		}
 	}

@@ -32,11 +32,8 @@ private:
 	core::ObjectWrapperPtr angleChannels;
 	core::ObjectWrapperPtr momentChannels;
 	core::ObjectWrapperPtr powerChannels;
-	//core::ObjectWrapperPtr leftEvents;
-	//core::ObjectWrapperPtr rightEvents;
     core::ObjectWrapperPtr allEvents;
     core::ObjectWrapperPtr allMarkers;
-	//core::ObjectWrapperPtr c3dMisc;
 	ParserPtr parserPtr;
     	
 public:
@@ -46,7 +43,7 @@ public:
 public:
     virtual void parseFile(const core::Filesystem::Path& path);
 
-    void computeDataForPlatform( GRFChannelPtr f1, MarkerCollectionPtr markers, c3dlib::ForcePlatformConstPtr platform, EventsCollectionConstPtr events );
+    //void computeDataForPlatform( GRFChannelPtr f1, MarkerCollectionPtr markers, c3dlib::ForcePlatformPtr platform, EventsCollectionConstPtr events );
 
     virtual core::IParser* create();
     virtual void getObjects(core::Objects& objects);

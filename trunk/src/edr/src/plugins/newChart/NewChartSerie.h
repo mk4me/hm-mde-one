@@ -14,7 +14,8 @@
 #include <core/IObjectSource.h>
 #include <qwt/qwt_scale_map.h>
 #include <qwt/qwt_plot_curve.h>
-#include <plugins/c3d/C3DChannels.h>
+#include <plugins/c3d/C3DCollections.h>
+#include <plugins/c3d/EventSerieBase.h>
 #include "NewChartCurve.h"
 #include "NewChartEvents.h"
 #include "Scales.h"
@@ -70,8 +71,13 @@ public:
         pen.setColor(color);
         curve->setPen(pen);
     }
+    
 
-    QColor getColor() const;
+    QColor getColor() const
+    {
+        UTILS_ASSERT(curve);
+        return curve->pen().color();
+    }
 
     void setWidth(int width);
 
@@ -118,6 +124,9 @@ public:
 
     QPointF getOffset() const;
     void setOffset(const QPointF& offset);
+
+private:
+    void setColorsForEvents(EventsHelper::SegmentsRange range, const QColor& color);
 
 private:
     NewChartVisualizer* visualizer;

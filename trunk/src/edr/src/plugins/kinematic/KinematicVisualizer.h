@@ -19,6 +19,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 #include <QtGui/QDoubleSpinBox>
+#include <plugins/c3d/EventSerieBase.h>
 #include "ISchemeDrawer.h"
 #include "OsgSchemeDrawer.h"
 #include "LineSchemeDrawer.h"
