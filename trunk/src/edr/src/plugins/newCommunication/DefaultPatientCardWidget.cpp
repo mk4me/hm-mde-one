@@ -1,5 +1,6 @@
 #include "CommunicationPCH.h"
 #include "DefaultPatientCardWidget.h"
+#include "DataSourceUserData.h"
 #include <QtGui/QFormLayout>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QVBoxLayout>
@@ -34,8 +35,8 @@ private:
 };
 
 DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(parent), personalDataWidget(new PersonalDataWidget()),
-	disordersDataWidget(new DisordersDataWidget()), antropomtricDataWidget(new AntropometricDataWidget()), leftBox(new QMultiToolBox()),
-	rightBox(new QMultiToolBox()), notesWidget(new NotesWidget()), sessionsWidget(new QTreeWidget())
+	disordersDataWidget(new DisordersDataWidget()), antropomtricDataWidget(new AntropometricDataWidget())/*, leftBox(new QMultiToolBox())*/,
+	/*rightBox(new QMultiToolBox()),*/ notesWidget(new NotesWidget()), sessionsWidget(new QTreeWidget())
 {
 	QStringList headers;
 
@@ -71,11 +72,19 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 	groupD->setLayout(new QHBoxLayout());
 	groupD->layout()->addWidget(notesWidget);
 
+	QWidget * leftWidget = new QWidget();
+	leftWidget->setObjectName(QString::fromUtf8("leftWidget"));
 	QVBoxLayout * vLayout = new QVBoxLayout();
+	vLayout->setContentsMargins(0,0,0,0);
 	vLayout->addWidget(groupA);
 	vLayout->addWidget(groupB);
 	vLayout->addWidget(groupC);
 	vLayout->addWidget(groupD);
+
+	leftWidget->setLayout(vLayout);
+
+	leftWidget->setMinimumWidth(450);
+	leftWidget->setContentsMargins(0,0,0,0);
 
 	//leftBox->addItem(personalDataWidget, tr("Personal data"));
 	//leftBox->addItem(disordersDataWidget, tr("Disorders"));
@@ -83,14 +92,14 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 	//leftBox->addItem(notesWidget, tr("Notes"));	
 
 	//rightBox->addItem(antropomtricDataWidget, tr("Anthropometric Data"));
-
+	antropomtricDataWidget->setMinimumWidth(450);
 	QGroupBox * groupE = new QGroupBox(tr("Anthropometric Data"));
 	groupE->setLayout(new QHBoxLayout());
 	groupE->layout()->addWidget(antropomtricDataWidget);
 
 	QHBoxLayout * layout = new QHBoxLayout();
-
-	layout->addLayout(vLayout);
+	
+	layout->addWidget(leftWidget);
 	layout->addWidget(groupE);
 
 	//layout->addWidget(leftBox);
@@ -101,6 +110,7 @@ DefaultPatientCardWidget::DefaultPatientCardWidget(QWidget * parent) : QFrame(pa
 	//leftBox->setItemExpanded(0);
 	//rightBox->setItemExpanded(0);
 	//rightBox->setItemEnabled(0,false);
+	innerSetPatient(nullptr, QPixmap(), nullptr, UserData());
 }
 
 DefaultPatientCardWidget::~DefaultPatientCardWidget()
@@ -112,16 +122,7 @@ void DefaultPatientCardWidget::setPatient(const webservices::MedicalShallowCopy:
 	const webservices::MotionShallowCopy::Performer * subject,
 	const QPixmap & photo, const communication::IUserData & userData)
 {
-	setPersonalData(patient, photo);
-	setDisordersData(patient == nullptr ? MedicalShallowCopy::PatientDisorders() : patient->disorders);
-
-	if(subject == nullptr){
-		setSessionsData(MotionShallowCopy::PerformerConfs());
-	}else{
-		setSessionsData(subject->performerConfs);
-	}
-
-	setNotes(patient, subject, userData);
+	innerSetPatient(patient, photo, subject, userData);
 }
 
 void DefaultPatientCardWidget::setPersonalData(const MedicalShallowCopy::Patient * patient, const QPixmap & photo)
@@ -142,19 +143,24 @@ void DefaultPatientCardWidget::setDisordersData(const MedicalShallowCopy::Patien
 	disordersDataWidget->setAutoUpdate(false);	
 
 	if(patientDisorders.empty() == false){	
-		
-		disordersDataWidget->setDisordersCount(patientDisorders.size());
+		int s = max(patientDisorders.size(), 2);
+		disordersDataWidget->setDisordersCount(s);
 
 		int i = 0;
 		for(auto it = patientDisorders.begin(); it != patientDisorders.end(); ++it){
 			disordersDataWidget->setDisorder(i++, QString::fromUtf8(it->second.disorder->name.c_str()),
 				QString::fromUtf8(it->second.diagnosisDate.c_str()), QString::fromUtf8(it->second.focus.c_str()));
 		}
-	}else{
-		disordersDataWidget->setDisordersCount(2);
 
-		for(int i = 0; i < 2; ++i){
-			disordersDataWidget->setDisorder(i++, QString(), QString(), QString());
+		for( ; i < s; ++i){
+			disordersDataWidget->setDisorder(i, QString(), QString(), QString());
+		}
+	}else{
+		int emptyRows = 2;
+		disordersDataWidget->setDisordersCount(emptyRows);
+
+		for(int i = 0; i < emptyRows; ++i){
+			disordersDataWidget->setDisorder(i, QString(), QString(), QString());
 		}
 	}
 
@@ -192,28 +198,28 @@ void DefaultPatientCardWidget::setSessionsData(const MotionShallowCopy::Performe
 	//czyœcimy zawartoœæ sesji
 	sessionsWidget->clear();
 
-	if(subjectConfigurations.empty() == true){
-		return;
-	}
+	if(subjectConfigurations.empty() == false){
+		//wypelniamy sesjami
 
-	//wypelniamy sesjami
+		//grupujemy wykresy na przed/po badaniu + upperBody, lowerBody
+		std::map<std::string, std::map<int, const MotionShallowCopy::Session *>> groupedData;
 
-	//grupujemy wykresy na przed/po badaniu + upperBody, lowerBody
-	std::map<std::string, std::map<int, const MotionShallowCopy::Session *>> groupedData;
+		for(auto it = subjectConfigurations.begin(); it != subjectConfigurations.end(); ++it){
+			auto session = it->second->session;
+			groupedData[session->sessionDate][session->sessionID] = session;
+		}
 
-	for(auto it = subjectConfigurations.begin(); it != subjectConfigurations.end(); ++it){
-		auto session = it->second->session;
-		groupedData[session->sessionDate][session->sessionID] = session;
-	}
+		if(groupedData.begin()->second.empty() == false){
+			QTreeWidgetItem * item = createBranch(QObject::tr("Before treatment"), groupedData.begin()->second);
+			sessionsWidget->addTopLevelItem(item);
+		}
 
-	if(groupedData.begin()->second.empty() == false){
-		QTreeWidgetItem * item = createBranch(QObject::tr("Before treatment"), groupedData.begin()->second);
-		sessionsWidget->addTopLevelItem(item);
-	}
-
-	if(groupedData.begin()->first != groupedData.rbegin()->first && groupedData.rbegin()->second.empty() == false){
-		QTreeWidgetItem * item = createBranch(tr("After treatment"), groupedData.rbegin()->second);
-		sessionsWidget->addTopLevelItem(item);
+		if(groupedData.begin()->first != groupedData.rbegin()->first && groupedData.rbegin()->second.empty() == false){
+			QTreeWidgetItem * item = createBranch(tr("After treatment"), groupedData.rbegin()->second);
+			sessionsWidget->addTopLevelItem(item);
+		}
+	}else{
+		setAntropometricData(MotionShallowCopy::Attrs());
 	}
 
 	sessionsWidget->expandAll();
@@ -363,6 +369,20 @@ QString DefaultPatientCardWidget::getAttribute(const MotionShallowCopy::Attrs & 
 	}
 
 	return value;
+}
+
+void DefaultPatientCardWidget::innerSetPatient( const webservices::MedicalShallowCopy::Patient * patient, const QPixmap & photo, const webservices::MotionShallowCopy::Performer * subject, const communication::IUserData & userData )
+{
+	setPersonalData(patient, photo);
+	setDisordersData(patient == nullptr ? MedicalShallowCopy::PatientDisorders() : patient->disorders);
+
+	if(subject == nullptr){
+		setSessionsData(MotionShallowCopy::PerformerConfs());
+	}else{
+		setSessionsData(subject->performerConfs);
+	}
+
+	setNotes(patient, subject, userData);
 }
 
 DefaultPatientCard::DefaultPatientCard() : patientCardWidget(new DefaultPatientCardWidget())

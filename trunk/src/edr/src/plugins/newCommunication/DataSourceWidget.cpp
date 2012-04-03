@@ -189,6 +189,7 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	patientCardPlaceholerWidget->setLayout(new QHBoxLayout());
 	registerPatientCard(new DefaultPatientCard());
 	patientCardManager.setPatientCard(0);
+	patientCardManager.currentPatientCard()->setPatient(nullptr);
 
 	//inicjujemy perspektywy
 	registerPerspective(new DataSourcePatientPerspective());
@@ -243,6 +244,14 @@ void DataSourceWidget::refreshCurrentPerspectiveContent()
 
 	//aktualna perspektywa jest ju¿ ok
 	perspectivesContent[perspectiveManager.currentPerspectiveWidget()] = contentManager.currentContentIndex();
+
+	//sprawdzam czy mam jakiegoœ selecta - je¿eli nie to próbuje coœ zaznaczyæ
+
+	auto selected = perspectiveManager.currentPerspectiveWidget()->selectedItems();
+
+	if(selected.empty() == true && perspectiveManager.currentPerspectiveWidget()->topLevelItemCount() > 0){
+		perspectiveManager.currentPerspectiveWidget()->topLevelItem(0)->setSelected(true);
+	}
 }
 
 void DataSourceWidget::refreshStatus()

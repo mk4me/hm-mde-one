@@ -47,6 +47,14 @@ NoteDialog::~NoteDialog()
 NotesWidget::NotesWidget(QWidget * parent) : QFrame(parent), currentPatientID(-1)
 {
 	setupUi(this);
+	notesTable->horizontalHeader()->setStyleSheet(QString::fromUtf8("QHeaderView::section:horizontal {\n"
+		"	background: rgb(41,41,41);\n"
+		"	color: white;\n"
+		"	padding: 2px;\n"
+		"	border: 2px solid black;\n"
+		"	border-top: none;\n"
+		"	border-right: none;\n"
+		"}"));
 }
 
 NotesWidget::~NotesWidget()
@@ -229,23 +237,41 @@ void NotesWidget::fillNotesList()
 {
 	auto it = patientNotes.find(currentPatientID);
 
-	if(it == patientNotes.end() || it->second.empty() == true){
-		return;
-	}
-
 	bool sorting = notesTable->isSortingEnabled();
 	notesTable->setSortingEnabled(false);
 
-	notesTable->setRowCount(it->second.size());
+	if(it == patientNotes.end() || it->second.empty() == true){
+		//tworzymy puste wiersze
+		int emptyRows = 2;
+		notesTable->setRowCount(emptyRows);
 
-	for(int row = 0; row < it->second.size(); ++row){
-		notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(it->second[row]->localID)));
-		notesTable->setItem(row, 1, new QTableWidgetItem(it->second[row]->title));
-		notesTable->setItem(row, 2, new QTableWidgetItem(it->second[row]->created.toString("dd.MM.yyyy")));
-		notesTable->setItem(row, 3, new QTableWidgetItem());
+		for(int row = 0; row < emptyRows; ++row){
+			notesTable->setItem(row, 0, new QTableWidgetItem());
+			notesTable->setItem(row, 1, new QTableWidgetItem());
+			notesTable->setItem(row, 2, new QTableWidgetItem());
+			notesTable->setItem(row, 3, new QTableWidgetItem());
+		}
+	}else{
+		int rows = max(it->second.size(), 2);
+		notesTable->setRowCount(rows);
+		int row = 0;
+		for( ; row < it->second.size(); ++row){
+			notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(it->second[row]->localID)));
+			notesTable->setItem(row, 1, new QTableWidgetItem(it->second[row]->title));
+			notesTable->setItem(row, 2, new QTableWidgetItem(it->second[row]->created.toString("dd.MM.yyyy")));
+			notesTable->setItem(row, 3, new QTableWidgetItem());
+		}
+
+		for( ; row < rows; ++row){
+			notesTable->setItem(row, 0, new QTableWidgetItem());
+			notesTable->setItem(row, 1, new QTableWidgetItem());
+			notesTable->setItem(row, 2, new QTableWidgetItem());
+			notesTable->setItem(row, 3, new QTableWidgetItem());
+		}
 	}
 
 	notesTable->setSortingEnabled(sorting);
+	notesTable->resizeColumnsToContents();
 }
 
 void NotesWidget::clearNotesList()
@@ -275,14 +301,28 @@ void NotesWidget::updateNote(const QDateTime & modified, const QString & title, 
 
 void NotesWidget::onCurrentNoteChange()
 {
-	int currentRow = notesTable->currentRow() + 1;
-	if(currentRow <= 0){
+
+	if(patientNotes.find(currentPatientID) == patientNotes.end()){
+		return;
+	}
+
+	int noteID = -1;
+	auto idText = notesTable->item(notesTable->currentRow(), 0)->text();
+	
+	if(idText.isEmpty() == false){
+		noteID = idText.toInt();
+		if(notes.find(noteID) == notes.end()) {
+			noteID = -1;
+		}
+	}
+
+	if(noteID <= 0){
 		currentNote.reset();
 		clearNote();
 		removeNoteButton->setEnabled(false);
 		editNoteButton->setEnabled(false);
 	}else{
-		currentNote = patientNotes[currentPatientID][currentRow];
+		currentNote = notes[noteID];
 		loadNote();
 		removeNoteButton->setEnabled(true);
 		editNoteButton->setEnabled(true);

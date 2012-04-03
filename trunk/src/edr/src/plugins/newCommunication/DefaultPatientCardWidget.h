@@ -45,6 +45,8 @@ public slots:
 		const webservices::MotionShallowCopy::Performer * subject = nullptr,
 		const QPixmap & photo = QPixmap(), const communication::IUserData & userData = communication::IUserData());
 
+	void innerSetPatient( const webservices::MedicalShallowCopy::Patient * patient, const QPixmap & photo, const webservices::MotionShallowCopy::Performer * subject, const communication::IUserData & userData );
+
 private slots:
 		
 	void setPersonalData(const webservices::MedicalShallowCopy::Patient * patient = nullptr, const QPixmap & photo = QPixmap());
