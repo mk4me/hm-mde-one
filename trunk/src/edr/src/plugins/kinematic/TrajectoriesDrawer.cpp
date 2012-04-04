@@ -71,6 +71,7 @@ void TrajectoryDrawer::createTrajectories( MarkerCollectionConstPtr markers )
 		geode->setStateSet(stateset);
 		lines->setVertexArray(vertices);
 		lines->setColorArray(colors);
+        lines->setDataVariance(osg::Object::DYNAMIC);
 		lines->setColorBinding(osg::Geometry::BIND_OVERALL);
 		lines->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, vertices->size()));
 

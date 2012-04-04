@@ -413,6 +413,7 @@ osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
     }
 
     linesGeom->setVertexArray(vertices);
+    linesGeom->setDataVariance(osg::Object::DYNAMIC);
     geode->setStateSet(stateset);
     linesGeom->setColorArray(colors);
     linesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
@@ -692,28 +693,28 @@ void KinematicVisualizer::refreshSpinboxes()
 
 void KinematicVisualizer::draggerTriggered()
 {
-    QAction* a = qobject_cast<QAction*>(sender());
-    //Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), translateDragger);
-    //Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), rotationDragger);
-    //Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), scaleDragger);
-    if (currentDragger) {
-        Manipulators::disconnect(transformNode, series[currentSerie]->getMatrixTransformNode(), currentDragger);
-    }
+    auto serie = tryGetCurrentSerie();
+    if (serie) {
+        QAction* a = qobject_cast<QAction*>(sender());
+        if (currentDragger) {
+            Manipulators::disconnect(transformNode, serie->getMatrixTransformNode(), currentDragger);
+        }
 
-    if (a == translateAction) {
-        currentDragger = translateDragger;
-    } else if (a == rotateAction) {
-        currentDragger = rotationDragger;
-    } else if (a == scaleAction) {
-        currentDragger = scaleDragger;
-    } else if (a == pickerAction) {
-        currentDragger = nullptr;
-    } else {
-        UTILS_ASSERT(false);
-    }
+        if (a == translateAction) {
+            currentDragger = translateDragger;
+        } else if (a == rotateAction) {
+            currentDragger = rotationDragger;
+        } else if (a == scaleAction) {
+            currentDragger = scaleDragger;
+        } else if (a == pickerAction) {
+            currentDragger = nullptr;
+        } else {
+            UTILS_ASSERT(false);
+        }
     
-    if (currentDragger) {
-        Manipulators::connect(transformNode, series[currentSerie]->getMatrixTransformNode(), currentDragger, series[currentSerie]->getPivot()); 
+        if (currentDragger) {
+            Manipulators::connect(transformNode, serie->getMatrixTransformNode(), currentDragger, serie->getPivot()); 
+        }
     }
 }
 

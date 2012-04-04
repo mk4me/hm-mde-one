@@ -126,6 +126,7 @@ GlLineSchemeDrawer::GeometryPtr GlLineSchemeDrawer::createCustomCylinder( int co
     cylinderGeom->setVertexArray(points);
     cylinderGeom->setNormalArray(normals);
     cylinderGeom->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
+    cylinderGeom->setDataVariance(osg::Object::DYNAMIC);
     
     int mod = complex * 2;
     for (int i = 0; i < complex; i++) {

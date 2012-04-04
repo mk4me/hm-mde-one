@@ -155,6 +155,7 @@ GRFSerie::GeodePtr GRFSerie::createStep( IForcePlatform::IStepConstPtr step, flo
     lines->setColorArray(colors);
     lines->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
     lines->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, verts->size()));
+    lines->setDataVariance(osg::Object::DYNAMIC);
     geode->addDrawable(lines);
     return geode;
 }
@@ -512,6 +513,7 @@ GRFSerie::TransformPtr GRFSerie::createPlatformTransform(osg::Texture2D* texture
 	coord->push_back(osg::Vec2(0.0f, 1.0f));
 	
 	geometry->setVertexArray(verts);
+    geometry->setDataVariance(osg::Object::DYNAMIC);
 	geometry->setTexCoordArray(0, coord);
 	
 	geometry->setColorArray(colors);

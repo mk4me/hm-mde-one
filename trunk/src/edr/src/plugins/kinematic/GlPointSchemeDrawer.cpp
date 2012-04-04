@@ -135,6 +135,7 @@ GlPointSchemeDrawer::GeometryPtr GlPointSchemeDrawer::createCustomSphere( int co
     sphereGeom->setVertexArray(points);
     sphereGeom->setNormalArray(normals);
     sphereGeom->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
+    sphereGeom->setDataVariance(osg::Object::DYNAMIC);
     
 
     for (e = 0; e < 2 * n; e++) {
