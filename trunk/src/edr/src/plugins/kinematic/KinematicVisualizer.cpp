@@ -369,7 +369,7 @@ KinematicVisualizer::KinematicVisualizer() :
 void KinematicVisualizer::update( double deltaTime )
 {
     KinematicSerie* serie = tryGetCurrentSerie();
-    if (serie->getTime() != lastTime) {
+    if (serie && serie->getTime() != lastTime) {
         lastTime = serie->getTime();
         if (currentDragger && serie) {
             currentDragger->setDraggerPivot(serie->getPivot());
