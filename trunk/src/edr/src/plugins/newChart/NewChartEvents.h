@@ -1,10 +1,10 @@
 /********************************************************************
-	created:	2012/02/22
-	created:	22:2:2012   10:17
-	filename: 	NewChartEvents.h
-	author:		Wojciech Kniec
-	
-	purpose:	
+    created:	2012/02/22
+    created:	22:2:2012   10:17
+    filename: 	NewChartEvents.h
+    author:		Wojciech Kniec
+    
+    purpose:	
 *********************************************************************/
 
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTEVENTS_H__
@@ -65,6 +65,9 @@ public:
         }
         return SegmentConstPtr();
     }
+
+
+    
 
     SegmentsConstRange getRightSegments() const { return boost::make_iterator_range(rightSegments.cbegin(), rightSegments.cend()); }
     SegmentsConstRange getLeftSegments() const { return boost::make_iterator_range(leftSegments.cbegin(), leftSegments.cend());  }

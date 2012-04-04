@@ -47,8 +47,7 @@ NewChartVisualizer::NewChartVisualizer() :
     averageCurve(nullptr),
     boundsAutoRefresh(true),
     movingAverageTimeWindow(0.125),
-    pointsPerWindow(25),
-    eventStepMode(false)
+    pointsPerWindow(25)
 {
 
 }
@@ -96,16 +95,6 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     QVBoxLayout* eventsLayout = new QVBoxLayout();
     eventsLayout->setMargin(0);
     eventsLayout->setContentsMargins(0, 0, 0, 0);
-
-    leftStepAction = new QAction(tr("Left step action"), this);
-    leftStepAction->setChecked(false);
-    leftStepAction->setCheckable(true);
-    connect(leftStepAction, SIGNAL(triggered(bool)), this, SLOT(setEventStepMode(bool)));
-
-    rightStepAction = new QAction(tr("Right step action"), this);
-    rightStepAction->setChecked(false);
-    rightStepAction->setCheckable(true);
-    connect(rightStepAction, SIGNAL(triggered(bool)), this, SLOT(setEventStepMode(bool)));
 
 
     eventsMenu = new QComboBox(eventsContextWidget);
@@ -255,8 +244,6 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
 
     id = manager->createGroup(tr("Events"));
     manager->addGroupAction(id, eventsContextWidget);
-    manager->addGroupAction(id, leftStepAction);
-    manager->addGroupAction(id, rightStepAction);
 
     id = manager->createGroup(tr("Tags"));
     manager->addGroupAction(id, valueMarkerAction);
@@ -831,10 +818,7 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 void NewChartVisualizer::setScale()
 {
     NewChartSerie* serie = tryGetCurrentSerie();
-    if (eventStepMode) {
-        setGlobalScales(scaleToActive);
-        qwtPlot->setAxisScale(QwtPlot::xBottom, 0.0, 100.0);
-    } else {
+    if (serie) {
        if (isEventMode()) {
            float x = serie->getTime();
            auto helper = serie->getEventsHelper();
@@ -847,48 +831,52 @@ void NewChartVisualizer::setScale()
        } else {
            setGlobalScales(scaleToActive);
        }
-    }
-    
-    
+    }    
 }
 
 
 void NewChartVisualizer::setGlobalScales(bool scaleToActive)
 {
     UTILS_ASSERT(percentDraw);
-    percentDraw->setPercentMode(false);
-    if (scaleToActive) {
-        Scales s = series[currentSerie]->getScales();
-        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
-        qwtPlot->setAxisScale(QwtPlot::yLeft, s.getYMin(), s.getYMax());
-    } else {
-        qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
-        qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
+    NewChartSerie* serie = tryGetCurrentSerie();
+    if (serie) {
+        percentDraw->setPercentMode(false);
+        if (scaleToActive) {
+            Scales s = serie->getScales();
+            qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+            qwtPlot->setAxisScale(QwtPlot::yLeft, s.getYMin(), s.getYMax());
+        } else {
+            qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+            qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
+        }
     }
 }
 
 void NewChartVisualizer::onShiftX( double d )
 {
-    NewChartSerie* s = series[currentSerie];
-    s->setXOffset(d);
-    qwtPlot->replot();
-
-    plotChanged();
+    NewChartSerie* s = tryGetCurrentSerie();
+    if (s) {
+        s->setXOffset(d);
+        qwtPlot->replot();
+        plotChanged();
+    }
 }
 
 void NewChartVisualizer::onShiftY( double d )
 {
-    NewChartSerie* s = series[currentSerie];
-    s->setYOffset(d);
-    qwtPlot->replot();
-
-    plotChanged();
+    NewChartSerie* s = tryGetCurrentSerie();
+    if (s) {
+        s->setYOffset(d);
+        qwtPlot->replot();
+        plotChanged();
+    }
 }
 
 void NewChartVisualizer::onScaleX( double d )
-{
-    if (d != 0.0) {
-        NewChartSerie* s = series[currentSerie];
+{ 
+    NewChartSerie* s = tryGetCurrentSerie();
+    if (s && d != 0.0) {
+       
         s->setXScale(d);
         qwtPlot->replot();
 
@@ -898,8 +886,8 @@ void NewChartVisualizer::onScaleX( double d )
 
 void NewChartVisualizer::onScaleY( double d )
 {
-    if (d != 0.0) {
-        NewChartSerie* s = series[currentSerie];
+    NewChartSerie* s = tryGetCurrentSerie();
+    if (s && d != 0.0) {
         s->setYScale(d);
         qwtPlot->replot();
 
@@ -909,21 +897,24 @@ void NewChartVisualizer::onScaleY( double d )
 
 void NewChartVisualizer::refreshSpinBoxes()
 {
-    shiftSpinX->blockSignals(true);
-    shiftSpinX->setValue(series[currentSerie]->getXOffset());
-    shiftSpinX->blockSignals(false);
+    NewChartSerie* serie = tryGetCurrentSerie();
+    if (serie) {
+        shiftSpinX->blockSignals(true);
+        shiftSpinX->setValue(serie->getXOffset());
+        shiftSpinX->blockSignals(false);
 
-    shiftSpinY->blockSignals(true);
-    shiftSpinY->setValue(series[currentSerie]->getYOffset());
-    shiftSpinY->blockSignals(false);
+        shiftSpinY->blockSignals(true);
+        shiftSpinY->setValue(serie->getYOffset());
+        shiftSpinY->blockSignals(false);
 
-    scaleSpinX->blockSignals(true);
-    scaleSpinX->setValue(series[currentSerie]->getXScale());
-    scaleSpinX->blockSignals(false);
-     
-    scaleSpinY->blockSignals(true);
-    scaleSpinY->setValue(series[currentSerie]->getYScale());
-    scaleSpinY->blockSignals(false);
+        scaleSpinX->blockSignals(true);
+        scaleSpinX->setValue(serie->getXScale());
+        scaleSpinX->blockSignals(false);
+
+        scaleSpinY->blockSignals(true);
+        scaleSpinY->setValue(serie->getYScale());
+        scaleSpinY->blockSignals(false);
+    }
 }
 
 void NewChartVisualizer::adjustOffsetStep( QDoubleSpinBox* spinBox, QwtPlot::Axis axis)
@@ -948,7 +939,6 @@ void NewChartVisualizer::plotChanged()
 void NewChartVisualizer::refreshBounds()
 {
     boundsToRefresh = false;
-
     if(series.empty() == true){
         return;
     }
@@ -1248,66 +1238,6 @@ bool NewChartVisualizer::isCurveFromSerie(const QwtPlotCurve* curve) const
     }
 
     return false;
-}
-
-void NewChartVisualizer::setEventStepMode( bool val)
-{
-    this->eventStepMode = val;
-
-    NewChartSerie* serie = tryGetCurrentSerie();
-    auto helper = serie->getEventsHelper();
-    for (auto it = series.begin(); it != series.end(); it++) {
-        (*it)->curve->attach(qwtPlot);
-        auto range = (*it)->getEventsHelper()->getLeftSegments();
-        for (auto segment = range.begin(); segment != range.end(); segment++) {
-            (*segment)->normalizedCurve->detach();
-        }
-        range = (*it)->getEventsHelper()->getRightSegments();
-        for (auto segment = range.begin(); segment != range.end(); segment++) {
-            (*segment)->normalizedCurve->detach();
-        }
-    }        
-    helper->getEventsItem()->attach(qwtPlot);
-    qwtMarker->attach(qwtPlot);
-    if (val) {
-        bool left = sender() == leftStepAction;
-        if (left) {
-            rightStepAction->setChecked(false);
-        } else {
-            leftStepAction->setChecked(false);
-        }
-        for (auto it = series.begin(); it != series.end(); it++) {
-            (*it)->curve->detach();
-            auto helper = (*it)->getEventsHelper();
-            auto range = left ? helper->getLeftSegments() : helper->getRightSegments();
-            for (auto segment = range.begin(); segment != range.end(); segment++) {
-                (*segment)->normalizedCurve->attach(qwtPlot);
-            }
-        }
-        helper->getEventsItem()->detach();
-        this->qwtMarker->detach();
-        if (bandsAction->isChecked()) {
-            bandsAction->setChecked(false);
-            showBands(false);
-        }
-        if (currentState) {
-            currentState->stateEnd();
-        }
-        currentState = statesMap[pickerAction];
-        currentState->stateBegin();
-    } else {
-    }
-    
-    this->activeSerieCombo->setEnabled(!val);
-    this->scaleAction->setEnabled(!val);
-    this->pickerAction->setEnabled(!val);
-    this->valueMarkerAction->setEnabled(!val);
-    this->vMarkerAction->setEnabled(!val);
-    this->hMarkerAction->setEnabled(!val);
-    this->bandsAction->setEnabled(!val);
-    setLabelsVisible(!val);
-    setScale();
-    qwtPlot->replot();
 }
 
 void NewChartVisualizer::setLabelsVisible( bool val )

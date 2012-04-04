@@ -104,6 +104,9 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     emgItem->setText(0, rootName);
     emgItem->setIcon(0, rootIcon);
     std::vector<core::ObjectWrapperConstPtr> emgs;
+    core::ObjectWrapperConstPtr collectionWrp = motion->getWrapperOfType(typeid(EMGCollection));
+    EMGCollectionConstPtr collection = collectionWrp->get();
+    IMeasurementConfigConstPtr config = collection->getConfig();
     motion->getWrappers(emgs, typeid(EMGChannel));
     int count = emgs.size();			
     for (int i = 0; i < count; i++) {	
@@ -111,7 +114,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
         if (c) {
             EMGFilterHelper* channelItem = new EMGFilterHelper(emgs[i]);
             channelItem->setIcon(0, itemIcon);	
-            channelItem->setText(0, c->getName().c_str());			
+            channelItem->setText(0, config ? config->tr(c->getName()).c_str() : c->getName().c_str());			
             channelItem->setMotion(motion);
             emgItem->addChild(channelItem);			
         }

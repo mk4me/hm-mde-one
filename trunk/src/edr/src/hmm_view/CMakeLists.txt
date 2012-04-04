@@ -33,6 +33,7 @@ set(PRIVATE_H
 	HmmContexts.h
 	TextEdit.h
 	base64.h
+	#Measurements.h
 	#Raport.h
 	#RaportsManager.h
 )
@@ -71,6 +72,7 @@ set(TARGET_SRC
 	HmmContexts.cpp
 	TextEdit.cpp
 	base64.cpp
+	#Measurements.cpp
 	#Raport.cpp
 	#RaportsManager.cpp
 )

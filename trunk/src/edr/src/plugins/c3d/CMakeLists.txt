@@ -14,6 +14,7 @@ set(PUBLIC_H
 	${HEADER_PATH}/IForcePlatform.h
 	${HEADER_PATH}/C3DCollections.h
 	${HEADER_PATH}/EventSerieBase.h
+	${HEADER_PATH}/IMeasurementConfig.h
 	#${HEADER_PATH}/Subject.h
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
@@ -23,7 +24,7 @@ set(PRIVATE_H
 	ForcePlatform.h
 	#EventVisualizer.h
 	#SubjectParser.h
-	
+	Measurements.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -36,6 +37,7 @@ set(TARGET_SRC
 	C3DParser.cpp
 	C3DChannels.cpp
 	ForcePlatform.cpp
+	Measurements.cpp
 	#EventVisualizer.cpp
 	#Subject.cpp
 )

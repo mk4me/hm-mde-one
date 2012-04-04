@@ -140,7 +140,6 @@ private slots:
       void showStatistics(bool visible);
       bool timeInsideEvent();
       void scaleToActiveSerie(bool);
-      void setEventStepMode(bool);
       void onShiftX(double d);
       void onShiftY(double d);
       void onScaleX(double d);
@@ -183,14 +182,11 @@ private:
     QwtPlotPanner* plotPanner;
     QwtPlotMagnifier* plotMagnifier;
     StatsTable* statsTable;
-    bool eventStepMode;
     bool scaleToActive;
     PercentScaleDraw* percentDraw;
 
     QWidget* eventsContextWidget;
     QComboBox * eventsMenu;
-    QAction* leftStepAction;
-    QAction* rightStepAction;
     QAction* pickerAction;
     QAction* valueMarkerAction;
     QAction* vMarkerAction;

@@ -37,6 +37,7 @@ set(SCHEMAS
 	deploy/schemas/soap-encoding.xsd
 	deploy/schemas/soap-encoding12.xsd
 	deploy/schemas/wsdl10.xsd
+	deploy/schemas/measurementconfs.xml
 )
 source_group("deploy\\schemas" FILES ${SCHEMAS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SCHEMAS})

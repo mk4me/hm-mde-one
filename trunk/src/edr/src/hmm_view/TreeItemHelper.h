@@ -14,6 +14,7 @@
 #include <QtGui/QTreeWidgetItem>
 //#include <plugins/chart/ChartVisualizer.h>
 #include <plugins/subject/Motion.h>
+#include <plugins/newChart/NewChartSerie.h>
 #include "Visualizer.h"
 
 //! podstawowa klasa ulatwiajaca tworzenie wizualizatora na podstawie elementu drzewa
@@ -154,69 +155,98 @@ public:
     }
 };
 
-////! klasa pomocnicza przy tworzeniu wykresow z wieloma seriami
-//class MultiserieHelper : public TreeItemHelper
-//{
-//public:
-//    enum ColorPolicy {
-//        Random,
-//        GreenRandom,
-//        RedRandom,
-//        Red,
-//        Green,
-//        HalfRedHalfGreen
-//    };
-//    
-//public:
-//    MultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts): colorPolicy(Random), wrappers(charts)
-//    {
-//      
-//    }
-//
-//    void setColorPolicy(ColorPolicy policy) { colorPolicy = policy; }
-//
-//public:
-//    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
-//    virtual VisualizerPtr createVisualizer();
-//
-//private:
-//    std::vector<core::ObjectWrapperConstPtr> wrappers;
-//    ColorPolicy colorPolicy;
-//};
 
-//! klasa pomocnicza przy tworzeniu wykresow z wieloma seriami
+class IMultiserieColorStrategy
+{
+public:
+    virtual ~IMultiserieColorStrategy() {}
+    virtual QColor getColor(NewChartSerie*, core::ObjectWrapperConstPtr) const = 0;
+};
+typedef core::shared_ptr<IMultiserieColorStrategy> IMultiserieColorStrategyPtr;
+typedef core::shared_ptr<const IMultiserieColorStrategy> IMultiserieColorStrategyConstPtr;
+
+class RandomMultiserieColorStrategy : public IMultiserieColorStrategy
+{
+public:
+    QColor getColor(NewChartSerie* s, core::ObjectWrapperConstPtr w) const
+    {
+        return QColor(rand() % 256, rand() % 256, rand() % 256);
+    }
+};
+
+class CopyColorMultiserieColorStrategy : public IMultiserieColorStrategy
+{
+public:
+    QColor getColor(NewChartSerie* s, core::ObjectWrapperConstPtr w) const
+    {
+        return s->getColor();
+    }
+};
+
+class RandomBetweenMultiserieColorStrategy : public IMultiserieColorStrategy
+{
+public:
+    RandomBetweenMultiserieColorStrategy(QColor c1, QColor c2) : c1(c1), c2(c2) {}
+
+    QColor getColor(NewChartSerie* s, core::ObjectWrapperConstPtr w) const
+    {
+        float r = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+        return QColor(
+            lerp(c1.red(), c2.red(), r),
+            lerp(c1.green(), c2.green(), r),
+            lerp(c1.blue(), c2.blue(), r)
+            );
+    }
+
+private:
+    int lerp(int from, int to, float r) const
+    {
+        return from * (1.0f - r) + to * r;
+    }
+    QColor c1, c2;
+};
+
+class ColorMapMultiserieStrategy : public IMultiserieColorStrategy
+{
+public:
+    ColorMapMultiserieStrategy(const std::map<core::ObjectWrapperConstPtr, QColor>& colorMap) : colorMap(colorMap) {}
+    virtual QColor getColor(NewChartSerie* s, core::ObjectWrapperConstPtr w) const 
+    {
+        auto it = colorMap.find(w);
+        if (it != colorMap.end()) {
+            return it->second;
+        }
+
+        return QColor();
+    }
+
+private:
+    std::map<core::ObjectWrapperConstPtr, QColor> colorMap;
+};
+
+
 class NewMultiserieHelper : public TreeItemHelper
 {
 public:
-    enum ColorPolicy {
-        Random,
-        GreenRandom,
-        RedRandom,
-        Red,
-        Green,
-        HalfRedHalfGreen
-    };
-
     typedef std::pair<core::ObjectWrapperConstPtr, EventsCollectionConstPtr> ChartWithEvents;
     typedef std::vector<ChartWithEvents> ChartWithEventsCollection;
 
 public:
     NewMultiserieHelper(const ChartWithEventsCollection& charts): 
-      colorPolicy(Random), title(""), wrappers(charts)
+      colorStrategy(new RandomMultiserieColorStrategy()), title(""), wrappers(charts)
     {
         
     }
 
-    // obsolete
     NewMultiserieHelper(const std::vector<core::ObjectWrapperConstPtr>& charts): 
-    colorPolicy(Random), title("")
+    colorStrategy(new RandomMultiserieColorStrategy()), title("")
     {
         for (auto it = charts.begin(); it != charts.end(); it++) {
             wrappers.push_back(std::make_pair(*it, EventsCollectionConstPtr()));
         }
     }
 
-    void setColorPolicy(ColorPolicy policy) { colorPolicy = policy; }
+    void setColorStrategy(IMultiserieColorStrategyConstPtr strategy) { colorStrategy = strategy; }
 
 public:
     virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series);
@@ -230,7 +260,7 @@ private:
     ChartWithEventsCollection wrappers;
     QString title;
     
-    ColorPolicy colorPolicy;
+    IMultiserieColorStrategyConstPtr colorStrategy;
 };
 
 //! klasa pomocnicza przy tworzeniu wizualizatora jointow (leniwe parsowanie)

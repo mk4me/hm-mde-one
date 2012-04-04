@@ -1,10 +1,10 @@
 /********************************************************************
-	created:	2012/03/25
-	created:	25:3:2012   20:35
-	filename: 	C3DCollections.h
-	author:		Wojciech Kniec
-	
-	purpose:	
+    created:	2012/03/25
+    created:	25:3:2012   20:35
+    filename: 	C3DCollections.h
+    author:		Wojciech Kniec
+    
+    purpose:	
 *********************************************************************/
 
 #ifndef HEADER_GUARD_C3DPLUGIN__C3DCOLLECTIONS_H__
@@ -13,6 +13,7 @@
 #include <kinematiclib/VskParser.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/c3d/IForcePlatform.h>
+#include <plugins/c3d/IMeasurementConfig.h>
 
 //! Prosta kolekcja przechowujaca wszystkie zdarzenia z pliku c3d
 class C3DEventsCollection
@@ -154,7 +155,18 @@ typedef boost::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
 typedef boost::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
 
 
-typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
+//typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
+class EMGCollection : public utils::DataChannelCollection<EMGChannel>
+{
+public:
+    IMeasurementConfigConstPtr getConfig() const
+    { 
+        return config; 
+    }
+    void setConfig(IMeasurementConfigConstPtr val) { config = val; }
+private:
+    IMeasurementConfigConstPtr config;
+};
 typedef boost::shared_ptr<EMGCollection> EMGCollectionPtr;
 typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
@@ -163,6 +175,31 @@ typedef utils::DataChannelCollection<VectorChannel> VectorChannelCollection;
 typedef core::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
 typedef core::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
 
+typedef core::shared_ptr<std::pair<float, float>> FloatPairPtr;
+static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events, C3DEventsCollection::Context context) 
+{
+    std::vector<FloatPairPtr> ret;
+
+    FloatPairPtr currentSegment;
+    for( auto it = events->cbegin(); it != events->cend(); it++) {
+        C3DEventsCollection::EventConstPtr event = *it;
+        if (event->getContext() == context) {
+            if (event->getLabel() == "Foot Strike") {
+                if (currentSegment) {
+                    currentSegment->second = event->getTime();
+                    ret.push_back(currentSegment);
+                }
+
+                currentSegment.reset(new std::pair<float, float>());
+                currentSegment->first = event->getTime();
+            } else if (currentSegment && event->getLabel() == "Foot Off") {
+                //currentSegment->event2 = event;
+            }
+        } 
+    }
+
+    return ret;
+}
 
 class GRFCollection : public VectorChannelCollection 
 {

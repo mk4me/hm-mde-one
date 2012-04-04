@@ -129,6 +129,89 @@ private:
     std::string name;
 };
 
+class ScalarWithTimeSegment : public ScalarChannelReaderInterface, public utils::ChannelDescriptor
+{
+protected:
+    ScalarWithTimeSegment(const ScalarWithTimeSegment & adaptor) : utils::ChannelDescriptor(adaptor), startIndex(adaptor.startIndex), endIndex(adaptor.endIndex) {}
+
+public:
+    ScalarWithTimeSegment(const ScalarChannelReaderInterfaceConstPtr & channel, time_type start, time_type end)
+        : utils::ChannelDescriptor(*channel), reader(core::const_pointer_cast<ScalarChannelReaderInterface>(channel))
+    {
+        startIndex = channel->getValueHelper(start).first;
+        endIndex = channel->getValueHelper(end).second;
+    }
+    virtual ~ScalarWithTimeSegment() {}
+
+    virtual const std::string& getName() const
+    {
+        return reader->getName();
+    }
+
+    virtual ScalarWithTimeSegment * clone() const
+    {
+        return new ScalarWithTimeSegment(*this);
+    }
+
+    //! \return Czas trwania kana³u
+    virtual time_type getLength() const
+    {
+        return static_cast<time_type>(100);
+    }
+
+    size_type transformIndex(size_type idx) const
+    {
+        return startIndex + idx;
+        float x = static_cast<float>(idx) / size();
+        return static_cast<size_type>(startIndex * (1.0f - x) + endIndex * x);
+    }
+
+    //! \param idx Indeks probki
+    //! \return Wartosc czasu dla danego indeksu
+    virtual time_type argument(size_type idx) const
+    {
+        return static_cast<time_type>(idx * 100) / size();
+    }
+
+    //! \param idx Indeks probki
+    //! \return Wartosc probki dla danego indeksu
+    virtual point_type_const_reference value(size_type idx) const
+    {
+        return reader->value(transformIndex(idx));
+    }
+
+    //! \return Iloœæ próbek w kanale
+    virtual size_type size() const
+    {
+        return endIndex - startIndex;
+    }
+
+    //! \return Czy kana³ nie zawiera danych
+    virtual bool empty() const
+    {
+        return reader->empty();
+    }
+
+    virtual float getSamplesPerSecond() const
+    {
+        return size() / getLength();
+    }
+
+    virtual float getSampleDuration() const
+    {
+        if (size()) {
+          return 1.0 / getSamplesPerSecond();
+        }
+
+        throw std::runtime_error("empty channel");
+    }
+
+private:
+    ScalarChannelReaderInterfacePtr reader;
+    int startIndex;
+    int endIndex;
+};
+
 typedef core::shared_ptr<ScalarChannel> ScalarChannelPtr;
 typedef core::shared_ptr<const ScalarChannel> ScalarChannelConstPtr;
 

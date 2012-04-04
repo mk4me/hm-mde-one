@@ -1,0 +1,84 @@
+<MeasurementConfs>
+   <MeasurementConf MeasurementConfID="3" Name="EMG_LB_1">
+      <Attrs>
+        <A Name="L1" Value="m. prosty uda [L]" />
+        <A Name="L2" Value="m. dwug³owy uda (g³owa d³uga) [L]" />
+        <A Name="L3" Value="m. brzuchaty ³ydki (g³owa boczna) [L]" />
+        <A Name="L4" Value="m. piszczelowy przedni [L]" />
+        <A Name="L5" Value="m. poœladkowy œredni [L]" />
+        <A Name="L6" Value="m. pó³œciêgnisty i pó³b³oniasty [L]" />
+        <A Name="L7" Value="m. napinacz powiêzi szerokiej [L]" />
+        <A Name="L8" Value="m. krawiecki [L]" />
+        <A Name="R9" Value="m. prosty uda [R]" />
+        <A Name="R10" Value="m. dwug³owy uda (g³owa d³uga) [R]" />
+        <A Name="R11" Value="m. brzuchaty ³ydki (g³owa boczna) [R]" />
+        <A Name="R12" Value="m. piszczelowy przedni [R]" />
+        <A Name="R13" Value="m. poœladkowy œredni [R]" />
+        <A Name="R14" Value="m. pó³œciêgnisty i pó³b³oniasty [R]" />
+        <A Name="R15" Value="m. napinacz powiêzi szerokiej [R]" />
+        <A Name="R16" Value="m. krawiecki [R]" />
+      </Attrs>
+    </MeasurementConf>
+    <MeasurementConf MeasurementConfID="2" Name="EMG_LB_2">
+      <Attrs>
+        <A Name="L1" Value="m. prosty uda [L]" />
+        <A Name="L2" Value="m. dwug³owy uda (g³owa d³uga) [L]" />
+        <A Name="L3" Value="m. brzuchaty ³ydki (g³owa boczna) [L]" />
+        <A Name="L4" Value="m. brzuchaty ³ydki (g³owa przyœrodkowa) [L]" />
+        <A Name="L5" Value="m. poœladkowy œredni [L]" />
+        <A Name="L6" Value="m. pó³œciêgnisty i pó³b³oniasty [L]" />
+        <A Name="L7" Value="m. poœladkowy wielki [L]" />
+        <A Name="L8" Value="m. krawiecki [L]" />
+        <A Name="R9" Value="m. prosty uda [R]" />
+        <A Name="R10" Value="m. dwug³owy uda (g³owa d³uga) [R]" />
+        <A Name="R11" Value="m. brzuchaty ³ydki (g³owa boczna) [R]" />
+        <A Name="R12" Value="m. brzuchaty ³ydki (g³owa przyœrodkowa) [R]" />
+        <A Name="R13" Value="m. poœladkowy œredni [R]" />
+        <A Name="R14" Value="m. pó³œciêgnisty i pó³b³oniasty [R]" />
+        <A Name="R15" Value="m. poœladkowy wielki [R]" />
+        <A Name="R16" Value="m. krawiecki [R]" />
+      </Attrs>
+    </MeasurementConf>
+   <MeasurementConf MeasurementConfID="1" Name="EMG_LB_3">
+      <Attrs>
+        <A Name="L1" Value="m. prosty uda [L]" />
+        <A Name="L2" Value="m. dwug³owy uda (g³owa d³uga) [L]" />
+        <A Name="L3" Value="m. brzuchaty ³ydki (g³owa boczna) [L]" />
+        <A Name="L4" Value="m. przy koœci strza³kowej piszczelowy przedni [L]" />
+        <A Name="L5" Value="m. poœladkowy œredni [L]" />
+        <A Name="L6" Value="m. pó³œciêgnisty i pó³b³oniasty [L]" />
+        <A Name="L7" Value="m. poœladkowy wielki [L]" />
+        <A Name="L8" Value="m. krawiecki [L]" />
+        <A Name="R9" Value="m. prosty uda [R]" />
+        <A Name="R10" Value="m. dwug³owy uda (g³owa d³uga) [R]" />
+        <A Name="R11" Value="m. brzuchaty ³ydki (g³owa boczna) [R]" />
+        <A Name="R12" Value="m. przy koœci strza³kowej piszczelowy przedni [R]" />
+        <A Name="R13" Value="m. poœladkowy œredni [R]" />
+        <A Name="R14" Value="m. pó³œciêgnisty i pó³b³oniasty [R]" />
+        <A Name="R15" Value="m. poœladkowy wielki [R]" />
+        <A Name="R16" Value="m. krawiecki [R]" />
+      </Attrs>
+    </MeasurementConf>
+	
+ <MeasurementConf MeasurementConfID="4" Name="EMG_UB_1">
+      <Attrs>
+        <A Name="L1" Value="m. czworoboczny grzbietu (kapturowy) [L]" />
+        <A Name="L2" Value="m. piersiowy wiêkszy [L]" />
+        <A Name="L3" Value="m. mostkowo-obojczykowo-sutkowy [L]" />
+        <A Name="L4" Value="m. prostownik grzbietu najd³u¿szy [L]" />
+        <A Name="L5" Value="m. naramienny poœrodkowy [L]" />
+        <A Name="L6" Value="m. trójg³owy ramienia (g³owa d³uga) [L]" />
+        <A Name="L7" Value="m. prostownik palców [L]" />
+        <A Name="L8" Value="m. odwodziciel krótki kciuka [L]" />
+        <A Name="R9" Value="m. czworoboczny grzbietu (kapturowy) [R]" />
+        <A Name="R10" Value="m. piersiowy [R]" />
+        <A Name="R11" Value="m. mostkowo-obojczykowo-sutkowy [R]" />
+        <A Name="R12" Value="m. prostownik grzbietu najd³u¿szy [R]" />
+        <A Name="R13" Value="m. naramienny poœrodkowy [R]" />
+        <A Name="R14" Value="m. trójg³owy ramienia (g³owa d³uga) [R]" />
+        <A Name="R15" Value="m. prostownik palców [R]" />
+        <A Name="R16" Value="m. odwodziciel krótki kciuka [R]" />
+      </Attrs>
+    </MeasurementConf>
+</MeasurementConfs>
+	

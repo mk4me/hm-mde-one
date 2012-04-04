@@ -24,6 +24,7 @@
 #include "PseudoLoginWidget.h"
 #include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
+//#include "Measurements.h"
 
 
 using namespace core;
@@ -32,10 +33,10 @@ using namespace PluginSubject;
 
 
 HmmMainWindow::HmmMainWindow() :
-	MainWindow(),
-	currentVisualizer(nullptr),
-	topMainWindow(nullptr),
-	analisis(nullptr),
+    MainWindow(),
+    currentVisualizer(nullptr),
+    topMainWindow(nullptr),
+    analisis(nullptr),
     currentItem(nullptr),
     data(nullptr),
     operations(nullptr),
@@ -52,7 +53,7 @@ HmmMainWindow::HmmMainWindow() :
     raportsTabContext.reset(new RaportsTabContext(flexiTabWidget, this));
     tabPlaceholder->layout()->addWidget(flexiTabWidget);
 
-	this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint);
     itemClickAction.setMainWindow(this);
     setMouseTracking(true);
     IMemoryDataManager* manager = DataManager::getInstance();
@@ -83,7 +84,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 {
     core::MainWindow::init(pluginLoader, managersAccessor);
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChange(QWidget*,QWidget*)));
-	
+    
 
     trySetStyleByName("hmm");
 
@@ -130,7 +131,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&)));    
-	//QObject::connect(treeWidget, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
+    //QObject::connect(treeWidget, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
 
    /* QSplitter * splitter = new QSplitter();
     splitter->setOrientation(Qt::Vertical);
@@ -182,29 +183,29 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 	for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
 		IServicePtr service = ServiceManager::getInstance()->getService(i);
 
-		const std::string& name = service->getName();
-		// HACK! nie da sie na razie castowac na CommunicationService
-		// trzeba by do HmmView dodac zaleznosc od tego pluginu (lub jego bibliotek)
-		// Nie da sie jednak includowac z tego poziomu odpowiedniego naglowka 
-		// (gdzies po drodze wymagane sa prywane naglowki z Communication)
-		// Moze wlasciwe bedzie identyfikowanie po UniqueID.
-		//if (name == "Communication") {
+        const std::string& name = service->getName();
+        // HACK! nie da sie na razie castowac na CommunicationService
+        // trzeba by do HmmView dodac zaleznosc od tego pluginu (lub jego bibliotek)
+        // Nie da sie jednak includowac z tego poziomu odpowiedniego naglowka 
+        // (gdzies po drodze wymagane sa prywane naglowki z Communication)
+        // Moze wlasciwe bedzie identyfikowanie po UniqueID.
+        //if (name == "Communication") {
 		//if (name == "DataExplorer") {
-			ActionsGroupManager mainWidgetActions;
-			QWidget* viewWidget = service->getWidget(&mainWidgetActions);
+            /*ActionsGroupManager mainWidgetActions;
+            QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
-			ActionsGroupManager controlWidgetActions;
-			QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
+            ActionsGroupManager controlWidgetActions;
+            QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
 
-			ActionsGroupManager settingsWidgetActions;
-			QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
+            ActionsGroupManager settingsWidgetActions;
+            QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
 
-			QVBoxLayout *layout = new QVBoxLayout();
+            QVBoxLayout *layout = new QVBoxLayout();
             layout->setContentsMargins(0,0,0,0);
             layout->addWidget(settingsWidget);
             layout->addWidget(viewWidget);
             layout->addWidget(controlWidget);
-			this->data->setLayout(layout);
+            this->data->setLayout(layout);*/
         if (name == "newTimeline") {
             showTimeline();
         }else if(name != "DataExplorer") {
@@ -224,18 +225,18 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 			//mam dataExplorer - zapamiêtuje i potem go wrzuce do danych
 			dataExplorer = service;
 		}
-	}
+    }
 
-	// akcje - Workflow (VDF) i konsola
-	EDRWorkflowWidget* widget = new EDRWorkflowWidget();
-	actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
-	widget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-	initializeConsole();
-	actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
-	widgetConsole->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-	layout->addWidget(actionsMainWindow);
+    // akcje - Workflow (VDF) i konsola
+    EDRWorkflowWidget* widget = new EDRWorkflowWidget();
+    actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
+    widget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    initializeConsole();
+    actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
+    widgetConsole->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    layout->addWidget(actionsMainWindow);
 
-	operations->setLayout(layout);
+    operations->setLayout(layout);
 
 	//QTabWidget * dataTabWidget = core::createNamedObject<QTabWidget>(QString("dataTabWidget"));
 
@@ -268,7 +269,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 		}
 	}    
 
-	//inicjalizacja title bara
+    //inicjalizacja title bara
     toolsGroupID = flexiTabWidget->addGroup(QObject::tr("Tools"));
     visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer"), QIcon(), false);
 
@@ -294,6 +295,16 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 //#else
 //    this->data->show();
 //#endif
+
+    
+    /*std::string path = core::getResourceString("schemas\\measurementconfs.xml");
+    try {
+    MeasurementsParser p;
+    p.parse(path);
+    this->measurements = p.getMeasurments();
+    } catch (std::runtime_error& e) {
+    LOG_ERROR(e.what());
+    }*/
     this->data->show();
 }
 
@@ -514,10 +525,10 @@ void HmmMainWindow::showTimeline()
     static bool timelineVisible = false;
     if (timelineVisible == false) {
         for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
-		    IServicePtr service = ServiceManager::getInstance()->getService(i);
+            IServicePtr service = ServiceManager::getInstance()->getService(i);
 
-		    const std::string& name = service->getName();
-		    if (name == "newTimeline") {
+            const std::string& name = service->getName();
+            if (name == "newTimeline") {
                 ActionsGroupManager mainWidgetActions;
                 QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
@@ -529,23 +540,15 @@ void HmmMainWindow::showTimeline()
 
                 EDRDockWidget * widget = new EDRDockWidget();
                 widget->setTitleBarWidget(new QWidget());
-                //widget->titleBarWidget()->setEnabled(false);
                 widget->setFeatures(QDockWidget::NoDockWidgetFeatures);
-                /*QLayout* layout = widget->getInnerWidget()->layout();
-                layout->setMargin(0);
-                layout->setContentsMargins(QMargins(0, 0, 0, 0));
-                layout->addWidget(controlWidget);*/
                 widget->setWidget(controlWidget);
                 widget->setAllowedAreas(Qt::BottomDockWidgetArea);
                 widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-			
+            
                 bottomMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
-
-                
-                
                 timelineVisible = true;
             }
-	    }
+        }
     }
 }
 
@@ -1076,6 +1079,33 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          connect(multiZ, SIGNAL(triggered()), this, SLOT(allZFromSession()));
          connect(multiZ, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
 
+         multiMenu->addSeparator();
+
+         QAction * normL = new ContextAction(helper, menu);
+         normL->setText(tr("Left Step normalization"));
+         multiMenu->addAction(normL);
+         connect(normL, SIGNAL(triggered()), this, SLOT(normalizedLeftChart()));
+         connect(normL, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+
+         QAction * normR = new ContextAction(helper, menu);
+         normR->setText(tr("Right Step normalization"));
+         multiMenu->addAction(normR);
+         connect(normR, SIGNAL(triggered()), this, SLOT(normalizedRightChart()));
+         connect(normR, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+
+         QAction * normAllL = new ContextAction(helper, menu);
+         normAllL->setText(tr("Left Step normalization - all from session"));
+         multiMenu->addAction(normAllL);
+         connect(normAllL, SIGNAL(triggered()), this, SLOT(allLeftNormalized()));
+         connect(normAllL, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+
+         QAction * normAllR = new ContextAction(helper, menu);
+         normAllR->setText(tr("Right Step normalization - all from session"));
+         multiMenu->addAction(normAllR);
+         connect(normAllR, SIGNAL(triggered()), this, SLOT(allRightNormalized()));
+         connect(normAllR, SIGNAL(triggered()), this->treeUsageContext.get(), SLOT(refresh()));
+
+
          menu->addMenu(multiMenu);
      }
 
@@ -1320,6 +1350,50 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      }
  }
 
+
+ void HmmMainWindow::allLeftNormalized()
+ {
+     auto context = c3dlib::C3DParser::IEvent::Left;
+     ContextAction* a = qobject_cast<ContextAction*>(sender());
+     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     if (helper) {
+         createNormalizedFromAll(helper, context);
+
+     }
+ }
+
+ void HmmMainWindow::allRightNormalized()
+ {
+     auto context = c3dlib::C3DParser::IEvent::Right;
+     ContextAction* a = qobject_cast<ContextAction*>(sender());
+     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     if (helper) {
+         createNormalizedFromAll(helper, context);
+
+     }
+ }
+
+ void HmmMainWindow::normalizedLeftChart()
+ {
+     auto context = c3dlib::C3DParser::IEvent::Left;
+     ContextAction* a = qobject_cast<ContextAction*>(sender());
+     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     if (helper) {
+         createNormalized(helper, context);
+
+     }
+ }
+
+ void HmmMainWindow::normalizedRightChart()
+ {
+     auto context = c3dlib::C3DParser::IEvent::Right;
+     ContextAction* a = qobject_cast<ContextAction*>(sender());
+     NewVector3ItemHelper* helper = dynamic_cast<NewVector3ItemHelper*>(a->getItemHelper());
+     if (helper) {
+         createNormalized(helper, context);
+     }
+ }
+
  void HmmMainWindow::allXFromSession()
  {
      int channelNo = 0;
@@ -1390,24 +1464,122 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          delete multi;
      }
  }
- 
+
+ void HmmMainWindow::createNormalized( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context )
+ {
+     std::vector<core::ObjectWrapperConstPtr> toVisualize;
+     MotionConstPtr motion = helper->getMotion();
+     EventsCollectionConstPtr events;
+     std::vector<FloatPairPtr> segments;
+     if (motion->hasObjectOfType(typeid(C3DEventsCollection))) {
+         auto w = motion->getWrapperOfType(typeid(C3DEventsCollection));
+         events = w->get();
+         segments = getTimeSegments(events, context);
+     }
+     std::map<ObjectWrapperConstPtr, QColor> colorMap;
+     VectorChannelConstPtr channel = helper->getWrapper()->get();
+     for (int j = 0; j != segments.size(); j++) {
+         FloatPairPtr segment = segments[j];
+         for (int channelNo = 0; channelNo <= 2; channelNo++) {
+             ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
+             ScalarChannelReaderInterfacePtr normalized(new ScalarWithTimeSegment(reader, segment->first, segment->second));
+             core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+             wrapper->set(normalized);
+             int no = toVisualize.size();
+             std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
+             colorMap[wrapper] = channelNo == 0 ? QColor(255, 0, 0) : (channelNo == 1 ? QColor(0, 255, 0) : QColor(0, 0, 255));
+             wrapper->setName  (prefix + ":" + boost::lexical_cast<std::string>(j));
+             wrapper->setSource(helper->getWrapper()->getSource() + boost::lexical_cast<std::string>(no));
+             toVisualize.push_back(wrapper);
+         }
+     }
+     NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
+     multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
+     createNewVisualizer(multi);
+     delete multi;
+ }
+
+ void HmmMainWindow::createNormalizedFromAll( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context )
+ {
+     std::vector<core::ObjectWrapperConstPtr> toVisualize;
+     SessionConstPtr s = helper->getMotion()->getSession();
+     Motions motions;
+     s->getMotions(motions);
+
+     std::map<ObjectWrapperConstPtr, QColor> colorMap;
+     for (auto it = motions.begin(); it != motions.end(); it++) {
+         std::vector<core::ObjectWrapperConstPtr> wrappers;
+         (*it)->getWrappers(wrappers, typeid(utils::DataChannelCollection<VectorChannel>), false);
+
+         EventsCollectionConstPtr events;
+         std::vector<FloatPairPtr> segments;
+         if ((*it)->hasObjectOfType(typeid(C3DEventsCollection))) {
+             auto w = (*it)->getWrapperOfType(typeid(C3DEventsCollection));
+             events = w->get();
+             segments = getTimeSegments(events, context);
+         }
+
+         for (auto it = wrappers.begin(); it != wrappers.end(); it++) {
+             VectorChannelCollectionConstPtr collection = (*it)->get();
+             int count = collection->getNumChannels();
+             for (int i = 0; i < count; i++) {
+                 VectorChannelConstPtr channel = collection->getChannel(i);
+                 VectorChannelConstPtr helperChannel = helper->getWrapper()->get();
+                 if (channel->getName() == helperChannel->getName()) {
+                     
+                     int r = rand() % 200;
+                     int g = rand() % 200;
+                     int b = rand() % 200;
+                     QColor colorX(r + 55,g , b);
+                     QColor colorY(r, g + 55, b);
+                     QColor colorZ(r, g, b + 55);
+                     for (int j = 0; j != segments.size(); j++) {
+                         FloatPairPtr segment = segments[j];
+
+                         for (int channelNo = 0; channelNo <= 2; channelNo++) {
+                             ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
+                             ScalarChannelReaderInterfacePtr normalized(new ScalarWithTimeSegment(reader, segment->first, segment->second));
+                             core::ObjectWrapperPtr wrapper = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
+                             wrapper->set(normalized);
+                             colorMap[wrapper] = channelNo == 0 ? colorX : (channelNo == 1 ? colorY : colorZ);
+                             int no = toVisualize.size();
+                             std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
+                             wrapper->setName  (prefix + boost::lexical_cast<std::string>(i) + ":" + boost::lexical_cast<std::string>(j));
+                             wrapper->setSource((*it)->getSource() + boost::lexical_cast<std::string>(no));
+                             toVisualize.push_back(wrapper);
+                         }
+                     }
+                 }
+
+             }
+
+         }
+     }
+     NewMultiserieHelper* multi = new NewMultiserieHelper(toVisualize);
+     multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
+     createNewVisualizer(multi);
+     delete multi;
+ }
+
+
+
  void HmmMainWindow::DataObserver::update( const core::IMemoryDataManager * subject )
  {
      std::vector<MotionConstPtr> motions = core::queryDataPtr(DataManager::getInstance());
      int count = motions.size();
 
-	 if(count > 0){
-		 if (motionsCount == 0) {
-			 hmm->analisisButton->setEnabled(true);			 
-		 }
-	 }else{
-		 if (motionsCount != 0) {
-			 hmm->analisisButton->setEnabled(false);
-		 }
-	 }
+     if(count > 0){
+         if (motionsCount == 0) {
+             hmm->analisisButton->setEnabled(true);			 
+         }
+     }else{
+         if (motionsCount != 0) {
+             hmm->analisisButton->setEnabled(false);
+         }
+     }
 
-	 if (motionsCount != count) {
-		 hmm->refreshTree();
-		 motionsCount = count;
-	 }
+     if (motionsCount != count) {
+         hmm->refreshTree();
+         motionsCount = count;
+     }
  }

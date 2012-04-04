@@ -8,7 +8,6 @@
 #include <plugins/newTimeline/ITimelineService.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/kinematic/Wrappers.h>
-//#include "plugins/chart/ChartVisualizer.h"
 #include <core/SubjectDataFilters.h>
 #include <QtGui/QFrame>
 #include "MainWindow.h"
@@ -90,16 +89,16 @@ private:
     };
 
 public:
-	HmmMainWindow();
+    HmmMainWindow();
     virtual ~HmmMainWindow();
 
 public:
-	//! Natywne dodanie opcji do menu.
-	virtual void onAddMenuItem( const std::string& path, bool checkable, bool initialState ) {}
-	//! Natywne usuniêcie opcji z menu.
-	virtual void onRemoveMenuItem( const std::string& path ) {}
+    //! Natywne dodanie opcji do menu.
+    virtual void onAddMenuItem( const std::string& path, bool checkable, bool initialState ) {}
+    //! Natywne usuniêcie opcji z menu.
+    virtual void onRemoveMenuItem( const std::string& path ) {}
 
-	virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
+    virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );
 
     const std::vector<PluginSubject::SessionConstPtr>& getCurrentSessions();
     void addItemToTree(QTreeWidgetItem* item);
@@ -115,9 +114,6 @@ public slots:
 private slots:
     void onFocusChange(QWidget * oldWidget, QWidget * newWidget);
     void visualizerDestroyed(QObject * visualizer);
-
-	//void onOpen();
-	//void onTreeItemClicked(QTreeWidgetItem *item, int column);
     void filterClicked(FilterEntryWidget* entry);
     VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
 
@@ -137,11 +133,20 @@ private slots:
 
     void allFromSession();
     void allXFromSession();
+    void allYFromSession();
+    void allZFromSession();
+    void allLeftNormalized();
+    void allRightNormalized();
+    void normalizedLeftChart();
+    void normalizedRightChart();
+
+    void createNormalizedFromAll( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context );
+
+
+    void createNormalized( NewVector3ItemHelper* helper, c3dlib::C3DParser::IEvent::Context context );
 
     void allTFromSession( NewVector3ItemHelper* helper, int channelNo );
 
-    void allYFromSession();
-    void allZFromSession();
 
     void removeFromVisualizers( ContextAction* action, bool once );
 
@@ -158,8 +163,7 @@ private slots:
 private:
     void showTimeline();
     bool isDataItem(QTreeWidgetItem * item);
-    //void createTree(const std::vector<SessionPtr>& sessions);
-	void extractScalarChannels(VectorChannelConstPtr v, ScalarChannelPtr& x, ScalarChannelPtr& y, ScalarChannelPtr& z);
+    void extractScalarChannels(VectorChannelConstPtr v, ScalarChannelPtr& x, ScalarChannelPtr& y, ScalarChannelPtr& z);
     void createFilterTabs();
     void createFilterTab1();
     void createFilterTab2();
@@ -192,16 +196,16 @@ private:
 private:
     std::vector<PluginSubject::DataFilterPtr> filters;
     std::vector<PluginSubject::SessionConstPtr> currentSessions;
-	VisualizerWidget* currentVisualizer;
+    VisualizerWidget* currentVisualizer;
 
     PluginSubject::ISubjectService * subjectService;
 
     QMainWindow* pane;
-	
+    
     EDRDockWidgetManager* topMainWindow;
     QMainWindow* bottomMainWindow;
 
-	std::vector<DataFilterWidget*> dataFilterWidgets;
+    std::vector<DataFilterWidget*> dataFilterWidgets;
     std::map<timeline::IChannelConstPtr, VisualizerWidget*> channelToVisualizer;
 
     ItemDoubleClick itemClickAction;

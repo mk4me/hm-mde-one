@@ -179,18 +179,20 @@ void Endo::createEMGEntry(QTreeWidgetItem* root, const std::vector<SessionConstP
     NewMultiserieHelper* hipMomentPrev = createArgsItem< NewMultiserieHelper >("Pre",  wrpX12,hipMoment);
     NewMultiserieHelper* hipMomentPost = createArgsItem< NewMultiserieHelper >("Post", wrpX34,hipMoment);
 
-    hipMomentPrev->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
-    hipMomentPost->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
+    //hipMomentPrev->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
+    //hipMomentPost->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
 
     NewMultiserieHelper* l1 = createArgsItem<NewMultiserieHelper>("Left",  wrpX1, hipMomentPrev);
     NewMultiserieHelper* r1 = createArgsItem<NewMultiserieHelper>("Right", wrpX2, hipMomentPrev);
     NewMultiserieHelper* l2 = createArgsItem<NewMultiserieHelper>("Left",  wrpX3, hipMomentPost);
     NewMultiserieHelper* r2 = createArgsItem<NewMultiserieHelper>("Right", wrpX4, hipMomentPost);
 
-    l1->setColorPolicy(NewMultiserieHelper::Red);
-    r1->setColorPolicy(NewMultiserieHelper::Green);
-    l2->setColorPolicy(NewMultiserieHelper::Red);
-    r2->setColorPolicy(NewMultiserieHelper::Green);
+    IMultiserieColorStrategyPtr redStrategy(new RandomBetweenMultiserieColorStrategy(QColor(200, 0, 0), QColor(255, 0,0)));
+    IMultiserieColorStrategyPtr greenStrategy(new RandomBetweenMultiserieColorStrategy(QColor(0, 200, 0), QColor(0, 255, 0)));
+    l1->setColorStrategy(redStrategy);
+    r1->setColorStrategy(greenStrategy);
+    l2->setColorStrategy(redStrategy);
+    r2->setColorStrategy(greenStrategy);
 
     l1->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Left"));
     r1->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
@@ -220,22 +222,24 @@ void Endo::createVectorEntry(QTreeWidgetItem* root, const std::vector<SessionCon
     
     NewMultiserieHelper* hipMomentPost = createArgsItem< NewMultiserieHelper >(QObject::tr("Post"), wrpX12, hipMoment);
 
-    hipMomentPrev->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
+    //hipMomentPrev->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
     hipMomentPrev->setTitle(QString("Multichart - %1").arg(name));
 
-    hipMomentPost->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
+    //hipMomentPost->setColorPolicy(NewMultiserieHelper::HalfRedHalfGreen);
 
     NewMultiserieHelper* lHelper1 = createArgsItem<NewMultiserieHelper >(QObject::tr("Left"),  wrpX1, hipMomentPrev);
     NewMultiserieHelper* rHelper1 = createArgsItem<NewMultiserieHelper >(QObject::tr("Right"), wrpX2, hipMomentPrev);
-    lHelper1->setColorPolicy(NewMultiserieHelper::Red);
-    rHelper1->setColorPolicy(NewMultiserieHelper::Green);
+    IMultiserieColorStrategyPtr redStrategy(new RandomBetweenMultiserieColorStrategy(QColor(200, 0, 0), QColor(255, 0,0)));
+    IMultiserieColorStrategyPtr greenStrategy(new RandomBetweenMultiserieColorStrategy(QColor(0, 200, 0), QColor(0, 255, 0)));
+    lHelper1->setColorStrategy(redStrategy);
+    rHelper1->setColorStrategy(greenStrategy);
     lHelper1->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Left"));
     rHelper1->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
 
     NewMultiserieHelper* lHelper2 = createArgsItem<NewMultiserieHelper >("Left",  wrpX1, hipMomentPost);
     NewMultiserieHelper* rHelper2 = createArgsItem<NewMultiserieHelper >("Right", wrpX2, hipMomentPost);
-    lHelper2->setColorPolicy(NewMultiserieHelper::Red);
-    rHelper2->setColorPolicy(NewMultiserieHelper::Green);
+    lHelper2->setColorStrategy(redStrategy);
+    rHelper2->setColorStrategy(greenStrategy);
     lHelper2->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Left"));
     rHelper2->setTitle(QString("Multichart - %1 (%2)").arg(name).arg("Right"));
 }
