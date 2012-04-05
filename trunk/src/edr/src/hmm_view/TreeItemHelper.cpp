@@ -196,6 +196,17 @@ std::vector<core::TypeInfo> NewMultiserieHelper::getTypeInfos() const
 void TreeItemHelper::getSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     createSeries(visualizer, path, series);
+
+	//filtrujemy serie -> przechodza tylko te ró¿ne od nullptr
+	auto it = series.begin();
+	while(it != series.end()){
+		if(*it == nullptr){
+			it = series.erase(it);
+		}else{
+			++it;
+		}
+	}
+
     auto& type = typeid(C3DEventsCollection);
     if (motion && motion->hasObjectOfType(type)) {
         EventsCollectionConstPtr events = motion->getWrapperOfType(type)->get();

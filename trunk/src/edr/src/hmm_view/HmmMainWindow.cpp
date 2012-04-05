@@ -429,7 +429,8 @@ void HmmMainWindow::addToVisualizer()
             QString path = QString("Custom_addition...%1").arg(counter++);
             std::vector<core::VisualizerTimeSeriePtr> series;
             helper->getSeries(visualizer, path, series);
-            addSeriesToTimeline(series, path, visualizer);
+			VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
+            //addSeriesToTimeline(series, path, visualizer);
 
             VisualizerWidget* vw = nullptr;
             for (auto it = items2Descriptions.begin(); it != items2Descriptions.end(); it++) {
@@ -969,8 +970,8 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     items2Descriptions.insert(std::make_pair(hmmItem, desc));
 
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
-
-    addSeriesToTimeline(series, path, visualizer);
+	VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
+    //addSeriesToTimeline(series, path, visualizer);
 
     //kontekst wizualizatora!!
     addContext(visualizerUsageContext);
@@ -979,38 +980,38 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     return visualizerDockWidget;
 }
 
- void HmmMainWindow::addSeriesToTimeline( const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer )
+ /*void HmmMainWindow::addSeriesToTimeline( const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer )
  {
-     TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
-     if(timeline != nullptr) {
-         if (series.size() == 1 && series[0] != nullptr) {
-             VisualizerChannelPtr channel(new VisualizerChannel(path.toStdString(), visualizer.get(), series[0]));
-             try{
-                 timeline->addChannel(path.toStdString(), channel);
-             }catch(...){
-                 LOG_ERROR("Could not add channel to timeline!");
-             }
-         } else {
-             VisualizerMultiChannel::SeriesWidgets visSeries;
-             for (int i = 0; i < series.size(); i++) {
-                 auto timeSerie = series[i];
-                 if(timeSerie != nullptr){
-                     visSeries.push_back(timeSerie);
-                 }
-             }
-             if (visSeries.size() > 0) {
-                 VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(path.toStdString(), visualizer.get(), visSeries));
-                 try {
-                     timeline->addChannel(path.toStdString(), multi);
-                 } catch ( const std::exception & e){
-                     LOG_ERROR("Could not add multichannel to timeline! Reason: " << e.what());
-                 } catch (...) {
-                     LOG_ERROR("Could not add multichannel to timeline! UNKNOWN REASON");
-                 }
-             }
-         }
-     }
+ TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
+ if(timeline != nullptr) {
+ if (series.size() == 1 && series[0] != nullptr) {
+ VisualizerChannelPtr channel(new VisualizerChannel(path.toStdString(), visualizer.get(), series[0]));
+ try{
+ timeline->addChannel(path.toStdString(), channel);
+ }catch(...){
+ LOG_ERROR("Could not add channel to timeline!");
  }
+ } else {
+ VisualizerMultiChannel::SeriesWidgets visSeries;
+ for (int i = 0; i < series.size(); i++) {
+ auto timeSerie = series[i];
+ if(timeSerie != nullptr){
+ visSeries.push_back(timeSerie);
+ }
+ }
+ if (visSeries.size() > 0) {
+ VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(path.toStdString(), visualizer.get(), visSeries));
+ try {
+ timeline->addChannel(path.toStdString(), multi);
+ } catch ( const std::exception & e){
+ LOG_ERROR("Could not add multichannel to timeline! Reason: " << e.what());
+ } catch (...) {
+ LOG_ERROR("Could not add multichannel to timeline! UNKNOWN REASON");
+ }
+ }
+ }
+ }
+ }*/
 
  void HmmMainWindow::refreshTree()
  {

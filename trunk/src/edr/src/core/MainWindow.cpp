@@ -242,7 +242,14 @@ void MainWindow::init(PluginLoader* pluginLoader, IManagersAccessor * managersAc
 
 MainWindow::~MainWindow()
 {
+	visualizerTimer.stop();
+	serviceTimer.stop();
+	//¿¹danie od³¹czenia siê serwisów od widgetów i elementów UI oraz innych serwisów czy zasobów aplikacji
+	ServiceManager::getInstance()->finalizeServices();
+
 //    VisualizerManager::getInstance()->setDebugWidget(nullptr);
+	VisualizerManager::getInstance()->markAllChannelsAsRemoved();
+	VisualizerManager::getInstance()->removeAllChannels();
 }
 
 void MainWindow::findResources(const std::string& resourcesPath)
@@ -304,8 +311,6 @@ void MainWindow::writeSettings()
 void MainWindow::closeEvent(QCloseEvent* event)
 {
     writeSettings();
-    //¿¹danie od³¹czenia siê serwisów od widgetów i elementów UI oraz innych serwisów czy zasobów aplikacji
-    ServiceManager::getInstance()->finalizeServices();
     QMainWindow::closeEvent(event);
 }
 

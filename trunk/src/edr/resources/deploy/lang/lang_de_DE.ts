@@ -4,85 +4,155 @@
 <context>
     <name>AnalisisWidget</name>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="14"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="14"/>
         <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="14"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget2.ui" line="14"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="88"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="88"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="140"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="88"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="143"/>
         <source>Active Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="97"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="97"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="97"/>
-        <source>Summary</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="117"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="117"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="117"/>
-        <source>1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="122"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="122"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="122"/>
-        <source>2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="144"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="215"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="144"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="215"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="164"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="238"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget2.ui" line="164"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="144"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="215"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="167"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="241"/>
         <source>Filters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="234"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="234"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="257"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget2.ui" line="183"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="234"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="248"/>
+        <source>Reset All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="267"/>
         <source>hide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="330"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="329"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="356"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="330"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="366"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget - Copy.ui" line="361"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget -previous.ui" line="360"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="391"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidgetWrongfullyMerged.ui" line="361"/>
+        <location filename="../../../src/hmm_view/ui/AnalisisWidget.ui" line="401"/>
         <source>Raports</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>AntropometricDataWidget</name>
     <message>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget2.ui" line="93"/>
-        <location filename="../../../src/hmm_view/ui/AnalisisWidget2.ui" line="261"/>
-        <source>Strona</source>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="259"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="272"/>
+        <source>Unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="260"/>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="262"/>
+        <source>Body Mass</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="263"/>
+        <source>Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="264"/>
+        <source>ASIS-ASIS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="266"/>
+        <source>kg</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="267"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="268"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="289"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="290"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="291"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="292"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="293"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="294"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="295"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="296"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="297"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="298"/>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="299"/>
+        <source>mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="273"/>
+        <source>Left Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="274"/>
+        <source>Right Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="276"/>
+        <source>Leg Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="277"/>
+        <source>Knee Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="278"/>
+        <source>Anckle Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="279"/>
+        <source>Circuit Thight</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="280"/>
+        <source>Circuit Shank</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="281"/>
+        <source>Shoulder Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="282"/>
+        <source>Elbow Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="283"/>
+        <source>Wrist Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="284"/>
+        <source>Wrist Thickness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="285"/>
+        <source>Hand Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/AntropometricDataWidget.cpp" line="286"/>
+        <source>Hand Thickness</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -108,73 +178,91 @@
     </message>
 </context>
 <context>
+    <name>CommunicationDataSource</name>
+    <message>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="2848"/>
+        <source>You are about to start the download of </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="2848"/>
+        <source> files. Are you sure there is enough space on disk and you can wait some longer time?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="2849"/>
+        <source>Attempt to download large amount of files</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CommunicationWidget</name>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="23"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="17"/>
         <source>Communication</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="177"/>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="180"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="171"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="174"/>
         <source>Update data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="188"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="182"/>
         <source>Performer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="191"/>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="202"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="185"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="196"/>
         <source>Change view</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="199"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="193"/>
         <source>Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="210"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="204"/>
         <source>Trial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="213"/>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="275"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="207"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="269"/>
         <source>Change View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="224"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="218"/>
         <source>Download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="227"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="221"/>
         <source>Download server trial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="241"/>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="244"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="235"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="238"/>
         <source>Use trial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="258"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="252"/>
         <source>Abort download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="261"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="255"/>
         <source>Abort downloading server trial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="272"/>
+        <location filename="../../../src/plugins/communication/ui/CommunicationWidgetEx.ui" line="266"/>
         <source>Local</source>
         <translation type="unfinished"></translation>
     </message>
@@ -183,8 +271,6 @@
     <name>ConfigurationDialog</name>
     <message>
         <location filename="../../../src/hmm_view/ui/configurationDialog.ui" line="14"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy (2).ui" line="17"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="17"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -205,59 +291,6 @@
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/configurationDialog.ui" line="127"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="30"/>
-        <source>Skeleton - front</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="54"/>
-        <source>Skeleton - back</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="78"/>
-        <source>Muscular - front</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="102"/>
-        <source>Muscular - back</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/configurationDialog - Copy.ui" line="126"/>
-        <source>Strona</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ConfigurationWidget</name>
-    <message>
-        <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="59"/>
-        <source>TextLabel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="97"/>
-        <source>Back</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="114"/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/configurationWidget.ui" line="121"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -310,6 +343,428 @@
     </message>
 </context>
 <context>
+    <name>DataSourceWidget</name>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="14"/>
+        <source>TabWidget</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="28"/>
+        <source>Motion Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="62"/>
+        <source>Perspective:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="72"/>
+        <source>Filter:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="80"/>
+        <source>No filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="116"/>
+        <source>User Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="125"/>
+        <source>Configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="182"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="248"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="597"/>
+        <source>Login</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="201"/>
+        <source>User:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="218"/>
+        <source>Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="277"/>
+        <source>Login Recovery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="335"/>
+        <source>Registration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="348"/>
+        <source>Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="365"/>
+        <source>Surname:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="382"/>
+        <source>E-mail:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="409"/>
+        <source>Send request</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="468"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="840"/>
+        <source>Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="550"/>
+        <source>Logout process</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="551"/>
+        <source>Some download is currently performed. Do you want to logout and cancel it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="604"/>
+        <source>Login problem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="605"/>
+        <source>Both fields: User and Password need to be filled. Please fill them and retry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="627"/>
+        <source>Error during login: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="635"/>
+        <source>UNKNOWN ERROR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="643"/>
+        <source>Please verify your internet connection, ensure firewall pass through EDR communication. If problem continues contact the producer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="646"/>
+        <source>Login error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="662"/>
+        <source>Logout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="669"/>
+        <source>Login information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="670"/>
+        <source>User is logged locally - there might be a problem with internet connection and remote services might not work correctly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="700"/>
+        <source>Synchronization error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="701"/>
+        <source>Synchronization data is corrupted. Please try again later. If problem continues contact producer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="716"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="730"/>
+        <source>Synchronization required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="717"/>
+        <source>Database was updated. Some data might be not available. Would You like to synchronize?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="731"/>
+        <source>Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="761"/>
+        <source>Login unsuccessful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="762"/>
+        <source>Given user or password is incorrect. Please correct it and try again. If problem continues contact database administrators.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="877"/>
+        <source>Load</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="878"/>
+        <source>Unload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="880"/>
+        <source>Download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="882"/>
+        <source>Refresh status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="884"/>
+        <source>Synchronize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1117"/>
+        <source>Database synchronization</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1118"/>
+        <source>Local data already synchronized. Synchronization is not required. Proceed anyway?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1242"/>
+        <source>Download problem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1243"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1253"/>
+        <source>Download request is </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1243"/>
+        <source> bytes large while there is only </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1243"/>
+        <source> bytes free. Download could not be continued. Please free some space or truncate your download request.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1252"/>
+        <source>Download warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1253"/>
+        <source> bytes large. This will take some time to download such amount of data. Are you sure you can wait some longer time?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1276"/>
+        <source>Download preparation error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1277"/>
+        <source>Error while preparing download request. Error description: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1323"/>
+        <source>Loading info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1324"/>
+        <source>Data loaded successfully to application.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1331"/>
+        <source>Errors while data loading:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1336"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1527"/>
+        <source>
+%1. File ID: %2. Error description: %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1341"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1532"/>
+        <source>
+%1. File ID: %2. Unknown error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1346"/>
+        <source>Loading warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1514"/>
+        <source>Unloading info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1515"/>
+        <source>Data unloaded successfully.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1522"/>
+        <source>Errors while data unloading:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1537"/>
+        <source>Unloading warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1716"/>
+        <source>Unknown error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1777"/>
+        <source>Downloading file %1 [%2/%3]</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DefaultPatientCardWidget</name>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DefaultPatientCardWidget.ui" line="20"/>
+        <source>Frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DefaultPatientCardWidget.ui" line="61"/>
+        <source>Patient Card</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="43"/>
+        <source>Session Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="53"/>
+        <source>Personal data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="61"/>
+        <source>Disorders</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="67"/>
+        <source>Sessions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="71"/>
+        <source>Notes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="96"/>
+        <source>Anthropometric Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="177"/>
+        <source>Session group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="178"/>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="182"/>
+        <source>Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="183"/>
+        <source>Laboratory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="184"/>
+        <source>Owner ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="185"/>
+        <source>Motion kind</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="186"/>
+        <source>Tags</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="187"/>
+        <source>Attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="218"/>
+        <source>After treatment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="245"/>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="266"/>
+        <source>Upper body</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="262"/>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="290"/>
+        <source>Lower body</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Dialog</name>
     <message>
         <location filename="../../../src/plugins/communication/ui/DownloadDialog.ui" line="20"/>
@@ -343,11 +798,70 @@
     </message>
 </context>
 <context>
+    <name>DisordersDataWidget</name>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DisordersDataWidget.cpp" line="73"/>
+        <source>Disorder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DisordersDataWidget.cpp" line="74"/>
+        <source>Diagnosis date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DisordersDataWidget.cpp" line="75"/>
+        <source>Focus</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DownloadDialog</name>
+    <message>
+        <location filename="../../../src/plugins/communication/DownloadDialogWidget.cpp" line="80"/>
+        <source>Error during data download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/DownloadDialogWidget.cpp" line="90"/>
+        <source>Data downloading finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/DownloadDialogWidget.cpp" line="113"/>
+        <location filename="../../../src/plugins/communication/DownloadDialogWidget.cpp" line="130"/>
+        <source>Operation cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DownloadStatusWidget</name>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DownloadStatusWidget.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DownloadStatusWidget.ui" line="22"/>
+        <source>Total progress:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DownloadStatusWidget.ui" line="36"/>
+        <source>File progress:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/DownloadStatusWidget.ui" line="52"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>EDRConsoleInnerWidget</name>
     <message>
         <location filename="../../../src/core/ui/EDRConsoleInnerWidget.ui" line="14"/>
         <location filename="../../../src/hmm_view/ui/EDRConsoleInnerWidget.ui" line="14"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRConsoleInnerWidget.ui" line="14"/>
         <location filename="../../../src/old_view/ui/EDRConsoleInnerWidget.ui" line="14"/>
         <source>Console</source>
         <translation type="unfinished"></translation>
@@ -355,7 +869,6 @@
     <message>
         <location filename="../../../src/core/ui/EDRConsoleInnerWidget.ui" line="32"/>
         <location filename="../../../src/hmm_view/ui/EDRConsoleInnerWidget.ui" line="32"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRConsoleInnerWidget.ui" line="32"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -378,7 +891,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/EDRDockInnerWidget.ui" line="20"/>
         <location filename="../../../src/hmm_view/ui/EDRDockInnerWidget.ui" line="20"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRDockInnerWidget.ui" line="20"/>
         <location filename="../../../src/old_view/ui/EDRDockInnerWidget.ui" line="20"/>
         <source>EDRDockInnerWidget</source>
         <translation type="unfinished"></translation>
@@ -386,7 +898,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/EDRDockInnerWidget.ui" line="64"/>
         <location filename="../../../src/hmm_view/ui/EDRDockInnerWidget.ui" line="64"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRDockInnerWidget.ui" line="64"/>
         <location filename="../../../src/old_view/ui/EDRDockInnerWidget.ui" line="64"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
@@ -394,7 +905,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/EDRDockInnerWidget.ui" line="76"/>
         <location filename="../../../src/hmm_view/ui/EDRDockInnerWidget.ui" line="76"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRDockInnerWidget.ui" line="76"/>
         <location filename="../../../src/old_view/ui/EDRDockInnerWidget.ui" line="76"/>
         <source>Float</source>
         <translation type="unfinished"></translation>
@@ -414,7 +924,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/EDRInnerWidget.ui" line="20"/>
         <location filename="../../../src/hmm_view/ui/EDRInnerWidget.ui" line="20"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRInnerWidget.ui" line="20"/>
         <location filename="../../../src/old_view/ui/EDRInnerWidget.ui" line="20"/>
         <source>EDRInnerWidget</source>
         <translation type="unfinished"></translation>
@@ -422,7 +931,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/EDRInnerWidget.ui" line="64"/>
         <location filename="../../../src/hmm_view/ui/EDRInnerWidget.ui" line="64"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRInnerWidget.ui" line="64"/>
         <location filename="../../../src/old_view/ui/EDRInnerWidget.ui" line="64"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
@@ -430,7 +938,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/EDRInnerWidget.ui" line="76"/>
         <location filename="../../../src/hmm_view/ui/EDRInnerWidget.ui" line="76"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRInnerWidget.ui" line="76"/>
         <location filename="../../../src/old_view/ui/EDRInnerWidget.ui" line="76"/>
         <source>Float</source>
         <translation type="unfinished"></translation>
@@ -525,7 +1032,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/EDRTitleBar.ui" line="35"/>
         <location filename="../../../src/hmm_view/ui/EDRTitleBar.ui" line="35"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRTitleBar.ui" line="35"/>
         <location filename="../../../src/old_view/ui/EDRTitleBar.ui" line="35"/>
         <source>EDRTitleBar</source>
         <translation type="unfinished"></translation>
@@ -538,7 +1044,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/EDRTitleBar.ui" line="157"/>
         <location filename="../../../src/hmm_view/ui/EDRTitleBar.ui" line="168"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRTitleBar.ui" line="168"/>
         <location filename="../../../src/old_view/ui/EDRTitleBar.ui" line="169"/>
         <source>o</source>
         <translation type="unfinished"></translation>
@@ -546,7 +1051,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/EDRTitleBar.ui" line="179"/>
         <location filename="../../../src/hmm_view/ui/EDRTitleBar.ui" line="175"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRTitleBar.ui" line="175"/>
         <location filename="../../../src/old_view/ui/EDRTitleBar.ui" line="176"/>
         <source>x</source>
         <translation type="unfinished"></translation>
@@ -556,8 +1060,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/core/ui/EDRTitleBar.ui" line="203"/>
         <location filename="../../../src/hmm_view/ui/EDRTitleBar.ui" line="190"/>
         <location filename="../../../src/hmm_view/ui/EDRTitleBar.ui" line="193"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRTitleBar.ui" line="190"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRTitleBar.ui" line="193"/>
         <location filename="../../../src/old_view/ui/EDRTitleBar.ui" line="191"/>
         <location filename="../../../src/old_view/ui/EDRTitleBar.ui" line="194"/>
         <source>Float</source>
@@ -568,8 +1070,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../../../src/core/ui/EDRTitleBar.ui" line="215"/>
         <location filename="../../../src/hmm_view/ui/EDRTitleBar.ui" line="202"/>
         <location filename="../../../src/hmm_view/ui/EDRTitleBar.ui" line="205"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRTitleBar.ui" line="202"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/EDRTitleBar.ui" line="205"/>
         <location filename="../../../src/old_view/ui/EDRTitleBar.ui" line="203"/>
         <location filename="../../../src/old_view/ui/EDRTitleBar.ui" line="206"/>
         <source>Close</source>
@@ -614,7 +1114,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/filter.ui" line="118"/>
-        <source>ANALOG</source>
+        <source>JEDNOSTKI CHOROBOWE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -662,7 +1162,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/DataProcessorWidget.ui" line="14"/>
         <location filename="../../../src/hmm_view/ui/DataProcessorWidget.ui" line="14"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/DataProcessorWidget.ui" line="14"/>
         <location filename="../../../src/old_view/ui/DataProcessorWidget.ui" line="14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
@@ -670,7 +1169,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/core/ui/DataProcessorWidget.ui" line="26"/>
         <location filename="../../../src/hmm_view/ui/DataProcessorWidget.ui" line="26"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/DataProcessorWidget.ui" line="26"/>
         <location filename="../../../src/old_view/ui/DataProcessorWidget.ui" line="26"/>
         <source>InputName</source>
         <translation type="unfinished"></translation>
@@ -679,136 +1177,67 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HMMMain</name>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="78"/>
         <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="14"/>
         <source>EDR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="622"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="922"/>
-        <source>Badania</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="728"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="954"/>
         <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="383"/>
         <source>Analizy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="803"/>
-        <source>Tab 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="814"/>
-        <source>Tab 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="986"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1139"/>
         <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="432"/>
         <source>Raporty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1018"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1239"/>
         <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="478"/>
         <source>Operacje</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1248"/>
-        <source>Strona</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1304"/>
-        <source>Layout Top</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1317"/>
-        <source>Font size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1330"/>
-        <source>Layout Bottom</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1362"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1375"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1388"/>
-        <source>0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1432"/>
         <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="521"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1464"/>
-        <source>Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1484"/>
-        <source>PushButton</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1514"/>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="993"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="964"/>
         <source>About...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1523"/>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1002"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="973"/>
         <source>&amp;Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1526"/>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1005"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="976"/>
         <source>O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1531"/>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1010"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="981"/>
         <source>Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1536"/>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1015"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="986"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1545"/>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1024"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="995"/>
         <source>Save layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1550"/>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1029"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1000"/>
         <source>Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/Legacy/toolboxmaindeffile - 21.10.ui" line="1555"/>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1034"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1005"/>
         <source>Create workflow</source>
         <translation type="unfinished"></translation>
     </message>
@@ -831,7 +1260,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HMMTreeItemUsageContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="281"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="282"/>
         <source>Item Actions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -839,108 +1268,161 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HmmMainWindow</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="395"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="438"/>
         <source>reason: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="397"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="399"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="440"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="442"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="399"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="442"/>
         <source>Unable to add data to visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1020"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="823"/>
+        <source>ILLNESS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="824"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="825"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="826"/>
+        <source>MULTI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="832"/>
+        <source>Endo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="833"/>
+        <source>Stroke</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="834"/>
+        <source>Spine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1016"/>
         <source>Active Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1054"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1043"/>
         <source>Create new visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1050"/>
         <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1060"/>
+        <source>Multi chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1052"/>
+        <source>All from session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1062"/>
+        <source>All X from session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1068"/>
+        <source>All Y from session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1074"/>
+        <source>All Z from session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1082"/>
         <source>Add to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1106"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1128"/>
         <source>Remove from:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1129"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1151"/>
         <source>Create in:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1140"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="1162"/>
         <source>New group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="543"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="586"/>
         <source>ANALOG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="544"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="587"/>
         <source>KINETIC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="545"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="588"/>
         <source>KINEMATIC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="546"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="589"/>
         <source>VIDEO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="555"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="598"/>
         <source>GRF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="608"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="651"/>
         <source>EMG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="705"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="734"/>
         <source>FORCES</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="706"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="735"/>
         <source>MOMENTS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="707"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="736"/>
         <source>POWERS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="755"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="784"/>
         <source>MARKERS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="756"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="785"/>
         <source>JOINTS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="762"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="789"/>
         <source>VIDEOS</source>
         <translation type="unfinished"></translation>
     </message>
@@ -977,42 +1459,102 @@ p, li { white-space: pre-wrap; }
         <source>Partially loaded</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="478"/>
+        <source>Data storage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="478"/>
+        <source>Data usage</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>KinematicVisualizer</name>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="139"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="142"/>
         <source>Switch Axes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="148"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="151"/>
         <source>Trajectories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="153"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="156"/>
         <source>Scheme Drawers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="160"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="163"/>
         <source>Ghost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="167"/>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="280"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="170"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="331"/>
         <source>View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="171"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="174"/>
         <source>No active serie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="271"/>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="234"/>
+        <source>Picker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="235"/>
+        <source>Translate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="236"/>
+        <source>Rotate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="237"/>
+        <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="249"/>
+        <source>Left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="250"/>
+        <source>Right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="251"/>
+        <source>Front</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="252"/>
+        <source>Back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="253"/>
+        <source>Top</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="254"/>
+        <source>Bottom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/kinematic/KinematicVisualizer.cpp" line="318"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1021,13 +1563,11 @@ p, li { white-space: pre-wrap; }
     <name>LanguageDialogWidget</name>
     <message>
         <location filename="../../../src/hmm_view/ui/languageDialog.ui" line="14"/>
-        <location filename="../../../src/hmm_view/ui/languageDialogWidget.ui" line="14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/hmm_view/ui/languageDialog.ui" line="20"/>
-        <location filename="../../../src/hmm_view/ui/languageDialogWidget.ui" line="20"/>
         <source>Choose language</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1046,10 +1586,92 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>LocalDataLoader</name>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="51"/>
+        <source>Synchronization data corrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="58"/>
+        <source>Synchronizing files:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="123"/>
+        <source>Synchronization canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="124"/>
+        <source>Synchronization successfully canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="126"/>
+        <source>Download canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="127"/>
+        <source>Download successfully canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="138"/>
+        <source>Synchronization error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="139"/>
+        <source>Synchronization has failed with the following error: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="139"/>
+        <source>Please try to synchronize later. If this error continues to happen contact producer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="141"/>
+        <source>Download error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="142"/>
+        <source>Download has failed with the following error: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="142"/>
+        <source>Please try to download later. If this error continues to happen contact producer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="153"/>
+        <source>Synchronization successful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="154"/>
+        <source>Synchronization has finished successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="156"/>
+        <source>Download successful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="157"/>
+        <source>Download has finished successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>LocalDataSourceWidget</name>
     <message>
         <location filename="../../../src/core/ui/LocalDataSourceWidget.ui" line="14"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/LocalDataSourceWidget.ui" line="14"/>
         <location filename="../../../src/hmm_view/ui/LocalDataSourceWidget.ui" line="14"/>
         <location filename="../../../src/old_view/ui/LocalDataSourceWidget.ui" line="14"/>
         <source>Local Data Source</source>
@@ -1057,7 +1679,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/core/ui/LocalDataSourceWidget.ui" line="20"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/LocalDataSourceWidget.ui" line="20"/>
         <location filename="../../../src/hmm_view/ui/LocalDataSourceWidget.ui" line="20"/>
         <location filename="../../../src/old_view/ui/LocalDataSourceWidget.ui" line="20"/>
         <source>Open trial ...</source>
@@ -1065,7 +1686,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/core/ui/LocalDataSourceWidget.ui" line="30"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/LocalDataSourceWidget.ui" line="30"/>
         <location filename="../../../src/hmm_view/ui/LocalDataSourceWidget.ui" line="30"/>
         <location filename="../../../src/old_view/ui/LocalDataSourceWidget.ui" line="30"/>
         <source>Trial:</source>
@@ -1073,7 +1693,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/core/ui/LocalDataSourceWidget.ui" line="37"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/LocalDataSourceWidget.ui" line="37"/>
         <location filename="../../../src/hmm_view/ui/LocalDataSourceWidget.ui" line="37"/>
         <location filename="../../../src/old_view/ui/LocalDataSourceWidget.ui" line="37"/>
         <source>No trial opened</source>
@@ -1081,7 +1700,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/core/ui/LocalDataSourceWidget.ui" line="44"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/LocalDataSourceWidget.ui" line="44"/>
         <location filename="../../../src/hmm_view/ui/LocalDataSourceWidget.ui" line="44"/>
         <location filename="../../../src/old_view/ui/LocalDataSourceWidget.ui" line="44"/>
         <source>Outputs:</source>
@@ -1089,7 +1707,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/core/ui/LocalDataSourceWidget.ui" line="58"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/LocalDataSourceWidget.ui" line="58"/>
         <location filename="../../../src/hmm_view/ui/LocalDataSourceWidget.ui" line="58"/>
         <location filename="../../../src/old_view/ui/LocalDataSourceWidget.ui" line="58"/>
         <source>Selected</source>
@@ -1097,7 +1714,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/core/ui/LocalDataSourceWidget.ui" line="63"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/LocalDataSourceWidget.ui" line="63"/>
         <location filename="../../../src/hmm_view/ui/LocalDataSourceWidget.ui" line="63"/>
         <location filename="../../../src/old_view/ui/LocalDataSourceWidget.ui" line="63"/>
         <source>Output</source>
@@ -1347,37 +1963,37 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>MedicalView</name>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1609"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1611"/>
         <source>Patients</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1610"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1612"/>
         <source>Disorders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1650"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1652"/>
         <source>View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1693"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1695"/>
         <source>Motion data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1694"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1697"/>
         <source>User data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1738"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1742"/>
         <source>Disorder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1743"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1747"/>
         <source>Patient</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1385,145 +2001,232 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>NewChartVisualizer</name>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="93"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="395"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="91"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="367"/>
         <source>No active serie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="107"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="100"/>
+        <source>Left step action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="105"/>
+        <source>Right step action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="112"/>
         <source>Events context</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="113"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="118"/>
         <source>None events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="114"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="119"/>
         <source>Left events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="115"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="120"/>
         <source>Right events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="122"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="127"/>
         <source>Picker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="129"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="134"/>
         <source>Value Marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="136"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="141"/>
         <source>Horizontal Marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="143"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="148"/>
         <source>Vertical Marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="148"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="153"/>
         <source>Scale to active</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="155"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="160"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="216"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="212"/>
         <source>X:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="217"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="213"/>
         <source>Y:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="223"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="219"/>
         <source>SX:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="224"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="220"/>
         <source>SY:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="260"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="234"/>
         <source>Upper bound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="261"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="235"/>
         <source>Lower bound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="262"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="236"/>
         <source>Moving average</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="279"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="249"/>
         <source>Operations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="286"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="256"/>
         <source>Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="289"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="261"/>
         <source>Tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="294"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="266"/>
         <source>Active Data Series</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="666"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="695"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="702"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="646"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="682"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="690"/>
         <source>Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="666"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="702"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="646"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="690"/>
         <source>%1: Left step %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="670"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="695"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="706"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="650"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="682"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="694"/>
         <source>Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="670"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="706"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="650"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="694"/>
         <source>%1: Right step %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="692"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="679"/>
         <source>Whole chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>NoteDialog</name>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="14"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="21"/>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="22"/>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>NotesWidget</name>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/NotesWidget.ui" line="20"/>
+        <source>Frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/NotesWidget.ui" line="79"/>
+        <source>ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/NotesWidget.ui" line="84"/>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/NotesWidget.ui" line="89"/>
+        <source>Created</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/NotesWidget.ui" line="94"/>
+        <source>Modified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/NotesWidget.ui" line="129"/>
+        <source>Add note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/NotesWidget.ui" line="136"/>
+        <source>Remove note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/NotesWidget.ui" line="156"/>
+        <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="192"/>
+        <source>Edit note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="177"/>
+        <source>New note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="210"/>
+        <source>Note validation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/NotesWidget.cpp" line="211"/>
+        <source>All note fields must be filled. Please fill them and try again.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1531,7 +2234,6 @@ p, li { white-space: pre-wrap; }
     <name>OsgTest</name>
     <message>
         <location filename="../../../src/core/ui/OsgWidget.ui" line="26"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/OsgWidget.ui" line="26"/>
         <location filename="../../../src/hmm_view/ui/OsgWidget.ui" line="26"/>
         <location filename="../../../src/old_view/ui/OsgWidget.ui" line="26"/>
         <source>OSG</source>
@@ -1539,7 +2241,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/core/ui/OsgWidget.ui" line="34"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/OsgWidget.ui" line="34"/>
         <location filename="../../../src/hmm_view/ui/OsgWidget.ui" line="34"/>
         <location filename="../../../src/old_view/ui/OsgWidget.ui" line="34"/>
         <source>Wykonaj test</source>
@@ -1547,7 +2248,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message utf8="true">
         <location filename="../../../src/core/ui/OsgWidget.ui" line="41"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/OsgWidget.ui" line="41"/>
         <location filename="../../../src/hmm_view/ui/OsgWidget.ui" line="41"/>
         <location filename="../../../src/old_view/ui/OsgWidget.ui" line="41"/>
         <source>Naciśnij mnie</source>
@@ -1555,7 +2255,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/core/ui/OsgWidget.ui" line="53"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/OsgWidget.ui" line="53"/>
         <location filename="../../../src/hmm_view/ui/OsgWidget.ui" line="53"/>
         <location filename="../../../src/old_view/ui/OsgWidget.ui" line="53"/>
         <source>Scene view: </source>
@@ -1745,62 +2444,265 @@ p, li { white-space: pre-wrap; }
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../../src/plugins/communication/ui/PatientCardWidget.ui" line="688"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Sans Unicode,Lucida Grande,sans-serif&apos;; font-size:8pt; color:#4b4b4b; background-color:#c8c8c8;&quot;&gt;		&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;First Name&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;		&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;Last Name&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;		&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;Email Address&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;		&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;Website&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;				&lt;/span&gt;&lt;/p&gt;
+&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;John			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Smith			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;johnsmith@example.com			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;http://www.example.com				&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Peter			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;James			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;peterjames@example.com			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;http://www.example.com				&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Ronald			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Weeley			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;ronweeley@example.com			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;http://www.example.com			&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PatientCardWidget</name>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="177"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="231"/>
         <source>Men</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="177"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="231"/>
         <source>Women</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="66"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="69"/>
         <source>Disorders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="67"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="70"/>
         <source>Sessions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="68"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="71"/>
         <source>Notes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="73"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="76"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="74"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="77"/>
         <source>Diagnosis Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="75"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="78"/>
         <source>Focus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="260"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="314"/>
         <source>Before</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="265"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="319"/>
         <source>After</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="381"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="463"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="484"/>
         <source>Upper body</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="480"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="508"/>
+        <source>Lower body</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="565"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="578"/>
+        <source>Unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="566"/>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="568"/>
+        <source>Body Mass</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="569"/>
+        <source>Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="570"/>
+        <source>ASIS-ASIS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="572"/>
+        <source>kg</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="573"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="574"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="595"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="596"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="597"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="598"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="599"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="600"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="601"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="602"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="603"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="604"/>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="605"/>
+        <source>mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="579"/>
+        <source>Left Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="580"/>
+        <source>Right Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="582"/>
+        <source>Leg Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="583"/>
+        <source>Knee Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="584"/>
+        <source>Anckle Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="585"/>
+        <source>Circuit Thight</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="586"/>
+        <source>Circuit Shank</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="587"/>
+        <source>Shoulder Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="588"/>
+        <source>Elbow Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="589"/>
+        <source>Wrist Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="590"/>
+        <source>Wrist Thickness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="591"/>
+        <source>Hand Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/PatientCardWidget.cpp" line="592"/>
+        <source>Hand Thickness</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PersonalDataWidget</name>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="20"/>
+        <source>Frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="47"/>
+        <location filename="../../../src/plugins/newCommunication/PersonalDataWidget.cpp" line="22"/>
+        <source>No photo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="82"/>
+        <source>Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="89"/>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="103"/>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="117"/>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="131"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="96"/>
+        <source>Surname:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="110"/>
+        <source>Gender:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/ui/PersonalDataWidget.ui" line="124"/>
+        <source>Birth date:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1887,14 +2789,14 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../edrutils/examples/QtPicturePlacer/PicturePlacerWindow.cpp" line="38"/>
-        <location filename="../../../../edrutils/examples/QtPicturePlacer/PicturePlacerWindow.cpp" line="78"/>
+        <location filename="../../../../edrutils/examples/QtPicturePlacer/PicturePlacerWindow.cpp" line="40"/>
+        <location filename="../../../../edrutils/examples/QtPicturePlacer/PicturePlacerWindow.cpp" line="80"/>
         <source>Load background file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../edrutils/examples/QtPicturePlacer/PicturePlacerWindow.cpp" line="53"/>
-        <location filename="../../../../edrutils/examples/QtPicturePlacer/PicturePlacerWindow.cpp" line="70"/>
+        <location filename="../../../../edrutils/examples/QtPicturePlacer/PicturePlacerWindow.cpp" line="55"/>
+        <location filename="../../../../edrutils/examples/QtPicturePlacer/PicturePlacerWindow.cpp" line="72"/>
         <source>Load image files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1991,112 +2893,117 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="55"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="53"/>
         <source>Forces</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="60"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="56"/>
         <source>Moments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="67"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="60"/>
         <source>Powers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="80"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="73"/>
         <source>Kinematic data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="83"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="76"/>
         <source>Markers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="88"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="81"/>
         <source>Joints</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="98"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="91"/>
         <source>Videos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="40"/>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="234"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="41"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="273"/>
         <source>Visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="278"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="279"/>
         <source>Tree</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="413"/>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="550"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="414"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="584"/>
         <source>Raports Tab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="233"/>
+        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="272"/>
         <source>Tools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="501"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="512"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="549"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="560"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="597"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="608"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="695"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="706"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="743"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="754"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="503"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="514"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="551"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="562"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="599"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="610"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="697"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="708"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="745"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="756"/>
         <source>Download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="524"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="535"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="572"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="583"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="620"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="631"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="718"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="729"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="766"/>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="777"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="526"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="537"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="574"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="585"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="622"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="633"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="720"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="731"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="768"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="779"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="958"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="960"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1842"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1844"/>
         <source>Before surgery</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1852"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1854"/>
         <source>After surgery</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1890"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1863"/>
+        <source>Inna klasyfikacja</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1902"/>
         <source>Upper body</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1896"/>
+        <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="1908"/>
         <source>Lower body</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2109,30 +3016,85 @@ Value: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="86"/>
+        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="87"/>
         <source>Foot Strike</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="87"/>
+        <location filename="../../../src/plugins/newChart/NewChartEvents.cpp" line="88"/>
         <source>Foot Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DefaultPatientCardWidget.cpp" line="213"/>
+        <source>Before treatment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../include/plugins/newCommunication/IDataSourceContent.h" line="243"/>
+        <source>Man</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../include/plugins/newCommunication/IDataSourceContent.h" line="248"/>
+        <source>Woman</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../include/plugins/newCommunication/IDataSourceContent.h" line="251"/>
+        <source>Not specified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceBaseContent.cpp" line="111"/>
+        <source>Patient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceBaseContent.cpp" line="107"/>
+        <source>Disorder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceBaseContent.cpp" line="115"/>
+        <source>Subject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceBaseContent.cpp" line="119"/>
+        <source>Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceBaseContent.cpp" line="123"/>
+        <source>Motion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceBaseContent.cpp" line="127"/>
+        <source>File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourcePerspective.cpp" line="179"/>
+        <source>Gender</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>RaportsTabContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="556"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="590"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="557"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="591"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="558"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="592"/>
         <source>Text</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2140,38 +3102,34 @@ Value: %2</source>
 <context>
     <name>RaportsThumbnailsContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="415"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="416"/>
         <source>Actions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="440"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="441"/>
         <source>Create raport</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="444"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="445"/>
         <source>Simple Raport</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="447"/>
-        <source>Default</source>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="455"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="462"/>
+        <source>Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="461"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="521"/>
+        <source>Screenshot %1 &lt;br&gt; &lt;IMG SRC=&quot;data:image/png;base64,%2&quot; ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0&gt;&lt;/P&gt; &lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="477"/>
         <source>Raport template:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="501"/>
-        <source>Screenshot %1 &lt;br&gt; &lt;IMG SRC=&quot;%2&quot; ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0&gt;&lt;/P&gt; &lt;br&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="506"/>
-        <source>                                                                            &lt;HTML&gt;                                                                                   &lt;BODY&gt;                                                                                   &lt;P&gt;&lt;FONT SIZE=6&gt; %1&lt;/FONT&gt;&lt;/P&gt;                                                           &lt;P&gt;&lt;FONT SIZE=3&gt; %2&lt;/FONT&gt;&lt;/P&gt;                                                           &lt;OL&gt;                                                                                     &lt;LI&gt;&lt;P&gt;&lt;FONT SIZE=5&gt;Headline&lt;/FONT&gt;&lt;/P&gt;                                                  Headline placeholder.                                                                    &lt;LI&gt;&lt;P&gt;&lt;FONT SIZE=5&gt;Data&lt;/FONT&gt;&lt;/P&gt;                                                      %3                                                                                       &lt;LI&gt;&lt;P&gt;&lt;FONT SIZE=5&gt;Conclusion&lt;/FONT&gt;&lt;/P&gt;                                                Conclusion placeholder                                                                   &lt;/P&gt;                                                                                     &lt;/OL&gt;                                                                                    &lt;/P&gt;                                                                                     &lt;/BODY&gt;                                                                                  &lt;/HTML&gt;                                                                                  </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2211,7 +3169,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     <name>SceneGraphWidget</name>
     <message>
         <location filename="../../../src/core/ui/SceneGraphWidget.ui" line="20"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/SceneGraphWidget.ui" line="20"/>
         <location filename="../../../src/hmm_view/ui/SceneGraphWidget.ui" line="20"/>
         <location filename="../../../src/old_view/ui/SceneGraphWidget.ui" line="20"/>
         <source>Form</source>
@@ -2219,7 +3176,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     </message>
     <message>
         <location filename="../../../src/core/ui/SceneGraphWidget.ui" line="34"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/SceneGraphWidget.ui" line="34"/>
         <location filename="../../../src/hmm_view/ui/SceneGraphWidget.ui" line="34"/>
         <location filename="../../../src/old_view/ui/SceneGraphWidget.ui" line="34"/>
         <source>Service</source>
@@ -2227,7 +3183,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     </message>
     <message>
         <location filename="../../../src/core/ui/SceneGraphWidget.ui" line="50"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/SceneGraphWidget.ui" line="50"/>
         <location filename="../../../src/hmm_view/ui/SceneGraphWidget.ui" line="50"/>
         <location filename="../../../src/old_view/ui/SceneGraphWidget.ui" line="50"/>
         <source>Refresh</source>
@@ -2255,42 +3210,42 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="219"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="162"/>
         <source>Serie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="224"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="167"/>
         <source>TimeSpan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="229"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="172"/>
         <source>Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="234"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="177"/>
         <source>Min time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="239"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="182"/>
         <source>Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="244"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="187"/>
         <source>Max time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="249"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="192"/>
         <source>Mean</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="254"/>
+        <location filename="../../../src/plugins/newChart/ui/statsTable.ui" line="197"/>
         <source>Variance</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2299,7 +3254,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     <name>TestEDRWidget</name>
     <message>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="26"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="26"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="26"/>
         <location filename="../../../src/old_view/ui/TestEDRWidget.ui" line="26"/>
         <source>TestEdrWidget</source>
@@ -2307,7 +3261,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     </message>
     <message>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="38"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="38"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="38"/>
         <location filename="../../../src/old_view/ui/TestEDRWidget.ui" line="38"/>
         <source>Add Widget</source>
@@ -2315,7 +3268,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     </message>
     <message>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="77"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="77"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="77"/>
         <location filename="../../../src/old_view/ui/TestEDRWidget.ui" line="77"/>
         <source>Add Action</source>
@@ -2323,7 +3275,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     </message>
     <message>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="90"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="90"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="90"/>
         <location filename="../../../src/old_view/ui/TestEDRWidget.ui" line="90"/>
         <source>Add Menu</source>
@@ -2332,8 +3283,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     <message>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="113"/>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="155"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="113"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="155"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="113"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="155"/>
         <location filename="../../../src/old_view/ui/TestEDRWidget.ui" line="113"/>
@@ -2344,8 +3293,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     <message>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="129"/>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="168"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="129"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="168"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="129"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="168"/>
         <location filename="../../../src/old_view/ui/TestEDRWidget.ui" line="129"/>
@@ -2355,7 +3302,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     </message>
     <message>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="142"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="142"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="142"/>
         <location filename="../../../src/old_view/ui/TestEDRWidget.ui" line="142"/>
         <source>Position</source>
@@ -2363,7 +3309,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     </message>
     <message>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="181"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="181"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="181"/>
         <location filename="../../../src/old_view/ui/TestEDRWidget.ui" line="181"/>
         <source>Clear</source>
@@ -2371,7 +3316,6 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
     </message>
     <message>
         <location filename="../../../src/core/ui/TestEDRWidget.ui" line="194"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/TestEDRWidget.ui" line="194"/>
         <location filename="../../../src/hmm_view/ui/TestEDRWidget.ui" line="194"/>
         <location filename="../../../src/old_view/ui/TestEDRWidget.ui" line="194"/>
         <source>Titlebar Height</source>
@@ -2381,161 +3325,161 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
 <context>
     <name>TextEdit</name>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="614"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="634"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="109"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="114"/>
         <source>&amp;New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="116"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="121"/>
         <source>&amp;Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="121"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="126"/>
         <source>&amp;Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="128"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="133"/>
         <source>Save &amp;As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="135"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="140"/>
         <source>&amp;Print...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="142"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="147"/>
         <source>Print Preview...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="147"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="152"/>
         <source>&amp;Export PDF...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="163"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="168"/>
         <source>&amp;Undo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="168"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="173"/>
         <source>&amp;Redo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="173"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="178"/>
         <source>Cu&amp;t</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="178"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="183"/>
         <source>&amp;Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="183"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="188"/>
         <source>&amp;Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="216"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="221"/>
         <source>&amp;Bold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="226"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="231"/>
         <source>&amp;Italic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="236"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="241"/>
         <source>&amp;Underline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="252"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="258"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="257"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="263"/>
         <source>&amp;Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="253"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="257"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="258"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="262"/>
         <source>C&amp;enter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="254"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="256"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="259"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="261"/>
         <source>&amp;Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="260"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="265"/>
         <source>&amp;Justify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="283"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="288"/>
         <source>&amp;Color...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="350"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="355"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="351"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="356"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="373"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="378"/>
         <source>%1[*] - %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="373"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="378"/>
         <source>Rich Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="387"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="392"/>
         <source>Open File...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="388"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="393"/>
         <source>HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="407"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="422"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="408"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="423"/>
         <source>ODF files (*.odt);;HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="424"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="441"/>
         <source>Print Document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="614"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="634"/>
         <source>This example demonstrates Qt&apos;s rich text editing facilities in action, providing an example document for you to experiment with.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2753,7 +3697,6 @@ Do you want to save your changes?</source>
     <name>VisualizerWidget</name>
     <message>
         <location filename="../../../src/core/ui/VisualizerWidget.ui" line="20"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/VisualizerWidget.ui" line="20"/>
         <location filename="../../../src/hmm_view/ui/VisualizerWidget.ui" line="20"/>
         <location filename="../../../src/old_view/ui/VisualizerWidget.ui" line="20"/>
         <source>Visualizer</source>
@@ -2761,7 +3704,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/VisualizerWidget.ui" line="53"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/VisualizerWidget.ui" line="58"/>
         <location filename="../../../src/hmm_view/ui/VisualizerWidget.ui" line="58"/>
         <location filename="../../../src/old_view/ui/VisualizerWidget.ui" line="58"/>
         <source>Close</source>
@@ -2769,7 +3711,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/VisualizerWidget.ui" line="65"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/VisualizerWidget.ui" line="70"/>
         <location filename="../../../src/hmm_view/ui/VisualizerWidget.ui" line="70"/>
         <location filename="../../../src/old_view/ui/VisualizerWidget.ui" line="70"/>
         <source>Float</source>
@@ -2785,7 +3726,6 @@ Do you want to save your changes?</source>
     <name>WorkflowWidget</name>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="26"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="26"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="26"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="26"/>
         <source>WorkflowWidget</source>
@@ -2793,7 +3733,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="60"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="60"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="60"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="60"/>
         <source>Sources</source>
@@ -2801,7 +3740,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="65"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="65"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="65"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="65"/>
         <source>Processing</source>
@@ -2809,7 +3747,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="70"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="70"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="70"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="70"/>
         <source>Visualize</source>
@@ -2817,7 +3754,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="75"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="75"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="75"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="75"/>
         <source>Sinks</source>
@@ -2825,7 +3761,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="86"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="86"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="86"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="86"/>
         <source>Strat</source>
@@ -2833,7 +3768,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="94"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="94"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="94"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="94"/>
         <source>Stop</source>
@@ -2841,7 +3775,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="99"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="99"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="99"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="99"/>
         <source>New</source>
@@ -2849,7 +3782,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="104"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="104"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="104"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="104"/>
         <source>Delete</source>
@@ -2857,7 +3789,6 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../../../src/core/ui/WorkflowWidget.ui" line="109"/>
-        <location filename="../../../src/hmm_view/ui/Legacy/WorkflowWidget.ui" line="109"/>
         <location filename="../../../src/hmm_view/ui/WorkflowWidget.ui" line="109"/>
         <location filename="../../../src/old_view/ui/WorkflowWidget.ui" line="109"/>
         <source>Info</source>
@@ -2867,57 +3798,67 @@ Do you want to save your changes?</source>
 <context>
     <name>core::MainWindow</name>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="148"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="149"/>
         <source>Preparing application core managers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="156"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="158"/>
         <source>Registering application core data sources</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="160"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="162"/>
         <source>Registering plugins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="174"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="176"/>
         <source>Registering plugins data types</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="178"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="180"/>
         <source>Registering plugins services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="182"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="184"/>
+        <source>Registering plugins sources</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="188"/>
         <source>Registering plugins parsers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="186"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="192"/>
         <source>Registering plugins visualizers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="190"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="196"/>
         <source>Registering plugins data processors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="194"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="200"/>
         <source>Registering plugins data sources</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="200"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="206"/>
         <source>Initializing services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/core/MainWindow.cpp" line="317"/>
+        <location filename="../../../src/core/MainWindow.cpp" line="218"/>
+        <source>Initializing sources</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/core/MainWindow.cpp" line="330"/>
         <source>Console</source>
         <translation type="unfinished"></translation>
     </message>

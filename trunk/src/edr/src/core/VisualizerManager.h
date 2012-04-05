@@ -17,6 +17,7 @@
 #include <utils/ObserverPattern.h>
 #include <core/ObjectWrapper.h>
 #include "Visualizer.h"
+#include "VisualizerChannel.h"
 #include <QtCore/QMetaType>
 #include <QtGui/QIcon>
 #include <core/IVisualizerManager.h>
@@ -31,7 +32,7 @@ class DataManager;
 class VisualizerManager : public core::IVisualizerManager, public utils::Observable<VisualizerManager>, public ManagerHelper<VisualizerManager>
 {
     friend class Visualizer;
-    friend class IVisualizerChannel;
+	friend class IVisualizerChannel;
 public:
     //! Lista wizualizatorów.
     typedef std::vector<core::IVisualizerPtr> IVisualizers;
@@ -39,14 +40,12 @@ public:
     typedef boost::iterator_range<IVisualizers::const_iterator> IVisualizersConstRange;
 
     typedef std::list<Visualizer*> Visualizers;
-    typedef std::list<IVisualizerChannel*> VisualizerChannels;
-
-    typedef std::map<Visualizer*, std::list<IVisualizerChannel*>> GroupedVisualizerChannels;
 
     //! Lista typów kolejnych Ÿróde³.
     typedef ObjectSlots::SlotsInfo SourcesTypes;
 
 private:
+
     //! Niezmienne dane pobrane z wizualizatorów.
     struct IVisualizerPersistantData
     {
@@ -56,6 +55,15 @@ private:
         SourcesTypes sourcesTypes;
     };
 
+	//! Dane zwi¹zane z obs³uga kana³ów timeline
+	struct ChannelData {
+		Visualizer * visualzier;
+		std::set<core::VisualizerTimeSeriePtr> series;
+		std::string path;
+		bool managed;
+		bool synchRemove;
+	};
+
 	//! pomocnicza mapa (typ obiektu domenowego) -> (identyfikator wizualizatora)
 	std::map<core::TypeInfo, UniqueID> mapType2ID;
 
@@ -64,13 +72,14 @@ private:
 
     Visualizers visualizers;
 
-    VisualizerChannels visualizerChannels;
-    GroupedVisualizerChannels groupedVisualizerChannels;
-
     //! Sta³e dane wizualizatorów.
     std::vector< IVisualizerPersistantData* > visualizersData;
     //! Widget do wizualizacji struktury sceny 3D. Do debuggowania.
     //SceneGraphWidget* debugWidget;
+
+	//! Utworzone kana³y
+	std::map<IVisualizerChannel *, ChannelData> channels;
+	std::map<Visualizer *, std::set<IVisualizerChannel *>> visualizerChannels;
 
 public:
     //! Tworzenie i niszczenie tylko przez metody singletonu.
@@ -145,6 +154,34 @@ public:
     //! \return Liczba instancji wizualizatorów danego typu.
     int getNumInstances(UniqueID id);
 
+	//! \param serie Seria danych, któr¹ opakowujemy w kana³ i dodajemy do timeline
+	//! \param visualizer Wizualizator ktorego seria ta dotyczy
+	//! \param path Œcie¿ka w timeline gdzie probujemy dodaæ kana³
+	//! \param synchRemove Czy usuniêcie kana³u z timeline powinno skutkowaæ usuniêciem jego serii danych z wizualizatora
+	//! \return WskaŸnik typu const void * identyfikuj¹cy utworzony kana³, wartoœæ nullptr oznacza ¿e kana³u nie utworzono
+	const void * createChannel(const core::VisualizerTimeSeriePtr & serie, Visualizer * visualizer, const std::string & path = std::string(), bool synchRemove = true);
+	//! \param series Serie danych, które opakowujemy w kana³ i dodajemy do timeline
+	//! \param visualizer Wizualizator ktorego serie te dotyczy
+	//! \param path Œcie¿ka w timeline gdzie probujemy dodaæ kana³
+	//! \param synchRemove Czy usuniêcie kana³u z timeline powinno skutkowaæ usuniêciem jego serii danych z wizualizatora
+	//! \return WskaŸnik typu const void * identyfikuj¹cy utworzony kana³, wartoœæ nullptr oznacza ¿e kana³u nie utworzono
+	const void * createChannel(const std::vector<core::VisualizerTimeSeriePtr> & series, Visualizer * visualizer, const std::string & path, bool synchRemove = true);
+	//! \param channel WskaŸnik typu const void * identyfikuj¹cy kana³ dla serii danych utworzony dla timeline
+	void removeChannel(const void * channel);
+	//! \param channel WskaŸnik typu const void * identyfikuj¹cy kana³ dla serii danych utworzony dla timeline
+	//! Metoda oznacza ¿e serie danych kana³u zosta³y ju¿ usuniêtê z wizualizatora
+	void markAsRemovedFromVisualizer(const void * channel);
+
+	//! \param visualizer Wizualizator dla ktorego oznaczamy ze wszystkie serie kanalow zostaly juz obsluzone - nie wymagaja usuwania
+	void markAllChannelsAsRemovedFromVisualizer(Visualizer * visualizer);
+	//! \param visualizer Wizualizator dla ktorego usuwamy wszystkie kanaly
+	void removeAllChannelsFromVisualizer(Visualizer * visualizer);
+
+	//! Wszystkie kanaly sa oznaczone jako obsluzone przez wizualizaotry
+	void markAllChannelsAsRemoved();
+	//! Usuwa wszystkie kanaly
+	void removeAllChannels();
+
 private:
     //! Tworzy instancjê wizualizatora.
     //! \param id id wizualizatora.
@@ -153,6 +190,11 @@ private:
     //! 
     VisualizerPtr createVisualizer(const Visualizer& prototype);
 
+	//! \param channel Kana³ który w³aœnie jest usuwamy
+	//! Jedyny smart pointer jest trzymany przez timeline
+	//! Jeœli tam go usuwam to uruchamiam jego destruktor który realizuje czyszczenie w wizualizatorach
+	void notifyDestroyed(IVisualizerChannel * channel);
+
 // TODO: create publiczne bez friend Visualizer czy prywatne + jakis inny mechanizm dostepu?
 public:
 	//! Tworzy instancjê wizualizatora.
@@ -160,17 +202,12 @@ public:
 	//! \return Instancja wizualizatora.
 	VisualizerPtr createVisualizer(const core::TypeInfo& typeInfo);
 
-    void clearVisualizerChannels(Visualizer * visualizer);
-
 private:
     //! \return Indeks prototypu.
     int getPrototypeIdx(UniqueID id) const;
 
     void notifyCreated(Visualizer* visualizer);
     void notifyDestroyed(Visualizer* visualizer);
-
-    void notifyCreated(IVisualizerChannel* channel);
-    void notifyDestroyed(IVisualizerChannel* channel);
 };
 
 

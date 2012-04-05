@@ -27,6 +27,10 @@ public:
 	Q_OBJECT
 public:
 	ToolboxMain() : MainWindow() {}
+	virtual ~ToolboxMain()
+	{
+
+	}
 
 public:
 	virtual void init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor );

@@ -250,6 +250,9 @@ void VisualizerWidget::clearCurrentVisualizer()
     if(visualizer == nullptr){
         return;
     }
+
+	VisualizerManager::getInstance()->markAllChannelsAsRemovedFromVisualizer(visualizer.get());
+	VisualizerManager::getInstance()->removeAllChannelsFromVisualizer(visualizer.get());
     
     //wyczyœæ menu wyboru Ÿróde³ i kana³ów
     clearSources();
@@ -266,31 +269,6 @@ void VisualizerWidget::clearCurrentVisualizer()
 
 void VisualizerWidget::clearDataSeries()
 {
-    if(timelineChannels.empty() == false){
-        TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
-        if(timeline != nullptr) {
-
-            do{
-
-                VisualizerChannelPtr channel = timelineChannels.begin()->second;
-
-                try{
-                    timeline->removeChannel(channel->getSerie()->getName());
-                }catch(std::runtime_error e){
-                    LOG_WARNING("Could not remove channel from timeline because: " << e.what());
-                }catch(...){
-                    LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
-                }
-
-                //channel->releaseChannel();
-
-                timelineChannels.erase(timelineChannels.begin());
-            }while(timelineChannels.empty() == false);
-        }
-
-        timelineChannels.swap(TimelineChannels());
-    }
-
     currentSeriesData.swap(std::map<core::ObjectWrapperConstPtr, core::VisualizerSeriePtr >());
     groupedSeriesData.swap(std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> >());
 }
@@ -543,7 +521,6 @@ void VisualizerWidget::removeAllSeries()
 void VisualizerWidget::innerRemoveAllSeries()
 {
     if(visualizer != nullptr){
-        VisualizerManager::getInstance()->clearVisualizerChannels(visualizer.get());
         visualizer->clearAllSeries();
     }
 
@@ -579,20 +556,7 @@ void VisualizerWidget::sourceSelected()
             VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie));
 
             if(timeSerie != nullptr){
-                TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
-                if(timeline != nullptr) {
-                    
-                    VisualizerChannelPtr channel(new VisualizerChannel(timeSerie->getName(), visualizer.get(), timeSerie));
-
-                    try{
-                        timeline->addChannel(channel->getChannelPath(), channel);
-                        timelineChannels[timeSerie] = channel;
-                    }catch(std::runtime_error e){
-                        LOG_WARNING("Could not add channel to timeline because: " << e.what());
-                    }catch(...){
-                        LOG_WARNING("Could not add channel to timeline. Unknown reason.");
-                    }
-                }
+                VisualizerManager::getInstance()->createChannel(timeSerie, visualizer.get());
             }
 
             currentSeriesData[lastSerie.second] = serie;

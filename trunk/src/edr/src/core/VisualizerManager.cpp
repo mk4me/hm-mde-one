@@ -90,31 +90,6 @@ VisualizerPtr VisualizerManager::createVisualizer( const core::TypeInfo& typeInf
 	throw std::runtime_error("Visualizer not registered.");
 }
 
-void VisualizerManager::clearVisualizerChannels(Visualizer * visualizer)
-{
-    TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
-    if(timeline != nullptr) {
-
-        auto it = groupedVisualizerChannels.find(visualizer);
-
-        if(it != groupedVisualizerChannels.end()){
-            for(auto channelIT = it->second.begin(); channelIT != it->second.end(); channelIT++){
-                try{
-                    (*channelIT)->managed = true;
-                    visualizerChannels.remove(*channelIT);
-                    timeline->removeChannel((*channelIT)->getChannelPath());
-                }catch(std::runtime_error e){
-                    LOG_WARNING("Could not remove channel from timeline because: " << e.what());
-                }catch(...){
-                    LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
-                }
-            }
-
-            groupedVisualizerChannels.erase(it);
-        }        
-    }
-}
-
 void VisualizerManager::update()
 {
     Visualizers::iterator it = visualizers.begin();
@@ -211,15 +186,199 @@ void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
     }*/
 }
 
-void VisualizerManager::notifyCreated(IVisualizerChannel* channel)
-{
-    visualizerChannels.push_back(channel);
-    groupedVisualizerChannels[channel->getVisualizer()].push_back(channel);
-}
-
 void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
 {
-    visualizerChannels.remove(channel);
-    groupedVisualizerChannels[channel->getVisualizer()].remove(channel);
+	auto channelIT = channels.find(channel);
+
+	if(channelIT == channels.end()){
+		return;
+	}
+
+	if(channelIT->second.synchRemove == true && channelIT->second.managed == false){
+
+		auto seriesITEnd = channelIT->second.series.end();
+		for(auto it = channelIT->second.series.begin(); it != seriesITEnd; ++it){
+			try{
+				channelIT->second.visualzier->removeSerie(*it);
+			}catch(std::exception & e){
+
+			}catch(...){
+
+			}
+		}
+	}
+
+	//teraz probuje usuwac serie danych z wizualizatora
+	visualizerChannels[channelIT->second.visualzier].erase(channelIT->first);
+
+	if(visualizerChannels[channelIT->second.visualzier].empty() == true){
+		visualizerChannels.erase(channelIT->second.visualzier);
+	}
+
+	channels.erase(channel);
+}
+
+const void * VisualizerManager::createChannel(const core::VisualizerTimeSeriePtr & serie, Visualizer * visualizer, const std::string & path, bool synchRemove)
+{
+	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
+	if(timeline != nullptr) {
+
+		VisualizerChannelPtr channel(new VisualizerChannel(serie));
+
+		try{
+
+			std::string p = (path.empty() == false) ? path : serie->getName();
+
+			timeline->addChannel(p, channel);
+
+			ChannelData data;
+			data.visualzier = visualizer;
+			data.series.insert(serie);
+			data.path = p;
+			data.managed = false;
+			data.synchRemove = synchRemove;
+
+			channels[channel.get()] = data;
+			visualizerChannels[visualizer].insert(channel.get());
+			return channel.get();
+		}catch(std::runtime_error e){
+			LOG_WARNING("Could not add channel to timeline because: " << e.what());
+		}catch(...){
+			LOG_WARNING("Could not add channel to timeline. Unknown reason.");
+		}
+	}
+
+	return nullptr;
+}
+
+const void * VisualizerManager::createChannel(const std::vector<core::VisualizerTimeSeriePtr> & series, Visualizer * visualizer, const std::string & path, bool synchRemove)
+{
+	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
+	if(timeline != nullptr) {
+
+		VisualizerChannelPtr channel(new VisualizerMultiChannel(series));
+
+		try{
+			timeline->addChannel(path, channel);
+
+			ChannelData data;
+			data.visualzier = visualizer;
+			data.series.insert(series.begin(), series.end());
+			data.path = path;
+			data.managed = false;
+			data.synchRemove = synchRemove;
+
+			channels[channel.get()] = data;
+			visualizerChannels[visualizer].insert(channel.get());
+			return channel.get();
+		}catch(std::runtime_error e){
+			LOG_WARNING("Could not add channel to timeline because: " << e.what());
+		}catch(...){
+			LOG_WARNING("Could not add channel to timeline. Unknown reason.");
+		}
+	}
+
+	return nullptr;
+}
+
+void VisualizerManager::removeChannel(const void * channel)
+{
+	//sprawdzam czy jest taki kanal
+	auto channelIT = channels.find((IVisualizerChannel*)channel);
+	if(channelIT == channels.end()){
+		//jesli nie ma to wychodzimy
+		return;
+	}	
+
+	//wlasciwa proba usuniecia kanalu z wizualizatora i timeline
+	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
+	bool removed = false;
+	if(timeline != nullptr) {
+
+		try{
+			//oczekuje ¿e destuktor kana³u zrobi resztê wywo³uj¹c notifyDestroyed
+			timeline->removeChannel(channelIT->second.path);
+			removed = true;
+		}catch(std::runtime_error & e){
+			LOG_WARNING("Could not remove channel from timeline because: " << e.what());
+		}catch(...){
+			LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
+		}
+	}
+
+	if(removed == false){
+		visualizerChannels[channelIT->second.visualzier].erase(channelIT->first);
+
+		if(visualizerChannels[channelIT->second.visualzier].empty() == true){
+			visualizerChannels.erase(channelIT->second.visualzier);
+		}
+
+		channels.erase(channelIT);
+	}
+}
+
+void VisualizerManager::removeAllChannels()
+{
+	//wlasciwa proba usuniecia kanalu z wizualizatora i timeline
+	TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
+	bool removed = false;
+	if(timeline != nullptr) {
+		for(auto channelIT = channels.begin(); channelIT != channels.end(); ++channelIT){
+			try{
+				//oczekuje ¿e destuktor kana³u zrobi resztê wywo³uj¹c notifyDestroyed
+				timeline->removeChannel(channelIT->second.path);
+			}catch(std::runtime_error & e){
+				LOG_WARNING("Could not remove channel from timeline because: " << e.what());
+			}catch(...){
+				LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
+			}
+		}
+	}
+
+	channels.swap(std::map<IVisualizerChannel *, ChannelData>());
+	visualizerChannels.swap(std::map<Visualizer *, std::set<IVisualizerChannel *>>());
+}
+
+void VisualizerManager::markAsRemovedFromVisualizer(const void * channel)
+{
+	//sprawdzam czy jest taki kanal
+	auto channelIT = channels.find((IVisualizerChannel*)channel);
+	if(channelIT == channels.end()){
+		//jesli nie ma to wychodzimy
+		return;
+	}
+
+	channelIT->second.managed = true;
+}
+
+void VisualizerManager::markAllChannelsAsRemovedFromVisualizer(Visualizer * visualizer)
+{
+	auto visualizerIT = visualizerChannels.find(visualizer);
+	if(visualizerIT == visualizerChannels.end()){
+		return;
+	}
+
+	for(auto channelIT = visualizerIT->second.begin(); channelIT != visualizerIT->second.end(); ++channelIT){
+		channels[*channelIT].managed = true;
+	}
+}
+
+void VisualizerManager::removeAllChannelsFromVisualizer(Visualizer * visualizer)
+{
+	auto visualizerIT = visualizerChannels.find(visualizer);
+	if(visualizerIT == visualizerChannels.end()){
+		return;
+	}
+
+	for(auto channelIT = visualizerIT->second.begin(); channelIT != visualizerIT->second.end(); ++channelIT){
+		removeChannel(*channelIT);
+	}
+}
+
+void VisualizerManager::markAllChannelsAsRemoved()
+{
+	for(auto channelIT = channels.begin(); channelIT != channels.end(); ++channelIT){
+		channelIT->second.managed = true;
+	}
 }
 

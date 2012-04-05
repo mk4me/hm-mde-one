@@ -23,7 +23,7 @@ class Visualizer : public QObject, public InputItem<core::IVisualizer>
 {
         Q_OBJECT;
 public:
-    typedef std::set<core::shared_ptr<core::IVisualizer::SerieBase> > DataSeries;
+    typedef std::set<core::VisualizerSeriePtr> DataSeries;
 
 private:
     //! Faktyczny widget.
@@ -36,9 +36,6 @@ private:
 
     //! Serie danych utrworzone przez u¿ytkownika
     DataSeries dataSeries;
-
-    ////! Serie danych o charakterze czasowym wystêpuj¹ce w timeline
-    //DataSeries timelineDataSeries;
 
 public:
     //! \param impl Implementacja wizualizatora. Obiekt przejmowany na w³asnoœæ.
@@ -95,100 +92,5 @@ typedef core::shared_ptr<Visualizer> VisualizerPtr;
 typedef core::shared_ptr<const Visualizer> VisualizerConstPtr;
 typedef core::weak_ptr<Visualizer> VisualizerWeakPtr;
 typedef core::weak_ptr<const Visualizer> VisualizerConstWeakPtr;
-
-class VisualizerWidget;
-
-class IVisualizerChannel : public timeline::IChannel
-{
-
-friend class VisualizerManager;
-
-public:
-    IVisualizerChannel(const std::string & path, Visualizer * visualizer);
-    virtual ~IVisualizerChannel();
-
-    const std::string & getChannelPath() const;
-    const Visualizer * getVisualizer() const;
-    Visualizer * getVisualizer();
-
-    //virtual void releaseChannel() = 0;
-
-private:
-    std::string path;
-    Visualizer * visualizer;
-    bool managed;
-};
-
-class VisualizerChannel : public IVisualizerChannel
-{
-public:
-
-    VisualizerChannel(const std::string & path, Visualizer * visualizer, const core::VisualizerTimeSeriePtr & serie);
-
-    //virtual void releaseChannel();
-
-    virtual ~VisualizerChannel();
-
-    //! \return Sklonowany kana³
-    virtual VisualizerChannel * clone() const;
-
-    //! \return Dlugosc kanalu w sekundach
-    virtual double getLength() const;
-
-    //! Czas zawiera siê miêdzy 0 a getLength()
-    //! \param time Aktualny, lokalny czas kanalu w sekundach
-    virtual void setTime(double time);
-
-    const core::VisualizerTimeSeriePtr & getSerie();
-
-    const core::VisualizerTimeSerieConstPtr & getSerie() const;
-
-private:
-
-    core::VisualizerTimeSeriePtr serie;
-    core::VisualizerTimeSerieConstPtr constSerie;
-};
-
-
-class VisualizerMultiChannel : public IVisualizerChannel
-{
-public:
-
-    typedef std::vector<core::VisualizerTimeSeriePtr> SeriesWidgets;
-
-public:
-
-    VisualizerMultiChannel(const std::string & path, Visualizer * visualizer, const SeriesWidgets seriesWidgets);
-
-    //virtual void releaseChannel();
-
-    virtual ~VisualizerMultiChannel();
-
-    //! \return Sklonowany kana³
-    virtual VisualizerMultiChannel * clone() const;
-
-    //! \return Dlugosc kanalu w sekundach
-    virtual double getLength() const;
-
-    //! Czas zawiera siê miêdzy 0 a getLength()
-    //! \param time Aktualny, lokalny czas kanalu w sekundach
-    virtual void setTime(double time);
-
-    const SeriesWidgets & getSeriesWidgets() const;
-
-private:
-
-    SeriesWidgets seriesWidgets;
-    float length;
-};
-
-typedef boost::shared_ptr<IVisualizerChannel> IVisualizerChannelPtr;
-typedef boost::shared_ptr<const IVisualizerChannel> IVisualizerChannelConstPtr;
-
-typedef boost::shared_ptr<VisualizerChannel> VisualizerChannelPtr;
-typedef boost::shared_ptr<const VisualizerChannel> VisualizerChannelConstPtr;
-
-typedef boost::shared_ptr<VisualizerMultiChannel> VisualizerMultiChannelPtr;
-typedef boost::shared_ptr<const VisualizerMultiChannel> VisualizerMultiChannelConstPtr;
 
 #endif  // HEADER_GUARD_CORE__VISUALIZER_H__

@@ -58,6 +58,11 @@ private:
 
         }
 
+		virtual ~VideoSerie()
+		{
+
+		}
+
         virtual void setName(const std::string & name)
         {
             this->name = name;
@@ -109,11 +114,11 @@ private:
         //! \param time Aktualny, lokalny czas kanalu w sekundach
         virtual void setTime(double time)
         {
-            osg::const_pointer_cast<VideoStream>(visualizer->stream)->setTime(time);
-            visualizer->streamImage = visualizer->stream->getImage(vidlib::PixelFormatRGB24);
-            visualizer->widget->setTexture( visualizer->stream->getTexture(visualizer->streamImage->getFormat(), visualizer->useTextureRect), true, visualizer->useTextureRect );
-            osgui::correctTexCoords(visualizer->widget, visualizer->streamImage);
-            visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
+			osg::const_pointer_cast<VideoStream>(visualizer->stream)->setTime(time);
+			visualizer->streamImage = visualizer->stream->getImage(vidlib::PixelFormatRGB24);
+			visualizer->widget->setTexture( visualizer->stream->getTexture(visualizer->streamImage->getFormat(), visualizer->useTextureRect), true, visualizer->useTextureRect );
+			osgui::correctTexCoords(visualizer->widget, visualizer->streamImage);
+			visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
         }
 
     private:

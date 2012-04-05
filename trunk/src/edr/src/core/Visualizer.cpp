@@ -2,6 +2,7 @@
 #include <core/ObjectWrapper.h>
 #include <core/Visualizer.h>
 #include "VisualizerManager.h"
+#include "VisualizerChannel.h"
 #include "VisualizerWidget.h"
 #include "PrintWidgetAction.h"
 #include <plugins/newTimeline/ITimelineService.h>
@@ -136,154 +137,8 @@ void Visualizer::reset()
     clearAllSeries();
 }
 
-
-IVisualizerChannel::IVisualizerChannel(const std::string & path, Visualizer * visualizer) : path(path), visualizer(visualizer), managed(false)
-{
-    VisualizerManager::getInstance()->notifyCreated(this);
-}
-
-IVisualizerChannel::~IVisualizerChannel()
-{
-    //if(VisualizerManager::getInstance() != nullptr){
-    if(managed == false){
-        VisualizerManager::getInstance()->notifyDestroyed(this);
-    }
-    //}
-}
-
-const std::string & IVisualizerChannel::getChannelPath() const
-{
-    return path;
-}
-
-const Visualizer * IVisualizerChannel::getVisualizer() const
-{
-    return visualizer;
-}
-
-Visualizer * IVisualizerChannel::getVisualizer()
-{
-    return visualizer;
-}
-
-VisualizerChannel::VisualizerChannel(const std::string & path, Visualizer * visualizer, const core::VisualizerTimeSeriePtr & serie)
-    : IVisualizerChannel(path, visualizer), serie(serie), constSerie(serie)
-{
-
-}
-
-//void VisualizerChannel::releaseChannel()
-//{
-//    serie = core::VisualizerTimeSeriePtr();
-//    visualizer = nullptr;
-//}
-
-VisualizerChannel::~VisualizerChannel()
-{
-    /*if(visualizer!= nullptr && visualizer->getCurrentVisualizer()){
-        visualizer->getCurrentVisualizer()->removeSerie(serie);
-    }*/
-}
-
-void VisualizerChannel::setTime(double time)
-{
-    serie->setTime(time);
-}
-
-double VisualizerChannel::getLength() const
-{
-    double ret = 0;
-    ret = serie->getLength();
-    return ret;
-}
-
-VisualizerChannel * VisualizerChannel::clone() const
-{
-    //TODO
-    //mo¿na tutaj wprowadzic zarz¹dzanie klonowaniem serii
-
-    return nullptr;
-}
-
-const core::VisualizerTimeSeriePtr & VisualizerChannel::getSerie()
-{
-    return serie;
-}
-
-const core::VisualizerTimeSerieConstPtr & VisualizerChannel::getSerie() const
-{
-    return constSerie;
-}
-
 void Visualizer::printActionPressed()
 {
     QPixmap p = getImplementation()->print();
     emit this->printTriggered(p);
-}
-
-//VisualizerWidget * VisualizerChannel::getVisualizer()
-//{
-//    return visualizer;
-//}
-//
-//const VisualizerWidget * VisualizerChannel::getVisualizer() const
-//{
-//    return visualizer;
-//}
-
-VisualizerMultiChannel::VisualizerMultiChannel(const std::string & path, Visualizer * visualizer, const SeriesWidgets seriesWidgets)
-    : IVisualizerChannel(path, visualizer), seriesWidgets(seriesWidgets)
-{
-    UTILS_ASSERT((seriesWidgets.empty() == false), "Nie podano ¿adnych serii dla kanalu");
-
-    auto it = seriesWidgets.begin();
-
-    length = (*it)->getLength();
-
-    it++;
-
-    for( ; it != seriesWidgets.end(); it++){
-        if(length < (*it)->getLength()){
-            length = (*it)->getLength();
-        }
-    }
-}
-
-//void VisualizerMultiChannel::releaseChannel()
-//{
-//    //seriesWidgets.swap(SeriesWidgets());
-//}
-
-VisualizerMultiChannel::~VisualizerMultiChannel()
-{
-    /*for(auto it = seriesWidgets.begin(); it != seriesWidgets.end(); it++){
-        if(it->second->getCurrentVisualizer() != nullptr){
-            it->second->getCurrentVisualizer()->removeSerie(it->first);
-        }
-    }*/
-}
-
-void VisualizerMultiChannel::setTime(double time)
-{
-    for(auto it = seriesWidgets.begin(); it != seriesWidgets.end(); it++){
-        (*it)->setTime(time > (*it)->getLength() ? (*it)->getLength() : time);
-    }
-}
-
-double VisualizerMultiChannel::getLength() const
-{
-    return length;
-}
-
-VisualizerMultiChannel * VisualizerMultiChannel::clone() const
-{
-    //TODO
-    //mo¿na tutaj wprowadzic zarz¹dzanie klonowaniem serii
-
-    return nullptr;
-}
-
-const VisualizerMultiChannel::SeriesWidgets & VisualizerMultiChannel::getSeriesWidgets() const
-{
-    return seriesWidgets;
 }

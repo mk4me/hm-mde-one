@@ -91,6 +91,15 @@ CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.p
 
 CommunicationDataSource::~CommunicationDataSource()
 {
+	//jesli ktos zalogowany to czyscimy
+	if(isLogged() == true){
+		try{
+			logout();
+		}catch(std::exception & e){
+
+		}
+	}
+
     CommunicationManager::destoryInstance();
     DataSourceWebServicesManager::destroy();
     DataSourceConnectionManager::destroy();

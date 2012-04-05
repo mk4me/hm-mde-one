@@ -117,7 +117,7 @@ private slots:
     void filterClicked(FilterEntryWidget* entry);
     VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
 
-    void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
+    //void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
 
     void onTreeContextMenu(const QPoint & pos);
 

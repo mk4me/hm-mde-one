@@ -11,6 +11,7 @@ set(TARGET_TARGETNAME
 
 # nag³ówki prywatne
 set(PRIVATE_H
+	VisualizerChannel.h
 	SourceManager.h
 	ActionsGroupManager.h
 	IAppUsageContext.h
@@ -117,6 +118,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	VisualizerChannel.cpp
 	SourceManager.cpp
 	ActionsGroupManager.cpp
 	FlexiWidgetTabContentWidget.cpp

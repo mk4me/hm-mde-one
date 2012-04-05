@@ -295,7 +295,7 @@ core::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const core::IVisu
 void VideoVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)
 {
     streamImage = nullptr;
-
+	stream = nullptr;
     ratioKeeper->setTarget(nullptr);
 
     refresh(viewer->width(), viewer->height());

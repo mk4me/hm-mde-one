@@ -10,6 +10,7 @@
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <osg/PositionAttitudeTransform>
+#include "SourceManager.h"
 
 #include <osgViewer/GraphicsWindow>
 #include <osgText/Text>
@@ -114,49 +115,79 @@ void ToolboxMain::initializeUI()
 	setCentralWidget( nullptr );
 	setDocumentMode(true);
 
+	IServicePtr dataExplorer;
+
 	// pozosta³e widgety "p³ywaj¹ce"
 	for (int i = 0; i < ServiceManager::getInstance()->getNumServices(); ++i) {
 		IServicePtr service = ServiceManager::getInstance()->getService(i);
 
-		// HACK
-		ActionsGroupManager mainWidgetActions;
-		QWidget* viewWidget = service->getWidget(&mainWidgetActions);
+		if(service->getName() != "DataExplorer"){
+			// HACK
+			ActionsGroupManager mainWidgetActions;
+			QWidget* viewWidget = service->getWidget(&mainWidgetActions);
 
-		ActionsGroupManager controlWidgetActions;
-		QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
+			ActionsGroupManager controlWidgetActions;
+			QWidget* controlWidget = service->getControlWidget(&controlWidgetActions);
 
-		ActionsGroupManager settingsWidgetActions;
-		QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
+			ActionsGroupManager settingsWidgetActions;
+			QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
 
-		if ( viewWidget ) {
+			if ( viewWidget ) {
 
-			addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
-				viewWidget, 
-				mainWidgetActions,
-				toQString(service->getName()), 
-				style,
-				"",
-				Qt::RightDockWidgetArea));
-		}
-		if ( controlWidget ) {
-			addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
-				controlWidget, 
-				controlWidgetActions,
-				toQString(service->getName() + " control"), 
-				style,
-				"Control",
-				Qt::BottomDockWidgetArea));
-		}
-		if ( settingsWidget ) {
-			addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(
-				settingsWidget, 
-				settingsWidgetActions,
-				toQString(service->getName() + " settings"), 
-				style,
-				"Settings",
-				Qt::LeftDockWidgetArea));
+				addDockWidget(Qt::RightDockWidgetArea, embeddWidget(
+					viewWidget, 
+					mainWidgetActions,
+					toQString(service->getName()), 
+					style,
+					"",
+					Qt::RightDockWidgetArea));
+			}
+			if ( controlWidget ) {
+				addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
+					controlWidget, 
+					controlWidgetActions,
+					toQString(service->getName() + " control"), 
+					style,
+					"Control",
+					Qt::BottomDockWidgetArea));
+			}
+			if ( settingsWidget ) {
+				addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(
+					settingsWidget, 
+					settingsWidgetActions,
+					toQString(service->getName() + " settings"), 
+					style,
+					"Settings",
+					Qt::LeftDockWidgetArea));
+			}
+		}else{
+			dataExplorer = service;
 		}
 	}
+
+	QTabWidget * dataTabWidget = createNamedObject<QTabWidget>(QString::fromUtf8("dataTabWidget"));
+
+	for (int i = 0; i < SourceManager::getInstance()->getNumSources(); ++i) {
+		auto source = SourceManager::getInstance()->getSource(i);
+
+		ActionsGroupManager settingsWidgetActions;
+		dataTabWidget->addTab(source->getWidget(&settingsWidgetActions), QString::fromStdString(source->getName()));
+		//TODO
+		//obs³u¿yc konteksy Ÿróde³
+	}
+
+	if(dataExplorer != nullptr){
+		ActionsGroupManager settingsWidgetActions;
+		dataTabWidget->addTab(dataExplorer->getWidget(&settingsWidgetActions), QString::fromStdString(dataExplorer->getName()));
+	}
+
+	addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(
+		dataTabWidget, 
+		ActionsGroupManager(),
+		tr("Data Sources"), 
+		style,
+		"",
+		Qt::RightDockWidgetArea));
 }
 
 
