@@ -6,8 +6,7 @@
 static const double MIN_DIST = 20.0;
 
 NewChartValueMarker::NewChartValueMarker( NewChartVisualizer* visualizer ) : 
-    NewChartLabelState(visualizer),
-    currentLabel(nullptr)
+    NewChartLabelState(visualizer)
 {
     marker.setLerpRatios(1.0f);
 }
@@ -26,31 +25,29 @@ bool NewChartValueMarker::stateEventFilter( QObject *object, QEvent *event )
         if (mouseEvent->button() == Qt::LeftButton) {
             currentLabel = getLabel(mouseEvent->pos(), currentSerie->getCurve());
         } else {
-            currentLabel = nullptr;
+            currentLabel = LabelDataConstPtr();
         }
         
         if (!currentLabel && mouseEvent->button() == Qt::LeftButton) {
-            QPointF sample;
-            double dist = getClosestPoint(sample, currentSerie->getCurve(), mouseEvent->pos());
-            if (dist < MIN_DIST) {
-                insertNewMarker(sample, currentSerie->getColor());
+            SeriePointDist closest = getClosestPoint(mouseEvent->pos());
+            if (closest.get<2>() < MIN_DIST) {
+                insertNewMarker(closest.get<1>(), closest.get<0>()->getColor());
             }
         }
     } else if (event->type() == QEvent::MouseButtonRelease) {
-        currentLabel = nullptr;
+        currentLabel = LabelDataConstPtr();
     } else if (event->type() == QEvent::MouseMove) {
         QMouseEvent* mouseEvent = (QMouseEvent*)event;
         
         if (currentLabel) {
             marker.setVisible(false);
-            move(mouseEvent->pos(), currentSerie->getCurve(), currentLabel);
-            currentLabel->itemChanged();
+            move(mouseEvent->pos(), currentSerie->getCurve(), currentLabel->label);
+            currentLabel->label->itemChanged();
         } else {
-            currentLabel = nullptr;
-            QPointF sample;
-            double dist = getClosestPoint(sample, currentSerie->getCurve(), mouseEvent->pos());
-            if (dist < MIN_DIST) {
-                marker.setValue(sample);
+            currentLabel = LabelDataConstPtr();
+            SeriePointDist spd = getClosestPoint(mouseEvent->pos());
+            if (spd.get<2>() < MIN_DIST) {
+                marker.setValue(spd.get<1>());
                 marker.setVisible(true);
             } else {
                 marker.setVisible(false);
@@ -80,8 +77,8 @@ void NewChartValueMarker::stateEnd()
 void NewChartValueMarker::insertNewMarker( const QPointF& point, const QColor& color )
 {
     const NewChartSerie* serie = visualizer->tryGetCurrentSerie();
-    NewChartDotPtr dot(new NewChartDotFloating(point, serie));
-    NewChartLabelPtr label(new NewChartLabel(QObject::tr("Time: %1\nValue: %2").arg(point.x()).arg(point.y())));
+    NewChartDot* dot = (new NewChartDotFloating(point, serie));
+    NewChartLabel* label = (new NewChartLabel(QObject::tr("Time: %1\nValue: %2").arg(point.x()).arg(point.y())));
     label->setPen(QPen(color));
     dot->attach(plot);
     label->attach(plot);

@@ -7,7 +7,6 @@ static const double MIN_DIST = 20.0;
 
 NewChartVerticals::NewChartVerticals( NewChartVisualizer* visualizer, NewChartLabel::ConnectionStyle style ) : 
     NewChartLabelState(visualizer),
-    currentLabel(nullptr),
     labelMarker(new NewChartLabel()),
     style(style)
 {
@@ -19,56 +18,53 @@ NewChartVerticals::NewChartVerticals( NewChartVisualizer* visualizer, NewChartLa
 
 bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
 {
-    const NewChartSerie* currentSerie = visualizer->tryGetCurrentSerie();
-    if (object != canvas || !currentSerie ) {
+    //const NewChartSerie* currentSerie = visualizer->tryGetCurrentSerie();
+    if (object != canvas) {
         return false;
     }
     
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent* mouseEvent = (QMouseEvent*)event;
         if (mouseEvent->button() == Qt::LeftButton) {
-            currentLabel = getLabel(mouseEvent->pos(), currentSerie->getCurve());
+            currentLabel = getLabel(mouseEvent->pos());
         } else {
-            currentLabel = nullptr;
+            currentLabel = LabelDataConstPtr();
         }
 
         if (!currentLabel && mouseEvent->button() == Qt::LeftButton) {
-            QPointF sample;
-            double dist = getClosestPoint(sample, currentSerie->getCurve(), mouseEvent->pos());
-            
+            SeriePointDist cpd = getClosestPoint(mouseEvent->pos());
             if (point1) {
-                insertNewMarker(*point1, sample, currentSerie->getColor());
+                insertNewMarker(point1->second, cpd.get<1>(), cpd.get<0>(), cpd.get<0>()->getColor());
                 point1.reset();
             } else {
-                if (dist < MIN_DIST) {
-                    point1.reset(new QPointF(sample));
+                if (cpd.get<2>() < MIN_DIST) {
+                    point1.reset(new std::pair<const NewChartSerie*, QPointF>(cpd.get<0>(), cpd.get<1>()));
                 }
             }
         }
     } else if (event->type() == QEvent::MouseButtonRelease) {
-        currentLabel = nullptr;
+        currentLabel = LabelDataConstPtr();
     } else if (event->type() == QEvent::MouseMove) {
         QMouseEvent* mouseEvent = (QMouseEvent*)event;
 
         if (currentLabel) {
             labelMarker->setVisible(false);
-            move(mouseEvent->pos(), currentSerie->getCurve(), currentLabel);
-            currentLabel->itemChanged();
+            move(mouseEvent->pos(), currentLabel->serie->getCurve(), currentLabel->label);
+            currentLabel->label->itemChanged();
         } else {
-            currentLabel = nullptr;
-            QPointF sample;
-            double dist = getClosestPoint(sample, currentSerie->getCurve(), mouseEvent->pos());
-            if (!point1 && dist < MIN_DIST) {
+            currentLabel = LabelDataConstPtr();
+            SeriePointDist cpd = getClosestPoint(mouseEvent->pos());
+            if (!point1 && cpd.get<2>() < MIN_DIST) {
                 marker.setVisible(true);
-                marker.setValue(sample);
+                marker.setValue(cpd.get<1>());
             } else {  
                 marker.setVisible(false);
             }
             if ( point1) {
-                QString serieName = (style == NewChartLabel::Horizontal) ? "t" : currentSerie->getName().c_str();
-                double diff = (style == NewChartLabel::Horizontal) ? (sample.x() - point1->x()) : (sample.y() - point1->y());
+                QString serieName = (style == NewChartLabel::Horizontal) ? "t" : point1->first->getName().c_str(); 
+                double diff = (style == NewChartLabel::Horizontal) ? (cpd.get<1>().x() - point1->second.x()) : (cpd.get<1>().y() - point1->second.y());
                 labelMarker->setText(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(diff));
-                labelMarker->connectDots(sample, *point1, style);
+                labelMarker->connectDots(cpd.get<1>(), point1->second, style);
                 labelMarker->setVisible(true);
                 labelMarker->itemChanged();
             } else {
@@ -97,9 +93,8 @@ void NewChartVerticals::stateEnd()
     marker.detach();
 }
 
-void NewChartVerticals::insertNewMarker( const QPointF& point1, const QPointF& point2, const QColor& color )
+void NewChartVerticals::insertNewMarker( const QPointF& point1, const QPointF& point2, const NewChartSerie* currentSerie, const QColor& color)
 {
-    const NewChartSerie* currentSerie = visualizer->tryGetCurrentSerie();
     UTILS_ASSERT(currentSerie);
     NewChartDotPtr dot1(new NewChartDotFloating(point1, currentSerie));
     NewChartDotPtr dot2(new NewChartDotFloating(point2, currentSerie));
@@ -130,4 +125,5 @@ void NewChartVerticals::updateLabels()
         (*it)->label->setText(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(delta));
     }
 }
+
 

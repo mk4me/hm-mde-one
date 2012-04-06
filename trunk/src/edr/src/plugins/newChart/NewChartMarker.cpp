@@ -136,7 +136,9 @@ NewChartLabel::NewChartLabel(const QString& text, const QPoint& shift, const QPo
     size(size),
     shift(shift),
     pen(QColor(135, 173, 255)),
-    brush(QColor(Qt::white))
+    brush(QColor(Qt::white)),
+    point1(nullptr),
+    point2(nullptr)
 {
     setZ( 1000 );
     brush.setStyle(Qt::SolidPattern);

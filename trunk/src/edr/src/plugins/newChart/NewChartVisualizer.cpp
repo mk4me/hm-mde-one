@@ -1252,6 +1252,11 @@ void NewChartVisualizer::setLabelsVisible( bool val )
     }
 }
 
+boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> NewChartVisualizer::getSeries() const
+{
+    return boost::make_iterator_range(series.cbegin(), series.cend());
+}
+
 
 
 

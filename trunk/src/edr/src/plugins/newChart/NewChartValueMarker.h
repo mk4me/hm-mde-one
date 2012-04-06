@@ -32,7 +32,7 @@ private:
 
 private:
     NewChartMarker marker;
-    NewChartLabel* currentLabel;
+    LabelDataConstPtr currentLabel;
 };
 typedef core::shared_ptr<NewChartValueMarker> NewChartValueMarkerPtr;
 typedef core::shared_ptr<const NewChartValueMarker> NewChartValueMarkerConstPtr;

@@ -28,13 +28,13 @@ public:
     virtual void stateEnd();
 
 private:
-    void insertNewMarker(const QPointF& point1, const QPointF& point2, const QColor& color = QColor(Qt::blue));
+    void insertNewMarker(const QPointF& point1, const QPointF& point2, const NewChartSerie* currentSerie, const QColor& color = QColor(Qt::blue));
     void updateLabels();
 
 private:
     NewChartLabelPtr labelMarker;
-    NewChartLabel* currentLabel;
-    boost::shared_ptr<QPointF> point1;
+    LabelDataConstPtr currentLabel;
+    boost::shared_ptr<std::pair<const NewChartSerie*, QPointF>> point1;
     NewChartLabel::ConnectionStyle style;
     NewChartMarker marker;
 };

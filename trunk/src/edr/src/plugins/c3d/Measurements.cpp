@@ -6,7 +6,7 @@
 void MeasurementsParser::parse( const std::string& filename )
 {
     measurments = MeasurementsPtr(new Measurements());
-    TiXmlDocument doc(filename.c_str());
+    TiXmlDocument doc(filename);
     bool loadOkay = doc.LoadFile();
     TiXmlElement* rootElement = nullptr;
     // jesli plik jest plikiem *xml ...
@@ -49,7 +49,7 @@ void MeasurementsParser::readMeasurment( TiXmlElement* element, MeasurementConfi
         if (strcmp(attrib->Name(), "MeasurementConfID") == 0) {
             config->number = attrib->IntValue();
         } else if (strcmp(attrib->Name(), "Name") == 0) {
-            config->name = attrib->Value();
+            config->name = QString::fromUtf8(attrib->Value());
         }
         attrib = attrib->Next();
     }
@@ -72,9 +72,9 @@ void MeasurementsParser::readAttribute( TiXmlElement* A, Measurements::Entry& pa
     TiXmlAttribute* attrib = A->FirstAttribute();
     while(attrib) {
         if (strcmp(attrib->Name(), "Name") == 0) {
-            pair.first = attrib->Value();
+            pair.first = QString::fromUtf8(attrib->Value());
         } else if (strcmp(attrib->Name(), "Value") == 0) {
-            pair.second = attrib->Value();
+            pair.second = QString::fromUtf8(attrib->Value());
         }
         attrib = attrib->Next();
     }
@@ -96,7 +96,7 @@ MeasurementsParser::MeasurementsParser() :
 void Measurements::addConfig( MeasurementConfigPtr config )
 {
     if (config) {
-        const std::string& name = config->getName();
+        const QString& name = config->getName();
         int number = config->getNumber();
         if (!hasConfig(name) && !hasConfig(number)) {
             configsByName[name] = config;
@@ -109,7 +109,7 @@ void Measurements::addConfig( MeasurementConfigPtr config )
     }
 }
 
-MeasurementConfigConstPtr Measurements::getConfig( const std::string& name ) const
+MeasurementConfigConstPtr Measurements::getConfig( const QString& name ) const
 {
     auto it = configsByName.find(name);
     if (it != configsByName.end()) {
@@ -129,7 +129,7 @@ MeasurementConfigConstPtr Measurements::getConfig( int number ) const
     throw std::runtime_error("Config not found");
 }
 
-MeasurementConfigConstPtr Measurements::tryGetConfig( const std::string& name ) const
+MeasurementConfigConstPtr Measurements::tryGetConfig( const QString& name ) const
 {
     if (hasConfig(name)) {
         return getConfig(name);
@@ -147,7 +147,7 @@ MeasurementConfigConstPtr Measurements::tryGetConfig( int number ) const
     return MeasurementConfigConstPtr();
 }
 
-bool Measurements::hasConfig( const std::string& name ) const
+bool Measurements::hasConfig( const QString& name ) const
 {
     return configsByName.find(name) != configsByName.end();
 }
@@ -157,13 +157,13 @@ bool Measurements::hasConfig( int number ) const
     return configsByNumber.find(number) != configsByNumber.end();
 }
 
-bool MeasurementConfig::hasEntry( const std::string& text ) const
+bool MeasurementConfig::hasEntry( const QString& text ) const
 {
     auto it = namesMap.find(text);
     return it != namesMap.end();
 }
 
-std::string MeasurementConfig::tr( const std::string& text ) const
+QString MeasurementConfig::tr( const QString& text ) const
 {
     auto it = namesMap.find(text);
     if (it != namesMap.end()) {

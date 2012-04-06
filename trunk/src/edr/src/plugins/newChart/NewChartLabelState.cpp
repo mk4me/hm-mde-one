@@ -13,27 +13,65 @@ void NewChartLabelState::move( const QPoint& pos, const QwtPlotCurve* curve, New
     label->setShift(pos - label->getPoint1Transformed(curve));
 }
 
-NewChartLabel* NewChartLabelState::getLabel( const QPoint& pos, const QwtPlotCurve* curve )
+NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const QPoint& pos, const QwtPlotCurve* curve )
 {
     const QwtPlotItemList& itmList = plot->itemList();
     for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
         NewChartLabel* label = dynamic_cast<NewChartLabel*>(*it);
         if (label && label->getPoint1() && label->isInsideLabel(pos, curve)) {            
-            return label;
+            LabelDataConstPtr data = getLabel(label);
+            if (data) {
+                return data;
+            }
         }
     }
 
-    return nullptr;
+    return LabelDataConstPtr();
 }
 
-double NewChartLabelState::getClosestPoint( QPointF& ret, const QwtPlotCurve* curve, const QPoint& pos )
+NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const QPoint& pos )
 {
-    UTILS_ASSERT(curve);
+    auto range = visualizer->getSeries();
+    for (auto it = range.begin(); it != range.end(); it++) {
+        LabelDataConstPtr l = getLabel(pos, (*it)->getCurve());
+        if (l) {
+            return l;
+        }
+    }
 
+    return LabelDataConstPtr();
+}
+
+NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const NewChartLabel* label ) const
+{
+    for (auto it = labels.begin(); it != labels.end(); it++) {
+        if ((*it)->label == label) {
+            return *it;
+        }
+    }
+
+    return LabelDataConstPtr();
+}
+
+NewChartLabelState::SeriePointDist NewChartLabelState::getClosestPoint(const QPoint& pos) const
+{
     double d = 0.0;
-    int pointIndex = curve->closestPoint(pos, &d);
-    ret = curve->sample( pointIndex );
-    return d;
+    double min = std::numeric_limits<double>::max();
+    const NewChartSerie* serie = nullptr;
+    QPointF ret;
+    auto series = visualizer->getSeries();
+    for (auto it = series.begin(); it != series.end(); it++) {
+        double dist;
+        const QwtPlotCurve* c = (*it)->getCurve();
+        int pointIndex = c->closestPoint(pos, &dist);
+        if (dist < min) {
+            min = dist;
+            serie = *it;
+            ret = c->sample( pointIndex );
+        }
+    }
+    
+    return boost::make_tuple(serie, ret, min);
 }
 
 void NewChartLabelState::draw( QPainter * painter)

@@ -113,8 +113,10 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
         EMGChannelPtr c = emgs[i]->get();	
         if (c) {
             EMGFilterHelper* channelItem = new EMGFilterHelper(emgs[i]);
-            channelItem->setIcon(0, itemIcon);	
-            channelItem->setText(0, config ? config->tr(c->getName()).c_str() : c->getName().c_str());			
+            channelItem->setIcon(0, itemIcon);
+            QString n = QString::fromStdString(emgs[i]->getName());
+            n = config ? config->tr(n) : n;
+            channelItem->setText(0, n);			
             channelItem->setMotion(motion);
             emgItem->addChild(channelItem);			
         }

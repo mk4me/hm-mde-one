@@ -37,8 +37,8 @@ private:
     QPen pen;
     QBrush brush;
 };
-typedef core::shared_ptr<NewChartDot> NewChartDotPtr;
-typedef core::shared_ptr<const NewChartDot> NewChartDotConstPtr;
+typedef NewChartDot* NewChartDotPtr;
+typedef const NewChartDot* NewChartDotConstPtr;
 
 class NewChartDotFixed : public NewChartDot
 {
@@ -132,8 +132,8 @@ private:
     NewChartDotConstPtr point2;
     ConnectionStyle connectionStyle;
 };
-typedef core::shared_ptr<NewChartLabel> NewChartLabelPtr;
-typedef core::shared_ptr<const NewChartLabel> NewChartLabelConstPtr;
+typedef NewChartLabel* NewChartLabelPtr;
+typedef const NewChartLabel* NewChartLabelConstPtr;
 
 class NewChartMarker : public QwtPlotMarker
 {

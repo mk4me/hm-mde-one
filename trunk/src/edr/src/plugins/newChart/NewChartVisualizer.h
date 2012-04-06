@@ -88,6 +88,8 @@ public:
       void setShowLegend(bool val);
       bool eventFilter( QObject *object, QEvent *event );
 
+      boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> getSeries() const;
+
       bool isEventMode() const { return context != C3DEventsCollection::Context::General; }
 
       virtual QPixmap print() const 

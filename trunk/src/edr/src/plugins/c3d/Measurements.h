@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_C3DPLUGIN__MEASUREMENTS_H__
 #define HEADER_GUARD_C3DPLUGIN__MEASUREMENTS_H__
 
-#include <string>
+#include <QtCore/QString>
 #include <vector>
 #include <core/SmartPtr.h>
 #include <plugins/c3d/IMeasurementConfig.h>
@@ -22,16 +22,16 @@ class MeasurementConfig : public IMeasurementConfig
 public:
     virtual ~MeasurementConfig() {}
 
-    std::string tr(const std::string& text) const;
-    bool hasEntry(const std::string& text) const;
+    QString tr(const QString& text) const;
+    bool hasEntry(const QString& text) const;
 
-    const std::string& getName() const { return name; }
+    const QString& getName() const { return name; }
     int getNumber() const { return number; }
 
 private:
-    std::string name;
+    QString name;
     int number;
-    std::map<std::string, std::string> namesMap;
+    std::map<QString, QString> namesMap;
 };
 typedef core::shared_ptr<MeasurementConfig> MeasurementConfigPtr;
 typedef core::shared_ptr<const MeasurementConfig> MeasurementConfigConstPtr;
@@ -39,7 +39,7 @@ typedef core::shared_ptr<const MeasurementConfig> MeasurementConfigConstPtr;
 class Measurements
 {
 public:
-    typedef std::pair<std::string, std::string> Entry;
+    typedef std::pair<QString, QString> Entry;
 
 public:
     Measurements() {}
@@ -48,18 +48,18 @@ public:
 public:
     void addConfig(MeasurementConfigPtr config);
 
-    MeasurementConfigConstPtr getConfig(const std::string& name) const;
+    MeasurementConfigConstPtr getConfig(const QString& name) const;
     MeasurementConfigConstPtr getConfig(int number) const;
 
-    MeasurementConfigConstPtr tryGetConfig(const std::string& name) const;
+    MeasurementConfigConstPtr tryGetConfig(const QString& name) const;
     MeasurementConfigConstPtr tryGetConfig(int number) const;
 
-    bool hasConfig(const std::string& name) const;
+    bool hasConfig(const QString& name) const;
     bool hasConfig(int number) const;
 
 private:
     std::map<int, MeasurementConfigPtr> configsByNumber;
-    std::map<std::string, MeasurementConfigPtr> configsByName;
+    std::map<QString, MeasurementConfigPtr> configsByName;
 };
 typedef core::shared_ptr<Measurements> MeasurementsPtr;
 typedef core::shared_ptr<const Measurements> MeasurementsConstPtr;

@@ -28,21 +28,27 @@ public:
     void removeSerieLabels(const NewChartSerie* serie);
     void setVisible(const NewChartSerie* serie, bool visible);
 
-protected:
-    void move(const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label);
-    NewChartLabel* getLabel(const QPoint& pos, const QwtPlotCurve* curve);
-    double getClosestPoint(QPointF& ret, const QwtPlotCurve* curve, const QPoint& pos);
 
 protected:
     struct LabelData
     {
-        NewChartLabelPtr label;
-        NewChartDotPtr dot1;
-        NewChartDotPtr dot2;
+        NewChartLabel* label;
+        NewChartDot* dot1;
+        NewChartDot* dot2;
         const NewChartSerie* serie;
     };
     typedef core::shared_ptr<LabelData> LabelDataPtr;
     typedef core::shared_ptr<const LabelData> LabelDataConstPtr;
+
+    typedef boost::tuple<const NewChartSerie*, QPointF, double> SeriePointDist;
+
+protected:
+    void move(const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label);
+    LabelDataConstPtr getLabel(const QPoint& pos);
+    LabelDataConstPtr getLabel(const QPoint& pos, const QwtPlotCurve* curve);
+    LabelDataConstPtr getLabel(const NewChartLabel* label) const;
+    SeriePointDist getClosestPoint(const QPoint& pos) const;
+    //boost::tuple<QPointF, double> getClosestPoint(const QwtPlotCurve*, const QPoint& pos) const;
 
 protected:
     std::vector<LabelDataPtr> labels;
