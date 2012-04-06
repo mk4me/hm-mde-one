@@ -15,6 +15,7 @@
 #include <webserviceslib/IBasicUpdatesWS.h>
 #include <webserviceslib/IFileStoremanWS.h>
 #include <webserviceslib/IUserPersonalSpaceWS.h>
+#include <webserviceslib/IAccountFactoryWS.h>
 
 class DataSourceWebServicesManager
 {
@@ -34,6 +35,7 @@ public:
 	const webservices::MotionFileStoremanWSPtr & motionFileStoremanService();
 	const webservices::MedicalFileStoremanWSPtr & medicalFileStoremanService();
 
+	const webservices::AccountFactoryWSPtr & accountFactoryService();
 	const webservices::AuthorizationWSPtr & authorizationService();
 	const webservices::AdministrationWSPtr & administrationService();
 	const webservices::UserPersonalSpaceWSPtr & userPersonalSpaceService();
@@ -54,6 +56,7 @@ private:
 	webservices::MotionFileStoremanWSPtr motionFileStoremanService_;
 	webservices::MedicalFileStoremanWSPtr medicalFileSoremanService_;
 
+	webservices::AccountFactoryWSPtr accountFactoryService_;
 	webservices::AuthorizationWSPtr authorizationService_;
 	webservices::AdministrationWSPtr administrationService_;
 	webservices::UserPersonalSpaceWSPtr userPersonalSpaceService_;

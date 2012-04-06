@@ -7,7 +7,7 @@ template<class Invoker>
 class _TWSConnection : public ISecureWSConnection
 {
 public:
-	_TWSConnection() : invoker_(new Invoker())
+	_TWSConnection() : invoker_(new Invoker()), ready(false), exception_(false)
 	{
 
 	}
@@ -89,6 +89,10 @@ public:
 	//! \param operation Metoda serwisu do wywo³ania
 	virtual void setOperation(const std::string & operation)
 	{
+		if(ready == false){
+			throw std::runtime_error("Connection not ready for data.");
+		}
+
 		operationName_ = operation;
 		invoker_->setOperation(operation);
 	}
@@ -97,14 +101,35 @@ public:
 	//! \param value Wartoœæ zmiennej
 	virtual void setValue(const std::string & name, const std::string & value)
 	{
+		if(ready == false){
+			throw std::runtime_error("Connection not ready for data.");
+		}
+
 		invoker_->setValue(name, value);
 	}
 
 	//! Wykonuje operacjê na serwisie webowym
 	virtual void invoke(bool process)
 	{
+		if(ready == false){
+			throw std::runtime_error("Connection not ready for data.");
+		}
+
+		exception_ = false;
+		s = e = std::string::npos;
 		invoker_->setAuth(user_, password_);
 		invoker_->invoke(0, process);
+		//tutaj weryfikujê czy by³ jakis wyj¹tek - jeœli tak to go zg³oszê
+		s = invoker_->getXMLResponse().find("<faultstring", 0);
+		if(s != std::string::npos){	
+			exception_ = true;
+			e = invoker_->getXMLResponse().find("</s:Fault>", s + 12);
+			if(e == std::string::npos){
+				e = invoker_->getXMLResponse().size();
+			}
+
+			throw std::runtime_error(invoker_->getXMLResponse().substr(s + 11, e-s - 11));
+		}
 	}
 	//! \param name Nazwa wartoœci któr¹ chcemy pobraæ
 	//! \return WskaŸnik do wartoœci, nullptr jeœli nie ma takiej wartoœci, wskaxnik pozostaje pod kontrol¹ implementacji IWSConnection
@@ -120,42 +145,38 @@ public:
 		//musze przetworzyæ odpowiedŸ - chcê w niej mieæ tylko to co istotne bez zbêdnych nag³ówków SOAP i bezpieczeñstwa
 		std::string ret(invoker_->getXMLResponse());
 
-		auto s = ret.find("<" + operationName_ + "Result", 0);
-		auto e = s;
-		if(s == std::string::npos){
+		if(exception_ != true){
 
-			s = ret.find("<faultstring", 0);
-
-			if(s == std::string::npos){
+			s = ret.find("<" + operationName_ + "Result", 0);
+		
+			if(s != std::string::npos){
+				e = ret.find("</" + operationName_ + "Result>", s + 1) + 9 + operationName_.size();
+				if(e == std::string::npos){
+					e = ret.size();
+				}
+			}else{
 				s = 0;
 				e = ret.size();
-			}else{
-
-				e = ret.find("</s:Fault>", s + 12);
-
 			}
-
-		}else{
-
-			e = ret.find("</" + operationName_ + "Result>", s + 1) + 9 + operationName_.size();
-
 		}
 
-		try{
-			ret = ret.substr(s, e-s);
-		}catch(...){
-
-		}
-
-		return ret;
+		return ret.substr(s, e-s);
 	}
 
 private:
 
 	void resetInvoker()
 	{
-		invoker_.reset(new Invoker());
-		setInvoker(boost::is_base_of<WsdlPull::CustomSSLWsdlInvoker, Invoker>());
+		ready = false;
+		try{
+			invoker_.reset(new Invoker());
+			setInvoker(boost::is_base_of<WsdlPull::CustomSSLWsdlInvoker, Invoker>());
+			ready = true;
+		}catch(std::exception & e){
+
+		}catch(...){
+
+		}
 	}
 
 	void setInvoker(boost::true_type)
@@ -173,6 +194,10 @@ private:
 	typedef core::shared_ptr<Invoker> InvokerPtr;
 
 private:
+	std::string::size_type s;
+	std::string::size_type e;
+	bool exception_;
+	bool ready;
 	std::string operationName_;
 	InvokerPtr invoker_;
 	std::string user_;

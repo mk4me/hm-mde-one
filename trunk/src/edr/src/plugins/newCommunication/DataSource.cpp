@@ -22,6 +22,7 @@ CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.p
 
     setConnectionsSerwerCertificatePath(core::getPathInterface()->getResourcesPath() / "v21.pjwstk.edu.pl.crt");
 
+	connectionsManager->accountFactoryWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AccountFactoryWS.svc?wsdl");
     connectionsManager->administrationWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AdministrationWS.svc?wsdl");
     connectionsManager->authorizationWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AuthorizationWS.svc?wsdl");
     connectionsManager->userPersonalSpaceWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/res/UserPersonalSpaceWSStandalone.wsdl");
@@ -44,6 +45,7 @@ CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.p
     //konfigurujemy web serwisy
     auto servicesManager = DataSourceWebServicesManager::create();
 
+	servicesManager->accountFactoryService()->setConnection(connectionsManager->accountFactoryWSConnection());
     servicesManager->administrationService()->setConnection(connectionsManager->administrationWSConnection());
     servicesManager->authorizationService()->setConnection(connectionsManager->authorizationWSConnection());
     servicesManager->userPersonalSpaceService()->setConnection(connectionsManager->userPersonalSpaceWSConnection());
@@ -111,6 +113,7 @@ void CommunicationDataSource::setConnectionsSerwerCertificatePath(const core::Fi
     auto connectionsManager = DataSourceConnectionManager::instance();
     std::string caPath = certPath.string();
 
+	connectionsManager->accountFactoryWSConnection()->setCAPath(caPath);
     connectionsManager->administrationWSConnection()->setCAPath(caPath);
     connectionsManager->authorizationWSConnection()->setCAPath(caPath);
     connectionsManager->userPersonalSpaceWSConnection()->setCAPath(caPath);
@@ -128,6 +131,7 @@ void CommunicationDataSource::setConnectionsCredentials(const User & user)
 {
     auto connectionsManager = DataSourceConnectionManager::instance();
 
+	connectionsManager->accountFactoryWSConnection()->setCredentials(user.name(), user.password());
     connectionsManager->administrationWSConnection()->setCredentials(user.name(), user.password());
     connectionsManager->authorizationWSConnection()->setCredentials(user.name(), user.password());
     connectionsManager->userPersonalSpaceWSConnection()->setCredentials(user.name(), user.password());

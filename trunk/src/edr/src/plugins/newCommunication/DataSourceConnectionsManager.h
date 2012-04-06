@@ -38,6 +38,9 @@ public:
 	//! \return Po³¹czenie z us³ug¹ BasicUpdatesWS dla danych medycznych
 	const WSConnectionPtr & medicalBasicUpdatesWSConnection() const;
 
+
+	//! \return Po³¹czenie z us³ug¹ AcvcountFactoryWS
+	const WSConnectionPtr & accountFactoryWSConnection() const;
 	//! \return Po³¹czenie z us³ug¹ UserPersonalSpaceWS
 	const WSConnectionPtr & userPersonalSpaceWSConnection() const;
 	//! \return Po³¹czenie z us³ug¹ AdministrationWS
@@ -66,6 +69,7 @@ private:
 	WSConnectionPtr medicalBasicQueriesWSConnection_;
 	WSConnectionPtr medicalBasicUpdatesWSConnection_;
 
+	WSConnectionPtr accountFactoryWSConnection_;
 	WSConnectionPtr userPersonalSpaceWSConnection_;
 	WSConnectionPtr administrationWSConnection_;
 	WSConnectionPtr authorizationWSConnection_;

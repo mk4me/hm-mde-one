@@ -15,6 +15,8 @@ set(TARGET_TARGETNAME
 # nag³ówki publiczne
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
+	${HEADER_PATH}/IAccountFactoryWS.h
+	${HEADER_PATH}/AccountFactoryWS.h
 	${HEADER_PATH}/IWSConnection.h
 	${HEADER_PATH}/IDownloadHelper.h
 	${HEADER_PATH}/IFtpsConnection.h
@@ -47,6 +49,7 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
+	AccountFactoryWS.cpp
 	DownloadHelper.cpp
 	AdministrationWS.cpp
 	AuthorizationWS.cpp

@@ -35,7 +35,8 @@ DataSourceConnectionManager::DataSourceConnectionManager()
 		administrationWSConnection_(new WSConnection()),
 		authorizationWSConnection_(new WSConnection()),
 		motionFtps_(new webservices::FtpsConnection()),
-		medicalFtps_(new webservices::FtpsConnection())
+		medicalFtps_(new webservices::FtpsConnection()),
+		accountFactoryWSConnection_(new WSConnection())
 {
 	
 }
@@ -73,6 +74,11 @@ const WSConnectionPtr & DataSourceConnectionManager::medicalBasicQueriesWSConnec
 const WSConnectionPtr & DataSourceConnectionManager::medicalBasicUpdatesWSConnection() const
 {
 	return medicalBasicUpdatesWSConnection_;
+}
+
+const WSConnectionPtr & DataSourceConnectionManager::accountFactoryWSConnection() const
+{
+	return accountFactoryWSConnection_;
 }
 
 const WSConnectionPtr & DataSourceConnectionManager::userPersonalSpaceWSConnection() const

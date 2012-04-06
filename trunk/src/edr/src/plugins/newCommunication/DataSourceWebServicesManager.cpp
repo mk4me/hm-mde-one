@@ -6,6 +6,7 @@
 #include <webserviceslib/BasicUpdatesWS.h>
 #include <webserviceslib/FileStoremanWS.h>
 #include <webserviceslib/UserPersonalSpaceWS.h>
+#include <webserviceslib/AccountFactoryWS.h>
 
 using namespace webservices;
 
@@ -80,6 +81,11 @@ const UserPersonalSpaceWSPtr & DataSourceWebServicesManager::userPersonalSpaceSe
 	return userPersonalSpaceService_;
 }
 
+const AccountFactoryWSPtr & DataSourceWebServicesManager::accountFactoryService()
+{
+	return accountFactoryService_;
+}
+
 DataSourceWebServicesManager::DataSourceWebServicesManager()
 	:	motionBasicQueriesService_(new MotionBasicQueriesWS()),
 		medicalBasicQueriesService_(new MedicalBasicQueriesWS()),
@@ -89,7 +95,8 @@ DataSourceWebServicesManager::DataSourceWebServicesManager()
 		medicalFileSoremanService_(new MedicalFileStoremanWS()),
 		authorizationService_(new AuthorizationWS()),
 		administrationService_(new AdministrationWS()),
-		userPersonalSpaceService_(new UserPersonalSpaceWS())
+		userPersonalSpaceService_(new UserPersonalSpaceWS()),
+		accountFactoryService_(new AccountFactoryWS())
 {
 
 }
