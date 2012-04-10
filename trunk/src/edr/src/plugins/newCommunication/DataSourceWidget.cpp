@@ -6,6 +6,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QMenu>
 #include <QtGui/QHBoxLayout>
+#include <QtCore/QRegExp>
 
 #include "DataSourceWebServicesManager.h"
 #include "DataSourceShallowCopyUtils.h"
@@ -182,6 +183,7 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	downloadStatusWidget->setVisible(false);
 	loginProgressBar->setVisible(false);
 	registrationProgressBar->setVisible(false);
+	activationProgressBar->setVisible(false);
 
 	connect(&downloadRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshDownloadProgress()));
 
@@ -795,7 +797,106 @@ void DataSourceWidget::onLoginRecover()
 
 void DataSourceWidget::onRegistration()
 {
+	static const QString strPatt("\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\b");
+	static const QRegExp rx(strPatt, Qt::CaseInsensitive);
 
+	QStringList verification;
+	if(regLoginEdit->text().isEmpty() == true || regPassEdit->text().isEmpty() == true
+		|| regRepPassEdit->text().isEmpty() == true || nameEdit->text().isEmpty() == true
+		|| surnameEdit->text().isEmpty() == true || emailEdit->text().isEmpty() == true){
+
+			verification.push_back(tr("All fields: Login, Password, Repeat password, Name, Surname and E-mail must be filled. Please correct them and try again."));
+	}
+
+	if(regPassEdit->text().isEmpty() == false && regRepPassEdit->text().isEmpty() == false && regPassEdit->text() != regRepPassEdit->text()){
+		verification.push_back(tr("Password differs from its repeat. Please verify password."));
+	}
+
+	/*if(emailEdit->text().isEmpty() == false && rx.exactMatch(emailEdit->text()) == false){
+		verification.push_back(tr("Incorrect E-mail. Please verify Your E-mail address."));
+	}*/
+
+	if(verification.empty() == false){
+
+		//generuje liste problemów
+		QString message;
+
+		for(int i = 0; i < verification.size(); ++i){
+			message += QString::number(i+1) + ". " + verification[i] + "\n";
+		}
+
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Registration form validation"));
+		messageBox.setText(message);
+		messageBox.setIcon(QMessageBox::Icon::Warning);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+		messageBox.exec();
+	}else {
+		
+		if(dataSource->registerUser(regLoginEdit->text().toStdString(), regPassEdit->text().toStdString(),
+			nameEdit->text().toStdString(), surnameEdit->text().toStdString(), emailEdit->text().toStdString()) == true){
+
+			QMessageBox messageBox;
+			messageBox.setWindowTitle(tr("Registration successful"));
+			messageBox.setText(tr("Your registration has finished. Activate Your account to be able to login and get access to database."));
+			messageBox.setIcon(QMessageBox::Icon::Information);
+			messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+			messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+			messageBox.exec();
+
+			if(dataSource->isLogged() == false){
+				//jeœli nikt nie jest jeszcze zalogowany to przenosimy do strony logowania
+				toolBox->setCurrentIndex(2);
+				//czêsciowo wype³niam ju¿ dane usera
+				activationLoginEdit->setText(regLoginEdit->text());
+			}
+		} else{
+			QMessageBox messageBox;
+			messageBox.setWindowTitle(tr("Registration failed"));
+			messageBox.setText(tr("Could not registrate. Please change login or email and try again. If problem continues contact producer."));
+			messageBox.setIcon(QMessageBox::Icon::Critical);
+			messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+			messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+			messageBox.exec();
+		}
+	}
+}
+
+void DataSourceWidget::onActivate()
+{
+	if(activationLoginEdit->text().isEmpty() == true || activationCodeEdit->text().isEmpty() == true){
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Activation validation"));
+		messageBox.setText(tr("Both fields: Login and Activation code must be filled. Please correct them and try again."));
+		messageBox.setIcon(QMessageBox::Icon::Warning);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+		messageBox.exec();
+	}else if(dataSource->tryActivateAccount(activationLoginEdit->text().toStdString(), activationCodeEdit->text().toStdString()) == true){
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Activation successful"));
+		messageBox.setText(tr("Given login has been successfully activated. You can now login using this account."));
+		messageBox.setIcon(QMessageBox::Icon::Information);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+		messageBox.exec();
+
+		if(dataSource->isLogged() == false){
+			//jeœli nikt nie jest jeszcze zalogowany to przenosimy do strony logowania
+			toolBox->setCurrentIndex(0);
+			//czêsciowo wype³niam ju¿ dane usera
+			userEdit->setText(activationLoginEdit->text());
+		}
+	}else{
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Activation failed"));
+		messageBox.setText(tr("Could not activate given login with provided activation code. Verify data and try again. If problem continiues please contact the producer."));
+		messageBox.setIcon(QMessageBox::Icon::Critical);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+		messageBox.exec();
+	}
 }
 
 void DataSourceWidget::onPerspectiveChange(int idx)
@@ -1187,33 +1288,7 @@ bool DataSourceWidget::refreshShallowCopy()
 		}else{
 			ret = false;
 		}
-
-		//	QMessageBox messageBox;
-		//	messageBox.setWindowTitle(tr("Synchronization successful"));
-		//	messageBox.setText(tr("Synchronization has succeeded."));
-		//	messageBox.setIcon(QMessageBox::Icon::Information);
-		//	messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
-		//	messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
-		//	messageBox.exec();
-
-		//}else{
-		//	//info ¿e z p³yk¹ kopi¹ coœ posz³o nie tak
-		//	QMessageBox messageBox;
-		//	messageBox.setWindowTitle(tr("Synchronization problem"));
-		//	messageBox.setText(tr("Downloaded data seems to be inconsistent. Please try to synchronize later. If this error continues to occur please contact the producer."));
-		//	messageBox.setIcon(QMessageBox::Icon::Warning);
-		//	messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
-		//	messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
-		//	messageBox.exec();
-		//}
 	}catch(...){
-		/*QMessageBox messageBox;
-		messageBox.setWindowTitle(tr("Synchronization problem"));
-		messageBox.setText(tr("Synchronization data seems to be invalid or inconsistent. Please try to synchronize later. If this error continues to occur please contact the producer."));
-		messageBox.setIcon(QMessageBox::Icon::Critical);
-		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
-		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
-		messageBox.exec();*/
 		ret = false;
 	}
 
@@ -1402,6 +1477,13 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			subPtr = subjectService->createSubject();
 			//dodajê do DM
 			auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, subPtr);
+
+			core::MetadataPtr meta(new core::Metadata(ow));
+			auto s = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first)->second;
+			meta->setValue("label", s->surname + ", " + s->name);
+
+			core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
+
 			//zapamiêtujê mapowanie
 			subjectsMapping[subjectIT->first] = ow;
 		}
@@ -1428,14 +1510,17 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					}
 				}
 
-				//TODO
-				//z powodu pluginu subject musze to robiæ
-				//data powinna znikn¹æ z sesju w plugin subject
-				auto s = filteredShallowCopy.motionShallowCopy->sessions.find(sessionIT->first)->second;
-				auto date = toTime(s->sessionDate);
-				sPtr = subjectService->createSession(subPtr, date.getYear(), date.getMonth(), date.getDay(), sessionObjects);
+				sPtr = subjectService->createSession(subPtr, sessionObjects);
 				//dodajê do DM
 				auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, sPtr);
+
+				core::MetadataPtr meta(new core::Metadata(ow));
+				auto s = filteredShallowCopy.motionShallowCopy->sessions.find(sessionIT->first)->second;
+				meta->setValue("label", s->sessionName);
+				meta->setValue("EMGConf", boost::lexical_cast<std::string>(s->emgConf));
+
+				core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
+
 				//zapamiêtujê mapowanie
 				sessionsMapping[sessionIT->first] = ow;
 			}
@@ -1467,6 +1552,13 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					mPtr = subjectService->createMotion(sPtr,motionObjects);
 					//dodajê do DM
 					auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, mPtr);
+
+					core::MetadataPtr meta(new core::Metadata(ow));
+					auto s = filteredShallowCopy.motionShallowCopy->trials.find(motionIT->first)->second;
+					meta->setValue("label", s->trialName);
+
+					core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
+
 					//zapamiêtujê mapowanie
 					motionsMapping[motionIT->first] = ow;
 				}

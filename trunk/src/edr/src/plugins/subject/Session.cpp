@@ -10,24 +10,14 @@
 
 using namespace PluginSubject;
 
-Session::Session(SubjectID sessionID, const SubjectConstPtr & subject, SubjectID localSessionID, unsigned int year,
-    unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
-    : sessionID(sessionID), subject(subject), localSessionID(localSessionID), year(year), month(month), day(day), wrappers(wrappers),
+Session::Session(SubjectID sessionID, const SubjectConstPtr & subject, SubjectID localSessionID,
+	const std::vector<core::ObjectWrapperConstPtr> & wrappers)
+    : sessionID(sessionID), subject(subject), localSessionID(localSessionID), wrappers(wrappers),
      currentMotionID(0)
 {
-    //data
-    std::stringstream ss;
-    ss.fill('0');
-    ss << year << "-";
-    ss.width(2);
-    ss << (unsigned int)month;
-    ss.width(0);
-    ss << "-";
-    ss.width(2);
-    ss << (unsigned int)day;
 
-    //data + nazwa subjecta
-    localName += ss.str() + "-" + "B";
+    //nazwa subjecta
+    localName = "B";
 
     std::stringstream ss1;
     ss1.fill('0');
@@ -93,21 +83,6 @@ void Session::getMotions(Motions & motions) const
 const SubjectConstPtr & Session::getSubject() const
 {
     return subject;
-}
-
-unsigned int Session::getYear() const
-{
-    return year;
-}
-
-unsigned char Session::getMonth() const
-{
-    return month;
-}
-
-unsigned char Session::getDay() const
-{
-    return day;
 }
 
 bool Session::hasObjectOfType(const core::TypeInfo& type) const
@@ -177,21 +152,6 @@ void FilteredSession::getMotions(Motions & motions) const
 const SubjectConstPtr & FilteredSession::getSubject() const
 {
     return originalSession->getSubject();
-}
-
-unsigned int FilteredSession::getYear() const
-{
-    return originalSession->getYear();
-}
-
-unsigned char FilteredSession::getMonth() const
-{
-    return originalSession->getMonth();
-}
-
-unsigned char FilteredSession::getDay() const
-{
-    return originalSession->getDay();
 }
 
 void FilteredSession::getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const

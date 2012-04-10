@@ -21,7 +21,7 @@ namespace core{
 
     //! Przekierowanie z queryData dla poprawnych danych.
     template <class T, class Ptr>
-    void queryDataIsConvertible__(IDataManagerBase* manager, std::vector<Ptr> & target, bool exact, boost::true_type)
+    void queryDataIsConvertible__(IDataManagerReader* manager, std::vector<Ptr> & target, bool exact, boost::true_type)
     {
         // pobieramy wrappery
         std::vector<ObjectWrapperConstPtr> objects;
@@ -34,7 +34,7 @@ namespace core{
 
     //! Przekierowanie z queryData dla niepoprawnych danych.
     template <class T, class Ptr>
-    void queryDataIsConvertible__(IDataManagerBase*, std::vector<Ptr>&, bool, boost::false_type)
+    void queryDataIsConvertible__(IDataManagerReader*, std::vector<Ptr>&, bool, boost::false_type)
     {
         UTILS_STATIC_ASSERT( false, "Niewlasciwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
     }
@@ -44,7 +44,7 @@ namespace core{
     //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
     //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
     template <class SmartPtr>
-    inline void queryDataPtr(IDataManagerBase* manager, std::vector<SmartPtr>& target, bool exact = false)
+    inline void queryDataPtr(IDataManagerReader* manager, std::vector<SmartPtr>& target, bool exact = false)
     {
         UTILS_STATIC_ASSERT(boost::is_const<typename SmartPtr::element_type>::value, "Interfejs pobierania danych operuje na stalych obiektach.");
         UTILS_STATIC_ASSERT(ObjectWrapperTraits<typename boost::remove_const<typename SmartPtr::element_type>::type>::isDefinitionVisible ||
@@ -57,7 +57,7 @@ namespace core{
     //! \return Wektor wskaŸników na obiekty. WskaŸniki musz¹ byæ konwertowalne z tego
     //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
     template <class SmartPtr>
-    inline std::vector<SmartPtr> queryDataPtr(IDataManagerBase* manager, bool exact = false, SmartPtr* /*dummy*/ = nullptr)
+    inline std::vector<SmartPtr> queryDataPtr(IDataManagerReader* manager, bool exact = false, SmartPtr* /*dummy*/ = nullptr)
     {
         std::vector<SmartPtr> target;
         queryDataPtr<SmartPtr>(manager, target, exact);
@@ -71,12 +71,12 @@ namespace core{
     {
 
     private:
-        IDataManagerBase* manager;
+        IDataManagerReader* manager;
         bool exact;
         //! \param manager
         //! \param exact
     public:
-        inline queryDataPtr_t(IDataManagerBase* manager, bool exact = false) :
+        inline queryDataPtr_t(IDataManagerReader* manager, bool exact = false) :
         manager(manager), exact(exact)
         {}
 
@@ -92,7 +92,7 @@ namespace core{
 
     //! Wersja funkcji queryData oparta o idiom "Return Type Resolver". Nie trzeba
     //! podawaæ jawnie typu elementu kolekcji jako parametru szablonu.
-    inline queryDataPtr_t queryDataPtr(IDataManagerBase* manager, bool exact = false)
+    inline queryDataPtr_t queryDataPtr(IDataManagerReader* manager, bool exact = false)
     {
         return queryDataPtr_t(manager, exact);
     }
@@ -102,7 +102,7 @@ namespace core{
     //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
     //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
     template <class T, class Ptr>
-    inline void queryData(IDataManagerBase* manager, std::vector<Ptr>& target, bool exact = false)
+    inline void queryData(IDataManagerReader* manager, std::vector<Ptr>& target, bool exact = false)
     {
         UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
         queryDataIsConvertible__<T, Ptr>(manager, target, exact, boost::is_convertible<Ptr, typename ObjectWrapperT<T>::ConstPtr>());
@@ -113,7 +113,7 @@ namespace core{
     //!     zdefiniowanego w zasadach wskaŸników dla wrappera.
     //! \param exact Czy maj¹ byæ wyci¹gane obiekty konkretnie tego typu (z pominiêciem polimorfizmu)?
     template <class T>
-    inline std::vector<typename ObjectWrapperT<T>::ConstPtr> queryData(IDataManagerBase* manager, bool exact = false, T* /*dummy*/ = nullptr)
+    inline std::vector<typename ObjectWrapperT<T>::ConstPtr> queryData(IDataManagerReader* manager, bool exact = false, T* /*dummy*/ = nullptr)
     {
         UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
         std::vector<typename ObjectWrapperT<T>::ConstPtr> target;

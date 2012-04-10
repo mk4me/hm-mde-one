@@ -84,6 +84,7 @@ private slots:
     void onLogin();
     void onLoginRecover();
     void onRegistration();
+	void onActivate();
 
     //! Zmiana perspektywy
     void onPerspectiveChange(int idx);

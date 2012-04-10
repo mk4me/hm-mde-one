@@ -16,7 +16,8 @@ resources, próby pomiarowe s¹ wyszukiwane i pobierane do trials.
 #include <core/IDataManager.h>
 #include "ManagerHelper.h"
 
-class DataManager : public core::IDataManagerBase, public core::IMemoryDataManager,
+
+class DataManager : public virtual core::IDataManagerReader, public core::IMemoryDataManager,
     public core::IFileDataManager, public ManagerHelper<DataManager>
 {
 public:
@@ -158,6 +159,11 @@ private:
     //! Mapa surowych wskaŸników i odpowiadaj¹cych im ObjectWrapperów
     typedef std::map<const void *, core::ObjectWrapperPtr> RawObjectWrapperMapping;
 
+	//! -------------------- Struktury do obs³ugi metadany ObjectWrapperów ------------------
+
+	//! Metadane wg OW
+	typedef std::map<core::ObjectWrapperPtr, std::vector<core::ObjectWrapperPtr>> MetadataByObjects;
+
     //! ---------------------------------------------------------------------------------
 
     //! Mapa fabryk obiektów.
@@ -195,6 +201,9 @@ private:
     //! Obiekty pochodz¹ce z parserów.
     ObjectsByTypes objectsByTypes;
 
+	//! Metadane wg OW
+	MetadataByObjects metadataByObjects;
+
     //! Mapowanie surowcyh wskaŸników do ObjectWrapperów - u¿ywane przy obs³udze wymiany danych w Workflow
     RawObjectWrapperMapping rawPointerToObjectWrapper;
 
@@ -231,22 +240,7 @@ public:
     ////! \param sourceTypeInfo Typ z ktorego chcemy pobrac dane
     ////! \param destTypeInfo Typ do ktorego chcemy zapisac dane
     ////! \return true jesli typ Ÿród³owy wspiera typ docelowy lub sa identyczne
-    bool isTypeCompatible(const core::TypeInfo & sourceTypeInfo, const core::TypeInfo & destTypeInfo) const
-    {
-        if(sourceTypeInfo == destTypeInfo){
-            return true;
-        }
-
-        bool ret = false;
-
-        auto const & typesSet = getTypeBaseTypes(sourceTypeInfo);
-
-        if(typesSet.find(destTypeInfo) != typesSet.end()){
-            ret = true;
-        }
-
-        return ret;
-    }
+    bool isTypeCompatible(const core::TypeInfo & sourceTypeInfo, const core::TypeInfo & destTypeInfo) const;
 
     //! Rejestruje zadany parser.
     //! \param newService
@@ -257,12 +251,22 @@ public:
     //! \return Parser o zadanym indeksie. Parser zawsze bêdzie niezainicjowany.
     core::IParserConstPtr getRegisteredParser(int idx) const;
 
-//IDataManagerBase
+//IDataManagerReader
 public:
 
     virtual void getObjects(std::vector<core::ObjectWrapperConstPtr>& objects, const core::TypeInfo& type, bool exact = true);
 
     virtual void getObjects(core::ObjectWrapperCollection& objects);
+
+	virtual bool isManaged(const core::ObjectWrapperConstPtr & object) const;
+
+	//! \param object Obiekt dla którego pobieram metadane
+	//! \param metadataCollection [out] Kolekcja metadanych dla zadanego obiektu
+	virtual void getMetadataForObject(const core::ObjectWrapperConstPtr & object, std::vector<core::ObjectWrapperConstPtr> & metadataCollection) const;
+	//! \param typeInfo Typ danych dla których chcemy pobrac wszystkie metadane
+	//! \param metadataCollection [out] Kolekcja metadanych dla zadanego obiektu
+	//! \param exact Czy mamy do³anczaæ metadane typów pochodnych
+	virtual void getMetadataForType(const core::TypeInfo & typeInfo, std::vector<core::ObjectWrapperConstPtr> & metadataCollection, bool exact = true) const;
 
     //! \return Zarejestrowane w aplikacji typy danych
     virtual const core::TypeInfoSet & getSupportedTypes() const;
@@ -298,7 +302,7 @@ private:
 
     virtual const core::ObjectWrapperPtr & getObjectWrapperForRawPtr(const void * ptr) const;
 
-    virtual bool objectIsManaged(void * ptr) const;
+    virtual bool objectIsManaged(const void * ptr) const;
 
     virtual core::ObjectWrapperPtr createObjectWrapper(const core::TypeInfo & type) const;
 

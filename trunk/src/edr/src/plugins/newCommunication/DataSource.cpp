@@ -608,6 +608,36 @@ void CommunicationDataSource::setShallowCopy(const ShallowCopy & shallowCopy)
     fullShallowCopyStatus->setShallowCopy(&fullShallowCopy);
 }
 
+bool CommunicationDataSource::tryActivateAccount(const std::string & login, const std::string & activationCode)
+{
+	bool ret = false;
+	try{
+		ret = DataSourceWebServicesManager::instance()->accountFactoryService()->activateUserAccount(login, activationCode);
+	}catch(std::exception & e){
+
+	}catch(...){
+
+	}
+
+	return ret;
+}
+
+bool CommunicationDataSource::registerUser(const std::string & login, const std::string & email, const std::string & password,
+	const std::string & firstName, const std::string & lastName)
+{
+	bool ret = false;
+	try{
+		DataSourceWebServicesManager::instance()->accountFactoryService()->createUserAccount(login, email, password, firstName, lastName);
+		ret = true;
+	}catch(std::exception & e){
+
+	}catch(...){
+
+	}
+
+	return ret;
+}
+
 void CommunicationDataSource::refreshFileManager()
 {
     auto itEnd = fullShallowCopy.motionShallowCopy->files.end();

@@ -26,7 +26,7 @@ namespace core
     //! Struktura przechowuj¹ca informacje o managerach. Tylko do wewnêtrznego u¿ytku.
     struct InstanceInfo
     {
-        IDataManagerBase* dataManagerReader;
+        IDataManagerReader* dataManagerReader;
         IVisualizerManager* visualizerManager;
         IServiceManager* serviceManager;
 		ISourceManager* sourceManager;
@@ -46,7 +46,7 @@ namespace core
     //! \return Bie¿¹ca instancja data managera readera. Rozwi¹zanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala
     //! na rozwijanie, wiêc jest potencjalnie szybsze.
-    inline IDataManagerBase* getDataManagerReader()
+    inline IDataManagerReader* getDataManagerReader()
     {
         return __instanceInfo.dataManagerReader;
     }

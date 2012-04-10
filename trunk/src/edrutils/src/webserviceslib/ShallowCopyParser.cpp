@@ -100,6 +100,7 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             session_element->QueryStringAttribute("SessionName", &session->sessionName);
             session_element->QueryStringAttribute("Tags", &session->tags);
             session_element->QueryStringAttribute("SessionDescription", &session->sessionDescription);
+			session_element->QueryStringAttribute("EMGConf", &session->emgConf);
 
             //Attrs
             TiXmlElement* attrs_element = session_element->FirstChildElement("Attrs");

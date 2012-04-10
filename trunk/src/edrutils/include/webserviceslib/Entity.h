@@ -223,6 +223,7 @@ namespace webservices
             std::string tags;
             std::string sessionDescription;
             Files files;
+			std::string emgConf;
         };
 
         //typedef std::vector<Session> Sessions;

@@ -62,8 +62,7 @@ public:
 
     virtual PluginSubject::SubjectPtr createSubject();
 
-    virtual PluginSubject::SessionPtr createSession(const PluginSubject::SubjectConstPtr & subject, unsigned int year,
-        unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    virtual PluginSubject::SessionPtr createSession(const PluginSubject::SubjectConstPtr & subject, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
 
     virtual PluginSubject::MotionPtr createMotion(const PluginSubject::SessionConstPtr & session,
         const std::vector<core::ObjectWrapperConstPtr> & wrappers);

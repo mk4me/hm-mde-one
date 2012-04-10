@@ -24,8 +24,7 @@ public:
 
     virtual SubjectPtr createSubject() = 0;
 
-    virtual SessionPtr createSession(const SubjectConstPtr & subject, unsigned int year,
-        unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers) = 0;
+    virtual SessionPtr createSession(const SubjectConstPtr & subject, const std::vector<core::ObjectWrapperConstPtr> & wrappers) = 0;
 
     virtual MotionPtr createMotion(const SessionConstPtr & session,
         const std::vector<core::ObjectWrapperConstPtr> & wrappers) = 0;    

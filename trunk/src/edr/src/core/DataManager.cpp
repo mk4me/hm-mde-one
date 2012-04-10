@@ -267,7 +267,7 @@ void DataManager::ParserInitializer::doDeinitialize(core::ObjectWrapperPtr & obj
 {
     auto it = DataManager::getInstance()->objectsByParsers.find(parser);
     if(it != DataManager::getInstance()->objectsByParsers.end() ){
-        for(auto objectIT = it->second.begin(); objectIT != it->second.end(); objectIT++){
+        for(auto objectIT = it->second.begin(); objectIT != it->second.end(); ++objectIT){
             if(*objectIT != nullptr){
                 (*objectIT)->reset();
             }
@@ -281,7 +281,7 @@ DataManager * ManagerHelper<DataManager>::manager = nullptr;
 
 DataManager::DataManager()
 {
-
+	registerObjectFactory(IObjectWrapperFactoryPtr(new core::ObjectWrapperFactory<Metadata>()));
 }
 
 DataManager::~DataManager()
@@ -307,7 +307,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
         }
 
         //weryfikacja rozszerzeñ
-        for(auto it = extensions.begin(); it != extensions.end(); it++){
+        for(auto it = extensions.begin(); it != extensions.end(); ++it){
 
             if(it->first.empty() == true){
                 std::stringstream str;
@@ -325,7 +325,7 @@ void DataManager::registerParser(const core::IParserPtr & parser)
             }
         }
 
-        for(auto it = extensions.begin(); it != extensions.end(); it++){
+        for(auto it = extensions.begin(); it != extensions.end(); ++it){
             //w³aœciwe rozszerzenie
             std::string extension(it->first);
 
@@ -464,7 +464,7 @@ const core::ObjectWrapperPtr & DataManager::getObjectWrapperForRawPtr(const void
     return it->second;
 }
 
-bool DataManager::objectIsManaged(void * ptr) const
+bool DataManager::objectIsManaged(const void * ptr) const
 {
     ScopedLock lock(stateMutex);
     return rawPointerToObjectWrapper.find(ptr) != rawPointerToObjectWrapper.end();
@@ -481,23 +481,36 @@ void DataManager::addData(const core::ObjectWrapperPtr & data, const core::DataI
     }
 
     if(data->isNull() == false || initializer != nullptr){
-
         //przepakowujemy do naszego wrappera
 
+		//dodaj do grupowania po typach
+		core::TypeInfoList types;
+		data->getSupportedTypes(types);
 
+		auto it = std::find(types.begin(), types.end(), typeid(Metadata));
+		if(it != types.end()){
+			MetadataPtr meta = data->get(false);
+			auto obj = meta->object().lock();
+			if(obj == nullptr || objects.find(obj) == objects.end()){
+				throw std::runtime_error("Trying to add metadata for uninitialized object or object not managed by DataManager");
+			}
+
+			metadataByObjects[obj].push_back(data);
+		}
+		
         objects.insert(data);
-
-        //dodaj do grupowania po typach
-        core::TypeInfoList types;
-        data->getSupportedTypes(types);
-
-        for(auto it = types.begin(); it != types.end(); it++){
+		
+        for(auto it = types.begin(); it != types.end(); ++it){
             objectsByTypes[*it].insert(data);
         }
 
         if(initializer != nullptr){
             objectsWithInitializers[data] = initializer;
         }
+
+		if(data->isNull() == false){
+			rawPointerToObjectWrapper[data->getRawPtr()] = data;
+		}
     }else{
         throw std::runtime_error("Attempting to add empty data without initializer");
     }
@@ -517,12 +530,23 @@ void DataManager::removeData(const core::ObjectWrapperPtr & data)
     }
 
     objects.erase(data);
+	metadataByObjects.erase(data);
 
-    //usun z grupowania po typach
-    core::TypeInfoList types;
-    data->getSupportedTypes(types);
+	//usun z grupowania po typach
+	core::TypeInfoList types;
+	data->getSupportedTypes(types);
 
-    for(auto it = types.begin(); it != types.end(); it++){
+	auto mIT = std::find(types.begin(), types.end(), typeid(Metadata));
+	if(mIT != types.end()){
+		MetadataPtr meta = data->get(false);
+		auto obj = meta->object().lock();
+		if(obj != nullptr){
+			auto & m = metadataByObjects[obj];
+			std::remove(m.begin(), m.end(), data);
+		}
+	} 
+
+    for(auto it = types.begin(); it != types.end(); ++it){
         auto IT = objectsByTypes.find(*it);
         IT->second.erase(data);
         if(IT->second.empty() == true){
@@ -543,7 +567,7 @@ void DataManager::getManagedFiles(core::Files & files) const
 {
     ScopedLock lock(stateMutex);
 
-    for(auto it = parsersByFiles.begin(); it != parsersByFiles.end(); it++){
+    for(auto it = parsersByFiles.begin(); it != parsersByFiles.end(); ++it){
         files.insert(it->first);
     }
 }
@@ -573,7 +597,7 @@ void DataManager::addFile(const core::Filesystem::Path & file, std::vector<Objec
     Objects totalObjects;
 
     //jeœli pliku nie ma dodaj go, stwórz parsery i rozszerz dostêpne dane wraz z ich opisem
-    for(auto parserIT = extIT->second.parsers.begin(); parserIT != extIT->second.parsers.end(); parserIT++){
+    for(auto parserIT = extIT->second.parsers.begin(); parserIT != extIT->second.parsers.end(); ++parserIT){
         //twworzymy w³asne opakowanie parsera klienckiego
         ParserPtr parser(new Parser((*parserIT)->create(), file));
         Objects objects;
@@ -583,7 +607,7 @@ void DataManager::addFile(const core::Filesystem::Path & file, std::vector<Objec
         Objects verifiedObjects;
 
         //zarejestrowanie obiektów i ich zwi¹zku z parserem i typami danych
-        for(auto objectIT = objects.begin(); objectIT != objects.end(); objectIT++){
+        for(auto objectIT = objects.begin(); objectIT != objects.end(); ++objectIT){
 
             if(*objectIT == nullptr){
 
@@ -652,12 +676,12 @@ void DataManager::removeFile(const core::Filesystem::Path & file)
     Objects totalObjects;
 
     //zwalniamy zasoby parserów ¿eby potem zwolniæ same parsery
-    for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); parserIT++){
+    for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); ++parserIT){
         auto objectsByParserIT = objectsByParsers.find(*parserIT);
         
         totalObjects.insert(objectsByParserIT->second.begin(), objectsByParserIT->second.end());
 
-        for(auto objectIT = objectsByParserIT->second.begin(); objectIT != objectsByParserIT->second.end(); objectIT++){
+        for(auto objectIT = objectsByParserIT->second.begin(); objectIT != objectsByParserIT->second.end(); ++objectIT){
 
             removeData(*objectIT);
 
@@ -684,7 +708,7 @@ void DataManager::initializeFile(const core::Filesystem::Path & file)
 
     Objects invalid;
 
-    for(auto objectIT = toInitialize.begin(); objectIT != toInitialize.end(); objectIT++){
+    for(auto objectIT = toInitialize.begin(); objectIT != toInitialize.end(); ++objectIT){
         initializeData(*objectIT);
 
         if((*objectIT)->isNull()){
@@ -697,7 +721,7 @@ void DataManager::initializeFile(const core::Filesystem::Path & file)
     // usuniêcie niew³aœciwych wpisów
     if ( invalid.empty() == false ) {
         LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after parsing " << file);
-        for(auto it = invalid.begin(); it != invalid.end(); it++){
+        for(auto it = invalid.begin(); it != invalid.end(); ++it){
             
             /*auto parserIT = parsersByObjects.find(*it);
             objectsByParsers[parserIT->second].erase(*it);
@@ -715,7 +739,7 @@ void DataManager::deinitializeFile(const core::Filesystem::Path & file)
     std::vector<core::ObjectWrapperPtr> toDeinitialize;
     getObjectsForFile(file, toDeinitialize);
 
-    for(auto objectIT = toDeinitialize.begin(); objectIT != toDeinitialize.end(); objectIT++){
+    for(auto objectIT = toDeinitialize.begin(); objectIT != toDeinitialize.end(); ++objectIT){
         deinitializeData(*objectIT);
     }
 }
@@ -729,7 +753,7 @@ void DataManager::getObjectsForFile(const core::Filesystem::Path & file, std::ve
         throw std::runtime_error("Trying to get object for file that is not managed by DataManager");
     }
 
-    for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); parserIT++){
+    for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); ++parserIT){
         auto it = objectsByParsers.find(*parserIT);
         objects.insert(objects.end(), it->second.begin(), it->second.end());
     }
@@ -737,11 +761,13 @@ void DataManager::getObjectsForFile(const core::Filesystem::Path & file, std::ve
 
 const DataManager::Extensions & DataManager::getSupportedFilesExtensions() const
 {
+	ScopedLock lock(stateMutex);
     return extensions;
 }
 
 bool DataManager::isExtensionSupported(const std::string & extension) const
 {
+	ScopedLock lock(stateMutex);
     std::string ext(extension);
 
     prepareExtension(ext);
@@ -751,6 +777,7 @@ bool DataManager::isExtensionSupported(const std::string & extension) const
 
 const IFileDataManager::ExtensionDescription & DataManager::getExtensionDescription(const std::string & extension) const
 {
+	ScopedLock lock(stateMutex);
     std::string ext(extension);
 
     prepareExtension(ext);
@@ -767,11 +794,13 @@ const IFileDataManager::ExtensionDescription & DataManager::getExtensionDescript
 
 const core::Types & DataManager::getSupportedTypes() const
 {
+	ScopedLock lock(stateMutex);
     return registeredTypes;
 }
 
 const core::Types & DataManager::getTypeBaseTypes(const core::TypeInfo & type) const
 {
+	ScopedLock lock(stateMutex);
     auto it = typesHierarchy.find(type);
     if(it == typesHierarchy.end()){
         throw std::runtime_error("Request for description of unsupported type");
@@ -782,6 +811,7 @@ const core::Types & DataManager::getTypeBaseTypes(const core::TypeInfo & type) c
 
 const core::Types & DataManager::getTypeDerrivedTypes(const core::TypeInfo & type) const
 {
+	ScopedLock lock(stateMutex);
     auto it = typesHierarchy.find(type);
     if(it == typesHierarchy.end()){
         throw std::runtime_error("Request for description of unsupported type");
@@ -827,7 +857,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
         types.insert(derrived.begin(), derrived.end());
     }
 
-    for(auto typeIT = types.begin(); typeIT != types.end(); typeIT++){
+    for(auto typeIT = types.begin(); typeIT != types.end(); ++typeIT){
 
         auto typeObjectsIT = objectsByTypes.find(*typeIT);
 
@@ -836,7 +866,7 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
             continue;
         }
 
-        for(auto objectIT = typeObjectsIT->second.begin(); objectIT != typeObjectsIT->second.end(); objectIT++){
+        for(auto objectIT = typeObjectsIT->second.begin(); objectIT != typeObjectsIT->second.end(); ++objectIT){
             
             core::ObjectWrapperPtr wrapper(*objectIT);
 
@@ -853,11 +883,17 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
 
     if ( invalid.empty() == false ) {
         LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after data request of type " << type.name());
-        for(auto it = invalid.begin(); it != invalid.end(); it++){
+        for(auto it = invalid.begin(); it != invalid.end(); ++it){
             
             removeData(*it);
         }
     }
+}
+
+bool DataManager::isManaged(const core::ObjectWrapperConstPtr & object) const
+{
+	ScopedLock lock(stateMutex);
+	return objects.find(core::const_pointer_cast<core::IObjectWrapper>(object)) != objects.end();
 }
 
 void DataManager::prepareExtension(std::string & extension)
@@ -870,6 +906,8 @@ void DataManager::prepareExtension(std::string & extension)
 
 void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & factory )
 {
+	ScopedLock lock(stateMutex);
+
     core::TypeInfo type = factory->getType();
     auto it = registeredTypes.find(type);
 
@@ -897,7 +935,7 @@ void DataManager::registerObjectFactory( const core::IObjectWrapperFactoryPtr & 
 
         typesHierarchy[type].first.insert(types.begin(), types.end());
 
-        for(auto typeIT = types.begin(); typeIT != types.end(); typeIT++){
+        for(auto typeIT = types.begin(); typeIT != types.end(); ++typeIT){
             typesHierarchy[*typeIT].second.insert(type);
         }
     }
@@ -933,4 +971,87 @@ const core::ObjectWrapperConstPtr & DataManager::getTypePrototype(const core::Ty
     }
 
     return it->second;
+}
+
+bool DataManager::isTypeCompatible(const core::TypeInfo & sourceTypeInfo, const core::TypeInfo & destTypeInfo) const
+{
+	if(sourceTypeInfo == destTypeInfo){
+		return true;
+	}
+
+	ScopedLock lock(stateMutex);
+
+	bool ret = false;
+
+	auto const & typesSet = getTypeBaseTypes(sourceTypeInfo);
+
+	if(typesSet.find(destTypeInfo) != typesSet.end()){
+		ret = true;
+	}
+
+	return ret;
+}
+
+void DataManager::getMetadataForObject(const core::ObjectWrapperConstPtr & object, std::vector<core::ObjectWrapperConstPtr> & metadataCollection) const
+{
+	ScopedLock lock(stateMutex);
+	//auto obj = getObjectWrapperForRawPtr(object->getRawPtr());
+
+	auto obj = boost::const_pointer_cast<core::IObjectWrapper>(object);
+
+	auto it = objects.find(obj);
+
+	if(it == objects.end()){
+		throw std::runtime_error("Query about metadata of object not managed by DataManager");
+	}
+
+	auto metaIT = metadataByObjects.find(obj);
+
+	if(metaIT != metadataByObjects.end()){
+		for(auto oIT = metaIT->second.begin(); oIT != metaIT->second.end(); ++oIT){
+			metadataCollection.push_back(*oIT);
+		}
+	}
+}
+
+void DataManager::getMetadataForType(const core::TypeInfo & typeInfo, std::vector<core::ObjectWrapperConstPtr> & metadataCollection, bool exact) const
+{
+	ScopedLock lock(stateMutex);
+
+	if(registeredTypes.find(typeInfo) == registeredTypes.end()){
+		std::stringstream str;
+		str << "Request for unsupported data type " << typeInfo.name();
+		throw std::runtime_error(str.str());
+	}
+
+	core::Objects objects;
+	core::Types types;
+	types.insert(typeInfo);
+
+	if(exact == false){
+		auto & derrived = getTypeDerrivedTypes(typeInfo);
+		types.insert(derrived.begin(), derrived.end());
+	}
+
+	for(auto typeIT = types.begin(); typeIT != types.end(); ++typeIT){
+
+		auto typeObjectsIT = objectsByTypes.find(*typeIT);
+
+		if(typeObjectsIT == objectsByTypes.end()){
+			//nie mamy jeszcze zadnego obiektu tego typu wiec idziemyu dalej
+			continue;
+		}
+
+		objects.insert(typeObjectsIT->second.begin(), typeObjectsIT->second.end());
+	}
+
+	auto metaITEnd = metadataByObjects.end();
+	for(auto it = objects.begin(); it != objects.end(); ++it){
+		auto metaIT = metadataByObjects.find(*it);
+		if(metaIT != metaITEnd){
+			for(auto oIT = metaIT->second.begin(); oIT != metaIT->second.end(); ++oIT){
+				metadataCollection.push_back(*oIT);
+			}
+		}
+	}
 }

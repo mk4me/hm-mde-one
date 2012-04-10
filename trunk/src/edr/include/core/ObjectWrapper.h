@@ -633,8 +633,10 @@ template <> struct ObjectWrapperTraits<type>                                    
     static const bool isDefinitionVisible = true;                                                 \
 };
 
-template<class T>
-class ObjectWrapperFactory;
+namespace core {
+	template<class T>
+	class ObjectWrapperFactory;
+}
 
 // Makro tworz¹ce specjalizacjê ObjectWrapperT. Musi wystêpowaæ w globalnym
 // namespace. Drugim parametrem mo¿e byæ dowolny typ maj¹cy cechy ptrPolicy,

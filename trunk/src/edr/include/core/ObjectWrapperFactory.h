@@ -41,14 +41,12 @@ namespace core
     {
         UTILS_STATIC_ASSERT(ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
 
-        friend class Plugin;
-        friend class MainWindow;        
-
-    private:
-
-        ObjectWrapperFactory() : typeInfo(typeid(T)) {}
-
     public:
+
+		ObjectWrapperFactory() : typeInfo(typeid(T))
+		{
+
+		}
 
         virtual const core::TypeInfo & getType() const
         {

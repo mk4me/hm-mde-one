@@ -18,7 +18,7 @@ namespace core {
     class IDataProcessorManager;
     class IDataSourceManager;
     class IVisualizerManager;
-    class IDataManagerBase;
+    class IDataManagerReader;
 
     class IManagersAccessor
     {
@@ -26,9 +26,9 @@ namespace core {
 
         virtual ~IManagersAccessor() {}
 
-        virtual IDataManagerBase * getDataManagerReader() = 0;
+        virtual IDataManagerReader * getDataManagerReader() = 0;
 
-        virtual const IDataManagerBase * getDataManagerReader() const = 0;
+        virtual const IDataManagerReader * getDataManagerReader() const = 0;
 
         virtual IFileDataManager * getFileDataManager() = 0;
 

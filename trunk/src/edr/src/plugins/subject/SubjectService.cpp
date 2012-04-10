@@ -102,10 +102,9 @@ SubjectPtr SubjectService::createSubject()
     return ret;
 }
 
-SessionPtr SubjectService::createSession(const SubjectConstPtr & subject, unsigned int year,
-    unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
+SessionPtr SubjectService::createSession(const SubjectConstPtr & subject, const std::vector<core::ObjectWrapperConstPtr> & wrappers)
 {
-    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(sessionCreationMutex);
+	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(sessionCreationMutex);
 
     if(currentSessionID == std::numeric_limits<SubjectID>::max()){
         throw std::runtime_error("Sessions overflow");
@@ -115,12 +114,8 @@ SessionPtr SubjectService::createSession(const SubjectConstPtr & subject, unsign
         throw std::runtime_error("Wrong subject for session");
     }
 
-    if(month < 1 || month > 12 || day < 1 || day > 31){
-        throw std::runtime_error("Wrong session date");
-    }
-
     SessionPtr ret(new Session(++currentSessionID, subject,
-        ++localSessionIDs[subject], year, month, day, wrappers));
+        ++localSessionIDs[subject], wrappers));
 
     localMotionIDs[ret] = 0;
 

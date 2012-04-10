@@ -33,18 +33,14 @@ private:
     PluginSubject::SubjectID currentMotionID;
     PluginSubject::SubjectConstPtr subject;
 
-    unsigned int year;
-    unsigned char month;
-    unsigned char day;
-
     std::vector<core::ObjectWrapperConstPtr> wrappers;
 
     std::string name;
     std::string localName;
 	
 private:
-    Session(PluginSubject::SubjectID sessionID, const PluginSubject::SubjectConstPtr & subject, PluginSubject::SubjectID localSessionID, unsigned int year,
-        unsigned char month, unsigned char day, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
+    Session(PluginSubject::SubjectID sessionID, const PluginSubject::SubjectConstPtr & subject,
+		PluginSubject::SubjectID localSessionID, const std::vector<core::ObjectWrapperConstPtr> & wrappers);
 
 public:
 
@@ -61,10 +57,6 @@ public:
     virtual void getMotions(PluginSubject::Motions & motions) const;
 
     virtual const PluginSubject::SubjectConstPtr & getSubject() const;
-
-    virtual unsigned int getYear() const;
-    virtual unsigned char getMonth() const;
-    virtual unsigned char getDay() const;
 
     virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const;
 
@@ -86,10 +78,6 @@ public:
     virtual void getMotions(PluginSubject::Motions & motions) const;
 
     virtual const PluginSubject::SubjectConstPtr & getSubject() const;
-
-    virtual unsigned int getYear() const;
-    virtual unsigned char getMonth() const;
-    virtual unsigned char getDay() const;
 
     virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const;
 

@@ -35,13 +35,6 @@ public:
     //! \return Lokalna nazwa sesji
     virtual const std::string & getLocalName() const = 0;
 
-    //! \return Rok wykonania sesji
-    virtual unsigned int getYear() const = 0;
-    //! \return Miesi¹c wykonania sesji
-    virtual unsigned char getMonth() const = 0;
-    //! \return Dzieñ wykonania sesji
-    virtual unsigned char getDay() const = 0;
-
     //! \param wrappers Zbiór OW zwi¹zanych z t¹ sesj¹ (ale nie z Motions)
     virtual void getWrappers(std::vector<core::ObjectWrapperConstPtr> & wrappers) const = 0;
 

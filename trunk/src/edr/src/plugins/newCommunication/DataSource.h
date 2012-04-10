@@ -74,7 +74,17 @@ public:
 	
     //! \return Dane aktualnego u¿ytkownika ( w szczególnoœci pusty obiekt jesli niezalogowano)
     virtual const User * currentUser() const;
+
 private:
+
+	//! \param login Login który próbujemy aktywowac po stronie bazy danych
+	//! \param activationCode Kod aktywacyjny otrzymany w mailu
+	//! \return Czy uda³o siê aktywowaæ konto
+	bool tryActivateAccount(const std::string & login, const std::string & activationCode);
+
+	bool registerUser(const std::string & login, const std::string & email, const std::string & password,
+		const std::string & firstName, const std::string & lastName);
+
 	//! Odœwie¿a fileManager w kontekœcie nowej p³ytkiej kopii bazy danych - mo¿e dosz³y jakieœ nowe pliki?
 	void refreshFileManager();
 

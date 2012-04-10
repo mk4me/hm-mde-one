@@ -341,6 +341,12 @@ public:
         //this->factories.push_back(factory);
         this->factories.push_back(IObjectWrapperFactoryPtr(new ObjectWrapperFactory<T>()));
     }
+
+	void addObjectWrapperFactory(const IObjectWrapperFactoryPtr & factory)
+	{
+		this->factories.push_back(factory);
+	}
+
     //! \return
     int getNumWrapperFactories() const
     {

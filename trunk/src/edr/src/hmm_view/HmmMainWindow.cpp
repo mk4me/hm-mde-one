@@ -1570,17 +1570,19 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      int count = motions.size();
 
      if(count > 0){
-         if (motionsCount == 0) {
+         //if (motionsCount == 0) {
              hmm->analisisButton->setEnabled(true);			 
-         }
+         //}
      }else{
-         if (motionsCount != 0) {
+         //if (motionsCount != 0) {
              hmm->analisisButton->setEnabled(false);
-         }
+         //}
      }
 
-     if (motionsCount != count) {
+	 hmm->refreshTree();
+
+     /*if (motionsCount != count) {
          hmm->refreshTree();
          motionsCount = count;
-     }
+     }*/
  }

@@ -79,12 +79,12 @@ public:
                 __instanceInfo.dataSourceManager = dataSourceManager.manager = nullptr;
             }
 
-            virtual IDataManagerBase * getDataManagerReader()
+            virtual IDataManagerReader * getDataManagerReader()
             {
                 return &dataManager;
             }
 
-            virtual const IDataManagerBase * getDataManagerReader() const
+            virtual const IDataManagerReader * getDataManagerReader() const
             {
                 return &dataManager;
             }

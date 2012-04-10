@@ -2,6 +2,7 @@
 #include "TreeBuilder.h"
 #include "HmmMainWindow.h"
 #include "EMGFilter.h"
+#include <core/IDataManager.h>
 
 using namespace PluginSubject;
 
@@ -22,7 +23,39 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
         session->getMotions(motions);
         BOOST_FOREACH(MotionConstPtr motion, motions) {	
             QTreeWidgetItem* motionItem = new QTreeWidgetItem();  
-            motionItem->setText(0, motion->getLocalName().c_str());
+
+			QString label(QString::fromUtf8(motion->getLocalName().c_str()));
+
+			//próbuje pobraæ metadane
+			try{
+				std::vector<core::ObjectWrapperConstPtr> metadata;
+
+				//najpierw pobieram wszystkie motiony z DM, potem znajdujê ten którego id równa siê mojemu motionowi i dla niego pobieram metadane
+				std::vector<PluginSubject::MotionConstPtr> dmMotions;
+
+				core::queryDataPtr(DataManager::getInstance(), dmMotions, true);
+
+				for(auto it = dmMotions.begin(); it != dmMotions.end(); ++it){
+					if((*it).get() != motion.get() && (*it)->getID() == motion->getID()){
+						core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), *it, metadata);
+					}
+				}
+
+				core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), motion, metadata);
+				auto metaITEnd = metadata.end();
+				for(auto metaIT = metadata.begin(); metaIT != metaITEnd; ++metaIT){
+					core::MetadataConstPtr meta = (*metaIT)->get(false);
+					std::string l;
+
+					if(meta != nullptr && meta->value("label", l) == true){
+						label = QString::fromUtf8(l.c_str());
+					}
+				}
+			}catch(...){
+
+			}
+
+            motionItem->setText(0, label);
             rootItem->addChild(motionItem);
             bool hasEmg = motion->hasObjectOfType(typeid(EMGChannel));
             bool hasGrf = motion->hasObjectOfType(typeid(GRFCollection));
