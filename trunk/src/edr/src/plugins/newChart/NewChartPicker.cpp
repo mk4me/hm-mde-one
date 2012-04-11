@@ -16,7 +16,7 @@ NewChartPicker::NewChartPicker( NewChartVisualizer* visualizer):
     pixelTolerance(20), currentCurve(nullptr),
     move(false)
 {
-    canvas = visualizer->getPlot()->canvas();
+    canvas = qobject_cast<QwtPlotCanvas *>(visualizer->getPlot()->canvas());
     canvas->installEventFilter( this );
     //canvas->setFocusPolicy( Qt::StrongFocus );
     canvas->setFocusIndicator( QwtPlotCanvas::ItemFocusIndicator );

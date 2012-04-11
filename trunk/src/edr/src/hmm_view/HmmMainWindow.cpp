@@ -270,7 +270,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 	}    
 
     //inicjalizacja title bara
-    toolsGroupID = flexiTabWidget->addGroup(QObject::tr("Tools"));
+    //toolsGroupID = flexiTabWidget->addGroup(QObject::tr("Tools"));
     visualizerGroupID = flexiTabWidget->addGroup(QObject::tr("Visualizer"), QIcon(), false);
 
     //TODO

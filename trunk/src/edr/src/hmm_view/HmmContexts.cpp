@@ -21,6 +21,8 @@ void HMMVisualizerUsageContext::activateContext(QWidget * contextWidget)
         return;
     }
 
+    //TODO zapisaæ styl widgeta, dokleiæ nasz styl i ustawiæ a nie nadpisywaæ
+
     contextWidget->setStyleSheet(QString::fromUtf8(
         "VisualizerWidget > .QWidget, VisualizerWidget > .QWidget:focus:hover {" \
             "border: 2px solid orange;"\
@@ -56,6 +58,8 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
     }
 
     if(isCurrentContextWidgetDestroyed() == false){
+
+        //TODO przywróciæ poprzedni styl widgeta
         getCurrentContextWidget()->setStyleSheet(QString());
     }
 

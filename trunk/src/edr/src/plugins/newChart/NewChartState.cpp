@@ -8,5 +8,5 @@ QObject((QObject*)visualizer),
     plot(visualizer->getPlot())
 {
     UTILS_ASSERT(visualizer && plot && plot->canvas());
-    canvas = plot->canvas();
+    canvas = qobject_cast<QwtPlotCanvas *>(plot->canvas());
 }

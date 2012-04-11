@@ -86,7 +86,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
         qwtPlot->insertLegend( legend, QwtPlot::BottomLegend );
     }
 
-    qwtPlot->canvas()->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
+    qobject_cast<QwtPlotCanvas *>(qwtPlot->canvas())->setFocusIndicator(QwtPlotCanvas::ItemFocusIndicator);
     qwtPlot->canvas()->installEventFilter(this);
 
     activeSerieCombo = new QComboBox();

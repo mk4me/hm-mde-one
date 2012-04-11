@@ -1441,7 +1441,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HMMTreeItemUsageContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="282"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="286"/>
         <source>Item Actions</source>
         <translation>Operacje</translation>
     </message>
@@ -3136,26 +3136,25 @@ p, li { white-space: pre-wrap; }
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="41"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="43"/>
         <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="274"/>
         <source>Visualizer</source>
         <translation>Wizualizator</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="279"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="283"/>
         <source>Tree</source>
         <translation>Drzewo danych</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="414"/>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="584"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="418"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="588"/>
         <source>Raports Tab</source>
         <translation>Raporty</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="273"/>
         <source>Tools</source>
-        <translation>Narzędzia</translation>
+        <translation type="obsolete">Narzędzia</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/communication/CommunicationDataSource.cpp" line="503"/>
@@ -3217,8 +3216,8 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../../src/plugins/newChart/NewChartMarker.cpp" line="105"/>
-        <location filename="../../../src/plugins/newChart/NewChartValueMarker.cpp" line="84"/>
-        <location filename="../../../src/plugins/newChart/NewChartValueMarker.cpp" line="102"/>
+        <location filename="../../../src/plugins/newChart/NewChartValueMarker.cpp" line="81"/>
+        <location filename="../../../src/plugins/newChart/NewChartValueMarker.cpp" line="99"/>
         <source>Time: %1
 Value: %2</source>
         <translation>Czas: %1
@@ -3297,17 +3296,17 @@ Wartość: %2</translation>
 <context>
     <name>RaportsTabContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="590"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="594"/>
         <source>File</source>
         <translation>Plik</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="591"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="595"/>
         <source>Edit</source>
         <translation>Edycja</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="592"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="596"/>
         <source>Text</source>
         <translation>Tekst</translation>
     </message>
@@ -3315,28 +3314,28 @@ Wartość: %2</translation>
 <context>
     <name>RaportsThumbnailsContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="416"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="420"/>
         <source>Actions</source>
         <translation>Operacje</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="441"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="445"/>
         <source>Create raport</source>
         <translation>Twórz raport</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="445"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="449"/>
         <source>Simple Raport</source>
         <translation>Prosty raport</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="455"/>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="462"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="459"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="466"/>
         <source>Empty</source>
         <translation>Pusty</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="521"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="525"/>
         <source>Screenshot %1 &lt;br&gt; &lt;IMG SRC=&quot;data:image/png;base64,%2&quot; ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0&gt;&lt;/P&gt; &lt;br&gt;</source>
         <translation>Obraz  %1 &lt;br&gt; &lt;IMG SRC=&quot;data:image/png;base64,%2&quot; ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0&gt;&lt;/P&gt; &lt;br&gt;</translation>
     </message>
@@ -3345,7 +3344,7 @@ Wartość: %2</translation>
         <translation type="obsolete">Domyślny</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="477"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="481"/>
         <source>Raport template:</source>
         <translation>Szablon raportu:</translation>
     </message>

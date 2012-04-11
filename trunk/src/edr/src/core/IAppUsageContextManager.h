@@ -266,10 +266,6 @@ private:
 
             if(pos > -1){
                 limitCurrentChainToPosition(pos);
-                //if(currentContextChain.back()->getCurrentContextWidget() != contextWidget){
-                    //currentContextChain.back()->tryDeactivate();
-                    //currentContextChain.back()->tryActivate(contextWidget);
-                //}
 
                 //prze³adowanie kontekstu / odœwie¿enie, dla widgetów które zmieniaj¹ stan ale nie ze wzglêdu na inne widgety dzieci (np. QTreeWidget na zmianê aktualnego wiersza)
                 refreshContext(currentContextChain.back(), contextWidget);
@@ -300,10 +296,6 @@ private:
                     if(tmpCurrent->getCurrentContextWidget() != nullptr){
                         
                         refreshContext(tmpCurrent);
-                        
-                        /*if(tmpCurrent->isActive() == false){
-                            currentContextChain.pop_back();
-                        }*/
                     }
 
                 }else{
@@ -322,12 +314,6 @@ private:
                 }
 
                 bool active = currentContextChain.back()->tryActivate(contextWidget);
-
-                /*
-                if(active == false){
-                    currentContextChain.pop_back();
-                }
-                */
             }
         }
     }
