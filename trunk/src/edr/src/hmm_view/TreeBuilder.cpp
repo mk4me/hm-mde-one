@@ -3,6 +3,10 @@
 #include "HmmMainWindow.h"
 #include "EMGFilter.h"
 #include <core/IDataManager.h>
+#include "Measurements.h"
+
+MeasurementsConstPtr measurements;
+
 
 using namespace PluginSubject;
 
@@ -139,7 +143,36 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     std::vector<core::ObjectWrapperConstPtr> emgs;
     core::ObjectWrapperConstPtr collectionWrp = motion->getWrapperOfType(typeid(EMGCollection));
     EMGCollectionConstPtr collection = collectionWrp->get();
-    IMeasurementConfigConstPtr config = collection->getConfig();
+    
+    if (!measurements) {
+        std::string p = core::getResourceString("schemas\\measurementconfs.xml");
+        try {
+            MeasurementsParser parser;
+            parser.parse(p);
+            measurements = parser.getMeasurments();
+        } catch (std::runtime_error& e) {
+            LOG_ERROR(e.what());
+        }
+    }
+
+    MeasurementConfigConstPtr config;
+    //próbuje pobraæ metadane
+    try{
+        std::vector<core::ObjectWrapperConstPtr> metadata;        
+        core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), motion->getSession(), metadata);
+        auto metaITEnd = metadata.end();
+        for(auto metaIT = metadata.begin(); metaIT != metaITEnd; ++metaIT){
+            core::MetadataConstPtr meta = (*metaIT)->get(false);
+            std::string l;
+
+            if(measurements != nullptr && meta != nullptr && meta->value("EMGConf", l) == true) {
+                config = measurements->getConfig(("EMG_" + l).c_str());
+            }
+        }
+    }catch(...){
+
+    }
+
     motion->getWrappers(emgs, typeid(EMGChannel));
     int count = emgs.size();			
     for (int i = 0; i < count; i++) {	

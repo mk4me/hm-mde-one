@@ -7,7 +7,6 @@
 #include "HmmMainWindow.h"
 #include "textedit.h"
 #include "AnalisisWidget.h"
-#include "base64.h"
 
 
 HMMVisualizerUsageContext::HMMVisualizerUsageContext(FlexiTabWidget * flexiTabWidget) : flexiTabWidget(flexiTabWidget), visualizerGroupID(-1)
@@ -516,8 +515,9 @@ void RaportsThumbnailsContext::createRaport()
                     h *= static_cast<double>(maxWidth) / w;
                     w = maxWidth;
                 }
-                const unsigned char* raw = reinterpret_cast<const unsigned char*>(buffer.buffer().constData());
-                QString base64 = QString::fromStdString(base64_encode(raw, buffer.size()));
+                //const unsigned char* raw = reinterpret_cast<const unsigned char*>(buffer.buffer().constData());
+                //QString base64 = QString::fromStdString(base64_encode(raw, buffer.size()));
+                QString base64 = buffer.buffer().toBase64();
                 images += tr("Screenshot %1 <br> <IMG SRC=\"data:image/png;base64,%2\" ALIGN=BOTTOM WIDTH=%3 HEIGHT=%4 BORDER=0></P> <br>").arg(counter++).arg(base64).arg(w).arg(h);
             }
             

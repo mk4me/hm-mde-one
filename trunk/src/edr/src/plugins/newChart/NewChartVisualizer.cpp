@@ -25,6 +25,7 @@
 #include "NewChartScaleDrawer.h"
 #include "NewChartLegend.h"
 #include <limits>
+#include <boost/bind.hpp>
 
 
 NewChartVisualizer::NewChartVisualizer() : 
@@ -60,6 +61,8 @@ NewChartVisualizer::~NewChartVisualizer()
     if(eventsContextWidget != nullptr){
         delete eventsContextWidget;
     }
+	delete percentDraw;
+    //delete qwtPlot;
 }
 
 
@@ -68,7 +71,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     QWidget* widget = new QWidget();
     widget->setObjectName(QString::fromUtf8("newChartVisualizerWidget"));
     QwtText txt(getName().c_str());
-    qwtPlot = new QwtPlot(txt, nullptr);
+    qwtPlot = new NCPlot(txt, nullptr);
     qwtPlot->setObjectName(QString::fromUtf8("plot"));
     percentDraw = new PercentScaleDraw(0.0, 5.0);
     qwtPlot->setAxisScaleDraw(QwtPlot::xBottom, percentDraw);
@@ -347,7 +350,8 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
     }
 
     activeSerieCombo->blockSignals(true);
-    (*it)->removeItemsFromPlot();
+    updateFIFO.push_back(boost::bind( &NewChartSerie::removeItemsFromPlot, *it ));
+    updateFIFO.push_back(boost::bind( &QwtPlot::replot, qwtPlot));
     series.erase(it);
     
     if(series.empty() == true){
@@ -365,10 +369,10 @@ void NewChartVisualizer::removeSerie( core::IVisualizer::SerieBase *serie )
                 active = i;
             }
         }
-
+    
         activeSerieCombo->setCurrentIndex(active);
     }
-
+    
     activeSerieCombo->blockSignals(false);
 
     plotChanged();
@@ -555,6 +559,10 @@ NewChartSerie* NewChartVisualizer::tryGetCurrentSerie()
 
 void NewChartVisualizer::update( double deltaTime )
 {
+    for (auto it = updateFIFO.begin(); it != updateFIFO.end(); it++) {
+        (*it)();
+    }
+    updateFIFO.clear();
     if (currentSerie >= 0 && currentSerie < series.size()) {
         
         qwtMarker->setVisible(true);

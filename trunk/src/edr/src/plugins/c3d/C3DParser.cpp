@@ -18,8 +18,6 @@
 #undef min
 #endif
 
-MeasurementsConstPtr C3DParser::measurements;
-
 C3DParser::C3DParser()
 {
 	for(int i = 0; i < 4; i++){
@@ -45,16 +43,6 @@ C3DParser::~C3DParser()
 
 void C3DParser::parseFile( const core::Filesystem::Path& path )
 {
-    if (!measurements) {
-        std::string p = core::getResourceString("schemas\\measurementconfs.xml");
-        try {
-            MeasurementsParser parser;
-            parser.parse(p);
-            measurements = parser.getMeasurments();
-        } catch (std::runtime_error& e) {
-            LOG_ERROR(e.what());
-        }
-    }
 	ParserPtr parser(new c3dlib::C3DParser());
 	parserPtr = parser;
     
@@ -90,10 +78,7 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
         EMGs->setSource(path.string());
     }
 	int count = parser->getNumEvents();
-    if (measurements) {
-        // duzy HACK
-        e->setConfig(measurements->getConfig(1));
-    }
+    
     EventsCollectionPtr allEventsCollection(new C3DEventsCollection());
 	for (int i = 0; i < count; i++) {
 		c3dlib::C3DParser::IEventPtr event = parser->getEvent(i);

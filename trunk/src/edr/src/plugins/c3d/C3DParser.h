@@ -17,7 +17,6 @@
 #include <c3dlib/C3DParser.h>
 #include <utils/DataChannel.h>
 #include <plugins/c3d/C3DChannels.h>
-#include "Measurements.h"
 
 class C3DParser : public core::IParser, utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float>
 {
@@ -36,7 +35,6 @@ private:
     core::ObjectWrapperPtr allEvents;
     core::ObjectWrapperPtr allMarkers;
 	ParserPtr parserPtr;
-    static MeasurementsConstPtr measurements;	
 
 public:
     C3DParser();

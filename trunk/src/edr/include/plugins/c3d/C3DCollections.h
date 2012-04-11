@@ -13,7 +13,6 @@
 #include <kinematiclib/VskParser.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/c3d/IForcePlatform.h>
-#include <plugins/c3d/IMeasurementConfig.h>
 
 //! Prosta kolekcja przechowujaca wszystkie zdarzenia z pliku c3d
 class C3DEventsCollection
@@ -155,18 +154,18 @@ typedef boost::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
 typedef boost::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
 
 
-//typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
-class EMGCollection : public utils::DataChannelCollection<EMGChannel>
-{
-public:
-    IMeasurementConfigConstPtr getConfig() const
-    { 
-        return config; 
-    }
-    void setConfig(IMeasurementConfigConstPtr val) { config = val; }
-private:
-    IMeasurementConfigConstPtr config;
-};
+typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
+//class EMGCollection : public utils::DataChannelCollection<EMGChannel>
+//{
+//public:
+//    IMeasurementConfigConstPtr getConfig() const
+//    { 
+//        return config; 
+//    }
+//    void setConfig(IMeasurementConfigConstPtr val) { config = val; }
+//private:
+//    IMeasurementConfigConstPtr config;
+//};
 typedef boost::shared_ptr<EMGCollection> EMGCollectionPtr;
 typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 

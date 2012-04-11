@@ -163,13 +163,26 @@ private:
     QwtPlotCurve* lowerBoundCurve;
     QwtPlotCurve* averageCurve;
 
+    std::vector< boost::function<void ()> > updateFIFO;
+
     bool boundsAutoRefresh;
     bool boundsToRefresh;
 
     double movingAverageTimeWindow;
     int pointsPerWindow;
 
-    QwtPlot* qwtPlot;
+    class NCPlot : public QwtPlot 
+    {
+    public:
+         explicit NCPlot( const QwtText &title, QWidget *p = nullptr ) : QwtPlot(title, p) {}
+        virtual ~NCPlot()
+        {
+            int a = 0;
+            a++;
+        }
+
+    };
+    NCPlot* qwtPlot;
     NewChartLegend* legend;
     QwtPlotMarker* qwtMarker;
     core::shared_ptr<QwtPlotGrid> grid;

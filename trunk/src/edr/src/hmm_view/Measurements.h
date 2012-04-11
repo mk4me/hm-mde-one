@@ -7,15 +7,14 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_C3DPLUGIN__MEASUREMENTS_H__
-#define HEADER_GUARD_C3DPLUGIN__MEASUREMENTS_H__
+#ifndef HEADER_GUARD_HMM__MEASUREMENTS_H__
+#define HEADER_GUARD_HMM__MEASUREMENTS_H__
 
 #include <QtCore/QString>
 #include <vector>
 #include <core/SmartPtr.h>
-#include <plugins/c3d/IMeasurementConfig.h>
 
-class MeasurementConfig : public IMeasurementConfig
+class MeasurementConfig
 {
     friend class MeasurementsParser;
 

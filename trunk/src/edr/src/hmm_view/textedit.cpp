@@ -70,7 +70,6 @@
 #include <QtCore/QUrl>
 #include <QtCore/QBuffer>
 #include <QtGui/QToolButton>
-#include "base64.h"
 
 const QString rsrcPath = ":/resources/icons/textedit";
 
