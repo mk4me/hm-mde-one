@@ -710,20 +710,25 @@ void DataSourceWidget::onLogin()
 						//pobierz datê ostatenij modyfikacji i porównaj
 						//jesli nowsza to zaproponuj synchronizacjê
 						//jeœli odmówi za³aduj ju¿ sparsowan¹ p³ytk¹ kopiê bazy danych
+						try{
+							auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
 
-						auto time = DataSourceWebServicesManager::instance()->motionBasicQueriesService()->dataModificationTime();
-
-						if(DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(userShallowCopy, time) == true){
-							QMessageBox messageBox;
-							messageBox.setWindowTitle(tr("Synchronization required"));
-							messageBox.setText(tr("Database was updated. Some data might be not available. Would You like to synchronize?"));
-							messageBox.setIcon(QMessageBox::Icon::Information);
-							messageBox.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
-							messageBox.setDefaultButton(QMessageBox::StandardButton::Yes);
-							auto ret = messageBox.exec();
-							if(ret = QMessageBox::StandardButton::Yes){
-								synch = true;
+							if(DataSourceShallowCopyUtils::shallowCopyRequiresRefresh(userShallowCopy, time) == true){
+								QMessageBox messageBox;
+								messageBox.setWindowTitle(tr("Synchronization required"));
+								messageBox.setText(tr("Database was updated. Some data might be not available. Would You like to synchronize?"));
+								messageBox.setIcon(QMessageBox::Icon::Information);
+								messageBox.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+								messageBox.setDefaultButton(QMessageBox::StandardButton::Yes);
+								auto ret = messageBox.exec();
+								if(ret = QMessageBox::StandardButton::Yes){
+									synch = true;
+								}
 							}
+						}catch(std::exception & e){
+
+						}catch(...){
+
 						}
 					}
 				}else{
