@@ -12,8 +12,10 @@
 #include <vector>
 #include <map>
 #include <QtCore/QString>
+#include <QtGui/QTextTable>
 #include <boost/any.hpp>
 #include <utils/Debug.h>
+#include <boost/array.hpp>
 
 template<class T>
 class DataTable
@@ -257,13 +259,63 @@ public:
 
     void clearHAlign();
 
-    void setVAlign(HAlign vAlign);
+    void setVAlign(VAlign vAlign);
 
     void clearVAlign();
 
 private:
 
     std::map<HtmlCellAttribute, boost::any> attributes;
+};
+
+//! Lista atrybutów tabeli
+enum HtmlTableAttribute {
+    TableWidth,			//! Szerokoœæ
+	TableHeight,		//! Wysokoœæ
+	TableBorder,		//! Gruboœæ ramki
+    TableBgColor,		//! Kolor t³a
+    TableCellSpacing,	//! Odstêp pomiêdzy komórkami
+    TableCellPadding    //! Padding komórek
+};
+
+class HtmlTableAttributes
+{
+public:
+
+    HtmlTableAttributes();
+    ~HtmlTableAttributes();
+
+public:
+
+    void generateHtmlAttributes(QString & html) const;
+
+    void setWidth(float width, HtmlWidthType type);
+
+    void clearWidth();
+
+	void setHeight(float width, HtmlWidthType type);
+
+    void clearHeight();
+
+    void setBgColor(const QString & bgColor);
+
+    void clearBgColor();
+
+	void setBorder(int border);
+
+    void clearBorder();
+
+    void setCellSpacing(int spacing);
+
+    void clearCellSpacing();
+
+    void setCellPadding(int padding);
+
+    void clearCellPadding();
+
+private:
+
+    std::map<HtmlTableAttribute, boost::any> attributes;
 };
 
 typedef DataTable<HtmlCellAttributes> HtmlDataTableCellAttributes;
@@ -287,6 +339,9 @@ struct HtmlDataTableStyles
 {
     //! Styl tabeli
     QString tableStyle_;
+
+	//! Atrybuty tabeli
+	HtmlTableAttributes tableAttributes;
 
     //! Styl wierszy gdy poziome na³ówki
     HtmlRowStyles headerRowStyle_;
@@ -332,13 +387,50 @@ private:
     static void buildContent(HtmlDataTableContent & content, const HtmlDataTableCellAttributes & cellAttributes,
         const TableHeadersStructureDescriptor & structure, const HtmlDataTableStyles & styles, int rows, int columns);
 
-    static void openTable(QString & table, const QString & style);
+    static void openTable(QString & table, const QString & style, const HtmlTableAttributes & attributes);
 
     static void closeTable(QString & table);
 
     static void openRow(QString & table, const QString & style);
 
     static void closeRow(QString & table);
+};
+
+typedef boost::array<boost::array<std::pair<QTextTableCellFormat, QTextBlockFormat>,4>,4> TableCellsFormat;
+
+class QTextTableViewHelper
+{
+public:
+	QTextTableViewHelper();
+	~QTextTableViewHelper();
+
+	void setHeadersCellsFormat(const TableCellsFormat & format);
+	void setDataCellsFormat(const TableCellsFormat & format);
+	void setTableFormat(const QTextTableFormat & format);
+
+	void setHeaderRows(int headerRows);
+	void setHeaderColumns(int headerColumns);
+
+	const TableCellsFormat & headersCellsFormat() const;
+	const TableCellsFormat & dataCellsFormat() const;
+	const QTextTableFormat & tableFormat() const;
+
+	int headerRows() const;
+	int headerColumns() const;
+
+	void update(QTextTable * table);
+	void updateContent(QTextTable * table);
+	void updateHeaders(QTextTable * table);
+	void updateTable(QTextTable * table);
+
+private:
+
+	int headerRows_;
+	int headerColumns_;
+
+	TableCellsFormat headersCellsFormat_;
+	TableCellsFormat dataCellsFormat_;
+	QTextTableFormat tableFormat_;
 };
 
 #endif	//	HEADER_GUARD___TABLEGENERATOR_H__

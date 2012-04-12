@@ -1,4 +1,5 @@
 #include <qthtmlgenlib/TableGenerator.h>
+#include <QtGui/QTextCursor>
 
 HtmlCellAttributes::HtmlCellAttributes()
 {
@@ -160,7 +161,7 @@ void HtmlCellAttributes::clearHAlign()
     attributes.erase(CellHAlign);
 }
 
-void HtmlCellAttributes::setVAlign(HAlign vAlign)
+void HtmlCellAttributes::setVAlign(VAlign vAlign)
 {
     attributes[CellVAlign] = vAlign;
 }
@@ -168,6 +169,146 @@ void HtmlCellAttributes::setVAlign(HAlign vAlign)
 void HtmlCellAttributes::clearVAlign()
 {
     attributes.erase(CellVAlign);
+}
+
+HtmlTableAttributes::HtmlTableAttributes()
+{
+
+}
+
+HtmlTableAttributes::~HtmlTableAttributes()
+{
+
+}
+
+void HtmlTableAttributes::generateHtmlAttributes(QString & html) const
+{
+	for(auto it = attributes.begin(); it != attributes.end(); ++it){
+
+		switch(it->first){
+
+		case TableWidth:
+			{                
+				HtmlWidth htmlWidth = boost::any_cast<HtmlWidth>(it->second);
+				std::string attrib(" width=\"");
+				attrib += boost::lexical_cast<std::string>(htmlWidth.width) + (htmlWidth.type == WAbsolute ? "px" : "%") + "\"";
+				html += attrib.c_str();
+			}
+
+			break;
+
+		case TableHeight:
+			{                
+				HtmlWidth htmlWidth = boost::any_cast<HtmlWidth>(it->second);
+				std::string attrib(" height=\"");
+				attrib += boost::lexical_cast<std::string>(htmlWidth.width) + (htmlWidth.type == WAbsolute ? "px" : "%") + "\"";
+				html += attrib.c_str();
+			}
+
+			break;
+
+		case TableBgColor:
+
+			{
+				QString color = boost::any_cast<QString>(it->second);
+				if(color.isEmpty() == false){
+					html += " bgcolor=\"" + color + "\"";
+				}
+			}
+			break;
+
+		case TableBorder:
+
+			{
+				int border = boost::any_cast<int>(it->second);
+				std::string attrib(" border=\"");
+				attrib += boost::lexical_cast<std::string>(border) + "\"";
+				html += attrib.c_str();
+			}
+			break;
+
+		case TableCellSpacing:
+			{
+				int cellspacing = boost::any_cast<int>(it->second);
+				std::string attrib(" cellspacing=\"");
+				attrib += boost::lexical_cast<std::string>(cellspacing) + "\"";
+				html += attrib.c_str();
+			}
+
+			break;
+		case TableCellPadding:
+			{
+				int cellpadding = boost::any_cast<int>(it->second);
+				std::string attrib(" cellpadding=\"");
+				attrib += boost::lexical_cast<std::string>(cellpadding) + "\"";
+				html += attrib.c_str();
+			}
+
+			break;
+		}
+	}
+}
+
+void HtmlTableAttributes::setWidth(float width, HtmlWidthType type)
+{
+	HtmlWidth htmlWidth = { width, type};
+	attributes[TableWidth] = htmlWidth;
+}
+
+void HtmlTableAttributes::clearWidth()
+{
+	attributes.erase(TableWidth);
+}
+
+void HtmlTableAttributes::setHeight(float width, HtmlWidthType type)
+{
+	HtmlWidth htmlWidth = { width, type};
+	attributes[TableHeight] = htmlWidth;
+}
+
+void HtmlTableAttributes::clearHeight()
+{
+	attributes.erase(TableHeight);
+}
+
+void HtmlTableAttributes::setBgColor(const QString & bgColor)
+{
+	attributes[TableBgColor] = bgColor;
+}
+
+void HtmlTableAttributes::clearBgColor()
+{
+	attributes.erase(TableBgColor);
+}
+
+void HtmlTableAttributes::setBorder(int border)
+{
+	attributes[TableBorder] = border;
+}
+
+void HtmlTableAttributes::clearBorder()
+{
+	attributes.erase(TableBorder);
+}
+
+void HtmlTableAttributes::setCellSpacing(int spacing)
+{
+	attributes[TableCellSpacing] = spacing;
+}
+
+void HtmlTableAttributes::clearCellSpacing()
+{
+	attributes.erase(TableCellSpacing);
+}
+
+void HtmlTableAttributes::setCellPadding(int padding)
+{
+	attributes[TableCellPadding] = padding;
+}
+
+void HtmlTableAttributes::clearCellPadding()
+{
+	attributes.erase(TableCellPadding);
 }
 
 StyleStatus styleStatus(int value, int min, int max)
@@ -229,7 +370,7 @@ void HtmlDataTableGenerator::generateHtmlTable(QString & table, const HtmlDataTa
     buildContent(c, a, structure, styles, rows, columns);
 
     // generujemy tabele
-    openTable(tmpTable, styles.tableStyle_);
+    openTable(tmpTable, styles.tableStyle_, styles.tableAttributes);
     for(int row = 0; row < rows; ++row){
 
         openRow(tmpTable, rowsData[row]);
@@ -315,9 +456,13 @@ void HtmlDataTableGenerator::buildContent(HtmlDataTableContent & content, const 
     }
 }
 
-void HtmlDataTableGenerator::openTable(QString & table, const QString & style)
+void HtmlDataTableGenerator::openTable(QString & table, const QString & style, const HtmlTableAttributes & attributes)
 {
-    table += "<table border=\"1\" cellspacing=\"0\" cellpadding=\"6\"" + (style.isEmpty() == false ? " style=\"" + style + "\"" : QString()) + ">";
+    table += "<table ";
+	
+	attributes.generateHtmlAttributes(table);
+	
+	table += (style.isEmpty() == false ? " style=\"" + style + "\"" : QString()) + ">";
 }
 
 void HtmlDataTableGenerator::closeTable(QString & table)
@@ -333,4 +478,115 @@ void HtmlDataTableGenerator::openRow(QString & table, const QString & style)
 void HtmlDataTableGenerator::closeRow(QString & table)
 {
     table += "</tr>";
+}
+
+QTextTableViewHelper::QTextTableViewHelper()
+{
+
+}
+
+QTextTableViewHelper::~QTextTableViewHelper()
+{
+
+}
+
+void QTextTableViewHelper::setHeadersCellsFormat(const TableCellsFormat & format)
+{
+	headersCellsFormat_ = format;
+}
+
+void QTextTableViewHelper::setDataCellsFormat(const TableCellsFormat & format)
+{
+	dataCellsFormat_ = format;
+}
+
+void QTextTableViewHelper::setTableFormat(const QTextTableFormat & format)
+{
+	tableFormat_ = format;
+}
+
+void QTextTableViewHelper::setHeaderRows(int headerRows)
+{
+	headerRows_ = headerRows;
+}
+
+void QTextTableViewHelper::setHeaderColumns(int headerColumns)
+{
+	headerColumns_ = headerColumns;
+}
+
+const TableCellsFormat & QTextTableViewHelper::headersCellsFormat() const
+{
+	return headersCellsFormat_;
+}
+
+const TableCellsFormat & QTextTableViewHelper::dataCellsFormat() const
+{
+	return dataCellsFormat_;
+}
+
+const QTextTableFormat & QTextTableViewHelper::tableFormat() const
+{
+	return tableFormat_;
+}
+
+int QTextTableViewHelper::headerRows() const
+{
+	return headerRows_;
+}
+
+int QTextTableViewHelper::headerColumns() const
+{
+	return headerColumns_;
+}
+
+void QTextTableViewHelper::update(QTextTable * table)
+{
+	updateTable(table);
+	updateHeaders(table);
+	updateContent(table);
+}
+
+void QTextTableViewHelper::updateTable(QTextTable * table)
+{
+	table->setFormat(tableFormat_);
+}
+
+void QTextTableViewHelper::updateContent(QTextTable * table)
+{
+	//odœwie¿am dane
+	for(int i = headerRows_; i < table->rows(); ++i){
+		auto rowStatus = styleStatus(i, headerRows_, table->rows() - 1);
+		for(int j = headerColumns_; j < table->columns(); ++j){
+			auto columnStatus = styleStatus(j, headerColumns_, table->columns() - 1);
+			auto cell = table->cellAt(i, j);
+			cell.setFormat(headersCellsFormat_[rowStatus][columnStatus].first);
+			cell.firstCursorPosition().setBlockFormat(headersCellsFormat_[rowStatus][columnStatus].second);
+		}
+	}
+}
+
+void QTextTableViewHelper::updateHeaders(QTextTable * table)
+{
+	//odœwie¿am wiersze nag³owkowe
+	for(int i = 0; i < headerRows_; ++i){
+		auto rowStatus = styleStatus(i, 0, headerRows_ - 1);
+		for(int j = 0; j < table->columns(); ++j){
+			auto columnStatus = styleStatus(j, 0, table->columns() - 1);
+			auto cell = table->cellAt(i, j);
+			cell.setFormat(headersCellsFormat_[rowStatus][columnStatus].first);
+			cell.firstCursorPosition().setBlockFormat(headersCellsFormat_[rowStatus][columnStatus].second);
+		}
+	}
+
+	//odœwie¿am kolumny nag³owka
+	for(int j = 0; j < headerColumns_; ++j){
+		auto columnStatus = styleStatus(j, 0, headerColumns_ - 1);
+		for(int i = headerRows_; i < table->rows(); ++i){
+			auto rowStatus = styleStatus(i, 0, table->rows() - 1);
+			auto cell = table->cellAt(i, j);
+			cell.setFormat(headersCellsFormat_[rowStatus][columnStatus].first);
+			cell.firstCursorPosition().setBlockFormat(headersCellsFormat_[rowStatus][columnStatus].second);
+		}
+	}
 }

@@ -23,6 +23,8 @@ void DisordersDataWidget::setAutoUpdate(bool autoUpdate)
 void DisordersDataWidget::setDisordersCount(int count)
 {
 	disordersTable.content.setRows(count + 1);
+	initDisordersAtributes();
+
 	clearDisorders();
 }
 
@@ -52,8 +54,8 @@ void DisordersDataWidget::setDisorder(int idx, const QString & name, const QStri
 void DisordersDataWidget::initDisorders()
 {
 	initDisordersContent();
-	initDisordersAtributes();
 	initDisordersHeaderStructure();
+	initDisordersAtributes();
 	initDisordersStyles();
 }
 
@@ -80,7 +82,13 @@ void DisordersDataWidget::initDisordersContent()
 
 void DisordersDataWidget::initDisordersStyles()
 {
-	disordersTable.styles.tableStyle_ = "width: 300px; border-style: solid; border-color: rgb(0, 0, 0); border-radius: 4px;";
+	disordersTable.styles.tableAttributes.setCellPadding(4);
+	disordersTable.styles.tableAttributes.setCellSpacing(0);
+	disordersTable.styles.tableAttributes.setWidth(100, WRelative);
+	disordersTable.styles.tableAttributes.setHeight(100, WRelative);
+	disordersTable.styles.tableAttributes.setBorder(1);
+
+	disordersTable.styles.tableStyle_ = "border-color: rgb(0, 0, 0);";
 	disordersTable.styles.headerRowStyle_[Single] = "color: white; background: rgb(41, 41, 41);";
 
 	//wiersz nag³ówkowy
@@ -98,7 +106,29 @@ void DisordersDataWidget::initDisordersStyles()
 
 void DisordersDataWidget::initDisordersAtributes()
 {
+	disordersTable.cellsAttributes.setDimensions(disordersTable.content.rows(), disordersTable.content.columns());
 
+	HtmlCellAttributes attributes;
+	attributes.setHAlign(HACenter);
+	attributes.setVAlign(VAMiddle);
+
+	//centrujemy dane
+	for(int i = 0; i < disordersTable.cellsAttributes.rows(); ++i){
+		for(int j = 0; j < disordersTable.cellsAttributes.columns(); ++j){
+			disordersTable.cellsAttributes.setCell(i, j, attributes);
+		}
+	}
+
+	attributes.setHAlign(HALeft);
+
+	//kolumnê z opisem wyrównujemy do lewej
+	for(int i = 1; i < disordersTable.cellsAttributes.rows(); ++i){
+		disordersTable.cellsAttributes.setCell(i, 1, attributes);
+	}
+
+	disordersTable.cellsAttributes.cell(0, 0).setWidth(5, WRelative);
+	disordersTable.cellsAttributes.cell(0, 2).setWidth(20, WRelative);
+	disordersTable.cellsAttributes.cell(0, 3).setWidth(10, WRelative);
 }
 
 void DisordersDataWidget::updateContent()

@@ -514,7 +514,7 @@
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="470"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="941"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="946"/>
         <source>Data</source>
         <translation>Dane</translation>
     </message>
@@ -585,7 +585,7 @@
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="718"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="732"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="737"/>
         <source>Synchronization required</source>
         <translation>Wymagana jest synchronizacja</translation>
     </message>
@@ -595,222 +595,222 @@
         <translation>Baza danych została zaktualizaowana. Część danych może być niedostępna. Czy chcesz zsynchronizować się z bazą danych?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="733"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="738"/>
         <source>Some data are not available. Synchronization is required for further data processing. Would You like to synchronize?</source>
         <translation>Część danych jest niedostępna. Aby kontynuować pracę wymagana jest synchronizacja. Czy chcesz przeprowadzić teraz synchronizację?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="763"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="768"/>
         <source>Login unsuccessful</source>
         <translation>Nieudane logowanie</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="764"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="769"/>
         <source>Given user or password is incorrect. Please correct it and try again. If problem continues contact database administrators.</source>
         <translation>Podane dane są niepoprawne. Sprawdź ich poprawność i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="808"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="813"/>
         <source>All fields: Login, Password, Repeat password, Name, Surname and E-mail must be filled. Please correct them and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="812"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="817"/>
         <source>Password differs from its repeat. Please verify password.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="829"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="834"/>
         <source>Registration form validation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="841"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="846"/>
         <source>Registration successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="842"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="847"/>
         <source>Your registration has finished. Activate Your account to be able to login and get access to database.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="856"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="861"/>
         <source>Registration failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="857"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="862"/>
         <source>Could not registrate. Please change login or email and try again. If problem continues contact producer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="870"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="875"/>
         <source>Activation validation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="871"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="876"/>
         <source>Both fields: Login and Activation code must be filled. Please correct them and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="878"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="883"/>
         <source>Activation successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="879"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="884"/>
         <source>Given login has been successfully activated. You can now login using this account.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="893"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="898"/>
         <source>Activation failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="894"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="899"/>
         <source>Could not activate given login with provided activation code. Verify data and try again. If problem continiues please contact the producer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="978"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="983"/>
         <source>Load</source>
         <translation>Załaduj dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="979"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="984"/>
         <source>Unload</source>
         <translation>Wyładuj dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="981"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="986"/>
         <source>Download</source>
         <translation>Pobierz dane</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="983"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="988"/>
         <source>Refresh status</source>
         <translation>Odśwież status danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="985"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="990"/>
         <source>Synchronize</source>
         <translation>Synchronizuj</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1218"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1223"/>
         <source>Database synchronization</source>
         <translation>Synchronizowanie bazy danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1219"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1224"/>
         <source>Local data already synchronized. Synchronization is not required. Proceed anyway?</source>
         <translation>Dane lokalne są już zsynchronizowane. Synchronizacja nie jest wymagana. Kontynuować mimo to?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1317"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1322"/>
         <source>Download problem</source>
         <translation>Problem ściągania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1318"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1328"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1323"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1333"/>
         <source>Download request is </source>
         <translation>Operacja ściągania obejmuje </translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1318"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1323"/>
         <source> bytes large while there is only </source>
         <translation> bajtów dancyh kiedy tylko </translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1318"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1323"/>
         <source> bytes free. Download could not be continued. Please free some space or truncate your download request.</source>
         <translation> bajtów jest wolne na dysku docelowym. Nie można kontynuować ściągania. Zwolnij odpowiednią ilość wolnego miejsca na dysku lub zaweż zakres ściądanych danych.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1327"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1332"/>
         <source>Download warning</source>
         <translation>Ostrzeżenie ściągania</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1328"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1333"/>
         <source> bytes large. This will take some time to download such amount of data. Are you sure you can wait some longer time?</source>
         <translation> bajtów dancyh. Ściąganie takiej ilości danych zajmie dłuższą chwilę. Czy mimo to chcesz kontynuować?</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1351"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1356"/>
         <source>Download preparation error</source>
         <translation>Błąd przygotowania ściągania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1352"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1357"/>
         <source>Error while preparing download request. Error description: </source>
         <translation>Błąd przygotowania ściągana danych. Opis błędu: </translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1398"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1403"/>
         <source>Loading info</source>
         <translation>Informacja ładowania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1399"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1404"/>
         <source>Data loaded successfully to application.</source>
         <translation>Dane załadowane pomyslnie do aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1406"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1411"/>
         <source>Errors while data loading:</source>
         <translation>Błędy ładowania danych do aplikacji:</translation>
-    </message>
-    <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1411"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1619"/>
-        <source>
-%1. File ID: %2. Error description: %3</source>
-        <translation>%1. Identyfikator pliku: %2. Opis błędu: %3</translation>
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1416"/>
         <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1624"/>
         <source>
+%1. File ID: %2. Error description: %3</source>
+        <translation>%1. Identyfikator pliku: %2. Opis błędu: %3</translation>
+    </message>
+    <message>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1421"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1629"/>
+        <source>
 %1. File ID: %2. Unknown error.</source>
         <translation>%1. Identyfikator pliku: %2. Nieznany błąd.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1421"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1426"/>
         <source>Loading warning</source>
         <translation>Ostrzeżenie ładowania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1606"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1611"/>
         <source>Unloading info</source>
         <translation>Informacja wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1607"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1612"/>
         <source>Data unloaded successfully.</source>
         <translation>Dane wyładowane pomyślnie z aplikacji.</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1614"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1619"/>
         <source>Errors while data unloading:</source>
         <translation>Błędy podczas wyładowywania danych z aplikacji:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1629"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1634"/>
         <source>Unloading warning</source>
         <translation>Ostrzeżenie wyładowywania danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1808"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1813"/>
         <source>Unknown error</source>
         <translation>Nieznany błąd</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1869"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1874"/>
         <source>Downloading file %1 [%2/%3]</source>
         <translation>Ściąganie pliku %1 [%2/%3]</translation>
     </message>
@@ -951,17 +951,17 @@
 <context>
     <name>DisordersDataWidget</name>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DisordersDataWidget.cpp" line="73"/>
+        <location filename="../../../src/plugins/newCommunication/DisordersDataWidget.cpp" line="75"/>
         <source>Disorder</source>
         <translation>Jednostka chorobowa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DisordersDataWidget.cpp" line="74"/>
+        <location filename="../../../src/plugins/newCommunication/DisordersDataWidget.cpp" line="76"/>
         <source>Diagnosis date</source>
         <translation>Data diagnozy</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DisordersDataWidget.cpp" line="75"/>
+        <location filename="../../../src/plugins/newCommunication/DisordersDataWidget.cpp" line="77"/>
         <source>Focus</source>
         <translation>Istotność</translation>
     </message>
@@ -1441,7 +1441,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>HMMTreeItemUsageContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="286"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="285"/>
         <source>Item Actions</source>
         <translation>Operacje</translation>
     </message>
@@ -2211,8 +2211,8 @@ Wartość: %2</translation>
 <context>
     <name>NewChartVisualizer</name>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="90"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="354"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="93"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="358"/>
         <source>No active serie</source>
         <translation>Brak aktywnej serii danych</translation>
     </message>
@@ -2225,138 +2225,138 @@ Wartość: %2</translation>
         <translation type="obsolete">Prawy krok</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="101"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="104"/>
         <source>Events context</source>
         <translation>Normalizacja</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="107"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="110"/>
         <source>None events</source>
         <translation>Brak</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="108"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="111"/>
         <source>Left events</source>
         <translation>Normalizacja wg kontekstu zdarzeń lewej stopy</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="109"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="112"/>
         <source>Right events</source>
         <translation>Normalizacja wg kontekstu zdarzeń prawej stopy</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="116"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="119"/>
         <source>Picker</source>
         <translation>Wskaźnik</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="123"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="126"/>
         <source>Value Marker</source>
         <translation>Znacznik wartości</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="130"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="133"/>
         <source>Horizontal Marker</source>
         <translation>Znacznik różnicy czasu</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="137"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="140"/>
         <source>Vertical Marker</source>
         <translation>Znacznik różnicy wartości</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="142"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="145"/>
         <source>Scale to active</source>
         <translation>Skaluj do aktywnej serii danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="149"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="152"/>
         <source>Statistics</source>
         <translation>Statystyki</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="201"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="204"/>
         <source>X:</source>
         <translation>X:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="202"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="205"/>
         <source>Y:</source>
         <translation>Y:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="208"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="211"/>
         <source>SX:</source>
         <translation>SX:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="209"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="212"/>
         <source>SY:</source>
         <translation>SY:</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="223"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="226"/>
         <source>Upper bound</source>
         <translation>Górna granica przedziału</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="224"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="227"/>
         <source>Lower bound</source>
         <translation>Dolna granica przedziału</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="225"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="228"/>
         <source>Moving average</source>
         <translation>Średnia ruchoma</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="238"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="241"/>
         <source>Operations</source>
         <translation>Operacje</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="245"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="248"/>
         <source>Events</source>
         <translation>Zdarzenia</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="248"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="251"/>
         <source>Tags</source>
         <translation>Znaczniki</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="253"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="256"/>
         <source>Active Data Series</source>
         <translation>Aktywna seria danych</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="633"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="669"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="641"/>
         <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="677"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="685"/>
         <source>Left</source>
         <translation>Strona lewa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="633"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="677"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="641"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="685"/>
         <source>%1: Left step %2</source>
         <translation>%1: Krok %2</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="637"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="669"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="681"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="645"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="677"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="689"/>
         <source>Right</source>
         <translation>Strona prawa</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="637"/>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="681"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="645"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="689"/>
         <source>%1: Right step %2</source>
         <translation>%1: Krok %2</translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="666"/>
+        <location filename="../../../src/plugins/newChart/NewChartVisualizer.cpp" line="674"/>
         <source>Whole chart</source>
         <translation>Wszystkie wykresy</translation>
     </message>
@@ -3081,73 +3081,73 @@ p, li { white-space: pre-wrap; }
         <translation>Prawa strona</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="64"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="68"/>
         <source>Analog data</source>
         <translation>Dane analogowe</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="67"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="71"/>
         <source>EMG</source>
         <translation>EMG</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="71"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="75"/>
         <source>GRF</source>
         <translation>GRF</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="77"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="81"/>
         <source>Kinetic data</source>
         <translation>Dane kinetyczne</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="86"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="90"/>
         <source>Forces</source>
         <translation>Siły</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="89"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="93"/>
         <source>Moments</source>
         <translation>Momenty</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="93"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="97"/>
         <source>Powers</source>
         <translation>Moce</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="106"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="110"/>
         <source>Kinematic data</source>
         <translation>Dane kinematyczne</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="109"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="113"/>
         <source>Markers</source>
         <translation>Markery</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="114"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="118"/>
         <source>Joints</source>
         <translation>Stawy</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="124"/>
+        <location filename="../../../src/hmm_view/TreeBuilder.cpp" line="128"/>
         <source>Videos</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="43"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="42"/>
         <location filename="../../../src/hmm_view/HmmMainWindow.cpp" line="274"/>
         <source>Visualizer</source>
         <translation>Wizualizator</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="283"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="282"/>
         <source>Tree</source>
         <translation>Drzewo danych</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="418"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="417"/>
         <location filename="../../../src/hmm_view/HmmContexts.cpp" line="588"/>
         <source>Raports Tab</source>
         <translation>Raporty</translation>
@@ -3314,23 +3314,23 @@ Wartość: %2</translation>
 <context>
     <name>RaportsThumbnailsContext</name>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="420"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="419"/>
         <source>Actions</source>
         <translation>Operacje</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="445"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="444"/>
         <source>Create raport</source>
         <translation>Twórz raport</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="449"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="448"/>
         <source>Simple Raport</source>
         <translation>Prosty raport</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="459"/>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="466"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="458"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="465"/>
         <source>Empty</source>
         <translation>Pusty</translation>
     </message>
@@ -3344,7 +3344,7 @@ Wartość: %2</translation>
         <translation type="obsolete">Domyślny</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="481"/>
+        <location filename="../../../src/hmm_view/HmmContexts.cpp" line="480"/>
         <source>Raport template:</source>
         <translation>Szablon raportu:</translation>
     </message>
@@ -3575,161 +3575,161 @@ Tworzenie w Qt ma swoją specyfikę i mogę powiedzieć jedno - RTFM. Dokumentac
 <context>
     <name>TextEdit</name>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="634"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="633"/>
         <source>About</source>
         <translation>O programie </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="114"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="113"/>
         <source>&amp;New</source>
         <translation>&amp;Nowy</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="121"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="120"/>
         <source>&amp;Open...</source>
         <translation>&amp;Otwórz...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="126"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="125"/>
         <source>&amp;Save</source>
         <translation>&amp;Zapisz</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="133"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="132"/>
         <source>Save &amp;As...</source>
         <translation>Zapisz &amp;jako...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="140"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="139"/>
         <source>&amp;Print...</source>
         <translation>&amp;Drukuj...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="147"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="146"/>
         <source>Print Preview...</source>
         <translation>Podgląd wydruku...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="152"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="151"/>
         <source>&amp;Export PDF...</source>
         <translation>&amp;Eksportuj do PDF... </translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="168"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="167"/>
         <source>&amp;Undo</source>
         <translation>&amp;Cofnij</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="173"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="172"/>
         <source>&amp;Redo</source>
         <translation>&amp;Popraw</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="178"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="177"/>
         <source>Cu&amp;t</source>
         <translation>Wy&amp;tnij</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="183"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="182"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopiuj</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="188"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="187"/>
         <source>&amp;Paste</source>
         <translation>&amp;Wklej</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="221"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="220"/>
         <source>&amp;Bold</source>
         <translation>&amp;Pogrubienie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="231"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="230"/>
         <source>&amp;Italic</source>
         <translation>P&amp;ochylenie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="241"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="240"/>
         <source>&amp;Underline</source>
         <translation>Pod&amp;kreślenie</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="257"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="263"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="256"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="262"/>
         <source>&amp;Left</source>
         <translation>Do &amp;lewej</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="258"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="262"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="257"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="261"/>
         <source>C&amp;enter</source>
         <translation>&amp;Centruj</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="259"/>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="261"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="258"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="260"/>
         <source>&amp;Right</source>
         <translation>Do P&amp;rawej</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="265"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="264"/>
         <source>&amp;Justify</source>
         <translation>&amp;Justuj</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="288"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="287"/>
         <source>&amp;Color...</source>
         <translation>&amp;Zmień kolor...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="355"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="354"/>
         <source>Application</source>
         <translation>Aplikacja</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="356"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="355"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
         <translation>Dokument został zmodyfikowany. Czy chcesz zachować zmiany?</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="378"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="377"/>
         <source>%1[*] - %2</source>
         <translation>%1[*] - %2</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="378"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="377"/>
         <source>Rich Text</source>
         <translation>Format RTF</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="392"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="391"/>
         <source>Open File...</source>
         <translation>Otwórz plik...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="393"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="392"/>
         <source>HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation>Pliki HTML (*.htm *.html);;Wszystkie pliki (*)</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="422"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="421"/>
         <source>Save as...</source>
         <translation>Zapisz jako...</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="423"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="422"/>
         <source>ODF files (*.odt);;HTML-Files (*.htm *.html);;All Files (*)</source>
         <translation>Pliki ODF (*.odt);;Pliki HTML (*.htm *.html);; Wszystkie pliki(*)</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="441"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="440"/>
         <source>Print Document</source>
         <translation>Drukuj dokument</translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/textedit.cpp" line="634"/>
+        <location filename="../../../src/hmm_view/textedit.cpp" line="633"/>
         <source>This example demonstrates Qt&apos;s rich text editing facilities in action, providing an example document for you to experiment with.</source>
         <translation>Ten przykład pokazuje udogodnienia rft w akcji, dostarczając przykładowy dokument do eksperymentów.</translation>
     </message>

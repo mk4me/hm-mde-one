@@ -234,8 +234,8 @@ void AntropometricDataWidget::tryChangeContent()
 void AntropometricDataWidget::initAntropometric()
 {
 	initAntropometricContent();
-	initAntropometricAtributes();
 	initAntropometricHeadersStructure();
+	initAntropometricAtributes();
 	initAntropometricStyles();
 }
 
@@ -301,7 +301,19 @@ void AntropometricDataWidget::initAntropometricContent()
 
 void AntropometricDataWidget::initAntropometricStyles()
 {
-	antropometricGeneralTable.antropometricStyles.tableStyle_ = "width: 300px; border-style: solid; border-color: rgb(0, 0, 0); border-radius: 4px;";
+	antropometricGeneralTable.antropometricStyles.tableAttributes.setCellPadding(4);
+	antropometricGeneralTable.antropometricStyles.tableAttributes.setCellSpacing(0);
+	antropometricGeneralTable.antropometricStyles.tableAttributes.setWidth(100, WRelative);
+	antropometricGeneralTable.antropometricStyles.tableAttributes.setHeight(100, WRelative);
+	antropometricGeneralTable.antropometricStyles.tableAttributes.setBorder(1);
+
+	antropometricLeftRightTable.antropometricStyles.tableAttributes.setCellPadding(4);
+	antropometricLeftRightTable.antropometricStyles.tableAttributes.setCellSpacing(0);
+	antropometricLeftRightTable.antropometricStyles.tableAttributes.setWidth(100, WRelative);
+	antropometricLeftRightTable.antropometricStyles.tableAttributes.setHeight(100, WRelative);
+	antropometricLeftRightTable.antropometricStyles.tableAttributes.setBorder(1);
+
+	antropometricGeneralTable.antropometricStyles.tableStyle_ = "border-color: rgb(0, 0, 0);";
 	antropometricGeneralTable.antropometricStyles.headerRowStyle_[StyleStatus::Single] = "color: white; background: rgb(41, 41, 41);";
 
 	//wiersz nag³ówkowy
@@ -334,5 +346,44 @@ void AntropometricDataWidget::initAntropometricStyles()
 
 void AntropometricDataWidget::initAntropometricAtributes()
 {
+	antropometricLeftRightTable.antropometricCellsAttributes.setDimensions(antropometricLeftRightTable.antropometricContent.rows(), antropometricLeftRightTable.antropometricContent.columns());
+	antropometricGeneralTable.antropometricCellsAttributes.setDimensions(antropometricGeneralTable.antropometricContent.rows(), antropometricGeneralTable.antropometricContent.columns());
 
+	HtmlCellAttributes attributes;
+	attributes.setHAlign(HACenter);
+	attributes.setVAlign(VAMiddle);
+
+	//centrujemy dane
+	for(int i = 0; i < antropometricLeftRightTable.antropometricCellsAttributes.rows(); ++i){
+		for(int j = 0; j < antropometricLeftRightTable.antropometricCellsAttributes.columns(); ++j){
+			antropometricLeftRightTable.antropometricCellsAttributes.setCell(i, j, attributes);
+		}
+	}
+
+	for(int i = 0; i < antropometricGeneralTable.antropometricCellsAttributes.rows(); ++i){
+		for(int j = 0; j < antropometricGeneralTable.antropometricCellsAttributes.columns(); ++j){
+			antropometricGeneralTable.antropometricCellsAttributes.setCell(i, j, attributes);
+		}
+	}
+
+	attributes.setHAlign(HALeft);
+
+	for(int i = 0; i < antropometricLeftRightTable.antropometricCellsAttributes.rows(); ++i){
+		for(int j = 0; j < antropometricLeftRightTable.antropometricHeadersStructure.headerColumns; ++j){
+			antropometricLeftRightTable.antropometricCellsAttributes.setCell(i, j, attributes);
+		}
+	}
+
+	for(int i = 0; i < antropometricGeneralTable.antropometricCellsAttributes.rows(); ++i){
+		for(int j = 0; j < antropometricGeneralTable.antropometricHeadersStructure.headerColumns; ++j){
+			antropometricGeneralTable.antropometricCellsAttributes.setCell(i, j, attributes);
+		}
+	}
+
+	antropometricLeftRightTable.antropometricCellsAttributes.cell(0,1).setWidth(10, WRelative);
+	antropometricLeftRightTable.antropometricCellsAttributes.cell(0,2).setWidth(25, WRelative);
+	antropometricLeftRightTable.antropometricCellsAttributes.cell(0,3).setWidth(25, WRelative);
+
+	antropometricGeneralTable.antropometricCellsAttributes.cell(0,1).setWidth(10, WRelative);
+	antropometricGeneralTable.antropometricCellsAttributes.cell(0,2).setWidth(50, WRelative);
 }
