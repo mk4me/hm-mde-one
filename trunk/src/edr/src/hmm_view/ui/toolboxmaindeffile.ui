@@ -823,8 +823,7 @@ QTabWidget#dataTabWidget QGroupBox {
 	border: 1px solid black;
 	border-radius: 0px;
 	padding: 0px;
-	padding-top: 6px;
-	margin-top: 6ex;
+	margin-top: 30px;
 color: white;
 font: bold 18px;
  }
@@ -833,9 +832,11 @@ QTabWidget#dataTabWidget QGroupBox::title {
      subcontrol-origin: margin;
 		subcontrol-position: top left;
      padding: 4px;	
-	left: 2ex;
 border: 1px solid black;
+border-bottom: none;
 border-radius: 4px;
+border-bottom-left-radius: 0px;
+border-bottom-right-radius: 0px;
 background: black;
 min-width: 10em;
 }

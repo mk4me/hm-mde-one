@@ -45,6 +45,8 @@ CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.p
     //konfigurujemy web serwisy
     auto servicesManager = DataSourceWebServicesManager::create();
 
+	//konfiguracja defaultowa dla us³ugi tworz¹cej userów w bazie - systemowy u¿ytkownik
+	connectionsManager->accountFactoryWSConnection()->setCredentials("hmdbServiceUser", "4accountCreation");
 	servicesManager->accountFactoryService()->setConnection(connectionsManager->accountFactoryWSConnection());
     servicesManager->administrationService()->setConnection(connectionsManager->administrationWSConnection());
     servicesManager->authorizationService()->setConnection(connectionsManager->authorizationWSConnection());
@@ -131,7 +133,8 @@ void CommunicationDataSource::setConnectionsCredentials(const User & user)
 {
     auto connectionsManager = DataSourceConnectionManager::instance();
 
-	connectionsManager->accountFactoryWSConnection()->setCredentials(user.name(), user.password());
+	//TODO weryfikowaæ do jakich us³ug klient ma dostêp i tylko te mu konfigurowaæ
+	//connectionsManager->accountFactoryWSConnection()->setCredentials(user.name(), user.password());
     connectionsManager->administrationWSConnection()->setCredentials(user.name(), user.password());
     connectionsManager->authorizationWSConnection()->setCredentials(user.name(), user.password());
     connectionsManager->userPersonalSpaceWSConnection()->setCredentials(user.name(), user.password());

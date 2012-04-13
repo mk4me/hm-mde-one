@@ -839,8 +839,8 @@ void DataSourceWidget::onRegistration()
 		messageBox.exec();
 	}else {
 		
-		if(dataSource->registerUser(regLoginEdit->text().toStdString(), regPassEdit->text().toStdString(),
-			nameEdit->text().toStdString(), surnameEdit->text().toStdString(), emailEdit->text().toStdString()) == true){
+		if(dataSource->registerUser(regLoginEdit->text().toStdString(), emailEdit->text().toStdString(), regPassEdit->text().toStdString(),
+			nameEdit->text().toStdString(), surnameEdit->text().toStdString()) == true){
 
 			QMessageBox messageBox;
 			messageBox.setWindowTitle(tr("Registration successful"));
