@@ -240,7 +240,10 @@ void DataSourceStatusManager::refreshDataStatus(const std::set<int> & modifiedFi
     for(auto fileIT = modifiedFilesStatus.begin(); fileIT != fileITEnd; ++fileIT){
         auto fIT = shallowCopy->motionShallowCopy->files.find(*fileIT);
         if(fIT == fITEnd){
-            throw std::runtime_error("Unrecognized file");
+            //throw std::runtime_error("Unrecognized file");
+			continue;
+			//TODO
+			//warning - file outside from shallowcopy
         }
 
         if(fIT->second->isSessionFile() == true){

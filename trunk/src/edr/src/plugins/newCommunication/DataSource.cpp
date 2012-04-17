@@ -1,5 +1,8 @@
 #include "CommunicationPCH.h"
 #include "DataSource.h"
+#include <quazip/quazip.h>
+#include <quazip/quazipfile.h>
+#include <QtCore/QFile>
 
 #include "DataSourceConnectionsManager.h"
 #include "DataSourceWebServicesManager.h"
@@ -361,6 +364,19 @@ void CommunicationDataSource::extractShallowCopyFromLocalStorageToUserSpace()
     }
 }
 
+bool CommunicationDataSource::copyData(QIODevice &inFile, QIODevice &outFile)
+{
+	while (!inFile.atEnd()) {
+		char buf[4096];
+		qint64 readLen = inFile.read(buf, 4096);
+		if (readLen <= 0)
+			return false;
+		if (outFile.write(buf, readLen) != readLen)
+			return false;
+	}
+	return true;
+}
+
 void CommunicationDataSource::extractDataFromLocalStorageToUserSpace()
 {
     std::vector<core::Filesystem::Path> extractedFiles;
@@ -369,7 +385,6 @@ void CommunicationDataSource::extractDataFromLocalStorageToUserSpace()
     for(auto sessionIT = fullShallowCopy.motionShallowCopy->sessions.begin(); sessionIT != sessionsItEnd; ++sessionIT){
         try{
             core::Filesystem::createDirectory(pathsManager->sessionPath(sessionIT->second->sessionName));
-
             auto filesItEnd = sessionIT->second->files.end();
             for(auto fileIT = sessionIT->second->files.begin(); fileIT != filesItEnd; ++fileIT){
                 extractFileFromLocalStorageToUserSpace(fileIT->second, sessionIT->second->sessionName);
@@ -415,6 +430,50 @@ void CommunicationDataSource::extractFileFromLocalStorageToUserSpace(const webse
     }else{
         fileStatusManager->setFileStorage(file->fileID, Remote);
     }
+
+	//próbuje pliki vsk wypakowaæ z zip
+
+	auto zipName = sessionName + ".zip";
+	auto vskName = sessionName + ".vsk";
+
+	if(file->fileName == zipName){
+		//mam zipa - szukam vsk w zip
+		auto vskDestPath = pathsManager->filePath(vskName, sessionName);
+		QuaZip zip(filePath.string().c_str());
+
+		if(zip.open(QuaZip::Mode::mdUnzip) == true){
+			//uda³o siê otworzyæ plik do wypakowywania
+			auto files = zip.getFileNameList();
+			if(files.contains(QString::fromUtf8(vskName.c_str())) == true &&
+				zip.setCurrentFile(QString::fromUtf8(vskName.c_str())) == true){
+
+				//znalaz³em vsk - próbujemy go wypakowaæ
+				QuaZipFile inFile(&zip);
+				if(inFile.open(QIODevice::ReadOnly) && inFile.getZipError() == UNZ_OK) {
+					
+					//tworze plik docelowy
+					QFile outFile;
+					outFile.setFileName(vskDestPath.string().c_str());
+					if(outFile.open(QIODevice::WriteOnly)) {
+
+						//uda³o siê - mogê kopiowaæ
+						auto ok = copyData(inFile, outFile);
+						ok &= (inFile.getZipError()==UNZ_OK);
+
+						//zamykam plik docelowy
+						outFile.close();
+
+						//zamykam plik w archiwum zip
+						inFile.close();
+
+						if ( ok == false || inFile.getZipError()!=UNZ_OK) {
+							core::Filesystem::deleteFile(vskDestPath);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void CommunicationDataSource::extractDataFromLocalStorageToUserSpace(const ShallowCopy & prevShallowCopy, const ShallowCopy & newShallowCopy)

@@ -329,8 +329,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>194</width>
-            <height>201</height>
+            <width>245</width>
+            <height>219</height>
            </rect>
           </property>
           <attribute name="label">
@@ -357,7 +357,11 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="regPassEdit"/>
+              <widget class="QLineEdit" name="regPassEdit">
+               <property name="echoMode">
+                <enum>QLineEdit::Password</enum>
+               </property>
+              </widget>
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="regRepPassLabel">
@@ -367,7 +371,11 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QLineEdit" name="regRepPassEdit"/>
+              <widget class="QLineEdit" name="regRepPassEdit">
+               <property name="echoMode">
+                <enum>QLineEdit::Password</enum>
+               </property>
+              </widget>
              </item>
              <item row="3" column="0">
               <widget class="QLabel" name="nameLabel">
@@ -484,8 +492,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>245</width>
-            <height>219</height>
+            <width>194</width>
+            <height>103</height>
            </rect>
           </property>
           <attribute name="label">

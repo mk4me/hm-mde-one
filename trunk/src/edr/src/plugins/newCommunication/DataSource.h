@@ -146,6 +146,9 @@ private:
 	//! \param fileIDs Zbiór idnetyfikatorów plików które ³aduje do DM
 	DownloadRequestPtr generateDownloadFilesRequest(const std::set<int> & fileIDs);
 
+	//na potrzeby obs³ugi rozpakowywania plików VSK z archiwum zip
+	static bool copyData(QIODevice &inFile, QIODevice &outFile);
+
 private:
     // ------------------------ LOGIKA -------------------------------
 	//! Aktualny u¿ytkownik

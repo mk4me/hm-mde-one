@@ -1034,8 +1034,9 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 				//pomijamy wszystkie niekompatybilne z DM pliki
 				const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();				
 				std::set<int> dmOKFiles;
-				FilesHelper::filterFiles(filesIDs, extensions, dmOKFiles, *(dataSource->fileStatusManager));
 
+				//filtruje pliki obs³ugiwane przez DM
+				FilesHelper::filterFiles(filesIDs, extensions, dmOKFiles, *(dataSource->fileStatusManager));
 
 				//pliki do za³adowania
 				FilesHelper::filterFiles(dmOKFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
@@ -1460,11 +1461,30 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 	auto itEND = loadedFilesObjects.end();
 	for(auto it = loadedFilesObjects.begin(); it != itEND; ++it){
-		auto fileIT = filteredShallowCopy.motionShallowCopy->files.find(it->first);
-		if(fileIT->second->isSessionFile() == true){
-			subjectHierarchy[fileIT->second->session->performerConf->performer->performerID][fileIT->second->session->sessionID].first.insert(it->first);
+
+		if(it->first < 0){
+			auto s = filteredShallowCopy.motionShallowCopy->sessions.find(- it->first);
+
+			if(s != filteredShallowCopy.motionShallowCopy->sessions.end()){
+				subjectHierarchy[s->second->performerConf->performer->performerID][s->second->sessionID].first.insert(it->first);
+			}else{
+				//TODO
+				//INFO o nieobs³ugiwanym pliku
+			}
+
 		}else{
-			subjectHierarchy[fileIT->second->trial->session->performerConf->performer->performerID][fileIT->second->trial->session->sessionID].second[fileIT->second->trial->trialID].insert(it->first);
+			auto fileIT = filteredShallowCopy.motionShallowCopy->files.find(it->first);
+			if(fileIT == filteredShallowCopy.motionShallowCopy->files.end()){
+				//TODO
+				//INFO o nieobs³ugiwanym pliku
+				continue;
+			}
+
+			if(fileIT->second->isSessionFile() == true){
+				subjectHierarchy[fileIT->second->session->performerConf->performer->performerID][fileIT->second->session->sessionID].first.insert(it->first);
+			}else{
+				subjectHierarchy[fileIT->second->trial->session->performerConf->performer->performerID][fileIT->second->trial->session->sessionID].second[fileIT->second->trial->trialID].insert(it->first);
+			}
 		}
 	}
 	

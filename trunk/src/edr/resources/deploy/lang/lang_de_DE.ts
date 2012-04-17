@@ -409,47 +409,47 @@
     </message>
     <message>
         <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="345"/>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="500"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="508"/>
         <source>Login:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="365"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="369"/>
         <source>Repeat password:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="375"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="383"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="392"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="400"/>
         <source>Surname:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="409"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="417"/>
         <source>E-mail:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="436"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="444"/>
         <source>Send request</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="492"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="500"/>
         <source>Activation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="510"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="518"/>
         <source>Activation Code:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="530"/>
+        <location filename="../../../src/plugins/newCommunication/ui/DataSourceWidget.ui" line="538"/>
         <source>Activate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -641,117 +641,117 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1223"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1224"/>
         <source>Database synchronization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1224"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1225"/>
         <source>Local data already synchronized. Synchronization is not required. Proceed anyway?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1322"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1323"/>
         <source>Download problem</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1323"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1333"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1324"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1334"/>
         <source>Download request is </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1323"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1324"/>
         <source> bytes large while there is only </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1323"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1324"/>
         <source> bytes free. Download could not be continued. Please free some space or truncate your download request.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1332"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1333"/>
         <source>Download warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1333"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1334"/>
         <source> bytes large. This will take some time to download such amount of data. Are you sure you can wait some longer time?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1356"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1357"/>
         <source>Download preparation error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1357"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1358"/>
         <source>Error while preparing download request. Error description: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1403"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1404"/>
         <source>Loading info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1404"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1405"/>
         <source>Data loaded successfully to application.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1411"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1412"/>
         <source>Errors while data loading:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1416"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1624"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1417"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1644"/>
         <source>
 %1. File ID: %2. Error description: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1421"/>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1629"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1422"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1649"/>
         <source>
 %1. File ID: %2. Unknown error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1426"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1427"/>
         <source>Loading warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1611"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1631"/>
         <source>Unloading info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1612"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1632"/>
         <source>Data unloaded successfully.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1619"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1639"/>
         <source>Errors while data unloading:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1634"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1654"/>
         <source>Unloading warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1813"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1833"/>
         <source>Unknown error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1874"/>
+        <location filename="../../../src/plugins/newCommunication/DataSourceWidget.cpp" line="1894"/>
         <source>Downloading file %1 [%2/%3]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1294,42 +1294,42 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="964"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="965"/>
         <source>About...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="973"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="974"/>
         <source>&amp;Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="976"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="977"/>
         <source>O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="981"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="982"/>
         <source>Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="986"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="987"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="995"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="996"/>
         <source>Save layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1000"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1001"/>
         <source>Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1005"/>
+        <location filename="../../../src/hmm_view/ui/toolboxmaindeffile.ui" line="1006"/>
         <source>Create workflow</source>
         <translation type="unfinished"></translation>
     </message>
