@@ -3,9 +3,9 @@
 #include "uniqueCollection.h"
 #include "TrajectoriesDrawer.h"
 
-void TrajectoryDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
+void TrajectoryDrawer::init( MarkersVisualizationSchemeConstPtr scheme )
 {
-	UTILS_ASSERT(scheme && scheme->hasMarkers());
+	UTILS_ASSERT(scheme && scheme->hasData());
 	OsgSchemeDrawer::init(scheme);
 	node = new osg::Group;
 	createTrajectories(scheme->getMarkers());
@@ -181,6 +181,7 @@ void TrajectoryDrawer::setTimes( const std::string& name, const std::pair<float,
 
 MarkerCollectionConstPtr TrajectoryDrawer::getMarkers() const
 {
-    UTILS_ASSERT(getVisualiztionScheme() && getVisualiztionScheme()->getMarkers());
-    return getVisualiztionScheme()->getMarkers();
+    MarkersVisualizationSchemeConstPtr scheme = core::dynamic_pointer_cast<const MarkersVisualizationScheme>(getVisualiztionScheme());
+    UTILS_ASSERT(scheme && scheme->getMarkers());
+    return scheme->getMarkers();
 }

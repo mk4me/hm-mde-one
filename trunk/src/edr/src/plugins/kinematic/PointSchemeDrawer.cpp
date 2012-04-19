@@ -6,13 +6,13 @@ using namespace boost;
 using namespace std;
 
 
-void PointSchemeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
+void PointSchemeDrawer::init( VisualizationSchemeConstPtr scheme )
 {
     UTILS_ASSERT(scheme);
     OsgSchemeDrawer::init(scheme);
 
     node = new osg::Group;
-    auto markers = scheme->getStates(dataToDraw);
+    auto markers = scheme->getStates();
     createMarkersCrowd(markers);
 }
 
@@ -23,7 +23,7 @@ void PointSchemeDrawer::deinit()
 
 void PointSchemeDrawer::update()
 {
-    auto markers = getVisualiztionScheme()->getStates(dataToDraw);
+    auto markers = getVisualiztionScheme()->getStates();
     for (int i = markers.size() - 1; i >= 0; --i) {
         points[i]->setPosition(markers[i].position);
     }

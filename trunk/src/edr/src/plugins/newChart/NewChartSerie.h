@@ -29,8 +29,8 @@ public:
     NewChartSerie(NewChartVisualizer * visualizer) :
       visualizer(visualizer), 
       active(false),
-      xvals(nullptr),
-      yvals(nullptr),
+      //xvals(nullptr),
+      //yvals(nullptr),
       time(0.0f),
       _z(0),
       _zBase(0)
@@ -139,8 +139,8 @@ private:
     EventsHelperPtr eventsHelper;
     
 
-    double* xvals;
-    double* yvals;
+    //double* xvals;
+    //double* yvals;
     bool active;
     double time;
     double _z;

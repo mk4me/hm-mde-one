@@ -22,7 +22,7 @@ public:
 
 public:
 	virtual osg::ref_ptr<osg::Node> getNode();
-	virtual void init(SkeletalVisualizationSchemeConstPtr scheme);
+	virtual void init(MarkersVisualizationSchemeConstPtr scheme);
 	virtual void deinit();
 	virtual void draw();
 	virtual void update();

@@ -41,7 +41,6 @@ public slots:
 
     range getEntries(ScalarChannelStatsConstPtr stats);
     std::list<QTreeWidgetItem*> getEntriesByChannel(channelConstPtr channel);
-    
     QStringList getGroups() const;
     void setActive(QTreeWidgetItem* treeItem);
     void setActive(const QString& group, const QString& name);

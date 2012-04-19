@@ -23,8 +23,7 @@ public:
 
 public:
     NewChartState(NewChartVisualizer* visualizer);
-
-	virtual ~NewChartState() {}
+	virtual ~NewChartState() { }
 
 public:
     virtual bool stateEventFilter( QObject *, QEvent * ) = 0;

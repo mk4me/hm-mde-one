@@ -62,8 +62,8 @@ void NewChartSerie::setActive( bool val )
 
 NewChartSerie::~NewChartSerie()
 {
-    delete[] xvals;
-    delete[] yvals;
+    //delete[] xvals;
+    //delete[] yvals;
 }
 
 void NewChartSerie::setEvents( EventsCollectionConstPtr val )

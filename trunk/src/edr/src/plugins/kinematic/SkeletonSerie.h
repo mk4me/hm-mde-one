@@ -55,16 +55,14 @@ public:
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
-	virtual void setLocalTime(double time)
-	{
-		UTILS_ASSERT(scheme && skeletonDrawers);
-		scheme->setTime(time);
-		skeletonDrawers->update();
-	}
+	virtual void setLocalTime(double time);
+
+    osg::Matrix getInitialMatrix() const;
 
 
 private:
     MarkerCollectionConstPtr createTrajectories(kinematic::JointAnglesCollectionConstPtr joints);
+    osg::Matrix getXYZMatrix() const;
 
 private:
 	KinematicVisualizer * visualizer;
@@ -73,6 +71,7 @@ private:
     core::ObjectWrapperConstPtr data;
     std::string name;
     TransformPtr skeletonNode;
+    bool xyzAxis;
 };
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;
 typedef boost::shared_ptr<const SkeletonSerie> SkeletonSerieConstPtr;

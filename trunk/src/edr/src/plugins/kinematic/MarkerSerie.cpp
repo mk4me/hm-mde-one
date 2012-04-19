@@ -9,7 +9,7 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
     visualizer->actionGhost->setVisible(true);
     connect(visualizer->actionGhost, SIGNAL(triggered(bool)), this, SLOT(showGhost(bool)));
 	MarkerCollectionConstPtr markersCollection = data->get();
-	scheme = SkeletalVisualizationSchemePtr(new SkeletalVisualizationScheme());
+	scheme = MarkersVisualizationSchemePtr(new MarkersVisualizationScheme());
 	scheme->setMarkers(markersCollection);
 	int markersCount = markersCollection->getNumChannels();
 	try {
@@ -17,8 +17,8 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 		scheme->setMarkersDataFromVsk(vsk ? vsk : Vsk::get(static_cast<Vsk::MarkersCount>(markersCount)));
 	} catch (...) {}
     	
-	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(DrawMarkers, 3, 0.02f)));
-	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(DrawMarkers, 10, 0.005f)));
+	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(3, 0.02f)));
+	markersDrawer->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(10, 0.005f)));
     
     trajectoryDrawer = TrajectoryDrawerPtr(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.33f), 300));
 	markersDrawer->addDrawer(trajectoryDrawer);
@@ -27,7 +27,7 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
     visualizer->schemeDialog->setDrawer(markersDrawer, QString(data->getName().c_str()));
 
 	transformNode->addChild(markersDrawer->getNode());
-	
+    matrixTransform->setMatrix(getInitialMatrix());
 }
 
 
@@ -38,7 +38,7 @@ void MarkerSerie::showGhost( bool visible )
         ghostNode = new osg::PositionAttitudeTransform();
         MarkerCollectionConstPtr markersCollection = data->get();
         while (time < this->getLength()) {
-            SkeletalVisualizationSchemePtr scheme(new SkeletalVisualizationScheme);
+            MarkersVisualizationSchemePtr scheme(new MarkersVisualizationScheme);
             
             scheme->setMarkers(markersCollection);
             try {
@@ -46,8 +46,8 @@ void MarkerSerie::showGhost( bool visible )
             } catch (...) {}
             scheme->setTime(time);
             osg::Vec4 color(1.0f, 1.0f, 0.9f, 0.25f);
-            OsgSchemeDrawerPtr drawer1(new GlPointSchemeDrawer(DrawMarkers, 3, 0.02f, color));
-            OsgSchemeDrawerPtr drawer2(new GlLineSchemeDrawer(DrawMarkers, 10, 0.005f, color));
+            OsgSchemeDrawerPtr drawer1(new GlPointSchemeDrawer(3, 0.02f, color));
+            OsgSchemeDrawerPtr drawer2(new GlLineSchemeDrawer(10, 0.005f, color));
             drawer1->init(scheme);
             drawer2->init(scheme);
             drawer1->update();
@@ -66,11 +66,23 @@ void MarkerSerie::showGhost( bool visible )
 void MarkerSerie::setLocalTime( double time )
 {
     UTILS_ASSERT(scheme);
+    auto shift = scheme->getCurrentPosition();
     scheme->setTime(time);
     markersDrawer->update();
-    //osg::Matrix m = matrixTransform->getMatrix();
-    //m.setTrans(scheme->getCurrentPosition());
-    //matrixTransform->setMatrix(m);
+    osg::Matrix m = matrixTransform->getMatrix();
+    shift = scheme->getCurrentPosition() - shift;
+    osg::Matrix rot = m;
+    rot.setTrans(osg::Vec3());
+    m.setTrans(m.getTrans() + shift * rot);
+    matrixTransform->setMatrix(m);
 }
+
+osg::Matrix MarkerSerie::getInitialMatrix() const
+{
+    osg::Matrix m;
+    m.setTrans(scheme->getRootPosition(0.0));
+    return m;
+}
+
 
 

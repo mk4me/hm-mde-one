@@ -53,10 +53,8 @@ public:
 		return scheme->getDuration();
 	}
 
-    virtual osg::Vec3 getLocalPivot() const
-    {
-        return scheme->getCurrentPosition();
-    }
+    virtual osg::Matrix getInitialMatrix() const;
+
 
 	//! Czas zawiera siê miêdzy 0 a getLength()
 	//! \param time Aktualny, lokalny czas kanalu w sekundach
@@ -67,7 +65,7 @@ private slots:
 	
 private:
 	KinematicVisualizer * visualizer;
-	SkeletalVisualizationSchemePtr scheme;
+	MarkersVisualizationSchemePtr scheme;
 	SchemeDrawerContainerPtr markersDrawer;
 	TrajectoryDrawerPtr trajectoryDrawer;
     osg::ref_ptr<osg::PositionAttitudeTransform> ghostNode;

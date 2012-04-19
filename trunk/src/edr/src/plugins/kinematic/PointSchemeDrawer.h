@@ -8,20 +8,18 @@
 class PointSchemeDrawer : public OsgSchemeDrawer
 {
 public:
-    PointSchemeDrawer(DataToDraw toDraw) :
-      dataToDraw(toDraw) 
-      {}
+    PointSchemeDrawer() {}
 public:
     virtual void draw();
     virtual void update();
     virtual void deinit();
-    virtual void init(SkeletalVisualizationSchemeConstPtr scheme);
+    virtual void init(VisualizationSchemeConstPtr scheme);
     virtual osg::ref_ptr<osg::Node> getNode() { return node; }
 
 private:
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
-    typedef SkeletalVisualizationScheme::JointState MarkerState;
+    typedef VisualizationScheme::State MarkerState;
 
 private:
     void createMarkersCrowd(const std::vector<MarkerState>& markers);
@@ -31,7 +29,6 @@ private:
 private:
     std::vector<TransformPtr> points;
     osg::ref_ptr<osg::Group> node;
-    DataToDraw dataToDraw;
 };
 
 #endif //HEADER_GUARD_POINTSCHEMEDRAWER_H__

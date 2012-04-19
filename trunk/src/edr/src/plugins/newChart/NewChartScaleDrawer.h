@@ -21,6 +21,8 @@ public:
       {
       }
 
+      virtual ~PercentScaleDraw() {}
+
 public:
     void setLeftRightValues(double left, double right)
     {

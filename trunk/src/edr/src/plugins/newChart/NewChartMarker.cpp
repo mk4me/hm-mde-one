@@ -162,9 +162,6 @@ void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtS
     boxRect.setWidth(textRect.width() + LABEL_BOUND * 2);
     boxRect.setHeight(textRect.height() + LABEL_BOUND * 2);
 
-    /*QBrush b(pen.color());
-    b.setStyle(Qt::SolidPattern);
-    painter->setBrush(b);*/
     painter->setPen(QPen(Qt::black));
     painter->setBrush(QBrush(Qt::black));
     if (!point2) {

@@ -58,38 +58,26 @@ public:
       NewChartSerie* tryGetCurrentSerie();
 
       virtual IVisualizer* createClone() const;
-      
       virtual const std::string& getName() const;
-      
       core::IVisualizer::SerieBase *createSerie(const core::ObjectWrapperConstPtr& data, const std::string& name);
-
       core::IVisualizer::SerieBase *createSerie(const core::IVisualizer::SerieBase * serie);
       
       virtual void removeSerie(core::IVisualizer::SerieBase *serie);
-
       virtual QWidget* createWidget(core::IActionsGroupManager * manager);
-
       virtual QIcon* createIcon();
-      
       virtual int getMaxDataSeries(void) const;
-
       virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info);
-
       virtual void setUp(core::IObjectSource* source);
       virtual void update(double deltaTime);
 
       void setScale();
-
       virtual void reset();
-
       void setTitle( const QString& title ) { qwtPlot->setTitle(title); }
       void setManipulation(bool val);
       bool isShowLegend() const { return showLegend; }
       void setShowLegend(bool val);
       bool eventFilter( QObject *object, QEvent *event );
-
       boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> getSeries() const;
-
       bool isEventMode() const { return context != C3DEventsCollection::Context::General; }
 
       virtual QPixmap print() const 
@@ -113,7 +101,6 @@ private:
       void plotChanged();
       void refreshBounds();
       void setLabelsVisible(bool);
-
       void simpleMovingAverage(int startIdx, int endIdx, const std::vector<float> & inReal,
           int optInTimePeriod, int & outBegIdx, int & outNBElement, std::vector<float> & outReal);
 
@@ -158,16 +145,12 @@ private slots:
       void setMovingAverageTimeWindow(double timeWindow);
 
 private:
-
     QwtPlotCurve* upperBoundCurve;
     QwtPlotCurve* lowerBoundCurve;
     QwtPlotCurve* averageCurve;
-
     std::vector< boost::function<void ()> > updateFIFO;
-
     bool boundsAutoRefresh;
     bool boundsToRefresh;
-
     double movingAverageTimeWindow;
     int pointsPerWindow;
 
@@ -217,6 +200,9 @@ private:
     C3DEventsCollection::Context context;
     EventsHelper::SegmentConstPtr oldSegment;
     NewChartPickerPtr picker;
+
+    float currentSerieTime;
+    float currentSerieValue;
 
 };
 typedef core::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;

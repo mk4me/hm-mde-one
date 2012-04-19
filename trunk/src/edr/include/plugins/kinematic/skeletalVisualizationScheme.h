@@ -78,25 +78,25 @@ class ISchemeDrawer;
 enum DataToDraw;
 typedef core::shared_ptr<ISchemeDrawer> ISchemeDrawerPtr;
 //! klasa stanowi polaczenie miedzy reprezentacja wewnetrzna, a kontrolka odrysowywujaca szkielet
-class SkeletalVisualizationScheme
+class VisualizationScheme
 {
 public:
     //! stan pojedynczego markera / jointa
-    struct JointState {
-        JointState() : position(), color(), isEffector(false), visible(true), name("UNKNOWN") {}
+    struct State {
+        State() : position(), color(), isEffector(false), visible(true), name("UNKNOWN") {}
         osg::Vec3 position;  //!< pozycja w globalnym ukladzie odniesienia
         osg::Vec4 color;     //!< kolor w formacie RGBA <0,1>
-        bool isEffector;     //!< czy joint jest lisciem w hierarchii
-        bool visible;        //!< czy joint powinien byæ widoczny
-        std::string name;    //!< nazwa jointa
+        bool isEffector;     //!< czy joint / marker jest lisciem w hierarchii
+        bool visible;        //!< czy joint / marker powinien byæ widoczny
+        std::string name;    //!< nazwa jointa / markera
     };
 
     //! struktura zawiera jedno polaczenie pomiedzy stawami lub markerami
     struct Connection {
         Connection() : index1(-1), index2(-1), color(), visible(true) {}
-        //! indeks pierwszego stawu/markera (zgodny z przekazywana tablica JointState)
+        //! indeks pierwszego stawu/markera (zgodny z przekazywana tablica State)
         int index1;         
-        //! indeks drugiego stawu/markera (zgodny z przekazywana tablica JointState)
+        //! indeks drugiego stawu/markera (zgodny z przekazywana tablica State)
         int index2;
         //! kolor po³¹czenia (RGBA <0,1>)
         osg::Vec4 color;
@@ -104,11 +104,8 @@ public:
     };
             
 public:
-    SkeletalVisualizationScheme();
-
-//public:
-//    //! Metoda tworzy schemat wizualizacji, zachowujac przy okazji slaby wskaznik do niego
-//    static core::shared_ptr<SkeletalVisualizationScheme> create();
+    VisualizationScheme();
+    virtual ~VisualizationScheme() {}
 
 public: // akcesory
     double getNormalizedTime() const { return normalizedTime; }
@@ -124,9 +121,80 @@ public: // akcesory
         return getNormalizedTime() * getDuration();
     }
 
-    const osg::Vec3& getCurrentPosition() const { return currentPosition; }
+    virtual osg::Vec3 getCurrentPosition() const = 0;
 
-    int getNumFrames() const { 
+    
+    virtual double getDuration() const = 0;
+
+    //! akcesory do zwracanych danych
+    const std::vector<State> &getStates() const { return states; }
+    const std::vector<Connection> &getConnections() const { return connections; }
+
+	virtual bool hasData() const = 0;
+
+
+protected:
+    //! stany markerow dla aktualnego czasu
+    std::vector<State> states;
+    std::vector<Connection> connections;
+    //! aktualny czas
+    double normalizedTime; 
+
+protected:
+    virtual void update(double time) = 0;
+};
+
+typedef core::shared_ptr<VisualizationScheme> VisualizationSchemePtr;
+typedef core::weak_ptr<VisualizationScheme> VisualizationSchemeWeak;
+typedef core::shared_ptr<const VisualizationScheme> VisualizationSchemeConstPtr;
+
+
+class MarkersVisualizationScheme : public VisualizationScheme
+{
+public:
+    MarkerCollectionConstPtr getMarkers() const { return markers; }
+    virtual double getDuration() const 
+    {
+        if (markers) {
+            return markers->getLength();
+        }
+        UTILS_ASSERT(false);
+        return 0.0;
+    }
+
+    virtual bool hasData() const { return markers.get(); }
+
+    void setMarkers(MarkerCollectionConstPtr val);
+    void setMarkersDataFromVsk(kinematic::VskParserConstPtr vsk);
+    virtual osg::Vec3 getCurrentPosition() const { return currentPosition; }
+    osg::Vec3 getRootPosition(double time) const;
+
+protected:
+    virtual void update( double time )
+    {
+        updateMarkers(time);
+    }
+
+private:
+    //! odswiezenie informacji o markerach
+    void updateMarkers(double time);
+
+
+private:
+    MarkerCollectionConstPtr markers;
+    osg::Vec3 currentPosition;
+};
+typedef core::shared_ptr<MarkersVisualizationScheme> MarkersVisualizationSchemePtr;
+typedef core::shared_ptr<const MarkersVisualizationScheme> MarkersVisualizationSchemeConstPtr;
+
+class SkeletalVisualizationScheme : public VisualizationScheme
+{
+public:
+
+    kinematic::JointAnglesCollectionConstPtr getJoints() const { return joints; }
+    void setJoints(kinematic::JointAnglesCollectionConstPtr val);
+
+    virtual int getNumFrames() const { 
         UTILS_ASSERT(joints);  
         return joints->getNumPointsPerChannel(); 
     }
@@ -134,43 +202,38 @@ public: // akcesory
         UTILS_ASSERT(joints); 
         return static_cast<double>(joints->getLength()) / joints->getNumPointsPerChannel(); 
     }
-    double getDuration() const { 
-        UTILS_ASSERT(joints || markers);
+
+    virtual double getDuration() const  { 
         if (joints) {
             return static_cast<double>(joints->getLength()); 
-        } else if (markers) {
-            return markers->getLength();
-        }
+        } 
         UTILS_ASSERT(false);
         return 0.0;
     }
 
-    //! akcesory do zwracanych danych
-    const std::vector<JointState> &getMarkersStates() const { return markersStates; }
-    const std::vector<JointState> &getJointStates() const { return jointMarkersStates; }
-    const std::vector<Connection> &getJointConnections() const { return jointConnections; }
-    const std::vector<Connection> &getMarkerConnections() const { return markerConnections; }
+    virtual bool hasData() const { return joints.get(); }
 
-    const std::vector<JointState> &getStates(DataToDraw toDraw) const;
-    const std::vector<Connection> &getConnections(DataToDraw toDraw) const;
+    virtual osg::Vec3 getCurrentPosition() const { return currentPosition; }
+    osg::Vec3 getRootPosition(double time) 
+    {
+        return joints->getRootPosition(time);
+    }
 
-	bool hasData() const { return markers || joints; }
-	bool hasMarkers() const { return markers.get() != nullptr; }
-	bool hasJoints() const { return joints.get() != nullptr; }
+protected:
+    virtual void update( double time )
+    {
+        updateJointTransforms(time);
+        currentPosition = getRootPosition(time);
 
-	MarkerCollectionConstPtr getMarkers() const { return markers; }
-	kinematic::JointAnglesCollectionConstPtr getJoints() const { return joints; }
+        int count = states.size();
+        for (int i = 0; i < count; i++) {
+            states[i].position -= currentPosition;
+        }
+    }
 
-	void setMarkers(MarkerCollectionConstPtr val);
-	void setJoints(kinematic::JointAnglesCollectionConstPtr val);
-    void setMarkersDataFromVsk(kinematic::VskParserConstPtr vsk);
-
-        
 private:
     //! odswiezenie informacji o jointach
     void updateJoints();
-    //! odswiezenie informacji o markerach
-    void updateMarkers(double time);
     //! obliczenie poczatkowych transformacji
     //void computeBindPoses(KinematicModelPtr model);
     //! obliczenie transformacji dla podanego czasu
@@ -182,28 +245,14 @@ private:
     void createSkeletonConnections(kinematic::hAnimJointPtr joint);
 
 private:
-    //! aktualny czas
-    double normalizedTime; 
-    //! pomocne przy zapelnianiu kolekcji jointow
-    int counterHelper;
-    //! stany markerow dla aktualnego czasu
-    std::vector<JointState> markersStates;
-    //! stany stawow dla aktualnego czasu
-    std::vector<JointState> jointMarkersStates;
     //! ulatwia ineksowanie jointow
     std::map<kinematic::hAnimJointPtr, int> visJoints;
-    //! zawiera informacje o polaczeniach miedzy stawami
-    std::vector<Connection> jointConnections;
-    std::vector<Connection> markerConnections;
-	MarkerCollectionConstPtr markers;
 	kinematic::JointAnglesCollectionConstPtr joints;
-    //! slaby wskaznik do this
-    //boost::weak_ptr<SkeletalVisualizationScheme> weak;
+    //! pomocne przy zapelnianiu kolekcji jointow
+    int counterHelper;
     osg::Vec3 currentPosition;
 };
-
 typedef core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;
-typedef core::weak_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemeWeak;
 typedef core::shared_ptr<const SkeletalVisualizationScheme> SkeletalVisualizationSchemeConstPtr;
 
 #endif

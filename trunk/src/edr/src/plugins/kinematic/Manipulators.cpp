@@ -74,7 +74,7 @@ osg::Node* Manipulators::addDraggerToScene(osg::PositionAttitudeTransform* scene
     // and ActivationKeyEvent then you'll have to press either than mod key or the specified key to
     // be able to activate the dragger when you mouse click on it.  Please note the follow allows
     // activation if either the ctrl key or the 'a' key is pressed and held down.
-    dragger->setActivationModKeyMask(osgGA::GUIEventAdapter::MODKEY_CTRL);
+    //dragger->setActivationModKeyMask(osgGA::GUIEventAdapter::MODKEY_CTRL);
     //dragger->setActivationKeyEvent('b');
     dragger->setDraggerActive(false);
     return root;
@@ -215,7 +215,7 @@ void Manipulators::connect( osg::PositionAttitudeTransform* parent, osg::MatrixT
     // and ActivationKeyEvent then you'll have to press either than mod key or the specified key to
     // be able to activate the dragger when you mouse click on it.  Please note the follow allows
     // activation if either the ctrl key or the 'a' key is pressed and held down.
-    dragger->setActivationModKeyMask(osgGA::GUIEventAdapter::MODKEY_CTRL);
+    //dragger->setActivationModKeyMask(osgGA::GUIEventAdapter::MODKEY_CTRL);
     //dragger->setActivationKeyEvent('b');
     //dragger->setDraggerActive(false);
 }

@@ -15,8 +15,7 @@
 class NewChartHorizontals : public NewChartState
 {
 public:
-    NewChartHorizontals(NewChartVisualizer* visualizer) : 
-      NewChartState(visualizer) {}
+    NewChartHorizontals(NewChartVisualizer* visualizer) : NewChartState(visualizer) {}
 	virtual ~NewChartHorizontals() {}
 
 public:

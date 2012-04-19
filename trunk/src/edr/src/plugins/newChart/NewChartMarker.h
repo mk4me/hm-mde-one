@@ -46,9 +46,8 @@ public:
     NewChartDotFixed(const QPointF& position, int size = 2) :
       NewChartDot(size),
       position(position)
-      {
-
-      }
+  {
+  }
 
 public:
     virtual QPointF getPosition() const { return position; }
@@ -88,16 +87,12 @@ public:
 
 public:
     virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
-
     bool isInsideLabel(const QPoint& transformedPoint, const QwtPlotCurve* curve) const;
-    
     const QString& getText() const { return text; }
     void setText(const QString& val) { text = val; }
-    
     const QPoint& getShift() const { return shift; }
     void setShift(const QPoint& val) { shift = val; }
     
-
     NewChartDotConstPtr getPoint1() const { return point1; }
     QPoint getPoint1Transformed(const QwtPlotCurve* curve) const;
     void setPoint1(NewChartDotConstPtr val) { point1 = val; }
@@ -112,10 +107,8 @@ public:
     void setPen(const QPen& val) { pen = val; }
 
     virtual int rtti() const { return QwtPlotItem::Rtti_PlotUserItem; }
-
     void connectDot(NewChartDotConstPtr dot, ConnectionStyle style = Simple);
     void connectDots(NewChartDotConstPtr point1, NewChartDotConstPtr point2, ConnectionStyle style );
-
     void connectDots(const QPointF& point1, const QPointF& point2, ConnectionStyle style);
 
 private:

@@ -15,14 +15,14 @@ class Scales
 public:
     Scales() : 
       initialized(false) 
-      {}
-      Scales(float xMin, float xMax, float yMin, float yMax) :
+    {}
+    Scales(float xMin, float xMax, float yMin, float yMax) :
       xMin(xMin),
-          xMax(xMax),
-          yMin(yMin),
-          yMax(yMax),
-          initialized(true) 
-      {}
+      xMax(xMax),
+      yMin(yMin),
+      yMax(yMax),
+      initialized(true) 
+    {}
 
 public:
     float getYMax() const { return yMax; }

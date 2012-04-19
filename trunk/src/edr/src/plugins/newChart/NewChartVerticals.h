@@ -23,7 +23,7 @@ public:
     virtual ~NewChartVerticals() {}
 
 public:
-    virtual bool stateEventFilter( QObject *, QEvent * );
+    virtual bool stateEventFilter(QObject *, QEvent *);
     virtual void stateBegin();
     virtual void stateEnd();
 

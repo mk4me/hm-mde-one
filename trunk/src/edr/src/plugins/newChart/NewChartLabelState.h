@@ -21,13 +21,12 @@ public:
 	virtual ~NewChartLabelState() {}
 
 public:
-    virtual void draw( QPainter * );
+    virtual void draw(QPainter *);
     virtual void stateBegin();
     virtual void stateEnd();
 
     void removeSerieLabels(const NewChartSerie* serie);
     void setVisible(const NewChartSerie* serie, bool visible);
-
 
 protected:
     struct LabelData
@@ -48,7 +47,6 @@ protected:
     LabelDataConstPtr getLabel(const QPoint& pos, const QwtPlotCurve* curve);
     LabelDataConstPtr getLabel(const NewChartLabel* label) const;
     SeriePointDist getClosestPoint(const QPoint& pos) const;
-    //boost::tuple<QPointF, double> getClosestPoint(const QwtPlotCurve*, const QPoint& pos) const;
 
 protected:
     std::vector<LabelDataPtr> labels;

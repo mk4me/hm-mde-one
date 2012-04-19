@@ -14,17 +14,6 @@ QwtPlotCurve(title),
 void NewChartCurve::drawCurve( QPainter *p, int style, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect, int from, int to ) const
 {
     QwtPlotCurve::drawCurve(p, style, xMap, yMap, canvasRect, from, to);
-
-    //QwtScaleMap newX = xMap;
-    //OffsetTransformation* x = new OffsetTransformation(getXOffset());
-    //newX.setTransformation(x);
-    //newX.setScaleInterval(xMap.s1() - getXOffset(), xMap.s2() - getXOffset());
-    //
-    //QwtScaleMap newY = yMap;
-    //OffsetTransformation* y = new OffsetTransformation(getYOffset());
-    //newY.setTransformation(y);
-    //newY.setScaleInterval(newY.s1() - getYOffset(), newY.s2() - getYOffset());
-    //QwtPlotCurve::drawCurve(p, style, newX, newY, canvasRect, from, to);
 }
 
 void NewChartCurve::setSamples( NewChartSeriesData* data )

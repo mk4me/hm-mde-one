@@ -1,5 +1,4 @@
 #include "NewChartPCH.h"
-#include <limits>
 #include <QtGui/QAction>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QSplitter>
@@ -48,7 +47,9 @@ NewChartVisualizer::NewChartVisualizer() :
     averageCurve(nullptr),
     boundsAutoRefresh(true),
     movingAverageTimeWindow(0.125),
-    pointsPerWindow(25)
+    pointsPerWindow(25),
+    currentSerieTime(-1.0f),
+    currentSerieValue(-1.0f)
 {
 
 }
@@ -182,7 +183,6 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     grid->enableYMin(false);
 
     grid->setMajPen(QPen(Qt::gray, 0, Qt::DashLine));
-    //grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     grid->attach(qwtPlot);
 
     this->currentState = picker;
@@ -201,8 +201,8 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     statsTable->setVisible(false);
     widget->setLayout(layout);
 
-    auto shiftX = LabeledSpinbox::create(widget, tr("X:"), 0.03, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-    auto shiftY = LabeledSpinbox::create(widget, tr("Y:"), 0.03, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    auto shiftX = LabeledSpinbox::create(widget, tr("X:"), 0.03, -(std::numeric_limits<double>::max)(), (std::numeric_limits<double>::max)());
+    auto shiftY = LabeledSpinbox::create(widget, tr("Y:"), 0.03, -(std::numeric_limits<double>::max)(), (std::numeric_limits<double>::max)());
     connect(shiftX.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftX(double)));
     connect(shiftY.get<2>(), SIGNAL(valueChanged(double)), this, SLOT(onShiftY(double)));
     shiftSpinX = shiftX.get<2>();
@@ -567,19 +567,21 @@ void NewChartVisualizer::update( double deltaTime )
         
         qwtMarker->setVisible(true);
         NewChartSerie* serie = series[currentSerie];
-        float x = serie->getTime();
-        float y = serie->getCurrentValue();
-        qwtMarker->setXValue(x * serie->getXScale() + serie->getXOffset());
-        qwtMarker->setYValue(y * serie->getYScale() + serie->getYOffset());
+        if (currentSerieTime != serie->getTime() || currentSerieValue != serie->getCurrentValue()) {
+            currentSerieTime = serie->getTime();
+            currentSerieValue = serie->getCurrentValue();
+            qwtMarker->setXValue(currentSerieTime * serie->getXScale() + serie->getXOffset());
+            qwtMarker->setYValue(currentSerieValue * serie->getYScale() + serie->getYOffset());
+        }
         auto helper = serie->getEventsHelper();
         if (isEventMode() && helper) {
-            EventsHelper::SegmentConstPtr segment = helper->getSegment(x, this->context);
+            EventsHelper::SegmentConstPtr segment = helper->getSegment(currentSerieTime, this->context);
             if (segment != oldSegment) {
                 recreateStats(segment ? segment->stats : ScalarChannelStatsConstPtr());
                 setScale(this->scaleToActive, segment ? true : false);
                 oldSegment = segment;
             }
-
+        
         }
     } else {
         qwtMarker->setVisible(false);
@@ -951,8 +953,8 @@ void NewChartVisualizer::refreshBounds()
         return;
     }
 
-    float minT = std::numeric_limits<float>::min();
-    float maxT = std::numeric_limits<float>::max();
+    float minT = (std::numeric_limits<float>::min)();
+    float maxT = (std::numeric_limits<float>::max)();
 
     //wyznaczamy parametry dla wsteg i œrednich
     //minimalny czas dla wszystkich seri danych
@@ -961,8 +963,8 @@ void NewChartVisualizer::refreshBounds()
     std::vector<ScalarChannelReaderInterfaceConstPtr> channels;
     for (auto it = series.begin(); it != series.end(); it++) {
         ScalarChannelReaderInterfaceConstPtr data((*it)->getData()->get());
-        minT = std::max(minT, data->argument(0));
-        maxT = std::min(maxT, data->argument(data->size() - 1));
+        minT = (std::max)(minT, data->argument(0));
+        maxT = (std::min)(maxT, data->argument(data->size() - 1));
         channels.push_back(data);
     }
 
@@ -1122,7 +1124,7 @@ void NewChartVisualizer::bbands( int startIdx, int endIdx, const std::vector<flo
         return;
     if( (endIdx < 0) || (endIdx < startIdx))
         return;
-    if( optInTimePeriod == std::numeric_limits<int>::min() )
+    if( optInTimePeriod == (std::numeric_limits<int>::min)() )
         optInTimePeriod = 5;
     else if( (optInTimePeriod < 2) || (optInTimePeriod > 100000) )
         return;

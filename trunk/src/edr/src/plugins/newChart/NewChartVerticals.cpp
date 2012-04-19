@@ -18,7 +18,6 @@ NewChartVerticals::NewChartVerticals( NewChartVisualizer* visualizer, NewChartLa
 
 bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
 {
-    //const NewChartSerie* currentSerie = visualizer->tryGetCurrentSerie();
     if (object != canvas) {
         return false;
     }

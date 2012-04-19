@@ -18,14 +18,14 @@ public:
     virtual void draw();
     virtual void update();
     virtual void deinit();
-    virtual void init(SkeletalVisualizationSchemeConstPtr scheme);
+    virtual void init(VisualizationSchemeConstPtr scheme);
     virtual osg::ref_ptr<osg::Node> getNode();
 
 private:
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
-    typedef SkeletalVisualizationScheme::Connection Connection;
-    typedef SkeletalVisualizationScheme::JointState JointState;
+    typedef VisualizationScheme::Connection Connection;
+    typedef VisualizationScheme::State JointState;
     
 private:
     void addLine(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color);
@@ -40,21 +40,19 @@ private:
 class ConeDrawer : public OsgSchemeDrawer
 {
     public:
-    ConeDrawer(DataToDraw toDraw) :
-    dataToDraw(toDraw)
-    {
-    }
+    ConeDrawer(float lineWidth) : lineWidth(lineWidth) {}
 
 public:
     virtual void draw();
     virtual void update();
     virtual void deinit();
-    virtual void init(SkeletalVisualizationSchemeConstPtr scheme);
+    virtual void init(VisualizationSchemeConstPtr scheme);
     virtual osg::ref_ptr<osg::Node> getNode();
 
 private:
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
+    float lineWidth;
 
 private:
     TransformPtr addTransform(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color);

@@ -57,9 +57,9 @@ void SchemeDialog::setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName 
         }
 
         if (points && lines) {
-            SkeletalVisualizationSchemeConstPtr scheme = lines->getVisualiztionScheme();
-            const std::vector<SkeletalVisualizationScheme::Connection>& cons = scheme->getConnections(scheme->getMarkers() ? DrawMarkers : DrawSkeleton);
-            const std::vector<SkeletalVisualizationScheme::JointState>& mrks = scheme->getStates(scheme->getMarkers() ? DrawMarkers : DrawSkeleton);
+            VisualizationSchemeConstPtr scheme = lines->getVisualiztionScheme();
+            const std::vector<VisualizationScheme::Connection>& cons = scheme->getConnections();
+            const std::vector<VisualizationScheme::State>& mrks = scheme->getStates();
             for (int i = 0; i < mrks.size();  i++) {
                 QTreeWidgetItem* item = new QTreeWidgetItem();
 
@@ -186,10 +186,10 @@ void SchemeDialog::visibilityChanged( bool visible )
             GlPointSchemeDrawerPtr points = t.get<0>();
             GlLineSchemeDrawerPtr lines = t.get<1>();
             int i = t.get<2>();
-            SkeletalVisualizationSchemeConstPtr scheme = points->getVisualiztionScheme();
-            typedef SkeletalVisualizationScheme::JointState JointState;
-            typedef SkeletalVisualizationScheme::Connection Connection;
-            std::vector<JointState> & mrks = const_cast<std::vector<JointState>&>(scheme->getStates(scheme->getMarkers() ? DrawMarkers : DrawSkeleton));
+            VisualizationSchemeConstPtr scheme = points->getVisualiztionScheme();
+            typedef VisualizationScheme::State JointState;
+            typedef VisualizationScheme::Connection Connection;
+            std::vector<JointState> & mrks = const_cast<std::vector<JointState>&>(scheme->getStates());
             mrks[i].visible = box->isChecked();
             points->update();
             lines->update();

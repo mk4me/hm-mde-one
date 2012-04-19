@@ -9,6 +9,7 @@ boost::tuple<QWidget*, QLabel*, QDoubleSpinBox*> LabeledSpinbox::create(QWidget*
     QLabel* l = new QLabel(label);
     spinWidget->layout()->addWidget(l);
     QDoubleSpinBox* spin = new QDoubleSpinBox();
+
     spin->setMaximum(maximum);
     spin->setMinimum(minimum);
     spin->setSingleStep(singleStep);

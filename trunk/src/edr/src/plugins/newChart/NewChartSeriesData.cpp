@@ -2,7 +2,7 @@
 #include "NewChartSeriesData.h"
 
 NewChartSeriesData::NewChartSeriesData( ScalarChannelReaderInterfaceConstPtr channel, 
-    QPointF offset /*= QPointF()*/, double scaleX /*= 1.0*/, double scaleY /*= 1.0*/ ) :
+    QPointF offset, double scaleX , double scaleY) :
     channel(channel),
     offset(offset),
     scaleX(scaleX),

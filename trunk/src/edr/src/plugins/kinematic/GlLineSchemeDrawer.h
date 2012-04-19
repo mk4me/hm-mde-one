@@ -10,16 +10,14 @@
 class GlLineSchemeDrawer : public OsgSchemeDrawer
 {
 public:
-    GlLineSchemeDrawer(DataToDraw toDraw, int cylinderComplexity, float cylinderRadius) :
-      dataToDraw(toDraw) ,
+    GlLineSchemeDrawer(int cylinderComplexity, float cylinderRadius) :
       complex(cylinderComplexity),
       radius(cylinderRadius),
       useCustomColor(false)
       {
       }
 
-      GlLineSchemeDrawer(DataToDraw toDraw, int cylinderComplexity, float cylinderRadius, const osg::Vec4& color) :
-        dataToDraw(toDraw) ,
+      GlLineSchemeDrawer(int cylinderComplexity, float cylinderRadius, const osg::Vec4& color) :
         complex(cylinderComplexity),
         radius(cylinderRadius),
         useCustomColor(true),
@@ -31,7 +29,7 @@ public:
     virtual void draw();
     virtual void update();
     virtual void deinit();
-    virtual void init(SkeletalVisualizationSchemeConstPtr scheme);
+    virtual void init(VisualizationSchemeConstPtr scheme);
     virtual osg::ref_ptr<osg::Node> getNode() { return node; }
 
 private:
@@ -46,7 +44,6 @@ private:
 private:
     std::vector<TransformPtr> cones;
     osg::ref_ptr<osg::Group> node;
-    DataToDraw dataToDraw;
     int complex;
     float radius;
     bool useCustomColor;

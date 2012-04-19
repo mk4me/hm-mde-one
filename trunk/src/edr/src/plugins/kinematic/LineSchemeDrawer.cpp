@@ -14,8 +14,8 @@ void LineSchemeDrawer::draw()
 
 void LineSchemeDrawer::update()
 {
-    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
-    auto joints = getVisualiztionScheme()->getStates(dataToDraw);
+    auto connections = getVisualiztionScheme()->getConnections();
+    auto joints = getVisualiztionScheme()->getStates();
         
     for (int i = connections.size() - 1; i >= 0; --i) {
         ref_ptr<Vec3Array> vertices = buffers[i];
@@ -32,13 +32,13 @@ void LineSchemeDrawer::deinit()
 
 }
 
-void LineSchemeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
+void LineSchemeDrawer::init( VisualizationSchemeConstPtr scheme )
 {
     UTILS_ASSERT(scheme);
     OsgSchemeDrawer::init(scheme);
     node = new osg::Group;
-    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
-    auto joints = getVisualiztionScheme()->getStates(dataToDraw);
+    auto connections = getVisualiztionScheme()->getConnections();
+    auto joints = getVisualiztionScheme()->getStates();
 
     buffers.reserve(connections.size());
     BOOST_FOREACH(const Connection& connection, connections) {
@@ -87,12 +87,12 @@ void ConeDrawer::draw()
 
 void ConeDrawer::update()
 {
-    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
-    auto states = getVisualiztionScheme()->getStates(dataToDraw);
+    auto connections = getVisualiztionScheme()->getConnections();
+    auto states = getVisualiztionScheme()->getStates();
 
     for (int i = connections.size() - 1;  i >= 0; --i) {
-        SkeletalVisualizationScheme::JointState state1 = states[connections[i].index1];
-        SkeletalVisualizationScheme::JointState state2 = states[connections[i].index2];
+        VisualizationScheme::State state1 = states[connections[i].index1];
+        VisualizationScheme::State state2 = states[connections[i].index2];
 
         Vec3 from = state1.position;
         Vec3 to = state2.position;
@@ -117,16 +117,16 @@ void ConeDrawer::deinit()
 
 }
 
-void ConeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
+void ConeDrawer::init( VisualizationSchemeConstPtr scheme )
 {
     node = new osg::Group;
     OsgSchemeDrawer::init(scheme);
-    auto connections = getVisualiztionScheme()->getConnections(dataToDraw);
-    auto states = getVisualiztionScheme()->getStates(dataToDraw);
+    auto connections = getVisualiztionScheme()->getConnections();
+    auto states = getVisualiztionScheme()->getStates();
     
     for (unsigned int i = 0;  i < connections.size(); ++i) {
-        SkeletalVisualizationScheme::JointState state1 = states[connections[i].index1];
-        SkeletalVisualizationScheme::JointState state2 = states[connections[i].index2];
+        VisualizationScheme::State state1 = states[connections[i].index1];
+        VisualizationScheme::State state2 = states[connections[i].index2];
         TransformPtr t = addTransform(state1.position, state2.position, connections[i].color);
         node->addChild(t);
         cones.push_back(t);
@@ -148,7 +148,7 @@ ConeDrawer::TransformPtr ConeDrawer::addTransform(const osg::Vec3& from, const o
     Vec3 zero;
     Vec3 up(0.0f, 1.0f, 0.0f);
     float length = dir.normalize();
-    ref_ptr<Cylinder> cone = new Cylinder(Vec3(0, 0, length * 0.5f ), dataToDraw == DrawSkeleton ? 0.05f : 0.02f, length);
+    ref_ptr<Cylinder> cone = new Cylinder(Vec3(0, 0, length * 0.5f ), lineWidth, length);
     ref_ptr<ShapeDrawable> drawable = new ShapeDrawable(cone);
     osg::Matrix mat;
     mat.makeLookAt(zero, -dir, up);

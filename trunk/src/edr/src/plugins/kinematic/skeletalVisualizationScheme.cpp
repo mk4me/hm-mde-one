@@ -12,12 +12,12 @@ kinematic::VskParserPtr Vsk::Count16(new kinematic::VskParser());
 kinematic::VskParserPtr Vsk::Count39(new kinematic::VskParser());
 kinematic::VskParserPtr Vsk::Count53(new kinematic::VskParser());
 
-SkeletalVisualizationScheme::SkeletalVisualizationScheme() :
+VisualizationScheme::VisualizationScheme() :
     normalizedTime(0)
 {
 }
 
-void SkeletalVisualizationScheme::setNormalizedTime( double val )
+void VisualizationScheme::setNormalizedTime( double val )
 {
     UTILS_ASSERT(hasData());
     if (normalizedTime != val) {
@@ -25,13 +25,7 @@ void SkeletalVisualizationScheme::setNormalizedTime( double val )
         if (val < 0.0 || val > 1.0) {
             LOGGER(Logger::Debug, "SkeletalVisualizationScheme : value out of <0,1>");
         }
-
-        if (joints) {
-            updateJointTransforms(val);
-        }
-        if (markers) {
-            updateMarkers(val);
-        }
+        update(val);
     }
 }
 
@@ -43,13 +37,6 @@ osg::Quat rotationParentChild(JointPtr parent, JointPtr child)
     osg::Matrix matParX; matParX.makeRotate(-parent->axis[0] * mul, 1.0, 0.0, 0.0);
 
     osg::Matrix matPar = matParZ * matParY * matParX;
-    //osg::Quat rz; rz.makeRotate(-parent->axis[2] * mul, 0.0, 0.0, 1.0);      
-   // osg::Quat ry; ry.makeRotate(-parent->axis[1] * mul, 0.0, 1.0, 0.0);  
-   // osg::Quat rx; rx.makeRotate(-parent->axis[0] * mul, 1.0, 0.0, 0.0);
-
-    //osg::Quat par = rz * ry * rx;
-    //osg::Quat par = rz;
-
 
     osg::Matrix matChiZ; matChiZ.makeRotate(child->axis[2] * mul, 0.0, 0.0, 1.0);
     osg::Matrix matChiY; matChiY.makeRotate(child->axis[1] * mul, 0.0, 1.0, 0.0);
@@ -75,7 +62,7 @@ osg::Vec3 vectorRotation(Vec3 v, double a, double b , double c)
 
 void SkeletalVisualizationScheme::updateJointTransforms(const std::vector<osg::Quat>& rotations, hAnimJointPtr joint, Quat parentRot, Vec3 parentPos)
 {
-    // zapewnienie zgodnosci indeksow (miedzy tablicami connections i jointStates)
+    // zapewnienie zgodnosci indeksow (miedzy tablicami connections i states)
     int i = visJoints[joint];
     Quat ident;
     double mul = osg::DegreesToRadians(1.0);
@@ -88,9 +75,8 @@ void SkeletalVisualizationScheme::updateJointTransforms(const std::vector<osg::Q
 
     shift = rotation * shift;
 
-    jointMarkersStates[i].position = (parentPos + shift);
+    states[i].position = (parentPos + shift);
 
-	// rewizja - przechodzenie po hierarchii
 	BOOST_FOREACH(hAnimJointPtr child, joint->getActiveJointChildren()) {
 		updateJointTransforms(rotations, child, rotation, parentPos + shift);
 	}
@@ -102,18 +88,9 @@ void SkeletalVisualizationScheme::updateJointTransforms( double normalizedTime )
     counterHelper = 0;
 
     hAnimSkeletonPtr skeleton = joints->getHAnimSkeleton();
-    osg::Quat q; Vec3 pos;
-    pos = joints->getRootPosition(normalizedTime);
-    updateJointTransforms(joints->getValues(static_cast<float>(normalizedTime * joints->getLength())), skeleton->getRoot(), q, pos);
+    currentPosition = joints->getRootPosition(normalizedTime);
+    updateJointTransforms(joints->getValues(static_cast<float>(normalizedTime * joints->getLength())), skeleton->getRoot(), osg::Quat(), currentPosition);
  }
-
-
-//core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationScheme::create()
-//{
-//    core::shared_ptr<SkeletalVisualizationScheme> scheme(new SkeletalVisualizationScheme());
-//    scheme->weak = scheme;
-//    return scheme;
-//}
 
 void SkeletalVisualizationScheme::createSkeletonConnections(kinematic::hAnimJointPtr joint)
 { 
@@ -124,29 +101,26 @@ void SkeletalVisualizationScheme::createSkeletonConnections(kinematic::hAnimJoin
 		c.index1 = visJoints[joint];
 		c.index2 = visJoints[child];
 		c.color = color;
-		jointConnections.push_back(c);
+		connections.push_back(c);
 		createSkeletonConnections(child);
 	}
 }
 
-void SkeletalVisualizationScheme::updateMarkers( double normalizedTime )
+void MarkersVisualizationScheme::updateMarkers( double normalizedTime )
 {
 	UTILS_ASSERT(markers);
     if (markers) {
+        double time = normalizedTime * markers->getLength();
+        currentPosition = getRootPosition(time);
+
         int count =  markers->getNumChannels();
-        currentPosition.set(0.0, 0.0, 0.0);
         for (int i = 0; i < count; i++) {
-            markersStates[i].position = markers->getValue(i, normalizedTime * markers->getLength());
-            currentPosition += markersStates[i].position;
+            states[i].position = markers->getValue(i, time) - currentPosition;
         }
-        currentPosition *= (1.0f / count);
-        //for (int i = 0; i < count; i++) {
-        //    markersStates[i].position -= currentPosition;
-        //}
     }
 }
 
-void SkeletalVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserConstPtr vsk )
+void MarkersVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserConstPtr vsk )
 {
     UTILS_ASSERT(markers, "There are no markers in kinematic model");
 
@@ -159,11 +133,11 @@ void SkeletalVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserCon
     for (auto it = vskMarkers.first; it != vskMarkers.second; it++) {
         std::map<std::string, int>::iterator found = markersIndices.find(it->name);
         if (found != markersIndices.end()) {
-            markersStates[found->second].color = it->color;
+            states[found->second].color = it->color;
         }
     }
     auto sticks = vsk->getSticks();
-    markerConnections.reserve(std::distance(sticks.first, sticks.second));
+    connections.reserve(std::distance(sticks.first, sticks.second));
     for (auto it = sticks.first; it != sticks.second; it++) {
         Connection c;
         auto it1 = markersIndices.find(it->name1);
@@ -172,51 +146,38 @@ void SkeletalVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserCon
             c.index1 = markersIndices[it->name1];
             c.index2 = markersIndices[it->name2];
             c.color = it->color;
-            markerConnections.push_back(c);
+            connections.push_back(c);
         }
     }
 }
 
-const std::vector<SkeletalVisualizationScheme::JointState> & SkeletalVisualizationScheme::getStates( DataToDraw toDraw ) const
-{
-    if (toDraw == DrawSkeleton) {
-        return getJointStates();
-    } else if (toDraw == DrawMarkers) {
-        return getMarkersStates();
-    }
-
-    UTILS_ASSERT(false);
-    return getJointStates();
-}
-
-const std::vector<SkeletalVisualizationScheme::Connection> & SkeletalVisualizationScheme::getConnections(DataToDraw toDraw ) const
-{
-    if (toDraw == DrawSkeleton) {
-        return getJointConnections();
-    } else if (toDraw == DrawMarkers) {
-        return getMarkerConnections();
-    }
-
-    UTILS_ASSERT(false);
-    return getJointConnections();
-}
-
-void SkeletalVisualizationScheme::setMarkers( MarkerCollectionConstPtr val )
+void MarkersVisualizationScheme::setMarkers( MarkerCollectionConstPtr val )
 {
 	UTILS_ASSERT(!markers && val);
 	this->markers = val;
     int count =  markers->getNumChannels();
-	if (count && markersStates.size() != count) {
-		markersStates.resize(count);
+	if (count && states.size() != count) {
+		states.resize(count);
 	}
 	osg::Vec4 blue(0,0,1,1);
 	for (int i = 0; i < count; i++) {
-		//markersStates[i].position = markers->getValue(i, 0.0 );
-		markersStates[i].color = blue;
-        markersStates[i].name = markers->getMarkerName(i);
+        states[i].color = blue;
+        states[i].name = markers->getMarkerName(i);
 	}
 
     updateMarkers(0.0);
+}
+
+osg::Vec3 MarkersVisualizationScheme::getRootPosition( double time ) const
+{
+    int count =  markers->getNumChannels();
+    osg::Vec3 position;
+    position.set(0.0, 0.0, 0.0);
+    for (int i = 0; i < count; i++) {
+        position += markers->getValue(i, time);
+    }
+    position *= (1.0f / count);
+    return position;
 }
 
 void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
@@ -233,11 +194,11 @@ void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
 	    }
 	}
 	
-	jointMarkersStates.resize(visJoints.size());
+	states.resize(visJoints.size());
 	osg::Vec4 gold(1,1,0,1);
 	for (auto it = visJoints.begin(); it != visJoints.end(); it++) {
-	    jointMarkersStates[it->second].color = gold;
-        jointMarkersStates[it->second].name = it->first->getName();
+        states[it->second].color = gold;
+        states[it->second].name = it->first->getName();
 	}
 	hAnimSkeletonPtr skeleton = joints->getHAnimSkeleton();
 	createSkeletonConnections(skeleton->getRoot());

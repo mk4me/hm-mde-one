@@ -5,7 +5,6 @@
 NewChartLabelState::NewChartLabelState(NewChartVisualizer* visualizer) :
     NewChartState(visualizer)
 {
-
 }
 
 void NewChartLabelState::move( const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label )
@@ -56,7 +55,7 @@ NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const NewCha
 NewChartLabelState::SeriePointDist NewChartLabelState::getClosestPoint(const QPoint& pos) const
 {
     double d = 0.0;
-    double min = std::numeric_limits<double>::max();
+    double min = (std::numeric_limits<double>::max)();
     const NewChartSerie* serie = nullptr;
     QPointF ret;
     auto series = visualizer->getSeries();
@@ -83,8 +82,6 @@ void NewChartLabelState::stateBegin()
 {
     canvas->setMouseTracking(true);
     canvas->setCursor(Qt::ForbiddenCursor);
-    //marker.attach(plot);
-    
 }
 
 void NewChartLabelState::stateEnd()

@@ -2,8 +2,6 @@
 #include "StatsTable.h"
 #include <QtGui/QItemDelegate>
 
-
-
 class ItemDelegate : public QItemDelegate
 {
 public:
@@ -45,23 +43,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      sum++;
      return sum;
  }
-
- //void StatsTable::setExpand( bool expand )
- //{
- //    expanded = expand;
- //    table->resizeColumnToContents(0);
- //    table->setHidden(!expand);
- //    if (expand) {
-
- //        int height = 0;
- //        for (int i = 0; i < table->topLevelItemCount(); i++) {
- //            height += getTreeItemRows(table->topLevelItem(i));
- //        }
- //        table->setMaximumHeight(height * rowHeight + table->header()->height());
- //    }
- //}
-
-  
+   
  QTreeWidgetItem* StatsTable::addEntry(const QString& group, const QString& name, ScalarChannelStatsConstPtr stats, const QColor& backgroundColor )
  {
      if (group.isEmpty()) {

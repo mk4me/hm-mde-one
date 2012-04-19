@@ -13,12 +13,15 @@
 
 #include <core/IVisualizer.h>
 #include <osg/Geode>
+#include <osgManipulator/Dragger>
+#include <osgManipulator/Command>
 #include <osgui/QOsgWidgets.h>
 #include <plugins/kinematic/skeletalVisualizationScheme.h>
 #include <QtGui/QIcon>
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 #include <QtGui/QDoubleSpinBox>
+
 #include <plugins/c3d/EventSerieBase.h>
 #include "ISchemeDrawer.h"
 #include "OsgSchemeDrawer.h"
@@ -30,6 +33,8 @@
 #include "Manipulators.h"
 #include "TrajectoriesDialog.h"
 #include "SchemeDialog.h"
+
+
 
 class KinematicSerie : public EventSerieBase
 {
@@ -49,8 +54,9 @@ public:
     {
         auto matrix = matrixTransform->getMatrix();
         auto t1 = matrix.getTrans();
-        matrix.setTrans(osg::Vec3());
-        return getLocalPivot() * matrix + t1; 
+        return t1;
+        //matrix.setTrans(osg::Vec3());
+        //return getLocalPivot() * matrix + t1; 
     }
 
      virtual void setEvents(EventsCollectionConstPtr val) {
@@ -60,16 +66,17 @@ public:
     double getTime() const { return time; }
     virtual void setTime(double val) { time = val; setLocalTime(val); }
 
-protected:
-    virtual osg::Vec3 getLocalPivot() const { return transformNode->getPosition(); }
-    virtual void setLocalTime(double time) = 0;
+    virtual osg::Matrix getInitialMatrix() const { return osg::Matrix(); }
+    virtual void resetTransform();
 
+protected:
+    virtual void setLocalTime(double time) = 0;
 protected:
     TransformPtr transformNode;
     EventsCollectionConstPtr events;
+    MatrixTransformPtr matrixTransform;
 
 private:
-    MatrixTransformPtr matrixTransform;
     double time;
 };
 
@@ -79,8 +86,10 @@ class KinematicVisualizer :  public QObject, public core::IVisualizer
 	friend class GRFSerie;
 	friend class MarkerSerie;
 	friend class SkeletonSerie;
+    friend class KinematicDraggerCallback;
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
+    typedef std::pair<QWidget*, QDoubleSpinBox*> SpinPair;
     Q_OBJECT;
     UNIQUE_ID("{E8B5DEB2-5C57-4323-937D-1FFD288B65B9}", "Kinematic visualizer");
 
@@ -97,12 +106,14 @@ public:
 	virtual core::IVisualizer* createClone() const;
     virtual void getInputInfo( std::vector<core::IInputDescription::InputInfo>& info );
     virtual QWidget* createWidget(core::IActionsGroupManager * manager);
+
+    
+
     virtual QIcon* createIcon();
     virtual const std::string& getName() const;
     virtual void reset();
     virtual QPixmap print() const;
 public:
-    void updateAnimation();
 	void resetScene();
 
 private:
@@ -113,16 +124,43 @@ private:
     void refreshSpinboxes();
     KinematicSerie* getParentSerie(GeodePtr geode);
 
+    osg::Vec3 getEulerFromQuat(const osg::Quat& q);
+    osg::Quat getQuatFromEuler(double heading, double attitude, double bank);
+    osg::Quat getQuatFromEuler(const osg::Vec3& euler);
+
+    SpinPair createSpinWidget( QWidget* parent, QString name, double step = 0.1, bool visible = true );
+
+    void setTransformMatrix(KinematicSerie* serie, const osg::Matrix& m);
+
+    void setTranslation(KinematicSerie* serie, int index, double d );
+    void setRotation( KinematicSerie* serie, int index, double d );
+    void setScale(KinematicSerie* serie, int index, double d );
+
+    void setTranslation(KinematicSerie* serie, const osg::Vec3& t  );
+    void setRotation( KinematicSerie* serie, const osg::Vec3& r );
+    void setRotation( KinematicSerie* serie, const osg::Quat& q);
+    void setScale(KinematicSerie* serie, const osg::Vec3& s );
+
 private slots:
     void showTrajectoriesDialog();
     void showSchemeDialog();
     void setActiveSerie(int idx);
     void setActiveSerie(KinematicSerie* serie);
-    void shiftLeft();
-    void shiftRight();
+
     void shiftX(double d);
     void shiftY(double d);
     void shiftZ(double d);
+
+    void rotateX(double d);
+    void rotateY(double d);
+    void rotateZ(double d);
+
+    void scaleX(double d);
+    void scaleY(double d);
+    void scaleZ(double d);
+
+    void resetTransform();
+
 
 public slots:
 	void setLeft();
@@ -138,8 +176,12 @@ public:
     virtual osg::Node* debugGetLocalSceneRoot();
     TransformPtr createIndicator() const;
 
+    void refreshTranslateSpinboxes();
+    void refreshRotateSpinboxes();
+    void refreshScaleSpinboxes();
+
 private:
-    SkeletalVisualizationSchemePtr scheme;
+    VisualizationSchemePtr scheme;
     QTimer updateTimer;
     std::string name;
     osg::ref_ptr<osg::Group> rootNode;
@@ -170,9 +212,17 @@ private:
     int currentSerie;
     std::vector<KinematicSerie*> series;
 
-    QDoubleSpinBox* spinX;
-    QDoubleSpinBox* spinY;
-    QDoubleSpinBox* spinZ;
+    SpinPair translateSpinWidgetX;
+    SpinPair translateSpinWidgetY;
+    SpinPair translateSpinWidgetZ;
+
+    SpinPair rotateSpinWidgetX;
+    SpinPair rotateSpinWidgetY;
+    SpinPair rotateSpinWidgetZ;
+
+    SpinPair scaleSpinWidgetX;
+    SpinPair scaleSpinWidgetY;
+    SpinPair scaleSpinWidgetZ;
 
     DraggerContainerPtr translateDragger;
     DraggerContainerPtr rotationDragger;
@@ -181,26 +231,16 @@ private:
     double lastTime;
 };
 
-
-class KinematicNotifier : public osg::NodeCallback
+class KinematicDraggerCallback : public osgManipulator::DraggerCallback
 {
-private:
-    KinematicVisualizer* vis;
+public:
+    KinematicDraggerCallback(KinematicVisualizer* kv) : visualizer(kv) {}
 
 public:
-    //! \param w Pocz¹tkowa szerokoœæ.
-    //! \param h Pocz¹tkowa wysokoœæ.
-    KinematicNotifier(KinematicVisualizer* visualizer) :
-      vis(visualizer)
-      {}
-
-      //! \param node
-      //! \param nv
-      virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
-      {
-          vis->updateAnimation();
-          traverse(node, nv);
-      }
+    virtual bool receive( const osgManipulator::MotionCommand& );
+private:
+    KinematicVisualizer* visualizer;
 };
+
 
 #endif  //  HEADER_GUARD___KINEMATICVISUALIZER_H__

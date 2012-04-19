@@ -10,6 +10,8 @@
 #ifndef HEADER_GUARD_NEWCHART__CHARTPCH_H__
 #define HEADER_GUARD_NEWCHART__CHARTPCH_H__
 
+#include <limits>
+
 #include <qwt/qwt_plot_canvas.h>
 #include <qwt/qwt_scale_draw.h>
 #include <qwt/qwt_scale_widget.h>

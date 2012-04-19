@@ -18,7 +18,8 @@
 class LabeledSpinbox
 {
 public:
-    static boost::tuple<QWidget*, QLabel*, QDoubleSpinBox*> create(QWidget* parent, const QString& label, double singleStep, double minimum, double maximum);
+    static boost::tuple<QWidget*, QLabel*, QDoubleSpinBox*> 
+        create(QWidget* parent, const QString& label, double singleStep, double minimum, double maximum);
 };
 
 

@@ -4,17 +4,17 @@ using namespace osg;
 using namespace boost;
 using namespace std;
 
-void GlLineSchemeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
+void GlLineSchemeDrawer::init( VisualizationSchemeConstPtr scheme )
 {
     UTILS_ASSERT(scheme);
     node = new osg::Group;
     OsgSchemeDrawer::init(scheme);
-    const auto& connections = getVisualiztionScheme()->getConnections(dataToDraw);
-    const auto& states = getVisualiztionScheme()->getStates(dataToDraw);
+    const auto& connections = getVisualiztionScheme()->getConnections();
+    const auto& states = getVisualiztionScheme()->getStates();
 
     for (unsigned int i = 0;  i < connections.size(); ++i) {
-        SkeletalVisualizationScheme::JointState state1 = states[connections[i].index1];
-        SkeletalVisualizationScheme::JointState state2 = states[connections[i].index2];
+        VisualizationScheme::State state1 = states[connections[i].index1];
+        VisualizationScheme::State state2 = states[connections[i].index2];
         TransformPtr t = addTransform(state1.position, state2.position, 
             useCustomColor ? customColor : connections[i].color);
         node->addChild(t);
@@ -29,12 +29,12 @@ void GlLineSchemeDrawer::deinit()
 
 void GlLineSchemeDrawer::update()
 {
-    const auto& connections = getVisualiztionScheme()->getConnections(dataToDraw);
-    const auto& states = getVisualiztionScheme()->getStates(dataToDraw);
+    const auto& connections = getVisualiztionScheme()->getConnections();
+    const auto& states = getVisualiztionScheme()->getStates();
 
     for (int i = connections.size() - 1;  i >= 0; --i) {
-        const SkeletalVisualizationScheme::JointState& state1 = states[connections[i].index1];
-        const SkeletalVisualizationScheme::JointState& state2 = states[connections[i].index2];
+        const VisualizationScheme::State& state1 = states[connections[i].index1];
+        const VisualizationScheme::State& state2 = states[connections[i].index2];
 
         Vec3 from = state1.position;
         Vec3 to = state2.position;

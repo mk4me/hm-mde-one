@@ -46,10 +46,8 @@ class NewChartLegend : public QwtLegend
 {
     Q_OBJECT;
 public:
-    explicit NewChartLegend( QWidget *parent = NULL ):
-    QwtLegend(parent)
-    {
-    }
+    explicit NewChartLegend( QWidget *parent = nullptr ) : QwtLegend(parent) {}
+    virtual ~NewChartLegend() {}
 
 protected:
     virtual QWidget *createWidget( const QwtLegendData & ) const;

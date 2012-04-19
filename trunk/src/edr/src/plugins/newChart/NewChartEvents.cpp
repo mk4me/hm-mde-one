@@ -42,8 +42,6 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
         painter->rotate(-90); // or 270
         painter->drawText(0, 0, QObject::tr(event->getLabel().c_str()));
         painter->restore();
-        //painter->drawText(x + 2, bottom - 30, QString(event->getLabel().c_str()));
-
 
         if (lastLeftEvent && left) {
             painter->setBrush(QBrush(i % 2 ? leftColor1 : leftColor2));

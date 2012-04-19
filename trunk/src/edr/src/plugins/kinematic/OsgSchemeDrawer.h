@@ -16,7 +16,7 @@ public:
         getNode()->setNodeMask(visible ? 0xFFFF : 0);
     }
 
-    virtual void init(SkeletalVisualizationSchemeConstPtr scheme) 
+    virtual void init(VisualizationSchemeConstPtr scheme) 
     { 
         UTILS_ASSERT(initialized == false, "Drawer was previously initialized");
         visualizationScheme = scheme; 
@@ -30,10 +30,10 @@ protected:
 	typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
 
 public:
-    SkeletalVisualizationSchemeConstPtr getVisualiztionScheme() const { return visualizationScheme; }
+    VisualizationSchemeConstPtr getVisualiztionScheme() const { return visualizationScheme; }
 
 private:
-    SkeletalVisualizationSchemeConstPtr visualizationScheme;
+    VisualizationSchemeConstPtr visualizationScheme;
     bool initialized;
 };
 

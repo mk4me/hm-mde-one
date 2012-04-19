@@ -5,16 +5,14 @@ using namespace osg;
 using namespace boost;
 using namespace std;
 
-GlPointSchemeDrawer::GlPointSchemeDrawer( DataToDraw toDraw, int sphereComplex, float sphereRadius ) :
-    dataToDraw(toDraw) ,
+GlPointSchemeDrawer::GlPointSchemeDrawer( int sphereComplex, float sphereRadius ) :
     complex(sphereComplex),
     radius(sphereRadius),
     useCustomColor(false)
 {
 }
 
-GlPointSchemeDrawer::GlPointSchemeDrawer( DataToDraw toDraw, int sphereComplex, float sphereRadius, const osg::Vec4& color ) :
-    dataToDraw(toDraw) ,
+GlPointSchemeDrawer::GlPointSchemeDrawer(int sphereComplex, float sphereRadius, const osg::Vec4& color ) :
     complex(sphereComplex),
     radius(sphereRadius),
     useCustomColor(true),
@@ -25,13 +23,13 @@ GlPointSchemeDrawer::GlPointSchemeDrawer( DataToDraw toDraw, int sphereComplex, 
 
 
 
-void GlPointSchemeDrawer::init( SkeletalVisualizationSchemeConstPtr scheme )
+void GlPointSchemeDrawer::init( VisualizationSchemeConstPtr scheme )
 {
     UTILS_ASSERT(scheme);
     OsgSchemeDrawer::init(scheme);
 
     node = new osg::Group;
-    auto markers = scheme->getStates(dataToDraw);
+    auto markers = scheme->getStates();
     createMarkersCrowd(markers);
 }
 
@@ -42,7 +40,7 @@ void GlPointSchemeDrawer::deinit()
 
 void GlPointSchemeDrawer::update()
 {
-    auto markers = getVisualiztionScheme()->getStates(dataToDraw);
+    auto markers = getVisualiztionScheme()->getStates();
     for (int i = markers.size() - 1; i >= 0; --i) {
         points[i]->setNodeMask(markers[i].visible ? 0xFFFF : 0);
         points[i]->setPosition(markers[i].position);

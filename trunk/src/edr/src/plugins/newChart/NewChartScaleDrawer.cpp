@@ -48,6 +48,5 @@ QwtScaleDiv PercentScaleDraw::getScaleDiv()
 
     QwtScaleDiv scaleDiv( majorTicks.first(), majorTicks.last(), ticks );
     scaleDiv.setTicks(QwtScaleDiv::MediumTick, mediumTicks);
-    //scaleDiv.setTicks(QwtScaleDiv::MinorTick, minorTicks);
     return scaleDiv;
 }

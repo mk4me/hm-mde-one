@@ -64,7 +64,6 @@ QWidget(parent)
     setData(data);
     button->setCheckable(true);
     l->addWidget(button);
-    //l->addWidget(QwtLegend::createWidget(data));
     this->setLayout(l);
 
     bool c2 = connect(button, SIGNAL(clicked(bool)), this, SLOT(onClick(bool)));

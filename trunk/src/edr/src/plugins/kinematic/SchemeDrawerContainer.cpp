@@ -14,7 +14,7 @@ osg::ref_ptr<osg::Node> SchemeDrawerContainer::getNode()
     return nodes;
 }
 
-void SchemeDrawerContainer::init( SkeletalVisualizationSchemeConstPtr scheme )
+void SchemeDrawerContainer::init( VisualizationSchemeConstPtr scheme )
 {
     OsgSchemeDrawer::init(scheme);
     wasInit = true;

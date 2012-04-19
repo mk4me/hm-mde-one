@@ -10,21 +10,21 @@
 class GlPointSchemeDrawer : public OsgSchemeDrawer
 {
 public:
-    GlPointSchemeDrawer(DataToDraw toDraw, int sphereComplex, float sphereRadius);
-    GlPointSchemeDrawer(DataToDraw toDraw, int sphereComplex, float sphereRadius, const osg::Vec4& color);
+    GlPointSchemeDrawer(int sphereComplex, float sphereRadius);
+    GlPointSchemeDrawer(int sphereComplex, float sphereRadius, const osg::Vec4& color);
 
 public:
     virtual void draw();
     virtual void update();
     virtual void deinit();
-    virtual void init(SkeletalVisualizationSchemeConstPtr scheme);
+    virtual void init(VisualizationSchemeConstPtr scheme);
     virtual osg::ref_ptr<osg::Node> getNode() { return node; }
 
 private:
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
-    typedef SkeletalVisualizationScheme::JointState MarkerState;
+    typedef VisualizationScheme::State MarkerState;
 
 private:
     void createMarkersCrowd(const std::vector<MarkerState>& markers);
