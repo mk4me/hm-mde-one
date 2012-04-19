@@ -219,19 +219,19 @@ public:
 			//t³umaczenia
 			QString locale = QLocale::system().name();
 
-			auto langPath = (edrConfig.getResourcesPath() / "lang" / "lang_").string();
+			auto langPath = QString((edrConfig.getResourcesPath() / "lang").string().c_str());
 
 			QTranslator appTranslator;
-			appTranslator.load(QString((langPath + locale.toStdString()).c_str()));
-			if (appTranslator.isEmpty()) {
-				appTranslator.load(QString((langPath + "pl_PL").c_str()));
+			
+			if(appTranslator.load("lang_" + locale, langPath) == false) {
+				appTranslator.load(QString("lang_pl_PL"), langPath);
+				//TODO
+				//jak tego siê nie uda za³adowaæ to mamy tylko angielski jêzyk - trzeba poinformowaæ
 			}
 
 			qApp->installTranslator(&appTranslator);
 
 			QSettings::setDefaultFormat(QSettings::IniFormat);
-
-			
 
             //Tworzymy tempa jeœli brakuje
             edrConfig.ensureTempDirectory();
