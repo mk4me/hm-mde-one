@@ -207,29 +207,31 @@ public:
 		{
 			// ustawienia aplikacji
 			QApplication application(argc, argv);
-            //
+
+			//tutaj mamy œciezki - potrzebujê je od razu
+			EDRConfig edrConfig;
+			EDRConfig::setPaths(edrConfig);
+
+            //ustawienia aplikacji
             application.setApplicationName("EDR");
 			application.setOrganizationName("PJWSTK");
-            QString locale = QLocale::system().name();
-            
-            QTranslator appTranslator;
-            appTranslator.load(QString("lang_") + locale);
-            if (appTranslator.isEmpty()) {
-                appTranslator.load("lang_pl_PL");
-            }
-            qApp->installTranslator(&appTranslator);
+			
+			//t³umaczenia
+			QString locale = QLocale::system().name();
 
-            QTranslator qtTranslator;
-            qtTranslator.load(QString("qt_") + locale);
-            if (qtTranslator.isEmpty()) {
-                qtTranslator.load("qt_pl_PL");
-            }
-            qApp->installTranslator(&qtTranslator);
+			auto langPath = (edrConfig.getResourcesPath() / "lang" / "lang_").string();
+
+			QTranslator appTranslator;
+			appTranslator.load(QString((langPath + locale.toStdString()).c_str()));
+			if (appTranslator.isEmpty()) {
+				appTranslator.load(QString((langPath + "pl_PL").c_str()));
+			}
+
+			qApp->installTranslator(&appTranslator);
 
 			QSettings::setDefaultFormat(QSettings::IniFormat);
 
-			EDRConfig edrConfig;
-			EDRConfig::setPaths(edrConfig);
+			
 
             //Tworzymy tempa jeœli brakuje
             edrConfig.ensureTempDirectory();

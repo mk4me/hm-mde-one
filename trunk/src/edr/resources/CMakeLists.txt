@@ -28,6 +28,7 @@ set(SHADERS
 source_group("deploy\\shaders" FILES ${SHADERS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SHADERS})
 
+# schematy dla wsdlpull
 set(SCHEMAS
 	deploy/schemas/http.xsd
 	deploy/schemas/mime.xsd
@@ -42,6 +43,7 @@ set(SCHEMAS
 source_group("deploy\\schemas" FILES ${SCHEMAS})
 set(ALL_RESURCES ${ALL_RESURCES} ${SCHEMAS})
 
+# pliki vsk opisuj¹ce modele szkieletowe
 set(TRIAL
 	deploy/trial/CZD.vsk
 	deploy/trial/M39.vsk
@@ -73,6 +75,11 @@ set(ALL_RESURCES ${ALL_RESURCES} ${ICONSVDF})
 file(GLOB IMAGES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/deploy/images/*.png")
 source_group("deploy\\images" FILES ${IMAGES})
 set(ALL_RESURCES ${ALL_RESURCES} ${IMAGES})
+
+# jêzyki
+file(GLOB LANGS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/deploy/lang/lang_*.ts")
+source_group("deploy\\lang" FILES ${LANGS})
+set(ALL_RESURCES ${ALL_RESURCES} ${LANGS})
 
 # czy kopiowaæ zasoby?
 option(PROJECT_ENABLE_SVN_RESOURCES_COPYING "Enable copying resources?" ON)
@@ -111,5 +118,38 @@ else()
 	# dodanie projektu bez ¿adnego polecenia - mo¿na ge edytowaæ z IDE
 	add_custom_target(resources 
 		SOURCES ${ALL_RESURCES}
-	)
+	)	
 endif()
+
+# projekt jêzyków
+ SET(PROJECT_LANGUAGES pl_PL de_DE CACHE STRING "dla lokalizacji w QT (ISO.639_ISO.3166)")
+ SET(WHOLE_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+ SET(RESOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../Resources)
+ 
+ SET(TS_COMMAND_1 \n "\"${QT_LUPDATE_EXECUTABLE}\"" ${WHOLE_SRC_PATH} -ts ${RESOURCES_PATH}/deploy/lang/lang_)
+ SET(QM_COMMAND_1 \n "\"${QT_LRELEASE_EXECUTABLE}\"" ${RESOURCES_PATH}/deploy/lang/lang_) 
+ SET(QM_COMMAND_2 .ts -qm ${CMAKE_CURRENT_BINARY_DIR}/lang_)
+ SET(FULL_TS_COMMAND)
+ SET(FULL_QM_COMMAND)
+ FOREACH(LANGUAGE ${PROJECT_LANGUAGES})
+   SET(TS_COMMAND ${TS_COMMAND_1}${LANGUAGE}.ts)
+   SET(FULL_TS_COMMAND ${FULL_TS_COMMAND} ${TS_COMMAND})
+   SET(QM_COMMAND ${QM_COMMAND_1}${LANGUAGE}${QM_COMMAND_2}${LANGUAGE}.qm)
+   SET(FULL_QM_COMMAND ${FULL_QM_COMMAND} ${QM_COMMAND})
+ ENDFOREACH(LANGUAGE ${PROJECT_LANGUAGES})
+ 
+# projekt lokalizacji 
+ADD_CUSTOM_TARGET(LOCALIZATION ALL
+	COMMAND ${FULL_TS_COMMAND}
+	COMMAND ${FULL_QM_COMMAND}
+	)
+					
+# przygotrowanie kopiowania plików QM do odpowiednich lokalizacji dla ró¿nych buildów
+ FOREACH(LANGUAGE ${PROJECT_LANGUAGES})
+	foreach (buildType ${CMAKE_CONFIGURATION_TYPES})
+		add_custom_command(TARGET LOCALIZATION POST_BUILD 
+			COMMAND "@CMAKE_COMMAND@" -E copy "${CMAKE_CURRENT_BINARY_DIR}/lang_${LANGUAGE}.qm" "${PROJECT_BUILD_ROOT}/bin/${buildType}/resources/lang/lang_${LANGUAGE}.qm"
+			COMMENT "Copying lang_${LANGUAGE} QM file"
+		)
+	endforeach()
+ ENDFOREACH(LANGUAGE ${PROJECT_LANGUAGES})
