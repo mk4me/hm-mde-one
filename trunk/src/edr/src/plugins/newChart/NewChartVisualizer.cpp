@@ -57,12 +57,10 @@ NewChartVisualizer::NewChartVisualizer() :
 
 NewChartVisualizer::~NewChartVisualizer()
 {
-    //TODO
     //przejrzec niszczenie dynamicznie tworzonych zasobów
     if(eventsContextWidget != nullptr){
         delete eventsContextWidget;
     }
-	delete percentDraw;
     //delete qwtPlot;
 }
 
