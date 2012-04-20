@@ -225,10 +225,10 @@ protected:
         updateJointTransforms(time);
         currentPosition = getRootPosition(time);
 
-        int count = states.size();
-        for (int i = 0; i < count; i++) {
-            states[i].position -= currentPosition;
-        }
+        //int count = states.size();
+        //for (int i = 0; i < count; i++) {
+        //    states[i].position -= currentPosition;
+        //}
     }
 
 private:

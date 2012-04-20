@@ -28,6 +28,7 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 
 	transformNode->addChild(markersDrawer->getNode());
     matrixTransform->setMatrix(getInitialMatrix());
+    trajectoryDrawer->setOffset(-scheme->getRootPosition(0.0));
 }
 
 
@@ -74,6 +75,7 @@ void MarkerSerie::setLocalTime( double time )
     osg::Matrix rot = m;
     rot.setTrans(osg::Vec3());
     m.setTrans(m.getTrans() + shift * rot);
+    trajectoryDrawer->setOffset(-scheme->getCurrentPosition());
     matrixTransform->setMatrix(m);
 }
 

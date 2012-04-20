@@ -1025,8 +1025,9 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      item->setExpanded(true);
 
      QFont font = item->font(0);
-     static int fontSize = font.pointSize();
-     font.setPointSize(fontSize + 4);
+     //static int fontSize = font.pointSize();
+     //font.setPointSize(fontSize + 4);
+     font.setPointSize(12);
      item->setFont(0, font);
 
      for (int i = 0; i < item->childCount(); i++) {
@@ -1034,7 +1035,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          child->setExpanded(true);
 
          QFont font = item->font(0);
-         font.setPointSize(font.pointSize() + 3);
+         font.setPointSize(14);
          item->setFont(0, font);
      }
  }

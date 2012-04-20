@@ -23,7 +23,7 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
 	skeletonDrawers->addDrawer(OsgSchemeDrawerPtr(new GlPointSchemeDrawer(3, 0.02f)));
 	skeletonDrawers->addDrawer(OsgSchemeDrawerPtr(new GlLineSchemeDrawer(10, 0.005f)));
     
-    TrajectoryDrawerPtr trajectoryDrawer(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.33f), 300));
+    trajectoryDrawer.reset(new TrajectoryDrawer(osg::Vec4(1, 1, 1, 0.33f), 300));
     MarkersVisualizationSchemePtr tempScheme(new MarkersVisualizationScheme());
     MarkerCollectionConstPtr mc = createTrajectories(collection);
     tempScheme->setMarkers(mc);
@@ -40,7 +40,8 @@ void SkeletonSerie::setData( const core::ObjectWrapperConstPtr & data )
 	//visualizer->transformNode->addChild(skeletonNode);
 	setAxis(true);
 	//visualizer->actionSwitchAxes->trigger();
-    //matrixTransform->setMatrix(getInitialMatrix());
+    matrixTransform->setMatrix(getInitialMatrix());
+    trajectoryDrawer->setOffset(-scheme->getRootPosition(0.0));
 }
 
 void SkeletonSerie::setAxis( bool xyz)
@@ -72,17 +73,17 @@ MarkerCollectionConstPtr SkeletonSerie::createTrajectories( kinematic::JointAngl
             markers->addChannel(marker);
         }
    
-        
         int argumentsSize = joint->size();
         for (int arg = 0; arg < argumentsSize; arg++) {
-            scheme.setTime(joint->argument(arg));
-
+            auto time = joint->argument(arg);
+            scheme.setTime(time);
+            auto rootPos = scheme.getCurrentPosition();
             const std::vector<VisualizationScheme::State>& states = scheme.getStates();
             // czy kolejnosc jest zapewniona? 
             int size = states.size();
             for (int i = 0; i < size; i++) {
                 VectorChannelPtr marker = markers->getChannel(i);
-                marker->addPoint(states[i].position);
+                marker->addPoint(states[i].position + rootPos);
             }
         }
         
@@ -114,6 +115,8 @@ void SkeletonSerie::setLocalTime( double time )
     osg::Matrix r2 = m;
     r2.setTrans(osg::Vec3());
     //m.setTrans(scheme->getCurrentPosition() * r);
+
+    trajectoryDrawer->setOffset(-scheme->getCurrentPosition());
     m.setTrans(m.getTrans() + shift * r * r2);
     matrixTransform->setMatrix(m);
 }
@@ -125,6 +128,14 @@ osg::Matrix SkeletonSerie::getInitialMatrix() const
   osg::Matrix r = xyzAxis ? getXYZMatrix() : osg::Matrix();
   m.setTrans(scheme->getRootPosition(0.0) * r);
   return m;
+}
+
+void SkeletonSerie::resetTransform()
+{
+    MatrixTransformPtr transform = getMatrixTransformNode();
+    transform->setMatrix(getInitialMatrix());
+    scheme->setNormalizedTime(0.0);
+    setLocalTime(getTime());
 }
 
 

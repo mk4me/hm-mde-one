@@ -22,7 +22,7 @@ public:
 
 public:
 	virtual osg::ref_ptr<osg::Node> getNode();
-	virtual void init(MarkersVisualizationSchemeConstPtr scheme);
+	virtual void init(VisualizationSchemeConstPtr scheme);
 	virtual void deinit();
 	virtual void draw();
 	virtual void update();
@@ -39,12 +39,13 @@ public:
 	void setTimes(const std::string& name, const std::pair<float, float>& times);
 
     MarkerCollectionConstPtr getMarkers() const;
+    void setOffset(const osg::Vec3& offset);
 	
 private:
 	void createTrajectories(MarkerCollectionConstPtr markers);
 
 private:
-	 osg::ref_ptr<osg::Group> node;
+	 osg::ref_ptr<osg::PositionAttitudeTransform> node;
 	 int density;
 	 osg::Vec4 color;
 	 

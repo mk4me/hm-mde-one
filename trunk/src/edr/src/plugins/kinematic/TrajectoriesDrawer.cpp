@@ -3,12 +3,13 @@
 #include "uniqueCollection.h"
 #include "TrajectoriesDrawer.h"
 
-void TrajectoryDrawer::init( MarkersVisualizationSchemeConstPtr scheme )
+void TrajectoryDrawer::init( VisualizationSchemeConstPtr scheme )
 {
-	UTILS_ASSERT(scheme && scheme->hasData());
-	OsgSchemeDrawer::init(scheme);
-	node = new osg::Group;
-	createTrajectories(scheme->getMarkers());
+    MarkersVisualizationSchemeConstPtr markesScheme = core::dynamic_pointer_cast<const MarkersVisualizationScheme>(scheme);
+	UTILS_ASSERT(markesScheme && markesScheme->hasData());
+	OsgSchemeDrawer::init(markesScheme);
+	node = new osg::PositionAttitudeTransform();
+	createTrajectories(markesScheme->getMarkers());
 }
 
 void TrajectoryDrawer::deinit()
@@ -184,4 +185,9 @@ MarkerCollectionConstPtr TrajectoryDrawer::getMarkers() const
     MarkersVisualizationSchemeConstPtr scheme = core::dynamic_pointer_cast<const MarkersVisualizationScheme>(getVisualiztionScheme());
     UTILS_ASSERT(scheme && scheme->getMarkers());
     return scheme->getMarkers();
+}
+
+void TrajectoryDrawer::setOffset( const osg::Vec3& offset )
+{
+    node->setPosition(offset);
 }

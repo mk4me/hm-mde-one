@@ -89,7 +89,7 @@ void SkeletalVisualizationScheme::updateJointTransforms( double normalizedTime )
 
     hAnimSkeletonPtr skeleton = joints->getHAnimSkeleton();
     currentPosition = joints->getRootPosition(normalizedTime);
-    updateJointTransforms(joints->getValues(static_cast<float>(normalizedTime * joints->getLength())), skeleton->getRoot(), osg::Quat(), currentPosition);
+    updateJointTransforms(joints->getValues(static_cast<float>(normalizedTime * joints->getLength())), skeleton->getRoot(), osg::Quat(), osg::Vec3());
  }
 
 void SkeletalVisualizationScheme::createSkeletonConnections(kinematic::hAnimJointPtr joint)

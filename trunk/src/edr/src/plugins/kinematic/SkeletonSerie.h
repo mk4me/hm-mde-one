@@ -64,6 +64,8 @@ private:
     MarkerCollectionConstPtr createTrajectories(kinematic::JointAnglesCollectionConstPtr joints);
     osg::Matrix getXYZMatrix() const;
 
+    virtual void resetTransform();
+
 private:
 	KinematicVisualizer * visualizer;
 	SkeletalVisualizationSchemePtr scheme;
@@ -72,6 +74,7 @@ private:
     std::string name;
     TransformPtr skeletonNode;
     bool xyzAxis;
+    TrajectoryDrawerPtr trajectoryDrawer;
 };
 typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;
 typedef boost::shared_ptr<const SkeletonSerie> SkeletonSerieConstPtr;
