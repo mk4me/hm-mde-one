@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "SkeletonSerie.h"
+#include "MarkersVisualizationScheme.h"
 
 SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer ) : 
     visualizer(visualizer), 

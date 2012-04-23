@@ -2,6 +2,7 @@
 #include <osg/LineWidth>
 #include "uniqueCollection.h"
 #include "TrajectoriesDrawer.h"
+#include "MarkersVisualizationScheme.h"
 
 void TrajectoryDrawer::init( VisualizationSchemeConstPtr scheme )
 {

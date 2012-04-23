@@ -1,5 +1,15 @@
-#ifndef HEADER_GUARD__SKELETALVISAULIZATIONSCHEME_H__
-#define HEADER_GUARD__SKELETALVISAULIZATIONSCHEME_H__
+/********************************************************************
+	created:	2012/04/23
+	created:	23:4:2012   12:45
+	filename: 	VisualizationScheme.h
+	author:		Wojciech Kniec
+	
+	purpose:	
+*********************************************************************/
+
+#ifndef HEADER_GUARD_KINEMATIC__VISUALIZATIONSCHEME_H__
+#define HEADER_GUARD_KINEMATIC__VISUALIZATIONSCHEME_H__
+
 
 #include <map>
 #include <utils/Utils.h>
@@ -147,112 +157,4 @@ protected:
 typedef core::shared_ptr<VisualizationScheme> VisualizationSchemePtr;
 typedef core::weak_ptr<VisualizationScheme> VisualizationSchemeWeak;
 typedef core::shared_ptr<const VisualizationScheme> VisualizationSchemeConstPtr;
-
-
-class MarkersVisualizationScheme : public VisualizationScheme
-{
-public:
-    MarkerCollectionConstPtr getMarkers() const { return markers; }
-    virtual double getDuration() const 
-    {
-        if (markers) {
-            return markers->getLength();
-        }
-        UTILS_ASSERT(false);
-        return 0.0;
-    }
-
-    virtual bool hasData() const { return markers.get(); }
-
-    void setMarkers(MarkerCollectionConstPtr val);
-    void setMarkersDataFromVsk(kinematic::VskParserConstPtr vsk);
-    virtual osg::Vec3 getCurrentPosition() const { return currentPosition; }
-    osg::Vec3 getRootPosition(double time) const;
-
-protected:
-    virtual void update( double time )
-    {
-        updateMarkers(time);
-    }
-
-private:
-    //! odswiezenie informacji o markerach
-    void updateMarkers(double time);
-
-
-private:
-    MarkerCollectionConstPtr markers;
-    osg::Vec3 currentPosition;
-};
-typedef core::shared_ptr<MarkersVisualizationScheme> MarkersVisualizationSchemePtr;
-typedef core::shared_ptr<const MarkersVisualizationScheme> MarkersVisualizationSchemeConstPtr;
-
-class SkeletalVisualizationScheme : public VisualizationScheme
-{
-public:
-
-    kinematic::JointAnglesCollectionConstPtr getJoints() const { return joints; }
-    void setJoints(kinematic::JointAnglesCollectionConstPtr val);
-
-    virtual int getNumFrames() const { 
-        UTILS_ASSERT(joints);  
-        return joints->getNumPointsPerChannel(); 
-    }
-    double getFrameTime() const {
-        UTILS_ASSERT(joints); 
-        return static_cast<double>(joints->getLength()) / joints->getNumPointsPerChannel(); 
-    }
-
-    virtual double getDuration() const  { 
-        if (joints) {
-            return static_cast<double>(joints->getLength()); 
-        } 
-        UTILS_ASSERT(false);
-        return 0.0;
-    }
-
-    virtual bool hasData() const { return joints.get(); }
-
-    virtual osg::Vec3 getCurrentPosition() const { return currentPosition; }
-    osg::Vec3 getRootPosition(double time) 
-    {
-        return joints->getRootPosition(time);
-    }
-
-protected:
-    virtual void update( double time )
-    {
-        updateJointTransforms(time);
-        currentPosition = getRootPosition(time);
-
-        //int count = states.size();
-        //for (int i = 0; i < count; i++) {
-        //    states[i].position -= currentPosition;
-        //}
-    }
-
-private:
-    //! odswiezenie informacji o jointach
-    void updateJoints();
-    //! obliczenie poczatkowych transformacji
-    //void computeBindPoses(KinematicModelPtr model);
-    //! obliczenie transformacji dla podanego czasu
-    void updateJointTransforms(double time);
-    //! obliczenie transformacji dla podanego czasu
-    void updateJointTransforms(const std::vector<osg::Quat>& rotations, kinematic::hAnimJointPtr joint, 
-        osg::Quat parentRot, osg::Vec3 parentPos);
-
-    void createSkeletonConnections(kinematic::hAnimJointPtr joint);
-
-private:
-    //! ulatwia ineksowanie jointow
-    std::map<kinematic::hAnimJointPtr, int> visJoints;
-	kinematic::JointAnglesCollectionConstPtr joints;
-    //! pomocne przy zapelnianiu kolekcji jointow
-    int counterHelper;
-    osg::Vec3 currentPosition;
-};
-typedef core::shared_ptr<SkeletalVisualizationScheme> SkeletalVisualizationSchemePtr;
-typedef core::shared_ptr<const SkeletalVisualizationScheme> SkeletalVisualizationSchemeConstPtr;
-
 #endif

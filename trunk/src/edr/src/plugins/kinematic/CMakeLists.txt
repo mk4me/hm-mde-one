@@ -26,6 +26,9 @@ set(PRIVATE_H
 	SchemeDialog.h
 	PickHandler.h
 	Manipulators.h
+	SkeletalVisualizationScheme.h
+	VisualizationScheme.h
+	MarkersVisualizationScheme.h
 )
 source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 
@@ -33,7 +36,7 @@ source_group("${SOURCEGROUP_PRIVATE_HEADERS}" FILES ${PRIVATE_H})
 string(REPLACE ${PROJECT_ROOT} ${PROJECT_INCLUDE_ROOT} HEADER_PATH ${PROJECT_SOURCE_DIR})
 set(PUBLIC_H
 	${HEADER_PATH}/Wrappers.h
-	${HEADER_PATH}/skeletalVisualizationScheme.h
+	
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
@@ -42,7 +45,6 @@ set(TARGET_H ${PRIVATE_H} ${PUBLIC_H})
 
 # Ÿród³a
 set(TARGET_SRC
-	skeletalVisualizationScheme.cpp
 	KinematicPlugin.cpp
 	KinematicParser.cpp
 	KinematicVisualizer.cpp
@@ -59,6 +61,9 @@ set(TARGET_SRC
 	SchemeDialog.cpp
 	PickHandler.cpp
 	Manipulators.cpp
+	SkeletalVisualizationScheme.cpp
+	VisualizationScheme.cpp
+	MarkersVisualizationScheme.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 

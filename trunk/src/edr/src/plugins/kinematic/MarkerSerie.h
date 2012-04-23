@@ -13,6 +13,7 @@
 #include <core/IVisualizer.h>
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
+#include "MarkersVisualizationScheme.h"
 
 class MarkerSerie : public QObject, public KinematicSerie
 {
