@@ -41,29 +41,32 @@ public:
 	
 public:
     /// \brief  Zwraca surowe dane z parsera
-    kinematic::SkeletalModelConstPtr getSkeletalData() const { return skeletalModel; }
+    //kinematic::SkeletalModelConstPtr getSkeletalModel() const { return skeletalModel; }
 	//! Tworzy dane zgodne z parserami na podstawie reprezentacji wewnetrznej
 	//kinematic::SkeletalModelPtr createSkeletalData() const;
     /// \brief  Ustawia dane z parsera
     /// \details W tym miejscu tworzony jest pe³ny szkielet h-anim, robiona jest normalizacja danych
     /// \param  skeletalModel   The skeletal model. 
     void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData);
+    void setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const std::vector<JointAngleChannelPtr>& channels);
     //! \brief zwraca szkielet zgodny z h-anim
     const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }
 	
-    bool hasSkeleton() const {
-        return (skeletalModel);
-    }
+    //bool hasSkeleton() const {
+    //    return (skeletalModel);
+    //}
 
    	int getIndex(const std::string& name) const;
 	int tryGetIndex(const std::string& name) const;
 
     osg::Vec3 getRootPosition(int frame) const;
     osg::Vec3 getRootPosition(double time) const;
+    const std::vector<osg::Vec3>& getRootPositions() const { return rootPositions; }
+
 
 private:
     /// \brief  Na podstawie danych z parsera tworzy tablice z kwaternionami
-    void createQuaternionRepresentation(SkeletalDataConstPtr & skeletalData);
+    void createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel, SkeletalDataConstPtr & skeletalData);
     /// \brief  Wyszukuje i zwraca dlugosc najdluzszej z kosci w szkielecie
     /// \param  skeleton  Przeszukiwany szkielet
     /// \return Dlugosc najdluzszej z kosci. 
@@ -79,16 +82,17 @@ private:
     osg::Quat createRotation(const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order);
 	
 private:
-	//! dane z parsera acclaim / biovision
-    kinematic::SkeletalModelConstPtr skeletalModel;
-	//! dane z parsera acclaim / biovision
-	kinematic::SkeletalDataConstPtr skeletalData;
+	////! dane z parsera acclaim / biovision
+    //kinematic::SkeletalModelConstPtr skeletalModel;
+	////! dane z parsera acclaim / biovision
+	//kinematic::SkeletalDataConstPtr skeletalData;
 	//! pelny szkielet h-anim                          
     kinematic::hAnimSkeletonPtr haSkeleton;
 	//! pozycje dla roota
     std::vector<osg::Vec3> rootPositions;
 	//! dlugosc przez ktora nalezy pomnozyc aby uzyskac poczatkowe dlugosci kosci            
     double lengthRatio;
+    bool initialized;
 }; 
 
 typedef boost::shared_ptr<JointAnglesCollection> JointAnglesCollectionPtr;

@@ -12,15 +12,18 @@ namespace kinematic {
 
 
 JointAnglesCollection::JointAnglesCollection(void) :
-    lengthRatio(-1.0)
+    lengthRatio(-1.0),
+    initialized(false)
 {
 }
 
+
 void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData )
 {
-    UTILS_ASSERT(!this->skeletalModel && !this->skeletalData);
-    this->skeletalModel = skeletalModel;
-	this->skeletalData = skeletalData;
+    UTILS_ASSERT(!initialized);
+    //UTILS_ASSERT(!this->skeletalModel && !this->skeletalData);
+    //this->skeletalModel = skeletalModel;
+	//this->skeletalData = skeletalData;
     
    const std::vector<SkeletalData::singleFramePtr>& frm = skeletalData->getFrames();
    this->haSkeleton = hAnimSkeleton::create();
@@ -55,7 +58,17 @@ void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelConstPtr skelet
     } 
    );
    
-   createQuaternionRepresentation(skeletalData);
+   createQuaternionRepresentation(skeletalModel, skeletalData);
+   initialized = true;
+}
+
+void JointAnglesCollection::setSkeletal( kinematic::hAnimSkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const Collection& channels )
+{
+    UTILS_ASSERT(!initialized);
+    this->haSkeleton = skeletalModel;
+    this->rootPositions = rootPositions;
+    this->channels = channels;
+    initialized = true;
 }
 
 double JointAnglesCollection::getMaxBoneLength(const Skeleton& skeleton) const 
@@ -73,7 +86,7 @@ double JointAnglesCollection::getMaxLength(const JointConstPtr & joint, double m
     return maxLength;
  }
 
-void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalDataConstPtr & data )
+void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel, kinematic::SkeletalDataConstPtr & data )
 {
     UTILS_ASSERT(lengthRatio > 0.0);
 	const std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
@@ -284,8 +297,8 @@ JointAnglesCollection* JointAnglesCollection::clone() const
 	obj->configurationID = this->configurationID;
 	obj->haSkeleton = hAnimSkeletonPtr(this->haSkeleton->clone());
 	obj->lengthRatio = this->lengthRatio;
-	obj->skeletalData = SkeletalDataPtr(this->skeletalData->clone());
-	obj->skeletalModel = SkeletalModelPtr(this->skeletalModel->clone());
+	//obj->skeletalData = SkeletalDataPtr(this->skeletalData->clone());
+	//obj->skeletalModel = SkeletalModelPtr(this->skeletalModel->clone());
 	return obj;
 }
 
