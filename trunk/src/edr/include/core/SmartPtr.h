@@ -9,7 +9,9 @@
 #ifndef __HEADER_GUARD_CORE__SMARTPTR_H__
 #define __HEADER_GUARD_CORE__SMARTPTR_H__
 
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/shared_array.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -18,6 +20,8 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
+	using boost::enable_shared_from_this;
+	using boost::shared_array;
     using boost::shared_ptr;
     using boost::weak_ptr;
     using boost::scoped_ptr;

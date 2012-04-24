@@ -11,6 +11,7 @@
 
 #include <core/TypeInfo.h>
 #include <vector>
+#include <string>
 
 namespace core {
 

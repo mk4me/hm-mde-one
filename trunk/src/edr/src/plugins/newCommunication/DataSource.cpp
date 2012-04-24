@@ -24,8 +24,8 @@ CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.p
     auto connectionsManager = DataSourceConnectionManager::create();
 
     setConnectionsSerwerCertificatePath(core::getPathInterface()->getResourcesPath() / "v21.pjwstk.edu.pl.crt");
-
-	connectionsManager->accountFactoryWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AccountFactoryWS.svc?wsdl");
+	
+	connectionsManager->accountFactoryWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDBMed/AccountFactoryWS.svc?wsdl");
     connectionsManager->administrationWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AdministrationWS.svc?wsdl");
     connectionsManager->authorizationWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/AuthorizationWS.svc?wsdl");
     connectionsManager->userPersonalSpaceWSConnection()->setUrl("https://v21.pjwstk.edu.pl/HMDB/res/UserPersonalSpaceWSStandalone.wsdl");
@@ -229,7 +229,12 @@ void CommunicationDataSource::login(const std::string & user, const std::string 
             //nie mam plytkiej kopi bazy danych wiec resetuje
             pathsManager->setUser(currentUser_);
         }
-    }
+    }else{
+		//TODO
+		//nie zalogowano i nie ma usera - mo¿e usuniêty?
+		//jeœli mamy takiego lokalnie to usuwamy z localStorage
+
+	}
 
     //jesli zalogowano poprawnie
     if(isLogged() == true){
@@ -517,13 +522,18 @@ void CommunicationDataSource::extractDataFromLocalStorageToUserSpace(const Shall
     //czêœæ w³aœciwa
     //usuwamy pliki których nie powinno byæ
     for(auto it = toDelete.begin(); it != toDeleteIT; ++it){
-        auto file = prevShallowCopy.motionShallowCopy->files.find(*it)->second;
+        //auto file = prevShallowCopy.motionShallowCopy->files.find(*it)->second;
         try{
-            fileStatusManager->removeFile(file->fileID);
-            core::Filesystem::deleteFile(fileStatusManager->filePath(file->fileID));
+			core::Filesystem::deleteFile(fileStatusManager->filePath(*it));
         }catch(...){
 
         }
+
+		try{
+			fileStatusManager->removeFile(*it);
+		}catch(...){
+
+		}
     }
 
     //dodajemy pliki do kótrych mamy dostêp, s¹ lokalne a jeszcze ich nie ma
@@ -674,7 +684,7 @@ bool CommunicationDataSource::tryActivateAccount(const std::string & login, cons
 {
 	bool ret = false;
 	try{
-		ret = DataSourceWebServicesManager::instance()->accountFactoryService()->activateUserAccount(login, activationCode);
+		ret = DataSourceWebServicesManager::instance()->accountFactoryService()->activateUserAccount(login, activationCode, true);
 	}catch(std::exception & e){
 
 	}catch(...){
@@ -689,7 +699,7 @@ bool CommunicationDataSource::registerUser(const std::string & login, const std:
 {
 	bool ret = false;
 	try{
-		DataSourceWebServicesManager::instance()->accountFactoryService()->createUserAccount(login, email, password, firstName, lastName);
+		DataSourceWebServicesManager::instance()->accountFactoryService()->createUserAccount(login, email, password, firstName, lastName, true);
 		ret = true;
 	}catch(std::exception & e){
 

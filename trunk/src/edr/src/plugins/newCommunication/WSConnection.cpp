@@ -90,7 +90,7 @@ public:
 	virtual void setOperation(const std::string & operation)
 	{
 		if(ready == false){
-			throw std::runtime_error("Connection not ready for data.");
+			throw std::runtime_error("setOperation - Connection not ready for data.");
 		}
 
 		operationName_ = operation;
@@ -102,7 +102,7 @@ public:
 	virtual void setValue(const std::string & name, const std::string & value)
 	{
 		if(ready == false){
-			throw std::runtime_error("Connection not ready for data.");
+			throw std::runtime_error("setValue - Connection not ready for data.");
 		}
 
 		invoker_->setValue(name, value);
@@ -112,7 +112,7 @@ public:
 	virtual void invoke(bool process)
 	{
 		if(ready == false){
-			throw std::runtime_error("Connection not ready for data.");
+			throw std::runtime_error("invoke - Connection not ready for data.");
 		}
 
 		exception_ = false;
@@ -120,7 +120,10 @@ public:
 		invoker_->setAuth(user_, password_);
 		invoker_->invoke(0, process);
 		//tutaj weryfikujê czy by³ jakis wyj¹tek - jeœli tak to go zg³oszê
-		s = invoker_->getXMLResponse().find("<faultstring", 0);
+		//pobieram pe³n¹ odpowiedŸ
+		auto const & resp = invoker_->getXMLResponse();
+
+		s = resp.find("<faultstring", 0);
 		if(s != std::string::npos){	
 			exception_ = true;
 			e = invoker_->getXMLResponse().find("</s:Fault>", s + 12);
@@ -128,7 +131,11 @@ public:
 				e = invoker_->getXMLResponse().size();
 			}
 
-			throw std::runtime_error(invoker_->getXMLResponse().substr(s + 11, e-s - 11));
+			if(resp.find("a:InvalidSecurityToken", 0) != std::string::npos){
+				throw webservices::WSConnectionSecurityException(resp.substr(s + 11, e-s - 11).c_str());
+			}else{
+				throw std::runtime_error(resp.substr(s + 11, e-s - 11));
+			}			
 		}
 	}
 	//! \param name Nazwa wartoœci któr¹ chcemy pobraæ
@@ -172,10 +179,11 @@ private:
 			invoker_.reset(new Invoker());
 			setInvoker(boost::is_base_of<WsdlPull::CustomSSLWsdlInvoker, Invoker>());
 			ready = true;
+			LOG_INFO("Created Invoker " << typeid(Invoker).name());
 		}catch(std::exception & e){
-
+			LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with error: " << e.what());
 		}catch(...){
-
+			LOG_INFO("Could not create proper Invoker: " << typeid(Invoker).name() << " with unknown error");
 		}
 	}
 

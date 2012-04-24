@@ -49,7 +49,7 @@ private:
         IEDRTitleBar::SideType side;
     };
 
-    typedef std::map<core::VisualizerTimeSeriePtr, VisualizerChannelPtr> TimelineChannels;
+    //typedef std::map<core::VisualizerTimeSeriePtr, VisualizerChannelPtr> TimelineChannels;
     typedef std::map<QObject*, InnerVisualizerElement> InnerVisualizerElements;
 
 private:    
@@ -72,12 +72,13 @@ private:
     QWidget * visualizerWidget;
 
 
-    TimelineChannels timelineChannels;
+    //TimelineChannels timelineChannels;
 
     std::map<core::ObjectWrapperConstPtr, core::VisualizerSeriePtr > currentSeriesData;
     std::map<core::TypeInfo, std::set<core::ObjectWrapperConstPtr> > groupedSeriesData;
 
     std::pair<QAction*, core::ObjectWrapperConstPtr> lastSerie;
+	std::map<core::ObjectWrapperConstPtr, const void *> timelineChannels;
 
 public:
     //! Zeruj¹cy konstruktor.

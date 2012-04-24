@@ -11,7 +11,8 @@
 
 #include <set>
 #include <core/TypeInfo.h>
-#include <map>
+#include <vector>
+#include <string>
 
 namespace core {
 

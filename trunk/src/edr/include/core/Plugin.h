@@ -23,6 +23,7 @@
 #include <core/IParser.h>
 #include <core/IVisualizer.h>
 #include <core/IDataProcessor.h>
+#include <core/IDataSource.h>
 #include <core/Export.h>
 #include <core/ObjectWrapperFactory.h>
 

@@ -173,6 +173,7 @@ DataSourceWidget::DataSourceWidget(CommunicationDataSource * dataSource, QWidget
 	downloadStatusWidget(new DownloadStatusWidget()), downloadCanceled(false), downloadCrashed(false)
 {
 	setupUi(this);
+	loginRecoveryButton->setVisible(false);
 	initializeStatusIcons();
 
 	setTabEnabled(0, false);
@@ -1290,7 +1291,7 @@ bool DataSourceWidget::refreshShallowCopy()
 			//ustawiam nowa p³ytka kopiê danych
 			dataSource->setShallowCopy(shallowCopy);
 			//odœwie¿am przefiltrowan¹ p³ytk¹ kopiê danych co wi¹¿e siê z uniewa¿nieniem dotychczasowych perspektyw
-			onFilterChange(filterManager.currentFilterIndex());
+			QMetaObject::invokeMethod(this, "onFilterChange", Q_ARG(int, filterManager.currentFilterIndex()));
 		}else{
 			ret = false;
 		}
@@ -1504,8 +1505,18 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, subPtr);
 
 			core::MetadataPtr meta(new core::Metadata(ow));
-			auto s = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first)->second;
-			meta->setValue("label", s->surname + ", " + s->name);
+			std::stringstream label;
+
+			auto sIT = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first);
+
+			if(sIT == filteredShallowCopy.medicalShallowCopy->patients.end()){
+				label << "Subject " << subjectIT->first;
+			}else{
+				label << sIT->second->name << ", " << sIT->second->surname;
+			}
+
+			//auto s = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first)->second;
+			meta->setValue("label", label.str());
 
 			core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
 

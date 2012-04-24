@@ -81,7 +81,7 @@ const UserPersonalSpaceWSPtr & DataSourceWebServicesManager::userPersonalSpaceSe
 	return userPersonalSpaceService_;
 }
 
-const AccountFactoryWSPtr & DataSourceWebServicesManager::accountFactoryService()
+const MultiAccountFactoryWSPtr & DataSourceWebServicesManager::accountFactoryService()
 {
 	return accountFactoryService_;
 }
@@ -96,7 +96,7 @@ DataSourceWebServicesManager::DataSourceWebServicesManager()
 		authorizationService_(new AuthorizationWS()),
 		administrationService_(new AdministrationWS()),
 		userPersonalSpaceService_(new UserPersonalSpaceWS()),
-		accountFactoryService_(new AccountFactoryWS())
+		accountFactoryService_(new MultiAccountFactoryWS())
 {
 
 }

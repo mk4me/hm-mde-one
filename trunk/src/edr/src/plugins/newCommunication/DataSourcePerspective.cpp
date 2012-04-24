@@ -62,21 +62,27 @@ const std::string DataSourcePatientPerspective::name() const
 
 void DataSourcePatientPerspective::rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy)
 {
-	auto patientsITEnd = shallowCopy.medicalShallowCopy->patients.end();
-	for(auto patientIT = shallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
-
+	//auto patientsITEnd = shallowCopy.medicalShallowCopy->patients.end();
+	//for(auto patientIT = shallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
+	auto subjectsITEnd = shallowCopy.motionShallowCopy->performers.end();
+	for(auto subjectIT = shallowCopy.motionShallowCopy->performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
 		//generuje item pacjenta
-		auto patientItem = new PatientItem(patientIT->second);
+		QTreeWidgetItem * item = nullptr;
+		if(subjectIT->second->patient != nullptr){
+			item = new PatientItem(subjectIT->second->patient);
+		}else{
+			item = new SubjectItem(subjectIT->second);
+		}
 
-		treeWidget->addTopLevelItem(patientItem);
+		treeWidget->addTopLevelItem(item);
 
-		auto perfConfsITEnd = patientIT->second->performer->performerConfs.end();
-		for(auto perfConfIT = patientIT->second->performer->performerConfs.begin(); perfConfIT != perfConfsITEnd; ++ perfConfIT){
+		auto perfConfsITEnd = subjectIT->second->performerConfs.end();
+		for(auto perfConfIT = subjectIT->second->performerConfs.begin(); perfConfIT != perfConfsITEnd; ++ perfConfIT){
 
 			//generuje item sesji
 			auto sessionItem = new SessionItem(perfConfIT->second->session);
 
-			patientItem->addChild(sessionItem);
+			item->addChild(sessionItem);
 
 			auto motionsITEnd = perfConfIT->second->session->trials.end();
 			for(auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){

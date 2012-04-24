@@ -42,7 +42,7 @@ class StatsTable;
 class NewChartLegend;
 class PercentScaleDraw;
 
-class NewChartVisualizer : public QObject, public core::IVisualizer, public boost::enable_shared_from_this<NewChartVisualizer>
+class NewChartVisualizer : public QObject, public core::IVisualizer, public core::enable_shared_from_this<NewChartVisualizer>
 {
     friend class NewChartSerie;
     Q_OBJECT;

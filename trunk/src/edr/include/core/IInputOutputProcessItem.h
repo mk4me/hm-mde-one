@@ -12,17 +12,22 @@
 #include <core/IWorkflowItemBase.h>
 #include <core/IInputDescription.h>
 #include <core/IOutputDescription.h>
-//#include <core/IObjectSource.h>
+#include <core/IObjectSource.h>
 #include <core/IObjectOutput.h>
 
 namespace core {
 
-	class  IObjestSource;
+	class IObjectSource;
+	class IObjectOutput;
+
 //! Interfejs dla elementów przetwarzaj¹cych.
 //! Zawiera opis wejœc i wyjœæ, podstawowe informacje i w³aœciwoœci elementów logicznych aplikacji operuj¹cych na danych
 class IInputOutputProcessItem : public IWorkflowItemBase, public IInputDescription, public IOutputDescription
 {
 public:
+
+	virtual ~IInputOutputProcessItem() {}
+
     //! Przetwarza informacje.
     //! \param input Obiekt z danymi wejsciowymi, NIE MA GWARANCJI ¯E DANE S¥ DOSTÊPNE - nale¿y to sprawdzaæ przy ka¿dym wywo³aniu
     //! \param output Miejsce zapisu danych wyjsciowych, przekazywanych dalej, MAMY ZAGWARANTOWANE ¯E DANE MO¯NA ZAWSZE zapisywaæ do wyjœcia (kwestia ich kompatybilnoœci z tym co zadeklarowano)

@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__PLUGINCOMMON_H__
 #define HEADER_GUARD_CORE__PLUGINCOMMON_H__
 
-#include <core/IWorkflowManager.h>
+//#include <core/IWorkflowManager.h>
 #include <core/IDataManager.h>
 #include <core/IVisualizerManager.h>
 #include <core/IServiceManager.h>
@@ -34,14 +34,14 @@ namespace core
 		ILog* logInterface;
         IDataProcessorManager* dataProcessorManager;
         IDataSourceManager* dataSourceManager;
-        IWorkflowManager* workflowManager;
+        //IWorkflowManager* workflowManager;
     };
 
     //! Zmienna defininowana przez makro tworz¹ce pluginy. Tylko do u¿ytku wewnêtrznego.
     extern InstanceInfo __instanceInfo;
 
     //! Makro definiuj¹ce zmienn¹ przechowuj¹c¹ managery. Automatycznie u¿ywane w pluginach.
-    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }; }
+    #define CORE_DEFINE_INSTANCE_INFO namespace core { InstanceInfo __instanceInfo = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr/*, nullptr*/ }; }
 
     //! \return Bie¿¹ca instancja data managera readera. Rozwi¹zanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala

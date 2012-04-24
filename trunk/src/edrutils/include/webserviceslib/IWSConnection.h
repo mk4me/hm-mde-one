@@ -15,6 +15,15 @@
 
 namespace webservices
 {
+	//! Wyj¹tek zwi¹zany z wo³aniem us³ug (invoke na connection) do których nie mamy praw
+	class WSConnectionSecurityException : public std::exception
+	{
+	public:
+		WSConnectionSecurityException() throw() : std::exception() {}
+		WSConnectionSecurityException(const WSConnectionSecurityException & exception) throw() : std::exception(exception) {}
+		WSConnectionSecurityException(const char * exception) throw() : std::exception(exception) {}
+	};
+
     //! Interfejs realizuj¹cy po³¹czenie z serwisami webowymi - metody powinny rzucac wyj¹tkiem w razie jakiegokolwiek niepowodzenia
     class IWSConnection : public IWSCredentials
     {

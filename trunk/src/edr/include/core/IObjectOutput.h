@@ -9,8 +9,8 @@
 #ifndef HEADER_GUARD_CORE__IOBJECTOUTPUT_H__
 #define HEADER_GUARD_CORE__IOBJECTOUTPUT_H__
 
-#include <stdexcept>
 #include <boost/type_traits.hpp>
+#include <core/SmartPtr.h>
 #include <utils/Debug.h>
 #include <core/ObjectWrapper.h>
 #include <core/ObjectWrapperCollection.h>
@@ -34,8 +34,18 @@ namespace core
         {
         public:
 
+			OutputObjectsCollection & operator= (const OutputObjectsCollection & other)
+			{
+				if (this != &other) // protect against invalid self-assignment
+				{
+					collection = other.collection;
+				}
+				// by convention, always return *this
+				return *this;
+			}
+
             //! Konstruktor inicjuj¹cy proxy kolekcj¹ object wrapperów
-            OutputObjectsCollection(const ObjectWrapperCollectionPtr & collection)
+            OutputObjectsCollection(const ObjectWrapperCollectionPtr & collection = ObjectWrapperCollectionPtr())
                 : collection(collection)
             {
 
@@ -113,7 +123,7 @@ namespace core
 
         private:
             //! Kolekcja danych któr¹ wype³niamy przez to proxy
-            const ObjectWrapperCollectionPtr & collection;
+            ObjectWrapperCollectionPtr collection;
         };
 
     public:

@@ -37,7 +37,17 @@ const bool AuthorizationWS::checkMyLogin() const
 	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(*mutex);
 	webservices::IWSConnection::ScopedLock lock_(*connection_);
 	connection_->setOperation("CheckMyLogin");
-	connection_->invoke(true);
+
+	try{
+		connection_->invoke(true);
+	}catch(WSConnectionSecurityException & e){
+		//nie mam usera
+		return false;
+	}catch(...){
+		//problem inny ni¿ prawa do us³ug
+		//rzucam dalej
+		throw;
+	}
 
 	bool ret = false;
 
@@ -46,30 +56,6 @@ const bool AuthorizationWS::checkMyLogin() const
 	}catch(...){
 
 	}
-
-	//
-
-	//
-	////muszê pobraæ listê u¿ytkowników i sprawdziæ czy ktoœ tam jest
-	//TiXmlDocument document;
-
-	//if(document.Parse(connection_->xmlResponse().c_str(), nullptr, TiXmlEncoding::TIXML_ENCODING_UTF8)) {
-	//	UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
-	//}else{
-
-	//	TiXmlHandle hDocument(&document);
-	//	TiXmlElement* _element;
-	//	TiXmlHandle hParent(0);
-
-	//	_element = hDocument.FirstChildElement().Element();
-	//	if(!_element) {
-	//		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
-	//	}
-
-	//	if(std::string(_element->GetText()) == "true"){
-	//		ret = true;
-	//	}
-	//}
 
 	return ret;
 }

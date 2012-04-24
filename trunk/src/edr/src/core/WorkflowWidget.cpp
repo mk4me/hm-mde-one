@@ -642,6 +642,9 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
     visWidget->setVisualizerSwitchEnable(false);
     ////nie niszcz wizualizatora przy jego zamykaniu !! dopiero usuniecie wêz³a powinno to robiæ
     visWidget->setPermanent(true);
+
+	EDRTitleBar * titleBar = supplyWithEDRTitleBar(visWidget);
+
     //dodajemy wizualizator do glownego okna
     window->addDockWidget(Qt::RightDockWidgetArea,visWidget);
 

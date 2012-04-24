@@ -39,7 +39,7 @@ private:
 
 private:
 
-    class DMObjectWrapper : public core::IObjectWrapper, public boost::enable_shared_from_this<DMObjectWrapper>
+    class DMObjectWrapper : public core::IObjectWrapper, public core::enable_shared_from_this<DMObjectWrapper>
     {
     public:
         DMObjectWrapper(const core::ObjectWrapperPtr & wrapper);

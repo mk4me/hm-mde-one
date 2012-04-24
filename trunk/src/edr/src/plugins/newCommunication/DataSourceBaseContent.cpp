@@ -47,7 +47,7 @@ bool DataSourceBaseContent::fillContent(QTreeWidgetItem * item, const communicat
 			{
 				auto subject = dynamic_cast<SubjectItem*>(item);
 				auto s = subject->value();
-				subject->setText(0, QString::number(s->performerID));
+				subject->setText(0, QObject::tr("Subject") + " " + QString::number(s->performerID));
 				ret = true;
 			}
 			break;

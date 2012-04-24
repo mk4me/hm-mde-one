@@ -55,12 +55,18 @@ namespace core
                     constObjectWrapperPtr->tryGet(ret, exact);
                     return ret;
                 }
+
+				//! Operator konwersji w formie wzorca robi¹cy ca³a magiê
+				inline operator ObjectWrapperConstPtr() const
+				{
+					return constObjectWrapperPtr;
+				}
             };
 
         public:
 
             //! Konstruktor inicjuj¹cy proxy kolekcj¹ object wrapperów
-            InputObjectsCollection(const ObjectWrapperCollectionConstPtr & collection)
+            InputObjectsCollection(const ObjectWrapperCollectionConstPtr & collection = ObjectWrapperCollectionConstPtr())
                 : collection(collection)
             {
 

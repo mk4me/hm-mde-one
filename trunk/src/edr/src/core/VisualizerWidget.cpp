@@ -452,7 +452,16 @@ void VisualizerWidget::fillSourcesMenu()
 
                     std::ostringstream str;
                     str << (*it)->getName() << " (from " << (*it)->getSource() << ")";
-                    QAction* action = nestedMenu->addAction(toQString(str.str()));
+
+					std::string s(str.str());
+					if(s.size() > 80){
+						s.erase(0, s.size() - 80);
+						s[0] = s[1] = s[2] = '.';
+					}else if( s.size() < 80){
+						s.insert(0, 80 - s.size(), ' ');
+					}
+
+                    QAction* action = nestedMenu->addAction(toQString(s));
                     connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
                     action->setCheckable(true);
                     action->setData(qVariantFromValue(TypeData(objects->getTypeInfo(),*it)));
@@ -473,6 +482,14 @@ void VisualizerWidget::fillSourcesMenu()
                     std::ostringstream str;
                     str << (*it)->getName() << " (from " << (*it)->getSource() << ")";
 
+					std::string s(str.str());
+					if(s.size() > 80){
+						s.erase(0, s.size() - 80);
+						s[0] = s[1] = s[2] = '.';
+					}else if( s.size() < 80){
+						s.insert(0, 80 - s.size(), ' ');
+					}
+
                     if(currentData.find(*it) == currentData.end()){
                         if(separator == false){
                             separator = true;
@@ -482,14 +499,14 @@ void VisualizerWidget::fillSourcesMenu()
                         }
 
                         
-                        QAction* action = nestedMenu->addAction(toQString(str.str()));
+                        QAction* action = nestedMenu->addAction(toQString(s));
                         connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
                         action->setCheckable(true);
                         action->setData(qVariantFromValue(TypeData(objects->getTypeInfo(),*it)));
                         action->setChecked( true );
                     }
 
-                    QAction* action = activeMenu->addAction(toQString(str.str()));
+                    QAction* action = activeMenu->addAction(toQString(s));
                     connect(action, SIGNAL(triggered()), this, SLOT(sourceSelected()) );
                     action->setCheckable(true);
                     action->setData(qVariantFromValue(TypeData(objects->getTypeInfo(),*it)));
@@ -556,7 +573,10 @@ void VisualizerWidget::sourceSelected()
             VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<IVisualizer::TimeSerieBase>(serie));
 
             if(timeSerie != nullptr){
-                VisualizerManager::getInstance()->createChannel(timeSerie, visualizer.get());
+                const void * tChannel = VisualizerManager::getInstance()->createChannel(timeSerie, visualizer.get());
+				if(tChannel != nullptr){
+					timelineChannels[td.second] = tChannel;
+				}
             }
 
             currentSeriesData[lastSerie.second] = serie;
@@ -595,32 +615,18 @@ void VisualizerWidget::sourceSelected()
             groupedSeriesData.erase(td.first);
         }
 
+		auto tChannel = timelineChannels.find(td.second);
+		if(tChannel != timelineChannels.end()){
+			try{
+				VisualizerManager::getInstance()->removeChannel(tChannel->second);
+			}catch(...){
+
+			}
+
+			timelineChannels.erase(tChannel);
+		}
+
         visualizer->removeSerie(it->second);
-
-        VisualizerTimeSeriePtr timeSerie(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(it->second));
-
-        if(timeSerie != nullptr){
-
-            auto iT = timelineChannels.find(timeSerie);
-
-            if(iT != timelineChannels.end()){
-                //usun kanal z timeline
-                TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
-                if(timeline != nullptr) {
-                    try{
-                        timeline->removeChannel(iT->first->getName());
-                    }catch(std::runtime_error e){
-                        LOG_WARNING("Could not remove channel from timeline because: " << e.what());
-                    }catch(...){
-                        LOG_WARNING("Could not remove channel from timeline. Unknown reason.");
-                    }
-                }
-
-                //iT->second->releaseChannel();
-
-                timelineChannels.erase(iT);
-            }
-        }
 
         currentSeriesData.erase(it);
 
