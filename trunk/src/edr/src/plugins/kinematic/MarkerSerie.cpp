@@ -39,26 +39,30 @@ void MarkerSerie::showGhost( bool visible )
         ghostNode = new osg::PositionAttitudeTransform();
         MarkerCollectionConstPtr markersCollection = data->get();
         while (time < this->getLength()) {
-            MarkersVisualizationSchemePtr scheme(new MarkersVisualizationScheme);
+            MarkersVisualizationSchemePtr tempScheme(new MarkersVisualizationScheme);
             
-            scheme->setMarkers(markersCollection);
+            tempScheme->setMarkers(markersCollection);
             try {
-                scheme->setMarkersDataFromVsk(Vsk::get(static_cast<Vsk::MarkersCount>(markersCollection->getNumChannels())));
+                tempScheme->setMarkersDataFromVsk(Vsk::get(static_cast<Vsk::MarkersCount>(markersCollection->getNumChannels())));
             } catch (...) {}
-            scheme->setTime(time);
+            tempScheme->setTime(time);
             osg::Vec4 color(1.0f, 1.0f, 0.9f, 0.25f);
             OsgSchemeDrawerPtr drawer1(new GlPointSchemeDrawer(3, 0.02f, color));
             OsgSchemeDrawerPtr drawer2(new GlLineSchemeDrawer(10, 0.005f, color));
-            drawer1->init(scheme);
-            drawer2->init(scheme);
+            drawer1->init(tempScheme);
+            drawer2->init(tempScheme);
             drawer1->update();
             drawer2->update();
-            ghostNode->addChild(drawer1->getNode());
-            ghostNode->addChild(drawer2->getNode());
-            time += 1.0f;
+            osg::ref_ptr<osg::PositionAttitudeTransform> shift = new osg::PositionAttitudeTransform();
+            shift->setPosition(tempScheme->getCurrentPosition());
+            shift->addChild(drawer1->getNode());
+            shift->addChild(drawer2->getNode());
+            ghostNode->addChild(shift);
+            time += 1.5f;
         }
 
         transformNode->addChild(ghostNode);
+        ghostNode->setPosition(-scheme->getCurrentPosition());
     }
 
     ghostNode->setNodeMask(visible ? 0xFFFF : 0);
@@ -76,6 +80,7 @@ void MarkerSerie::setLocalTime( double time )
     rot.setTrans(osg::Vec3());
     m.setTrans(m.getTrans() + shift * rot);
     trajectoryDrawer->setOffset(-scheme->getCurrentPosition());
+    ghostNode->setPosition(-scheme->getCurrentPosition());
     matrixTransform->setMatrix(m);
 }
 
