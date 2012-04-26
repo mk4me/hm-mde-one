@@ -41,7 +41,7 @@ protected:
 private:
     //! odswiezenie informacji o markerach
     void updateMarkers(double time);
-
+    float getStickLength( VectorChannelConstPtr channel1, VectorChannelConstPtr channel2, float epsilon = 0.001f );
 
 private:
     MarkerCollectionConstPtr markers;

@@ -44,9 +44,13 @@ void MarkersVisualizationScheme::setMarkersDataFromVsk( kinematic::VskParserCons
         Connection c;
         auto it1 = markersIndices.find(it->name1);
         auto it2 = markersIndices.find(it->name2);
+        
         if (it1 != markersIndices.end() && it2 != markersIndices.end()) {
             c.index1 = markersIndices[it->name1];
             c.index2 = markersIndices[it->name2];
+            VectorChannelConstPtr channel1 = markers->getChannel(c.index1);
+            VectorChannelConstPtr channel2 = markers->getChannel(c.index2);
+            c.length = getStickLength(channel1, channel2);
             c.color = it->color;
             connections.push_back(c);
         }
@@ -80,6 +84,44 @@ osg::Vec3 MarkersVisualizationScheme::getRootPosition( double time ) const
     }
     position *= (1.0f / count);
     return position;
+}
+
+float MarkersVisualizationScheme::getStickLength( VectorChannelConstPtr channel1, VectorChannelConstPtr channel2, float epsilon)
+{
+    std::map<float, int> histogram;
+    float length = (std::min)(channel1->getLength(), channel2->getLength());
+    float t = 0.0f;
+    float delta = length / 100;
+ 
+    while (t < length) {
+        auto i1 = channel1->getValueHelper(t).first;
+        auto i2 = channel2->getValueHelper(t).first;
+        float len = (channel1->value(i1) - channel2->value(i2)).length();
+        bool found = false;
+        for (auto it = histogram.begin(); it != histogram.end(); ++it) {
+            if (std::abs(it->first - len) < epsilon) {
+                histogram[it->first] += 1;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            histogram[len] = 1;
+        }
+        t += delta;
+    }
+
+    float ret = 0.0f;
+    int max = 0;
+    for (auto it = histogram.begin(); it != histogram.end(); ++it) {
+        if (max < it->second) {
+            max = it->second;
+            ret = it->first;
+        }
+    }
+
+    return ret;
 }
 
 

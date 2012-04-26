@@ -103,7 +103,7 @@ public:
 
     //! struktura zawiera jedno polaczenie pomiedzy stawami lub markerami
     struct Connection {
-        Connection() : index1(-1), index2(-1), color(), visible(true) {}
+        Connection() : index1(-1), index2(-1), color(), visible(true), length(-1.0f) {}
         //! indeks pierwszego stawu/markera (zgodny z przekazywana tablica State)
         int index1;         
         //! indeks drugiego stawu/markera (zgodny z przekazywana tablica State)
@@ -111,6 +111,8 @@ public:
         //! kolor po³¹czenia (RGBA <0,1>)
         osg::Vec4 color;
         bool visible;
+
+        float length;
     };
             
 public:

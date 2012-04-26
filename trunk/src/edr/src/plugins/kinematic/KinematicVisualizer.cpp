@@ -136,8 +136,8 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     widget->getCamera()->setClearColor(osg::Vec4(0.0f, 0.0f, 0.1f, 1));
 
     QIcon icon0;
-    icon0.addFile(QString::fromUtf8(":/resources/icons/switch-axisa.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
-    icon0.addFile(QString::fromUtf8(":/resources/icons/switch-axis.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
+    icon0.addFile(QString::fromUtf8(":/resources/icons/switch-axisa.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon0.addFile(QString::fromUtf8(":/resources/icons/switch-axis.png"), QSize(), QIcon::Normal, QIcon::On);
     actionSwitchAxes = new QAction(tr("Switch Axes"), widget);
     actionSwitchAxes->setIcon(icon0);
     actionSwitchAxes->setCheckable(true);
@@ -520,7 +520,7 @@ void KinematicVisualizer::setActiveSerie( int idx )
 
 void KinematicVisualizer::setActiveSerie( KinematicSerie* serie )
 {
-    for (int i = 0; i < series.size(); i++) {
+    for (unsigned int i = 0; i < series.size(); i++) {
         if (series[i] == serie) {
             setActiveSerie(i);
             return;
@@ -531,7 +531,8 @@ void KinematicVisualizer::setActiveSerie( KinematicSerie* serie )
 
 KinematicSerie* KinematicVisualizer::tryGetCurrentSerie()
 {
-    if (currentSerie >= 0 && currentSerie < series.size()) {
+    int count = static_cast<int>(series.size());
+    if (currentSerie >= 0 && currentSerie < count) {
         return series[currentSerie];
     }
     return nullptr;

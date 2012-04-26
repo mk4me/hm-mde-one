@@ -80,7 +80,9 @@ void MarkerSerie::setLocalTime( double time )
     rot.setTrans(osg::Vec3());
     m.setTrans(m.getTrans() + shift * rot);
     trajectoryDrawer->setOffset(-scheme->getCurrentPosition());
-    ghostNode->setPosition(-scheme->getCurrentPosition());
+    if (ghostNode) {
+        ghostNode->setPosition(-scheme->getCurrentPosition());
+    }
     matrixTransform->setMatrix(m);
 }
 

@@ -15,11 +15,13 @@ void GlLineSchemeDrawer::init( VisualizationSchemeConstPtr scheme )
     for (unsigned int i = 0;  i < connections.size(); ++i) {
         VisualizationScheme::State state1 = states[connections[i].index1];
         VisualizationScheme::State state2 = states[connections[i].index2];
+        float length = connections[i].length > 0.0f ? connections[i].length : (state1.position - state2.position).length();
         TransformPtr t = addTransform(state1.position, state2.position, 
-            useCustomColor ? customColor : connections[i].color);
+            useCustomColor ? customColor : connections[i].color,  length);
         node->addChild(t);
         cones.push_back(t);
     }
+    update();
  }
 
 void GlLineSchemeDrawer::deinit()
@@ -31,7 +33,7 @@ void GlLineSchemeDrawer::update()
 {
     const auto& connections = getVisualiztionScheme()->getConnections();
     const auto& states = getVisualiztionScheme()->getStates();
-
+    float epsilon = 0.1f;
     for (int i = connections.size() - 1;  i >= 0; --i) {
         const VisualizationScheme::State& state1 = states[connections[i].index1];
         const VisualizationScheme::State& state2 = states[connections[i].index2];
@@ -49,7 +51,11 @@ void GlLineSchemeDrawer::update()
 		rotation.set(Matrix::inverse(mat));
         t->setPosition(from);
         t->setAttitude(rotation);
-        t->setNodeMask(state1.visible && state2.visible ? 0xFFFF : 0);
+
+        float length = connections[i].length;
+        bool pointsVisible = state1.visible && state2.visible;
+        bool correctLength = length < 0.0f || std::abs(length - dir.length()) < epsilon;
+        t->setNodeMask(connections[i].visible && pointsVisible && correctLength ? 0xFFFF : 0);
     }
 }
 
@@ -58,7 +64,7 @@ void GlLineSchemeDrawer::draw()
 
 }
 
-GlLineSchemeDrawer::TransformPtr GlLineSchemeDrawer::addTransform(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color)
+GlLineSchemeDrawer::TransformPtr GlLineSchemeDrawer::addTransform(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color, float length)
 {
     //float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
     
@@ -66,7 +72,7 @@ GlLineSchemeDrawer::TransformPtr GlLineSchemeDrawer::addTransform(const osg::Vec
     Vec3 dir = to - from;
     Vec3 zero;
     Vec3 up(0.0f, 1.0f, 0.0f);
-    float length = dir.normalize();
+    dir.normalize();
     GeometryPtr cylinder = createCustomCylinder(complex, length, radius, color);
     
     osg::Matrix mat;

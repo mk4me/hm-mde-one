@@ -65,7 +65,9 @@ public:
      }
 
     double getTime() const { return time; }
-    virtual void setTime(double val) { time = val; setLocalTime(val); }
+    virtual void setTime(double val) { 
+        time = val; setLocalTime(val);
+    }
 
     virtual osg::Matrix getInitialMatrix() const { return osg::Matrix(); }
     virtual void resetTransform();

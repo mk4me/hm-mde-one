@@ -126,7 +126,8 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
     try {
         IForcePlatformCollection platforms;
         auto parsedPlatforms = parser->getForcePlatforms();
-        for (int i = 0; i < parsedPlatforms.size(); i++) {
+        int count = parsedPlatforms.size();
+        for (unsigned int i = 0; i < count;  i++) {
             ForcePlatformPtr fp(new ForcePlatform(parsedPlatforms[i]));
             // HACK ! POWINIEN BYC KANAL NA PODST. NR PLATFORMY!
             fp->setForceChannel(grfs->getGRFChannel(i == 0 ? GRFChannel::F1 : GRFChannel::F2));

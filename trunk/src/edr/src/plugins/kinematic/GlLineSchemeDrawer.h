@@ -39,7 +39,7 @@ private:
 
 private:
     GeometryPtr createCustomCylinder( int complex , float height, float radius, osg::Vec4 color) const;
-    TransformPtr addTransform(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color);
+    TransformPtr addTransform(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color, float length);
 
 private:
     std::vector<TransformPtr> cones;
