@@ -87,7 +87,6 @@ DataFilterPtr Endo::createCustomV3Filter(bool post, const std::string& name )
 
 void Endo::createEMGBranch( QTreeWidgetItem* root, const std::vector<SessionConstPtr>& sessions )
 {
-    QTreeWidgetItem* emgItem = root;
     {
         DataFilterPtr lprev = createCustomEMGFilter(false, "L1");
         DataFilterPtr rprev = createCustomEMGFilter(false, "R9");
@@ -274,7 +273,6 @@ void Spine::createEMGBranch( QTreeWidgetItem* root, const std::vector<SessionCon
     //2. miêsieñ kapturowy (powy¿ej C3) (UB > L1 i R9)
     //3. miêsieñ poœladkowy wielki (LB > L7 i R15)
 
-    QTreeWidgetItem* emgItem = root;
     {
         DataFilterPtr lprev = createCustomEMGFilter(false, "L1");
         DataFilterPtr rprev = createCustomEMGFilter(false, "R9");

@@ -153,7 +153,6 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
 void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::VisualizerTimeSeriePtr>& series )
 {
     int count = wrappers.size();
-    int count2 = count / 2;
     for (int i = 0; i < count; i++) {
         auto wrapper = wrappers[i].first;
         auto serieX = visualizer->createSerie(wrapper, wrapper->getSource());

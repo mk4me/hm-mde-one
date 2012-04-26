@@ -10,10 +10,16 @@
 #ifndef HEADER_GUARD_NEW_CHART__SCALES_H__
 #define HEADER_GUARD_NEW_CHART__SCALES_H__
 
+#include <limits>
+
 class Scales
 {
 public:
     Scales() : 
+	  xMin((std::numeric_limits<float>::max)()),
+      xMax((std::numeric_limits<float>::min)()),
+      yMin((std::numeric_limits<float>::max)()),
+      yMax((std::numeric_limits<float>::min)()),
       initialized(false) 
     {}
     Scales(float xMin, float xMax, float yMin, float yMax) :

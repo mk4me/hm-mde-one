@@ -29,11 +29,10 @@ public:
     NewChartSerie(NewChartVisualizer * visualizer) :
       visualizer(visualizer), 
       active(false),
-      //xvals(nullptr),
-      //yvals(nullptr),
       time(0.0f),
       _z(0),
-      _zBase(0)
+      _zBase(0),
+	  curve(nullptr)
     {
 
     }
@@ -137,10 +136,6 @@ private:
     core::shared_ptr<ScalarContiniousTimeAccessor> accessor;
     ScalarChannelReaderInterfaceConstPtr reader;
     EventsHelperPtr eventsHelper;
-    
-
-    //double* xvals;
-    //double* yvals;
     bool active;
     double time;
     double _z;

@@ -46,7 +46,6 @@ void SkeletalVisualizationScheme::updateJointTransforms(const std::vector<osg::Q
     // zapewnienie zgodnosci indeksow (miedzy tablicami connections i states)
     int i = visJoints[joint];
     Quat ident;
-    double mul = osg::DegreesToRadians(1.0);
     Vec3 shift = joint->getLocalShift();
        
     Quat pc = joint->getChildParentRotation();
@@ -92,7 +91,6 @@ void SkeletalVisualizationScheme::setJoints( JointAnglesCollectionConstPtr val )
 	UTILS_ASSERT(val && val->getHAnimSkeleton());
 	this->joints = val;
 	const auto& jointMap = joints->getHAnimSkeleton()->getJoints();
-	int count = jointMap.size();
 	
 	auto it = jointMap.begin();
 	for (int index = 0; it != jointMap.end(); it++) {

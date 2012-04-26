@@ -177,7 +177,7 @@ void TrajectoryDrawer::setTimes( const std::string& name, const std::pair<float,
 			geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, start, end - start));
 		}
 	} catch (...) {
-		int i = 0;
+		//int i = 0;
 	}
 }
 

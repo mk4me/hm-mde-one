@@ -42,7 +42,7 @@ void GlLineSchemeDrawer::update()
         Vec3 dir = to - from;
         Vec3 zero;
         Vec3 up(0.0f, 1.0f, 0.0f);
-        float length = dir.normalize();
+        //float length = dir.normalize();
         osg::Matrix mat;
 		osg::Quat rotation;
 		mat.makeLookAt(zero, -dir, up);
@@ -60,7 +60,7 @@ void GlLineSchemeDrawer::draw()
 
 GlLineSchemeDrawer::TransformPtr GlLineSchemeDrawer::addTransform(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color)
 {
-    float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+    //float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
     
     GeodePtr geode = new Geode();
     Vec3 dir = to - from;
@@ -95,11 +95,11 @@ GlLineSchemeDrawer::GeometryPtr GlLineSchemeDrawer::createCustomCylinder( int co
     int n = complex;
     double r = radius;
     double segmentRad = 2 * osg::PI / complex;
-    int numberOfSeparators = 4 * n + 4;
+    //int numberOfSeparators = 4 * n + 4;
 
     //triangleIndices = new Int32Collection();
     osg::Vec3 v;
-    float height2 = 0.5f * height;
+    //float height2 = 0.5f * height;
     
     for (int i = 0; i < complex; i++) {
         float rad = static_cast<float>(i) * segmentRad;

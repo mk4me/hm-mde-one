@@ -100,7 +100,7 @@ void ConeDrawer::update()
         Vec3 dir = to - from;
         Vec3 zero;
         Vec3 up(0.0f, 1.0f, 0.0f);
-        float length = dir.normalize();
+        //float length = dir.normalize();
         osg::Matrix mat;
         mat.makeLookAt(zero, -dir, up);
 
@@ -140,7 +140,7 @@ osg::ref_ptr<osg::Node> ConeDrawer::getNode()
 
 ConeDrawer::TransformPtr ConeDrawer::addTransform(const osg::Vec3& from, const osg::Vec3& to, const osg::Vec4& color)
 {
-    float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+    //float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
     
     //Vec4 color(1, 1, 1, 0.5f);
     ConeDrawer::GeodePtr geode = new Geode();

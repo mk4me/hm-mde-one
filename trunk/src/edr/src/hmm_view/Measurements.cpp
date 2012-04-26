@@ -59,22 +59,24 @@ void MeasurementsParser::readMeasurment( TiXmlElement* element, MeasurementConfi
         }
         for (TiXmlElement* a = attrs->FirstChildElement(); a != nullptr; a = a->NextSiblingElement()) {
             if (a && strcmp(a->Value(), "A") == 0) {
-                Measurements::Entry entry;
+                MeasurementConfig::MapEntry entry;
                 readAttribute(a, entry);
-                config->namesMap.insert(entry);
+                config->entry2Data.insert(entry);
             }
         }
     }
 }
 
-void MeasurementsParser::readAttribute( TiXmlElement* A, Measurements::Entry& pair )
+void MeasurementsParser::readAttribute( TiXmlElement* A, MeasurementConfig::MapEntry& entry )
 {
     TiXmlAttribute* attrib = A->FirstAttribute();
     while(attrib) {
         if (strcmp(attrib->Name(), "Name") == 0) {
-            pair.first = QString::fromUtf8(attrib->Value());
+            entry.first = QString::fromUtf8(attrib->Value());
         } else if (strcmp(attrib->Name(), "Value") == 0) {
-            pair.second = QString::fromUtf8(attrib->Value());
+            entry.second.name = QString::fromUtf8(attrib->Value());
+        } else if (strcmp(attrib->Name(), "Id") == 0) {
+            entry.second.id = QString::fromUtf8(attrib->Value());
         }
         attrib = attrib->Next();
     }
@@ -157,17 +159,46 @@ bool Measurements::hasConfig( int number ) const
     return configsByNumber.find(number) != configsByNumber.end();
 }
 
+MeasurementsConstPtr Measurements::measurements;
+
+MeasurementsConstPtr Measurements::get()
+{
+    if (!measurements) {
+        std::string p = core::getResourceString("schemas\\measurementconfs.xml");
+        try {
+            MeasurementsParser parser;
+            parser.parse(p);
+            measurements = parser.getMeasurments();
+        } catch (std::runtime_error& e) {
+            LOG_ERROR(e.what());
+        }
+    }
+
+    return measurements;
+}
+
 bool MeasurementConfig::hasEntry( const QString& text ) const
 {
-    auto it = namesMap.find(text);
-    return it != namesMap.end();
+    auto it = entry2Data.find(text);
+    return it != entry2Data.end();
 }
 
 QString MeasurementConfig::tr( const QString& text ) const
 {
-    auto it = namesMap.find(text);
-    if (it != namesMap.end()) {
-        return it->second;
+    auto it = entry2Data.find(text);
+    if (it != entry2Data.end()) {
+        return it->second.name;
     }
     return text;
+}
+
+QString MeasurementConfig::getIdByName(const QString& name) const
+{
+    for (auto it = entry2Data.cbegin(); it != entry2Data.cend(); it++) {
+        if (it->second.name == name) {
+            return it->second.id;
+        }
+    }
+
+    return QString();
 }

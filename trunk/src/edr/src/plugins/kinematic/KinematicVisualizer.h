@@ -44,7 +44,8 @@ public:
 
     KinematicSerie() :
         transformNode(new osg::PositionAttitudeTransform()),
-        matrixTransform(new osg::MatrixTransform())
+        matrixTransform(new osg::MatrixTransform()),
+        time(0.0)
     {
         matrixTransform->addChild(transformNode);
     }

@@ -107,7 +107,7 @@ void ForcePlatform::computeSteps(MarkerCollectionPtr markers, EventsCollectionCo
         }
     }
 
-    if (possibleSteps.size()) {
+    if (!possibleSteps.empty()) {
         possibleSteps.sort([&](const Step& s1, const Step& s2)->bool 
         {
             if (s1.isValid() && s2.isValid()) {

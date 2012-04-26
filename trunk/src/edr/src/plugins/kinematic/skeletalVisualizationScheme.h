@@ -15,7 +15,11 @@
 class SkeletalVisualizationScheme : public VisualizationScheme
 {
 public:
-
+	SkeletalVisualizationScheme() : 
+		counterHelper(-1) 
+	{}
+	
+public:
     kinematic::JointAnglesCollectionConstPtr getJoints() const { return joints; }
     void setJoints(kinematic::JointAnglesCollectionConstPtr val);
 

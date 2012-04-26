@@ -44,11 +44,11 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
         painter->restore();
 
         if (lastLeftEvent && left) {
-            painter->setBrush(QBrush(i % 2 ? leftColor1 : leftColor2));
+            painter->setBrush(QBrush((i % 2) ? leftColor1 : leftColor2));
             int lastX = static_cast<int>(xMap.transform(lastLeftEvent->getTime()));
             painter->drawRect(lastX, top, x - lastX, bottom - top);
         } else if (lastRightEvent && !left) {
-            painter->setBrush(QBrush(i % 2 ? rightColor1 : rightColor2));
+            painter->setBrush(QBrush((i % 2) ? rightColor1 : rightColor2));
             int lastX = static_cast<int>(xMap.transform(lastRightEvent->getTime()));
             painter->drawRect(lastX, top, x - lastX, bottom - top);
         } 

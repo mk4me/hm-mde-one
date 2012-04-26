@@ -54,7 +54,6 @@ NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const NewCha
 
 NewChartLabelState::SeriePointDist NewChartLabelState::getClosestPoint(const QPoint& pos) const
 {
-    double d = 0.0;
     double min = (std::numeric_limits<double>::max)();
     const NewChartSerie* serie = nullptr;
     QPointF ret;

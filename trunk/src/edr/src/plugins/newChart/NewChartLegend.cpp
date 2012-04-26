@@ -7,8 +7,8 @@
 QWidget * NewChartLegend::createWidget( const QwtLegendData & data ) const
 {
     NewChartLegendItem* item = new NewChartLegendItem(data);
-    bool c2 = connect( item, SIGNAL( buttonClicked( bool ) ), this,  SLOT( itemChecked( bool ) ) );
-    bool c3 = connect( item, SIGNAL( checkClicked(bool)), this, SLOT(onCheck(bool)));
+    connect( item, SIGNAL( buttonClicked( bool ) ), this,  SLOT( itemChecked( bool ) ) );
+    connect( item, SIGNAL( checkClicked(bool)), this, SLOT(onCheck(bool)));
     return item;
 }
 
@@ -66,8 +66,8 @@ QWidget(parent)
     l->addWidget(button);
     this->setLayout(l);
 
-    bool c2 = connect(button, SIGNAL(clicked(bool)), this, SLOT(onClick(bool)));
-    bool c3 = connect(check, SIGNAL(clicked(bool)), this, SLOT(onClick(bool)));
+    connect(button, SIGNAL(clicked(bool)), this, SLOT(onClick(bool)));
+    connect(check, SIGNAL(clicked(bool)), this, SLOT(onClick(bool)));
 }
 
 bool NewChartLegendItem::isItemVisible()

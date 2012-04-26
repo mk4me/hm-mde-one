@@ -34,8 +34,8 @@ void MarkerSerie::setData( const core::ObjectWrapperConstPtr & data )
 
 void MarkerSerie::showGhost( bool visible )
 {
-    float time = 0.0f;
     if (!ghostNode) {
+	    float time = 0.0f;
         ghostNode = new osg::PositionAttitudeTransform();
         MarkerCollectionConstPtr markersCollection = data->get();
         while (time < this->getLength()) {

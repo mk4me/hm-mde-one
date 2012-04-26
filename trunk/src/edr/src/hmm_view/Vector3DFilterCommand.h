@@ -30,6 +30,7 @@
 #include "FilterCommand.h"
 #include "TreeItemHelper.h"
 #include "configurationDialog.h"
+#include "Measurements.h"
 
 typedef std::map<QString, std::pair<QString,QString> > NamesDictionary;
 
@@ -116,7 +117,7 @@ public:
         return root;
     }
 
-private:
+protected:
     BranchFunction branchFunction;
     QIcon elementIcon;
     QIcon rootIcon;
@@ -234,9 +235,8 @@ public:
         return root;
     }
 
- private:
-    
-    void filterTree(QTreeWidgetItem* item)
+private:
+    virtual void filterTree(QTreeWidgetItem* item)
     {
         if (item->childCount()) {
             for (int i = item->childCount() - 1; i >= 0; --i) {
@@ -262,7 +262,69 @@ protected:
     QWidget* parentWidget;
 };
 
+class EMGCommand : public BuilderConfiguredFilterCommand<EMGCollection>
+{
+public:
+    EMGCommand(BranchFunction function, const NamesDictionary& namesDictionary, 
+        const QString& frontXml, const QString& backXml, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon()) :
+        BuilderConfiguredFilterCommand(function, namesDictionary, frontXml, backXml, rootIcon, elementIcon) {}
 
+public:
+    virtual QTreeWidgetItem* createTreeBranch( const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions ) 
+    {
+        QTreeWidgetItem* root = new QTreeWidgetItem();
+        root->setText(0, rootItemName);
+        root->setIcon(0, rootIcon);
+        BOOST_FOREACH(PluginSubject::SessionConstPtr session, sessions) {
+
+            MeasurementConfigConstPtr config = getMeta(session);
+            PluginSubject::Motions motions;
+            session->getMotions(motions);
+            BOOST_FOREACH(PluginSubject::MotionConstPtr motion, motions) {
+                QTreeWidgetItem* colItem = branchFunction(motion, QString(motion->getLocalName().c_str()), rootIcon, elementIcon);
+                if (config) {
+                    
+                    for (int i = colItem->childCount() - 1; i >= 0; --i) {
+                        QTreeWidgetItem* item = colItem->child(i);
+                        QString name = item->text(0);
+                        auto entry = activeElements.find(config->getIdByName(name).toStdString());
+                        if (entry != activeElements.end() && !entry->second) {
+                            delete item;
+                        }
+                    }
+                }
+                root->addChild(colItem);
+            }
+        }
+
+        return root;
+    }
+
+    MeasurementConfigConstPtr getMeta( PluginSubject::SessionConstPtr session) 
+    {
+        MeasurementConfigConstPtr config;
+        //próbuje pobraæ metadane
+        try{
+            auto measurements = Measurements::get();
+            std::vector<core::ObjectWrapperConstPtr> metadata;        
+            core::IDataManagerReader::getMetadataForObject(DataManager::getInstance(), session, metadata);
+            auto metaITEnd = metadata.end();
+            for(auto metaIT = metadata.begin(); metaIT != metaITEnd; ++metaIT){
+                core::MetadataConstPtr meta = (*metaIT)->get(false);
+                std::string l;
+
+                if(measurements != nullptr && meta != nullptr && meta->value("EMGConf", l) == true) {
+                    config = measurements->getConfig(("EMG_" + l).c_str());
+                }
+            }
+        }catch(...){
+
+        }	
+        return config;
+    }
+
+
+};
 
 
 
@@ -288,7 +350,7 @@ public:
 
       //! 
       //! \param rootItemName 
-      //! \param sessions fdsdsd
+      //! \param sessions
       virtual QTreeWidgetItem* createTreeBranch(const QString& rootItemName, const std::vector<PluginSubject::SessionConstPtr>& sessions)
       {
           QTreeWidgetItem* root = new QTreeWidgetItem();
@@ -348,7 +410,7 @@ public:
               Motions motions;
               filtered->getMotions(motions);
               BOOST_FOREACH(MotionConstPtr motion, motions) {
-                  QTreeWidgetItem* motionItem = new QTreeWidgetItem();
+                  //QTreeWidgetItem* motionItem = new QTreeWidgetItem();
                   std::vector<core::ObjectWrapperConstPtr> objects;
                   motion->getWrappers(objects, typeid(Collection));
                   BOOST_FOREACH(ObjectWrapperConstPtr wrapper, objects) {

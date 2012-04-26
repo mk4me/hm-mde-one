@@ -144,7 +144,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     topMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     bottomMainWindow = new QMainWindow();
     bottomMainWindow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    bool c = connect(topMainWindow, SIGNAL(changed()), treeUsageContext.get(), SLOT(refresh()));
+    connect(topMainWindow, SIGNAL(changed()), treeUsageContext.get(), SLOT(refresh()));
     //TODO
     //trzeba wyzanaczaæ max wysokoœæ tak aby nie "wypycha³o" nam timeline!!
     // powinno byæ mniej wiêcej coœ takiego - wysokoœæ dla aktualnej rozdzielczoœci - wysokoœc timeline - wysokoœæ górnego paska - przestrzeñ wolna pomiêdzy tymi elementami w pionie
@@ -171,7 +171,7 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     bottomMainWindow->layout()->setContentsMargins(QMargins(0, 0, 0, 0));
     analisisArea->setLayout(v);
 
-    int i = toolBar->children().size();
+    //int i = toolBar->children().size();
 
     // akcje - Workflow (VDF) i konsola <--- aktualnie œmietnik na inne serwisy i testy
 
@@ -603,54 +603,53 @@ void HmmMainWindow::createFilterTab1()
 
     QString emgFront = core::getResourceString("images/muscular_front/muscular_front.xml");
     QString emgBack = core::getResourceString("images/muscular_back/muscular_back.xml");
-
-    typedef Vector3DFilterCommand2<EMGChannel, EMGCollection, EMGFilterHelper> EMGCommand;
+    
     NamesDictionary emgNames;
-    emgNames["noga1"  ] = std::make_pair("L1",  "Elektroda L1");
-    emgNames["noga1R" ] = std::make_pair("L2",  "Elektroda L2");
-    emgNames["noga2"  ] = std::make_pair("L3",  "Elektroda L3");
-    emgNames["noga2R" ] = std::make_pair("L4",  "Elektroda L4");
-    emgNames["noga3"  ] = std::make_pair("L5",  "Elektroda L5");
-    emgNames["noga3R" ] = std::make_pair("L6",  "Elektroda L6");
-    emgNames["noga4"  ] = std::make_pair("L7",  "Elektroda L7");
-    emgNames["noga4R" ] = std::make_pair("R8",  "Elektroda R8");
-    emgNames["noga5"  ] = std::make_pair("R9",  "Elektroda R9");
-    emgNames["noga5R" ] = std::make_pair("R10", "Elektroda R10");
-    emgNames["palec1" ] = std::make_pair("R11", "Elektroda R11");
-    emgNames["palec1R"] = std::make_pair("R12", "Elektroda R12");
-    emgNames["ramie1" ] = std::make_pair("R13", "Elektroda R13");
-    emgNames["ramie1R"] = std::make_pair("R15", "Elektroda R15");
-    emgNames["ramie2" ] = std::make_pair("R14", "Elektroda R14");
-    emgNames["ramie2R"] = std::make_pair("R16", "Elektroda R16");
+    emgNames["krawiecki_l"                ] = std::make_pair("krawiecki_l"                , "krawiecki_l"                );
+    emgNames["krawiecki_p"                ] = std::make_pair("krawiecki_p"                , "krawiecki_p"                );
+    emgNames["naramienny_l"               ] = std::make_pair("naramienny_l"               , "naramienny_l"               );
+    emgNames["naramienny_p"               ] = std::make_pair("naramienny_p"               , "naramienny_p"               );
+    emgNames["odwodziciel_krotki_kciuka_l"] = std::make_pair("odwodziciel_krotki_kciuka_l", "odwodziciel_krotki_kciuka_l");
+    emgNames["odwodziciel_krotki_kciuka_p"] = std::make_pair("odwodziciel_krotki_kciuka_p", "odwodziciel_krotki_kciuka_p");
+    emgNames["piersiowy_wiekszy_l"        ] = std::make_pair("piersiowy_wiekszy_l"        , "piersiowy_wiekszy_l"        );
+    emgNames["piersiowy_wiekszy_p"        ] = std::make_pair("piersiowy_wiekszy_p"        , "piersiowy_wiekszy_p"        );
+    emgNames["piszczelowy_przedni_l"      ] = std::make_pair("piszczelowy_przedni_l"      , "piszczelowy_przedni_l"      );
+    emgNames["piszczelowy_przedni_p"      ] = std::make_pair("piszczelowy_przedni_p"      , "piszczelowy_przedni_p"      );
+    emgNames["prosty_uda_l"               ] = std::make_pair("prosty_uda_l"               , "prosty_uda_l"               );
+    emgNames["prosty_uda_p"               ] = std::make_pair("prosty_uda_p"               , "prosty_uda_p"               );
+    emgNames["ramie3"                     ] = std::make_pair("ramie3"                     , "ramie3"                     );
+    emgNames["ramie3R"                    ] = std::make_pair("ramie3R"                    , "ramie3R"                    );
+    emgNames["strzalkowy_p"               ] = std::make_pair("strzalkowy_p"               , "strzalkowy_p"               );
+    emgNames["strzalkowy_l"               ] = std::make_pair("strzalkowy_l"               , "strzalkowy_l"               );
+    emgNames["przy_kstrzalkowej_piszczelowy_p"] = std::make_pair("przy_kstrzalkowej_piszczelowy_p", "przy_kstrzalkowej_piszczelowy_p");
+    emgNames["przy_kstrzalkowej_piszczelowy_l"] = std::make_pair("przy_kstrzalkowej_piszczelowy_l", "przy_kstrzalkowej_piszczelowy_l");
 
-    emgNames["noga-tyl1"  ] = std::make_pair("L1",  "Elektroda L1");
-    emgNames["noga-tyl1P" ] = std::make_pair("L2",  "Elektroda L2");
-    emgNames["noga-tyl2"  ] = std::make_pair("L3",  "Elektroda L3");
-    emgNames["noga-tyl2P" ] = std::make_pair("L4",  "Elektroda L4");
-    emgNames["noga-tyl3"  ] = std::make_pair("L5",  "Elektroda L5");
-    emgNames["noga-tyl3P" ] = std::make_pair("L6",  "Elektroda L6");
-    emgNames["noga-tyl4"  ] = std::make_pair("L7",  "Elektroda L7");
-    emgNames["noga-tyl4P" ] = std::make_pair("R8",  "Elektroda R8");
-    emgNames["noga-tyl5"  ] = std::make_pair("R9",  "Elektroda R9");
-    emgNames["noga-tyl5P" ] = std::make_pair("R10", "Elektroda R10");
-    emgNames["noga-tyl6"  ] = std::make_pair("R11", "Elektroda R11");
-    emgNames["noga-tyl6P" ] = std::make_pair("R12", "Elektroda R12");
-    emgNames["ramie-tyl1" ] = std::make_pair("R13", "Elektroda R13");
-    emgNames["ramie-tyl1P"] = std::make_pair("R15", "Elektroda R15");
-    emgNames["ramie-tyl2" ] = std::make_pair("R14", "Elektroda R14");
-    emgNames["ramie-tyl2P"] = std::make_pair("R16", "Elektroda R16");
-    /*emgNames["ramie-tyl3" ] = std::make_pair("", "");
-    emgNames["ramie-tyl3P"] = std::make_pair("", "");
-    emgNames["ramie-tyl4" ] = std::make_pair("", "");
-    emgNames["ramie-tyl4P"] = std::make_pair("", "");
-    emgNames["ramie-tyl5" ] = std::make_pair("", "");
-    emgNames["ramie-tyl5P"] = std::make_pair("", "");
-    emgNames["ramie-tyl6" ] = std::make_pair("", "");
-    emgNames["ramie-tyl6P"] = std::make_pair("", "");*/
-    //emgNames["ramie3" ] = std::make_pair("", "Dioda ");
-    //emgNames["ramie3R"] = std::make_pair("", "Dioda ");
-    //IFilterCommandPtr emgCommand(new EMGCommand(emgNames, emgFront, emgBack));
-    IFilterCommandPtr emgCommand(new BuilderConfiguredFilterCommand<EMGCollection>(TreeBuilder::createEMGBranch, 
+    emgNames["brzuchaty_lydki_gb_l"       ] = std::make_pair("brzuchaty_lydki_gb_l"       , "brzuchaty_lydki_gb_l"       );
+    emgNames["brzuchaty_lydki_gb_p"       ] = std::make_pair("brzuchaty_lydki_gb_p"       , "brzuchaty_lydki_gb_p"       );
+    emgNames["brzuchaty_lydki_gprzysr_l"  ] = std::make_pair("brzuchaty_lydki_gprzysr_l"  , "brzuchaty_lydki_gprzysr_l"  );
+    emgNames["brzuchaty_lydki_gprzysr_p"  ] = std::make_pair("brzuchaty_lydki_gprzysr_p"  , "brzuchaty_lydki_gprzysr_p"  );
+    emgNames["czworoboczny_grzbietu_l"    ] = std::make_pair("czworoboczny_grzbietu_l"    , "czworoboczny_grzbietu_l"    );
+    emgNames["czworoboczny_grzbietu_p"    ] = std::make_pair("czworoboczny_grzbietu_p"    , "czworoboczny_grzbietu_p"    );
+    emgNames["dwuglowy_uda_l"             ] = std::make_pair("dwuglowy_uda_l"             , "dwuglowy_uda_l"             );
+    emgNames["dwuglowy_uda_p"             ] = std::make_pair("dwuglowy_uda_p"             , "dwuglowy_uda_p"             );
+    emgNames["polsciegnisty_l"            ] = std::make_pair("polsciegnisty_l"            , "polsciegnisty_l"            );
+    emgNames["polsciegnisty_p"            ] = std::make_pair("polsciegnisty_p"            , "polsciegnisty_p"            );
+    emgNames["posladkowy_wielki_l"        ] = std::make_pair("posladkowy_wielki_l"        , "posladkowy_wielki_l"        );
+    emgNames["posladkowy_wielki_p"        ] = std::make_pair("posladkowy_wielki_p"        , "posladkowy_wielki_p"        );
+    emgNames["prostownik_palcow_l"        ] = std::make_pair("prostownik_palcow_l"        , "prostownik_palcow_l"        );
+    emgNames["prostownik_palcow_p"        ] = std::make_pair("prostownik_palcow_p"        , "prostownik_palcow_p"        );
+    emgNames["ramie-tyl2"                 ] = std::make_pair("ramie-tyl2"                 , "ramie-tyl2"                 );
+    emgNames["ramie-tyl2P"                ] = std::make_pair("ramie-tyl2P"                , "ramie-tyl2P"                );
+    emgNames["ramie-tyl3"                 ] = std::make_pair("ramie-tyl3"                 , "ramie-tyl3"                 );
+    emgNames["ramie-tyl3P"                ] = std::make_pair("ramie-tyl3P"                , "ramie-tyl3P"                );
+    emgNames["most_obojcz_sutkowy_p"      ] = std::make_pair("rmost_obojcz_sutkowy_p"     , "most_obojcz_sutkowy_p"      );
+    emgNames["most_obojcz_sutkowy_l"      ] = std::make_pair("rmost_obojcz_sutkowy_l"     , "most_obojcz_sutkowy_l"      );
+    //emgNames["ramie-tyl6"                 ] = std::make_pair("ramie-tyl6"                 , "ramie-tyl6"                 );
+    //emgNames["ramie-tyl6P"                ] = std::make_pair("ramie-tyl6P"                , "ramie-tyl6P"                );
+    emgNames["trojglowy_ramienia_gdluga_l"] = std::make_pair("trojglowy_ramienia_gdluga_l", "trojglowy_ramienia_gdluga_l");
+    emgNames["trojglowy_ramienia_gdluga_p"] = std::make_pair("trojglowy_ramienia_gdluga_p", "trojglowy_ramienia_gdluga_p");
+
+    IFilterCommandPtr emgCommand(new EMGCommand(TreeBuilder::createEMGBranch, 
         emgNames, emgFront, emgBack, TreeBuilder::getRootEMGIcon(), TreeBuilder::getEMGIcon()));
     filter1->addFilter(tr("EMG"), emgCommand, &iconEmgSmall);
 
@@ -848,10 +847,10 @@ void HmmMainWindow::createFilterTab2()
     filter4->addFilter("Moment", multi2);
     filter4->addFilter("Power", multi3);
 
-    bool connectionOK = connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
-    connectionOK = connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
-    connectionOK = connect(filter3, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
-    connectionOK = connect(filter4, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter1, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter2, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter3, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
+    connect(filter4, SIGNAL(activated(bool)), this, SLOT(filterGroupActivated(bool)));
 
     dataFilterWidgets.push_back(filter1);
     dataFilterWidgets.push_back(filter2);

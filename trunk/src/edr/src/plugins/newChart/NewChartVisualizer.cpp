@@ -42,6 +42,17 @@ NewChartVisualizer::NewChartVisualizer() :
     shiftSpinY(nullptr),
     scaleSpinX(nullptr),
     scaleSpinY(nullptr),
+	qwtPlot(nullptr),
+	legend(nullptr),
+	boundsToRefresh(false),
+	qwtMarker(nullptr),
+	activeSerieCombo(nullptr),
+	pickerAction(nullptr),
+	valueMarkerAction(nullptr),
+	vMarkerAction(nullptr),
+	hMarkerAction(nullptr),
+	scaleAction(nullptr),
+	bandsAction(nullptr),
     upperBoundCurve(nullptr),
     lowerBoundCurve(nullptr),
     averageCurve(nullptr),
@@ -169,8 +180,8 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     plotMagnifier =  new QwtPlotMagnifier( qwtPlot->canvas() );
     
 
-    bool c = connect(legend, SIGNAL(checked( QwtPlotItem *, bool, int)), this, SLOT(onSerieSelected(QwtPlotItem*, bool, int)));
-    c = connect(legend, SIGNAL(checkboxChanged(const QwtPlotItem*, bool)), this, SLOT(onSerieVisible(const QwtPlotItem*, bool)));
+    connect(legend, SIGNAL(checked( QwtPlotItem *, bool, int)), this, SLOT(onSerieSelected(QwtPlotItem*, bool, int)));
+    connect(legend, SIGNAL(checkboxChanged(const QwtPlotItem*, bool)), this, SLOT(onSerieVisible(const QwtPlotItem*, bool)));
     qwtMarker = new NewChartMarker();
     qwtMarker->setXValue(0);
     qwtMarker->setYValue(0);

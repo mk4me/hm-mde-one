@@ -5,7 +5,7 @@
 #include <core/IDataManager.h>
 #include "Measurements.h"
 
-MeasurementsConstPtr measurements;
+
 
 
 using namespace PluginSubject;
@@ -86,14 +86,14 @@ QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std:
                 motion->getWrappers(moments, typeid(MomentCollection));
                 std::vector<core::ObjectWrapperConstPtr> powers;
                 motion->getWrappers(powers, typeid(PowerCollection));
-                if (forces.size() > 0) {
+                if (!forces.empty()) {
                     kineticItem->addChild(createForcesBranch(motion, QObject::tr("Forces"), getRootForcesIcon(), getForcesIcon()));
                 }
-                if (moments.size() > 0) {
+                if (!moments.empty()) {
                     kineticItem->addChild(createMomentsBranch(motion, QObject::tr("Moments"), getRootMomentsIcon(), getMomentsIcon()));
                 }
                 // do rozwiniecia - potrzeba parsowac pliki vsk i interpretowac strukture kinamatyczna tak jak to robi Vicon
-                if (powers.size() > 0) {
+                if (!powers.empty()) {
                     kineticItem->addChild(createPowersBranch(motion, QObject::tr("Powers"), getRootPowersIcon(), getPowersIcon()));
                 }
             }
@@ -144,16 +144,7 @@ QTreeWidgetItem* TreeBuilder::createEMGBranch( const MotionConstPtr & motion, co
     core::ObjectWrapperConstPtr collectionWrp = motion->getWrapperOfType(typeid(EMGCollection));
     EMGCollectionConstPtr collection = collectionWrp->get();
     
-    if (!measurements) {
-        std::string p = core::getResourceString("schemas\\measurementconfs.xml");
-        try {
-            MeasurementsParser parser;
-            parser.parse(p);
-            measurements = parser.getMeasurments();
-        } catch (std::runtime_error& e) {
-            LOG_ERROR(e.what());
-        }
-    }
+    auto measurements = Measurements::get();
 
     MeasurementConfigConstPtr config;
     //próbuje pobraæ metadane

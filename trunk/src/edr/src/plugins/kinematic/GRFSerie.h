@@ -30,7 +30,8 @@ public:
 
 public:
 	GRFSerie(KinematicVisualizer * visualizer) : 
-	  visualizer(visualizer)
+	  visualizer(visualizer),
+      maxLength(0.0f)
 	  {
 
 	  }

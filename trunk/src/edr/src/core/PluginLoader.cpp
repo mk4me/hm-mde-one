@@ -44,13 +44,13 @@ void PluginLoader::unloadPlugins()
         clear();
         freeLibraries();
     }
-    catch(std::runtime_error e){
+    catch(std::runtime_error& e){
         LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
-    catch(std::invalid_argument e){
+    catch(std::invalid_argument& e){
         LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
-    catch(std::exception e){
+    catch(std::exception& e){
         LOG_ERROR("PluginLoader: Error unloading plugins " << e.what());
     }
     catch(...){

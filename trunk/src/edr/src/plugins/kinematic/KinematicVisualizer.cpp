@@ -336,7 +336,8 @@ KinematicVisualizer::KinematicVisualizer() :
     schemeDialog(nullptr),
     currentSerie(-1),
     currentDragger(nullptr),
-    lastTime(-1.0f)
+    lastTime(-1.0f),
+	actionTrajectories(nullptr)
 {
 
 }
@@ -444,7 +445,7 @@ void KinematicVisualizer::refillDrawersMaps()
 {
     drawersByAction.clear();
     drawersByName.clear();
-    for (std::map<std::string, QAction*>::iterator it = actionByName.begin(); it != actionByName.end(); it++) {
+    for (std::map<std::string, QAction*>::iterator it = actionByName.begin(); it != actionByName.end(); ++it) {
         SchemeDrawerContainerPtr drawer(new SchemeDrawerContainer());
         drawersByAction[it->second] = drawer;
         drawersByName[it->first] = drawer;

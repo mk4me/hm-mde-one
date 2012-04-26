@@ -41,7 +41,6 @@ void PickHandler::pick(osgViewer::View* view, const osgGA::GUIEventAdapter& ea)
 {
     osgUtil::LineSegmentIntersector::Intersections intersections;
 
-    std::string gdlist="";
     float x = ea.getX();
     float y = ea.getY();
 
