@@ -15,6 +15,7 @@ extern "C" {
 #include <stdint.h>
 #undef INTMAX_C
 #undef UINTMAX_C
+#include <libavutil/mem.h>
 #include <libavutil/error.h>
 #pragma warning (pop)
 }
