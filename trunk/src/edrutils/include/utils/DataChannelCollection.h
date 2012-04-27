@@ -15,14 +15,16 @@
 #include <iterator>
 #include <boost/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <utils/DataChannel.h>
+#include <utils/DataChannelDescriptors.h>
+#include <utils/DataChannelAccessors.h>
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Klasa agreguje klasy DataChannel, wszystkie dodawane kanaly powinny miec tyle samo wpisow
-template <class Channel, class TimeAccessor = GeneralDataChannelTimeAccessor<typename Channel::point_type, typename Channel::time_type>>
-class DataChannelCollection : public TimeAccessor
+//template <class Channel, template<typename Point, typename Time> class Interpolator = LerpInterpolator>
+template <class Channel, class TimeAccessor = DataChannelTimeAccessor<typename Channel::point_type, typename Channel::time_type>>
+class DataChannelCollection
 {
     UTILS_STATIC_ASSERT((boost::is_base_of<IRawGeneralDataChannelReader<typename Channel::point_type, typename Channel::time_type>, Channel>::value), "Base class should inherit from IRawGeneralDataChannelReader");
     
@@ -118,7 +120,7 @@ public:
 		std::vector<PointType> res(channels.size());
 		for (int i = 0; i < count; i++) {
 			//res[i] = channels[i]->getValue(time);
-            res[i] = TimeAccessor::getChannelValue(time, *channels[i]);
+            res[i] = TimeAccessor::getValue(time, *channels[i]);
 		}
 		return res;
 	}
@@ -139,7 +141,7 @@ public:
 	//! \return wartosc kanalu
 	PointType getValue(int index, TimeType time) const
 	{
-		return TimeAccessor::getChannelValue(time, *getChannel(index));
+		return TimeAccessor::getValue(time, *getChannel(index));
 	}
 
 	//! \return maksymalna wartosc w calej dziedzinie dla wszystkich kanalow

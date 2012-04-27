@@ -30,11 +30,13 @@ private:
     //! Viewer osg.
     osg::ref_ptr<osgui::QOsgDefaultWidget> viewer;
     //!
-    VideoStreamConstPtr stream;
+    VideoStreamPtr stream;
     //! Czy u¿ywaæ textureRect?
     bool useTextureRect;
     //!
     double prevStreamTime;
+
+	double currentStreamTime;
     //!
     int prevStreamWidth;
 
@@ -48,6 +50,10 @@ private:
     osg::ref_ptr<vidlib::VideoImage> streamImage;
 
 private:
+
+	void refreshImage();
+
+	bool getImage();
 
     class VideoSerie : public core::IVisualizer::TimeSerieBase
     {
@@ -83,20 +89,24 @@ private:
 			} else if (data->isSupported(typeid(VideoChannel))) {
 				VideoChannelConstPtr channel = data->get();
 				if (channel) {
-					visualizer->stream = channel->getVideoStream();
+					visualizer->stream = osg::const_pointer_cast<VideoStream>(channel->getVideoStream());
 					success = visualizer->stream != nullptr;
 				}
 			}
 
-            // pobranie obrazkaa
+            // pobranie obrazka
             if ( success  == true && visualizer->stream != nullptr ) {
                 visualizer->ratioKeeper->setTarget(visualizer->widget);
-                visualizer->streamImage = visualizer->stream->getImage(vidlib::PixelFormatRGB24);
-                visualizer->widget->setTexture( visualizer->stream->getTexture(visualizer->streamImage->getFormat(), visualizer->useTextureRect), true, visualizer->useTextureRect );
-                osgui::correctTexCoords(visualizer->widget, visualizer->streamImage);
-            }
+				if(visualizer->getImage() == true){
+					visualizer->refreshImage();
+					//! Fix pierwszej ramki - wymuszam poprawny resize okienek OSG!!
+					visualizer->viewer->getEventQueue()->windowResize(0, 0, visualizer->viewer->width(), visualizer->viewer->height());
+					visualizer->viewer->frame();
+				}
+            }else{
 
-            visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
+				visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
+			}
         }
 
         virtual const core::ObjectWrapperConstPtr & getData() const
@@ -114,11 +124,7 @@ private:
         //! \param time Aktualny, lokalny czas kanalu w sekundach
         virtual void setTime(double time)
         {
-			osg::const_pointer_cast<VideoStream>(visualizer->stream)->setTime(time);
-			visualizer->streamImage = visualizer->stream->getImage(vidlib::PixelFormatRGB24);
-			visualizer->widget->setTexture( visualizer->stream->getTexture(visualizer->streamImage->getFormat(), visualizer->useTextureRect), true, visualizer->useTextureRect );
-			osgui::correctTexCoords(visualizer->widget, visualizer->streamImage);
-			visualizer->refresh(visualizer->viewer->width(), visualizer->viewer->height());
+			visualizer->currentStreamTime = time;
         }
 
     private:

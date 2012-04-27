@@ -13,6 +13,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
 #include <boost/accumulators/statistics/moment.hpp>
 #include <boost/accumulators/statistics/min.hpp>
 #include <boost/accumulators/statistics/max.hpp>
@@ -25,8 +26,10 @@
 #include <utils/DataChannel.h>
 
 // Implementacje dodatkowych akumulatorow 
-namespace boost { namespace accumulators
-{
+namespace boost {
+	
+	namespace accumulators
+	{
 
     namespace impl
     {
@@ -336,7 +339,7 @@ public:
 
 protected:
     //! Aktualizuje statystyki kana³u
-    virtual void updateStats() const
+    void updateStats() const
     {
         using namespace boost::accumulators;
         typedef boost::accumulators::accumulator_set<PointType, features< tag::min_with_index, tag::max_with_index, tag::mean, tag::variance >> Stats;

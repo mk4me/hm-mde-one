@@ -144,8 +144,9 @@ protected:
 typedef boost::shared_ptr<VideoChannel> VideoChannelPtr;
 typedef boost::shared_ptr<const VideoChannel> VideoChannelConstPtr;
 
-class VideoCollection : public utils::DataChannelCollection<VideoChannel, utils::SimpleDataChannelTimeAccessor<VideoImageOsgPtr, float>>
+class VideoCollection : public utils::DataChannelCollection<VideoChannel, utils::DataChannelTimeAccessor<VideoChannel::point_type, VideoChannel::time_type, utils::DiscreteInterpolator, utils::BorderExtrapolator>>
 {
+
 };
 typedef boost::shared_ptr<VideoCollection> VideoCollectionPtr;
 typedef boost::shared_ptr<const VideoCollection> VideoCollectionConstPtr;

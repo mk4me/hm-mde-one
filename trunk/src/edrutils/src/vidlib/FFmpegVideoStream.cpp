@@ -288,7 +288,8 @@ FFmpegVideoStream::~FFmpegVideoStream()
     av_free(packet);
     av_free(frame);
     avcodec_close(codecContext);
-    av_close_input_file(formatContext);
+    //av_close_input_file(formatContext);
+	avformat_close_input(&formatContext);
 }
 
 //------------------------------------------------------------------------------
@@ -300,7 +301,8 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     // mo¿na inicjalizowaæ wiele razy, sprawdza wewnetrznie czy ju¿ by³a zainicjalizowana
     av_register_all();
     // otwieramy plik
-    if ( (error = av_open_input_file(&formatContext, source.c_str(), NULL, 0, NULL)) != 0 ) {
+    //if ( (error = av_open_input_file(&formatContext, source.c_str(), NULL, 0, NULL)) != 0 ) {
+	if ( (error = avformat_open_input(&formatContext, source.c_str(), NULL, 0)) != 0 ) {
         VIDLIB_ERROR(FFmpegError( "av_open_input_file error", error ));
     }
     // info o kodekach
@@ -309,13 +311,15 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     }
 
 #ifdef VIDLIB_DEBUG
-    dump_format(formatContext, 0, source.c_str(), false);
+    //dump_format(formatContext, 0, source.c_str(), false);
+	av_dump_format(formatContext, 0, source.c_str(), false);
 #endif // VIDLIB_DEBUG
 
     // szukamy strumienia video
     for (unsigned int i = 0; i < formatContext->nb_streams; ++i) {
         AVStream * selectedStream = formatContext->streams[i];
-        if ( selectedStream->codec->codec_type == CODEC_TYPE_VIDEO ) {
+        //if ( selectedStream->codec->codec_type == CODEC_TYPE_VIDEO ) {
+		if ( selectedStream->codec->codec_type == AVMEDIA_TYPE_VIDEO ) {
             // czy to jest ten strumieñ, który chcemy otworzyæ?
             if ( wantedVideoStream < 0 || wantedVideoStream == static_cast<int>(i) ) {
                 codecContext = selectedStream->codec;
@@ -335,6 +339,10 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     if(pCodec==NULL) {
         VIDLIB_ERROR( FFmpegError( "avcodec_find_decoder" ) );
     }
+
+	int i = codecContext->thread_count;
+
+	codecContext->thread_count = 1;
 
     // otwieramy kodek
     if( (error=avcodec_open(codecContext, pCodec)) <0) {

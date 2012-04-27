@@ -319,11 +319,15 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
             comboType->setCurrentIndex(idx);
 
             visualizerWidget = visualizer->getOrCreateWidget();
+
             visualizerImplementationCustomElements = visualizer->getGenericActions();
             if(visualizerWidget != nullptr){
                 visualizerWidget->setObjectName(QString::fromUtf8("visualizerWidget"));
                 setWidget(visualizerWidget);
-            }
+				setMinimumSize(max(visualizerWidget->minimumWidth(), 50), max(visualizerWidget->minimumHeight(), 50));
+            }else{
+				setMinimumSize(0, 0);
+			}
 
             setWindowTitle(visualizer->getUIName());
 

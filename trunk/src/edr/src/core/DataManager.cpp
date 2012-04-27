@@ -872,11 +872,11 @@ void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects,
 
             initializeData(wrapper);
 
-            if((*objectIT)->isNull() == true){
+            if(wrapper->isNull() == true){
                 //jesli nadal nie udalo sie zainicjalizowac danych to trzeba je usunac
-                invalid.insert(*objectIT);
+                invalid.insert(wrapper);
             }else{
-                objects.push_back(*objectIT);
+                objects.push_back(wrapper);
             }
         }
     }

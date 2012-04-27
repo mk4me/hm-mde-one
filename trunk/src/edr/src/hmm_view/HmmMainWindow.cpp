@@ -218,9 +218,17 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
             ActionsGroupManager settingsWidgetActions;
             QWidget* settingsWidget = service->getSettingsWidget(&settingsWidgetActions);
 
-            layout->addWidget(settingsWidget);
-            layout->addWidget(viewWidget);
-            layout->addWidget(controlWidget);
+			if(settingsWidget){
+				layout->addWidget(settingsWidget);
+			}
+
+			if(viewWidget){
+				layout->addWidget(viewWidget);
+			}
+
+			if(controlWidget){
+				layout->addWidget(controlWidget);
+			}
         }else{
 			//mam dataExplorer - zapamiêtuje i potem go wrzuce do danych
 			dataExplorer = service;
@@ -346,12 +354,7 @@ void HmmMainWindow::createNewVisualizer()
 void HmmMainWindow::createNewVisualizer( TreeItemHelper* helper, EDRDockWidgetSet* dockSet )
 {
     showTimeline();
-    VisualizerWidget* w = createDockVisualizer(helper);
-    if (dockSet) {
-        dockSet->addDockWidget(w);
-    } else {
-        topMainWindow->autoAddDockWidget( w );
-    }
+    VisualizerWidget* w = createAndAddDockVisualizer(helper, dockSet);
 }
 
 void HmmMainWindow::createVisualizerInNewSet()
@@ -360,10 +363,15 @@ void HmmMainWindow::createVisualizerInNewSet()
     UTILS_ASSERT(action);
     if (action) {
         showTimeline();
-        VisualizerWidget* w = createDockVisualizer(action->getItemHelper());
-        EDRDockWidgetSet* set = new EDRDockWidgetSet(QString(w->getCurrentVisualizer()->getUIName()), topMainWindow);
-        set->addDockWidget(w);
-        topMainWindow->addDockWidgetSet(set);
+
+		EDRDockWidgetSet* set = new EDRDockWidgetSet(topMainWindow);
+		topMainWindow->addDockWidgetSet(set);
+
+        VisualizerWidget* w = createAndAddDockVisualizer(action->getItemHelper(), set);
+        auto vis = w->getCurrentVisualizer();
+		if(vis){
+			set->setWindowTitle(vis->getUIName());
+		}
     }
 }
 
@@ -914,38 +922,15 @@ void HmmMainWindow::onToolButton(bool checked)
 
 void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 {
+	LOG_DEBUG("HmmMainWindow::visualizerDestroyed");
     visualizerUsageContext->setCurrentContextWidgetDestroyed(true);
     removeContext(qobject_cast<QWidget*>(visualizer));
     visualizerUsageContext->setCurrentContextWidgetDestroyed(false);
 }
 
- VisualizerWidget* HmmMainWindow::createDockVisualizer( TreeItemHelper* hmmItem )
-{
-    std::stack<QString> pathStack;
-    QTreeWidgetItem * pomItem = hmmItem;
-
-    while(pomItem != nullptr){
-        pathStack.push(pomItem->text(0));
-        pomItem = pomItem->parent();
-    }
-
-    QString path;
-
-    path += pathStack.top();
-    pathStack.pop();
-
-    while(pathStack.empty() == false){
-        path += "/";
-        path += pathStack.top();
-        pathStack.pop();
-    }
-
-    static int incr = 0;
-    QString suffix = QString("/id_%1").arg(incr++);
-    path += suffix;
-
+ VisualizerWidget* HmmMainWindow::createDockVisualizer(const VisualizerPtr & visualizer)
+{   
     VisualizerManager* visualizerManager = VisualizerManager::getInstance();
-    VisualizerPtr visualizer = hmmItem->createVisualizer();
     visualizer->getOrCreateWidget();
     // todo : zastanowic sie nad bezpieczenstwem tej operacji
     connect(visualizer.get(), SIGNAL(printTriggered(const QPixmap&)), this, SLOT(addToRaports(const QPixmap&)));
@@ -959,25 +944,101 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
     EDRTitleBar * titleBar = supplyWithEDRTitleBar(visualizerDockWidget);
 
-    std::vector<VisualizerTimeSeriePtr> series;
-    hmmItem->getSeries(visualizer, path, series);
     visualizer->getWidget()->setFocusPolicy(Qt::ClickFocus);
     //visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
     visualizerDockWidget->setFocusProxy(visualizer->getWidget());
 
-    DataItemDescription desc(visualizer, series, visualizerDockWidget);
-    items2Descriptions.insert(std::make_pair(hmmItem, desc));
-
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
-	VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
-    //addSeriesToTimeline(series, path, visualizer);
 
     //kontekst wizualizatora!!
     addContext(visualizerUsageContext);
     addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
 
+	visualizerDockWidget->setMinimumSize(max(50, visualizerDockWidget->minimumWidth()), max(50, visualizerDockWidget->minimumHeight()));
+
     return visualizerDockWidget;
 }
+
+ VisualizerWidget* HmmMainWindow::createAndAddDockVisualizer( TreeItemHelper* hmmItem, EDRDockWidgetSet* dockSet)
+ {
+	 std::stack<QString> pathStack;
+	 QTreeWidgetItem * pomItem = hmmItem;
+
+	 while(pomItem != nullptr){
+		 pathStack.push(pomItem->text(0));
+		 pomItem = pomItem->parent();
+	 }
+
+	 QString path;
+
+	 path += pathStack.top();
+	 pathStack.pop();
+
+	 while(pathStack.empty() == false){
+		 path += "/";
+		 path += pathStack.top();
+		 pathStack.pop();
+	 }
+
+	 static int incr = 0;
+	 QString suffix = QString("/id_%1").arg(incr++);
+	 path += suffix;
+	 auto visualizer = hmmItem->createVisualizer();
+	 auto visualizerDockWidget = createDockVisualizer(visualizer);
+
+	 if (dockSet) {
+		 dockSet->addDockWidget(visualizerDockWidget);
+	 } else {
+		 topMainWindow->autoAddDockWidget( visualizerDockWidget );
+	 }
+
+	 //QApplication::processEvents();
+	 ////qApp->postEvent(visualizerDockWidget, new QResizeEvent(visualizerDockWidget->size(), visualizerDockWidget->size()));
+	 //visualizerDockWidget->repaint();
+	 //QApplication::processEvents();
+
+	 std::vector<VisualizerTimeSeriePtr> series;
+	 hmmItem->getSeries(visualizer, path, series);
+	 DataItemDescription desc(visualizer, series, visualizerDockWidget);
+	 items2Descriptions.insert(std::make_pair(hmmItem, desc));
+	 VisualizerManager::getInstance()->createChannel(series, visualizer.get(), path.toStdString());
+
+	 return visualizerDockWidget;
+ }
+
+ /*void HmmMainWindow::addSeriesToTimeline( const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer )
+ {
+ TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
+ if(timeline != nullptr) {
+ if (series.size() == 1 && series[0] != nullptr) {
+ VisualizerChannelPtr channel(new VisualizerChannel(path.toStdString(), visualizer.get(), series[0]));
+ try{
+ timeline->addChannel(path.toStdString(), channel);
+ }catch(...){
+ LOG_ERROR("Could not add channel to timeline!");
+ }
+ } else {
+ VisualizerMultiChannel::SeriesWidgets visSeries;
+ for (int i = 0; i < series.size(); i++) {
+ auto timeSerie = series[i];
+ if(timeSerie != nullptr){
+ visSeries.push_back(timeSerie);
+ }
+ }
+ if (visSeries.size() > 0) {
+ VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(path.toStdString(), visualizer.get(), visSeries));
+ try {
+ timeline->addChannel(path.toStdString(), multi);
+ } catch ( const std::exception & e){
+ LOG_ERROR("Could not add multichannel to timeline! Reason: " << e.what());
+ } catch (...) {
+ LOG_ERROR("Could not add multichannel to timeline! UNKNOWN REASON");
+ }
+ }
+ }
+ }
+ }*/
+
  void HmmMainWindow::refreshTree()
  {
      std::vector<SessionConstPtr> sessions = core::queryDataPtr(DataManager::getInstance());

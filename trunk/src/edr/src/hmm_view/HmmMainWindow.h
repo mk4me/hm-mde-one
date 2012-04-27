@@ -115,7 +115,9 @@ private slots:
     void onFocusChange(QWidget * oldWidget, QWidget * newWidget);
     void visualizerDestroyed(QObject * visualizer);
     void filterClicked(FilterEntryWidget* entry);
-    VisualizerWidget* createDockVisualizer( TreeItemHelper* hmmItem );
+    VisualizerWidget* createDockVisualizer(const VisualizerPtr & visualizer);
+	VisualizerWidget* createAndAddDockVisualizer( TreeItemHelper* hmmItem, EDRDockWidgetSet* dockSet);
+
 
     //void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
 

@@ -23,6 +23,9 @@ set(PUBLIC_H
 	${HEADER_PATH}/Align.h
 	${HEADER_PATH}/ClonePolicies.h
 	${HEADER_PATH}/DataChannel.h
+	${HEADER_PATH}/DataChannelAccessors.h
+	${HEADER_PATH}/DataChannelTimers.h
+	${HEADER_PATH}/DataChannelDescriptors.h
 	${HEADER_PATH}/DataChannelCollection.h
 	${HEADER_PATH}/DataChannelModifiers.h
 	${HEADER_PATH}/DataChannelStats.h

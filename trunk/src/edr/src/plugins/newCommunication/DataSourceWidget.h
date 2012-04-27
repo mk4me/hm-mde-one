@@ -82,7 +82,7 @@ private slots:
     void onFilterRemove();
 
     void onLogin();
-    void onLoginRecover();
+    void onLoginRecovery();
     void onRegistration();
 	void onActivate();
 

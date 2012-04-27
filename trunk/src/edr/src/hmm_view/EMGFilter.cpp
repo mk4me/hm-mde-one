@@ -18,6 +18,11 @@ public:
     }
     virtual ~ChannelNoCopyModifier() {}
 
+	virtual ChannelNoCopyModifier * clone() const
+	{
+		return nullptr;
+	}
+
     virtual const std::string& getName() const {
         return channel->getName();
     }

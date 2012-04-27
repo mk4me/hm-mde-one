@@ -94,8 +94,8 @@ float MarkersVisualizationScheme::getStickLength( VectorChannelConstPtr channel1
     float delta = length / 100;
  
     while (t < length) {
-        auto i1 = channel1->getValueHelper(t).first;
-        auto i2 = channel2->getValueHelper(t).first;
+        auto i1 = channel1->utils::IRawUniformDataChannelReader<osg::Vec3f,float>::getValueHelper(t).first;
+        auto i2 = channel2->utils::IRawUniformDataChannelReader<osg::Vec3f,float>::getValueHelper(t).first;
         float len = (channel1->value(i1) - channel2->value(i2)).length();
         bool found = false;
         for (auto it = histogram.begin(); it != histogram.end(); ++it) {

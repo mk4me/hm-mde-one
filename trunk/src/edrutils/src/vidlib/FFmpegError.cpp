@@ -53,12 +53,12 @@ void FFmpegError::setMessage( const char* msg, size_t length )
 {
     enum ErrorCode {
         ErrorCodeINVALIDDATA = AVERROR_INVALIDDATA,
-        ErrorCoderIO = AVERROR_IO,
-        ErrorCodeNOENT = AVERROR_NOENT,
-        ErrorCodeNOFMT = AVERROR_NOFMT,
-        ErrorCodeNOMEM = AVERROR_NOMEM,
-        ErrorCodeNOTSUPP = AVERROR_NOTSUPP,
-        ErrorCodeNUMEXPECTED = AVERROR_NUMEXPECTED,
+        //ErrorCoderIO = AVERROR_IO,
+        //ErrorCodeNOENT = AVERROR_NOENT,
+        //ErrorCodeNOFMT = AVERROR_NOFMT,
+        //ErrorCodeNOMEM = AVERROR_NOMEM,
+        //ErrorCodeNOTSUPP = AVERROR_NOTSUPP,
+        //ErrorCodeNUMEXPECTED = AVERROR_NUMEXPECTED,
         ErrorCodeUNKNOWN = AVERROR_UNKNOWN,
         ErrorCodeEOF = AVERROR_EOF,
         ErrorCodePATCHWELCOME = AVERROR_PATCHWELCOME

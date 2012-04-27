@@ -11,13 +11,14 @@
 #define HEADER_GUARD_UTILS__DATACHANNELMODIFIERS_H__
 
 #include <utils/DataChannel.h>
+#include <utils/DataChannelDescriptors.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 template<class PointType, class TimeType>
-class IChannelAutoModifier : public virtual IChannelReader<PointType, TimeType, true>
+class IChannelAutoModifier : public IChannelReader<PointType, TimeType, true>
 {
 public:
 
@@ -59,7 +60,7 @@ private:
 };
 
 template<class PointType, class TimeType>
-class ChannelAutoModifier : public IChannelAutoModifier<PointType, TimeType>, private IRawDataChannelExtendedWriter<PointType, TimeType>, private RawGeneralDataChannel<PointType, TimeType>
+class ChannelAutoModifier : public IChannelAutoModifier<PointType, TimeType>, private IRawDataChannelExtendedWriter<PointType, TimeType>
 {
 
 private:
@@ -104,7 +105,7 @@ public:
             throw std::runtime_error("Wrong channel for Tracker");
         }
 
-        data.swap(TimeData());
+        impl.storage.clear();
 
         this->channel->detach(notifier.get());
         this->channel = channel;
@@ -142,41 +143,56 @@ public:
         }
     }
 
+	virtual ChannelAutoModifier * clone() const
+	{
+		return nullptr;
+	}
+
+	virtual const std::string & getName() const
+	{
+		return impl.getName();
+	}
+
+	void setName(const std::string & name)
+	{
+		impl.setName(name);
+	}
+
     virtual time_type getLength() const
     {
-        return RawGeneralDataChannel<PointType, TimeType>::getLength();
+        return impl.getLength();
     }
 
     //! \param idx Indeks probki
     //! \return Wartosc czasu dla danego indeksu
     virtual time_type argument(size_type idx) const
     {
-        return RawGeneralDataChannel<PointType, TimeType>::argument(idx);
+        return impl.argument(idx);
     }
 
     //! \param idx Indeks probki
     //! \return Wartosc probki dla danego indeksu
     virtual point_type_const_reference value(size_type idx) const
     {
-        return RawGeneralDataChannel<PointType, TimeType>::value(idx);
+        return impl.value(idx);
     }
 
     //! \return Iloœæ próbek w kanale
     virtual size_type size() const
     {
-        return RawGeneralDataChannel<PointType, TimeType>::size();
+        return impl.size();
     }
 
     //! \return Czy kana³ nie zawiera danych
     virtual bool empty() const
     {
-        return RawGeneralDataChannel<PointType, TimeType>::empty();
+        return impl.empty();
     }
     //! \param time Czas dla ktorego chemy uzyskac dwie najblizsze probki
     //! \return para indeksow, pierwszy wskazujke probke o czasie mniejszym lub rownym zadanemu czasowi, drugi wskazuje probke o czasie wiekszym lub rownym zadanemu
-    virtual std::pair<size_type, size_type> getValueHelper(time_type time) const
+    virtual data_range getValueHelper(time_type time) const
     {
-        return RawGeneralDataChannel<PointType, TimeType>::getValueHelper(time);
+        return impl.getValueHelper(time);
     }
 
 private:
@@ -195,15 +211,15 @@ private:
     virtual void addPoint(time_type time, point_type_const_reference point)
     {
 
-        if(data.empty() == true){
+        if(impl.empty() == true){
             if(time != 0) {
                 throw std::runtime_error("First sample time must be 0");
             }
-        }else if(time < data.back().first){
+        }else if(time < impl.storage.back().first){
             throw std::runtime_error("Samples time must be in chronological order");
         }
 
-        data.push_back(value_type(time, point));
+        impl.storage.addPoint(time, point);
 
         changed = true;
     }
@@ -216,7 +232,7 @@ private:
 
     virtual void setIndexData(size_type idx, point_type_const_reference point)
     {
-        data[idx].second = point;
+        impl.storage.setPoint(idx, point);
         changed = true;
     }
 
@@ -225,6 +241,7 @@ private:
     typename IChannelAutoModifier<PointType, TimeType>::_MyModifierType modifier;
     boost::shared_ptr<UpdateNotifier> notifier;
     bool changed;
+	RawGeneralDataChannel<PointType, TimeType> impl;
 };
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace 

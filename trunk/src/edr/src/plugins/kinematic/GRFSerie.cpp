@@ -99,7 +99,7 @@ GRFSerie::GeodePtr GRFSerie::createStep( IForcePlatform::IStepConstPtr step, flo
     osg::Vec3 lastV1;
     osg::Vec3 lastOrigin1;
     for (int i = 0; i < numSegments; i++) {
-        v.set(getChannelValue(f, *f1));
+        v.set(TimeAccessor::getValue(f, *f1));
         float length = v.length();
 
         float ratio1 = (f - startTime1) / (endTime1 - startTime1);
@@ -292,7 +292,7 @@ void GRFSerie::setLocalTime( double time )
         const auto& platforms = grfCollection->getPlatforms();
         for (auto it = platforms.cbegin(); it != platforms.cend(); it++) {
             auto f1 = (*it)->getForceChannel();
-            osg::Vec3 v1(getChannelValue(t, *f1));
+            osg::Vec3 v1(TimeAccessor::getValue(t, *f1));
 
             float ratio1 = v1.length() / maxLength;
 

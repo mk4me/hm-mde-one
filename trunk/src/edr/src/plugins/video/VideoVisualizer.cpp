@@ -49,13 +49,15 @@ struct VideoVisualizer::WidgetUpdater : public osg::Drawable::UpdateCallback
 
 
 VideoVisualizer::VideoVisualizer() :
-name("Video"), prevStreamTime(-1), prevStreamWidth(-1), useTextureRect(true)
+name("Video"), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1), useTextureRect(true)
 {
 
 }
 
 VideoVisualizer::~VideoVisualizer()
 {
+	/*streamImage = nullptr;
+	stream = nullptr;*/
     viewer = nullptr;
 }
 
@@ -101,14 +103,17 @@ void VideoVisualizer::refresh( float width, float height )
     workspace->resize(width , height);
     workspace->update();
     // aktualizacja tekstury t³a
-    workspace->getBackground()->setTexCoordRegion(0, height, width, -height);
+    //workspace->getBackground()->setTexCoordRegion(0, height, width, -height);
+	workspace->getBackground()->setTexCoordRegion(0, 0, width, height);
 	
     // aktualizacja rozmiaru tekstury
     if ( streamImage ) {
         // odœwie¿enia danych zale¿nych od obrazka
         // resize obrazka
         streamImage->setMaxWidth(widget, widget->getWidth());
-        workspace->resizeAdd();
+		if(width > 0 && height > 0){
+			workspace->resizeAdd();
+		}
     }
 }
 
@@ -163,26 +168,44 @@ void VideoVisualizer::updateWidget()
 
 void VideoVisualizer::update( double deltaTime )
 {
+	bool needsUpdate = false;
+
+	if ( currentStreamTime != prevStreamTime ) {
+		prevStreamTime = currentStreamTime;
+		needsUpdate = true;
+
+		stream->setTime(currentStreamTime);
+		getImage();
+	}
+
     if ( streamImage ) {
 
-        bool needsUpdate = false;
-        double timestamp = streamImage->getTimestamp();
+		refreshImage();
+
         int width = streamImage->s();
         
         if ( prevStreamWidth != width ) {
             prevStreamWidth = width;
             needsUpdate = true;
-        }
-
-        if ( timestamp != prevStreamTime ) {
-            prevStreamTime = timestamp;
-            needsUpdate = true;
-        }
-
-        if ( needsUpdate ) {
-            viewer->update();
-        }
+        }    
     }
+
+	if ( needsUpdate ) {
+		viewer->update();
+	}
+}
+
+bool VideoVisualizer::getImage()
+{
+	streamImage = stream->getImage(vidlib::PixelFormatRGB24);
+	return streamImage != nullptr;
+}
+
+void VideoVisualizer::refreshImage()
+{
+	widget->setTexture( stream->getTexture(streamImage->getFormat(), useTextureRect), true, useTextureRect );
+	osgui::correctTexCoords(widget, streamImage);
+	refresh(viewer->width(), viewer->height());
 }
 
 QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
@@ -222,10 +245,9 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
     windowManager->addChild(workspace);
 
     // dodanie widgetu
-    //widget = new Widget("video", 100, 100);
     widget = new Widget("video");
-    //widget->setSize(100, 100);
-    widget->setUpdateCallback( new WidgetUpdater(this) );
+	widget->setMinimumSize(50, 50);
+    //widget->setUpdateCallback( new WidgetUpdater(this) );
 
     // ratio keeper
     ratioKeeper = new AspectRatioKeeper(widget, 1);
@@ -258,6 +280,8 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
     retWidget->layout()->setContentsMargins(2,0,2,2);
     retWidget->setFocusPolicy(Qt::StrongFocus);
     viewer->setFocusPolicy(Qt::StrongFocus);
+
+	retWidget->setMinimumSize(50, 50);
 
     return retWidget;
 }
@@ -294,20 +318,20 @@ core::IVisualizer::TimeSerieBase* VideoVisualizer::createSerie(const core::IVisu
 
 void VideoVisualizer::removeSerie(core::IVisualizer::SerieBase* serie)
 {
-    streamImage = nullptr;
-	stream = nullptr;
-    ratioKeeper->setTarget(nullptr);
-
-    refresh(viewer->width(), viewer->height());
+    reset();
 }
 
 void VideoVisualizer::reset()
 {
-    streamImage = nullptr;
+	streamImage = nullptr;
+	stream = nullptr;
+	ratioKeeper->setTarget(nullptr);
 
-    ratioKeeper->setTarget(nullptr);
+	prevStreamTime = currentStreamTime = -1;
 
-    refresh(viewer->width(), viewer->height());
+	prevStreamWidth = -1;
+
+	refresh(viewer->width(), viewer->height());
 }
 
 QPixmap VideoVisualizer::print() const

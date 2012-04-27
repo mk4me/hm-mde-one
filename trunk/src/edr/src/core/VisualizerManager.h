@@ -23,6 +23,7 @@
 #include <core/IVisualizerManager.h>
 #include <core/IManagersAccessor.h>
 #include "ManagerHelper.h"
+#include <OpenThreads/ReentrantMutex>
 
 Q_DECLARE_METATYPE(UniqueID);
 
@@ -80,6 +81,8 @@ private:
 	//! Utworzone kana³y
 	std::map<IVisualizerChannel *, ChannelData> channels;
 	std::map<Visualizer *, std::set<IVisualizerChannel *>> visualizerChannels;
+
+	mutable OpenThreads::ReentrantMutex visualizersMutex;
 
 public:
     //! Tworzenie i niszczenie tylko przez metody singletonu.

@@ -17,11 +17,12 @@
 #include <plugins/c3d/C3DCollections.h>
 
 
-class ForcePlatform : public IForcePlatform, private utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float>
+class ForcePlatform : public IForcePlatform
 {
 public:
     typedef c3dlib::C3DParser::IEvent IEvent;
     typedef c3dlib::C3DParser::IEvent::Context Context;
+	typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> TimeAccessor;
 
     class Step : public IStep
     {

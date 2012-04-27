@@ -15,6 +15,7 @@
 #include "EDRDFSourceNode.h"
 #include "VisualizerWidget.h"
 #include "EDRTitleBar.h"
+//#include "MainWindow.h"
 
 #ifdef _DEBUG
 
@@ -650,6 +651,8 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
 
     //aktualizuj mapowanie logiki do UI
     logicToUI[visWidget->getCurrentVisualizer().get()] = visWidget;
+
+	//bool ok = connect(visWidget->getCurrentVisualizer().get(), SIGNAL(printTriggered(QPixmap)), core::MainWindow::getInstance(), SLOT(saveScreen(QPixmap)));
 
     return visWidget->getCurrentVisualizer();
 }

@@ -71,10 +71,10 @@ void ForcePlatform::computeSteps(MarkerCollectionPtr markers, EventsCollectionCo
     for (auto it = events->cbegin(); it != events->cend(); it++) {
         const auto e = *it;
         double time = e->getTime();
-        osg::Vec3 ltoePos = getChannelValue(time, *ltoe);
-        osg::Vec3 rtoePos = getChannelValue(time, *rtoe);
-        osg::Vec3 lheePos = getChannelValue(time, *lhee);
-        osg::Vec3 rheePos = getChannelValue(time, *rhee);
+        osg::Vec3 ltoePos = TimeAccessor::getValue(time, *ltoe);
+        osg::Vec3 rtoePos = TimeAccessor::getValue(time, *rtoe);
+        osg::Vec3 lheePos = TimeAccessor::getValue(time, *lhee);
+        osg::Vec3 rheePos = TimeAccessor::getValue(time, *rhee);
         Context context = e->getContext();
         if (context == IEvent::Left && (isInsideXY(ltoePos) || isInsideXY(lheePos))) {
             std::string l = e->getLabel();
@@ -128,9 +128,9 @@ void ForcePlatform::computeSteps(MarkerCollectionPtr markers, EventsCollectionCo
             if (it->isValid()) {
                 float time1 = it->getStartTime();
                 float time2 = it->getEndTime();
-                it->setStartPoint(it->getContext() == IEvent::Left ? getChannelValue(time1, *lhee) : getChannelValue(time1, *rhee));
+                it->setStartPoint(it->getContext() == IEvent::Left ? TimeAccessor::getValue(time1, *lhee) : TimeAccessor::getValue(time1, *rhee));
                 //f1->dataStart = time1;
-                it->setEndPoint(it->getContext() == IEvent::Left ? getChannelValue(time2, *ltoe) : getChannelValue(time2, *rtoe));
+                it->setEndPoint(it->getContext() == IEvent::Left ? TimeAccessor::getValue(time2, *ltoe) : TimeAccessor::getValue(time2, *rtoe));
                 //f1->dataEnd = time2;
             } else {
                 float time1 = it->getStartTime();
@@ -144,8 +144,8 @@ void ForcePlatform::computeSteps(MarkerCollectionPtr markers, EventsCollectionCo
 
                 it->setStartTime(time1);
                 it->setEndTime(time2);
-                it->setStartPoint(it->getContext() == IEvent::Left ? getChannelValue(time1, *lhee) : getChannelValue(time1, *rhee));
-                it->setEndPoint(it->getContext() == IEvent::Left ? getChannelValue(time2, *ltoe) : getChannelValue(time2, *rtoe));
+                it->setStartPoint(it->getContext() == IEvent::Left ? TimeAccessor::getValue(time1, *lhee) : TimeAccessor::getValue(time1, *rhee));
+                it->setEndPoint(it->getContext() == IEvent::Left ? TimeAccessor::getValue(time2, *ltoe) : TimeAccessor::getValue(time2, *rtoe));
             }
 
             steps.push_back(IForcePlatform::IStepPtr(new Step(*it)));

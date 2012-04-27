@@ -57,7 +57,9 @@ void HMMVisualizerUsageContext::deactivateContext(QWidget * nextContextWidget, b
         return;
     }
 
-    if(isCurrentContextWidgetDestroyed() == false){
+	auto w = getCurrentContextWidget();
+
+    if(w != nullptr && isCurrentContextWidgetDestroyed() == false){
 
         //TODO przywróciæ poprzedni styl widgeta
         getCurrentContextWidget()->setStyleSheet(QString());

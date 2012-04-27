@@ -5,6 +5,7 @@
 #include "DataManager.h"
 //#include "SceneGraphWidget.h"
 #include <boost/foreach.hpp>
+#include <OpenThreads/ScopedLock>
 
 using namespace core;
 
@@ -40,6 +41,7 @@ VisualizerManager::~VisualizerManager()
 
 IVisualizerConstPtr VisualizerManager::getPrototype( UniqueID id ) const
 {
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     IVisualizers::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(), 
         [=](const IVisualizerPtr& ptr) { return ptr->getID() == id; }
     );
@@ -62,6 +64,7 @@ VisualizerPtr VisualizerManager::createVisualizer( UniqueID id )
 
 int VisualizerManager::getNumInstances( UniqueID id )
 {
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     return std::count_if( visualizers.begin(), visualizers.end(), [=](Visualizer* ptr) {
         return ptr->getID() == id;
     });
@@ -92,6 +95,7 @@ VisualizerPtr VisualizerManager::createVisualizer( const core::TypeInfo& typeInf
 
 void VisualizerManager::update()
 {
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     Visualizers::iterator it = visualizers.begin();
     Visualizers::iterator last = visualizers.end();
     while ( it != last ) {
@@ -102,6 +106,7 @@ void VisualizerManager::update()
 
 void VisualizerManager::registerVisualizer( IVisualizerPtr visualizer )
 {
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     if (!getPrototype(visualizer->getID())) {
 
         std::vector<IInputDescription::InputInfo> visualizerInputInfo;
@@ -157,6 +162,7 @@ const VisualizerManager::SourcesTypes& VisualizerManager::getSourcesTypes( Uniqu
 
 int VisualizerManager::getPrototypeIdx( UniqueID id ) const
 {
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     IVisualizers::const_iterator found = std::find_if(prototypes.begin(), prototypes.end(), 
         [=](const IVisualizerPtr& ptr) { return ptr->getID() == id; }
     );
@@ -169,6 +175,7 @@ int VisualizerManager::getPrototypeIdx( UniqueID id ) const
 
 void VisualizerManager::notifyCreated( Visualizer* visualizer )
 {
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     LOG_DEBUG("Visualizer " << visualizer->getName() << " created");
     visualizers.push_back(visualizer);
     /*if ( debugWidget ) {
@@ -178,6 +185,7 @@ void VisualizerManager::notifyCreated( Visualizer* visualizer )
 
 void VisualizerManager::notifyDestroyed( Visualizer* visualizer )
 {
+	OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> lock(visualizersMutex);
     LOG_DEBUG("Visualizer " << visualizer->getName() << " destroyed.");
     visualizers.remove(visualizer);
 

@@ -15,6 +15,8 @@
 #include <utils/DataChannelModifiers.h>
 #include <utils/DataChannelStats.h>
 #include <utils/DataChannelCollection.h>
+#include <utils/DataChannelAccessors.h>
+#include <utils/DataChannelTimers.h>
 #include <core/ObjectWrapper.h>
 #include <osg/Vec3>
 #include <osg/Math>
@@ -31,10 +33,10 @@ typedef utils::ITimer<float>::TimerConstPtr TimerConstPtr;
 
 typedef utils::Timer<float> GeneralTimer;
 
-typedef utils::TimerOnTimer<float> TimerOnTimer;
+//typedef utils::TimerOnTimer<float> TimerOnTimer;
 
 
-typedef utils::GeneralDataChannelTimeAccessor<float, float> ScalarContiniousTimeAccessor;
+typedef utils::DataChannelTimeAccessor<float, float> ScalarContiniousTimeAccessor;
 typedef utils::CurrentValueExtractor<float, float> ScalarCurentValueExtractor;
 typedef utils::ChannelAutoModifier<float, float> ScalarModifier;
 
@@ -48,7 +50,7 @@ typedef utils::Channel<osg::Vec3f> VectorChannel;
 
 typedef VectorChannel::Interface VectorChannelReaderInterface;
 
-typedef utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float> VectorContiniousTimeAccessor;
+typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> VectorContiniousTimeAccessor;
 typedef utils::CurrentValueExtractor<osg::Vec3f, float> VectorCurentValueExtractor;
 typedef utils::ChannelAutoModifier<osg::Vec3f, float> VectorModifier;
 
@@ -58,14 +60,15 @@ typedef core::shared_ptr<const VectorChannel> VectorChannelConstPtr;
 typedef core::shared_ptr<VectorChannelReaderInterface> VectorChannelReaderInterfacePtr;
 typedef core::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
 
-class VectorToScalarAdaptor : public ScalarChannelReaderInterface, public utils::ChannelDescriptor
+class VectorToScalarAdaptor : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
 {
 protected:
-    VectorToScalarAdaptor(const VectorToScalarAdaptor & adaptor) : utils::ChannelDescriptor(adaptor), vector(adaptor.vector), index(adaptor.index), name(adaptor.name) {}
+    VectorToScalarAdaptor(const VectorToScalarAdaptor & adaptor) : descriptor(adaptor.descriptor), vector(adaptor.vector), index(adaptor.index), name(adaptor.name) {}
 
 public:
     VectorToScalarAdaptor(const VectorChannelReaderInterfaceConstPtr & vector, size_type idx, const std::string & name = std::string())
-        : utils::ChannelDescriptor(*vector), vector(core::const_pointer_cast<VectorChannelReaderInterface>(vector)), index(idx), name(name)
+        : descriptor(*vector),// vector(core::const_pointer_cast<VectorChannelReaderInterface>(vector)), index(idx), name(name)
+		 vector(vector), index(idx), name(name)
     {
         UTILS_ASSERT((idx >= 0 && idx < 3), "Bledny index dla adaptera skalarnego kanalu wektorowego");
     }
@@ -75,6 +78,11 @@ public:
     {
         return name;
     }
+
+	void setName(const std::string& name)
+	{
+		this->name = name;
+	}
 
     virtual VectorToScalarAdaptor * clone() const
     {
@@ -123,20 +131,70 @@ public:
         return vector->getSampleDuration();
     }
 
+	//! \return
+	virtual const std::string& getTimeBaseUnit() const
+	{ 
+		return descriptor.getTimeBaseUnit();
+	}
+
+	//! \return
+	virtual float getTimeScaleFactor() const
+	{ 
+		return descriptor.getTimeScaleFactor();
+	}
+
+	//! \return
+	virtual const std::string& getValueBaseUnit() const
+	{ 
+		return descriptor.getValueBaseUnit();
+	}
+
+	//! \return
+	virtual float getValueScaleFactor() const
+	{ 
+		return descriptor.getValueScaleFactor();
+	}
+
+	//! \param timeBaseUnit
+	virtual void setTimeBaseUnit(const std::string& timeBaseUnit) 
+	{ 
+		descriptor.setTimeBaseUnit(timeBaseUnit);
+	}
+
+	//! \param timeBaseUnit
+	virtual void setTimeScaleFactor(float timeScaleFactor) 
+	{ 
+		descriptor.setTimeScaleFactor(timeScaleFactor);
+	}
+
+	//! \param yUnit
+	virtual void setValueBaseUnit(const std::string& valueBaseUnit) 
+	{ 
+		descriptor.setValueBaseUnit(valueBaseUnit);
+	}
+
+	//! \param timeBaseUnit
+	virtual void setValueScaleFactor(float valueScaleFactor) 
+	{ 
+		descriptor.setValueScaleFactor(valueScaleFactor);
+	}
+
 private:
-    VectorChannelReaderInterfacePtr vector;
+    VectorChannelReaderInterfaceConstPtr vector;
     size_type index;
     std::string name;
+	utils::ChannelDescriptor descriptor;
 };
 
-class ScalarWithTimeSegment : public ScalarChannelReaderInterface, public utils::ChannelDescriptor
+class ScalarWithTimeSegment : public ScalarChannelReaderInterface, public utils::IChannelDescriptorWriter
 {
 protected:
-    ScalarWithTimeSegment(const ScalarWithTimeSegment & adaptor) : utils::ChannelDescriptor(adaptor), startIndex(adaptor.startIndex), endIndex(adaptor.endIndex) {}
+    ScalarWithTimeSegment(const ScalarWithTimeSegment & adaptor) : descriptor(adaptor.descriptor), startIndex(adaptor.startIndex), endIndex(adaptor.endIndex) {}
 
 public:
     ScalarWithTimeSegment(const ScalarChannelReaderInterfaceConstPtr & channel, time_type start, time_type end)
-        : utils::ChannelDescriptor(*channel), reader(core::const_pointer_cast<ScalarChannelReaderInterface>(channel))
+        : descriptor(*channel),// reader(core::const_pointer_cast<ScalarChannelReaderInterface>(channel))
+		reader(channel)
     {
         startIndex = channel->getValueHelper(start).first;
         endIndex = channel->getValueHelper(end).second;
@@ -206,10 +264,59 @@ public:
         throw std::runtime_error("empty channel");
     }
 
+	//! \return
+	virtual const std::string& getTimeBaseUnit() const
+	{ 
+		return descriptor.getTimeBaseUnit();
+	}
+
+	//! \return
+	virtual float getTimeScaleFactor() const
+	{ 
+		return descriptor.getTimeScaleFactor();
+	}
+
+	//! \return
+	virtual const std::string& getValueBaseUnit() const
+	{ 
+		return descriptor.getValueBaseUnit();
+	}
+
+	//! \return
+	virtual float getValueScaleFactor() const
+	{ 
+		return descriptor.getValueScaleFactor();
+	}
+
+	//! \param timeBaseUnit
+	virtual void setTimeBaseUnit(const std::string& timeBaseUnit) 
+	{ 
+		descriptor.setTimeBaseUnit(timeBaseUnit);
+	}
+
+	//! \param timeBaseUnit
+	virtual void setTimeScaleFactor(float timeScaleFactor) 
+	{ 
+		descriptor.setTimeScaleFactor(timeScaleFactor);
+	}
+
+	//! \param yUnit
+	virtual void setValueBaseUnit(const std::string& valueBaseUnit) 
+	{ 
+		descriptor.setValueBaseUnit(valueBaseUnit);
+	}
+
+	//! \param timeBaseUnit
+	virtual void setValueScaleFactor(float valueScaleFactor) 
+	{ 
+		descriptor.setValueScaleFactor(valueScaleFactor);
+	}
+
 private:
-    ScalarChannelReaderInterfacePtr reader;
+    ScalarChannelReaderInterfaceConstPtr reader;
     int startIndex;
     int endIndex;
+	utils::ChannelDescriptor descriptor;
 };
 
 typedef core::shared_ptr<ScalarChannel> ScalarChannelPtr;

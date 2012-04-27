@@ -19,7 +19,7 @@
 
 const float grfScale = 0.0008f;
 
-class GRFSerie : public KinematicSerie, private utils::GeneralDataChannelTimeAccessor<osg::Vec3f, float>
+class GRFSerie : public KinematicSerie
 {
 public:
 	typedef osg::ref_ptr<osg::Geode> GeodePtr;
@@ -27,6 +27,7 @@ public:
 	typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
 	typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
 	typedef osg::ref_ptr<osg::ShapeDrawable> ShapeDrawablePtr;
+	typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> TimeAccessor;
 
 public:
 	GRFSerie(KinematicVisualizer * visualizer) : 

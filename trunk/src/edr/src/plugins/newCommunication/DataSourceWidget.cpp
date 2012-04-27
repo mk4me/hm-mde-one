@@ -796,7 +796,7 @@ void DataSourceWidget::saveAndRemoveShallowCopy()
 	}
 }
 
-void DataSourceWidget::onLoginRecover()
+void DataSourceWidget::onLoginRecovery()
 {
 
 }

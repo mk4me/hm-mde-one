@@ -11,6 +11,18 @@
 #define HEADER_GUARD_KINEMATIC__PICKHANDLER_H__
 
 
+#include <osg/Geode>
+#include <osg/Drawable>
+#include <osgGa/GUIEventHandler>
+#include <osgGa/GUIEventAdapter>
+#include <osgViewer/View>
+
+#include <boost/tuple/tuple.hpp>
+#include <boost/function.hpp>
+#include <list>
+
+
+
 class PickHandler : public osgGA::GUIEventHandler 
 {
 public: 

@@ -15,7 +15,7 @@
 #include <plugins/c3d/C3DChannels.h>
 #include "OsgSchemeDrawer.h"
 
-class TrajectoryDrawer : public OsgSchemeDrawer, private VectorContiniousTimeAccessor
+class TrajectoryDrawer : public OsgSchemeDrawer
 {
 public:
 	TrajectoryDrawer(const osg::Vec4& color, int density);
