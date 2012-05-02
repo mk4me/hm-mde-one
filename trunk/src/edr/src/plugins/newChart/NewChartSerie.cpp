@@ -1,6 +1,6 @@
 #include "NewChartPCH.h"
 #include <QtGui/QPainter>
-#include <qwt/qwt_curve_fitter.h>
+//#include <qwt/qwt_curve_fitter.h>
 #include "NewChartSerie.h"
 #include "NewChartVisualizer.h"
 #include "NewChartSeriesData.h"

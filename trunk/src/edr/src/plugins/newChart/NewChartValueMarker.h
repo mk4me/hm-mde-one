@@ -13,7 +13,7 @@
 #include "NewChartState.h"
 #include "NewChartMarker.h"
 #include "NewChartLabelState.h"
-#include <qwt/qwt_plot_curve.h>
+//#include <qwt/qwt_plot_curve.h>
 
 class NewChartValueMarker : public NewChartLabelState
 {

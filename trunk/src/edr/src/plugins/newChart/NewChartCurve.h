@@ -56,6 +56,11 @@ protected:
         const QwtScaleMap &xMap, const QwtScaleMap &yMap,
         const QRectF &canvasRect, int from, int to ) const;
 
+    virtual void dataChanged() { QwtPlotSeriesItem::dataChanged(); }
+    virtual void setRectOfInterest( const QRectF& r ) { QwtSeriesStore<QPointF>::setRectOfInterest(r); }
+    virtual size_t dataSize() const { return QwtSeriesStore<QPointF>::dataSize(); } 
+    virtual QRectF dataRect() const { return QwtSeriesStore<QPointF>::dataRect(); } 
+
 private:
     double xOffset;
     double yOffset;

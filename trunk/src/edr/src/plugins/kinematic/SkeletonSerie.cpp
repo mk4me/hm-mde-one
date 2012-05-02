@@ -66,11 +66,11 @@ MarkerCollectionConstPtr SkeletonSerie::createTrajectories( kinematic::JointAngl
         SkeletalVisualizationScheme scheme;
         scheme.setJoints(joints);
         JointAngleChannelConstPtr joint = joints->getChannel(0);
-        const std::vector<VisualizationScheme::State>& states = scheme.getStates();
-        int count = states.size();
+        const std::vector<VisualizationScheme::State>& s = scheme.getStates();
+        int count = s.size();
         for (int i = 0; i < count; i++) {
             MarkerChannelPtr marker(new MarkerChannel(joint->getSamplesPerSecond()));
-            marker->setName(states[i].name);
+            marker->setName(s[i].name);
             markers->addChannel(marker);
         }
    

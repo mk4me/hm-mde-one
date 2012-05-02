@@ -1152,7 +1152,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
                  bool compatibile = false;
                  for (int idx = 0; idx < visualizer->getNumInputs(); idx++) {
                      std::vector<TypeInfo> types = helper->getTypeInfos();
-                     for (int h = 0; h < types.size(); h++) {
+                     for (unsigned int h = 0; h < types.size(); h++) {
                          if (dataManager->isTypeCompatible(visualizer->getInputType(idx), types[h])) {
                              compatibile = true;
                              break;
@@ -1319,7 +1319,7 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
              if (action->getVisualizer() == nullptr || desc.visualizer.lock() == action->getVisualizer()) {
                  auto toErase = it; it++;
                  items2Descriptions.erase(toErase);
-                 for (int i = 0; i < desc.series.size(); i++) {
+                 for (unsigned int i = 0; i < desc.series.size(); i++) {
                      desc.visualizer.lock()->removeSerie(desc.series[i].lock());
                  }
                  if (desc.visualizer.lock()->getDataSeries().size() == 0) {

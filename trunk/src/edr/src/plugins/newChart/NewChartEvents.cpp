@@ -24,12 +24,12 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
 
     for (int i = 0; i < count; i++) {
         C3DEventsCollection::EventConstPtr event = events->getEvent(i);
-        if (event->getContext() != C3DEventsCollection::Context::Left && event->getContext() != C3DEventsCollection::Context::Right) {
+        if (event->getContext() != C3DEventsCollection::IEvent::Left && event->getContext() != C3DEventsCollection::IEvent::Right) {
             continue;
         }
         int x = static_cast<int>(xMap.transform(event->getTime()));
 
-        bool left = event->getContext() == C3DEventsCollection::Context::Left;
+        bool left = event->getContext() == C3DEventsCollection::IEvent::Left;
         int top = left ? canvasRect.top() : half;
         int bottom = left ? half : canvasRect.bottom();
 
@@ -52,7 +52,7 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
             int lastX = static_cast<int>(xMap.transform(lastRightEvent->getTime()));
             painter->drawRect(lastX, top, x - lastX, bottom - top);
         } 
-        if (event->getContext() == C3DEventsCollection::Context::Left) {
+        if (event->getContext() == C3DEventsCollection::IEvent::Left) {
             lastLeftEvent = event;
         } else {
             lastRightEvent = event;
@@ -106,7 +106,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
         } 
     }
 
-    for (int i = 0; i < collection.size(); i++) {
+    for (unsigned int i = 0; i < collection.size(); i++) {
         ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
         SegmentPtr segment = collection[i];
         QString name = QString("%1:%2").arg(scalar->getName().c_str()).arg(i);
@@ -124,7 +124,7 @@ EventsHelper::EventsHelper( EventsCollectionConstPtr events, ScalarChannelReader
     scalar(scalar),
     eventsItem(new EventsPlotItem(events))
 {
-    createSegments(leftSegments, C3DEventsCollection::Context::Left);
-    createSegments(rightSegments, C3DEventsCollection::Context::Right);
+    createSegments(leftSegments, C3DEventsCollection::IEvent::Left);
+    createSegments(rightSegments, C3DEventsCollection::IEvent::Right);
    
 }

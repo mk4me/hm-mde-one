@@ -9,12 +9,12 @@
 #include <QtGui/QDoubleSpinBox>
 #include <boost/foreach.hpp>
 #include "NewChartVisualizer.h"
-#include <qwt/qwt_plot_canvas.h>
-#include <qwt/qwt_scale_draw.h>
-#include <qwt/qwt_scale_widget.h>
-#include <qwt/qwt_plot_layout.h>
-#include <qwt/qwt_legend_label.h>
-#include <qwt/qwt_legend.h>
+//#include <qwt/qwt_plot_canvas.h>
+//#include <qwt/qwt_scale_draw.h>
+//#include <qwt/qwt_scale_widget.h>
+//#include <qwt/qwt_plot_layout.h>
+//#include <qwt/qwt_legend_label.h>
+//#include <qwt/qwt_legend.h>
 #include "StatsTable.h"
 #include "NewChartMarker.h"
 #include "NewChartValueMarker.h"
@@ -33,7 +33,7 @@ NewChartVisualizer::NewChartVisualizer() :
     plotPanner(nullptr),
     plotMagnifier(nullptr),
     statsTable(nullptr),
-    context(C3DEventsCollection::Context::General),
+    context(C3DEventsCollection::IEvent::General),
     eventsContextWidget(nullptr),
     eventsMenu(nullptr),
     scaleToActive(false),
@@ -117,9 +117,9 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     eventsContextWidget->setLayout(eventsLayout);
 
     QIcon eventsIcon(":/resources/icons/normalizacja1.png");
-    eventsMenu->addItem(eventsIcon, tr("None events") , QVariant(C3DEventsCollection::Context::General));
-    eventsMenu->addItem(eventsIcon, tr("Left events") , QVariant(C3DEventsCollection::Context::Left));
-    eventsMenu->addItem(eventsIcon, tr("Right events"), QVariant(C3DEventsCollection::Context::Right));
+    eventsMenu->addItem(eventsIcon, tr("None events") , QVariant(C3DEventsCollection::IEvent::General));
+    eventsMenu->addItem(eventsIcon, tr("Left events") , QVariant(C3DEventsCollection::IEvent::Left));
+    eventsMenu->addItem(eventsIcon, tr("Right events"), QVariant(C3DEventsCollection::IEvent::Right));
 
     picker.reset(new NewChartPicker(this));
     connect(picker.get(), SIGNAL(serieSelected(QwtPlotItem*)), this, SLOT(onSerieSelected(QwtPlotItem*)));
@@ -163,8 +163,8 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     showStats->setCheckable(true);
     showStats->setChecked(false);
     QIcon iconStats;
-    iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-a.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
-    iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-b.png"), QSize(), QIcon::Mode::Normal, QIcon::State::On);
+    iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-a.png"), QSize(), QIcon::Normal, QIcon::Off);
+    iconStats.addFile(QString::fromUtf8(":/resources/icons/stat-b.png"), QSize(), QIcon::Normal, QIcon::On);
     showStats->setIcon(iconStats);
     connect(showStats, SIGNAL(triggered(bool)), this, SLOT(showStatistics(bool)));
 
@@ -226,7 +226,7 @@ QWidget* NewChartVisualizer::createWidget( core::IActionsGroupManager * manager 
     
     bandsAction = new QAction("Bands", this);
     QIcon iconBands;
-    iconBands.addFile(QString::fromUtf8(":/resources/icons/charts.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+    iconBands.addFile(QString::fromUtf8(":/resources/icons/charts.png"), QSize(), QIcon::Normal, QIcon::Off);
     bandsAction->setIcon(iconBands);
     bandsAction->setCheckable(true);
     bandsAction->setChecked(false);
@@ -425,7 +425,7 @@ void NewChartVisualizer::setActiveSerie( int idx )
 
         auto helper = serie->getEventsHelper();
         if (helper && helper->getEventsItem()) {
-            helper->getEventsItem()->setVisible(context != C3DEventsCollection::Context::General);
+            helper->getEventsItem()->setVisible(context != C3DEventsCollection::IEvent::General);
             //helper->getEventsItem()->attach(qwtPlot);
         }
 
@@ -479,7 +479,7 @@ void NewChartVisualizer::onSerieSelected(QwtPlotItem* item, bool on, int idx)
         idx = -1; // idx nie chcemy wykorzystywac!
         if (on == true) {
         
-            for (int i = 0; i < series.size(); i++) {
+            for (unsigned int i = 0; i < series.size(); i++) {
                 NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(series[i]->curve));
                 if (series[i]->curve == curve) {
                     // powinno wywolac sygnal, ktory ustawi aktywna serie
@@ -552,7 +552,7 @@ void NewChartVisualizer::setManipulation( bool val )
 }
 const NewChartSerie* NewChartVisualizer::tryGetCurrentSerie() const
 {
-    if (currentSerie >= 0 && currentSerie < series.size()) {
+    if (currentSerie >= 0 && currentSerie < static_cast<int>(series.size())) {
         return series[currentSerie];
     }
     return nullptr;
@@ -560,7 +560,7 @@ const NewChartSerie* NewChartVisualizer::tryGetCurrentSerie() const
 
 NewChartSerie* NewChartVisualizer::tryGetCurrentSerie()
 {
-    if (currentSerie >= 0 && currentSerie < series.size()) {
+    if (currentSerie >= 0 && currentSerie < static_cast<int>(series.size())) {
         return series[currentSerie];
     }
     return nullptr;
@@ -572,7 +572,7 @@ void NewChartVisualizer::update( double deltaTime )
         (*it)();
     }
     updateFIFO.clear();
-    if (currentSerie >= 0 && currentSerie < series.size()) {
+    if (currentSerie >= 0 && currentSerie < static_cast<int>(series.size())) {
         
         qwtMarker->setVisible(true);
         NewChartSerie* serie = series[currentSerie];
@@ -643,7 +643,7 @@ int NewChartVisualizer::getMaxDataSeries( void ) const
 void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPtr val )
 {
     C3DEventsCollection::Context c = static_cast<C3DEventsCollection::Context>(eventsMenu->itemData(eventsMenu->currentIndex()).toInt());
-    bool eventMode = (c != C3DEventsCollection::Context::General);
+    bool eventMode = (c != C3DEventsCollection::IEvent::General);
     EventsHelperPtr helper = serie->getEventsHelper();
     helper->getEventsItem()->attach(qwtPlot);
     helper->getEventsItem()->setVisible(serie == tryGetCurrentSerie() && eventMode);
@@ -660,7 +660,7 @@ void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPt
 void NewChartVisualizer::onEventContext(int index)
 {
     C3DEventsCollection::Context c = static_cast<C3DEventsCollection::Context>(eventsMenu->itemData(index).toInt());
-    bool eventMode = (c != C3DEventsCollection::Context::General);
+    bool eventMode = (c != C3DEventsCollection::IEvent::General);
     NewChartSerie* serie = tryGetCurrentSerie();
     if (serie) {
         auto helper = serie->getEventsHelper();
@@ -685,8 +685,8 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
         statsTable->addEntry(tr("Whole chart"), (*it)->getName().c_str(), (*it)->getStats() );
     }
     if (stats) {
-        QString group = context == C3DEventsCollection::Context::Left ? tr("Left") : tr("Right");
-        QColor color  = context == C3DEventsCollection::Context::Left ?  QColor(255, 200, 200) : QColor(200, 255, 200);
+        QString group = context == C3DEventsCollection::IEvent::Left ? tr("Left") : tr("Right");
+        QColor color  = context == C3DEventsCollection::IEvent::Left ?  QColor(255, 200, 200) : QColor(200, 255, 200);
         statsTable->addEntry(group, stats->getChannel()->getName().c_str(), stats, color);
     } else {
         for (auto it = series.begin(); it != series.end(); it++) {
@@ -719,7 +719,7 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
         QwtPlotCurve* c = const_cast<QwtPlotCurve*>(curve);
         c->setVisible(visible);
     } else {
-        for (int i = 0; i < series.size(); i++) {
+        for (unsigned int i = 0; i < series.size(); i++) {
             if (series[i]->curve == curve) {
                 if (!series[i]->isActive()) {
                     series[i]->setVisible(visible);
@@ -744,7 +744,7 @@ void NewChartVisualizer::onSerieVisible(const QwtPlotItem* dataSerie, bool visib
     }
 
     recreateScales();
-    if (context == C3DEventsCollection::Context::General || !timeInsideEvent()) {
+    if (context == C3DEventsCollection::IEvent::General || !timeInsideEvent()) {
         setScale();
     }
     legend->blockSignals(false);
@@ -781,7 +781,7 @@ bool NewChartVisualizer::timeInsideEvent()
 void NewChartVisualizer::scaleToActiveSerie( bool scaleToActive)
 {
     this->scaleToActive = scaleToActive;
-    setScale(scaleToActive, context != C3DEventsCollection::Context::General);
+    setScale(scaleToActive, context != C3DEventsCollection::IEvent::General);
 }
 
 void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )

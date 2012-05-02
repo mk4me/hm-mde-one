@@ -10,8 +10,8 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTSTATE_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTSTATE_H__
 
-#include <qwt/qwt_plot.h>
-#include <qwt/qwt_plot_canvas.h>
+//#include <qwt/qwt_plot.h>
+//#include <qwt/qwt_plot_canvas.h>
 
 class NewChartVisualizer;
 

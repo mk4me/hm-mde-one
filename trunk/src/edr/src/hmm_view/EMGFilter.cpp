@@ -1,7 +1,7 @@
 #include "hmmPCH.h"
 #include "EMGFilter.h"
 #include <plugins/c3d/C3DChannels.h>
-#include <plugins/newChart/NewChartSerie.h>
+#include <plugins/newChart/INewChartSerie.h>
 
 template<class PointType, class TimeType>
 class ChannelNoCopyModifier : public utils::IChannelAutoModifier<PointType, TimeType>
@@ -91,7 +91,8 @@ public:
     virtual const _MyModifierType & getModifier() const
     {
         UTILS_ASSERT(false);
-        return _MyModifierType();
+        static auto m = _MyModifierType();
+        return m;
     }
 
 protected:
@@ -128,6 +129,59 @@ protected:
 //    }
 //};
 
+class RMSModifier
+{
+public:
+    typedef ScalarChannelReaderInterface::point_type pointT;
+    typedef ScalarChannelReaderInterface::size_type sizeT;
+
+    void operator()(ScalarChannelReaderInterface::_MyExtendedWriter & modifierInterface,
+        const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
+        const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
+    {
+        //uzupe³nij brakujace probki 
+        if(myChannel.size() < observedChannel.size()){
+            for(auto idx = myChannel.size(); idx < observedChannel.size(); idx ++){
+                modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
+            }
+        }
+        //aktualizacja próbek
+
+        sizeT meanR = 10;
+        sizeT count = myChannel.size() - meanR;
+        // brzeg lewy...
+        for (sizeT l_idx = 0; l_idx < meanR; l_idx++) {
+            pointT sum = 0;
+            for (sizeT i = 0; i < l_idx + meanR; i++) {
+                sum += observedChannel.value(i) * observedChannel.value(i);
+            }
+            sum /= (l_idx + meanR);
+            sum = sqrt(sum);
+            modifierInterface.setIndexData(l_idx, sum);
+        }
+        // wlasciwa interpolacja
+        for(sizeT idx = meanR; idx < count; idx++) {
+            pointT sum = 0;
+            for (sizeT i = idx - meanR; i < idx + meanR + 1; i++) {
+                sum += observedChannel.value(i) * observedChannel.value(i);
+            }
+            sum /= (meanR + meanR + 1);
+            sum = sqrt(sum);
+            modifierInterface.setIndexData(idx, sum);
+        }
+        // brzeg prawy...
+        for (sizeT r_idx = count; r_idx < myChannel.size(); r_idx++) {
+            pointT sum = 0;
+            for (sizeT i = r_idx; i < myChannel.size(); i++) {
+                sum += observedChannel.value(i) * observedChannel.value(i);
+            }
+            sum /= (r_idx - count + meanR);
+            sum = sqrt(sum);
+            modifierInterface.setIndexData(r_idx, sum);
+        }
+    }
+};
+
 class ScalarChannelIntegrator
 {
 public:
@@ -143,13 +197,13 @@ public:
         const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
         ////uzupe³nij brakujace probki : co dziesiata...
-        int skipN = 10;
+        sizeT skipN = 10;
         if(myChannel.size() * skipN < observedChannel.size()){
             for(auto idx = myChannel.size() * skipN; idx < observedChannel.size(); idx += skipN){
                 pointT sum = 0;
-                int right = idx + skipN;
+                sizeT right = idx + skipN;
                 right = right < observedChannel.size() ? right : observedChannel.size();
-                for (auto idx2 = idx; idx2 < right; idx2++) {
+                for (sizeT idx2 = idx; idx2 < right; idx2++) {
                     sum += observedChannel.value(idx2);
                 }
                 modifierInterface.addPoint(observedChannel.argument(idx), sum / skipN);
@@ -160,11 +214,11 @@ public:
         sizeT meanR = 10;
         sizeT count = myChannel.size() - meanR;
 
-        for (int step = 0; step < 50; step++) {
+        for (sizeT step = 0; step < 50; step++) {
             // brzeg lewy...
             for (sizeT l_idx = 0; l_idx < meanR; l_idx++) {
                 pointT sum = 0;
-                for (int i = 0; i < l_idx + meanR; i++) {
+                for (sizeT i = 0; i < l_idx + meanR; i++) {
                     sum += observedChannel.value(i);
                 }
                 sum /= (l_idx + meanR);
@@ -173,7 +227,7 @@ public:
             // wlasciwa interpolacja
             for(sizeT idx = meanR; idx < count; idx++) {
                 pointT sum = 0;
-                for (int i = idx - meanR; i < idx + meanR + 1; i++) {
+                for (sizeT i = idx - meanR; i < idx + meanR + 1; i++) {
                    sum += observedChannel.value(i);
                 }
                 sum /= (meanR + meanR + 1);
@@ -182,7 +236,7 @@ public:
             // brzeg prawy...
             for (sizeT r_idx = count; r_idx < myChannel.size(); r_idx++) {
                 pointT sum = 0;
-                for (int i = r_idx; i < myChannel.size(); i++) {
+                for (sizeT i = r_idx; i < myChannel.size(); i++) {
                     sum += observedChannel.value(i);
                 }
                 sum /= (r_idx - count + meanR);
@@ -244,11 +298,32 @@ public:
 
     virtual void initialize() 
     {
-        point_type sum = 0;
-        //srednia
+        point_type min = channel->value(0);
+        point_type max = min;
+
         size_type count = channel->size();
         for(size_type idx = 0; idx < count; idx++){
-            sum += channel->value(idx);
+            point_type val = channel->value(idx);
+            if (val > max) {
+                max = val;
+            } else if (val < min) {
+                min = val;
+            }
+        }
+
+        point_type min4 = min / 4;
+        point_type max4 = max / 4;
+
+        point_type sum = 0;
+        //srednia
+        for(size_type idx = 0; idx < count; idx++) {
+            point_type val = channel->value(idx);
+            if (val > max4) {
+                val = max4;
+            } else if (val < min4) {
+                val = min4;
+            }
+            sum += val;
         }
 
         mean = sum / static_cast<point_type>(count);
@@ -276,7 +351,8 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     boost::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(nonConstChannel2));
     absTest->initialize();
     
-    core::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
+    //core::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
+    core::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, RMSModifier()));
     
     core::ObjectWrapperPtr wrapperX = core::ObjectWrapper::create<ScalarChannelReaderInterface>();
     wrapperX->set(core::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
@@ -286,9 +362,7 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 
     auto serieX = visualizer->createSerie(wrapperX, wrapperX->getName());
 
-    NewChartSerie* chartSerieX = dynamic_cast<NewChartSerie*>(serieX.get());
-
-    //chartSerieX->setColor(255, 0, 0);
+    INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
 
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
 }

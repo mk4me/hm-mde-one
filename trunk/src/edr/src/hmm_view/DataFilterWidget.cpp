@@ -96,7 +96,7 @@ void DataFilterWidget::setColor( const QColor& color )
 
 const FilterEntryWidget* DataFilterWidget::getEntry( int index ) const
 {
-    UTILS_ASSERT(index >= 0 && index < entries.size());
+    UTILS_ASSERT(index >= 0 && index < static_cast<int>(entries.size()));
     return entries[index];
 }
 

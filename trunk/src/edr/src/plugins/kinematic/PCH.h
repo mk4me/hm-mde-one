@@ -26,7 +26,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
-#include <QtOpenGL/QtOpenGL>
+//#include <QtOpenGL/QtOpenGL>
 
 UTILS_PUSH_WARNINGS
 #include <osg/Node>

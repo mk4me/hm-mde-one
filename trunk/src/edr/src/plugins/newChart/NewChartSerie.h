@@ -12,17 +12,18 @@
 
 #include <core/IVisualizer.h>
 #include <core/IObjectSource.h>
-#include <qwt/qwt_scale_map.h>
-#include <qwt/qwt_plot_curve.h>
+//#include <qwt/qwt_scale_map.h>
+//#include <qwt/qwt_plot_curve.h>
 #include <plugins/c3d/C3DCollections.h>
 #include <plugins/c3d/EventSerieBase.h>
+#include <plugins/newChart/INewChartSerie.h>
 #include "NewChartCurve.h"
 #include "NewChartEvents.h"
 #include "Scales.h"
 
 class NewChartCurve;
 
-class NewChartSerie : public EventSerieBase
+class NewChartSerie : public INewChartSerie
 {
     friend class NewChartVisualizer;
 public:
@@ -43,7 +44,7 @@ public:
     double getTime() const { return time; }
     double getCurrentValue() const 
     { 
-        return accessor->getValue(time); 
+        return static_cast<double>(accessor->getValue(time)); 
     } 
     virtual void setTime(double time);
 
@@ -63,7 +64,7 @@ public:
         setColor(QColor(r, g, b, a));
     }
 
-    void setColor(const QColor& color)
+    virtual void setColor(const QColor& color)
     {
         UTILS_ASSERT(curve);
         QPen pen = curve->pen();
@@ -72,7 +73,7 @@ public:
     }
     
 
-    QColor getColor() const
+    virtual QColor getColor() const
     {
         UTILS_ASSERT(curve);
         return curve->pen().color();

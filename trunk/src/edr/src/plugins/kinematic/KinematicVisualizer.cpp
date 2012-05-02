@@ -78,9 +78,10 @@ core::IVisualizer::TimeSerieBase *KinematicVisualizer::createSerie(const core::O
 		UTILS_ASSERT(false);
 	}
 
-    transformNode->addChild(ret->getMatrixTransformNode());
-    
-    series.push_back(ret);
+    if (ret) {
+        transformNode->addChild(ret->getMatrixTransformNode());
+        series.push_back(ret);
+    }
     if(series.size() == 1){
         activeSerieCombo->blockSignals(true);
         activeSerieCombo->clear();

@@ -1,7 +1,7 @@
 #include "hmmPCH.h"
 #include "TreeItemHelper.h"
 #include "VisualizerManager.h"
-#include <plugins/newChart/NewChartVisualizer.h>
+#include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/c3d/EventSerieBase.h>
 
 VisualizerPtr TreeWrappedItemHelper::createVisualizer()
@@ -57,10 +57,10 @@ void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QSt
 
 VisualizerPtr NewChartItemHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(NewChartVisualizer::getClassID());
+    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannelReaderInterface));
     QWidget * visWidget = visualizer->getOrCreateWidget();
     visWidget->layout()->setContentsMargins(2, 0, 2, 2);
-    NewChartVisualizer* chart = dynamic_cast<NewChartVisualizer*>(visualizer->getImplementation());
+    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
         UTILS_ASSERT(false);
         LOG_ERROR("Wrong visualizer type!");
@@ -86,10 +86,10 @@ void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const Q
 
 VisualizerPtr NewVector3ItemHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(NewChartVisualizer::getClassID());
+    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannelReaderInterface));
     QWidget * visWidget = visualizer->getOrCreateWidget();
     visWidget->layout()->setContentsMargins(2, 0, 2, 2);
-    NewChartVisualizer* chart = dynamic_cast<NewChartVisualizer*>(visualizer->getImplementation());
+    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
         UTILS_ASSERT(false);
         LOG_ERROR("Wrong visualizer type!");
@@ -135,13 +135,13 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     auto serieY = visualizer->createSerie(wrapperY, wrapperY->getName());
     auto serieZ = visualizer->createSerie(wrapperZ, wrapperZ->getName());
 
-    NewChartSerie* chartSerieX = dynamic_cast<NewChartSerie*>(serieX.get());
-    NewChartSerie* chartSerieY = dynamic_cast<NewChartSerie*>(serieY.get());
-    NewChartSerie* chartSerieZ = dynamic_cast<NewChartSerie*>(serieZ.get());
+    INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
+    INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY.get());
+    INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ.get());
 
-    chartSerieX->setColor(255, 0, 0);
-    chartSerieY->setColor(0, 255, 0);
-    chartSerieZ->setColor(0, 0, 255);
+    chartSerieX->setColor(QColor(255, 0, 0));
+    chartSerieY->setColor(QColor(0, 255, 0));
+    chartSerieZ->setColor(QColor(0, 0, 255));
 
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
     series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieY));
@@ -160,7 +160,7 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
             EventSerieBasePtr eventSerie = core::dynamic_pointer_cast<EventSerieBase>(serieX);
             eventSerie->setEvents(wrappers[i].second);
         }
-        NewChartSerie* chartSerieX = dynamic_cast<NewChartSerie*>(serieX.get());
+        INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX.get());
         
         chartSerieX->setColor(colorStrategy->getColor(chartSerieX, wrapper));
         series.push_back(core::dynamic_pointer_cast<core::IVisualizer::TimeSerieBase>(serieX));
@@ -170,10 +170,10 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
 
 VisualizerPtr NewMultiserieHelper::createVisualizer()
 {
-    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(NewChartVisualizer::getClassID());
+    VisualizerPtr visualizer = VisualizerManager::getInstance()->createVisualizer(typeid(ScalarChannelReaderInterface));
     QWidget * visWidget = visualizer->getOrCreateWidget();
     visWidget->layout()->setContentsMargins(2, 0, 2, 2);
-    NewChartVisualizer* chart = dynamic_cast<NewChartVisualizer*>(visualizer->getImplementation());
+    INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->getImplementation());
     if (!chart) {
         UTILS_ASSERT(false);
         LOG_ERROR("Wrong visualizer type!");

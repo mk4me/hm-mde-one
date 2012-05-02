@@ -29,6 +29,10 @@
 #include <utils/Debug.h>
 #include <utils/Enum.h>
 
+#include <QtCore/QtCore>
+#include <QtGui/QtGui>
+//#include <QtOpenGL/QtOpenGL>
+
 UTILS_PUSH_WARNINGS
 #include <osg/Node>
 #include <osg/Config>
@@ -57,9 +61,7 @@ UTILS_PUSH_WARNINGS
 #include <osgGA/StateSetManipulator>
 UTILS_POP_WARNINGS
 
-#include <QtCore/QtCore>
-#include <QtGui/QtGui>
-#include <QtOpenGL/QtOpenGL>
+
 
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>

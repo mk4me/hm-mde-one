@@ -20,18 +20,21 @@
 #include <core/IObjectSource.h>
 #include <plugins/c3d/C3DChannels.h>
 
-#include <qwt/qwt_plot.h>
-#include <qwt/qwt_text.h>
-#include <qwt/qwt_plot_curve.h>
-#include <qwt/qwt_plot_marker.h>
-#include <qwt/qwt_series_data.h>
-#include <qwt/qwt_plot_grid.h>
-#include <qwt/qwt_plot_zoomer.h>
-#include <qwt/qwt_picker_machine.h>
-#include <qwt/qwt_legend.h>
-#include <qwt/qwt_plot_panner.h>
-#include <qwt/qwt_plot_magnifier.h>
-#include <qwt/qwt_scale_draw.h>
+//#include <qwt/qwt_plot.h>
+//#include <qwt/qwt_text.h>
+//#include <qwt/qwt_plot_curve.h>
+//#include <qwt/qwt_plot_marker.h>
+//#include <qwt/qwt_series_data.h>
+//#include <qwt/qwt_plot_grid.h>
+//#include <qwt/qwt_plot_zoomer.h>
+//#include <qwt/qwt_picker_machine.h>
+//#include <qwt/qwt_legend.h>
+//#include <qwt/qwt_plot_panner.h>
+//#include <qwt/qwt_plot_magnifier.h>
+//#include <qwt/qwt_scale_draw.h>
+
+#include <plugins/newChart/INewChartVisualizer.h>
+#include <plugins/newChart/INewChartSerie.h>
 
 #include "NewChartSerie.h"
 #include "NewChartState.h"
@@ -42,7 +45,7 @@ class StatsTable;
 class NewChartLegend;
 class PercentScaleDraw;
 
-class NewChartVisualizer : public QObject, public core::IVisualizer, public core::enable_shared_from_this<NewChartVisualizer>
+class NewChartVisualizer : public QObject, public INewChartVisualizer//, public core::enable_shared_from_this<NewChartVisualizer>
 {
     friend class NewChartSerie;
     Q_OBJECT;
@@ -72,13 +75,14 @@ public:
 
       void setScale();
       virtual void reset();
-      void setTitle( const QString& title ) { qwtPlot->setTitle(title); }
+      virtual void setTitle( const QString& title ) { qwtPlot->setTitle(title); }
+      virtual QString getTitle() const { return qwtPlot->title().text(); }
       void setManipulation(bool val);
       bool isShowLegend() const { return showLegend; }
       void setShowLegend(bool val);
       bool eventFilter( QObject *object, QEvent *event );
       boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> getSeries() const;
-      bool isEventMode() const { return context != C3DEventsCollection::Context::General; }
+      bool isEventMode() const { return context != C3DEventsCollection::IEvent::General; }
 
       virtual QPixmap print() const 
       {

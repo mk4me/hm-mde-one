@@ -10,18 +10,22 @@
 #ifndef HEADER_GUARD_CORE__MAINWINDOW_H__
 #define HEADER_GUARD_CORE__MAINWINDOW_H__
 
-#include <utils/Debug.h>
-#include <osgViewer/CompositeViewer>
+#include <QtCore/QObject> 
+#include <QtCore/QTimer>
 #include <QtCore/QVector>
+#include <qtCore/QSettings>
+#include <QtGui/QSplashScreen>
+
+#include <osgViewer/CompositeViewer>
+
+#include <utils/Debug.h>
 
 #include <core/PluginLoader.h>
 #include <core/Window.h>
 #include <core/DataManager.h>
-
 #include <core/Filesystem.h>
 #include <core/IManagersAccessor.h>
-#include <QtCore/QObject>
-#include <QtGui/QSplashScreen>
+
 #include "ActionsGroupManager.h"
 
 class UserInterfaceService;

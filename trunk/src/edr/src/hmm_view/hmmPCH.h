@@ -23,7 +23,8 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
-#include <QtCore/qglobal.h>
+#include <QtCore/QDir>
+#include <QtCore/QDateTime>
 #include <QtCore/QVariant>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QThread>

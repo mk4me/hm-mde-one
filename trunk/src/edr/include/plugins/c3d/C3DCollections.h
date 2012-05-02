@@ -24,7 +24,8 @@ public:
     typedef std::vector<EventPtr> Collection;
     typedef Collection::iterator iterator;
     typedef Collection::const_iterator const_iterator;
-    typedef c3dlib::C3DParser::IEvent::Context Context;
+    typedef c3dlib::C3DParser::IEvent IEvent;
+    typedef IEvent::Context Context;
 
 private:
     //! kolekcja przechowuje zdarzenia wczytane z pliku c3d
@@ -185,12 +186,12 @@ static std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events
         if (event->getContext() == context) {
             if (event->getLabel() == "Foot Strike") {
                 if (currentSegment) {
-                    currentSegment->second = event->getTime();
+                    currentSegment->second = static_cast<float>(event->getTime());
                     ret.push_back(currentSegment);
                 }
 
                 currentSegment.reset(new std::pair<float, float>());
-                currentSegment->first = event->getTime();
+                currentSegment->first = static_cast<float>(event->getTime());
             } else if (currentSegment && event->getLabel() == "Foot Off") {
                 //currentSegment->event2 = event;
             }

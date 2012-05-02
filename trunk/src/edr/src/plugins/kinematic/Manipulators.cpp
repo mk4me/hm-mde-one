@@ -82,7 +82,7 @@ osg::Node* Manipulators::addDraggerToScene(osg::PositionAttitudeTransform* scene
 
 osgManipulator::Dragger* Manipulators::createDragger( Manipulators::DraggerType type )
 {
-    osgManipulator::Dragger* dragger = 0;
+    osgManipulator::Dragger* dragger = nullptr;
     switch (type) {
         case TabPlane:          
             dragger = new osgManipulator::TabPlaneDragger(); 
@@ -127,56 +127,8 @@ osgManipulator::Dragger* Manipulators::createDragger( Manipulators::DraggerType 
         default:
             UTILS_ASSERT(false);
     }
-    //if ("TabPlaneDragger" == name)
-    //{
-    //    osgManipulator::TabPlaneDragger* d = new osgManipulator::TabPlaneDragger();
-    //    d->setupDefaultGeometry();
-    //    dragger = d;
-    //}
-    //else if ("TabPlaneTrackballDragger" == name)
-    //{
-    //    osgManipulator::TabPlaneTrackballDragger* d = new osgManipulator::TabPlaneTrackballDragger();
-    //    d->setupDefaultGeometry();
-    //    dragger = d;
-    //}
-    //else if ("TabBoxTrackballDragger" == name)
-    //{
-    //    osgManipulator::TabBoxTrackballDragger* d = new osgManipulator::TabBoxTrackballDragger();
-    //    d->setupDefaultGeometry();
-    //    dragger = d;
-    //}
-    //else if ("TrackballDragger" == name)
-    //{
-    //    osgManipulator::TrackballDragger* d = new osgManipulator::TrackballDragger();
-    //    d->setupDefaultGeometry();
-    //    dragger = d;
-    //}
-    //else if ("Translate1DDragger" == name)
-    //{
-    //    osgManipulator::Translate1DDragger* d = new osgManipulator::Translate1DDragger();
-    //    d->setupDefaultGeometry();
-    //    dragger = d;
-    //}
-    //else if ("Translate2DDragger" == name)
-    //{
-    //    osgManipulator::Translate2DDragger* d = new osgManipulator::Translate2DDragger();
-    //    d->setupDefaultGeometry();
-    //    dragger = d;
-    //}
-    //else if ("TranslateAxisDragger" == name)
-    //{
-    //    osgManipulator::TranslateAxisDragger* d = new osgManipulator::TranslateAxisDragger();
-    //    d->setupDefaultGeometry();
-    //    dragger = d;
-    //}
-    //else
-    //{
-    //    osgManipulator::TabBoxDragger* d = new osgManipulator::TabBoxDragger();
-    //    d->setupDefaultGeometry();
-    //    dragger = d;
-    //}
-    //
-    //return dragger;
+    
+    return dragger;
 }
 
 void Manipulators::connect( osg::PositionAttitudeTransform* parent, osg::MatrixTransform* child, DraggerContainer* draggerContainer, const osg::Vec3& pivot )

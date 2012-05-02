@@ -14,7 +14,7 @@
 #include <QtGui/QTreeWidgetItem>
 //#include <plugins/chart/ChartVisualizer.h>
 #include <plugins/subject/Motion.h>
-#include <plugins/newChart/NewChartSerie.h>
+#include <plugins/newChart/INewChartSerie.h>
 #include "Visualizer.h"
 
 //! podstawowa klasa ulatwiajaca tworzenie wizualizatora na podstawie elementu drzewa
@@ -160,7 +160,7 @@ class IMultiserieColorStrategy
 {
 public:
     virtual ~IMultiserieColorStrategy() {}
-    virtual QColor getColor(NewChartSerie*, core::ObjectWrapperConstPtr) const = 0;
+    virtual QColor getColor(INewChartSerie*, core::ObjectWrapperConstPtr) const = 0;
 };
 typedef core::shared_ptr<IMultiserieColorStrategy> IMultiserieColorStrategyPtr;
 typedef core::shared_ptr<const IMultiserieColorStrategy> IMultiserieColorStrategyConstPtr;
@@ -168,7 +168,7 @@ typedef core::shared_ptr<const IMultiserieColorStrategy> IMultiserieColorStrateg
 class RandomMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
-    QColor getColor(NewChartSerie* s, core::ObjectWrapperConstPtr w) const
+    QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const
     {
         return QColor(rand() % 256, rand() % 256, rand() % 256);
     }
@@ -177,7 +177,7 @@ public:
 class CopyColorMultiserieColorStrategy : public IMultiserieColorStrategy
 {
 public:
-    QColor getColor(NewChartSerie* s, core::ObjectWrapperConstPtr w) const
+    QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const
     {
         return s->getColor();
     }
@@ -188,7 +188,7 @@ class RandomBetweenMultiserieColorStrategy : public IMultiserieColorStrategy
 public:
     RandomBetweenMultiserieColorStrategy(QColor c1, QColor c2) : c1(c1), c2(c2) {}
 
-    QColor getColor(NewChartSerie* s, core::ObjectWrapperConstPtr w) const
+    QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const
     {
         float r = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
         return QColor(
@@ -201,7 +201,7 @@ public:
 private:
     int lerp(int from, int to, float r) const
     {
-        return from * (1.0f - r) + to * r;
+        return static_cast<int>(from * (1.0f - r) + to * r);
     }
     QColor c1, c2;
 };
@@ -210,7 +210,7 @@ class ColorMapMultiserieStrategy : public IMultiserieColorStrategy
 {
 public:
     ColorMapMultiserieStrategy(const std::map<core::ObjectWrapperConstPtr, QColor>& colorMap) : colorMap(colorMap) {}
-    virtual QColor getColor(NewChartSerie* s, core::ObjectWrapperConstPtr w) const 
+    virtual QColor getColor(INewChartSerie* s, core::ObjectWrapperConstPtr w) const 
     {
         auto it = colorMap.find(w);
         if (it != colorMap.end()) {

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTVERTICALS_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTVERTICALS_H__
 
-#include <qwt/qwt_plot_curve.h>
+//#include <qwt/qwt_plot_curve.h>
 #include "NewChartState.h"
 #include "NewChartMarker.h"
 #include "NewChartLabelState.h"

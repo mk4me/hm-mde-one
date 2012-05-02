@@ -1,6 +1,7 @@
 #include "hmmPCH.h"
 #include <boost/tuple/tuple.hpp>
 #include <QtGui/QToolBar>
+#include <QtCore/QBuffer>
 #include <core/PluginCommon.h>
 #include "VisualizerWidget.h"
 #include "HmmContexts.h"

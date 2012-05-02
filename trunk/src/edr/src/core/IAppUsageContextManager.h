@@ -339,7 +339,7 @@ protected:
     int contextPositionInCurrentChain(QWidget * contextWidget)
     {
         int ret = -1;
-        for(auto i = 0; i < currentContextChain.size(); i++){
+        for(unsigned int i = 0; i < currentContextChain.size(); i++){
             if(currentContextChain[i]->getCurrentContextWidget() == contextWidget){
                 ret = i;
                 break;

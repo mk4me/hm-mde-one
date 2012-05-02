@@ -5,9 +5,6 @@
 #include <core/IDataManager.h>
 #include "Measurements.h"
 
-
-
-
 using namespace PluginSubject;
 
 QTreeWidgetItem* TreeBuilder::createTree(const QString& rootItemName, const std::vector<SessionConstPtr>& sessions)

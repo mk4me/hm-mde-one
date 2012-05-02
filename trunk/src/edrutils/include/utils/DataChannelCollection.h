@@ -63,7 +63,7 @@ public:
 
 	const ChannelPtr & getChannel(int index) 
 	{
-		UTILS_ASSERT(index >= 0 && index < channels.size());
+		UTILS_ASSERT(index >= 0 && index < static_cast<int>(channels.size()));
 		return channels[index];
 	}
 

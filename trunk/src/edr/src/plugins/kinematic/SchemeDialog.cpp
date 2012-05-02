@@ -60,7 +60,7 @@ void SchemeDialog::setDrawer(OsgSchemeDrawerPtr drawer, const QString& rootName 
             VisualizationSchemeConstPtr scheme = lines->getVisualiztionScheme();
             const std::vector<VisualizationScheme::Connection>& cons = scheme->getConnections();
             const std::vector<VisualizationScheme::State>& mrks = scheme->getStates();
-            for (int i = 0; i < mrks.size();  i++) {
+            for (unsigned int i = 0; i < mrks.size();  i++) {
                 QTreeWidgetItem* item = new QTreeWidgetItem();
 
                 item->setText(1, mrks[i].name.c_str());
