@@ -101,7 +101,7 @@ namespace core {
 		void updateVisualizers();
         void updateServices();
 
-		//void saveScreen(const QPixmap & pixmap);
+		void saveScreen(const QPixmap & pixmap);
 
 	public:
 		void initializeConsole();

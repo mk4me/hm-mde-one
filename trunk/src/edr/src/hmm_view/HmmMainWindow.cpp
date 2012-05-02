@@ -53,51 +53,87 @@ HmmMainWindow::HmmMainWindow() :
     raportsTabContext.reset(new RaportsTabContext(flexiTabWidget, this));
     tabPlaceholder->layout()->addWidget(flexiTabWidget);
 
+	dataContext.reset(new HMMDataContext());
+	analisisContext.reset(new HMMAnalysisContext());
+	reportsContext.reset(new HMMReportContext());
+
     this->setWindowFlags(Qt::FramelessWindowHint);
     itemClickAction.setMainWindow(this);
     setMouseTracking(true);
     IMemoryDataManager* manager = DataManager::getInstance();
     manager->attach(dataObserver.get());
+	contextEventFilter = new ContextEventFilter(this);
 }
 
-void HmmMainWindow::onFocusChange(QWidget * oldWidget, QWidget * newWidget)
+void HmmMainWindow::activateContext(QWidget * widget)
 {
-    //jesli faktycznie contextWidget to ustawiamy aktywny kontekst
-    if(isContextWidget(newWidget)){
-        setCurrentContext(newWidget);
-    }else{
-    
-        QWidget * widget = getParentContextWidget(newWidget);
-    
-        if(widget != nullptr){
-            setCurrentContext(widget);
-            //if(widget->hasFocus() == false){
-            //    widget->blockSignals(true);
-            //    widget->setFocus();
-            //    widget->blockSignals(false);
-            //}
-        }
-    }
+	if(plainContextWidgets.find(widget) != plainContextWidgets.end()){
+		setCurrentContext(widget);
+	}else{
+		auto it = derrivedContextWidgets.left.find(widget);
+		setCurrentContext(it->second);
+	}
 }
+
+void HmmMainWindow::deactivateContext(QWidget * widget)
+{
+	if(widget == nullptr || widget == getCurrentContextWidget()){
+		auto context = getCurrentContext();
+		if(context != nullptr){
+			setCurrentContext(context);
+		}else{
+			setCurrentContext((QWidget*)nullptr);
+		}
+	}
+}
+
+//void HmmMainWindow::onFocusChange(QWidget * oldWidget, QWidget * newWidget)
+//{
+//    //jesli faktycznie contextWidget to ustawiamy aktywny kontekst
+//    if(isContextWidget(newWidget)){
+//        setCurrentContext(newWidget);
+//    }else{
+//    
+//        QWidget * widget = getParentContextWidget(newWidget);
+//    
+//        if(widget != nullptr){
+//            setCurrentContext(widget);
+//            //if(widget->hasFocus() == false){
+//            //    widget->blockSignals(true);
+//            //    widget->setFocus();
+//            //    widget->blockSignals(false);
+//            //}
+//        }
+//    }
+//}
 
 void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAccessor * managersAccessor )
 {
     core::MainWindow::init(pluginLoader, managersAccessor);
     connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(onFocusChange(QWidget*,QWidget*)));
     
+	addContext(dataContext);
+	addContext(analisisContext);
+	addContext(reportsContext);
+
+	addContext(visualizerUsageContext, analisisContext);
+	
 
     trySetStyleByName("hmm");
 
     this->analisis = new AnalisisWidget(nullptr, this);
     QTreeWidget* treeWidget = this->analisis->getTreeWidget();
-    addContext(treeUsageContext);
+    addContext(treeUsageContext, analisisContext);
     addWidgetToContext(treeUsageContext, treeWidget);
+	plainContextWidgets.insert(treeWidget);
+	contextEventFilter->registerPermamentContextWidget(treeWidget);
 
     
-    addContext(raportsThumbnailsContext);
+    addContext(raportsThumbnailsContext, analisisContext);
     //addWidgetToContext(raportsThumbnailsContext, analisis->getRaportsThumbnailList());
     addWidgetToContext(raportsThumbnailsContext, analisis->scrollArea_3);
-
+	plainContextWidgets.insert(analisis->scrollArea_3);
+	contextEventFilter->registerPermamentContextWidget(analisis->scrollArea_3);
     
 	QTabWidget * dataTabWidget = createNamedObject<QTabWidget>(QString::fromUtf8("dataTabWidget"));
    
@@ -108,8 +144,10 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 
     this->operations = new QWidget();
     this->raports = new TextEdit();
-    addContext(raportsTabContext);
+    addContext(raportsTabContext, reportsContext);
     addWidgetToContext(raportsTabContext, this->raports);
+	contextEventFilter->registerPermamentContextWidget(this->raports);
+	plainContextWidgets.insert(this->raports);
     button2TabWindow[this->dataButton] = this->data;
     button2TabWindow[this->operationsButton] = this->operations;
     button2TabWindow[this->raportsButton] = this->raports;
@@ -236,9 +274,12 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
     }
 
     // akcje - Workflow (VDF) i konsola
+	//tylko w debug
+#ifdef _DEBUG
     EDRWorkflowWidget* widget = new EDRWorkflowWidget();
     actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widget);
     widget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+#endif
     initializeConsole();
     actionsMainWindow->addDockWidget(Qt::BottomDockWidgetArea, widgetConsole);
     widgetConsole->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
@@ -334,6 +375,7 @@ HmmMainWindow::~HmmMainWindow()
     delete data;
     this->operations->setParent(nullptr);
     delete operations;
+	delete contextEventFilter;
 }
 
 bool HmmMainWindow::isDataItem(QTreeWidgetItem * item)
@@ -908,11 +950,32 @@ void HmmMainWindow::onToolButton(bool checked)
             button->blockSignals(false);
         }
     }else{
+
+		//zapamiêtaæ aktualny kontekst
+		contextStates[currentButton] = ContextState(getCurrentContext(), getCurrentContextWidget());
+
         currentButton->blockSignals(true);
         currentButton->setChecked(false);
         currentButton->blockSignals(false);
         button2TabWindow[currentButton]->hide();
+
         button2TabWindow[button]->show();
+
+		//przywracamy poprzedni kontekst
+		auto it = contextStates.find(button);
+		if(it != contextStates.end()){
+			if(it->second.first == nullptr){
+				setCurrentContext((QWidget*)nullptr);
+			}else{
+				try{
+					setCurrentContext(it->second.first, it->second.second);
+				}catch(...){
+					setCurrentContext(it->second.first, nullptr);
+					it->second.second = nullptr;
+				}
+			}
+		}
+
         currentButton = button;
     }
     
@@ -922,10 +985,15 @@ void HmmMainWindow::onToolButton(bool checked)
 
 void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 {
-	LOG_DEBUG("HmmMainWindow::visualizerDestroyed");
+	auto w = qobject_cast<QWidget*>(visualizer);
     visualizerUsageContext->setCurrentContextWidgetDestroyed(true);
-    removeContext(qobject_cast<QWidget*>(visualizer));
+    removeContext(w);
     visualizerUsageContext->setCurrentContextWidgetDestroyed(false);
+	contextEventFilter->unregisterClosableContextWidget(w);
+	auto it = derrivedContextWidgets.right.find(w);
+	contextEventFilter->unregisterClosableContextWidget(it->second);
+	derrivedContextWidgets.right.erase(it);
+	plainContextWidgets.erase(w);
 }
 
  VisualizerWidget* HmmMainWindow::createDockVisualizer(const VisualizerPtr & visualizer)
@@ -942,19 +1010,14 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
     visualizerDockWidget->setVisualizerSwitchVisible(false);
     visualizerDockWidget->setSourceVisible(false);
 
-    EDRTitleBar * titleBar = supplyWithEDRTitleBar(visualizerDockWidget);
+    EDRTitleBar * titleBar = supplyWithEDRTitleBar(visualizerDockWidget, false);
 
-    visualizer->getWidget()->setFocusPolicy(Qt::ClickFocus);
-    //visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
-    visualizerDockWidget->setFocusProxy(visualizer->getWidget());
+	registerVisualizerContext(titleBar, visualizerDockWidget, visualizer);
 
-    connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
-
-    //kontekst wizualizatora!!
-    addContext(visualizerUsageContext);
-    addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
 
 	visualizerDockWidget->setMinimumSize(max(50, visualizerDockWidget->minimumWidth()), max(50, visualizerDockWidget->minimumHeight()));
+
+
 
     return visualizerDockWidget;
 }
@@ -991,11 +1054,6 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 	 } else {
 		 topMainWindow->autoAddDockWidget( visualizerDockWidget );
 	 }
-
-	 //QApplication::processEvents();
-	 ////qApp->postEvent(visualizerDockWidget, new QResizeEvent(visualizerDockWidget->size(), visualizerDockWidget->size()));
-	 //visualizerDockWidget->repaint();
-	 //QApplication::processEvents();
 
 	 std::vector<VisualizerTimeSeriePtr> series;
 	 hmmItem->getSeries(visualizer, path, series);
@@ -1588,6 +1646,34 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
      multi->setColorStrategy(IMultiserieColorStrategyPtr(new ColorMapMultiserieStrategy(colorMap)));
      createNewVisualizer(multi);
      delete multi;
+ }
+
+ void HmmMainWindow::registerVisualizerContext( EDRTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer )
+ {
+	 contextEventFilter->registerClosableContextWidget(titleBar);
+	 titleBar->installEventFilter(contextEventFilter);
+	 contextEventFilter->registerClosableContextWidget(visualizerDockWidget);
+	 visualizerDockWidget->installEventFilter(contextEventFilter);
+
+	 auto visWidget = visualizer->getWidget();
+
+	 contextEventFilter->registerClosableContextWidget(visWidget);
+	 visWidget->installEventFilter(contextEventFilter);
+
+	 plainContextWidgets.insert(visualizerDockWidget);
+	 derrivedContextWidgets.insert(DerrivedContextWidgets::value_type(titleBar,visualizerDockWidget));
+	 derrivedContextWidgets.insert(DerrivedContextWidgets::value_type(visWidget,visualizerDockWidget));
+
+
+	 visWidget->setFocusPolicy(Qt::ClickFocus);
+	 //visualizer->getWidget()->setFocusProxy(visualizerDockWidget);
+	 visualizerDockWidget->setFocusProxy(visWidget);
+
+	 connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
+
+	 //kontekst wizualizatora!!
+	 //addContext(visualizerUsageContext);
+	 addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
  }
 
 

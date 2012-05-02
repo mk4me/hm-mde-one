@@ -11,6 +11,7 @@
 #define HEADER_GUARD___DATASOURCESTATUSMANAGER_H__
 
 #include <map>
+#include <set>
 
 #include <plugins/newCommunication/IDataSourceStatusManager.h>
 #include <core/IDataManager.h>
@@ -54,6 +55,9 @@ public:
     void removeFile(int fileID);
 	//! Usuwa informacje o wszysktich plikach
 	void removeAllFiles();
+
+	//! \param files [out] Pliki obs³ugiwane przez FileStatusManager
+	void managedFiles(std::set<int> & files) const;
 
 	//! \param fileID Identyfikator pliku
 	//! \return Czy plik jest pod kontrol¹ managera
@@ -103,6 +107,7 @@ private:
 
     //! Informacje o statusie plików
     FilesStatus filesStatus;
+	std::set<int> files;
     //! Manager plików do weryfikacji ich statusów
     const core::IFileDataManager * fileDataManager;
 };

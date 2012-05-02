@@ -328,7 +328,7 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Dane</string>
+          <string>Data</string>
          </property>
          <property name="icon">
           <iconset resource="Icons.qrc">
@@ -380,7 +380,7 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Analizy</string>
+          <string>Analisys</string>
          </property>
          <property name="icon">
           <iconset resource="Icons.qrc">
@@ -429,7 +429,7 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Raporty</string>
+          <string>Reports</string>
          </property>
          <property name="icon">
           <iconset resource="Icons.qrc">
@@ -475,7 +475,7 @@ QFrame#toolBar &gt; QToolButton:checked, QFrame#toolBar &gt; QToolButton:hover:c
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Operacje</string>
+          <string>Console</string>
          </property>
          <property name="icon">
           <iconset resource="Icons.qrc">
@@ -927,6 +927,14 @@ QFrame#mainArea QDockWidget &gt; .QWidget, QFrame#mainArea EDRDockWidget &gt; .Q
 	border-top-right-radius: 0px;
 	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
+	padding: 0px;
+	margin: 0px;
+}
+
+QFrame#mainArea VisualizerWidget &gt; .QWidget &gt; * {
+	margin: 0px;
+	padding: 0px;
+	border: none;
 }
 
 QFrame#mainArea VisualizerWidget &gt; .QWidget:focus, QFrame#mainArea VisualizerWidget &gt; .QWidget:focus:hover {
@@ -1012,6 +1020,7 @@ QFrame#mainArea VisualizerWidget &gt; .QWidget:hover {
   <include location="../../core/ui/CoreIcons.qrc"/>
   <include location="Icons.qrc"/>
   <include location="Icons.qrc"/>
+  <include location="C:/Users/mati/.designer/backup/Icons.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -1062,6 +1071,5 @@ QFrame#mainArea VisualizerWidget &gt; .QWidget:hover {
   <slot>populateWindowMenu()</slot>
   <slot>populateVisualizersMenu()</slot>
   <slot>createWorkflow()</slot>
-  <slot>onFocusChange(QWidget*,QWidget*)</slot>
  </slots>
 </ui>

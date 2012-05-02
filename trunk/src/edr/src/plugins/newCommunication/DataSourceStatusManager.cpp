@@ -27,6 +27,7 @@ void FileStatusManager::addFile(int fileID, const core::Filesystem::Path & path,
     }
     FileStatus fStatus = {fileID, path, status};
     filesStatus.insert(FilesStatus::value_type(fileID, fStatus));
+	files.insert(fileID);
 }
 
 void FileStatusManager::removeFile(int fileID)
@@ -37,16 +38,23 @@ void FileStatusManager::removeFile(int fileID)
     }
     
     filesStatus.erase(it);
+	files.erase(fileID);
 }
 
 void FileStatusManager::removeAllFiles()
 {
 	filesStatus.swap(FilesStatus());
+	files.swap(std::set<int>());
 }
 
 bool FileStatusManager::fileExists(int fileID)
 {
-	return filesStatus.find(fileID) != filesStatus.end();
+	return files.find(fileID) != files.end();
+}
+
+void FileStatusManager::managedFiles(std::set<int> & files) const
+{
+	files.insert(this->files.begin(), this->files.end());
 }
 
 void FileStatusManager::setFileStatus(int fileID, const DataStatus & status)

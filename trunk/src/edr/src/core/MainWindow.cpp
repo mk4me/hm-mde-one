@@ -102,17 +102,17 @@ void MainWindow::setStyleByName( const std::string& styleName )
     throw std::runtime_error(std::string("Unable to set style : ") + styleName);
 }
 
-//void MainWindow::saveScreen(const QPixmap & pixmap)
-//{	
-//	static int i = 0;
-//	static auto filePath = core::getUserDataPath() / "screens";
-//
-//	if(core::Filesystem::pathExists(filePath) == false){
-//		core::Filesystem::createDirectory(filePath);
-//	}
-//
-//	pixmap.save(QString((filePath / "screen_%1.png").string().c_str()).arg(i++));
-//}
+void MainWindow::saveScreen(const QPixmap & pixmap)
+{	
+	static int i = 0;
+	static auto filePath = core::getUserDataPath() / "screens";
+
+	if(core::Filesystem::pathExists(filePath) == false){
+		core::Filesystem::createDirectory(filePath);
+	}
+
+	pixmap.save(QString((filePath / "screen_%1.png").string().c_str()).arg(i++));
+}
 
 
 bool MainWindow::trySetStyleByName( const std::string& styleName )

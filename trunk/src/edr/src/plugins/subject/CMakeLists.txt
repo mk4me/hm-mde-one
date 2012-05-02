@@ -25,7 +25,6 @@ set(PUBLIC_H
 )
 source_group("${SOURCEGROUP_PUBLIC_HEADERS}" FILES ${PUBLIC_H})
 set(PRIVATE_H
-	SubjectVisualizer.h
 	SubjectService.h
 	Motion.h
 	Session.h
@@ -41,16 +40,12 @@ set(TARGET_SRC
 	Motion.cpp
 	Session.cpp
 	Subject.cpp
-	SubjectVisualizer.cpp
 	SubjectService.cpp
 	SubjectPlugin.cpp
 )
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 
 # SET(TARGET_MOC_H
-# ChartWidget.h
-# ChartVisualizerTitleBar.h
-# ChartVisualizer.h
 # )
 # QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 # source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})
@@ -60,8 +55,6 @@ source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_SRC})
 #------------------------------------------------------------------------------
 # UI
 # SET(TARGET_UI
-	# ui/ChartWidget.ui
-	# ui/ChartVisualizerTitleBar.ui
 # )
 # QT4_WRAP_UI(TARGET_UI_H ${TARGET_UI})
 # source_group("${SOURCEGROUP_UI}" FILES ${TARGET_UI_H} ${TARGET_UI})

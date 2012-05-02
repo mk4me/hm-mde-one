@@ -251,21 +251,17 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
 
     indicatorNode = createIndicator();
 
+#ifdef _DEBUG
 
-#ifndef _DEBUG
+	//dodajemy tez event handler ze statystykami
+	widget->addEventHandler( new osgViewer::StatsHandler() );
+	widget->setTimerActive(true);
 
-    //dodajemy dodatkowy zwyk³y widget
-    QWidget * retWidget = new QWidget();
-    retWidget->setLayout(new QVBoxLayout());
-    retWidget->layout()->addWidget(widget);
-
-#else
-    //widget proxy przekierowujacy focusa do okienka osg
-    QWidget * retWidget = new core::QOsgEncapsulatorWidget(widget);
-    //dodajemy tez event handler ze statystykami
-    widget->addEventHandler( new osgViewer::StatsHandler() );
-    widget->setTimerActive(true);
 #endif
+
+	widget->setFocusPolicy(Qt::StrongFocus);
+
+	widget->setMinimumSize(50, 50);
 
     auto info = [&](const PickHandler::PickerList& list) {
         auto it = list.begin();
@@ -308,10 +304,6 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     id = manager->createGroup(tr("View"));
     manager->addGroupAction(id, viewMenu);
     manager->addGroupAction(id, actionSwitchAxes);
-    
-    retWidget->setFocusPolicy(Qt::StrongFocus);
-    widget->setFocusPolicy(Qt::StrongFocus);
-    retWidget->layout()->setContentsMargins(2,0,2,2);
 
     currentDragger = nullptr;
     translateDragger = Manipulators::creatreDraggerContainer(Manipulators::TranslateAxis);
@@ -322,8 +314,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
     rotationDragger->getDragger()->addDraggerCallback(new KinematicDraggerCallback(this));
     scaleDragger->getDragger()->addDraggerCallback(new KinematicDraggerCallback(this));
 
-
-    return retWidget;
+    return widget;
 }
 
 const std::string& KinematicVisualizer::getName() const

@@ -16,6 +16,33 @@
 #include "FlexiTabWidget.h"
 #include "IAppUsageContextManager.h"
 
+class HMMEmptyContext : public IAppUsageContext
+{
+public:
+	HMMEmptyContext() {}
+	virtual ~HMMEmptyContext() {}
+public:
+
+	virtual void activateContext(QWidget * contextWidget) {}
+
+	virtual void deactivateContext(QWidget * nextContextWidget, bool refresh) {}
+};
+
+class HMMDataContext : public HMMEmptyContext
+{
+
+};
+
+class HMMAnalysisContext : public HMMEmptyContext
+{
+
+};
+
+class HMMReportContext : public HMMEmptyContext
+{
+
+};
+
 class HMMVisualizerUsageContext : public IAppUsageContext
 {
 public:

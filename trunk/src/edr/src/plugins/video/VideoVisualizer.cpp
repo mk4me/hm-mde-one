@@ -259,31 +259,19 @@ QWidget* VideoVisualizer::createWidget(core::IActionsGroupManager * manager)
 
     refresh(float(viewer->width()), float(viewer->height()));
 
+#ifdef _DEBUG
 
-#ifndef _DEBUG
-
-    //dodajemy dodatkowy zwyk³y widget
-    QWidget * retWidget = new QWidget();
-    retWidget->setLayout(new QVBoxLayout());
-    retWidget->layout()->addWidget(viewer);
-
-#else
-
-    //widget proxy przekierowujacy focusa do okienka osg
-    QWidget * retWidget = new QOsgEncapsulatorWidget(viewer);
     //dodajemy tez event handler ze statystykami
     viewer->addEventHandler( new osgViewer::StatsHandler() );
     viewer->setTimerActive(true);
 
 #endif
 
-    retWidget->layout()->setContentsMargins(2,0,2,2);
-    retWidget->setFocusPolicy(Qt::StrongFocus);
     viewer->setFocusPolicy(Qt::StrongFocus);
 
-	retWidget->setMinimumSize(50, 50);
+	viewer->setMinimumSize(50, 50);
 
-    return retWidget;
+    return viewer;
 }
 
 void VideoVisualizer::setUp( core::IObjectSource* source )

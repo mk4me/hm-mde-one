@@ -303,6 +303,8 @@ private:
                     limitCurrentChainToPosition(-1);
                 }
 
+				std::reverse(newContextChain.begin(), newContextChain.end());
+
                 int lastPos = currentContextChain.size();
 
                 currentContextChain.insert(currentContextChain.end(), newContextChain.begin(), newContextChain.end());

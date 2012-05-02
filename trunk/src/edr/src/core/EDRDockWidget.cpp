@@ -38,9 +38,3 @@ void EDRDockWidget::setWindowTitle(const QString & title)
     QWidget::setWindowTitle(title);
     emit windowTitleChanged(title);
 }
-//
-//void EDRDockWidget::setFeatures(DockWidgetFeatures features)
-//{
-//    QDockWidget::setFeatures(features);
-//    emit featuresChanged(features);
-//}

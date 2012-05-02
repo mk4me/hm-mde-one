@@ -15,7 +15,7 @@
 #include "EDRDFSourceNode.h"
 #include "VisualizerWidget.h"
 #include "EDRTitleBar.h"
-//#include "MainWindow.h"
+#include "MainWindow.h"
 
 #ifdef _DEBUG
 
@@ -88,26 +88,13 @@ WorkflowWidget::WorkflowWidget(WorkflowService* service)
         //dodaj odpowiadaj¹cy element do toolbara
     }
 
-#ifndef _DEBUG
+#ifdef _DEBUG
 
-    //dodajemy dodatkowy zwyk³y widget
-    QWidget * retWidget = new QWidget();
-    retWidget->setLayout(new QVBoxLayout());
-    retWidget->layout()->addWidget(workflowVDFWidget);
-
-#else
-
-    //widget proxy przekierowujacy focusa do okienka osg
-    QWidget * retWidget = new core::QOsgEncapsulatorWidget(workflowVDFWidget);
     //dodajemy tez event handler ze statystykami
     workflowVDFWidget->addEventHandler( new osgViewer::StatsHandler() );
     workflowVDFWidget->setTimerActive(true);
 
 #endif
-
-    retWidget->layout()->setContentsMargins(2,0,2,2);
-    retWidget->setFocusPolicy(Qt::StrongFocus);
-    workflowVDFWidget->setFocusPolicy(Qt::StrongFocus);
 }
 
 WorkflowWidget::~WorkflowWidget()
@@ -522,28 +509,17 @@ EDRWorkflowWidget::EDRWorkflowWidget() : currentAction(nullptr), model(new EDRDa
     titleBar->addObject(actionStop, IEDRTitleBar::Left);
 
 
-#ifndef _DEBUG
+#ifdef _DEBUG
 
-    //dodajemy dodatkowy zwyk³y widget
-    QWidget * retWidget = new QWidget();
-    retWidget->setLayout(new QVBoxLayout());
-    retWidget->layout()->addWidget(workflowVDFWidget);
-
-#else
-
-    //widget proxy przekierowujacy focusa do okienka osg
-    QWidget * retWidget = new core::QOsgEncapsulatorWidget(workflowVDFWidget);
     //dodajemy tez event handler ze statystykami
     workflowVDFWidget->addEventHandler( new osgViewer::StatsHandler() );
     workflowVDFWidget->setTimerActive(true);
 
 #endif
 
-    retWidget->setFocusPolicy(Qt::StrongFocus);
     workflowVDFWidget->setFocusPolicy(Qt::StrongFocus);
-    retWidget->layout()->setContentsMargins(2,0,2,2);
 
-    layout->addWidget(retWidget);
+    layout->addWidget(workflowVDFWidget);
 }
 
 EDRWorkflowWidget::~EDRWorkflowWidget()
@@ -652,7 +628,7 @@ WorkflowItemPtr EDRWorkflowWidget::buildAndInitializeVisualizer(UniqueID id)
     //aktualizuj mapowanie logiki do UI
     logicToUI[visWidget->getCurrentVisualizer().get()] = visWidget;
 
-	//bool ok = connect(visWidget->getCurrentVisualizer().get(), SIGNAL(printTriggered(QPixmap)), core::MainWindow::getInstance(), SLOT(saveScreen(QPixmap)));
+	bool ok = connect(visWidget->getCurrentVisualizer().get(), SIGNAL(printTriggered(QPixmap)), core::MainWindow::getInstance(), SLOT(saveScreen(QPixmap)));
 
     return visWidget->getCurrentVisualizer();
 }

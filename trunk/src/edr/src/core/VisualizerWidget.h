@@ -70,6 +70,7 @@ private:
     QMenu* menuSource;
 
     QWidget * visualizerWidget;
+	QWidget * visualizerWidgetContainer;
 
 
     //TimelineChannels timelineChannels;

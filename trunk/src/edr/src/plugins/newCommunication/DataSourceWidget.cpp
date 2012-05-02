@@ -981,6 +981,9 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	QMenu menu;
 
 	//poszczeólne akcje
+	auto loadAll = menu.addAction(tr("Load All"));
+	auto unloadAll = menu.addAction(tr("Unload All"));
+	menu.addSeparator();
 	auto load = menu.addAction(tr("Load"));
 	auto unload = menu.addAction(tr("Unload"));
 	menu.addSeparator();
@@ -991,6 +994,8 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	auto synch = menu.addAction(tr("Synchronize"));
 
 	//chwilowo dezaktywuje - nie wiem co bêdzie
+	loadAll->setEnabled(false);
+	unloadAll->setEnabled(false);
 	load->setEnabled(false);
 	unload->setEnabled(false);
 	download->setEnabled(false);
@@ -1013,9 +1018,9 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	std::set<int> filesIDs;
 
 	auto selectedItems = perspective->selectedItems();
-
+	const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();				
 	if(selectedItems.empty() == false){		
-		UTILS_ASSERT(selectedItems.size() == 1, "Zly model selekcji");
+		//UTILS_ASSERT(selectedItems.size() == 1, "Zly model selekcji");
 
 		//sprawdzam czy to cos co mogê za³adowaæ?
 
@@ -1024,7 +1029,7 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 			currentPerspectiveItem = selectedItems[0];
 			//pobieram pliki dla wybranego elementu
 			getItemsFiles(currentPerspectiveItem, filesIDs, filteredShallowCopy);
-			UTILS_ASSERT(filesIDs.empty() == false, "Brak danych w drzewie");
+			//UTILS_ASSERT(filesIDs.empty() == false, "Brak danych w drzewie");
 		
 			if(filesIDs.empty() == false){
 				//mam dane - mogê pracowaæ
@@ -1033,7 +1038,7 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 				//na bazie tych info odpowiednio ³¹cze akcje ze slotami i aktywuje je + zapamiêtuje te info do wykonania ich!!
 
 				//pomijamy wszystkie niekompatybilne z DM pliki
-				const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();				
+				
 				std::set<int> dmOKFiles;
 
 				//filtruje pliki obs³ugiwane przez DM
@@ -1066,6 +1071,26 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 		}
 	}
 
+	std::set<int> allFiles;
+
+	filteredFiles(allFiles);
+
+	std::set<int> dmOkFiles;
+	FilesHelper::filterFiles(allFiles, extensions, dmOkFiles, *(dataSource->fileStatusManager));
+	FilesHelper::filterFiles(dmOkFiles, DataStatus(Local, Unloaded), allFilesToLoad, *(dataSource->fileStatusManager));
+
+	FilesHelper::filterFiles(allFiles, communication::Loaded, allFilesToUnload, *(dataSource->fileStatusManager));
+	
+	if(allFilesToLoad.empty() == false){
+		loadAll->setEnabled(true);
+		connect(loadAll, SIGNAL(triggered()), this, SLOT(onLoadAll()));
+	}
+
+	if(allFilesToUnload.empty() == false){
+		unloadAll->setEnabled(true);
+		connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnloadAll()));
+	}
+
 	setCursor(Qt::ArrowCursor);
 	menu.exec(perspective->mapToGlobal(pos));
 
@@ -1073,6 +1098,8 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 
 	filesToLoad.swap(std::set<int>());
 	filesToUnload.swap(std::set<int>());
+	allFilesToLoad.swap(std::set<int>());
+	allFilesToUnload.swap(std::set<int>());
 	//tutaj nie czyszczê plików œci¹ganych bo one s¹ kopiowane w innym w¹tku - tam to robie (LocalDataLoader)
 }
 
@@ -1302,6 +1329,16 @@ bool DataSourceWidget::refreshShallowCopy()
 	return ret;
 }
 
+void DataSourceWidget::filteredFiles(std::set<int> & files) const
+{
+	if(filteredShallowCopy.motionShallowCopy != nullptr){
+		auto filesITEnd = filteredShallowCopy.motionShallowCopy->files.end(); 
+		for(auto it = filteredShallowCopy.motionShallowCopy->files.begin(); it != filesITEnd; ++it){
+			files.insert(it->first);
+		}
+	}
+}
+
 
 void DataSourceWidget::onDownload()
 {
@@ -1368,73 +1405,12 @@ void DataSourceWidget::onDownload()
 
 void DataSourceWidget::onLoad()
 {
-	setCursor(Qt::WaitCursor);
-	QApplication::processEvents();
-	//! £aduje pliki do DM
-	std::set<int> loadedFiles;
-	std::map<int, std::vector<core::ObjectWrapperPtr>> loadedFilesObjects;
-	std::map<int, std::string> loadingErrors;
-	std::vector<int> unknownErrors;
+	loadFiles(filesToLoad);
+}
 
-	for(auto it = filesToLoad.begin(); it != filesToLoad.end(); ++it){
-		try{
-			std::vector<core::ObjectWrapperPtr> objects;
-			const auto & p = dataSource->fileStatusManager->filePath(*it);
-			dataSource->fileDM->addFile(p, objects);
-			loadedFiles.insert(*it);
-			loadedFilesObjects[*it] = objects;
-		}catch(std::exception & e){
-			loadingErrors[*it] = std::string(e.what());
-		}catch(...){
-			unknownErrors.push_back(*it);
-		}
-	}
-
-	filesLoadedToDM.insert(loadedFiles.begin(), loadedFiles.end());
-
-	refreshStatus(loadedFiles);
-
-	//w loadedFilesObjects mamy info o plikach i zwi¹zanych z nimi obiektach domenowych
-	//próbujemy teraz przez plugin subject realizowaæ hierarchiê danych
-	
-	loadSubjectHierarchy(loadedFilesObjects);
-
-
-	if(loadingErrors.empty() == true && unknownErrors.empty() == true){
-		QMessageBox messageBox;
-		messageBox.setWindowTitle(tr("Loading info"));
-		messageBox.setText(tr("Data loaded successfully to application."));
-		messageBox.setIcon(QMessageBox::Icon::Information);
-		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
-		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
-
-		messageBox.exec();
-	}else{
-		QString message(tr("Errors while data loading:"));
-		
-		int i = 1;
-
-		for(auto it = loadingErrors.begin(); it != loadingErrors.end(); ++it){
-			message += tr("\n%1. File ID: %2. Error description: %3").arg(i).arg(it->first).arg(QString::fromUtf8(it->second.c_str()));
-			++i;
-		}
-
-		for(auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
-			message += tr("\n%1. File ID: %2. Unknown error.").arg(i).arg(*it);
-			++i;
-		}
-
-		QMessageBox messageBox;
-		messageBox.setWindowTitle(tr("Loading warning"));
-		messageBox.setText(message);
-		messageBox.setIcon(QMessageBox::Icon::Warning);
-		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
-		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
-
-		messageBox.exec();
-	}
-
-	setCursor(Qt::ArrowCursor);
+void DataSourceWidget::onLoadAll()
+{
+	loadFiles(allFilesToLoad);
 }
 
 void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core::ObjectWrapperPtr>> & loadedFilesObjects)
@@ -1603,75 +1579,14 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 	}
 }
 
+void DataSourceWidget::onUnloadAll()
+{
+	unloadFiles(allFilesToUnload);
+}
+
 void DataSourceWidget::onUnload()
 {
-	setCursor(Qt::WaitCursor);
-	QApplication::processEvents();
-	//! £aduje pliki do DM
-	std::set<int> unloadedFiles;
-	std::map<int, std::string> unloadingErrors;
-	std::vector<int> unknownErrors;
-
-	for(auto it = filesToUnload.begin(); it != filesToUnload.end(); ++it){
-		try{
-			std::vector<core::ObjectWrapperPtr> objects;
-			const auto & p = dataSource->fileStatusManager->filePath(*it);
-			dataSource->fileDM->removeFile(p);
-			unloadedFiles.insert(*it);
-		}catch(std::exception & e){
-			unloadingErrors[*it] = std::string(e.what());
-		}catch(...){
-			unknownErrors.push_back(*it);
-		}
-	}
-
-	std::vector<int> diff(filesLoadedToDM.size() - unloadedFiles.size());
-	std::set_difference(filesLoadedToDM.begin(), filesLoadedToDM.end(), unloadedFiles.begin(), unloadedFiles.end(), diff.begin());
-
-	filesLoadedToDM.swap(std::set<int>(diff.begin(), diff.end()));
-
-	refreshStatus(unloadedFiles);
-
-	//próbujemy teraz przez plugin subject realizowaæ hierarchiê danych
-
-	unloadSubjectHierarchy(unloadedFiles);
-
-
-	if(unloadingErrors.empty() == true && unknownErrors.empty() == true){
-		QMessageBox messageBox;
-		messageBox.setWindowTitle(tr("Unloading info"));
-		messageBox.setText(tr("Data unloaded successfully."));
-		messageBox.setIcon(QMessageBox::Icon::Information);
-		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
-		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
-
-		messageBox.exec();
-	}else{
-		QString message(tr("Errors while data unloading:"));
-
-		int i = 1;
-
-		for(auto it = unloadingErrors.begin(); it != unloadingErrors.end(); ++it){
-			message += tr("\n%1. File ID: %2. Error description: %3").arg(i).arg(it->first).arg(QString::fromUtf8(it->second.c_str()));
-			++i;
-		}
-
-		for(auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
-			message += tr("\n%1. File ID: %2. Unknown error.").arg(i).arg(*it);
-			++i;
-		}
-
-		QMessageBox messageBox;
-		messageBox.setWindowTitle(tr("Unloading warning"));
-		messageBox.setText(message);
-		messageBox.setIcon(QMessageBox::Icon::Warning);
-		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
-		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
-
-		messageBox.exec();
-	}
-
-	setCursor(Qt::ArrowCursor);
+	unloadFiles(filesToUnload);
 }
 
 void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFilesIDs)
@@ -1911,4 +1826,146 @@ void DataSourceWidget::resetDownloadProgressStatus()
 	downloadStatusWidget->fileProgressBar->setValue(0);
 	downloadStatusWidget->downloadTextStatus->setText(QString());
 	downloadStatusWidget->downloadTextStatus->setStyleSheet(QString());
+}
+
+void DataSourceWidget::loadFiles(const std::set<int> & files)
+{
+	setCursor(Qt::WaitCursor);
+	QApplication::processEvents();
+	//! £aduje pliki do DM
+	std::set<int> loadedFiles;
+	std::map<int, std::vector<core::ObjectWrapperPtr>> loadedFilesObjects;
+	std::map<int, std::string> loadingErrors;
+	std::vector<int> unknownErrors;
+
+	for(auto it = files.begin(); it != files.end(); ++it){
+		try{
+			std::vector<core::ObjectWrapperPtr> objects;
+			const auto & p = dataSource->fileStatusManager->filePath(*it);
+			dataSource->fileDM->addFile(p, objects);
+			loadedFiles.insert(*it);
+			loadedFilesObjects[*it] = objects;
+		}catch(std::exception & e){
+			loadingErrors[*it] = std::string(e.what());
+		}catch(...){
+			unknownErrors.push_back(*it);
+		}
+	}
+
+	filesLoadedToDM.insert(loadedFiles.begin(), loadedFiles.end());
+
+	refreshStatus(loadedFiles);
+
+	//w loadedFilesObjects mamy info o plikach i zwi¹zanych z nimi obiektach domenowych
+	//próbujemy teraz przez plugin subject realizowaæ hierarchiê danych
+
+	loadSubjectHierarchy(loadedFilesObjects);
+
+
+	if(loadingErrors.empty() == true && unknownErrors.empty() == true){
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Loading info"));
+		messageBox.setText(tr("Data loaded successfully to application."));
+		messageBox.setIcon(QMessageBox::Icon::Information);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+
+		messageBox.exec();
+	}else{
+		QString message(tr("Errors while data loading:"));
+
+		int i = 1;
+
+		for(auto it = loadingErrors.begin(); it != loadingErrors.end(); ++it){
+			message += tr("\n%1. File ID: %2. Error description: %3").arg(i).arg(it->first).arg(QString::fromUtf8(it->second.c_str()));
+			++i;
+		}
+
+		for(auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
+			message += tr("\n%1. File ID: %2. Unknown error.").arg(i).arg(*it);
+			++i;
+		}
+
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Loading warning"));
+		messageBox.setText(message);
+		messageBox.setIcon(QMessageBox::Icon::Warning);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+
+		messageBox.exec();
+	}
+
+	setCursor(Qt::ArrowCursor);
+}
+
+void DataSourceWidget::unloadFiles(const std::set<int> & files)
+{
+	setCursor(Qt::WaitCursor);
+	QApplication::processEvents();
+	//! £aduje pliki do DM
+	std::set<int> unloadedFiles;
+	std::map<int, std::string> unloadingErrors;
+	std::vector<int> unknownErrors;
+
+	for(auto it = files.begin(); it != files.end(); ++it){
+		try{
+			std::vector<core::ObjectWrapperPtr> objects;
+			const auto & p = dataSource->fileStatusManager->filePath(*it);
+			dataSource->fileDM->removeFile(p);
+			unloadedFiles.insert(*it);
+		}catch(std::exception & e){
+			unloadingErrors[*it] = std::string(e.what());
+		}catch(...){
+			unknownErrors.push_back(*it);
+		}
+	}
+
+	std::vector<int> diff(filesLoadedToDM.size() - unloadedFiles.size());
+	std::set_difference(filesLoadedToDM.begin(), filesLoadedToDM.end(), unloadedFiles.begin(), unloadedFiles.end(), diff.begin());
+
+	filesLoadedToDM.swap(std::set<int>(diff.begin(), diff.end()));
+
+	refreshStatus(unloadedFiles);
+
+	//próbujemy teraz przez plugin subject realizowaæ hierarchiê danych
+
+	unloadSubjectHierarchy(unloadedFiles);
+
+
+	if(unloadingErrors.empty() == true && unknownErrors.empty() == true){
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Unloading info"));
+		messageBox.setText(tr("Data unloaded successfully."));
+		messageBox.setIcon(QMessageBox::Icon::Information);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+
+		messageBox.exec();
+	}else{
+		QString message(tr("Errors while data unloading:"));
+
+		int i = 1;
+
+		for(auto it = unloadingErrors.begin(); it != unloadingErrors.end(); ++it){
+			message += tr("\n%1. File ID: %2. Error description: %3").arg(i).arg(it->first).arg(QString::fromUtf8(it->second.c_str()));
+			++i;
+		}
+
+		for(auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
+			message += tr("\n%1. File ID: %2. Unknown error.").arg(i).arg(*it);
+			++i;
+		}
+
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Unloading warning"));
+		messageBox.setText(message);
+		messageBox.setIcon(QMessageBox::Icon::Warning);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+
+		messageBox.exec();
+	}
+
+	setCursor(Qt::ArrowCursor);
 }

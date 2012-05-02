@@ -1,7 +1,10 @@
 #ifndef HMM_TOOLBOXMAIN_H
 #define HMM_TOOLBOXMAIN_H
 
+#include <boost/bimap.hpp>
+#include <boost/bimap/multiset_of.hpp>
 #include <core/PluginCommon.h>
+#include <core/EDRTitleBar.h>
 #include <core/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/subject/ISubjectService.h>
@@ -49,7 +52,7 @@ private:
 
 class TextEdit;
 
-    
+class ContextEventFilter;
 
 
 class HmmMainWindow : public core::MainWindow, private Ui::HMMMain, protected IAppUsageContextManager
@@ -58,7 +61,9 @@ class HmmMainWindow : public core::MainWindow, private Ui::HMMMain, protected IA
 
 private:
 
-private:
+	friend class ContextEventFilter;
+
+
     //! Obserwuje Memory data manager. Jezeli dane sie zmienia, to odswiezone zostanie drzewo.
     class DataObserver : public utils::Observer<core::IMemoryDataManager>
     {
@@ -112,15 +117,20 @@ public slots:
     void refreshTree();
 
 private slots:
-    void onFocusChange(QWidget * oldWidget, QWidget * newWidget);
+
+	void activateContext(QWidget * widget);
+	void deactivateContext(QWidget * widget);
+
+    //void onFocusChange(QWidget * oldWidget, QWidget * newWidget);
     void visualizerDestroyed(QObject * visualizer);
     void filterClicked(FilterEntryWidget* entry);
     VisualizerWidget* createDockVisualizer(const VisualizerPtr & visualizer);
-	VisualizerWidget* createAndAddDockVisualizer( TreeItemHelper* hmmItem, EDRDockWidgetSet* dockSet);
 
+	void registerVisualizerContext( EDRTitleBar * titleBar, VisualizerWidget* visualizerDockWidget, const VisualizerPtr & visualizer );
+
+	VisualizerWidget* createAndAddDockVisualizer( TreeItemHelper* hmmItem, EDRDockWidgetSet* dockSet);	
 
     //void addSeriesToTimeline(const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer );
-
     void onTreeContextMenu(const QPoint & pos);
 
     void addToRaports(const QPixmap& pixmap);
@@ -195,6 +205,9 @@ private:
 
     friend class ItemDoubleClick;
 
+	typedef boost::bimap<boost::bimaps::set_of<QWidget*>, boost::bimaps::multiset_of<QWidget*>> DerrivedContextWidgets;
+	typedef std::pair<AppUsageContextPtr, QWidget*> ContextState;
+
 private:
     std::vector<PluginSubject::DataFilterPtr> filters;
     std::vector<PluginSubject::SessionConstPtr> currentSessions;
@@ -234,6 +247,7 @@ private:
     FlexiTabWidget::GUIID toolsGroupID;
 
     std::map<QWidget*, QWidget*> button2TabWindow;
+	std::map<QWidget*, ContextState> contextStates;
     QToolButton* currentButton;
     DataObserverPtr dataObserver;
 
@@ -243,6 +257,89 @@ private:
     HMMTreeItemUsageContextPtr treeUsageContext;
     RaportsThumbnailsContextPtr raportsThumbnailsContext;
     RaportsTabContextPtr raportsTabContext;
+	AppUsageContextPtr dataContext;
+	AppUsageContextPtr analisisContext;
+	AppUsageContextPtr reportsContext;
+
+	std::set<QWidget*> plainContextWidgets;
+	DerrivedContextWidgets derrivedContextWidgets;
+	ContextEventFilter * contextEventFilter;
+};
+
+class ContextEventFilter : public QObject
+{
+	Q_OBJECT
+
+public:
+
+	ContextEventFilter(HmmMainWindow * mainWindow) : mainWindow(mainWindow) {}
+	virtual ~ContextEventFilter() {}
+
+	void registerPermamentContextWidget(QWidget * widget)
+	{
+		permamentWidgets.insert(widget);
+		widget->installEventFilter(this);
+	}
+
+	void registerClosableContextWidget(QWidget * widget)
+	{
+		closableWidgets.insert(widget);
+	}
+
+	void unregisterPermamentContextWidget(QWidget * widget)
+	{
+		permamentWidgets.erase(widget);
+	}
+
+	void unregisterClosableContextWidget(QWidget * widget)
+	{
+		closableWidgets.erase(widget);
+	}
+
+protected:
+
+	bool eventFilter(QObject *obj, QEvent *event)
+	{
+		auto w = (QWidget*)obj;
+		auto eType = event->type();
+		switch(event->type())
+		{
+		case QEvent::Close:
+			{
+				auto it = closableWidgets.find(w);
+				if(it != closableWidgets.end()){
+					mainWindow->deactivateContext(w);
+				}
+			}
+			break;
+
+		case QEvent::MouseButtonPress:
+			{
+				auto it = closableWidgets.find(w);
+				if(it != closableWidgets.end()){
+					mainWindow->activateContext(w);
+				}
+			}
+			break;
+
+		case QEvent::FocusIn:
+			{
+				auto it = permamentWidgets.find(w);
+				if(it != permamentWidgets.end()){
+					mainWindow->activateContext(w);
+				}
+			}
+			break;
+		}
+
+			return QObject::eventFilter(obj, event);
+	}
+
+private:
+	HmmMainWindow * mainWindow;
+
+	std::set<QWidget*> permamentWidgets;
+	std::set<QWidget*> closableWidgets;
 };
 
 #endif // TOOLBOXMAIN_H

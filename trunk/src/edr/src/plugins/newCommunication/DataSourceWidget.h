@@ -97,7 +97,14 @@ private slots:
 
     void onDownload();
     void onLoad();
-    void onUnload();
+	void onLoadAll();
+
+	void loadFiles(const std::set<int> & files);
+
+	void onUnload();
+	void onUnloadAll();
+
+	void unloadFiles(const std::set<int> & files);
 
     //! Wywo³ywany po stronie w¹tku UI update
     void onUpdateDownloadRequest();
@@ -109,6 +116,8 @@ private slots:
     void onPerspectiveCurrentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 
 private:
+
+	void filteredFiles(std::set<int> & files) const;
 
 	static bool isItemLoadable(const QTreeWidgetItem * item);
 
@@ -210,8 +219,12 @@ private:
     //! Potem musz¹ zostaæ zresetowane!!
     //! Pliki do za³adowania
     std::set<int> filesToLoad;
+	//! Wszystkie dostepne pliki do zaladowania
+	std::set<int> allFilesToLoad;
     //! Pliki do wy³adowania - EXPEREIMENTAL!!
     std::set<int> filesToUnload;
+	//! Wszystkie dostepne pliki do wyladowania
+	std::set<int> allFilesToUnload;
     //! Pliki do œci¹gniêcia
     std::set<int> filesToDownload;
 

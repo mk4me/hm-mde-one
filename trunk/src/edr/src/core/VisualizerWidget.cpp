@@ -57,24 +57,35 @@ VisualizerWidget::VisualizerWidget( const VisualizerPtr& source, QWidget* parent
 VisualizerWidget::~VisualizerWidget()
 {        
     // usuniêcie widgeta
+	visualizerWidgetContainer = nullptr;
     clearCurrentVisualizer();
 }
 
 void VisualizerWidget::clearCurrentVisualizerWidget()
 {
-    if(visualizerWidget == nullptr){
+    if(visualizerWidget == nullptr || visualizerWidgetContainer == nullptr ){
         return;
     }
 
-    if(widget() == visualizerWidget){
-        setWidget(nullptr);
+    //if(){
+        //setWidget(nullptr);
+		visualizerWidget->setVisible(false);
+		visualizerWidgetContainer->layout()->removeWidget(visualizerWidget);
         visualizerWidget->setParent(nullptr);
         visualizerWidget = nullptr;
-    }
+		setMinimumSize(0,0);
+    //}
 }
 
 void VisualizerWidget::init()
 {
+	//wewnêtrzny widget - realizuje ramkê i padding
+	visualizerWidgetContainer = new QWidget();
+	visualizerWidgetContainer->setObjectName(QString::fromUtf8("visualizerContainer"));
+	visualizerWidgetContainer->setLayout(new QHBoxLayout());
+	visualizerWidgetContainer->layout()->setContentsMargins(2,2,2,2);
+	setWidget(visualizerWidgetContainer);
+
     setFocusPolicy(Qt::StrongFocus);
     lastSerie.first = nullptr;    
 
@@ -322,8 +333,9 @@ void VisualizerWidget::setCurrentVisualizer( const VisualizerPtr& visualizer )
 
             visualizerImplementationCustomElements = visualizer->getGenericActions();
             if(visualizerWidget != nullptr){
-                visualizerWidget->setObjectName(QString::fromUtf8("visualizerWidget"));
-                setWidget(visualizerWidget);
+                //visualizerWidget->setObjectName(QString::fromUtf8("visualizerWidget"));
+                //setWidget(visualizerWidget);
+				visualizerWidgetContainer->layout()->addWidget(visualizerWidget);
 				setMinimumSize(max(visualizerWidget->minimumWidth(), 50), max(visualizerWidget->minimumHeight(), 50));
             }else{
 				setMinimumSize(0, 0);
