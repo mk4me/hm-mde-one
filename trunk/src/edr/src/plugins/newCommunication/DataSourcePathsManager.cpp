@@ -88,11 +88,12 @@ std::string DataSourcePathsManager::generateUserHash(const User & user)
 	bool first = true;
 
 	for(int i = 0; i < hash.size(); ++i){
-		if(std::isalnum(hash[i]) == false){
-			char nChar = hash[i] / 43;
+		unsigned char c = (hash[i] + 5) % 128; 
+		if(std::isalnum(c) == false){
+			char nChar = c / 43;
 
 			if(first == true){
-				nChar = 'a' + hash[i] % 24;
+				nChar = 'a' + c % 24;
 				first = false;
 			}else{
 
@@ -100,24 +101,26 @@ std::string DataSourcePathsManager::generateUserHash(const User & user)
 				case 1:
 
 					//obcinamy do cyfr
-					nChar = '0' + hash[i] % 9;
+					nChar = '0' + c % 9;
 					break;
 
 				case 2:
 
 					//obcinamy do dy¿ych liter
-					nChar = 'A' + hash[i] % 24;
+					nChar = 'A' + c % 24;
 					break;
 
 				case 0:
 
 					//obcinamy do ma³ych liter
-					nChar = 'a' + hash[i] % 24;
+					nChar = 'a' + c % 24;
 					break;
 				}
 			}
 
 			hash[i] = nChar;
+		}else{
+			hash[i] = c;
 		}
 	}
 
@@ -159,6 +162,11 @@ bool DataSourcePathsManager::pathExists(const core::Filesystem::Path & path)
 	return core::Filesystem::pathExists(path);
 }
 
+const core::Filesystem::Path & DataSourcePathsManager::projectsPath() const
+{
+	return localProjectsPath;
+}
+
 const core::Filesystem::Path & DataSourcePathsManager::motionShallowCopyPath() const
 {
 	return localMotionShallowCopyPath;
@@ -190,7 +198,7 @@ void DataSourcePathsManager::rebuildUserPaths()
 
 	localDataPath = localUserDataPath / "data";
 	localSchemasPath = localUserDataPath / "scheme";
-	
+	localProjectsPath = localDataPath / (userHash_ + "projects.xml");
 	localMotionSchemasPath = localSchemasPath / "motion";
 	
 	localMedicalSchemasPath = localSchemasPath / "medical";

@@ -25,6 +25,7 @@
 #include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
 //#include "Measurements.h"
+#include "AboutDialog.h"
 
 
 using namespace core;
@@ -45,6 +46,9 @@ HmmMainWindow::HmmMainWindow() :
     flexiTabWidget(new FlexiTabWidget())
 {
     setupUi(this);
+
+	connect(actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
+
     splashScreen()->setPixmap(QPixmap(":/resources/splashscreen/spplash.png"));
 
     visualizerUsageContext.reset(new HMMVisualizerUsageContext(flexiTabWidget));
@@ -120,7 +124,6 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 	
 
     trySetStyleByName("hmm");
-
     this->analisis = new AnalisisWidget(nullptr, this);
     QTreeWidget* treeWidget = this->analisis->getTreeWidget();
     addContext(treeUsageContext, analisisContext);
@@ -1699,4 +1702,11 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
          hmm->refreshTree();
          motionsCount = count;
      }*/
+ }
+
+ void HmmMainWindow::onAbout()
+ {
+	 AboutDialog about;
+	 about.exec();
+
  }

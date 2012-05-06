@@ -192,6 +192,8 @@ LogInitializer::LogInitializer( const char* configPath )
     ConsoleWidgetAppender::registerClass();
     // za³adowanie parametów logowania
     PropertyConfigurator::configure(configPath);
+
+	osg::setNotifyLevel(osg::DEBUG_FP);
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(Logger::getLogger( "osg" ) ));
     qInstallMsgHandler(QtMessageHandler);
 
@@ -256,12 +258,12 @@ class OsgNotifyHandlerConsoleWidget : public osg::NotifyHandler
 {
 private:
     //! Konsola w³aœciwa.
-    ConsoleWidget* console;
+    EDRConsoleWidget* console;
     //!
     osg::ref_ptr<osg::NotifyHandler> defaultHandler;
     //! Kolejka wiadomoœci dla konsoli. U¿ywana, gdy pojawiaj¹ siê zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
-    std::queue<ConsoleWidgetEntryPtr> queuedEntries;
+    std::queue<EDRConsoleWidgetEntryPtr> queuedEntries;
     typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
     OpenThreads::Mutex queueMutex;
 
@@ -302,7 +304,7 @@ public:
         std::string msg = message;
         boost::trim(msg);
 
-        ConsoleWidgetEntryPtr entry(new ConsoleWidgetEntry());
+        EDRConsoleWidgetEntryPtr entry(new EDRConsoleWidgetEntry());
         //entry.message = QString::fromWCharArray( event->getMessage().c_str() );
         if ( severity >= osg::DEBUG_INFO ) {
             entry->severity = core::LogSeverityDebug;
@@ -343,7 +345,7 @@ LogInitializer::~LogInitializer()
 }
 
 
-void LogInitializer::setConsoleWidget( ConsoleWidget* widget )
+void LogInitializer::setConsoleWidget( EDRConsoleWidget* widget )
 {
     OsgNotifyHandlerConsoleWidget* handler = dynamic_cast<OsgNotifyHandlerConsoleWidget*>(osg::getNotifyHandler());
     UTILS_ASSERT(handler);

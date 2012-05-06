@@ -118,6 +118,8 @@ public slots:
 
 private slots:
 
+	void onAbout();
+
 	void activateContext(QWidget * widget);
 	void deactivateContext(QWidget * widget);
 

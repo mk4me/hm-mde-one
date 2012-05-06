@@ -18,6 +18,7 @@
 #include "FilesHelper.h"
 #include <plugins/subject/ISubjectService.h>
 #include <webserviceslib/DateTimeUtils.h>
+#include <QtGui/QInputDialog>
 
 using namespace communication;
 using namespace webservices;
@@ -586,6 +587,8 @@ void DataSourceWidget::onLogin()
 		//usuwamy wszystkie elementy pluginu subject
 		unloadSubjectHierarchy();
 
+		trySaveProjects();
+
 		dataSource->logout();
 
 		setTabEnabled(0, false);
@@ -596,6 +599,8 @@ void DataSourceWidget::onLogin()
 		onFilterChange(-1);
 		onPerspectiveChange(0);
 		onContentChange(0);
+
+		projects.swap(std::map<std::string, std::set<int>>());
 
 		loginButton->setText(tr("Login"));
 	}else{
@@ -755,6 +760,8 @@ void DataSourceWidget::onLogin()
 					//odœwie¿am przefiltrowan¹ p³ytk¹ kopiê danych co wi¹¿e siê z uniewa¿nieniem dotychczasowych perspektyw
 					onFilterChange(filterManager.currentFilterIndex());
 				}
+
+				tryLoadProjects();
 
 				setTabEnabled(0, true);
 				setTabEnabled(1, true);
@@ -989,6 +996,12 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	menu.addSeparator();
 	auto download = menu.addAction(tr("Download"));
 	menu.addSeparator();
+
+	auto saveProject = menu.addAction(tr("Save project as..."));
+	auto loadProject = menu.addMenu(tr("Load project"));
+	auto deleteProject = menu.addMenu(tr("Delete project"));
+	menu.addSeparator();
+
 	auto refresh = menu.addAction(tr("Refresh status"));
 	menu.addSeparator();
 	auto synch = menu.addAction(tr("Synchronize"));
@@ -999,96 +1012,114 @@ void DataSourceWidget::perspectiveContextMenu(const QPoint & pos)
 	load->setEnabled(false);
 	unload->setEnabled(false);
 	download->setEnabled(false);
+
+	loadProject->setEnabled(false);
+	deleteProject->setEnabled(false);
 	refresh->setEnabled(false);
 	synch->setEnabled(false);
 
-	//skoro coœ œci¹gam muszê poczekaæ!!
-	if(currentDownloadRequest != nullptr){
-		return;
-	}
+	//skoro coœ œci¹gam muszê poczekaæ!! nie przetwarzam reszty tylko pokazuje nizainicjalizowane menu
+	if(currentDownloadRequest == nullptr){
 
-	//aktywujemy podstaweowe operacje
-	connect(refresh, SIGNAL(triggered()), this, SLOT(refreshStatus()));
-	refresh->setEnabled(true);
+		connect(saveProject, SIGNAL(triggered()), this, SLOT(onSaveProject()));
 
-	connect(synch, SIGNAL(triggered()), this, SLOT(updateShallowCopy()));
-	synch->setEnabled(true);
+		//aktywujemy podstaweowe operacje
+		connect(refresh, SIGNAL(triggered()), this, SLOT(refreshStatus()));
+		refresh->setEnabled(true);
 
-	//sprawdzamy co to za item, potrzebujemy wszystkich plików z nim zwi¹zanych
-	std::set<int> filesIDs;
+		connect(synch, SIGNAL(triggered()), this, SLOT(updateShallowCopy()));
+		synch->setEnabled(true);
 
-	auto selectedItems = perspective->selectedItems();
-	const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();				
-	if(selectedItems.empty() == false){		
-		//UTILS_ASSERT(selectedItems.size() == 1, "Zly model selekcji");
+		//sprawdzamy co to za item, potrzebujemy wszystkich plików z nim zwi¹zanych
+		std::set<int> filesIDs;
 
-		//sprawdzam czy to cos co mogê za³adowaæ?
+		auto selectedItems = perspective->selectedItems();
+		const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();				
+		if(selectedItems.empty() == false){		
+			//UTILS_ASSERT(selectedItems.size() == 1, "Zly model selekcji");
 
-		if(isItemLoadable(selectedItems[0]) == true){
+			//sprawdzam czy to cos co mogê za³adowaæ?
+
+			if(isItemLoadable(selectedItems[0]) == true){
 			
-			currentPerspectiveItem = selectedItems[0];
-			//pobieram pliki dla wybranego elementu
-			getItemsFiles(currentPerspectiveItem, filesIDs, filteredShallowCopy);
-			//UTILS_ASSERT(filesIDs.empty() == false, "Brak danych w drzewie");
+				currentPerspectiveItem = selectedItems[0];
+				//pobieram pliki dla wybranego elementu
+				getItemsFiles(currentPerspectiveItem, filesIDs, filteredShallowCopy);
+				//UTILS_ASSERT(filesIDs.empty() == false, "Brak danych w drzewie");
 		
-			if(filesIDs.empty() == false){
-				//mam dane - mogê pracowaæ
-				//wyci¹gam dane lokalne i zdalne
-				//wyci¹gam dane za³¹dowane i nieza³adowane
-				//na bazie tych info odpowiednio ³¹cze akcje ze slotami i aktywuje je + zapamiêtuje te info do wykonania ich!!
+				if(filesIDs.empty() == false){
+					//mam dane - mogê pracowaæ
+					//wyci¹gam dane lokalne i zdalne
+					//wyci¹gam dane za³¹dowane i nieza³adowane
+					//na bazie tych info odpowiednio ³¹cze akcje ze slotami i aktywuje je + zapamiêtuje te info do wykonania ich!!
 
-				//pomijamy wszystkie niekompatybilne z DM pliki
+					//pomijamy wszystkie niekompatybilne z DM pliki
 				
-				std::set<int> dmOKFiles;
+					std::set<int> dmOKFiles;
 
-				//filtruje pliki obs³ugiwane przez DM
-				FilesHelper::filterFiles(filesIDs, extensions, dmOKFiles, *(dataSource->fileStatusManager));
+					//filtruje pliki obs³ugiwane przez DM
+					FilesHelper::filterFiles(filesIDs, extensions, dmOKFiles, *(dataSource->fileStatusManager));
 
-				//pliki do za³adowania
-				FilesHelper::filterFiles(dmOKFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
+					//pliki do za³adowania
+					FilesHelper::filterFiles(dmOKFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
 
-				//pliki do wy³adowania - EXPERIMENTAL
-				FilesHelper::filterFiles(dmOKFiles, communication::Loaded, filesToUnload, *(dataSource->fileStatusManager));
+					//pliki do wy³adowania - EXPERIMENTAL
+					FilesHelper::filterFiles(dmOKFiles, communication::Loaded, filesToUnload, *(dataSource->fileStatusManager));
 
-				//pliki do œci¹gniêcia
-				FilesHelper::filterFiles(filesIDs, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
+					//pliki do œci¹gniêcia
+					FilesHelper::filterFiles(filesIDs, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
 
-				if(filesToLoad.empty() == false){
-					load->setEnabled(true);
-					connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
-				}
+					if(filesToLoad.empty() == false){
+						load->setEnabled(true);
+						connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
+					}
 
-				if(filesToUnload.empty() == false){
-					unload->setEnabled(true);
-					connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
-				}
+					if(filesToUnload.empty() == false){
+						unload->setEnabled(true);
+						connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
+					}
 
-				if(filesToDownload.empty() == false){
-					download->setEnabled(true);
-					connect(download, SIGNAL(triggered()), this, SLOT(onDownload()));
+					if(filesToDownload.empty() == false){
+						download->setEnabled(true);
+						connect(download, SIGNAL(triggered()), this, SLOT(onDownload()));
+					}
 				}
 			}
 		}
-	}
 
-	std::set<int> allFiles;
+		std::set<int> allFiles;
 
-	filteredFiles(allFiles);
+		filteredFiles(allFiles);
 
-	std::set<int> dmOkFiles;
-	FilesHelper::filterFiles(allFiles, extensions, dmOkFiles, *(dataSource->fileStatusManager));
-	FilesHelper::filterFiles(dmOkFiles, DataStatus(Local, Unloaded), allFilesToLoad, *(dataSource->fileStatusManager));
+		std::set<int> dmOkFiles;
+		FilesHelper::filterFiles(allFiles, extensions, dmOkFiles, *(dataSource->fileStatusManager));
+		FilesHelper::filterFiles(dmOkFiles, DataStatus(Local, Unloaded), allFilesToLoad, *(dataSource->fileStatusManager));
 
-	FilesHelper::filterFiles(allFiles, communication::Loaded, allFilesToUnload, *(dataSource->fileStatusManager));
+		FilesHelper::filterFiles(allFiles, communication::Loaded, allFilesToUnload, *(dataSource->fileStatusManager));
 	
-	if(allFilesToLoad.empty() == false){
-		loadAll->setEnabled(true);
-		connect(loadAll, SIGNAL(triggered()), this, SLOT(onLoadAll()));
-	}
+		if(allFilesToLoad.empty() == false){
+			loadAll->setEnabled(true);
+			connect(loadAll, SIGNAL(triggered()), this, SLOT(onLoadAll()));
+		}
 
-	if(allFilesToUnload.empty() == false){
-		unloadAll->setEnabled(true);
-		connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnloadAll()));
+		if(allFilesToUnload.empty() == false){
+			unloadAll->setEnabled(true);
+			connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnloadAll()));
+		}
+
+
+		for(auto it = projects.begin(); it != projects.end(); ++it){
+			auto loadAction = loadProject->addAction(QString::fromUtf8(it->first.c_str()));
+			auto deleteAction = deleteProject->addAction(QString::fromUtf8(it->first.c_str()));
+
+			connect(loadAction, SIGNAL(triggered()), this, SLOT(onLoadProject()));
+			connect(deleteAction, SIGNAL(triggered()), this, SLOT(onDeleteProject()));
+		}
+
+		if(projects.empty() == false){
+			loadProject->setEnabled(true);
+			deleteProject->setEnabled(true);
+		}
 	}
 
 	setCursor(Qt::ArrowCursor);
@@ -1581,7 +1612,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 
 void DataSourceWidget::onUnloadAll()
 {
-	unloadFiles(allFilesToUnload);
+	unloadFiles(filesLoadedToDM);
 }
 
 void DataSourceWidget::onUnload()
@@ -1899,7 +1930,7 @@ void DataSourceWidget::loadFiles(const std::set<int> & files)
 	setCursor(Qt::ArrowCursor);
 }
 
-void DataSourceWidget::unloadFiles(const std::set<int> & files)
+void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage)
 {
 	setCursor(Qt::WaitCursor);
 	QApplication::processEvents();
@@ -1932,40 +1963,258 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files)
 
 	unloadSubjectHierarchy(unloadedFiles);
 
+	if(showMessage == true){
+		if(unloadingErrors.empty() == true && unknownErrors.empty() == true){
+			QMessageBox messageBox;
+			messageBox.setWindowTitle(tr("Unloading info"));
+			messageBox.setText(tr("Data unloaded successfully."));
+			messageBox.setIcon(QMessageBox::Icon::Information);
+			messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+			messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
 
-	if(unloadingErrors.empty() == true && unknownErrors.empty() == true){
-		QMessageBox messageBox;
-		messageBox.setWindowTitle(tr("Unloading info"));
-		messageBox.setText(tr("Data unloaded successfully."));
-		messageBox.setIcon(QMessageBox::Icon::Information);
-		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
-		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+			messageBox.exec();
+		}else{
+			QString message(tr("Errors while data unloading:"));
 
-		messageBox.exec();
-	}else{
-		QString message(tr("Errors while data unloading:"));
+			int i = 1;
 
-		int i = 1;
+			for(auto it = unloadingErrors.begin(); it != unloadingErrors.end(); ++it){
+				message += tr("\n%1. File ID: %2. Error description: %3").arg(i).arg(it->first).arg(QString::fromUtf8(it->second.c_str()));
+				++i;
+			}
 
-		for(auto it = unloadingErrors.begin(); it != unloadingErrors.end(); ++it){
-			message += tr("\n%1. File ID: %2. Error description: %3").arg(i).arg(it->first).arg(QString::fromUtf8(it->second.c_str()));
-			++i;
+			for(auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
+				message += tr("\n%1. File ID: %2. Unknown error.").arg(i).arg(*it);
+				++i;
+			}
+
+			QMessageBox messageBox;
+			messageBox.setWindowTitle(tr("Unloading warning"));
+			messageBox.setText(message);
+			messageBox.setIcon(QMessageBox::Icon::Warning);
+			messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+			messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+
+			messageBox.exec();
 		}
-
-		for(auto it = unknownErrors.begin(); it != unknownErrors.end(); ++it){
-			message += tr("\n%1. File ID: %2. Unknown error.").arg(i).arg(*it);
-			++i;
-		}
-
-		QMessageBox messageBox;
-		messageBox.setWindowTitle(tr("Unloading warning"));
-		messageBox.setText(message);
-		messageBox.setIcon(QMessageBox::Icon::Warning);
-		messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
-		messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
-
-		messageBox.exec();
 	}
 
 	setCursor(Qt::ArrowCursor);
+}
+
+void DataSourceWidget::saveProject(const std::string & projectName, const std::set<int> & projectFiles)
+{
+	projects[projectName] = projectFiles;
+}
+
+void DataSourceWidget::deleteProject(const std::string & projectName)
+{
+	projects.erase(projectName);
+}
+
+void DataSourceWidget::loadProject(const std::string & projectName)
+{
+	//make intersection of user project with data in shallow
+	auto const & projectFiles = projects.find(projectName)->second;
+
+	std::vector<int> accessibleFiles;
+	auto filesITEnd = filteredShallowCopy.motionShallowCopy->files.end();
+	for(auto it = projectFiles.begin(); it != projectFiles.end(); ++it){
+		if(filteredShallowCopy.motionShallowCopy->files.find(*it) != filesITEnd){
+			accessibleFiles.push_back(*it);
+		}
+	}
+
+	if(accessibleFiles.size() < projectFiles.size()){
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Loading project warning"));
+		messageBox.setText(tr("Some project files are no longer accessible. Contact data owner to grant required privilages. Do You want to load the project without those files now?"));
+		messageBox.setIcon(QMessageBox::Icon::Warning);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Yes);
+
+		int ret = messageBox.exec();
+
+		if(ret == QMessageBox::StandardButton::No){
+			return;
+		}
+	}
+
+	std::set<int> toVerify(accessibleFiles.begin(), accessibleFiles.end());
+	std::set<int> dmOKFiles;
+	//filtruje pliki obs³ugiwane przez DM
+	const auto & extensions = dataSource->fileDM->getSupportedFilesExtensions();
+	FilesHelper::filterFiles(toVerify, extensions, dmOKFiles, *(dataSource->fileStatusManager));
+
+	filesToDownload.swap(std::set<int>());
+
+	//pliki do œci¹gniêcia
+	FilesHelper::filterFiles(dmOKFiles, communication::Remote, filesToDownload, *(dataSource->fileStatusManager));
+
+	if(filesToDownload.empty() == false){
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Loading project warning"));
+		messageBox.setText(tr("Some project files must are missing. Data download is required. Do You want to continue?"));
+		messageBox.setIcon(QMessageBox::Icon::Warning);
+		messageBox.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+		messageBox.setDefaultButton(QMessageBox::StandardButton::Yes);
+
+		int ret = messageBox.exec();
+
+		if(ret == QMessageBox::StandardButton::No){
+			return;
+		}
+
+		//TODO
+		//obs³uga œci¹gania - jak siê ca³e skoñczy to ³¹duje projekt z powodzeniem, jak tylko czêsciowo to warning!!
+
+	}
+
+	filesToDownload.swap(std::set<int>());	
+
+	//pliki do za³adowania
+	FilesHelper::filterFiles(dmOKFiles, DataStatus(Local, Unloaded), filesToLoad, *(dataSource->fileStatusManager));
+
+	unloadFiles(filesLoadedToDM, false);
+
+	loadFiles(filesToLoad);
+}
+
+void DataSourceWidget::onSaveProject()
+{
+	//TODO
+	//widget z opcj¹ podania nazwy
+	//nazwa staje siê nazwa projektu jezeli jeszcze takiego nie ma, jak jest to pytam czy nadpisaæ
+	bool again = false;
+	do{
+		QInputDialog input;
+		input.setInputMode(QInputDialog::TextInput);
+		input.setLabelText(tr("Project name:"));
+		input.setOkButtonText(tr("Save"));
+		input.setWindowTitle(tr("Save project as..."));
+		int ret = input.exec();
+		
+		if(!ret){
+			return;
+		}
+
+		if(input.textValue().isEmpty() == true){
+			again = true;
+			QMessageBox messageBox;
+			messageBox.setWindowTitle(tr("Save project warning"));
+			messageBox.setText(tr("Project name can not be empty. Please give a name to the project and continue."));
+			messageBox.setIcon(QMessageBox::Icon::Warning);
+			messageBox.setStandardButtons(QMessageBox::StandardButton::Ok);
+			messageBox.setDefaultButton(QMessageBox::StandardButton::Ok);
+			messageBox.exec();
+		}else{
+			again = false;
+			//realizacja zapisu
+			saveProject(input.textValue().toStdString(), filesLoadedToDM);
+		}
+	}while(again);
+
+}
+
+void DataSourceWidget::onDeleteProject()
+{
+	auto action = qobject_cast<QAction*>(sender());
+
+	deleteProject(action->text().toStdString());
+}
+
+void DataSourceWidget::onLoadProject()
+{
+	auto action = qobject_cast<QAction*>(sender());
+
+	loadProject(action->text().toStdString());
+}
+
+void DataSourceWidget::trySaveProjects()
+{
+	if(projects.empty() == true){
+		return;
+	}
+
+	std::ofstream projectsOut(DataSourcePathsManager::instance()->projectsPath().string());
+
+	if(projectsOut.is_open() == false){
+		//TODO
+		//b³¹d zapisu
+	}
+
+	try{
+
+	for(auto it = projects.begin(); it != projects.end(); ++it){
+		projectsOut << it->first << ":";
+		auto fIT = it->second.begin();
+		projectsOut << *fIT;
+		++fIT;
+		for( ; fIT != it->second.end(); ++ fIT){
+			projectsOut<< "," << *fIT;
+		}
+		projectsOut << ";" << std::endl;
+	}
+
+	projectsOut.close();
+
+	DataSourceLocalStorage::instance()->loadFile(DataSourcePathsManager::instance()->projectsPath());
+
+	}catch(...){
+
+	}
+}
+
+void DataSourceWidget::tryLoadProjects()
+{
+	try{
+		
+		if(DataSourceLocalStorage::instance()->fileIsLocal(DataSourcePathsManager::instance()->projectsPath().filename().string()) == false){
+			return;
+		}
+
+		DataSourceLocalStorage::instance()->extractFile(DataSourcePathsManager::instance()->projectsPath().filename().string(), DataSourcePathsManager::instance()->projectsPath());
+
+		std::ifstream projectsInput(DataSourcePathsManager::instance()->projectsPath().string());
+
+		while(projectsInput.good()){
+
+			std::string line;
+			std::getline(projectsInput, line);
+			
+			if(line.empty() == true || line.size() < 4){
+				continue;
+			}
+
+			//parsujemy
+			std::string::size_type pos = line.find(':', 1);
+
+			if(pos != std::string::npos){
+				using namespace boost;
+				//mamy nazwê
+				std::string projectName(line.substr(0, pos));
+				std::set<int> files;
+				//szukam plików
+				static const char_separator<char> sep(":,;");
+				auto filesString = line.substr(pos+1, line.size()-1);
+				tokenizer< char_separator<char> > tokens(filesString, sep);
+				for(auto it = tokens.begin(); it != tokens.end(); ++it){
+
+					if((*it).empty() == false){
+						try{
+							files.insert(boost::lexical_cast<int>(*it));
+						}catch(...){
+
+						}
+					}
+				}
+
+				if(files.empty() == false){
+					saveProject(projectName, files);
+				}
+			}
+		}
+	}catch(...){
+
+	}
 }

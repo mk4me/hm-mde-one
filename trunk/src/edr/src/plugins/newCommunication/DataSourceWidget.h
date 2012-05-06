@@ -93,18 +93,18 @@ private slots:
 
     void perspectiveContextMenu(const QPoint & pos);
 
+	void onSaveProject();
+	void onDeleteProject();
+	void onLoadProject();
+
     void updateShallowCopy();
 
     void onDownload();
     void onLoad();
 	void onLoadAll();
 
-	void loadFiles(const std::set<int> & files);
-
 	void onUnload();
 	void onUnloadAll();
-
-	void unloadFiles(const std::set<int> & files);
 
     //! Wywo³ywany po stronie w¹tku UI update
     void onUpdateDownloadRequest();
@@ -116,6 +116,13 @@ private slots:
     void onPerspectiveCurrentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 
 private:
+
+	void loadFiles(const std::set<int> & files);
+	void unloadFiles(const std::set<int> & files, bool showMessage = true);
+
+	void saveProject(const std::string & projectName, const std::set<int> & projectFiles);
+	void loadProject(const std::string & projectName);
+	void deleteProject(const std::string & projectName);
 
 	void filteredFiles(std::set<int> & files) const;
 
@@ -164,6 +171,9 @@ private:
 
     //! Resetuje stan widgeta - status pobierania
     void resetDownloadProgressStatus();
+
+	void trySaveProjects();
+	void tryLoadProjects();
 
 private:
     //! Aktualnie ustawiony content perspektyw
@@ -236,6 +246,8 @@ private:
 	std::map<int, core::ObjectWrapperPtr> subjectsMapping;
 	std::map<int, core::ObjectWrapperPtr> sessionsMapping;
 	std::map<int, core::ObjectWrapperPtr> motionsMapping;
+
+	std::map<std::string, std::set<int>> projects;
 };
 
 #endif	//	HEADER_GUARD___DATASOURCEWIDGET_H__

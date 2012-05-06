@@ -66,6 +66,12 @@ void DataSourcePatientPerspective::rebuildPerspective(QTreeWidget * treeWidget, 
 	//for(auto patientIT = shallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
 	auto subjectsITEnd = shallowCopy.motionShallowCopy->performers.end();
 	for(auto subjectIT = shallowCopy.motionShallowCopy->performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
+
+		//jeœli pusty pacjent to go pomijamy
+		if(subjectIT->second->performerConfs.empty() == true){
+			continue;
+		}
+
 		//generuje item pacjenta
 		QTreeWidgetItem * item = nullptr;
 		if(subjectIT->second->patient != nullptr){
@@ -79,6 +85,10 @@ void DataSourcePatientPerspective::rebuildPerspective(QTreeWidget * treeWidget, 
 		auto perfConfsITEnd = subjectIT->second->performerConfs.end();
 		for(auto perfConfIT = subjectIT->second->performerConfs.begin(); perfConfIT != perfConfsITEnd; ++ perfConfIT){
 
+			if(perfConfIT->second->session->trials.empty() == true){
+				continue;
+			}
+
 			//generuje item sesji
 			auto sessionItem = new SessionItem(perfConfIT->second->session);
 
@@ -86,6 +96,10 @@ void DataSourcePatientPerspective::rebuildPerspective(QTreeWidget * treeWidget, 
 
 			auto motionsITEnd = perfConfIT->second->session->trials.end();
 			for(auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){
+
+				if(motionIT->second->files.empty() == true){
+					continue;
+				}
 
 				//generuje item motiona
 				auto motionItem = new MotionItem(motionIT->second);
@@ -114,7 +128,11 @@ const std::string DataSourceDisorderPerspective::name() const
 void DataSourceDisorderPerspective::rebuildPerspective(QTreeWidget * treeWidget, const communication::ShallowCopy & shallowCopy)
 {
 	auto disordersITEnd = shallowCopy.medicalShallowCopy->patientsByDisorder.end();
-	for(auto disorderIT = shallowCopy.medicalShallowCopy->patientsByDisorder.begin(); disorderIT != disordersITEnd; ++disorderIT){
+	for(auto disorderIT = shallowCopy.medicalShallowCopy->patientsByDisorder.begin(); disorderIT != disordersITEnd; ++disorderIT){		
+
+		if(disorderIT->second.empty() == true){
+			continue;
+		}
 
 		auto disorderItem = new DisorderItem(shallowCopy.medicalShallowCopy->disorders.find(disorderIT->first)->second);
 

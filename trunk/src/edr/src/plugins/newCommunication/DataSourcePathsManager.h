@@ -77,6 +77,9 @@ public:
     //! \return Czy œcie¿ka faktycznie istnieje - katalog lub plik s¹ fizycznie dostepne
     static bool pathExists(const core::Filesystem::Path & path);
 
+	//! \return Œcie¿ka do p³ytkiej kopii bazy danych ruchu
+	const core::Filesystem::Path & projectsPath() const;
+
     //! \return Œcie¿ka do p³ytkiej kopii bazy danych ruchu
     const core::Filesystem::Path & motionShallowCopyPath() const;
     //! \return Œcie¿ka do metadanych ruchu
@@ -105,6 +108,8 @@ private:
 	core::Filesystem::Path localUsersDataPath;
 	//! Œcie¿ka do rozpakowanych dancyh u¿ytkownika
 	core::Filesystem::Path localUserDataPath;
+	//! Œcie¿ka do pliku z projektami u¿ytkownika
+	core::Filesystem::Path localProjectsPath;
     //! Œciezka do schematu bazy danych ruchu
     core::Filesystem::Path localMotionSchemasPath;
     //! Œciezka do schematu bazy danych pacjentów
