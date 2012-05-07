@@ -13868,7 +13868,7 @@ Do you want to save your changes?</source>
         <translation type="unfinished">Herauslösen</translation>
     </message>
     <message>
-        <location filename="../../../src/core/VisualizerWidget.cpp" line="113"/>
+        <location filename="../../../src/core/VisualizerWidget.cpp" line="115"/>
         <source>Sources</source>
         <translation type="unfinished"></translation>
     </message>

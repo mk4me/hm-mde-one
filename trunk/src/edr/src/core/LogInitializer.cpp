@@ -193,7 +193,7 @@ LogInitializer::LogInitializer( const char* configPath )
     // za³adowanie parametów logowania
     PropertyConfigurator::configure(configPath);
 
-	osg::setNotifyLevel(osg::DEBUG_FP);
+	osg::setNotifyLevel(osg::NotifySeverity::FATAL);
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(Logger::getLogger( "osg" ) ));
     qInstallMsgHandler(QtMessageHandler);
 

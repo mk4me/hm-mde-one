@@ -38,7 +38,7 @@ extern "C" {
 
 
 #define AVIO_FFMPEG_SEEK_WITH_STREAM_INDEX
-//#define AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
+#define AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
 
 
 #define BREAK_ON_ERROR( x ) { if (!(x)) { VIDLIB_ERROR(*getLastError()); }}
@@ -202,6 +202,8 @@ namespace vidlib {
 
 FFmpegVideoStream::Initializer::Initializer()
 {
+	avcodec_register_all();
+
     // rejestracja formatów
     av_register_all();
     // rejestracja callbacka
@@ -239,7 +241,7 @@ VideoStream* FFmpegVideoStream::clone() const
         UTILS_ASSERT(getTime() == cloned->getTime());
         UTILS_ASSERT(getFrameTimestamp() == cloned->getFrameTimestamp());
     }
-    return cloned.release();
+     return cloned.release();
 }
 
 //------------------------------------------------------------------------------
@@ -282,14 +284,17 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
 
 FFmpegVideoStream::~FFmpegVideoStream()
 {
+	std::cout << "FFmpegVideoStream destructor " << std::endl;
     VIDLIB_FUNCTION_PROLOG;
     av_free_packet(alignedPacket);
     av_free(alignedPacket);
     av_free(packet);
     av_free(frame);
     avcodec_close(codecContext);
-    //av_close_input_file(formatContext);
+	std::cout << "ffmepeg before close file: " << formatContext->filename << std::endl;
 	avformat_close_input(&formatContext);
+
+	std::cout << "ffmepeg after close file" << std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -299,15 +304,15 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     VIDLIB_FUNCTION_PROLOG;
     int error = 0;
     // mo¿na inicjalizowaæ wiele razy, sprawdza wewnetrznie czy ju¿ by³a zainicjalizowana
-    av_register_all();
+    //av_register_all();
     // otwieramy plik
     //if ( (error = av_open_input_file(&formatContext, source.c_str(), NULL, 0, NULL)) != 0 ) {
 	if ( (error = avformat_open_input(&formatContext, source.c_str(), NULL, 0)) != 0 ) {
-        VIDLIB_ERROR(FFmpegError( "av_open_input_file error", error ));
+        VIDLIB_ERROR(FFmpegError( "avformat_open_input error", error ));
     }
     // info o kodekach
-    if ( (error=av_find_stream_info(formatContext)) < 0 ) {
-        VIDLIB_ERROR(FFmpegError( "av_find_stream_info error", error ));
+    if ( (error=avformat_find_stream_info(formatContext, nullptr)) < 0 ) {
+        VIDLIB_ERROR(FFmpegError( "avformat_find_stream_info error", error ));
     }
 
 #ifdef VIDLIB_DEBUG
@@ -344,9 +349,12 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
 
 	codecContext->thread_count = 1;
 
+	AVDictionary* dict = nullptr;
+	av_dict_set(&dict, "b", "2.5M", 0);
+
     // otwieramy kodek
-    if( (error=avcodec_open(codecContext, pCodec)) <0) {
-        VIDLIB_ERROR( FFmpegError( "avcodec_open", error ) );
+    if( (error=avcodec_open2(codecContext, pCodec, &dict)) <0) {
+        VIDLIB_ERROR( FFmpegError( "avcodec_open2", error ) );
     }
 
     // alokacja kaltki
@@ -359,7 +367,7 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     packet = (AVPacket*)av_malloc(sizeof(AVPacket));
     av_init_packet(packet);
     alignedPacket = (AVPacket*)av_malloc(sizeof(AVPacket));
-    utils::zero(*alignedPacket);
+    //utils::zero(*alignedPacket);
     av_init_packet(alignedPacket);
 
     // odstêp miêdzy ramkami
@@ -596,26 +604,26 @@ bool FFmpegVideoStream::readFrame()
 
     for (;;) {
 
-#ifndef VIDLIB_FFMPEG_ENABLE_NEWAPI
-        //!
-        while ( frameBytesRemaining > 0 ) {
-            // odczytujemy ramkê
-            const int bytesDecoded = avcodec_decode_video(codecContext, frame, &gotPicture, frameData, frameBytesRemaining);
-            if ( bytesDecoded < 0 ) {
-                VIDLIB_ERROR( FFmpegError("Error decoding frame") );
-            }
-            frameBytesRemaining -= bytesDecoded;
-            frameData += bytesDecoded;
-
-            if ( gotPicture ) {
-                // liczymy timestamp
-                frameTimestamp = getTimestamp(frame, packet->dts);
-                nextFrameTimestamp = std::min(frameTimestamp+frameSpan, videoStream->duration);
-                onGotFrame(frame, frameTimestamp);
-                return true;
-            }
-        }
-#endif // VIDLIB_FFMPEG_ENABLE_NEWAPI
+//#ifndef VIDLIB_FFMPEG_ENABLE_NEWAPI
+//        //!
+//        while ( frameBytesRemaining > 0 ) {
+//            // odczytujemy ramkê
+//            const int bytesDecoded = avcodec_decode_video(codecContext, frame, &gotPicture, frameData, frameBytesRemaining);
+//            if ( bytesDecoded < 0 ) {
+//                VIDLIB_ERROR( FFmpegError("Error decoding frame") );
+//            }
+//            frameBytesRemaining -= bytesDecoded;
+//            frameData += bytesDecoded;
+//
+//            if ( gotPicture ) {
+//                // liczymy timestamp
+//                frameTimestamp = getTimestamp(frame, packet->dts);
+//                nextFrameTimestamp = std::min(frameTimestamp+frameSpan, videoStream->duration);
+//                onGotFrame(frame, frameTimestamp);
+//                return true;
+//            }
+//        }
+//#endif // VIDLIB_FFMPEG_ENABLE_NEWAPI
 
         // czy to koniec?
         if ( url_feof(formatContext->pb) ) {
@@ -651,7 +659,7 @@ bool FFmpegVideoStream::readFrame()
             // pomocnicza zmienna
             codecContext->reordered_opaque = packet->pts;
 
-#ifdef VIDLIB_FFMPEG_ENABLE_NEWAPI
+//#ifdef VIDLIB_FFMPEG_ENABLE_NEWAPI
             //packet->flags |= PKT_FLAG_KEY;
             {
                 error = avcodec_decode_video2(codecContext, frame, &gotPicture, packet);
@@ -668,12 +676,12 @@ bool FFmpegVideoStream::readFrame()
                 return true;
             }
 
-#else // VIDLIB_FFMPEG_ENABLE_NEWAPI
-
-            frameBytesRemaining = packet->size;
-            frameData = packet->data;
-
-#endif // VIDLIB_FFMPEG_ENABLE_NEWAPI
+//#else // VIDLIB_FFMPEG_ENABLE_NEWAPI
+//
+//            frameBytesRemaining = packet->size;
+//            frameData = packet->data;
+//
+//#endif // VIDLIB_FFMPEG_ENABLE_NEWAPI
         }
     }
 }

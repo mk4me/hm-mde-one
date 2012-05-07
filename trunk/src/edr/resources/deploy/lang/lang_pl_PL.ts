@@ -14003,7 +14003,7 @@ Do you want to save your changes?</source>
         <translation>Dokuj / oddokuj</translation>
     </message>
     <message>
-        <location filename="../../../src/core/VisualizerWidget.cpp" line="113"/>
+        <location filename="../../../src/core/VisualizerWidget.cpp" line="115"/>
         <source>Sources</source>
         <translation>Źródła</translation>
     </message>

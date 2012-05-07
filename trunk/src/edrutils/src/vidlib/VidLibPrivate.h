@@ -34,7 +34,7 @@
 //------------------------------------------------------------------------------
 
 //! Czy mo¿na u¿ywaæ nowego API?
-#define VIDLIB_FFMPEG_ENABLE_NEWAPI
+//#define VIDLIB_FFMPEG_ENABLE_NEWAPI
 //! Do jakiej wartoœci dane maj¹ byæ alignowane?
 #define VIDLIB_FFMPEG_ALIGN_BYTES 4
 
