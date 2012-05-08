@@ -110,7 +110,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
         ScalarChannelReaderInterfacePtr nonConstChannel(core::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
         SegmentPtr segment = collection[i];
         QString name = QString("%1:%2").arg(scalar->getName().c_str()).arg(i);
-        segment->normalizedCurve = new QwtPlotCurve(name);
+        segment->normalizedCurve = PlotCurvePtr(new QwtPlotCurve(name));
         segment->normalizedCurve->setData(new NewChartEventStateData(scalar, segment->begin, segment->end));
         segment->normalizedCurve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
         segment->normalizedCurve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);

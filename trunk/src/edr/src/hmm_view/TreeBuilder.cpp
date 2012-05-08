@@ -212,8 +212,8 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
     motion->getWrappers(videos, typeid(VideoChannel));
     int count = videos.size();			
     for (int i = 0; i < count; i++) {							
-        QTreeWidgetItem* channelItem = new TreeWrappedItemHelper(videos[i]);	
-
+        TreeWrappedItemHelper* channelItem = new TreeWrappedItemHelper(videos[i]);	
+        channelItem->setMotion(motion);
         channelItem->setIcon(0, itemIcon);						
         channelItem->setText(0, videos[i]->getName().c_str());			
         videoItem->addChild(channelItem);
@@ -224,10 +224,10 @@ QTreeWidgetItem* TreeBuilder::createVideoBranch( const MotionConstPtr & motion, 
 
 QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
 {
-    QTreeWidgetItem* skeletonItem = new JointsItemHelper(motion);
+    JointsItemHelper* skeletonItem = new JointsItemHelper(motion);
     skeletonItem->setIcon(0, rootIcon);
     skeletonItem->setText(0, rootName);
-
+    skeletonItem->setMotion(motion);
     try {
         core::ObjectWrapperConstPtr angleCollection = motion->getWrapperOfType(typeid(AngleCollection));
         AngleCollectionConstPtr m = angleCollection->get();
@@ -241,7 +241,8 @@ QTreeWidgetItem* TreeBuilder::createJointsBranch( const MotionConstPtr & motion,
 QTreeWidgetItem* TreeBuilder::createMarkersBranch( const MotionConstPtr & motion, const QString& rootName, const QIcon& rootIcon, const QIcon& itemIcon )
 {
     core::ObjectWrapperConstPtr markerCollection = motion->getWrapperOfType(typeid(MarkerCollection));
-    QTreeWidgetItem* markersItem = new TreeWrappedItemHelper(markerCollection);
+    TreeWrappedItemHelper* markersItem = new TreeWrappedItemHelper(markerCollection);
+    markersItem->setMotion(motion);
     markersItem->setIcon(0, rootIcon);
     markersItem->setText(0, rootName);		
 

@@ -1,32 +1,13 @@
 #include "NewChartPCH.h"
 #include "StatsTable.h"
-#include <QtGui/QItemDelegate>
-
-class ItemDelegate : public QItemDelegate
-{
-public:
-    ItemDelegate(int width, int height) : width(width), height(height) {}
-    QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
-    {
-        return QSize(width, height);
-    }
-
-    int getWidth() const { return width; }
-    void setWidth(int val) { width = val; }
-    int getHeight() const { return height; }
-    void setHeight(int val) { height = val; }
-
-private:
-    int width;
-    int height;
-};
 
 StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/ ) :
     QWidget(parent, f),
-    rowHeight(13)
+    rowHeight(13),
+    treeItemDelegate(100, rowHeight)
 {
     setupUi(this);
-    table->setItemDelegate(new ItemDelegate(100, rowHeight));
+    table->setItemDelegate(&treeItemDelegate);
 }
 
  int getTreeItemRows(const QTreeWidgetItem* item) 

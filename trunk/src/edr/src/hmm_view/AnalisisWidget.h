@@ -47,9 +47,7 @@ private slots:
     void setFiltersExpanded(bool expand);
     void filterClicked(FilterEntryWidget* filter);
     void applyClicked();
-
     void switchToFirstTab();
-
     void recreateTree(FilterEntryWidget* currentFilter);
 
 private:
@@ -61,6 +59,7 @@ private:
     HmmMainWindow* hmm;
     //TODO potrzebne tylko, aby przekazac info miedzy elementami.
     FilterEntryWidget* currentFilter;
+
 };
 
 

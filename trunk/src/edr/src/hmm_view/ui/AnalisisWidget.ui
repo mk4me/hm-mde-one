@@ -42,9 +42,6 @@
 }</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
       <property name="margin">
        <number>0</number>
       </property>
@@ -380,8 +377,8 @@ QPushButton#applyButton:hover
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>318</width>
-                  <height>436</height>
+                  <width>100</width>
+                  <height>30</height>
                  </rect>
                 </property>
                </widget>
@@ -416,8 +413,8 @@ QPushButton#applyButton:hover
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>318</width>
-               <height>659</height>
+               <width>66</width>
+               <height>52</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -445,6 +442,16 @@ QPushButton#applyButton:hover
           </item>
          </layout>
         </widget>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="SummaryWindowWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
        </widget>
       </item>
      </layout>

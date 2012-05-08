@@ -74,7 +74,7 @@ UTILS_POP_WARNINGS
 
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
-#include <QtOpenGL/QtOpenGL>
+//#include <QtOpenGL/QtOpenGL>
 
 #include <utils/Debug.h>
 #include <utils/Enum.h>

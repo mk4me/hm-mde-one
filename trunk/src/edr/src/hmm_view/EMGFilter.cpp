@@ -147,7 +147,7 @@ public:
         }
         //aktualizacja próbek
 
-        sizeT meanR = 10;
+        sizeT meanR = 250;
         sizeT count = myChannel.size() - meanR;
         // brzeg lewy...
         for (sizeT l_idx = 0; l_idx < meanR; l_idx++) {
@@ -170,12 +170,13 @@ public:
             modifierInterface.setIndexData(idx, sum);
         }
         // brzeg prawy...
-        for (sizeT r_idx = count; r_idx < myChannel.size(); r_idx++) {
+        for (sizeT r_idx = count; r_idx < observedChannel.size(); r_idx++) {
             pointT sum = 0;
-            for (sizeT i = r_idx; i < myChannel.size(); i++) {
+            for (sizeT i = r_idx; i < observedChannel.size(); i++) {
                 sum += observedChannel.value(i) * observedChannel.value(i);
             }
-            sum /= (r_idx - count + meanR);
+            //sum /= (r_idx - count + meanR);
+            sum /= observedChannel.size() - r_idx;
             sum = sqrt(sum);
             modifierInterface.setIndexData(r_idx, sum);
         }

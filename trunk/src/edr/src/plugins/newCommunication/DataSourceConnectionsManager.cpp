@@ -10,6 +10,8 @@ DataSourceConnectionManager * DataSourceConnectionManager::create()
 	}else{
 		throw std::runtime_error("Instance already created");
 	}
+
+    return instance_;
 }
 
 void DataSourceConnectionManager::destroy()

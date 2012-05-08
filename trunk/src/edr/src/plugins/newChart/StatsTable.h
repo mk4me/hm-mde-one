@@ -13,6 +13,27 @@
 #include "ui_statsTable.h"
 #include <plugins/c3d/C3DChannels.h>
 
+#include <QtGui/QItemDelegate>
+
+class ItemDelegate : public QItemDelegate
+{
+public:
+    ItemDelegate(int width, int height) : width(width), height(height) {}
+    QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
+    {
+        return QSize(width, height);
+    }
+
+    int getWidth() const { return width; }
+    void setWidth(int val) { width = val; }
+    int getHeight() const { return height; }
+    void setHeight(int val) { height = val; }
+
+private:
+    int width;
+    int height;
+};
+
 //! Wyswietla statystyki wykresow w postaci pogrupowanego drzewa wpisow.
 //! Widget normalnie jest zwiniety, rozwijanie nastepuje po nacisnieciu przycisku.
 class StatsTable : public QWidget, private Ui::StatsTable
@@ -50,6 +71,7 @@ public slots:
 private:
     int rowHeight;
     std::multimap<ScalarChannelStatsConstPtr, QTreeWidgetItem*> stats2TreeItems;
+    ItemDelegate treeItemDelegate;
 };
 typedef core::shared_ptr<StatsTable> StatsTablePtr;
 typedef core::shared_ptr<const StatsTable> StatsTableConstPtr;

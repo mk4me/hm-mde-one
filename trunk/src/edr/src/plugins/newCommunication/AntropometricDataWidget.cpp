@@ -314,34 +314,34 @@ void AntropometricDataWidget::initAntropometricStyles()
 	antropometricLeftRightTable.antropometricStyles.tableAttributes.setBorder(1);
 
 	antropometricGeneralTable.antropometricStyles.tableStyle_ = "border-color: rgb(0, 0, 0);";
-	antropometricGeneralTable.antropometricStyles.headerRowStyle_[StyleStatus::Single] = "color: white; background: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.headerRowStyle_[Single] = "color: white; background: rgb(41, 41, 41);";
 
 	//wiersz nag³ówkowy
-	antropometricGeneralTable.antropometricStyles.headersStyles[StyleStatus::Single][StyleStatus::Middle] = "color: white; border-style: none; border-color: white;";
+	antropometricGeneralTable.antropometricStyles.headersStyles[Single][Middle] = "color: white; border-style: none; border-color: white;";
 	// kolumna nag³ówkowa - musze dodaæ kolor, nie da siê kolumnom przypisywaæ w³aœciwoœci
-	antropometricGeneralTable.antropometricStyles.headersStyles[StyleStatus::Middle][StyleStatus::Single] = "color: white; border-style: none; border-color: white; background: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.headersStyles[Middle][Single] = "color: white; border-style: none; border-color: white; background: rgb(41, 41, 41);";
 	// ostatni element kolumny nag³ówkowej - tylko kolor
-	antropometricGeneralTable.antropometricStyles.headersStyles[StyleStatus::Last][StyleStatus::Single] = "color: white; background: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.headersStyles[Last][Single] = "color: white; background: rgb(41, 41, 41);";
 
 	//style contentu - tutaj chcemy uzyskaæ efekt kratownicy bez ramki
-	antropometricGeneralTable.antropometricStyles.contentStyles[StyleStatus::First][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricGeneralTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricGeneralTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.contentStyles[First][First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.contentStyles[Last][First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricGeneralTable.antropometricStyles.contentStyles[Last][Last] = "border-style: none; border-color: rgb(41, 41, 41);";
 
 	// kopiujemy wiêkszoœæ ustawieñ
 	antropometricLeftRightTable.antropometricStyles = antropometricGeneralTable.antropometricStyles;
 	//poprawiamy style contentu - wiêcej mo¿liwoœci
-	antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::First][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::First][StyleStatus::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::First][StyleStatus::Last] = QString();
+	antropometricLeftRightTable.antropometricStyles.contentStyles[First][First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[First][Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[First][Last] = QString();
 
-	antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Middle][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Middle][StyleStatus::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Middle][StyleStatus::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[Middle][First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[Middle][Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[Middle][Last] = "border-style: none; border-color: rgb(41, 41, 41);";
 
-	antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::First] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
-	antropometricLeftRightTable.antropometricStyles.contentStyles[StyleStatus::Last][StyleStatus::Last] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[Last][First] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[Last][Middle] = "border-style: none; border-color: rgb(41, 41, 41);";
+	antropometricLeftRightTable.antropometricStyles.contentStyles[Last][Last] = "border-style: none; border-color: rgb(41, 41, 41);";
 }
 
 void AntropometricDataWidget::initAntropometricAtributes()

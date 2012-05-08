@@ -17,6 +17,7 @@ using namespace webservices;
 CommunicationDataSource::CommunicationDataSource() : serwerPingUrl("http://v21.pjwstk.edu.pl/"), memoryDM(nullptr), fileDM(nullptr), dataSourceWidget(nullptr)
 {
     //konfiguracja wsdlpulla ¿eby pisa³ pliki tymczasowe tam gdzie mamy prawo zapisu
+
     XmlUtils::TMPFILESDIR = core::getPathInterface()->getTmpPath().string();
     WsdlPull::SCHEMADIR = (core::getPathInterface()->getResourcesPath() / "schemas/").string();   
 
@@ -102,7 +103,7 @@ CommunicationDataSource::~CommunicationDataSource()
 	if(isLogged() == true){
 		try{
 			logout();
-		}catch(std::exception & e){
+		}catch(std::exception & ){
 
 		}
 	}
@@ -111,6 +112,7 @@ CommunicationDataSource::~CommunicationDataSource()
     DataSourceWebServicesManager::destroy();
     DataSourceConnectionManager::destroy();
     DataSourcePathsManager::destroy();
+    DataSourceLocalStorage::destroy();
 }
 
 void CommunicationDataSource::setConnectionsSerwerCertificatePath(const core::Filesystem::Path & certPath)
@@ -446,7 +448,7 @@ void CommunicationDataSource::extractFileFromLocalStorageToUserSpace(const webse
 		auto vskDestPath = pathsManager->filePath(vskName, sessionName);
 		QuaZip zip(filePath.string().c_str());
 
-		if(zip.open(QuaZip::Mode::mdUnzip) == true){
+		if(zip.open(QuaZip::mdUnzip) == true){
 			//uda³o siê otworzyæ plik do wypakowywania
 			auto files = zip.getFileNameList();
 			if(files.contains(QString::fromUtf8(vskName.c_str())) == true &&
@@ -685,7 +687,7 @@ bool CommunicationDataSource::tryActivateAccount(const std::string & login, cons
 	bool ret = false;
 	try{
 		ret = DataSourceWebServicesManager::instance()->accountFactoryService()->activateUserAccount(login, activationCode, true);
-	}catch(std::exception & e){
+	}catch(std::exception & ){
 
 	}catch(...){
 
@@ -701,7 +703,7 @@ bool CommunicationDataSource::registerUser(const std::string & login, const std:
 	try{
 		DataSourceWebServicesManager::instance()->accountFactoryService()->createUserAccount(login, email, password, firstName, lastName, true);
 		ret = true;
-	}catch(std::exception & e){
+	}catch(std::exception & ){
 
 	}catch(...){
 

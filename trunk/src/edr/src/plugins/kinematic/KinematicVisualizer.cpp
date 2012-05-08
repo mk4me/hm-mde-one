@@ -5,6 +5,7 @@
 #include "MarkerSerie.h"
 #include "PickHandler.h"
 #include "Manipulators.h"
+//#include <vld.h>
 
 #ifdef _DEBUG
 
@@ -234,7 +235,7 @@ QWidget* KinematicVisualizer::createWidget(core::IActionsGroupManager * manager)
 	connect(top_action, SIGNAL(triggered()), this, SLOT(setTop()));
 	connect(btm_action, SIGNAL(triggered()), this, SLOT(setBottom())); 	
 
-    QAction* resetTransformAction = new QAction(nullptr);
+    QAction* resetTransformAction = new QAction(widget);
     resetTransformAction->setText(tr("Reset transform"));
     connect(resetTransformAction, SIGNAL(triggered()), this, SLOT(resetTransform()));
 	

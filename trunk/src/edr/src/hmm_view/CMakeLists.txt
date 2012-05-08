@@ -30,6 +30,7 @@ set(PRIVATE_H
 	ConfigurationPainter.h
 	AnalisisWidget.h
 	IllnessUnit.h
+	SummaryWindow.h
 	LanguageDialog.h
 	HmmContexts.h
 	TextEdit.h
@@ -72,6 +73,7 @@ set(TARGET_SRC
 	AnalisisWidget.cpp
 	LanguageDialog.cpp
 	HmmContexts.cpp
+	SummaryWindow.cpp
 	TextEdit.cpp
 	#base64.cpp
 	Measurements.cpp
@@ -99,6 +101,7 @@ SET(TARGET_MOC_H
 	LanguageDialog.h
 	TextEdit.h
 	HmmContexts.h
+	SummaryWindow.h
 )
 QT4_WRAP_CPP(TARGET_MOC_SRC ${TARGET_MOC_H})
 source_group("${SOURCEGROUP_SOURCES}" FILES ${TARGET_MOC_SRC})

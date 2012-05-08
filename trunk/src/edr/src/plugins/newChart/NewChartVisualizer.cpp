@@ -9,12 +9,6 @@
 #include <QtGui/QDoubleSpinBox>
 #include <boost/foreach.hpp>
 #include "NewChartVisualizer.h"
-//#include <qwt/qwt_plot_canvas.h>
-//#include <qwt/qwt_scale_draw.h>
-//#include <qwt/qwt_scale_widget.h>
-//#include <qwt/qwt_plot_layout.h>
-//#include <qwt/qwt_legend_label.h>
-//#include <qwt/qwt_legend.h>
 #include "StatsTable.h"
 #include "NewChartMarker.h"
 #include "NewChartValueMarker.h"
@@ -72,7 +66,10 @@ NewChartVisualizer::~NewChartVisualizer()
     if(eventsContextWidget != nullptr){
         delete eventsContextWidget;
     }
-    //delete qwtPlot;
+
+    delete upperBoundCurve;
+    delete lowerBoundCurve;
+    delete averageCurve;
 }
 
 

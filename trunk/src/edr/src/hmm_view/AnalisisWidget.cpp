@@ -1,5 +1,6 @@
 #include "hmmPCH.h"
 #include "AnalisisWidget.h"
+#include "SummaryWindow.h"
 
 AnalisisWidget::AnalisisWidget( QWidget* parent, HmmMainWindow* hmm, int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
 QWidget(parent, flags),

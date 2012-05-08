@@ -23,6 +23,7 @@
 #include "IAppUsageContextManager.h"
 #include <QtGui/QToolBox>
 
+#include "SummaryWindow.h"
 #include "HmmContexts.h"
 
 class EDRDockWidgetManager;
@@ -62,7 +63,7 @@ class HmmMainWindow : public core::MainWindow, private Ui::HMMMain, protected IA
 private:
 
 	friend class ContextEventFilter;
-
+    friend class SummaryWindowController; //tymczasowo
 
     //! Obserwuje Memory data manager. Jezeli dane sie zmienia, to odswiezone zostanie drzewo.
     class DataObserver : public utils::Observer<core::IMemoryDataManager>
@@ -266,6 +267,8 @@ private:
 	std::set<QWidget*> plainContextWidgets;
 	DerrivedContextWidgets derrivedContextWidgets;
 	ContextEventFilter * contextEventFilter;
+    SummaryWindowPtr summaryWindow;
+    SummaryWindowController* summaryWindowController;
 };
 
 class ContextEventFilter : public QObject

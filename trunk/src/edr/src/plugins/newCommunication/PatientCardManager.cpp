@@ -62,7 +62,7 @@ void PatientCardManager::setPatientCard(int idx)
 		patientCards[currentPatientCard_].widget->setVisible(false);
 	}
 
-	UTILS_ASSERT(idx > -1 && idx < patientCards.size());
+	UTILS_ASSERT(idx > -1 && idx < static_cast<int>(patientCards.size()));
 	currentPatientCard_ = idx;
 
 	if(currentPatientCard_ != -1){
@@ -72,13 +72,13 @@ void PatientCardManager::setPatientCard(int idx)
 
 QWidget * PatientCardManager::patientCardWidget(int idx) const
 {
-	UTILS_ASSERT(idx > -1 && idx < patientCards.size());
+	UTILS_ASSERT(idx > -1 && idx < static_cast<int>(patientCards.size()));
 	return patientCards[idx].widget;
 }
 
 const std::string & PatientCardManager::patientCardName(int idx) const
 {
-	UTILS_ASSERT(idx > -1 && idx < patientCards.size());
+	UTILS_ASSERT(idx > -1 && idx < static_cast<int>(patientCards.size()));
 	return patientCards[idx].name;
 }
 

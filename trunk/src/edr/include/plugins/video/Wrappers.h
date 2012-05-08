@@ -55,9 +55,9 @@ private:
 
 public:
 	VideoChannel(VideoStreamPtr video, const std::string & name = std::string()) :
-	videoStream(video), samplesPerSecond(videoStream->getFramerate()), name(name)
+	videoStream(video), samplesPerSecond(static_cast<float>(videoStream->getFramerate())), name(name)
 	{
-        invSamplesPerSecond = 1.0 / samplesPerSecond;
+        invSamplesPerSecond = 1.0f / samplesPerSecond;
     }
 
 	virtual VideoChannel* clone() const
@@ -88,7 +88,7 @@ public:
 
 	virtual time_type getLength() const
 	{
-		return videoStream->getDuration();
+		return static_cast<time_type>(videoStream->getDuration());
 	}
 	//! \return Liczba punktów pomiarowych.
 	virtual size_type size() const
@@ -107,7 +107,7 @@ public:
     virtual time_type argument(size_type idx) const
     {
         UTILS_ASSERT((idx >= 0),"B³êdny indeks dla kana³y - musi byæ wiêkszy lub równy 0");
-        return videoStream->getFrameDuration() * idx;
+        return static_cast<time_type>(videoStream->getFrameDuration() * idx);
     }
 
     //! \param idx Indeks probki

@@ -38,7 +38,7 @@ int DataSourceFilterManager::registerFilter(DataSourceFilter * filter)
 
 void DataSourceFilterManager::setCurrentFilter(int idx)
 {
-    UTILS_ASSERT(idx == -1 || (idx >= 0 && idx < filters.size()));
+    UTILS_ASSERT(idx == -1 || (idx >= 0 && idx < static_cast<int>(filters.size())));
 
     currentFilter_ = idx;
 }

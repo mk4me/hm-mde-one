@@ -42,8 +42,10 @@ HmmMainWindow::HmmMainWindow() :
     data(nullptr),
     operations(nullptr),
     dataObserver(new DataObserver(this)),
+    summaryWindow(new SummaryWindow(this)),
     visualizersActionsTab(new QWidget()),
-    flexiTabWidget(new FlexiTabWidget())
+    flexiTabWidget(new FlexiTabWidget()),
+    summaryWindowController(new SummaryWindowController(summaryWindow, this))
 {
     setupUi(this);
 
@@ -71,12 +73,22 @@ HmmMainWindow::HmmMainWindow() :
 
 void HmmMainWindow::activateContext(QWidget * widget)
 {
+    QWidget* toSet = nullptr;
 	if(plainContextWidgets.find(widget) != plainContextWidgets.end()){
-		setCurrentContext(widget);
+		toSet = widget;
 	}else{
 		auto it = derrivedContextWidgets.left.find(widget);
-		setCurrentContext(it->second);
+		toSet = it->second;
 	}
+    
+    setCurrentContext(toSet);
+
+    // hack - nie da sie zinstalowac dwoch filtrow eventow dla jednego widgeta, 
+    // obecne rozwiazanie jest specyficzne dla kontekstow
+    VisualizerWidget* vw = dynamic_cast<VisualizerWidget*>(toSet);
+    if (vw) {
+        summaryWindowController->onVisualizator(vw);
+    }
 }
 
 void HmmMainWindow::deactivateContext(QWidget * widget)
@@ -167,11 +179,10 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
         UTILS_ASSERT(c);
     }
 
-    //treeWidget->setColumnCount(2);
-    //treeWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
-
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&)));    
+    QObject::connect(treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onTreeContextMenu(const QPoint&))); 
+    QObject::connect(treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), summaryWindowController, SLOT(onTreeItemSelected(QTreeWidgetItem* , int)));
+    QObject::connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), summaryWindowController, SLOT(focusChanged(QWidget*,QWidget*)));
     //QObject::connect(treeWidget, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(onTreeItemClicked(QTreeWidgetItem*, int)));    
 
    /* QSplitter * splitter = new QSplitter();
@@ -348,15 +359,6 @@ void HmmMainWindow::init( core::PluginLoader* pluginLoader, core::IManagersAcces
 //    this->data->show();
 //#endif
 
-    
-    /*std::string path = core::getResourceString("schemas\\measurementconfs.xml");
-    try {
-    MeasurementsParser p;
-    p.parse(path);
-    this->measurements = p.getMeasurments();
-    } catch (std::runtime_error& e) {
-    LOG_ERROR(e.what());
-    }*/
     this->data->show();
 }
 
@@ -1066,39 +1068,6 @@ void HmmMainWindow::visualizerDestroyed(QObject * visualizer)
 
 	 return visualizerDockWidget;
  }
-
- /*void HmmMainWindow::addSeriesToTimeline( const std::vector<core::VisualizerTimeSeriePtr> &series, const QString &path, const VisualizerPtr &visualizer )
- {
- TimelinePtr timeline = core::queryServices<ITimelineService>(ServiceManager::getInstance());
- if(timeline != nullptr) {
- if (series.size() == 1 && series[0] != nullptr) {
- VisualizerChannelPtr channel(new VisualizerChannel(path.toStdString(), visualizer.get(), series[0]));
- try{
- timeline->addChannel(path.toStdString(), channel);
- }catch(...){
- LOG_ERROR("Could not add channel to timeline!");
- }
- } else {
- VisualizerMultiChannel::SeriesWidgets visSeries;
- for (int i = 0; i < series.size(); i++) {
- auto timeSerie = series[i];
- if(timeSerie != nullptr){
- visSeries.push_back(timeSerie);
- }
- }
- if (visSeries.size() > 0) {
- VisualizerMultiChannelPtr multi(new VisualizerMultiChannel(path.toStdString(), visualizer.get(), visSeries));
- try {
- timeline->addChannel(path.toStdString(), multi);
- } catch ( const std::exception & e){
- LOG_ERROR("Could not add multichannel to timeline! Reason: " << e.what());
- } catch (...) {
- LOG_ERROR("Could not add multichannel to timeline! UNKNOWN REASON");
- }
- }
- }
- }
- }*/
 
  void HmmMainWindow::refreshTree()
  {

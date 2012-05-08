@@ -153,7 +153,7 @@ void NotesWidget::removeNote()
 	notesTable->setSortingEnabled(false);
 	notesTable->removeRow(notesTable->currentRow());
 
-	for(int i = currentNote->localID; i < pNotes.size()-1; ++i){
+	for(unsigned int i = currentNote->localID; i < pNotes.size() - 1; ++i){
 		pNotes[i] = pNotes[i+1];
 		pNotes[i]->localID = i;
 
@@ -252,9 +252,9 @@ void NotesWidget::fillNotesList()
 			notesTable->setItem(row, 3, new QTableWidgetItem());
 		}
 	}else{
-		int rows = max(it->second.size(), 2);
+		unsigned int rows = max(it->second.size(), 2);
 		notesTable->setRowCount(rows);
-		int row = 0;
+		unsigned int row = 0;
 		for( ; row < it->second.size(); ++row){
 			notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(it->second[row]->localID)));
 			notesTable->setItem(row, 1, new QTableWidgetItem(it->second[row]->title));

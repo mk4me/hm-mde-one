@@ -17,7 +17,9 @@
 #include <iostream>
 #include <boost/foreach.hpp>
 #include <curl/curl.h>
+#pragma warning( disable : 4251 )
 #include <wsdlparser/WsdlInvoker.h>
+#pragma warning( default : 4251 )
 #include <core/ILog.h>
 
 #include <webserviceslib/ShallowCopyParser.h>

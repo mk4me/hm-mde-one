@@ -34,6 +34,7 @@ public:
     typedef float timeType;
     typedef C3DEventsCollection::EventConstPtr EventConstPtr;
     typedef C3DEventsCollection::EventPtr EventPtr;
+    typedef boost::shared_ptr<QwtPlotCurve> PlotCurvePtr;
     struct Segment 
     {
         EventConstPtr event1;
@@ -41,7 +42,7 @@ public:
         timeType begin;
         timeType end;
         ScalarChannelStatsPtr stats;
-        QwtPlotCurve* normalizedCurve;
+        PlotCurvePtr normalizedCurve;
     };
     typedef core::shared_ptr<Segment> SegmentPtr;
     typedef core::shared_ptr<const Segment> SegmentConstPtr;

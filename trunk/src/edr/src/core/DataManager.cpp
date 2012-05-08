@@ -233,7 +233,7 @@ bool DataManager::DMObjectWrapper::getSmartPtr(void* ptr, const core::TypeInfo& 
         try{
             DataManager::getInstance()->initializeData(core::ObjectWrapperPtr(core::const_pointer_cast<DMObjectWrapper>(shared_from_this())));
         }
-        catch(std::exception & e){
+        catch(std::exception & ){
 
         }
     }

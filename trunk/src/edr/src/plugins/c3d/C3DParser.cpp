@@ -9,7 +9,6 @@
 #include <boost/tuple/tuple.hpp>
 #include "ForcePlatform.h"
 #include <core/Filesystem.h>
-
 #ifdef max
 #undef max
 #endif
@@ -126,8 +125,8 @@ void C3DParser::parseFile( const core::Filesystem::Path& path )
     try {
         IForcePlatformCollection platforms;
         auto parsedPlatforms = parser->getForcePlatforms();
-        int count = parsedPlatforms.size();
-        for (unsigned int i = 0; i < count;  i++) {
+        int count = static_cast<int>(parsedPlatforms.size());
+        for (int i = 0; i < count;  i++) {
             ForcePlatformPtr fp(new ForcePlatform(parsedPlatforms[i]));
             // HACK ! POWINIEN BYC KANAL NA PODST. NR PLATFORMY!
             fp->setForceChannel(grfs->getGRFChannel(i == 0 ? GRFChannel::F1 : GRFChannel::F2));

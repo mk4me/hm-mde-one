@@ -59,7 +59,7 @@ UTILS_POP_WARNINGS
 
 #include <QtCore/QtCore>
 #include <QtGui/QtGui>
-#include <QtOpenGL/QtOpenGL>
+//#include <QtOpenGL/QtOpenGL>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>

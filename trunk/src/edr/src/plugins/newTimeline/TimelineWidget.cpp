@@ -4,7 +4,7 @@
 #include <QtGui/QCheckBox>
 
 #include <math.h>
-#include <qwt/qwt_scale_draw.h>
+//#include <qwt/qwt_scale_draw.h>
 #include "TimelineWidget.h"
 #include "ChannelCheckbox.h"
 #include "ChannelWidget.h"
@@ -13,9 +13,9 @@
 
 TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidget * parent, Qt::WindowFlags f)
     : QWidget(parent, f), removeChannelsMenu(new QMenu()), /*scaleSpinBox(new QDoubleSpinBox()),*/
-    playbackDirectionAction(new QAction(QString("Playback direction"), nullptr)), timeToBeginAction(new QAction(QString("Begin"), nullptr)),
-    timeToEndAction(new QAction(QString("End"), nullptr)), playPauseAction(new QAction(QString("Play"), nullptr)),
-    stopAction(new QAction(QString("Stop"), nullptr)), /*scaleLabel(new QLabel(QString("<font color=\"white\"><b>Scale:</b></font>"))),
+    playbackDirectionAction(new QAction(QString("Playback direction"), this)), timeToBeginAction(new QAction(QString("Begin"), this)),
+    timeToEndAction(new QAction(QString("End"), this)), playPauseAction(new QAction(QString("Play"), this)),
+    stopAction(new QAction(QString("Stop"), this)), /*scaleLabel(new QLabel(QString("<font color=\"white\"><b>Scale:</b></font>"))),
     timeLabel(new QLabel(QString("<font color=\"white\"><b>Time:</b></font>"))),*/ rootItem(new QTreeWidgetItem()),
     slider(new TimeSliderWidget()), preciseTimeWidget(new QDateTimeEdit()), timelineTabs(new QWidget()),
     leftTabButton(new QToolBar()), middleTabButton(new QToolBar()), rightTabButton(new QToolBar())
@@ -194,10 +194,10 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     //HACK
     //to powinno byc stylowane za pomoc¹ CSS, niestety Qwt operuje tylko na paletach
     QPalette sliderPalette(this->palette());
-    sliderPalette.setBrush(QPalette::ColorRole::Light, QBrush(QColor(135, 177, 255)));
-    sliderPalette.setBrush(QPalette::ColorRole::Mid, QBrush(QColor(255,0,0)));
-    sliderPalette.setBrush(QPalette::ColorRole::Dark, QBrush(QColor(135, 177, 255)));
-    sliderPalette.setBrush(QPalette::ColorRole::Button, QBrush(QColor(0,0,0)));
+    sliderPalette.setBrush(QPalette::Light, QBrush(QColor(135, 177, 255)));
+    sliderPalette.setBrush(QPalette::Mid, QBrush(QColor(255,0,0)));
+    sliderPalette.setBrush(QPalette::Dark, QBrush(QColor(135, 177, 255)));
+    sliderPalette.setBrush(QPalette::Button, QBrush(QColor(0,0,0)));
     slider->setPalette(sliderPalette);
 
     QWidget * widget = new QWidget();

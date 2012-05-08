@@ -13,6 +13,7 @@ DataSourcePathsManager * DataSourcePathsManager::create(const core::Filesystem::
 	}
 
 	instance_ = new DataSourcePathsManager(usersDataPath);
+    return instance_;
 }
 
 void DataSourcePathsManager::destroy()
@@ -87,7 +88,7 @@ std::string DataSourcePathsManager::generateUserHash(const User & user)
 	
 	bool first = true;
 
-	for(int i = 0; i < hash.size(); ++i){
+	for(unsigned int i = 0; i < hash.size(); ++i){
 		unsigned char c = (hash[i] + 5) % 128; 
 		if(std::isalnum(c) == false){
 			char nChar = c / 43;

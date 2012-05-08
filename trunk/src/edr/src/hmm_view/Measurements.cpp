@@ -37,7 +37,6 @@ void MeasurementsParser::parse( const std::string& filename )
     } else {
         std::runtime_error(filename + " does not have root element");
     }
-
     loaded = true;
 }
 

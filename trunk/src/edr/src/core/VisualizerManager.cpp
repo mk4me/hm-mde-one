@@ -208,7 +208,7 @@ void VisualizerManager::notifyDestroyed(IVisualizerChannel* channel)
 		for(auto it = channelIT->second.series.begin(); it != seriesITEnd; ++it){
 			try{
 				channelIT->second.visualzier->removeSerie(*it);
-			}catch(std::exception & e){
+			}catch(std::exception & ){
 
 			}catch(...){
 

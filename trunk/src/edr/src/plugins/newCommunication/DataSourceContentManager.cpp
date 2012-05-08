@@ -51,7 +51,7 @@ DataSourceContentPtr DataSourceContentManager::currentContent() const
 
 void DataSourceContentManager::setCurrentContent(int idx)
 {
-	UTILS_ASSERT(idx >= 0 && idx < contents.size());
+	UTILS_ASSERT(idx >= 0 && idx < static_cast<int>(contents.size()));
 
 	currentContent_ = idx;
 }

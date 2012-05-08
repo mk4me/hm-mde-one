@@ -3,6 +3,7 @@
 #include <plugins/newCommunication/Patient.h>
 #include "DataSource.h"
 
+
 CORE_DEFINE_WRAPPER(Patient, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
 
 CORE_PLUGIN_BEGIN("newCommunication", UID::GenerateUniqueID("{B73693E1-A494-4064-84E6-BCD20DC6BD3E}"))
