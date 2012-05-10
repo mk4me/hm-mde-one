@@ -117,6 +117,9 @@ private slots:
 
 private:
 
+	static core::shared_ptr<communication::AntropometricData> createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs);
+	static float getAntropometricValue(const std::string & attribute, const webservices::MotionShallowCopy::Attrs & attrs, float defValue = 0.0);
+
 	void loadFiles(const std::set<int> & files);
 	void unloadFiles(const std::set<int> & files, bool showMessage = true);
 
@@ -174,6 +177,8 @@ private:
 
 	void trySaveProjects();
 	void tryLoadProjects();
+
+	void addPatientObject(const webservices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID);
 
 private:
     //! Aktualnie ustawiony content perspektyw
@@ -242,10 +247,13 @@ private:
 	std::set<int> filesLoadedToDM;
 
 	//! ------------ Logika danych w DM (ObjectWrappers) ----------------
-	std::map<int, core::ObjectWrapperPtr> patientsMapping;
-	std::map<int, core::ObjectWrapperPtr> subjectsMapping;
-	std::map<int, core::ObjectWrapperPtr> sessionsMapping;
-	std::map<int, core::ObjectWrapperPtr> motionsMapping;
+
+	typedef std::pair<core::ObjectWrapperPtr, std::vector<core::ObjectWrapperPtr>> MappingValue;
+
+	std::map<int, MappingValue> patientsMapping;
+	std::map<int, MappingValue> subjectsMapping;
+	std::map<int, MappingValue> sessionsMapping;
+	std::map<int, MappingValue> motionsMapping;
 
 	std::map<std::string, std::set<int>> projects;
 };

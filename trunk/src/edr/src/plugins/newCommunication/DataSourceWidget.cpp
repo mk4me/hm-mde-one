@@ -1504,7 +1504,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 		auto subIT = subjectsMapping.find(subjectIT->first);
 		if(subIT != subjectsMapping.end()){
 			//mam subjecta - nie musze ju¿ nic robiæ
-			subPtr = subIT->second->get();
+			subPtr = subIT->second.first->get();
 		}else{
 			//tworzê subjecta
 			subPtr = subjectService->createSubject();
@@ -1514,12 +1514,13 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			core::MetadataPtr meta(new core::Metadata(ow));
 			std::stringstream label;
 
-			auto sIT = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first);
+			auto pIT = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first);
 
-			if(sIT == filteredShallowCopy.medicalShallowCopy->patients.end()){
+			if(pIT == filteredShallowCopy.medicalShallowCopy->patients.end()){
 				label << "Subject " << subjectIT->first;
 			}else{
-				label << sIT->second->name << ", " << sIT->second->surname;
+				label << pIT->second->name << ", " << pIT->second->surname;
+				addPatientObject(pIT->second, subPtr->getID());
 			}
 
 			//auto s = filteredShallowCopy.medicalShallowCopy->patients.find(subjectIT->first)->second;
@@ -1528,7 +1529,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
 
 			//zapamiêtujê mapowanie
-			subjectsMapping[subjectIT->first] = ow;
+			subjectsMapping[subjectIT->first].first = ow;
 		}
 
 		//mam subjecta, mogê iœæ dalej do sesji
@@ -1539,7 +1540,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 			auto sIT = sessionsMapping.find(sessionIT->first);
 			if(sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze ju¿ nic robiæ
-				sPtr = sIT->second->get();
+				sPtr = sIT->second.first->get();
 			}else{
 				//tworzê sesjê
 				//generujê zbiór ow dla sesji
@@ -1553,19 +1554,28 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					}
 				}
 
+				auto s = filteredShallowCopy.motionShallowCopy->sessions.find(sessionIT->first)->second;
+
+				//dane antropometryczne
+				auto antro = createAntropometricData(s->performerConf->attrs);
+				auto antroOW = core::IMemoryDataManager::addData(dataSource->memoryDM, antro);
+				sessionObjects.push_back(antroOW);
+				sessionsMapping[sessionIT->first].second.push_back(antroOW);
+
 				sPtr = subjectService->createSession(subPtr, sessionObjects);
 				//dodajê do DM
 				auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, sPtr);
 
 				core::MetadataPtr meta(new core::Metadata(ow));
-				auto s = filteredShallowCopy.motionShallowCopy->sessions.find(sessionIT->first)->second;
+				
 				meta->setValue("label", s->sessionName);
 				meta->setValue("EMGConf", boost::lexical_cast<std::string>(s->emgConf));
+				meta->setValue("data", s->sessionDate);
 
 				core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
 
 				//zapamiêtujê mapowanie
-				sessionsMapping[sessionIT->first] = ow;
+				sessionsMapping[sessionIT->first].first = ow;
 			}
 
 			//mam sesjê - mogê iœæ dalej z motionami!!
@@ -1578,7 +1588,7 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					//mam subjecta - nie musze ju¿ nic robiæ
 					//TODO
 					//nie powinno mnie tu byæ wg aktualnego dzia³ania pluginu subject!!
-					mPtr = mIT->second->get();
+					mPtr = mIT->second.first->get();
 				}else{
 					//tworzê sesjê
 					//generujê zbiór ow dla motiona
@@ -1603,11 +1613,89 @@ void DataSourceWidget::loadSubjectHierarchy(const std::map<int, std::vector<core
 					core::IMemoryDataManager::addData(dataSource->memoryDM, meta);
 
 					//zapamiêtujê mapowanie
-					motionsMapping[motionIT->first] = ow;
+					motionsMapping[motionIT->first].first = ow;
 				}
 			}
 		}
 	}
+}
+
+void DataSourceWidget::addPatientObject(const webservices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID)
+{
+	//generujê listê schorzeñ
+	std::vector<communication::Disorder> disorders;
+	for(auto it = patient->disorders.begin(); it != patient->disorders.end(); ++it)	{
+
+		communication::Disorder dis;
+		dis.focus = it->second.focus;
+		dis.diagnosisDate = it->second.diagnosisDate;
+		dis.comments = it->second.comments;
+		dis.name = it->second.disorder->name;
+
+		disorders.push_back(dis);
+	}
+	
+	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, patient->birthDate,
+		Patient::decodeGender(patient->gender), core::shared_ptr<const QPixmap>(), disorders));
+
+	//dodajê do DM
+	auto ow = core::IMemoryDataManager::addData(dataSource->memoryDM, pPtr);
+
+	//zapamiêtuje
+	patientsMapping[patient->patientID].first = ow;
+}
+
+core::shared_ptr<communication::AntropometricData> DataSourceWidget::createAntropometricData(const webservices::MotionShallowCopy::Attrs & attrs)
+{
+	auto antro = core::shared_ptr<communication::AntropometricData>(new communication::AntropometricData());
+	antro->bodyMass = communication::AntropometricData::value_type(getAntropometricValue("BodyMass", attrs), "kg");
+	antro->height = communication::AntropometricData::value_type(getAntropometricValue("Height", attrs), "mm");
+	antro->interAsisDistance = communication::AntropometricData::value_type(getAntropometricValue("InterAsisDistance", attrs), "mm");
+
+	antro->leftLegLength = communication::AntropometricData::value_type(getAntropometricValue("LeftLegLength", attrs), "mm");
+	antro->rightLegLenght = communication::AntropometricData::value_type(getAntropometricValue("RightLegLenght", attrs), "mm");
+
+	antro->leftKneeWidth = communication::AntropometricData::value_type(getAntropometricValue("LeftKneeWidth", attrs), "mm");
+	antro->rightKneeWidth = communication::AntropometricData::value_type(getAntropometricValue("RightKneeWidth", attrs), "mm");
+
+	antro->leftAnkleWidth = communication::AntropometricData::value_type(getAntropometricValue("LeftAnkleWidth", attrs), "mm");
+	antro->rightAnkleWidth = communication::AntropometricData::value_type(getAntropometricValue("RightAnkleWidth", attrs), "mm");
+
+	antro->leftCircuitThigh = communication::AntropometricData::value_type(getAntropometricValue("LeftCircuitThigh", attrs), "mm");
+	antro->rightCircuitThight = communication::AntropometricData::value_type(getAntropometricValue("RightCircuitThight", attrs), "mm");
+
+	antro->leftCircuitShank = communication::AntropometricData::value_type(getAntropometricValue("LeftCircuitShank", attrs), "mm");
+	antro->rightCircuitShank = communication::AntropometricData::value_type(getAntropometricValue("RightCircuitShank", attrs), "mm");
+
+	antro->leftShoulderOffset = communication::AntropometricData::value_type(getAntropometricValue("LeftShoulderOffset", attrs), "mm");
+	antro->rightShoulderOffset = communication::AntropometricData::value_type(getAntropometricValue("RightShoulderOffset", attrs), "mm");
+
+	antro->leftElbowWidth = communication::AntropometricData::value_type(getAntropometricValue("LeftElbowWidth", attrs), "mm");
+	antro->rightElbowWidth = communication::AntropometricData::value_type(getAntropometricValue("RightElbowWidth", attrs), "mm");
+
+	antro->leftWristWidth = communication::AntropometricData::value_type(getAntropometricValue("LeftWristWidth", attrs), "mm");
+	antro->rightWristWidth = communication::AntropometricData::value_type(getAntropometricValue("RightWristWidth", attrs), "mm");
+
+	antro->leftWristThickness = communication::AntropometricData::value_type(getAntropometricValue("LeftWristThickness", attrs), "mm");
+	antro->rightWristThickness = communication::AntropometricData::value_type(getAntropometricValue("RightWristThickness", attrs), "mm");
+
+	antro->leftHandWidth = communication::AntropometricData::value_type(getAntropometricValue("LeftHandWidth", attrs), "mm");
+	antro->rightHandWidth = communication::AntropometricData::value_type(getAntropometricValue("RightHandWidth", attrs), "mm");
+
+	antro->leftHandThickness = communication::AntropometricData::value_type(getAntropometricValue("LeftHandThickness", attrs), "mm");
+	antro->rightHandThickness = communication::AntropometricData::value_type(getAntropometricValue("RightHandThickness", attrs), "mm");
+
+	return antro;
+}
+
+float DataSourceWidget::getAntropometricValue(const std::string & attribute, const webservices::MotionShallowCopy::Attrs & attrs, float defValue)
+{
+	auto it = attrs.find(attribute);
+	if(it != attrs.end()){
+		return boost::lexical_cast<float>(it->second);
+	}
+
+	return defValue;
 }
 
 void DataSourceWidget::onUnloadAll()
@@ -1672,7 +1760,12 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 
 					if(diffIT == diff.begin()){
 						//to znaczy ¿e usun¹³em wszystkie pliki motiona -> mogê usuwaæ motiona
-						dataSource->memoryDM->removeData(mIT->second);
+						for(auto rIT = mIT->second.second.begin(); rIT != mIT->second.second.end(); ++rIT){
+							dataSource->memoryDM->removeData(*rIT);
+						}
+						
+						dataSource->memoryDM->removeData(mIT->second.first);
+
 						motionsMapping.erase(mIT);
 					}else{
 						//TODO
@@ -1692,12 +1785,16 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 			auto sIT = sessionsMapping.find(sessionIT->first);
 			if(sIT != sessionsMapping.end()){
 				//mam subjecta - nie musze ju¿ nic robiæ
-				sPtr = sIT->second->get();
+				sPtr = sIT->second.first->get();
 				PluginSubject::Motions motions;
 				sPtr->getMotions(motions);
 				if(motions.empty() == true){
 					//sesja jest pusta - do usuniêcia
-					dataSource->memoryDM->removeData(sIT->second);
+					for(auto rIT = sIT->second.second.begin(); rIT != sIT->second.second.end(); ++rIT){
+						dataSource->memoryDM->removeData(*rIT);
+					}
+
+					dataSource->memoryDM->removeData(sIT->second.first);
 					sessionsMapping.erase(sIT);
 				}
 			}else{
@@ -1714,11 +1811,16 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 		auto subIT = subjectsMapping.find(subjectIT->first);
 		if(subIT != subjectsMapping.end()){
 			//mam subjecta - nie musze ju¿ nic robiæ
-			subPtr = subIT->second->get();
+			subPtr = subIT->second.first->get();
 			PluginSubject::Sessions sessions;
 			subPtr->getSessions(sessions);
 			if(sessions.empty() == true){
-				dataSource->memoryDM->removeData(subIT->second);
+
+				for(auto rIT = subIT->second.second.begin(); rIT != subIT->second.second.end(); ++rIT){
+					dataSource->memoryDM->removeData(*rIT);
+				}
+
+				dataSource->memoryDM->removeData(subIT->second.first);
 				subjectsMapping.erase(subIT);
 			}
 		}else{
@@ -1732,25 +1834,45 @@ void DataSourceWidget::unloadSubjectHierarchy(const std::set<int> & unloadedFile
 void DataSourceWidget::unloadSubjectHierarchy()
 {
 	for(auto it = motionsMapping.begin(); it != motionsMapping.end(); ++it){
-		dataSource->memoryDM->removeData(it->second);
+
+		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
+			dataSource->memoryDM->removeData(*rIT);
+		}
+
+		dataSource->memoryDM->removeData(it->second.first);
 	}
 
 	for(auto it = sessionsMapping.begin(); it != sessionsMapping.end(); ++it){
-		dataSource->memoryDM->removeData(it->second);
+
+		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
+			dataSource->memoryDM->removeData(*rIT);
+		}
+
+		dataSource->memoryDM->removeData(it->second.first);
 	}
 
 	for(auto it = subjectsMapping.begin(); it != subjectsMapping.end(); ++it){
-		dataSource->memoryDM->removeData(it->second);
+
+		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
+			dataSource->memoryDM->removeData(*rIT);
+		}
+
+		dataSource->memoryDM->removeData(it->second.first);
 	}
 
 	for(auto it = patientsMapping.begin(); it != patientsMapping.end(); ++it){
-		dataSource->memoryDM->removeData(it->second);
+
+		for(auto rIT = it->second.second.begin(); rIT != it->second.second.end(); ++rIT){
+			dataSource->memoryDM->removeData(*rIT);
+		}
+
+		dataSource->memoryDM->removeData(it->second.first);
 	}
 
-	patientsMapping.swap(std::map<int, core::ObjectWrapperPtr>());
-	subjectsMapping.swap(std::map<int, core::ObjectWrapperPtr>());
-	sessionsMapping.swap(std::map<int, core::ObjectWrapperPtr>());
-	motionsMapping.swap(std::map<int, core::ObjectWrapperPtr>());
+	patientsMapping.swap(std::map<int, MappingValue>());
+	subjectsMapping.swap(std::map<int, MappingValue>());
+	sessionsMapping.swap(std::map<int, MappingValue>());
+	motionsMapping.swap(std::map<int, MappingValue>());
 }
 
 void DataSourceWidget::onUpdateDownloadRequest()

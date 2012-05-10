@@ -192,8 +192,6 @@ LogInitializer::LogInitializer( const char* configPath )
     ConsoleWidgetAppender::registerClass();
     // za³adowanie parametów logowania
     PropertyConfigurator::configure(configPath);
-
-	osg::setNotifyLevel(osg::NotifySeverity::FATAL);
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx(Logger::getLogger( "osg" ) ));
     qInstallMsgHandler(QtMessageHandler);
 

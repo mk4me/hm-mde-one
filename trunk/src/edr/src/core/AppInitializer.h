@@ -26,6 +26,7 @@
 #include "DataSourceManager.h"
 #include <utils/Push.h>
 #include <core/IManagersAccessor.h>
+#include <osgQt/GraphicsWindowQt>
 
 #ifdef CORE_ENABLE_LEAK_DETECTION
 #include <utils/LeakDetection.h>
@@ -265,6 +266,17 @@ public:
 				    // siê destruktora
 
 				    {
+						{
+							//HACK - wymuszamy statyczne linkowanie z bibliotek¹ osgQt.
+							// to gwarantuje poprawne zainicjowanie obiektu HeartBeat odpowiedzialnego
+							// za obs³uge scen OpenGL po stronie widgetów OSG.
+							// Choæ niekoniecznie w tym w¹tku z tego kozystamy ( nie musimy mieæ tworzonych na starcie ¿adnych widgetów OSG)
+							// jest to niezbêdne dla prawid³owej deinicjalizacji tego obiektu - czasu ¿ycia jego zasobów.
+							// W przeciwnym wypadku powstanie kilka instancji tego obiektu - po jednej dla ka¿dego pluginu dostarczaj¹cego widgetów OSG
+							// Bardzo niebezpieczne!! Powodowa³o crash aplikacji przy inicjalizacji a potem przy zamykaniu
+							boost::shared_ptr<QWidget> w(new osgQt::GLWidget());
+						}
+
                         // tworzymy widok
 					    FrontpageWidget widget;
                         //inicjalizujemy widok

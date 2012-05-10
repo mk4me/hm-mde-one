@@ -10,4 +10,5 @@ CORE_PLUGIN_BEGIN("newCommunication", UID::GenerateUniqueID("{B73693E1-A494-4064
     //CORE_PLUGIN_ADD_SERVICE(CommunicationService)
     CORE_PLUGIN_ADD_SOURCE(CommunicationDataSource)
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(communication::IPatient)
+	CORE_PLUGIN_ADD_OBJECT_WRAPPER(communication::AntropometricData)
 CORE_PLUGIN_END
