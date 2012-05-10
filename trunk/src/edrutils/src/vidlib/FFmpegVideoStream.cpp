@@ -24,6 +24,7 @@ extern "C" {
 #pragma warning (disable: 4244)
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
+#include <libavutil/opt.h>
 #include <libavutil/mathematics.h>
 #include <libavutil/log.h>
 #pragma warning (pop)
@@ -38,7 +39,7 @@ extern "C" {
 
 
 #define AVIO_FFMPEG_SEEK_WITH_STREAM_INDEX
-#define AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
+//#define AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
 
 
 #define BREAK_ON_ERROR( x ) { if (!(x)) { VIDLIB_ERROR(*getLastError()); }}
@@ -273,6 +274,11 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
     alignedPacket = NULL;
 
     wantedTime = INVALID_TIMESTAMP;
+
+	codec_opts = NULL;
+
+	av_dict_set(&codec_opts, "threads", "auto", 0);
+
     init( source, wantedVideoStream );
 
     // sprawdzanie pewnych warunków
@@ -284,17 +290,14 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
 
 FFmpegVideoStream::~FFmpegVideoStream()
 {
-	std::cout << "FFmpegVideoStream destructor " << std::endl;
     VIDLIB_FUNCTION_PROLOG;
     av_free_packet(alignedPacket);
     av_free(alignedPacket);
     av_free(packet);
     av_free(frame);
     avcodec_close(codecContext);
-	std::cout << "ffmepeg before close file: " << formatContext->filename << std::endl;
 	avformat_close_input(&formatContext);
-
-	std::cout << "ffmepeg after close file" << std::endl;
+	av_dict_free(&codec_opts);
 }
 
 //------------------------------------------------------------------------------
@@ -345,15 +348,10 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
         VIDLIB_ERROR( FFmpegError( "avcodec_find_decoder" ) );
     }
 
-	int i = codecContext->thread_count;
-
-	codecContext->thread_count = 1;
-
-	AVDictionary* dict = nullptr;
-	av_dict_set(&dict, "b", "2.5M", 0);
+	//codecContext->thread_count = 1;
 
     // otwieramy kodek
-    if( (error=avcodec_open2(codecContext, pCodec, &dict)) <0) {
+    if( (error=avcodec_open2(codecContext, pCodec, &codec_opts)) <0) {
         VIDLIB_ERROR( FFmpegError( "avcodec_open2", error ) );
     }
 
@@ -375,6 +373,8 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     frameSpan = frameSpanRational.den;
     UTILS_ASSERT(frameSpanRational.num == 1, "Error getting frame span.");
     //UTILS_ASSERT(videoStream->duration % frameSpan == 0, "Error getting frame span.");
+
+	timeBaseFrac = videoStream->time_base.den / videoStream->time_base.num;
 
     // parametry strumienia
     double frameRate = av_q2d(videoStream->r_frame_rate);
@@ -715,7 +715,7 @@ inline int64_t FFmpegVideoStream::secToTimestap( double time ) const
 {
     VIDLIB_FUNCTION_PROLOG;
     UTILS_ASSERT(videoStream);
-    return static_cast<int64_t>(time * videoStream->time_base.den / videoStream->time_base.num);
+    return static_cast<int64_t>(time * timeBaseFrac);//videoStream->time_base.den / videoStream->time_base.num);
 }
 
 //------------------------------------------------------------------------------

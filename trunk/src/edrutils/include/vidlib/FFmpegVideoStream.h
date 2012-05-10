@@ -26,6 +26,8 @@ struct AVFrame;
 struct AVStream;
 struct AVPacket;
 struct AVPicture;
+struct AVDictionary;
+struct AVCodec;
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {
@@ -101,6 +103,8 @@ private:
     AVCodecContext * codecContext;
     //! StrumieÒ.
     AVStream * videoStream;
+	//! Sta≥a do wyznaczania czasu strumienia
+	int timeBaseFrac;
     //! Bieøπca ramka.
     AVFrame * frame;
     //! Prawdziwy timestamp prezentacji bieøπcej ramki. W jednostkach strumienia.
@@ -126,6 +130,8 @@ private:
     AVPacket * packet;
     //! Prawdziwy uøywany w momencie, gdy ürÛd≥owy nie ma wyalignowanych danych.
     AVPacket * alignedPacket;
+	//! Ustawienia dla kodeka - iloúÊ wπtkÛw do dekodowania
+	AVDictionary * codec_opts;
 
 public:
     //! \param source èrÛd≥o.
@@ -157,7 +163,6 @@ public:
     //! powinien prze≥adowaÊ tÍ metodÍ.
     //! \param dst
     virtual bool getData(PictureLayered & dst) const;
-
 
 private:
     //! Pomija ramki aø dotrze do zadanego czasu.
